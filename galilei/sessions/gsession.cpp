@@ -789,7 +789,7 @@ void GSession::CopyIdealGroups(bool save) throw(std::bad_alloc,GException)
 	CalcDesc=GroupCalcMng->GetCurrentMethod();
 
 	// Clear current group
-	GGroups::Clear();
+	ClearGroups();
 
 	// Go through each languages
 	Grps=Subjects->GetIdealGroups()->GetGroupsCursor();
@@ -944,6 +944,7 @@ void GSession::LoadHistoricGroupsByDate(RString mindate,RString maxdate)
 void GSession::ReInit(bool)
 {
 	// Clean subprofiles and feedbacks
+	ClearGroups();
 	ClearFdbks();
 	ClearSubProfiles();
 
@@ -1007,7 +1008,7 @@ GSession::~GSession(void)
 		if(ProfilesSims) delete ProfilesSims;
 
 		// Clear all entities
-		GGroups::Clear();
+		ClearGroups();
 		GUsers::Clear();
 		GDocs::Clear();
 
