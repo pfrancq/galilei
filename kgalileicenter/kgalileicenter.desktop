@@ -1,0 +1,12 @@
+# KDE Config File  
+[Desktop Entry]
+Type=Application
+Exec=kgalileicenter -caption "%c" %i %m  
+Icon=kgalileicenter.png
+MiniIcon=kgalileicenter.png
+DocPath=kgalileicenter/index.html
+Comment=
+Comment[de]=
+Terminal=0
+Name=KGalileiCenter
+Name[de]=KGalileiCenter
