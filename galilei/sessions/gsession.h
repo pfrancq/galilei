@@ -49,7 +49,6 @@
 #include <profiles/gusers.h>
 #include <profiles/gsubprofile.h>
 #include <docs/gdocs.h>
-#include <groups/ggroupir.h>
 #include <groups/ggroupsmng.h>
 #include <groups/gsubjecttree.h>
 #include <docs/glinkcalc.h>
@@ -108,16 +107,6 @@ protected:
 	GSubProfileDesc* SubProfileDesc;
 
 	/**
-	* Container of grouping method for the profiles.
-	*/
-	R::RContainer<GGrouping,R::tId,true,true>* Groupings;
-
-	/**
-	* Current grouping method used.
-	*/
-	GGrouping* Grouping;
-
-	/**
 	* Container of group description method.
 	*/
 	R::RContainer<GGroupCalc,R::tId,true,true>* GroupCalcs;
@@ -145,7 +134,12 @@ protected:
 	/**
 	* Profile Calc Manager used by this session.
 	*/
-	GProfileCalcManager* ProfileCalcMng;
+	GProfileCalcManager* ProfilingMng;
+
+	/**
+	* Grouping Manager used by this session.
+	*/
+	GGroupingManager* GroupingMng;
 
 	/**
 	* Analyser used for the document.
@@ -153,7 +147,7 @@ protected:
 	GDocAnalyse* DocAnalyse;
 
 	/**
-	* Similarity between the  profiles.    
+	* Similarity between the  profiles.
 	*/
 	GProfilesSims* ProfilesSims;
 
@@ -202,9 +196,12 @@ public:
 	* @param f              Number of feedbacks.
 	* @param g              Number of groups.
 	* @param umng           URL Manager.
-	* @param pmng           Profile Calc Manager.
+	* @param pmng           Profiling Manager.
+	* @param gmng           Grouping Manager.
 	*/
-	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* umng, GProfileCalcManager* pmng,GDocOptions* opt) throw(bad_alloc,GException);
+	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
+		GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng,
+		GDocOptions* opt) throw(bad_alloc,GException);
 
 	/**
 	* Get the documents' analyser.
@@ -213,9 +210,14 @@ public:
 	GDocAnalyse* GetDocAnalyse(void) const {return(DocAnalyse);}
 
 	/**
-	* Get the profile Calc manager used by this session.
+	* Get the profiling manager used by this session.
 	*/
-	GProfileCalcManager* GetProfileCalcMng(void) {return(ProfileCalcMng);}
+	GProfileCalcManager* GetProfilingMng(void) {return(ProfilingMng);}
+
+	/**
+	* Get the grouping manager used by this session.
+	*/
+	GGroupingManager* GetGroupingMng(void) {return(GroupingMng);}
 
 	/**
 	* Get a pointer to the document options.
@@ -272,49 +274,6 @@ public:
 	* @return Return a GProfileDescCursor.
 	*/
 	GSubProfileDescCursor& GetProfileDescsCursor(void);
-
-	/**
-	* Set the current computing method.
-	* @param name           Name of the computing method.
-	*/
-	void SetCurrentComputingMethod(const char* name) throw(GException);
-
-	/**
-	* Register a grouping method for the profiles.
-	* @param grp            Grouping method to register.
-	*/
-	void RegisterGroupingMethod(GGrouping* grp) throw(bad_alloc);
-
-	/**
-	* Set the current grouping method.
-	* @param name           Name of the grouping method.
-	*/
-	void SetCurrentGroupingMethod(const char* name) throw(GException);
-
-	/**
-	* Set the settings for the current grouping method.
-	* @param s              Settings of the current grouping method.
-	*/
-	void SetCurrentGroupingMethodSettings(const char* s) throw(GException);
-
-	/**
-	* Get the settings of a given grouping method.
-	* @param n              Name of the grouping method.
-	* @returns C String representing the settings of the given grouping method.
-	*/
-	const char* GetGroupingMethodSettings(const char* n) throw(GException);
-
-	/**
-	* Get the current grouping method.
-	* @returns Pointer to a GGrouping class.
-	*/
-	GGrouping* GetCurrentGroupingMethod(void) {return(Grouping);}
-
-	/**
-	* Get a cursor to the grouping methods registered.
-	* @return Return a GGoupingCursor.
-	*/
-	GGroupingCursor& GetGroupingsCursor(void);
 
 	/**
 	* Register a group description method.
@@ -697,29 +656,6 @@ public:
 	* Save the feedbaks
 	*/
 	virtual void SaveFdbks(void)=0;
-
-	/**
-	* Clear all the chromosomes stored.
-	*/
-	virtual void ClearStoredChromos(void)=0;
-
-	/**
-	* Save a chromosome.
-	* @param chromo         The chromosome to save.
-	* @param id             An id to find the chromosome after saving.
-	* @param objs           Objects.
-	* @param lang           The lang of the subprofiles in the chromosome. 
-	*/
-	virtual void SaveChromo(GChromoIR* chromo,unsigned int id,R::RObjs<GObjIR>* objs)=0;
-
-	/**
-	* Load a instance of chromosome for statisical use only.
-	* @param lang           The lang of the subprofiles in the chromosome.
-	* @param objs           Objects.
-	* @param p              Parameters.
-	* @return pointer to a Ginstir
-	*/
-	virtual GInstIR* LoadInstIR(GLang* lang,R::RObjs<GObjIR>* objs,GIRParams* p)=0;
 
 	/**
 	* Save The Documents Simylarities into the database.

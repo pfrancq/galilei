@@ -40,13 +40,26 @@
 
 
 //-----------------------------------------------------------------------------
+// include file for LibTool--
+#include <ltmm/loader.hh>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <sessions/gplugin.h>
+#include <profiles/gprofilecalcmanager.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+// API VERSION
+#define API_GROUPING_VERSION "1.0"
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -55,13 +68,8 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Grouping.
 */
-class GGrouping
+class GGrouping : public GPlugin<GFactoryGrouping>
 {
-	/**
-	* Name of the grouping.
-	*/
-	R::RString GroupingName;
-
 protected:
 
 	/**
@@ -113,50 +121,21 @@ public:
 
 	/**
 	* Constructor.
-	* @param n              Name of the grouping.
-	* @param s              Session.
+	* @param fac             Factory of the plugin.
 	*/
-	GGrouping(const char* n,GSession* s) throw(bad_alloc);
+	GGrouping(GFactoryGrouping* fac) throw(bad_alloc);
 
 	/**
-	* Get the name of the grouping method.
-	* @returns Pointer to a C string.
+	* Connect to a Session.
+	* @param session         The session.
 	*/
-	const char* GetGroupingName(void) const {return(GroupingName());}
+	virtual void Connect(GSession* session);
 
 	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
+	* Disconnect from a Session.
+	* @param session         The session.
 	*/
-	virtual const char* GetSettings(void) {return("");}
-
-	/**
-	* Set the settings for the method using a string.
-	* @param char*          C string coding the settings.
-	*/
-	virtual void SetSettings(const char*) {}
-
-	/**
-	* Set a parameter of the grouping method.
-	* @param param          Name of the parameter.
-	* @param value          Value of the parameter.
-	*/
-	virtual void SetParam(const char* param,const char* value);
-
-	/**
-	* Compare method used for R::RContainer.
-	*/
-	int Compare(const GGrouping* grp) const;
-
-	/**
-	* Compare method used for R::RContainer.
-	*/
-	int Compare(const GGrouping& grp) const;
-
-	/**
-	* Compare method used for R::RContainer.
-	*/
-	int Compare(const char* name) const;
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Initialisation of the method.
@@ -223,12 +202,93 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GFactoryGrouping : public GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>
+{
+public:
+	/**
+	* Constructor.
+	* @param mng             Manager of the plugin.
+	* @param n               Name of the Factory/Plugin.
+	* @param f               Lib of the Factory/Plugin.
+	*/
+	GFactoryGrouping(GGroupingManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>(mng,n,f) {}
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GFactoryGrouping(void) {}
+};
+
+
+//-----------------------------------------------------------------------------
+typedef GFactoryGrouping*(*GFactoryGroupingInit)(GGroupingManager*,const char*);
+
+
+//------------------------------------------------------------------------------
+#define CREATE_GROUPING_FACTORY(name,C,about,config)                                         \
+class TheFactory : public GFactoryGrouping                                                   \
+{                                                                                               \
+private:                                                                                        \
+	static GFactoryGrouping* Inst;                                                           \
+	TheFactory(GGroupingManager* mng,const char* l) : GFactoryGrouping(mng,name,l)        \
+	{                                                                                           \
+		C::CreateParams(this);                                                                  \
+	}                                                                                           \
+	virtual ~TheFactory(void) {}                                                                \
+public:                                                                                         \
+	static GFactoryGrouping* CreateInst(GGroupingManager* mng,const char* l)              \
+	{                                                                                           \
+		if(!Inst)                                                                               \
+			Inst = new TheFactory(mng,l);                                                       \
+		return(Inst);                                                                           \
+	}                                                                                           \
+	virtual void About(void) {C::About();}                                                      \
+	virtual bool HasAbout(void) const {return(about);}                                          \
+	virtual void Configure(void) {C::Configure(this);}                                          \
+	virtual bool HasConfigure(void) const {return(config);}                                     \
+	virtual const char* GetAPIVersion(void) const {return(API_GROUPING_VERSION);}            \
+	virtual void Create(void) throw(GException)                                                 \
+	{                                                                                           \
+		if(Plugin) return;                                                                      \
+		Plugin=new C(this);                                                                     \
+		Plugin->ApplyConfig();                                                                  \
+	}                                                                                           \
+	virtual void Delete(void) throw(GException)                                                 \
+	{                                                                                           \
+		if(!Plugin) return;                                                                     \
+		delete Plugin;                                                                          \
+		Plugin=0;                                                                               \
+	}                                                                                           \
+};                                                                                              \
+                                                                                                \
+GFactoryGrouping* TheFactory::Inst = 0;                                                      \
+                                                                                                \
+extern "C"                                                                                      \
+{                                                                                               \
+	GFactoryGrouping* FactoryCreate(GGroupingManager* mng,const char* l)                  \
+	{                                                                                           \
+		return(TheFactory::CreateInst(mng,l));                                                  \
+	}                                                                                           \
+}
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GGroupingCursor class provides a way to go trough a set of grouping
 * method for the profiles.
 * @short Profiles Grouping Methods Cursor
 */
 CLASSCURSOR(GGroupingCursor,GGrouping,unsigned int)
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GFactoryGroupingCursor class provides a way to go trough a set of
+* factories.
+* @short Grouping Methods Factories Cursor
+*/
+CLASSCURSOR(GFactoryGroupingCursor,GFactoryGrouping,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

@@ -52,6 +52,7 @@
 #include <groups/ggroups.h>
 #include <groups/ggroupvector.h>
 #include <groups/ggrouping.h>
+#include <groups/ggroupingmanager.h>
 #include <groups/gcomparegrouping.h>
 #include <profiles/gprofilecalc.h>
 #include <sessions/gprginstfor.h>
@@ -64,7 +65,6 @@
 #include <tests/gstatprofdoc.h>
 #include <docs/gdocoptions.h>
 using namespace GALILEI;
-
 using namespace R;
 
 
@@ -234,7 +234,7 @@ void GComputeProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsi
 		strcpy(tmp,"Compute Profiles: Current Method");
 	r->WriteStr(tmp);
 	if(args->NbPtr==1)
-		Owner->Session->SetCurrentComputingMethod(args->Tab[0]->GetValue(prg));
+		Owner->Session->GetProfilingMng()->SetCurrentMethod(args->Tab[0]->GetValue(prg));
 	Owner->Session->CalcProfiles(r,Owner->FirstProfile,Owner->AutoSave);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 }
@@ -243,21 +243,16 @@ void GComputeProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsi
 //-----------------------------------------------------------------------------
 void GGroupProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
-	if(args->NbPtr==2)
-		sprintf(tmp,"Group Profiles: Method=\"%s\"  Settings=\"%s\"",args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
-	else
 	if(args->NbPtr==1)
-		sprintf(tmp,"Group Profiles: Method=\"%s\"  Current Settings",args->Tab[0]->GetValue(prg));
+		sprintf(tmp,"Group Profiles: Method=\"%s\" ",args->Tab[0]->GetValue(prg));
 	else
-		strcpy(tmp,"Group Profiles: Current Method and Settings");
+		strcpy(tmp,"Group Profiles: Current Method");
 	r->WriteStr(tmp);
 	if(args->NbPtr==1)
-		Owner->Session->SetCurrentGroupingMethod(args->Tab[0]->GetValue(prg));
-	if(args->NbPtr==2)
-		Owner->Session->SetCurrentGroupingMethodSettings(args->Tab[1]->GetValue(prg));
+		Owner->Session->GetGroupingMng()->SetCurrentMethod(args->Tab[0]->GetValue(prg));
 	if(Owner->Session->GetIdealGroups())
 	{
-		GGrouping* algo=Owner->Session->GetCurrentGroupingMethod();
+		GGrouping* algo=Owner->Session->GetGroupingMng()->GetCurrentMethod();
 		algo->SetIdealGroups(Owner->Session->GetIdealGroups());
 	}
 	Owner->Session->GroupingProfiles(r,Owner->FirstGroup,Owner->AutoSave);
@@ -448,9 +443,9 @@ void GSetComputingParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsi
 
 	if(args->NbPtr!=2)
 		throw GException("Method needs two parameters");
-	calc=Owner->Session->GetProfileCalcMng()->GetCurrentMethod();
+	calc=Owner->Session->GetProfilingMng()->GetCurrentMethod();
 	if(!calc)
-		throw GException("No current profile computing method selected");
+		throw GException("No profiling method selected");
 	calc->GetFactory()->Set(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
 }
 
@@ -458,9 +453,14 @@ void GSetComputingParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsi
 //-----------------------------------------------------------------------------
 void GSetGroupingParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
+	GGrouping* calc;
+
 	if(args->NbPtr!=2)
 		throw GException("Method needs two parameters");
-	Owner->Session->GetCurrentGroupingMethod()->SetParam(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
+	calc=Owner->Session->GetGroupingMng()->GetCurrentMethod();
+	if(!calc)
+		throw GException("No grouping computing method selected");
+	calc->GetFactory()->Set(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
 }
 
 
@@ -628,16 +628,16 @@ void GAddProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned
 void GRealLifeI::CommonTasks(GSlot* r) throw(GException)
 {
 	// Compute Profiles
-	r->WriteStr("Compute Profiles: Current Method and Settings");
+	r->WriteStr("Compute Profiles: Current Method");
 
 	Owner->Session->CalcProfiles(r,Owner->FirstProfile,Owner->AutoSave);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 
 	// Group Profiles
-	r->WriteStr("Group Profiles: Current Method and Settings");
+	r->WriteStr("Group Profiles: Current Method");
 	if(Owner->Session->GetIdealGroups())
 	{
-		GGrouping* algo=Owner->Session->GetCurrentGroupingMethod();
+		GGrouping* algo=Owner->Session->GetGroupingMng()->GetCurrentMethod();
 		algo->SetIdealGroups(Owner->Session->GetIdealGroups());
 	}
 	Owner->Session->GroupingProfiles(r,Owner->FirstGroup,Owner->AutoSave);

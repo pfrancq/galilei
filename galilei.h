@@ -168,13 +168,10 @@ class GGroupHistory;
 class GGroupCursor;
 class GGroupVector;
 class GGrouping;
-class GGroupingKCos;
-class GGroupingSupKMeans;
-class GGroupingCure;
-class GGroupingGGA;
-class GGroupingSim;
-class GGroupingRandom;
 class GGroupingCursor;
+class GFactoryGrouping;
+class GFactoryGroupingCursor;
+class GGroupingManager;
 class GGroupCalc;
 class GGroupCalcCursor;
 #if GALILEITEST
@@ -182,16 +179,6 @@ class GGroupCalcCursor;
 	class GSubjectCursor;
 	class GSubjectTree;
 #endif
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration - GA Part
-class GIR;
-class GInstIR;
-class GObjIR;
-class GChromoIR;
-class GGroupIR;
-class GHeuristicIR;
 
 
 //-----------------------------------------------------------------------------

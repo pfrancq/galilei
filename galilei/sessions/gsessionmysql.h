@@ -85,9 +85,12 @@ public:
 	* @param pwd            Password of the uzer.
 	* @param db             Name of the database.
 	* @param umng           URL Manager.
-	* @param pmng           Profile Calc Manager.
+	* @param pmng           Profiling Manager.
+	* @param gmng           Grouping Manager.
 	*/
-	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,GURLManager* umng,GProfileCalcManager* pmng,GDocOptions* opt) throw(bad_alloc,GException,R::RMySQLError);
+	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
+		GURLManager* umng,GProfileCalcManager* pmng, GGroupingManager* gmng,
+		GDocOptions* opt) throw(bad_alloc,GException,R::RMySQLError);
 
 	/**
 	* Count the number of rows of a table.
@@ -307,29 +310,6 @@ public:
 	* @param filename       Name of the file.
 	*/
 	virtual void ExecuteData(const char* filename) throw(GException);
-
-	/**
-	* Clear all the chromosomes stored.
-	*/
-	virtual void ClearStoredChromos(void);
-
-	/**
-	* Save A Chromosome into the database.
-	* @param chromo         The chromosome to save.
-	* @param id             An id to find the chromosome after saving. 
-	* @param objs           Objects.
-	* @param lang           The lang of the subprofiles in the chromosome.
-	*/
-	virtual void SaveChromo(GChromoIR* chromo,unsigned int id,R::RObjs<GObjIR>* objs);
-
-	/**
-	* Load a instance of chromosome for statisical use only.
-	* @param lang           The lang of the subprofiles in the chromosome.
-	* @param objs           Objects.
-	* @param p              Parameters.
-	* @return pointer to a Ginstir
-	*/
-	virtual GInstIR* LoadInstIR(GLang* lang,R::RObjs<GObjIR>* objs,GIRParams* p);
 
 	/**
 	* Save The Documents Simylarities into the database.

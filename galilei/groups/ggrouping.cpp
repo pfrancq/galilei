@@ -67,12 +67,18 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGrouping::GGrouping(const char* n,GSession* s) throw(bad_alloc)
-	: GroupingName(n), Session(s), Lang(0), Groups(0), SubProfiles(s->GetNbUsers(),s->GetNbUsers()/2),
-	  DeletedGroups(200,100)
+GGrouping::GGrouping(GFactoryGrouping* fac) throw(bad_alloc)
+	: GPlugin<GFactoryGrouping>(fac), Lang(0), Groups(0), SubProfiles(100,50),
+	  DeletedGroups(200,100), IdealGroups(0)
+{
+}
+
+//-----------------------------------------------------------------------------
+void GGrouping::Connect(GSession* session)
 {
 	GLangCursor Langs;
 
+	Session=session;
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 		DeletedGroups.InsertPtr(new GGroups(Langs()));
@@ -81,40 +87,22 @@ GALILEI::GGrouping::GGrouping(const char* n,GSession* s) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGrouping::SetParam(const char*,const char*)
+void GGrouping::Disconnect(GSession*)
+{
+	Session=0;
+	DeletedGroups.Clear();
+	IdealGroups=0;
+}
+
+
+//-----------------------------------------------------------------------------
+void GGrouping::Init(void) throw(bad_alloc)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GGrouping::Compare(const GGrouping* grp) const
-{
-	return(GroupingName.Compare(grp->GroupingName));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GGrouping::Compare(const GGrouping& grp) const
-{
-	return(GroupingName.Compare(grp.GroupingName));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GGrouping::Compare(const char* name) const
-{
-	return(GroupingName.Compare(name));
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GGrouping::Init(void) throw(bad_alloc)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GGrouping::Clear(void) throw(bad_alloc)
+void GGrouping::Clear(void) throw(bad_alloc)
 {
 	unsigned int i;
 
@@ -127,7 +115,7 @@ void GALILEI::GGrouping::Clear(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GGroup* GALILEI::GGrouping::NewGroup(GLang* lang)
+GGroup* GGrouping::NewGroup(GLang* lang)
 {
 	GGroup* grp;
 
@@ -142,7 +130,7 @@ GGroup* GALILEI::GGrouping::NewGroup(GLang* lang)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGrouping::DeleteGroup(GGroup* grp)
+void GGrouping::DeleteGroup(GGroup* grp)
 {
 	grp->DeleteSubProfiles();
 	if(SaveGroups)
@@ -152,7 +140,7 @@ void GALILEI::GGrouping::DeleteGroup(GGroup* grp)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
+void GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 {
 	RCursor<GLang,unsigned int> CurLang(Session->GetLangs());
 	GGroupCalc* CalcDesc;
@@ -213,6 +201,6 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GGrouping::~GGrouping(void)
+GGrouping::~GGrouping(void)
 {
 }

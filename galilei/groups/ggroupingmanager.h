@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GGroupingRandom.h
+	GGroupingManager.h
 
-	Random Heuristic for grouping Subprofiles - Header.
+	Manager to handle grouping method - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -35,92 +35,69 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGroupingRandomH
-#define GGroupingRansomH
+#ifndef GGroupingManagerH
+#define GGroupingManagerH
 
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/random.h>
-using namespace R;
+#include <rstd/rcontainer.h>
+#include <rstd/rstring.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/ggrouping.h>
-
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GGroup;
-
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupingRandom provides a representation for a method to group randomly
-* some subprofiles.
+* The GGroupingManager class provides a representation for a manager
+* responsible to manage all the grouping methods.
 * @author Pascal Francq
-* @short Random Grouping.
+* @short Grouping Method Manager.
 */
-class GGroupingRandom : public GGrouping
+class GGroupingManager : public R::RContainer<GFactoryGrouping,unsigned int,true,true>
 {
-protected:
-
 	/**
-	* Random Generator Number.
+	* Method currently selected.
 	*/
-	RRandomGood Random;
+	GGrouping* Current;
 
 public:
 
 	/**
-	* Constructor.
-	* @param s              Session.
+	* Construct a URL manager.
+	* @param path            Path to find the plugins.
 	*/
-	GGroupingRandom(GSession* s) throw(bad_alloc);
+	GGroupingManager(const char* path) throw(GException);
 
 	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
+	* Set the current method.
+	* @param name            Name of the method.
 	*/
-	virtual const char* GetSettings(void);
+	void SetCurrentMethod(const char* name) throw(GException);
 
 	/**
-	* Set the settings for the method using a string.
-	* "FullSim LevelSim GlobalSim"
-	* @param s*             C string coding the settings.
+	* Get the current method.
+	* @return Pointer to GProfileCalc.
 	*/
-	virtual void SetSettings(const char* s);
+	GGrouping* GetCurrentMethod(void);
 
 	/**
-	* Initialisation of the method.
+	* Get a cursor over the filters of the system.
 	*/
-	virtual void Init(void) throw(bad_alloc);
-
-protected:
+	GFactoryGroupingCursor& GetGroupingsCursor(void);
 
 	/**
-	* Test if a group is valid.
-	* @returns always true
+	* Destructor of URL manager.
 	*/
-	virtual bool IsValid(GGroup* grp);
-
-	/**
-	* Make the grouping for a specific Language.
-	*/
-	virtual void Run(void) throw(GException);
-
-public:
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GGroupingRandom(void);
+	virtual ~GGroupingManager(void);
 };
 
 

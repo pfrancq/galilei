@@ -74,10 +74,6 @@ using namespace R;
 #include <filters/gurlmanager.h>
 #include <groups/gsubject.h>
 #include <groups/ggroup.h>
-#include <groups/gchromoir.h>
-#include <groups/ginstir.h>
-#include <groups/ggroupir.h>
-#include <groups/gobjir.h>
 #include <groups/ggroupcalcgravitation.h>
 #include <postgroups/gstandartinoutput.h>
 #include <postgroups/ginoutputbase.h>
@@ -101,9 +97,11 @@ const char GALILEI::GSessionMySQL::SQLNULL[5]="NULL";
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,GURLManager* umng,GProfileCalcManager* pmng,GDocOptions* opt) throw(bad_alloc,GException,RMySQLError)
+GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
+	GURLManager* umng,GProfileCalcManager* pmng,GGroupingManager* gmng,
+	GDocOptions* opt) throw(bad_alloc,GException,RMySQLError)
 	: RDb(host,user,pwd,db),
-	  GSession(GetCount("htmls"),GetCount("users"),GetCount("profiles"),GetCount("htmlsbyprofiles"),GetCount("groups"),umng,pmng,opt)
+	  GSession(GetCount("htmls"),GetCount("users"),GetCount("profiles"),GetCount("htmlsbyprofiles"),GetCount("groups"),umng,pmng,gmng,opt)
 {
 	DbName=db;
 }
@@ -1275,114 +1273,6 @@ void GALILEI::GSessionMySQL::ExecuteData(const char* filename) throw(GException)
 	}
 }
 
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::ClearStoredChromos(void)
-{
-	RQuery delete1(this,"DELETE FROM tempchromo");
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveChromo(GChromoIR* chromo,unsigned int id,RObjs<GObjIR>* objs)
-{
-	char sSql[100];
-	unsigned int* tab;
-	unsigned int* ptr;
-	int GrpId;
-	const char* c;
-
-	// Get the language of hte instance.
-	c=chromo->Instance->GetLang()->GetCode();
-
-	// Delete all the old chromo where the id is id.
-	sprintf(sSql,"DELETE FROM tempchromo WHERE chromoid=%u AND lang='%s'",id,c);
-	RQuery delete1(this,sSql);
-
-	// Parse the chromosomes and save them into the database.
-	GrpId=0;
-	for(chromo->Used.Start();!chromo->Used.End();chromo->Used.Next())
-	{
-		GrpId++;
-		GGroupIR* gr=chromo->Used();
-		ptr=tab=gr->GetObjectsId();
-		while((*ptr)!=NoObject)
-        {
-			GObjIR* o=objs->Tab[*(ptr++)];
-			sprintf(sSql,"INSERT INTO tempchromo(chromoid,groupid,lang,subprofileid) VALUES(%u,%u,'%s',%u)",id,GrpId,c,o->GetSubProfile()->GetId());
-			RQuery InsertChromo(this,sSql);
-		}
-		delete[] tab;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RObjs<GObjIR>* objs,GIRParams* p)
-{
-	GInstIR* InstIR;
-	char sSql[200];
-	unsigned int popsize;
-	GChromoIR* chromo;
-	GGroupDataIR data;
-	GGroupIR* grp;
-	unsigned int id;
-	unsigned int chromoid;
-	unsigned int groupid;
-	unsigned int v;
-
-	// Init part
-	chromoid=cNoRef;
-
-	// count the number of chromosome in tempchromo to assign popsize;
-	sprintf(sSql,"SELECT max(chromoid) FROM tempchromo");
-	RQuery count(this,sSql);
-	count.Start();
-	if(count.End()) return(0);
-	popsize=atoi(count[0]);
-	if(!popsize) return(0);
-
-	InstIR=new GInstIR(this,lang,0,objs,p,popsize,0);
-	InstIR->Init(&data);
-	sprintf(sSql,"SELECT chromoid,groupid,subprofileid FROM tempchromo WHERE lang='%s' ORDER by chromoid,groupid",lang->GetCode());
-	RQuery GA(this,sSql);
-	for(GA.Start();!GA.End();GA.Next())
-	{
-		// Read Chromosome
-		v=atoi(GA[0]);
-		if(v!=chromoid)
-		{
-			chromoid=v;
-			groupid=cNoRef;
-			grp=0;
-			if(chromoid==popsize)
-				chromo=InstIR->BestChromosome;
-			else
-				chromo=InstIR->Chromosomes[chromoid];
-		}
-
-		// Read Group
-		v=atoi(GA[1]);
-		// If group id changed -> new group needed
-		if((v!=groupid))
-		{
-			grp=chromo->ReserveGroup();
-			groupid=v;
-		}
-
-		// Read SubProfile
-		id=atoi(GA[2]);
-		for(objs->Start();!objs->End();objs->Next())
-		{
-			if((*objs)()->GetSubProfile()->GetId()==id)
-			{
-				grp->Insert((*objs)());
-				break;
-			}
-		}
-	}
-	return(InstIR);
-}
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::SaveDocSim(void)

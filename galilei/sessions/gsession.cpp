@@ -71,6 +71,7 @@ using namespace R;
 #include <groups/ggroup.h>
 #include <groups/ggroupvector.h>
 #include <groups/ggrouping.h>
+#include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalc.h>
 #include <profiles/gprofilecalc.h>
 #include <filters/gurlmanager.h>
@@ -88,10 +89,13 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* umng, GProfileCalcManager* pmng,GDocOptions* opt) throw(bad_alloc,GException)
+GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
+	GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng,
+	GDocOptions* opt) throw(bad_alloc,GException)
 	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(), Fdbks(f+f/2,f/2),
-	  Groupings(0), Grouping(0), URLMng(umng), ProfileCalcMng(pmng), DocAnalyse(0),
+	 URLMng(umng), ProfilingMng(pmng), GroupingMng(gmng),
+	  DocAnalyse(0),
 	  bGroups(false),bFdbks(false), DocOptions(opt)
 
 {
@@ -102,7 +106,6 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Groups.InsertPtr(new GGroups(Langs()));
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
-	Groupings=new RContainer<GGrouping,R::tId,true,true>(3,3);
 	GroupCalcs=new RContainer<GGroupCalc,R::tId,true,true>(2,3);
 	LinkCalcs=new RContainer<GLinkCalc,unsigned int,true,true>(3,2);
 	DocOptions=new GDocOptions(opt);
@@ -167,70 +170,6 @@ GGroupsEvaluateCursor& GALILEI::GSession::GetIdealDocsCursor(void)
 {
 	GGroupsEvaluateCursor *cur=GGroupsEvaluateCursor::GetTmpCursor();
 	cur->Set(IdealDocs);
-	return(*cur);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::SetCurrentComputingMethod(const char* name) throw(GException)
-{
-	ProfileCalcMng->SetCurrentMethod(name);
-}
-
-
-// //-----------------------------------------------------------------------------
-// GProfileCalcCursor& GALILEI::GSession::GetComputingsCursor(void)
-// {
-// 	GProfileCalcCursor *cur=GProfileCalcCursor::GetTmpCursor();
-// 	cur->Set(ProfileCalcs);
-// 	return(*cur);
-// }
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::RegisterGroupingMethod(GGrouping* grp) throw(bad_alloc)
-{
-	Groupings->InsertPtr(grp);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::SetCurrentGroupingMethod(const char* name) throw(GException)
-{
-	GGrouping* tmp;
-
-	tmp=Groupings->GetPtr<const char*>(name);
-	if(!tmp)
-		throw GException(RString("Grouping method '")+name+"' doesn't exists.");
-	Grouping=tmp;
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::SetCurrentGroupingMethodSettings(const char* s) throw(GException)
-{
-	if((!Grouping)||(!(*s))) return;
-	Grouping->SetSettings(s);
-}
-
-
-//-----------------------------------------------------------------------------
-const char* GALILEI::GSession::GetGroupingMethodSettings(const char* n) throw(GException)
-{
-	GGrouping* tmp;
-
-	tmp=Groupings->GetPtr<const char*>(n);
-	if(!tmp)
-		return(0);
-	return(tmp->GetSettings());
-}
-
-
-//-----------------------------------------------------------------------------
-GGroupingCursor& GALILEI::GSession::GetGroupingsCursor(void)
-{
-	GGroupingCursor *cur=GGroupingCursor::GetTmpCursor();
-	cur->Set(Groupings);
 	return(*cur);
 }
 
@@ -768,9 +707,9 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 	GProfileCursor Prof=GetProfilesCursor();
 	GProfilesSim* profSim;
 	GProfilesBehaviour* profBehaviour;
-	GProfileCalc* ProfileCalc=ProfileCalcMng->GetCurrentMethod();
+	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
 
-	if(!ProfileCalc)
+	if(!Profiling)
 		throw GException("No computing method chosen.");
 	if(!LinkCalc)
 		throw GException("No Link computing method chosen.");
@@ -789,7 +728,7 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 				{
 					if (DocOptions->UseLink)
 						LinkCalc->Compute(Subs());
-					ProfileCalc->Compute(Subs());
+					Profiling->Compute(Subs());
 					// add the mofified profile to the list of modified profiles  for similarities
 					profSim = ProfilesSims->GetPtr<GLang*>(Subs()->GetLang());
 					profSim->AddModifiedProfile(Subs()->GetProfile()->GetId());
@@ -831,9 +770,9 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 void GALILEI::GSession::CalcProfile(GProfile* prof) throw(GException)
 {
 	GSubProfileCursor Subs;
-	GProfileCalc* ProfileCalc=ProfileCalcMng->GetCurrentMethod();
+	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
 
-	if(!ProfileCalc)
+	if(!Profiling)
 		throw GException("No computing method chosen.");
 	if(!LinkCalc)
 		throw GException("No Link computing method chosen.");
@@ -844,13 +783,17 @@ void GALILEI::GSession::CalcProfile(GProfile* prof) throw(GException)
 		{
 			LinkCalc->Compute(Subs());
 		}
-		ProfileCalc->Compute(Subs());
+		Profiling->Compute(Subs());
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException)
 {
+	GGrouping* Grouping=GroupingMng->GetCurrentMethod();
+
+	if(!Grouping)
+		throw GException("No grouping method chosen.");
 	Grouping->Grouping(rec,modified,save);
 }
 
@@ -1133,7 +1076,6 @@ GALILEI::GSession::~GSession(void) throw(GException)
 {
 	if(DocAnalyse) delete DocAnalyse;
 	if(DocOptions) delete DocOptions;
-	if(Groupings) delete Groupings;
 	if(GroupCalcs) delete GroupCalcs;
 	if(SubProfileDescs) delete SubProfileDescs;
 	if(IdealGroups) delete IdealGroups;

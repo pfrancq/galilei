@@ -79,6 +79,11 @@ class GConfig : R::RXMLStruct
 	*/
 	R::RXMLTag* ProfileCalcs;
 
+	/**
+	* Tag holding the grouping methods.
+	*/
+	R::RXMLTag* Groupings;
+
 public:
 
 	/**
@@ -120,6 +125,18 @@ public:
 	* @param mng             Manager.
 	*/
 	void Store(GProfileCalcManager& mng);
+
+	/**
+	* Read the grouping methods from the structure.
+	* @param mng             Manager.
+	*/
+	void Read(GGroupingManager& mng);
+
+	/**
+	* Store the grouping methods in the structure.
+	* @param mng             Manager.
+	*/
+	void Store(GGroupingManager& mng);
 
 	/**
 	* Destructor.
