@@ -1,7 +1,7 @@
 INCLUDES = $(all_includes) -I$(top_srcdir) -I.. -Igoo -Ixpdf
-filterslib_LTLIBRARIES =  ../libpdf.la
-___libpdf_la_LDFLAGS = -module -avoid-version
-___libpdf_la_SOURCES = gfilterpdf.cpp \
+filterslib_LTLIBRARIES =  libpdf.la
+libpdf_la_LDFLAGS = -module -avoid-version
+libpdf_la_SOURCES = gfilterpdf.cpp \
 	goo/GHash.cc \
 	goo/GList.cc \
 	goo/GString.cc \
