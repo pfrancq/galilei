@@ -48,6 +48,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gir.h>
+#include <groups/girprom.h>
 
 
 //-----------------------------------------------------------------------------
@@ -178,6 +179,16 @@ private:
 	* Test Chromosome (Thread dependent data).
 	*/
 	GChromoIR** thTests;
+
+	/**
+	* PROMETHE  Kernel used by the chromosome.
+	*/
+	GIRProm* thProm;
+
+	/**
+	* Array of solutions to create in PROMETHEE Kernel.
+	*/
+	RPromethee::RPromSol** thSols;
 
 	/**
 	* Container of document.
@@ -454,6 +465,7 @@ public:
 	// friend classes
 	friend class GGroupIR;
 	friend class GInstIR;
+	friend class GIRProm;
 };
 
 

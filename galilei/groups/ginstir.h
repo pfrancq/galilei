@@ -47,12 +47,12 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rgga/rinstg.h>
-#include <rpromethee/rpromkernel.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gir.h>
+#include <groups/girprom.h>
 #include <rgga/rinstg.h>
 
 
@@ -87,6 +87,16 @@ public:
 	GChromoIR** Tests;
 
 	/**
+	* PROMETHE  Kernel used by the chromosome.
+	*/
+	GIRProm Prom;
+
+	/**
+	* Array of solutions to create in PROMETHEE Kernel.
+	*/
+	RPromethee::RPromSol** Sols;
+
+	/**
 	* Construct the data.
 	* @param owner          The instance of the problem.
 	*/
@@ -110,7 +120,7 @@ public:
 * @author Pascal Francq
 * @short IR Instance.
 */
-class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>, public RPromethee::RPromKernel
+class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>, public GIRProm
 {
 	/**
 	* Similarities between the subprofiles to group.
@@ -131,75 +141,6 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	* Parameter of the GA.
 	*/
 	GIRParams* Params;
-
-	/**
-	* Criteria representing the average similarity of the profiles with the
-	* ones of the same group.
-	*/
-	RPromethee::RPromCriterion* CritSim;
-
-	/**
-	* Criteria representing the Similarity criterion "AvgSim".
-	*/
-	RPromethee::RPromCriterion* CritSimAvgSim;
-
-	/**
-	* Criteria representing the Similarity criterion "J".
-	*/
-	RPromethee::RPromCriterion* CritSimJ;
-
-	/**
-	* Criteria representing the Similarity criterion "AvgRatio".
-	*/
-	RPromethee::RPromCriterion* CritSimAvgRatio;
-
-	/**
-	* Criteria representing the Similarity criterion "AvgMinRatio".
-	*/
-	RPromethee::RPromCriterion* CritSimMinRatio;
-
-	/**
-	* Value of the Similarity criterion "AvgRatio".
-	*/
-	RPromethee::RPromCriterion* CritSimRatio;
-
-	/**
-	* Value of the Similarity criterion "AvgWOverB".
-	*/
-	RPromethee::RPromCriterion* CritSimWOverB;
-
-	/**
-	* Value of the Similarity criterion "SimWB".
-	*/
-	RPromethee::RPromCriterion* CritSimSimWB;
-
-	/**
-	* Criteria representing number of groups.
-	*/
-	RPromethee::RPromCriterion* CritInfo;
-
-	/**
-	* Criteria representing the entropy of a solution.
-	*/
-	RPromethee::RPromCriterion* CritEntropy;
-
-	/**
-	* Criteria representing the factor depending on the subprofiles having
-	* common OK documents.
-	*/
-	RPromethee::RPromCriterion* CritSameFeedbacks;
-
-	/**
-	* Criteria representing the factor depending on the subprofiles having
-	* common documents but with opposite judgement.
-	*/
-	RPromethee::RPromCriterion* CritDiffFeedbacks;
-
-	/**
-	* Criteria representing the factor depending on the subprofiles that are
-	* social.
-	*/
-	RPromethee::RPromCriterion* CritSocial;
 
 	/**
 	* Solutions corresponding to the chromosome.
@@ -255,7 +196,20 @@ public:
 	* @param p              Parameters.
 	* @param debug          Debugger.
 	*/
-	GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,GIRParams* p,RGA::RDebug *debug=0) throw(bad_alloc);
+	GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,GIRParams* p,RGA::RDebug *debug) throw(bad_alloc);
+
+	/**
+	* Construct the instance.
+	* @param ses            Session.
+	* @param l              Language.
+	* @param grps           Pointer to the current solutions.
+	* @param objs           The objects to group.
+	* @param s              Similarities between the subprofiles.
+	* @param p              Parameters.
+	* @param pop            Population size.
+	* @param debug          Debugger.
+	*/
+	GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,GIRParams* p,unsigned int pop,RGA::RDebug *debug) throw(bad_alloc);
 
 	/**
 	* Create a specific heuristic for the IR problem.
