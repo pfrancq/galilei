@@ -40,7 +40,7 @@
     </make>
     <configurations>
       <default>
-        <configargs>--prefix=/usr/local --enable-debug</configargs>
+        <configargs>--prefix=/usr/local --enable-debug=full</configargs>
         <builddir/>
         <topsourcedir/>
         <cppflags/>
