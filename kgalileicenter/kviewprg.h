@@ -6,7 +6,7 @@
 
 	Window to run a program - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -45,7 +45,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // forward declaration
-class QMultiLineEdit;
+#include <qtextedit.h>
 
 
 //-----------------------------------------------------------------------------
@@ -61,22 +61,24 @@ class QMultiLineEdit;
 */
 class KViewPrg : public KView, public GSlot
 {
+	class MyThread;
+
 	Q_OBJECT
 
 	/**
 	* Widget to see the output.
 	*/
-	QMultiLineEdit* Output;
-
-	/**
-	* Is the computing running?
-	*/
-	bool Running;
+	QTextEdit* Output;
 
 	/**
 	* Name of the program.
 	*/
 	RString Name;
+
+	/**
+	* Thread running the program.
+	*/
+	MyThread* Prg;
 
 public:
 
@@ -133,7 +135,12 @@ public:
 	/**
 	* Run the program.
 	*/
-	void Run(void);
+	virtual void run(void);
+
+	/**
+	* See if a thread is running.
+	*/
+	bool isRunning(void) {return(Prg);}
 
 protected:
 
@@ -143,6 +150,11 @@ protected:
 	void resizeEvent(QResizeEvent *);
 
 public:
+
+	/**
+	* The program is finished.
+	*/
+	void endPrg(void);
 
 	/**
 	* Look if the window can be closed.

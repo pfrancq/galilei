@@ -6,7 +6,7 @@
 
 	Window to run a program - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -42,8 +42,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for Qt
-#include<qmultilineedit.h>
-#include<qpixmap.h>
+#include <qthread.h>
+#include <qpixmap.h>
 #include <qmessagebox.h>
 
 
@@ -57,6 +57,71 @@
 // application specific includes
 #include "kviewprg.h"
 #include "kdoc.h"
+using namespace std;
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class KViewPrg::MyThread
+//
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+class KViewPrg::MyThread : public QThread
+{
+	KViewPrg* Rec;
+	RString Name;
+	GSession* Session;
+
+public:
+	MyThread(GSession* session,KViewPrg* rec,RString name);
+	virtual void run(void);
+};
+
+
+//-----------------------------------------------------------------------------
+KViewPrg::MyThread::MyThread(GSession* session,KViewPrg* rec,RString name)
+	: QThread(), Rec(rec), Name(name), Session(session)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewPrg::MyThread::run(void)
+{
+	try
+	{
+		Session->RunPrg(Rec,Name);
+		if(GSession::Break())
+		{
+			QMessageBox::information(Rec,"KGALILEICenter","Program Aborded");
+			GSession::ResetBreak();
+		}
+		else
+		{
+			QMessageBox::information(Rec,"KGALILEICenter","Program Executed");
+		}
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(Rec,"KGALILEICenter - GALILEI Exception",e.GetMsg());
+	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(Rec,"KGALILEICenter - R Exception",e.GetMsg());
+	}
+	catch(std::bad_alloc)
+	{
+		QMessageBox::critical(Rec,"KGALILEICenter","Memory Error");
+	}
+	catch(...)
+	{
+		QMessageBox::critical(Rec,"KGALILEICenter","Undefined Error");
+	}
+	Rec->endPrg();
+};
 
 
 
@@ -68,13 +133,13 @@
 
 //-----------------------------------------------------------------------------
 KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,RString name,int wflags) throw(std::bad_alloc,RException)
-	: KView(doc,parent,name,wflags), GSlot(), Running(false), Name(name)
+	: KView(doc,parent,name,wflags), GSlot(), Name(name), Prg(0)
 {
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("make.png",KIcon::Small)));
 	setCaption(ToQString(name));
 
-	Output=new QMultiLineEdit(this,"Output");
+	Output=new QTextEdit(this,"Output");
 	Output->setReadOnly(true);
 	Output->resize(size());
 }
@@ -110,7 +175,7 @@ void KViewPrg::NextGroupLang(const GLang*) throw(std::bad_alloc,RException)
 //-----------------------------------------------------------------------------
 void KViewPrg::WriteStr(const char* str) throw(std::bad_alloc,RException)
 {
-	Output->insertLine(str);
+	Output->append(str);
 	KApplication::kApplication()->processEvents();
 }
 
@@ -123,45 +188,11 @@ void KViewPrg::Interact(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::Run(void)
+void KViewPrg::run(void)
 {
 	KApplication::kApplication()->processEvents();
-	Running=true;
-	try
-	{
-		Doc->GetSession()->RunPrg(this,Name);
-		Running=false;
-		if(GSession::Break())
-		{
-			QMessageBox::information(this,"KGALILEICenter","Program Aborded");
-			close();
-		}
-		else
-		{
-			QMessageBox::information(this,"KGALILEICenter","Program Executed");
-		}
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-	}
-	catch(R::RMySQLError& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - RDB Exception",e.GetMsg());
-	}
-	catch(RException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
-	}
-	catch(std::bad_alloc)
-	{
-		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
-	}
-	catch(...)
-	{
-		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
-	}
-	Running=false;
+	Prg=new MyThread(Doc->GetSession(),this,Name);
+	Prg->run();
 }
 
 
@@ -173,10 +204,17 @@ void KViewPrg::resizeEvent(QResizeEvent *)
 
 
 //-----------------------------------------------------------------------------
+void KViewPrg::endPrg(void)
+{
+	delete Prg;
+	Prg=0;
+}
+
+//-----------------------------------------------------------------------------
 bool KViewPrg::canClose(void)
 {
 	// If nothing running -> can close
-	if(!Running)
+	if(!Prg)
 	{
 		return(true);
 	}

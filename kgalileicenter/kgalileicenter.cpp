@@ -1076,19 +1076,7 @@ void KGALILEICenterApp::slotRunProgram(void)
 	try
 	{
 		createClient(Doc,o=new KViewPrg(Doc,pWorkspace,tmp,0));
-		o->Run();
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-	}
-	catch(R::RMySQLError& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - RDB Exception",e.GetMsg());
-	}
-	catch(RException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+		o->run();
 	}
 	catch(std::bad_alloc)
 	{
