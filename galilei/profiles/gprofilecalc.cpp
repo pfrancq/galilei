@@ -56,6 +56,12 @@ GALILEI::GProfileCalc::GProfileCalc(const char* name,GSession* session) throw(ba
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GProfileCalc::SetParam(const char*,const char*)
+{
+}
+
+
+//-----------------------------------------------------------------------------
 int GALILEI::GProfileCalc::Compare(const GProfileCalc& desc) const
 {
 	return(ComputingName.Compare(desc.ComputingName));

@@ -79,6 +79,13 @@ public:
 	GProfileCalc(const char* name,GSession* session) throw(bad_alloc);
 
 	/**
+	* Set a parameter of the grouping method.
+	* @param param          Name of the parameter.
+	* @param value          Value of the parameter.
+	*/
+	virtual void SetParam(const char* param,const char* value);
+
+	/**
 	* Compute a profile.
 	* @param profile        Profile to compute.
 	*/
