@@ -301,7 +301,7 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		sprintf(sSql,"INSERT INTO subprofiles(profileid,langid, state) VALUES(%u,'%s', %u)",id,Langs()->GetCode(), static_cast<int>(osCreated));
+		sprintf(sSql,"INSERT INTO subprofiles(profileid,langid,state,) VALUES(%u,'%s', %u)",id,Langs()->GetCode(), static_cast<int>(osCreated));
 		RQuery insertsub(this,sSql);
 		sprintf(sSql,"SELECT subprofileid, state from subprofiles WHERE subprofileid=LAST_INSERT_ID())");
 		RQuery selectsub(this,sSql);
@@ -321,7 +321,7 @@ GSubProfile* GALILEI::GSessionMySQL::NewSubProfile(GProfile* prof,GLang* lang) t
 	GSubProfile* subprof;
 	unsigned int id;
 
-	sprintf(sSql,"INSERT INTO subprofiles(profileid,langid,state) VALUES(%u,'%s',%u)",prof->GetId(),lang->GetCode(),osCreated);
+	sprintf(sSql,"INSERT INTO subprofiles(profileid,langid,state,calculated,attached) VALUES(%u,'%s',%u,'2001-09-01','2001-08-31')",prof->GetId(),lang->GetCode(),osCreated);
 	RQuery insertsubprof(this,sSql);
 
 	// Get Id and updated
@@ -329,7 +329,7 @@ GSubProfile* GALILEI::GSessionMySQL::NewSubProfile(GProfile* prof,GLang* lang) t
 	RQuery selectsubprofile(this,sSql);
 	selectsubprofile.Start();
 	id=strtoul(selectsubprofile[0],0,10);
-	InsertSubProfile(subprof=new GSubProfileVector(prof,id,lang,0,0,osCreated,0));
+	InsertSubProfile(subprof=new GSubProfileVector(prof,id,lang,0,"2001-08-31",osCreated,"2001-09-01"));
 	prof->InsertPtr(subprof);
 
 	// Return new created subprofile

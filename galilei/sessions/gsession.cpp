@@ -561,7 +561,9 @@ void GALILEI::GSession::InitProfilesSims(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::ChangeProfilesSimState(bool global,GLang* lang)throw(bad_alloc)
 {
-	GProfilesSim* profSim = ProfilesSims->GetPtr<GLang*>(lang);
+	GProfilesSim* profSim;
+
+ 	profSim= ProfilesSims->GetPtr<GLang*>(lang);
 	profSim->UpdateProfSim(global);
 
 }
@@ -581,9 +583,12 @@ void GALILEI::GSession::ChangeAllProfilesSimState(bool global)throw(bad_alloc)
 //-----------------------------------------------------------------------------
 double GALILEI::GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
 {
+	GProfilesSim* profSim;
 
-	GProfilesSim* profSim = ProfilesSims->GetPtr<const GLang*>(sub1->GetLang());
-	return profSim->GetSim(sub1,sub2);
+	profSim= ProfilesSims->GetPtr<const GLang*>(sub1->GetLang());
+	if((!profSim)||(sub1->GetLang()!=sub2->GetLang()))
+		return(0.0);
+	return(profSim->GetSim(sub1,sub2));
 }
 
 
