@@ -130,7 +130,7 @@ void GSubProfile::Analyse(GProfDoc *profdoc)
 void GSubProfile::Analyse(void)
 {
 	unsigned int kwdid;
-	GWordRef *ref;
+	GIWord *ref;
 
 	MOK->EndCalc();
 	MKO->EndCalc();
@@ -147,11 +147,11 @@ void GSubProfile::Analyse(void)
 			{
 				KO->DeletePtr(ref);
 				NbKO--;
-				Common->InsertPtr(new GWordRef(kwdid));
+				Common->InsertPtr(new GIWord(kwdid));
 			}
 			else
 			{
-				OK->InsertPtr(new GWordRef(kwdid));
+				OK->InsertPtr(new GIWord(kwdid));
 				NbOK++;
 			}
 		}
@@ -163,11 +163,11 @@ void GSubProfile::Analyse(void)
 			{
 				OK->DeletePtr(ref);
 				NbOK--;
-				Common->InsertPtr(new GWordRef(kwdid));
+				Common->InsertPtr(new GIWord(kwdid));
 			}
 			else
 			{
-				KO->InsertPtr(new GWordRef(kwdid));
+				KO->InsertPtr(new GIWord(kwdid));
 				NbKO++;
 			}
 		}
@@ -184,16 +184,16 @@ bool GSubProfile::Similar(GSubProfile *sub)
 	for(OK->Start();!OK->End();OK->Next())
 	{
 		for(sub->OK->Start();!sub->OK->End();sub->OK->Next())
-			if((*OK)()->Id==(*sub->OK)()->Id) Sim++;
+			if((*OK)()->GetId()==(*sub->OK)()->GetId()) Sim++;
 		for(sub->Common->Start();!sub->Common->End();sub->Common->Next())
-			if((*OK)()->Id==(*sub->Common)()->Id) Sim++;
+			if((*OK)()->GetId()==(*sub->Common)()->GetId()) Sim++;
 	}
 	for(Common->Start();!Common->End();Common->Next())
 	{
 		for(sub->OK->Start();!sub->OK->End();sub->OK->Next())
-			if((*Common)()->Id==(*sub->OK)()->Id) Sim++;
+			if((*Common)()->GetId()==(*sub->OK)()->GetId()) Sim++;
 		for(sub->Common->Start();!sub->Common->End();sub->Common->Next())
-			if((*Common)()->Id==(*sub->Common)()->Id) Sim++;
+			if((*Common)()->GetId()==(*sub->Common)()->GetId()) Sim++;
 	}
 	NbComp=OK->NbPtr+Common->NbPtr+sub->OK->NbPtr+sub->Common->NbPtr;
 	Sim=(4.0*Sim)/static_cast<double>(NbComp);
