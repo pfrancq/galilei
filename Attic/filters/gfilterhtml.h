@@ -6,7 +6,7 @@
 
 	A HTML filter - Header.
 
-	(C) 2001 by J. LAMORAL
+	(C) 2001 by Pascal Francq
 
 	Version $Revision$
 
@@ -31,7 +31,7 @@ using namespace RXML;
 
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
-#include <rio/rtextfile.h>
+//#include <rio/rtextfile.h>
 using namespace RIO;
 
 
@@ -39,7 +39,6 @@ using namespace RIO;
 // include files for GALILEI
 #include <filters/codetochar.h>
 #include <filters/gfilter.h>
-
 
 
 //-----------------------------------------------------------------------------
@@ -51,13 +50,18 @@ namespace GALILEI{
 /**
 * The GFilterHTML class provides a representation of a document to filter in a
 * XML structure.
-* @author Julien Lamoral
+* @author Pascal Francq
 * @short HTML's Filter.
 */
-
-
 class GFilterHTML: public GFilter
 {
+	class Tag;
+
+	/**
+	* Header Tags.
+	*/
+	RStd::RContainer<Tag,unsigned int,true,true>* Tags;
+
 	/**
 	* Buffer containing all the document.
 	*/
@@ -71,53 +75,47 @@ class GFilterHTML: public GFilter
 	/**
 	* Pointer to the beginning of the block actually treated.
 	*/
-	char* Begin;
+	char* Block;
 
 	/**
-	* The container of html code
+	* Total length of the block actually treated.
+	*/
+	unsigned int BlockLen;
+
+	/**
+	* Total length of the current tag.
+	*/
+	unsigned int TagLen;
+
+	/**
+	* Pointer to the part to skip of the tag is not a valid one.
+	*/
+	char* SkipTag;
+
+	/**
+	* Pointer to the beginning of the current Tag.
+	*/
+	char* BeginTag;
+
+	/**
+	* Pointer to parameters of the current tag.
+	*/
+	char* Params;
+
+	/**
+	* Current tag.
+	*/
+	Tag* CurTag;
+
+	/**
+	* The container of HTML code
 	*/
 	RContainer<CodeToChar,unsigned int,true,true> Chars;
 
 	/**
-	* Pointer to the current position in the buffer.
+	* Determine if the current tag is a closing tag or an open one.
 	*/
-	char* hold;
-
-	/**
-	*Pointer to the value of the tag.
-	*/
-	char* ptrvalue;
-
-	/**
-	* The current Tag and the Old tag used for close non closed tag
-	*/
-	RString TAG,OldTag;
-
-	/**
-	*Some counter used for the counting  closed tag
-	*/
-	int ClassementVector [8];
-
-	/**
-	* Used for cout the open tag
-	*/
-	bool NextWirteTag;
-
-	/**
-	* true if the buffer is at the end of the document
-	*/
-	bool end;
-
-	/**
-	*Some XMl tag
-	*/
-	RXMLTag *top,*objs,*act,*meta,*content,*links;
-
-	/**
-	*Some XMl tag used in get current value
-	*/
-	RXMLTag* TagVector[8] ;
-
+	bool bEndTag;
 
 public:
 
@@ -128,96 +126,67 @@ public:
 	GFilterHTML(GURLManager* mng);
 
 	/**
-	* Functiun who analyse the header of the html document
-	*/
-	void AnalyseHeader(GDocXML* doc);
-	
-private:
-	/**
-	* Functiun who analyse the body of the html document
-	*/
-	void AnalyseBody(GDocXML* doc);
-	
-	/**
-	*Function who init the container of code and correspondant char
-	*/
-	void InitCharContainer (void);
-
-	/**
-	*Function who compare 2 tag
-	*@param current       The name of the tag to be compare
-	*/
-	bool TagCompare (const char* current);
-	
-	/**
-	*Get the value into 2 tag used in metadata for the title
-	*/
-	void GetValue (GDocXML* doc);
-	
-	/**
-	*Get the value into 2 tag used in body
-	*@param  current      The name of the current tag
-	*/
-	void GetValueCurentTag (char* current,GDocXML* doc);
-
-	/**
-	*Get the value into 2 tag used in metadata for the keywords and the resume
-	*/
-	void GetMetaValue (GDocXML* doc);
-
-	/**
-	*Go to the next tag
-	*/
-	void NextTag (void);
-	
-	/**
-	*Go to the next end tag
-	*@param name               the name of the tag
-	*/
-	void NextEndTag (char* name);
-	
-    /**
 	* Analyze the document and fill the XML structure with the information
 	* about its content.
 	* @param doc            XML Structure that will represent the document.
 	*/
 	virtual bool Analyze(GDocXML* doc);
 
-	/**
-	*Return true if the caractere is a space a tab or a carriage return
-	*/
-	bool IsSpace(void);
+protected:
 
 	/**
-	*Skip spaces into the buffer
+	*Function who init the container of code and correspondant char
 	*/
-	void SkipSpaces(void);
-	
-	
-	/**
-	* Add a tag in the xml struct
-	* @param level          	The level of the tag
-	* @param tag				The name of the tag
-	* @param doc            XML Structure that will represent the document.
-	*/
-	void AddTag(int level,char* tag,GDocXML* doc);
+	void InitCharContainer(void);
 
 	/**
-	*Initialisation of the html string
+	* This function skip spaces.
 	*/
-	void InitWords(void);
+	inline void SkipSpaces(void)
+	{while((*Pos)&&isspace(*Pos)) Pos++;}
 
 	/**
-	*Goto to the next word
+	* Functiun who analyse the header of the html document
 	*/
-	bool NextWord(void);
-	
+	void AnalyseHeader(void);
+
+	/**
+	* Functiun who analyse the body of the html document
+	*/
+	void AnalyseBody(void);
+
+	/**
+	* Treat a META tag.
+	* @param params         Parameters of the META tag.
+	* @param metaData       XML Tag representing the meta data of the document.
+	*/
+	void ReadMetaTag(char* params,RXMLTag* metaData);
+
+	/**
+	* This function replace codes by the corresponding characters.
+	* Ex.: &egrave; by 'è'.
+	*/
+	void ReplaceCode(void);
+
+	/**
+	* Read the next tag. In particular, the pointers BeginTag and Params are
+	* set correctly. Set bEndTag to true if it is a ending tag.
+	*/
+	void NextTag(void);
+
+	/**
+	* Call NexTag to read the next tag. If the tag is not valid, it is replace by
+	* spaces. Everythin in comments or between two <SCRIPT> tags are also
+	* replace by spaces.
+	*/
+	void NextValidTag(void);
+
 public:
+
 	/**
 	*The destructor
 	*/
 	virtual ~GFilterHTML(void);
-	
 };
 
 
