@@ -272,6 +272,16 @@ public:
 	double GetMaxRatioSame(GObjIR* obj);
 
 	/**
+	* Construct the list of all relevant documents of the subprofiles of a
+	* group not already judged by a given subprofile and ordered in descending
+	* order of their similarity with the chosen subprofile.
+	* @param docs           Documents not judged.
+	* @param s              Subprofile.
+	* \warning This method uses an internal container which is not optimal.
+	*/
+	void NotJudgedDocsRelList(RStd::RContainer<GDocSim,unsigned,true,false>* docs, GObjIR* s);
+
+	/**
 	* Destruct the group.
 	*/
 	virtual ~GGroupIR(void);

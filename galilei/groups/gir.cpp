@@ -162,6 +162,7 @@ GALILEI::GIRParams& GALILEI::GIRParams::operator=(const GALILEI::GIRParams& src)
 	}
 	ParamsSim=src.ParamsSim;
 	ParamsInfo=src.ParamsInfo;
+	ParamsEntropy=src.ParamsEntropy;
 	ParamsSameFeedbacks=src.ParamsSameFeedbacks;
 	ParamsDiffFeedbacks=src.ParamsDiffFeedbacks;
 	ParamsSocial=src.ParamsSocial;

@@ -224,6 +224,11 @@ public:
 	RPromethee::RPromCriterionParams ParamsInfo;
 
 	/**
+	* Parameter for the criterion "Information".
+	*/
+	RPromethee::RPromCriterionParams ParamsEntropy;
+
+	/**
 	* Parameter for the criterion "Same Feedbacks".
 	*/
 	RPromethee::RPromCriterionParams ParamsSameFeedbacks;

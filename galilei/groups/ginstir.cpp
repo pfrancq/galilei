@@ -124,13 +124,12 @@ GALILEI::GThreadDataIR::~GThreadDataIR(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-//GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,SimType st,GIRParams* p,RGA::RDebug *debug) throw(bad_alloc)
 GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,GIRParams* p,RGA::RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(p->PopSize,objs,FirstFit,debug),
 	  RPromKernel("GALILEI",PopSize+1,5), Sims(s), SameFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1),
 	  DiffFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1), Params(p), 
 	  CritSim(0), CritSimAvgSim(0), CritSimJ(0), CritSimAvgRatio(0),CritSimMinRatio(0),CritSimRatio(0),
-	  CritSimWOverB(0), CritSimSimWB(0), CritInfo(0), CritSameFeedbacks(0), CritDiffFeedbacks(0), CritSocial(0),
+	  CritSimWOverB(0), CritSimSimWB(0), CritInfo(0), CritEntropy(0), CritSameFeedbacks(0), CritDiffFeedbacks(0), CritSocial(0),
 	  Sols(0),CurrentGroups(grps), Session(ses), Lang(l), NoSocialSubProfiles(objs->NbPtr), BestSols(p->MaxGen,p->MaxGen/2)
 {
 	RPromSol** ptr;
@@ -139,10 +138,6 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 	GSubProfilesSameDocs* sdocs;
 	unsigned int i,j;
 	double nb,tmp;
-//	RIO::RTextFile same("/home/pfrancq/same.txt",RIO::RTextFile::Create);
-//	RIO::RTextFile diff("/home/pfrancq/diff.txt",RIO::RTextFile::Create);
-//	same.SetSeparator(" ");
-//	diff.SetSeparator(" ");
 
 	#ifdef RGADEBUG
 		IdealGroups=0;
@@ -168,19 +163,11 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 			if(nb)
 			{
 				SameFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
-//				same<<"Same:";
-//				same<<"\tRatio="<<sdocs->GetRatio();
-//				same<<"\tProfile"<<Cur1()->GetId()<<"'"<<Cur1()->GetSubProfile()->GetProfile()->GetName()<<"'";
-//				same<<"\tProfile"<<Cur2()->GetId()<<"'"<<Cur2()->GetSubProfile()->GetProfile()->GetName()<<"'"<<endl;
 			}
 			nb=Cur1()->GetSubProfile()->GetCommonDiffDocs(Cur2()->GetSubProfile());
 			if(nb)
 			{
 				DiffFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
-//				diff<<"Diff:";
-//				diff<<"\tRatio="<<sdocs->GetRatio();
-//				diff<<"\tProfile"<<Cur1()->GetId()<<"'"<<Cur1()->GetSubProfile()->GetProfile()->GetName()<<"'";
-//				diff<<"\tProfile"<<Cur2()->GetId()<<"'"<<Cur2()->GetSubProfile()->GetProfile()->GetName()<<"'"<<endl;
 			}
 		}
 	}
@@ -205,10 +192,14 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 		if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
 			CritSimSimWB=NewCriterion(Maximize,"Similarity SimWB",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
 	}
-	CritInfo=NewCriterion(Maximize,"Information",Params->ParamsInfo.P,Params->ParamsInfo.Q,Params->ParamsInfo.Weight);
-	CritSameFeedbacks=NewCriterion(Maximize,"Same Feedbacks",Params->ParamsSameFeedbacks.P,Params->ParamsSameFeedbacks.Q,Params->ParamsSameFeedbacks.Weight);
-	CritDiffFeedbacks=NewCriterion(Minimize,"Diff Feedbacks",Params->ParamsDiffFeedbacks.P,Params->ParamsDiffFeedbacks.Q,Params->ParamsDiffFeedbacks.Weight);
-	CritSocial=NewCriterion(Minimize,"Social",Params->ParamsSocial.P,Params->ParamsSocial.Q,Params->ParamsSocial.Weight);
+	if(Params->ParamsInfo.Weight)
+		CritInfo=NewCriterion(Minimize,"Information",Params->ParamsInfo.P,Params->ParamsInfo.Q,Params->ParamsInfo.Weight);
+	if(Params->ParamsSameFeedbacks.Weight)
+		CritSameFeedbacks=NewCriterion(Maximize,"Same Feedbacks",Params->ParamsSameFeedbacks.P,Params->ParamsSameFeedbacks.Q,Params->ParamsSameFeedbacks.Weight);
+	if(Params->ParamsDiffFeedbacks.Weight)
+		CritDiffFeedbacks=NewCriterion(Minimize,"Diff Feedbacks",Params->ParamsDiffFeedbacks.P,Params->ParamsDiffFeedbacks.Q,Params->ParamsDiffFeedbacks.Weight);
+	if(Params->ParamsSocial.Weight)
+		CritSocial=NewCriterion(Minimize,"Social",Params->ParamsSocial.P,Params->ParamsSocial.Q,Params->ParamsSocial.Weight);
 	Sols=new RPromSol*[PopSize+1];
 	if(Sols)
 	{
@@ -265,9 +256,6 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 		Recall=c->Recall;
 		Total=c->Global;
 	}
-//	if(c->Id==PopSize) s=Sols[0]; else s=Sols[c->Id+1];
-//	sprintf(Tmp,"Id %2u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Nb=%1.3f - OK=%1.3f - Diff=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
-//	        c->Id,s->GetFi(),s->GetFiPlus(),s->GetFiMinus(),c->AvgSim,c->AvgProf,c->OKFactor,c->DiffFactor,c->SocialFactor,Recall,Precision,Total);
 	if(Params->SimMeasures==sctCorl)
 	{
 		sprintf(Tmp,"Id %2u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Info=%1.3f - SameFdbk=%1.3f - DiffFdbk=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
@@ -314,7 +302,6 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 		        c->CritInfo,c->CritSameFeedbacks,c->CritDiffFeedbacks,c->CritSocial,Recall,Precision,Total);
 		strcat(Tmp,Tmp2);
 	}
-//	file<<c->Id<<c->AvgSim<<c->AvgProf<<c->OKFactor<<c->DiffFactor<<c->SocialFactor<<Total<<endl;
 	Debug->PrintInfo(Tmp);
 }
 #endif
@@ -326,11 +313,11 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	unsigned int i;
 	GChromoIR** C;
 	GChromoIR* s;
-	GChromoIR* b;
+//	GChromoIR* b;
 	RPromSol** Res;
 	RPromSol** ptr;
 	double r;
-	GGroupDataIR GrpData;
+//	GGroupDataIR GrpData;
 
 	#ifdef RGADEBUG
 		if(Debug) Debug->BeginFunc("PostEvaluate","GInstIR");
@@ -340,20 +327,13 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 		Assign((*ptr),CritSim,BestChromosome->CritSim);
 	else
 	{
-		if(CritSimAvgSim)
-			Assign((*ptr),CritSimAvgSim,BestChromosome->CritSimAvgSim);
-		if(CritSimJ)
-			Assign((*ptr),CritSimJ,BestChromosome->CritSimJ);
-		if(CritSimAvgRatio)
-			Assign((*ptr),CritSimAvgRatio,BestChromosome->CritSimAvgRatio);
-		if(CritSimMinRatio)
-			Assign((*ptr),CritSimMinRatio,BestChromosome->CritSimMinRatio);
-		if(CritSimRatio)
-			Assign((*ptr),CritSimRatio,BestChromosome->CritSimRatio);
-		if(CritSimWOverB)
-			Assign((*ptr),CritSimWOverB,BestChromosome->CritSimWOverB);
-		if(CritSimSimWB)
-			Assign((*ptr),CritSimSimWB,BestChromosome->CritSimSimWB);
+		Assign((*ptr),CritSimAvgSim,BestChromosome->CritSimAvgSim);
+		Assign((*ptr),CritSimJ,BestChromosome->CritSimJ);
+		Assign((*ptr),CritSimAvgRatio,BestChromosome->CritSimAvgRatio);
+		Assign((*ptr),CritSimMinRatio,BestChromosome->CritSimMinRatio);
+		Assign((*ptr),CritSimRatio,BestChromosome->CritSimRatio);
+		Assign((*ptr),CritSimWOverB,BestChromosome->CritSimWOverB);
+		Assign((*ptr),CritSimSimWB,BestChromosome->CritSimSimWB);
 	}
 	Assign((*ptr),CritInfo,BestChromosome->CritInfo);
 	Assign((*ptr),CritSameFeedbacks,BestChromosome->CritSameFeedbacks);
@@ -365,20 +345,13 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 			Assign((*ptr),CritSim,(*C)->CritSim);
 		else
 		{
-			if(CritSimAvgSim)
-				Assign((*ptr),CritSimAvgSim,(*C)->CritSimAvgSim);
-			if(CritSimJ)
-				Assign((*ptr),CritSimJ,(*C)->CritSimJ);
-			if(CritSimAvgRatio)
-				Assign((*ptr),CritSimAvgRatio,(*C)->CritSimAvgRatio);
-			if(CritSimMinRatio)
-				Assign((*ptr),CritSimMinRatio,(*C)->CritSimMinRatio);
-			if(CritSimRatio)
-				Assign((*ptr),CritSimRatio,(*C)->CritSimRatio);
-			if(CritSimWOverB)
-				Assign((*ptr),CritSimWOverB,(*C)->CritSimWOverB);
-			if(CritSimSimWB)
-				Assign((*ptr),CritSimSimWB,(*C)->CritSimSimWB);
+			Assign((*ptr),CritSimAvgSim,(*C)->CritSimAvgSim);
+			Assign((*ptr),CritSimJ,(*C)->CritSimJ);
+			Assign((*ptr),CritSimAvgRatio,(*C)->CritSimAvgRatio);
+			Assign((*ptr),CritSimMinRatio,(*C)->CritSimMinRatio);
+			Assign((*ptr),CritSimRatio,(*C)->CritSimRatio);
+			Assign((*ptr),CritSimWOverB,(*C)->CritSimWOverB);
+			Assign((*ptr),CritSimSimWB,(*C)->CritSimSimWB);
 		}
 		Assign((*ptr),CritInfo,(*C)->CritInfo);
 		Assign((*ptr),CritSameFeedbacks,(*C)->CritSameFeedbacks);
@@ -512,7 +485,7 @@ void GALILEI::GInstIR::PostRun(void)
 //		if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
 //			CritSimSimWB=Prom.NewCriterion(Maximize,"Similarity SimWB",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
 //	}
-//	CritInfo=Prom.NewCriterion(Maximize,"Information",Params->ParamsInfo.P,Params->ParamsInfo.Q,Params->ParamsInfo.Weight);
+//	CritInfo=Prom.NewCriterion(Minimize,"Information",Params->ParamsInfo.P,Params->ParamsInfo.Q,Params->ParamsInfo.Weight);
 //	CritSameFeedbacks=Prom.NewCriterion(Maximize,"Same Feedbacks",Params->ParamsSameFeedbacks.P,Params->ParamsSameFeedbacks.Q,Params->ParamsSameFeedbacks.Weight);
 //	CritDiffFeedbacks=Prom.NewCriterion(Minimize,"Diff Feedbacks",Params->ParamsDiffFeedbacks.P,Params->ParamsDiffFeedbacks.Q,Params->ParamsDiffFeedbacks.Weight);
 //	CritSocial=Prom.NewCriterion(Minimize,"Social",Params->ParamsSocial.P,Params->ParamsSocial.Q,Params->ParamsSocial.Weight);
@@ -523,20 +496,13 @@ void GALILEI::GInstIR::PostRun(void)
 //			Prom.Assign(s,CritSim,BestSols()->CritSim);
 //		else
 //		{
-//			if(CritSimAvgSim)
-//				Prom.Assign(s,CritSimAvgSim,BestSols()->CritSimAvgSim);
-//			if(CritSimJ)
-//				Prom.Assign(s,CritSimJ,BestSols()->CritSimJ);
-//			if(CritSimAvgRatio)
-//				Prom.Assign(s,CritSimAvgRatio,BestSols()->CritSimAvgRatio);
-//			if(CritSimMinRatio)
-//				Prom.Assign(s,CritSimMinRatio,BestSols()->CritSimMinRatio);
-//			if(CritSimRatio)
-//				Prom.Assign(s,CritSimRatio,BestSols()->CritSimRatio);
-//			if(CritSimWOverB)
-//				Prom.Assign(s,CritSimWOverB,BestSols()->CritSimWOverB);
-//			if(CritSimSimWB)
-//				Prom.Assign(s,CritSimSimWB,BestSols()->CritSimSimWB);
+//			Prom.Assign(s,CritSimAvgSim,BestSols()->CritSimAvgSim);
+//			Prom.Assign(s,CritSimJ,BestSols()->CritSimJ);
+//			Prom.Assign(s,CritSimAvgRatio,BestSols()->CritSimAvgRatio);
+//			Prom.Assign(s,CritSimMinRatio,BestSols()->CritSimMinRatio);
+//			Prom.Assign(s,CritSimRatio,BestSols()->CritSimRatio);
+//			Prom.Assign(s,CritSimWOverB,BestSols()->CritSimWOverB);
+//			Prom.Assign(s,CritSimSimWB,BestSols()->CritSimSimWB);
 //		}
 //		Prom.Assign(s,CritInfo,BestSols()->CritInfo);
 //		Prom.Assign(s,CritSameFeedbacks,BestSols()->CritSameFeedbacks);

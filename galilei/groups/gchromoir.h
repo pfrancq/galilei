@@ -115,6 +115,11 @@ private:
 	double CritInfo;
 
 	/**
+	* Value of the "Entropy" criterion.
+	*/
+	double CritEntropy;
+
+	/**
 	* Value of the "Same Feedbacks" criterion.
 	*/
 	double CritSameFeedbacks;
@@ -173,6 +178,11 @@ private:
 	* Test Chromosome (Thread dependent data).
 	*/
 	GChromoIR** thTests;
+
+	/**
+	* Container of document.
+	*/
+	RStd::RContainer<GDocSim,unsigned,true,false> Docs;
 
 #ifdef RGADEBUG
 
@@ -316,6 +326,11 @@ public:
 	* Evaluate the 'Info' criterion of the chromosome.
 	*/
 	void EvaluateInfo(void);
+
+	/**
+	* Evaluate the 'Entropy' criterion of the chromosome.
+	*/
+	void EvaluateEntropy(void);
 
 	/**
 	* Evaluate the 'Same Feebacks' criterion of the chromosome.

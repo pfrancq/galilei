@@ -39,6 +39,9 @@
 #include <profiles/gprofilessim.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
+#include <profiles/gprofdoc.h>
+#include <docs/gdocsim.h>
+#include <docs/gdoc.h>
 #include <groups/ggroupir.h>
 #include <groups/gchromoir.h>
 #include <groups/ginstir.h>
@@ -570,6 +573,50 @@ double GALILEI::GGroupIR::GetMaxRatioSame(GObjIR* obj)
 			max=tmp;
 	}
 	return(max);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroupIR::NotJudgedDocsRelList(RStd::RContainer<GDocSim,unsigned,true,false>* docs, GObjIR* s)
+{
+	GObjIR** ptr;
+	unsigned int i;
+	GProfDocCursor Fdbks;
+	tDocJudgement j;
+	bool global=Owner->Instance->Params->GlobalSim;
+	GLang* Lang=Owner->Instance->Lang;
+	GSubProfile* sub;
+
+	// Clear container.
+	docs->Clear();
+	// Go through the subprofiles of the group
+	sub=s->GetSubProfile();
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),AvgSim=0.0;--i;ptr++)
+	{
+		if((*ptr)==s) continue;
+
+		// Go through the judgments
+		Fdbks=(*ptr)->GetSubProfile()->GetProfile()->GetProfDocCursor();
+		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+		{
+			// Must be the same language than the group.
+			if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
+
+			// Verify if already inserted in Docs or if it was not judged by the
+			// subprofile s
+			if((docs->GetPtr<const GDoc*>(Fdbks()->GetDoc()))||(sub->GetProfile()->GetFeedback(Fdbks()->GetDoc()))) continue;
+
+			// If not -> insert it in docs if relevant.
+			j=Fdbks()->GetFdbk();
+			if((j==djNav)||(j==djOK))
+			{
+				if(global)
+					docs->InsertPtr(new GDocSim(Fdbks()->GetDoc(),sub->GlobalSimilarity(Fdbks()->GetDoc())));
+				else
+					docs->InsertPtr(new GDocSim(Fdbks()->GetDoc(),sub->Similarity(Fdbks()->GetDoc())));
+			}
+		}
+	}
 }
 
 

@@ -169,9 +169,14 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	RPromethee::RPromCriterion* CritSimSimWB;
 
 	/**
-	* Criteria representing the average number of profiles per groups.
+	* Criteria representing number of groups.
 	*/
 	RPromethee::RPromCriterion* CritInfo;
+
+	/**
+	* Criteria representing the entropy of a solution.
+	*/
+	RPromethee::RPromCriterion* CritEntropy;
 
 	/**
 	* Criteria representing the factor depending on the subprofiles having

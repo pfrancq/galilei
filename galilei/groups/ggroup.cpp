@@ -263,10 +263,7 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 			// Must be the same language than the group.
 			if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
 
-			// Verify that it was not judged by s
-			if(s->GetProfile()->GetFeedback(Fdbks()->GetDoc())) continue;
-
-			// Veify if already inserted in Docs or if it was not judged by the
+			// Verify if already inserted in Docs or if it was not judged by the
 			// subprofile s
 			if((Docs.GetPtr<const GProfDoc*>(Fdbks()))||(s->GetProfile()->GetFeedback(Fdbks()->GetDoc()))) continue;
 

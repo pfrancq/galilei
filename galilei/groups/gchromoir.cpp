@@ -35,6 +35,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <math.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for R Project
 #include <rpromethee/rpromkernel.h>
 #include <rpromethee/rpromsol.h>
@@ -56,6 +61,7 @@ using namespace RPromethee;
 #include <profiles/gprofile.h>
 #include <profiles/gprofilessim.h>
 #include <profiles/gsubprofilessamedocs.h>
+#include <docs/gdocsim.h>
 using namespace GALILEI;
 using namespace RGGA;
 using namespace RGA;
@@ -73,7 +79,8 @@ GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
 	: RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
 	  Sims(0), CritSim(0.0), CritSimAvgSim(0.0), CritSimJ(0.0), CritSimAvgRatio(0.0),
 	  CritSimMinRatio(0.0), CritSimRatio(0.0), CritSimWOverB(0.0), CritSimSimWB(0.0),
-	  CritInfo(0.0), CritSameFeedbacks(0.0), CritDiffFeedbacks(1.0), CritSocial(1.0), Protos(Used.MaxPtr)
+	  CritInfo(0.0), CritEntropy(0.0), CritSameFeedbacks(0.0), CritDiffFeedbacks(1.0), CritSocial(1.0), Protos(Used.MaxPtr),
+	  Docs(100,50)
 {
 	#ifdef RGADEBUG
 		Global=0.0;
@@ -566,7 +573,27 @@ void GALILEI::GChromoIR::EvaluateSim(void)
 void GALILEI::GChromoIR::EvaluateInfo(void)
 {
 	// Compute Average number of profiles.
-	CritInfo=static_cast<double>(Objs->GetNb())/static_cast<double>(Used.NbPtr);
+	CritInfo=static_cast<double>(Used.NbPtr);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GChromoIR::EvaluateEntropy(void)
+{
+	GObjIRCursor Cur;
+	double Pjk;
+
+	Cur=(*Objs);
+	for(Cur.Start(),CritEntropy=0.0;!Cur.End();Cur.Next())
+	{
+		GetGroup(Cur())->NotJudgedDocsRelList(&Docs,Cur());
+		for(Docs.Start();!Docs.End();Docs.Next())
+		{
+			Pjk=Docs()->GetSim();
+			CritEntropy-=Pjk*log(Pjk);
+		}
+	}
+	CritEntropy*=1.0;
 }
 
 
@@ -644,6 +671,7 @@ void GALILEI::GChromoIR::Evaluate(void) throw(RGA::eGA)
 {
 	EvaluateSim();
 	EvaluateInfo();
+	EvaluateEntropy();
 	EvaluateSameFeedbacks();
 	EvaluateDiffFeedbacks();
 	EvaluateSocial();
@@ -947,7 +975,7 @@ void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
 		if(Instance->Params->Measures.GetPtr<const char*>("SimWB")->Use)
 			PromCritSimSimWB=Kernel->NewCriterion(Maximize,"Similarity SimWB",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
 	}
-	PromCritInfo=Kernel->NewCriterion(Maximize,"Information",Instance->Params->ParamsInfo.P,Instance->Params->ParamsInfo.Q,Instance->Params->ParamsInfo.Weight);
+	PromCritInfo=Kernel->NewCriterion(Minimize,"Information",Instance->Params->ParamsInfo.P,Instance->Params->ParamsInfo.Q,Instance->Params->ParamsInfo.Weight);
 	PromCritSameFeedbacks=Kernel->NewCriterion(Maximize,"Same Feedbacks",Instance->Params->ParamsSameFeedbacks.P,Instance->Params->ParamsSameFeedbacks.Q,Instance->Params->ParamsSameFeedbacks.Weight);
 	PromCritDiffFeedbacks=Kernel->NewCriterion(Minimize,"Diff Feedbacks",Instance->Params->ParamsDiffFeedbacks.P,Instance->Params->ParamsDiffFeedbacks.Q,Instance->Params->ParamsDiffFeedbacks.Weight);
 	PromCritSocial=Kernel->NewCriterion(Minimize,"Social",Instance->Params->ParamsSocial.P,Instance->Params->ParamsSocial.Q,Instance->Params->ParamsSocial.Weight);
@@ -982,20 +1010,13 @@ void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
 			Kernel->Assign(s,PromCritSim,thTests[i]->CritSim);
 		else
 		{
-			if(PromCritSimAvgSim)
-				Kernel->Assign(s,PromCritSimAvgSim,thTests[i]->CritSimAvgSim);
-			if(PromCritSimJ)
-				Kernel->Assign(s,PromCritSimJ,thTests[i]->CritSimJ);
-			if(PromCritSimAvgRatio)
-				Kernel->Assign(s,PromCritSimAvgRatio,thTests[i]->CritSimAvgRatio);
-			if(PromCritSimMinRatio)
-				Kernel->Assign(s,PromCritSimMinRatio,thTests[i]->CritSimMinRatio);
-			if(PromCritSimRatio)
-				Kernel->Assign(s,PromCritSimRatio,thTests[i]->CritSimRatio);
-			if(PromCritSimWOverB)
-				Kernel->Assign(s,PromCritSimWOverB,thTests[i]->CritSimWOverB);
-			if(PromCritSimSimWB)
-				Kernel->Assign(s,PromCritSimSimWB,thTests[i]->CritSimSimWB);
+			Kernel->Assign(s,PromCritSimAvgSim,thTests[i]->CritSimAvgSim);
+			Kernel->Assign(s,PromCritSimJ,thTests[i]->CritSimJ);
+			Kernel->Assign(s,PromCritSimAvgRatio,thTests[i]->CritSimAvgRatio);
+			Kernel->Assign(s,PromCritSimMinRatio,thTests[i]->CritSimMinRatio);
+			Kernel->Assign(s,PromCritSimRatio,thTests[i]->CritSimRatio);
+			Kernel->Assign(s,PromCritSimWOverB,thTests[i]->CritSimWOverB);
+			Kernel->Assign(s,PromCritSimSimWB,thTests[i]->CritSimSimWB);
 		}
 		Kernel->Assign(s,PromCritInfo,thTests[i]->CritInfo);
 		Kernel->Assign(s,PromCritSameFeedbacks,thTests[i]->CritSameFeedbacks);
