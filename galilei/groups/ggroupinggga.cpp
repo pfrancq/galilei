@@ -105,7 +105,7 @@ void GALILEI::GGroupingGGA::SetSettings(const char* s)
 	unsigned int t;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %c %u %u %c %u %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+	sscanf(s,"%u %c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
 	       &t,&c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
 	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
 	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
