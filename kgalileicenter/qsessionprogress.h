@@ -125,7 +125,7 @@ class QCreateDB : public QSessionThread
 	RString SQLPath;
 	bool UseStopList;
 	bool UseUsers;
-	
+
 public:
 	QCreateDB(RString dbName,RString host,RString user,RString pass,RString path,bool useSL, bool useUsr) : DbName(dbName), Host(host), User(user),Pass(pass),SQLPath(path),UseStopList(useSL),UseUsers(useUsr) {}
 	virtual void DoIt(void);
@@ -150,7 +150,7 @@ class QFillDB : public QSessionThread
 	RString Pass;
 	RString CatDirectory;
 	GFilterManagerKDE* FilterManager;
-	
+
 	RDb* Db;
 	int CurrentDocId;
 public:
@@ -348,6 +348,11 @@ class QSessionProgressDlg : public QSemiModal, public GSlot
 	* Thread running the task.
 	*/
 	QSessionThread* Task;
+
+	/**
+	* Is something running?
+	*/
+	bool Running;
 
 public:
 

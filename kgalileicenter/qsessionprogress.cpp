@@ -199,7 +199,7 @@ void QCreateDB::DoIt(void)
 
 	//Qsession progres to view progression
 	Parent->PutText("Database structure created");
-			
+
 	RDb::CreateDatabase(Host,User,Pass,DbName);
 	RDb Db(Host,User,Pass,DbName,"latin1");
 	if(GSession::Break())
@@ -209,7 +209,7 @@ void QCreateDB::DoIt(void)
 	Parent->PutText("Dump Database model");
 	path=SQLPath+"DbModel.sql";
 	RTextFile fileM(path,Read,"Latin1");
-	
+
 	while((!fileM.Eof())&&(!GSession::Break()))
 	{
 		line=fileM.GetLine();
@@ -320,7 +320,7 @@ void QCreateDB::DoIt(void)
 void QFillDB::DoIt(void)
 {
 	Parent->PutText("Try to connect database");
-			
+
 	//Init
 	DIR* dp;
 	struct dirent* ep;
@@ -329,10 +329,10 @@ void QFillDB::DoIt(void)
 	RString sSql("");
 	bool found=false;
 	int catId;
-		
+
 	//Connect to DB
 	Db = new RDb(Host,User,Pass,DbName,"latin1");
-	
+
 	Parent->PutText("Find documents and fill categories");
 
 	//Find ID of last inserted document
@@ -341,7 +341,7 @@ void QFillDB::DoIt(void)
 	nbDoc.Start();
 	if((!nbDoc.End())&&(nbDoc[0]))
 		CurrentDocId=atoi(nbDoc[0]);
-	
+
 	//Parse directory containing files
 	dp=opendir(CatDirectory);
 	if(dp)
@@ -365,10 +365,10 @@ void QFillDB::DoIt(void)
 			throw new GException("Fill Database : no category detected");
 		}
 	}
-			
+
 	//Create profiles
 	Parent->PutText("create Profiles");
-	
+
 	//Get Nb users
 	sSql="SELECT userid FROM users";
 	RQuery userId(Db,sSql);
@@ -376,14 +376,14 @@ void QFillDB::DoIt(void)
 	{
 		usersId.InsertPtr(new RString(userId[0]));
 	}
-		
+
 	sSql="SELECT * FROM topics WHERE parent !=0";
 	RQuery topics(Db,sSql);
 	for(topics.Start();!topics.End();topics.Next())
 	{
 		sSql="SELECT name FROM topics WHERE topicid="+topics[2];
 		RQuery topics2(Db,sSql);
-		
+
 		topics2.Start();
 		if((!topics.End())&&topics[0])
 		{
@@ -412,7 +412,7 @@ int QFillDB::CreateCategory(RString name,int parentId)
 	{
 		sSql="INSERT INTO topics SET name='"+name+"',langid='en',parent="+itou(parentId);
 		RQuery insert(Db,sSql);
-		
+
 		sSql="SELECT topicid FROM topics WHERE name='" + name +"' AND parent=" + itou(parentId);
 		RQuery get(Db,sSql);
 		get.Start();
@@ -453,7 +453,7 @@ void QFillDB::ParseDocDir(RString path,int parentId, int level)
 			{
 				// Choose right mime type
 				newPath=path+"/"+ep->d_name;
-				
+
 				//Determine mime type of the file
 				RString mime("");
 				mime=FilterManager->GFilterManager::DetermineMIMEType(newPath.Latin1());
@@ -468,7 +468,7 @@ void QFillDB::ParseDocDir(RString path,int parentId, int level)
 						sSql="INSERT INTO htmls SET html='"+newPath+"',updated='2004-01-01',mimetype='"+mime+"',title='"+newPath+"'";
 						RQuery insert(Db,sSql);
 						CurrentDocId++;
-					
+
 						//Insert docid and topicid in htmlsbytopics
 						sSql="INSERT INTO topicsbyhtmls SET topicid="+itou(parentId)+",htmlid="+itou(CurrentDocId);
 						RQuery insert2(Db,sSql);
@@ -669,7 +669,7 @@ void QFillMIMETypes::DoIt(void)
 
 //-----------------------------------------------------------------------------
 QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char* c) throw(std::bad_alloc,RException)
-    : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), Session(s), Task(0)
+    : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), Session(s), Task(0), Running(false)
 {
 	resize(600, 78 );
 	setCaption(i18n(c));
@@ -699,8 +699,14 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 	KApplication::kApplication()->processEvents();
 	Task=task;
 	Task->Set(Session,this);
+	Running=true;
 	Task->start();
 	exec();
+	if(Task)
+	{
+		delete Task;
+		Task=0;
+	}
 	if(GSession::Break())
 	{
 		GSession::ResetBreak();
@@ -769,7 +775,7 @@ void QSessionProgressDlg::receiveNextChromosome(unsigned int id) throw(std::bad_
 void QSessionProgressDlg::receiveButton()
 {
 	// If nothing running -> can close
-	if(!Task)
+	if(!Running)
 	{
 		close();
 		return;
@@ -802,14 +808,12 @@ void QSessionProgressDlg::Finish(bool Cancel)
 {
 	if(Task)
 	{
-		delete Task;
-		Task=0;
+		Running=false;
 	}
 	if(!Cancel)
 		txtRem->setText("Finish");
 	btnOk->setEnabled(true);
 	btnOk->setText(i18n("&OK"));
-	KApplication::kApplication()->processEvents();
 }
 
 
