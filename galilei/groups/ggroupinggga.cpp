@@ -68,9 +68,10 @@ using namespace RGA;
 //-----------------------------------------------------------------------------
 GALILEI::GGroupingGGA::GGroupingGGA(GSession* s) throw(bad_alloc)
 	: GGrouping("Grouping Genetic Algorithms",s), PopSize(16), MinSimLevel(0.1),
-	  MaxGen(20), Step(false), StepGen(5), ParamsSim(0.2,0.05,1.0),
-	  ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0), ParamsDiff(0.2,0.05,1.0),
-	  ParamsSocial(0.2,0.05,1.0), GlobalSim(false), Objs(0)
+	  MinCommonOK(1.0), MinCommonDiff(1.0), MaxGen(20), Step(false), StepGen(5),
+	  ParamsSim(0.2,0.05,1.0), ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0),
+	  ParamsDiff(0.2,0.05,1.0),ParamsSocial(0.2,0.05,1.0), GlobalSim(false),
+	  Objs(0)
 {
 }
 
@@ -83,8 +84,8 @@ const char* GALILEI::GGroupingGGA::GetSettings(void)
 
 	if(Step) c='1'; else c='0';
 	if(GlobalSim) c1='1'; else c1='0';
-	sprintf(tmp,"%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	        c1,PopSize,MaxGen,c,StepGen,MinSimLevel,
+	sprintf(tmp,"%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	        c1,PopSize,MaxGen,c,StepGen,MinSimLevel,MinCommonOK,MinCommonDiff,
 	        ParamsSim.P,ParamsSim.Q,ParamsSim.Weight,
 	        ParamsNb.P,ParamsNb.Q,ParamsNb.Weight,
 	        ParamsOK.P,ParamsOK.Q,ParamsOK.Weight,
@@ -100,8 +101,8 @@ void GALILEI::GGroupingGGA::SetSettings(const char* s)
 	char c,c1;
 
 	if(!(*s)) return;
-	sscanf(s,"%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	       &c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,
+	sscanf(s,"%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
 	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
 	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
 	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,

@@ -73,6 +73,18 @@ protected:
 	double MinSimLevel;
 
 	/**
+	* Minimum number of common OK documents needed to force two profiles to be
+	* in the same group.
+	*/
+	double MinCommonOK;
+
+	/**
+	* Minimum number of common documents judged differently needed to force two
+	* profiles to be in two different groups.
+	*/
+	double MinCommonDiff;
+
+	/**
 	* Maximal number of generation to run.
 	*/
 	unsigned int MaxGen;
@@ -143,8 +155,9 @@ public:
 
 	/**
 	* Set the settings for the method using a string.
-	* "Global PopSize MaxGen StepGen Step MinSimLevel ParamsSim.P ParamsSim.Q ParamsSim.Weight"
-	* " ParamsNb.P ParamsNb.Q ParamsNb.Weight ParamsOK.P ParamsOK.Q ParamsOK.Weight ParamsDiff.P ParamsDiff.Q ParamsDiff.Weight"
+	* "Global PopSize MaxGen StepGen Step MinSimLevel MinCommonOK MinCommonDiff"
+	* " ParamsSim.P ParamsSim.Q ParamsSim.Weight ParamsNb.P ParamsNb.Q ParamsNb.Weight "
+	* " ParamsOK.P ParamsOK.Q ParamsOK.Weight ParamsDiff.P ParamsDiff.Q ParamsDiff.Weight"
 	* @param s*             C string coding the settings.
 	*/
 	virtual void SetSettings(const char* s);
@@ -172,6 +185,34 @@ public:
 	* @returns double representing the minimum level.
 	*/
 	double GetMinSimLevel(void) const {return(MinSimLevel);}
+
+	/**
+	* Set the minimum number of common OK documents needed to force two
+	* profiles to be in the same group.
+	* @param m              Minimum level.
+	*/
+	void SetMinCommonOK(double m) {MinCommonOK=m;}
+
+	/**
+	* Get the minimum number of common OK documents needed to force two
+	* profiles to be in the same group.
+	* @returns double representing the minimum level.
+	*/
+	double GetMinCommonOK(void) const {return(MinCommonOK);}
+
+	/**
+	* Set the minimum number of common documents judged differently needed to
+	* force two profiles to be in two different groups.
+	* @param m              Minimum level.
+	*/
+	void SetMinCommonDiff(double m) {MinCommonDiff=m;}
+
+	/**
+	* Get the minimum number of common documents judged differently needed to
+	* force two profiles to be in two different groups.
+	* @returns double representing the minimum level.
+	*/
+	double GetMinCommonDiff(void) const {return(MinCommonDiff);}
 
 	/**
 	* Set the Maximal number of generation.
