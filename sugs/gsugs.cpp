@@ -100,7 +100,7 @@ void GSugs::Disconnect(GSession* session) throw(GException)
 void GSugs::Run(void) throw(GException)
 {
 	GGroupCursor Grps;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 	RCursor<GFdbk> Doc;
 	unsigned int i;
 	char tmp[10];
