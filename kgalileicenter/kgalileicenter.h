@@ -303,7 +303,7 @@ private slots:
 	void slotProfilesCalc(void);
 
 	/**
-	* Show the groups' window.
+	* Show the groups window.
 	*/
 	void slotShowGroups(void);
 
@@ -322,9 +322,8 @@ private slots:
 	*/
 	void slotGroupsEvaluation(void);
 
-
 	/**
-	* Show the documents' window.
+	* Show the documents window.
 	*/
 	void slotShowDocs(void);
 
@@ -387,6 +386,11 @@ private slots:
 	* Stop the GA.
 	*/
 	void slotGAStop(void);
+
+	/**
+	* Analyse chromosomes store during a GA.
+	*/
+	void slotGAAnalyse(void);
 
 	/**
 	* Toggles the toolbar.
@@ -512,6 +516,7 @@ public:
 	KAction* gaStart;
 	KAction* gaPause;
 	KAction* gaStop;
+	KAction* gaAnalyse;
 
 	KAction* rRunR;
 

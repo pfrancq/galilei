@@ -105,6 +105,7 @@ using namespace GALILEI;
 #include "kviewprofile.h"
 #include "kviewga.h"
 #include "kviewr.h"
+#include "kviewchromos.h"
 #include "qconnectmysql.h"
 #include "qsessionprogress.h"
 #include "qlanguages.h"
@@ -180,6 +181,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			textFrench->setEnabled(true);
 			textEnglish->setEnabled(true);
 			plugins->setEnabled(true);
+			gaAnalyse->setEnabled(true);
 			runProgram->setEnabled(true);
 			runInsts->setEnabled(true);
 			UpdateMenusEntries();
@@ -254,6 +256,7 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 	textFrench->setEnabled(false);
 	textEnglish->setEnabled(false);
 	plugins->setEnabled(false);
+	gaAnalyse->setEnabled(false);
 	statusBar()->changeItem("Not Connected !",1);
 }
 
@@ -527,6 +530,13 @@ void KGALILEICenterApp::slotGAStop(void)
 	{
 		((KViewGA*)m)->StopGA();
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotGAAnalyse(void)
+{
+	createClient(Doc,new KViewChromos(Doc,pWorkspace,"View Chromosomes",0));
 }
 
 
