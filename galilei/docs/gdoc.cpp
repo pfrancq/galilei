@@ -22,6 +22,7 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
 #include <rstd/rcontainercursor.h>
 using namespace RStd;
 
@@ -33,6 +34,7 @@ using namespace RStd;
 #include <gsessions/gsession.h>
 using namespace GALILEI;
 using namespace RXML;
+using namespace RTimeDate;
 
 
 
@@ -43,18 +45,11 @@ using namespace RXML;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDoc::GDoc (const RString& url,const RStd::RString& name,const unsigned int id,GMIMEFilter* t,unsigned int nbdiff) throw(bad_alloc)
-  : URL(url), Name(name), Id(id), Words(nbdiff>300?nbdiff:300),NbWords(0),NbDiffWords(nbdiff), Lang(0),
-    Calc(true), bSave(false), Type(t)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GDoc::GDoc(const RString& url,const RStd::RString& name,const unsigned int id,GLang* lang,GMIMEFilter* t,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc)
+GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int nb,unsigned int nbdiff,unsigned int nbf) throw(bad_alloc)
 	: URL(url), Name(name), Id(id), Words(nbdiff>300?nbdiff:300),NbWords(nb), NbDiffWords(nbdiff),
-	  Lang(lang), Calc(true), bSave(false), Type(t)
+	  Lang(lang), Save(false), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2)
 {
+	Calc=Updated>Computed;
 }
 
 
@@ -178,7 +173,6 @@ int GALILEI::GDoc::AnalyseTagForStopKwd(RXMLTag* tag,GDict* stop)
 //-----------------------------------------------------------------------------
 void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw(GException)
 {
-	cout<<tag->GetName()<<endl;
 	const char* ptr;
 	RString word(50),stem(50);
 	GIWordOccur* Occur;
@@ -219,9 +213,11 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	int max,act;
 	GDict* stop;
 	GDict* dic;
+
+	if(!Calc) return;
+
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(session->GetLangs());
 
-	cout<<"Analyse: "<<URL()<<endl;
 	content=xml->GetContent();
 	RAssert(content);
 
@@ -245,6 +241,8 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	NbWords=NbDiffWords=0;
 	AnalyseContentTag(content,stop,session->GetDic(Lang));
 	Calc=false;
+	Save=true;
+	Computed.SetToday();
 }
 
 

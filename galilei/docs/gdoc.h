@@ -25,7 +25,7 @@
 // include files for R Project
 #include <rstd/rstring.h>
 #include <rxml/rxmltag.h>
-
+#include <rtimedate/rdate.h>
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
@@ -34,6 +34,7 @@
 #include <ginfos/giwordoccurs.h>
 #include <glangs/glang.h>
 #include <filters/gmimefilter.h>
+#include <gprofiles/gprofdoc.h>
 
 
 
@@ -101,36 +102,45 @@ class GDoc
 	/**
 	* Must the doc be saved?
 	*/
-	bool bSave;
+	bool Save;
 
 	/**
 	* Type of the document.
 	*/
 	GMIMEFilter* Type;
 
+	/**
+	* Date of last update of document's content.
+	*/
+	RTimeDate::RDate Updated;
+
+	/**
+	* Date of last document's analysis.
+	*/
+	RTimeDate::RDate Computed;
+
+	/**
+	* Profiles which have judge the current document.
+	*/
+	RContainer<GProfDoc,unsigned,true,false> Fdbks;
+
 public:
 
 	/**
 	* Construct the document.
 	* @param url            URL of the document.
-	* @param id             Identifier of the document.
-	* @param t              MIME type of the document.
-	* @param nbdiff         Number of different words appearing in the
-	*                       document.
-	*/
-	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,GMIMEFilter* t,unsigned int nbdiff=500) throw(bad_alloc);
-
-	/**
-	* Construct the document.
-	* @param url            URL of the document.
+	* @param title          Name of the document.
 	* @param id             Identifier of the document.
 	* @param lang           Language of the document.
 	* @param t              MIME type of the document.
+	* @param u              String representing the date of the last update.
+	* @param a              String representing the date of the last analysis.
 	* @param nb             Total number of words in the document.
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
+	* @param nbf            Number of Feedbacks.
 	*/
-	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,GLang* lang,GMIMEFilter* t,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc);
+	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int nb,unsigned int nbdiff,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Compare function needed by RStd::RContainer.
@@ -169,10 +179,34 @@ public:
 	const char* GetName(void) const {return(Name());}
 
 	/**
+	* Get the date of the last update of the document's content.
+	* @returns Pointer to date.
+	*/
+	const RTimeDate::RDate* GetUpdated(void) const {return(&Updated);}
+
+	/**
+	* Get the date of the last analysis of the document.
+	* @returns Pointer to date.
+	*/
+	const RTimeDate::RDate* GetComputed(void) const {return(&Computed);}
+
+	/**
 	* Get the MIME type.
 	* @returns Pointer to a MIME type.
 	*/
 	GMIMEFilter* GetMIMEType(void) const {return(Type);}
+
+	/**
+	* Test if the document must be saved.
+	* @returns Boolean value.
+	*/
+	bool MustSave(void) const {return(Save);}
+
+	/**
+	* Test if the document must be analysed.
+	* @returns Boolean value.
+	*/
+	bool MustAnalyse(void) const {return(Calc);}
 
 protected:
 
@@ -269,6 +303,38 @@ public:
 	* @returns Pointer to the current word.
 	*/
 	GIWordOccur* GetCurWords(void) {return(Words());}
+
+	/**
+	* Start the iterator to go trough the profiles judging the document.
+	*/
+	inline void ProfilesStart(void)
+		{Fdbks.Start();}
+
+	/**
+	* Test if the end of the container of profiles judging the document is
+	* reached.
+	*/
+	inline bool ProfilesEnd(void) const
+		{return(Fdbks.End());}
+
+	/**
+	* Goto the next element, if the end is reached, go to the beginning.
+	*/
+	inline void ProfilesNext(void)
+		{Fdbks.Next();}
+
+	/**
+	* Get the current profile judging the document.
+	* @returns Pointer to the current profile.
+	*/
+	GProfDoc* GetCurProfiles(void) {return(Fdbks());}
+
+	/**
+	* Add a judgement for this document.
+	* @param j              Judgement.
+	*/
+	void AddJudgement(GProfDoc* j) throw(bad_alloc)
+		{ Fdbks.InsertPtr(j); }
 
 	/**
 	* Destruct the document.
