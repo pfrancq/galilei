@@ -12,12 +12,10 @@ kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui \
 	kview.cpp kdoc.cpp kgalileicenter.cpp main.cpp qplugins.ui qsessionoptions.ui
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
 kgalileicenter_LDADD = /usr/lib/libmysqlclient.la \
-	$(QTWIDGETS_LIB)/galilei/libkde_galilei.la $(QTWIDGETS_LIB)/rpromethee/libkde_rpromethee.la \
-	$(QTWIDGETS_LIB)/rga/libkde_rga.la \
 	$(GALILEI_LIB)/sessions/libgalilei_sessions.la $(GALILEI_LIB)/profiles/libgalilei_profiles.la \
 	$(GALILEI_LIB)/infos/libgalilei_infos.la \
 	$(GALILEI_LIB)/groups/libgalilei_groups.la $(GALILEI_LIB)/historic/libgalilei_historic.la \
-	$(GALILEI_LIB)/docs/libgalilei_docs.la \
+	$(GALILEI_LIB)/docs/libgalilei_docs.la $(GALILEI_LIB)/frontend/kde/libkde_galilei.la \
 	$(R_LIB)/rgga/librgga.la $(R_LIB)/rpromethee/librpromethee.la $(R_LIB)/rstd/librstd.la \
 	$(R_LIB)/rga/librga.la $(R_LIB)/rdb/librdb.la $(R_LIB)/rmath/librmath.la  $(R_LIB)/rprg/librprg.la \
 	-lcurl $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET) -lltdl -dlopen self
@@ -72,7 +70,8 @@ uninstall-local:
 # kde_wallpaperdir  Where general wallpapers should go to.
 
 # set the include path for X, qt and KDE
-INCLUDES = -I$(GALILEI_LIB) -I$(R_LIB) -I$(QTWIDGETS_LIB) $(all_includes)
+#INCLUDES = -I$(GALILEI_LIB) -I$(R_LIB) -I$(QTWIDGETS_LIB) $(all_includes)
+INCLUDES = -I$(top_srcdir) $(all_includes)
 
 METASOURCES = AUTO
 

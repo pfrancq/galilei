@@ -42,9 +42,6 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rga/rgasignals.h>
-#include <rga/qgamonitor.h>
-#include <rga/qxmlcontainer.h>
 #include <rpromethee/rpromcriterion.h>
 using namespace R;
 

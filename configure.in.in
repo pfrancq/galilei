@@ -16,7 +16,11 @@
 
 #---------------------------------------------------------
 # ---- add configure option : --with-r-includes=DIR ----
-R_INC_PATH="/usr/include/r"
+if test "x$R_LIB" != "x" ; then
+	R_INC_PATH=$R_LIB
+else
+	R_INC_PATH="/usr/include/r /usr/include /usr/include/r /usr/local /usr/local/include /usr/local/include/r ${prefix}/include/r"
+fi
 AC_ARG_WITH(r-includes,
 	AC_HELP_STRING(
 		[--with-r-includes=DIR],
@@ -25,7 +29,11 @@ AC_ARG_WITH(r-includes,
 
 
 # ---- add configure option : --with-r-libs=DIR ----
-R_LIB_PATH="/usr/lib"
+if test "x$R_LIB" != "x" ; then
+	R_LIB_PATH=$R_LIB
+else
+	R_LIB_PATH="/usr/lib /usr/lib/r /usr/local/lib /usr/local/lib/r ${prefix}/lib/r"
+fi
 AC_ARG_WITH(r-libs,
 	AC_HELP_STRING(
 		[--with-r-libs=DIR],
@@ -55,11 +63,11 @@ AC_DEFUN(R_LIB_CHK,[
 AC_DEFUN(R_INC_CHK,[
 	R_INC_DIR=""
 	str="$1/$2"
-	for i in $R_LIB $R_INC_PATH  /usr/include /usr/include/r /usr/local /usr/local/r; do
+	for i in $R_INC_PATH ; do
 		test -f $i/$str                    && R_INC_DIR=$i/$1 && break
-		test -f $i/r/$str              && R_INC_DIR=$i/r/$1 && break
+		#test -f $i/r/$str              && R_INC_DIR=$i/r/$1 && break
 	done
-	AC_MSG_CHECKING(checking for $1/$2)
+	AC_MSG_CHECKING(for $1/$2)
 	if test -z "$R_INC_DIR"; then
 		if test "x$R_INC_PATH" != "x"; then
 			AC_MSG_RESULT(no)
@@ -69,9 +77,13 @@ AC_DEFUN(R_INC_CHK,[
 			AC_MSG_ERROR(Cannot find $2 headers.  Use --with-r-includes= to specify non-default path.)
 		fi
 	fi
-AC_MSG_RESULT(yes)
+	AC_MSG_RESULT(yes in $R_INC_DIR)
 
-CPPFLAGS="-I$R_INC_DIR $CPPFLAGS"
+	if test "x$i" != "x$PAST_R_INC_DIR"; then
+		CPPFLAGS="-I$i $CPPFLAGS"
+	fi
+	PAST_R_INC_DIR="$i"
+
 ])
 # --- end def function -----
 
@@ -89,18 +101,18 @@ R_INC_CHK(rstd,rcontainer.h)
 # ---- check the presence of all R libraries
 for l in rdb rga rga2d rgga rmath rprg rpromethee rstd; do
 
-	#AC_MSG_CHECKING(checking for lib$l)
-	for i in $R_LIB $R_INC_PATH /usr /usr/local /usr/local/r/; do
-		R_LIB_CHK($i/$l,$l)
-		R_LIB_CHK($i/lib/,$l)
-		R_LIB_CHK($i/lib/r,$l)
+	#AC_MSG_CHECKING(for lib$l)
+	for i in $R_LIB_PATH ; do
+		R_LIB_CHK($i/$l,$l)  #check for local presence
+		R_LIB_CHK($i,$l)
+		R_LIB_CHK($i/r,$l)
 	done
-	AC_MSG_CHECKING(checking for lib$l)
+	AC_MSG_CHECKING(for lib$l)
 	if test -z "$R_LIB_DIR"; then
 		AC_MSG_RESULT(no)
 		AC_MSG_ERROR(Cannot find lib$l)
 	else
-		AC_MSG_RESULT(yes)
+		AC_MSG_RESULT(yes in $R_LIB_DIR)
 	fi
 	if test "x$R_LIB_DIR" != "x$PAST_R_LIB_DIR"; then
 		LDFLAGS="-L$R_LIB_DIR $LDFLAGS"
@@ -126,7 +138,11 @@ echo "LDFLAGS : " $LDFLAGS
 
 #---------------------------------------------------------
 # ---- add configure option : --with-galilei-includes=DIR ----
-GALILEI_INC_PATH="/usr/include/galilei"
+if test "x$GALILEI_LIB" != "x" ; then
+	GALILEI_INC_PATH=$GALILEI_LIB
+else
+	GALILEI_INC_PATH="/usr/include /usr/include/galilei /usr/local /usr/local/include /usr/local/include/galilei ${prefix}/include/galilei"
+fi
 AC_ARG_WITH(galilei-includes,
 	AC_HELP_STRING(
 		[--with-galilei-includes=DIR],
@@ -136,12 +152,15 @@ AC_ARG_WITH(galilei-includes,
 # ---- end arg for configure ----
 
 # ---- add configure option : --with-galilei-libs=DIR ----
-
-GALILEI_LIB_PATH="/usr/lib"
+if test "x$GALILEI_LIB" != "x" ; then
+	GALILEI_LIB_PATH=$GALILEI_LIB
+else
+	GALILEI_LIB_PATH="/usr/lib /usr/lib/galilei /usr/local /usr/local/lib /usr/local/lib/galilei ${prefix}/lib/galilei"
+fi
 AC_ARG_WITH(galilei-libs,
 	AC_HELP_STRING(
 		[--with-galilei-libs=DIR],
-		[where the GALILEI libraries are installed, default: [/usr/lib]. ]),
+		[where the GALILEI libraries are installed, default: [/usr/lib/galilei]. ]),
 	GALILEI_LIB_PATH="$withval")
 
 # ---- end arg for configure ----
@@ -164,9 +183,9 @@ AC_DEFUN(GALILEI_LIB_CHK,[
 AC_DEFUN(GALILEI_INC_CHK,[
 	GALILEI_INC_DIR=""
 	str="$1/$2"
-	for i in $GALILEI_LIB $GALILEI_INC_PATH  /usr/include /usr/include/galilei /usr/local /usr/local/galilei; do
+	for i in $GALILEI_INC_PATH ; do
 		test -f $i/$str                    && GALILEI_INC_DIR=$i/$1 && break
-		test -f $i/galilei/$str              && GALILEI_INC_DIR=$i/galilei/$1 && break
+		#test -f $i/galilei/$str              && GALILEI_INC_DIR=$i/galilei/$1 && break
 	done
 	AC_MSG_CHECKING(checking for $1/$2)
 	if test -z "$GALILEI_INC_DIR"; then
@@ -178,9 +197,12 @@ AC_DEFUN(GALILEI_INC_CHK,[
 			AC_MSG_ERROR(Cannot find $2 headers.  Use --with-galilei-includes=DIR to specify non-default path.)
 		fi
 	fi
-AC_MSG_RESULT(yes)
+	AC_MSG_RESULT(yes in $GALILEI_INC_DIR)
 
-CPPFLAGS="-I$GALILEI_INC_DIR $CPPFLAGS"
+	if test "x$i" != "x$PAST_GALILEI_INC_DIR"; then
+		CPPFLAGS="-I$i $CPPFLAGS"
+	fi
+	PAST_GALILEI_INC_DIR="$i"
 ])
 # --- end def function -----
 
@@ -192,22 +214,21 @@ GALILEI_INC_CHK(infos,gdict.h)
 GALILEI_INC_CHK(profiles, gprofile.h)
 GALILEI_INC_CHK(sessions,gsession.h)
 
-
 # ---- check the presence of all GALILEI libraries
 for l in docs groups historic infos profiles sessions; do
 
 	#AC_MSG_CHECKING(checking for lib$l)
-	for i in $GALILEI_LIB $GALILEI_INC_PATH /usr /usr/local /usr/local/galilei/; do
+	for i in $GALILEI_LIB_PATH ; do
 		GALILEI_LIB_CHK($i/$l,$l)
-		GALILEI_LIB_CHK($i/lib/,$l)
-		GALILEI_LIB_CHK($i/lib/galilei,$l)
+		GALILEI_LIB_CHK($i,$l)
+		GALILEI_LIB_CHK($i/galilei,$l)
 	done
 	AC_MSG_CHECKING(checking for lib$l)
 	if test -z "$GALILEI_LIB_DIR"; then
 		AC_MSG_RESULT(no)
 		AC_MSG_ERROR(Cannot find lib$l)
 	else
-		AC_MSG_RESULT(yes)
+		AC_MSG_RESULT(yes in $GALILEI_LIB_DIR)
 	fi
 	if test "x$GALILEI_LIB_DIR" != "x$PAST_GALILEI_LIB_DIR"; then
 		LDFLAGS="-L$GALILEI_LIB_DIR $LDFLAGS"
@@ -221,7 +242,8 @@ echo "LDFLAGS : " $LDFLAGS
 
 #--------------------- END GALILEI LIB -----------------------------
 
-AM_INIT_AUTOMAKE(kgalileicenter,0.2)
+
+AM_INIT_AUTOMAKE(kgalileicenter,1.0)
 
 CXXFLAGS="$NOOPT_CXXFLAGS" dnl __kdevelop[noopt]__
 CFLAGS="$NOOPT_CFLAGS" dnl __kdevelop[noopt]__
