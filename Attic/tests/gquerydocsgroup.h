@@ -63,6 +63,8 @@ namespace GALILEI{
 */
 class GQueryDocsGroup
 {
+	class GroupSim;
+
 	/**
 	* Current Session;
 	*/
@@ -103,6 +105,61 @@ class GQueryDocsGroup
 	*/
 	double Second;
 
+	/**
+	* Number of groups corresponding to a query.
+	*/
+	unsigned int comptintra;
+
+	/**
+	* Number of groups not corresponding to a query.
+	*/
+	unsigned int comptinter;
+
+	/**
+	* Number of groups retrieved by the queries.
+	*/
+	unsigned int comptfind;
+
+	/**
+	* Number of queries done.
+	*/
+	unsigned int queries;
+
+	/**
+	* Container of groups retrieved by the current query.
+	*/
+	RStd::RContainer<GroupSim,unsigned int,false,false> Groups;
+
+	/**
+	* Current Language.
+	*/
+	GLang* Lang;
+
+	/**
+	* Transform the query?
+	*/
+	bool Transform;
+
+	/**
+	* Identificator of the current group.
+	*/
+	unsigned int GroupId;
+
+	/**
+	* List of indexes used in the query.
+	*/
+	unsigned int* Index;
+
+	/**
+	* Number of first words used.
+	*/
+	unsigned int Best;
+
+	/**
+	* Number of words in a query.
+	*/
+	unsigned int Nb;
+
 public:
 
 	/**
@@ -118,6 +175,19 @@ public:
 	* @param trans          Transform query vector?
 	*/
 	void Run(unsigned int first,unsigned int nb,bool trans);
+
+private:
+
+	/**
+	*/
+	void AddQuery(unsigned int pos,unsigned level);
+
+	/**
+	* Do a query.
+	*/
+	void DoQuery(GIWordsWeights& query);
+
+public:
 
 	/**
 	* Get the similarity Query-Same Groups.
