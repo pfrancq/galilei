@@ -327,7 +327,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 
 	// Run all post-doc methods that are enabled
 	GFactoryPostDocCursor PostDocs=PostDocMng->GetPostDocsCursor();
-	for(PostDocs.Start();!PostDocs.End();PostDocs.End())
+	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
 	{
 		PostDoc=PostDocs()->GetPlugin();
 		if(PostDoc)
