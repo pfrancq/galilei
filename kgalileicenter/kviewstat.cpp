@@ -75,7 +75,7 @@ public:
 	{
 		o->insertLine(Name());
 	}
-	virtual void Exec(char* param,KDoc* doc,QMultiLineEdit* o,RTextFile* f)
+	virtual void Exec(char* /*param*/,KDoc* /*doc*/,QMultiLineEdit* o,RTextFile* /*f*/)
 	{
 		o->insertLine(Name());
 	}
@@ -97,7 +97,7 @@ public:
 	{
 		o->insertLine("CLEAR: Clear the result widget.");
 	}
-	virtual void Exec(char* /*param*/,KDoc* /*doc*/,QMultiLineEdit* o,RTextFile* f)
+	virtual void Exec(char* /*param*/,KDoc* /*doc*/,QMultiLineEdit* o,RTextFile* /*f*/)
 	{
 		o->clear();
 	}
@@ -118,7 +118,7 @@ public:
 	{
 		o->insertLine("USER: Show information about a user");
 	}
-	virtual void Exec(char* param,KDoc* /*doc*/,QMultiLineEdit* o,RTextFile* f)
+	virtual void Exec(char* param,KDoc* /*doc*/,QMultiLineEdit* o,RTextFile* /*f*/)
 	{
 		o->insertLine(param);
 	}
