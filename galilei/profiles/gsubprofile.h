@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <infos/gweightinfos.h>
 
 
 //------------------------------------------------------------------------------
@@ -51,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Subprofile.
 */
-class GSubProfile
+class GSubProfile : public GWeightInfos
 {
 protected:
 
@@ -128,12 +129,6 @@ public:
 	* @param lang            Language of the subprofile.
 	*/
 	GSubProfile(GSession* session,GProfile* prof,GLang* lang) throw(std::bad_alloc);
-
-	/**
-	* Get the name of the model used for the description.
-	* @return C String.
-	*/
-	virtual const char* GetModelName(void) const=0;
 
 	/**
 	* Compare two subprofiles by comparing their identificator.
@@ -219,7 +214,7 @@ public:
 	* @return Pointer GProfile.
 	*/
 	GProfile* GetProfile(void) const {return(Profile);}
-
+	
 	/**
 	* Verify if the subprofile is defined, i.e. if it is computed. A subprofile
 	* that isn't computed, isn't attached. By default, it is supposed to be
@@ -313,6 +308,17 @@ public:
 	GProfDocCursor GetProfDocCursor(void);
 
 	/**
+	* Get a cursor over the vector.
+	* @return GWeightInfoCursor element.
+	*/
+	GWeightInfoCursor GetWeightInfoCursor(void);
+
+	/**
+	* Get the number of elements of the vector that are not null.
+	*/
+	unsigned int GetNbNoNull(void) const;
+
+	/**
 	* Compute the similarity between a subprofile and a document.
 	* @param doc             Pointer to a document.
 	*/
@@ -370,6 +376,15 @@ public:
 	GSubject* GetSubject(void) const;
 
 #endif
+	/**
+	* Update the references of the document.
+	*/
+	void UpdateRefs(void) const throw(GException);
+
+	/**
+	* Remove the references of the document.
+	*/
+	void RemoveRefs(void) const throw(GException);
 
 	/**
 	* Destructor of a subprofile.

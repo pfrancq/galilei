@@ -35,7 +35,7 @@
 #include <profiles/gprofile.h>
 #include <sessions/gsession.h>
 #include <profiles/guser.h>
-#include <profiles/gsubprofilevector.h>
+#include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
 #include <docs/gdoc.h>
 using namespace GALILEI;
@@ -140,7 +140,7 @@ GSubProfile* GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
 	// If subprofile does not exist -> create it
 	if(!sub)
 	{
-		sub=new GSubProfileVector(s,this,lang);
+		sub=new GSubProfile(s,this,lang);
 		s->InsertSubProfile(sub);
 	}
 

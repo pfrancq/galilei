@@ -36,6 +36,7 @@
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
 #include <docs/gdoc.h>
+#include <infos/gweightinfo.h>
 #include <infos/glang.h>
 #include <groups/ggroup.h>
 #include <sessions/gsession.h>
@@ -52,7 +53,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,const char* u, const char* c) throw(std::bad_alloc)
-  :  Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
+	: GWeightInfos(60), Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
 {
 
 	#if GALILEITEST
@@ -75,7 +76,7 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,
 
 //------------------------------------------------------------------------------
 GSubProfile::GSubProfile(GSession* session,GProfile *prof,GLang *lang) throw(std::bad_alloc)
-  :  Id(cNoRef), Profile(prof), Lang(lang), Group(0), State(osCreated), Attached(""), Updated(""), Computed(""), Fdbks(20,10)
+	: GWeightInfos(60), Id(cNoRef), Profile(prof), Lang(lang), Group(0), State(osCreated), Attached(""), Updated(""), Computed(""), Fdbks(20,10)
 {
 	#if GALILEITEST
 		Subject=0;
@@ -141,6 +142,9 @@ void GSubProfile::RemoveAssessment(GProfDoc* j) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GSubProfile::ClearFdbks(void) throw(std::bad_alloc,GException)
 {
+	RemoveRefs();
+	GWeightInfos::Clear();
+
 	// When all assessments are removed -> the profile is always modified
 	Fdbks.Clear();
 	State=osModified;
@@ -178,7 +182,7 @@ void GSubProfile::SetState(tObjState state)
 //------------------------------------------------------------------------------
 bool GSubProfile::IsDefined(void) const
 {
-	return(false);
+	return(NbPtr);
 }
 
 
@@ -330,46 +334,75 @@ GProfDoc* GSubProfile::GetFeedback(const GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-double GSubProfile::Similarity(const GDoc*) const
+double GSubProfile::Similarity(const GDoc* doc) const
 {
-	return(0.0);
+	return(GWeightInfos::Similarity(doc));
 }
 
 
 //------------------------------------------------------------------------------
-double GSubProfile::SimilarityIFF(const GDoc*) const throw(GException)
+double GSubProfile::SimilarityIFF(const GDoc* doc) const throw(GException)
 {
-	return(0.0);
+	return(GWeightInfos::SimilarityIFF(doc,otDocSubProfile,Lang));
 }
 
 
 //------------------------------------------------------------------------------
-double GSubProfile::Similarity(const GSubProfile*) const
+double GSubProfile::Similarity(const GSubProfile* sub) const
 {
-	return(0.0);
+	return(GWeightInfos::Similarity(sub));
 }
 
 
 //------------------------------------------------------------------------------
-double GSubProfile::SimilarityIFF(const GSubProfile*) const throw(GException)
+double GSubProfile::SimilarityIFF(const GSubProfile* sub) const throw(GException)
 {
-	return(0.0);
+	return(GWeightInfos::SimilarityIFF(sub,otSubProfile,Lang));
 }
 
 
 //------------------------------------------------------------------------------
-double GSubProfile::Similarity(const GGroup*) const
+double GSubProfile::Similarity(const GGroup* grp) const
 {
-	return(0.0);
+	return(GWeightInfos::Similarity(grp));
 }
 
 
 //------------------------------------------------------------------------------
-double GSubProfile::SimilarityIFF(const GGroup*) const throw(GException)
+double GSubProfile::SimilarityIFF(const GGroup* grp) const throw(GException)
 {
-	return(0.0);
+	return(GWeightInfos::SimilarityIFF(grp,otSubProfileGroup,Lang));
 }
 
+
+//------------------------------------------------------------------------------
+GWeightInfoCursor GSubProfile::GetWeightInfoCursor(void)
+{
+	GWeightInfoCursor cur(this);
+	return(cur);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GSubProfile::GetNbNoNull(void) const
+{
+	return(NbPtr);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubProfile::UpdateRefs(void) const throw(GException)
+{
+	AddRefs(otSubProfile,Lang);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubProfile::RemoveRefs(void) const throw(GException)
+{
+	DelRefs(otSubProfile,Lang);
+}
+		
 
 #if GALILEITEST
 //------------------------------------------------------------------------------
@@ -398,4 +431,11 @@ void GSubProfile::UpdateFinished(void)
 //------------------------------------------------------------------------------
 GSubProfile::~GSubProfile(void)
 {
+	try
+	{
+		RemoveRefs();
+	}
+	catch(...)
+	{
+	}
 }

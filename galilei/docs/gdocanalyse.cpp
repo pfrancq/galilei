@@ -38,7 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdocanalyse.h>
-#include <docs/gdocvector.h>
+#include <docs/gdoc.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
 using namespace R;

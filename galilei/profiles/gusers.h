@@ -38,6 +38,8 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gprofile.h>
 
 
 //------------------------------------------------------------------------------

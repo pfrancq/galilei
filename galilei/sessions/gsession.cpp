@@ -51,7 +51,7 @@ using namespace R;
 #include <sessions/gsessionprg.h>
 #include <sessions/gstatscalc.h>
 #include <sessions/gstatscalcmanager.h>
-#include <docs/gdocvector.h>
+#include <docs/gdoc.h>
 #include <docs/gdocanalyse.h>
 #include <docs/gdocanalysemanager.h>
 #include <docs/gdocxml.h>
@@ -66,13 +66,12 @@ using namespace R;
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofilessims.h>
 #include <profiles/gprofilesbehaviours.h>
-#include <profiles/gsubprofilevector.h>
+#include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
 #include <profiles/gprofilecalc.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
-#include <groups/ggroupvector.h>
 #include <groups/ggrouping.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalc.h>
@@ -631,7 +630,7 @@ void GSession::CopyIdealGroups(bool save) throw(std::bad_alloc,GException)
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Create a new group in groups
-		grp=new GGroupVector(cNoRef,Grps()->GetLang(),true);
+		grp=new GGroup(cNoRef,Grps()->GetLang(),true);
 		AssignId(grp);
 		InsertGroup(grp);
 
@@ -698,7 +697,7 @@ void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 	GDocCursor DocCursor=GetDocsCursor();
 	for(DocCursor.Start();!DocCursor.End();DocCursor.Next())
 	{
-		GDocVector* Doc=dynamic_cast<GDocVector*>(DocCursor());
+		GDoc* Doc=DocCursor();
 		for(Doc->Start();!Doc->End();Doc->Next())
 		{
 			GWeightInfo* WW=(*Doc)();
@@ -725,7 +724,7 @@ void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 
 	for(DocCursor.Start();!DocCursor.End();DocCursor.Next())
 	{
-		GDocVector* Doc=dynamic_cast<GDocVector*>(DocCursor());
+		GDoc* Doc=DocCursor();
 		for(int i=0;i<NbKwd;i++)
 		{
 			if(!test[i])

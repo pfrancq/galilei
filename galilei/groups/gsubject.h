@@ -44,7 +44,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/ggroupvector.h>
+#include <groups/ggroup.h>
 
 
 //------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ namespace GALILEI{
 * @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subject
 */
-class GSubject: public R::RNode<GSubject,false>, public GGroupVector
+class GSubject: public R::RNode<GSubject,false>, public GGroup
 {
 protected:
 

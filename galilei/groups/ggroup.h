@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <infos/gweightinfos.h>
 
 
 //------------------------------------------------------------------------------
@@ -51,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Group.
 */
-class GGroup : protected R::RContainer<GSubProfile,false,true>
+class GGroup : protected R::RContainer<GSubProfile,false,true>, public GWeightInfos
 {
 protected:
 
@@ -100,12 +101,6 @@ private:
 	static int sortOrder(const void *a,const void *b);
 
 public:
-
-	/**
-	* Get the name of the model used for the description.
-	* @return C String.
-	*/
-	virtual const char* GetModelName(void) const {return (0);};
 
 	/**
 	* Compare two groups by comparing their identificator.
@@ -161,6 +156,12 @@ public:
 	* @param id             Identifier.
 	*/
 	void SetId(unsigned int id) throw(GException);
+
+	/**
+	* Get a cursor over the vector.
+	* @return GWeightInfoCursor element.
+	*/
+	GWeightInfoCursor GetWeightInfoCursor(void);
 
 	/**
 	* Return the state of the group.
@@ -285,12 +286,6 @@ public:
 	double ComputeSumSim(const GSubProfile* s,bool iff) const;
 
 	/**
-	* Add a given information to the group.
-	* @param info            Pointer to the information.
-	*/
-	virtual void AddInfo(GWeightInfo* info) throw(std::bad_alloc);
-
-	/**
 	* Compute the similarity between a group and a document.
 	* @param doc             Pointer to a document.
 	*/
@@ -328,6 +323,23 @@ public:
 	* @param grp             Pointer to a group.
 	*/
 	virtual double SimilarityIFF(const GGroup* grp) const throw(GException);
+
+	/**
+	* Update the references of the group. This method does the update only for
+	* groups which are community.
+	*/
+	void UpdateRefs(void) const throw(GException);
+
+	/**
+	* Remove the references of the group. This method does the update only for
+	* groups which are community.
+	*/
+	void RemoveRefs(void) const throw(GException);
+
+	/**
+	* Clear the vector representing the group.
+	*/
+	void Clear(void);
 
 	/**
 	* Destructor of a group.

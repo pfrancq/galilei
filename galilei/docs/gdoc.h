@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <infos/gweightinfos.h>
 
 
 //------------------------------------------------------------------------------
@@ -51,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Document.
 */
-class GDoc
+class GDoc : public GWeightInfos
 {
 protected:
 
@@ -140,12 +141,6 @@ public:
 	* @param mime           MIME type of the document.
 	*/
 	GDoc(const R::RString& url,const R::RString& name,const R::RString& mime) throw(std::bad_alloc);
-
-	/**
-	* Get the name of the model used for the description.
-	* @return C String.
-	*/
-	virtual const char* GetModelName(void) const=0;
 
 	/**
 	* Compare two documents by comparing their identificator.
@@ -252,12 +247,6 @@ public:
 	void SetState(tObjState state);
 
 	/**
-	* Add a given information to the document.
-	* @param info            Pointer to the information.
-	*/
-	virtual void AddInfo(GWeightInfo* info) throw(std::bad_alloc)=0;
-
-	/**
 	* @return Pointer to the Language.
 	*/
 	GLang* GetLang(void) const {return(Lang);}
@@ -313,6 +302,12 @@ public:
 	*/
 	unsigned int GetNbFdbks(void) const;
 
+	/**
+	* Get a Cursor on the weights of the document.
+	* @return GWordWeightCursor.
+	*/
+	GWeightInfoCursor GetWeightInfoCursor(void);
+	
 	/**
 	* Compute a similarity between two documents.
 	* @param doc             Pointer to a document.
@@ -419,6 +414,16 @@ public:
 	unsigned int GetNbSubjects(void);
 
 #endif
+
+	/**
+	* Update the references of the document.
+	*/
+	void UpdateRefs(void) const throw(GException);
+
+	/**
+	* Remove the references of the document.
+	*/
+	void RemoveRefs(void) const throw(GException);
 
 	/**
 	* Destruct the document.

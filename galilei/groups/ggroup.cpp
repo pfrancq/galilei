@@ -42,6 +42,7 @@
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
 #include <sessions/gsession.h>
+#include <infos/gweightinfo.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -79,7 +80,7 @@ public:
 
 //------------------------------------------------------------------------------
 GGroup::GGroup(unsigned int id,GLang* lang,bool com) throw(std::bad_alloc)
-	: RContainer<GSubProfile,false,true>(20,10), Id(id),
+	: RContainer<GSubProfile,false,true>(20,10), GWeightInfos(60), Id(id),
 	  State(osUpToDate), Lang(lang), Community(com)
 {
 }
@@ -87,7 +88,7 @@ GGroup::GGroup(unsigned int id,GLang* lang,bool com) throw(std::bad_alloc)
 
 //------------------------------------------------------------------------------
 GGroup::GGroup(GLang* lang,bool com) throw(std::bad_alloc)
-	: RContainer<GSubProfile,false,true>(20,10), Id(cNoRef),
+	: RContainer<GSubProfile,false,true>(20,10), GWeightInfos(60), Id(cNoRef),
 	  State(osCreated), Lang(lang), Community(com)
 {
 }
@@ -131,14 +132,14 @@ int GGroup::Compare(const unsigned int id) const
 //------------------------------------------------------------------------------
 bool GGroup::IsDefined(void) const
 {
-	return(false);
+	return(!GWeightInfos::IsEmpty());
 }
 
 
 //------------------------------------------------------------------------------
 bool GGroup::IsEmpty(void) const
 {
-	return(NbPtr==0);
+	return(GWeightInfos::IsEmpty());
 }
 
 
@@ -170,7 +171,7 @@ void GGroup::DeleteSubProfile(GSubProfile* sp) throw(std::bad_alloc)
 {
 	if(Community)
 		sp->SetGroup(0);
-	DeletePtr(sp);
+	R::RContainer<GSubProfile,false,true>::DeletePtr(sp);
 	State=osUpdated;
 }
 
@@ -226,12 +227,11 @@ GSubProfileCursor GGroup::GetCursor(void)
 //------------------------------------------------------------------------------
 unsigned int GGroup::GetNbSubProfiles(const GGroup* grp) const
 {
-	unsigned int tot=0;
-	GSubProfile** ptr;
-	unsigned int i;
+	unsigned int tot;
+	GSubProfileCursor sub(this);
 
-	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
-		if(grp->IsIn(*ptr))
+	for(sub.Start(),tot=0;!sub.End();sub.Next())
+		if(grp->IsIn(sub()))
 			tot++;
 	return(tot);
 }
@@ -240,15 +240,14 @@ unsigned int GGroup::GetNbSubProfiles(const GGroup* grp) const
 //------------------------------------------------------------------------------
 unsigned int GGroup::GetNbSubProfiles(void) const
 {
-	return(NbPtr);
+	return(R::RContainer<GSubProfile,false,true>::GetNb());
 }
 
 
 //------------------------------------------------------------------------------
 void GGroup::NotJudgedDocsList(RContainer<GProfDoc,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc)
 {
-	GSubProfile** tab;
-	unsigned int i;
+	GSubProfileCursor sub(this);
 	GProfDocCursor Fdbks;
 	GProfDoc* ptr;
 	tDocAssessment j;
@@ -256,12 +255,12 @@ void GGroup::NotJudgedDocsList(RContainer<GProfDoc,false,true>* docs, GSubProfil
 	// Clear container.
 	docs->Clear();
 
-	for(i=NbPtr+1,tab=Tab;--i;tab++)
+	for(sub.Start();!sub.End();sub.Next())
 	{
-		if((*tab)==s) continue;
+		if(sub()==s) continue;
 
 		// Go through the judgments
-		Fdbks=(*tab)->GetProfDocCursor();
+		Fdbks=sub()->GetProfDocCursor();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
 			// Verify that it was not judged by s
@@ -302,8 +301,7 @@ void GGroup::NotJudgedDocsList(RContainer<GProfDoc,false,true>* docs, GSubProfil
 //------------------------------------------------------------------------------
 void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc)
 {
-	GSubProfile** tab;
-	unsigned int i;
+	GSubProfileCursor sub(this);
 	GProfDocCursor Fdbks;
 	tDocAssessment j;
 	RContainer<GProfDocRef,true,false> Docs(50,25);
@@ -312,13 +310,13 @@ void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,false,false>* docs, GSubPr
 	docs->Clear();
 
 	// Go through the subprofiles
-	for(i=NbPtr+1,tab=Tab;--i;tab++)
+	for(sub.Start();!sub.End();sub.Next())
 	{
 		//If current treated subprofile is the subprofile "s" ->Then only add links docs
-		if((*tab)==s)
+		if(sub()==s)
 		{
 			// Go through the judgments
-			Fdbks=(*tab)->GetProfDocCursor();
+			Fdbks=sub()->GetProfDocCursor();
 			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 			{
 				// Verify if the document is a relevant hub or authority.
@@ -334,7 +332,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,false,false>* docs, GSubPr
 		}
 
 		// Go through the judgments
-		Fdbks=(*tab)->GetProfDocCursor();
+		Fdbks=sub()->GetProfDocCursor();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
 			// Verify if the document is relevant.
@@ -351,7 +349,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,false,false>* docs, GSubPr
 	}
 
 	// Sort the container by similarity
-	if(NbPtr)
+	if(Docs.NbPtr)
 		qsort(static_cast<void*>(Docs.Tab),Docs.NbPtr,sizeof(GProfDocRef*),sortOrder);
 
 	// Copy the result in docs
@@ -364,25 +362,24 @@ void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,false,false>* docs, GSubPr
 GSubProfile* GGroup::RelevantSubProfile(bool iff) const
 {
 	GSubProfile* rel;
-	GSubProfile** sub;
-	unsigned int i;
+	GSubProfileCursor sub(this);
 	double refsum,sum;
 
 	// If no objects -> No relevant one.
-	if(!NbPtr) return(0);
+	if(!R::RContainer<GSubProfile,false,true>::GetNb())
+		return(0);
 
 	// Suppose the first element is the most relevant.
-	sub=Tab;
-	rel=(*Tab);
+	rel=RContainer<GSubProfile,false,true>::GetPtrAt(0);
 	refsum=ComputeSumSim(rel,iff);
 
 	// Look if in the other objects, there is a better one
-	for(i=NbPtr,sub++;--i;sub++)
+	for(sub.Start();!sub.End();sub.Next())
 	{
-		sum=ComputeSumSim(*sub,iff);
+		sum=ComputeSumSim(sub(),iff);
 		if (sum>=refsum)
 		{
-			rel=(*sub);
+			rel=sub();
 			refsum=sum;
 		}
 	}
@@ -395,67 +392,91 @@ GSubProfile* GGroup::RelevantSubProfile(bool iff) const
 //------------------------------------------------------------------------------
 double GGroup::ComputeSumSim(const GSubProfile* s,bool iff) const
 {
-	double sum=0.0;
-	GSubProfile** sub1;
-	unsigned int i;
+	double sum;
+	GSubProfileCursor sub(this);
 
-	for(sub1=Tab,i=NbPtr+1;--i;sub1++)
+	for(sub.Start(),sum=0.0;!sub.End();sub.Next())
 	{
-		if((*sub1)==s) continue;
+		if(sub()==s) continue;
 		if(iff)
-			sum=sum+s->SimilarityIFF((*sub1));
+			sum=sum+s->SimilarityIFF(sub());
 		else
-			sum=sum+s->Similarity((*sub1));
+			sum=sum+s->Similarity(sub());
 	}
 	return(sum);
 }
 
 
 //------------------------------------------------------------------------------
-void GGroup::AddInfo(GWeightInfo*) throw(std::bad_alloc)
+GWeightInfoCursor GGroup::GetWeightInfoCursor(void)
 {
+	GWeightInfoCursor cur(this);
+	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-double GGroup::Similarity(const GDoc*) const
+double GGroup::Similarity(const GGroup* desc) const
 {
-	return(0.0);
+	return(GWeightInfos::Similarity(desc));
 }
 
 
 //------------------------------------------------------------------------------
-double GGroup::SimilarityIFF(const GDoc*) const throw(GException)
+double GGroup::SimilarityIFF(const GGroup* desc) const throw(GException)
 {
-	return(0.0);
+	return(GWeightInfos::SimilarityIFF(desc,otGroup,Lang));
 }
 
 
 //------------------------------------------------------------------------------
-double GGroup::Similarity(const GSubProfile*) const
+double GGroup::Similarity(const GDoc* doc) const
 {
-	return(0.0);
+	return(GWeightInfos::Similarity(doc));
 }
 
 
 //------------------------------------------------------------------------------
-double GGroup::SimilarityIFF(const GSubProfile*) const throw(GException)
+double GGroup::SimilarityIFF(const GDoc* doc) const throw(GException)
 {
-	return(0.0);
+	return(GWeightInfos::SimilarityIFF(doc,otDocGroup,Lang));
 }
 
 
 //------------------------------------------------------------------------------
-double GGroup::Similarity(const GGroup*) const
+double GGroup::Similarity(const GSubProfile* doc) const
 {
-	return(0.0);
+	return(GWeightInfos::Similarity(doc));
 }
 
 
 //------------------------------------------------------------------------------
-double GGroup::SimilarityIFF(const GGroup*) const throw(GException)
+double GGroup::SimilarityIFF(const GSubProfile* doc) const throw(GException)
 {
-	return(0.0);
+	return(GWeightInfos::SimilarityIFF(doc,otSubProfileGroup,Lang));
+}
+
+
+//------------------------------------------------------------------------------
+void GGroup::UpdateRefs(void) const throw(GException)
+{
+	if(Community)
+		AddRefs(otGroup,Lang);
+}
+
+
+//------------------------------------------------------------------------------
+void GGroup::RemoveRefs(void) const throw(GException)
+{
+	if(Community)
+		DelRefs(otGroup,Lang);
+}
+
+
+//------------------------------------------------------------------------------
+void GGroup::Clear(void)
+{
+	GWeightInfos::Clear();
 }
 
 
@@ -471,6 +492,7 @@ GGroup::~GGroup(void)
 			for(Sub.Start();!Sub.End();Sub.Next())
 				Sub()->SetGroup(0);
 		}
+		RemoveRefs();
 	}
 	catch(...)
 	{

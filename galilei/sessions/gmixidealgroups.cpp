@@ -48,7 +48,6 @@ using namespace R;
 #include <infos/glang.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
-#include <groups/ggroupvector.h>
 #include <groups/gsubject.h>
 #include <profiles/gsubprofile.h>
 using namespace GALILEI;
@@ -153,7 +152,7 @@ bool GALILEI::GMixIdealGroups::SplitGroups(void)
 
 	// choose a place to split and put the first elements in g2
 
-	g2=new GGroupVector(MixedGroups->GetNewId(), g1->GetLang(), false);
+	g2=new GGroup(MixedGroups->GetNewId(), g1->GetLang(), false);
 	r1=Rand->Value(g1->GetNbSubProfiles());
 	for(s=TabS,i=r1+1;--i;)
 	{
@@ -181,7 +180,7 @@ void GALILEI::GMixIdealGroups::RandomGroups(void)
 	for (igrpscur.Start(); !igrpscur.End(); igrpscur.Next())
 	{
 		igrp=igrpscur();
-		grp=new GGroupVector(igrp->GetId(), igrp->GetLang(), false);
+		grp=new GGroup(igrp->GetId(), igrp->GetLang(), false);
 		MixedGroups->InsertGroup(grp);
 	}
 
@@ -309,7 +308,7 @@ void GALILEI::GMixIdealGroups::InitMixedGroups(unsigned int mingroups)
 	for (grpscur.Start(); !grpscur.End(); grpscur.Next())
 	{
 			igrp=grpscur();
-			grp=new GGroupVector(igrp->GetId(), igrp->GetLang(), false);
+			grp=new GGroup(igrp->GetId(), igrp->GetLang(), false);
 			subs=igrp->GetSubProfilesCursor();
 			for (subs.Start(); !subs.End();subs.Next())
 				grp->InsertSubProfile(subs());

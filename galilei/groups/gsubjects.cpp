@@ -208,7 +208,7 @@ void GSubjects::CreateSet(void) throw(std::bad_alloc)
 		if(!Subs()->IsUsed()) continue;
 
 		// Create an ideal group for this subject
-		IdealGroups->InsertGroup(Grp=new GGroupVector(IdealGroups->GetNbGroups(),Subs()->GetLang(),false));
+		IdealGroups->InsertGroup(Grp=new GGroup(IdealGroups->GetNbGroups(),Subs()->GetLang(),false));
 
 		// Copy the documents of the same language of the session in Docs;
 		NbDocs=Session->FillDocs(Docs,Subs()->GetLang());
@@ -668,7 +668,7 @@ bool GSubjects::AddTopic(bool Save) throw(std::bad_alloc)
 	newSubject->SetUsed(true);
 
 	// Create an ideal group for this subject
-	IdealGroups->InsertGroup(Grp=new GGroupVector(IdealGroups->GetNbGroups(),newSubject->GetLang(),false));
+	IdealGroups->InsertGroup(Grp=new GGroup(IdealGroups->GetNbGroups(),newSubject->GetLang(),false));
 
 	// Copy the documents of the same language of the session in Docs;
 	NbDocs=Session->FillDocs(Docs,newSubject->GetLang());

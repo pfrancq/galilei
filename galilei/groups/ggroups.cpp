@@ -33,7 +33,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include<groups/ggroups.h>
-#include<groups/ggroupvector.h>
+#include<groups/ggroup.h>
 #include<infos/glang.h>
 #include<profiles/gsubprofile.h>
 using namespace GALILEI;

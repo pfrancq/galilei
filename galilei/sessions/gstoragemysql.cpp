@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -46,17 +46,16 @@
 #include <infos/gwordlist.h>
 #include <infos/gweightinfo.h>
 #include <infos/gweightinfos.h>
-#include <docs/gdocvector.h>
+#include <docs/gdoc.h>
 #include <docs/glink.h>
 #include <profiles/guser.h>
 #include <profiles/gusers.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
-#include <profiles/gsubprofilevector.h>
+#include <profiles/gsubprofile.h>
 #include <sessions/gstoragemysql.h>
 #include <sessions/gslot.h>
 #include <groups/ggroup.h>
-#include <groups/ggroupvector.h>
 #include <groups/gsubjects.h>
 #include <groups/gsubject.h>
 #include <sessions/gsession.h>
@@ -363,7 +362,7 @@ void GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 		sSql="DELETE FROM subprofilesbykwds WHERE langid='"+l+"' AND subprofileid="+itou(sub->GetId());
 		RQuery deletekwds(Db,sSql);
 
-		Cur=((GSubProfileVector*)sub)->GetWeightInfoCursor();
+		Cur=sub->GetWeightInfoCursor();
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			sSql="INSERT INTO subprofilesbykwds(subprofileid,kwdid,weight, langid) VALUES("+itou(sub->GetId())+","+itou(Cur()->GetId())+",'"+dtou(Cur()->GetWeight())+"','"+l+"')";
@@ -386,7 +385,7 @@ void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int histor
 	try
 	{
 		// Save subprofiles
-		Cur=((GSubProfileVector*)sub)->GetWeightInfoCursor();
+		Cur=sub->GetWeightInfoCursor();
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			RString sSql("INSERT INTO historicsubprofiles(historicID,subprofileid,kwdid,weight, date, langid) VALUES("+
@@ -443,7 +442,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 	GProfile* prof;
 	GFactoryLangCursor langs;
 	GLang* lang;
-	GSubProfileVector* sub;
+	GSubProfile* sub;
 	unsigned int userid,profileid,subid;
 	GGroup* grp;
 	bool Social;
@@ -486,7 +485,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 						throw GException(RString("Error in loading subprofiles: no language defined with code '")+subprofil[1]+RString("'"));
 					subid=atoi(subprofil[0]);
 					grp=session->GetGroup(atoi(subprofil[3]));
-					session->InsertSubProfile(sub=new GSubProfileVector(prof,subid,lang,grp,subprofil[2], GetMySQLToDate(subprofil[4]), GetMySQLToDate(subprofil[5])));
+					session->InsertSubProfile(sub=new GSubProfile(prof,subid,lang,grp,subprofil[2], GetMySQLToDate(subprofil[4]), GetMySQLToDate(subprofil[5])));
 					#if GALILEITEST
 						if((s)&&(sub->GetLang()==s->GetLang()))
 						{
@@ -508,9 +507,9 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 			RQuery sel(Db,sSql);
 			for(sel.Start();!sel.End();sel.Next())
 			{
-				sub=dynamic_cast<GSubProfileVector*>(session->GetSubProfile(atoi(sel[0]),lang));
+				sub=session->GetSubProfile(atoi(sel[0]),lang);
 				if(sub)
-					sub->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
+					sub->InsertInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
 			}
 		}
 
@@ -521,7 +520,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 			if(!lang) continue;
 			GSubProfileCursor SubProfiles=session->GetSubProfilesCursor(lang);
 			for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
-				dynamic_cast<GSubProfileVector*>(SubProfiles())->UpdateRefs();
+				SubProfiles()->UpdateRefs();
 		}
 
 		// Load the ideal Groups.
@@ -559,7 +558,7 @@ void GStorageMySQL::LoadIdealGroupment(GSession* session) throw(std::bad_alloc,G
 			RQuery sel(Db,sSql);
 			for(sel.Start();!sel.End();sel.Next())
 			{
-				groups->InsertGroup(group=new GGroupVector(atoi(sel[0]),lang,false));
+				groups->InsertGroup(group=new GGroup(atoi(sel[0]),lang,false));
 				sSql="SELECT profileid FROM idealgroup where groupid="+sel[0];
 				RQuery sub(Db,sSql);
 				for(sub.Start();!sub.End();sub.Next())
@@ -698,7 +697,7 @@ void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException
 //------------------------------------------------------------------------------
 void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 {
-	GDocVector* doc;
+	GDoc* doc;
 	GLang* lang;
 	int docid;
 	GFactoryLangCursor langs;
@@ -712,7 +711,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		{
 			docid=atoi(quer[0]);
 			lang=session->GetLangs()->GetLang(quer[4]);
-			session->InsertDoc(doc=new GDocVector(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7])));
+			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7])));
 		}
 
 		// Load the links of the document loaded.
@@ -731,9 +730,9 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 			RQuery sel(Db,"SELECT htmlid,kwdid,occurs FROM htmlsbykwds WHERE langid='"+RString(lang->GetCode())+"'");
 			for(sel.Start();!sel.End();sel.Next())
 			{
-				doc=dynamic_cast<GDocVector*>(session->GetDoc(atoi(sel[0])));
+				doc=session->GetDoc(atoi(sel[0]));
 				if(doc)
-					doc->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
+					doc->InsertInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
 			}
 		}
 
@@ -757,7 +756,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		// Update References of the loaded documents.
 		GDocCursor Docs=session->GetDocsCursor();
 		for(Docs.Start();!Docs.End();Docs.Next())
-			dynamic_cast<GDocVector*>(Docs())->UpdateRefs();
+			Docs()->UpdateRefs();
 	}
 	catch(RMySQLError e)
 	{
@@ -865,7 +864,7 @@ void GStorageMySQL::SaveDoc(GDoc* doc) throw(GException)
 			l=doc->GetLang()->GetCode();
 			sSql="DELETE FROM htmlsbykwds WHERE langid='"+l+"' AND htmlid="+id;
 			RQuery deletekwds(Db,sSql);
-			Words=dynamic_cast<GDocVector*>(doc)->GetWeightInfoCursor();
+			Words=doc->GetWeightInfoCursor();
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				sSql="INSERT INTO htmlsbykwds(htmlid,kwdid,occurs, langid) VALUES("+id+","+itou(Words()->GetId())+",'"+dtou(Words()->GetWeight())+"','"+l+"')";
@@ -920,7 +919,7 @@ void GStorageMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
 		if(doc->GetLang())
 		{
 			l=doc->GetLang()->GetCode();
-			Words=dynamic_cast<GDocVector*>(doc)->GetWeightInfoCursor();
+			Words=doc->GetWeightInfoCursor();
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				if((Words()->GetId()>=n)&&(Words()->GetWeight()>0))
@@ -991,7 +990,7 @@ void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 			}
 
 			// Save the description part
-			WordCur.Set(dynamic_cast<GGroupVector*>(GroupsCursor()));
+			WordCur.Set(GroupsCursor());
 			for(WordCur.Start();!WordCur.End();WordCur.Next())
 			{
 				sSql="INSERT INTO groupsbykwds(groupid,kwdid,occurs,langid) VALUES("+itou(GroupsCursor()->GetId())+","+itou(WordCur()->GetId())+",'"+dtou(WordCur()->GetWeight())+"','"+RString(GroupsCursor()->GetLang()->GetCode())+"')";
@@ -1123,7 +1122,7 @@ void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historic
 //------------------------------------------------------------------------------
 void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GException)
 {
-	GGroupVector* group;
+	GGroup* group;
 	GGroupCursor GroupsCursor;
 	GLang* lang;
 	GFactoryLangCursor langs;
@@ -1134,7 +1133,7 @@ void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GExceptio
 		for(group2.Start();!group2.End();group2.Next())
 		{
 			lang=session->GetLangs()->GetLang(group2[1]);
-			group=new GGroupVector(atoi(group2[0]),lang,true);
+			group=new GGroup(atoi(group2[0]),lang,true);
 			session->InsertGroup(group);
 		}
 
@@ -1147,16 +1146,16 @@ void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GExceptio
 			RQuery sel(Db,"SELECT groupid,kwdid,occurs FROM groupsbykwds WHERE langid='"+RString(lang->GetCode())+"'");
 			for(sel.Start();!sel.End();sel.Next())
 			{
-				group=dynamic_cast<GGroupVector*>(session->GetGroup(atoi(sel[0])));
+				group=session->GetGroup(atoi(sel[0]));
 				if(!group) continue;
-				group->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
+				group->InsertInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
 			}
 		}
 
 		// Update References of the loaded groups.
 		GroupsCursor=session->GetGroupsCursor();
 		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
-			dynamic_cast<GGroupVector*>(GroupsCursor())->UpdateRefs();
+			GroupsCursor()->UpdateRefs();
 	}
 	catch(RMySQLError e)
 	{

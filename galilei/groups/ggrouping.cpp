@@ -37,7 +37,7 @@
 #include <infos/glangmanager.h>
 #include <groups/ggroupcalc.h>
 #include <groups/ggroupcalcmanager.h>
-#include <groups/ggroupvector.h>
+#include <groups/ggroup.h>
 #include <groups/ggroups.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>

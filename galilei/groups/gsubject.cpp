@@ -50,7 +50,7 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 GSubject::GSubject(unsigned int id,const char* name,GLang* l,bool u) throw(std::bad_alloc)
-	 : RNode<GSubject,false>(10,2), GGroupVector(id,l,false), Name(name), Used(u),
+	 : RNode<GSubject,false>(10,2), GGroup(id,l,false), Name(name), Used(u),
 	   Docs(1000,500)
 {
 }

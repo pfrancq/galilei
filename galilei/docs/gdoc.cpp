@@ -38,6 +38,7 @@
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
+#include <infos/gweightinfo.h>
 #if GALILEITEST
 	#include <groups/gsubject.h>
 #endif
@@ -54,7 +55,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const RString& u,const RString& a,unsigned int f,unsigned int nbf) throw(std::bad_alloc)
-	: URL(url), Name(name), Id(id),
+	:  GWeightInfos(60), URL(url), Name(name), Id(id),
 	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
 	  Failed(f), LinkSet(5,2)
 #if GALILEITEST
@@ -75,7 +76,7 @@ GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,co
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(const RString& url,const RString& name,const RString& mime) throw(std::bad_alloc)
-	: URL(url), Name(name), Id(cNoRef),
+	: GWeightInfos(60), URL(url), Name(name), Id(cNoRef),
 	  Lang(0), MIMEType(mime), Updated(), Computed(), Fdbks(50,25),
 	  Failed(0), LinkSet(5,2)
 #if GALILEITEST
@@ -97,7 +98,7 @@ GDoc::GDoc(const RString& url,const RString& name,const RString& mime) throw(std
 //------------------------------------------------------------------------------
 bool GDoc::IsDefined(void) const
 {
-	return(false);
+	return(!GWeightInfos::IsEmpty());
 }
 
 
@@ -134,6 +135,8 @@ void GDoc::ClearInfos(bool l)
 {
 	if(l)
 		Lang=0;
+	RemoveRefs();
+	Clear();
 }
 
 
@@ -249,44 +252,68 @@ GProfDocCursor GDoc::GetProfDocCursor(void)
 
 
 //------------------------------------------------------------------------------
-double GDoc::Similarity(const GDoc*) const
+GWeightInfoCursor GDoc::GetWeightInfoCursor(void)
 {
-	return(0.0);
+	GWeightInfoCursor cur(this);
+	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-double GDoc::SimilarityIFF(const GDoc*) const throw(GException)
+double GDoc::Similarity(const GDoc* doc) const
 {
-	return(0.0);
+	return(GWeightInfos::Similarity(doc));
 }
 
 
 //------------------------------------------------------------------------------
-double GDoc::Similarity(const GSubProfile*) const
+double GDoc::SimilarityIFF(const GDoc* doc) const throw(GException)
 {
-	return(0.0);
+	return(GWeightInfos::SimilarityIFF(doc,otDoc,Lang));
 }
 
 
 //------------------------------------------------------------------------------
-double GDoc::SimilarityIFF(const GSubProfile*) const throw(GException)
+double GDoc::Similarity(const GSubProfile* sub) const
 {
-	return(0.0);
+	return(GWeightInfos::Similarity(sub));
 }
 
 
 //------------------------------------------------------------------------------
-double GDoc::Similarity(const GGroup*) const
+double GDoc::SimilarityIFF(const GSubProfile* sub) const throw(GException)
 {
-	return(0.0);
+	return(GWeightInfos::SimilarityIFF(sub,otDocSubProfile,Lang));
 }
 
 
 //------------------------------------------------------------------------------
-double GDoc::SimilarityIFF(const GGroup*) const throw(GException)
+double GDoc::Similarity(const GGroup* grp) const
 {
-	return(0.0);
+	return(GWeightInfos::Similarity(grp));
+}
+
+
+//------------------------------------------------------------------------------
+double GDoc::SimilarityIFF(const GGroup* grp) const throw(GException)
+{
+	return(GWeightInfos::SimilarityIFF(grp,otDocGroup,Lang));
+}
+
+
+//------------------------------------------------------------------------------
+void GDoc::UpdateRefs(void) const throw(GException)
+{
+	if(!Lang) return;
+	AddRefs(otDoc,Lang);
+}
+
+
+//------------------------------------------------------------------------------
+void GDoc::RemoveRefs(void) const throw(GException)
+{
+	if(!Lang) return;
+	DelRefs(otDoc,Lang);
 }
 
 
@@ -383,4 +410,11 @@ unsigned int GDoc::GetNbSubjects(void)
 //------------------------------------------------------------------------------
 GDoc::~GDoc(void)
 {
+	try
+	{
+		RemoveRefs();
+	}
+	catch(...)
+	{
+	}
 }
