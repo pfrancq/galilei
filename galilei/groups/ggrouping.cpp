@@ -151,7 +151,7 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool save)
 	GGroup** Tab;
 	unsigned int i;
 
-	SaveGroups=save;
+	SaveGroups=/*save*/true;
 	Modified=modified;
 
 	// Go trough each language.
