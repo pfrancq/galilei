@@ -48,6 +48,13 @@ const unsigned cNoRef=0xFFFFFFFF;        // A undefined identificator reference
 
 //-----------------------------------------------------------------------------
 /**
+* Represent different methods to compute the profiles.
+*/
+enum tProfileCompute{pcNothing,pcStatistical};
+
+
+//-----------------------------------------------------------------------------
+/**
 * The GException class provides a basic representation for an exception.
 * @author Pascal Francq
 * @short Basic Exception.
@@ -55,14 +62,14 @@ const unsigned cNoRef=0xFFFFFFFF;        // A undefined identificator reference
 class GException
 {
 	/**
-	* A code representing the exception.
-	*/
-	unsigned int Code;
-
-	/**
 	* Message holding some information.
 	*/
 	RStd::RString Msg;
+
+	/**
+	* A code representing the exception.
+	*/
+	unsigned int Code;
 
 public:
 
@@ -76,7 +83,7 @@ public:
 	* @param str                      Message of the error.
 	*/
 	GException(const RStd::RString& str) throw(bad_alloc)
-		: Msg(str) {}
+		: Msg(str), Code(NoDefinedError) {}
 
 	/**
 	* Construct an exception.
@@ -84,7 +91,13 @@ public:
 	* @param str                      Message of the error.
 	*/
 	GException(const unsigned code,const RStd::RString& str) throw(bad_alloc)
-		: Code(code), Msg(str) {}
+		: Msg(str), Code(code) {}
+
+	/**
+	* Get the content of the exception.
+	* @returns Pointer to a C String.
+	*/
+	const char* GetMsg(void) const {return(Msg());}
 };
 
 
