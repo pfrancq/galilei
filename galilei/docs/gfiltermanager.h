@@ -80,7 +80,7 @@ public:
 	* Construct a URL manager.
 	* @param path            Path to find the plugins.
 	*/
-	GURLManager(const R::RString& path) throw(GException);
+	GURLManager(const char* path) throw(GException);
 
 protected:
 

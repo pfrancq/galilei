@@ -83,39 +83,49 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GURLManager::GURLManager(const RString& path) throw(GException)
+GALILEI::GURLManager::GURLManager(const char* path) throw(GException)
 	: R::RContainer<GFactoryFilter,unsigned int,true,true>(10,5), MIMES(50,25)
 {
 	DIR* dp;
 	struct dirent* ep;
 	RString Path(path);
-	bool Problem=false;
 	RString Msg;
 
-	try
+	loader<>& l=loader<>::instance();
+	Path+="/filters";
+	l.addto_search_path(Path());
+	dp=opendir(Path);
+	if(!dp) return;
+	while((ep=readdir(dp)))
 	{
-		loader<>& l=loader<>::instance();
-		Path+="/filters";
-		l.addto_search_path(Path());
-		dp=opendir(Path);
-		if(!dp) return;
-		while((ep=readdir(dp)))
+		if(strcmp(&ep->d_name[strlen(ep->d_name)-3],".la")) continue;
+		try
 		{
-			if(strcmp(&ep->d_name[strlen(ep->d_name)-3],".la")) continue;
 			handle<>& myhandle = l.load(ep->d_name);
 			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
 			GFactoryFilter* myfactory = ((GFactoryFilterInit)(*(*myinit)))(this,ep->d_name);
 			if(strcmp(API_FILTER_VERSION,myfactory->GetAPIVersion()))
-				throw GException("Plugin not compatible with API Version");
+			{
+				Msg+=ep->d_name;
+				Msg+=" - Plugin not compatible with API Version\n";
+				continue;
+			}
 			InsertPtr(myfactory);
 			myfactory->Create();
 		}
-		closedir(dp);
+		catch(std::exception& e)
+		{
+			Msg+=ep->d_name;
+			Msg+=" - ";
+			Msg+=e.what();
+			Msg+="\n";
+		}
 	}
-	catch(std::exception& e)
-	{
-		throw(GException(e.what()));
-	}
+	closedir(dp);
+
+	// If something in Msg -> error
+	if(Msg.GetLen())
+		throw(GException(Msg));
 }
 
 
