@@ -78,7 +78,11 @@ while (body)
 		//initialisation of body
 		NextWirteTag= true;
 		NextTag();
-		if (TagCompare("body"))
+		if (TagCompare("h1")||TagCompare("h2")||TagCompare("h3")||TagCompare("h4")||TagCompare("h5")||TagCompare("h6")||TagCompare("p")||TagCompare("/html"))
+		{
+		body=false;
+		}
+		else if (TagCompare("body"))
 		{
 		while((*Buffer)&&(!TagCompare("/body"))&&(!end))
 			{
@@ -182,7 +186,11 @@ void GFilterHTML::AnalyseHeader(GDocXML* doc)
 	while (head)
 	{
 		NextTag();
-		if (TagCompare("head"))
+		if (TagCompare("body")||TagCompare("h1")||TagCompare("h2")||TagCompare("h3")||TagCompare("h4")||TagCompare("h5")||TagCompare("h6")||TagCompare("p")||TagCompare("/html"))
+		{
+		head = false;
+		}
+		else if (TagCompare("head"))
 		{
 		   while(!TagCompare("/head"))
 			{
