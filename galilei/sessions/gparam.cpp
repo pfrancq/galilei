@@ -89,10 +89,21 @@ int GParam::Compare(const RString& n) const
 //------------------------------------------------------------------------------
 void GParam::ReadConfig(RXMLTag* parent)
 {
-	RXMLTag* tag;
+	R::RXMLTagCursor Cur=parent->GetXMLTagsCursor();
+	RXMLTag* tag=0;
 
-	tag=parent->GetTag(Name);
+	// Find Tag
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if((Cur()->GetName()=="Param")&&(Cur()->GetAttrValue("Name")==Name))
+		{
+			tag=Cur();
+			break;
+		}
+	}
 	if(!tag) return;
+
+	// Read Info
 	ReadAttributes(tag);
 }
 
@@ -102,7 +113,8 @@ void GParam::SaveConfig(RXMLTag* parent)
 {
 	RXMLTag* tag;
 
-	tag=new RXMLTag(Name);
+	tag=new RXMLTag("Param");
+	tag->InsertAttr("Name",Name);
 	WriteAttributes(tag);
 	parent->AddTag(tag);
 }
