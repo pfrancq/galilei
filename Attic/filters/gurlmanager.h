@@ -35,6 +35,7 @@ using namespace RStd;
 #include <filters/gmimefilter.h>
 
 
+
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
@@ -108,7 +109,7 @@ public:
 	/**
 	* @param mime           Name of the mimetype.
 	*/
-	const GMIMEFilter* GetMIMEType(const char* mime) const;
+	GMIMEFilter* GetMIMEType(const char* mime) const;
 
 	/**
 	* Destructor of URL manager.

@@ -203,9 +203,9 @@ int GALILEI::GLangEN::GetWordSize(char* kwd)
 		}
 		kwd++;
 	}
-
 	return(Result);
 }
+
 
 //-----------------------------------------------------------------------------
 bool GALILEI::GLangEN::ContainsVowel(const char* kwd)
@@ -229,7 +229,7 @@ bool GALILEI::GLangEN::EndsWithCVC(char* kwd,char* &end)
 		end=kwd+length-1;
 		return((!strchr("aeiouwxy",(*end)--))&&    // Consonant
 			(!strchr("aeiouy",(*end)--))&&         // Vowel
-			(strchr("aeiou",(*end))));               // Consonant
+			(strchr("aeiou",(*end))));             // Consonant
 	}
 }
 

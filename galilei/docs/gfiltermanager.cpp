@@ -83,6 +83,7 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(const GDoc* doc)
 	const char* ptr;
 	int i;
 	GDocXML* xml=0;
+	bool Dwn;
 
 	// Verify it is a local file (file:/) or nothing.
 	ptr=doc->GetURL();
@@ -96,12 +97,20 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(const GDoc* doc)
 	{
 		if(!Download(doc->GetURL(),tmpFile))
 			return(xml);
+		Dwn=true;
+	}
+	else
+	{
+		tmpFile=doc->GetURL();
+		Dwn=false;
 	}
 
 	// Analyse it.
+	xml=new GDocXML(doc->GetURL(),tmpFile());
+	doc->GetMIMEType()->GetFilter()->Analyze(xml);
 
 	// Delete it
-	if(tmpFile.GetLen())
+	if(Dwn)
 		Delete(tmpFile);
 
 	// Return XML structure
@@ -119,7 +128,7 @@ void GALILEI::GURLManager::AddMIME(const char* mime,GFilter* f)
 
 
 //-----------------------------------------------------------------------------
-const GMIMEFilter* GALILEI::GURLManager::GetMIMEType(const char* mime) const
+GMIMEFilter* GALILEI::GURLManager::GetMIMEType(const char* mime) const
 {
 	if(!mime) return(0);
 	return(MIMES.GetPtr<const char*>(mime));

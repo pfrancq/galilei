@@ -106,7 +106,7 @@ class GDoc
 	/**
 	* Type of the document.
 	*/
-	const GMIMEFilter* Type;
+	GMIMEFilter* Type;
 
 public:
 
@@ -118,7 +118,7 @@ public:
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
 	*/
-	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,const GMIMEFilter* t,unsigned int nbdiff=500) throw(bad_alloc);
+	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,GMIMEFilter* t,unsigned int nbdiff=500) throw(bad_alloc);
 
 	/**
 	* Construct the document.
@@ -130,7 +130,7 @@ public:
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
 	*/
-	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,GLang* lang,const GMIMEFilter* t,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc);
+	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,GLang* lang,GMIMEFilter* t,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc);
 
 	/**
 	* Compare function needed by RStd::RContainer.
@@ -172,7 +172,7 @@ public:
 	* Get the MIME type.
 	* @returns Pointer to a MIME type.
 	*/
-	const GMIMEFilter* GetMIMEType(void) const {return(Type);}
+	GMIMEFilter* GetMIMEType(void) const {return(Type);}
 
 protected:
 

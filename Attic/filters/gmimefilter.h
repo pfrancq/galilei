@@ -92,6 +92,12 @@ public:
 	const char* GetName(void) const {return(Type());}
 
 	/**
+	* Get a filter able to manipulate this type of files.
+	* @returns Pointer to a Filter.
+	*/
+	GFilter* GetFilter(void) const {return(Filter);}
+
+	/**
 	* Destructor of the filter.
 	*/
 	virtual ~GMIMEFilter(void);
