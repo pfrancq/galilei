@@ -727,7 +727,7 @@ void QSessionProgressDlg::receiveNextDoc(const GDoc* doc) throw(std::bad_alloc,R
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,RException)
 {
-	txtRem->setText(QString("Analyse Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetName())+"' ...");
+	txtRem->setText(QString("Analyse Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetFullName())+"' ...");
 }
 
 
