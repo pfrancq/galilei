@@ -125,7 +125,7 @@ AC_DEFUN(GALILEI_ALL_LIB_CHK,[
 			GALILEI_LIB_CHK($i,libgalilei_$l)
 			GALILEI_LIB_CHK($i/galilei,libgalilei_$l)
 		done
-		AC_MSG_CHECKING(checking for libgalilei_$l)
+		AC_MSG_CHECKING(for libgalilei_$l)
 		if test -z "$GALILEI_LIB_DIR"; then
 			AC_MSG_RESULT(no)
 			AC_MSG_ERROR(Cannot find libgalilei_$l)
