@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rgga/rfirstfitheuristic.h>
+#include <rgga/rgroupingheuristic.h>
 
 
 //-----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short IR Heuristic.
 */
-class GIRHeuristic : public RGGA::RFirstFitHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
+class GIRHeuristic : public RGGA::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
 {
 public:
 

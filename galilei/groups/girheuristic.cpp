@@ -56,16 +56,15 @@ using namespace RGGA;
 
 //-----------------------------------------------------------------------------
 GALILEI::GIRHeuristic::GIRHeuristic(RRandom* r,RStd::RCursor<GObjIR,unsigned int>* objs)
-	: RGGA::RFirstFitHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(r,objs)
+	: RGGA::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>("IR Heuristic",r,objs)
 {
-	Name="IR Heuristic";
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GIRHeuristic::Init(GChromoIR* groups)
 {
-	RGGA::RFirstFitHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Init(groups);
+	RGGA::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Init(groups);
 }
 
 
@@ -77,19 +76,23 @@ GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGA::eGA)
 	double ratio;
 	double maxratio;
 	double sim;
+	GGroupIRCursor Cur;
 
-	for(Groups->Used.Start(),maxsim=maxratio=-1.0,grp=0;!Groups->Used.End();Groups->Used.Next())
+//	if(CurObj->GetId()==16||CurObj->GetId()==5)
+//		cout<<"Debug"<<endl;
+	Cur.Set(Groups->Used);
+	for(Cur.Start(),maxsim=maxratio=-1.0,grp=0;!Cur.End();Cur.Next())
 	{
-		if(!Groups->Used()->CanInsert(CurObj)) continue;
-		sim=Groups->Used()->ComputeAvgSim(CurObj);
-		ratio=Groups->Used()->GetMaxRatioSame(CurObj);
+		if(!Cur()->CanInsert(CurObj)) continue;
+		sim=Cur()->ComputeAvgSim(CurObj);
+		ratio=Cur()->GetMaxRatioSame(CurObj);
 		if(ratio>=Groups->Instance->GetMinCommonSame())
 		{
 			// Take the group with the highest ratio
 			if(ratio>maxratio)
 			{
 				maxratio=ratio;
-				grp=Groups->Used();
+				grp=Cur();
 				maxsim=2.0;
 			}
 		}
@@ -98,7 +101,7 @@ GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGA::eGA)
 			if(sim>maxsim)
 			{
 				maxsim=sim;
-				grp=Groups->Used();
+				grp=Cur();
 			}
 		}
 //		return(Groups->Used());

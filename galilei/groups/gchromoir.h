@@ -115,31 +115,6 @@ private:
 	double Fi;
 
 	/**
-	* Value of the "Similarity" criterion with local changes.
-	*/
-	double LocalCritSim;
-
-	/**
-	* Value of the "Information" criterion with local changes.
-	*/
-	double LocalCritInfo;
-
-	/**
-	* Value of the "Same Feedbacks" criterion with local changes.
-	*/
-	double LocalCritSameFeedbacks;
-
-	/**
-	* Value of the "Diff Feedbacks" criterion with local changes.
-	*/
-	double LocalCritDiffFeedbacks;
-
-	/**
-	* Value of the "Social" criterion with local changes.
-	*/
-	double LocalCritSocial;
-
-	/**
 	* Temporary array of Objects (Thread dependent data).
 	*/
 	GObjIR** thObjs1;
@@ -158,6 +133,16 @@ private:
 	* Number of objects in thObjs2.
 	*/
 	unsigned int NbObjs2;
+
+	/**
+	* Prototypes used for the KMeans.
+	*/
+	RContainer<GObjIR,tId,false,true> Protos;
+
+	/**
+	* Test Chromosome (Thread dependent data).
+	*/
+	GChromoIR** thTests;
 
 #ifdef RGADEBUG
 
@@ -226,100 +211,7 @@ public:
 	* @param obj            subprofile used as reference.
 	* @returns result.
 	*/
-	bool IsInGroup(GObjIR** grp,unsigned int nb,GObjIR* obj);
-
-	/**
-	* Compute the sum of the similarities of a given subprofile to all the
-	* others.
-	* @param obj            subprofile used as reference.
-	* @returns result.
-	*/
-	double ComputeSumSim(GObjIR** grp,unsigned int nb,GObjIR* obj);
-
-	/**
-	* Compute the sum of the similarities of a given subprofile to all the
-	* others.
-	* @param obj            subprofile used as reference.
-	* @returns result.
-	*/
 	double ComputeSumSim(GObjIR* obj);
-
-	/**
-	* Compute the sum of the distances of a given subprofile to all the others.
-	* @param obj            subprofile used as reference.
-	* @returns result.
-	*/
-	double ComputeSumDist(GObjIR** grp,unsigned int nb,GObjIR* obj);
-
-	/**
-	* Compute the maximum similarity of a given subprofile to all the others.
-	* @param obj            subprofile used as reference.
-	* @returns result.
-	*/
-	double ComputeMaxSim(GObjIR** grp,unsigned int nb,GObjIR* obj);
-
-	/**
-	* Compute the minimum similarity of a given subprofile to all the others.
-	* @param obj            subprofile used as reference.
-	* @returns result.
-	*/
-	double ComputeMinSim(GObjIR** grp,unsigned int nb,GObjIR* obj);
-
-	/**
-	* Compute the minimum similarity inside a list of subprofiles.
-	* @param obj            subprofile used as reference.
-	* @returns result.
-	*/
-	double ComputeMinSim(GObjIR** grp,unsigned int nb);
-
-	/**
-	* Compute the maximum similarity between subprofiles of two groups.
-	* @param rgrp           The reference list of subprofiles.
-	* @param rnb            Number of reference subprofiles.
-	* @param grp            The group used for the comparison.
-	* @returns result.
-	*/
-	double ComputeMaxSim(GObjIR** rgrp,unsigned int rnb,GGroupIR* grp);
-
-	/**
-	* Compute the maximum similarity between subprofiles of a group and a list
-	* of subprofiles.
-	* @param rgrp           The reference list of subprofiles.
-	* @param rnb            Number of reference subprofiles.
-	* @param grp            Array of subprofiles.
-	* @param nb             Number of subprofiles.
-	* @returns result.
-	*/
-	double ComputeMaxSim(GObjIR** rgrp,unsigned int rnb,GObjIR** grp,unsigned int nb);
-
-	/**
-	* Compute the relevant subprofile of the group, i.a. the subprofile which
-	* is the most similar to all the others subprofiles.
-	* @param grp            Array of subprofiles.
-	* @param nb             Number of subprofiles.
-	* @rel                  Relevant subprofile computed.
-	* @returns Sum of similarities to the relevant subprofile.
-	*/
-	double ComputeRelevantSum(GObjIR** grp,unsigned int nb,GObjIR*  &rel);
-
-	/**
-	* Compute the relevant subprofile of the group, i.a. the subprofile which
-	* is the most similar to all the others subprofiles.
-	* @param grp            Array of subprofiles.
-	* @param nb             Number of subprofiles.
-	* @rel                  Relevant subprofile computed.
-	* @returns Sum of distances to the relevant subprofile.
-	*/
-	double ComputeRelevantSumDist(GObjIR** grp,unsigned int nb,GObjIR*  &rel);
-
-	/**
-	* Compute the relevant subprofile of the group, i.a. the subprofile which
-	* is the most similar to all the others subprofiles.
-	* @param grp            Array of subprofiles.
-	* @param nb             Number of subprofiles.
-	* @rel                  Relevant subprofile computed.
-	*/
-	void ComputeRelevant(GObjIR** grp,unsigned int nb,GObjIR*  &rel);
 
 	/**
 	* Compute the most relevant subprofile of the chromosome, i.a. the
@@ -327,53 +219,6 @@ public:
 	* @return Pointer to the most relevant one.
 	*/
 	GObjIR* ComputeGlobalRelevant(void);
-
-	/**
-	* Compute the relevant subprofile of the group, i.a. the subprofile which
-	* is the most similar to all the others subprofiles.
-	* @param grp            Array of subprofiles.
-	* @param nb             Number of subprofiles.
-	* @rel                  Relevant subprofile computed.
-	* @returns Minimum of similarities to the relevant subprofile.
-	*/
-	double ComputeRelevantMin(GObjIR** grp,unsigned int nb,GObjIR*  &rel);
-
-	/**
-	* Compute the relevant subprofile of the group, i.a. the subprofile which
-	* is the most similar to all the others profiles.
-	* @param grp            Array of subprofiles.
-	* @param nb             Number of subprofiles.
-	* @rel                  Relevant subprofile computed.
-	* @returns Maximum similarity to the relevant subprofile.
-	*/
-	double ComputeRelevantMax(GObjIR** grp,unsigned int nb,GObjIR*  &rel);
-
-	/**
-	* Evaluation of the chromosome and the changed one (OldNew).
-	* @param nbcrit         Minimal number of criteria to be ameliorated. If
-	*                       null, use PROMETHEE to evaluate.
-	* @return true if the new one seems to be the best.
-	*/
-	bool EvaluateOldNew(unsigned int nbcrit);
-
-	/**
-	* Look if two groups were merged together.
-	* @param grp1           First group.
-	* @param grp2           Second group.
-	* @param nbcrit         Minimal number of criteria to be ameliorated. If
-	*                       null, use PROMETHEE to evaluate.
-	* @return bool.
-	*/
-	bool MergeGroups(GGroupIR* grp1,GGroupIR* grp2,unsigned int nbcrit);
-
-	/**
-	* Look if a group was be divided.
-	* @param grp            Group to analyse.
-	* @param nbcrit         Minimal number of criteria to be ameliorated. If
-	*                       null, use PROMETHEE to evaluate.
-	* @return bool.
-	*/
-	bool DivideGroup(GGroupIR* grp,unsigned int nbcrit);
 
 	/**
 	* Construct the chromosome to be the same as grps.
@@ -387,108 +232,64 @@ public:
 	virtual bool RandomConstruct(void);
 
 	/**
-	* Evaluate the similarity of the solution where eventually grp1 must be
-	* devided, or grp1 and grp2 must be merged using the "AvgSim" measure.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the similarity of the solution using the "AvgSim" measure.
 	*/
-	void EvaluateAvgSim(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateAvgSim(void);
 
 	/**
-	* Evaluate the similarity of the solution where eventually grp1 must be
-	* devided, or grp1 and grp2 must be merged using the "J" measure.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the similarity using the "J" measure.
 	*/
-	void EvaluateJ(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateJ(void);
 
 	/**
-	* Evaluate the similarity of the solution where eventually grp1 must be
-	* devided, or grp1 and grp2 must be merged using the "AvgRatio" measure.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the similarity of the solution using the "AvgRatio" measure.
 	*/
-	void EvaluateAvgRatio(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateAvgRatio(void);
 
 	/**
-	* Evaluate the similarity of the solution where eventually grp1 must be
-	* devided, or grp1 and grp2 must be merged using the "MinRatio" measure.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the similarity of the solution using the "MinRatio" measure.
 	*/
-	void EvaluateMinRatio(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateMinRatio(void);
 
 	/**
-	* Evaluate the similarity of the solution where eventually grp1 must be
-	* devided, or grp1 and grp2 must be merged using the "Ratio" measure.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the similarity of the solution using the "Ratio" measure.
 	*/
-	void EvaluateRatio(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateRatio(void);
 
 	/**
-	* Evaluate the similarity of the solution where eventually grp1 must be
-	* devided, or grp1 and grp2 must be merged using the "WOverB" measure.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the similarity of the solution using the "WOverB" measure.
 	*/
-	void EvaluateWOverB(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateWOverB(void);
 
 	/**
-	* Evaluate the similarity of the solution where eventually grp1 must be
-	* devided, or grp1 and grp2 must be merged using the "SimWB" measure.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the similarity of the solution using the "SimWB" measure.
 	*/
-	void EvaluateSimWB(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateSimWB(void);
 
 	/**
-	* Evaluate the 'Similarity' criterion of the chromosome where eventually
-	* grp1 must be devided, or grp1 and grp2 must be merged.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the 'Similarity' criterion of the chromosome.
 	*/
-	void EvaluateSim(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateSim(void);
 
 	/**
-	* Evaluate the 'Info' criterion of the chromosome where eventually where
-	* must be devided, or grp1 and grp2 must be merged.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the 'Info' criterion of the chromosome.
 	*/
-	void EvaluateInfo(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateInfo(void);
 
 	/**
-	* Evaluate the 'Same Feebacks' criterion of the chromosome where eventually
-	* grp1 must be devided, or grp1 and grp2 must be merged.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the 'Same Feebacks' criterion of the chromosome.
 	*/
-	void EvaluateSameFeedbacks(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateSameFeedbacks(void);
 
 	/**
-	* Evaluate the 'Diff Feebacks' criterion of the chromosome where eventually
-	* grp1 must be devided, or grp1 and grp2 must be merged.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the 'Diff Feebacks' criterion.
 	*/
-	void EvaluateDiffFeedbacks(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateDiffFeedbacks(void);
 
 	/**
-	* Evaluate the 'Social' criterion of the chromosome where eventually grp1
-	* must be devided, or grp1 and grp2 must be merged.
-	* @param grp1           First group.
-	* @param grp2           Second group.
+	* Evaluate the 'Social' criterion of the chromosome.
 	*/
-	void EvaluateSocial(GGroupIR* grp1=0,GGroupIR* grp2=0);
-
-	/**
-	* Evaluation of the chromosome where eventually grp1 must be devided, or
-	* grp1 and grp2 must be merged.
-	* @param grp1           First group.
-	* @param grp2           Second group.
-	*/
-	void Evaluate(GGroupIR* grp1,GGroupIR* grp2);
+	void EvaluateSocial(void);
 
 	/**
 	* Evaluation of the chromosome.
@@ -496,20 +297,29 @@ public:
 	virtual void Evaluate(void);
 
 	/**
-	* Try some divisions.
-	* @param nbcrit         Minimal number of criteria to be ameliorated. If
-	*                       null, use PROMETHEE to evaluate.
-	* @param true if at least a division was done.
+	*  Reallocate the objects to the groups based on the different prototypes.
 	*/
-	bool TryDivisions(unsigned int nbcrit=0);
+	void ReAllocate(void);
 
 	/**
-	* Try some merges.
-	* @param nbcrit         Minimal number of criteria to be ameliorated. If
-	*                       null, use PROMETHEE to evaluate.
-	* @param true if at least a merge was done.
+	* Calc the number of new prototypes until the last K-Means iteration.
 	*/
-	bool TryMerges(unsigned int nbcrit=0);
+	unsigned int CalcNewProtosNb(void);
+
+	/**
+	* Perform a K-Means on the chromosome.
+	*/
+	void DoKMeans(void);
+
+	/**
+	* Divide the group containing the two most dissimilar subprofiles.
+	*/
+	void DivideWorstSubProfiles(void);
+
+	/**
+	* Merge the two groups containing the two most similar subprofiles.
+	*/
+	void MergeBestSubProfiles(void);
 
 	/**
 	* Perform an optimisation.
@@ -517,24 +327,9 @@ public:
 	virtual void Optimisation(void);
 
 	/**
-	* Do the standard crossover of the GGA and do a reorganisation after.
-	*/
-	virtual bool Crossover(GChromoIR* parent1,GChromoIR* parent2);
-
-	/**
-	* Do the standard mutation of the GGA and do a reorganisation after.
-	*/
-	virtual bool Mutation(void);
-
-	/**
 	* Do the standard mutation of the GGA.
 	*/
 	virtual bool Modify(void);
-
-	/**
-	* Does a reorganisation of the chromosome.
-	*/
-	void ReOrganisation(void);
 
 	/**
 	* Look if two subprofiles are in the same group or not.

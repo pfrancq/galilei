@@ -76,23 +76,41 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GALILEI::GThreadDataIR::GThreadDataIR(GInstIR* owner)
 	: RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(owner),
-	  tmpObjs1(0),tmpObjs2(0)
+	  tmpObjs1(0),tmpObjs2(0), Tests(0)
 {
+	Tests=new GChromoIR*[5];
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GThreadDataIR::Init(void) throw(bad_alloc)
 {
+	GGroupDataIR data;
+
 	RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init();
 	tmpObjs1=new GObjIR*[Owner->Objs->GetNb()];
 	tmpObjs2=new GObjIR*[Owner->Objs->GetNb()];
+	for(int i=0;i<5;i++)
+	{
+		Tests[i]=new GChromoIR(Owner,Owner->PopSize+1+i);
+		Tests[i]->Init(this);
+		(static_cast<RGGA::RGroups<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>*>(Tests[i]))->Init(&data);
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GThreadDataIR::~GThreadDataIR(void)
 {
+	GChromoIR** C;
+	unsigned int i;
+
+	if(Tests)
+	{
+		for(i=5+1,C=Tests;--i;C++)
+			if(*C) delete (*C);
+		delete[] Tests;
+	}
 	if(tmpObjs1) delete[] tmpObjs1;
 	if(tmpObjs2) delete[] tmpObjs2;
 }
@@ -118,8 +136,13 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsig
 	RPromSol** ptr;
 	RCursor<GObjIR,unsigned int> Cur1;
 	RCursor<GObjIR,unsigned int> Cur2;
+	GSubProfilesSameDocs* sdocs;
 	unsigned int i,j;
 	double nb,tmp;
+//	RIO::RTextFile same("/home/pfrancq/same.txt",RIO::RTextFile::Create);
+//	RIO::RTextFile diff("/home/pfrancq/diff.txt",RIO::RTextFile::Create);
+//	same.SetSeparator(" ");
+//	diff.SetSeparator(" ");
 
 	#ifdef RGADEBUG
 		IdealGroups=0;
@@ -143,10 +166,22 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsig
 			tmp=Cur1()->GetSubProfile()->GetCommonDocs(Cur2()->GetSubProfile());
 			nb=Cur1()->GetSubProfile()->GetCommonOKDocs(Cur2()->GetSubProfile());
 			if(nb)
-				SameFeedbacks.InsertPtr(new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
+			{
+				SameFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
+//				same<<"Same:";
+//				same<<"\tRatio="<<sdocs->GetRatio();
+//				same<<"\tProfile"<<Cur1()->GetId()<<"'"<<Cur1()->GetSubProfile()->GetProfile()->GetName()<<"'";
+//				same<<"\tProfile"<<Cur2()->GetId()<<"'"<<Cur2()->GetSubProfile()->GetProfile()->GetName()<<"'"<<endl;
+			}
 			nb=Cur1()->GetSubProfile()->GetCommonDiffDocs(Cur2()->GetSubProfile());
 			if(nb)
-				DiffFeedbacks.InsertPtr(new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
+			{
+				DiffFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
+//				diff<<"Diff:";
+//				diff<<"\tRatio="<<sdocs->GetRatio();
+//				diff<<"\tProfile"<<Cur1()->GetId()<<"'"<<Cur1()->GetSubProfile()->GetProfile()->GetName()<<"'";
+//				diff<<"\tProfile"<<Cur2()->GetId()<<"'"<<Cur2()->GetSubProfile()->GetProfile()->GetName()<<"'"<<endl;
+			}
 		}
 	}
 
@@ -169,6 +204,19 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsig
 RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* GALILEI::GInstIR::CreateHeuristic(void) throw(bad_alloc)
 {
 	return(new GIRHeuristic(Random,Objs));
+}
+
+
+//-----------------------------------------------------------------------------
+GObjIR* GALILEI::GInstIR::GetObj(const GSubProfile* sub) const
+{
+	GObjIRCursor Cur;
+
+	Cur=(*Objs);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		if(Cur()->GetSubProfile()==sub)
+			return(Cur());
+	return(0);
 }
 
 
@@ -201,8 +249,8 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 //	if(c->Id==PopSize) s=Sols[0]; else s=Sols[c->Id+1];
 //	sprintf(Tmp,"Id %2u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Nb=%1.3f - OK=%1.3f - Diff=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
 //	        c->Id,s->GetFi(),s->GetFiPlus(),s->GetFiMinus(),c->AvgSim,c->AvgProf,c->OKFactor,c->DiffFactor,c->SocialFactor,Recall,Precision,Total);
-	sprintf(Tmp,"Id %2u: Sim=%1.3f - Info=%1.3f - SameFdbk=%1.3f - DiffFdbk=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
-	        c->Id,c->CritSim,c->CritInfo,c->CritSameFeedbacks,c->CritDiffFeedbacks,c->CritSocial,Recall,Precision,Total);
+	sprintf(Tmp,"Id %2u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Info=%1.3f - SameFdbk=%1.3f - DiffFdbk=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
+	        c->Id,c->Fi,c->FiPlus,c->FiMinus,c->CritSim,c->CritInfo,c->CritSameFeedbacks,c->CritDiffFeedbacks,c->CritSocial,Recall,Precision,Total);
 //	file<<c->Id<<c->AvgSim<<c->AvgProf<<c->OKFactor<<c->DiffFactor<<c->SocialFactor<<Total<<endl;
 	Debug->PrintInfo(Tmp);
 }
@@ -349,7 +397,7 @@ double GALILEI::GInstIR::GetRatioDiff(GSubProfile* sub1,GSubProfile* sub2) const
 	GSubProfilesSameDocs Test(sub1->GetId(),sub2->GetId(),0.0);
 	GSubProfilesSameDocs* ptr;
 
-	ptr=SameFeedbacks.GetPtr<const GSubProfilesSameDocs&>(Test);
+	ptr=DiffFeedbacks.GetPtr<const GSubProfilesSameDocs&>(Test);
 	if(ptr)
 		return(ptr->GetRatio());
 	return(0.0);
@@ -362,7 +410,7 @@ double GALILEI::GInstIR::GetRatioSame(GSubProfile* sub1,GSubProfile* sub2) const
 	GSubProfilesSameDocs Test(sub1->GetId(),sub2->GetId(),0.0);
 	GSubProfilesSameDocs* ptr;
 
-	ptr=DiffFeedbacks.GetPtr<const GSubProfilesSameDocs&>(Test);
+	ptr=SameFeedbacks.GetPtr<const GSubProfilesSameDocs&>(Test);
 	if(ptr)
 		return(ptr->GetRatio());
 	return(0.0);

@@ -77,6 +77,11 @@ public:
 	GObjIR** tmpObjs2;
 
 	/**
+	* Test Chromosomes.
+	*/
+	GChromoIR** Tests;
+
+	/**
 	* Construct the data.
 	* @param owner          The instance of the problem.
 	*/
@@ -233,6 +238,13 @@ public:
 	* Create a specific heuristic for the IR problem.
 	*/
 	virtual RGGA::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* CreateHeuristic(void) throw(bad_alloc);
+
+	/**
+	* Get the GA object corresponding to a subprofile.
+	* @param sub            SubProfile to search for.
+	* @ereturns GObjIR*
+	*/
+	GObjIR* GetObj(const GSubProfile* sub) const;
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case

@@ -564,7 +564,7 @@ double GALILEI::GGroupIR::GetMaxRatioSame(GObjIR* obj)
 	GObjIR** ptr;
 
 	// Look if in the other objects, there is a better one
-	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),max=0.0;--i;ptr++)
+	for(i=NbSubObjects+1,ptr=GetObjects(),max=0.0;--i;ptr++)
 	{
 		tmp=Owner->Instance->GetRatioSame(sub,(*ptr)->GetSubProfile());
 		if(tmp>max)
