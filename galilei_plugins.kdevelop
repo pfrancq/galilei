@@ -12,7 +12,7 @@
     </keywords>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <ignoreparts/>
     <secondaryLanguages/>
   </general>
@@ -48,19 +48,20 @@
   <kdevdebugger>
     <general>
       <dbgshell>libtool</dbgshell>
-      <programargs/>
-      <gdbpath/>
+      <programargs></programargs>
+      <gdbpath></gdbpath>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
       <runappinappdirectory>true</runappinappdirectory>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
     </general>
     <display>
       <staticmembers>false</staticmembers>
       <demanglenames>true</demanglenames>
+      <outputradix>10</outputradix>
     </display>
   </kdevdebugger>
   <kdevfilecreate>
@@ -80,14 +81,15 @@
       <abortonerror>false</abortonerror>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin/>
+      <makebin></makebin>
+      <prio>0</prio>
     </make>
     <general>
       <useconfiguration>default</useconfiguration>
     </general>
     <run>
-      <mainprogram>/home/pfrancq/prj/kgalileicenter/kgalileicenter/kgalileicenter</mainprogram>
-      <programargs/>
+      <mainprogram>$HOME/prj/kgalileicenter/kgalileicenter/kgalileicenter</mainprogram>
+      <programargs></programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars/>
@@ -110,6 +112,7 @@
         <cflags/>
         <cxxflags/>
         <f77flags/>
+        <envvars/>
       </default>
     </configurations>
   </kdevautoproject>
@@ -160,4 +163,11 @@
     <recursivewhencommitremove>true</recursivewhencommitremove>
     <revertoptions>-C</revertoptions>
   </kdevcvsservice>
+  <kdevdocumentation>
+    <projectdoc>
+      <docsystem></docsystem>
+      <docurl></docurl>
+      <usermanualurl></usermanualurl>
+    </projectdoc>
+  </kdevdocumentation>
 </kdevelop>
