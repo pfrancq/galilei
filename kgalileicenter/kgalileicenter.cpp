@@ -268,7 +268,6 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 {
 
 	RString strTmp;
-	
 
 	//Init dlg box
 	QCreateDatabase dlg(this,0,true);
@@ -510,7 +509,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 	select = Doc->GetSession()->GetStorage()->SelectDummyEntry("Som_maps",0,RString::Null,0,0);
 
 	//set widget title
-	tmp=QString::number(select->GetNbRows())+"Maps available - Double click on map to display";
+	tmp=QString::number(select->GetNbRows())+" Maps available - Double click on map to display";
 	dlg->groupBox->setTitle(tmp);
 	dlg->show();
 
@@ -586,7 +585,8 @@ void KGALILEICenterApp::slotChooseSOM(void)
 	}
 
 	delete select;
-	delete select2;
+	if (select2) 
+		delete select2;
 }
 
 
