@@ -127,9 +127,12 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save,bool savehistory) th
 
 	// Compute the description of the groups and Save the information.
 	CalcDesc=Session->GetGroupCalcMng()->GetCurrentMethod();
-	Groups=Session->GetGroupsCursor();
-	for(Groups.Start();!Groups.End();Groups.Next())
-		CalcDesc->Compute(Groups());
+	if(CalcDesc)
+	{
+		Groups=Session->GetGroupsCursor();
+		for(Groups.Start();!Groups.End();Groups.Next())
+			CalcDesc->Compute(Groups());
+	}
 
 	// Save if necessary
 	if(save)
