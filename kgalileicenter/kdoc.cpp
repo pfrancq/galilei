@@ -6,7 +6,7 @@
 
 	Document representing a GALILEI session - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -196,6 +196,7 @@ bool KDoc::canCloseFrame(KView* /*pFrame*/)
 {
 	KView *w;
 
+	std::cout<<"Coucou"<<std::endl;
 	for(w=pViewList->first();w!=0;w=pViewList->next())
 	{
 		if(!w->canClose())

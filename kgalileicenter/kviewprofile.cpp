@@ -145,7 +145,7 @@ void KViewProfile::ConstructFdbks(void)
 	RDate d;
 	char sDate[20];
 	RCursor<GFdbk> Docs;
-	GSubProfileCursor SubCur;
+	RCursor<GSubProfile> SubCur;
 	GDoc* doc;
 
 	if(!Fdbks) return;
@@ -196,7 +196,7 @@ void KViewProfile::ConstructLinks(void)
 	RString iconName="";
 	char sDate[20];
 	RCursor<GFdbk> Docs;
-	GSubProfileCursor SubCur;
+	RCursor<GSubProfile> SubCur;
 	GDoc* doc;
 
 	if(!FdbksLinks) return;
@@ -243,7 +243,7 @@ void KViewProfile::ConstructGroups(void)
 	GLang* lang;
 	char sDate[20];
 	RDate d;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 
 	Groups->clear();
 	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();

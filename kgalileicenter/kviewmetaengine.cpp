@@ -265,7 +265,7 @@ void KViewMetaEngine::QueryEngine()
 }
 
 //-----------------------------------------------------------------------------
-void KViewMetaEngine::update(unsigned int cmd)
+void KViewMetaEngine::update(unsigned int)
 {
 }
 

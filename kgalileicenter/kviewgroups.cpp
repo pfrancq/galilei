@@ -108,7 +108,7 @@ void KViewGroups::ConstructGroups(void)
 	GLang* lang;
 	char sDate[20];
 	RDate d;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 
 	Groups->clear();
 	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();

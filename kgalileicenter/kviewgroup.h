@@ -42,7 +42,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdoc.h>
+#include <docs/gdocproxy.h>
 namespace GALILEI
 {
 	class GGroup;

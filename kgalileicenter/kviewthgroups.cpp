@@ -198,7 +198,7 @@ void KViewThGroups::ConstructThGroups(void)
 {
 	GFactoryLangCursor CurLang;
 	GLang* lang;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 
 	thGroups->clear();
 	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
@@ -233,7 +233,7 @@ void KViewThGroups::ConstructGroups(void)
 	GLang* lang;
 	char tmp1[70];
 	char tmp2[30];
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 	
 	Doc->GetSession()->GetSubjects()->Compare();
 	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());

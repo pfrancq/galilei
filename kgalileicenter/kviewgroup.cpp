@@ -134,7 +134,7 @@ void KViewGroup::ConstructProfiles(void)
 {
 	char sDate[20];
 	RDate d;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 
 	Profiles->clear();
 	Sub=Group->GetSubProfilesCursor();
@@ -191,7 +191,7 @@ void KViewGroup::ConstructDocs(void)
 	RDate d;
 	char sDate[20];
 	RCursor<GFdbk> docs;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 	GDoc* doc;
 
 	// Clear the Widget
