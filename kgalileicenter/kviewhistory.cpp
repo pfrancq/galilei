@@ -102,12 +102,12 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 	QPopupMenu* groupmenu;
 	groupmenu= new QPopupMenu();
 	groupmenu->insertItem(QString("Calc Modified Groups"),this, SLOT(slotCheckModifiedGroups()),0,1,-1) ;
-	ToolBar->insertItem("Group",groupmenu);
+	ToolBar->insertItem("Group",groupmenu,2);
 	QPopupMenu* subprofmenu;
 	subprofmenu= new QPopupMenu();
 	subprofmenu->insertItem(QString("Calc bad-grouped Profiles"),this, SLOT(slotCheckWellGroupedSubProfs()),0,1,-1) ;
 	subprofmenu->insertItem(QString("Calc NewProfiles"),this, SLOT(slotCheckNewProfiles()),0,2,-1) ;
-	ToolBar->insertItem("SubProfiles",subprofmenu);
+	ToolBar->insertItem("SubProfiles",subprofmenu,2);
 	QPopupMenu* viewmenu;
 	viewmenu= new QPopupMenu();
 	viewmenu->insertItem(QString("Show/Hide Similarities"),this, SLOT(slotViewSimilarities()),0,1,-1) ;
@@ -187,7 +187,7 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 	Solution->setChanged();
 
 	//tmp display
-	CreateGroupsRelationship();
+	Groups->CreateGroupsRelationship(MaxGen);
 
 	//connections.
 	connect(Solution,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
@@ -257,7 +257,6 @@ void KViewHistory::resizeEvent(QResizeEvent*)
 void KViewHistory::slotCheckModifiedGroups(void)
 {
 	Doc->GetSession()->GetGroupsHistoryManager()->CheckModifiedGroups(MinGen);
-	ToolBar->setItemEnabled(1,false);
 }
 
 
@@ -266,10 +265,9 @@ void KViewHistory::slotCheckWellGroupedSubProfs(void)
 {
 	for (Groups->Start(); !Groups->End(); Groups->Next())
 	{
-		SetGroupsSubject((*Groups)());
+		(*Groups)()->SetGroupsSubject();
 		(*Groups)()->CheckWellGroupedSubProfs();
 	}
-	ToolBar->setItemEnabled(2,false);
 }
 
 
@@ -278,7 +276,6 @@ void KViewHistory::slotCheckNewProfiles(void)
 {
 	for (Groups->Start(); !Groups->End(); Groups->Next())
 		(*Groups)()->CheckNewProfiles();
-	ToolBar->setItemEnabled(3,false);
 }
 
 
@@ -407,182 +404,6 @@ void KViewHistory::DisplayChildrenRelationShip(GGroupHistory* grp, QListViewItem
 	for (cur.Start(); !cur.End(); cur.Next())
 		DisplayChildrenRelationShip(cur(), grpitem);
 	grpitem->setOpen(true);
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewHistory::CheckModifiedGroups(GGroupsHistory* grps)
-{
-	R::RContainer<GWeightInfosHistory, unsigned int, false, true>* lastsubs;
-	GGroupsHistory* lastgroups;
-	GGroupHistory* grp, *lastgroup;
-	GWeightInfosHistory* sub, *lastsub;
-	unsigned int  lastcurid;
-
-	// if the grps is the frst historic one, return
-	if (grps->GetId()==MinGen) return;
-
-	//get the last groups and put its profiles in a container
-	lastsubs=new R::RContainer<GWeightInfosHistory, unsigned int, false, true>(10,5);
-	lastgroups=Groups->GetPtr(grps->GetId()-1);
-	if (!lastgroups) return;
-	for (lastgroups->Start(); !lastgroups->End(); lastgroups->Next())
-		for ((*lastgroups)()->Start(); !(*lastgroups)()->End();(*lastgroups)()->Next())
-			lastsubs->InsertPtr((*(*lastgroups)())());
-
-	// check the actual groups
-	for (grps->Start(); !grps->End(); grps->Next())
-	{
-		grp=(*grps)();
-		grp->Start();
-		sub=(*grp)();
-
-		//get the equivalent last subprofile
-		lastsub=lastsubs->GetPtr(sub->GetId());
-		//get the equivalent last group.
-		lastgroup=lastgroups->GetPtr(lastsub->GetParent());
-		//if the number of pointers is different, the group is modified
-		if (lastgroup->NbPtr!=grp->NbPtr)
-		{
-			grp->SetModified(true);
-			continue;
-		}
-		
-		//if a couple of subprofiles doesn't belong to a same group in the current and historic groups
-		// then the group is modified.
-		lastcurid=lastsub->GetParent()->GetId();
-		while(grp->GetModified()==false&&!grp->End())
-		{
-			lastsub=lastsubs->GetPtr((*grp)()->GetId());
-			// if the subprofiles is a new one, group is modified
-			if (!lastsub) grp->SetModified(true);
-
-			//if the lastcurid has changed , group is modified
-			if(lastcurid!=lastsub->GetParent()->GetId())
-				grp->SetModified(true);
-			grp->Next();
-		}
-	}
-
-	delete lastsubs;
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewHistory::SetGroupsSubject(GGroupsHistory* grps)
-{
-	GGroupHistory* grp;
-	GSubject* mainsubject;
-	unsigned int occur, maxoccur,knownsubject;
-	R::RContainer<GSubject, unsigned int, false, true>* subjects;
-
-
-	//find the dominant subject
-	for (grps->Start(); !grps->End(); grps->Next())
-	{
-		grp=(*grps)();
-		maxoccur=knownsubject=0;
-
-		// find all the subjects contained in the group.
-		subjects=new R::RContainer<GSubject, unsigned int, false, true>(5,2);
-		for (grp->Start(); !grp->End(); grp->Next())
-		{
-			subjects->InsertPtr((*grp)()->GetSubProfile()->GetSubject());
-		}
-
-		// find the most dominant one
-		subjects->Start();
-		while((maxoccur<(grp->NbPtr-knownsubject))&&!subjects->End())
-		{
-			occur=0;
-			for (grp->Start(); !grp->End(); grp->Next())
-			{
-				if ((*grp)()->GetSubProfile()->GetSubject()->GetId()==(*subjects)()->GetId())
-					occur++;
-			}
-			knownsubject+=occur;
-			if(occur>maxoccur)
-			{
-				maxoccur=occur;
-				mainsubject=(*subjects)();
-			}
-			subjects->Next();
-		}
-		grp->SetSubject(mainsubject);
-		delete subjects;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewHistory::CreateGroupsRelationship(void)
-{
-	unsigned int  i, maxoccurs, nbchildren;
-	GGroupsHistory* curgrps, *nextgrps;
-	GGroupHistory* grp;
-	GWeightInfosHistory* subprof;
-	bool treated;
-	unsigned int** tab;
-
-	for (Groups->Start(); !Groups->End(); Groups->Next())
-	{
-		//if the groups is the last one, no child
-		if ((*Groups)()->GetId()==MaxGen) continue;
-
-		curgrps=(*Groups)();
-		nextgrps=Groups->GetPtr(curgrps->GetId()+1);
-		if (!nextgrps)
-			return;
-
-		for (curgrps->Start(); !curgrps->End(); curgrps->Next())
-		{
-			grp=(*curgrps)();
-			nbchildren=0;
-			//initialize the table od groupid / nboccurs
-			tab= new unsigned int* [grp->NbPtr];
-			for (i=0; i<grp->NbPtr; i++)
-				tab[i]=new unsigned int [2];
-			for (i=0; i<grp->NbPtr; i++)
-				tab[i][0]=tab[i][1]=0;
-
-			//fill the table
-			for (grp->Start(); !grp->End(); grp->Next())
-			{
-				subprof=nextgrps->GetSubProfile((*grp)()->GetId());
-				treated=false;
-				i=0;
-				while(!treated&&i<nbchildren)
-				{
-					if (tab[i][0]==subprof->GetParent()->GetId())
-					{
-						tab[i][1]++;
-						treated=true;
-					}
-					i++;
-				}
-				if(!treated)
-				{
-					tab[i][0]=subprof->GetParent()->GetId();
-					tab[i][1]++;
-					nbchildren++;
-				}
-			}
-
-			//analyse table;
-			maxoccurs=0;
-			for (i=0; i<grp->NbPtr;i++)
-				if (tab[i][1]>maxoccurs)
-					maxoccurs=tab[i][1];
-			//and find the childrens
-			for (i=0; i<grp->NbPtr;i++)
-				if (tab[i][1]==maxoccurs)
-					grp->InsertChildren(nextgrps->GetPtr(tab[i][0]));
-			//delete the table
-			for (i=0; i<grp->NbPtr; i++)
-				delete [] tab[i];
-			delete [] tab;
-		}
-	}
 }
 
 

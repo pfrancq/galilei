@@ -145,7 +145,7 @@ class KViewHistory : public KView
 	/**
 	* The container of groups
 	*/
-	R::RContainer<GGroupsHistory, unsigned int, true,true>* Groups;
+	GGroupsHistoryManager* Groups;
 
 	/**
 	* selected items from Solutions.
@@ -252,7 +252,6 @@ private slots:
  
 public:
 
-
 	/**
 	* Update the SimsView listview..
 	*/
@@ -267,31 +266,6 @@ public:
 	* Update the SimsView listview..
 	*/
 	void DisplayChildrenRelationShip(GGroupHistory* grpitem,QListViewItemType* attach);
-
-	/**
-	* check if a group has changed since last historic.
-	*/
-	void CheckModifiedGroups(GGroupsHistory* grps);
-
-	/**
-	* Set the subject of the groups (dominant subject)
-	*/
-	void SetGroupsSubject(GGroupsHistory* grps);
-
-	/**
-	* check if the subprofiles are well-grouped
-	*/
-	void CheckWellGroupedSubProfiles(GGroupsHistory* grps);
-
-	/**
-	* check if new profiles were added in this groupment.
-	*/
-	void CheckNewProfiles(GGroupsHistory* grps);
-
-	/**
-	* creates relationship between historic groups..
-	*/
-	void CreateGroupsRelationship(void);
 
 	/**
 	* Destructor for the view.

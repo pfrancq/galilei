@@ -713,7 +713,7 @@ void KGALILEICenterApp::slotShowHistory(void)
 	size=Doc->GetSession()->GetStorage()->GetHistorySize();
 
 	QHistoryDlg dlg(this,0,true);
-	dlg.TLMaxHistory->setText(QString("Max Historic ID (<")+itou(size).Latin1()+QString(")"));
+	dlg.TLMaxHistory->setText(QString("Max Historic ID (max: ")+itou(size).Latin1()+QString(")"));
 	dlg.SBMinId->setMinValue(1);
 	dlg.SBMinId->setMaxValue(size);
 	dlg.SBMaxId->setMinValue(1);

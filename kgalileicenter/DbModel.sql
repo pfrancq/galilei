@@ -223,6 +223,7 @@ CREATE TABLE nlsubprofilesbykwds (
 
 CREATE TABLE nlhistoricsubprofiles (
   historicid int(11),
+  date Date DEFAULT '0000-00-00',
   subprofileid int(11),
   kwdid int(11),
   weight float
@@ -395,6 +396,7 @@ CREATE TABLE historicgroups (
 
 CREATE TABLE frhistoricsubprofiles (
   historicid int(11),
+  date Date DEFAULT '0000-00-00',
   subprofileid int(11),
   kwdid int(11),
   weight float
@@ -407,6 +409,7 @@ CREATE TABLE frhistoricsubprofiles (
 
 CREATE TABLE enhistoricsubprofiles (
   historicid int(11),
+  date Date DEFAULT '0000-00-00',
   subprofileid int(11),
   kwdid int(11),
   weight float
