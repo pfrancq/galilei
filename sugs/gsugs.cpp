@@ -70,8 +70,6 @@ GSugs::GSugs(GFactoryPostGroup* fac) throw(bad_alloc)
 //------------------------------------------------------------------------------
 void GSugs::CreateParams(GParams* params)
 {
-	//level param
-	params->InsertPtr(new GParamUInt("Level",0));
 }
 
 
