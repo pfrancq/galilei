@@ -85,7 +85,7 @@ const char* GALILEI::GGroupingKCos::GetSettings(void)
 	char c, d,e, f, g, h , k;
 	if(Random) c='1'; else c='0';
 	if (FindGroupsNumber) d='1'; else d='0';
-	if (GlobalSimi) e='1'; else e='0';
+	if (GlobalSim) e='1'; else e='0';
 	if (Relevant) h='1'; else h='0';
 	if (Scattered) k='1'; else k='0';
 
@@ -104,7 +104,7 @@ void GALILEI::GGroupingKCos::SetSettings(const char* s)
 	sscanf(s,"%c %u %u %c %c %c %c %c",&c, &IterNumber, &NbTests, &d, &e, &f,  &h, &k);
 	if(c=='1') Random=true; else Random=false;
 	if(d=='1') FindGroupsNumber=true; else FindGroupsNumber=false;
-	if(e=='1') GlobalSimi=true; else GlobalSimi=false;
+	if(e=='1') GlobalSim=true; else GlobalSim=false;
 	if(h=='1') Relevant=true; else Relevant=false;
 	if(k=='1') Scattered=true; else Scattered=false;
 }
@@ -126,7 +126,7 @@ void GALILEI::GGroupingKCos::Run(void) throw(GException)
 	double var;
 
 	// Calculates the similarities between subprofiles
-	ProfSim= new GProfilesSim(SubProfiles, GlobalSimi);
+	ProfSim= new GProfilesSim(SubProfiles, GlobalSim);
 
 	//temp
 	int nbdiff=SubProfiles.NbPtr;
@@ -193,7 +193,7 @@ void GALILEI::GGroupingKCos::DisplayInfos(void)
 	cout << " *** KMeansCos *** "<< endl;
 	cout << "NbSubProfiles"<<SubProfiles.NbPtr<<endl;
 	cout << "nombre de test= "<<NbTests <<endl;
-	cout << "global similarity= "<<GlobalSimi<<endl;
+	cout << "global similarity= "<<GlobalSim<<endl;
 	cout << " parameters max iter:"<<IterNumber<< " nb tests: "<<NbTests<<endl<<endl;
 	cout << " *** initial parameters ***"<<endl;
 	cout << " 	random :"<<  Random<<endl;
@@ -344,7 +344,7 @@ void  GALILEI::GGroupingKCos::ReCenter()
 	protoserror->Clear();
 	for (grpstemp->Start(); !grpstemp->End(); grpstemp->Next())
 	{
-		GSubProfile* tmp=(*grpstemp)()->RelevantSubProfile(GlobalSimi);
+		GSubProfile* tmp=(*grpstemp)()->RelevantSubProfile(GlobalSim);
 		protoserror->InsertPtr(tmp);
 //		cout << "new proto " << tmp->GetId() << "from group "<< (*grpstemp)()->GetId()<<endl;
 	}
@@ -416,7 +416,7 @@ double GALILEI::GGroupingKCos::CalcCalinsky()
 	for (grpstemp2->Start(); !grpstemp2->End(); grpstemp2->Next())
 	{
 		GGroup* gr=(*grpstemp2)();
-		GSubProfile* center= gr->RelevantSubProfile(GlobalSimi);
+		GSubProfile* center= gr->RelevantSubProfile(GlobalSim);
 		for (gr->Start(); !gr->End(); gr->Next())
 		{
 			double dist=(1.0)-Similarity((*gr)(),center);
@@ -477,7 +477,7 @@ double GALILEI::GGroupingKCos::PalMeasure()
 		GGroup* g= (*grpstemp)();
 		double sumgr=0.0;
 		for (g->Start(); !g->End(); g->Next())
-			sumgr+=g->ComputeSumSim((*g)(), GlobalSimi);
+			sumgr+=g->ComputeSumSim((*g)(), GlobalSim);
 		sum+=sumgr/g->NbPtr;
 	}
 	sum/=grpstemp->NbPtr;

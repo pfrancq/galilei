@@ -64,12 +64,9 @@ some
 * @author David Wartel
 * @short KMeansCos Grouping.
 */
-
-class GGroupingKCos :   public GGroupingKMeans
-
+class GGroupingKCos : public GGroupingKMeans
 {
 protected:
-
 
 	/**
 	* Container of subprofiles considered as prototypes,
@@ -86,8 +83,6 @@ protected:
 	* Container of the final groupment
 	*/
 	RContainer<GGroup,unsigned int,false,false>* grpsfinal;
-
-
 
 public:
 

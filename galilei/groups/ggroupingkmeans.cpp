@@ -64,7 +64,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GALILEI::GGroupingKMeans::GGroupingKMeans(GSession* s, const char* n) throw(bad_alloc)
 		:  GGrouping(n,s), Random(false),  Relevant(false), Scattered(false), Refined(true), IterNumber(10), NbTests(1),
-			FindGroupsNumber(false), MaxNbGroups(13), MinNbGroups(13), GlobalSimi(false),
+			FindGroupsNumber(false), MaxNbGroups(13), MinNbGroups(13), GlobalSim(false),
 				protos(0), grpstemp2(0)
 {
 	Epsilon= 0.0005;
@@ -124,7 +124,7 @@ void GALILEI::GGroupingKMeans::ScatteredInitSubProfiles(unsigned int nbsubs)
 	GGroup* g=((GGroup*)new GGroupVector(0,Groups->GetLang()));
 	for (SubProfiles.Start(); !SubProfiles.End(); SubProfiles.Next())
 		g->InsertPtr(SubProfiles());
-	sub = g->RelevantSubProfile(GlobalSimi);
+	sub = g->RelevantSubProfile(GlobalSim);
 	protos->InsertPtr(sub);
 	while (k<nbsubs-1)
 	{
@@ -316,7 +316,7 @@ bool  GALILEI::GGroupingKMeans::VerifyKMeansMod(RContainer<GSubProfile,unsigned 
 	// check for 'empty' clusters.
 	for (grpstemp2->Start(); !grpstemp2->End(); grpstemp2->Next())
 		if ((*grpstemp2)()->NbPtr==1)
-			wrongprotos->InsertPtr((*grpstemp2)()->RelevantSubProfile(GlobalSimi));
+			wrongprotos->InsertPtr((*grpstemp2)()->RelevantSubProfile(GlobalSim));
 
 	for (wrongprotos->Start(); !wrongprotos->End(); wrongprotos->Next())
 		protos->DeletePtr((*wrongprotos)());
@@ -345,7 +345,7 @@ double  GALILEI::GGroupingKMeans::GroupsVariance(RContainer<GGroup,unsigned int,
 	for (grps->Start(); !grps->End(); grps->Next())
 	{
 		GGroup* gr = (*grps)() ;
-		GSubProfile* proto= gr->RelevantSubProfile(GlobalSimi);
+		GSubProfile* proto= gr->RelevantSubProfile(GlobalSim);
 		for (gr->Start(); !gr->End(); gr->Next())
 		{
 			var+=Similarity((*gr)(), proto);
@@ -358,7 +358,7 @@ double  GALILEI::GGroupingKMeans::GroupsVariance(RContainer<GGroup,unsigned int,
 double  GALILEI::GGroupingKMeans::GroupVariance(GGroup* grp)     // calculates the intra/min(inter)
 {
 	double variance=0.0;
-	GSubProfile* center=grp->RelevantSubProfile(GlobalSimi);
+	GSubProfile* center=grp->RelevantSubProfile(GlobalSim);
 	for (grp->Start(); !grp->End(); grp->Next())
 		variance+=(1-Similarity(center, (*grp)()))*(1-Similarity(center, (*grp)()));
 	cout << " variance group = "<< variance/grp->NbPtr;

@@ -127,7 +127,7 @@ protected:
 	/**
 	* check if the global similarity is required.
 	*/
-	bool GlobalSimi;
+	bool GlobalSim;
 
 	/**
 	* Container of subprofiles considered as prototypes
@@ -243,7 +243,7 @@ public:
 	* Get the status of the 'GlobalSim' criterion
 	* @return bool value.
 	*/
-	bool GetGlobalSimi(void) const {return(GlobalSimi);}
+	bool GetGlobalSim(void) const {return(GlobalSim);}
 
 	/**
 	* Get the maximum number of iterations.
@@ -291,7 +291,7 @@ public:
 	* Set the status of the 'GlobalSim' criterion.
 	* @param s              global?
 	*/
-	void SetGlobalSimi(bool s) {GlobalSimi=s;}
+	void SetGlobalSim(bool s) {GlobalSim=s;}
 
 	/**
 	* Set the number of iteration.
