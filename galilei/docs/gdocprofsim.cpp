@@ -41,6 +41,10 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <rstd/rcontainer.h>
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
 //#include <profiles/gprofilessim.h>
 #include <docs/gdocprofsim.h>
 #include <profiles/gsubprofile.h>
@@ -70,7 +74,7 @@ public:
 	tObjState State;         //  State of the similarity.
 
 
-	GSim(unsigned int id,double s,tObjState state = osUpToDate) : Id(id), Sim(s),State(state)  {}
+	GSim(unsigned int id,double s,tObjState state = osUpToDate) : Id(id), Sim(s),State(state)  {;}
 	int Compare(const GSim* s) const {return(Id-s->Id);}
 	int Compare(const GSim& s) const {return(Id-s.Id);}
 	int Compare(const unsigned int id) const {return(Id-id);}
@@ -114,8 +118,8 @@ GALILEI::GDocProfSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_a
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocProfSim::GDocProfSim(GDocs* d, RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* l) throw(bad_alloc)
-	: Sims(d->GetNbDocs(Lang)+2,d->GetNbDocs(Lang)/2+1), GlobalSim(global), Lang(l)
-{
+		: Sims(d->GetNbDocs(l)+2,d->GetNbDocs(l)/2+1), GlobalSim(global), Lang(l) 
+ {
 	GDocCursor Cur_d;
 	GSubProfileCursor Cur_p;
 	unsigned int  nbrSubProf;
@@ -130,7 +134,6 @@ GALILEI::GDocProfSim::GDocProfSim(GDocs* d, RStd::RContainer<GSubProfile,unsigne
 		for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
 		{
 			AnalyseSim(sim,Cur_d(),Cur_p());
-
 		}
 	}
 }
@@ -138,7 +141,7 @@ GALILEI::GDocProfSim::GDocProfSim(GDocs* d, RStd::RContainer<GSubProfile,unsigne
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocProfSim::GDocProfSim(GDocs* d, RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global,GLang* l) throw(bad_alloc)
-     : Sims(d->GetNbDocs(Lang)+2,d->GetNbDocs(Lang)/2 +1), GlobalSim(global), Lang(l)
+     : Sims(d->GetNbDocs(l)+2,d->GetNbDocs(l)/2 +1), GlobalSim(global), Lang(l)
 {
 	GDocCursor Cur_d;
 	GSubProfileCursor Cur_p;
@@ -180,7 +183,7 @@ GALILEI::GDocProfSim::GDocProfSim(GDocCursor* d, GSubProfileCursor* s,bool globa
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocProfSim::GDocProfSim(GDocs* d, GSubProfileCursor& s,bool global,GLang* l) throw(bad_alloc)
-	: Sims(d->GetNbDocs(Lang)+2,d->GetNbDocs(Lang)/2 +1), GlobalSim(global), Lang(l)
+	: Sims(d->GetNbDocs(l)+2,d->GetNbDocs(l)/2 +1), GlobalSim(global), Lang(l)
 {
 	GDocCursor Cur_d;
 	GSubProfileCursor Cur_p;
