@@ -39,7 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include <math.h>
 
 

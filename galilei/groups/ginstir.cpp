@@ -337,6 +337,10 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 					case stSimWB:
 						sprintf(Tmp2,"%1.3f - ",c->CritSimSimWB);
 						break;
+					case stNone:
+					default:
+						strcpy(Tmp2,"");
+						break;
 				}
 				strcat(Tmp,Tmp2);
 			}

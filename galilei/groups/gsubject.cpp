@@ -60,7 +60,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 //include specific files
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include <math.h>
 
 

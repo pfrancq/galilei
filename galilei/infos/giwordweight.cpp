@@ -107,7 +107,7 @@ int GALILEI::GIWordWeight::Compare(const GIWordWeight *calc) const
 //-----------------------------------------------------------------------------
 double GALILEI::GIWordWeight::GetQueryWeight(tObjType ObjType,GDict* dict,double max) const
 {
-	return(Weight/max)*log(dict->GetRef(ObjType)/dict->GetRef(Id,ObjType));
+	return(Weight/max)*log(static_cast<double>(dict->GetRef(ObjType))/static_cast<double>(dict->GetRef(Id,ObjType)));
 }
 
 

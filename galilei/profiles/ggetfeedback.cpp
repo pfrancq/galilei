@@ -42,7 +42,7 @@ using namespace RIO;
 
 //-----------------------------------------------------------------------------
 //include specific files
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 
 
