@@ -154,19 +154,19 @@ public:
 	const GSubProfile* GetSubProfile(const GLang* lang) const;
 
 	/**
-	* Get the date of the last update of the document's content.
+	* Get the date of the last update of the profile's.
 	* @returns Pointer to date.
 	*/
 	const RTimeDate::RDate* GetUpdated(void) const {return(&Updated);}
 
 	/**
-	* Get the date of the last analysis of the document.
+	* Get the date of the last analysis of the profile.
 	* @returns Pointer to date.
 	*/
 	const RTimeDate::RDate* GetComputed(void) const {return(&Computed);}
 
 	/**
-	* Return the state of the document.
+	* Return the state of the profile.
 	* @returns GALILEI::tObjState value.
 	*/
 	tObjState GetState(void) const {return(State);}
