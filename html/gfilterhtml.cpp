@@ -95,7 +95,7 @@ GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 	: GFilter(mng,"HTML Filter","text/html","$Revision$"), Tags(0),
 	 Buffer(0), Chars(50,5)
 {
-	AddMIME("text/html");
+	AddMIME(mng,"text/html");
 	InitCharContainer();
 	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
 	Tags->InsertPtr(new Tag("HEAD","",Tag::tHEAD,true,8,false));
