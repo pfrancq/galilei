@@ -34,7 +34,7 @@ email=pfrancq@ulb.ac.be
 kdevprj_version=1.3
 lfv_open_groups=
 make_options=\s-j2
-makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am,kgalileicenter/r/rgga/Makefile.am,kgalileicenter/r/rpromethee/Makefile.am,kgalileicenter/qtwidgets/rpromethee/Makefile.am,kgalileicenter/galilei/tests/Makefile.am
+makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am,kgalileicenter/r/rgga/Makefile.am,kgalileicenter/r/rpromethee/Makefile.am,kgalileicenter/qtwidgets/rpromethee/Makefile.am,kgalileicenter/galilei/tests/Makefile.am,kgalileicenter/galilei/postgroups/Makefile.am
 modifyMakefiles=true
 project_name=KGalileiCenter
 project_type=mdi_kde2
@@ -60,6 +60,7 @@ Headers - GALILEI=*/galilei/galilei.h,*/galilei/gplugin.h
 Headers - Groups=*groups/*.h
 Headers - Infos=*infos/*.h
 Headers - Langs=*langs/*.h
+Headers - PostGroups=*postgroups/*.h
 Headers - Profiles=*profiles/*.h
 Headers - Qt Widgets=*qtwidgets/*.h
 Headers - Sessions=*sessions/*.h
@@ -83,6 +84,7 @@ Sources - GALILEI=*/galilei/gplugin.cpp
 Sources - Groups=*groups/*.cpp
 Sources - Infos=*infos/*.cpp
 Sources - Langs=*langs/*.cpp
+Sources - PostGroups=*postgroups/*.cpp
 Sources - Profiles=*profiles/*.cpp
 Sources - Qt Widgets=*qtwidgets/*.cpp,*qtwidgets/*.hh
 Sources - Sessions=*sessions/*.cpp
@@ -100,7 +102,7 @@ Sources R - Time-Date=*rtimedate/*.cpp
 Sources R - XML=*rxml/*.cpp
 Translations=*.po
 User Interface=*.kdevdlg,*.ui,*.rc
-groups=Headers,Headers - Tests,Headers - GALILEI,Headers R - GA,Headers R - GGA,Headers - Qt Widgets,Headers R - Math,Headers R - MySQL,Headers R - Prométhée,Headers R - Time-Date,Headers R - IO,Headers R - Std,Sources R - Prométhée,Headers - URL Managers,Headers - Sessions,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - GALILEI,Sources - Infos,Sources - Tests,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources - Sessions,Sources R - Time-Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,Sources R - GGA,User Interface,Translations,GNU,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
+groups=Headers,Headers - Tests,Headers - GALILEI,Headers R - GA,Headers R - GGA,Headers - Qt Widgets,Headers R - Math,Headers R - MySQL,Headers R - Prométhée,Headers R - Time-Date,Headers R - IO,Headers R - Std,Sources R - Prométhée,Headers - URL Managers,Headers - Sessions,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - GALILEI,Sources - Infos,Sources - Tests,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - PostGroups,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources - Sessions,Sources R - Time-Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,Sources R - GGA,User Interface,Translations,GNU,Headers - PostGroups,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
 
 [Makefile.am]
 files=kgalileicenter.kdevprj,admin,AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,kgalileicenter.lsm
@@ -159,7 +161,7 @@ type=prog_main
 
 [kgalileicenter/galilei/Makefile.am]
 files=kgalileicenter/galilei/galilei.h,kgalileicenter/galilei/gplugin.cpp,kgalileicenter/galilei/gplugin.h
-sub_dirs=docs,filters,groups,infos,langs,profiles,sessions,urlmanagers,tests
+sub_dirs=docs,filters,groups,infos,langs,profiles,sessions,urlmanagers,tests,postgroups
 type=static_library
 
 [kgalileicenter/galilei/docs/Makefile.am]
@@ -1146,6 +1148,37 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/langs/gwordlist.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/postgroups/Makefile.am]
+files=kgalileicenter/galilei/postgroups/gpointofview.cpp,kgalileicenter/galilei/postgroups/gpointofview.h,kgalileicenter/galilei/postgroups/gpointofviewoptions.cpp,kgalileicenter/galilei/postgroups/gpointofviewoptions.h
+sharedlib_LDFLAGS=-version-info 0:0:0
+sharedlib_rootname=postgroups
+sub_dirs=
+type=static_library
+
+[kgalileicenter/galilei/postgroups/gpointofview.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/postgroups/gpointofview.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/postgroups/gpointofviewoptions.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/postgroups/gpointofviewoptions.h]
 dist=true
 install=false
 install_location=

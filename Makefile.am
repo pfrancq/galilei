@@ -28,6 +28,6 @@ dist-hook:
 	cd $(top_distdir) && perl admin/am_edit -padmin
 	cd $(top_distdir) && $(MAKE) -f admin/Makefile.common subdirs
 AM_CFLAGS = 
-AM_CXXFLAGS =
+AM_CXXFLAGS = -fexceptions -I$GCENTER/r -I$GCENTER/galilei  -I$GCENTER/qtwidgets
 AM_FFLAGS = 
-INCLUDES =  -I$GCENTER/galilei  -I$GCENTER/r  -I$GCENTER/qtwidgets
+INCLUDES = -I$GCENTER/galilei -I$GCENTER/r -I$GCENTER/qtwidgets
