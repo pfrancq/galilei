@@ -85,14 +85,14 @@ GALILEI::GGroup::GGroup(const unsigned int id,GLang* lang) throw(bad_alloc)
 //--------------------------------------------------------------------------
 int GALILEI::GGroup::sortOrder(const void *a,const void *b)
 {
-  double af=(*((GProfDocRef**)(a)))->Sim;
-  double bf=(*((GProfDocRef**)(b)))->Sim;
+	double af=(*((GProfDocRef**)(a)))->Sim;
+	double bf=(*((GProfDocRef**)(b)))->Sim;
 
-  if(af==bf) return(0);
-  if(af>bf)
-    return(-1);
-  else
-    return(1);
+	if(af==bf) return(0);
+	if(af>bf)
+		return(-1);
+	else
+		return(1);
 }
 
 
@@ -272,7 +272,8 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 	}
 
 	// Sort the container by similarity
-	qsort(static_cast<void*>(Docs.Tab),Docs.NbPtr,sizeof(GProfDocRef*),sortOrder);
+	if(NbPtr)
+		qsort(static_cast<void*>(Docs.Tab),Docs.NbPtr,sizeof(GProfDocRef*),sortOrder);
 
 	// Copy the result in docs
 	for(Docs.Start();!Docs.End();Docs.Next())
