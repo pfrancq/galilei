@@ -40,7 +40,7 @@
 #include <docs/gdoc.h>
 #include <docs/gdocs.h>
 using namespace GALILEI;
-
+using namespace RIO;
 
 
 //-----------------------------------------------------------------------------
@@ -50,43 +50,56 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GSim
+class GALILEI::GDocsSim::GSim
 {
 public:
-	unsigned int Id;         // identifier of the second document.
-	double Sim;              // Similarity between the documents.
+	unsigned int Id1;
+	unsigned int Id2;
+	double Sim;
 
-	GSim(unsigned int id,double s) : Id(id), Sim(s) {};
-	int Compare(const GSim* s) const {return(Id-s->Id);}
-	int Compare(const GSim& s) const {return(Id-s.Id);}
-	int Compare(const unsigned int id) const {return(Id-id);}
+	GSim(void) : Id1(0), Id2(0), Sim(0.0) {}
+	GSim(const GSim& r) : Id1(r.Id1), Id2(r.Id2), Sim(r.Sim) {}
+	GSim(unsigned int id1,unsigned id2,double s) : Id1(0), Id2(0), Sim(s)
+	{
+		if(id1<id2)
+		{
+			Id1=id1;
+			Id2=id2;
+		}
+		else
+		{
+			Id1=id2;
+			Id2=id1;
+		}
+	}
+	int Compare(const GSim* rec) const
+	{
+		int i=Id1-rec->Id1;
+		if(i) return(i);
+		return(Id2-rec->Id2);
+	}
+	int Compare(const GSim& rec) const
+	{
+		int i=Id1-rec.Id1;
+		if(i) return(i);
+		return(Id2-rec.Id2);
+	}
+	GSim& operator=(const GSim& src)
+	{
+		Id1=src.Id1;
+		Id2=src.Id2;
+		Sim=src.Sim;
+		return(*this);
+	}
+	void Write(RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f)
+	{
+		f<<Id1<<Id2<<Sim;
+	}
+	void Read(RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f)
+	{
+		f>>Id1>>Id2>>Sim;
+	}
 };
-
-
-
-//-----------------------------------------------------------------------------
-//
-// class GSims
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-class GALILEI::GDocsSim::GSims : public RStd::RContainer<GSim,unsigned int,true,true>
-{
-public:
-	unsigned int Id;         // Identifier of the first document.
-
-	GSims(unsigned int id,unsigned int max) throw(bad_alloc);
-	int Compare(const GSims* s) const {return(Id-s->Id);}
-	int Compare(const GSims& s) const {return(Id-s.Id);}
-	int Compare(const unsigned int id) const {return(Id-id);}
-};
-
-//-----------------------------------------------------------------------------
-GALILEI::GDocsSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_alloc)
-	: RStd::RContainer<GSim,unsigned int,true,true>(max,max/2), Id(id)
-{
-}
 
 
 
@@ -97,58 +110,71 @@ GALILEI::GDocsSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_allo
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocsSim::GDocsSim(const char*,GDocs* d,bool global) throw(bad_alloc)
-	: Sims(d->GetNbDocs(),d->GetNbDocs()/2)
+GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs* d,bool global) throw(bad_alloc)
+	: Sims(0)
 {
 	GDocCursor Cur1;
 	GDocCursor Cur2;
-	unsigned int i,j;
-	GSims* sim;
-	double tmp;
 
-	Cur1.Set(d);
-	Cur2.Set(d);
-	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
+	try
 	{
-		Sims.InsertPtr(sim=new GSims(Cur1()->GetId(),j));
-		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-		{
-			if(Cur1()->GetLang()!=Cur2()->GetLang()) continue;
-			if(global)
-				tmp=Cur1()->GlobalSimilarity(Cur2());
-			else
-				tmp=Cur1()->Similarity(Cur2());
-			if(tmp)
-				sim->InsertPtr(new GSim(Cur2()->GetId(),tmp));
-		}
+		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,RIO::Read);
+	}
+	catch(...)
+	{
+		// File doesn't exist -> Create it
+		Cur1.Set(d);
+		Cur2.Set(d);
+		ComputeSims(filename,Cur1,Cur2,global);
+		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,RIO::Read);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocsSim::GDocsSim(const char*,GDocs& d,bool global) throw(bad_alloc)
-	: Sims(d.GetNbDocs(),d.GetNbDocs()/2)
+GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs& d,bool global) throw(bad_alloc)
+	: Sims(0)
 {
 	GDocCursor Cur1;
 	GDocCursor Cur2;
-	unsigned int i,j;
-	GSims* sim;
-	double tmp;
 
-	Cur1.Set(d);
-	Cur2.Set(d);
+	try
+	{
+		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,RIO::Read);
+	}
+	catch(...)
+	{
+		// File doesn't exist -> Create it
+		Cur1.Set(d);
+		Cur2.Set(d);
+		ComputeSims(filename,Cur1,Cur2,global);
+		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,RIO::Read);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocsSim::ComputeSims(const char* filename,GDocCursor& Cur1,GDocCursor& Cur2,bool global) throw(bad_alloc,RString)
+{
+	unsigned int i,j;
+	RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,RIO::Create);
+	GSim r;
+
 	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
 	{
-		Sims.InsertPtr(sim=new GSims(Cur1()->GetId(),j));
+		r.Id1=Cur1()->GetId();
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
 			if(Cur1()->GetLang()!=Cur2()->GetLang()) continue;
 			if(global)
-				tmp=Cur1()->GlobalSimilarity(Cur2());
+				r.Sim=Cur1()->GlobalSimilarity(Cur2());
 			else
-				tmp=Cur1()->Similarity(Cur2());
-			if(tmp)
-				sim->InsertPtr(new GSim(Cur2()->GetId(),tmp));
+				r.Sim=Cur1()->Similarity(Cur2());
+			if(r.Sim)
+			{
+				r.Id2=Cur2()->GetId();
+				r.Write(*Sims);
+			}
 		}
 	}
 }
@@ -157,9 +183,8 @@ GALILEI::GDocsSim::GDocsSim(const char*,GDocs& d,bool global) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 double GALILEI::GDocsSim::GetSim(unsigned int i,unsigned int j)
 {
-	GSims* s;
-	GSim* s2;
 	unsigned int tmp;
+	GSim c;
 
 	if(i==j) return(1.0);
 	if(i>j)
@@ -168,11 +193,11 @@ double GALILEI::GDocsSim::GetSim(unsigned int i,unsigned int j)
 		i=j;
 		j=tmp;
 	}
-	s=Sims.GetPtr<unsigned int>(i);
-	if(!s) return(0.0);
-	s2=s->GetPtr<unsigned int>(j);
-	if(!s2) return(0.0);
-	return(s2->Sim);
+	c.Id1=i;
+	c.Id2=j;
+	if(Sims->GetRec(c))
+		return(0.0);
+	return(c.Sim);
 }
 
 
@@ -186,4 +211,6 @@ double GALILEI::GDocsSim::GetSim(const GDoc* d1,const GDoc* d2)
 //-----------------------------------------------------------------------------
 GALILEI::GDocsSim::~GDocsSim(void)
 {
+	if(Sims)
+		delete Sims;
 }

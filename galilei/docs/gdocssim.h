@@ -40,6 +40,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rio/rrecfile.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
@@ -58,12 +63,12 @@ namespace GALILEI{
 */
 class GDocsSim
 {
-	class GSims;
+	class GSim;
 
 	/**
 	* The similarities.
 	*/
-	RStd::RContainer<GSims,unsigned int,true,true> Sims;
+	RIO::RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>* Sims;
 
 public:
 
@@ -82,6 +87,19 @@ public:
 	* @param global         Global approach.
 	*/
 	GDocsSim(const char* filename,GDocs& d,bool global) throw(bad_alloc);
+
+protected:
+
+	/**
+	* Compute the similarities.
+	* @param filename       Name of the file containing the similarities.
+	* @param Cur1           First cursor.
+	* @param Cur2           Second cursor.
+	* @param global         Global approach.
+	*/
+	void ComputeSims(const char* filename,GDocCursor& Cur1,GDocCursor& Cur2,bool global) throw(bad_alloc,RString);
+
+public:
 
 	/**
 	* Get the similarities between two documents.
