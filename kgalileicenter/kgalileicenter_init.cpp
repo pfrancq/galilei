@@ -83,7 +83,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KGALILEICenterApp::KGALILEICenterApp(void)
+KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
 	: KMainWindow(0,"KGALILEICenterApp"), Langs(getenv("GALILEI_PLUGINS_LIB")),URLManager(getenv("GALILEI_PLUGINS_LIB")),
 	  DocAnalyseManager(getenv("GALILEI_PLUGINS_LIB")),
 	  ProfilingManager(getenv("GALILEI_PLUGINS_LIB")), GroupingManager(getenv("GALILEI_PLUGINS_LIB")),

@@ -38,6 +38,8 @@
 #include <iostream>
 using namespace std;
 
+
+
 #include <sessions/galilei.h>
 
 //-----------------------------------------------------------------------------
@@ -46,7 +48,7 @@ using namespace std;
 #include <kaboutdata.h>
 #include <klocale.h>
 #include <kapp.h>
-
+#include <qmessagebox.h>
 
 //-----------------------------------------------------------------------------
 // include files for current application
@@ -107,11 +109,11 @@ int main(int argc, char *argv[])
 	}
 	catch(GALILEI::GException& e)
 	{
-		cout<<e.GetMsg()<<endl;
+		cout<<e.GetMsg()<<endl;;
 	}
 	catch(...)
 	{
-		cout<<"Problem"<<endl;
+		cout<<"Unknown problem"<<endl;
 	}
  	return(0);
 }

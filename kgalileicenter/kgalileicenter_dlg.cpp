@@ -258,8 +258,7 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	// Goes through PostGroups
 	def=cur=0;
-	PostGroup=PostGroupManager.GetPostGroupCursor();
-	dlg.CurrentPostGroup->insertItem("None",0);
+	PostGroup=PostGroupManager.GetPostGroupsCursor();
 	for(PostGroup.Start(),idx=1;!PostGroup.End();PostGroup.Next(), idx++)
 	{
 		str=PostGroup()->GetName();
@@ -267,9 +266,6 @@ void KGALILEICenterApp::slotPlugins(void)
 		str+=PostGroup()->GetLib();
 		str+="]";
 		cur=new QPostGroupItem(dlg.PostGroups,PostGroup(),str);
-		dlg.CurrentPostGroup->insertItem(PostGroup()->GetName(),idx);
-		if((PostGroup()->GetPlugin())&&(PostGroup()->GetPlugin()==PostGroupManager.GetCurrentMethod()))
-			dlg.CurrentPostGroup->setCurrentItem(idx);
 		if(!def)
 			def=cur;
 	}
@@ -278,13 +274,11 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.PostGroups->setSelected(def,true);
 		dlg.changePostGroup(def);
 		dlg.EnablePostGroup->setEnabled(true);
-		dlg.CurrentPostGroup->setEnabled(true);
 	}
 
 	// Goes through the PostDoc method
 	def=cur=0;
 	PostDoc=PostDocManager.GetPostDocsCursor();
-	dlg.CurrentPostDoc->insertItem("None",0);
 	for(PostDoc.Start(),idx=1;!PostDoc.End();PostDoc.Next(),idx++)
 	{
 		str=PostDoc()->GetName();
@@ -292,9 +286,6 @@ void KGALILEICenterApp::slotPlugins(void)
 		str+=PostDoc()->GetLib();
 		str+="]";
 		cur=new QPostDocItem(dlg.PostDocs,PostDoc(),str);
-		dlg.CurrentPostDoc->insertItem(PostDoc()->GetName(),idx);
-		if((PostDoc()->GetPlugin())&&(PostDoc()->GetPlugin()==PostDocManager.GetCurrentMethod()))
-			dlg.CurrentPostDoc->setCurrentItem(idx);
 		if(!def)
 			def=cur;
 	}
@@ -303,7 +294,6 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.PostDocs->setSelected(def,true);
 		dlg.changePostDoc(def);
 		dlg.EnablePostDoc->setEnabled(true);
-		dlg.CurrentPostDoc->setEnabled(true);
 	}
 
 	// Goes through languages
@@ -457,13 +447,6 @@ void KGALILEICenterApp::slotPlugins(void)
 				item7->Fac->Delete(getSession());
 			item7=dynamic_cast<QPostDocItem*>(item7->itemBelow());
 		}
-		try
-		{
-			PostDocManager.SetCurrentMethod(dlg.CurrentPostDoc->currentText());
-		}
-		catch(GException)
-		{
-		}
 
 		// Goes through the languages method
 		QLangItem* item8=dynamic_cast<QLangItem*>(dlg.Langs->firstChild());
@@ -504,7 +487,6 @@ void KGALILEICenterApp::slotPlugins(void)
 				item10->Fac->Delete(getSession());
 			item10=dynamic_cast<QPostGroupItem*>(item10->itemBelow());
 		}
-
 	}
 
 }
