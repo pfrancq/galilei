@@ -86,6 +86,11 @@ protected:
 	*/
 	tSubProfileDesc SubProfileDesc;
 
+	/**
+	* Groups to destruct after the grouping.
+	*/
+	RStd::RContainer<GGroups,unsigned int,true,true> DeletedGroups;
+
 public:
 
 	/**
@@ -147,6 +152,21 @@ protected:
 	* is done by the Grouping method.
 	*/
 	virtual void Run(void) throw(GException)=0;
+
+	/**
+	* Create a new group. In practice a list of all removed groups are hold
+	* and an existing group not more necessary is used before creating a new
+	* one.
+	* @param lang       Language of the group to create.
+	*/
+	GGroup* NewGroup(GLang* lang);
+
+	/**
+	* Delete an existing group. In practice a list of all removed groups are
+	* hold and an existing group not more necessary is first put in a container
+	* before being destructed.
+	*/
+	void DeleteGroup(GGroup* grp);
 
 public:
 

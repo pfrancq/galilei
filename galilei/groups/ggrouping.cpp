@@ -40,6 +40,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
+#include <langs/glang.h>
 #include <groups/ggrouping.h>
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
@@ -58,8 +59,14 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGrouping::GGrouping(const char* n,GSession* s) throw(bad_alloc)
-	: GroupingName(n), Session(s), Lang(0), Groups(0), SubProfiles(s->GetNbUsers(),s->GetNbUsers()/2)
+	: GroupingName(n), Session(s), Lang(0), Groups(0), SubProfiles(s->GetNbUsers(),s->GetNbUsers()/2),
+	  DeletedGroups(200,100)
 {
+	GLangCursor Langs;
+
+	Langs=Session->GetLangsCursor();
+	for(Langs.Start();!Langs.End();Langs.Next())
+		DeletedGroups.InsertPtr(new GGroups(Langs()));
 }
 
 
@@ -93,19 +100,29 @@ void GALILEI::GGrouping::Init(void) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GALILEI::GGrouping::Clear(void) throw(bad_alloc)
 {
-	GGroup* Grp;
-	GGroup** Tab;
 	unsigned int i;
 
 	// Go through the groups and delete all invalid groups.
-	for(i=Groups->NbPtr+1,Tab=Groups->Tab;--i;Tab++)
+	for(i=Groups->NbPtr+1;--i;)
 	{
-		Grp=(*Tab);
-		Grp->DeleteSubProfiles();
-		Session->DeleteGroup(Grp);
-		Groups->DeletePtr(Grp);
-		Tab--;
+		DeleteGroup(*Groups->Tab);
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+GGroup* GALILEI::GGrouping::NewGroup(GLang* lang)
+{
+	return(Session->NewGroup(lang));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGrouping::DeleteGroup(GGroup* grp)
+{
+	grp->DeleteSubProfiles();
+	Groups->DeletePtr(grp);
+	Session->DeleteGroup(grp);
 }
 
 
@@ -134,9 +151,7 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified)
 			Grp=(*Tab);
 			if((!modified)||(((Grp->GetState()!=osUpToDate)&&(Grp->GetState()!=osUpdated))&&(!IsValid(Grp))))
 			{
-				Grp->DeleteSubProfiles();
-				Session->DeleteGroup(Grp);
-				Groups->DeletePtr(Grp);
+				DeleteGroup(Grp);
 				Tab--;
 			}
 		}
