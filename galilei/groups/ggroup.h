@@ -83,6 +83,11 @@ private:
 
 public:
 
+  /**
+	*constrcutor for pov.
+	* @
+	*/
+	GGroup(void)throw(bad_alloc);
 	/**
 	* Construct a group with a specific identificator.
 	* @param id             Identificator.

@@ -46,6 +46,7 @@
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
+#include <postgroups/gpointofview.h>
 using namespace GALILEI;
 using namespace RStd;
 
@@ -80,6 +81,13 @@ public:
 //  GGroup
 //
 //-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GALILEI::GGroup::GGroup( ) throw(bad_alloc)
+	: RContainer<GSubProfile,unsigned int,false,true>(20,10)
+{
+}
+
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroup::GGroup(const unsigned int id,GLang* lang) throw(bad_alloc)
