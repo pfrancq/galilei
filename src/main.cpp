@@ -149,8 +149,6 @@ int main(int argc, char *argv[])
 		Session.LoadUsers(false,true);
 		Session.LoadFdbks();
 		Session.PostConnect(&LinkCalcManager);
-		Session.InitProfilesSims();
-		Session.InitProfilesBehaviours();
 		Log->WriteLog("Data loaded");
 
 // 		try
