@@ -99,7 +99,6 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
 	CurrentRandom=0;
 	Random = new RRandomGood(CurrentRandom);
-//	Random->Reset(0);
 }
 
 
