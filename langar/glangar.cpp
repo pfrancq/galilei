@@ -76,7 +76,7 @@ public:
 	RString ForbiddenLetter;
 	bool CycleRule; // true if the rule has to be applied until it can not any more, false if the rule has to ben applied one once
 	bool NextLevel; // must go to next level if rule is applied
-	ArabicRule(unsigned int id, unsigned int level, RString os, RString ns, int before_pos, int after_pos, 
+	ArabicRule(unsigned int id, unsigned int level, RString os, RString ns, int before_pos, int after_pos,
 		unsigned int nb_min_letters, int equality_pos, RString equality, int forbidden_pos, RString forbidden_letter, bool cycle_rule, bool next_level);
 	int Compare(const ArabicRule*) {return(-1);} // force rules to be sorted as entered;
 	bool Apply(RString& kwd); //function to apply the rule -> returns true if a stemmer is applied
@@ -86,7 +86,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-GLangAR::ArabicRule::ArabicRule(unsigned int id, unsigned int level, RString os, RString ns,  int before_pos, int after_pos, 
+GLangAR::ArabicRule::ArabicRule(unsigned int id, unsigned int level, RString os, RString ns,  int before_pos, int after_pos,
 		unsigned int nb_min_letters, int equality_pos, RString equality, int forbidden_pos, RString forbidden_letter, bool cycle_rule, bool next_level)
 	: Id(id), Level(level), OldSuffix(os), NewSuffix(ns), BeforePos(before_pos), AfterPos(after_pos), NbMinLetters(nb_min_letters),
 		EqualityPos(equality_pos), Equality(equality), ForbiddenPos(forbidden_pos), ForbiddenLetter(forbidden_letter), CycleRule(cycle_rule), NextLevel(next_level)
@@ -123,7 +123,7 @@ int GLangAR::ArabicRule::CheckConditions(RString kwd)
 	// checking before condtions
 	if(AfterPos!=-1&&(((kwd.GetLen()-OldSuffix.GetLen()-position)!=AfterPos)))
 		return(-1);
-	
+
 	//now verify if this old suffix is the old suffix to change (if old suffix appears many times in the word)
 	//check before postion and after position.
 	//check miminum of letters
@@ -136,7 +136,7 @@ int GLangAR::ArabicRule::CheckConditions(RString kwd)
 			return(-1);
 
 	//check for forbidden letter
-	if((ForbiddenPos!=-1)&&(!(kwd.Mid(ForbiddenPos, ForbiddenLetter.GetLen()).Compare(ForbiddenLetter)))) 
+	if((ForbiddenPos!=-1)&&(!(kwd.Mid(ForbiddenPos, ForbiddenLetter.GetLen()).Compare(ForbiddenLetter))))
 		return(-1);
 
 	return(position);
@@ -233,87 +233,87 @@ void GALILEI::GLangAR::LoadRules(void) throw(GException)
 	int sep;
 	ArabicRule* rule;
 
-	//Read Rules
-	RTextFile rules_file(Factory->GetString("RulesFile"), Factory->GetString("Encoding"));
-	rules_file.Open(RIO::Read);
-	
-	//treat on read line
-	while (!rules_file.Eof())
+	try
 	{
-		w=rules_file.GetWord();
+		//Read Rules
+		RTextFile rules_file(Factory->GetString("RulesFile"), Factory->GetString("Encoding"));
+		rules_file.Open(RIO::Read);
 
-		//load one rule
-		tab=new RString[nbargs];
-		tmp=0;
-		for (i=0; i<nbargs;i++)
+		//treat on read line
+		while (!rules_file.Eof())
 		{
-			sep=w.Find(separator,tmp);
-			if( sep==-1)
-			{
-				tab[i++]=w.Mid(tmp);
-				break;
-			}
-			else
-			{
-				tab[i]=w.Mid(tmp, (sep-tmp));
-				tmp=sep+1;
-			}
-		}
-		if (i<nbargs)
-			cout <<" not enough argument found in arabic rules loading..."<<i << "arguments found ("<<nbargs<<" needed)"<<endl;
+			w=rules_file.GetWord();
 
-		//insert rule
-		int before_pos=(!tab[4].GetLen())? -1: atoi(tab[4].Latin1());;
-		int after_pos= (!tab[5].GetLen())? -1: atoi(tab[5].Latin1());
-		int equality_pos=(!tab[7].GetLen())? -1: atoi(tab[7].Latin1())-1;
-		int forbidden_pos=(!tab[10].GetLen())? -1: atoi(tab[10].Latin1())-1;;
-		RString old_suffix=(tab[2].GetLen())? tab[2].Mid(1,tab[2].GetLen()-2) : tab[2];//remove the " characters
-		RString new_suffix=(tab[3].GetLen())? tab[3].Mid(1,tab[3].GetLen()-2) : tab[3]; //remove the " characters
-		RString equality=(tab[8].GetLen())? tab[8].Mid(1,tab[8].GetLen()-2) : tab[8]; //remove the " characters
-		RString forbidden_letter=(tab[9].GetLen())? tab[9].Mid(1,tab[9].GetLen()-2) : tab[9]; //remove the " characters;
-		bool cycle_rule=(!tab[11].GetLen())? 0: atoi(tab[11].Latin1()); //remove the " characters;
-		bool next_level=(!tab[12].GetLen())? 0: atoi(tab[12].Latin1()); //remove the " characters;
-		cout <<" cycle="<<cycle_rule<<" - test="<<tab[11].Latin1()<<" - level ="<<next_level<<endl;
-		cout << " treating rule "<<atoi(tab[0].Latin1())<<" level "<<atoi(tab[1].Latin1())<<endl;
-		rule=new ArabicRule(atoi(tab[1].Latin1()),atoi(tab[0].Latin1()),old_suffix,new_suffix,before_pos, after_pos,
-			atoi(tab[6].Latin1()),equality_pos,equality,forbidden_pos,forbidden_letter, cycle_rule, next_level);
-		switch(rule->Level)
-		{
-			case(0):
-				Rules0->InsertPtr(rule);
-				break;
-			case(1):
-				Rules1->InsertPtr(rule);
-				break;
-			case(2):
-				Rules2->InsertPtr(rule);
-				break;
-			case(3):
-				Rules3->InsertPtr(rule);
-				break;
-			case(4):
-				Rules4->InsertPtr(rule);
-				break;
-			case(5):
-				Rules5->InsertPtr(rule);
-				break;
-			case(6):
-				Rules6->InsertPtr(rule);
-				break;
-			case(7):
-				Rules7->InsertPtr(rule);
-				break;
-			default:
-				cout <<" wrong arabic rule level"<<endl;
-				break;
+			//load one rule
+			tab=new RString[nbargs];
+			tmp=0;
+			for (i=0; i<nbargs;i++)
+			{
+				sep=w.Find(separator,tmp);
+				if( sep==-1)
+				{
+					tab[i++]=w.Mid(tmp);
+					break;
+				}
+				else
+				{
+					tab[i]=w.Mid(tmp, (sep-tmp));
+					tmp=sep+1;
+				}
+			}
+			if (i<nbargs)
+				cout <<" not enough argument found in arabic rules loading..."<<i << "arguments found ("<<nbargs<<" needed)"<<endl;
+
+			//insert rule
+			int before_pos=(!tab[4].GetLen())? -1: atoi(tab[4].Latin1());;
+			int after_pos= (!tab[5].GetLen())? -1: atoi(tab[5].Latin1());
+			int equality_pos=(!tab[7].GetLen())? -1: atoi(tab[7].Latin1())-1;
+			int forbidden_pos=(!tab[10].GetLen())? -1: atoi(tab[10].Latin1())-1;;
+			RString old_suffix=(tab[2].GetLen())? tab[2].Mid(1,tab[2].GetLen()-2) : tab[2];//remove the " characters
+			RString new_suffix=(tab[3].GetLen())? tab[3].Mid(1,tab[3].GetLen()-2) : tab[3]; //remove the " characters
+			RString equality=(tab[8].GetLen())? tab[8].Mid(1,tab[8].GetLen()-2) : tab[8]; //remove the " characters
+			RString forbidden_letter=(tab[9].GetLen())? tab[9].Mid(1,tab[9].GetLen()-2) : tab[9]; //remove the " characters;
+			bool cycle_rule=(!tab[11].GetLen())? 0: atoi(tab[11].Latin1()); //remove the " characters;
+			bool next_level=(!tab[12].GetLen())? 0: atoi(tab[12].Latin1()); //remove the " characters;
+			rule=new ArabicRule(atoi(tab[1].Latin1()),atoi(tab[0].Latin1()),old_suffix,new_suffix,before_pos, after_pos,
+				atoi(tab[6].Latin1()),equality_pos,equality,forbidden_pos,forbidden_letter, cycle_rule, next_level);
+			switch(rule->Level)
+			{
+				case(0):
+					Rules0->InsertPtr(rule);
+					break;
+				case(1):
+					Rules1->InsertPtr(rule);
+					break;
+				case(2):
+					Rules2->InsertPtr(rule);
+					break;
+				case(3):
+					Rules3->InsertPtr(rule);
+					break;
+				case(4):
+					Rules4->InsertPtr(rule);
+					break;
+				case(5):
+					Rules5->InsertPtr(rule);
+					break;
+				case(6):
+					Rules6->InsertPtr(rule);
+					break;
+				case(7):
+					Rules7->InsertPtr(rule);
+					break;
+				default:
+					cout <<" wrong arabic rule level"<<endl;
+					break;
+			}
+			if(tab)
+				delete[] tab;
 		}
-		delete[] tab;
 	}
-	//bilan (debug)
-	cout << "bilan"<<endl;
-	cout <<" rules0 "<<Rules0->NbPtr<<" rules1 "<<Rules1->NbPtr<<" rules2 "<<Rules2->NbPtr<<" rules3 "<<Rules3->NbPtr<<" rules4 "<<Rules4->NbPtr<<" rules5 "<<Rules5->NbPtr<<" rules6 "<<Rules6->NbPtr<<" rules7 "<<Rules7->NbPtr<<endl;
-	char tmpchar[200];
-	sprintf(tmpchar, "Rules loaded : Rules1 =%u, Rules2=%u, Rules3=%u, Rules4=%u, Rules5=%u, Rules6=%u, Rules7=%u", Rules1->NbPtr, Rules2->NbPtr,Rules3->NbPtr,Rules4->NbPtr,Rules5->NbPtr,Rules6->NbPtr,Rules7->NbPtr);
+	catch(...)
+	{
+	}
 }
 
 
