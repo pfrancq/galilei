@@ -777,17 +777,6 @@ void GALILEI::GSessionMySQL::SaveGroups(void)
 
 		}
 	}
-
-	// Update References of the loaded groups.
-	GroupsCursor=this->GetGroupsCursor();
-	for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
-	{
-		groups=GroupsCursor();
-		for(groups->Start();!groups->End();groups->Next())
-		{
-			static_cast<GGroupVector*>((*groups)())->UpdateRefs();
-		}
-	}
 }
 
 
@@ -827,7 +816,10 @@ void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 	char sSql[100];
 	GGroupVector* group;
 	GLangCursor Langs;
-    GIWordWeight* Word;
+	GIWordWeight* Word;
+	GGroups* groups;
+	GGroupsCursor GroupsCursor;
+
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
@@ -845,6 +837,17 @@ void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 				group->AddWord(Word);
 			}
 			groups->InsertPtr(group);
+		}
+	}
+
+	// Update References of the loaded groups.
+	GroupsCursor=this->GetGroupsCursor();
+	for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
+	{
+		groups=GroupsCursor();
+		for(groups->Start();!groups->End();groups->Next())
+		{
+			static_cast<GGroupVector*>((*groups)())->UpdateRefs();
 		}
 	}
 }

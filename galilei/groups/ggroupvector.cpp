@@ -97,7 +97,7 @@ double GALILEI::GGroupVector::Similarity(const GGroup* desc) const
 //-----------------------------------------------------------------------------
 double GALILEI::GGroupVector::GlobalSimilarity(const GGroup* desc) const
 {
-	return(SimilarityIdf((static_cast<const GGroupVector*>(desc)),otSubProfile,Lang));
+	return(SimilarityIdf((static_cast<const GGroupVector*>(desc)),otGroup,Lang));
 }
 
 
