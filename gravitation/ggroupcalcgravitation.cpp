@@ -111,7 +111,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 	for(i=grp->NbPtr+1,ptr=grp->Tab;--i;ptr++)
 	{
 		// Go trough the words of the current subprofile
-		Ref=static_cast<GSubProfileVector*>(*ptr)->GetVector();
+		Ref=static_cast<GSubProfileVector*>(*ptr);
 		for(j=Ref->NbPtr+1,w=Ref->Tab;--j;w++)
 		{
 			ins=Vector->GetInsertPtr<unsigned int>((*w)->GetId());
