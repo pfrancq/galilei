@@ -81,7 +81,8 @@ GALILEI::GIdealGroup::GIdealGroup(GSession* session)
 {
 	PercOK=10;
 	PercKO=10;
-	Rand=0;
+	PercHS=0;
+	PercErr=0;
 	Subjects=new GSubjectTree(PercOK,PercKO,Session->GetNbUsers());
 	Session->LoadSubjectTree(Subjects);
 	Subjects->InsertProfiles();
@@ -108,7 +109,7 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 	Session->ClearFdbks();
 
  	// Create the different judgments.
-	Subjects->Judgments(Session,Rand,PercOK,PercKO,NbProfMin,NbProfMax,PercSocial);
+	Subjects->Judgments(Session,PercOK,PercKO,PercHS,NbProfMin,NbProfMax,PercSocial,PercErr);
 
 	// Create the ideal groupment corresponding to the precedent judgment.
 	Subjects->IdealGroupment(groups,Session,parent);
@@ -119,6 +120,7 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 		// Save the ideal groupment into the database.
 		Session->SaveIdealGroupment(groups);
 	}
+
 }
 
 
@@ -134,7 +136,7 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 {
 	static char tmp[100];
 
-	sprintf(tmp,"%u %u %i %u %u %u",PercOK,PercKO,Rand,NbProfMin,NbProfMax,PercSocial);
+	sprintf(tmp,"%u %u %u %i %u %u %u %u",PercOK,PercKO,PercHS,Rand,NbProfMin,NbProfMax,PercSocial,PercErr);
 
 	return(tmp);
 }
@@ -144,10 +146,12 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 void GALILEI::GIdealGroup::SetSettings(const char* s)
 {
 	unsigned int a,b;
-
 	if(!(*s)) return;
-	sscanf(s,"%u %u %i %u %u %u",&PercOK,&PercKO,&Rand,&a,&b,&PercSocial);
+	sscanf(s,"%u %u %u %i %u %u %u %u",&PercOK,&PercKO,&PercHS,&Rand,&a,&b,&PercSocial,&PercErr);
 	if (a<=b) NbProfMin=a;
 	if (b<=Session->GetNbUsers()) NbProfMax=b;
-	if (b==0) NbProfMax=Session->GetNbUsers(); 
+	if (b==0) NbProfMax=Session->GetNbUsers();
+
+	if(Rand!=0)
+		Session->SetCurrentRandom(Rand);
 }

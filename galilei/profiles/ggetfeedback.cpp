@@ -75,8 +75,10 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGetFeedback::GGetFeedback(GSession* session)
-	: Session(session), NbDoc(30), Global(true), IdealGroup(0), Parent(0)
+	: Session(session), NbDoc(30), Global(true), PercErr(0),IdealGroup(0), Parent(0)
 {
+	IdealDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
+	Session->LoadIdealDocument(IdealDoc);
 }
 
 
@@ -113,7 +115,8 @@ void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,t
 					prof2=(*docs)()->GetProfile()->GetSubProfile((*docs)()->GetDoc()->GetLang())->GetId();
 					if(i<NbDoc)
 					{
-						CreateNewFeedback(AreInSameGroup(prof1,prof2),Prof1(),(*docs)()->GetDoc());
+						CreateNewFeedback(JudgType(Prof1(),(*docs)()->GetDoc()),Prof1(),(*docs)()->GetDoc());
+
 					}
 					i++;
 				}
@@ -128,68 +131,55 @@ void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,t
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GGetFeedback::AreInSameGroup(int prof11,int prof22)
+int GALILEI::GGetFeedback::JudgType(GSubProfile* SubProf,GDoc* Doc)
 {
-	int prof1,prof2;
-	GSubProfileCursor Prof1;
-	GSubProfileCursor Prof2;
-	int subgrpid1,subgrpid2;
-	subgrpid1=-1;
-	subgrpid2=-2;
 
-	GGroupCursor Grp;
+	int GrpDocId;
+	int GrpProfId;
+	int tempres;
 
-	//Verify if 2 profiles are in the same ideal group.
+	// Find The id of the group where the document is.
+	for(IdealDoc->Start();!  IdealDoc->End();  IdealDoc->Next())
+	{
+		GGroupEvaluateCursor Grp=(*IdealDoc)()->GetGroupEvaluateCursor();
+ 		for(Grp.Start();!Grp.End();Grp.Next())
+		{
+			if(Grp()->IsIn(Doc->GetId()))
+			GrpDocId=Grp()->GetId();
+		}
+	}
+
+	// Find the id of the group  where the subprofile is.
 	for(IdealGroup->Start();!IdealGroup->End();IdealGroup->Next())
 	{
-		Grp=(*IdealGroup)()->GetGroupCursor();
-
+		GGroupCursor Grp=(*IdealGroup)()->GetGroupCursor();
 		for(Grp.Start();!Grp.End();Grp.Next())
 		{
-			Prof1=Grp()->GetSubProfileCursor();
-			Prof2=Grp()->GetSubProfileCursor();
-			for(Prof1.Start();!Prof1.End();Prof1.Next())
+			GSubProfileCursor Prof=Grp()->GetSubProfileCursor();
+			for(Prof.Start();!Prof.End();Prof.Next())
 			{
-				prof1=Prof1()->GetId();
-				if (prof11==prof1)
+				if (SubProf->GetId()==Prof()->GetId())
 				{
-					subgrpid1=Parent->GetPtr(Grp()->GetId())->ParentId;
-					for(Prof2.Start();!Prof2.End();Prof2.Next())
-					{
-						prof2=Prof2()->GetId();
-						if(prof22==prof2) return(1);
-					}
+					GrpProfId=Grp()->GetId();
 				}
 			}
 		}
 	}
 
-	//If there arent in the same group.. verify if there are in the same general ideal group.
-	for(IdealGroup->Start();!IdealGroup->End();IdealGroup->Next())
+	// Compare his two id.
+	// Same grp.
+	if(GrpDocId==GrpProfId) tempres=1;
+	// Same parent.
+	else if(Parent->GetPtr(GrpDocId)->ParentId==Parent->GetPtr(GrpProfId)->ParentId) tempres=2;
+	// Different grp.
+	else  tempres=3;
+
+	// If there is Random change the judgment.
+	if(Session->GetCurrentRandomValue(100)<int(PercErr))
 	{
-		Grp=(*IdealGroup)()->GetGroupCursor();
-
-		for(Grp.Start();!Grp.End();Grp.Next())
-		{
-			Prof1=Grp()->GetSubProfileCursor();
-			for(Prof1.Start();!Prof1.End();Prof1.Next())
-			{
-				prof1=Prof1()->GetId();
-				if (prof22==prof1)
-				{
-					subgrpid2=Parent->GetPtr(Grp()->GetId())->ParentId;
-				}
-			}
-		}
+		tempres=int(Session->GetCurrentRandomValue(3)+1);
 	}
-
-	if (subgrpid2==subgrpid1)
-	{
-		return(2);
-	}
-
-	// there are not in the same group and havent the same parent.
-	return(3);
+	return(tempres);
 }
 
 
@@ -224,7 +214,7 @@ void GALILEI::GGetFeedback::SetSettings(const char* s)
 	char c;
 	
 	if(!(*s)) return;
-	sscanf(s,"%c %u",&c,&NbDoc);
+	sscanf(s,"%c %u %u",&c,&NbDoc,&PercErr);
 	if(c=='1') Global=true; else Global=false;
 }
 
@@ -236,6 +226,6 @@ const char* GALILEI::GGetFeedback::GetSettings(void)
 	char c;
 	
 	if(Global) c='1'; else c='0';
-	sprintf(tmp,"%c %u",c,NbDoc);
+	sprintf(tmp,"%c %u %u",c,NbDoc,PercErr);
 	return(tmp);
 }

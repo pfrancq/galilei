@@ -61,6 +61,7 @@ using namespace RIO;
 #include <profiles/gprofile.h>
 #include <profiles/guser.h>
 #include <profiles/gprofdoc.h>
+#include <tests/ggroupsevaluate.h>
 using namespace GALILEI;
 using namespace RMath;
 using namespace RStd;
@@ -83,7 +84,8 @@ GALILEI::GSubjectTree::GSubjectTree(unsigned int NbOk,unsigned int NbKo,unsigned
 	NbUsers=nbusers;
 	NbProfiles=NbUsers;
 	profiles=new RContainer<GProfile,unsigned,false,true>(10,5);
-	Random = new RRandomGood(12345);
+	sprintf(today,"'%u-%u-%u'",date.GetYear(),date.GetMonth(),date.GetDay());
+	IdealDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 }
 
 
@@ -112,17 +114,18 @@ void GALILEI::GSubjectTree::InsertProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubjectTree::Judgments(GSession* ses,int ran,int percok,int percko,int nbmin,int nbmax,unsigned int percsocial)
+void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int perchs,int nbmin,int nbmax,unsigned int percsocial,int percerr)
 {
 	int NbProfilesWhoJudgesDocuments;
 	unsigned int psocial;
 
 	NbDocsOk=percok;
 	NbDocsKo=percko;
-	if(ran!=0) Random->Reset(ran);
+	NbDocsHs=perchs;
 	InitProfiles();
-	InitSubSubjects();                                    
+	InitSubSubjects();
 	GProfileCursor ProfCursor;
+	ses->LoadIdealDocument(IdealDoc);
 
 	//Calculation of the total number of subsubjects.
 	int nbrsububjects=0;
@@ -136,23 +139,32 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int ran,int percok,int perck
 		tab[i]=0;
 	
 	
-	ProfCursor=ses->GetProfilesCursor();	
+	// Create the social parameters.
+	ProfCursor=ses->GetProfilesCursor();
 	for(ProfCursor.Start();!ProfCursor.End();ProfCursor.Next())
 	{
-		psocial=Random->Value(100);
+		psocial=ses->GetCurrentRandomValue(100);
 		if(psocial<=percsocial)	ProfCursor()->SetSocial(true);
 		else  ProfCursor()->SetSocial(false);
 		ses->SaveProfile(ProfCursor());
 	}
+
+	// Create the judgments.
 	for (this->Start(); !this->End(); this->Next())
 	{
 		GSubject* subject=(*this)();
+		// For each subject chose documents to juge.
 		for (subject->Start();!subject->End();subject->Next())
 		{
 			GSubject* sub1=(*subject)();
-			if (nbmax>NbProfiles) NbProfilesWhoJudgesDocuments =(Random->Value(NbProfiles-nbmin))+nbmin;
-			else  NbProfilesWhoJudgesDocuments =(Random->Value(nbmax-nbmin))+nbmin; 
-			sub1->setIsJudged(true); 
+			// find the number of profile who can judge documents.
+			if (nbmax>NbProfiles) NbProfilesWhoJudgesDocuments =(ses->GetCurrentRandomValue(NbProfiles-nbmin))+nbmin;
+			else  NbProfilesWhoJudgesDocuments =(ses->GetCurrentRandomValue(nbmax-nbmin))+nbmin;
+
+			// Set that the subject is judged.
+			sub1->setIsJudged(true);
+			
+			// For each subprofiles who can judge documents/
 			for (int i=0; i<NbProfilesWhoJudgesDocuments; i++)
 			{
 				// Create the judgement.
@@ -163,62 +175,137 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int ran,int percok,int perck
 				tab[sub1->GetId()-1]=tab[sub1->GetId()-1]+1;
 		
 				// Documents OK.
-				JudgeDocuments(profid,sub1,1,ses);
+				JudgeDocuments(profid,sub1,1,ses,percerr);
 
+				// The Number of Ok documents judged by this profiles.
+				int nbDocok = int(((double(NbDocsOk*sub1->urls->NbPtr)/100))+0.5);
+
+				int SubthemaKO;
 				// Documents KO.
 				if (subject->NbPtr>1) //If the subsuject enables the KO judgement of documents.
 				{
-					int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
+					int subthema = (ses->GetCurrentRandomValue(subject->NbPtr))+subject->SubSubjectMinId();
 					GSubject* sub2=subject->GetPtr(subthema);
+					SubthemaKO=subthema;
 					while(sub2==sub1)
 					{
-						int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
+						int subthema = (ses->GetCurrentRandomValue(subject->NbPtr))+subject->SubSubjectMinId();
 						sub2=subject->GetPtr(subthema);
+						SubthemaKO=subthema;
 					}
-					JudgeDocuments(profid,sub2,0,ses);
+					JudgeDocuments(profid,sub2,2,ses,percerr);
+				}
+
+				// Documents HS.
+				// If the subsuject enables the KO judgement of documents.
+				if (NbDocsHs>0)
+				{
+					// Judge NBDocsHs percent of NbDocok
+					for (int i=1;i<int(NbDocsHs*nbDocok/100);i++)
+					{
+						int DocIdToJug=(ses->GetCurrentRandomValue(ses->GetNbDocs())+1);
+						int GrpDocId;
+						GDoc* doc=ses->GetDoc(DocIdToJug);
+
+						// Verify that the Document is not in ok or ko subject
+						for(IdealDoc->Start();! IdealDoc->End();  IdealDoc->Next())
+						{
+							GGroupEvaluateCursor Grp=(*IdealDoc)()->GetGroupEvaluateCursor();
+							for(Grp.Start();!Grp.End();Grp.Next())
+							{
+								if(Grp()->IsIn(DocIdToJug))
+								{
+									GrpDocId=Grp()->GetId();
+								}
+							}
+						}
+
+						// If the doc is not in the ok subjetc or ko subject
+						// and that the profiles doenst have judged
+						if((GrpDocId!=sub1->GetId())&&(GrpDocId!=SubthemaKO))
+						{
+							if(ses->GetProfile(profid)->GetFeedback(doc)==0)
+							{
+								// the default value is HS
+								int tempjug=3;
+								// but if ther is random error
+								if(ses->GetCurrentRandomValue(100)<int(percerr))
+								{
+									tempjug=int(ses->GetCurrentRandomValue(3)+1);
+								}
+								if(tempjug==1)
+								{
+									 ses->InsertFdbk(ses->GetProfile(profid),doc,djOK,today);
+								}
+								else if(tempjug==2)
+								{
+									ses->InsertFdbk(ses->GetProfile(profid),doc,djKO,today);
+								}
+								else if(tempjug==3)
+								{
+									ses->InsertFdbk(ses->GetProfile(profid),doc,djOutScope,today);
+								}
+							}
+							else i--;
+						}
+					}
 				}
 			}
 		}
-	}   
+	}
 	delete [] tab;
 }
   
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,bool i,GSession* ses )
+void GALILEI::GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSession* ses,int PercErr )
 {
-	char today[12];
-	RTimeDate::RDate date;
+
 	int NbDocs;
-	char judgement;
+	int judgement;
 
 	//If i juge ok.
-	if (i)
+	if (i==1)
 	{
 		NbDocs=int(((double(NbDocsOk*sub->urls->NbPtr)/100))+0.5);
-		judgement='O';
+		judgement=1;
 	}
 
 	//If i=0 juge KO.
-	else
+	else if (i==2)
 	{
 		NbDocs=int(((double(NbDocsKo*sub->urls->NbPtr)/100))+0.5);
-		judgement='K';
+		judgement=2;
 	}
+
 
 	RContainer<GDoc,unsigned,false,false>* judgedDocs=new RContainer<GDoc,unsigned,false,false>(10,5);
 	int j=0;
-	sprintf(today,"'%u-%u-%u'",date.GetYear(),date.GetMonth(),date.GetDay());
 	while (j<NbDocs)
 	{
 		sub->urls->Start();
-		int url=(Random->Value(sub->urls->NbPtr))+(*(sub->urls))()->GetId();
-//		int url=(rand()%(sub->urls->NbPtr))+(*(sub->urls))()->GetId();
+		int url=(ses->GetCurrentRandomValue(sub->urls->NbPtr))+(*(sub->urls))()->GetId();
 		GDoc* doc=sub->urls->GetPtr(url);
 		if (!judgedDocs->GetPtr(doc->GetId()))
 		{
-			if(judgement=='O') ses->InsertFdbk(ses->GetProfile(profileid),ses->GetDoc(doc->GetId()),djOK,today);
-			else ses->InsertFdbk(ses->GetProfile(profileid),ses->GetDoc(doc->GetId()),djKO,today);
+			int tempjug=judgement;
+			// If there is Random change the judgment.
+			if(ses->GetCurrentRandomValue(100)<int(PercErr))
+			{
+				tempjug=int(ses->GetCurrentRandomValue(3)+1);
+			}
+			if(tempjug==1)
+			{
+				 ses->InsertFdbk(ses->GetProfile(profileid),ses->GetDoc(doc->GetId()),djOK,today);
+			}
+			else if(tempjug==2)
+			{
+				ses->InsertFdbk(ses->GetProfile(profileid),ses->GetDoc(doc->GetId()),djKO,today);
+			}
+			else if(tempjug==3)
+			{
+				ses->InsertFdbk(ses->GetProfile(profileid),ses->GetDoc(doc->GetId()),djOutScope,today);
+			}
 			judgedDocs->InsertPtr(doc);
 			j++;
 		}
@@ -436,7 +523,4 @@ void GALILEI::GSubjectTree::InitSubSubjects()
 //-----------------------------------------------------------------------------
 GALILEI::GSubjectTree::~GSubjectTree(void)
 {
-	if(Random)
-		delete Random;
-
 }

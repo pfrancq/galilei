@@ -78,6 +78,17 @@ protected:
 	unsigned int PercKO;
 
 	/**
+	* The percentage of hs documents compare to Ok documents.
+	*/
+	unsigned int PercHS;
+
+
+	/**
+	* The Percentage of documents judged whith error.
+	*/
+	unsigned int PercErr;
+
+	/**
 	* Parameter to initialyse the random function for autocreate jugment.
 	* 0 to use randomly, >0 to use whit the same su sequence
 	*/

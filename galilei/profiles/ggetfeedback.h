@@ -39,11 +39,13 @@
 #define GGetFeedbackH
 
 
+
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <profiles/gusers.h>
 #include <groups/gsubject.h>
+#include <tests/ggroupsevaluate.h>
 
 
 
@@ -81,6 +83,11 @@ protected:
 	bool Global;
 
 	/**
+	* The Percentage of documents judged whith error.
+	*/
+	unsigned int PercErr;
+
+	/**
 	* IdealGroup              the idealgroupment.
 	*/
 	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroup;
@@ -91,13 +98,19 @@ protected:
 	RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* Parent;
 
 	/**
-	* Return 1 if the profiles are in the same group.
-	* Return 2 if the profiles are in different group but whith the same parent group.
-	* Return 3 if the profiles are in different group.
-	* @param prof1            the id of the first profile.
-	* @param prof2            the id of the second profile.
+	* IdealDoc                the idealgroupment of document.
 	*/
-	int AreInSameGroup(int prof1,int prof2);
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDoc;
+
+	/**
+	* Return 1 if the profiles judge the doc OK.
+	* Return 2 if the profiles judge the doc KO.
+	* Return 3 if the profiles judge the doc HS.
+	* If PercErr is not null the judgment can be different from the ideal judgment.
+	* @param Subprof          the subprofiles who judg the document.
+	* @param Doc              the Document who will be judged.
+	*/
+	int JudgType(GSubProfile* SubProf,GDoc* Doc);
 
 	/**
 	* Create a feedback for the user whith profil id prof1 whith the documents doc.

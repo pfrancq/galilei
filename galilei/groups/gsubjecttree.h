@@ -44,7 +44,6 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rtree.h>
-#include <rmath/random.h>
 
 
 //-----------------------------------------------------------------------------
@@ -83,14 +82,34 @@ protected:
 	int NbDocsKo;
 
 	/**
+	* Number of documents Hs per profile.
+	*/
+	int NbDocsHs;
+
+	/**
 	* Number of users in database;.
 	*/
 	int NbUsers;
 
 	/**
+	* The date of today.
+	*/
+	char today[12];
+
+	/**
+	* the date.
+	*/
+	RTimeDate::RDate date;
+
+	/**
 	* Container of all the profiles.
 	*/
 	RStd::RContainer<GProfile,unsigned,false,true>* profiles;
+
+	/**
+	* IdealDoc                the idealgroupment of document.
+	*/
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDoc;
 
 	/**
 	* set all hasjudged boolean to false;
@@ -102,10 +121,7 @@ protected:
 	*/
 	void InitSubSubjects(void);
 
-	/**
-	* Random number generator
-	*/
-	RMath::RRandom* Random;
+
 
 public:
 	
@@ -120,20 +136,24 @@ public:
 	/**
 	* Executes the queries to create new profiles.
 	* @param ses            The Gailieli session
-	* @param rand           0 total random >0 restart the sequence of randum number
-	* @param nbmin          the minimal number of profiles by groups
-	* @param nbmax          the maximal number of profiles by groups
-	* @param presocial      the % of profiels who are social
+	* @param precok         The perc of ok document who will judge the profile.
+	* @param precko         The perc of ko document who will judge the profile.
+	* @param prechs         The perc of hs document who will judge the profile (percentage of ok documents).
+	* @param nbmin          The minimal number of profiles by groups
+	* @param nbmax          The maximal number of profiles by groups
+	* @param presocial      The % of profiels who are social
+	* @param precerr        The perc of document who will judge the profile non specialy conforming to the ideal groupment.
 	*/
-	void Judgments(GSession* ses,int rand,int percok,int precko,int nbmin,int nbmax,unsigned int percsocial);
+	void Judgments(GSession* ses,int percok,int precko,int prechs,int nbmin,int nbmax,unsigned int percsocial,int precerr);
 
 	/**
 	* Judge documents from the susubject sub.
-	* @param profid      id of the profile wich judges the documents
-	* @param sub         subsubject containing the docs to judge.
-	* @param i           i=1 for OK judgement, i=0 for KO judgment.
+	* @param profid         Id of the profile wich judges the documents
+	* @param sub            Subsubject containing the docs to judge.
+	* @param i              I=1 for OK judgement, i=2 for KO judgment i=3 for hs documents.
+	* @param precerr        The perc of document who will judge the profile non specialy conforming to the ideal groupment.
 	*/
-	void JudgeDocuments(int profid,GSubject* sub,bool i, GSession* ses);
+	void JudgeDocuments(int profid,GSubject* sub,int i, GSession* ses,int precerr);
 
 	/**
 	* Write the ideal groupment into a file

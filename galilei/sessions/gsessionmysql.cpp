@@ -992,6 +992,92 @@ GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs
 	return(InstIR);
 }
 
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::SaveDocSim(void)
+{
+	char sSql[200];
+
+
+	//The container of documents.
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
+
+	// Load the ideal document container.
+	LoadIdealDocument(GroupsDoc);
+
+	double tempGlobal;
+	double tempnormal;
+
+	for(GroupsDoc->Start();!GroupsDoc->End();GroupsDoc->Next())
+	{
+		GGroupEvaluateCursor Cur2=(*GroupsDoc)()->GetGroupEvaluateCursor();
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		{
+			GGroupEvaluate* Group=Cur2();
+			// A vector used to memorise the id of the documents
+			int* vector;
+			vector=new int[Group->NbPtr()];
+			unsigned int i=0;
+			for(Group->Start();!Group->End();Group->Next())
+			{
+				vector[i]=Group->Current();
+				i++;
+			}
+			// For all the document in this group
+			for(i=0;i<Group->NbPtr();i++)
+			{
+				for(unsigned int j=0;j<Group->NbPtr();j++)
+				{
+					tempGlobal=Group->GlobalSimilarity(vector[i],vector[j]);
+					tempnormal=Group->Similarity(vector[i],vector[j]);
+ 					if((tempGlobal>-10)&&(tempGlobal<10))
+					{
+						if(vector[i]<vector[j])
+						{
+							sprintf(sSql,"INSERT INTO statdoc(id1,id2,nsim,gsim,same) VALUES(%u,%u,%f,%f,1)",vector[i],vector[j],tempnormal,tempGlobal);
+							RQuery InsertChromo(this,sSql);
+						}
+					}
+				}
+			}
+
+			// Calc the similarity for all the document which are not in the current group.
+			GGroupEvaluateCursor Cur=(*GroupsDoc)()->GetGroupEvaluateCursor();
+			for(Cur.Start();!Cur.End();Cur.Next())
+			{
+				GGroupEvaluate* GroupExtra=Cur();
+				int* vectorextra;
+				vectorextra=new int[GroupExtra->NbPtr()];
+				int ii=0;
+				for(GroupExtra->Start();!GroupExtra->End();GroupExtra->Next())
+				{
+					vectorextra[ii]=GroupExtra->Current();
+					ii++;
+				}
+				if(GroupExtra->GetId()!=Group->GetId())
+				{
+					for(i=0;i<Group->NbPtr();i++)
+					{
+						for(unsigned int j=0;j<GroupExtra->NbPtr();j++)
+						{
+							tempGlobal=Group->GlobalSimilarity(vectorextra[j],vector[i]);
+							tempnormal=Group->Similarity(vectorextra[j],vector[i]);
+ 							if((tempGlobal>-10)&&(tempGlobal<10))
+							{
+								if(vector[i]<vectorextra[j])
+								{
+									sprintf(sSql,"INSERT INTO statdoc(id1,id2,nsim,gsim,same) VALUES(%u,%u,%f,%f,0)",vector[i],vectorextra[j],tempnormal,tempGlobal);
+									RQuery InsertChromo(this,sSql);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
+
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionMySQL::~GSessionMySQL()

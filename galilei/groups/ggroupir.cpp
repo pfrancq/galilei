@@ -245,6 +245,7 @@ double GALILEI::GGroupIR::ComputeMinSim(GObjIR* obj)
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),MinSim=1.0;--i;ptr++)
 	{
 		if((*ptr)==obj) continue;
+
 		tmp=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
 		if(tmp<MinSim)
 			MinSim=tmp;
@@ -314,6 +315,7 @@ double GALILEI::GGroupIR::ComputeMinSim(void)
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),MinSim=1.0;--i;ptr++)
 	{
 		tmp=ComputeMinSim(*ptr);
+		
 		if(tmp<MinSim)
 			MinSim=tmp;
 	}
@@ -351,7 +353,6 @@ double GALILEI::GGroupIR::ComputeRelevantSum(void)
 			BestSumSim=SumSim;
 		}
 	}
-
 	// Return results
 	AvgSim=BestSumSim;
 	return(BestSumSim);

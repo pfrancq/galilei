@@ -36,6 +36,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
+#include <rmath/random.h>
+using namespace RMath;
 #include <rstd/rcontainercursor.h>
 using namespace RStd;
 #include <rio/rtextfile.h>
@@ -95,6 +97,9 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	GroupCalcs=new RContainer<GGroupCalc,RStd::tId,true,true>(2,3);
 	DocOptions=new GDocOptions();
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
+	CurrentRandom=0;
+	Random = new RRandomGood(CurrentRandom);
+//	Random->Reset(0);
 }
 
 
@@ -584,6 +589,22 @@ void GALILEI::GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 	}
 }
 
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::SetCurrentRandom(int rand)
+{
+	CurrentRandom=rand;
+	Random->Reset(CurrentRandom);
+	cout<<Random->Value(100)<<endl;
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GSession::GetCurrentRandomValue(unsigned int max)
+{
+	return(int(Random->Value(max)));
+
+}
 
 //-----------------------------------------------------------------------------
 GALILEI::GSession::~GSession(void) throw(GException)

@@ -148,6 +148,17 @@ protected:
 	*/
 	GDocOptions* DocOptions;
 
+	/**
+	* The current seek for this session.
+	*/
+	int CurrentRandom;
+
+	/**
+	* Random number generator
+	*/
+	RRandom* Random;
+
+
 public:
 
 	/**
@@ -541,6 +552,12 @@ public:
 	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global,SimType s)=0;
 
 	/**
+	* Save The Documents Simylarities into the database.
+	*/
+	virtual void SaveDocSim(void)=0;
+
+
+	/**
 	* Run a "program" for this session.
 	* @param filename       Name of the file.
 	*/
@@ -552,6 +569,25 @@ public:
 	* @param nboccurs       The minimal occurs for the word in a document
 	*/
 	void DocsFilter(int nbdocs,int nboccurs) throw(GException);
+
+	/**
+	* Get The Current RandomSeed.
+	* @return The current RandomSeed.
+	*/
+	int GetCurrentRandom(void) {return(CurrentRandom);};
+
+	/**
+	* Set The Current RandomSeed.
+	* @param rand             The current RandomSeed.
+	*/
+	void SetCurrentRandom(int rand);
+
+	/**
+	* Get The Current Random Value.
+	* @param max              The max Random Value.
+	* @return The current Random value * max.
+	*/
+	int GetCurrentRandomValue(unsigned int max);
 
 	/**
 	* Destructor.

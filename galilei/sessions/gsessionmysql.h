@@ -288,6 +288,11 @@ public:
 	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global,SimType s);
 
 	/**
+	* Save The Documents Simylarities into the database.
+	*/
+	virtual void SaveDocSim(void);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSessionMySQL(void);
