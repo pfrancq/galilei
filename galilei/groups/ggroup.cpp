@@ -191,3 +191,42 @@ void GALILEI::GGroup::NotJudgedDocsList(RStd::RContainer<GProfDoc,unsigned,false
 		}
 	}
 }
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s)
+{
+	GSubProfile** tab;
+	unsigned int i;
+	GProfDocCursor Fdbks;
+	GProfDoc* ptr;
+	tDocJudgement j;
+
+	// Clear container.
+	docs->Clear();
+
+	for(i=NbPtr+1,tab=Tab;--i;tab++)
+	{
+		if((*tab)==s) continue;
+
+		// Go through the judgments
+		Fdbks=(*tab)->GetProfile()->GetProfDocCursor();
+		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+		{
+			// Must be the same language than the group.
+			if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
+
+			// Verify that it was not judged by s
+			if(s->GetProfile()->GetFeedback(Fdbks()->GetDoc())) continue;
+
+			// Verify if already inserted:
+			// If not -> insert it in docs.
+			// If yes -> Verify judgement
+			ptr=docs->GetPtr<const GProfDoc*>(Fdbks());
+			if(ptr) continue;
+			j=ptr->GetFdbk();
+			if((j==djNav)||(j==djOK))
+				docs->InsertPtr(Fdbks());
+		}
+	}
+}

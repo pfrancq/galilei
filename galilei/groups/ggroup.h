@@ -174,6 +174,14 @@ public:
 	* @param s              Subprofile.
 	*/
 	void NotJudgedDocsList(RStd::RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s);
+
+	/**
+	* Construct the list of all relevant documents of the subprofiles of a
+	* group not already judged by a given subprofile.
+	* @param docs           Documents not judged.
+	* @param s              Subprofile.
+	*/
+	void NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s);
 };
 
 
