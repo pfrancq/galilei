@@ -351,11 +351,11 @@ bool GALILEI::GChromoIR::MergeGroups(GGroupIR* grp1,GGroupIR* grp2,unsigned int 
 	// Look number of criteria ameliorated
 	if(nbcrit==3)
 	{
-//		Kernel->ComputePrometheeII();
-//		if(Kernel->GetBestSol()->GetId())
-//			nbcrit=0;
-//		else
-//			nbcrit=4;
+		Kernel->ComputePrometheeII();
+		if(Kernel->GetBestSol()->GetId())
+			nbcrit=0;
+		else
+			nbcrit=4;
 		delete Kernel;
 	}
 	if(NbCrit>=nbcrit)
@@ -684,7 +684,7 @@ void GALILEI::GChromoIR::Evaluate(void)
 	Cur1.Set(Used);
 	for(Cur1.Start(),SocialFactor=0.0;!Cur1.End();Cur1.Next())
 	{
-		if(Cur1()->NbSubObjects>1) continue;
+		if(Cur1()->NbSubObjects!=1) continue;
 		if(!Instance->NoSocialSubProfiles.IsIn<const unsigned int>(GetObj(Cur1()->SubObjects)->GetId()))
 			SocialFactor+=1.0;
 	}
@@ -751,42 +751,42 @@ void GALILEI::GChromoIR::Evaluate(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::LocalOptimisation(void)
 {
-//	bool Cont;
-//	GGroupIRCursor Cur1,Cur2;
-//	unsigned int i,j;
-//	bool** ptr;
-//
-//	// Init Pairs
-//	for(i=NbRows+1,ptr=Pairs;--i;ptr++)
-//		memset(*ptr,0x0,(i-1)*sizeof(bool));
-//	Cur1.Set(Used);
-//	Cur2.Set(Used);
-//	for(Cur1.Start(),i=0,j=Cur1.GetNb();(--j)&&(!Cont);Cur1.Next(),i++)
-//		for(Cur2.GoTo(i+1);(!Cur2.End())&&(!Cont);Cur2.Next())
-//			Set(Cur1()->Id,Cur2()->Id,true);
-//
-//	// Try to regroup groups until it is not possible anymore
-////	cout<<"\tRegroups... ";
-//	for(Cont=true;Cont;)
-//	{
-//		Cont=false;
-//		Cur1.Set(Used);
-//		Cur2.Set(Used);
-//		for(Cur1.Start(),i=0,j=Cur1.GetNb();(--j)&&(!Cont);Cur1.Next(),i++)
-//		{
-//			for(Cur2.GoTo(i+1);(!Cur2.End())&&(!Cont);Cur2.Next())
-//			{
-//				if(!Get(Cur1()->Id,Cur2()->Id)) continue;
-//				if(MergeGroups(Cur1(),Cur2(),3))
-//				{
-//					Cont=true;
+	bool Cont;
+	GGroupIRCursor Cur1,Cur2;
+	unsigned int i,j;
+	bool** ptr;
+
+	// Init Pairs
+	for(i=NbRows+1,ptr=Pairs;--i;ptr++)
+		memset(*ptr,0x0,(i-1)*sizeof(bool));
+	Cur1.Set(Used);
+	Cur2.Set(Used);
+	for(Cur1.Start(),i=0,j=Cur1.GetNb();(--j)&&(!Cont);Cur1.Next(),i++)
+		for(Cur2.GoTo(i+1);(!Cur2.End())&&(!Cont);Cur2.Next())
+			Set(Cur1()->Id,Cur2()->Id,true);
+
+	// Try to regroup groups until it is not possible anymore
+//	cout<<"\tRegroups... ";
+	for(Cont=true;Cont;)
+	{
+		Cont=false;
+		Cur1.Set(Used);
+		Cur2.Set(Used);
+		for(Cur1.Start(),i=0,j=Cur1.GetNb();(--j)&&(!Cont);Cur1.Next(),i++)
+		{
+			for(Cur2.GoTo(i+1);(!Cur2.End())&&(!Cont);Cur2.Next())
+			{
+				if(!Get(Cur1()->Id,Cur2()->Id)) continue;
+				if(MergeGroups(Cur1(),Cur2(),3))
+				{
+					Cont=true;
 //					cout<<"Local Opti: Merge Done"<<endl;
-//				}
-//				else
-//					Set(Cur1()->Id,Cur2()->Id,false);
-//			}
-//		}
-//	}
+				}
+				else
+					Set(Cur1()->Id,Cur2()->Id,false);
+			}
+		}
+	}
 }
 
 

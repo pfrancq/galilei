@@ -206,15 +206,29 @@ bool GALILEI::GGroupingGGA::IsCoherent(const GGroup* /*grp*/,const GSubProfile* 
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GGroupingGGA::IsValid(GGroup* /*grp*/)
+bool GALILEI::GGroupingGGA::IsValid(GGroup* grp)
 {
-//	unsigned int i,j;
-//	GSubProfile** sub1;
-//	GSubProfile** sub2;
-//
-//	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
-//		if(Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile())<Owner->MinSimLevel)
-//			return(false);
+	GSubProfileCursor Cur1,Cur2;
+	unsigned int i,j;
+
+	Cur1=grp->GetSubProfileCursor();
+	Cur2=grp->GetSubProfileCursor();
+	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
+	{
+		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
+		{
+			if(GlobalSim)
+			{
+				if(Cur1()->GlobalSimilarity(Cur2())<MinSimLevel)
+					return(false);
+			}
+			else
+			{
+				if(Cur1()->Similarity(Cur2())<MinSimLevel)
+					return(false);
+			}
+		}
+	}
 	return(true);
 }
 

@@ -33,7 +33,9 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-//#include <rpromethee/rpromkernel.h>
+//#include <rio/rtextfile.h>
+//using namespace RIO;
+//RTextFile file("/home/pfrancq/prom.txt",RTextFile::Create);
 #include <rpromethee/rpromsol.h>
 #include <rpromethee/rpromcriterion.h>
 using namespace RPromethee;
@@ -202,7 +204,7 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 	GObjIR** ptr;
 	unsigned int i;
 	GGroups* Cur;
-	RPromSol* s;
+//	RPromSol* s;
 
 	if(!Debug) return;
 	Precision=0.0;
@@ -230,9 +232,12 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 		Recall=Comp.GetRecall();
 		c->Global=Total=Comp.GetTotal();
 	}
-	if(c->Id==PopSize) s=Sols[0]; else s=Sols[c->Id+1];
-	sprintf(Tmp,"Id %u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Nb=%1.3f - OK=%1.3f - Diff=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
-	        c->Id,s->GetFi(),s->GetFiPlus(),s->GetFiMinus(),c->AvgSim,c->AvgProf,c->OKFactor,c->DiffFactor,c->SocialFactor,Recall,Precision,Total);
+//	if(c->Id==PopSize) s=Sols[0]; else s=Sols[c->Id+1];
+//	sprintf(Tmp,"Id %2u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Nb=%1.3f - OK=%1.3f - Diff=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
+//	        c->Id,s->GetFi(),s->GetFiPlus(),s->GetFiMinus(),c->AvgSim,c->AvgProf,c->OKFactor,c->DiffFactor,c->SocialFactor,Recall,Precision,Total);
+	sprintf(Tmp,"Id %2u: Sim=%1.3f - Nb=%1.3f - OK=%1.3f - Diff=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
+	        c->Id,c->AvgSim,c->AvgProf,c->OKFactor,c->DiffFactor,c->SocialFactor,Recall,Precision,Total);
+//	file<<c->Id<<c->AvgSim<<c->AvgProf<<c->OKFactor<<c->DiffFactor<<c->SocialFactor<<Total<<endl;
 	Debug->PrintInfo(Tmp);
 }
 #endif
@@ -287,15 +292,10 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 
 	//  The second best has the fitness of 1
 	if((*ptr)->GetId())
-	{
 		s=Chromosomes[(*ptr)->GetId()-1];
-		(*s->Fitness)=1.0;
-	}
 	else
-	{
 		s=BestChromosome;
-		(*s->Fitness)=1.0;
-	}
+	(*s->Fitness)=1.0;
 	#ifdef RGADEBUG
 		WriteChromoInfo(s);
 	#endif

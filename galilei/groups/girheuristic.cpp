@@ -72,13 +72,13 @@ GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGGA::RGroupingHeuristicE
 	for(Groups->Used.Start();!Groups->Used.End();Groups->Used.Next())
 	{
 		if(!Groups->Used()->CanInsert(CurObj)) continue;
-//		tmp=Groups->Used()->ComputeAvgSim(CurObj);
-//		if(tmp>max)
-//		{
-//			max=tmp;
-//			grp=Groups->Used();
-//		}
-		return(Groups->Used());
+		tmp=Groups->Used()->ComputeAvgSim(CurObj);
+		if(tmp>max)
+		{
+			max=tmp;
+			grp=Groups->Used();
+		}
+//		return(Groups->Used());
 	}
 	if(!grp)
 		grp=Groups->ReserveGroup();

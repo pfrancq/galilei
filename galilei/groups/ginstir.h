@@ -203,7 +203,7 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	/**
 	* Solutions corresponding to the chromosome.
 	*/
-	RPromSol** Sols;
+	RPromethee::RPromSol** Sols;
 
 	/**
 	* Global Similarities.
