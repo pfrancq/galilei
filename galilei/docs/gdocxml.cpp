@@ -65,6 +65,41 @@ GDocXML::GDocXML(const char* url,const char* filename) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
+const char* GALILEI::GDocXML::GetURL(void) const
+{
+	return(URL());
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GDocXML::GetFile(void) const
+{
+	return(FileName());
+}
+
+
+//-----------------------------------------------------------------------------
+RXMLTag* GALILEI::GDocXML::GetMetaData(void)
+{
+	return(MetaData);
+}
+
+
+//-----------------------------------------------------------------------------
+RXMLTag* GALILEI::GDocXML::GetContent(void)
+{
+	return(Content);
+}
+
+
+//-----------------------------------------------------------------------------
+RXMLTag* GALILEI::GDocXML::GetLinks(void)
+{
+	return(Links);
+}
+
+
+//-----------------------------------------------------------------------------
 RXMLTag* GALILEI::GDocXML::AddLink(void) throw(bad_alloc)
 {
 	RXMLTag* t;

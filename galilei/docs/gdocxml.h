@@ -102,31 +102,31 @@ public:
 	* Get the URL.
 	* @returns Pointer to a C string.
 	*/
-	const char* GetURL(void) const {return(URL());}
+	const char* GetURL(void) const;
 
 	/**
 	* Get the File Name.
 	* @returns Pointer to a C string.
 	*/
-	const char* GetFile(void) const {return(FileName());}
+	const char* GetFile(void) const;
 
 	/**
 	* @returns A pointer to the tag containing the metadata of the
 	*          corresponding document.
 	*/
-	R::RXMLTag* GetMetaData(void) {return(MetaData);}
+	R::RXMLTag* GetMetaData(void);
 
 	/**
 	* @returns A pointer to the tag containing the content of the corresponding
 	*          document.
 	*/
-	R::RXMLTag* GetContent(void) {return(Content);}
+	R::RXMLTag* GetContent(void);
 
 	/**
 	* @returns A pointer to the tag containing the links of the corresponding
 	*          document.
 	*/
-	R::RXMLTag* GetLinks(void) {return(Links);}
+	R::RXMLTag* GetLinks(void);
 
 	/**
 	* Add a tag metaData to the links stucture

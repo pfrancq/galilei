@@ -112,13 +112,13 @@ public:
 	* Get the MIME type.
 	* @returns Pointer to a MIME type.
 	*/
-	const char* GetName(void) const {return(Type());}
+	const char* GetName(void) const;
 
 	/**
 	* Get a filter able to manipulate this type of files.
 	* @returns Pointer to a Filter.
 	*/
-	GFilter* GetFilter(void) const {return(Filter);}
+	GFilter* GetFilter(void) const;
 
 	/**
 	* Destructor of the filter.
