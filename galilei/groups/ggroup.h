@@ -85,13 +85,6 @@ public:
 	* @return Identificator.
 	*/
 	unsigned int GetId(void) const {return(Id);}
-
-	/**
-	* can the group attache the subprofile?  -> Must be in separate class.
-	* @param sub            subprofile to attach.
-	*/
-	bool CanAttach(GSubProfile *sub);
-
 };
 
 

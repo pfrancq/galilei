@@ -46,7 +46,8 @@ class GProfile;
 
 //-----------------------------------------------------------------------------
 /**
-* This class represents a sub-profile for a specific language.
+* This class represents a sub-profile for a specific language. The sub-profiles
+* are ordered by identificators.
 * @author Pascal Francq.
 * @short Sub-Profile.
 */
@@ -167,9 +168,9 @@ public:
 	GIWordList* GetCommon(void) const {return(Common);}
 
 	/**
-	* Boolean function for calculation of similarity between SubProfiles.
+	* Compute similarity between SubProfiles.
 	*/
-	bool Similar(GSubProfile *sub);
+	double Similarity(const GSubProfile *sub) const;
 
 	/**
 	*Destructor

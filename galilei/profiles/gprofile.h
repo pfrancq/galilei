@@ -137,6 +137,13 @@ public:
 	const GUser* GetUser(void) const {return(Owner);}
 
 	/**
+	* Get the subprofile corresponding to a given language.
+	* @param lang           Pointer to the language.
+	* @return Pointer to the subprofile.
+	*/
+	const GSubProfile* GetSubProfile(const GLang* lang) const;
+
+	/**
 	* Test if the profile was modified.
 	* @returns Boolean.
 	*/

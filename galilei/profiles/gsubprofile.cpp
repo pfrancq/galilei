@@ -79,7 +79,7 @@ int GALILEI::GSubProfile::Compare(const GSubProfile *subprofile) const
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GSubProfile::Similar(GSubProfile *sub)
+double GALILEI::GSubProfile::Similarity(const GSubProfile *sub) const
 {
 	double Sim=0;
 	unsigned int NbComp;
@@ -100,15 +100,13 @@ bool GALILEI::GSubProfile::Similar(GSubProfile *sub)
 	}
 	NbComp=OK->NbPtr+Common->NbPtr+sub->OK->NbPtr+sub->Common->NbPtr;
 	Sim=(4.0*Sim)/static_cast<double>(NbComp);
-	return(Sim>=0.5);
+	return(Sim);
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfile::~GSubProfile(void)
 {
-//	if(MOK) delete MOK;
-//	if(MKO) delete MKO;
 	if(OK) delete OK;
 	if(KO) delete KO;
 	if(Common) delete Common;

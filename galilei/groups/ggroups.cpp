@@ -17,13 +17,18 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainercursor.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<ggroups/ggroups.h>
 #include<ggroups/ggroupslangs.h>
 #include<gprofiles/gusers.h>
 #include<gsessions/gsession.h>
 using namespace GALILEI;
-using namespace RStd;
 
 
 
@@ -57,6 +62,20 @@ int GALILEI::GGroups::Compare(const GGroups* groups) const
 int GALILEI::GGroups::Compare(const GLang* lang) const
 {
 	return(Lang->Compare(lang));
+}
+
+
+//-----------------------------------------------------------------------------
+GGroup* GALILEI::GGroups::GetGroup(const GSubProfile* sub) const
+{
+	RContainerCursor<GGroup,unsigned int,true,false> cur(this);
+
+	for(cur.Start();!cur.End();cur.Next())
+	{
+		if(cur()->GetPtr(sub))
+			return(cur());
+	}
+	return(0);
 }
 
 

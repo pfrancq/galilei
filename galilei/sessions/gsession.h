@@ -101,6 +101,9 @@ public:
 //  void AnalyseDocs(URLFunc *urlfunc,InfoFunc *infofunc) throw(bad_alloc,GException);
   void ClearDocs(void) throw(GException);
 
+  	unsigned int GetNbUsers(void) const {return(Users->NbPtr);}
+
+
 	/**
 	* @return Pointer to the mime type.
 	*/
@@ -112,6 +115,26 @@ public:
 	*/
 	GMIMEType* GetMIMEType(const RString& name)
 		{return(MIMETypes->GetPtr<const RString>(name));}
+
+
+	/**
+	* @name Method for Groups.
+	*/
+	//@{
+
+	/**
+	* Find the groups for a specific language.
+	* @param lang           Pointer to the language.
+	* @returns Pointer to the group.
+	*/
+	GGroups* GetGroups(const GLang* lang) const;
+
+	/**
+	* Create a new group.
+	*/
+	GGroup* NewGroup(void);
+
+	//@}
 
   // Destructor
   virtual ~GSession(void) throw(GException);

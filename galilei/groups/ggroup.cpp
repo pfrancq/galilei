@@ -62,13 +62,3 @@ int GALILEI::GGroup::Compare(const GGroup* group) const
 {
 	return(Id-group->Id);
 }
-
-
-//-----------------------------------------------------------------------------
-bool GALILEI::GGroup::CanAttach(GSubProfile *sub)
-{
-	for(Start();!End();Next())
-		if((*this)()->Similar(sub))
-			return(true);
-	return(false);
-}

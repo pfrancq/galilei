@@ -67,6 +67,13 @@ int GALILEI::GProfile::Compare(const GProfile *profile) const
 
 
 //-----------------------------------------------------------------------------
+const GSubProfile* GALILEI::GProfile::GetSubProfile(const GLang* lang) const
+{
+	return(GetPtr<const GLang*>(lang,false));
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GProfile::AddDocJudged(GDoc* doc,char j) throw(bad_alloc)
 {
 	if(doc)

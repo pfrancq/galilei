@@ -40,7 +40,7 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 * The GGroups class provides a representation for all the groups of a given
-* language.
+* language. The GGroups are ordered by languages.
 * @author Pascal Francq
 * @short Languages' Groups.
 */
@@ -79,6 +79,13 @@ public:
 	* @return Pointer to the language.
 	*/
 	GLang* GetLang(void) const {return(Lang);}
+
+	/**
+	* Get the group where the given subprofile is attached.
+	* @param sub            Subprofile used.
+	* @returns Pointer to the group.
+	*/
+	GGroup* GetGroup(const GSubProfile* sub) const;
 
 	/**
 	* Compute -> Must be in separate class.

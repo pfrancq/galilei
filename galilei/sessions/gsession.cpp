@@ -130,8 +130,30 @@ GUser* GALILEI::GSession::CreateUser(const char* usr,const char* pwd,const char*
 }
 
 
+
+
+
+
+
+
 //---------------------------------------------------------------------------
-GSession::~GSession(void) throw(GException)
+GGroups* GALILEI::GSession::GetGroups(const GLang* lang) const
+{
+	return(GroupsLangs->GetPtr<const GLang*>(lang));
+}
+
+
+//---------------------------------------------------------------------------
+GGroup* GALILEI::GSession::NewGroup(void)
+{
+	return(new GGroup());
+}
+
+
+
+
+//---------------------------------------------------------------------------
+GALILEI::GSession::~GSession(void) throw(GException)
 
 {
 	if(Langs) delete Langs;
