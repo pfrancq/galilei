@@ -150,7 +150,7 @@ void GALILEI::GIdealGroup::SetSettings(const char* s)
 {
 	unsigned int a;
 	unsigned int b;
-	if(!(*s)) return;
+	if(!s) return;
 	sscanf(s,"%lf %lf %lf %i %u %u %lf %lf %lf %u",&PercOK,&PercKO,&PercHS,&Rand,&a,&b,&PercSocial,&PercErr,&PercGrp,&NbDocPerGrp);
 	if (a<=b) NbProfMin=a;
 	if (b<=Session->GetNbUsers()) NbProfMax=b;
