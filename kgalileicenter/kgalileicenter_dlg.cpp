@@ -91,7 +91,6 @@ using namespace GALILEI;
 #include "kviewusers.h"
 #include "kviewdoc.h"
 #include "kviewprofile.h"
-#include "qdocsoptionsdlg.h"
 #include "qsessionoptions.h"
 #include "qplugins.h"
 #include "qgalileiitem.h"
