@@ -173,6 +173,11 @@ public:
 	double GetMaxWeight(void) const;
 
 	/**
+	* Compute similarity between two vectors.
+	*/
+	double Similarity(const GIWordsWeights* w) const;
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GIWordsWeights(void);
