@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	GLang.h
 
-	Basic Information - Implementation.
+	Basic Language - Header.
 
 	(C) 2001 by P. Francq.
 
@@ -28,52 +28,98 @@
 	Boston, MA  02111-1307  USA
 
 */
+
+
+
+//-----------------------------------------------------------------------------
 #ifndef GLangH
 #define GLangH
 
 
-
-
+//-----------------------------------------------------------------------------
+// include files for R Project
 #include <rstd/rstring.h>
-
 using namespace RStd;
+#include <rinter/rlang.h>
+using namespace RInter;
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // include files for Galilei
-
 #include <galilei.h>
 
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 namespace GALILEI{
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 
-//---------------------------------------------------------------------------
-// class GLang
-class GLang
+//-----------------------------------------------------------------------------
+/**
+* The GLang class provides a representation for a basic language. The virtual
+* function GetStemming must be implemented for the different languages.
+*/
+class GLang : public RInter::RLang
 {
 public:
-  RString Lang;               // Language
-  char Code[3];               // The code used in the databases
-  bool Activ;                 // Defines if the language is activ
 
-  // Constructor
-  GLang(const RString& lang,const char* code) throw(bad_alloc);
+	/**
+	* Name of the language, for example "English".
+	*/
+//	RString Lang;
 
-  // Function needed by GLangs (-> RContainer)
-  int Compare(const GLang& lang);
-  int Compare(const GLang* lang);
+	/**
+	* Code of the language, for example "en".
+	*/
+//	char Code[3];
 
-  // Dictionnay and Stop List names
- // virtual RString& GetDic(void)=0;
-  //virtual RString& GetStop(void)=0;
+	/**
+	* Defines if the language is activ.
+	*/
+	bool Activ;
 
-	// Destructor
-	virtual ~GLang(void) {}
+	/**
+	* Constructor of a language.
+	* @param lang           Name of the language.
+	* @param code           Code of the language.
+	*/
+	GLang(const RString& lang,const char* code) throw(bad_alloc);
+
+	/**
+	* Comparaison function used by the Container.
+	* @param lang           Pointer of the language used for comparaison.
+	*/
+	int Compare(const GLang& lang) const;
+
+	/**
+	* Comparaison function used by the Container.
+	* @param lang           Language used of the comparaison.
+	*/
+	int Compare(const GLang* lang) const;
+
+	/**
+	* Compare function like strcmp used in particular for RContainer class.
+	* @param code           Code used for the comparaison.
+	*/
+	int Compare(const char* code) const;
+
+	/**
+	* Function that return stemming of a word.
+	* @param kwd            Word to find the stemming.
+	* @return The stemming of the word.
+	*/
+	RString& GetStemming(const RString& kwd);
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GLang(void);
 };
 
-}
- #endif
+
+}  //-------- End of namespace GALILEI ----------------------------------------
+
+
+//-----------------------------------------------------------------------------
+#endif

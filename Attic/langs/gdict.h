@@ -83,7 +83,7 @@ public:
 //  virtual void Load(void) throw(bad_alloc,GException)=0;
   int Compare(const GDict* dict) { return(Name.Compare(dict->Name)); }
   int Compare(const GDict& dict) { return(Name.Compare(dict.Name)); }
-  int Compare(const GLang* lang) { return(Lang->Lang.Compare(lang->Lang)); }
+  int Compare(const GLang* lang) { return(Lang->Compare(lang)); }
   virtual ~GDict(void);
 };
 

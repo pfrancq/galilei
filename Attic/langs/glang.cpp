@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	GLang.cpp
 
-	Basic Information - Implementation.
+	Basic Language - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -28,14 +28,17 @@
 	Boston, MA  02111-1307  USA
 
 */
+
+
+
 //---------------------------------------------------------------------------
-// include file for ANSI C/C++
+// include files for ANSI C/C++
 #include <string.h>
 
-//---------------------------------------------------------------------------
-// include file for HyperPRISME
-#include "glang.h"
 
+//---------------------------------------------------------------------------
+// include files for GALILEI
+#include <glangs/glang.h>
 using namespace GALILEI;
 
 
@@ -48,25 +51,33 @@ using namespace GALILEI;
 
 //---------------------------------------------------------------------------
 GLang::GLang(const RString& lang,const char* code) throw(bad_alloc)
-  : Lang(lang),Activ(true)
+	: RLang(lang,code), Activ(true)
 {
-  memcpy(Code,code,2*sizeof(char));
-  Code[2]=0;
 }
 
 
 //---------------------------------------------------------------------------
-int GLang::Compare(const GLang& lang)
+int GLang::Compare(const GLang& lang) const
 {
-  return(Lang.Compare(lang.Lang));
+  return(strcmp(Code,lang.Code));
 }
 
 
 //---------------------------------------------------------------------------
-int GLang::Compare(const GLang *lang)
+int GLang::Compare(const GLang* lang) const
 {
-  return(Lang.Compare(lang->Lang));
+  return(strcmp(Code,lang->Code));
 }
 
 
+//---------------------------------------------------------------------------
+int GLang::Compare(const char* code) const
+{
+  return(strcmp(Code,code));
+}
 
+
+//---------------------------------------------------------------------------
+GLang::~GLang(void)
+{
+}

@@ -56,15 +56,13 @@ GLangs::GLangs(unsigned nb) throw(bad_alloc)
 
 
 //---------------------------------------------------------------------------
-GLang* GLangs::GetLang(const char *code)
+GLang* GLangs::GetLang(const char* code)
 {
   GLang **ptr;
   long i;
 
 	if(!code) return(0);
-  for(i=NbPtr+1,ptr=Tab;--i;ptr++)
-    if(!strcmp(code,(*ptr)->Code)) return(*ptr);
-  return(0);
+	return(GetPtr<const char*>(code));
 }
 
 
