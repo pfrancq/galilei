@@ -352,7 +352,7 @@ void GALILEI::GFilterHTML::AnalyseLink(void)
 	if(metalink)
 	{
 		Doc->AddFormat("text/html",metalink);
-		if(bBlockIns)
+		if(bBlockIns&&Block)
 			AnalyzeBlock(Block,Doc->AddTitle(metalink));
 	}
 
