@@ -99,7 +99,7 @@ protected:
 	* @param metaData       Pointer to the tag representing the metaData.
 	* @return true if a command can be extracted, false if it is the end.
 	*/
-	bool ExtractCmd(char* line,RXMLTag* metaData);
+	bool ExtractCmd(char* line,RXML::RXMLTag* metaData);
 
 public:
 
