@@ -546,6 +546,8 @@ void KViewHistory::CreateGroupsRelationship(void)
 	GGroupHistory* grp;
 	GIWordsWeightsHistory* subprof;
 	bool treated;
+	unsigned int** tab;
+
 
 
 	for (Groups->Start(); !Groups->End(); Groups->Next())
@@ -561,7 +563,9 @@ void KViewHistory::CreateGroupsRelationship(void)
 			grp=(*curgrps)();
 			nbchildren=0;
 			//initialize the table od groupid / nboccurs
-			unsigned int tab[grp->NbPtr][2];
+			tab= new unsigned int* [grp->NbPtr];
+			for (i=0; i<grp->NbPtr; i++)
+				tab[i]=new unsigned int [2];
 			for (i=0; i<grp->NbPtr; i++)
 				tab[i][0]=tab[i][1]=0;
 
@@ -597,6 +601,10 @@ void KViewHistory::CreateGroupsRelationship(void)
 			for (i=0; i<grp->NbPtr;i++)
 				if (tab[i][1]==maxoccurs)
 					grp->InsertChildren(nextgrps->GetPtr(tab[i][0]));
+			//delete the table
+			for (i=0; i<grp->NbPtr; i++)
+				delete [] tab[i];
+			delete [] tab;
 		}
 	}
 }

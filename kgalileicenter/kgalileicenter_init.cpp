@@ -219,12 +219,6 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("User", dbUser);
 	Config->writeEntry("Password", dbPwd);
 
-	// Write the session parameters
-	Config->setGroup(SessionParams.GetName());
-	Config->writeEntry("SameBehaviourMinDocs",SessionParams.GetUInt("SameBehaviourMinDocs"));
-	Config->writeEntry("DiffBehaviourMinDocs",SessionParams.GetUInt("DiffBehaviourMinDocs"));
-	Config->writeEntry("NullSimLevel",SessionParams.GetDouble("NullSimLevel"));
-
 	// Save Config
 	GConfig Conf("/etc/galilei/galilei.galileiconfig");
 	Conf.Store(Langs);
@@ -281,12 +275,6 @@ void KGALILEICenterApp::readOptions(void)
 	dbUser=Config->readEntry("User","admin").ascii();
 	dbPwd=Config->readEntry("Password","gillian").ascii();
 
-	// Read the Session Parameters
-	Config->setGroup(SessionParams.GetName());
-	SessionParams.Set("SameBehaviourMinDocs",Config->readNumEntry("SameBehaviourMinDocs",0));
-	SessionParams.Set("DiffBehaviourMinDocs",Config->readNumEntry("DiffBehaviourMinDocs",0));
-	SessionParams.Set("NullSimLevel",Config->readDoubleNumEntry("NullSimLevel",0.00001));
-
 	// Read Config
 	try
 	{
@@ -303,7 +291,7 @@ void KGALILEICenterApp::readOptions(void)
 		Conf.Read(PostDocManager);
 		Conf.Read(PostGroupManager);
 		Conf.Read(PostGroupManager);
-//		Conf.Read(SessionParams);
+		Conf.Read(SessionParams);
 	}
 	catch(...)
 	{
