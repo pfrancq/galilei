@@ -98,6 +98,16 @@ public:
 	R::RCursor<GFactoryGroupCalc> GetGroupCalcsCursor(void);
 
 	/**
+	* Read config of the manager
+	*/
+	virtual void ReadConfig(RXMLTag* t);
+	
+	/**
+	* Store config of the manager
+	*/	
+	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
+
+	/**
 	* Destructor of the group computing methods manager.
 	*/
 	virtual ~GGroupCalcManager(void);

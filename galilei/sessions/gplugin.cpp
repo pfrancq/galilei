@@ -38,11 +38,18 @@ using namespace R;
 using namespace std;
 
 
-RContainer<GPluginManager,false,true> GPluginManager::Managers(10,5);
+
 //------------------------------------------------------------------------------
 //
 // GPlugin Manager class
 //
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Global variables
+RContainer<GPluginManager,false,true> GPluginManager::Managers(10,5);
+
+
 //------------------------------------------------------------------------------
 GPluginManager::GPluginManager(RString name,RString path)
 	: Name(name),Path(path)
@@ -52,7 +59,31 @@ GPluginManager::GPluginManager(RString name,RString path)
 
 
 //-----------------------------------------------------------------------------
-/*int GPluginManager::Compare(const GPluginManager& pm) const
+void GPluginManager::Connect(GSession*)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void GPluginManager::Disconnect(GSession*)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void GPluginManager::ReadConfig(R::RXMLTag*)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void GPluginManager::SaveConfig(R::RXMLStruct*,R::RXMLTag*)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+int GPluginManager::Compare(const GPluginManager& pm) const
 {
 	return(Name.Compare(pm.GetName()));
 }
@@ -70,7 +101,7 @@ int GPluginManager::Compare(const RString& name) const
 {
 	return(Name.Compare(name));
 }
-*/
+
 
 //-----------------------------------------------------------------------------
 GPluginManager* GPluginManager::GetManager(RString name)
@@ -86,13 +117,15 @@ RCursor<GPluginManager> GPluginManager::GetCursor(void)
 {
 	RCursor<GPluginManager> cur(GPluginManager::Managers);
 	return(cur);
-
 }
 
+
+//-----------------------------------------------------------------------------
 GPluginManager::~GPluginManager(void)
 {
 	Managers.DeletePtr(this);
 }
+
 
 
 //------------------------------------------------------------------------------

@@ -90,6 +90,16 @@ public:
 	R::RCursor<GFactoryStatsCalc> GetStatsCalcsCursor(void);
 
 	/**
+	* Read config of the manager
+	*/
+	virtual void ReadConfig(RXMLTag* t);
+	
+	/**
+	* Store config of the manager
+	*/	
+	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
+
+	/**
 	* Destructor of the statistics methods manager.
 	*/
 	virtual ~GStatsCalcManager(void);

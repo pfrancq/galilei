@@ -99,6 +99,16 @@ public:
 	R::RCursor<GFactoryGrouping> GetGroupingsCursor(void);
 
 	/**
+	* Read config of the manager
+	*/
+	virtual void ReadConfig(RXMLTag* t);
+	
+	/**
+	* Store config of the manager
+	*/	
+	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
+
+	/**
 	* Destructor of a grouping methods manager.
 	*/
 	virtual ~GGroupingManager(void);

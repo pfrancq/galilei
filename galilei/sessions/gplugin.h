@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include file for R
 #include <rstd/rxmltag.h>
+#include <rstd/rxmlstruct.h>
 
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
@@ -74,72 +75,82 @@ class GPluginManager
 	* The name of the manager
 	*/
 	R::RString Name;
-	
+
 	/**
 	* The path of the current manager
 	*/
 	R::RString Path;
-	
+
 public :
 	/**
 	* A static container containing all the managers
 	*/
 	static R::RContainer<GPluginManager,false,true> Managers;
-	
+
 public :
 	/**
 	* Constructor for the manager of plugins manager
 	*/
 	GPluginManager(R::RString name,R::RString path);
-	
+
 	/**
 	* Connect to the session
 	*/
-	virtual void Connect(GSession* sess) {}
-	
+	virtual void Connect(GSession* sess);
+
 	/**
 	* Disconnect to the session
 	*/
-	virtual void Disconnect(GSession* sess) {}
-	
+	virtual void Disconnect(GSession* sess);
+
+	/**
+	* Read Config for the current manager
+	*/
+	virtual void ReadConfig(R::RXMLTag* t);
+
+	/**
+	* Save Config for the current manager
+	*/
+	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
+
 	/**
 	* Method used to compare element from a Container
 	*/
-	int Compare(const GPluginManager* pm) const {return(Name.Compare(pm->GetName()));}
-	
+	int Compare(const GPluginManager* pm) const;
+
 	/**
 	* Method used to compare element from a Container
 	*/
-	int Compare(const GPluginManager& pm) const {return(Name.Compare(pm.GetName()));}
-	
+	int Compare(const GPluginManager& pm) const;
+
 	/**
 	* Method used to compare element from a Container
 	*/
-	int Compare(const R::RString& name) const {return(Name.Compare(name));}
-	
+	int Compare(const R::RString& name) const;
+
 	/**
 	* Get the name of the current Manager
 	*/
 	R::RString GetName(void) const{return Name;};
-	
+
 	/**
 	* Get the path associated to the current manager
 	*/
 	R::RString GetPath(void) const{return Path;};
-	
+
 	/**
 	* Get the manager associated to the "name"
 	* @param name         The name of the manager to be found
-	* @return GPluginManager The plugins manager 
+	* @return GPluginManager The plugins manager
 	*/
 	static GPluginManager* GetManager(R::RString name);
-	
+
 	/**
 	* Get a cursor over all the managers
 	* @return GPluginManager A cursor on the managers
 	*/
 	static R::RCursor<GPluginManager> GetCursor(void);
-	
+
 	/**
 	* The destructor
 	*/
@@ -283,6 +294,7 @@ public:
 	* Set the handler of the library.
 	* @param handle         Handle of the library.
 	*/
+
 	void SetHandler(void* handle) {Handle=handle;}
 
 	/**
@@ -400,7 +412,7 @@ public:
 		// Find Tag
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			if((Cur()->GetName()=="Plugin")&&(Cur()->GetAttrValue("Name")==Name))
+			if((Cur()->GetName()=="plugin")&&(Cur()->GetAttrValue("name")==Name))
 			{
 				tag=Cur();
 				break;
@@ -409,7 +421,7 @@ public:
 		if(!tag) return;
 
 		// Read Info
-		if(tag->GetAttrValue("Enable")=="True")
+		if(tag->GetAttrValue("enable")=="True")
 			Create();
 		GParams::ReadConfig(tag);
 
@@ -425,13 +437,13 @@ public:
 	*/
 	void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent)
 	{
-		R::RXMLTag* tag=new R::RXMLTag("Plugin");
-		tag->InsertAttr("Name",Name);
+		R::RXMLTag* tag=new R::RXMLTag("plugin");
+		tag->InsertAttr("name",Name);
 		xml->AddTag(parent,tag);
 		if(Plugin)
-			tag->InsertAttr("Enable","True");
+			tag->InsertAttr("enable","True");
 		else
-			tag->InsertAttr("Enable","False");
+			tag->InsertAttr("enable","False");
 		GParams::SaveConfig(xml,tag);
 	}
 

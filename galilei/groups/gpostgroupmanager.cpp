@@ -102,6 +102,32 @@ R::RCursor<GFactoryPostGroup> GPostGroupManager::GetPostGroupsCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GPostGroupManager::ReadConfig(RXMLTag* t)
+{
+	R::RCursor<GFactoryPostGroup> Cur;
+	
+	if(!t) return;
+	Cur=GetPostGroupsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(t);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GPostGroupManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryPostGroup> Cur;
+	Cur=GetPostGroupsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+}
+
+
+//------------------------------------------------------------------------------
 GPostGroupManager::~GPostGroupManager(void)
 {
 }

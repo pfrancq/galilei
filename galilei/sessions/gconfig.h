@@ -59,75 +59,16 @@ namespace GALILEI{
 */
 class GConfig : R::RXMLStruct
 {
+
 	/**
 	* File containg the document (must be local).
 	*/
 	R::RString FileName;
 
 	/**
-	* Tag holding the filters.
+	* Tag holding the main categories.
 	*/
-	R::RXMLTag* Filters;
-
-	/**
-	* Tag holding the profile computation methods.
-	*/
-	R::RXMLTag* ProfileCalcs;
-
-	/**
-	* Tag holding the grouping methods.
-	*/
-	R::RXMLTag* Groupings;
-
-	/**
-	* Tag holding the group computation methods.
-	*/
-	R::RXMLTag* GroupCalcs;
-
-	/**
-	* Tag holding the statistics.
-	*/
-	R::RXMLTag* StatsCalcs;
-
-	/**
-	* Tag holding the linking computation methods.
-	*/
-	R::RXMLTag* LinkCalcs;
-
-	/**
-	* Tag holding the postgroup computation methods.
-	*/
-	R::RXMLTag* PostGroups;
-
-	/**
-	* Tag holding words clustering methods.
-	*/
-	R::RXMLTag* PostDocs;
-
-	/**
-	* Tag holding words clustering methods.
-	*/
-	R::RXMLTag* PostProfile;
-
-	/**
-	* Tag holding the languages.
-	*/
-	R::RXMLTag* Langs;
-
-	/**
-	* Document Analysis Methods.
-	*/
-	R::RXMLTag* DocAnalyses;
-	
-	/**
-	* Document Analysis Methods.
-	*/
-	R::RXMLTag* Engines;
-	
-	/**
-	* Document Analysis Methods.
-	*/
-	R::RXMLTag* MetaEngines;
+	R::RXMLTag* Root;
 	
 	/**
 	* Document Analysis Methods.
@@ -151,151 +92,6 @@ public:
 	* Save a file in the structure.
 	*/
 	void Save(void) throw(GException);
-
-	/**
-	* Read the filters from the structure.
-	* @param mng             Manager.
-	*/
-	void Read(GFilterManager* mng);
-
-	/**
-	* Store the filters in the structure.
-	* @param mng             Manager.
-	*/
-	void Store(GFilterManager* mng);
-
-	/**
-	* Read the profiles computing methods from the structure.
-	* @param mng             Manager.
-	*/
-	void Read(GProfileCalcManager* mng);
-
-	/**
-	* Store the profiles computing methods in the structure.
-	* @param mng             Manager.
-	*/
-	void Store(GProfileCalcManager* mng);
-
-	/**
-	* Read the grouping methods from the structure.
-	* @param mng             Manager.
-	*/
-	void Read(GGroupingManager* mng);
-
-	/**
-	* Store the grouping methods in the structure.
-	* @param mng             Manager.
-	*/
-	void Store(GGroupingManager* mng);
-
-	/**
-	* Read the groups computing methods from the structure.
-	* @param mng             Manager.
-	*/
-	void Read(GGroupCalcManager* mng);
-
-	/**
-	* Store the groups computing methods in the structure.
-	* @param mng             Manager.
-	*/
-	void Store(GGroupCalcManager* mng);
-
-	/**
-	* Read the statistics from the structure.
-	* @param mng             Manager.
-	*/
-	void Read(GStatsCalcManager* mng);
-
-	/**
-	* Store the statistics in the structure.
-	* @param mng             Manager.
-	*/
-	void Store(GStatsCalcManager* mng);
-
-	/**
-	* Read the links computing methods from the structure.
-	* @param mng             Manager.
-	*/
-	void Read(GLinkCalcManager* mng);
-
-	/**
-	* Store the links computing methods in the structure.
-	* @param mng             Manager.
-	*/
-	void Store(GLinkCalcManager* mng);
-
-
-	/**
-	* Read the Post Group computing methods from the structure.
-	* @param mng             Manager.
-	*/
-	void Read(GPostGroupManager* mng);
-
-	/**
-	* Store the Post Group computing methods in the structure.
-	* @param mng             Manager.
-	*/
-	void Store(GPostGroupManager* mng);
-
-	/**
-	* Read the Post Profile computing methods from the structure.
-	* @param mng             Manager.
-	*/
-	void Read(GPostProfileManager* mng);
-
-	/**
-	* Store the Post Profile computing methods in the structure.
-	* @param mng             Manager.
-	*/
-	void Store(GPostProfileManager* mng);
-
-	/**
-	* Read the words clustering methods from the structure.
-	* @param mng             Manager.
-	*/
-	void Read(GPostDocManager* mng);
-
-	/**
-	* Store the words clustering methods in the structure.
-	* @param mng             Manager.
-	*/
-	void Store(GPostDocManager* mng);
-
-	/**
-	* Read the langauges.
-	* @param mng             Manager.
-	*/
-	void Read(GLangManager* mng);
-
-	/**
-	* Store the languages.
-	* @param mng             Manager.
-	*/
-	void Store(GLangManager* mng);
-
-	/**
-	* Read the DocAnalyse computing methods from the structure.
-	* @param mng             Manager.
-	*/
-	void Read(GDocAnalyseManager* mng);
-
-	/**
-	* Store the DocAnalyse computing methods in the structure.
-	* @param mng             Manager.
-	*/
-	void Store(GDocAnalyseManager* mng);
-	
-	/**
-	* Read the (meta) Engine methods from the structure.
-	* @param mng             Manager.
-	*/
-	void Read(GEngineManager* mng);
-
-	/**
-	* Store the (meta) engine methods in the structure.
-	* @param mng             Manager.
-	*/
-	void Store(GEngineManager* mng);
 
 	/**
 	* Read the Session params in the structure.

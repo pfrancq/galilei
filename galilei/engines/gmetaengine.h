@@ -137,7 +137,7 @@ public:
 * @author Vandaele Valery
 * @short Generic meta engine Factory.
 */
-class GFactoryMetaEngine : public GFactoryPlugin<GFactoryMetaEngine,GMetaEngine,GEngineManager>
+class GFactoryMetaEngine : public GFactoryPlugin<GFactoryMetaEngine,GMetaEngine,GMetaEngineManager>
 {
 public:
 	/**
@@ -146,8 +146,8 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryMetaEngine(GEngineManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryMetaEngine,GMetaEngine,GEngineManager>(mng,n,f) {}
+	GFactoryMetaEngine(GMetaEngineManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryMetaEngine,GMetaEngine,GMetaEngineManager>(mng,n,f) {}
 
 	/**
 	* Destructor.
@@ -160,7 +160,7 @@ public:
 /**
 * Signature of the method used to initiliaze a meta engine factory.
 */
-typedef GFactoryMetaEngine* GFactoryMetaEngineInit(GEngineManager*,const char*);
+typedef GFactoryMetaEngine* GFactoryMetaEngineInit(GMetaEngineManager*,const char*);
 
 
 //-------------------------------------------------------------------------------
@@ -169,13 +169,13 @@ class TheFactory : public GFactoryMetaEngine                                    
 {                                                                                         \
 private:                                                                                  \
 	static GFactoryMetaEngine* Inst;                                                      \
-	TheFactory(GEngineManager* mng,const char* l) : GFactoryMetaEngine(mng,name,l)        \
+	TheFactory(GMetaEngineManager* mng,const char* l) : GFactoryMetaEngine(mng,name,l)        \
 	{                                                                                     \
 		C::CreateParams(this);                                                            \
 	}                                                                                     \
 	virtual ~TheFactory(void) {}                                                          \
 public:                                                                                   \
-	static GFactoryMetaEngine* CreateInst(GEngineManager* mng,const char* l)              \
+	static GFactoryMetaEngine* CreateInst(GMetaEngineManager* mng,const char* l)              \
 	{                                                                                     \
 		if(!Inst)                                                                         \
 			Inst = new TheFactory(mng,l);                                                 \
@@ -218,7 +218,7 @@ GFactoryMetaEngine* TheFactory::Inst = 0;                                       
                                                                                           \
 extern "C"                                                                                \
 {                                                                                         \
-	GFactoryMetaEngine* FactoryCreate(GEngineManager* mng,const char* l)                  \
+	GFactoryMetaEngine* FactoryCreate(GMetaEngineManager* mng,const char* l)                  \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
 	}                                                                                     \

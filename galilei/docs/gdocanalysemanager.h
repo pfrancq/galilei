@@ -101,6 +101,16 @@ public:
 	R::RCursor<GFactoryDocAnalyse> GetDocAnalysesCursor(void);
 
 	/**
+	* Read config of the manager
+	*/
+	virtual void ReadConfig(RXMLTag* t);
+	
+	/**
+	* Store config of the manager
+	*/	
+	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
+
+	/**
 	* Destructor of the manager.
 	*/
 	virtual ~GDocAnalyseManager(void);

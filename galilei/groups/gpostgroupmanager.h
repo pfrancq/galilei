@@ -82,6 +82,16 @@ public:
 	R::RCursor<GFactoryPostGroup> GetPostGroupsCursor(void);
 
 	/**
+	* Read config of the manager
+	*/
+	virtual void ReadConfig(RXMLTag* t);
+	
+	/**
+	* Store config of the manager
+	*/	
+	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
+
+	/**
 	* Destruct the post-group computing methods manager.
 	*/
 	virtual ~GPostGroupManager(void);

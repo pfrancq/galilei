@@ -126,6 +126,43 @@ R::RCursor<GFactoryGroupCalc> GGroupCalcManager::GetGroupCalcsCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GGroupCalcManager::ReadConfig(RXMLTag* t)
+{
+	R::RCursor<GFactoryGroupCalc> Cur;
+
+	if(!t) return;
+	Cur=GetGroupCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(t);
+	}
+	try
+	{
+		SetCurrentMethod(t->GetAttrValue("current"));
+	}
+	catch(GException)
+	{
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GGroupCalcManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryGroupCalc> Cur;
+	Cur=GetGroupCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+	if(Current)
+		t->InsertAttr("current",Current->GetFactory()->GetName());
+	else
+		t->InsertAttr("current","None");
+}
+
+
+//------------------------------------------------------------------------------
 GGroupCalcManager::~GGroupCalcManager(void)
 {
 }

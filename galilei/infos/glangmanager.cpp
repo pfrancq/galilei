@@ -117,6 +117,32 @@ R::RCursor<GFactoryLang> GLangManager::GetLangsCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GLangManager::ReadConfig(RXMLTag* t)
+{
+	R::RCursor<GFactoryLang> Cur;
+	
+	if(!t) return;
+	Cur=GetLangsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(t);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GLangManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryLang> Cur;
+	Cur=GetLangsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+}
+
+
+//------------------------------------------------------------------------------
 GLangManager::~GLangManager(void)
 {
 }

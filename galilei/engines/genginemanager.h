@@ -4,7 +4,7 @@
 
 	GEngine.h
 
-	Generic Engine for extraction of results from the a search engine - Header.
+	Generic Engine Manager- Header.
 
 	Copyright 2004 by the Universit�Libre de Bruxelles.
 
@@ -52,13 +52,8 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short search engine Manager.
 */
-class GEngineManager : public R::RContainer<GFactoryMetaEngine,true,true>, public R::RContainer<GFactoryEngine,true,true> , public GPluginManager
+class GEngineManager : public R::RContainer<GFactoryEngine,true,true> , public GPluginManager
 {
-	/**
-	* Method currently selected.
-	*/
-	GMetaEngine* Current;
-
 public:
 
 	/**
@@ -87,24 +82,6 @@ public:
 	R::RCursor<GFactoryEngine> GetEnginesCursor(void);
 
 	/**
-	* Get a cursor over the meta engine factories handled by the manager.
-	* @return GFactoryEngineCursor
-	*/
-	R::RCursor<GFactoryMetaEngine> GetMetaEnginesCursor(void);
-
-	/**
-	* Set the current method.
-	* @param name            Name of the method.
-	*/
-	void SetCurrentMethod(const char* name) throw(GException);
-
-	/**
-	* Get the current method.
-	* @return Pointer to GDocAnalyse.
-	*/
-	GMetaEngine* GetCurrentMethod(void);
-
-	/**
 	* Get the engine corresponding to the "name"
 	* @param name           The name of the engine
 	* @return GEngine       A pointer to the engine corresponding to the name
@@ -112,16 +89,14 @@ public:
 	GEngine* GetEngine(R::RString name);
 
 	/**
-	* Insert a meta engine factory in the maanger
-	* @param ptr              Pointer to the meta engine factory
+	* Read config of the manager
 	*/
-	void InsertPtr(GFactoryMetaEngine* ptr) throw(std::bad_alloc);
-
+	virtual void ReadConfig(RXMLTag* t);
+	
 	/**
-	* Insert a engine factory in the maanger
-	* @param ptr              Pointer to the engine factory
-	*/
-	void InsertPtr(GFactoryEngine* ptr) throw(std::bad_alloc);
+	* Store config of the manager
+	*/	
+	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**
 	* Destructor of the manager.

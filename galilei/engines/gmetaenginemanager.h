@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GProfileCalcManager.h
+	GEngine.h
 
-	Profile Computing Methods Manager - Header.
+	Generic Meta Engine Manager- Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2004 by the Université libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Valery Vandaele (vavdaele@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,15 +31,14 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GProfileCalcManagerH
-#define GProfileCalcManagerH
+#ifndef GMetaEngineManagerH
+#define GMetaEngineManagerH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <sessions/gplugin.h>
-
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
@@ -48,26 +47,26 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GProfileCalcManager class provides a representation for a manager
-* responsible to manage all the profile computing methods.
-* @author Pascal Francq
-* @short Profile Computing Methods Manager.
+* The GMetaEngineManager class provides a representation for a manager
+* responsible to manage all the search engines.
+* @author Vandaele Valery
+* @short search engine Manager.
 */
-class GProfileCalcManager : public R::RContainer<GFactoryProfileCalc,true,true>, public GPluginManager
+class GMetaEngineManager : public R::RContainer<GFactoryMetaEngine,true,true> , public GPluginManager
 {
 	/**
 	* Method currently selected.
 	*/
-	GProfileCalc* Current;
+	GMetaEngine* Current;
 
 public:
 
 	/**
-	* Construct the profile computing methods manager.
+	* Constructor of a manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
-	GProfileCalcManager(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
+	GMetaEngineManager(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
 
 	/**
 	* Connect to a Session.
@@ -82,6 +81,12 @@ public:
 	void Disconnect(GSession* session) throw(GException);
 
 	/**
+	* Get a cursor over the meta engine factories handled by the manager.
+	* @return GFactoryEngineCursor
+	*/
+	R::RCursor<GFactoryMetaEngine> GetMetaEnginesCursor(void);
+
+	/**
 	* Set the current method.
 	* @param name            Name of the method.
 	*/
@@ -89,15 +94,9 @@ public:
 
 	/**
 	* Get the current method.
-	* @return Pointer to GProfileCalc.
+	* @return Pointer to GDocAnalyse.
 	*/
-	GProfileCalc* GetCurrentMethod(void);
-
-	/**
-	* Get a cursor over the profile computing methods managed.
-	* @return GFactoryProfileCalcCursor.
-	*/
-	R::RCursor<GFactoryProfileCalc> GetProfileCalcsCursor(void);
+	GMetaEngine* GetCurrentMethod(void);
 
 	/**
 	* Read config of the manager
@@ -110,9 +109,9 @@ public:
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**
-	* Destructor of the profile computing methods manager.
+	* Destructor of the manager.
 	*/
-	virtual ~GProfileCalcManager(void);
+	virtual ~GMetaEngineManager(void);
 };
 
 

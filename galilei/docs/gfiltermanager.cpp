@@ -294,6 +294,31 @@ R::RCursor<GFactoryFilter> GFilterManager::GetFiltersCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GFilterManager::ReadConfig(RXMLTag* t)
+{
+	R::RCursor<GFactoryFilter> Cur;
+	
+	if(!t) return;
+	Cur=GetFiltersCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(t);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryFilter> Cur;
+	Cur=GetFiltersCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+}
+
+//------------------------------------------------------------------------------
 GFilterManager::~GFilterManager(void)
 {
 }

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GEngineManager.cpp
+	GMetaEngineManager.cpp
 
-	Generic engine Manager - Implementation.
+	Generic Meta engine Manager Implementation.
 
-	Copyright 2004 by the Universit�Libre de Bruxelles.
+	Copyright 2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele (vavdaele@ulb.ac.be)
@@ -38,8 +38,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <engines/genginemanager.h>
-#include <engines/gengine.h>
+#include <engines/gmetaenginemanager.h>
+#include <engines/gmetaengine.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -47,93 +47,122 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-// class GEngine
+// class GMetaEngineManager
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GEngineManager::GEngineManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: R::RContainer<GFactoryEngine,true,true>(10,5),GPluginManager("Engine",path)
+GMetaEngineManager::GMetaEngineManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
+	: RContainer<GFactoryMetaEngine,true,true>(10,5),GPluginManager("MetaEngine",path),Current(0)
 {
 	RString Path(path);
-	Path+="/engines";
-	LoadPlugins<GFactoryEngine,GFactoryEngineInit,GEngineManager>(this,Path.Latin1(),API_ENGINE_VERSION, dlg);
+	Path+="/metaengines";
+	LoadPlugins<GFactoryMetaEngine,GFactoryMetaEngineInit,GMetaEngineManager>(this,Path.Latin1(),API_METAENGINE_VERSION, dlg);
 }
 
 
 //------------------------------------------------------------------------------
-void GEngineManager::Connect(GSession* session) throw(GException)
+void GMetaEngineManager::Connect(GSession* session) throw(GException)
 {
-	R::RCursor<GFactoryEngine> Cur;
-	GEngine* eng;
+	R::RCursor<GFactoryMetaEngine> CurM;
+	GMetaEngine* meta;
 
-	Cur.Set(this);
-	for(Cur.Start();!Cur.End();Cur.Next())
+	CurM.Set(this);
+	for(CurM.Start();!CurM.End();CurM.Next())
 	{
-		eng=Cur()->GetPlugin();
-		if(eng)
-			eng->Connect(session);
+		meta=CurM()->GetPlugin();
+		if(meta)
+			meta->Connect(session);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GEngineManager::Disconnect(GSession* session) throw(GException)
+void GMetaEngineManager::Disconnect(GSession* session) throw(GException)
 {
-	R::RCursor<GFactoryEngine> Cur;
-	GEngine* eng;
+	R::RCursor<GFactoryMetaEngine> CurM;
+	GMetaEngine* meta;
 
-	Cur.Set(this);
-	for(Cur.Start();!Cur.End();Cur.Next())
+	CurM.Set(this);
+	for(CurM.Start();!CurM.End();CurM.Next())
 	{
-		eng=Cur()->GetPlugin();
-		if(eng)
-			eng->Disconnect(session);
+		meta=CurM()->GetPlugin();
+		if(meta)
+			meta->Disconnect(session);
 	}
 }
 
+
 //------------------------------------------------------------------------------
-GEngine* GEngineManager::GetEngine(R::RString name)
+void GMetaEngineManager::SetCurrentMethod(const char* name) throw(GException)
 {
-	return (GetPtr(name.Latin1())->GetPlugin());
+	GFactoryMetaEngine* fac;
+	GMetaEngine* tmp;
+
+	fac=RContainer<GFactoryMetaEngine,true,true>::GetPtr<const char*>(name);
+	if(fac)
+		tmp=fac->GetPlugin();
+	else
+		tmp=0;
+	Current=tmp;
+	if(!tmp)
+		throw GException(RString("Computing method '")+name+"' doesn't exists.");
 }
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryEngine> GEngineManager::GetEnginesCursor(void)
+GMetaEngine* GMetaEngineManager::GetCurrentMethod(void)
 {
-	R::RCursor<GFactoryEngine> cur(this);
+	return(Current);
+}
+
+
+//------------------------------------------------------------------------------
+R::RCursor<GFactoryMetaEngine> GMetaEngineManager::GetMetaEnginesCursor(void)
+{
+	R::RCursor<GFactoryMetaEngine> cur(this);
 	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-void GEngineManager::ReadConfig(RXMLTag* t)
+void GMetaEngineManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryEngine> Cur;
-	
+	R::RCursor<GFactoryMetaEngine> Cur;
+
 	if(!t) return;
-	Cur=GetEnginesCursor();
+	Cur=GetMetaEnginesCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
 	}
-}
-
-
-//------------------------------------------------------------------------------
-void GEngineManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
-{
-	R::RCursor<GFactoryEngine> Cur;
-	Cur=GetEnginesCursor();
-	for(Cur.Start();!Cur.End();Cur.Next())
+	try
 	{
-		Cur()->SaveConfig(xml,t);
+		SetCurrentMethod(t->GetAttrValue("current"));
+	}
+	catch(GException)
+	{
 	}
 }
 
 
 //------------------------------------------------------------------------------
-GEngineManager::~GEngineManager(void)
+void GMetaEngineManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryMetaEngine> Cur;
+	Cur=GetMetaEnginesCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+	if(Current)
+		t->InsertAttr("current",Current->GetFactory()->GetName());
+	else
+		t->InsertAttr("current","None");
+}
+
+
+//------------------------------------------------------------------------------
+GMetaEngineManager::~GMetaEngineManager(void)
 {
 }

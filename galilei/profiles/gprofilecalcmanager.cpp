@@ -127,6 +127,43 @@ R::RCursor<GFactoryProfileCalc> GProfileCalcManager::GetProfileCalcsCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GProfileCalcManager::ReadConfig(RXMLTag* t)
+{
+	R::RCursor<GFactoryProfileCalc> Cur;
+
+	if(!t) return;
+	Cur=GetProfileCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(t);
+	}
+	try
+	{
+		SetCurrentMethod(t->GetAttrValue("current"));
+	}
+	catch(GException)
+	{
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GProfileCalcManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryProfileCalc> Cur;
+	Cur=GetProfileCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+	if(Current)
+		t->InsertAttr("current",Current->GetFactory()->GetName());
+	else
+		t->InsertAttr("current","None");
+}
+
+
+//------------------------------------------------------------------------------
 GProfileCalcManager::~GProfileCalcManager(void)
 {
 }

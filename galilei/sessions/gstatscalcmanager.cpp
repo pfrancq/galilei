@@ -116,6 +116,32 @@ R::RCursor<GFactoryStatsCalc> GStatsCalcManager::GetStatsCalcsCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GStatsCalcManager::ReadConfig(RXMLTag* t)
+{
+	R::RCursor<GFactoryStatsCalc> Cur;
+	
+	if(!t) return;
+	Cur=GetStatsCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(t);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStatsCalcManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryStatsCalc> Cur;
+	Cur=GetStatsCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+}
+
+
+//------------------------------------------------------------------------------
 GStatsCalcManager::~GStatsCalcManager(void)
 {
 }

@@ -125,6 +125,43 @@ R::RCursor<GFactoryLinkCalc> GLinkCalcManager::GetLinkCalcsCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GLinkCalcManager::ReadConfig(RXMLTag* t)
+{
+	R::RCursor<GFactoryLinkCalc> Cur;
+
+	if(!t) return;
+	Cur=GetLinkCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(t);
+	}
+	try
+	{
+		SetCurrentMethod(t->GetAttrValue("current"));
+	}
+	catch(GException)
+	{
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GLinkCalcManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryLinkCalc> Cur;
+	Cur=GetLinkCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+	if(Current)
+		t->InsertAttr("current",Current->GetFactory()->GetName());
+	else
+		t->InsertAttr("current","None");
+}
+
+
+//------------------------------------------------------------------------------
 GLinkCalcManager::~GLinkCalcManager(void)
 {
 }

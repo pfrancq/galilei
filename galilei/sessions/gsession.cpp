@@ -67,6 +67,7 @@ using namespace R;
 #include <engines/gengine.h>
 #include <engines/gmetaengine.h>
 #include <engines/genginemanager.h>
+#include <engines/gmetaenginemanager.h>
 #include <engines/genginedoc.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
@@ -155,7 +156,6 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 //------------------------------------------------------------------------------
 void GSession::Connect(void)
 {
-	
 	RCursor<GPluginManager> cur = GPluginManager::GetCursor();
 	
 	for(cur.Start();!cur.End();cur.Next())
@@ -435,7 +435,7 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 {
 	GMetaEngine* metaEngine;
 	// Verify that a meta engine is selected
-	metaEngine=(dynamic_cast<GEngineManager*>(GPluginManager::GetManager("Engine")))->GetCurrentMethod();
+	metaEngine=(dynamic_cast<GMetaEngineManager*>(GPluginManager::GetManager("MetaEngine")))->GetCurrentMethod();
 	if(!metaEngine)
 		throw GException("No meta engine method chosen.");
 	metaEngine->Query(keyWords,true); //true ->Use all keywords passed to the meta engine

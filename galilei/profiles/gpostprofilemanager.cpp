@@ -102,6 +102,32 @@ R::RCursor<GFactoryPostProfile> GPostProfileManager::GetPostProfileCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GPostProfileManager::ReadConfig(RXMLTag* t)
+{
+	R::RCursor<GFactoryPostProfile> Cur;
+	
+	if(!t) return;
+	Cur=GetPostProfileCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(t);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GPostProfileManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryPostProfile> Cur;
+	Cur=GetPostProfileCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+}
+
+
+//------------------------------------------------------------------------------
 GPostProfileManager::~GPostProfileManager(void)
 {
 }

@@ -126,6 +126,43 @@ R::RCursor<GFactoryGrouping> GGroupingManager::GetGroupingsCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GGroupingManager::ReadConfig(RXMLTag* t)
+{
+	R::RCursor<GFactoryGrouping> Cur;
+
+	if(!t) return;
+	Cur=GetGroupingsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(t);
+	}
+	try
+	{
+		SetCurrentMethod(t->GetAttrValue("current"));
+	}
+	catch(GException)
+	{
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GGroupingManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryGrouping> Cur;
+	Cur=GetGroupingsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+	if(Current)
+		t->InsertAttr("current",Current->GetFactory()->GetName());
+	else
+		t->InsertAttr("current","None");
+}
+
+
+//------------------------------------------------------------------------------
 GGroupingManager::~GGroupingManager(void)
 {
 }

@@ -104,6 +104,32 @@ R::RCursor<GFactoryPostDoc> GPostDocManager::GetPostDocsCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GPostDocManager::ReadConfig(RXMLTag* t)
+{
+	R::RCursor<GFactoryPostDoc> Cur;
+	
+	if(!t) return;
+	Cur=GetPostDocsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(t);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GPostDocManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryPostDoc> Cur;
+	Cur=GetPostDocsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+}
+
+
+//------------------------------------------------------------------------------
 GPostDocManager::~GPostDocManager(void)
 {
 }

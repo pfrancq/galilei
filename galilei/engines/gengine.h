@@ -47,13 +47,10 @@
 
 
 //------------------------------------------------------------------------------
-// API VERSION
-#define API_ENGINE_VERSION "1.0"
-
-
-//------------------------------------------------------------------------------
 namespace GALILEI{
 //------------------------------------------------------------------------------
+// API VERSION
+#define API_ENGINE_VERSION "1.0"
 
 
 //------------------------------------------------------------------------------
@@ -78,11 +75,6 @@ protected:
 	CURL* Lib;
 
 private:
-
-	/**
-	* The owner of this class
-	*/
-	GMetaEngine* Owner;
 
 	/*
 	* The name of the engine
@@ -133,12 +125,6 @@ public:
 	*@return double         The weight.
 	*/
 	virtual double GetEngineWeight(void)=0;
-
-	/**
-	* Get the Owner of the class
-	* @return GMetaEngine    The owner of this class
-	*/
-	GMetaEngine* GetOwner(void){return Owner;}
 
 	/**
 	* Get the name of the engine

@@ -40,7 +40,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <engines/gengine.h>
-#include <engines/gmetaengine.h>
 #include <rstd/rdownload.h>
 #include <rstd/rstd.h>
 #include <curl/curl.h>

@@ -128,6 +128,43 @@ R::RCursor<GFactoryDocAnalyse> GDocAnalyseManager::GetDocAnalysesCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GDocAnalyseManager::ReadConfig(RXMLTag* t)
+{
+	R::RCursor<GFactoryDocAnalyse> Cur;
+
+	if(!t) return;
+	Cur=GetDocAnalysesCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(t);
+	}
+	try
+	{
+		SetCurrentMethod(t->GetAttrValue("current"));
+	}
+	catch(GException)
+	{
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GDocAnalyseManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+{
+	R::RCursor<GFactoryDocAnalyse> Cur;
+	Cur=GetDocAnalysesCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(xml,t);
+	}
+	if(Current)
+		t->InsertAttr("current",Current->GetFactory()->GetName());
+	else
+		t->InsertAttr("current","None");
+}
+
+
+//------------------------------------------------------------------------------
 GDocAnalyseManager::~GDocAnalyseManager(void)
 {
 }

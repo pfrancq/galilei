@@ -93,7 +93,7 @@ void GParam::ReadConfig(RXMLTag* parent)
 	// Find Tag
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if((Cur()->GetName()=="Param")&&(Cur()->GetAttrValue("Name")==Name))
+		if((Cur()->GetName()=="param")&&(Cur()->GetAttrValue("name")==Name))
 		{
 			tag=Cur();
 			break;
@@ -111,8 +111,8 @@ void GParam::SaveConfig(RXMLStruct* xml,RXMLTag* parent)
 {
 	RXMLTag* tag;
 
-	tag=new RXMLTag("Param");
-	tag->InsertAttr("Name",Name);
+	tag=new RXMLTag("param");
+	tag->InsertAttr("name",Name);
 	WriteAttributes(tag);
 	xml->AddTag(parent,tag);
 }
@@ -233,7 +233,7 @@ void GParamInt::ReadAttributes(RXMLTag* tag)
 {
 	const char* val;
 
-	val=tag->GetAttrValue("Value");
+	val=tag->GetAttrValue("value");
 	if(!val) return;
 	sscanf(val,"%i",&Value);
 }
@@ -245,7 +245,7 @@ void GParamInt::WriteAttributes(RXMLTag* tag)
 	char val[20];
 
 	sprintf(val,"%i",Value);
-	tag->InsertAttr("Value",val);
+	tag->InsertAttr("value",val);
 }
 
 
@@ -303,7 +303,7 @@ void GParamUInt::ReadAttributes(RXMLTag* tag)
 {
 	const char* val;
 
-	val=tag->GetAttrValue("Value");
+	val=tag->GetAttrValue("value");
 	if(!val) return;
 	sscanf(val,"%u",&Value);
 }
@@ -315,7 +315,7 @@ void GParamUInt::WriteAttributes(RXMLTag* tag)
 	char val[20];
 
 	sprintf(val,"%u",Value);
-	tag->InsertAttr("Value",val);
+	tag->InsertAttr("value",val);
 }
 
 
@@ -373,7 +373,7 @@ void GParamDouble::ReadAttributes(RXMLTag* tag)
 {
 	const char* val;
 
-	val=tag->GetAttrValue("Value");
+	val=tag->GetAttrValue("value");
 	if(!val) return;
 	sscanf(val,"%lf",&Value);
 }
@@ -385,7 +385,7 @@ void GParamDouble::WriteAttributes(RXMLTag* tag)
 	char val[25];
 
 	sprintf(val,"%f",Value);
-	tag->InsertAttr("Value",val);
+	tag->InsertAttr("value",val);
 }
 
 
@@ -433,14 +433,14 @@ GParamString::GParamString(const char* n,const char* d) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GParamString::ReadAttributes(RXMLTag* tag)
 {
-	Value=tag->GetAttrValue("Value");
+	Value=tag->GetAttrValue("value");
 }
 
 
 //------------------------------------------------------------------------------
 void GParamString::WriteAttributes(RXMLTag* tag)
 {
-	tag->InsertAttr("Value",Value);
+	tag->InsertAttr("value",Value);
 }
 
 
@@ -483,13 +483,13 @@ void GParamProm::ReadAttributes(RXMLTag* tag)
 {
 	const char* val;
 
-	val=tag->GetAttrValue("P");
+	val=tag->GetAttrValue("p");
 	if(!val) return;
 	sscanf(val,"%lf",&Value.P);
-	val=tag->GetAttrValue("Q");
+	val=tag->GetAttrValue("q");
 	if(!val) return;
 	sscanf(val,"%lf",&Value.Q);
-	val=tag->GetAttrValue("Weight");
+	val=tag->GetAttrValue("weight");
 	if(!val) return;
 	sscanf(val,"%lf",&Value.Weight);
 }
@@ -501,11 +501,11 @@ void GParamProm::WriteAttributes(RXMLTag* tag)
 	char val[25];
 
 	sprintf(val,"%f",Value.P);
-	tag->InsertAttr("P",val);
+	tag->InsertAttr("p",val);
 	sprintf(val,"%f",Value.Q);
-	tag->InsertAttr("Q",val);
+	tag->InsertAttr("q",val);
 	sprintf(val,"%f",Value.Weight);
-	tag->InsertAttr("Weight",val);
+	tag->InsertAttr("weight",val);
 }
 
 
@@ -555,7 +555,7 @@ void GParamBool::ReadAttributes(RXMLTag* tag)
 {
 	const char* val;
 
-	val=tag->GetAttrValue("Value");
+	val=tag->GetAttrValue("value");
 	if(!val) return;
 	if(strcmp(val,"True")) Value=false; else Value=true;
 }
@@ -565,9 +565,9 @@ void GParamBool::ReadAttributes(RXMLTag* tag)
 void GParamBool::WriteAttributes(RXMLTag* tag)
 {
 	if(Value)
-		tag->InsertAttr("Value","True");
+		tag->InsertAttr("value","True");
 	else
-		tag->InsertAttr("Value","False");
+		tag->InsertAttr("value","False");
 }
 
 
