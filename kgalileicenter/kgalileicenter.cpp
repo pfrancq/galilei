@@ -147,6 +147,10 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
 			sessionConnect->setEnabled(false);
+			RImportDC->setEnabled(true);
+			RImportG->setEnabled(true);
+			RExportDM->setEnabled(true);
+			RExportP->setEnabled(true);
 			textFrench->setEnabled(true);
 			textEnglish->setEnabled(true);
 			plugins->setEnabled(true);
@@ -400,7 +404,7 @@ void KGALILEICenterApp::slotGAInit(void)
 {
 	KApplication::kApplication()->processEvents();
 	setDocParams(Doc);
-	createClient(Doc,new KViewGA(Doc,16,pWorkspace,"View Theoritical Groups",0));
+	createClient(Doc,new KViewGA(Doc,"en",16,pWorkspace,"Genetic Algorithm",0));
 	gaPause->setEnabled(true);
 	gaStart->setEnabled(true);
 	gaStop->setEnabled(true);
@@ -704,6 +708,46 @@ void KGALILEICenterApp::slotHandleItem(QListViewItem* item)
 	}
 }
 
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotRImportDC(void)
+{
+	slotStatusMsg(i18n("Opening file..."));
+	KApplication::kApplication()->processEvents();
+	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.dc|Document Concept"), this, i18n("Open File..."));
+	if(!url.isEmpty())
+	{
+		Doc->GetSession()->ImportDC(url.path().latin1());	
+	}
+	slotStatusMsg(i18n("Ready."));
+
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotRImportG(void)
+{
+	slotStatusMsg(i18n("Opening file..."));
+	KApplication::kApplication()->processEvents();
+	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.g|Groupment"), this, i18n("Open File..."));
+	if(!url.isEmpty())
+	{
+		Doc->GetSession()->ImportG(url.path().latin1());	
+	}
+	slotStatusMsg(i18n("Ready."));
+}
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotRExportDM(void)
+{
+	Doc->GetSession()->ExportDM();
+}
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotRExportP(void)
+{
+	Doc->GetSession()->ExportP();
+}
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::~KGALILEICenterApp(void)

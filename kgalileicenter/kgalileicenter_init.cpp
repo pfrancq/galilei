@@ -139,6 +139,12 @@ void KGALILEICenterApp::initActions(void)
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
 
+	// Menu "R Stat
+	RImportDC=new KAction(i18n("&RImportDC"),0,this,SLOT(slotRImportDC()),actionCollection(),"RImportDC");
+	RImportG=new KAction(i18n("&RImportG"),0,this,SLOT(slotRImportG()),actionCollection(),"RImportG");
+	RExportDM=new KAction(i18n("&RExportDM"),0,this,SLOT(slotRExportDM()),actionCollection(),"RExportDM");
+	RExportP=new KAction(i18n("&RExportP"),0,this,SLOT(slotRExportP()),actionCollection(),"RExportP");
+
 	// Menu "GA"
 	gaInit=new KAction(i18n("&Initialize"),"reload",KAccel::stringToKey("Alt+I"),this,SLOT(slotGAInit(void)),actionCollection(),"gaInit");
 	gaStart=new KAction(i18n("&Start"),"exec",KAccel::stringToKey("Alt+S"),this,SLOT(slotGAStart(void)),actionCollection(),"gaStart");
@@ -349,6 +355,10 @@ void KGALILEICenterApp::DisableAllActions(void)
 	gaStop->setEnabled(false);
 	plugins->setEnabled(false);
 	runProgram->setEnabled(false);
+	RImportDC->setEnabled(false);
+	RImportG->setEnabled(false);
+	RExportDM->setEnabled(false);
+	RExportP->setEnabled(false);
 }
 
 

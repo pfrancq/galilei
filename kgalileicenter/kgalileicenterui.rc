@@ -49,6 +49,13 @@
 		<Action name="textFrench"/>
 		<Action name="textEnglish"/>
 	</Menu>
+	<Menu name="R"><text>&amp;R</text>
+		<Separator/>
+		<Action name="RImportDC"/>
+		<Action name="RImportG"/>
+		<Action name="RExportDM"/>
+		<Action name="RExportP"/>
+	</Menu>
 	<Menu name="GA"><text>&amp;GA</text>
 		<Action name="gaInit"/>
 		<Separator/>

@@ -455,6 +455,26 @@ private slots:
 	*/
 	void slotStatusMsg(const QString& text);
 
+	/**
+	* Called to import a R Document/Concept Matrix.
+	*/
+	void slotRImportDC ();
+
+	/**
+	* Called to import a R Groupment Matrix.
+	*/
+	void slotRImportG();
+
+	/**
+	* Called to export a Document/Word Matrix.
+	*/
+	void slotRExportDM();
+
+	/**
+	* Called to export a Profile Matrix.
+	*/
+	void slotRExportP();
+
 public slots:
 
 	/**
@@ -515,6 +535,12 @@ public:
 	KAction* gaStart;
 	KAction* gaPause;
 	KAction* gaStop;
+
+	KAction* RImportDC;
+	KAction* RImportG;
+	KAction* RExportDM;
+	KAction* RExportP;
+
 
 	KAction* plugins;
 	KAction* docsOptions;
