@@ -6,7 +6,7 @@
 
 	Main Window - Implementation of the Init part.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -80,7 +80,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
-	: KMainWindow(0,"KGALILEICenterApp"), dbHost("salut"),dbName("pasl"),dbUser("as"),dbPwd("as"),pluginsPath("coucou"),Doc(0)
+	: KMainWindow(0,"KGALILEICenterApp"), dbHost(),dbName(),dbUser(),dbPwd(),pluginsPath(),Doc(0)
 {
 	Config=kapp->config();
 	initStatusBar();

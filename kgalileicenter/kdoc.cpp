@@ -196,7 +196,6 @@ bool KDoc::canCloseFrame(KView* /*pFrame*/)
 {
 	KView *w;
 
-	std::cout<<"Coucou"<<std::endl;
 	for(w=pViewList->first();w!=0;w=pViewList->next())
 	{
 		if(!w->canClose())
