@@ -46,20 +46,6 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-// General function
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GProfileCursor* GetGProfileCursor(void)
-{
-	return(GetTemporaryObject<GProfileCursor,20>());
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
 //  class GSessionSignalsReceiver
 //
 //-----------------------------------------------------------------------------
@@ -221,9 +207,16 @@ void GALILEI::GSession::AnalyseDocs(GSessionSignalsReceiver* rec,bool modified) 
 
 
 //-----------------------------------------------------------------------------
-GProfileCursor& GALILEI::GSession::GetProfilesCursor(void) const
+GProfile* GALILEI::GSession::GetProfile(const unsigned int id) const
 {
-	GProfileCursor *cur=GetGProfileCursor();
+	return(Profiles->GetPtr<unsigned int>(id));
+}
+
+
+//-----------------------------------------------------------------------------
+GProfileCursor& GALILEI::GSession::GetProfilesCursor(void)
+{
+	GProfileCursor *cur=GProfileCursor::GetTmpCursor();
 	cur->Set(Profiles);
 	return(*cur);
 }
@@ -317,6 +310,15 @@ void GALILEI::GSession::InitGroups(void) throw(bad_alloc,GException)
 	// Load the users
 	LoadGroups();
 	bGroups=true;
+}
+
+
+//-----------------------------------------------------------------------------
+GGroupsCursor& GALILEI::GSession::GetGroupsCursor(void)
+{
+	GGroupsCursor *cur=GGroupsCursor::GetTmpCursor();
+	cur->Set(Groups);
+	return(*cur);
 }
 
 

@@ -54,6 +54,7 @@ class GProfDoc;
 class GSubProfile;
 class GGroup;
 class GGroups;
+class GGroupsCursor;
 class GProfileCalc;
 class GFilter;
 class GMIMEFilter;
@@ -132,7 +133,7 @@ protected:
 	/**
 	* All the judgements.
 	*/
-	RContainer<GProfDoc,unsigned,true,true> Fdbks;
+	RStd::RContainer<GProfDoc,unsigned,true,true> Fdbks;
 
 	/**
 	* SubProfiles handled by the system.
@@ -427,9 +428,15 @@ public:
 		virtual void Save(const GProfile* prof) throw(GException)=0;
 
 		/**
+		* Get a profile with a specific identifier.
+		* @param id         Identifier.
+		*/
+		GProfile* GetProfile(const unsigned int id) const;
+
+		/**
 		* Get a cursor over the profiles used in the system.
 		*/
-		GProfileCursor& GetProfilesCursor(void) const;
+		GProfileCursor& GetProfilesCursor(void);
 
 		/**
 		* Get the number of users treated by the system.
@@ -542,6 +549,11 @@ public:
 		* Load the Groups.
 		*/
 		void InitGroups(void) throw(bad_alloc,GException);
+
+		/**
+		* Get a cursor over the groups of the system.
+		*/
+		GGroupsCursor& GetGroupsCursor(void);
 
 		/**
 		* Find the groups for a specific language.

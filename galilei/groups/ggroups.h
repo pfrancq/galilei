@@ -22,8 +22,9 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for R Project
+// include files for R Project
 #include <rstd/rcontainer.h>
+#include <rstd/rcursor.h>
 
 
 //-----------------------------------------------------------------------------
@@ -40,6 +41,7 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 // forward class declaration
 class GGroup;
+class GGroupCursor;
 class GLang;
 class GSubProfile;
 
@@ -95,10 +97,23 @@ public:
 	GGroup* GetGroup(const GSubProfile* sub) const;
 
 	/**
+	* Get a cursor over the groups.
+	*/
+	GGroupCursor& GetGroupCursor(void);
+
+	/**
 	* Compute -> Must be in separate class.
 	*/
 	void Calc(void);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GGroupsCursor class provides a way to go trough a set of groups.
+* @short Groups' Cursor
+*/
+CLASSCURSOR(GGroupsCursor,GGroups,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

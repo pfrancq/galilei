@@ -85,3 +85,26 @@ void GALILEI::GGroup::DeleteSubProfiles(void)
 		(*this)()->SetGroup(0);
 	Clear();
 }
+
+
+//-----------------------------------------------------------------------------
+GSubProfileCursor& GALILEI::GGroup::GetSubProfileCursor(void)
+{
+	GSubProfileCursor* cur=GSubProfileCursor::GetTmpCursor();
+	cur->Set(this);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GGroup::GetNbSubProfiles(GGroup* grp)
+{
+	unsigned int tot=0;
+	GSubProfileCursor Sub;
+
+	Sub.Set(this);
+	for(Sub.Start();!Sub.End();Sub.Next())
+		if(grp->IsIn<const GSubProfile*>(Sub()))
+			tot++;
+	return(tot);
+}

@@ -24,6 +24,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
+#include <rstd/rcursor.h>
 #include <rtimedate/rdate.h>
 
 
@@ -210,6 +211,14 @@ public:
 	*/
 	~GSubProfile(void);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GSubProfileCursor class provides a way to go trough a set of subprofiles.
+* @short SubProfiles' Cursor
+*/
+CLASSCURSOR(GSubProfileCursor,GSubProfile,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

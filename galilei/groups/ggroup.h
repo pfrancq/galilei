@@ -22,8 +22,9 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for R Project
+// include files for R Project
 #include <rstd/rcontainer.h>
+#include <rstd/rcursor.h>
 
 
 //-----------------------------------------------------------------------------
@@ -41,6 +42,7 @@ namespace GALILEI{
 // forward class declaration
 class GLang;
 class GSubProfile;
+class GSubProfileCursor;
 
 
 //-----------------------------------------------------------------------------
@@ -137,7 +139,26 @@ public:
 	* Delete all subprofiles.
 	*/
 	void DeleteSubProfiles(void);
+
+	/**
+	* Get a cursor over the subprofiles.
+	*/
+	GSubProfileCursor& GetSubProfileCursor(void);
+
+	/**
+	* Compute the number of subprofiles of grp that are in the current group.
+	* @param grp            Group to compare with.
+	*/
+	unsigned int GetNbSubProfiles(GGroup* grp);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GGroupCursor class provides a way to go trough a set of group.
+* @short Group' Cursor
+*/
+CLASSCURSOR(GGroupCursor,GGroup,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------
