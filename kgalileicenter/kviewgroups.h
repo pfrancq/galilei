@@ -69,7 +69,7 @@ class KViewGroups : public KView
 	Q_OBJECT
 
 	/**
-	*  list view of groups containing the the profile
+	*  List view of groups containing the the profile.
 	*/
 	QListView* Groups;
 
@@ -96,7 +96,7 @@ public:
 	GGroup* GetCurrentGroup(void);
 
 	/**
-	* Construct the groups' widget.
+	* Construct the groups widget.
 	*/
 	void ConstructGroups(void);
 
