@@ -60,6 +60,11 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+// include files for KDE
+#include <kiconloader.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for current application
 #include "kviewgroups.h"
 #include "qsessionprogress.h"
@@ -78,7 +83,7 @@ KViewGroups::KViewGroups(KDoc* doc,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags)
 {
 	setCaption("List of Groups");
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/kmultiple.png"));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
 	Groups = new QListView(this);
 	Groups->resize(size());
 	Groups->addColumn(QString("Profiles"));
@@ -120,19 +125,19 @@ void KViewGroups::ConstructGroups(void)
 		if(!lang) continue;
 		GGroups* grs=Doc->GetSession()->GetGroups(lang);
 		QListViewItemType* grsitem = new QListViewItemType(Groups,lang->GetName());
-		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
+		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		for (grs->Start(); !grs->End(); grs->Next())
 		{
 			GGroup* gr=(*grs)();
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group");
-			gritem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/window_new.png"));
+			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 			for(gr->Start(); !gr->End(); gr->Next())
 			{
 				GSubProfile* sub=(*gr)();
 				d=sub->GetAttached();
 				sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
 				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName(),sDate);
-				subitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
+				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}
 	}

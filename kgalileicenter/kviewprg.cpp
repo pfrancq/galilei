@@ -43,6 +43,7 @@
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kapplication.h>
+#include <kiconloader.h>
 
 
 //-----------------------------------------------------------------------------
@@ -62,7 +63,7 @@ KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), GSlot()
 {
 	// Window proprieties
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/make.png"));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("make.png",KIcon::Small)));
 	setCaption(name);
 
 	Output=new QMultiLineEdit(this,"Output");

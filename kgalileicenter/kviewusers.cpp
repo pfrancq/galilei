@@ -54,6 +54,11 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+// include files for KDE
+#include <kiconloader.h>
+
+
+//-----------------------------------------------------------------------------
 // application specific includes
 #include "kviewusers.h"
 #include "kdoc.h"
@@ -71,7 +76,7 @@ KViewUsers::KViewUsers(KDoc* doc,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags)
 {
 	setCaption("List of users");
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/apps/kdmconfig.png"));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kdmconfig.png",KIcon::Small)));
 	Users = new QListView(this);
 	Users->addColumn(QString("User"));
 	Users->setRootIsDecorated(true);
@@ -104,11 +109,11 @@ void KViewUsers::CreateUsersListView(void)
 	for(CurUsr.Start();!CurUsr.End();CurUsr.Next())
 	{
 		useritem = new QListViewItemType(CurUsr(),Users,CurUsr()->GetFullName());
-		useritem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/personal.png"));
+		useritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
 		for (CurUsr()->Start(); !CurUsr()->End(); CurUsr()->Next())
 		{
 			prof=new QListViewItemType((*CurUsr())(), useritem, (*CurUsr())()->GetName());
-			prof->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/kdict.png"));
+			prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("kdict.png",KIcon::Small)));
 		}
 	}
 }

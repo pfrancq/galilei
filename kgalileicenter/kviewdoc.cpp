@@ -70,6 +70,11 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+// include files for KDE
+#include <kiconloader.h>
+
+
+//-----------------------------------------------------------------------------
 // application specific includes
 #include "kviewdoc.h"
 #include "qsessionprogress.h"
@@ -89,7 +94,7 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 	  bDelDoc(false), bDocXML(false)
 {
 	// Window proprieties
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/document.png"));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
 	setCaption("Description of \" "+QString(Document->GetName())+"\"");
 
 	// initialisation of the tab widget
@@ -147,7 +152,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	Document=new GDocVector(file,file,cNoRef,0,Doc->GetSession()->GetMIMEType(mime),0,0,0,0,0,0,0);
 
 	// Window proprieties
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/document.png"));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
 	setCaption("Description of \" "+QString(Document->GetName())+"\"");
 
 	// initialisation of the tab widget
@@ -187,20 +192,18 @@ void KViewDoc::ConstructFdbks(void)
 
 
 	// Init different judgements
-	QListViewItemType* ok= new QListViewItemType(Fdbks, "OK Judgements");
-	ok->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/ok.png"));
-	QListViewItemType* ko= new QListViewItemType(Fdbks, "KO Judgements");
-	ko->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/remove.png"));
-	QListViewItemType* n= new QListViewItemType(Fdbks, "N Judgements");
-	n->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/view_tree.png"));
-	QListViewItemType* hs= new QListViewItemType(Fdbks, "HS Judgements");
-	hs->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
+	QListViewItemType* ok= new QListViewItemType(Fdbks,"Relevant Documents");
+	ok->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("ok.png",KIcon::Small)));
+	QListViewItemType* ko= new QListViewItemType(Fdbks, "Fuzzy Relevant Documents");
+	ko->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("remove.png",KIcon::Small)));
+	QListViewItemType* hs= new QListViewItemType(Fdbks, "Irrelevant Documents");
+	hs->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("stop.png",KIcon::Small)));
 
 	//init different judgements for documents from link analysis.
-	QListViewItemType* lh= new QListViewItemType(FdbksLinks , "Hub Judgements");
-	//lh->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
-	QListViewItemType* la= new QListViewItemType(FdbksLinks, "Authority Judgements");
-	//la->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
+	QListViewItemType* lh= new QListViewItemType(FdbksLinks , "Hub Documents");
+	//lh->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("stop.png",KIcon::Small)));
+	QListViewItemType* la= new QListViewItemType(FdbksLinks, "Authority Documents");
+	//la->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("stop.png",KIcon::Small)));
 
 
 	// Add Judgements for profile.
@@ -218,9 +221,6 @@ void KViewDoc::ConstructFdbks(void)
 			case djKO:
 				p=ko;
 				break;
-			case djNav:
-				p=n;
-				break;
 			case (djNav | djHub):
 				p=lh;
 				break;
@@ -235,7 +235,7 @@ void KViewDoc::ConstructFdbks(void)
 		d=Profiles()->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
 		QListViewItemType* prof = new QListViewItemType(Profiles()->GetProfile(),p,Profiles()->GetProfile()->GetName(),Profiles()->GetProfile()->GetUser()->GetFullName(),sDate);
-		prof->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/personal.png"));
+		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
 	}
 }
 

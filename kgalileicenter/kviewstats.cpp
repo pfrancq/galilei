@@ -160,7 +160,7 @@ void KViewStats::ComputeStats(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewStats::resizeEvent(QResizeEvent* e)
+void KViewStats::resizeEvent(QResizeEvent*)
 {
 	Res->resize(size());
 }

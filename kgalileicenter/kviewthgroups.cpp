@@ -64,6 +64,11 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+// include files for KDE
+#include <kiconloader.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for current application
 #include "kviewthgroups.h"
 #include "qsessionprogress.h"
@@ -83,7 +88,7 @@ KViewThGroups::KViewThGroups(KDoc* doc,RContainer<GGroups,unsigned int,true,true
 	: KView(doc,parent,name,wflags), Groups(0)
 {
 	Groups=idealgroup;
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/kmultiple.png"));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
 
 	// initialisation of the tab widget
 	Infos=new QTabWidget(this);
@@ -118,7 +123,7 @@ KViewThGroups::KViewThGroups(KDoc* doc,const char* filename,QWidget* parent,cons
 	: KView(doc,parent,name,wflags), Groups(0)
 {
 	LoadGroups(filename);
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/kmultiple.png"));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
 
 	// initialisation of the tab widget
 	Infos=new QTabWidget(this);
@@ -219,17 +224,17 @@ void KViewThGroups::ConstructThGroups(void)
 		GGroups* grs=Groups->GetPtr<const GLang*>(lang);
 		if(!grs) continue;
 		QListViewItemType* grsitem = new QListViewItemType(thGroups,lang->GetName());
-		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
+		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		for(grs->Start(); !grs->End(); grs->Next())
 		{
 			GGroup* gr=(*grs)();
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group");
-			gritem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/window_new.png"));
+			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 			for(gr->Start(); !gr->End(); gr->Next())
 			{
 				GSubProfile* sub=(*gr)();
 				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName());
-				subitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
+				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}
 	}
@@ -255,20 +260,20 @@ void KViewThGroups::ConstructGroups(void)
 		if(!lang) continue;
 		GGroups* grs=Doc->GetSession()->GetGroups(lang);
 		QListViewItemType* grsitem = new QListViewItemType(prGroups,lang->GetName());
-		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
+		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		for (grs->Start(); !grs->End(); grs->Next())
 		{
 			GGroup* gr=(*grs)();
 			sprintf(tmp1,"Precision: %1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(gr));
 			sprintf(tmp2,"Recall: %1.3f",Doc->GetSession()->GetSubjects()->GetRecall(gr));
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group",tmp1,tmp2);
-			gritem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/window_new.png"));
+			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 			for(gr->Start(); !gr->End(); gr->Next())
 			{
 				GSubProfile* sub=(*gr)();
 				sprintf(tmp1,"%s (%s)",sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName());
 				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,tmp1);
-				subitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
+				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}
 	}

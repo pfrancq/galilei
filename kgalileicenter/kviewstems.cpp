@@ -58,6 +58,11 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+// include files for KDE
+#include <kiconloader.h>
+
+
+//-----------------------------------------------------------------------------
 // application specific includes
 #include "kdoc.h"
 #include "kviewstems.h"
@@ -134,7 +139,7 @@ KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget*
 	: KView(doc,parent,name,wflags), Roots(0), Stems(0), Words(0),
 	  Precision(0.0), Recall(0.0)
 {
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/kmultiple.png"));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
 	char tmp[10];
 
 	Lang=doc->GetSession()->GetLangs()->GetLang(code);

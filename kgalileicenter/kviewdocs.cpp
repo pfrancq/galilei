@@ -58,6 +58,11 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+// include files for KDE
+#include <kiconloader.h>
+
+
+//-----------------------------------------------------------------------------
 // includes files for current application
 #include "kviewdocs.h"
 #include "kdoc.h"
@@ -77,7 +82,7 @@ struct LangItem
 	QListViewItem* Item;
 
 	LangItem(GLang* l,QListViewItem* i) : Lang(l), Item(i)
-	{Item->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));}
+	{Item->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));}
 	int Compare(const LangItem* l) const;
 	int Compare(const LangItem& l) const;
 	int Compare(const GLang* l) const;
@@ -126,7 +131,7 @@ KViewDocs::KViewDocs(KDoc* doc,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags)
 {
 	setCaption("List of documents");
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/apps/window_list.png"));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("window_list.png",KIcon::Small)));
 	Docs = new QListView(this,"QListView of KViewDocs");
 	Docs->addColumn(QString("Title"));
 	Docs->addColumn(QString("URL"));
@@ -181,8 +186,8 @@ void KViewDocs::CreateDocsListView(void)
 		else
 			ptr=det;
 		QListViewItemType* docitem= new QListViewItemType(CurDocs(),LangItems.GetPtr<const GLang*>(CurDocs()->GetLang())->Item,CurDocs()->GetName(),CurDocs()->GetURL(),ptr);
-		docitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/document.png"));
-		docitem->setPixmap(1,QPixmap("/usr/share/icons/hicolor/16x16/apps/konqueror.png"));
+		docitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
+		docitem->setPixmap(1,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
 	}
 }
 

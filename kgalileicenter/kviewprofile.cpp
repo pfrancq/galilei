@@ -65,6 +65,11 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+// include files for KDE
+#include <kiconloader.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for current application
 #include "kviewprofile.h"
 #include "qsessionprogress.h"
@@ -84,7 +89,7 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	: KView(doc,parent,name,wflags), Profile(profile), Fdbks(0)
 {
 	// Window initialisation
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 	setCaption("Profile \""+QString(Profile->GetName())+"\"");
 
 	// initialisation of the tab widget
@@ -164,21 +169,19 @@ void KViewProfile::ConstructFdbks(void)
 
 	// Init different judgements
 	Fdbks->clear();
-	QListViewItemType* ok= new QListViewItemType(Fdbks, "OK Judgements");
-	ok->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/ok.png"));
-	QListViewItemType* ko= new QListViewItemType(Fdbks, "KO Judgements");
-	ko->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/remove.png"));
-	QListViewItemType* n= new QListViewItemType(Fdbks, "N Judgements");
-	n->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/view_tree.png"));
-	QListViewItemType* hs= new QListViewItemType(Fdbks, "HS Judgements");
-	hs->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
+	QListViewItemType* ok= new QListViewItemType(Fdbks, "Relevant Documennts");
+	ok->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("ok.png",KIcon::Small)));
+	QListViewItemType* ko= new QListViewItemType(Fdbks, "Fuzzy Relevant Documents");
+	ko->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("remove.png",KIcon::Small)));
+	QListViewItemType* hs= new QListViewItemType(Fdbks, "Irrelevant Documents");
+	hs->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("stop.png",KIcon::Small)));
 
 	// Init different judgements for document from link analysis.
 	FdbksLinks->clear();
-	QListViewItemType* lh= new QListViewItemType(FdbksLinks, "Hub Judgements");
-	//lh->setPixmap(0,QPixmap("/usr/share/icons/hicolor/..."));
-	QListViewItemType* la= new QListViewItemType(FdbksLinks, "Authority Judgements");
-	//la->setPixmap(0,QPixmap("/usr/share/icons/hicolor/..."));
+	QListViewItemType* lh= new QListViewItemType(FdbksLinks, "Hub Documents");
+	//lh->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("",KIcon::Small)));
+	QListViewItemType* la= new QListViewItemType(FdbksLinks, "Authority Documents");
+	//la->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("",KIcon::Small)));
 
 
 	// Add Judgements from profiles.
@@ -196,10 +199,7 @@ void KViewProfile::ConstructFdbks(void)
 			case djKO:
 				p=ko;
 				break;
-			case djNav:
-				p=n;
-				break;
-			case (djNav| djHub):
+			case djHub:
 				p=lh;
 				break;
 			case djOutScope:
@@ -213,7 +213,7 @@ void KViewProfile::ConstructFdbks(void)
 		d=Docs()->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
 		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName(),Docs()->GetDoc()->GetURL(),sDate);
-		prof->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/konqueror.png"));
+		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
 	}
 
 	// Add Judgements from subprofiles.
@@ -234,10 +234,7 @@ void KViewProfile::ConstructFdbks(void)
 				case djKO:
 					p=ko;
 					break;
-				case djNav:
-					p=n;
-					break;
-				case (djNav| djHub):
+				case djHub:
 					p=lh;
 					break;
 				case djOutScope:
@@ -251,7 +248,7 @@ void KViewProfile::ConstructFdbks(void)
 			d=Docs()->GetUpdated();
 			sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
 			QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName(),Docs()->GetDoc()->GetURL(),sDate);
-			prof->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/konqueror.png"));
+			prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
 		}
 	}
 }
@@ -272,7 +269,7 @@ void KViewProfile::ConstructGroups(void)
 		lang=CurLang()->GetPlugin();
 		GGroups* grs=Doc->GetSession()->GetGroups(lang);
 		QListViewItemType* grsitem = new QListViewItemType(Groups,lang->GetName());
-		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
+		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		sub=Profile->GetSubProfile(lang);
 		if(!sub) continue;
 		for (grs->Start(); !grs->End(); grs->Next())
@@ -286,7 +283,7 @@ void KViewProfile::ConstructGroups(void)
 				d=sub->GetAttached();
 				sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
 				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName(),sDate);
-				subitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
+				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}
 	}
@@ -338,7 +335,7 @@ void KViewProfile::ComputeProfile(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewProfile::ConstructPov(GProfile *profile)
+void KViewProfile::ConstructPov(GProfile* /*profile*/)
 {
 // 	GInOutputBase *datainput = NULL;
 // 	GStandardInOutPutCursor Outpt; //= GetGOutPutCursor();
@@ -449,7 +446,7 @@ void KViewProfile::ConstructPov(GProfile *profile)
 
 
 //-----------------------------------------------------------------------------
-char * KViewProfile::GetNameDoc(char *longname)
+char* KViewProfile::GetNameDoc(char* /*longname*/)
 {
 /*	int len = 0;
 	int l = 0;
@@ -464,11 +461,12 @@ char * KViewProfile::GetNameDoc(char *longname)
 	for(k = 0 ; l > 0 ; l--, i++, k++)
 		shortname[k] = longname[i];
 		return shortname;*/
+	return(0);
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewProfile::ConstructPov2(GProfile *profile)
+void KViewProfile::ConstructPov2(GProfile* /*profile*/)
 {
 /**	GInOutputBase *datainput = NULL;
 	GInOutputBase *listdoc;
@@ -507,7 +505,7 @@ void KViewProfile::ConstructPov2(GProfile *profile)
 						rows[pos][0] = Outpt()->GetIdw();
 						pos++;
 						QListViewItemType* heads = new QListViewItemType(Pov,Outpt()->GetWord());
-						heads->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
+						heads->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 						// construit la liste de ce headword
 
 					for(scan.Start(); !scan.End(); scan.Next()) // for each level scan the container
@@ -533,7 +531,7 @@ void KViewProfile::ConstructPov2(GProfile *profile)
 												memset(lword,0,128);
 												sprintf(lword,"%s",scan()->GetWord());
 												QListViewItemType* subitem=new QListViewItemType(heads,lword);
-												subitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
+												subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 											}
 										}
 									}
@@ -549,7 +547,7 @@ void KViewProfile::ConstructPov2(GProfile *profile)
 }
 
 //-----------------------------------------------------------------------------
-void KViewProfile::GetListSubPov(GInOutputBase *datainput)
+void KViewProfile::GetListSubPov(GInOutputBase* /*datainput*/)
 {
 /*
 	for ( int i = 0 ; i < 10; i++ )
