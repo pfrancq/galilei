@@ -356,7 +356,7 @@ void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GExcepti
 	const char* ptr;
 	RString word(50);
 
-	if(tag->GetName()=="sentence")
+	if(tag->GetName()=="docxml:sentence")
 	{
 		ptr=tag->GetContent();
 		while(*ptr)
