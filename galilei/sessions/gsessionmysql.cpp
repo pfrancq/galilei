@@ -61,6 +61,14 @@ GSessionMySQL::~GSessionMySQL()
 
 
 //-----------------------------------------------------------------------------
+void GSessionMySQL::LoadAllFromDB()
+{
+	LoadLangsFromDB();
+	LoadUsersFromDB();
+	LoadGroupsFromDB();
+	LoadDocs();
+}
+//-----------------------------------------------------------------------------
 void GSessionMySQL::LoadUsersFromDB()
 {        
 	if (Langs)
@@ -366,4 +374,7 @@ void GSessionMySQL::LoadProfileDocs(GProfile* profile)
 }
 
 
-
+//-----------------------------------------------------------------------------
+void GSessionMySQL::AddDocJudgement(GDoc* doc, GProfile* profile, char fdbk)
+{
+}

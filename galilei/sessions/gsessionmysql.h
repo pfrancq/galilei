@@ -62,6 +62,11 @@ public:
 	/**
 	* Loading Users function.
 	*/
+	void LoadAllFromDB();
+
+	/**
+	* Loading Users function.
+	*/
 	void LoadUsersFromDB();
 	
 	/**
@@ -119,6 +124,12 @@ public:
 	* Loading the groupment from database.
 	*/
 	void LoadGroupsFromDB(void);
+
+		
+	/**
+	* Add a judgement by a profile for a document.
+	*/
+	void AddDocJudgement(GDoc* doc, GProfile* profile, char fdbk);
 
 	/**
 	*
