@@ -84,6 +84,11 @@ public:
 	virtual void ApplyConfig(void) {}
 
 	/**
+	* Get the factory of the plugin.
+	*/
+	factory* GetFactory(void) const {return(Factory);}
+
+	/**
 	* Destructor of the plugin.
 	*/
 	virtual ~GPlugin(void) {}
@@ -99,7 +104,7 @@ protected:
 	/**
 	* URL Manager associated.
 	*/
-	GURLManager* Mng;
+	mng* Mng;
 
 	/**
 	* Pointer to the plugin.
@@ -195,6 +200,49 @@ public:
 	* Return the version of the plugin.
 	*/
 	const char* GetVersion(void) const {return(Version);}
+
+	/**
+	* Read a configuration from a XML Tag.
+	* @param parent          Parent Tag.
+	*/
+	void ReadConfig(R::RXMLTag* parent)
+	{
+		R::RXMLTagCursor Cur=parent->GetXMLTagsCursor();
+		RXMLTag* tag=0;
+
+		// Find Tag
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			if((Cur()->GetName()=="Plugin")&&(Cur()->GetAttrValue("Name")==Name))
+			{
+				tag=Cur();
+				break;
+			}
+		}
+		if(!tag) return;
+
+		// Read Info
+		if(tag->GetAttrValue("Enable")=="True")
+			Create();
+		GParams::ReadConfig(tag);
+	}
+
+	/**
+	* Save a configuration to a XML Tag.
+	* this tag.
+	* @param parent          Parent tag.
+	*/
+	void SaveConfig(R::RXMLTag* parent)
+	{
+		RXMLTag* tag=new R::RXMLTag("Plugin");
+		tag->InsertAttr("Name",Name);
+		parent->AddTag(tag);
+		if(Plugin)
+			tag->InsertAttr("Enable","True");
+		else
+			tag->InsertAttr("Enable","False");
+		GParams::SaveConfig(tag);
+	}
 
 	/**
 	* Destructor.

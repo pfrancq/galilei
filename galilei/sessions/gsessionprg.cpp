@@ -228,18 +228,13 @@ void GModifyProfilesI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned 
 //-----------------------------------------------------------------------------
 void GComputeProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
-	if(args->NbPtr==2)
-		sprintf(tmp,"Compute Profiles: Method=\"%s\"  Settings=\"%s\"",args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
-	else
 	if(args->NbPtr==1)
-		sprintf(tmp,"Compute Profiles: Method=\"%s\"  Current Settings",args->Tab[0]->GetValue(prg));
+		sprintf(tmp,"Compute Profiles: Method=\"%s\"",args->Tab[0]->GetValue(prg));
 	else
-		strcpy(tmp,"Compute Profiles: Current Method and Settings");
+		strcpy(tmp,"Compute Profiles: Current Method");
 	r->WriteStr(tmp);
 	if(args->NbPtr==1)
 		Owner->Session->SetCurrentComputingMethod(args->Tab[0]->GetValue(prg));
-	if(args->NbPtr==2)
-		Owner->Session->SetCurrentComputingMethodSettings(args->Tab[1]->GetValue(prg));
 	Owner->Session->CalcProfiles(r,Owner->FirstProfile,Owner->AutoSave);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 }
@@ -449,9 +444,14 @@ void GStatsDocsI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned i
 //-----------------------------------------------------------------------------
 void GSetComputingParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
+	GProfileCalc* calc;
+
 	if(args->NbPtr!=2)
 		throw GException("Method needs two parameters");
-	Owner->Session->GetCurrentComputingMethod()->SetParam(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
+	calc=Owner->Session->GetProfileCalcMng()->GetCurrentMethod();
+	if(!calc)
+		throw GException("No current profile computing method selected");
+	calc->GetFactory()->Set(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
 }
 
 

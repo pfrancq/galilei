@@ -81,16 +81,16 @@ public:
 
 	/**
 	* Read a configuration from a XML Tag.
-	* @param parent          Parent tag.
+	* @param tag             Tag.
 	*/
-	void ReadConfig(R::RXMLTag* parent);
+	void ReadConfig(R::RXMLTag* tag);
 
 	/**
 	* Save a configuration to a XML Tag.
 	* this tag.
-	* @param parent          Parent tag.
+	* @param tag             Tag.
 	*/
-	void SaveConfig(R::RXMLTag* parent);
+	void SaveConfig(R::RXMLTag* tag);
 
 	/**
 	* Get the content of the parameter.

@@ -61,13 +61,10 @@ const char* GParams::GetName(void) const
 
 
 //------------------------------------------------------------------------------
-void GParams::ReadConfig(RXMLTag* parent)
+void GParams::ReadConfig(RXMLTag* tag)
 {
-	RXMLTag* tag;
 	GParamCursor Cur;
 
-	tag=parent->GetTag(Name);
-	if(!tag) return;
 	Cur.Set(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->ReadConfig(tag);
@@ -75,16 +72,13 @@ void GParams::ReadConfig(RXMLTag* parent)
 
 
 //------------------------------------------------------------------------------
-void GParams::SaveConfig(RXMLTag* parent)
+void GParams::SaveConfig(RXMLTag* tag)
 {
-	RXMLTag* tag;
 	GParamCursor Cur;
 
-	tag=new RXMLTag(Name);
 	Cur.Set(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->SaveConfig(tag);
-	parent->AddTag(tag);
 }
 
 

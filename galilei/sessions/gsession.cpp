@@ -88,12 +88,12 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng, GDocOptions* opt) throw(bad_alloc,GException)
+GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* umng, GProfileCalcManager* pmng,GDocOptions* opt) throw(bad_alloc,GException)
 	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(), Fdbks(f+f/2,f/2),
-	  ProfileCalcs(0), ProfileCalc(0), Groupings(0), Grouping(0), URLMng(mng), DocAnalyse(0),
+	  Groupings(0), Grouping(0), URLMng(umng), ProfileCalcMng(pmng), DocAnalyse(0),
 	  bGroups(false),bFdbks(false), DocOptions(opt)
-	
+
 {
 	GLangCursor Langs;
 	IdealGroups= new RContainer<GALILEI::GGroups, unsigned int, true, true> (g+g/2,g/2);
@@ -101,7 +101,6 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Groups.InsertPtr(new GGroups(Langs()));
-	ProfileCalcs=new RContainer<GProfileCalc,unsigned int,true,true>(3,3);
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
 	Groupings=new RContainer<GGrouping,R::tId,true,true>(3,3);
 	GroupCalcs=new RContainer<GGroupCalc,R::tId,true,true>(2,3);
@@ -173,39 +172,19 @@ GGroupsEvaluateCursor& GALILEI::GSession::GetIdealDocsCursor(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::RegisterComputingMethod(GProfileCalc* grp) throw(bad_alloc)
-{
-	ProfileCalcs->InsertPtr(grp);
-}
-
-
-//-----------------------------------------------------------------------------
 void GALILEI::GSession::SetCurrentComputingMethod(const char* name) throw(GException)
 {
-	GProfileCalc* tmp;
-
-	tmp=ProfileCalcs->GetPtr<const char*>(name);
-	if(!tmp)
-		throw GException(RString("Computing method '")+name+"' doesn't exists.");
-	ProfileCalc=tmp;
+	ProfileCalcMng->SetCurrentMethod(name);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::SetCurrentComputingMethodSettings(const char* s) throw(GException)
-{
-	if((!ProfileCalc)||(!(*s))) return;
-	ProfileCalc->SetSettings(s);
-}
-
-
-//-----------------------------------------------------------------------------
-GProfileCalcCursor& GALILEI::GSession::GetComputingsCursor(void)
-{
-	GProfileCalcCursor *cur=GProfileCalcCursor::GetTmpCursor();
-	cur->Set(ProfileCalcs);
-	return(*cur);
-}
+// //-----------------------------------------------------------------------------
+// GProfileCalcCursor& GALILEI::GSession::GetComputingsCursor(void)
+// {
+// 	GProfileCalcCursor *cur=GProfileCalcCursor::GetTmpCursor();
+// 	cur->Set(ProfileCalcs);
+// 	return(*cur);
+// }
 
 
 //-----------------------------------------------------------------------------
@@ -789,6 +768,7 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 	GProfileCursor Prof=GetProfilesCursor();
 	GProfilesSim* profSim;
 	GProfilesBehaviour* profBehaviour;
+	GProfileCalc* ProfileCalc=ProfileCalcMng->GetCurrentMethod();
 
 	if(!ProfileCalc)
 		throw GException("No computing method chosen.");
@@ -851,6 +831,12 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 void GALILEI::GSession::CalcProfile(GProfile* prof) throw(GException)
 {
 	GSubProfileCursor Subs;
+	GProfileCalc* ProfileCalc=ProfileCalcMng->GetCurrentMethod();
+
+	if(!ProfileCalc)
+		throw GException("No computing method chosen.");
+	if(!LinkCalc)
+		throw GException("No Link computing method chosen.");
 
 	Subs=prof->GetSubProfilesCursor();
 	for (Subs.Start(); !Subs.End(); Subs.Next())
@@ -1150,7 +1136,6 @@ GALILEI::GSession::~GSession(void) throw(GException)
 	if(Groupings) delete Groupings;
 	if(GroupCalcs) delete GroupCalcs;
 	if(SubProfileDescs) delete SubProfileDescs;
-	if(ProfileCalcs) delete ProfileCalcs;
 	if(IdealGroups) delete IdealGroups;
 	if(IdealDocs) delete IdealDocs;
 }

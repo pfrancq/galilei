@@ -108,16 +108,6 @@ protected:
 	GSubProfileDesc* SubProfileDesc;
 
 	/**
-	* Container of computing method for the profiles.
-	*/
-	R::RContainer<GProfileCalc,unsigned int,true,true>* ProfileCalcs;
-
-	/**
-	* Current method used to computed the profiles.
-	*/
-	GProfileCalc* ProfileCalc;
-
-	/**
 	* Container of grouping method for the profiles.
 	*/
 	R::RContainer<GGrouping,R::tId,true,true>* Groupings;
@@ -151,6 +141,11 @@ protected:
 	* URL Manager used by this session.
 	*/
 	GURLManager* URLMng;
+
+	/**
+	* Profile Calc Manager used by this session.
+	*/
+	GProfileCalcManager* ProfileCalcMng;
 
 	/**
 	* Analyser used for the document.
@@ -206,15 +201,21 @@ public:
 	* @param p              Number of profiles.
 	* @param f              Number of feedbacks.
 	* @param g              Number of groups.
-	* @param mng            URL Manager.
+	* @param umng           URL Manager.
+	* @param pmng           Profile Calc Manager.
 	*/
-	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng, GDocOptions* opt) throw(bad_alloc,GException);
+	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* umng, GProfileCalcManager* pmng,GDocOptions* opt) throw(bad_alloc,GException);
 
 	/**
 	* Get the documents' analyser.
 	* @returns Pointer to a GDocAnalyse class.
 	*/
 	GDocAnalyse* GetDocAnalyse(void) const {return(DocAnalyse);}
+
+	/**
+	* Get the profile Calc manager used by this session.
+	*/
+	GProfileCalcManager* GetProfileCalcMng(void) {return(ProfileCalcMng);}
 
 	/**
 	* Get a pointer to the document options.
@@ -273,34 +274,10 @@ public:
 	GSubProfileDescCursor& GetProfileDescsCursor(void);
 
 	/**
-	* Register a computing method for the profiles.
-	* @param com            Grouping method to register.
-	*/
-	void RegisterComputingMethod(GProfileCalc* grp) throw(bad_alloc);
-
-	/**
 	* Set the current computing method.
 	* @param name           Name of the computing method.
 	*/
 	void SetCurrentComputingMethod(const char* name) throw(GException);
-
-	/**
-	* Set the settings to the current computing method.
-	* @param s              Settings of the current computing method.
-	*/
-	void SetCurrentComputingMethodSettings(const char* s) throw(GException);
-
-	/**
-	* Get the current computing method.
-	* @returns Pointer to a GProfileCalc class.
-	*/
-	GProfileCalc* GetCurrentComputingMethod(void) {return(ProfileCalc);}
-
-	/**
-	* Get a cursor to the computing methods registered.
-	* @return Return a GComputingCursor.
-	*/
-	GProfileCalcCursor& GetComputingsCursor(void);
 
 	/**
 	* Register a grouping method for the profiles.
@@ -414,7 +391,6 @@ public:
 	* @return Return a GLinkCalcCursor.
 	*/
 	GLinkCalcCursor& GetLinkCalcsCursor(void);
-
 
 	/**
 	* Create a XML structure of the content of a document. The structure

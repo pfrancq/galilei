@@ -6,7 +6,7 @@
 
 	Generic Filter for documents - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -148,12 +148,6 @@ public:
 	GFactoryFilter(GURLManager* mng,const char* n,const char* f) : GFactoryPlugin<GFactoryFilter,GFilter,GURLManager>(mng,n,f) {}
 
 	/**
-	* Get the API Version of the plugin.
-	* @return C String.
-	*/
-	virtual const char* GetAPIVersion(void) const {return(API_FILTER_VERSION);}
-
-	/**
 	* Destructor.
 	*/
 	virtual ~GFactoryFilter(void) {}
@@ -186,6 +180,7 @@ public:                                                                        \
 	virtual bool HasAbout(void) const {return(about);}                         \
 	virtual void Configure(void) {C::Configure(this);}                         \
 	virtual bool HasConfigure(void) const {return(config);}                    \
+	virtual const char* GetAPIVersion(void) const {return(API_FILTER_VERSION);}\
 	virtual void Create(void) throw(GException)                                \
 	{                                                                          \
 		if(Plugin) return;                                                     \

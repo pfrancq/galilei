@@ -101,9 +101,9 @@ const char GALILEI::GSessionMySQL::SQLNULL[5]="NULL";
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,GURLManager* mng,GDocOptions* opt) throw(bad_alloc,GException,RMySQLError)
+GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,GURLManager* umng,GProfileCalcManager* pmng,GDocOptions* opt) throw(bad_alloc,GException,RMySQLError)
 	: RDb(host,user,pwd,db),
-	  GSession(GetCount("htmls"),GetCount("users"),GetCount("profiles"),GetCount("htmlsbyprofiles"),GetCount("groups"),mng,opt)
+	  GSession(GetCount("htmls"),GetCount("users"),GetCount("profiles"),GetCount("htmlsbyprofiles"),GetCount("groups"),umng,pmng,opt)
 {
 	DbName=db;
 }

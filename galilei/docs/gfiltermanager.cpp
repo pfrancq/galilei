@@ -111,7 +111,6 @@ GALILEI::GURLManager::GURLManager(const char* path) throw(GException)
 				continue;
 			}
 			InsertPtr(myfactory);
-			myfactory->Create();
 		}
 		catch(std::exception& e)
 		{
