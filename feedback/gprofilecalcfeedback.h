@@ -42,7 +42,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainer.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -167,18 +167,18 @@ protected:
 	/**
 	* Global vectors computed.
 	*/
-	RStd::RContainer<InternVector,unsigned int,true,true> Vectors;
+	R::RContainer<InternVector,unsigned int,true,true> Vectors;
 
 	/**
 	* Number of documents where each index term of the "OK" and "N" documents
 	* for the different languages appears.
 	*/
-	RStd::RContainer<InternVector,unsigned int,true,true> NbDocsWords;
+	R::RContainer<InternVector,unsigned int,true,true> NbDocsWords;
 
 	/**
 	* Number of documents per languages.
 	*/
-	RStd::RContainer<GNbDocsLangs,unsigned int,true,true> NbDocsLangs;
+	R::RContainer<GNbDocsLangs,unsigned int,true,true> NbDocsLangs;
 
 	/**
 	* Ordered vector for current computed profile.
