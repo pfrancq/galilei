@@ -90,18 +90,25 @@ GALILEI::GURLManager::GURLManager(const char* path) throw(GException)
 	struct dirent* ep;
 	RString Path(path);
 	RString Msg;
+	RString Name;
+	char DlgLib[100];
+	int len;
 
 	loader<>& l=loader<>::instance();
 	Path+="/filters";
-	l.addto_search_path(Path());
 	dp=opendir(Path);
+	Path+="/";
 	if(!dp) return;
 	while((ep=readdir(dp)))
 	{
-		if(strcmp(&ep->d_name[strlen(ep->d_name)-3],".la")) continue;
+		len=strlen(ep->d_name);
+		if(strcmp(&ep->d_name[len-3],".la")) continue;
+		if(!strcmp(&ep->d_name[len-7],"_dlg.la")) continue;
 		try
 		{
-			handle<>& myhandle = l.load(ep->d_name);
+			// Create the factory and insert it
+			Name=Path+ep->d_name;
+			handle<>& myhandle = l.load(Name());
 			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
 			GFactoryFilter* myfactory = ((GFactoryFilterInit)(*(*myinit)))(this,ep->d_name);
 			if(strcmp(API_FILTER_VERSION,myfactory->GetAPIVersion()))
@@ -111,6 +118,20 @@ GALILEI::GURLManager::GURLManager(const char* path) throw(GException)
 				continue;
 			}
 			InsertPtr(myfactory);
+
+			// Look if dialog boxes are available
+			try
+			{
+				strcpy(DlgLib,Name());
+				DlgLib[Name.GetLen()-3]=0;
+				strcat(DlgLib,"_dlg.la");
+				handle<>& myhandle2 = l.load(DlgLib);
+				myfactory->SetAbout(myhandle2.find_symbol("About"));
+				myfactory->SetConfig(myhandle2.find_symbol("Configure"));
+			}
+			catch(...)
+			{
+			}
 		}
 		catch(std::exception& e)
 		{

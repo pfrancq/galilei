@@ -617,7 +617,8 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		rec->receiveNextProfile(Prof());
+		if(rec)
+			rec->receiveNextProfile(Prof());
 		Subs=Prof()->GetSubProfilesCursor();
 		for (Subs.Start(); !Subs.End(); Subs.Next())
 		{

@@ -74,8 +74,9 @@ public:
 	/**
 	* Construct a URL manager.
 	* @param path            Path to find the plugins.
+	* @param dlg             Load the existing dialog.
 	*/
-	GGroupCalcManager(const char* path) throw(GException);
+	GGroupCalcManager(const char* path,bool dlg=true) throw(GException);
 
 	/**
 	* Connect to a Session.

@@ -59,25 +59,32 @@ using namespace ltmm;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GStatsCalcManager::GStatsCalcManager(const char* path) throw(GException)
+GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(GException)
 	: RContainer<GFactoryStatsCalc,unsigned int,true,true>(10,5)
 {
 	DIR* dp;
 	struct dirent* ep;
 	RString Path(path);
 	RString Msg;
+	RString Name;
+	char DlgLib[100];
+	int len;
 
 	loader<>& l=loader<>::instance();
 	Path+="/stats";
-	l.addto_search_path(Path());
 	dp=opendir(Path);
+	Path+="/";
 	if(!dp) return;
 	while((ep=readdir(dp)))
 	{
-		if(strcmp(&ep->d_name[strlen(ep->d_name)-3],".la")) continue;
+		len=strlen(ep->d_name);
+		if(strcmp(&ep->d_name[len-3],".la")) continue;
+		if(!strcmp(&ep->d_name[len-7],"_dlg.la")) continue;
 		try
 		{
-			handle<>& myhandle = l.load(ep->d_name);
+			// Create the factory and insert it
+			Name=Path+ep->d_name;
+			handle<>& myhandle = l.load(Name());
 			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
 			GFactoryStatsCalc* myfactory = ((GFactoryStatsCalcInit)(*(*myinit)))(this,ep->d_name);
 			if(strcmp(API_STATSCALC_VERSION,myfactory->GetAPIVersion()))
@@ -87,6 +94,21 @@ GStatsCalcManager::GStatsCalcManager(const char* path) throw(GException)
 				continue;
 			}
 			InsertPtr(myfactory);
+
+			// Look if dialog boxes are available
+			if(!dlg) continue;
+			try
+			{
+				strcpy(DlgLib,Name());
+				DlgLib[Name.GetLen()-3]=0;
+				strcat(DlgLib,"_dlg.la");
+				handle<>& myhandle2 = l.load(DlgLib);
+				myfactory->SetAbout(myhandle2.find_symbol("About"));
+				myfactory->SetConfig(myhandle2.find_symbol("Configure"));
+			}
+			catch(...)
+			{
+			}
 		}
 		catch(std::exception& e)
 		{

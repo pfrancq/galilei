@@ -158,28 +158,24 @@ typedef GFactoryLinkCalc*(*GFactoryLinkCalcInit)(GLinkCalcManager*,const char*);
 
 
 //------------------------------------------------------------------------------
-#define CREATE_LINKCALC_FACTORY(name,C,about,config)                                         \
-class TheFactory : public GFactoryLinkCalc                                                   \
+#define CREATE_LINKCALC_FACTORY(name,C)                                                         \
+class TheFactory : public GFactoryLinkCalc                                                      \
 {                                                                                               \
 private:                                                                                        \
-	static GFactoryLinkCalc* Inst;                                                           \
-	TheFactory(GLinkCalcManager* mng,const char* l) : GFactoryLinkCalc(mng,name,l)        \
+	static GFactoryLinkCalc* Inst;                                                              \
+	TheFactory(GLinkCalcManager* mng,const char* l) : GFactoryLinkCalc(mng,name,l)              \
 	{                                                                                           \
 		C::CreateParams(this);                                                                  \
 	}                                                                                           \
 	virtual ~TheFactory(void) {}                                                                \
 public:                                                                                         \
-	static GFactoryLinkCalc* CreateInst(GLinkCalcManager* mng,const char* l)              \
+	static GFactoryLinkCalc* CreateInst(GLinkCalcManager* mng,const char* l)                    \
 	{                                                                                           \
 		if(!Inst)                                                                               \
 			Inst = new TheFactory(mng,l);                                                       \
 		return(Inst);                                                                           \
 	}                                                                                           \
-	virtual void About(void) {C::About();}                                                      \
-	virtual bool HasAbout(void) const {return(about);}                                          \
-	virtual void Configure(void) {C::Configure(this);}                                          \
-	virtual bool HasConfigure(void) const {return(config);}                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_LINKCALC_VERSION);}            \
+	virtual const char* GetAPIVersion(void) const {return(API_LINKCALC_VERSION);}               \
 	virtual void Create(void) throw(GException)                                                 \
 	{                                                                                           \
 		if(Plugin) return;                                                                      \
@@ -194,11 +190,11 @@ public:                                                                         
 	}                                                                                           \
 };                                                                                              \
                                                                                                 \
-GFactoryLinkCalc* TheFactory::Inst = 0;                                                      \
+GFactoryLinkCalc* TheFactory::Inst = 0;                                                         \
                                                                                                 \
 extern "C"                                                                                      \
 {                                                                                               \
-	GFactoryLinkCalc* FactoryCreate(GLinkCalcManager* mng,const char* l)                  \
+	GFactoryLinkCalc* FactoryCreate(GLinkCalcManager* mng,const char* l)                        \
 	{                                                                                           \
 		return(TheFactory::CreateInst(mng,l));                                                  \
 	}                                                                                           \

@@ -74,7 +74,7 @@ public:
 	* Construct a URL manager.
 	* @param path            Path to find the plugins.
 	*/
-	GURLManagerCURL(const char* path);
+	GURLManagerCURL(const char* path) throw(GException);
 
 protected:
 

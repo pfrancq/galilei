@@ -85,7 +85,7 @@ int WriteTmpFile(void *buffer, size_t size, size_t nmemb, void *stream)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GURLManagerCURL::GURLManagerCURL(const char* path)
+GALILEI::GURLManagerCURL::GURLManagerCURL(const char* path) throw(GException)
 	: GURLManager(path)
 {
 	Lib = curl_easy_init();

@@ -135,7 +135,7 @@ typedef GFactoryProfileCalc*(*GFactoryProfileCalcInit)(GProfileCalcManager*,cons
 
 
 //------------------------------------------------------------------------------
-#define CREATE_PROFILECALC_FACTORY(name,C,about,config)                                         \
+#define CREATE_PROFILECALC_FACTORY(name,C)                                                      \
 class TheFactory : public GFactoryProfileCalc                                                   \
 {                                                                                               \
 private:                                                                                        \
@@ -152,10 +152,6 @@ public:                                                                         
 			Inst = new TheFactory(mng,l);                                                       \
 		return(Inst);                                                                           \
 	}                                                                                           \
-	virtual void About(void) {C::About();}                                                      \
-	virtual bool HasAbout(void) const {return(about);}                                          \
-	virtual void Configure(void) {C::Configure(this);}                                          \
-	virtual bool HasConfigure(void) const {return(config);}                                     \
 	virtual const char* GetAPIVersion(void) const {return(API_PROFILECALC_VERSION);}            \
 	virtual void Create(void) throw(GException)                                                 \
 	{                                                                                           \

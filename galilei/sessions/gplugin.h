@@ -116,6 +116,17 @@ protected:
 	*/
 	R::RString Lib;
 
+	/**
+	* Pointer to a function showing the about box.
+	*/
+	ltmm::symbol* AboutDlg;
+
+	/**
+	* Pointer to a function showing the configure box.
+	* @param f               Factory of the pluging to configure.
+	*/
+	ltmm::symbol* ConfigDlg;
+
 public:
 	/**
 	* Constructor.
@@ -123,7 +134,20 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryPlugin(mng* m,const char* n,const char* f) : GParams(n), Mng(m), Plugin(0), Lib(f) {}
+	GFactoryPlugin(mng* m,const char* n,const char* f)
+		: GParams(n), Mng(m), Plugin(0), Lib(f), AboutDlg(0), ConfigDlg(0) {}
+
+	/**
+	* Set the about box.
+	* @param dlg             Param to the function.
+	*/
+	void SetAbout(ltmm::symbol* dlg) {AboutDlg=dlg;}
+
+	/**
+	* Set the configure box.
+	* @param dlg             Param to the function.
+	*/
+	void SetConfig(ltmm::symbol* dlg) {ConfigDlg=dlg;}
 
 	/**
 	* Method needed by R::RContainer.
@@ -153,12 +177,20 @@ public:
 	/**
 	* Show 'about' information.
 	*/
-	virtual void About(void)=0;
+	void About(void)
+	{
+		if(AboutDlg)
+			((void(*)(void))(AboutDlg->ptr()))();
+	}
 
 	/**
 	* Configure the parameters.
 	*/
-	virtual void Configure(void)=0;
+	void Configure(void)
+	{
+		if(ConfigDlg)
+			((void(*)(factory*))(ConfigDlg->ptr()))(dynamic_cast<factory*>(this));
+	}
 
 	/**
 	* Apply the configuration eventually to the plugin.
@@ -168,12 +200,12 @@ public:
 	/**
 	* Specify if an about box exist.
 	*/
-	virtual bool HasAbout(void) const {return(false);}
+	bool HasAbout(void) const {return(AboutDlg);}
 
 	/**
 	* Specify if a configure box exist.
 	*/
-	virtual bool HasConfigure(void) const {return(false);}
+	bool HasConfigure(void) const {return(ConfigDlg);}
 
 	/**
 	* Get the API Version of the plugin.

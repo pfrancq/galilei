@@ -99,9 +99,9 @@ public:
 
 	/**
 	* Compute a profile.
-	* @param xml             XML structure that will hold the resutls.
+	* @param res             XML tag that will be hold the results.
 	*/
-	virtual void Compute(GDocXML& xml)=0;
+	virtual void Compute(R::RXMLTag& res)=0;
 
 	/**
 	* Destructor.
@@ -135,28 +135,24 @@ typedef GFactoryStatsCalc*(*GFactoryStatsCalcInit)(GStatsCalcManager*,const char
 
 
 //------------------------------------------------------------------------------
-#define CREATE_STATSCALC_FACTORY(name,C,about,config)                                         \
-class TheFactory : public GFactoryStatsCalc                                                   \
+#define CREATE_STATSCALC_FACTORY(name,C)                                                        \
+class TheFactory : public GFactoryStatsCalc                                                     \
 {                                                                                               \
 private:                                                                                        \
-	static GFactoryStatsCalc* Inst;                                                           \
-	TheFactory(GStatsCalcManager* mng,const char* l) : GFactoryStatsCalc(mng,name,l)        \
+	static GFactoryStatsCalc* Inst;                                                             \
+	TheFactory(GStatsCalcManager* mng,const char* l) : GFactoryStatsCalc(mng,name,l)            \
 	{                                                                                           \
 		C::CreateParams(this);                                                                  \
 	}                                                                                           \
 	virtual ~TheFactory(void) {}                                                                \
 public:                                                                                         \
-	static GFactoryStatsCalc* CreateInst(GStatsCalcManager* mng,const char* l)              \
+	static GFactoryStatsCalc* CreateInst(GStatsCalcManager* mng,const char* l)                  \
 	{                                                                                           \
 		if(!Inst)                                                                               \
 			Inst = new TheFactory(mng,l);                                                       \
 		return(Inst);                                                                           \
 	}                                                                                           \
-	virtual void About(void) {C::About();}                                                      \
-	virtual bool HasAbout(void) const {return(about);}                                          \
-	virtual void Configure(void) {C::Configure(this);}                                          \
-	virtual bool HasConfigure(void) const {return(config);}                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_STATSCALC_VERSION);}            \
+	virtual const char* GetAPIVersion(void) const {return(API_STATSCALC_VERSION);}              \
 	virtual void Create(void) throw(GException)                                                 \
 	{                                                                                           \
 		if(Plugin) return;                                                                      \
@@ -171,11 +167,11 @@ public:                                                                         
 	}                                                                                           \
 };                                                                                              \
                                                                                                 \
-GFactoryStatsCalc* TheFactory::Inst = 0;                                                      \
+GFactoryStatsCalc* TheFactory::Inst = 0;                                                        \
                                                                                                 \
 extern "C"                                                                                      \
 {                                                                                               \
-	GFactoryStatsCalc* FactoryCreate(GStatsCalcManager* mng,const char* l)                  \
+	GFactoryStatsCalc* FactoryCreate(GStatsCalcManager* mng,const char* l)                      \
 	{                                                                                           \
 		return(TheFactory::CreateInst(mng,l));                                                  \
 	}                                                                                           \

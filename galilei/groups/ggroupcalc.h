@@ -141,28 +141,24 @@ typedef GFactoryGroupCalc*(*GFactoryGroupCalcInit)(GGroupCalcManager*,const char
 
 
 //------------------------------------------------------------------------------
-#define CREATE_GROUPCALC_FACTORY(name,C,about,config)                                         \
-class TheFactory : public GFactoryGroupCalc                                                   \
+#define CREATE_GROUPCALC_FACTORY(name,C)                                                        \
+class TheFactory : public GFactoryGroupCalc                                                     \
 {                                                                                               \
 private:                                                                                        \
-	static GFactoryGroupCalc* Inst;                                                           \
-	TheFactory(GGroupCalcManager* mng,const char* l) : GFactoryGroupCalc(mng,name,l)        \
+	static GFactoryGroupCalc* Inst;                                                             \
+	TheFactory(GGroupCalcManager* mng,const char* l) : GFactoryGroupCalc(mng,name,l)            \
 	{                                                                                           \
 		C::CreateParams(this);                                                                  \
 	}                                                                                           \
 	virtual ~TheFactory(void) {}                                                                \
 public:                                                                                         \
-	static GFactoryGroupCalc* CreateInst(GGroupCalcManager* mng,const char* l)              \
+	static GFactoryGroupCalc* CreateInst(GGroupCalcManager* mng,const char* l)                  \
 	{                                                                                           \
 		if(!Inst)                                                                               \
 			Inst = new TheFactory(mng,l);                                                       \
 		return(Inst);                                                                           \
 	}                                                                                           \
-	virtual void About(void) {C::About();}                                                      \
-	virtual bool HasAbout(void) const {return(about);}                                          \
-	virtual void Configure(void) {C::Configure(this);}                                          \
-	virtual bool HasConfigure(void) const {return(config);}                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_GROUPCALC_VERSION);}            \
+	virtual const char* GetAPIVersion(void) const {return(API_GROUPCALC_VERSION);}              \
 	virtual void Create(void) throw(GException)                                                 \
 	{                                                                                           \
 		if(Plugin) return;                                                                      \
@@ -177,11 +173,11 @@ public:                                                                         
 	}                                                                                           \
 };                                                                                              \
                                                                                                 \
-GFactoryGroupCalc* TheFactory::Inst = 0;                                                      \
+GFactoryGroupCalc* TheFactory::Inst = 0;                                                        \
                                                                                                 \
 extern "C"                                                                                      \
 {                                                                                               \
-	GFactoryGroupCalc* FactoryCreate(GGroupCalcManager* mng,const char* l)                  \
+	GFactoryGroupCalc* FactoryCreate(GGroupCalcManager* mng,const char* l)                      \
 	{                                                                                           \
 		return(TheFactory::CreateInst(mng,l));                                                  \
 	}                                                                                           \

@@ -226,28 +226,24 @@ typedef GFactoryGrouping*(*GFactoryGroupingInit)(GGroupingManager*,const char*);
 
 
 //------------------------------------------------------------------------------
-#define CREATE_GROUPING_FACTORY(name,C,about,config)                                         \
-class TheFactory : public GFactoryGrouping                                                   \
+#define CREATE_GROUPING_FACTORY(name,C)                                                         \
+class TheFactory : public GFactoryGrouping                                                      \
 {                                                                                               \
 private:                                                                                        \
-	static GFactoryGrouping* Inst;                                                           \
-	TheFactory(GGroupingManager* mng,const char* l) : GFactoryGrouping(mng,name,l)        \
+	static GFactoryGrouping* Inst;                                                              \
+	TheFactory(GGroupingManager* mng,const char* l) : GFactoryGrouping(mng,name,l)              \
 	{                                                                                           \
 		C::CreateParams(this);                                                                  \
 	}                                                                                           \
 	virtual ~TheFactory(void) {}                                                                \
 public:                                                                                         \
-	static GFactoryGrouping* CreateInst(GGroupingManager* mng,const char* l)              \
+	static GFactoryGrouping* CreateInst(GGroupingManager* mng,const char* l)                    \
 	{                                                                                           \
 		if(!Inst)                                                                               \
 			Inst = new TheFactory(mng,l);                                                       \
 		return(Inst);                                                                           \
 	}                                                                                           \
-	virtual void About(void) {C::About();}                                                      \
-	virtual bool HasAbout(void) const {return(about);}                                          \
-	virtual void Configure(void) {C::Configure(this);}                                          \
-	virtual bool HasConfigure(void) const {return(config);}                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_GROUPING_VERSION);}            \
+	virtual const char* GetAPIVersion(void) const {return(API_GROUPING_VERSION);}               \
 	virtual void Create(void) throw(GException)                                                 \
 	{                                                                                           \
 		if(Plugin) return;                                                                      \
@@ -262,11 +258,11 @@ public:                                                                         
 	}                                                                                           \
 };                                                                                              \
                                                                                                 \
-GFactoryGrouping* TheFactory::Inst = 0;                                                      \
+GFactoryGrouping* TheFactory::Inst = 0;                                                         \
                                                                                                 \
 extern "C"                                                                                      \
 {                                                                                               \
-	GFactoryGrouping* FactoryCreate(GGroupingManager* mng,const char* l)                  \
+	GFactoryGrouping* FactoryCreate(GGroupingManager* mng,const char* l)                        \
 	{                                                                                           \
 		return(TheFactory::CreateInst(mng,l));                                                  \
 	}                                                                                           \
