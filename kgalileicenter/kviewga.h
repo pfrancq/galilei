@@ -85,7 +85,7 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	QTabWidget* TabWidget;
 	
 	/**
-	* The widget that handle statistics about the running GA.	
+	* The widget that handle statistics about the running GA.
 	*/
 	QGAMonitor* Monitor;
 	
@@ -150,6 +150,18 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	double MinSimLevel;
 
 	/**
+	* Minimum number of common OK documents needed to force two profiles to be
+	* in the same group.
+	*/
+	double MinCommonOK;
+
+	/**
+	* Minimum number of common documents judged differently needed to force two
+	* profiles to be in two different groups.
+	*/
+	double MinCommonDiff;
+
+	/**
 	* Size of the Population.
 	*/
 	unsigned int PopSize;
@@ -173,6 +185,11 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	* Parameter for the criterion "Diff Factor".
 	*/
 	RPromethee::RPromCriterionParams ParamsDiff;
+
+	/**
+	* Parameter for the criterion "Diff Social".
+	*/
+	RPromethee::RPromCriterionParams ParamsSocial;
 
 	/**
 	* SubProfiles that must be grouped again.

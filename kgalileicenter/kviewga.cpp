@@ -85,12 +85,14 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* paren
 	setCaption(QString("GALILEI Genetic Algorithms - ")+lang->GetName());
 
 	// Values
-	sscanf(Doc->GetSession()->GetGroupingMethodSettings("Grouping Genetic Algorithms"),"%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	       &c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,
+	sscanf(Doc->GetSession()->GetGroupingMethodSettings("Grouping Genetic Algorithms"),
+           "%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
 	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
 	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
 	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,
-	       &ParamsDiff.P,&ParamsDiff.Q,&ParamsDiff.Weight);
+	       &ParamsDiff.P,&ParamsDiff.Q,&ParamsDiff.Weight,
+	       &ParamsSocial.P,&ParamsSocial.Q,&ParamsSocial.Weight);
 	if(c=='1') Step=true; else Step=false;
 
 	// Tab
