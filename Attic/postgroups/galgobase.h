@@ -141,11 +141,6 @@ public :
 	GIWordWeightCursor Ccur;
 
 	/**
-	* get the profile vector
-	*/
-	GProfileCalcVector *ProfileVect;
-
-	/**
 	* Manage the construction profile by profile in a group
 	* @return void
 	*/
