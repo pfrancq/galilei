@@ -78,35 +78,35 @@ const unsigned int MaxWordLen=50;
 class GTextAnalyse::WordWeight
 {
 public:
-	char Word[MaxWordLen+1];
+	RString Word;
 	bool* InStop;
 	unsigned int Nb;
 	double Weight;
 	bool OnlyLetters;
 
 	WordWeight(unsigned int nb) throw(bad_alloc);
-	inline void Clear(void) {(*Word)=0; Nb=0; Weight=0.0;}
+	inline void Clear(void) {Word=""; Nb=0; Weight=0.0;}
 
 	int Compare(const WordWeight& word) const
-		{return(strcmp(Word,word.Word));}
+		{return(Word.Compare(word.Word));}
 	int Compare(const WordWeight* word) const
-		{return(strcmp(Word,word->Word));}
+		{return(Word.Compare(word->Word));}
 	int Compare(const char* word) const
-		{return(strcmp(Word,word));}
+		{return(Word.Compare(word));}
 
 	static char HashIndex(const WordWeight* w)
-		{return(R::RString::HashIndex(w->Word));}
+		{return(RString::HashIndex(w->Word));}
 	static char HashIndex(const WordWeight& w)
-		{return(R::RString::HashIndex(w.Word));}
+		{return(RString::HashIndex(w.Word));}
 	static char HashIndex(const char* word)
-		{return(R::RString::HashIndex(word));}
+		{return(RString::HashIndex(word));}
 
 	static char HashIndex2(const WordWeight* w)
-		{return(R::RString::HashIndex2(w->Word));}
+		{return(RString::HashIndex2(w->Word));}
 	static char HashIndex2(const WordWeight& w)
-		{return(R::RString::HashIndex2(w.Word));}
+		{return(RString::HashIndex2(w.Word));}
 	static char HashIndex2(const char* word)
-		{return(R::RString::HashIndex2(word));}
+		{return(RString::HashIndex2(word));}
 
 	~WordWeight(void);
 };
@@ -114,7 +114,7 @@ public:
 
 //-----------------------------------------------------------------------------
 GTextAnalyse::WordWeight::WordWeight(unsigned int nb) throw(bad_alloc)
-	: InStop(0)
+	:  Word(MaxWordLen+1), InStop(0)
 {
 	InStop=new bool[nb];
 	Clear();
@@ -328,7 +328,7 @@ bool GTextAnalyse::ValidWord(const RString& kwd)
 }
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AddWord(const char* word,double weight) throw(bad_alloc)
+void GTextAnalyse::AddWord(const RString& word,double weight) throw(bad_alloc)
 {
 	bool Find;
 	unsigned int Index;
@@ -344,7 +344,7 @@ void GTextAnalyse::AddWord(const char* word,double weight) throw(bad_alloc)
 	Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
 
 	// Find the index where the word is or must be.
-	Index=Section->GetId<const char*>(word,Find);
+	Index=Section->GetId<const RString&>(word,Find);
 
 	// If the word wasn't found, insert it and look for each language if it's
 	// in the corresponding stoplist.
@@ -357,7 +357,7 @@ void GTextAnalyse::AddWord(const char* word,double weight) throw(bad_alloc)
 		w=Direct[Ndiff++];
 		Section->InsertPtrOrderAt(w,Index);
 		w->OnlyLetters=OnlyLetters;
-		strcpy(w->Word,word);
+		w->Word=word;
 
 		// Look for each language if the word is in the stop list.
 		if(FindLang)
@@ -366,7 +366,7 @@ void GTextAnalyse::AddWord(const char* word,double weight) throw(bad_alloc)
 			{
 				lang=CurLangs()->GetPlugin();
 				if(!lang) continue;
-				(*is)=lang->GetStop()->IsIn<const char*>(word);
+				(*is)=lang->GetStop()->IsIn<const RString&>(word);
 				if(*is)
 				{
 					// In the stoplist -> Inc different words of the stop lists.
@@ -377,7 +377,7 @@ void GTextAnalyse::AddWord(const char* word,double weight) throw(bad_alloc)
 		}
 		else
 		{
-			if(Lang->GetStop()->IsIn<const char*>(word))
+			if(Lang->GetStop()->IsIn<const RString&>(word))
 			{
 				w->InStop[LangIndex]=true;
 				Sl[LangIndex]++;
@@ -418,12 +418,14 @@ void GTextAnalyse::AddWord(const char* word,double weight) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-bool GTextAnalyse::ExtractWord(const char* &ptr,RString& word,double weight)
+bool GTextAnalyse::ExtractWord(const RChar* &ptr,RString& word,double weight)
 {
 	unsigned len;
-	const char* begin;
+	const RChar* begin;
 	bool Cont;
 	bool Letter=false;
+	static RString Test1("-.@\\/");
+	static RString Test2("\'\\");
 
 BeginExtract:
 
@@ -433,17 +435,17 @@ BeginExtract:
 	OnlyLetters=true;
 
 	// Skip spaces and punctation.
-	while((*ptr)&&(!isalnum(*ptr)))
+	while((!ptr->IsNull())&&(!ptr->IsAlNum()))
 		ptr++;
 	begin=ptr;
 
 	// Read the word
-	while((*ptr)&&Cont)
+	while((!ptr->IsNull())&&Cont)
 	{
 		// Read word --> look for a non alphanumeric character.
-		while((*ptr)&&(isalnum(*ptr)))
+		while((!ptr->IsNull())&&(ptr->IsAlNum()))
 		{
-			if(!isdigit(*ptr))
+			if(!ptr->IsDigit())
 				Letter=true;
 			else
 				OnlyLetters=false;
@@ -451,11 +453,11 @@ BeginExtract:
 			ptr++;
 		}
 		Cont=false;   // Normally, end of the word.
-		if(!(*ptr)) continue;
+		if(ptr->IsNull()) continue;
 
 		// If the next character is in {-./\@} and no blank space after,
 		// then continue the word.
-		if((strchr("-.@\\/",*ptr))&&(isalnum(*(ptr+1))))
+		if((RChar::StrChr(Test1(),*ptr))&&((ptr+1)->IsAlNum()))
 		{
 			Cont=true;
 			OnlyLetters=false;
@@ -472,7 +474,7 @@ BeginExtract:
 		goto BeginExtract;
 
 	// If just numbers or special characters or it doesn't begin with a letter, extract next word.
-	if((!Letter)||(isdigit(*begin))||(strchr("-.@\\/",*begin)))
+	if((!Letter)||(begin->IsDigit())||(RChar::StrChr(Test1(),*begin)))
 		goto BeginExtract;
 
 	// Copy result in word, make it lower case and return true.
@@ -480,8 +482,9 @@ BeginExtract:
 	{
 		ptr-=( len - MaxWordLen +1);
 		len=MaxWordLen;
-			// if the word ends with a " ' " or a " \ " the skip the character.
-		if ( strchr("\'\\",*(ptr)) )
+
+		// if the word ends with a " ' " or a " \ " the skip the character.
+		if(RChar::StrChr(Test2(),*ptr))
 		{
 			len--;
 		}
@@ -496,13 +499,13 @@ BeginExtract:
 //-----------------------------------------------------------------------------
 void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
 {
-	const char* ptr;
+	const RChar* ptr;
 	RString word(MaxWordLen);
 
 	if(tag->GetName()=="docxml:sentence")
 	{
-		ptr=tag->GetContent();
-		while(*ptr)
+		ptr=tag->GetContent()();
+		while(!ptr->IsNull())
 			ExtractWord(ptr,word,weight);
 	}
 	else
@@ -662,6 +665,12 @@ void GTextAnalyse::DetermineLang(void) throw(GException)
 	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 	{
 		Frac=((double)(*tmp1))/((double)Ndiff);
+/*		cout<<CurLangs()->GetName()<<endl;
+		cout<<"       Sdiff  "<<(*tmp1)<<endl;
+		cout<<"       Ndiff  "<<Ndiff<<endl;
+		cout<<"       Frac   "<<Frac<<endl;
+		cout<<"       S      "<<(*tmp2)<<endl;
+		cout<<"       N      "<<N<<endl;*/
 		if(((*tmp2)>S)&&(Frac>=MinFrac))
 		{
 			Lang=CurLangs()->GetPlugin();
@@ -692,7 +701,7 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 		if((*wrd)->InStop[LangIndex]) continue;
 
 		// if len<MinWordSize -> do not treat it.
-		if(strlen((*wrd)->Word)<MinWordSize) continue;
+		if((*wrd)->Word.GetLen()<MinWordSize) continue;
 
 		// If only letters -> apply stemming algorithm.
 		if((*wrd)->OnlyLetters)

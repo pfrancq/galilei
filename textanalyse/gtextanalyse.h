@@ -254,7 +254,7 @@ protected:
 	* @param word           Word to add.
 	* @param weight         Weights of the words added during this analyze.
 	*/
-	void AddWord(const char* word,double weight) throw(bad_alloc);
+	void AddWord(const RString& word,double weight) throw(bad_alloc);
 
 	/**
 	* This function construct a word.
@@ -263,7 +263,7 @@ protected:
 	* @param weight         Weights of the words added during this analyze.
 	* @returns true if a word was extract.
 	*/
-	bool ExtractWord(const char* &ptr,R::RString& word,double weight);
+	bool ExtractWord(const RChar* &ptr,R::RString& word,double weight);
 
 	/**
 	* Analyse a tag.
