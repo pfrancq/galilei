@@ -38,6 +38,7 @@
 #include <galilei/qcomputingpluginconf.h>
 #include <galilei/qgroupingpluginconf.h>
 #include <galilei/qgroupcalcpluginconf.h>
+#include <galilei/qlinkcalcpluginconf.h>
 
 
 //---------------------------------------------------------------------------
@@ -111,6 +112,10 @@ QPluginsDlg::QPluginListView::QPluginListView(KGALILEICenterApp* a,QCheckListIte
 			if(RString(str)==(App->GetCurrentGroupCalcMethod()))
 				setOn(true);
 			break;
+		case 5:
+			if(RString(str)==(App->GetCurrentLinkCalcMethod()))
+				setOn(true);
+			break;
 	}
 }
 
@@ -145,6 +150,11 @@ void QPluginsDlg::QPluginListView::activate(void)
 			if(App->getDocument())
 				((App->getDocument())->GetSession())->SetCurrentGroupCalcMethod(App->GetCurrentGroupCalcMethod());
 			break;
+		case 5:
+            App->SetCurrentLinkCalcMethod(Name);
+			if(App->getDocument())
+				((App->getDocument())->GetSession())->SetCurrentLinkCalcMethod(App->GetCurrentLinkCalcMethod());
+			break;
 	}
 }
 
@@ -163,6 +173,8 @@ QPluginsDlg::QPluginsDlg(KGALILEICenterApp* app,const char* name)
 	Computings=new RStd::RContainer<QComputingPluginConf,unsigned int,true,true>(3,3);
 	Groupings=new RStd::RContainer<QGroupingPluginConf,unsigned int,true,true>(3,3);
 	GroupCalcs=new RStd::RContainer<QGroupCalcPluginConf,unsigned int,true,true>(3,3);
+	LinkCalcs=new RStd::RContainer<QLinkCalcPluginConf,unsigned int,true,true>(3,3);
+
 
 	// Window initialisation
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
@@ -226,6 +238,13 @@ void QPluginsDlg::RegisterGroupCalcPluginConf(QGroupCalcPluginConf* ins) throw(b
 
 
 //---------------------------------------------------------------------------
+void QPluginsDlg::RegisterLinkCalcPluginConf(QLinkCalcPluginConf* ins) throw(bad_alloc)
+{
+	LinkCalcs->InsertPtr(ins);
+}
+
+
+//---------------------------------------------------------------------------
 void QPluginsDlg::ConstructPlugins(void) throw(bad_alloc)
 {
 	QPluginListView* item;
@@ -246,6 +265,11 @@ void QPluginsDlg::ConstructPlugins(void) throw(bad_alloc)
 	item->setSelectable(false);
 	for(App->GroupCalcMethod->Start();!App->GroupCalcMethod->End();App->GroupCalcMethod->Next())
 		new QPluginListView(App,item,4,(*App->GroupCalcMethod)()->StrDup());
+
+	item=new QPluginListView(App,Plugins,0,"Link Description Methods");
+	item->setSelectable(false);
+	for(App->LinkCalcMethod->Start();!App->LinkCalcMethod->End();App->LinkCalcMethod->Next())
+		new QPluginListView(App,item,5,(*App->LinkCalcMethod)()->StrDup());
 }
 
 
@@ -275,6 +299,10 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 				case 4:
 					b=((QGroupCalcPluginConf*)Conf)->ConfigChanged();
 					break;
+				case 5:
+					b=((QLinkCalcPluginConf*)Conf)->ConfigChanged();
+					break;
+	
 			}
 			if(b)
 			{
@@ -337,6 +365,16 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 				Conf=NoConf;
 			else
 				((QGroupCalcPluginConf*)Conf)->Set();
+			Cur=p;
+			break;
+
+		case 5:
+			Conf=NoConf;
+			Conf=LinkCalcs->GetPtr<const char*>(p->Name);
+			if(!Conf)
+				Conf=NoConf;
+			else
+				((QLinkCalcPluginConf*)Conf)->Set();
 			Cur=p;
 			break;
 

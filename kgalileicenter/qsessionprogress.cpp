@@ -227,6 +227,28 @@ void QSessionProgressDlg::AnalyseDocs(bool modified)
 
 
 //-----------------------------------------------------------------------------
+void QSessionProgressDlg::ComputeLinks()
+{
+	btnOk->setEnabled(false);
+	show();
+	KApplication::kApplication()->processEvents();
+
+	try
+	{
+		txtRem->setText("Compute Links ...");
+		KApplication::kApplication()->processEvents();
+		Session->ComputeLinks(this);
+		txtRem->setText("Finish");
+	}
+	catch(GException& e)
+	{
+		txtRem->setText(QString("Error: ")+e.GetMsg());
+	}
+	btnOk->setEnabled(true);
+}
+
+
+//-----------------------------------------------------------------------------
 void QSessionProgressDlg::ComputeProfile(GProfile* prof)
 {
 	btnOk->setEnabled(false);
@@ -350,6 +372,16 @@ void QSessionProgressDlg::receiveNextChromosome(unsigned int id)
 	char tmp[50];
 
 	sprintf(tmp,"Analyse Chromosome n°%u ...",id);
+	txtRem->setText(tmp);
+	KApplication::kApplication()->processEvents();
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::receiveNextMethod(unsigned int num)
+{
+	char tmp[50];
+	sprintf(tmp,"Compute Links - Step n°%u ...",num);
 	txtRem->setText(tmp);
 	KApplication::kApplication()->processEvents();
 }

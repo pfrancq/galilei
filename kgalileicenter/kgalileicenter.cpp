@@ -53,6 +53,7 @@ using namespace RStd;
 // include files for GALILEI
 #include <docs/gdocxml.h>
 #include <docs/gdocoptions.h>
+#include <docs/glinkcalcitalgo.h>
 #include <sessions/gsessionmysql.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gsubprofiledesc.h>
@@ -196,10 +197,12 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterGroupingMethod(new GGroupingRandom(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess, &CalcGravitationParams));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess,&CalcRelevantParams));
+			Sess->RegisterLinkCalcMethod(new GLinkCalcItAlgo(Sess, &LinkCalcItAlgoParams));
 			Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 			Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 			Sess->SetCurrentComputingMethod(CurrentComputingMethod);
 			Sess->SetCurrentGroupCalcMethod(CurrentGroupCalcMethod);
+			Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
 			sessionConnect->setEnabled(false);
@@ -261,10 +264,12 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterGroupingMethod(new GGroupingCure(Sess, &CureParams));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess,&CalcGravitationParams));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess, &CalcRelevantParams));
+	Sess->RegisterLinkCalcMethod(new GLinkCalcItAlgo(Sess,&LinkCalcItAlgoParams));
 	Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 	Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 	Sess->SetCurrentComputingMethod(CurrentComputingMethod);
 	Sess->SetCurrentGroupCalcMethod(CurrentGroupCalcMethod);
+	Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 	sessionDisconnect->setEnabled(true);
 	sessionCompute->setEnabled(true);
 	sessionConnect->setEnabled(false);
@@ -692,6 +697,15 @@ void KGALILEICenterApp::slotDocsAnalyse(void)
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Documents");
 	d->AnalyseDocs(!docAlwaysCalc->isChecked());
 	Doc->updateAllViews(0);
+}
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotComputeLinks(void)
+{
+	setDocParams(Doc);
+	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Document's Links");
+	d->ComputeLinks();
+	Doc->updateAllViews(1);
 }
 
 

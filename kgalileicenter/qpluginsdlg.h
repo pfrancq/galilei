@@ -42,6 +42,7 @@ namespace GALILEI
 	class QComputingPluginConf;
 	class QGroupingPluginConf;
 	class QGroupCalcPluginConf;
+	class QLinkCalcPluginConf;
 }
 using namespace GALILEI;
 
@@ -121,6 +122,11 @@ class QPluginsDlg : public QDialog
 	RStd::RContainer<QGroupCalcPluginConf,unsigned int,true,true>* GroupCalcs;
 
 	/**
+	* List of all configuration for the link description method.
+	*/
+	RStd::RContainer<QLinkCalcPluginConf,unsigned int,true,true>* LinkCalcs;
+
+	/**
 	* Application to condfigure.
 	*/
 	KGALILEICenterApp* App;
@@ -148,6 +154,11 @@ public:
 	* Register a plugin to configure a group description method.
 	*/
 	void RegisterGroupCalcPluginConf(QGroupCalcPluginConf* ins) throw(bad_alloc);
+
+	/**
+	* Register a plugin to configure a link description method.
+	*/
+	void RegisterLinkCalcPluginConf(QLinkCalcPluginConf* ins) throw(bad_alloc);
 
 	/**
 	* Construct the list of plugins.

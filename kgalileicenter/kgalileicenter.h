@@ -56,6 +56,7 @@
 #include <groups/ggroupingsim.h>
 #include <groups/ggroupcalcrelevant.h>
 #include <groups/ggroupcalcgravitation.h>
+#include <docs/glinkcalcitalgo.h>
 #include <profiles/gprofilecalcfeedback.h>
 #include <profiles/gprofilecalcreweighting.h>
 #include <profiles/gprofilecalcvector.h>
@@ -174,6 +175,11 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	*/
 	GCalcGravitationParams CalcGravitationParams;
 
+	/**
+	* Parameters for 'Iterative Algorithm' link description computing
+	*/
+	GLinkCalcItAlgoParams LinkCalcItAlgoParams;
+
     /**
 	* Current Profile Description Method
 	*/
@@ -193,6 +199,11 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	* Current Group Descrition Method
 	*/
 	RStd::RString CurrentGroupCalcMethod;
+
+	/**
+	* Current Group Descrition Method
+	*/
+	RStd::RString CurrentLinkCalcMethod;
 
 	/**
 	* Database server's host.
@@ -272,6 +283,11 @@ public:
 	*/
 	RStd::RContainer<RStd::RString,unsigned int,true,true>* GroupCalcMethod;
 
+	/**
+	* Container of link description method.
+	*/
+	RStd::RContainer<RStd::RString,unsigned int,true,true>* LinkCalcMethod;
+
 
 public:
 
@@ -326,6 +342,16 @@ public:
 	* Set the Current group description method used.
 	*/
 	void SetCurrentGroupCalcMethod(RStd::RString str) {CurrentGroupCalcMethod=str;}
+
+	/**
+	* Return the Current link description method used.
+	*/
+	RStd::RString GetCurrentLinkCalcMethod(void) {return (CurrentLinkCalcMethod);}
+
+	/**
+	* Set the Current link description method used.
+	*/
+	void SetCurrentLinkCalcMethod(RStd::RString str) {CurrentLinkCalcMethod=str;}
 
 protected:
 
@@ -585,6 +611,11 @@ private slots:
 	void slotDocsAnalyse(void);
 
 	/**
+	* Compute the links for all documents.
+	*/
+	void slotComputeLinks(void);
+
+	/**
 	* Compute statistics on all the documents.
 	*/
 	void slotDocsStats(void);
@@ -786,6 +817,7 @@ public:
 	KAction* showDocs;
 	KAction* docAnalyse;
 	KAction* docsAnalyse;
+	KAction* linksCalc;
 	KAction* docsStats;
 	KAction* createXML;
 	KAction* saveXML;
