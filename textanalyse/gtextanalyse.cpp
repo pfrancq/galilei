@@ -53,7 +53,7 @@
 #include <infos/gword.h>
 #include <infos/gweightinfo.h>
 #include <infos/gdict.h>
-#include <infos/glangs.h>
+#include <infos/glangmanager.h>
 #include <sessions/gsession.h>
 using namespace R;
 using namespace GALILEI;
