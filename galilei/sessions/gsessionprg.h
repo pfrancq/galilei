@@ -119,6 +119,11 @@ public:
 	double Total;
 
 	/**
+	* Percentage of correct assignments for the subprofiles last added.
+	*/
+	double PercAss;
+	
+	/**
 	* First profile computing has be done.
 	*/
 	bool FirstProfile;
@@ -132,6 +137,11 @@ public:
 	* When Autosave is true, after each computing, the results is saved.
 	*/
 	bool AutoSave;
+
+	/**
+	* When TrackNewProfile is true, the system
+	*/
+	bool TrackNewProfiles;
 
 	/**
 	* Create a class.
@@ -362,33 +372,52 @@ public:
 
 
 //-----------------------------------------------------------------------------
-class GAddProfiles : public GSM
+class GAddProfilesI : public GSM
 {
 public:
-	GAddProfiles(GPrgClassSession* o) : GSM("AddProfiles",o) {}
+	GAddProfilesI(GPrgClassSession* o) : GSM("AddProfiles",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
 
 //-----------------------------------------------------------------------------
-class GRealLife : public GSM
+class GRealLifeI : public GSM
 {
 	GGetFeedback FdbksMethod;
 	char What[2];
 	void CommonTasks(GSlot* r) throw(GException);
 public:
-	GRealLife(GPrgClassSession* o) : GSM("RealLife",o),FdbksMethod(Owner->Session) {}
+	GRealLifeI(GPrgClassSession* o) : GSM("RealLife",o),FdbksMethod(Owner->Session) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
 
 //-----------------------------------------------------------------------------
-class GAddAssessments : public GSM
+class GAddAssessmentsI : public GSM
 {
 public:
-	GAddAssessments(GPrgClassSession* o) : GSM("AddAssessments",o) {}
+	GAddAssessmentsI(GPrgClassSession* o) : GSM("AddAssessments",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
+
+
+//-----------------------------------------------------------------------------
+class GTrackNewProfilesI : public GSM
+{
+public:
+	GTrackNewProfilesI(GPrgClassSession* o) : GSM("TrackNewProfiles",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GClearNewProfilesI : public GSM
+{
+public:
+	GClearNewProfilesI(GPrgClassSession* o) : GSM("ClearNewProfiles",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
 
 
 //-----------------------------------------------------------------------------

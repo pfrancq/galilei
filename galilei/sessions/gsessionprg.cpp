@@ -87,7 +87,12 @@ void GOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned i
 	}
 	Owner->OFile=new RTextFile(args->Tab[0]->GetValue(prg),RIO::Create);
 	Owner->OFile->SetSeparator("\t");
-	(*Owner->OFile)<<"Sets"<<"Recall"<<"Precision"<<"Total"<<endl;
+	(*Owner->OFile)<<"Sets"<<"Recall"<<"Precision"<<"Total";
+	if(Owner->TrackNewProfiles)
+	{
+		(*Owner->OFile)<<"TrackNew";
+	}
+	(*Owner->OFile)<<endl;
 }
 
 
@@ -273,12 +278,28 @@ void GCompareIdealI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 	Owner->Precision=CompMethod.GetPrecision();
 	Owner->Recall=CompMethod.GetRecall();
 	Owner->Total=CompMethod.GetTotal();
-	sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f",Owner->Recall,Owner->Precision,Owner->Total);
+	if(Owner->TrackNewProfiles)
+	{
+		Owner->PercAss=Owner->GetIdealMethod()->ComputePercAss();
+		sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f  -  New: %f",Owner->Recall,Owner->Precision,Owner->Total,Owner->PercAss);
+	}
+	else
+		sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f",Owner->Recall,Owner->Precision,Owner->Total);
 	r->WriteStr(tmp);
 	if(Owner->OFile)
-		(*Owner->OFile)<<Owner->TestName<<Owner->Recall<<Owner->Precision<<Owner->Total<<endl;
+	{
+		(*Owner->OFile)<<Owner->TestName<<Owner->Recall<<Owner->Precision<<Owner->Total;
+		if(Owner->TrackNewProfiles)
+			(*Owner->OFile)<<Owner->PercAss;
+		(*Owner->OFile)<<endl;
+	}
 	if(Owner->GOFile)
-		(*Owner->GOFile)<<Owner->Recall<<Owner->Precision<<Owner->Total<<endl;
+	{
+		(*Owner->GOFile)<<Owner->Recall<<Owner->Precision<<Owner->Total;
+		if(Owner->TrackNewProfiles)
+			(*Owner->GOFile)<<Owner->PercAss;
+		(*Owner->GOFile)<<endl;
+	}
 }
 
 
@@ -500,29 +521,24 @@ void GAddIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 	r->WriteStr(tmp);
 	if(args->NbPtr==1)
 		Owner->GetIdealMethod()->SetSettings(args->Tab[0]->GetValue(prg));
-	Owner->GetIdealMethod()->AddJudgement(Owner->AutoSave);
+	Owner->GetIdealMethod()->AddTopic(Owner->AutoSave);
 }
 
 
 //-----------------------------------------------------------------------------
-void GAddProfiles::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GAddProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
-	if(args->NbPtr==1)
-		sprintf(tmp,"Adding Profile: Settings=\"%s\"",args->Tab[0]->GetValue(prg));
-	else
-		strcpy(tmp,"Adding Profile");
+	if(args->NbPtr!=2)
+		throw GException("Method needs two parameters");
+	sprintf(tmp,"Adding Profile: Settings=\"%s\",\"%s\"",args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
 	r->WriteStr(tmp);
-	if(args->NbPtr==1)
-		Owner->GetIdealMethod()->SetSettings(args->Tab[0]->GetValue(prg));
-	cout <<atoi(args->Tab[0]->GetValue(prg)) <<endl;
-	cout <<atoi(args->Tab[1]->GetValue(prg)) <<endl;
 	sprintf(tmp, "%u new profiles created",Owner->GetIdealMethod()->AddProfiles(atoi(args->Tab[0]->GetValue(prg)), atoi(args->Tab[1]->GetValue(prg)),Owner->AutoSave));
 	r->WriteStr(tmp);
 }
 
 
 //-----------------------------------------------------------------------------
-void GRealLife::CommonTasks(GSlot* r) throw(GException)
+void GRealLifeI::CommonTasks(GSlot* r) throw(GException)
 {
 	// Compute Profiles
 	r->WriteStr("Compute Profiles: Current Method and Settings");
@@ -557,7 +573,7 @@ void GRealLife::CommonTasks(GSlot* r) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GRealLife::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	unsigned int MaxStep;
 	unsigned int MinFBStep;
@@ -622,7 +638,7 @@ void GRealLife::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned 
 		else
 		{
 			// Create one profile of a new topic
-			if(Owner->GetIdealMethod()->AddJudgement(Owner->AutoSave))
+			if(Owner->GetIdealMethod()->AddTopic(Owner->AutoSave))
 			{
 				What[0]='N';
 			}
@@ -648,7 +664,7 @@ void GRealLife::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned 
 
 
 //-----------------------------------------------------------------------------
-void GAddAssessments::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GAddAssessmentsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	unsigned int nbDocs;
 
@@ -658,6 +674,36 @@ void GAddAssessments::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,uns
 	sprintf(tmp,"Adding Assessments: Settings=\"%u\"",nbDocs);
 	r->WriteStr(tmp);
 	Owner->GetIdealMethod()->AddAssessments(Owner->AutoSave,nbDocs);
+}
+
+
+//-----------------------------------------------------------------------------
+void GTrackNewProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	if(args->NbPtr)
+	{
+		if(((args->Tab[0]->GetValue(prg))[0]=='0')||(args->Tab[0]->GetValue(prg)=="true"))
+		{
+			r->WriteStr("Track New Profiles: false");
+			Owner->TrackNewProfiles=false;
+		}
+		else
+		{
+			r->WriteStr("Track New Profiles: true");
+			Owner->TrackNewProfiles=true;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GClearNewProfilesI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	if(args->NbPtr!=0)
+		throw GException("Method needs no parameter");
+	strcpy(tmp,"Create Ideal Groups");
+	r->WriteStr("Clear New Profiles");
+	Owner->GetIdealMethod()->ClearLastAdded();
 }
 
 
@@ -671,7 +717,7 @@ void GAddAssessments::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,uns
 //-----------------------------------------------------------------------------
 GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	: GPrgClass("Session"), IdealMethod(0), Session(s), OFile(0),
-	  GOFile(0), SOFile(0), AutoSave(false) 
+	  GOFile(0), SOFile(0), AutoSave(false), TrackNewProfiles(false) 
 {
 	Methods.InsertPtr(new GOutputI(this));
 	Methods.InsertPtr(new GGOutputI(this));
@@ -695,9 +741,11 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GStatsProfilesDocsI(this));
 	Methods.InsertPtr(new GStatsGroupsDocsI(this));
 	Methods.InsertPtr(new GAddIdealI(this));
-	Methods.InsertPtr(new GAddProfiles(this));
-	Methods.InsertPtr(new GRealLife(this));
-	Methods.InsertPtr(new GAddAssessments(this));
+	Methods.InsertPtr(new GAddProfilesI(this));
+	Methods.InsertPtr(new GRealLifeI(this));
+	Methods.InsertPtr(new GAddAssessmentsI(this));
+	Methods.InsertPtr(new GTrackNewProfilesI(this));
+	Methods.InsertPtr(new GClearNewProfilesI(this));
 };
 
 
