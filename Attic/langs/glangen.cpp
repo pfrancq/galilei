@@ -272,6 +272,9 @@ bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,uns
 	{
 		ptr=(*rules)();
 
+		// Verify if the minimum root size is Ok.
+		if(ptr->MinRootSize>WordSize) continue;
+
 		// If the word is leng enough, find the potentiel end suffix and put it
 		// in ending. If the ending isn't corresponding to the rule's suffix,
 		// go to the next rule.
@@ -280,9 +283,6 @@ bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,uns
 		if(strcmp(ending,ptr->OldSuffix)) continue;
 		tmp=*ending;
 		(*ending)=0;
-
-		// Verify if the minimum root size is Ok.
-		if(ptr->MinRootSize>WordSize) continue;
 
 		// If there is a condition verify it.
 		switch(ptr->Condition)
