@@ -140,8 +140,6 @@ double GALILEI::GIWordsWeights::GetMaxWeight(void) const
 //-----------------------------------------------------------------------------
 double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w) const
 {
-
-
 	double Sim=0.0;
 	GIWordWeight** ptr=Tab;
 	GIWordWeight** ptr2=w->Tab;
@@ -150,8 +148,9 @@ double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w) const
 	double norm1=0.0;
 	double norm2=0.0;
 
-	if((!NbPtr)||(!w->NbPtr))     // if subProfile is not defined -> the similarity must be null
-	return(0.0);
+	// if one SubProfile is not defined -> the similarity must be null
+	if((!NbPtr)||(!w->NbPtr))     
+		return(0.0);
 	
 	while(--i)
 	{
@@ -167,11 +166,13 @@ double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w) const
 			if(((*ptr)->Weight>0)||((*ptr2)->Weight>0))
 			{
 				norm2+=(*ptr2)->Weight*(*ptr2)->Weight;
+				norm1+=(*ptr)->Weight*(*ptr)->Weight;
 				Sim+=(*ptr)->Weight*(*ptr2)->Weight;
 			}
 			ptr2++;
 		}
-		norm1+=(*ptr)->Weight*(*ptr)->Weight;
+		else
+			norm1+=(*ptr)->Weight*(*ptr)->Weight;
 		ptr++;
 	}
 	while(j)
@@ -199,8 +200,12 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 	double TotalRefW=lang->GetRef(ObjType,tWord);
 	double TotalRefWL=lang->GetRef(ObjType,tWordList);
 	double w1,w2;
+
+	// if one SubProfile is not defined -> the similarity must be null
 	if((!NbPtr)||(!w->NbPtr))
 		return(0.0);
+
+	// Compute Similarity
 	while(--i)
 	{
 		if((*ptr)->InfoType()==infoWordList)
@@ -227,11 +232,13 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 				else
 					w2=((*ptr2)->Weight/max2)*log(TotalRefW/lang->GetRef((*ptr2)->GetId(),ObjType));
 				norm2+=w2*w2;
+				norm1+=w1*w1;
 				Sim+=w1*w2;
 			}
 			ptr2++;
 		}
-		norm1+=w1*w1;
+		else
+			norm1+=w1*w1;
 		ptr++;
 	}
 	while(j)
@@ -258,9 +265,11 @@ void GALILEI::GIWordsWeights::AddRefs(tObjType ObjType,GDict* dic) const
 	dic->IncRef(ObjType,tWord);
 	dic->IncRef(ObjType,tWordList);
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
-		if((*ptr)->InfoType()==4)
+	{
+		if((*ptr)->InfoType()==infoWordList)
 			dic->IncRef((*ptr)->GetId(),ObjType,tWordList);
 		else dic->IncRef((*ptr)->GetId(),ObjType,tWord);
+	}
 }
 
 
@@ -273,9 +282,12 @@ void GALILEI::GIWordsWeights::DelRefs(tObjType ObjType,GDict* dic) const
 	dic->DecRef(ObjType,tWord);
 	dic->DecRef(ObjType,tWordList);
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
-		if((*ptr)->InfoType()==4)
+	{
+		if((*ptr)->InfoType()==infoWordList)
 			dic->DecRef((*ptr)->GetId(),ObjType,tWordList);
-		else dic->DecRef((*ptr)->GetId(),ObjType,tWord);
+		else
+			dic->DecRef((*ptr)->GetId(),ObjType,tWord);
+	}
 }
 
 
@@ -289,9 +301,10 @@ void GALILEI::GIWordsWeights::Transform(tObjType ObjType,GLang* lang)
 
 	for(i=NbPtr+1,ptr=Tab,max=GetMaxWeight();--i;ptr++)
 	{
-		if((*ptr)->InfoType()==4)
+		if((*ptr)->InfoType()==infoWordList)
 			TotalRef=lang->GetRef(ObjType,tWordList);
-		else TotalRef=lang->GetRef(ObjType,tWord);
+		else
+			TotalRef=lang->GetRef(ObjType,tWord);
 		(*ptr)->Weight=((*ptr)->Weight/max)*log(TotalRef/lang->GetRef((*ptr)->GetId(),ObjType));
 	}
 }
@@ -319,9 +332,10 @@ void GALILEI::GIWordsWeights::ModifyQueryGroups(tObjType ObjType,GLang* lang)
 			InsertPtr(ptr=new GIWordWeight((*words)->GetId()));
 		freq=0.5+((0.5*ptr->Weight)/max);
 		idffactor=log(TotalRef/nbref);
-		if(ptr->InfoType()==4)
+		if(ptr->InfoType()==infoWordList)
 			TotalRef=lang->GetRef(ObjType,tWordList);
-		else TotalRef=lang->GetRef(ObjType,tWord);
+		else
+			TotalRef=lang->GetRef(ObjType,tWord);
 		ptr->SetWeight(freq*idffactor);
 	}
 }
@@ -348,9 +362,10 @@ void GALILEI::GIWordsWeights::ModifyQuery(tObjType ObjType,GLang* lang)
 		if(!ptr)
 			InsertPtr(ptr=new GIWordWeight((*words)->GetId()));
 		freq=0.5+((0.5*ptr->Weight)/max);
-		if(ptr->InfoType()==4)
+		if(ptr->InfoType()==infoWordList)
 			TotalRef=lang->GetRef(ObjType,tWordList);
-		else TotalRef=lang->GetRef(ObjType,tWord);
+		else
+			TotalRef=lang->GetRef(ObjType,tWord);
 		idffactor=log(TotalRef/nbref);
 		ptr->SetWeight(freq*idffactor);
 	}
