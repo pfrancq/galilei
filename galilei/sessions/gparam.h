@@ -246,6 +246,12 @@ public:
 	virtual void Set(int v);
 
 	/**
+	* Set the content of the parameter.
+	* @param v               Value of the parameter.
+	*/
+	virtual void Set(unsigned int v);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GParamInt(void);
@@ -297,6 +303,12 @@ public:
 	* @param v               Value of the parameter.
 	*/
 	virtual void Set(unsigned int v);
+
+	/**
+	* Set the content of the parameter.
+	* @param v               Value of the parameter.
+	*/
+	virtual void Set(int v);
 
 	/**
 	* Destructor.

@@ -34,6 +34,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <values.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gparam.h>
 using namespace GALILEI;
@@ -249,6 +254,14 @@ void GParamInt::Set(int v)
 
 
 //------------------------------------------------------------------------------
+void GParamInt::Set(unsigned int v)
+{
+	if (v>MAXINT) return;
+	Value=v;
+}
+
+
+//------------------------------------------------------------------------------
 GParamInt::~GParamInt(void)
 {
 }
@@ -293,6 +306,14 @@ void GParamUInt::WriteAttributes(RXMLTag* tag)
 unsigned int GParamUInt::GetUInt(void)
 {
 	return(Value);
+}
+
+
+//------------------------------------------------------------------------------
+void GParamUInt::Set(int v)
+{
+	if(v<0) return;
+	Value=v;
 }
 
 
