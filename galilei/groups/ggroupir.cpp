@@ -36,6 +36,7 @@
 #include <profiles/gprofilessim.h>
 #include <groups/ggroupir.h>
 #include <groups/gchromoir.h>
+#include <groups/ginstir.h>
 #include <groups/gobjir.h>
 using namespace GALILEI;
 using namespace RGGA;
@@ -96,13 +97,13 @@ bool GALILEI::GGroupIR::CanInsert(const GObjIR* obj)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GGroupIR::PostInsert(const GObjIR* obj)
+void GALILEI::GGroupIR::PostInsert(const GObjIR* /*obj*/)
 {
 }
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GGroupIR::PostDelete(const GObjIR* obj)
+void GALILEI::GGroupIR::PostDelete(const GObjIR* /*obj*/)
 {
 }
 
@@ -143,9 +144,27 @@ double  GALILEI::GGroupIR::ComputeAvgSim(void)
 
 
 //---------------------------------------------------------------------------
-bool GALILEI::GGroupIR::DoOptimisation(GObjIR** /*objs*/,unsigned int& /*nbobjs*/)
+void GALILEI::GGroupIR::DoOptimisation(void)
 {
-	return(true);
+//	unsigned int Pos;
+//	unsigned int i;
+//	GObjIR** ptr;
+//	double Avg;
+//	GSubProfile* sub;
+//	GSubProfile* obj;
+//
+//	if(NbSubObjects<=1) return;
+//	Pos=Owner->Instance->RRand(NbSubObjects);
+//	sub=Owner->GetObj(SubObjects+Pos)->GetSubProfile();
+//	Avg=0.0;
+//	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+//	{
+//		obj=(*ptr)->GetSubProfile();
+//		if(obj==sub) continue;
+//		Avg+=Owner->Sims->GetSim(sub,obj);
+//	}
+//	Avg/=NbSubObjects-1;
+//	return;
 }
 
 

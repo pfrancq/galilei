@@ -84,6 +84,14 @@ void GALILEI::GChromoIR::Evaluate(void)
 }
 
 
+//-----------------------------------------------------------------------------
+void GALILEI::GChromoIR::LocalOptimisation(void)
+{
+	for(Used.Start();!Used.End();Used.Next())
+		Used()->DoOptimisation();
+}
+
+
 //---------------------------------------------------------------------------
 GChromoIR& GALILEI::GChromoIR::operator=(const GChromoIR& chromo)
 {

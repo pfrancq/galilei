@@ -100,6 +100,7 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	RPromSol* s;
 	RPromSol** Res;
 	RPromSol** ptr;
+	double r;
 
 	#ifdef RGADEBUG
 		if(Debug) Debug->BeginFunc("PostEvaluate","GInstIR");
@@ -112,11 +113,18 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 		Prom.Assign(s,CritSim,(*C)->AvgSim);
 		Prom.Assign(s,CritNb,(*C)->AvgProf);
 	}
+	s=Prom.NewSol();
+	Prom.Assign(s,CritSim,BestChromosome->AvgSim);
+	Prom.Assign(s,CritNb,BestChromosome->AvgProf);
 	Prom.ComputePrometheeII();
 	Res=Prom.GetSols();
-	for(i=PopSize+1,ptr=Res;--i;ptr++)
+	for(i=PopSize+2,ptr=Res;--i;ptr++)
 	{
-		(*Chromosomes[(*ptr)->GetId()]->Fitness)=(*ptr)->GetFi();
+		r=(Gen+(((double)i)/((double)(PopSize+2))))/((double)MaxGen);
+		if((*ptr)->GetId()==PopSize)
+			(*BestChromosome->Fitness)=r;
+		else
+			(*Chromosomes[(*ptr)->GetId()]->Fitness)=r;
 	}
 	#ifdef RGADEBUG
 		if(Debug) Debug->EndFunc("PostEvaluate","GInstIR");

@@ -130,12 +130,10 @@ public:
 	virtual void PostDelete(const GObjIR* obj);
 
 	/**
-	* Do a local optimisation by checking whether it is possible to replace up
-	* to three objects in the group by one or two objects of objs, in such a
-	* way that the total size of the group increases. If so, perform the
-	* changes in the group and in objs.
+	* Do a local optimisation by checking whether it is interesting to separate
+	* a group in two.
 	*/
-	bool DoOptimisation(GObjIR** objs,unsigned int& nbobjs);
+	void DoOptimisation(void);
 
 	/**
 	* Compute the average similarity of the group.

@@ -103,6 +103,11 @@ public:
 	virtual void Evaluate(void);
 
 	/**
+	* Does a local optimisation for the chromosome.
+	*/
+	virtual void LocalOptimisation(void);
+
+	/**
 	* The assigment operator.
 	* @param chromo         The chromosome used as source.
 	*/
