@@ -46,6 +46,7 @@
 #include<groups/ggroups.h>
 #include<groups/ggroup.h>
 #include<groups/ggroupvector.h>
+//#include <groups/gevaluategroupsnumber.h>
 #include<langs/glang.h>
 #include<sessions/gsession.h>
 #include<sessions/gslot.h>
@@ -140,30 +141,77 @@ void GALILEI::GGroupingKCos::SetSettings(const char* s)
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingKCos::Run(void) throw(GException)
 {
+//	GGroup* g,*gr;
+//	RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>* kmeans;
+//	kmeans=new  RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups> (&SubProfiles) ;
+//	// init parameters of kmeans
+//	kmeans->SetNbTests(1);
+//	kmeans->SetGroupsNumber(Params->NbGroups);
+//	kmeans->SetInitial(RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>::Refined);
+//	kmeans->SetEpsilon(Params->Epsilon);
+//	kmeans->SetIterNumber(Params->NbIters);
+//	kmeans->SetSubSamplesNumber(Params->NbSubSamples);
+//	kmeans->SetSubSamplesRate(Params->SubSamplesRate);
+//	kmeans->SetVerifyKMeansMaxIters(1000);
+//	// run the kmeans
+//	kmeans->Run();
+//	// save the grouping in the session
+//	RContainer<GGroup,unsigned int,false,false>* grps=kmeans->GetGrouping();
+//	for (grps->Start(); !grps->End(); grps->Next())
+//	{
+//			gr=(*grps)();
+//			g=new GGroupVector(gr->GetId(), Groups->GetLang());
+//			for (gr->Start(); !gr->End(); gr->Next())
+//				g->InsertPtr((*gr)());
+//			Groups->InsertPtr(g);
+//	}
+
+	unsigned int i;
+	if (!SubProfiles.NbPtr)  return;
 	GGroup* g,*gr;
-	RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>* kmeans;
-	kmeans=new  RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups> (&SubProfiles) ;
-	// init parameters of kmeans
-	kmeans->SetNbTests(1);
-	kmeans->SetGroupsNumber(Params->NbGroups);
-	kmeans->SetInitial(RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>::Refined);
-	kmeans->SetEpsilon(Params->Epsilon);
-	kmeans->SetIterNumber(Params->NbIters);
-	kmeans->SetSubSamplesNumber(Params->NbSubSamples);
-	kmeans->SetSubSamplesRate(Params->SubSamplesRate);
-	kmeans->SetVerifyKMeansMaxIters(1000);
-	// run the kmeans
-	kmeans->Run();
-	// save the grouping in the session
-	RContainer<GGroup,unsigned int,false,false>* grps=kmeans->GetGrouping();
-	for (grps->Start(); !grps->End(); grps->Next())
+	RContainer<GGroup,unsigned int,false,false>* grps;
+	for (i=13; i<14; i++)
 	{
+		RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>* kmeans;
+		kmeans=new  RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups> (&SubProfiles) ;
+		// init parameters of kmeans
+		kmeans->SetNbTests(1);
+		kmeans->SetGroupsNumber(Params->NbGroups);
+		kmeans->SetInitial(RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>::Refined);
+		kmeans->SetEpsilon(Params->Epsilon);
+		kmeans->SetIterNumber(Params->NbIters);
+		kmeans->SetSubSamplesNumber(Params->NbSubSamples);
+		kmeans->SetSubSamplesRate(Params->SubSamplesRate);
+		kmeans->SetVerifyKMeansMaxIters(1000);
+		kmeans->SetGroupsNumber(i);
+
+		// run the kmeans
+	 	kmeans->Run();
+		grps=kmeans->GetGrouping();
+		RContainer<GGroup,unsigned int,false,true>* grps2;
+		grps2=new  RContainer<GGroup,unsigned int,false,true>(10,5);
+		for (grps->Start(); !grps->End(); grps->Next())
+			grps2->InsertPtr((*grps)());
+//		GEvaluateGroupsNumber* eval;
+//		eval=new GEvaluateGroupsNumber(grps2,Session);
+//		cout << eval->CalculateSDbw()<<","<<endl;
+
+		// save the grouping in the session
+		for (grps->Start(); !grps->End(); grps->Next())
+		{
 			gr=(*grps)();
 			g=new GGroupVector(gr->GetId(), Groups->GetLang());
 			for (gr->Start(); !gr->End(); gr->Next())
 				g->InsertPtr((*gr)());
 			Groups->InsertPtr(g);
+		}
+
+		delete kmeans;
+		delete grps2;
+//		delete eval;
 	}
+
+
 }
 
 

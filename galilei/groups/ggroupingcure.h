@@ -139,7 +139,7 @@ protected:
 	/**
 	* container of groups.
 	*/
-	RContainer<GGroup,unsigned int,true,true> * Grps;
+	RContainer<GGroup,unsigned int,false,true> * Grps;
 
 
 
@@ -222,12 +222,12 @@ public :
 	* calculate the cost function.
 	* @param grps           the group the cost function is applied on
 	*/
-	double CostFunction(RContainer<GGroup,unsigned int,true,true>* grps);
+	double CostFunction(RContainer<GGroup,unsigned int,false,true>* grps);
 
 	/*
 	* temporary function to show groups
 	*/
-	void ShowGroups(RContainer<GGroup,unsigned int,true,true>*gs);
+	void ShowGroups(RContainer<GGroup,unsigned int,false,true>*gs);
 
 	/**
 	* destructor

@@ -46,6 +46,7 @@ using namespace RIO;
 #include<groups/ggroupingcure.h>
 #include <groups/ggroupingsim.h>
 #include <groups/gcomparegrouping.h>
+//#include <groups/gevaluategroupsnumber.h>
 #include<groups/ggroups.h>
 #include<groups/ggroup.h>
 #include<groups/ggroupvector.h>
@@ -102,7 +103,7 @@ GALILEI::GGroupingCure::GGroupingCure(GSession* s, GCureParams* p) throw(bad_all
 		:  GGrouping("CURE",s), Params(p)
 {
 	Prototypes = new RContainer<GSubProfile,unsigned int,false,false> (10, 5);
-	Grps = new  RContainer<GGroup,unsigned int,true,true> (10, 5);
+	Grps = new  RContainer<GGroup,unsigned int,false,true> (10, 5);
 }
 
 
@@ -170,14 +171,6 @@ void  GALILEI::GGroupingCure::Run(void) throw(GException)
 	InitGroups();
 	InitProtos();
 
-//	// Calculates the similarities between subprofiles                       // 			   a supprimer
-//	RTextFile file=RTextFile("profsimsgrouping.txt",RIO::Create);
-//	cout << "  Resutats CURE -------------------------------------"<<endl<<endl<<endl;
-//	GSubProfile** s1;
-//	GSubProfile** s2;
-//	for(s1=SubProfiles.Tab,i=SubProfiles.NbPtr;--i;s1++)
-//		for(s2=s1+1,j=i+1;--j;s2++)
-// 			file << "sim entre " <<(*s1)->GetId()<< "et "<<(*s2)->GetId()<<" = "<< ProfSim->GetSim((*s1)->GetId(), (*s2)->GetId())<<endl;
 	while (Grps->NbPtr>Params->NbGroups)
 	{
 		// find the two closest groups.
@@ -198,8 +191,9 @@ void  GALILEI::GGroupingCure::Run(void) throw(GException)
 		//merge the groups
 		MergeGroups(gr1, gr2);
 //		cout << "number of group at this time = " << Grps->NbPtr<<endl;
-//		cout << "cost function  : "<< CostFunction(Grps) <<endl;
-		cout << CostFunction(Grps)<<","<<endl;
+//		GEvaluateGroupsNumber* eval= new GEvaluateGroupsNumber(Grps,Session);
+//		cout<< eval->CalculateSDbw()<<","<<endl;
+//		delete eval;
 	}
 
 	Groups->Clear();
@@ -312,7 +306,11 @@ double GALILEI::GGroupingCure::GroupsDistance(GGroup* g1, GGroup* g2)
 //-----------------------------------------------------------------------------
 double GALILEI::GGroupingCure::SubProfDistance(GSubProfile* s1, GSubProfile* s2)
 {
-	return(1.0-Session->GetSimProf(s1, s2));
+	double dist;
+
+	dist=1.0-Session->GetSimProf(s1, s2);
+	if (dist <1e-10) return 0.0;
+	else return(dist);
 }
 
 
@@ -324,7 +322,7 @@ double GALILEI::GGroupingCure::Similarity(GSubProfile* s1, GSubProfile* s2)
 
 
 //-----------------------------------------------------------------------------
-double  GALILEI::GGroupingCure::CostFunction(RContainer<GGroup,unsigned int,true,true>* grps)     // calculates the intra/min(inter)
+double  GALILEI::GGroupingCure::CostFunction(RContainer<GGroup,unsigned int,false,true>* grps)     // calculates the intra/min(inter)
 {
 	unsigned int i,j;
 	double intra, inter;
@@ -354,14 +352,14 @@ double  GALILEI::GGroupingCure::CostFunction(RContainer<GGroup,unsigned int,true
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupingCure::ShowGroups(RContainer<GGroup,unsigned int,true,true>*gs)
+void GALILEI::GGroupingCure::ShowGroups(RContainer<GGroup,unsigned int,false,true>*gs)
 {
 	for (gs->Start(); !gs->End(); gs->Next())
 	{
 		GGroup* g= (*gs)();
-//		cout << "Groupe "<< g->GetId() <<endl;
+		cout << "Groupe "<< g->GetId() <<endl;
 		for (g->Start(); !g->End(); g->Next())
-//			cout << "sub" << (*g)()->GetId() << "     ";
+			cout << "sub" << (*g)()->GetId() << "     ";
 		cout <<endl;
 	}
 }
