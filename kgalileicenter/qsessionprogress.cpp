@@ -140,11 +140,6 @@ void QSessionProgressDlg::LoadSession(GLangManager* langs,GFilterManager* umng, 
 	KApplication::kApplication()->processEvents();
 	Session->PostConnect(lmng);
 
-	txtRem->setText("Initialisation Similarities, Agreement and disagreement ratios ...");
-	KApplication::kApplication()->processEvents();
-	Session->InitProfilesSims();
-	Session->InitProfilesBehaviours();
-
 	txtRem->setText("Finish");
 	btnOk->setEnabled(true);
 }

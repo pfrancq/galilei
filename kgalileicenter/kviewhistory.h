@@ -153,7 +153,7 @@ class KViewHistory : public KView
 	/**
 	* Similarities between the subprofiles to group.
 	*/
-	GProfilesSim* Sims;
+	GProfilesSims* Sims;
 
 
 public:
