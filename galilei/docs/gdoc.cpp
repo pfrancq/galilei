@@ -271,7 +271,7 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 	infos->Clear();
 
 	// if document has a language -> update its references
-	if(Lang) return;
+	if(Lang)
 		AddRefs(otDoc,Lang);
 
 	// Signal to the profiles that the document has changed
