@@ -74,6 +74,11 @@ protected:
 	RRandom* Rand;
 
 	/**
+	* Container used to create subjects catagories.
+	*/
+	RContainer<GGroupIdParentId,unsigned int,true,true>* Parents;
+
+	/**
 	* Ideal groupment.
 	*/
 	RContainer<GGroups,unsigned int,true,true>* IdealGroups;
@@ -81,12 +86,7 @@ protected:
 	/**
 	* Mixed groups.
 	*/
-	RContainer<GGroups,unsigned int,true,true>* MixedGroups;
-
-	/**
-	* Container used to create subjects catagories.
-	*/
-	RContainer<GGroupIdParentId,unsigned int,true,true>* Parents;
+	RContainer<GGroups,unsigned int,true,true> MixedGroups;
 
 	/**
 	* Current Language.
@@ -104,6 +104,11 @@ protected:
 	GGroups** Tabs;
 
 	/**
+	* Temporary array of pointer to subprofiles.
+	*/
+	GSubProfile** TabS;
+
+	/**
 	* Session.
 	*/
 	GSession* Session;
@@ -119,14 +124,9 @@ protected:
 	bool Ideal;
 
 	/**
-	* Want to merge same category ?
+	* Want to merge ?
 	*/
-	bool MergeSame;
-
-	/**
-	* Want to merge different categories? 
-	*/
-	bool MergeDiff;
+	bool Merge;
 
 	/**
 	* Want to split ?
@@ -152,12 +152,11 @@ public:
 	* @param nbgroups       Number of groups needed
 	* @param nbsubprofiles  Number of subprofiles.
 	* @param level          maximum number of each type of mix.
-	* @param ms             merge same category?
-	* @param md             merge different category?
+	* @param m              merge same?
 	* @param s              split category?
 	* @param r              random grouping?
 	*/
-	GMixIdealGroups(GSession* sess, RContainer<GGroupIdParentId,unsigned int,true,true>* parents, RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups=10, int level=3, bool ms=true, bool md=true, bool s=true, bool r=true, bool i=true);
+	GMixIdealGroups(GSession* sess, RContainer<GGroupIdParentId,unsigned int,true,true>* parents, RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups=10, int level=3, bool m=true, bool s=true, bool r=true, bool i=true);
 
 	/**
 	* set the settings.
@@ -165,11 +164,17 @@ public:
 	void SetSettings(const char* s);
 
 	/**
+	* Get the ideal group of a given subprofile.
+	* @param s              Pointer to the subprofile.
+	* @reutns GGroup pointer.
+	*/
+	GGroup* GetIdealGroup(GSubProfile* s);
+
+	/**
 	* Merge groups.
-	* @param sametheme      groups from same category?
 	* @returns true if merge possible.
 	*/
-	bool MergeGroups(bool sametheme);
+	bool MergeGroups(void);
 	
 	/**
 	* Split groups in two groups.
