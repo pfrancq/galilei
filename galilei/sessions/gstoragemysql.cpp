@@ -423,7 +423,7 @@ void GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 		{
 			//insert the subprofile;
 			sSql="INSERT INTO subprofiles SET profileid="+itou(sub->GetProfile()->GetId());
-			sSql+=",langid='"+RString(sub->GetLang()->GetCode())+"',attached=CURDATE(),state="+itou(sub->GetState());
+			sSql+=",langid='"+RString(sub->GetLang()->GetCode())+"',attached=CURDATE()";
 			sSql+=",updated="+RQuery::SQLValue(sub->GetUpdated())+",calculated="+RQuery::SQLValue(sub->GetComputed())+",subprofileid="+itou(sub->GetId());
 		}
 		else
