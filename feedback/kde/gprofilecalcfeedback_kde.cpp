@@ -6,7 +6,7 @@
 
 	A KDE about box for the feedback method - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003-2004 by the UniversitÃ© libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -93,6 +93,7 @@ void Configure(GFactoryProfileCalc* params)
 	dlg.RelFactor->setValue(params->GetDouble("RelFactor"));
 	dlg.FuzzyFactor->setValue(params->GetDouble("FuzzyFactor"));
 	dlg.IrrelFactor->setValue(params->GetDouble("IrrelFactor"));
+	dlg.IncrementalMode->setChecked(params->GetBool("IncrementalMode"));
 	if(dlg.exec())
 	{
 		params->Set("MaxSize",dlg.MaxSize->value());
@@ -101,6 +102,7 @@ void Configure(GFactoryProfileCalc* params)
 		params->Set("RelFactor",dlg.RelFactor->value());
 		params->Set("FuzzyFactor",dlg.FuzzyFactor->value());
 		params->Set("IrrelFactor",dlg.IrrelFactor->value());
+		params->Set("IncrementalMode",dlg.IncrementalMode->isChecked());
  		params->Apply();
  	}
 }

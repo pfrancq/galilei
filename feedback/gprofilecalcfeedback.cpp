@@ -6,7 +6,7 @@
 
 	Vector Computing Method  - Implementation.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2004 by the UniversitÃ© lLibre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -58,9 +58,9 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac) throw(bad_alloc)
-	: GProfileCalc(fac), MaxNonZero(60), RelFactor(1.0), FuzzyFactor(0.25),
+	: GProfileCalc(fac), Infos(5000,2500), MaxNonZero(60), RelFactor(1.0), FuzzyFactor(0.25),
 	  IrrelFactor(0.75), Positive(false), isf(true), Vectors(5000),
-	  NbDocsWords(5000), NbDocs(0), MaxOrderSize(5000)
+	  NbDocsWords(5000), NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
 }
@@ -75,6 +75,7 @@ void GProfileCalcFeedback::ApplyConfig(void)
 	IrrelFactor=Factory->GetDouble("IrrelFactor");
 	Positive=Factory->GetBool("Positive");
 	isf=Factory->GetBool("isf");
+	IncrementalMode=Factory->GetBool("IncrementalMode");
 }
 
 
@@ -93,7 +94,7 @@ void GProfileCalcFeedback::Disconnect(GSession* session) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc,GException)
+void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 {
 	GWeightInfoCursor Words;
 	RCursor<GFdbk> Docs;
@@ -112,7 +113,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 
 	// Go through all documents, to compute the number of documents "OK", "KO"
 	// and "N" for each language and the number of documents for each index term.
-	Docs=subprofile->GetFdbks();
+	Docs=SubProfile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		// If the assessment of the document  is not relevant
@@ -135,7 +136,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 
 	// Go through all documents, add the frequences of the words of "OK"
 	// documents and substract the frequences of the words of "KO" documents.
-	Docs=subprofile->GetFdbks();
+	Docs=SubProfile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		CurDoc=Docs()->GetDoc();
@@ -180,22 +181,14 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::ComputeSubProfile(GSubProfile* s) throw(bad_alloc,GException)
+void GProfileCalcFeedback::ComputeSubProfile(void) throw(bad_alloc,GException)
 {
 	GWeightInfo** ptr;
 	unsigned int i,nb;
-	GWeightInfos* Vector=s;
-
-	// Clear the Vector.
-	s->RemoveRefs();
-	Vector->Clear();
 
 	// Choose the elements to stay.
 	if(Vectors.IsEmpty())
-	{
-		s->UpdateFinished();
 		return;
-	}
 
 	// Put in Order an ordered version of Global
 	if(Vectors.NbPtr+1>MaxOrderSize)
@@ -215,24 +208,31 @@ void GProfileCalcFeedback::ComputeSubProfile(GSubProfile* s) throw(bad_alloc,GEx
 	else
 		nb=Vectors.NbPtr;
 	for(i=nb+1,ptr=Order;(--i)&&(*ptr);ptr++)
-		Vector->InsertPtr(new GWeightInfo(*ptr));
-
-	// Update the references of the vector.
-	s->UpdateRefs();
-
-	//Tell the subprofile that the udpate is finished.
-	s->UpdateFinished();
+		Infos.InsertPtr(new GWeightInfo(*ptr));
 }
 
 
 //-----------------------------------------------------------------------------
 void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(GException)
 {
+	SubProfile=subprofile;
+
+	// Clear Infos
+	// Rem: Since Infos is not responsible for allocation/desallocation
+	//      -> parse it to prevent memory leaks
+	RCursor<GWeightInfo> Cur(Infos);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		delete Cur();
+	Infos.Clear();
+
 	// Compute the global vectors.
-	ComputeGlobal(subprofile);
+	ComputeGlobal();
 
 	// Compute the vector for each subprofile
-	ComputeSubProfile(subprofile);
+	ComputeSubProfile();
+
+	// Set the Variable of the subprofile
+	subprofile->Update(&Infos,true);
 }
 
 
@@ -245,12 +245,21 @@ void GProfileCalcFeedback::CreateParams(GParams* params)
 	params->InsertPtr(new GParamDouble("IrrelFactor",0.75));
 	params->InsertPtr(new GParamBool("Positive",false));
 	params->InsertPtr(new GParamBool("isf",true));
+	params->InsertPtr(new GParamBool("IncrementalMode",false));
 }
 
 
 //-----------------------------------------------------------------------------
 GProfileCalcFeedback::~GProfileCalcFeedback(void)
 {
+	// Clear Infos
+	// Rem: Since Infos is not responsible for allocation/desallocation
+	//      -> parse it to prevent memory leaks
+	RCursor<GWeightInfo> Cur(Infos);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		delete Cur();
+	Infos.Clear();
+
 	if(Order) delete[] Order;
 }
 

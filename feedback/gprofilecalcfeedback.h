@@ -6,7 +6,7 @@
 
 	Vector Computing Method - Header.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2004 by the UniversitÃ© libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -73,6 +73,12 @@ namespace GALILEI{
 class GProfileCalcFeedback : public GProfileCalc
 {
 protected:
+
+	/**
+	* Information computed.
+	*/
+	R::RContainer<GWeightInfo,false,true> Infos;
+
 	/**
 	* Maximal number of the non-zero weights in the vector.
 	*/
@@ -132,6 +138,11 @@ protected:
 	*/
 	unsigned int MaxOrderSize;
 
+	/**
+	* Incremental mode for the computing.
+	*/
+	bool IncrementalMode;
+
 public:
 
 	/**
@@ -157,30 +168,27 @@ public:
 	*/
 	virtual void Disconnect(GSession* session) throw(GException);
 
+private:
+
 	/**
 	* Compute the global vectors.
 	* @param profile        Profile to compute.
 	*/
-	void ComputeGlobal(GSubProfile* subprofile) throw(std::bad_alloc,GException);
+	void ComputeGlobal(void) throw(std::bad_alloc,GException);
 
 	/**
 	* Computes the subprofile of a profile.
 	* @param s              SubProfile to compute.
 	*/
-	void ComputeSubProfile(GSubProfile* s) throw(std::bad_alloc,GException);
+	void ComputeSubProfile(void) throw(std::bad_alloc,GException);
+
+public:
 
 	/**
 	* Compute a profile.
 	* @param profile        Profile to compute.
 	*/
 	virtual void Compute(GSubProfile* subprofile) throw(GException);
-
-	/**
-	* Get the type of the method implemented. This method is used for the
-	* vector model.
-	* @returns tSubProfileDesc enum type.
-	*/
-	virtual tSubProfileDesc GetType(void) const {return(sdVector);}
 
 	/**
 	* Create the parameters.

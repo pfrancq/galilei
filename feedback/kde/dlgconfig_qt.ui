@@ -99,6 +99,20 @@
                         <string>When this parameter is checked, the inverse subprofile factor is used when computing the weight of the information entities used for the description.</string>
                     </property>
                 </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>IncrementalMode</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Incremental mode used</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Specify if the incremental mode must be used.</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>When this parameter is checked, the method computes the description with the old description as a "virtual document" and the "new" documents.</string>
+                    </property>
+                </widget>
             </vbox>
         </widget>
         <widget class="QGroupBox">
