@@ -45,7 +45,6 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 // include files for Galilei
 #include <galilei.h>
-#include <gsessions/gsession.h>
 #include <glangs/glang.h>
 #include <glangs/gdict.h>
 
@@ -53,7 +52,7 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 namespace GALILEI{
 //---------------------------------------------------------------------------
-class GDict;
+
 class GSession;
 
 //---------------------------------------------------------------------------

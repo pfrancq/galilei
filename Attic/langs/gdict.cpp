@@ -35,9 +35,9 @@
 
 //---------------------------------------------------------------------------
 // include file for galilei
-
-#include "gdict.h"
-#include  <gdocs/gword.h>
+#include <gsessions/gsession.h>
+#include <glangs/gdict.h>
+#include <glangs/gword.h>
 #include <glangs/glang.h>
 using namespace GALILEI;
 
@@ -51,8 +51,8 @@ using namespace GALILEI;
 
 //---------------------------------------------------------------------------
 GDict::GDict(GSession* _owner,const RString& name,GLang *lang,unsigned max,unsigned maxletter) throw(bad_alloc)
-  : RHashContainer<GWord,unsigned,27,true>(maxletter+(maxletter/4),maxletter/4), Direct(0),
-    MaxId(max+max/4), UsedId(0),Lang(lang), Name(name), Desc(""), Loaded(false), owner(_owner)
+  : RHashContainer<GWord,unsigned,27,true>(maxletter+(maxletter/4),maxletter/4), Direct(0), owner(_owner),
+    MaxId(max+max/4), UsedId(0),Lang(lang), Name(name), Desc(""), Loaded(false)
 {
   Direct=new GWord*[MaxId];
   memset(Direct,0,MaxId*sizeof(GWord*));
@@ -61,8 +61,8 @@ GDict::GDict(GSession* _owner,const RString& name,GLang *lang,unsigned max,unsig
 
 //---------------------------------------------------------------------------
 GDict::GDict(GSession* _owner,const RString& name,const RString& desc,GLang* lang) throw(bad_alloc)
-  : RHashContainer<GWord,unsigned,27,true>(1000,1000), Direct(0), MaxId(10000),
-    UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false),owner(_owner)
+  : RHashContainer<GWord,unsigned,27,true>(1000,1000), Direct(0),owner(_owner), MaxId(10000),
+    UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false)
 {
   Direct=new GWord*[MaxId];
   memset(Direct,0,MaxId*sizeof(GWord*));

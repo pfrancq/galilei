@@ -32,8 +32,9 @@
 
 //---------------------------------------------------------------------------
 // include file for Galilei
-#include "gdicts.h"
+#include <glangs/gdicts.h>
 #include <glangs/gdict.h>
+#include <gsessions/gsession.h>
 
 using namespace GALILEI;
 

@@ -29,15 +29,21 @@
 
 */
 
+
+
 //---------------------------------------------------------------------------
 // include file for ANSI C/C++
 #include <string.h>
 
+
+//---------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rstd.h>
+
+
 //---------------------------------------------------------------------------
 // include file for Galilei
-
 #include "glangs.h"
-
 using namespace GALILEI;
 
 
@@ -58,10 +64,7 @@ GLangs::GLangs(unsigned nb) throw(bad_alloc)
 //---------------------------------------------------------------------------
 GLang* GLangs::GetLang(const char* code)
 {
-  GLang **ptr;
-  long i;
-
-	if(!code) return(0);
+	RReturnValIfFail(code,0);
 	return(GetPtr<const char*>(code));
 }
 

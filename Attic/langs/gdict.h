@@ -45,9 +45,9 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 // include files for Galilei
 #include <galilei.h>
-#include <gdocs/gword.h>
+#include <glangs/gword.h>
 #include <glangs/glang.h>
-#include <gsessions/gsession.h>
+
 
 
 //---------------------------------------------------------------------------
@@ -63,9 +63,11 @@ public:
   GWord** Direct;
 	GSession* owner;
 
-  unsigned MaxId,UsedId;
+  unsigned MaxId;
+  unsigned UsedId;
   GLang *Lang;
-  RString Name,Desc;
+  RString Name;
+  RString Desc;
   bool Loaded;
 
 	GDict(GSession* owner,const RString& name,GLang *lang,unsigned max,unsigned maxletter) throw(bad_alloc);
