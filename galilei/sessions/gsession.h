@@ -545,16 +545,16 @@ public:
 	/**
 	* Save a group, i.e. save all the information of the subprofiles
 	* concerning the groupement.
-	* @param grp        Group to save.
+	* @param grp            Group to save.
 	*/
 	virtual void Save(GGroup* grp) throw(GException);
 
 	/**
 	* Save the groups of the session
-	* @param mixedgroups     groups to save
-	* @param nbmixedgroups   mixedgroups number
+	* @param mixedgroups    groups to save
+	* @param id             Identificator.
 	*/
-	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true> * mixedgroups, int nbmixedgroups)=0;
+	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true> * mixedgroups,unsigned int id)=0;
 
 	/**
 	* Get a cursor over the filters of the system.

@@ -796,17 +796,18 @@ void GALILEI::GSessionMySQL::SaveGroups(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveMixedGroups(RContainer<GGroups,unsigned int,true,true>* mixedgroups,int nbmixedgroups)
+void GALILEI::GSessionMySQL::SaveMixedGroups(RContainer<GGroups,unsigned int,true,true>* mixedgroups,unsigned int id)
 {
 	char sSql[100];
 	GGroups* grps;
 	GGroup* grp;
 
 	// Delete all the old chromo where the id is id.
-	if(!nbmixedgroups)
+	if(!mixedgroups) return;
+	if(!id)
 	{
-		sprintf(sSql,"DELETE FROM tempchromo");
-		RQuery delete1(this,sSql);
+		// First chromosome to store, delete all chromosomes
+		RQuery delete1(this,"DELETE FROM tempchromo");
 	}
 
 	for(mixedgroups->Start(); !mixedgroups->End(); mixedgroups->Next())
@@ -818,7 +819,7 @@ void GALILEI::GSessionMySQL::SaveMixedGroups(RContainer<GGroups,unsigned int,tru
 			for(grp->Start(); !grp->End(); grp->Next())
 			{
 				GSubProfile* sub = (*grp)();
-				sprintf(sSql,"INSERT INTO tempchromo(chromoid,groupid,lang,subprofileid) VALUES(%u,%u,'%s',%u)",nbmixedgroups,grp->GetId(),grp->GetLang()->GetCode(),sub->GetId());
+				sprintf(sSql,"INSERT INTO tempchromo(chromoid,groupid,lang,subprofileid) VALUES(%u,%u,'%s',%u)",id,grp->GetId(),grp->GetLang()->GetCode(),sub->GetId());
 				RQuery InsertChromo(this,sSql);
 			}
 		}

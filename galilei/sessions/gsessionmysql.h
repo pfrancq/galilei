@@ -238,10 +238,10 @@ public:
 
 	/**
 	* Save the mixed groups of the session.
-	* @param mixedgroups    groups to save
-	* @param nbmixedgroups number of the chromo
+	* @param mixedgroups    groups to save.
+	* @param id             Identificator.
 	*/
-	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true>* mixedgroups,int nbmixedgroups);
+	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true>* mixedgroups,unsigned int id);
 
 	/**
 	* Delete a group.
