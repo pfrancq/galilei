@@ -130,7 +130,7 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 {
 	static char tmp[100];
 
-	sprintf(tmp,"%u %u %u %u %u",PercOK,PercKO,Rand,NbProfMin,NbProfMax);
+	sprintf(tmp,"%u %u %i %u %u",PercOK,PercKO,Rand,NbProfMin,NbProfMax);
 
 	return(tmp);
 }
@@ -140,8 +140,9 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 void GALILEI::GIdealGroup::SetSettings(const char* s)
 {
 	unsigned int a,b;
+
 	if(!(*s)) return;
-	sscanf(s,"%u %u %u %u %u",&PercOK,&PercKO,&Rand,&a,&b);
+	sscanf(s,"%u %u %i %u %u",&PercOK,&PercKO,&Rand,&a,&b);
 	if (a<=b) NbProfMin=a;
 	if (b<=Session->GetNbUsers()) NbProfMax=b;
 	if (b==0) NbProfMax=Session->GetNbUsers(); 
