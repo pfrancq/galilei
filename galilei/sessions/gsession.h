@@ -77,7 +77,7 @@ protected:
 	/**
 	* Pointer to the ideal Docs
 	*/
-	RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDoc;
+	RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDocs;
 
 	/**
 	* Pointer to a tree of subject
@@ -142,7 +142,7 @@ protected:
 	/**
 	* Similarity between the  profiles.    
 	*/
-	GProfilesSims* ProfilesSims ;
+	GProfilesSims* ProfilesSims;
 
 	/**
 	* State of the groups.
@@ -208,7 +208,12 @@ public:
 	/**
 	* Get a pointer to the ideal docs
 	*/
-	RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* GetIdealDoc(void);
+	RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* GetIdealDocs(void);
+
+	/**
+	* Get a cursor over the ideal documents of the system.
+	*/
+	GGroupsEvaluateCursor& GetIdealDocsCursor(void);
 
 	/**
 	* Return a pointer to a tree of subjects

@@ -99,8 +99,16 @@ public:
 	* Get a cursor over the groups.
 	*/
 	GGroupEvaluateCursor& GetGroupEvaluateCursor(void);
-
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GGroupsEvaluateCursor class provides a way to go trough a set of
+* GroupsEvaluate.
+* @short GroupsEvaluate Cursor.
+*/
+CLASSCURSOR(GGroupsEvaluateCursor,GGroupsEvaluate,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

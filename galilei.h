@@ -186,11 +186,14 @@ class GIdealGroup;
 class GGroupIdParentId;
 class GGetFeedback;
 class GGroupEvaluate;
+class GGroupEvaluateCursor;
 class GGroupsEvaluate;
+class GGroupsEvaluateCursor;
 class GSubject;
 class GStatSimSubProf;
 class GStatSimDoc;
 class GMixedIdealGroups;
+
 
 //-----------------------------------------------------------------------------
 // forward class declaration - Params Part

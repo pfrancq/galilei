@@ -77,8 +77,7 @@ using namespace GALILEI;
 GALILEI::GGetFeedback::GGetFeedback(GSession* session)
 	: Session(session), NbDoc(30), Global(true), PercErr(0),IdealGroup(0), Parent(0)
 {
-	IdealDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
-	IdealDoc=(Session->GetIdealDoc());
+	IdealDocs=Session->GetIdealDocs();
 }
 
 
@@ -154,9 +153,9 @@ unsigned int GALILEI::GGetFeedback::JudgType(GSubProfile* SubProf,GDoc* Doc)
 		tab[i]=0;
 
 	// Find The id of the group where the document is.
-	for(IdealDoc->Start();! IdealDoc->End();  IdealDoc->Next())
+	for(IdealDocs->Start();! IdealDocs->End();  IdealDocs->Next())
 	{
-		GGroupEvaluateCursor Grp=(*IdealDoc)()->GetGroupEvaluateCursor();
+		GGroupEvaluateCursor Grp=(*IdealDocs)()->GetGroupEvaluateCursor();
 		for(Grp.Start();!Grp.End();Grp.Next())
 		{
 			if(Grp()->IsIn(Doc->GetId()))
@@ -274,9 +273,9 @@ const char* GALILEI::GGetFeedback::GetSettings(void)
 	return(tmp);
 }
 
+
 //-----------------------------------------------------------------------------
 GALILEI::GGetFeedback::~GGetFeedback()
 {
-	delete IdealDoc;
 }
 

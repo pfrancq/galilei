@@ -131,7 +131,7 @@ void GALILEI::GSubjectTree::ChooseSubject(GSession* ses,double percgrp,unsigned 
 	tab1=new unsigned int [nbrsububjects];
 	tab2=new unsigned int [nbrsububjects];
 
-	IdealDoc=ses->GetIdealDoc();
+	IdealDoc=ses->GetIdealDocs();
 	for(IdealDoc->Start();!IdealDoc->End();IdealDoc->Next())
 	{
 		GGroupEvaluateCursor Grp=(*IdealDoc)()->GetGroupEvaluateCursor();

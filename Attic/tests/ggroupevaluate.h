@@ -158,13 +158,13 @@ public:
 	virtual ~GGroupEvaluate(void);
 };
 
+
 //-----------------------------------------------------------------------------
 /**
 * The GGroupEvaluateCursor class provides a way to go trough a set of groupEvaluate.
 * @short GroupEvaluate Cursor.
 */
 CLASSCURSOR(GGroupEvaluateCursor,GGroupEvaluate,unsigned int)
-
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

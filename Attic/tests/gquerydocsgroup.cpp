@@ -106,16 +106,17 @@ GALILEI::GQueryDocsGroup::GQueryDocsGroup(GSession* ses) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GQueryDocsGroup::Run(void)
+void GALILEI::GQueryDocsGroup::Run(unsigned int first,unsigned int nb,bool trans)
 {
-	double comptintra;
-	double comptinter;
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup;
-	GGroupsEvaluate* groups;
+	unsigned int comptintra;
+	unsigned int comptinter;
+	unsigned int comptfind;
+	unsigned int pos;
+	unsigned int queries;
+	GGroupsEvaluateCursor IdealDocs;
 	GGroupEvaluateDoc* group;
 	GDoc* Doc;
 	GDocVector* DocV;
-	idealgroup=Session->GetIdealDoc();
 	GIWordsWeights QueryWord(5000);
 	GIWordsWeights QueryWord1(5);
 	RContainer<GroupSim,unsigned int,false,false> Groups(50);
@@ -127,7 +128,8 @@ void GALILEI::GQueryDocsGroup::Run(void)
 
 	// Init Part
 	IdealGroups=Session->GetIdealGroupsCursor();
-	SimQueryIntra=SimQueryInter=Targets=comptintra=comptinter=0.0;
+	First=Second=SimQueryIntra=SimQueryInter=Recall=0.0;
+	queries=comptintra=comptinter=0;
 
 	// Compute Ideal Group Description
 	for(IdealGroups.Start();!IdealGroups.End();IdealGroups.Next())
@@ -136,18 +138,17 @@ void GALILEI::GQueryDocsGroup::Run(void)
 			Calc->Compute((*IdealGroups())());
 	}
 
-	// Compute Queries
-	for(idealgroup->Start();!idealgroup->End();idealgroup->Next())
+	// Do Queries
+	IdealDocs=Session->GetIdealDocsCursor();
+	for(IdealDocs.Start();!IdealDocs.End();IdealDocs.Next())
 	{
-		groups=(*idealgroup)();
-		//for each group in this languages
-		for(groups->Start();!groups->End();groups->Next())
+		for(IdealDocs()->Start();!IdealDocs()->End();IdealDocs()->Next())
 		{
-			group=static_cast<GGroupEvaluateDoc*>((*groups)());
+			group=static_cast<GGroupEvaluateDoc*>((*IdealDocs())());
 			QueryWord.Clear();
 
-			// for each doc  add the wheigth of all the words of the current doc
-			// in the current container
+			// Sum the weight of each information entity in a new vector,
+			// compute idf factor and ordered it in descending order
 			for(group->Start();!group->End();group->Next())
 			{
 				Doc=Session->GetDoc(group->Current());
@@ -169,7 +170,7 @@ void GALILEI::GQueryDocsGroup::Run(void)
 					}
 				}
 			}
-			QueryWord.Transform(otDocs,groups->GetLang());
+			QueryWord.Transform(otDocs,IdealDocs()->GetLang());
 			if(SizeOrder<QueryWord.NbPtr)
 			{
 				delete[] Order;
@@ -178,11 +179,15 @@ void GALILEI::GQueryDocsGroup::Run(void)
 			}
 			memcpy(Order,QueryWord.Tab,QueryWord.NbPtr*sizeof(GIWordWeight*));
 			qsort(static_cast<void*>(Order),QueryWord.NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
-			Order[QueryWord.NbPtr]=0;
-			for(int i=0;i<10;i++)
+
+			// Construct and apply the queries
+			for(unsigned int i=0;i<first;i++)
 			{
+				queries++;
 				QueryWord1.Clear();
-				QueryWord1.InsertPtr(new GIWordWeight(Order[i]));
+				QueryWord1.InsertPtr(new GIWordWeight(Order[i]->GetId(),2.0));
+				if(trans)
+					QueryWord1.ModifyQueryGroups(otGroups,IdealDocs()->GetLang());
 
 				// Parse all the groups and insert those which have a sim with
 				// the query greater than 0.0
@@ -201,17 +206,18 @@ void GALILEI::GQueryDocsGroup::Run(void)
 				}
 				qsort(static_cast<void*>(Groups.Tab),Groups.NbPtr,sizeof(GroupSim*),GroupSim::sortOrder);
 
-				double comptfind=0.0;
-				for(ptr=Groups.Tab,j=Groups.NbPtr+1;--j;ptr++)
+				// Parse the groups in descending order of similarity with the current query
+				for(ptr=Groups.Tab,j=Groups.NbPtr+1,pos=0,comptfind=0;--j;ptr++)
 				{
 					comptfind++;
 					GGroup* temp=(*ptr)->Grp;
 					double sim=(*ptr)->Sim;
 					if(temp->GetId()==group->GetId())
 					{
-						Targets+=(1/comptfind);
+						Recall+=(1/comptfind);
 						SimQueryIntra+=sim;
 						comptintra++;
+						pos=Groups.NbPtr-j;
 					}
 					else
 					{
@@ -219,10 +225,22 @@ void GALILEI::GQueryDocsGroup::Run(void)
 						comptinter++;
 					}
 				}
+				if(pos==0)
+				{
+					First++;
+				}
+				if(pos<=1)
+				{
+					Second++;
+				}
 			}
 		}
 	}
-	Targets/=comptintra;
+
+	// Computes Average Values
+	Recall/=comptintra;
+	First/=queries;
+	Second/=queries;
 	SimQueryIntra/=comptintra;
 	SimQueryInter/=comptinter;
 }

@@ -89,8 +89,8 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	
 {
 	GLangCursor Langs;
-    IdealGroups= new RStd::RContainer<GALILEI::GGroups, unsigned int, true, true> (g+g/2,g/2);
-	IdealDoc=new RStd::RContainer<GALILEI::GGroupsEvaluate, unsigned int, false, false> (2,1);
+	IdealGroups= new RStd::RContainer<GALILEI::GGroups, unsigned int, true, true> (g+g/2,g/2);
+	IdealDocs=new RStd::RContainer<GALILEI::GGroupsEvaluate, unsigned int, false, false> (2,1);
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Groups.InsertPtr(new GGroups(Langs()));
@@ -149,10 +149,20 @@ GGroupsCursor& GALILEI::GSession::GetIdealGroupsCursor(void)
 
 
 //-----------------------------------------------------------------------------
-RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* GALILEI::GSession::GetIdealDoc(void)
+RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* GALILEI::GSession::GetIdealDocs(void)
 {
-	return(IdealDoc);
+	return(IdealDocs);
 }
+
+
+//-----------------------------------------------------------------------------
+GGroupsEvaluateCursor& GALILEI::GSession::GetIdealDocsCursor(void)
+{
+	GGroupsEvaluateCursor *cur=GGroupsEvaluateCursor::GetTmpCursor();
+	cur->Set(IdealDocs);
+	return(*cur);
+}
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::RegisterComputingMethod(GProfileCalc* grp) throw(bad_alloc)
@@ -645,7 +655,9 @@ GALILEI::GSession::~GSession(void) throw(GException)
 	if(DocAnalyse) delete DocAnalyse;
 	if(DocOptions) delete DocOptions;
 	if(Groupings) delete Groupings;
- 	if(GroupCalcs) delete GroupCalcs;
+	if(GroupCalcs) delete GroupCalcs;
 	if(SubProfileDescs) delete SubProfileDescs;
 	if(ProfileCalcs) delete ProfileCalcs;
+	if(IdealGroups) delete IdealGroups;
+	if(IdealDocs) delete IdealDocs;
 }

@@ -89,9 +89,19 @@ class GQueryDocsGroup
 	double SimQueryInter;
 
 	/**
-	* Number of correct groups found.
+	* Recall of the queries.
 	*/
-	double Targets;
+	double Recall;
+
+	/**
+	* Number of times the correct group is the first retrieved.
+	*/
+	double First;
+
+	/**
+	* Number of times the correct groups is the 2 first retrieved.
+	*/
+	double Second;
 
 public:
 
@@ -103,8 +113,11 @@ public:
 
 	/**
 	* Run the query.
+	* @param first          Number of first words used.
+	* @param nb             Number of words in a query.
+	* @param trans          Transform query vector?
 	*/
-	void Run(void);
+	void Run(unsigned int first,unsigned int nb,bool trans);
 
 	/**
 	* Get the similarity Query-Same Groups.
@@ -122,7 +135,19 @@ public:
 	* Get the number of correct groups found.
 	* @returns double
 	*/
-	double GetTargets(void) const {return(Targets);}
+	double GetRecall(void) const {return(Recall);}
+
+	/**
+	* Get the number of times the correct group is the first retrieved.
+	* @returns double
+	*/
+	double GetFirst(void) const {return(First);}
+
+	/**
+	* Get the number of times the correct groups is the 2 first retrieved.
+	* @returns double
+	*/
+	double GetSecond(void) const {return(Second);}
 
 	/**
 	* Destructor.

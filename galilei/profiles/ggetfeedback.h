@@ -94,7 +94,7 @@ protected:
 	/**
 	* The ideal groupment of documents.
 	*/
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDoc;
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDocs;
 
 	/**
 	* Return 1 if the profiles judge the doc OK.

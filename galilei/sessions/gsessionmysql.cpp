@@ -418,7 +418,7 @@ void GALILEI::GSessionMySQL::LoadIdealDocument()
 	GGroupEvaluateDoc* group;
 	GLangCursor Langs;
 
-	IdealDoc->Clear();
+	IdealDocs->Clear();
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
@@ -450,7 +450,7 @@ void GALILEI::GSessionMySQL::LoadIdealDocument()
 			}
 			groups->InsertPtr(group);
 		}
-		IdealDoc->InsertPtr(groups);
+		IdealDocs->InsertPtr(groups);
 	}
 }
 
@@ -1033,9 +1033,8 @@ void GALILEI::GSessionMySQL::SaveDocSim(void)
 {
 	char sSql[200];
 
-
-	//The container of documents.
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = IdealDoc;
+	// The container of documents.
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = IdealDocs;
 
 	double tempGlobal;
 	double tempnormal;
