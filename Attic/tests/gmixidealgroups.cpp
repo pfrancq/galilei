@@ -66,10 +66,11 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GMixIdealGroups::GMixIdealGroups(GSession* sess, RContainer<GGroupIdParentId,unsigned int,true,true>* parents, RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups, int level, bool ms, bool md, bool s, bool r)
+GALILEI::GMixIdealGroups::GMixIdealGroups(GSession* sess, RContainer<GGroupIdParentId,unsigned int,true,true>* parents, RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups, int level, bool ms, bool md, bool s, bool r, bool i)
 {
 	//init parameters
 	Random=r;
+	Ideal=i;
 	MergeDiff=md;
 	MergeSame=ms;
 	Split=s;
@@ -233,10 +234,12 @@ void GALILEI::GMixIdealGroups::RandomGroups(void)
 void GALILEI::GMixIdealGroups::Run(void)
 {
 	int r, nbgroups;
+	nbgroups=NbMixedGroups;
 	if (Random)
-		nbgroups=NbMixedGroups-1;
-	else
-		nbgroups=NbMixedGroups;
+		nbgroups=nbgroups-1;
+	if (Ideal)
+		nbgroups=nbgroups-1;
+
 	// set the correct Level
 	Level++;
 	
@@ -264,9 +267,17 @@ void GALILEI::GMixIdealGroups::Run(void)
 		if (Split||MergeSame||MergeDiff)
 			StockInDatabase(i);
 	}
-	// totaly random
-	RandomGroups();
-	StockInDatabase(NbMixedGroups-1);
+	if (Random)
+	{
+		RandomGroups();
+		StockInDatabase(nbgroups);
+		nbgroups++;
+	}
+	if (Ideal)
+	{
+		InitMixedGroups();
+		StockInDatabase(nbgroups);
+	}
 }
 
 
