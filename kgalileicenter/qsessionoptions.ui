@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>339</width>
-            <height>299</height>
+            <width>288</width>
+            <height>371</height>
         </rect>
     </property>
     <property name="caption">
@@ -172,6 +172,35 @@
         </widget>
         <widget class="QGroupBox">
             <property name="name">
+                <cstring>groupBox1_2_2</cstring>
+            </property>
+            <property name="title">
+                <string>Groups Historic Options</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>CBGroupsHistory</cstring>
+                    </property>
+                    <property name="text">
+                        <string>save historical groups</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>CBProfilesHistory</cstring>
+                    </property>
+                    <property name="text">
+                        <string>save historical profiles</string>
+                    </property>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
                 <cstring>groupBox2</cstring>
             </property>
             <property name="paletteForegroundColor">
@@ -246,7 +275,7 @@
             <property name="sizeHint">
                 <size>
                     <width>20</width>
-                    <height>40</height>
+                    <height>16</height>
                 </size>
             </property>
         </spacer>

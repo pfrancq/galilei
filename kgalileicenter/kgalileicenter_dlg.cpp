@@ -500,6 +500,8 @@ void KGALILEICenterApp::slotSessionOptions(void)
 	QSessionOptions dlg(this, "Session Options");
 	dlg.SBDiffBehaviour->setValue(SessionParams.GetUInt("DiffBehaviourMinDocs"));
 	dlg.SBSameBehaviour->setValue(SessionParams.GetUInt("SameBehaviourMinDocs"));
+	dlg.CBGroupsHistory->setChecked(SessionParams.GetBool("SaveGroupsHistory"));
+	dlg.CBProfilesHistory->setChecked(SessionParams.GetBool("SaveProfilesHistory"));
 	dlg.NullSim->setText(tmp);
 
 	if(dlg.exec())
@@ -507,5 +509,12 @@ void KGALILEICenterApp::slotSessionOptions(void)
 		SessionParams.Set("DiffBehaviourMinDocs",dlg.SBDiffBehaviour->value());
 		SessionParams.Set("SameBehaviourMinDocs", dlg.SBSameBehaviour->value());
 		SessionParams.Set("NullSimLevel", atof(dlg.NullSim->text()));
+		SessionParams.Set("SaveGroupsHistory", dlg.CBGroupsHistory->isChecked());
+		SessionParams.Set("SaveProfilesHistory", dlg.CBProfilesHistory->isChecked());
+		if(dlg.CBProfilesHistory->isChecked()&&!dlg.CBGroupsHistory->isChecked())
+		{
+			QMessageBox::information(this,"Historic Options","historical groups will be saved (needed to save histoical profiles)");
+			SessionParams.Set("SaveGroupsHistory", true);
+		}
 	}
 }

@@ -110,10 +110,10 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 	ToolBar->insertItem("SubProfiles",subprofmenu);
 	QPopupMenu* viewmenu;
 	viewmenu= new QPopupMenu();
-//	viewmenu->insertItem(QString("Show/Hide Similarities"),this, SLOT(slotViewSimilarities()),0,1,-1) ;
+	viewmenu->insertItem(QString("Show/Hide Similarities"),this, SLOT(slotViewSimilarities()),0,1,-1) ;
 	viewmenu->insertItem(QString("Show/Hide RelationShip"),this, SLOT(slotViewRelationShip()),0,2,-1);
 	viewmenu->insertSeparator();
-//	viewmenu->insertItem(QString("Clear Similarities"),this, SLOT(slotClearSimilarities()),0,3,-1) ;
+	viewmenu->insertItem(QString("Clear Similarities"),this, SLOT(slotClearSimilarities()),0,3,-1) ;
 	viewmenu->insertItem(QString("Clear RelationShip"),this, SLOT(slotClearRelationShip()),0,4,-1) ;
 	ToolBar->insertItem("Views",viewmenu);
 
@@ -128,13 +128,15 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 	TabWidget->setBackgroundOrigin( QTabWidget::ParentOrigin );
 
 	// Sims view
-//	SimsView=new QListView(this);
-//	SimsView->setGeometry(QRect((this->width())/2, 30,(this->width())/2,this->height()));
-//	SimsView->addColumn("FirstSubProfile");
-//	SimsView->addColumn("Second SubProfile");
-//	SimsView->addColumn("Similarity");
-//	SimsView->setResizeMode(QListView::AllColumns);
-//	SimsView->hide();
+	SimsView=new QListView(this);
+	SimsView->setGeometry(QRect((this->width())/2, 30,(this->width())/2,this->height()));
+	SimsView->addColumn("FirstSubProfile");
+	SimsView->addColumn("Second SubProfile");
+	SimsView->addColumn("Similarity");
+	SimsView->addColumn("Historic Id");
+	SimsView->addColumn("Historic Date");
+	SimsView->setResizeMode(QListView::AllColumns);
+	SimsView->hide();
 
 	// RelationShip ListView
 	RelationShip=new QListView(this);
@@ -203,7 +205,6 @@ void KViewHistory::update(unsigned int /*cmd*/)
 void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 {
 	static char tmp[100];
-//	QGoToPopDlg *dlg;
 
 	GGroupsHistory* grps;
 
@@ -221,7 +222,7 @@ void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 			Solution->setGroups(grps);
 			Solution->setChanged();
 			SelectedSubProfiles->Clear();
-//			SimsView->clear();
+			SimsView->clear();
 			sprintf(tmp,"Solution (%u) [%u-%u-%u]",CurId, grps->GetDate().GetYear(),
 				grps->GetDate().GetMonth(),grps->GetDate().GetDay());
 			TabWidget->changeTab(Solution,tmp);
@@ -246,10 +247,8 @@ void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 void KViewHistory::resizeEvent(QResizeEvent*)
 {
 	TabWidget->setGeometry(QRect(0,30,(this->width())/2,this->height()-30));
-	// Sims view
-//	SimsView->setGeometry(QRect((this->width())/2, 30,(this->width())/2,this->height()-30));
+	SimsView->setGeometry(QRect((this->width())/2, 30,(this->width())/2,this->height()-30));
 	RelationShip->setGeometry(QRect((this->width())/2, 30,(this->width())/2,this->height()-30));
-
 	ToolBar->setGeometry(QRect(0, 0,(this->width()),50));
 }
 
@@ -295,7 +294,7 @@ void KViewHistory::slotViewSimilarities(void)
 //-----------------------------------------------------------------------------
 void KViewHistory::slotViewRelationShip(void)
 {
-//	SimsView->hide();
+	SimsView->hide();
 	if (RelationShip->isHidden())  RelationShip->show();
 	else RelationShip->hide();
 }
@@ -334,11 +333,11 @@ void KViewHistory::slotSelectedSetChanged(QListViewItem* item)
 //-----------------------------------------------------------------------------
 void KViewHistory::DisplaySimilarities(void)
 {
-/*	unsigned int i,j;
+	unsigned int i,j;
 	double similarity;
 	GWeightInfosHistory** giwwh1, **giwwh2;
 	QListViewItem* sim;
-	char num1[50], num2[50], num3[50];
+	char num1[50], num2[50], num3[50], id[10], date[50];
 
 	//clear the list view
 	SimsView->clear();
@@ -348,15 +347,19 @@ void KViewHistory::DisplaySimilarities(void)
 	{
 		for (j=i, giwwh2=giwwh1+1; j--; giwwh2++)
 		{
-			if (Global) similarity=(*giwwh1)->SimilarityIFF(*giwwh2, otSubProfile,Lang) ;
+			if (Global) similarity=(*giwwh1)->SimilarityIFF(*giwwh2, otSubProfile,(*giwwh1)->GetParent()->GetLang()) ;
 			else similarity=(*giwwh1)->Similarity(*giwwh2);
 			sprintf(num1,"%u",(*giwwh1)->GetId());
 			sprintf(num2,"%u",(*giwwh2)->GetId());
 			sprintf(num3,"%f",similarity);
-			sim=new QListViewItem(SimsView, num1, num2, num3);
+			sprintf(id, "%u",(*giwwh1)->GetParent()->GetParent()->GetId());
+			sprintf(date,"%u-%u-%u",(*giwwh1)->GetParent()->GetParent()->GetDate().GetYear(),
+ 				(*giwwh1)->GetParent()->GetParent()->GetDate().GetMonth(),
+				(*giwwh1)->GetParent()->GetParent()->GetDate().GetDay());
+			sim=new QListViewItem(SimsView, num1, num2, num3,id, date);
 		}
 	}
-*/
+
 }
 
 
@@ -594,9 +597,9 @@ KViewHistory::~KViewHistory(void)
 		delete Sims;
 	if(TabWidget)
 		delete (TabWidget);
-/*	if(SimsView)
+	if(SimsView)
 		delete (SimsView);
-*/	if(SelectedSubProfiles)
+	if(SelectedSubProfiles)
 		delete SelectedSubProfiles;
 }
 
