@@ -136,6 +136,12 @@ void KGALILEICenterApp::slotDocsOptions(void)
 	dlg.frameNonWord->setEnabled(DocOptions->NonLetterWords);
 	for(Filters.Start();!Filters.End();Filters.Next())
 		new QListViewItem(dlg.lvFilters,Filters()->GetName(),Filters()->GetMIMES(),Filters()->GetVersion());
+	dlg.cbUseLink->setChecked(DocOptions->UseLink);
+	dlg.cbExternalLink->setChecked(DocOptions->UseExternalLink);
+	dlg.cbLimit->setChecked(DocOptions->LimitLink);
+	dlg.frameLimit->setEnabled(DocOptions->LimitLink);
+	dlg.txtNbLinks->setValue(DocOptions->NbLinks);
+
 	if(dlg.exec())
 	{
 		double d=dlg.txtMinStop->text().toDouble();
@@ -150,6 +156,10 @@ void KGALILEICenterApp::slotDocsOptions(void)
 		DocOptions->MinOccurCluster=dlg.txtMinOccC->value();
 		DocOptions->NbIteration=dlg.txtNbIteration->value();
 		DocOptions->NonLetterWords=dlg.cbNonWord->isChecked();
+		DocOptions->UseLink=dlg.cbUseLink->isChecked();
+		DocOptions->UseExternalLink=dlg.cbExternalLink->isChecked();
+		DocOptions->LimitLink=dlg.cbLimit->isChecked();
+		DocOptions->NbLinks=dlg.txtNbLinks->value();
 	}
 }
 

@@ -276,6 +276,10 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Maximum Documents",DocOptions->MaxDocs);
 	Config->writeEntry("Minimum Occurence Clustering",DocOptions->MinOccurCluster);
 	Config->writeEntry("Iteration Number",DocOptions->NbIteration);
+	Config->writeEntry("Use Link",DocOptions->UseLink);
+	Config->writeEntry("Use External Link",DocOptions->UseExternalLink);
+	Config->writeEntry("Limit Link",DocOptions->LimitLink);
+	Config->writeEntry("Links Number",DocOptions->NbLinks);
 
 	// Write Config of Session Options
 	Config->setGroup("Session Options");
@@ -451,6 +455,10 @@ void KGALILEICenterApp::readOptions(void)
 	DocOptions->MaxDocs=Config->readUnsignedNumEntry("Maximum Documents",300);
 	DocOptions->MinOccurCluster=Config->readUnsignedNumEntry("Minimum Occurence Clustering",2);
 	DocOptions->NbIteration=Config->readUnsignedNumEntry("Iteration Number",2);
+	DocOptions->UseLink=Config->readBoolEntry("Use Link",true);
+	DocOptions->UseExternalLink=Config->readBoolEntry("Use External Link",false);
+	DocOptions->LimitLink=Config->readBoolEntry("Limit Link",false);
+	DocOptions->NbLinks=Config->readUnsignedNumEntry("Links Number",20);
 
 	// Read Session Options
 	GroupingMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
@@ -572,8 +580,8 @@ void KGALILEICenterApp::readOptions(void)
 
 	// Read Config of LinkCalcItAlgo
 	Config->setGroup(LinkCalcItAlgoParams.GetComputingName());
-	LinkCalcItAlgoParams.NbIteration=Config->readNumEntry("NbIteration",500);
-	LinkCalcItAlgoParams.NbResults=Config->readNumEntry("NbResults",500);
+	LinkCalcItAlgoParams.NbIteration=Config->readNumEntry("NbIteration",5);
+	LinkCalcItAlgoParams.NbResults=Config->readNumEntry("NbResults",5);
 }
 
 

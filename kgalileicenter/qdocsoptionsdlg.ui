@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>392</width>
-            <height>359</height>
+            <width>372</width>
+            <height>406</height>
         </rect>
     </property>
     <property name="caption">
@@ -30,7 +30,10 @@
         </property>
         <widget class="QTabWidget">
             <property name="name">
-                <cstring>tabWidget</cstring>
+                <cstring>Links</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
             </property>
             <widget class="QWidget">
                 <property name="name">
@@ -41,80 +44,13 @@
                 </attribute>
                 <widget class="QGroupBox">
                     <property name="name">
-                        <cstring>GroupBox1</cstring>
-                    </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>10</x>
-                            <y>10</y>
-                            <width>250</width>
-                            <height>90</height>
-                        </rect>
-                    </property>
-                    <property name="title">
-                        <string>Language</string>
-                    </property>
-                    <widget class="QCheckBox">
-                        <property name="name">
-                            <cstring>cbStaticLang</cstring>
-                        </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>10</x>
-                                <y>20</y>
-                                <width>110</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
-                        <property name="text">
-                            <string>Static Languages</string>
-                        </property>
-                        <property name="whatsThis" stdset="0">
-                            <string>If &lt;b&gt;Static Language&lt;/b&gt; is checked, when a document has a language defined, the system suppose that the language doesn"t change. If &lt;b&gt;Static Language&lt;/b&gt; is unchecked, each time a document is analysed, the system checks for the language.</string>
-                        </property>
-                    </widget>
-                    <widget class="QLabel">
-                        <property name="name">
-                            <cstring>TextLabel1</cstring>
-                        </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>10</x>
-                                <y>50</y>
-                                <width>170</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
-                        <property name="text">
-                            <string>Minimum Stop ratio:</string>
-                        </property>
-                    </widget>
-                    <widget class="QLineEdit">
-                        <property name="name">
-                            <cstring>txtMinStop</cstring>
-                        </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>190</x>
-                                <y>50</y>
-                                <width>50</width>
-                                <height>22</height>
-                            </rect>
-                        </property>
-                        <property name="whatsThis" stdset="0">
-                            <string>For each pair document/language, the system computes a ratio between the number of distinct word of the stoplist of the language in the document and the total number of distinc word in the document. When this ratio is lower that this parameter, the system supposes that the document can't be of the corresponding language.</string>
-                        </property>
-                    </widget>
-                </widget>
-                <widget class="QGroupBox">
-                    <property name="name">
                         <cstring>GroupBox2_2</cstring>
                     </property>
                     <property name="geometry">
                         <rect>
                             <x>10</x>
                             <y>110</y>
-                            <width>250</width>
+                            <width>310</width>
                             <height>100</height>
                         </rect>
                     </property>
@@ -137,7 +73,7 @@
                             <rect>
                                 <x>10</x>
                                 <y>20</y>
-                                <width>230</width>
+                                <width>280</width>
                                 <height>20</height>
                             </rect>
                         </property>
@@ -153,7 +89,7 @@
                             <rect>
                                 <x>10</x>
                                 <y>50</y>
-                                <width>230</width>
+                                <width>280</width>
                                 <height>40</height>
                             </rect>
                         </property>
@@ -163,6 +99,22 @@
                         <property name="frameShadow">
                             <enum>Sunken</enum>
                         </property>
+                        <widget class="QSpinBox">
+                            <property name="name">
+                                <cstring>txtMinWordSize</cstring>
+                            </property>
+                            <property name="geometry">
+                                <rect>
+                                    <x>220</x>
+                                    <y>10</y>
+                                    <width>50</width>
+                                    <height>21</height>
+                                </rect>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>This parameter controls the minimum requested number of succesives characters needed to handle them as a valid word.</string>
+                            </property>
+                        </widget>
                         <widget class="QLabel">
                             <property name="name">
                                 <cstring>TextLabel1_2_2</cstring>
@@ -182,22 +134,6 @@
                                 <string>Minimum Word Size:</string>
                             </property>
                         </widget>
-                        <widget class="QSpinBox">
-                            <property name="name">
-                                <cstring>txtMinWordSize</cstring>
-                            </property>
-                            <property name="geometry">
-                                <rect>
-                                    <x>170</x>
-                                    <y>10</y>
-                                    <width>50</width>
-                                    <height>21</height>
-                                </rect>
-                            </property>
-                            <property name="whatsThis" stdset="0">
-                                <string>This parameter controls the minimum requested number of succesives characters needed to handle them as a valid word.</string>
-                            </property>
-                        </widget>
                     </widget>
                 </widget>
                 <widget class="QGroupBox">
@@ -208,7 +144,7 @@
                         <rect>
                             <x>10</x>
                             <y>220</y>
-                            <width>250</width>
+                            <width>310</width>
                             <height>50</height>
                         </rect>
                     </property>
@@ -237,7 +173,7 @@
                         </property>
                         <property name="geometry">
                             <rect>
-                                <x>190</x>
+                                <x>230</x>
                                 <y>20</y>
                                 <width>50</width>
                                 <height>21</height>
@@ -245,6 +181,73 @@
                         </property>
                         <property name="whatsThis" stdset="0">
                             <string>This parameter control the minimum size request for a stem to be handle by the system during the computation.</string>
+                        </property>
+                    </widget>
+                </widget>
+                <widget class="QGroupBox">
+                    <property name="name">
+                        <cstring>GroupBox1</cstring>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>10</x>
+                            <y>10</y>
+                            <width>310</width>
+                            <height>90</height>
+                        </rect>
+                    </property>
+                    <property name="title">
+                        <string>Language</string>
+                    </property>
+                    <widget class="QCheckBox">
+                        <property name="name">
+                            <cstring>cbStaticLang</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>10</x>
+                                <y>20</y>
+                                <width>160</width>
+                                <height>20</height>
+                            </rect>
+                        </property>
+                        <property name="text">
+                            <string>Static Languages</string>
+                        </property>
+                        <property name="whatsThis" stdset="0">
+                            <string>If &lt;b&gt;Static Language&lt;/b&gt; is checked, when a document has a language defined, the system suppose that the language doesn"t change. If &lt;b&gt;Static Language&lt;/b&gt; is unchecked, each time a document is analysed, the system checks for the language.</string>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit">
+                        <property name="name">
+                            <cstring>txtMinStop</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>230</x>
+                                <y>50</y>
+                                <width>50</width>
+                                <height>22</height>
+                            </rect>
+                        </property>
+                        <property name="whatsThis" stdset="0">
+                            <string>For each pair document/language, the system computes a ratio between the number of distinct word of the stoplist of the language in the document and the total number of distinc word in the document. When this ratio is lower that this parameter, the system supposes that the document can't be of the corresponding language.</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel">
+                        <property name="name">
+                            <cstring>TextLabel1</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>10</x>
+                                <y>50</y>
+                                <width>170</width>
+                                <height>20</height>
+                            </rect>
+                        </property>
+                        <property name="text">
+                            <string>Minimum Stop ratio:</string>
                         </property>
                     </widget>
                 </widget>
@@ -295,11 +298,18 @@
                     </property>
                     <property name="geometry">
                         <rect>
-                            <x>10</x>
-                            <y>10</y>
-                            <width>240</width>
+                            <x>60</x>
+                            <y>20</y>
+                            <width>230</width>
                             <height>260</height>
                         </rect>
+                    </property>
+                    <property name="paletteForegroundColor">
+                        <color>
+                            <red>0</red>
+                            <green>0</green>
+                            <blue>0</blue>
+                        </color>
                     </property>
                 </widget>
             </widget>
@@ -318,7 +328,7 @@
                         <rect>
                             <x>10</x>
                             <y>10</y>
-                            <width>250</width>
+                            <width>320</width>
                             <height>60</height>
                         </rect>
                     </property>
@@ -347,9 +357,9 @@
                         </property>
                         <property name="geometry">
                             <rect>
-                                <x>186</x>
+                                <x>240</x>
                                 <y>20</y>
-                                <width>50</width>
+                                <width>60</width>
                                 <height>23</height>
                             </rect>
                         </property>
@@ -371,8 +381,8 @@
                         <rect>
                             <x>20</x>
                             <y>10</y>
-                            <width>250</width>
-                            <height>100</height>
+                            <width>300</width>
+                            <height>80</height>
                         </rect>
                     </property>
                     <property name="title">
@@ -380,12 +390,28 @@
                     </property>
                     <widget class="QLabel">
                         <property name="name">
+                            <cstring>TextLabel1_2</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>20</x>
+                                <y>20</y>
+                                <width>155</width>
+                                <height>20</height>
+                            </rect>
+                        </property>
+                        <property name="text">
+                            <string>Minimum documents</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel">
+                        <property name="name">
                             <cstring>TextLabel2</cstring>
                         </property>
                         <property name="geometry">
                             <rect>
-                                <x>10</x>
-                                <y>70</y>
+                                <x>20</x>
+                                <y>50</y>
                                 <width>160</width>
                                 <height>20</height>
                             </rect>
@@ -400,8 +426,8 @@
                         </property>
                         <property name="geometry">
                             <rect>
-                                <x>170</x>
-                                <y>30</y>
+                                <x>210</x>
+                                <y>20</y>
                                 <width>70</width>
                                 <height>23</height>
                             </rect>
@@ -419,8 +445,8 @@
                         </property>
                         <property name="geometry">
                             <rect>
-                                <x>170</x>
-                                <y>70</y>
+                                <x>210</x>
+                                <y>50</y>
                                 <width>70</width>
                                 <height>23</height>
                             </rect>
@@ -432,22 +458,6 @@
                             <number>2</number>
                         </property>
                     </widget>
-                    <widget class="QLabel">
-                        <property name="name">
-                            <cstring>TextLabel1_2</cstring>
-                        </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>10</x>
-                                <y>30</y>
-                                <width>155</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
-                        <property name="text">
-                            <string>Minimum documents</string>
-                        </property>
-                    </widget>
                 </widget>
                 <widget class="QGroupBox">
                     <property name="name">
@@ -456,44 +466,44 @@
                     <property name="geometry">
                         <rect>
                             <x>20</x>
-                            <y>120</y>
-                            <width>250</width>
-                            <height>60</height>
+                            <y>90</y>
+                            <width>300</width>
+                            <height>50</height>
                         </rect>
                     </property>
                     <property name="title">
                         <string>Occurence</string>
                     </property>
-                    <widget class="QLabel">
-                        <property name="name">
-                            <cstring>TextLabel3</cstring>
-                        </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>10</x>
-                                <y>30</y>
-                                <width>153</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
-                        <property name="text">
-                            <string>Minimum Occurence</string>
-                        </property>
-                    </widget>
                     <widget class="QSpinBox">
                         <property name="name">
                             <cstring>txtMinOccC</cstring>
                         </property>
                         <property name="geometry">
                             <rect>
-                                <x>178</x>
-                                <y>29</y>
-                                <width>60</width>
+                                <x>210</x>
+                                <y>20</y>
+                                <width>70</width>
                                 <height>23</height>
                             </rect>
                         </property>
                         <property name="minValue">
                             <number>1</number>
+                        </property>
+                    </widget>
+                    <widget class="QLabel">
+                        <property name="name">
+                            <cstring>TextLabel3</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>20</x>
+                                <y>20</y>
+                                <width>153</width>
+                                <height>20</height>
+                            </rect>
+                        </property>
+                        <property name="text">
+                            <string>Minimum Occurence</string>
                         </property>
                     </widget>
                 </widget>
@@ -504,28 +514,28 @@
                     <property name="geometry">
                         <rect>
                             <x>20</x>
-                            <y>190</y>
-                            <width>250</width>
-                            <height>70</height>
+                            <y>140</y>
+                            <width>300</width>
+                            <height>180</height>
                         </rect>
                     </property>
                     <property name="title">
                         <string>Iteration</string>
                     </property>
-                    <widget class="QSpinBox">
+                    <widget class="QLabel">
                         <property name="name">
-                            <cstring>txtNbIteration</cstring>
+                            <cstring>TextLabel3_2</cstring>
                         </property>
                         <property name="geometry">
                             <rect>
-                                <x>177</x>
-                                <y>21</y>
-                                <width>60</width>
-                                <height>23</height>
+                                <x>20</x>
+                                <y>120</y>
+                                <width>160</width>
+                                <height>21</height>
                             </rect>
                         </property>
-                        <property name="minValue">
-                            <number>1</number>
+                        <property name="text">
+                            <string>Minimum Confidence</string>
                         </property>
                     </widget>
                     <widget class="QLabel">
@@ -534,14 +544,574 @@
                         </property>
                         <property name="geometry">
                             <rect>
-                                <x>10</x>
-                                <y>20</y>
+                                <x>20</x>
+                                <y>90</y>
                                 <width>126</width>
                                 <height>20</height>
                             </rect>
                         </property>
                         <property name="text">
                             <string>Iteration Number</string>
+                        </property>
+                    </widget>
+                    <widget class="QSpinBox">
+                        <property name="name">
+                            <cstring>txtNbIteration</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>210</x>
+                                <y>90</y>
+                                <width>70</width>
+                                <height>23</height>
+                            </rect>
+                        </property>
+                        <property name="minValue">
+                            <number>1</number>
+                        </property>
+                    </widget>
+                    <widget class="QSpinBox">
+                        <property name="name">
+                            <cstring>txtNbDocsMin</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>210</x>
+                                <y>150</y>
+                                <width>71</width>
+                                <height>23</height>
+                            </rect>
+                        </property>
+                    </widget>
+                    <widget class="QLabel">
+                        <property name="name">
+                            <cstring>TextLabel4_2</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>20</x>
+                                <y>150</y>
+                                <width>189</width>
+                                <height>20</height>
+                            </rect>
+                        </property>
+                        <property name="text">
+                            <string>Minimum of Appearances</string>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit">
+                        <property name="name">
+                            <cstring>txtMinConf</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>210</x>
+                                <y>120</y>
+                                <width>60</width>
+                                <height>27</height>
+                            </rect>
+                        </property>
+                    </widget>
+                    <widget class="QCheckBox">
+                        <property name="name">
+                            <cstring>cbDistance</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>20</x>
+                                <y>20</y>
+                                <width>260</width>
+                                <height>31</height>
+                            </rect>
+                        </property>
+                        <property name="text">
+                            <string>Using documents structure</string>
+                        </property>
+                    </widget>
+                    <widget class="QFrame">
+                        <property name="name">
+                            <cstring>FrameDistance</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>10</x>
+                                <y>50</y>
+                                <width>280</width>
+                                <height>40</height>
+                            </rect>
+                        </property>
+                        <property name="palette">
+                            <palette>
+                                <active>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>220</red>
+                                        <green>220</green>
+                                        <blue>220</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>237</red>
+                                        <green>237</green>
+                                        <blue>237</blue>
+                                    </color>
+                                    <color>
+                                        <red>110</red>
+                                        <green>110</green>
+                                        <blue>110</blue>
+                                    </color>
+                                    <color>
+                                        <red>146</red>
+                                        <green>146</green>
+                                        <blue>146</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>220</red>
+                                        <green>220</green>
+                                        <blue>220</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                </active>
+                                <disabled>
+                                    <color>
+                                        <red>128</red>
+                                        <green>128</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>220</red>
+                                        <green>220</green>
+                                        <blue>220</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>253</red>
+                                        <green>253</green>
+                                        <blue>253</blue>
+                                    </color>
+                                    <color>
+                                        <red>110</red>
+                                        <green>110</green>
+                                        <blue>110</blue>
+                                    </color>
+                                    <color>
+                                        <red>146</red>
+                                        <green>146</green>
+                                        <blue>146</blue>
+                                    </color>
+                                    <color>
+                                        <red>128</red>
+                                        <green>128</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>128</red>
+                                        <green>128</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>220</red>
+                                        <green>220</green>
+                                        <blue>220</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>0</green>
+                                        <blue>255</blue>
+                                    </color>
+                                </disabled>
+                                <inactive>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>220</red>
+                                        <green>220</green>
+                                        <blue>220</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>253</red>
+                                        <green>253</green>
+                                        <blue>253</blue>
+                                    </color>
+                                    <color>
+                                        <red>110</red>
+                                        <green>110</green>
+                                        <blue>110</blue>
+                                    </color>
+                                    <color>
+                                        <red>146</red>
+                                        <green>146</green>
+                                        <blue>146</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>220</red>
+                                        <green>220</green>
+                                        <blue>220</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>0</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>128</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>0</red>
+                                        <green>0</green>
+                                        <blue>255</blue>
+                                    </color>
+                                    <color>
+                                        <red>255</red>
+                                        <green>0</green>
+                                        <blue>255</blue>
+                                    </color>
+                                </inactive>
+                            </palette>
+                        </property>
+                        <property name="frameShape">
+                            <enum>StyledPanel</enum>
+                        </property>
+                        <property name="frameShadow">
+                            <enum>Sunken</enum>
+                        </property>
+                        <widget class="QSpinBox">
+                            <property name="name">
+                                <cstring>txtWindowSize</cstring>
+                            </property>
+                            <property name="geometry">
+                                <rect>
+                                    <x>200</x>
+                                    <y>10</y>
+                                    <width>70</width>
+                                    <height>23</height>
+                                </rect>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel2_2</cstring>
+                            </property>
+                            <property name="geometry">
+                                <rect>
+                                    <x>10</x>
+                                    <y>10</y>
+                                    <width>171</width>
+                                    <height>20</height>
+                                </rect>
+                            </property>
+                            <property name="text">
+                                <string>Window Size</string>
+                            </property>
+                        </widget>
+                    </widget>
+                </widget>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>Links</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Links</string>
+                </attribute>
+                <widget class="QGroupBox">
+                    <property name="name">
+                        <cstring>GroupL1</cstring>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>10</x>
+                            <y>10</y>
+                            <width>321</width>
+                            <height>85</height>
+                        </rect>
+                    </property>
+                    <property name="title">
+                        <string>General Options</string>
+                    </property>
+                    <widget class="QCheckBox">
+                        <property name="name">
+                            <cstring>cbExternalLink</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>20</x>
+                                <y>50</y>
+                                <width>271</width>
+                                <height>31</height>
+                            </rect>
+                        </property>
+                        <property name="text">
+                            <string>Manage External Links</string>
+                        </property>
+                    </widget>
+                    <widget class="QCheckBox">
+                        <property name="name">
+                            <cstring>cbUseLink</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>20</x>
+                                <y>20</y>
+                                <width>270</width>
+                                <height>31</height>
+                            </rect>
+                        </property>
+                        <property name="text">
+                            <string>Use Links Information</string>
+                        </property>
+                    </widget>
+                </widget>
+                <widget class="QGroupBox">
+                    <property name="name">
+                        <cstring>GroupL2</cstring>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>10</x>
+                            <y>100</y>
+                            <width>321</width>
+                            <height>120</height>
+                        </rect>
+                    </property>
+                    <property name="title">
+                        <string>Limitations</string>
+                    </property>
+                    <widget class="QCheckBox">
+                        <property name="name">
+                            <cstring>cbLimit</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>13</x>
+                                <y>17</y>
+                                <width>261</width>
+                                <height>31</height>
+                            </rect>
+                        </property>
+                        <property name="text">
+                            <string>Limit Number of Links</string>
+                        </property>
+                    </widget>
+                    <widget class="QFrame">
+                        <property name="name">
+                            <cstring>frameLimit</cstring>
+                        </property>
+                        <property name="enabled">
+                            <bool>false</bool>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>10</x>
+                                <y>50</y>
+                                <width>291</width>
+                                <height>60</height>
+                            </rect>
+                        </property>
+                        <property name="frameShape">
+                            <enum>StyledPanel</enum>
+                        </property>
+                        <property name="frameShadow">
+                            <enum>Sunken</enum>
+                        </property>
+                        <widget class="QSpinBox">
+                            <property name="name">
+                                <cstring>txtNbLinks</cstring>
+                            </property>
+                            <property name="geometry">
+                                <rect>
+                                    <x>220</x>
+                                    <y>20</y>
+                                    <width>50</width>
+                                    <height>20</height>
+                                </rect>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1_3</cstring>
+                            </property>
+                            <property name="geometry">
+                                <rect>
+                                    <x>10</x>
+                                    <y>10</y>
+                                    <width>191</width>
+                                    <height>41</height>
+                                </rect>
+                            </property>
+                            <property name="text">
+                                <string>Maximum Number of Link 
+to the Same URL</string>
+                            </property>
+                        </widget>
+                    </widget>
+                </widget>
+                <widget class="QGroupBox">
+                    <property name="name">
+                        <cstring>GroupL3</cstring>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>10</x>
+                            <y>223</y>
+                            <width>320</width>
+                            <height>90</height>
+                        </rect>
+                    </property>
+                    <property name="title">
+                        <string>Allowed Extension</string>
+                    </property>
+                    <widget class="QLineEdit">
+                        <property name="name">
+                            <cstring>leExtensions</cstring>
+                        </property>
+                        <property name="enabled">
+                            <bool>false</bool>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>7</x>
+                                <y>20</y>
+                                <width>301</width>
+                                <height>24</height>
+                            </rect>
+                        </property>
+                    </widget>
+                    <widget class="QPushButton">
+                        <property name="name">
+                            <cstring>butExt</cstring>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>82</x>
+                                <y>55</y>
+                                <width>171</width>
+                                <height>24</height>
+                            </rect>
+                        </property>
+                        <property name="text">
+                            <string>Add / Remove extension</string>
                         </property>
                     </widget>
                 </widget>
@@ -635,6 +1205,18 @@
         <sender>cbNonWord</sender>
         <signal>toggled(bool)</signal>
         <receiver>frameNonWord</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>cbDistance</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>FrameDistance</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>cbLimit</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>frameLimit</receiver>
         <slot>setEnabled(bool)</slot>
     </connection>
 </connections>
