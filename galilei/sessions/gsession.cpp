@@ -31,7 +31,9 @@
 
 */
 
-
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <fstream>
 
 //-----------------------------------------------------------------------------
 // include files for R Project
@@ -251,10 +253,18 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	GDocCursor Docs=GetDocsCursor();
 	RContainer<GDoc,unsigned int,false,true>* tmpDocs = new RContainer<GDoc,unsigned int,false,true>(5,2);
 	GDocAnalyse* Analyse;
+	RString err;
 
+	// verify that the textanalyse method is selected
 	Analyse=DocAnalyseMng->GetCurrentMethod();
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
+
+
+	// opens and appends the Log File for all errors occuring in the filter or analyse phase.
+	err= "Documents Filtering and Analysis on Data Set : "+GetDbName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear());
+	rec->WriteStr(err.Latin1());
+
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		if(modified&&(Docs()->GetState()==osUpToDate)) continue;
@@ -289,6 +299,10 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 		{
 			if(xml)
 				delete xml;
+
+			cout<< "error "<<e.GetMsg()<<endl;
+			// write error message to the log file handled by the GSlot.
+			rec->WriteStr(e.GetMsg());
 		}
 	}
 

@@ -200,14 +200,9 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
 	// if URL and protocol different than 'file' -> Download it
 	if(Url&&strncasecmp(doc->GetURL(),"file",i))
 	{
-		try
-		{
-			Download(doc->GetURL(),tmpFile);
-		}
-		catch(GException& e)
-		{
-			return(0);
-		}
+
+		// if the download can't be done an error is then send
+		Download(doc->GetURL(),tmpFile);
 		Dwn=true;
 	}
 	else

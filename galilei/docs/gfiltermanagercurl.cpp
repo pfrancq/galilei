@@ -111,7 +111,7 @@ void GFilterManagerCURL::Download(const char* URL,RString& tmpFile) throw(GExcep
 	if(tmpfile.stream)
 		fclose(tmpfile.stream);
 	if(err)
-		throw GException(RString("Can't download url ")+URL);
+		throw GException(RString("Can't download url : ")+ URL);
 }
 
 
