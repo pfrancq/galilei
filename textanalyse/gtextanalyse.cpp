@@ -371,6 +371,52 @@ void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GExcepti
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag, RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
+{
+	const char* ptr;
+	const char* endPtr;
+	GDoc* tmpDoc=0;
+
+	endPtr=ptr=0;
+
+	if (tag->GetName()=="dc:identifier")
+	{
+		ptr=tag->GetContent();
+
+		// keep only html links (-> whith html extension)
+		endPtr=ptr;
+		while (*endPtr)
+		{
+			endPtr++;
+		}
+		while ((*endPtr)!='.')
+		{
+			endPtr--;
+		}
+		if ((!strncasecmp(endPtr,".html",5)) || (!strncasecmp(endPtr,".htm",4)))
+		{
+			tmpDoc = Session->GetDoc(ptr);   //where ptr is the url.
+			if (! tmpDoc)
+			{
+				//DocsToAdd->InsertPtr(tmpDoc=Session->NewDoc(ptr,ptr,"text/html"));
+				//tmpDoc->SetState(osNotNeeded);
+			}
+			else
+			{
+				Doc->InsertLink(tmpDoc);
+			}
+		}
+	}
+	else
+	{
+		for (tag->Start();!tag->End();tag->Next())
+			AnalyseLinksTag((*tag)(),DocsToAdd);
+	}
+#pragma warn "ici il faut rajouter les proprietes des liens." ;
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
 {
 	double Frac,MinFrac;
@@ -449,10 +495,11 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
+void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,false,true>* tmpDocs)throw(GException)
 {
 	RXMLTag* content;
 	RXMLTag* metadata;
+	RXMLTag* link;
 
 	// Init Part and verification
 	if(!xml)
@@ -475,6 +522,11 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 	}
 	AnalyseTag(metadata,2.0);
 	AnalyseTag(content,1.0);
+
+	// Analyse the content of link tags
+	link = xml->GetLinks ();
+	RAssert(link);
+	AnalyseLinksTag(link,tmpDocs);
 
 	// Determine the Language if necessary.
 	if(FindLang)
