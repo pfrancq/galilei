@@ -59,6 +59,7 @@ class GProfileCalc;
 class GFilter;
 class GMIMEFilter;
 class GURLManager;
+class GDocAnalyse;
 
 
 //-----------------------------------------------------------------------------
@@ -149,6 +150,11 @@ protected:
 	* URL Manager used by this session.
 	*/
 	GURLManager* Mng;
+
+	/**
+	* Analyser used for the document.
+	*/
+	GDocAnalyse* DocAnalyse;
 
 	/**
 	* State of the dictionnaries and stoplists.
@@ -326,6 +332,12 @@ public:
 		* @param doc        Document to save.
 		*/
 		virtual void Save(GDoc* doc) throw(GException)=0;
+
+		/**
+		* Get the documents' analyser.
+		* @returns Pointer to a GDocAnalyse class.
+		*/
+		GDocAnalyse* GetDocAnalyse(void) const {return(DocAnalyse);}
 
 		/**
 		* Get the number of documents treated by the system.

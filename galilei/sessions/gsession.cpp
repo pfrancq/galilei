@@ -29,6 +29,7 @@ using namespace RStd;
 #include <glangs/glangfr.h>
 #include <glangs/gdict.h>
 #include <gdocs/gdoc.h>
+#include <gdocs/gdocanalyse.h>
 #include <gdocs/gdocxml.h>
 #include <gprofiles/guser.h>
 #include <gprofiles/gprofile.h>
@@ -78,7 +79,7 @@ void GALILEI::GSessionSignalsReceiver::receiveNextProfile(const GProfile* prof)
 //-----------------------------------------------------------------------------
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException)
 	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(g+g/2,g/2), Fdbks(f+f/2,f/2), Profiles(0), SubProfiles(0), Mng(mng),
-	  bDics(false), bDocs(false), bUsers(false), bGroups(false),
+	  DocAnalyse(0), bDics(false), bDocs(false), bUsers(false), bGroups(false),
 	  bFdbks(false), StaticLang(true)
 	
 {
@@ -90,6 +91,7 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	Groups.InsertPtr(new GGroups(l));
 	Profiles=new RContainer<GProfile,unsigned int,true,true>(p*2,p);
 	SubProfiles=new RContainer<GSubProfile,unsigned int,true,false>(p,p/2);
+	DocAnalyse=new GDocAnalyse(this);
 }
 
 
@@ -180,13 +182,13 @@ void GALILEI::GSession::AnalyseDocs(GSessionSignalsReceiver* rec,bool modified) 
 		rec->receiveNextDoc(Docs());
 		try
 		{
-			if(modified&&(Docs()->GetState()!=osUpdated))
+			if((!modified)||(Docs()->GetState()!=osUpdated))
 			{
 				xml=Mng->CreateDocXML(Docs());
 				if(xml)
 				{
 					Docs()->InitFailed();
-					Docs()->Analyse(xml,this);
+					DocAnalyse->Analyse(xml,Docs());
 					delete xml;
 					xml=0;
 				}
@@ -259,7 +261,7 @@ void GALILEI::GSession::CalcProfiles(GSessionSignalsReceiver* rec,GProfileCalc* 
 		rec->receiveNextProfile(prof);
 		try
 		{
-			if(modified&&(prof->GetState()!=osUpdated))
+			if((!modified)||(prof->GetState()!=osUpdated))
 				method->Compute(prof);
 			Save(prof);
 			if(prof->GetState()==osUpdated)
@@ -380,4 +382,5 @@ GALILEI::GSession::~GSession(void) throw(GException)
 {
 	if(SubProfiles) delete SubProfiles;
 	if(Profiles) delete Profiles;
+	if(DocAnalyse) delete DocAnalyse;
 }
