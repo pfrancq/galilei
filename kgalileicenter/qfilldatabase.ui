@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>366</width>
-            <height>300</height>
+            <height>372</height>
         </rect>
     </property>
     <property name="caption">
@@ -192,54 +192,6 @@
                 </widget>
             </vbox>
         </widget>
-        <widget class="QGroupBox" row="1" column="0">
-            <property name="name">
-                <cstring>GroupBox1</cstring>
-            </property>
-            <property name="frameShape">
-                <enum>Box</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Sunken</enum>
-            </property>
-            <property name="title">
-                <string>Configuration</string>
-            </property>
-            <vbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout62</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>TextLabel1</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Path to Directory :</string>
-                            </property>
-                        </widget>
-                        <widget class="KURLRequester">
-                            <property name="name">
-                                <cstring>KUDirectory</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>200</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-            </vbox>
-        </widget>
         <widget class="QLayoutWidget" row="3" column="0">
             <property name="name">
                 <cstring>layout64</cstring>
@@ -272,6 +224,9 @@
                     <property name="text">
                         <string>&amp;Cancel</string>
                     </property>
+                    <property name="accel">
+                        <string>Alt+C</string>
+                    </property>
                 </widget>
                 <widget class="QPushButton">
                     <property name="name">
@@ -279,6 +234,9 @@
                     </property>
                     <property name="text">
                         <string>&amp;OK</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+O</string>
                     </property>
                     <property name="default">
                         <bool>true</bool>
@@ -303,6 +261,151 @@
                 </size>
             </property>
         </spacer>
+        <widget class="QGroupBox" row="1" column="0">
+            <property name="name">
+                <cstring>GroupBox1</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>Box</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="title">
+                <string>Configuration</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget" row="0" column="0">
+                    <property name="name">
+                        <cstring>layout62</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Path to Directory :</string>
+                            </property>
+                        </widget>
+                        <widget class="KURLRequester">
+                            <property name="name">
+                                <cstring>KUDirectory</cstring>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>200</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget" row="1" column="0">
+                    <property name="name">
+                        <cstring>layout7</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel1</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Category depth :</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer7</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>251</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="KIntSpinBox">
+                            <property name="name">
+                                <cstring>Depth</cstring>
+                            </property>
+                            <property name="minValue">
+                                <number>2</number>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget" row="2" column="0">
+                    <property name="name">
+                        <cstring>layout13</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>HasParent</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Has parent :</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer8</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>ParentName</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>ChooseBtn</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
+                            <property name="text">
+                                <string>Choose</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </grid>
+        </widget>
     </grid>
 </widget>
 <connections>
@@ -318,6 +421,18 @@
         <receiver>QFillEmptyDatabase</receiver>
         <slot>reject()</slot>
     </connection>
+    <connection>
+        <sender>HasParent</sender>
+        <signal>stateChanged(int)</signal>
+        <receiver>QFillEmptyDatabase</receiver>
+        <slot>ChangeParent(int)</slot>
+    </connection>
+    <connection>
+        <sender>ChooseBtn</sender>
+        <signal>pressed()</signal>
+        <receiver>QFillEmptyDatabase</receiver>
+        <slot>ChooseParentName()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>LEName</tabstop>
@@ -328,10 +443,23 @@
     <tabstop>PushButton2_2</tabstop>
     <tabstop>PushButton2</tabstop>
 </tabstops>
+<includes>
+    <include location="global" impldecl="in declaration">rdb/rmysql.h</include>
+    <include location="global" impldecl="in declaration">qlistview.h</include>
+    <include location="local" impldecl="in implementation">qfilldatabase.ui.h</include>
+</includes>
+<slots>
+    <slot>ChangeParent( int s )</slot>
+    <slot>ChooseParentName()</slot>
+</slots>
+<functions>
+    <function>InsertSubItem( R::RDb &amp; db, int parentId, QListViewItem * item )</function>
+</functions>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>kurlrequester.h</includehint>
     <includehint>klineedit.h</includehint>
     <includehint>kpushbutton.h</includehint>
+    <includehint>knuminput.h</includehint>
 </includehints>
 </UI>

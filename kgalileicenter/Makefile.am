@@ -3,7 +3,7 @@ bin_PROGRAMS = kgalileicenter
 
 ## INCLUDES were found outside kdevelop specific part
 
-kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui \
+kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui qchooseparent.ui\
 	qcreatedatabase.ui qmixidealconfig.ui qexportmatrixdlg.ui \
 	kviewprg.cpp \
 	kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewstems.cpp \

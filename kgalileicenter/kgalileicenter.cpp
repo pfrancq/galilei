@@ -294,14 +294,14 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 		CreateDbUseUsers= dlg.UseUsers->isChecked();
 
 		// if the database name field is empty -> ERROR
-		if( dbName.GetLen() == 0)
+		if( dbName.IsEmpty())
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a name for the database! "));
 			return;
 		}
 
 		// if the user or host is not specified -> ERROR
-		if( (host.GetLen()== 0) || (user.GetLen() == 0))
+		if( (host.IsEmpty()) || (user.IsEmpty()))
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a user and a host for the database! "));
 			return;
@@ -310,7 +310,7 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 		//************************* ------------- Find a Database Modele -----------------------*************************
 		strTmp = FromQString(dlg.sqlPath->url());
 		// if no url is specified then return error
-		if (strTmp.GetLen() == 0)
+		if (strTmp.IsEmpty())
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must select the path to the SQL files! "));
 			return;
@@ -408,30 +408,37 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 		RString host = FromQString(dlg.LEHost->text());
 		RString user = FromQString(dlg.LEUser->text());
 		RString password = FromQString(dlg.LEPassword->text());
+		int depth = dlg.Depth->value();
+		RString parentName = FromQString(dlg.ParentName->text());
 
 		// if the database name field is empty -> ERROR
-		if( dbname.GetLen() == 0)
+		if( dbname.IsEmpty())
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a name for the database to fill! "));
 			return;
 		}
 
 		// if the user or host is not specified -> ERROR
-		if( (host.GetLen()== 0) || (user.GetLen() == 0))
+		if( (host.IsEmpty()) || (user.IsEmpty()))
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a user and a host for the database! "));
 			return;
 		}
 
 		// if the database name field is empty -> ERROR
-		if( catDirectory.GetLen() == 0)
+		if( catDirectory.IsEmpty())
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a directory containing all the categories! "));
 			return;
 		}
+		if((dlg.HasParent->isChecked())&& parentName.IsEmpty())
+		{
+			QMessageBox::critical(this,"KGALILEICenter",QString("You must insert a NAME for the parent or unchecked the \"Has Parent\" option! "));
+			return;
+		}
 
 		QSessionProgressDlg Dlg(this,0,"Fill Database");
-		if(!Dlg.Run(new QFillDB(dbname,host,user,password,catDirectory,URLManager)))
+		if(!Dlg.Run(new QFillDB(dbname,host,user,password,catDirectory,depth,parentName,URLManager)))
 			return;
 	}
 }

@@ -150,16 +150,19 @@ class QFillDB : public QSessionThread
 	RString User;
 	RString Pass;
 	RString CatDirectory;
+	int Depth;
+	RString ParentName;
 	GFilterManagerKDE* FilterManager;
 
 	RDb* Db;
 	int CurrentDocId;
 public:
-	QFillDB(RString dbName,RString host,RString user,RString pass,RString catDir, GFilterManagerKDE* mng) : DbName(dbName), Host(host), User(user),Pass(pass),CatDirectory(catDir), FilterManager(mng),Db(0),CurrentDocId(0) {}
+	QFillDB(RString dbName,RString host,RString user,RString pass,RString catDir,int depth, RString parentName, GFilterManagerKDE* mng) : DbName(dbName), Host(host), User(user),Pass(pass),CatDirectory(catDir),Depth(depth),ParentName(parentName), FilterManager(mng),Db(0),CurrentDocId(0) {}
 	virtual void DoIt(void);
 private:
 	int CreateCategory(RString name,int parentId);
 	void ParseDocDir(RString path,int parentId, int level);
+	void InsertDocument(RString path,int parentId);
 };
 
 

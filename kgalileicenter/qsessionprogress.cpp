@@ -328,8 +328,11 @@ void QFillDB::DoIt(void)
 	RContainer<RString,true,false> usersId(10,5);
 	RString path("");
 	RString sSql("");
+	RString tmp("");
 	bool found=false;
 	int catId;
+	int parentId=0;
+	int nbTopicsAtBegin=0;
 
 	//Connect to DB
 	Db = new RDb(Host,User,Pass,DbName,"latin1");
@@ -342,6 +345,29 @@ void QFillDB::DoIt(void)
 	nbDoc.Start();
 	if((!nbDoc.End())&&(nbDoc[0]))
 		CurrentDocId=atoi(nbDoc[0]);
+		
+	sSql="SELECT count(*) FROM topics";
+	RQuery nbTopic(Db,sSql);
+	nbTopic.Start();
+	if((!nbTopic.End())&&(nbTopic[0]))
+		nbTopicsAtBegin=atoi(nbTopic[0]);
+	cout<<"nb topics"<<nbTopicsAtBegin<<endl;
+		
+	if(!ParentName.IsEmpty())
+	{
+		tmp=ParentName;
+		while(tmp.Find('/')>-1)
+		{
+			int id=tmp.Find('/');
+			parentId= CreateCategory(tmp.Mid(0,id),parentId);
+			tmp=tmp.Mid(id+1);
+		}
+		if(!tmp.IsEmpty())
+		{
+			parentId= CreateCategory(tmp,parentId);
+		}
+	}
+		
 
 	//Parse directory containing files
 	dp=opendir(CatDirectory);
@@ -353,9 +379,14 @@ void QFillDB::DoIt(void)
 			if((ep->d_type==DT_DIR)&&(ep->d_name[0] != '.'))
 			{
 				found=true;
-				catId= CreateCategory(ep->d_name,0);
+				catId= CreateCategory(ep->d_name,parentId);
 				path= CatDirectory+ep->d_name;
 				ParseDocDir(path,catId,1);
+			}
+			else if((!ParentName.IsEmpty())&&(ep->d_type==DT_REG))
+			{
+				path=CatDirectory+ ep->d_name;
+				InsertDocument(path,parentId);
 			}
 		}
 		if(GSession::Break())
@@ -369,7 +400,7 @@ void QFillDB::DoIt(void)
 
 	//Create profiles
 	Parent->PutText("create Profiles");
-
+	
 	//Get Nb users
 	sSql="SELECT userid FROM users";
 	RQuery userId(Db,sSql);
@@ -378,7 +409,8 @@ void QFillDB::DoIt(void)
 		usersId.InsertPtr(new RString(userId[0]));
 	}
 
-	sSql="SELECT * FROM topics WHERE parent !=0";
+	sSql="SELECT * FROM topics WHERE parent !=0 and topicid>"+itou(nbTopicsAtBegin);
+	cout<<sSql<<endl;
 	RQuery topics(Db,sSql);
 	for(topics.Start();!topics.End();topics.Next())
 	{
@@ -404,7 +436,7 @@ int QFillDB::CreateCategory(RString name,int parentId)
 {
 	RString sSql("");
 	int catId;
-	sSql="SELECT topicid FROM topics WHERE name='" + name +"' AND parent=" + itou(parentId);
+	sSql="SELECT topicid FROM topics WHERE name='" +name +"' AND parent=" + itou(parentId);
 	RQuery cat(Db,sSql);
 	cat.Start();
 	if((!cat.End())&&(cat[0]))
@@ -414,7 +446,7 @@ int QFillDB::CreateCategory(RString name,int parentId)
 		sSql="INSERT INTO topics SET name='"+name+"',langid='en',parent="+itou(parentId);
 		RQuery insert(Db,sSql);
 
-		sSql="SELECT topicid FROM topics WHERE name='" + name +"' AND parent=" + itou(parentId);
+		sSql="SELECT topicid FROM topics WHERE name='" +name +"' AND parent=" + itou(parentId);
 		RQuery get(Db,sSql);
 		get.Start();
 		if(get[0])
@@ -422,9 +454,36 @@ int QFillDB::CreateCategory(RString name,int parentId)
 		else
 			throw new GException("Cannot insert new category in database");
 	}
-	sSql= "Parse documents for category : "+ name;
+	sSql= "Parse documents for category : "+name;
 	Parent->PutText(sSql);
 	return catId;
+}
+
+
+//-----------------------------------------------------------------------------
+void QFillDB::InsertDocument(RString path,int parentId)
+{
+	//Determine mime type of the file
+	RString sSql("");
+	RString mime("");
+	mime=FilterManager->GFilterManager::DetermineMIMEType(path.Latin1());
+	if(!mime.IsEmpty())
+	{
+		sSql="SELECT * FROM htmls WHERE html='"+path+"'";
+		RQuery allReadyExists(Db,sSql);
+		allReadyExists.Start();
+		if(allReadyExists.End())
+		{
+			//Insert doc in htmls
+			sSql="INSERT INTO htmls SET html='"+path+"',updated='2004-01-01',mimetype='"+mime+"',title='"+path+"'";
+			RQuery insert(Db,sSql);
+			CurrentDocId++;
+
+			//Insert docid and topicid in htmlsbytopics
+			sSql="INSERT INTO topicsbyhtmls SET topicid="+itou(parentId)+",htmlid="+itou(CurrentDocId);
+			RQuery insert2(Db,sSql);
+		}
+	}
 }
 
 
@@ -443,7 +502,7 @@ void QFillDB::ParseDocDir(RString path,int parentId, int level)
 		{
 			if((ep->d_type==DT_DIR)&&(ep->d_name[0] != '.'))
 			{
-				if(level<2)
+				if(level<Depth)
 					catId= CreateCategory(ep->d_name,parentId);
 				else
 					catId=parentId;
@@ -454,27 +513,7 @@ void QFillDB::ParseDocDir(RString path,int parentId, int level)
 			{
 				// Choose right mime type
 				newPath=path+"/"+ep->d_name;
-
-				//Determine mime type of the file
-				RString mime("");
-				mime=FilterManager->GFilterManager::DetermineMIMEType(newPath.Latin1());
-				if(!mime.IsEmpty())
-				{
-					sSql="SELECT * FROM htmls WHERE html='"+newPath+"'";
-					RQuery allReadyExists(Db,sSql);
-					allReadyExists.Start();
-					if(allReadyExists.End())
-					{
-						//Insert doc in htmls
-						sSql="INSERT INTO htmls SET html='"+newPath+"',updated='2004-01-01',mimetype='"+mime+"',title='"+newPath+"'";
-						RQuery insert(Db,sSql);
-						CurrentDocId++;
-
-						//Insert docid and topicid in htmlsbytopics
-						sSql="INSERT INTO topicsbyhtmls SET topicid="+itou(parentId)+",htmlid="+itou(CurrentDocId);
-						RQuery insert2(Db,sSql);
-					}
-				}
+				InsertDocument(newPath,parentId);
 			}
 		}
 	}
