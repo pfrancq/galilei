@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	GSubProfile.cpp
 
-	Basic Information - Implementation.
+	Sub-Profile - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -33,33 +33,33 @@ using namespace GALILEI;
 
 //---------------------------------------------------------------------------
 GSubProfile::GSubProfile(void) throw(bad_alloc)
-  : Id(cNoRef),Lang(0),/*MOK(0),MKO(0),*/OK(0),KO(0),Common(0),bToAttach(true)
+  : Id(cNoRef),Lang(0),OK(0),KO(0),Common(0),bToAttach(true)
 {
 	OK=new GIWordList();
 	KO=new GIWordList();
 	Common=new GIWordList();
 }
+
 
 //---------------------------------------------------------------------------
 GSubProfile::GSubProfile(GProfile *owner,unsigned int id,GLang *lang) throw(bad_alloc)
-  : Owner(owner),Id(id),Lang(lang),/*MOK(0),MKO(0),*/OK(0),KO(0),Common(0),bToAttach(true)
+  : Owner(owner),Id(id),Lang(lang),OK(0),KO(0),Common(0),bToAttach(true)
 {
 	OK=new GIWordList();
 	KO=new GIWordList();
 	Common=new GIWordList();
-//	MOK=new GWordCalcs(Lang,Owner->Owner->Owner->Session);
-//	MKO=new GWordCalcs(Lang,Owner->Owner->Owner->Session);
 }
 
+
 //---------------------------------------------------------------------------
-bool GSubProfile::NeedOK(void)
+bool GSubProfile::NeedOK(unsigned int NbOK)
 {
 	return((NbOK<30)/*&&(NbOK<MOK->NbPtr)*/);
 }
 
 
 //---------------------------------------------------------------------------
-bool GSubProfile::NeedKO(void)
+bool GSubProfile::NeedKO(unsigned int NbKO)
 {
 	return((NbKO<30)/*&&(NbOK<MKO->NbPtr)*/);
 }
@@ -97,7 +97,7 @@ int GSubProfile::Compare(const GSubProfile *subprofile)
 //---------------------------------------------------------------------------
 void GSubProfile::Analyse(GProfDoc *profdoc)
 {
-	switch(profdoc->Fdbk)
+	switch(profdoc->GetFdbk())
 	{
 		case 'O':
 		case 'N':
@@ -116,15 +116,17 @@ void GSubProfile::Analyse(void)
 {
 	unsigned int kwdid;
 	GIWord *ref;
+	unsigned int NbKO;
+	unsigned int NbOK;
 
 /*	MOK->EndCalc();
 	MKO->EndCalc();*/
 
 	NbOK=0;
 	NbKO=0;
-	while(NeedOK()||NeedKO())
+	while(NeedOK(NbOK)||NeedKO(NbKO))
 	{
-		if(NeedOK())
+		if(NeedOK(NbOK))
 		{
 //			kwdid=MOK->NextWord();
 			ref=KO->GetPtr<unsigned int>(kwdid);
@@ -140,7 +142,7 @@ void GSubProfile::Analyse(void)
 				NbOK++;
 			}
 		}
-		if(NeedKO())
+		if(NeedKO(NbKO))
 		{
 //			kwdid=MKO->NextWord();
 			ref=OK->GetPtr<unsigned int>(kwdid);

@@ -39,14 +39,16 @@ using namespace RXML;
 
 //-----------------------------------------------------------------------------
 GALILEI::GDoc::GDoc (const RString& url,const unsigned int id,const unsigned int nbdiff) throw(bad_alloc)
-  : URL(url),Id(id),Words(nbdiff),NbWords(0),NbDiffWords(),Lang(0),Calc(true), bSave(false)
+  : URL(url),Id(id),Words(nbdiff),NbWords(0),NbDiffWords(),Lang(0), Calc(true),
+    bSave(false)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GDoc::GDoc(const RString& url,const unsigned int id,GLang* lang,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc)
-	: URL(url), Id(id), Words(nbdiff),NbWords(nb), NbDiffWords(nbdiff),Calc(true), bSave(false)
+	: URL(url), Id(id), Words(nbdiff),NbWords(nb), NbDiffWords(nbdiff), Lang(lang),
+	  Calc(true), bSave(false)
 {
 }
 

@@ -2,30 +2,15 @@
 
 	GALILEI Research Project
 
-	gprofdoc.h
+	GProfDoc.h
 
-	Basic Information - Implementation.
+	Profile's Judgement of a document - Header.
 
 	(C) 2001 by P. Francq.
 
 	Version $Revision$
 
 	Last Modify: $Date$
-
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
 
 */
 
@@ -41,29 +26,66 @@
 #include <gdocs/gdoc.h>
 
 
+
 //-----------------------------------------------------------------------------
 namespace GALILEI {
 //-----------------------------------------------------------------------------
 
+
 //-----------------------------------------------------------------------------
+/**
+* The GProfDoc class provides a representation for a profile's judgement of a
+* given document.
+* @author Pascal Francq
+* @short Profile's Judgement.
+*/
 class GProfDoc
 {
-public:
-	GDoc *Doc;
-    char Fdbk;
+	/**
+	* Document Juged.
+	*/
+	GDoc* Doc;
 
-	/** constructor of GProfDoc
+	/**
+	* Feedback of the profile.
+	*/
+	char Fdbk;
+
+public:
+
+	/**
+	* Constructor.
+	* @param doc            Pointer to the document judged.
+	* @param fdbk           Feedback.
 	*/
     GProfDoc(GDoc *doc,char fdbk);
 
-	/** comparaison functions
+	/**
+	* Compare mathod used by RStd::RContainer.
 	*/
 	int Compare(const GProfDoc &profdoc);
+
+	/**
+	* Compare mathod used by RStd::RContainer.
+	*/
 	int Compare(const GProfDoc *profdoc);
+
+	/**
+	* Get the feedback for the document.
+	* @returns Profile's feedback.
+	*/
+	char GetFdbk(void) const {return(Fdbk);}
+
+	/**
+	* Get the document judged.
+	* @returns Pointer to the document.
+	*/
+	GDoc* GetDoc(void) const {return(Doc);}
 };
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------
+
 
 //-----------------------------------------------------------------------------
 #endif

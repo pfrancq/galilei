@@ -97,7 +97,6 @@ public:
 	* Documents juged by profile
 	*/
 	RContainer<GProfDoc,unsigned,true,true> FdbkDocs;
-	
 
 	/**
 	* Date of Update
@@ -138,13 +137,33 @@ public:
 	void Calc(void);
 
 	/**
-	* Load and Save virtual functions.
+	* Start the iterator to go trough the documents judged.
 	*/
-//	virtual void Load(void) throw(bad_alloc,GException)=0;
-//	virtual void Save(void) throw(bad_alloc,GException)=0;
+	inline void DocsStart(void)
+		{FdbkDocs.Start();}
 
+	/**
+	* Test if the end of the container of documents judged is reached.
+	*/
+	inline bool DocsEnd(void) const
+		{return(FdbkDocs.End());}
+
+	/**
+	* Goto the next element, if the end is reached, go to the beginning.
+	*/
+	inline void DocsNext(void)
+		{FdbkDocs.Next();}
+
+	/**
+	* Get the current document judge.
+	* @returns Pointer to the current document udge.
+	*/
+	GProfDoc* GetCurDocs(void) {return(FdbkDocs());}
 };
+
+
 }  //-------- End of namespace GALILEI ----------------------------------------
+
 
 //-----------------------------------------------------------------------------
 #endif

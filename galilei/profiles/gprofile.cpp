@@ -88,9 +88,9 @@ void GProfile::Calc(void)
 	unsigned int i;
 
 	for(FdbkDocs.Start();!FdbkDocs.End();FdbkDocs.Next())
-		if(!FdbkDocs()->Doc->MustAnalyse())
+		if(!FdbkDocs()->GetDoc()->MustAnalyse())
 		{
-			sub=GetPtr<GLang*>(FdbkDocs()->Doc->GetLang(),false);
+			sub=GetPtr<GLang*>(FdbkDocs()->GetDoc()->GetLang(),false);
 			if(sub)
 				sub->Analyse(FdbkDocs());
 		}

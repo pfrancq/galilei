@@ -189,6 +189,11 @@ public:
 	unsigned int GetNbDiffWords(void) {return(NbDiffWords);}
 
 	/**
+	* @return Pointer to the Language.
+	*/
+	GLang* GetLang(void) const {return(Lang);}
+
+	/**
 	* @return True if the document has to be calc.
 	*/
 	bool MustAnalyse(void) {return(Calc);}

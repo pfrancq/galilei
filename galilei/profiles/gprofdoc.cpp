@@ -1,13 +1,27 @@
+/*
+
+	GALILEI Research Project
+
+	GProfDoc.cpp
+
+	Profile's Judgement of a document - Implementation.
+
+	(C) 2001 by P. Francq.
+
+	Version $Revision$
+
+	Last Modify: $Date$
+
+*/
 
 
-#include <stdlib.h>
-
-//include files for GALILEI
-#include<gprofdoc.h>
-
-using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
+//include files for GALILEI
+#include <gprofiles/gprofdoc.h>
+using namespace GALILEI;
+
+
 
 //---------------------------------------------------------------------------
 //
@@ -16,21 +30,21 @@ using namespace GALILEI;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GProfDoc::GProfDoc(GDoc  *doc,char fdbk)
+GALILEI::GProfDoc::GProfDoc(GDoc* doc,char fdbk)
   : Doc(doc), Fdbk(fdbk)
 {
 }
 
 
 //---------------------------------------------------------------------------
-int GProfDoc::Compare(const GProfDoc &profdoc)
+int GALILEI::GProfDoc::Compare(const GProfDoc& profdoc)
 {
   return(Doc->GetId()-profdoc.Doc->GetId());
 }
 
 
 //---------------------------------------------------------------------------
-int GProfDoc::Compare(const GProfDoc *profdoc)
+int GALILEI::GProfDoc::Compare(const GProfDoc* profdoc)
 {
   return(Doc->GetId()-profdoc->Doc->GetId());
 }

@@ -55,13 +55,13 @@ class GProfileCalcList : public GProfileCalc
 	* List of words' frequences in the "OK" and "N" documents for the different
 	* languages.
 	*/
-	RStd::RContainer<GIWordCalcs,unsigned int,true,true>* OK;
+	RStd::RContainer<GIWordCalcs,unsigned int,true,true> OK;
 
 	/**
 	* List of words' frequences in the "KO" documents for the different
 	* languages.
 	*/
-	RStd::RContainer<GIWordCalcs,unsigned int,true,true>* KO;
+	RStd::RContainer<GIWordCalcs,unsigned int,true,true> KO;
 
 public:
 

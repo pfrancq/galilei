@@ -100,6 +100,12 @@ public:
 	int Compare(const GIWordCalcs* c) const
 		{return(Lang->Compare(c->Lang));}
 
+	/**
+	* Compare method used by RStd::RContainer.
+	*/
+	int Compare(const GLang* l) const
+		{return(Lang->Compare(l));}
+
 private:
 
 	/**

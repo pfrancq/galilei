@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gsubprofile.h
+	GSubProfile.h
 
-	Basic Information - Implementation.
+	Sub-Profile - Header.
 
 	(C) 2001 by P. Francq.
 
@@ -27,16 +27,10 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <glangs/glang.h>
-#include <ginfos/giwordcalcs.h>
 #include <ginfos/giwordlist.h>
 #include <gprofiles/gprofdoc.h>
-using namespace GALILEI;
 
 
 
@@ -54,46 +48,41 @@ class GProfile;
 /**
 * This class represents a sub-profile for a specific language.
 * @author Pascal Francq.
-* @short Sub-Profile class.
+* @short Sub-Profile.
 */
 class GSubProfile
 {
 public:
+
 	/**
 	* Owner profile of the subprofile.
 	*/
 	GProfile *Owner;
 
 	/**
-	* Identifier
+	* Identifier of the subprofile.
 	*/
 	unsigned Id;
 
 	/**
-	* Language
+	* Language of the subprofile.
 	*/
 	GLang *Lang;
 
-//	GIWordCalcs *MOK;
-//	GIWordCalcs *MKO;
-	
 	/**
 	* List OK.
 	*/
-	GIWordList *OK;
+	GIWordList* OK;
 
 	/**
 	* List KO.
 	*/
-	GIWordList *KO;
+	GIWordList* KO;
 
 	/**
 	* List Common.
 	*/
-	GIWordList *Common;
-	
-	unsigned int NbOK;
-	unsigned int NbKO;
+	GIWordList* Common;
 	
 	/**
 	* Must Attach to group ? (T/F).
@@ -117,8 +106,8 @@ public:
 
 	/** boolean functions for calculation of OK, KO and Common lists.
 	*/
-	bool NeedOK(void);
-	bool NeedKO(void);
+	bool NeedOK(unsigned int NbOK);
+	bool NeedKO(unsigned int NbKO);
 
 	/**
 	* Comparaison functions
