@@ -45,9 +45,9 @@ using namespace RTimeDate;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int nb,unsigned int nbdiff,unsigned int nbf) throw(bad_alloc)
+GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int nb,unsigned int nbdiff,unsigned int nbf) throw(bad_alloc)
 	: URL(url), Name(name), Id(id), Words(nbdiff>300?nbdiff:300),NbWords(nb), NbDiffWords(nbdiff),
-	  Lang(lang), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2)
+	  Lang(lang), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2), Failed(f)
 {
 	if(Updated>Computed)
 	{
@@ -64,28 +64,28 @@ GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang
 //-----------------------------------------------------------------------------
 int GALILEI::GDoc::Compare(const GDoc& doc) const
 {
-  return(Id-doc.Id);
+	return(Id-doc.Id);
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GDoc::Compare(const GDoc* doc) const
 {
-  return(Id-doc->Id);
+	return(Id-doc->Id);
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GDoc::Compare(const unsigned id) const
 {
-  return(Id-id);
+	return(Id-id);
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GDoc::Compare(const GLang* lang) const
 {
-  return(Lang->Compare(lang));
+	return(Lang->Compare(lang));
 }
 
 

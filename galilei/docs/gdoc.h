@@ -119,6 +119,11 @@ class GDoc
 	*/
 	RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
+	/**
+	* Count the number of downloads failed.
+	*/
+	unsigned int Failed;
+
 public:
 
 	/**
@@ -130,12 +135,13 @@ public:
 	* @param t              MIME type of the document.
 	* @param u              String representing the date of the last update.
 	* @param a              String representing the date of the last analysis.
+	* @param f              Number of fails.
 	* @param nb             Total number of words in the document.
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int nb,unsigned int nbdiff,unsigned int nbf=100) throw(bad_alloc);
+	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int nb,unsigned int nbdiff,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Compare function needed by RStd::RContainer.
@@ -268,13 +274,29 @@ public:
 	/**
 	* @return Identificator of the document.
 	*/
-	unsigned int GetId(void) {return(Id);}
+	unsigned int GetId(void) const {return(Id);}
 
 	/**
 	* Set the identifier.
 	* @param id             Identifier.
 	*/
 	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+
+	/**
+	* Get the number of failed for the document.
+	* @returns unsigned int.
+	*/
+	unsigned int GetFailed(void) const {return(Failed);}
+
+	/**
+	* Increase the number of failed attemp.
+	*/
+	void IncFailed(void) {Failed++;}
+
+	/**
+	* Decrease the number of failed attemp.
+	*/
+	void DecFailed(void) {Failed--;}
 
 	/**
 	* Start the iterator to go trough the word.
