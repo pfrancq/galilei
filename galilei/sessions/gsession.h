@@ -1,3 +1,20 @@
+/*
+
+	GALILEI Research Project
+
+	GSession.h
+
+	Basic GALILEI Session - Header.
+
+	(C) 2001 by Pascal Francq
+
+	Version $Revision$
+
+	Last Modify: $Date$
+
+*/
+
+
 
 //---------------------------------------------------------------------------
 #ifndef GSessionH
@@ -5,15 +22,12 @@
 
 
 //---------------------------------------------------------------------------
-// include files for Rainbow
-
+// include files for R Project
 #include <rstd/rcontainer.h>
-
-using namespace RStd;
 
 
 //---------------------------------------------------------------------------
-// include files for HyperPRISME
+// include files for GALILEI
 #include <galilei.h>
 #include <glangs/glangs.h>
 #include <glangs/gdicts.h>
@@ -44,14 +58,13 @@ public:
 	GUsers* Users;
 	GDocs* Docs;
 	GGroupsLangs* GroupsLangs;
-	RContainer<GMIMEType,unsigned int,true,true>* MIMETypes;
+	RStd::RContainer<GMIMEType,unsigned int,true,true>* MIMETypes;
 
   // Constructor & Init part
   GSession(void) throw(bad_alloc,GException);
 
   // Dictionnaries
-  void LoadDics(void) throw(bad_alloc,GException);
-  void LoadStops(void) throw(bad_alloc,GException);
+  virtual void LoadDics(void) throw(bad_alloc,GException)=0;
   GDict* GetDic(GLang *lang) throw(GException);
   GDict* GetStop(GLang *lang) throw(GException);
   void ClearDics(void) throw(GException);
@@ -60,10 +73,10 @@ public:
 	
 
   // Documents
-  void PutAllDocs(bool alldocs);
-  bool GetAllDocs(void) { return(AllDocs); }
+//  void PutAllDocs(bool alldocs);
+//  bool GetAllDocs(void) { return(AllDocs); }
   unsigned GetNbDocs(void);
-  void AnalyseDocs(URLFunc *urlfunc,InfoFunc *infofunc) throw(bad_alloc,GException);
+//  void AnalyseDocs(URLFunc *urlfunc,InfoFunc *infofunc) throw(bad_alloc,GException);
   void ClearDocs(void) throw(GException);
 
 	/**

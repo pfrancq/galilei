@@ -12,21 +12,6 @@
 
         Last Modify: $Date$
 
-        This library is free software; you can redistribute it and/or
-        modify it under the terms of the GNU Library General Public
-        License as published by the Free Software Foundation; either
-        version 2.0 of the License, or (at your option) any later version.
-
-        This library is distributed in the hope that it will be useful,
-        but WITHOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-        Library General Public License for more details.
-
-        You should have received a copy of the GNU Library General Public
-        License along with this library, as a file COPYING.LIB; if not, write
-        to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-        Boston, MA  02111-1307  USA
-
 */
 
 
@@ -159,14 +144,33 @@ void GSessionMySQL::LoadSubProfilesFromDB (GProfile* prof)
 
 
 //-----------------------------------------------------------------------------
+void GSessionMySQL::LoadDics(void) throw(bad_alloc,GException)
+{
+	GLang* lang;
+	char str[30];
+
+	if(!Dics) Dics=new GDicts(Langs->NbPtr);
+	if(!Stops) Stops=new GDicts(Langs->NbPtr);
+	for(Langs->Start();!Langs->End();Langs->Next())
+	{
+		lang=(*Langs)();
+		sprintf(str,"%skwds",lang->GetCode());
+//		LoadDicFromDB(str,lang,Dics);
+		sprintf(str,"%sstopkwds",lang->GetCode());
+//		LoadDicFromDb(str,lang,Stops);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void GSessionMySQL::LoadLangsFromDB()
 {
 	GLang* lang;
 
 	RQuery compt(db,"SELECT COUNT(*) FROM languages");
 	compt.Begin();
-	Dics=new GDicts(atoi(compt[0]), this);
-	Stops=new GDicts(atoi(compt[0]), this);
+	Dics=new GDicts(atoi(compt[0]));
+	Stops=new GDicts(atoi(compt[0]));
 	Langs = new GLangs(atoi(compt[0]));
 	lang=new GLangEN();
 	Langs->InsertPtr(lang);
@@ -200,9 +204,9 @@ void GSessionMySQL::LoadDicFromDB(const RString &name,GLang *lang)
         RQuery max(db,sSql);
         max.Begin();
         if(max[0])
-                dict=new GDict(this,name,lang,strtoul(max[0],0,10),MaxCount);
+                dict=new GDict(this,name,"Dictionnary",lang,strtoul(max[0],0,10),MaxCount);
         else
-                dict=new GDict(this,name,lang,100,MaxCount);
+                dict=new GDict(this,name,"Dictionnary",lang,100,MaxCount);
 
         FillDict(dict);
         Dics->InsertPtr(dict);
@@ -229,9 +233,9 @@ void GSessionMySQL::LoadStopsFromDB(const RString &name,GLang *lang)
         RQuery max(db,sSql);
         max.Begin();
         if(max[0])
-                dict=new GDict(this,name,lang,strtoul(max[0],0,10),MaxCount);
+                dict=new GDict(this,name,"Dictionnary",lang,strtoul(max[0],0,10),MaxCount);
         else
-                dict=new GDict(this,name,lang,100,MaxCount);
+                dict=new GDict(this,name,"Dictionnary",lang,100,MaxCount);
 
         FillDict(dict);
         Stops->InsertPtr(dict);
@@ -242,13 +246,14 @@ void GSessionMySQL::LoadStopsFromDB(const RString &name,GLang *lang)
 void GSessionMySQL::FillDict(GDict* dict)
 {
 	char ssql[100];
-	sprintf(ssql,"SELECT kwdid, kwd  FROM %s", dict->Name());
+	sprintf(ssql,"SELECT kwdid, kwd  FROM %s", dict->GetName());
 	RQuery dicts (db, ssql);
 	for(dicts.Begin();dicts.IsMore();dicts++)
 	{
-	 	GWord* word = new GWord (atoi(dicts[0]), RString(dicts[1]));
+	 	/*GWord* word = new GWord (atoi(dicts[0]), RString(dicts[1]));
 		dict->PutDirect(word);
-		dict->InsertPtr (word);
+		dict->InsertPtr (word);*/
+		dict->Put(atoi(dicts[0]), RString(dicts[1]));
 	}
         
 }
@@ -263,7 +268,7 @@ void GSessionMySQL::LoadDocs(void)
 	sprintf(sSql1,"SELECT COUNT(*) FROM htmls" );
 	RQuery count(db,sSql1);
 	count.Begin();
-	Docs = new  GDocs (atoi(count[0]),true,this);
+	Docs = new  GDocs (atoi(count[0]),this);
 	sprintf(sSql2,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title  FROM htmls");
 	RQuery quer (db,sSql2);
 	for(quer.Begin();quer.IsMore();quer++)

@@ -33,8 +33,12 @@
 
 //---------------------------------------------------------------------------
 // include files for GALILEI
-#include "gsession.h"
+#include <gsessions/gsession.h>
+#include <glangs/glangen.h>
+#include <glangs/glangfr.h>
 using namespace GALILEI;
+using namespace RStd;
+
 
 
 //---------------------------------------------------------------------------
@@ -48,25 +52,11 @@ GSession::GSession(void) throw(bad_alloc,GException)
   : AllDocs(true),Langs(0),Stops(0),Dics(0),Users(0),Docs(0),GroupsLangs(0), MIMETypes(0)
 {
 	MIMETypes=new RContainer<GMIMEType,unsigned int,true,true>(20,10);
+	Langs=new GLangs(2);
+	Langs->InsertPtr(new GLangEN());
+	Langs->InsertPtr(new GLangFR());
 }
 
-
-
-//---------------------------------------------------------------------------
-void GSession::LoadDics(void) throw(bad_alloc,GException)
-{
- cout << "ok";
-  if(!Dics) throw(GException("Error in ""GSession::LoadDics"": Dictionnaries not created"));
-  Dics->Load(true,true);
-}
-
-
-//---------------------------------------------------------------------------
-void GSession::LoadStops(void) throw(bad_alloc,GException)
-{
-  if(!Stops) throw(GException("Error in ""GSession::LoadStops"": StopLists not created"));
-  Stops->Load(false,true);
-}
 
 //---------------------------------------------------------------------------
 GDict* GSession::GetDic(GLang *lang) throw(GException)
@@ -102,12 +92,12 @@ void GSession::ClearStops(void) throw(GException)
 }
 
 
-//---------------------------------------------------------------------------
-void GSession::PutAllDocs(bool alldocs)
-{
-  AllDocs=alldocs;
-  if(Docs) Docs->AllDocs=AllDocs;
-}
+////---------------------------------------------------------------------------
+//void GSession::PutAllDocs(bool alldocs)
+//{
+//  AllDocs=alldocs;
+//  if(Docs) Docs->AllDocs=AllDocs;
+//}
 
 
 //---------------------------------------------------------------------------
@@ -118,10 +108,10 @@ unsigned GSession::GetNbDocs(void)
 
 
 //---------------------------------------------------------------------------
-void GSession::AnalyseDocs(URLFunc *urlfunc,InfoFunc *infofunc) throw(bad_alloc,GException)
-{
-  Docs->Analyse(urlfunc,infofunc);
-}
+//void GSession::AnalyseDocs(URLFunc *urlfunc,InfoFunc *infofunc) throw(bad_alloc,GException)
+//{
+//  Docs->Analyse(urlfunc,infofunc);
+//}
 
 
 //---------------------------------------------------------------------------

@@ -12,96 +12,80 @@
 
 	Last Modify: $Date$
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
-
 */
 
 
-//---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // include file for ANSI C/C++
 #include <string.h>
 
-//---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // include file for Galilei
 #include <glangs/gword.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
 
-
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //
 // class GWord
 //
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
-GWord::GWord(void)
+//-----------------------------------------------------------------------------
+GALILEI::GWord::GWord(void) throw(bad_alloc)
   : Id(cNoRef),Word()
 {
 }
 
 
-//---------------------------------------------------------------------------
-GWord::GWord(const RString& word)
+//-----------------------------------------------------------------------------
+GALILEI::GWord::GWord(const RString& word) throw(bad_alloc)
   : Id(cNoRef),Word(word)
 {
 }
 
 
-//---------------------------------------------------------------------------
-GWord::GWord(unsigned id,const RString& word)
+//-----------------------------------------------------------------------------
+GALILEI::GWord::GWord(unsigned id,const RString& word) throw(bad_alloc)
   : Id(id),Word(word)
 {
 }
 
 
-//---------------------------------------------------------------------------
-GWord::GWord(const GWord& word)
+//-----------------------------------------------------------------------------
+GALILEI::GWord::GWord(const GWord& word) throw(bad_alloc)
   : Id(word.Id),Word(word.Word)
 {
 }
 
 
-//---------------------------------------------------------------------------
-int GWord::Compare(const GWord& word) const
+//-----------------------------------------------------------------------------
+int GALILEI::GWord::Compare(const GWord& word) const
 {
-  return(Word.Compare(word.Word));
+	return(Word.Compare(word.Word));
 }
 
 
-//---------------------------------------------------------------------------
-int GWord::Compare(const GWord* word) const
+//-----------------------------------------------------------------------------
+int GALILEI::GWord::Compare(const GWord* word) const
 {
-  return(Word.Compare(word->Word));
+	return(Word.Compare(word->Word));
 }
 
 
-//---------------------------------------------------------------------------
-int GWord::Compare(const RString& word) const
+//-----------------------------------------------------------------------------
+int GALILEI::GWord::Compare(const RString& word) const
 {
-  return(Word.Compare(word));
+	return(Word.Compare(word));
 }
 
 
-//---------------------------------------------------------------------------
-int GWord::Compare(const GIWord* ref) const
+//-----------------------------------------------------------------------------
+int GALILEI::GWord::Compare(const unsigned int id) const
 {
-  return(Id-ref->GetId());
+	return(Id-id);
 }
-
-
-

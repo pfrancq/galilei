@@ -4,28 +4,13 @@
 
 	GDic.h
 
-	Dictionnary - Implementation.
+	Dictionnary - Header.
 
 	(C) 2001 by P. Francq.
 
 	Version $Revision$
 
 	Last Modify: $Date$
-
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
 
 */
 
@@ -38,17 +23,15 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainer.h>
 #include <rstd/rhashcontainer.h>
 #include <rstd/rstring.h>
-using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
 #include <glangs/gword.h>
 #include <glangs/glang.h>
+
 
 
 //-----------------------------------------------------------------------------
@@ -61,35 +44,114 @@ namespace GALILEI{
 class GSession;
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * The GDict class provides a representation for a dictionnary.
+* @author Pascal Francq
+* @short Dictionnary.
 */
-class GDict : public RHashContainer<GWord,unsigned,27,true>
+class GDict : public RStd::RHashContainer<GWord,unsigned,27,true>
 {
+	/**
+	* Session responsible for the dictionnary.
+	*/
+	GSession* Session;
+
+	/**
+	* Direct access to the words using an identificator.
+	*/
+	GWord** Direct;
+
+	/**
+	* Maximal value of the identificator handled by Direct.
+	*/
+	unsigned MaxId;
+
+	/**
+	* Highest value of the identificator.
+	*/
+	unsigned UsedId;
+
+	/**
+	* Pointer to the language corresponding to the dictionnary.
+	*/
+	GLang *Lang;
+
+	/**
+	* Name of the dictionnary. This can be the name of a file or a table in a
+	* database.
+	*/
+	RString Name;
+
+	/**
+	* Description of the dictionnary.
+	*/
+	RString Desc;
+
+	/**
+	* State of the dictionnary.
+	*/
+	bool Loaded;
+
+
 public:
-  GWord** Direct;
-	GSession* owner;
 
-  unsigned MaxId;
-  unsigned UsedId;
-  GLang *Lang;
-  RString Name;
-  RString Desc;
-  bool Loaded;
+	/**
+	* Constructor of the dictionnary.
+	* @param session        Session.
+	* @param name           Name of the dictionnary.
+	* @param desc           Description of the dictionnary.
+	* @param lang           Corresponding language.
+	* @param max            Total maximal number of words to create at
+	*                       initialisation.
+	* @param maxletters     Maximal number of words to create at initialisation
+	*                       for the different letters.
+	*/
+	GDict(GSession* session,const RStd::RString& name,const RStd::RString& desc,GLang* lang,unsigned max,unsigned maxletter) throw(bad_alloc);
 
-	GDict(GSession* owner,const RString& name,GLang *lang,unsigned max,unsigned maxletter) throw(bad_alloc);
-	GDict(GSession* owner,const RString& name,const RString& desc,GLang* lang=NULL) throw(bad_alloc);
-  void Clear(void);
-  void PutDirect(GWord *word) throw(bad_alloc); // Put a word in Direct
-  inline void Put(unsigned id,const RString &word) throw(bad_alloc)
-  {
-    GWord Word(id,word),*ptr;
-    ptr=GetInsertPtr<GWord>(Word,false);
-    PutDirect(ptr);
-  }
-//  virtual unsigned NextId(const RString& word) throw(GException)=0;          // Return id for a new word
-  unsigned GetId(const RString& word) throw(bad_alloc);    // Return the id for a given word
+	/**
+	* Clear the dictionnary.
+	*/
+	void Clear(void);
+
+private:
+
+	/**
+	* Put a word in direct.
+	* @param word           Pointer to the word to insert.
+	*/
+	void PutDirect(GWord* word) throw(bad_alloc);
+
+public:
+
+	/**
+	* Put a string corresponding to a word and an identificator in the
+	* dictionnary.
+	*/
+	inline void Put(unsigned id,const RStd::RString& word) throw(bad_alloc)
+	{
+		GWord Word(id,word),*ptr;
+		ptr=GetInsertPtr<GWord>(Word,true);
+		PutDirect(ptr);
+	}
+
+	/**
+	* Get the identificator of the word corresponding to a string. If the word
+	* doesn't exist in the dictionnary, it is created.
+	* @return Identificator of the word.
+	*/
+	unsigned int GetId(const RStd::RString& word) throw(bad_alloc);
+
+	/**
+	* Get the maximal number of word actually supposed.
+	*/
+	unsigned int GetMaxId(void) const {return(MaxId);}
+
+	/**
+	* Get thye name of the dictionnary.
+	* @returns Pointer a C string.
+	*/
+	const char* GetName(void) const {return(Name());}
 
 	/**
 	* @return Word given by an identificator.
@@ -97,17 +159,31 @@ public:
 	const char* GetWord(const unsigned int id) const
 		{return(Direct[id]->Word());}
 
-//  virtual void Load(void) throw(bad_alloc,GException)=0;
-  int Compare(const GDict* dict) { return(Name.Compare(dict->Name)); }
-  int Compare(const GDict& dict) { return(Name.Compare(dict.Name)); }
-  int Compare(const GLang* lang) { return(Lang->Compare(lang)); }
-  virtual ~GDict(void);
+	/**
+	* Compare function used in the RStd::RContainer.
+	*/
+	int Compare(const GDict* dict) const;
+
+	/**
+	* Compare function used in the RStd::RContainer.
+	*/
+	int Compare(const GDict& dict) const;
+
+	/**
+	* Compare function used in the RStd::RContainer.
+	*/
+	int Compare(const GLang* lang) const;
+
+	/**
+	* Destructor of the dictionnary.
+	*/
+	virtual ~GDict(void);
 };
 
 
 
-}  //-------- End of namespace HyperPRISME-----------------------------------
+}  //-------- End of namespace GALILEI ----------------------------------------
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 #endif

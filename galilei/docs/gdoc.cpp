@@ -19,19 +19,6 @@
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
-#include <string.h>
-#include <iostream.h>
-#include <fstream.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rxml/rxmltag.h>
-using namespace RXML;
 
 
 //-----------------------------------------------------------------------------
@@ -39,8 +26,8 @@ using namespace RXML;
 #include <gdocs/gdoc.h>
 #include <gdocs/gdocxml.h>
 #include <gsessions/gsession.h>
-#include <glib.h>
 using namespace GALILEI;
+using namespace RXML;
 
 
 
@@ -52,14 +39,14 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GDoc::GDoc (const RString& url,const unsigned int id,const unsigned int nbdiff) throw(bad_alloc)
-  : URL(url),Id(id),Words(this,nbdiff),NbWords(0),NbDiffWords(),Lang(0),Calc(true), bSave(false)
+  : URL(url),Id(id),Words(nbdiff),NbWords(0),NbDiffWords(),Lang(0),Calc(true), bSave(false)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GDoc::GDoc(const RString& url,const unsigned int id,GLang* lang,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc)
-	: URL(url), Id(id), Words(this,nbdiff),NbWords(nb), NbDiffWords(nbdiff),Calc(true), bSave(false)
+	: URL(url), Id(id), Words(nbdiff),NbWords(nb), NbDiffWords(nbdiff),Calc(true), bSave(false)
 {
 }
 
@@ -171,7 +158,7 @@ void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw
 				NbWords++;
 				if(!stop->IsIn(word))
 				{
-					Occur=Words.GetPtr(dic->GetId(word),this);
+					Occur=Words.GetPtr(dic->GetId(word));
 					if(!Occur->GetNbOccurs()) NbDiffWords++;
 					Occur->IncOccurs();
 				}

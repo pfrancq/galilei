@@ -44,7 +44,7 @@ using namespace GALILEI;
 
 //---------------------------------------------------------------------------
 GWordCalcs::GWordCalcs(GLang *lang,GSession *session) throw(bad_alloc)
-	: RContainer<GWordCalc,unsigned,true,true>(session->GetDic(lang)->MaxId,50),
+	: RContainer<GWordCalc,unsigned,true,true>(session->GetDic(lang)->GetMaxId(),50),
 	  NbWordsDocs(0.0), Order(0)
 {
 }

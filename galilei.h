@@ -12,21 +12,6 @@
 
 	Last Modify: $Date$
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
-
 */
 
 
@@ -37,16 +22,28 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for Rainbow
+// include files for R Project
 #include <rstd/rstd.h>
 #include <rstd/rstring.h>
-using namespace RStd;
 
-const unsigned cNoRef=0xFFFFFFFF;
+
+/**
+* \namespace GALILEI
+* \brief GALILEI Classes.
+*
+* This namespace declares all the classes implemented during the GALILEI
+* project.
+*/
+
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+// General constant
+const unsigned cNoRef=0xFFFFFFFF;        // A undefined identificator reference
 
 
 //-----------------------------------------------------------------------------
@@ -65,7 +62,7 @@ class GException
 	/**
 	* Message holding some information.
 	*/
-	RString Msg;
+	RStd::RString Msg;
 
 public:
 
@@ -78,7 +75,7 @@ public:
 	* Construct an exception.
 	* @param str                      Message of the error.
 	*/
-	GException(const RString &str) throw(bad_alloc)
+	GException(const RStd::RString& str) throw(bad_alloc)
 		: Msg(str) {}
 
 	/**
@@ -86,7 +83,7 @@ public:
 	* @param code                     Code of the error.
 	* @param str                      Message of the error.
 	*/
-	GException(const unsigned code,const RString &str) throw(bad_alloc)
+	GException(const unsigned code,const RStd::RString& str) throw(bad_alloc)
 		: Code(code), Msg(str) {}
 };
 

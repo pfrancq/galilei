@@ -23,11 +23,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainer.h>
 #include <rstd/rstring.h>
-using namespace RStd;
 #include <rxml/rxmltag.h>
-using namespace RXML;
 
 
 //-----------------------------------------------------------------------------
@@ -36,7 +33,6 @@ using namespace RXML;
 #include <glangs/gdict.h>
 #include <ginfos/giwordoccurs.h>
 #include <glangs/glang.h>
-//#include <gdocs/gdocxml.h>
 
 
 //-----------------------------------------------------------------------------
@@ -55,13 +51,14 @@ class GDocs;
 /**
 * The GDoc class provides a representation of the analysis of a document.
 * @author Pascal Francq
+* @short Document.
 */
 class GDoc
 {
 	/**
 	* URL of the document.
 	*/
-	RString URL;
+	RStd::RString URL;
 
 	/**
 	* Identifier of the document.
@@ -108,7 +105,7 @@ public:
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
 	*/
-	GDoc(const RString& url,const unsigned int id,const unsigned int nbdiff=500) throw(bad_alloc);
+	GDoc(const RStd::RString& url,const unsigned int id,const unsigned int nbdiff=500) throw(bad_alloc);
 
 	/**
 	* Construct the document.
@@ -119,7 +116,7 @@ public:
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
 	*/
-	GDoc(const RString& url,const unsigned int id,GLang* lang,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc);
+	GDoc(const RStd::RString& url,const unsigned int id,GLang* lang,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc);
 
 	/**
 	* Compare function needed by RStd::RContainer.
@@ -147,7 +144,7 @@ protected:
 	* @param word           Where to store the word.
 	* @returns true if a word was extract.
 	*/
-	bool ExtractWord(const char* &ptr,RString& word);
+	bool ExtractWord(const char* &ptr,RStd::RString& word);
 
 public:
 
@@ -156,7 +153,7 @@ public:
 	* @param tag            Tag to analyse.
 	* @param stop           Stoplist to use.
 	*/
-	int AnalyseTagForStopKwd(RXMLTag* tag,GDict* stop);
+	int AnalyseTagForStopKwd(RXML::RXMLTag* tag,GDict* stop);
 
 	/**
 	* Analyse a content tag.
@@ -164,7 +161,7 @@ public:
 	* @param stop           Stoplist to use.
 	* @param dic            Dictionnary to use.
 	*/
-	void AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw(GException);
+	void AnalyseContentTag(RXML::RXMLTag* tag,GDict* stop,GDict* dic) throw(GException);
 
 	/**
 	* Analyse a XML representation of a document for a session and store the
@@ -211,15 +208,12 @@ public:
 	*/
 	virtual ~GDoc(void);
 
-	// friend classes
 	friend class GWordCalcs;
-	friend class GDocs;
 };
 
 
+}  //-------- End of namespace GALILEI ----------------------------------------
 
 
-}  //-------- End of namespace Galilei-----------------------------------
-
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 #endif
