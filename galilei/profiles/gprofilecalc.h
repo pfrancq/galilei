@@ -63,6 +63,12 @@ public:
 	virtual void Compute(GProfile* profile)=0;
 
 	/**
+	* Get the type of the method implemented.
+	* @returns tProfileCompute type.
+	*/
+	virtual tProfileCompute GetType(void) const {return(pcNothing);}
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GProfileCalc(void);
