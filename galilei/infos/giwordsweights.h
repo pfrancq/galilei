@@ -167,6 +167,12 @@ public:
 	bool IsEmpty(void) const {return(!NbPtr);}
 
 	/**
+	* Compute the maximal weights in this list.
+	* @return double.
+	*/
+	double GetMaxWeight(void) const;
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GIWordsWeights(void);

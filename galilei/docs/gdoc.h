@@ -315,6 +315,12 @@ public:
 	GIWordWeightCursor& GetWordWeightCursor(void);
 
 	/**
+	* Compute the maximal weights of the index terms of the document.
+	* @return double.
+	*/
+	double GetMaxWeight(void) const;
+
+	/**
 	* Get a Cursor on the feedback for the profile.
 	* @return GProfDocCursor.
 	*/

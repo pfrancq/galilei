@@ -152,6 +152,23 @@ GIWordWeight* GALILEI::GIWordsWeights::NextWord(void)
 
 
 //---------------------------------------------------------------------------
+double GALILEI::GIWordsWeights::GetMaxWeight(void) const
+{
+	double max;
+	GIWordWeight** ptr;
+	unsigned int i;
+
+	max=0.0;
+	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
+	{
+		if((*ptr)->GetWeight()>max)
+			max=(*ptr)->GetWeight();
+	}
+	return(max);
+}
+
+
+//---------------------------------------------------------------------------
 GALILEI::GIWordsWeights::~GIWordsWeights(void)
 {
 	if(Order) delete[] Order;

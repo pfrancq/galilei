@@ -160,6 +160,13 @@ GIWordWeightCursor& GALILEI::GDoc::GetWordWeightCursor(void)
 
 
 //-----------------------------------------------------------------------------
+double  GALILEI::GDoc::GetMaxWeight(void) const
+{
+	return(Words->GetMaxWeight());
+}
+
+
+//-----------------------------------------------------------------------------
 GProfDocCursor& GALILEI::GDoc::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
