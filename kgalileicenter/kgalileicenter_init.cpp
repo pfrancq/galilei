@@ -290,6 +290,7 @@ void KGALILEICenterApp::saveOptions(void)
 	saveOptions("Similarity Criterion",IRParams.ParamsSim);
 	saveOptions("Information Criterion",IRParams.ParamsInfo);
 	saveOptions("Entropy Criterion",IRParams.ParamsEntropy);
+	saveOptions("Likelihood Criterion",IRParams.ParamsLikelihood);
 	saveOptions("Same Feedbacks Criterion",IRParams.ParamsSameFeedbacks);
 	saveOptions("Different Feedbacks Criterion",IRParams.ParamsDiffFeedbacks);
 	saveOptions("Social Criterion",IRParams.ParamsSocial);
@@ -456,6 +457,7 @@ void KGALILEICenterApp::readOptions(void)
 	readOptions("Similarity Criterion",IRParams.ParamsSim);
 	readOptions("Information Criterion",IRParams.ParamsInfo);
 	readOptions("Entropy Criterion",IRParams.ParamsEntropy);
+	readOptions("Likelihood Criterion",IRParams.ParamsLikelihood);
 	readOptions("Same Feedbacks Criterion",IRParams.ParamsSameFeedbacks);
 	readOptions("Different Feedbacks Criterion",IRParams.ParamsDiffFeedbacks);
 	readOptions("Social Criterion",IRParams.ParamsSocial);
