@@ -452,9 +452,8 @@ void GSubjects::ComputeTotal(void)
 			GroupIdeal=(GroupsIdeal)();
 			for(GroupIdeal->Start();!GroupIdeal->End();GroupIdeal->Next())
 			{
-				GroupComputed=0;
-				for(GroupsComputed.Start();!GroupsComputed.End()&&!GroupComputed;GroupsComputed.Next())
-					if ((GroupsComputed)()->IsIn((*GroupIdeal)()))
+				for(GroupsComputed.Start(),GroupComputed=0;(!GroupsComputed.End())&&(!GroupComputed);GroupsComputed.Next())
+					if((GroupsComputed)()->IsIn((*GroupIdeal)()))
 						GroupComputed=(GroupsComputed)();
 				//GroupComputed=(*GroupIdeal)()->GetGroup();//GroupsComputed->GetGroup((*GroupIdeal)());
 				if(GroupComputed)
