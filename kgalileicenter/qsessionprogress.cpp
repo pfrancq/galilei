@@ -135,7 +135,7 @@ void QSessionThread::run(void)
 		cancel=true;
 	}
 	Parent->Finish(cancel);
-};
+}
 
 
 //-----------------------------------------------------------------------------
@@ -207,18 +207,18 @@ void QCreateDB::DoIt(void)
 	RDb Db(Host,User,Pass,DbName,"latin1");
 // 	if(GSession::Break())
 // 		return;
-// 
+//
 // 	//Dump database model
 // 	Parent->PutText("Dump Database model");
 // 	path=SQLPath+"DbModel.sql";
 // 	RTextFile fileM(path,Read,"Latin1");
-// 
+//
 // 	while((!fileM.Eof())&&(!GSession::Break()))
 // 	{
 // 		line=fileM.GetLine();
 // 		if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
 // 			continue;
-// 
+//
 // 		endFound=false;
 // 		while(!fileM.Eof() && !endFound)
 // 		{
@@ -236,7 +236,7 @@ void QCreateDB::DoIt(void)
 // 		}
 // 		if(!sql.IsEmpty())
 // 			RQuery Sendquery(Db,sql);
-// 
+//
 // 		sql="";
 // 	}
 // 	if(GSession::Break())
@@ -251,7 +251,7 @@ void QCreateDB::DoIt(void)
 // 		DIR* dp;
 // 		struct dirent* ep;
 // 		path="";
-// 
+//
 // 		dp=opendir(SQLPath);
 // 		if(dp)
 // 		{
@@ -260,10 +260,10 @@ void QCreateDB::DoIt(void)
 // 				if(strncmp(&ep->d_name[0],"DbStopList",10)) continue;
 // 				msg+=ep->d_name[11];
 // 				msg+=ep->d_name[12];
-// 
+//
 // 				path=SQLPath+ep->d_name;
 // 				RTextFile fileS(path,Read,"utf-8");
-// 
+//
 // 				Parent->PutText(msg);
 // 				while(!fileS.Eof())
 // 				{
@@ -285,8 +285,9 @@ void QCreateDB::DoIt(void)
 		path=SQLPath +"DbUsers.sql";
 		Parent->PutText("Dump Database users");
 
-		RTextFile fileU(path,Read,"Latin1");
+		RTextFile fileU(path,"Latin1");
 
+		fileU.Open(Read);
 		while((!fileU.Eof())&&(!GSession::Break()))
 		{
 			line=fileU.GetLine();
@@ -348,13 +349,13 @@ void QFillDB::DoIt(void)
 	nbDoc.Start();
 	if((!nbDoc.End())&&(nbDoc[0]))
 		CurrentDocId=atoi(nbDoc[0]);
-		
+
 	sSql="SELECT count(*) FROM topics";
 	RQuery nbTopic(Db,sSql);
 	nbTopic.Start();
 	if((!nbTopic.End())&&(nbTopic[0]))
 		nbTopicsAtBegin=atoi(nbTopic[0]);
-		
+
 	if(!ParentName.IsEmpty())
 	{
 		tmp=ParentName;
@@ -369,7 +370,7 @@ void QFillDB::DoIt(void)
 			parentId= CreateCategory(tmp,parentId);
 		}
 	}
-		
+
 
 	//Parse directory containing files
 	dp=opendir(CatDirectory);
@@ -403,7 +404,7 @@ void QFillDB::DoIt(void)
 	//Create profiles
 	Parent->PutText("create Profiles");
 	profileid=0;
-	
+
 	//Get Nb users
 	sSql="SELECT userid FROM users";
 	RQuery userId(Db,sSql);

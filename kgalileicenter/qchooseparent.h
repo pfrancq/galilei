@@ -1,7 +1,7 @@
 /****************************************************************************
-** Form interface generated from reading ui file './qchooseparent.ui'
+** Form interface generated from reading ui file '/home/pfrancq/prj/kgalileicenter/kgalileicenter/qchooseparent.ui'
 **
-** Created: Fri Aug 20 10:59:46 2004
+** Created: Tue Dec 28 17:09:10 2004
 **      by: The User Interface Compiler ($Id$)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -16,6 +16,7 @@
 class QVBoxLayout;
 class QHBoxLayout;
 class QGridLayout;
+class QSpacerItem;
 class QLabel;
 class QListView;
 class QListViewItem;
@@ -38,6 +39,7 @@ public:
 protected:
     QGridLayout* QChooseParentLayout;
     QHBoxLayout* Layout1;
+    QSpacerItem* space;
 
 protected slots:
     virtual void languageChange();

@@ -6,7 +6,7 @@
 ** a constructor, and a destroy() slot in place of a destructor.
 *****************************************************************************/
 
-
+#include <kurlrequester.h>
 void QCreateDatabase::AfficheMore(void  )
 {
 	if (moreGroup->isHidden())

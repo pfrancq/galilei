@@ -121,7 +121,7 @@ void KViewPrg::MyThread::run(void)
 		QMessageBox::critical(Rec,"KGALILEICenter","Undefined Error");
 	}
 	Rec->endPrg();
-};
+}
 
 
 
