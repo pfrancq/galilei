@@ -85,8 +85,8 @@ GALILEI::GGroup::GGroup(const unsigned int id,GLang* lang) throw(bad_alloc)
 //--------------------------------------------------------------------------
 int GALILEI::GGroup::sortOrder(const void *a,const void *b)
 {
-  double af=(*((GProfDoc**)(a)))->Similarity();
-  double bf=(*((GProfDoc**)(b)))->Similarity();
+  double af=(*((GProfDocRef**)(a)))->Sim;
+  double bf=(*((GProfDocRef**)(b)))->Sim;
 
   if(af==bf) return(0);
   if(af>bf)
@@ -238,7 +238,6 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 	GSubProfile** tab;
 	unsigned int i;
 	GProfDocCursor Fdbks;
-	GProfDoc* ptr;
 	tDocJudgement j;
 	RContainer<GProfDocRef,unsigned int,true,false> Docs(50,25);
 
@@ -260,11 +259,12 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 			// Verify that it was not judged by s
 			if(s->GetProfile()->GetFeedback(Fdbks()->GetDoc())) continue;
 
-			// Verify if already inserted:
-			// If not -> insert it in docs.
-			// If yes -> Verify judgement
-			ptr=docs->GetPtr<const GProfDoc*>(Fdbks());
-			if(ptr) continue;
+			// Veify if already inserted in docs or if it was not judged by the
+			// subprofile s
+
+			if((docs->GetPtr<const GProfDoc*>(Fdbks()))||(s->GetProfile()->GetFeedback(Fdbks()->GetDoc()))) continue;
+
+			// If not -> insert it in docs if relevant.
 			j=Fdbks()->GetFdbk();
 			if((j==djNav)||(j==djOK))
 				Docs.InsertPtr(new GProfDocRef(Fdbks(),s->Similarity(Fdbks()->GetDoc())));
