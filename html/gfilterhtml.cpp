@@ -137,6 +137,8 @@ bool GFilterHTML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 		accessmode=O_BINARY;
 	#endif
 	handle=open(Doc->GetFile(),accessmode);
+	if(handle==-1)
+		throw GException("file not found");
 	fstat(handle, &statbuf);
 	Block=Pos=Buffer=new char[statbuf.st_size+1];
 	TagLen=0;

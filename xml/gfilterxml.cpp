@@ -240,6 +240,8 @@ bool GALILEI::GFilterXML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	#endif
 	handle=open(Doc->GetFile(),accessmode);
 	fstat(handle, &statbuf);
+	if(handle==-1)
+		throw GException("file not found");
 	Block=Pos=Buffer=new char[statbuf.st_size+1];
 	TagLen=0;
 	read(handle,Buffer,statbuf.st_size);
