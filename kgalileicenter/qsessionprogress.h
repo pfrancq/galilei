@@ -45,13 +45,7 @@
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for Qt
 #include <qsemimodal.h>
-#include <qframe.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-
 
 //-----------------------------------------------------------------------------
 // include files for current application

@@ -47,6 +47,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <langs/glang.h>
+#include <langs/glangs.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <groups/gsubject.h>

@@ -32,18 +32,18 @@
 
 
 
-INSERT INTO users VALUES (1,'jlamoral','jlamoral','Julien Lamoral','jlamoral@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
-INSERT INTO users VALUES (2,'dwartel','dwartel','David Wartel','Dwartel@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
-INSERT INTO users VALUES (3,'mpaternostre','mpaternostre','Marjorie Paternostre','marjorie.paternostre@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
-INSERT INTO users VALUES (4,'pfrancq','pfrancq','Pascal Francq','pfrancq@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
-INSERT INTO users VALUES (5,'vvandaele','vvandaele','Valery Vandaele','vavdaele@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
-INSERT INTO users VALUES (6,'nkumps','nkumps','Nicolas Kumps','nkumps@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
-INSERT INTO users VALUES (7,'adelch','adelch','Alain Delchambre','adelch@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
-INSERT INTO users VALUES (8,'pdelit','pdelit','Pierre De Lit','pdelit@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
-INSERT INTO users VALUES (9,'lauquier','lauquier','Laurent Auquière','lauquier@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
-INSERT INTO users VALUES (10,'ben','ben','Benoit Lagrange','blagrange@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
-INSERT INTO users VALUES (11,'napoleon','napoleon','Pierre Lambert','napoleon@waterloo.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
-INSERT INTO users VALUES (12,'george','george','Marco Saerens','bush@whitehouse.com','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium');
+INSERT INTO users VALUES (1,'jlamoral','jlamoral','Julien Lamoral','jlamoral@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
+INSERT INTO users VALUES (2,'dwartel','dwartel','David Wartel','Dwartel@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
+INSERT INTO users VALUES (3,'mpaternostre','mpaternostre','Marjorie Paternostre','marjorie.paternostre@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
+INSERT INTO users VALUES (4,'pfrancq','pfrancq','Pascal Francq','pfrancq@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
+INSERT INTO users VALUES (5,'vvandaele','vvandaele','Valery Vandaele','vavdaele@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
+INSERT INTO users VALUES (6,'nkumps','nkumps','Nicolas Kumps','nkumps@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
+INSERT INTO users VALUES (7,'adelch','adelch','Alain Delchambre','adelch@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
+INSERT INTO users VALUES (8,'pdelit','pdelit','Pierre De Lit','pdelit@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
+INSERT INTO users VALUES (9,'lauquier','lauquier','Laurent Auquière','lauquier@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
+INSERT INTO users VALUES (10,'ben','ben','Benoit Lagrange','blagrange@ulb.ac.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
+INSERT INTO users VALUES (11,'napoleon','napoleon','Pierre Lambert','napoleon@waterloo.be','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
+INSERT INTO users VALUES (12,'george','george','Marco Saerens','bush@whitehouse.com','Researcher','Université Libre de Bruxelles','Avenue F.D. Roosevelt, 50','CP 165/14','B-1050 Brussels','Belgium',0);
 
 
 

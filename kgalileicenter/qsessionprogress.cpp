@@ -39,6 +39,12 @@
 #include <klocale.h>
 #include <kapplication.h>
 
+//-----------------------------------------------------------------------------
+// include files for Qt
+#include <qframe.h>
+#include <qlabel.h>
+#include <qpushbutton.h>
+
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
@@ -47,6 +53,7 @@
 #include <langs/glang.h>
 #include <docs/gdocanalyse.h>
 #include <docs/gdocxml.h>
+#include <docs/gpostdoc.h>
 #include <profiles/guser.h>
 #include <sessions/gsession.h>
 #include <profiles/gprofile.h>
@@ -55,9 +62,12 @@
 using namespace GALILEI;
 using namespace R;
 
+
 //-----------------------------------------------------------------------------
 // include files for current project
 #include "qsessionprogress.h"
+
+
 
 
 
@@ -118,7 +128,7 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangs* langs,GURLManager
 
 	txtRem->setText("Connect (Loading Dicionnaries/Stoplists) ...");
 	KApplication::kApplication()->processEvents();
-	Session->Connect(langs,umng,dmng,pmng,gmng,gcmng,smng,lmng,pdmng, pgmng);
+	Session->Connect(langs,umng,dmng,pmng,gmng,gcmng,smng,pdmng, pgmng);
 
 	Session->LoadSubjectTree();
 
@@ -155,6 +165,8 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangs* langs,GURLManager
 		Session->InitFdbks();
 	}
 
+	
+	Session->PostConnect(lmng);
 	txtRem->setText("Finish");
 	btnOk->setEnabled(true);
 }

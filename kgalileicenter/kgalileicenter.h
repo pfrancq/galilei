@@ -48,19 +48,19 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <langs/glangs.h>
 #include <docs/glinkcalcmanager.h>
+#include <docs/gdocanalysemanager.h>
+#include <docs/gpostdocmanager.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalcmanager.h>
+#include <sessions/gsession.h>
+#include <postgroups/gpostgroupmanager.h>
 #include <sessions/gstatscalcmanager.h>
 #include <galilei/gurlmanagerkde.h>
-#include <langs/glangs.h>
-#include <sessions/gsession.h>
-#include <docs/gdocanalysemanager.h>
-#include <postgroups/gpostgroupmanager.h>
 
 using namespace GALILEI;
-
 
 
 //-----------------------------------------------------------------------------
@@ -153,16 +153,15 @@ class KGALILEICenterApp : public KMainWindow
 	*/
 	GLinkCalcManager LinkCalcManager;
 
-		/**
-	* Linking Manager.
-	*/
-	GPostGroupManager PostGroupManager;
-
-
 	/**
-	* Linking Manager.
+	* PostDocManager Manager.
 	*/
 	GPostDocManager PostDocManager;
+
+	/**
+	* PostGroup Manager.
+	*/
+	GPostGroupManager PostGroupManager;
 
 	/**
 	* The configuration object of the application.

@@ -46,6 +46,7 @@ using namespace R;
 #include <galilei/qlistviewitemtype.h>
 #include <docs/gdoc.h>
 #include <langs/glang.h>
+#include <langs/glangs.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 
