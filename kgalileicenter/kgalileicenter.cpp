@@ -541,6 +541,7 @@ void KGALILEICenterApp::slotRunProgram()
 	char tmp[100];
 	KViewPrg* o;
 
+	KApplication::kApplication()->processEvents();
 	KURL url=KFileDialog::getOpenURL("/home/pfrancq",i18n("*.kprg|KGALILEICenter Programs"), this, i18n("Open File..."));
 	if(url.isEmpty())
 	{

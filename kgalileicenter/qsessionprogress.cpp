@@ -94,6 +94,7 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd)
 {
 	btnOk->setEnabled(false);
 	show();
+	KApplication::kApplication()->processEvents();
 
 	// Look if dics must be loaded)
 	if((cmd==0)||(cmd==1))
@@ -145,6 +146,8 @@ void QSessionProgressDlg::CreateDocXML(GDocXML* &xml,GDoc* doc)
 {
 	btnOk->setEnabled(false);
 	show();
+	KApplication::kApplication()->processEvents();
+
 	txtRem->setText("Creating XML Structure ...");
 	KApplication::kApplication()->processEvents();
 	if(xml)
@@ -170,6 +173,8 @@ void QSessionProgressDlg::AnalyseXML(GDocXML* &xml,GDoc* doc)
 {
 	btnOk->setEnabled(false);
 	show();
+	KApplication::kApplication()->processEvents();
+
 	try
 	{
 		if(!xml)
@@ -197,6 +202,8 @@ void QSessionProgressDlg::AnalyseDocs(bool modified)
 {
 	btnOk->setEnabled(false);
 	show();
+	KApplication::kApplication()->processEvents();
+
 	try
 	{
 		txtRem->setText("Analyse Documents ...");
@@ -217,6 +224,8 @@ void QSessionProgressDlg::ComputeProfile(GProfile* prof)
 {
 	btnOk->setEnabled(false);
 	show();
+	KApplication::kApplication()->processEvents();
+
 	try
 	{
 		txtRem->setText(QString("Compute Profile'")+prof->GetName()+"' ...");
@@ -237,6 +246,8 @@ void QSessionProgressDlg::ComputeProfiles(bool modified)
 {
 	btnOk->setEnabled(false);
 	show();
+	KApplication::kApplication()->processEvents();
+
 	try
 	{
 		txtRem->setText("Compute Profiles ...");
@@ -257,6 +268,8 @@ void QSessionProgressDlg::GroupProfiles(bool modified)
 {
 	btnOk->setEnabled(false);
 	show();
+	KApplication::kApplication()->processEvents();
+
 	try
 	{
 		txtRem->setText("Groups Profiles ...");
@@ -277,6 +290,8 @@ void QSessionProgressDlg::ComputeAll(bool modified)
 {
 	btnOk->setEnabled(false);
 	show();
+	KApplication::kApplication()->processEvents();
+
 	try
 	{
 		txtRem->setText("Analyse Documents ...");
