@@ -100,11 +100,11 @@ void GALILEI::GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 	bool EndSentence;
 
 	// Look at block
-	ptr=block;
 	len=strlen(block);
 	if(!len) return;
 
 	// Search Sentences
+	ptr=block;
 	while(*ptr)
 	{
 		// Skip leading spaces.
