@@ -147,6 +147,9 @@ public:
 	* Destructor.
 	*/
 	virtual ~GIWordWeight(void);
+
+	// friend classes
+	friend class GIWordsWeights;
 };
 
 

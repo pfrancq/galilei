@@ -91,8 +91,8 @@ void GALILEI::GIWordsWeights::Clear(void)
 //--------------------------------------------------------------------------
 int GALILEI::GIWordsWeights::sortOrder(const void *a,const void *b)
 {
-  double af=(*((GIWordWeight**)(a)))->GetWeight();
-  double bf=(*((GIWordWeight**)(b)))->GetWeight();
+  double af=(*((GIWordWeight**)(a)))->Weight;
+  double bf=(*((GIWordWeight**)(b)))->Weight;
 
   if(af==bf) return(0);
   if(af>bf)
@@ -114,13 +114,13 @@ double GALILEI::GIWordsWeights::GetMaxWeight(void) const
 
 	// Suppose first weight is the highest
 	ptr=Tab;
-	max=(*ptr)->GetWeight();
+	max=(*ptr)->Weight;
 
 	// Look if there is a greather one.
 	for(i=NbPtr,ptr++;--i;ptr++)
 	{
-		if((*ptr)->GetWeight()>max)
-			max=(*ptr)->GetWeight();
+		if((*ptr)->Weight>max)
+			max=(*ptr)->Weight;
 	}
 	return(max);
 }
@@ -142,23 +142,23 @@ double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w) const
 		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
 		{
 			j--;
-			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+			norm2+=(*ptr2)->Weight*(*ptr2)->Weight;
 			ptr2++;
 		}
 		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
 		{
 			j--;
-			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
-			Sim+=(*ptr)->GetWeight()*(*ptr2)->GetWeight();
+			norm2+=(*ptr2)->Weight*(*ptr2)->Weight;
+			Sim+=(*ptr)->Weight*(*ptr2)->Weight;
 			ptr2++;
 		}
-		norm1+=(*ptr)->GetWeight()*(*ptr)->GetWeight();
+		norm1+=(*ptr)->Weight*(*ptr)->Weight;
 		ptr++;
 	}
 	while(j)
 	{
 		j--;
-		norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+		norm2+=(*ptr2)->Weight*(*ptr2)->Weight;
 		ptr2++;
 	}
 	Sim/=(sqrt(norm1)*sqrt(norm2));
@@ -183,18 +183,18 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 
 	while(--i)
 	{
-		w1=((*ptr)->GetWeight()/max1)*log(TotalRef/lang->GetRef((*ptr)->GetId(),ObjType));
+		w1=((*ptr)->Weight/max1)*log(TotalRef/lang->GetRef((*ptr)->GetId(),ObjType));
 		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
 		{
 			j--;
-			w2=((*ptr2)->GetWeight()/max2)*log(TotalRef/lang->GetRef((*ptr2)->GetId(),ObjType));
+			w2=((*ptr2)->Weight/max2)*log(TotalRef/lang->GetRef((*ptr2)->GetId(),ObjType));
 			norm2+=w2*w2;
 			ptr2++;
 		}
 		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
 		{
 			j--;
-			w2=((*ptr2)->GetWeight()/max2)*log(TotalRef/lang->GetRef((*ptr2)->GetId(),ObjType));
+			w2=((*ptr2)->Weight/max2)*log(TotalRef/lang->GetRef((*ptr2)->GetId(),ObjType));
 			norm2+=w2*w2;
 			Sim+=w1*w2;
 			ptr2++;
@@ -205,7 +205,7 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 	while(j)
 	{
 		j--;
-		w2=((*ptr2)->GetWeight()/max2)*log(TotalRef/lang->GetRef((*ptr2)->GetId(),ObjType));
+		w2=((*ptr2)->Weight/max2)*log(TotalRef/lang->GetRef((*ptr2)->GetId(),ObjType));
 		norm2+=w2*w2;
 		ptr2++;
 	}
@@ -250,7 +250,7 @@ void GALILEI::GIWordsWeights::ModifyQuery(tObjType ObjType,GLang* lang)
 	{
 		nbref=lang->GetRef((*ptr)->GetId(),ObjType);
 		if(!nbref) continue;
-		freq=0.5+((0.5*(*ptr)->GetWeight())/max);
+		freq=0.5+((0.5*(*ptr)->Weight)/max);
 		idffactor=log(TotalRef/nbref);
 		(*ptr)->SetWeight(freq*idffactor);
 	}
