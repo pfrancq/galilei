@@ -159,43 +159,50 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 	unsigned int userid,profileid;
 
 	// Go through the users
-	RQuery users(this, "SELECT userid,user,fullname FROM users");
-	for(users.Begin();users.IsMore();users++)
+	try
 	{
-		userid=atoi(users[0]);
-		sprintf(sSql,"SELECT profileid, description, updated FROM profiles WHERE userid=%u",userid);
-		RQuery profiles(this,sSql);
-		Users.InsertPtr(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
-		for(profiles.Begin();profiles.IsMore();profiles++)
+		RQuery users(this, "SELECT userid,user,fullname FROM users");
+		for(users.Begin();users.IsMore();users++)
 		{
-			profileid=atoi(profiles[0]);
-			usr->InsertPtr(prof=new GProfile(usr,profileid,profiles[1],GetNbLangs()));
-			sprintf(sSql,"SELECT subprofileid,langid FROM subprofiles WHERE profileid=%u",profileid);
-			RQuery subprofil (this,sSql);
-			for(subprofil.Begin();subprofil.IsMore();subprofil++)
+			userid=atoi(users[0]);
+			sprintf(sSql,"SELECT profileid, description,updated,calculated FROM profiles WHERE userid=%u",userid);
+			RQuery profiles(this,sSql);
+			Users.InsertPtr(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
+			for(profiles.Begin();profiles.IsMore();profiles++)
 			{
-				lang=GetLang(subprofil[1]);
-				prof->InsertPtr(sub=new GSubProfile(prof,atoi(subprofil[0]),lang));
+				profileid=atoi(profiles[0]);
+				usr->InsertPtr(prof=new GProfile(usr,profileid,profiles[1],profiles[2],profiles[3],GetNbLangs()));
+				sprintf(sSql,"SELECT subprofileid,langid FROM subprofiles WHERE profileid=%u",profileid);
+				RQuery subprofil (this,sSql);
+				for(subprofil.Begin();subprofil.IsMore();subprofil++)
+				{
+					lang=GetLang(subprofil[1]);
+					prof->InsertPtr(sub=new GSubProfile(prof,atoi(subprofil[0]),lang));
 
-				// Load GWordList 'OK'
-				sprintf(sSql,"SELECT kwdid FROM %sokkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
-				RQuery ok(this,sSql);
-				for(ok.Begin();ok.IsMore();ok++)
-					sub->GetOK()->InsertPtr(new GIWord(atoi(ok[0])));
+					// Load GWordList 'OK'
+					sprintf(sSql,"SELECT kwdid FROM %sokkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
+					RQuery ok(this,sSql);
+					for(ok.Begin();ok.IsMore();ok++)
+						sub->GetOK()->InsertPtr(new GIWord(atoi(ok[0])));
 
-				// Load GWordList 'KO'
-				sprintf(sSql,"SELECT kwdid FROM %skokwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
-				RQuery ko(this,sSql);
-				for(ko.Begin();ko.IsMore();ko++)
-					sub->GetKO()->InsertPtr(new GIWord(atoi(ko[0])));
+					// Load GWordList 'KO'
+					sprintf(sSql,"SELECT kwdid FROM %skokwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
+					RQuery ko(this,sSql);
+					for(ko.Begin();ko.IsMore();ko++)
+						sub->GetKO()->InsertPtr(new GIWord(atoi(ko[0])));
 
-				// Load GWordList 'Common'
-				sprintf(sSql,"SELECT kwdid FROM %scomkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
-				RQuery com(this,sSql);
-				for(com.Begin();com.IsMore();com++)
-					sub->GetCommon()->InsertPtr(new GIWord(atoi(com[0])));
+					// Load GWordList 'Common'
+					sprintf(sSql,"SELECT kwdid FROM %scomkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
+					RQuery com(this,sSql);
+					for(com.Begin();com.IsMore();com++)
+						sub->GetCommon()->InsertPtr(new GIWord(atoi(com[0])));
+				}
 			}
 		}
+	}
+	catch(RMySQLError& e)
+	{
+		throw GException(e.GetError());
 	}
 }
 
