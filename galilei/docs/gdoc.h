@@ -192,6 +192,21 @@ public:
 	unsigned int GetNbDiffWords(void) {return(NbDiffWords);}
 
 	/**
+	* @return True if the document has to be calc.
+	*/
+	bool MustAnalyse(void) {return(Calc);}
+
+	/**
+	* @return Pointer to the language of the document.
+	*/
+	GLang* GetLang(void) {return(Lang);}
+
+	/**
+	* @return Identificator of the document.
+	*/
+	unsigned int GetId(void) {return(Id);}
+
+	/**
 	* Destruct the document.
 	*/
 	virtual ~GDoc(void);
