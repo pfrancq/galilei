@@ -83,16 +83,6 @@ protected:
 	R::RContainer<GProfDoc,unsigned,true,true> Fdbks;
 
 	/**
-	* Container of computing method for the profiles.
-	*/
-	R::RContainer<GSubProfileDesc,unsigned int,true,true>* SubProfileDescs;
-
-	/**
-	* Current method used to computed the profiles.
-	*/
-	GSubProfileDesc* SubProfileDesc;
-
-	/**
 	* Pointer to the languages.
 	*/
 	GLangManager* Langs;
@@ -256,12 +246,6 @@ public:
 	* Get the parameters of the session.
 	*/
 	GSessionParams* GetSessionParams(void) const {return(SessParams);}
-
-	/**
-	* Get the current description method.
-	* @returns Pointer to a GSubProfileDesc class.
-	*/
-	GSubProfileDesc* GetCurrentProfileDesc(void) {return(SubProfileDesc);}
 
 	/**
 	* Get a cursor to the link description methods registered.

@@ -6,7 +6,7 @@
 
 	Profile - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,23 +34,21 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GProfileH
 #define GProfileH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GProfile class provides a representation of a profile. In fact, it is a
 * container of subprofiles, each subprofile corresponding to a language.
@@ -77,19 +75,9 @@ protected:
 	R::RString Name;
 
 	/**
-	* Documents juged by profile.
+	* Documents assessed by profile.
 	*/
 	R::RContainer<GProfDoc,unsigned,false,true> Fdbks;
-
-//	/**
-//	* Date of Update.
-//	*/
-//	R::RDate Updated;
-//
-//	/**
-//	* Date of last document's analysis.
-//	*/
-//	R::RDate Computed;
 
 	/**
 	* Determine if the profile is social, i.e. prefer to be grouped with
@@ -107,7 +95,7 @@ protected:
 public:
 
     /**
-	* Constructor og GProfile
+	* Constructor of a profile.
 	* @param usr            User of the profile.
 	* @param id             Identificator of the profile.
 	* @param name           Name of the profile.
@@ -120,24 +108,48 @@ public:
 	GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
-	* Clear The Fdbks Container
+	* Clear the assessment of the profile.
 	*/
 	void ClearFdbks (void);
 
 	/**
-	* Comparaison function
-	*/
-	int Compare(const unsigned int& id) const;
-
-	/**
-	* Comparaison function
+	* Compare two profiles by comparing their identificator.
+	* @see R::RContainer
+	* @param profile         Profile.
+	* @return int
 	*/
 	int Compare(const GProfile& profile) const;
-	
+
 	/**
-	* Comparaison function
+	* Compare two profiles by comparing their identificator.
+	* @see R::RContainer
+	* @param profile         Pointer to a profile.
+	* @return int
 	*/
 	int Compare(const GProfile* profile) const;
+
+	/**
+	* Compare an identificator of a profile with another one.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
+	*/
+	int Compare(const unsigned int id) const;
+
+#if GALILEITEST
+
+	/**
+	* Set the Subject of the subprofile.
+	* @param s              Subject.
+	*/
+	void SetSubject(GSubject* s);
+
+	/**
+	* Get the subject of the subprofile.
+	*/
+	GSubject* GetSubject(void) const;
+
+#endif
 
 	/**
 	* Get the identificator of the profile.
@@ -149,13 +161,13 @@ public:
 	* Set the identifier.
 	* @param id             Identifier.
 	*/
-	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+	void SetId(unsigned int id)  throw(GException);
 
 	/**
 	* Get the name of the profile.
-	* @return Pointer to a C String.
+	* @return RString.
 	*/
-	const char* GetName(void) const {return(Name);}
+	R::RString& GetName(void) const;
 
 	/**
 	* Get the user of the profile.
@@ -170,10 +182,10 @@ public:
 	bool IsSocial(void) const {return(Social);}
 
 	/**
-	* set if the profile is social.
+	* Set if the profile is social.
 	* @param social         social  value.
 	*/
-	void SetSocial(bool social) {Social=social;}
+	void SetSocial(bool social);
 
 	/**
 	* Get the subprofile corresponding to a given language.
@@ -200,11 +212,11 @@ public:
 	GProfDoc* GetFeedback(const GDoc* doc) const;
 
 	/**
-	* Get the number of judged documents of a given language.
+	* Get the number of assessed documents of a given language.
 	* @param lang           Pointer to the language.
 	* @returns unsigned int.
 	*/
-	unsigned int GetNbJudgedDocs(const GLang* lang) const;
+	unsigned int GetNbAssessedDocs(const GLang* lang) const;
 
 	/**
 	* Get a Cursor on the feedback for the profile.
@@ -219,7 +231,7 @@ public:
 	GSubProfileCursor& GetSubProfilesCursor(void);
 
 	/**
-	* Add a judgement for this profile.
+	* Add an assessment for the profile.
 	* @param j              Assessment.
 	* @param s              Session.
 	*/
@@ -228,36 +240,21 @@ public:
 	/**
 	* Store the profdoc in the feedbacks of the subprofile
 	* coressponding to the lang of the profdoc.
-	* this function is called when at least one of the two lang is defined
+	*
+	* This function is called when at least one of the two lang is defined
 	* and the two lang are different.
 	* @param s                  Session.
 	*/
 	void DispatchFdbks(GProfDoc* profdoc, GLang* oldlang,GSession* s);
 
-
 	/*
-	* Destructor
+	* Destructor of the profile.
 	*/
 	~GProfile(void);
-
-#if GALILEITEST
-
-	/**
-	* Set the Subject of the subprofile.
-	* @param s              Subject.
-	*/
-	void SetSubject(GSubject* s);
-
-	/**
-	* Get the subject of the subprofile.
-	*/
-	GSubject* GetSubject(void) const;
-
-#endif
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GProfileCursor class provides a way to go trough a set of profiles.
 * @short Profiles Cursor
@@ -265,8 +262,8 @@ public:
 CLASSCURSOR(GProfileCursor,GProfile,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

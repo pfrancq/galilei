@@ -69,7 +69,6 @@ using namespace R;
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofilessims.h>
 #include <profiles/gprofilesbehaviours.h>
-#include <profiles/gsubprofiledesc.h>
 #include <profiles/gsubprofilevector.h>
 #include <profiles/gprofdoc.h>
 #include <profiles/gprofilecalc.h>
@@ -109,13 +108,8 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	  ProfilesBehaviours(0), DocProfSims(0), Random(0),  SessParams(sessparams)
 {
 	// Init Part
-	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
 	CurrentRandom=0;
 	Random = new RRandomGood(CurrentRandom);
-
-	// Only Vector Space
-	SubProfileDesc=new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile);
-	SubProfileDescs->InsertPtr(SubProfileDesc);
 
 	// Create SubjectTree
 	if(tests)
@@ -764,7 +758,6 @@ GSession::~GSession(void) throw(GException)
 	if(Langs) Langs->Disconnect(this);
 
 	// Delete stuctures
-	if(SubProfileDescs) delete SubProfileDescs;
 	if(Random) delete Random;
 	if(Subjects) delete Subjects;
 }

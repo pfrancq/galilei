@@ -80,7 +80,7 @@ GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const ch
 
 
 //------------------------------------------------------------------------------
-bool GDoc::HasRepresentation(void) const
+bool GDoc::IsDefined(void) const
 {
 	return(false);
 }

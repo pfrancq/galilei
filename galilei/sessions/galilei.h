@@ -132,8 +132,6 @@ class GLinks;
 class GUsers;
 class GUser;
 class GUserCursor;
-class GSubProfileDesc;
-class GSubProfileDescCursor;
 class GProfile;
 class GProfileCursor;
 class GSubProfile;

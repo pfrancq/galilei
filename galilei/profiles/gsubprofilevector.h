@@ -6,7 +6,7 @@
 
 	Subprofile in the Vector Model - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,29 +34,28 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GSubProfileVectorH
 #define GSubProfileVectorH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <profiles/gsubprofile.h>
 #include <infos/gweightinfos.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GSubProfileVector provides a representation for a subprofile described as
 * a vector corresponding to a list of pairs {keyword,weight}.
 * @author Pascal Francq.
-* @short Vector model subprofile.
+* @short Vector Subprofile.
 */
 class GSubProfileVector : public GSubProfile, public GWeightInfos
 {
@@ -64,11 +63,11 @@ public:
 
 	/**
 	* Constructor of the subprofile.
-	* @param prof           Profile.
-	* @param id             Identifier.
-	* @param lang           Language of the subprofile.
-	* @param grp            Group.
-	* @param a              String representing the date where it was attached.
+	* @param prof            Profile.
+	* @param id              Identifier.
+	* @param lang            Language of the subprofile.
+	* @param grp             Group.
+	* @param a               String representing the date where it was attached.
 	*/
 	GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(bad_alloc);
 
@@ -79,69 +78,60 @@ public:
 	virtual const char* GetModelName(void) const {return("Vector");}
 
 	/**
-	* Create a new profile.
-	* @param prof           Profile.
-	* @param id             Identifier.
-	* @param lang           Language of the subprofile.
-	* @param grp            Group.
-	* @param a              String representing the date where it was attached.
+	* Clear all the assessments of the subprofile.
 	*/
-	static GSubProfile* NewSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c);
+	virtual void ClearFdbks(void) throw(bad_alloc);
 
 	/**
-	* Method called when the profiles feedbacks were cleared.
-	*/
-	virtual void ClearFdbks(void);
-
-	/**
-	* See if the subprpfile is defined, i.e. if it is computed. A subprofile
-	* that isn't computed, isn't attached.
+	* Verify if the subprofile is defined, i.e. if it is computed.
+	* @return bool.
 	*/
 	virtual bool IsDefined(void) const;
 
 	/**
-	* Add a word with the corresponding weight to the description.
-	* @param id             Identificator of the word.
-	* @param w              Weight of the word.
+	* Add a given information to the document.
+	* @param info            Pointer to the information.
 	*/
-	void AddWord(unsigned int id,double w) throw(bad_alloc);
-
-	/**
-	* Add a concept with the corresponding weight to the description.
-	* @param id             Identificator of the concept.
-	* @param w              Weight of the concept.
-	*/
-	void AddWordList(unsigned int id,double w) throw(bad_alloc);
+	virtual void AddInfo(GWeightInfo* info) throw(bad_alloc);
 
 	/**
 	* Compute the similarity between a subprofile and a document.
+	* @param doc             Pointer to a document.
 	*/
-	virtual double Similarity(const GDoc* doc) const;
+	virtual double Similarity(const GDoc* doc) const throw(GException);
 
 	/**
-	* Compute the global similarity between a subprofile and a document.
+	* Compute the similarity between a subprofile and a document using a Inverse
+	* Frequence Factor (IFF).
+	* @param doc             Pointer to a document.
 	*/
-	virtual double SimilarityIFF(const GDoc* doc) const;
+	virtual double SimilarityIFF(const GDoc* doc) const throw(GException);
 
 	/**
 	* Compute the similarity between subprofiles.
+	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double Similarity(const GSubProfile* sub) const;
+	virtual double Similarity(const GSubProfile* sub) const throw(GException);
 
 	/**
-	* Compute the global similarity between subprofiles.
+	* Compute the similarity between subprofiles using a Inverse Frequence
+	* Factor (IFF).
+	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double SimilarityIFF(const GSubProfile* sub) const;
+	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException);
 
 	/**
 	* Compute the similarity between a subprofile and a group.
+	* @param grp             Pointer to a group.
 	*/
-	virtual double Similarity(const GGroup* grp) const;
+	virtual double Similarity(const GGroup* grp) const throw(GException);
 
 	/**
-	* Compute the global similarity between a subprofile and a group.
+	* Compute the similarity between a subprofile and a group using a Inverse
+	* Frequence Factor (IFF).
+	* @param grp             Pointer to a group.
 	*/
-	virtual double SimilarityIFF(const GGroup* grp) const;
+	virtual double SimilarityIFF(const GGroup* grp) const throw(GException);
 
 	/**
 	* Get a cursor over the vector.
@@ -155,30 +145,24 @@ public:
 	unsigned int GetNbNoNull(void) const;
 
 	/**
-	* Get the vector representing the sub-profile.
-	* @returns Pointer to GWeightInfos.
-	*/
-	GWeightInfos* GetVector(void) {return(this);}
-
-	/**
 	* Update the references of the document.
 	*/
-	void UpdateRefs(void) const;
+	void UpdateRefs(void) const throw(GException);
 
 	/**
 	* Remove the references of the document.
 	*/
-	void RemoveRefs(void) const;
+	void RemoveRefs(void) const throw(GException);
 
 	/**
-	* Destructor.
+	* Destructor of a subprofile represented by a vector.
 	*/
 	virtual ~GSubProfileVector(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

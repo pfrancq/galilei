@@ -144,11 +144,11 @@ public:
 	virtual const char* GetModelName(void) const=0;
 
 	/**
-	* Verify if the document has a representation. By default, a document does
-	* not have a representation
+	* Verify if the document is defined. By default, a document is suppose to be
+	* undefined.
 	* @return false.
 	*/
-	virtual bool HasRepresentation(void) const;
+	virtual bool IsDefined(void) const;
 
 	/**
 	* Compare two documents by comparing their identificator.

@@ -256,7 +256,6 @@ void GALILEI::GSessionMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_a
 				break;
 		}
 	}
-
 }
 
 
@@ -578,6 +577,7 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 			}
 		}
 
+
 		// Load the subprofile's description
 		langs=Langs->GetLangsCursor();
 		for(langs.Start();!langs.End();langs.Next())
@@ -594,12 +594,12 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 					if(lang->GetDict()->GetData(atoi(sel[1]))->GetType()==infoWordList)
 					{
 						if(wg)
-							dynamic_cast<GSubProfileVector*>(sub)->AddWordList(atoi(sel[1]),atof(sel[2]));
+							dynamic_cast<GSubProfileVector*>(sub)->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWordList));
 					}
 					else
 					{
 						if(w)
-							dynamic_cast<GSubProfileVector*>(sub)->AddWord(atoi(sel[1]),atof(sel[2]));
+							dynamic_cast<GSubProfileVector*>(sub)->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWord));
 					}
 				}
 			}

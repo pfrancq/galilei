@@ -4,9 +4,9 @@
 
 	GSubProfile.h
 
-	Sub-Profile - Header.
+	Subprofile - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,27 +34,25 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GSubProfileH
 #define GSubProfileH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* This class represents a sub-profile for a specific language. The sub-profiles
-* are ordered by identificator. A sub-profile is in reality a container of
-* sub-profile descriptions.
+* This class provides a representation for a user's subprofile.
 * @author Pascal Francq.
-* @short Sub-Profile.
+* @short Subprofile.
 */
 class GSubProfile
 {
@@ -86,22 +84,22 @@ protected:
 	tObjState State;
 
 	/**
-	* Date of attachment to the group.
+	* Date of the attachment of the subprofile into the group.
 	*/
 	R::RDate Attached;
 
 	/**
-	* Date of Update.
+	* Date of the update of the profile (new assessments).
 	*/
 	R::RDate Updated;
 
 	/**
-	* Date of last document's analysis.
+	* Date of last subprofile computing.
 	*/
 	R::RDate Computed;
 
 	/**
-	* Documents juged by the subprofile.
+	* Documents assessed by the subprofile.
 	*/
 	R::RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
@@ -116,11 +114,11 @@ public:
 
 	/**
 	* Constructor of the subprofile.
-	* @param prof           Profile.
-	* @param id             Identifier.
-	* @param lang           Language of the subprofile.
-	* @param grp            Group.
-	* @param a              String representing the date where it was attached.
+	* @param prof            Profile.
+	* @param id              Identifier.
+	* @param lang            Language of the subprofile.
+	* @param grp             Group.
+	* @param a               String representing the date where it was attached.
 	*/
 	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(bad_alloc);
 
@@ -131,123 +129,131 @@ public:
 	virtual const char* GetModelName(void) const=0;
 
 	/**
-	* Create a new profile.
-	* @param GProfile*      Pointer to the profile.
-	* @param unsigned int   Identifier.
-	* @param GLang*         Language of the subprofile.
-	* @param GGroup*        Pointer to the group.
-	* @param const char*    C String representing the date where it was attached.
-	*/
-	static GSubProfile* NewSubProfile(GProfile*,unsigned int,GLang*,GGroup*,const char*) {return(0);}
-
-	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const unsigned int id) const;
-
-	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const GLang* lang) const;
-
-	/**
-	* Compare methods used by R::RContainer.
+	* Compare two subprofiles by comparing their identificator.
+	* @see R::RContainer
+	* @param subprofile      Subprofile.
+	* @return int
 	*/
 	int Compare(const GSubProfile& subprofile) const;
 
 	/**
-	* Compare methods used by R::RContainer.
+	* Compare two subprofiles by comparing their identificator.
+	* @see R::RContainer
+	* @param subprofile      Pointer to a subprofile.
+	* @return int
 	*/
 	int Compare(const GSubProfile* subprofile) const;
 
+	/**
+	* Compare an identificator of a subprofile with another one.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
+	*/
+	int Compare(const unsigned int id) const;
+
+	/**
+	* Compare the language of a subprofile with another one.
+	* @see R::RContainer
+	* @param lang            Pointer to a language.
+	* @return int
+	*/
+	int Compare(const GLang* lang) const;
+
 	/*
-	* add a judgement for the subprofile.
+	* Add an assessment for the subprofile.
+	* @param j               Pointer to an assessment.
 	*/
 	void AddAssessment(GProfDoc* j) throw(bad_alloc);
 
-	/**
-	* Remove a judgement for this subprofile.
-	* @param j              Assessment.
+	/*
+	* Remove an assessment for the subprofile.
+	* @param j               Pointer to an assessment.
 	*/
 	void RemoveAssessment(GProfDoc* j) throw(bad_alloc);
 
 	/**
-	* Method called when the profiles feedbacks were cleared.
+	* Clear all the assessments of the subprofile.
 	*/
-	virtual void ClearFdbks(void);
+	virtual void ClearFdbks(void) throw(bad_alloc);
 
 	/**
-	* Get the identifier of the subprofile.
-	* @return Identificator.
+	* Get the identificator of the subprofile.
+	* @return unsigned int.
 	*/
 	unsigned int GetId(void) const {return(Id);}
 
 	/**
-	* Set the identifier.
-	* @param id             Identifier.
+	* Set the identificator.
+	* @param id             Identificator.
 	*/
-	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+	void SetId(unsigned int id) throw(GException);
 
 	/**
-	* returns the state of the subprofile
+	* Get the state of the subprofile.
+	* @return tObjState.
 	*/
-	tObjState GetState(void) const {return State;}
+	tObjState GetState(void) const {return(State);}
 
 	/*
-	* set the state of the subprofile
+	* Set the state of the subprofile
+	* @param state           New state of the subprofile.
 	*/
 	void SetState(tObjState state);
 
 	/**
 	* Get the language of the subprofile.
-	* @return Pointer to the language.
+	* @return Pointer to the GLang.
 	*/
 	GLang* GetLang(void) const {return(Lang);}
 
 	/**
-	* Get the corresponding profile.
-	* @return Pointer to the profile.
+	* Get the profile of the subprofile.
+	* @return Pointer GProfile.
 	*/
 	GProfile* GetProfile(void) const {return(Profile);}
 
 	/**
-	* See if the subprpfile is defined, i.e. if it is computed. A subprofile
-	* that isn't computed, isn't attached.
+	* Verify if the subprofile is defined, i.e. if it is computed. A subprofile
+	* that isn't computed, isn't attached. By default, it is supposed to be
+	* undefined.
+	* @return bool
 	*/
-	virtual bool IsDefined(void) const {return(false);};
+	virtual bool IsDefined(void) const;
 
 	/**
-	* Get the corresponding group.
+	* Get the group holding the subprofile.
 	* @returns Pointer to GGroup.
 	*/
 	GGroup* GetGroup(void) const {return(Group);}
 
 	/**
-	* Set the group for the subprofile.
-	* @params grp           Group where to attached.
+	* Set the group holding the subprofile.
+	* @params grp            Pointer to the group.
 	*/
 	void SetGroup(GGroup* grp);
 
 	/**
 	* Get the date of the last attachment.
-	* @returns Pointer to date.
+	* @returns R::RDate.
 	*/
 	R::RDate& GetAttached(void) const;
 
 	/**
 	* Get the date of the last update of the subprofile.
-	* @returns Pointer to date.
+	* @returns R::RDate.
 	*/
 	R::RDate& GetUpdated(void) const;
 
 	/**
 	* Get the date of the last analysis of the subprofile.
-	* @returns Pointer to date.
+	* @returns R::RDate.
 	*/
 	R::RDate& GetComputed(void) const;
 
 	/**
-	* See if the subprofiles was updated until the last attachment to a group.
+	* See if the subprofile was updated until the last time he was inserted into
+	* a group.
 	* @returns Boolean.
 	*/
 	bool IsUpdated(void) const;
@@ -256,6 +262,8 @@ public:
 	* Get the number of common OK document between two subprofiles. In
 	* practice, it computes the number of the common documents of the
 	* corresponding profiles which are of the language of the profile.
+	* @param prof            Pointer to a subprofile.
+	* @return unsigned int.
 	*/
 	unsigned int GetCommonOKDocs(const GSubProfile* prof);
 
@@ -263,6 +271,8 @@ public:
 	* Get the number of common document between two subprofiles. In
 	* practice, it computes the number of the common documents of the
 	* corresponding profiles which are of the language of the profile.
+	* @param prof            Pointer to a subprofile.
+	* @return unsigned int.
 	*/
 	unsigned int GetCommonDocs(const GSubProfile* prof) ;
 
@@ -270,61 +280,72 @@ public:
 	* Get the number of common document with different judgement between two
 	* subprofiles. In practice, it computes the number of the common documents
 	* of the corresponding profiles which are of the language of the profile.
+	* @param prof            Pointer to a subprofile.
+	* @return unsigned int.
 	*/
 	unsigned int GetCommonDiffDocs(const GSubProfile* prof);
 
 	/**
-	* Get the number of judged documents.
+	* Get the number of assessed documents.
 	* @returns unsigned int.
 	*/
-	unsigned int GetNbJudgedDocs(void) const {return (Fdbks.NbPtr);}
+	unsigned int GetNbAssessedDocs(void) const {return(Fdbks.NbPtr);}
 
 	/**
-	* Get the feedback of the subprofile on a specific document.
-	* @param doc            Pointer to the document.
+	* Get the assessment of the subprofile on a specific document.
+	* @param doc             Pointer to the document.
 	* return Pointer to the feedback or 0 if the document wasn't judged by the
 	*        profile.
 	*/
 	GProfDoc* GetFeedback(const GDoc* doc) const;
 
 	/**
-	* Get a Cursor on the feedback for the profile.
+	* Get a cursor on the feedback for the profile.
 	* @return GProfDocCursor.
 	*/
 	GProfDocCursor& GetProfDocCursor(void);
 
 	/**
 	* Compute the similarity between a subprofile and a document.
+	* @param doc             Pointer to a document.
 	*/
-	virtual double Similarity(const GDoc* doc) const;
+	virtual double Similarity(const GDoc* doc) const throw(GException);
 
 	/**
-	* Compute the global similarity between a subprofile and a document.
+	* Compute the similarity between a subprofile and a document using a Inverse
+	* Frequence Factor (IFF).
+	* @param doc             Pointer to a document.
 	*/
-	virtual double SimilarityIFF(const GDoc* doc) const;
+	virtual double SimilarityIFF(const GDoc* doc) const throw(GException);
 
 	/**
 	* Compute the similarity between subprofiles.
+	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double Similarity(const GSubProfile* sub) const;
+	virtual double Similarity(const GSubProfile* sub) const throw(GException);
 
 	/**
-	* Compute the global similarity between subprofiles.
+	* Compute the similarity between subprofiles using a Inverse Frequence
+	* Factor (IFF).
+	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double SimilarityIFF(const GSubProfile* sub) const;
+	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException);
 
 	/**
 	* Compute the similarity between a subprofile and a group.
+	* @param grp             Pointer to a group.
 	*/
-	virtual double Similarity(const GGroup* grp) const;
+	virtual double Similarity(const GGroup* grp) const throw(GException);
 
 	/**
-	* Compute the global similarity between a subprofile and a group.
+	* Compute the similarity between a subprofile and a group using a Inverse
+	* Frequence Factor (IFF).
+	* @param grp             Pointer to a group.
 	*/
-	virtual double SimilarityIFF(const GGroup* grp) const;
+	virtual double SimilarityIFF(const GGroup* grp) const throw(GException);
 
 	/**
-	* Tell the subprofile that its updated is finished.
+	* Finish the update process of the subprofile.
 	*/
 	void UpdateFinished(void);
 
@@ -344,13 +365,13 @@ public:
 #endif
 
 	/**
-	*Destructor
+	* Destructor of a subprofile.
 	*/
 	virtual ~GSubProfile(void);
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GSubProfileCursor class provides a way to go trough a set of subprofiles.
 * @short SubProfiles Cursor
@@ -358,9 +379,8 @@ public:
 CLASSCURSOR(GSubProfileCursor,GSubProfile,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif
-

@@ -4,9 +4,9 @@
 
 	GProfDoc.h
 
-	Profile's Assessment of a document - Header.
+	Profile's Assessment on a document - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,27 +34,26 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GProfDocH
 #define GProfDocH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI {
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GProfDoc class provides a representation for assessment of a given profile
 * on a given document.
 * @author Pascal Francq
-* @short Profile Assessment.
+* @short Profile's Assessment.
 */
 class GProfDoc
 {
@@ -69,12 +68,12 @@ class GProfDoc
 	GProfile* Profile;
 
 	/**
-	* Feedback of the profile.
+	* Assessment of the profile.
 	*/
 	tDocAssessment Fdbk;
 
 	/**
-	* Last Updated of this feedback.
+	* Last update of this assessment.
 	*/
 	R::RDate Updated;
 
@@ -82,7 +81,7 @@ public:
 
 	/**
 	* Constructor.
-	* @param doc            Pointer to the document judged.
+	* @param doc            Pointer to the document assessed.
 	* @param prof           Pointer to the profile.
 	* @param fdbk           Assessment.
 	* @param date           Date.
@@ -91,7 +90,7 @@ public:
 
 	/**
 	* Constructor.
-	* @param doc            Pointer to the document judged.
+	* @param doc            Pointer to the document assessed.
 	* @param prof           Pointer to the profile.
 	* @param fdbk           Assessment.
 	* @param date           Date.
@@ -99,18 +98,29 @@ public:
 	GProfDoc(GDoc* doc,GProfile* prof,tDocAssessment fdbk,R::RDate& date);
 
 	/**
-	* Compare mathod used by R::RContainer.
+	* Compare two assessements to order them using the document identificator as
+	* first index and the sybprofile identificator as the second one.
+	* @see R::RContainer
+	* @param profdoc        Assessement.
+	* @return int
 	*/
 	int Compare(const GProfDoc &profdoc) const;
 
 	/**
-	* Compare mathod used by R::RContainer.
+	* Compare two assessements to order them using the document identificator as
+	* first index and the sybprofile identificator as the second one.
+	* @see R::RContainer
+	* @param profdoc        Pointer to an assessement.
+	* @return int
 	*/
 	int Compare(const GProfDoc *profdoc) const;
 
 	/**
-	* Compare mathod used by R::RContainer for the document part.
-	* @param doc            Pointer to the document.
+	* Compare the document assessed with another document using their
+	* identificators.
+	* @see R::RContainer
+	* @param doc             Pointer to a document.
+	* @return int
 	*/
 	int Compare(const GDoc* doc) const;
 
@@ -130,25 +140,25 @@ public:
 
 	/**
 	* Get the assessment for the document.
-	* @returns Profile's feedback.
+	* @returns Profile's assessment.
 	*/
-	tDocAssessment GetFdbk(void) const;
+	tDocAssessment GetFdbk(void) const {return(Fdbk);}
 
 	/**
 	* Get the document assessed.
 	* @returns Pointer to the document.
 	*/
-	GDoc* GetDoc(void) const;
+	GDoc* GetDoc(void) const {return(Doc);}
 
 	/**
-	* Get the profile that has assessed.
+	* Get the profile that has assessed the document.
 	* @returns Pointer to the profile.
 	*/
-	GProfile* GetProfile(void) const;
+	GProfile* GetProfile(void) const {return(Profile);}
 
 	/**
 	* Get the date of the last assessment of the profile on the document.
-	* @returns Pointer to a date.
+	* @returns R::RDate.
 	*/
 	R::RDate& GetUpdated(void) const;
 
@@ -160,14 +170,6 @@ public:
 	* @return bool
 	*/
 	bool FdbkTreated(void) const;
-
-	/**
-	* Get the similarity between the document and the profile. In particular, if
-	* the profile does not have a subprofile of the language of the document,
-	* the similarity is null.
-	* @return double.
-	*/
-	double Similarity(void);
 
 	/**
 	* Create an erronous assessment with a given percentage. The percentage
@@ -198,7 +200,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GProfDocCursor class provides a way to go trough a set of feedbacks.
 * @short Feedbacks Cursor
@@ -206,8 +208,8 @@ public:
 CLASSCURSOR(GProfDocCursor,GProfDoc,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

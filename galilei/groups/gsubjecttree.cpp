@@ -617,7 +617,7 @@ void GSubjectTree::AddAssessments(bool Save)
 		for(Prof.Start();!Prof.End();Prof.Next())
 		{
 			// Look if current subprofile has already judged documents.
-			if(!Prof()->GetNbJudgedDocs()) continue;
+			if(!Prof()->GetNbAssessedDocs()) continue;
 
 			// Mix the documents
 			Session->GetRandom()->RandOrder<GDoc*>(Docs,NbDocs);
@@ -810,7 +810,7 @@ unsigned int GSubjectTree::AddProfiles(bool Save)
 	while((!Prof.End())&&(nbprofilescreated<nbprof))
 	{
 		// check if the profile is free
-		if (Prof()->GetProfile()->GetNbJudgedDocs(usedSubject->GetLang()))
+		if (Prof()->GetProfile()->GetNbAssessedDocs(usedSubject->GetLang()))
 		{
 			Prof.Next(); continue;
 		}

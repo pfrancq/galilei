@@ -4,9 +4,9 @@
 
 	GSubProfile.cpp
 
-	Sub-Profile - Implementation.
+	Subprofile - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -33,27 +33,27 @@
 */
 
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include<profiles/gsubprofile.h>
 #include<profiles/gprofile.h>
 #include<profiles/gprofdoc.h>
 #include<infos/glang.h>
 #include<groups/ggroup.h>
-
 using namespace GALILEI;
 using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GSubProfile
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GALILEI::GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,tObjState state, const char* c) throw(bad_alloc)
+//------------------------------------------------------------------------------
+GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,tObjState state, const char* c) throw(bad_alloc)
   :  Id(id), Profile(prof), Lang(lang), Group(grp), State(state), Attached(a),  Computed(c), Fdbks(20,10)
 {
 
@@ -66,59 +66,66 @@ GALILEI::GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGr
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GSubProfile::Compare(const unsigned int id) const
-{
-	return(Id-id);
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GSubProfile::Compare(const GLang* lang) const
-{
-	return(Lang->Compare(lang));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GSubProfile::Compare(const GSubProfile& subprofile) const
+//------------------------------------------------------------------------------
+int GSubProfile::Compare(const GSubProfile& subprofile) const
 {
 	return(Id-subprofile.Id);
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GSubProfile::Compare(const GSubProfile* subprofile) const
+//------------------------------------------------------------------------------
+int GSubProfile::Compare(const GSubProfile* subprofile) const
 {
 	return(Id-subprofile->Id);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSubProfile::AddAssessment(GProfDoc* j) throw(bad_alloc)
+//------------------------------------------------------------------------------
+int GSubProfile::Compare(const unsigned int id) const
+{
+	return(Id-id);
+}
+
+
+//------------------------------------------------------------------------------
+int GSubProfile::Compare(const GLang* lang) const
+{
+	return(Lang->Compare(lang));
+}
+
+
+//------------------------------------------------------------------------------
+void GSubProfile::AddAssessment(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 	State=osModified;
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSubProfile::RemoveAssessment(GProfDoc* j) throw(bad_alloc)
+//------------------------------------------------------------------------------
+void GSubProfile::RemoveAssessment(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.DeletePtr(j);
 	State=osModified;
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSubProfile::ClearFdbks(void)
+//------------------------------------------------------------------------------
+void GSubProfile::ClearFdbks(void) throw(bad_alloc)
 {
 	Fdbks.Clear();
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSubProfile::SetState(tObjState state)
+//------------------------------------------------------------------------------
+void GSubProfile::SetId(unsigned int id) throw(GException)
+{
+	if(Id==cNoRef)
+	Id=id;
+}
+
+//------------------------------------------------------------------------------
+void GSubProfile::SetState(tObjState state)
 {
 	GGroup* grp;
 	State=state;
@@ -133,8 +140,16 @@ void GALILEI::GSubProfile::SetState(tObjState state)
 	}
 }
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSubProfile::SetGroup(GGroup* grp)
+
+//------------------------------------------------------------------------------
+bool GSubProfile::IsDefined(void) const
+{
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubProfile::SetGroup(GGroup* grp)
 {
 	Group=grp;
 	if(grp)
@@ -142,8 +157,7 @@ void GALILEI::GSubProfile::SetGroup(GGroup* grp)
 }
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RDate& GSubProfile::GetAttached(void) const
 {
 	RDate* d=RDate::GetDate();
@@ -153,7 +167,7 @@ RDate& GSubProfile::GetAttached(void) const
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RDate& GSubProfile::GetUpdated(void) const
 {
 	RDate* d=RDate::GetDate();
@@ -163,7 +177,7 @@ RDate& GSubProfile::GetUpdated(void) const
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 R::RDate& GSubProfile::GetComputed(void) const
 {
 	RDate* d=RDate::GetDate();
@@ -173,15 +187,15 @@ R::RDate& GSubProfile::GetComputed(void) const
 }
 
 
-//-----------------------------------------------------------------------------
-bool GALILEI::GSubProfile::IsUpdated(void) const
+//------------------------------------------------------------------------------
+bool GSubProfile::IsUpdated(void) const
 {
 	return(Attached<Updated);
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
+//------------------------------------------------------------------------------
+unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
 {
 	tDocAssessment f;
 	GProfDoc* cor;
@@ -212,8 +226,8 @@ unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GSubProfile::GetCommonDocs(const GSubProfile* prof)
+//------------------------------------------------------------------------------
+unsigned int GSubProfile::GetCommonDocs(const GSubProfile* prof)
 {
 	tDocAssessment f;
 	GProfDoc* cor;
@@ -241,8 +255,8 @@ unsigned int GALILEI::GSubProfile::GetCommonDocs(const GSubProfile* prof)
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
+//------------------------------------------------------------------------------
+unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
 {
 	tDocAssessment f;
 	GProfDoc* cor;
@@ -275,8 +289,8 @@ unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
 }
 
 
-//-----------------------------------------------------------------------------
-GProfDocCursor& GALILEI::GSubProfile::GetProfDocCursor(void)
+//------------------------------------------------------------------------------
+GProfDocCursor& GSubProfile::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
 	cur->Set(Fdbks);
@@ -284,79 +298,80 @@ GProfDocCursor& GALILEI::GSubProfile::GetProfDocCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
-GProfDoc* GALILEI::GSubProfile::GetFeedback(const GDoc* doc) const
+//------------------------------------------------------------------------------
+GProfDoc* GSubProfile::GetFeedback(const GDoc* doc) const
 {
 	return(Fdbks.GetPtr<const GDoc*>(doc));
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GSubProfile::Similarity(const GDoc*) const
+//------------------------------------------------------------------------------
+double GSubProfile::Similarity(const GDoc*) const throw(GException)
 {
 	return(0.0);
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GSubProfile::SimilarityIFF(const GDoc*) const
+//------------------------------------------------------------------------------
+double GSubProfile::SimilarityIFF(const GDoc*) const throw(GException)
 {
 	return(0.0);
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GSubProfile::Similarity(const GSubProfile*) const
+//------------------------------------------------------------------------------
+double GSubProfile::Similarity(const GSubProfile*) const throw(GException)
 {
 	return(0.0);
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GSubProfile::SimilarityIFF(const GSubProfile*) const
+//------------------------------------------------------------------------------
+double GSubProfile::SimilarityIFF(const GSubProfile*) const throw(GException)
 {
 	return(0.0);
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GSubProfile::Similarity(const GGroup*) const
+//------------------------------------------------------------------------------
+double GSubProfile::Similarity(const GGroup*) const throw(GException)
 {
 	return(0.0);
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GSubProfile::SimilarityIFF(const GGroup*) const
+//------------------------------------------------------------------------------
+double GSubProfile::SimilarityIFF(const GGroup*) const throw(GException)
 {
 	return(0.0);
 }
+
 
 #if GALILEITEST
-//-----------------------------------------------------------------------------
-void GALILEI::GSubProfile::SetSubject(GSubject* s)
+//------------------------------------------------------------------------------
+void GSubProfile::SetSubject(GSubject* s)
 {
 	Subject=s;
 }
 
 
-//-----------------------------------------------------------------------------
-GSubject* GALILEI::GSubProfile::GetSubject(void) const
+//------------------------------------------------------------------------------
+GSubject* GSubProfile::GetSubject(void) const
 {
 	return(Subject);
 }
 #endif
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSubProfile::UpdateFinished(void)
+//------------------------------------------------------------------------------
+void GSubProfile::UpdateFinished(void)
 {
 	State=osUpdated;
 	Computed.SetToday();
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GSubProfile::~GSubProfile(void)
+//------------------------------------------------------------------------------
+GSubProfile::~GSubProfile(void)
 {
 }

@@ -4,9 +4,9 @@
 
 	GProfDoc.cpp
 
-	Profile's Assessment of a document - Implementation.
+	Profile's Assessment on a document - Implementation.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,7 +34,7 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gprofdoc.h>
 #include <profiles/gprofile.h>
@@ -45,27 +45,27 @@ using namespace R;
 
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GProfDoc
 //
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocAssessment fdbk,const char* date)
   : Doc(doc), Profile(prof), Fdbk(fdbk), Updated(date)
 {
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocAssessment fdbk,RDate& date)
   : Doc(doc), Profile(prof), Fdbk(fdbk), Updated(date)
 {
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int GProfDoc::Compare(const GProfDoc& profdoc) const
 {
 	int diff;
@@ -76,7 +76,7 @@ int GProfDoc::Compare(const GProfDoc& profdoc) const
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int GProfDoc::Compare(const GProfDoc* profdoc) const
 {
 	int diff;
@@ -87,14 +87,14 @@ int GProfDoc::Compare(const GProfDoc* profdoc) const
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int GProfDoc::Compare(const GDoc* doc) const
 {
 	return(Doc->GetId()-doc->GetId());
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GProfDoc::UpdateFdbk(tDocAssessment fdbk,const char* date)
 {
 	Fdbk=fdbk;
@@ -102,7 +102,7 @@ void GProfDoc::UpdateFdbk(tDocAssessment fdbk,const char* date)
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GProfDoc::UpdateFdbk(tDocAssessment fdbk,RDate& date)
 {
 	Fdbk=fdbk;
@@ -110,28 +110,7 @@ void GProfDoc::UpdateFdbk(tDocAssessment fdbk,RDate& date)
 }
 
 
-//---------------------------------------------------------------------------
-tDocAssessment GProfDoc::GetFdbk(void) const
-{
-	return(Fdbk);
-}
-
-
-//---------------------------------------------------------------------------
-GDoc* GProfDoc::GetDoc(void) const
-{
-	return(Doc);
-}
-
-
-//---------------------------------------------------------------------------
-GProfile* GProfDoc::GetProfile(void) const
-{
-	return(Profile);
-}
-
-
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RDate& GProfDoc::GetUpdated(void) const
 {
 	RDate* d=RDate::GetDate();
@@ -141,7 +120,7 @@ RDate& GProfDoc::GetUpdated(void) const
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool GProfDoc::FdbkTreated(void) const
 {
 	GSubProfile* sub;
@@ -156,21 +135,7 @@ bool GProfDoc::FdbkTreated(void) const
 }
 
 
-//---------------------------------------------------------------------------
-double GProfDoc::Similarity(void)
-{
-	GSubProfile* sub;
-	GLang* lang;
-
-	lang=Doc->GetLang();
-	if(!lang) return(0.0);
-	sub=Profile->GetPtr<const GLang*>(lang);
-	if(!sub) return(0.0);
-	return(sub->Similarity(Doc));
-}
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 tDocAssessment GProfDoc::ErrorJudgment(tDocAssessment fdbk,double PercErr,RRandom* rand)
 {
 	double random=rand->Value()*100+1.0;
@@ -203,7 +168,7 @@ tDocAssessment GProfDoc::ErrorJudgment(tDocAssessment fdbk,double PercErr,RRando
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GProfDoc::~GProfDoc(void)
 {
 }

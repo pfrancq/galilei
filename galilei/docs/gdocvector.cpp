@@ -53,7 +53,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf) throw(bad_alloc)
+GDocVector::GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf) throw(bad_alloc)
 	: GDoc(url,name,id,lang,mime,u,a,f,nbf),
 	  GWeightInfos(100)
 {
@@ -61,14 +61,14 @@ GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id
 
 
 //------------------------------------------------------------------------------
-bool GALILEI::GDocVector::HasRepresentation(void) const
+bool GDocVector::IsDefined(void) const
 {
 	return(!GWeightInfos::IsEmpty());
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GDocVector::ClearInfos(bool l)
+void GDocVector::ClearInfos(bool l)
 {
 	GDoc::ClearInfos(l);
 	RemoveRefs();
@@ -84,7 +84,7 @@ void GDocVector::AddInfo(GWeightInfo* info) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GWeightInfoCursor& GALILEI::GDocVector::GetWeightInfoCursor(void)
+GWeightInfoCursor& GDocVector::GetWeightInfoCursor(void)
 {
 	GWeightInfoCursor *cur=GWeightInfoCursor::GetTmpCursor();
 	cur->Set(this);
@@ -93,49 +93,49 @@ GWeightInfoCursor& GALILEI::GDocVector::GetWeightInfoCursor(void)
 
 
 //------------------------------------------------------------------------------
-double GALILEI::GDocVector::Similarity(const GDoc* doc) const
+double GDocVector::Similarity(const GDoc* doc) const
 {
 	return(GWeightInfos::Similarity(dynamic_cast<const GDocVector*>(doc)));
 }
 
 
 //------------------------------------------------------------------------------
-double GALILEI::GDocVector::SimilarityIFF(const GDoc* doc) const
+double GDocVector::SimilarityIFF(const GDoc* doc) const
 {
 	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GDocVector*>(doc),otDoc,Lang));
 }
 
 
 //------------------------------------------------------------------------------
-double GALILEI::GDocVector::Similarity(const GSubProfile* sub) const
+double GDocVector::Similarity(const GSubProfile* sub) const
 {
 	return(GWeightInfos::Similarity(dynamic_cast<const GSubProfileVector*>(sub)));
 }
 
 
 //------------------------------------------------------------------------------
-double GALILEI::GDocVector::SimilarityIFF(const GSubProfile* sub) const
+double GDocVector::SimilarityIFF(const GSubProfile* sub) const
 {
 	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GSubProfileVector*>(sub),otDocSubProfile,Lang));
 }
 
 
 //------------------------------------------------------------------------------
-double GALILEI::GDocVector::Similarity(const GGroup* grp) const
+double GDocVector::Similarity(const GGroup* grp) const
 {
 	return(GWeightInfos::Similarity(dynamic_cast<const GGroupVector*>(grp)));
 }
 
 
 //------------------------------------------------------------------------------
-double GALILEI::GDocVector::SimilarityIFF(const GGroup* grp) const
+double GDocVector::SimilarityIFF(const GGroup* grp) const
 {
 	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GGroupVector*>(grp),otDocGroup,Lang));
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GDocVector::UpdateRefs(void) const
+void GDocVector::UpdateRefs(void) const throw(GException)
 {
 	if(!Lang) return;
 	AddRefs(otDoc,Lang);
@@ -143,7 +143,7 @@ void GALILEI::GDocVector::UpdateRefs(void) const
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GDocVector::RemoveRefs(void) const
+void GDocVector::RemoveRefs(void) const throw(GException)
 {
 	if(!Lang) return;
 	DelRefs(otDoc,Lang);
@@ -151,7 +151,7 @@ void GALILEI::GDocVector::RemoveRefs(void) const
 
 
 //------------------------------------------------------------------------------
-GALILEI::GDocVector::~GDocVector(void)
+GDocVector::~GDocVector(void)
 {
 	RemoveRefs();
 }

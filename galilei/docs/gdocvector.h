@@ -82,10 +82,10 @@ public:
 	virtual const char* GetModelName(void) const {return("Vector");}
 
 	/**
-	* Look if the document has a representation?
+	* Verify if the document is defined.
 	* @return bool.
 	*/
-	virtual bool HasRepresentation(void) const;
+	virtual bool IsDefined(void) const;
 
 	/**
 	* Get the identificator of the document.
@@ -152,12 +152,12 @@ public:
 	/**
 	* Update the references of the document.
 	*/
-	void UpdateRefs(void) const;
+	void UpdateRefs(void) const throw(GException);
 
 	/**
 	* Remove the references of the document.
 	*/
-	void RemoveRefs(void) const;
+	void RemoveRefs(void) const throw(GException);
 
 	/**
 	* Destruct the document.

@@ -161,7 +161,7 @@ void GDocProfSims::GDocProfSim::AnalyseSim(GSims* sim,const GDoc* doc ,const GSu
 	double tmp;
 
 	if(doc->GetLang()!=sub->GetLang()) return;
-	if((!doc->HasRepresentation())||(!sub->IsDefined())) return;
+	if((!doc->IsDefined())||(!sub->IsDefined())) return;
 	if(IFF)
 		tmp=doc->SimilarityIFF(sub);
 	else

@@ -6,7 +6,7 @@
 
 	Profile - Implementation.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,7 +34,7 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include filess for GALILEI
 #include <profiles/gprofile.h>
 #include <sessions/gsession.h>
@@ -47,45 +47,86 @@ using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GProfile
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GALILEI::GProfile::GProfile(GUser *usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf) throw(bad_alloc)
+//------------------------------------------------------------------------------
+GProfile::GProfile(GUser *usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf) throw(bad_alloc)
   : RContainer<GSubProfile,unsigned,false,true>(nb,nb/2), User(usr),Id(id),Name(name),
     Fdbks(nbf+nbf/2,nbf/2), Social(s)
 {
-
 	User->InsertPtr(this);
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GProfile::Compare(const unsigned int &id) const
+//------------------------------------------------------------------------------
+int GProfile::Compare(const GProfile &profile) const
+{
+	return(Id-profile.Id);
+}
+
+
+//------------------------------------------------------------------------------
+int GProfile::Compare(const GProfile *profile) const
+{
+	return(Id-profile->Id);
+}
+
+
+//------------------------------------------------------------------------------
+int GProfile::Compare(const unsigned int id) const
 {
 	return(Id-id);
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GProfile::Compare(const GProfile &profile) const
+#if GALILEITEST
+//------------------------------------------------------------------------------
+void GProfile::SetSubject(GSubject* s)
 {
-  return(Id-profile.Id);
+	Subject=s;
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GProfile::Compare(const GProfile *profile) const
+//------------------------------------------------------------------------------
+GSubject* GProfile::GetSubject(void) const
 {
-  return(Id-profile->Id);
+	return(Subject);
+}
+#endif
+
+
+//------------------------------------------------------------------------------
+void GProfile::SetId(unsigned int id) throw(GException)
+{
+	if(Id==cNoRef)
+		throw GException("Cannot assign cNoRef to a user");
+	Id=id;
 }
 
 
-//-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GProfile::GetSubProfile(const GLang* lang) const
+//------------------------------------------------------------------------------
+RString& GProfile::GetName(void) const
+{
+	RString* tmp=RString::GetString();
+
+	(*tmp)=Name;
+	return(*tmp);
+}
+
+
+//------------------------------------------------------------------------------
+void GProfile::SetSocial(bool social)
+{
+	Social=social;
+}
+
+
+//------------------------------------------------------------------------------
+GSubProfile* GProfile::GetSubProfile(const GLang* lang) const
 {
 	// If no lang -> return null
 	if(!lang) return(0);
@@ -93,8 +134,8 @@ GSubProfile* GALILEI::GProfile::GetSubProfile(const GLang* lang) const
 }
 
 
-//-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
+//------------------------------------------------------------------------------
+GSubProfile* GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
 {
 	GSubProfile* sub;
 
@@ -110,8 +151,8 @@ GSubProfile* GALILEI::GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
 }
 
 
-//-----------------------------------------------------------------------------
-GProfDoc* GALILEI::GProfile::GetFeedback(const GDoc* doc) const
+//------------------------------------------------------------------------------
+GProfDoc* GProfile::GetFeedback(const GDoc* doc) const
 {
 	GLang* lang;
 
@@ -123,15 +164,15 @@ GProfDoc* GALILEI::GProfile::GetFeedback(const GDoc* doc) const
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GProfile::GetNbJudgedDocs(const GLang* lang) const
+//------------------------------------------------------------------------------
+unsigned int GProfile::GetNbAssessedDocs(const GLang* lang) const
 {
-	return(GetSubProfile(lang)->GetNbJudgedDocs());
+	return(GetSubProfile(lang)->GetNbAssessedDocs());
 }
 
 
-//-----------------------------------------------------------------------------
-GProfDocCursor& GALILEI::GProfile::GetProfDocCursor(void)
+//------------------------------------------------------------------------------
+GProfDocCursor& GProfile::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
 	cur->Set(Fdbks);
@@ -139,8 +180,8 @@ GProfDocCursor& GALILEI::GProfile::GetProfDocCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
-GSubProfileCursor& GALILEI::GProfile::GetSubProfilesCursor(void)
+//------------------------------------------------------------------------------
+GSubProfileCursor& GProfile::GetSubProfilesCursor(void)
 {
 	GSubProfileCursor *cur=GSubProfileCursor::GetTmpCursor();
 	cur->Set(this);
@@ -148,8 +189,8 @@ GSubProfileCursor& GALILEI::GProfile::GetSubProfilesCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GProfile::ClearFdbks(void)
+//------------------------------------------------------------------------------
+void GProfile::ClearFdbks(void)
 {
 	GSubProfileCursor Cur;
 
@@ -163,8 +204,8 @@ void GALILEI::GProfile::ClearFdbks(void)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GProfile::AddAssessment(GProfDoc* j,GSession* s) throw(bad_alloc)
+//------------------------------------------------------------------------------
+void GProfile::AddAssessment(GProfDoc* j,GSession* s) throw(bad_alloc)
 {
 	GLang* l;
 
@@ -172,7 +213,6 @@ void GALILEI::GProfile::AddAssessment(GProfDoc* j,GSession* s) throw(bad_alloc)
 	if(!l)
 	{
 		Fdbks.InsertPtr(j);
-//		SetState(osModified);
 	}
 	else
 	{
@@ -181,8 +221,8 @@ void GALILEI::GProfile::AddAssessment(GProfDoc* j,GSession* s) throw(bad_alloc)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang, GSession* s)
+//------------------------------------------------------------------------------
+void GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang, GSession* s)
 {
 	GLang* lang;
 	GSubProfile* sub;
@@ -223,23 +263,7 @@ void GALILEI::GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang, GSessio
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GProfile::~GProfile(void)
+//------------------------------------------------------------------------------
+GProfile::~GProfile(void)
 {
 }
-
-
-#if GALILEITEST
-//-----------------------------------------------------------------------------
-void GALILEI::GProfile::SetSubject(GSubject* s)
-{
-	Subject=s;
-}
-
-
-//-----------------------------------------------------------------------------
-GSubject* GALILEI::GProfile::GetSubject(void) const
-{
-	return(Subject);
-}
-#endif
