@@ -51,7 +51,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <historic/giwordsweightshistory.h>
+#include <historic/gweightinfoshistory.h>
 #include <historic/ggroupshistory.h>
 using namespace GALILEI;
 
@@ -148,7 +148,7 @@ class KViewHistory : public KView
 	/**
 	* selected items from Solutions.
 	*/
-	R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>* SelectedSubProfiles;
+	R::RContainer<GWeightInfosHistory, unsigned int, false, true>* SelectedSubProfiles;
 
 	/**
 	* Similarities between the subprofiles to group.

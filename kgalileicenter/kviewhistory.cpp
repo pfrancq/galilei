@@ -96,7 +96,7 @@ KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	GSubProfile* sub;
 
 	//init the container of selected subprofiles.
-	SelectedSubProfiles=new R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>(5,2);
+	SelectedSubProfiles=new R::RContainer<GWeightInfosHistory, unsigned int, false, true>(5,2);
 
 	//init ToolBar components.
 	ToolBar=  new QMenuBar( this, "file operations" );
@@ -294,7 +294,7 @@ void KViewHistory::slotViewRelationShip(void)
 void KViewHistory::slotSelectedSetChanged(QListViewItem* item)
 {
 
-	GIWordsWeightsHistory* tmp;
+	GWeightInfosHistory* tmp;
 	QListViewItemType* itemtype=((QListViewItemType*)item);
 
 	switch(itemtype->Type)
@@ -325,7 +325,7 @@ void KViewHistory::DisplaySimilarities(void)
 {
 	unsigned int i,j;
 	double similarity;
-	GIWordsWeightsHistory** giwwh1, **giwwh2;
+	GWeightInfosHistory** giwwh1, **giwwh2;
 	QListViewItem* sim;
 	char num1[50], num2[50], num3[50];
 
@@ -392,17 +392,17 @@ void KViewHistory::DisplayChildrenRelationShip(GGroupHistory* grp, QListViewItem
 //-----------------------------------------------------------------------------
 void KViewHistory::CheckModifiedGroups(GGroupsHistory* grps)
 {
-	R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>* lastsubs;
+	R::RContainer<GWeightInfosHistory, unsigned int, false, true>* lastsubs;
 	GGroupsHistory* lastgroups;
 	GGroupHistory* grp, *lastgroup;
-	GIWordsWeightsHistory* sub, *lastsub;
+	GWeightInfosHistory* sub, *lastsub;
 	unsigned int  lastcurid;
 	
 	// if the grps is the frst historic one, return
 	if (grps->GetId()==MinGen) return;
 
 	//get the last groups and put its profiles in a container
-	lastsubs=new R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>(10,5);
+	lastsubs=new R::RContainer<GWeightInfosHistory, unsigned int, false, true>(10,5);
 	lastgroups=Groups->GetPtr(grps->GetId()-1);
 	if (!lastgroups) return;
 	for (lastgroups->Start(); !lastgroups->End(); lastgroups->Next())
@@ -512,12 +512,12 @@ void KViewHistory::CheckWellGroupedSubProfiles(GGroupsHistory* grps)
 //-----------------------------------------------------------------------------
 void KViewHistory::CheckNewProfiles(GGroupsHistory* grps)
 {
-	R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>* lastsubs;
+	R::RContainer<GWeightInfosHistory, unsigned int, false, true>* lastsubs;
 	GGroupsHistory* lastgroups;
 	GGroupHistory* grp;
 
 	//get the last groups and put its profiles in a container
-	lastsubs=new R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>(10,5);
+	lastsubs=new R::RContainer<GWeightInfosHistory, unsigned int, false, true>(10,5);
 	lastgroups=Groups->GetPtr(grps->GetId()-1);
 	if (!lastgroups) return;
 	for (lastgroups->Start(); !lastgroups->End(); lastgroups->Next())
@@ -544,7 +544,7 @@ void KViewHistory::CreateGroupsRelationship(void)
 	unsigned int  i, maxoccurs, nbchildren;
 	GGroupsHistory* curgrps, *nextgrps;
 	GGroupHistory* grp;
-	GIWordsWeightsHistory* subprof;
+	GWeightInfosHistory* subprof;
 	bool treated;
 	unsigned int** tab;
 
