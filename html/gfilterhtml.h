@@ -157,6 +157,11 @@ class GFilterHTML: public GFilter
 	*/
 	char* Base;
 
+	/**
+	* Specify if the analysis is currently in a script part.
+	*/
+	bool InScript;
+
 public:
 
 	/**

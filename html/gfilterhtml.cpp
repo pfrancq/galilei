@@ -148,7 +148,7 @@ bool GFilterHTML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	SkipSpaces();
 	CurTag=NextTag=0;
 	Params=NextParams=0;
-	bEndTag=bEndNextTag=false;
+	InScript=bEndTag=bEndNextTag=false;
 
 	// Traitement of the document
 	AnalyseHeader();
@@ -840,7 +840,7 @@ beginread:
 		memset(SkipComments,' ',len*sizeof(char));
 		goto beginread;
 	}
-	
+
 	// Is it a ending tag ('</')?
 	bEndTag=((*Pos)==('/'));
 	if(bEndTag)
@@ -868,6 +868,17 @@ beginread:
 	(*(Pos++))=0;
 	TagLen++;
 
+	// If the analysis is in a script part, only a closing </SCRIPT> tag is accepted.
+	if(InScript&&((!bEndTag)||(strncmp(BeginTag,"SCRIPT",6))))
+	{
+		// Disable the '<' character and restart the analysis
+		(*SkipTag)=' ';
+		(*(Pos-1))=' ';
+		Pos=SkipTag;
+		BlockLen-=TagLen;
+		goto beginread;
+	}
+
 	// If Possible parameters
 	if(bParams)
 	{
@@ -885,7 +896,6 @@ beginread:
 		if(bParams)
 		{
 			Params=Pos;
-			//cerr << " les parametres "<< Params<<"   "<< *Params <<endl;
 			while((*Pos)&&((*Pos)!='>')&&(!(((*Pos)=='/')&&((*(Pos+1))=='>'))))
 			{
 				if((*Pos)=='&')
@@ -911,7 +921,6 @@ beginread:
 		TagLen++;
 		Pos++;
 	}
-
 }
 
 
@@ -933,24 +942,25 @@ GFilterHTML::Tag* GFilterHTML::GetValidTag(void)
 		}
 		else
 		{
-			if((t->Type==Tag::tSCRIPT)&&(!bEndTag))
+			if((t->Type==Tag::tSCRIPT)&&(!bEndTag)&&(*Pos))
 			{
 				char* SkipScript=SkipTag;
 				BlockLen=TagLen;
 				RemBlockIns=bBlockIns;
-				while((!t)||(!((t->Type==Tag::tSCRIPT)&&bEndTag)))
+				InScript=true;
+				while(((!t)||(!((t->Type==Tag::tSCRIPT)&&bEndTag)))&&(*Pos))
 				{
 					ReadNextTag();
 					t=Tags->GetPtr<const char*>(BeginTag);
 					BlockLen+=TagLen;
 				}
+				InScript=false;
 				memset(SkipScript,' ',BlockLen*sizeof(char));
 				t=0;
 				bBlockIns=RemBlockIns;
 			}
 		}
-	}
-	while(!t);
+	} while((!t)&&(*Pos));
 	return(t);
 }
 
