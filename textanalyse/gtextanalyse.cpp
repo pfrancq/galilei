@@ -404,7 +404,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 	if(Words)
 		Words->Clear();
 	else
-		Words=new GIWordsWeights(Lang,Ndiff);
+		Words=new GIWordsWeights(Ndiff);
 	for(i=Ndiff+1,wrd=Direct;--i;wrd++)
 	{
 		if((*wrd)->InStop[LangIndex]) continue;
