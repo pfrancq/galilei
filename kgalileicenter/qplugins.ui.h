@@ -114,6 +114,15 @@ void QPlugins::changeGroupCalc( QListViewItem * item )
 	AboutGroupCalc->setEnabled(f->Fac->HasAbout());
 }
 
+void QPlugins::changeMetaEngine( QListViewItem * item)
+{
+    if(!item) return;
+	QMetaEngineItem* f=dynamic_cast<QMetaEngineItem*>(item);
+	EnableMetaEngine->setChecked(f->Enable);
+	ConfigMetaEngine->setEnabled(f->Fac->HasConfigure());
+	AboutMetaEngine->setEnabled(f->Fac->HasAbout());
+}
+
 
 void QPlugins::slotAboutGrouping()
 {
@@ -135,6 +144,13 @@ void QPlugins::slotAboutGroupCalc()
 {
         	if(!GroupCalcs->currentItem()) return;
 	QGroupCalcItem* f=dynamic_cast<QGroupCalcItem*>(GroupCalcs->currentItem());
+	f->Fac->About();
+}
+
+void QPlugins::slotAboutMetaEngine()
+{
+    	if(!MetaEngines->currentItem()) return;
+	QMetaEngineItem* f=dynamic_cast<QMetaEngineItem*>(MetaEngines->currentItem());
 	f->Fac->About();
 }
 
@@ -162,6 +178,13 @@ void QPlugins::slotConfigGroupCalc()
 	f->Fac->Configure();
 }
 
+void QPlugins::slotConfigMetaEngine()
+{
+        	if(!MetaEngines->currentItem()) return;
+	QMetaEngineItem* f=dynamic_cast<QMetaEngineItem*>(MetaEngines->currentItem());
+	f->Fac->Configure();
+}
+
 
 void QPlugins::slotGroupingEnable( bool state )
 {
@@ -183,6 +206,14 @@ void QPlugins::slotLinkCalcEnable( bool state )
 {
         	if(!LinkCalcs->currentItem()) return;
 	QLinkCalcItem* f=dynamic_cast<QLinkCalcItem*>(LinkCalcs->currentItem());
+	f->Enable=state;
+}
+
+
+void QPlugins::slotMetaEngineEnable( bool state )
+{
+        	if(!MetaEngines->currentItem()) return;
+	QMetaEngineItem* f=dynamic_cast<QMetaEngineItem*>(MetaEngines->currentItem());
 	f->Enable=state;
 }
 
@@ -417,3 +448,36 @@ void QPlugins::updateLevels(void)
 	f->Fac->Set("Level",level);
     } 
   }
+
+void QPlugins::changeEngine(QListViewItem* item)
+{
+	if(!item) return;
+	QEngineItem* f=dynamic_cast<QEngineItem*>(item);
+	EnableEngine->setChecked(f->Enable);
+	ConfigEngine->setEnabled(f->Fac->HasConfigure());
+	AboutEngine->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::slotAboutEngine()
+{
+	if(!Engines->currentItem()) return;
+	QEngineItem* f=dynamic_cast<QEngineItem*>(Engines->currentItem());
+	f->Fac->About();
+}
+
+
+void QPlugins::slotConfigEngine()
+{
+	if(!Engines->currentItem()) return;
+	QEngineItem* f=dynamic_cast<QEngineItem*>(Engines->currentItem());
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotEngineEnable( bool state )
+{
+	if(!Engines->currentItem()) return;
+	QEngineItem* f=dynamic_cast<QEngineItem*>(Engines->currentItem());
+	f->Enable=state;
+}

@@ -102,6 +102,7 @@ using namespace std;
 #include "kview.h"
 #include "kviewdocs.h"
 #include "kviewdoc.h"
+#include "kviewmetaengine.h"
 #include "kviewusers.h"
 #include "kviewstats.h"
 #include "kviewthgroups.h"
@@ -174,7 +175,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,
 			GroupingManager,GroupCalcManager,StatsCalcManager,LinkCalcManager,PostDocManager,
-			PostGroupManager);
+			PostGroupManager,EngineManager);
 			sessionConnect->setEnabled(false);
 			UpdateMenusEntries();
 			dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
@@ -215,7 +216,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(RString host,RString user,RString
 		Doc->SetSession(Sess);
 		d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 		d->LoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,GroupingManager,
-		GroupCalcManager,StatsCalcManager,LinkCalcManager, PostDocManager, PostGroupManager);
+		GroupCalcManager,StatsCalcManager,LinkCalcManager, PostDocManager, PostGroupManager,EngineManager);
 		sessionConnect->setEnabled(false);
 		UpdateMenusEntries();
 		dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
@@ -843,6 +844,12 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 	((KViewDoc*)m)->AnalyseDocXML();
 }
 
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotQueryMetaEngine(void)
+{
+	createClient(Doc,new KViewMetaEngine(Doc,pWorkspace,"View Meta Engine Results",0));
+}
+
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotFillMIMETypes(void)
@@ -1220,4 +1227,5 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 	if(LinkCalcManager) delete LinkCalcManager;
 	if(PostDocManager) delete PostDocManager;
 	if(PostGroupManager) delete PostGroupManager;
+	if(EngineManager) delete EngineManager;
 }

@@ -64,6 +64,8 @@
  		<Action name="saveXML"/>
 		<Action name="analyseXML"/>
 		<separator/>
+		<Action name="queryMetaEngine"/>
+		<separator/>
 		<Action name="fillMIMETypes"/>
 	</Menu>
 	<Menu name="Text"><text>&amp;Text</text>

@@ -49,6 +49,8 @@
 #include <profiles/gprofilecalc.h>
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
+#include <engines/gengine.h>
+#include <engines/gmetaengine.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -115,6 +117,8 @@ void KGALILEICenterApp::slotPlugins(void)
 	GFactoryDocAnalyseCursor DocAnalyse;
 	GFactoryPostGroupCursor PostGroup;
 	GFactoryPostGroupOrder* pgorder;
+	GFactoryEngineCursor Engine;
+	GFactoryMetaEngineCursor MetaEngine;
 	QPlugins dlg(this,"Plugins Dialog");
 	QString str;
 	QListViewItem* def;
@@ -368,6 +372,52 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.CurrentDocAnalyse->setEnabled(true);
 	}
 
+	// Goes through engines
+	def=cur=0;
+	Engine=EngineManager->GetEnginesCursor();
+	for(Engine.Start();!Engine.End();Engine.Next())
+	{
+		str=ToQString(Engine()->GetName());
+		cout<<Engine()->GetName()<<endl;
+		str+=" [";
+		str+=ToQString(Engine()->GetLib());
+		str+="]";
+		cur=new QEngineItem(dlg.Engines,Engine(),str);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.Engines->setSelected(def,true);
+		dlg.changeEngine(def);
+		dlg.EnableEngine->setEnabled(true);
+	}
+
+	// Goes through the meta engine method
+	def=cur=0;
+	MetaEngine=EngineManager->GetMetaEnginesCursor();
+	dlg.CurrentMetaEngine->insertItem("None",0);
+	for(MetaEngine.Start(),idx=1;!MetaEngine.End();MetaEngine.Next(),idx++)
+	{
+		str=ToQString(MetaEngine()->GetName());
+		str+=" [";
+		str+=ToQString(MetaEngine()->GetLib());
+		str+="]";
+		cur=new QMetaEngineItem(dlg.MetaEngines,MetaEngine(),str);
+		dlg.CurrentMetaEngine->insertItem(ToQString(MetaEngine()->GetName()),idx);
+		if((MetaEngine()->GetPlugin())&&(MetaEngine()->GetPlugin()==EngineManager->GetCurrentMethod()))
+			dlg.CurrentMetaEngine->setCurrentItem(idx);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.MetaEngines->setSelected(def,true);
+		dlg.changeMetaEngine(def);
+		dlg.EnableMetaEngine->setEnabled(true);
+		dlg.CurrentMetaEngine->setEnabled(true);
+	}
+	
 	if(dlg.exec())
 	{
 		// read the plugins path
@@ -528,6 +578,37 @@ void KGALILEICenterApp::slotPlugins(void)
 			else
 				item10->Fac->Delete(getSession());
 			item10=dynamic_cast<QPostGroupItem*>(item10->itemBelow());
+		}
+		
+		// Goes through engines
+		QEngineItem* item11=dynamic_cast<QEngineItem*>(dlg.Engines->firstChild());
+		while(item11)
+		{
+			cout<<"passe dans engines dlg"<<endl;
+			if(item11->Enable)
+				item11->Fac->Create();
+			else
+				item11->Fac->Delete();
+			item11=dynamic_cast<QEngineItem*>(item11->itemBelow());
+		}
+		
+		// Goes through the meta engine method
+		QMetaEngineItem* item12=dynamic_cast<QMetaEngineItem*>(dlg.MetaEngines->firstChild());
+		while(item12)
+		{
+			cout<<"passe dans meta engines dlg"<<endl;
+			if(item12->Enable)
+				item12->Fac->Create(getSession());
+			else
+				item12->Fac->Delete(getSession());
+			item12=dynamic_cast<QMetaEngineItem*>(item12->itemBelow());
+		}
+		try
+		{
+			EngineManager->SetCurrentMethod(dlg.CurrentMetaEngine->currentText());
+		}
+		catch(GException)
+		{
 		}
 	}
 

@@ -178,7 +178,7 @@ void KViewDoc::ConstructFdbks(void)
 	QListViewItem *p;
 	RDate d;
 	char sDate[20];
-	GProfDocCursor Profiles;
+	RContainer<GProfDoc,true,false> Assess(100,50);
 
 	if(!Fdbks) return;
 	if(!FdbksLinks) return;
@@ -192,7 +192,7 @@ void KViewDoc::ConstructFdbks(void)
 	QListViewItemType* hs= new QListViewItemType(Fdbks, "Irrelevant Documents");
 	hs->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("stop.png",KIcon::Small)));
 
-	//init different judgements for documents from link analysis.
+	// Init different judgements for documents from link analysis.
 	QListViewItemType* lh= new QListViewItemType(FdbksLinks , "Hub Documents");
 	lh->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("ok.png",KIcon::Small)));
 	QListViewItemType* la= new QListViewItemType(FdbksLinks, "Authority Documents");
@@ -200,7 +200,8 @@ void KViewDoc::ConstructFdbks(void)
 
 
 	// Add Judgements for profile.
-	Profiles=Document->GetProfDocCursor();
+	Doc->GetSession()->GetDocAssessments(Document->GetId(),Assess);
+	RCursor<GProfDoc> Profiles(Assess);
 	for(Profiles.Start();!Profiles.End();Profiles.Next())
 	{
 		switch(Profiles()->GetFdbk()/* & djMaskJudg*/)

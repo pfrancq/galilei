@@ -47,6 +47,8 @@
 #include <infos/glang.h>
 #include <docs/gdocanalyse.h>
 #include <groups/gpostgroup.h>
+#include <engines/gengine.h>
+#include <engines/gmetaengine.h>
 
 using namespace GALILEI;
 
@@ -169,6 +171,28 @@ public:
 	GFactoryPostGroup* Fac;
 	bool Enable;
 	QPostGroupItem(QListView* lst,GFactoryPostGroup* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+class QEngineItem : public QListViewItem
+{
+public:
+	GFactoryEngine* Fac;
+	bool Enable;
+	QEngineItem(QListView* lst,GFactoryEngine* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+class QMetaEngineItem : public QListViewItem
+{
+public:
+	GFactoryMetaEngine* Fac;
+	bool Enable;
+	QMetaEngineItem(QListView* lst,GFactoryMetaEngine* fac,const char* desc)
 		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}

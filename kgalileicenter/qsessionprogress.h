@@ -102,9 +102,10 @@ public:
 	* @param gcmng          Group Computing Manager.
 	* @param smng           Statistical Manager.
 	* @param lmng           Linking Manager.
+	* @param emng           Engine Manager.
 	*/
 	void LoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng,  GPostGroupManager* pgmng) throw(GException,std::bad_alloc);
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng,  GPostGroupManager* pgmng, GEngineManager* emng) throw(GException,std::bad_alloc);
 
 	/**
 	* Create a XML structure.

@@ -89,19 +89,26 @@ KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
 
 	//read the kgalileicenter options
 	readOptions();
+	try
+	{
+		//init the plugins managers;
+		Langs=new GLangManager(pluginsPath.Latin1());
+		URLManager=new GFilterManagerKDE(pluginsPath.Latin1());
+		DocAnalyseManager=new GDocAnalyseManager(pluginsPath.Latin1()),
+		ProfilingManager=new GProfileCalcManager(pluginsPath);
+		GroupingManager=new GGroupingManager(pluginsPath.Latin1());
+		GroupCalcManager=new GGroupCalcManager(pluginsPath.Latin1());
+		StatsCalcManager=new GStatsCalcManager(pluginsPath.Latin1());
+		LinkCalcManager=new GLinkCalcManager(pluginsPath.Latin1());
+		PostDocManager=new GPostDocManager(pluginsPath.Latin1());
+		PostGroupManager=new GPostGroupManager(pluginsPath.Latin1());
+		EngineManager=new GEngineManager(pluginsPath.Latin1());
 
-	//init the plugins managers;
-	Langs=new GLangManager(pluginsPath.Latin1());
-	URLManager=new GFilterManagerKDE(pluginsPath.Latin1());
-	DocAnalyseManager=new GDocAnalyseManager(pluginsPath.Latin1()),
-	ProfilingManager=new GProfileCalcManager(pluginsPath);
-	GroupingManager=new GGroupingManager(pluginsPath.Latin1());
-	GroupCalcManager=new GGroupCalcManager(pluginsPath.Latin1());
-	StatsCalcManager=new GStatsCalcManager(pluginsPath.Latin1());
-	LinkCalcManager=new GLinkCalcManager(pluginsPath.Latin1());
-	PostDocManager=new GPostDocManager(pluginsPath.Latin1());
-	PostGroupManager=new GPostGroupManager(pluginsPath.Latin1());
-
+	}
+	catch(GException e)
+	{
+		std::cout<<e.GetMsg()<<std::endl;
+	}
 	//read the galilei & galilei_plugins options
 	readGALILEIOptions();
 
@@ -153,6 +160,7 @@ void KGALILEICenterApp::initActions(void)
 	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
 	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
 	analyseXML=new KAction(i18n("&Analyse XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
+	queryMetaEngine=new KAction(i18n("&Query Meta Engine"),"find",0,this,SLOT(slotQueryMetaEngine()),actionCollection(),"queryMetaEngine");
 	fillMIMETypes=new KAction(i18n("Construct &MIME types from KDE"),"desktop",0,this,SLOT(slotFillMIMETypes()),actionCollection(),"fillMIMETypes");
 
 	// Menu "Texts"
@@ -250,6 +258,7 @@ void KGALILEICenterApp::saveOptions(void)
 		Conf.Store(LinkCalcManager);
 		Conf.Store(PostDocManager);
 		Conf.Store(PostGroupManager);
+		Conf.Store(EngineManager);
 		Conf.Store(SessionParams);
 		Conf.Save();
 	}
@@ -326,6 +335,7 @@ void KGALILEICenterApp::readGALILEIOptions(void)
 		Conf.Read(PostDocManager);
 		Conf.Read(PostGroupManager);
 		Conf.Read(PostGroupManager);
+		Conf.Read(EngineManager);
 		Conf.Read(SessionParams);
 	}
 	catch(...)
@@ -383,6 +393,7 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	showDocs->setEnabled(true);
 	docAnalyse->setEnabled(true);
 	docsAnalyse->setEnabled(true);
+	queryMetaEngine->setEnabled(true);
 	runProgram->setEnabled(true);
 	sessionStats->setEnabled(true);
 }
@@ -412,6 +423,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);
+	queryMetaEngine->setEnabled(false);
 	runProgram->setEnabled(false);
 	sessionStats->setEnabled(false);
 }

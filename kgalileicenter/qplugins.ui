@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>738</width>
-            <height>432</height>
+            <height>444</height>
         </rect>
     </property>
     <property name="caption">
@@ -1414,6 +1414,245 @@
                             </widget>
                         </vbox>
                     </widget>
+                    <widget class="QWidget">
+                        <property name="name">
+                            <cstring>TabPage</cstring>
+                        </property>
+                        <attribute name="title">
+                            <string>Engines</string>
+                        </attribute>
+                        <grid>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLayoutWidget" row="1" column="0">
+                                <property name="name">
+                                    <cstring>layout2_5</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QPushButton">
+                                        <property name="name">
+                                            <cstring>ConfigEngine</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>Configure</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QPushButton">
+                                        <property name="name">
+                                            <cstring>AboutEngine</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>About</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer2_5</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>EnableEngine</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>Enable engine</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QListView" row="0" column="0">
+                                <column>
+                                    <property name="text">
+                                        <string>Engines</string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <property name="name">
+                                    <cstring>Engines</cstring>
+                                </property>
+                                <property name="resizePolicy">
+                                    <enum>Manual</enum>
+                                </property>
+                                <property name="resizeMode">
+                                    <enum>AllColumns</enum>
+                                </property>
+                            </widget>
+                        </grid>
+                    </widget>
+                    <widget class="QWidget">
+                        <property name="name">
+                            <cstring>TabPage</cstring>
+                        </property>
+                        <attribute name="title">
+                            <string>Meta Engines</string>
+                        </attribute>
+                        <grid>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLayoutWidget" row="0" column="0">
+                                <property name="name">
+                                    <cstring>layout5_3_4</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1_2_3_3</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Current Method</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Choose current method</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer4_2_3_3</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Fixed</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>20</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="QComboBox">
+                                        <property name="name">
+                                            <cstring>CurrentMetaEngine</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Choose current method</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget" row="2" column="0">
+                                <property name="name">
+                                    <cstring>layout3_2_3_3</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QPushButton">
+                                        <property name="name">
+                                            <cstring>ConfigMetaEngine</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>Configure</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QPushButton">
+                                        <property name="name">
+                                            <cstring>AboutMetaEngine</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>About</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer3_2_3_4</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>EnableMetaEngine</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>Enable method</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QListView" row="1" column="0">
+                                <column>
+                                    <property name="text">
+                                        <string>Method</string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <property name="name">
+                                    <cstring>MetaEngines</cstring>
+                                </property>
+                                <property name="resizePolicy">
+                                    <enum>Manual</enum>
+                                </property>
+                                <property name="resizeMode">
+                                    <enum>AllColumns</enum>
+                                </property>
+                            </widget>
+                        </grid>
+                    </widget>
                 </widget>
             </vbox>
         </widget>
@@ -1497,32 +1736,12 @@
         </widget>
     </vbox>
 </widget>
-<customwidgets>
-</customwidgets>
 <connections>
     <connection>
-        <sender>buttonOk</sender>
+        <sender>AboutDocAnalyse</sender>
         <signal>clicked()</signal>
         <receiver>QPlugins</receiver>
-        <slot>accept()</slot>
-    </connection>
-    <connection>
-        <sender>buttonCancel</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>reject()</slot>
-    </connection>
-    <connection>
-        <sender>Filters</sender>
-        <signal>currentChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeFilter(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigFilter</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigFilter()</slot>
+        <slot>slotAboutDocAnalyse()</slot>
     </connection>
     <connection>
         <sender>AboutFilter</sender>
@@ -1531,40 +1750,10 @@
         <slot>slotAboutFilter()</slot>
     </connection>
     <connection>
-        <sender>EnableFilter</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotFilterEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>ProfileCalcs</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeProfileCalc(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigProfileCalc</sender>
+        <sender>AboutGroupCalc</sender>
         <signal>clicked()</signal>
         <receiver>QPlugins</receiver>
-        <slot>slotConfigProfileCalc()</slot>
-    </connection>
-    <connection>
-        <sender>AboutProfileCalc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutProfileCalc()</slot>
-    </connection>
-    <connection>
-        <sender>EnableProfileCalc</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotProfileCalcEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigGrouping</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigGrouping()</slot>
+        <slot>slotAboutGroupCalc()</slot>
     </connection>
     <connection>
         <sender>AboutGrouping</sender>
@@ -1573,76 +1762,10 @@
         <slot>slotAboutGrouping()</slot>
     </connection>
     <connection>
-        <sender>EnableGrouping</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotGroupingEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>Groupings</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeGrouping(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>GroupCalcs</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeGroupCalc(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigGroupCalc</sender>
+        <sender>AboutLang</sender>
         <signal>clicked()</signal>
         <receiver>QPlugins</receiver>
-        <slot>slotConfigGroupCalc()</slot>
-    </connection>
-    <connection>
-        <sender>AboutGroupCalc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutGroupCalc()</slot>
-    </connection>
-    <connection>
-        <sender>EnableGroupCalc</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotGroupCalcEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>Stats</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeStatCalc(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigStat</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigStatCalc()</slot>
-    </connection>
-    <connection>
-        <sender>AboutStat</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutStatCalc()</slot>
-    </connection>
-    <connection>
-        <sender>EnableStat</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotStatCalcEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>LinkCalcs</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeLinkCalc(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigLinkCalc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigLinkCalc()</slot>
+        <slot>slotAboutLang()</slot>
     </connection>
     <connection>
         <sender>AboutLinkCalc</sender>
@@ -1651,88 +1774,10 @@
         <slot>slotAboutLinkCalc()</slot>
     </connection>
     <connection>
-        <sender>EnableLinkCalc</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotLinkCalcEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigPostDoc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigPostDoc()</slot>
-    </connection>
-    <connection>
         <sender>AboutPostDoc</sender>
         <signal>clicked()</signal>
         <receiver>QPlugins</receiver>
         <slot>slotAboutPostDoc()</slot>
-    </connection>
-    <connection>
-        <sender>PostDocs</sender>
-        <signal>clicked(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changePostDoc(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>EnablePostDoc</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotPostDocEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>Langs</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeLang(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigLang</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigLang()</slot>
-    </connection>
-    <connection>
-        <sender>AboutLang</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutLang()</slot>
-    </connection>
-    <connection>
-        <sender>EnableLang</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotLangEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>DocAnalyses</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeDocAnalyse(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigDocAnalyse</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigDocAnalyse()</slot>
-    </connection>
-    <connection>
-        <sender>AboutDocAnalyse</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutDocAnalyse()</slot>
-    </connection>
-    <connection>
-        <sender>EnableDocAnalyse</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotDocAnalyseEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigPostGroup</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigPostGroup()</slot>
     </connection>
     <connection>
         <sender>AboutPostGroup</sender>
@@ -1741,10 +1786,208 @@
         <slot>slotAboutPostGroup()</slot>
     </connection>
     <connection>
+        <sender>AboutProfileCalc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutProfileCalc()</slot>
+    </connection>
+    <connection>
+        <sender>AboutStat</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutStatCalc()</slot>
+    </connection>
+    <connection>
+        <sender>buttonCancel</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>buttonOk</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>buttonOk</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>updateLevels()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigDocAnalyse</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigDocAnalyse()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigFilter</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigFilter()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigGroupCalc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigGroupCalc()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigGrouping</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigGrouping()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigLang</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigLang()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigLinkCalc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigLinkCalc()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigPostDoc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigPostDoc()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigPostGroup</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigPostGroup()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigProfileCalc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigProfileCalc()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigStat</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigStatCalc()</slot>
+    </connection>
+    <connection>
+        <sender>DocAnalyses</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeDocAnalyse(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>EnableDocAnalyse</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotDocAnalyseEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableFilter</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotFilterEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableGroupCalc</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotGroupCalcEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableGrouping</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotGroupingEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableLang</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotLangEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableLinkCalc</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotLinkCalcEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnablePostDoc</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotPostDocEnable(bool)</slot>
+    </connection>
+    <connection>
         <sender>EnablePostGroup</sender>
         <signal>toggled(bool)</signal>
         <receiver>QPlugins</receiver>
         <slot>slotPostGroupEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableProfileCalc</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotProfileCalcEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableStat</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotStatCalcEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>Filters</sender>
+        <signal>currentChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeFilter(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>GroupCalcs</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeGroupCalc(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>Groupings</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeGrouping(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>Langs</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeLang(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>LinkCalcs</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeLinkCalc(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>PostDocs</sender>
+        <signal>clicked(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changePostDoc(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>PostDocsDown</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>postDocMoveDown()</slot>
+    </connection>
+    <connection>
+        <sender>PostDocsUp</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>postDocMoveUp()</slot>
     </connection>
     <connection>
         <sender>PostGroups</sender>
@@ -1765,22 +2008,64 @@
         <slot>postGroupMoveUp()</slot>
     </connection>
     <connection>
-        <sender>PostDocsDown</sender>
-        <signal>clicked()</signal>
+        <sender>ProfileCalcs</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
-        <slot>postDocMoveDown()</slot>
+        <slot>changeProfileCalc(QListViewItem*)</slot>
     </connection>
     <connection>
-        <sender>PostDocsUp</sender>
-        <signal>clicked()</signal>
+        <sender>Stats</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
-        <slot>postDocMoveUp()</slot>
+        <slot>changeStatCalc(QListViewItem*)</slot>
     </connection>
     <connection>
-        <sender>buttonOk</sender>
+        <sender>AboutEngine</sender>
         <signal>clicked()</signal>
         <receiver>QPlugins</receiver>
-        <slot>updateLevels()</slot>
+        <slot>slotAboutEngine()</slot>
+    </connection>
+    <connection>
+        <sender>AboutMetaEngine</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutMetaEngine()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigEngine</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigEngine()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigMetaEngine</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigMetaEngine()</slot>
+    </connection>
+    <connection>
+        <sender>EnableEngine</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotEngineEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableMetaEngine</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotMetaEngineEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>Engines</sender>
+        <signal>currentChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeEngine(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>MetaEngines</sender>
+        <signal>currentChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeMetaEngine(QListViewItem*)</slot>
     </connection>
 </connections>
 <tabstops>
@@ -1850,15 +2135,19 @@
     <slot>changeGrouping( QListViewItem * item )</slot>
     <slot>changeLinkCalc( QListViewItem * item )</slot>
     <slot>changeGroupCalc( QListViewItem * item )</slot>
+    <slot>changeMetaEngine( QListViewItem * item )</slot>
     <slot>slotAboutGrouping()</slot>
     <slot>slotAboutLinkCalc()</slot>
     <slot>slotAboutGroupCalc()</slot>
+    <slot>slotAboutMetaEngine()</slot>
     <slot>slotConfigGrouping()</slot>
     <slot>slotConfigLinkCalc()</slot>
     <slot>slotConfigGroupCalc()</slot>
+    <slot>slotConfigMetaEngine()</slot>
     <slot>slotGroupingEnable( bool state )</slot>
     <slot>slotGroupCalcEnable( bool state )</slot>
     <slot>slotLinkCalcEnable( bool state )</slot>
+    <slot>slotMetaEngineEnable( bool state )</slot>
     <slot>changeStatCalc( QListViewItem * item )</slot>
     <slot>slotAboutStatCalc()</slot>
     <slot>slotConfigStatCalc()</slot>
@@ -1884,6 +2173,10 @@
     <slot>postGroupMoveDown( void )</slot>
     <slot>postGroupMoveUp( void )</slot>
     <slot>updateLevels( void )</slot>
+    <slot>changeEngine( QListViewItem * item )</slot>
+    <slot>slotAboutEngine()</slot>
+    <slot>slotConfigEngine()</slot>
+    <slot>slotEngineEnable( bool state )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>

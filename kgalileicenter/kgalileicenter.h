@@ -48,6 +48,7 @@
 #include <docs/glinkcalcmanager.h>
 #include <docs/gdocanalysemanager.h>
 #include <docs/gpostdocmanager.h>
+#include <engines/genginemanager.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalcmanager.h>
@@ -156,6 +157,11 @@ class KGALILEICenterApp : public KMainWindow
 	* PostGroup Manager.
 	*/
 	GPostGroupManager* PostGroupManager;
+	
+	/**
+	* Engine & meta engine Manager.
+	*/
+	GEngineManager* EngineManager;
 
 	/**
 	* The configuration object of the application.
@@ -492,6 +498,11 @@ private slots:
 	* Analyse the XML structure of the current document.
 	*/
 	void slotAnalyseXML(void);
+	
+	/**
+	* Query the meta engine
+	*/
+	void slotQueryMetaEngine(void);
 
 	/**
 	* Construct the XML structure of the MIME types based on the one of KDE.
@@ -628,6 +639,7 @@ public:
 	KAction* createXML;
 	KAction* saveXML;
 	KAction* analyseXML;
+	KAction* queryMetaEngine;
 	KAction* fillMIMETypes;
 
 	KAction* textFrench;
