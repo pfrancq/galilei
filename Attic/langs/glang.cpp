@@ -101,8 +101,8 @@ int GALILEI::GLang::Compare(const GLang& lang) const
 //-----------------------------------------------------------------------------
 int GALILEI::GLang::Compare(const GLang* lang) const
 {
-	if(!this&&!lang)
-		return(0);
+	if(!lang)
+		return(1);
 	return(strcmp(Code,lang->Code));
 }
 

@@ -82,6 +82,7 @@ int GALILEI::GDocsLang::Compare(const GDocsLang& docLang) const
 		if(!docLang.Lang) return(0);
 		return(-1);
 	}
+	if(!docLang.Lang) return(1);
 	return(Lang->Compare(docLang.Lang));
 }
 
@@ -94,6 +95,7 @@ int GALILEI::GDocsLang::Compare(const GDocsLang* docLang) const
 		if(!docLang->Lang) return(0);
 		return(-1);
 	}
+	if(!docLang->Lang) return(1);
 	return(Lang->Compare(docLang->Lang));
 }
 
@@ -106,6 +108,7 @@ int GALILEI::GDocsLang::Compare(const GLang* lang) const
 		if(!lang) return(0);
 		return(-1);
 	}
+	if(!lang) return(1);
 	return(Lang->Compare(lang));
 }
 
