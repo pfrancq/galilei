@@ -663,9 +663,7 @@ void GALILEI::GSessionMySQL::SaveFdbks(void) throw(GException)
 		}
 		sprintf(sSql,"INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES(%u,'%c',%u,CURDATE())",
 		        Fdbks()->GetDoc()->GetId(),j,Fdbks()->GetProfile()->GetId());
-		cout<<sSql<<endl;
 		RQuery fdbks(this,sSql);
-
 	}
 }
 
