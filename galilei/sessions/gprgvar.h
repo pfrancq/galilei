@@ -63,19 +63,13 @@ protected:
 	*/
 	RStd::RString Name;
 
-	/**
-	* Owner of the variable.
-	*/
-	GPrgVar* Owner;
-
 public:
 
 	/**
 	* Create a variable.
 	* @param name           Name.
-	* @param owner          Owner.
 	*/
-	GPrgVar(const char* name,GPrgVar* owner) throw(bad_alloc);
+	GPrgVar(const char* name) throw(bad_alloc);
 
 	/**
 	* Method needed by RStd::Rcontainer.

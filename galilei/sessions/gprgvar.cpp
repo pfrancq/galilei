@@ -54,8 +54,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GPrgVar::GPrgVar(const char* name,GPrgVar* owner) throw(bad_alloc)
-	: Name(name), Owner(owner)
+GALILEI::GPrgVar::GPrgVar(const char* name) throw(bad_alloc)
+	: Name(name)
 {
 }
 

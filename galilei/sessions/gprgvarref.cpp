@@ -44,6 +44,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gprgvarref.h>
+#include <sessions/gsessionprg.h>
 using namespace GALILEI;
 
 
@@ -55,8 +56,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GPrgVarRef::GPrgVarRef(GPrgVar* owner,const char* ref) throw(bad_alloc)
-	: GPrgVar(ref,owner)
+GALILEI::GPrgVarRef::GPrgVarRef(const char* ref) throw(bad_alloc)
+	: GPrgVar(ref)
 {
 }
 
@@ -68,9 +69,9 @@ void GALILEI::GPrgVarRef::Assign(const void*) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GPrgVarRef::GetValue(GSessionPrg*) throw(GException)
+const char* GALILEI::GPrgVarRef::GetValue(GSessionPrg* prg) throw(GException)
 {
-	return(0);
+	return(prg->GetValue(Name));
 }
 
 

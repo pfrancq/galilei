@@ -55,15 +55,16 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GPrgVarConst::GPrgVarConst(GPrgVar* owner,const char* value) throw(bad_alloc)
-	: GPrgVar(value,owner)
+GALILEI::GPrgVarConst::GPrgVarConst(const char* value) throw(bad_alloc)
+	: GPrgVar(value)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GPrgVarConst::Assign(const void*) throw(GException)
+void GALILEI::GPrgVarConst::Assign(const void* data) throw(GException)
 {
+	Name=static_cast<const char*>(data);
 }
 
 

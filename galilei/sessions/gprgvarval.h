@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgVarRef.h
+	GPrgVarVal.h
 
-	Reference to a Variable - Header.
+	Variable - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -35,8 +35,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GPrgVarRefH
-#define GPrgVarRefH
+#ifndef GPrgVarValH
+#define GPrgVarValH
 
 
 //-----------------------------------------------------------------------------
@@ -51,19 +51,25 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GPrgVar provides a class for a generic variable.
+* The GPrgVarCons provides a class for a variable.
 * @author Pascal Francq
-* @short Program Variable.
+* @short Variable.
 */
-class GPrgVarRef : public GPrgVar
+class GPrgVarVal : public GPrgVar
 {
+	/**
+	* Value of the variable.
+	*/
+	RStd::RString Value;
+
 public:
 
 	/**
 	* Create a variable.
-	* @param ref            Reference.
+	* @param name           Name.
+	* @param value          Value.
 	*/
-	GPrgVarRef(const char* ref) throw(bad_alloc);
+	GPrgVarVal(const char* name,const char* value) throw(bad_alloc);
 
 	/**
 	* Assign some data to the variable.
@@ -80,7 +86,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GPrgVarRef(void);
+	virtual ~GPrgVarVal(void);
 };
 
 

@@ -435,50 +435,6 @@ GALILEI::GPrgClassSession::~GPrgClassSession(void)
 
 //-----------------------------------------------------------------------------
 //
-// InsType
-//
-//-----------------------------------------------------------------------------
-
-////-----------------------------------------------------------------------------
-class GALILEI::GSessionPrg::InstType
-{
-public:
-	RString Name;
-	tInst Type;
-
-	InstType(const char* n,tInst t) : Name(n), Type(t) {}
-	int Compare(const InstType* t) const {return(Name.Compare(t->Name));}
-	int Compare(const char* t) const {return(Name.Compare(t));}
-};
-
-
-
-//-----------------------------------------------------------------------------
-//
-// Inst
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-class GALILEI::GSessionPrg::Inst
-{
-public:
-	RString Param1;
-	RString Param2;
-	tInst Type;
-
-	Inst(const char* p1,const char* p2,tInst t) : Type(t)
-	{
-		if(p1) Param1=p1;
-		if(p2) Param2=p2;
-	}
-	int Compare(const Inst* t) const {return(-1);}
-};
-
-
-
-//-----------------------------------------------------------------------------
-//
 // GSessionPrg
 //
 //-----------------------------------------------------------------------------
@@ -487,15 +443,18 @@ public:
 GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_alloc,GException)
 	: FileName(f), Rec(r), Insts(40), Vars(10,5), Classes(10,5), Prg(FileName)
 {
+	GPrgInst* i;
+
 	// Init Part
 	Classes.InsertPtr(new GPrgClassSession(s));
 
 	Prg.SetRem("#");
-	while(!Prg.Eof())
+	ReadLine=true;
+	while((!ReadLine)||(!Prg.Eof()&&(ReadLine)))
 	{
-		// Read the line
-		strcpy(tmp,Prg.GetLine());
-		AnalyseLine(tmp);
+		i=AnalyseLine(Prg);
+		if(i)
+			Insts.InsertPtr(i);
 	}
 }
 
@@ -509,9 +468,9 @@ int GALILEI::GSessionPrg::CountTabs(char* line)
 	// Count tabs
 	ptr=line;
 	tabs=0;
-	while((*ptr)&&(isspace(*ptr)))
+	while((*ptr)&&((*ptr)=='\t'))
 	{
-		if((*ptr)=='\t') tabs++;
+		tabs++;
 		ptr++;
 	}
 	return(tabs);
@@ -519,16 +478,26 @@ int GALILEI::GSessionPrg::CountTabs(char* line)
 
 
 //-----------------------------------------------------------------------------
-GSessionPrg::Inst* GALILEI::GSessionPrg::AnalyseLine(char* line) throw(bad_alloc,GException)
+GPrgInst* GALILEI::GSessionPrg::AnalyseLine(RIO::RTextFile& prg) throw(bad_alloc,GException)
 {
 	RString l;
 	char* ptr;
 	char* obj;
+	char* line;
 	char* name;
 	char what;
 	char tabs;
 	GPrgVar* r;
 	char buf[200];
+	char* tbuf;
+
+	// Read the line
+	if(ReadLine)
+	{
+		tbuf=prg.GetLine();
+		strcpy(tmp,tbuf);
+	}
+	line=tmp;
 
 	// Skip Spaces and count tabs
 	tabs=CountTabs(line);
@@ -548,19 +517,28 @@ GSessionPrg::Inst* GALILEI::GSessionPrg::AnalyseLine(char* line) throw(bad_alloc
 	// Look if instruction
 	if(what=='(')
 	{
-		// Is the object not a "for"
+		// If is "for"
 		if(!strcmp(obj,"for"))
 		{
-			GPrgInstFor f(ptr);
+			GPrgInstFor* f=new GPrgInstFor(ptr);
 
 			// Read the next lines
-			strcpy(tmp,Prg.GetLine());
-			while((!Prg.Eof())&&(CountTabs(tmp)>tabs))
+			tbuf=Prg.GetLine();
+			if(!tbuf) return(f);
+			strcpy(tmp,tbuf);
+			ReadLine=false;
+			while((!ReadLine)||(!Prg.Eof()&&(ReadLine)))
 			{
-				strcpy(tmp,Prg.GetLine());
+				if(CountTabs(tmp)<=tabs) break;
+				f->AddInst(AnalyseLine(prg));
+				tbuf=prg.GetLine();
+				if(!tbuf) return(f);
+				strcpy(tmp,tbuf);
+				ReadLine=false;
 			}
-			throw GException("for not implemented for "+RString(name));
+			return(f);
 		}
+		throw GException(RString("Instruction \"")+RString(name)+"\" does not exist.");
 	}
 
 	// Look if call to an object
@@ -585,23 +563,23 @@ GSessionPrg::Inst* GALILEI::GSessionPrg::AnalyseLine(char* line) throw(bad_alloc
 
 		// Create the instruction
 		GPrgInstMethod* inst=new GPrgInstMethod(method);
-		Insts.InsertPtr(inst);
 		while((*ptr))
 		{
-			r=GSessionPrg::AnalyseParam(0,ptr);
+			r=GSessionPrg::AnalyseParam(ptr);
 			if(r)
 				inst->AddParam(r);
 		}
-		return(0);
+		ReadLine=true;
+		return(inst);
 	}
 
-	// No instruction
+	ReadLine=true;
 	return(0);
 }
 
 
 //-----------------------------------------------------------------------------
-GPrgVar* GALILEI::GSessionPrg::AnalyseParam(GPrgVar* owner,char* &param) throw(bad_alloc,GException)
+GPrgVar* GALILEI::GSessionPrg::AnalyseParam(char* &param) throw(bad_alloc,GException)
 {
 	char* ptr;
 
@@ -624,7 +602,7 @@ GPrgVar* GALILEI::GSessionPrg::AnalyseParam(GPrgVar* owner,char* &param) throw(b
 		param++;
 
 		// Value
-		return(new GPrgVarConst(owner,ptr));
+		return(new GPrgVarConst(ptr));
 	}
 	else
 	{
@@ -635,7 +613,7 @@ GPrgVar* GALILEI::GSessionPrg::AnalyseParam(GPrgVar* owner,char* &param) throw(b
 		(*(param++))=0;
 
 		// Ref
-		return(new GPrgVarRef(owner,ptr));
+		return(new GPrgVarRef(ptr));
 	}
 }
 
@@ -646,6 +624,30 @@ void GALILEI::GSessionPrg::Exec(void) throw(GException)
 	if(!Rec) return;
 	for(Insts.Start();!Insts.End();Insts.Next())
 		Insts()->Run(this,Rec);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionPrg::AddVar(GPrgVar* var) throw(bad_alloc,GException)
+{
+	Vars.InsertPtr(var);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionPrg::DelVar(GPrgVar* var) throw(bad_alloc,GException)
+{
+	Vars.DeletePtr(var);
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GSessionPrg::GetValue(const char* var) throw(GException)
+{
+	GPrgVar* v=Vars.GetPtr<const char*>(var);
+
+	if(!v) return(0);
+	return(v->GetValue(this));
 }
 
 

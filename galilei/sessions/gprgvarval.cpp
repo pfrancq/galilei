@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgVarRef.h
+	GPrgVarVal.cpp
 
-	Reference to a Variable - Header.
+	Variable - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -33,59 +33,49 @@
 */
 
 
-
+   
 //-----------------------------------------------------------------------------
-#ifndef GPrgVarRefH
-#define GPrgVarRefH
+// include files for ANSI C/C++
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
-#include <sessions/gprgvar.h>
+#include <sessions/gprgvarval.h>
+using namespace GALILEI;
 
 
+
 //-----------------------------------------------------------------------------
-namespace GALILEI{
+//
+// GPrgVarVal
+//
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-/**
-* The GPrgVar provides a class for a generic variable.
-* @author Pascal Francq
-* @short Program Variable.
-*/
-class GPrgVarRef : public GPrgVar
+GALILEI::GPrgVarVal::GPrgVarVal(const char* name,const char* value) throw(bad_alloc)
+	: GPrgVar(name), Value(value)
 {
-public:
-
-	/**
-	* Create a variable.
-	* @param ref            Reference.
-	*/
-	GPrgVarRef(const char* ref) throw(bad_alloc);
-
-	/**
-	* Assign some data to the variable.
-	* @param data           Data.
-	*/
-	virtual void Assign(const void* data) throw(GException);
-
-	/**
-	* Get the value of the variable.
-	* @param prg            Program.
-	*/
-	virtual const char* GetValue(GSessionPrg* prg) throw(GException);
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GPrgVarRef(void);
-};
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
+}
 
 
 //-----------------------------------------------------------------------------
-#endif 
+void GALILEI::GPrgVarVal::Assign(const void* data) throw(GException)
+{
+	Value=static_cast<const char*>(data);
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GPrgVarVal::GetValue(GSessionPrg*) throw(GException)
+{
+	return(Value());
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GPrgVarVal::~GPrgVarVal(void)
+{
+}

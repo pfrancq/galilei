@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GPrgInstConst.h
+	GPrgVarConst.h
 
 	Const Variable - Header.
 
@@ -61,10 +61,9 @@ public:
 
 	/**
 	* Create a variable.
-	* @param owner          Owner.
-	* @param value          Value
+	* @param value          Name.
 	*/
-	GPrgVarConst(GPrgVar* owner,const char* value) throw(bad_alloc);
+	GPrgVarConst(const char* value) throw(bad_alloc);
 
 	/**
 	* Assign some data to the variable.

@@ -331,17 +331,7 @@ public:
 */
 class GSessionPrg
 {
-public:
-
-	class Inst;
-	class InstType;
-
 protected:
-
-	/**
-	* Represent the different instruction allowed.
-	*/
-	enum tInst{Log,Output,GOutput,Sql,Comp,Group,CreateIdeal,LoadIdeal,MixIdeal,Test,CmpIdeal,Fdbks,SetAutoSave,SOutput,StatProf,StatDoc,ModifyProf,forinst};
 
 	/**
 	* Name of the file to execute.
@@ -378,6 +368,11 @@ protected:
 	*/
 	char tmp[500];
 
+	/**
+	* Must a line be readed;
+	*/
+	bool ReadLine;
+
 public:
 
 	/**
@@ -393,27 +388,42 @@ public:
 	* @param line           Line to analyze.
 	* @returns Instruction to insert.
 	*/
-	int CountTabs(char* line);
+	static int CountTabs(char* line);
 
 	/**
 	* Analyse a line of source code.
-	* @param line           Line to analyze.
+	* @param prg            File containing the program.
 	* @returns Instruction to insert.
 	*/
-	Inst* AnalyseLine(char* line) throw(bad_alloc,GException);
+	GPrgInst* AnalyseLine(RIO::RTextFile& prg) throw(bad_alloc,GException);
 
 	/**
 	* Analyse a parameter.
 	* @param param          Parameter to analyse.
-	* @param owner          Owner.
 	* @returns Variable created.
 	*/
-	static GPrgVar* AnalyseParam(GPrgVar* owner,char* &param) throw(bad_alloc,GException);
+	static GPrgVar* AnalyseParam(char* &param) throw(bad_alloc,GException);
 
 	/**
 	* Execute a "program" for the current session.
 	*/
 	void Exec(void) throw(GException);
+
+	/**
+	* Add a variable.
+	*/
+	void AddVar(GPrgVar* var) throw(bad_alloc,GException);
+
+	/**
+	* Del a variable.
+	*/
+	void DelVar(GPrgVar* var) throw(bad_alloc,GException);
+
+	/**
+	* Get the value of the variable.
+	* @param var            Name of the variable.
+	*/
+	virtual const char* GetValue(const char* var) throw(GException);
 
 	/**
 	* Destructor.

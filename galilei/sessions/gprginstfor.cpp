@@ -45,6 +45,7 @@
 // include files for GALILEI
 #include <sessions/gprginstfor.h>
 #include <sessions/gsessionprg.h>
+#include <sessions/gprgvarval.h>
 using namespace GALILEI;
 
 
@@ -79,7 +80,7 @@ GALILEI::GPrgInstFor::GPrgInstFor(char* line) throw(bad_alloc)
 	// Read Values
 	while((*line))
 	{
-		r=GSessionPrg::AnalyseParam(0,line);
+		r=GSessionPrg::AnalyseParam(line);
 		if(r)
 			Values.InsertPtr(r);
 	}
@@ -96,13 +97,18 @@ void GALILEI::GPrgInstFor::AddInst(GPrgInst* ins) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GALILEI::GPrgInstFor::Run(GSessionPrg* prg,GSlot* r) throw(GException)
 {
+	GPrgVarVal* local=new GPrgVarVal(Var,"");
+
+	prg->AddVar(local);
 	for(Values.Start();!Values.End();Values.Next())
 	{
+		local->Assign(Values()->GetValue(prg));
 		for(Insts.Start();!Insts.End();Insts.Next())
 		{
 			Insts()->Run(prg,r);
 		}
 	}
+	prg->DelVar(local);
 }
 
 
