@@ -68,12 +68,12 @@ protected :
 	/**
 	* Container of outgoing links.
 	*/
-	R::RContainer<GLinks,true,true>* Links_Out;
+	static R::RContainer<GLinks,true,true> Links_Out;
 
 	/**
 	* Status of the graph.
 	*/
-	bool Inited;
+	static bool Inited;
 
 public :
 

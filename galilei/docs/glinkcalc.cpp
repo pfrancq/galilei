@@ -41,6 +41,8 @@ using namespace GALILEI;
 using namespace R;
 
 
+RContainer<GLinks,true,true> GLinkCalc::Links_Out(100,50);
+bool GLinkCalc::Inited=false;
 
 //------------------------------------------------------------------------------
 //
@@ -50,10 +52,8 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryLinkCalc>(fac), Session(0), Links_Out(0)
+	: GPlugin<GFactoryLinkCalc>(fac), Session(0)
 {
-	Links_Out = new RContainer<GLinks,true,true> (100,50);
-	Inited=false;
 }
 
 
@@ -71,14 +71,14 @@ void GLinkCalc::InitGraph(void) throw(GException)
 		size = cur.GetNb() * sizeof(GLinks);
 		for(cur.Start();!cur.End();cur.Next())
 		{
-			Links_Out->InsertPtr( new GLinks( cur() ));
+			Links_Out.InsertPtr( new GLinks( cur() ));
 		}
 
 			// For each page p set all the pages qi pointed by p
 		for(cur.Start();!cur.End();cur.Next())
 		{
 			if (!cur()->GetNbLinks()) continue;
-			links_out=Links_Out->GetPtr(cur()->GetId());
+			links_out=Links_Out.GetPtr(cur()->GetId());
 			lcur = cur()->GetLinkCursor();
 			size += lcur.GetNb() * sizeof(GLink);
 
@@ -88,7 +88,6 @@ void GLinkCalc::InitGraph(void) throw(GException)
 				links_out->InsertPtr(lcur());
 			}
 		}
-
 		Inited =true;
 	}
 }
@@ -102,11 +101,11 @@ void GLinkCalc::AddDoc(GDoc* doc) throw(GException)
 
 	if (!doc->GetNbLinks()) return;
 
-	links_out=Links_Out->GetPtr(doc->GetId());
+	links_out=Links_Out.GetPtr(doc->GetId());
 	if (! links_out)
 	{
-		Links_Out->InsertPtr(new GLinks(doc) );
-		links_out =Links_Out->GetPtr(doc->GetId());
+		Links_Out.InsertPtr(new GLinks(doc) );
+		links_out =Links_Out.GetPtr(doc->GetId());
 		lcur= doc->GetLinkCursor();
 
 		for (lcur.Start();!lcur.End();lcur.Next())
@@ -123,7 +122,6 @@ void GLinkCalc::AddDoc(GDoc* doc) throw(GException)
 void GLinkCalc::Connect(GSession* session) throw(GException)
 {
 	Session=session;
-	InitGraph();
 }
 
 
@@ -131,17 +129,11 @@ void GLinkCalc::Connect(GSession* session) throw(GException)
 void GLinkCalc::Disconnect(GSession*) throw(GException)
 {
 	Session=0;
-	if(Links_Out)
-	{
-		delete Links_Out;
-		Links_Out=0;
-	}
+	Inited=false;
 }
 
 
 //------------------------------------------------------------------------------
 GLinkCalc::~GLinkCalc(void)
 {
-	if(Links_Out)
-		delete Links_Out;
 }
