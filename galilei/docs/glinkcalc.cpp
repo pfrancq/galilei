@@ -51,16 +51,18 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLinkCalc::GLinkCalc(const char* name, GSession* ses) throw(bad_alloc)
-	: ComputingName(name), Session(ses)
+GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(bad_alloc)
+	: GPlugin<GFactoryLinkCalc>(fac), Session(0)
 {
 	Links_Out = new RContainer<GLinks,unsigned int,true,true> (100,50);
 	Inited=false;
 }
 
 
+
+
 //-----------------------------------------------------------------------------
-void GALILEI::GLinkCalc::InitGraph(void)
+void GLinkCalc::InitGraph(void)
 {
 	GDocCursor cur = Session->GetDocsCursor();
 	GLinkCursor lcur;
@@ -100,7 +102,7 @@ void GALILEI::GLinkCalc::InitGraph(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLinkCalc::AddDoc(GDoc* doc)
+void GLinkCalc::AddDoc(GDoc* doc)
 {
 	GLinkCursor lcur;
 	GLinks* links_out=0;
@@ -125,23 +127,16 @@ void GALILEI::GLinkCalc::AddDoc(GDoc* doc)
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GLinkCalc::Compare(const GLinkCalc& lnkCalc) const
+void GLinkCalc::Connect(GSession* session)
 {
-	return(ComputingName.Compare(lnkCalc.ComputingName));
+	Session=session;
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GLinkCalc::Compare(const GLinkCalc* lnkCalc) const
+void GLinkCalc::Disconnect(GSession*)
 {
-	return(ComputingName.Compare(lnkCalc->ComputingName));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GLinkCalc::Compare(const char* name) const
-{
-	return(ComputingName.Compare(name));
+	Session=0;
 }
 
 

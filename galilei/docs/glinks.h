@@ -113,8 +113,9 @@ public :
 	/**
 	* destructor of GLinks
 	*/
-	~GLinks(void);
+	virtual ~GLinks(void);
 };
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -123,8 +124,8 @@ public :
 */
 CLASSCURSOR(GLinksCursor,GLinks,unsigned int)
 
-}  //-------- End of namespace GALILEI ----------------------------------
 
+}  //-------- End of namespace GALILEI ----------------------------------
 
 
 //-----------------------------------------------------------------------------

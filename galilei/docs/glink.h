@@ -92,59 +92,58 @@ public :
 	* @param link            Link used for the comparaison.
 	* @returns 0 if the same, -1 or +1 if different.
 	*/
-	int Compare(const GLink* link) const { return(DocTO->GetId() - link->GetDoc()->GetId());};
+	int Compare(const GLink* link) const { return(DocTO->GetId() - link->GetDoc()->GetId());}
 
 	/**
 	* Compare two links.
 	* @param link            Link used for the comparaison.
 	* @returns 0 if the same, -1 or +1 if different.
 	*/
-	int Compare(const GLink& link) const{ return(DocTO->GetId()-link.GetDoc()->GetId() ); };
-                                                                    
+	int Compare(const GLink& link) const{ return(DocTO->GetId()-link.GetDoc()->GetId() ); }
+
 	/**
 	* Compare two links.
 	* @param id             The id of the document used for the comparaison.
 	* @returns 0 if the same, -1 or +1 if different.
 	*/
 	int Compare( const unsigned int id) const{return (DocTO->GetId()- id );};
-	
+
 	/**
 	* Compare two links.
 	* @param doc            Pointer to a Gdoc used for the comparaison.
 	* @return 0 if the same, -1 or +1 if different.
 	*/
-	int Compare(const GDoc* doc) const{ return( DocTO->GetId()- doc->GetId() );};
+	int Compare(const GDoc* doc) const{ return( DocTO->GetId()- doc->GetId() );}
 
 	/**
 	* Compare two links.
 	* @param doc            Gdoc id used for the comparaison.
 	* @return 0 if the same, -1 or +1 if different.
 	*/
-	int Compare(const GDoc& doc) const {return (DocTO->GetId() - doc.GetId() );};
+	int Compare(const GDoc& doc) const {return (DocTO->GetId() - doc.GetId() );}
 
-	
 	/**
 	* increase the number of same link.
 	*/
-	void AddOccurence() {Occurs++;};
+	void AddOccurence() {Occurs++;}
 
 	/**
 	* Set the number of occurence of the link.
 	* @param nbO          The Number of occurences.
 	*/
-	void SetOccurs(unsigned int nbO) {Occurs = nbO;};
+	void SetOccurs(unsigned int nbO) {Occurs = nbO;}
 
 	/**
 	* Get the number of occurences of the link.
 	* @return int         The number of links.
 	*/
-	unsigned int GetOccurs() {return Occurs;};
+	unsigned int GetOccurs() {return Occurs;}
 
 	/**
 	* Get the url of the link.
 	* @return RString     the url of the link.
 	*/
-	R::RString GetUrl(void) {return DocTO->GetURL();};
+	R::RString GetUrl(void) {return DocTO->GetURL();}
 
 	/**
 	* Get the format of the link.
@@ -174,18 +173,18 @@ public :
 	* Get the doc pointed by the link
 	* @return GDoc        the pointer to the doc Pointed.
 	*/
-	const GDoc* GetDoc(void) const {return DocTO;};
+	const GDoc* GetDoc(void) const {return DocTO;}
 
 	/**
 	* Get the id of the document.
 	* @return int         the id of the link.
 	*/
-	unsigned int GetId(void) {return DocTO->GetId();};
+	unsigned int GetId(void) {return DocTO->GetId();}
 
 	/**
 	* destructor of GLink
 	*/
-	~GLink(void);
+	virtual ~GLink(void);
 };
 
 

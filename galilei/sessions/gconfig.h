@@ -94,6 +94,11 @@ class GConfig : R::RXMLStruct
 	*/
 	R::RXMLTag* StatsCalcs;
 
+	/**
+	* Tag holding the profile computation methods.
+	*/
+	R::RXMLTag* LinkCalcs;
+
 public:
 
 	/**
@@ -171,6 +176,18 @@ public:
 	* @param mng             Manager.
 	*/
 	void Store(GStatsCalcManager& mng);
+
+	/**
+	* Read the links computing methods from the structure.
+	* @param mng             Manager.
+	*/
+	void Read(GLinkCalcManager& mng);
+
+	/**
+	* Store the links computing methods in the structure.
+	* @param mng             Manager.
+	*/
+	void Store(GLinkCalcManager& mng);
 
 	/**
 	* Destructor.

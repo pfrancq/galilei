@@ -58,7 +58,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
+GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
 	: URL(url), Name(name), Id(id), N(n), V(v), Ndiff(ndiff), Vdiff(vdiff),
 	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
 	  Failed(f)
@@ -81,7 +81,7 @@ GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GDoc::HasRepresentation(void) const
+bool GDoc::HasRepresentation(void) const
 {
 	return(false);
 }
@@ -89,35 +89,35 @@ bool GALILEI::GDoc::HasRepresentation(void) const
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::Compare(const GDoc& doc) const
+int GDoc::Compare(const GDoc& doc) const
 {
 	return(Id-doc.Id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::Compare(const GDoc* doc) const
+int GDoc::Compare(const GDoc* doc) const
 {
 	return(Id-doc->Id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::Compare(const unsigned id) const
+int GDoc::Compare(const unsigned id) const
 {
 	return(Id-id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::Compare(const GLang* lang) const
+int GDoc::Compare(const GLang* lang) const
 {
 	return(Lang->Compare(lang));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::ClearInfos(bool l)
+void GDoc::ClearInfos(bool l)
 {
 	if(l)
 		Lang=0;
@@ -129,42 +129,42 @@ void GALILEI::GDoc::ClearInfos(bool l)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::ClearFdbks(void)
+void GDoc::ClearFdbks(void)
 {
 	Fdbks.Clear();
 }
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GDoc::GetURL(void) const
+const char* GDoc::GetURL(void) const
 {
 return(URL());
 }
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GDoc::GetName(void) const
+const char* GDoc::GetName(void) const
 {
 	return(Name());
 }
 
 
 //-----------------------------------------------------------------------------
-const R::RDate* GALILEI::GDoc::GetUpdated(void) const
+const R::RDate* GDoc::GetUpdated(void) const
 {
 	return(&Updated);
 }
 
 
 //-----------------------------------------------------------------------------
-const R::RDate* GALILEI::GDoc::GetComputed(void) const
+const R::RDate* GDoc::GetComputed(void) const
 {
 	return(&Computed);
 }
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GDoc::GetMIMEType(void) const
+const char* GDoc::GetMIMEType(void) const
 {
 	if(MIMEType.IsEmpty()) return(0);
 	return(MIMEType());
@@ -172,28 +172,28 @@ const char* GALILEI::GDoc::GetMIMEType(void) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::SetMIMEType(const char* mime)
+void GDoc::SetMIMEType(const char* mime)
 {
 	MIMEType=mime;
 }
 
 
 //-----------------------------------------------------------------------------
-tObjState GALILEI::GDoc::GetState(void) const
+tObjState GDoc::GetState(void) const
 {
 	return(State);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::SetState(tObjState state)
+void GDoc::SetState(tObjState state)
 {
 	State=state;
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd)
+void GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd)
 {
 	GSubProfile* sub;
 
@@ -214,14 +214,14 @@ void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned in
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GDoc::GetNbFdbks(void) const
+unsigned int GDoc::GetNbFdbks(void) const
 {
 	return(Fdbks.NbPtr);
 }
 
 
 //-----------------------------------------------------------------------------
-GProfDocCursor& GALILEI::GDoc::GetProfDocCursor(void)
+GProfDocCursor& GDoc::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
 	cur->Set(Fdbks);
@@ -230,56 +230,56 @@ GProfDocCursor& GALILEI::GDoc::GetProfDocCursor(void)
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GDoc::Similarity(const GDoc*) const
+double GDoc::Similarity(const GDoc*) const
 {
 	return(0.0);
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GDoc::GlobalSimilarity(const GDoc*) const
+double GDoc::GlobalSimilarity(const GDoc*) const
 {
 	return(0.0);
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GDoc::Similarity(const GSubProfile*) const
+double GDoc::Similarity(const GSubProfile*) const
 {
 	return(0.0);
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GDoc::GlobalSimilarity(const GSubProfile*) const
+double GDoc::GlobalSimilarity(const GSubProfile*) const
 {
 	return(0.0);
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GDoc::Similarity(const GGroup*) const
+double GDoc::Similarity(const GGroup*) const
 {
 	return(0.0);
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GDoc::GlobalSimilarity(const GGroup*) const
+double GDoc::GlobalSimilarity(const GGroup*) const
 {
 	return(0.0);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::AddJudgement(GProfDoc* j) throw(bad_alloc)
+void GDoc::AddJudgement(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GDoc::GetNbLinks(void)
+unsigned int GDoc::GetNbLinks(void)
 {
 	unsigned int res = LinkSet->NbPtr;
 	return res;
@@ -287,7 +287,7 @@ unsigned int GALILEI::GDoc::GetNbLinks(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::InsertLink(const GDoc* doc) throw(bad_alloc)
+void GDoc::InsertLink(const GDoc* doc) throw(bad_alloc)
 {
 	GLink* link ;
 	link = LinkSet->GetInsertPtr(doc);
@@ -296,7 +296,7 @@ void GALILEI::GDoc::InsertLink(const GDoc* doc) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::InsertLink(const GDoc* doc,unsigned int nbOccurs) throw(bad_alloc)
+void GDoc::InsertLink(const GDoc* doc,unsigned int nbOccurs) throw(bad_alloc)
 {
 	GLink* link ;
 	link = LinkSet->GetInsertPtr(doc);
@@ -305,7 +305,7 @@ void GALILEI::GDoc::InsertLink(const GDoc* doc,unsigned int nbOccurs) throw(bad_
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::InsertLink(const GDoc* doc,char* /*format*/,char* /*type*/) throw(bad_alloc)
+void GDoc::InsertLink(const GDoc* doc,char* /*format*/,char* /*type*/) throw(bad_alloc)
 {
 	GLink* link ;
 	link = LinkSet->GetInsertPtr(doc);
@@ -317,7 +317,7 @@ void GALILEI::GDoc::InsertLink(const GDoc* doc,char* /*format*/,char* /*type*/) 
 
 
 //-----------------------------------------------------------------------------
-GLinkCursor& GALILEI::GDoc::GetLinkCursor(void)
+GLinkCursor& GDoc::GetLinkCursor(void)
 {
 	GLinkCursor *cur = GLinkCursor::GetTmpCursor();
 	cur->Set(LinkSet);
@@ -328,21 +328,21 @@ GLinkCursor& GALILEI::GDoc::GetLinkCursor(void)
 
 #if GALILEITEST
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::InsertSubject(GSubject* s)
+void GDoc::InsertSubject(GSubject* s)
 {
 	Subjects.InsertPtr(s);
 }
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GDoc::IsFromSubject(const GSubject* s)
+bool GDoc::IsFromSubject(const GSubject* s)
 {
 	return(Subjects.IsIn(s));
 }
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GDoc::IsFromParentSubject(const GSubject* s)
+bool GDoc::IsFromParentSubject(const GSubject* s)
 {
 	GSubjectCursor Sub;
 
@@ -358,7 +358,7 @@ bool GALILEI::GDoc::IsFromParentSubject(const GSubject* s)
 
 
 //-----------------------------------------------------------------------------
-GSubjectCursor& GALILEI::GDoc::GetSubjectCursor(void)
+GSubjectCursor& GDoc::GetSubjectCursor(void)
 {
 	GSubjectCursor *cur=GSubjectCursor::GetTmpCursor();
 	cur->Set(Subjects);
@@ -368,6 +368,7 @@ GSubjectCursor& GALILEI::GDoc::GetSubjectCursor(void)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDoc::~GDoc(void)
+GDoc::~GDoc(void)
 {
+	delete LinkSet;
 }

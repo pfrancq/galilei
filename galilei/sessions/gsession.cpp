@@ -94,11 +94,12 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
 	GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-	GStatsCalcManager* smng,
+	GStatsCalcManager* smng, GLinkCalcManager* lmng,
 	GDocOptions* opt, GSessionParams* sessparams) throw(bad_alloc,GException)
 	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(), Fdbks(f+f/2,f/2),
-	  URLMng(umng), ProfilingMng(pmng), GroupingMng(gmng), GroupCalcMng(gcmng), StatsCalcMng(smng),
+	  URLMng(umng), ProfilingMng(pmng), GroupingMng(gmng), GroupCalcMng(gcmng),
+	  StatsCalcMng(smng), LinkCalcMng(lmng),
 	  DocAnalyse(0), bGroups(false),bFdbks(false),
 	  DocOptions(opt),SessParams(sessparams)
 
@@ -111,7 +112,6 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Groups.InsertPtr(new GGroups(Langs()));
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
-	LinkCalcs=new RContainer<GLinkCalc,unsigned int,true,true>(3,2);
 	DocOptions=new GDocOptions(opt);
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
 	CurrentRandom=0;
@@ -122,6 +122,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	GroupingMng->Connect(this);
 	GroupCalcMng->Connect(this);
 	StatsCalcMng->Connect(this);
+	LinkCalcMng->Connect(this);
 
 	// Only Vector Space
 	SubProfileDesc=new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile);
@@ -162,49 +163,10 @@ GDocsLangCursor& GSession::GetIdealDocsCursor(void)
 
 
 //-----------------------------------------------------------------------------
-void GSession::RegisterLinkCalcMethod(GLinkCalc* lnk) throw(bad_alloc)
+GFactoryLinkCalcCursor& GSession::GetLinkCalcsCursor(void)
 {
-	LinkCalcs->InsertPtr(lnk);
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::SetCurrentLinkCalcMethod(const char* name) throw(GException)
-{
-	GLinkCalc* tmp;
-
-	tmp=LinkCalcs->GetPtr<const char*>(name);
-	if(!tmp)
-		throw GException(RString("Link Description method '")+name+"' doesn't exists.");
-	LinkCalc=tmp;
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::SetCurrentLinkCalcMethodSettings(const char* s) throw(GException)
-{
-	if((!LinkCalc)||(!(*s))) return;
-	LinkCalc->SetSettings(s);
-}
-
-
-//-----------------------------------------------------------------------------
-const char* GSession::GetLinkCalcMethodSettings(const char* n) throw(GException)
-{
-	GLinkCalc* tmp;
-
-	tmp=LinkCalcs->GetPtr<const char*>(n);
-	if(!tmp)
-		return(0);
-	return(tmp->GetSettings());
-}
-
-
-//-----------------------------------------------------------------------------
-GLinkCalcCursor& GSession::GetLinkCalcsCursor(void)
-{
-	GLinkCalcCursor *cur=GLinkCalcCursor::GetTmpCursor();
-	cur->Set(LinkCalcs);
+	GFactoryLinkCalcCursor *cur=GFactoryLinkCalcCursor::GetTmpCursor();
+	cur->Set(LinkCalcMng);
 	return(*cur);
 }
 
@@ -633,11 +595,11 @@ GUser* GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const char* /*n
 //-----------------------------------------------------------------------------
 void GSession::InitLinks()
 {
+	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
 	if(!LinkCalc)
-		throw GException("No Link computing method chosen.");
-
-	LinkCalc->InitGraph();
+		LinkCalc->InitGraph();
 }
+
 
 //-----------------------------------------------------------------------------
 void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
@@ -648,11 +610,10 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 	GProfilesSim* profSim;
 	GProfilesBehaviour* profBehaviour;
 	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
+	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
 
 	if(!Profiling)
 		throw GException("No computing method chosen.");
-	if(!LinkCalc)
-		throw GException("No Link computing method chosen.");
 
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
@@ -666,7 +627,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 			{
 				if((!modified)||(Subs()->GetState()!=osUpdated))
 				{
-					if (DocOptions->UseLink)
+					if(LinkCalc)
 						LinkCalc->Compute(Subs());
 					Profiling->Compute(Subs());
 					// add the mofified profile to the list of modified profiles  for similarities
@@ -674,7 +635,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 					profSim->AddModifiedProfile(Subs()->GetProfile()->GetId());
 					// add the mofified profile to the list of modified profiles  for behaviours
 					profBehaviour = ProfilesBehaviours->GetPtr<GLang*>(Subs()->GetLang());
-					profBehaviour->AddModifiedProfile(Subs()->GetProfile()->GetId());	
+					profBehaviour->AddModifiedProfile(Subs()->GetProfile()->GetId());
 				}
 			}
 			catch(GException& e)
@@ -683,7 +644,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 		}
 	}
 
-	// update the state of all the sims. 
+	// update the state of all the sims.
 	ChangeAllProfilesSimState(true);   /// !!!!  check if 'true' is the correct value !?!
 
 	//updtae the state of the behaviours
@@ -711,15 +672,14 @@ void GSession::CalcProfile(GProfile* prof) throw(GException)
 {
 	GSubProfileCursor Subs;
 	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
+	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
 
 	if(!Profiling)
 		throw GException("No computing method chosen.");
-	if(!LinkCalc)
-		throw GException("No Link computing method chosen.");
 
 	Subs=prof->GetSubProfilesCursor();
 	for (Subs.Start(); !Subs.End(); Subs.Next())
-		if (DocOptions->UseLink)
+		if(LinkCalc)
 		{
 			LinkCalc->Compute(Subs());
 		}
@@ -1019,6 +979,7 @@ GSession::~GSession(void) throw(GException)
 	GroupingMng->Disconnect(this);
 	GroupCalcMng->Disconnect(this);
 	StatsCalcMng->Disconnect(this);
+	LinkCalcMng->Disconnect(this);
 
 	// Delete stuctures
 	if(DocAnalyse) delete DocAnalyse;

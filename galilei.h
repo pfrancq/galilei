@@ -108,6 +108,7 @@ class GDicts;
 //-----------------------------------------------------------------------------
 // forward class declaration - Document Part
 class GDoc;
+class GDCMetaData;
 class GDocVector;
 class GDocCursor;
 class GDocXML;
@@ -126,9 +127,14 @@ class GWordsClustering;
 //-----------------------------------------------------------------------------
 // forward class declaration - Link Part
 class GLink;
+class GBalancedLinks;
 class GLinkCursor;
+class GLinks;
 class GLinkCalc;
 class GLinkCalcCursor;
+class GFactoryLinkCalc;
+class GFactoryLinkCalcCursor;
+class GLinkCalcManager;
 
 
 //-----------------------------------------------------------------------------

@@ -108,16 +108,6 @@ protected:
 	GSubProfileDesc* SubProfileDesc;
 
 	/**
-	* Container of link description method.
-	*/
-	R::RContainer<GLinkCalc,unsigned int,true,true>* LinkCalcs;
-
-	/**
-	* Current link description method used.
-	*/
-	GLinkCalc* LinkCalc;
-
-	/**
 	* URL Manager used by this session.
 	*/
 	GURLManager* URLMng;
@@ -141,6 +131,11 @@ protected:
 	* Statistics Manager used by this session.
 	*/
 	GStatsCalcManager* StatsCalcMng;
+
+	/**
+	* Linking Manager used by this session.
+	*/
+	GLinkCalcManager* LinkCalcMng;
 
 	/**
 	* Analyser used for the document.
@@ -206,10 +201,11 @@ public:
 	* @param gmng           Grouping Manager.
 	* @param gcmng          Group Computing Manager.
 	* @param smng           Statistical Manager.
+	* @param lmng           Linking Manager.
 	*/
 	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
 		GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng,
+		GStatsCalcManager* smng, GLinkCalcManager* lmng,
 		GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException);
 
 	/**
@@ -277,42 +273,10 @@ public:
 	GSubProfileDesc* GetCurrentProfileDesc(void) {return(SubProfileDesc);}
 
 	/**
-	* Register a link description method.
-	* @param lnk            Description method to register.
-	*/
-	void RegisterLinkCalcMethod(GLinkCalc* lnk) throw(bad_alloc);
-
-	/**
-	* Set the current link description method.
-	* @param name           Name of the link description method.
-	*/
-	void SetCurrentLinkCalcMethod(const char* name) throw(GException);
-
-	/**
-	* Set the settings for the current link description method.
-	* @param s              Settings of the current link description method.
-	*/
-	void SetCurrentLinkCalcMethodSettings(const char* s) throw(GException);
-
-	/**
-	* Get the settings of a given link description method.
-	* @param n              Name of the link description method.
-	* @returns C String representing the settings of the given link
-	* description method.
-	*/
-	const char* GetLinkCalcMethodSettings(const char* n) throw(GException);
-
-	/**
-	* Get the current link description method.
-	* @returns Pointer to a GLinkCalc class.
-	*/
-	GLinkCalc* GetCurrentLinkCalcMethod(void) {return(LinkCalc);}
-
-	/**
 	* Get a cursor to the link description methods registered.
 	* @return Return a GLinkCalcCursor.
 	*/
-	GLinkCalcCursor& GetLinkCalcsCursor(void);
+	GFactoryLinkCalcCursor& GetLinkCalcsCursor(void);
 
 	/**
 	* Create a XML structure of the content of a document. The structure

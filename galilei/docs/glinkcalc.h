@@ -37,16 +37,26 @@
 #ifndef GLinkCalcH
 #define GLinkCalcH
 
+//-----------------------------------------------------------------------------
+// include file for LibTool--
+#include <ltmm/loader.hh>
+
 
 //-----------------------------------------------------------------------------
 //include file for GALILEI
 #include <galilei.h>
 #include <docs/glinks.h>
+#include <sessions/gplugin.h>
+#include <docs/glinkcalcmanager.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// API VERSION
+#define API_LINKCALC_VERSION "1.0"
 
 
 //-----------------------------------------------------------------------------
@@ -55,15 +65,8 @@ namespace GALILEI{
 * @author  Vandaele Valery
 * @short generic link computation.
 */
-class GLinkCalc
+class GLinkCalc : public GPlugin<GFactoryLinkCalc>
 {
-private :
-
-	/**
-	* Name of the link method.
-	*/
-	R::RString ComputingName;
-	
 protected :
 
 	/**
@@ -84,17 +87,28 @@ protected :
 public :
 
 	/**
-	* constructor of GLinkCalc
-	* @param name           Name.
-	* @param session        Session
+	* Construct the computing method.
+	* @param fac             Factory of the plugin.
 	*/
-	GLinkCalc(const char* name,GSession* session) throw(bad_alloc);
+	GLinkCalc(GFactoryLinkCalc* fac) throw(bad_alloc);
 
 	/**
 	* Compute a profile using link method
 	* @params Prof       The profile to compute.
 	*/
 	virtual void Compute(GSubProfile* subprof)=0;
+
+	/**
+	* Connect to a Session.
+	* @param session         The session.
+	*/
+	virtual void Connect(GSession* session);
+
+	/**
+	* Disconnect from a Session.
+	* @param session         The session.
+	*/
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Init the algorithm for link computation
@@ -107,43 +121,90 @@ public :
 	void AddDoc(GDoc* doc);
 
 	/**
-	* Get the name of the computing method.
-	* @returns Pointer to a C string.
-	*/
-	const char* GetComputingName(void) const {return(ComputingName);}
-
-	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
-	*/
-	virtual const char* GetSettings(void) {return("");}
-
-	/**
 	* Set the settings for the method using a string.
 	* @param char*          C string coding the settings.
 	*/
 	virtual void SetSettings(const char*) {}
 
 	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const GLinkCalc& lnkCal) const;
-
-	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const GLinkCalc* lnkCalc) const;
-
-	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const char* name) const;
-
-	/**
 	* destructor of GLinkCalc
 	*/
 	virtual ~GLinkCalc(void);
 };
+
+
+//-----------------------------------------------------------------------------
+class GFactoryLinkCalc : public GFactoryPlugin<GFactoryLinkCalc,GLinkCalc,GLinkCalcManager>
+{
+public:
+	/**
+	* Constructor.
+	* @param mng             Manager of the plugin.
+	* @param n               Name of the Factory/Plugin.
+	* @param f               Lib of the Factory/Plugin.
+	*/
+	GFactoryLinkCalc(GLinkCalcManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryLinkCalc,GLinkCalc,GLinkCalcManager>(mng,n,f) {}
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GFactoryLinkCalc(void) {}
+};
+
+
+//-----------------------------------------------------------------------------
+typedef GFactoryLinkCalc*(*GFactoryLinkCalcInit)(GLinkCalcManager*,const char*);
+
+
+//------------------------------------------------------------------------------
+#define CREATE_LINKCALC_FACTORY(name,C,about,config)                                         \
+class TheFactory : public GFactoryLinkCalc                                                   \
+{                                                                                               \
+private:                                                                                        \
+	static GFactoryLinkCalc* Inst;                                                           \
+	TheFactory(GLinkCalcManager* mng,const char* l) : GFactoryLinkCalc(mng,name,l)        \
+	{                                                                                           \
+		C::CreateParams(this);                                                                  \
+	}                                                                                           \
+	virtual ~TheFactory(void) {}                                                                \
+public:                                                                                         \
+	static GFactoryLinkCalc* CreateInst(GLinkCalcManager* mng,const char* l)              \
+	{                                                                                           \
+		if(!Inst)                                                                               \
+			Inst = new TheFactory(mng,l);                                                       \
+		return(Inst);                                                                           \
+	}                                                                                           \
+	virtual void About(void) {C::About();}                                                      \
+	virtual bool HasAbout(void) const {return(about);}                                          \
+	virtual void Configure(void) {C::Configure(this);}                                          \
+	virtual bool HasConfigure(void) const {return(config);}                                     \
+	virtual const char* GetAPIVersion(void) const {return(API_LINKCALC_VERSION);}            \
+	virtual void Create(void) throw(GException)                                                 \
+	{                                                                                           \
+		if(Plugin) return;                                                                      \
+		Plugin=new C(this);                                                                     \
+		Plugin->ApplyConfig();                                                                  \
+	}                                                                                           \
+	virtual void Delete(void) throw(GException)                                                 \
+	{                                                                                           \
+		if(!Plugin) return;                                                                     \
+		delete Plugin;                                                                          \
+		Plugin=0;                                                                               \
+	}                                                                                           \
+};                                                                                              \
+                                                                                                \
+GFactoryLinkCalc* TheFactory::Inst = 0;                                                      \
+                                                                                                \
+extern "C"                                                                                      \
+{                                                                                               \
+	GFactoryLinkCalc* FactoryCreate(GLinkCalcManager* mng,const char* l)                  \
+	{                                                                                           \
+		return(TheFactory::CreateInst(mng,l));                                                  \
+	}                                                                                           \
+}
+
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -152,6 +213,16 @@ public :
 * @short Link Description Methods Cursor
 */
 CLASSCURSOR(GLinkCalcCursor,GLinkCalc,unsigned int)
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GFactoryLinkCalcCursor class provides a way to go trough a set of
+* factories.
+* @short Links Computing Methods Factories Cursor
+*/
+CLASSCURSOR(GFactoryLinkCalcCursor,GFactoryLinkCalc,unsigned int)
+
 
 }  //-------- End of namespace GALILEI ----------------------------------------
 

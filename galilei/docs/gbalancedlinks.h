@@ -134,7 +134,7 @@ public :
 	/**
 	* destructor of GLinks
 	*/
-	~GBalancedLinks(void);
+	virtual ~GBalancedLinks(void);
 };
 
 //-----------------------------------------------------------------------------
@@ -143,6 +143,7 @@ public :
 * @short Links Cursor
 */
 CLASSCURSOR(GBalancedLinksCursor,GBalancedLinks,unsigned int)
+
 
 }  //-------- End of namespace GALILEI ----------------------------------
 

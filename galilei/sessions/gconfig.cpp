@@ -55,6 +55,8 @@ using namespace R;
 #include <groups/ggroupcalc.h>
 #include <sessions/gstatscalcmanager.h>
 #include <sessions/gstatscalc.h>
+#include <docs/glinkcalcmanager.h>
+#include <docs/glinkcalc.h>
 using namespace GALILEI;
 
 
@@ -77,6 +79,7 @@ GConfig::GConfig(const char* f) throw(bad_alloc)
 	AddNode(t,Groupings=new RXMLTag("galileiconfig:groupings"));
 	AddNode(t,GroupCalcs=new RXMLTag("galileiconfig:groupCalcs"));
 	AddNode(t,StatsCalcs=new RXMLTag("galileiconfig:statsCalcs"));
+	AddNode(t,LinkCalcs=new RXMLTag("galileiconfig:linkCalcs"));
 }
 
 
@@ -92,6 +95,7 @@ void GConfig::Load(void)
 		Groupings=GetTop()->GetTag("galileiconfig:groupings");
 		GroupCalcs=GetTop()->GetTag("galileiconfig:groupCalcs");
 		StatsCalcs=GetTop()->GetTag("galileiconfig:statsCalcs");
+		LinkCalcs=GetTop()->GetTag("galileiconfig:linkCalcs");
 	}
 	catch(...)
 	{
@@ -279,6 +283,46 @@ void GConfig::Store(GStatsCalcManager& mng)
 	{
 		Cur()->SaveConfig(StatsCalcs);
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GLinkCalcManager& mng)
+{
+	GFactoryLinkCalcCursor Cur;
+
+	if(!LinkCalcs) return;
+	Cur=mng.GetLinkCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(LinkCalcs);
+	}
+	try
+	{
+		mng.SetCurrentMethod(LinkCalcs->GetAttrValue("Current"));
+	}
+	catch(GException)
+	{
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GLinkCalcManager& mng)
+{
+	GFactoryLinkCalcCursor Cur;
+	GLinkCalc* lcalc;
+
+	Cur=mng.GetLinkCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(LinkCalcs);
+	}
+	lcalc=mng.GetCurrentMethod();
+	if(lcalc)
+		LinkCalcs->InsertAttr("Current",lcalc->GetFactory()->GetName());
+	else
+		LinkCalcs->InsertAttr("Current","None");
 }
 
 

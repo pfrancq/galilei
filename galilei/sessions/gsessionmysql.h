@@ -89,10 +89,11 @@ public:
 	* @param gmng           Grouping Manager.
 	* @param gcmng          Group Computing Manager.
 	* @param smng           Statistical Manager.
+	* @param lmng           Linking Manager.
 	*/
 	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
 		GURLManager* umng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng,
+		GStatsCalcManager* smng, GLinkCalcManager* lmng,
 		GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException,R::RMySQLError);
 
 	/**
