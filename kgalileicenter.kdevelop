@@ -39,12 +39,12 @@
       <cxxflags>\s-O0 -g3 -Wall</cxxflags>
     </compiler>
     <run>
-      <mainprogram>/home/vvandaele/prj/kgalileicenter/kgalileicenter/kgalileicenter</mainprogram>
+      <mainprogram>kgalileicenter/kgalileicenter</mainprogram>
       <programargs></programargs>
       <terminal>false</terminal>
       <envvars/>
       <autocompile>true</autocompile>
-      <directoryradio>custom</directoryradio>
+      <directoryradio>build</directoryradio>
       <customdirectory>/</customdirectory>
     </run>
     <configurations>
