@@ -1106,7 +1106,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/tests/Makefile.am]
-files=kgalileicenter/galilei/tests/ggroupevaluate.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.h,kgalileicenter/galilei/tests/ggroupevaluatesubprof.cpp,kgalileicenter/galilei/tests/ggroupevaluatesubprof.h,kgalileicenter/galilei/tests/ggroupsevaluate.cpp,kgalileicenter/galilei/tests/ggroupsevaluate.h,kgalileicenter/galilei/tests/ggroupevaluate.h,kgalileicenter/galilei/tests/gsimdocquerygroup.cpp,kgalileicenter/galilei/tests/gsimdocquerygroup.h
+files=kgalileicenter/galilei/tests/ggroupevaluate.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.h,kgalileicenter/galilei/tests/ggroupevaluatesubprof.cpp,kgalileicenter/galilei/tests/ggroupevaluatesubprof.h,kgalileicenter/galilei/tests/ggroupsevaluate.cpp,kgalileicenter/galilei/tests/ggroupsevaluate.h,kgalileicenter/galilei/tests/ggroupevaluate.h,kgalileicenter/galilei/tests/gsimdocquerygroup.cpp,kgalileicenter/galilei/tests/gsimdocquerygroup.h,kgalileicenter/galilei/tests/gstatsimsubprof.cpp,kgalileicenter/galilei/tests/gstatsimsubprof.h
 sharedlib_LDFLAGS=-version-info 0:0:0
 sharedlib_rootname=tests
 sub_dirs=
@@ -1167,6 +1167,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/tests/gsimdocquerygroup.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/tests/gstatsimsubprof.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/tests/gstatsimsubprof.h]
 dist=true
 install=false
 install_location=
