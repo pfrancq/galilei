@@ -55,16 +55,72 @@ GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 
 
 //---------------------------------------------------------------------------
+bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
+{
+	int accessmode,handle;
+	struct stat statbuf;
+
+	// Initialisation
+	Doc=doc;
+	accessmode=O_RDONLY;
+	#if !unix
+		accessmode=O_BINARY;
+	#endif
+	handle=open(Doc->GetFile(),accessmode);
+	fstat(handle, &statbuf);
+	Begin=Pos=Buffer=new char[statbuf.st_size+1];
+	read(handle,Buffer,statbuf.st_size);
+	Buffer[statbuf.st_size]=0;
+	SkipSpaces();
+
+	//Initialisation of the different variable
+	InitCharContainer();
+	
+	for (int i=0;i<8;i++)
+	{
+		ClassementVector[i]=0;
+	}
+	
+	NextWirteTag=true;
+
+	// Begin  the parsing of the HTML Structure
+	doc->AddNode(doc->GetTop(),meta=new RXMLTag("MetaData"));
+	doc->AddNode(meta,act=new RXMLTag("URL"));
+	act->InsertAttr(new RXMLAttr("value",Doc->GetURL()));
+	doc->AddNode(meta,act=new RXMLTag("TypeDoc"));
+	act->InsertAttr(new RXMLAttr("code","html"));
+
+	// Traitement of Headers
+	AnalyseHeader(doc);
+
+	// Traitement of Content
+	doc->AddNode(doc->GetTop(),content=new RXMLTag("Content"));
+	AnalyseBody(doc);
+
+	// Traitment of links
+	doc->AddNode(doc->GetTop(),links=new RXMLTag("links"));
+
+	// Done
+	if (Begin)
+	{
+		delete[] Begin;
+		Begin=0;
+	}
+	return(true);
+}
+
+
+//---------------------------------------------------------------------------
 void GALILEI::GFilterHTML::AnalyseBody(GDocXML* doc)
 {
 	bool body=true;
-	char *tmpchar;
 
 	while (body)
 	{
 		//initialisation of body
 		NextWirteTag= true;
 		NextTag();
+		// if  there is a h1 or .. before le body stop
 		if (TagCompare("h1")||TagCompare("h2")||TagCompare("h3")||TagCompare("h4")||TagCompare("h5")||TagCompare("h6")||TagCompare("p")||TagCompare("/html"))
 		{
 			body=false;
@@ -76,77 +132,21 @@ void GALILEI::GFilterHTML::AnalyseBody(GDocXML* doc)
 				// go to the next tag
 				NextTag();
 				//  if compare to ...  search to the good fonction
-				if (TagCompare("h1"))
+				if (TagCompare("h1")||TagCompare("h2")||TagCompare("h3")||TagCompare("h4")||TagCompare("h5")||TagCompare("h6")||TagCompare("p"))
 				{
-					tmpchar="h1";
-					GetValueCurentTag (tmpchar, doc);
+					GetValueCurentTag (OldTag.StrDup(), doc);
 				}
-				else if (TagCompare("h2"))
+				else if (TagCompare("script"))
 				{
-					tmpchar="h2";
-					GetValueCurentTag (tmpchar, doc);
-				}
-				else if (TagCompare("h3"))
-				{
-					tmpchar="h3";
-					GetValueCurentTag (tmpchar, doc);
-				}
-				else if (TagCompare("h4"))
-				{
-					tmpchar="h4";
-					GetValueCurentTag (tmpchar, doc);
-				}
-				else if (TagCompare("h5"))
-				{
-					tmpchar="h5";
-					GetValueCurentTag (tmpchar, doc);
-				}
-				else if (TagCompare("h6"))
-				{
-					tmpchar="h6";
-					GetValueCurentTag (tmpchar, doc);
-				}
-				else if (TagCompare("p"))
-				{
-					tmpchar="p";
-					GetValueCurentTag (tmpchar, doc);
-				}
-				else if (TagCompare("meta"))
-				{
+					NextTag();
+					while (!TagCompare("/script"))
+					{
+						NextTag();
+					}
 				}
 				else if (TagCompare("/body"))
 				{
-				end=true;
-				}
-				else if (TagCompare("/h1"))
-				{
-					tmpchar="h1";
-				}
-				else if (TagCompare("/h2"))
-				{
-					tmpchar="h2";
-					
-				}
-				else if (TagCompare("/h3"))
-				{
-					tmpchar="h3";
-				}
-				else if (TagCompare("/h4"))
-				{
-					tmpchar="h4";
-				}
-				else if (TagCompare("/h5"))
-				{
-					tmpchar="h5";
-				}
-				else if (TagCompare("/h6"))
-				{
-					tmpchar="h6";
-				}
-				else if (TagCompare("/p"))
-				{
-					tmpchar="p";
-					
+					end=true;
 				}
 				else
 				{
@@ -357,17 +357,17 @@ void GALILEI::GFilterHTML::GetValueCurentTag(char* curent,GDocXML* doc)
 			ok2=true;
 		}
 	}
+	
 	// whe analyse only if there is a containt
 	if (ok2)
 	{
 		bool contents=true;
-		int curTag;
 
 		// we compare the current tag  .. and case the value of this tag
 		// if the tag must be attached to the current we attach his  to
-		//the precednent tag else we attach to the contentrand nivo
+		// the precednent tag else we attach to the content level
 
-		if (curent==("h1"))
+		if (!strcmp(curent,"h1"))
 		{
 			contents= true;
 			for (int i=0;i<8;i++)
@@ -380,186 +380,66 @@ void GALILEI::GFilterHTML::GetValueCurentTag(char* curent,GDocXML* doc)
 			AnalyzeBlock(Pos,TagVector [1]);
 		}
 
-		if (curent==("h2"))
+		if (!strcmp(curent,"h2"))
 		{
-			contents=true;
-			for (int i=1;i<2;i++)
-			{
-				if (ClassementVector[i]!=0)
-				{
-					contents=false;
-					curTag=i;
-				}
-				
-			}
-			if(contents)
-			{
-				for (int i=0;i<8;i++)
-				{
-					ClassementVector[i]=0;
-				}
-				ClassementVector [2]=1;
-				doc->AddNode(content,TagVector [2]=new RXMLTag("h2"));
-				AnalyzeBlock(Pos,TagVector [2]);
-			}
-			else
-			{
-				ClassementVector [2]=1;
-				doc->AddNode(TagVector [curTag],TagVector [2]=new RXMLTag("h2"));
-				AnalyzeBlock(Pos,TagVector [2]);
-			}
+			AddTag(2,curent, doc);
 		}
-		if (curent==("h3"))
+		if (!strcmp(curent,"h3"))
 		{
-			contents=true;
-			for (int i=1;i<3;i++)
-			{
-				if (ClassementVector[i]!=0)
-				{
-					contents=false;
-					curTag=i;
-				}
-			}
-			if(contents)
-			{
-				for (int i=0;i<8;i++)
-				{
-					ClassementVector[i]=0;
-				}
-				ClassementVector [3]=1;
-				doc->AddNode(content,TagVector [3]=new RXMLTag("h3"));
-				AnalyzeBlock(Pos,TagVector [3]);
-			}
-			else
-			{
-				ClassementVector [3]=1;
-				doc->AddNode(TagVector [curTag],TagVector [3]=new RXMLTag("h3"));
-				AnalyzeBlock(Pos,TagVector [3]);
-			}
-			
+			AddTag(3,curent, doc);
 		}
-		if (curent==("h4"))
+		if (!strcmp(curent,"h4"))
 		{
-			contents=true;
-			for (int i=1;i<4;i++)
-			{
-				if (ClassementVector[i]!=0)
-				{
-					contents=false;
-					curTag=i;
-				}
-				
-			}
-			if(contents)
-			{
-				for (int i=0;i<8;i++)
-				{
-					ClassementVector[i]=0;
-				}
-				ClassementVector [4]=1;
-				doc->AddNode(content,TagVector [4]=new RXMLTag("h4"));
-				AnalyzeBlock(Pos,TagVector [4]);
-			}
-			else
-			{
-				ClassementVector [4]=1;
-				doc->AddNode(TagVector [curTag],TagVector [4]=new RXMLTag("h4"));
-				AnalyzeBlock(Pos,TagVector [4]);
-			}
+			AddTag(4,curent, doc);
 		}
-		if (curent==("h5"))
+		if (!strcmp(curent,"h5"))
 		{
-			contents=true;
-			for (int i=1;i<5;i++)
-			{
-				if (ClassementVector[i]!=0)
-				{
-					contents=false;
-					curTag=i;
-				}
-				
-			}
-			if(contents)
-			{
-				for (int i=0;i<8;i++)
-				{
-					ClassementVector[i]=0;
-				}
-				ClassementVector [5]=1;
-				doc->AddNode(content,TagVector [5]=new RXMLTag("h5"));
-				AnalyzeBlock(Pos,TagVector [5]);
-			}
-			else
-			{
-				ClassementVector [5]=1;
-				doc->AddNode(TagVector [curTag],TagVector [5]=new RXMLTag("h5"));
-				AnalyzeBlock(Pos,TagVector [5]);
-			}
-			
+			AddTag(5,curent, doc);
 		}
-		if (curent==("h6"))
+		if (!strcmp(curent,"h6"))
 		{
-			contents=true;
-			for (int i=1;i<6;i++)
-			{
-				if (ClassementVector[i]!=0)
-				{
-					contents=false;
-					curTag=i;
-				}
-			}
-			if(contents)
-			{
-				for (int i=0;i<8;i++)
-				{
-					ClassementVector[i]=0;
-				}
-				ClassementVector [6]=1;
-				doc->AddNode(content,TagVector [6]=new RXMLTag("h6"));
-				AnalyzeBlock(Pos,TagVector [6]);
-			}
-			else
-			{
-				ClassementVector [6]=1;
-				doc->AddNode(TagVector [curTag],TagVector [6]=new RXMLTag("h6"));
-				AnalyzeBlock(Pos,TagVector [6]);
-			}
-			
+			AddTag(6,curent, doc);
 		}
-		if (curent==("p"))
+		if (!strcmp(curent,"p"))
 		{
-			contents=true;
-			for (int i=1;i<7;i++)
-			{
-				if (ClassementVector[i]!=0)
-				{
-					contents=false;
-					curTag=i;
-				}
-			}
-			if(contents)
-			{
-				for (int i=0;i<8;i++)
-				{
-					ClassementVector[i]=0;
-				}
-				ClassementVector [7]=1;
-				doc->AddNode(content,TagVector [7]=new RXMLTag("p"));
-				AnalyzeBlock(Pos,TagVector [7]);
-			}
-			else
-			{
-				ClassementVector [7]=1;
-				doc->AddNode(TagVector [curTag],TagVector [7]=new RXMLTag("p"));
-				AnalyzeBlock(Pos,TagVector [7]);
-			}
+		    AddTag(7,curent, doc);
 		}
 	}
 
 	// on remet le buffer a <
 	(*Buffer)='<';
 }
+//---------------------------------------------------------------------------
+void GALILEI::GFilterHTML::AddTag(int level,char* tag,GDocXML* doc)
+{
+	bool contents=true;
+	int curTag;
+	for (int i=1;i<level;i++)
+	{
+		if (ClassementVector[i]!=0)
+		{
+			contents=false;
+			curTag=i;
+		}
+	}
+	if(contents)
+	{
+		for (int i=0;i<level+1;i++)
+		{
+			ClassementVector[i]=0;
+		}
+		ClassementVector [level]=1;
+		doc->AddNode(content,TagVector [level]=new RXMLTag(tag));
+		AnalyzeBlock(Pos,TagVector [level]);
+	}
+	else
+	{
+		ClassementVector [level]=1;
+		doc->AddNode(TagVector [curTag],TagVector [level]=new RXMLTag(tag));
+		AnalyzeBlock(Pos,TagVector [level]);
+	}
 
+}
 
 //---------------------------------------------------------------------------
 void GALILEI::GFilterHTML::InitCharContainer(void)
@@ -665,68 +545,11 @@ void GALILEI::GFilterHTML::InitCharContainer(void)
 }
 
 
-//---------------------------------------------------------------------------
-bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
-{
-	int accessmode,handle;
-	struct stat statbuf;
-
-	// Initialisation
-	Doc=doc;
-	accessmode=O_RDONLY;
-	#if !unix
-		accessmode=O_BINARY;
-	#endif
-	handle=open(Doc->GetFile(),accessmode);
-	fstat(handle, &statbuf);
-	Begin=Pos=Buffer=new char[statbuf.st_size+1];
-	read(handle,Buffer,statbuf.st_size);
-	Buffer[statbuf.st_size]=0;
-	SkipSpaces();
-
-	//Initialisation of the different variable
-	InitCharContainer();
-	for (int i=0;i<7;i++)
-	{
-		h[i]=0;
-	}
-	for (int i=0;i<8;i++)
-	{
-		ClassementVector[i]=0;
-	}
-	p=0;
-	NextWirteTag=true;
-
-	// Begin  the parsing of the HTML Structure
-	doc->AddNode(doc->GetTop(),meta=new RXMLTag("MetaData"));
-	doc->AddNode(meta,act=new RXMLTag("URL"));
-	act->InsertAttr(new RXMLAttr("value",Doc->GetURL()));
-	doc->AddNode(meta,act=new RXMLTag("TypeDoc"));
-	act->InsertAttr(new RXMLAttr("code","html"));
-
-	// Traitement of Headers
-	AnalyseHeader(doc);
-
-	// Traitement of Content
-	doc->AddNode(doc->GetTop(),content=new RXMLTag("Content"));
-	AnalyseBody(doc);
-
-	// Traitment of links
-	doc->AddNode(doc->GetTop(),links=new RXMLTag("links"));
-
-	// Done
-	if (Begin)
-	{
-		delete[] Begin;
-		Begin=0;
-	}
-	return(true);
-}
-
 
 //---------------------------------------------------------------------------
 void GALILEI::GFilterHTML::GetMetaValue (GDocXML* doc)
 {
+
 	RString temp2 (100);
 	bool ok=true;
 	bool ok1=false;
@@ -747,7 +570,7 @@ void GALILEI::GFilterHTML::GetMetaValue (GDocXML* doc)
 	}
 	ok2=true;
 	// the information is the name of the metatag
-	
+
 	while((*Buffer)&&ok2)
 	{
 		if ((*Buffer)=='"')
@@ -806,6 +629,7 @@ void GALILEI::GFilterHTML::GetMetaValue (GDocXML* doc)
 	 		Buffer++;
 		}
 	}
+	
 	// the buffer is "on" a '"'
 	(*Buffer)=0;
 
