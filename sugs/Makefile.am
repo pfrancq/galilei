@@ -1,8 +1,8 @@
 INCLUDES = $(all_includes) -I$(top_srcdir)
-lib_LTLIBRARIES =  ../libsugs.la
-___libsugs_la_LDFLAGS = -module -avoid-version
-___libsugs_la_SOURCES = gsugs.cpp
-___libsugs_la_LIBADD=
+lib_LTLIBRARIES =  libsugs.la
+libsugs_la_LDFLAGS = -module -avoid-version
+libsugs_la_SOURCES = gsugs.cpp
+libsugs_la_LIBADD=
 AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =
