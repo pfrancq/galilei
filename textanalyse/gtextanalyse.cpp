@@ -55,6 +55,7 @@
 #include <infos/gdict.h>
 #include <infos/glangmanager.h>
 #include <sessions/gsession.h>
+#include <sessions/gstorage.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -674,7 +675,9 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 				{
 					if (externalLinks)
 					{
-						DocsToAdd->InsertPtr(tmpDoc=Session->NewDoc(ptr,ptr,"text/html"));
+						tmpDoc=new GDocVector(ptr,ptr,"text/html");
+						Session->AssignId(tmpDoc);
+						DocsToAdd->InsertPtr(tmpDoc);
 						tmpDoc->SetState(osNotNeeded);
 					}
 				}
@@ -769,7 +772,7 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 		cout<<"warning : analyse with document struct needs /var/galilei/bin/DB_name"<<endl;
 		RString name;
 		name="/var/galilei/bin/";
-		name+=Session->GetDbName();
+		name+=Session->GetStorage()->GetName();
 		name+="/Doc";
 		name+=itou(Doc->GetId());
 		R::RRecFile<GWord,sizeof(unsigned int),false> f(name,R::Create);
