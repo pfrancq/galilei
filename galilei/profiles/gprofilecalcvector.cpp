@@ -241,7 +241,7 @@ void GALILEI::GProfileCalcVector::ComputeSubProfile(GSubProfileVector* s) throw(
 	if(LangVector->IsEmpty()) return;
 
 	// Put in Order an ordered version of LangVector
-	if(LangVector->NbPtr>MaxOrderSize)
+	if(LangVector->NbPtr+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
 		MaxOrderSize=static_cast<unsigned int>((LangVector->NbPtr+1)*1.1);
