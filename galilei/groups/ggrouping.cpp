@@ -42,7 +42,7 @@ using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
+// include files for GALILEI
 #include <langs/glang.h>
 #include <groups/ggrouping.h>
 #include <groups/ggroupcalc.h>
@@ -53,6 +53,11 @@ using namespace RStd;
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
 using namespace GALILEI;
+
+
+//-----------------------------------------------------------------------------
+// defines
+//#define GROUP_SUBPROFILES_NOT_DEFINED
 
 
 
