@@ -65,15 +65,13 @@ void GSessionMySQL::LoadUsersFromDB()
 {        
 	if (Langs)
 	{
-		Users = new GUsers(10,this);
+		Users = new GUsers(10);
 		GUser* usr;
 		RQuery users (db, "SELECT userid,user FROM users");
 		for(users.Begin();users.IsMore();users++)
 		{
-			usr=new GUser(Users);
-			usr->Id=atoi(users[0]);
-			usr->Name=RString(users[1]);
-			LoadProfilesFromDB(usr);        
+			usr=new GUser(atoi(users[0]),users[1]);
+			LoadProfilesFromDB(usr);
 			Users->InsertPtr(usr);
 		}
 	}
@@ -88,7 +86,7 @@ void GSessionMySQL::LoadProfilesFromDB (GUser* usr)
 	// load profiles of this user
 	GProfile* prof;
 	char sSql[100];
-	sprintf(sSql,"SELECT profileid, description, updated FROM profiles WHERE userid=%u",usr->Id);
+	sprintf(sSql,"SELECT profileid, description, updated FROM profiles WHERE userid=%u",usr->GetId());
         
 	RQuery profiles(db,sSql);
 	for(profiles.Begin();profiles.IsMore();profiles++)
@@ -118,19 +116,19 @@ void GSessionMySQL::LoadSubProfilesFromDB (GProfile* prof)
                                 
 
 		// Load GWordList 'OK'
-		sprintf(sSql,"SELECT kwdid FROM %sokkwds WHERE subprofileid=%u",lang->Code,sub->GetId());
+		sprintf(sSql,"SELECT kwdid FROM %sokkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
 		RQuery ok(db,sSql);
 		for(ok.Begin();ok.IsMore();ok++)                
 			sub->GetOK()->InsertPtr(new GIWord(atoi(ok[0])));
 
 		// Load GWordList 'KO'
-		sprintf(sSql,"SELECT kwdid FROM %skokwds WHERE subprofileid=%u",lang->Code,sub->GetId());
+		sprintf(sSql,"SELECT kwdid FROM %skokwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
 		RQuery ko(db,sSql);
 		for(ko.Begin();ko.IsMore();ko++)                
 			sub->GetKO()->InsertPtr(new GIWord(atoi(ko[0])));
 
 		// Load GWordList 'Common'
-		sprintf(sSql,"SELECT kwdid FROM %scomkwds WHERE subprofileid=%u",lang->Code,sub->GetId());
+		sprintf(sSql,"SELECT kwdid FROM %scomkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
 		RQuery com(db,sSql);
 		for(com.Begin();com.IsMore();com++)                
 			sub->GetCommon()->InsertPtr(new GIWord(atoi(com[0])));
@@ -364,16 +362,7 @@ void GSessionMySQL::LoadProfileDocs(GProfile* profile)
 	RQuery docs (db, ssql);
 
 	for(docs.Begin();docs.IsMore();docs++)
-	{
-		char temp=atoi(docs[1]);
-		GDoc* doc=Docs->GetPtr<const unsigned>(atoi(docs[0]));
-		if (doc)
-		{
-			GProfDoc* profdoc=new GProfDoc(doc, temp);
-			profile->FdbkDocs.InsertPtr(profdoc);
-		}
-		
-	}
+		profile->AddDocJudged(Docs->GetPtr<const unsigned>(atoi(docs[0])),atoi(docs[1]));
 }
 
 

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gusers.cpp
+	GUsers.cpp
 
-	Basic Information - Implementation.
+	Users - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -12,54 +12,46 @@
 
 	Last Modify: $Date$
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
-
 */
 
-#include <stdlib.h>
 
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainercursor.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
 //include files for GALILEI
-#include<gusers.h>
-#include <gsessions/gsession.h>
+#include<gprofiles/gusers.h>
 using namespace GALILEI;
 
-//-----------------------------------------------------------------------------
+
 
 //-----------------------------------------------------------------------------
 //
-//  HGsers
+//  GGUsers
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GUsers::GUsers(unsigned int nb,GSession *session) throw(bad_alloc)
-  : RContainer<GUser,unsigned,true,true>(nb+nb/2,nb/2),Session(session)
+GALILEI::GUsers::GUsers(unsigned int nb) throw(bad_alloc)
+	: RContainer<GUser,unsigned,true,true>(nb+nb/2,nb/2)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GSubProfile* GUsers::GetSubProfile(unsigned int profileid)
+GSubProfile* GALILEI::GUsers::GetSubProfile(unsigned int profileid) const
 {
-	GSubProfile *sub;
-	GUser *usr;
+	GSubProfile* sub;
+	GUser* usr;
+	RContainerCursor<GUser,unsigned,true,true> cur(this);
 
-	for(Start();!End();Next())
+	for(cur.Start();!cur.End();cur.Next())
 	{
-		usr=(*this)();
+		usr=cur();
 		for(usr->Start();!usr->End();usr->Next())
 		{
 			sub=(*usr)()->GetPtr<unsigned int>(profileid);

@@ -122,6 +122,15 @@ void GSession::ClearDocs(void) throw(GException)
 
 
 //---------------------------------------------------------------------------
+GUser* GALILEI::GSession::CreateUser(const char* usr,const char* pwd,const char* name,const char* email,
+	                  const char* title,const char* org,const char* addr1,
+	                  const char* addr2,const char* city,const char* country) throw(bad_alloc)
+{
+	return(0);
+}
+
+
+//---------------------------------------------------------------------------
 GSession::~GSession(void) throw(GException)
 
 {

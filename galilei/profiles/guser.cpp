@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	guser.cpp
+	GUser.cpp
 
-	Basic Information - Implementation.
+	User - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -14,15 +14,15 @@
 
 */
 
-#include <stdlib.h>
 
-//include files for GALILEI
-#include<gprofiles/guser.h>
-#include <gprofiles/gusers.h>
-
-using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
+//include files for GALILEI
+#include<gprofiles/guser.h>
+using namespace GALILEI;
+using namespace RStd;
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -32,28 +32,28 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-GUser::GUser(GUsers *owner) throw(bad_alloc)
-  : RContainer<GProfile,unsigned,true,true>(20,10),Owner(owner),Id(0),Name(25),SessNum(0)
+GUser::GUser(const unsigned int id,const char* name) throw(bad_alloc)
+  : RContainer<GProfile,unsigned,true,true>(20,10),Id(id),Name(name)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GUser::Compare(const GUser &user)
+int GALILEI::GUser::Compare(const GUser &user) const
 {
-  return(Id-user.Id);
+	return(Id-user.Id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GUser::Compare(const GUser *user)
+int GALILEI::GUser::Compare(const GUser *user) const
 {
-  return(Id-user->Id);
+	return(Id-user->Id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GUser::Compare(const unsigned int id)
+int GALILEI::GUser::Compare(const unsigned int id) const
 {
 	return(Id-id);
 }

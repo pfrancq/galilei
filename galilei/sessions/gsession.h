@@ -72,6 +72,28 @@ public:
 	virtual unsigned DicNextId(const RString& word)=0;
 	
 
+protected:
+
+public:
+
+	/**
+	* Create a new user in the system.
+	* @param usr            User.
+	* @param pwd            Password.
+	* @param name           Name.
+	* @param email          EMail.
+	* @param title          Title.
+	* @param org            Organisation.
+	* @param addr1          Address (Part 1).
+	* @param addr2          Address (Part 2).
+	* @param city           City.
+	* @param country        Country.
+	*
+	*/
+	GUser* CreateUser(const char* usr,const char* pwd,const char* name,const char* email,
+	                  const char* title,const char* org,const char* addr1,
+	                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
+
   // Documents
 //  void PutAllDocs(bool alldocs);
 //  bool GetAllDocs(void) { return(AllDocs); }

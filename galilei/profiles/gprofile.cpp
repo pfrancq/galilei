@@ -64,3 +64,11 @@ int GALILEI::GProfile::Compare(const GProfile *profile) const
 {
   return(Id-profile->Id);
 }
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GProfile::AddDocJudged(GDoc* doc,char j) throw(bad_alloc)
+{
+	if(doc)
+		FdbkDocs.InsertPtr(new GProfDoc(doc,j));
+}

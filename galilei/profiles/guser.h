@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	guser.h
+	GUser.h
 
-	Basic Information - Implementation.
+	User - Header.
 
 	(C) 2001 by P. Francq.
 
@@ -39,58 +39,64 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-// forward declaration
-class GUsers;
-
-
-//-----------------------------------------------------------------------------
-// class GUser
-
+/**
+* The GUser class provides a representation for a user.
+* @author Pascal Francq
+* @short User.
+*/
 class GUser : public RStd::RContainer<GProfile,unsigned,true,true>
 {
-public:
-
-	GUsers *Owner;
 	/**
-	* Identifier
+	* Identificator of the user.
 	*/
 	unsigned Id;
-	
+
 	/*
-	* Name
+	* Name of the user.
 	*/
-	RString Name;
-	
-	/**
-	* Number of session
-	*/
-	unsigned SessNum;    // Number of session
+	RStd::RString Name;
+
+public:
 
 	/**
-	* Construct a GUser
-	* @param owner			parent owners
+	* Construct a GUser.
+	* @param id             Identificator.
+	* @param name           Name of the user.
 	*/
-	GUser(GUsers *owner) throw(bad_alloc);
-	
-	/** comparaison functions
+	GUser(const unsigned int id,const char* name) throw(bad_alloc);
+
+	/**
+	* Compare method used by RStd::RContainer.
 	*/
-	int Compare(const unsigned int id);
-	
-	/** comparaison functions
+	int Compare(const GUser &user) const;
+
+	/**
+	* Compare method used by RStd::RContainer.
 	*/
-	int Compare(const GUser &user);
-	
-	/** comparaison functions
+	int Compare(const GUser *user) const;
+
+	/**
+	* Compare method used by RStd::RContainer.
 	*/
-	int Compare(const GUser *user);
-	
-	/** virtual Load function
+	int Compare(const unsigned int id) const;
+
+	/**
+	* Get the identificator of the user.
+	* @return Identificator.
 	*/
-//	virtual void Load(void) throw(bad_alloc,GException)=0;
+	unsigned int GetId(void) const {return(Id);}
+
+	/**
+	* Get the name of the user.
+	* @return Pointer to a C String.
+	*/
+	const char* GetName(void) const {return(Name());}
 
 };
 
+
 }  //-------- End of namespace GALILEI ----------------------------------------
+
 
 //-----------------------------------------------------------------------------
 
