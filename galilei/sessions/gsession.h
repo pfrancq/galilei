@@ -50,6 +50,7 @@
 #include <docs/gdocs.h>
 #include <groups/ggroupsmng.h>
 #include <docs/glinkcalc.h>
+#include <postgroups/gpostgroup.h>
 #include <docs/gpostdoc.h>
 #include <sessions/gparams.h>
 
@@ -131,6 +132,12 @@ protected:
 	GLinkCalcManager* LinkCalcMng;
 
 	/**
+	* PostGroup Manager used by this session.
+	*/
+	GPostGroupManager* PostGroupMng;
+
+
+	/**
 	* Words clustering Manager used by this session.
 	*/
 	GPostDocManager* PostDocMng;
@@ -206,7 +213,7 @@ public:
 	* @param lmng           Linking Manager.
 	*/
 	void Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng) throw(bad_alloc,GException);
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(bad_alloc,GException);
 
 	/**
 	* Get the documents' analyser.
@@ -234,6 +241,11 @@ public:
 	* Get the link computing manager used by this session.
 	*/
 	GLinkCalcManager* GetLinkCalcMng(void) {return(LinkCalcMng);}
+
+	/**
+	* Get the PostGroup manager used by this session.
+	*/
+	GPostGroupManager* GetPostGroupMng(void) {return(PostGroupMng);}
 
 	/**
 	* Get the group computing manager used by this session.
@@ -666,26 +678,6 @@ public:
 	* @returns Number of rows.
 	*/
 	virtual unsigned int GetCount(const char* tbl)=0;
-
-	/**
-	*  save the Point of views (expert kwds for a profile)
-	*/
-	virtual unsigned int SavePointOfView(R::RContainer<GStandardInOutPut,unsigned,false,true>*spov) =0;
-
-	/**
-	*  load the Points of views (expert kwds for a profile)
-	*/
-	virtual GInOutputBase * LoadPointOfView(GSubProfile *profile)=0;
-
-	/**
-	*  load the Points of views (expert kwds for a profile)
-	*/
-	virtual GInOutputBase * GetDocList(int grp, int profile, int idw) = 0;
-
-	/**
-	*  test if a specific level exists or not
-	*/
-	virtual int LevelExist(int level, int profileid) =0;
 
 	/**
 	* Destructor.

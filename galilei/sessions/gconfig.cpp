@@ -62,6 +62,9 @@ using namespace R;
 #include <langs/glangs.h>
 #include <docs/gdocanalyse.h>
 #include <docs/gdocanalysemanager.h>
+#include <postgroups/gpostgroup.h>
+#include <postgroups/gpostgroupmanager.h>
+
 using namespace GALILEI;
 
 
@@ -88,6 +91,7 @@ GConfig::GConfig(const char* f) throw(bad_alloc)
 	AddNode(t,PostDocs=new RXMLTag("galileiconfig:postDocs"));
 	AddNode(t,Langs=new RXMLTag("galileiconfig:langs"));
 	AddNode(t,DocAnalyses=new RXMLTag("galileiconfig:docanalyses"));
+	AddNode(t,PostGroups=new RXMLTag("galileiconfig:postgroups"));
 }
 
 
@@ -107,6 +111,7 @@ void GConfig::Load(void) throw(GException)
 		PostDocs=GetTop()->GetTag("galileiconfig:postDocs");
 		Langs=GetTop()->GetTag("galileiconfig:langs");
 		DocAnalyses=GetTop()->GetTag("galileiconfig:docanalyses");
+		PostGroups=GetTop()->GetTag("galileiconfig:postgroups");
 	}
 	catch(...)
 	{
@@ -342,6 +347,33 @@ void GConfig::Store(GLinkCalcManager& mng)
 		LinkCalcs->InsertAttr("Current",lcalc->GetFactory()->GetName());
 	else
 		LinkCalcs->InsertAttr("Current","None");
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GPostGroupManager& mng)
+{
+	GFactoryPostGroupCursor Cur;
+
+	if(!PostGroups) return;
+	Cur=mng.GetPostGroupCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(PostGroups);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GPostGroupManager& mng)
+{
+	GFactoryPostGroupCursor Cur;
+
+	Cur=mng.GetPostGroupCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(PostGroups);
+	}
 }
 
 

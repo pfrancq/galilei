@@ -100,6 +100,12 @@ class GConfig : R::RXMLStruct
 	R::RXMLTag* LinkCalcs;
 
 	/**
+	* Tag holding the postgroup computation methods.
+	*/
+	R::RXMLTag* PostGroups;
+
+
+	/**
 	* Tag holding words clustering methods.
 	*/
 	R::RXMLTag* PostDocs;
@@ -204,6 +210,20 @@ public:
 	*/
 	void Store(GLinkCalcManager& mng);
 
+
+	/**
+	* Read the Post Group computing methods from the structure.
+	* @param mng             Manager.
+	*/
+	void Read(GPostGroupManager& mng);
+
+	/**
+	* Store the Post Group computing methods in the structure.
+	* @param mng             Manager.
+	*/
+	void Store(GPostGroupManager& mng);
+
+
 	/**
 	* Read the words clustering methods from the structure.
 	* @param mng             Manager.
@@ -229,13 +249,13 @@ public:
 	void Store(GLangs& mng);
 
 	/**
-	* Read the links computing methods from the structure.
+	* Read the DocAnalyse computing methods from the structure.
 	* @param mng             Manager.
 	*/
 	void Read(GDocAnalyseManager& mng);
 
 	/**
-	* Store the links computing methods in the structure.
+	* Store the DocAnalyse computing methods in the structure.
 	* @param mng             Manager.
 	*/
 	void Store(GDocAnalyseManager& mng);

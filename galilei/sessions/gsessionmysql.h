@@ -310,16 +310,6 @@ public:
 	virtual void ExecuteData(const char* filename) throw(GException);
 
 	/**
-	* prepear the generation of pov
-	*/
-	void PrepearPoV(GGroup * grp, GSession* s);
-
-	/**
-	* check if pov exist or not
-	*/
-	int Alreadyexist(int grpid);
-
-	/**
 	* load the historic groups.
 	*/
 	GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID);
@@ -328,26 +318,6 @@ public:
 	*returns the number of historic groups stored in database.
 	*/
 	virtual unsigned int GetHistorySize(void) ;
-
-	/**
-	*  save the Point of views (expert kwds for a profile)
-	*/
-	virtual unsigned int SavePointOfView(R::RContainer<GStandardInOutPut,unsigned,false,true>*spov);
-
-	/**
-	*  load the Point of views (expert kwds for a profile) returns 0 if profile is empty
-	*/
-	virtual GInOutputBase * LoadPointOfView(GSubProfile *profile);
-
-	/**
-	*  load the Point of views (expert kwds for a profile) returns 0 if profile is empty
-	*/
-	virtual GInOutputBase * GetDocList(int grp, int profile, int idw);
-
-	/**
-	*  check if a specific level does exist in the table
-	*/
-	virtual int LevelExist(int level, int profileid);
 
 	/**
 	* Destructor.

@@ -81,6 +81,8 @@ using namespace R;
 #include <infos/giwordweight.h>
 #include <historic/ggroupshistory.h>
 #include <groups/gsubjecttree.h>
+#include <postgroups/gpostgroup.h>
+
 using namespace GALILEI;
 
 
@@ -97,7 +99,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	: GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(0), Fdbks(f+f/2,f/2),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
-	  StatsCalcMng(0), LinkCalcMng(0), PostDocMng(0),
+	  StatsCalcMng(0), LinkCalcMng(0),PostDocMng(0),PostGroupMng(0),
 	  bGroups(false),bFdbks(false),
 	  SessParams(sessparams)
 
@@ -118,8 +120,10 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 
 
 //-----------------------------------------------------------------------------
-void GSession::Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-	GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng) throw(bad_alloc,GException)
+void GSession::Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng,
+	GGroupingManager* gmng, GGroupCalcManager* gcmng,GStatsCalcManager* smng,
+	GLinkCalcManager* lmng, GPostDocManager* pdmng,GPostGroupManager* pgmng) throw(bad_alloc,GException)
+
 {
 	GLang* lang;
 
@@ -155,6 +159,10 @@ void GSession::Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng
 	LinkCalcMng=lmng;
 	if(LinkCalcMng)
 		LinkCalcMng->Connect(this);
+	PostGroupMng=pgmng;
+	if(PostGroupMng)
+		PostGroupMng->Connect(this);
+
 	PostDocMng=pdmng;
 	if(PostDocMng)
 		PostDocMng->Connect(this);
@@ -920,6 +928,7 @@ GSession::~GSession(void) throw(GException)
 	if(GroupCalcMng) GroupCalcMng->Disconnect(this);
 	if(StatsCalcMng) StatsCalcMng->Disconnect(this);
 	if(LinkCalcMng) LinkCalcMng->Disconnect(this);
+	if(PostGroupMng) PostGroupMng->Disconnect(this);
 	if(Langs) Langs->Disconnect(this);
 	if(DocAnalyseMng) DocAnalyseMng->Disconnect(this);
 

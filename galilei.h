@@ -221,14 +221,18 @@ class GMixedIdealGroups;
 
 //-----------------------------------------------------------------------------
 // forward class declaration - PostGroups
-class GStandardInOutPut;
-class GInOutputBase;
-class GDispatchpov;
-class GExpertKwds;
-class GAlgoBase;
-class GCpov;
-class GCpovCursor;
-class GStandardInOutPutCursor;
+//class GStandardInOutPut;
+//class GInOutputBase;
+//class GDispatchpov;
+//class GExpertKwds;
+//class GAlgoBase;
+//class GCpov;
+//class GCpovCursor;
+//class GStandardInOutPutCursor;
+class GPostGroup;
+class GPostGroupManager;
+class GFactoryPostGroup;
+class GFactoryPostGroupCursor;
 
 
 //-----------------------------------------------------------------------------
