@@ -490,12 +490,12 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 					if(lang->GetDict()->GetData(atoi(sel[1]))->GetType()==infoWordList)
 					{
 						if(wg)
-							((GSubProfileVector*)sub)->AddWordList(atoi(sel[1]),atof(sel[2]));
+							dynamic_cast<GSubProfileVector*>(sub)->AddWordList(atoi(sel[1]),atof(sel[2]));
 					}
 					else
 					{
 						if(w)
-							((GSubProfileVector*)sub)->AddWord(atoi(sel[1]),atof(sel[2]));
+							dynamic_cast<GSubProfileVector*>(sub)->AddWord(atoi(sel[1]),atof(sel[2]));
 					}
 				}
 			}
@@ -508,7 +508,7 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 			if(!lang) continue;
 			GSubProfileCursor SubProfiles=GetSubProfilesCursor(lang);
 			for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
-				((GSubProfileVector*)SubProfiles())->UpdateRefs();
+				dynamic_cast<GSubProfileVector*>(SubProfiles())->UpdateRefs();
 		}
 		// Load the ideal Groups.
 		LoadIdealGroupment();
@@ -1259,7 +1259,7 @@ void GALILEI::GSessionMySQL::LoadGroups(bool wg,bool w) throw(bad_alloc,GExcepti
 		groups=GroupsCursor();
 		for(groups->Start();!groups->End();groups->Next())
 		{
-			static_cast<GGroupVector*>((*groups)())->UpdateRefs();
+			dynamic_cast<GGroupVector*>((*groups)())->UpdateRefs();
 		}
 	}
 }
@@ -1273,7 +1273,7 @@ void GALILEI::GSessionMySQL::ExecuteData(const char* filename) throw(GException)
 
 	while(!Sql.Eof())
 	{
-		l=Sql.GetLine();                                                       
+		l=Sql.GetLine();
 		RQuery exec(this,l);
 	}
 }

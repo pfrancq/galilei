@@ -100,7 +100,7 @@ public:
 	* Compute a profile.
 	* @param subprofile      Profile to compute.
 	*/
-	virtual void Compute(GSubProfile* subprofile)=0;
+	virtual void Compute(GSubProfile* subprofile) throw(bad_alloc,GException)=0;
 
 	/**
 	* Destructor.

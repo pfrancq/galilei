@@ -4,9 +4,9 @@
 
 	GFilterManager.cpp
 
-	Generic Manager to handle URL file - Implementation.
+	Generic filter manager handling URL - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,14 +34,14 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gfiltermanager.h>
 #include <docs/gfilter.h>
@@ -53,13 +53,13 @@ using namespace ltmm;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GFilterManager::GMIMEFilter
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
+//------------------------------------------------------------------------------
 class GFilterManager::GMIMEFilter
 {
 public:
@@ -75,14 +75,14 @@ public:
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GFilterManager
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GALILEI::GFilterManager::GFilterManager(const char* path,bool dlg) throw(GException)
+//------------------------------------------------------------------------------
+GFilterManager::GFilterManager(const char* path,bool dlg) throw(bad_alloc,GException)
 	: R::RContainer<GFactoryFilter,unsigned int,true,true>(10,5), MIMES(50,25)
 {
 	DIR* dp;
@@ -150,27 +150,27 @@ GALILEI::GFilterManager::GFilterManager(const char* path,bool dlg) throw(GExcept
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GFilterManager::Download(const char* /*URL*/,RString& /*tmpFile*/) throw(GException)
+//------------------------------------------------------------------------------
+void GFilterManager::Download(const char*,RString&) throw(GException)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-const char* GALILEI::GFilterManager::DetermineMIMEType(const char* /*tmpfile*/)
+//------------------------------------------------------------------------------
+const char* GFilterManager::DetermineMIMEType(const char*)
 {
 	return(0);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GFilterManager::Delete(RString& /*tmpFile*/) throw(GException)
+//------------------------------------------------------------------------------
+void GFilterManager::Delete(RString&) throw(GException)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-GDocXML* GALILEI::GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
+//------------------------------------------------------------------------------
+GDocXML* GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
 {
 	RString tmpFile(250);
 	char tmp[250];
@@ -253,15 +253,15 @@ GDocXML* GALILEI::GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GFilterManager::AddMIME(const char* mime,GFilter* f)
+//------------------------------------------------------------------------------
+void GFilterManager::AddMIME(const char* mime,GFilter* f) throw(bad_alloc)
 {
 	MIMES.InsertPtr(new GMIMEFilter(mime,f));
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GFilterManager::DelMIMES(GFilter* f)
+//------------------------------------------------------------------------------
+void GFilterManager::DelMIMES(GFilter* f)
 {
 	RContainer<GMIMEFilter,unsigned int,false,false> Rem(5,5);
 
@@ -278,8 +278,8 @@ void GALILEI::GFilterManager::DelMIMES(GFilter* f)
 }
 
 
-//-----------------------------------------------------------------------------
-const char* GALILEI::GFilterManager::GetMIMEType(const char* mime) const
+//------------------------------------------------------------------------------
+const char* GFilterManager::GetMIMEType(const char* mime) const
 {
 	GMIMEFilter* fil;
 
@@ -290,8 +290,8 @@ const char* GALILEI::GFilterManager::GetMIMEType(const char* mime) const
 }
 
 
-//-----------------------------------------------------------------------------
-GFactoryFilterCursor& GALILEI::GFilterManager::GetFiltersCursor(void)
+//------------------------------------------------------------------------------
+GFactoryFilterCursor& GFilterManager::GetFiltersCursor(void)
 {
 	GFactoryFilterCursor *cur=GFactoryFilterCursor::GetTmpCursor();
 	cur->Set(this);
@@ -299,7 +299,7 @@ GFactoryFilterCursor& GALILEI::GFilterManager::GetFiltersCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GFilterManager::~GFilterManager(void)
+//------------------------------------------------------------------------------
+GFilterManager::~GFilterManager(void)
 {
 }

@@ -4,9 +4,9 @@
 
 	GFilterManagerCURL.h
 
-	Manager to handle URL file using the CURL library - Header.
+	Filter manager handling URL using the CURL library - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,32 +34,32 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GFilterManagerCURLH
 #define GFilterManagerCURLH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for CURL
 #include <curl/curl.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gfiltermanager.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GFilterManagerCURL class provides a representation for a manager using the
-* CURL library.
+* The GFilterManagerCURL class provides a representation for a filter manager
+* using the CURL library.
 * @author Pascal Francq
-* @short CURL URL Manager.
+* @short URL Manager using the CURL library.
 */
 class GFilterManagerCURL : public GFilterManager
 {
@@ -71,11 +71,11 @@ class GFilterManagerCURL : public GFilterManager
 public:
 
 	/**
-	* Construct a URL manager.
+	* Construct the URL manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Should the dialog box be loaded.
 	*/
-	GFilterManagerCURL(const char* path,bool dlg=true) throw(GException);
+	GFilterManagerCURL(const char* path,bool dlg=true) throw(bad_alloc,GException);
 
 protected:
 
@@ -87,7 +87,8 @@ protected:
 	virtual void Download(const char* URL,R::RString& tmpFile) throw(GException);
 
 	/**
-	* Delete the file locally.
+	* Delete a temporary copy of a file created by the manager. This method is
+	* only called if a temporary file was really created.
 	* @param tmpFile        Temporary file to delete.
 	*/
 	virtual void Delete(R::RString& tmpFile) throw(GException);
@@ -95,14 +96,14 @@ protected:
 public:
 
 	/**
-	* Destructor of URL manager.
+	* Destructor of the URL manager.
 	*/
 	virtual ~GFilterManagerCURL(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

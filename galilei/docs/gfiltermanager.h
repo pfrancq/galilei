@@ -4,9 +4,9 @@
 
 	GFilterManager.h
 
-	Generic Manager to handle URL file - Header.
+	Generic filter manager handling URL - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,47 +34,51 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GFilterManagerH
 #define GFilterManagerH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GFilterManager class provides a representation for a manager responsible to
-* transform generic URL into a local file. If needed, the file has to be
-* download and store locally.
+* The GFilterManager class provides a representation for a generic manager that
+* handles :
+* - Plugins of filters.
+* - A list of association between a MIME type and a filter.
+* - URL, by downloading the file and making a local copy available (this copy
+*   has to be remove after the analysis).
 * @author Pascal Francq
 * @short Generic URL Manager.
 */
 class GFilterManager : public R::RContainer<GFactoryFilter,unsigned int,true,true>
 {
-	class GMIMEFilter;
 protected:
 
+	class GMIMEFilter;
+
 	/**
-	* List of all mime types avalaible.
+	* List of all pairs (MIME type,filter) available.
 	*/
 	R::RContainer<GMIMEFilter,unsigned int,true,true> MIMES;
 
 public:
 
 	/**
-	* Construct a URL manager.
+	* Construct the filter manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Should the dialog box be loaded.
 	*/
-	GFilterManager(const char* path,bool dlg=true) throw(GException);
+	GFilterManager(const char* path,bool dlg=true) throw(bad_alloc,GException);
 
 protected:
 
@@ -82,19 +86,20 @@ protected:
 	* Download and store locally a document given by an URL.
 	* @param URL            URL of the document.
 	* @param tmpFile        Temporary file created.
-	* @returns true if the document was download.
 	*/
 	virtual void Download(const char* URL,R::RString& tmpFile) throw(GException);
 
 	/**
-	* Look for the mime types of a temporary file.
+	* Try to guess the MIME types of a temporary file. By default, this method
+	* does nothing.
 	* @param tmpFile        Temporary file created.
-	* @return Pointer to a GMIMEFilter.
+	* @return Name fo of the MIME type.
 	*/
 	virtual const char* DetermineMIMEType(const char* tmpfile);
 
 	/**
-	* Delete the file locally.
+	* Delete a temporary copy of a file created by the manager. This method is
+	* only called if a temporary file was really created.
 	* @param tmpFile        Temporary file to delete.
 	*/
 	virtual void Delete(R::RString& tmpFile) throw(GException);
@@ -102,47 +107,49 @@ protected:
 public:
 
 	/**
-	* Transform a file in a GDocXML. Try to find the type of the document by
-	* analysing the extension of it.
+	* Transform a file into a GDocXML document. Try to find the MIME type of the
+	* document if not specified.
 	* @param doc            Document to analyze
 	* Return Pointer to a GDocXML.
 	*/
 	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
 
 	/**
-	* Add a mime type and a filter.
-	* @param mime           Name of the mimetype.
-	* @param f              Filter.
+	* Add a pair (MIME type,filter).
+	* @param mime           Name of the MIME type.
+	* @param f              Pointer to the filter.
 	*/
-	void AddMIME(const char* mime,GFilter* f);
+	void AddMIME(const char* mime,GFilter* f) throw(bad_alloc);
 
 	/**
-	* Delete all the mime type related to a filter.
-	* @param f              Filter.
+	* Delete all the MIME type associated with a filter.
+	* @param f              Pointer to the filter.
 	*/
 	void DelMIMES(GFilter* f);
 
 	/**
-	* Get the filter for a specific mime type.
-	* @param mime           Name of the mimetype.
-	* @return Pointer to a GMIMEFilter.
+	* Get the name of a filter associated with a given MIME type.
+	* @param mime           Name of the MIME type.
+	* @return C string containing the name of the filter (or null if no filter
+	*         was found).
 	*/
 	const char* GetMIMEType(const char* mime) const;
 
 	/**
 	* Get a cursor over the filters of the system.
+	* @return GFactoryFilterCursor.
 	*/
 	GFactoryFilterCursor& GetFiltersCursor(void);
 
 	/**
-	* Destructor of URL manager.
+	* Destructor of filter manager.
 	*/
 	virtual ~GFilterManager(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

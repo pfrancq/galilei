@@ -4,9 +4,9 @@
 
 	GFilterManagerCURL.cpp
 
-	Manager to handle URL file using the CURL library - Implementation.
+	Filter manager handling URL using the CURL library - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,12 +34,12 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <stdio.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gfiltermanagercurl.h>
 using namespace GALILEI;
@@ -47,13 +47,13 @@ using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // Internal function and structure
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 struct DwnFile
 {
 	char filename[L_tmpnam+1];
@@ -61,10 +61,10 @@ struct DwnFile
 };
 
 
-//-----------------------------------------------------------------------------
-int WriteTmpFile(void *buffer, size_t size, size_t nmemb, void *stream)
+//------------------------------------------------------------------------------
+int WriteTmpFile(void* buffer, size_t size, size_t nmemb, void* stream)
 {
-	struct DwnFile* out=(struct DwnFile *)stream;
+	struct DwnFile* out=(struct DwnFile*)stream;
 
 	if(out && !out->stream)
 	{
@@ -78,22 +78,22 @@ int WriteTmpFile(void *buffer, size_t size, size_t nmemb, void *stream)
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GFilterManagerCURL
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GALILEI::GFilterManagerCURL::GFilterManagerCURL(const char* path,bool dlg) throw(GException)
+//------------------------------------------------------------------------------
+GFilterManagerCURL::GFilterManagerCURL(const char* path,bool dlg) throw(bad_alloc,GException)
 	: GFilterManager(path,dlg)
 {
 	Lib = curl_easy_init();
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GFilterManagerCURL::Download(const char* URL,RString& tmpFile) throw(GException)
+//------------------------------------------------------------------------------
+void GFilterManagerCURL::Download(const char* URL,RString& tmpFile) throw(GException)
 {
 	struct DwnFile tmpfile;
 	int err;
@@ -111,19 +111,19 @@ void GALILEI::GFilterManagerCURL::Download(const char* URL,RString& tmpFile) thr
 	if(tmpfile.stream)
 		fclose(tmpfile.stream);
 	if(err)
-		throw GException(RString("Can't download url")+URL);
+		throw GException(RString("Can't download url ")+URL);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GFilterManagerCURL::Delete(RString& tmpFile) throw(GException)
+//------------------------------------------------------------------------------
+void GFilterManagerCURL::Delete(RString& tmpFile) throw(GException)
 {
 	remove(tmpFile);
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GFilterManagerCURL::~GFilterManagerCURL(void)
+//------------------------------------------------------------------------------
+GFilterManagerCURL::~GFilterManagerCURL(void)
 {
 	curl_easy_cleanup(Lib);
 }

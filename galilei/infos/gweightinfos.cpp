@@ -248,6 +248,7 @@ void GWeightInfos::AddRefs(tObjType ObjType,GLang* lang) const throw(GException)
 
 	if(!lang)
 		throw GException("No Language defined");
+	if(!NbPtr) return;
 	lang->IncRef(ObjType);
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
 	{
@@ -264,6 +265,7 @@ void GWeightInfos::DelRefs(tObjType ObjType,GLang* lang) const throw(GException)
 
 	if(!lang)
 		throw GException("No Language defined");
+	if(!NbPtr) return;
 	lang->DecRef(ObjType);
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
 	{

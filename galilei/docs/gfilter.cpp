@@ -50,21 +50,21 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GALILEI::GFilter::GFilter(GFactoryFilter* fac) throw(bad_alloc)
+GFilter::GFilter(GFactoryFilter* fac) throw(bad_alloc)
 	: GPlugin<GFactoryFilter>(fac), Doc(0)
 {
 }
 
 
 // //---------------------------------------------------------------------------
-void GALILEI::GFilter::AddMIME(const char* name) throw(bad_alloc)
+void GFilter::AddMIME(const char* name) throw(bad_alloc)
 {
 	GetFactory()->GetMng()->AddMIME(name,this);
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(bad_alloc,GException)
+void GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(bad_alloc,GException)
 {
 	char* ptr;
 	char* hold;
@@ -157,7 +157,7 @@ void GALILEI::GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(bad_alloc
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach) throw(bad_alloc,GException)
+void GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach) throw(bad_alloc,GException)
 {
 	RChar* ptr;
 	RChar* hold;
@@ -251,7 +251,7 @@ void GALILEI::GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach) throw(bad_allo
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach) throw(bad_alloc,GException)
+void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach) throw(bad_alloc,GException)
 {
 	char* ptr;
 	RXMLTag* kwd;
@@ -289,7 +289,7 @@ void GALILEI::GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach) thro
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach) throw(bad_alloc,GException)
+void GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach) throw(bad_alloc,GException)
 {
 	RChar* ptr;
 	RXMLTag* kwd;
@@ -327,6 +327,6 @@ void GALILEI::GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach) th
 
 
 //------------------------------------------------------------------------------
-GALILEI::GFilter::~GFilter(void)
+GFilter::~GFilter(void)
 {
 }
