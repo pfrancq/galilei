@@ -69,7 +69,7 @@ using namespace RGA;
 GALILEI::GGroupingGGA::GGroupingGGA(GSession* s) throw(bad_alloc)
 	: GGrouping("Grouping Genetic Algorithms",s), PopSize(16), MinSimLevel(0.1),
 	  MinCommonOK(1.0), MinCommonDiff(1.0), MaxGen(20), Step(false), StepGen(5),
-	  ParamsSim(0.2,0.05,1.0), ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0),
+	  SimMeasure(stAvgSim), ParamsSim(0.2,0.05,1.0), ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0),
 	  ParamsDiff(0.2,0.05,1.0),ParamsSocial(0.2,0.05,1.0), GlobalSim(false),
 	  Objs(0)
 {
@@ -84,8 +84,8 @@ const char* GALILEI::GGroupingGGA::GetSettings(void)
 
 	if(Step) c='1'; else c='0';
 	if(GlobalSim) c1='1'; else c1='0';
-	sprintf(tmp,"%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	        c1,PopSize,MaxGen,c,StepGen,MinSimLevel,MinCommonOK,MinCommonDiff,
+	sprintf(tmp,"%u %c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	        SimMeasure,c1,PopSize,MaxGen,c,StepGen,MinSimLevel,MinCommonOK,MinCommonDiff,
 	        ParamsSim.P,ParamsSim.Q,ParamsSim.Weight,
 	        ParamsNb.P,ParamsNb.Q,ParamsNb.Weight,
 	        ParamsOK.P,ParamsOK.Q,ParamsOK.Weight,
@@ -99,15 +99,17 @@ const char* GALILEI::GGroupingGGA::GetSettings(void)
 void GALILEI::GGroupingGGA::SetSettings(const char* s)
 {
 	char c,c1;
+	unsigned int t;
 
 	if(!(*s)) return;
-	sscanf(s,"%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	       &c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
+	sscanf(s,"%u %c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &t,&c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
 	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
 	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
 	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,
 	       &ParamsDiff.P,&ParamsDiff.Q,&ParamsDiff.Weight,
 	       &ParamsSocial.P,&ParamsSocial.Q,&ParamsSocial.Weight);
+	SimMeasure=static_cast<SimType>(t);
 	if(c=='1') Step=true; else Step=false;
 	if(c1=='1') GlobalSim=true; else GlobalSim=false;
 }
@@ -236,7 +238,6 @@ bool GALILEI::GGroupingGGA::IsValid(GGroup* grp)
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo) throw(bad_alloc)
 {
-	unsigned int i;
 	GGroupIR* gr;
 	GGroup* g;
 	unsigned int* tab;
@@ -272,9 +273,9 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 		}
 		GProfilesSim Sims(SubProfiles,GlobalSim);
 		if(Modified)
-			Instance=new GInstIR(Session,Lang,MinSimLevel,MaxGen,PopSize,Groups,Objs,GlobalSim,&Sims,RGGA::FirstFit,0/*&file*/);
+			Instance=new GInstIR(Session,Lang,MinSimLevel,MaxGen,PopSize,Groups,Objs,GlobalSim,&Sims,SimMeasure,0/*&file*/);
 		else
-			Instance=new GInstIR(Session,Lang,MinSimLevel,MaxGen,PopSize,0,Objs,GlobalSim,&Sims,RGGA::FirstFit,0/*&file*/);
+			Instance=new GInstIR(Session,Lang,MinSimLevel,MaxGen,PopSize,0,Objs,GlobalSim,&Sims,SimMeasure,0/*&file*/);
 		Instance->Init(&data);
 		Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
 		Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);

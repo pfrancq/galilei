@@ -65,6 +65,20 @@ class GIRHeuristic;
 
 //-----------------------------------------------------------------------------
 /**
+* Define the type of measure used for the corresponding similarity criterion.
+*/
+enum SimType {
+	stAvgSim                /** Average Similarity.*/,
+	stSumRel                /** sum_proto(intra)/min_proto(inter).*/,
+	stAvgMinMax             /** Average min(intra)/max(inter).*/,
+	stMinMinMax             /** Min min(intra)/max(inter).*/,
+	stMinRel                /** Min max_proto(intra)/min_proto(inter).*/,
+	stAvgVarMinRel          /** Average max_proto(intra)/min_proto(inter).*/,
+	stAvgVar                /** Average(Var_intra)/Average(Var_inter).*/};
+
+
+//-----------------------------------------------------------------------------
+/**
 * The RFitnessIR provides a representation for a fitness function for the
 * information retrieval problem.
 * @author Pascal Francq

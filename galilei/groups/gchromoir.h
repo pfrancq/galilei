@@ -60,6 +60,7 @@ namespace GALILEI {
 */
 class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
 {
+private:
 	/**
 	* Similarities between the subprofiles to group.
 	*/
@@ -99,14 +100,52 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 	double SocialFactor;
 
 	/**
+	* Local average similarity of the groups.
+	*/
+	double LocalAvgSim;
+
+	/**
+	* Local average number of profiles in the groups.
+	*/
+	double LocalAvgProf;
+
+	/**
+	* Local factor representing the part of subprofiles having common OK
+	* documents and that are in the same group.
+	*/
+	double LocalOKFactor;
+
+	/**
+	* Local factor representing the part of subprofiles having common documents
+	* but with different judgements and that are in the same group.
+	*/
+	double LocalDiffFactor;
+
+	/**
+	* Local factor representing the part of subprofiles that don't want to be
+	* alone but that are really alone.
+	*/
+	double LocalSocialFactor;
+
+	/**
 	* Temporary array of Objects (Thread dependent data).
 	*/
 	GObjIR** thObjs1;
 
 	/**
+	* Number of objects in thObjs1.
+	*/
+	unsigned int NbObjs1;
+
+	/**
 	* Temporary array of Objects (Thread dependent data).
 	*/
 	GObjIR** thObjs2;
+
+	/**
+	* Number of objects in thObjs2.
+	*/
+	unsigned int NbObjs2;
 
 	/**
 	* Array representing the pairs of groups not tested for merging.
@@ -159,12 +198,61 @@ public:
 	double ComputeSumSim(GObjIR** grp,unsigned int nb,GObjIR* obj);
 
 	/**
+	* Compute the maximum similarity of a given profile to all the others.
+	* @param obj            Profile used as reference.
+	* @returns result.
+	*/
+	double ComputeMaxSim(GObjIR** grp,unsigned int nb,GObjIR* obj);
+
+	/**
+	* Compute the minimum similarity of a given profile to all the others.
+	* @param obj            Profile used as reference.
+	* @returns result.
+	*/
+	double ComputeMinSim(GObjIR** grp,unsigned int nb,GObjIR* obj);
+
+	/**
+	* Compute the minimum similarity inside a list of subprofiles.
+	* @param obj            Profile used as reference.
+	* @returns result.
+	*/
+	double ComputeMinSim(GObjIR** grp,unsigned int nb);
+
+	/**
+	* Compute the maximum similarity between subprofiles of two groups.
+	* @param rgrp           The reference list of subprofiles.
+	* @param rnb             Number of reference subprofiles.
+	* @param grp            The group used for the comparison.
+	* @returns result.
+	*/
+	double ComputeMaxSim(GObjIR** rgrp,unsigned int rnb,GGroupIR* grp);
+
+	/**
+	* Compute the maximum similarity between subprofiles of a group and a list
+	* of subprofiles.
+	* @param rgrp           The reference list of subprofiles.
+	* @param rnb             Number of reference subprofiles.
+	* @param grp            Array of subprofiles.
+	* @param nb             Number of subprofiles.
+	* @returns result.
+	*/
+	double ComputeMaxSim(GObjIR** rgrp,unsigned int rnb,GObjIR** grp,unsigned int nb);
+
+	/**
 	* Compute the relevant profile of the group, i.a. the profile which is the
 	* most similar to all the others profiles.
 	* @rel                  Relevant profile computed.
 	* @returns Sum of similarities to the relevant profile.
 	*/
-	double ComputeRelevant(GObjIR** grp,unsigned int nb,GSubProfile* &rel);
+	double ComputeRelevantSum(GObjIR** grp,unsigned int nb,GSubProfile* &rel);
+
+	/**
+	* Compute the relevant profile of the group, i.a. the profile which is the
+	* most similar to all the others profiles.
+	* @rel                  Relevant profile computed.
+	* @returns Maximum similarity to the relevant profile.
+	*/
+	double ComputeRelevantMax(GObjIR** grp,unsigned int nb,GSubProfile* &rel);
 
 	/**
 	* Look if two groups were merged together.
@@ -193,6 +281,92 @@ public:
 	* @return The function must retrun true if a solution has been constructed.
 	*/
 	virtual bool RandomConstruct(void);
+
+	/**
+	* Evaluate the similarity of the solution where eventually grp1 must be
+	* devided, or grp1 and grp2 must be merged using the "Average Similarity".
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateAvgSim(GGroupIR* grp1,GGroupIR* grp2);
+
+	/**
+	* Evaluate the similarity of the solution where eventually grp1 must be
+	* devided, or grp1 and grp2 must be merged using the
+	* "sum_proto(intra)/min_proto(inter)".
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateSumRel(GGroupIR* grp1,GGroupIR* grp2);
+
+	/**
+	* Evaluate the similarity of the solution where eventually grp1 must be
+	* devided, or grp1 and grp2 must be merged using the
+	* "Average min(intra)/max(inter)".
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateAvgMinMax(GGroupIR* grp1,GGroupIR* grp2);
+
+	/**
+	* Evaluate the similarity of the solution where eventually grp1 must be
+	* devided, or grp1 and grp2 must be merged using the
+	* "Min min(intra)/max(inter)".
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateMinMinMax(GGroupIR* grp1,GGroupIR* grp2);
+
+	/**
+	* Evaluate the similarity of the solution where eventually grp1 must be
+	* devided, or grp1 and grp2 must be merged using the
+	* "Min_proto(intra)/min_proto(inter)".
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateMinRel(GGroupIR* grp1,GGroupIR* grp2);
+
+	/**
+	* Evaluate the similarity of the solution where eventually grp1 must be
+	* devided, or grp1 and grp2 must be merged using the
+	* "Average max_proto(intra)/min_proto(inter)".
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateAvgVarMinRel(GGroupIR* grp1,GGroupIR* grp2);
+
+	/**
+	* Evaluate the similarity of the solution where eventually grp1 must be
+	* devided, or grp1 and grp2 must be merged using the
+	* "Average(Var_intra)/Average(Var_inter)".
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateAvgVar(GGroupIR* grp1,GGroupIR* grp2);
+
+	/**
+	* Evaluate the similarity of the solution where eventually grp1 must be
+	* devided, or grp1 and grp2 must be merged.
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateSim(GGroupIR* grp1=0,GGroupIR* grp2=0);
+
+	/**
+	* Evaluate the OK factor of the solution where eventually grp1 must be
+	* devided, or grp1 and grp2 must be merged.
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateOKFactor(GGroupIR* grp1=0,GGroupIR* grp2=0);
+
+	/**
+	* Evaluate the Diff factor of the solution where eventually grp1 must be
+	* devided, or grp1 and grp2 must be merged.
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateDiffFactor(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
 	* Evaluation of the chromosomes. Actually, it is just the average of the

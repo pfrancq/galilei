@@ -172,6 +172,11 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	unsigned long MaxGen;
 
 	/**
+	* Type of measure used for the similarity criterion.
+	*/
+	SimType SimMeasure;
+
+	/**
 	* Criteria representing the average similarity of the profiles with the
 	* ones of the same group.
 	*/
@@ -254,7 +259,7 @@ public:
 	* @param h              The type of heuristic to be used.
 	* @param debug          Debugger.
 	*/
-	GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,RGGA::HeuristicType h,RGA::RDebug *debug=0) throw(bad_alloc);
+	GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,SimType st,RGA::RDebug *debug=0) throw(bad_alloc);
 
 	/**
 	* Create a specific heuristic for the IR problem.

@@ -119,11 +119,11 @@ bool GSubProfilesSameGroupIR::IsIn(const GObjIR* obj) const
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,HeuristicType h,RGA::RDebug *debug) throw(bad_alloc)
-	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(popsize,objs,h,debug),
+GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,SimType st,RGA::RDebug *debug) throw(bad_alloc)
+	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(popsize,objs,FirstFit,debug),
 	  RPromKernel("GALILEI",PopSize+1,5), Sims(s), SameGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
 	  DiffGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
-	  MinSimLevel(m), MaxGen(max), CritSim(0), CritNb(0), CritOKDocs(0), Sols(0), GlobalSim(g),
+	  MinSimLevel(m), MaxGen(max), SimMeasure(st), CritSim(0), CritNb(0), CritOKDocs(0), Sols(0), GlobalSim(g),
 	  CurrentGroups(grps), Session(ses), Lang(l), NoSocialSubProfiles(objs->NbPtr)
 {
 	RPromSol** ptr;

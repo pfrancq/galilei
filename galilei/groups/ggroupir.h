@@ -149,6 +149,20 @@ public:
 	double ComputeSumSim(GObjIR* obj);
 
 	/**
+	* Compute the maximum similarity of a given profile to all the others.
+	* @param obj            Profile used as reference.
+	* @returns result.
+	*/
+	double ComputeMaxSim(GObjIR* obj);
+
+	/**
+	* Compute the minimum similarity of a given profile to all the others.
+	* @param obj            Profile used as reference.
+	* @returns result.
+	*/
+	double ComputeMinSim(GObjIR* obj);
+
+	/**
 	* Compute the average of the similarities of a given profile to the one of the group.
 	* @param obj            Profile used as reference.
 	* @returns result.
@@ -156,11 +170,47 @@ public:
 	double ComputeAvgSim(GObjIR* obj);
 
 	/**
-	* Compute the relevant profile of the group, i.a. the profile which is the
-	* most similar to all the others profiles.
+	* Compute the maximum similarity between subprofiles of two groups.
+	* @param grp            The group used for the comparison.
+	* @returns result.
+	*/
+	double ComputeMaxSim(GGroupIR* grp);
+
+	/**
+	* Compute the maximum similarity between subprofiles of a group and a list
+	* of subprofiles.
+	* @param grp            Array of subprofiles.
+	* @param nb             Number of subprofiles.
+	* @returns result.
+	*/
+	double ComputeMaxSim(GObjIR** grp,unsigned int nb);
+
+	/**
+	* Compute the minimum similarity in the group.
+	* @returns result.
+	*/
+	double ComputeMinSim(void);
+
+	/**
+	* Compute the most relevant profile of the group, i.a. the profile which is
+	* the most similar to all the others profiles.
 	* @returns Sum of similarities to the relevant profile.
 	*/
-	double ComputeRelevant(void);
+	double ComputeRelevantSum(void);
+
+	/**
+	* Compute the most relevant profile of the group, i.a. the profile which is
+	* the most similar to all the others profiles.
+	* @returns Max of similarities to the relevant profile.
+	*/
+	double ComputeRelevantMax(void);
+
+	/**
+	* Compute the most non-relevant profile of the group, i.a. the profile
+	* which is the les similar to all the others profiles.
+	* @returns Sum of similarities to the non-relevant profile.
+	*/
+	double ComputeNonRelevant(void);
 
 	/**
 	* Assignment operator.

@@ -196,6 +196,46 @@ double GALILEI::GGroupIR::ComputeSumSim(GObjIR* obj)
 
 
 //---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeMaxSim(GObjIR* obj)
+{
+	unsigned int i;
+	GObjIR** ptr;
+	double MaxSim,tmp;
+	GSubProfile* sub;
+
+	sub=obj->GetSubProfile();
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),MaxSim=0.0;--i;ptr++)
+	{
+		if((*ptr)==obj) continue;
+		tmp=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+		if(tmp>MaxSim)
+			MaxSim=tmp;
+	}
+	return(MaxSim);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeMinSim(GObjIR* obj)
+{
+	unsigned int i;
+	GObjIR** ptr;
+	double MinSim,tmp;
+	GSubProfile* sub;
+
+	sub=obj->GetSubProfile();
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),MinSim=1.0;--i;ptr++)
+	{
+		if((*ptr)==obj) continue;
+		tmp=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+		if(tmp<MinSim)
+			MinSim=tmp;
+	}
+	return(MinSim);
+}
+
+
+//---------------------------------------------------------------------------
 double GALILEI::GGroupIR::ComputeAvgSim(GObjIR* obj)
 {
 	unsigned int i;
@@ -215,7 +255,56 @@ double GALILEI::GGroupIR::ComputeAvgSim(GObjIR* obj)
 
 
 //---------------------------------------------------------------------------
-double GALILEI::GGroupIR::ComputeRelevant(void)
+double GALILEI::GGroupIR::ComputeMaxSim(GGroupIR* grp)
+{
+	unsigned int i;
+	GObjIR** ptr;
+	double MaxSim,tmp;
+
+	for(i=grp->NbSubObjects+1,ptr=Owner->GetObjs(grp->SubObjects),MaxSim=0.0;--i;ptr++)
+	{
+		tmp=ComputeMaxSim(*ptr);
+		if(tmp>MaxSim)
+			MaxSim=tmp;
+	}
+	return(MaxSim);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeMaxSim(GObjIR** grp,unsigned int nb)
+{
+	double MaxSim,tmp;
+
+	for(nb++,MaxSim=0.0;--nb;grp++)
+	{
+		tmp=ComputeMaxSim(*grp);
+		if(tmp>MaxSim)
+			MaxSim=tmp;
+	}
+	return(MaxSim);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeMinSim(void)
+{
+	unsigned int i;
+	GObjIR** ptr;
+	double MinSim,tmp;
+
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),MinSim=1.0;--i;ptr++)
+	{
+		tmp=ComputeMinSim(*ptr);
+		if(tmp<MinSim)
+			MinSim=tmp;
+	}
+	return(MinSim);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeRelevantSum(void)
 {
 	unsigned int i;
 	GObjIR** ptr;
@@ -226,7 +315,6 @@ double GALILEI::GGroupIR::ComputeRelevant(void)
 	if(!NbSubObjects)
 	{
 		Relevant=0;
-		AvgSim=0.0;
 		return(0.0);
 	}
 
@@ -248,6 +336,73 @@ double GALILEI::GGroupIR::ComputeRelevant(void)
 
 	// Return results
 	AvgSim=BestSumSim;
+	return(BestSumSim);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeRelevantMax(void)
+{
+	unsigned int i;
+	GObjIR** ptr;
+	double BestSumSim;
+ 	double MaxSumSim;
+	double SumSim;
+
+	// If no objects -> No relevant one.
+	if(!NbSubObjects)
+	{
+		Relevant=0;
+		return(0.0);
+	}
+
+	// Suppose the first element is the most relevant.
+	ptr=Owner->GetObjs(SubObjects);
+	Relevant=(*ptr)->GetSubProfile();
+	BestSumSim=ComputeSumSim(*ptr);
+	MaxSumSim=ComputeMaxSim(*ptr);
+
+	// Look if in the other objects, there is a better one
+	for(i=NbSubObjects,ptr++;--i;ptr++)
+	{
+		SumSim=ComputeSumSim(*ptr);
+		if(SumSim>BestSumSim)
+		{
+			Relevant=(*ptr)->GetSubProfile();
+			BestSumSim=SumSim;
+			MaxSumSim=ComputeMaxSim(*ptr);
+		}
+	}
+
+	// Return results
+	return(MaxSumSim);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeNonRelevant(void)
+{
+	unsigned int i;
+	GObjIR** ptr;
+	double BestSumSim;
+	double SumSim;
+
+	// If no objects -> No relevant one.
+	if(!NbSubObjects) return(0.0);
+
+	// Suppose the first element is the most non-relevant.
+	ptr=Owner->GetObjs(SubObjects);
+	BestSumSim=ComputeSumSim(*ptr);
+
+	// Look if in the other objects, there is a better one
+	for(i=NbSubObjects,ptr++;--i;ptr++)
+	{
+		SumSim=ComputeSumSim(*ptr);
+		if(SumSim<BestSumSim)
+			BestSumSim=SumSim;
+	}
+
+	// Return results
 	return(BestSumSim);
 }
 

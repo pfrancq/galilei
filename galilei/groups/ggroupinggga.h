@@ -100,6 +100,11 @@ protected:
 	unsigned int StepGen;
 
 	/**
+	* Type of measure used for the similarity criterion.
+	*/
+	SimType SimMeasure;
+
+	/**
 	* Parameter for the criterion "Similariry".
 	*/
 	RPromethee::RPromCriterionParams ParamsSim;
@@ -173,6 +178,18 @@ public:
 	* @returns Size.
 	*/
 	unsigned int GetPopSize(void) const {return(PopSize);}
+
+	/**
+	* Set the type of similarity used.
+	* @param t              Type to used.
+	*/
+	void SetSimMeasure(unsigned int t) {SimMeasure=static_cast<SimType>(t);}
+
+	/**
+	* Get the type of similarity used.
+	* @returns SimType.
+	*/
+	SimType GetSimMeasure(void) const {return(SimMeasure);}
 
 	/**
 	* Set the minimum level of similarity for the groups.
