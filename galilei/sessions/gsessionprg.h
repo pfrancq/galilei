@@ -155,7 +155,7 @@ public:
 	/**
 	* Clock Reference used to measure laps of execution time.
 	*/
-	clock_t ClockRef;
+	time_t ClockRef;
 
 	/**
 	* Create a class.

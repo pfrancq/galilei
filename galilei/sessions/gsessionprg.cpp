@@ -743,20 +743,20 @@ void GResetTimeI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned in
 	if(args->NbPtr!=0)
 		throw GException("Method needs no parameter");
 	r->WriteStr("Reset Time");
-	Owner->ClockRef=clock();
+	Owner->ClockRef=time(0);
 }
 
 
 //-----------------------------------------------------------------------------
 void GComputeTimeI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
-	clock_t end;
+	time_t end;
 	double cpu_time;
 
-	end=clock();
+	end=time(0);
 	if(args->NbPtr!=0)
 		throw GException("Method needs no parameter");
-	cpu_time=static_cast<double>(end-Owner->ClockRef)/CLOCKS_PER_SEC;
+	cpu_time=difftime(end,Owner->ClockRef);
 	sprintf(tmp,"Ellapsed Time %f",cpu_time);
 	r->WriteStr(tmp);
 }
