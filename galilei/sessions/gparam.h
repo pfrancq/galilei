@@ -58,6 +58,7 @@ namespace GALILEI{
 */
 class GParam
 {
+protected:
 	/**
 	* Name of the parameter.
 	*/
