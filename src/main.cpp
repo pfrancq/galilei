@@ -89,31 +89,31 @@ int main(int argc, char *argv[])
 	cout<<"Copyright 1999-2004 by the Universit�Libre de Bruxelles"<<endl;
 	try
 	{
-		RString lib;
+		RContainer<RString,true,false> lib(10,5);
 		RXMLTag* Tag;
 
 		// Read Config
 		cout<<"Read Config ..."<<endl;
-		RXMLFile ConfigFile("/etc/galilei/galilei.conf",&Config,R::Read);
-		ConfigFile.Process();
+		RXMLFile ConfigFile("/etc/galilei/galilei.conf",&Config);
+		ConfigFile.Open(RIO::Read);
 		Tag=Config.GetTag("Plugins");
 		if(!Tag)
 			throw GException("Problems with the configure file '/etc/galilei/galilei.conf'");
-		lib=Tag->GetAttrValue("Dir");
+		lib.InsertPtr(new RString(Tag->GetAttrValue("Dir")));
 
 		//------------------------------------------------------------------------------
 		// Managers
-		GFilterManagerCURL URLManager(lib,false);
-		GProfileCalcManager ProfilingManager(lib,false);
-		GGroupingManager GroupingManager(lib,false);
-		GGroupCalcManager GroupCalcManager(lib,false);
-		GStatsCalcManager StatsCalcManager (lib,false);
-		GLinkCalcManager LinkCalcManager(lib,false);
-		GLangManager Langs(lib,true,false);
-		GDocAnalyseManager DocAnalyseManager(lib,false);
-		GPostDocManager PostDocManager(lib,false);
-		GPostGroupManager PostGroupManager(lib,false);
-		GPostProfileManager PostProfileManager(lib,false);
+		GFilterManagerCURL URLManager(&lib,false);
+		GProfileCalcManager ProfilingManager(&lib,false);
+		GGroupingManager GroupingManager(&lib,false);
+		GGroupCalcManager GroupCalcManager(&lib,false);
+		GStatsCalcManager StatsCalcManager(&lib,false);
+		GLinkCalcManager LinkCalcManager(&lib,false);
+		GLangManager Langs(&lib,true,false);
+		GDocAnalyseManager DocAnalyseManager(&lib,false);
+		GPostDocManager PostDocManager(&lib,false);
+		GPostGroupManager PostGroupManager(&lib,false);
+		GPostProfileManager PostProfileManager(&lib,false);
 
 		Tag=Config.GetTag("Config");
 		if(!Tag)
