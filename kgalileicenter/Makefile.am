@@ -44,7 +44,7 @@ uninstall-local:
 # kde_wallpaperdir  Where general wallpapers should go to.
 
 # set the include path for X, qt and KDE
-INCLUDES = -I$(GALILEI_LIB) -I$(R_LIB) -I$(QWLIB) $(all_includes)
+INCLUDES = -I$(GALILEI_LIB) -I$(R_LIB) -I$(QTWIDGETS_LIB) $(all_includes)
 
 METASOURCES = AUTO
 
