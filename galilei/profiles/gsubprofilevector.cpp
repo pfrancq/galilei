@@ -56,9 +56,8 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfileVector::GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a) throw(bad_alloc)
-  : GSubProfile(prof,id,lang,grp,a)/*, GIWordsWeights(Lang,60)*/, Vector(0)
+  : GSubProfile(prof,id,lang,grp,a), GIWordsWeights(60)
 {
-	Vector = new GIWordsWeights(60);
 }
 
 
@@ -72,43 +71,42 @@ GSubProfile* GALILEI::GSubProfileVector::NewSubProfile(GProfile* prof,unsigned i
 //-----------------------------------------------------------------------------
 bool GALILEI::GSubProfileVector::IsDefined(void) const
 {
-	// The Vector can't be empty.
-	return(Vector&&(Vector->NbPtr));
+	return(NbPtr);
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSubProfileVector::AddWord(unsigned int id,double w) throw(bad_alloc)
 {
-	Vector->InsertPtr(new GIWordWeight(id,w));
+	InsertPtr(new GIWordWeight(id,w));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::Similarity(const GSubProfile* desc) const
 {
-	return(Vector->Similarity((static_cast<const GSubProfileVector*>(desc))->Vector));
+	return(GIWordsWeights::Similarity((static_cast<const GSubProfileVector*>(desc))));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::GlobalSimilarity(const GSubProfile* desc) const
 {
-	return(Vector->SimilarityIdf((static_cast<const GSubProfileVector*>(desc))->Vector,otSubProfile,Lang));
+	return(SimilarityIdf((static_cast<const GSubProfileVector*>(desc)),otSubProfile,Lang));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::Similarity(const GDoc* doc) const
 {
-	return(Vector->Similarity(doc->GetWordWeights()));
+	return(GIWordsWeights::Similarity(doc->GetWordWeights()));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(Vector->SimilarityIdf(doc->GetWordWeights(),otNoClass,Lang));
+	return(SimilarityIdf(doc->GetWordWeights(),otNoClass,Lang));
 }
 
 
@@ -116,7 +114,7 @@ double GALILEI::GSubProfileVector::GlobalSimilarity(const GDoc* doc) const
 GIWordWeightCursor& GALILEI::GSubProfileVector::GetVectorCursor(void)
 {
 	GIWordWeightCursor *cur=GIWordWeightCursor::GetTmpCursor();
-	cur->Set(Vector);
+	cur->Set(this);
 	return(*cur);
 }
 
@@ -124,7 +122,7 @@ GIWordWeightCursor& GALILEI::GSubProfileVector::GetVectorCursor(void)
 //-----------------------------------------------------------------------------
 unsigned int GALILEI::GSubProfileVector::GetNbNoNull(void) const
 {
-	return(Vector->NbPtr);
+	return(NbPtr);
 }
 
 
@@ -132,8 +130,9 @@ unsigned int GALILEI::GSubProfileVector::GetNbNoNull(void) const
 void GALILEI::GSubProfileVector::UpdateRefs(void) const
 {
 	GDict* d=Lang->GetDict();
-	if(d&&Vector)
-		Vector->AddRefs(otSubProfile,d);
+	if(d)
+		AddRefs(otSubProfile,d);
+
 }
 
 
@@ -141,13 +140,12 @@ void GALILEI::GSubProfileVector::UpdateRefs(void) const
 void GALILEI::GSubProfileVector::RemoveRefs(void) const
 {
 	GDict* d=Lang->GetDict();
-	if(d&&Vector)
-		Vector->DelRefs(otSubProfile,d);
+	if(d)
+		DelRefs(otSubProfile,d);
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfileVector::~GSubProfileVector(void)
 {
-	if(Vector) delete Vector;
 }

@@ -55,13 +55,8 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Sub-Profile Vector Description.
 */
-class GSubProfileVector : public GSubProfile//, public GIWordsWeights
+class GSubProfileVector : public GSubProfile, public GIWordsWeights
 {
-	/**
-	* List representing the sub-profile.
-	*/
-	GIWordsWeights* Vector;
-
 public:
 
 	/**
@@ -133,7 +128,7 @@ public:
 	* Get the vector representing the sub-profile.
 	* @returns Pointer to GIWordsWeights.
 	*/
-	GIWordsWeights* GetVector(void) {return(Vector);}
+	GIWordsWeights* GetVector(void) {return(this);}
 
 	/**
 	* Update the references of the document.
@@ -144,11 +139,6 @@ public:
 	* Remove the references of the document.
 	*/
 	void RemoveRefs(void) const;
-
-	/**
-	* @return Pointer to the Language.
-	*/
-//	GLang* GetLang(void) const {return(GSubProfile::Lang);}
 
 	/**
 	* Destructor.
