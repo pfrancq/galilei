@@ -9,6 +9,7 @@
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be)
 		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
@@ -57,20 +58,40 @@ namespace GALILEI{
 /**
 * The GQueryDocsGroup provides a way to calc similarity with words in Docs and the
 * ideal corresponding group.
-* @author Lamoral Julien
+* @author Francq Pascal and Lamoral Julien
 * @short Doc Query Evaluate.
 */
 class GQueryDocsGroup
 {
 	/**
-	* Language corresponding to the set of groups.
+	* Current Session;
 	*/
-	GLang* Lang;
+	GSession* Session;
 
 	/**
-	* Random number generator
+	* Array of GIWordWeight used for ordering.
 	*/
-	RMath::RRandom* Random;
+	GIWordWeight** Order;
+
+	/**
+	* Size of the array;
+	*/
+	unsigned int SizeOrder;
+
+	/**
+	* Similarity Query-Same Groups
+	*/
+	double SimQueryIntra;
+
+	/**
+	* Similarity Query-Diff Groups.
+	*/
+	double SimQueryInter;
+
+	/**
+	* Number of correct groups found.
+	*/
+	double Targets;
 
 public:
 
@@ -81,13 +102,34 @@ public:
 	GQueryDocsGroup(GSession* ses) throw(bad_alloc);
 
 	/**
+	* Run the query.
+	*/
+	void Run(void);
+
+	/**
+	* Get the similarity Query-Same Groups.
+	* @returns double
+	*/
+	double GetSimQueryIntra(void) const {return(SimQueryIntra);}
+
+	/**
+	* Get the similarity Query-Diff Groups.
+	* @returns double
+	*/
+	double GetSimQueryInter(void) const {return(SimQueryInter);}
+
+	/**
+	* Get the number of correct groups found.
+	* @returns double
+	*/
+	double GetTargets(void) const {return(Targets);}
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GQueryDocsGroup(void);
 
 };
-
-
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

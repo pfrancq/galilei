@@ -9,6 +9,7 @@
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
@@ -39,7 +40,6 @@
 #include <tests/gquerydocsgroup.h>
 #include <tests/ggroupsevaluate.h>
 #include <tests/ggroupevaluatedoc.h>
-#include <tests/gquery.h>
 #include <sessions/gsession.h>
 #include <docs/gdocvector.h>
 #include <docs/gdoc.h>
@@ -57,6 +57,39 @@ using namespace GALILEI;
 
 
 
+//-----------------------------------------------------------------------------
+//
+// class GroupSim
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class GroupSim
+{
+public:
+	GGroup* Grp;
+	double Sim;
+
+	GroupSim(GGroup* g,double s) : Grp(g), Sim(s) {}
+	int Compare(const GroupSim*) const {return(-1);}
+	static int sortOrder(const void *a,const void *b);
+};
+
+
+//-----------------------------------------------------------------------------
+int GroupSim::sortOrder(const void *a,const void *b)
+{
+	double af=(*((GroupSim**)(a)))->Sim;
+	double bf=(*((GroupSim**)(b)))->Sim;
+
+	if(af==bf) return(0);
+	if(af>bf)
+		return(-1);
+	else
+		return(1);
+}
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -64,26 +97,39 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 
-
 //-----------------------------------------------------------------------------
 GALILEI::GQueryDocsGroup::GQueryDocsGroup(GSession* ses) throw(bad_alloc)
+	: Session(ses), Order(0), SizeOrder(6000)
 {
-	double simintra=0.0;
-	double siminter=0.0;
-	double comptintra=0.0;
-	double comptinter=0.0;
-	double comptgood=0.0;
-	double compttot=0.0;
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup=new RContainer<GGroupsEvaluate,unsigned int,false,false>(2,2);
+	Order=new GIWordWeight*[SizeOrder];
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GQueryDocsGroup::Run(void)
+{
+	double comptintra;
+	double comptinter;
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup;
 	GGroupsEvaluate* groups;
 	GGroupEvaluateDoc* group;
 	GDoc* Doc;
 	GDocVector* DocV;
-	idealgroup=ses->GetIdealDoc();
-	GIWordWeight** Order=new GIWordWeight*[5000];
-	GIWordsWeights* QueryWord = new GIWordsWeights(5000);
-	GIWordsWeights* QueryWord1 = new GIWordsWeights(1);
+	idealgroup=Session->GetIdealDoc();
+	GIWordsWeights QueryWord(5000);
+	GIWordsWeights QueryWord1(5);
+	RContainer<GroupSim,unsigned int,false,false> Groups(50);
+	GroupSim** ptr;
+	unsigned int j;
+	GGroupsCursor idealgroups;
+	GGroupCursor Group;
 
+	// Init Part
+	Session->LoadIdealGroupmentInGroups();
+	idealgroups=Session->GetGroupsCursor();
+	SimQueryIntra=SimQueryInter=Targets=comptintra=comptinter=0.0;
+
+	// Compute Queries
 	for(idealgroup->Start();!idealgroup->End();idealgroup->Next())
 	{
 		groups=(*idealgroup)();
@@ -91,74 +137,92 @@ GALILEI::GQueryDocsGroup::GQueryDocsGroup(GSession* ses) throw(bad_alloc)
 		for(groups->Start();!groups->End();groups->Next())
 		{
 			group=static_cast<GGroupEvaluateDoc*>((*groups)());
-			
+			QueryWord.Clear();
+
 			// for each doc  add the wheigth of all the words of the current doc
 			// in the current container
 			for(group->Start();!group->End();group->Next())
 			{
-				Doc=ses->GetDoc(group->Current());
-				GProfDocCursor ProfDoc=Doc->GetProfDocCursor();
-				if(ProfDoc.End())
+				Doc=Session->GetDoc(group->Current());
+				if(!Doc->GetNbFdbks())
 				{
 					DocV=static_cast<GDocVector*>(Doc);
-					GIWordWeightCursor WordCusor=DocV->GetWordWeightCursor();
-			 		for(WordCusor.Start();!WordCusor.End();WordCusor.Next())
+					GIWordWeightCursor WordCursor=DocV->GetWordWeightCursor();
+					for(WordCursor.Start();!WordCursor.End();WordCursor.Next())
 					{
-						GIWordWeight* tmp = QueryWord->GetPtr(WordCusor());
-						if(!tmp) QueryWord->InsertPtr(new GIWordWeight(WordCusor()));
+						GIWordWeight* tmp = QueryWord.GetPtr(WordCursor());
+						if(!tmp)
+						{
+							QueryWord.InsertPtr(new GIWordWeight(WordCursor()));
+						}
 						else
 						{
-							tmp->AddWeight(WordCusor()->GetWeight());
+							tmp->AddWeight(WordCursor()->GetWeight());
 						}
 					}
 				}
 			}
-	
-			QueryWord->Transform(otDocs,groups->GetLang());
-
-			if(Order) delete[] Order;
-			int MaxOrderSize=static_cast<unsigned int>((QueryWord->NbPtr+1)*1.1);
-			Order=new GIWordWeight*[MaxOrderSize];
-			memcpy(Order,QueryWord->Tab,QueryWord->NbPtr*sizeof(GIWordWeight*));
-			qsort(static_cast<void*>(Order),QueryWord->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
-			Order[QueryWord->NbPtr]=0;
+			QueryWord.Transform(otDocs,groups->GetLang());
+			if(SizeOrder<QueryWord.NbPtr)
+			{
+				delete[] Order;
+				SizeOrder=static_cast<unsigned int>((QueryWord.NbPtr+1)*1.1);
+				Order=new GIWordWeight*[SizeOrder];
+			}
+			memcpy(Order,QueryWord.Tab,QueryWord.NbPtr*sizeof(GIWordWeight*));
+			qsort(static_cast<void*>(Order),QueryWord.NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
+			Order[QueryWord.NbPtr]=0;
 			for(int i=0;i<10;i++)
 			{
-				QueryWord1->Clear();
-				QueryWord1->InsertPtr(new GIWordWeight(Order[i]));
-				GQuery qq(QueryWord1,ses,groups->GetLang(),0.000,true);
+				QueryWord1.Clear();
+				QueryWord1.InsertPtr(new GIWordWeight(Order[i]));
+
+				// Parse all the groups and insert those which have a sim with
+				// the query greater than 0.0
+				Groups.Clear();
+				for(idealgroups.Start();!idealgroups.End();idealgroups.Next())
+				{
+					Group=idealgroups()->GetGroupCursor();
+					for(Group.Start();!Group.End();Group.Next())
+					{
+						GGroup* Grp=Group();
+						if(!Grp->NbPtr) continue;
+						double simidf=QueryWord1.Similarity(static_cast<GGroupVector*>(Group())->GetVector());
+						if(simidf>0.0)
+							Groups.InsertPtr(new GroupSim(Grp,simidf));
+					}
+				}
+				qsort(static_cast<void*>(Groups.Tab),Groups.NbPtr,sizeof(GroupSim*),GroupSim::sortOrder);
+
 				double comptfind=0.0;
-				for(qq.ResStart();!qq.ResEnd();qq.ResNext())
+				for(ptr=Groups.Tab,j=Groups.NbPtr+1;--j;ptr++)
 				{
 					comptfind++;
-					GGroup* temp=qq.GetCurrentGroup();
-					double sim=qq.GetCurrentSim();
+					GGroup* temp=(*ptr)->Grp;
+					double sim=(*ptr)->Sim;
 					if(temp->GetId()==group->GetId())
 					{
-						comptgood+=(1/comptfind);
-						simintra+=sim;
+						Targets+=(1/comptfind);
+						SimQueryIntra+=sim;
 						comptintra++;
 					}
 					else
 					{
-						siminter+=sim;
+						SimQueryInter+=sim;
 						comptinter++;
 					}
-					
 				}
-				compttot++;
 			}
-			QueryWord->Clear();
-			cout<<"nbgood "<<comptgood/comptintra<<" simintra "<<simintra/comptintra<<" siminter "<<siminter/comptinter<<endl;
 		}
 	}
-	cout<<" the   nbgood "<<comptgood/comptintra<<" simintra "<<simintra/comptintra<<" siminter "<<siminter/comptinter<<endl;
-	delete(idealgroup);
-	if(Order) delete[] Order;
+	Targets/=comptintra;
+	SimQueryIntra/=comptintra;
+	SimQueryInter/=comptinter;
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GQueryDocsGroup::~GQueryDocsGroup(void)
 {
+	if(Order) delete[] Order;
 }
