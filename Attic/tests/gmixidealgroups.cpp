@@ -63,14 +63,19 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 
+
+
 //-----------------------------------------------------------------------------
-GALILEI::GMixIdealGroups::GMixIdealGroups(GSession* sess, RContainer<GGroupIdParentId,unsigned int,true,true>* parents, RContainer<GGroups,unsigned int,true,true>* idealgroups)
+GALILEI::GMixIdealGroups::GMixIdealGroups(GSession* sess, RContainer<GGroupIdParentId,unsigned int,true,true>* parents, RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups, int level, bool ms, bool md, bool s, bool r)
 {
 	//init parameters
-	Random=MergeDiff=MergeSame=Split=true;
+	Random=r;
+	MergeDiff=md;
+	MergeSame=ms;
+	Split=s;
 	Session=sess;
-	Level=3;
-	NbMixedGroups=10;
+	Level=level;
+	NbMixedGroups=nbgroups;
 	Rand=new RRandomGood(0);
 	IdealGroups= new RContainer<GGroups,unsigned int,true,true> (2,2);
 	MixedGroups= new RContainer<GGroups,unsigned int,true,true>(2,2);
@@ -81,7 +86,6 @@ GALILEI::GMixIdealGroups::GMixIdealGroups(GSession* sess, RContainer<GGroupIdPar
 		Parents->InsertPtr((*parents)());
 	for (idealgroups->Start(); !idealgroups->End(); idealgroups->Next())
 		IdealGroups->InsertPtr((*idealgroups)());
-
 }
 
 

@@ -126,9 +126,17 @@ protected:
 public:
 
 	/**
-	* Constructor.
+	* Constructor
+	* @param sess           opened session
+	* @param idealgroups    groups to mix
+	* @param nbgroups       number of groups needed
+	* @param level          maximum number of each type of mix.
+	* @param ms             merge same category?
+	* @param md             merge different category?
+	* @param s              split category?
+	* @param r              random grouping?
 	*/
-	GMixIdealGroups(GSession* sess, RContainer<GGroupIdParentId,unsigned int,true,true>* parents, RContainer<GGroups,unsigned int,true,true>* idealgroups);
+	GMixIdealGroups(GSession* sess, RContainer<GGroupIdParentId,unsigned int,true,true>* parents, RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups=10, int level=3, bool ms=true, bool md=true, bool s=true, bool r=true);
 
 	/**
 	* set the settings.
