@@ -211,17 +211,17 @@ private slots:
 	/**
 	* function to update simsview when the selected set has changed in tabview.
 	*/
-	 void slotEssai1(void) ;
+	 void slotCheckModifiedGroups(void) ;
 
 	/**
 	* function to update simsview when the selected set has changed in tabview.
 	*/
-	 void slotEssai2(void);
+	 void slotCheckWellGroupedSubProfs(void);
 
 	/**
 	* function to update simsview when the selected set has changed in tabview.
 	*/
-	 void slotEssai3(void);
+	 void slotCheckNewProfiles(void);
 
 	/**
 	* function to show similarities

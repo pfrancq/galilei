@@ -205,6 +205,8 @@ void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 			grps=Groups->GetPtr(CurId);
 			Solution->setGroups(grps);
 			Solution->setChanged();
+			SelectedSubProfiles->Clear();
+			SimsView->clear();
 			break;
 
 			
