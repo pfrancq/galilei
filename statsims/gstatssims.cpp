@@ -6,7 +6,7 @@
 
 	Groups Evaluation - Implementation.
 
-	Copyright 2002-2004 by the Université Libre de Bruxelles.
+	Copyright 2002-2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -110,13 +110,13 @@ public:
 
 //------------------------------------------------------------------------------
 // Statistics between subprofiles
-class GStatSimSubProf : public GStatSimElements<GSubProfile,GSubProfileCursor>
+class GStatSimSubProf : public GStatSimElements<GSubProfile,RCursor<GSubProfile> >
 {
 public:
 	GStatSimSubProf(GSession* ses,R::RTextFile* f,bool g,bool l)
-		: GStatSimElements<GSubProfile,GSubProfileCursor>(ses,f,g,l) {}
+		: GStatSimElements<GSubProfile,RCursor<GSubProfile> >(ses,f,g,l) {}
 
-	GSubProfileCursor GetElementCursor(GLang* Lang)
+	RCursor<GSubProfile> GetElementCursor(GLang* Lang)
 	{return(Session->GetSubProfilesCursor(Lang));}
 
 	bool SameSubject(GSubProfile* sub1,GSubProfile* sub2)
@@ -155,7 +155,7 @@ public:
 	{
 		// Suppose subject of the group is subject of the first subprofile
 		// contained
-		GSubProfileCursor Subp=grp->GetSubProfilesCursor();
+		RCursor<GSubProfile> Subp=grp->GetSubProfilesCursor();
 		Subp.Start();
 		return(doc->IsFromSubject(Subp()->GetSubject()));
 	}
@@ -164,7 +164,7 @@ public:
 	{
 		// Suppose subject of the group is subject of the first subprofile
 		// contained
-		GSubProfileCursor Subp=grp->GetSubProfilesCursor();
+		RCursor<GSubProfile> Subp=grp->GetSubProfilesCursor();
 		Subp.Start();
 		LocalStat* t=Sub.GetInsertPtr<GSubject*>(Subp()->GetSubject());
 		if(global)
@@ -177,14 +177,14 @@ public:
 
 //------------------------------------------------------------------------------
 // Statistics between documents/groups
-class GStatSimDocProf : public GStatSimDocs<GSubProfile,GSubProfileCursor>
+class GStatSimDocProf : public GStatSimDocs<GSubProfile,RCursor<GSubProfile> >
 {
 public:
 
 	GStatSimDocProf(GSession* ses,R::RTextFile* f,bool g,bool l)
-		: GStatSimDocs<GSubProfile,GSubProfileCursor>(ses,f,g,l) {}
+		: GStatSimDocs<GSubProfile,RCursor<GSubProfile> >(ses,f,g,l) {}
 
-	GSubProfileCursor GetElementCursor(GLang* Lang)
+	RCursor<GSubProfile> GetElementCursor(GLang* Lang)
 	{return(Session->GetSubProfilesCursor(Lang));}
 
 	bool HasSubject(GSubProfile* sub)
