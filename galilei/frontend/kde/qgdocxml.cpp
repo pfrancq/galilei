@@ -61,16 +61,16 @@ class QListViewItemXMLTag : public QListViewItem
 public:
 	RXMLTag*  Tag;
 
-	QListViewItemXMLTag(QListView* v,RXMLTag* t,const char* c1)
+	QListViewItemXMLTag(QListView* v,RXMLTag* t,QString c1)
 		: QListViewItem(v,c1), Tag(t) {}
 
-	QListViewItemXMLTag(QListView* v,QListViewItem* a,RXMLTag* t,const char* c1)
+	QListViewItemXMLTag(QListView* v,QListViewItem* a,RXMLTag* t,QString c1)
 		: QListViewItem(v,a,c1), Tag(t) {}
 
-	QListViewItemXMLTag(QListViewItem* v,RXMLTag* t,const char* c1)
+	QListViewItemXMLTag(QListViewItem* v,RXMLTag* t,QString c1)
 		: QListViewItem(v,c1), Tag(t) {}
 
-		QListViewItemXMLTag(QListViewItem* v, QListViewItem* v2,RXMLTag* t,const char* c1)
+		QListViewItemXMLTag(QListViewItem* v, QListViewItem* v2,RXMLTag* t,QString c1)
 		: QListViewItem(v,v2,c1), Tag(t) {}
 
 };
@@ -130,7 +130,7 @@ void GALILEI::QGDocXML::ConstructTag(RXMLTag* t,QListViewItem* parent)
 		}
 		if(!Cur()->GetContent().IsEmpty())
 		{
-			ptr2=new QListViewItemXMLTag(ptr,0,Cur()->GetContent());
+			ptr2=new QListViewItemXMLTag(ptr,0,ToQString(Cur()->GetContent()));
 			ptr2->setPixmap(0,QPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("xml_text.png",KIcon::Small))));
 		}
 		ConstructTag(Cur(),ptr);
