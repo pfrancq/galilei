@@ -258,7 +258,8 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		if(modified&&(Docs()->GetState()==osUpToDate)) continue;
-		rec->receiveNextDoc(Docs());
+		if(rec)
+			rec->receiveNextDoc(Docs());
 		undefLang=false;
 		try
 		{
