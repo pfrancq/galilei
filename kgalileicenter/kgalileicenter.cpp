@@ -482,7 +482,7 @@ void KGALILEICenterApp::slotGroupsCalc(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGroupingCompare(void)
+void KGALILEICenterApp::slotGroupingCompareFromFile(void)
 {
 	slotStatusMsg(i18n("Opening file..."));
 	setDocParams(Doc);
@@ -495,6 +495,16 @@ void KGALILEICenterApp::slotGroupingCompare(void)
 	slotStatusMsg(i18n("Ready."));
 }
 
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotGroupingCompare(void)
+{
+	RContainer<GGroups,unsigned int,true,true>* idealgroups=0;
+	idealgroups=new RContainer<GGroups,unsigned int,true,true>(2,2);
+ 	Doc->GetSession()->LoadIdealGroupment(idealgroups);
+	if(idealgroups)
+		createClient(Doc,new KViewThGroups(Doc,idealgroups,pWorkspace,"View Theoritical Groups",0));
+}
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotGroupsEvaluation(void)

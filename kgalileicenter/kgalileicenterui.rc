@@ -32,9 +32,13 @@
 		<Separator/>
 		<Action name="showGroups"/>
 		<Action name="groupsCalc"/>
-		<Action name="groupingCompare"/>
 		<Action name="groupsEvaluation"/>
 		<Action name="runQuery"/>
+		<Separator/>
+		<Menu name="Compare"><text>&amp;Compare</text>
+			<Action name="groupingCompareFromFile"/>
+			<Action name="groupingCompare"/>
+		</Menu>
 		<Separator/>
 		<Action name="mixIdealGroups"/>
 	</Menu>

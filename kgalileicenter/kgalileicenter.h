@@ -337,6 +337,11 @@ private slots:
 	/**
 	* Compare the current grouping with a theoritic one given in a file.
 	*/
+	void slotGroupingCompareFromFile(void);
+
+	/**
+	* Compare the current grouping with the grouping in memory.
+	*/
 	void slotGroupingCompare(void);
 
 	/**
@@ -536,6 +541,7 @@ public:
 	KToggleAction* groupAlwaysSave;
 	KAction* showGroups;
 	KAction* groupsCalc;
+	KAction* groupingCompareFromFile;
 	KAction* groupingCompare;
 	KAction* groupsEvaluation;
 	KAction* mixIdealGroups;
