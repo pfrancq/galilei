@@ -96,7 +96,7 @@ void GProfileCalcFeedback::Disconnect(GSession* session) throw(GException)
 //-----------------------------------------------------------------------------
 void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 {
-	GWeightInfoCursor Words;
+	RCursor<GWeightInfo> Words;
 	RCursor<GFdbk> Docs;
 	GDocProxy* CurDoc;
 	GWeightInfo* w;
