@@ -49,6 +49,9 @@ AC_ENABLE_SHARED(yes)
 AC_ENABLE_STATIC(no)
 dnl KDE_PROG_LIBTOOL
 
+AC_LIBTOOL_DLOPEN
+AM_PROG_LIBTOOL
+
 dnl for NLS support. Call them in this order!
 dnl WITH_NLS is for the po files
 dnl AM_KDE_WITH_NLS
