@@ -172,6 +172,11 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	*/
 	RPromSol** Sols;
 
+	/**
+	* Global Similarities.
+	*/
+	bool GlobalSim;
+
 public:
 
 	/**
@@ -183,7 +188,7 @@ public:
 	* @param h              The type of heuristic to be used.
 	* @param debug          Debugger.
 	*/
-	GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
+	GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
 
 	/**
 	* Initialisation of the instance.
@@ -212,6 +217,12 @@ public:
 	* @param w              Weight of the criterion.
 	*/
 	void SetCriterionParam(const char* crit,double p,double q,double w);
+
+	/**
+	* Look if the global similarities are supposed to be global.
+	* @return bool.
+	*/
+	bool IsGlobalSim(void) const {return(GlobalSim);}
 
 	/**
 	* Destruct the instance.

@@ -74,11 +74,11 @@ GALILEI::GThreadDataIR::GThreadDataIR(GInstIR* owner)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,HeuristicType h,RDebug *debug) throw(bad_alloc)
+GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,HeuristicType h,RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(popsize,objs,h,debug),
 	  RPromKernel("GALILEI",PopSize+1,2), Sims(s), SameGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
 	  DiffGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
-	  MinSimLevel(m), MaxGen(max), CritSim(0), CritNb(0), CritOKDocs(0), Sols(0)
+	  MinSimLevel(m), MaxGen(max), CritSim(0), CritNb(0), CritOKDocs(0), Sols(0), GlobalSim(g)
 {
 	RPromSol** ptr;
 	RCursor<GObjIR,unsigned int> Cur1;

@@ -62,6 +62,7 @@ class GInstIR;
 class GObjIR;
 class GSubProfilesSameGroupIR;
 
+
 //-----------------------------------------------------------------------------
 /**
 * The RFitnessIR provides a representation for a fitness function for the

@@ -87,7 +87,7 @@ protected:
 	/**
 	* Relevant object of the group.
 	*/
-	GSubProfile* Relevant;
+	const GSubProfile* Relevant;
 
 public:
 

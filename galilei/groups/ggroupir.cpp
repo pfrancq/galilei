@@ -185,8 +185,6 @@ double GALILEI::GGroupIR::ComputeSumSim(GObjIR* obj)
 	double AvgSim;
 	GSubProfile* sub;
 
-//	if(NbSubObjects==1)
-//		return(1.0);
 	sub=obj->GetSubProfile();
 	AvgSim=0.0;
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
