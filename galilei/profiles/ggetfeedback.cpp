@@ -87,7 +87,7 @@ void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,t
 {
 	//Compare each profiles whith all profiles in the same computed group an juge the Nbdocuments most relevant for the user
 	RStd::RContainer<GProfDoc,unsigned,false,false>* docs=new RStd::RContainer<GProfDoc,unsigned,false,false>(100,50);
-	unsigned int prof1,prof2;
+	unsigned int prof1/*,prof2*/;
 	GGroupsCursor Cur;
 	GSubProfileCursor Prof1;
 	GGroupCursor Grp;
@@ -111,11 +111,13 @@ void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,t
 				prof1=Prof1()->GetProfile()->GetSubProfile(Grp()->GetLang())->GetId();
 				for(docs->Start();!docs->End();docs->Next())
 				{
-					prof2=(*docs)()->GetProfile()->GetSubProfile((*docs)()->GetDoc()->GetLang())->GetId();
+//					prof2=(*docs)()->GetProfile()->GetSubProfile((*docs)()->GetDoc()->GetLang())->GetId();
 					if(i<NbDoc)
 					{
 						CreateNewFeedback(JudgType(Prof1(),(*docs)()->GetDoc()),Prof1(),(*docs)()->GetDoc());
 					}
+					else
+						break;
 					i++;
 				}
 				Prof1()->GetProfile()->SetState(osModified);

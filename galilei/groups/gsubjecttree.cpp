@@ -349,6 +349,7 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,double percok,double percko,
 							}
 						}
 					}
+					delete[] tabko;
 				}
 			}
 		}
