@@ -97,6 +97,13 @@ void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
 }
 
 
+//-----------------------------------------------------------------------------
+int GALILEI::GChromoIR::Compare(const GChromoIR* c) const
+{
+	return(Id-c->Id);
+}
+
+
 #ifdef RGADEBUG
 //-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::CompareIdeal(GSession* s,RStd::RContainer<GGroups,unsigned int,true,true>* ideal)

@@ -208,6 +208,11 @@ public:
 	*/
 	virtual void Init(GThreadDataIR* thData) throw(bad_alloc);
 
+	/**
+	* Method needed by RStd::RContainer.
+	*/
+	int Compare(const GChromoIR* c) const;
+
 #ifdef RGADEBUG
 
 	/**

@@ -395,13 +395,13 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	{
 		s=Chromosomes[(*ptr)->GetId()-1];
 		(*s->Fitness)=Gen+1.1;
-		if(Gen)
-		{
-			BestSols.InsertPtr(b=new GChromoIR(this,BestSols.NbPtr));
-			b->Init(thDatas[0]);
-			(static_cast<RGroups<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>*>(b))->Init(&GrpData);
-			(*b)=(*s);
-		}
+//		if(Gen)
+//		{
+//			BestSols.InsertPtr(b=new GChromoIR(this,BestSols.NbPtr));
+//			b->Init(thDatas[0]);
+//			(static_cast<RGroups<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>*>(b))->Init(&GrpData);
+//			(*b)=(*s);
+//		}
 	}
 	else
 	{
