@@ -3,12 +3,12 @@ bin_PROGRAMS = kgalileicenter
 
 ## INCLUDES were found outside kdevelop specific part
 
-kgalileicenter_SOURCES = kviewstorechromos.cpp qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui \
-	qcreatedatabase.ui qmixidealconfig.ui qviewchromos.ui kviewquery.cpp kviewchromos.cpp \
-	kviewevaluategroup.cpp kviewgroupsevaluation.cpp qlanguages.ui kviewr.cpp kviewprg.cpp \
-	qpluginsdlg.cpp kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewga.cpp kviewstems.cpp \
+kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui \
+	qcreatedatabase.ui qmixidealconfig.ui kviewquery.cpp  \
+	kviewr.cpp kviewprg.cpp \
+	qpluginsdlg.cpp kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewstems.cpp \
 	qsessionprogress.cpp qdocsoptionsdlg.ui qconnectmysql.ui kviewusers.cpp kviewthgroups.cpp \
-	kviewstat.cpp kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp \
+	kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp \
 	kview.cpp kdoc.cpp kgalileicenter.cpp main.cpp qplugins.ui qsessionoptions.ui
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
 kgalileicenter_LDADD = $(GALILEI_LIB)/postgroups/libgalilei_postgroups.la /usr/lib/libmysqlclient.la \
@@ -23,18 +23,17 @@ kgalileicenter_LDADD = $(GALILEI_LIB)/postgroups/libgalilei_postgroups.la /usr/l
 	-lcurl $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET) -lltdl -dlopen self
 
 
-SUBDIRS = 
+SUBDIRS =
 
 EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kgalileicenter.desktop \
 	lo32-app-kgalileicenter.png lo16-app-kgalileicenter.png kdoc.cpp kdoc.h kview.cpp kview.h \
 	kviewdoc.cpp kviewdoc.h kviewdocs.cpp kviewdocs.h kviewgroup.cpp kviewgroup.h \
-	kviewgroups.cpp kviewgroups.h kviewprofile.cpp kviewprofile.h kviewstat.cpp kviewstat.h \
+	kviewgroups.cpp kviewgroups.h kviewprofile.cpp kviewprofile.h \
 	kviewthgroups.cpp kviewthgroups.h kviewusers.cpp kviewusers.h qconnectmysql.ui \
 	qdocsoptionsdlg.ui qsessionprogress.cpp qsessionprogress.h kviewstems.cpp kviewstems.h \
-	kviewga.cpp kviewga.h kgalileicenter_dlg.cpp kgalileicenter_init.cpp qpluginsdlg.cpp qpluginsdlg.h \
-	kviewprg.cpp kviewprg.h kviewr.cpp kviewr.h qlanguages.ui \
-	kviewgroupsevaluation.cpp kviewgroupsevaluation.h kviewevaluategroup.cpp kviewevaluategroup.h \
-	kviewchromos.cpp kviewchromos.h kviewquery.cpp kviewquery.h qviewchromos.ui qmixidealconfig.ui\
+	kgalileicenter_dlg.cpp kgalileicenter_init.cpp qpluginsdlg.cpp qpluginsdlg.h \
+	kviewprg.cpp kviewprg.h kviewr.cpp kviewr.h  \
+	kviewquery.cpp kviewquery.h qmixidealconfig.ui\
 	qcreatedatabase.ui qcreatedatabase.ui.h qfilldatabase.ui\
 	hi16-app-kgalileicenter.png hi32-app-kgalileicenter.png kviewhistory.cpp kviewhistory.h \
 	qhistorydlg.ui kviewstorechromos.cpp kviewstorechromos.h qgalileiitem.h

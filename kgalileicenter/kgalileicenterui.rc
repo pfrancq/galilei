@@ -13,7 +13,6 @@
 		<separator/>
 		<Action name="sessionCompute"/>
 		<Action name="runProgram"/>
-		<Action name="runInsts"/>
 		<separator/>
  		<Action name="sessionTest"/>
 		<Action name="sessionStat"/>
@@ -35,7 +34,6 @@
 		<Separator/>
 		<Action name="showGroups"/>
 		<Action name="groupsCalc"/>
-		<Action name="groupsEvaluation"/>
 		<Action name="runQuery"/>
 		<Separator/>
 		<Menu name="Compare"><text>&amp;Compare</text>
@@ -52,8 +50,7 @@
 		<Action name="wordsClusteringSave"/>
 		<Separator/>
 		<Action name="showDocs"/>
-		<Action name="docsStats"/>
-		<separator/>               
+		<separator/>
 		<Action name="docAnalyse"/>
 		<Action name="docsAnalyse"/>
 		<separator/>
@@ -72,17 +69,6 @@
 	<Menu name="R"><text>&amp;R</text>
 		<Separator/>
 		<Action name="rRunR"/>
-	</Menu>
-	<Menu name="GA"><text>&amp;GA</text>
-		<Action name="gaInit"/>
-		<Separator/>
-		<Action name="gaStart"/>
-		<Action name="gaPause"/>
-		<Action name="gaStop"/>
-		<Separator/>
-		<Action name="gaSave"/>
-		<Action name="gaAnalyse"/>
-		<Action name="gaShow"/>
 	</Menu>
 	<Menu name="settings"><text>&amp;Settings</text>
 		<Action name="oldplugins"/>

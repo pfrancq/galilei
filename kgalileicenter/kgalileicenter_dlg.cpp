@@ -172,6 +172,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	GFactoryProfileCalcCursor ProfileCalc;
 	GFactoryGroupCalcCursor GroupCalc;
 	GFactoryGroupingCursor Grouping;
+	GFactoryStatsCalcCursor StatsCalc;
 	QPlugins dlg(this,"Plugins Dialog");
 	QString str;
 	QListViewItem* def;
@@ -273,6 +274,26 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.CurrentGroupCalc->setEnabled(true);
 	}
 
+	// Goes through statistics
+	def=cur=0;
+	StatsCalc=StatsCalcManager.GetStatsCalcsCursor();
+	for(StatsCalc.Start();!StatsCalc.End();StatsCalc.Next())
+	{
+		str=StatsCalc()->GetName();
+		str+=" [";
+		str+=StatsCalc()->GetLib();
+		str+="]";
+		cur=new QStatsCalcItem(dlg.Stats,StatsCalc(),str);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.Stats->setSelected(def,true);
+		dlg.changeStatCalc(def);
+		dlg.EnableStat->setEnabled(true);
+	}
+
 	if(dlg.exec())
 	{
 		// Goes through filters
@@ -340,6 +361,18 @@ void KGALILEICenterApp::slotPlugins(void)
 		catch(GException)
 		{
 		}
+
+		// Goes through statistics
+		QStatsCalcItem* item5=dynamic_cast<QStatsCalcItem*>(dlg.Stats->firstChild());
+		while(item5)
+		{
+			if(item5->Enable)
+				item5->Fac->Create();
+			else
+				item5->Fac->Delete();
+			item5=dynamic_cast<QStatsCalcItem*>(item5->itemBelow());
+		}
+
 	}
 
 }

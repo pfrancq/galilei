@@ -111,22 +111,14 @@ using namespace GALILEI;
 #include "kviewthgroups.h"
 #include "kviewgroups.h"
 #include "kviewgroup.h"
-#include "kviewgroupsevaluation.h"
-#include "kviewevaluategroup.h"
-#include "kviewstat.h"
 #include "kviewquery.h"
 #include "kviewprg.h"
 #include "kviewstems.h"
 #include "kviewprofile.h"
-#include "kviewga.h"
 #include "kviewr.h"
-#include "kviewchromos.h"
-#include "kviewstorechromos.h"
 #include "kviewhistory.h"
 #include "qconnectmysql.h"
 #include "qsessionprogress.h"
-#include "qlanguages.h"
-#include "qviewchromos.h"
 #include "qmixidealconfig.h"
 #include "qcreatedatabase.h"
 #include "qfilldatabase.h"
@@ -188,9 +180,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
  			rRunR->setEnabled(true);
 			textFrench->setEnabled(true);
 			textEnglish->setEnabled(true);
-			gaAnalyse->setEnabled(true);
 			runProgram->setEnabled(true);
-			runInsts->setEnabled(true);
 			runQuery->setEnabled(true);
 			UpdateMenusEntries();
 			dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
@@ -247,9 +237,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
  	rRunR->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
-	gaAnalyse->setEnabled(true);
 	runProgram->setEnabled(true);
-	runInsts->setEnabled(true);
 	runQuery->setEnabled(true);
 	UpdateMenusEntries();
 	dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
@@ -289,12 +277,6 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 void KGALILEICenterApp::slotSessionTest(void)
 {
 
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSessionStat(void)
-{
 }
 
 
@@ -642,12 +624,6 @@ void KGALILEICenterApp::slotGroupingCompare(void)
 		createClient(Doc,new KViewThGroups(Doc,Doc->GetSession()->GetIdealGroups(),pWorkspace,"View Theoritical Groups",0));
 }
 
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGroupsEvaluation(void)
-{
-	createClient(Doc,new KViewGroupsEvaluation(Doc,pWorkspace,"View Docs",0));
-}
-
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotShowDocs(void)
@@ -681,16 +657,6 @@ void KGALILEICenterApp::slotDocsAnalyse(void)
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Documents");
 	d->AnalyseDocs(!docAlwaysCalc->isChecked());
 	Doc->updateAllViews(0);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotDocsStats(void)
-{
-	setDocParams(Doc);
-//	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Documents");
-//	d->AnalyseDocs(!docAlwaysCalc->isChecked());
-//	Doc->updateAllViews(0);
 }
 
 
@@ -784,136 +750,6 @@ void KGALILEICenterApp::slotTextEnglish(void)
 		createClient(Doc,new KViewStems("en",url.path(),Doc,pWorkspace,"View Theoritical Groups",0));
 	}
 	slotStatusMsg(i18n("Ready."));
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGAInit(void)
-{
-	QLanguages dlg(this,0,true);
-	char tmp[3];
-
-	KApplication::kApplication()->processEvents();
-	if(dlg.exec())
-	{
-		if(dlg.cbLangs->currentItem()==0)
-			strcpy(tmp,"en");
-		else
-			strcpy(tmp,"fr");
-		setDocParams(Doc);
-		createClient(Doc,new KViewGA(Doc,tmp,dlg.cbGlobal->isChecked(),dlg.cbScratch->isChecked(),pWorkspace,"Genetic Algorithm",0));
-		gaPause->setEnabled(true);
-		gaStart->setEnabled(true);
-		gaStop->setEnabled(true);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGAStart(void)
-{
-	KApplication::kApplication()->processEvents();
-	KView* m = (KView*)pWorkspace->activeWindow();
-	if(m&&(m->getType()==gGA))
-	{
-		((KViewGA*)m)->RunGA();
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGAPause(void)
-{
-	KApplication::kApplication()->processEvents();
-	KView* m = (KView*)pWorkspace->activeWindow();
-	if(m&&(m->getType()==gGA))
-	{
-		((KViewGA*)m)->PauseGA();
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGAStop(void)
-{
-	KApplication::kApplication()->processEvents(1000);
-	KView* m = (KView*)pWorkspace->activeWindow();
-	if(m&&(m->getType()==gGA))
-	{
-		((KViewGA*)m)->StopGA();
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGASave(void)
-{
-	KApplication::kApplication()->processEvents(1000);
-	KView* m = (KView*)pWorkspace->activeWindow();
-	if(m&&(m->getType()==gGA))
-	{
-		((KViewGA*)m)->SaveGA();
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGAAnalyse(void)
-{
-	QViewChromos dlg(this,0,true);
-	char tmp[3];
-
-	KApplication::kApplication()->processEvents();
-	if(!dlg.exec()) return;
-
-	try
-	{
-		if(dlg.cbLangs->currentItem()==0)
-			strcpy(tmp,"en");
-		else
-			strcpy(tmp,"fr");
-		setDocParams(Doc);
-		createClient(Doc,new KViewChromos(Doc,tmp,dlg.cbSim->isChecked(),pWorkspace,"View Chromosomes",0));
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
-	}
-	catch(R::RMySQLError& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
-	}
-	catch(bad_alloc)
-	{
-		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
-	}
-	catch(...)
-	{
-		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGAShow(void)
-{
-	QLanguages dlg(this,0,true);
-	dlg.cbScratch->hide();
-	char tmp[3];
-
-	KApplication::kApplication()->processEvents();
-	if(dlg.exec())
-	{
-		if(dlg.cbLangs->currentItem()==0)
-			strcpy(tmp,"en");
-		else
-			strcpy(tmp,"fr");
-		setDocParams(Doc);
-		createClient(Doc,new KViewStoreChromos(Doc,tmp,dlg.cbGlobal->isChecked(),pWorkspace,"Show Chromosomes",0));
-		gaPause->setEnabled(true);
-		gaStart->setEnabled(true);
-		gaStop->setEnabled(true);
-	}
 }
 
 
@@ -1138,15 +974,6 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotRunInsts(void)
-{
-	KApplication::kApplication()->processEvents();
-	createClient(Doc,new KViewStat(Doc,pWorkspace,"Run Instructions",0));
-	KApplication::kApplication()->processEvents();
-}
-
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotWindowActivated(QWidget*)
 {
 	KView* m = dynamic_cast<KView*>(pWorkspace->activeWindow());
@@ -1172,10 +999,6 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 			saveXML->setEnabled(false);
 			analyseXML->setEnabled(false);
 			profileCalc->setEnabled(false);
-			gaStart->setEnabled(false);
-			gaPause->setEnabled(false);
-			gaStop->setEnabled(false);
-			gaSave->setEnabled(false);
 			break;
 
 		case gDocs:
@@ -1183,10 +1006,6 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 			saveXML->setEnabled(false);
 			analyseXML->setEnabled(false);
 			profileCalc->setEnabled(false);
-			gaStart->setEnabled(false);
-			gaPause->setEnabled(false);
-			gaStop->setEnabled(false);
-			gaSave->setEnabled(false);
 			break;
 
 		case gDoc:
@@ -1194,10 +1013,6 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 			saveXML->setEnabled(((KViewDoc*)m)->IsDocXML());
 			analyseXML->setEnabled(((KViewDoc*)m)->IsDocXML());
 			profileCalc->setEnabled(false);
-			gaStart->setEnabled(false);
-			gaPause->setEnabled(false);
-			gaStop->setEnabled(false);
-			gaSave->setEnabled(false);
 			break;
 
 		case gProfile:
@@ -1205,10 +1020,6 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 			saveXML->setEnabled(false);
 			analyseXML->setEnabled(false);
 			profileCalc->setEnabled(true);
-			gaStart->setEnabled(false);
-			gaPause->setEnabled(false);
-			gaStop->setEnabled(false);
-			gaSave->setEnabled(false);
 			break;
 
 		case gGroups:
@@ -1216,10 +1027,6 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 			createXML->setEnabled(false);
 			analyseXML->setEnabled(false);
 			profileCalc->setEnabled(false);
-			gaStart->setEnabled(false);
-			gaPause->setEnabled(false);
-			gaStop->setEnabled(false);
-			gaSave->setEnabled(false);
 			break;
 
 		case gGA:
@@ -1227,10 +1034,6 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 			saveXML->setEnabled(false);
 			analyseXML->setEnabled(false);
 			profileCalc->setEnabled(false);
-			gaStart->setEnabled(true);
-			gaPause->setEnabled(true);
-			gaStop->setEnabled(true);
-			gaSave->setEnabled(true);
 			break;
 
 		case gNothing:
@@ -1239,10 +1042,6 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 			saveXML->setEnabled(false);
 			analyseXML->setEnabled(false);
 			profileCalc->setEnabled(false);
-			gaStart->setEnabled(false);
-			gaPause->setEnabled(false);
-			gaStop->setEnabled(false);
-			gaSave->setEnabled(false);
 			break;
 	}
 }

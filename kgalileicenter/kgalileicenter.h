@@ -55,6 +55,7 @@
 #include <profiles/gprofilecalcmanager.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalcmanager.h>
+#include <sessions/gstatscalcmanager.h>
 #include <galilei/gurlmanagerkde.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
@@ -130,6 +131,11 @@ class KGALILEICenterApp : public KMainWindow
 	* Computing Method Manager.
 	*/
 	GGroupCalcManager GroupCalcManager;
+
+	/**
+	* Statistics Manager.
+	*/
+	GStatsCalcManager StatsCalcManager;
 
 	/**
 	* The configuration object of the application.
@@ -414,11 +420,6 @@ private slots:
 	void slotSessionTest(void);
 
 	/**
-	* Launch the statistique module.
-	*/
-	void slotSessionStat(void);
-
-	/**
 	* Closes all documents and quits the application.
 	*/
 	void slotSessionQuit(void);
@@ -443,7 +444,6 @@ private slots:
 	*/
 	void slotProcessExited(KProcess*);
 
-	
 	/**
 	* Show the users' window.
 	*/
@@ -480,11 +480,6 @@ private slots:
 	void slotGroupingCompare(void);
 
 	/**
-	* evaluate a clustering.
-	*/
-	void slotGroupsEvaluation(void);
-
-	/**
 	* mix the ideal groupment.
 	*/
 	void slotMixIdealGroups(void);
@@ -503,11 +498,6 @@ private slots:
 	* Analyse all the documents.
 	*/
 	void slotDocsAnalyse(void);
-
-	/**
-	* Compute statistics on all the documents.
-	*/
-	void slotDocsStats(void);
 
 	/**
 	* Create a DocXML structure for the current document.
@@ -545,41 +535,6 @@ private slots:
 	void slotTextEnglish(void);
 
 	/**
-	* Initialize the GA.
-	*/
-	void slotGAInit(void);
-
-	/**
-	* Start the GA.
-	*/
-	void slotGAStart(void);
-
-	/**
-	* Pause the GA.
-	*/
-	void slotGAPause(void);
-
-	/**
-	* Stop the GA.
-	*/
-	void slotGAStop(void);
-
-	/**
-	* Analyse chromosomes store during a GA.
-	*/
-	void slotGAAnalyse(void);
-
-	/**
-	* Save the chromosomes of the actual generation.
-	*/
-	void slotGASave(void);
-
-	/**
-	* Show the chromosomes stored.
-	*/
-	void slotGAShow(void);
-
-	/**
 	* Show the chromosomes stored.
 	*/
 	void slotShowHistory(void);
@@ -615,12 +570,7 @@ private slots:
 	void slotRunProgram(void);
 
 	/**
-	* Run some instructions.
-	*/
-	void slotRunInsts(void);
-
-	/**
-	* Run some instructions.
+	* Run a query on the groups.
 	*/
 	void slotRunQuery(void);
 
@@ -696,9 +646,8 @@ public:
 	KAction* sessionDisconnect;
 	KAction* fillEmptyDb;
 	KAction* sessionTest;
-	KAction* sessionStat;
 	KAction* sessionQuit;
-	
+
 
 	KToggleAction* profileAlwaysCalc;
 	KToggleAction* profileAlwaysSave;
@@ -712,7 +661,6 @@ public:
 	KAction* groupsCalc;
 	KAction* groupingCompareFromFile;
 	KAction* groupingCompare;
-	KAction* groupsEvaluation;
 	KAction* mixIdealGroups;
 	KAction* showGroupsHistory;
 
@@ -721,7 +669,6 @@ public:
 	KAction* showDocs;
 	KAction* docAnalyse;
 	KAction* docsAnalyse;
-	KAction* docsStats;
 	KAction* createXML;
 	KAction* saveXML;
 	KAction* analyseXML;
@@ -731,14 +678,6 @@ public:
 	KAction* textFrench;
 	KAction* textEnglish;
 
-	KAction* gaInit;
-	KAction* gaStart;
-	KAction* gaPause;
-	KAction* gaStop;
-	KAction* gaSave;
-	KAction* gaAnalyse;
-	KAction* gaShow;
-
 	KAction* rRunR;
 
 	KAction* plugins;
@@ -747,7 +686,6 @@ public:
 	KAction* sessionOptions;
 
 	KAction* runProgram;
-	KAction* runInsts;
 	KAction* runQuery;
 
 	KAction* windowTile;

@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>425</width>
-            <height>365</height>
+            <width>465</width>
+            <height>455</height>
         </rect>
     </property>
     <property name="caption">
@@ -198,7 +198,7 @@
                     <widget class="QListView">
                         <column>
                             <property name="text">
-                                <string>Method</string>
+                                <string>Profile Computing Methods</string>
                             </property>
                             <property name="clickable">
                                 <bool>true</bool>
@@ -342,7 +342,7 @@
                     <widget class="QListView">
                         <column>
                             <property name="text">
-                                <string>Method</string>
+                                <string>Grouping Methods</string>
                             </property>
                             <property name="clickable">
                                 <bool>true</bool>
@@ -494,7 +494,7 @@
                     <widget class="QListView">
                         <column>
                             <property name="text">
-                                <string>Method</string>
+                                <string>Groups Computing Methods</string>
                             </property>
                             <property name="clickable">
                                 <bool>true</bool>
@@ -569,6 +569,101 @@
                                 </property>
                                 <property name="text">
                                     <string>Enable method</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Statistics</string>
+                </attribute>
+                <vbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QListView">
+                        <column>
+                            <property name="text">
+                                <string>Statistics</string>
+                            </property>
+                            <property name="clickable">
+                                <bool>true</bool>
+                            </property>
+                            <property name="resizable">
+                                <bool>true</bool>
+                            </property>
+                        </column>
+                        <property name="name">
+                            <cstring>Stats</cstring>
+                        </property>
+                        <property name="resizePolicy">
+                            <enum>Manual</enum>
+                        </property>
+                        <property name="resizeMode">
+                            <enum>AllColumns</enum>
+                        </property>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout2_2</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>ConfigStat</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>Configure</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>AboutStat</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>About</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer2_2</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Horizontal</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>40</width>
+                                        <height>20</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>EnableStat</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>Enable filter</string>
                                 </property>
                             </widget>
                         </hbox>
@@ -765,6 +860,30 @@
         <receiver>QPlugins</receiver>
         <slot>slotGroupCalcEnable(bool)</slot>
     </connection>
+    <connection>
+        <sender>Stats</sender>
+        <signal>clicked(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeStatCalc(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>ConfigStat</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigStatCalc()</slot>
+    </connection>
+    <connection>
+        <sender>AboutStat</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutStatCalc()</slot>
+    </connection>
+    <connection>
+        <sender>EnableStat</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotStatCalcEnable(bool)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">qplugins.ui.h</include>
@@ -790,6 +909,10 @@
     <slot>slotGroupingEnable( bool state )</slot>
     <slot>slotGroupCalcEnable( bool state )</slot>
     <slot>slotLinkCalcEnable( bool state )</slot>
+    <slot>changeStatCalc( QListViewItem * item )</slot>
+    <slot>slotAboutStatCalc()</slot>
+    <slot>slotConfigStatCalc()</slot>
+    <slot>slotStatCalcEnable( bool state )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

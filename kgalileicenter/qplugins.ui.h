@@ -169,3 +169,37 @@ void QPlugins::slotLinkCalcEnable( bool state )
 {
 
 }
+
+
+void QPlugins::changeStatCalc( QListViewItem *  item)
+{
+       	if(!item) return;
+	QStatsCalcItem* f=dynamic_cast<QStatsCalcItem*>(item);
+	EnableStat->setChecked(f->Enable);
+	ConfigStat->setEnabled(f->Fac->HasConfigure());
+	AboutStat->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::slotAboutStatCalc()
+{
+    	if(!Stats->currentItem()) return;
+	QStatsCalcItem* f=dynamic_cast<QStatsCalcItem*>(Stats->currentItem());
+	f->Fac->About();
+}
+
+
+void QPlugins::slotConfigStatCalc()
+{
+        	if(!Stats->currentItem()) return;
+	QStatsCalcItem* f=dynamic_cast<QStatsCalcItem*>(Stats->currentItem());
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotStatCalcEnable( bool state )
+{
+        	if(!Stats->currentItem()) return;
+	QStatsCalcItem* f=dynamic_cast<QStatsCalcItem*>(Stats->currentItem());
+	f->Enable=state;
+}

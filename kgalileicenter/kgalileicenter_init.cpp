@@ -87,7 +87,7 @@ using namespace R;
 KGALILEICenterApp::KGALILEICenterApp(void)
 	: KMainWindow(0,"KGALILEICenterApp"), URLManager(getenv("GALILEI_PLUGINS_LIB")),
 	  ProfilingManager(getenv("GALILEI_PLUGINS_LIB")), GroupingManager(getenv("GALILEI_PLUGINS_LIB")),
-	  GroupCalcManager(getenv("GALILEI_PLUGINS_LIB")),
+	  GroupCalcManager(getenv("GALILEI_PLUGINS_LIB")), StatsCalcManager(getenv("GALILEI_PLUGINS_LIB")),
 	  dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0), DocOptions(0)
 {
 	Config=kapp->config();
@@ -113,10 +113,8 @@ void KGALILEICenterApp::initActions(void)
 	createDatabase=new KAction(i18n("Create &Database"),"exec",0,this,SLOT(slotCreateDatabase()),actionCollection(),"createDatabase");
 	fillEmptyDb=new KAction(i18n("&Fill Empty Database"),"exec",0,this,SLOT(slotFillEmptyDb()),actionCollection(),"fillEmptyDb");
 	runProgram=new KAction(i18n("&Run Program"),"rebuild",0,this,SLOT(slotRunProgram()),actionCollection(),"runProgram");
-	runInsts=new KAction(i18n("Run &Instructions"),"help",0,this,SLOT(slotRunInsts()),actionCollection(),"runInsts");;
 	sessionDisconnect=new KAction(i18n("&Disconnect Database"),"connect_no",0,this,SLOT(slotSessionDisconnect()),actionCollection(),"sessionDisconnect");
 	sessionTest=new KAction(i18n("&Test"),"gohome",0,this,SLOT(slotSessionTest()),actionCollection(),"sessionTest");
-	sessionStat=new KAction(i18n("&Stat"),"gohome",0,this,SLOT(slotSessionStat()),actionCollection(),"sessionStat");
 	sessionQuit=new KAction(i18n("E&xit"),"exit",0,this,SLOT(slotSessionQuit()),actionCollection(),"sessionQuit");
 
 	// Menu "Users"
@@ -131,7 +129,6 @@ void KGALILEICenterApp::initActions(void)
 	groupAlwaysSave=new KToggleAction(i18n("Enables/disables groups Saving"),0,0,0,actionCollection(),"groupAlwaysSave");
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
-	groupsEvaluation=new KAction(i18n("&Evaluate Grouping"),"fileopen",0,this,SLOT(slotGroupsEvaluation()),actionCollection(),"groupsEvaluation");
 	runQuery=new KAction(i18n("Run &Query"),"help",0,this,SLOT(slotRunQuery()),actionCollection(),"runQuery");
 	groupingCompareFromFile=new KAction(i18n("From &File"),"fileopen",0,this,SLOT(slotGroupingCompareFromFile()),actionCollection(),"groupingCompareFromFile");
 	groupingCompare=new KAction(i18n("From &Memory"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
@@ -142,9 +139,8 @@ void KGALILEICenterApp::initActions(void)
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
 	wordsClusteringSave=new KToggleAction(i18n("Enables/disables Clusters of Words Saving"),0,0,0,actionCollection(),"wordsClusteringSave");
 	showDocs=new KAction(i18n("&Show Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
-	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");;
-	docsAnalyse=new KAction(i18n("&Analyse Documents"),0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");;
-	docsStats=new KAction(i18n("S&tatistics about Documents"),0,this,SLOT(slotDocsStats()),actionCollection(),"docsStats");;
+	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
+	docsAnalyse=new KAction(i18n("&Analyse Documents"),0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
 	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
 	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
 	analyseXML=new KAction(i18n("&Analyse XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
@@ -157,15 +153,6 @@ void KGALILEICenterApp::initActions(void)
 
 	// Menu "R Stat
 	rRunR=new KAction(i18n("Run &R"),0,this,SLOT(slotRRunR()),actionCollection(),"rRunR");
-
-	// Menu "GA"
-	gaInit=new KAction(i18n("&Initialize"),"reload",KKey("Alt+I").keyCodeQt(),this,SLOT(slotGAInit(void)),actionCollection(),"gaInit");
-	gaStart=new KAction(i18n("&Start"),"exec",KKey("Alt+S").keyCodeQt(),this,SLOT(slotGAStart(void)),actionCollection(),"gaStart");
-	gaPause=new KAction(i18n("&Pause"),"player_pause",KKey("Alt+P").keyCodeQt(),this,SLOT(slotGAPause(void)),actionCollection(),"gaPause");
-	gaStop=new KAction(i18n("S&top"),"stop",KKey("Alt+T").keyCodeQt(),this,SLOT(slotGAStop(void)),actionCollection(),"gaStop");
-	gaAnalyse=new KAction(i18n("&Analyse Stored Chromosomes"),"viewmag",0,this,SLOT(slotGAAnalyse(void)),actionCollection(),"gaAnalyse");
-	gaSave=new KAction(i18n("S&tore Chromosomes"),"save",0,this,SLOT(slotGASave(void)),actionCollection(),"gaSave");
-	gaShow=new KAction(i18n("Sho&w Chromosomes"),"save",0,this,SLOT(slotGAShow(void)),actionCollection(),"gaShow");
 
 	// Menu "Settings"
 	viewToolBar = KStdAction::showToolbar(this, SLOT(slotViewToolBar()), actionCollection());
@@ -322,6 +309,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Conf.Store(ProfilingManager);
 	Conf.Store(GroupingManager);
 	Conf.Store(GroupCalcManager);
+	Conf.Store(StatsCalcManager);
 	Conf.Save();
 }
 
@@ -349,7 +337,7 @@ void KGALILEICenterApp::readOptions(void)
 	profileAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Profiles",false));
 	profileAlwaysSave->setChecked(Config->readBoolEntry("Always Save Profiles",true));
 	groupAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Groups",false));
-	groupAlwaysSave->setChecked(Config->readBoolEntry("Always save Groups",true));
+	groupAlwaysSave->setChecked(Config->readBoolEntry("Always Save Groups",true));
 	docAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Docs",false));
 	wordsClusteringSave->setChecked(Config->readBoolEntry("Always Save Clusters",false));
 
@@ -446,6 +434,7 @@ void KGALILEICenterApp::readOptions(void)
 	Conf.Read(ProfilingManager);
 	Conf.Read(GroupingManager);
 	Conf.Read(GroupCalcManager);
+	Conf.Read(StatsCalcManager);
 }
 
 
@@ -483,12 +472,12 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	// Menu "Users"
 	showUsers->setEnabled(Doc&&Doc->GetSession()->IsUsersLoad());
 	profilesCalc->setEnabled(Doc&&Doc->GetSession()->IsUsersLoad()&&Doc->GetSession()->IsDocsLoad());
+	profileCalc->setEnabled(Doc&&Doc->GetSession()->IsUsersLoad()&&Doc->GetSession()->IsDocsLoad());
 
 	// Menu "Groups"
 	showGroups->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
 	groupsCalc->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad()&&Doc->GetSession()->IsUsersLoad());
 	groupingCompare->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
-	groupsEvaluation->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
 	mixIdealGroups->setEnabled(true);
 
 	// Menu "Document"
@@ -496,11 +485,6 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	docAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDicsLoad());
 	docsAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad()&&Doc->GetSession()->IsDicsLoad());
 	//linksCalc->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
-	docsStats->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad()&&Doc->GetSession()->IsDicsLoad());
-
-	// Menu "GA"
-	gaInit->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad()&&Doc->GetSession()->IsUsersLoad());
-	gaShow->setEnabled(true);
 }
 
 
@@ -515,7 +499,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	sessionConnect->setEnabled(true);
 	sessionCompute->setEnabled(false);
 	groupingCompare->setEnabled(false);
-	groupsEvaluation->setEnabled(false);
 	textFrench->setEnabled(false);
 	textEnglish->setEnabled(false);
 	createXML->setEnabled(false);
@@ -529,18 +512,9 @@ void KGALILEICenterApp::DisableAllActions(void)
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);
-	docsStats->setEnabled(false);
-	gaInit->setEnabled(false);
-	gaPause->setEnabled(false);
-	gaStart->setEnabled(false);
-	gaStop->setEnabled(false);
-	gaShow->setEnabled(false);
 	runProgram->setEnabled(false);
-	runInsts->setEnabled(false);
 	runQuery->setEnabled(false);
 	rRunR->setEnabled(false);
-	gaAnalyse->setEnabled(false);
-	gaSave->setEnabled(false);
 }
 
 
