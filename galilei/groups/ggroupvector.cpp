@@ -39,7 +39,9 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <groups/ggroupvector.h>
-#include <profiles/gsubprofilevector.h>
+#include <profiles/gsubprofile.h>
+#include <langs/glang.h>
+#include <langs/gdict.h>
 using namespace GALILEI;
 
 
@@ -57,3 +59,20 @@ GALILEI::GGroupVector::GGroupVector(const unsigned int id,GLang* lang) throw(bad
 }
 
 
+//-----------------------------------------------------------------------------
+void GALILEI::GGroupVector::UpdateRefs(void) const
+{
+	GDict* d=Lang->GetDict();
+	if(d)
+		AddRefs(otGroup,d);
+
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroupVector::RemoveRefs(void) const
+{
+	GDict* d=Lang->GetDict();
+	if(d)
+		DelRefs(otGroup,d);
+}

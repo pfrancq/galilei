@@ -70,6 +70,22 @@ public:
 	* @return C String.
 	*/
 	virtual const char* GetModelName(void) const {return("Vector");}
+
+	/**
+	* Update the references of the document.
+	*/
+	void UpdateRefs(void) const;
+
+	/**
+	* Remove the references of the document.
+	*/
+	void RemoveRefs(void) const;
+
+	/**
+	* Get the vector representing the sub-profile.
+	* @returns Pointer to GIWordsWeights.
+	*/
+	GIWordsWeights* GetVector(void) {return(this);}
 };
 
 

@@ -55,6 +55,26 @@ namespace GALILEI{
 */
 class GGroupCalcRelevant : public GGroupCalc
 {
+	/**
+	* Global similarities used.
+	*/
+	bool GlobalSim;
+
+	/**
+	* Maximal number of the non-zero weights in the vector.
+	*/
+	unsigned int MaxNonZero;
+
+	/**
+	* Ordered vector for current computed profile.
+	*/
+	GIWordWeight** Order;
+
+	/**
+	* Maximal size allocate for a profile.
+	*/
+	unsigned int MaxOrderSize;
+
 public:
 
 	/**
@@ -64,10 +84,41 @@ public:
 	GGroupCalcRelevant(GSession* session) throw(bad_alloc);
 
 	/**
+	* Compute the sum of the similarities of a given profile to all the others.
+	* @param grp            Group to compute.
+	* @param sub            Subprofile used as reference.
+	* @returns result.
+	*/
+	double ComputeSumSim(GGroup* grp,GSubProfile* sub);
+
+	/**
 	* Compute a group.
 	* @param grp            Group to compute.
 	*/
 	virtual void Compute(GGroup* grp);
+
+	/**
+	* Get the number of non-zero weights in the vector.
+	*/
+	unsigned int GetMaxNonZero(void) const {return(MaxNonZero);}
+
+	/**
+	* Set the number of non-zero weights in the vector.
+	* @param n              Number of non-zero weights.
+	*/
+	void SetMaxNonZero(unsigned int n) {MaxNonZero=n;}
+
+	/**
+	* Get the status of the global similarity.
+	* @return bool value.
+	*/
+	bool GetGlobalSim(void) const {return(GlobalSim);}
+
+	/**
+	* Set the status of the global similarity.
+	* @param s              Global similarity?
+	*/
+	void SetGlobalSim(bool s) {GlobalSim=s;}
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -77,9 +128,9 @@ public:
 
 	/**
 	* Set the settings for the method using a string.
-	* @param char*          C string coding the settings.
+	* @param s              C string coding the settings.
 	*/
-	virtual void SetSettings(const char*);
+	virtual void SetSettings(const char* s);
 
 	/**
 	* Get the name of the model used for the description.

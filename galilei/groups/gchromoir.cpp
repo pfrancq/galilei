@@ -761,7 +761,7 @@ void GALILEI::GChromoIR::LocalOptimisation(void)
 		memset(*ptr,0x0,(i-1)*sizeof(bool));
 	Cur1.Set(Used);
 	Cur2.Set(Used);
-	for(Cur1.Start(),i=0,j=Cur1.GetNb();(--j)&&(!Cont);Cur1.Next(),i++)
+	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
 		for(Cur2.GoTo(i+1);(!Cur2.End())&&(!Cont);Cur2.Next())
 			Set(Cur1()->Id,Cur2()->Id,true);
 
@@ -866,7 +866,7 @@ void GALILEI::GChromoIR::ReOrganisation(void)
 
 //	cout<<"ReOrganisation Gen="<<Instance->Gen<<" ; Id="<<Id<<endl;
 	Cur1.Set(Used);
-	for(Cur1.Start();(!Cur1.End())&&(!Cont);Cur1.Next())
+	for(Cur1.Start();!Cur1.End();Cur1.Next())
 		Cur1()->Done=false;
 
 	// Try to divided groups until it is not possible anymore
@@ -892,7 +892,7 @@ void GALILEI::GChromoIR::ReOrganisation(void)
 		memset(*ptr,0x0,(i-1)*sizeof(bool));
 	Cur1.Set(Used);
 	Cur2.Set(Used);
-	for(Cur1.Start(),i=0,j=Cur1.GetNb();(--j)&&(!Cont);Cur1.Next(),i++)
+	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
 		for(Cur2.GoTo(i+1);(!Cur2.End())&&(!Cont);Cur2.Next())
 			Set(Cur1()->Id,Cur2()->Id,true);
 

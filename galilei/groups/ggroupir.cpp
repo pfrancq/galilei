@@ -236,7 +236,7 @@ double GALILEI::GGroupIR::ComputeRelevant(void)
 	BestSumSim=ComputeSumSim(*ptr);
 
 	// Look if in the other objects, there is a better one
-	for(i=NbSubObjects;--i;ptr++)
+	for(i=NbSubObjects,ptr++;--i;ptr++)
 	{
 		SumSim=ComputeSumSim(*ptr);
 		if(SumSim>BestSumSim)

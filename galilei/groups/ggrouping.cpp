@@ -142,6 +142,7 @@ void GALILEI::GGrouping::DeleteGroup(GGroup* grp)
 void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
+	GGroupCalc* CalcDesc;
 	GSubProfileCursor cur;
 	GGroup* Grp;
 	GGroup** Tab;
@@ -183,9 +184,10 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 		Run();
 
 		// Compute the description of the groups and Save the information.
+		CalcDesc=Session->GetCurrentGroupCalcMethod();
 		for(Groups->Start();!Groups->End();Groups->Next())
 		{
-			Session->GetCurrentGroupCalcMethod()->Compute((*Groups)());
+			CalcDesc->Compute((*Groups)());
 			if(SaveGroups)
 				Session->Save((*Groups)());
 		}

@@ -56,6 +56,26 @@ namespace GALILEI{
 */
 class GGroupCalcGravitation : public GGroupCalc
 {
+	/**
+	* Maximal number of the non-zero weights in the vector.
+	*/
+	unsigned int MaxNonZero;
+
+	/**
+	* Ordered vector for current computed profile.
+	*/
+	GIWordWeight** Order;
+
+	/**
+	* Maximal size allocate for a profile.
+	*/
+	unsigned int MaxOrderSize;
+
+	/*
+	* List of words used for computation.
+	*/
+	GIWordsWeights* Vector;
+
 public:
 
 	/**
@@ -63,6 +83,17 @@ public:
 	* @param session        Session.
 	*/
 	GGroupCalcGravitation(GSession* session) throw(bad_alloc);
+
+	/**
+	* Get the number of non-zero weights in the vector.
+	*/
+	unsigned int GetMaxNonZero(void) const {return(MaxNonZero);}
+
+	/**
+	* Set the number of non-zero weights in the vector.
+	* @param n              Number of non-zero weights.
+	*/
+	void SetMaxNonZero(unsigned int n) {MaxNonZero=n;}
 
 	/**
 	* Compute a group.
@@ -78,9 +109,9 @@ public:
 
 	/**
 	* Set the settings for the method using a string.
-	* @param char*          C string coding the settings.
+	* @param s              C string coding the settings.
 	*/
-	virtual void SetSettings(const char*);
+	virtual void SetSettings(const char* s);
 
 	/**
 	* Get the name of the model used for the description.
