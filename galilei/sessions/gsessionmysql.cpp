@@ -902,8 +902,9 @@ void GALILEI::GSessionMySQL::LoadWordsGroups(GDict* dict) throw(GException)
 		tmp=dict->GroupsList.GetPtr(atoi(loadwords[0]));
 		tmp->InsertWord(new GWord(atoi(loadwords[1]),dict->GetWord(atoi(loadwords[1]))));
 	}
-
 }
+
+
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
 {
@@ -963,7 +964,7 @@ void GALILEI::GSessionMySQL::SaveGroups(void)
 	GGroups* groups;
 	GGroup* g;
 	GIWordWeightCursor WordCur;
-	GGroupsCursor GroupsCursor; 
+	GGroupsCursor GroupsCursor;
 	char sSql[100];
 	GLangCursor Langs;
 	GSubProfile* sub;
