@@ -158,32 +158,36 @@ GDocXML* GALILEI::GSession::CreateDocXML(GDoc* doc) throw(GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::AnalyseDocs(GSessionSignalsReceiver* rec) throw(GException)
 {
-	tObjState s;
 	GDocXML* xml;
 
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		s=Docs()->GetState();
-		if((s==osUpToDate)||(s==osUpdated)) continue;
+		if(Docs()->GetState()==osUpToDate) continue;
 		rec->receiveNextDoc(Docs());
 		try
 		{
-			xml=0;
-			cout<<"Create Doc";
-			xml=Mng->CreateDocXML(Docs());
-			cout<<"...OK"<<endl<<"Create Doc...";
-			Docs()->Analyse(xml,this);
-			cout<<"OK"<<endl;
-			delete xml;
+			if(Docs()->GetState()!=osUpdated)
+			{
+				xml=Mng->CreateDocXML(Docs());
+				if(xml)
+				{
+					Docs()->InitFailed();
+					Docs()->Analyse(xml,this);
+					delete xml;
+					xml=0;
+				}
+				else
+					Docs()->IncFailed();
+			}
+			Save(Docs());
+			if(Docs()->GetState()==osUpdated)
+				Docs()->SetState(osUpToDate);
 		}
 		catch(GException& e)
 		{
 			if(xml)
 				delete xml;
 		}
-		cout<<"Save...";
-		Save(Docs());
-		cout<<"OK"<<endl;
 	}
 }
 

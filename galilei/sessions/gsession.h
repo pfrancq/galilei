@@ -285,13 +285,22 @@ protected:
 		*/
 		virtual void LoadDocs(void) throw(bad_alloc,GException)=0;
 
+public:
+
+		/**
+		* Create a new document.
+		* @param url        URL of the document.
+		* @param name       Name of the document.
+		* @param mime       MIME Type of the document
+		* @returns Pointer to a new created document.
+		*/
+		virtual GDoc* NewDoc(const char* url,const char* name,const char* mime) throw(GException)=0;
+
 		/**
 		* Save a document.
-		* @param doc            Document to save.
+		* @param doc        Document to save.
 		*/
 		virtual void Save(GDoc* doc) throw(GException)=0;
-
-public:
 
 		/**
 		* Get the number of documents treated by the system.
@@ -351,6 +360,20 @@ public:
 	//@{
 
 protected:
+
+		/**
+		* Create a new profile.
+		* @param usr        Pointer to the user of the profile.
+		* @param desc       Description of the profile.
+		* @returns Pointer to GProfile.
+		*/
+		virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException)=0;
+
+		/**
+		* Save a profile.
+		* @param prof       Profile to save.
+		*/
+		virtual void Save(const GProfile* prof) throw(GException)=0;
 
 		/**
 		* Load the Users.
@@ -519,17 +542,24 @@ public:
 		inline bool FiltersEnd(void) const
 			{return(Mng->GetFilters()->End());}
 
-	/**
-	* Goto the next element, if the end is reached, go to the beginning.
-	*/
-	inline void FiltersNext(void)
-		{Mng->GetFilters()->Next();}
+		/**
+		* Goto the next element, if the end is reached, go to the beginning.
+		*/
+		inline void FiltersNext(void)
+			{Mng->GetFilters()->Next();}
 
-	/**
-	* Get the current word.
-	* @returns Pointer to the current word.
-	*/
-	GFilter* GetCurFilters(void) {return((*Mng->GetFilters())());}
+		/**
+		* Get the current filter.
+		* @returns Pointer to the current filter.
+		*/
+		GFilter* GetCurFilters(void) {return((*Mng->GetFilters())());}
+
+		/**
+		* Get the filter for a specific mime type.
+		* @param mime           Name of the mimetype.
+		* @return Pointer to a GMIMEFilter.
+		*/
+		GMIMEFilter* GetMIMEType(const char* mime) const {return(Mng->GetMIMEType(mime));}
 
 	//@}
 
