@@ -129,8 +129,14 @@ public :
 	void AddOccurence() {Occurs++;};
 
 	/**
+	* Set the number of occurence of the link.
+	* @param nbO          The Number of occurences.
+	*/
+	void SetOccurs(unsigned int nbO) {Occurs = nbO;};
+
+	/**
 	* Get the number of occurences of the link.
-	* @return int         the number of links.
+	* @return int         The number of links.
 	*/
 	unsigned int GetOccurs() {return Occurs;};
 

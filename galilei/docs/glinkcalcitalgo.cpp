@@ -104,6 +104,7 @@ void GALILEI::GLinkCalcItAlgo::InitAlgo(void)
 {
 	GDocCursor cur = Session->GetDocsCursor();
 	GLinkCursor lcur;
+	GLink* tmpLink=0;
 	GLinks* links_out=0;
 	GLinks* links_in=0;
 
@@ -123,10 +124,14 @@ void GALILEI::GLinkCalcItAlgo::InitAlgo(void)
 		
 		for (lcur.Start();!lcur.End();lcur.Next())
 		{
+			//out_going links
 			links_out->InsertPtr(lcur());
 
+			//incomming links.
 			links_in = Links_In->GetPtr(lcur()->GetDoc()->GetId());
-			links_in->InsertPtr(new GLink(cur() ));
+			links_in->InsertPtr(tmpLink = new GLink(cur() ));
+			tmpLink->SetOccurs(lcur()->GetOccurs());
+
 		}
 	}
 
@@ -136,10 +141,10 @@ void GALILEI::GLinkCalcItAlgo::InitAlgo(void)
 //	for (llcur.Start();!llcur.End();llcur.Next())
 //	{
 //		lcur = llcur()->GetLinkCursor();
-//		cout<< "le document parent :" << llcur()->GetDoc()->GetId()<<endl;
+//		cout<< "le document parent :" << llcur()->GetDoc()->GetId()<<" **** "<<endl;
 //		for (lcur.Start();!lcur.End();lcur.Next())
 //		{
-//			cout<< "le doc pointe a l'id : "<< lcur()->GetDoc()->GetId() <<endl;
+//			cout<< "le doc pointe a l'id : "<< lcur()->GetDoc()->GetId() <<" occurence "<<lcur()->GetOccurs()<<endl;
 //		}
 //	}
 //
@@ -153,7 +158,7 @@ void GALILEI::GLinkCalcItAlgo::InitAlgo(void)
 //		cout<< "le document parent :" << llcur()->GetDoc()->GetId()<<endl;
 //		for (lcur.Start();!lcur.End();lcur.Next())
 //		{
-//			cout<< "le doc qui pointe a l'id : "<< lcur()->GetDoc()->GetId() <<endl;
+//			cout<< "le doc qui pointe a l'id : "<< lcur()->GetDoc()->GetId() <<" occurence "<<lcur()->GetOccurs() <<endl;
 //		}
 //	}
 }
@@ -162,24 +167,96 @@ void GALILEI::GLinkCalcItAlgo::InitAlgo(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GLinkCalcItAlgo::Operation_I(void)
 {
+	unsigned int choice,maxLink,i;
 	float sum;
 	GLinkCursor cur;
 
 	GLinksCursor lcur=GetLinksOutCursor();
 	Norme_Out=0;
-	
-	for(lcur.Start();!lcur.End();lcur.Next())
-	{
-		sum=0;
-		cur= Links_In->GetPtr( new GLinks(lcur()->GetDoc()))->GetLinkCursor();
 
-		for(cur.Start();!cur.End();cur.Next())
-		{
-			sum+= Links_In->GetPtr( cur()->GetDoc()->GetId() )->GetWeight();
-		}
-		lcur()->SetWeight(sum);
-		Norme_Out += sum*sum;
+	if(Params->LimitLink)
+	{
+		maxLink=Params->NbLinks;
+		if(Params->UseMultipleLink) choice=1;
+		else choice=2;
 	}
+	else
+	{
+		if(Params->UseMultipleLink) choice=3;
+		else choice=4;
+	}
+
+	switch (choice)
+	{
+		// Limit Link && MultipleLink   
+		case 1:
+			cout<<"true true "<<endl;
+			for(lcur.Start(),i=maxLink;!lcur.End();lcur.Next(),i--)
+			{
+				sum=0;
+				cur= Links_In->GetPtr( new GLinks(lcur()->GetDoc()))->GetLinkCursor();
+
+				for(cur.Start();!cur.End();cur.Next())
+				{
+					sum+= Links_In->GetPtr( cur()->GetDoc()->GetId() )->GetWeight()* cur()->GetOccurs();
+				}
+				lcur()->SetWeight(sum);
+				Norme_Out += sum*sum;
+			}
+			break;
+
+		// Limit Link && not MultipleLink 
+		case 2:
+					cout<<"true false "<<endl;
+			for(lcur.Start(),i=maxLink;!lcur.End();lcur.Next(),i--)
+			{
+				sum=0;
+				cur= Links_In->GetPtr( new GLinks(lcur()->GetDoc()))->GetLinkCursor();
+
+				for(cur.Start();!cur.End();cur.Next())
+				{
+					sum+= Links_In->GetPtr( cur()->GetDoc()->GetId() )->GetWeight();
+				}
+				lcur()->SetWeight(sum);
+				Norme_Out += sum*sum;
+			}
+			break;
+
+		// not Limit Link && MultipleLink 
+		case 3:
+						cout<<"false true "<<endl;
+			for(lcur.Start();!lcur.End();lcur.Next())
+			{
+				sum=0;
+				cur= Links_In->GetPtr( new GLinks(lcur()->GetDoc()))->GetLinkCursor();
+
+				for(cur.Start();!cur.End();cur.Next())
+				{
+					sum+= Links_In->GetPtr( cur()->GetDoc()->GetId() )->GetWeight()* cur()->GetOccurs();
+				}
+				lcur()->SetWeight(sum);
+				Norme_Out += sum*sum;
+			}
+			break;
+
+		// not Limit Link && not MultipleLink 
+		case 4:
+					cout<<"false false "<<endl;
+			for(lcur.Start();!lcur.End();lcur.Next())
+			{
+				sum=0;
+				cur= Links_In->GetPtr( new GLinks(lcur()->GetDoc()))->GetLinkCursor();
+
+				for(cur.Start();!cur.End();cur.Next())
+				{
+					sum+= Links_In->GetPtr( cur()->GetDoc()->GetId() )->GetWeight();
+				}
+				lcur()->SetWeight(sum);
+				Norme_Out += sum*sum;
+			}
+			break;
+	}
+	
 	Norme_Out=sqrt(Norme_Out);
 }
 
@@ -192,19 +269,34 @@ void GALILEI::GLinkCalcItAlgo::Operation_O(void)
 
 	GLinksCursor lcur=GetLinksInCursor();
 	Norme_In=0;
-	
-	for(lcur.Start();!lcur.End();lcur.Next())
-	{
-		sum=0;
-		cur= Links_Out->GetPtr( new GLinks(lcur()->GetDoc()))->GetLinkCursor();
 
-		for(cur.Start();!cur.End();cur.Next())
+	if (Params->UseMultipleLink)
+		for(lcur.Start();!lcur.End();lcur.Next())
 		{
-			sum+= Links_Out->GetPtr( cur()->GetDoc()->GetId() )->GetWeight();
+			sum=0;
+			cur= Links_Out->GetPtr( new GLinks(lcur()->GetDoc()))->GetLinkCursor();
+
+			for(cur.Start();!cur.End();cur.Next())
+			{
+				sum+= Links_Out->GetPtr( cur()->GetDoc()->GetId() )->GetWeight() * cur()->GetOccurs();
+			}
+			lcur()->SetWeight(sum);
+			Norme_In += sum*sum;
 		}
-		lcur()->SetWeight(sum);
-		Norme_In += sum*sum;
-	}
+	else
+		for(lcur.Start();!lcur.End();lcur.Next())
+		{
+			sum=0;
+			cur= Links_Out->GetPtr( new GLinks(lcur()->GetDoc()))->GetLinkCursor();
+
+			for(cur.Start();!cur.End();cur.Next())
+			{
+				sum+= Links_Out->GetPtr( cur()->GetDoc()->GetId() )->GetWeight() * cur()->GetOccurs();
+			}
+			lcur()->SetWeight(sum);
+			Norme_In += sum*sum;
+		}
+
 	Norme_In=sqrt(Norme_In);
 }
 

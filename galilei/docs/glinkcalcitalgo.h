@@ -80,6 +80,11 @@ public:
 	unsigned int NbLinks;
 
 	/**
+	* Determine if multiple link can be use in the same doc.
+	*/
+	bool UseMultipleLink;
+
+	/**
 	* Get the settings of the method coded in a string.
 	* return Pointer to a C string.
 	*/
@@ -161,7 +166,7 @@ private :
 	void InitAlgo(void);
 
 	/**
-	* Compute the weight of Incomming Links.
+	* Compute the weight of Incomming Links.                      
 	*/
 	void Operation_I(void);
 
