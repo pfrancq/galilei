@@ -268,44 +268,38 @@ public:
 	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
 
 	/**
-	* @name Method for Users/Profiles.
+	* Load the Users.
 	*/
-	//@{
+	void InitUsers(void) throw(bad_alloc,GException);
 
-		/**
-		* Load the Users.
-		*/
-		void InitUsers(void) throw(bad_alloc,GException);
+	/**
+	* Create a new user in the system.
+	* @param usr            User.
+	* @param pwd            Password.
+	* @param name           Name.
+	* @param email          EMail.
+	* @param title          Title.
+	* @param org            Organisation.
+	* @param addr1          Address (Part 1).
+	* @param addr2          Address (Part 2).
+	* @param city           City.
+	* @param country        Country.
+	*/
+	GUser* NewUser(const char* usr,const char* pwd,const char* name,const char* email,
+	                  const char* title,const char* org,const char* addr1,
+	                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
+	/**
+	* Compute all the necessary profiles.
+	* @param rec        Receiver for the signals.
+	* @param modified   Recompute only modified elements or all.
+	*/
+	void CalcProfiles(GSlot* rec,bool modified=true) throw(GException);
 
-		/**
-		* Create a new user in the system.
-		* @param usr            User.
-		* @param pwd            Password.
-		* @param name           Name.
-		* @param email          EMail.
-		* @param title          Title.
-		* @param org            Organisation.
-		* @param addr1          Address (Part 1).
-		* @param addr2          Address (Part 2).
-		* @param city           City.
-		* @param country        Country.
-		*/
-		GUser* NewUser(const char* usr,const char* pwd,const char* name,const char* email,
-		                  const char* title,const char* org,const char* addr1,
-		                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
-
-		/**
-		* Compute all the necessary profiles.
-		* @param rec        Receiver for the signals.
-		* @param modified   Recompute only modified elements or all.
-		*/
-		void CalcProfiles(GSlot* rec,bool modified=true) throw(GException);
-
-		/**
-		* Compute a profile.
-		* @param prof       Pointer to the profile to compute.
-		*/
-		void CalcProfile(GProfile* prof) throw(GException);
+	/**
+	* Compute a profile.
+	* @param prof       Pointer to the profile to compute.
+	*/
+	void CalcProfile(GProfile* prof) throw(GException);
 
 	/**
 	* Make the groups.
@@ -314,136 +308,113 @@ public:
 	*/
 	void GroupingProfiles(GSlot* rec=0,bool modified=true)  throw(GException);
 
-	//@}
-
-	/**
-	* @name Method for Feedbacks.
-	*/
-	//@{
-
 protected:
 
-		/**
-		* Load the Feedbacks.
-		*/
-		virtual void LoadFdbks(void) throw(bad_alloc,GException)=0;
+	/**
+	* Load the Feedbacks.
+	*/
+	virtual void LoadFdbks(void) throw(bad_alloc,GException)=0;
 
 public:
 
-		/**
-		* Verify if the feedback are loaded.
-		* @returns true, if loaded.
-		*/
-		bool IsFdbksLoad(void) const {return(bFdbks);}
-
-		/**
-		* Load the Users' feedback.
-		*/
-		void InitFdbks(void) throw(bad_alloc,GException);
-
-		/**
-		* Insert a new Feedback.
-		* @param p          Pointer to the profile.
-		* @param d          Pointer to the document.
-		* @param j          Feedback.
-		* @param date       Date on the last feedback.
-		*/
-		void InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const char* date) throw(bad_alloc);
-
-	//@}
+	/**
+	* Verify if the feedback are loaded.
+	* @returns true, if loaded.
+	*/
+	bool IsFdbksLoad(void) const {return(bFdbks);}
 
 	/**
-	* @name Method for Groups.
+	* Load the Users' feedback.
 	*/
-	//@{
+	void InitFdbks(void) throw(bad_alloc,GException);
+
+	/**
+	* Insert a new Feedback.
+	* @param p          Pointer to the profile.
+	* @param d          Pointer to the document.
+	* @param j          Feedback.
+	* @param date       Date on the last feedback.
+	*/
+	void InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const char* date) throw(bad_alloc);
 
 protected:
 
-		/**
-		* Load the groups.
-		*/
-		virtual void LoadGroups(void) throw(bad_alloc,GException)=0;
+	/**
+	* Load the groups.
+	*/
+	virtual void LoadGroups(void) throw(bad_alloc,GException)=0;
 
 public:
 
-		/**
-		* Verify if the groups are loaded.
-		* @returns true, if loaded.
-		*/
-		bool IsGroupsLoad(void) const {return(bGroups);}
-
-		/**
-		* Load the Groups.
-		*/
-		void InitGroups(void) throw(bad_alloc,GException);
-
-		/**
-		* Get a cursor over the groups of the system.
-		*/
-		GGroupsCursor& GetGroupsCursor(void);
-
-		/**
-		* Find the groups for a specific language.
-		* @param lang           Pointer to the language.
-		* @returns Pointer to the group.
-		*/
-		GGroups* GetGroups(const GLang* lang) const;
-
-		/**
-		* Save a group, i.e. save all the information of the subprofiles
-		* concerning the groupement.
-		* @param grp        Group to save.
-		*/
-		void Save(GGroup* grp) throw(GException);
-
-		/**
-		* Create a new group.
-		* @param lang       Language of the group to create.
-		*/
-		virtual GGroup* NewGroup(GLang* lang)=0;
-
-		/**
-		* Delete a group.
-		* @param grp        Group to delete.
-		*/
-		virtual void DeleteGroup(GGroup* grp)=0;
-
-	//@}
+	/**
+	* Verify if the groups are loaded.
+	* @returns true, if loaded.
+	*/
+	bool IsGroupsLoad(void) const {return(bGroups);}
 
 	/**
-	* @name Method for URL Manager and Filters.
+	* Load the Groups.
 	*/
-	//@{
+	void InitGroups(void) throw(bad_alloc,GException);
 
-		/**
-		* Start the iterator to go trough the filters.
-		*/
-		void FiltersStart(void);
+	/**
+	* Get a cursor over the groups of the system.
+	*/
+	GGroupsCursor& GetGroupsCursor(void);
 
-		/**
-		* Test if the end of the container of filters is reached.
-		*/
-		bool FiltersEnd(void) const;
+	/**
+	* Find the groups for a specific language.
+	* @param lang           Pointer to the language.
+	* @returns Pointer to the group.
+	*/
+	GGroups* GetGroups(const GLang* lang) const;
 
-		/**
-		* Goto the next element, if the end is reached, go to the beginning.
-		*/
-		void FiltersNext(void);
+	/**
+	* Save a group, i.e. save all the information of the subprofiles
+	* concerning the groupement.
+	* @param grp        Group to save.
+	*/
+	void Save(GGroup* grp) throw(GException);
 
-		/**
-		* Get the current filter.
-		* @returns Pointer to the current filter.
-		*/
-		GFilter* GetCurFilters(void);
+	/**
+	* Create a new group.
+	* @param lang       Language of the group to create.
+	*/
+	virtual GGroup* NewGroup(GLang* lang)=0;
 
-		/**
-		* Get the filter for a specific mime type.
-		* @param mime           Name of the mimetype.
-		* @return Pointer to a GMIMEFilter.
-		*/
-		GMIMEFilter* GetMIMEType(const char* mime) const;
+	/**
+	* Delete a group.
+	* @param grp        Group to delete.
+	*/
+	virtual void DeleteGroup(GGroup* grp)=0;
 
-	//@}
+	/**
+	* Start the iterator to go trough the filters.
+	*/
+	void FiltersStart(void);
+
+	/**
+	* Test if the end of the container of filters is reached.
+	*/
+	bool FiltersEnd(void) const;
+
+	/**
+	* Goto the next element, if the end is reached, go to the beginning.
+	*/
+	void FiltersNext(void);
+
+	/**
+	* Get the current filter.
+	* @returns Pointer to the current filter.
+	*/
+	GFilter* GetCurFilters(void);
+
+	/**
+	* Get the filter for a specific mime type.
+	* @param mime           Name of the mimetype.
+	* @return Pointer to a GMIMEFilter.
+	*/
+	GMIMEFilter* GetMIMEType(const char* mime) const;
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
