@@ -141,6 +141,11 @@ class GQueryDocsGroup
 	bool Transform;
 
 	/**
+	* Global Similarities?
+	*/
+	bool GlobalSim;
+
+	/**
 	* Identificator of the current group.
 	*/
 	unsigned int GroupId;
@@ -173,8 +178,9 @@ public:
 	* @param first          Number of first words used.
 	* @param nb             Number of words in a query.
 	* @param trans          Transform query vector?
+	* @param global         Global Similarities?
 	*/
-	void Run(unsigned int first,unsigned int nb,bool trans);
+	void Run(unsigned int first,unsigned int nb,bool trans,bool global);
 
 private:
 

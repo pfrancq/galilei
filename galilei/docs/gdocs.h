@@ -61,6 +61,7 @@ namespace GALILEI{
 class GSession;
 class GDoc;
 class GDocCursor;
+class GDocsLang;
 
 
 //-----------------------------------------------------------------------------
@@ -77,7 +78,19 @@ class GDocs : public RStd::RContainer<GDoc,unsigned,true,true>
 	*/
 	bool bDocs;
 
+
+protected :
+	/**
+	*  Create one document container (GDocsLang) for each langage.
+	*/
+	void InsertDocsByLang(void);
+
 public:
+
+	/**
+	* A container of GDocsLang in which all the docs from a specific langage are stocked
+	*/
+	RStd::RContainer<GDocsLang,unsigned int,false,true>* DocsLang;
 
 	/**
 	* Constructor.
@@ -86,9 +99,14 @@ public:
 	GDocs(unsigned int nb) throw(bad_alloc);
 
 	/**
-	* Get a cursor over the profiles used in the system.
+	* Get a cursor over the documents used in the system.
 	*/
-	GDocCursor& GetDocsCursor(void);
+	GDocCursor& GetDocsCursor();
+
+	/**
+	* Get a cursor over the documents of a specific langage used in the system
+	*/
+	GDocCursor& GetDocsCursor(GLang* lang) throw(GException);
 
 	/**
 	* Load the documents.
@@ -118,6 +136,13 @@ public:
 		{return(NbPtr);}
 
 	/**
+	* Get the number of documents treated by the system for a specific langage.
+	* @param lang          The langage of the documents
+	* @returns Number of documents.
+	*/
+	unsigned int GetNbDocs(GLang* lang) const ;
+
+	/**
 	* Verify if the documents are loaded.
 	* @returns true, if loaded.
 	*/
@@ -140,6 +165,45 @@ public:
 	GDoc* GetDoc(unsigned int id) throw(bad_alloc);
 
 	/**
+	* Get a document from the container
+	* @param id         Identificator of the document
+	* @param lang       The langage of the requested document.
+	*/
+	GDoc* GetDoc(unsigned int id, GLang* lang) throw(bad_alloc);
+
+
+	/**
+	* Get the list of document from the container including all the doc for each langage.
+	* @param lang       The langage of the documents to be returned.
+	*/
+	GDocsLang* GetDocsLang(GLang* lang)throw(bad_alloc);
+
+	/**
+	* Get the langage of the documents contained in the list.
+	*/
+	//GLang* GetLang(void) const {return Lang;}
+
+
+	/**
+	* Compare function needed by RStd::RContainer
+	* @param doc             Documents used for the comparaison.
+	*/
+	//int Compare(const GDocs& doc) const;
+
+	/**
+	* Compare function needed by RStd::RContainer.
+	* @param doc            Pointer to the document used for the comparaison.
+	*/
+	//int Compare(const GDocs* doc) const;
+
+
+	/**
+	* Compare function needed by RStd::RContainer.
+	* @param lang           Language used for the comparaison.
+	*/
+	//int Compare(const GLang*) const;
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GDocs(void);
@@ -151,3 +215,4 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
+

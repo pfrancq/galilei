@@ -343,12 +343,11 @@ void GSetGroupingParamI::Run(GSessionPrg* prg,GSlot*,RStd::RContainer<GPrgVar,un
 //-----------------------------------------------------------------------------
 void GRunQueriesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
-	if(args->NbPtr!=3)
+	if(args->NbPtr!=4)
 		throw GException("Method needs three parameters");
 
 	GQueryDocsGroup Queries(Owner->Session);
-	Queries.Run(atoi(args->Tab[0]->GetValue(prg)),atoi(args->Tab[1]->GetValue(prg)),atoi(args->Tab[2]->GetValue(prg)));
-
+	Queries.Run(atoi(args->Tab[0]->GetValue(prg)),atoi(args->Tab[1]->GetValue(prg)),atoi(args->Tab[2]->GetValue(prg)),atoi(args->Tab[3]->GetValue(prg)));
 	sprintf(tmp,"First: %f  -  Second: %f  -  Recall: %f  -  SimIntra: %f  -  SimInter: %f ",
 	        Queries.GetFirst(),Queries.GetSecond(),Queries.GetRecall(),Queries.GetSimQueryIntra(),Queries.GetSimQueryInter());
 	r->WriteStr(tmp);

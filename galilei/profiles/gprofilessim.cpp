@@ -231,7 +231,8 @@ double GALILEI::GProfilesSim::GetSim(const GSubProfile* sub1,const GSubProfile* 
 
 	i = sub1->GetId();
 	j = sub2->GetId();
-	
+
+	if(i==j) return (1.0);
 	if (i>j)
 	{
 		tmp=i;

@@ -103,7 +103,9 @@ class GDocAnalyse;
 class GDocOptions;
 class GDocSim;
 class GDocsSim;
-
+class GDocsLang;
+class GDocProfSim;
+class GDocProfSims;
 
 //-----------------------------------------------------------------------------
 // forward class declaration - User Part

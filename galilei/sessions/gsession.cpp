@@ -55,6 +55,8 @@ using namespace RIO;
 #include <docs/gdocanalyse.h>
 #include <docs/gdocxml.h>
 #include <docs/gdocoptions.h>
+#include <docs/gdocprofsim.h>
+#include <docs/gdocprofsims.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -355,47 +357,111 @@ void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 	LoadUsers();
   bUsers=true;
 
-  // Initialise the profiles sims
-
-  //		//---------------
-	
-  
+  // Initialise the profiles sims  
 	InitProfilesSims();
+
+	// Initialise the sims between documents and subprofiles
+	InitDocProfSims();
   
 }
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::InitDocProfSims(void)
+{
+	GLangCursor langs = GetLangsCursor();
+	RContainer<GSubProfile,unsigned int,false,true>* subProf;
+	GDocProfSim* docProfSim;
+
+	DocProfSims = new GDocProfSims(100);
+
+	for(langs.Start();!langs.End(); langs.Next())                                                     
+	{
+		subProf = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
+		GSubProfileCursor subProfCur = GetSubProfilesCursor(langs());
+
+		for(subProfCur.Start();!subProfCur.End();subProfCur.Next())
+		{
+			subProf->InsertPtr( subProfCur());
+		}
+    docProfSim= new GDocProfSim(this,subProf, false,langs());
+		DocProfSims->InsertPtr(docProfSim);
+	}
+}
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::ChangeDocProfState(bool global,GLang* lang)throw(bad_alloc)
+{
+	GDocProfSim* docProfSim = DocProfSims->GetPtr<GLang*>(lang);
+	docProfSim->UpdateDocProfSim(this,this, global);
+
+}
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::ChangeAllDocProfState(bool global)throw(bad_alloc)
+{
+	GLangCursor langs = GetLangsCursor();
+	for (langs.Start();!langs.End();langs.Next())
+	{
+		ChangeDocProfState(global,langs());
+	}
+}
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSession::GetSimDocProf(GLang* l,unsigned int id_doc, unsigned int id_sub)
+{
+	GDocProfSim* docProfSim = DocProfSims->GetPtr<GLang*>(l);
+	return docProfSim->GetSim(this,this,id_doc,id_sub);
+}
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub)
+{
+	GDocProfSim* docProfSim = DocProfSims->GetPtr<GLang*>(doc->GetLang());
+	return docProfSim->GetSim(doc,sub);
+}
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::InitProfilesSims(void) 
 {
 	GLangCursor langs = GetLangsCursor();
 
-	RContainer<GSubProfile,unsigned int,false,true>* SubProf;
+	RContainer<GSubProfile,unsigned int,false,true>* subProf;
 	GProfilesSim* profSim;
 
 	ProfilesSims = new GProfilesSims(100);
 	
 	for(langs.Start();!langs.End(); langs.Next())
 	{
-		SubProf = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
-		GSubProfileCursor SubProfCur = GetSubProfilesCursor(langs());
+		subProf = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
+		GSubProfileCursor subProfCur = GetSubProfilesCursor(langs());
 
-		for(SubProfCur.Start();!SubProfCur.End();SubProfCur.Next())
+		for(subProfCur.Start();!subProfCur.End();subProfCur.Next())
 		{
-			SubProf->InsertPtr( SubProfCur());
+			subProf->InsertPtr( subProfCur());      
 		}
-    profSim= new GProfilesSim(SubProf, false,langs());
+    profSim= new GProfilesSim(subProf, false,langs());
 		ProfilesSims->InsertPtr(profSim);
 	}
 }
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::ChangeProfilesState(bool global,GLang* lang)throw(bad_alloc)
+void GALILEI::GSession::ChangeProfilesSimState(bool global,GLang* lang)throw(bad_alloc)
 {
 	GProfilesSim* profSim = ProfilesSims->GetPtr<GLang*>(lang);
 	profSim->UpdateProfSim(this, global,lang);
 
 }
 
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::ChangeAllProfilesSimState(bool global)throw(bad_alloc)
+{
+	GLangCursor langs = GetLangsCursor();
+	for( langs.Start(); !langs.End(); langs.Next())
+	{
+		ChangeProfilesSimState(global,langs());
+	}
+}
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSession::GetSimProf(GLang* l,unsigned int id1, unsigned int id2)
@@ -407,18 +473,10 @@ double GALILEI::GSession::GetSimProf(GLang* l,unsigned int id1, unsigned int id2
 //-----------------------------------------------------------------------------
 double GALILEI::GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
 {
-	if(sub1->GetLang() != sub2->GetLang()) return (0.0);
 
 	GProfilesSim* profSim = ProfilesSims->GetPtr<GLang*>(sub1->GetLang());
 	return profSim->GetSim(sub1,sub2);
 }
-
-
-////-----------------------------------------------------------------------------
-//GProfilesSim* GALILEI::GSession::GetProfileSims(GLang* l)
-//{
-//	return(ProfilesSims->GetPtr(l));
-//}
 
 
 //-----------------------------------------------------------------------------
@@ -456,7 +514,7 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 	}
 
 
-	ChangeProfilesState(true,GetLang("en"));   /// !!!!
+	ChangeAllProfilesSimState(true);   /// !!!!
 }
 
 

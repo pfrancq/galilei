@@ -145,6 +145,11 @@ protected:
 	GProfilesSims* ProfilesSims;
 
 	/**
+	*  Similarity between documents and  profiles for each langage.
+	*/
+	GDocProfSims* DocProfSims ;
+
+	/**
 	* State of the groups.
 	*/
 	bool bGroups;
@@ -395,14 +400,26 @@ public:
 
 	                  
 
+		/**
+	* Initialise the table of similarity between the profiles
+	*/
+	void InitProfilesSims(void);
+	                  
 	/**
-	* Update the state of similarity between two subProfiles for a given language.
+	* Update the state of similarity between the subProfiles for a given language.
 	* @param global         use the Global/Locale similarity
 	* @param lang           The lang of the subprofiles
 	*/
-	void ChangeProfilesState(bool global,GLang* lang)throw(bad_alloc);
+	void ChangeProfilesSimState(bool global,GLang* lang)throw(bad_alloc);
 
-                                
+/**
+	* Update the state of similarity between the subProfiles for all language in the system.
+	* @param global         use the Global/Locale similarity
+	* @param lang           The lang of the subprofiles
+	*/
+	void ChangeAllProfilesSimState(bool global)throw(bad_alloc);
+
+                                                                
 	/**
 	* Return the similarity between two subProfiles for a given language.
 	* @param l              The language used
@@ -419,6 +436,41 @@ public:
 	*/
 	double GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2);
 
+			/**
+	* Initialise the table of similarity between documents and profiles
+	*/
+	void InitDocProfSims(void);
+
+	/**
+	* Update the state of similarity between a profile and a subProfiles for a given language.
+	* @param global         use the Global/Locale similarity
+	* @param lang           The lang of the document/subprofiles
+	*/
+	void ChangeDocProfState(bool global,GLang* lang)throw(bad_alloc);
+
+	/**
+	* Update the state of similarity between a profile and a subProfiles for all the langages contained in the system.
+	* @param global         use the Global/Locale similarity1
+	*/
+	void ChangeAllDocProfState(bool global)throw(bad_alloc);
+
+	/**
+	* Return the similarity between a document and a subProfiles for a given language.
+	* @param l              The language used
+	* @param id_doc            Identificator of the document
+	* @param id_sub            Identificator of the subprofile
+	*/
+	double GetSimDocProf(GLang* l,unsigned int id_doc, unsigned int id_sub);
+
+
+	/**
+	* Return the similarity between a document and a subProfiles.
+	* @param doc           The Pointer to the document.
+	* @param sub2          The Pointer to the subprofile.
+	*/
+	double GetSimDocProf(const GDoc* doc,const GSubProfile* sub);
+
+	
                   
 	/**
 	* Compute all the necessary profiles.
@@ -443,11 +495,6 @@ public:
 	*/
 	void GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException);
 
-public :
-	/**
-	* Initialise the table of similarity between the profiles
-	*/
-	void InitProfilesSims(void);
 
 protected:
 

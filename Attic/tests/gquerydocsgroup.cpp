@@ -106,7 +106,7 @@ GALILEI::GQueryDocsGroup::GQueryDocsGroup(GSession* ses) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GQueryDocsGroup::Run(unsigned int first,unsigned int nb,bool trans)
+void GALILEI::GQueryDocsGroup::Run(unsigned int first,unsigned int nb,bool trans,bool global)
 {
 	GGroupEvaluateDoc* group;
 	GDoc* Doc;
@@ -121,6 +121,7 @@ void GALILEI::GQueryDocsGroup::Run(unsigned int first,unsigned int nb,bool trans
 	First=Second=SimQueryIntra=SimQueryInter=Recall=0.0;
 	queries=comptintra=comptinter=0;
 	Transform=trans;
+	GlobalSim=global;
 	Best=first;
 	Nb=nb;
 	Index=new unsigned int[nb];
@@ -240,7 +241,10 @@ void GALILEI::GQueryDocsGroup::DoQuery(GIWordsWeights& query)
 		for(Group.Start();!Group.End();Group.Next())
 		{
 			if(!Group()->NbPtr) continue;
-			sim=query.Similarity(static_cast<GGroupVector*>(Group())->GetVector());
+			if(GlobalSim)
+				sim=query.SimilarityIdf(static_cast<GGroupVector*>(Group())->GetVector(),otGroups,Lang);
+			else
+				sim=query.Similarity(static_cast<GGroupVector*>(Group())->GetVector());
 			if(sim>0.0)
 				Groups.InsertPtr(new GroupSim(Group(),sim));
 		}
