@@ -206,6 +206,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word,double weight) throw(bad_all
 	unsigned int* tmp1;
 	unsigned int* tmp2;
 
+	cout<<word<<endl;
 	// Find the section of double hash table concerned by the current word.
 	Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
 
@@ -323,13 +324,6 @@ BeginExtract:
 
 	// If len null, return (nothing else to extract)
 	if(!len) return(false);
-
-	// if len<MinWordSize, extract next word.
-	if(len<Options->MinWordSize)
-	{
-		Letter=false;
-		goto BeginExtract;
-	}
 
 	// if not only letters and non-letter words not enabled -> extract next word.
 	if((!OnlyLetters)&&(!Options->NonLetterWords))
@@ -552,7 +546,13 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 
 	for(i=Ndiff+1,wrd=Direct;--i;wrd++)
 	{
+		// If Stop list -> do not treat it.
 		if((*wrd)->InStop[LangIndex]) continue;
+
+		// if len<MinWordSize -> do not treat it.
+		if(strlen((*wrd)->Word)<Options->MinWordSize) continue;
+
+		// If only letters -> apply stemming algorithm.
 		if((*wrd)->OnlyLetters)
 		{
 			stem=Lang->GetStemming((*wrd)->Word);
@@ -636,8 +636,9 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsign
 		UpdateFdbks(oldlang, Lang);
 	}
 
-	// Construct Information
-	ConstructInfos();
+	// Construct Information if languages determined.
+	if(Lang)
+		ConstructInfos();
 
 	// Set the Variable of the document
 	doc->SetInfos(Lang,N,Ndiff,V,Vdiff);
