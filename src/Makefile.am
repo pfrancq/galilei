@@ -1,5 +1,5 @@
 # set the include path for X, qt and KDE
-INCLUDES = -I$(GALILEI_LIB) -I$(R_LIB) $(all_includes)
+INCLUDES = -I$(top_srcidr) $(all_includes)
 
 # these are the headers for your project
 noinst_HEADERS =
