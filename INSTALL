@@ -82,11 +82,8 @@ libraries Needed by galilei_plugins
   Some libraries are needed by the galilei_plugins project. These libraries must
   be present on the system. "configure" check for these libraries.
 
-  -o- LTMM include must be presents on the system. By default the configure scrip
-      looks for these files in [/usr/include/ltmm/ , /usr/local/include/ltmm/]. If
-      not found you can use the
-      --with-ltmm=DIR
-      option to specify the instalation path.
+  -o- LTDL include must be presents on the system. By default the configure scrip
+      looks for these files in [/usr/include/ , /usr/local/include/].
 
   -o- wvWare2 library must be present to enable MS-DOC filters. The wvWare2 Project
       can be found on SourceForge. The galilei_plugins has been tested to work with
@@ -94,6 +91,10 @@ libraries Needed by galilei_plugins
       configure option :
       --with-libwv2=DIR
       to specify the library location
+      This library must be present to compile the plugins with default
+      configuration. If you don't want to use the library try to compile
+      the plugins with the "--enable-wvWare=no"  option. But doing this
+      you will not be able to filter MSWord documents.
 
   -o- R libraries and includes must be present on the system. By default configure
       looks for these files in /usr/include/r /usr/local/include/r. If you have
@@ -150,7 +151,11 @@ flags:
     stocked. Default check are: /usr/include/ltmm/, /usr/local/include/ltmm/
 
   o --with-libwv2=DIR allows to specify the instalation path of the wvWare
-    library.
+    library if the library is not found in default directories.
+
+  o --enable-wv2=no allows you to disable/enable the use of the wvWare
+    library. Disabling this option, the MSWord documents shound't be
+    filtered by the system.
 
   o --with-r-include=DIR allow to specify where are the source files
     for the "r project" if they are not found. Some default directory

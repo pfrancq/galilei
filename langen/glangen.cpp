@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -349,18 +345,17 @@ bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,uns
 
 
 //-----------------------------------------------------------------------------
-RString& GALILEI::GLangEN::GetStemming(const RString& _kwd) throw(GException)
+RString GALILEI::GLangEN::GetStemming(const RString& _kwd) throw(GException)
 {
-	RString *res=RString::GetString();
+	RString res;
 	char kwd[51];
 	char* end;
 	unsigned int len;
 
 	// Transform _kwd in lowercase and store it in kwd.
-	(*res)=_kwd;
-	res->StrLwr();
-	if(res->GetLen()>50) return(*res);
-	strcpy(kwd,(*res));
+	res=_kwd.ToLower();
+	if(res.GetLen()>50) return(*res);
+	strcpy(kwd,res);
 	len=_kwd.GetLen()-1;
 	end=&kwd[len];
 
@@ -381,8 +376,8 @@ RString& GALILEI::GLangEN::GetStemming(const RString& _kwd) throw(GException)
 		end++;
 	if(*end)
 		(*end)=0;
-	(*res)=kwd;
-	return(*res);
+	res=kwd;
+	return(res);
 }
 
 
