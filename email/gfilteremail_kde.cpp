@@ -92,10 +92,10 @@ void GFilterEMail::Configure(GFactoryFilter* params)
 {
 	DlgConfig_Qt dlg;
 
-	dlg.BlankLines->setChecked(params->GetBool("Blank Lines"));
+	dlg.BlankLines->setChecked(params->GetBool("BlankLines"));
 	if(dlg.exec())
 	{
-		params->Set("Blank Lines",dlg.BlankLines->isChecked());
+		params->Set("BlankLines",dlg.BlankLines->isChecked());
 		params->Apply();
 	}
 }

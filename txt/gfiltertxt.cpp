@@ -151,4 +151,4 @@ GFilterTXT::~GFilterTXT(void)
 }
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("Text",GFilterTXT,true,false)
+CREATE_FILTER_FACTORY("Text Filter",GFilterTXT,true,false)

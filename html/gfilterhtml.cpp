@@ -1038,4 +1038,4 @@ GFilterHTML::~GFilterHTML()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("HTML",GFilterHTML,true,false)
+CREATE_FILTER_FACTORY("HTML Filter",GFilterHTML,true,false)

@@ -755,4 +755,4 @@ GALILEI::GFilterXML::~GFilterXML()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("XML",GFilterXML,true,false)
+CREATE_FILTER_FACTORY("XML Filter",GFilterXML,true,false)

@@ -73,7 +73,7 @@ GFilterEMail::GFilterEMail(GFactoryFilter* fac)
 //-----------------------------------------------------------------------------
 void GFilterEMail::ApplyConfig(void)
 {
-	BlankLines=Factory->GetBool("Blank Lines");
+	BlankLines=Factory->GetBool("BlankLines");
 }
 
 
@@ -255,7 +255,7 @@ void GFilterEMail::SetBlankLines(bool b)
 //------------------------------------------------------------------------------
 void GFilterEMail::CreateParams(GParams* params)
 {
-	params->InsertPtr(new GParamBool("Blank Lines",false));
+	params->InsertPtr(new GParamBool("BlankLines",false));
 }
 
 
@@ -266,4 +266,4 @@ GFilterEMail::~GFilterEMail(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("EMail",GFilterEMail,true,true)
+CREATE_FILTER_FACTORY("EMail Filter",GFilterEMail,true,true)

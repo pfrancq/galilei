@@ -607,4 +607,4 @@ GALILEI::GFilterSGML::~GFilterSGML()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("SGML",GFilterSGML,true,false)
+CREATE_FILTER_FACTORY("SGML Filter",GFilterSGML,true,false)

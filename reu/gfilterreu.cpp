@@ -690,4 +690,4 @@ GALILEI::GFilterReu::~GFilterReu()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("Reuters",GFilterReu,true,false)
+CREATE_FILTER_FACTORY("Reuters Filter",GFilterReu,true,false)
