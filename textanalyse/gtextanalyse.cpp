@@ -49,8 +49,8 @@ using namespace RStd;
 #include <docs/gdocoptions.h>
 #include <docs/gdocxml.h>
 #include <langs/gword.h>
-#include <infos/giwordoccur.h>
-#include <infos/giwordoccurs.h>
+#include <infos/giwordweight.h>
+#include <infos/giwordsweights.h>
 #include <langs/gdict.h>
 #include <langs/glang.h>
 #include <filters/gmimefilter.h>
@@ -75,7 +75,7 @@ const unsigned int MaxWordLen=500;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GALILEI::GDocAnalyse::WordOccur
+class GALILEI::GDocAnalyse::WordWeight
 {
 public:
 	char Word[MaxWordLen+1];
@@ -83,36 +83,36 @@ public:
 	unsigned int Nb;
 	bool OnlyLetters;
 
-	WordOccur(unsigned int nb) throw(bad_alloc);
+	WordWeight(unsigned int nb) throw(bad_alloc);
 	inline void Clear(void) {(*Word)=0; Nb=0;}
 
-	int Compare(const WordOccur& word) const
+	int Compare(const WordWeight& word) const
 		{return(strcmp(Word,word.Word));}
-	int Compare(const WordOccur* word) const
+	int Compare(const WordWeight* word) const
 		{return(strcmp(Word,word->Word));}
 	int Compare(const char* word) const
 		{return(strcmp(Word,word));}
 
-	static char HashIndex(const WordOccur* w)
+	static char HashIndex(const WordWeight* w)
 		{return(RStd::RString::HashIndex(w->Word));}
-	static char HashIndex(const WordOccur& w)
+	static char HashIndex(const WordWeight& w)
 		{return(RStd::RString::HashIndex(w.Word));}
 	static char HashIndex(const char* word)
 		{return(RStd::RString::HashIndex(word));}
 
-	static char HashIndex2(const WordOccur* w)
+	static char HashIndex2(const WordWeight* w)
 		{return(RStd::RString::HashIndex2(w->Word));}
-	static char HashIndex2(const WordOccur& w)
+	static char HashIndex2(const WordWeight& w)
 		{return(RStd::RString::HashIndex2(w.Word));}
 	static char HashIndex2(const char* word)
 		{return(RStd::RString::HashIndex2(word));}
 
-	~WordOccur(void);
+	~WordWeight(void);
 };
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocAnalyse::WordOccur::WordOccur(unsigned int nb) throw(bad_alloc)
+GALILEI::GDocAnalyse::WordWeight::WordWeight(unsigned int nb) throw(bad_alloc)
 	: InStop(0)
 {
 	InStop=new bool[nb];
@@ -121,7 +121,7 @@ GALILEI::GDocAnalyse::WordOccur::WordOccur(unsigned int nb) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocAnalyse::WordOccur::~WordOccur(void)
+GALILEI::GDocAnalyse::WordWeight::~WordWeight(void)
 {
 	if(InStop) delete[] InStop;
 }
@@ -136,35 +136,35 @@ GALILEI::GDocAnalyse::WordOccur::~WordOccur(void)
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocAnalyse::GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc)
-	: Session(s), CurLangs(Session->GetLangs()), Occurs(0), Words(0), Direct(0),
+	: Session(s), CurLangs(Session->GetLangs()), Weights(0), Words(0), Direct(0),
 	  NbDirect(5000), Sl(0), Sldiff(0), Lang(0), Options(opt)
 {
-	WordOccur** ptr;
+	WordWeight** ptr;
 	unsigned int i;
 
 	Sl=new unsigned int[Session->GetNbLangs()];
 	Sldiff=new unsigned int[Session->GetNbLangs()];
-	Occurs=new RDblHashContainer<WordOccur,unsigned,27,27,false>(500,250);
-	Direct=new WordOccur*[NbDirect];
+	Weights=new RDblHashContainer<WordWeight,unsigned,27,27,false>(500,250);
+	Direct=new WordWeight*[NbDirect];
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
-		(*ptr)=new WordOccur(Session->GetNbLangs());
+		(*ptr)=new WordWeight(Session->GetNbLangs());
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GDocAnalyse::Clear(void)
 {
-	WordOccur** ptr;
+	WordWeight** ptr;
 	unsigned int i,j;
-	RContainer<WordOccur,unsigned int,false,true>*** ptr1;
-	RContainer<WordOccur,unsigned int,false,true>** ptr2;
+	RContainer<WordWeight,unsigned int,false,true>*** ptr1;
+	RContainer<WordWeight,unsigned int,false,true>** ptr2;
 
 	memset(Sl,0,sizeof(unsigned int)*Session->GetNbLangs());
 	memset(Sldiff,0,sizeof(unsigned int)*Session->GetNbLangs());
 	N=Ndiff=V=Vdiff=S=Sdiff=0;
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)->Clear();
-	for(i=27+1,ptr1=Occurs->Hash;--i;ptr1++)
+	for(i=27+1,ptr1=Weights->Hash;--i;ptr1++)
 		for(j=27+1,ptr2=*ptr1;--j;ptr2++)
     {
 		(*ptr2)->LastPtr=(*ptr2)->NbPtr=0;
@@ -176,16 +176,16 @@ void GALILEI::GDocAnalyse::Clear(void)
 void GALILEI::GDocAnalyse::VerifyDirect(void) throw(bad_alloc)
 {
 	unsigned int i;
-	WordOccur** ptr;
+	WordWeight** ptr;
 
 	if(NbDirect==Ndiff)
 	{
-		ptr=new WordOccur*[NbDirect+2500];
-		memcpy(ptr,Direct,NbDirect*sizeof(WordOccur*));
+		ptr=new WordWeight*[NbDirect+2500];
+		memcpy(ptr,Direct,NbDirect*sizeof(WordWeight*));
 		delete[] Direct;
 		Direct=ptr;
 		for(i=2500+1,ptr=&Direct[NbDirect];--i;ptr++)
-			(*ptr)=new WordOccur(Session->GetNbLangs());
+			(*ptr)=new WordWeight(Session->GetNbLangs());
 		NbDirect+=2500;
 	}
 }
@@ -196,15 +196,15 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 {
 	bool Find;
 	unsigned int Index;
-	WordOccur* w;
-	RContainer<WordOccur,unsigned int,false,true>* Section;
+	WordWeight* w;
+	RContainer<WordWeight,unsigned int,false,true>* Section;
 	unsigned int i;
 	bool *is;
 	unsigned int* tmp1;
 	unsigned int* tmp2;
 
 	// Find the section of double hash table concerned by the current word.
-	Section=Occurs->Hash[WordOccur::HashIndex(word)][WordOccur::HashIndex2(word)];
+	Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
 
 	// Find the index where the word is or must be.
 	Index=Section->GetId<const char*>(word,Find);
@@ -392,9 +392,9 @@ void GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 {
-	WordOccur** wrd;
-	GIWordOccur** Tab;
-	GIWordOccur* Occur;
+	WordWeight** wrd;
+	GIWordWeight** Tab;
+	GIWordWeight* Occur;
 	unsigned int i,MinOccur;
 	RString stem(50);
 	GDict* dic;
@@ -404,7 +404,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 	if(Words)
 		Words->Clear();
 	else
-		Words=new GIWordOccurs(Ndiff);
+		Words=new GIWordsWeights(Lang,Ndiff);
 	for(i=Ndiff+1,wrd=Direct;--i;wrd++)
 	{
 		if((*wrd)->InStop[LangIndex]) continue;
@@ -422,10 +422,10 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 		if(stem.GetLen()>=Options->MinStemSize)
 		{
 			Occur=Words->GetPtr(dic->GetId(stem));
-			if(!Occur->GetNbOccurs())
+			if(!Occur->GetWeight())
 				Vdiff++;
 			V+=(*wrd)->Nb;
-			Occur->AddNbOccurs((*wrd)->Nb);
+			Occur->AddWeight((*wrd)->Nb);
 		}
 	}
 
@@ -435,7 +435,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 	for(i=Words->NbPtr+1,Tab=Words->Tab;--i;Tab++)
 	{
 		Occur=(*Tab);
-		if(Occur->GetNbOccurs()<MinOccur)
+		if(Occur->GetWeight()<MinOccur)
 		{
 			Words->DeletePtr(Occur);
 			Tab--;
@@ -529,10 +529,10 @@ void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
 //-----------------------------------------------------------------------------
 GALILEI::GDocAnalyse::~GDocAnalyse(void)
 {
-	WordOccur** ptr;
+	WordWeight** ptr;
 	unsigned int i;
 
-	if(Occurs) delete Occurs;
+	if(Weights) delete Weights;
 	if(Direct)
 	{
 		for(i=NbDirect+1,ptr=Direct;--i;ptr++)

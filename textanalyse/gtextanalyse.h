@@ -44,31 +44,14 @@
 #include <rxml/rxmltag.h>
 
 
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
 
-
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// Forward declaration
-class GDocXML;
-class GDoc;
-class GDocOptions;
-class GIWordOccurs;
-class GIWordOccur;
-class GMIMEFilter;
-class GLang;
-class GProfDoc;
-class GDict;
-class GSession;
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -78,7 +61,7 @@ class GSession;
 */
 class GDocAnalyse
 {
-	class WordOccur;
+	class WordWeight;
 
 	/**
 	* Corresponding session;
@@ -93,18 +76,18 @@ class GDocAnalyse
 	/**
 	* All the word appaering in the current document.
 	*/
-	RStd::RDblHashContainer<WordOccur,unsigned,27,27,false>* Occurs;
+	RStd::RDblHashContainer<WordWeight,unsigned,27,27,false>* Weights;
 
 	/**
 	* Information about the words containted in the document. Actually, only
 	* the number of occurences of the words are used.
 	*/
-	GIWordOccurs* Words;
+	GIWordsWeights* Words;
 
 	/**
 	* Direct access to the words.
 	*/
-	WordOccur** Direct;
+	WordWeight** Direct;
 
 	/**
 	* Number of elements allocated in Direct;
