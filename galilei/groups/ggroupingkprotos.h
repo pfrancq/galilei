@@ -1,4 +1,4 @@
-/*
+                                                          /*
 
 	GALILEI Research Project
 
@@ -6,10 +6,7 @@
 
 	Heuristic using Similarity - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
-
-	Authors:
-		David Wartel (dwartel@ulb.ac.be).
+	(C) 2001 by David Wartel.
 
 	Version $Revision$
 
@@ -46,8 +43,8 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/ggrouping.h>
-
+#include <groups/ggroupingkmeans.h>
+#include <profiles/gprofilessim.h>
 
 
 //-----------------------------------------------------------------------------
@@ -61,53 +58,50 @@ class GGroup;
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupingKProtos provides a representation for a method to group some
-* subprofiles using the notion of similarity.
-* @author Pascal Francq
-* @short Similarity Grouping.
+* The GGroupingKProtos provides a representation for a method to group
+some
+* subprofiles using the KMeans algorithm adapted to cosinus distance.
+* @author David Wartel
+* @short KMeansCos Grouping.
 */
-class GGroupingKProtos : public GGrouping
+
+class GGroupingKProtos :   public GGroupingKMeans
+
 {
 protected:
-	/**
-	* random initial conditions or not.
-	*/
-	bool Random;
+
 
 	/**
-	* the algorithm must find the number of groups or not.
+	* Landa parameter
 	*/
-	bool FindGroupsNumber;
+	double Landa;
 
 	/**
-	* Level of similarity for the groupement.
+	* number of protos per groups (excepted center)
 	*/
-	int GroupsNumber;
+	unsigned int NbPrototypes;
 
 	/**
-	* Number of protos per group;.
+	* Container of subprofiles considered as prototypes,
+	* needed to calculate the error between two iterations
 	*/
-	int ProtosNumber;
+	RContainer<GSubProfile,unsigned int,false,false>* protoserror;
 
 	/**
-	*Number of iterations
+	* Temporary container of groupment, needed to run tests
 	*/
-	int IterNumber;
+	RContainer<GGroup,unsigned int,false,false>* grpstemp;
 
 	/**
-	* Number of tests
+	* Container of the final groupment
 	*/
-	int NbTests;
+	RContainer<GGroup,unsigned int,false,false>* grpsfinal;
 
 	/**
-	*Maximum number of groups
+	* Container of subprofiles considered as prototypes,
 	*/
-	int MaxNbGroups;
+	RContainer<GSubProfile,unsigned int,false,false>* prototypes;
 
-	/**
-	*Minimum number of groups
-	*/
-	int MinNbGroups;
 
 public:
 
@@ -121,132 +115,106 @@ public:
 	* Get the settings of the method coded in a string.
 	* return Pointer to a C string.
 	*/
-	virtual const char* GetSettings(void);
+	const char* GetSettings(void);
+
+	/**
+	* returns NbPrototypes
+	*/
+	unsigned int  GetNbPrototypes(void) {return(NbPrototypes);};
+
+	/**
+	* sets the value of NbPrototypes
+	*/
+	void  SetNbPrototypes(unsigned int i) {NbPrototypes=i;};
+
 
 	/**
 	* Set the settings for the method using a string.
 	* @param s*             C string coding the settings.
 	*/
-	virtual void SetSettings(const char* s);
+	void SetSettings(const char* s);
+
+	/**
+	* Init the prototypes
+	* @param dataset        set of all subprofiles.
+	* @param nbprototypes   number of prototypes needed.
+	*/
+	void RandomInitProtos(RContainer<GSubProfile,unsigned int,false,true>* dataset, unsigned int nbprototypes);
 
 	/**
 	* Initialisation of the method.
 	*/
-	virtual void Init(void) throw(bad_alloc);
-
-
+	void Init(void) throw(bad_alloc);
 
 	/**
-	* Get the status of the full similarity.
-	* @return bool value.
+	* Calculates the cost function for a kmeanscos clustering
 	*/
-	bool GetRandom(void) const {return(Random);}
+	double CostFunction(RContainer<GGroup,unsigned int,false,false>* grps);
 
 	/**
-	* Set the status of the full similarity.
-	* @param s              Full similarity?
+	*  reallocate the subprofiles to prototypes
 	*/
-	void SetRandom(bool s) {Random=s;}
+	void ReAllocate(RContainer<GSubProfile, unsigned int, false, true>* dataset);
 
 	/**
-	* Set the status of FindGroupsNumber.
-	* @param s              Full similarity?
+	* returns the distance between a subprofile and a center or a prototype
+	* @param center         distance to center if true, else distance to nearest prototype
 	*/
-	void SetFindGroupsNumber(bool s) {FindGroupsNumber=s;}
+	double Distance(GSubProfile* s,RContainer<GSubProfile,unsigned int,false,true> *grps, bool center);
 
 	/**
-	* Get the number of groups.
-	* @return int value.
+	* returns the nearest prototype inside the group
 	*/
-	int GetGroupsNumber(void) const {return(GroupsNumber);}
+	GSubProfile* NearestPrototype(GSubProfile* s,RContainer<GSubProfile,unsigned int,false,true> *grp);
 
 	/**
-	* Get the number o fprotos per group.
-	* @return int value.
+	*  recenters the prototypes
 	*/
-	int GetProtosNumber(void) const {return(ProtosNumber);}
+	void ReCenter(void);
 
 	/**
-	* Get the status of FindGroupsNumber.
-	* @param s              Full similarity?
+	*  excute the kmeans algorithm
 	*/
-	int GetFindGroupsNumber(void) {return(FindGroupsNumber);}
-
+	void Execute(RContainer<GSubProfile, unsigned int, false, true>* Dataset, unsigned int nbtests);
 
 	/**
-	* Get the maximum number of groups
-	* @return int value.
+	*  calculates the error between two iterations
 	*/
-	int GetMaxNbGroups(void) const {return(MaxNbGroups);}
+	int CalcError(void);
 
 	/**
-	* Get the minimum number of groups
-	* @return int value.
+	* returns the Calinsky index for the clustering
 	*/
-	int GetMinNbGroups(void) const {return(MinNbGroups);}
+	double CalcCalinsky(void);
 
 	/**
-	* Get the number of tests
-	* @return int value.
+	* returns the knearestneighboors measure.
 	*/
-	int GetTestsNumber(void) const {return(NbTests);}
+	double TestMeasure(void);
 
 	/**
-	* Get the maximum number of iterations.
-	* @return int value.
+	* returns the "recouvrement" rate.
 	*/
-	int GetIterNumber(void) const {return(IterNumber);}
+	double StatMeasure(void);
 
 	/**
-	* Set the level of similarity for the grouping.
-	* @param l              Level to used.
+	* pal measure
 	*/
-	void SetGroupsNumber(int  i) {GroupsNumber=i;}
+	double PalMeasure(void);
 
 	/**
-	* Set the number of protos per group.
-	* @param i              number to used.
+	*
 	*/
-	void SetProtosNumber(int  i) {ProtosNumber=i;}
+	void DisplayInfos(void);
 
-	/**
-	* Set the maximum number of groups.
-	* @param i              Level to used.
-	*/
-	void SetMaxNbGroups(int  i) {MaxNbGroups=i;}
-
-
-	/**
-	* Set the minimum number of groups.
-	* @param i              Level to used.
-	*/
-	void SetMinNbGroups(int  i) {MinNbGroups=i;}
-
-
-	/**
-	* Set the number of tests
-	* @param i              nulber to set.
-	*/
-	void SetTestsNumber(int  i) {NbTests=i;}
-
-	/**
-	* Set the level of similarity for the grouping.
-	* @param l              Level to used.
-	*/
-	void SetIterationsNumber(int  i) {IterNumber=i;}
 
 protected:
 
 	/**
-	* Test if a group is valid. If a group isn't not valid, the group is
-	* deleted and all profiles are to be inserted again.
-	*/
-	virtual bool IsValid(GGroup* grp);
-
-	/**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void) throw(GException);
+	void Run(void) throw(GException);
+
 
 public:
 
@@ -257,8 +225,9 @@ public:
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI----------------------------------------
 
 
 //-----------------------------------------------------------------------------
 #endif
+

@@ -37,10 +37,12 @@
 #include <time.h>
 #include <math.h>
 
+
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<groups/ggroupingkcos.h>
 #include<groups/ggroupingsim.h>
+#include <profiles/gprofilessim.h>
 #include<groups/ggroups.h>
 #include<groups/ggroup.h>
 #include<groups/ggroupvector.h>
@@ -49,14 +51,15 @@
 #include<sessions/gslot.h>
 #include<profiles/gprofile.h>
 #include<profiles/gsubprofilevector.h>
+#include <groups/gcomparegrouping.h>
+using namespace GALILEI;
 
+
+//-----------------------------------------------------------------------------
 //include files for R
 #include <rmath/random.h>
 using namespace RMath;
-
-
-using namespace GALILEI;
-
+//-----------------------------------------------------------------------------
 
 
 
@@ -73,6 +76,7 @@ GALILEI::GGroupingKCos::GGroupingKCos( GSession* s) throw(bad_alloc)
 	protoserror = new RContainer<GSubProfile,unsigned int,false,false> (10, 5);
 	grpstemp = new RContainer<GGroup,unsigned int,false,false>  (10, 5);
 	grpsfinal = new RContainer<GGroup,unsigned int,false,false>  (10, 5);
+
 }
 
 
@@ -82,14 +86,14 @@ const char* GALILEI::GGroupingKCos::GetSettings(void)
 {
 
 	static char tmp[250];
-	char c, d,e, f, g, h , k;
-	if(Random) c='1'; else c='0';
-	if (FindGroupsNumber) d='1'; else d='0';
-	if (GlobalSim) e='1'; else e='0';
-	if (Relevant) h='1'; else h='0';
-	if (Scattered) k='1'; else k='0';
+	char c, d,e, h , k;
+	if(initial==Random) c='1'; else c='0';
+	if (initial==FindGroupsNumber) d='1'; else d='0';
+	if (initial==GlobalSim) e='1'; else e='0';
+	if (initial==Relevant) h='1'; else h='0';
+	if (initial==Scattered) k='1'; else k='0';
 
-	 sprintf(tmp,"%c %u %u %c %c  %c, %c",c, IterNumber, NbTests, d, e, h, k);
+	sprintf(tmp,"%c %u %u %c %c  %c, %c",c, IterNumber, NbTests, d, e, h, k);
 	return(tmp);
 }
 
@@ -98,15 +102,15 @@ const char* GALILEI::GGroupingKCos::GetSettings(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingKCos::SetSettings(const char* s)
 {
-	char c, d, e, f,g, h, k;
+	char c, d,e,  h, k;
 
 	if(!(*s)) return;
-	sscanf(s,"%c %u %u %c %c %c %c %c",&c, &IterNumber, &NbTests, &d, &e, &f,  &h, &k);
-	if(c=='1') Random=true; else Random=false;
-	if(d=='1') FindGroupsNumber=true; else FindGroupsNumber=false;
+	sscanf(s,"%c %u %u %c %c %c %c",&c, &IterNumber, &NbTests, &d, &e,   &h, &k);
+	if(c=='1') initial=Random;
+	if(d=='1') initial=Refined;
 	if(e=='1') GlobalSim=true; else GlobalSim=false;
-	if(h=='1') Relevant=true; else Relevant=false;
-	if(k=='1') Scattered=true; else Scattered=false;
+	if(h=='1') initial=Relevant;
+	if(k=='1') initial=Scattered;
 }
 
 
@@ -120,52 +124,34 @@ void GALILEI::GGroupingKCos::Init(void) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingKCos::Run(void) throw(GException)
 {
-
-	if (SubProfiles.NbPtr==0) return ;
 	int grnumber;
 	double var;
 
+	if (SubProfiles.NbPtr==0) return ; 
+
 	// Calculates the similarities between subprofiles
 	ProfSim= new GProfilesSim(SubProfiles, GlobalSim);
-
-	//temp
-	int nbdiff=SubProfiles.NbPtr;
-	GSubProfile **s1, **s2;
-	unsigned int i,j;
-	for (s1=SubProfiles.Tab, i=SubProfiles.NbPtr; --i;s1++)
-	{
-		int sim=0;
-		for(s2=s1+1,j=i+1;--j;s2++)
-		 {
-			if ((Similarity(*s1,(*s2))>0.9999)&&(!sim))
-			 {
-				nbdiff--;
-				sim=1;
-			}
-		}
-	}
-	cout <<" nbdiff profiles="<<nbdiff <<endl;
 
 	//evaluate the number of groups
 	EvaluateGroupsNumber();
 
 	//temp   - display KmeansCosinus parameters
-	DisplayInfos();
+//	DisplayInfos();
 
 	for (GroupsNumber=MinNbGroups; GroupsNumber<(MaxNbGroups+1); GroupsNumber++)
 	{
-		cout <<" ------------------------------------------------------------------------ init " <<endl;
-		if (Refined)
+//		cout <<" ------------------------------------------------------------------------ init " <<endl;
+		if (initial==Refined)
 			Init();
-		cout <<" ------------------------------------------------------------------------Run " <<endl;
-		Execute(&SubProfiles, NbTests, false);
+//		cout <<" ------------------------------------------------------------------------Run " <<endl;
 
-		
+		Execute(&SubProfiles, NbTests);
+
 		// evaluate the clustering / each clutering for each number of group
 		double finalcost=CostFunction(grpstemp2)/protos->NbPtr;
-		double variance=GroupsVariance(grpstemp2);
-		cout << "----------------->>>>>> "<<GroupsNumber<< " goupes -   final cost function: "<< finalcost<<endl;
-		cout << "----------------->>>>>> "<<GroupsNumber<< " goupes -   final variance: "<< variance<<endl;
+//		double distortion=Distortion(grpstemp2);
+//		cout << "----------------->>>>>> "<<GroupsNumber<< " goupes -   final cost function: "<< finalcost<<endl;
+//		cout << "----------------->>>>>> "<<GroupsNumber<< " goupes -   final distortion: "<< distortion<<endl;
 
 		if ((GroupsNumber==MinNbGroups)||(finalcost<var))
 		{
@@ -175,9 +161,8 @@ void GALILEI::GGroupingKCos::Run(void) throw(GException)
 			for (grpstemp2->Start(); !grpstemp2->End(); grpstemp2->Next())
 				grpsfinal->InsertPtr((*grpstemp2)());
 	 	}
-		cout << "index Calinsky "<< CalcCalinsky()<<endl;
-		
-      }
+	}
+
 	for (grpsfinal->Start(); !grpsfinal->End(); grpsfinal->Next())
 	{
 		Groups->InsertPtr((*grpsfinal)());
@@ -185,6 +170,25 @@ void GALILEI::GGroupingKCos::Run(void) throw(GException)
 	cout << "----------------->>>>>>end final cost function: "<<var<<endl;
 	cout << "----------------->>>>>>end final nbgroup: "<< grnumber<<endl;
 }
+
+
+//-----------------------------------------------------------------------------
+//void GALILEI::GGroupingKCos::Run(void) throw(GException)
+//{
+//	unsigned int i;
+//	RRandomGood* r;
+// 	GGroupDataIR data;
+//	Objs=new RGA::RObjs<GObjIR>(SubProfiles.NbPtr);
+//	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
+//	{
+//		Objs->InsertPtr(new GObjIR(i,SubProfiles()));
+//	}
+//	GProfilesSim Sims(SubProfiles,GlobalSim);
+//	r=new RRandomGood(0);
+//	RGroupingKMeans<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* kmeans;
+//	kmeans=new  RGroupingKMeans<GGroupIR,GObjIR,GGroupDataIR,GChromoIR> (r, Objs) ;
+//	kmeans->Run();
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -196,65 +200,43 @@ void GALILEI::GGroupingKCos::DisplayInfos(void)
 	cout << "global similarity= "<<GlobalSim<<endl;
 	cout << " parameters max iter:"<<IterNumber<< " nb tests: "<<NbTests<<endl<<endl;
 	cout << " *** initial parameters ***"<<endl;
-	cout << " 	random :"<<  Random<<endl;
-	cout << " 	scattered :"<< Scattered<<endl;
-	cout << " 	relevant :"<< Relevant<<endl;
+	cout << "initial condi :"<< initial<<endl;
 }
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupingKCos::Execute(RContainer<GSubProfile, unsigned int, false, true>* dataset, unsigned int nbtests, bool init)
+void GALILEI::GGroupingKCos::Execute(RContainer<GSubProfile, unsigned int, false, true>* dataset, unsigned int nbtests)
 {
+	double cost, finalcost;
+	unsigned int iter, error;
+
+	srand((unsigned)time(NULL));   //enables the total random parameters
 	Clear();
 	grpstemp->Clear();
-	double variances[GroupsNumber];
-	double finalcost;
-	srand((unsigned)time(NULL));   //enables the total random parameters
-
-	
 
 	for (unsigned int test=0; test<nbtests; test++)
 	{
-		cout << "**** test "<<test<<"****"<<endl;
 		// initialization
-		if (Random)
+		if (initial==Random)
 			RandomInitSubProfiles(&SubProfiles, GroupsNumber); // cycle
-		//init variances
-		for (int i=0; i<GroupsNumber; i++)
-			variances[i]=0.0;
-		unsigned int iter=0;
-		int error=1;
+		iter=0;
+		error=1;
 		while ((iter<IterNumber)&&(error!=0))
 		{
 //			cout << "            iter "<<itermax<<endl;
 			//Groups->Clear();
 			grpstemp->Clear();
 
-			//tmp
-//			cout << "variances" <<endl;
-//			for (int i=0; i<GroupsNumber; i++)
-//				cout << variances[i]<< "   "<<endl;
-//			cout <<endl;
-			
 			// (re-)allocation
-//			cout << "reallocating..."<<endl;
-			ReAllocate(dataset, variances, init);
-
-			// Calulate the variances of each groups
-			for (grpstemp->Start(); !grpstemp->End(); grpstemp->Next())
-				variances[(*grpstemp)()->GetId()]=GroupVariance((*grpstemp)());
+			ReAllocate(dataset);
 
 			//recentering
-//			cout << "recentering..."<<endl;
 			ReCenter();
 
 			// error calculation
 			error=CalcError();
 			iter++;
 		}
-
-		if (error==0) cout << "convergence"; else cout << "max iter reached ";
-		double cost=CostFunction(grpstemp)/protos->NbPtr;
-//		cout << "cost function = "<< cost<<endl;
+		cost=CostFunction(grpstemp)/protos->NbPtr;
 		if ((test==0)||(cost< finalcost))
 		{
 			grpstemp2->Clear();
@@ -269,8 +251,10 @@ void GALILEI::GGroupingKCos::Execute(RContainer<GSubProfile, unsigned int, false
 //-----------------------------------------------------------------------------
 double  GALILEI::GGroupingKCos::CostFunction(RContainer<GGroup,unsigned int,false,false>* grps)     // calculates the intra/min(inter)
 {
-	GSubProfile **s1, **s2;
+	unsigned int i, j;
 	double intra=0.0, mininter=1.0;
+	GSubProfile **s1, **s2;
+
 	for (protos->Start(); !protos->End(); protos->Next())
 	{
 		GSubProfile* proto = (*protos)();
@@ -282,8 +266,6 @@ double  GALILEI::GGroupingKCos::CostFunction(RContainer<GGroup,unsigned int,fals
 		}
 	}
 	intra=intra/SubProfiles.NbPtr;
-
-	unsigned int i, j;
 	for(s1=protos->Tab,i=protos->NbPtr;--i;s1++)
 	{
 		for(s2=s1+1,j=i+1;--j;s2++)
@@ -294,50 +276,46 @@ double  GALILEI::GGroupingKCos::CostFunction(RContainer<GGroup,unsigned int,fals
 				mininter=dist;
 		}
 	}
-
 	return(intra/mininter);
 }
 
 
 //-----------------------------------------------------------------------------
-void  GALILEI::GGroupingKCos::ReAllocate(RContainer<GSubProfile,unsigned int,false,true>* dataset, double variances[], bool init)
+void  GALILEI::GGroupingKCos::ReAllocate(RContainer<GSubProfile,unsigned int,false,true>* dataset)
 {
-	GGroup * g;
 	int i=0;
+	GGroup * g;
+
 	for (protos->Start(); !protos->End(); protos->Next())  // groupscontaining one proto are created
 	{
 		grpstemp->InsertPtr(g=new GGroupVector(i,Groups->GetLang()));
 		g->InsertPtr((*protos)());
-//		cout << "  proto   "<< (*protos)()->GetId();
 		i++;
 	}
-//	cout <<endl;
+
 	for (dataset->Start(); !dataset->End(); dataset->Next())
 	{
 		GSubProfile* s=(*dataset)();
 		if (protos->GetPtr(s)) continue;
 		GSubProfile* parent, *proto;
-		protos->Start();
-		double dist=Distance(s,(*protos)(), variances, init);
+		protos->Start(); proto=(*protos)();
+		double dist=Distance(s,proto);
 		parent=(*protos)();
 		for (protos->Next(); !protos->End(); protos->Next())
 		{
 			proto=(*protos)();
-			if (Distance(s,proto, variances, init)<dist)
+			if (Distance(s,proto)<dist)
 			{
-				dist=Distance(s,proto, variances, init);
+				dist=Distance(s,proto);
 				parent=proto;
 			}
 		}
-
 		GGroup* gr=FindGroup(grpstemp, parent);
 		gr->InsertSubProfile(s);
-//		cout << "insert profile" << s->GetId() <<" in group"<<gr->GetId()<< " parent "<<parent->GetId() <<endl;
 	}
-		//tmp
-//		ShowGroups(grpstemp);
-
 }
+
+
 //-----------------------------------------------------------------------------
 void  GALILEI::GGroupingKCos::ReCenter()
 {
@@ -346,27 +324,17 @@ void  GALILEI::GGroupingKCos::ReCenter()
 	{
 		GSubProfile* tmp=(*grpstemp)()->RelevantSubProfile(GlobalSim);
 		protoserror->InsertPtr(tmp);
-//		cout << "new proto " << tmp->GetId() << "from group "<< (*grpstemp)()->GetId()<<endl;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GGroupingKCos::Distance(GSubProfile *s1, GSubProfile *proto, double variances[], bool init)
+double GALILEI::GGroupingKCos::Distance(GSubProfile *s1, GSubProfile *proto)
 {
-	double newdist, dist, variance;
-	GGroup* gr;
-
-	gr=FindGroup(grpstemp, proto);
+	double dist;
 	dist=(1-Similarity(s1,proto));
-	variance= variances[gr->GetId()];
-	if(variance==0.0||init==true)
-		return(dist);
-	newdist=0.5*grpstemp->NbPtr*log(variance);
-	newdist+=0.5*dist*dist/variance;
-	cout<< "newdist carré = "<<newdist<<endl;
-	return(newdist);	
-	
+
+	return(dist);
 }
 
 
@@ -384,8 +352,8 @@ int  GALILEI::GGroupingKCos::CalcError()
 	{
 		protos->InsertPtr((*protoserror)());
 	}
-//	cout << "error : "<< err<<endl;
 	return(err);
+
 }
 
 
@@ -400,10 +368,16 @@ double GALILEI::GGroupingKCos::TestMeasure()
 double GALILEI::GGroupingKCos::CalcCalinsky()
 {
 	GSubProfile* mean;
-	double refsum=0.0;
-	for (SubProfiles.Start();!SubProfiles.End(); SubProfiles.Next())
+	double refsum, sum, dist, dist2,cal;
+	double ssw=0.0, ssb=0.0;
+	int k, n;
+
+	SubProfiles.Start();
+	refsum=SumSimilarity((SubProfiles)());
+	mean=(SubProfiles)();
+	for (SubProfiles.Next();!SubProfiles.End(); SubProfiles.Next())
 	{
-		double sum=SumSimilarity((SubProfiles)());
+		sum=SumSimilarity((SubProfiles)());
 		if (sum>refsum)
 		{
 			refsum=sum;
@@ -412,76 +386,24 @@ double GALILEI::GGroupingKCos::CalcCalinsky()
 	}
 
 	// ssw & ssb calculation
-	double ssw=0.0, ssb=0.0;
 	for (grpstemp2->Start(); !grpstemp2->End(); grpstemp2->Next())
 	{
 		GGroup* gr=(*grpstemp2)();
 		GSubProfile* center= gr->RelevantSubProfile(GlobalSim);
 		for (gr->Start(); !gr->End(); gr->Next())
 		{
-			double dist=(1.0)-Similarity((*gr)(),center);
+			dist=(1.0)-Similarity((*gr)(),center);
 			ssw=ssw+(dist*dist);
 		}
-		double dist2=(1.0)-Similarity(center,mean);
+		dist2=(1.0)-Similarity(center,mean);
 		ssb=ssb+((gr->NbPtr)*(dist2*dist2));
 	}
 
 	//index calculation
-	double cal;
-	int k=GroupsNumber;
-	int n=SubProfiles.NbPtr;
+	k=GroupsNumber;
+	n=SubProfiles.NbPtr;
 	cal=(ssb/(k-1))/(ssw/(n-k));
 	return(cal);
-}
-
-
-//-----------------------------------------------------------------------------
-double GALILEI::GGroupingKCos::StatMeasure()
-{
-	GGroup* g1;
-	GSubProfile* s1;
-	GSubProfile** s2;
-	unsigned int j;
-	double stat=0.0;
-	int compt=0;
-
-	for(Groups->Start(); !Groups->End(); Groups->Next())
-	{
-		g1=(*Groups)();
-		for (g1->Start(); !g1->End(); g1->Next())
-		{
-			s1=(*g1)();
-			for(s2=g1->Tab,j=g1->NbPtr;j--;s2++)
-			{
-				if (s1->GetId()!=(*s2)->GetId())
-				{
-					double tmp=s1->GetCommonDocs(*s2);
-					stat=stat+(tmp/s1->GetNbJudgedDocs());
-					compt=compt+1;
-				}
-			}
-		}
-	}
-	stat=stat/compt;
-	return(stat*100);
-}
-
-
-
-//-----------------------------------------------------------------------------
-double GALILEI::GGroupingKCos::PalMeasure()
-{
-	double sum=0.0;
-	for (grpstemp->Start(); !grpstemp->End(); grpstemp->Next())
-	{
-		GGroup* g= (*grpstemp)();
-		double sumgr=0.0;
-		for (g->Start(); !g->End(); g->Next())
-			sumgr+=g->ComputeSumSim((*g)(), GlobalSim);
-		sum+=sumgr/g->NbPtr;
-	}
-	sum/=grpstemp->NbPtr;
-	return(sum);
 }
 
 

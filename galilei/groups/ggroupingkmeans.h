@@ -1,4 +1,4 @@
-                                                                                                                                                                                                       /*
+                                                                                                                                                                                                                                                                           /*
 
 	GALILEI Research Project
 
@@ -47,13 +47,17 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <groups/ggroupingsim.h>
-#include <profiles/gprofilessim.h>
+#include<groups/ggrouping.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// forward class declaration
+class GGroup;
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -65,34 +69,28 @@ some
 */
 
 class GGroupingKMeans : public GGrouping
-
 {
+
+public:
+
+	/**
+	* enum of initial conditions
+	*/
+	enum Initial {Refined,Random, Scattered, Relevant};
+
+
 protected:
+
+	/**
+	*
+	*/
+	Initial initial;
 
 	/**
 	* value for decimals error
 	*/
 	double Epsilon;
 
-	/**
-	* Random initial conditions or not.
-	*/
-	bool Random;
-
-	/**
-	* Initial conditions are relevant subprofiles;.
-	*/
-	bool Relevant;
-
-	/**
-	* Initial conditions are scattered subprofiles;.
-	*/
-	bool Scattered;
-
-	/**
-	* initial points are provided by 'Refinig Initial Points" method
-	*/
-	bool Refined;
 
 	/**
 	* Number of groups.
@@ -149,6 +147,7 @@ protected:
 	*/
 	RRandom * Rand;
 
+
 public:
 
 	/**
@@ -182,50 +181,31 @@ public:
 	/**
 	* returns the 'nbsub' most relevant subprofiles.
 	*/
-	void RelevantInitSubProfiles(unsigned int nbsub);
+	void RelevantInitSubProfiles(int nbsub);
 
 	/**
 	* init the protos to the most scattered subprofiles.
 	* @param nbsub         number of subprofiles to get.
 	*/
-	void ScatteredInitSubProfiles(unsigned int nbsub);
+	void ScatteredInitSubProfiles(int nbsub);
 
 	/**
 	* init the protos with random subprofiles.
 	* @param nbsub         number of subprofiles to get.
 	*/
-	void RandomInitSubProfiles(RContainer<GSubProfile,unsigned int,false,true>* datase,unsigned int groupsnumber);
+	void RandomInitSubProfiles(RContainer<GSubProfile,unsigned int,false,true>* datase, unsigned int groupsnumber);
 
 	/**
 	* init the protos to the refined points.
 	* @param nbsub         number of subsamples to get.
 	* @param level           level  (in %) of the full dataset for the subsamples
 	*/
-	void RefiningCenters(unsigned int nbsub, int level);
+	void RefiningCenters(int nbsub, int level);
 
 	/**
-	* Get the status of the 'random' criterion
-	* @return bool value.
+	*  get the initial conditions
 	*/
-	bool GetRandom(void) const {return(Random);}
-
-	/**
-	* Get the status of the 'relevant' criterion
-	* @return bool value.
-	*/
-	bool GetRelevant(void) const {return(Relevant);}
-
-	/**
-	* Get the status of the 'scattered' criterion
-	* @return bool value.
-	*/
-	bool GetScattered(void) const {return(Scattered);}
-
-	/**
-	* Get the status of the 'Refined' criterion
-	* @return bool value.
-	*/
-	bool GetRefined(void) const {return(Refined);}
+	Initial GetInit(void) {return(initial);};
 
 	/**
 	* Get the status of 'FindGroupsNumber'.
@@ -240,6 +220,12 @@ public:
 	int GetTestsNumber(void) const {return(NbTests);}
 
 	/**
+	* Get the number of groups
+	* @return int value.
+	*/
+	int GetGroupsNumber(void) const {return(GroupsNumber);}
+
+	/**
 	* Get the status of the 'GlobalSim' criterion
 	* @return bool value.
 	*/
@@ -252,33 +238,14 @@ public:
 	int GetIterNumber(void) const {return(IterNumber);}
 
 	/**
-	* Set the status of the 'random' criterion.
-	* @param s              random?
+	* sets the initial conditions
 	*/
-	void SetRandom(bool s) {Random=s;}
-
-	/**
-	* Set the status of the 'Relevant' criterion.
-	* @param s              relevant?
-	*/
-	void SetRelevant(bool s) {Relevant=s;}
-
-	/**
-	* Set the status of the 'scattered' criterion.
-	* @param s              random?
-	*/
-	void SetScattered(bool s) {Scattered=s;}
-
-	/**
-	* Set the status of the 'refined' criterion.
-	* @param s              random?
-	*/
-	void SetRefined(bool s) {Refined=s;}
+	void SetInit(Initial i) {initial=i;};
 
 	/**
 	* Set the status of 'FindGroupsNumber' criterion.
 	* @param s              Find Groups Number?
-	*/
+       */
 	 void SetFindGroupsNumber(bool s) {FindGroupsNumber=s;}
 
 	 /**
@@ -286,6 +253,12 @@ public:
 	* @param i              number to set.
 	*/
 	void SetTestsNumber(int  i) {NbTests=i;}
+
+	 /**
+	* Set the number of tests
+	* @param i              number to set.
+	*/
+	void SetGroupsNumber(int  i) {GroupsNumber=i;}
 
 	/**
 	* Set the status of the 'GlobalSim' criterion.
@@ -317,12 +290,12 @@ public:
 	/**
 	* Calculates the cost function for a kmeanscos clustering
 	*/
-	virtual double CostFunction(void){};
+	virtual double CostFunction(RContainer<GGroup,unsigned int,false,false>* grps)=0;
 
 	/**
 	*  reallocate the subprofiles to prototypes
 	*/
-	virtual void ReAllocate(RContainer<GSubProfile,unsigned int,false,true>* dataset, double variance[], bool init)=0;
+	virtual void ReAllocate(RContainer<GSubProfile,unsigned int,false,true>* dataset)=0;
 
 	/**
 	*  recenters the prototypes
@@ -333,7 +306,7 @@ public:
 	* executes the grouping part of K-Means algorithm
 	* @param init           intialization step?
 	*/
-	virtual void Execute(RContainer<GSubProfile,unsigned int,false,true>* dataset, unsigned int maxiter, bool init)=0;
+	virtual void Execute(RContainer<GSubProfile,unsigned int,false,true>* dataset, unsigned int maxiter)=0;
 
 	/**
 	* returns the sum of similarity between s and all the subprofiles
@@ -353,13 +326,12 @@ public:
 	/**
 	* return the variance of a given clustering
 	*/
-	virtual double GroupsVariance(RContainer<GGroup,unsigned int,false,false>* grps);
+	virtual double Distortion(RContainer<GGroup,unsigned int,false,false>* grps);
 
 	/**
 	* return the variance of a given clustering
 	*/
 	virtual double GroupVariance(GGroup* grp);
-
 
 	/**
 	* returns the group containing the subprofile s;
@@ -370,12 +342,12 @@ public:
 	* Verify the confition of KMeansMod (no empty clusters)
 	* return true if the conditons are respected, else false
 	*/
-	bool VerifyKMeansMod(RContainer<GSubProfile,unsigned int,false,false>* startingprotos,  GGroup* subsample);
+	bool  VerifyKMeansMod(void);
 
 	/**
-	*  Shows the content of a group
+	*  couts the content of a group
 	*/
-	virtual void ShowGroups(RContainer<GGroup,unsigned int,false,false>* grs);
+	virtual void ShowGroups(RContainer<GGroup,unsigned int,true,true>* grs);
 
 
 protected:
@@ -398,6 +370,7 @@ public:
 	* Destructor.
 	*/
 	virtual ~GGroupingKMeans(void);
+
 };
 
 
@@ -406,3 +379,4 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
+

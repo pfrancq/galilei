@@ -39,17 +39,17 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainercursor.h>
-using namespace RStd;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include<galilei.h>
 #include <groups/ggroupingkmeans.h>
-#include <profiles/gprofilessim.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
 
 //-----------------------------------------------------------------------------
 // forward class declaration
@@ -64,31 +64,36 @@ some
 * @author David Wartel
 * @short KMeansCos Grouping.
 */
-class GGroupingKCos : public GGroupingKMeans
+
+class GGroupingKCos :   public GGroupingKMeans
 {
+
+
 protected:
 
 	/**
 	* Container of subprofiles considered as prototypes,
 	* needed to calculate the error between two iterations
 	*/
-	RContainer<GSubProfile,unsigned int,false,false>* protoserror;
+	RStd::RContainer<GSubProfile,unsigned int,false,false>* protoserror;
 
 	/**
 	* Temporary container of groupment, needed to run tests
 	*/
-	RContainer<GGroup,unsigned int,false,false>* grpstemp;
+	RStd::RContainer<GGroup,unsigned int,false,false>* grpstemp;
 
 	/**
 	* Container of the final groupment
 	*/
-	RContainer<GGroup,unsigned int,false,false>* grpsfinal;
+	RStd::RContainer<GGroup,unsigned int,false,false>* grpsfinal;
+
 
 public:
 
 	/**
 	* Constructor.
 	* @param s              Session.
+	* @param grps          Ideal groupment.
 	*/
 	GGroupingKCos(GSession* s) throw(bad_alloc);
 
@@ -112,12 +117,12 @@ public:
 	/**
 	* Calculates the cost function for a kmeanscos clustering
 	*/
-	double CostFunction(RContainer<GGroup,unsigned int,false,false>* grps);
+	double CostFunction(RStd::RContainer<GGroup,unsigned int,false,false>* grps);
 
 	/**
 	*  reallocate the subprofiles to prototypes
 	*/
-	void ReAllocate(RContainer<GSubProfile, unsigned int, false, true>* dataset, double variances[], bool init);
+	void ReAllocate(RStd::RContainer<GSubProfile, unsigned int, false, true>* dataset);
 
 	/**
 	*  recenters the prototypes
@@ -128,12 +133,13 @@ public:
 	*  excute the kmeans algorithm
 	* @param init           initialisation step?
 	*/
-	void Execute(RContainer<GSubProfile, unsigned int, false, true>* Dataset, unsigned int nbtests, bool init);
+	void Execute(RStd::RContainer<GSubProfile, unsigned int, false, true>* Dataset, unsigned int nbtests);
 
 	/**
 	* Calculate the distance between two subprofiles
+	* @param init           initialization step?
 	*/
-	double Distance(GSubProfile *s1, GSubProfile *s2, double variances[], bool init);
+	double Distance(GSubProfile *s1, GSubProfile *s2);
 
 	/**
 	*  calculates the error between two iterations
@@ -151,19 +157,10 @@ public:
 	double TestMeasure(void);
 
 	/**
-	* returns the "recouvrement" rate.
-	*/
-	double StatMeasure(void);
-
-	/**
-	* pal measure
-	*/
-	double PalMeasure(void);
-
-	/**
 	* displays infos about kmeanscos parameters
 	*/
 	void DisplayInfos(void);
+
 
 protected:
 
