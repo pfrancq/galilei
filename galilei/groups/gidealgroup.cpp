@@ -67,6 +67,7 @@ using namespace RStd;
 #include <sessions/gsession.h>
 #include <profiles/gusers.h>
 #include <groups/gsubject.h>
+#include <tests/ggroupsevaluate.h>
 using namespace GALILEI;
 
 
@@ -83,12 +84,14 @@ GALILEI::GIdealGroup::GIdealGroup(GSession* session)
 	PercKO=10;
 	PercHS=0;
 	PercErr=0;
-	Subjects=new GSubjectTree(PercOK,PercKO,Session->GetNbUsers());
-	Session->LoadSubjectTree(Subjects);
-	Subjects->InsertProfiles();
 	NbProfMax=10;
 	NbProfMin=2;
 	PercSocial=100;
+	PercGrp=100;
+	NbDocPerGrp=0;
+	Subjects=new GSubjectTree(PercOK,PercKO,Session->GetNbUsers());
+	Session->LoadSubjectTree(Subjects);
+	Subjects->InsertProfiles();
 }
 
 
@@ -101,7 +104,6 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 	{
 		GGroupsCursor Cur;
 		GGroupCursor Cur2;
-
 		if(Save)
 		{
 			Cur.Set(groups);
@@ -119,16 +121,14 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 		parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,10);
 	else
 		parent->Clear();
-
 	// Clear the old feedback.
 	Session->ClearFdbks();
-
-	// Clear subprofiles assignement
+	// Clear subprofiles assignement.
 	Session->ClearSubProfilesGroups();
-
+	// Choose The Subject who will be used.
+	Subjects->ChooseSubject(Session,PercGrp,NbDocPerGrp);
 	// Create the different judgments.
 	Subjects->Judgments(Session,PercOK,PercKO,PercHS,NbProfMin,NbProfMax,PercSocial,PercErr);
-
 	// Create the ideal groupment corresponding to the precedent judgment.
 	Subjects->IdealGroupment(groups,Session,parent);
 	if(Save)
@@ -136,7 +136,6 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 		Session->SaveFdbks();  
 		Session->SaveIdealGroupment(groups);
 	}
-
 }
 
 
@@ -152,7 +151,7 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 {
 	static char tmp[100];
 
-	sprintf(tmp,"%u %u %u %i %u %u %u %u",PercOK,PercKO,PercHS,Rand,NbProfMin,NbProfMax,PercSocial,PercErr);
+	sprintf(tmp,"%u %u %u %i %u %u %u %u %u %u",PercOK,PercKO,PercHS,Rand,NbProfMin,NbProfMax,PercSocial,PercErr,PercGrp,NbDocPerGrp);
 
 	return(tmp);
 }
@@ -163,7 +162,7 @@ void GALILEI::GIdealGroup::SetSettings(const char* s)
 {
 	unsigned int a,b;
 	if(!(*s)) return;
-	sscanf(s,"%u %u %u %i %u %u %u %u",&PercOK,&PercKO,&PercHS,&Rand,&a,&b,&PercSocial,&PercErr);
+	sscanf(s,"%u %u %u %i %u %u %u %u %u %u",&PercOK,&PercKO,&PercHS,&Rand,&a,&b,&PercSocial,&PercErr,&PercGrp,&NbDocPerGrp);
 	if (a<=b) NbProfMin=a;
 	if (b<=Session->GetNbUsers()) NbProfMax=b;
 	if (b==0) NbProfMax=Session->GetNbUsers();

@@ -89,6 +89,16 @@ protected:
 	unsigned int PercErr;
 
 	/**
+	* The Percentage of Group to use.
+	*/
+	unsigned int PercGrp;
+
+	/**
+	* The Percentage of Group to use.
+	*/
+	unsigned int NbDocPerGrp;
+
+	/**
 	* Parameter to initialyse the random function for autocreate jugment.
 	* 0 to use randomly, >0 to use whit the same su sequence
 	*/

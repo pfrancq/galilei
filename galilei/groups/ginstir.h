@@ -225,6 +225,11 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 
 #endif
 
+	/**
+	* Container holding the best chromosomes.
+	*/
+	RStd::RContainer<GChromoIR,unsigned int,true,false> BestSols;
+
 public:
 
 	/**
@@ -300,6 +305,11 @@ public:
 	* @param sub2           Second SubProfile.
 	*/
 	double GetRatioSame(GSubProfile* sub1,GSubProfile* sub2) const;
+
+	/**
+	* This function can be used to do a traitement after the GA stops.
+	*/
+	virtual void PostRun(void);
 
 	/**
 	* Destruct the instance.

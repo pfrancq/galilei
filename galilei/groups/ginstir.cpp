@@ -131,7 +131,7 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 	  DiffFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1), Params(p), 
 	  CritSim(0), CritSimAvgSim(0), CritSimJ(0), CritSimAvgRatio(0),CritSimMinRatio(0),CritSimRatio(0),
 	  CritSimWOverB(0), CritSimSimWB(0), CritInfo(0), CritSameFeedbacks(0), CritDiffFeedbacks(0), CritSocial(0),
-	  Sols(0),CurrentGroups(grps), Session(ses), Lang(l), NoSocialSubProfiles(objs->NbPtr)
+	  Sols(0),CurrentGroups(grps), Session(ses), Lang(l), NoSocialSubProfiles(objs->NbPtr), BestSols(p->MaxGen,p->MaxGen/2)
 {
 	RPromSol** ptr;
 	RCursor<GObjIR,unsigned int> Cur1;
@@ -325,10 +325,12 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 {
 	unsigned int i;
 	GChromoIR** C;
- 	GChromoIR* s;
+	GChromoIR* s;
+	GChromoIR* b;
 	RPromSol** Res;
 	RPromSol** ptr;
 	double r;
+	GGroupDataIR GrpData;
 
 	#ifdef RGADEBUG
 		if(Debug) Debug->BeginFunc("PostEvaluate","GInstIR");
@@ -361,6 +363,7 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	{
 		if(Params->SimMeasures==sctCorl)
 			Assign((*ptr),CritSim,(*C)->CritSim);
+		else
 		{
 			if(CritSimAvgSim)
 				Assign((*ptr),CritSimAvgSim,(*C)->CritSimAvgSim);
@@ -392,6 +395,13 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	{
 		s=Chromosomes[(*ptr)->GetId()-1];
 		(*s->Fitness)=Gen+1.1;
+		if(Gen)
+		{
+			BestSols.InsertPtr(b=new GChromoIR(this,BestSols.NbPtr));
+			b->Init(thDatas[0]);
+			(static_cast<RGroups<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>*>(b))->Init(&GrpData);
+			(*b)=(*s);
+		}
 	}
 	else
 	{
@@ -473,6 +483,69 @@ double GALILEI::GInstIR::GetRatioSame(GSubProfile* sub1,GSubProfile* sub2) const
 	if(ptr)
 		return(ptr->GetRatio());
 	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GInstIR::PostRun(void)
+{
+//	RPromKernel Prom("GALILEI",BestSols.NbPtr,5);
+//	RPromSol* s;
+//
+//	// Init Criterion and Solutions of the PROMETHEE part
+//	if(Params->SimMeasures==sctCorl)
+//		CritSim=Prom.NewCriterion(Maximize,"Similarity",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+//	else
+//	{
+//		if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
+//			CritSimAvgSim=Prom.NewCriterion(Maximize,"Similarity AvgSim",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+//		if(Params->Measures.GetPtr<const char*>("J")->Use)
+//			CritSimJ=Prom.NewCriterion(Maximize,"Similarity J",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+//		if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
+//			CritSimAvgRatio=Prom.NewCriterion(Maximize,"Similarity AvgRatio",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+//		if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
+//			CritSimMinRatio=Prom.NewCriterion(Maximize,"Similarity MinRatio",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+//		if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
+//			CritSimRatio=Prom.NewCriterion(Maximize,"Similarity Ratio",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+//		if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
+//			CritSimWOverB=Prom.NewCriterion(Maximize,"Similarity WoverB",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+//		if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
+//			CritSimSimWB=Prom.NewCriterion(Maximize,"Similarity SimWB",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+//	}
+//	CritInfo=Prom.NewCriterion(Maximize,"Information",Params->ParamsInfo.P,Params->ParamsInfo.Q,Params->ParamsInfo.Weight);
+//	CritSameFeedbacks=Prom.NewCriterion(Maximize,"Same Feedbacks",Params->ParamsSameFeedbacks.P,Params->ParamsSameFeedbacks.Q,Params->ParamsSameFeedbacks.Weight);
+//	CritDiffFeedbacks=Prom.NewCriterion(Minimize,"Diff Feedbacks",Params->ParamsDiffFeedbacks.P,Params->ParamsDiffFeedbacks.Q,Params->ParamsDiffFeedbacks.Weight);
+//	CritSocial=Prom.NewCriterion(Minimize,"Social",Params->ParamsSocial.P,Params->ParamsSocial.Q,Params->ParamsSocial.Weight);
+//	for(BestSols.Start();!BestSols.End();BestSols.Next())
+//	{
+//		s=Prom.NewSol();
+//		if(Params->SimMeasures==sctCorl)
+//			Prom.Assign(s,CritSim,BestSols()->CritSim);
+//		else
+//		{
+//			if(CritSimAvgSim)
+//				Prom.Assign(s,CritSimAvgSim,BestSols()->CritSimAvgSim);
+//			if(CritSimJ)
+//				Prom.Assign(s,CritSimJ,BestSols()->CritSimJ);
+//			if(CritSimAvgRatio)
+//				Prom.Assign(s,CritSimAvgRatio,BestSols()->CritSimAvgRatio);
+//			if(CritSimMinRatio)
+//				Prom.Assign(s,CritSimMinRatio,BestSols()->CritSimMinRatio);
+//			if(CritSimRatio)
+//				Prom.Assign(s,CritSimRatio,BestSols()->CritSimRatio);
+//			if(CritSimWOverB)
+//				Prom.Assign(s,CritSimWOverB,BestSols()->CritSimWOverB);
+//			if(CritSimSimWB)
+//				Prom.Assign(s,CritSimSimWB,BestSols()->CritSimSimWB);
+//		}
+//		Prom.Assign(s,CritInfo,BestSols()->CritInfo);
+//		Prom.Assign(s,CritSameFeedbacks,BestSols()->CritSameFeedbacks);
+//		Prom.Assign(s,CritDiffFeedbacks,BestSols()->CritDiffFeedbacks);
+//		Prom.Assign(s,CritSocial,BestSols()->CritSocial);
+//	}
+//	Prom.ComputePrometheeII();
+//	(*BestChromosome)=(*BestSols.Tab[Prom.GetBestSol()->GetId()]);
+//	emitBestSig();
 }
 
 

@@ -147,6 +147,11 @@ public:
 	* @param s*             C string coding the settings.
 	*/
 	void SetSettings(const char* s);
+	
+	/**
+	* Destructor.
+	*/
+	~GGetFeedback(void);
 
 };
 

@@ -86,6 +86,7 @@ GALILEI::GSubjectTree::GSubjectTree(unsigned int NbOk,unsigned int NbKo,unsigned
 	profiles=new RContainer<GProfile,unsigned,false,true>(10,5);
 	sprintf(today,"'%u-%u-%u'",date.GetYear(),date.GetMonth(),date.GetDay());
 	IdealDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
+
 }
 
 
@@ -93,7 +94,9 @@ GALILEI::GSubjectTree::GSubjectTree(unsigned int NbOk,unsigned int NbKo,unsigned
 void GALILEI::GSubjectTree::InsertProfiles(void)
 {
 	int profid=1, subid=1;
-	for (int i=0; i<NbUsers; i++)
+	unsigned int i;
+
+	for (i=0; i<NbUsers; i++)
 	{
 		for (this->Start();!this->End(); this->Next())
 		{
@@ -109,12 +112,81 @@ void GALILEI::GSubjectTree::InsertProfiles(void)
 			}
 		}
 	}
-	
+
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int perchs,int nbmin,int nbmax,unsigned int percsocial,int percerr)
+void GALILEI::GSubjectTree::ChooseSubject(GSession* ses,unsigned int percgrp,unsigned int NbDocPerGrp)
+{
+	ses->LoadIdealDocument(IdealDoc);
+	int PercGrp=percgrp;
+	int nbrsububjects=0;
+	int compt=0;
+	for (this->Start();!this->End(); this->Next())
+	{
+		nbrsububjects=nbrsububjects+(*this)()->NbPtr;
+	}
+	int* tab;
+	int* tab1;
+	unsigned int* tab2;
+	tab=new int [nbrsububjects];
+	tab1=new int [nbrsububjects];
+	tab2=new unsigned int [nbrsububjects];
+	for(IdealDoc->Start();!IdealDoc->End();IdealDoc->Next())
+	{
+		GGroupEvaluateCursor Grp=(*IdealDoc)()->GetGroupEvaluateCursor();
+		for(Grp.Start();!Grp.End();Grp.Next())
+		{
+			tab2[compt]=Grp()->NbPtr();
+			compt++;
+		}
+	}
+   	for (int i=0; i<nbrsububjects;i++)
+	{
+		tab[i]=ses->GetCurrentRandomValue(100);
+		tab1[i]=tab[i];
+	}
+	qsort(tab, nbrsububjects, sizeof(int),sortOrder);
+	int nb=int(nbrsububjects*PercGrp/100);
+	if(nb<0) nb=0;
+	if(nb>nbrsububjects-1) nb=nbrsububjects-1;
+	int minvalue=tab[nb];
+	compt=0;
+	int comptused=0;
+	for (this->Start(); !this->End(); this->Next())
+	{
+		GSubject* subject=(*this)();
+		for (subject->Start();!subject->End();subject->Next())
+		{
+			if((tab1[compt]<=minvalue)&&(tab2[compt]>NbDocPerGrp))
+			{
+				(*subject)()->setIsUsed(true);
+				comptused++;
+			}
+			else
+			{
+				(*subject)()->setIsUsed(false);
+			}
+			compt++;
+		}
+	}
+	delete [] tab;
+	delete [] tab1;
+	delete [] tab2;
+
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GSubjectTree::sortOrder(const void * a, const void * b)
+{
+	return ( *(int*)a - *(int*)b );
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int perchs,unsigned int nbmin,unsigned int nbmax,unsigned int percsocial,int percerr)
 {
 	int NbProfilesWhoJudgesDocuments;
 	unsigned int psocial;
@@ -125,7 +197,6 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int pe
 	InitProfiles();
 	InitSubSubjects();
 	GProfileCursor ProfCursor;
-	ses->LoadIdealDocument(IdealDoc);
 
 	//Calculation of the total number of subsubjects.
 	int nbrsububjects=0;
@@ -133,12 +204,29 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int pe
 	{
 		nbrsububjects=nbrsububjects+(*this)()->NbPtr;
 	}
-    int* tab;
+
+	int* tab;
 	tab=new int [nbrsububjects];
 	for (int i=0; i<nbrsububjects;i++)
 		tab[i]=0;
-	
-	
+
+	int* tabs;
+	tabs=new int [nbrsububjects];
+	for (int i=0; i<nbrsububjects;i++)
+		tabs[i]=0;
+
+
+	int compt=0;
+	for (this->Start(); !this->End(); this->Next())
+	{
+		GSubject* subject=(*this)();
+		for (subject->Start();!subject->End();subject->Next())
+		{
+			if((*subject)()->isUsed())	tabs[compt]=1;
+			compt++;
+		}
+	}
+
 	// Create the social parameters.
 	ProfCursor=ses->GetProfilesCursor();
 	for(ProfCursor.Start();!ProfCursor.End();ProfCursor.Next())
@@ -157,103 +245,118 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int pe
 		for (subject->Start();!subject->End();subject->Next())
 		{
 			GSubject* sub1=(*subject)();
-			// find the number of profile who can judge documents.
-			if (nbmax>NbProfiles) NbProfilesWhoJudgesDocuments =(ses->GetCurrentRandomValue(NbProfiles-nbmin))+nbmin;
-			else  NbProfilesWhoJudgesDocuments =(ses->GetCurrentRandomValue(nbmax-nbmin))+nbmin;
-
-			// Set that the subject is judged.
-			sub1->setIsJudged(true);
-			
-			// For each subprofiles who can judge documents/
-			for (int i=0; i<NbProfilesWhoJudgesDocuments; i++)
+			if(sub1->isUsed())
 			{
-				// Create the judgement.
-				// First, find the profile who can judge the docs
-				int profid=(tab[sub1->GetId()-1])*nbrsububjects+sub1->GetId();
-				GProfile* proftemp = profiles->GetPtr(profid);
-				proftemp->SetState(osUpdated);
-				tab[sub1->GetId()-1]=tab[sub1->GetId()-1]+1;
+				// find the number of profile who can judge documents.
+				if (nbmax>NbProfiles) NbProfilesWhoJudgesDocuments =(ses->GetCurrentRandomValue(NbProfiles-nbmin))+nbmin;
+				else  NbProfilesWhoJudgesDocuments =(ses->GetCurrentRandomValue(nbmax-nbmin))+nbmin;
+
+				// Set that the subject is judged.
+				sub1->setIsJudged(true);
+			
+				// For each subprofiles who can judge documents/
+				for (int i=0;i<NbProfilesWhoJudgesDocuments;i++)
+				{
+					// Create the judgement.
+					// First, find the profile who can judge the docs
+					int profid=(tab[sub1->GetId()-1])*nbrsububjects+sub1->GetId();
+					GProfile* proftemp=profiles->GetPtr(profid);
+					proftemp->SetState(osUpdated);
+					tab[sub1->GetId()-1]=tab[sub1->GetId()-1]+1;
 		
-				// Documents OK.
-				JudgeDocuments(profid,sub1,1,ses,percerr);
+					// Documents OK.
+					JudgeDocuments(profid,sub1,1,ses,percerr);
 
-				// The Number of Ok documents judged by this profiles.
-				int nbDocok = int(((double(NbDocsOk*sub1->urls->NbPtr)/100))+0.5);
+					// The Number of Ok documents judged by this profiles.
+					int nbDocok = int(((double(NbDocsOk*sub1->urls->NbPtr)/100))+0.5);
 
-				int SubthemaKO;
-				// Documents KO.
-				if (subject->NbPtr>1) //If the subsuject enables the KO judgement of documents.
-				{
-					int subthema = (ses->GetCurrentRandomValue(subject->NbPtr))+subject->SubSubjectMinId();
-					GSubject* sub2=subject->GetPtr(subthema);
-					SubthemaKO=subthema;
-					while(sub2==sub1)
+					// Documents KO.
+					//If the subsuject enables the KO judgement of documents.
+					int* tabko;
+					tabko=new int [subject->NbPtr];
+					for (unsigned int i=0; i<subject->NbPtr;i++)
+						tabko[i]=0;
+
+					if (subject->NbPtr>1)
 					{
-						int subthema = (ses->GetCurrentRandomValue(subject->NbPtr))+subject->SubSubjectMinId();
-						sub2=subject->GetPtr(subthema);
-						SubthemaKO=subthema;
-					}
-					JudgeDocuments(profid,sub2,2,ses,percerr);
-				}
-
-				// Documents HS.
-				// If the subsuject enables the KO judgement of documents.
-				if (NbDocsHs>0)
-				{
-					// Judge NBDocsHs percent of NbDocok
-					for (int i=1;i<int(NbDocsHs*nbDocok/100);i++)
-					{
-						int DocIdToJug=(ses->GetCurrentRandomValue(ses->GetNbDocs())+1);
-						int GrpDocId;
-						GDoc* doc=ses->GetDoc(DocIdToJug);
-
-						// Verify that the Document is not in ok or ko subject
-						for(IdealDoc->Start();! IdealDoc->End();  IdealDoc->Next())
+						for(unsigned int i=0;i<subject->NbPtr-1;i++)
 						{
-							GGroupEvaluateCursor Grp=(*IdealDoc)()->GetGroupEvaluateCursor();
-							for(Grp.Start();!Grp.End();Grp.Next())
+							int subthema=i+subject->SubSubjectMinId();
+							GSubject* sub2=subject->GetPtr(subthema);
+							if(sub2!=sub1)
 							{
-								if(Grp()->IsIn(DocIdToJug))
-								{
-									GrpDocId=Grp()->GetId();
-								}
+	  							if(sub2->isUsed()) JudgeDocuments(profid,sub2,2,ses,percerr);
 							}
 						}
+					}
 
-						// If the doc is not in the ok subjetc or ko subject
-						// and that the profiles doenst have judged
-						if((GrpDocId!=sub1->GetId())&&(GrpDocId!=SubthemaKO))
+					// Documents HS.
+					// If the subsuject enables the KO judgement of documents.
+					if (NbDocsHs>0)
+					{
+						// Judge NBDocsHs percent of NbDocok
+						for (int i=1;i<int(NbDocsHs*nbDocok/100);i++)
 						{
-							if(ses->GetProfile(profid)->GetFeedback(doc)==0)
+							int DocIdToJug=(ses->GetCurrentRandomValue(ses->GetNbDocs())+1);
+							int GrpDocId=0;
+
+							GDoc* doc=ses->GetDoc(DocIdToJug);
+
+							// Verify that the Document is not in ok or ko subject
+							for(IdealDoc->Start();!IdealDoc->End();IdealDoc->Next())
 							{
-								// the default value is HS
-								int tempjug=3;
-								// but if ther is random error
-								if(ses->GetCurrentRandomValue(100)<int(percerr))
+								GGroupEvaluateCursor Grp=(*IdealDoc)()->GetGroupEvaluateCursor();
+								bool find=false;
+								for(Grp.Start();!Grp.End();Grp.Next())
 								{
-									tempjug=int(ses->GetCurrentRandomValue(3)+1);
-								}
-								if(tempjug==1)
-								{
-									 ses->InsertFdbk(ses->GetProfile(profid),doc,djOK,today);
-								}
-								else if(tempjug==2)
-								{
-									ses->InsertFdbk(ses->GetProfile(profid),doc,djKO,today);
-								}
-								else if(tempjug==3)
-								{
-									ses->InsertFdbk(ses->GetProfile(profid),doc,djOutScope,today);
+									if(Grp()->IsIn(DocIdToJug))
+									{
+										GrpDocId=Grp()->GetId();
+										find=true;
+									}
+									if(find) continue;
 								}
 							}
-							else i--;
+
+							// If the doc is not in the ok subject or ko subject
+							// and that the profiles doenst have judged and that the subject is judged
+
+							if((GrpDocId>subject->SubSubjectMinId())&&(GrpDocId<subject->SubSubjectMinId()+subject->NbPtr)&&(tabs[GrpDocId-1]==1))
+							{
+								if(ses->GetProfile(profid)->GetFeedback(doc)==0)
+								{
+									// the default value is HS
+									int tempjug=3;
+
+									//But if their is random error
+									if(ses->GetCurrentRandomValue(100)<int(percerr))
+									{
+										tempjug=int(ses->GetCurrentRandomValue(3)+1);
+									}
+									if(tempjug==1)
+									{
+										ses->InsertFdbk(ses->GetProfile(profid),doc,djOK,today);
+									}
+									else if(tempjug==2)
+									{
+										ses->InsertFdbk(ses->GetProfile(profid),doc,djKO,today);
+									}
+									else if(tempjug==3)
+									{
+										ses->InsertFdbk(ses->GetProfile(profid),doc,djOutScope,today);
+									}
+								}
+								else i--;
+							}
 						}
 					}
 				}
 			}
 		}
 	}
+	
 	delete [] tab;
+	delete [] tabs;
 }
   
 
@@ -280,12 +383,11 @@ void GALILEI::GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSe
 
 
 	RContainer<GDoc,unsigned,false,false>* judgedDocs=new RContainer<GDoc,unsigned,false,false>(10,5);
-	int j=0;
-	while (j<NbDocs)
+	int j=0;  while (j<NbDocs)
 	{
 		sub->urls->Start();
-		int url=(ses->GetCurrentRandomValue(sub->urls->NbPtr))+(*(sub->urls))()->GetId();
-		GDoc* doc=sub->urls->GetPtr(url);
+		int url=(ses->GetCurrentRandomValue(sub->urls->NbPtr));
+		GDoc* doc=sub->urls->GetPtrAt(url);
 		if (!judgedDocs->GetPtr(doc->GetId()))
 		{
 			int tempjug=judgement;
@@ -296,7 +398,7 @@ void GALILEI::GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSe
 			}
 			if(tempjug==1)
 			{
-				 ses->InsertFdbk(ses->GetProfile(profileid),ses->GetDoc(doc->GetId()),djOK,today);
+				ses->InsertFdbk(ses->GetProfile(profileid),ses->GetDoc(doc->GetId()),djOK,today);
 			}
 			else if(tempjug==2)
 			{
@@ -306,10 +408,12 @@ void GALILEI::GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSe
 			{
 				ses->InsertFdbk(ses->GetProfile(profileid),ses->GetDoc(doc->GetId()),djOutScope,today);
 			}
+
 			judgedDocs->InsertPtr(doc);
 			j++;
 		}
-	}	
+	}
+
 	delete judgedDocs;
 }     
 
@@ -395,7 +499,7 @@ void GALILEI::GSubjectTree::IdealGroupmentFile(const char* url)
 void GALILEI::GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,true>* Groups,GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent) 	// research by profiles' name to find ideal groups
 {
 	unsigned int nb;
-	unsigned int id,ii;
+	unsigned int id;
 	GGroups* groups;
 	GGroup* group;
 	unsigned int nbprof;
@@ -416,13 +520,13 @@ void GALILEI::GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int
 			nbrsubsubjects++;
 		}
 	}
-	ii=0;
+
 	nb=nbrsubsubjects;
 	CurLang=ses->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 		Groups->InsertPtr(new GGroups(CurLang()));
 
-
+	CreateParent(parent);
 	RContainer<GProfile,unsigned,false,false>* prof=new RContainer<GProfile,unsigned,false,false>(10,5);
 	//For each subject.
 	for (Start(); !End(); Next())
@@ -432,46 +536,48 @@ void GALILEI::GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int
 		for (subject->Start(); !subject->End(); subject->Next())
 		{
 			GSubject* sub= (*subject)();
-			if (sub->isJudged())
+			if (sub->isUsed())
 			{
-				lang=ses->GetLang(sub->GetLang());
-				int* tab;
-				tab=new int[profiles->NbPtr];
-				unsigned int k;
-				for (k=0; k<(profiles->NbPtr); k++)
+				if (sub->isJudged())
 				{
-					tab[k]=0;
-				}
-				int c=0;
-				// find the profiles who are in the subsubject.
-				for (profiles->Start(); !profiles->End(); profiles->Next())
-				{
-					GProfile* profile= (*profiles)();
-					if((!prof->GetPtr(profile))&&(profile->GetState()==osUpdated)&&(!strcmp(profile->GetName(),(RString(subject->GetName())+"/"+sub->GetName()))))
+					lang=ses->GetLang(sub->GetLang());
+					int* tab;
+					tab=new int[profiles->NbPtr];
+					unsigned int k;
+					for (k=0; k<(profiles->NbPtr); k++)
 					{
-						c=c+1;
-						prof->InsertPtr(profile);
-						tab[c-1]=profile->GetId();
+						tab[k]=0;
 					}
+					int c=0;
+					// find the profiles who are in the subsubject.
+					for (profiles->Start(); !profiles->End(); profiles->Next())
+					{
+						GProfile* profile= (*profiles)();
+						if((!prof->GetPtr(profile))&&(profile->GetState()==osUpdated)&&(!strcmp(profile->GetName(),(RString(subject->GetName())+"/"+sub->GetName()))))
+						{
+							c=c+1;
+							prof->InsertPtr(profile);
+							tab[c-1]=profile->GetId();
+						}
+					}
+					nbprof=c;
+					groups=Groups->GetPtr<const GLang*>(lang);
+					group=new GGroupVector(sub->GetId(),lang);
+					//parent->InsertPtr(new GGroupIdParentId(ii,subject->GetId()));
+					groups->InsertPtr(group);
+					int temp=0 ;
+					while (tab[temp]!=0)
+					{
+						id=tab[temp];
+						profile=ses->GetProfile(id);
+						if(!profile) continue;
+						subprofile=profile->GetSubProfile(lang);
+						if(!subprofile) continue;
+						group->InsertPtr(subprofile);
+						temp++;
+					}
+					delete[] tab;
 				}
-				nbprof=c;
-				groups=Groups->GetPtr<const GLang*>(lang);
-				ii++;
-				group=new GGroupVector(ii,lang);
-				parent->InsertPtr(new GGroupIdParentId(ii,subject->GetId()));
-				groups->InsertPtr(group);
-				int temp=0 ;
-				while (tab[temp]!=0)
-				{
-					id=tab[temp];
-					profile=ses->GetProfile(id);
-					if(!profile) continue;
-					subprofile=profile->GetSubProfile(lang);
-					if(!subprofile) continue;
-					group->InsertPtr(subprofile);
-					temp++;
-				}
-				delete[] tab;
 			}
 		}
 	}
@@ -482,6 +588,7 @@ void GALILEI::GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int
 //-----------------------------------------------------------------------------
 void GALILEI::GSubjectTree::CreateParent(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent)
 {
+	parent->Clear();
 	for (Start(); !End(); Next())
 	{
 		GSubject * subject= (*this)();
@@ -493,6 +600,7 @@ void GALILEI::GSubjectTree::CreateParent(RStd::RContainer<GGroupIdParentId,unsig
 		}
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSubjectTree::InitProfiles()
@@ -523,4 +631,6 @@ void GALILEI::GSubjectTree::InitSubSubjects()
 //-----------------------------------------------------------------------------
 GALILEI::GSubjectTree::~GSubjectTree(void)
 {
+	delete profiles;
+	delete IdealDoc;
 }

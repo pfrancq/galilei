@@ -414,6 +414,7 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup)
 {
+
 	char sSql[100];
 	GGroupsEvaluate* groups;
 	GGroupEvaluateDoc* group;
@@ -424,12 +425,13 @@ void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsign
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		groups = new GGroupsEvaluate(Langs());
-		sprintf(sSql,"SELECT distinct groupid FROM idealgroup WHERE langid='%s'",Langs()->GetCode());
+	//	sprintf(sSql,"SELECT distinct subsubjectid FROM subjectbyhtmls WHERE langid='%s'",Langs()->GetCode());
+		sprintf(sSql,"SELECT distinct subsubjectid FROM subsubject WHERE langid='%s'",Langs()->GetCode());
 		RQuery sel(this,sSql);
 		for(sel.Start();!sel.End();sel.Next())
 		{
 			RContainer<GDoc,unsigned int,false,true>* doc=new RContainer<GDoc,unsigned int,false,true>(100,50);
-			sprintf(sSql,"SELECT htmlid FROM htmls where subsubjectid=%u",atoi(sel[0]));
+			sprintf(sSql,"SELECT htmlid FROM subjectbyhtmls where subsubjectid=%u",atoi(sel[0]));
 			RQuery sub(this,sSql);
 			for(sub.Start();!sub.End();sub.Next())
 			{
@@ -516,27 +518,29 @@ void GALILEI::GSessionMySQL::SaveIdealGroupment(RContainer<GGroups,unsigned int,
 void GALILEI::GSessionMySQL::LoadSubjectTree(GSubjectTree* subjects)
 {
 	char sSql[200];
-	
 	sprintf(sSql,"SELECT subjectid,subjectname from subject");
 	RQuery sub(this,sSql);
 	for(sub.Start();!sub.End();sub.Next())
 	{
+		int temp=0;
 		GSubject* subject=new GSubject(sub[1],atoi(sub[0]));
 		sprintf(sSql,"SELECT subsubjectid,subsubjectname from subsubject where subjectid=%u",atoi(sub[0]));
 		RQuery subsub(this,sSql);
 		for(subsub.Start();!subsub.End();subsub.Next())
 		{
 			GSubject* subsubject=new GSubject(subsub[1],atoi(subsub[0]));
-			sprintf(sSql,"SELECT htmlid from htmls where subsubjectid=%u",atoi(subsub[0]));
+			sprintf(sSql,"SELECT htmlid from subjectbyhtmls where subsubjectid=%u",atoi(subsub[0]));
 			RQuery doc(this,sSql);
 			for(doc.Start();!doc.End();doc.Next())
 			{
 				subsubject->urls->InsertPtr(this->GetDoc(atoi(doc[0])));
 				subsubject->SetLang(this->GetDoc(atoi(doc[0]))->GetLang());
+				temp++;
 			}
+			if(temp==0) subsubject->SetLang(this->GetDoc(1)->GetLang());
 			subject->InsertNode(subsubject);
 		}
-		subjects->InsertPtr(subject);
+			subjects->InsertPtr(subject);
 	}
 }
 

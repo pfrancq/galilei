@@ -118,12 +118,18 @@ protected:
 	/**
 	* The id of the subject.
 	*/
-	int Id;
+	unsigned int Id;
 
 	/**
-	* Return true if the subsubject is judged.
+	* true if the subsubject is judged.
 	*/
 	bool IsJudged;
+
+	/**
+	* true if the subsubject is used.
+	*/
+	bool IsUsed;
+
 
 	/**
 	* The language of a subsubject
@@ -142,7 +148,7 @@ public:
 	* @param name            The name of the subsubject.
 	* @param id              the subject id.
 	*/
-	GSubject(RStd::RString name, int id);
+	GSubject(RStd::RString name, unsigned int id);
 
 	/**
 	* Compare a subject with a given name.
@@ -182,7 +188,7 @@ public:
 	* Return the id of the Subject.
 	* @returns The id of the subject.
 	*/
-	int GetId(void) {return(Id);};
+	unsigned int GetId(void) {return(Id);};
 
 	/**
 	* Return true if the subject is judged
@@ -196,9 +202,20 @@ public:
 	void setIsJudged(bool b) {IsJudged=b;}
 
 	/**
+	* Return true if the subject is Used
+	* @returns IsUsed.
+	*/
+	bool isUsed(void) {return(IsUsed);}
+
+	/**
+	* Set the bool IsUsed.
+	*/
+	void setIsUsed(bool b) {IsUsed=b;}
+
+	/**
 	* Set the bool isjudged.
 	*/
-	int SubSubjectMinId(void);
+	unsigned int SubSubjectMinId(void);
 
 	/**
 	* Return the Lang of the Subject.

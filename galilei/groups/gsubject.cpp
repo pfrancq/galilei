@@ -71,10 +71,11 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GSubject::GSubject(RString name, int id)
+GSubject::GSubject(RString name,unsigned int id)
 	 : RNode<GSubject,false>(10,2)
 {
 	IsJudged=0;
+	IsUsed=false;
 	urls=new RContainer<GDoc,unsigned,false,false> (10,5);
 	Name=name;
 	Id=id;
@@ -82,9 +83,9 @@ GSubject::GSubject(RString name, int id)
 
 
 //-----------------------------------------------------------------------------
-int GSubject::SubSubjectMinId(void)
+unsigned int GSubject::SubSubjectMinId(void)
 {
-	int min;
+	unsigned int min;
 	GSubject **s1;
 	unsigned int i;
 
@@ -99,7 +100,7 @@ int GSubject::SubSubjectMinId(void)
 		GSubject* subject=(*s1);
 		if (subject->GetId()<min) min=subject->GetId();
 	}
-	return min;
+	return(min);
 }
 
 
@@ -113,4 +114,5 @@ void GSubject::SetLang(const GLang* lang)
 //-----------------------------------------------------------------------------
 GSubject::~GSubject(void)
 {
+	delete urls;
 }

@@ -69,27 +69,27 @@ protected:
 	/**
 	* Number of profiles needed.
 	*/
-	int NbProfiles;
+	unsigned int NbProfiles;
 
 	/**
 	* Number of documents Ok per profile.
 	*/
-	int NbDocsOk;
+	unsigned int NbDocsOk;
 
 	/**
 	* Number of documents Ko per profile.
 	*/
-	int NbDocsKo;
+	unsigned int NbDocsKo;
 
 	/**
 	* Number of documents Hs per profile.
 	*/
-	int NbDocsHs;
+	unsigned int NbDocsHs;
 
 	/**
 	* Number of users in database;.
 	*/
-	int NbUsers;
+	unsigned int NbUsers;
 
 	/**
 	* The date of today.
@@ -104,10 +104,10 @@ protected:
 	/**
 	* Container of all the profiles.
 	*/
-	RStd::RContainer<GProfile,unsigned,false,true>* profiles;
+	RStd::RContainer<GProfile,unsigned int,false,true>* profiles;
 
 	/**
-	* IdealDoc                the idealgroupment of document.
+	* The idealgroupment of document.
 	*/
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDoc;
 
@@ -122,7 +122,6 @@ protected:
 	void InitSubSubjects(void);
 
 
-
 public:
 	
 	/**
@@ -132,6 +131,19 @@ public:
 	* @param nbusers        nb of users in the database.
 	*/
 	GSubjectTree(unsigned int nbOk,unsigned int nbKo,unsigned int nbusers);
+
+	/**
+	* Static function used to ordered by frenquecy.
+	*/
+	static int sortOrder(const void *a,const void *b);
+
+	/**
+	* Chose subject to juge whith
+	* @param ses            The Gailieli session
+	* @param precgrp        The perc of group who will be in the session.
+	* @param NBDocPerGrp    The minimal number of document per group to keep the group.
+	*/
+	void ChooseSubject(GSession* ses,unsigned int percgrp,unsigned int NbDocPerGrp);
 
 	/**
 	* Executes the queries to create new profiles.
@@ -144,7 +156,7 @@ public:
 	* @param presocial      The % of profiels who are social
 	* @param precerr        The perc of document who will judge the profile non specialy conforming to the ideal groupment.
 	*/
-	void Judgments(GSession* ses,int percok,int precko,int prechs,int nbmin,int nbmax,unsigned int percsocial,int precerr);
+	void Judgments(GSession* ses,int percok,int precko,int prechs,unsigned int nbmin,unsigned int nbmax,unsigned int percsocial,int precerr);
 
 	/**
 	* Judge documents from the susubject sub.
@@ -167,14 +179,14 @@ public:
 	void InsertProfiles(void);
 
 	/**
-	* Filing in the conatiner of group with a ideal groupment.
+	* Filling in the conatiner of group with a ideal groupment.
 	* @param groups      The Ggroups container to fill in.
 	* @param ses         The Galieli session.
 	*/
 	void IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,true>* groups,GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent);
 
 	/**
-	* creates a container of GroupIdParentId from a subjctree.
+	* Creates a container of GroupIdParentId from a subjectree.
 	*/
 	void CreateParent(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent);
 

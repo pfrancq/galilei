@@ -104,7 +104,6 @@ void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,t
 		for(Grp.Start();!Grp.End();Grp.Next())
 		{
 			Prof1=Grp()->GetSubProfileCursor();
-			
 			for(Prof1.Start();!Prof1.End();Prof1.Next())
 			{
 				Grp()->NotJudgedDocsRelList(docs, Prof1(),Global);
@@ -116,7 +115,6 @@ void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,t
 					if(i<NbDoc)
 					{
 						CreateNewFeedback(JudgType(Prof1(),(*docs)()->GetDoc()),Prof1(),(*docs)()->GetDoc());
-
 					}
 					i++;
 				}
@@ -124,6 +122,7 @@ void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,t
 			}
 		}
 	}
+	
 	delete docs;
 	if(Save)
 		Session->SaveFdbks();
@@ -136,16 +135,37 @@ int GALILEI::GGetFeedback::JudgType(GSubProfile* SubProf,GDoc* Doc)
 
 	int GrpDocId;
 	int GrpProfId;
-	int tempres;
+	int tempres=3;
+	int nbgrp=0;
+
+	for(IdealGroup->Start();!IdealGroup->End();IdealGroup->Next())
+	{
+		GGroupCursor Grp=(*IdealGroup)()->GetGroupCursor();
+		for(Grp.Start();!Grp.End();Grp.Next())
+		{
+			nbgrp++;
+		}
+	}
+	
+	int* tab;
+	tab=new int [nbgrp];
+	for (int i=0; i<nbgrp;i++)
+		tab[i]=0;
+
+	int compt=0;
 
 	// Find The id of the group where the document is.
-	for(IdealDoc->Start();!  IdealDoc->End();  IdealDoc->Next())
+	for(IdealDoc->Start();! IdealDoc->End();  IdealDoc->Next())
 	{
 		GGroupEvaluateCursor Grp=(*IdealDoc)()->GetGroupEvaluateCursor();
- 		for(Grp.Start();!Grp.End();Grp.Next())
+		for(Grp.Start();!Grp.End();Grp.Next())
 		{
 			if(Grp()->IsIn(Doc->GetId()))
-			GrpDocId=Grp()->GetId();
+			{
+				GrpDocId=Grp()->GetId();
+				tab[compt]=GrpDocId;
+				compt++;
+			}
 		}
 	}
 
@@ -166,20 +186,45 @@ int GALILEI::GGetFeedback::JudgType(GSubProfile* SubProf,GDoc* Doc)
 		}
 	}
 
-	// Compare his two id.
-	// Same grp.
-	if(GrpDocId==GrpProfId) tempres=1;
-	// Same parent.
-	else if(Parent->GetPtr(GrpDocId)->ParentId==Parent->GetPtr(GrpProfId)->ParentId) tempres=2;
-	// Different grp.
-	else  tempres=3;
+	if(GrpProfId!=0)
+	{
+		// Compare his two id.
+		// Same grp.  
+		for(int i=0;i<nbgrp;i++)
+		{
+			if(tab[i]!=0)
+			{
+				if(tab[i]==GrpProfId) tempres=1;
+			}
+			else continue;
+		}
+
+		// Same parent.
+		if(tempres==3)
+		{
+			unsigned int b=Parent->GetPtr(GrpProfId)->ParentId;
+			for(int i=0;i<nbgrp;i++)
+			{
+				if(tab[i]!=0)
+				{
+					unsigned int a=Parent->GetPtr(tab[i])->ParentId;
+					if(a==b) tempres=2;
+				}
+				else continue;
+			}
+		
+		}
+	}
 
 	// If there is Random change the judgment.
 	if(Session->GetCurrentRandomValue(100)<int(PercErr))
 	{
 		tempres=int(Session->GetCurrentRandomValue(3)+1);
 	}
+
+	delete [] tab;
 	return(tempres);
+	
 }
 
 
@@ -229,3 +274,10 @@ const char* GALILEI::GGetFeedback::GetSettings(void)
 	sprintf(tmp,"%c %u %u",c,NbDoc,PercErr);
 	return(tmp);
 }
+
+//-----------------------------------------------------------------------------
+GALILEI::GGetFeedback::~GGetFeedback()
+{
+	delete IdealDoc;
+}
+
