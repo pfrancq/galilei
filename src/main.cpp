@@ -184,11 +184,6 @@ int main(int argc, char *argv[])
 		cout<<"Error: "<<e.GetMsg()<<endl;
 		Log->WriteLog(RString("Error: ")+e.GetMsg());
 	}
-	catch(R::RMySQLError& e)
-	{
-		cout<<"Error: "<<e.GetError()<<endl;
-		Log->WriteLog(RString("Error: ")+e.GetError());
-	}
 	catch(std::exception& e)
 	{
 		cout<<"Error: "<<e.what()<<endl;
