@@ -140,8 +140,8 @@ public:
 	/**
 	* Load and Save virtual functions.
 	*/
-	virtual void Load(void) throw(bad_alloc,GException)=0;
-	virtual void Save(void) throw(bad_alloc,GException)=0;
+//	virtual void Load(void) throw(bad_alloc,GException)=0;
+//	virtual void Save(void) throw(bad_alloc,GException)=0;
 
 };
 }  //-------- End of namespace GALILEI ----------------------------------------

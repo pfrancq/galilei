@@ -100,7 +100,7 @@ public:
 	
 	/** virtual Load function
 	*/
-	virtual void Load(void) throw(bad_alloc,GException)=0;
+//	virtual void Load(void) throw(bad_alloc,GException)=0;
 
 };
 

@@ -30,19 +30,86 @@
 */
 
 
+//-----------------------------------------------------------------------------
 #ifndef GSESSIONMSQL_H
 #define GSESSIONMSQL_H
 
+
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rmysql/rmysql.h>
+using namespace RMySQL;
+
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
 #include <gsessions/gsession.h>
+
+
+
+//-----------------------------------------------------------------------------
+namespace GALILEI{
+//-----------------------------------------------------------------------------
+
 
 /**
   *@author Pascal Francq
   */
 
-class gsessionmysql : public GSession  {
-public: 
-	gsessionmysql();
-	~gsessionmysql();
+class GSessionMySQL : public GSession
+{
+public:
+	
+	
+	GSessionMySQL(RDb* _db);
+	~GSessionMySQL(void);
+
+	RDb* db;
+
+	/**
+	* Loading Users function.
+	*/
+	void LoadUsersFromDB(void);
+	
+	/**
+	* Loading Profiles function
+	*@param usr             User owner of profiles.
+	*/
+	void LoadProfilesFromDB(GUser* usr);
+	
+	/**
+	* Loading SubProfiles function
+	*@param prof            Profile owner of the subprofiles.
+	*/
+	void LoadSubProfilesFromDB(GProfile* prof);
+	
+	/**
+	* Loading Langs into the 'Langs' container
+	*/
+	void LoadLangsFromDB(void);
+
+	/**
+	* Loading Dics into the 'Dics' container from Database.
+	*@param name            name of the database table containing the kwds.
+	*@param lang            languague of the dic.
+	*/
+	void LoadDicFromDB(const RString &name,GLang *lang);
+
+	/**
+	*
+	*/
+	unsigned DicNextId(const RString& word);
+	
 };
 
+}  //-------- End of namespace GALILEI ----------------------------------------
+
+//-----------------------------------------------------------------------------
+
 #endif
+
+
+
+
