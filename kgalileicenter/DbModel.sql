@@ -51,6 +51,16 @@ CREATE TABLE enkwds (
 
 
 --
+-- Table structure for table 'enkwdsbygroups'
+--
+
+CREATE TABLE enkwdsbygroups (
+  grid int(11) NOT NULL default '0',
+  kwdid int(11) NOT NULL default '0'
+) TYPE=MyISAM;
+
+
+--
 -- Table structure for table 'enstopkwds'
 --
 
@@ -104,6 +114,16 @@ CREATE TABLE frkwds (
   kwd varchar(50) default NULL,
   type int(11) default '1',
   PRIMARY KEY  (kwdid)
+) TYPE=MyISAM;
+
+
+--
+-- Table structure for table 'frkwdsbygroups'
+--
+
+CREATE TABLE frkwdsbygroups (
+  grid int(11) NOT NULL default '0',
+  kwdid int(11) NOT NULL default '0'
 ) TYPE=MyISAM;
 
 
