@@ -596,7 +596,7 @@ GUser* GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const char* /*n
 void GSession::InitLinks()
 {
 	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
-	if(!LinkCalc)
+	if(LinkCalc)
 		LinkCalc->InitGraph();
 }
 
