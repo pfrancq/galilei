@@ -85,6 +85,12 @@ public:
 	GGroupsCursor& GetGroupsCursor(void);
 
 	/**
+	* Get a pointer to all the groups.
+	* @return Pointer to containers of groups.
+	*/
+	RStd::RContainer<GGroups,unsigned int,true,true>* GetGroups(void);
+
+	/**
 	* Find the groups for a specific language.
 	* @param lang           Pointer to the language.
 	* @returns Pointer to the group.

@@ -67,6 +67,13 @@ GGroupsCursor& GALILEI::GGroupsMng::GetGroupsCursor(void)
 
 
 //-----------------------------------------------------------------------------
+RStd::RContainer<GGroups,unsigned int,true,true>* GALILEI::GGroupsMng::GetGroups(void)
+{
+	return(&Groups);
+}
+
+
+//-----------------------------------------------------------------------------
 GGroups* GALILEI::GGroupsMng::GetGroups(const GLang* lang) const
 {
 	return(Groups.GetPtr<const GLang*>(lang));
