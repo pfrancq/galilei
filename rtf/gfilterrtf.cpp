@@ -65,17 +65,21 @@ GALILEI::GFilterRTF::GFilterRTF(GFactoryFilter* fac)
 	Tags->InsertPtr(new Tag("\\info",Tag::tMETA));
 	Tags->InsertPtr(new Tag("\\listtable",Tag::tSKIP));
 	Tags->InsertPtr(new Tag("\\listtable",Tag::tSKIP));
+
 	//tag for info part
 	Tags->InsertPtr(new Tag("\\author",Tag::tAUTHOR));
+
 	//Tags->InsertPtr(new Tag("\\operator","",Tag::tOPERATOR,false,8,false));
 	Tags->InsertPtr(new Tag("\\title",Tag::tTITLE));
 	Tags->InsertPtr(new Tag("\\subject",Tag::tSUBJECT));
 	Tags->InsertPtr(new Tag("\\company",Tag::tPUBLI));
 	Tags->InsertPtr(new Tag("\\keywords",Tag::tDESCRIPT));
 	Tags->InsertPtr(new Tag("\\creatim",Tag::tDATE));
+
 	//Header & footer display
 	Tags->InsertPtr(new Tag("\\header",Tag::tSKIP));
 	Tags->InsertPtr(new Tag("\\footer",Tag::tSKIP));
+
 	//bullet and numbering info
 	Tags->InsertPtr(new Tag("\\pnseclvl",Tag::tSKIP));
 
@@ -140,6 +144,8 @@ GFilterRTF::Tag* GFilterRTF::FindTag(RString str)
 //------------------------------------------------------------------------------
 void GFilterRTF::AnalyseMeta(RString str, Tag* t)
 {
+	RString date("");
+
 	int id=str.FindStr(t->Name);
 	if(id<0) return;
 	id+=t->Name.GetLen();
@@ -168,7 +174,6 @@ void GFilterRTF::AnalyseMeta(RString str, Tag* t)
 
 		case Tag::tDATE :
 			unsigned int idValD,idValE;
-			RString date("");
 			//find year
 			idValD=str.FindStr("\\yr")+3;
 			idValE=str.Find('\\',idValD);
@@ -186,6 +191,9 @@ void GFilterRTF::AnalyseMeta(RString str, Tag* t)
 			idValE=str.Find('\\',idValD);
 			date+=str.Mid(idValD,idValE-idValD);
 			AnalyzeBlock(date,Doc->AddDate());
+			break;
+
+		default:
 			break;
 	}
 }
@@ -385,6 +393,7 @@ bool GFilterRTF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 //------------------------------------------------------------------------------
 void GALILEI::GFilterRTF::InitCharContainer(void)
 {
+	#warning Automatic code extraction must be possible
 	Chars.InsertPtr(new CodeToChar("\\u224\\\'00\\\'E0",0x00E0));
 	Chars.InsertPtr(new CodeToChar("\\u225\\\'00\\\'E1",0X00E1));
 	Chars.InsertPtr(new CodeToChar("\\u226\\\'00\\\'E2",0x00E2));
