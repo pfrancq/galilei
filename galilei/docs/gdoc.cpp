@@ -132,6 +132,13 @@ BeginExtract:
 	// If len null, return (nothing else to extract)
 	if(!len) return(false);
 
+	// if len=1, extract next word.
+	if(len==1)
+	{
+		Letter=false;
+		goto BeginExtract;
+	}
+
 	// If just numbers or special characters, extract next word.
 	if(!Letter)
 		goto BeginExtract;
@@ -187,9 +194,12 @@ void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw
 				if(!stop->IsIn<const char*>(word()))
 				{
 					stem=Lang->GetStemming(word);
-					Occur=Words.GetPtr(dic->GetId(stem));
-					if(!Occur->GetNbOccurs()) NbDiffWords++;
-					Occur->IncOccurs();
+					if(stem.GetLen()>=2)
+					{
+						Occur=Words.GetPtr(dic->GetId(stem));
+						if(!Occur->GetNbOccurs()) NbDiffWords++;
+						Occur->IncOccurs();
+					}
 				}
 			}
 		}
