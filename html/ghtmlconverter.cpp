@@ -934,7 +934,7 @@ void GHTMLConverter::ConstructURL(RString& urlG,RString link)
 	{
 		//The name of the file read ->to get base url
 		urlTmp = Doc->GetURL();
-		id= urlTmp.FindStr("/",-1);
+		id= urlTmp.FindStr("/",-1)+1;
 		base=urlTmp.Mid(0,id);
 	}
 	else
