@@ -177,7 +177,7 @@ void KViewProfile::ConstructFdbks(void)
 		d=Docs()->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
 		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName(),Docs()->GetDoc()->GetURL(),sDate);
-		prof->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/personal.png"));
+		prof->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/konqueror.png"));
 	}
 }
 
