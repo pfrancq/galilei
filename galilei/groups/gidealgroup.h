@@ -173,6 +173,13 @@ public:
 	void AddJudgement(bool Save);
 
 	/**
+	* Add judgements for some new not used profiles.
+	* @param minprofiles           minimum number of new profiles to create.
+	* @param maxprofiles           maximum number of new profiles to create.
+	*/
+	unsigned int AddProfiles(unsigned int minprofiles, unsigned int maxprofiles, bool Save);
+
+	/**
 	* Get the settings of the method coded in a string.
 	* return Pointer to a C string.
 	*/
