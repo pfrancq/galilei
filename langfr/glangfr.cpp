@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <string.h>
+#include <ctype.h>
 
 
 //-----------------------------------------------------------------------------
@@ -69,7 +70,9 @@ GLangFR::FrenchPorterRule::FrenchPorterRule(char* os,char* ns,int oo,int no,int 
 GALILEI::GLangFR::GLangFR(void) throw(bad_alloc)
 	: GLang("French","fr"), Rules1(0)
 {
+	
 	Rules1=new RContainer<FrenchPorterRule,unsigned int,true,false>(130,10);
+	
 	Rules1->InsertPtr(new FrenchPorterRule("issaient"," ", 7,0 ,1));
 	Rules1->InsertPtr(new FrenchPorterRule("alement"," ",6 ,0 ,1));
 	Rules1->InsertPtr(new FrenchPorterRule("eraient"," ",6 ,0 ,1));
@@ -96,6 +99,7 @@ GALILEI::GLangFR::GLangFR(void) throw(bad_alloc)
 	Rules1->InsertPtr(new FrenchPorterRule("t"," ", 0, 0,1));
 
 	Rules1->InsertPtr(new FrenchPorterRule("ication"," ",6 ,0 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("uction"," ",2 ,0 ,1)); // a moi
 	Rules1->InsertPtr(new FrenchPorterRule("iation"," ",5 ,0 ,1));
 	Rules1->InsertPtr(new FrenchPorterRule("ation"," ",4 ,0 ,1));
 	Rules1->InsertPtr(new FrenchPorterRule("tion"," ",3 ,0 ,1));
@@ -230,11 +234,13 @@ GALILEI::GLangFR::GLangFR(void) throw(bad_alloc)
 
 	Rules1->InsertPtr(new FrenchPorterRule("eau"," ",2 ,0 ,1));
 	Rules1->InsertPtr(new FrenchPorterRule("au"," ",2 ,0 ,1)); // a moi
-	Rules1->InsertPtr(new FrenchPorterRule("uction"," ",2 ,0 ,1)); // a moi
 
-	Rules2=new RContainer<FrenchPorterRule,unsigned int,true,false>(130,10);
-	Rules2->InsertPtr(new FrenchPorterRule("nn","n",1 ,0 ,1));
-	Rules2->InsertPtr(new FrenchPorterRule("ll","l",1 ,0 ,1));
+
+	Rules2=new RContainer<FrenchPorterRule,unsigned int,true,false>(10,10);
+	Rules2->InsertPtr(new FrenchPorterRule("nn ","n",2 ,0 ));
+	Rules2->InsertPtr(new FrenchPorterRule("ll ","l",2 ,0 ));
+
+
 
 }
 
@@ -298,8 +304,7 @@ bool GALILEI::GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRu
 		// in ending. If the ending isn't corresponding to the rule's suffix,
 		// go to the next rule.
 		
-		// Verify if the minimum root size is Ok.
-		if(ptr->MinRootSize>WordSize) continue;
+		
 		
 		if(len<=ptr->OldOffset) continue;
 		ending=end-ptr->OldOffset;
@@ -338,6 +343,10 @@ RString& GALILEI::GLangFR::GetStemming(const RString& _kwd)
 	ApplyRules(kwd,end,Rules2);
 	
 	// Put the result in res and return it.
+	while((*end)&&(!isspace(*end)))
+		end++;
+	if(*end)
+		(*end)=0;
 	(*res)=kwd;
 	return((*res));
 }
