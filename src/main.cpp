@@ -70,7 +70,8 @@ using namespace R;
 #include <sessions/gsessionmysql.h>
 #include <sessions/gconfig.h>
 #include <sessions/gslotlog.h>
-#include <docs/gdocoptions.h>
+#include <docs/gdocanalysemanager.h>
+#include <langs/glangs.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -98,12 +99,16 @@ int main(int argc, char *argv[])
  		GGroupCalcManager GroupCalcManager("/home/pfrancq/prj/galilei_plugins",false);
  		GStatsCalcManager StatsCalcManager ("/home/pfrancq/prj/galilei_plugins",false);
  		GLinkCalcManager LinkCalcManager("/home/pfrancq/prj/galilei_plugins",false);
+		GLangs Langs("/home/pfrancq/prj/galilei_plugins",false);
+		GDocAnalyseManager DocAnalyseManager("/home/pfrancq/prj/galilei_plugins",false);
 
 		// Read Config
 		cout<<"Read Config"<<endl;
 		RXMLFile ConfigFile("/etc/galilei/galilei.conf",&Config,R::Read);
 		GConfig Conf(Config.GetTag("Config")->GetAttrValue("File"));
 		Conf.Load();
+		Conf.Read(Langs);
+		Conf.Read(DocAnalyseManager);
 		Conf.Read(URLManager);
 		Conf.Read(ProfilingManager);
 		Conf.Read(GroupingManager);
@@ -112,19 +117,6 @@ int main(int argc, char *argv[])
 		Conf.Read(LinkCalcManager);
 
 		// Options
-		GDocOptions DocOptions;
-		DocOptions.MinStopWords=0.01;
-		DocOptions.MinWordSize=4;
-		DocOptions.MinStemSize=3;
-		DocOptions.MinOccur=1;
-		DocOptions.MinDocs=5;
-		DocOptions.MaxDocs=300;
-		DocOptions.MinOccurCluster=2;
-		DocOptions.NbIteration=2;
-		DocOptions.NonLetterWords=true;
-		DocOptions.UseLink=false;
-		DocOptions.UseExternalLink=false;
-		DocOptions.UseRedirection=false;
 		GSessionParams SessionParams;
 		SessionParams.Set("SameBehaviourMinDocs",15);
 		SessionParams.Set("DiffBehaviourMinDocs",15);
@@ -139,17 +131,16 @@ int main(int argc, char *argv[])
 							Config.GetTag("World")->GetAttrValue("User"),
 							Config.GetTag("World")->GetAttrValue("Pwd"),
 							Config.GetTag("World")->GetAttrValue("Name"),
-							&DocOptions,&SessionParams,false);
+							&SessionParams,false);
 		Log->WriteLog("Session created");
 
 
 		// Load Data from MySQL database
-		Session.InitDics();
+		Session.Connect(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
 		Session.InitDocs(false,true);
 		Session.InitGroups(false,true);
 		Session.InitUsers(false,true);
 		Session.InitFdbks();
-		Session.Connect(&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
 		Log->WriteLog("Data loaded");
 
 // 		try
