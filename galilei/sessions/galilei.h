@@ -196,6 +196,7 @@ class GParams;
 class GParam;
 class GConfig;
 class GSessionParams;
+class GStorage;
 
 
 //------------------------------------------------------------------------------

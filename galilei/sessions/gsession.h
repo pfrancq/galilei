@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -37,12 +37,12 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GSessionH
 #define GSessionH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <profiles/gusers.h>
@@ -51,104 +51,97 @@
 #include <sessions/gparams.h>
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GSession provides a representation for a GALILEI session. The way the
-* data are stored and loaded is dedicated to a child class of GSession through
-* a set of pure virtual methods defined.
+* The GSession provides a representation for a generic GALILEI session.
 * @author GALILEI Team
 * @short Generic Session.
 */
 class GSession : public GDocs, public GUsers, public GGroups
 {
 protected:
+
 	/**
-	* Pointer to a tree of subject
+	* Pointer to a tree of subjects used for testing purposes.
 	*/
 	GSubjects* Subjects;
 
 	/**
-	* Name of the current database.
-	*/
-	R::RString DbName;
-
-	/**
-	* All the judgements.
+	* All the assessments.
 	*/
 	R::RContainer<GProfDoc,unsigned,true,true> Fdbks;
 
 	/**
-	* Pointer to the languages.
+	* Languages Manager.
 	*/
 	GLangManager* Langs;
 
 	/**
-	* URL Manager used by this session.
+	* URL Manager.
 	*/
 	GFilterManager* URLMng;
 
 	/**
-	* Profile Calc Manager used by this session.
+	* SubProfile Computing Methods Manager.
 	*/
 	GProfileCalcManager* ProfilingMng;
 
 	/**
-	* Grouping Manager used by this session.
+	* Grouping Methods Manager.
 	*/
 	GGroupingManager* GroupingMng;
 
 	/**
-	* Group Computing Manager used by this session.
+	* Group Computing Methods Manager.
 	*/
 	GGroupCalcManager* GroupCalcMng;
 
 	/**
-	* Statistics Manager used by this session.
+	* Statistics Methods Manager.
 	*/
 	GStatsCalcManager* StatsCalcMng;
 
 	/**
-	* Linking Manager used by this session.
+	* Link Methods Manager.
 	*/
 	GLinkCalcManager* LinkCalcMng;
 
 	/**
-	* PostGroup Manager used by this session.
+	* Post-Group Computing Methods Manager.
 	*/
 	GPostGroupManager* PostGroupMng;
 
 	/**
-	* Words clustering Manager used by this session.
+	* Documents Post-Analysis Methods Manager.
 	*/
 	GPostDocManager* PostDocMng;
 
 	/**
-	* Analyser used for the document.
+	* Document Analysis Methods Manager.
 	*/
 	GDocAnalyseManager* DocAnalyseMng;
 
 	/**
-	* Similarity between the  profiles.
+	* Similarities between the subprofiles.
 	*/
 	GProfilesSims* ProfilesSims;
 
 	/**
-	* behaviour inter profiles.
+	* Agreement and disagreement ratios between the subprofiles.
 	*/
 	GProfilesBehaviours* ProfilesBehaviours;
 
 	/**
-	*  Similarity between documents and profiles for each langage.
+	*  Similarities between documents and subprofiles.
 	*/
 	GDocProfSims* DocProfSims;
 
 	/**
-	* The current seek for this session.
+	* Current seek for this session.
 	*/
 	int CurrentRandom;
 
@@ -162,191 +155,188 @@ protected:
 	*/
 	GSessionParams* SessParams;
 
+	/**
+	* Storage manager.
+	*/
+	GStorage* Storage;
+
 public:
 
 	/**
 	* Constructor.
-	* @param d              Number of documents.
-	* @param u              Number of users.
-	* @param p              Number of profiles.
-	* @param f              Number of feedbacks.
-	* @param g              Number of groups.
-	* @param test           Test mode.
+	* @param str             Storage manager.
+	* @param d               Number of documents.
+	* @param u               Number of users.
+	* @param p               Number of profiles.
+	* @param f               Number of feedbacks.
+	* @param g               Number of groups.
+	* @param test            Test mode.
 	*/
-	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
+	GSession(GStorage* str,unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
 		GSessionParams* sessparams,bool tests) throw(bad_alloc,GException);
 
 	/**
-	* Connect the session to the different managers.
-	* @param langs          Languages.
-	* @param umng           URL Manager.
-	* @param dmng           Document Analysis Manager.
-	* @param pmng           Profiling Manager.
-	* @param gmng           Grouping Manager.
-	* @param gcmng          Group Computing Manager.
-	* @param smng           Statistical Manager.
+	* Connect the session to managers.
+	* @param langs           Languages Manager.
+	* @param umng            URL Manager.
+	* @param dmng            Document Analysis Methods Manager.
+	* @param pmng            Subprofile Computing Methods Manager.
+	* @param gmng            Grouping Methods Manager.
+	* @param gcmng           Group Computing Methods Manager.
+	* @param smng            Statistics Methods Manager.
+	* @param pdmng           Documents Post-Analysis Methods Manager.
+	* @param pgmng           Post-Group Computing Methods Manager
 	*/
 	void Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(bad_alloc,GException);
 
 	/**
-	* Connect the session to the linking manager.
-	* @param lmng           Linking Manager.
+	* Post-connect the session to other manager.
+	* @param lmng            Link Methods Manager.
 	*/
 	void PostConnect(GLinkCalcManager* lmng) throw(bad_alloc,GException);
 
 	/**
-	* Get the documents' analyser.
-	* @returns Pointer to a GDocAnalyse class.
-	*/
-	GDocAnalyseManager* GetDocAnalyseMng(void) const {return(DocAnalyseMng);}
-
-	/**
-	* Get the languages.
-	* @returns Pointer to a GLangManager class.
+	* Get the languages manager.
+	* @return Pointer to GLangManager.
 	*/
 	GLangManager* GetLangs(void) const {return(Langs);}
 
 	/**
-	* Get the profiling manager used by this session.
+	* Get the document analysis methods manager.
+	* @return Pointer to GDocAnalyse.
+	*/
+	GDocAnalyseManager* GetDocAnalyseMng(void) const {return(DocAnalyseMng);}
+
+	/**
+	* Get the subprofile computing methods manager.
+	* @return Pointer to GProfileCalcManager.
 	*/
 	GProfileCalcManager* GetProfilingMng(void) {return(ProfilingMng);}
 
 	/**
-	* Get the grouping manager used by this session.
+	* Get the grouping methods manager.
+	* @return Pointer to GGroupingManager.
 	*/
 	GGroupingManager* GetGroupingMng(void) {return(GroupingMng);}
 
 	/**
-	* Get the link computing manager used by this session.
+	* Get the link methods manager.
+	* @return Pointer to GLinkCalcManager.
 	*/
 	GLinkCalcManager* GetLinkCalcMng(void) {return(LinkCalcMng);}
 
 	/**
-	* Get the PostGroup manager used by this session.
+	* Get the post-group computing methods manager.
+	* @return Pointer to GPostGroupManager.
 	*/
 	GPostGroupManager* GetPostGroupMng(void) {return(PostGroupMng);}
 
 	/**
-	* Get the group computing manager used by this session.
+	* Get the group computing methods manager.
+	* @return Pointer to GGroupCalcManager.
 	*/
 	GGroupCalcManager* GetGroupCalcMng(void) {return(GroupCalcMng);}
 
 	/**
-	* Get the statistics manager used by this session.
+	* Get the statistics methods manager.
+	* @return Pointer to GStatsCalcManager.
 	*/
 	GStatsCalcManager* GetStatsCalcMng(void) {return(StatsCalcMng);}
 
 	/**
-	* Return a pointer to a tree of subjects
+	* Get the storage manager.
+	* @return Pointer to GStorage.
+	*/
+	GStorage* GetStorage(void) const {return(Storage);}
+
+	/**
+	* Get the subjects defined.
+	* @return Pointer to GSubjects.
 	*/
 	GSubjects* GetSubjects(void) {return(Subjects);}
 
 	/**
 	* Get the parameters of the session.
+	* @param Pointer to GSessionParams.
 	*/
 	GSessionParams* GetSessionParams(void) const {return(SessParams);}
 
 	/**
-	* Get a cursor to the link description methods registered.
-	* @return Return a GLinkCalcCursor.
+	* Get a cursor over the factories of the link methods.
+	* @return GLinkCalcCursor.
 	*/
 	GFactoryLinkCalcCursor& GetLinkCalcsCursor(void);
 
 	/**
-	* Get a cursor to the words clustering description methods registered.
-	* @return Return a GPostDocCursor.
+	* Get a cursor over the factories of the document post-analysis methods.
+	* @return GPostDocCursor.
 	*/
 	GFactoryPostDocCursor& GetPostDocsCursor(void);
 
 	/**
-	* Create a XML structure of the content of a document. The structure
-	* created has to be desallocate by the caller.
-	* @param doc        Document to analyse.
+	* Get a cursor over the assessments made.
+	* @return GProfDocCursor.
 	*/
-	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
-
-	/**
-	* Create concept in the whole set of documents.
-	*/
-	void AnalyseAssociation(void) throw(GException);
-
-	/**
-	* Remove concepts from the whole set of documents.
-	*/
-	void RemoveAssociation(void) throw(GException);
-
-	/**
-	* Analyse all the necessary documents.
-	* @param rec        Receiver for the signals.
-	* @param modified   Recompute only modified elements or all.
-	*/
-	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
+	GProfDocCursor& GetProfDocsCursor(void);
 
 	/**
 	* Assign an identifier to a new data of a given dictionary.
 	* @param data           Data.
 	* @param dict           Dictionary.
 	*/
-	virtual void AssignId(GData* data,const GDict* dict)=0;
+	virtual void AssignId(GData* data,const GDict* dict);
 
 	/**
-	* Assign an identifier to a new grou.
+	* Assign an identifier to a new group.
 	* @param grp            Group.
 	*/
 	virtual void AssignId(GGroup* data);
 
 	/**
-	* Loading a dictionary/stoplist.
-	* @param dic            Pointer to the dictionary.
-	* @param lang           Languague.
-	* @param stop           Is it a stop list.
+	* Assign an identifier to a new document.
+	* @param doc            Document.
 	*/
-	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException)=0;
+	virtual void AssignId(GDoc* doc);
 
 	/**
-	* Load a specific word from a dictionary.
-	* @param id             Idenfificator of the word.
-	* @param code           Code of the languague.
+	* Assign an identifier to a new subprofile.
+	* @param sub             Subprofile.
 	*/
-	virtual const char* LoadWord(unsigned int id,const char* code)=0;
+	virtual void AssignId(GSubProfile* sub);
 
 	/**
-	* Load a specific wordlist from a dictionary.
-	* @param w              WordList to load.
-	* @param code           Code of the languague.
+	* Create a XML structure with the content of a document. The structure
+	* created has to be desallocate by the caller.
+	* @param doc             Document to analyse.
+	* @return Pointer to a GDocXML structure.
 	*/
-	virtual void LoadWordList(GWordList* w,GLang* lang) throw(bad_alloc,GException)=0;
+	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
 
 	/**
-	* Save a specific wordlist in the database.
-	* @param dic            Pointer to the dictionary.
-	* @param w              WordList to save.
+	* Analyse the documents. If a post-document analysis method is currently
+	* selected, it is run at the end of the document analysis.
+	* @param rec             Receiver for the signals.
+	* @param modified        Recompute only modified elements or all.
 	*/
-	virtual void SaveWordList(GDict* dic,GWordList* w) throw(bad_alloc,GException)=0;
+	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
 
 	/**
-	* Delete all the wordlists from the database.
-	* @param dic            Pointer to the dictionary.
+	* Compute the (sub)profiles.
+	* @param rec            Receiver for the signals.
+	* @param modified       Recompute only modified elements or all.
+	* @param save           Save modified elements.
 	*/
-	virtual void DeleteWordList(GDict* dic) throw(bad_alloc,GException)=0;
+	void CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException);
 
 	/**
-	* Create a new user in the system.
-	* @param usr            User.
-	* @param pwd            Password.
-	* @param name           Name.
-	* @param email          EMail.
-	* @param title          Title.
-	* @param org            Organisation.
-	* @param addr1          Address (Part 1).
-	* @param addr2          Address (Part 2).
-	* @param city           City.
-	* @param country        Country.
+	* Groups the subprofile into virtual communities. If a post-group method is
+	* currently selected, it is run at the end of the clustering.
+	* @param rec            Receiver of the signals.
+	* @param modified       Recompute only modified elements or all.
+	* @param save           Save modified elements.
 	*/
-	GUser* NewUser(const char* usr,const char* pwd,const char* name,const char* email,
-	                  const char* title,const char* org,const char* addr1,
-	                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
+	void GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException);
 
 	/**
 	* Set if the Inverse Frequency Factor should be used for the similarities
@@ -405,43 +395,6 @@ public:
 	double GetSimDocProf(const GDoc* doc,const GSubProfile* sub) throw(GException);
        
 	/**
-	* Compute all the necessary profiles.
-	* @param rec            Receiver for the signals.
-	* @param modified       Recompute only modified elements or all.
-	* @param save           Save modified elements.
-	*/
-	void CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException);
-
-	/**
-	* Compute a profile.
-	* @param prof       Pointer to the profile to compute.
-	*/
-	void CalcProfile(GProfile* prof) throw(GException);
-
-	/**
-	* Apply the postgroup treatment.
-	*/
-	void CalcPostGroup(void) throw(GException);
-
-	/**
-	* Make the groups.
-	* @param rec            Receiver of the signals.
-	* @param modified       Recompute only modified elements or all.
-	* @param save           Save modified elements.
-	*/
-	void GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException);
-
-	/**
-	* Load the Feedbacks.
-	*/
-	virtual void LoadFdbks(void) throw(bad_alloc,GException)=0;
-
-	/**
-	* Load the SubjectTree.
-	*/
-	virtual void LoadSubjectTree()=0;
-
-	/**
 	* Get a Cursor on the feedbacks.
 	* @return GProfDocCursor.
 	*/
@@ -472,35 +425,10 @@ public:
 
 	/**
 	* Copy the ideal groupment in the current one.
+	* @param save           Save modified elements.
 	*/
-	void CopyIdealGroups(void) throw(bad_alloc,GException);
+	void CopyIdealGroups(bool save) throw(bad_alloc,GException);
 
-	/**
-	* Save a group, i.e. save all the information of the subprofiles
-	* concerning the groupement.
-	* @param grp            Group to save.
-	*/
-	virtual void Save(GGroup* grp) throw(GException);
-
-	/**
-	* Save the groups of the session
-	* @param mixedgroups    groups to save
-	* @param id             Identificator.
-	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
-	*/
-	virtual void SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic=false)=0;
-
-	/**
-	* Save profiles in history
-	* @param historicid     id of the historic.
-	*/
-	virtual void SaveHistoricProfiles(unsigned int historicid)=0;
-
-	/**
-	* Return the name of the current database.
-	*/
-	virtual R::RString GetDbName()=0;
-	
 	/**
 	* Get a cursor over the filters of the system.
 	*/
@@ -512,37 +440,6 @@ public:
 	* @return Pointer to a GMIMEFilter.
 	*/
 	const char* GetMIMEType(const char* mime) const;
-
-	/**
-	* Execute a sequence of steps needed to construct data. Typically, this
-	* can be a SQL file.
-	* @param filename       Name of the file.
-	*/
-	virtual void ExecuteData(const char* filename) throw(GException)=0;
-
-	/**
-	* Load the ideal groupment.
-	* @param idealgroup   The ideal container of group
-	*/
-	virtual void LoadIdealGroupment()=0;
-
-	/**
-	* Save the ideal groupment
-	* @param idealgroup   The ideal container of group
-	*/
-	virtual void SaveIdealGroupment(GGroups* idealgroup)=0;
-
-	/**
-	* Save the feedbaks
-	*/
-	virtual void SaveFdbks(void)=0;
-
-	/**
-	* Save clusters of words in a document.
-	* @param doc            Document to save.
-	* @param n              Id of the first cluster of words.
-	*/
-	virtual void SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)=0;
 
 	/**
 	* Run a "program" for this session.
@@ -587,43 +484,11 @@ public:
 	*/
 	R::RContainer<GGroupsHistory, unsigned int, false,true>* LoadHistoricGroups (R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen);
 
-	/*
-	* load an historic groups.
-	*/
-	virtual GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID)=0;
-
 	/**
-	*returns the number of historic groups stored in database.
-	*/
-	virtual unsigned int GetHistorySize(void) =0;
-
-	/**
-	* re-init the session (clear all containers).
+	* Re-init the session (clear all containers).
 	* @param Save           must the reinit be saved?
 	*/
 	void ReInit(bool Save);
-
-	/**
-	* Count the number of rows of a table.
-	* @param tbl            Table to analyse.
-	* @returns Number of rows.
-	*/
-	virtual unsigned int GetCount(const char* tbl)=0;
-
-	/**
-	* Create a dummy table to store different kid of
-	* data.
-	* @ param name              name of the dummy object.
-	*/
-	virtual void CreateDummy(const char* name)=0;
-
-	/**
-	* Add a dummy entry into a dummy table;
-	* @param name               name of the dummy table.
-	 * @param id                id of the dymmy entry.
-	 * @param desc              description of the dymmy entry.
-	*/
-	virtual void AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid)=0;
 
 	/**
 	* Destructor.
@@ -632,7 +497,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GSessionParams represents  the parameter used to create the session.
 * @short GSession Parameters.
@@ -655,8 +520,8 @@ public:
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSessionMySQL.cpp
+	GStorageMySQL.cpp
 
-	GALILEI Session using a MySQL Database - Implementation.
+	Storage Manager using a MySQL Database - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,67 +34,63 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <stdlib.h>
 #include <ctype.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gsessionmysql.h>
+#include <infos/gdict.h>
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
-#include <infos/gdict.h>
-#include <infos/gwordlist.h>
 #include <infos/gword.h>
+#include <infos/gwordlist.h>
 #include <infos/gweightinfo.h>
-#include <historic/giwordsweightshistory.h>
-#include <profiles/guser.h>
-#include <profiles/gprofile.h>
-#include <profiles/gsubprofilevector.h>
-#include <profiles/gprofdoc.h>
+#include <infos/gweightinfos.h>
 #include <docs/gdocvector.h>
-#include <docs/gdocs.h>
 #include <docs/glink.h>
-#include <groups/ggroups.h>
+#include <profiles/guser.h>
+#include <profiles/gusers.h>
+#include <profiles/gprofile.h>
+#include <profiles/gprofdoc.h>
+#include <profiles/gsubprofilevector.h>
+#include <sessions/gstoragemysql.h>
+#include <groups/ggroup.h>
+#include <groups/ggroupvector.h>
 #include <groups/gsubjects.h>
 #include <groups/gsubject.h>
-#include <groups/ggroup.h>
+#include <sessions/gsession.h>
 #include <historic/ggroupshistory.h>
-
-
+#include <historic/giwordsweightshistory.h>
 using namespace GALILEI;
 using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
-//  GSessionMySQL
+//  GStorageMySQL
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-#define Ins_spec 1
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Static variable
-const char GALILEI::GSessionMySQL::SQLNULL[5]="NULL";
+#define Ins_spec 1
+const char GALILEI::GStorageMySQL::SQLNULL[5]="NULL";
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
-	GSessionParams* sessparams,bool tests) throw(bad_alloc,GException,RMySQLError)
-	: RDb(host,user,pwd,db),
-	  GSession(GetCount("htmls"),GetCount("users"),GetCount("profiles"),GetCount("htmlsbyprofiles"),GetCount("groups"),
-	  	sessparams,tests)
+//------------------------------------------------------------------------------
+GALILEI::GStorageMySQL::GStorageMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,RMySQLError)
+	: RDb(host,user,pwd,db), GStorage(db)
 {
-	DbName=db;
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GSessionMySQL::GetCount(const char* tbl)
+//------------------------------------------------------------------------------
+unsigned int GALILEI::GStorageMySQL::GetCount(const char* tbl)
 {
 	char sSql[100];
 	const char* c;
@@ -108,8 +104,8 @@ unsigned int GALILEI::GSessionMySQL::GetCount(const char* tbl)
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GSessionMySQL::GetMax(const char* tbl,const char* fld)
+//------------------------------------------------------------------------------
+unsigned int GALILEI::GStorageMySQL::GetMax(const char* tbl,const char* fld)
 {
 	char sSql[100];
 	const char* c;
@@ -123,16 +119,16 @@ unsigned int GALILEI::GSessionMySQL::GetMax(const char* tbl,const char* fld)
 }
 
 
-//-----------------------------------------------------------------------------
-const char* GALILEI::GSessionMySQL::GetDateToMySQL(const RDate& d,char* tmp)
+//------------------------------------------------------------------------------
+const char* GALILEI::GStorageMySQL::GetDateToMySQL(const RDate& d,char* tmp)
 {
 	sprintf(tmp,"'%u-%u-%u'",d.GetYear(),d.GetMonth(),d.GetDay());
 	return(tmp);
 }
 
 
-//-----------------------------------------------------------------------------
-const char* GALILEI::GSessionMySQL::ValidSQLValue(const char* val,char* tmp)
+//------------------------------------------------------------------------------
+const char* GALILEI::GStorageMySQL::ValidSQLValue(const char* val,char* tmp)
 {
 	const char* ptr1=val;
 	char* ptr2=tmp;
@@ -152,8 +148,8 @@ const char* GALILEI::GSessionMySQL::ValidSQLValue(const char* val,char* tmp)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::AssignId(GData* data,const GDict* dict)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::AssignId(GData* data,const GDict* dict)
 {
 
 	// preliminary traitement of special words and composite like insert -> reinsert ...
@@ -204,8 +200,8 @@ void GALILEI::GSessionMySQL::AssignId(GData* data,const GDict* dict)
 
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException)
 {
 	unsigned int MaxCount=100;
 	unsigned int MaxId=0;
@@ -263,8 +259,8 @@ void GALILEI::GSessionMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_a
 }
 
 
-//-----------------------------------------------------------------------------
-const char* GALILEI::GSessionMySQL::LoadWord(unsigned int id,const char* code)
+//--------------------.---------------------------------------------------------
+const char* GALILEI::GStorageMySQL::LoadWord(unsigned int id,const char* code)
 {
 	char sSql[100];
 
@@ -277,8 +273,8 @@ const char* GALILEI::GSessionMySQL::LoadWord(unsigned int id,const char* code)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadWordList(GWordList* w,GLang* lang) throw(bad_alloc,GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::LoadWordList(GWordList* w,GLang* lang) throw(bad_alloc,GException)
 {
 	char sSql[100];
 
@@ -289,8 +285,8 @@ void GALILEI::GSessionMySQL::LoadWordList(GWordList* w,GLang* lang) throw(bad_al
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveWordList(GDict* dic,GWordList* w) throw(bad_alloc,GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::SaveWordList(GDict* dic,GWordList* w) throw(bad_alloc,GException)
 {
 	GWordCursor Cur;
 	char sSql[600];
@@ -310,144 +306,8 @@ void GALILEI::GSessionMySQL::SaveWordList(GDict* dic,GWordList* w) throw(bad_all
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::DeleteWordList(GDict* dic) throw(bad_alloc,GException)
-{
-	GDataCursor datas;
-	char sSql[600];
-	unsigned nbwords;
-	sprintf(sSql,"DELETE FROM %skwdsbygroups ",dic->GetLang()->GetCode());
-	RQuery deletecluster(this,sSql);
-	datas=dic->GetDataCursor(infoWordList);
-	for(datas.Start();!datas.End();datas.Next())
-	{
-		sprintf(sSql,"DELETE FROM %skwds WHERE kwdid=%u",dic->GetLang()->GetCode(),datas()->GetId());
-		RQuery updatedic(this,sSql);
-	}
-	for(datas.Start();!datas.End();datas.Next())
-	{
-		sprintf(sSql,"DELETE FROM %shtmlsbykwds WHERE kwdid=%u",dic->GetLang()->GetCode(),datas()->GetId());
-		RQuery updatedoc(this,sSql);
-	}
-	for(datas.Start();!datas.End();datas.Next())
-	{
-		sprintf(sSql,"DELETE FROM %sgroupsbykwds WHERE kwdid=%u",dic->GetLang()->GetCode(),datas()->GetId());
-		RQuery updategroups(this,sSql);
-	}
-	for(datas.Start();!datas.End();datas.Next())
-	{
-		sprintf(sSql,"DELETE FROM %ssubprofilesbykwds WHERE kwdid=%u",dic->GetLang()->GetCode(),datas()->GetId());
-		RQuery updateprof(this,sSql);
-	}
-	datas.Start();
-	while(!datas.End())
-	{
-		dic->DeleteData(datas());
-		datas.Next();
-	}
-	sprintf(sSql,"SELECT COUNT(*) from %skwdsbygroups",dic->GetLang()->GetCode());
-	RQuery autoinckbg(this,sSql);
-	autoinckbg.Start();
-	nbwords=strtoul(autoinckbg[0],0,10);
-	nbwords++;
-	sprintf(sSql,"ALTER TABLE %skwdsbygroups AUTO_INCREMENT = %u ",dic->GetLang()->GetCode(),nbwords);
-	RQuery updateautoincrementkbg(this,sSql);
-	sprintf(sSql,"SELECT COUNT(*) from %shtmlsbykwds",dic->GetLang()->GetCode());
-	RQuery autoinchbk(this,sSql);
-	autoinchbk.Start();
-	nbwords=strtoul(autoinchbk[0],0,10);
-	nbwords++;
-	sprintf(sSql,"ALTER TABLE %shtmlsbykwds AUTO_INCREMENT = %u ",dic->GetLang()->GetCode(),nbwords);
-	RQuery updateautoincrementhbk(this,sSql);
-	sprintf(sSql,"SELECT COUNT(*) from %skwds",dic->GetLang()->GetCode());
-	RQuery autoinck(this,sSql);
-	autoinck.Start();
-	nbwords=strtoul(autoinck[0],0,10);
-	nbwords++;
-	sprintf(sSql,"ALTER TABLE %skwds AUTO_INCREMENT = %u ",dic->GetLang()->GetCode(),nbwords);
-	RQuery updateautoincrementk(this,sSql);
-	sprintf(sSql,"SELECT COUNT(*) from %sgroupsbykwds",dic->GetLang()->GetCode());
-	RQuery autoincgbk(this,sSql);
-	autoincgbk.Start();
-	nbwords=strtoul(autoincgbk[0],0,10);
-	nbwords++;
-	sprintf(sSql,"ALTER TABLE %sgroupsbykwds AUTO_INCREMENT = %u ",dic->GetLang()->GetCode(),nbwords);
-	RQuery updateautoincrementgbk(this,sSql);
-	sprintf(sSql,"SELECT COUNT(*) from %ssubprofilesbykwds",dic->GetLang()->GetCode());
-	RQuery autoincsbk(this,sSql);
-	autoincsbk.Start();
-	nbwords=strtoul(autoincsbk[0],0,10);
-	nbwords++;
-	sprintf(sSql,"ALTER TABLE %ssubprofilesbykwds AUTO_INCREMENT = %u ",dic->GetLang()->GetCode(),nbwords);
-	RQuery updateautoincrementsbk(this,sSql);
-}
-
-
-//-----------------------------------------------------------------------------
-GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException)
-{
-	char sSql[500];
-	char sDes[100];
-	GProfile* prof;
-	unsigned int id;
-	GFactoryLangCursor langs;
-	GLang* lang;
-
-	sprintf(sSql,"INSERT INTO profiles(userid,description) VALUES(%u,%s)",
-		usr->GetId(),ValidSQLValue(desc,sDes));
-	RQuery insertprof(this,sSql);
-
-	// Get Id and updated
-	sprintf(sSql,"SELECT profileid FROM profiles WHERE profileid=LAST_INSERT_ID()");
-	RQuery selectprofile(this,sSql);
-	selectprofile.Start();
-	id=strtoul(selectprofile[0],0,10);
-	InsertProfile(prof=new GProfile(usr,id,desc,true,Langs->NbPtr));
-
-	// Construct SubProfiles
-	langs=Langs->GetLangsCursor();
-	for(langs.Start();!langs.End();langs.Next())
-	{
-		lang=langs()->GetPlugin();
-		if(!lang) continue;
-		sprintf(sSql,"INSERT INTO subprofiles(profileid,langid,state,) VALUES(%u,'%s', %u)",id,lang->GetCode(), static_cast<int>(osCreated));
-		RQuery insertsub(this,sSql);
-		sprintf(sSql,"SELECT subprofileid, state from subprofiles WHERE subprofileid=LAST_INSERT_ID())");
-		RQuery selectsub(this,sSql);
-		selectsub.Start();
-		InsertSubProfile(new GSubProfileVector(prof,strtoul(selectsub[0],0,10),lang,0,0,(static_cast<tObjState>(atoi(selectsub[1]))),0));
-	}
-
-	// Return new created profile
-	return(prof);
-}
-
-
-//-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GSessionMySQL::NewSubProfile(GProfile* prof,GLang* lang) throw(bad_alloc,GException)
-{
-	char sSql[500];
-	GSubProfile* subprof;
-	unsigned int id;
-
-	sprintf(sSql,"INSERT INTO subprofiles(profileid,langid,state,calculated,attached) VALUES(%u,'%s',%u,'2001-09-01','2001-08-31')",prof->GetId(),lang->GetCode(),osCreated);
-	RQuery insertsubprof(this,sSql);
-
-	// Get Id and updated
-	sprintf(sSql,"SELECT subprofileid FROM subprofiles WHERE subprofileid=LAST_INSERT_ID()");
-	RQuery selectsubprofile(this,sSql);
-	selectsubprofile.Start();
-	id=strtoul(selectsubprofile[0],0,10);
-	InsertSubProfile(subprof=new GSubProfileVector(prof,id,lang,0,"2001-08-31",osCreated,"2001-09-01"));
-	prof->InsertPtr(subprof);
-
-	// Return new created subprofile
-	return(subprof);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 {
 	char sSql[200];
 	char scomputed[15];
@@ -478,8 +338,8 @@ void GALILEI::GSessionMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int historicid) throw(GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int historicid) throw(GException)
 {
 	char sSql[200];
 	GWeightInfoCursor Cur;
@@ -494,8 +354,9 @@ void GALILEI::GSessionMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned i
 	}
 }
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveProfile(GProfile* prof) throw(GException)
+
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
 {
 	char sSql[500];
 	char sname[200];
@@ -523,8 +384,8 @@ void GALILEI::GSessionMySQL::SaveProfile(GProfile* prof) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::LoadUsers(GSession* session) throw(bad_alloc,GException)
 {
 	char sSql[100];
 	GUser* usr;
@@ -540,33 +401,36 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 	// Go through the users
 	try
 	{
-		RQuery users(this, "SELECT userid,user,fullname FROM users");
-		for(users.Start();!users.End();users.Next())
+		RQuery select(this, "SELECT userid,user,fullname FROM users");
+		for(select.Start();!select.End();select.Next())
 		{
-			userid=atoi(users[0]);
+			userid=atoi(select[0]);
 			sprintf(sSql,"SELECT profileid,description,social,topicid FROM profiles WHERE userid=%u",userid);
 			RQuery profiles(this,sSql);
-			InsertUser(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
+			session->InsertUser(usr=new GUser(userid,select[1],select[2],profiles.GetNbRows()));
 			for(profiles.Start();!profiles.End();profiles.Next())
 			{
 				profileid=atoi(profiles[0]);
-				if(Subjects)
-					s=Subjects->GetSubject(atoi(profiles[3]));
-				else
+				#if GALILEITEST
+					s=session->GetSubjects()->GetSubject(atoi(profiles[3]));
+				#else
 					s=0;
+				#endif
 				Social=false;
 				if(atoi(profiles[2])==1) Social=true;
-				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,Langs->NbPtr));
-				if(s)
-					prof->SetSubject(s);
+				session->InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,session->GetLangs()->NbPtr));
+				#if GALILEITEST
+					if(s)
+						prof->SetSubject(s);
+				#endif
 				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid, state, calculated FROM subprofiles WHERE profileid=%u",profileid);
 				RQuery subprofil (this,sSql);
 				for(subprofil.Start();!subprofil.End();subprofil.Next())
 				{
-					lang=Langs->GetLang(subprofil[1]);
+					lang=session->GetLangs()->GetLang(subprofil[1]);
 					subid=atoi(subprofil[0]);
-					grp=GetGroup(atoi(subprofil[3]));
-					InsertSubProfile(sub=new GSubProfileVector(prof,subid,lang,grp,subprofil[2], (static_cast<tObjState>(atoi(subprofil[4]))), subprofil[5]));
+					grp=session->GetGroup(atoi(subprofil[3]));
+					session->InsertSubProfile(sub=new GSubProfileVector(prof,subid,lang,grp,subprofil[2], (static_cast<tObjState>(atoi(subprofil[4]))), subprofil[5]));
 					#if GALILEITEST
 						if((s)&&(sub->GetLang()==s->GetLang()))
 						{
@@ -578,9 +442,8 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 			}
 		}
 
-
 		// Load the subprofile's description
-		langs=Langs->GetLangsCursor();
+		langs=session->GetLangs()->GetLangsCursor();
 		for(langs.Start();!langs.End();langs.Next())
 		{
 			lang=langs()->GetPlugin();
@@ -589,20 +452,9 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 			RQuery sel(this,sSql);
 			for(sel.Start();!sel.End();sel.Next())
 			{
-				sub=dynamic_cast<GSubProfileVector*>(GetSubProfile(atoi(sel[0]),lang));
+				sub=dynamic_cast<GSubProfileVector*>(session->GetSubProfile(atoi(sel[0]),lang));
 				if(sub)
-				{
-					if(lang->GetDict()->GetData(atoi(sel[1]))->GetType()==infoWordList)
-					{
-						if(wg)
-							sub->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWordList));
-					}
-					else
-					{
-						if(w)
-							sub->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWord));
-					}
-				}
+					sub->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
 			}
 		}
 
@@ -611,13 +463,13 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 		{
 			lang=langs()->GetPlugin();
 			if(!lang) continue;
-			GSubProfileCursor SubProfiles=GetSubProfilesCursor(lang);
+			GSubProfileCursor SubProfiles=session->GetSubProfilesCursor(lang);
 			for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 				dynamic_cast<GSubProfileVector*>(SubProfiles())->UpdateRefs();
 		}
 
 		// Load the ideal Groups.
-		LoadIdealGroupment();
+		LoadIdealGroupment(session);
 	}
 	catch(RMySQLError& e)
 	{
@@ -626,8 +478,8 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadIdealGroupment()
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::LoadIdealGroupment(GSession* session)
 {
 	GGroups* groups;
 	GGroup* group;
@@ -636,11 +488,11 @@ void GALILEI::GSessionMySQL::LoadIdealGroupment()
 	char sSql[100];
 	GSubProfile* subp;
 
-	if(!Subjects) return;
-	groups=GetSubjects()->GetIdealGroups();
+	if(!session->GetSubjects()) return;
+	groups=session->GetSubjects()->GetIdealGroups();
 	groups->Clear();
 
-	langs=Langs->GetLangsCursor();
+	langs=session->GetLangs()->GetLangsCursor();
 	for(langs.Start();!langs.End();langs.Next())
 	{
 		lang=langs()->GetPlugin();
@@ -654,7 +506,7 @@ void GALILEI::GSessionMySQL::LoadIdealGroupment()
 			RQuery sub(this,sSql);
 			for(sub.Start();!sub.End();sub.Next())
 			{
-				subp=GetProfile(atoi(sub[0]))->GetSubProfile(lang);
+				subp=session->GetProfile(atoi(sub[0]))->GetSubProfile(lang);
 				if(subp)
 					group->InsertSubProfile(subp);
 			}
@@ -665,8 +517,8 @@ void GALILEI::GSessionMySQL::LoadIdealGroupment()
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveIdealGroupment(GGroups* idealgroup)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup)
 {
 	GGroupCursor groups;
 	GSubProfileCursor sub;
@@ -688,29 +540,29 @@ void GALILEI::GSessionMySQL::SaveIdealGroupment(GGroups* idealgroup)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadSubjectTree()
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::LoadSubjectTree(GSession* session)
 {
 	char sSql[200];
 	GSubject* subject;
 	GSubject* subsubject;
 
-	if(!Subjects) return;
-	Subjects->Clear();
+	if(!session->GetSubjects()) return;
+	session->GetSubjects()->Clear();
 	RQuery sub(this,"SELECT topicid,name,used,langid FROM topics WHERE parent=0");
 	for(sub.Start();!sub.End();sub.Next())
 	{
-		Subjects->AddNode(0,subject=new GSubject(atoi(sub[0]),sub[1],Langs->GetLang(sub[3]),atoi(sub[2])));
+		session->GetSubjects()->AddNode(0,subject=new GSubject(atoi(sub[0]),sub[1],session->GetLangs()->GetLang(sub[3]),atoi(sub[2])));
 		sprintf(sSql,"SELECT topicid,name,used,langid FROM topics WHERE parent=%u",atoi(sub[0]));
 		RQuery subsub(this,sSql);
 		for(subsub.Start();!subsub.End();subsub.Next())
-			Subjects->AddNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],Langs->GetLang(subsub[3]),atoi(subsub[2])));
+			session->GetSubjects()->AddNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],session->GetLangs()->GetLang(subsub[3]),atoi(subsub[2])));
 	}
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::LoadFdbks(GSession* session) throw(bad_alloc,GException)
 {
 	char sSql[200];
 	GProfile* prof;
@@ -722,11 +574,11 @@ void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
 	RQuery fdbks(this,sSql);
 	for(fdbks.Start();!fdbks.End();fdbks.Next())
 	{
-		usr=GetUser(atoi(fdbks[3]));
+		usr=session->GetUser(atoi(fdbks[3]));
 		if(!usr) continue;
 		prof=usr->GetPtr<unsigned int>(atoi(fdbks[2]));
 		if(!prof) continue;
-		doc=GetDoc(atoi(fdbks[0]));
+		doc=session->GetDoc(atoi(fdbks[0]));
 		if(!doc) continue;
 
 		switch(fdbks[1][0])
@@ -757,13 +609,13 @@ void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
 			default:
 				break;
 		}
-		InsertFdbk(prof,doc,jug,fdbks[4]);
+		session->InsertFdbk(prof,doc,jug,fdbks[4]);
 	}
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::LoadDocs(GSession* session) throw(bad_alloc,GException)
 {
 	GDocVector* doc;
 	GLang* lang;
@@ -778,8 +630,8 @@ void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException
 	for(quer.Start();!quer.End();quer.Next())
 	{
 		docid=atoi(quer[0]);
-		lang=Langs->GetLang(quer[4]);
-		InsertDoc(doc=new GDocVector(quer[1],quer[2],docid,lang,quer[3],quer[5],quer[6],atoi(quer[7])));
+		lang=session->GetLangs()->GetLang(quer[4]);
+		session->InsertDoc(doc=new GDocVector(quer[1],quer[2],docid,lang,quer[3],quer[5],quer[6],atoi(quer[7])));
 	}
 
 	// Load the links of the document loaded.
@@ -787,11 +639,11 @@ void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException
 	RQuery querLinks (this,sSql);
 	for (querLinks.Start(); !querLinks.End() ; querLinks.Next())
 	{
-		GetDoc(atoi(querLinks[0]) )->InsertLink(GetDoc(atoi( querLinks[1]) ), atoi(querLinks[2]));
+		session->GetDoc(atoi(querLinks[0]) )->InsertLink(session->GetDoc(atoi( querLinks[1]) ), atoi(querLinks[2]));
 	}
 
 	// Load the document's description
-	langs=Langs->GetLangsCursor();
+	langs=session->GetLangs()->GetLangsCursor();
 	for(langs.Start();!langs.End();langs.Next())
 	{
 		lang=langs()->GetPlugin();
@@ -800,20 +652,9 @@ void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException
 		RQuery sel(this,sSql);
 		for(sel.Start();!sel.End();sel.Next())
 		{
-			doc=dynamic_cast<GDocVector*>(GetDoc(atoi(sel[0])));
+			doc=dynamic_cast<GDocVector*>(session->GetDoc(atoi(sel[0])));
 			if(doc)
-			{
-				if(lang->GetDict()->GetData(atoi(sel[1]))->GetType()==infoWordList)
-				{
-					if(wg)
-						doc->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWordList));
-				}
-				else
-				{
-					if(w)
-						doc->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWord));
-				}
-			}
+				doc->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
 		}
 	}
 
@@ -821,10 +662,10 @@ void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException
 	RQuery subdocs(this,"SELECT htmlid,topicid FROM topicsbyhtmls");
 	for(subdocs.Start();!subdocs.End();subdocs.Next())
 	{
-		d=GetDoc(atoi(subdocs[0]));
+		d=session->GetDoc(atoi(subdocs[0]));
 		if(!d) continue;
-		if(Subjects)
-			s=Subjects->GetSubject(atoi(subdocs[1]));
+		if(session->GetSubjects())
+			s=session->GetSubjects()->GetSubject(atoi(subdocs[1]));
 		else
 			s=0;
 		if(!s) continue;
@@ -833,47 +674,26 @@ void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException
 	}
 
 	// Update References of the loaded documents.
-	GDocCursor Docs=GetDocsCursor();
+	GDocCursor Docs=session->GetDocsCursor();
 	for(Docs.Start();!Docs.End();Docs.Next())
 		dynamic_cast<GDocVector*>(Docs())->UpdateRefs();
 }
 
 
-//-----------------------------------------------------------------------------
-GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char* mime) throw(GException)
-{
-	char sSql[1000];
-	char surl[1000];
-	char sname[1000];
-	GDoc *doc;
-
-	// Insert it
-	sprintf(sSql,"INSERT INTO htmls(html,title,mimetype,updated) VALUES(%s,%s,'%s',CURDATE())",
-	        ValidSQLValue(url,surl),ValidSQLValue(name,sname),mime);
-	RQuery insertdoc(this,sSql);
-
-	// Get Id and updated
-	sprintf(sSql,"SELECT htmlid,updated FROM htmls WHERE htmlid=LAST_INSERT_ID()");
-	RQuery selectdoc(this,sSql);
-	selectdoc.Start();
-	doc=new GDocVector(url,name,strtoul(selectdoc[0],0,10),0,mime,selectdoc[1],0,0);
-//	InsertDoc(doc);
-	return(doc);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveFdbks(void) throw(GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 {
 	char sSql[500];
 	//char j;
 	char *j = new char[2];
+	GProfDocCursor Fdbks;
 
 	// Clear the all feedbacks
 	sprintf(sSql,"DELETE FROM htmlsbyprofiles");
 	RQuery delete1(this,sSql);
 
 	// Reinsert all the feedbacks
+	Fdbks=session->GetProfDocsCursor();
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 	{
 		switch(Fdbks()->GetFdbk() & djMaskJudg)
@@ -909,8 +729,8 @@ void GALILEI::GSessionMySQL::SaveFdbks(void) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::SaveDoc(GDoc* doc) throw(GException)
 {
 	char sSql[1000];
 	const char* l=0;
@@ -975,8 +795,8 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
 {
 	char sSql[1000];
 	const char* l=0;
@@ -1028,8 +848,8 @@ void GALILEI::GSessionMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GExcepti
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveGroups(void)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::SaveGroups(GSession* session)
 {
 	GWeightInfoCursor WordCur;
 	GGroupCursor GroupsCursor;
@@ -1039,7 +859,8 @@ void GALILEI::GSessionMySQL::SaveGroups(void)
 	char sattached[15];
 	GSubProfileCursor Sub;
 
-	langs=Langs->GetLangsCursor();
+	RQuery delete1(this,"DELETE FROM groups");
+	langs=session->GetLangs()->GetLangsCursor();
 	for(langs.Start();!langs.End();langs.Next())
 	{
 		lang=langs()->GetPlugin();
@@ -1048,9 +869,12 @@ void GALILEI::GSessionMySQL::SaveGroups(void)
 		RQuery delete2(this,sSql);
 	}
 
-	GroupsCursor=GetGroupsCursor();
+	GroupsCursor=session->GetGroupsCursor();
 	for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
 	{
+		sprintf(sSql,"INSERT INTO groups(groupid,langid) VALUES(%u,'%s')",GroupsCursor()->GetId(),GroupsCursor()->GetLang()->GetCode());
+		RQuery insert1(this,sSql);
+
 		// Save SubProfiles infos
 		Sub=GroupsCursor()->GetSubProfilesCursor();
 		for(Sub.Start();!Sub.End();Sub.Next())
@@ -1072,8 +896,8 @@ void GALILEI::GSessionMySQL::SaveGroups(void)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic)
 {
 	char sSql[100];
 	char database[20];
@@ -1115,13 +939,13 @@ void GALILEI::GSessionMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int i
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveHistoricProfiles(unsigned int historicid)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historicid)
 {
 	GFactoryLangCursor curLang;
 	GLang* lang;
 
-	// Delete historic subprofiles if historicid=0 .
+	// Delete historic subprofiles if historicid=0.
 	char sSql[200];
 	if (historicid==0)
 	{
@@ -1134,7 +958,7 @@ void GALILEI::GSessionMySQL::SaveHistoricProfiles(unsigned int historicid)
 		}
 	}
 
-	GProfileCursor curProf=this->GetProfilesCursor() ;
+	GProfileCursor curProf=session->GetProfilesCursor() ;
 
 
 	// Save the Subprofile
@@ -1148,40 +972,8 @@ void GALILEI::GSessionMySQL::SaveHistoricProfiles(unsigned int historicid)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::NewGroup(GLang* lang,GGroup* grp)
-{
-	char sSql[100];
-
-	// Insert it
-	if(!lang) return;
-	sprintf(sSql,"INSERT INTO groups(langid) VALUES('%s')",lang->GetCode());
-	RQuery insert(this,sSql);
-
-	// Get Id and updated
-	sprintf(sSql,"SELECT groupid FROM groups WHERE groupid=LAST_INSERT_ID()");
-	RQuery select(this,sSql);
-	select.Start();
-	grp->SetId(strtoul(select[0],0,10));
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::DeleteGroup(GGroup* grp)
-{
-	char sSql[100];
-
-	if(!grp) return;
-	sprintf(sSql,"UPDATE subprofiles SET groupid=0 WHERE groupid=%u",grp->GetId());
-	RQuery up(this,sSql);
-	sprintf(sSql,"DELETE FROM groups WHERE groupid=%u",grp->GetId());
-	RQuery del(this,sSql);
-	grp->SetId(cNoRef);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadGroups(bool /*wg*/,bool /*w*/) throw(bad_alloc,GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::LoadGroups(GSession* session) throw(bad_alloc,GException)
 {
 	char sSql[100];
 	GGroupVector* group;
@@ -1192,13 +984,13 @@ void GALILEI::GSessionMySQL::LoadGroups(bool /*wg*/,bool /*w*/) throw(bad_alloc,
 	RQuery group2 (this,"SELECT groupid, langid  FROM groups");
 	for(group2.Start();!group2.End();group2.Next())
 	{
-		lang=GetLangs()->GetLang(group2[1]);
+		lang=session->GetLangs()->GetLang(group2[1]);
 		group=new GGroupVector(atoi(group2[0]),lang,true);
-		InsertGroup(group);
+		session->InsertGroup(group);
 	}
 
 	// Load the groups description
-	langs=Langs->GetLangsCursor();
+	langs=session->GetLangs()->GetLangsCursor();
 	for(langs.Start();!langs.End();langs.Next())
 	{
 		lang=langs()->GetPlugin();
@@ -1207,21 +999,21 @@ void GALILEI::GSessionMySQL::LoadGroups(bool /*wg*/,bool /*w*/) throw(bad_alloc,
 		RQuery sel(this,sSql);
 		for(sel.Start();!sel.End();sel.Next())
 		{
-			group=dynamic_cast<GGroupVector*>(GetGroup(atoi(sel[0])));
+			group=dynamic_cast<GGroupVector*>(session->GetGroup(atoi(sel[0])));
 			if(!group) continue;
 			group->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
 		}
 	}
 
 	// Update References of the loaded groups.
-	GroupsCursor=GetGroupsCursor();
+	GroupsCursor=session->GetGroupsCursor();
 	for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
 		dynamic_cast<GGroupVector*>(GroupsCursor())->UpdateRefs();
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::ExecuteData(const char* filename) throw(GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::ExecuteData(const char* filename) throw(GException)
 {
 	RTextFile Sql(filename);
 	RString l;
@@ -1234,8 +1026,8 @@ void GALILEI::GSessionMySQL::ExecuteData(const char* filename) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
-GGroupsHistory* GALILEI::GSessionMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicid)
+//------------------------------------------------------------------------------
+GGroupsHistory* GALILEI::GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicid)
 {
 	char sSql[200];
 	GGroupHistory* grp;
@@ -1283,8 +1075,8 @@ GGroupsHistory* GALILEI::GSessionMySQL::LoadAnHistoricGroups(RContainer<GSubProf
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GSessionMySQL::GetHistorySize(void)
+//------------------------------------------------------------------------------
+unsigned int GALILEI::GStorageMySQL::GetHistorySize(void)
 {
 	char sSql[200];
 	sprintf(sSql,"SELECT COUNT(DISTINCT historicid) from historicgroups");
@@ -1294,8 +1086,8 @@ unsigned int GALILEI::GSessionMySQL::GetHistorySize(void)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::CreateDummy(const char* name) throw(GException)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::CreateDummy(const char* name) throw(GException)
 {
 	char sSql[200];
 	sprintf(sSql,"CREATE TABLE %s (id INT(11), parentid INT(11), description TEXT) ",name);
@@ -1303,8 +1095,8 @@ void GALILEI::GSessionMySQL::CreateDummy(const char* name) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid)
+//------------------------------------------------------------------------------
+void GALILEI::GStorageMySQL::AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid)
 {
 	char sSql[500];
 	sprintf(sSql, "INSERT INTO %s (id, parentid, description) values (%u, %u, '%s')", name, id, parentid, desc);
@@ -1312,8 +1104,7 @@ void GALILEI::GSessionMySQL::AddDummyEntry(const char* name, unsigned int id, co
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GSessionMySQL::~GSessionMySQL() throw(GException)
+//------------------------------------------------------------------------------
+GALILEI::GStorageMySQL::~GStorageMySQL(void) throw(GException)
 {
-
 }

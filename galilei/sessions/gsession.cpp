@@ -31,11 +31,11 @@
 
 */
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for R Project
 #include <fstream>
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/random.h>
 #include <rstd/rcursor.h>
@@ -43,13 +43,14 @@
 using namespace R;
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
 #include <infos/gdict.h>
 #include <infos/gwordlist.h>
 #include <sessions/gsession.h>
+#include <sessions/gstorage.h>
 #include <sessions/gslot.h>
 #include <sessions/gsessionprg.h>
 #include <sessions/gstatscalc.h>
@@ -92,20 +93,20 @@ using namespace GALILEI;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // GSession
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
+//------------------------------------------------------------------------------
+GSession::GSession(GStorage* str,unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
  GSessionParams* sessparams,bool tests) throw(bad_alloc,GException)
 	: GDocs(d), GUsers(u,p), GGroups(g),
 	  Subjects(0), Fdbks(f+f/2,f/2),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
 	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0),
-	  ProfilesBehaviours(0), DocProfSims(0), Random(0),  SessParams(sessparams)
+	  ProfilesBehaviours(0), DocProfSims(0), Random(0),  SessParams(sessparams), Storage(str)
 {
 	// Init Part
 	CurrentRandom=0;
@@ -117,7 +118,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng,
 	GGroupingManager* gmng, GGroupCalcManager* gcmng,GStatsCalcManager* smng,
 	GPostDocManager* pdmng,GPostGroupManager* pgmng) throw(bad_alloc,GException)
@@ -164,7 +165,7 @@ void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseMana
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::PostConnect(GLinkCalcManager* lmng) throw(bad_alloc,GException)
 {
 	LinkCalcMng=lmng;
@@ -177,7 +178,7 @@ void GSession::PostConnect(GLinkCalcManager* lmng) throw(bad_alloc,GException)
 	DocProfSims = new GDocProfSims(this,true,false);
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GFactoryLinkCalcCursor& GSession::GetLinkCalcsCursor(void)
 {
 	GFactoryLinkCalcCursor *cur=GFactoryLinkCalcCursor::GetTmpCursor();
@@ -186,7 +187,7 @@ GFactoryLinkCalcCursor& GSession::GetLinkCalcsCursor(void)
 }
 
 
-//------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 GFactoryPostDocCursor& GSession::GetPostDocsCursor(void)
 {
 	GFactoryPostDocCursor *cur=GFactoryPostDocCursor::GetTmpCursor();
@@ -195,194 +196,186 @@ GFactoryPostDocCursor& GSession::GetPostDocsCursor(void)
 }
 
 
-//------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 GDocXML* GSession::CreateDocXML(GDoc* doc) throw(GException)
 {
 	return(URLMng->CreateDocXML(doc));
 }
 
 
-//-----------------------------------------------------------------------------
-void GSession::AnalyseAssociation(void) throw(GException)
+//------------------------------------------------------------------------------
+GProfDocCursor& GSession::GetProfDocsCursor(void)
 {
-	GPostDoc* PostDoc=PostDocMng->GetCurrentMethod();
-	if(!PostDoc)
-		throw GException("No computing method chosen.");
-	else
-		PostDoc->Run();
+	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
+	cur->Set(Fdbks);
+	return(*cur);
 }
 
 
-//-----------------------------------------------------------------------------
-void GSession::RemoveAssociation(void) throw(GException)
+//------------------------------------------------------------------------------
+void GSession::AssignId(GData* data,const GDict* dict)
 {
-	unsigned i;
-	GDocCursor docs=GetDocsCursor();
-	GDocVector* doc;
-	GDataCursor Datas;
-	docs.Start();
-	GDict* dic=docs()->GetLang()->GetDict();
-
-	Datas=dic->GetDataCursor(infoWordList);
-
-	for(i=docs.GetNb(),docs.Start();--i;docs.Next())
-	{
-		doc=dynamic_cast<GDocVector*>(docs());
-		for(Datas.Start();!Datas.End();Datas.Next())
-		{
-			if(doc->IsIn(Datas()->GetId()))
-				doc->DeletePtr(Datas()->GetId());
-		}
-		doc->UpdateRefs();
-	}
-
-	DeleteWordList(dic);
+	Storage->AssignId(data,dict);
 }
 
 
-//-----------------------------------------------------------------------------
-void GSession::AssignId(GGroup* data)
+//------------------------------------------------------------------------------
+void GSession::AssignId(GGroup* grp)
 {
-	data->SetId(GGroups::GetMaxId()+1);
+	grp->SetId(GGroups::GetNewId());
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void GSession::AssignId(GDoc* doc)
+{
+	doc->SetId(GDocs::GetNewId());
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::AssignId(GSubProfile* sub)
+{
+	sub->SetId(GUsers::GetNewId(otSubProfile));
+}
+
+
+//------------------------------------------------------------------------------
 void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 {
 	bool undefLang;
 	GDocXML* xml=0;
 	GDocCursor Docs=GetDocsCursor();
-	RContainer<GDoc,unsigned int,false,true>* tmpDocs = new RContainer<GDoc,unsigned int,false,true>(5,2);
+	RContainer<GDoc,unsigned int,false,true> tmpDocs(5,2);
 	GDocAnalyse* Analyse;
 	RString err;
+	bool Cont;               // Continue the analysuis
 
-	// verify that the textanalyse method is selected
+	// Verify that the textanalyse method is selected
 	Analyse=DocAnalyseMng->GetCurrentMethod();
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
 
 
-	// opens and appends the Log File for all errors occuring in the filter or analyse phase.
+	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
 	{
-		err= "Documents Filtering and Analysis on Data Set : "+GetDbName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear());
+		err= "Documents Filtering and Analysis on Data Set : "+Storage->GetName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear());
 		rec->WriteStr(err.Latin1());
 	}
 
-	for(Docs.Start();!Docs.End();Docs.Next())
+	// Analyse the documents
+	do
 	{
-		if(modified&&(Docs()->GetState()==osUpToDate)) continue;
-		if(rec)
-			rec->receiveNextDoc(Docs());
-		undefLang=false;
-		try
+		// Go through the existing documents
+		for(Docs.Start();!Docs.End();Docs.Next())
 		{
-			if(((!modified)||(Docs()->GetState()!=osUpdated))||((Docs()->GetState()!=osNotNeeded)))
-			{
-				if (!Docs()->GetLang()) undefLang=true;
-				xml=URLMng->CreateDocXML(Docs());
-				if(xml)
-				{
-					Docs()->InitFailed();
-					Analyse->Analyse(xml,Docs(),tmpDocs);
-					delete xml;
-					xml=0;
-					if ((undefLang)&&(Docs()->GetLang()))
-					{
-						MoveDoc(Docs());
-					}
-				}
-				else
-					Docs()->IncFailed();
-			}
-			SaveDoc(Docs());
-			if(Docs()->GetState()==osUpdated)
-				Docs()->SetState(osUpToDate);
-		}
-		catch(GException& e)
-		{
-			if(xml)
-				delete xml;
-
-			cout<< "error "<<e.GetMsg()<<endl;
-			// write error message to the log file handled by the GSlot.
+			if(modified&&(Docs()->GetState()==osUpToDate)) continue;
 			if(rec)
-				rec->WriteStr(e.GetMsg());
+				rec->receiveNextDoc(Docs());
+			undefLang=false;
+			try
+			{
+				if(((!modified)||(Docs()->GetState()!=osUpdated))||((Docs()->GetState()!=osNotNeeded)))
+				{
+					if (!Docs()->GetLang()) undefLang=true;
+					xml=URLMng->CreateDocXML(Docs());
+					if(xml)
+					{
+						Docs()->InitFailed();
+						Analyse->Analyse(xml,Docs(),&tmpDocs);
+						delete xml;
+						xml=0;
+						if((undefLang)&&(Docs()->GetLang()))
+						{
+							MoveDoc(Docs());
+						}
+					}
+					else
+						Docs()->IncFailed();
+				}
+				Storage->SaveDoc(Docs());
+				if(Docs()->GetState()==osUpdated)
+					Docs()->SetState(osUpToDate);
+			}
+			catch(GException& e)
+			{
+				if(xml)
+					delete xml;
+
+				// Write error message to the log file handled by the GSlot.
+				if(rec)
+					rec->WriteStr(e.GetMsg());
+			}
 		}
-	}
 
-	// add new doc in the container of documents.
-	RCursor<GDoc,unsigned int> Cur(tmpDocs);
-	for (Cur.Start();!Cur.End();Cur.Next())
-	{
-		InsertDoc(Cur());
+		// Add the new documents.
+		// Continue the analysis if documents were added.
+		RCursor<GDoc,unsigned int> Cur(tmpDocs);
+		Cont=tmpDocs.NbPtr;
+		for(Cur.Start();!Cur.End();Cur.Next())
+			InsertDoc(Cur());
+		tmpDocs.Clear();
 	}
-	tmpDocs->Clear();
+	while(Cont);
 
+	// If a post-doc method is currently selected -> Run it.
+	GPostDoc* PostDoc=PostDocMng->GetCurrentMethod();
+	if(PostDoc)
+		PostDoc->Run();
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::UseIFFDocProf(bool iff)
 {
 	DocProfSims->UseIFF(iff);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub) throw(GException)
 {
 	return(DocProfSims->GetSim(doc,sub));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::UseIFFProfs(bool iff)
 {
 	ProfilesSims->UseIFF(iff);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2) throw(GException)
 {
 	return(ProfilesSims->GetSim(sub1,sub2));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException)
 {
 	return(ProfilesBehaviours->GetAgreementRatio(sub1,sub2));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException)
 {
 	return(ProfilesBehaviours->GetDisagreementRatio(sub1,sub2));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate) throw(GException)
 {
 	return(ProfilesSims->GetMinimumOfSimilarity(lang,deviationrate));
 }
 
 
-
-//-----------------------------------------------------------------------------
-GUser* GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const char* /*name*/,const char* /*email*/,
-	                  const char* /*title*/,const char* /*org*/,const char* /*addr1*/,
-	                  const char* /*addr2*/,const char* /*city*/,const char* /*country*/) throw(bad_alloc)
-{
-	return(0);
-}
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
 {
 	GSubProfileCursor Subs;
@@ -435,7 +428,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 		{
 			try
 			{
-				SaveProfile(Prof());
+				Storage->SaveProfile(Prof());
 			}
 			catch(GException& e)
 			{
@@ -445,39 +438,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 }
 
 
-//-----------------------------------------------------------------------------
-void GSession::CalcProfile(GProfile* prof) throw(GException)
-{
-	GSubProfileCursor Subs;
-	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
-	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
-
-	if(!Profiling)
-		throw GException("No computing method chosen.");
-
-	Subs=prof->GetSubProfilesCursor();
-	for (Subs.Start(); !Subs.End(); Subs.Next())
-	{
-		if(LinkCalc)
-		{
-			LinkCalc->Compute(Subs());
-		}
-		Profiling->Compute(Subs());
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::CalcPostGroup(void) throw(GException)
-{
-	GPostGroup* PostGrouping=PostGroupMng->GetCurrentMethod();
-	if(!PostGrouping)
-		throw GException("No postgroup method chosen.");
-	PostGrouping->Run();
-}
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException)
 {
 	GGrouping* Grouping=GroupingMng->GetCurrentMethod();
@@ -485,10 +446,13 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GExce
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
 	Grouping->Grouping(rec,modified,save);
+	GPostGroup* PostGrouping=PostGroupMng->GetCurrentMethod();
+	if(PostGrouping)
+		PostGrouping->Run();
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GProfDocCursor& GSession::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
@@ -497,7 +461,7 @@ GProfDocCursor& GSession::GetProfDocCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::ClearFdbks(void)
 {
 	GDocCursor cur=GetDocsCursor();
@@ -514,7 +478,7 @@ void GSession::ClearFdbks(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate& date) throw(bad_alloc)
 {
 	GProfDoc* f;
@@ -525,7 +489,7 @@ void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate& date) t
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,const char* date) throw(bad_alloc)
 {
 	GProfDoc* f;
@@ -536,8 +500,8 @@ void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,const char* date)
 }
 
 
-//-----------------------------------------------------------------------------
-void GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
+//------------------------------------------------------------------------------
+void GSession::CopyIdealGroups(bool save) throw(bad_alloc,GException)
 {
 	GGroupCursor Grps;
 //	GGroupCursor Ideal;
@@ -572,13 +536,13 @@ void GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
 		CalcDesc->Compute(grp);
 	}
 
-/*	if(save)
-		Session->SaveGroups();*/
+	if(save)
+		Storage->SaveGroups(this);
 }
 
 
-//-----------------------------------------------------------------------------
-void GSession::Save(GGroup* grp) throw(GException)
+//------------------------------------------------------------------------------
+/*void GSession::Save(GGroup* grp) throw(GException)
 {
 	GSubProfileCursor Sub;
 
@@ -588,24 +552,24 @@ void GSession::Save(GGroup* grp) throw(GException)
 		SaveSubProfile(Sub());
 	if(grp->GetState()==osUpdated)
 		grp->SetState(osUpToDate);
-}
+}*/
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GFactoryFilterCursor& GSession::GetFiltersCursor(void)
 {
 	return(URLMng->GetFiltersCursor());
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const char* GSession::GetMIMEType(const char* mime) const
 {
 	return(URLMng->GetMIMEType(mime));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::RunPrg(GSlot* rec,const char* filename) throw(GException)
 {
 	GSessionPrg Prg(filename,this,rec);
@@ -613,7 +577,7 @@ void GSession::RunPrg(GSlot* rec,const char* filename) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 {
 	//The number of word in current lang.
@@ -681,7 +645,7 @@ void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::SetCurrentRandom(int rand)
 {
 	CurrentRandom=rand;
@@ -689,7 +653,7 @@ void GSession::SetCurrentRandom(int rand)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int GSession::GetCurrentRandomValue(unsigned int max)
 {
 	return(int(Random->Value(max)));
@@ -697,7 +661,7 @@ int GSession::GetCurrentRandomValue(unsigned int max)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RContainer<GGroupsHistory, unsigned int, false,true>* GSession::LoadHistoricGroups (RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen)
 {
 	unsigned int i;
@@ -708,7 +672,7 @@ RContainer<GGroupsHistory, unsigned int, false,true>* GSession::LoadHistoricGrou
 	historicalgroups=new RContainer<GGroupsHistory, unsigned int, false,true>(maxgen-mingen+1);
 	for (i=mingen; i<maxgen+1; i++)
 	{
-		hgrps=LoadAnHistoricGroups(subprofiles, lang,i);
+		hgrps=Storage->LoadAnHistoricGroups(subprofiles, lang,i);
 		historicalgroups->InsertPtr(hgrps);
 	}
 
@@ -716,7 +680,7 @@ RContainer<GGroupsHistory, unsigned int, false,true>* GSession::LoadHistoricGrou
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSession::ReInit(bool)
 {
 	//clean subprofiles = clear the feedbacles & the content of the profiles.
@@ -732,7 +696,7 @@ void GSession::ReInit(bool)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GSession::~GSession(void) throw(GException)
 {
 	// Delete Similarities Managers
@@ -761,9 +725,10 @@ GSession::~GSession(void) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+#include <sessions/gstoragemysql.h>
+//------------------------------------------------------------------------------
 // class GSessionParams
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GSessionParams::GSessionParams(void)
 	: GParams("Session Parameters")
 {

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSessionMySQL.h
+	GStorageMySQL.h
 
-	GALILEI Session using a MySQL Database - Header.
+	Storage Manager using a MySQL Database - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,41 +34,34 @@
 
 
 
-//-----------------------------------------------------------------------------
-#ifndef GSessionMySQLH
-#define GSessionMySQLH
+//------------------------------------------------------------------------------
+#ifndef GStorageMySQLH
+#define GStorageMySQLH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for R Project
 #include <rdb/rmysql.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gsession.h>
+#include <sessions/gstorage.h>
 #include <sessions/galilei.h>
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GInfoList;
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GSessionMySQL class provides a representation for a GALILEI session using
+* The GStorageMySQL class provides a representation for a storage manager using
 * a MySQL Database as store medium.
 * @author Pascal Francq
-* @short MySQL Session.
+* @short MySQL-based Storage Manager.
 */
-class GSessionMySQL : public R::RDb, public GSession
+class GStorageMySQL : public R::RDb, public GStorage
 {
 	/**
 	* String representing the null value.
@@ -81,12 +74,10 @@ public:
 	* Constructor.
 	* @param host           Host of the database server.
 	* @param user           User to connect with.
-	* @param pwd            Password of the uzer.
+	* @param pwd            Password of the user.
 	* @param db             Name of the database.
-	* @param test           Test mode.
 	*/
-	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
-		GSessionParams* sessparams,bool tests) throw(bad_alloc,GException,R::RMySQLError);
+	GStorageMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,R::RMySQLError);
 
 	/**
 	* Count the number of rows of a table.
@@ -120,14 +111,14 @@ protected:
 	*/
 	const char* ValidSQLValue(const char* val,char* tmp);
 
+public :
+
 	/**
 	* Assign an identifier to a new data of a given dictionary.
 	* @param data           Data.
 	* @param dict           Dictionary.
 	*/
 	virtual void AssignId(GData* data,const GDict* dict);
-
-public :
 
 	/**
 	* Loading a dictionary/stoplist.
@@ -159,64 +150,47 @@ public :
 	virtual void SaveWordList(GDict* dic,GWordList* w) throw(bad_alloc,GException);
 
 	/**
-	* Delete all the wordlists from the database.
-	* @param dic            Pointer to the dictionary.
-	*/
-	virtual void DeleteWordList(GDict* dic) throw(bad_alloc,GException);
-
-	/**
 	* Load the documents.
 	* @param wg             Enable the use of wordlists.
 	* @param w              Enable the use of words.
 	*/
-	virtual void LoadDocs(bool wg,bool w) throw(bad_alloc,GException);
+	virtual void LoadDocs(GSession* session) throw(bad_alloc,GException);
 
 	/**
 	*  Load the users.
-	* @param wg             Enable the use of wordlists.
-	* @param w              Enable the use of words.
+	* @param session         Session.
 	*/
-	virtual void LoadUsers(bool wg,bool w) throw(bad_alloc,GException);
+	virtual void LoadUsers(GSession* session) throw(bad_alloc,GException);
 
 	/**
 	*  Load the users Feedback.
 	*/
-	virtual void LoadFdbks(void) throw(bad_alloc,GException);
+	virtual void LoadFdbks(GSession* session) throw(bad_alloc,GException);
 
 	/**
 	* Load the groups.
 	* @param wg             Enable the use of wordlists.
 	* @param w              Enable the use of words.
 	*/
-	virtual void LoadGroups(bool wg,bool w) throw(bad_alloc,GException);
+	virtual void LoadGroups(GSession* session) throw(bad_alloc,GException);
 
 	/**
 	* Load the Subjectree.
 	* @param subjects     The tree of subjects.
 	*/
-	virtual void LoadSubjectTree(void);
+	virtual void LoadSubjectTree(GSession* session);
 
 	/**
 	* Load the ideal groupment.
 	* @param idealgroup   The ideal container of group
 	*/
-	virtual void LoadIdealGroupment();
-
+	virtual void LoadIdealGroupment(GSession* session);
 
 	/**
 	* Save the ideal groupment
 	* @param idealgroup   The ideal container of group
 	*/
 	virtual void SaveIdealGroupment(GGroups* idealgroup);
-
-	/**
-	* Create a new document.
-	* @param url          URL of the document.
-	* @param name         Name of the document.
-	* @param mime         MIME Type of the document
-	* @returns Pointer to a new created document.
-	*/
-	virtual GDoc* NewDoc(const char* url,const char* name,const char* mime) throw(GException);
 
 	/**
 	* Save a document.
@@ -234,23 +208,7 @@ public :
 	/**
 	* Save a the users feedback.
 	*/
-	virtual void SaveFdbks(void) throw(GException);
-
-	/**
-	* Create a new profile.
-	* @param usr        Pointer to the user of the profile.
-	* @param desc       Description of the profile.
-	* @returns Pointer to GProfile.
-	*/
-	virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException);
-
-	/**
-	* Create a new subprofile.
-	* @param prof            Pointer to the profile.
-	* @param lang            Language of the subprofile.
-	* @returns Pointer to GSubProfile.
-	*/
-	virtual GSubProfile* NewSubProfile(GProfile* prof,GLang* lang) throw(bad_alloc,GException);
+	virtual void SaveFdbks(GSession* session) throw(GException);
 
 	/**
 	* Save information about the groupement (Group and attachment date) of
@@ -271,19 +229,13 @@ public :
 	*/
 	virtual void SaveProfile(GProfile* prof) throw(GException);
 
-	/**
-	* Create a new group.
-	* @param lang       Language of the group to create.
-	* @param grp        Group created.
-	*/
-	virtual void NewGroup(GLang* lang,GGroup* grp);
 
 	/**
 	* Save the groups description.
 	* @param lang       Language of the group to create.
 	* @param grp        Group created.
 	*/
-	virtual void SaveGroups(void);
+	virtual void SaveGroups(GSession* session);
 
 	/**
 	* Save the mixed groups of the session.
@@ -296,18 +248,7 @@ public :
 	/**
 	* Save the Profiles in history.
 	*/
-	virtual void SaveHistoricProfiles(unsigned int historicid);
-
-	/**
-	* Return the name of the current database.
-	*/
-	virtual R::RString GetDbName(){return(DbName);};
-
-	/**
-	* Delete a group.
-	* @param grp        Group to delete.
-	*/
-	virtual void DeleteGroup(GGroup* grp);
+	virtual void SaveHistoricProfiles(GSession* session,unsigned int historicid);
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
@@ -341,16 +282,15 @@ public :
 	*/
 	virtual void AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid);
 
-
 	/**
 	* Destructor.
 	*/
-	virtual ~GSessionMySQL(void) throw(GException);
+	virtual ~GStorageMySQL(void) throw(GException);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

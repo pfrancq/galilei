@@ -54,6 +54,7 @@
 #include <docs/glinkcalc.h>
 #include <docs/glinkcalcmanager.h>
 #include <sessions/gsession.h>
+#include <sessions/gstorage.h>
 #include <sessions/gslot.h>
 #include <sessions/gmixidealgroups.h>
 using namespace GALILEI;
@@ -331,15 +332,6 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-class GWordsClusteringI : public GSM
-{
-public:
-	GWordsClusteringI(GPrgClassSession* o) : GSM("WordsClustering",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
-};
-
-
 
 //------------------------------------------------------------------------------
 //
@@ -482,7 +474,7 @@ void GSqlI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,tr
 		throw RException("The method needs the name of the SQL file.");
 	sprintf(tmp,"Execute Sql file '%s'",args->Tab[0]->GetValue(prg));
 	o->WriteStr(tmp);
-	Owner->Session->ExecuteData(args->Tab[0]->GetValue(prg));
+	Owner->Session->GetStorage()->ExecuteData(args->Tab[0]->GetValue(prg));
 }
 
 
@@ -703,7 +695,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o) throw(RException)
 	{
 		sprintf(tmp,"Store History n°%u",Owner->NbHistory);
 		o->WriteStr(tmp);
-		Owner->Session->SaveMixedGroups(Owner->Session,Owner->NbHistory++);
+		Owner->Session->GetStorage()->SaveMixedGroups(Owner->Session,Owner->NbHistory++);
 	}
 
 	// Compare Ideal
@@ -885,8 +877,8 @@ void GStoreInHistoryI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned
 		throw RException("Method needs no parameter.");
 	sprintf(tmp,"Store History n°%u",Owner->NbHistory);
 	o->WriteStr(tmp);
-	Owner->Session->SaveMixedGroups(Owner->Session,Owner->NbHistory, true);
-	Owner->Session->SaveHistoricProfiles(Owner->NbHistory++);
+	Owner->Session->GetStorage()->SaveMixedGroups(Owner->Session,Owner->NbHistory, true);
+	Owner->Session->GetStorage()->SaveHistoricProfiles(Owner->Session,Owner->NbHistory++);
 }
 
 
@@ -912,18 +904,6 @@ void GComputeTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned in
 	cpu_time=difftime(end,Owner->ClockRef);
 	sprintf(tmp,"Ellapsed Time %f",cpu_time);
 	o->WriteStr(tmp);
-}
-
-
-
-//------------------------------------------------------------------------------
-void GWordsClusteringI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
-{
-	if(args->NbPtr)
-		throw RException("Method needs no parameters.");
-	o->WriteStr("Create New Concepts");
-	Owner->Session->RemoveAssociation();
-	Owner->Session->AnalyseAssociation();
 }
 
 
@@ -966,7 +946,6 @@ GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GStoreInHistoryI(this));
 	Methods.InsertPtr(new GResetTimeI(this));
 	Methods.InsertPtr(new GComputeTimeI(this));
-	Methods.InsertPtr(new GWordsClusteringI(this));
 	Methods.InsertPtr(new GSetRandI(this));
 };
 
