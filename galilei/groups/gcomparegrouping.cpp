@@ -39,26 +39,8 @@
 #include<profiles/gprofile.h>
 #include<profiles/gsubprofile.h>
 #include<sessions/gsession.h>
+#include<sessions/gslot.h>
 using namespace GALILEI;
-
-
-
-//-----------------------------------------------------------------------------
-//
-//  class GCompareGroupingSignalsReceiver
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GALILEI::GCompareGroupingSignalsReceiver::GCompareGroupingSignalsReceiver(void)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GCompareGroupingSignalsReceiver::NextProfile(GProfile*)
-{
-}
 
 
 
@@ -119,7 +101,7 @@ GGroup* GALILEI::GCompareGrouping::GetIdealGroup(GSubProfile* sub) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GCompareGrouping::ComputeRecallPrecision(GCompareGroupingSignalsReceiver* /*rec*/)
+void GALILEI::GCompareGrouping::ComputeRecallPrecision(GSlot* /*rec*/)
 {
 	GroupScoreCursor Grp;
 	GSubProfileCursor Sub;
@@ -179,7 +161,7 @@ void GALILEI::GCompareGrouping::ComputeRecallPrecision(GCompareGroupingSignalsRe
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GCompareGrouping::ComputeTotal(GCompareGroupingSignalsReceiver* /*rec*/)
+void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 {
 	GGroup* thGrp;
 	GGroup* thGrp2;
@@ -220,7 +202,7 @@ void GALILEI::GCompareGrouping::ComputeTotal(GCompareGroupingSignalsReceiver* /*
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GCompareGrouping::Compare(GCompareGroupingSignalsReceiver* rec)
+void GALILEI::GCompareGrouping::Compare(GSlot* rec)
 {
 	ComputeRecallPrecision(rec);
 	ComputeTotal(rec);

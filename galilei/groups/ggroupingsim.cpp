@@ -42,9 +42,6 @@ using namespace RStd;
 #include<groups/ggroupingsim.h>
 #include<groups/ggroups.h>
 #include<groups/ggroup.h>
-#include<profiles/guser.h>
-#include<profiles/gsubprofile.h>
-#include<profiles/gsubprofiledesc.h>
 #include<langs/glang.h>
 #include<sessions/gsession.h>
 using namespace GALILEI;

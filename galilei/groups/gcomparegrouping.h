@@ -52,37 +52,6 @@ using namespace RStd;
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GSession;
-class GGroups;
-class GGroup;
-class GProfile;
-class GSubProfile;
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GGroupingSignalsReceiver provides a representation for a reciever of
-* signals of a grouping method.
-*/
-class GCompareGroupingSignalsReceiver
-{
-public:
-	/**
-	* Constructor.
-	*/
-	GCompareGroupingSignalsReceiver(void);
-
-	/**
-	* Method called by GCompareGrouping each time a new profile is analysed.
-	* @param prof           Pointer to the current profile.
-	*/
-	virtual void NextProfile(GProfile* prof);
-};
-
-
 //-----------------------------------------------------------------------------
 /**
 * The GCompareGrouping provides a way to compare the groupement obtained with a
@@ -148,13 +117,13 @@ protected:
 	* Compute the Recall and the Precision.
 	* @param rec            Receiver of the signals.
 	*/
-	void ComputeRecallPrecision(GCompareGroupingSignalsReceiver* rec=0);
+	void ComputeRecallPrecision(GSlot* rec=0);
 
 	/**
 	* Compute the Total Evaluation.
 	* @param rec            Receiver of the signals.
 	*/
-	void ComputeTotal(GCompareGroupingSignalsReceiver* rec=0);
+	void ComputeTotal(GSlot* rec=0);
 
 public:
 
@@ -163,7 +132,7 @@ public:
 	* @param rec            Receiver of the signals.
 	* @param modified   Recompute only modified elements or all.
 	*/
-	void Compare(GCompareGroupingSignalsReceiver* rec=0);
+	void Compare(GSlot* rec=0);
 
 	/**
 	* Get the total precision of the groupement.

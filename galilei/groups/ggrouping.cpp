@@ -43,10 +43,7 @@ using namespace RStd;
 #include <groups/ggrouping.h>
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
-#include <profiles/guser.h>
 #include <profiles/gprofile.h>
-#include <profiles/gsubprofile.h>
-#include <profiles/gsubprofiledesc.h>
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
 using namespace GALILEI;
