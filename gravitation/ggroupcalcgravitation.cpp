@@ -58,10 +58,9 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GGroupCalcGravitation::GGroupCalcGravitation(GFactoryGroupCalc* fac) throw(bad_alloc)
-	: GGroupCalc(fac), MaxNonZero(100), Order(0), Vector(0), MaxOrderSize(5000)
+	: GGroupCalc(fac), Infos(5000,2500), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
-	Vector=new GWeightInfos(MaxNonZero);
 }
 
 
@@ -96,44 +95,48 @@ void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
 	RCursor<GSubProfile> Sub;
 
 	// Clear the Vector.
-	Group=grp;
-	Group->RemoveRefs();
-	Group->Clear();
-	Vector->Clear();
+	Vector.Clear();
+	// Clear Infos
+	// Rem: Since Infos is not responsible for allocation/desallocation
+	//      -> parse it to prevent memory leaks
+	RCursor<GWeightInfo> Cur(Infos);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		delete Cur();
+	Infos.Clear();
 
 	// If no subprofiles -> No relevant one.
-	if(!Group->GetNbSubProfiles()) return;
+	if(!grp->GetNbSubProfiles()) return;
 
 	// Go through the subprofiles and sum the weigths.
-	Sub=Group->GetSubProfilesCursor();
+	Sub=grp->GetSubProfilesCursor();
 	for(Sub.Start();!Sub.End();Sub.Next())
 	{
 		// Go trough the words of the current subprofile
 		Ref=Sub();
 		for(j=Ref->NbPtr+1,w=Ref->Tab;--j;w++)
 		{
-			ins=Vector->GetInsertPtr<unsigned int>((*w)->GetId());
+			ins=Vector.GetInsertPtr<unsigned int>((*w)->GetId());
 			(*ins)+=(*w)->GetWeight();
 		}
 	}
 
 	// Copy the information of the relevant subprofile to the group.
-	if(Vector->NbPtr+1>MaxOrderSize)
+	if(Vector.NbPtr+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<unsigned int>((Vector->NbPtr+1)*1.1);
+		MaxOrderSize=static_cast<unsigned int>((Vector.NbPtr+1)*1.1);
 		Order=new GWeightInfo*[MaxOrderSize];
 	}
-	memcpy(Order,Vector->Tab,Vector->NbPtr*sizeof(GWeightInfo*));
-	if(Vector->NbPtr)
-		qsort(static_cast<void*>(Order),Vector->NbPtr,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
-	Order[Vector->NbPtr]=0;
+	memcpy(Order,Vector.Tab,Vector.NbPtr*sizeof(GWeightInfo*));
+	if(Vector.NbPtr)
+		qsort(static_cast<void*>(Order),Vector.NbPtr,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
+	Order[Vector.NbPtr]=0;
 	if(MaxNonZero)
 	{
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Group->InsertInfo(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/Group->GetNbSubProfiles()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
 		}
 	}
 	else
@@ -141,12 +144,12 @@ void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
 		for(w=Order;(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Group->InsertInfo(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/Group->GetNbSubProfiles()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
 		}
 	}
 
-	// Update the references of the vector.
-	Group->UpdateRefs();
+	// Update the group.
+	grp->Update(&Infos,true);
 }
 
 
@@ -160,8 +163,15 @@ void GGroupCalcGravitation::CreateParams(GParams* params)
 //-----------------------------------------------------------------------------
 GGroupCalcGravitation::~GGroupCalcGravitation(void)
 {
+	// Clear Infos
+	// Rem: Since Infos is not responsible for allocation/desallocation
+	//      -> parse it to prevent memory leaks
+	RCursor<GWeightInfo> Cur(Infos);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		delete Cur();
+	Infos.Clear();
+
 	if(Order) delete[] Order;
-	if(Vector) delete Vector;
 }
 
 

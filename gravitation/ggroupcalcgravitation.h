@@ -6,7 +6,7 @@
 
 	Group Description is Gravitational Point Computing Method - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -39,10 +39,12 @@
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <groups/ggroupcalc.h>
+#include <infos/gweightinfos.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
+//-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
@@ -56,6 +58,11 @@ namespace GALILEI{
 class GGroupCalcGravitation : public GGroupCalc
 {
 	/**
+	* Information computed.
+	*/
+	R::RContainer<GWeightInfo,false,true> Infos;
+
+	/**
 	* Maximal number of the non-zero weights in the vector.
 	*/
 	unsigned int MaxNonZero;
@@ -68,12 +75,7 @@ class GGroupCalcGravitation : public GGroupCalc
 	/**
 	* Internal vector.
 	*/
-	GWeightInfos* Vector;
-	
-	/*
-	* Vector representing the document.
-	*/
-	GGroup* Group;
+	GWeightInfos Vector;
 
 	/**
 	* Maximal size allocate for a profile.
