@@ -62,19 +62,18 @@ using namespace R;
 #include <ptotdll.h>
 
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // extern structure
 extern BUNDLE ocr, rot270, rot90;
 
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // declare global variables;
 const unsigned int CharInc=200000;
 const unsigned int LineLen=2000;
 static bool cork = false;
 static bool debug = false;
-static char *gs_cmd = "gs";
-static char *outfile = "";
+static const char *gs_cmd = "gs";
 static char *cmd; /* = argv[0] */
 static enum
 {
@@ -84,8 +83,6 @@ static enum
 } orientation = portrait;
 
 static bool bboxes = false;
-
-static int explicitFiles = 0; /* count of explicit file arguments */
 
 #ifdef VMS
 	#define OCRPATH "pstotext_dir:pstotext-ocr.ps"
@@ -114,7 +111,7 @@ static char *make_temp(BUNDLE b)
   return path;
 }
 
-static char *ocr_path = NULL, *rotate_path = NULL;
+static const char *ocr_path = NULL, *rotate_path = NULL;
 static FILE *gs = NULL;
 static void *instance; /* pstotext state */
 #ifdef VMS
@@ -143,17 +140,6 @@ static int cleanup() {
 #endif
   return status;
 }
-
-static void handler(int x) {
-  int status = cleanup();
-  if (status!=0) exit(status);
-#ifdef VMS
-  exit(1);
-#else
-  exit(2);
-#endif
-}
-
 
 
 
@@ -199,7 +185,6 @@ bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	RXMLTag* tag;
 	bool Paragraph;
 	char gs_cmdline[2*MAXPATHLEN];
-	char input[MAXPATHLEN];
 	int status;
 	#ifdef VMS
 		FILE *cfile;
@@ -215,8 +200,6 @@ bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 
 
 	// Analyse Doc->GetFile()
-/*	signal(SIGINT, handler);
-	signal(SIGHUP, handler);*/
 
 	ocr_path = make_temp(ocr);
 

@@ -4,6 +4,6 @@
 /* Last modified on Fri Oct 11 15:35:24 PDT 1996 by mcjones   */
 /* Modified by Pascal Francq auguest 2003 for integration in GALILEI */
 
-typedef char *BUNDLE[];
+typedef const char *BUNDLE[];
 
 extern "C" void putbundle(BUNDLE b, FILE *f);

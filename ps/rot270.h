@@ -1,4 +1,4 @@
-char *rot270[] = {
+const char *rot270[] = {
   "% Copyright (C) 1995, Digital Equipment Corporation.\n",
   "% All rights reserved.\n",
   "% See the file pstotext.txt for a full description.\n",

@@ -39,7 +39,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/galilei.h>
 #include <docs/gfilter.h>
 #include <codetochar.h>
 
