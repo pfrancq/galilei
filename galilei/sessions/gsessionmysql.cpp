@@ -981,11 +981,13 @@ GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs
 			{
 				id=atoi(qsubprof[0]);
 				for(objs->Start();!objs->End();objs->Next())
+				{
 					if((*objs)()->GetSubProfile()->GetId()==id)
 					{
 						grp->Insert((*objs)());
 						break;
 					}
+				}
 			}
 		}
 	}
