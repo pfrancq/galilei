@@ -107,13 +107,15 @@ void GALILEI::GSubjectTree::InsertProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubjectTree::Judgments(GSession* ses,int ran,int percok,int percko)
+void GALILEI::GSubjectTree::Judgments(GSession* ses,int ran,int percok,int percko,int nbmin,int nbmax)
 {
-    NbDocsOk=percok;
+	int NbProfilesWhoJudgesDocuments;
+
+	NbDocsOk=percok;
 	NbDocsKo=percko;
 	if(ran!=0) Random->Reset(ran);
 	InitProfiles();
-	InitSubSubjects();
+	InitSubSubjects();                                    
 
 	//Calculation of the total number of subsubjects.
 	int nbrsububjects=0;
@@ -128,39 +130,40 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int ran,int percok,int perck
 
 	for (this->Start(); !this->End(); this->Next())
 	{
-	 	GSubject* subject=(*this)();
-		for (int i=0; i<NbProfiles; i++)
+		GSubject* subject=(*this)();
+		for (subject->Start();!subject->End();subject->Next())
 		{
-
-			// Chose a subsubject.
-			int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
-			GSubject* sub1=subject->GetPtr(subthema);
-			sub1->setIsJudged(true);
-
-			// Create the judgement.
-			// First, find the profile who can judge the docs
-			int profid=(tab[sub1->GetId()-1])*nbrsububjects+sub1->GetId();
-			GProfile* proftemp = profiles->GetPtr(profid);
-			proftemp->SetState(osUpdated);
-			tab[sub1->GetId()-1]=tab[sub1->GetId()-1]+1;
-		
-			// Documents OK.
-			JudgeDocuments(profid,sub1,1,ses);
-
-			// Documents KO.
-			if (subject->NbPtr>1) //If the subsuject enables the KO judgement of documents.
+			GSubject* sub1=(*subject)();
+			if (nbmax>NbProfiles) NbProfilesWhoJudgesDocuments =(Random->Value(NbProfiles-nbmin))+nbmin;
+			else  NbProfilesWhoJudgesDocuments =(Random->Value(nbmax-nbmin))+nbmin; 
+			sub1->setIsJudged(true); 
+			for (int i=0; i<NbProfilesWhoJudgesDocuments; i++)
 			{
-				int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
-				GSubject* sub2=subject->GetPtr(subthema);
-				while(sub2==sub1)
+				// Create the judgement.
+				// First, find the profile who can judge the docs
+				int profid=(tab[sub1->GetId()-1])*nbrsububjects+sub1->GetId();
+				GProfile* proftemp = profiles->GetPtr(profid);
+				proftemp->SetState(osUpdated);
+				tab[sub1->GetId()-1]=tab[sub1->GetId()-1]+1;
+		
+				// Documents OK.
+				JudgeDocuments(profid,sub1,1,ses);
+
+				// Documents KO.
+				if (subject->NbPtr>1) //If the subsuject enables the KO judgement of documents.
 				{
 					int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
-					sub2=subject->GetPtr(subthema);
+					GSubject* sub2=subject->GetPtr(subthema);
+					while(sub2==sub1)
+					{
+						int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
+						sub2=subject->GetPtr(subthema);
+					}
+					JudgeDocuments(profid,sub2,0,ses);
 				}
-				JudgeDocuments(profid,sub2,0,ses);
 			}
 		}
-	}
+	}   
 	delete [] tab;
 }
   

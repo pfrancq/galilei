@@ -114,10 +114,12 @@ public:
 
 	/**
 	* Executes the queries to create new profiles.
-	* @param ses       The Gailieli session
-	* @param rand      0 total random >0 restart the sequence of randum number
+	* @param ses         The Gailieli session
+	* @param rand        0 total random >0 restart the sequence of randum number
+	* @param nbmin       the minimal number of profiles by groups
+	* @param nbmax       the maximal number of profiles by groups
 	*/
-	void Judgments(GSession* ses,int rand,int percok,int precko);
+	void Judgments(GSession* ses,int rand,int percok,int precko,int nbmin,int nbmax);
 
 	/**
 	* Judge documents from the susubject sub.

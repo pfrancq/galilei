@@ -80,6 +80,16 @@ protected:
 	*/
 	int Rand;
 
+	/**
+	* The maximal number of profiles in a group.
+	*/
+	unsigned int NbProfMax;
+
+	/**
+	* The minimal number of profiles in a group.	
+	*/
+	unsigned int NbProfMin;
+
 public:
 
 	/**

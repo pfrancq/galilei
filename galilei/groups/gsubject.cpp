@@ -81,16 +81,18 @@ GSubject::GSubject(RString name, int id)
 int GSubject::SubSubjectMinId(void)
 {
 	int min;
-	
-	for (this->Start(); !this->End(); this->Next())
+	GSubject **s1;
+	unsigned int i;
+
+	for(s1=this->Tab,i=this->NbPtr;--i;s1++)
 	{
-		GSubject* subject=(*this)();
+		GSubject* subject=(*s1);
 		min=subject->GetId();
 	}
 	
-	for (this->Start(); !this->End(); this->Next())
+	for(s1=this->Tab,i=this->NbPtr;--i;s1++)
 	{
-		GSubject* subject=(*this)();
+		GSubject* subject=(*s1);
 		if (subject->GetId()<min) min=subject->GetId();
 	}
 	return min;
