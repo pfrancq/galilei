@@ -683,16 +683,30 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotWordsClustering()
+void KGALILEICenterApp::slotWordsClustering(void)
 {
-	Doc->GetSession()->AnalyseAssociation();
+	try
+	{
+		Doc->GetSession()->AnalyseAssociation();
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+	}
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotRemoveCluster()
+void KGALILEICenterApp::slotRemoveCluster(void)
 {
-	Doc->GetSession()->RemoveAssociation();
+	try
+	{
+		Doc->GetSession()->RemoveAssociation();
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+	}
 }
 
 
@@ -818,7 +832,7 @@ void KGALILEICenterApp::windowMenuActivated(int id)
 {
 	QWidget* w = pWorkspace->windowList().at( id );
 	if(w)
-	w->setFocus();
+		w->setFocus();
 }
 
 

@@ -340,9 +340,6 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	groupingCompareFromFile->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
-	createXML->setEnabled(true);
-	saveXML->setEnabled(true);
-	analyseXML->setEnabled(true);
 	wordsClustering->setEnabled(true);
 	removeCluster->setEnabled(true);
 	groupsCalc->setEnabled(true);
