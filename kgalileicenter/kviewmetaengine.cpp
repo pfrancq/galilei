@@ -51,6 +51,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // includes files for Qt/KDE
 #include <qpixmap.h>
+#include <qmessagebox.h>
 #include <qlayout.h>
 #include <qgroupbox.h>
 #include <qpopmenu.h>
@@ -83,7 +84,6 @@ using namespace R;
 KViewMetaEngine::KViewMetaEngine(KDoc* doc,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags)
 {
-
 	setCaption("Query meta engine");
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 
@@ -114,7 +114,7 @@ KViewMetaEngine::KViewMetaEngine(KDoc* doc,QWidget* parent,const char* name,int 
 	NbRes = new KIntSpinBox( groupBoxSearch, "NbRes" );
 	NbRes->setMaxValue(1000);
 	//Set Value: default = the value from meta engine option
-	unsigned int tmp=(dynamic_cast<GEngineManager*>(GPluginManager::GetManager("Engine")))->GetCurrentMethod()->GetNbResUsed();
+	unsigned int tmp=dynamic_cast<GMetaEngineManager*>(GPluginManager::GetManager("MetaEngine"))->GetCurrentMethod()->GetNbResUsed();
 	if(tmp==-1)
 		NbRes->setValue(100);
 	else
@@ -169,7 +169,6 @@ KViewMetaEngine::KViewMetaEngine(KDoc* doc,QWidget* parent,const char* name,int 
 	//Add results to vertical layout
 	vLayout->addWidget(Results);
 	//CreateMetaEngineResultsListView();
-
 }
 
 //-----------------------------------------------------------------------------
@@ -190,7 +189,7 @@ GEngineDoc* KViewMetaEngine::GetCurrentEngineDoc(void)
 void KViewMetaEngine::CreateMetaEngineResultsListView(void)
 {
 	R::RCursor<GEngineDoc> engCur;
-	engCur=(dynamic_cast<GEngineManager*>(GPluginManager::GetManager("Engine")))->GetCurrentMethod()->GetEngineDocsCursor();
+	engCur=(dynamic_cast<GMetaEngineManager*>(GPluginManager::GetManager("MetaEngine")))->GetCurrentMethod()->GetEngineDocsCursor();
 	QListViewItemType* urlitem=0, *afteritem=0;
 	QListViewItemType* desc;
 	unsigned int i=1;

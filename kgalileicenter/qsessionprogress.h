@@ -100,9 +100,10 @@ class QLoadSession : public QSessionThread
 	GPostProfileManager* PPmng;
 	GPostGroupManager* PGmng;
 	GEngineManager* Emng;
+	GMetaEngineManager* MEmng;
 public:
 	QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostProfileManager* ppmng, GPostGroupManager* pgmng, GEngineManager* emng);
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostProfileManager* ppmng, GPostGroupManager* pgmng, GEngineManager* emng,GMetaEngineManager* memng);
 	virtual void DoIt(void);
 };
 

@@ -49,6 +49,7 @@
 #include <docs/gdocanalysemanager.h>
 #include <docs/gpostdocmanager.h>
 #include <engines/genginemanager.h>
+#include <engines/gmetaenginemanager.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalcmanager.h>
@@ -165,9 +166,14 @@ class KGALILEICenterApp : public KMainWindow
 	GPostGroupManager* PostGroupManager;
 	
 	/**
-	* Engine & meta engine Manager.
+	* Engine engine Manager.
 	*/
 	GEngineManager* EngineManager;
+
+	/**
+	* Meta engine Manager.
+	*/
+	GMetaEngineManager* MetaEngineManager;
 
 	/**
 	* The configuration object of the application.

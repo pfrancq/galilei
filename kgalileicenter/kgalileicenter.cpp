@@ -175,7 +175,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			QSessionProgressDlg dlg(this,Sess,"Loading from Database");
 			if(dlg.Run(new QLoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,
 			GroupingManager,GroupCalcManager,StatsCalcManager,LinkCalcManager,PostDocManager,
-			PostProfileManager,PostGroupManager,EngineManager)))
+			PostProfileManager,PostGroupManager,EngineManager,MetaEngineManager)))
 			{
 				sessionConnect->setEnabled(false);
 				UpdateMenusEntries();
@@ -701,6 +701,11 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotQueryMetaEngine(void)
 {
+	if(!(dynamic_cast<GMetaEngineManager*>(GPluginManager::GetManager("MetaEngine"))->GetCurrentMethod()))
+	{
+		QMessageBox::information(this," Error "," No Meta Engine Method selected!!");
+		return;
+	}
 	createClient(Doc,new KViewMetaEngine(Doc,pWorkspace,"View Meta Engine Results",0));
 }
 
@@ -1069,4 +1074,5 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 	if(PostProfileManager) delete PostProfileManager;
 	if(PostGroupManager) delete PostGroupManager;
 	if(EngineManager) delete EngineManager;
+	if(MetaEngineManager) delete MetaEngineManager;
 }

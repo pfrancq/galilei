@@ -140,7 +140,7 @@ void QSessionThread::run(void)
 
 //-----------------------------------------------------------------------------
 QLoadSession::QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostProfileManager* ppmng, GPostGroupManager* pgmng, GEngineManager* emng)
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostProfileManager* ppmng, GPostGroupManager* pgmng, GEngineManager* emng,GMetaEngineManager* memng)
 {
 	Langs=langs;
 	Umng=umng;
@@ -154,6 +154,7 @@ QLoadSession::QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyse
 	PPmng=ppmng;
 	PGmng=pgmng;
 	Emng=emng;
+	MEmng=memng;
 }
 
 
@@ -351,7 +352,6 @@ void QFillDB::DoIt(void)
 	nbTopic.Start();
 	if((!nbTopic.End())&&(nbTopic[0]))
 		nbTopicsAtBegin=atoi(nbTopic[0]);
-	cout<<"nb topics"<<nbTopicsAtBegin<<endl;
 		
 	if(!ParentName.IsEmpty())
 	{
@@ -410,7 +410,6 @@ void QFillDB::DoIt(void)
 	}
 
 	sSql="SELECT * FROM topics WHERE parent !=0 and topicid>"+itou(nbTopicsAtBegin);
-	cout<<sSql<<endl;
 	RQuery topics(Db,sSql);
 	for(topics.Start();!topics.End();topics.Next())
 	{
@@ -635,59 +634,6 @@ void QFillMIMETypes::receiveNextMIMEPath(const char* path,RXMLStruct& xml)
 		if((ep->d_type==DT_REG)&&(fnmatch("*.desktop",ep->d_name,0)==0))
 		{
 			Parent->PutText(ep->d_name);
-//			cout<<Full.Latin1()<<endl;
-/*			RTextFile File(Full);
-			RString Type;
-			RString Comment;
-			RString MIME;
-			RString Patterns;
-			RString Encoding;
-			RString Line;
-
-			Desktop=false;
-			while(!File.Eof())
-			{
-				if(!strcmp(path,"%"))
-					cout<<debug<<endl;
-				Line=File.GetLine();
-				Len=Line.GetLen();
-				if(Len<5) continue;
-				if(Line[static_cast<unsigned int>(0)]==RChar('['))
-					Desktop=(Line=="[Desktop Entry]");
-				if(!Desktop) continue;
-
-				// Read Information
-				if(Line.Mid(0,4)=="Type")
-					Type=Line.Mid(5,Len-5);
-				if(Line.Mid(0,8)=="Encoding")
-					Encoding=Line.Mid(9,Len-9);
-				if(Line.Mid(0,8)=="Patterns")
-					Patterns=Line.Mid(9,Len-9);
-				if((Line.Mid(0,7)=="Comment")&&(Line[static_cast<unsigned int>(7)]!=RChar('[')))
-					Comment=Line.Mid(8,Len-8);
-				if(Line.Mid(0,8)=="MimeType")
-					MIME=Line.Mid(9,Len-9);
-				if(!strcmp(path,"%"))
-					cout<<debug<<endl;
-			}
-			if((!Patterns.IsEmpty())&&(!MIME.IsEmpty())&&(Type=="MimeType"))
-			{
-				cout<<"<mimeType description=\""<<Comment.Latin1()<<"\" code=\""<<MIME.Latin1()<<"\"";
-				if(!Encoding.IsEmpty())
-				{
-					cout<<" encoding=\""<<Encoding.Latin1()<<"\"";
-				}
-				cout<<">"<<endl;
-				pos=0;
-				while(pos!=-1)
-				{
-					next=Patterns.Find(';',pos+1);
-					if(next>0)
-						cout<<"<file type=\""<<Comment.Latin1()<<"\" ext=\""<<Patterns.Mid(pos,next-pos).Latin1()<<"\"/>"<<endl;
-					pos=next;
-				}
-				cout<<"</mimeType"<<endl;
-			}*/
 		}
 	}
 }

@@ -105,6 +105,7 @@ KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
 		PostProfileManager=new GPostProfileManager(pluginsPath.Latin1());
 		PostGroupManager=new GPostGroupManager(pluginsPath.Latin1());
 		EngineManager=new GEngineManager(pluginsPath.Latin1());
+		MetaEngineManager=new GMetaEngineManager(pluginsPath.Latin1());
 
 	}
 	catch(GException e)
@@ -248,23 +249,11 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("CreateDbSQLpath",CreateDbSQLpath);
 	Config->writeEntry("CreateDbUseStopList",CreateDbUseStopList);
 	Config->writeEntry("CreateDbUseUsers",CreateDbUseUsers);
-	
+
 	// Save Config
 	try
 	{
 		GConfig Conf("/etc/galilei/galilei.galileiconfig");
-		Conf.Store(Langs);
-		Conf.Store(URLManager);
-		Conf.Store(DocAnalyseManager);
-		Conf.Store(ProfilingManager);
-		Conf.Store(GroupingManager);
-		Conf.Store(GroupCalcManager);
-		Conf.Store(StatsCalcManager);
-		Conf.Store(LinkCalcManager);
-		Conf.Store(PostDocManager);
-		Conf.Store(PostProfileManager);
-		Conf.Store(PostGroupManager);
-		Conf.Store(EngineManager);
 		Conf.Store(SessionParams);
 		Conf.Save();
 	}
@@ -318,7 +307,7 @@ void KGALILEICenterApp::readOptions(void)
 	dbUser=Config->readEntry("User","root").ascii();
 	dbPwd=Config->readEntry("Password","").ascii();
 	dbEncoding=Config->readEntry("Encoding","latin1").ascii();
-	
+
 	//read create database options
 	CreateDbSQLpath=Config->readEntry("CreateDbPath","/usr/share/galilei/sql/").ascii();
 	CreateDbUseStopList=Config->readBoolEntry("CreateDbUseStopList",true);
@@ -334,18 +323,6 @@ void KGALILEICenterApp::readGALILEIOptions(void)
 	{
 		GConfig Conf("/etc/galilei/galilei.galileiconfig");
 		Conf.Load();
-		Conf.Read(Langs);
-		Conf.Read(URLManager);
-		Conf.Read(DocAnalyseManager);
-		Conf.Read(ProfilingManager);
-		Conf.Read(GroupingManager);
-		Conf.Read(GroupCalcManager);
-		Conf.Read(StatsCalcManager);
-		Conf.Read(LinkCalcManager);
-		Conf.Read(PostDocManager);
-		Conf.Read(PostProfileManager);
-		Conf.Read(PostGroupManager);
-		Conf.Read(EngineManager);
 		Conf.Read(SessionParams);
 	}
 	catch(...)

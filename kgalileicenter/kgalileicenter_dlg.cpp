@@ -217,7 +217,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.changeLang(Init<GFactoryLang,GLang,QLangItem>(Langs->GetLangsCursor(),dlg.Langs,dlg.EnableLang));
 	dlg.changeDocAnalyse(Init<GFactoryDocAnalyse,GDocAnalyse,QDocAnalyseItem>(DocAnalyseManager->GetDocAnalysesCursor(),dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse,DocAnalyseManager->GetCurrentMethod()));
 	dlg.changeEngine(Init<GFactoryEngine,GEngine,QEngineItem>(EngineManager->GetEnginesCursor(),dlg.Engines,dlg.EnableEngine));
-	dlg.changeMetaEngine(Init<GFactoryMetaEngine,GMetaEngine,QMetaEngineItem>(EngineManager->GetMetaEnginesCursor(),dlg.MetaEngines,dlg.EnableMetaEngine,dlg.CurrentMetaEngine,EngineManager->GetCurrentMethod()));
+	dlg.changeMetaEngine(Init<GFactoryMetaEngine,GMetaEngine,QMetaEngineItem>(MetaEngineManager->GetMetaEnginesCursor(),dlg.MetaEngines,dlg.EnableMetaEngine,dlg.CurrentMetaEngine,MetaEngineManager->GetCurrentMethod()));
 
 	if(dlg.exec())
 	{
@@ -287,7 +287,7 @@ void KGALILEICenterApp::slotPlugins(void)
 		}
 		try
 		{
-			EngineManager->SetCurrentMethod(dlg.CurrentMetaEngine->currentText());
+			MetaEngineManager->SetCurrentMethod(dlg.CurrentMetaEngine->currentText());
 		}
 		catch(GException)
 		{
