@@ -131,10 +131,12 @@ class GFactoryDocAnalyseCursor;
 class GFactoryPostDoc;
 class GFactoryPostDocCursor;
 
+
 //-----------------------------------------------------------------------------
 // forward class declaration - Link Part
 class GIWordWeight;
 class GIWordWeights;
+
 
 //-----------------------------------------------------------------------------
 // forward class declaration - Link Part
@@ -227,14 +229,6 @@ class GMixedIdealGroups;
 
 //-----------------------------------------------------------------------------
 // forward class declaration - PostGroups
-//class GStandardInOutPut;
-//class GInOutputBase;
-//class GDispatchpov;
-//class GExpertKwds;
-//class GAlgoBase;
-//class GCpov;
-//class GCpovCursor;
-//class GStandardInOutPutCursor;
 class GPostGroup;
 class GPostGroupManager;
 class GFactoryPostGroup;
@@ -304,15 +298,15 @@ enum tDocJudgement
 	 // the 4 first bits are used to express the judgemnet of the Doc (OK,KO,N,HS)
 	 // the 5th and 6th bits are used to express the status of the Doc (Hub, Autority )
 	 // the masks are used to separate the judgement and the status of a doc.
-	djUnknow=0               /** Unknow judgement.*/,
-	djOK=1                      /** Document is OK.*/,
-	djKO=2                      /** Document is KO.*/,
-	djNav=4                    /** Document is an interesting navigation document.*/,
-	djOutScope=8           /** Document is out of scope.*/,
-	djHub=16                  /** Document is a Hub.*/,
-	djAutority=32            /** Document is an Autority.*/,
-	djMaskJudg=15          /** Mask for the judgement of the doc.*/,
-	djMaskHubAuto=48    /** Mask for the Hub or Autority.*/
+	djUnknow=0                  /** Unknow judgement.*/,
+	djOK=1                      /** Document is relevant.*/,
+	djKO=2                      /** Document is fuzzy relevant.*/,
+	djNav=4                     /** Document is an interesting navigation document.*/,
+	djOutScope=8                /** Document is irrelevant.*/,
+	djHub=16                    /** Document is a Hub.*/,
+	djAutority=32               /** Document is an Autority.*/,
+	djMaskJudg=15               /** Mask for the judgement of the doc.*/,
+	djMaskHubAuto=48            /** Mask for the Hub or Autority.*/
 
 };
 

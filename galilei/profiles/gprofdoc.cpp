@@ -52,21 +52,21 @@ using namespace R;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GALILEI::GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,const char* date)
+GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,const char* date)
   : Doc(doc), Profile(prof), Fdbk(fdbk), Updated(date)
 {
 }
 
 
 //---------------------------------------------------------------------------
-GALILEI::GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,RDate date)
+GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,RDate date)
   : Doc(doc), Profile(prof), Fdbk(fdbk), Updated(date)
 {
 }
 
 
 //---------------------------------------------------------------------------
-int GALILEI::GProfDoc::Compare(const GProfDoc& profdoc) const
+int GProfDoc::Compare(const GProfDoc& profdoc) const
 {
 	int diff;
 
@@ -77,7 +77,7 @@ int GALILEI::GProfDoc::Compare(const GProfDoc& profdoc) const
 
 
 //---------------------------------------------------------------------------
-int GALILEI::GProfDoc::Compare(const GProfDoc* profdoc) const
+int GProfDoc::Compare(const GProfDoc* profdoc) const
 {
 	int diff;
 
@@ -88,42 +88,73 @@ int GALILEI::GProfDoc::Compare(const GProfDoc* profdoc) const
 
 
 //---------------------------------------------------------------------------
-int GALILEI::GProfDoc::Compare(const GDoc* doc) const
+int GProfDoc::Compare(const GDoc* doc) const
 {
 	return(Doc->GetId()-doc->GetId());
 }
 
 
 //---------------------------------------------------------------------------
-tDocJudgement GALILEI::GProfDoc::GetFdbk(void) const
+void GProfDoc::UpdateFdbk(tDocJudgement fdbk,const char* date)
+{
+	Fdbk=fdbk;
+	Updated=date;
+}
+
+
+//---------------------------------------------------------------------------
+void GProfDoc::UpdateFdbk(tDocJudgement fdbk,R::RDate date)
+{
+	Fdbk=fdbk;
+	Updated=date;
+}
+
+
+//---------------------------------------------------------------------------
+tDocJudgement GProfDoc::GetFdbk(void) const
 {
 	return(Fdbk);
 }
 
 
 //---------------------------------------------------------------------------
-GDoc* GALILEI::GProfDoc::GetDoc(void) const
+GDoc* GProfDoc::GetDoc(void) const
 {
 	return(Doc);
 }
 
 
 //---------------------------------------------------------------------------
-GProfile* GALILEI::GProfDoc::GetProfile(void) const
+GProfile* GProfDoc::GetProfile(void) const
 {
 	return(Profile);
 }
 
 
 //---------------------------------------------------------------------------
-const RDate* GALILEI::GProfDoc::GetUpdated(void) const
+const RDate* GProfDoc::GetUpdated(void) const
 {
 	return(&Updated);
 }
 
 
 //---------------------------------------------------------------------------
-double GALILEI::GProfDoc::Similarity(void)
+bool GProfDoc::FdbkTreated(void) const
+{
+	GSubProfile* sub;
+	GLang* lang;
+
+	lang=Doc->GetLang();
+	if(!lang) return(false);
+	sub=Profile->GetPtr<const GLang*>(lang);
+	if(!sub) return(false);
+	if(Updated>(*sub->GetComputed())) return(false);
+	return(true);
+}
+
+
+//---------------------------------------------------------------------------
+double GProfDoc::Similarity(void)
 {
 	GSubProfile* sub;
 	GLang* lang;
@@ -137,7 +168,7 @@ double GALILEI::GProfDoc::Similarity(void)
 
 
 //-----------------------------------------------------------------------------
-tDocJudgement GALILEI::GProfDoc::ErrorJudgment(tDocJudgement fdbk,double PercErr,RRandom* rand)
+tDocJudgement GProfDoc::ErrorJudgment(tDocJudgement fdbk,double PercErr,RRandom* rand)
 {
 	double random=rand->Value()*100+1.0;
 
@@ -170,6 +201,6 @@ tDocJudgement GALILEI::GProfDoc::ErrorJudgment(tDocJudgement fdbk,double PercErr
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfDoc::~GProfDoc(void)
+GProfDoc::~GProfDoc(void)
 {
 }

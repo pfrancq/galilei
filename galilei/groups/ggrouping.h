@@ -94,7 +94,7 @@ protected:
 	/**
 	* Type of the description used to group.
 	*/
-	tSubProfileDesc SubProfileDesc;
+//	tSubProfileDesc SubProfileDesc;
 
 	/**
 	* Groups to destruct after the grouping.
