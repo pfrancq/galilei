@@ -933,12 +933,11 @@ void GALILEI::GSessionMySQL::SaveChromo(GChromoIR* chromo,unsigned int id,RGA::R
 
 
 //-----------------------------------------------------------------------------
-GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global)
+GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global,SimType s)
 {
 	GInstIR* InstIR;
 	char sSql[200];
 	unsigned int popsize;
-	SimType s;
 	GChromoIR* chromo;
 	GGroupDataIR data;
 	GGroupIR* grp;

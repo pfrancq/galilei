@@ -530,9 +530,10 @@ public:
 	* @param objs           Objects.
 	* @param sim            Similarities.
 	* @param global         Global Similarities.
+	* @param s              Sim type.
 	* @return pointer to a Ginstir
 	*/
-	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global)=0;
+	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global,SimType s)=0;
 
 	/**
 	* Run a "program" for this session.

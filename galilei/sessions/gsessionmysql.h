@@ -277,9 +277,10 @@ public:
 	* @param objs           Objects.
 	* @param sim            Similarities.
 	* @param global         Global Similarities.
+	* @param s              Sim type.
 	* @return pointer to a Ginstir
 	*/
-	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global);
+	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global,SimType s);
 
 	/**
 	* Destructor.
