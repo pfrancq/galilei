@@ -177,7 +177,7 @@ GProfile* GUsers::GetProfile(const unsigned int id) const
 //------------------------------------------------------------------------------
 GProfileCursor GUsers::GetProfilesCursor(void)
 {
-	GProfileCursor cur(*Profiles);
+	GProfileCursor cur(Profiles);
 	return(cur);
 }
 
@@ -210,7 +210,7 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id) const throw(GException
 	RCursor<GSubProfiles> Cur;
 	GSubProfile* ptr;
 
-	Cur.Set(*SubProfiles);
+	Cur.Set(SubProfiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		//ptr=Cur()->GetPtrAt(id);
@@ -237,7 +237,6 @@ GSubProfileCursor GUsers::GetSubProfilesCursor(GLang* lang) throw(GException)
 	if(ptr)
 		return(ptr->GetSubProfilesCursor());
 	GSubProfileCursor cur;
-	cur.Set(static_cast<GSubProfiles*>(0));
 	return(cur);
 }
 
@@ -248,7 +247,7 @@ void GUsers::ClearSubProfilesGroups(void) throw(GException)
 	RCursor<GSubProfiles> Cur;
 	GSubProfileCursor Cur2;
 
-	Cur.Set(*SubProfiles);
+	Cur.Set(SubProfiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur2.Set(Cur());
