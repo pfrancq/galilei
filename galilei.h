@@ -42,7 +42,7 @@
 #include <rstd/rstring.h>
 using namespace RStd;
 
-
+const unsigned cNoRef=0xFFFFFFFF;
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
