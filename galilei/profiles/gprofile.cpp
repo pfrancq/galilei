@@ -6,7 +6,7 @@
 
 	Profile - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -49,8 +49,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFdbk::GFdbk(unsigned int id,tDocAssessment fdbk,RDate& date)
-  : Doc(New<GDocProxy>(id)), Fdbk(fdbk), Updated(date)
+GFdbk::GFdbk(unsigned int id,tDocAssessment fdbk,RDate& updated)
+  : Doc(New<GDocProxy>(id)), Fdbk(fdbk), Updated(updated)
 {
 }
 

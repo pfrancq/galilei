@@ -6,7 +6,7 @@
 
 	Profile - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -68,45 +68,46 @@ class GFdbk
 	*/
 	R::RDate Updated;
 
+
 public:
 
 	/**
 	* Constructor.
-	* @param id             Identificator of the document.
-	* @param fdbk           Assessment.
-	* @param date           Date.
+	* @param id               Identificator of the document.
+	* @param fdbk             Assessment.
+	* @param updated          Date.
 	*/
-	GFdbk(unsigned int id,tDocAssessment fdbk,R::RDate& date);
+	GFdbk(unsigned int id,tDocAssessment fdbk,R::RDate& updated);
 
 	/**
 	* Compare two assessements to order them using the document identificator.
 	* @see R::RContainer
-	* @param profdoc        Assessement.
+	* @param fdbk             Assessement.
 	* @return int
 	*/
-	int Compare(const GFdbk &profdoc) const;
+	int Compare(const GFdbk& fdbk) const;
 
 	/**
 	* Compare two assessements to order them using the document identificator.
 	* @see R::RContainer
-	* @param profdoc        Pointer to an assessement.
+	* @param fdbk             Pointer to an assessement.
 	* @return int
 	*/
-	int Compare(const GFdbk *profdoc) const;
+	int Compare(const GFdbk* fdbk) const;
 
 	/**
 	* Compare the document assessed with another document using their
 	* identificators.
 	* @see R::RContainer
-	* @param doc             Identificator of the document.
+	* @param doc              Identificator of the document.
 	* @return int
 	*/
 	int Compare(unsigned int id) const;
 
 	/**
 	* Update the assessment on a given date.
-	* @param fdbk           Assessment.
-	* @param date           Date.
+	* @param fdbk             Assessment.
+	* @param date             Date.
 	*/
 	void UpdateFdbk(tDocAssessment fdbk,R::RDate date);
 
