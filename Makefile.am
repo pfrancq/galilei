@@ -17,10 +17,13 @@ package-messages:
 
 EXTRA_DIST = admin COPYING configure.in.in
 
+config:
+	python PluginsConfig.py
+
 dist-hook:
 	cd $(top_distdir) && perl admin/am_edit -padmin
 	cd $(top_distdir) && $(MAKE) -f admin/Makefile.common subdirs
-AM_CFLAGS = 
-AM_CXXFLAGS = 
-AM_FFLAGS = 
-INCLUDES = 
+AM_CFLAGS =
+AM_CXXFLAGS =
+AM_FFLAGS =
+INCLUDES =
