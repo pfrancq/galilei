@@ -214,6 +214,10 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	GDict* stop;
 	GDict* dic;
 
+	// Verify that xml structure exists.
+	if(!xml)
+		throw GException("No XML Structure for document '"+URL+"'");
+
 	if(!Calc) return;
 
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(session->GetLangs());

@@ -279,7 +279,7 @@ public:
 		* created has to be desallocate by the caller.
 		* @param doc        Document to analyse.
 		*/
-		GDocXML* CreateDocXML(const GDoc* doc);
+		GDocXML* CreateDocXML(const GDoc* doc) throw(GException);
 
 	//@}
 

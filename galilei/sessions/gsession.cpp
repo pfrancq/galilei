@@ -16,13 +16,13 @@
 
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainercursor.h>
 using namespace RStd;
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsessions/gsession.h>
 #include <glangs/glangen.h>
@@ -32,13 +32,13 @@ using namespace RStd;
 
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //
 // GSession
 //
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int f,GURLManager* mng) throw(bad_alloc,GException)
 	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(2,5), Fdbks(f+f/2,f/2), Mng(mng),
 	  bDics(false), bDocs(false), bUsers(false), bGroups(false),
@@ -62,7 +62,7 @@ GLang* GALILEI::GSession::GetLang(const char* code) const
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::InitDics(void) throw(bad_alloc,GException)
 {
 	// If dictionnary already loaded, do nothing.
@@ -79,21 +79,21 @@ void GALILEI::GSession::InitDics(void) throw(bad_alloc,GException)
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 GDict* GALILEI::GSession::GetDic(const GLang *lang) const throw(GException)
 {
 	return(Dics.GetPtr<const GLang*>(lang,false));
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 GDict* GALILEI::GSession::GetStop(const GLang *lang) const throw(GException)
 {
 	return(Stops.GetPtr<const GLang*>(lang,false));
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 const char* GALILEI::GSession::GetWord(const unsigned int id,const GLang* lang)
 {
 	if(bDics)
@@ -102,7 +102,7 @@ const char* GALILEI::GSession::GetWord(const unsigned int id,const GLang* lang)
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 const char* GALILEI::GSession::GetWord(const unsigned int id,const GDict* dict) const
 {
 	if(bDics&&dict)
@@ -111,8 +111,7 @@ const char* GALILEI::GSession::GetWord(const unsigned int id,const GDict* dict) 
 }
 
 
-
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::InitDocs(void) throw(bad_alloc,GException)
 {
 	// If documents already loaded, do nothing.
@@ -124,14 +123,14 @@ void GALILEI::GSession::InitDocs(void) throw(bad_alloc,GException)
 }
 
 
-//---------------------------------------------
-GDocXML* GALILEI::GSession::CreateDocXML(const GDoc* doc)
+//-----------------------------------------------------------------------------
+GDocXML* GALILEI::GSession::CreateDocXML(const GDoc* doc) throw(GException)
 {
 	return(Mng->CreateDocXML(doc));
 }
 
 
-//--------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 {
 	// If users already loaded, do nothing.
@@ -143,7 +142,7 @@ void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 GUser* GALILEI::GSession::CreateUser(const char* usr,const char* pwd,const char* name,const char* email,
 	                  const char* title,const char* org,const char* addr1,
 	                  const char* addr2,const char* city,const char* country) throw(bad_alloc)
@@ -152,7 +151,7 @@ GUser* GALILEI::GSession::CreateUser(const char* usr,const char* pwd,const char*
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::InitFdbks(void) throw(bad_alloc,GException)
 {
 	// If users' feedback already loaded, do nothing.
@@ -170,7 +169,7 @@ void GALILEI::GSession::InitFdbks(void) throw(bad_alloc,GException)
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,char j,const char* date) throw(bad_alloc)
 {
 	GProfDoc* f;
@@ -181,7 +180,7 @@ void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,char j,const char* date) 
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::InitGroups(void) throw(bad_alloc,GException)
 {
 	// If groups already loaded, do nothing.
@@ -193,7 +192,7 @@ void GALILEI::GSession::InitGroups(void) throw(bad_alloc,GException)
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::InitGroupsMember(void) throw(bad_alloc,GException)
 {
 	// If users' feedback already loaded, do nothing.
@@ -213,21 +212,21 @@ void GALILEI::GSession::InitGroupsMember(void) throw(bad_alloc,GException)
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 GGroups* GALILEI::GSession::GetGroups(const GLang* lang) const
 {
 	return(Groups.GetPtr<const GLang*>(lang));
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 GGroup* GALILEI::GSession::NewGroup(void)
 {
 	return(new GGroup());
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 GALILEI::GSession::~GSession(void) throw(GException)
 {
 }
