@@ -110,7 +110,7 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 		for (Profs1.Start();!Profs1.End(); Profs1.Next())
 		{
 			// If the profile is defined -> compter +1
-			if (Profs1()->GetFeedback( Docs() ))
+			if (Profs1()->GetFdbk(Docs()->GetId()))
 			{
 				nbProfJugDoc++;
 			}
