@@ -251,7 +251,7 @@ bool GALILEI::GFilterXML::Analyze(GDocXML* doc)
 	AnalyseDoc();
 
 	// Done
-	if(Block)
+	if(Buffer)
 	{
 		delete[] Buffer;
 		Buffer=0;
