@@ -629,9 +629,9 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 	for(subdocs.Start();!subdocs.End();subdocs.Next())
 	{
 		d=GetDoc(atoi(subdocs[0]));
-		if(!d) {cout<<"Problem"<<endl;continue;}
+		if(!d) continue;
 		s=Subjects.GetPtr<const unsigned int>(atoi(subdocs[1]));
-		if(!s) {cout<<"Problem"<<endl;continue;}
+		if(!s) continue;
 		s->InsertDoc(d);
 		d->InsertSubject(s);
 	}
