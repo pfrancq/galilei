@@ -433,7 +433,7 @@ struct GLinkCalcCorrespondence::BestValue GALILEI::GLinkCalcCorrespondence::find
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLinkCalcCorrespondence::Compute(GProfile* Prof)
+void GALILEI::GLinkCalcCorrespondence::Compute(GProfile* /*Prof*/)
 {
 
 //	RContainer<GDoc,unsigned int, false,true>* BaseSet;

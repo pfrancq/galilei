@@ -244,7 +244,7 @@ void GALILEI::GDoc::InsertLink(const GDoc* doc,unsigned int nbOccurs) throw(bad_
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::InsertLink(const GDoc* doc,char* format,char* type) throw(bad_alloc)
+void GALILEI::GDoc::InsertLink(const GDoc* doc,char* /*format*/,char* /*type*/) throw(bad_alloc)
 {
 	GLink* link ;
 	link = LinkSet->GetInsertPtr(doc);

@@ -308,7 +308,7 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 {
 	GSim* sim;
 	GSims* sims;
-	unsigned int nbcomp,i,j;
+	unsigned int nbcomp,i;
 	double oldsim,newsim;
 	GSubProfile** sub1, **sub2;
 	double newmean, oldmean, newdev, olddev;

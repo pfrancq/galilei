@@ -671,9 +671,8 @@ void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang)
+void GALILEI::GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* /*newlang*/)
 {
-	GProfileCursor profcur;
 	GProfDocCursor profdoccursor;
 
 	// if the old lang and the new lang are not defined.

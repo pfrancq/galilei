@@ -411,7 +411,7 @@ struct GLinkCalcHITS::BestValue GALILEI::GLinkCalcHITS::findMin(struct BestValue
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLinkCalcHITS::Compute(GProfile* Prof)
+void GALILEI::GLinkCalcHITS::Compute(GProfile* /*Prof*/)
 {
 
 //	RContainer<GDoc,unsigned int, false,true>* BaseSet;

@@ -378,7 +378,7 @@ void GALILEI::GWordsClustering::UpdateDoc(GDocVector* doc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GWordsClustering::SaveAssociations(unsigned n,bool save)
+void GALILEI::GWordsClustering::SaveAssociations(unsigned /*n*/,bool save)
 {
 	double nb;
 	GWordList *tmp;

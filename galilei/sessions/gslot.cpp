@@ -84,7 +84,7 @@ void GALILEI::GSlot::receiveNextChromosome(unsigned int)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextMethod(unsigned int num)
+void GALILEI::GSlot::receiveNextMethod(unsigned int)
 {
 }
 

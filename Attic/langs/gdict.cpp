@@ -110,9 +110,11 @@ void GALILEI::GDict::Put(unsigned id,const RStd::RString& word) throw(bad_alloc)
 	GWordList* wordlist;
 	GWord Word(id,word),*ptr;
 	char *tmp,*tmp2;
+	char grouplist[10]="grouplist";
 	bool grplst=true;
+
 	tmp=word.StrDup();
-	tmp2="grouplist";
+	tmp2=grouplist;
 	while((*tmp)&&(*tmp2)&&(grplst))
 	{
 		if((*tmp)==(*tmp2))
@@ -215,14 +217,14 @@ int GALILEI::GDict::Compare(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType,GWordType WordType)
+void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType,GWordType /*WordType*/)
 {
 	Direct[id]->IncRef(ObjType);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType,GWordType WordType)
+void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType,GWordType /*WordType*/)
 {
 	Direct[id]->DecRef(ObjType);
 }

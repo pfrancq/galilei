@@ -702,8 +702,7 @@ void GALILEI::GChromoIR::Evaluate(void) throw(RGA::eGA)
 void GALILEI::GChromoIR::ReAllocate(void) throw(RGA::eGA)
 {
 	GGroupIRCursor Grp;
-	GObjIR** ptr;
-	unsigned int i,nb;
+	unsigned int nb;
 	double sim,maxsim,ratio;
 	GSubProfile* sub;
 	GGroupIR* grp;
