@@ -134,14 +134,15 @@ void KViewStats::ComputeStats(void)
 	GFactoryStatsCalcCursor Cur;
 	GStatsCalc* Calc;
 	RXMLTag Root("Statistics");
-	QProgressDialog Dlg("Compute Statistics","Abort",Doc->GetSession()->GetStatsCalcMng()->NbPtr,this, "progress", TRUE );
+	QProgressDialog Dlg( "Compute Statistics", "Abort Compute", Doc->GetSession()->GetStatsCalcMng()->NbPtr +1 ,this, "progress", TRUE );
 	int i;
 
 	// Compute the statistics
 	Dlg.setMinimumDuration(0);
+	Dlg.setProgress(0);
 	KApplication::kApplication()->processEvents();
 	Cur.Set(Doc->GetSession()->GetStatsCalcMng());
-	for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
+	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
 	{
 		Dlg.setProgress(i);
 		Dlg.setLabelText(Cur()->GetName());
