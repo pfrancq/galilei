@@ -210,6 +210,17 @@ class GMixedIdealGroups;
 
 
 //-----------------------------------------------------------------------------
+// forward class declaration - PostGroups
+class GStandardInOutPut;
+class GInOutputBase;
+class GDispatchpov;
+class GExpertKwds;
+class GAlgoBase;
+class GCpov;
+class GCpovCursor;
+class GStandardInOutPutCursor;
+
+//-----------------------------------------------------------------------------
 // forward class declaration - Parameters Part
 // Grouping parameters
 class GGroupingParams;
