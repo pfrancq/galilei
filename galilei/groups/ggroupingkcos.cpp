@@ -148,7 +148,7 @@ void GALILEI::GGroupingKCos::Run(void) throw(GException)
 
 	for (GroupsNumber=MinNbGroups; GroupsNumber<(MaxNbGroups+1); GroupsNumber++)
 	{
-		Groups->Clear();
+		Clear();
 		grpstemp->Clear();
 		double finalcost;
 		if(SubProfiles.NbPtr==0) return;
@@ -215,7 +215,7 @@ void  GALILEI::GGroupingKCos::ReAllocate()
 	GGroup * g;
 	for (protos->Start(); !protos->End(); protos->Next())  // groups containing one proto are created
 	{
-		grpstemp->InsertPtr(g=Session->NewGroup(Groups->GetLang()));
+		grpstemp->InsertPtr(g=NewGroup(Groups->GetLang()));
 		g->InsertPtr((*protos)());
 	}
 	for (SubProfiles.Start(); !SubProfiles.End(); SubProfiles.Next())
