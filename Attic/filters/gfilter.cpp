@@ -36,14 +36,14 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GFilter::GFilter(const RString& url,GURLManager* mng)
-	: Manager(mng),URL(url), Doc(0)
+GALILEI::GFilter::GFilter(GURLManager* mng)
+	: Manager(mng), Doc(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GFilter::AddMIME(const RString& name)
+void GALILEI::GFilter::AddMIME(const char* name)
 {
 	Manager->AddMIME(name,this);
 }

@@ -41,6 +41,8 @@
 #include <urlmanagers/gurlmanager.h>
 #include <filters/gmimefilter.h>
 #include <filters/gfilter.h>
+#include <filters/gfilteremail.h>
+#include <filters/gfilterhtml.h>
 #include <gsessions/gsession.h>
 using namespace GALILEI;
 
@@ -53,9 +55,11 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GURLManager::GURLManager(GSession* session)
-	: Session(session), MIMES(50,25), Filters(50,25)
+GALILEI::GURLManager::GURLManager(void)
+	: MIMES(50,25), Filters(50,25)
 {
+	new GFilterHTML(this);
+	new GFilterEMail(this);
 }
 
 
@@ -73,7 +77,7 @@ void GALILEI::GURLManager::Delete(RString& tmpFile)
 
 
 //-----------------------------------------------------------------------------
-GDocXML* GALILEI::GURLManager::CreateDocXML(const char* URL,const char* mime)
+GDocXML* GALILEI::GURLManager::CreateDocXML(const GDoc* doc)
 {
 	RString tmpFile(50);
 	const char* ptr;
@@ -81,7 +85,7 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(const char* URL,const char* mime)
 	GDocXML* xml=0;
 
 	// Verify it is a local file (file:/) or nothing.
-	ptr=URL;
+	ptr=doc->GetURL();
 	i=0;
 	while((*ptr)&&(isalnum(*ptr)))
 	{
@@ -90,7 +94,7 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(const char* URL,const char* mime)
 	}
 	if(i&&((*ptr)==':')&&(strncmp(ptr,"file",i)))
 	{
-		if(!Download(URL,tmpFile))
+		if(!Download(doc->GetURL(),tmpFile))
 			return(xml);
 	}
 
@@ -106,11 +110,19 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(const char* URL,const char* mime)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GURLManager::AddMIME(const RString& ext,GFilter* f)
+void GALILEI::GURLManager::AddMIME(const char* mime,GFilter* f)
 {
 	if(!Filters.IsIn(f))
 		Filters.InsertPtr(f);
-	//MIMES.InsertPtr(new GMIMEFilter(ext,f));
+	MIMES.InsertPtr(new GMIMEFilter(mime,f));
+}
+
+
+//-----------------------------------------------------------------------------
+const GMIMEFilter* GALILEI::GURLManager::GetMIMEType(const char* mime) const
+{
+	if(!mime) return(0);
+	return(MIMES.GetPtr<const char*>(mime));
 }
 
 

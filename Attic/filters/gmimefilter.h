@@ -24,12 +24,10 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rstring.h>
-using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocs/gmimetype.h>
 #include <filters/gfilter.h>
 
 
@@ -51,7 +49,7 @@ protected:
 	/**
 	* File extension.
 	*/
-	GMIMEType* Type;
+	RStd::RString Type;
 
 	/**
 	* Filter corresponding.
@@ -65,7 +63,7 @@ public:
 	* @param t              MIME-Type.
 	* @param f              Filter corresponding.
 	*/
-	GMIMEFilter(GMIMEType* t,GFilter* f);
+	GMIMEFilter(const char* t,GFilter* f);
 
 	/**
 	* Compare function used by RContainer.
@@ -86,6 +84,12 @@ public:
 	* Compare function used by RContainer.
 	*/
 	int Compare(const char* t) const;
+
+	/**
+	* Get the MIME type.
+	* @returns Pointer to a MIME type.
+	*/
+	const char* GetName(void) const {return(Type());}
 
 	/**
 	* Destructor of the filter.

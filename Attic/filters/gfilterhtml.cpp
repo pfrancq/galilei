@@ -1,25 +1,26 @@
-/*                         .
+/*
 
-	GALILEIResearch Project
+	GALILEI Research Project
 
-	gfilterhtml.cpp
+	GFilterHTML.cpp
 
-	A XML representation of a document - Header.
+	A HTML filter - Implementation.
 
 	(C) 2001 by Lamoral Julien
 
 	Version $Revision$
 
 	Last Modify: $Date$
-		
+
 */
+
+
 
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <string.h>
 #include <fstream.h>
-
 #include <iostream.h> // for cout only.
 #include <stdio.h>
 #include <sys/stat.h>
@@ -49,31 +50,20 @@ using namespace GALILEI;
 
 
 //---------------------------------------------------------------------------
-GFilterHTML::GFilterHTML(const RString& url,GURLManager* mng)
-: GFilter(url,mng), Buffer(0), Chars(50,5),s(url)
+GFilterHTML::GFilterHTML(GURLManager* mng)
+: GFilter(mng), Buffer(0), Chars(50,5)
 {
-	// telechargement du fichier en local
-	int accessmode,handle;
-	struct stat statbuf;
-	accessmode=O_RDONLY;
-	#if !unix
-		accessmode=O_BINARY;
-	#endif
-	handle=open(url,accessmode);
-	fstat(handle, &statbuf);
-	Begin=Pos=Buffer=new char[statbuf.st_size+1];
-	read(handle,Buffer,statbuf.st_size);
-	Buffer[statbuf.st_size]=0;
-	
-
+	AddMIME("text/html");
 }
+
+
 //---------------------------------------------------------------------------
 void GFilterHTML::AnalyseBody(GDocXML* doc)
 {
+	bool body=true;
+	char *tmpchar;
 
-bool body=true;
-char *tmpchar;
-while (body)
+	while (body)
 	{
 		//initialisation of body
 		NextWirteTag= true;
@@ -840,12 +830,21 @@ Chars.InsertPtr(new CodeToChar("yacute",'ý'));
 //---------------------------------------------------------------------------
 bool GFilterHTML::Analyze(GDocXML* doc)
 {
-	// Initialisation
-	
-	
-	// intialisation of Buffer
-	SkipSpaces();
+	int accessmode,handle;
+	struct stat statbuf;
 
+	// Initialisation
+	Doc=doc;
+	accessmode=O_RDONLY;
+	#if !unix
+		accessmode=O_BINARY;
+	#endif
+	handle=open(Doc->GetFile(),accessmode);
+	fstat(handle, &statbuf);
+	Begin=Pos=Buffer=new char[statbuf.st_size+1];
+	read(handle,Buffer,statbuf.st_size);
+	Buffer[statbuf.st_size]=0;
+	SkipSpaces();
 	
 	//Initialisation of the different variable
 	
@@ -869,7 +868,7 @@ bool GFilterHTML::Analyze(GDocXML* doc)
 	doc->AddNode(doc->GetTop(),meta=new RXMLTag("MetaData"));
 	
 	doc->AddNode(meta,act=new RXMLTag("URL"));
-	act->InsertAttr(new RXMLAttr("value",URL));
+	act->InsertAttr(new RXMLAttr("value",Doc->GetURL()));
 	
 	doc->AddNode(meta,act=new RXMLTag("TypeDoc"));
 	act->InsertAttr(new RXMLAttr("code","html"));
@@ -887,8 +886,14 @@ bool GFilterHTML::Analyze(GDocXML* doc)
 	
 
 	doc->AddNode(doc->GetTop(),links=new RXMLTag("links"));
-	RXMLFile("/home/jlamoral/test.txt",&s,RTextFile::Create);
+	RXMLFile("/home/jlamoral/test.txt",doc,RTextFile::Create);
 
+	// Done
+	if (Begin)
+	{
+		delete[] Begin;
+		Begin=0;
+	}
 	return(true);
 }
 
@@ -1128,10 +1133,6 @@ void GFilterHTML::InitWords(void)
 
 GFilterHTML::~GFilterHTML()
 {
-
-	if (Begin) delete[] Begin;
-
-
 }
 
 

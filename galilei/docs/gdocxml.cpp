@@ -30,8 +30,8 @@ using namespace RXML;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GDocXML::GDocXML(const RString& url) throw(bad_alloc)
-	: RXMLStruct(), URL(url)
+GDocXML::GDocXML(const char* url,const char* filename) throw(bad_alloc)
+	: RXMLStruct(), URL(url), FileName(filename)
 {
 	AddNode(0,new RXMLTag("Doc"));
 }

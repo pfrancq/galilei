@@ -43,17 +43,17 @@ using namespace RXML;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDoc::GDoc (const RString& url,const RStd::RString& name,const unsigned int id,unsigned int nbdiff) throw(bad_alloc)
+GALILEI::GDoc::GDoc (const RString& url,const RStd::RString& name,const unsigned int id,const GMIMEFilter* t,unsigned int nbdiff) throw(bad_alloc)
   : URL(url), Name(name), Id(id), Words(nbdiff>300?nbdiff:300),NbWords(0),NbDiffWords(nbdiff), Lang(0),
-    Calc(true), bSave(false)
+    Calc(true), bSave(false), Type(t)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDoc::GDoc(const RString& url,const RStd::RString& name,const unsigned int id,GLang* lang,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc)
+GALILEI::GDoc::GDoc(const RString& url,const RStd::RString& name,const unsigned int id,GLang* lang,const GMIMEFilter* t,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc)
 	: URL(url), Name(name), Id(id), Words(nbdiff>300?nbdiff:300),NbWords(nb), NbDiffWords(nbdiff),
-	  Lang(lang), Calc(true), bSave(false)
+	  Lang(lang), Calc(true), bSave(false), Type(t)
 {
 }
 

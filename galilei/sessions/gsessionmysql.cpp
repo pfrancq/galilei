@@ -36,8 +36,8 @@ using namespace RMySQL;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,RMySQLError)
-	: RDb(host,user,pwd,db), GSession(GetCount("htmls"),GetCount("users"))
+GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,GURLManager* mng) throw(bad_alloc,GException,RMySQLError)
+	: RDb(host,user,pwd,db), GSession(GetCount("htmls"),GetCount("users"),mng)
 {
 }
 
@@ -229,13 +229,13 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 	int docid;
 	char sSql[100];
 
-	sprintf(sSql,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title FROM htmls");
+	sprintf(sSql,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title,mimetype FROM htmls");
 	RQuery quer (this,sSql);
 	for(quer.Begin();quer.IsMore();quer++)
 	{
 		docid=atoi(quer[0]);
 		lang=GetLang(quer[2]);
-		Docs.InsertPtr(doc=new GDoc(quer[1],quer[6],docid,lang,atoi(quer[4]),atoi(quer[5])));
+		Docs.InsertPtr(doc=new GDoc(quer[1],quer[6],docid,lang,Mng->GetMIMEType(quer[7]),atoi(quer[4]),atoi(quer[5])));
 		if(lang)
 		{
 			sprintf(sSql,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",lang->GetCode(),docid);

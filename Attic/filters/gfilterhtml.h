@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GDocXML.h
+	GFilterHTML.h
 
-	A XML representation of a document - Header.
+	A HTML filter - Header.
 
 	(C) 2001 by J. LAMORAL
 
@@ -14,8 +14,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GFilterHTML_H
-#define GFilterHTML_H
+#ifndef GFilterHTMLH
+#define GFilterHTMLH
 
 
 //-----------------------------------------------------------------------------
@@ -40,7 +40,6 @@ using namespace RIO;
 // include files for GALILEI
 #include <filters/codetochar.h>
 #include <filters/gfilter.h>
-#include <glib.h>
 
 
 //-----------------------------------------------------------------------------
@@ -126,16 +125,7 @@ public:
 	* true if the buffer is at the end of the document
 	*/
 	bool end;
-	
-	/**
-	* the xml structure corresponding to the html document
-	*/
-	GDocXML s;
-	//RXMLStruct s1;
-	
 
-	
-	
 	/**
 	*Some XMl tag
 	*/
@@ -151,10 +141,9 @@ public:
 
 	/**
 	* Construct the HTML filter for a specific HTML document.
-	* @param url            URL of the document.
 	* @param mng            Manager.
 	*/
-	GFilterHTML(const RString& url,GURLManager* mng);
+	GFilterHTML(GURLManager* mng);
 	
 	
 	/**

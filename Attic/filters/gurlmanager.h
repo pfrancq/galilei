@@ -30,6 +30,7 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdocs/gdocxml.h>
+#include <gdocs/gdoc.h>
 #include <filters/gfilter.h>
 #include <filters/gmimefilter.h>
 
@@ -55,11 +56,6 @@ class GSession;
 class GURLManager
 {
 	/**
-	* Corresponding Session.
-	*/
-	GSession* Session;
-
-	/**
 	* List of all mime types avalaible.
 	*/
 	RContainer<GMIMEFilter,unsigned int,true,true> MIMES;
@@ -73,9 +69,10 @@ public:
 
 	/**
 	* Construct a URL manager.
-	* @param session        Session.
 	*/
-	GURLManager(GSession* session);
+	GURLManager(void);
+
+protected:
 
 	/**
 	* Download and store locally a document given by an URL.
@@ -91,21 +88,27 @@ public:
 	*/
 	virtual void Delete(RString& tmpFile);
 
+public:
+
 	/**
 	* Transform a file in a GDocXML. Try to find the type of the document by
 	* analysing the extension of it.
-	* @param URL            URL of the document.
-	* @param mime           MIME-Type of the document.
+	* @param doc            Document to analyze
 	* Return Pointer to a GDocXML.
 	*/
-	GDocXML* CreateDocXML(const char* URL,const char* mime);
+	GDocXML* CreateDocXML(const GDoc* doc);
 
 	/**
 	* Add a mime type and a filter.
-	* @param ext            Extension.
+	* @param mime           Name of the mimetype.
 	* @param f              Filter.
 	*/
-	void AddMIME(const RString& ext,GFilter* f);
+	void AddMIME(const char* mime,GFilter* f);
+
+	/**
+	* @param mime           Name of the mimetype.
+	*/
+	const GMIMEFilter* GetMIMEType(const char* mime) const;
 
 	/**
 	* Destructor of URL manager.

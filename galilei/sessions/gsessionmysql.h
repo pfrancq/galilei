@@ -53,8 +53,9 @@ public:
 	* @param user           User to connect with.
 	* @param pwd            Password of the uzer.
 	* @param db             Name of the database.
+	* @param mng            URL Manager.
 	*/
-	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,RMySQL::RMySQLError);
+	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,GURLManager* mng) throw(bad_alloc,GException,RMySQL::RMySQLError);
 
 	/**
 	* Count the number of rows of a table.

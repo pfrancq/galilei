@@ -48,15 +48,33 @@ class GDocXML : public RXML::RXMLStruct
 	/**
 	* url of the document.
 	*/
-	RString URL;
+	RStd::RString URL;
+
+	/**
+	* file containg the document (must be local).
+	*/
+	RStd::RString FileName;
 
 public:
 
 	/**
 	* Construct a XML document.
 	* @param url            URL of the document.
+	* @param filename       File of the document.
 	*/
-	GDocXML(const RString& url) throw(bad_alloc);
+	GDocXML(const char* url,const char* filename) throw(bad_alloc);
+
+	/**
+	* Get the URL.
+	* @returns Pointer to a C string.
+	*/
+	const char* GetURL(void) const {return(URL());}
+
+	/**
+	* Get the File Name.
+	* @returns Pointer to a C string.
+	*/
+	const char* GetFile(void) const {return(FileName());}
 
 	/**
 	* @returns A pointer to the tag containing the content of the corresponding

@@ -43,24 +43,10 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterEMail::GFilterEMail(const RString& url,GURLManager* mng)
-	: GFilter(url,mng), Buffer(0)
+GFilterEMail::GFilterEMail(GURLManager* mng)
+	: GFilter(mng), Buffer(0)
 {
-	int accessmode,handle;
-	struct stat statbuf;
-
 	AddMIME("text/email");
-	accessmode=O_RDONLY;
-	#if !unix
-		accessmode=O_BINARY;
-	#endif
-	handle=open(url,accessmode);
-	fstat(handle, &statbuf);
-	Begin=Pos=Buffer=new char[statbuf.st_size+1];
-	read(handle,Buffer,statbuf.st_size);
-	Buffer[statbuf.st_size]=0;
-	SkipSpaces();
-	Begin=Pos;
 }
 
 
@@ -120,12 +106,27 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 	bool Header;
 	bool Paragraph;
 	char* findstr;
+	int accessmode,handle;
+	struct stat statbuf;
+
+	// Init Part
+	Doc=doc;
+	accessmode=O_RDONLY;
+	#if !unix
+		accessmode=O_BINARY;
+	#endif
+	handle=open(Doc->GetFile(),accessmode);
+	fstat(handle, &statbuf);
+	Begin=Pos=Buffer=new char[statbuf.st_size+1];
+	read(handle,Buffer,statbuf.st_size);
+	Buffer[statbuf.st_size]=0;
+	SkipSpaces();
+	Begin=Pos;
 
 	// Create the metaData tag and the first information
-	Doc=doc;
 	Doc->AddNode(Doc->GetTop(),part=new RXMLTag("MetaData"));
 	Doc->AddNode(part,tag=new RXMLTag("URL"));
-	tag->InsertAttr("value",URL);
+	tag->InsertAttr("value",Doc->GetURL());
 	Doc->AddNode(part,tag=new RXMLTag("TypeDoc"));
 	tag->InsertAttr("TypeDoc","email/text");
 
@@ -192,6 +193,13 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 	// Look for the links
 	Doc->AddNode(Doc->GetTop(),part=new RXMLTag("links"));
 
+	// Done Part
+	if(Buffer)
+	{
+		delete[] Buffer;
+		Buffer=0;
+	}
+
 	// Return OK
 	return(true);
 }
@@ -200,5 +208,4 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 //-----------------------------------------------------------------------------
 GFilterEMail::~GFilterEMail(void)
 {
-	if(Buffer) delete[] Buffer;
 }

@@ -39,13 +39,12 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GALILEI::GSession::GSession(const unsigned int d,const unsigned int u) throw(bad_alloc,GException)
-	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(2,5), MIMETypes(0),
+GALILEI::GSession::GSession(const unsigned int d,const unsigned int u,GURLManager* mng) throw(bad_alloc,GException)
+	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(2,5), Mng(mng),
 	  bDics(false), bDocs(false), bUsers(false), bGroups(false)
 {
 	GLang* l;
 
-	MIMETypes=new RContainer<GMIMEType,unsigned int,true,true>(20,10);
 	Langs.InsertPtr(l=new GLangEN());
 	Groups.InsertPtr(new GGroups(l));
 	Langs.InsertPtr(l=new GLangFR());
@@ -211,6 +210,5 @@ GGroup* GALILEI::GSession::NewGroup(void)
 //---------------------------------------------------------------------------
 GALILEI::GSession::~GSession(void) throw(GException)
 {
-	if(MIMETypes) delete MIMETypes;
 }
 

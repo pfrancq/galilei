@@ -51,18 +51,14 @@ class GURLManager;
 class GFilter
 {	
 protected:
+
 	/**
 	* Manager.
 	*/
 	GURLManager* Manager;
 
 	/**
-	* URL of the document to filter.
-	*/
-	RString URL;
-
-	/**
-	* Structure corresponding to the document.
+	* Structure corresponding to the document currently analyzed.
 	*/
 	GDocXML* Doc;
 
@@ -70,10 +66,9 @@ public:
 
 	/**
 	* Construct the filter for a specific document.
-	* @param url            URL of the document.
 	* @param mng            Manager.
 	*/
-	GFilter(const RString& url,GURLManager* mng);
+	GFilter(GURLManager* mng);
 
 	/**
 	* Compare method used by RContainer.
@@ -89,7 +84,7 @@ public:
 	* Add a specific MIME-Type for this filter.
 	* @param mime           Name of the MIME-Type.
 	*/
-	void AddMIME(const RString& mime);
+	void AddMIME(const char* mime);
 
 	/**
 	* Analyze the document and fill the XML structure with the information

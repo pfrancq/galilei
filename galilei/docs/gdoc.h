@@ -33,7 +33,7 @@
 #include <glangs/gdict.h>
 #include <ginfos/giwordoccurs.h>
 #include <glangs/glang.h>
-#include <gdocs/gmimetype.h>
+#include <filters/gmimefilter.h>
 
 
 
@@ -103,27 +103,34 @@ class GDoc
 	*/
 	bool bSave;
 
+	/**
+	* Type of the document.
+	*/
+	const GMIMEFilter* Type;
+
 public:
 
 	/**
 	* Construct the document.
 	* @param url            URL of the document.
 	* @param id             Identifier of the document.
+	* @param t              MIME type of the document.
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
 	*/
-	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,unsigned int nbdiff=500) throw(bad_alloc);
+	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,const GMIMEFilter* t,unsigned int nbdiff=500) throw(bad_alloc);
 
 	/**
 	* Construct the document.
 	* @param url            URL of the document.
 	* @param id             Identifier of the document.
 	* @param lang           Language of the document.
+	* @param t              MIME type of the document.
 	* @param nb             Total number of words in the document.
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
 	*/
-	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,GLang* lang,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc);
+	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,GLang* lang,const GMIMEFilter* t,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc);
 
 	/**
 	* Compare function needed by RStd::RContainer.
@@ -160,6 +167,12 @@ public:
 	* @returns Pointer to a C string.
 	*/
 	const char* GetName(void) const {return(Name());}
+
+	/**
+	* Get the MIME type.
+	* @returns Pointer to a MIME type.
+	*/
+	const GMIMEFilter* GetMIMEType(void) const {return(Type);}
 
 protected:
 

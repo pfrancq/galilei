@@ -34,6 +34,7 @@
 #include <gprofiles/gusers.h>
 #include <ggroups/ggroups.h>
 #include <gdocs/gdocs.h>
+#include <urlmanagers/gurlmanager.h>
 
 
 
@@ -85,9 +86,9 @@ protected:
 	RStd::RContainer<GGroups,unsigned int,true,true> Groups;
 
 	/**
-	* MIME types handled by the system.
+	* URL Manager used by this session.
 	*/
-	RStd::RContainer<GMIMEType,unsigned int,true,true>* MIMETypes;
+	GURLManager* Mng;
 
 	/**
 	* State of the dictionnaries and stoplists.
@@ -125,27 +126,9 @@ public:
 	* Constructor.
 	* @param d              Number of documents.
 	* @param u              Number of users.
+	* @param mng            URL Manager.
 	*/
-	GSession(const unsigned int d,const unsigned int u) throw(bad_alloc,GException);
-
-	/**
-	* @name Method for MIME types.
-	*/
-	//@{
-
-		/**
-		* @return Pointer to the mime type.
-		*/
-		GMIMEType* GetMIMEType(const char* name)
-			{return(MIMETypes->GetPtr<const char*>(name));}
-
-		/**
-		* @return Pointer to the mime type.
-		*/
-		GMIMEType* GetMIMEType(const RString& name)
-			{return(MIMETypes->GetPtr<const RString>(name));}
-
-	//@}
+	GSession(const unsigned int d,const unsigned int u,GURLManager* mng) throw(bad_alloc,GException);
 
 	/**
 	* @name Method for Languages.
