@@ -10,10 +10,6 @@
 	Authors
 		 Vandaele Valery(vavdaele@ulb.ac.be)
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -33,18 +29,23 @@
 
 
 
-//-----------------------------------------------------------------------------
-//include file for GALLILEI
-#include <gstatprofdoc.h>
-
+//------------------------------------------------------------------------------
+//include file for GALILEI
 #include <infos/glangmanager.h>
 #include <infos/glang.h>
 #include <docs/gdoc.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
 #include <sessions/gsession.h>
+#include <sessions/gstatscalc.h>
+
+
+//------------------------------------------------------------------------------
+// include files for statistics
+#include <gstatprofdoc.h>
 using namespace GALILEI;
 using namespace std;
+using namespace R;
 
 
 
@@ -80,17 +81,15 @@ void GALILEI::GStatProfDoc::WriteLine(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GStatProfDoc::Run(void)
+void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 {
 	GFactoryLangCursor Langs;
 	GLang* lang;
 	GProfileCursor Profs1,Profs2;
 	GDocCursor Docs;
-
 	unsigned int nbProfJugDoc,nbDocs ;
 	unsigned int i,j;
 	double sum, tmp,nbSame,nbDiff;
-
 
 	//Initialization
 	nbProfJugDoc=nbDocs=0;
@@ -120,10 +119,12 @@ void GALILEI::GStatProfDoc::Run(void)
 		//(*File) << Docs()->GetId()<<"     "<<nbProfJugDoc<<endl;
 		nbDocs++;
 	}
-
-	MeanNbProf = sum/ nbDocs;
-	cout << " Mean of profiles juged doc "<<MeanNbProf <<endl;
-
+	if(nbDocs)
+	{
+		MeanNbProf = sum/ nbDocs;
+		calc->AddTag(xml,tag,"MeanNbProfAssess",MeanNbProf);
+//	cout << " Mean of profiles juged doc "<<MeanNbProf <<endl;
+	}
 
 	// compute Agreement-Desagreement Ratio
 	sum=0;
@@ -153,8 +154,14 @@ void GALILEI::GStatProfDoc::Run(void)
 			}
 		}
 	}
-	MeanSame /= sum;
-	MeanDiff /=sum;
+
+	if(sum)
+	{
+		MeanSame /= sum;
+		MeanDiff /=sum;
+		calc->AddTag(xml,tag,"MeanSameRatio",MeanSame);
+		calc->AddTag(xml,tag,"MeanDiffRatio",MeanDiff);
+	}
 
 	if(File)
 		(*File)<< MeanNbProf<<"		"<<MeanSame<<"		"<<MeanDiff<<endl;

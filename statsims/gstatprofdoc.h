@@ -10,10 +10,6 @@
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be)
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -103,22 +99,22 @@ public :
 	/**
 	* Construct the Mean of number of profiles having juged common docs.
 	*/
-	void Run(void);
+	void Run(GStatsCalc* calc,R::RXMLStruct* xml,R::RXMLTag* tag);
 
 	/**
 	* Get The mean of number of profile having juged a same document.
 	*/
-	double GetMeanNbProf(void) const {return (MeanNbProf); }
+//	double GetMeanNbProf(void) const {return (MeanNbProf); }
 
 	/*
 	* Get the average of the Agreement ratio between profiles.
 	*/
-	double GetMeanSame(void) const {return (MeanSame);}
+//	double GetMeanSame(void) const {return (MeanSame);}
 
 	/*
 	* Get the average of the Desagreement Ration between profiles.
 	*/
-	double GetMeanDiff(void) const {return (MeanDiff);}
+//	double GetMeanDiff(void) const {return (MeanDiff);}
 
 	/*
 	* Write a line to the output File.

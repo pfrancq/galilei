@@ -6,14 +6,10 @@
 
 	Groups Evaluation - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2004 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -34,48 +30,197 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <stdlib.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for R Library
-//#include <rstd/rtextfile.h>
+#include <rstd/rxmlstruct.h>
 
 
-
-//-----------------------------------------------------------------------------
-//include files for GALILEI
-#include <gstatssims.h>
-#include <gstatsimdoc.h>
-#include <gstatsimdocprof.h>
-#include <gstatsimdocgrp.h>
-#include <gstatprofdoc.h>
-#include <gstatsimsubprof.h>
-#include <gstatsimprofgrp.h>
-#include <groups/gsubjects.h>
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <infos/glangmanager.h>
+#include <infos/glang.h>
 #include <sessions/gsession.h>
-using namespace R;
+#include <groups/gsubject.h>
+#include <groups/gsubjects.h>
+#include <docs/gdoc.h>
+#include <profiles/gsubprofile.h>
 using namespace GALILEI;
+using namespace R;
 using namespace std;
 
 
+//------------------------------------------------------------------------------
+// include statistics files
+#include <gstatsimelements.h>
+#include <gstatsimdocs.h>
+#include <gstatssims.h>
+#include <gstatprofdoc.h>
+#include <gstatsimprofgrp.h>
 
-//-----------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//
+// Instantiation of the templates
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Statistics between documents
+class GStatSimDoc : public GStatSimElements<GDoc,GDocCursor>
+{
+public:
+	GStatSimDoc(GSession* ses,R::RTextFile* f,bool g,bool l)
+		: GStatSimElements<GDoc,GDocCursor>(ses,f,g,l) {}
+
+	GDocCursor GetElementCursor(GLang* Lang)
+	{ return(Session->GetDocsCursor(Lang));}
+
+	bool SameSubject(GDoc* doc1,GDoc* doc2)
+	{
+		GSubjectCursor Subjects(doc1->GetSubjectCursor());
+		for(Subjects.Start();!Subjects.End();Subjects.Next())
+			if(doc2->IsFromSubject(Subjects()))
+				return(true);
+		return(false);
+	}
+
+	bool HasSubject(GDoc* doc)
+	{return(doc->GetNbSubjects());}
+
+	virtual void OverlapTopics(GDoc* doc,bool global)
+	{
+		GSubjectCursor Subjects=doc->GetSubjectCursor();
+		for(Subjects.Start();!Subjects.End();Subjects.Next())
+		{
+			LocalStat* t=Sub.GetInsertPtr<GSubject*>(Subjects());
+			if(global)
+				t->OverlapG=true;
+			else
+				t->OverlapL=true;
+		}
+	}
+};
+
+
+//------------------------------------------------------------------------------
+// Statistics between subprofiles
+class GStatSimSubProf : public GStatSimElements<GSubProfile,GSubProfileCursor>
+{
+public:
+	GStatSimSubProf(GSession* ses,R::RTextFile* f,bool g,bool l)
+		: GStatSimElements<GSubProfile,GSubProfileCursor>(ses,f,g,l) {}
+
+	GSubProfileCursor GetElementCursor(GLang* Lang)
+	{return(Session->GetSubProfilesCursor(Lang));}
+
+	bool SameSubject(GSubProfile* sub1,GSubProfile* sub2)
+	{return(sub1->GetSubject()==sub2->GetSubject());}
+	
+	bool HasSubject(GSubProfile* sub)
+	{return(sub->GetSubject());}
+
+	virtual void OverlapTopics(GSubProfile* sub,bool global)
+	{
+		LocalStat* t=Sub.GetInsertPtr<GSubject*>(sub->GetSubject());
+		if(global)
+			t->OverlapG=true;
+		else
+			t->OverlapL=true;
+	}
+};
+
+
+//------------------------------------------------------------------------------
+// Statistics between documents/groups
+class GStatSimDocGrp : public GStatSimDocs<GGroup,GGroupCursor>
+{
+public:
+
+	GStatSimDocGrp(GSession* ses,R::RTextFile* f,bool g,bool l)
+		: GStatSimDocs<GGroup,GGroupCursor>(ses,f,g,l) {}
+
+	GGroupCursor GetElementCursor(GLang* Lang)
+	{ return(Session->GetGroupsCursor(Lang));}
+
+	bool HasSubject(GGroup* grp)
+	{return(!grp->IsEmpty());}
+
+	bool SameSubject(GGroup* grp,GDoc* doc)
+	{
+		// Suppose subject of the group is subject of the first subprofile
+		// contained
+		GSubProfileCursor Subp=grp->GetSubProfilesCursor();
+		Subp.Start();
+		return(doc->IsFromSubject(Subp()->GetSubject()));
+	}
+
+	virtual void OverlapTopics(GGroup* grp,bool global)
+	{
+		// Suppose subject of the group is subject of the first subprofile
+		// contained
+		GSubProfileCursor Subp=grp->GetSubProfilesCursor();
+		Subp.Start();
+		LocalStat* t=Sub.GetInsertPtr<GSubject*>(Subp()->GetSubject());
+		if(global)
+			t->OverlapG=true;
+		else
+			t->OverlapL=true;
+	}
+};
+
+
+//------------------------------------------------------------------------------
+// Statistics between documents/groups
+class GStatSimDocProf : public GStatSimDocs<GSubProfile,GSubProfileCursor>
+{
+public:
+
+	GStatSimDocProf(GSession* ses,R::RTextFile* f,bool g,bool l)
+		: GStatSimDocs<GSubProfile,GSubProfileCursor>(ses,f,g,l) {}
+
+	GSubProfileCursor GetElementCursor(GLang* Lang)
+	{return(Session->GetSubProfilesCursor(Lang));}
+
+	bool HasSubject(GSubProfile* sub)
+	{return(sub->GetSubject());}
+
+	bool SameSubject(GSubProfile* sub,GDoc* doc)
+	{
+		return(doc->IsFromSubject(sub->GetSubject()));
+	}
+
+	virtual void OverlapTopics(GSubProfile* sub,bool global)
+	{
+		LocalStat* t=Sub.GetInsertPtr<GSubject*>(sub->GetSubject());
+		if(global)
+			t->OverlapG=true;
+		else
+			t->OverlapL=true;
+	}
+};
+
+
+
+//------------------------------------------------------------------------------
 //
 //  class GStatsSims
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GStatsSims::GStatsSims(GFactoryStatsCalc* fac) throw(bad_alloc)
 	: GStatsCalc(fac)
 {
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GStatsSims::ApplyConfig(void)
 {
 	Docs=Factory->GetBool("Docs");
@@ -91,32 +236,31 @@ void GStatsSims::ApplyConfig(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GStatsSims::Connect(GSession* session) throw(GException)
 {
 	GStatsCalc::Connect(session);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GStatsSims::Disconnect(GSession* session) throw(GException)
 {
 	GStatsCalc::Disconnect(session);
 }
 
 
-//---------------------------------------------------------------------------
-void GStatsSims::Compute(R::RXMLTag& res) throw(GException)
+//------------------------------------------------------------------------------
+void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)
 {
 	RXMLTag* tag;
 	RXMLTag* tag2;
-	RXMLTag* tag3;
 	RString str;
 	RTextFile* Details=0;
 
 	// Init Main XML Tag
 	tag=new RXMLTag(Factory->GetName());
-	res.AddTag(tag);
+	xml->AddTag(&res,tag);
 
 	// Create Details File if necessary
 	if(File)
@@ -135,158 +279,44 @@ void GStatsSims::Compute(R::RXMLTag& res) throw(GException)
 	if(Docs)
 	{
 		tag2=new RXMLTag("Documents");
-		tag->AddTag(tag2);
+		xml->AddTag(tag,tag2);
 		GStatSimDoc Stat(Session,Details,WithFactors,WithoutFactors);
-		Stat.Run();
-		tag3=new RXMLTag("Without idf");
-		tag2->AddTag(tag3);
-		str=dtou(Stat.GetAvgIntraL());
-		tag3->AddTag(new RXMLTag("Avg Intra="+str));
-		str=dtou(Stat.GetAvgInterL());
-		tag3->AddTag(new RXMLTag("Avg Inter="+str));
-		str=dtou(Stat.GetAVGolL());
-		tag3->AddTag(new RXMLTag("Avg Local Overlap Factor="+str));
-		str=dtou(Stat.GetAVGGolL());
-		tag3->AddTag(new RXMLTag("Avg Global Overlap Factor="+str));
-		str=dtou(Stat.GetRieL());
-		tag3->AddTag(new RXMLTag("Rie Factor="+str));
-		tag3=new RXMLTag("With idf");
-		tag2->AddTag(tag3);
-		str=dtou(Stat.GetAvgIntraG());
-		tag3->AddTag(new RXMLTag("Avg Intra="+str));
-		str=dtou(Stat.GetAvgInterG());
-		tag3->AddTag(new RXMLTag("Avg Inter="+str));
-		str=dtou(Stat.GetAVGolG());
-		tag3->AddTag(new RXMLTag("Avg Local Overlap Factor="+str));
-		str=dtou(Stat.GetAVGGolG());
-		tag3->AddTag(new RXMLTag("Avg Global Overlap Factor="+str));
-		str=dtou(Stat.GetRieG());
-		tag3->AddTag(new RXMLTag("Rie Factor="+str));
+		Stat.Run(this,xml,tag2);
 	}
 	if(ProfDoc)
 	{
-		tag2=new RXMLTag("Documents/Profiles");
-		tag->AddTag(tag2);
+		tag2=new RXMLTag("Documents-Profiles");
+		xml->AddTag(tag,tag2);
 		GStatSimDocProf Stat(Session,Details,WithFactors,WithoutFactors);
-		Stat.Run();
-		tag3=new RXMLTag("Without idf");
-		tag2->AddTag(tag3);
-		str=dtou(Stat.GetAvgIntraL());
-		tag3->AddTag(new RXMLTag("Avg Intra="+str));
-		str=dtou(Stat.GetAvgInterL());
-		tag3->AddTag(new RXMLTag("Avg Inter="+str));
-		str=dtou(Stat.GetAVGolL());
-		tag3->AddTag(new RXMLTag("Avg Local Overlap Factor="+str));
-		str=dtou(Stat.GetAVGGolL());
-		tag3->AddTag(new RXMLTag("Avg Global Overlap Factor="+str));
-		str=dtou(Stat.GetRieL());
-		tag3->AddTag(new RXMLTag("Rie Factor="+str));
-		tag3=new RXMLTag("With idf");
-		tag2->AddTag(tag3);
-		str=dtou(Stat.GetAvgIntraG());
-		tag3->AddTag(new RXMLTag("Avg Intra="+str));
-		str=dtou(Stat.GetAvgInterG());
-		tag3->AddTag(new RXMLTag("Avg Inter="+str));
-		str=dtou(Stat.GetAVGolG());
-		tag3->AddTag(new RXMLTag("Avg Local Overlap Factor="+str));
-		str=dtou(Stat.GetAVGGolG());
-		tag3->AddTag(new RXMLTag("Avg Global Overlap Factor="+str));
-		str=dtou(Stat.GetRieG());
-		tag3->AddTag(new RXMLTag("Rie Factor="+str));
+		Stat.Run(this,xml,tag2);
 	}
 	if(GroupDoc)
 	{
-		tag2=new RXMLTag("Documents/Groups");
-		tag->AddTag(tag2);
+		tag2=new RXMLTag("Documents-Groups");
+		xml->AddTag(tag,tag2);
 		GStatSimDocGrp Stat(Session,Details,WithFactors,WithoutFactors);
-		Stat.Run();
-		tag3=new RXMLTag("Without idf");
-		tag2->AddTag(tag3);
-		str=dtou(Stat.GetAvgIntraL());
-		tag3->AddTag(new RXMLTag("Avg Intra="+str));
-		str=dtou(Stat.GetAvgInterL());
-		tag3->AddTag(new RXMLTag("Avg Inter="+str));
-		str=dtou(Stat.GetAVGolL());
-		tag3->AddTag(new RXMLTag("Avg Local Overlap Factor="+str));
-		str=dtou(Stat.GetAVGGolL());
-		tag3->AddTag(new RXMLTag("Avg Global Overlap Factor="+str));
-		str=dtou(Stat.GetRieL());
-		tag3->AddTag(new RXMLTag("Rie Factor="+str));
-		tag3=new RXMLTag("With idf");
-		tag2->AddTag(tag3);
-		str=dtou(Stat.GetAvgIntraG());
-		tag3->AddTag(new RXMLTag("Avg Intra="+str));
-		str=dtou(Stat.GetAvgInterG());
-		tag3->AddTag(new RXMLTag("Avg Inter="+str));
-		str=dtou(Stat.GetAVGolG());
-		tag3->AddTag(new RXMLTag("Avg Local Overlap Factor="+str));
-		str=dtou(Stat.GetAVGGolG());
-		tag3->AddTag(new RXMLTag("Avg Global Overlap Factor="+str));
-		str=dtou(Stat.GetRieG());
-		tag3->AddTag(new RXMLTag("Rie Factor="+str));
+		Stat.Run(this,xml,tag2);
 	}
 	if(Profiles)
 	{
 		tag2=new RXMLTag("Profiles");
-		tag->AddTag(tag2);
+		xml->AddTag(tag,tag2);
 		GStatSimSubProf Stat(Session,Details,WithFactors,WithoutFactors);
-		Stat.Run();
-		tag3=new RXMLTag("Without idf");
-		tag2->AddTag(tag3);
-		str=dtou(Stat.GetAvgIntraL());
-		tag3->AddTag(new RXMLTag("Avg Intra="+str));
-		str=dtou(Stat.GetAvgInterL());
-		tag3->AddTag(new RXMLTag("Avg Inter="+str));
-		str=dtou(Stat.GetAVGolL());
-		tag3->AddTag(new RXMLTag("Avg Local Overlap Factor="+str));
-		str=dtou(Stat.GetAVGGolL());
-		tag3->AddTag(new RXMLTag("Avg Global Overlap Factor="+str));
-		str=dtou(Stat.GetRieL());
-		tag3->AddTag(new RXMLTag("Rie Factor="+str));
-		tag3=new RXMLTag("With idf");
-		tag2->AddTag(tag3);
-		str=dtou(Stat.GetAvgIntraG());
-		tag3->AddTag(new RXMLTag("Avg Intra="+str));
-		str=dtou(Stat.GetAvgInterG());
-		tag3->AddTag(new RXMLTag("Avg Inter="+str));
-		str=dtou(Stat.GetAVGolG());
-		tag3->AddTag(new RXMLTag("Avg Local Overlap Factor="+str));
-		str=dtou(Stat.GetAVGGolG());
-		tag3->AddTag(new RXMLTag("Avg Global Overlap Factor="+str));
-		str=dtou(Stat.GetRieG());
-		tag3->AddTag(new RXMLTag("Rie Factor="+str));
+		Stat.Run(this,xml,tag2);
 	}
 	if(SameDocProf)
 	{
 		tag2=new RXMLTag("Profiles/Common Documents");
-		tag->AddTag(tag2);
+		xml->AddTag(tag,tag2);
 		GStatProfDoc Stat(Session,Details);
-		Stat.Run();
-		str=dtou(Stat.GetMeanNbProf());
-		tag2->AddTag(new RXMLTag("Avg Number of profiles assessing same documents="+str));
-		str=dtou(Stat.GetMeanSame());
-		tag2->AddTag(new RXMLTag("Avg Agreement Ratio="+str));
-		str=dtou(Stat.GetMeanDiff());
-		tag2->AddTag(new RXMLTag("Avg Disagreement Ratio="+str));
+		Stat.Run(this,xml,tag2);
 	}
-	if(GroupDoc)
+	if(GroupProf)
 	{
 		tag2=new RXMLTag("Profiles/Groups");
-		tag->AddTag(tag2);
-		GStatSimProfGrp Stat(Session,Session->GetSubjects()->GetIdealGroups());
-		Stat.Run();
-		str=dtou(Stat.GetAvgIntra());
-		tag2->AddTag(new RXMLTag("Avg Intra="+str));
-		str=dtou(Stat.GetAvgInter());
-		tag2->AddTag(new RXMLTag("Avg Inter="+str));
-		str=dtou(Stat.GetAVGol());
-		tag2->AddTag(new RXMLTag("Avg Local Overlap Factor="+str));
-		str=dtou(Stat.GetAVGGrpol());
-		tag2->AddTag(new RXMLTag("Avg Global Overlap Factor="+str));
-		str=dtou(Stat.GetRie());
-		tag2->AddTag(new RXMLTag("Rie Factor="+str));
-		str=dtou(Stat.GetJ());
-		tag2->AddTag(new RXMLTag("J="+str));
+		xml->AddTag(tag,tag2);
+		GStatSimProfGrp Stat(Session,Session->GetSubjects()->GetIdealGroups(),Details,WithFactors,WithoutFactors);
+		Stat.Run(this,xml,tag2);
 	}
 
 	// Desallocate Details File if necessary
@@ -311,7 +341,7 @@ void GStatsSims::CreateParams(GParams* params)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GStatsSims::~GStatsSims(void)
 {
 }
