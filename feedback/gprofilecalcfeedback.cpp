@@ -284,7 +284,7 @@ void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) thro
 	if(Global->NbPtr>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=(Global->NbPtr+1)*1.1;
+		MaxOrderSize=static_cast<unsigned int>((Global->NbPtr+1)*1.1);
 		Order=new GIWordWeight*[MaxOrderSize];
 	}
 	memcpy(Order,Global->Tab,Global->NbPtr*sizeof(GIWordWeight*));
@@ -295,12 +295,18 @@ void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) thro
 	if(MaxNonZero)
 	{
 		for(i=MaxNonZero+1,ptr=Order;(--i)&&(*ptr);ptr++)
-			Vector->InsertPtr(new GIWordWeight(*ptr));
+		{
+			if((*ptr)->GetWeight()>0)
+				Vector->InsertPtr(new GIWordWeight(*ptr));
+		}
 	}
 	else
 	{
 		for(ptr=Order;(*ptr);ptr++)
-			Vector->InsertPtr(new GIWordWeight(*ptr));
+		{
+			if((*ptr)->GetWeight()>0)
+				Vector->InsertPtr(new GIWordWeight(*ptr));
+		}
 	}
 
 	// Update the references of the vector.
