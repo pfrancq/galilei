@@ -137,7 +137,7 @@ int GALILEI::GGroup::Compare(const GGroup* group) const
 //-----------------------------------------------------------------------------
 bool GALILEI::GGroup::IsEmpty(void) const
 {
-	return(NbPtr);
+	return(NbPtr==0);
 }
 
 
