@@ -84,6 +84,11 @@ class GProfilesSim
 	*/
 	double Deviation;
 
+	/**
+	*  old number of comparison in computation of Mean and Deviation.
+	*/
+	unsigned int OldNbComp;
+
 public:
 
 	/**

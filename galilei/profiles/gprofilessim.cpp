@@ -111,7 +111,7 @@ GALILEI::GProfilesSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* l) throw(bad_alloc)
-	: Sims(s->NbPtr,s->NbPtr<50?50:s->NbPtr/2), GlobalSim(global), Lang(l)
+	: Sims(s->NbPtr,s->NbPtr<50?50:s->NbPtr/2), GlobalSim(global), Lang(l) , OldNbComp(0)
 {
 	GSubProfileCursor Cur1;
 	GSubProfileCursor Cur2;
@@ -154,6 +154,7 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 		deviation/=double(nbcomp);
 		deviation-=MeanSim*MeanSim;
 		Deviation=deviation;
+		OldNbComp=nbcomp;
 	}
 	else
 		MeanSim=Deviation=0.0;
@@ -349,7 +350,6 @@ tObjState GALILEI::GProfilesSim::GetState(unsigned int id1, unsigned int id2)
 //-----------------------------------------------------------------------------
 void  GALILEI::GProfilesSim::UpdateProfSim(GUsers* users,bool global,GLang* lang)throw(bad_alloc)
 {
-
 	Lang = lang;
 	GSubProfileCursor Cur1;
 	GSubProfileCursor Cur2;
@@ -506,11 +506,17 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 	GSim* sim;
 	GSims* sims;
 	unsigned int nbcomp,i,j;
+	unsigned int nbmodifiedsims=0;
 	double oldsim,newsim;
 	GSubProfile** sub1, **sub2;
-;
-	
+
 	nbcomp=(subprofiles->NbPtr)*(subprofiles->NbPtr-1)/2;
+
+//	cout << "ancienne meansim= "<<MeanSim<<endl;
+//	cout << "ancien ecart type"<< Deviation <<endl;
+//	cout <<"Oldcomp ="<<OldNbComp<<endl;
+//	cout <<"nbcomp ="<<nbcomp<<endl;
+	
 	for (sub1=subprofiles->Tab, i=subprofiles->NbPtr; i--; sub1++)
 	{
 		sims=Sims.GetPtr((*sub1)->GetId());
@@ -525,21 +531,30 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 			{
 				oldsim=sim->Sim;
 				newsim=GetSim((*sub1),(*sub2));
+
 				// deviation is calculated as follow : {sum (xi"2/n)} - mean"2
 				//removing the square meansim from deviation
-				Deviation+=MeanSim*MeanSim;
+				Deviation=OldNbComp*(Deviation+(MeanSim*MeanSim));
 				//removing the modified element
-				Deviation-=(oldsim*oldsim)/nbcomp;
+				Deviation-=(oldsim*oldsim);
 				//add the new value of the modified element
-				Deviation+=(newsim*newsim)/nbcomp;
+				Deviation+=(newsim*newsim);
+				//set to the correct number of comparison
+				Deviation/=nbcomp;
 				//update the mean of similarities
-				MeanSim=(nbcomp*MeanSim)-oldsim+newsim;
+				MeanSim=(OldNbComp*MeanSim)-oldsim+newsim;
 				MeanSim/=nbcomp;
 				//add the square of new mean of similarities
 				Deviation-=MeanSim*MeanSim;
+
+				//tmp dav
+				nbmodifiedsims++;
 			}
 		}
 	}
+
+	OldNbComp=nbcomp;
+//	cout << nbmodifiedsims<< " sims were modified !"<<endl;
 }
 
 
