@@ -39,7 +39,7 @@
       <cxxflags>\s-O0 -g3 -Wall</cxxflags>
     </compiler>
     <run>
-      <mainprogram>kgalileicenter/kgalileicenter</mainprogram>
+      <mainprogram>kgalileicenter/.libs/kgalileicenter</mainprogram>
       <programargs/>
       <terminal>false</terminal>
       <envvars/>
@@ -162,6 +162,7 @@
     <display>
       <staticmembers>false</staticmembers>
       <demanglenames>true</demanglenames>
+      <outputradix>10</outputradix>
     </display>
   </kdevdebugger>
   <kdevfilecreate>
