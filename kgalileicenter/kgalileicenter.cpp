@@ -578,13 +578,26 @@ void KGALILEICenterApp::slotCreateXML(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSaveXML(void)
 {
+	int dlg;
+	KURL url;
+
 	KView* m = (KView*)pWorkspace->activeWindow();
 	if(m->getType()!=gDoc) return;
-	KURL url=KFileDialog::getSaveURL(QString::null,i18n("*.docxml"), this, i18n("Save DocXML File..."));
- 	if(!url.isEmpty())
+	dlg=KMessageBox::No;
+	while(dlg!=KMessageBox::Yes)
 	{
-		((KViewDoc*)m)->SaveDocXML(url.path());
+		url=KFileDialog::getSaveURL(QString::null,i18n("*.docxml"), this, i18n("Save DocXML File..."));
+		if(url.isEmpty()) return;
+		QFile Test(url.path().latin1());
+		if(Test.exists())
+		{
+			dlg=KMessageBox::warningYesNoCancel(this,"A Document with this Name exists.\nDo you want to overwrite it?","Warning");
+			if(dlg==KMessageBox::No) return;
+		}
+		else
+			dlg=KMessageBox::Yes;
 	}
+	((KViewDoc*)m)->SaveDocXML(url.path());
 }
 
 
