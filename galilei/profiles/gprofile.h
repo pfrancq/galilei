@@ -78,6 +78,8 @@ class GLang;
 */
 class GProfile : public RStd::RContainer<GSubProfile,unsigned,false,true>
 {
+protected:
+
 	/**
 	* The owner of the profile.
 	*/
@@ -128,9 +130,15 @@ public:
 	GProfile(GUser* usr,const unsigned int id,const char* name,const char* u,const char* a,unsigned int nb,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
+	* Clear The Fdbks Container
+	*/
+	void ClearFdbks (void);
+
+	/**
 	* Comparaison function
 	*/
 	int Compare(const unsigned int& id) const;
+
 	
 	/**
 	* Comparaison function

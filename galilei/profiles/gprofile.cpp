@@ -151,6 +151,13 @@ GSubProfileCursor& GALILEI::GProfile::GetSubProfilesCursor(void)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GProfile::ClearFdbks(void)
+{
+	Fdbks.Clear();
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GProfile::AddJudgement(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.InsertPtr(j);
