@@ -69,8 +69,9 @@ GSessionMySQL::~GSessionMySQL()
 
 
 //-----------------------------------------------------------------------------
-void GSessionMySQL::LoadUsersFromDB()
+void GSessionMySQL::LoadUsersFromDB(GSessionMySQL* mysqlsess)
 {	
+	Users = new GUsers(10,mysqlsess);
 	GUser* usr;
     RQuery users (db, "SELECT userid,user FROM users");
 	for(users.Begin();users.IsMore();users++)
@@ -89,7 +90,7 @@ void GSessionMySQL::LoadProfilesFromDB (GUser* usr)
 {
 	// load profiles of this user
 	GProfile* prof;
-	char* sSql;
+	char sSql[100];
 	sprintf(sSql,"SELECT profileid, description FROM profiles WHERE userid=%u",usr->Id);
 	RQuery profiles(db,sSql);
 	for(profiles.Begin();profiles.IsMore();profiles++)
@@ -109,7 +110,7 @@ void GSessionMySQL::LoadProfilesFromDB (GUser* usr)
 void GSessionMySQL::LoadSubProfilesFromDB (GProfile* prof)
 {
 	GSubProfile* sub ;
-	char* ssql, sSql;
+	char ssql[100], sSql[100];
 	GLang* lang;
 	sprintf(ssql,"SELECT subprofileid, langid FROM subprofiles WHERE profileid=%u",prof->Id);
 	RQuery subprofil (db,ssql);
@@ -120,19 +121,19 @@ void GSessionMySQL::LoadSubProfilesFromDB (GProfile* prof)
 				
 
 		// Load GWordList 'OK'
-		sprintf(&sSql,"SELECT kwdid FROM %sokkwds WHERE subprofileid=%u",lang->Code,sub->Id);
+		sprintf(sSql,"SELECT kwdid FROM %sokkwds WHERE subprofileid=%u",lang->Code,sub->Id);
 		RQuery ok(db,sSql);
 		for(ok.Begin();ok.IsMore();ok++)		
 			sub->OK->InsertPtr(new GWordRef(atoi(ok[0])));
 
 		// Load GWordList 'KO'
-		sprintf(&sSql,"SELECT kwdid FROM %skokwds WHERE subprofileid=%u",lang->Code,sub->Id);
+		sprintf(sSql,"SELECT kwdid FROM %skokwds WHERE subprofileid=%u",lang->Code,sub->Id);
 		RQuery ko(db,sSql);
 		for(ko.Begin();ko.IsMore();ko++)		
 		sub->KO->InsertPtr(new GWordRef(atoi(ko[0])));
 
 		// Load GWordList 'Common'
-		sprintf(&sSql,"SELECT kwdid FROM %scomkwds WHERE subprofileid=%u",lang->Code,sub->Id);
+		sprintf(sSql,"SELECT kwdid FROM %scomkwds WHERE subprofileid=%u",lang->Code,sub->Id);
 		RQuery com(db,sSql);
 		for(com.Begin();com.IsMore();com++)		
 			sub->Common->InsertPtr(new GWordRef(atoi(com[0])));
@@ -145,22 +146,35 @@ void GSessionMySQL::LoadSubProfilesFromDB (GProfile* prof)
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadLangsFromDB()
 {
+	RQuery compt(db,"SELECT COUNT(*) FROM languages");
+	compt.Begin();
+	Dics=new GDicts(atoi(compt[0]), this);
+	Stops=new GDicts(atoi(compt[0]), this);
+	Langs = new GLangs(5);
 	RQuery langs(db,"SELECT langid,language FROM languages");
 	for(langs.Begin();langs.IsMore();langs++)
-		Langs->InsertPtr(new GLang(langs[1],langs[0]));
+	{
+		GLang* lang=new GLang (langs[1], langs[0]);
+		Langs->InsertPtr(lang);
+		RString dictablename=RString (langs[0])+RString("kwds");
+		LoadDicFromDB( dictablename,lang) ;
+		dictablename=RString (langs[0])+RString("stopkwds");
+		LoadStopsFromDB( dictablename,lang) ;
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 
-
 void GSessionMySQL::LoadDicFromDB(const RString &name,GLang *lang)
 {
+	GDict* dict;
 	unsigned int MaxCount=0;
-	char* sSql;
+	char sSql[100];
 
 	for(char i='a';i<='z';i++)
 	{
+
 		sprintf(sSql,"SELECT COUNT(*) FROM %s WHERE kwd LIKE '%c%%'",name(),i);
 		RQuery count(db,sSql);
 		count.Begin();
@@ -171,10 +185,58 @@ void GSessionMySQL::LoadDicFromDB(const RString &name,GLang *lang)
 	RQuery max(db,sSql);
 	max.Begin();
 	if(max[0])
-		Dics->InsertPtr(new GDict(this,name,lang,strtoul(max[0],0,10),MaxCount));
+		dict=new GDict(this,name,lang,strtoul(max[0],0,10),MaxCount);
 	else
-		Dics->InsertPtr(new GDict(this,name,lang,100,MaxCount));
+		dict=new GDict(this,name,lang,100,MaxCount);
+
+	FillDict(dict);
+	Dics->InsertPtr(dict);
 }
+
+
+//-----------------------------------------------------------------------------
+void GSessionMySQL::LoadStopsFromDB(const RString &name,GLang *lang)
+{
+	GDict* dict;
+	unsigned int MaxCount=0;
+	char sSql[100];
+
+	for(char i='a';i<='z';i++)
+	{
+
+		sprintf(sSql,"SELECT COUNT(*) FROM %s WHERE kwd LIKE '%c%%'",name(),i);
+		RQuery count(db,sSql);
+		count.Begin();
+		if(strtoul(count[0],0,10)>MaxCount) MaxCount=strtoul(count[0],0,10);
+	}
+	if(MaxCount==0) MaxCount=100;
+	sprintf(sSql,"SELECT MAX(kwdid) FROM %s",name());
+	RQuery max(db,sSql);
+	max.Begin();
+	if(max[0])
+		dict=new GDict(this,name,lang,strtoul(max[0],0,10),MaxCount);
+	else
+		dict=new GDict(this,name,lang,100,MaxCount);
+
+	FillDict(dict);
+	Stops->InsertPtr(dict);
+}
+
+
+//-----------------------------------------------------------------------------
+void GSessionMySQL::FillDict(GDict* dict)
+{
+	char ssql[100];
+	sprintf(ssql,"SELECT kwdid, kwd  FROM %s", dict->Name());
+	RQuery dicts (db, ssql);
+	for(dicts.Begin();dicts.IsMore();dicts++)
+	{
+		GWord* word = new GWord (atoi(dicts[0]), RString(dicts[1]));
+		dict->InsertPtr (word);
+	}
+	
+}
+
 
 
 //-----------------------------------------------------------------------------

@@ -81,7 +81,7 @@ public:
 	
 	/** vitual Load function
 	*/
-	virtual void Load(void) throw(bad_alloc,GException)=0;
+	//virtual void Load(void) throw(bad_alloc,GException)=0;
 };
 
 }  //-------- End of namespace GALILEI ----------------------------------------

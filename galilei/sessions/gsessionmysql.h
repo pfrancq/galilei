@@ -71,7 +71,7 @@ public:
 	/**
 	* Loading Users function.
 	*/
-	void LoadUsersFromDB(void);
+	void LoadUsersFromDB(GSessionMySQL* mysqlsess);
 	
 	/**
 	* Loading Profiles function
@@ -97,10 +97,26 @@ public:
 	*/
 	void LoadDicFromDB(const RString &name,GLang *lang);
 
+	
+    /**
+	* Loading Dics into the 'Stops' container from Database.
+	*@param name            name of the database table containing the kwds.
+	*@param lang            languague of the dic.
+	*/
+	void LoadStopsFromDB(const RString &name,GLang *lang);
+
+
 	/**
 	*
 	*/
 	unsigned DicNextId(const RString& word);
+
+	/**
+	*
+	*/
+	void FillDict(GDict* dict) ;
+
+	
 	
 };
 
