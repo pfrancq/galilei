@@ -6,7 +6,7 @@
 
 	Main Window - Implementation of the Dialog part.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -212,7 +212,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.changeLang(Init<GFactoryLangCursor,GLang,QLangItem>(Langs->GetLangsCursor(),dlg.Langs,dlg.EnableLang));
 	dlg.changeDocAnalyse(Init<GFactoryDocAnalyseCursor,GDocAnalyse,QDocAnalyseItem>(DocAnalyseManager->GetDocAnalysesCursor(),dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse,DocAnalyseManager->GetCurrentMethod()));
 	dlg.changeEngine(Init<GFactoryEngineCursor,GEngine,QEngineItem>(EngineManager->GetEnginesCursor(),dlg.Engines,dlg.EnableEngine));
-	dlg.changeMetaEngine(Init<GFactoryMetaEngineCursor,GMetaEngine,QMetaEngineItem>(EngineManager->GetMetaEnginesCursor(),dlg.MetaEngines,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse,EngineManager->GetCurrentMethod()));
+	dlg.changeMetaEngine(Init<GFactoryMetaEngineCursor,GMetaEngine,QMetaEngineItem>(EngineManager->GetMetaEnginesCursor(),dlg.MetaEngines,dlg.EnableMetaEngine,dlg.CurrentMetaEngine,EngineManager->GetCurrentMethod()));
 	
 	if(dlg.exec())
 	{
