@@ -80,6 +80,13 @@ void KView::print(QPrinter* pPrinter)
 
 
 //-----------------------------------------------------------------------------
+bool KView::canClose(void)
+{
+	return(true);
+}
+
+
+//-----------------------------------------------------------------------------
 void KView::closeEvent(QCloseEvent* /*e*/)
 {
 	// DO NOT CALL QWidget::closeEvent(e) here !!

@@ -1032,9 +1032,7 @@ void KGALILEICenterApp::slotRunProgram(void)
 	try
 	{
 		createClient(Doc,o=new KViewPrg(Doc,pWorkspace,tmp,0));
-		KApplication::kApplication()->processEvents();
-		Doc->GetSession()->RunPrg(o,tmp);
- 		QMessageBox::information(this,"KGALILEICenter","Program Executed");
+		o->Run();
 	}
 	catch(GException& e)
 	{

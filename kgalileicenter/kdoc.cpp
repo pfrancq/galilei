@@ -194,8 +194,13 @@ void KDoc::deleteContents(void)
 //-----------------------------------------------------------------------------
 bool KDoc::canCloseFrame(KView* /*pFrame*/)
 {
-	if(!isLastView())
-		return(true);
+	KView *w;
+
+	for(w=pViewList->first();w!=0;w=pViewList->next())
+	{
+		if(!w->canClose())
+			return(false);
+	}
 	return(true);
 }
 

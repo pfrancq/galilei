@@ -111,7 +111,7 @@ QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char*
 	txtRem->setGeometry( QRect( 10, 10, 580, 20 ) );
 	txtRem->setText(c+QString(" ..."));
 
-	connect(btnOk,SIGNAL(clicked()),this,SLOT(close()));
+	connect(btnOk,SIGNAL(clicked()),this,SLOT(receiveButton()));
 }
 
 
@@ -473,6 +473,13 @@ void QSessionProgressDlg::receiveNextChromosome(unsigned int id) throw(std::bad_
 
 
 //-----------------------------------------------------------------------------
+void QSessionProgressDlg::Interact(void)
+{
+	KApplication::kApplication()->processEvents();
+}
+
+
+//-----------------------------------------------------------------------------
 void QSessionProgressDlg::receiveNextMIMEPath(const char* path,RXMLStruct& xml)
 {
 //	unsigned int Len;
@@ -559,6 +566,16 @@ void QSessionProgressDlg::receiveNextMIMEPath(const char* path,RXMLStruct& xml)
 
 
 //-----------------------------------------------------------------------------
+bool QSessionProgressDlg::receiveButton()
+{
+	if(!txtRem->text().compare("Finish"))
+		return(close());
+	GSession::SetBreak();
+	return(false);
+}
+
+
+//-----------------------------------------------------------------------------
 void QSessionProgressDlg::FillMIMETypes(const char* path)
 {
 	RXMLStruct xml;
@@ -583,8 +600,8 @@ void QSessionProgressDlg::PutText(const char* text)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::Begin(void)
 {
-	txtRem->setText("Finish");
-	btnOk->setEnabled(false);
+	txtRem->setText("Cancel");
+	btnOk->setEnabled(true);
 	show();
 	KApplication::kApplication()->processEvents();
 }

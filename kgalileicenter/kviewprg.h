@@ -68,6 +68,16 @@ class KViewPrg : public KView, public GSlot
 	*/
 	QMultiLineEdit* Output;
 
+	/**
+	* Is the computing running?
+	*/
+	bool Running;
+
+	/**
+	* Name of the program.
+	*/
+	RString Name;
+
 public:
 
 	/**
@@ -77,7 +87,7 @@ public:
 	* @param name           Name of the program.
 	* @param wflags         Flags.
 	*/
-	KViewPrg(KDoc* doc,QWidget* parent,const char* name,int wflags) throw(std::bad_alloc,RException);
+	KViewPrg(KDoc* doc,QWidget* parent,RString name,int wflags) throw(std::bad_alloc,RException);
 
 	/**
 	* Return the type of the window.
@@ -115,6 +125,16 @@ public:
 	*/
 	virtual void WriteStr(const char* str) throw(std::bad_alloc,RException);
 
+	/**
+	* Verify if Qt has nothing to do.
+	*/
+	virtual void Interact(void);
+
+	/**
+	* Run the program.
+	*/
+	void Run(void);
+
 protected:
 
 	/**
@@ -123,6 +143,11 @@ protected:
 	void resizeEvent(QResizeEvent *);
 
 public:
+
+	/**
+	* Look if the window can be closed.
+	*/
+	bool canClose(void);
 
 	/**
 	* Destructor for the view.

@@ -206,6 +206,11 @@ public:
 	*/
 	virtual void receiveNextChromosome(unsigned int id) throw(std::bad_alloc,RException);
 
+	/**
+	* Verify if Qt has nothing to do.
+	*/
+	virtual void Interact(void);
+
 private:
 
 	/**
@@ -214,6 +219,13 @@ private:
 	* @param xml            XML structure holding the actual mime types.
 	*/
 	void receiveNextMIMEPath(const char* path,RXMLStruct& xml);
+
+public slots:
+
+	/**
+	* Slot when button is pressed.
+	*/
+	bool receiveButton();
 
 public:
 

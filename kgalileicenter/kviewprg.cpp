@@ -31,9 +31,20 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <frontend/kde/rqt.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <sessions/gsession.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for Qt
 #include<qmultilineedit.h>
 #include<qpixmap.h>
+#include <qmessagebox.h>
 
 
 //-----------------------------------------------------------------------------
@@ -45,6 +56,7 @@
 //-----------------------------------------------------------------------------
 // application specific includes
 #include "kviewprg.h"
+#include "kdoc.h"
 
 
 
@@ -55,12 +67,12 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,const char* name,int wflags) throw(std::bad_alloc,RException)
-	: KView(doc,parent,name,wflags), GSlot()
+KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,RString name,int wflags) throw(std::bad_alloc,RException)
+	: KView(doc,parent,name,wflags), GSlot(), Running(false), Name(name)
 {
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("make.png",KIcon::Small)));
-	setCaption(name);
+	setCaption(ToQString(name));
 
 	Output=new QMultiLineEdit(this,"Output");
 	Output->setReadOnly(true);
@@ -104,9 +116,75 @@ void KViewPrg::WriteStr(const char* str) throw(std::bad_alloc,RException)
 
 
 //-----------------------------------------------------------------------------
+void KViewPrg::Interact(void)
+{
+	KApplication::kApplication()->processEvents();
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewPrg::Run(void)
+{
+	KApplication::kApplication()->processEvents();
+	Running=true;
+	try
+	{
+		Doc->GetSession()->RunPrg(this,Name);
+		Running=false;
+		if(GSession::Break())
+		{
+			QMessageBox::information(this,"KGALILEICenter","Program Aborded");
+			close();
+		}
+		else
+		{
+			QMessageBox::information(this,"KGALILEICenter","Program Executed");
+		}
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
+	}
+	catch(R::RMySQLError& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - RDB Exception",e.GetMsg());
+	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+	}
+	catch(std::bad_alloc)
+	{
+		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
+	}
+	catch(...)
+	{
+		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
+	}
+	Running=false;
+}
+
+
+//-----------------------------------------------------------------------------
 void KViewPrg::resizeEvent(QResizeEvent *)
 {
+	std::cout<<"resize"<<std::endl;
 	Output->resize(size());
+}
+
+
+//-----------------------------------------------------------------------------
+bool KViewPrg::canClose(void)
+{
+	// If nothing running -> can close
+	if(!Running)
+	{
+		return(true);
+	}
+
+	// Ah ah, something runs -> ask to break it
+	GSession::SetBreak();
+	return(false);
 }
 
 

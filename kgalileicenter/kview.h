@@ -121,6 +121,11 @@ public:
 	*/
 	void print(QPrinter* pPrinter);
 
+	/**
+	* Look if the window can be closed. By default, yes.
+	*/
+	virtual bool canClose(void);
+
 protected:
 
 	/**
