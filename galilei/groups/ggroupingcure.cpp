@@ -68,7 +68,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GCureParams::GCureParams(void)
-	: GGroupingParams("Cure")
+	: GGroupingParams("CURE")
 {
 }
 

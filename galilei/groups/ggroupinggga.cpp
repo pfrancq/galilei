@@ -70,7 +70,7 @@ using namespace RGA;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupingGGA::GGroupingGGA(GSession* s,GIRParams* p) throw(bad_alloc)
-	: GGrouping("Grouping Genetic Algorithms",s), Objs(0), Params(p)
+	: GGrouping("GVCA",s), Objs(0), Params(p)
 {
 }
 

@@ -81,7 +81,7 @@ using namespace RMath;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSupKMeansParams::GSupKMeansParams(void)
-	: GGroupingParams("SUPKMeans")
+	: GGroupingParams("SUPkMeans")
 {
 	Debug=false;
 }
@@ -118,7 +118,7 @@ void GALILEI::GSupKMeansParams::SetSettings(const char* s)
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupingSupKMeans::GGroupingSupKMeans( GSession* s, GSupKMeansParams* p, GKMeansParams* p2) throw(bad_alloc)
-		: GGrouping("SUPKMeans",s), Params(p), Params2(p2)
+		: GGrouping("SUPkMeans",s), Params(p), Params2(p2)
 {
 	Protos= new RContainer<GSubProfile,unsigned int,false,false>(10,5);
  	ProtosDblKMeans= new RContainer<GSubProfile,unsigned int,false,false>(10,5);

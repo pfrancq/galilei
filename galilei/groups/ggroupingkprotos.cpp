@@ -70,7 +70,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GKProtosParams::GKProtosParams(void)
-	: GGroupingParams("KMeans Prototypes")
+	: GGroupingParams("kMeansProtos")
 {
 }
 
