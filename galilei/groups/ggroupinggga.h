@@ -37,6 +37,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rpromethee/rpromcriterion.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ggrouping.h>
 
@@ -86,6 +91,26 @@ protected:
 	* Number of generation for each step.
 	*/
 	unsigned int StepGen;
+
+	/**
+	* Parameter for the criterion "Similariry".
+	*/
+	RPromethee::RPromCriterionParams ParamsSim;
+
+	/**
+	* Parameter for the criterion "NB Profiles".
+	*/
+	RPromethee::RPromCriterionParams ParamsNb;
+
+	/**
+	* Parameter for the criterion "OK Factor".
+	*/
+	RPromethee::RPromCriterionParams ParamsOK;
+
+	/**
+	* Parameter for the criterion "Diff Factor".
+	*/
+	RPromethee::RPromCriterionParams ParamsDiff;
 
 public:
 
@@ -166,6 +191,24 @@ public:
 	* @returns unsigned int representing the number of generations.
 	*/
 	unsigned int GetStepGen(void) const {return(StepGen);}
+
+	/**
+	* Set the parameters for a particular criterion of PROMETHEE.
+	* @param crit           Name of the criterion.
+	* @param p              Preference's threshold.
+	* @param q              Indifference's threshold.
+	* @param w              Weight of the criterion.
+	*/
+	void SetCriterionParam(const char* crit,double p,double q,double w);
+
+	/**
+	* Set the parameters for a particular criterion of PROMETHEE.
+	* @param crit           Name of the criterion.
+	* @param p              Preference's threshold.
+	* @param q              Indifference's threshold.
+	* @param w              Weight of the criterion.
+	*/
+	void GetCriterionParam(const char* crit,double& p,double& q,double& w);
 
 	/**
 	* Initialisation of the method.

@@ -198,6 +198,15 @@ public:
 	virtual void PostEvaluate(void) throw(eGA);
 
 	/**
+	* Set the parameters for a particular criterion of PROMETHEE.
+	* @param crit           Name of the criterion.
+	* @param p              Preference's threshold.
+	* @param q              Indifference's threshold.
+	* @param w              Weight of the criterion.
+	*/
+	void SetCriterionParam(const char* crit,double p,double q,double w);
+
+	/**
 	* Destruct the instance.
 	*/
 	virtual ~GInstIR(void);

@@ -53,6 +53,7 @@ using namespace RStd;
 #include <langs/glang.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
+using namespace RPromethee;
 
 
 
@@ -65,20 +66,28 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GALILEI::GGroupingGGA::GGroupingGGA(GSession* s) throw(bad_alloc)
 	: GGrouping("Grouping Genetic Algorithms",s), PopSize(16), MinSimLevel(0.1),
-	  MaxGen(20), Step(false), StepGen(5)
+	  MaxGen(20), Step(false), StepGen(5), ParamsSim(0.2,0.05,1.0),
+	  ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0), ParamsDiff(0.2,0.05,1.0)
 {
 }
+
 
 //-----------------------------------------------------------------------------
 const char* GALILEI::GGroupingGGA::GetSettings(void)
 {
-	static char tmp[100];
+	static char tmp[200];
 	char c;
 
 	if(Step) c='1'; else c='0';
-	sprintf(tmp,"%u %u %c %u %lf",PopSize,MaxGen,c,StepGen,MinSimLevel);
+	sprintf(tmp,"%u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	        PopSize,MaxGen,c,StepGen,MinSimLevel,
+	        ParamsSim.P,ParamsSim.Q,ParamsSim.Weight,
+	        ParamsNb.P,ParamsNb.Q,ParamsNb.Weight,
+	        ParamsOK.P,ParamsOK.Q,ParamsOK.Weight,
+	        ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
 	return(tmp);
 }
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingGGA::SetSettings(const char* s)
@@ -86,7 +95,12 @@ void GALILEI::GGroupingGGA::SetSettings(const char* s)
 	char c;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %u %c %u %lf",&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel);
+	sscanf(s,"%u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,
+	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
+	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
+	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,
+	       &ParamsDiff.P,&ParamsDiff.Q,&ParamsDiff.Weight);
 	if(c=='1') Step=true; else Step=false;
 }
 
@@ -94,6 +108,66 @@ void GALILEI::GGroupingGGA::SetSettings(const char* s)
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingGGA::Init(void) throw(bad_alloc)
 {
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroupingGGA::SetCriterionParam(const char* crit,double p,double q,double w)
+{
+	if(!strcmp(crit,"Similarity"))
+	{
+		ParamsSim.P=p;
+		ParamsSim.Q=q;
+		ParamsSim.Weight=w;
+	}
+	else if(!strcmp(crit,"Nb Profiles"))
+	{
+		ParamsNb.P=p;
+		ParamsNb.Q=q;
+		ParamsNb.Weight=w;
+	}
+	else if(!strcmp(crit,"OK Factor"))
+	{
+		ParamsOK.P=p;
+		ParamsOK.Q=q;
+		ParamsOK.Weight=w;
+	}
+	else if(!strcmp(crit,"Diff Factor"))
+	{
+		ParamsDiff.P=p;
+		ParamsDiff.Q=q;
+		ParamsDiff.Weight=w;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroupingGGA::GetCriterionParam(const char* crit,double& p,double& q,double& w)
+{
+	if(!strcmp(crit,"Similarity"))
+	{
+		p=ParamsSim.P;
+		q=ParamsSim.Q;
+		w=ParamsSim.Weight;
+	}
+	else if(!strcmp(crit,"Nb Profiles"))
+	{
+		p=ParamsNb.P;
+		q=ParamsNb.Q;
+		w=ParamsNb.Weight;
+	}
+	else if(!strcmp(crit,"OK Factor"))
+	{
+		p=ParamsOK.P;
+		q=ParamsOK.Q;
+		w=ParamsOK.Weight;
+	}
+	else if(!strcmp(crit,"Diff Factor"))
+	{
+		p=ParamsDiff.P;
+		q=ParamsDiff.Q;
+		w=ParamsDiff.Weight;
+	}
 }
 
 
@@ -139,6 +213,10 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 		GProfilesSim Sims(SubProfiles);
 		GInstIR Instance(MinSimLevel,MaxGen,PopSize,&Objs,&Sims,RGGA::FirstFit,0);
 		Instance.Init(&data);
+		Instance.SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
+		Instance.SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
+		Instance.SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
+		Instance.SetCriterionParam("Diff Factor",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
 		Instance.Run();
 		Clear();
 		for(Instance.BestChromosome->Used.Start();!Instance.BestChromosome->Used.End();Instance.BestChromosome->Used.Next())

@@ -210,6 +210,36 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GInstIR::SetCriterionParam(const char* crit,double p,double q,double w)
+{
+	if(!strcmp(crit,"Similarity"))
+	{
+		CritSim->SetP(p);
+		CritSim->SetQ(q);
+		CritSim->SetWeight(w);
+	}
+	else if(!strcmp(crit,"Nb Profiles"))
+	{
+		CritNb->SetP(p);
+		CritNb->SetQ(q);
+		CritNb->SetWeight(w);
+	}
+	else if(!strcmp(crit,"OK Factor"))
+	{
+		CritOKDocs->SetP(p);
+		CritOKDocs->SetQ(q);
+		CritOKDocs->SetWeight(w);
+	}
+	else if(!strcmp(crit,"Diff Factor"))
+	{
+		CritDiffDocs->SetP(p);
+		CritDiffDocs->SetQ(q);
+		CritDiffDocs->SetWeight(w);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GInstIR::~GInstIR(void)
 {
 	if(Sols)
