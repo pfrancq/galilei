@@ -37,7 +37,7 @@
 //include file for GALLILEI
 #include <gstatprofdoc.h>
 
-#include <infos/glangs.h>
+#include <infos/glangmanager.h>
 #include <infos/glang.h>
 #include <docs/gdoc.h>
 #include <profiles/gsubprofile.h>
