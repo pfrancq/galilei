@@ -160,6 +160,8 @@ const char* GALILEI::GSessionMySQL::ValidSQLValue(const char* val,char* tmp)
 	{
 		if((*ptr1)=='\'')
 			(*(ptr2++))='\'';
+		if((*ptr1)=='\\')
+			(*(ptr2++))='\\';
 		(*(ptr2++))=(*(ptr1++));
 	}
 	(*(ptr2++))='\'';
