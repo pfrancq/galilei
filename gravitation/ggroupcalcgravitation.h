@@ -85,7 +85,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GGroupCalcGravitation(GFactoryGroupCalc* fac) throw(bad_alloc);
+	GGroupCalcGravitation(GFactoryGroupCalc* fac) throw(std::bad_alloc);
 
 	/**
 	* Configurations were applied from the factory.

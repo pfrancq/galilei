@@ -50,6 +50,7 @@
 #include <infos/gweightinfos.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
