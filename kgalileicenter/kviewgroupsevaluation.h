@@ -6,7 +6,10 @@
 
 	Window to manipulate theoritical groups - Header.
 
-	(C) 2001 by David Wartel
+	Copyright 2001 by the Université Libre de Bruxelles.
+
+	Authors:
+		David Wartel (dwartel@ulb.ac.be).
 
 	Version $Revision$
 

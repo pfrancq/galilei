@@ -6,7 +6,10 @@
 
 	Window to run a program - Header.
 
-	(C) 2002 by Pascal Francq
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 

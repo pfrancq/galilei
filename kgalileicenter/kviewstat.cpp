@@ -6,7 +6,10 @@
 
 	Window for the running some instruction to the session - Implementation.
 
-	(C) 2002 by Pascal Francq
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 

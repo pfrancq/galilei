@@ -6,7 +6,10 @@
 
 	Window to see differents statistique for the ideal group of profile and document.
 
-	(C) 2002 by Julien lamoral
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 

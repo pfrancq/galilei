@@ -6,7 +6,11 @@
 
 	Window to show all the documents - Implementation.
 
-	(C) 2001 by P. Francq & D. Wartel.
+	Copyright 2001 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
+		David Wartel (dwartel@ulb.ac.be).
 
 	Version $Revision$
 

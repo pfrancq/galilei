@@ -6,7 +6,11 @@
 
 	Window to manipulate the groups - Header.
 
-	(C) 2001 by Pascal Francq and David Wartel
+	Copyright 2001 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
+		David Wartel (dwartel@ulb.ac.be).
 
 	Version $Revision$
 

@@ -4,7 +4,10 @@
 
 	Main program - Implementation.
 
-	(C) 2001 by Pascal Francq
+	Copyright 2001 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 

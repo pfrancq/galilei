@@ -6,7 +6,10 @@
 
 	Window for manipulating a specific document - Implementation.
 
-	(C) 2001-2002 by Pascal Francq
+	Copyright 2001-2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 
@@ -52,7 +55,7 @@ using namespace RGA;
 #include <infos/giwordsweights.h>
 #include <galilei/qlistviewitemtype.h>
 #include <galilei/qgdocxml.h>
-#include <docs/gdoc.h>
+#include <docs/gdocvector.h>
 #include <docs/gdocxml.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
@@ -84,7 +87,7 @@ using namespace RTimeDate;
 
 //-----------------------------------------------------------------------------
 KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Document(document), Fdbks(0), Struct(0),
+	: KView(doc,parent,name,wflags), Document(dynamic_cast<GDocVector*>(document)), Fdbks(0), Struct(0),
 	  bDelDoc(false), bDocXML(false)
 {
 	// Window proprieties
@@ -134,7 +137,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	  bDelDoc(true), bDocXML(false)
 {
 	// Construct the document
-	Document=new GDoc(file,file,cNoRef,0,Doc->GetSession()->GetMIMEType(mime),0,0,0,0,0,0,0);
+	Document=new GDocVector(file,file,cNoRef,0,Doc->GetSession()->GetMIMEType(mime),0,0,0,0,0,0,0);
 
 	// Window proprieties
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/document.png"));

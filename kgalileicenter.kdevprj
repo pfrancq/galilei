@@ -163,7 +163,7 @@ sub_dirs=docs,filters,groups,infos,langs,profiles,sessions,urlmanagers,tests
 type=static_library
 
 [kgalileicenter/galilei/docs/Makefile.am]
-files=kgalileicenter/galilei/docs/gdcmetadata.cpp,kgalileicenter/galilei/docs/gdcmetadata.h,kgalileicenter/galilei/docs/gdoc.cpp,kgalileicenter/galilei/docs/gdoc.h,kgalileicenter/galilei/docs/gdocanalyse.cpp,kgalileicenter/galilei/docs/gdocanalyse.h,kgalileicenter/galilei/docs/gdoclist.cpp,kgalileicenter/galilei/docs/gdoclist.h,kgalileicenter/galilei/docs/gdocs.cpp,kgalileicenter/galilei/docs/gdocs.h,kgalileicenter/galilei/docs/gdocxml.cpp,kgalileicenter/galilei/docs/gdocxml.h,kgalileicenter/galilei/docs/gdocoptions.cpp,kgalileicenter/galilei/docs/gdocoptions.h,kgalileicenter/galilei/docs/gdocssim.h,kgalileicenter/galilei/docs/gdocssim.cpp
+files=kgalileicenter/galilei/docs/gdcmetadata.cpp,kgalileicenter/galilei/docs/gdcmetadata.h,kgalileicenter/galilei/docs/gdoc.cpp,kgalileicenter/galilei/docs/gdoc.h,kgalileicenter/galilei/docs/gdocanalyse.cpp,kgalileicenter/galilei/docs/gdocanalyse.h,kgalileicenter/galilei/docs/gdoclist.cpp,kgalileicenter/galilei/docs/gdoclist.h,kgalileicenter/galilei/docs/gdocs.cpp,kgalileicenter/galilei/docs/gdocs.h,kgalileicenter/galilei/docs/gdocxml.cpp,kgalileicenter/galilei/docs/gdocxml.h,kgalileicenter/galilei/docs/gdocoptions.cpp,kgalileicenter/galilei/docs/gdocoptions.h,kgalileicenter/galilei/docs/gdocssim.h,kgalileicenter/galilei/docs/gdocssim.cpp,kgalileicenter/galilei/docs/gdocvector.cpp,kgalileicenter/galilei/docs/gdocvector.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=docs
 sub_dirs=
@@ -248,6 +248,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/docs/gdocssim.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/docs/gdocvector.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/docs/gdocvector.h]
 dist=true
 install=false
 install_location=

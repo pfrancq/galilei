@@ -6,7 +6,10 @@
 
 	Window for manipulating a specific document - Header.
 
-	(C) 2001-2002 by Pascal Francq
+	Copyright 2001-2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 
@@ -41,6 +44,7 @@
 namespace GALILEI
 {
 	class GDoc;
+ 	class GDocVector;
 	class GDocXML;
 	class QGDocXML;
 }
@@ -72,7 +76,7 @@ class KViewDoc : public KView
 	/**
 	* Document to describe.
 	*/
-	GDoc* Document;
+	GDocVector* Document;
 
 	/**
 	* Widget to handle the different information of the document.
@@ -176,7 +180,7 @@ public:
 	* Get the doc of this window.
 	* @return Pointer to a GALILEI::GDoc.
 	*/
-	GDoc* GetDoc(void) const {return(Document);}
+	GDocVector* GetDoc(void) const {return(Document);}
 
 	/**
 	* Look if the DocXML is already been computed for

@@ -6,7 +6,10 @@
 
 	Window for the running some instruction to the session - Header.
 
-	(C) 2002 by Lamoral Julien
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 
