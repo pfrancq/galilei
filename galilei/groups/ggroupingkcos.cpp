@@ -151,6 +151,7 @@ void GALILEI::GGroupingKCos::Run(void) throw(GException)
 	kmeans->SetIterNumber(Params->NbIters);
 	kmeans->SetSubSamplesNumber(Params->NbSubSamples);
 	kmeans->SetSubSamplesRate(Params->SubSamplesRate);
+	kmeans->SetVerifyKMeansMaxIters(1000);
 	// run the kmeans
 	kmeans->Run();
 	// save the grouping in the session
