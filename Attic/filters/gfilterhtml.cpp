@@ -88,7 +88,7 @@ bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
 	doc->AddNode(meta,act=new RXMLTag("URL"));
 	act->InsertAttr(new RXMLAttr("value",Doc->GetURL()));
 	doc->AddNode(meta,act=new RXMLTag("TypeDoc"));
-	act->InsertAttr(new RXMLAttr("code","html"));
+	act->InsertAttr(new RXMLAttr("code","text/html"));
 
 	// Traitement of Headers
 	AnalyseHeader(doc);
@@ -99,7 +99,6 @@ bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
 
 	// Traitment of links
 	doc->AddNode(doc->GetTop(),links=new RXMLTag("links"));
-
 	// Done
 	if (Begin)
 	{
@@ -134,7 +133,13 @@ void GALILEI::GFilterHTML::AnalyseBody(GDocXML* doc)
 				//  if compare to ...  search to the good fonction
 				if (TagCompare("h1")||TagCompare("h2")||TagCompare("h3")||TagCompare("h4")||TagCompare("h5")||TagCompare("h6")||TagCompare("p"))
 				{
+					
 					GetValueCurentTag (OldTag.StrDup(), doc);
+				}
+				//for the element of table
+				else if(TagCompare("td")||TagCompare("li")||TagCompare("hr"))
+				{
+				GetValueCurentTag ("p", doc);
 				}
 				else if (TagCompare("script"))
 				{
@@ -262,13 +267,81 @@ void GALILEI::GFilterHTML::GetValueCurentTag(char* curent,GDocXML* doc)
 				(*Buffer)=0;
 				
 			}
+			else if((*temporarybuffer)=='t'||(*temporarybuffer)=='T')
+			{
+				temporarybuffer++;
+				if ( (*temporarybuffer)=='d'||(*temporarybuffer)=='D')
+				{
+					ok4=false;
+					(*Buffer)=0;
+				}
+				else
+				{
+					while ((*Buffer)&&(*Buffer!='>'))
+					{
+						Buffer++;
+					}
+					if ((*Buffer)) Buffer++;
+				}
+			}
+			else if((*temporarybuffer)=='l'||(*temporarybuffer)=='L')
+			{
+				temporarybuffer++;
+				if ( (*temporarybuffer)=='i'||(*temporarybuffer)=='I')
+				{
+					ok4=false;
+					(*Buffer)=0;
+				}
+				else
+				{
+					while ((*Buffer)&&(*Buffer!='>'))
+					{
+						Buffer++;
+					}
+					if ((*Buffer)) Buffer++;
+				}
+			}
 			else if (((*temporarybuffer)=='/'))
 			{
 				temporarybuffer++;
-				if ( (*temporarybuffer)=='h'||(*temporarybuffer)=='p'||(*temporarybuffer)=='H'||(*temporarybuffer)=='P')
+				if ( (*temporarybuffer)=='h'||(*temporarybuffer)=='p'||(*temporarybuffer)=='H'||(*temporarybuffer)=='P'||(*temporarybuffer)=='t'||(*temporarybuffer)=='T')
 				{
 				ok4=false;
 				(*Buffer)=0;
+				}
+				else if((*temporarybuffer)=='t'||(*temporarybuffer)=='T')
+				{	
+					temporarybuffer++;
+					if ( (*temporarybuffer)=='d'||(*temporarybuffer)=='D')
+					{
+						ok4=false;
+						(*Buffer)=0;
+					}
+					else
+					{
+						while ((*Buffer)&&(*Buffer!='>'))
+						{
+							Buffer++;
+						}
+						if ((*Buffer)) Buffer++;
+					}
+				}
+				else if((*temporarybuffer)=='l'||(*temporarybuffer)=='L')
+				{	
+					temporarybuffer++;
+					if ( (*temporarybuffer)=='i'||(*temporarybuffer)=='I')
+					{
+						ok4=false;
+						(*Buffer)=0;
+					}
+					else
+					{
+						while ((*Buffer)&&(*Buffer!='>'))
+						{
+							Buffer++;
+						}
+						if ((*Buffer)) Buffer++;
+					}
 				}
 				else if (  (*temporarybuffer)=='b'||(*temporarybuffer)=='B')
 				{
@@ -296,7 +369,8 @@ void GALILEI::GFilterHTML::GetValueCurentTag(char* curent,GDocXML* doc)
 	}
 
 	// we enter to Pos the interessant value into the 2inetresting tags and whe retire the unintresting inforation	
-	Pos=ptrvalue;	
+//	Pos=ptrvalue;
+	RString sentence (200);
 	while((*ptrvalue))
 	{
 		bool ok3=true;
@@ -330,14 +404,17 @@ void GALILEI::GFilterHTML::GetValueCurentTag(char* curent,GDocXML* doc)
 
 			if (ptr)
 			{
-				(*ptrvalue)= ptr->Return;
+				sentence+=ptr->Return;
+				(*ptrvalue)=ptr->Return;
+				ptrvalue++;
 			}
 			else
 			{
 			 (*ptrvalue)=' ';
+			 sentence+=' ';
 			}
 		}
-
+		
 		// if there is a tag it is a unintresting tag
 		else if ((*ptrvalue)=='<')
 		{
@@ -350,17 +427,20 @@ void GALILEI::GFilterHTML::GetValueCurentTag(char* curent,GDocXML* doc)
 				(*ptrvalue)=' ';
 				ptrvalue++;	
 		}
-
 		else
 		{
+			sentence+=(*ptrvalue);
 			ptrvalue++;
 			ok2=true;
 		}
 	}
+
 	
 	// whe analyse only if there is a containt
 	if (ok2)
 	{
+		
+		Pos=sentence.StrDup();	
 		bool contents=true;
 
 		// we compare the current tag  .. and case the value of this tag
