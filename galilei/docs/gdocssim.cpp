@@ -157,7 +157,7 @@ GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs& d,bool global) throw(bad
 void GALILEI::GDocsSim::ComputeSims(const char* filename,GDocCursor& Cur1,GDocCursor& Cur2,bool global) throw(bad_alloc,RString)
 {
 	unsigned int i,j;
-	RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,RIO::Create);
+	RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true> f(filename,RIO::Create);
 	GSim r;
 
 	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
@@ -173,7 +173,7 @@ void GALILEI::GDocsSim::ComputeSims(const char* filename,GDocCursor& Cur1,GDocCu
 			if(r.Sim)
 			{
 				r.Id2=Cur2()->GetId();
-				r.Write(*Sims);
+				r.Write(f);
 			}
 		}
 	}
@@ -195,7 +195,7 @@ double GALILEI::GDocsSim::GetSim(unsigned int i,unsigned int j)
 	}
 	c.Id1=i;
 	c.Id2=j;
-	if(Sims->GetRec(c))
+	if(!Sims->GetRec(c))
 		return(0.0);
 	return(c.Sim);
 }
