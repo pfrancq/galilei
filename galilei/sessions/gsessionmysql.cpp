@@ -83,11 +83,14 @@ using namespace RTimeDate;
 
 
 
+
 //-----------------------------------------------------------------------------
 //
 //  GSessionMySQL
 //
 //-----------------------------------------------------------------------------
+
+#define Ins_spec 1
 
 //-----------------------------------------------------------------------------
 // Static variable
@@ -165,6 +168,27 @@ const char* GALILEI::GSessionMySQL::ValidSQLValue(const char* val,char* tmp)
 //-----------------------------------------------------------------------------
 unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* dict)
 {
+
+	// preliminary traitement of special words and composite like insert -> reinsert ...
+	#if Ins_spec
+		if (strstr(word,"insert"))
+		{
+			return 1;
+		}
+		if (strstr(word,"delete"))
+		{
+			return 2;
+		}
+		if (strstr(word,"update"))
+		{
+			return 3;
+		}
+		if (strstr(word,"select"))
+		{
+			return 4;
+		}
+	#endif
+
 	char sSql[600];
 	// Verify that the word didn't already exist.
 	sprintf(sSql,"SELECT kwdid FROM %skwds WHERE kwd='%s'",dict->GetLang()->GetCode(),word);
@@ -174,6 +198,9 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 		find.Start();
 		return(strtoul(find[0],0,10));
 	}
+
+	// Get the existing word for derivate of 'insert' 'delete' 'update' 'delete'
+
 
 	// Insert the new word
 	sprintf(sSql,"INSERT INTO %skwds(kwd) VALUES('%s')",dict->GetLang()->GetCode(),word);
