@@ -4,7 +4,7 @@
 
 	GProfDoc.cpp
 
-	Profile's Judgement of a document - Implementation.
+	Profile's Assessment of a document - Implementation.
 
 	Copyright 2001-2002 by the Université Libre de Bruxelles.
 
@@ -52,14 +52,14 @@ using namespace R;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,const char* date)
+GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocAssessment fdbk,const char* date)
   : Doc(doc), Profile(prof), Fdbk(fdbk), Updated(date)
 {
 }
 
 
 //---------------------------------------------------------------------------
-GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,RDate& date)
+GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocAssessment fdbk,RDate& date)
   : Doc(doc), Profile(prof), Fdbk(fdbk), Updated(date)
 {
 }
@@ -95,7 +95,7 @@ int GProfDoc::Compare(const GDoc* doc) const
 
 
 //---------------------------------------------------------------------------
-void GProfDoc::UpdateFdbk(tDocJudgement fdbk,const char* date)
+void GProfDoc::UpdateFdbk(tDocAssessment fdbk,const char* date)
 {
 	Fdbk=fdbk;
 	Updated=date;
@@ -103,7 +103,7 @@ void GProfDoc::UpdateFdbk(tDocJudgement fdbk,const char* date)
 
 
 //---------------------------------------------------------------------------
-void GProfDoc::UpdateFdbk(tDocJudgement fdbk,RDate& date)
+void GProfDoc::UpdateFdbk(tDocAssessment fdbk,RDate& date)
 {
 	Fdbk=fdbk;
 	Updated=date;
@@ -111,7 +111,7 @@ void GProfDoc::UpdateFdbk(tDocJudgement fdbk,RDate& date)
 
 
 //---------------------------------------------------------------------------
-tDocJudgement GProfDoc::GetFdbk(void) const
+tDocAssessment GProfDoc::GetFdbk(void) const
 {
 	return(Fdbk);
 }
@@ -171,7 +171,7 @@ double GProfDoc::Similarity(void)
 
 
 //-----------------------------------------------------------------------------
-tDocJudgement GProfDoc::ErrorJudgment(tDocJudgement fdbk,double PercErr,RRandom* rand)
+tDocAssessment GProfDoc::ErrorJudgment(tDocAssessment fdbk,double PercErr,RRandom* rand)
 {
 	double random=rand->Value()*100+1.0;
 

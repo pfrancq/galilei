@@ -255,7 +255,7 @@ enum tObjState
 /**
 * Judgments over a document.
 */
-enum tDocJudgement
+enum tDocAssessment
 {
 	 // the 4 first bits are used to express the judgemnet of the Doc (OK,KO,N,HS)
 	 // the 5th and 6th bits are used to express the status of the Doc (Hub, Autority )

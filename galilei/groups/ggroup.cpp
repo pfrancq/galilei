@@ -211,7 +211,7 @@ void GALILEI::GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>
 	unsigned int i;
 	GProfDocCursor Fdbks;
 	GProfDoc* ptr;
-	tDocJudgement j;
+	tDocAssessment j;
 
 	// Clear container.
 	docs->Clear();
@@ -265,7 +265,7 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,fa
 	GSubProfile** tab;
 	unsigned int i;
 	GProfDocCursor Fdbks;
-	tDocJudgement j;
+	tDocAssessment j;
 	RContainer<GProfDocRef,unsigned int,true,false> Docs(50,25);
 
 	// Clear container.
@@ -289,7 +289,7 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,fa
 			if(j & djOK)
 			{
 				if(global)
-					Docs.InsertPtr(new GProfDocRef(Fdbks(),s->GlobalSimilarity(Fdbks()->GetDoc())));
+					Docs.InsertPtr(new GProfDocRef(Fdbks(),s->SimilarityIFF(Fdbks()->GetDoc())));
 				else
 					Docs.InsertPtr(new GProfDocRef(Fdbks(),s->Similarity(Fdbks()->GetDoc())));
 			}
@@ -349,7 +349,7 @@ double GALILEI::GGroup::ComputeSumSim(const GSubProfile* s,bool g) const
 	{
 		if((*sub1)==s) continue;
 		if(g)
-			sum=sum+s->GlobalSimilarity((*sub1));
+			sum=sum+s->SimilarityIFF((*sub1));
 		else
 			sum=sum+s->Similarity((*sub1));
 	}
@@ -365,7 +365,7 @@ double GALILEI::GGroup::Similarity(const GDoc*) const
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GGroup::GlobalSimilarity(const GDoc*) const
+double GALILEI::GGroup::SimilarityIFF(const GDoc*) const
 {
 	return(0.0);
 }
@@ -379,7 +379,7 @@ double GALILEI::GGroup::Similarity(const GSubProfile*) const
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GGroup::GlobalSimilarity(const GSubProfile*) const
+double GALILEI::GGroup::SimilarityIFF(const GSubProfile*) const
 {
 	return(0.0);
 }
@@ -393,7 +393,7 @@ double GALILEI::GGroup::Similarity(const GGroup*) const
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GGroup::GlobalSimilarity(const GGroup*) const
+double GALILEI::GGroup::SimilarityIFF(const GGroup*) const
 {
 	return(0.0);
 }

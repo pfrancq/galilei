@@ -164,7 +164,7 @@ void GALILEI::GProfile::ClearFdbks(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfile::AddJudgement(GProfDoc* j,GSession* s) throw(bad_alloc)
+void GALILEI::GProfile::AddAssessment(GProfDoc* j,GSession* s) throw(bad_alloc)
 {
 	GLang* l;
 
@@ -176,7 +176,7 @@ void GALILEI::GProfile::AddJudgement(GProfDoc* j,GSession* s) throw(bad_alloc)
 	}
 	else
 	{
-		GetInsertSubProfile(l,s)->AddJudgement(j);
+		GetInsertSubProfile(l,s)->AddAssessment(j);
 	}
 }
 
@@ -197,7 +197,7 @@ void GALILEI::GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang, GSessio
 	if((!oldlang)&&lang)
 	{
 		sub=GetInsertSubProfile(lang,s);
-		sub->AddJudgement(profdoc);
+		sub->AddAssessment(profdoc);
 		sub->SetState(osModified);
 		Fdbks.DeletePtr(profdoc);
 		return;
@@ -208,17 +208,17 @@ void GALILEI::GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang, GSessio
 	{
 		Fdbks.InsertPtr(profdoc);
 		sub=GetInsertSubProfile(oldlang,s);
-		sub->RemoveJudgement(profdoc);
+		sub->RemoveAssessment(profdoc);
 		sub->SetState(osModified);
 		return;
 	}
 
 	// if the two langs are defined (but different)
 	sub=GetInsertSubProfile(lang,s);
-	sub->AddJudgement(profdoc);
+	sub->AddAssessment(profdoc);
 	sub->SetState(osModified);
 	sub=GetSubProfile(oldlang);
-	sub->RemoveJudgement(profdoc);
+	sub->RemoveAssessment(profdoc);
 	sub->SetState(osModified);
 }
 

@@ -221,6 +221,15 @@ void GDoc::SetLang(GLang *l)
 
 
 //-----------------------------------------------------------------------------
+void GDoc::SetId(unsigned int id) throw(GException)
+{
+	if(id==cNoRef)
+		throw GException("Cannot assign cNoRef to a document");
+	Id=id;
+}
+
+
+//-----------------------------------------------------------------------------
 unsigned int GDoc::GetNbFdbks(void) const
 {
 	return(Fdbks.NbPtr);
@@ -244,7 +253,7 @@ double GDoc::Similarity(const GDoc*) const
 
 
 //-----------------------------------------------------------------------------
-double GDoc::GlobalSimilarity(const GDoc*) const
+double GDoc::SimilarityIFF(const GDoc*) const
 {
 	return(0.0);
 }
@@ -258,7 +267,7 @@ double GDoc::Similarity(const GSubProfile*) const
 
 
 //-----------------------------------------------------------------------------
-double GDoc::GlobalSimilarity(const GSubProfile*) const
+double GDoc::SimilarityIFF(const GSubProfile*) const
 {
 	return(0.0);
 }
@@ -272,14 +281,14 @@ double GDoc::Similarity(const GGroup*) const
 
 
 //-----------------------------------------------------------------------------
-double GDoc::GlobalSimilarity(const GGroup*) const
+double GDoc::SimilarityIFF(const GGroup*) const
 {
 	return(0.0);
 }
 
 
 //-----------------------------------------------------------------------------
-void GDoc::AddJudgement(GProfDoc* j) throw(bad_alloc)
+void GDoc::AddAssessment(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 }

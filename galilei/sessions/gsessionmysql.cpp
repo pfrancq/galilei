@@ -610,7 +610,7 @@ void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
 	GProfile* prof;
 	GUser* usr;
 	GDoc* doc;
-	tDocJudgement jug;
+	tDocAssessment jug;
 
 	sprintf(sSql,"SELECT htmlid, judgement, profiles.profileid, userid, when2 FROM htmlsbyprofiles,profiles WHERE profiles.profileid=htmlsbyprofiles.profileid");
 	RQuery fdbks(this,sSql);
@@ -641,10 +641,10 @@ void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
 		switch(fdbks[1][1])
 		{
 			case 'H':
-				jug = tDocJudgement(jug | djHub);
+				jug = tDocAssessment(jug | djHub);
 				break;
 			case 'A':
-				jug = tDocJudgement(jug | djAutority);
+				jug = tDocAssessment(jug | djAutority);
 				break;
 			//case 'U':
 				//break;
@@ -784,7 +784,7 @@ void GALILEI::GSessionMySQL::SaveFdbks(void) throw(GException)
 				j[0]='K';
 				break;
 			default:
-				throw GException("No Valid Judgement");
+				throw GException("No Valid Assessment");
 		}
 		switch(Fdbks()->GetFdbk() & djMaskHubAuto)
 		{

@@ -157,7 +157,7 @@ void GFilterManager::Download(const char*,RString&) throw(GException)
 
 
 //------------------------------------------------------------------------------
-const char* GFilterManager::DetermineMIMEType(const char*)
+const char* GFilterManager::DetermineMIMEType(const char*) throw(GException)
 {
 	return(0);
 }
@@ -230,7 +230,8 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
 	if(!mime)
 	{
 		mime=DetermineMIMEType(tmpFile);
-		doc->SetMIMEType(mime);
+		if(mime)
+			doc->SetMIMEType(mime);
 	}
 
 	// Create a DocXML.

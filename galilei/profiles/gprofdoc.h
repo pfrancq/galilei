@@ -4,7 +4,7 @@
 
 	GProfDoc.h
 
-	Profile's Judgement of a document - Header.
+	Profile's Assessment of a document - Header.
 
 	Copyright 2001 by the Université Libre de Bruxelles.
 
@@ -71,7 +71,7 @@ class GProfDoc
 	/**
 	* Feedback of the profile.
 	*/
-	tDocJudgement Fdbk;
+	tDocAssessment Fdbk;
 
 	/**
 	* Last Updated of this feedback.
@@ -87,7 +87,7 @@ public:
 	* @param fdbk           Assessment.
 	* @param date           Date.
 	*/
-    GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,const char* date);
+    GProfDoc(GDoc* doc,GProfile* prof,tDocAssessment fdbk,const char* date);
 
 	/**
 	* Constructor.
@@ -96,7 +96,7 @@ public:
 	* @param fdbk           Assessment.
 	* @param date           Date.
 	*/
-	GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,R::RDate& date);
+	GProfDoc(GDoc* doc,GProfile* prof,tDocAssessment fdbk,R::RDate& date);
 
 	/**
 	* Compare mathod used by R::RContainer.
@@ -119,20 +119,20 @@ public:
 	* @param fdbk           Assessment.
 	* @param date           Date.
 	*/
-	void UpdateFdbk(tDocJudgement fdbk,const char* date);
+	void UpdateFdbk(tDocAssessment fdbk,const char* date);
 
 	/**
 	* Update the assessment on a given date.
 	* @param fdbk           Assessment.
 	* @param date           Date.
 	*/
-	void UpdateFdbk(tDocJudgement fdbk,R::RDate& date);
+	void UpdateFdbk(tDocAssessment fdbk,R::RDate& date);
 
 	/**
 	* Get the assessment for the document.
 	* @returns Profile's feedback.
 	*/
-	tDocJudgement GetFdbk(void) const;
+	tDocAssessment GetFdbk(void) const;
 
 	/**
 	* Get the document assessed.
@@ -187,9 +187,9 @@ public:
 	* @param fdbk           Original assessment.
 	* @param PercErr        Percentage of error.
 	* @param rand           Pointer to the random number generator to use.
-	* @returns tDocJudgement
+	* @returns tDocAssessment
 	*/
-	static tDocJudgement ErrorJudgment(tDocJudgement fdbk,double PercErr,R::RRandom* rand);
+	static tDocAssessment ErrorJudgment(tDocAssessment fdbk,double PercErr,R::RRandom* rand);
 
 	/*
 	* Destructor

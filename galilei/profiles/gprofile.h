@@ -220,10 +220,10 @@ public:
 
 	/**
 	* Add a judgement for this profile.
-	* @param j              Judgement.
+	* @param j              Assessment.
 	* @param s              Session.
 	*/
-	void AddJudgement(GProfDoc* j,GSession* s) throw(bad_alloc);
+	void AddAssessment(GProfDoc* j,GSession* s) throw(bad_alloc);
 
 	/**
 	* Store the profdoc in the feedbacks of the subprofile

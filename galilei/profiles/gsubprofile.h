@@ -163,13 +163,13 @@ public:
 	/*
 	* add a judgement for the subprofile.
 	*/
-	void AddJudgement(GProfDoc* j) throw(bad_alloc);
+	void AddAssessment(GProfDoc* j) throw(bad_alloc);
 
 	/**
 	* Remove a judgement for this subprofile.
-	* @param j              Judgement.
+	* @param j              Assessment.
 	*/
-	void RemoveJudgement(GProfDoc* j) throw(bad_alloc);
+	void RemoveAssessment(GProfDoc* j) throw(bad_alloc);
 
 	/**
 	* Method called when the profiles feedbacks were cleared.
@@ -301,7 +301,7 @@ public:
 	/**
 	* Compute the global similarity between a subprofile and a document.
 	*/
-	virtual double GlobalSimilarity(const GDoc* doc) const;
+	virtual double SimilarityIFF(const GDoc* doc) const;
 
 	/**
 	* Compute the similarity between subprofiles.
@@ -311,7 +311,7 @@ public:
 	/**
 	* Compute the global similarity between subprofiles.
 	*/
-	virtual double GlobalSimilarity(const GSubProfile* sub) const;
+	virtual double SimilarityIFF(const GSubProfile* sub) const;
 
 	/**
 	* Compute the similarity between a subprofile and a group.
@@ -321,7 +321,7 @@ public:
 	/**
 	* Compute the global similarity between a subprofile and a group.
 	*/
-	virtual double GlobalSimilarity(const GGroup* grp) const;
+	virtual double SimilarityIFF(const GGroup* grp) const;
 
 	/**
 	* Tell the subprofile that its updated is finished.

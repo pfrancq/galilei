@@ -173,7 +173,7 @@ void GALILEI::GProfilesSim::AnalyseSim(GSims* sim,const GSubProfile* sub1,const 
 	unsigned int pos;
 
 	if(GlobalSim)
-		tmp=sub1->GlobalSimilarity(sub2);
+		tmp=sub1->SimilarityIFF(sub2);
 	else
 		tmp=sub1->Similarity(sub2);
 //	if(fabs(tmp)<1e-10) return;
@@ -215,7 +215,7 @@ double GALILEI::GProfilesSim::GetSim(const GSubProfile* sub1,const GSubProfile* 
 		s2->State = osUpToDate ;
 		if (GlobalSim)
 		{
-			s2->Sim=sub1->GlobalSimilarity(sub2);
+			s2->Sim=sub1->SimilarityIFF(sub2);
 			return ( s2->Sim);
 		}
 		else

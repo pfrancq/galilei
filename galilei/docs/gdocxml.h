@@ -102,13 +102,13 @@ public:
 	* Get the URL.
 	* @returns Pointer to a C string.
 	*/
-	const char* GetURL(void) const;
+	R::RString& GetURL(void) const;
 
 	/**
 	* Get the File Name.
 	* @returns Pointer to a C string.
 	*/
-	const char* GetFile(void) const;
+	R::RString& GetFile(void) const;
 
 	/**
 	* Get an access to the metadata of the document.

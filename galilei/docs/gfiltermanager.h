@@ -95,7 +95,7 @@ protected:
 	* @param tmpFile        Temporary file created.
 	* @return Name fo of the MIME type.
 	*/
-	virtual const char* DetermineMIMEType(const char* tmpfile);
+	virtual const char* DetermineMIMEType(const char* tmpfile) throw(GException);
 
 	/**
 	* Delete a temporary copy of a file created by the manager. This method is

@@ -267,7 +267,7 @@ public:
 	* Set the identifier.
 	* @param id             Identifier.
 	*/
-	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+	void SetId(unsigned int id) throw(GException);
 
 	/**
 	* Get the number of failed for the document.
@@ -303,59 +303,71 @@ public:
 	unsigned int GetNbFdbks(void) const;
 
 	/**
-	* Compute the similarity between documents.
+	* Compute a similarity between two documents.
+	* @param doc             Pointer to a document.
 	*/
 	virtual double Similarity(const GDoc* doc) const;
 
 	/**
-	* Compute the global similarity between documents.
+	* Compute a similarity between two documents using a Inverse Frequence
+	* Factor (IFF).
+	* @param doc             Pointer to a document.
 	*/
-	virtual double GlobalSimilarity(const GDoc* doc) const;
+	virtual double SimilarityIFF(const GDoc* doc) const;
 
 	/**
-	* Compute the similarity between a document and a subprofile.
+	* Compute a similarity between a document and a subprofile.
+	* @param sub             Pointer to a subprofile.
 	*/
 	virtual double Similarity(const GSubProfile* sub) const;
 
 	/**
-	* Compute the global similarity between a document and a subprofile.
+	* Compute a similarity between a document and a subprofile using a Inverse
+	* Frequence Factor (IFF).
+	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double GlobalSimilarity(const GSubProfile* sub) const;
+	virtual double SimilarityIFF(const GSubProfile* sub) const;
 
 	/**
-	* Compute the similarity between a document and a group.
+	* Compute a similarity between a document and a group.
+	* @param grp             Pointer to a group.
 	*/
 	virtual double Similarity(const GGroup* grp) const;
 
 	/**
-	* Compute the global similarity between a document and a group.
+	* Compute a similarity between a document and a group using a Inverse
+	* Frequence Factor (IFF).
+	* @param grp             Pointer to a group.
 	*/
-	virtual double GlobalSimilarity(const GGroup* grp) const;
+	virtual double SimilarityIFF(const GGroup* grp) const;
 
 	/**
-	* Add a judgement for this document.
-	* @param j              Judgement.
+	* Add a assessment for this document.
+	* @param j              Assessment.
 	*/
-	void AddJudgement(GProfDoc* j) throw(bad_alloc);
+	void AddAssessment(GProfDoc* j) throw(bad_alloc);
 
 	/**
-	* Get the Number  of Outgoing links
+	* Get the number of outgoing links
+	* @return unsigned int.
 	*/
 	unsigned int GetNbLinks(void);
 
 	/**
 	* Add a new link to the document
-	* @params doc           The Document representing the link to be inserted.
+	* @params doc           The document representing the link to be inserted.
 	*/
 	void InsertLink(const GDoc* doc) throw(bad_alloc);
 
 	/**
-	* Add a new link to the document and set the number of occurences
-	* @params doc            The Document representing the link to be inserted.
-	* @params nbOccurs  The number of occurence of the link inside the document.
+	* Add a new link to the document and set the number of occurences of this
+	* link.
+	* @param doc             The Document representing the link to be inserted.
+	* @param nbOccurs        The number of occurence of the link inside the
+	*                        document.
 	*/
 	void InsertLink(const GDoc* doc, unsigned int nbOccurs) throw(bad_alloc);
-	
+
 	/**
 	* Add a new link to the document
 	* @params doc           The Document representing the link to be inserted.
@@ -369,7 +381,6 @@ public:
 	* @return GLinkCursor.
 	*/
 	GLinkCursor& GetLinkCursor(void);
-
 
 #if GALILEITEST
 
@@ -408,7 +419,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GDocCursor class provides a way to go trough a set of documents.
 * @short Documents Cursor
@@ -416,8 +427,8 @@ public:
 CLASSCURSOR(GDocCursor,GDoc,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

@@ -192,7 +192,7 @@ void GALILEI::GDocsSim::ComputeSims(const char* filename,GDocCursor& Cur1,GDocCu
 		{
 			if(Cur1()->GetLang()!=Cur2()->GetLang()) continue;
 			if(global)
-				r.Sim=Cur1()->GlobalSimilarity(Cur2());
+				r.Sim=Cur1()->SimilarityIFF(Cur2());
 			else
 				r.Sim=Cur1()->Similarity(Cur2());
 			if(r.Sim)

@@ -95,7 +95,7 @@ int GALILEI::GSubProfile::Compare(const GSubProfile* subprofile) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubProfile::AddJudgement(GProfDoc* j) throw(bad_alloc)
+void GALILEI::GSubProfile::AddAssessment(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 	State=osModified;
@@ -103,7 +103,7 @@ void GALILEI::GSubProfile::AddJudgement(GProfDoc* j) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubProfile::RemoveJudgement(GProfDoc* j) throw(bad_alloc)
+void GALILEI::GSubProfile::RemoveAssessment(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.DeletePtr(j);
 	State=osModified;
@@ -183,7 +183,7 @@ bool GALILEI::GSubProfile::IsUpdated(void) const
 //-----------------------------------------------------------------------------
 unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
 {
-	tDocJudgement f;
+	tDocAssessment f;
 	GProfDoc* cor;
 	unsigned int nb;
 
@@ -215,7 +215,7 @@ unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
 //-----------------------------------------------------------------------------
 unsigned int GALILEI::GSubProfile::GetCommonDocs(const GSubProfile* prof)
 {
-	tDocJudgement f;
+	tDocAssessment f;
 	GProfDoc* cor;
 	unsigned int nb;
 
@@ -244,7 +244,7 @@ unsigned int GALILEI::GSubProfile::GetCommonDocs(const GSubProfile* prof)
 //-----------------------------------------------------------------------------
 unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
 {
-	tDocJudgement f;
+	tDocAssessment f;
 	GProfDoc* cor;
 	unsigned int nb;
 	bool bOK,bOK2;
@@ -299,7 +299,7 @@ double GALILEI::GSubProfile::Similarity(const GDoc*) const
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSubProfile::GlobalSimilarity(const GDoc*) const
+double GALILEI::GSubProfile::SimilarityIFF(const GDoc*) const
 {
 	return(0.0);
 }
@@ -313,7 +313,7 @@ double GALILEI::GSubProfile::Similarity(const GSubProfile*) const
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSubProfile::GlobalSimilarity(const GSubProfile*) const
+double GALILEI::GSubProfile::SimilarityIFF(const GSubProfile*) const
 {
 	return(0.0);
 }
@@ -327,7 +327,7 @@ double GALILEI::GSubProfile::Similarity(const GGroup*) const
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSubProfile::GlobalSimilarity(const GGroup*) const
+double GALILEI::GSubProfile::SimilarityIFF(const GGroup*) const
 {
 	return(0.0);
 }

@@ -112,34 +112,42 @@ public:
 	GWeightInfoCursor& GetWeightInfoCursor(void);
 
 	/**
-	* Compute the similarity between documents.
+	* Compute a similarity between two documents.
+	* @param doc             Pointer to a document.
 	*/
 	virtual double Similarity(const GDoc* doc) const;
 
 	/**
-	* Compute the global similarity between documents.
+	* Compute a similarity between two documents using a Inverse Frequence
+	* Factor (IFF).
+	* @param doc             Pointer to a document.
 	*/
-	virtual double GlobalSimilarity(const GDoc* doc) const;
+	virtual double SimilarityIFF(const GDoc* doc) const;
 
 	/**
-	* Compute the similarity between a document and a subprofile.
+	* Compute a similarity between a document and a subprofile.
+	* @param sub             Pointer to a subprofile.
 	*/
 	virtual double Similarity(const GSubProfile* sub) const;
 
 	/**
-	* Compute the global similarity between a document and a subprofile.
+	* Compute a similarity between a document and a subprofile using a Inverse
+	* Frequence Factor (IFF).
+	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double GlobalSimilarity(const GSubProfile* sub) const;
+	virtual double SimilarityIFF(const GSubProfile* sub) const;
 
 	/**
-	* Compute the similarity between a document and a group.
+	* Compute a similarity between a document and a group.
+	* @param grp             Pointer to a group.
 	*/
 	virtual double Similarity(const GGroup* grp) const;
 
 	/**
-	* Compute the global similarity between a document and a group.
+	* Compute a similarity between a document and a group using a Inverse
+	* Frequence Factor (IFF).
 	*/
-	virtual double GlobalSimilarity(const GGroup* grp) const;
+	virtual double SimilarityIFF(const GGroup* grp) const;
 
 	/**
 	* Update the references of the document.

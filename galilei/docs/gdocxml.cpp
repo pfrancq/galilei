@@ -65,16 +65,22 @@ GDocXML::GDocXML(const char* url,const char* filename) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-const char* GDocXML::GetURL(void) const
+RString& GDocXML::GetURL(void) const
 {
-	return(URL.Latin1());
+	RString* tmp=RString::GetString();
+
+	(*tmp)=URL;
+	return(*tmp);
 }
 
 
 //------------------------------------------------------------------------------
-const char* GDocXML::GetFile(void) const
+RString& GDocXML::GetFile(void) const
 {
-	return(FileName.Latin1());
+	RString* tmp=RString::GetString();
+
+	(*tmp)=FileName;
+	return(*tmp);
 }
 
 

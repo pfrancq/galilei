@@ -102,7 +102,7 @@ public:
 	/**
 	* Compute the global similarity between a group and a document.
 	*/
-	virtual double GlobalSimilarity(const GDoc* doc) const;
+	virtual double SimilarityIFF(const GDoc* doc) const;
 
 	/**
 	* Compute the similarity between a group and subprofile.
@@ -112,7 +112,7 @@ public:
 	/**
 	* Compute the global similarity between a group and a subprofile.
 	*/
-	virtual double GlobalSimilarity(const GSubProfile* sub) const;
+	virtual double SimilarityIFF(const GSubProfile* sub) const;
 
 	/**
 	* Compute the similarity between groups.
@@ -122,7 +122,7 @@ public:
 	/**
 	* Compute the global similarity between groups.
 	*/
-	virtual double GlobalSimilarity(const GGroup* grp) const;
+	virtual double SimilarityIFF(const GGroup* grp) const;
 
 	/**
 	* Get a cursor over the vector.

@@ -205,7 +205,7 @@ void GALILEI::GDocProfSim::AnalyseSim(GSims* sim,const GDoc* doc ,const GSubProf
 	if (doc->GetLang() == sub->GetLang())
 	{
 		if(GlobalSim)
-			tmp=doc->GlobalSimilarity(sub);
+			tmp=doc->SimilarityIFF(sub);
 		else
 			tmp=doc->Similarity(sub);
 		if(fabs(tmp)<1e-10) return;
@@ -234,7 +234,7 @@ double GALILEI::GDocProfSim::GetSim(GDocs* docs,GUsers* users, unsigned int i,un
 		s2->State = osUpToDate ;
 		if (GlobalSim)
 		{
-			s2->Sim=docs->GetDoc(i)->GlobalSimilarity(users->GetSubProfile(j,Lang));
+			s2->Sim=docs->GetDoc(i)->SimilarityIFF(users->GetSubProfile(j,Lang));
 			return (s2->Sim);
 		}
 		else
@@ -274,7 +274,7 @@ double GALILEI::GDocProfSim::GetSim(const GDoc* doc,const GSubProfile* sub)
 		s2->State = osUpToDate ;
 		if (GlobalSim)
 		{
-			s2->Sim=doc->GlobalSimilarity(sub);
+			s2->Sim=doc->SimilarityIFF(sub);
 			return ( s2->Sim);
 		}
 		else
