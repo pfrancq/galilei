@@ -311,7 +311,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Rate of element by subsample",KMeansParams.SubSamplesRate);
 	Config->writeEntry("Epsilon",KMeansParams.Epsilon);
 
-	// Write Config of KMeans
+	// Write Config of KProto
 	Config->setGroup(KProtosParams.GetGroupingName());
 	Config->writeEntry("Number of Groups",KProtosParams.NbGroups);
 	Config->writeEntry("Number of Protos",KProtosParams.NbProtos);
@@ -328,11 +328,16 @@ void KGALILEICenterApp::saveOptions(void)
 
 	// Write Config of SupKMeans
 	Config->setGroup(SupKMeansParams.GetGroupingName());
+	Config->writeEntry("UsedAsInitialization",SupKMeansParams.UsedAsInitialization);
 	Config->writeEntry("NbPcSame",SupKMeansParams.NbPcSame);
 	Config->writeEntry("NbPcDiff",SupKMeansParams.NbPcDiff);
 	Config->writeEntry("MinSim",SupKMeansParams.MinSim);
 	Config->writeEntry("NbIters",SupKMeansParams.NbIters);
 	Config->writeEntry("DoubleKMeans",SupKMeansParams.DoubleKMeans);
+	Config->writeEntry("SameGroupRate",SupKMeansParams.SameGroupRate);
+	Config->writeEntry("NbSamples",SupKMeansParams.NbSamples);
+	Config->writeEntry("InitMode",SupKMeansParams.InitMode);
+	Config->writeEntry("Debug",SupKMeansParams.Debug);
 
 	// Write Config of GroupCalcRelevant
 	Config->setGroup(CalcRelevantParams.GetComputingName());
@@ -503,12 +508,16 @@ void KGALILEICenterApp::readOptions(void)
 
 	// Read Config of SupKMeans
 	Config->setGroup(SupKMeansParams.GetGroupingName());
-	cout <<SupKMeansParams.GetGroupingName()<<endl;
+	SupKMeansParams.UsedAsInitialization=Config->readBoolEntry("UsedAsInitialization",false);
 	SupKMeansParams.NbPcSame=Config->readNumEntry("NbPcSame",60);
 	SupKMeansParams.NbPcDiff=Config->readNumEntry("NbPcDiff",60);
 	SupKMeansParams.MinSim=Config->readDoubleNumEntry("MinSim",0.1);
 	SupKMeansParams.NbIters=Config->readNumEntry("NbIters",20);
 	SupKMeansParams.DoubleKMeans=Config->readBoolEntry("DoubleKMeans",false);
+	SupKMeansParams.SameGroupRate=Config->readNumEntry("SameGroupRate",100);
+	SupKMeansParams.NbSamples=Config->readNumEntry("NbSamples",10);
+	SupKMeansParams.InitMode=Config->readNumEntry("InitMode",GSupKMeansParams::Relevant);
+	SupKMeansParams.Debug=Config->readBoolEntry("Debug",false);
 
 	// Read Config of GroupCalcRelevant
 	Config->setGroup(CalcRelevantParams.GetComputingName());
