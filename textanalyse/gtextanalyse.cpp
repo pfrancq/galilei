@@ -708,12 +708,6 @@ void GTextAnalyse::DetermineLang(void) throw(GException)
 	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 	{
 		Frac=((double)(*tmp1))/((double)Ndiff);
-		/*cout<<CurLangs()->GetName()<<endl;
-		cout<<"       Sdiff  "<<(*tmp1)<<endl;
-		cout<<"       Ndiff  "<<Ndiff<<endl;
-		cout<<"       Frac   "<<Frac<<endl;
-		cout<<"       S      "<<(*tmp2)<<endl;
-		cout<<"       N      "<<N<<endl;*/
 		if(((*tmp2)>S)&&(Frac>=MinFrac))
 		{
 			Lang=CurLangs()->GetPlugin();
