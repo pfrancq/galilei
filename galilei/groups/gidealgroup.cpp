@@ -77,6 +77,7 @@ GALILEI::GIdealGroup::GIdealGroup(GSession* session)
 {
 	PercOK=10;
 	PercKO=10;
+	Rand=0;
 	Subjects=new GSubjectTree(PercOK,PercKO,Session->GetNbUsers());
 	Session->LoadSubjectTree(Subjects);
 	Subjects->InsertProfiles();
@@ -100,7 +101,7 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 	Session->ClearFdbks();
 
 	// Create the different judgments.
-	Subjects->Judgments(Session);
+	Subjects->Judgments(Session,Rand);
 
 	// Create the ideal groupment corresponding to the precedent judgment.
 	Subjects->IdealGroupment(groups,Session,parent);
@@ -113,7 +114,7 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 {
 	static char tmp[100];
 	
-	sprintf(tmp,"%u %u ",PercOK,PercKO);
+	sprintf(tmp,"%u %u %i",PercOK,PercKO,Rand);
 	return(tmp);
 }
 
@@ -122,7 +123,7 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 void GALILEI::GIdealGroup::SetSettings(const char* s)
 {
 	if(!(*s)) return;
-	sscanf(s,"%u %u ",&PercOK,&PercKO);
+	sscanf(s,"%u %u %i",&PercOK,&PercKO,&Rand);
 }
 
 

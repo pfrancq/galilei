@@ -41,8 +41,10 @@
 //-----------------------------------------------------------------------------
 // include files for R-Project
 #include <rtimedate/rdate.h>
-#include<rstd/rcontainercursor.h>
-#include<rstd/rtree.h>
+#include <rstd/rcontainercursor.h>
+#include <rstd/rtree.h>
+#include <rmath/random.h>
+using namespace RMath;
 
 
 //-----------------------------------------------------------------------------
@@ -74,6 +76,7 @@ GSubjectTree::GSubjectTree(unsigned int NbOk,unsigned int NbKo,unsigned int nbus
 	NbUsers=nbusers;
 	NbProfiles=NbUsers;
 	profiles=new RContainer<GProfile,unsigned,false,true>(10,5);
+	Random = new RRandomGood(12345);
 }
 
 
@@ -102,8 +105,10 @@ void GSubjectTree::InsertProfiles(void)
 
 
 //---------------------------------------------------
-void GSubjectTree::Judgments(GSession* ses)
+void GSubjectTree::Judgments(GSession* ses,int ran)
 {
+	if(ran!=-1) Random->Reset(ran);
+
 	InitProfiles();
 	InitSubSubjects();
 
@@ -125,7 +130,8 @@ void GSubjectTree::Judgments(GSession* ses)
 		{
 
 			//Chose a subsubject.
-			int soustheme = (rand()%(subject->NbPtr))+subject->SubSubjectMinId();
+			int soustheme = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
+//			int soustheme = (rand()%(subject->NbPtr))+subject->SubSubjectMinId();
 			GSubject* sub1=subject->GetPtr(soustheme);
 			sub1->setIsJudged(true);
 
@@ -142,11 +148,13 @@ void GSubjectTree::Judgments(GSession* ses)
 			//Documents KO.
 			if (subject->NbPtr>1) //If the subsuject enables the KO judgement of documents.
 			{
-				int soustheme = (rand()%(subject->NbPtr))+subject->SubSubjectMinId();
+				int soustheme = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
+//				int soustheme = (rand()%(subject->NbPtr))+subject->SubSubjectMinId();
 				GSubject* sub2=subject->GetPtr(soustheme);
 				while(sub2==sub1)
 				{
-					int soustheme = (rand()%(subject->NbPtr))+subject->SubSubjectMinId();
+					int soustheme = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
+//					int soustheme = (rand()%(subject->NbPtr))+subject->SubSubjectMinId();
 					sub2=subject->GetPtr(soustheme);
 				}
 				JudgeDocuments(profid,sub2,0,ses);
@@ -185,7 +193,8 @@ void GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,bool i,GSession* s
 	while (j<NbDocs)
 	{
 		sub->urls->Start();
-		int url=(rand()%(sub->urls->NbPtr))+(*(sub->urls))()->GetId();
+		int url=(Random->Value(sub->urls->NbPtr))+(*(sub->urls))()->GetId();
+//		int url=(rand()%(sub->urls->NbPtr))+(*(sub->urls))()->GetId();
 		GDoc* doc=sub->urls->GetPtr(url);
 		if (!judgedDocs->GetPtr(doc->GetId()))
 		{
@@ -387,3 +396,13 @@ void GSubjectTree::InitSubSubjects()
 		}
 	}
 }
+
+
+//-----------------------------------------------------------------------------
+GSubjectTree::~GSubjectTree(void)
+{
+	if(Random)
+		delete Random;
+
+}
+

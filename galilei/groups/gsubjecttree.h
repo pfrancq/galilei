@@ -42,8 +42,10 @@
 #include <rstd/rstring.h>
 #include <rstd/rtree.h>
 #include <rio/rtextfile.h>
+#include <rmath/random.h>
 using namespace RIO;
 using namespace RStd;
+using namespace RMath;
 
 
 //-----------------------------------------------------------------------------
@@ -106,6 +108,11 @@ protected:
 	*/
 	void InitSubSubjects(void);
 
+	/**
+	* Random number generator
+	*/
+	RRandom* Random;
+
 public:
 	
 	/**
@@ -119,8 +126,9 @@ public:
 	/**
 	* Executes the queries to create new profiles.
 	* @param ses       The Gailieli session
+	* @param rand      -1 total random >=0 restart the sequence of randum number
 	*/
-	void Judgments(GSession* ses);
+	void Judgments(GSession* ses,int rand);
 
 	/**
 	* Judge documents from the susubject sub.
@@ -151,7 +159,7 @@ public:
 	/**
 	* Destructor
 	*/
-	~GSubjectTree(void){};
+	~GSubjectTree(void);
 
 
 };

@@ -74,6 +74,11 @@ protected:
 	*/
 	unsigned int PercKO;
 
+	/**
+	* Parameter to initialyse the random function for autocreate jugment.
+	*/
+	int Rand;
+
 public:
 
 	/**
