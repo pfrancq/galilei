@@ -138,13 +138,20 @@
   </kdevclassview>
   <kdevcvs>
     <cvsoptions>-f</cvsoptions>
-    <commitoptions></commitoptions>
-    <addoptions></addoptions>
-    <logoptions></logoptions>
+    <commitoptions/>
+    <addoptions/>
+    <logoptions/>
     <updateoptions>-dP</updateoptions>
     <removeoptions>-f</removeoptions>
     <revertoptions>-C -d -P</revertoptions>
     <diffoptions>-u3 -p</diffoptions>
-    <rshoptions></rshoptions>
+    <rshoptions/>
   </kdevcvs>
+  <kdevcvsservice>
+    <recursivewhenupdate>true</recursivewhenupdate>
+    <prunedirswhenupdate>true</prunedirswhenupdate>
+    <createdirswhenupdate>true</createdirswhenupdate>
+    <recursivewhencommitremove>true</recursivewhencommitremove>
+    <revertoptions>-C</revertoptions>
+  </kdevcvsservice>
 </kdevelop>
