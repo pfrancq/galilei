@@ -76,8 +76,9 @@ GSubProfile* GALILEI::GSubProfileVector::NewSubProfile(GProfile* prof,unsigned i
 //-----------------------------------------------------------------------------
 void GALILEI::GSubProfileVector::ClearFdbks(void)
 {
-	GSubProfile::ClearFdbks();
+	RemoveRefs();
 	GIWordsWeights::Clear();
+	GSubProfile::ClearFdbks();
 }
 
 
