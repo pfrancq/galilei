@@ -263,6 +263,11 @@ public:
 	virtual void ExecuteData(const char* filename) throw(GException);
 
 	/**
+	* Clear all the chromosomes stored.
+	*/
+	virtual void ClearStoredChromos(void);
+
+	/**
 	* Save A Chromosome into the database.
 	* @param chromo         The chromosome to save.
 	* @param id             An id to find the chromosome after saving. 

@@ -899,6 +899,13 @@ void GALILEI::GSessionMySQL::ExecuteData(const char* filename) throw(GException)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::ClearStoredChromos(void)
+{
+	RQuery delete1(this,"DELETE FROM tempchromo");
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::SaveChromo(GChromoIR* chromo,unsigned int id,RGA::RObjs<GObjIR>* objs)
 {
 	char sSql[100];

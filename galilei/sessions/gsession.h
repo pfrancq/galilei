@@ -516,7 +516,12 @@ public:
 	virtual void SaveFdbks(void)=0;
 
 	/**
-	* Save A Chromosome into the database.
+	* Clear all the chromosomes stored.
+	*/
+	virtual void ClearStoredChromos(void)=0;
+
+	/**
+	* Save a chromosome.
 	* @param chromo         The chromosome to save.
 	* @param id             An id to find the chromosome after saving.
 	* @param objs           Objects.
