@@ -67,6 +67,8 @@ public:
   GDict* GetStop(GLang *lang) throw(GException);
   void ClearDics(void) throw(GException);
   void ClearStops(void) throw(GException);
+	virtual unsigned DicNextId(const RString& word)=0;
+	
 
   // Documents
   template<class hdocs> void LoadDocuments(unsigned nb) throw(bad_alloc,GException);
