@@ -40,6 +40,7 @@
 #include <tests/ggroupevaluate.h>
 #include <tests/ggroupevaluatesubprof.h>
 #include <tests/ggroupsevaluate.h>
+#include <tests/gstatsimid.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <sessions/gsession.h>
@@ -69,81 +70,156 @@ GALILEI::GStatSimSubProf::GStatSimSubProf(GSession* ses,RContainer<GGroups,unsig
 //-----------------------------------------------------------------------------
 void GALILEI::GStatSimSubProf::Run(void)
 {
-	double MinIntra;
-	double MaxExtra;
 
-	//Initialization
-	MeanIntraM=0.0;
-	MeanExtraM=0.0;
-	Overlap=0.0;
+	//The container of StatSimilarities.
+	RContainer<GSatSimId,unsigned int,true,true> StatsSim (100,50);
 
-	int ComptIntra=0;
-	int ComptExtra=0;
-	int ComptOverlap=0;
-
-	// For each language
 	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
 	{
 		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
 		// For each SubGroup
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
-			// Temp initialization
-			MinIntra=1.0;
-			MaxExtra=0.0;
-
 			GGroup * Group=Cur2();
 			GSubProfileCursor SubCur1= Group->GetSubProfileCursor();
-			GSubProfileCursor SubCur2= Group->GetSubProfileCursor();
-			// for each subprofiles in thos group compare whith all subprofile in this group.
 			for(SubCur1.Start();!SubCur1.End();SubCur1.Next())
 			{
-				for(SubCur2.Start();!SubCur2.End();SubCur2.Next())
-				{
-					double temp;
-					if(Global) temp=SubCur1()->GlobalSimilarity(SubCur2());
-					else temp=SubCur1()->Similarity(SubCur2());
-					if(SubCur1()->GetId()!=SubCur2()->GetId())
-					{
-						MeanIntraM+=temp;
-						ComptIntra++;
-						if(temp<MinIntra) MinIntra=temp;
-					}
-				}
+				GSatSimId* temp=new GSatSimId(SubCur1()->GetId(),Group->GetId());
+				StatsSim.InsertPtr(temp);
 			}
-			GGroupCursor Cur=(*IdealGroups)()->GetGroupCursor();
-			// Compare each subprofile sof the group whith all the subprofiles in the session.
-			for(Cur.Start();!Cur.End();Cur.Next())
-			{
-				GGroup* GroupExtra=Cur();
-				// not compare with the same group...
-				if(GroupExtra->GetId()!=Group->GetId())
-				{
-					GSubProfileCursor SubCur1= Group->GetSubProfileCursor();
-					GSubProfileCursor SubCur2= GroupExtra->GetSubProfileCursor();
-					for(SubCur1.Start();!SubCur1.End();SubCur1.Next())
-					{
-						for(SubCur2.Start();!SubCur2.End();SubCur2.Next())
-						{
-							double temp;
-							if(Global) temp=SubCur1()->GlobalSimilarity(SubCur2());
-							else temp=SubCur1()->Similarity(SubCur2());
-							MeanExtraM+=temp;
-							ComptExtra++;
-							if((temp>MaxExtra)&&(temp<0.99)) MaxExtra=temp;
-						}
-					}
-				}
-			}
-			ComptOverlap++;
-			if(MaxExtra>MinIntra) Overlap+=(MaxExtra-MinIntra);
 		}
 	}
-	MeanIntraM/=ComptIntra;
-	MeanExtraM/=ComptExtra;
-	if(ComptOverlap>0)
-		Overlap/=ComptOverlap;
+
+	// Calculation of SimId Contianer
+	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
+	{
+		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		{
+			GGroup * Group=Cur2();
+			GSubProfileCursor SubCur1= Group->GetSubProfileCursor();
+			for(SubCur1.Start();!SubCur1.End();SubCur1.Next())
+			{
+				GSatSimId* temp1=StatsSim.GetPtr(SubCur1()->GetId());
+				for(StatsSim.Start();!StatsSim.End();StatsSim.Next())
+				{
+					double simtemp1temp2;
+					GSatSimId* temp2=StatsSim();
+					if(Global) simtemp1temp2= Session->GetSubProfile(temp1->GetId())->GlobalSimilarity(Session->GetSubProfile(temp2->GetId()));
+					else simtemp1temp2=Session->GetSubProfile(temp1->GetId())->Similarity(Session->GetSubProfile(temp2->GetId()));
+					if(temp1->GetId()!=temp2->GetId())
+					{
+						temp1->SetSim(simtemp1temp2,temp2->GetGrpId());
+						temp2->SetSim(simtemp1temp2,temp1->GetGrpId());
+					}
+				}
+			}
+		}
+	}
+
+	//Initialization
+	MeanIntraM=0.0;
+	MeanExtraM=0.0;
+	MeanIntraMin=0.0;
+	MeanExtraMax=0.0;
+	Overlap=0.0;
+	GrpOverlap=0.0;
+
+	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
+	{
+		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		{
+			bool grpover=false;
+			for(StatsSim.Start();!StatsSim.End();StatsSim.Next())
+			{
+				GSatSimId* temp=StatsSim();
+				if(temp->GetGrpId()==Cur2()->GetId())
+				{
+					if(temp->GetMinIntra()<temp->GetMaxInter())
+					{
+						grpover=true;
+					}
+				}
+			}
+			if(grpover) GrpOverlap++;
+		}
+	}
+
+	int ComptOverlap=0;
+	int CompProf=0;
+
+	for(StatsSim.Start();!StatsSim.End();StatsSim.Next())
+	{
+		GSatSimId* temp=StatsSim();
+		MeanIntraM+=temp->GetMeanIntra();
+		MeanExtraM+=temp->GetMeanInter();
+		CompProf++;
+		MeanIntraMin+=temp->GetMinIntra();
+		MeanExtraMax+=temp->GetMaxInter();
+		if(temp->GetMinIntra()<temp->GetMaxInter())
+		{
+			ComptOverlap++;
+		}
+		
+	}
+	
+	MeanIntraM/=CompProf;
+	MeanExtraM/=CompProf;
+	Overlap=100*ComptOverlap/CompProf;
 	Rie=(MeanIntraM-MeanExtraM)/MeanIntraM;
+
+	//Calculation of J.
+	double SW=0;
+	double Mb=1;
+	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
+	{
+		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
+		// For each SubGroup
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		{
+			double SWtemp=0;
+			GGroup * Group=Cur2();
+			GSubProfile* relevant= Group->RelevantSubProfile(Global);
+			GSubProfileCursor SubCur1= Group->GetSubProfileCursor();
+			for(SubCur1.Start();!SubCur1.End();SubCur1.Next())
+			{
+				if(Global)
+					SWtemp+=(1-relevant->GlobalSimilarity(SubCur1()))*(1-relevant->GlobalSimilarity(SubCur1()));
+				else
+					SWtemp+=(1-relevant->Similarity(SubCur1()))*(1-relevant->GlobalSimilarity(SubCur1()));
+			}
+			SW+=SWtemp;
+		}
+	}
+	
+	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
+	{
+		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
+		GGroupCursor Cur1=(*IdealGroups)()->GetGroupCursor();
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		{
+			GGroup* Group2=Cur2();
+			GSubProfile* relevant= Group2->RelevantSubProfile(Global);
+			for(Cur1.Start();!Cur1.End();Cur1.Next())
+			{
+				GGroup* Group1=Cur1();
+				GSubProfile* relevant1=Group1->RelevantSubProfile(Global);
+				if(relevant1->GetId()!=relevant->GetId())
+				{
+					double temp;
+					if(Global)
+						temp=(1-relevant->GlobalSimilarity(relevant1))*(1-relevant->GlobalSimilarity(relevant1));
+					else
+						temp=(1-relevant->Similarity(relevant1))*(1-relevant->GlobalSimilarity(relevant1));
+					if(temp<Mb) Mb=temp;
+				}
+			}
+		}
+	}
+	J=Mb/SW;
+
+
 }
 
 

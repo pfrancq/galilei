@@ -114,7 +114,7 @@ void GSOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned 
 	}
 	Owner->SOFile=new RTextFile(args->Tab[0]->GetValue(prg),RIO::Create);
 	Owner->SOFile->SetSeparator("\t");
-	(*Owner->SOFile)<<"AVGintra"<<"AVGinter"<<"AVGol"<<"tRie"<<endl;
+	(*Owner->SOFile)<<"AVGintra"<<"AVGinter"<<"AVGol"<<"tRie"<<"AVGGrpol"<<endl;
 }
 
 
@@ -309,11 +309,11 @@ void GStatsProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,uns
 	if(args->NbPtr==1)
 		ProfStats.SetSettings(args->Tab[0]->GetValue(prg));
 	ProfStats.Run();
-	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f",
-	        ProfStats.GetAvgIntra(),ProfStats.GetAvgInter(),ProfStats.GetAVGol(),ProfStats.GetRie());
+	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f - AVGGrpGol: %f",
+	        ProfStats.GetAvgIntra(),ProfStats.GetAvgInter(),ProfStats.GetAVGol(),ProfStats.GetRie(),ProfStats.GetAVGGrpol());
 	r->WriteStr(tmp);
 	if(Owner->SOFile)
-		(*Owner->SOFile)<<ProfStats.GetAvgIntra()<<ProfStats.GetAvgInter()<<ProfStats.GetAVGol()<<ProfStats.GetRie()<<endl;
+		(*Owner->SOFile)<<ProfStats.GetAvgIntra()<<ProfStats.GetAvgInter()<<ProfStats.GetAVGol()<<ProfStats.GetRie()<<ProfStats.GetAVGGrpol()<<endl;
 }
 
 
@@ -330,7 +330,7 @@ void GStatsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigne
 	if(args->NbPtr==1)
 		DocStats.SetSettings(args->Tab[0]->GetValue(prg));
 	DocStats.Run();
-	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f",
+	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f ",
 	        DocStats.GetAvgIntra(),DocStats.GetAvgInter(),DocStats.GetAVGol(),DocStats.GetRie());
 	r->WriteStr(tmp);
 	if(Owner->SOFile)

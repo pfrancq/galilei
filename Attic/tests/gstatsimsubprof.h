@@ -66,6 +66,16 @@ protected:
 	GSession* Session;
 
 	/**
+	* The Mean of the Mean intra min group similarity.
+	*/
+	double MeanIntraMin;
+
+	/**
+	* The Mean of the Mean extra max group similarity.
+	*/
+	double MeanExtraMax;
+
+	/**
 	* The Mean of the Mean intra group similarity.
 	*/
 	double MeanIntraM;
@@ -81,9 +91,19 @@ protected:
 	double Rie;
 
 	/**
+	* Cost function.
+	*/
+	double J;
+
+	/**
 	* Overlap Factor.
 	*/
 	double Overlap;
+
+	/**
+	* Overlap Group Factor.
+	*/
+	double GrpOverlap;
 
 	/**
 	* The Container of ideal group.
@@ -117,16 +137,30 @@ public:
 	double GetAvgInter(void) const {return(MeanExtraM);}
 
 	/**
-	* Get the evevarge overlap factor.
+	* Get the avevarge overlap factor.
 	* @returns AVGol.
 	*/
 	double GetAVGol(void) const {return(Overlap);}
+
+	/**
+	* Get the avevarge  group overlap factor.
+	* @returns AVGol.
+	*/
+	double GetAVGGrpol(void) const {return(GrpOverlap);}
+
 
 	/**
 	* Get the Rie factor.
 	* @returns Rie factor.
 	*/
 	double GetRie(void) const {return(Rie);}
+
+	/**
+	* Get the Rie factor.
+	* @returns Rie factor.
+	*/
+	double GetJ(void) const {return(J);}
+
 
 	/**
 	* Construct the subprofile similarity.
