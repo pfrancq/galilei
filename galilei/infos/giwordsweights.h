@@ -89,6 +89,12 @@ public:
 	virtual const GInfoType InfoType(void) const;
 
 	/**
+	* The assignement operator.
+	* @param src            Vector used as source.
+	*/
+	GIWordsWeights& operator=(const GIWordsWeights& src) throw(bad_alloc);
+
+	/**
 	* Static function used to ordered by frenquecy.
 	*/
 	static int sortOrder(const void *a,const void *b);
@@ -139,6 +145,14 @@ public:
 	* @param dic            Dictionnary.
 	*/
 	void DelRefs(tObjType ObjType,GDict* dic) const;
+
+	/**
+	* Transform the vector from a independent weight to the form compatible
+	* with the vector model.
+	* @param ObjType        Type of the reference.
+	* @param lang           Language.
+	*/
+	void Transform(tObjType ObjType,GLang* lang);
 
 	/**
 	* Method used to recompute the weights of the terms like the formula

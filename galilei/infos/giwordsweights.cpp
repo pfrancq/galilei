@@ -80,11 +80,12 @@ const GInfo::GInfoType GALILEI::GIWordsWeights::InfoType(void) const
 }
 
 
-//---------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::Clear(void)
+//-----------------------------------------------------------------------------
+GALILEI::GIWordsWeights& GALILEI::GIWordsWeights::operator=(const GALILEI::GIWordsWeights::GIWordsWeights& src) throw(bad_alloc)
 {
-	RContainer<GIWordWeight,unsigned,true,true>::Clear();
-	NbWordsDocs=0.0;
+	RContainer<GIWordWeight,unsigned,true,true>::operator=(src);
+	NbWordsDocs=src.NbWordsDocs;
+	return(*this);
 }
 
 
@@ -99,6 +100,13 @@ int GALILEI::GIWordsWeights::sortOrder(const void *a,const void *b)
     return(-1);
   else
     return(1);
+}
+
+//---------------------------------------------------------------------------
+void GALILEI::GIWordsWeights::Clear(void)
+{
+	RContainer<GIWordWeight,unsigned,true,true>::Clear();
+	NbWordsDocs=0.0;
 }
 
 
@@ -239,6 +247,21 @@ void GALILEI::GIWordsWeights::DelRefs(tObjType ObjType,GDict* dic) const
 
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
 		dic->DecRef((*ptr)->GetId(),ObjType);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GIWordsWeights::Transform(tObjType ObjType,GLang* lang)
+{
+	GIWordWeight** ptr;
+	unsigned int i;
+	double max;
+	double TotalRef;
+
+	for(i=NbPtr+1,ptr=Tab,max=GetMaxWeight(),TotalRef=lang->GetRef(ObjType);--i;ptr++)
+	{
+		(*ptr)->Weight=((*ptr)->Weight/max)*log(TotalRef/lang->GetRef((*ptr)->GetId(),ObjType));
+	}
 }
 
 
