@@ -224,7 +224,7 @@ void GALILEI::GLangAR::LoadRules(void) throw(GException)
 	try
 	{
 		rules_file=new RTextFile(Factory->GetString("RulesFile"), Factory->GetString("Encoding"));
-		rules_file->Open(Read);
+		rules_file->Open(RIO::Read);
 	}
 	catch(...)
 	{
