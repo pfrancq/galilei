@@ -30,7 +30,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <glangs/gdict.h>
+#include <langs/gdict.h>
 
 
 

@@ -18,10 +18,10 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include<gprofiles/guser.h>
-#include <gprofiles/gprofile.h>
-#include<gprofiles/gsubprofile.h>
-#include<gprofiles/gprofdoc.h>
+#include<profiles/guser.h>
+#include<profiles/gprofile.h>
+#include<profiles/gsubprofile.h>
+#include<profiles/gprofdoc.h>
 using namespace GALILEI;
 using namespace RStd;
 

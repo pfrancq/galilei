@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GIWordCalc.h
+	GIWordWeight.h
 
-	Frequence of a word in a set of documents - Header.
+	Weight of a word - Header.
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -17,14 +17,13 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GIWordCalcH
-#define GIWordCalcH
+#ifndef GIWordWeightH
+#define GIWordWeightH
 
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include <ginfos/giword.h>
-
+#include <infos/giword.h>
 
 
 //-----------------------------------------------------------------------------
@@ -34,17 +33,17 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GIWordCalc class provides a representation for a frequence of a word in a
-* set of documents.
+* The GIWordWeight class provides a representation for a weight of a word in a
+* given collection of words, for example a document.
 * @author Pascal Francq
-* @short Word's Frequence in documents' set.
+* @short Word Weight.
 */
-class GIWordCalc : public GIWord
+class GIWordWeight : public GIWord
 {
 	/**
 	* Frequence of the word.
 	*/
-	double Freq;
+	double Weight;
 
 public:
 
@@ -52,7 +51,7 @@ public:
 	* Constructor.
 	* @param id             Identificator of the word.
 	*/
-	GIWordCalc(const unsigned int id) throw(bad_alloc);
+	GIWordWeight(const unsigned int id) throw(bad_alloc);
 
 	/**
 	* Return the name of the class.
@@ -67,20 +66,20 @@ public:
 	/**
 	* Compare method used by RStd::RContainer.
 	*/
-	int Compare(const GIWordCalc &calc) const;
+	int Compare(const GIWordWeight &calc) const;
 
 	/**
 	* Compare method used by RStd::RContainer.
 	*/
-	int Compare(const GIWordCalc *calc) const;
+	int Compare(const GIWordWeight *calc) const;
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GIWordCalc(void);
+	virtual ~GIWordWeight(void);
 
 	// friend classes
-	friend class GIWordCalcs;
+	friend class GIWordsWeights;
 };
 
 

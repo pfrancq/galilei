@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocs/gdcmetadata.h>
+#include <docs/gdcmetadata.h>
 using namespace GALILEI;
 using namespace RStd;
 

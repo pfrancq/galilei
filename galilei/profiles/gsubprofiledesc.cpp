@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GWord.cpp
+	GSubProfileDesc.cpp
 
-	Word - Implementation.
+	Generic Sub-Profile Description - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -17,82 +17,84 @@
 
 
 //-----------------------------------------------------------------------------
-// include file for ANSI C/C++
-#include <string.h>
-
-
-//-----------------------------------------------------------------------------
-// include file for Galilei
-#include <langs/gword.h>
+//include files for GALILEI
+#include<profiles/gsubprofiledesc.h>
+#include<profiles/gprofile.h>
+#include<profiles/gsubprofile.h>
+#include<groups/ggroup.h>
 using namespace GALILEI;
-using namespace RStd;
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GWord
+//  GSubProfileDesc
 //
 //-----------------------------------------------------------------------------
 
+
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(void) throw(bad_alloc)
-  : Id(cNoRef),Word()
+GALILEI::GSubProfileDesc::GSubProfileDesc(GSubProfile* sub,GGroup* grp,const char* a) throw(bad_alloc)
+  : Owner(sub), Group(grp), Attached(a)
 {
+//	Profile->InsertPtr(this);
+//	if(grp)
+//		grp->InsertPtr(this);
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(const RString& word) throw(bad_alloc)
-  : Id(cNoRef),Word(word)
+int GALILEI::GSubProfileDesc::Compare(const GSubProfileDesc& desc) const
 {
+	return(-1);
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(unsigned id,const RString& word) throw(bad_alloc)
-  : Id(id),Word(word)
+int GALILEI::GSubProfileDesc::Compare(const GSubProfileDesc* desc) const
 {
+	return(-1);
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(const GWord& word) throw(bad_alloc)
-  : Id(word.Id),Word(word.Word)
+unsigned int  GALILEI::GSubProfileDesc::GetId(void) const
 {
+	return(Owner->GetId());
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GWord::Compare(const GWord& word) const
+GLang*  GALILEI::GSubProfileDesc::GetLang(void) const
 {
-	return(Word.Compare(word.Word));
+	return(Owner->GetLang());
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GWord::Compare(const GWord* word) const
+bool GALILEI::GSubProfileDesc::IsDefined(void) const
 {
-	return(Word.Compare(word->Word));
+	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GWord::Compare(const RString& word) const
+void GALILEI::GSubProfileDesc::SetGroup(GGroup* grp)
 {
-	return(Word.Compare(word));
+	Group=grp;
+	if(grp)
+		Attached.SetToday();
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GWord::Compare(const char* word) const
+bool GALILEI::GSubProfileDesc::IsUpdated(void) const
 {
-	return(Word.Compare(word));
+	return(Attached<(*Owner->GetProfile()->GetUpdated()));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GWord::Compare(const unsigned int id) const
+GALILEI::GSubProfileDesc::~GSubProfileDesc(void)
 {
-	return(Id-id);
 }

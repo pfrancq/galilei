@@ -23,7 +23,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gprofiles/gprofile.h>
+#include <profiles/gprofile.h>
 
 
 

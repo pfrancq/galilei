@@ -6,7 +6,7 @@
 
 	Profile's Judgement of a document - Implementation.
 
-	(C) 2001 by P. Francq.
+	(C) 2001-2002 by P. Francq.
 
 	Version $Revision$
 
@@ -17,10 +17,10 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
-#include <gprofiles/gprofdoc.h>
-#include <gdocs/gdoc.h>
-#include <gprofiles/gprofile.h>
+// include files for GALILEI
+#include <profiles/gprofdoc.h>
+#include <docs/gdoc.h>
+#include <profiles/gprofile.h>
 using namespace GALILEI;
 
 

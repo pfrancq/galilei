@@ -23,7 +23,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggroups/ggrouping.h>
+#include <groups/ggrouping.h>
 
 
 

@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ginfos/ginfo.h>
+#include <infos/ginfo.h>
 using namespace GALILEI;
 using namespace RStd;
 

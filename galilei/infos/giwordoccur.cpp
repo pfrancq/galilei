@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ginfos/giwordoccur.h>
+#include <infos/giwordoccur.h>
 using namespace GALILEI;
 using namespace RStd;
 

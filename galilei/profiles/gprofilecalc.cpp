@@ -18,8 +18,8 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include <gprofiles/gprofilecalc.h>
-#include <gsessions/gsession.h>
+#include <profiles/gprofilecalc.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 
 

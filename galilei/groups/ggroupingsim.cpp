@@ -24,13 +24,13 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include<ggroups/ggroupingsim.h>
-#include<ggroups/ggroups.h>
-#include<ggroups/ggroup.h>
-#include<gprofiles/guser.h>
-#include<gprofiles/gsubprofile.h>
-#include<glangs/glang.h>
-#include<gsessions/gsession.h>
+#include<groups/ggroupingsim.h>
+#include<groups/ggroups.h>
+#include<groups/ggroup.h>
+#include<profiles/guser.h>
+#include<profiles/gsubprofile.h>
+#include<langs/glang.h>
+#include<sessions/gsession.h>
 using namespace GALILEI;
 
 

@@ -29,10 +29,10 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <glangs/glangs.h>
-#include <glangs/gdicts.h>
-#include <gprofiles/gusers.h>
-#include <gdocs/gdocs.h>
+#include <langs/glangs.h>
+#include <langs/gdicts.h>
+#include <profiles/gusers.h>
+#include <docs/gdocs.h>
 
 
 

@@ -19,9 +19,9 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocs/gdocs.h>
-#include <gdocs/gdoc.h>
-#include <gsessions/gsession.h>
+#include <docs/gdocs.h>
+#include <docs/gdoc.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace RStd;
 

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GIWordCalc.cpp
+	GIWordWeight.cpp
 
-	Frequence of a word in a set of documents - Implementation.
+	Weight of a word - Implementation.
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include<ginfos/giwordcalc.h>
+#include<infos/giwordweight.h>
 using namespace GALILEI;
 using namespace RStd;
 
@@ -26,46 +26,46 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //
-//  GIWordCalc
+//  GIWordWeight
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GIWordCalc::GIWordCalc(unsigned id) throw(bad_alloc)
-  : GIWord(id), Freq(0.0)
+GALILEI::GIWordWeight::GIWordWeight(unsigned id) throw(bad_alloc)
+  : GIWord(id), Weight(0.0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-const RString GALILEI::GIWordCalc::ClassName(void) const
+const RString GALILEI::GIWordWeight::ClassName(void) const
 {
-	return("GIWordCalc");
+	return("GIWordWeight");
 }
 
 
 //-----------------------------------------------------------------------------
-const GInfo::GInfoType GALILEI::GIWordCalc::InfoType(void) const
+const GInfo::GInfoType GALILEI::GIWordWeight::InfoType(void) const
 {
 	return(infoWordCalc);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GIWordCalc::Compare(const GIWordCalc &calc) const
+int GALILEI::GIWordWeight::Compare(const GIWordWeight &calc) const
 {
   return(Id-calc.Id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GIWordCalc::Compare(const GIWordCalc *calc) const
+int GALILEI::GIWordWeight::Compare(const GIWordWeight *calc) const
 {
   return(Id-calc->Id);
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GIWordCalc::~GIWordCalc(void)
+GALILEI::GIWordWeight::~GIWordWeight(void)
 {
 }

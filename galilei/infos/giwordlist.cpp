@@ -18,8 +18,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ginfos/giwordlist.h>
-#include <ginfos/giword.h>
+#include <infos/giwordlist.h>
+#include <infos/giword.h>
 using namespace GALILEI;
 
 

@@ -28,9 +28,9 @@
 #include <filters/gfilter.h>
 #include <filters/gfilteremail.h>
 #include <filters/gfilterhtml.h>
-#include <gdocs/gdocxml.h>
-#include <gdocs/gdoc.h>
-#include <gsessions/gsession.h>
+#include <docs/gdocxml.h>
+#include <docs/gdoc.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace RStd;
 

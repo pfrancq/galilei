@@ -23,10 +23,10 @@
 
 //---------------------------------------------------------------------------
 // include file for GALILEI
-#include <glangs/gdict.h>
-#include <glangs/gword.h>
-#include <glangs/glang.h>
-#include <gsessions/gsession.h>
+#include <langs/gdict.h>
+#include <langs/gword.h>
+#include <langs/glang.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace RStd;
 

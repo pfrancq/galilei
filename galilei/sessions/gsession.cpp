@@ -24,20 +24,20 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gsessions/gsession.h>
-#include <glangs/glangen.h>
-#include <glangs/glangfr.h>
-#include <glangs/gdict.h>
-#include <gdocs/gdoc.h>
-#include <gdocs/gdocanalyse.h>
-#include <gdocs/gdocxml.h>
-#include <gprofiles/guser.h>
-#include <gprofiles/gprofile.h>
-#include <gprofiles/gsubprofile.h>
-#include <gprofiles/gprofdoc.h>
-#include <ggroups/ggroups.h>
-#include <ggroups/ggroup.h>
-#include <gprofiles/gprofilecalc.h>
+#include <sessions/gsession.h>
+#include <langs/glangen.h>
+#include <langs/glangfr.h>
+#include <langs/gdict.h>
+#include <docs/gdoc.h>
+#include <docs/gdocanalyse.h>
+#include <docs/gdocxml.h>
+#include <profiles/guser.h>
+#include <profiles/gprofile.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gprofdoc.h>
+#include <groups/ggroups.h>
+#include <groups/ggroup.h>
+#include <profiles/gprofilecalc.h>
 #include <urlmanagers/gurlmanager.h>
 #include <filters/gfilter.h>
 #include <filters/gmimefilter.h>

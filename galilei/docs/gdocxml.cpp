@@ -18,9 +18,10 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocs/gdocxml.h>
+#include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace RXML;
+
 
 
 //-----------------------------------------------------------------------------

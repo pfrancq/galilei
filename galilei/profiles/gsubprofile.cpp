@@ -18,13 +18,13 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include<gprofiles/gsubprofile.h>
-#include <gprofiles/gprofile.h>
-#include <glangs/glang.h>
-#include <ginfos/giword.h>
-#include <ginfos/giwordlist.h>
-#include <gprofiles/gprofdoc.h>
-#include <ggroups/ggroup.h>
+#include<profiles/gsubprofile.h>
+#include<profiles/gprofile.h>
+#include<langs/glang.h>
+#include<infos/giword.h>
+#include<infos/giwordlist.h>
+#include<profiles/gprofdoc.h>
+#include<groups/ggroup.h>
 using namespace GALILEI;
 
 

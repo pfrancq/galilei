@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ginfos/ginfo.h>
+#include <infos/ginfo.h>
 
 
 

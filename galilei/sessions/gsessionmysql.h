@@ -29,7 +29,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gsessions/gsession.h>
+#include <sessions/gsession.h>
 
 
 

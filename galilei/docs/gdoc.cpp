@@ -29,17 +29,17 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocs/gdoc.h>
-#include <gdocs/gdocxml.h>
-#include <ginfos/giwordoccur.h>
-#include <ginfos/giwordoccurs.h>
-#include <glangs/gword.h>
-#include <glangs/gdict.h>
-#include <glangs/glang.h>
+#include <docs/gdoc.h>
+#include <docs/gdocxml.h>
+#include <infos/giwordoccur.h>
+#include <infos/giwordoccurs.h>
+#include <langs/gword.h>
+#include <langs/gdict.h>
+#include <langs/glang.h>
 #include <filters/gmimefilter.h>
-#include <gprofiles/gprofile.h>
-#include <gprofiles/gprofdoc.h>
-#include <gsessions/gsession.h>
+#include <profiles/gprofile.h>
+#include <profiles/gprofdoc.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace RXML;
 using namespace RTimeDate;

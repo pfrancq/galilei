@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GProfileCalcList.h
+	GProfileCalcVector.h
 
-	"Lists" Profile Computing Method  - Implementation.
+	Vector Computing Method  - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -24,25 +24,26 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include <gprofiles/gprofilecalclist.h>
-#include <gdocs/gdoc.h>
-#include <gprofiles/gsubprofile.h>
-#include <gprofiles/gprofdoc.h>
-#include <ginfos/giword.h>
-#include <ginfos/giwordlist.h>
-#include <gsessions/gsession.h>
+#include<profiles/gprofilecalcvector.h>
+#include<docs/gdoc.h>
+#include<profiles/gsubprofile.h>
+#include<profiles/gprofdoc.h>
+#include<infos/giword.h>
+#include<infos/giwordlist.h>
+#include<infos/giwordsweights.h>
+#include<sessions/gsession.h>
 using namespace GALILEI;
 
 
 
 //-----------------------------------------------------------------------------
 //
-//  GProfileCalcList
+//  GProfileCalcVector
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalcList::GProfileCalcList(GSession* session,unsigned int size) throw(bad_alloc)
+GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session,unsigned int size) throw(bad_alloc)
 	: GProfileCalc(session), OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
 	  Size(size)
 {
@@ -50,21 +51,21 @@ GALILEI::GProfileCalcList::GProfileCalcList(GSession* session,unsigned int size)
 
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
-		OK.InsertPtr(new GIWordCalcs(CurLang(),Session->GetDic(CurLang())->GetMaxId()));
-		KO.InsertPtr(new GIWordCalcs(CurLang(),Session->GetDic(CurLang())->GetMaxId()));
+		OK.InsertPtr(new GIWordsWeights(CurLang(),Session->GetDic(CurLang())->GetMaxId()));
+		KO.InsertPtr(new GIWordsWeights(CurLang(),Session->GetDic(CurLang())->GetMaxId()));
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcList::Compute(GProfile* profile)
+void GALILEI::GProfileCalcVector::Compute(GProfile* profile)
 {
 	GProfDoc *d;
 	GSubProfile* s;
 	unsigned int kwdid;
 	GIWord *ref;
-	GIWordCalcs* MOK;               // OK Docs' Stats for a given language.
-	GIWordCalcs* MKO;               // KO Docs' Stats for a given language.
+	GIWordsWeights* MOK;               // OK Docs' Stats for a given language.
+	GIWordsWeights* MKO;               // KO Docs' Stats for a given language.
 	GIWordList* SubOK;              // OK List of a given subprofile.
 	GIWordList* SubKO;              // KO List of a given subprofile.
 	GIWordList* SubCommon;          // Common List of a given subprofile.
@@ -166,6 +167,6 @@ void GALILEI::GProfileCalcList::Compute(GProfile* profile)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalcList::~GProfileCalcList(void)
+GALILEI::GProfileCalcVector::~GProfileCalcVector(void)
 {
 }

@@ -23,7 +23,7 @@
 
 //-----------------------------------------------------------------------------
 // include file for GALILEI
-#include <glangs/gdicts.h>
+#include <langs/gdicts.h>
 using namespace GALILEI;
 using namespace RStd;
 

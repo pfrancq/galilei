@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalcList.h
+	GProfileCalcVector.h
 
-	"Lists" Profile Computing Method - Header.
+	Vector Computing Method - Header.
 
-	(C) 2001 by P. Francq.
+	(C) 2001-2002 by P. Francq.
 
 	Version $Revision$
 
@@ -17,8 +17,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GProfileCalcListH
-#define GProfileCalcListH
+#ifndef GProfileCalcVectorH
+#define GProfileCalcVectorH
 
 
 //-----------------------------------------------------------------------------
@@ -29,9 +29,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gprofiles/gprofilecalc.h>
-#include <ginfos/giwordcalcs.h>
-
+#include <profiles/gprofilecalc.h>
 
 
 //-----------------------------------------------------------------------------
@@ -40,26 +38,30 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
+// forward class declaration
+class GIWordsWeights;
+
+
+//-----------------------------------------------------------------------------
 /**
-* The GProfileCalcList class provides a representation for a method to compute
-* a specific profile, i.e. its sub-profiles by using the "lists" method base on
-* frequential appearence.
+* The GProfileCalcVector class provides a representation for a method to compute
+* a specific profile, i.e. its sub-profiles by using the vector method.
 * @author Pascal Francq
 * @short "Lists" Profile' Computing Method.
 */
-class GProfileCalcList : public GProfileCalc
+class GProfileCalcVector : public GProfileCalc
 {
 	/**
 	* List of words' frequences in the "OK" and "N" documents for the different
 	* languages.
 	*/
-	RStd::RContainer<GIWordCalcs,unsigned int,true,true> OK;
+	RStd::RContainer<GIWordsWeights,unsigned int,true,true> OK;
 
 	/**
 	* List of words' frequences in the "KO" documents for the different
 	* languages.
 	*/
-	RStd::RContainer<GIWordCalcs,unsigned int,true,true> KO;
+	RStd::RContainer<GIWordsWeights,unsigned int,true,true> KO;
 
 	/**
 	* Size of the OK and KO lists of the profiles.
@@ -73,7 +75,7 @@ public:
 	* @param session        Session.
 	* @param size           Size of the OK and KO lists of the profiles.
 	*/
-	GProfileCalcList(GSession* session,const unsigned int size) throw(bad_alloc);
+	GProfileCalcVector(GSession* session,const unsigned int size) throw(bad_alloc);
 
 	/**
 	* Compute a profile.
@@ -102,7 +104,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GProfileCalcList(void);
+	virtual ~GProfileCalcVector(void);
 };
 
 

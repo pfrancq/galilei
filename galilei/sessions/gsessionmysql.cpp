@@ -29,19 +29,19 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include <gsessionsmysql/gsessionmysql.h>
-#include <glangs/glang.h>
-#include <ginfos/giwordlist.h>
-#include <ginfos/giwordoccur.h>
-#include <ginfos/giwordoccurs.h>
-#include <gprofiles/guser.h>
-#include <gprofiles/gprofile.h>
-#include <gprofiles/gsubprofile.h>
-#include <gprofiles/gprofdoc.h>
-#include <gdocs/gdoc.h>
-#include <gdocs/gdocs.h>
-#include <ggroups/ggroup.h>
-#include <ggroups/ggroups.h>
+#include <sessions/gsessionmysql.h>
+#include <langs/glang.h>
+#include <infos/giwordlist.h>
+#include <infos/giwordoccur.h>
+#include <infos/giwordoccurs.h>
+#include <profiles/guser.h>
+#include <profiles/gprofile.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gprofdoc.h>
+#include <docs/gdoc.h>
+#include <docs/gdocs.h>
+#include <groups/ggroup.h>
+#include <groups/ggroups.h>
 #include <filters/gmimefilter.h>
 #include <urlmanagers/gurlmanager.h>
 using namespace GALILEI;

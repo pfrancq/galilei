@@ -18,8 +18,8 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include <ggroups/ggroup.h>
-#include <gprofiles/gsubprofile.h>
+#include <groups/ggroup.h>
+#include <profiles/gsubprofile.h>
 using namespace GALILEI;
 using namespace RStd;
 

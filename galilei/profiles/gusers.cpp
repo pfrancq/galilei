@@ -24,11 +24,11 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include<gprofiles/gusers.h>
-#include<gprofiles/guser.h>
-#include<gprofiles/gprofile.h>
-#include<gprofiles/gsubprofile.h>
-#include<gprofiles/gprofdoc.h>
+#include<profiles/gusers.h>
+#include<profiles/guser.h>
+#include<profiles/gprofile.h>
+#include<profiles/gsubprofile.h>
+#include<profiles/gprofdoc.h>
 using namespace GALILEI;
 
 

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GSubProfile.h
+	GSubProfileDesc.h
 
-	Sub-Profile - Header.
+	Generic Sub-Profile Description - Header.
 
 	(C) 2001 by P. Francq.
 
@@ -17,8 +17,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GSubProfileH
-#define GSubProfileH
+#ifndef GSubProfileDescH
+#define GSubProfileDescH
 
 
 
@@ -41,37 +41,31 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 // forward class declaration
 class GLang;
-class GIWordList;
-class GProfDoc;
-class GProfile;
-class GSubProfileRef;
-class GSubProfileDesc;
+class GSubProfile;
 class GGroup;
 
 
 //-----------------------------------------------------------------------------
 /**
-* This class represents a sub-profile for a specific language. The sub-profiles
-* are ordered by language.
+* The GSubProfileDesc class provides a representation for description of a
+* sub-profile.
 * @author Pascal Francq.
-* @short Sub-Profile.
+* @short Genertic Sub-Profile Description.
 */
-class GSubProfile
+class GSubProfileDesc
 {
+public:
 	/**
-	* Identifier of the subprofile.
+	* Type of the description.
 	*/
-	unsigned Id;
+	enum DescType {Vector /** Vector Representation.*/};
+
+protected:
 
 	/**
-	* Owner profile of the subprofile.
+	* Owner of the description.
 	*/
-	GProfile* Profile;
-
-	/**
-	* Language of the subprofile.
-	*/
-	GLang* Lang;
+	GSubProfile* Owner;
 
 	/**
 	* Corresponding Group.
@@ -83,76 +77,43 @@ class GSubProfile
 	*/
 	RTimeDate::RDate Attached;
 
-	/**
-	* List OK.
-	*/
-	GIWordList* OK;
-
-	/**
-	* List KO.
-	*/
-	GIWordList* KO;
-
-	/**
-	* List Common.
-	*/
-	GIWordList* Common;
-
 public:
 
 	/**
 	* Constructor of the subprofile.
-	* @param prod           Profile.
-	* @param id             Identifier.
-	* @param lang           Language of the subprofile.
+	* @param sub            Owner.
 	* @param grp            Group.
 	* @param a              String representing the date where it was attached.
 	*/
-	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a) throw(bad_alloc);
+	GSubProfileDesc(GSubProfile* sub,GGroup* grp,const char* a) throw(bad_alloc);
 
 	/**
 	* Compare methods used by RStd::RContainer.
 	*/
-	int Compare(const unsigned int id) const;
+	int Compare(const GSubProfileDesc& desc) const;
 
 	/**
 	* Compare methods used by RStd::RContainer.
 	*/
-	int Compare(const GLang* lang) const;
-
-	/**
-	* Compare methods used by RStd::RContainer.
-	*/
-	int Compare(const GSubProfile& subprofile) const;
-
-	/**
-	* Compare methods used by RStd::RContainer.
-	*/
-	int Compare(const GSubProfile* subprofile) const;
+	int Compare(const GSubProfileDesc* desc) const;
 	
 	/**
 	* Get the identifier of the subprofile.
 	* @return Identificator.
 	*/
-	unsigned int GetId(void) const {return(Id);}
-
-	/**
-	* Set the identifier.
-	* @param id             Identifier.
-	*/
-	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+	unsigned int GetId(void) const;
 
 	/**
 	* Get the language of the subprofile.
 	* @return Pointer to the language.
 	*/
-	GLang* GetLang(void) const {return(Lang);}
+	GLang* GetLang(void) const;
 
 	/**
-	* Get the corresponding profile.
-	* @return Pointer to the profile.
+	* Get the corresponding sub-profile.
+	* @return Pointer to the sub-profile.
 	*/
-	GProfile* GetProfile(void) const {return(Profile);}
+	GSubProfile* GetSubProfile(void) const {return(Owner);}
 
 	/**
 	* Get the corresponding group.
@@ -165,24 +126,6 @@ public:
 	* @params grp           Group where to attached.
 	*/
 	void SetGroup(GGroup* grp);
-
-	/**
-	* Get the list of word for OK.
-	* @return Pointer to the list.
-	*/
-	GIWordList* GetOK(void) const {return(OK);}
-
-	/**
-	* Get the list of word for KO.
-	* @return Pointer to the list.
-	*/
-	GIWordList* GetKO(void) const {return(KO);}
-
-	/**
-	* Get the list of word for Common.
-	* @return Pointer to the list.
-	*/
-	GIWordList* GetCommon(void) const {return(Common);}
 
 	/**
 	* Get the date of the last attachment.
@@ -200,26 +143,27 @@ public:
 	* See if the subprpfile is defined, i.e. if it is computed. A subprofile
 	* that isn't computed, isn't attached.
 	*/
-	bool IsDefined(void) const;
+	virtual bool IsDefined(void) const;
 
 	/**
 	* Compute similarity between SubProfiles.
 	*/
-	double Similarity(const GSubProfile *sub) const;
+	virtual double Similarity(const GSubProfileDesc* desc) const=0;
 
 	/**
 	*Destructor
 	*/
-	~GSubProfile(void);
+	virtual ~GSubProfileDesc(void);
 };
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GSubProfileCursor class provides a way to go trough a set of subprofiles.
-* @short SubProfiles' Cursor
+* The GSubProfileDescCursor class provides a way to go trough a set of
+* sub-profile descriptions.
+* @short SubProfile Descriptions Cursor
 */
-CLASSCURSOR(GSubProfileCursor,GSubProfile,unsigned int)
+CLASSCURSOR(GSubProfileDescCursor,GSubProfileDesc,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

@@ -18,11 +18,11 @@
 
 //-----------------------------------------------------------------------------
 // include filess for GALILEI
-#include <gprofiles/gprofile.h>
-#include <gprofiles/guser.h>
-#include <gprofiles/gsubprofile.h>
-#include <gprofiles/gprofdoc.h>
-#include <ggroups/ggroup.h>
+#include <profiles/gprofile.h>
+#include <profiles/guser.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gprofdoc.h>
+#include <groups/ggroup.h>
 using namespace GALILEI;
 using namespace RTimeDate;
 

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GIWordcalcs.h
+	GIWordsWeights.h
 
-	Frequences of words appearing in a set a documents - Implementation.
+	Weights of a list of words - Header.
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -17,8 +17,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GIWordCalcsH
-#define GIWordCalcsH
+#ifndef GIWordsWeightsH
+#define GIWordsWeightsH
 
 
 //-----------------------------------------------------------------------------
@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ginfos/ginfo.h>
+#include <infos/ginfo.h>
 
 
 //-----------------------------------------------------------------------------
@@ -37,20 +37,20 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 // forward class declaration
-class GIWordCalc;
+class GIWordWeight;
 class GDoc;
 class GLang;
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GIWordCalcs provides a representation for the frequences of words that
-* are appearing in a set of documents. This documents must all be of the same
-* language.
+* The GIWordsWeights provides a representation for the words weights of a given
+* collection of words, for example a document or a set of documents.
+* It implements the vector representing a document in the Vector Model.
 * @author Pascal Francq
-* @short Frequences of words appearing in a set a documents.
+* @short Words Weights.
 */
-class GIWordCalcs : public GInfo,public RStd::RContainer<GIWordCalc,unsigned,true,true>
+class GIWordsWeights : public GInfo,public RStd::RContainer<GIWordWeight,unsigned,true,true>
 {
 	/**
 	* Total number of words in the set of documents analysed.
@@ -65,12 +65,12 @@ class GIWordCalcs : public GInfo,public RStd::RContainer<GIWordCalc,unsigned,tru
 	/**
 	* Hold the same list but in decreasing order of frequencies.
 	*/
-	GIWordCalc** Order;
+	GIWordWeight** Order;
 
 	/**
 	* Pointer to go trough the ordered list.
 	*/
-	GIWordCalc** CurOrder;
+	GIWordWeight** CurOrder;
 
 public:
 
@@ -79,7 +79,7 @@ public:
 	* @param lang           Language.
 	* @param nb             Maximal number of word created at initialisation.
 	*/
-	GIWordCalcs(GLang *lang,unsigned int nb) throw(bad_alloc);
+	GIWordsWeights(GLang *lang,unsigned int nb) throw(bad_alloc);
 
 	/**
 	* Return the name of the class.
@@ -94,12 +94,12 @@ public:
 	/**
 	* Compare method used by RStd::RContainer.
 	*/
-	int Compare(const GIWordCalcs& c) const;
+	int Compare(const GIWordsWeights& c) const;
 
 	/**
 	* Compare method used by RStd::RContainer.
 	*/
-	int Compare(const GIWordCalcs* c) const;
+	int Compare(const GIWordsWeights* c) const;
 
 	/**
 	* Compare method used by RStd::RContainer.
@@ -145,7 +145,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GIWordCalcs(void);
+	virtual ~GIWordsWeights(void);
 };
 
 

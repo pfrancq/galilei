@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocs/gdoclist.h>
+#include <docs/gdoclist.h>
 using namespace GALILEI;
 using namespace RStd;
 
