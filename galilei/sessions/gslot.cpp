@@ -49,38 +49,38 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSlot::GSlot(void)
+GSlot::GSlot(void) throw(bad_alloc,RException)
 	: RPrgOutput()
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::receiveNextDoc(const GDoc*)
+void GSlot::receiveNextDoc(const GDoc*) throw(bad_alloc,RException)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::receiveNextProfile(const GProfile*)
+void GSlot::receiveNextProfile(const GProfile*) throw(bad_alloc,RException)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::NextGroupLang(const GLang*)
+void GSlot::NextGroupLang(const GLang*) throw(bad_alloc,RException)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::receiveNextChromosome(unsigned int)
+void GSlot::receiveNextChromosome(unsigned int) throw(bad_alloc,RException)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::receiveNextMethod(unsigned int)
+void GSlot::receiveNextMethod(unsigned int) throw(bad_alloc,RException)
 {
 }
 

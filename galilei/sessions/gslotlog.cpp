@@ -4,7 +4,7 @@
 
 	GSlotLogLog.cpp
 
-	Slot for GALILEI using a log file - Implementation.
+	Log File Slot - Implementation.
 
 	Copyright 2003 by the Université Libre de Bruxelles.
 
@@ -40,9 +40,9 @@
 #include <docs/gdoc.h>
 #include <profiles/gprofile.h>
 #include <infos/glang.h>
-
 using namespace GALILEI;
 using namespace R;
+
 
 
 //------------------------------------------------------------------------------
@@ -52,14 +52,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GALILEI::GSlotLog::GSlotLog(const char* name) throw(bad_alloc,RString)
+GALILEI::GSlotLog::GSlotLog(const char* name) throw(bad_alloc,RException)
 	: GSlot(), RTextFile(name,Append)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextDoc(const GDoc* doc) throw(bad_alloc,RString)
+void GALILEI::GSlotLog::receiveNextDoc(const GDoc* doc) throw(bad_alloc,RException)
 {
 	sprintf(Buffer,"Analyse Doc %u",doc->GetId());
 	WriteLog(Buffer);
@@ -67,7 +67,7 @@ void GALILEI::GSlotLog::receiveNextDoc(const GDoc* doc) throw(bad_alloc,RString)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextProfile(const GProfile* prof) throw(bad_alloc,RString)
+void GALILEI::GSlotLog::receiveNextProfile(const GProfile* prof) throw(bad_alloc,RException)
 {
 	sprintf(Buffer,"Compute Profile %u",prof->GetId());
 	WriteLog(Buffer);
@@ -75,7 +75,7 @@ void GALILEI::GSlotLog::receiveNextProfile(const GProfile* prof) throw(bad_alloc
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::NextGroupLang(const GLang* lang) throw(bad_alloc,RString)
+void GALILEI::GSlotLog::NextGroupLang(const GLang* lang) throw(bad_alloc,RException)
 {
 	sprintf(Buffer,"Group %s Profiles",lang->GetName());
 	WriteLog(Buffer);
@@ -83,19 +83,19 @@ void GALILEI::GSlotLog::NextGroupLang(const GLang* lang) throw(bad_alloc,RString
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::WriteStr(const char*) throw(bad_alloc,RString)
+void GALILEI::GSlotLog::WriteStr(const char*) throw(bad_alloc,RException)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextChromosome(unsigned int) throw(bad_alloc,RString)
+void GALILEI::GSlotLog::receiveNextChromosome(unsigned int) throw(bad_alloc,RException)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextMethod(unsigned int) throw(bad_alloc,RString)
+void GALILEI::GSlotLog::receiveNextMethod(unsigned int) throw(bad_alloc,RException)
 {
 }
 

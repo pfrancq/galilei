@@ -68,37 +68,37 @@ public:
 	/**
 	* Constructor.
 	*/
-	GSlot(void);
+	GSlot(void) throw(bad_alloc,R::RException);
 
 	/**
 	* The traitment for a specific document will begin.
 	* @param doc            Document.
 	*/
-	virtual void receiveNextDoc(const GDoc* doc);
+	virtual void receiveNextDoc(const GDoc* doc) throw(bad_alloc,R::RException);
 
 	/**
 	* The traitment for a specific document will begin.
 	* @param prof           Profile.
 	*/
-	virtual void receiveNextProfile(const GProfile* prof);
+	virtual void receiveNextProfile(const GProfile* prof) throw(bad_alloc,R::RException);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
-	virtual void NextGroupLang(const GLang* lang);
+	virtual void NextGroupLang(const GLang* lang) throw(bad_alloc,R::RException);
 
 	/**
 	* The traitment for a specific chromosome will begin.
 	* @param id             Identificator of the chromosome.
 	*/
-	virtual void receiveNextChromosome(unsigned int id);
+	virtual void receiveNextChromosome(unsigned int id) throw(bad_alloc,R::RException);
 
 	/**
 	* The traitment for a specific method will begin.
 	* @param id             The id describing the step in the method.
 	*/
-	virtual void receiveNextMethod(unsigned int num);
+	virtual void receiveNextMethod(unsigned int num) throw(bad_alloc,R::RException);
 
 	/**
 	* Destructor.

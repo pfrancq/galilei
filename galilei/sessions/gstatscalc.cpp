@@ -4,9 +4,9 @@
 
 	GStatsCalc.cpp
 
-	Generic Statistics - Implementation.
+	Generic Statistics Method - Implementation.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,41 +34,41 @@
 
 
 
-//-----------------------------------------------------------------------------
-//include files for GALILEI
+//------------------------------------------------------------------------------
+// include files for GALILEI
 #include <sessions/gstatscalc.h>
-
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 //
 //  GStatsCalc
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GStatsCalc::GStatsCalc(GFactoryStatsCalc* fac) throw(bad_alloc)
 	: GPlugin<GFactoryStatsCalc>(fac), Session(0)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-void GStatsCalc::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GStatsCalc::Connect(GSession* session) throw(GException)
 {
 	Session=session;
 }
 
 
-//-----------------------------------------------------------------------------
-void GStatsCalc::Disconnect(GSession*)
+//------------------------------------------------------------------------------
+void GStatsCalc::Disconnect(GSession*) throw(GException)
 {
 	Session=0;
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GStatsCalc::~GStatsCalc(void)
 {
 }

@@ -4,9 +4,9 @@
 
 	GStatsCalcManager.h
 
-	Manager to handle statistics - Header.
+	Sstatistics Methods Manager - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,73 +34,72 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GStatsCalcManagerH
 #define GStatsCalcManagerH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GStatsCalcManager class provides a representation for a manager
 * responsible to manage all the statistics.
 * @author Pascal Francq
-* @short Statistics Manager.
+* @short Sstatistics Methods Manager.
 */
 class GStatsCalcManager : public R::RContainer<GFactoryStatsCalc,unsigned int,true,true>
 {
 public:
 
 	/**
-	* Construct a URL manager.
+	* Construct the statistics methods manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
-	GStatsCalcManager(const char* path,bool dlg=true) throw(GException);
+	GStatsCalcManager(const char* path,bool dlg=true) throw(bad_alloc,GException);
 
 	/**
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	void Connect(GSession* session);
+	void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	void Disconnect(GSession* session);
+	void Disconnect(GSession* session) throw(GException);
 
 	/**
-	* Get the staitiscs.
+	* Get a particular statistics method.
 	* @param name            Name of the method.
 	* @return Pointer to GStatsCalc.
 	*/
 	GStatsCalc* Get(const char* name);
 
 	/**
-	* Get a cursor over the filters of the system.
+	* Get a cursor over the statistics methods managed.
+	* return GFactoryStatsCalcCursor.
 	*/
 	GFactoryStatsCalcCursor& GetStatsCalcsCursor(void);
 
 	/**
-	* Destructor of URL manager.
+	* Destructor of the statistics methods manager.
 	*/
 	virtual ~GStatsCalcManager(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

@@ -97,6 +97,7 @@ public:
 
 	/**
 	* Get a cursor over the profile computing methods managed.
+	* @return GFactoryProfileCalcCursor.
 	*/
 	GFactoryProfileCalcCursor& GetProfileCalcsCursor(void);
 

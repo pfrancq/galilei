@@ -1,12 +1,12 @@
 /*
 
-	R Project Library
+	GALILEI Research Project
 
 	GStatsCalcManager.cpp
 
-	Manager to handle statistics  - Implementation.
+	Sstatistics Methods Manager   - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,14 +34,14 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gstatscalcmanager.h>
 #include <sessions/gstatscalc.h>
@@ -52,14 +52,14 @@ using namespace ltmm;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GStatsCalcManager
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(GException)
+//------------------------------------------------------------------------------
+GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(bad_alloc,GException)
 	: RContainer<GFactoryStatsCalc,unsigned int,true,true>(10,5)
 {
 	DIR* dp;
@@ -126,8 +126,8 @@ GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(GException
 }
 
 
-//-----------------------------------------------------------------------------
-void GStatsCalcManager::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GStatsCalcManager::Connect(GSession* session) throw(GException)
 {
 	GFactoryStatsCalcCursor Cur;
 	GStatsCalc* calc;
@@ -142,8 +142,8 @@ void GStatsCalcManager::Connect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
-void GStatsCalcManager::Disconnect(GSession* session)
+//------------------------------------------------------------------------------
+void GStatsCalcManager::Disconnect(GSession* session) throw(GException)
 {
 	GFactoryStatsCalcCursor Cur;
 	GStatsCalc* calc;
@@ -158,7 +158,7 @@ void GStatsCalcManager::Disconnect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GStatsCalc* GStatsCalcManager::Get(const char* name)
 {
 	GFactoryStatsCalc* fac;
@@ -170,7 +170,7 @@ GStatsCalc* GStatsCalcManager::Get(const char* name)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GFactoryStatsCalcCursor& GStatsCalcManager::GetStatsCalcsCursor(void)
 {
 	GFactoryStatsCalcCursor *cur=GFactoryStatsCalcCursor::GetTmpCursor();
@@ -179,7 +179,7 @@ GFactoryStatsCalcCursor& GStatsCalcManager::GetStatsCalcsCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GStatsCalcManager::~GStatsCalcManager(void)
 {
 }

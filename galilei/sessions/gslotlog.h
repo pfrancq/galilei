@@ -4,7 +4,7 @@
 
 	GSlotLogLog.h
 
-	Slot for GALILEI using a log file - Header.
+	Log File Slot - Header.
 
 	Copyright 2003 by the Université Libre de Bruxelles.
 
@@ -35,8 +35,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GSlotLog_H
-#define GSlotLog_H
+#ifndef GSlotLogH
+#define GSlotLogH
 
 
 //------------------------------------------------------------------------------
@@ -49,18 +49,16 @@
 #include <sessions/gslot.h>
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GSlotLog class provides a receiver of signals of a GALILEI session using a
 * log file to store the outputs.
 * @author Pascal Francq
-* @short Generic Slot.
+* @short Log File Slot.
 */
 class GSlotLog : public GSlot, public R::RTextFile
 {
@@ -75,44 +73,44 @@ public:
 	* Constructor.
 	* @param name            Name of the file.
 	*/
-	GSlotLog(const char* name) throw(bad_alloc,R::RString);
+	GSlotLog(const char* name) throw(bad_alloc,R::RException);
 
 	/**
 	* The traitment for a specific document will begin.
 	* @param doc            Document.
 	*/
-	virtual void receiveNextDoc(const GDoc* doc) throw(bad_alloc,R::RString);
+	virtual void receiveNextDoc(const GDoc* doc) throw(bad_alloc,R::RException);
 
 	/**
 	* The traitment for a specific document will begin.
 	* @param prof           Profile.
 	*/
-	virtual void receiveNextProfile(const GProfile* prof) throw(bad_alloc,R::RString);
+	virtual void receiveNextProfile(const GProfile* prof) throw(bad_alloc,R::RException);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
-	virtual void NextGroupLang(const GLang* lang) throw(bad_alloc,R::RString);
+	virtual void NextGroupLang(const GLang* lang) throw(bad_alloc,R::RException);
 
 	/**
 	* Method called when executing a sequence of instruction to output some
 	* information.
 	* @param str            String to output.
 	*/
-	virtual void WriteStr(const char* str) throw(bad_alloc,R::RString);
+	virtual void WriteStr(const char* str) throw(bad_alloc,R::RException);
 
 	/**
 	* The traitment for a specific chromosome will begin.
 	* @param id             Identificator of the chromosome.
 	*/
-	virtual void receiveNextChromosome(unsigned int id) throw(bad_alloc,R::RString);
+	virtual void receiveNextChromosome(unsigned int id) throw(bad_alloc,R::RException);
 
 	/**
 	* The traitment for a specific method will begin.
 	* @param id             The id describing the step in the method.
 	*/
-	virtual void receiveNextMethod(unsigned int num) throw(bad_alloc,R::RString);
+	virtual void receiveNextMethod(unsigned int num) throw(bad_alloc,R::RException);
 
 	/**
 	* Destructor.

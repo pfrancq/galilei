@@ -4,9 +4,9 @@
 
 	GSessionPrg.h
 
-	Program to run on a Session - Header.
+	Program running a Session object - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,34 +34,33 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GSessionPrgH
 #define GSessionPrgH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for R Project
 #include <rprg/rprgfunc.h>
 #include <rprg/rprgclass.h>
 #include <rprg/rprg.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GPrgSessionClass provides a class for a GALILEI session.
+* The GPrgSessionClass provides a representation of a class of a GALILEI
+* session for the internal scripting language.
 * @author Pascal Francq
-* @short GALILEI Session.
+* @short GALILEI Session Script Class.
 */
 class GPrgClassSession : public R::RPrgClass
 {
@@ -160,7 +159,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GSessionPrg provides a class for executing a GALILEI Program.
 * @author Pascal Francq
@@ -174,7 +173,7 @@ public:
 	* Constructor.
 	* @param f              Name of the file.
 	* @param s              Session.
-	* @param r              Receiver.
+	* @param o              Generic output class.
 	*/
 	GSessionPrg(R::RString f,GSession* s,R::RPrgOutput* o) throw(bad_alloc,GException);
 
@@ -185,8 +184,8 @@ public:
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif
