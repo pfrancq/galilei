@@ -162,7 +162,6 @@ class GProfilesSims;
 class GProfilesBehaviour;
 class GProfilesBehaviourCursor;
 class GProfilesBehaviours;
-class GSubProfilesSameDocs;
 
 
 //-----------------------------------------------------------------------------
