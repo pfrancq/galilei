@@ -104,9 +104,7 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 	// Clear the old feedback.
 	Session->ClearFdbks();
 
-	
-
-	// Create the different judgments.
+ 	// Create the different judgments.
 	Subjects->Judgments(Session,Rand,PercOK,PercKO,NbProfMin,NbProfMax,PercSocial);
 
 	// Create the ideal groupment corresponding to the precedent judgment.
