@@ -98,6 +98,7 @@ using namespace GALILEI;
 #include "kviewprofile.h"
 #include "qdocsoptionsdlg.h"
 #include "qpluginsdlg.h"
+#include "qsessionoptions.h"
 #include "qplugins.h"
 #include "qgalileiitem.h"
 
@@ -313,4 +314,19 @@ void KGALILEICenterApp::slotOldPlugins(void)
 	dlg.RegisterLinkCalcPluginConf(new QLinkCalcSALSAPluginConf(&LinkCalcSALSAParams));
 	dlg.RegisterLinkCalcPluginConf(new QLinkCalcTreshPluginConf(&LinkCalcTreshParams));
 	dlg.exec();
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotSessionOptions(void)
+{
+	QSessionOptions dlg(this, "Session Options");
+	dlg.SBDiffBehaviour->setValue(SessionParams.GetUInt("DiffBehaviourMinDocs"));
+	dlg.SBSameBehaviour->setValue(SessionParams.GetUInt("SameBehaviourMinDocs"));
+
+	if(dlg.exec())
+	{
+		SessionParams.Set("DiffBehaviourMinDocs",dlg.SBDiffBehaviour->value());
+		SessionParams.Set("SameBehaviourMinDocs", dlg.SBSameBehaviour->value());
+	}
 }

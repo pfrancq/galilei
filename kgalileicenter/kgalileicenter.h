@@ -57,6 +57,7 @@
 #include <profiles/gprofilecalcmanager.h>
 #include <groups/ggroupingmanager.h>
 #include <galilei/gurlmanagerkde.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 
 
@@ -161,7 +162,12 @@ class KGALILEICenterApp : public KMainWindow
 	*/
 	GLinkCalcTreshParams LinkCalcTreshParams;
 
-    /**
+	/**
+	* Parameters of the session.
+	*/
+	GSessionParams SessionParams;
+
+	/**
 	* Current Profile Description Method
 	*/
 	R::RString CurrentProfileDesc;
@@ -625,6 +631,11 @@ private slots:
 	void slotPlugins(void);
 
 	/**
+	* configure the parameters of the sessions
+	*/
+	void slotSessionOptions(void);
+
+	/**
 	* Run a program text file.
 	*/
 	void slotRunProgram(void);
@@ -759,6 +770,7 @@ public:
 	KAction* plugins;
 	KAction* oldPlugins;
 	KAction* docsOptions;
+	KAction* sessionOptions;
 
 	KAction* runProgram;
 	KAction* runInsts;

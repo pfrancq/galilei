@@ -173,6 +173,7 @@ void KGALILEICenterApp::initActions(void)
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
 	docsOptions=new KAction(i18n("&Documents Options"),"configure",0,this,SLOT(slotDocsOptions()),actionCollection(),"docsOptions");
 	plugins=new KAction(i18n("&Plugins"),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
+	sessionOptions=new KAction(i18n("&Session Options"),"configure",0,this,SLOT(slotSessionOptions()),actionCollection(),"sessionOptions");
 	oldPlugins=new KAction(i18n("&Old Plugins"),"wizard",0,this,SLOT(slotOldPlugins()),actionCollection(),"oldplugins");
 
 	// Menu "Window"
@@ -319,6 +320,11 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("FKTresh",LinkCalcTreshParams.FKTresh);
 	Config->writeEntry("Kvalue",LinkCalcTreshParams.Kvalue);
 
+	// Write the session parameters
+	Config->setGroup(SessionParams.GetName());
+	Config->writeEntry("SameBehaviourMinDocs",SessionParams.GetUInt("SameBehaviourMinDocs"));
+	Config->writeEntry("DiffBehaviourMinDocs",SessionParams.GetUInt("DiffBehaviourMinDocs"));
+
 	// Save Config
 	GConfig Conf("/etc/galilei/galilei.galileiconfig");
 	Conf.Store(URLManager);
@@ -448,6 +454,11 @@ void KGALILEICenterApp::readOptions(void)
 	LinkCalcTreshParams.AKTresh=Config->readBoolEntry("AKTresh",false);
 	LinkCalcTreshParams.FKTresh=Config->readBoolEntry("FKTresh",false);
 	LinkCalcTreshParams.Kvalue=Config->readNumEntry("Kvalue",60);
+
+	// Read the Session Parameters
+	Config->setGroup(SessionParams.GetName());
+	SessionParams.Set("SameBehaviourMinDocs",Config->readNumEntry("SameBehaviourMinDocs",0));
+	SessionParams.Set("DiffBehaviourMinDocs",Config->readNumEntry("DiffBehaviourMinDocs",0));
 
 	// Read Config
 	GConfig Conf("/etc/galilei/galilei.galileiconfig");
