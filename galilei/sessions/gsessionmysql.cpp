@@ -65,9 +65,9 @@ using namespace RIO;
 #include <docs/gdocvector.h>
 #include <docs/gdocs.h>
 #include <groups/ggroupvector.h>
-#include <groups/ggrouphistory.h>
+#include <historic/ggrouphistory.h>
 #include <groups/ggroups.h>
-#include <groups/ggroupshistory.h>
+#include <historic/ggroupshistory.h>
 #include <tests/ggroupsevaluate.h>
 #include <tests/ggroupevaluatedoc.h>
 #include <groups/gsubjecttree.h>

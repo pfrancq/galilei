@@ -66,7 +66,6 @@ using namespace RIO;
 #include <profiles/gsubprofiledesc.h>
 #include <profiles/gprofdoc.h>
 #include <groups/ggroups.h>
-#include <groups/ggroupshistory.h>
 #include <groups/ggroup.h>
 #include <groups/ggroupvector.h>
 #include <groups/ggrouping.h>
@@ -76,6 +75,7 @@ using namespace RIO;
 #include <filters/gfilter.h>
 #include <filters/gmimefilter.h>
 #include <infos/giwordweight.h>
+#include <historic/ggroupshistory.h>
 using namespace GALILEI;
 
 
