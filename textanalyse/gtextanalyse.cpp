@@ -217,9 +217,14 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 		}
 		else
 		{
-			w->InStop[LangIndex]=Session->GetStop(Lang)->IsIn<const char*>(word);
-			Sl[LangIndex]++;
-			Sldiff[LangIndex]++;
+			if(Session->GetStop(Lang)->IsIn<const char*>(word))
+			{
+				w->InStop[LangIndex]=true;
+				Sl[LangIndex]++;
+				Sldiff[LangIndex]++;
+			}
+			else
+				w->InStop[LangIndex]=false;
 		}
 	}
 	else
@@ -234,7 +239,10 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 			}
 		}
 		else
-			Sl[LangIndex]++;
+		{
+			if(w->InStop[LangIndex])
+				Sl[LangIndex]++;
+		}
 	}
 	N++;
 	w->Nb++;
