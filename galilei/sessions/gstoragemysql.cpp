@@ -585,6 +585,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 				if(subprofileid!=cNoRef)
 				{
 					sub=session->GetSubProfile(subprofileid);
+					session->AddModifiedProfile(sub);
 					if(sub)
 						sub->Update(&Infos,false);
 				}
@@ -599,9 +600,13 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 		if(subprofileid!=cNoRef)
 		{
 			sub=session->GetSubProfile(subprofileid);
+			session->AddModifiedProfile(sub);
 			if(sub)
 				sub->Update(&Infos,false);
 		}
+
+		session->UpdateBehaviours();
+		session->UpdateProfilesSims();
 
 		// Load the ideal Groups.
 		LoadIdealGroupment(session);

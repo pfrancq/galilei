@@ -332,6 +332,18 @@ public:
 	void UpdateBehaviours(void);
 
 	/**
+	* Update the state of agreement and disagreement ratios between the
+	* subprofiles.
+	*/
+	void UpdateProfilesSims(void);
+
+	/**
+	* Add a subprofile to the list of the modified one.
+	* @param sub             Pointer to the subprofile.
+	*/
+	void AddModifiedProfile(GSubProfile* sub);
+
+	/**
 	* Return the disagreement ratio between two subprofiles .
 	* @param sub1           The Pointer to the first subprofile
 	* @param sub2           The Pointer to the second subprofile
@@ -516,7 +528,7 @@ template<class C> C* New(unsigned int id)
 /**
 * The GSessionParams represents  the parameter used to create the session.
 * @short GSession Parameters.
-*/ 
+*/
 class GSessionParams : public GParams
 {
 

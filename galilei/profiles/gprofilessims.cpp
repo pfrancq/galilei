@@ -177,7 +177,7 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, RCursor<GSubPr
 	Sims=new RContainer<GSims,true,false>(i+1,1);
 
 	//initialize table of modified subprofiles;
-	ModifiedProfs=new RContainer<GSubProfile,false,true>(5,1);
+	ModifiedProfs=new RContainer<GSubProfile,false,true>(5000,5000);
 
 	//builds the left inferior triangular matrix.
 	Cur1=s;

@@ -439,6 +439,32 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 
 
 //------------------------------------------------------------------------------
+void GSession::UpdateBehaviours(void)
+{
+	if (!SessParams->GetBool("DebugBehaviour"))
+		ProfilesBehaviours->Update();
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::UpdateProfilesSims(void)
+{
+	if (!SessParams->GetBool("DebugSim"))
+		ProfilesSims->Update();
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::AddModifiedProfile(GSubProfile* sub)
+{
+	if(ProfilesSims)
+		ProfilesSims->AddModifiedProfile(sub);
+	if(ProfilesBehaviours)
+		ProfilesBehaviours->AddModifiedProfile(sub);
+}
+
+
+//------------------------------------------------------------------------------
 void GSession::UseIFFDocProf(bool iff)
 {
 	DocProfSims->UseIFF(iff);
