@@ -142,7 +142,7 @@ bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
 	AnalyseBody();
 
 	// Done
-	if(Block)
+	if(Buffer)
 	{
 		delete[] Buffer;
 		Buffer=0;
