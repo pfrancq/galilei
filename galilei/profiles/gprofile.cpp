@@ -19,6 +19,9 @@
 //-----------------------------------------------------------------------------
 // include filess for GALILEI
 #include <gprofiles/gprofile.h>
+#include <gprofiles/guser.h>
+#include <gprofiles/gsubprofile.h>
+#include <gprofiles/gprofdoc.h>
 using namespace GALILEI;
 using namespace RTimeDate;
 
@@ -31,8 +34,8 @@ using namespace RTimeDate;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfile::GProfile(GUser *owner,const unsigned int id,const char* name,const char* u,const char* a,unsigned int nb,unsigned int nbf) throw(bad_alloc)
-  : RContainer<GSubProfile,unsigned,true,true>(nb,nb/2),Owner(owner),Id(id),Name(name),
+GALILEI::GProfile::GProfile(GUser *usr,const unsigned int id,const char* name,const char* u,const char* a,unsigned int nb,unsigned int nbf) throw(bad_alloc)
+  : RContainer<GSubProfile,unsigned,false,true>(nb,nb/2), User(usr),Id(id),Name(name),
     Fdbks(nbf+nbf/2,nbf/2), Updated(u), Computed(a)
 {
 	if(Updated>Computed)
@@ -44,6 +47,7 @@ GALILEI::GProfile::GProfile(GUser *owner,const unsigned int id,const char* name,
 	}
 	else
 		State=osUpToDate;
+	User->InsertPtr(this);
 }
 
 
@@ -80,4 +84,39 @@ void GALILEI::GProfile::UpdateFinished(void)
 {
 	State=osUpdated;
 	Computed.SetToday();
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GProfile::DocsStart(void)
+{
+	Fdbks.Start();
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GProfile::DocsEnd(void) const
+{
+	return(Fdbks.End());
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GProfile::DocsNext(void)
+{
+	Fdbks.Next();
+}
+
+
+//-----------------------------------------------------------------------------
+GProfDoc* GALILEI::GProfile::GetCurDocs(void)
+{
+	return(Fdbks());
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GProfile::AddJudgement(GProfDoc* j) throw(bad_alloc)
+{
+	Fdbks.InsertPtr(j);
 }

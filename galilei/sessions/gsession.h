@@ -47,6 +47,9 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 // forward class declaration
 class GFilter;
+class GSubProfileRef;
+class GSubProfile;
+class GProfile;
 
 
 //-----------------------------------------------------------------------------
@@ -124,6 +127,21 @@ protected:
 	RContainer<GProfDoc,unsigned,true,true> Fdbks;
 
 	/**
+	* SubProfiles References handled by the system.
+	*/
+	RStd::RContainer<GSubProfileRef,unsigned int,true,true>* SubProfileRefs;
+
+	/**
+	* SubProfiles handled by the system.
+	*/
+	RStd::RContainer<GProfile,unsigned int,true,true>* Profiles;
+
+	/**
+	* SubProfiles handled by the system.
+	*/
+	RStd::RContainer<GSubProfile,unsigned int,true,false>* SubProfiles;
+
+	/**
 	* URL Manager used by this session.
 	*/
 	GURLManager* Mng;
@@ -149,11 +167,6 @@ protected:
 	bool bGroups;
 
 	/**
-	* State of the groups' Member.
-	*/
-	bool bGroupsMember;
-
-	/**
 	* State of the User's feedbacks.
 	*/
 	bool bFdbks;
@@ -169,10 +182,11 @@ public:
 	* Constructor.
 	* @param d              Number of documents.
 	* @param u              Number of users.
-	* @param f              Number of Feedbacks.
+	* @param p              Number of profiles.
+	* @param f              Number of feedbacks.
 	* @param mng            URL Manager.
 	*/
-	GSession(unsigned int d,unsigned int u,unsigned int f,GURLManager* mng) throw(bad_alloc,GException);
+	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,GURLManager* mng) throw(bad_alloc,GException);
 
 	/**
 	* @name Method for Languages.
@@ -377,6 +391,13 @@ public:
 		virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException)=0;
 
 		/**
+		* Save information about the groupement (Group and attachment date) of
+		* a subprofile. For a complete save, call Save(const GProfile*).
+		* @param sub        Subprofile to save.
+		*/
+		virtual void Save(const GSubProfile* sub) throw(GException)=0;
+
+		/**
 		* Save a profile.
 		* @param prof       Profile to save.
 		*/
@@ -419,7 +440,7 @@ public:
 		* @param city           City.
 		* @param country        Country.
 		*/
-		GUser* CreateUser(const char* usr,const char* pwd,const char* name,const char* email,
+		GUser* NewUser(const char* usr,const char* pwd,const char* name,const char* email,
 		                  const char* title,const char* org,const char* addr1,
 		                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
 
@@ -480,12 +501,6 @@ protected:
 		*/
 		virtual void LoadGroups(void) throw(bad_alloc,GException)=0;
 
-		/**
-		* Load the group's member.
-		* @param grp        Group to load the members.
-		*/
-		virtual void LoadGroupsMember(GGroup* grp) throw(bad_alloc,GException)=0;
-
 public:
 
 		/**
@@ -498,17 +513,6 @@ public:
 		* Load the Groups.
 		*/
 		void InitGroups(void) throw(bad_alloc,GException);
-
-		/**
-		* Verify if the groups' members are loaded.
-		* @returns true, if loaded.
-		*/
-		bool IsGroupsMember(void) const {return(bGroupsMember);}
-
-		/**
-		* Load the Groups' Member.
-		*/
-		void InitGroupsMember(void) throw(bad_alloc,GException);
 
 		/**
 		* Find the groups for a specific language.

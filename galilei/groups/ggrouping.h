@@ -81,7 +81,7 @@ protected:
 	/**
 	* Sub-Profiles to group.
 	*/
-	RStd::RContainer<GSubProfile,unsigned int,false,true> SubProfiles;
+	RStd::RContainer<GSubProfile,unsigned int,false,false> SubProfiles;
 
 public:
 

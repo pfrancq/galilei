@@ -26,15 +26,16 @@
 #include <rtimedate/rdate.h>
 
 
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <gprofiles/gsubprofile.h>
-
-
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// forward class declaration
+class GProfile;
+class GSubProfile;
+class GGroup;
 
 
 //-----------------------------------------------------------------------------
@@ -53,6 +54,11 @@ class GSubProfileRef
 	GSubProfile* SubProfile;
 
 	/**
+	* Corresponding Group.
+	*/
+	GGroup* Group;
+
+	/**
 	* Date of attachment to the group.
 	*/
 	RTimeDate::RDate Attached;
@@ -62,9 +68,10 @@ public:
 	/**
 	* Constructor.
 	* @param sub            SubProfile.
+	* @param grp            Group.
 	* @param a              String representing the date where it was attached.
 	*/
-	GSubProfileRef(GSubProfile* sub,const char* a);
+	GSubProfileRef(GSubProfile* sub,GGroup* grp,const char* a);
 
 	/**
 	* Constructor.
@@ -96,25 +103,37 @@ public:
 	* Get the identificator of the subprofile.
 	* @return Identificator.
 	*/
-	unsigned int GetId(void) const {return(SubProfile->GetId());}
+	unsigned int GetId(void) const;
 
 	/**
-	* Get the the subprofile.
-	* @return Pointer to GALILEI::SubProfile.
+	* Get the subprofile.
+	* @return Pointer to GALILEI::GSubProfile.
 	*/
 	GSubProfile* GetSubProfile(void) const {return(SubProfile);}
 
 	/**
-	* Get the the profile.
-	* @return Pointer to GALILEI::Profile.
+	* Get the profile.
+	* @return Pointer to GALILEI::GProfile.
 	*/
-	GProfile* GetProfile(void) const {return(SubProfile->GetProfile());}
+	GProfile* GetProfile(void) const;
+
+	/**
+	* Get the group.
+	* @return Pointer to GALILEI::GGroup.
+	*/
+	GGroup* GetGroup(void) const {return(Group);}
 
 	/**
 	* Get the date of the last attachment.
 	* @returns Pointer to date.
 	*/
 	const RTimeDate::RDate* GetAttached(void) const {return(&Attached);}
+
+	/**
+	* See if the subprofiles was updated until the last attachment to a group.
+	* @returns Boolean.
+	*/
+	bool IsUpdated(void) const;
 };
 
 

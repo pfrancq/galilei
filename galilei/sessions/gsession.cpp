@@ -25,10 +25,12 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsessions/gsession.h>
+#include <gprofiles/guser.h>
+#include <gprofiles/gsubprofile.h>
+#include <ggroups/gsubprofileref.h>
 #include <glangs/glangen.h>
 #include <glangs/glangfr.h>
 using namespace GALILEI;
-using namespace RStd;
 
 
 
@@ -64,10 +66,10 @@ void GALILEI::GSessionSignalsReceiver::receiveNextProfile(const GProfile* prof)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int f,GURLManager* mng) throw(bad_alloc,GException)
-	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(2,5), Fdbks(f+f/2,f/2), Mng(mng),
+GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,GURLManager* mng) throw(bad_alloc,GException)
+	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(2,5), Fdbks(f+f/2,f/2), SubProfileRefs(0), Profiles(0), SubProfiles(0), Mng(mng),
 	  bDics(false), bDocs(false), bUsers(false), bGroups(false),
-	  bGroupsMember(false), bFdbks(false), StaticLang(true)
+	  bFdbks(false), StaticLang(true)
 	
 {
 	GLang* l;
@@ -76,6 +78,9 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int f,GURLMan
 	Groups.InsertPtr(new GGroups(l));
 	Langs.InsertPtr(l=new GLangFR());
 	Groups.InsertPtr(new GGroups(l));
+	SubProfileRefs=new RContainer<GSubProfileRef,unsigned int,true,true>(p*2,p);
+	Profiles=new RContainer<GProfile,unsigned int,true,true>(p*2,p);
+	SubProfiles=new RContainer<GSubProfile,unsigned int,true,false>(p,p/2);
 }
 
 
@@ -198,6 +203,10 @@ void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 	// If users already loaded, do nothing.
 	if(bUsers) return;
 
+	// Initialise groups.
+	if(!bGroups)
+		InitGroups();
+
 	// Load the users
 	LoadUsers();
 	bUsers=true;
@@ -205,7 +214,7 @@ void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-GUser* GALILEI::GSession::CreateUser(const char* usr,const char* pwd,const char* name,const char* email,
+GUser* GALILEI::GSession::NewUser(const char* usr,const char* pwd,const char* name,const char* email,
 	                  const char* title,const char* org,const char* addr1,
 	                  const char* addr2,const char* city,const char* country) throw(bad_alloc)
 {
@@ -216,28 +225,23 @@ GUser* GALILEI::GSession::CreateUser(const char* usr,const char* pwd,const char*
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::CalcProfiles(GSessionSignalsReceiver* rec,GProfileCalc* method) throw(GException)
 {
-	tObjState s;
 	GProfile* prof;
 
-	for(Users.Start();!Users.End();Users.Next())
+	for(Profiles->Start();!Profiles->End();Profiles->Next())
 	{
-		for(Users()->Start();!Users()->End();Users()->Next())
+		prof=(*Profiles)();
+		if(prof->GetState()==osUpToDate) continue;
+		rec->receiveNextProfile(prof);
+		try
 		{
-			prof=(*Users())();
-			s=prof->GetState();
-			if(s==osUpToDate) continue;
-			rec->receiveNextProfile(prof);
-			try
-			{
-				if(s!=osUpdated)
-					method->Compute(prof);
-				Save(prof);
-				if(s==osUpdated)
-					prof->SetState(osUpToDate);
-			}
-			catch(GException& e)
-			{
-			}
+			if(prof->GetState()!=osUpdated)
+				method->Compute(prof);
+			Save(prof);
+			if(prof->GetState()==osUpdated)
+				prof->SetState(osUpToDate);
+		}
+		catch(GException& e)
+		{
 		}
 	}
 }
@@ -285,26 +289,6 @@ void GALILEI::GSession::InitGroups(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitGroupsMember(void) throw(bad_alloc,GException)
-{
-	// If users' feedback already loaded, do nothing.
-	if(bGroupsMember) return;
-
-	// Verify that users and groups are loaded
-	if(!bUsers)
-		InitUsers();
-	if(!bGroups)
-		InitGroups();
-
-	// Load the groups' member.
-	for(Groups.Start();!Groups.End();Groups.Next())
-		for((Groups)()->Start();!(Groups)()->End();(Groups)()->Next())
-			LoadGroupsMember((*(Groups)())());
-	bGroupsMember=true;
-}
-
-
-//-----------------------------------------------------------------------------
 GGroups* GALILEI::GSession::GetGroups(const GLang* lang) const
 {
 	return(Groups.GetPtr<const GLang*>(lang));
@@ -322,4 +306,7 @@ GGroup* GALILEI::GSession::NewGroup( GLang* lang)
 GALILEI::GSession::~GSession(void) throw(GException)
 {
 	if(Mng) delete Mng;
+	if(SubProfileRefs) delete SubProfileRefs;
+	if(SubProfiles) delete SubProfiles;
+	if(Profiles) delete Profiles;
 }

@@ -20,6 +20,10 @@
 //include files for GALILEI
 #include<gprofiles/gsubprofile.h>
 #include <gprofiles/gprofile.h>
+#include <glangs/glang.h>
+#include <ginfos/giwordlist.h>
+#include <gprofiles/gprofdoc.h>
+#include <ggroups/ggroup.h>
 using namespace GALILEI;
 
 
@@ -30,23 +34,17 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 
+
 //-----------------------------------------------------------------------------
-GALILEI::GSubProfile::GSubProfile(void) throw(bad_alloc)
-  : Id(cNoRef),Lang(0),OK(0),KO(0),Common(0)
+GALILEI::GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a) throw(bad_alloc)
+  : Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a), OK(0), KO(0), Common(0)
 {
 	OK=new GIWordList();
 	KO=new GIWordList();
 	Common=new GIWordList();
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GSubProfile::GSubProfile(GProfile *owner,unsigned int id,GLang *lang) throw(bad_alloc)
-  : Owner(owner),Id(id),Lang(lang),OK(0),KO(0),Common(0)
-{
-	OK=new GIWordList();
-	KO=new GIWordList();
-	Common=new GIWordList();
+	Profile->InsertPtr(this);
+//	if(grp)
+//		grp->InsertPtr(this);
 }
 
 
@@ -105,11 +103,25 @@ double GALILEI::GSubProfile::Similarity(const GSubProfile *sub) const
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSubProfile::SetGroup(GGroup* grp)
+{
+	if(!grp) return;
+//	grp->InsertPtr(this);
+	Attached.SetToday();
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GSubProfile::IsUpdated(void) const
+{
+	return(Attached<(*Profile->GetUpdated()));
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GSubProfile::~GSubProfile(void)
 {
 	if(OK) delete OK;
 	if(KO) delete KO;
 	if(Common) delete Common;
 }
-
-

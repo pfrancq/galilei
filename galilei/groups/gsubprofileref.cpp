@@ -17,8 +17,11 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
+// include files for GALILEI
 #include <ggroups/gsubprofileref.h>
+#include <gprofiles/gsubprofile.h>
+#include <gprofiles/gprofile.h>
+#include <ggroups/ggroup.h>
 using namespace GALILEI;
 
 
@@ -30,9 +33,10 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSubProfileRef::GSubProfileRef(GSubProfile* sub,const char* a)
-	: SubProfile(sub), Attached(a)
+GALILEI::GSubProfileRef::GSubProfileRef(GSubProfile* sub,GGroup* grp,const char* a)
+	: SubProfile(sub), Group(grp), Attached(a)
 {
+	grp->InsertPtr(this);
 }
 
 
@@ -69,4 +73,25 @@ int GALILEI::GSubProfileRef::Compare(const GSubProfileRef* gp) const
 int GALILEI::GSubProfileRef::Compare(const GSubProfile* s) const
 {
 	return(SubProfile->GetId()-s->GetId());
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GSubProfileRef::GetId(void) const
+{
+	return(SubProfile->GetId());
+}
+
+
+//-----------------------------------------------------------------------------
+GProfile* GALILEI::GSubProfileRef::GetProfile(void) const
+{
+	return(SubProfile->GetProfile());
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GSubProfileRef::IsUpdated(void) const
+{
+	return(Attached<(*SubProfile->GetProfile()->GetUpdated()));
 }

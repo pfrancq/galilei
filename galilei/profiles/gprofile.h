@@ -35,8 +35,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gprofiles/gsubprofile.h>
-#include <gprofiles/gprofdoc.h>
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------
@@ -45,8 +44,11 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-// Forward class declaration
+// forward class declaration
 class GUser;
+class GSubProfile;
+class GProfDoc;
+class GLang;
 
 
 //-----------------------------------------------------------------------------
@@ -56,12 +58,12 @@ class GUser;
 * @author Pascal Francq
 * @short Profile.
 */
-class GProfile : public RStd::RContainer<GSubProfile,unsigned,true,true>
+class GProfile : public RStd::RContainer<GSubProfile,unsigned,false,true>
 {
 	/**
 	* The owner of the profile.
 	*/
-	GUser* Owner;
+	GUser* User;
 
 	/**
 	* Identificator of the profile.
@@ -97,7 +99,7 @@ public:
 
     /**
 	* Constructor og GProfile
-	* @param owner          User of the profile.
+	* @param usr            User of the profile.
 	* @param id             Identificator of the profile.
 	* @param name           Name of the profile.
 	* @param u              String representing the date of updated.
@@ -105,7 +107,7 @@ public:
 	* @param nb             Number of subprofiles.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GProfile(GUser *owner,const unsigned int id,const char* name,const char* u,const char* a,unsigned int nb,unsigned int nbf=100) throw(bad_alloc);
+	GProfile(GUser* usr,const unsigned int id,const char* name,const char* u,const char* a,unsigned int nb,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Comparaison function
@@ -144,7 +146,7 @@ public:
 	* Get the user of the profile.
 	* @return Pointer to the user.
 	*/
-	const GUser* GetUser(void) const {return(Owner);}
+	const GUser* GetUser(void) const {return(User);}
 
 	/**
 	* Get the subprofile corresponding to a given language.
@@ -185,33 +187,29 @@ public:
 	/**
 	* Start the iterator to go trough the documents judged.
 	*/
-	inline void DocsStart(void)
-		{Fdbks.Start();}
+	void DocsStart(void);
 
 	/**
 	* Test if the end of the container of documents judged is reached.
 	*/
-	inline bool DocsEnd(void) const
-		{return(Fdbks.End());}
+	bool DocsEnd(void) const;
 
 	/**
 	* Goto the next element, if the end is reached, go to the beginning.
 	*/
-	inline void DocsNext(void)
-		{Fdbks.Next();}
+	void DocsNext(void);
 
 	/**
 	* Get the current document judge.
 	* @returns Pointer to the current document udge.
 	*/
-	GProfDoc* GetCurDocs(void) {return(Fdbks());}
+	GProfDoc* GetCurDocs(void);
 
 	/**
 	* Add a judgement for this profile.
 	* @param j              Judgement.
 	*/
-	void AddJudgement(GProfDoc* j) throw(bad_alloc)
-		{ Fdbks.InsertPtr(j); }
+	void AddJudgement(GProfDoc* j) throw(bad_alloc);
 };
 
 

@@ -25,6 +25,8 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<ggroups/ggrouping.h>
+#include<gprofiles/guser.h>
+#include<gprofiles/gsubprofile.h>
 #include<gsessions/gsession.h>
 using namespace GALILEI;
 
@@ -88,7 +90,9 @@ void GALILEI::GGrouping::Grouping(GGroupingSignalsReceiver* rec)
 		{
 			// Go through each profile.
 			for(CurUsr()->Start();!CurUsr()->End();CurUsr()->Next())
+			{
 				SubProfiles.InsertPtr((*CurUsr())()->GetSubProfile(CurLang()));
+			}
 		}
 
 		// Make the grouping

@@ -23,11 +23,13 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <glangs/glang.h>
-#include <ginfos/giwordlist.h>
-#include <gprofiles/gprofdoc.h>
+// include files for R Project
+#include <rtimedate/rdate.h>
 
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------
@@ -36,8 +38,13 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-// forward declaration
+// forward class declaration
+class GLang;
+class GIWordList;
+class GProfDoc;
 class GProfile;
+class GSubProfileRef;
+class GGroup;
 
 
 //-----------------------------------------------------------------------------
@@ -50,19 +57,29 @@ class GProfile;
 class GSubProfile
 {
 	/**
-	* Owner profile of the subprofile.
-	*/
-	GProfile* Owner;
-
-	/**
 	* Identifier of the subprofile.
 	*/
 	unsigned Id;
 
 	/**
+	* Owner profile of the subprofile.
+	*/
+	GProfile* Profile;
+
+	/**
 	* Language of the subprofile.
 	*/
 	GLang* Lang;
+
+	/**
+	* Corresponding Group.
+	*/
+	GGroup* Group;
+
+	/**
+	* Date of attachment to the group.
+	*/
+	RTimeDate::RDate Attached;
 
 	/**
 	* List OK.
@@ -82,17 +99,14 @@ class GSubProfile
 public:
 
 	/**
-	* Default Constructor.
-	*/
-	GSubProfile(void) throw(bad_alloc);
-
-	/**
 	* Constructor of the subprofile.
-	* @param owner          owner profile
-	* @param id             identifier
-	* @param lang           Language of the subprofile
+	* @param prod           Profile.
+	* @param id             Identifier.
+	* @param lang           Language of the subprofile.
+	* @param grp            Group.
+	* @param a              String representing the date where it was attached.
 	*/
-	GSubProfile(GProfile* owner,unsigned int id,GLang* lang) throw(bad_alloc);
+	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a) throw(bad_alloc);
 
 	/**
 	* Compare methods used by RStd::RContainer.
@@ -136,7 +150,19 @@ public:
 	* Get the corresponding profile.
 	* @return Pointer to the profile.
 	*/
-	GProfile* GetProfile(void) const {return(Owner);}
+	GProfile* GetProfile(void) const {return(Profile);}
+
+	/**
+	* Get the corresponding group.
+	* @returns Pointer to GGroup.
+	*/
+	GGroup* GetGroup(void) const {return(Group);}
+
+	/**
+	* Set the group for the subprofile.
+	* @params grp           Group where to attached.
+	*/
+	void SetGroup(GGroup* grp);
 
 	/**
 	* Get the list of word for OK.
@@ -155,6 +181,18 @@ public:
 	* @return Pointer to the list.
 	*/
 	GIWordList* GetCommon(void) const {return(Common);}
+
+	/**
+	* Get the date of the last attachment.
+	* @returns Pointer to date.
+	*/
+	const RTimeDate::RDate* GetAttached(void) const {return(&Attached);}
+
+	/**
+	* See if the subprofiles was updated until the last attachment to a group.
+	* @returns Boolean.
+	*/
+	bool IsUpdated(void) const;
 
 	/**
 	* Compute similarity between SubProfiles.

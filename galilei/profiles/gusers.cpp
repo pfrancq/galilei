@@ -25,6 +25,10 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<gprofiles/gusers.h>
+#include<gprofiles/guser.h>
+#include<gprofiles/gprofile.h>
+#include<gprofiles/gsubprofile.h>
+#include<gprofiles/gprofdoc.h>
 using namespace GALILEI;
 
 

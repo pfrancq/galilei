@@ -19,6 +19,9 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<gprofiles/guser.h>
+#include <gprofiles/gprofile.h>
+#include<gprofiles/gsubprofile.h>
+#include<gprofiles/gprofdoc.h>
 using namespace GALILEI;
 using namespace RStd;
 
@@ -33,7 +36,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GUser::GUser(const unsigned int id,const char* name,const char* fullname,const unsigned int nb) throw(bad_alloc)
-	: RContainer<GProfile,unsigned,true,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
+	: RContainer<GProfile,unsigned,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
 	  FullName(fullname)
 {
 }

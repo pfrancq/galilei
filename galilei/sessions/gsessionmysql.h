@@ -38,6 +38,11 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
+// forward class declaration
+class GIWordList;
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GSessionMySQL class provides a representation for a GALILEI session using
 * a MySQL Database as store medium.
@@ -154,11 +159,6 @@ protected:
 	*/
 	virtual void LoadGroups(void) throw(bad_alloc,GException);
 
-	/**
-	* Load the groups' member.
-	*/
-	virtual void LoadGroupsMember(GGroup* grp) throw(bad_alloc,GException);
-
 public:
 
 	/**
@@ -183,6 +183,13 @@ public:
 	* @returns Pointer to GProfile.
 	*/
 	virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException);
+
+	/**
+	* Save information about the groupement (Group and attachment date) of
+	* a subprofile. For a complete save, call Save(const GProfile*).
+	* @param sub        Subprofile to save.
+	*/
+	virtual void Save(const GSubProfile* sub) throw(GException);
 
 	/**
 	* Save a profile.

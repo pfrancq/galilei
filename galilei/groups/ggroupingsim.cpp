@@ -25,6 +25,7 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<ggroups/ggroupingsim.h>
+#include<gprofiles/gsubprofile.h>
 #include<gsessions/gsession.h>
 using namespace GALILEI;
 

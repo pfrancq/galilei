@@ -22,20 +22,25 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for R Project
+// include files for R Project
 #include <rstd/rcontainer.h>
 #include <rstd/rstring.h>
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
-#include <gprofiles/gprofile.h>
-using namespace GALILEI;
+// include files for GALILEI
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+
+
+//-----------------------------------------------------------------------------
+// forward class declaration
+class GProfile;
 
 
 //-----------------------------------------------------------------------------
@@ -44,7 +49,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short User.
 */
-class GUser : public RStd::RContainer<GProfile,unsigned,true,true>
+class GUser : public RStd::RContainer<GProfile,unsigned,false,true>
 {
 	/**
 	* Identificator of the user.
