@@ -259,6 +259,7 @@ void KViewChromos::ConstructChromosomesSim(void)
 
 	// Initialise the dialog box
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
+	d->Begin();
 	d->show();
 	KApplication::kApplication()->processEvents();
 
@@ -393,6 +394,7 @@ void KViewChromos::ConstructChromosomesRanking(void)
 
 	// Initialise the dialog box
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
+	d->Begin();
 	d->show();
 	KApplication::kApplication()->processEvents();
 

@@ -859,37 +859,16 @@ void KGALILEICenterApp::slotRunQuery(void)
 
 
 //-----------------------------------------------------------------------------
-//void KGALILEICenterApp::slotMixIdealGroups(void)
-//{
-//	GMixIdealGroups* mix;
-//	GSubjectTree* subjecttree=new GSubjectTree(0, 0, 0);
-//	RContainer<GGroups,unsigned int,true,true>* idealgroups;
-//	idealgroups= new RContainer<GGroups,unsigned int,true,true>(5,2);
-//	RContainer<GGroupIdParentId,unsigned int,true,true>* parent;
-//	parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,5);
-//
-//	Doc->GetSession()->LoadIdealGroupment(idealgroups);
-//	Doc->GetSession()->LoadSubjectTree(subjecttree);
-//	subjecttree->CreateParent(parent);
-//	mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups);
-//	mix->Run();
-//}
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotMixIdealGroups(void)
  {
 	GMixIdealGroups* mix;
 	const char *nbgroups, *level;
-	bool random, mergesame, mergediff, split;
+	bool random, ideal, mergesame, mergediff, split;
 	GSubjectTree* subjecttree=new GSubjectTree(0, 0, 0);
 	RContainer<GGroups,unsigned int,true,true>* idealgroups;
 	RContainer<GGroupIdParentId,unsigned int,true,true>* parent;
 	idealgroups= new RContainer<GGroups,unsigned int,true,true>(5,2);
 
-	parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,5);
-	Doc->GetSession()->LoadIdealGroupment(idealgroups);
-	Doc->GetSession()->LoadSubjectTree(subjecttree);
-	subjecttree->CreateParent(parent);
 	QMixIdealConfig dlg(this,0,true);
 	if(dlg.exec())
 	{
@@ -897,12 +876,30 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 		nbgroups=dlg.LENbMixedGroups->text().latin1();
 		level=dlg.LELevel->text().latin1();
 		random=dlg.RBRandom->isChecked();
+		ideal=dlg.RBIdeal->isChecked();
 		mergesame=dlg.RBMergeSame->isChecked();
 		mergediff=dlg.RBMergeDiff->isChecked();
 		split=dlg.RBSplit->isChecked();
 	}
-	mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups, atoi(nbgroups), atoi(level), mergesame, mergediff, split, random);
+
+	// Initialise the dialog box
+	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Mix Ideal Groups");
+	d->Begin();
+	d->show();
+	KApplication::kApplication()->processEvents();
+
+	// Init Part
+	d->PutText("Initialisation");
+	parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,5);
+	Doc->GetSession()->LoadIdealGroupment(idealgroups);
+	Doc->GetSession()->LoadSubjectTree(subjecttree);
+	subjecttree->CreateParent(parent);
+
+	// Create new solution
+	d->PutText("Create new solutions");
+	mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups, atoi(nbgroups), atoi(level), mergesame, mergediff, split, random,ideal);
 	mix->Run();
+	d->Finish();
 }
 
 

@@ -176,6 +176,11 @@ public:
 	void PutText(const char* text);
 
 	/**
+	* Begin.
+	*/
+	void Begin(void);
+
+	/**
 	* Finish.
 	*/
 	void Finish(void);

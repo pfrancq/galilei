@@ -361,6 +361,14 @@ void QSessionProgressDlg::PutText(const char* text)
 
 
 //-----------------------------------------------------------------------------
+void QSessionProgressDlg::Begin(void)
+{
+	txtRem->setText("Finish");
+	btnOk->setEnabled(false);
+}
+
+
+//-----------------------------------------------------------------------------
 void QSessionProgressDlg::Finish(void)
 {
 	txtRem->setText("Finish");
