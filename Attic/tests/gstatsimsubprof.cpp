@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	SatSimSubProf.cpp
+	GSatSimSubProf.cpp
 
 	Calc the similarity between subprofiles using the ideal groupment - Implementation.
 
@@ -63,7 +63,6 @@ using namespace GALILEI;
 GALILEI::GStatSimSubProf::GStatSimSubProf(GSession* ses,RContainer<GGroups,unsigned int,true,true>* ideal)
 	: Session(ses), IdealGroups(ideal),Global(true)
 {
-	
 }
 
 

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	SatSimSubProf.h
+	GSatSimSubProf.h
 
 	Calc the similarity between subprofiles using the ideal groupment - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -54,7 +54,7 @@ namespace GALILEI{
 /**
 * The SatSimSubProf class provides a way to see similaritys between profiles.
 * @author Lamoral Julien & Pascal Francq.
-* @short Similaritys between profiles.
+* @short Subprofiles Similarities Statistics.
 */
 class GStatSimSubProf
 {
@@ -64,7 +64,6 @@ protected:
 	* Session.
 	*/
 	GSession* Session;
-
 
 	/**
 	* The Mean of the Mean intra group similarity.
@@ -130,8 +129,7 @@ public:
 	double GetRie(void) const {return(Rie);}
 
 	/**
-	* Construct the subprofile similarity widget.
-	* @param Global         Use Global similarity ?
+	* Construct the subprofile similarity.
 	*/
 	void Run(void);
 
