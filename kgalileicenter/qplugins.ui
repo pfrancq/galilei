@@ -1149,7 +1149,7 @@
     </connection>
     <connection>
         <sender>Filters</sender>
-        <signal>clicked(QListViewItem*)</signal>
+        <signal>currentChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
         <slot>changeFilter(QListViewItem*)</slot>
     </connection>
@@ -1173,7 +1173,7 @@
     </connection>
     <connection>
         <sender>ProfileCalcs</sender>
-        <signal>clicked(QListViewItem*)</signal>
+        <signal>selectionChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
         <slot>changeProfileCalc(QListViewItem*)</slot>
     </connection>
@@ -1215,13 +1215,13 @@
     </connection>
     <connection>
         <sender>Groupings</sender>
-        <signal>clicked(QListViewItem*)</signal>
+        <signal>selectionChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
         <slot>changeGrouping(QListViewItem*)</slot>
     </connection>
     <connection>
         <sender>GroupCalcs</sender>
-        <signal>clicked(QListViewItem*)</signal>
+        <signal>selectionChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
         <slot>changeGroupCalc(QListViewItem*)</slot>
     </connection>
@@ -1245,7 +1245,7 @@
     </connection>
     <connection>
         <sender>Stats</sender>
-        <signal>clicked(QListViewItem*)</signal>
+        <signal>selectionChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
         <slot>changeStatCalc(QListViewItem*)</slot>
     </connection>
@@ -1269,7 +1269,7 @@
     </connection>
     <connection>
         <sender>LinkCalcs</sender>
-        <signal>clicked(QListViewItem*)</signal>
+        <signal>selectionChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
         <slot>changeLinkCalc(QListViewItem*)</slot>
     </connection>
@@ -1293,7 +1293,7 @@
     </connection>
     <connection>
         <sender>Langs</sender>
-        <signal>clicked(QListViewItem*)</signal>
+        <signal>selectionChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
         <slot>changeLang(QListViewItem*)</slot>
     </connection>
@@ -1317,7 +1317,7 @@
     </connection>
     <connection>
         <sender>DocAnalyses</sender>
-        <signal>clicked(QListViewItem*)</signal>
+        <signal>selectionChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
         <slot>changeDocAnalyse(QListViewItem*)</slot>
     </connection>
