@@ -81,6 +81,12 @@ public:
 	GIWordWeight(const unsigned int id,double w) throw(bad_alloc);
 
 	/**
+	* Constructor.
+	* @param w              Pointer to a word weight.
+	*/
+	GIWordWeight(const GIWordWeight* w) throw(bad_alloc);
+
+	/**
 	* Return the name of the class.
 	*/
 	virtual const RStd::RString ClassName(void) const;

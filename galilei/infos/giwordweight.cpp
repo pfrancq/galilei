@@ -67,6 +67,13 @@ GALILEI::GIWordWeight::GIWordWeight(unsigned id,double w) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
+GALILEI::GIWordWeight::GIWordWeight(const GIWordWeight* w) throw(bad_alloc)
+  : GIWord(w->Id), Weight(w->Weight)
+{
+}
+
+
+//-----------------------------------------------------------------------------
 const RString GALILEI::GIWordWeight::ClassName(void) const
 {
 	return("GIWordWeight");
