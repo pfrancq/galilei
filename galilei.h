@@ -129,6 +129,7 @@ class GSubProfileVector;
 class GProfDoc;
 class GProfDocCursor;
 class GProfileCalc;
+class GProfileCalcVector;
 class GProfileCalcCursor;
 class GProfilesSim;
 class GProfilesSims;
