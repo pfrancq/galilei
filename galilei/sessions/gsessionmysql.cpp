@@ -278,7 +278,7 @@ void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 		RQuery group2 (this,sSql);
 		for(group2.Begin();group2.IsMore();group2++)
 		{
-			groups->InsertPtr(group=new GGroup(atoi(group2[0])));
+			groups->InsertPtr(group=new GGroup(atoi(group2[0]),Langs()));
 		}
 	}
 }
@@ -301,7 +301,7 @@ void GALILEI::GSessionMySQL::LoadGroupsMember(GGroup* grp) throw(bad_alloc,GExce
 				GProfile* prof=(*usr)();
 				GSubProfile* s=prof->GetPtr<unsigned int>(atoi(sub[1]),false);
 				if(s)
-					grp->InsertPtr(s);
+					grp->InsertPtr(new GSubProfileRef(s,sub[2]));
 			}
 		}
 	}
