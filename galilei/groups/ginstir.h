@@ -40,6 +40,11 @@
 
 
 //-----------------------------------------------------------------------------
+// Defines
+#define BESTSOLSVERIFICATION 0
+
+
+//-----------------------------------------------------------------------------
 // include files for R Project
 #include <rgga/rinstg.h>
 #include <rpromethee/rpromkernel.h>
@@ -230,10 +235,13 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 
 #endif
 
+#if BESTSOLSVERIFICATION
 	/**
 	* Container holding the best chromosomes.
 	*/
 	RStd::RContainer<GChromoIR,unsigned int,true,false> BestSols;
+
+#endif
 
 public:
 

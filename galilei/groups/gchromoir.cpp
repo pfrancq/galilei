@@ -580,20 +580,14 @@ void GALILEI::GChromoIR::EvaluateInfo(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::EvaluateEntropy(void)
 {
-	GObjIRCursor Cur;
-	double Pjk;
+	GGroupIRCursor Cur;
 
-	Cur=(*Objs);
-	for(Cur.Start(),CritEntropy=0.0;!Cur.End();Cur.Next())
+	// Computed the entropy of each group
+	Cur.Set(Used);
+	for(Cur.Start(),CritEntropy==0.0;!Cur.End();Cur.Next())
 	{
-		GetGroup(Cur())->NotJudgedDocsRelList(&Docs,Cur());
-		for(Docs.Start();!Docs.End();Docs.Next())
-		{
-			Pjk=Docs()->GetSim();
-			CritEntropy-=Pjk*log(Pjk);
-		}
+		CritEntropy+=Cur()->ComputeEntropy();
 	}
-	//CritEntropy*=1.0;
 }
 
 

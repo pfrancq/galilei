@@ -104,14 +104,50 @@ enum SimType {
 class GSimMeasure
 {
 public:
+	/**
+	* Name of the measure.
+	*/
 	RStd::RString Name;
+
+	/**
+	* Type fo the measure.
+	*/
 	SimType Type;
+
+	/**
+	* Is this emasure used as criteria?
+	*/
 	bool Use;
+
+	/**
+	* If similarity is evaluated using a correlation, what is the weight of
+	* this measure.
+	*/
 	double Weight;
 
+	/**
+	* Constructor.
+	* @param n              Name.
+	* @param t              Type.
+	* @param u              Used as criteria?
+	* @param w              Weight if correlation used.
+	*/
 	GSimMeasure(const char* n,SimType t,bool u=false,double w=0.0);
+
+	/**
+	* Compare method used by the RStd::RContainer.
+	*/
 	int Compare(const GSimMeasure* s) const;
+
+	/**
+	* Compare method used by the RStd::RContainer.
+	*/
 	int Compare(const char* s) const;
+
+	/**
+	* Assigment operator.
+	* @param src            Object used as source.
+	*/
 	GSimMeasure& operator=(const GSimMeasure& src);
 };
 

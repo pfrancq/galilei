@@ -130,7 +130,10 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 	  DiffFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1), Params(p), 
 	  CritSim(0), CritSimAvgSim(0), CritSimJ(0), CritSimAvgRatio(0),CritSimMinRatio(0),CritSimRatio(0),
 	  CritSimWOverB(0), CritSimSimWB(0), CritInfo(0), CritEntropy(0), CritSameFeedbacks(0), CritDiffFeedbacks(0), CritSocial(0),
-	  Sols(0),CurrentGroups(grps), Session(ses), Lang(l), NoSocialSubProfiles(objs->NbPtr), BestSols(p->MaxGen,p->MaxGen/2)
+	  Sols(0),CurrentGroups(grps), Session(ses), Lang(l), NoSocialSubProfiles(objs->NbPtr)
+#if BESTSOLSVERIFICATION
+	  , BestSols(p->MaxGen,p->MaxGen/2)
+#endif
 {
 	RPromSol** ptr;
 	RCursor<GObjIR,unsigned int> Cur1;
@@ -364,10 +367,12 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	{
 		s=Chromosomes[(*ptr)->GetId()-1];
 		(*s->Fitness)=Gen+1.1;
-		BestSols.InsertPtr(b=new GChromoIR(this,BestSols.NbPtr));
-		b->Init(thDatas[0]);
-		(static_cast<RGroups<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>*>(b))->Init(&GrpData);
-		(*b)=(*s);
+		#if BESTSOLSVERIFICATION
+			BestSols.InsertPtr(b=new GChromoIR(this,BestSols.NbPtr));
+			b->Init(thDatas[0]);
+			(static_cast<RGroups<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>*>(b))->Init(&GrpData);
+			(*b)=(*s);
+		#endif
 	}
 	else
 	{
@@ -455,6 +460,7 @@ double GALILEI::GInstIR::GetRatioSame(GSubProfile* sub1,GSubProfile* sub2) const
 //-----------------------------------------------------------------------------
 void GALILEI::GInstIR::PostRun(void)
 {
+#if BESTSOLSVERIFICATION
 	RPromKernel Prom("GALILEI",BestSols.NbPtr,5);
 	RPromSol* s;
 
@@ -505,6 +511,7 @@ void GALILEI::GInstIR::PostRun(void)
 	Prom.ComputePrometheeII();
 	(*BestChromosome)=(*BestSols.Tab[Prom.GetBestSol()->GetId()]);
 	emitBestSig();
+#endif
 }
 
 

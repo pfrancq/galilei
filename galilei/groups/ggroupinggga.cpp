@@ -76,6 +76,91 @@ GALILEI::GGroupingGGA::GGroupingGGA(GSession* s,GIRParams* p) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GGroupingGGA::SetParam(const char* param,const char* value)
+{
+	if(!strcmp(param,"Global"))
+	{
+		Params->GlobalSim=atoi(value);
+	}
+	else
+	if(!strcmp(param,"SimLevel"))
+	{
+		Params->MinSimLevel=atof(value);
+	}
+	else
+	if(!strcmp(param,"SameBehaviors"))
+	{
+		Params->MinCommonOK=atof(value);
+	}
+	else
+	if(!strcmp(param,"DiffBehaviors"))
+	{
+		Params->MinCommonDiff=atof(value);
+	}
+	else
+	if(!strcmp(param,"k-Means"))
+	{
+		Params->MaxKMeans=atoi(value);
+	}
+	else
+	if(!strcmp(param,"CritSim"))
+	{
+		Params->ParamsSim.Set(value);
+	}
+	else
+	if(!strcmp(param,"CritInfo"))
+	{
+		Params->ParamsInfo.Set(value);
+	}
+	else
+	if(!strcmp(param,"CritEntropy"))
+	{
+		Params->ParamsEntropy.Set(value);
+	}
+	else
+	if(!strcmp(param,"CritSameBehaviors"))
+	{
+		Params->ParamsSameFeedbacks.Set(value);
+	}
+	else
+	if(!strcmp(param,"CritDiffBehaviors"))
+	{
+		Params->ParamsDiffFeedbacks.Set(value);
+	}
+	else
+	if(!strcmp(param,"CritSocial"))
+	{
+		Params->ParamsSocial.Set(value);
+	}
+	else
+	if(!strncmp(param,"Sim(",4))
+	{
+		int i;
+		char tmp[60];
+		strcmp(tmp,&param[4]);
+		tmp[strlen(tmp)-1]=0;       // Skip last ')';
+		GSimMeasure* ptr=Params->Measures.GetPtr<const char*>(tmp);
+		if(!ptr) return;
+		sscanf(value,"%i %lf",&i,&(ptr->Weight));
+		ptr->Use=i;
+	}
+	else
+	if(!strcmp(param,"SimType"))
+	{
+		if(!strcmp(value,"Criteria"))
+		{
+			Params->SimMeasures=sctCrits;
+		}
+		else
+		if(!strcmp(value,"Correlation"))
+		{
+			Params->SimMeasures=sctCorl;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 const char* GALILEI::GGroupingGGA::GetSettings(void)
 {
 	static char tmp[200];

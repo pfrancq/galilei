@@ -35,6 +35,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <math.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gprofilessim.h>
 #include <profiles/gsubprofile.h>
@@ -49,6 +54,7 @@
 using namespace GALILEI;
 using namespace RGGA;
 using namespace RGA;
+
 
 
 //-----------------------------------------------------------------------------
@@ -89,16 +95,16 @@ int sort_function(const void* a,const void* b)
 
 //-----------------------------------------------------------------------------
 GGroupIR::GGroupIR(GGroupIR* grp)
-	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(grp), AvgSim(0.0),
-	  Relevant(0)
+	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(grp), Changed(false),
+	  AvgSim(0.0), Relevant(0), Entropy(0.0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupIR::GGroupIR(GChromoIR* owner,const unsigned int id,const GGroupDataIR* data)
-	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(owner,id,data), AvgSim(0.0),
-	Relevant(0)
+	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(owner,id,data), Changed(false),
+	  AvgSim(0.0), Relevant(0), Entropy(0.0)
 {
 }
 
@@ -109,6 +115,8 @@ void GALILEI::GGroupIR::Clear(void)
 	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Clear();
 	AvgSim=0.0;
 	Relevant=0;
+	Entropy=0.0;
+	Changed=false;
 }
 
 
@@ -134,12 +142,14 @@ bool GALILEI::GGroupIR::CanInsert(const GObjIR* obj)
 //---------------------------------------------------------------------------
 void GALILEI::GGroupIR::PostInsert(const GObjIR* /*obj*/)
 {
+	Changed=true;
 }
 
 
 //---------------------------------------------------------------------------
 void GALILEI::GGroupIR::PostDelete(const GObjIR* /*obj*/)
 {
+	Changed=false;
 }
 
 
@@ -553,6 +563,9 @@ GGroupIR& GALILEI::GGroupIR::operator=(const GGroupIR& grp)
 {
 	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::operator=(grp);
 	AvgSim=grp.AvgSim;
+	Relevant=grp.Relevant;
+	Entropy=grp.Entropy;
+	Changed=grp.Changed;
 	return(*this);
 }
 
@@ -589,9 +602,10 @@ void GALILEI::GGroupIR::NotJudgedDocsRelList(RStd::RContainer<GDocSim,unsigned,t
 
 	// Clear container.
 	docs->Clear();
+
 	// Go through the subprofiles of the group
 	sub=s->GetSubProfile();
-	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),AvgSim=0.0;--i;ptr++)
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
 	{
 		if((*ptr)==s) continue;
 
@@ -617,6 +631,59 @@ void GALILEI::GGroupIR::NotJudgedDocsRelList(RStd::RContainer<GDocSim,unsigned,t
 			}
 		}
 	}
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeEntropy(void)
+{
+	GObjIR** ptr;
+	GObjIR** ptr2;
+	unsigned int i,l;
+	GProfDocCursor Fdbks;
+	tDocJudgement j;
+	bool global=Owner->Instance->Params->GlobalSim;
+	GLang* Lang=Owner->Instance->Lang;
+	GSubProfile* sub;
+	double Pjk;
+
+	if(!Changed) return(Entropy);
+
+	// Compute the entropy for each objects of the group
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),Entropy=0.0;--i;ptr++)
+	{
+		sub=(*ptr)->GetSubProfile();
+
+		// Go through each subprofile
+		for(l=NbSubObjects+1,ptr2=Owner->GetObjs(SubObjects);--l;ptr2++)
+		{
+			if((*ptr2)==(*ptr)) continue;
+
+			// Go through the judgments of subprofile (*ptr2)
+			Fdbks=(*ptr2)->GetSubProfile()->GetProfile()->GetProfDocCursor();
+			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+			{
+				// Must be the same language than the group.
+				if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
+
+				// Verify if document was not judged by the subprofile sub
+				if(sub->GetProfile()->GetFeedback(Fdbks()->GetDoc())) continue;
+
+				// If not -> add in to then entropy.
+				j=Fdbks()->GetFdbk();
+				if((j==djNav)||(j==djOK))
+				{
+					if(global)
+						Pjk=sub->GlobalSimilarity(Fdbks()->GetDoc());
+					else
+						Pjk=sub->Similarity(Fdbks()->GetDoc());
+					Entropy-=Pjk*log(Pjk);
+				}
+			}
+		}
+	}
+	Changed=false;
+	return(Entropy);
 }
 
 

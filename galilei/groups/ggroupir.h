@@ -82,7 +82,10 @@ class GGroupIR : public RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
 {
 protected:
 
-	bool Done;
+	/**
+	* Determine if the group have changed.
+	*/
+	bool Changed;
 
 	/**
 	* Average similarity between the profiles of the group.
@@ -93,6 +96,11 @@ protected:
 	* Relevant object of the group.
 	*/
 	GObjIR* Relevant;
+
+	/**
+	* Entropy of the objects of the group.
+	*/
+	double Entropy;
 
 public:
 
@@ -280,6 +288,13 @@ public:
 	* \warning This method uses an internal container which is not optimal.
 	*/
 	void NotJudgedDocsRelList(RStd::RContainer<GDocSim,unsigned,true,false>* docs, GObjIR* s);
+
+	/**
+	* Compute the Entropy of objects of the group if ti was changed, else use
+	* the value computed before.
+	* @return double.
+	*/
+	double ComputeEntropy(void);
 
 	/**
 	* Destruct the group.
