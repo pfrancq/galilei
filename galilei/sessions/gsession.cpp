@@ -133,7 +133,7 @@ GSubProfileDescCursor& GALILEI::GSession::GetProfileDescsCursor(void)
 }
 
 //-----------------------------------------------------------------------------
-RStd::RContainer<GGroups,unsigned int,true,true>* GALILEI::GSession::GetIdealGroups()
+RStd::RContainer<GGroups,unsigned int,true,true>* GALILEI::GSession::GetIdealGroups(void)
 {
 	return(IdealGroups);
 }

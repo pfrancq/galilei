@@ -117,15 +117,32 @@ protected:
 	*/
 	void InitSubSubjects(void);
 
+	/**
+	* Number of subsubjects in the tree
+	*/
+	unsigned int nbsubsubjects;
+
+	/**
+	*  temporary tab.
+	*/
+	unsigned int* tabs ;
+
+	/**
+	*  temporary tab.
+	*/
+	unsigned int* tabp ;
+
 public:
+
 
 	/**
 	* Constructor.
 	* @param nbOK           %of ok document.
 	* @param nbKO           %of ok document.
 	* @param nbusers        nb of users in the database.
+	* @param nbsubsubj      nb of subsubjects in the database
 	*/
-	GSubjectTree(double nbOk,double nbKo,unsigned int nbusers);
+	GSubjectTree(double nbOk,double nbKo,unsigned int nbusers,unsigned int nbsubsubj);
 
 	/**
 	* Static function used to ordered by frenquecy.
@@ -165,6 +182,15 @@ public:
 	* @param precerr        The perc of document who will judge the profile non specialy conforming to the ideal groupment.
 	*/
 	void JudgeDocuments(unsigned int profid,GSubject* sub,unsigned int i, GSession* ses,double precerr);
+
+	/**
+	* Return a new judgment when the first is wrong.
+	* @param ses            The Gailieli session
+	* @param judg           The first judgment
+	* @param PrecErr        The perc of document who will judge the profile non
+	*                       specialy conforming to the ideal groupment.
+	*/
+	void Judge(GSession* ses,unsigned int judg,double PercErr,unsigned int profileid,GDoc* doc);
 
 	/**
 	* Write the ideal groupment into a file

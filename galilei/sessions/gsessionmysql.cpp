@@ -526,7 +526,7 @@ void GALILEI::GSessionMySQL::LoadSubjectTree()
 	subsubj.Start();
 	nbsubsubj=atoi(subsubj[0]);
 	sprintf(sSql,"SELECT subjectid,subjectname from subject");
-	Subjects = new GSubjectTree(0,0,nbuser);
+	Subjects = new GSubjectTree(0,0,nbuser,nbsubsubj);
 	RQuery sub(this,sSql);
 	unsigned int j=1;
 	for(sub.Start();!sub.End();sub.Next())
@@ -546,13 +546,13 @@ void GALILEI::GSessionMySQL::LoadSubjectTree()
 				subsubject->InsertDoc(d);
 				subsubject->SetLang(d->GetLang());
 				temp++;
-				d->InsertSubject(subject);
+				d->InsertSubject(subsubject);
 			}
 			if(temp==0) subsubject->SetLang(this->GetDoc(1)->GetLang());
 			subject->InsertNode(subsubject);
 			for(unsigned int k=0; k<nbuser;k++)
 				for (unsigned int i=1;i<=GetNbLangs();i++)
-					GetSubProfile((k*nbsubsubj*(GetNbLangs()))+((j-1)*2)+i)->SetSubject(subject);
+					GetSubProfile((k*nbsubsubj*(GetNbLangs()))+((j-1)*2)+i)->SetSubject(subsubject);
 			j++;
 		}
 			Subjects->InsertPtr(subject);
