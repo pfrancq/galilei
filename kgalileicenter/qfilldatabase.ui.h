@@ -7,7 +7,7 @@
 ** place of a destructor.
 *****************************************************************************/
 
-#include "qchooseparent.h"  
+#include "qchooseparent.h"
 #include "qmessagebox.h"
 #include "qlistview.h"
 #include "kurlrequester.h"
@@ -27,7 +27,7 @@ void QFillEmptyDatabase::ChangeParent( int s )
     }
     if(s==QButton::Off)
     {
-	ParentName->setText(""); 
+	ParentName->setText("");
 	ParentName->setEnabled(false);
 	ChooseBtn->setEnabled(false);
     }
@@ -38,20 +38,20 @@ void QFillEmptyDatabase::InsertSubItem(R::RDb& db,int parentId,QListViewItem* it
 {
 	QListViewItem* t;
 	R::RString sSQL("");
-	
+
 	sSQL="SELECT * FROM topics where parent="+R::itou(parentId);
 	R::RQuery insert(db,sSQL);
-	
+
 	for(insert.Start();!insert.End();insert.Next())
 	{
 		item->insertItem(t=new QListViewItem(item,ToQString(insert[1])));
-		InsertSubItem(db,atoi(insert[0]),t);
+		InsertSubItem(db,atoi(insert[0].Latin1()),t);
 	}
-	
+
 }
 
 void QFillEmptyDatabase::ChooseParentName()
-{ 
+{
 	R::RString sSQL("");
 	QListViewItem* t;
 	//Verify that Db infos are available
@@ -64,19 +64,19 @@ void QFillEmptyDatabase::ChooseParentName()
 	{
 		//Connect to Db
 		R::RDb Db (R::FromQString(LEHost->text()),R::FromQString(LEUser->text()),R::FromQString(LEPassword->text()),R::FromQString(LEName->text()),"latin1");
-   
+
 		//Init dlg
 		QChooseParent dlg(this,0,true);
 		dlg.TopicsView->setColumnWidth(0,300);
-		sSQL="SELECT * FROM topics where parent=0";   
+		sSQL="SELECT * FROM topics where parent=0";
 		R::RQuery mainTopics(Db,sSQL);
-		
+
 		for(mainTopics.Start();!mainTopics.End();mainTopics.Next())
 		{
 			dlg.TopicsView->insertItem(t=new QListViewItem(dlg.TopicsView,ToQString(mainTopics[1])));
-			InsertSubItem(Db,atoi(mainTopics[0]),t);
+			InsertSubItem(Db,atoi(mainTopics[0].Latin1()),t);
 		}
-		
+
 		if(dlg.exec())
 		{
 			R::RString tmp("");

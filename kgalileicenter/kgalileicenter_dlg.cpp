@@ -181,7 +181,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	RString paths("");
 	RCursor<RString> cPath(*pluginsPath);
 	for(cPath.Start();!cPath.End();cPath.Next())
-		paths+=cPath()+RString(";");
+		paths+=(*cPath())+RString(";");
 	dlg.PluginsPath->setMode(KFile::Directory);
 	dlg.PluginsPath->setURL(ToQString(paths));
 

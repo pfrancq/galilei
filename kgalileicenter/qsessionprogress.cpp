@@ -427,7 +427,7 @@ void QFillDB::DoIt(void)
 			RCursor<RString> userCur(usersId);
 			for(userCur.Start();!userCur.End();userCur.Next())
 			{
-				sSql="INSERT INTO profiles SET description='"+topics[1]+"',updated='2004-01-01',userid="+userCur()+",topicid="+topics[0];
+				sSql="INSERT INTO profiles SET description='"+topics[1]+"',updated='2004-01-01',userid="+(*userCur())+",topicid="+topics[0];
 //				sSql="INSERT INTO profiles SET description='"+topics2[0]+"/"+topics[1]+"',updated='2004-01-01',userid="+userCur()+",topicid="+topics[0];
 				RQuery prof(Db,sSql);
 				sSql="INSERT INTO subprofiles SET langid='en', attached='2001-01-01', profileid="+itou(++profileid);

@@ -243,7 +243,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Always Save Docs",docAlwaysSave->isChecked());
 	RCursor<RString> cPath(*pluginsPath);
 	for(cPath.Start();!cPath.End();cPath.Next())
-		paths+=cPath()+RString(";");
+		paths+=(*cPath())+RString(";");
 	Config->writeEntry("PluginsPath", paths);
 
 	Config->setGroup("Database Options");

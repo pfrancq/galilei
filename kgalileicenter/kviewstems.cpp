@@ -119,9 +119,8 @@ public:
 	unsigned int Pos;
 
 	GrWordId(GrWord* grp,unsigned int pos) : Grp(grp), Pos(pos) {}
-	int Compare(const GrWord* grp) const {return(Grp->Compare(grp));}
-	int Compare(const GrWordId* grp) const {return(Grp->Compare(grp->Grp));}
-	int Compare(const GrWordId& grp) const {return(Grp->Compare(grp.Grp));}
+	int Compare(const GrWord* grp) const {return(Grp->Compare(*grp));}
+	int Compare(const GrWordId& grp) const {return(Grp->Compare(*grp.Grp));}
 };
 
 
@@ -336,7 +335,7 @@ unsigned int KViewStems::GetNbWords(GrWord* grp1,GrWord* grp2)
 
 	RCursor<Word> cWord(grp1->Words);
 	for(cWord.Start();!cWord.End();cWord.Next())
-		if(grp2->Words.IsIn<const Word*>(cWord()))
+		if(grp2->Words.IsIn<Word>(*cWord()))
 			tot++;
 	return(tot);
 }
