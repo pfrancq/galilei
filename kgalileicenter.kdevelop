@@ -45,7 +45,7 @@
     </run>
     <configurations>
       <default>
-        <configargs/>
+        <configargs>--prefix=/usr --enable-debug</configargs>
         <builddir/>
         <topsourcedir/>
         <cppflags/>
@@ -57,7 +57,7 @@
         <cxxcompilerbinary/>
         <f77compilerbinary/>
         <cflags/>
-        <cxxflags>-fexceptions -I$GCENTER/r -I$GCENTER/galilei  -I$GCENTER/qtwidgets</cxxflags>
+        <cxxflags/>
         <f77flags/>
       </default>
     </configurations>
@@ -131,8 +131,8 @@
       <toc>perl</toc>
     </ignoretocs>
     <projectdoc>
-      <userdocDir>./html/</userdocDir>
-      <apidocDir>./html/</apidocDir>
+      <userdocDir>/home/pfrancq/prj/kgalileicenter/html/</userdocDir>
+      <apidocDir>/home/pfrancq/prj/kgalileicenter/html/</apidocDir>
     </projectdoc>
   </kdevdoctreeview>
   <kdevdebugger>
@@ -156,9 +156,9 @@
   <cppsupportpart>
     <codecompletion/>
     <filetemplates>
-      <choosefiles>true</choosefiles>
-      <interfaceURL>/home/pfrancq/data/divers/header_template</interfaceURL>
-      <implementationURL>/home/pfrancq/data/divers/cpp_template</implementationURL>
+      <choosefiles>false</choosefiles>
+      <interfaceURL/>
+      <implementationURL/>
       <interfacesuffix>.h</interfacesuffix>
       <implementationsuffix>.cpp</implementationsuffix>
       <lowercasefilenames>true</lowercasefilenames>
