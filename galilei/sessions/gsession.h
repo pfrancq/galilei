@@ -4,7 +4,7 @@
 
 	GSession.h
 
-	Basic GALILEI Session - Header.
+	Generic GALILEI Session - Header.
 
 	(C) 2001 by Pascal Francq
 
@@ -16,49 +16,56 @@
 
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 #ifndef GSessionH
 #define GSessionH
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainer.h>
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <glangs/glangs.h>
 #include <glangs/gdicts.h>
 #include <gprofiles/gusers.h>
-#include <gprofiles/gprofile.h>
 #include <ggroups/ggroupslangs.h>
-#include <glangs/gdict.h>
-#include <gexceptions.h>
-#include <gdocs/gmimetype.h>
 #include <gdocs/gdocs.h>
 
 
-//---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 namespace GALILEI{
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 
-//---------------------------------------------------------------------------
-// GSession
+//-----------------------------------------------------------------------------
+/**
+* The GSession provides a representation for a GALILEI session. The way the
+* data are stored and loaded is dedicated to a child class of GSession through
+* a set of pure virtual methods defined.
+* @author Pascal Francq
+* @short Generic Session.
+*/
 class GSession
 {
 protected:
-	bool AllDocs;     // All Documents
-public:
-	GLangs* Langs;
+	/**
+	* Languages handled by the system.
+	*/
+	GLangs Langs;
+
 	GDicts* Stops;
 	GDicts* Dics;
 	GUsers* Users;
 	GDocs* Docs;
-	GGroupsLangs* GroupsLangs;
+	RStd::RContainer<GGroups,unsigned int,true,true> Groups;
 	RStd::RContainer<GMIMEType,unsigned int,true,true>* MIMETypes;
+
+public:
 
   // Constructor & Init part
   GSession(void) throw(bad_alloc,GException);
@@ -95,10 +102,7 @@ public:
 	                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
 
   // Documents
-//  void PutAllDocs(bool alldocs);
-//  bool GetAllDocs(void) { return(AllDocs); }
   unsigned GetNbDocs(void);
-//  void AnalyseDocs(URLFunc *urlfunc,InfoFunc *infofunc) throw(bad_alloc,GException);
   void ClearDocs(void) throw(GException);
 
   	unsigned int GetNbUsers(void) const {return(Users->NbPtr);}
@@ -116,6 +120,78 @@ public:
 	GMIMEType* GetMIMEType(const RString& name)
 		{return(MIMETypes->GetPtr<const RString>(name));}
 
+	/**
+	* @name Method for Languages.
+	*/
+	//@{
+
+protected:
+
+
+public:
+		/**
+		* Get the number of languages treated by the system.
+		* @returns Number of languages.
+		*/
+		unsigned int GetNbLangs(void) const
+			{return(Langs.NbPtr);}
+
+		/**
+		* Get a pointer to the languages.
+		* @returns Pointer to the languages.
+		*/
+		const GLangs* GetLangs(void) const
+			{return(&Langs);}
+
+		/**
+		* Get a pointer to a language while having its code.
+		* @param code             Code of the language.
+		* @returns Pointer to the language.
+		*/
+		GLang* GetLang(const char* code);
+
+	//@}
+
+	/**
+	* @name Method for Information.
+	*/
+	//@{
+
+	//@}
+
+	/**
+	* @name Method for Documents.
+	*/
+	//@{
+		/**
+		* Get the number of documents treated by the system.
+		* @returns Number of documents.
+		*/
+		unsigned int GetNbDocs(void) const
+			{return(Docs->NbPtr);}
+
+		/**
+		* Get a pointer to the documents.
+		* @returns Pointer to the documents.
+		*/
+		const GDocs* GetDocs(void) const
+			{return(Docs);}
+
+	//@}
+
+	/**
+	* @name Method for Users/Profiles.
+	*/
+	//@{
+
+		/**
+		* Get a pointer to the Users.
+		* @returns Pointer to the users.
+		*/
+		const GUsers* GetUsers(void) const
+			{return(Users);}
+
+	//@}
 
 	/**
 	* @name Method for Groups.

@@ -17,6 +17,12 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainercursor.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gprofiles/gprofilecalclist.h>
 using namespace GALILEI;
@@ -31,16 +37,15 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcList::GProfileCalcList(GSession* session,unsigned int size) throw(bad_alloc)
-	: GProfileCalc(session), OK(Session->Langs->NbPtr),
-	  KO(Session->Langs->NbPtr), Size(size)
+	: GProfileCalc(session), OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
+	  Size(size)
 {
-	GLang* Lang;
+	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
 
-	for(Session->Langs->Start();!Session->Langs->End();Session->Langs->Next())
+	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
-		Lang=(*Session->Langs)();
-		OK.InsertPtr(new GIWordCalcs(Lang,Session->GetDic(Lang)->GetMaxId()));
-		KO.InsertPtr(new GIWordCalcs(Lang,Session->GetDic(Lang)->GetMaxId()));
+		OK.InsertPtr(new GIWordCalcs(CurLang(),Session->GetDic(CurLang())->GetMaxId()));
+		KO.InsertPtr(new GIWordCalcs(CurLang(),Session->GetDic(CurLang())->GetMaxId()));
 	}
 }
 

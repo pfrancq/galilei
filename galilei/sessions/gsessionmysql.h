@@ -1,10 +1,10 @@
 /*
 
-	R Project Library
+	GALILEI Research Project
 
-	gsessionmsql.h
+	GSessionMySQL.h
 
-	Description - Header.
+	GALILEI Session using a MySQL Database - Header.
 
 	(C) 2001 by Pascal Francq
 
@@ -15,23 +15,15 @@
 */
 
 
-//-----------------------------------------------------------------------------
-#ifndef GSESSIONMSQL_H
-#define GSESSIONMSQL_H
-
-
 
 //-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdio.h>      // Defining size_t
-#include <stdlib.h>
-#include <string.h>     // String functions
+#ifndef GSessionMySQLH
+#define GSessionMySQLH
 
 
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rmysql/rmysql.h>
-using namespace RMySQL;
 
 
 //-----------------------------------------------------------------------------
@@ -45,19 +37,39 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 
 
+//-----------------------------------------------------------------------------
 /**
-  *@author Pascal Francq
-  */
-
-class GSessionMySQL : public GSession
+* The GSessionMySQL class provides a representation for a GALILEI session using
+* a MySQL Database as store medium.
+* @author Pascal Francq
+* @short MySQL Session.
+*/
+class GSessionMySQL : public RMySQL::RDb, public GSession
 {
 public:
-	
-	
-	GSessionMySQL(RDb* _db);
-	~GSessionMySQL(void);
+	/**
+	* Constructor.
+	* @param host           Host of the database server.
+	* @param user           User to connect with.
+	* @param pwd            Password of the uzer.
+	* @param db             Name of the database.
+	*/
+	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,RMySQL::RMySQLError);
 
-	RDb* db; 
+	/**
+	* Count the number of rows of a table.
+	* @param tbl            Table to analyse.
+	* @returns Number of rows.
+	*/
+	unsigned int GetCount(const char* tbl);
+
+	/**
+	* Count the maximal value for a field of a table.
+	* @param tbl            Table to analyse.
+	* @param fld            Field to analyse.
+	* @returns Maximal value.
+	*/
+	unsigned int GetMax(const char* tbl,const char* fld);
 
 	/**
 	* Loading Users function.
@@ -140,16 +152,17 @@ public:
 	*/
 	void LoadDocs(void);
 
+public:
 
-
+	/**
+	* Destructor.
+	*/
+	~GSessionMySQL(void);
 };
+
 
 }  //-------- End of namespace GALILEI ----------------------------------------
 
+
 //-----------------------------------------------------------------------------
-
 #endif
-
-
-
-

@@ -2,30 +2,15 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	GSession.cpp
 
-	Basic Information - Implementation.
+	Generic GALILEI Session - Implementation.
 
 	(C) 2001 by P. Francq.
 
 	Version $Revision$
 
 	Last Modify: $Date$
-
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
 
 */
 
@@ -48,18 +33,29 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GSession::GSession(void) throw(bad_alloc,GException)
-  : AllDocs(true),Langs(0),Stops(0),Dics(0),Users(0),Docs(0),GroupsLangs(0), MIMETypes(0)
+GALILEI::GSession::GSession(void) throw(bad_alloc,GException)
+  : Langs(2),Stops(0),Dics(0),Users(0),Docs(0),Groups(2,5), MIMETypes(0)
 {
+	GLang* l;
+
 	MIMETypes=new RContainer<GMIMEType,unsigned int,true,true>(20,10);
-	Langs=new GLangs(2);
-	Langs->InsertPtr(new GLangEN());
-	Langs->InsertPtr(new GLangFR());
+	Langs.InsertPtr(l=new GLangEN());
+	Groups.InsertPtr(new GGroups(l));
+	Langs.InsertPtr(l=new GLangFR());
+	Groups.InsertPtr(new GGroups(l));
+}
+
+
+//-----------------------------------------------------------------------------
+GLang* GALILEI::GSession::GetLang(const char* code)
+{
+	RReturnValIfFail(code,0);
+	return(Langs.GetPtr<const char*>(code));
 }
 
 
 //---------------------------------------------------------------------------
-GDict* GSession::GetDic(const GLang *lang) throw(GException)
+GDict* GALILEI::GSession::GetDic(const GLang *lang) throw(GException)
 {
   if(!lang) throw(GException("Error in ""GSession::GetDic"": Language not defined"));
   if(!Dics) throw(GException("Error in ""GSession::GetDic"": Dictionnaries not created"));
@@ -68,7 +64,7 @@ GDict* GSession::GetDic(const GLang *lang) throw(GException)
 
 
 //---------------------------------------------------------------------------
-GDict* GSession::GetStop(const GLang *lang) throw(GException)
+GDict* GALILEI::GSession::GetStop(const GLang *lang) throw(GException)
 {
   if(!lang) throw(GException("Error in ""GSession::GetStop"": Language not defined"));
   if(!Stops) throw(GException("Error in ""GSession::GetStop"": StopLists not created"));
@@ -77,7 +73,7 @@ GDict* GSession::GetStop(const GLang *lang) throw(GException)
 
 
 //---------------------------------------------------------------------------
-void GSession::ClearDics(void) throw(GException)
+void GALILEI::GSession::ClearDics(void) throw(GException)
 {
   if(!Dics) throw(GException("Error in ""GSession::ClearDics"": Dictionnaries not created"));
   Dics->Clear();
@@ -85,7 +81,7 @@ void GSession::ClearDics(void) throw(GException)
 
 
 //---------------------------------------------------------------------------
-void GSession::ClearStops(void) throw(GException)
+void GALILEI::GSession::ClearStops(void) throw(GException)
 {
   if(!Stops) throw(GException("Error in ""GSession::ClearStops"": StopLists not created"));
   Stops->Clear();
@@ -101,7 +97,7 @@ void GSession::ClearStops(void) throw(GException)
 
 
 //---------------------------------------------------------------------------
-unsigned GSession::GetNbDocs(void)
+unsigned GALILEI::GSession::GetNbDocs(void)
 {
 	return(Docs->NbPtr);
 }
@@ -115,7 +111,7 @@ unsigned GSession::GetNbDocs(void)
 
 
 //---------------------------------------------------------------------------
-void GSession::ClearDocs(void) throw(GException)
+void GALILEI::GSession::ClearDocs(void) throw(GException)
 {
   Docs->Clear();
 }
@@ -130,16 +126,10 @@ GUser* GALILEI::GSession::CreateUser(const char* usr,const char* pwd,const char*
 }
 
 
-
-
-
-
-
-
 //---------------------------------------------------------------------------
 GGroups* GALILEI::GSession::GetGroups(const GLang* lang) const
 {
-	return(GroupsLangs->GetPtr<const GLang*>(lang));
+	return(Groups.GetPtr<const GLang*>(lang));
 }
 
 
@@ -150,18 +140,14 @@ GGroup* GALILEI::GSession::NewGroup(void)
 }
 
 
-
-
 //---------------------------------------------------------------------------
 GALILEI::GSession::~GSession(void) throw(GException)
-
 {
-	if(Langs) delete Langs;
 	if(Stops) delete Stops;
 	if(Dics) delete Dics;
 	if(Docs) delete Docs;
 	if(Users) delete Users;
-	if(GroupsLangs) delete GroupsLangs;
+//	if(GroupsLangs) delete GroupsLangs;
 	if(MIMETypes) delete MIMETypes;
 }
 

@@ -33,6 +33,8 @@
 #include <glangs/gdict.h>
 #include <ginfos/giwordoccurs.h>
 #include <glangs/glang.h>
+#include <gdocs/gmimetype.h>
+
 
 
 //-----------------------------------------------------------------------------
@@ -127,19 +129,25 @@ public:
 	* Compare function needed by RStd::RContainer.
 	* @param doc            Document used for the comparaison.
 	*/
-	int Compare(const GDoc& doc);
+	int Compare(const GDoc& doc) const;
 
 	/**
 	* Compare function needed by RStd::RContainer.
 	* @param doc            Pointer to the document used for the comparaison.
 	*/
-	int Compare(const GDoc* doc);
+	int Compare(const GDoc* doc) const;
 
 	/**
 	* Compare function needed by RStd::RContainer.
 	* @param id            Identificator used for the comparaison.
 	*/
-	int Compare(const unsigned id);
+	int Compare(const unsigned id) const;
+
+	/**
+	* Compare function needed by RStd::RContainer.
+	* @param lang           Language used for the comparaison.
+	*/
+	int Compare(const GLang*) const;
 
 	/**
 	* Get the URL.

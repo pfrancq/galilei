@@ -82,7 +82,7 @@ public:
 	* @param kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/
-	virtual RString& GetStemming(const RStd::RString& kwd)=0;
+	virtual RString& GetStemming(const RStd::RString& kwd);
 
 	/**
 	* Destructor.

@@ -22,6 +22,11 @@
 
 
 //-----------------------------------------------------------------------------
+#include <rstd/rcontainercursor.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdocs/gdoc.h>
 #include <gdocs/gdocxml.h>
@@ -54,23 +59,30 @@ GALILEI::GDoc::GDoc(const RString& url,const RStd::RString& name,const unsigned 
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::Compare(const GDoc& doc)
+int GALILEI::GDoc::Compare(const GDoc& doc) const
 {
   return(Id-doc.Id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::Compare(const GDoc* doc)
+int GALILEI::GDoc::Compare(const GDoc* doc) const
 {
   return(Id-doc->Id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::Compare(const unsigned id)
+int GALILEI::GDoc::Compare(const unsigned id) const
 {
   return(Id-id);
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GDoc::Compare(const GLang* lang) const
+{
+  return(Lang->Compare(lang));
 }
 
 
@@ -182,6 +194,7 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	int max,act;
 	GDict* stop;
 	GDict* dic;
+	RContainerCursor<GLang,unsigned int,true,true> CurLang(session->GetLangs());
 
 	cout<<"Analyse: "<<URL()<<endl;
 	content=xml->GetContent();
@@ -191,12 +204,12 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	// in the document.
 	cout<<"Nb Words: "<<AnalyseTagForStopKwd(content,0)<<endl;
 	max=0;
-	for(session->Langs->Start();!session->Langs->End();session->Langs->Next())
+	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
-		act=AnalyseTagForStopKwd(content,dic=session->GetStop((*session->Langs)()));
+		act=AnalyseTagForStopKwd(content,dic=session->GetStop(CurLang()));
 		if(act>max)
 		{
-			Lang=(*session->Langs)();
+			Lang=CurLang();
 			max=act;
 			stop=dic;
 		}

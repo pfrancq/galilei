@@ -63,6 +63,17 @@ int GALILEI::GLang::Compare(const char* code) const
 }
 
 
+//-------------------------------------------------------------------------------
+RString& GALILEI::GLang::GetStemming(const RString& _kwd)
+{
+	RString *res=RString::GetString();
+
+	(*res)=_kwd;
+	res->StrLwr();
+	return((*res));
+}
+
+
 //-----------------------------------------------------------------------------
 GALILEI::GLang::~GLang(void)
 {

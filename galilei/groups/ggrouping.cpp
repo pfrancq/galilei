@@ -17,6 +17,12 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainercursor.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<ggroups/ggrouping.h>
 #include<gsessions/gsession.h>
@@ -46,24 +52,22 @@ void GALILEI::GGrouping::Init(void) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GALILEI::GGrouping::Grouping(void)
 {
-	GLang* l;
-	GUser* u;
+	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
 
 	// Go trough each language.
-	for(Session->Langs->Start();!Session->Langs->End();Session->Langs->Next())
+	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
-		l=(*Session->Langs)();
 		SubProfiles.Clear();
-		Groups=Session->GetGroups(l);
+		Groups=Session->GetGroups(CurLang());
 
 		// Go through the users to find the subprofiles corresponding to the
 		// language.
-		for(Session->Users->Start();!Session->Users->End();Session->Users->Next())
+		RContainerCursor<GUser,unsigned int,true,true> CurUsr(Session->GetUsers());
+		for(CurUsr.Start();!CurUsr.End();CurUsr.Next())
 		{
-			u=(*Session->Users)();
 			// Go through each profile.
-			for(u->Start();!u->End();u->Next())
-				SubProfiles.InsertPtr((*u)()->GetSubProfile(l));
+			for(CurUsr()->Start();!CurUsr()->End();CurUsr()->Next())
+				SubProfiles.InsertPtr((*CurUsr())()->GetSubProfile(CurLang()));
 		}
 
 		// Make the grouping
