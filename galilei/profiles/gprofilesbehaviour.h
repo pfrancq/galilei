@@ -144,7 +144,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GBehaviours : public RStd::RContainer<GBehaviour,unsigned int,true,false>
+class GBehaviours : public R::RContainer<GBehaviour,unsigned int,true,false>
 {
 public:
 
@@ -184,7 +184,7 @@ class GProfilesBehaviour
 	/**
 	* The similarities.
 	*/
-	RStd::RContainer<GBehaviours,unsigned int,true,false> Behaviours;
+	R::RContainer<GBehaviours,unsigned int,true,false> Behaviours;
 
 	/**
 	* Global similarities used?
@@ -214,7 +214,7 @@ public:
 	* @param global         Global approach.
 	* @param lang           Lang of the profilesSim
 	*/
-	GProfilesBehaviour(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,GLang* lang=0) throw(bad_alloc);
+	GProfilesBehaviour(R::RContainer<GSubProfile,unsigned int,false,true>* s,GLang* lang=0) throw(bad_alloc);
 
 	/**
 	* Analyse the behaviourof the two subprofiles and insert it in behaviours if necessary.
@@ -249,17 +249,17 @@ public:
 	tObjState GetState(unsigned int id1, unsigned int id2);
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GLang* l) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GProfilesBehaviour& profilesBehaviour) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GProfilesBehaviour* profilesBehaviour) const;
 

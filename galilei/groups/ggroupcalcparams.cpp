@@ -39,6 +39,7 @@
 #include <groups/ggroupcalcparams.h>
 #include <groups/ggroupcalc.h>
 using namespace GALILEI;
+using namespace R;
 
 
 

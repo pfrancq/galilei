@@ -43,7 +43,7 @@
 // include file for Galilei
 #include <langs/gword.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 

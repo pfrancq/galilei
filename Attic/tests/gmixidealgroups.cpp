@@ -38,10 +38,9 @@
 
 //-----------------------------------------------------------------------------
 // include files for R
-#include <rmath/random.h>
+#include <rstd/random.h>
 #include <rstd/rcontainer.h>
-using namespace RMath;
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------

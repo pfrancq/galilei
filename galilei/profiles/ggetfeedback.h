@@ -85,7 +85,7 @@ protected:
 	/**
 	* New documents to judge.
 	*/
-	RStd::RContainer<GProfDoc,unsigned,false,false> Docs;
+	R::RContainer<GProfDoc,unsigned,false,false> Docs;
 
 	/**
 	* The date of today.

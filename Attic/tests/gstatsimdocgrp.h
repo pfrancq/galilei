@@ -140,22 +140,22 @@ protected:
 	/**
 	* Statistics Output file.
 	*/
-	RIO::RTextFile* File;
+	R::RTextFile* File;
 
 	/**
 	* Container of statistics on the subjects.
 	*/
-	RStd::RContainer<LocalStat,unsigned int,true,true> Sub;
+	R::RContainer<LocalStat,unsigned int,true,true> Sub;
 
 	/**
 	* Container of statistics on Precisions (Local).
 	*/
-	RStd::RContainer<SimGroup,unsigned int,true,true> DocsL;
+	R::RContainer<SimGroup,unsigned int,true,true> DocsL;
 
 	/**
 	* Container of statistics on Precisions (Global).
 	*/
-	RStd::RContainer<SimGroup,unsigned int,true,true> DocsG;
+	R::RContainer<SimGroup,unsigned int,true,true> DocsG;
 
 public:
 
@@ -166,7 +166,7 @@ public:
 	* @param g              Global Similarity.
 	* @param l              Local Similarity.
 	*/
-	GStatSimDocGrp(GSession* ses,RIO::RTextFile* f,bool g,bool l);
+	GStatSimDocGrp(GSession* ses,R::RTextFile* f,bool g,bool l);
 
 	/**
 	* Static function used to ordered by similarity.

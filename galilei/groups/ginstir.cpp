@@ -38,14 +38,8 @@
 // include files for R Project
 #include <rpromethee/rpromsol.h>
 #include <rpromethee/rpromcriterion.h>
-using namespace RPromethee;
-
-
-//-----------------------------------------------------------------------------
-// include files for R Project
 #include <rgga/rgroupingheuristic.h>
-using namespace RGGA;
-using namespace RGA;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -100,7 +94,7 @@ void GALILEI::GThreadDataIR::Init(void) throw(bad_alloc)
 	{
 		Tests[i]=new GChromoIR(Owner,Owner->PopSize+1+i);
 		Tests[i]->Init(this);
-		(static_cast<RGGA::RGroups<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>*>(Tests[i]))->Init(&data);
+		(static_cast<RGroups<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>*>(Tests[i]))->Init(&data);
 	}
 }
 
@@ -132,7 +126,7 @@ GALILEI::GThreadDataIR::~GThreadDataIR(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GIRParams* p,RGA::RDebug *debug) throw(bad_alloc)
+GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RObjs<GObjIR>* objs,GIRParams* p,RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(p->PopSize,objs,FirstFit,debug),
 	  GIRProm(p), SameFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1),
 	  DiffFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1), Params(p), 
@@ -194,7 +188,7 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GIRParams* p,unsigned int pop,RGA::RDebug *debug) throw(bad_alloc)
+GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RObjs<GObjIR>* objs,GIRParams* p,unsigned int pop,RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(pop,objs,FirstFit,debug),
 	  GIRProm(p), SameFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1),
 	  DiffFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1), Params(p),

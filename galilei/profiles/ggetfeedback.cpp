@@ -35,15 +35,15 @@
 
 
 //-----------------------------------------------------------------------------
-// inluce files for R-Project
-#include <rio/rtextfile.h>
-using namespace RIO;
+// include files for ANSI C/C++
+#include <iostream>
+#include <stdlib.h>
 
 
 //-----------------------------------------------------------------------------
-//include specific files
-#include <iostream>
-#include <stdlib.h>
+// include files for R Project
+#include <rstd/rtextfile.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -77,7 +77,7 @@ using namespace GALILEI;
 GALILEI::GGetFeedback::GGetFeedback(GSession* session)
 	: Session(session), NbDocs(30), Global(true), PercErr(0), Docs(NbDocs)
 {
-	RTimeDate::RDate date;
+	RDate date;
 
 	sprintf(today,"%u-%u-%u",date.GetYear(),date.GetMonth(),date.GetDay());
 }

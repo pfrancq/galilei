@@ -55,7 +55,7 @@ namespace GALILEI{
 * @author Pascal Francq , Valery Vandaele
 * @short SubProfiles.
 */
-class GDocProfSims : public RStd::RContainer<GDocProfSim,unsigned int,true,true>
+class GDocProfSims : public R::RContainer<GDocProfSim,unsigned int,true,true>
 {
 
 public:

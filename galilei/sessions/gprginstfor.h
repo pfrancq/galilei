@@ -60,17 +60,17 @@ class GPrgInstFor : public GPrgInst
 	/**
 	* Variable defined in the for.
 	*/
-	RStd::RString Var;
+	R::RString Var;
 
 	/**
 	* Values of the variable.
 	*/
-	RStd::RContainer<GPrgVar,unsigned int,true,false> Values;
+	R::RContainer<GPrgVar,unsigned int,true,false> Values;
 
 	/**
 	* List of all "Instructions" to execute.
 	*/
-	RStd::RContainer<GPrgInst,unsigned int,true,false> Insts;
+	R::RContainer<GPrgInst,unsigned int,true,false> Insts;
 
 	/**
 	* Identation of for.

@@ -60,7 +60,7 @@ class GGroupingParams
 	/**
 	* Name of the grouping.
 	*/
-	RStd::RString GroupingName;
+	R::RString GroupingName;
 
 public:
 
@@ -89,22 +89,22 @@ public:
 	virtual void SetSettings(const char*) {}
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const GGroupingParams* grp) const;
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const GGroupingParams& grp) const;
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const GGrouping* grp) const;
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const char* name) const;
 

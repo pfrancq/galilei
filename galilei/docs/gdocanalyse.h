@@ -72,7 +72,7 @@ class GDocAnalyse
 	/**
 	* All the word appaering in the current document.
 	*/
-	RStd::RDblHashContainer<WordWeight,unsigned,27,27,false>* Weights;
+	R::RDblHashContainer<WordWeight,unsigned,27,27,false>* Weights;
 
 	/**
 	* Current document to analyse.
@@ -193,21 +193,21 @@ protected:
 	* @param weight         Weights of the words added during this analyze.
 	* @returns true if a word was extract.
 	*/
-	bool ExtractWord(const char* &ptr,RStd::RString& word,double weight);
+	bool ExtractWord(const char* &ptr,R::RString& word,double weight);
 
 	/**
 	* Analyse a tag.
 	* @param tag            Tag to analyse.
 	* @param weight         Weights of the words added during this analyze.
 	*/
-	void AnalyseTag(RXML::RXMLTag* tag,double weight) throw(GException);
+	void AnalyseTag(R::RXMLTag* tag,double weight) throw(GException);
 
 	/**
 	* Analyse a link tag.
 	* @param tag            Tag to analyse.
 	* @param tmpDocs        A pointer to a container of docs to maintain the documents to be added.
 	*/
-	void AnalyseLinksTag(RXML::RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException);
+	void AnalyseLinksTag(R::RXMLTag* tag,bool externalLinks,R::RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException);
 
 	/**
 	* This methods determine the language of the current structure studied,
@@ -232,7 +232,7 @@ public:
 	* @param doc            Corresponding document.
 	* @param tmpDocs        A container of docs to maintain the documents ro be added.
 	*/
-	void Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException);
+	void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException);
 
 	/**
 	* Analyse a XML representation of a document for a session and computes

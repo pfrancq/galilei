@@ -63,7 +63,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Vector in Words Space.
 */
-class GIWordsWeights : public GInfo,public RStd::RContainer<GIWordWeight,unsigned,true,true>
+class GIWordsWeights : public GInfo,public R::RContainer<GIWordWeight,unsigned,true,true>
 {
 	/**
 	* Total number of words in the set of documents analysed.
@@ -81,7 +81,7 @@ public:
 	/**
 	* Return the name of the class.
 	*/
-	virtual const RStd::RString ClassName(void) const;
+	virtual const R::RString ClassName(void) const;
 
 	/**
 	* Return the type of the information.

@@ -175,22 +175,22 @@ class GGroupingSupKMeans  : public GGrouping
 	/**
 	* Container of cObj considered as prototypes
 	*/
-	RContainer<GSubProfile,unsigned int,false,false>* Protos;
+	R::RContainer<GSubProfile,unsigned int,false,false>* Protos;
 
 	/**
 	* Container of cObj considered as prototypes
 	*/
-	RContainer<GSubProfile,unsigned int,false,false>* ProtosDblKMeans;
+	R::RContainer<GSubProfile,unsigned int,false,false>* ProtosDblKMeans;
 
 	/**
 	* Container of cObj considered as prototypes
 	*/
-	RContainer<GGroups,unsigned int,false,false>* FoundGroups;
+	R::RContainer<GGroups,unsigned int,false,false>* FoundGroups;
 
 	/**
 	* hard constraints container.
 	*/
-	RContainer<GGroup,unsigned int,false,false>* HardConstraints;
+	R::RContainer<GGroup,unsigned int,false,false>* HardConstraints;
 
 public:
 

@@ -39,9 +39,8 @@
 #include <docs/gdoc.h>
 #include <docs/gdocslang.h>
 #include <langs/glang.h>
-
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 

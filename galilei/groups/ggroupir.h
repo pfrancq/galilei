@@ -78,7 +78,7 @@ public:
 * @author Pascal Francq
 * @short IR Group.
 */
-class GGroupIR : public RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
+class GGroupIR : public R::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
 {
 protected:
 
@@ -301,7 +301,7 @@ public:
 	* @param s              Subprofile.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(RStd::RContainer<GDocSim,unsigned,true,false>* docs, GObjIR* s);
+	void NotJudgedDocsRelList(R::RContainer<GDocSim,unsigned,true,false>* docs, GObjIR* s);
 
 	/**
 	* Compute the Entropy of objects of the group if it was changed, else use

@@ -60,7 +60,7 @@ class GGroupCalc
 	/**
 	* Name of the computing method.
 	*/
-	RStd::RString ComputingName;
+	R::RString ComputingName;
 
 protected:
 
@@ -103,17 +103,17 @@ public:
 	virtual void SetSettings(const char*) {}
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GGroupCalc& desc) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GGroupCalc* desc) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const char* name) const;
 

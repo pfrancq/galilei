@@ -44,9 +44,8 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcursor.h>
-using namespace RStd;
-#include <rio/rtextfile.h>
-using namespace RIO;
+#include <rstd/rtextfile.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -73,7 +72,7 @@ using namespace RIO;
 #include <tests/ggroupevaluatedoc.h>
 #include <groups/gsubjecttree.h>
 #include <filters/gmimefilter.h>
-#include <urlmanagers/gurlmanager.h>
+#include <filters/gurlmanager.h>
 #include <groups/gsubject.h>
 #include <groups/ggroup.h>
 #include <groups/gchromoir.h>
@@ -83,8 +82,6 @@ using namespace RIO;
 #include <groups/ggroupcalcgravitation.h>
 #include <postgroups/gpointofview.h>
 using namespace GALILEI;
-using namespace RMySQL;
-using namespace RTimeDate;
 
 
 
@@ -1162,7 +1159,7 @@ void GALILEI::GSessionMySQL::ClearStoredChromos(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveChromo(GChromoIR* chromo,unsigned int id,RGA::RObjs<GObjIR>* objs)
+void GALILEI::GSessionMySQL::SaveChromo(GChromoIR* chromo,unsigned int id,RObjs<GObjIR>* objs)
 {
 	char sSql[100];
 	unsigned int* tab;
@@ -1184,7 +1181,7 @@ void GALILEI::GSessionMySQL::SaveChromo(GChromoIR* chromo,unsigned int id,RGA::R
 		GrpId++;
 		GGroupIR* gr=chromo->Used();
 		ptr=tab=gr->GetObjectsId();
-		while((*ptr)!=RGGA::NoObject)
+		while((*ptr)!=NoObject)
         {
 			GObjIR* o=objs->Tab[*(ptr++)];
 			sprintf(sSql,"INSERT INTO tempchromo(chromoid,groupid,lang,subprofileid) VALUES(%u,%u,'%s',%u)",id,GrpId,c,o->GetSubProfile()->GetId());
@@ -1196,7 +1193,7 @@ void GALILEI::GSessionMySQL::SaveChromo(GChromoIR* chromo,unsigned int id,RGA::R
 
 
 //-----------------------------------------------------------------------------
-GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GIRParams* p)
+GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RObjs<GObjIR>* objs,GIRParams* p)
 {
 	GInstIR* InstIR;
 	char sSql[200];

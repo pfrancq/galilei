@@ -43,8 +43,7 @@
 #include <groups/ggroup.h>
 #include <docs/gdoc.h>
 using namespace GALILEI;
-using namespace RTimeDate;
-using namespace RStd;
+using namespace R;
 
 
 

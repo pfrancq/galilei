@@ -32,10 +32,11 @@
 
 
 //-----------------------------------------------------------------------------
-// include specific files
+// include files for C/C++ ANSI
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
@@ -50,6 +51,7 @@
 #include<profiles/gprofile.h>
 #include <profiles/gprofilessim.h>
 using namespace GALILEI;
+using namespace R;
 
 
 

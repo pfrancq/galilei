@@ -61,12 +61,12 @@ class GTest
 	/**
 	* Identificator of the test.
 	*/
-	RStd::tId Id;
+	R::tId Id;
 
 	/**
 	* Name of the Test.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 public:
 
@@ -75,32 +75,32 @@ public:
 	* @param id             Identificator.
 	* @param name           Name of the test.
 	*/
-	GTest(const RStd::tId id,const char* name) throw(bad_alloc);
+	GTest(const R::tId id,const char* name) throw(bad_alloc);
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	*/
 	int Compare(const GTest* test);
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	*/
 	int Compare(const GTest& test);
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	*/
-	int Compare(const RStd::tId id);
+	int Compare(const R::tId id);
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	*/
-	int Compare(const RStd::RString& name);
+	int Compare(const R::RString& name);
 	
 	/**
 	* Get the identificator of the test.
 	*/
-	RStd::tId GetId(void) {return(Id);}
+	R::tId GetId(void) {return(Id);}
 
 	/**
 	* Get the name of the test.

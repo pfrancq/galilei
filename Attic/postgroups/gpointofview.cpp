@@ -35,7 +35,16 @@
 
 
 
-// ----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainer.h>
+#include <rstd/rrecfile.h>
+#include <rstd/rcursor.h>
+#include <rdb/rmysql.h>
+using namespace R;
+
+
+//----------------------------------------------------------------------------
 //include file for GALILEI
 #include <postgroups/gpointofview.h>
 //#include <sessions/gsessionmysql.h>
@@ -51,13 +60,6 @@
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-#include <rio/rrecfile.h>
-#include <rstd/rcursor.h>
-#include <rmysql/rmysql.h>
-using namespace RStd;
 
 
 

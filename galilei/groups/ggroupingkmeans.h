@@ -39,9 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcursor.h>
-#include <rmath/random.h>
-using namespace RMath;
-using namespace RStd;
+#include <rstd/random.h>
 
 
 //-----------------------------------------------------------------------------
@@ -130,12 +128,12 @@ protected:
 	/**
 	* Container of subprofiles considered as prototypes
 	*/
-	RContainer<GSubProfile,unsigned int,false,false>* protos;
+	R::RContainer<GSubProfile,unsigned int,false,false>* protos;
 
 	/**
 	* Temporary container of groupment, needed to run tests
 	*/
-	RContainer<GGroup,unsigned int,false,false>* grpstemp2;
+	R::RContainer<GGroup,unsigned int,false,false>* grpstemp2;
 
 	/*
 	* Similarities between all profiles;
@@ -145,8 +143,7 @@ protected:
 	/**
 	*  random parameters
 	*/
-	RRandom * Rand;
-
+	R::RRandom * Rand;
 
 public:
 
@@ -176,7 +173,7 @@ public:
 	/**
 	* return true if the subprofile is a valid proto;
 	*/
-	bool IsValidProto(RContainer<GSubProfile,unsigned int,false,false>* prototypes,GSubProfile* s) throw(bad_alloc);
+	bool IsValidProto(R::RContainer<GSubProfile,unsigned int,false,false>* prototypes,GSubProfile* s) throw(bad_alloc);
 
 	/**
 	* returns the 'nbsub' most relevant subprofiles.
@@ -193,7 +190,7 @@ public:
 	* init the protos with random subprofiles.
 	* @param nbsub         number of subprofiles to get.
 	*/
-	void RandomInitSubProfiles(RContainer<GSubProfile,unsigned int,false,true>* datase, unsigned int groupsnumber);
+	void RandomInitSubProfiles(R::RContainer<GSubProfile,unsigned int,false,true>* datase, unsigned int groupsnumber);
 
 	/**
 	* init the protos to the refined points.
@@ -290,12 +287,12 @@ public:
 	/**
 	* Calculates the cost function for a kmeanscos clustering
 	*/
-	virtual double CostFunction(RContainer<GGroup,unsigned int,false,false>* grps)=0;
+	virtual double CostFunction(R::RContainer<GGroup,unsigned int,false,false>* grps)=0;
 
 	/**
 	*  reallocate the subprofiles to prototypes
 	*/
-	virtual void ReAllocate(RContainer<GSubProfile,unsigned int,false,true>* dataset)=0;
+	virtual void ReAllocate(R::RContainer<GSubProfile,unsigned int,false,true>* dataset)=0;
 
 	/**
 	*  recenters the prototypes
@@ -306,7 +303,7 @@ public:
 	* executes the grouping part of K-Means algorithm
 	* @param init           intialization step?
 	*/
-	virtual void Execute(RContainer<GSubProfile,unsigned int,false,true>* dataset, unsigned int maxiter)=0;
+	virtual void Execute(R::RContainer<GSubProfile,unsigned int,false,true>* dataset, unsigned int maxiter)=0;
 
 	/**
 	* returns the sum of similarity between s and all the subprofiles
@@ -326,7 +323,7 @@ public:
 	/**
 	* return the variance of a given clustering
 	*/
-	virtual double Distortion(RContainer<GGroup,unsigned int,false,false>* grps);
+	virtual double Distortion(R::RContainer<GGroup,unsigned int,false,false>* grps);
 
 	/**
 	* return the variance of a given clustering
@@ -336,7 +333,7 @@ public:
 	/**
 	* returns the group containing the subprofile s;
 	*/
-	GGroup* FindGroup(RContainer<GGroup,unsigned int,false,false>* grps, GSubProfile* s);
+	GGroup* FindGroup(R::RContainer<GGroup,unsigned int,false,false>* grps, GSubProfile* s);
 
 	/**
 	* Verify the confition of KMeansMod (no empty clusters)
@@ -347,7 +344,7 @@ public:
 	/**
 	*  couts the content of a group
 	*/
-	virtual void ShowGroups(RContainer<GGroup,unsigned int,true,true>* grs);
+	virtual void ShowGroups(R::RContainer<GGroup,unsigned int,true,true>* grs);
 
 
 protected:

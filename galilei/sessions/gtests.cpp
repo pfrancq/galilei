@@ -39,7 +39,7 @@
 #include <sessions/gtests.h>
 #include <sessions/gtest.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 

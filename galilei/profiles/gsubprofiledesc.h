@@ -68,7 +68,7 @@ protected:
 	/**
 	* Name of the Profile Description Method.
 	*/
-	RStd::RString ProfDescName;
+	R::RString ProfDescName;
 
 	/**
 	* Pointer a function used for creating a subprofile description.
@@ -86,17 +86,17 @@ public:
 	GSubProfileDesc(const char* name,GSubProfile* (*func)(GProfile* prof,unsigned int id,GLang*,GGroup*,const char* , tObjState state , const char*)) throw(bad_alloc);
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GSubProfileDesc& desc) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GSubProfileDesc* desc) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const char* name) const;
 

@@ -57,7 +57,7 @@ namespace GALILEI{
 * @author David Wartel
 * @short Languages GroupsHistory.
 */
-class GGroupsHistory : public RStd::RContainer<GGroupHistory,unsigned int,true,true>
+class GGroupsHistory : public R::RContainer<GGroupHistory,unsigned int,true,true>
 {
 
 private :
@@ -91,17 +91,17 @@ public :
 	GIWordsWeightsHistory* GetSubProfile(unsigned int id);
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroupsHistory& groups) const;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroupsHistory* groups) const;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(unsigned int id) const ;
 

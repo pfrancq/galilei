@@ -64,12 +64,12 @@ public:
 	GPrgInst(void) throw(bad_alloc);
 
 	/**
-	* Method needed by RStd::Rcontainer.
+	* Method needed by R::Rcontainer.
 	*/
 	int Compare(const GPrgInst* t) const;
 
 	/**
-	* Method needed by RStd::Rcontainer.
+	* Method needed by R::Rcontainer.
 	*/
 	int Compare(const char* t) const;
 

@@ -43,7 +43,7 @@
 // include file for GALILEI
 #include <langs/gdicts.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 

@@ -63,7 +63,7 @@ class GDocProfSim
 	/**
 	* The similarities.
 	*/
-	RStd::RContainer<GSims,unsigned int,true,true> Sims;
+	R::RContainer<GSims,unsigned int,true,true> Sims;
 
 	/**
 	* Global similarities used?
@@ -84,7 +84,7 @@ public:
 	* @param global         Global approach.
 	* @param lang           Lang of the profilesSim
 	*/
-	GDocProfSim(GDocs* d,RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* lang=0) throw(bad_alloc);
+	GDocProfSim(GDocs* d,R::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* lang=0) throw(bad_alloc);
 
 	/**
 	* Constructor.
@@ -93,7 +93,7 @@ public:
 	* @param global         Global approach.
 	* @param lang           Lang of the profilesSim
 	*/
-	GDocProfSim(GDocs* d,RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global,GLang* lang=0) throw(bad_alloc);
+	GDocProfSim(GDocs* d,R::RContainer<GSubProfile,unsigned int,false,true>& s,bool global,GLang* lang=0) throw(bad_alloc);
 
 
 	/**
@@ -146,17 +146,17 @@ public:
 	tObjState GetState(unsigned int doc_id, unsigned int prof_id);
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GLang* l) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GDocProfSim& docProfSim) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GDocProfSim* docProfSim) const;
 

@@ -136,17 +136,17 @@ public :
 	GGroupHistory* GetParent(void);
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GIWordsWeightsHistory& giwwh) const ;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	 int Compare(const GIWordsWeightsHistory* giwwh) const ;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(unsigned int id) const ;
 

@@ -48,7 +48,7 @@
 #include <profiles/gprofdoc.h>
 #include <postgroups/gpointofview.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 
@@ -200,7 +200,7 @@ unsigned int GALILEI::GGroup::GetNbSubProfiles(GGroup* grp)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroup::NotJudgedDocsList(RStd::RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s)
+void GALILEI::GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s)
 {
 	GSubProfile** tab;
 	unsigned int i;
@@ -262,7 +262,7 @@ void GALILEI::GGroup::NotJudgedDocsList(RStd::RContainer<GProfDoc,unsigned,false
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global)
+void GALILEI::GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global)
 {
 	GSubProfile** tab;
 	unsigned int i;

@@ -55,7 +55,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Tests.
 */
-class GTests : public RStd::RContainer<GTest,RStd::tId,true,true>
+class GTests : public R::RContainer<GTest,R::tId,true,true>
 {
 public:
 	/**

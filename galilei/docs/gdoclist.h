@@ -62,7 +62,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Documents' List.
 */
-class GDocList : public RStd::RContainer<GDoc,unsigned int,false,true>
+class GDocList : public R::RContainer<GDoc,unsigned int,false,true>
 {
 public:
 

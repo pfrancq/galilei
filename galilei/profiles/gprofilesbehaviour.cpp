@@ -47,6 +47,7 @@
 #include <profiles/gusers.h>
 #include <langs/glang.h>
 using namespace GALILEI;
+using namespace R;
 
 
 
@@ -59,7 +60,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GBehaviours::GBehaviours(unsigned int id,unsigned int max) throw(bad_alloc)
-	: RStd::RContainer<GBehaviour,unsigned int,true,false>(max,max/2), Id(id)
+	: RContainer<GBehaviour,unsigned int,true,false>(max,max/2), Id(id)
 {
 }
 
@@ -71,7 +72,7 @@ GALILEI::GBehaviours::GBehaviours(unsigned int id,unsigned int max) throw(bad_al
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfilesBehaviour::GProfilesBehaviour(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,GLang* l) throw(bad_alloc)
+GALILEI::GProfilesBehaviour::GProfilesBehaviour(RContainer<GSubProfile,unsigned int,false,true>* s,GLang* l) throw(bad_alloc)
 	: Behaviours(s->NbPtr,s->NbPtr<50?50:s->NbPtr/2),Lang(l)
 {
 	GSubProfileCursor Cur1, Cur2;

@@ -71,7 +71,7 @@ protected:
 	/**
 	* Value of the metadata.
 	*/
-	RStd::RString Value;
+	R::RString Value;
 
 public:
 
@@ -83,17 +83,17 @@ public:
 	GDCMetaData(MetaDataType type,const char val) throw(bad_alloc);
 
 	/**
-	* Compare function used by RStd::RContainer.
+	* Compare function used by R::RContainer.
 	*/
 	int Compare(const GDCMetaData* mt) const;
 
 	/**
-	* Compare function used by RStd::RContainer.
+	* Compare function used by R::RContainer.
 	*/
 	int Compare(const GDCMetaData& mt) const;
 
 	/**
-	* Compare function used by RStd::RContainer.
+	* Compare function used by R::RContainer.
 	*/
 	int Compare(const MetaDataType t) const;
 

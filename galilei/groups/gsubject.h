@@ -63,7 +63,7 @@ namespace GALILEI{
 * @author Pascal Francq & Julien Lamoral
 * @short  Subject
 */
-class GSubject: public RStd::RNode<GSubject,false>
+class GSubject: public R::RNode<GSubject,false>
 {
 protected:
 
@@ -75,7 +75,7 @@ protected:
 	/**
 	* The name of the subject.
 	*/
-	RString Name;
+	R::RString Name;
 
 	/**
 	* true if the subsubject is used.
@@ -90,12 +90,12 @@ protected:
 	/**
 	* Documents in the subject.
 	*/
-	RStd::RContainer<GDoc,unsigned,false,true> Docs;
+	R::RContainer<GDoc,unsigned,false,true> Docs;
 
 	/**
 	* Sub-profiles in the subject.
 	*/
-	RStd::RContainer<GSubProfile,unsigned,false,true> SubProfiles;
+	R::RContainer<GSubProfile,unsigned,false,true> SubProfiles;
 
 public:
 

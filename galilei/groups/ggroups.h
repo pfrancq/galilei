@@ -55,7 +55,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Languages Groups.
 */
-class GGroups : public RStd::RContainer<GGroup,unsigned int,true,true>
+class GGroups : public R::RContainer<GGroup,unsigned int,true,true>
 {
 	/**
 	* Language corresponding to the set of groups.
@@ -77,17 +77,17 @@ public:
 	GGroups(GGroups* grps) throw(bad_alloc);
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroups& groups) const;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroups* groups) const;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GLang* lang) const;
 

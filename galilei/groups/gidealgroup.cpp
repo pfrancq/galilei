@@ -35,17 +35,16 @@
 
 
 //-----------------------------------------------------------------------------
-// inluce files for R-Project
-#include <rio/rtextfile.h>
-using namespace RIO;
-#include <rstd/rcontainer.h>
-using namespace RStd;
+// include files for ANSI C/C++
+#include <iostream>
+#include <stdlib.h>
 
 
 //-----------------------------------------------------------------------------
-//include specific files
-#include <iostream>
-#include <stdlib.h>
+// inluce files for R Project
+#include <rstd/rtextfile.h>
+#include <rstd/rcontainer.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -70,6 +69,7 @@ using namespace RStd;
 using namespace GALILEI;
 
 
+
 //-----------------------------------------------------------------------------
 //
 //  GIdealGroup
@@ -79,7 +79,7 @@ using namespace GALILEI;
 GALILEI::GIdealGroup::GIdealGroup(GSession* session)
 	: Session(session), Docs(0), NbDocs(0), LastAdded(50,25)
 {
-	RTimeDate::RDate date;
+	RDate date;
 
 	PercOK=10;
 	PercKO=10;
@@ -152,7 +152,7 @@ void GALILEI::GIdealGroup::CreateSet(void)
 	GSubjectCursor Subs;
 	GSubProfileCursor Prof;
 	unsigned int nbprof,nbsocial;
-	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+	RContainer<GGroups,unsigned int,true,true>* IdealGroups;
 	GGroups* CurGrps;
 	GGroup* Grp;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;

@@ -39,6 +39,13 @@
 
 
 //-----------------------------------------------------------------------------
+//include files for R Project
+#include <rstd/random.h>
+#include <rstd/rtextfile.h>
+using namespace R;
+
+
+//-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <groups/ggroupingsupkmeans.h>
 #include <groups/ggroupingkcos.h>
@@ -59,14 +66,6 @@
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-//include files for R
-#include <rmath/random.h>
-#include <rio/rtextfile.h>
-
-
-
-using namespace RMath;
 
 
 //-----------------------------------------------------------------------------

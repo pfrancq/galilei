@@ -33,8 +33,8 @@
 
 //------------------------------------------------------------------------------
 // include files for R
-#include <rxml/rxmltag.h>
-using namespace RXML;
+#include <rstd/rxmltag.h>
+using namespace R;
 
 
 //------------------------------------------------------------------------------
@@ -43,7 +43,6 @@ using namespace RXML;
 #include <network/gsocketport.h>
 using namespace GALILEI;
 using namespace ost;
-using namespace RIO;
 
 
 
@@ -96,7 +95,7 @@ GBridge::GBridge(RXMLStruct* s,InetHostAddress& machine)
 	  TCPSocket(machine,atoi(s->GetTag("Entry")->GetAttrValue("Port"))), Thread(),
 	  Config(s), Log(0)
 {
-	Log=new RIO::RTextFile(s->GetTag("Log")->GetAttrValue("File"),Append);
+	Log=new RTextFile(s->GetTag("Log")->GetAttrValue("File"),Append);
 	Log->WriteLog("GALILEI Server launch up");
 }
 

@@ -42,6 +42,8 @@
 //-----------------------------------------------------------------------------
 // include files for RStd
 #include <rstd/rcontainer.h>
+using namespace R;
+
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
@@ -53,10 +55,8 @@
 #include <langs/glang.h>
 #include <docs/gdocs.h>
 #include <docs/gdoc.h>
-
-
-
 using namespace GALILEI;
+
 
 
 //-----------------------------------------------------------------------------
@@ -91,7 +91,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GALILEI::GDocProfSim::GSims : public RStd::RContainer<GSim,unsigned int,true,true>
+class GALILEI::GDocProfSim::GSims : public RContainer<GSim,unsigned int,true,true>
 {
 public:
 	unsigned int Id;         // Identifier of the first profile
@@ -105,7 +105,7 @@ public:
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocProfSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_alloc)
-	: RStd::RContainer<GSim,unsigned int,true,true>(max,max/2), Id(id)
+	: RContainer<GSim,unsigned int,true,true>(max,max/2), Id(id)
 {
 }
 
@@ -117,7 +117,7 @@ GALILEI::GDocProfSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_a
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocProfSim::GDocProfSim(GDocs* d, RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* l) throw(bad_alloc)
+GALILEI::GDocProfSim::GDocProfSim(GDocs* d, RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* l) throw(bad_alloc)
 		: Sims(d->GetNbDocs(l)+2,d->GetNbDocs(l)/2+1), GlobalSim(global), Lang(l) 
  {
 	GDocCursor Cur_d;
@@ -140,7 +140,7 @@ GALILEI::GDocProfSim::GDocProfSim(GDocs* d, RStd::RContainer<GSubProfile,unsigne
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocProfSim::GDocProfSim(GDocs* d, RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global,GLang* l) throw(bad_alloc)
+GALILEI::GDocProfSim::GDocProfSim(GDocs* d, RContainer<GSubProfile,unsigned int,false,true>& s,bool global,GLang* l) throw(bad_alloc)
      : Sims(d->GetNbDocs(l)+2,d->GetNbDocs(l)/2 +1), GlobalSim(global), Lang(l)
 {
 	GDocCursor Cur_d;

@@ -65,7 +65,7 @@ CLASSCURSOR(GGroupHistoryCursor,GGroupHistory,unsigned int)
 * @author David Wartel
 * @short GroupHistory.
 */
-class GGroupHistory : public RStd::RContainer<GIWordsWeightsHistory,unsigned int,false,true>
+class GGroupHistory : public R::RContainer<GIWordsWeightsHistory,unsigned int,false,true>
 {
 
 protected:
@@ -98,12 +98,12 @@ protected:
 	/**
 	* container of childrens.
 	*/
-	RStd::RContainer<GGroupHistory, unsigned int, false,true>* Childrens;
+	R::RContainer<GGroupHistory, unsigned int, false,true>* Childrens;
 
 	/**
 	* container of parents.
 	*/
-	RStd::RContainer<GGroupHistory, unsigned int, false,true>* Parents;
+	R::RContainer<GGroupHistory, unsigned int, false,true>* Parents;
 
 public:
 
@@ -155,17 +155,17 @@ public:
 	 void InsertParent(GGroupHistory* grp);
 
 	 /**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const unsigned int id) const;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroupHistory& grouph) const;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroupHistory* grouph) const;;
 

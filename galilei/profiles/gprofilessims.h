@@ -55,7 +55,7 @@ namespace GALILEI{
 * @author Pascal Francq and Valery Vandaele
 * @short SubProfiles.
 */
-class GProfilesSims : public RStd::RContainer<GProfilesSim,unsigned int,true,true>
+class GProfilesSims : public R::RContainer<GProfilesSim,unsigned int,true,true>
 {
 public:
 

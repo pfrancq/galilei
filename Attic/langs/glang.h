@@ -41,7 +41,7 @@
 // include files for R Project
 #include <rstd/rcursor.h>
 #include <rstd/rstring.h>
-#include <rinter/rlang.h>
+#include <rstd/rlang.h>
 
 
 //-----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Generic Language.
 */
-class GLang : public RInter::RLang
+class GLang : public R::RLang
 {
 protected:
 
@@ -84,7 +84,7 @@ protected:
 	class SkipWord
 	{
 	public:
-		RString Word;
+		R::RString Word;
 	
 		SkipWord(const char* w) : Word(w) {}
 		int Compare(const SkipWord* w)
@@ -95,7 +95,7 @@ protected:
 			{return(Word.Compare(w));}
 	};
 
-	RStd::RContainer<SkipWord,unsigned int,true,true> SkipWords;
+	R::RContainer<SkipWord,unsigned int,true,true> SkipWords;
 
 public:
 
@@ -104,7 +104,7 @@ public:
 	* @param lang           Name of the language.
 	* @param code           Code of the language.
 	*/
-	GLang(const RStd::RString& lang,const char* code,GDict* dict) throw(bad_alloc);
+	GLang(const R::RString& lang,const char* code,GDict* dict) throw(bad_alloc);
 
 	/**
 	* Comparaison function used by the Container.
@@ -129,7 +129,7 @@ public:
 	* @param kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/
-	virtual RString& GetStemming(const RStd::RString& kwd);
+	virtual R::RString& GetStemming(const R::RString& kwd);
 
 	void SetMult(double m) {mult=m;}
 	double GetMult() {return(mult);}
@@ -138,7 +138,7 @@ public:
 	* See if a given word is a valid one, don't content text and numbers that
 	* are to skip.
 	*/
-	bool ValidWord(const RStd::RString& kwd);
+	bool ValidWord(const R::RString& kwd);
 
 	/**
 	* Assign the dictionnary to the lang.

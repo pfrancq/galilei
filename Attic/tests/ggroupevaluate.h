@@ -140,15 +140,15 @@ public:
 	/**
 	* Return the name of the group
 	*/
-	virtual RStd::RString GetName(void)=0;
+	virtual R::RString GetName(void)=0;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroupEvaluate& ) const;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroupEvaluate* ) const;
 

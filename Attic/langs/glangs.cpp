@@ -52,7 +52,7 @@
 #include <langs/glangfr.h>
 #include <langs/gdicts.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 

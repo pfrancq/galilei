@@ -50,6 +50,7 @@
 	#include <groups/gsubject.h>
 #endif
 using namespace GALILEI;
+using namespace R;
 
 
 
@@ -81,7 +82,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GStatSimDoc::GStatSimDoc(GSession* ses,RIO::RTextFile* f,bool g,bool l)
+GALILEI::GStatSimDoc::GStatSimDoc(GSession* ses,RTextFile* f,bool g,bool l)
 	: Session(ses), Global(g), Local(l), File(f), Sub(100,50)
 {
 	if(File)

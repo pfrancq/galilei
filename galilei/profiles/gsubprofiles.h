@@ -55,7 +55,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short SubProfiles.
 */
-class GSubProfiles : public RStd::RContainer<GSubProfile,unsigned int,true,true>
+class GSubProfiles : public R::RContainer<GSubProfile,unsigned int,true,true>
 {
 protected:
 
@@ -74,17 +74,17 @@ public:
 	GSubProfiles(GLang* lang,unsigned int s) throw(bad_alloc);
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GLang* lang) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GSubProfiles& s) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GSubProfiles* s) const;
 

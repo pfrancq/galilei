@@ -47,7 +47,7 @@
 #include <langs/glang.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 
@@ -105,7 +105,7 @@ void GALILEI::GDict::PutDirect(GWord* word) throw(bad_alloc)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GDict::Put(unsigned id,const RStd::RString& word) throw(bad_alloc)
+void GALILEI::GDict::Put(unsigned id,const RString& word) throw(bad_alloc)
 {
 	GWordList* wordlist;
 	GWord Word(id,word),*ptr;

@@ -105,31 +105,31 @@ public :
 	GDoc* GetDoc(void) const {return Doc; }
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param doc            Pointer to the document used for the comparaison.
 	*/
 	int Compare(const GDocRefUrl* doc) const;
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param doc            Document used for the comparaison.
 	*/
 	int Compare(const  GDocRefUrl& doc) const;
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param doc            Pointer to the document used for the comparaison.
 	*/
 	int Compare(const GDoc* doc) const;
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param doc            Document used for the comparaison.
 	*/
 	int Compare(const GDoc& doc) const;
 
 		/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param url            the url used for the comparaison.
 	*/
 	int Compare(const char* url) const;

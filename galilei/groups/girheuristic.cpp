@@ -44,7 +44,7 @@
 #include <groups/gobjir.h>
 #include <groups/ginstir.h>
 using namespace GALILEI;
-using namespace RGGA;
+using namespace R;
 
 
 
@@ -55,8 +55,8 @@ using namespace RGGA;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GIRHeuristic::GIRHeuristic(RRandom* r,RStd::RCursor<GObjIR,unsigned int>* objs)
-	: RGGA::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>("IR Heuristic",r,objs)
+GALILEI::GIRHeuristic::GIRHeuristic(RRandom* r,RCursor<GObjIR,unsigned int>* objs)
+	: RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>("IR Heuristic",r,objs)
 {
 }
 
@@ -64,12 +64,12 @@ GALILEI::GIRHeuristic::GIRHeuristic(RRandom* r,RStd::RCursor<GObjIR,unsigned int
 //-----------------------------------------------------------------------------
 void GALILEI::GIRHeuristic::Init(GChromoIR* groups)
 {
-	RGGA::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Init(groups);
+	RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Init(groups);
 }
 
 
 //-----------------------------------------------------------------------------
-GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGA::eGA)
+GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(eGA)
 {
 	GGroupIR* grp;
 	double maxsim;
@@ -129,7 +129,7 @@ GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGA::eGA)
 
 //-----------------------------------------------------------------------------
 
-void GALILEI::GIRHeuristic::PostRun(void) throw(RGA::eGA)
+void GALILEI::GIRHeuristic::PostRun(void) throw(eGA)
 {
 	GObjIR* obj;
 	GGroupIRCursor Cur1,Cur2;

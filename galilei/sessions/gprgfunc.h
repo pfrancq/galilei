@@ -61,7 +61,7 @@ protected:
 	/**
 	* Name of the function.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 public:
 
@@ -72,12 +72,12 @@ public:
 	GPrgFunc(const char* name) throw(bad_alloc);
 
 	/**
-	* Method needed by RStd::Rcontainer.
+	* Method needed by R::Rcontainer.
 	*/
 	int Compare(const GPrgFunc* t) const;
 
 	/**
-	* Method needed by RStd::Rcontainer.
+	* Method needed by R::Rcontainer.
 	*/
 	int Compare(const char* t) const;
 
@@ -87,7 +87,7 @@ public:
 	* @param r              Receiver.
 	* @param args           Parameters.
 	*/
-	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 	
 	/**
 	* Destructor.

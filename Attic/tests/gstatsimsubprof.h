@@ -129,12 +129,12 @@ protected:
 	/**
 	* Statistics Output file.
 	*/
-	RIO::RTextFile* File;
+	R::RTextFile* File;
 
 	/**
 	* Container of statistics on the subjects.
 	*/
-	RStd::RContainer<LocalStat,unsigned int,true,true> Sub;
+	R::RContainer<LocalStat,unsigned int,true,true> Sub;
 
 public:
 
@@ -145,7 +145,7 @@ public:
 	* @param g              Global Similarity.
 	* @param l              Local Similarity.
 	*/
-	GStatSimSubProf(GSession* ses,RIO::RTextFile* f,bool g,bool l);
+	GStatSimSubProf(GSession* ses,R::RTextFile* f,bool g,bool l);
 
 	/**
 	* Get the average intra-group similarity (Local).

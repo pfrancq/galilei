@@ -51,9 +51,10 @@
 
 //---------------------------------------------------------------------------
 // include files for GALILEI
-#include "gfilterreu.h"
+#include <filters/gfilterreu.h>
 #include <filters/codetochar.h>
 using namespace GALILEI;
+using namespace R;
 
 
 

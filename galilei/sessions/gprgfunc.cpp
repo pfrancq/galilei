@@ -46,6 +46,8 @@
 #include <sessions/gprgfunc.h>
 #include <sessions/gprgvar.h>
 using namespace GALILEI;
+using namespace R;
+
 
 
 //-----------------------------------------------------------------------------
@@ -76,7 +78,7 @@ int GALILEI::GPrgFunc::Compare(const char* t) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GPrgFunc::Run(GSessionPrg*,GSlot*,RStd::RContainer<GPrgVar,unsigned int,true,false>*) throw(GException)
+void GALILEI::GPrgFunc::Run(GSessionPrg*,GSlot*,RContainer<GPrgVar,unsigned int,true,false>*) throw(GException)
 {
 }
 

@@ -71,7 +71,7 @@ class GDocRefUrl;
 * @author Pascal Francq
 * @short List of documents.
 */
-class GDocs : public RStd::RContainer<GDoc,unsigned,true,true>
+class GDocs : public R::RContainer<GDoc,unsigned,true,true>
 {
 protected:
 
@@ -85,12 +85,12 @@ public:
 	/**
 	* A container of GDocsLang in which all the docs from a specific langage are stocked
 	*/
-	RStd::RContainer<GDocsLang,unsigned int,true,true> DocsLang;
+	R::RContainer<GDocsLang,unsigned int,true,true> DocsLang;
 
 	/**
 	* A container of GDocRefUrl in which all the docs stocked by url.
 	*/
-	RStd::RContainer<GDocRefUrl,unsigned int,true,true> DocsRefUrl;
+	R::RContainer<GDocRefUrl,unsigned int,true,true> DocsRefUrl;
 
 	/**
 	* Constructor.

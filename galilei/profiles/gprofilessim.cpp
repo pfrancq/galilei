@@ -46,10 +46,9 @@
 #include <profiles/gprofile.h>
 #include <profiles/gusers.h>
 #include <langs/glang.h>
-
-
-
 using namespace GALILEI;
+using namespace R;
+
 
 
 //-----------------------------------------------------------------------------
@@ -84,7 +83,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GALILEI::GProfilesSim::GSims : public RStd::RContainer<GSim,unsigned int,true,false>
+class GALILEI::GProfilesSim::GSims : public RContainer<GSim,unsigned int,true,false>
 {
 public:
 	unsigned int Id;         // Identifier of the first profile
@@ -98,7 +97,7 @@ public:
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_alloc)
-	: RStd::RContainer<GSim,unsigned int,true,false>(max,max/2), Id(id)
+	: RContainer<GSim,unsigned int,true,false>(max,max/2), Id(id)
 {
 }
 
@@ -110,7 +109,7 @@ GALILEI::GProfilesSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* l) throw(bad_alloc)
+GALILEI::GProfilesSim::GProfilesSim(RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* l) throw(bad_alloc)
 	: Sims(s->NbPtr,s->NbPtr<50?50:s->NbPtr/2), GlobalSim(global), Lang(l) 
 {
 	GSubProfileCursor Cur1, Cur2;
@@ -304,7 +303,7 @@ void  GALILEI::GProfilesSim::UpdateProfSim(bool global)throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* subprofiles)
+void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RContainer<GSubProfile,unsigned int,false,true>* subprofiles)
 {
 	GSim* sim;
 	GSims* sims;

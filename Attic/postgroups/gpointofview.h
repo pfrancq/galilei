@@ -70,12 +70,12 @@ public :
 	/**
 	*
 	*/
-	GDispatchpov( RStd::RContainer<GGroups,unsigned int,true,true>* groups  )throw(bad_alloc);
+	GDispatchpov( R::RContainer<GGroups,unsigned int,true,true>* groups  )throw(bad_alloc);
 
  	/**
 	*
 	*/
-	GDispatchpov( RStd::RContainer<GGroup,unsigned int,true,true>* group ) throw(bad_alloc);
+	GDispatchpov( R::RContainer<GGroup,unsigned int,true,true>* group ) throw(bad_alloc);
 
   	/**
 	*
@@ -90,7 +90,7 @@ public :
 	/**
 	*
 	*/
-	void GeneratePoV(RStd::RContainer<GGroups,unsigned int,true,true>* groups);
+	void GeneratePoV(R::RContainer<GGroups,unsigned int,true,true>* groups);
 
 	/**
 	* build the hierarchy of expert kwds for all the profiles af all the group
@@ -307,7 +307,7 @@ public :
 	/**
 	* RContainer of standard outputs
 	*/
-	RStd::RContainer<StandardOutPut,unsigned,false,true>* StdOutPut;
+	R::RContainer<StandardOutPut,unsigned,false,true>* StdOutPut;
 
 	/**
 	* Cursor on the Rcontainer that contains the outputs of the ExpertKwds
@@ -388,7 +388,7 @@ public :
 	/**
 	* Rontainer of expert kwds
 	*/
-	//     RStd::RContainer<GCpov,unsigned,false,true>* GCpovs;
+	//     R::RContainer<GCpov,unsigned,false,true>* GCpovs;
 
 	/**
 	* compare function
@@ -476,7 +476,7 @@ public :
 	/**
 	* compare function
 	*/
-	RStd::RContainer<ExpertKwds,unsigned,false,true>* IsInDocs;
+	R::RContainer<ExpertKwds,unsigned,false,true>* IsInDocs;
 
 	/**
 	* compare funct  ion
@@ -637,13 +637,13 @@ public :
 	/**
 	*Container kwds
 	*/
-	RStd::RContainer<ExpertKwds,unsigned int,false,true> *ChainPov;
+	R::RContainer<ExpertKwds,unsigned int,false,true> *ChainPov;
 
 	/**
 	* container of POV
 	* .
 	*/
-	RStd::RContainer<GCpov,unsigned int,false,true>* Pov;
+	R::RContainer<GCpov,unsigned int,false,true>* Pov;
 
 	/**
 	* langage used

@@ -62,7 +62,7 @@ namespace GALILEI {
 * @author Pascal Francq
 * @short IR Chromosome.
 */
-class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
+class GChromoIR : public R::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
 {
 private:
 	/**
@@ -173,7 +173,7 @@ private:
 	/**
 	* Prototypes used for the KMeans.
 	*/
-	RContainer<GObjIR,tId,false,true> Protos;
+	R::RContainer<GObjIR,R::tId,false,true> Protos;
 
 	/**
 	* Test Chromosome (Thread dependent data).
@@ -188,12 +188,12 @@ private:
 	/**
 	* Array of solutions to create in PROMETHEE Kernel.
 	*/
-	RPromethee::RPromSol** thSols;
+	R::RPromSol** thSols;
 
 	/**
 	* Container of document.
 	*/
-	RStd::RContainer<GDocSim,unsigned,true,false> Docs;
+	R::RContainer<GDocSim,unsigned,true,false> Docs;
 
 #if GALILEITEST
 
@@ -230,7 +230,7 @@ public:
 	virtual void Init(GThreadDataIR* thData) throw(bad_alloc);
 
 	/**
-	* Method needed by RStd::RContainer.
+	* Method needed by R::RContainer.
 	*/
 	int Compare(const GChromoIR* c) const;
 
@@ -257,7 +257,7 @@ public:
 	* @param s              Session.
 	* param ideal           Ideal grouprement.
 	*/
-	void CompareIdeal(GSession* s,RStd::RContainer<GGroups,unsigned int,true,true>* ideal);
+	void CompareIdeal(GSession* s,R::RContainer<GGroups,unsigned int,true,true>* ideal);
 
 #endif
 
@@ -279,13 +279,13 @@ public:
 	/**
 	* Construct the chromosome to be the same as grps.
 	*/
-	void ConstructChromo(GGroups* grps) throw(RGA::eGA);
+	void ConstructChromo(GGroups* grps) throw(R::eGA);
 
 	/**
 	* Construct a valid solution.
 	* @return The function must retrun true if a solution has been constructed.
 	*/
-	virtual void RandomConstruct(void) throw(RGA::eGA);
+	virtual void RandomConstruct(void) throw(R::eGA);
 
 	/**
 	* Evaluate the similarity of the solution using the "AvgSim" measure.
@@ -366,32 +366,32 @@ public:
 	/**
 	* Evaluation of the chromosome.
 	*/
-	virtual void Evaluate(void) throw(RGA::eGA);
+	virtual void Evaluate(void) throw(R::eGA);
 
 	/**
 	*  Reallocate the objects to the groups based on the different prototypes.
 	*/
-	void ReAllocate(void) throw(RGA::eGA);
+	void ReAllocate(void) throw(R::eGA);
 
 	/**
 	* Calc the number of new prototypes until the last K-Means iteration.
 	*/
-	unsigned int CalcNewProtosNb(void) throw(RGA::eGA);
+	unsigned int CalcNewProtosNb(void) throw(R::eGA);
 
 	/**
 	* Perform a K-Means on the chromosome.
 	*/
-	void DoKMeans(void) throw(RGA::eGA);
+	void DoKMeans(void) throw(R::eGA);
 
 	/**
 	* Divide the group containing the two most dissimilar subprofiles.
 	*/
-	void DivideWorstSubProfiles(void) throw(RGA::eGA);
+	void DivideWorstSubProfiles(void) throw(R::eGA);
 
 	/**
 	* Merge the two groups containing the two most similar subprofiles.
 	*/
-	void MergeBestSubProfiles(void) throw(RGA::eGA);
+	void MergeBestSubProfiles(void) throw(R::eGA);
 
 	/**
 	* Treat the social subprofiles, i.e. if these subprofiles are alone in a group,
@@ -405,12 +405,12 @@ public:
 	/**
 	* Perform an optimisation.
 	*/
-	virtual void Optimisation(void) throw(RGA::eGA);
+	virtual void Optimisation(void) throw(R::eGA);
 
 	/**
 	* Do the standard mutation of the GGA.
 	*/
-	virtual void Modify(void) throw(RGA::eGA);
+	virtual void Modify(void) throw(R::eGA);
 
 	/**
 	* Look if two subprofiles are in the same group or not.

@@ -74,12 +74,12 @@ protected:
 	/**
 	* Ideal Groups handled by the system.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+	R::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
 
 	/**
 	* Pointer to the ideal Docs
 	*/
-	RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDocs;
+	R::RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDocs;
 
 	/**
 	* Pointer to a tree of subject
@@ -89,12 +89,12 @@ protected:
 	/**
 	* All the judgements.
 	*/
-	RStd::RContainer<GProfDoc,unsigned,true,true> Fdbks;
+	R::RContainer<GProfDoc,unsigned,true,true> Fdbks;
 
 	/**
 	* Container of computing method for the profiles.
 	*/
-	RStd::RContainer<GSubProfileDesc,unsigned int,true,true>* SubProfileDescs;
+	R::RContainer<GSubProfileDesc,unsigned int,true,true>* SubProfileDescs;
 
 	/**
 	* Current method used to computed the profiles.
@@ -104,7 +104,7 @@ protected:
 	/**
 	* Container of computing method for the profiles.
 	*/
-	RStd::RContainer<GProfileCalc,unsigned int,true,true>* ProfileCalcs;
+	R::RContainer<GProfileCalc,unsigned int,true,true>* ProfileCalcs;
 
 	/**
 	* Current method used to computed the profiles.
@@ -114,7 +114,7 @@ protected:
 	/**
 	* Container of grouping method for the profiles.
 	*/
-	RStd::RContainer<GGrouping,RStd::tId,true,true>* Groupings;
+	R::RContainer<GGrouping,R::tId,true,true>* Groupings;
 
 	/**
 	* Current grouping method used.
@@ -124,7 +124,7 @@ protected:
 	/**
 	* Container of group description method.
 	*/
-	RStd::RContainer<GGroupCalc,RStd::tId,true,true>* GroupCalcs;
+	R::RContainer<GGroupCalc,R::tId,true,true>* GroupCalcs;
 
 	/**
 	* Current group description method used.
@@ -134,7 +134,7 @@ protected:
 	/**
 	* Container of link description method.
 	*/
-	RStd::RContainer<GLinkCalc,unsigned int,true,true>* LinkCalcs;
+	R::RContainer<GLinkCalc,unsigned int,true,true>* LinkCalcs;
 
 	/**
 	* Current link description method used.
@@ -189,7 +189,7 @@ protected:
 	/**
 	* Random number generator
 	*/
-	RMath::RRandom* Random;
+	R::RRandom* Random;
 
 public:
 
@@ -218,9 +218,9 @@ public:
 
 	/**
 	* Get the ideal groups of the session
-	* @return Pointer to RStd::RContainer<GGroups,unsigned int,true,true>.
+	* @return Pointer to R::RContainer<GGroups,unsigned int,true,true>.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true>* GetIdealGroups(void);
+	R::RContainer<GGroups,unsigned int,true,true>* GetIdealGroups(void);
 
 	/**
 	* Get a cursor over the ideal groups of the system.
@@ -230,7 +230,7 @@ public:
 	/**
 	* Get a pointer to the ideal docs
 	*/
-	RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* GetIdealDocs(void);
+	R::RContainer<GGroupsEvaluate,unsigned int,false,false>* GetIdealDocs(void);
 
 	/**
 	* Get a cursor over the ideal documents of the system.
@@ -517,7 +517,7 @@ public:
 	*  caculated
 	* @param deviationrate  factor of the standart deviation.
 	*/
-	double GetMinimumOfSimilarity(RStd::RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate=1.5);
+	double GetMinimumOfSimilarity(R::RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate=1.5);
 
 	/**
 	* Initialise the table of similarity between documents and profiles
@@ -655,7 +655,7 @@ public:
 	* @param id             Identificator.
 	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
 	*/
-	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true> * mixedgroups,unsigned int id, bool historic=false)=0;
+	virtual void SaveMixedGroups(R::RContainer<GGroups,unsigned int,true,true> * mixedgroups,unsigned int id, bool historic=false)=0;
 
 	/**
 	* Save profiles in history
@@ -692,7 +692,7 @@ public:
 	* Save the ideal groupment
 	* @param idealgroup   The ideal container of group	
 	*/
-	virtual void SaveIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup)=0;
+	virtual void SaveIdealGroupment(R::RContainer<GGroups,unsigned int,true,true>* idealgroup)=0;
 
 	/**
 	* Save the feedbaks
@@ -711,7 +711,7 @@ public:
 	* @param objs           Objects.
 	* @param lang           The lang of the subprofiles in the chromosome. 
 	*/
-	virtual void SaveChromo(GChromoIR* chromo,unsigned int id,RGA::RObjs<GObjIR>* objs)=0;
+	virtual void SaveChromo(GChromoIR* chromo,unsigned int id,R::RObjs<GObjIR>* objs)=0;
 
 	/**
 	* Load a instance of chromosome for statisical use only.
@@ -720,7 +720,7 @@ public:
 	* @param p              Parameters.
 	* @return pointer to a Ginstir
 	*/
-	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GIRParams* p)=0;
+	virtual GInstIR* LoadInstIR(GLang* lang,R::RObjs<GObjIR>* objs,GIRParams* p)=0;
 
 	/**
 	* Save The Documents Simylarities into the database.
@@ -765,19 +765,19 @@ public:
 
 	/**
 	* Get the random number generator.
-	* @returns Pointer to RMath::RRandom;
+	* @returns Pointer to R::RRandom;
 	*/
-	RMath::RRandom* GetRandom(void) const {return(Random);}
+	R::RRandom* GetRandom(void) const {return(Random);}
 
 	/**
 	* load the historic groups.
 	*/
-	RStd::RContainer<GGroupsHistory, unsigned int, false,true>* LoadHistoricGroups (RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen);
+	R::RContainer<GGroupsHistory, unsigned int, false,true>* LoadHistoricGroups (R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen);
 
 	/*
 	* load an historic groups.
 	*/
-	virtual GGroupsHistory* LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID)=0;
+	virtual GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID)=0;
 
 	/**
 	*returns the number of historic groups stored in database.

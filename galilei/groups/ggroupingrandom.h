@@ -41,8 +41,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rmath/random.h>
-using namespace RMath;
+#include <rstd/random.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------

@@ -37,7 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcursor.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -57,8 +57,6 @@ using namespace RStd;
 #include <langs/glang.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
-using namespace RPromethee;
-using namespace RGA;
 
 
 
@@ -267,7 +265,7 @@ void GALILEI::GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo) throw(b
 		gr=chromo->Used();
 		g=NewGroup(Lang);
 		ptr=tab=gr->GetObjectsId();
-		while((*ptr)!=RGGA::NoObject)
+		while((*ptr)!=NoObject)
 			g->InsertSubProfile(Objs->Tab[*(ptr++)]->GetSubProfile());
 		delete[] tab;
 	}
@@ -288,7 +286,7 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 	try
 	{
 	 	GGroupDataIR data;
-		Objs=new RGA::RObjs<GObjIR>(SubProfiles.NbPtr);
+		Objs=new RObjs<GObjIR>(SubProfiles.NbPtr);
 		for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
 		{
 			Objs->InsertPtr(obj=new GObjIR(i,SubProfiles()));

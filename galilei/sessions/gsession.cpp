@@ -35,12 +35,10 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rmath/random.h>
-using namespace RMath;
+#include <rstd/random.h>
 #include <rstd/rcursor.h>
-using namespace RStd;
-#include <rio/rtextfile.h>
-using namespace RIO;
+#include <rstd/rtextfile.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -74,7 +72,7 @@ using namespace RIO;
 #include <groups/ggrouping.h>
 #include <groups/ggroupcalc.h>
 #include <profiles/gprofilecalc.h>
-#include <urlmanagers/gurlmanager.h>
+#include <filters/gurlmanager.h>
 #include <filters/gfilter.h>
 #include <filters/gmimefilter.h>
 #include <infos/giwordweight.h>
@@ -98,15 +96,15 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	
 {
 	GLangCursor Langs;
-	IdealGroups= new RStd::RContainer<GALILEI::GGroups, unsigned int, true, true> (g+g/2,g/2);
-	IdealDocs=new RStd::RContainer<GALILEI::GGroupsEvaluate, unsigned int, false, false> (2,1);
+	IdealGroups= new RContainer<GALILEI::GGroups, unsigned int, true, true> (g+g/2,g/2);
+	IdealDocs=new RContainer<GALILEI::GGroupsEvaluate, unsigned int, false, false> (2,1);
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Groups.InsertPtr(new GGroups(Langs()));
 	ProfileCalcs=new RContainer<GProfileCalc,unsigned int,true,true>(3,3);
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
-	Groupings=new RContainer<GGrouping,RStd::tId,true,true>(3,3);
-	GroupCalcs=new RContainer<GGroupCalc,RStd::tId,true,true>(2,3);
+	Groupings=new RContainer<GGrouping,tId,true,true>(3,3);
+	GroupCalcs=new RContainer<GGroupCalc,tId,true,true>(2,3);
 	LinkCalcs=new RContainer<GLinkCalc,unsigned int,true,true>(3,2);
 	DocOptions=new GDocOptions();
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
@@ -143,7 +141,7 @@ GSubProfileDescCursor& GALILEI::GSession::GetProfileDescsCursor(void)
 }
 
 //-----------------------------------------------------------------------------
-RStd::RContainer<GGroups,unsigned int,true,true>* GALILEI::GSession::GetIdealGroups(void)
+RContainer<GGroups,unsigned int,true,true>* GALILEI::GSession::GetIdealGroups(void)
 {
 	return(IdealGroups);
 }
@@ -159,7 +157,7 @@ GGroupsCursor& GALILEI::GSession::GetIdealGroupsCursor(void)
 
 
 //-----------------------------------------------------------------------------
-RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* GALILEI::GSession::GetIdealDocs(void)
+RContainer<GGroupsEvaluate,unsigned int,false,false>* GALILEI::GSession::GetIdealDocs(void)
 {
 	return(IdealDocs);
 }
@@ -646,7 +644,7 @@ double GALILEI::GSession::GetDisAgreementRatio(GSubProfile* sub1,GSubProfile* su
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSession::GetMinimumOfSimilarity(RStd::RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate)
+double GALILEI::GSession::GetMinimumOfSimilarity(RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate)
 {
 	double meanSim;
 	double deviation;
@@ -997,7 +995,7 @@ int GALILEI::GSession::GetCurrentRandomValue(unsigned int max)
 
 
 //-----------------------------------------------------------------------------
-RStd::RContainer<GGroupsHistory, unsigned int, false,true>* GALILEI::GSession::LoadHistoricGroups (RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen)
+RContainer<GGroupsHistory, unsigned int, false,true>* GALILEI::GSession::LoadHistoricGroups (RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen)
 {
 	unsigned int i;
 	GGroupsHistory* hgrps;

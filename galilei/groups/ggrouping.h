@@ -60,7 +60,7 @@ class GGrouping
 	/**
 	* Name of the grouping.
 	*/
-	RStd::RString GroupingName;
+	R::RString GroupingName;
 
 protected:
 
@@ -82,7 +82,7 @@ protected:
 	/**
 	* SubProfiles that must be grouped again.
 	*/
-	RStd::RContainer<GSubProfile,unsigned int,false,true> SubProfiles;
+	R::RContainer<GSubProfile,unsigned int,false,true> SubProfiles;
 
 	/**
 	* Type of the description used to group.
@@ -92,7 +92,7 @@ protected:
 	/**
 	* Groups to destruct after the grouping.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true> DeletedGroups;
+	R::RContainer<GGroups,unsigned int,true,true> DeletedGroups;
 
 	/**
 	* Must the groups be save in the database.
@@ -107,7 +107,7 @@ protected:
 	/**
 	* Ideal Groups.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+	R::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
 
 public:
 
@@ -144,17 +144,17 @@ public:
 	virtual void SetParam(const char* param,const char* value);
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const GGrouping* grp) const;
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const GGrouping& grp) const;
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const char* name) const;
 
@@ -172,7 +172,7 @@ public:
 	* Set the ideal groups.
 	* @param ideal          Pointer to the ideal groups.
 	*/
-	void SetIdealGroups(RStd::RContainer<GGroups,unsigned int,true,true>* ideal) {IdealGroups=ideal;}
+	void SetIdealGroups(R::RContainer<GGroups,unsigned int,true,true>* ideal) {IdealGroups=ideal;}
 
 protected:
 

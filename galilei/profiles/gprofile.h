@@ -49,7 +49,7 @@
 #include <rstd/rcontainer.h>
 #include <rstd/rcursor.h>
 #include <rstd/rstring.h>
-#include <rtimedate/rdate.h>
+#include <rstd/rdate.h>
 
 
 //-----------------------------------------------------------------------------
@@ -79,7 +79,7 @@ class GLang;
 * @author Pascal Francq
 * @short Profile.
 */
-class GProfile : public RStd::RContainer<GSubProfile,unsigned,false,true>
+class GProfile : public R::RContainer<GSubProfile,unsigned,false,true>
 {
 protected:
 
@@ -96,22 +96,22 @@ protected:
 	/**
 	* Name of the profile.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 	/**
 	* Documents juged by profile.
 	*/
-	RStd::RContainer<GProfDoc,unsigned,false,true> Fdbks;
+	R::RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
 //	/**
 //	* Date of Update.
 //	*/
-//	RTimeDate::RDate Updated;
+//	R::RDate Updated;
 //
 //	/**
 //	* Date of last document's analysis.
 //	*/
-//	RTimeDate::RDate Computed;
+//	R::RDate Computed;
 
 	/**
 	* Determine if the profile is social, i.e. prefer to be grouped with

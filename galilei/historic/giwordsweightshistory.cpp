@@ -37,6 +37,8 @@
 // include files for GALILEI
 #include <historic/giwordsweightshistory.h>
 using namespace GALILEI;
+using namespace R;
+
 
 
 //-----------------------------------------------------------------------------

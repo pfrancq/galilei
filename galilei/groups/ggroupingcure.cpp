@@ -37,10 +37,11 @@
 #include <math.h>
 
 //-----------------------------------------------------------------------------
-//include files for test
+//include files for R Project
+#include <rstd/rtextfile.h>          // 		!a supprimer
+using namespace R;
 
-#include <rio/rtextfile.h>          // 		!a supprimer
-using namespace RIO;
+
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<groups/ggroupingcure.h>

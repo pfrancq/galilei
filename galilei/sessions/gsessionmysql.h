@@ -41,8 +41,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rmysql/rmysql.h>
-#include <rtimedate/rdate.h>
+#include <rdb/rmysql.h>
+#include <rstd/rdate.h>
 
 
 //-----------------------------------------------------------------------------
@@ -68,7 +68,7 @@ class GIWordList;
 * @author Pascal Francq
 * @short MySQL Session.
 */
-class GSessionMySQL : public RMySQL::RDb, public GSession
+class GSessionMySQL : public R::RDb, public GSession
 {
 	/**
 	* String representing the null value.
@@ -85,7 +85,7 @@ public:
 	* @param db             Name of the database.
 	* @param mng            URL Manager.
 	*/
-	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,GURLManager* mng) throw(bad_alloc,GException,RMySQL::RMySQLError);
+	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,GURLManager* mng) throw(bad_alloc,GException,R::RMySQLError);
 
 	/**
 	* Count the number of rows of a table.
@@ -105,12 +105,12 @@ public:
 protected:
 
 	/**
-	* Transform a RTimeDate::RDate to a C string with the MySQL format.
+	* Transform a R::RDate to a C string with the MySQL format.
 	* @param d              Date to transform.
 	* @param tmp            C String containing the date.
 	* @returns Pointer to the tmp C string.
 	*/
-	const char* GetDateToMySQL(const RTimeDate::RDate* d,char* tmp);
+	const char* GetDateToMySQL(const R::RDate* d,char* tmp);
 
 	/**
 	* Parse a field and when for quotes and double them.
@@ -179,7 +179,7 @@ public:
 	* Save the ideal groupment
 	* @param idealgroup   The ideal container of group	
 	*/
-	virtual void SaveIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup);
+	virtual void SaveIdealGroupment(R::RContainer<GGroups,unsigned int,true,true>* idealgroup);
 
 	/**
 	* Create a new document.
@@ -254,7 +254,7 @@ public:
 	* @param id             Identificator.
 	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
 	*/
-	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true>* mixedgroups,unsigned int id, bool historic=false);
+	virtual void SaveMixedGroups(R::RContainer<GGroups,unsigned int,true,true>* mixedgroups,unsigned int id, bool historic=false);
 
 	/**
 	* Save the Profiles in history.
@@ -286,7 +286,7 @@ public:
 	* @param objs           Objects.
 	* @param lang           The lang of the subprofiles in the chromosome.
 	*/
-	virtual void SaveChromo(GChromoIR* chromo,unsigned int id,RGA::RObjs<GObjIR>* objs);
+	virtual void SaveChromo(GChromoIR* chromo,unsigned int id,R::RObjs<GObjIR>* objs);
 
 	/**
 	* Load a instance of chromosome for statisical use only.
@@ -295,7 +295,7 @@ public:
 	* @param p              Parameters.
 	* @return pointer to a Ginstir
 	*/
-	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GIRParams* p);
+	virtual GInstIR* LoadInstIR(GLang* lang,R::RObjs<GObjIR>* objs,GIRParams* p);
 
 	/**
 	* Save The Documents Simylarities into the database.
@@ -315,7 +315,7 @@ public:
 	/**
 	* load the historic groups.
 	*/
-	GGroupsHistory* LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID);
+	GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID);
 
 	/**
 	*returns the number of historic groups stored in database.

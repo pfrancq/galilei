@@ -40,8 +40,8 @@
 #include <sessions/gsession.h>
 #include <profiles/gprofile.h>
 #include <docs/gdoc.h>
-
 using namespace GALILEI;
+
 
 
 //-----------------------------------------------------------------------------
@@ -51,7 +51,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GStatProfDoc::GStatProfDoc(GSession* ses,RIO::RTextFile* f)
+GALILEI::GStatProfDoc::GStatProfDoc(GSession* ses,R::RTextFile* f)
 	: Session(ses), File(f)
 {
 //	if(File)

@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 //include files for R Project
-#include <rtimedate/rdate.h>
+#include <rstd/rdate.h>
 
 
 //-----------------------------------------------------------------------------
@@ -93,22 +93,22 @@ protected:
 	/**
 	* Date of attachment to the group.
 	*/
-	RTimeDate::RDate Attached;
+	R::RDate Attached;
 
 	/**
 	* Date of Update.
 	*/
-	RTimeDate::RDate Updated;
+	R::RDate Updated;
 
 	/**
 	* Date of last document's analysis.
 	*/
-	RTimeDate::RDate Computed;
+	R::RDate Computed;
 
 	/**
 	* Documents juged by the subprofile.
 	*/
-	RStd::RContainer<GProfDoc,unsigned,false,true> Fdbks;
+	R::RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
 #if GALILEITEST
 	/**
@@ -146,22 +146,22 @@ public:
 	static GSubProfile* NewSubProfile(GProfile*,unsigned int,GLang*,GGroup*,const char*) {return(0);}
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const unsigned int id) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GLang* lang) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GSubProfile& subprofile) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GSubProfile* subprofile) const;
 
@@ -238,19 +238,19 @@ public:
 	* Get the date of the last attachment.
 	* @returns Pointer to date.
 	*/
-	const RTimeDate::RDate* GetAttached(void) const {return(&Attached);}
+	const R::RDate* GetAttached(void) const {return(&Attached);}
 
 	/**
 	* Get the date of the last update of the subprofile.
 	* @returns Pointer to date.
 	*/
-	const RTimeDate::RDate* GetUpdated(void) const {return(&Updated);}
+	const R::RDate* GetUpdated(void) const {return(&Updated);}
 
 	/**
 	* Get the date of the last analysis of the subprofile.
 	* @returns Pointer to date.
 	*/
-	const RTimeDate::RDate* GetComputed(void) const {return(&Computed);}
+	const R::RDate* GetComputed(void) const {return(&Computed);}
 
 	/**
 	* See if the subprofiles was updated until the last attachment to a group.

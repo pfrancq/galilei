@@ -62,17 +62,17 @@ protected:
 	/**
 	* Name of the class.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 	/**
 	* Variables.
 	*/
-	RStd::RContainer<GPrgVar,unsigned int,true,true> Vars;
+	R::RContainer<GPrgVar,unsigned int,true,true> Vars;
 
 	/**
 	* Methods.
 	*/
-	RStd::RContainer<GPrgFunc,unsigned int,true,true> Methods;
+	R::RContainer<GPrgFunc,unsigned int,true,true> Methods;
 
 public:
 
@@ -83,12 +83,12 @@ public:
 	GPrgClass(const char* name) throw(bad_alloc);
 
 	/**
-	* Method needed by RStd::Rcontainer.
+	* Method needed by R::Rcontainer.
 	*/
 	int Compare(const GPrgClass* c) const;
 
 	/**
-	* Method needed by RStd::Rcontainer.
+	* Method needed by R::Rcontainer.
 	*/
 	int Compare(const char* c) const;
 

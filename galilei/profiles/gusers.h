@@ -54,17 +54,17 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Users.
 */
-class GUsers : public RStd::RContainer<GUser,unsigned,true,true>
+class GUsers : public R::RContainer<GUser,unsigned,true,true>
 {
 	/**
 	* Profiles handled by the system.
 	*/
-	RStd::RContainer<GProfile,unsigned int,true,true>* Profiles;
+	R::RContainer<GProfile,unsigned int,true,true>* Profiles;
 
 	/**
 	* SubProfiles handled by the system.
 	*/
-	RStd::RContainer<GSubProfiles,unsigned int,true,true>* SubProfiles;
+	R::RContainer<GSubProfiles,unsigned int,true,true>* SubProfiles;
 
 protected:
 

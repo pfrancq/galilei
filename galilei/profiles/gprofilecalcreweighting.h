@@ -114,7 +114,7 @@ protected:
 	/**
 	* Global vectors computed.
 	*/
-	RStd::RContainer<InternVector,unsigned int,true,true> Vectors;
+	R::RContainer<InternVector,unsigned int,true,true> Vectors;
 
 	/**
 	* Ordered vector for current computed profile.

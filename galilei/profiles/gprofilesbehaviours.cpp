@@ -40,7 +40,7 @@
 #include <langs/glang.h>
 #include <profiles/gprofilesbehaviour.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 

@@ -61,7 +61,7 @@ namespace GALILEI{
 //   class GProfilesBehaviours
 //
 //-----------------------------------------------------------------------------
-class GProfilesBehaviours : public RStd::RContainer<GProfilesBehaviour,unsigned int,true,true>
+class GProfilesBehaviours : public R::RContainer<GProfilesBehaviour,unsigned int,true,true>
 {
 public:
 

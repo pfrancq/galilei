@@ -47,7 +47,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // include files for R
 #include <rstd/rstring.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------

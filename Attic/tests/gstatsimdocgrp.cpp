@@ -54,6 +54,7 @@
 	#include <groups/gsubject.h>
 #endif
 using namespace GALILEI;
+using namespace R;
 
 
 
@@ -105,7 +106,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GStatSimDocGrp::GStatSimDocGrp(GSession* ses,RIO::RTextFile* f,bool g,bool l)
+GALILEI::GStatSimDocGrp::GStatSimDocGrp(GSession* ses,RTextFile* f,bool g,bool l)
 	: Session(ses), Global(g), Local(l), File(f), Sub(100,50), DocsL(25000,10000), DocsG(25000,10000)
 {
 	if(File)

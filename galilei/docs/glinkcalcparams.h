@@ -63,7 +63,7 @@ private :
 	/**
 	* Name of the linkcalc.
 	*/
-	RStd::RString ComputingName;
+	R::RString ComputingName;
 
 public :
 
@@ -110,22 +110,22 @@ public :
 	virtual void SetSettings(const char*) {}
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const GLinkCalcParams* p) const;
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const GLinkCalcParams& p) const;
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const GLinkCalc* calc) const;
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const char* name) const;
 

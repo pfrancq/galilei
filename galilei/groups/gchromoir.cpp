@@ -44,7 +44,7 @@
 #include <rpromethee/rpromkernel.h>
 #include <rpromethee/rpromsol.h>
 #include <rpromethee/rpromcriterion.h>
-using namespace RPromethee;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -63,8 +63,6 @@ using namespace RPromethee;
 #include <profiles/gsubprofilessamedocs.h>
 #include <docs/gdocsim.h>
 using namespace GALILEI;
-using namespace RGGA;
-using namespace RGA;
 
 
 
@@ -94,7 +92,7 @@ GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
 void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
 {
 	// Parent Initialisation
-	RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(thData);
+	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(thData);
 
 	// Current
 	thObjs1=thData->tmpObjs1;
@@ -114,7 +112,7 @@ int GALILEI::GChromoIR::Compare(const GChromoIR* c) const
 
 #if GALILEITEST
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::CompareIdeal(GSession* s,RStd::RContainer<GGroups,unsigned int,true,true>* ideal
+void GALILEI::GChromoIR::CompareIdeal(GSession* s,RContainer<GGroups,unsigned int,true,true>* ideal
 )
 {
 	GGroupIR* gr;
@@ -192,7 +190,7 @@ GObjIR* GALILEI::GChromoIR::ComputeGlobalRelevant(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::ConstructChromo(GGroups* grps) throw(RGA::eGA)
+void GALILEI::GChromoIR::ConstructChromo(GGroups* grps) throw(eGA)
 {
 	GGroupCursor Grp;
 	GSubProfileCursor SubProfile;
@@ -229,14 +227,14 @@ void GALILEI::GChromoIR::ConstructChromo(GGroups* grps) throw(RGA::eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::RandomConstruct(void) throw(RGA::eGA)
+void GALILEI::GChromoIR::RandomConstruct(void) throw(eGA)
 {
 	// Look if already a solution in the session
 	if(Instance->CurrentGroups)
 		 ConstructChromo(Instance->CurrentGroups);
 
 	// Call classic heuristic for non-assigned objects
-	RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::RandomConstruct();
+	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::RandomConstruct();
 
 	// If first element, do nothing.
 	if((!Instance->CurrentGroups)||(!Id))
@@ -680,7 +678,7 @@ void GALILEI::GChromoIR::EvaluateSocial(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Evaluate(void) throw(RGA::eGA)
+void GALILEI::GChromoIR::Evaluate(void) throw(eGA)
 {
 	EvaluateSim();
 	if(Instance->Params->ParamsInfo.Weight)
@@ -699,7 +697,7 @@ void GALILEI::GChromoIR::Evaluate(void) throw(RGA::eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::ReAllocate(void) throw(RGA::eGA)
+void GALILEI::GChromoIR::ReAllocate(void) throw(eGA)
 {
 	GGroupIRCursor Grp;
 	unsigned int nb;
@@ -800,7 +798,7 @@ void GALILEI::GChromoIR::ReAllocate(void) throw(RGA::eGA)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GChromoIR::CalcNewProtosNb(void) throw(RGA::eGA)
+unsigned int GALILEI::GChromoIR::CalcNewProtosNb(void) throw(eGA)
 {
 	unsigned int count;
 	GGroupIRCursor Grp;
@@ -818,7 +816,7 @@ unsigned int GALILEI::GChromoIR::CalcNewProtosNb(void) throw(RGA::eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::DoKMeans(void) throw(RGA::eGA)
+void GALILEI::GChromoIR::DoKMeans(void) throw(eGA)
 {
 	unsigned int itermax;
 	int error;
@@ -861,7 +859,7 @@ void GALILEI::GChromoIR::DoKMeans(void) throw(RGA::eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::DivideWorstSubProfiles(void) throw(RGA::eGA)
+void GALILEI::GChromoIR::DivideWorstSubProfiles(void) throw(eGA)
 {
 	GGroupIRCursor Grp;
 	unsigned int i,j;
@@ -944,7 +942,7 @@ void GALILEI::GChromoIR::DivideWorstSubProfiles(void) throw(RGA::eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::MergeBestSubProfiles(void) throw(RGA::eGA)
+void GALILEI::GChromoIR::MergeBestSubProfiles(void) throw(eGA)
 {
 	GObjIRCursor Cur,Cur2;
 	unsigned int i,j;
@@ -1042,7 +1040,7 @@ void GALILEI::GChromoIR::TreatSocialSubProfiles(bool rel)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
+void GALILEI::GChromoIR::Optimisation(void) throw(eGA)
 {
 	unsigned int i;
 	RPromSol** s;
@@ -1102,9 +1100,9 @@ void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Modify(void) throw(RGA::eGA)
+void GALILEI::GChromoIR::Modify(void) throw(eGA)
 {
-	RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Mutation();
+	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Mutation();
 }
 
 
@@ -1119,7 +1117,7 @@ bool GALILEI::GChromoIR::SameGroup(unsigned int obj1,unsigned int obj2) const
 //-----------------------------------------------------------------------------
 GChromoIR& GALILEI::GChromoIR::operator=(const GChromoIR& chromo)
 {
-	RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::operator=(chromo);
+	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::operator=(chromo);
 	CritSim=chromo.CritSim;
 	CritSimAvgSim=chromo.CritSimAvgSim;
 	CritSimJ=chromo.CritSimJ;

@@ -55,7 +55,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Group.
 */
-class GGroup : public RStd::RContainer<GSubProfile,unsigned int,false,true>
+class GGroup : public R::RContainer<GSubProfile,unsigned int,false,true>
 {
 protected:
 
@@ -108,17 +108,17 @@ public:
 	virtual const char* GetModelName(void) const {return (0);};
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const unsigned int id) const;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroup& group) const;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroup* group) const;
 
@@ -193,7 +193,7 @@ public:
 	* @param docs           Documents not judged.
 	* @param s              Subprofile.
 	*/
-	void NotJudgedDocsList(RStd::RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s);
+	void NotJudgedDocsList(R::RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s);
 
 	/**
 	* Construct the list of all relevant documents of the subprofiles of a
@@ -204,7 +204,7 @@ public:
 	* @param global         Global Similarities.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global);
+	void NotJudgedDocsRelList(R::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global);
 
 	/**
 	* Compute the relevant subprofile, i.e. the subprofiles whith the highest

@@ -131,7 +131,7 @@ protected:
 	/**
 	* Container of last added subprofiles.
 	*/
-	RStd::RContainer<GSubProfile,unsigned int,false,true> LastAdded;
+	R::RContainer<GSubProfile,unsigned int,false,true> LastAdded;
 
 public:
 

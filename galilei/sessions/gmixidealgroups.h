@@ -42,10 +42,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R
-#include <rmath/random.h>
+#include <rstd/random.h>
 #include <rstd/rcontainer.h>
-using namespace RMath;
-using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
@@ -71,17 +69,17 @@ protected:
 	/**
 	* Random number.
 	*/
-	RRandom* Rand;
+	R::RRandom* Rand;
 
 	/**
 	* Ideal groupment.
 	*/
-	RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+	R::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
 
 	/**
 	* Mixed groups.
 	*/
-	RContainer<GGroups,unsigned int,true,true> MixedGroups;
+	R::RContainer<GGroups,unsigned int,true,true> MixedGroups;
 
 	/**
 	* Current Language.
@@ -151,7 +149,7 @@ public:
 	* @param s              split category?
 	* @param r              random grouping?
 	*/
-	GMixIdealGroups(GSession* sess, /*RContainer<GGroupIdParentId,unsigned int,true,true>* parents, */RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups=10, int level=3, bool m=true, bool s=true, bool r=true, bool i=true);
+	GMixIdealGroups(GSession* sess,R::RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups=10, int level=3, bool m=true, bool s=true, bool r=true, bool i=true);
 
 	/**
 	* set the settings.
@@ -170,7 +168,7 @@ public:
 	* @returns true if merge possible.
 	*/
 	bool MergeGroups(void);
-	
+
 	/**
 	* Split groups in two groups.
 	* @returns true if split possible.

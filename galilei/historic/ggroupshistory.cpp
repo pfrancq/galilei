@@ -38,6 +38,8 @@
 // include files for GALILEI
 #include <historic/ggroupshistory.h>
 using namespace GALILEI;
+using namespace R;
+
 
 
 //-----------------------------------------------------------------------------
@@ -49,7 +51,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupsHistory::GGroupsHistory(GLang* lang, unsigned int id)
-	: RStd::RContainer<GGroupHistory,unsigned int,true,true>(20,10)
+	: RContainer<GGroupHistory,unsigned int,true,true>(20,10)
 {
 	Lang=lang;
 	Id=id;

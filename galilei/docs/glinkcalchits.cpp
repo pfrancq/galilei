@@ -35,7 +35,6 @@
 
 //-----------------------------------------------------------------------------
 //include file for GALILEI
-
 #include <langs/glang.h>
 #include <docs/glinkcalchits.h>
 #include <sessions/gsession.h>
@@ -44,10 +43,8 @@
 #include <sessions/gslot.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
-
-
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 
@@ -170,7 +167,7 @@ void GALILEI::GLinkCalcHITS::AddDoc(GDoc* doc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLinkCalcHITS::Operation_I(RStd::RContainer<GBalancedLinks,unsigned int,true,true>* out_Links,RStd::RContainer<GBalancedLinks,unsigned int,true,true>* in_Links)
+void GALILEI::GLinkCalcHITS::Operation_I(RContainer<GBalancedLinks,unsigned int,true,true>* out_Links,RContainer<GBalancedLinks,unsigned int,true,true>* in_Links)
 {
 	unsigned int choice,maxLink,i;
 	float sum;
@@ -267,7 +264,7 @@ void GALILEI::GLinkCalcHITS::Operation_I(RStd::RContainer<GBalancedLinks,unsigne
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLinkCalcHITS::Operation_O(RStd::RContainer<GBalancedLinks,unsigned int,true,true>* out_Links,RStd::RContainer<GBalancedLinks,unsigned int,true,true>* in_Links)
+void GALILEI::GLinkCalcHITS::Operation_O(RContainer<GBalancedLinks,unsigned int,true,true>* out_Links,RContainer<GBalancedLinks,unsigned int,true,true>* in_Links)
 {
 	float sum;
 	GLinkCursor cur;
@@ -315,7 +312,7 @@ void GALILEI::GLinkCalcHITS::Operation_O(RStd::RContainer<GBalancedLinks,unsigne
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLinkCalcHITS::Normalization(RStd::RContainer<GBalancedLinks,unsigned int,true,true>* Links, float Norme)
+void GALILEI::GLinkCalcHITS::Normalization(RContainer<GBalancedLinks,unsigned int,true,true>* Links, float Norme)
 {
 	GBalancedLinksCursor lcur;
 	//float test=0;
@@ -415,8 +412,8 @@ void GALILEI::GLinkCalcHITS::Compute(GProfile* /*Prof*/)
 {
 
 //	RContainer<GDoc,unsigned int, false,true>* BaseSet;
-//	RStd::RContainer<GBalancedLinks,unsigned int,true,true>* out_Links;
-//	RStd::RContainer<GBalancedLinks,unsigned int,true,true>* in_Links  ;
+//	RContainer<GBalancedLinks,unsigned int,true,true>* out_Links;
+//	RContainer<GBalancedLinks,unsigned int,true,true>* in_Links  ;
 //	RContainer<GBalancedLinks,unsigned int,true,false>* best_Links_Out;
 //	RContainer<GBalancedLinks,unsigned int,true,false>* best_Links_In;
 //
@@ -493,8 +490,8 @@ void GALILEI::GLinkCalcHITS::Compute(GProfile* /*Prof*/)
 //	//---------------------------------------------------------------
 //	// Creation of Vector Needed for links computation
 //	 // Init Part
-//	out_Links=new RStd::RContainer<GBalancedLinks,unsigned int,true,true>(50,10);
-//	in_Links = new RStd::RContainer<GBalancedLinks,unsigned int,true,true>(50,10);
+//	out_Links=new RContainer<GBalancedLinks,unsigned int,true,true>(50,10);
+//	in_Links = new RContainer<GBalancedLinks,unsigned int,true,true>(50,10);
 //
 //	docCur.Set(BaseSet);
 //	for (docCur.Start(); ! docCur.End() ; docCur.Next())

@@ -35,9 +35,11 @@
 
 //-----------------------------------------------------------------------------
 //include file for galilei
-#include <gdocrefurl.h>
+#include <docs/gdocrefurl.h>
 #include <docs/gdoc.h>
 using namespace GALILEI;
+using namespace R;
+
 
 
 //-----------------------------------------------------------------------------
@@ -55,7 +57,7 @@ GALILEI::GDocRefUrl::GDocRefUrl(GDoc* d) : Doc(d)
 //-----------------------------------------------------------------------------
 int GALILEI::GDocRefUrl::Compare(const GDocRefUrl* doc) const
 {
-	RStd::RString tmp =Doc->GetURL();
+	RString tmp =Doc->GetURL();
 	return (tmp.Compare(doc->GetURL()));
 }
 
@@ -63,7 +65,7 @@ int GALILEI::GDocRefUrl::Compare(const GDocRefUrl* doc) const
 //-----------------------------------------------------------------------------
 int GALILEI::GDocRefUrl::Compare(const GDocRefUrl& doc) const
 {
-	RStd::RString tmp =Doc->GetURL();
+	RString tmp =Doc->GetURL();
 	return (tmp.Compare(doc.GetURL()));
 }
 
@@ -71,7 +73,7 @@ int GALILEI::GDocRefUrl::Compare(const GDocRefUrl& doc) const
 //-------------------------------------------------------------- --------------
 int GALILEI::GDocRefUrl::Compare(const GDoc* doc) const
 {
-	RStd::RString tmp =Doc->GetURL();
+	RString tmp =Doc->GetURL();
 	return (tmp.Compare(doc->GetURL()));
 }
 
@@ -79,14 +81,14 @@ int GALILEI::GDocRefUrl::Compare(const GDoc* doc) const
 //-----------------------------------------------------------------------------
 int GALILEI::GDocRefUrl::Compare(const GDoc& doc) const
 {
-	RStd::RString tmp =Doc->GetURL();
+	RString tmp =Doc->GetURL();
 	return (tmp.Compare(doc.GetURL()));
 }
 
 //-----------------------------------------------------------------------------
 int GALILEI::GDocRefUrl::Compare(const char* url) const
 {
-	RStd::RString tmp =Doc->GetURL();
+	RString tmp =Doc->GetURL();
 	return (tmp.Compare(url));
 }
 

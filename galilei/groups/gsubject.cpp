@@ -37,11 +37,17 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <stdlib.h>
+#include <iostream>
+#include <math.h>
+
+
+//-----------------------------------------------------------------------------
 //include files for R Project
 #include <rstd/rcursor.h>
-#include <rio/rtextfile.h>
-using namespace RIO;
-using namespace RStd;
+#include <rstd/rtextfile.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -55,14 +61,6 @@ using namespace RStd;
 #include <profiles/gprofdoc.h>
 #include <langs/glang.h>
 using namespace GALILEI;
-
-
-//-----------------------------------------------------------------------------
-//include specific files
-#include <stdlib.h>
-#include <iostream>
-#include <math.h>
-
 
 
 

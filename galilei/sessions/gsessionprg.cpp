@@ -63,10 +63,8 @@
 #include <tests/gstatsimdocgrp.h>
 #include <tests/gstatprofdoc.h>
 #include <docs/gdocoptions.h>
-
 using namespace GALILEI;
-using namespace RIO;
-using namespace RStd;
+using namespace R;
 
 
 
@@ -77,7 +75,7 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void GOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GOutputI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(!args->NbPtr)
 		throw GException("No filename specified");
@@ -88,7 +86,7 @@ void GOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned i
 		delete Owner->OFile;
 		Owner->OFile=0;
 	}
-	Owner->OFile=new RTextFile((args->Tab[0]->GetValue(prg)),RIO::Create);
+	Owner->OFile=new RTextFile((args->Tab[0]->GetValue(prg)),Create);
 	Owner->OFile->SetSeparator("\t");
 	(*Owner->OFile)<<"Sets"<<"Recall"<<"Precision"<<"Total";
 	if(Owner->TrackNewProfiles)
@@ -100,7 +98,7 @@ void GOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned i
 
 
 //-----------------------------------------------------------------------------
-void GGOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GGOutputI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	sprintf(tmp,"Create Graph Output file '%s'",args->Tab[0]->GetValue(prg));
 	r->WriteStr(tmp);
@@ -109,13 +107,13 @@ void GGOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned 
 		delete Owner->GOFile;
 		Owner->GOFile=0;
 	}
-	Owner->GOFile=new RTextFile(args->Tab[0]->GetValue(prg),RIO::Create);
+	Owner->GOFile=new RTextFile(args->Tab[0]->GetValue(prg),Create);
 	Owner->GOFile->SetSeparator("\t");
 }
 
 
 //-----------------------------------------------------------------------------
-void GSOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSOutputI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	sprintf(tmp,"Create Statistics Output file '%s'",args->Tab[0]->GetValue(prg));
 	r->WriteStr(tmp);
@@ -124,13 +122,13 @@ void GSOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned 
 		delete Owner->SOFile;
 		Owner->SOFile=0;
 	}
-	Owner->SOFile=new RTextFile(args->Tab[0]->GetValue(prg),RIO::Create);
+	Owner->SOFile=new RTextFile(args->Tab[0]->GetValue(prg),Create);
 	Owner->SOFile->SetSeparator("\t");
 }
 
 
 //-----------------------------------------------------------------------------
-void GDSOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GDSOutputI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	sprintf(tmp,"Create Documents Statistics Output file '%s'",args->Tab[0]->GetValue(prg));
 	r->WriteStr(tmp);
@@ -139,7 +137,7 @@ void GDSOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 		delete Owner->DSOFile;
 		Owner->DSOFile=0;
 	}
-	Owner->DSOFile=new RTextFile(args->Tab[0]->GetValue(prg),RIO::Create);
+	Owner->DSOFile=new RTextFile(args->Tab[0]->GetValue(prg),Create);
 	Owner->DSOFile->SetSeparator("\t");
 
 	(*Owner->DSOFile)<<"-------------------------------------------------------------------------------------------------"<<endl;
@@ -153,7 +151,7 @@ void GDSOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 
 
 //-----------------------------------------------------------------------------
-void GSetLinksUseI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSetLinksUseI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 	{
@@ -173,7 +171,7 @@ void GSetLinksUseI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsig
 
 
 //-----------------------------------------------------------------------------
-void GSetAutoSaveI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSetAutoSaveI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 	{
@@ -192,7 +190,7 @@ void GSetAutoSaveI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsig
 
 
 //-----------------------------------------------------------------------------
-void GTestI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GTestI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	sprintf(tmp,"Current Test Name '%s'",args->Tab[0]->GetValue(prg));
 	r->WriteStr(tmp);
@@ -202,7 +200,7 @@ void GTestI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int
 
 
 //-----------------------------------------------------------------------------
-void GLogI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GLogI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	sprintf(tmp,"Create Log file '%s'",args->Tab[0]->GetValue(prg));
 	r->WriteStr(tmp);
@@ -210,7 +208,7 @@ void GLogI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,
 
 
 //-----------------------------------------------------------------------------
-void GSqlI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSqlI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	sprintf(tmp,"Execute Sql file '%s'",args->Tab[0]->GetValue(prg));
 	r->WriteStr(tmp);
@@ -219,7 +217,7 @@ void GSqlI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,
 
 
 //-----------------------------------------------------------------------------
-void GModifyProfilesI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>*) throw(GException)
+void GModifyProfilesI::Run(GSessionPrg*,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>*) throw(GException)
 {
 	Owner->FirstProfile=false;
 	r->WriteStr("Profiles are considered as modified");
@@ -227,7 +225,7 @@ void GModifyProfilesI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsign
 
 
 //-----------------------------------------------------------------------------
-void GComputeProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GComputeProfilesI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr==2)
 		sprintf(tmp,"Compute Profiles: Method=\"%s\"  Settings=\"%s\"",args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
@@ -247,7 +245,7 @@ void GComputeProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,u
 
 
 //-----------------------------------------------------------------------------
-void GGroupProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GGroupProfilesI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr==2)
 		sprintf(tmp,"Group Profiles: Method=\"%s\"  Settings=\"%s\"",args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
@@ -271,7 +269,7 @@ void GGroupProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,uns
 }
 
 //-----------------------------------------------------------------------------
-void GCreateIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GCreateIdealI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr==1)
 		sprintf(tmp,"Create Ideal Groups: Settings=\"%s\"",args->Tab[0]->GetValue(prg));
@@ -286,7 +284,7 @@ void GCreateIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsig
 
 
 //-----------------------------------------------------------------------------
-void GMixIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GMixIdealI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr==1)
 		sprintf(tmp,"Creating Mixed Groups: Settings=\"%s\"",args->Tab[0]->GetValue(prg));
@@ -301,7 +299,7 @@ void GMixIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 
 
 //-----------------------------------------------------------------------------
-void GFdbksCycleI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GFdbksCycleI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr==1)
 		sprintf(tmp,"Create Feedbacks Cycle: Settings=\"%s\"",args->Tab[0]->GetValue(prg));
@@ -315,7 +313,7 @@ void GFdbksCycleI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsign
 
 
 //-----------------------------------------------------------------------------
-void GCompareIdealI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>*) throw(GException)
+void GCompareIdealI::Run(GSessionPrg*,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>*) throw(GException)
 {
 	r->WriteStr("Compare with Ideal Groups");
 	GCompareGrouping CompMethod(Owner->Session,Owner->Session->GetIdealGroups());
@@ -349,7 +347,7 @@ void GCompareIdealI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 
 
 //-----------------------------------------------------------------------------
-void GCompareLinksI::Run(GSessionPrg*prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>*args) throw(GException)
+void GCompareLinksI::Run(GSessionPrg*prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>*args) throw(GException)
 {
 	bool g;
 
@@ -383,7 +381,7 @@ void GCompareLinksI::Run(GSessionPrg*prg,GSlot* r,RStd::RContainer<GPrgVar,unsig
 
 
 //-----------------------------------------------------------------------------
-void GStatsProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GStatsProfilesI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	bool g,l;
 
@@ -416,7 +414,7 @@ void GStatsProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,uns
 
 
 //-----------------------------------------------------------------------------
-void GStatsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GStatsDocsI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	bool g,l;
 
@@ -448,7 +446,7 @@ void GStatsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigne
 
 
 //-----------------------------------------------------------------------------
-void GSetComputingParamI::Run(GSessionPrg* prg,GSlot*,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSetComputingParamI::Run(GSessionPrg* prg,GSlot*,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=2)
 		throw GException("Method needs two parameters");
@@ -457,7 +455,7 @@ void GSetComputingParamI::Run(GSessionPrg* prg,GSlot*,RStd::RContainer<GPrgVar,u
 
 
 //-----------------------------------------------------------------------------
-void GSetGroupingParamI::Run(GSessionPrg* prg,GSlot*,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSetGroupingParamI::Run(GSessionPrg* prg,GSlot*,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=2)
 		throw GException("Method needs two parameters");
@@ -466,7 +464,7 @@ void GSetGroupingParamI::Run(GSessionPrg* prg,GSlot*,RStd::RContainer<GPrgVar,un
 
 
 //-----------------------------------------------------------------------------
-void GRunQueriesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GRunQueriesI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=4)
 		throw GException("Method needs four parameters");
@@ -482,7 +480,7 @@ void GRunQueriesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsign
 
 
 //-----------------------------------------------------------------------------
-void GStatsProfilesDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GStatsProfilesDocsI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	bool g,l;
 
@@ -536,7 +534,7 @@ void GStatsProfilesDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar
 
 
 //-----------------------------------------------------------------------------
-void GStatsGroupsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GStatsGroupsDocsI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	bool g,l;
 
@@ -592,7 +590,7 @@ void GStatsGroupsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,u
 
 
 //-----------------------------------------------------------------------------
-void GAddIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GAddIdealI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr==1)
 		sprintf(tmp,"Create New Ideal Group: Settings=\"%s\"",args->Tab[0]->GetValue(prg));
@@ -606,7 +604,7 @@ void GAddIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 
 
 //-----------------------------------------------------------------------------
-void GAddProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GAddProfilesI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=2)
 		throw GException("Method needs two parameters");
@@ -670,7 +668,7 @@ void GRealLifeI::CommonTasks(GSlot* r) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	unsigned int MaxStep;
 	unsigned int MinFBStep;
@@ -763,7 +761,7 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 
 
 //-----------------------------------------------------------------------------
-void GAddAssessmentsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GAddAssessmentsI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	unsigned int nbDocs;
 
@@ -777,7 +775,7 @@ void GAddAssessmentsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,un
 
 
 //-----------------------------------------------------------------------------
-void GTrackNewProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GTrackNewProfilesI::Run(GSessionPrg* prg,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 	{
@@ -796,7 +794,7 @@ void GTrackNewProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,
 
 
 //-----------------------------------------------------------------------------
-void GClearNewProfilesI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GClearNewProfilesI::Run(GSessionPrg*,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=0)
 		throw GException("Method needs no parameter");
@@ -806,7 +804,7 @@ void GClearNewProfilesI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsi
 
 
 //-----------------------------------------------------------------------------
-void GStoreInHistoryI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GStoreInHistoryI::Run(GSessionPrg*,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=0)
 		throw GException("Method needs no parameter");
@@ -818,7 +816,7 @@ void GStoreInHistoryI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsign
 
 
 //-----------------------------------------------------------------------------
-void GResetTimeI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GResetTimeI::Run(GSessionPrg*,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=0)
 		throw GException("Method needs no parameter");
@@ -828,7 +826,7 @@ void GResetTimeI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned in
 
 
 //-----------------------------------------------------------------------------
-void GComputeTimeI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GComputeTimeI::Run(GSessionPrg*,GSlot* r,RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	time_t end;
 	double cpu_time;
@@ -974,7 +972,7 @@ unsigned int GALILEI::GSessionPrg::CountTabs(char* line)
 
 
 //-----------------------------------------------------------------------------
-GPrgInst* GALILEI::GSessionPrg::AnalyseLine(RIO::RTextFile& prg) throw(bad_alloc,GException)
+GPrgInst* GALILEI::GSessionPrg::AnalyseLine(RTextFile& prg) throw(bad_alloc,GException)
 {
 	RString l;
 	char* ptr;

@@ -45,7 +45,7 @@
 #include<infos/giwordsweights.h>
 #include<langs/gdict.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 

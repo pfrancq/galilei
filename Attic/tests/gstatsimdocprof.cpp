@@ -102,7 +102,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GStatSimDocProf::GStatSimDocProf(GSession* ses,RIO::RTextFile* f,bool g,bool l)
+GALILEI::GStatSimDocProf::GStatSimDocProf(GSession* ses,R::RTextFile* f,bool g,bool l)
 	: Session(ses), Global(g), Local(l), File(f), Sub(100,50), DocsL(25000,10000), DocsG(25000,10000)
 {
 	if(File)

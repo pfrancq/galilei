@@ -64,7 +64,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short List of dictionnaries.
 */
-class GDicts : public RStd::RContainer<GDict,unsigned,true,true>
+class GDicts : public R::RContainer<GDict,unsigned,true,true>
 {
 public:
 

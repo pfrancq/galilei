@@ -57,7 +57,7 @@ class GLinkCursor;
 * @author  Vandaele Valery
 * @short List of Links.
 */
-class GLinks : public RStd::RContainer<GLink,unsigned,false,true>
+class GLinks : public R::RContainer<GLink,unsigned,false,true>
 {
 protected :
 
@@ -93,19 +93,19 @@ public :
 	GLinkCursor& GetLinkCursor(void);
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param lnk            Pointer to the links used for the comparaison.
 	*/
 	int Compare(const GLinks* lnk) const {return(Doc->GetId()- lnk->GetDoc()->GetId());}
 
   /**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param lnk            Links used for the comparaison.
 	*/
 	int Compare(GLinks& lnk) const {return(Doc->GetId()- lnk.GetDoc()->GetId());}
 	
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param ID             ID used for the comparaison.
 	*/
 	int Compare(const unsigned int id) const {return(Doc->GetId()-id);}

@@ -46,10 +46,10 @@
 #include <rstd/rcontainer.h>
 #include <rstd/rcursor.h>
 #include <rstd/rdblhashcontainer.h>
-#include <rtimedate/rdate.h>
-#include <rxml/rxmltag.h>
-#include <rio/rtextfile.h>
-#include <rmath/random.h>
+#include <rstd/rdate.h>
+#include <rstd/rxmltag.h>
+#include <rstd/rtextfile.h>
+#include <rstd/random.h>
 
 
 //-----------------------------------------------------------------------------
@@ -348,7 +348,7 @@ class GException
 	/**
 	* Message holding some information.
 	*/
-	RStd::RString Msg;
+	R::RString Msg;
 
 public:
 
@@ -356,7 +356,7 @@ public:
 	* Construct an exception.
 	* @param str                      Message of the error.
 	*/
-	GException(const RStd::RString& str) throw(bad_alloc)
+	GException(const R::RString& str) throw(bad_alloc)
 		: Msg(str) {}
 
 	/**

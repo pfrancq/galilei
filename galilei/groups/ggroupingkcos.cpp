@@ -37,6 +37,12 @@
 #include <time.h>
 #include <math.h>
 
+//-----------------------------------------------------------------------------
+//include files for R Project
+#include <rstd/random.h>
+#include <rgga/rgroupingkmeans.h>
+using namespace R;
+
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
@@ -54,17 +60,6 @@
 #include<profiles/gsubprofilevector.h>
 #include <groups/gcomparegrouping.h>
 using namespace GALILEI;
-
-
-//-----------------------------------------------------------------------------
-//include files for R
-#include <rmath/random.h>
-#include <rgga/rgroupingkmeans.h>
-using namespace RMath;
-using namespace RGGA;
-
-
-//-----------------------------------------------------------------------------
 
 
 

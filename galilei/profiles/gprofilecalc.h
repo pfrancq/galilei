@@ -60,7 +60,7 @@ class GProfileCalc
 	/**
 	* Name of the computing method.
 	*/
-	RStd::RString ComputingName;
+	R::RString ComputingName;
 
 protected:
 
@@ -110,22 +110,22 @@ public:
 	virtual void SetSettings(const char*) {}
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GProfileCalc& desc) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GProfileCalc* desc) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const char* name) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const tSubProfileDesc t) const;
 

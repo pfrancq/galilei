@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rio/rrecfile.h>
+#include <rstd/rrecfile.h>
 
 
 //-----------------------------------------------------------------------------
@@ -102,12 +102,12 @@ public:
 		GSim(unsigned int id1,unsigned id2,double s);
 
 		/**
-		* Compare method needed by RIO::RRecFile.
+		* Compare method needed by R::RRecFile.
 		*/
 		int Compare(const GSim* rec) const;
 
 		/**
-		* Compare method needed by RIO::RRecFile.
+		* Compare method needed by R::RRecFile.
 		*/
 		int Compare(const GSim& rec) const;
 
@@ -117,14 +117,14 @@ public:
 		GSim& operator=(const GSim& src);
 
 		/**
-		* Write a record to a RIO::RRecFile.
+		* Write a record to a R::RRecFile.
 		*/
-		void Write(RIO::RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f) throw(RStd::RString);
+		void Write(R::RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f) throw(R::RString);
 
 		/**
-		* Read a record from a RIO::RRecFile.
+		* Read a record from a R::RRecFile.
 		*/
-		void Read(RIO::RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f) throw(RStd::RString);
+		void Read(R::RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f) throw(R::RString);
 	};
 
 private:
@@ -132,7 +132,7 @@ private:
 	/**
 	* The similarities.
 	*/
-	RIO::RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>* Sims;
+	R::RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>* Sims;
 
 public:
 
@@ -142,7 +142,7 @@ public:
 	* @param d              Documents of the system.
 	* @param global         Global approach.
 	*/
-	GDocsSim(const char* filename,GDocs* d,bool global) throw(bad_alloc,RStd::RString);
+	GDocsSim(const char* filename,GDocs* d,bool global) throw(bad_alloc,R::RString);
 
 	/**
 	* Constructor.
@@ -150,7 +150,7 @@ public:
 	* @param d              documents of the system.
 	* @param global         Global approach.
 	*/
-	GDocsSim(const char* filename,GDocs& d,bool global) throw(bad_alloc,RStd::RString);
+	GDocsSim(const char* filename,GDocs& d,bool global) throw(bad_alloc,R::RString);
 
 protected:
 
@@ -161,7 +161,7 @@ protected:
 	* @param Cur2           Second cursor.
 	* @param global         Global approach.
 	*/
-	void ComputeSims(const char* filename,GDocCursor& Cur1,GDocCursor& Cur2,bool global) throw(bad_alloc,RStd::RString);
+	void ComputeSims(const char* filename,GDocCursor& Cur1,GDocCursor& Cur2,bool global) throw(bad_alloc,R::RString);
 
 public:
 

@@ -100,7 +100,7 @@ public:
 	/**
 	* Return the name of the class.
 	*/
-	virtual const RStd::RString ClassName(void) const;
+	virtual const R::RString ClassName(void) const;
 
 	/**
 	* Return the type of the information.

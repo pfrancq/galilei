@@ -53,8 +53,7 @@
 #include <groups/gobjir.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
-using namespace RGGA;
-using namespace RGA;
+using namespace R;
 
 
 
@@ -96,7 +95,7 @@ int sort_function(const void* a,const void* b)
 
 //-----------------------------------------------------------------------------
 GGroupIR::GGroupIR(GGroupIR* grp)
-	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(grp), Changed(false),
+	: RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(grp), Changed(false),
 	  AvgSim(0.0), Relevant(0), Entropy(0.0)
 {
 }
@@ -104,7 +103,7 @@ GGroupIR::GGroupIR(GGroupIR* grp)
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupIR::GGroupIR(GChromoIR* owner,const unsigned int id,const GGroupDataIR* data)
-	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(owner,id,data), Changed(false),
+	: RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(owner,id,data), Changed(false),
 	  AvgSim(0.0), Relevant(0), Entropy(0.0)
 {
 }
@@ -113,7 +112,7 @@ GALILEI::GGroupIR::GGroupIR(GChromoIR* owner,const unsigned int id,const GGroupD
 //---------------------------------------------------------------------------
 void GALILEI::GGroupIR::Clear(void)
 {
-	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Clear();
+	RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Clear();
 	AvgSim=0.0;
 	Relevant=0;
 	Entropy=0.0;
@@ -570,7 +569,7 @@ GSubProfile* GALILEI::GGroupIR::GetRelevantSubProfile(void) const
 //---------------------------------------------------------------------------
 GGroupIR& GALILEI::GGroupIR::operator=(const GGroupIR& grp)
 {
-	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::operator=(grp);
+	RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::operator=(grp);
 	AvgSim=grp.AvgSim;
 	Relevant=grp.Relevant;
 	Entropy=grp.Entropy;
@@ -600,7 +599,7 @@ double GALILEI::GGroupIR::GetMaxRatioSame(GObjIR* obj)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupIR::NotJudgedDocsRelList(RStd::RContainer<GDocSim,unsigned,true,false>* docs, GObjIR* s)
+void GALILEI::GGroupIR::NotJudgedDocsRelList(RContainer<GDocSim,unsigned,true,false>* docs, GObjIR* s)
 {
 	GObjIR** ptr;
 	unsigned int i;

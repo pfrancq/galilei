@@ -43,7 +43,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcursor.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -62,8 +62,6 @@ using namespace RStd;
 #include <profiles/gprofdoc.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
-using namespace RXML;
-using namespace RTimeDate;
 
 
 

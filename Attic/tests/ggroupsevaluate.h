@@ -44,7 +44,7 @@
 #include <galilei.h>
 #include <tests/ggroupevaluate.h>
 #include <rstd/rcursor.h>
-using namespace RStd;
+using namespace R;
 
 
 
@@ -59,7 +59,7 @@ namespace GALILEI{
 * @author Lamoral Julien
 * @short Languages GroupsEvaluate.
 */
-class GGroupsEvaluate:public RStd::RContainer<GGroupEvaluate,unsigned int,false,true>
+class GGroupsEvaluate:public R::RContainer<GGroupEvaluate,unsigned int,false,true>
 {
 	/**
 	* Language corresponding to the set of groups.
@@ -75,17 +75,17 @@ public:
 	GGroupsEvaluate(GLang* lang) throw(bad_alloc);
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroupsEvaluate& groups) const;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroupsEvaluate* groups) const;
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GLang* lang) const;
 

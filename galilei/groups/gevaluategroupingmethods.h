@@ -43,7 +43,7 @@
 // include files for R Project
 #include <rstd/rcontainer.h>
 #include <rstd/rcursor.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------

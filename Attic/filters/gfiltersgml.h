@@ -41,12 +41,12 @@
 // include files for R Project
 #include <rstd/rstring.h>
 #include <rstd/rcontainer.h>
-using namespace RStd;
-#include <rxml/rxmlfile.h>
-#include <rxml/rxmlstruct.h>
-using namespace RXML;
-#include <rio/rtextfile.h>
-using namespace RIO;
+using namespace R;
+#include <rstd/rxmlfile.h>
+#include <rstd/rxmlstruct.h>
+using namespace R;
+#include <rstd/rtextfile.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -74,7 +74,7 @@ class GFilterSGML: public GFilter
 	/**
 	* Header Tags.
 	*/
-	RStd::RContainer<Tag,unsigned int,true,true>* Tags;
+	R::RContainer<Tag,unsigned int,true,true>* Tags;
 
 	/**
 	* Buffer containing all the document.

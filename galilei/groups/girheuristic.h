@@ -60,7 +60,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short IR Heuristic.
 */
-class GIRHeuristic : public RGGA::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
+class GIRHeuristic : public R::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
 {
 public:
 
@@ -69,7 +69,7 @@ public:
 	* @param r              The random genrator to use.
 	* @param objs           Pointer to the objects.
 	*/
-	 GIRHeuristic(RRandom* r,RStd::RCursor<GObjIR,unsigned int>* objs);
+	 GIRHeuristic(R::RRandom* r,R::RCursor<GObjIR,unsigned int>* objs);
 
 	/**
 	* Initialize the heuristic.
@@ -80,12 +80,12 @@ public:
 	/**
 	* Find a group for the next object.
 	*/
-	virtual GGroupIR* FindGroup(void) throw(RGA::eGA);
+	virtual GGroupIR* FindGroup(void) throw(R::eGA);
 
 	/**
 	* Verify that no social profiles is alone.
 	*/
-	virtual void PostRun(void) throw(RGA::eGA);
+	virtual void PostRun(void) throw(R::eGA);
 	
 	/**
 	* Destruct the grouping heuristic.

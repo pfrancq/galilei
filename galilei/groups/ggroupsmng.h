@@ -60,7 +60,7 @@ protected:
 	/**
 	* Groups handled by the system.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true> Groups;
+	R::RContainer<GGroups,unsigned int,true,true> Groups;
 
 public:
 
@@ -88,7 +88,7 @@ public:
 	* Get a pointer to all the groups.
 	* @return Pointer to containers of groups.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true>* GetGroups(void);
+	R::RContainer<GGroups,unsigned int,true,true>* GetGroups(void);
 
 	/**
 	* Find the groups for a specific language.

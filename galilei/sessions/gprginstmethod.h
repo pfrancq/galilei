@@ -68,7 +68,7 @@ protected:
 	/**
 	* Parameters for the method.
 	*/
-	RStd::RContainer<GPrgVar,unsigned int,true,false> Params;
+	R::RContainer<GPrgVar,unsigned int,true,false> Params;
 
 public:
 

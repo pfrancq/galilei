@@ -34,8 +34,10 @@
 
 
 //---------------------------------------------------------------------------
+// include files for ANSI C/C++
 #include <stdlib.h>
 #include <math.h>
+
 
 //---------------------------------------------------------------------------
 // include files for GALILEI
@@ -48,7 +50,9 @@
 #include <langs/glang.h>
 #include <langs/gwordlist.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -154,7 +158,7 @@ GALILEI::GWordsClustering::GWordsClustering(GDict* dic,unsigned mindocs,unsigned
 	Doc=new RContainer<GDoc,unsigned,false,false>(100,50);
 	Dic=dic;
 	NbMinDocs=mindocs;
-  NbMaxDocs=maxdocs;
+	NbMaxDocs=maxdocs;
 	NbMinOcc=minocc;
 }
 

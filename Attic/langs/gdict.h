@@ -61,7 +61,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Dictionnary.
 */
-class GDict : public RStd::RDblHashContainer<GWord,unsigned,27,27,true>
+class GDict : public R::RDblHashContainer<GWord,unsigned,27,27,true>
 {
 	/**
 	* Session responsible for the dictionnary.
@@ -94,12 +94,12 @@ class GDict : public RStd::RDblHashContainer<GWord,unsigned,27,27,true>
 	* Name of the dictionnary. This can be the name of a file or a table in a
 	* database.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 	/**
 	* Description of the dictionnary.
 	*/
-	RStd::RString Desc;
+	R::RString Desc;
 
 	/**
 	* State of the dictionnary.
@@ -128,7 +128,7 @@ class GDict : public RStd::RDblHashContainer<GWord,unsigned,27,27,true>
 
 public:
 
-	RStd::RContainer<GWordList,unsigned,true,false> GroupsList;
+	R::RContainer<GWordList,unsigned,true,false> GroupsList;
 
 	/**
 	* Constructor of the dictionnary.
@@ -142,7 +142,7 @@ public:
 	*                       for the different letters.
 	* @param st             Is it a Stoplist?.
 	*/
-	GDict(GSession* s,const RStd::RString& name,const RStd::RString& desc,GLang* lang,unsigned m,unsigned ml,bool st) throw(bad_alloc);
+	GDict(GSession* s,const R::RString& name,const R::RString& desc,GLang* lang,unsigned m,unsigned ml,bool st) throw(bad_alloc);
 
 	/**
 	* Clear the dictionnary.
@@ -163,7 +163,7 @@ public:
 	* Put a string corresponding to a word and an identificator in the
 	* dictionnary.
 	*/
-	void Put(unsigned id,const RStd::RString& word) throw(bad_alloc);
+	void Put(unsigned id,const R::RString& word) throw(bad_alloc);
 
 	void InsertNewWordList(GWordList& wordlist,bool save);
 
@@ -172,7 +172,7 @@ public:
 	* doesn't exist in the dictionnary, it is created.
 	* @return Identificator of the word.
 	*/
-	unsigned int GetId(const RStd::RString& word) throw(bad_alloc);
+	unsigned int GetId(const R::RString& word) throw(bad_alloc);
 
 	/**
 	* Get the maximal number of word actually supposed.
@@ -219,17 +219,17 @@ public:
 		{return(Stop);}
 
 	/**
-	* Compare function used in the RStd::RContainer.
+	* Compare function used in the R::RContainer.
 	*/
 	int Compare(const GDict* dict) const;
 
 	/**
-	* Compare function used in the RStd::RContainer.
+	* Compare function used in the R::RContainer.
 	*/
 	int Compare(const GDict& dict) const;
 
 	/**
-	* Compare function used in the RStd::RContainer.
+	* Compare function used in the R::RContainer.
 	*/
 	int Compare(const GLang* lang) const;
 

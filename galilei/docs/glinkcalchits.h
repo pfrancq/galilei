@@ -134,7 +134,7 @@ private :
 	/**
 	* Container of outgoing links.
 	*/
-	RStd::RContainer<GLinks,unsigned int,true,true>* Links_Out;
+	R::RContainer<GLinks,unsigned int,true,true>* Links_Out;
 
 	/**
 	* The Norme for the weight of the links contained in Links_Out
@@ -179,21 +179,21 @@ private :
 	* @params out_links          The container of outgoing links for the computed profile
 	* @params in_links             The container of incomming links for the computed profile
 	*/
-	void Operation_I(RStd::RContainer<GBalancedLinks,unsigned int,true,true>* out_Links,RStd::RContainer<GBalancedLinks,unsigned int,true,true>* in_Links);
+	void Operation_I(R::RContainer<GBalancedLinks,unsigned int,true,true>* out_Links,R::RContainer<GBalancedLinks,unsigned int,true,true>* in_Links);
 
 	/**
 	* Compute the weight of Outgoing Links (wi = SUM weigth of page that i point).
 	* @params out_links          The container of outgoing links for the computed profile
 	* @params in_links             The container of incomming links for the computed profile
 	*/
-	void Operation_O(RStd::RContainer<GBalancedLinks,unsigned int,true,true>* out_Links,RStd::RContainer<GBalancedLinks,unsigned int,true,true>* in_Links);
+	void Operation_O(R::RContainer<GBalancedLinks,unsigned int,true,true>* out_Links,R::RContainer<GBalancedLinks,unsigned int,true,true>* in_Links);
 
 	/**
 	* Normalization of weight for Links.
 	* @params Links           The container from where the values must be normalised.
 	* @params Norme          The norme used to normalise
 	*/
-	void Normalization(RStd::RContainer<GBalancedLinks,unsigned int,true,true>* Links, float Norme);
+	void Normalization(R::RContainer<GBalancedLinks,unsigned int,true,true>* Links, float Norme);
 
 	/**
 	* Find the best values for Outgoing links;
@@ -201,7 +201,7 @@ private :
 	* @param lcur           The GLinksCursor on the container to be treated
 	* @param Bv             The container of Links for the best Values.
 	*/
-	void FindBestValues(unsigned int nb,GBalancedLinksCursor lcur,RContainer<GBalancedLinks,unsigned int,true,false>* Bv);
+	void FindBestValues(unsigned int nb,GBalancedLinksCursor lcur,R::RContainer<GBalancedLinks,unsigned int,true,false>* Bv);
 
 	/*
 	* Find min value in a struct BestValue

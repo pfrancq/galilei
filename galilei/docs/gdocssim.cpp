@@ -40,7 +40,7 @@
 #include <docs/gdoc.h>
 #include <docs/gdocs.h>
 using namespace GALILEI;
-using namespace RIO;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs* d,bool global) throw(bad
 
 	try
 	{
-		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,RIO::Read);
+		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,R::Read);
 	}
 	catch(...)
 	{
@@ -147,7 +147,7 @@ GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs* d,bool global) throw(bad
 		Cur1.Set(d);
 		Cur2.Set(d);
 		ComputeSims(filename,Cur1,Cur2,global);
-		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,RIO::Read);
+		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,R::Read);
 	}
 }
 
@@ -161,7 +161,7 @@ GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs& d,bool global) throw(bad
 
 	try
 	{
-		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,RIO::Read);
+		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,R::Read);
 	}
 	catch(...)
 	{
@@ -169,7 +169,7 @@ GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs& d,bool global) throw(bad
 		Cur1.Set(d);
 		Cur2.Set(d);
 		ComputeSims(filename,Cur1,Cur2,global);
-		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,RIO::Read);
+		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,R::Read);
 	}
 }
 
@@ -178,7 +178,7 @@ GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs& d,bool global) throw(bad
 void GALILEI::GDocsSim::ComputeSims(const char* filename,GDocCursor& Cur1,GDocCursor& Cur2,bool global) throw(bad_alloc,RString)
 {
 	unsigned int i,j;
-	RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true> f(filename,RIO::Create);
+	RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true> f(filename,R::Create);
 	GSim r;
 
 	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)

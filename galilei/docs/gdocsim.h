@@ -84,17 +84,17 @@ public:
 	static int sortOrder(const void *a,const void *b);
 
 	/**
-	* Method needed by RStd::RContainer.
+	* Method needed by R::RContainer.
 	*/
 	int Compare(const GDocSim* d) const;
 
 	/**
-	* Method needed by RStd::RContainer.
+	* Method needed by R::RContainer.
 	*/
 	int Compare(const GDocSim& d) const;
 
 	/**
-	* Method needed by RStd::RContainer.
+	* Method needed by R::RContainer.
 	*/
 	int Compare(const GDoc* d) const;
 

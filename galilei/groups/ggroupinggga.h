@@ -63,7 +63,7 @@ protected:
 	/**
 	* GA Objects.
 	*/
-	RGA::RObjs<GObjIR>* Objs;
+	R::RObjs<GObjIR>* Objs;
 
 	/**
 	* Instance of the GA.

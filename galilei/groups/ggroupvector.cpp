@@ -49,6 +49,7 @@
 #include <langs/glang.h>
 #include <langs/gdict.h>
 using namespace GALILEI;
+using namespace R;
 
 
 

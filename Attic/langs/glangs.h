@@ -60,7 +60,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Languages.
 */
-class GLangs : public RStd::RContainer<GLang,unsigned,true,true>
+class GLangs : public R::RContainer<GLang,unsigned,true,true>
 {
 protected:
 

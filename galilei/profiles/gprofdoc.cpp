@@ -41,6 +41,7 @@
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 using namespace GALILEI;
+using namespace R;
 
 
 
@@ -58,7 +59,7 @@ GALILEI::GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,const ch
 
 
 //---------------------------------------------------------------------------
-GALILEI::GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,RTimeDate::RDate date)
+GALILEI::GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,RDate date)
   : Doc(doc), Profile(prof), Fdbk(fdbk), Updated(date)
 {
 }
@@ -108,7 +109,7 @@ double GALILEI::GProfDoc::Similarity(void)
 
 
 //-----------------------------------------------------------------------------
-tDocJudgement GALILEI::GProfDoc::ErrorJudgment(tDocJudgement fdbk,double PercErr,RMath::RRandom* rand)
+tDocJudgement GALILEI::GProfDoc::ErrorJudgment(tDocJudgement fdbk,double PercErr,RRandom* rand)
 {
 	double random=rand->Value()*100+1.0;
 

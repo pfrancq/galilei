@@ -107,7 +107,7 @@ protected:
 	/**
 	* The Container of ideal group.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+	R::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
 
 	/**
 	* Global similaity used if true.
@@ -126,7 +126,7 @@ public:
 	* @param ses            The  galilei session.
 	* @param groups         Ideal groupement.
 	*/
-	GStatSimProfGrp(GSession* ses,RStd::RContainer<GGroups,unsigned int,true,true>* ideal);
+	GStatSimProfGrp(GSession* ses,R::RContainer<GGroups,unsigned int,true,true>* ideal);
 
 	/**
 	* Get the average intra-group similarity.

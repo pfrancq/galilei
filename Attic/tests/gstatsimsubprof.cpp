@@ -85,7 +85,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GStatSimSubProf::GStatSimSubProf(GSession* ses,RIO::RTextFile* f,bool g,bool l)
+GALILEI::GStatSimSubProf::GStatSimSubProf(GSession* ses,R::RTextFile* f,bool g,bool l)
 	: Session(ses), Global(g), Local(l), File(f), Sub(100,50)
 {
 	if(File)

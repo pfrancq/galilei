@@ -37,6 +37,8 @@
 //-----------------------------------------------------------------------------
 // includes files for GALILEI
 #include <groups/gir.h>
+using namespace GALILEI;
+using namespace R;
 
 
 

@@ -153,22 +153,22 @@ protected:
 	/**
 	* container of prototypes.
 	*/
-	RStd::RContainer<GSubProfile, unsigned int, false, false>* Protos;
+	R::RContainer<GSubProfile, unsigned int, false, false>* Protos;
 
 	/**
 	* container of centers.
 	*/
-	RStd::RContainer<GSubProfile, unsigned int, false, false>* Centers;
+	R::RContainer<GSubProfile, unsigned int, false, false>* Centers;
 	
 	/**
 	* container of centers needed to calculate error.
 	*/
-	RStd::RContainer<GSubProfile, unsigned int, false, false>* CentersError;
+	R::RContainer<GSubProfile, unsigned int, false, false>* CentersError;
 
 	/**
 	* groupement.
 	*/
-	RStd::RContainer<GGroup,unsigned int, false, true>* Grps;
+	R::RContainer<GGroup,unsigned int, false, true>* Grps;
 
 
 protected:
@@ -219,7 +219,7 @@ public:
 	/**
 	* Calculates the Distance between a subprofile and a group
 	*/
-	double Distance(GSubProfile* s,RContainer<GSubProfile,unsigned int,false,true> *grp, bool center);
+	double Distance(GSubProfile* s,R::RContainer<GSubProfile,unsigned int,false,true> *grp, bool center);
 	
 	/**
 	* returns the similarity between two subprofiles.
@@ -229,12 +229,12 @@ public:
 	/**
 	* find the group, in the container of group, conatining a given subprofile
 	*/
-	GGroup* FindGroup(RContainer<GGroup,unsigned int,false,true>* grps, GSubProfile* s);
+	GGroup* FindGroup(R::RContainer<GGroup,unsigned int,false,true>* grps, GSubProfile* s);
 	
 	/**
 	* returns the nearest prototype to a given subprofile inside a given group 
 	*/
-	GSubProfile* NearestPrototype(GSubProfile* s,RContainer<GSubProfile,unsigned int,false,true> *grp);
+	GSubProfile* NearestPrototype(GSubProfile* s,R::RContainer<GSubProfile,unsigned int,false,true> *grp);
 	
 	/**
 	* calculates the centers error between two iterations.

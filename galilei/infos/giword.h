@@ -112,7 +112,7 @@ public:
 	/**
 	* @returns Name of the class.
 	*/
-	virtual const RStd::RString ClassName(void) const;
+	virtual const R::RString ClassName(void) const;
 
 	/**
 	* @returns Type of the information.

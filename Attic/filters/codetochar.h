@@ -68,7 +68,7 @@ class CodeToChar
 	/**
 	* Code.
 	*/
-	RStd::RString Code;
+	R::RString Code;
 
 public:
 
@@ -80,17 +80,17 @@ public:
 	CodeToChar(const char* code,char c) throw(bad_alloc);
 
 	/**
-	* Utilised by RStd::RContainer
+	* Utilised by R::RContainer
 	*/
 	int Compare(const char* code) const;
 
 	/**
-	* Utilised by RStd::RContainer
+	* Utilised by R::RContainer
 	*/
 	int Compare(const CodeToChar& code) const;
 
 	/**
-	* Utilised by RStd::RContainer
+	* Utilised by R::RContainer
 	*/
 	int Compare(const CodeToChar* code) const;
 

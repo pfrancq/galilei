@@ -44,7 +44,7 @@
 #include <langs/gword.h>
 #include <langs/gwordlist.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -72,7 +72,7 @@ GALILEI::GWordList::GWordList(unsigned int word)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWordList::GWordList(unsigned int id,const RStd::RString& word)
+GALILEI::GWordList::GWordList(unsigned int id,const RString& word)
 	: GWord(id,word)
 {
 	List=new RContainer<GWord,unsigned,false,true>(2);

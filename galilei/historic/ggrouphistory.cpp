@@ -38,6 +38,8 @@
 // include files for GALILEI
 #include <historic/ggrouphistory.h>
 using namespace GALILEI;
+using namespace R;
+
 
 
 //-----------------------------------------------------------------------------
@@ -48,14 +50,14 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(bad_alloc)
-	: RStd::RContainer<GIWordsWeightsHistory,unsigned int,false,true>(20,10)
+	: RContainer<GIWordsWeightsHistory,unsigned int,false,true>(20,10)
 {
 	 Id=id;
 	 Lang=lang;
 	 Modified=false;
 	 Parent=grps;
-	 Childrens=new  RStd::RContainer<GGroupHistory,unsigned int,false,true>(2,1);
-	 Parents=new  RStd::RContainer<GGroupHistory,unsigned int,false,true>(2,1);
+	 Childrens=new  RContainer<GGroupHistory,unsigned int,false,true>(2,1);
+	 Parents=new  RContainer<GGroupHistory,unsigned int,false,true>(2,1);
 
 }
 

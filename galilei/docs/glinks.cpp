@@ -37,9 +37,10 @@
 //include file for GALILEI
 #include <docs/glinks.h>
 #include <docs/glink.h>
-
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
+
+
 
 //-----------------------------------------------------------------------------
 //

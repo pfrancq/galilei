@@ -67,7 +67,7 @@ class GIWord;
 * @author Pascal Francq
 * @short List of words' references.
 */
-class GIWordList : public GInfo,public RStd::RContainer<GIWord,unsigned,true,true>
+class GIWordList : public GInfo,public R::RContainer<GIWord,unsigned,true,true>
 {
 	/**
 	* Identifier of the list.
@@ -95,7 +95,7 @@ public:
 	/**
 	* Return the name of the class.
 	*/
-	virtual const RStd::RString ClassName(void) const;
+	virtual const R::RString ClassName(void) const;
 
 	/**
 	* Return the type of the information.

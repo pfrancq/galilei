@@ -40,7 +40,7 @@
 #include <langs/glang.h>
 #include <docs/gdocprofsims.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 

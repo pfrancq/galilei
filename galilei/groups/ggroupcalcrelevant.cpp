@@ -48,6 +48,7 @@
 #include <infos/giwordweight.h>
 #include <infos/giwordsweights.h>
 using namespace GALILEI;
+using namespace R;
 
 
 

@@ -37,6 +37,13 @@
 #include <time.h>
 #include <math.h>
 
+
+//-----------------------------------------------------------------------------
+//include files for R Project
+#include <rgga/rgroupingkmeans.h>
+using namespace R;
+
+
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<groups/ggroupingkprotos.h>
@@ -48,17 +55,6 @@
 #include <profiles/gsubprofile.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
-
-
-//-----------------------------------------------------------------------------
-//include files for R
-#include <rgga/rgroupingkmeans.h>
-using namespace RGGA;
-using namespace RStd;
-
-
-//-----------------------------------------------------------------------------
-
 
 
 

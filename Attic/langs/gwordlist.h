@@ -60,7 +60,7 @@ public:
 	/**
 	* Id of the two words of the list.
 	*/
-	RStd::RContainer<GWord,unsigned,false,true>* List;
+	R::RContainer<GWord,unsigned,false,true>* List;
 
 public:
 
@@ -77,7 +77,7 @@ public:
 	/**
 	* Constructor.
 	*/
-	GWordList(unsigned int id,const RStd::RString& word);
+	GWordList(unsigned int id,const R::RString& word);
 
 	/**
 	* Constructor.

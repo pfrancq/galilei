@@ -62,7 +62,7 @@ namespace GALILEI{
 * @author GALILEI Team
 * @short Tree of the Galilei subject.
 */
-class GSubjectTree : public RStd::RTree<GSubject,true,false>
+class GSubjectTree : public R::RTree<GSubject,true,false>
 {
 public:
 

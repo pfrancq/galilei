@@ -47,6 +47,7 @@
 #include<sessions/gsession.h>
 #include<sessions/gslot.h>
 using namespace GALILEI;
+using namespace R;
 
 
 

@@ -61,7 +61,7 @@ protected:
 	/**
 	* Name of the variable.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 public:
 
@@ -72,12 +72,12 @@ public:
 	GPrgVar(const char* name) throw(bad_alloc);
 
 	/**
-	* Method needed by RStd::Rcontainer.
+	* Method needed by R::Rcontainer.
 	*/
 	int Compare(const GPrgVar* v) const;
 
 	/**
-	* Method needed by RStd::Rcontainer.
+	* Method needed by R::Rcontainer.
 	*/
 	int Compare(const char* v) const;
 

@@ -45,7 +45,7 @@
 #include <langs/glang.h>
 #include <langs/gdict.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 
@@ -126,7 +126,7 @@ RString& GALILEI::GLang::GetStemming(const RString& _kwd)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLang::ValidWord(const RStd::RString& kwd)
+bool GALILEI::GLang::ValidWord(const RString& kwd)
 {
 	char look[10];
 	const char* ptr=kwd();

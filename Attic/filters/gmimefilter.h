@@ -72,7 +72,7 @@ protected:
 	/**
 	* File extension.
 	*/
-	RStd::RString Type;
+	R::RString Type;
 
 	/**
 	* Filter corresponding.
@@ -101,7 +101,7 @@ public:
 	/**
 	* Compare function used by RContainer.
 	*/
-	int Compare(const RStd::RString& t) const;
+	int Compare(const R::RString& t) const;
 
 	/**
 	* Compare function used by RContainer.

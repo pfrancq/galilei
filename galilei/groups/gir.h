@@ -107,7 +107,7 @@ public:
 	/**
 	* Name of the measure.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 	/**
 	* Type fo the measure.
@@ -135,12 +135,12 @@ public:
 	GSimMeasure(const char* n,SimType t,bool u=false,double w=0.0);
 
 	/**
-	* Compare method used by the RStd::RContainer.
+	* Compare method used by the R::RContainer.
 	*/
 	int Compare(const GSimMeasure* s) const;
 
 	/**
-	* Compare method used by the RStd::RContainer.
+	* Compare method used by the R::RContainer.
 	*/
 	int Compare(const char* s) const;
 
@@ -159,21 +159,21 @@ public:
 * @author Pascal Francq
 * @short IR Fitness.
 */
-class GFitnessIR : public RGA::RFitness<double,true>
+class GFitnessIR : public R::RFitness<double,true>
 {
 public:
 
 	/**
 	* Constructor of the fitness function used for the Bin Packing.
 	*/
-	GFitnessIR(void) : RGA::RFitness<double,true>() {}
+	GFitnessIR(void) : R::RFitness<double,true>() {}
 
 	/**
 	* Assignment operator with a fitness f.
 	*/
 	GFitnessIR& operator=(const GFitnessIR &f)
 	{
-		RGA::RFitness<double,true>::operator=(f);
+		R::RFitness<double,true>::operator=(f);
 		return(*this);
 	}
 
@@ -182,7 +182,7 @@ public:
 	*/
 	GFitnessIR& operator=(const double val)
 	{
-		RGA::RFitness<double,true>::operator=(val);
+		R::RFitness<double,true>::operator=(val);
 		return(*this);
 	}
 };
@@ -247,42 +247,42 @@ public:
 	/**
 	* Measures.
 	*/
-	RStd::RContainer<GSimMeasure,unsigned int,true,true> Measures;
+	R::RContainer<GSimMeasure,unsigned int,true,true> Measures;
 
 	/**
 	* Parameter for the criterion "Similariry".
 	*/
-	RPromethee::RPromCriterionParams ParamsSim;
+	R::RPromCriterionParams ParamsSim;
 
 	/**
 	* Parameter for the criterion "Information".
 	*/
-	RPromethee::RPromCriterionParams ParamsInfo;
+	R::RPromCriterionParams ParamsInfo;
 
 	/**
 	* Parameter for the criterion "Entropy".
 	*/
-	RPromethee::RPromCriterionParams ParamsEntropy;
+	R::RPromCriterionParams ParamsEntropy;
 
 	/**
 	* Parameter for the criterion "Likelihood".
 	*/
-	RPromethee::RPromCriterionParams ParamsLikelihood;
+	R::RPromCriterionParams ParamsLikelihood;
 
 	/**
 	* Parameter for the criterion "Same Feedbacks".
 	*/
-	RPromethee::RPromCriterionParams ParamsSameFeedbacks;
+	R::RPromCriterionParams ParamsSameFeedbacks;
 
 	/**
 	* Parameter for the criterion "Diff Feedbacks".
 	*/
-	RPromethee::RPromCriterionParams ParamsDiffFeedbacks;
+	R::RPromCriterionParams ParamsDiffFeedbacks;
 
 	/**
 	* Parameter for the criterion "Social".
 	*/
-	RPromethee::RPromCriterionParams ParamsSocial;
+	R::RPromCriterionParams ParamsSocial;
 
 	/**
 	* Global similarities used.

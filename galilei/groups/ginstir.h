@@ -67,7 +67,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short IR "thread-dependent" Data.
 */
-class GThreadDataIR : public RGGA::RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
+class GThreadDataIR : public R::RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
 {
 public:
 
@@ -94,7 +94,7 @@ public:
 	/**
 	* Array of solutions to create in PROMETHEE Kernel.
 	*/
-	RPromethee::RPromSol** Sols;
+	R::RPromSol** Sols;
 
 	/**
 	* Construct the data.
@@ -120,17 +120,17 @@ public:
 * @author Pascal Francq
 * @short IR Instance.
 */
-class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>, public GIRProm
+class GInstIR : public R::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>, public GIRProm
 {
 	/**
 	* Couples of subprofiles having same feedbacks on common documents.
 	*/
-	RStd::RContainer<GSubProfilesSameDocs,unsigned int,true,true> SameFeedbacks;
+	R::RContainer<GSubProfilesSameDocs,unsigned int,true,true> SameFeedbacks;
 
 	/**
 	* Couples of subprofiles having different feedbacks on common documents.
 	*/
-	RStd::RContainer<GSubProfilesSameDocs,unsigned int,true,true> DiffFeedbacks;
+	R::RContainer<GSubProfilesSameDocs,unsigned int,true,true> DiffFeedbacks;
 
 	/**
 	* Parameter of the GA.
@@ -140,7 +140,7 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	/**
 	* Solutions corresponding to the chromosome.
 	*/
-	RPromethee::RPromSol** Sols;
+	R::RPromSol** Sols;
 
 	/**
 	* Pointer to the current clustering in the session.
@@ -160,20 +160,20 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	/**
 	* Social Profiles.
 	*/
-	RStd::RContainer<GObjIR,unsigned int,false,true> NoSocialSubProfiles;
+	R::RContainer<GObjIR,unsigned int,false,true> NoSocialSubProfiles;
 
 #if GALILEITEST
 	/**
 	* Ideal Groups.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+	R::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
 #endif
 
 #if BESTSOLSVERIFICATION
 	/**
 	* Container holding the best chromosomes.
 	*/
-	RStd::RContainer<GChromoIR,unsigned int,true,false> BestSols;
+	R::RContainer<GChromoIR,unsigned int,true,false> BestSols;
 #endif
 
 public:
@@ -187,7 +187,7 @@ public:
 	* @param p              Parameters.
 	* @param debug          Debugger.
 	*/
-	GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GIRParams* p,RGA::RDebug *debug) throw(bad_alloc);
+	GInstIR(GSession* ses,GLang* l,GGroups* grps,R::RObjs<GObjIR>* objs,GIRParams* p,R::RDebug *debug) throw(bad_alloc);
 
 	/**
 	* Construct the instance.
@@ -199,12 +199,12 @@ public:
 	* @param pop            Population size.
 	* @param debug          Debugger.
 	*/
-	GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GIRParams* p,unsigned int pop,RGA::RDebug *debug) throw(bad_alloc);
+	GInstIR(GSession* ses,GLang* l,GGroups* grps,R::RObjs<GObjIR>* objs,GIRParams* p,unsigned int pop,R::RDebug *debug) throw(bad_alloc);
 
 	/**
 	* Create a specific heuristic for the IR problem.
 	*/
-	virtual RGGA::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* CreateHeuristic(void) throw(bad_alloc);
+	virtual R::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* CreateHeuristic(void) throw(bad_alloc);
 
 	/**
 	* Get the GA object corresponding to a subprofile.
@@ -232,14 +232,14 @@ public:
 	* Set the ideal groups.
 	* @param ideal          Pointer to the ideal groups.
 	*/
-	void SetIdealGroups(RStd::RContainer<GGroups,unsigned int,true,true>* ideal) {IdealGroups=ideal;}
+	void SetIdealGroups(R::RContainer<GGroups,unsigned int,true,true>* ideal) {IdealGroups=ideal;}
 
 #endif
 
 	/**
 	* Apply PROMETHEE to classify the chromosomes.
 	*/
-	virtual void PostEvaluate(void) throw(RGA::eGA);
+	virtual void PostEvaluate(void) throw(R::eGA);
 	
 	/**
 	* return the Language actually grouped.

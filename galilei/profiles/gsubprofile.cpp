@@ -43,8 +43,7 @@
 #include<profiles/gprofdoc.h>
 #include<groups/ggroup.h>
 using namespace GALILEI;
-using namespace RStd;
-using namespace RTimeDate;
+using namespace R;
 
 
 

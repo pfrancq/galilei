@@ -44,7 +44,7 @@
 #include <docs/gdocrefurl.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 

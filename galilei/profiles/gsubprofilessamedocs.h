@@ -62,12 +62,12 @@ private:
 	/**
 	* Identificator of the first subprofile.
 	*/
-	RStd::tId Id1;
+	R::tId Id1;
 
 	/**
 	* Identificator of the Second subprofile.
 	*/
-	RStd::tId Id2;
+	R::tId Id2;
 
 	/**
 	* Ratio of "common documents" judged either with a similar feedback or with
@@ -84,15 +84,15 @@ public:
 	* @param nb             Number of common documents.
 	* @param tot            Total number documents.
 	*/
-	GSubProfilesSameDocs(RStd::tId i1,RStd::tId i2,double r);
+	GSubProfilesSameDocs(R::tId i1,R::tId i2,double r);
 
 	/**
-	* Compare method by RStd::RContainer.
+	* Compare method by R::RContainer.
 	*/
 	int Compare(const GSubProfilesSameDocs* g) const;
 
 	/**
-	* Compare method by RStd::RContainer.
+	* Compare method by R::RContainer.
 	*/
 	int Compare(const GSubProfilesSameDocs& g) const;
 
@@ -101,7 +101,7 @@ public:
 	* @param obj            Identificator to test.
 	* @return bool.
 	*/
-	bool IsIn(const RStd::tId obj) const;
+	bool IsIn(const R::tId obj) const;
 
 	/**
 	* Get the ratio.
@@ -113,13 +113,13 @@ public:
 	* Get the little identificator.
 	* @return tId.
 	*/
-	RStd::tId GetId1(void) const {return(Id1);}
+	R::tId GetId1(void) const {return(Id1);}
 
 	/**
 	* Get the highest identificator.
 	* @return tId.
 	*/
-	RStd::tId GetId2(void) const {return(Id2);}
+	R::tId GetId2(void) const {return(Id2);}
 };
 
 

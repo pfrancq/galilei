@@ -54,6 +54,7 @@
 #include <groups/ggroupvector.h>
 #include <groups/ggroupcalcgravitation.h>
 using namespace GALILEI;
+using namespace R;
 
 
 
@@ -98,7 +99,7 @@ int GALILEI::GQueryDocsGroup::GroupSim::sortOrder(const void *a,const void *b)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GQueryDocsGroup::GQueryDocsGroup(GSession* ses,RIO::RTextFile* f) throw(bad_alloc)
+GALILEI::GQueryDocsGroup::GQueryDocsGroup(GSession* ses,RTextFile* f) throw(bad_alloc)
 	: Session(ses), Order(0), SizeOrder(6000), Groups(50), File(f)
 {
 	Order=new GIWordWeight*[SizeOrder];

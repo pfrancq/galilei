@@ -62,7 +62,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Plugin.
 */
-class GIRProm : public RPromethee::RPromKernel
+class GIRProm : public R::RPromKernel
 {
 	/**
 	* Parameters.
@@ -73,75 +73,75 @@ class GIRProm : public RPromethee::RPromKernel
 	* Criteria representing the average similarity of the profiles with the
 	* ones of the same group.
 	*/
-	RPromethee::RPromCriterion* CritSim;
+	R::RPromCriterion* CritSim;
 
 	/**
 	* Criteria representing the Similarity criterion "AvgSim".
 	*/
-	RPromethee::RPromCriterion* CritSimAvgSim;
+	R::RPromCriterion* CritSimAvgSim;
 
 	/**
 	* Criteria representing the Similarity criterion "J".
 	*/
-	RPromethee::RPromCriterion* CritSimJ;
+	R::RPromCriterion* CritSimJ;
 
 	/**
 	* Criteria representing the Similarity criterion "AvgRatio".
 	*/
-	RPromethee::RPromCriterion* CritSimAvgRatio;
+	R::RPromCriterion* CritSimAvgRatio;
 
 	/**
 	* Criteria representing the Similarity criterion "AvgMinRatio".
 	*/
-	RPromethee::RPromCriterion* CritSimMinRatio;
+	R::RPromCriterion* CritSimMinRatio;
 
 	/**
 	* Value of the Similarity criterion "AvgRatio".
 	*/
-	RPromethee::RPromCriterion* CritSimRatio;
+	R::RPromCriterion* CritSimRatio;
 
 	/**
 	* Value of the Similarity criterion "AvgWOverB".
 	*/
-	RPromethee::RPromCriterion* CritSimWOverB;
+	R::RPromCriterion* CritSimWOverB;
 
 	/**
 	* Value of the Similarity criterion "SimWB".
 	*/
-	RPromethee::RPromCriterion* CritSimSimWB;
+	R::RPromCriterion* CritSimSimWB;
 
 	/**
 	* Criteria representing number of groups.
 	*/
-	RPromethee::RPromCriterion* CritInfo;
+	R::RPromCriterion* CritInfo;
 
 	/**
 	* Criteria representing the entropy of a solution.
 	*/
-	RPromethee::RPromCriterion* CritEntropy;
+	R::RPromCriterion* CritEntropy;
 
 	/**
 	* Criteria representing the likelihood of a solution.
 	*/
-	RPromethee::RPromCriterion* CritLikelihood;
+	R::RPromCriterion* CritLikelihood;
 
 	/**
 	* Criteria representing the factor depending on the subprofiles having
 	* common OK documents.
 	*/
-	RPromethee::RPromCriterion* CritSameFeedbacks;
+	R::RPromCriterion* CritSameFeedbacks;
 
 	/**
 	* Criteria representing the factor depending on the subprofiles having
 	* common documents but with opposite judgement.
 	*/
-	RPromethee::RPromCriterion* CritDiffFeedbacks;
+	R::RPromCriterion* CritDiffFeedbacks;
 
 	/**
 	* Criteria representing the factor depending on the subprofiles that are
 	* social.
 	*/
-	RPromethee::RPromCriterion* CritSocial;
+	R::RPromCriterion* CritSocial;
 
 public:
 
@@ -156,7 +156,7 @@ public:
 	* @param s              Solution.
 	* @param c              Chromosome.
 	*/
-	void Assign(RPromethee::RPromSol* s,GChromoIR* c);
+	void Assign(R::RPromSol* s,GChromoIR* c);
 };
 
 

@@ -46,7 +46,7 @@
 #include <sessions/gprginstmethod.h>
 #include <sessions/gprgvar.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 

@@ -100,7 +100,7 @@ public:
 	/**
 	* Return the name of the class.
 	*/
-	virtual const RStd::RString ClassName(void) const;
+	virtual const R::RString ClassName(void) const;
 
 	/**
 	* Return the type of the information.
@@ -108,12 +108,12 @@ public:
 	virtual const GInfoType InfoType(void) const;
 
 	/**
-	* Compare method used by RStd::RContainer.
+	* Compare method used by R::RContainer.
 	*/
 	int Compare(const GIWordWeight &calc) const;
 
 	/**
-	* Compare method used by RStd::RContainer.
+	* Compare method used by R::RContainer.
 	*/
 	int Compare(const GIWordWeight *calc) const;
 

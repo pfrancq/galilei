@@ -121,19 +121,19 @@ public:
 	GSatSimId(unsigned int id,unsigned int grpid);
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param statsimid      GSatSimId used for the comparaison.
 	*/
 	int Compare(const GSatSimId& statsimid) const;
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param statsimid      Pointer to the GSatSimId used for the comparaison.
 	*/
 	int Compare(const GSatSimId* statsimid) const;
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param id            Identificator used for the comparaison.
 	*/
 	int Compare(const unsigned id) const;

@@ -60,7 +60,7 @@ class GCalcParams
 	/**
 	* Name of the grouping.
 	*/
-	RStd::RString ComputingName;
+	R::RString ComputingName;
 
 public:
 
@@ -89,22 +89,22 @@ public:
 	virtual void SetSettings(const char*) {}
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const GCalcParams* grp) const;
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const GCalcParams& grp) const;
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const GProfileCalc* grp) const;
 
 	/**
-	* Compare method used for RStd::RContainer.
+	* Compare method used for R::RContainer.
 	*/
 	int Compare(const char* name) const;
 

@@ -62,7 +62,7 @@ class GProfilesSim
 	/**
 	* The similarities.
 	*/
-	RStd::RContainer<GSims,unsigned int,true,false> Sims;
+	R::RContainer<GSims,unsigned int,true,false> Sims;
 
 	/**
 	* Global similarities used?
@@ -107,7 +107,7 @@ public:
 	* @param global         Global approach.
 	* @param lang           Lang of the profilesSim
 	*/
-	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* lang=0) throw(bad_alloc);
+	GProfilesSim(R::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* lang=0) throw(bad_alloc);
 
 	/**
 	* Analyse the similarity of the two subprofiles and insert when necessary.
@@ -141,17 +141,17 @@ public:
 	tObjState GetState(unsigned int id1, unsigned int id2);
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GLang* l) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GProfilesSim& profilesSim) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare methods used by R::RContainer.
 	*/
 	int Compare(const GProfilesSim* profilesSim) const;
 
@@ -189,7 +189,7 @@ public:
 	/**
 	* update and get the deviation od similarities
 	*/
-	void UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* suprofile);
+	void UpdateDeviationAndMeanSim(R::RContainer<GSubProfile,unsigned int,false,true>* suprofile);
 
 	/**
 	* returns mean of similaritries

@@ -48,8 +48,7 @@
 	#include <groups/gsubject.h>
 #endif
 using namespace GALILEI;
-using namespace RXML;
-using namespace RTimeDate;
+using namespace R;
 
 
 
@@ -69,7 +68,7 @@ GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang
 #endif
 {
 	LinkSet=new RContainer<GLink,unsigned int,false,true>(5,2);
-	
+
 	if(Updated>Computed)
 	{
 		if(Computed==RDate::null)

@@ -63,12 +63,12 @@ protected:
 	/**
 	* URL of the document.
 	*/
-	RStd::RString URL;
+	R::RString URL;
 
 	/**
 	* Name of the document.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 	/**
 	* Identifier of the document.
@@ -113,17 +113,17 @@ protected:
 	/**
 	* Date of last update of document's content.
 	*/
-	RTimeDate::RDate Updated;
+	R::RDate Updated;
 
 	/**
 	* Date of last document's analysis.
 	*/
-	RTimeDate::RDate Computed;
+	R::RDate Computed;
 
 	/**
 	* Profiles which have judge the current document.
 	*/
-	RStd::RContainer<GProfDoc,unsigned,false,true> Fdbks;
+	R::RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
 	/**
 	* Count the number of downloads failed.
@@ -133,13 +133,13 @@ protected:
 	/**
 	* Container of Link.
 	*/
-	RStd::RContainer<GLink,unsigned int,false,true>* LinkSet;
+	R::RContainer<GLink,unsigned int,false,true>* LinkSet;
 
 #if GALILEITEST
 	/**
 	* Subjects of the documents.
 	*/
-	RStd::RContainer<GSubject,unsigned int,false,true> Subjects;
+	R::RContainer<GSubject,unsigned int,false,true> Subjects;
 #endif
 
 public:
@@ -175,25 +175,25 @@ public:
 	virtual bool HasRepresentation(void) const;
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param doc            Document used for the comparaison.
 	*/
 	int Compare(const GDoc& doc) const;
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param doc            Pointer to the document used for the comparaison.
 	*/
 	int Compare(const GDoc* doc) const;
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param id            Identificator used for the comparaison.
 	*/
 	int Compare(const unsigned id) const;
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param lang           Language used for the comparaison.
 	*/
 	int Compare(const GLang*) const;
@@ -225,13 +225,13 @@ public:
 	* Get the date of the last update of the document's content.
 	* @returns Pointer to date.
 	*/
-	const RTimeDate::RDate* GetUpdated(void) const {return(&Updated);}
+	const R::RDate* GetUpdated(void) const {return(&Updated);}
 
 	/**
 	* Get the date of the last analysis of the document.
 	* @returns Pointer to date.
 	*/
-	const RTimeDate::RDate* GetComputed(void) const {return(&Computed);}
+	const R::RDate* GetComputed(void) const {return(&Computed);}
 
 	/**
 	* Get the MIME type.

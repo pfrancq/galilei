@@ -40,7 +40,7 @@
 #include <groups/ggroup.h>
 #include <profiles/gsubprofile.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 
@@ -67,7 +67,7 @@ GGroupsCursor& GALILEI::GGroupsMng::GetGroupsCursor(void)
 
 
 //-----------------------------------------------------------------------------
-RStd::RContainer<GGroups,unsigned int,true,true>* GALILEI::GGroupsMng::GetGroups(void)
+RContainer<GGroups,unsigned int,true,true>* GALILEI::GGroupsMng::GetGroups(void)
 {
 	return(&Groups);
 }

@@ -44,9 +44,9 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R-Project
-#include <rio/rtextfile.h>
-using namespace RIO;
+// include files for R Project
+#include <rstd/rtextfile.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -62,8 +62,6 @@ using namespace RIO;
 #include <profiles/guser.h>
 #include <profiles/gprofdoc.h>
 using namespace GALILEI;
-using namespace RMath;
-using namespace RStd;
 
 
 

@@ -46,7 +46,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rmath/random.h>
+#include <rstd/random.h>
 
 
 //-----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ class GSimDocQueryGroup
 	/**
 	* Random number generator
 	*/
-	RMath::RRandom* Random;
+	R::RRandom* Random;
 
 public:
 

@@ -39,9 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcursor.h>
-#include <rmath/random.h>
-using namespace RMath;
-using namespace RStd;
+#include <rstd/random.h>
 
 
 //-----------------------------------------------------------------------------
@@ -134,14 +132,12 @@ protected:
 	/**
 	* container of representatives
 	*/
-	RContainer<GSubProfile,unsigned int,false,false>* Prototypes;
+	R::RContainer<GSubProfile,unsigned int,false,false>* Prototypes;
 
 	/**
 	* container of groups.
 	*/
-	RContainer<GGroup,unsigned int,false,true> * Grps;
-
-
+	R::RContainer<GGroup,unsigned int,false,true> * Grps;
 
 public :
 
@@ -222,12 +218,12 @@ public :
 	* calculate the cost function.
 	* @param grps           the group the cost function is applied on
 	*/
-	double CostFunction(RContainer<GGroup,unsigned int,false,true>* grps);
+	double CostFunction(R::RContainer<GGroup,unsigned int,false,true>* grps);
 
 	/*
 	* temporary function to show groups
 	*/
-	void ShowGroups(RContainer<GGroup,unsigned int,false,true>*gs);
+	void ShowGroups(R::RContainer<GGroup,unsigned int,false,true>*gs);
 
 	/**
 	* destructor

@@ -38,7 +38,7 @@
 // include files for GALILEI
 #include <sessions/gtest.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 
@@ -77,7 +77,7 @@ int GALILEI::GTest::Compare(const tId id)
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GTest::Compare(const RStd::RString& name)
+int GALILEI::GTest::Compare(const RString& name)
 {
 	return(Name.Compare(name));
 }

@@ -43,6 +43,7 @@
 #include <groups/ggroups.h>
 #include <profiles/gsubprofile.h>
 using namespace GALILEI;
+using namespace R;
 
 
 

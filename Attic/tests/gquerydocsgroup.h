@@ -47,7 +47,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rmath/random.h>
+#include <rstd/random.h>
 
 
 //-----------------------------------------------------------------------------
@@ -128,7 +128,7 @@ class GQueryDocsGroup
 	/**
 	* Container of groups retrieved by the current query.
 	*/
-	RStd::RContainer<GroupSim,unsigned int,false,false> Groups;
+	R::RContainer<GroupSim,unsigned int,false,false> Groups;
 
 	/**
 	* Current Language.
@@ -168,7 +168,7 @@ class GQueryDocsGroup
 	/**
 	* Statistics Output file.
 	*/
-	RIO::RTextFile* File;
+	R::RTextFile* File;
 
 public:
 
@@ -177,7 +177,7 @@ public:
 	* @param ses            The Galilei session.
 	* @param f              File.
 	*/
-	GQueryDocsGroup(GSession* ses,RIO::RTextFile* f) throw(bad_alloc);
+	GQueryDocsGroup(GSession* ses,R::RTextFile* f) throw(bad_alloc);
 
 	/**
 	* Run the query.

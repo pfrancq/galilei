@@ -60,7 +60,7 @@ class GPrgVarVal : public GPrgVar
 	/**
 	* Value of the variable.
 	*/
-	RStd::RString Value;
+	R::RString Value;
 
 public:
 

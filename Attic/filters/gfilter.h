@@ -69,19 +69,19 @@ protected:
 	/**
 	* Name of the filter.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 	/**
 	* Mimetypes handle by the Filters separated by a semi-colon.
 	*
 	* Example: text/html;text/xml
 	*/
-	RStd::RString MIMES;
+	R::RString MIMES;
 
 	/**
 	* Version of the filter.
 	*/
-	RStd::RString Version;
+	R::RString Version;
 
 public:
 
@@ -144,7 +144,7 @@ protected:
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeBlock(char* block,RXML::RXMLTag* attach);
+	void AnalyzeBlock(char* block,R::RXMLTag* attach);
 
 	/**
 	* Analyse a list of keywords sepating by a single character.
@@ -152,7 +152,7 @@ protected:
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeKeywords(char* list,char sep,RXML::RXMLTag* attach);
+	void AnalyzeKeywords(char* list,char sep,R::RXMLTag* attach);
 
 public:
 

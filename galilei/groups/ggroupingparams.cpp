@@ -39,6 +39,7 @@
 #include <groups/ggroupingparams.h>
 #include <groups/ggrouping.h>
 using namespace GALILEI;
+using namespace R;
 
 
 

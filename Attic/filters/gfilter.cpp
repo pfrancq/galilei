@@ -42,9 +42,9 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <filters/gfilter.h>
-#include <urlmanagers/gurlmanager.h>
+#include <filters/gurlmanager.h>
 using namespace GALILEI;
-using namespace RXML;
+using namespace R;
 
 
 

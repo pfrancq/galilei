@@ -38,8 +38,8 @@
 
 //------------------------------------------------------------------------------
 // include files for R
-#include <rio/rtextfile.h>
-#include <rxml/rxmlstruct.h>
+#include <rstd/rtextfile.h>
+#include <rstd/rxmlstruct.h>
 
 
 //-----------------------------------------------------------------------------
@@ -57,11 +57,11 @@ namespace GALILEI{
 */
 class GBridge : public GServer
 {
-	RXML::RXMLStruct* Config;
-	RIO::RTextFile* Log;
+	R::RXMLStruct* Config;
+	R::RTextFile* Log;
 public:
 
-	GBridge(RXML::RXMLStruct* s,ost::InetHostAddress& machine);
+	GBridge(R::RXMLStruct* s,ost::InetHostAddress& machine);
 
 	virtual void WriteLog(const char* entry);
 

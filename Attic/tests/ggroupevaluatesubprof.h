@@ -68,7 +68,7 @@ protected:
 	/**
 	* Container of subprofile in this group.
 	*/
-	RStd::RContainer<GSubProfile,unsigned int,false,true>* SubProfile;
+	R::RContainer<GSubProfile,unsigned int,false,true>* SubProfile;
 
 	/**
 	* Pointer to the Galilei session.
@@ -83,14 +83,14 @@ protected:
 	/**
 	* Name of the group.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 public:
 
 	/**
 	* Constructor.
 	*/
-	GGroupEvaluateSubprof(unsigned int id,GLang* lang,RStd::RContainer<GSubProfile,unsigned int,false,true>* sub,GSession* ses);
+	GGroupEvaluateSubprof(unsigned int id,GLang* lang,R::RContainer<GSubProfile,unsigned int,false,true>* sub,GSession* ses);
 
 	/**
 	* The number of subdoc int the groupment.
@@ -154,12 +154,12 @@ public:
 	virtual double GroupSumSimilarity(unsigned int subdoc);
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroupEvaluateSubprof&);
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by R::RContainer.
 	*/
 	int Compare(const GGroupEvaluateSubprof*);
 
@@ -171,7 +171,7 @@ public:
 	/**
 	* Return the name of the group;
 	*/
-	RStd::RString GetName(void){return(Name);};
+	R::RString GetName(void){return(Name);};
 
 	/**
 	* Destructor.

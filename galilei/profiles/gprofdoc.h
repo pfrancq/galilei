@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rtimedate/rdate.h>
+#include <rstd/rdate.h>
 
 
 //-----------------------------------------------------------------------------
@@ -81,7 +81,7 @@ class GProfDoc
 	/**
 	* Last Updated of this feedback.
 	*/
-	RTimeDate::RDate Updated;
+	R::RDate Updated;
 
 public:
 
@@ -101,21 +101,21 @@ public:
 	* @param fdbk           Feedback.
 	* @param date           Date.
 	*/
-	GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,RTimeDate::RDate date);
+	GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,R::RDate date);
 
     
 	/**
-	* Compare mathod used by RStd::RContainer.
+	* Compare mathod used by R::RContainer.
 	*/
 	int Compare(const GProfDoc &profdoc) const;
 
 	/**
-	* Compare mathod used by RStd::RContainer.
+	* Compare mathod used by R::RContainer.
 	*/
 	int Compare(const GProfDoc *profdoc) const;
 
 	/**
-	* Compare mathod used by RStd::RContainer for the document part.
+	* Compare mathod used by R::RContainer for the document part.
 	* @param doc            Pointer to the document.
 	*/
 	int Compare(const GDoc* doc) const;
@@ -142,7 +142,7 @@ public:
 	* Get the date of the feedback.
 	* @returns Pointer to a date.
 	*/
-	const RTimeDate::RDate* GetUpdated(void) const {return(&Updated);}
+	const R::RDate* GetUpdated(void) const {return(&Updated);}
 
 	/**
 	* Get the similarity between the document and the profile.
@@ -157,7 +157,7 @@ public:
 	* @param rand           Pointer to the random number generator to use.
 	* @returns tDocJudgement
 	*/
-	static tDocJudgement ErrorJudgment(tDocJudgement fdbk,double PercErr,RMath::RRandom* rand);
+	static tDocJudgement ErrorJudgment(tDocJudgement fdbk,double PercErr,R::RRandom* rand);
 };
 
 

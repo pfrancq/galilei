@@ -36,7 +36,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpointofviewoptions.h>
+#include <postgroups/gpointofviewoptions.h>
 using namespace GALILEI;
 
 

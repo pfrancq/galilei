@@ -68,7 +68,7 @@ class GProfile;
 * @author Pascal Francq
 * @short User.
 */
-class GUser : public RStd::RContainer<GProfile,unsigned,false,true>
+class GUser : public R::RContainer<GProfile,unsigned,false,true>
 {
 	/**
 	* Identificator of the user.
@@ -78,12 +78,12 @@ class GUser : public RStd::RContainer<GProfile,unsigned,false,true>
 	/*
 	* Name of the user.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 	/*
 	* FullName of the user.
 	*/
-	RStd::RString FullName;
+	R::RString FullName;
 
 public:
 
@@ -97,17 +97,17 @@ public:
 	GUser(const unsigned int id,const char* name,const char* fullname,const unsigned int nb) throw(bad_alloc);
 
 	/**
-	* Compare method used by RStd::RContainer.
+	* Compare method used by R::RContainer.
 	*/
 	int Compare(const GUser &user) const;
 
 	/**
-	* Compare method used by RStd::RContainer.
+	* Compare method used by R::RContainer.
 	*/
 	int Compare(const GUser *user) const;
 
 	/**
-	* Compare method used by RStd::RContainer.
+	* Compare method used by R::RContainer.
 	*/
 	int Compare(const unsigned int id) const;
 

@@ -73,7 +73,7 @@ protected:
 	/**
 	* Container of doc in this group.
 	*/
-	RStd::RContainer<GDoc,unsigned int,false,true>* Doc;
+	R::RContainer<GDoc,unsigned int,false,true>* Doc;
 
 	/**
 	* Pointer to the Galilei session.
@@ -83,14 +83,14 @@ protected:
 	/**
 	* Name of the group.
 	*/
-	RStd::RString Name;
+	R::RString Name;
 
 public:
 
 	/**
 	* Constructor.
 	*/
-	GGroupEvaluateDoc(unsigned int id,GLang* lang,RStd::RContainer<GDoc,unsigned int,false,true>* doc,GSession* ses,RStd::RString name);
+	GGroupEvaluateDoc(unsigned int id,GLang* lang,R::RContainer<GDoc,unsigned int,false,true>* doc,GSession* ses,R::RString name);
 
 	/**
 	* The number of subdoc int the groupment.
@@ -154,19 +154,19 @@ public:
 	virtual double GroupSumSimilarity(unsigned int subdoc);
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by RContainer.
 	*/
 	int Compare(const GGroupEvaluateDoc&);
 
 	/**
-	* Compare method needed by RStd::RContainer.
+	* Compare method needed by RContainer.
 	*/
 	int Compare(const GGroupEvaluateDoc*);
 
 	/**
 	* Return the name of the group;
 	*/
-	RStd::RString GetName(void){return(Name);};
+	R::RString GetName(void){return(Name);};
 
 	/**
 	* Return the id of the group
@@ -178,9 +178,6 @@ public:
 	*/
 	virtual ~GGroupEvaluateDoc(void);
 };
-
-
-
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

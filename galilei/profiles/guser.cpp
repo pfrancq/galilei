@@ -41,7 +41,7 @@
 #include<profiles/gsubprofile.h>
 #include<profiles/gprofdoc.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 

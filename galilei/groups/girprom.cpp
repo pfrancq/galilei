@@ -38,7 +38,7 @@
 // include files for R Project
 #include <rpromethee/rpromsol.h>
 #include <rpromethee/rpromcriterion.h>
-using namespace RPromethee;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -103,7 +103,7 @@ GALILEI::GIRProm::GIRProm(GIRParams* p) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIRProm::Assign(RPromethee::RPromSol* s,GChromoIR* c)
+void GALILEI::GIRProm::Assign(RPromSol* s,GChromoIR* c)
 {
 	RPromKernel::Assign(s,CritSim,c->CritSim);
 	RPromKernel::Assign(s,CritSimAvgSim,c->CritSimAvgSim);

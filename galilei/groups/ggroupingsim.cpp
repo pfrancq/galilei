@@ -48,6 +48,7 @@
 #include<langs/glang.h>
 #include<sessions/gsession.h>
 using namespace GALILEI;
+using namespace R;
 
 
 

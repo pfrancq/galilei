@@ -40,7 +40,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rio/rrecfile.h>
+#include <rstd/rrecfile.h>
 #include <rstd/rcontainer.h>
 
 
@@ -67,7 +67,7 @@ class GWordsClustering
 			unsigned Id;
 			double Idf;
 		public :
-			RContainer<GDoc,unsigned,false,true>* Docs;
+			R::RContainer<GDoc,unsigned,false,true>* Docs;
 			GWordDocs();
 			GWordDocs(unsigned id);
 			int Compare(const GWordDocs* n) const;
@@ -84,11 +84,11 @@ class GWordsClustering
 	/**
 	* Container of all the words contain in the documents.
 	*/
-	RContainer<GWordDocs,unsigned,true,true>* Words;
+	R::RContainer<GWordDocs,unsigned,true,true>* Words;
 	/**
 	* Container of all the groups of words.
 	*/
-	RContainer<GIWordList,unsigned,true,true>* Groups;
+	R::RContainer<GIWordList,unsigned,true,true>* Groups;
 
 	/**
 	* Number of documents to compute.
@@ -116,7 +116,7 @@ class GWordsClustering
 	/**
 	* Container of all the documents to compute.
 	*/
-	RStd::RContainer<GDoc,unsigned int,false,false>* Doc;
+	R::RContainer<GDoc,unsigned int,false,false>* Doc;
 
 	/**
 	* Dictionnary.

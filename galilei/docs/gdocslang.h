@@ -55,7 +55,7 @@ namespace GALILEI{
 * @author Pascal Francq , Valery Vandaele
 * @short SubProfiles.
 */
-class GDocsLang : public RStd::RContainer<GDoc,unsigned int,false,true>
+class GDocsLang : public R::RContainer<GDoc,unsigned int,false,true>
 {
 protected:
 
@@ -90,19 +90,19 @@ public:
 	GLang* GetLang(void) const {return Lang;}
 
 	/**
-	* Compare function needed by RStd::RContainer
+	* Compare function needed by R::RContainer
 	* @param doc             Documents used for the comparaison.
 	*/
 	int Compare(const GDocsLang& docLang) const;
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param doc            Pointer to the document used for the comparaison.
 	*/
 	int Compare(const GDocsLang* docLang) const;
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param lang           Language used for the comparaison.
 	*/
 	int Compare(const GLang*) const;
