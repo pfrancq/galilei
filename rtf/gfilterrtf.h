@@ -9,9 +9,8 @@
 	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
+		Vandaele Valery(vavdaele@ulb.ac.be)
 		Kumps Nicolas (nkumps@ulb.ac.be)
-
-	Version $Revision$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -53,7 +52,7 @@ namespace GALILEI{
 /**
 * The GFilterRTF class provides a representation of a RTF document to filter in a
 * RTF structure.
-* @author Nicolas Kumps
+* @author Nicolas Kumps,Vandaele Valery
 * @short RTF's Filter.
 */
 class GFilterRTF: public GFilter
@@ -61,41 +60,21 @@ class GFilterRTF: public GFilter
 	class Tag
 	{
 	public:
-		enum tTag{tNULL,tSKIP,tSKIPTO,tEND,tTITLE,tAUTHOR,tOPERATOR,tSUBJECT,tPAR};
+		enum tTag{tNULL,tMAIN,tMETA,tTEXT,tSKIP,tTITLE,tAUTHOR,tPUBLI,tDESCRIPT,tDATE,tSUBJECT,tPAR};
 		R::RString Name;
-		R::RString XMLName;
 		tTag Type;
-		bool Head;
-		int Level;
-		bool Ins;
 
-		Tag(const char* n,const char* x,tTag t,bool h,int l,bool i)
-			: Name(n), XMLName(x), Type(t),Head(h), Level(l),Ins(i) {}
+		Tag(const char* n,tTag t)
+			: Name(n), Type(t) {}
 		int Compare(const Tag* t) const {return(Name.Compare(t->Name));}
 		int Compare(const Tag& t) const {return(Name.Compare(t.Name));}
-		int Compare(const char* t) const {return(Name.Compare(t));}
-
+		int Compare(const RString s) const {return(Name.Compare(s));}
 	};
 
 	/**
 	* Header Tags.
 	*/
 	R::RContainer<Tag,unsigned int,true,true>* Tags;
-
-	/**
-	* Buffer containing all the document.
-	*/
-	char* Buffer;
-
-	/**
-	* Pointer to the current position in the buffer.
-	*/
-	char* Pos;
-
-	/**
-	* Pointer to the beginning of the block actually treated.
-	*/
-	char* Begin;
 
 	/**
 	* Pointer to parameters of the current tag.
@@ -131,31 +110,37 @@ protected:
 	void InitCharContainer(void);
 
 	/**
-	* This function skip spaces.
+	* This function  parse every sub block of the string of the document(block = {...} )
+	* @param str		the string to search
+	* @param text          if true ->text else metadatas
 	*/
-	inline void SkipSpaces(void)
-	{while((*Pos)&&isspace(*Pos)) Pos++;}
+	void FindBlock(R::RString str,bool text=false);
+
+	/*
+	* Find the first tag in the string
+	* @return       The tag found
+	*/
+	Tag* FindTag(RString str);
 
 	/**
-	* Function who extract the commands.
+	* Analyse the content of the string and save it in the right docxmlTag
+	* @param str            the string to analyse
+	* @param t              Tag associated with the text to insert
 	*/
-	bool ExtractCmd(Tag::tTag* tagtype);
+	void AnalyseMeta(R::RString str, Tag* t);
 
 	/**
-	* Function use to skip an unuse tag.
+	* Analyse the content of the string and save it in the right docxmlTag
+	* @param str            the string to analyse
 	*/
-	void SkipTag(void);
+	void AnalyseText(R::RString str);
 
-	/**
-	* Function who delete the command.
+	/*
+	* Replace codes from the srting
+	* @param str            the ingoing string
+	* @return RString       the string with code replaced.
 	*/
-	void DeleteCmd(void);
-
-	/**
-	* This function return true if replace code by the corresponding character.
-	* Ex.: \u232\'00\'E8; by 'è'.
-	*/
-	bool ReplaceCode(void);
+	RString ReplaceCodes(RString str);
 
 public:
 

@@ -11,10 +11,6 @@
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -31,12 +27,6 @@
 	Boston, MA  02111-1307  USA
 
 */
-
-
-// #define OPI_SUPPORT 0
-//
-// #define MULTITHREADED _REENTRANT
-
 
 //------------------------------------------------------------------------------
 // include files for ANSI C/C++
@@ -78,36 +68,36 @@ GFilterMSDoc::GFilterMSDoc(GFactoryFilter* fac)
 
 
 //------------------------------------------------------------------------------
-RString& GFilterMSDoc::ConvertUtoRString(const wvWare::UString& ustr) throw(bad_alloc)
+RString GFilterMSDoc::ConvertUtoRString(const wvWare::UString& ustr) throw(bad_alloc)
 {
-	RString *res=RString::GetString();
-	(*res)=ustr.cstring().c_str();
-
-	return (*res);
+	RString res;
+	res="";
+	int len = ustr.length();
+	for(int i=0;i<len;i++)
+	{
+		res+=ustr.data()[i].unicode();
+	}
+	return (res);
 }
 
 
 //------------------------------------------------------------------------------
-RString& GFilterMSDoc::ConvertChar(const RString& str) throw(bad_alloc)
+RString GFilterMSDoc::ConvertChar(const RString& str) throw(bad_alloc)
 {
-	RString *res=RString::GetString();
-	const char* ptr1;
+	RString res;
+	RCharCursor cur(str);
 
-	ptr1=str.Latin1() ;
-	cout<<ptr1<<endl;
-	(*res)="";
-
-	while(*ptr1)
+	for(cur.Start();!cur.End();cur.Next())
 	{
-		if((*ptr1)==25)  // the code to be replaced
+		if(cur()==25) //If the code is 25 ("'") then replace it xith the real char "'"
 		{
-			(*res)+='\'';
-			ptr1++;
+			res+='\'';
 		}
 		else
-			(*res)+=(*(ptr1++));
+			res+=cur();
 	}
-	return(*res);
+
+	return(res);
 }
 
 
@@ -152,7 +142,7 @@ void GFilterMSDoc::AddField()
 		case 0:    Doc->AddIdentifier(FieldValue); break; //Add filename
 		case 1:    Doc->AddTitle(FieldValue); break;  // Add the title of the page.
 		case 2:    Doc->AddCreator(FieldValue); break; //Add the author of the page.
-		case 3:    AnalyzeKeywords(FieldValue.Latin1(),',',Doc->AddSubject()); break;  // Add keywords
+		case 3:    AnalyzeKeywords(FieldValue,',',Doc->AddSubject()); break;  // Add keywords
 		case 4:    Doc->AddDate(FieldValue); break;  // Add the Date
 		case 5:    Doc->AddIdentifier(FieldValue,Doc->AddLink()) ; break;
 	}
@@ -169,12 +159,12 @@ void GFilterMSDoc::ReadMetaData()
 	if (!strings.author().isNull())
 	{
 		str=ConvertChar(ConvertUtoRString(strings.author()));
-		Doc->AddCreator(str.Latin1());
+		Doc->AddCreator(str);
 	}
 	if(!strings.title().isNull())
 	{
 		str=ConvertChar(ConvertUtoRString(strings.title()));
-		Doc->AddTitle(str.Latin1());
+		Doc->AddTitle(str);
 	}
 
 }
@@ -196,10 +186,9 @@ void GFilterMSDoc::WriteParagraph(RString par)
 
 	if ( !par.IsEmpty() )
 	{
-		cout << "write Paragraph"<<endl;
 		part=Doc->GetContent();
-		part->AddTag(tag=new RXMLTag("docxml:p"));
-		AnalyzeBlock(par.Latin1(),tag);
+		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+		AnalyzeBlock(par,tag);
 	}
 
 	Paragraph="";
@@ -225,7 +214,6 @@ bool GFilterMSDoc::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 
 	// Create the metaData tag and the first information
 	Doc->AddIdentifier(Doc->GetURL());
-	Doc->AddFormat("text/msword");
 
 
 	// get fileName
@@ -253,7 +241,7 @@ bool GFilterMSDoc::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	}
 	if (!Parser->parse())
 	{
-		throw(GException("An error occurs during filer parsing"));
+		throw(GException("An error occurs during file parsing"));
 		return false;
 	}
 
@@ -291,8 +279,6 @@ void GFilterMSDoc::bodyStart(void)
 //------------------------------------------------------------------------------
 void GFilterMSDoc::footnoteStart(void)
 {
-	cout<< "coucou , passe dans foot Start"<<endl;
-
 	//Grab data that was stored whith the functor, that triggered this parsing
 	SubDocument subDoc( SubDocQueue.front());
 	int type = subDoc.data;
@@ -303,40 +289,10 @@ void GFilterMSDoc::footnoteStart(void)
 		++footNoteNumber;
 }
 
-//------------------------------------------------------------------------------
-/*void GFilterMSDoc::footnoteEnd(void)
-{
-	cout<< "coucou , passe dans foot End"<<endl;
-}*/
-
-
-//------------------------------------------------------------------------------
-//Methods for TextHandler
-//------------------------------------------------------------------------------
-/*void GFilterMSDoc::sectionStart(wvWare::SharedPtr<const wvWare::Word97::SEP> sep)
-{
-	sectionNumber++;
-	if (sectionNumber == 1)
-	{
-		//FirsSectionFound(sep);
-		cout <<" implementer first section found"<<endl;
-	}
-	else
-	{	//Not the first section. Check for a page break
-		// 1= New Column, 2=new Page, 3=even Page, 4=odd Page
-		if (sep->bkc >=1)
-		{
-			pageBreak();
-		}
-	}
-}
-*/
-
 
 //------------------------------------------------------------------------------
 void GFilterMSDoc::headersFound( const wvWare::HeaderFunctor& parseHeaders)
 {
-	cout << "headers found "<<endl;
 	if (sectionNumber ==1)
 	{
 		subDocFound( new wvWare::HeaderFunctor(parseHeaders),0);
@@ -355,17 +311,14 @@ void GFilterMSDoc::paragraphStart(wvWare::SharedPtr<const wvWare::ParagraphPrope
 	//ParagraphProper = paragraphProp;
 
 	//Paragraph="";
-	cout << "--- paragraph start --- possibilite de gestion des propriete des paragraph ainsi que des style"<<endl;
+
 }
 
 
 //------------------------------------------------------------------------------
 void GFilterMSDoc::paragraphEnd()
 {
-	cout << "--- paragraph end --- gerer les tables.."<<endl;
-
 	WriteParagraph(Paragraph);
-
 	bInParagraph = false;
 }
 
@@ -373,7 +326,6 @@ void GFilterMSDoc::paragraphEnd()
 //------------------------------------------------------------------------------
 void GFilterMSDoc::fieldStart(const wvWare::FLD* fld, wvWare::SharedPtr<const wvWare::Word97::CHP> /*chp*/)
 {
-	cout << "passe dans field Start :"<<fld<<endl;
 	FieldType = fldToFieldType(fld);
 	InsideField=true;
 	FieldAfterSeparator = false;
@@ -406,8 +358,7 @@ void GFilterMSDoc::fieldEnd(const wvWare::FLD* /*fld*/,wvWare::SharedPtr<const w
 //------------------------------------------------------------------------------
 void GFilterMSDoc::runOfText(const wvWare::UString& text, wvWare::SharedPtr<const wvWare::Word97::CHP> /*chp*/)
 {
-	RString newTxt = ConvertChar( ConvertUtoRString(text)) ;
-	cout << "TEXT :: "<< newTxt.Latin1()<< endl;
+	RString newTxt = ConvertChar(ConvertUtoRString(text)) ;
 
 	//text after fieldtart and before fieldSeparator is useless
 	if (InsideField && !FieldAfterSeparator) return;

@@ -11,10 +11,6 @@
 	Authors:
 		Kumps Nicolas (nkumps@ulb.ac.be)
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -33,22 +29,6 @@
 */
 
 
-
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <ctype.h>
-#include <string.h>
-#include <iostream> // for cout only.
-#include <stdio.h>
-#include <sys/stat.h>
-#ifdef _BSD_SOURCE
-	#include <unistd.h>
-#else
-	#include <io.h>
-#endif
-#include <fcntl.h>
-
-
 //---------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterrtf.h>
@@ -62,33 +42,6 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //
-// class Tag
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-//class GALILEI::GFilterRTF::Tag
-//{
-//public:
-//	enum tTag{tNULL,tPAR};
-//	RString Name;
-//	RString XMLName;
-//	tTag Type;
-//	bool Head;
-//	int Level;
-//	bool Ins;
-
-//	Tag(const char* n,const char* x,tTag t,bool h,int l,bool i)
-//		: Name(n), XMLName(x), Type(t),Head(h), Level(l),Ins(i) {}
-//	int Compare(const Tag* t) const {return(Name.Compare(t->Name));}
-//	int Compare(const Tag& t) const {return(Name.Compare(t.Name));}
-//	int Compare(const char* t) const {return(Name.Compare(t));}
-//};
-
-
-
-//------------------------------------------------------------------------------
-//
 // class GFilterRTF
 //
 //------------------------------------------------------------------------------
@@ -96,249 +49,335 @@ using namespace std;
 //------------------------------------------------------------------------------
 GALILEI::GFilterRTF::GFilterRTF(GFactoryFilter* fac)
 	: GFilter(fac), Tags(0),
-	 Buffer(0), Chars(50,5)
+	 Chars(50,5)
 {
 	AddMIME("text/rtf");
 	InitCharContainer();
 	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
 
-	Tags->InsertPtr(new Tag("\\par","docxml:p",Tag::tPAR,false,8,false));
-	Tags->InsertPtr(new Tag("\\PAR","docxml:p",Tag::tPAR,false,8,false));
-	Tags->InsertPtr(new Tag("\\pard","docxml:p",Tag::tPAR,false,8,false));
-	Tags->InsertPtr(new Tag("\\PARD","docxml:p",Tag::tPAR,false,8,false));
-	Tags->InsertPtr(new Tag("\\pict","",Tag::tSKIP,false,8,false));
-	Tags->InsertPtr(new Tag("\\PICT","",Tag::tSKIP,false,8,false));
-	Tags->InsertPtr(new Tag("\\shp","",Tag::tSKIP,false,8,false));
-	Tags->InsertPtr(new Tag("\\SHP","",Tag::tSKIP,false,8,false));
-	Tags->InsertPtr(new Tag("\\*\\datafield","",Tag::tSKIP,false,8,false));
-	Tags->InsertPtr(new Tag("\\*\\DATAFIELD","",Tag::tSKIP,false,8,false));
-//	Tags->InsertPtr(new Tag("\\field","",Tag::tSKIPTO,false,8,false));
-//	Tags->InsertPtr(new Tag("\\FIELD","",Tag::tSKIPTO,false,8,false));
-//	Tags->InsertPtr(new Tag("\\fldrslt","",Tag::tEND,false,8,false));
-//	Tags->InsertPtr(new Tag("\\FLDRSLT","",Tag::tEND,false,8,false));
-	Tags->InsertPtr(new Tag("\\author","",Tag::tAUTHOR,false,8,false));
-	Tags->InsertPtr(new Tag("\\AUTHOR","",Tag::tAUTHOR,false,8,false));
-	Tags->InsertPtr(new Tag("\\operator","",Tag::tOPERATOR,false,8,false));
-	Tags->InsertPtr(new Tag("\\OPERATOR","",Tag::tOPERATOR,false,8,false));
-	Tags->InsertPtr(new Tag("\\title","",Tag::tTITLE,false,8,false));
-	Tags->InsertPtr(new Tag("\\TITLE","",Tag::tTITLE,false,8,false));
-	Tags->InsertPtr(new Tag("\\subject","",Tag::tSUBJECT,false,8,false));
-	Tags->InsertPtr(new Tag("\\SUBJECT","",Tag::tSUBJECT,false,8,false));
+	//document Headers
+	Tags->InsertPtr(new Tag("\\rtf",Tag::tMAIN));
+	Tags->InsertPtr(new Tag("\\fonttbl",Tag::tSKIP));
+	Tags->InsertPtr(new Tag("\\colortbl",Tag::tSKIP));
+	Tags->InsertPtr(new Tag("\\stylesheet",Tag::tSKIP));
+	Tags->InsertPtr(new Tag("\\listtable",Tag::tSKIP));
+	Tags->InsertPtr(new Tag("\\listoverridetable",Tag::tSKIP));
+	Tags->InsertPtr(new Tag("\\info",Tag::tMETA));
+	Tags->InsertPtr(new Tag("\\listtable",Tag::tSKIP));
+	Tags->InsertPtr(new Tag("\\listtable",Tag::tSKIP));
+	//tag for info part
+	Tags->InsertPtr(new Tag("\\author",Tag::tAUTHOR));
+	//Tags->InsertPtr(new Tag("\\operator","",Tag::tOPERATOR,false,8,false));
+	Tags->InsertPtr(new Tag("\\title",Tag::tTITLE));
+	Tags->InsertPtr(new Tag("\\subject",Tag::tSUBJECT));
+	Tags->InsertPtr(new Tag("\\company",Tag::tPUBLI));
+	Tags->InsertPtr(new Tag("\\keywords",Tag::tDESCRIPT));
+	Tags->InsertPtr(new Tag("\\creatim",Tag::tDATE));
+	//Header & footer display
+	Tags->InsertPtr(new Tag("\\header",Tag::tSKIP));
+	Tags->InsertPtr(new Tag("\\footer",Tag::tSKIP));
+	//bullet and numbering info
+	Tags->InsertPtr(new Tag("\\pnseclvl",Tag::tSKIP));
 
+	//Text content
+	Tags->InsertPtr(new Tag("\\par",Tag::tPAR));
+	Tags->InsertPtr(new Tag("\\pard",Tag::tPAR));
+
+	Tags->InsertPtr(new Tag("\\fs20",Tag::tTEXT));
 }
 
 //------------------------------------------------------------------------------
-bool GFilterRTF::ExtractCmd(Tag::tTag* tagtype)
+GFilterRTF::Tag* GFilterRTF::FindTag(RString str)
 {
-	char* ptr=Pos+1;
-	char tmp[50];
-	char* ptr2=tmp;
-	int len;
-	len=45;
-	(*tagtype)=Tag::tNULL;
+	RString curTag("");
+	RCharCursor strCur(str);
+	Tag* t;
+	t=0;
+	bool begFound=false;
+	bool endFound=false;
 
-	(*(ptr2++))=(*Pos);
-	while((*ptr)&&((*ptr)!='\\')&&((*ptr)!='{')&&((*ptr)!='}')&&(!isspace(*ptr))&&(len--))
-		(*(ptr2++))=(*(ptr++));
-	(*ptr2)=0;
-	if (Tags->IsIn(tmp))
-		(*tagtype)=Tags->GetPtr<const char*>(tmp)->Type;
-	while((*ptr)&&((*ptr)!=' ')&&((*ptr)!='{')&&((*ptr)!='}'))
-		ptr++;
-	Pos=ptr;
-	if(!(*ptr))
+	//Find the first possible tag if tag begin with \* skiop these chars
+	for(strCur.Start();!strCur.End();strCur.Next())
 	{
-		(*tagtype)=Tag::tNULL;
-		return(false);
-	}
-	if(((*tagtype)==Tag::tNULL)||((*tagtype==Tag::tSKIPTO)))
-		return(false);
-	else return(true);
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterRTF::DeleteCmd()
-{
-	char* ptr=Pos;
-	int len;
-
-	len=0;
-	while((*ptr)&&((*ptr)!=' ')&&((*ptr)!='{')&&((*ptr)!='}'))
-	{
-		ptr++;
-		len++;
-	}
-	(*Pos)=' ';
-	memset(ptr-len,' ',len*sizeof(char));
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterRTF::SkipTag()
-{
-	bool end=false;
-	Tag::tTag tagtype=Tag::tNULL;
-	int len=0;
-	char* mem;
-	while((!end)&&(*Pos))
-	{
-		while((*Pos)&&((*Pos)!='\\'))
+		if(begFound)
 		{
-			Pos++;
-			len++;
+			if((strCur()=='\\')||(strCur()=='{')||(strCur()==' '))
+			{
+				endFound=true;
+				t=Tags->GetPtr<const RString>(curTag);
+				return (t);
+			}
+			else
+			{
+				if((strCur()=='*')&&(curTag=="\\"))
+				{
+					begFound=false;
+					curTag="";
+				}
+				else
+				{
+					curTag+=strCur();
+					t=Tags->GetPtr<const RString>(curTag);
+					if(t)
+						return (t);
+				}
+			}
 		}
-		mem=Pos;
-		ExtractCmd(&tagtype);
-		Pos=mem;
-		if(tagtype==Tag::tEND)
-			end=true;
-		Pos++;
-		len++;
-	}
-	Pos--;
-	len--;
-	memset(Pos-len,' ',len*sizeof(char));
+		else
+			if(strCur()=='\\')
+			{
+				begFound=true;
+				curTag+=strCur();
+			}
 
+	}
+
+	//IF tag is nto found in for loop return NULL
+	return t;
 }
 
+
+//------------------------------------------------------------------------------
+void GFilterRTF::AnalyseMeta(RString str, Tag* t)
+{
+	int id=str.FindStr(t->Name);
+	if(id<0) return;
+	id+=t->Name.GetLen();
+
+	switch(t->Type)
+	{
+		case Tag::tTITLE :
+			AnalyzeBlock(str.Mid(id),Doc->AddTitle());
+			break;
+
+		case Tag::tAUTHOR :
+			AnalyzeBlock(str.Mid(id),Doc->AddCreator());
+			break;
+
+		case Tag::tSUBJECT :
+			AnalyzeBlock(str.Mid(id),Doc->AddSubject());
+			break;
+
+		case Tag::tPUBLI :
+			AnalyzeBlock(str.Mid(id),Doc->AddPublisher());
+			break;
+
+		case Tag::tDESCRIPT :
+			AnalyzeKeywords(str.Mid(id),' ',Doc->AddSubject());
+			break;
+
+		case Tag::tDATE :
+			unsigned int idValD,idValE;
+			RString date("");
+			//find year
+			idValD=str.FindStr("\\yr")+3;
+			idValE=str.Find('\\',idValD);
+			date+=str.Mid(idValD,idValE-idValD);
+			date+="-";
+
+			//Find month
+			idValD=str.FindStr("\\mo")+3;
+			idValE=str.Find('\\',idValD);
+			date+=str.Mid(idValD,idValE-idValD);
+			date+="-";
+
+			//Find day
+			idValD=str.FindStr("\\dy")+3;
+			idValE=str.Find('\\',idValD);
+			date+=str.Mid(idValD,idValE-idValD);
+			AnalyzeBlock(date,Doc->AddDate());
+			break;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterRTF::AnalyseText(R::RString str)
+{
+	RString par("");
+	RString readTag("");
+
+	Tag* t;
+	RXMLTag* part;
+	RXMLTag* tag;
+	RCharCursor cur(str);
+	bool tagFound=false;
+
+	str=ReplaceCodes(str);
+	part = Doc->GetContent();
+	for(cur.Start();!cur.End();cur.Next())
+	{
+		if(!(cur()=='\\')&& !((cur()==' ')&(tagFound)))
+		{
+			if(!tagFound)
+				par+=cur();
+			else
+				readTag+=cur();
+		}
+		if(cur()=='\\')
+		{
+			if(!readTag.IsEmpty())
+			{
+				t=Tags->GetPtr<const RString>(readTag);
+				if((t)&&(t->Type==Tag::tPAR)&&(!par.IsEmpty()))
+				{
+					Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+					AnalyzeBlock(par,tag);
+					par="";
+				}
+			}
+			readTag="";
+			readTag+=cur();
+			tagFound=true;
+		}
+		if((tagFound)&&(cur()==' '))
+		{
+			if(!readTag.IsEmpty())
+			{
+				t=Tags->GetPtr<const RString>(readTag);
+				if((t)&&(t->Type==Tag::tPAR)&&(!par.IsEmpty()))
+				{
+					Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+					AnalyzeBlock(par,tag);
+					par="";
+				}
+			}
+			readTag="";
+			tagFound=false;
+		}
+	}
+
+	//test If some text has not been added yet to structure
+	if(!par.IsEmpty())
+	{
+		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+		AnalyzeBlock(par,tag);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterRTF::FindBlock(RString str,bool text)
+{
+	Tag* t;
+	unsigned int openedPos,nbOpened,nbClosed;
+	RCharCursor strCur(str);
+	bool first=true;
+	bool found=false;
+	RString curTag("");
+
+	openedPos=nbOpened=nbClosed=0;
+
+	for(strCur.Start();!strCur.End();strCur.Next())
+	{
+		if(strCur()=='{')
+		{
+			if(first)
+			{
+				first=false;
+				openedPos=strCur.GetPos();
+			}
+			nbOpened++;
+		}
+		if(strCur()=='}')
+		{
+			nbClosed++;
+		}
+		if((!first)&&(nbOpened==nbClosed))
+		{
+			unsigned int endPos=0;
+			unsigned int test;
+			endPos=strCur.GetPos();
+			test=endPos-openedPos;
+			found=true;
+			if(text)
+			{
+				if(openedPos>1)
+					AnalyseText(str.Mid(0,openedPos-1));
+
+				FindBlock(str.Mid(openedPos+1,endPos-openedPos-1),true);
+				AnalyseText(str.Mid(endPos+1));
+			}
+			//Recursif on the sub block
+			t=FindTag(str.Mid(openedPos+1,endPos-openedPos-1));
+			if(!t)
+			{
+				FindBlock(str.Mid(openedPos+1,endPos-openedPos-1));
+			}
+			else
+			{
+				if(!(t->Type==Tag::tSKIP))
+				{
+					if(t->Type==Tag::tTEXT)
+					{
+						FindBlock(str.Mid(openedPos+1,endPos-openedPos-1),true);
+					}
+					else
+					{
+						if((t->Type==Tag::tTITLE)||(t->Type==Tag::tAUTHOR)||(t->Type==Tag::tSUBJECT)||(t->Type==Tag::tPUBLI)||(t->Type==Tag::tDESCRIPT)||(t->Type==Tag::tDATE))
+						{
+							AnalyseMeta(str.Mid(openedPos+1,endPos-openedPos-1),t);
+						}
+						FindBlock(str.Mid(openedPos+1,endPos-openedPos-1));
+					}
+				}
+			}
+			first=true;
+		}
+	}
+	if((!found)&&(text))
+	{
+		//text has not been treatde yet.
+		AnalyseText(str);
+	}
+}
 
 //------------------------------------------------------------------------------
 bool GFilterRTF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 {
 	RXMLTag* part;
-	RXMLTag* tag;
-	bool Header;
-	bool Paragraph;
-	char tmp;
-	char* findstr;
-	char* del;
-	char* mem;
-	int accessmode,handle;
-	bool empty=true;
-	Tag::tTag newtagtype,oldtagtype;
-	struct stat statbuf;
+	bool Stop;
+	bool Read;
+	RString NextLine;
+	RString Line;
+	RString Text;
 
-	// Init Part
-	Doc=doc;
-	accessmode=O_RDONLY;
-	#ifndef _BSD_SOURCE
-		accessmode=O_BINARY;
-	#endif
-	handle=open(Doc->GetFile(),accessmode);
-	if(handle==-1)
-		throw GException("file not found : "+Doc->GetFile());
-	fstat(handle, &statbuf);
-	Begin=Pos=Buffer=new char[statbuf.st_size+1];
-	read(handle,Buffer,statbuf.st_size);
-	Buffer[statbuf.st_size]=0;
-	close(handle);
-	SkipSpaces();
-
-	// Create the metaData tag and the first information
-	part=Doc->GetMetaData();
-	Doc->AddIdentifier(Doc->GetURL());
-	Doc->AddFormat("text/rtf");
-	// Look for the content
-	part=Doc->GetContent();
-	Pos=Begin; // Remember the first line which is not a command
-	while(*Pos)
+	try
 	{
-		SkipSpaces();
-		// Paragraph are supposed to be terminated by at least one blank line
-		Paragraph=false;
-		newtagtype=oldtagtype=Tag::tNULL;
-		while ((!Paragraph)&&(*Pos)&&(oldtagtype!=Tag::tSKIP))
-		{
-			while((*Pos)&&((*Pos)!='\\'))
-				Pos++;
-			Begin=Pos;
-			if(!(*Pos)) return(true);
-			else
-			{
-				Paragraph=ExtractCmd(&oldtagtype);
-				if(oldtagtype==Tag::tSKIP) Paragraph=false;
-			}
-		}
-		if(!(*Pos)) return(true);
-		Begin=Pos;
-		empty=true;
-		while((*Pos)&&Paragraph)
-		{
-			// Read a Line
-			while((*Pos)&&((*Pos)!='\\')&&((*Pos)!='{')&&((*Pos)!='}'))
-			{
-				if(!isspace(*Pos)) empty=false;
-				Pos++;
-			}
-			if(!(*Pos))
-				Paragraph=false;
-			else
-			{
-				Paragraph=ReplaceCode();
-				mem=Pos;
-				if(!Paragraph)
-				{
-					Paragraph=(!(ExtractCmd(&newtagtype)));
-					if(!Paragraph)
-					{
-//						if(newtagtype==Tag::tSKIPTO) SkipTag();
-						Pos=mem;
-					}
-					else
-					{
-						Pos=mem;
-						DeleteCmd();
-					}
-				}
-			}
+		// Init Part
+		Doc=doc;
+		RTextFile Src(Doc->GetFile());
+		Stop=Src.Eof();
 
-		}
-		switch(oldtagtype)
-		{
-			case Tag::tPAR :
-				if(!empty) part->AddTag(tag=new RXMLTag("docxml:p"));
-				break;
-			case Tag::tNULL :
-				part->AddTag(tag=new RXMLTag(""));
-				Paragraph=false;
-				break;
-			default :
-				break;
-		};
-		if(!(*Pos)) return(true);
-		Pos--;
-		(*(Pos++))=0;
-		if((newtagtype!=Tag::tSKIP)&&(oldtagtype!=Tag::tSKIP))
-		{
-			switch(oldtagtype)
-			{
-				case Tag::tTITLE:
-					Doc->AddTitle(Begin);
-					break;
-				case Tag::tAUTHOR:
-					Doc->AddCreator(Begin);
-					break;
-				case Tag::tOPERATOR:
-					break;
-				case Tag::tSUBJECT:
-					Doc->AddSubject(Begin);
-					break;
-				default:
-					if(!empty) AnalyzeBlock(Begin,tag);
-				break;
-			}
-		}
+		// Create the metaData tag and the first information
+		part=Doc->GetMetaData();
+		Doc->AddIdentifier(Doc->GetURL());
+
+		//Treat Content
+		part=Doc->GetContent();
+		Read=false;
+		Text = Src.GetUntilEnd();
+
+		FindBlock(Text);
+	}
+	catch(bad_alloc)
+	{
+		throw;
+	}
+	catch(GException)
+	{
+		throw;
+	}
+	catch(RException& e)
+	{
+		throw GException(e.GetMsg());
+	}
+	catch(...)
+	{
+		throw GException("Unexcepted exception");
 	}
 
-	// Done Part
-	if(Buffer)
-	{
-		delete[] Buffer;
-		Buffer=0;
-	}
-
-	// Return OK
+	Doc->GetContent()->DeleteEmptyTags(Doc);
 	return(true);
 }
 
@@ -416,77 +455,70 @@ void GALILEI::GFilterRTF::InitCharContainer(void)
 	Chars.InsertPtr(new CodeToChar("\\rdblquote",'\"'));
 	Chars.InsertPtr(new CodeToChar("\\RQUOTE",'\''));
 	Chars.InsertPtr(new CodeToChar("\\RDBLQUOTE",'\"'));
-	Chars.InsertPtr(new CodeToChar("{",' '));
-	Chars.InsertPtr(new CodeToChar("}",' '));
-
+	Chars.InsertPtr(new CodeToChar("\\uc",' '));
+	Chars.InsertPtr(new CodeToChar("\\uc1",' '));
+	Chars.InsertPtr(new CodeToChar("\\uc2",' '));
+	Chars.InsertPtr(new CodeToChar("\\uc3",' '));
 }
 
 
 //------------------------------------------------------------------------------
-bool GALILEI::GFilterRTF::ReplaceCode(void)
+RString GALILEI::GFilterRTF::ReplaceCodes(RString str)
 {
-	char* ptr=Pos+1;
-	char tmp[20];
-	char* ptr2=tmp;
-	int len,clen;
+	RCharCursor cur(str);
+	CodeToCharCursor codeCur;
+	RString code("");
+	RString resStr("");
 	CodeToChar *c;
+	int curPos=0;
+	int posS;
+	posS=0;
 
-	// Search 12 letters
-	len=0;
-	clen=12;
-	(*(ptr2++))=(*Pos);
-	if(((*Pos)!='{')&&((*Pos)!='}'))
-		while((clen)&&(*ptr)&&(!isspace(*ptr)))
+	while(true)
+	{
+		curPos=str.Find('\\',curPos);
+		if(curPos<0) {resStr+=str.Mid(posS); return resStr;}
+		code=str.Mid(curPos,13);
+
+		c=Chars.GetPtr<const RString>(code);
+		if(c)
 		{
-			(*(ptr2++))=(*(ptr++));
-			len++;
-			clen--;
+			resStr+=str.Mid(posS,curPos-posS);
+			resStr+=c->GetChar();
+			curPos+=12;
+			posS=curPos+1;
 		}
-
-	if(!(*ptr)) return(false);
-
-	// Find the code
-	(*ptr2)=0;
-	c=Chars.GetPtr<const char*>(tmp);
-	//if(!c) return(false);
-//----------------test------------------
-	if((!c)&&(len>=4))
-	{
-		ptr=Pos+1;
-		ptr2=tmp;
-		len=0;
-		clen=3;
-		(*(ptr2++))=(*Pos);
-		if(((*Pos)!='{')&&((*Pos)!='}'))
-			while((clen)&&(*ptr)&&(!isspace(*ptr)))
+		else
+		{
+			code=str.Mid(curPos,4);
+			c=Chars.GetPtr<const RString>(code);
+			if(c)
 			{
-				(*(ptr2++))=(*(ptr++));
-				len++;
-				clen--;
+				resStr+=str.Mid(posS,curPos-posS);
+				resStr+=c->GetChar();
+				curPos+=3;
+				posS=curPos+1;
 			}
-		(*ptr2)=0;
-		c=Chars.GetPtr<const char*>(tmp);
+			else
+			{
+				codeCur.Set(Chars);
+				int id;
+				for(codeCur.Start();!codeCur.End();codeCur.Next())
+				{
+					id=-1;
+					str.FindStr(codeCur()->GetCode(),curPos);
+					if(id>=0)
+					{
+						resStr+=str.Mid(posS,curPos-posS);
+						resStr+=codeCur()->GetChar();
+						curPos+=codeCur()->GetLen();
+						posS=curPos+1;
+					}
+				}
+			}
+		}
+		curPos++;
 	}
-	if(!c) return(false);
-//--------------------------------------
-
-	// Replace character.
-	(*Pos)=c->GetChar();
-
-	// Search end of word from end of the code.
-	len=1;
-	ptr2=ptr;
-	while((*ptr2)&&(!isspace(*ptr2)))
-	{
-		ptr2++;
-		len++;
-	}
-
-	// Move end of the word to skip the code and replace by spaces.
-	memcpy(Pos+1,ptr,len*sizeof(char));
-	len=c->GetLen()-1;
-	memset(ptr2-len,' ',len*sizeof(char));
-	return(true);
 }
 
 

@@ -11,8 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -97,7 +95,7 @@ protected:
 	* @param key             Name of the metadata to get.
 	* @return R::RString.
 	*/
-	R::RString& CreateString(Dict* infoDict,char* key);
+	R::RString CreateString(Dict* infoDict,char* key);
 
 	/**
 	* Get a meta data representing a date from the PDF file.
@@ -105,7 +103,7 @@ protected:
 	* @param key             Name of the metadata to get.
 	* @return R::RString.
 	*/
-	R::RString& CreateDate(Dict* infoDict,char* key);
+	R::RString CreateDate(Dict* infoDict,char* key);
 
 	/**
 	* This function skip spaces.

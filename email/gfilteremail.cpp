@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -35,22 +31,9 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <iostream> // for cout only.
-#include <stdio.h>
-#include <sys/stat.h>
-#ifdef _BSD_SOURCE
-	#include <unistd.h>
-#else
-	#include <io.h>
-#endif
-#include <fcntl.h>
-
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI Plugins
 #include <gfilteremail.h>
+
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
@@ -70,8 +53,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GFilterEMail::GFilterEMail(GFactoryFilter* fac)
-	: GFilter(fac), Buffer(0),
-	  BlankLines(false)
+	: GFilter(fac), BlankLines(false)
 {
 	AddMIME("text/email");
 }
@@ -85,55 +67,68 @@ void GFilterEMail::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-bool GFilterEMail::ExtractCmd(char* line,RXMLTag* /*metaData*/)
+bool GFilterEMail::ExtractCmd(const RString& line)
 {
-	char* ptr=line;
+	RString Cmd(line.GetLen());
+	const RChar* ptr=line();
+	unsigned int len=0;
+	unsigned int pos;
 
 	// Look an the first word
-	while((*ptr)&&((isalnum(*ptr))||((*ptr)=='-')))
+	while((!ptr->IsNull())&&((ptr->IsAlNum())||((*ptr)==RChar('-'))))
+	{
 		ptr++;
-
+		len++;
+	}
+	
 	// Skip Spaces.
-	while((*ptr)&&(((*ptr)==' ')||((*ptr)=='\t')))
+	while((!ptr->IsNull())&&(((*ptr)==' ')||((*ptr)==RChar('\t'))))
 		ptr++;
 
 	// If the next character is not a ':', this is not a cmd.
-	if((!(*ptr))||((*(ptr))!=':'))
+	if((!(!ptr->IsNull()))||((*(ptr))!=RChar(':')))
 		return(false);
 
-	// Mark end of command Skip :
-	(*(ptr++))=0;
+	// Mark end of command and put it in lowercase and Skip ':'
+	Cmd=line.Mid(0,len).ToLower();
 
 	// After skipped the spaces, and separate the command pointed by line and
 	// the information pointed by ptr.
-	while((*ptr)&&(((*ptr)==' ')||((*ptr)=='\t')))
+	pos=len;
+	len=0;
+	ptr++;
+	while((!ptr->IsNull())&&(((*ptr)==' ')||((*ptr)==RChar('\t'))))
+	{
 		ptr++;
+		len++;
+	}
 
 	// Analyse the different metaData possible.
-	if((!strcasecmp(line,"subject"))&&(*ptr))
+	RString metaData=line.Mid(pos,len);
+	if((Cmd=="subject")&&(!metaData.IsEmpty()))
 	{
-		AnalyzeBlock(ptr,Doc->AddTitle());
+		AnalyzeBlock(metaData,Doc->AddTitle());
 	}
-	else if((!strcasecmp(line,"summary"))&&(*ptr))
+	else if((Cmd=="summary")&&(!metaData.IsEmpty()))
 	{
-		AnalyzeBlock(ptr,Doc->AddSubject());
+		AnalyzeBlock(metaData,Doc->AddSubject());
 	}
-	else if((!strcasecmp(line,"from"))&&(*ptr))
+	else if((Cmd=="from")&&(!metaData.IsEmpty()))
 	{
-		AnalyzeBlock(ptr,Doc->AddCreator());
+		AnalyzeBlock(metaData,Doc->AddCreator());
 	}
-	else if((!strcasecmp(line,"organization"))&&(*ptr))
+	else if((Cmd=="organization")&&(!metaData.IsEmpty()))
 	{
-		AnalyzeBlock(ptr,Doc->AddPublisher());
+		AnalyzeBlock(metaData,Doc->AddPublisher());
 	}
-	else if((!strcasecmp(line,"date"))&&(*ptr))
+	else if((Cmd=="date")&&(!metaData.IsEmpty()))
 	{
-		Doc->AddDate(ptr);
+		Doc->AddDate(metaData);
 	}
-	else if((!strcasecmp(line,"keywords"))&&(*ptr))
+	else if((Cmd=="keywords")&&(!metaData.IsEmpty()))
 	{
-		AnalyzeKeywords(ptr,',',Doc->AddSubject());
-	}
+		AnalyzeKeywords(metaData,',',Doc->AddSubject());
+	}     
 
 	return(true);
 }
@@ -146,118 +141,134 @@ bool GFilterEMail::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	RXMLTag* tag;
 	bool Header;
 	bool Paragraph;
-	char tmp;
-	char* findstr;
-	int accessmode,handle;
-	struct stat statbuf;
+	bool Stop;
+	bool NextStop;
+//	char tmp;
+	bool Read;
+//	char* findstr;
+	RString NextLine;
+	RString Line;
+	const RChar* ptr;
 
-	// Init Part
-	Doc=doc;
-	accessmode=O_RDONLY;
-	#ifndef _BSD_SOURCE
-		accessmode=O_BINARY;
-	#endif
-	handle=open(Doc->GetFile(),accessmode);
-	if(handle==-1)
-		throw GException("file not found : "+Doc->GetFile());
-	fstat(handle, &statbuf);
-	Begin=Pos=Buffer=new char[statbuf.st_size+1];
-	read(handle,Buffer,statbuf.st_size);
-	Buffer[statbuf.st_size]=0;
-	close(handle);
-	SkipSpaces();
-
-	// Create the metaData tag and the first information
-	part=Doc->GetMetaData();
-	Doc->AddIdentifier(Doc->GetURL());
-	Doc->AddFormat("text/email");
-
-	// Email have and the beginning information on each line.
-	Header=true;        // There headers to read.
-	while((*Pos)&&Header)
+	try
 	{
-		// Read a line and Analyse it for a command.
-		Begin=Pos;
-		while((*Pos)&&((*Pos)!='\n')&&((*Pos)!='\r'))
-			Pos++;
-		tmp=(*Pos);
-		(*(Pos++))=0;      // Skip the end of line.
-		Header=ExtractCmd(Begin,part);
+		// Init Part
+		Doc=doc;
+		RTextFile Src(Doc->GetFile());
+		Stop=Src.Eof();
 
-		// If Multiple blank lines are allowed and last line is a command, skip them
-		if(Header&&BlankLines)
+		// Create the metaData tag and the first information
+		part=Doc->GetMetaData();
+		Doc->AddIdentifier(Doc->GetURL());
+	
+		// Email have at the beginning information on each line.
+		Header=true;        // There headers to read.
+		Read=true;
+		while((!Src.Eof())&&Header)
 		{
-			while((*Pos)&&(((*Pos)=='\n')||((*Pos)=='\r')))
-				Pos++;
-		}
-	}
-	(*(Pos-1))=tmp;
+			// Read a line
+			if(Read)
+				Line=Src.GetLine(false);
 
-	// Look if the email is signed.
-	findstr=strstr(Begin,("-----BEGIN PGP SIGNED MESSAGE-----"));
-	if(findstr)
-	{
-		Begin=findstr+strlen("-----BEGIN PGP SIGNED MESSAGE-----")+1;   // Skip this;
-		// Search end of mail
-		findstr=strstr(Begin,"-----BEGIN PGP SIGNATURE-----");
-		if(findstr)
-			(*findstr)=0;
-	}   
-	else
-		Begin[strlen(Begin)-1]='\n';
-
-	// Look for the content
-	part=Doc->GetContent();
-	Pos=Begin; // Remember the first line which is not a command
-	while(*Pos)
-	{
-		part->AddTag(tag=new RXMLTag("docxml:p"));
-		SkipSpaces();
-		Begin=Pos;
-		// Paragraph are supposed to be terminated by at least one blank line
-		Paragraph=true;
-		while((*Pos)&&Paragraph)
-		{
-			// Read a Line
-			while((*Pos)&&((*Pos)!='\n')&&((*Pos)!='\r'))
-				Pos++;
-			Pos++;      // Skip the '\n'.
-			// Skip Spaces and Tab
-			while((*Pos)&&(((*Pos)==' ')||((*Pos)=='\t')))
-				Pos++;
-			// Look if the next lines is a blank one.
-			if((*Pos)=='\n')
+			// Add the next lines beginning with a space
+			if(!Src.Eof())
 			{
-				(*(Pos++))=0;      // Mark the end of the paragraph.
-				Paragraph=false;
+				NextLine=Src.GetLine(false);
+				while((NextLine()->IsSpace())&&(!Src.Eof()))
+				{
+					Line+=NextLine;
+					NextLine=Src.GetLine(false);
+				}
 			}
-		}
-		AnalyzeBlock(Begin,tag);
-	}
 
-	// Done Part
-	if(Buffer)
-	{
-		delete[] Buffer;
-		Buffer=0;
+			// Analyse the line for a command.
+			Header=ExtractCmd(Line);
+	
+			// If Multiple blank lines are allowed and last line is a command, skip them
+			if(Header&&BlankLines)
+			{
+				while((NextLine.IsEmpty())&&(!Src.Eof()))
+					NextLine=Src.GetLine(false);
+			}
+			
+			// Next line becomes the current one
+			Line=NextLine;
+			Read=false;
+			Stop=NextStop;
+		}
+	
+		// Look if the email is signed.
+/*		findstr=strstr(Begin,("-----BEGIN PGP SIGNED MESSAGE-----"));
+		if(findstr)
+		{
+			Begin=findstr+strlen("-----BEGIN PGP SIGNED MESSAGE-----")+1;   // Skip this;
+			// Search end of mail
+			findstr=strstr(Begin,"-----BEGIN PGP SIGNATURE-----");
+			if(findstr)
+				(*findstr)=0;
+		}   
+		else
+			Begin[strlen(Begin)-1]='\n';*/
+	
+		// Look for the content
+		part=Doc->GetContent();
+
+		while((!Read)||(!Src.Eof()))
+		{
+			Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+
+			// If necessary -> read a new line f
+			if(!Read)
+				Read=true;
+			else
+			{
+				if(!Src.Eof())
+					Line=NextLine;
+			}
+
+			// Paragraph are supposed to be terminated by at least one blank line
+			Paragraph=true;
+			while((!Src.Eof())&&Paragraph)
+			{
+				// Read a Line
+				NextLine=Src.GetLine(false);
+
+				// Look if it is a blank line
+				ptr=NextLine();
+				while((!ptr->IsNull())&&(ptr->IsSpace()))
+					ptr++;
+				
+				// If blank line -> it is the end of a paragraph
+				if(ptr->IsNull())
+				{
+					Paragraph=false;
+				}
+				else
+					Line+=NextLine;
+			}
+			AnalyzeBlock(Line,tag);
+		}
+	
 	}
+	catch(bad_alloc)
+	{
+		throw;
+	}
+	catch(GException)
+	{
+		throw;
+	}
+	catch(RException& e)
+	{
+		throw GException(e.GetMsg());
+	}
+	catch(...)
+	{
+		throw GException("Unexcepted exception");
+	}  
 
 	// Return OK
 	return(true);
-}
-
-
-//-----------------------------------------------------------------------------
-bool GFilterEMail::IsBlankLines(void)
-{
-	return(BlankLines);
-}
-
-
-//-----------------------------------------------------------------------------
-void GFilterEMail::SetBlankLines(bool b)
-{
-	BlankLines=b;
 }
 
 

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -110,7 +106,6 @@ bool GFilterPDF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
 	Doc->AddIdentifier(Doc->GetURL());
-	Doc->AddFormat("text/pdf");
 
 	// parse args
 	fileName = new GString(Doc->GetFile());
@@ -140,7 +135,7 @@ bool GFilterPDF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 			Doc->AddSubject(str);
 		str=CreateString(info.getDict(),"Keywords");
 		if(!str.IsEmpty())
-			AnalyzeKeywords(str.Latin1(),',',Doc->AddSubject());
+			AnalyzeKeywords(str,',',Doc->AddSubject());
 		str=CreateString(info.getDict(),"Author");
 		if(!str.IsEmpty())
 			Doc->AddCreator(str);
@@ -175,7 +170,7 @@ bool GFilterPDF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	Pos=Begin;
 	while(!Pos->IsNull())
 	{
-		part->AddTag(tag=new RXMLTag("docxml:p"));
+		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 		SkipSpaces();
 		Begin=Pos;
 		// Paragraph are supposed to be terminated by at least one blank line
@@ -210,16 +205,15 @@ bool GFilterPDF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-RString& GFilterPDF::CreateString(Dict* infoDict,char* key/*,UnicodeMap *uMap*/)
+RString GFilterPDF::CreateString(Dict* infoDict,char* key/*,UnicodeMap *uMap*/)
 {
-	RString* tmp=RString::GetString();
+	RString res;
 	Object obj;
 	GString *s1;
 	GBool isUnicode;
 	Unicode u;
 	int i;
 
-	(*tmp)="";
 	if(infoDict->lookup(static_cast<char*>(key),&obj)->isString())
 	{
 		s1 = obj.getString();
@@ -245,18 +239,18 @@ RString& GFilterPDF::CreateString(Dict* infoDict,char* key/*,UnicodeMap *uMap*/)
 				u = s1->getChar(i) & 0xff;
 				++i;
 			}
-			(*tmp)+=u;
+			res+=u;
 	}
 	}
 	obj.free();
-	return(*tmp);
+	return(res);
 }
 
 
 //------------------------------------------------------------------------------
-RString& GFilterPDF::CreateDate(Dict* infoDict,char* key)
+RString GFilterPDF::CreateDate(Dict* infoDict,char* key)
 {
-	RString* tmp=RString::GetString();
+	RString res;
 	Object obj;
 	char *s;
 
@@ -267,10 +261,10 @@ RString& GFilterPDF::CreateDate(Dict* infoDict,char* key)
 		{
 			s += 2;
 		}
-		(*tmp)=s;
+		res=s;
 	}
 	obj.free();
-	return(*tmp);
+	return(res);
 }
 
 

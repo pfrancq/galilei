@@ -9,10 +9,8 @@
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
 		Vandaele Valery (vavdaele@ulb.ac.be)
-
-	Version $Revision$
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,6 +29,34 @@
 
 */
 
+/**
+* How to use the tTags:
+* Each tTag is associated to a king of docxml information.
+* tNULL :               Represents a tag that is not associated to a docxml Tag
+*			but Which content will be add to the content of the docxml structure
+* tMAIN :               Represents the upper tag (root tag)
+*tATTRIBUT 		Represents an attribute of a tag
+*tSKIP                  Represents a tag that must be skipped (tag+content)
+*tTITLE			The tag represents the title of the doc
+*tDATE			The tag represents the date of the doc
+*tAUTHOR		The tag represents the author of the doc
+*tPUBLI			The tag represents the publisher of the doc
+*tSOURCE		The tag represents the source of the doc
+*tCONTRIB		The tag represents the contibutor of the doc
+*tDESCRIPT		The tag represents the description of the doc (usually a list of keywords)
+*tRIGHTS		The tag represents the copyrights of the doc
+*tLANG			The tag represents the language of the doc
+*tMETA			The tag represents the metadata of the doc
+*tIDENTIFIER		The tag represents the identifier of the doc (reserved)
+*tRELATION		The tag represents the relation of the doc
+*tCOVERAGE		The tag represents the coverage of the doc
+*tTEXT			The tag represents the main Text of the doc
+*tPAR			The tag represents a paragraph of the doc
+*tSUBJCET		The tag represents the subject of the doc
+*tSUMMARY		The tag represents the summary of the doc (this will be add to the content of the docxml structure as a par)
+tH1->tH6		The tag represents the heading style of a part of the doc
+*
+*/
 
 
 //-----------------------------------------------------------------------------
@@ -42,7 +68,6 @@
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <docs/gfilter.h>
-#include <codetochar.h>
 
 
 //-----------------------------------------------------------------------------
@@ -54,84 +79,83 @@ namespace GALILEI{
 /**
 * The GFilterXML class provides a representation of a XML document to filter in a
 * XML structure.
-* @author Pascal Francq
+* @author Vandaele Valery
 * @short XML's Filter.
 */
 class GFilterXML: public GFilter
 {
+	// Enumeration of all possible tags
+	enum tTag{tNULL,tMAIN,tATTRIBUT,tSKIP,tTITLE,tDATE,tAUTHOR,tPUBLI,tSOURCE,tCONTRIB,tDESCRIPT,tRIGHTS,tLANG,tMETA,tIDENTIFIER,tRELATION,tCOVERAGE,tTEXT,tPAR,tSUBJECT,tSUMMARY,tH1,tH2,tH3,tH4,tH5,tH6};
+
+	// forward declaration of class Attributs and Tag containing correspondence between XML tags and docXML tags
+	class Attribut;
 	class Tag;
+	class Def;
+	class MimeDef;
+
+	// Define Cursor on Attributs objects
+	CLASSCURSOR(AttributCursor,Attribut,unsigned int);
+
+	// Define Cursor on Tags objects
+	CLASSCURSOR(TagCursor,Tag,unsigned int);
+
+	// Define Cursor on Tags objects
+	CLASSCURSOR(DefCursor,Def,unsigned int);
+
+	// Define Cursor on Tags objects
+	CLASSCURSOR(MimeDefCursor,MimeDef,unsigned int);
+
+	/*
+	* Structure to maintain Tags name and eventually the parent associated to the tag
+	*/
+	typedef struct TagStruct{
+		R::RString Name;
+		R::RString Parent;
+		TagStruct(RString n,RString p): Name(n),Parent(p){}
+		int Compare(const TagStruct& tag) const
+		{
+			//if identical test the parent
+			if(!Name.Compare(tag.Name))
+				return (Parent.Compare(tag.Parent));
+			else
+				return(Name.Compare(tag.Name));
+		}
+		int Compare(const TagStruct* tag) const
+		{
+			//if identical test the parent
+			if(!Name.Compare(tag->Name))
+				return (Parent.Compare(tag->Parent));
+			else
+				return(Name.Compare(tag->Name));
+		}
+	};
 
 	/**
-	* Header Tags.
+	* The directory where the xml definition files are stored
 	*/
-	R::RContainer<Tag,unsigned int,true,true>* Tags;
+	RString xmlDefPath;
 
 	/**
-	* Buffer containing all the document.
+	* Definitions (all set of tags with their corresponding mime type).
 	*/
-	char* Buffer;
+	R::RContainer<Def,unsigned int,true,true>* Definitions;
 
 	/**
-	* Pointer to the current position in the buffer.
+	* Link between MimeTypes and associated Definitions
 	*/
-	char* Pos;
+	R::RContainer<MimeDef,unsigned int,true,true>* MimeDefinitions;
 
 	/**
-	* Pointer to the beginning of the block actually treated.
+	* The current used definityion for the tags
 	*/
-	char* Block;
+	Def* CurrentDefinition;
 
 	/**
-	* Total length of the block actually treated.
+	* Maintain the state of the definitions
+	* false if not inited or path has changed
 	*/
-	unsigned int BlockLen;
+	bool DefinitionIsInited;
 
-	/**
-	* Total length of the current tag.
-	*/
-	unsigned int TagLen;
-
-	/**
-	* Pointer to the part to skip of the tag is not a valid one.
-	*/
-	char* SkipTag;
-
-	/**
-	* Pointer to the beginning of the current Tag.
-	*/
-	char* BeginTag;
-
-	/**
-	* Pointer to parameters of the current tag.
-	*/
-	char* Params;
-
-	/**
-	* Current tag.
-	*/
-	Tag* CurTag;
-
-	/**
-	* The container of XML code
-	*/
-	R::RContainer<CodeToChar,unsigned int,true,true> Chars;
-
-	/**
-	* Determine if the current tag is a closing tag or an open one.
-	*/
-	bool bEndTag;
-
-	/**
-	* Holds the most opened level in the structure.
-	*/
-	unsigned int MinOpenLevel;
-
-
-	/**
-	*  TAG containing the content of the document.
-	*/
-	R::RXMLTag* contentT;
-	
 public:
 
 	/**
@@ -148,61 +172,81 @@ public:
 	*/
 	virtual bool Analyze(GDocXML* doc) throw(std::bad_alloc,GException);
 
+	/**
+	* Configurations were applied from the factory.
+	*/
+	virtual void ApplyConfig(void);
+
+
 protected:
 
 	/**
-	*Function who init the container of code and correspondant char
+	* Insert Tag in docXML structure and return inserted Tag (No content is added)
+	* @param currentTag       the tag to add to the structure
+	* @param parentTag        the parent tag in the docxml structure.
+	* @return RXMLTag         pointer to the inserted tag in docxml structure
 	*/
-	void InitCharContainer(void);
+	RXMLTag* InsertTag(tTag t,RXMLTag* parentTag) throw(std::bad_alloc,GException);
 
 	/**
-	* This function skip spaces.
+	* Analyse Tag
+	* @param curTag            the tag to insert in docxml struct
+	* @param curTag            the last tag added to the structure.
+	* @param parentTag         the parent Tag in docxml(to which the curTag must be added)
 	*/
-	inline void SkipSpaces(void)
-	{while((*Pos)&&isspace(*Pos)) Pos++;}
-
-
-	/**
-	* Function who analyse the Params  of the xml dc tag
-	*/
-	void AnalyseParams(void);
-	
+	void AnalyseTag(RXMLTag* curTag,RXMLTag* currentTagParent,RXMLTag* parentTag) throw(std::bad_alloc,GException);
 
 	/**
-	* Function who analyse the metatag of the xml document
+	* Analyse attributes
+	* @param currentTag            the tag to insert in docxml struct
 	*/
-	void AnalyseMeta(void);
-	
-	/**
-	* Function who analyse the content of the xml document
-	*/
-	void AnalyseContent(void);
-	
-  /**
-  * Function who analyse the document
-  */
-	void AnalyseDoc(void);
+	void AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent) throw(bad_alloc,GException);
 
 	/**
-	* This function replace codes by the corresponding characters.
-	* Ex.: &egrave; by 'è'.
+	* Load the different tags definitions from files
 	*/
-	void ReplaceCode(void);
+	void LoadDefinitions(void) throw(GException);
 
 	/**
-	* Read the next tag. In particular, the pointers BeginTag and Params are
-	* set correctly. Set bEndTag to true if it is a ending tag.
+	* Read the content of the filter definition
 	*/
-	void NextTag(void);
+	void FillFilterDefinitions(R::RXMLTag* tag) throw(bad_alloc,GException);
 
 	/**
-	* Call NexTag to read the next tag. If the tag is not valid, it is replace by
-	* spaces. Everythin in comments or between two <SCRIPT> tags are also
-	* replace by spaces.
+	* read the content of the tags definitions
 	*/
-	void NextValidTag(void);
+	void FillTagsDefinition(R::RXMLTag* currentTag,Def* def) throw(GException);
+
+	/**
+	* read the content of the attributes tags definitions
+	*/
+	void FillAttributesDefinition(RXMLTag* currentTag,Tag* t) throw(GException);
+
+	/**
+	* read the content of the mimeTypes definitions
+	*/
+	void FillMimeDefinition(R::RXMLTag* currentTag, Def* def) throw(GException);
+
+	/**
+	* Convert a RString into a tTag Enum
+	*/
+	tTag ConvertRStringtoTagEnum(RString str);
+
+	/**
+	* Get a cursor over the container of definitions
+	*/
+	DefCursor GetDefinitionsCursor(void);
+
+	/**
+	* Get a cursor over the container of mimedefinitions
+	* (link between one mime type and its corresponding tag definition)
+	*/
+	MimeDefCursor GetMimeDefinitionsCursor(void);
 
 public:
+
+	//-----------------------------------------------------------------------------
+	//virtual void Connect(GSession* session) throw(GException);
 
 	/**
 	* Create the parameters.

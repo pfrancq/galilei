@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes) -I$(top_srcdir) -I.. -Igoo -Ixps
+INCLUDES = $(all_includes) -I$(top_srcdir)
 filterslib_LTLIBRARIES =  ../libps.la
 ___libps_la_LDFLAGS = -module -avoid-version
 ___libps_la_SOURCES = gfilterps.cpp bundle.cpp ptotdll.cpp

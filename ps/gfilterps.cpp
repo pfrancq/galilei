@@ -22,8 +22,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be)
 			Create Filter for GALILEI
 
-	Version $Revision$
-
 */
 
 
@@ -73,7 +71,7 @@ extern BUNDLE ocr, rot270, rot90;
 const unsigned int CharInc=200000;
 const unsigned int LineLen=2000;
 static bool cork = false;
-static bool debug = false;
+static bool debugfilter = false;
 static const char *gs_cmd = "gs";
 static char *cmd; /* = argv[0] */
 static enum
@@ -197,7 +195,6 @@ bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
 	Doc->AddIdentifier(Doc->GetURL());
-	Doc->AddFormat("application/postscript");
 
 
 	// Analyse Doc->GetFile()
@@ -218,12 +215,12 @@ bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 				"%s -r72 -dNODISPLAY -dFIXEDMEDIA -dDELAYBIND -dWRITESYSTEMDICT %s -dNOPAUSE %s %s %s",
 			#endif
 			gs_cmd,
-			(debug ? "" : "-q"),
+			(debugfilter ? "" : "-q"),
 			rotate_path,
 			ocr_path,
 			Doc->GetFile().Latin1()
 			);
-	if (debug)
+	if (debugfilter)
 		cerr<<gs_cmdline<<endl;
 
 	#ifdef VMS
@@ -280,7 +277,7 @@ bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 		char *pre, *word, *post;
 		int llx, lly, urx, ury;
 		if (fgets(line, LineLen, gs)==NULL) break;
-		if (debug) fputs(line, stderr);
+		if (debugfilter) fputs(line, stderr);
 		status = pstotextFilter(instance, line, &pre, &word, &post, &llx, &lly, &urx, &ury);
 		if(status)
 		{
@@ -298,7 +295,7 @@ bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 			if (!bboxes)
 			{
 				StrToBuffer(post);
-				if(debug) cerr<<endl;
+				if(debugfilter) cerr<<endl;
 			}
 		}
 	}
@@ -317,7 +314,7 @@ bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	Pos=Begin;
 	while(!Pos->IsNull())
 	{
-		part->AddTag(tag=new RXMLTag("docxml:p"));
+		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 		SkipSpaces();
 		Begin=Pos;
 		// Paragraph are supposed to be terminated by at least one blank line
@@ -344,6 +341,10 @@ bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	}
 
 	// Clean up
+	if (instance)
+	{
+		free(instance);
+	}
 	delete[] CharBuffer;
 	return(true);
 }

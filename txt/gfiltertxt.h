@@ -11,8 +11,6 @@
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be).
 
-	Version $Revision$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -63,26 +61,6 @@ namespace GALILEI{
 */
 class GFilterTXT : public GFilter
 {
-	/**
-	* Buffer containing all the txt file.
-	*/
-	char* Buffer;
-
-	/**
-	* Pointer to the current position in the buffer.
-	*/
-	char* Pos;
-
-	/**
-	* Pointer to the beginning of the block actually treated.
-	*/
-	char* Begin;
-
-	/**
-	* Determine if blank lines are allowed between commands in
-	* the txts.
-	*/
-//	bool BlankLines;
 
 public:
 
@@ -92,14 +70,6 @@ public:
 	* @param name           Name of the filter.
 	*/
 	GFilterTXT(GFactoryFilter* fac);
-
-protected:
-
-	/**
-	* This function skip spaces.
-	*/
-	inline void SkipSpaces(void)
-	{while((*Pos)&&isspace(*Pos)) Pos++;}
 
 public:
 
@@ -111,18 +81,7 @@ public:
 	*/
 	virtual bool Analyze(GDocXML* doc) throw(std::bad_alloc,GException);
 
-	/**
-	* Determine if blank lines are allowed between two commands.
-	* @return true if it is allowed.
-	*/
-	//bool IsBlankLines(void);
-
-	/**
-	* Select if blank lines are allowed between two commands.
-	* @param                    Allowed or not?
-	*/
-	//void SetBlankLines(bool b);
-
+	
 	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.

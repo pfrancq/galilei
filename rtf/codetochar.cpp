@@ -12,10 +12,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be).
 		Julien Lamoral (jlamoral@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -51,14 +47,14 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::CodeToChar::CodeToChar(const char* code,char c) throw(bad_alloc)
+GALILEI::CodeToChar::CodeToChar(const char* code,RChar c) throw(bad_alloc)
 	: Char(c), Code(code)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::CodeToChar::Compare(const char* code) const
+int GALILEI::CodeToChar::Compare(const RString& code) const
 {
 	return(Code.Compare(code));
 }

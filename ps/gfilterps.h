@@ -22,8 +22,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be)
 			Create Filter for GALILEI
 
-	Version $Revision$
-
 */
 
 

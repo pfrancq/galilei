@@ -2090,9 +2090,10 @@ static void outputToRChar(void* /*stream*/, char *text, int len)
 	}
 	else
 	{
-		isUnicode = true;
+		isUnicode = false;
 		i = 0;
 	}
+
 	for(;i<len;)
 	{
 		if(isUnicode)

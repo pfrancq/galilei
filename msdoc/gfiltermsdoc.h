@@ -11,8 +11,6 @@
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be).
 
-	Version $Revision$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -201,14 +199,14 @@ protected:
 	* @param ustr                   The UString to convert
 	* @return RString               The string converted to RString
 	*/
-	R::RString& ConvertUtoRString(const wvWare::UString& ustr) throw(std::bad_alloc);
+	R::RString ConvertUtoRString(const wvWare::UString& ustr) throw(std::bad_alloc);
 
 	/*
 	* Replace the code of the character \' ( because wrong code is produced by the wvWare::Parser.
 	* @param str                    The string where the char \' must be replaced.
 	* @return RString               The string with the correct char code.
 	*/
-	R::RString& ConvertChar(const R::RString& str) throw(std::bad_alloc);
+	R::RString ConvertChar(const R::RString& str) throw(std::bad_alloc);
 
 	/*
 	* convert wv2.FLD to FIELD.Subtype

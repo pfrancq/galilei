@@ -12,10 +12,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be).
 		Julien Lamoral (jlamoral@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -43,6 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Library
 #include <rstd/rstring.h>
+#include <rstd/rchar.h>
 
 
 
@@ -63,8 +60,8 @@ class CodeToChar
 	/**
 	* Character corresponding to the code.
 	*/
-	char Char;
-	
+	R::RChar Char;
+
 	/**
 	* Code.
 	*/
@@ -77,12 +74,12 @@ public:
 	* @param code           Code.
 	* @param c              Character.
 	*/
-	CodeToChar(const char* code,char c) throw(std::bad_alloc);
+	CodeToChar(const char* code,R::RChar c) throw(std::bad_alloc);
 
 	/**
 	* Utilised by R::RContainer
 	*/
-	int Compare(const char* code) const;
+	int Compare(const R::RString& code) const;
 
 	/**
 	* Utilised by R::RContainer
@@ -98,7 +95,13 @@ public:
 	* Get the characters corresponding to this code.
 	* @returns char.
 	*/
-	char GetChar(void) const {return(Char);}
+	R::RChar GetChar(void) const {return(Char);}
+
+	/**
+	* Get the characters corresponding to this code.
+	* @returns char.
+	*/
+	R::RString GetCode(void) const {return(Code);}
 
 	/**
 	* Get The len of the code.
@@ -112,6 +115,7 @@ public:
 	~CodeToChar(void);
 };
 
+CLASSCURSOR(CodeToCharCursor,CodeToChar,unsigned int);
 
 }  //-------- End of namespace GALILEI ----------------------------------------
 

@@ -394,7 +394,11 @@ int DLLEXPORT pstotextInit(void **instance) {
   int i;
 
   t = (T *)malloc(sizeof(T));
-  if (t == NULL) return PSTOTEXT_INIT_MALLOC;
+  if (t == NULL)
+  {
+	free(t);
+	return PSTOTEXT_INIT_MALLOC;
+  }
 
   t->state = state_normal;
 
@@ -417,6 +421,7 @@ int DLLEXPORT pstotextInit(void **instance) {
 
   t->encoding = (EncodingTable *)malloc(t->encodingSize * sizeof(Encoding));
   if (t->encoding == NULL) {
+    free(t->metrics);
     free(t);
     return PSTOTEXT_INIT_MALLOC;
   }
@@ -426,6 +431,8 @@ int DLLEXPORT pstotextInit(void **instance) {
 
   t->font = (FontTable *)malloc(t->fontSize * sizeof(Font));
   if (t->font == NULL) {
+    free(t->metrics);
+    free(t->font);
     free(t);
     return PSTOTEXT_INIT_MALLOC;
   }
@@ -436,7 +443,6 @@ int DLLEXPORT pstotextInit(void **instance) {
   t->blx = t->bly = t->toprx = t->topry = 0;
 
   *instance = t;
-
   return 0;
 }
 

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -33,6 +29,10 @@
 */
 
 
+//-----------------------------------------------------------------------------
+// include files for R
+#include <frontend/kde/rqt.h>
+
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
@@ -45,6 +45,11 @@ using namespace GALILEI;
 #include <kaboutdata.h>
 #include <klocale.h>
 #include <kaboutapplication.h>
+#include <kurlrequester.h>
+
+//-----------------------------------------------------------------------------
+// include files for Current
+#include <dlgconfig_qt.h>
 
 
 //-----------------------------------------------------------------------------
@@ -68,6 +73,22 @@ void About(void)
 	KAboutApplication dlg(&aboutData);
 	dlg.exec();
 }
+
+//------------------------------------------------------------------------------
+void Configure(GFactoryFilter* params)
+{
+	DlgConfig_Qt dlg;
+
+	//dlg.xmlDefPath->setURL(ToQt(params->GetString("xmlDefinitionPath")));
+	dlg.xmlDefPath->setMode(KFile::Directory);
+	dlg.xmlDefPath->setURL(ToQString(params->GetString("xmlDefPath")));
+	if(dlg.exec())
+	{
+		params->Set("xmlDefPath",FromQString(dlg.xmlDefPath->url()));
+		params->Apply();
+	}
+}
+
 
 
 //------------------------------------------------------------------------------

@@ -9,12 +9,8 @@
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
 		Vandaele Valery (vavdaele@ulb.ac.be)
-
-	Version $Revision$
-
-	Last Modify: $Date$
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -35,26 +31,13 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <ctype.h>
-#include <string.h>
-#include <iostream> // for cout only.
-#include <stdio.h>
-#include <sys/stat.h>
-#ifdef _BSD_SOURCE
-	#include <unistd.h>
-#else
-	#include <io.h>
-#endif
-#include <fcntl.h>
-
-
 //---------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterxml.h>
 #include <docs/gfiltermanager.h>
 #include <docs/gdocxml.h>
+#include <rstd/rxmlfile.h>
+#include <rstd/rxmlattr.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -63,7 +46,39 @@ using namespace std;
 
 //---------------------------------------------------------------------------
 //
-// class Tag
+// class GFilterXML::Attribut
+//
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+class GALILEI::GFilterXML::Attribut
+{
+public:
+
+	RString Name;
+	tTag Type;
+	RString Value;
+	//All allowed attributs for a Tag
+	R::RContainer<Attribut,unsigned int,true,true> SubAttrs;
+
+	Attribut(const RString n,tTag t,const RString v)
+		: Name(n), Type(t),Value(v),SubAttrs(5,2) {}
+	int Compare(const Attribut* a) const {return(Name.Compare(a->Name));}
+	int Compare(const Attribut& a) const {return(Name.Compare(a.Name));}
+	int Compare(const RString* a) const {return(Name.Compare(a));}
+	int Compare(const RString& a) const {return(Name.Compare(a));}
+	void InsertSubAttribute(Attribut* a){SubAttrs.InsertPtr(a);}
+	AttributCursor GetSubAttributsCursor(void)
+	{
+		AttributCursor cur(SubAttrs);
+		return(cur);
+	}
+};
+
+
+//---------------------------------------------------------------------------
+//
+// class GFilterXML::Tag
 //
 //---------------------------------------------------------------------------
 
@@ -71,22 +86,66 @@ using namespace std;
 class GALILEI::GFilterXML::Tag
 {
 public:
-	enum tTag{tNULL,tNEWSITEM,tTITLE,tDATE,tPUBLI,tSOURCE,tTEXT,tPAR,tSUBJECT,tAUTHOR,tSUMMARY,tNOTE,tDESCRIPT,tRIGHTS,tLANG,tMETA,tDC,tH1,tH2,tH3,tH4,tH5,tH6}; 
-	RString Name;
-	RString XMLName;
-	tTag Type;
-	bool Head;
-	int Level;
-	bool Ins;
 
-	Tag(const char* n,const char* x,tTag t,bool h,int l,bool i)
-		: Name(n), XMLName(x), Type(t),Head(h), Level(l),Ins(i) {}
-	int Compare(const Tag* t) const {return(Name.Compare(t->Name));}
+	//struct TagStruct Name;
+	struct TagStruct Name;
+	tTag Type;
+
+	//All allowed attributs for a Tag
+	R::RContainer<Attribut,unsigned int,true,true> Attrs;
+
+	Tag(const RString n,const RString p,tTag t)
+		: Name(n,p),Type(t),Attrs(5,2) {}
+
 	int Compare(const Tag& t) const {return(Name.Compare(t.Name));}
-	int Compare(const char* t) const {return(Name.Compare(t));}
+	int Compare(const Tag* t) const {return(Name.Compare(t->Name));}
+	int Compare(const TagStruct& t) const {return(Name.Compare(t));}
+	int Compare(const TagStruct* t) const {return(Name.Compare(t));}
+	void InsertAttribute(Attribut* t){Attrs.InsertPtr(t);}
+	AttributCursor GetAttributsCursor(void)
+	{
+		AttributCursor cur(Attrs);
+		return(cur);
+	}
 };
 
 
+//---------------------------------------------------------------------------
+class GFilterXML::Def
+{
+public:
+	RString Name;
+
+	//Definition of the Tags associated to the current definition
+	R::RContainer<Tag,unsigned int,true,true> Tags;
+
+	Def(const RString n)
+		: Name(n)/*,Mimes(5,2)*/,Tags(10,5) {}
+	int Compare(const Def* d) const {return(Name.Compare(d->Name));}
+	int Compare(const Def& d) const {return(Name.Compare(d.Name));}
+	int Compare(const RString& d) const {return(Name.Compare(d));}
+	void InsertTag(Tag* t){Tags.InsertPtr(t);}
+	TagCursor GetTagsCursor(void)
+	{
+		TagCursor cur(Tags);
+		return(cur);
+	}
+};
+
+
+//---------------------------------------------------------------------------
+class GFilterXML::MimeDef
+{
+public:
+	RString Name;
+	Def* Definition;
+
+	MimeDef(const RString n,Def* def)
+		: Name(n), Definition(def) {}
+	int Compare(const MimeDef* d) const {return(Name.Compare(d->Name));}
+	int Compare(const MimeDef& d) const {return(Name.Compare(d.Name));}
+	int Compare(const RString& d) const {return(Name.Compare(d));}
+};
 
 //---------------------------------------------------------------------------
 //
@@ -96,655 +155,785 @@ public:
 
 //---------------------------------------------------------------------------
 GALILEI::GFilterXML::GFilterXML(GFactoryFilter* fac)
-	: GFilter(fac), Tags(0),
-	 Buffer(0), Chars(50,5)
+	: GFilter(fac),xmlDefPath(""),Definitions(0),
+	MimeDefinitions(0),CurrentDefinition(0),DefinitionIsInited(false)
 {
-	AddMIME("text/xmlReu");
-	InitCharContainer();
-	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
-	
-	Tags->InsertPtr(new Tag("NEWSITEM","",Tag::tNEWSITEM,false,8,false));
-	
+	//Add generic mime type for the filter
+	AddMIME("text/sgml");
+	AddMIME("text/xml");
+}
 
-	Tags->InsertPtr(new Tag("TITLE","",Tag::tTITLE,false,8,false));
-	
+//-----------------------------------------------------------------------------
+void GFilterXML::ApplyConfig(void)
+{
+	RString oldPath(xmlDefPath);
 
-	Tags->InsertPtr(new Tag("TEXT","",Tag::tTEXT,false,8,false));
-	
-	Tags->InsertPtr(new Tag("copyright","",Tag::tRIGHTS,false,8,false));
-	Tags->InsertPtr(new Tag("COPYRIGHT","",Tag::tRIGHTS,false,8,false));
-	
-	Tags->InsertPtr(new Tag("metadata","",Tag::tMETA,false,8,false));
-	Tags->InsertPtr(new Tag("METADATA","",Tag::tMETA,false,8,false));
-	Tags->InsertPtr(new Tag("p","docxml:p",Tag::tPAR,false,8,false));
-	Tags->InsertPtr(new Tag("P","docxml:p",Tag::tPAR,false,8,false));
-	Tags->InsertPtr(new Tag("DC","",Tag::tDC,false,8,false));
+	xmlDefPath=Factory->GetString("xmlDefPath");
 
-	Tags->InsertPtr(new Tag("H1","docxml:h1",Tag::tH1,false,1,true));
-	Tags->InsertPtr(new Tag("H2","docxml:h2",Tag::tH2,false,2,true));
-	Tags->InsertPtr(new Tag("H3","docxml:h3",Tag::tH3,false,3,true));
-	Tags->InsertPtr(new Tag("H4","docxml:h4",Tag::tH4,false,4,true));
-	Tags->InsertPtr(new Tag("H5","docxml:h5",Tag::tH5,false,5,true));
-	Tags->InsertPtr(new Tag("H6","docxml:h6",Tag::tH6,false,6,true));
-
+	//If path has changed ->Set Inited to false
+	if(oldPath.Compare(xmlDefPath))
+		DefinitionIsInited=false;
 }
 
 //---------------------------------------------------------------------------
-void GALILEI::GFilterXML::AnalyseDoc(void)
+GFilterXML::tTag GFilterXML::ConvertRStringtoTagEnum(RString str)
 {
-	RXMLTag* meta ;
-	Tag::tTag LastType=Tag::tNULL;;
-	char* OldBlock;
-	char* OldParams;
-
-// Init Part.
-	meta=Doc->GetMetaData();
-	Doc->AddIdentifier(Doc->GetURL());
-	Doc->AddFormat("text/xml");
-
-
-	// Parse it.
-	NextValidTag();
-	while((*Pos)&&CurTag)
+	tTag t;
+	if(str=="tMAIN")
 	{
-		switch(LastType)
+		t=tMAIN;
+		return t;
+	}
+	if(str=="tATTRIBUT")
+	{
+		t=tATTRIBUT;
+		return t;
+	}
+	if(str=="tSKIP")
+	{
+		t=tSKIP;
+		return t;
+	}
+	if(str=="tTITLE")
+	{
+		t=tTITLE;
+		return t;
+	}
+	if(str=="tDATE")
+	{
+		t=tDATE;
+		return t;
+	}
+	if(str=="tPUBLI")
+	{
+		t=tPUBLI;
+		return t;
+	}
+	if(str=="tSOURCE")
+	{
+		t=tSOURCE;
+		return t;
+	}
+	if(str=="tCONTRIB")
+	{
+		t=tCONTRIB;
+		return t;
+	}
+	if(str=="tDESCRIPT")
+	{
+		t=tDESCRIPT;
+		return t;
+	}
+	if(str=="tRIGHTS")
+	{
+		t=tRIGHTS;
+		return t;
+	}
+	if(str=="tPAR")
+	{
+		t=tPAR;
+		return t;
+	}
+	if(str=="tLANG")
+	{
+		t=tLANG;
+		return t;
+	}
+	if(str=="tMETA")
+	{
+		t=tMETA;
+		return t;
+	}
+	if(str=="tIDENTIFIER")
+	{
+		t=tIDENTIFIER;
+		return t;
+	}
+	if(str=="tRELATION")
+	{
+		t=tRELATION;
+		return t;
+	}
+	if(str=="tCOVERAGE")
+	{
+		t=tCOVERAGE;
+		return t;
+	}
+	if(str=="tTEXT")
+	{
+		t=tTEXT;
+		return t;
+	}
+	if(str=="tSUBJECT")
+	{
+		t=tSUBJECT;
+		return t;
+	}
+	if(str=="tSUMMARY")
+	{
+		t=tSUMMARY;
+		return t;
+	}
+	if(str=="tH1")
+	{
+		t=tH1;
+		return t;
+	}
+	if(str=="tH2")
+	{
+		t=tH2;
+		return t;
+	}
+	if(str=="tH3")
+	{
+		t=tH3;
+		return t;
+	}
+	if(str=="tH4")
+	{
+		t=tH4;
+		return t;
+	}
+	if(str=="tH5")
+	{
+		t=tH5;
+		return t;
+	}
+	if(str=="tH6")
+	{
+		t=tH6;
+		return t;
+	}
+
+	//ELSE return tNULL
+	t=tNULL;
+	return t;
+}
+
+//---------------------------------------------------------------------------
+void GFilterXML::LoadDefinitions(void) throw(GException)
+{
+	DIR* dp;
+	struct dirent* ep;
+	RString Name;
+	//bool end=false;
+	int len;
+	RXMLStruct fileStruct;
+	RXMLTag* tag;
+
+
+	//Set Definition to Inited
+	DefinitionIsInited=true;
+	//Delete the container of definitions
+	delete Definitions;
+	delete MimeDefinitions;
+	Definitions=0;
+	MimeDefinitions=0;
+	CurrentDefinition=0;
+
+	//Load the new definitions
+	//Init containers
+	Definitions=new R::RContainer<Def,unsigned int,true,true>(10,5) ;
+	MimeDefinitions=new R::RContainer<MimeDef,unsigned int,true,true>(10,5) ;
+
+	if(xmlDefPath.IsEmpty()) throw GException("Path to xml definition is Empty");
+	dp=opendir(xmlDefPath);
+	if(!dp) throw GException("Path to xml definition is not correct");
+
+	while((ep=readdir(dp)))
+	{
+		len=strlen(ep->d_name);
+		if(len<3) continue;
+		if(strcmp(&ep->d_name[len-7],".xmlDef")) continue;
+		try
 		{
-			case Tag::tTITLE:
-				AnalyzeBlock(OldBlock,Doc->AddTitle());
-				break;
+			Name=xmlDefPath+ep->d_name;
+			// Init Part
 
-			case Tag::tAUTHOR:
-				AnalyzeBlock(OldBlock,Doc->AddCreator());
-				break;
-			
+			RXMLFile Src(Name,&fileStruct);
+			Src.Process();
+			tag=fileStruct.GetTop();
+			FillFilterDefinitions(tag);
+		}
+		catch(RString& str)
+		{
+			throw GException(str);
+		}
+		catch(RIOException& e)
+		{
+			throw GException(e.GetMsg());
+		}
+		catch(bad_alloc)
+		{
+			throw;
+		}
+		catch(GException)
+		{
+			throw;
+		}
+		catch(RException& e)
+		{
+			throw GException(e.GetMsg());
+		}
+		catch(...)
+		{
+			throw GException("Unexcepted exception");
+		}
+	}
+}
 
-			case Tag::tSUBJECT:
-				AnalyzeBlock(OldBlock,Doc->AddSubject());
-				break;
 
-			case Tag::tDESCRIPT:
-				AnalyzeBlock(OldBlock,Doc->AddDescription());
-				break;
+//---------------------------------------------------------------------------
+void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag) throw(bad_alloc,GException)
+{
+	Def* definition;
+	RXMLAttrCursor xmlAttrCur;
+	RXMLTagCursor tagCur;
 
-			case Tag::tPUBLI:
-				AnalyzeBlock(OldBlock,Doc->AddPublisher());
-				break;
+	if(!currentTag) return;
 
-//			case Tag::t:
-//				AnalyzeBlock(OldBlock,Doc->AddContributor());
-//				break;
+	// Get Filter Name (attribute of the main Tag)
+	if(!(currentTag->GetName() == "xmlConverter")) return;
 
-			case Tag::tDATE:
-				AnalyzeBlock(OldBlock,Doc->AddDate());
-				break;
+	//Read filter name
+	xmlAttrCur=currentTag->GetXMLAttrCursor();
+	for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
+	{
+		if(xmlAttrCur()->GetName() == "name")
+		{
+			definition = new Def(xmlAttrCur()->GetValue());
+			Definitions->InsertPtr(definition);
+		}
+	}
 
-			case Tag::tSOURCE:
-				AnalyzeBlock(OldBlock,Doc->AddSource());
-				break;
+	if(!definition)
+	{
+		throw GException("No filter name found in tag \"xmlConverter\"");
+	}
 
-			case Tag::tLANG:
-				AnalyzeBlock(OldBlock,Doc->AddLanguage());
-				break;
+	//Treat current tag CHILDREN
+	//--------------------------
+	tagCur=currentTag->GetXMLTagsCursor();
+	for(tagCur.Start();!tagCur.End();tagCur.Next())
+	{
+		if(tagCur()->GetName() == "mimeTypes")
+		{
+			FillMimeDefinition(tagCur(),definition);
+		}
+		if(tagCur()->GetName()== "tagsDefinition")
+		{
+			FillTagsDefinition(tagCur(),definition);
+		}
+	}
+}
 
-//			case Tag::t:
-//				AnalyzeBlock(OldBlock,Doc->AddRelation());
-//				break;
 
-//			case Tag::t:
-//				AnalyzeBlock(OldBlock,Doc->AddCoverage());
-//				break;
+//---------------------------------------------------------------------------
+void GFilterXML::FillTagsDefinition(RXMLTag* currentTag,Def* def) throw(GException)
+{
+	RXMLAttrCursor xmlAttrCur;
+	RXMLTagCursor tagCur;
+	RString tagName;
+	RString docxmlName;
+	RString parentName;
+	Tag* t;
 
-			case Tag::tRIGHTS:
-				AnalyzeBlock(OldBlock,Doc->AddRights());
-				break;
 
-			case Tag::tMETA:
-				AnalyseMeta();
-				break;
+	tagCur=currentTag->GetXMLTagsCursor();
+	for(tagCur.Start();!tagCur.End();tagCur.Next())
+	{
+		if(tagCur()->GetName()=="tag")
+		{
+			tagName=docxmlName=parentName="";
+			xmlAttrCur=tagCur()->GetXMLAttrCursor();
+			for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
+			{
+				if( xmlAttrCur()->GetName()=="name")
+				{
+					tagName=xmlAttrCur()->GetValue();
+				}
+				if( xmlAttrCur()->GetName()=="docxml")
+				{
+					docxmlName=xmlAttrCur()->GetValue();
+				}
+				if( xmlAttrCur()->GetName()=="parent")
+				{
+					parentName=xmlAttrCur()->GetValue();
+				}
+			}
+			//Insert found Tag
+			if(!tagName.IsEmpty())
+			{
+				def->InsertTag(t=new Tag(tagName,parentName,ConvertRStringtoTagEnum(docxmlName)));
 
-			default:
-				break;
-		};
-		if(bEndTag)
-			LastType=Tag::tNULL;
+				//treat sub tags which are attributes of the current Tag
+				FillAttributesDefinition(tagCur(),t);
+			}
+		}
+	}
+}
+
+
+//---------------------------------------------------------------------------
+void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag) throw(GException)
+{
+	RXMLAttrCursor xmlAttrCur;
+	RXMLTagCursor tagCur,subTagCur;
+	RString tagName;
+	RString docxmlName;
+	RString value;
+	Attribut* attr;
+
+	//Parse sub tags of the current one
+	tagCur=currentTag->GetXMLTagsCursor();
+	for(tagCur.Start();!tagCur.End();tagCur.Next())
+	{
+		if(tagCur()->GetName()=="attribut")
+		{
+			tagName=docxmlName=value="";
+			xmlAttrCur=tagCur()->GetXMLAttrCursor();
+			for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
+			{
+				if( xmlAttrCur()->GetName()=="name")
+				{
+					tagName=xmlAttrCur()->GetValue();
+				}
+				if( xmlAttrCur()->GetName()=="docxml")
+				{
+					docxmlName=xmlAttrCur()->GetValue();
+				}
+				if( xmlAttrCur()->GetName()=="value")
+				{
+					value=xmlAttrCur()->GetValue();
+				}
+			}
+			//Insert found Tag
+			if(!tagName.IsEmpty())
+			{
+				tag->InsertAttribute(attr=new Attribut(tagName,ConvertRStringtoTagEnum(docxmlName),value));
+
+				//treat sub tags which are attributes of the current Tag
+				subTagCur=tagCur()->GetXMLTagsCursor();
+				for(subTagCur.Start();!subTagCur.End();subTagCur.Next())
+				{
+					if(subTagCur()->GetName()=="attribut")
+					{
+						tagName=docxmlName=value="";
+						xmlAttrCur=subTagCur()->GetXMLAttrCursor();
+						for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
+						{
+							if( xmlAttrCur()->GetName()=="name")
+							{
+								tagName=xmlAttrCur()->GetValue();
+							}
+							if( xmlAttrCur()->GetName()=="docxml")
+							{
+								docxmlName=xmlAttrCur()->GetValue();
+							}
+							if( xmlAttrCur()->GetName()=="value")
+							{
+								value=xmlAttrCur()->GetValue();
+							}
+						}
+						//Insert found Tag
+						if(!tagName.IsEmpty())
+						{
+							attr->InsertSubAttribute(new Attribut(tagName,ConvertRStringtoTagEnum(docxmlName),value));
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+//---------------------------------------------------------------------------
+void GFilterXML::FillMimeDefinition(RXMLTag* currentTag,Def* def) throw(GException)
+{
+	RXMLAttrCursor xmlAttrCur;
+	RXMLTagCursor tagCur;
+
+	tagCur=currentTag->GetXMLTagsCursor();
+	for(tagCur.Start();!tagCur.End();tagCur.Next())
+	{
+		//Tag Read must have the name "mimeType"
+		if(tagCur()->GetName()=="mimeType")
+		{
+			xmlAttrCur=tagCur()->GetXMLAttrCursor();
+			for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
+			{
+				//Attribut name contents the name of the current mimeType
+				if(xmlAttrCur()->GetName() == "name")
+				{
+					MimeDefinitions->InsertPtr(new MimeDef(xmlAttrCur()->GetValue(),def));
+					//Add Mime to the filter
+					AddMIME(xmlAttrCur()->GetValue());
+				}
+			}
+		}
+	}
+}
+
+
+//---------------------------------------------------------------------------
+RXMLTag* GFilterXML::InsertTag(tTag t,RXMLTag* parentTag) throw(std::bad_alloc,GException)
+{
+
+	RXMLTag* resTag;
+	resTag= NULL;
+
+	switch(t)
+	{
+		//ALL metadata types tags
+		case tTITLE:
+			resTag=Doc->AddTitle();
+			break;
+
+		case tAUTHOR:
+			resTag=Doc->AddCreator();
+			break;
+
+		case tSUBJECT:
+			resTag=Doc->AddSubject();
+			break;
+
+		case tDESCRIPT:
+			resTag=Doc->AddDescription();
+			break;
+
+		case tPUBLI:
+			resTag=Doc->AddPublisher();
+			break;
+
+		case tDATE:
+			resTag=Doc->AddDate();
+			break;
+
+		case tSOURCE:
+			resTag=Doc->AddSource();
+			break;
+
+		case tLANG:
+			resTag=Doc->AddLanguage();
+			break;
+
+		case tRIGHTS:
+			resTag=Doc->AddRights();
+			break;
+
+		case tCONTRIB:
+			resTag=Doc->AddRights();
+			break;
+
+		case tRELATION:
+			resTag=Doc->AddRelation();
+			break;
+
+		case tCOVERAGE:
+			resTag=Doc->AddCoverage();
+			break;
+
+		case tMETA:
+			break;
+
+		//ALL content types tags
+		case tMAIN:
+			break;
+
+		case tTEXT:
+			resTag=Doc->GetContent();
+			break;
+
+		case tPAR:
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:p"));
+			break;
+
+		case tH1:
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h1"));
+			break;
+
+		case tH2:
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h2"));
+			break;
+
+		case tH3:
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h3"));
+			break;
+
+		case tH4:
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h4"));
+			break;
+
+		case tH5:
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h5"));
+			break;
+
+		case tH6:
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h6"));
+			break;
+
+		case tSKIP:
+			break;
+
+		default:
+			resTag=parentTag;
+			break;
+	};
+
+	return resTag;
+}
+
+
+//---------------------------------------------------------------------------
+void GFilterXML::AnalyseTag(RXMLTag* currentTag,RXMLTag* currentTagParent ,RXMLTag* docXMLparentTag) throw(std::bad_alloc,GException)
+{
+	Tag *t;
+	RXMLTagCursor tagCur;
+	RXMLAttrCursor attrCur;
+	RXMLTag* newTag;
+
+	bool description=false;
+
+	//Get Correspondence between read tag and docxml tag using the parent info
+	t=CurrentDefinition->Tags.GetPtr<const TagStruct>(TagStruct(currentTag->GetName(),currentTagParent->GetName()));
+	if(!t)
+		t=CurrentDefinition->Tags.GetPtr<const TagStruct>(TagStruct(currentTag->GetName(),""));
+
+	if(!t)
+	{
+		//If No Tag associated -> Insert content but not tag to the parent
+		newTag=docXMLparentTag;
+	}
+	else
+	{
+		newTag=InsertTag(t->Type,docXMLparentTag);
+
+		//return if tag must be skipped.
+		if(t->Type == tSKIP) return;
+		if(t->Type == tDESCRIPT) description=true;
+	}
+
+
+	//Treat current tag CONTENT
+	//-------------------------
+	if(newTag)
+	{
+		//Insert content in Node
+		if(currentTag->HasContent())
+		{
+			if(description)
+			{
+				AnalyzeKeywords(currentTag->GetContent(),',',newTag);
+				description=false;
+			}
+			else
+			{
+				AnalyzeBlock(currentTag->GetContent(),newTag);
+			}
+		}
+	}
+
+	//Treat current node Attributes
+	//-------------------------
+	AnalyzeAttributes(currentTag,currentTagParent);
+
+	//Treat current tag CHILDREN if the current one is not skipped
+	//--------------------------
+	tagCur=currentTag->GetXMLTagsCursor();
+	for(tagCur.Start();!tagCur.End();tagCur.Next())
+	{
+		if(newTag)
+		{
+			AnalyseTag(tagCur(),currentTag,newTag);
+		}
 		else
 		{
-			OldBlock=Block;
-			OldParams=Params;
-			LastType=CurTag->Type;
-		}
-		if((bEndTag&&(CurTag->Type==Tag::tNEWSITEM)) )
-		{
-			return;
-		}
-
-		NextValidTag();
-		if( CurTag->Type == Tag::tTEXT)
-		{
-			AnalyseContent();
+			AnalyseTag(tagCur(),currentTag,docXMLparentTag);
 		}
 	}
 }
 
 
 //---------------------------------------------------------------------------
-bool GALILEI::GFilterXML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
+void GFilterXML::AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent) throw(bad_alloc,GException)
 {
-	int accessmode,handle;
-	struct stat statbuf;
+	Tag* t;
+	RXMLTag* attrTag;
+	Attribut* subattr;
+	AttributCursor attrCur,subAttrCur;
 
-	// Initialisation
-	Doc=doc;
-	accessmode=O_RDONLY;
-	#ifndef _BSD_SOURCE
-		accessmode=O_BINARY;
-	#endif
-	handle=open(Doc->GetFile(),accessmode);
-	fstat(handle, &statbuf);
-	if(handle==-1)
-		throw GException("file not found : "+Doc->GetFile());
-	Block=Pos=Buffer=new char[statbuf.st_size+1];
-	TagLen=0;
-	read(handle,Buffer,statbuf.st_size);
-	Buffer[statbuf.st_size]=0;
-	close(handle);
-	SkipSpaces();
+	RString attrName;
+	RString valueName;
 
-	// Traitement of the document
-	AnalyseDoc();
+	t=CurrentDefinition->Tags.GetPtr<const TagStruct>(TagStruct(currentTag->GetName(),currentTagParent->GetName()));
+	if(!t)
+		t=CurrentDefinition->Tags.GetPtr<const TagStruct>(TagStruct(currentTag->GetName(),""));
 
-	// Done
-	if(Buffer)
+	if(!t) return;
+
+	attrCur=t->GetAttributsCursor();
+	for(attrCur.Start();!attrCur.End();attrCur.Next())
 	{
-		delete[] Buffer;
-		Buffer=0;
+		//Test if this attributes exists in the current Tag
+		if(currentTag->IsAttrDefined(attrCur()->Name))
+		{
+			//If the Tag Attribute has no child attribute --> The attribue can be add with its value
+			if(!attrCur()->SubAttrs.NbPtr)
+			{
+				attrTag=InsertTag(attrCur()->Type,currentTag);
+				if(attrTag)
+				{
+					//Insert content in Node
+					AnalyzeBlock(currentTag->GetAttrValue(attrCur()->Name)(),attrTag);
+				}
+			}
+			// If SubAttributes ->The get Value and parse sub Tags
+			else
+			{
+				attrName=currentTag->GetAttrValue(attrCur()->Name);
+
+				subattr=attrCur()->SubAttrs.GetPtr<const RString>(attrName);
+				if(subattr)
+				{
+					valueName=subattr->Value;
+					if(currentTag->IsAttrDefined(valueName))
+					{
+						//Insert/Get appropriate Node in xml structure
+						attrTag=InsertTag(subattr->Type,currentTag);
+						//Insert content in Node
+						AnalyzeBlock(currentTag->GetAttrValue(valueName),attrTag);
+					}
+				}
+			}
+		}
 	}
+}
+
+
+//---------------------------------------------------------------------------
+bool GFilterXML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
+{
+	RString mime;
+	MimeDef* mimeDef;
+	DefCursor defCur;
+	//Def* def;
+	RXMLTag* part;
+	RXMLTag* tag;
+	RXMLTagCursor Cur;
+	RXMLStruct fileStruct;
+
+	try
+	{
+
+		//Test if filters are loaded
+		if(!DefinitionIsInited)
+		{
+			//Load definitions from file
+			LoadDefinitions();
+		}
+		if((!Definitions->NbPtr)||(!MimeDefinitions->NbPtr))
+		{
+			throw GException("No definitions found for filter XML! Verify that the path to the definition is correct.");
+		}
+		// Init Part
+		Doc=doc;
+		RXMLFile Src(Doc->GetFile(),&fileStruct);
+		Src.Process();
+
+		//Choose the correct tags definition (according to the mime type)
+		if(!Doc->GetMetaData()->GetTag("dc:format")) return false;
+		mime=Doc->GetTag("dc:format")->GetContent();
+		if(mime.IsEmpty())
+		{
+			throw GException("The MimeType of the document is not defined !");
+		}
+		mimeDef= MimeDefinitions->GetPtr<RString>(mime);
+		if(mimeDef)
+		{
+			CurrentDefinition= mimeDef->Definition;
+		}
+		else
+		{
+			tag=fileStruct.GetTop();
+
+			//Go through all the definitions of the tags and look if the main tag is the same
+			defCur.Set(Definitions);
+			for(defCur.Start();!defCur.End();defCur.Next())
+			{
+				if(defCur()->Tags.GetPtr<TagStruct>(TagStruct(tag->GetName(),"")))
+				{
+					CurrentDefinition=defCur();
+					continue;
+				}
+			}
+		}
+
+		// Create the metaData tag and the first information
+		part=Doc->GetContent();
+		Doc->AddIdentifier(Doc->GetURL());
+		tag=fileStruct.GetTop();
+		AnalyseTag(tag,tag,0);
+	}
+	catch(RString& str)
+	{
+		throw GException(str);
+	}
+	catch(RIOException& e)
+	{
+		throw GException(e.GetMsg());
+	}
+	catch(bad_alloc)
+	{
+		throw;
+	}
+	catch(GException)
+	{
+		throw;
+	}
+	catch(RException& e)
+	{
+		throw GException(e.GetMsg());
+	}
+	catch(...)
+	{
+		throw GException("Unexcepted exception");
+	}
+
+	// Return OK
 	return(true);
 }
 
 
-//---------------------------------------------------------------------------
-void GALILEI::GFilterXML::InitCharContainer(void)
+//------------------------------------------------------------------------------
+GFilterXML::DefCursor GFilterXML::GetDefinitionsCursor(void)
 {
-	Chars.InsertPtr(new CodeToChar("Ucirc",'Û'));
-	Chars.InsertPtr(new CodeToChar("quot",'"'));
-	
-	Chars.InsertPtr(new CodeToChar("gt",'>'));
-	Chars.InsertPtr(new CodeToChar("lt",'<'));
-	Chars.InsertPtr(new CodeToChar("equals",'='));
-
-	Chars.InsertPtr(new CodeToChar("amp",'&'));
-	Chars.InsertPtr(new CodeToChar("plus",'+'));
-	Chars.InsertPtr(new CodeToChar("minus",'-'));
-	Chars.InsertPtr(new CodeToChar("lsqb",'['));
-	Chars.InsertPtr(new CodeToChar("rsqb",']'));
-	Chars.InsertPtr(new CodeToChar("less",'-'));
-
-	
-}
-
-
-//---------------------------------------------------------------------------
-void GALILEI::GFilterXML::AnalyseMeta(void)
-{
-	RXMLTag* meta;
-	Tag::tTag LastType=Tag::tNULL;;
-	char* OldBlock;
-	char* OldParams;
-
-	// Init Part.
-	meta=Doc->GetMetaData();
-
-	// Parse it.
-	NextValidTag();
-	while((*Pos)&&CurTag)
-	{
-		switch(LastType)
-		{
-			case Tag::tDC:
-				if (Params)
-				{
-					AnalyseParams();
-				}
-				break;
-				
-//			case Tag::tMETA:
-//				ReadMetaTag(OldParams,meta);
-//				break;
-			default:
-				break;
-		};
-		if(bEndTag)
-			LastType=Tag::tNULL;
-		else
-		{
-			OldBlock=Block;
-			OldParams=Params;
-			LastType=CurTag->Type;
-		}
-		if((bEndTag&&(CurTag->Type==Tag::tMETA))/*||(!CurTag->metadata)*/) return;
-		NextValidTag();
-	}
-}
-
-
-//---------------------------------------------------------------------------
-void GALILEI::GFilterXML::AnalyseContent(void)
-{
-	RXMLTag *actuelT, *contentT;
-	RXMLTag** ptr;
-	RXMLTag* openT[9];
-
-	char *oldBlock, *insert;
-	int level;
-
-	// Init Part
-	memset(openT,0,9*sizeof(RXMLTag*));
-	openT[0]=contentT=Doc->GetContent();
-	level= MinOpenLevel= 0;
-	oldBlock=0;
-
-	//Parse It
-	while((*Pos)&&(CurTag))
-	{
-		if(bEndTag)
-		{
-			insert = Block;
-			oldBlock=0;
-			Block=Pos;
-
-			if(insert)
-			{
-				if(level == 0) // if parent node == docxml:content -> create a docxml:p to contain the bloc.
-				{
-					level++;
-					openT[level]=new RXMLTag("docxml:p");
-					Doc->AddNode(openT[level-1],openT[level]);
-					AnalyzeBlock(insert,openT[level] );
-					level--;
-				}
-				else
-				{
-					AnalyzeBlock(insert,openT[level] );
-				}
-			}
-			if ( (level >0) &&(CurTag->Type!=Tag::tTEXT) )
-			{
-				level--;
-			}
-			if ((CurTag->Type == Tag::tTEXT)&&(bEndTag) )
-			{
-				contentT->DeleteEmptyTags(Doc);
-				return; // fin du text!!
-			}
-		}
-		else
-		{
-			insert= oldBlock;
-			oldBlock = Block;
-			ptr=&openT[level];
-			actuelT=(*ptr);
-			
-			if(insert)
-			{
-				if(level == 0) // if parent node == docxml:content -> create a docxml:p to contain the bloc.
-				{
-					level++;
-					openT[level]=new RXMLTag("docxml:p");
-					Doc->AddNode(openT[level-1],openT[level]);
-					AnalyzeBlock(insert,openT[level] );
-					level--;
-				}
-				else
-				{
-					AnalyzeBlock(insert,openT[level] );
-				}
-			}
-			if((CurTag->Ins)&&(CurTag->Type!=Tag::tTEXT))
-			{
-				level++;
-				openT[level]=new RXMLTag(CurTag->XMLName);
-				Doc->AddNode(actuelT,openT[level]);
-			}
-		}
-		NextValidTag();
-	}
-}
-
-//---------------------------------------------------------------------------
-void GALILEI::GFilterXML::ReplaceCode(void)
-{
-	char* ptr=Pos+1;
-	char tmp[11];
-	char* ptr2=tmp;
-	int len;
-	CodeToChar *c;
-
-	// Search maximal 10 letter ending with a ';' or spaces
-	len=0;
-	while((*ptr)&&((*ptr)!=';')&&(!isspace(*ptr))&&(len<10))
-	{
-		(*(ptr2++))=(*(ptr++));
-		len++;
-	}
-
-	// If not ';' -> not a code
-	if((!(*ptr))||((*ptr)!=';')) return;
-	ptr++; // Skip ';'.
-
-	// Find the code
-	(*ptr2)=0;
-	c=Chars.GetPtr<const char*>(tmp);
-	if(!c) return;
-
-	// Replace character.
-	(*Pos)=c->GetChar();
-
-	// Search end of word from end of the code.
-	len=1;
-	ptr2=ptr;
-	while((*ptr2)&&(!isspace(*ptr2)))
-	{
-		ptr2++;
-		len++;
-	}
-
-	// Move end of the word to skip the code and replace by spaces.
-	memcpy(Pos+1,ptr,len*sizeof(char));
-	len=c->GetLen()+1;
-	memset(ptr2-len,' ',len*sizeof(char));
-}
-
-//---------------------------------------------------------------------------
-void GALILEI::GFilterXML::AnalyseParams(void)
-{
-	
-	char *value;
-	while((*Params)&&((*Params)!='>'))
-	{ 
-		if (! strncmp(Params,"element=\"",9) )
-		{
-			Params+=9;
-			if ((*Params)== ' ')
-			{
-				Params++;
-			}
-// ----- element publisher : ---------------
-			if (!strncmp(Params,"dc.publisher\"",13) )
-			{
-				Params+=14;
-				if (! strncmp(Params,"value=\"",7))
-				{
-					Params+=7;
-					value = Params;
-					while ((*Params) != '"')
-					{
-						Params++;
-					}
-					(*Params) = 0;
-					AnalyzeBlock(value,Doc->AddPublisher());
-					break;
-				}
-			}
-// -------- elements creator.name: ---
-		  if (!strncmp(Params,"dc.creator.name\"",16) )
-			{
-				Params+=17;
-
-				if (! strncmp(Params,"value=\"",7))
-				{
-					Params+=7;
-					value = Params;
-					while ((*Params) != '"')
-					{
-						Params++;
-					}
-					(*Params) = 0;
-					AnalyzeBlock(value,Doc->AddCreator());
-					break;
-				}
-			}
-
-//  ----------- elements date.created:----
-		  if (!strncmp(Params,"dc.date.published\"",18) )
-			{
-				Params+=19;
-				if (! strncmp(Params,"value=\"",7))
-				{
-					Params+=7;
-					value = Params;
-					while ((*Params) != '"')
-					{
-						Params++;
-					}
-					(*Params) = 0;
-					AnalyzeBlock(value,Doc->AddDate());
-					break;
-				}
-			}
-
-// ---------elements creator.name: --------
-		  if (!strncmp(Params,"dc.coverage.start\"",18) )
-			{
-				Params+=19;
-				if (! strncmp(Params,"value=\"",7))
-				{
-					Params+=7;
-					value = Params;
-					while ((*Params) != '"')
-					{
-						Params++;
-					}
-					(*Params) = 0;
-					AnalyzeBlock(value,Doc->AddCoverage());
-					break;
-				}
-			}
-
-// -------------- elements source: -------------
-		  if (!strncmp(Params,"dc.source\"",10) )
-			{
-				Params+=11;
-				if (! strncmp(Params,"value=\"",7))
-				{
-					Params+=7;
-					value = Params;
-					while ((*Params) != '"')
-					{
-						Params++;
-					}
-					(*Params) = 0;
-					AnalyzeBlock(value,Doc->AddSource());
-					break;
-				}
-			}
-
-      			// elements contributor:
-		  if (!strncmp(Params,"dc.contributor.editor.name\"",27) )
-			{
-				Params+=28;
-				if (! strncmp(Params,"value=\"",7))
-				{
-					Params+=7;
-					value = Params;
-					while ((*Params) != '"')
-					{
-						Params++;
-					}
-					(*Params) = 0;
-					AnalyzeBlock(value,Doc->AddContributor());
-					break;
-				}
-			}
-			
-		}
-		
-		Params++;
-	}
-}
-
-//---------------------------------------------------------------------------
-void GALILEI::GFilterXML::NextTag(void)
-{
-	bool bParams;            // Look if there are parameters.
-
-beginread:
-
-	// Find Begin of Tag ('<')
-	while((*Pos)&&((*Pos)!='<'))
-	{
-		if((*Pos)=='&')
-			ReplaceCode();
-		Pos++;
-		BlockLen++;
-	}
-
-	// Skip '<'
-	if(!(*Pos))
-	{
-		CurTag=0;
-		return;
-	}
-	SkipTag=Pos;
-	(*SkipTag)=0;    // If valid tag, don't treat it.
-	TagLen=1;
-	Pos++;
-
-	// Is it a comment?
-	if(!strncmp(Pos,"!--",3))
-	{
-		char* SkipComments=Pos-1;
-		unsigned len=1;
-		Pos+=3; TagLen+=3; len+=3;// Skip '!--'
-		// Search end of comments
-		do
-		{
-			while((*Pos)&&((*Pos)!='-'))
-			{
-				Pos++;
-				TagLen++;
-				len++;
-			}
-			if(*Pos) // Skip '-'
-			{
-				Pos++;
-				TagLen++;
-				len++;
-			}
-		} while((*Pos)&&strncmp(Pos,"->",2));
-		Pos+=2; TagLen+=2; len+=2;// Skip '->'
-		memset(SkipComments,' ',len*sizeof(char));
-		goto beginread;
-	}
-
-	// Is it a ending tag ('</')?
-	bEndTag=((*Pos)==('/'));
-	if(bEndTag)
-	{
-		Pos++; TagLen++; // Skip '/'.
-	}
-
-	// Skip spaces between '<' or '</' and the name of te tag.
-	while((*Pos)&&isspace(*Pos))
-	{
-		Pos++;
-		TagLen++;
-	}
-
-	// Find end of tag name (In uppercase) -> End if space or '>' or '/'
-	BeginTag=Pos;
-	while((*Pos)&&((*Pos)!='>')&&(!(((*Pos)=='/')&&((*(Pos+1))=='>')))&&(!isspace(*Pos)))
-	{
-		if((*Pos)=='&')
-			ReplaceCode();
-		(*(Pos++))=toupper(*Pos);
-		TagLen++;
-	}
-	bParams=isspace(*Pos); // If name ending with a space -> Possible parameters.
-	(*(Pos++))=0;
-	TagLen++;
-
-	// If Possible parameters
-	if(bParams)
-	{
-		// Slip spaces after name of the tag.
-		while((*Pos)&&isspace(*Pos))
-		{
-			Pos++;
-			TagLen++;
-		}
-
-		// If next character is '/' or '>' -> No parameters for the tag.
-		bParams=(!(((*Pos)=='/')&&((*(Pos+1))=='>'))&&((*Pos)!='>'));
-
-		// Parameters are store until  '/>' or '>'
-		if(bParams)
-		{
-			Params=Pos;
-			while((*Pos)&&((*Pos)!='>')&&(!(((*Pos)=='/')&&((*(Pos+1))=='>'))))
-			{
-				if((*Pos)=='&')
-					ReplaceCode();
-				Pos++;
-				TagLen++;
-			}
-			(*Pos)=0;
-		}
-		else
-			Params=0;
-
-		// Skip '>' or '/'.
-		Pos++;
-		TagLen++;
-	}
-	else
-		Params=0;
-
-	// Skip '>' or '/>'
-	if((*Pos)=='>')
-	{
-		TagLen++;
-		Pos++;
-	}
-}
-
-
-//---------------------------------------------------------------------------
-void GALILEI::GFilterXML::NextValidTag(void)
-{
-	// Look if it is a known tag. If not, replace all by spaces and continue.
-	do
-	{
-		if(!(*Pos)) return;
-		NextTag();
-		CurTag=Tags->GetPtr<const char*>(BeginTag);
-		if(!CurTag)
-		{ 
-			memset(SkipTag,' ',TagLen*sizeof(char));
-		}
-	} while(!CurTag);
-
-	// Return
-	BlockLen=0;
-	if((!bEndTag)/*||(!MinOpenLevel)*/)
-	{
-		Block=Pos;
-	}
+	DefCursor cur(Definitions);
+	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-void GFilterXML::CreateParams(GParams*)
+GFilterXML::MimeDefCursor GFilterXML::GetMimeDefinitionsCursor(void)
 {
+	MimeDefCursor cur(MimeDefinitions);
+	return(cur);
+}
+
+//------------------------------------------------------------------------------
+void GFilterXML::CreateParams(GParams* params)
+{
+	params->InsertPtr(new GParamString("xmlDefPath","/etc/galilei/XMLdefinitions/"));
 }
 
 
 //---------------------------------------------------------------------------
 GALILEI::GFilterXML::~GFilterXML()
 {
-	if(Tags) delete Tags;
+	if(Definitions) delete Definitions;
+	if(MimeDefinitions) delete MimeDefinitions;
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("Reuters Corpus XML Filter",GFilterXML)
+CREATE_FILTER_FACTORY("XML Filter",GFilterXML)

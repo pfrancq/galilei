@@ -11,10 +11,6 @@
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -32,30 +28,17 @@
 
 */
 
-
-
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <iostream> // for cout only.
-#include <stdio.h>
-#include <sys/stat.h>
-#ifdef _BSD_SOURCE
-	#include <unistd.h>
-#else
-	#include <io.h>
-#endif
-#include <fcntl.h>
-
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfiltertxt.h>
-#include <docs/gfiltermanager.h>
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
 #include <docs/gdocxml.h>
+#include <docs/gfiltermanager.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
-
 
 
 //-----------------------------------------------------------------------------
@@ -66,7 +49,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GFilterTXT::GFilterTXT(GFactoryFilter* fac)
-	: GFilter(fac), Buffer(0)
+	: GFilter(fac)
 {
 	AddMIME("text/plain");
 }
@@ -78,59 +61,78 @@ bool GFilterTXT::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	RXMLTag* part;
 	RXMLTag* tag;
 	bool Paragraph;
-	int accessmode,handle;
-	struct stat statbuf;
+	bool Read;
 
-	// Init Part
-	Doc=doc;
-	accessmode=O_RDONLY;
-	#ifndef _BSD_SOURCE
-		accessmode=O_BINARY;
-	#endif
-	handle=open(Doc->GetFile(),accessmode);
-	if(handle==-1)
-		throw GException("file not found : "+Doc->GetFile());
-	fstat(handle, &statbuf);
-	Begin=Pos=Buffer=new char[statbuf.st_size+1];
-	read(handle,Buffer,statbuf.st_size);
-	Buffer[statbuf.st_size]=0;
-	close(handle);
-	SkipSpaces();
+	RString NextLine;
+	RString Line;
+	const RChar* ptr;
 
-	// Look for the content
-	part=Doc->GetContent();
-	Pos=Begin; // Remember the first line which is not a command
-	while(*Pos)
+	try
 	{
-		part->AddTag(tag=new RXMLTag("docxml:p"));
-		SkipSpaces();
-		Begin=Pos;
-		// Paragraph are supposed to be terminated by at least one blank line
-		Paragraph=true;
-		while((*Pos)&&Paragraph)
+		// Init Part
+		Doc=doc;
+		RTextFile Src(Doc->GetFile());
+
+		// Create the metaData tag and the first information
+		part=Doc->GetContent();
+		Doc->AddIdentifier(Doc->GetURL());
+
+		Read=true;
+
+		while(!Src.Eof())
 		{
-			// Read a Line
-			while((*Pos)&&((*Pos)!='\n')&&((*Pos)!='\r'))
-				Pos++;
-			Pos++;      // Skip the '\n'.
-			// Skip Spaces and Tab
-			while((*Pos)&&(((*Pos)==' ')||((*Pos)=='\t')))
-				Pos++;
-			// Look if the next lines is a blank one.
-			if((*Pos)=='\n')
-			{
-				(*(Pos++))=0;      // Mark the end of the paragraph.
-				Paragraph=false;
-			}
-		}
-		AnalyzeBlock(Begin,tag);
-	}
+			Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 
-	// Done Part
-	if(Buffer)
+			if(Read)
+			{
+				if(!Src.Eof())
+					Line=NextLine;
+			}
+
+			// Paragraph are supposed to be terminated by at least one blank line
+			Paragraph=true;
+			while((!Src.Eof())&&Paragraph)
+			{
+				// Read a Line
+				NextLine=Src.GetLine(false);
+
+				// Look if it is a blank line
+				ptr=NextLine();
+				while((!ptr->IsNull())&&(ptr->IsSpace()))
+					ptr++;
+
+				// If blank line -> it is the end of a paragraph
+				if(ptr->IsNull())
+				{
+					Paragraph=false;
+				}
+				else
+				{
+					if(!Line.IsEmpty())
+						Line+=' ';
+					Line+=NextLine;
+				}
+			}
+			AnalyzeBlock(Line,tag);
+			if(tag->IsEmpty())
+				Doc->DeleteTag(tag);
+		}
+	}
+	catch(bad_alloc)
 	{
-		delete[] Buffer;
-		Buffer=0;
+		throw;
+	}
+	catch(GException)
+	{
+		throw;
+	}
+	catch(RException& e)
+	{
+		throw GException(e.GetMsg());
+	}
+	catch(...)
+	{
+		throw GException("Unexcepted exception");
 	}
 
 	// Return OK
