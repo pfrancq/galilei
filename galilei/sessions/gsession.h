@@ -487,6 +487,11 @@ public:
 	virtual void LoadIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup)=0;
 
 	/**
+	* Load the ideal groupment in the groups container.
+	*/
+	void LoadIdealGroupmentInGroups(void);
+
+	/**
 	* Load the ideal groupment of document.
 	* @param idealgroup   The ideal container of group	
 	*/

@@ -180,6 +180,7 @@ public:
 	*/
 	virtual void LoadIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup);
 
+
 	/**
 	* Save the ideal groupment
 	* @param idealgroup   The ideal container of group	

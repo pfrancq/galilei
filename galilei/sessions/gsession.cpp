@@ -455,6 +455,31 @@ void GALILEI::GSession::Save(GGroup* grp) throw(GException)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSession::LoadIdealGroupmentInGroups(void)
+{
+	GGroupCalc* Calc;
+	Calc=GetCurrentGroupCalcMethod();
+	GGroups* groups;
+	GGroup* group;
+
+	RContainer<GGroups,unsigned int,true,true>* idealgroup=new RContainer<GGroups,unsigned int,true,true>(20,20);
+	LoadIdealGroupment(idealgroup);
+	for(idealgroup->Start();!idealgroup->End();idealgroup->Next())
+	{
+		groups=(*idealgroup)();
+		ClearGroups(groups->GetLang());
+		Groups.InsertPtr(groups);
+		for(groups->Start();!groups->End();groups->Next())
+		{
+			group=(*groups)();
+			Calc->Compute(group);
+		}
+	}
+	
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::ClearGroups(GLang* lang)
 {
 	unsigned int i;

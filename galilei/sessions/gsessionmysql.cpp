@@ -76,6 +76,7 @@ using namespace RIO;
 #include <groups/ginstir.h>
 #include <groups/ggroupir.h>
 #include <groups/gobjir.h>
+#include <groups/ggroupcalcgravitation.h>
 using namespace GALILEI;
 using namespace RMySQL;
 using namespace RTimeDate;
