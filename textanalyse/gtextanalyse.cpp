@@ -50,10 +50,10 @@
 #include <gtextanalyse.h>
 #include <docs/gdocvector.h>
 #include <docs/gdocxml.h>
-#include <langs/gword.h>
-#include <infos/giwordweight.h>
-#include <langs/gdict.h>
-#include <langs/glangs.h>
+#include <infos/gword.h>
+#include <infos/gweightinfo.h>
+#include <infos/gdict.h>
+#include <infos/glangs.h>
 #include <sessions/gsession.h>
 using namespace R;
 using namespace GALILEI;
@@ -729,8 +729,8 @@ void GTextAnalyse::DetermineLang(void) throw(GException)
 void GTextAnalyse::ConstructInfos(void) throw(GException)
 {
 	WordWeight** wrd;
-	GIWordWeight** Tab;
-	GIWordWeight* Occur;
+	GWeightInfo** Tab;
+	GWeightInfo* Occur;
 	unsigned int i;
 	RString stem(MaxWordLen);
 	GDict* dic;
@@ -905,3 +905,4 @@ GTextAnalyse::~GTextAnalyse(void)
 
 //------------------------------------------------------------------------------
 CREATE_DOCANALYSE_FACTORY("Text Analyse",GTextAnalyse)
+
