@@ -187,6 +187,14 @@ void GGroup::InsertSubProfile(GSubProfile* sp) throw(bad_alloc)
 		sp->SetGroup(this);
 }
 
+
+//------------------------------------------------------------------------------
+void GGroup::InsertPtr(GSubProfile* sp) throw(bad_alloc)
+{
+	InsertSubProfile(sp);
+}
+
+
 //------------------------------------------------------------------------------
 void GGroup::DeleteSubProfiles(void) throw(bad_alloc)
 {
@@ -209,6 +217,13 @@ GSubProfileCursor& GGroup::GetSubProfilesCursor(void)
 	GSubProfileCursor* cur=GSubProfileCursor::GetTmpCursor();
 	cur->Set(this);
 	return(*cur);
+}
+
+
+//------------------------------------------------------------------------------
+GSubProfileCursor& GGroup::GetCursor(void)
+{
+	return(GetSubProfilesCursor());
 }
 
 
