@@ -77,15 +77,27 @@ public:
 
 	/**
 	* Assignement operator for lists of weighted information entities.
-	* @param w              Source list of weighted information entity.
+	* @param w              Source list of weighted information entities.
 	*/
 	GWeightInfos& operator=(const GWeightInfos& w) throw(std::bad_alloc);
 
 	/**
 	* Assignement operator for lists of weighted information entities.
-	* @param w              Source list of weighted information entity.
+	* @param w              Source list of weighted information entities.
 	*/
 	GWeightInfos& operator=(const R::RContainer<GWeightInfo,false,true>& w) throw(std::bad_alloc);
+
+	/**
+	* Deep copy of a list of weighted information entities.
+	* @param src            Source list of weighted information entities.
+	*/
+	void Copy(const GWeightInfos& src) throw(std::bad_alloc);
+
+	/**
+	* Deep copy of a list of weighted information entities.
+	* @param src            Source list of weighted information entities.
+	*/
+	void Copy(const GWeightInfos* src) throw(std::bad_alloc);
 
 	/**
 	* Static function used to order the information entities by weights.
