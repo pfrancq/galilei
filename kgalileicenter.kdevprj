@@ -151,7 +151,7 @@ install_location=
 type=DATA
 
 [kgalileicenter/Makefile.am]
-files=kgalileicenter/main.cpp,kgalileicenter/kgalileicenter.cpp,kgalileicenter/kgalileicenter.h,kgalileicenter/kgalileicenterui.rc,kgalileicenter/kgalileicenter.desktop,kgalileicenter/lo32-app-kgalileicenter.png,kgalileicenter/lo16-app-kgalileicenter.png,kgalileicenter/kdoc.cpp,kgalileicenter/kdoc.h,kgalileicenter/kview.cpp,kgalileicenter/kview.h,kgalileicenter/kviewdoc.cpp,kgalileicenter/kviewdoc.h,kgalileicenter/kviewdocs.cpp,kgalileicenter/kviewdocs.h,kgalileicenter/kviewgroup.cpp,kgalileicenter/kviewgroup.h,kgalileicenter/kviewgroups.cpp,kgalileicenter/kviewgroups.h,kgalileicenter/kviewprofile.cpp,kgalileicenter/kviewprofile.h,kgalileicenter/kviewstat.cpp,kgalileicenter/kviewstat.h,kgalileicenter/kviewthgroups.cpp,kgalileicenter/kviewthgroups.h,kgalileicenter/kviewusers.cpp,kgalileicenter/kviewusers.h,kgalileicenter/qaddjudgementselectdoc.ui,kgalileicenter/qaddjudgementselectprofile.ui,kgalileicenter/qaddnewdocument.ui,kgalileicenter/qaddnewuser.ui,kgalileicenter/qaddprofile.ui,kgalileicenter/qconnectmysql.ui,kgalileicenter/qdocsoptionsdlg.ui,kgalileicenter/qeditjudgementselectdoc.ui,kgalileicenter/qeditjudgementselectprofile.ui,kgalileicenter/qsessionprogress.cpp,kgalileicenter/qsessionprogress.h,kgalileicenter/kviewstems.cpp,kgalileicenter/kviewstems.h,kgalileicenter/kviewga.cpp,kgalileicenter/kviewga.h,kgalileicenter/qloadonedoc.ui,kgalileicenter/kgalileicenter_dlg.cpp,kgalileicenter/kgalileicenter_init.cpp,kgalileicenter/qpluginsdlg.cpp,kgalileicenter/qpluginsdlg.h,kgalileicenter/kviewprg.cpp,kgalileicenter/kviewprg.h,kgalileicenter/kviewr.cpp,kgalileicenter/kviewr.h,kgalileicenter/qlanguages.ui
+files=kgalileicenter/main.cpp,kgalileicenter/kgalileicenter.cpp,kgalileicenter/kgalileicenter.h,kgalileicenter/kgalileicenterui.rc,kgalileicenter/kgalileicenter.desktop,kgalileicenter/lo32-app-kgalileicenter.png,kgalileicenter/lo16-app-kgalileicenter.png,kgalileicenter/kdoc.cpp,kgalileicenter/kdoc.h,kgalileicenter/kview.cpp,kgalileicenter/kview.h,kgalileicenter/kviewdoc.cpp,kgalileicenter/kviewdoc.h,kgalileicenter/kviewdocs.cpp,kgalileicenter/kviewdocs.h,kgalileicenter/kviewgroup.cpp,kgalileicenter/kviewgroup.h,kgalileicenter/kviewgroups.cpp,kgalileicenter/kviewgroups.h,kgalileicenter/kviewprofile.cpp,kgalileicenter/kviewprofile.h,kgalileicenter/kviewstat.cpp,kgalileicenter/kviewstat.h,kgalileicenter/kviewthgroups.cpp,kgalileicenter/kviewthgroups.h,kgalileicenter/kviewusers.cpp,kgalileicenter/kviewusers.h,kgalileicenter/qconnectmysql.ui,kgalileicenter/qdocsoptionsdlg.ui,kgalileicenter/qsessionprogress.cpp,kgalileicenter/qsessionprogress.h,kgalileicenter/kviewstems.cpp,kgalileicenter/kviewstems.h,kgalileicenter/kviewga.cpp,kgalileicenter/kviewga.h,kgalileicenter/kgalileicenter_dlg.cpp,kgalileicenter/kgalileicenter_init.cpp,kgalileicenter/qpluginsdlg.cpp,kgalileicenter/qpluginsdlg.h,kgalileicenter/kviewprg.cpp,kgalileicenter/kviewprg.h,kgalileicenter/kviewr.cpp,kgalileicenter/kviewr.h,kgalileicenter/qlanguages.ui
 sub_dirs=galilei,r,qtwidgets
 type=prog_main
 
@@ -1152,36 +1152,6 @@ install=false
 install_location=
 type=SOURCE
 
-[kgalileicenter/qaddjudgementselectdoc.ui]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/qaddjudgementselectprofile.ui]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/qaddnewdocument.ui]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/qaddnewuser.ui]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/qaddprofile.ui]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
 [kgalileicenter/qconnectmysql.ui]
 dist=true
 install=false
@@ -1194,25 +1164,7 @@ install=false
 install_location=
 type=SOURCE
 
-[kgalileicenter/qeditjudgementselectdoc.ui]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/qeditjudgementselectprofile.ui]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
 [kgalileicenter/qlanguages.ui]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/qloadonedoc.ui]
 dist=true
 install=false
 install_location=

@@ -297,16 +297,6 @@ private slots:
 	void slotShowUsers(void);
 
 	/**
-	* Opens a dialog box to add a new user.
-	*/
-	void slotAddUser(void);
-
-	/**
-	* Opens a dialog box to add a new profile.
-	*/
-	void slotAddProfile(void);
-
-	/**
 	* Compute a profile.
 	*/
 	void slotProfileCalc(void);
@@ -337,11 +327,6 @@ private slots:
 	void slotShowDocs(void);
 
 	/**
-	* Opens a dialog box to add a document.
-	*/
-	void slotAddDoc(void);
-
-	/**
 	* Analyse a document.
 	*/
 	void slotDocAnalyse(void);
@@ -357,19 +342,14 @@ private slots:
 	void slotDocsStats(void);
 
 	/**
-	* Opens a dialog box to add a judgement.
-	*/
-	void slotAddJudgement(void);
-
-	/**
-	* Opens a dialog box to add a judgement.
-	*/
-	void slotEditJudgement(void);
-
-	/**
-	* Create a XML structure for the current document.
+	* Create a DocXML structure for the current document.
 	*/
 	void slotCreateXML(void);
+
+	/**
+	* Save a DocXML structure in a document.
+	*/
+	void slotSaveXML(void);
 
 	/**
 	* Analyse the XML structure of the current document.
@@ -518,8 +498,6 @@ public:
 
 	KToggleAction* profileAlwaysCalc;
 	KAction* showUsers;
-	KAction* addUser;
-	KAction* addProfile;
 	KAction* profilesCalc;
 	KAction* profileCalc;
 
@@ -530,13 +508,11 @@ public:
 
 	KToggleAction* docAlwaysCalc;
 	KAction* showDocs;
-	KAction* addDoc;
 	KAction* docAnalyse;
 	KAction* docsAnalyse;
 	KAction* docsStats;
-	KAction* addJudgement;
-	KAction* editJudgement;
 	KAction* createXML;
+	KAction* saveXML;
 	KAction* analyseXML;
 
 	KAction* textFrench;

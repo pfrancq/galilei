@@ -113,8 +113,6 @@ void KGALILEICenterApp::initActions(void)
 	// Menu "Users"
 	profileAlwaysCalc=new KToggleAction(i18n("Enables/disables users' Recomputing"),0,0,0,actionCollection(),"profileAlwaysCalc");
 	showUsers=new KAction(i18n("&Show Users"),"kdmconfig",0,this,SLOT(slotShowUsers()),actionCollection(),"showUsers");
-	addUser=new KAction(i18n("Add &User"),0,this,SLOT(slotAddUser()),actionCollection(),"addUser");
-	addProfile=new KAction(i18n("Add &Profile"),0,this,SLOT(slotAddProfile()),actionCollection(),"addProfile");
 	profilesCalc=new KAction(i18n("&Calc Profiles"),"run",0,this,SLOT(slotProfilesCalc()),actionCollection(),"profilesCalc");
 	profileCalc=new KAction(i18n("&Calc Profile"),"run",0,this,SLOT(slotProfileCalc()),actionCollection(),"profilecalc");
 
@@ -130,10 +128,8 @@ void KGALILEICenterApp::initActions(void)
 	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");;
 	docsAnalyse=new KAction(i18n("&Analyse Documents"),0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");;
 	docsStats=new KAction(i18n("S&tatistics about Documents"),0,this,SLOT(slotDocsStats()),actionCollection(),"docsStats");;
-	addDoc=new KAction(i18n("Add &Document"),0,this,SLOT(slotAddDoc()),actionCollection(),"addDoc");
-	addJudgement=new KAction(i18n("Add &Judgement"),0,this,SLOT(slotAddJudgement()),actionCollection(),"addJudgement");
-	editJudgement=new KAction(i18n("&Edit Judgement"),0,this,SLOT(slotEditJudgement()),actionCollection(),"editJudgement");
 	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
+	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
 	analyseXML=new KAction(i18n("&Analyse XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
 
 	// Menu "Texts"
@@ -309,7 +305,6 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	// Menu "Users"
 	showUsers->setEnabled(Doc&&Doc->GetSession()->IsUsersLoad());
 	profilesCalc->setEnabled(Doc&&Doc->GetSession()->IsUsersLoad()&&Doc->GetSession()->IsDocsLoad());
-	addUser->setEnabled(Doc&&Doc->GetSession()->IsUsersLoad());
 
 	// Menu "Groups"
 	showGroups->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
@@ -321,7 +316,6 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	docAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDicsLoad());
 	docsAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad()&&Doc->GetSession()->IsDicsLoad());
 	docsStats->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad()&&Doc->GetSession()->IsDicsLoad());
-	addDoc->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
 	
 	// Menu "GA"
 	gaInit->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad()&&Doc->GetSession()->IsUsersLoad());
@@ -342,17 +336,13 @@ void KGALILEICenterApp::DisableAllActions(void)
 	textFrench->setEnabled(false);
 	textEnglish->setEnabled(false);
 	createXML->setEnabled(false);
+	saveXML->setEnabled(false);
 	analyseXML->setEnabled(false);
-	addProfile->setEnabled(false);
-	addUser->setEnabled(false);
 	groupsCalc->setEnabled(false);
 	showDocs->setEnabled(false);
-	addDoc->setEnabled(false);
 	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);
 	docsStats->setEnabled(false);
-	addJudgement->setEnabled(false);
-	editJudgement->setEnabled(false);
 	gaInit->setEnabled(false);
 	gaPause->setEnabled(false);
 	gaStart->setEnabled(false);

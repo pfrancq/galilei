@@ -40,6 +40,8 @@
 // include files for R Project
 #include <rstd/rcontainercursor.h>
 using namespace RStd;
+#include <rxml/rxmlfile.h>
+using namespace RXML;
 #include <rga/qxmlcontainer.h>
 using namespace RGA;
 
@@ -82,7 +84,8 @@ using namespace RTimeDate;
 
 //-----------------------------------------------------------------------------
 KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Document(document), Fdbks(0), Struct(0), DelDoc(false)
+	: KView(doc,parent,name,wflags), Document(document), Fdbks(0), Struct(0),
+	  bDelDoc(false), bDocXML(false)
 {
 	// Window proprieties
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/document.png"));
@@ -126,11 +129,12 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 
 
 //-----------------------------------------------------------------------------
-KViewDoc::KViewDoc(const char* file,KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Document(0), Fdbks(0), Struct(0), DelDoc(true)
+KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,const char* name,int wflags)
+	: KView(doc,parent,name,wflags), Document(0), Fdbks(0), Struct(0),
+	  bDelDoc(true), bDocXML(false)
 {
 	// Construct the document
-	Document=Doc->GetSession()->NewDoc(file,file,"text/html");
+	Document=new GDoc(file,file,cNoRef,0,Doc->GetSession()->GetMIMEType(mime),0,0,0,0,0,0,0);
 
 	// Window proprieties
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/document.png"));
@@ -297,7 +301,18 @@ void KViewDoc::CreateDocXML(void)
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Create Doc XML");
 	d->CreateDocXML(Struct,Document);
 	if(Struct)
+	{
 		XML->SetDocXML(Struct);
+		bDocXML=true;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewDoc::SaveDocXML(const char* name)
+{
+	if(!Struct) return;
+	RXMLFile f(name,Struct,RTextFile::Create);
 }
 
 
@@ -322,6 +337,6 @@ void KViewDoc::AnalyseDocXML(void)
 KViewDoc::~KViewDoc(void)
 {
 	if(Struct) delete Struct;
-	if(DelDoc)
+	if(bDelDoc)
 		delete Document;
 }

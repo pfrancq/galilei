@@ -107,7 +107,12 @@ class KViewDoc : public KView
 	/**
 	* Delete the Document when deleting the window?
 	*/
-	bool DelDoc;
+	bool bDelDoc;
+
+	/**
+	* DocXML Computed?
+	*/
+	bool bDocXML;
 
 public:
 
@@ -124,12 +129,13 @@ public:
 	/**
 	* Constructor for the view
 	* @param file           Document to represent.
+	* @param mime           Mime Type of the document.
 	* @param doc            Document instance that the view represents.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewDoc(const char* file,KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.
@@ -172,12 +178,22 @@ public:
 	*/
 	GDoc* GetDoc(void) const {return(Document);}
 
-	
+	/**
+	* Look if the DocXML is already been computed for
+	*/
+	bool IsDocXML(void) const {return(bDocXML);}
+
 	/**
 	* Create a GDocXML structure for the current document and show it in the
 	* corresponding tab.
 	*/
 	void CreateDocXML(void);
+
+	/**
+	* Save the GDocXML structure for the current document.
+	* @param name           File where to store the file.
+	*/
+	void SaveDocXML(const char* name);
 
 	/**
 	* Analyse a GDocXML structure of the current document and show the results.

@@ -18,8 +18,6 @@
 		<Action name="profileAlwaysCalc"/>
 		<Separator/>
 		<Action name="showUsers"/>
-		<Action name="addUser"/>
-		<Action name="addProfile"/>
 		<Action name="profilesCalc"/>
 		<Separator/>
 		<Action name="profileCalc"/>
@@ -35,14 +33,13 @@
 		<Action name="docAlwaysCalc"/>
 		<Separator/>
 		<Action name="showDocs"/>
-		<Action name="addDoc"/>
-		<Action name="docAnalyse"/>
-		<Action name="docsAnalyse"/>
 		<Action name="docsStats"/>
 		<separator/>
-		<Action name="addJudgement"/>
-		<Action name="editJudgement"/>
+		<Action name="docAnalyse"/>
+		<Action name="docsAnalyse"/>
+		<separator/>
 		<Action name="createXML"/>
+ 		<Action name="saveXML"/>
 		<Action name="analyseXML"/>
 	</Menu>
 	<Menu name="Text"><text>&amp;Text</text>

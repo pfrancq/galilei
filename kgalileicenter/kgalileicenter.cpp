@@ -65,6 +65,7 @@ using namespace GALILEI;
 #include <kaction.h>
 #include <kapp.h>
 #include <kmessagebox.h>
+#include <kmimetype.h>
 #include <kfiledialog.h>
 #include <klocale.h>
 #include <kio/job.h>
@@ -326,8 +327,6 @@ void KGALILEICenterApp::slotGroupingCompare(void)
 void KGALILEICenterApp::slotShowDocs(void)
 {
 	createClient(Doc,new KViewDocs(Doc,pWorkspace,"View Docs",0));
-	addJudgement->setEnabled(true);
-	editJudgement->setEnabled(true);
 }
 
 
@@ -341,8 +340,9 @@ void KGALILEICenterApp::slotDocAnalyse(void)
 	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.*"), this, i18n("Open File..."));
 	if(!url.isEmpty())
 	{
-		createClient(Doc,m=new KViewDoc(url.path(),Doc,pWorkspace,"View Document",0));
+		createClient(Doc,m=new KViewDoc(url.path(),KMimeType::findByURL(url)->name(),Doc,pWorkspace,"View Document",0));
 		m->CreateDocXML();
+		slotWindowActivated(m);
 	}
 	slotStatusMsg(i18n("Ready."));
 }
@@ -375,6 +375,20 @@ void KGALILEICenterApp::slotCreateXML(void)
 	if(m->getType()!=gDoc) return;
 	setDocParams(Doc);
 	((KViewDoc*)m)->CreateDocXML();
+	slotWindowActivated(m);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotSaveXML(void)
+{
+	KView* m = (KView*)pWorkspace->activeWindow();
+	if(m->getType()!=gDoc) return;
+	KURL url=KFileDialog::getSaveURL(QString::null,i18n("*.docxml"), this, i18n("Save DocXML File..."));
+ 	if(!url.isEmpty())
+	{
+		((KViewDoc*)m)->SaveDocXML(url.path());
+	}
 }
 
 
@@ -616,11 +630,9 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 		{
 			case gUsers:
 				createXML->setEnabled(false);
+				saveXML->setEnabled(false);
 				analyseXML->setEnabled(false);
-				addProfile->setEnabled(true);
 				profileCalc->setEnabled(false);
-				addJudgement->setEnabled(false);
-				editJudgement->setEnabled(false);
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
@@ -628,23 +640,19 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 
 			case gDocs:
 				createXML->setEnabled(false);
+				saveXML->setEnabled(false);
 				analyseXML->setEnabled(false);
-				addProfile->setEnabled(false);
 				profileCalc->setEnabled(false);
-				addJudgement->setEnabled(false);
-				editJudgement->setEnabled(false);
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
 				break;
 
 			case gDoc:
-				createXML->setEnabled(true);
-				analyseXML->setEnabled(true);
-				addProfile->setEnabled(false);
+				createXML->setEnabled(!(((KViewDoc*)m)->IsDocXML()));
+				saveXML->setEnabled(((KViewDoc*)m)->IsDocXML());
+				analyseXML->setEnabled(((KViewDoc*)m)->IsDocXML());
 				profileCalc->setEnabled(false);
-				addJudgement->setEnabled(true);
-				editJudgement->setEnabled(true);
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
@@ -652,47 +660,39 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 
 			case gProfile:
 				createXML->setEnabled(false);
+				saveXML->setEnabled(false);
 				analyseXML->setEnabled(false);
-				addProfile->setEnabled(false);
 				profileCalc->setEnabled(true);
-				addJudgement->setEnabled(true);
-				editJudgement->setEnabled(true);
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
 				break;
 
 			case gGroups:
+				saveXML->setEnabled(false);
 				createXML->setEnabled(false);
 				analyseXML->setEnabled(false);
-				addProfile->setEnabled(false);
 				profileCalc->setEnabled(false);
-				addJudgement->setEnabled(false);
-				editJudgement->setEnabled(false);
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
 				break;
 
 			case gGA:
-				addProfile->setEnabled(false);
 				createXML->setEnabled(false);
+				saveXML->setEnabled(false);
 				analyseXML->setEnabled(false);
 				profileCalc->setEnabled(false);
-				addJudgement->setEnabled(false);
-				editJudgement->setEnabled(false);
 				gaStart->setEnabled(true);
 				gaPause->setEnabled(true);
 				gaStop->setEnabled(true);
 
 			case gNothing:
 			default:
-				addProfile->setEnabled(false);
 				createXML->setEnabled(false);
+				saveXML->setEnabled(false);
 				analyseXML->setEnabled(false);
 				profileCalc->setEnabled(false);
-				addJudgement->setEnabled(false);
-				editJudgement->setEnabled(false);
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
@@ -702,12 +702,10 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 	else
 	{
 		setCaption("");
-		addProfile->setEnabled(false);
+		saveXML->setEnabled(false);
 		createXML->setEnabled(false);
 		analyseXML->setEnabled(false);
 		profileCalc->setEnabled(false);
-		addJudgement->setEnabled(false);
-		editJudgement->setEnabled(false);
 	}
 }
 
