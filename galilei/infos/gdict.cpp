@@ -223,32 +223,38 @@ bool GDict::IsIn(const RString& name) const
 //------------------------------------------------------------------------------
 void GDict::IncRef(unsigned int id,tObjType ObjType) throw(GException)
 {
-	if(id>MaxId)
+	GData* data;
+
+	if((id>MaxId)||(!(data=Direct[id])))
 		throw GException("Cannot access data");
-	Direct[id]->IncRef(ObjType);
+	data->IncRef(ObjType);
 }
 
 
 //------------------------------------------------------------------------------
 void GDict::DecRef(unsigned int id,tObjType ObjType) throw(GException)
 {
-	if(id>MaxId)
+	GData* data;
+
+	if((id>MaxId)||(!(data=Direct[id])))
 		throw GException("Cannot access data");
-	Direct[id]->DecRef(ObjType);
+	data->DecRef(ObjType);
 }
 
 
 //------------------------------------------------------------------------------
 unsigned int GDict::GetRef(unsigned int id,tObjType ObjType) throw(GException)
 {
-	if(id>MaxId)
+	GData* data;
+
+	if((id>MaxId)||(!(data=Direct[id])))
 		throw GException("Cannot access data");
-	return(Direct[id]->GetRef(ObjType));
+	return(data->GetRef(ObjType));
 }
 
 
 //------------------------------------------------------------------------------
-void GDict::IncRef(tObjType ObjType)
+void GDict::IncRef(tObjType ObjType) throw(GException)
 {
 	switch(ObjType)
 	{
@@ -262,6 +268,7 @@ void GDict::IncRef(tObjType ObjType)
 			NbRefGroups++;
 			break;
 		default:
+			throw GException ("Unkown type to increase");
 			break;
 	}
 }
@@ -288,6 +295,7 @@ void GDict::DecRef(tObjType ObjType) throw(GException)
 			NbRefGroups--;
 			break;
 		default:
+			throw GException ("Unkown type to decrease");
 			break;
 	}
 }

@@ -146,7 +146,7 @@ RString& GData::GetName(void) const
 
 
 //-----------------------------------------------------------------------------
-void GData::IncRef(tObjType ObjType)
+void GData::IncRef(tObjType ObjType) throw(GException)
 {
 	switch(ObjType)
 	{
@@ -160,26 +160,34 @@ void GData::IncRef(tObjType ObjType)
 			NbRefGroups++;
 			break;
 		default:
+			throw GException ("Unkown type to increase");
 			break;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GData::DecRef(tObjType ObjType)
+void GData::DecRef(tObjType ObjType) throw(GException)
 {
 	switch(ObjType)
 	{
 		case otDoc:
+			if(!NbRefDocs)
+				throw GException("Cannot decrease null number of references for documents");
 			NbRefDocs--;
 			break;
 		case otSubProfile:
+			if(!NbRefSubProfiles)
+				throw GException("Cannot decrease null number of references for subprofiles");
 			NbRefSubProfiles--;
 			break;
 		case otGroup:
+			if(!NbRefGroups)
+				throw GException("Cannot decrease null number of references for groups");
 			NbRefGroups--;
 			break;
 		default:
+			throw GException ("Unkown type to decrease");
 			break;
 	}
 }

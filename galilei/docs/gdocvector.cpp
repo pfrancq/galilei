@@ -96,6 +96,7 @@ void GALILEI::GDocVector::AddWord(const unsigned int id,const double nb)
 {
 	InsertPtr(new GWeightInfo(id,nb));
 }
+
 //-----------------------------------------------------------------------------
 void GALILEI::GDocVector::AddWordList(const unsigned int id,const double nb)
 {
@@ -173,4 +174,5 @@ void GALILEI::GDocVector::RemoveRefs(void) const
 //-----------------------------------------------------------------------------
 GALILEI::GDocVector::~GDocVector(void)
 {
+	RemoveRefs();
 }

@@ -260,7 +260,7 @@ public:
 	* Increase the number of objects of a given type using the dictionary.
 	* @param ObjType        Type of the object.
 	*/
-	void IncRef(tObjType ObjType);
+	void IncRef(tObjType ObjType) throw(GException);
 
 	/**
 	* Decrease the number of objects of a given type using the dictionary.

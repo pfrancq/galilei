@@ -189,6 +189,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 	double max1=GetMaxWeight();
 	double max2=w->GetMaxWeight();
 	double w1,w2,iff;
+	double TotalRef;
 
 	if(!lang)
 		throw GException("No Language defined");
@@ -198,14 +199,15 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 		return(0.0);
 
 	// Compute Similarity
+	TotalRef=lang->GetRef(ObjType);
 	while(--i)
 	{
-		iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef((*ptr)->GetId(),ObjType));
+		iff=TotalRef/static_cast<double>(lang->GetRef((*ptr)->GetId(),ObjType));
 		w1=((*ptr)->GetWeight()/max1)*log(iff);
 		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
 		{
 			j--;
-			iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
+			iff=TotalRef/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
 			w2=((*ptr2)->GetWeight()/max2)*log(iff);
 			norm2+=w2*w2;
 			ptr2++;
@@ -215,7 +217,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 			j--;
 			if(((*ptr)->GetWeight()>0)||((*ptr2)->GetWeight()>0))
 			{
-				iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
+				iff=TotalRef/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
 				w2=((*ptr2)->GetWeight()/max2)*log(iff);
 				norm2+=w2*w2;
 				norm1+=w1*w1;
@@ -230,7 +232,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 	while(j)
 	{
 		j--;
-		iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
+		iff=TotalRef/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
 		w2=((*ptr2)->GetWeight()/max2)*log(iff);
 		norm2+=w2*w2;
 		ptr2++;

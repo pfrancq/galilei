@@ -277,13 +277,13 @@ public:
 	* Increase the number of references on this data for a given object type.
 	* @param ObjType        Type of the reference.
 	*/
-	void IncRef(tObjType ObjType);
+	void IncRef(tObjType ObjType) throw(GException);
 
 	/**
 	* Decrease the number of references on this data for a given object type.
 	* @param ObjType        Type of the reference.
 	*/
-	void DecRef(tObjType ObjType);
+	void DecRef(tObjType ObjType) throw(GException);
 
 	/**
 	* Get the number of references on this data for a given object type.

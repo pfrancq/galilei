@@ -45,7 +45,8 @@
 // include files for GALILEI
 #include <sessions/gsessionprg.h>
 
-//#include <infos/glang.h>
+#include <infos/glang.h>
+#include <infos/glangmanager.h>
 //#include <profiles/gprofile.h>
 /*#include <profiles/gsubprofiledesc.h>
 #include <groups/ggroups.h>
@@ -519,6 +520,7 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 			NewProf=Owner->Session->GetSubjects()->AddProfiles(Owner->AutoSave);
 			Owner->Session->GetSubjects()->Set("NbProfMin",nbminprof);
 			Owner->Session->GetSubjects()->Set("NbProfMax",nbmaxprof);
+
 			if(NewProf)
 				What[0]='E';
 			else
@@ -547,6 +549,7 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 				NewProf=Owner->Session->GetSubjects()->AddProfiles(Owner->AutoSave);
 				Owner->Session->GetSubjects()->Set("NbProfMin",nbminprof);
 				Owner->Session->GetSubjects()->Set("NbProfMax",nbmaxprof);
+
 				if(NewProf)
 					What[0]='E';
 				else

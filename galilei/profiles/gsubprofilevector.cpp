@@ -174,4 +174,5 @@ void GALILEI::GSubProfileVector::RemoveRefs(void) const
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfileVector::~GSubProfileVector(void)
 {
+	RemoveRefs();
 }
