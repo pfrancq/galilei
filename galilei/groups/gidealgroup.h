@@ -39,21 +39,11 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <profiles/gusers.h>
-#include <groups/gsubject.h>
-#include <groups/gsubjecttree.h>
-
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// Forward class declaration
-class GSubProfile;
-
 
 //-----------------------------------------------------------------------------
 /**  This Class implement a representation of a ideal groupment for GALILEI
@@ -67,18 +57,22 @@ protected:
 	 /**
 	* The differents Subjects of the ideal groupment.
 	*/
-	GSubjectTree* subjects;
+	GSubjectTree* Subjects;
 
 	/**
 	* The Users of the galilei system.
 	*/
-	GUsers* users;
+	GSession* Session;
 	
 	/**
-	* PercOK           The % of ok documents.
-	* PercKO           The % of ko documents.
+	* The percentage of ok documents.
 	*/
-	unsigned int PercOK,PercKO;
+	unsigned int PercOK;
+
+	/**
+	* The percentage of ko documents.
+	*/
+	unsigned int PercKO;
 
 public:
 
@@ -86,19 +80,16 @@ public:
 	* Constructor Get GIdealGroup Function.
 	* Create the profiles,subprofiles and the judgment randomly from a file
 	* where is stoked the grouping of document.
-	* @param txturl           The url of the file.
-	* @param user             The usercontainer.
-
+	* @param session        The Galilei Session.
 	*/
-	GIdealGroup(GUsers* user,GSession* ses);
+	GIdealGroup(GSession* session);
 
 	/**
 	* Create randomly the judgment for all the users.
-	* @param ses		The Galilei Session.
-	* @param parent     The container to assign groupid and parent id.
-	* @param groups 	The ideal groupment into a GGroups container.
+	* @param parent         The container to assign groupid and parent id.
+	* @param groups         The ideal groupment into a GGroups container.
 	*/
-	void CreateJudgement(GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups);
+	void CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups);
 
 	/**
 	* Write the ideal groupment into a file

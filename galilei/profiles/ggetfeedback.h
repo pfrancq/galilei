@@ -63,6 +63,11 @@ class GGetFeedback
 protected:
 
 	/**
+	* Session.
+	*/
+	GSession* Session;
+
+	/**
 	* The number of documents judget by user feeddback.
 	*/
 	unsigned int NbDoc;
@@ -95,25 +100,24 @@ protected:
 	* Create a feedback for the user whith profil id prof1 whith the documents doc.
 	* @param fdbk             1 if the feedback is ok,2 for ko and 3 for hs.
 	* @param sub              the subprofile.
-	* @param ses              the galilei session.
 	* @param doc              the doc who will be judged
 	*/
-	void CreateNewFeedback(int fdbk,GSubProfile* sub,GSession* ses,GDoc* doc);
+	void CreateNewFeedback(int fdbk,GSubProfile* sub,GDoc* doc);
 
 public:
 
 	/**
 	* the constructor
-	* @param ses              the galilei session.
-	* @param idealgroup       the idealgroupment.
-	* @param parent           the id of the parent of a subsubject.
+	* @param session        Galilei session.
 	*/
-	GGetFeedback(RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent);
+	GGetFeedback(GSession* session);
 
 	/**
 	* Create new feedback for the different users of the system.
+	* @param parent         the id of the parent of a subsubject.
+	* @param idealgroup     the idealgroupment.
 	*/
-	void Run(GSession* ses);
+	void Run(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent,RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup);
 	
 	/**
 	* Get the settings of the method coded in a string.

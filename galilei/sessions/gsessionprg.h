@@ -68,7 +68,7 @@ protected:
 	/**
 	* Represent the different instruction allowed.
 	*/
-	enum tInst{Log,Output,Sql,Comp,Group,Ideal,Test};
+	enum tInst{Log,Output,Sql,Comp,Group,Ideal,Test,CmpIdeal,Fdbks};
 
 	/**
 	* Name of the file to execute.
@@ -103,11 +103,6 @@ protected:
 	/**
 	* Output file.
 	*/
-	RStd::RString OutputName;
-
-	/**
-	* Output file.
-	*/
 	RIO::RTextFile* OFile;
 
 	/**
@@ -129,6 +124,21 @@ protected:
 	* Total comparaison between for the current groupment.
 	*/
 	double Total;
+
+	/**
+	* Method to create an ideal clustering.
+	*/
+	GIdealGroup* IdealMethod;
+
+	/**
+	* Method to create a feedback cycle.
+	*/
+	GGetFeedback* FdbksMethod;
+
+	/**
+	* Container used to create subjects catagories.
+	*/
+	RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* Parents;
 
 public:
 

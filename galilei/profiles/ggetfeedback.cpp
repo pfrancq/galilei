@@ -71,16 +71,14 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGetFeedback::GGetFeedback(RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent)
-	:IdealGroup(idealgroup),Parent(parent)
+GALILEI::GGetFeedback::GGetFeedback(GSession* session)
+	: Session(session), NbDoc(30), Global(true), IdealGroup(0), Parent(0)
 {
-	NbDoc=30;
-	Global=true;
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGetFeedback::Run(GSession* ses)
+void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent,RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup)
 {
 	//Compare each profiles whith all profiles in the same computed group an juge the Nbdocuments most relevant for the user
 	RStd::RContainer<GProfDoc,unsigned,false,false>* docs=new RStd::RContainer<GProfDoc,unsigned,false,false>(100,50);
@@ -89,8 +87,12 @@ void GALILEI::GGetFeedback::Run(GSession* ses)
 	GSubProfileCursor Prof1;
 	GGroupCursor Grp;
 
-	Cur=ses->GetGroupsCursor();
+	// Init Part
+	IdealGroup=idealgroup;
+	Parent=parent;
 
+	// Go through the groups
+	Cur=Session->GetGroupsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Grp=Cur()->GetGroupCursor();
@@ -108,8 +110,8 @@ void GALILEI::GGetFeedback::Run(GSession* ses)
 					prof2=(*docs)()->GetProfile()->GetSubProfile((*docs)()->GetDoc()->GetLang())->GetId();
 					if(i<NbDoc)
 					{
-						CreateNewFeedback(AreInSameGroup(prof1,prof2),Prof1(),ses,(*docs)()->GetDoc());
-					}	
+						CreateNewFeedback(AreInSameGroup(prof1,prof2),Prof1(),(*docs)()->GetDoc());
+					}
 					i++;
 				}
 			}
@@ -149,7 +151,7 @@ int GALILEI::GGetFeedback::AreInSameGroup(int prof11,int prof22)
 					for(Prof2.Start();!Prof2.End();Prof2.Next())
 					{
 						prof2=Prof2()->GetId();
-						if(prof22==prof2) return 1;
+						if(prof22==prof2) return(1);
 					}
 				}
 			}
@@ -177,36 +179,35 @@ int GALILEI::GGetFeedback::AreInSameGroup(int prof11,int prof22)
 
 	if (subgrpid2==subgrpid1)
 	{
-		return 2;
+		return(2);
 	}
-		
+
 	// there are not in the same group and havent the same parent.
-	return 3;
+	return(3);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGetFeedback::CreateNewFeedback(int fdbk,GSubProfile* sub,GSession* ses,GDoc* doc)
+void GALILEI::GGetFeedback::CreateNewFeedback(int fdbk,GSubProfile* sub,GDoc* doc)
 {
 	//Auto create Judgement for prof11 on a % of ok, ko or hs documents from prof22.
 	char today[12];
 	RTimeDate::RDate date;
 
-	cout<<fdbk<<sub->GetId()<<doc->GetName()<<endl;
 	sprintf(today,"'%u-%u-%u'",date.GetYear(),date.GetMonth(),date.GetDay());
-	if (fdbk==1)
+	switch(fdbk)
 	{
-		ses->InsertFdbk(sub->GetProfile(),doc,djOK,today);
-	}
+		case 1:
+			Session->InsertFdbk(sub->GetProfile(),doc,djOK,today);
+			break;
 
-	else if(fdbk==2)
-	{
-		ses->InsertFdbk(sub->GetProfile(),doc,djKO,today);
-	}
+		case 2:
+			Session->InsertFdbk(sub->GetProfile(),doc,djKO,today);
+			break;
 
-	else if(fdbk==3)
-	{
-		ses->InsertFdbk(sub->GetProfile(),doc,djOutScope,today);
+		case 3:
+			Session->InsertFdbk(sub->GetProfile(),doc,djOutScope,today);
+			break;
 	}
 }
 

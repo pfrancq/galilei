@@ -57,6 +57,8 @@ using namespace RStd;
 #include <groups/ggrouping.h>
 #include <groups/gcomparegrouping.h>
 #include <profiles/gprofilecalc.h>
+#include <profiles/ggetfeedback.h>
+#include <groups/gidealgroup.h>
 using namespace GALILEI;
 using namespace RIO;
 
@@ -84,7 +86,7 @@ public:
 
 //-----------------------------------------------------------------------------
 //
-// Ins
+// Inst
 //
 //-----------------------------------------------------------------------------
 
@@ -96,7 +98,11 @@ public:
 	RString Param2;
 	tInst Type;
 
-	Inst(const char* p1,const char* p2,tInst t) : Param1(p1), Type(t) {if(p2) Param2=p2;}
+	Inst(const char* p1,const char* p2,tInst t) : Param1(p1), Type(t)
+	{
+		if(p1) Param1=p1;
+		if(p2) Param2=p2;
+	}
 	int Compare(const Inst* t) const {return(-1);}
 };
 
@@ -110,7 +116,8 @@ public:
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_alloc,GException)
-	: FileName(f), Session(s), Rec(r), InstTypes(20), Insts(40), OFile(0), Groups(0)
+	: FileName(f), Session(s), Rec(r), InstTypes(20), Insts(40), OFile(0),
+	  Groups(0), IdealMethod(0), FdbksMethod(0), Parents(0)
 	
 {
 	RString l;
@@ -122,13 +129,22 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 	char* param2;
 	InstType* t;
 
+	// Init Part
+	IdealMethod=new GIdealGroup(Session);
+	FdbksMethod=new GGetFeedback(Session);
+
+	// Instructions
 	InstTypes.InsertPtr(new InstType("SetOutput",Output));
 	InstTypes.InsertPtr(new InstType("Test",Test));
 	InstTypes.InsertPtr(new InstType("Log",Log));
 	InstTypes.InsertPtr(new InstType("ExecSql",Sql));
 	InstTypes.InsertPtr(new InstType("ComputeProfiles",Comp));
 	InstTypes.InsertPtr(new InstType("GroupProfiles",Group));
-	InstTypes.InsertPtr(new InstType("CompareIdeal",Ideal));
+	InstTypes.InsertPtr(new InstType("CompareIdeal",CmpIdeal));
+	InstTypes.InsertPtr(new InstType("CreateIdeal",Ideal));
+	InstTypes.InsertPtr(new InstType("FdbksCycle",Fdbks));
+
+	// Read Program File
 	RTextFile Prg(FileName);
 	Prg.SetRem("#");
 	while(!Prg.Eof())
@@ -238,31 +254,34 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 	switch(i->Type)
 	{
 		case Output:
-			sprintf(tmp,"Create Output file '%s'",OutputName());
+			sprintf(tmp,"Create Output file '%s'",i->Param1());
 			Rec->WriteStr(tmp);
 			if(OFile)
 			{
 				delete OFile;
 				OFile=0;
 			}
-			OutputName=i->Param1;
-			OFile=new RTextFile(OutputName,RTextFile::Create);
+			OFile=new RTextFile(i->Param1,RTextFile::Create);
 			(*OFile)<<"Sets\tRecall\tPrecision\tTotal"<<endl;
 			break;
+
 		case Test:
 			sprintf(tmp,"Current Test Name '%s'",i->Param1());
 			Rec->WriteStr(tmp);
 			TestName=i->Param1();
 			break;
+
 		case Log:
 			sprintf(tmp,"Create Log file '%s'",i->Param1());
 			Rec->WriteStr(tmp);
 			break;
+
 		case Sql:
 			sprintf(tmp,"Execute Sql file '%s'",i->Param1());
 			Rec->WriteStr(tmp);
 			Session->ExecuteData(i->Param1());
 			break;
+
 		case Comp:
 			sprintf(tmp,"Compute Profiles: Method=\"%s\"  Settings=\"%s\"",i->Param1(),i->Param2());
 			Rec->WriteStr(tmp);
@@ -270,6 +289,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			Session->SetCurrentComputingMethodSettings(i->Param2());
  			Session->CalcProfiles(Rec,false,false);
 			break;
+
 		case Group:
 			sprintf(tmp,"Group Profiles: Method=\"%s\"  Settings=\"%s\"",i->Param1(),i->Param2());
 			Rec->WriteStr(tmp);
@@ -277,10 +297,30 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			Session->SetCurrentGroupingMethodSettings(i->Param2());
  			Session->GroupingProfiles(Rec,false,false);
 			break;
+
 		case Ideal:
-			sprintf(tmp,"Compare with ideal groupement from file '%s'",i->Param1());
-			Rec->WriteStr(tmp);
-			LoadGroups(i->Param1());
+			if(i->Param1.GetLen())
+			{
+				sprintf(tmp,"Load Ideal Groups from file '%s'",i->Param1());
+				Rec->WriteStr(tmp);
+				LoadGroups(i->Param1());
+			}
+			else
+			{
+				Rec->WriteStr("Create Ideal Groups");
+				IdealMethod->CreateJudgement(Parents,Groups);
+			}
+			break;
+
+		case Fdbks:
+				Rec->WriteStr("Create Feedbacks Cycle");
+				FdbksMethod->Run(Parents,Groups);
+			break;
+
+		case CmpIdeal:
+			if(!Groups)
+				throw GException("No Ideal Groups Defined");
+			sprintf(tmp,"Compare with Ideal Groups",i->Param1());
 			GCompareGrouping Comp(Session,Groups);
 			Comp.Compare(0);
 			Precision=Comp.GetPrecision();
@@ -316,4 +356,10 @@ GALILEI::GSessionPrg::~GSessionPrg(void)
 		delete Groups;
 	if(OFile)
 		delete OFile;
+	if(IdealMethod)
+		delete IdealMethod;
+	if(FdbksMethod)
+		delete FdbksMethod;
+	if(Parents)
+		delete Parents;
 }

@@ -32,28 +32,29 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for R-Project
+// include files for ANSI C/C++
+#include <stdlib.h>
+#include <iostream.h>
+#include <math.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for R-Project
 #include <rtimedate/rdate.h>
 #include<rstd/rcontainercursor.h>
 #include<rstd/rtree.h>
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
+// include files for GALILEI
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
 #include <groups/gsubject.h>
 #include <profiles/gprofile.h>
 #include <profiles/guser.h>
 #include <profiles/gprofdoc.h>
-
-
-//-----------------------------------------------------------------------------
-//include specific files
-#include <stdlib.h>
-#include <iostream.h>
-#include <math.h>
-#include "gsubjecttree.h"
+#include <groups/gsubjecttree.h>
+#include <groups/gsubject.h>
 
 
 
@@ -89,7 +90,7 @@ void GSubjectTree::InsertProfiles(void)
 			{
 				GSubject* sub= (*subject)();
 				GUser* usr = new GUser(0,"test","test",1);
-				this->profiles->InsertPtr(new GProfile(usr,profid,(subject->GetName()+"/"+sub->GetName()),0,0,1,1));
+				this->profiles->InsertPtr(new GProfile(usr,profid,(RString(subject->GetName())+"/"+sub->GetName()),0,0,1,1));
 				subid++;
 				subid++;
 				profid++;
@@ -249,7 +250,7 @@ void GSubjectTree::IdealGroupmentFile(char* url)
 						//if the profile as juged some document.
 						if (profile->GetState()==osUpdated)
 						{
-							if(!strcmp(profile->GetName(),(subject->GetName()+"/"+sub->GetName())))
+							if(!strcmp(profile->GetName(),(RString(subject->GetName())+"/"+sub->GetName())))
 							{
 								c=c+1;
 								prof->InsertPtr(profile);
@@ -330,7 +331,7 @@ void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,tru
 				for (profiles->Start(); !profiles->End(); profiles->Next())
 				{
 					GProfile* profile= (*profiles)();
-					if((!prof->GetPtr(profile))&&(profile->GetState()==osUpdated)&&(!strcmp(profile->GetName(),(subject->GetName()+"/"+sub->GetName()))))
+					if((!prof->GetPtr(profile))&&(profile->GetState()==osUpdated)&&(!strcmp(profile->GetName(),(RString(subject->GetName())+"/"+sub->GetName()))))
 					{
 						c=c+1;
 						prof->InsertPtr(profile);

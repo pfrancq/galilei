@@ -122,6 +122,7 @@ public:
 
 	/**
 	* Set the settings for the method using a string.
+	* "MaxNonZero Idf"
 	* @param s              C string coding the settings.
 	*/
 	virtual void SetSettings(const char* s);

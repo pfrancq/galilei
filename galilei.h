@@ -108,6 +108,10 @@ class GFilterCursor;
 class GMIMEFilter;
 class GURLManager;
 class GSubjectTree;
+class GIdealGroup;
+class GGroupIdParentId;
+class GGetFeedback;
+
 
 //-----------------------------------------------------------------------------
 /**

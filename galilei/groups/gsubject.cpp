@@ -32,18 +32,23 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for R-Project
-#include <rtimedate/rdate.h>
+//include files for R Project
 #include <rstd/rcontainercursor.h>
+#include <rio/rtextfile.h>
+using namespace RIO;
+using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
+// include files for GALILEI
+#include <groups/gsubject.h>
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
 #include <profiles/gprofile.h>
 #include <profiles/guser.h>
 #include <profiles/gprofdoc.h>
+#include <langs/glang.h>
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
@@ -51,7 +56,7 @@
 #include <stdlib.h>
 #include <iostream.h>
 #include <math.h>
-#include "gsubject.h"
+
 
 
 
@@ -61,6 +66,7 @@
 //
 //-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
 GSubject::GSubject(RString name, int id)
 	 : RNode<GSubject,false>(10,2)
 {
@@ -88,4 +94,17 @@ int GSubject::SubSubjectMinId(void)
 		if (subject->GetId()<min) min=subject->GetId();
 	}
 	return min;
+}
+
+
+//-----------------------------------------------------------------------------
+void GSubject::SetLang(const GLang* lang)
+{
+	Lang=lang->GetCode();
+}
+
+
+//-----------------------------------------------------------------------------
+GSubject::~GSubject(void)
+{
 }

@@ -32,27 +32,24 @@
 
 
 //---------------------------------------------------------------------------
-#ifndef GSUBJECTH
-#define GSUBJECTH
+#ifndef GSubjectH
+#define GSubjectH
 
 
 //-----------------------------------------------------------------------------
-// include files for R-Project
-#include <rstd/rcontainer.h>
-#include <rstd/rstring.h>
-#include <rio/rtextfile.h>
+//include files for R Project
 #include <rstd/rnode.h>
-using namespace RIO;
-using namespace RStd;
+
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gsession.h>
+#include <galilei.h>
 #include <docs/gdoc.h>
-#include <langs/glang.h>
-using namespace GALILEI;
 
 
+//-----------------------------------------------------------------------------
+namespace GALILEI{
+//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 /** This Class implement a representation for a groupid and the parentid of the
@@ -60,7 +57,6 @@ using namespace GALILEI;
 *  @author Julien Lamoral
 *  @short  Subject
 */
-//-----------------------------------------------------------------------------
 class GGroupIdParentId
 {
 public:
@@ -97,7 +93,7 @@ public:
 *  @author Julien Lamoral
 *  @short  Subject
 */
-class GSubject: public RNode<GSubject,false>
+class GSubject: public RStd::RNode<GSubject,false>
 {
 protected:
 
@@ -119,21 +115,21 @@ protected:
 	/**
 	* The language of a subsubject
 	*/
-	RString Lang;
+	RStd::RString Lang;
 
 public:
 
 	/**
 	* The container of document in the subject.
 	*/
-	RContainer<GDoc,unsigned,false,false>* urls;
+	RStd::RContainer<GDoc,unsigned,false,false>* urls;
 
 	/**
 	* Constructor
 	* @param name            The name of the subsubject.
 	* @param id              the subject id.
 	*/
-	GSubject(RString name, int id);
+	GSubject(RStd::RString name, int id);
 
 	/**
 	* Compare a subject with a given name.
@@ -167,7 +163,7 @@ public:
 	* Return the name of the Subject.
 	* @returns a string containing the name.
 	*/
-	RString GetName(void) {return(Name);};
+	const char* GetName(void) {return(Name());};
 
 	/**
 	* Return the id of the Subject.
@@ -194,31 +190,29 @@ public:
 	* Return the Lang of the Subject.
 	* @returns a string containing the lang.
 	*/
-	RString GetLang(void) {return(Lang);};
+	const char* GetLang(void) {return(Lang());}
 
 	/**
 	* Return the Lang of the Subject.
 	* @returns a string containing the lang.
 	*/
-	void SetLang(const char* lg) {Lang=lg;};
+	void SetLang(const char* lg) {Lang=lg;}
 
 	/**
 	* Return the Lang of the Subject.
 	* @returns a string containing the lang.
 	*/
-	void SetLang(const GLang* lang) {Lang=lang->GetCode();};
+	void SetLang(const GLang* lang);
 
-	
 	/**
 	* Destructor.
 	*/
-	~GSubject(void){};
+	~GSubject(void);
+};
+
 
 }; //-------- End of namespace GALIELI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------
-
 #endif
-
-

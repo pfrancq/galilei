@@ -68,6 +68,7 @@ class GProfileCalc
 	RStd::RString ComputingName;
 
 protected:
+
 	/**
 	* Session.
 	*/

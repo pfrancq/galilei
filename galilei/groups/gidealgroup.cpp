@@ -61,6 +61,8 @@ using namespace RStd;
 #include <groups/ggroups.h>
 #include <groups/gsubjecttree.h>
 #include <sessions/gsession.h>
+#include <profiles/gusers.h>
+#include <groups/gsubject.h>
 using namespace GALILEI;
 
 
@@ -70,30 +72,39 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 
-GALILEI::GIdealGroup::GIdealGroup(GUsers* user,GSession* ses)
-	:users(user)
+GALILEI::GIdealGroup::GIdealGroup(GSession* session)
+	: Session(session)
 {
 	PercOK=10;
 	PercKO=10;
-	subjects=new GSubjectTree(PercOK,PercKO,users->NbPtr);
-	ses->LoadSubjectTree(subjects);
-	subjects->InsertProfiles();
+	Subjects=new GSubjectTree(PercOK,PercKO,Session->GetNbUsers());
+	Session->LoadSubjectTree(Subjects);
+	Subjects->InsertProfiles();
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIdealGroup::CreateJudgement(GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups)
+void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups)
 {
-	groups=new RContainer<GGroups,unsigned int,true,true>(2,2);
-	parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,10);
+	if(!groups)
+		groups=new RContainer<GGroups,unsigned int,true,true>(2,2);
+	else
+		groups->Clear();
 
-	//Clear the old feedback.
-	ses->ClearFdbks();
-	//Create the different judgments.
-	subjects->Judgments(ses);
-	//Create the ideal groupment corresponding to the precedent judgment.
-	subjects->IdealGroupment(groups,ses,parent);
-	ses->SaveIdealGroupment(groups);
+ 	if(!parent)
+		parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,10);
+	else
+		parent->Clear();
+
+	// Clear the old feedback.
+	Session->ClearFdbks();
+
+	// Create the different judgments.
+	Subjects->Judgments(Session);
+
+	// Create the ideal groupment corresponding to the precedent judgment.
+	Subjects->IdealGroupment(groups,Session,parent);
+	Session->SaveIdealGroupment(groups);
 }
 
 
@@ -119,6 +130,6 @@ void GALILEI::GIdealGroup::SetSettings(const char* s)
 //-----------------------------------------------------------------------------
 void GALILEI::GIdealGroup::CreateIdealGroupmentFile(char * url)
 {
-	subjects->IdealGroupmentFile(url);
+	Subjects->IdealGroupmentFile(url);
 }
 

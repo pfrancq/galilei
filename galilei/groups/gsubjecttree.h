@@ -94,7 +94,7 @@ protected:
 	/**
 	* Container of all the profiles.
 	*/
-	RContainer<GProfile,unsigned,false,true>* profiles;
+	RStd::RContainer<GProfile,unsigned,false,true>* profiles;
 
 	/**
 	* set all hasjudged boolean to false;
