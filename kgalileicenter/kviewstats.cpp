@@ -143,7 +143,7 @@ void KViewStats::ComputeStats(void)
 	RXMLTag* Root;
 
 	int i;
-	GStatsCalcManager* Mng=(dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatCalc")));
+	GStatsCalcManager* Mng=(dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc")));
 
 	if(!Mng)
 	{
