@@ -319,6 +319,14 @@ RCursor<GFdbk> GSubProfile::GetFdbks(void)
 
 
 //------------------------------------------------------------------------------
+RCursor<GWeightInfo> GSubProfile::GetWeightInfoCursor(void)
+{
+	RCursor<GWeightInfo> cur(this);
+	return(cur);
+}
+
+
+//------------------------------------------------------------------------------
 double GSubProfile::Similarity(const GDoc* doc) const
 {
 	return(GWeightInfos::Similarity(doc));
@@ -375,14 +383,6 @@ double GSubProfile::SimilarityIFF(const GGroup* grp) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-GWeightInfoCursor GSubProfile::GetWeightInfoCursor(void)
-{
-	GWeightInfoCursor cur(this);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
 unsigned int GSubProfile::GetNbNoNull(void) const
 {
 	return(NbPtr);
@@ -406,7 +406,7 @@ GSubject* GSubProfile::GetSubject(void) const
 //------------------------------------------------------------------------------
 void GSubProfile::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
-	// If the subprofile had a language -> remove its references
+	// Remove its references
 	if(Lang)
 		DelRefs(otSubProfile,Lang);
 
@@ -422,13 +422,13 @@ void GSubProfile::Update(R::RContainer<GWeightInfo,false,true>* infos,bool compu
 	// Clear infos
 	infos->Clear();
 
-	// if document has a language -> update its references
+	// Update its references
 	if(Lang)
 		AddRefs(otSubProfile,Lang);
 
 	// Signal to the its group that it was modified
-/*	if(Group)
-		Group->HasUpdate(Id,computed);*/
+	if(Group)
+		Group->HasUpdate(Id,computed);
 }
 
 
@@ -445,7 +445,7 @@ GSubProfile::~GSubProfile(void)
 {
 	try
 	{
-		// If the profile has a language ->  remove its references
+		// Remove its references
 		if(Lang)
 			DelRefs(otSubProfile,Lang);
 	}

@@ -288,11 +288,9 @@ GFdbk* GProfile::GetFdbk(unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::HasUpdate(unsigned int id,bool computed)
+void GProfile::HasUpdate(unsigned int,bool)
 {
-	GDoc* doc=GSession::Get()->GetDoc(id);
-	if(doc)
-		std::cout<<"Document has change"<<std::endl;
+/*	GDoc* doc=GSession::Get()->GetDoc(id);*/
 }
 
 

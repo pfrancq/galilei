@@ -299,10 +299,9 @@ proxy:
 	R::RCursor<GFdbk> GetFdbks(void);
 
 	/**
-	* Get a cursor over the vector.
-	* @return GWeightInfoCursor element.
+	* Get a Cursor on the weighted information entities.
 	*/
-	GWeightInfoCursor GetWeightInfoCursor(void);
+	R::RCursor<GWeightInfo> GetWeightInfoCursor(void);
 
 	/**
 	* Get the number of elements of the vector that are not null.
@@ -373,7 +372,7 @@ proxy:
 	GSubject* GetSubject(void) const;
 
 	/**
-	* Update the document by assigning it a set of information and a language.
+	* Update the subprofile by assigning it a set of information and a language.
 	* @param infos            Pointer to the information.
 	* @param computed         The update is called after a computation (and not
 	*                         after a loading from a database).

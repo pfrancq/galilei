@@ -72,7 +72,6 @@ namespace GALILEI{
 // forward class declaration - Infos Part
 class GInfo;
 class GWeightInfo;
-class GWeightInfoCursor;
 class GWeightInfos;
 class GInfosWeightsHistory;
 class GLang;

@@ -95,6 +95,11 @@ public:
 	static int sortOrder(const void* a,const void* b);
 
 	/**
+	* Get a Cursor on the weighted information entities.
+	*/
+	R::RCursor<GWeightInfo> GetWeightInfoCursor(void);
+
+	/**
 	* Insert an information.
 	* @param info           Weighted information.
 	*/

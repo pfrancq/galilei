@@ -281,8 +281,7 @@ proxy:
 	R::RCursor<GProfileProxy> GetFdbks(void);
 
 	/**
-	* Get a Cursor on the weights of the document.
-	* @return GWordWeightCursor.
+	* Get a Cursor on the weighted information entities.
 	*/
 	R::RCursor<GWeightInfo> GetWeightInfoCursor(void);
 

@@ -332,7 +332,7 @@ void GStorageMySQL::SaveWordList(GDict* dic,GWordList* w) throw(GException)
 void GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 {
 	RString sSql;
-	GWeightInfoCursor Cur;
+	RCursor<GWeightInfo> Cur;
 	RString l;
 
 	try
@@ -379,7 +379,7 @@ void GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 //------------------------------------------------------------------------------
 void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int historicID) throw(GException)
 {
-	GWeightInfoCursor Cur;
+	RCursor<GWeightInfo> Cur;
 
 	try
 	{
@@ -446,8 +446,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 	GGroup* grp;
 	bool Social;
 	GSubject* s;
-	unsigned int subprofileid;
-	unsigned int i,idx;
+	unsigned int i,idx,subprofileid;
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
 
 	// Go through the users
@@ -690,11 +689,10 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 {
 	GDoc* doc;
 	GLang* lang;
-	int docid;
 	GFactoryLangCursor langs;
 	GDoc* d;
 	GSubject* s;
-	unsigned int i,idx;
+	unsigned int i,idx,docid;
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
 
 	try
@@ -889,7 +887,7 @@ void GStorageMySQL::SaveDoc(GDoc* doc) throw(GException)
 	RString l;
 	RString id;
 	RString f;
-	GWeightInfoCursor Words;
+	RCursor<GWeightInfo> Words;
 	GLinkCursor lcur;
 
 	try
@@ -948,7 +946,7 @@ void GStorageMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
 	RString l;
 	RString id;
 	RString f;
-	GWeightInfoCursor Words;
+	RCursor<GWeightInfo> Words;
 
 	try
 	{
@@ -993,7 +991,7 @@ void GStorageMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
 //------------------------------------------------------------------------------
 void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 {
-	GWeightInfoCursor WordCur;
+	RCursor<GWeightInfo> WordCur;
 	GGroupCursor GroupsCursor;
 	RString sSql;
 	GFactoryLangCursor langs;
@@ -1163,6 +1161,8 @@ void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GExceptio
 	GGroupCursor GroupsCursor;
 	GLang* lang;
 	GFactoryLangCursor langs;
+	unsigned int groupid,idx,i;
+	RContainer<GWeightInfo,false,true> Infos(1000,500);
 
 	try
 	{
@@ -1174,25 +1174,38 @@ void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GExceptio
 			session->InsertGroup(group);
 		}
 
-		// Load the groups description
-		langs=session->GetLangs()->GetLangsCursor();
-		for(langs.Start();!langs.End();langs.Next())
+		RQuery sel(Db,"SELECT groupid,kwdid,langid,occurs FROM groupsbykwds ORDER BY groupid,kwdid");
+		for(sel.Start(),groupid=cNoRef;!sel.End();sel.Next(),i++)
 		{
-			lang=langs()->GetPlugin();
-			if(!lang) continue;
-			RQuery sel(Db,"SELECT groupid,kwdid,occurs FROM groupsbykwds WHERE langid='"+RString(lang->GetCode())+"'");
-			for(sel.Start();!sel.End();sel.Next())
+			// Get the id
+			idx=atoi(sel[0]);
+			lang=session->GetLangs()->GetLang(sel[2]);
+
+			// If not the same -> new group
+			if(idx!=groupid)
 			{
-				group=session->GetGroup(atoi(sel[0]));
-				if(!group) continue;
-				group->InsertInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
+				// If valid group -> assign the information to it
+				if(groupid!=cNoRef)
+				{
+					group=session->GetGroup(groupid);
+					if(group)
+						group->Update(&Infos,false);
+				}
+
+				// New group
+				groupid=idx;
+				i=0;
 			}
+
+			Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
+		}
+		if(groupid!=cNoRef)
+		{
+			group=session->GetGroup(groupid);
+			if(group)
+				group->Update(&Infos,false);
 		}
 
-		// Update References of the loaded groups.
-		GroupsCursor=session->GetGroupsCursor();
-		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
-			GroupsCursor()->UpdateRefs();
 	}
 	catch(RMySQLError e)
 	{

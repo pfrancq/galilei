@@ -188,15 +188,6 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GWordWeightCursor class provides a way to go trough a container of
-* weighted information entities.
-* @short Weighted Information Entity Cursor.
-*/
-CLASSCURSOR(GWeightInfoCursor,GWeightInfo);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

@@ -131,7 +131,7 @@ public:
 	* undefined.
 	* @return false.
 	*/
-	virtual bool IsDefined(void) const;
+	bool IsDefined(void) const;
 
 	/**
 	* Verify if the group is empty, i.e. it does not have any subprofiles.
@@ -158,10 +158,9 @@ public:
 	void SetId(unsigned int id) throw(GException);
 
 	/**
-	* Get a cursor over the vector.
-	* @return GWeightInfoCursor element.
+	* Get a Cursor on the weighted information entities.
 	*/
-	GWeightInfoCursor GetWeightInfoCursor(void);
+	R::RCursor<GWeightInfo> GetWeightInfoCursor(void);
 
 	/**
 	* Return the state of the group.
@@ -289,57 +288,63 @@ public:
 	* Compute the similarity between a group and a document.
 	* @param doc             Pointer to a document.
 	*/
-	virtual double Similarity(const GDoc* doc) const;
+	double Similarity(const GDoc* doc) const;
 
 	/**
 	* Compute a similarity between a group and a document using a Inverse
 	* Frequence Factor (IFF).
 	* @param doc             Pointer to a document.
 	*/
-	virtual double SimilarityIFF(const GDoc* doc) const throw(GException);
+	double SimilarityIFF(const GDoc* doc) const throw(GException);
 
 	/**
 	* Compute the similarity between a group and subprofile.
 	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double Similarity(const GSubProfile* sub) const;
+	double Similarity(const GSubProfile* sub) const;
 
 	/**
 	* Compute a similarity between a group and a subprofile using a Inverse
 	* Frequence Factor (IFF).
 	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException);
+	double SimilarityIFF(const GSubProfile* sub) const throw(GException);
 
 	/**
 	* Compute the similarity between groups.
 	* @param grp             Pointer to a group.
 	*/
-	virtual double Similarity(const GGroup* grp) const;
+	double Similarity(const GGroup* grp) const;
 
 	/**
 	* Compute a similarity between two groups using a Inverse Frequence Factor
 	* (IFF).
 	* @param grp             Pointer to a group.
 	*/
-	virtual double SimilarityIFF(const GGroup* grp) const throw(GException);
-
-	/**
-	* Update the references of the group. This method does the update only for
-	* groups which are community.
-	*/
-	void UpdateRefs(void) const throw(GException);
-
-	/**
-	* Remove the references of the group. This method does the update only for
-	* groups which are community.
-	*/
-	void RemoveRefs(void) const throw(GException);
+	double SimilarityIFF(const GGroup* grp) const throw(GException);
 
 	/**
 	* Clear the vector representing the group.
 	*/
 	void Clear(void);
+
+	/**
+	* Update the group by assigning it a set of information and a language.
+	* @param infos            Pointer to the information.
+	* @param computed         The update is called after a computation (and not
+	*                         after a loading from a database).
+	* \warning The container infos is cleared by this method.
+	*/
+	void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed);
+
+	/**
+	* This method is call by a subprofile when it was modified (either because it
+	* as analyzed for the first time or because the content has changed).
+	* @param id               Identificator of the subprofile.
+	* @param computed         The update is called after a computation (and not
+	*                         after a loading from a database).
+	*/
+	void HasUpdate(unsigned int id,bool computed);
 
 	/**
 	* Destructor of a group.

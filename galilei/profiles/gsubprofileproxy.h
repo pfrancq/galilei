@@ -72,7 +72,7 @@ public:
 	virtual unsigned int GetCommonDiffDocs(const GSubProfile* prof)=0;
 	virtual unsigned int GetNbAssessedDocs(void) const=0;
 	virtual R::RCursor<GFdbk> GetFdbks(void)=0;
-	virtual GWeightInfoCursor GetWeightInfoCursor(void)=0;
+	virtual R::RCursor<GWeightInfo> GetWeightInfoCursor(void)=0;
 	virtual unsigned int GetNbNoNull(void) const=0;
 	virtual double Similarity(const GDoc* doc) const=0;
 	virtual double SimilarityIFF(const GDoc* doc) const throw(GException)=0;

@@ -107,6 +107,14 @@ void GWeightInfos::Clear(void)
 
 
 //------------------------------------------------------------------------------
+RCursor<GWeightInfo> GWeightInfos::GetWeightInfoCursor(void)
+{
+	RCursor<GWeightInfo> cur(this);
+	return(cur);
+}
+
+
+//------------------------------------------------------------------------------
 void GWeightInfos::InsertInfo(GWeightInfo* info) throw(std::bad_alloc)
 {
 	InsertPtr(info);

@@ -407,11 +407,12 @@ double GGroup::ComputeSumSim(const GSubProfile* s,bool iff) const
 
 
 //------------------------------------------------------------------------------
-GWeightInfoCursor GGroup::GetWeightInfoCursor(void)
+RCursor<GWeightInfo> GGroup::GetWeightInfoCursor(void)
 {
-	GWeightInfoCursor cur(this);
+	RCursor<GWeightInfo> cur(this);
 	return(cur);
 }
+
 
 
 //------------------------------------------------------------------------------
@@ -457,25 +458,40 @@ double GGroup::SimilarityIFF(const GSubProfile* doc) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GGroup::UpdateRefs(void) const throw(GException)
-{
-	if(Community)
-		AddRefs(otGroup,Lang);
-}
-
-
-//------------------------------------------------------------------------------
-void GGroup::RemoveRefs(void) const throw(GException)
-{
-	if(Community)
-		DelRefs(otGroup,Lang);
-}
-
-
-//------------------------------------------------------------------------------
 void GGroup::Clear(void)
 {
 	GWeightInfos::Clear();
+}
+
+
+//------------------------------------------------------------------------------
+void GGroup::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
+{
+	// Remove its references
+	if(Lang)
+		DelRefs(otSubProfile,Lang);
+
+	// Assign information
+	GWeightInfos::Clear();
+	if(computed)
+	{
+		State=osUpdated;
+	}
+	GWeightInfos::operator=(*infos);
+
+	// Clear infos
+	infos->Clear();
+
+	// Update its references
+	if(Lang)
+		AddRefs(otSubProfile,Lang);
+}
+
+
+//------------------------------------------------------------------------------
+void GGroup::HasUpdate(unsigned int,bool)
+{
+	State=osModified;
 }
 
 
@@ -491,7 +507,9 @@ GGroup::~GGroup(void)
 			for(Sub.Start();!Sub.End();Sub.Next())
 				Sub()->SetGroup(0);
 		}
-		RemoveRefs();
+		// Remove its references
+		if(Lang)
+			DelRefs(otGroup,Lang);
 	}
 	catch(...)
 	{
