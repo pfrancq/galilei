@@ -62,11 +62,6 @@ class GTextAnalyse : public GDocAnalyse
 	class WordWeight;
 
 	/**
-	* Current document to analyse (has to be a vector).
-	*/
-	GDoc* Doc;
-
-	/**
 	* Cursor on the different languages defined in the system.
 	*/
 	GFactoryLangCursor CurLangs;
@@ -75,6 +70,11 @@ class GTextAnalyse : public GDocAnalyse
 	* All the word appearing in the current document.
 	*/
 	R::RDblHashContainer<WordWeight,27,27,false>* Weights;
+
+	/**
+	* Information computed.
+	*/
+	R::RContainer<GWeightInfo,false,true> Infos;
 
 	/**
 	* Direct access to the words.

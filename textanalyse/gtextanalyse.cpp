@@ -134,7 +134,7 @@ GTextAnalyse::WordWeight::~WordWeight(void)
 
 //-----------------------------------------------------------------------------
 GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac) throw(bad_alloc)
-	: GDocAnalyse(fac), Weights(0), Direct(0), NbDirect(5000),
+	: GDocAnalyse(fac), Weights(0), Infos(5000,2500), Direct(0), NbDirect(5000),
 	  Order(0), NbOrder(5000), Sl(0), Sldiff(0), Lang(0)
 {
 }
@@ -248,6 +248,14 @@ void GTextAnalyse::Clear(void)
 		{
 			(*ptr2)->LastPtr=(*ptr2)->NbPtr=0;
 		}
+
+	// Clear Infos
+	// Rem: Since Infos is not responsible for allocation/desallocation
+	//      -> parse it to prevent memory leaks
+	RCursor<GWeightInfo> Cur(Infos);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		delete Cur();
+	Infos.Clear();
 }
 
 
@@ -669,18 +677,17 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 			{
 				ptr--;
 			}
-			if ((!RChar::StrCmp(ptr,".html")) || (!RChar::StrCmp(ptr,".htm")))
+			if((!RChar::StrCmp(ptr,".html"))||(!RChar::StrCmp(ptr,".htm")))
 			{
 				tmpDoc = Session->GetDoc(url);   //where ptr is the url.
-				if (! tmpDoc)
+				if(!tmpDoc)
 				{
-					if (externalLinks)
+					if(externalLinks)
 					{
 						tmpDoc=new GDoc(url,url,"text/html");
 						Session->AssignId(tmpDoc);
 						DocsToAdd->InsertPtr(tmpDoc);
 						tmpDoc->SetState(osNotNeeded);
-						#warning add link documents
 					}
 				}
 				else
@@ -761,14 +768,15 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 		if(stem.GetLen()>=MinStemSize)
 		{
 			GWord w(stem);
-			Occur=Doc->GetInsertPtr(dic->InsertData(&w));
+			Occur=Infos.GetInsertPtr(dic->InsertData(&w));
 			if(!Occur->GetWeight())
 				Vdiff++;
 			V+=(*wrd)->Nb;
 			(*Occur)+=(*wrd)->Weight;
 		}
 	}
-	//Save the order of appearance of the valid words of the document in a binary file.
+
+	// Save the order of appearance of the valid words of the document in a binary file.
 	if(Distance)
 	{
 		DIR* dp;
@@ -818,16 +826,17 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 			throw GException("Cannot create binary files");
 		}
 	}
+
 	// Verify that each occurences is not under the minimal.
 	if(MinOccur<2) return;
 
 
-	for(i=Doc->NbPtr+1,Tab=Doc->Tab;--i;Tab++)
+	for(i=Infos.NbPtr+1,Tab=Infos.Tab;--i;Tab++)
 	{
 		Occur=(*Tab);
 		if(Occur->GetWeight()<MinOccur)
 		{
-			Doc->DeletePtr(Occur);
+			Infos.DeletePtr(Occur);
 			Tab--;
 		}
 	}
@@ -842,7 +851,6 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 	RXMLTag* link;
 	RXMLTag* Title;
 	RString Name;
-	GLang* oldlang;
 	RCursor<RXMLTag> Tags;
 
 	// Init Part and verification
@@ -855,10 +863,9 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 	RAssert(content);
 	metadata=xml->GetMetaData();
 	RAssert(metadata);
+	Clear();
 
 	// Analyse the doc structure.
-	Clear();
-	Doc->ClearInfos(FindLang);
 	if(!FindLang)
 	{
 		// if Language defined -> Compute LangIndex
@@ -886,26 +893,19 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 	link = xml->GetLinks ();
 	RAssert(link);
 	AnalyseLinksTag(link,UseExternalLinks,tmpDocs);
-	#warning manage container of documents to add
 
 	// Determine the Language if necessary.
 	if(FindLang)
-	{
-		// Remember old language and determine the new one.
-		oldlang=Lang;
 		DetermineLang();
-		Doc->SetLang(Lang);
-
-		// Dispatch the document through the profiles which have assessed it.
-		UpdateFdbks(oldlang, Lang, Doc);
-	}
 
 	// Construct Information if languages determined.
 	if(Lang)
 		ConstructInfos();
 
 	// Set the Variable of the document
-	Doc->UpdateRefs();
+//	Doc->UpdateRefs();
+	// Update the document
+	Doc->Update(Lang,&Infos);
 }
 
 
@@ -929,25 +929,13 @@ void GTextAnalyse::CreateParams(GParams* params)
 //-----------------------------------------------------------------------------
 GTextAnalyse::~GTextAnalyse(void)
 {
-//	WordWeight** ptr;
-//	GWord** pt;
-//	unsigned int i;
-
-/*	if(Weights) delete Weights;
-	if(Direct)
-	{
-		for(i=NbDirect+1,ptr=Direct;--i;ptr++)
-			delete(*ptr);
-		delete[] Direct;
-	}*/
-/*	if(Order)
-	{
-		for(i=NbOrder+1,pt=Order;--i;pt++)
-			delete(*pt);
-		delete[] Order;
-	}*/
-/*	if(Sldiff) delete[] Sldiff;
-	if(Sl) delete[] Sl;*/
+	// Clear Infos
+	// Rem: Since Infos is not responsible for allocation/desallocation
+	//      -> parse it to prevent memory leaks
+	RCursor<GWeightInfo> Cur(Infos);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		delete Cur();
+	Infos.Clear();
 }
 
 
