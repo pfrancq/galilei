@@ -6,7 +6,7 @@
 
 	Generic Plugin - Header.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2204 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -366,6 +366,14 @@ public:
 			dlclose(HandleDlg);
 	}
 };
+
+
+//------------------------------------------------------------------------------
+/**
+* Starting from a directory, this function looks for all shared libraries in the
+* sub-dirs and add them in the containers.
+*/
+void FindPlugins(const R::RString& dir,R::RContainer<R::RString,true,true>& plugins,R::RContainer<R::RString,true,true>& dlgs);
 
 
 //------------------------------------------------------------------------------
