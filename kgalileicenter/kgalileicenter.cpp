@@ -765,12 +765,15 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 	((KViewDoc*)m)->AnalyseDocXML();
 }
 
+
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotWordsClustering()
 {
 	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
 	Doc->GetSession()->AnalyseAssociation(wordsClusteringSave->isChecked());
 }
+
+
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotTextFrench(void)
 {
