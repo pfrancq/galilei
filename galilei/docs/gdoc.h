@@ -82,19 +82,24 @@ class GDoc
 	GIWordOccurs* Words;
 
 	/**
-	* Total number of words with stoplist.
+	* Total number of words.
 	*/
-	unsigned int TotalWords;
+	unsigned int N;
 
 	/**
-	* Total number of words without stoplist.
+	* Total number of words used for the information construction.
 	*/
-	unsigned int NbWords;
+	unsigned int V;
 
 	/**
 	* Number of different words.
 	*/
-	unsigned int NbDiffWords;
+	unsigned int Ndiff;
+
+	/**
+	* Number of different words used for the information construction.
+	*/
+	unsigned int Vdiff;
 
 	/**
 	* Pointer to the language.
@@ -143,13 +148,13 @@ public:
 	* @param u              String representing the date of the last update.
 	* @param a              String representing the date of the last analysis.
 	* @param f              Number of fails.
-	* @param tot            Total number of words in the document with stoplist.
-	* @param nb             Total number of words in the document without stoplist.
-	* @param nbdiff         Number of different words appearing in the
-	*                       document.
+	* @param n              Total number of words.
+	* @param ndiff          Number of different words.
+	* @param v              Total number of valid words.
+	* @param vdiff          Number of different valid words.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int tot,unsigned int nb,unsigned int nbdiff,unsigned int nbf=100) throw(bad_alloc);
+	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Compare function needed by RStd::RContainer.
@@ -227,17 +232,22 @@ public:
 	/**
 	* @return Total number of words in the documents with stoplist.
 	*/
-	unsigned int GetTotalWords(void) {return(TotalWords);}
+	unsigned int GetN(void) {return(N);}
 
 	/**
 	* @return Total number of words in the documents.
 	*/
-	unsigned int GetNbWords(void) {return(NbWords);}
+	unsigned int GetV(void) {return(V);}
 
 	/**
 	* @return Number of different words in the documents.
 	*/
-	unsigned int GetNbDiffWords(void) {return(NbDiffWords);}
+	unsigned int GetNdiff(void) {return(Ndiff);}
+
+	/**
+	* @return Number of different words in the documents.
+	*/
+	unsigned int GetVdiff(void) {return(Vdiff);}
 
 	/**
 	* @return Pointer to the Language.

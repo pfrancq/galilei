@@ -95,7 +95,7 @@ void GALILEI::GIWordCalcs::Analyse(GDoc* doc)
 {
 	GIWordCalc* w;
 
-	NbWordsDocs+=doc->GetNbWords();
+	NbWordsDocs+=doc->GetV();
 	for(doc->WordsStart();!doc->WordsEnd();doc->WordsNext())
 	{
 		w=GetInsertPtr<unsigned int>(doc->GetCurWords()->GetId());

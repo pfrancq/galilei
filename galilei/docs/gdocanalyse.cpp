@@ -116,13 +116,13 @@ GALILEI::GDocAnalyse::WordOccur::~WordOccur(void)
 //-----------------------------------------------------------------------------
 GALILEI::GDocAnalyse::GDocAnalyse(GSession* s) throw(bad_alloc)
 	: Session(s), CurLangs(Session->GetLangs()), Occurs(0), Direct(0),
-	  NbDirect(5000), tmpNbDiffStopWords(0), tmpNbStopWords(0), Lang(0), Doc(0)
+	  NbDirect(5000), Sl(0), Sldiff(0), Lang(0), Doc(0)
 {
 	WordOccur** ptr;
 	unsigned int i;
 
-	tmpNbDiffStopWords=new unsigned int[Session->GetNbLangs()];
-	tmpNbStopWords=new unsigned int[Session->GetNbLangs()];
+	Sl=new unsigned int[Session->GetNbLangs()];
+	Sldiff=new unsigned int[Session->GetNbLangs()];
 	Occurs=new RDblHashContainer<WordOccur,unsigned,27,27,false>(500,250);
 	Direct=new WordOccur*[NbDirect];
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
@@ -138,9 +138,9 @@ void GALILEI::GDocAnalyse::Clear(void)
 	RContainer<WordOccur,unsigned int,false,true>*** ptr1;
 	RContainer<WordOccur,unsigned int,false,true>** ptr2;
 
-	memset(tmpNbDiffStopWords,0,sizeof(unsigned int)*Session->GetNbLangs());
-	memset(tmpNbStopWords,0,sizeof(unsigned int)*Session->GetNbLangs());
-	NbDiffWords=NbWords=NbDiffStopWords=NbStopWords=0;
+	memset(Sl,0,sizeof(unsigned int)*Session->GetNbLangs());
+	memset(Sldiff,0,sizeof(unsigned int)*Session->GetNbLangs());
+	N=Ndiff=S=Sdiff=0;
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)->Clear();
 	for(i=27+1,ptr1=Occurs->Hash;--i;ptr1++)
@@ -157,7 +157,7 @@ void GALILEI::GDocAnalyse::VerifyDirect(void) throw(bad_alloc)
 	unsigned int i;
 	WordOccur** ptr;
 
-	if(NbDirect==NbDiffWords)
+	if(NbDirect==Ndiff)
 	{
 		ptr=new WordOccur*[NbDirect+2500];
 		memcpy(ptr,Direct,NbDirect*sizeof(WordOccur*));
@@ -196,7 +196,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 		VerifyDirect();
 
 		// Create the word and insert it in the Occurs.
-		w=Direct[NbDiffWords++];
+		w=Direct[Ndiff++];
 		Section->InsertPtrOrderAt(w,Index);
 		w->OnlyLetters=OnlyLetters;
 		strcpy(w->Word,word);
@@ -204,7 +204,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 		// Look for each language if the word is in the stop list.
 		if(FindLang)
 		{
-			for(CurLangs.Start(),is=w->InStop,tmp1=tmpNbDiffStopWords,tmp2=tmpNbStopWords;!CurLangs.End();CurLangs.Next(),is++,tmp1++,tmp2++)
+			for(CurLangs.Start(),is=w->InStop,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),is++,tmp1++,tmp2++)
 			{
 				(*is)=Session->GetStop(CurLangs())->IsIn<const char*>(word);
 				if(*is)
@@ -221,14 +221,14 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 		w=Section->Tab[Index];
 		if(FindLang)
 		{
-			for(i=Session->GetNbLangs()+1,is=w->InStop,tmp2=tmpNbStopWords;--i;is++,tmp2++)
+			for(i=Session->GetNbLangs()+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
 			{
 				if(*is)
 					(*tmp2)++;
 			}
 		}
 	}
-	NbWords++;
+	N++;
 	w->Nb++;
 }
 
@@ -290,8 +290,8 @@ BeginExtract:
 		goto BeginExtract;
 	}
 
-	// If just numbers or special characters or it begins with a number, extract next word.
-	if((!Letter)||(isdigit(*begin)))
+	// If just numbers or special characters or it doesn't begin with a letter, extract next word.
+	if((!Letter)||(isdigit(*begin))||(strchr("-.@\\/",*begin)))
 		goto BeginExtract;
 
 	// Copy result in word, make it lower case and return true.
@@ -356,14 +356,14 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 	if(FindLang)
 	{
 		Doc->Lang=Lang=0;
-		for(CurLangs.Start(),i=0,tmp1=tmpNbDiffStopWords,tmp2=tmpNbStopWords;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
+		for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 		{
-			Frac=((double)(*tmp1))/((double)NbDiffWords);
-			if(((*tmp2)>NbStopWords)&&(Frac>=MinFrac))
+			Frac=((double)(*tmp1))/((double)Ndiff);
+			if(((*tmp2)>S)&&(Frac>=MinFrac))
 			{
 				Lang=CurLangs();
-				NbStopWords=(*tmp2);
-				NbDiffStopWords=(*tmp1);
+				S=(*tmp2);
+				Sdiff=(*tmp1);
 				LangIndex=i;
 			}
 		}
@@ -376,14 +376,15 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 
 	// Set the Variable of the document
 	Doc->Lang=Lang;
-	Doc->TotalWords=NbWords;
-	Doc->NbWords=NbWords-NbStopWords;
-	Doc->NbDiffWords=NbDiffWords-NbDiffStopWords;
+	Doc->N=N;
+	Doc->Ndiff=Ndiff;
+	Doc->V=0;
+	Doc->Vdiff=0;
 	dic=Session->GetDic(Lang);
 
 	// Analyse it
 	Doc->Words->Clear();
-	for(i=NbDiffWords+1,wrd=Direct;--i;wrd++)
+	for(i=Ndiff+1,wrd=Direct;--i;wrd++)
 	{
 		if((*wrd)->InStop[LangIndex]) continue;
 		if((*wrd)->OnlyLetters)
@@ -392,13 +393,17 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 		}
 		else
 		{
-			if(!Lang->ValidWord((*wrd)->Word))
-				continue;
+			// Not necessary because when not begin with a letter, word not extract
+			// if(!Lang->ValidWord((*wrd)->Word))
+			//	continue;
 			stem=(*wrd)->Word;
 		}
 		if(stem.GetLen()>=Session->GetMinStemSize())
 		{
 			Occur=Doc->Words->GetPtr(dic->GetId(stem));
+			if(!Occur->GetNbOccurs())
+				Doc->Vdiff++;
+			Doc->V+=(*wrd)->Nb;
 			Occur->AddNbOccurs((*wrd)->Nb);
 		}
 	}
@@ -409,6 +414,48 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 	Doc->Computed.SetToday();
 	for(Doc->Fdbks.Start();!Doc->Fdbks.End();Doc->Fdbks.Next())
 		Doc->Fdbks()->GetProfile()->SetState(osModified);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
+{
+	RXMLTag* content;
+	double Frac,MinFrac;
+	unsigned int i;
+	unsigned int* tmp1;
+	unsigned int* tmp2;
+	RString stem(50);
+	unsigned int LangIndex;
+
+	// Init Part and verification
+	if(!xml)
+		throw GException("No XML Structure");
+	MinFrac=Session->GetMinStopWords();
+	content=xml->GetContent();
+	RAssert(content);
+	Lang=0;
+	Clear();
+
+	// Analyse the doc structure.
+	AnalyseTag(content);
+
+	// Determine Lang and LangIndex for current analyse.
+	// Computes General Statistics
+	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
+	{
+		Frac=((double)(*tmp1))/((double)Ndiff);
+		if(((*tmp2)>S)&&(Frac>=MinFrac))
+		{
+			Lang=CurLangs();
+			S=(*tmp2);
+			Sdiff=(*tmp1);
+			LangIndex=i;
+		}
+	}
+	if(!Lang) return;
+
+	// Computes Statictics dependant of the language
 }
 
 
@@ -425,6 +472,6 @@ GALILEI::GDocAnalyse::~GDocAnalyse(void)
 			delete(*ptr);
 		delete[] Direct;
 	}
-	if(tmpNbDiffStopWords) delete[] tmpNbDiffStopWords;
-	if(tmpNbStopWords) delete[] tmpNbStopWords;
+	if(Sldiff) delete[] Sldiff;
+	if(Sl) delete[] Sl;
 }
