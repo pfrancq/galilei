@@ -67,15 +67,17 @@ class GLangFR : public GLang
 	/**
 	* List of Rules '1'.
 	*/
-	RContainer<FrenchPorterRule,unsigned int,true,false>* Rules1;
+	R::RContainer<FrenchPorterRule,unsigned int,true,false>* Rules1;
+
     /**
 	* List of Rules '2'.
 	*/
-	RContainer<FrenchPorterRule,unsigned int,true,false>* Rules2;
+	R::RContainer<FrenchPorterRule,unsigned int,true,false>* Rules2;
+
 	/**
 	* List of Rules '3'.
 	*/
-	RContainer<FrenchPorterRule,unsigned int,true,false>* Rules3;
+	R::RContainer<FrenchPorterRule,unsigned int,true,false>* Rules3;
 
 public:
 
@@ -90,7 +92,7 @@ public:
 	* @param _kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/
-	virtual RStd::RString& GetStemming(const RStd::RString& _kwd);
+	virtual R::RString& GetStemming(const R::RString& _kwd);
 
 private:
 
@@ -126,7 +128,7 @@ private:
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	bool ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,unsigned int,true,false>* rules,int ruleslevel);
+	bool ApplyRules(char* kwd,char* &end,R::RContainer<FrenchPorterRule,unsigned int,true,false>* rules,int ruleslevel);
 
 public:
 

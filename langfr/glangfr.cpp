@@ -45,7 +45,8 @@
 // include files for GALILEI
 #include <langs/glangfr.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
+
 
 
 //-----------------------------------------------------------------------------
