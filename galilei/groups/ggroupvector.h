@@ -88,6 +88,12 @@ public:
 	virtual bool IsDefined(void) const;
 
 	/**
+	* Get the identificator of the group.
+	* @return unsigned int.
+	*/
+	unsigned int GetId(void) const {return(Id);}
+
+	/**
 	* Add a given information to the group.
 	* @param info            Pointer to the information.
 	*/

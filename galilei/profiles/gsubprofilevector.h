@@ -99,6 +99,12 @@ public:
 	virtual bool IsDefined(void) const;
 
 	/**
+	* Get the identificator of the subprofile.
+	* @return unsigned int.
+	*/
+	unsigned int GetId(void) const {return(Id);}
+
+	/**
 	* Add a given information to the document.
 	* @param info            Pointer to the information.
 	*/
