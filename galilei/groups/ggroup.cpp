@@ -339,3 +339,30 @@ double GALILEI::GGroup::ComputeSumSim(const GSubProfile* s,bool g) const
 	return(sum);
 }
 
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroup::Similarity(const GGroup*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroup::GlobalSimilarity(const GGroup*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroup::Similarity(const GDoc*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroup::GlobalSimilarity(const GDoc*) const
+{
+	return(0.0);
+}
