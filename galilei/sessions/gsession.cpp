@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Implementation.
 
-	Copyright 2001-2002 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Université libre de Bruxelles.
 
 	Authors:
 
@@ -27,9 +27,12 @@
 
 */
 
+
+
 //------------------------------------------------------------------------------
-// include files for R Project
+// include files for ANSI C/C++
 #include <fstream>
+
 
 //------------------------------------------------------------------------------
 // include files for R Project
@@ -104,6 +107,25 @@ using namespace GALILEI;
 // Global variables
 GSession* GSession::Session=0;
 bool GSession::ExternBreak=false;
+
+
+GSession::GSession(GStorage* str) throw(std::bad_alloc,GException)
+	: GDocs(str->GetNbSaved(otDoc)), GUsers(0,0),
+	  GGroups(0), Subjects(0),
+	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
+	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0), DocAnalyseMng(0),
+	  EngineMng(0),ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
+	  SessParams(0), Storage(str)
+{
+	// Init Part
+	if(!Session)
+		Session=this;
+	CurrentRandom=0;
+	Random = new RRandomGood(CurrentRandom);
+
+	// create the groups history manager.
+	GroupsHistoryMng=new GGroupsHistoryManager(2);
+}
 
 
 //------------------------------------------------------------------------------
@@ -344,6 +366,98 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 
 	// Run all post-doc methods that are enabled
 	ComputePostDoc(rec);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save) throw(GException)
+{
+	bool undefLang;
+	GDocXML* xml=0;
+	GDocCursor Docs=GetDocsCursor();
+	RContainer<GDoc,false,true> tmpDocs(5,2);
+	GDocAnalyse* Analyse;
+	RString err;
+	bool Cont;               // Continue the analysuis
+
+	// Verify that the textanalyse method is selected
+	Analyse=DocAnalyseMng->GetCurrentMethod();
+	if(!Analyse)
+		throw GException("No document analysis method chosen.");
+
+	ExternBreak=false;
+	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
+	if(rec)
+	{
+		err= "Documents Filtering and Analysis on Data Set : "+Storage->GetName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear());
+		rec->WriteStr(err.Latin1());
+	}
+
+	// Analyse the documents
+	do
+	{
+		// Go through the existing documents
+		for(Docs.Start();!Docs.End();Docs.Next())
+		{
+			if(modified&&(Docs()->GetState()==osUpToDate)) continue;
+			if(rec)
+			{
+				rec->Interact();
+				rec->receiveNextDoc(Docs());
+			}
+			if(ExternBreak) return;
+			undefLang=false;
+			try
+			{
+				if(((!modified)||(Docs()->GetState()!=osUpdated))||((Docs()->GetState()!=osNotNeeded)))
+				{
+					if (!Docs()->GetLang()) undefLang=true;
+					xml=URLMng->CreateDocXML(Docs());
+					if(xml)
+					{
+						Docs()->InitFailed();
+						Analyse->Analyze(xml,Docs(),&tmpDocs);
+						delete xml;
+						xml=0;
+						if((undefLang)&&(Docs()->GetLang()))
+						{
+							MoveDoc(Docs());
+						}
+					}
+					else
+						Docs()->IncFailed();
+				}
+				if(save)
+					Storage->SaveDoc(Docs());
+
+				if(Docs()->GetState()==osUpdated)
+					Docs()->SetState(osUpToDate);
+			}
+			catch(GException& e)
+			{
+				if(xml)
+					delete xml;
+
+				// Write error message to the log file handled by the GSlot.
+				if(rec)
+					rec->WriteStr(e.GetMsg());
+				else
+					throw GException(e.GetMsg());
+			}
+		}
+		
+		// Add the new documents.
+		// Continue the analysis if documents were added.
+		RCursor<GDoc> Cur(tmpDocs);
+		Cont=tmpDocs.NbPtr;
+		for(Cur.Start();!Cur.End();Cur.Next())
+			InsertDoc(Cur());
+		tmpDocs.Clear();
+	}
+	while(Cont);
+
+	// Run all post-doc methods that are enabled
+	//ComputePostDoc(rec);
 }
 
 

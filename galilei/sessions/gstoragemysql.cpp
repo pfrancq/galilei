@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database - Implementation.
 
-	Copyright 2001-2004 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -749,6 +749,32 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 				s->InsertDoc(d);
 				d->InsertSubject(s);
 			}
+		}
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadNewDocs(GSession* session) throw(std::bad_alloc,GException)
+{
+	GDoc* doc;
+	GLang* lang;
+	int docid;
+	GFactoryLangCursor langs;
+
+	try
+	{
+		dynamic_cast<GDocs*>(session)->Clear();
+		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed FROM htmls WHERE calculated < updated");
+		for(quer.Start();!quer.End();quer.Next())
+		{
+			docid=atoi(quer[0]);
+			lang=session->GetLangs()->GetLang(quer[4]);
+			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7])));
 		}
 	}
 	catch(RMySQLError e)

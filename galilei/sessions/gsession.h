@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -176,6 +176,12 @@ protected:
 
 public:
 
+/**
+	* Constructor.
+	* @param str             Storage manager.
+	*/
+	GSession(GStorage* str) throw(std::bad_alloc,GException);
+	
 	/**
 	* Constructor.
 	* @param str             Storage manager.
@@ -386,6 +392,15 @@ public:
 	* @param save            Document must be saved.
 	*/
 	void AnalyseDocs(GSlot* rec=0,bool modified=true,bool save=true) throw(GException);
+
+	/**
+	* Analyse the documents. At the end, all the enabled post-docs methods are
+	* run.
+	* @param rec             Receiver for the signals.
+	* @param modified        Recompute only modified elements or all.
+	* @param save            Document must be saved.
+	*/
+	void AnalyseNewDocs(GSlot* rec=0,bool modified=true,bool save=true) throw(GException);
 
 	/**
 	* run post-grouping methods are called.

@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2004 by the UniversitÃ© libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -153,6 +153,12 @@ public:
 	*/
 	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException);
 
+	/**
+	* Load the new documents.
+	* @param session        Session.
+	*/
+	virtual void LoadNewDocs(GSession* session) throw(std::bad_alloc,GException);
+	
 	/**
 	* Load the users.
 	* @param session         Session.

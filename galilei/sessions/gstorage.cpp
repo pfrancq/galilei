@@ -6,7 +6,7 @@
 
 	Generic Storage Manager - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003-2004 by the UniversitÃ© libre de Bruxelles.
 
 	Authors:
 

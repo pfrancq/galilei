@@ -6,7 +6,7 @@
 
 	Generic Storage Manager - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003-2004 by the UniversitÃ© libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -127,6 +127,12 @@ public:
 	* @param session        Session.
 	*/
 	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException)=0;
+
+	/**
+	* Load the new documents.
+	* @param session        Session.
+	*/
+	virtual void LoadNewDocs(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Save a document where it is stored. This method is called after an
