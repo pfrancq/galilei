@@ -54,7 +54,7 @@ class GSugs  : public GPostGroup
 	/**
 	* Array of documents.
 	*/
-	R::RContainer<GProfDoc,unsigned,false,false> Docs;
+	R::RContainer<GProfDoc,false,false> Docs;
 
 public:
 
