@@ -87,7 +87,7 @@ class GDoc
 	unsigned int N;
 
 	/**
-	* Total number of words used for the information construction.
+	* Total number of valid words.
 	*/
 	unsigned int V;
 
@@ -97,7 +97,7 @@ class GDoc
 	unsigned int Ndiff;
 
 	/**
-	* Number of different words used for the information construction.
+	* Number of different valid words.
 	*/
 	unsigned int Vdiff;
 

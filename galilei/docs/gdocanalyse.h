@@ -80,6 +80,12 @@ class GDocAnalyse
 	RStd::RDblHashContainer<WordOccur,unsigned,27,27,false>* Occurs;
 
 	/**
+	* Information about the words containted in the document. Actually, only
+	* the number of occurences of the words are used.
+	*/
+	GIWordOccurs* Words;
+
+	/**
 	* Direct access to the words.
 	*/
 	WordOccur** Direct;
@@ -98,6 +104,16 @@ class GDocAnalyse
 	* Number of different words in the document.
 	*/
 	unsigned int Ndiff;
+
+	/**
+	* Total number of valid words.
+	*/
+	unsigned int V;
+
+	/**
+	* Number of different valid words.
+	*/
+	unsigned int Vdiff;
 
 	/**
 	* Number of words of the stoplist for the different languages that are in
@@ -127,11 +143,6 @@ class GDocAnalyse
 	* Language actually considered.
 	*/
 	GLang* Lang;
-
-	/**
-	* Document actually Treated.
-	*/
-	GDoc* Doc;
 
 	/**
 	* Determine if the language must be find for the current document.
@@ -177,13 +188,29 @@ protected:
 	*/
 	bool ExtractWord(const char* &ptr,RStd::RString& word);
 
-public:
-
 	/**
 	* Analyse a tag.
 	* @param tag            Tag to analyse.
 	*/
 	void AnalyseTag(RXML::RXMLTag* tag) throw(GException);
+
+	/**
+	* This methods determine the language of the current structure studied,
+	* i.e. the language with the maximal number of words of the stop-list
+	* contained in the document and with a minimal value for the ratio of
+	* stopwords that are in the document.
+	* @returns The index of the selected lang in the arrays Rl and Rdiffl.
+	*/
+	unsigned int DetermineLang(void) throw(GException);
+
+	/**
+	* Construct the information about the current document and store it in
+	* Words.
+	* @param LangIndex      Index of the lang in the arrays Rl and Rdiffl.
+	*/
+	void ConstructInfos(unsigned int LangIndex) throw(GException);
+
+public:
 
 	/**
 	* Analyse a XML representation of a document for a session and store the
@@ -200,7 +227,47 @@ public:
 	*/
 	void ComputeStats(GDocXML* xml) throw(GException);
 
-public:
+	/**
+	* @return Total number of words in the documents with stoplist.
+	*/
+	unsigned int GetN(void) {return(N);}
+
+	/**
+	* @return Total number of words in the documents.
+	*/
+	unsigned int GetV(void) {return(V);}
+
+	/**
+	* @return Total number of words in the stop-list.
+	*/
+	unsigned int GetS(void) {return(S);}
+
+	/**
+	* @param l              Index of the language.
+	* @return Total number of words in the stop-list.
+	*/
+	unsigned int GetS(unsigned int l) {return(Sl[l]);}
+
+	/**
+	* @return Number of different words in the documents.
+	*/
+	unsigned int GetNdiff(void) {return(Ndiff);}
+
+	/**
+	* @return Number of different words in the documents.
+	*/
+	unsigned int GetVdiff(void) {return(Vdiff);}
+
+	/**
+	* @return Number of different words in the stop-list.
+	*/
+	unsigned int GetSdiff(void) {return(Sdiff);}
+
+	/**
+	* @param l              Index of the language.
+	* @return Number of different words in the stop-list.
+	*/
+	unsigned int GetSdiff(unsigned int l) {return(Sldiff[l]);}
 
 	/**
 	* Destructor.
