@@ -40,6 +40,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <time.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for R Project
 #include <rio/rtextfile.h>
 
@@ -60,7 +65,6 @@
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
 
 
 //-----------------------------------------------------------------------------
@@ -147,6 +151,11 @@ public:
 	* When TrackNewProfile is true, the system
 	*/
 	bool TrackNewProfiles;
+
+	/**
+	* Clock Reference used to measure laps of execution time.
+	*/
+	clock_t ClockRef;
 
 	/**
 	* Create a class.
@@ -429,6 +438,24 @@ class GStoreInHistoryI : public GSM
 {
 public:
 	GStoreInHistoryI(GPrgClassSession* o) : GSM("StoreInHistory",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GResetTimeI : public GSM
+{
+public:
+	GResetTimeI(GPrgClassSession* o) : GSM("ResetTime",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GComputeTimeI : public GSM
+{
+public:
+	GComputeTimeI(GPrgClassSession* o) : GSM("ComputeTime",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 

@@ -738,6 +738,32 @@ void GStoreInHistoryI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsign
 
 
 //-----------------------------------------------------------------------------
+void GResetTimeI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	if(args->NbPtr!=0)
+		throw GException("Method needs no parameter");
+	r->WriteStr("Reset Time");
+	Owner->ClockRef=clock();
+}
+
+
+//-----------------------------------------------------------------------------
+void GComputeTimeI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	clock_t end;
+	double cpu_time;
+
+	end=clock();
+	if(args->NbPtr!=0)
+		throw GException("Method needs no parameter");
+	cpu_time=static_cast<double>(end-Owner->ClockRef)/CLOCKS_PER_SEC;
+	sprintf(tmp,"Ellapsed Time %f",cpu_time);
+	r->WriteStr(tmp);
+}
+
+
+
+//-----------------------------------------------------------------------------
 //
 // class GPrgClassSession
 //
