@@ -32,6 +32,10 @@ EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kg
 
 KDE_ICON = kgalileicenter konquerorHub konquerorAutho
 
+install-data-local:
+	$(mkinstalldirs) /usr/share/galilei/sql/
+	$(INSTALL_DATA) $(srcdir)/sql/* /usr/share/galilei/sql/
+	
 # set the include path for X, qt and KDE
 INCLUDES = $(all_includes)
 

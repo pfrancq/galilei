@@ -2,6 +2,10 @@
 -- author Vandaele Valery     vavdaele@ulb.ac.be
 --------------------------------------------------------------------------
 
+
+
+
+
 -- this file contains all the command to be use to create a database 
 -- with all required tables and fields.
 --------------------------------------------------------------------------
@@ -45,219 +49,21 @@ CREATE TABLE bookmarksbyhtmls (
   KEY index_bookmarkid(bookmarkid,profileid)
 ) TYPE=MyISAM;
 
+#
+# Table structure for table kwds
+#
 
---
--- Table structure for table 'engroupsbykwds'
---
 
-CREATE TABLE engroupsbykwds (
-  groupid int(11) NOT NULL default '0',
+CREATE TABLE kwds (
+  kwdautoid int(11) NOT NULL auto_increment,
   kwdid int(11) NOT NULL default '0',
-  occurs double default NULL
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'enhtmlsbykwds'
---
-
-CREATE TABLE enhtmlsbykwds (
-  htmlid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0',
-  occurs double(20,10) default NULL
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'enkwds'
---
-
-CREATE TABLE enkwds (
-  kwdid int(11) NOT NULL auto_increment,
   kwd varchar(50) default NULL,
   type int(11) default '1',
-  PRIMARY KEY  (kwdid)
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'enkwdsbygroups'
---
-
-CREATE TABLE enkwdsbygroups (
-  grid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0'
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'enstopkwds'
---
-
-CREATE TABLE enstopkwds (
-  kwdid int(11) NOT NULL auto_increment,
-  kwd varchar(50) NOT NULL default '',
-  type int(11) default '1',
-  PRIMARY KEY  (kwdid)
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'ensubprofilesbykwds'
---
-
-CREATE TABLE ensubprofilesbykwds (
-  subprofileid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0',
-  weight float NOT NULL default '0'
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'frgroupsbykwds'
---
-
-CREATE TABLE frgroupsbykwds (
-  groupid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0',
-  occurs double default NULL
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'frhtmlsbykwds'
---
-
-CREATE TABLE frhtmlsbykwds (
-  htmlid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0',
-  occurs int(20) default NULL
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'frkwds'
---
-
-CREATE TABLE frkwds (
-  kwdid int(11) NOT NULL auto_increment,
-  kwd varchar(50) default NULL,
-  type int(11) default '1',
-  PRIMARY KEY  (kwdid)
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'frkwdsbygroups'
---
-
-CREATE TABLE frkwdsbygroups (
-  grid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0'
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'frstopkwds'
---
-
-CREATE TABLE frstopkwds (
-  kwdid int(11) NOT NULL auto_increment,
-  kwd varchar(50) NOT NULL default '',
-  type int(11) default '1',
-  PRIMARY KEY  (kwdid)
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'frsubprofilesbykwds'
---
-
-CREATE TABLE frsubprofilesbykwds (
-  subprofileid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0',
-  weight float NOT NULL default '0'
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'nlgroupsbykwds'
---
-
-CREATE TABLE nlgroupsbykwds (
-  groupid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0',
-  occurs double default NULL
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'nlhtmlsbykwds'
---
-
-CREATE TABLE nlhtmlsbykwds (
-  htmlid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0',
-  occurs double(20,10) default NULL
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'nlkwds'
---
-
-CREATE TABLE nlkwds (
-  kwdid int(11) NOT NULL auto_increment,
-  kwd varchar(50) default NULL,
-  type int(11) default '1',
-  PRIMARY KEY  (kwdid)
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'nlkwdsbygroups'
---
-
-CREATE TABLE nlkwdsbygroups (
-  grid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0'
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'nlstopkwds'
---
-
-CREATE TABLE nlstopkwds (
-  kwdid int(11) NOT NULL auto_increment,
-  kwd varchar(50) NOT NULL default '',
-  type int(11) default '1',
-  PRIMARY KEY  (kwdid)
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'nlsubprofilesbykwds'
---
-
-CREATE TABLE nlsubprofilesbykwds (
-  subprofileid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0',
-  weight float NOT NULL default '0'
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'nlhistoricsubprofiles'
---
-
-CREATE TABLE nlhistoricsubprofiles (
-  historicid int(11),
-  date Date DEFAULT '0000-00-00',
-  subprofileid int(11),
-  kwdid int(11),
-  weight float
-) TYPE=MyISAM;
+  langid char(2) default NULL,
+  INDEX langidndx (langid),
+  INDEX langidsndx (langid,kwdid),
+  PRIMARY KEY  (kwdautoid)
+) TYPE=MyISAM AUTO_INCREMENT=1 ;
 
 
 --
@@ -270,6 +76,17 @@ CREATE TABLE groups (
   PRIMARY KEY  (groupid)
 ) TYPE=MyISAM;
 
+#
+# Table structure for table `groupsbykwds`
+#
+
+CREATE TABLE groupsbykwds (
+  groupid int(11) NOT NULL default '0',
+  kwdid int(11) NOT NULL default '0',
+  occurs double default NULL,
+  langid char(2) default NULL,
+  INDEX langidndx (langid)
+) TYPE=MyISAM;
 
 --
 -- Table structure for table 'htmls'
@@ -301,6 +118,55 @@ CREATE TABLE htmlsbyprofiles (
 ) TYPE=MyISAM;
 
 
+#
+# Table structure for table `htmlsbykwds`
+#
+
+CREATE TABLE htmlsbykwds (
+  htmlid int(11) NOT NULL default '0',
+  kwdid int(11) NOT NULL default '0',
+  occurs double(20,10) default NULL,
+  langid char(2) default NULL,
+  INDEX langidndx (langid)
+) TYPE=MyISAM;
+
+#
+# Table structure for table `kwdsbygroups`
+#
+
+CREATE TABLE kwdsbygroups (
+  grid int(11) NOT NULL default '0',
+  kwdid int(11) NOT NULL default '0',
+  langid char(2) default NULL,
+  INDEX langidndx (langid)
+) TYPE=MyISAM;
+
+#
+# Table structure for table `stopkwds`
+#
+
+CREATE TABLE stopkwds (
+  kwdautoid int(11) NOT NULL auto_increment,
+  kwdid int(11) NOT NULL default '0',
+  kwd varchar(50) NOT NULL default '',
+  type int(11) default '1',
+  langid char(2) default NULL,
+  INDEX langidndx (langid),
+  PRIMARY KEY  (kwdautoid)
+) TYPE=MyISAM AUTO_INCREMENT=1 ;
+
+#
+# Table structure for table `subprofilesbykwds`
+#
+
+CREATE TABLE subprofilesbykwds (
+  subprofileid int(11) NOT NULL default '0',
+  kwdid int(11) NOT NULL default '0',
+  weight float NOT NULL default '0',
+  langid char(2) default NULL,
+  INDEX langidndx (langid)
+) TYPE=MyISAM;
+
 --
 -- Table structure for table 'idealgroup'
 --
@@ -311,21 +177,6 @@ CREATE TABLE idealgroup (
   groupid int(11) NOT NULL default '0',
   PRIMARY KEY  (profileid)
 ) TYPE=MyISAM;
-
-
---
--- Table structure for table 'languages'
---
-
-CREATE TABLE languages (
-  langid char(2) default NULL,
-  language char(30) default NULL
-) TYPE=MyISAM;
-
-
-INSERT INTO languages VALUES ('en','English');
-INSERT INTO languages VALUES ('fr','Français');
-INSERT INTO languages VALUES ('nl','Dutch');
 
 --
 -- Table structure for table 'profiles'
@@ -420,29 +271,18 @@ CREATE TABLE historicgroups (
 ) TYPE=MyISAM;
 
 
---
--- Table structure for table 'frhistoricsubprofiles'
---
+#
+# Table structure for table `historicsubprofiles`
+#
 
-CREATE TABLE frhistoricsubprofiles (
-  historicid int(11),
-  date Date DEFAULT '0000-00-00',
-  subprofileid int(11),
-  kwdid int(11),
-  weight float
-) TYPE=MyISAM;
-
-
---
--- Table structure for table 'enhistoricsubprofiles'
---
-
-CREATE TABLE enhistoricsubprofiles (
-  historicid int(11),
-  date Date DEFAULT '0000-00-00',
-  subprofileid int(11),
-  kwdid int(11),
-  weight float
+CREATE TABLE historicsubprofiles (
+  historicid int(11) default NULL,
+  subprofileid int(11) default NULL,
+  kwdid int(11) default NULL,
+  weight float default NULL,
+  date date default '0000-00-00',
+  langid char(2) default NULL,
+  INDEX langidndx (langid)
 ) TYPE=MyISAM;
 
 
@@ -472,13 +312,13 @@ CREATE TABLE users (
 --
 
 CREATE TABLE expertkwds (
-  PROFILEID integer not null,
-  GROUPID integer not null,
-  IDW_MOT numeric(7) not null,
-  MOT_EXPERT varchar(50) not null,
-  LEVEL integer ,
-  FREQ varchar(128) ,
-  PARENTS varchar(128)
+  profileid integer not null,
+  groupid integer not null,
+  idw_mot numeric(7) not null,
+  mot_expert varchar(50) not null,
+  level integer ,
+  freq varchar(128) ,
+  parents varchar(128)
 )TYPE=MyISAM;
 
 
@@ -487,8 +327,19 @@ CREATE TABLE expertkwds (
 --
 
 CREATE TABLE expkwdsdoclist (
-  PROFILEID integer not null,
-  GROUPID integer not null,
-  IDW_MOT numeric(7) not null,
-  NOM_DOC varchar(255)
+  profileid integer not null,
+  groupid integer not null,
+  idw_mot numeric(7) not null,
+  nom_doc varchar(255)
 )TYPE=MyISAM;
+
+
+-- 
+-- Creation of the indexes: 
+--
+
+create index idx_htmls_kwds on htmlsbykwds(htmlid,kwdid);
+create index idx_subprofiles_kwds on subprofilesbykwds(subprofileid,kwdid);
+create index idx_groups_kwds on groupsbykwds(groupid,kwdid);
+create index idx_lang on stopkwds(langid);
+create index idx_lang on kwds(langid);
