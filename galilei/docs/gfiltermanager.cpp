@@ -82,6 +82,13 @@ void GALILEI::GURLManager::Download(const char* /*URL*/,RString& /*tmpFile*/) th
 
 
 //-----------------------------------------------------------------------------
+GMIMEFilter*  GALILEI::GURLManager::DetermineMIMEType(const char* /*tmpfile*/)
+{
+	return(0);
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GURLManager::Delete(RString& /*tmpFile*/) throw(GException)
 {
 }
@@ -141,6 +148,10 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 			tmpFile=doc->GetURL();
 		Dwn=false;
 	}
+
+	// Verify if the MIME type is defined -> if not try to guess
+	if(!doc->GetMIMEType())
+		doc->SetMIMEType(DetermineMIMEType(tmpFile()));
 
 	// Analyse it.
 	xml=new GDocXML(doc->GetURL(),tmpFile());

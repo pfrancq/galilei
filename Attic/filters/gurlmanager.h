@@ -100,9 +100,16 @@ protected:
 	* Download and store locally a document given by an URL.
 	* @param URL            URL of the document.
 	* @param tmpFile        Temporary file created.
-	* @returns true if the document was download;
+	* @returns true if the document was download.
 	*/
 	virtual void Download(const char* URL,R::RString& tmpFile) throw(GException);
+
+	/**
+	* Look for the mime types of a temporary file.
+	* @param tmpFile        Temporary file created.
+	* @return Pointer to a GMIMEFilter.
+	*/
+	virtual GMIMEFilter* DetermineMIMEType(const char* tmpfile);
 
 	/**
 	* Delete the file locally.
