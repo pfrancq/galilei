@@ -172,6 +172,12 @@ public:
 	tObjState GetState(void) const {return(State);}
 
 	/**
+	* Set the state of the profile.
+	* @param state          New state.
+	*/
+	void SetState(tObjState state) {State=state;}
+
+	/**
 	* Tell the profile that its updated is finished.
 	*/
 	void UpdateFinished(void);

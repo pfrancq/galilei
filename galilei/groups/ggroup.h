@@ -104,10 +104,16 @@ public:
 	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
 
 	/**
-	* Returnt he state of the document.
+	* Return the state of the group.
 	* @returns GALILEI::tObjState value.
 	*/
 	tObjState GetState(void) const {return(State);}
+	
+	/**
+	* Set the state of the group.
+	* @param state          New state.
+	*/
+	void SetState(tObjState state) {State=state;}
 
 	/**
 	* Get the language of the set of groups.
