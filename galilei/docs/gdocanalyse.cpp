@@ -396,7 +396,7 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 				continue;
 			stem=(*wrd)->Word;
 		}
-		if(stem.GetLen()>2)
+		if(stem.GetLen()>=Session->GetMinStemSize())
 		{
 			Occur=Doc->Words->GetPtr(dic->GetId(stem));
 			Occur->AddNbOccurs((*wrd)->Nb);

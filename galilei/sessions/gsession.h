@@ -197,6 +197,11 @@ protected:
 	*/
 	unsigned int MinWordSize;
 
+	/**
+	* Minimum number of characters to have a valid stem.
+	*/
+	unsigned int MinStemSize;
+
 public:
 
 	/**
@@ -399,6 +404,18 @@ public:
 		* @param min        Minimal size.
 		*/
 		void SetMinWordSize(unsigned int min) {MinWordSize=min;}
+
+		/**
+		* Get the minimum size of a stem.
+		* @returns unsigned int.
+		*/
+		unsigned int GetMinStemSize(void) const {return(MinStemSize);}
+
+		/**
+		* Set the minimum size of a stem.
+		* @param min        Minimal size.
+		*/
+		void SetMinStemSize(unsigned int min) {MinStemSize=min;}
 
 		/**
 		* Load the documents.
