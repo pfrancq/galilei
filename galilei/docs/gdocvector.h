@@ -111,7 +111,7 @@ public:
 	* @param id             Identificator of the word.
 	* @param nb             Occurences of the word.
 	*/
-	void AddWord(const unsigned int id,const double nb);
+	virtual void AddWord(const unsigned int id,const double nb);
 
 	/**
 	* Get a Cursor on the weights of the document.
