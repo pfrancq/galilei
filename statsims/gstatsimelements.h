@@ -6,7 +6,7 @@
 
 	Template for computing Similarities between elmeents.
 
-	Copyright 2002-2004 by the Université Libre de Bruxelles.
+	Copyright 2002-2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -130,7 +130,7 @@ protected:
 	/**
 	* Container of statistics on the subjects.
 	*/
-	R::RContainer<LocalStat,unsigned int,true,true> Sub;
+	R::RContainer<LocalStat,true,true> Sub;
 
 public:
 
@@ -408,7 +408,7 @@ template<class E,class C>
 	}
 
 	// Compute topics statistics
-	R::RCursor<LocalStat,unsigned int> LocalStats(Sub);
+	R::RCursor<LocalStat> LocalStats(Sub);
 	if(!LocalStats.GetNb()) return;
 	LangTag=new RXMLTag("Topics");
 	xml->AddTag(tag,LangTag);
