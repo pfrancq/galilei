@@ -111,6 +111,8 @@ class GDocsLang;
 class GDocProfSim;
 class GDocProfSims;
 class GWordsClustering;
+class GLinkCalc;
+class GLinkCalcCursor;
 
 
 //-----------------------------------------------------------------------------
