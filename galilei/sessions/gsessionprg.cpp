@@ -273,7 +273,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				delete OFile;
 				OFile=0;
 			}
-			OFile=new RTextFile(i->Param1,RTextFile::Create);
+			OFile=new RTextFile(i->Param1,RIO::Create);
 			OFile->SetSeparator("\t");
 			(*OFile)<<"Sets"<<"Recall"<<"Precision"<<"Total"<<endl;
 			break;
@@ -286,7 +286,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				delete GOFile;
 				GOFile=0;
 			}
-			GOFile=new RTextFile(i->Param1,RTextFile::Create);
+			GOFile=new RTextFile(i->Param1,RIO::Create);
 			GOFile->SetSeparator("\t");
 			break;
 
@@ -298,7 +298,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				delete SOFile;
 				SOFile=0;
 			}
-			SOFile=new RTextFile(i->Param1,RTextFile::Create);
+			SOFile=new RTextFile(i->Param1,RIO::Create);
 			SOFile->SetSeparator("\t");
 			(*SOFile)<<"AVGintra"<<"AVGinter"<<"AVGol"<<"tRie"<<endl;
 			break;

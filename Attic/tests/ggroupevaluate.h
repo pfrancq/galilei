@@ -140,7 +140,7 @@ public:
 	/**
 	* Return the name of the group
 	*/
-	virtual RString GetName(void)=0;
+	virtual RStd::RString GetName(void)=0;
 
 	/**
 	* Compare method needed by RStd::RContainer.

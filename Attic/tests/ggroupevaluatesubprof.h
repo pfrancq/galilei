@@ -83,7 +83,7 @@ protected:
 	/**
 	* Name of the group.
 	*/
-	RString Name;
+	RStd::RString Name;
 
 public:
 
@@ -171,7 +171,7 @@ public:
 	/**
 	* Return the name of the group;
 	*/
-	RString GetName(void){return(Name);};
+	RStd::RString GetName(void){return(Name);};
 
 	/**
 	* Destructor.

@@ -83,14 +83,14 @@ protected:
 	/**
 	* Name of the group.
 	*/
-	RString Name;
+	RStd::RString Name;
 
 public:
 
 	/**
 	* Constructor.
 	*/
-	GGroupEvaluateDoc(unsigned int id,GLang* lang,RStd::RContainer<GDoc,unsigned int,false,true>* doc,GSession* ses,RString name);
+	GGroupEvaluateDoc(unsigned int id,GLang* lang,RStd::RContainer<GDoc,unsigned int,false,true>* doc,GSession* ses,RStd::RString name);
 
 	/**
 	* The number of subdoc int the groupment.
@@ -166,7 +166,7 @@ public:
 	/**
 	* Return the name of the group;
 	*/
-	RString GetName(void){return(Name);};
+	RStd::RString GetName(void){return(Name);};
 
 	/**
 	* Return the id of the group

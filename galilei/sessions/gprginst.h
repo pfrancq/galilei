@@ -59,7 +59,7 @@ class GPrgInst
 	/**
 	* Name of the instruction.
 	*/
-	RString Name;
+	RStd::RString Name;
 
 public:
 

@@ -144,7 +144,7 @@ protected:
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeBlock(char* block,RXMLTag* attach);
+	void AnalyzeBlock(char* block,RXML::RXMLTag* attach);
 
 	/**
 	* Analyse a list of keywords sepating by a single character.
@@ -152,7 +152,7 @@ protected:
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeKeywords(char* list,char sep,RXMLTag* attach);
+	void AnalyzeKeywords(char* list,char sep,RXML::RXMLTag* attach);
 
 public:
 

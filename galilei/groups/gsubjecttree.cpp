@@ -318,7 +318,7 @@ void GALILEI::GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSe
 void GALILEI::GSubjectTree::IdealGroupmentFile(const char* url)
 {
     // The file where the ideal groupment is stored.
-	RTextFile* textfile = new RTextFile (url, RTextFile::Create);
+	RTextFile* textfile = new RTextFile (url, RIO::Create);
 
 	//calculation of the number of goups (ie the number of judged soubsubjects)
 	int nbrsubsubjects=0;

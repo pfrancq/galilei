@@ -51,6 +51,7 @@
 // include files for GALILEI
 #include <filters/gfilteremail.h>
 using namespace GALILEI;
+using namespace RXML;
 
 
 

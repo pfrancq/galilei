@@ -59,7 +59,7 @@ class GPrgVar
 	/**
 	* Name of the variable.
 	*/
-	RString Name;
+	RStd::RString Name;
 
 	/**
 	* Owner of the variable.

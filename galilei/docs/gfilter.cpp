@@ -44,6 +44,7 @@
 #include <filters/gfilter.h>
 #include <urlmanagers/gurlmanager.h>
 using namespace GALILEI;
+using namespace RXML;
 
 
 

@@ -101,7 +101,7 @@ public:
 	* @param obj            Identificator to test.
 	* @return bool.
 	*/
-	bool IsIn(const tId obj) const;
+	bool IsIn(const RStd::tId obj) const;
 
 	/**
 	* Get the ratio.

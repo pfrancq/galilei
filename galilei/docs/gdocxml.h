@@ -42,6 +42,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rxml/rxmlstruct.h>
+#include <rxml/rxmltag.h>
 
 
 //-----------------------------------------------------------------------------
@@ -77,17 +78,17 @@ class GDocXML : public RXML::RXMLStruct
 	/**
 	* Tag holding the metadata.
 	*/
-	RXMLTag* MetaData;
+	RXML::RXMLTag* MetaData;
 
 	/**
 	* Tag holding the content.
 	*/
-	RXMLTag* Content;
+	RXML::RXMLTag* Content;
 
 	/**
 	* Tag holding the links.
 	*/
-	RXMLTag* Links;
+	RXML::RXMLTag* Links;
 
 public:
 
@@ -114,19 +115,19 @@ public:
 	* @returns A pointer to the tag containing the metadata of the
 	*          corresponding document.
 	*/
-	RXMLTag* GetMetaData(void) {return(MetaData);}
+	RXML::RXMLTag* GetMetaData(void) {return(MetaData);}
 
 	/**
 	* @returns A pointer to the tag containing the content of the corresponding
 	*          document.
 	*/
-	RXMLTag* GetContent(void) {return(Content);}
+	RXML::RXMLTag* GetContent(void) {return(Content);}
 
 	/**
 	* @returns A pointer to the tag containing the links of the corresponding
 	*          document.
 	*/
-	RXMLTag* GetLinks(void) {return(Links);}
+	RXML::RXMLTag* GetLinks(void) {return(Links);}
 
 	/**
 	* Add a title to the metadata.
@@ -138,7 +139,7 @@ public:
 	* Add a title to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddTitle(void) throw(bad_alloc);
+	RXML::RXMLTag* AddTitle(void) throw(bad_alloc);
 
 	/**
 	* Add a creator to the metadata.
@@ -150,7 +151,7 @@ public:
 	* Add a creator to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddCreator(void) throw(bad_alloc);
+	RXML::RXMLTag* AddCreator(void) throw(bad_alloc);
 
 	/**
 	* Add a subject to the metadata.
@@ -162,7 +163,7 @@ public:
 	* Add a subject to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddSubject(void) throw(bad_alloc);
+	RXML::RXMLTag* AddSubject(void) throw(bad_alloc);
 
 	/**
 	* Add a description to the metadata.
@@ -174,7 +175,7 @@ public:
 	* Add a description to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddDescription(void) throw(bad_alloc);
+	RXML::RXMLTag* AddDescription(void) throw(bad_alloc);
 
 	/**
 	* Add a publisher to the metadata.
@@ -186,7 +187,7 @@ public:
 	* Add a publisher to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddPublisher(void) throw(bad_alloc);
+	RXML::RXMLTag* AddPublisher(void) throw(bad_alloc);
 
 	/**
 	* Add a contributor to the metadata.
@@ -198,7 +199,7 @@ public:
 	* Add a contributor to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddContributor(void) throw(bad_alloc);
+	RXML::RXMLTag* AddContributor(void) throw(bad_alloc);
 
 	/**
 	* Add a date to the metadata.
@@ -210,7 +211,7 @@ public:
 	* Add a date to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddDate(void) throw(bad_alloc);
+	RXML::RXMLTag* AddDate(void) throw(bad_alloc);
 
 	/**
 	* Add a type to the metadata.
@@ -222,7 +223,7 @@ public:
 	* Add a type to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddType(void) throw(bad_alloc);
+	RXML::RXMLTag* AddType(void) throw(bad_alloc);
 
 	/**
 	* Add a format to the metadata.
@@ -234,7 +235,7 @@ public:
 	* Add a format to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddFormat(void) throw(bad_alloc);
+	RXML::RXMLTag* AddFormat(void) throw(bad_alloc);
 
 	/**
 	* Add an identifier to the metadata.
@@ -246,7 +247,7 @@ public:
 	* Add an identifier to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddIdentifier(void) throw(bad_alloc);
+	RXML::RXMLTag* AddIdentifier(void) throw(bad_alloc);
 
 	/**
 	* Add a source to the metadata.
@@ -258,7 +259,7 @@ public:
 	* Add a source to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddSource(void) throw(bad_alloc);
+	RXML::RXMLTag* AddSource(void) throw(bad_alloc);
 
 	/**
 	* Add a language to the metadata.
@@ -270,7 +271,7 @@ public:
 	* Add a language to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddLanguage(void) throw(bad_alloc);
+	RXML::RXMLTag* AddLanguage(void) throw(bad_alloc);
 
 	/**
 	* Add a relation to the metadata.
@@ -282,7 +283,7 @@ public:
 	* Add a relation to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddRelation(void) throw(bad_alloc);
+	RXML::RXMLTag* AddRelation(void) throw(bad_alloc);
 
 	/**
 	* Add a coverage to the metadata.
@@ -294,7 +295,7 @@ public:
 	* Add a coverage to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddCoverage(void) throw(bad_alloc);
+	RXML::RXMLTag* AddCoverage(void) throw(bad_alloc);
 
 	/**
 	* Add rights to the metadata.
@@ -306,7 +307,7 @@ public:
 	* Add rights to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXMLTag* AddRights(void) throw(bad_alloc);
+	RXML::RXMLTag* AddRights(void) throw(bad_alloc);
 
 	/**
 	* Destruct the document.
