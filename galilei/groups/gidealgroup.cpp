@@ -70,20 +70,17 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 
-GALILEI::GIdealGroup::GIdealGroup(const char* txturl,GUsers* user)
+GALILEI::GIdealGroup::GIdealGroup(const char* txturl,GUsers* user,int percok,int percko)
 	:users(user)
 {
-	int percok,percko;
-	// The % of ok and ko document judget by an user.
-	percok=10;
-	percko=10;
+	
 	subjects=new GSubjectTree(percok,percko,users->NbPtr);
 	//The file where is stoked the differents information about docs,subject,...
 	RTextFile* textfile = new RTextFile (txturl, RTextFile::Read);
 	char *ptr= textfile->GetLine(),*sub,*url;
 	int c1=1,c2=1;
 	int samesub=0;
-	//Parse the file to find Subject, subSubject, and the url of the different documens-ts
+	//Parse the file to find Subject, subSubject, and the url of the different documents
 	while ((*ptr)=='T')
 	{
 		samesub++;
@@ -92,7 +89,7 @@ GALILEI::GIdealGroup::GIdealGroup(const char* txturl,GUsers* user)
 		while ((*sub)=='S')
 		{
 			GSubject* subsubject=new GSubject(RString(++sub),c2);
-			subsubject->lang=textfile->GetLine();
+			subsubject->SetLang(textfile->GetLine());
 			url=textfile->GetLine();
 			while ((*url)=='U')
 			{
@@ -101,7 +98,7 @@ GALILEI::GIdealGroup::GIdealGroup(const char* txturl,GUsers* user)
 				char* temp2=strchr(++temp,' ');
 				(*temp2)=0;
 				char* name= (++url);
-				GDoc* newurl= new GDoc(name, name,atoi(temp),0,0,0,0,0,0,1,1,1,1);
+				GDoc* newurl= new GDoc(name,name,atoi(temp),0,0,0,0,0,0,1,1,1,1);
 				subsubject->urls->InsertPtr(newurl);
 				url=textfile->GetLine();
 			}
@@ -119,17 +116,18 @@ GALILEI::GIdealGroup::GIdealGroup(const char* txturl,GUsers* user)
 
 
 //-----------------------------------------------------------------------------
-RStd::RContainer<GGroups,unsigned int,true,true>*  GALILEI::GIdealGroup::CreateJudgement(GSession* ses)
+RStd::RContainer<GGroups,unsigned int,true,true>*  GALILEI::GIdealGroup::CreateJudgement(GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent)
 {
 	RContainer<GGroups,unsigned int,true,true>* groups;
 	groups=new RContainer<GGroups,unsigned int,true,true>(2,2);
+	parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,10);
 
 	//Clear the old feedback.
 	ses->ClearFdbks();
 	//Create the different judgments.
 	subjects->Judgments(ses);
 	//Create the ideal groupment corresponding to the precedent judgment.
-	subjects->IdealGroupment(groups,ses);
+	subjects->IdealGroupment(groups,ses,parent);
 	return groups;
 }
 

@@ -82,15 +82,18 @@ public:
 	* where is stoked the grouping of document.
 	* @param txturl           The url of the file.
 	* @param user             The usercontainer.
+	* @param percok           The % of ok documents.
+	* @param percko           The % of ko documents.
 	*/
-	GIdealGroup(const char* txturl,GUsers* user);
+	GIdealGroup(const char* txturl,GUsers* user,int percok,int percko);
 
 	/**
 	* Create randomly the judgment for all the users.
 	* Return the ideal groupment into a GGroups container.
 	* @param ses		The Galilei Session.
+	* @param parent     The container to assign groupid and parent id.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true>* CreateJudgement(GSession* ses);
+	RStd::RContainer<GGroups,unsigned int,true,true>* CreateJudgement(GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent);
 
 	/**
 	* Write the ideal groupment into a file

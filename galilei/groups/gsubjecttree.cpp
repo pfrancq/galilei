@@ -116,8 +116,8 @@ void GSubjectTree::Judgments(GSession* ses)
 	{
 		nbrsububjects=nbrsububjects+(*this)()->NbPtr;
 	}
-
-	int tab[nbrsububjects];
+    int* tab;
+	tab=new int [nbrsububjects];
 	for (int i=0; i<nbrsububjects;i++)
 		tab[i]=0;
 
@@ -156,6 +156,7 @@ void GSubjectTree::Judgments(GSession* ses)
 			}
 		}
 	}
+	delete [] tab;
 }
   
 
@@ -177,7 +178,7 @@ void GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSession* se
 	//If i=0 juge KO.
 	else
 	{
-		NbDocs=int(((double(NbDocsOk*sub->urls->NbPtr)/100))+0.5);
+		NbDocs=int(((double(NbDocsKo*sub->urls->NbPtr)/100))+0.5);
 		judgement='K';
 	}
 
@@ -203,7 +204,7 @@ void GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSession* se
 //-----------------------------------------------------------------------------
 void GSubjectTree::IdealGroupmentFile(char* url)
 {
-
+    // The file where the ideal groupment is stored.
 	RTextFile* textfile = new RTextFile (url, RTextFile::Create);
 
 	//calculation of the number of goups (ie the number of judged soubsubjects)
@@ -222,18 +223,21 @@ void GSubjectTree::IdealGroupmentFile(char* url)
 	textfile->WriteLine();
 
 	RContainer<GProfile,unsigned,false,true>* prof=new RContainer<GProfile,unsigned,false,true>(10,5);
+	//for each subject.
 	for (Start(); !End(); Next())
 	{
 		GSubject * subject= (*this)();
+		//for each subsubject.
 		for (subject->Start(); !subject->End(); subject->Next())
 		{
 			GSubject* sub= (*subject)();
 			if (sub->isJudged())
 			{
-				textfile->WriteStr(sub->lang);
+				textfile->WriteStr(sub->GetLang());
 				textfile->WriteStr("\t");
-				int tab[profiles->NbPtr];
-				int k;
+				int* tab;
+				tab= new int[profiles->NbPtr];
+				unsigned int k;
 				for (k=0; k<(profiles->NbPtr); k++)
 				{
 				 	tab[k]=0;
@@ -245,6 +249,7 @@ void GSubjectTree::IdealGroupmentFile(char* url)
 					GProfile* tmp=prof->GetPtr(profile);
 					if((!tmp))
 					{
+						//if the profile as juged some document.
 						if (profile->GetState()==osUpdated)
 						{
 							if(!strcmp(profile->GetName(),(subject->GetName()+"/"+sub->GetName())))
@@ -264,15 +269,17 @@ void GSubjectTree::IdealGroupmentFile(char* url)
 					temp++;
 				}
 				textfile->WriteLine();
+				delete[] tab;
 			}
 		}
 	}
 	delete textfile;
+	delete prof;
 }
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,true>* Groups,GSession* ses) 	// research by profiles' name to find ideal groups
+void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,true>* Groups,GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent) 	// research by profiles' name to find ideal groups
 {
 
 	unsigned int nb;
@@ -304,22 +311,26 @@ void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,tru
 
 
 	RContainer<GProfile,unsigned,false,true>* prof=new RContainer<GProfile,unsigned,false,true>(10,5);
+	//For each subject.
 	for (Start(); !End(); Next())
 	{
 		GSubject * subject= (*this)();
+		//For each subsubject of the precedent subject.
 		for (subject->Start(); !subject->End(); subject->Next())
 		{
 			GSubject* sub= (*subject)();
 			if (sub->isJudged())
 			{
-				lang=ses->GetLang(sub->lang);
-				int tab[profiles->NbPtr];
+				lang=ses->GetLang(sub->GetLang());
+				int* tab;
+				tab=new int[profiles->NbPtr];
 				unsigned int k;
 				for (k=0; k<(profiles->NbPtr); k++)
 				{
 					tab[k]=0;
 				}
 				int c=0;
+				// find the profiles who are in the subsubject.
 				for (profiles->Start(); !profiles->End(); profiles->Next())
 				{
 					GProfile* profile= (*profiles)();
@@ -334,7 +345,7 @@ void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,tru
 				groups=Groups->GetPtr<const GLang*>(lang);
 				ii++;
 				group=new GGroup(ii,lang);
-				group->SetSubGroupId(subject->GetId());
+				parent->InsertPtr(new GGroupIdParentId(ii,subject->GetId()));
 				groups->InsertPtr(group);
 				int temp=0 ;
 				while (tab[temp]!=0)
@@ -347,6 +358,7 @@ void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,tru
 					group->InsertPtr(subprofile);
 					temp++;
 				}
+				delete[] tab;
 			}
 		}
 	}
@@ -357,7 +369,8 @@ void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,tru
 //-----------------------------------------------------------------------------
 void GSubjectTree::InitProfiles()
 {
- 	for (profiles->Start(); !profiles->End();profiles->Next())
+	//Profiles doenst have juged document.
+	for (profiles->Start(); !profiles->End();profiles->Next())
 	{
 		(*profiles)()->SetState(osModified);
 	}
@@ -367,7 +380,8 @@ void GSubjectTree::InitProfiles()
 //-----------------------------------------------------------------------------
 void GSubjectTree::InitSubSubjects()
 {
- 	for (Start(); !End();Next())
+	//No subject are judged.
+	for (Start(); !End();Next())
 	{
 		GSubject * subject=(*this)();
 		for(subject->Start();!subject->End();subject->Next())

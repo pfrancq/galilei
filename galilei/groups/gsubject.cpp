@@ -54,6 +54,7 @@
 #include "gsubject.h"
 
 
+
 //-----------------------------------------------------------------------------
 //
 // class GSubject
@@ -63,7 +64,7 @@
 GSubject::GSubject(RString name, int id)
 	 : RNode<GSubject,false>(10,2)
 {
-	isjudged=0;
+	IsJudged=0;
 	urls=new RContainer<GDoc,unsigned,false,true> (10,5);
 	Name=name;
 	Id=id;
@@ -73,7 +74,14 @@ GSubject::GSubject(RString name, int id)
 //-----------------------------------------------------------------------------
 int GSubject::SubSubjectMinId(void)
 {
-	int min=20000;
+	int min;
+	
+	for (this->Start(); !this->End(); this->Next())
+	{
+		GSubject* subject=(*this)();
+		min=subject->GetId();
+	}
+	
 	for (this->Start(); !this->End(); this->Next())
 	{
 		GSubject* subject=(*this)();

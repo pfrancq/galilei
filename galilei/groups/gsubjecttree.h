@@ -148,7 +148,7 @@ public:
 	* @param groups      The Ggroups container to fill in.
 	* @param ses         The Galieli session.
 	*/
-	void IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,true>* groups,GSession* ses);
+	void IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,true>* groups,GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent);
 
 	/**
 	* Destructor

@@ -54,6 +54,43 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+/** This Class implement a representation for a groupid and the parentid of the
+*  group.
+*  @author Julien Lamoral
+*  @short  Subject
+*/
+//-----------------------------------------------------------------------------
+class GGroupIdParentId
+{
+public:
+
+	/**
+	*The id of the groupment.
+	*/
+	int GrpId;
+
+	/**
+	*The position of the group.
+	*/
+	int ParentId;
+
+	/**
+	* Construct the Real ID .
+	* @RealId              the id of the groupment.
+	* @parentid Id          the id of the parent
+	*/
+	GGroupIdParentId(int RealId,int parentid) : GrpId(RealId), ParentId(parentid) {}
+
+	int Compare(const GGroupIdParentId* grp) const {return(GrpId-grp->GrpId);}
+
+	int Compare(const int ID) const {return(GrpId-ID);}
+
+	int Compare(const GGroupIdParentId& grp) const {return(GrpId-grp.GrpId);}
+	
+};
+
+
+//-----------------------------------------------------------------------------
 /** This Class implement a representation for a subject used to create judgment
 *  and feedback.
 *  @author Julien Lamoral
@@ -76,7 +113,12 @@ protected:
 	/**
 	* Return true if the subsubject is judged.
 	*/
-	bool isjudged;
+	bool IsJudged;
+
+	/**
+	* The language of a subsubject
+	*/
+	RString Lang;
 
 public:
 
@@ -133,24 +175,31 @@ public:
 	int GetId(void) {return(Id);};
 
 	/**
-	* The language of a subsubject
-	*/
-	char* lang;
-
-	/**
 	* Return isjudged.
 	*/
-	bool isJudged(void) {return(isjudged);}
+	bool isJudged(void) {return(IsJudged);}
 
 	/**
 	* Set the bool isjudged.
 	*/
-	void setIsJudged(bool b) {isjudged=b;}
+	void setIsJudged(bool b) {IsJudged=b;}
 
 	/**
 	* Set the bool isjudged.
 	*/
 	int SubSubjectMinId(void);
+
+	/**
+	* Return the Lang of the Subject.
+	* @returns a string containing the lang.
+	*/
+	RString GetLang(void) {return(Lang);};
+
+    /**
+	* Return the Lang of the Subject.
+	* @returns a string containing the lang.
+	*/
+	void SetLang(char* lg) {Lang=lg;};
 
 	/**
 	* Destructor.
