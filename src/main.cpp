@@ -94,18 +94,24 @@ int main(int argc, char *argv[])
 	cout<<"Copyright 1999-2003 by the Université Libre de Bruxelles"<<endl;
 	try
 	{
+		char* lib=getenv("GALILEI_PLUGINS_LIB");
+		if(!lib)
+			lib=getenv("GALILEI_LIB");
+		if(!lib)
+			throw GException("GALILEI_LIB or GALILEI_PLUGINS_LIB must be defined");
+
 		//------------------------------------------------------------------------------
 		// Managers
-		GFilterManagerCURL URLManager("/home/pfrancq/prj/galilei_plugins",false);
-		GProfileCalcManager ProfilingManager("/home/pfrancq/prj/galilei_plugins",false);
-		GGroupingManager GroupingManager("/home/pfrancq/prj/galilei_plugins",false);
-		GGroupCalcManager GroupCalcManager("/home/pfrancq/prj/galilei_plugins",false);
-		GStatsCalcManager StatsCalcManager ("/home/pfrancq/prj/galilei_plugins",false);
-		GLinkCalcManager LinkCalcManager("/home/pfrancq/prj/galilei_plugins",false);
-		GLangManager Langs("/home/pfrancq/prj/galilei_plugins",false);
-		GDocAnalyseManager DocAnalyseManager("/home/pfrancq/prj/galilei_plugins",false);
-		GPostDocManager PostDocManager("/home/pfrancq/prj/galilei_plugins",false);
-		GPostGroupManager PostGroupManager("/home/pfrancq/prj/galilei_plugins",false);
+		GFilterManagerCURL URLManager(lib,false);
+		GProfileCalcManager ProfilingManager(lib,false);
+		GGroupingManager GroupingManager(lib,false);
+		GGroupCalcManager GroupCalcManager(lib,false);
+		GStatsCalcManager StatsCalcManager (lib,false);
+		GLinkCalcManager LinkCalcManager(lib,false);
+		GLangManager Langs(lib,false);
+		GDocAnalyseManager DocAnalyseManager(lib,false);
+		GPostDocManager PostDocManager(lib,false);
+		GPostGroupManager PostGroupManager(lib,false);
 
 		// Read Config
 		cout<<"Read Config"<<endl;
@@ -157,7 +163,7 @@ int main(int argc, char *argv[])
 		cout<<"Compute Profiles."<<endl;
 		Session.CalcProfiles(Log,true,true);
 		cout<<"Groups Profiles."<<endl;
-		Session.GroupingProfiles(Log,true,true);
+		Session.GroupingProfiles(Log,true,true,false);
 		Log->WriteLog("Session updated");
 
 		// End Session
