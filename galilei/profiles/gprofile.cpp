@@ -176,6 +176,7 @@ void GALILEI::GProfile::ClearFdbks(void)
 	Cur.Set(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->ClearFdbks();
+	State=osModified;
 }
 
 
@@ -183,6 +184,7 @@ void GALILEI::GProfile::ClearFdbks(void)
 void GALILEI::GProfile::AddJudgement(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.InsertPtr(j);
+	SetState(osModified);
 }
 
 
