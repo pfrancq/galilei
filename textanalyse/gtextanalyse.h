@@ -60,6 +60,7 @@ namespace GALILEI{
 // Forward declaration
 class GDocXML;
 class GDoc;
+class GDocOptions;
 class GIWordOccurs;
 class GIWordOccur;
 class GMIMEFilter;
@@ -174,13 +175,19 @@ class GDocAnalyse
 	*/
 	unsigned int LangIndex;
 
+	/**
+	* Options.
+	*/
+	GDocOptions* Options;
+
 public:
 
 	/**
 	* Constructor.
 	* @param s              Session.
+	* @param opt            Options.
 	*/
-	GDocAnalyse(GSession* s) throw(bad_alloc);
+	GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc);
 
 protected:
 

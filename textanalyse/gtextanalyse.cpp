@@ -46,6 +46,7 @@ using namespace RStd;
 // include files for GALILEI
 #include <docs/gdocanalyse.h>
 #include <docs/gdoc.h>
+#include <docs/gdocoptions.h>
 #include <docs/gdocxml.h>
 #include <langs/gword.h>
 #include <infos/giwordoccur.h>
@@ -134,9 +135,9 @@ GALILEI::GDocAnalyse::WordOccur::~WordOccur(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocAnalyse::GDocAnalyse(GSession* s) throw(bad_alloc)
+GALILEI::GDocAnalyse::GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc)
 	: Session(s), CurLangs(Session->GetLangs()), Occurs(0), Words(0), Direct(0),
-	  NbDirect(5000), Sl(0), Sldiff(0), Lang(0)
+	  NbDirect(5000), Sl(0), Sldiff(0), Lang(0), Options(opt)
 {
 	WordOccur** ptr;
 	unsigned int i;
@@ -320,14 +321,14 @@ BeginExtract:
 	if(!len) return(false);
 
 	// if len<MinWordSize, extract next word.
-	if(len<Session->GetMinWordSize())
+	if(len<Options->MinWordSize)
 	{
 		Letter=false;
 		goto BeginExtract;
 	}
 
 	// if not only letters and non-letter words not enabled -> extract next word.
-	if((!OnlyLetters)&&(!Session->IsNonLetterWords()))
+	if((!OnlyLetters)&&(!Options->NonLetterWords))
 		goto BeginExtract;
 
 	// If just numbers or special characters or it doesn't begin with a letter, extract next word.
@@ -372,7 +373,7 @@ void GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
 	unsigned int* tmp2;
 
 	LangIndex=cNoRef;
-	MinFrac=Session->GetMinStopWords();
+	MinFrac=Options->MinStopWords;
 	Lang=0;
 	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 	{
@@ -418,7 +419,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 			//	continue;
 			stem=(*wrd)->Word;
 		}
-		if(stem.GetLen()>=Session->GetMinStemSize())
+		if(stem.GetLen()>=Options->MinStemSize)
 		{
 			Occur=Words->GetPtr(dic->GetId(stem));
 			if(!Occur->GetNbOccurs())
@@ -429,7 +430,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 	}
 
 	// Verify that each occurences is not under the minimal.
-	MinOccur=Session->GetMinOccur();
+	MinOccur=Options->MinOccur;
 	if(MinOccur<2) return;
 	for(i=Words->NbPtr+1,Tab=Words->Tab;--i;Tab++)
 	{
@@ -452,7 +453,7 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 	if(!xml)
 		throw GException("No XML Structure for document '"+doc->URL+"'");
 	Lang=doc->GetLang();
-	FindLang=((!doc->Lang)||(!Session->IsStaticLang()));
+	FindLang=((!doc->Lang)||(!Options->StaticLang));
 	content=xml->GetContent();
 	RAssert(content);
 
