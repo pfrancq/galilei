@@ -221,7 +221,11 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 	else
 		MeanSim=Deviation=0.0;
 	if(Deviation<0)
-		throw("Negative Deviation in creating profiles similarities !");
+	{
+		char tmp[250];
+		sprintf(tmp,"Negative Deviation (%f) in creating profiles similarities !",Deviation);
+		throw GException(tmp);
+	}
 }
 
 
@@ -439,8 +443,12 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor& subprofile
 	Deviation=newdev;
 	if (fabs(Deviation)<0.00001)
 		Deviation=0.0;
-	if (Deviation <0.0)
-		throw(GException("Negative Deviation in profiles similarities"));
+	if(Deviation<0)
+	{
+		char tmp[250];
+		sprintf(tmp,"Negative Deviation (%f) in creating profiles similarities !",Deviation);
+		throw GException(tmp);
+	}
 	OldNbComp=nbcomp;
 }
 
