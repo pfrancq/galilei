@@ -94,6 +94,12 @@ public:
 	unsigned int GetId(void) const {return(Id);}
 
 	/**
+	* Set the identifier.
+	* @param id             Identifier.
+	*/
+	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+
+	/**
 	* Get the name of the user.
 	* @return Pointer to a C String.
 	*/

@@ -138,6 +138,12 @@ public:
 	unsigned int GetId(void) const {return(Id);}
 
 	/**
+	* Set the identifier.
+	* @param id             Identifier.
+	*/
+	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+
+	/**
 	* Get the language of the subprofile.
 	* @return Pointer to the language.
 	*/
