@@ -35,13 +35,10 @@
 #include <docs/gdoc.h>
 #include <docs/glink.h>
 #include <infos/glang.h>
-#include <profiles/gprofile.h>
-#include <profiles/gsubprofile.h>
+#include <profiles/gprofileproxy.h>
 #include <profiles/gprofdoc.h>
 #include <infos/gweightinfo.h>
-#if GALILEITEST
-	#include <groups/gsubject.h>
-#endif
+#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -56,11 +53,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const RString& u,const RString& a,unsigned int f,unsigned int nbf) throw(std::bad_alloc)
 	:  GWeightInfos(60), URL(url), Name(name), Id(id),
-	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), //Fdbks(nbf+nbf/2,nbf/2),
-	  Failed(f), LinkSet(5,2)
-#if GALILEITEST
-	  ,Subjects(2,1)
-#endif
+	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
+	  Failed(f), LinkSet(5,2),Subjects(2,1)
 {
 	if(Updated>Computed)
 	{
@@ -77,11 +71,8 @@ GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,co
 //------------------------------------------------------------------------------
 GDoc::GDoc(const RString& url,const RString& name,const RString& mime) throw(std::bad_alloc)
 	: GWeightInfos(60), URL(url), Name(name), Id(cNoRef),
-	  Lang(0), MIMEType(mime), Updated(), Computed(), //Fdbks(50,25),
-	  Failed(0), LinkSet(5,2)
-#if GALILEITEST
-	  ,Subjects(2,1)
-#endif
+	  Lang(0), MIMEType(mime), Updated(), Computed(), Fdbks(50,25),
+	  Failed(0), LinkSet(5,2),Subjects(2,1)
 {
 	if(Updated>Computed)
 	{
@@ -131,19 +122,9 @@ int GDoc::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::ClearInfos(bool l)
-{
-	if(l)
-		Lang=0;
-	RemoveRefs();
-	Clear();
-}
-
-
-//------------------------------------------------------------------------------
 void GDoc::ClearFdbks(void)
 {
-// 	Fdbks.Clear();
+ 	Fdbks.Clear();
 }
 
 
@@ -211,23 +192,6 @@ void GDoc::SetState(tObjState state)
 
 
 //------------------------------------------------------------------------------
-void GDoc::SetLang(GLang *l)
-{
-	GSubProfile* sub;
-
-	Lang=l;
-	State=osUpdated;
-	Computed.SetToday();
-/*	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
-	{
-		sub=Fdbks()->GetProfile()->GetSubProfile(l);
-		if(sub)
-			sub->SetState(osModified);
-	}*/
-}
-
-
-//------------------------------------------------------------------------------
 void GDoc::SetId(unsigned int id) throw(GException)
 {
 	if(id==cNoRef)
@@ -237,18 +201,11 @@ void GDoc::SetId(unsigned int id) throw(GException)
 
 
 //------------------------------------------------------------------------------
-// unsigned int GDoc::GetNbFdbks(void) const
-// {
-// 	return(Fdbks.NbPtr);
-// }
-// 
-// 
-// //------------------------------------------------------------------------------
-// GProfDocCursor GDoc::GetProfDocCursor(void)
-// {
-// 	GProfDocCursor cur(Fdbks);
-// 	return(cur);
-// }
+RCursor<GProfileProxy> GDoc::GetFdbks(void)
+{
+	RCursor<GProfileProxy> cur(Fdbks);
+	return(cur);
+}
 
 
 //------------------------------------------------------------------------------
@@ -302,25 +259,46 @@ double GDoc::SimilarityIFF(const GGroup* grp) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GDoc::UpdateRefs(void) const throw(GException)
+void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos)
 {
-	if(!Lang) return;
-	AddRefs(otDoc,Lang);
+	GLang* Old(Lang);
+
+	// If document had a language -> remove its references
+	if(Old)
+		DelRefs(otDoc,Old);
+
+	// Assign language and information
+	GWeightInfos::Clear();
+	Lang=lang;
+	State=osUpdated;
+	Computed.SetToday();
+	GWeightInfos::operator=(*infos);
+
+	// Clear infos
+	infos->Clear();
+
+	// if document has a language -> update its references
+	if(Lang) return;
+		AddRefs(otDoc,Lang);
+
+	// Signal to the profiles that the document has changed
+	RCursor<GProfileProxy> Cur(Fdbks);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Modify(this,Lang,Old);
 }
 
 
 //------------------------------------------------------------------------------
-void GDoc::RemoveRefs(void) const throw(GException)
+void GDoc::InsertFdbk(unsigned int id) throw(std::bad_alloc)
 {
-	if(!Lang) return;
-	DelRefs(otDoc,Lang);
+	Fdbks.InsertPtr(New<GProfileProxy>(id));
 }
 
 
 //------------------------------------------------------------------------------
-void GDoc::AddAssessment(GProfDoc* j) throw(std::bad_alloc)
+void GDoc::DeleteFdbk(unsigned int id) throw(std::bad_alloc)
 {
-//	Fdbks.InsertPtr(j);
+	Fdbks.DeletePtr(Fdbks.GetPtr<unsigned int>(id));
 }
 
 
@@ -358,7 +336,6 @@ GLinkCursor GDoc::GetLinkCursor(void)
 }
 
 
-#if GALILEITEST
 //------------------------------------------------------------------------------
 void GDoc::InsertSubject(GSubject* s)
 {
@@ -404,15 +381,14 @@ unsigned int GDoc::GetNbSubjects(void)
 }
 
 
-#endif
-
-
 //------------------------------------------------------------------------------
 GDoc::~GDoc(void)
 {
 	try
 	{
-		RemoveRefs();
+		// If document have a language -> remove its references
+		if(Lang)
+			DelRefs(otDoc,Lang);
 	}
 	catch(...)
 	{

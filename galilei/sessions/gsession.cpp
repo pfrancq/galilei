@@ -89,6 +89,8 @@ using namespace R;
 #include <groups/gpostgroup.h>
 #include <groups/gpostgroupmanager.h>
 #include <docs/gdocproxymem.h>
+#include <profiles/gsubprofileproxymem.h>
+#include <profiles/gprofileproxymem.h>
 using namespace GALILEI;
 
 
@@ -181,6 +183,7 @@ void GSession::PostConnect(GLinkCalcManager* lmng) throw(std::bad_alloc,GExcepti
 		ProfilesBehaviours = new GProfilesBehaviours(this,true);
 	DocProfSims = new GDocProfSims(this,true,false);
 }
+
 
 //------------------------------------------------------------------------------
 GFactoryLinkCalcCursor GSession::GetLinkCalcsCursor(void)
@@ -644,8 +647,8 @@ void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate date) th
 	GProfDoc* f;
 
 	Fdbks.InsertPtr(f=new GProfDoc(d,p,j,date));
-	p->AddAssessment(f,this);
-	d->AddAssessment(f);
+	p->InsertFdbk(f,this);
+	d->InsertFdbk(p->GetId());
 }
 
 
@@ -655,8 +658,8 @@ void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,const char* date)
 	GProfDoc* f;
 
 	Fdbks.InsertPtr(f=new GProfDoc(d,p,j,date));
-	p->AddAssessment(f,this);
-	d->AddAssessment(f);
+	p->InsertFdbk(f,this);
+	d->InsertFdbk(p->GetId());
 }
 
 
@@ -851,10 +854,35 @@ void GSession::ExportMatrix(GSlot* rec, const char* type, const char* filename, 
 
 
 //------------------------------------------------------------------------------
-auto_ptr<GDocProxy> GSession::GetDocProxy(unsigned int id)
+void GSession::New(GDocProxy* &ptr,unsigned int id)
 {
 	GDoc* doc=GetDoc(id);
-	return(auto_ptr<GDocProxy>(new GDocProxyMem(doc)));
+	if(!doc)
+		ptr=0;
+	else
+		ptr=new GDocProxyMem(doc);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::New(GSubProfileProxy* &ptr,unsigned int id)
+{
+	GSubProfile* sub=GetSubProfile(id);
+	if(!sub)
+		ptr=0;
+	else
+		ptr=new GSubProfileProxyMem(sub);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::New(GProfileProxy* &ptr,unsigned int id)
+{
+	GProfile* prof=GetProfile(id);
+	if(!prof)
+		ptr=0;
+	else
+		ptr=new GProfileProxyMem(prof);
 }
 
 
@@ -891,13 +919,15 @@ GSession::~GSession(void)
 	catch(...)
 	{
 	}
+	Session=0;
 }
 
 
 
-
 //------------------------------------------------------------------------------
+//
 // class GSessionParams
+//
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------

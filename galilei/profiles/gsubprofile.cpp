@@ -55,10 +55,7 @@ using namespace R;
 GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,const char* u, const char* c) throw(std::bad_alloc)
 	: GWeightInfos(60), Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
 {
-
-	#if GALILEITEST
-		Subject=0;
-	#endif
+	Subject=0;
 	if(Updated>=Computed)
 	{
 		if(Computed==RDate::null)
@@ -78,9 +75,7 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,
 GSubProfile::GSubProfile(GSession* session,GProfile *prof,GLang *lang) throw(std::bad_alloc)
 	: GWeightInfos(60), Id(cNoRef), Profile(prof), Lang(lang), Group(0), State(osCreated), Attached(""), Updated(""), Computed(""), Fdbks(20,10)
 {
-	#if GALILEITEST
-		Subject=0;
-	#endif
+	Subject=0;
 	session->AssignId(this);
 	Profile->InsertPtr(this);
 }
@@ -115,7 +110,7 @@ int GSubProfile::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::AddAssessment(GProfDoc* j) throw(std::bad_alloc)
+void GSubProfile::InsertFdbk(GProfDoc* j) throw(std::bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 
@@ -129,7 +124,7 @@ void GSubProfile::AddAssessment(GProfDoc* j) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::RemoveAssessment(GProfDoc* j) throw(std::bad_alloc)
+void GSubProfile::DeleteFdbk(GProfDoc* j) throw(std::bad_alloc)
 {
 	Fdbks.DeletePtr(j);
 
@@ -402,9 +397,8 @@ void GSubProfile::RemoveRefs(void) const throw(GException)
 {
 	DelRefs(otSubProfile,Lang);
 }
-		
 
-#if GALILEITEST
+
 //------------------------------------------------------------------------------
 void GSubProfile::SetSubject(GSubject* s)
 {
@@ -417,7 +411,6 @@ GSubject* GSubProfile::GetSubject(void) const
 {
 	return(Subject);
 }
-#endif
 
 
 //------------------------------------------------------------------------------

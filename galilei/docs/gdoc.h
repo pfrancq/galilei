@@ -39,6 +39,7 @@
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <infos/gweightinfos.h>
+#include <groups/gsubject.h>
 
 
 //------------------------------------------------------------------------------
@@ -99,7 +100,7 @@ protected:
 	/**
 	* Profiles which have assessed the document.
 	*/
-//	R::RContainer<GProfDoc,false,true> Fdbks;
+	R::RContainer<GProfileProxy,true,true> Fdbks;
 
 	/**
 	* Count the number of downloads failed.
@@ -111,12 +112,10 @@ protected:
 	*/
 	R::RContainer<GLink,true,true> LinkSet;
 
-#if GALILEITEST
 	/**
 	* Subjects of the document.
 	*/
 	R::RContainer<GSubject,false,true> Subjects;
-#endif
 
 public:
 
@@ -181,13 +180,9 @@ proxy:
 	* undefined.
 	* @return false.
 	*/
-	virtual bool IsDefined(void) const;
+	bool IsDefined(void) const;
 
-	/**
-	* This function clears the information related to the document.
-	* @param l              Must the language be removed.
-	*/
-	virtual void ClearInfos(bool l);
+proxy:
 
 	/**
 	* Clear all the assessments on the document.
@@ -253,11 +248,7 @@ proxy:
 	*/
 	GLang* GetLang(void) const {return(Lang);}
 
-	/**
-	* Set the language of the document.
-	* @param l              Pointer to the lLanguage.
-	*/
-	void SetLang(GLang* l);
+proxy:
 
 	/**
 	* Get the identificator of the document.
@@ -292,70 +283,68 @@ proxy:
 	*/
 	void DecFailed(void) {Failed--;}
 
-public:
-
 	/**
-	* Get a Cursor on the feedback on the document.
-	* @return GProfDocCursor.
+	* Get a cursor on the profiles which have assesses the documents.
+	* @return R::RCursor<GProfileProxy>.
 	*/
-//	GProfDocCursor GetProfDocCursor(void);
-
-	/**
-	* Get the number of feedbacks on the document.
-	* @return unsigned int
-	*/
-//	unsigned int GetNbFdbks(void) const;
+	R::RCursor<GProfileProxy> GetFdbks(void);
 
 	/**
 	* Get a Cursor on the weights of the document.
 	* @return GWordWeightCursor.
 	*/
 	GWeightInfoCursor GetWeightInfoCursor(void);
-	
+
 	/**
 	* Compute a similarity between two documents.
 	* @param doc             Pointer to a document.
 	*/
-	virtual double Similarity(const GDoc* doc) const;
+	double Similarity(const GDoc* doc) const;
 
 	/**
 	* Compute a similarity between two documents using a Inverse Frequence
 	* Factor (IFF).
 	* @param doc             Pointer to a document.
 	*/
-	virtual double SimilarityIFF(const GDoc* doc) const throw(GException);
+	double SimilarityIFF(const GDoc* doc) const throw(GException);
 
 	/**
 	* Compute a similarity between a document and a subprofile.
 	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double Similarity(const GSubProfile* sub) const;
+	double Similarity(const GSubProfile* sub) const;
 
 	/**
 	* Compute a similarity between a document and a subprofile using a Inverse
 	* Frequence Factor (IFF).
 	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException);
+	double SimilarityIFF(const GSubProfile* sub) const throw(GException);
 
 	/**
 	* Compute a similarity between a document and a group.
 	* @param grp             Pointer to a group.
 	*/
-	virtual double Similarity(const GGroup* grp) const;
+	double Similarity(const GGroup* grp) const;
 
 	/**
 	* Compute a similarity between a document and a group using a Inverse
 	* Frequence Factor (IFF).
 	* @param grp             Pointer to a group.
 	*/
-	virtual double SimilarityIFF(const GGroup* grp) const throw(GException);
+	double SimilarityIFF(const GGroup* grp) const throw(GException);
 
 	/**
-	* Add a assessment for this document.
-	* @param j              Assessment.
+	* Add a profile to the list of those which have assess the document.
+	* @param id               Identificator of the profile.
 	*/
-	void AddAssessment(GProfDoc* j) throw(std::bad_alloc);
+	void InsertFdbk(unsigned int id) throw(std::bad_alloc);
+
+	/**
+	* Delete a profile from the list of those which have assess the document.
+	* @param id               Identificator of the profile.
+	*/
+	void DeleteFdbk(unsigned int id) throw(std::bad_alloc);
 
 	/**
 	* Get the number of outgoing links
@@ -373,7 +362,7 @@ public:
 	* Add a new link to the document and set the number of occurences of this
 	* link.
 	* @param doc             The Document representing the link to be inserted.
-	* @param nbOccurs        The number of occurence of the link inside the
+	* @param nbOccurs        The number of occurences of the link inside the
 	*                        document.
 	*/
 	void InsertLink(const GDoc* doc, unsigned int nbOccurs) throw(std::bad_alloc);
@@ -383,8 +372,6 @@ public:
 	* @return GLinkCursor.
 	*/
 	GLinkCursor GetLinkCursor(void);
-
-#if GALILEITEST
 
 	/**
 	* Insert a new subject for this document.
@@ -417,17 +404,15 @@ public:
 	*/
 	unsigned int GetNbSubjects(void);
 
-#endif
-
 	/**
-	* Update the references of the document.
+	* Update the document by assigning it a set of information and a language.
+	* @param lang             Pointer to the language.
+	* @param infos            Pointer to the information.
+	* \warning The container infos is cleared by this method.
 	*/
-	void UpdateRefs(void) const throw(GException);
+	void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos);
 
-	/**
-	* Remove the references of the document.
-	*/
-	void RemoveRefs(void) const throw(GException);
+public:
 
 	/**
 	* Destruct the document.

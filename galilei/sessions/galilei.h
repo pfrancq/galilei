@@ -6,7 +6,7 @@
 
 	GALILEI Header - Header.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2004 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -60,9 +60,6 @@
 
 //------------------------------------------------------------------------------
 // Defines
-#ifndef GALILEITEST
-	#define GALILEITEST 1
-#endif
 #define proxy public
 
 
@@ -145,6 +142,7 @@ class GUsers;
 class GUser;
 class GUserCursor;
 class GProfile;
+class GProfileProxy;
 class GSubProfile;
 class GSubProfileProxy;
 class GSubProfileCursor;

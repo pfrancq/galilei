@@ -65,6 +65,11 @@ protected:
 	*/
 	GSession* Session;
 
+	/**
+	* Current document to analyse (has to be a vector).
+	*/
+	GDoc* Doc;
+
 public:
 
 	/**
@@ -97,11 +102,6 @@ public:
 	*                       docs.
 	*/
 	virtual void Analyze(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,false,true>* tmpDocs=0) throw(GException)=0;
-
-	/**
-	* Update the feedbacks of the profiles and subprofiles.
-	*/
-	void UpdateFdbks(GLang* oldlang, GLang* newlang, GDoc* doc) throw(GException);
 
 	/**
 	* Destructor of the document analysis method.

@@ -198,7 +198,7 @@ void GProfile::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
-void GProfile::AddAssessment(GProfDoc* j,GSession* s) throw(std::bad_alloc)
+void GProfile::InsertFdbk(GProfDoc* j,GSession* s) throw(std::bad_alloc)
 {
 	GLang* l;
 
@@ -209,94 +209,56 @@ void GProfile::AddAssessment(GProfDoc* j,GSession* s) throw(std::bad_alloc)
 	}
 	else
 	{
-		GetInsertSubProfile(l,s)->AddAssessment(j);
+		GetInsertSubProfile(l,s)->InsertFdbk(j);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang, GSession* s)
+void GProfile::Modify(GDoc* doc,GLang* newlang,GLang* oldlang)
 {
-	GLang* lang;
 	GSubProfile* sub;
+	GProfDoc* assess=0;
 
-	// Get new lang
-	lang=profdoc->GetDoc()->GetLang();
-
-	// If no lang -> return
-	if((!lang)&&(!oldlang)) return;
-
-	// if the old lang is not defined and the new lang is defined.
-	if((!oldlang)&&lang)
-	{
-		sub=GetInsertSubProfile(lang,s);
-		sub->AddAssessment(profdoc);
-		sub->SetState(osModified);
-		Fdbks.DeletePtr(profdoc);
+	// If no languages are defined -> nothing to do
+	if((!newlang)&&(!oldlang))
 		return;
+
+	// If a new language is defined -> modify the corresponding subprofile
+	if(newlang)
+	{
+		sub=GetInsertSubProfile(newlang,GSession::Get());
+		sub->SetState(osModified);
 	}
 
-	//if the new lang is not defined and the old one is defined.
-	if((!lang)&&oldlang)
-	{
-		Fdbks.InsertPtr(profdoc);
-		sub=GetInsertSubProfile(oldlang,s);
-		sub->RemoveAssessment(profdoc);
-		sub->SetState(osModified);
+	// If the languages are identical -> nothing else to do
+	if(newlang==oldlang)
 		return;
+
+	// Find the corresponding assessment and delete it
+	if(oldlang)
+	{
+		GSubProfile* sub2=GetInsertSubProfile(oldlang,GSession::Get());
+		assess=sub2->GetFeedback(doc);
+		if(assess)
+			sub2->DeleteFdbk(assess);
+		sub2->SetState(osModified);
+	}
+	else
+	{
+		assess=Fdbks.GetPtr<const GDoc*>(doc);
+		if(assess)
+			Fdbks.DeletePtr(assess);
 	}
 
-	// if the two langs are defined (but different)
-	sub=GetInsertSubProfile(lang,s);
-	sub->AddAssessment(profdoc);
-	sub->SetState(osModified);
-	sub=GetSubProfile(oldlang);
-	sub->RemoveAssessment(profdoc);
-	sub->SetState(osModified);
+	// Re-insert the assessment
+	if(!assess)
+		return;
+	if(!newlang)
+		Fdbks.InsertPtr(assess);
+	else
+		sub->InsertFdbk(assess);
 }
-
-
-//------------------------------------------------------------------------------
-// void GProfile::Modify(GSession* session,GDocRef& profdoc,GLang* newlang,GLang* oldlang)
-// {
-// 	GSubProfile* sub;
-// 
-// 	// If no languages are defined -> nothing to do
-// 	if((!newlang)&&(!oldlang))
-// 		return;
-// 
-// 	// If a new language is defined -> modify the corresponding subprofile
-// 	if(newlang)
-// 	{
-// 		sub=GetInsertSubProfile(newlang,session);
-// 		sub->SetState(osModified);
-// 	}
-// 
-// 	// If the languages are identical -> nothing else to do
-// 	if(newlang==oldlang)
-// 		return;
-// 
-// 	#warning profdoc must be create/delete
-// 
-// 	// If the old language was defined -> delete the assessment on the document
-// 	if(oldlang)
-// 	{
-// 		GSubProfile* sub2=GetInsertSubProfile(oldlang,session);
-// //		subs->RemoveAssessment(profdoc);
-// 		sub2->SetState(osModified);
-// 	}
-// 
-// 	if(!newlang)
-// 	{
-// 		// if the new language is not defined -> create an assessment in the profile
-// //		Fdbks.InsertPtr(profdoc);
-// 	}
-// 	else
-// 	{
-// 		// if the new language is defined -> create an asessment in the subprofile
-// //		sub->AddAssessment(profdoc);
-// 	}
-// }
 
 
 //------------------------------------------------------------------------------

@@ -82,12 +82,10 @@ protected:
 	*/
 	bool Social;
 
-#if GALILEITEST
 	/**
 	* Subject of the profile.
 	*/
 	GSubject* Subject;
-#endif
 
 public:
 
@@ -131,7 +129,7 @@ public:
 	*/
 	int Compare(const unsigned int id) const;
 
-#if GALILEITEST
+proxy:
 
 	/**
 	* Set the Subject of the subprofile.
@@ -143,8 +141,6 @@ public:
 	* Get the subject of the subprofile.
 	*/
 	GSubject* GetSubject(void) const;
-
-#endif
 
 	/**
 	* Get the identificator of the profile.
@@ -230,32 +226,18 @@ public:
 	* @param j              Assessment.
 	* @param s              Session.
 	*/
-	void AddAssessment(GProfDoc* j,GSession* s) throw(std::bad_alloc);
+	void InsertFdbk(GProfDoc* j,GSession* s) throw(std::bad_alloc);
 
 	/**
-	* Store the profdoc in the feedbacks of the subprofile
-	* coressponding to the lang of the profdoc.
-	*
-	* This function is called when at least one of the two lang is defined
-	* and the two lang are different.
-	* @param profdoc        Pointer to the feedback.
-	* @param oldlang        Old language of the document.  
-	* @param s              Session.
+	* This method is call when a document was modified.
+	* @param doc            Pointer to the document.
+	* @param newlang        New language of the document.  
+	* @param oldlang        Old language of the document. 
+	* The document must have been assessed by the profile. 
 	*/
-	void DispatchFdbks(GProfDoc* profdoc, GLang* oldlang,GSession* s);
+	void Modify(GDoc* doc,GLang* newlang,GLang* oldlang);
 
-	/**
-	* Store the profdoc in the feedbacks of the subprofile
-	* coressponding to the lang of the profdoc.
-	*
-	* This function is called when at least one of the two lang is defined
-	* and the two lang are different.
-	* @param session        Pointer to the session.
-	* @param profdoc        Pointer to the feedback.
-	* @param oldlang        Old language of the document.  
-	* @param s              Session.
-	*/
-//	void Modify(GSession* session,GDocRef& profdoc,GLang* newlang,GLang* oldlang);
+public:
 
 	/*
 	* Destructor of the profile.

@@ -101,12 +101,10 @@ protected:
 	*/
 	R::RContainer<GProfDoc,false,true> Fdbks;
 
-#if GALILEITEST
 	/**
 	* Subject of the subprofile.
 	*/
 	GSubject* Subject;
-#endif
 
 public:
 
@@ -163,18 +161,18 @@ public:
 	int Compare(const GLang* lang) const;
 
 proxy:
-	
+
 	/**
 	* Add an assessment for the subprofile.
 	* @param j               Pointer to an assessment.
 	*/
-	void AddAssessment(GProfDoc* j) throw(std::bad_alloc);
+	void InsertFdbk(GProfDoc* j) throw(std::bad_alloc);
 
 	/**
 	* Remove an assessment for the subprofile.
 	* @param j               Pointer to an assessment.
 	*/
-	void RemoveAssessment(GProfDoc* j) throw(std::bad_alloc);
+	void DeleteFdbk(GProfDoc* j) throw(std::bad_alloc);
 
 	/**
 	* Clear all the assessments of the subprofile.
@@ -216,7 +214,7 @@ proxy:
 	* @return Pointer GProfile.
 	*/
 	GProfile* GetProfile(void) const {return(Profile);}
-	
+
 	/**
 	* Verify if the subprofile is defined, i.e. if it is computed. A subprofile
 	* that isn't computed, isn't attached. By default, it is supposed to be
