@@ -137,6 +137,7 @@ void KViewProfile::ConstructFdbks(void)
 	const RDate* d;
 	char sDate[20];
 	GProfDocCursor Docs;
+	GSubProfileCursor SubCur;
 
 	if(!Fdbks) return;
 
@@ -152,33 +153,37 @@ void KViewProfile::ConstructFdbks(void)
 	hs->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
 
 	// Add Judgements
-	Docs=Profile->GetProfDocCursor();
-	for(Docs.Start();!Docs.End();Docs.Next())
+	SubCur=Profile->GetSubProfilesCursor();
+	for (SubCur.Start(); !SubCur.End(); SubCur.Next())
 	{
-		switch(Docs()->GetFdbk() & djMaskJudg)
+		Docs=SubCur()->GetProfDocCursor();
+		for(Docs.Start();!Docs.End();Docs.Next())
 		{
-			case djOK:
-				p=ok;
-				break;
-			case djKO:
-				p=ko;
-				break;
-			case djNav:
-				p=n;
-				break;
-			case djOutScope:
-				p=hs;
-				break;
-			default:
-				p=0;
-				break;
+			switch(Docs()->GetFdbk())
+			{
+				case djOK:
+					p=ok;
+					break;
+				case djKO:
+					p=ko;
+					break;
+				case djNav:
+					p=n;
+					break;
+				case djOutScope:
+					p=hs;
+					break;
+				default:
+					p=0;
+					break;
+			}
+			if(!p) continue;
+			d=Docs()->GetUpdated();
+			sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
+			QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName(),Docs()->GetDoc()->GetURL(),sDate);
+			prof->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/konqueror.png"));
 		}
-		if(!p) continue;
-		d=Docs()->GetUpdated();
-		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
-		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName(),Docs()->GetDoc()->GetURL(),sDate);
-		prof->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/konqueror.png"));
-	}
+	}      
 }
 
 //-----------------------------------------------------------------------------
@@ -203,7 +208,6 @@ void KViewProfile::ConstructGroups(void)
 			for(gr->Start(); !gr->End(); gr->Next())
 			{
 				GSubProfile* sub=(*gr)();
-				
 				d=sub->GetAttached();
 				sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
 				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName(),sDate);

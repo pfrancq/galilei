@@ -32,7 +32,7 @@ configure_args=--prefix=/usr --enable-debug\s
 debug_args=-dograb
 email=pfrancq@ulb.ac.be
 kdevprj_version=1.3
-lfv_open_groups=Sources - Groups
+lfv_open_groups=
 make_options=\s-j2
 makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am,kgalileicenter/r/rgga/Makefile.am,kgalileicenter/r/rpromethee/Makefile.am,kgalileicenter/qtwidgets/rpromethee/Makefile.am,kgalileicenter/galilei/tests/Makefile.am,kgalileicenter/galilei/postgroups/Makefile.am,kgalileicenter/galilei/historic/Makefile.am
 modifyMakefiles=true
@@ -1218,7 +1218,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/profiles/Makefile.am]
-files=kgalileicenter/galilei/profiles/gprofdoc.cpp,kgalileicenter/galilei/profiles/gprofdoc.h,kgalileicenter/galilei/profiles/gprofile.cpp,kgalileicenter/galilei/profiles/gprofile.h,kgalileicenter/galilei/profiles/gprofilecalc.cpp,kgalileicenter/galilei/profiles/gprofilecalc.h,kgalileicenter/galilei/profiles/gprofilecalcvector.cpp,kgalileicenter/galilei/profiles/gprofilecalcvector.h,kgalileicenter/galilei/profiles/gsubprofile.cpp,kgalileicenter/galilei/profiles/gsubprofile.h,kgalileicenter/galilei/profiles/gsubprofiledesc.cpp,kgalileicenter/galilei/profiles/gsubprofiledesc.h,kgalileicenter/galilei/profiles/guser.cpp,kgalileicenter/galilei/profiles/guser.h,kgalileicenter/galilei/profiles/gusers.cpp,kgalileicenter/galilei/profiles/gusers.h,kgalileicenter/galilei/profiles/gsubprofilevector.cpp,kgalileicenter/galilei/profiles/gsubprofilevector.h,kgalileicenter/galilei/profiles/gprofilecalcfeedback.cpp,kgalileicenter/galilei/profiles/gprofilecalcfeedback.h,kgalileicenter/galilei/profiles/gprofilecalcreweighting.cpp,kgalileicenter/galilei/profiles/gprofilecalcreweighting.h,kgalileicenter/galilei/profiles/gprofilessim.h,kgalileicenter/galilei/profiles/gprofilessim.cpp,kgalileicenter/galilei/profiles/ggetfeedback.cpp,kgalileicenter/galilei/profiles/ggetfeedback.h,kgalileicenter/galilei/profiles/gsubprofiles.cpp,kgalileicenter/galilei/profiles/gsubprofiles.h,kgalileicenter/galilei/profiles/gsubprofilessamedocs.cpp,kgalileicenter/galilei/profiles/gsubprofilessamedocs.h,kgalileicenter/galilei/profiles/gcalcparams.cpp,kgalileicenter/galilei/profiles/gcalcparams.h,kgalileicenter/galilei/profiles/gprofilessims.cpp,kgalileicenter/galilei/profiles/gprofilessims.h
+files=kgalileicenter/galilei/profiles/gprofdoc.cpp,kgalileicenter/galilei/profiles/gprofdoc.h,kgalileicenter/galilei/profiles/gprofile.cpp,kgalileicenter/galilei/profiles/gprofile.h,kgalileicenter/galilei/profiles/gprofilecalc.cpp,kgalileicenter/galilei/profiles/gprofilecalc.h,kgalileicenter/galilei/profiles/gprofilecalcvector.cpp,kgalileicenter/galilei/profiles/gprofilecalcvector.h,kgalileicenter/galilei/profiles/gsubprofile.cpp,kgalileicenter/galilei/profiles/gsubprofile.h,kgalileicenter/galilei/profiles/gsubprofiledesc.cpp,kgalileicenter/galilei/profiles/gsubprofiledesc.h,kgalileicenter/galilei/profiles/guser.cpp,kgalileicenter/galilei/profiles/guser.h,kgalileicenter/galilei/profiles/gusers.cpp,kgalileicenter/galilei/profiles/gusers.h,kgalileicenter/galilei/profiles/gsubprofilevector.cpp,kgalileicenter/galilei/profiles/gsubprofilevector.h,kgalileicenter/galilei/profiles/gprofilecalcfeedback.cpp,kgalileicenter/galilei/profiles/gprofilecalcfeedback.h,kgalileicenter/galilei/profiles/gprofilecalcreweighting.cpp,kgalileicenter/galilei/profiles/gprofilecalcreweighting.h,kgalileicenter/galilei/profiles/gprofilessim.h,kgalileicenter/galilei/profiles/gprofilessim.cpp,kgalileicenter/galilei/profiles/ggetfeedback.cpp,kgalileicenter/galilei/profiles/ggetfeedback.h,kgalileicenter/galilei/profiles/gsubprofiles.cpp,kgalileicenter/galilei/profiles/gsubprofiles.h,kgalileicenter/galilei/profiles/gsubprofilessamedocs.cpp,kgalileicenter/galilei/profiles/gsubprofilessamedocs.h,kgalileicenter/galilei/profiles/gcalcparams.cpp,kgalileicenter/galilei/profiles/gcalcparams.h,kgalileicenter/galilei/profiles/gprofilessims.cpp,kgalileicenter/galilei/profiles/gprofilessims.h,kgalileicenter/galilei/profiles/gprofilesbehaviour.cpp,kgalileicenter/galilei/profiles/gprofilesbehaviour.h,kgalileicenter/galilei/profiles/gprofilesbehaviours.cpp,kgalileicenter/galilei/profiles/gprofilesbehaviours.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=profiles
 sub_dirs=
@@ -1315,6 +1315,30 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/profiles/gprofilecalcvector.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/profiles/gprofilesbehaviour.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/profiles/gprofilesbehaviour.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/profiles/gprofilesbehaviours.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/profiles/gprofilesbehaviours.h]
 dist=true
 install=false
 install_location=
