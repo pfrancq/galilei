@@ -1,0 +1,90 @@
+<!DOCTYPE kdevelop>
+<kdevelop>
+<general>
+<author>Pascal Francq</author>
+  <email>pfrancq@ulb.ac.be</email>
+  <projectmanagement>KDevKDEAutoProject</projectmanagement>
+  <primarylanguage>C++</primarylanguage>
+  <keywords>
+<keyword>KDE</keyword>
+   <keyword>Qt</keyword>  </keywords> </general>
+ <kdevautoproject>
+<general>
+<mainprogram>kgalileicenter</mainprogram>  </general>
+  <configure>
+<configargs>\s--build=i386-linux --host=i386-linux --target=i386-linux --prefix=/usr/lib/kde3 --enable-debug\s</configargs>  </configure>
+  <make>
+<abortonerror/>
+   <numberofjobs/>
+   <dontact/>
+   <makebin/>  </make>
+  <compiler>
+<cflags/>
+   <cxxflags>\s-O0 -g3 -Wall</cxxflags>  </compiler> </kdevautoproject>
+ <kdevfileview>
+<groups>
+<group pattern="*kdoc*.h,*kview*.h,*kgalileicenter.h,*qsession*.h,*qplugins*.h" name="Headers" />
+   <group pattern="*tests/*.h" name="Headers - Tests" />
+   <group pattern="*/galilei/galilei.h,*/galilei/gplugin.h" name="Headers - GALILEI" />
+   <group pattern="*r/rga/*.h" name="Headers R - GA" />
+   <group pattern="*r/rgga/*.h" name="Headers R - GGA" />
+   <group pattern="*qtwidgets/*.h" name="Headers - Qt Widgets" />
+   <group pattern="*rmath/*.h" name="Headers R - Math" />
+   <group pattern="*rmysql/*.h" name="Headers R - MySQL" />
+   <group pattern="*rpromethee*.h" name="Headers R - Prométhée" />
+   <group pattern="*rtimedate/*.h" name="Headers R - Time-Date" />
+   <group pattern="*rio/*.h" name="Headers R - IO" />
+   <group pattern="*rstd/*.h" name="Headers R - Std" />
+   <group pattern="*rpromethee*.cpp" name="Sources R - Prométhée" />
+   <group pattern="*urlmanagers/*.h" name="Headers - URL Managers" />
+   <group pattern="*sessions/*.h" name="Headers - Sessions" />
+   <group pattern="*profiles/*.h" name="Headers - Profiles" />
+   <group pattern="*infos/*.h" name="Headers - Infos" />
+   <group pattern="*groups/*.h" name="Headers - Groups" />
+   <group pattern="*filters/*.h" name="Headers - Filters" />
+   <group pattern="*main.cpp,*kdoc*.cpp,*kview*.cpp,*kgalileicenter.cpp,*qsession*.cpp,*kgalileicenter_*.cpp,*qplugins*.cpp" name="Sources" />
+   <group pattern="*/galilei/gplugin.cpp" name="Sources - GALILEI" />
+   <group pattern="*infos/*.cpp" name="Sources - Infos" />
+   <group pattern="*tests/*.cpp" name="Sources - Tests" />
+   <group pattern="*filters/*.cpp" name="Sources - Filters" />
+   <group pattern="*qtwidgets/*.cpp,*qtwidgets/*.hh" name="Sources - Qt Widgets" />
+   <group pattern="*rmath/*.cpp" name="Sources R - Math" />
+   <group pattern="*docs/*.cpp" name="Sources - Docs" />
+   <group pattern="*urlmanagers/*.cpp" name="Sources - URL Managers" />
+   <group pattern="*rmysql/*.cpp" name="Sources R - MySQL" />
+   <group pattern="*rinter/*.cpp" name="Sources R - Inter" />
+   <group pattern="*sessions/*.cpp" name="Sources - Sessions" />
+   <group pattern="*rtimedate/*.cpp" name="Sources R - Time-Date" />
+   <group pattern="*rxml/*.cpp" name="Sources R - XML" />
+   <group pattern="*profiles/*.cpp" name="Sources - Profiles" />
+   <group pattern="*langs/*.cpp" name="Sources - Langs" />
+   <group pattern="*groups/*.cpp" name="Sources - Groups" />
+   <group pattern="*rstd/*.cpp,*rstd/*.hh" name="Sources R - Std" />
+   <group pattern="*rio/*.cpp" name="Sources R - IO" />
+   <group pattern="*r/rga/*.hh,*r/rga/*.cpp" name="Sources R - GA" />
+   <group pattern="*r/rgga/*.hh,*r/rgga/*.cpp" name="Sources R - GGA" />
+   <group pattern="*.kdevdlg,*.ui,*.rc" name="User Interface" />
+   <group pattern="*.po" name="Translations" />
+   <group pattern="AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,NEWS" name="GNU" />
+   <group pattern="*rinter/*.h" name="Headers R - Inter" />
+   <group pattern="*docs/*.h" name="Headers - Docs" />
+   <group pattern="*rxml/*.h" name="Headers R - XML" />
+   <group pattern="*langs/*.h" name="Headers - Langs" />
+   <group pattern="*" name="Others" />  </groups>
+  <tree>
+<hidenonprojectfiles>false</hidenonprojectfiles>
+   <hidepatterns>*.o,*.lo,CVS</hidepatterns>  </tree> </kdevfileview>
+ <kdevdoctreeview>
+<ignoretocs>
+<toc>gtk</toc>
+   <toc>gnustep</toc>
+   <toc>python</toc>
+   <toc>php</toc>
+   <toc>perl</toc>  </ignoretocs> </kdevdoctreeview>
+ <kdevdebugger>
+<general>
+<dbgshell>libtool</dbgshell>  </general>
+  <breakpoints/> </kdevdebugger>
+ <workspace>
+<openfiles>
+<file url="file:/home/pfrancq/prj/kgalileicenter/kgalileicenter/kviewchromos.cpp" />  </openfiles> </workspace></kdevelop>
