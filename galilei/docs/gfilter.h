@@ -42,9 +42,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <docs/gdocxml.h>
 #include <sessions/gplugin.h>
-#include <filters/gurlmanager.h>
 
 
 //-----------------------------------------------------------------------------

@@ -40,9 +40,9 @@
 #include <docs/gdoc.h>
 #include <profiles/gprofile.h>
 #include <langs/glang.h>
+
 using namespace GALILEI;
 using namespace R;
-
 
 
 //------------------------------------------------------------------------------

@@ -51,34 +51,19 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* [Desccription of the class]
-* @author 
-* @short [short description].
+* This class represents a document represented by its URL. When these documents are placed in a
+* RContainer they are sorted bu url.
+* @author Vandaele Valery
+* @short Doc described by URL
 */
 class GDocRefUrl
 {
-public :
+protected:
 
 	/**
 	* the document.
 	*/
 	GDoc* Doc;
-
-private :
-
-	/**
-	* [function description]
-	* @param1 [param1 name]    [param1 description]
-	*/
-//	[type] [function name]([type] param1,...);
-
-protected :
-
-	/**
-	* [function description]
-	* @param1 [param1 name]    [param1 description]
-	*/
-//	[type] [function name]([type] param1,...);
 
 public :
 
@@ -134,8 +119,6 @@ public :
 	*/
 	int Compare(const char* url) const;
 
-
-	
 	/**
 	* destructor of GDocRefUrl
 	*/

@@ -37,9 +37,8 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <sessions/gstatscalc.h>
-#include <sessions/gsession.h>
-using namespace GALILEI;
 
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------

@@ -41,7 +41,6 @@
 #include <profiles/guser.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
-#include <groups/ggroup.h>
 #include <docs/gdoc.h>
 using namespace GALILEI;
 using namespace R;
@@ -223,6 +222,11 @@ void GALILEI::GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang, GSessio
 	sub->SetState(osModified);
 }
 
+
+//-----------------------------------------------------------------------------
+GALILEI::GProfile::~GProfile(void)
+{
+}
 
 
 #if GALILEITEST

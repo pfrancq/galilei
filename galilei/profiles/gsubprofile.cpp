@@ -33,15 +33,14 @@
 */
 
 
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include<langs/glang.h>
-#include<docs/gdoc.h>
 #include<profiles/gsubprofile.h>
 #include<profiles/gprofile.h>
 #include<profiles/gprofdoc.h>
+#include<langs/glang.h>
 #include<groups/ggroup.h>
+
 using namespace GALILEI;
 using namespace R;
 

@@ -4,7 +4,7 @@
 
 	GGroupsHistory.cpp
 
-	Group - Implementation.
+	History of Groups for a given language - Implementation.
 
 	Copyright 2001 by the Université Libre de Bruxelles.
 
@@ -37,6 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <historic/ggroupshistory.h>
+#include <historic/giwordsweightshistory.h>
 using namespace GALILEI;
 using namespace R;
 

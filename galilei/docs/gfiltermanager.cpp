@@ -45,9 +45,8 @@
 // include files for GALILEI
 #include <filters/gurlmanager.h>
 #include <filters/gfilter.h>
-#include <docs/gdocxml.h>
 #include <docs/gdoc.h>
-#include <sessions/gsession.h>
+#include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;
 using namespace ltmm;

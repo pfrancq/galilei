@@ -40,13 +40,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-#include <rstd/rcursor.h>
-#include <rstd/rstring.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
@@ -135,6 +128,11 @@ public:
 	*/
 	const char* GetFullName(void) const {return(FullName);}
 
+	/**
+	* Destructor
+	*/
+	~GUser(void);
+
 };
 
 
@@ -152,5 +150,3 @@ CLASSCURSOR(GUserCursor,GUser,unsigned int)
 //-----------------------------------------------------------------------------
 
 #endif
-
-

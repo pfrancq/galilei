@@ -36,10 +36,6 @@
 //-----------------------------------------------------------------------------
 //include file for GALILEI
 #include <docs/gpostdoc.h>
-#include <docs/glink.h>
-#include <docs/glinks.h>
-#include <docs/gdoc.h>
-#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
 

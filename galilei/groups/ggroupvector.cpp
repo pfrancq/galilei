@@ -44,10 +44,8 @@
 #include <groups/ggroupvector.h>
 #include <profiles/gsubprofilevector.h>
 #include <docs/gdocvector.h>
-#include <profiles/gsubprofile.h>
 #include <infos/giwordweight.h>
 #include <langs/glang.h>
-#include <langs/gdict.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -148,8 +146,15 @@ void GALILEI::GGroupVector::AddWord(GIWordWeight* word)
 {
 	GIWordsWeights::InsertPtr(word);
 }
+
+
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupVector::AddWordList(unsigned id,double w)
 {
 	GIWordsWeights::InsertPtr(new GIWordWeight(id,w,infoWordList));
+}
+
+//-----------------------------------------------------------------------------
+GALILEI::GGroupVector::~GGroupVector(void)
+{
 }

@@ -43,11 +43,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rstd.h>
-
-
-//-----------------------------------------------------------------------------
 // include file for Galilei
 #include <langs/glangs.h>
 #include <langs/glang.h>

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GSubProfiles.cpp
+	GDocProfSims.cpp
 
 	List of SubProfiles for a given Language - Implementation.
 
@@ -36,8 +36,6 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocprofsim.h>
-#include <langs/glang.h>
 #include <docs/gdocprofsims.h>
 using namespace GALILEI;
 using namespace R;

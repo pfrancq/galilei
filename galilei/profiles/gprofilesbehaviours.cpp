@@ -37,10 +37,11 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gprofilesbehaviours.h>
-#include <langs/glang.h>
 #include <profiles/gprofilesbehaviour.h>
-using namespace GALILEI;
+
 using namespace R;
+using namespace GALILEI;
+
 
 
 

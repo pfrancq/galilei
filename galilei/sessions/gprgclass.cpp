@@ -43,9 +43,9 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <sessions/gprgfunc.h>
 #include <sessions/gprgclass.h>
 #include <sessions/gprgvar.h>
-#include <sessions/gprginst.h>
 using namespace GALILEI;
 
 

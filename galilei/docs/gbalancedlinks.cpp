@@ -1,7 +1,7 @@
 /*
 	GALILEI Research Project
 
-	GLinks.cpp
+	GBalancedLinks.cpp
 
 	List of Links with an associated weight - Implementation.
 
@@ -36,8 +36,6 @@
 //-----------------------------------------------------------------------------
 //include file for GALILEI
 #include <docs/gbalancedlinks.h>
-//#include <docs/glinks.h>
-#include <docs/glink.h>
 using namespace GALILEI;
 using namespace R;
 

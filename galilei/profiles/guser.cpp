@@ -81,4 +81,9 @@ int GALILEI::GUser::Compare(const unsigned int id) const
 }
 
 
+//-----------------------------------------------------------------------------
+GALILEI::GUser::~GUser(void)
+{
+}
+
 

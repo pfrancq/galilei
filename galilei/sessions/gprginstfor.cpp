@@ -36,16 +36,17 @@
    
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
-#include <stdlib.h>
+/*#include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-
+*/
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gprginstfor.h>
-#include <sessions/gsessionprg.h>
 #include <sessions/gprgvarval.h>
+#include <sessions/gprgfunc.h>
+#include <sessions/gsessionprg.h>
 using namespace GALILEI;
 
 

@@ -37,13 +37,10 @@
 #ifndef GParams_H
 #define GParams_H
 
-//-----------------------------------------------------------------------------
-// include files for R Library
-#include <rstd/rcontainer.h>
-
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <sessions/gparam.h>
 
 

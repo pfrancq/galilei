@@ -40,22 +40,16 @@
 #include <ctype.h>
 
 
-
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcursor.h>
-#include <rstd/rtextfile.h>
-using namespace R;
-
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gsessionmysql.h>
 #include <langs/glang.h>
+#include <langs/glangs.h>
 #include <langs/gdict.h>
 #include <langs/gwordlist.h>
 #include <infos/giwordlist.h>
 #include <infos/giwordweight.h>
+#include <historic/giwordsweightshistory.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofilevector.h>
@@ -63,17 +57,13 @@ using namespace R;
 #include <docs/gdocvector.h>
 #include <docs/gdocs.h>
 #include <docs/glink.h>
-#include <groups/ggroupvector.h>
-#include <historic/ggrouphistory.h>
 #include <groups/ggroups.h>
-#include <historic/ggroupshistory.h>
 #include <groups/gsubjecttree.h>
-#include <filters/gurlmanager.h>
 #include <groups/gsubject.h>
 #include <groups/ggroup.h>
-/*#include <postgroups/gstandartinoutput.h>
-#include <postgroups/ginoutputbase.h>
-#include <postgroups/gdispatchpov.h>*/
+#include <historic/ggroupshistory.h>
+
+
 using namespace GALILEI;
 using namespace R;
 

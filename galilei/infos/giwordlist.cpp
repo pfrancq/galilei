@@ -85,3 +85,7 @@ bool GALILEI::GIWordList::IsSame(const GIWordList& l) const
 	return(true);
 }
 
+
+GALILEI::GIWordList::~GIWordList(void)
+{
+}

@@ -45,7 +45,6 @@
 // include files for GALILEI
 #include <docs/gdocanalysemanager.h>
 #include <docs/gdocanalyse.h>
-#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
 using namespace ltmm;

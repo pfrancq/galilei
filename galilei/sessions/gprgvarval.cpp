@@ -4,7 +4,7 @@
 
 	GPrgVarVal.cpp
 
-	Variable - Implementation.
+	Representation of a Prg Variable - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 

@@ -9,7 +9,7 @@
 	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Vandaele Valery (vavdaele@ulb.ac.be).
 
 	Version $Revision$
 
@@ -40,12 +40,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-#include <rstd/rstring.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
@@ -59,7 +53,7 @@ namespace GALILEI{
 /**
 * The GLinkCalcManager class provides a representation for a manager
 * responsible to manage all the links computing methods.
-* @author Pascal Francq
+* @author Vandaele Valery
 * @short Links Computing Method Manager.
 */
 class GLinkCalcManager : public R::RContainer<GFactoryLinkCalc,unsigned int,true,true>

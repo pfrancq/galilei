@@ -4,7 +4,7 @@
 
 	GIWordsWeightsHistory.h
 
-	Weights of a list of words - Header.
+	Historic of Weights of a list of words - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -40,15 +40,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <profiles/gsubprofile.h>
-#include <infos/ginfo.h>
 #include <infos/giwordsweights.h>
 
 

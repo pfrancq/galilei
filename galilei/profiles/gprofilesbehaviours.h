@@ -9,7 +9,7 @@
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		david Wartel (dwartel@ulb.ac.be).
+		David Wartel (dwartel@ulb.ac.be).
 
 	Version $Revision$
 

@@ -48,7 +48,6 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <sessions/gplugin.h>
-#include <postgroups/gpostgroupmanager.h>
 
 
 //-----------------------------------------------------------------------------
@@ -64,8 +63,8 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 * The GPostGroup class provides a representation for a method to compute the
-* description of a specific group.
-* @author Pascal Francq
+* postgroupment of a specific group.
+* @author Vandaele Valery
 * @short Generic Group Description Computing Method.
 */
 class GPostGroup : public GPlugin<GFactoryPostGroup>
@@ -101,8 +100,6 @@ public:
 	* @param session         The session.
 	*/
 	virtual void Disconnect(GSession* session);
-
-
 
 	/**
 	* Destructor.

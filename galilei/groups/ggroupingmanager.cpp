@@ -45,7 +45,6 @@
 // include files for GALILEI
 #include <groups/ggroupingmanager.h>
 #include <groups/ggrouping.h>
-#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
 using namespace ltmm;

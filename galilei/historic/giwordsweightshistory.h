@@ -40,15 +40,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <profiles/gsubprofile.h>
-#include <infos/ginfo.h>
 #include <infos/giwordsweights.h>
 
 

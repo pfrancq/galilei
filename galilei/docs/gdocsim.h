@@ -109,6 +109,12 @@ public:
 	* @returns double.
 	*/
 	double GetSim(void) const {return(Sim);}
+
+	/**
+	* Set a new similarity value
+	*/
+	void SetSim(double sim) { Sim=sim;};
+
 };
 
 

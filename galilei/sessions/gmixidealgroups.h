@@ -41,12 +41,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R
-#include <rstd/random.h>
-#include <rstd/rcontainer.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 

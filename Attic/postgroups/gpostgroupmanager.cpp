@@ -45,7 +45,6 @@
 // include files for GALILEI
 #include <postgroups/gpostgroupmanager.h>
 #include <postgroups/gpostgroup.h>
-#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
 using namespace ltmm;

@@ -37,11 +37,9 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include<groups/ggroups.h>
-#include<langs/glang.h>
 #include<groups/ggroupvector.h>
+#include<langs/glang.h>
 #include<profiles/gsubprofile.h>
-#include<profiles/gusers.h>
-#include<sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -151,4 +149,8 @@ GGroup* GALILEI::GGroups::NewGroup(void) throw(bad_alloc)
 void GALILEI::GGroups::DeleteGroup(GGroup* grp)
 {
 	DeletePtr(grp);
+}
+
+GALILEI::GGroups::~GGroups(void)
+{
 }

@@ -37,12 +37,12 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdoc.h>
-#include <docs/gdocxml.h>
+//#include <docs/gdocxml.h>
 #include <docs/glink.h>
 #include <langs/glang.h>
 #include <profiles/gprofile.h>
+#include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
-#include <sessions/gsession.h>
 #if GALILEITEST
 	#include <groups/gsubject.h>
 #endif

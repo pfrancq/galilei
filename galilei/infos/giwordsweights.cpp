@@ -33,21 +33,12 @@
 */
 
 
-
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdlib.h>
-#include <math.h>
-
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/giwordsweights.h>
 #include <infos/giwordweight.h>
-#include <docs/gdoc.h>
 #include <langs/glang.h>
 #include <langs/gdict.h>
-#include <langs/gword.h>
 #include <langs/gwordlist.h>
 using namespace GALILEI;
 using namespace R;

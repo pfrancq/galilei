@@ -33,13 +33,6 @@
 */
 
 
-
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++1
-#include <string.h>
-#include <ctype.h>
-
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <langs/glang.h>

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GFilterEMail.h
+	GDocXML.h
 
-	Filter's document for an email - Header.
+	A XML representation of a document - Header.
 
 	Copyright 2001 by the Université Libre de Bruxelles.
 
@@ -61,6 +61,7 @@ namespace GALILEI{
 * document. For the metadata, the Dublin Core Metadata Element Set is used with
 * the RDF format.
 * @author Pascal Francq
+* Short Xml representation for documents
 */
 class GDocXML : public R::RXMLStruct
 {

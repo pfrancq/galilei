@@ -40,19 +40,6 @@
 
 
 //-----------------------------------------------------------------------------
-//include file for ANSI C/C++
-#include <time.h>
-
-
-//-----------------------------------------------------------------------------
-//include files for R Project
-#include <rstd/rcontainer.h>
-#include <rstd/rcursor.h>
-#include <rstd/rstring.h>
-#include <rstd/rdate.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
@@ -61,15 +48,6 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GUser;
-class GSubProfile;
-class GSubProfileCursor;
-class GProfDoc;
-class GProfDocCursor;
-class GLang;
 
 
 //-----------------------------------------------------------------------------
@@ -256,6 +234,11 @@ public:
 	*/
 	void DispatchFdbks(GProfDoc* profdoc, GLang* oldlang,GSession* s);
 
+
+	/*
+	* Destructor
+	*/
+	~GProfile(void);
 
 #if GALILEITEST
 

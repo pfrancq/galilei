@@ -36,14 +36,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
-#include <ctype.h>
-#include <math.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcursor.h>
-using namespace R;
+//#include <ctype.h>
+//#include <math.h>
 
 
 //-----------------------------------------------------------------------------
@@ -51,15 +45,10 @@ using namespace R;
 #include <docs/gdocvector.h>
 #include <profiles/gsubprofilevector.h>
 #include <groups/ggroupvector.h>
-#include <docs/gdocxml.h>
 #include <infos/giwordweight.h>
-#include <infos/giwordsweights.h>
-#include <langs/gword.h>
-#include <langs/gdict.h>
 #include <langs/glang.h>
-#include <profiles/gprofile.h>
-#include <profiles/gprofdoc.h>
-#include <sessions/gsession.h>
+
+using namespace R;
 using namespace GALILEI;
 
 

@@ -33,18 +33,11 @@
 */
 
 
-
-//-----------------------------------------------------------------------------
-// include ANSI C/C++
-#include <math.h>
-
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gprofilessim.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
-#include <profiles/gusers.h>
 #include <langs/glang.h>
 using namespace GALILEI;
 using namespace R;

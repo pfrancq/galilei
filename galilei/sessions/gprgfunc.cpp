@@ -33,18 +33,10 @@
 */
 
 
-   
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gprgfunc.h>
-#include <sessions/gprgvar.h>
 using namespace GALILEI;
 using namespace R;
 

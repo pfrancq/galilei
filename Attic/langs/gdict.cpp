@@ -42,7 +42,6 @@
 //---------------------------------------------------------------------------
 // include file for GALILEI
 #include <langs/gdict.h>
-#include <langs/gword.h>
 #include <langs/gwordlist.h>
 #include <langs/glang.h>
 #include <sessions/gsession.h>

@@ -43,11 +43,8 @@
 // include files for GALILEI
 #include<profiles/gsubprofilevector.h>
 #include <groups/ggroupvector.h>
-#include <docs/gdocvector.h>
 #include<langs/glang.h>
-#include<infos/giword.h>
 #include<infos/giwordweight.h>
-#include<infos/giwordsweights.h>
 #include<docs/gdocvector.h>
 using namespace GALILEI;
 

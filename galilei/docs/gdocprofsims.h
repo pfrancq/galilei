@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GDocProfSim.h
+	GDocProfSims.h
 
 	List of SubProfiles for a given Language - Implementation.
 
@@ -42,7 +42,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-
+#include <docs/gdocprofsim.h>
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
@@ -102,7 +102,3 @@ CLASSCURSOR(GDocProfSimsCursor,GDocProfSims,unsigned int)
 
 //-----------------------------------------------------------------------------
 #endif
-
-
-
- 

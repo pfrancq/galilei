@@ -4,7 +4,7 @@
 
 	Gsubjects.h
 
-	GSubject - Implementation.
+	Subject - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -49,7 +49,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <docs/gdoc.h>
 #include <groups/ggroupvector.h>
 
 
@@ -61,7 +60,7 @@ namespace GALILEI{
 /**
 * This Class implement a representation for a subject used to create judgment
 * and feedback.
-* @author Pascal Francq & Julien Lamoral
+* @author Pascal Francq & Julien Lamoral & David Wartel
 * @short  Subject
 */
 class GSubject: public R::RNode<GSubject,false>, public GGroupVector

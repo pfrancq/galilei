@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GProfilesSim.cpp
+	GDocProfSim.cpp
 
-	Similarities between Profiles - Implementation
+	Similarities between Profiles and Documents - Implementation
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -40,21 +40,15 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R
-#include <rstd/rcontainer.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
-//#include <profiles/gprofilessim.h>
 #include <docs/gdocprofsim.h>
 #include <profiles/gsubprofile.h>
-#include <profiles/gprofile.h>
 #include <profiles/gusers.h>
 #include <langs/glang.h>
 #include <docs/gdocs.h>
 #include <docs/gdoc.h>
+
+using namespace R;
 using namespace GALILEI;
 
 
@@ -405,7 +399,7 @@ void  GALILEI::GDocProfSim::UpdateDocProfSim(GDocs* docs,GUsers* users,bool glob
 			}
 		}
 	}
-	#warning osDelete to add
+	#warning pragm osDelete to add
 	#warning when all the sim between the subprofiles are computed -> set Profile State to osUpdated
 }
 

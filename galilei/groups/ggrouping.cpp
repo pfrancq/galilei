@@ -34,23 +34,22 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcursor.h>
-using namespace R;
-
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <langs/glang.h>
 #include <groups/ggrouping.h>
+#include <langs/glang.h>
+#include <langs/glangs.h>
 #include <groups/ggroupcalc.h>
+#include <groups/ggroupcalcmanager.h>
 #include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
 #include <profiles/gprofile.h>
-#include <profiles/gsubprofiles.h>
+#include <profiles/gsubprofile.h>
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
+
+using namespace R;
 using namespace GALILEI;
 
 

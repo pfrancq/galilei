@@ -137,7 +137,15 @@ public:
 	*/
 	void AddWord(GIWordWeight* word);
 
+	/**
+	* Add a word list in the container of words
+	*/
 	void AddWordList(unsigned id,double w);
+
+	/**
+	* Destructor
+	*/
+	~GGroupVector(void);
 };
 
 

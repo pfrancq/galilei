@@ -1,11 +1,11 @@
- 
+
                                                         /*
 
 	GALILEI Research Project
 
-	GProfilesSim.h
+	GDocProfSim.h
 
-	Similarities between Profiles - Header
+	Similarities between Profiles and Documents - Header
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 

@@ -36,6 +36,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/giwordsweightshistory.h>
+#include <profiles/gsubprofile.h>
 using namespace GALILEI;
 
 

@@ -48,7 +48,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <sessions/gplugin.h>
-#include <sessions/gstatscalcmanager.h>
+
 
 
 //-----------------------------------------------------------------------------

@@ -40,12 +40,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <infos/ginfo.h>
 
 
@@ -118,6 +114,12 @@ public:
 	* Verify if two lists contain the same information entities.
 	*/
 	bool IsSame(const GIWordList& l) const;
+
+
+	/**
+	*Destructor
+	*/
+	~GIWordList(void);
 };
 
 

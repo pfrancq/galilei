@@ -40,11 +40,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rdate.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
@@ -157,6 +152,11 @@ public:
 	* @returns tDocJudgement
 	*/
 	static tDocJudgement ErrorJudgment(tDocJudgement fdbk,double PercErr,R::RRandom* rand);
+
+	/*
+	* Destructor
+	*/
+	~GProfDoc(void);
 };
 
 

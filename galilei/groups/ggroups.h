@@ -128,6 +128,11 @@ public:
 	* @param grp            Group to delete.
 	*/
 	void DeleteGroup(GGroup* grp);
+
+	/**
+	* Destructor
+	*/
+	~GGroups(void);
 };
 
 

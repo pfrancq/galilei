@@ -37,8 +37,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gslot.h>
-using namespace GALILEI;
 
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------

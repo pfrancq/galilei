@@ -4,12 +4,12 @@
 
 	GGroup.h
 
-	Group - Header.
+	History of Group for a given language - Header.
 
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		David Wartel (dwartel@ulb.ac.be)..
 
 	Version $Revision$
 
@@ -42,7 +42,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <historic/giwordsweightshistory.h>
 
 
 //-----------------------------------------------------------------------------

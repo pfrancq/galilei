@@ -46,6 +46,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <filters/gurlmanager.h>
 
 
@@ -56,7 +57,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GURLManagerKDE class provides a representation for a manager using the
+* The GURLManagerCURL class provides a representation for a manager using the
 * CURL library.
 * @author Pascal Francq
 * @short CURL URL Manager.

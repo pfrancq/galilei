@@ -43,7 +43,6 @@
 //include files for GALILEI
 #include <groups/ggroup.h>
 #include <docs/gdoc.h>
-#include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
 using namespace GALILEI;
@@ -404,4 +403,8 @@ double GALILEI::GGroup::Similarity(const GGroup*) const
 double GALILEI::GGroup::GlobalSimilarity(const GGroup*) const
 {
 	return(0.0);
+}
+
+GALILEI::GGroup::~GGroup(void)
+{
 }

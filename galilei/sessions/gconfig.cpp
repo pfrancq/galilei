@@ -38,12 +38,13 @@
 // include files for R Project
 #include <rstd/rio.h>
 #include <rstd/rxmlfile.h>
-using namespace R;
+//#include <rstd/rxmltag.h>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gconfig.h>
+#include <sessions/gplugin.h>
 #include <filters/gurlmanager.h>
 #include <filters/gfilter.h>
 #include <profiles/gprofilecalcmanager.h>
@@ -65,6 +66,7 @@ using namespace R;
 #include <postgroups/gpostgroup.h>
 #include <postgroups/gpostgroupmanager.h>
 
+using namespace R;
 using namespace GALILEI;
 
 

@@ -41,8 +41,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rdblhashcontainer.h>
-#include <rstd/rstring.h>
+//#include <rstd/rdblhashcontainer.h>
+//#include <rstd/rstring.h>
 
 
 //-----------------------------------------------------------------------------

@@ -46,12 +46,8 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <profiles/gusers.h>
-#include <profiles/gsubprofile.h>
 #include <docs/gdocs.h>
 #include <groups/ggroupsmng.h>
-#include <docs/glinkcalc.h>
-#include <postgroups/gpostgroup.h>
-#include <docs/gpostdoc.h>
 #include <sessions/gparams.h>
 
 
@@ -209,11 +205,16 @@ public:
 	* @param gmng           Grouping Manager.
 	* @param gcmng          Group Computing Manager.
 	* @param smng           Statistical Manager.
-	* @param lmng           Linking Manager.
 	*/
 	void Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(bad_alloc,GException);
+		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(bad_alloc,GException);
 
+	/**
+	* Connect the session to the linking manager.
+	* @param lmng           Linking Manager.
+	*/
+	void PostConnect(GLinkCalcManager* lmng) throw(bad_alloc,GException);
+	
 	/**
 	* Get the documents' analyser.
 	* @returns Pointer to a GDocAnalyse class.

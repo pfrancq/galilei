@@ -4,7 +4,7 @@
 
 	GSubjectTree.cpp
 
-	GSubjectTree - Implementation.
+	Tree of Subjects - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -37,30 +37,18 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdlib.h>
-#include <iostream>
-#include <math.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rtextfile.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gsubjecttree.h>
-#include <sessions/gsession.h>
-#include <docs/gdoc.h>
-#include <langs/glang.h>
 #include <groups/gsubject.h>
-#include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
+#include <docs/gdoc.h>
+#include <sessions/gsession.h>
+#include <langs/glang.h>
+#include <langs/glangs.h>
 #include <profiles/gprofile.h>
-#include <profiles/guser.h>
+#include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
+using namespace R;
 using namespace GALILEI;
 
 

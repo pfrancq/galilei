@@ -38,24 +38,24 @@
 
 //-----------------------------------------------------------------------------
 // include files for R
-#include <rstd/random.h>
+/*#include <rstd/random.h>
 #include <rstd/rcontainer.h>
-using namespace R;
 
+*/
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gmixidealgroups.h>
+#include <sessions/gsession.h>
+#include <sessions/gslot.h>
+#include <langs/glang.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <groups/ggroupvector.h>
 #include <groups/gsubject.h>
 #include <profiles/gsubprofile.h>
-#include <sessions/gsession.h>
-#include <sessions/gslot.h>
-#include <langs/glang.h>
 using namespace GALILEI;
-
+using namespace R;
 
 
 //-----------------------------------------------------------------------------

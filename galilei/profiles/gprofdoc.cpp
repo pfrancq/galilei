@@ -37,9 +37,9 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gprofdoc.h>
-#include <docs/gdoc.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
+#include <docs/gdoc.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -166,4 +166,10 @@ tDocJudgement GALILEI::GProfDoc::ErrorJudgment(tDocJudgement fdbk,double PercErr
 		}
 	}
 	return(fdbk);
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GProfDoc::~GProfDoc(void)
+{
 }

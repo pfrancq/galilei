@@ -39,8 +39,6 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcursor.h>
-#include <rstd/rstring.h>
 #include <rstd/rlang.h>
 
 
@@ -48,7 +46,6 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <sessions/gplugin.h>
-#include <langs/glangs.h>
 
 
 //-----------------------------------------------------------------------------

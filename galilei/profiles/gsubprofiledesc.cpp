@@ -37,7 +37,6 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<profiles/gsubprofiledesc.h>
-#include<profiles/gsubprofile.h>
 using namespace GALILEI;
 
 

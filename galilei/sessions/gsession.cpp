@@ -50,14 +50,20 @@ using namespace R;
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
 #include <sessions/gsessionprg.h>
+#include <sessions/gstatscalc.h>
+#include <sessions/gstatscalcmanager.h>
 #include <docs/gdocvector.h>
 #include <docs/gdocanalyse.h>
+#include <docs/gdocanalysemanager.h>
 #include <docs/gdocxml.h>
 #include <docs/gdocslang.h>
 #include <docs/gdocprofsim.h>
 #include <docs/gdocprofsims.h>
 #include <docs/glinkcalc.h>
+#include <docs/glinkcalcmanager.h>
 #include <docs/glink.h>
+#include <docs/gpostdoc.h>
+#include <docs/gpostdocmanager.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -68,20 +74,22 @@ using namespace R;
 #include <profiles/gsubprofiledesc.h>
 #include <profiles/gsubprofilevector.h>
 #include <profiles/gprofdoc.h>
+#include <profiles/gprofilecalc.h>
+#include <profiles/gprofilecalcmanager.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <groups/ggroupvector.h>
 #include <groups/ggrouping.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalc.h>
-#include <sessions/gstatscalc.h>
-#include <profiles/gprofilecalc.h>
+#include <groups/ggroupcalcmanager.h>
+#include <groups/gsubjecttree.h>
 #include <filters/gurlmanager.h>
 #include <filters/gfilter.h>
 #include <infos/giwordweight.h>
 #include <historic/ggroupshistory.h>
-#include <groups/gsubjecttree.h>
 #include <postgroups/gpostgroup.h>
+#include <postgroups/gpostgroupmanager.h>
 
 using namespace GALILEI;
 
@@ -121,7 +129,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 //-----------------------------------------------------------------------------
 void GSession::Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng,
 	GGroupingManager* gmng, GGroupCalcManager* gcmng,GStatsCalcManager* smng,
-	GLinkCalcManager* lmng, GPostDocManager* pdmng,GPostGroupManager* pgmng) throw(bad_alloc,GException)
+	GPostDocManager* pdmng,GPostGroupManager* pgmng) throw(bad_alloc,GException)
 
 {
 	GLang* lang;
@@ -155,9 +163,6 @@ void GSession::Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng
 	StatsCalcMng=smng;
 	if(StatsCalcMng)
 		StatsCalcMng->Connect(this);
-	LinkCalcMng=lmng;
-	if(LinkCalcMng)
-		LinkCalcMng->Connect(this);
 	PostGroupMng=pgmng;
 	if(PostGroupMng)
 		PostGroupMng->Connect(this);
@@ -167,6 +172,14 @@ void GSession::Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng
 		PostDocMng->Connect(this);
 }
 
+
+//-----------------------------------------------------------------------------
+void GSession::PostConnect(GLinkCalcManager* lmng) throw(bad_alloc,GException)
+{
+	LinkCalcMng=lmng;
+	if(LinkCalcMng)
+		LinkCalcMng->Connect(this);
+}
 
 //-----------------------------------------------------------------------------
 GFactoryLinkCalcCursor& GSession::GetLinkCalcsCursor(void)

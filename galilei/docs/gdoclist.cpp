@@ -4,7 +4,7 @@
 
 	gdoc.cpp
 
-	Document - Implementation.
+	List of Documents- Implementation.
 
 	Copyright 2001 by the Université Libre de Bruxelles.
 
@@ -37,6 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdoclist.h>
+#include <docs/gdoc.h>
 using namespace GALILEI;
 using namespace R;
 

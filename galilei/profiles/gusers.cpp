@@ -33,13 +33,6 @@
 */
 
 
-
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcursor.h>
-using namespace R;
-
-
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<profiles/gusers.h>
@@ -48,6 +41,8 @@ using namespace R;
 #include<profiles/gsubprofile.h>
 #include<profiles/gsubprofiles.h>
 #include<profiles/gprofdoc.h>
+
+using namespace R;
 using namespace GALILEI;
 
 

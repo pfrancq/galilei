@@ -4,7 +4,7 @@
 	
 	GSubjectTree.h
 
-	GSubjectTree - Implementation.
+	Tree of Subjects - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 

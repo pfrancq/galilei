@@ -4,7 +4,7 @@
 
 	GPrgVarVal.h
 
-	Variable - Header.
+	Representation of a Prg Variable - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 

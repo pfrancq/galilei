@@ -9,7 +9,7 @@
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Vandaele Valery (vavdaele@ulb.ac.be).
 
 	Version $Revision$
 
@@ -45,7 +45,6 @@
 // include files for GALILEI
 #include <docs/glinkcalcmanager.h>
 #include <docs/glinkcalc.h>
-#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
 using namespace ltmm;

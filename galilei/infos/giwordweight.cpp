@@ -42,7 +42,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include<infos/giwordweight.h>
-#include<infos/giwordsweights.h>
 #include<langs/gdict.h>
 using namespace GALILEI;
 using namespace R;

@@ -1,7 +1,7 @@
 /*
 	GALILEI Research Project
 
-	GLinks.h
+	GBalancedLinks.h
 
 	List of Links with an associated weight - Header.
 
@@ -41,7 +41,6 @@
 //-----------------------------------------------------------------------------
 //include file for GALILEI
 #include <galilei.h>
-#include <docs/gdoc.h>
 #include <docs/glinks.h>
 
 
@@ -50,13 +49,12 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-class GLinkCursor;
 
 //-----------------------------------------------------------------------------
 /**
-* This class provides a representation of a set of links.
+* This class provides a representation of a set of links with each a weight.
 * @author  Vandaele Valery
-* @short List of Links.
+* @short List of Links whith a weight.
 */
 class GBalancedLinks : public GLinks
 {
@@ -82,12 +80,6 @@ public :
 	*/
 	GBalancedLinks(GDoc* doc);
 
-	
-//	/**
-//	* Get the document containing all the links.
-//	* return doc              the document.
-//	*/
-//	GDoc* GetDoc(void) const {return Doc;}
 
 	/**
 	* Get the id of the doc
@@ -108,18 +100,12 @@ public :
 	void SetWeight(float w){Weight=w;}
 
 	/**
-	* Get a cursor on the Links of the document.
-	* @return GLinkCursor.
-	*/
-	//GLinkCursor& GetLinkCursor(void);
-
-	/**
 	* Compare function needed by R::RContainer.
 	* @param lnk            Pointer to the links used for the comparaison.
 	*/
 	int Compare(const GBalancedLinks* lnk) const {return(Doc->GetId()- lnk->GetDoc()->GetId());}
 
-  /**
+	/**
 	* Compare function needed by R::RContainer.
 	* @param lnk            Links used for the comparaison.
 	*/

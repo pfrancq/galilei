@@ -4,7 +4,7 @@
 
 	GSubject.cpp
 
-	GSubject - Implementation.
+	Subject - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -35,30 +35,13 @@
 */ 
 
 
-
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdlib.h>
-#include <iostream>
-#include <math.h>
-
-
-//-----------------------------------------------------------------------------
-//include files for R Project
-#include <rstd/rcursor.h>
-#include <rstd/rtextfile.h>
-using namespace R;
-
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gsubject.h>
-#include <groups/ggroups.h>
-#include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
-#include <profiles/guser.h>
-#include <profiles/gprofdoc.h>
-#include <langs/glang.h>
+#include <docs/gdoc.h>
+
+using namespace R;
 using namespace GALILEI;
 
 

@@ -37,12 +37,11 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <langs/glang.h>
+
 #include <docs/gdocs.h>
 #include <docs/gdoc.h>
 #include <docs/gdocslang.h>
 #include <docs/gdocrefurl.h>
-#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
 

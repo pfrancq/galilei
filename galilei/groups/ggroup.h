@@ -262,6 +262,11 @@ public:
 	* Compute the global similarity between groups.
 	*/
 	virtual double GlobalSimilarity(const GGroup* grp) const;
+
+	/**
+	* Destructor
+	*/
+	~GGroup(void);
 };
 
 

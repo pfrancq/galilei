@@ -43,6 +43,7 @@
 // include file for LibTool--
 #include <ltmm/loader.hh>
 
+#include <rstd/rxmltag.h>
 
 //------------------------------------------------------------------------------
 // include file for GALILEI
@@ -257,7 +258,7 @@ public:
 	void ReadConfig(R::RXMLTag* parent)
 	{
 		R::RXMLTagCursor Cur=parent->GetXMLTagsCursor();
-		RXMLTag* tag=0;
+		R::RXMLTag* tag=0;
 
 		// Find Tag
 		for(Cur.Start();!Cur.End();Cur.Next())
@@ -286,7 +287,7 @@ public:
 	*/
 	void SaveConfig(R::RXMLTag* parent)
 	{
-		RXMLTag* tag=new R::RXMLTag("Plugin");
+		R::RXMLTag* tag=new R::RXMLTag("Plugin");
 		tag->InsertAttr("Name",Name);
 		parent->AddTag(tag);
 		if(Plugin)

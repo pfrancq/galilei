@@ -40,9 +40,12 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rstring.h>
 #include <rstd/rxmltag.h>
 #include <rpromethee/rpromcriterion.h>
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------

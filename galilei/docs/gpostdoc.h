@@ -45,7 +45,6 @@
 //include file for GALILEI
 #include <galilei.h>
 #include <sessions/gplugin.h>
-#include <docs/gpostdocmanager.h>
 
 
 //-----------------------------------------------------------------------------

@@ -41,9 +41,7 @@
 //-----------------------------------------------------------------------------
 //include file for GALILEI
 #include <galilei.h>
-#include <docs/glinks.h>
 #include <sessions/gplugin.h>
-#include <docs/glinkcalcmanager.h>
 
 
 //-----------------------------------------------------------------------------
