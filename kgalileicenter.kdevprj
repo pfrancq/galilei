@@ -72,7 +72,7 @@ Headers R - Math=*rmath/*.h
 Headers R - MySQL=*rmysql/*.h
 Headers R - Prométhée=*rpromethee*.h
 Headers R - Std=*rstd/*.h
-Headers R - Time/Date=*rtimedate/*.h
+Headers R - Time-Date=*rtimedate/*.h
 Headers R - XML=*rxml/*.h
 Others=*
 Sources=*main.cpp,*kdoc*.cpp,*kview*.cpp,*kgalileicenter.cpp,*qsession*.cpp,*kgalileicenter_*.cpp,*qplugins*.cpp
@@ -94,11 +94,11 @@ Sources R - Math=*rmath/*.cpp
 Sources R - MySQL=*rmysql/*.cpp
 Sources R - Prométhée=*rpromethee*.cpp
 Sources R - Std=*rstd/*.cpp,*rstd/*.hh
-Sources R - Time/Date=*rtimedate/*.cpp
+Sources R - Time-Date=*rtimedate/*.cpp
 Sources R - XML=*rxml/*.cpp
 Translations=*.po
 User Interface=*.kdevdlg,*.ui,*.rc
-groups=Headers,Headers - GALILEI,Headers R - GA,Headers R - GGA,Headers - Qt Widgets,Headers R - Math,Headers R - MySQL,Headers R - Prométhée,Headers R - Time/Date,Headers R - IO,Headers R - Std,Sources R - Prométhée,Headers - URL Managers,Headers - Sessions,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - GALILEI,Sources - Infos,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources - Sessions,Sources R - Time/Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,Sources R - GGA,User Interface,Translations,GNU,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
+groups=Headers,Headers - GALILEI,Headers R - GA,Headers R - GGA,Headers - Qt Widgets,Headers R - Math,Headers R - MySQL,Headers R - Prométhée,Headers R - Time-Date,Headers R - IO,Headers R - Std,Sources R - Prométhée,Headers - URL Managers,Headers - Sessions,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - GALILEI,Sources - Infos,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources - Sessions,Sources R - Time-Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,Sources R - GGA,User Interface,Translations,GNU,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
 
 [Makefile.am]
 files=kgalileicenter.kdevprj,admin,AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,kgalileicenter.lsm
