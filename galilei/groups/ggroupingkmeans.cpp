@@ -190,7 +190,7 @@ void GALILEI::GGroupingKMeans::InitCenters(void) throw(bad_alloc)
 	if (initial==Scattered)
 		ScatteredInitSubProfiles(GroupsNumber);
 	if(initial==Refined)
-		RefiningCenters(15,80);
+		RefiningCenters(4,80);
 }
 
 
