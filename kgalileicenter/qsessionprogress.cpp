@@ -261,6 +261,28 @@ void QSessionProgressDlg::ComputeProfile(GProfile* prof)
 
 
 //-----------------------------------------------------------------------------
+void QSessionProgressDlg::PostGroupCalc()
+{
+	btnOk->setEnabled(false);
+	show();
+	KApplication::kApplication()->processEvents();
+
+	try
+	{
+		txtRem->setText(QString("Applying PostGroup Treatment..."));
+		KApplication::kApplication()->processEvents();
+		Session->CalcPostGroup();
+		txtRem->setText("Finish");
+	}
+	catch(GException& e)
+	{
+		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
+	}
+	btnOk->setEnabled(true);
+
+}
+
+//-----------------------------------------------------------------------------
 void QSessionProgressDlg::ComputeProfiles(bool modified,bool save)
 {
 	btnOk->setEnabled(false);

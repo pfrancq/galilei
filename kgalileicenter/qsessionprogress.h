@@ -146,6 +146,11 @@ public:
 	void ComputeProfiles(bool modified,bool save);
 
 	/**
+	* Apply the postgroup treatment.
+	*/
+	void PostGroupCalc(void);
+
+	/**
 	* Groups the profiles.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
