@@ -169,7 +169,7 @@ void GALILEI::GProfileCalcReWeighting::ComputeSubProfile(GSubProfileVector* s) t
 	if(MOK->NbPtr>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=(MOK->NbPtr+1)*1.1;
+		MaxOrderSize=static_cast<unsigned int>((MOK->NbPtr+1)*1.1);
 		Order=new GIWordWeight*[MaxOrderSize];
 	}
 	memcpy(Order,MOK->Tab,MOK->NbPtr*sizeof(GIWordWeight*));
@@ -180,12 +180,18 @@ void GALILEI::GProfileCalcReWeighting::ComputeSubProfile(GSubProfileVector* s) t
 	if(MaxNonZero)
 	{
 		for(i=MaxNonZero+1,ptr=Order;(--i)&&(*ptr);ptr++)
-			Vector->InsertPtr(new GIWordWeight(*ptr));
+		{
+			if((*ptr)->GetWeight()>0)
+				Vector->InsertPtr(new GIWordWeight(*ptr));
+		}
 	}
 	else
 	{
 		for(ptr=Order;(*ptr);ptr++)
-			Vector->InsertPtr(new GIWordWeight(*ptr));
+		{
+			if((*ptr)->GetWeight()>0)
+				Vector->InsertPtr(new GIWordWeight(*ptr));
+		}
 	}
 
 	// Update the references of the vector.
