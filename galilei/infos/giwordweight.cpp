@@ -93,14 +93,11 @@ int GALILEI::GIWordWeight::Compare(const GIWordWeight *calc) const
   return(Id-calc->Id);
 }
 
-//-----------------------------------------------------------------------------
-double GALILEI::GIWordWeight::GetQueryWeight(tObjType ObjType,GDict* dict,GIWordsWeights* vector) const
-{
-	double ret;
 
-	ret=dict->GetRef(ObjType)/dict->GetRef(Id,ObjType);
-	ret=(0.5+(0.5*Weight/vector->GetMaxWeight()))*log(ret);
-	return(ret);
+//-----------------------------------------------------------------------------
+double GALILEI::GIWordWeight::GetQueryWeight(tObjType ObjType,GDict* dict,double max) const
+{
+	return(Weight/max)*log(dict->GetRef(ObjType)/dict->GetRef(Id,ObjType));
 }
 
 

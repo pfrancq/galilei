@@ -42,14 +42,14 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
+// include files for GALILEI
+#include <galilei.h>
 #include <infos/giword.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -111,10 +111,10 @@ public:
 	* dictionnary.
 	* @param ObjType        Type of the reference.
 	* @param dict           Dictionnary.
-	* @param vector         Vector containing the specific word.
+	* @param max            Maximal value of the vector containing the word.
 	* @return double.
 	*/
-	double GetQueryWeight(tObjType ObjType,GDict* dict,GIWordsWeights* vector) const;
+	double GetQueryWeight(tObjType ObjType,GDict* dict,double max) const;
 
 	/**
 	* Set the weight of the word.

@@ -172,7 +172,7 @@ double GALILEI::GIWordsWeights::GetMaxWeight(void) const
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w,tObjType /*ObjType*/) const
+double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w) const
 {
 	double Sim=0.0;
 	GIWordWeight** ptr=Tab;
@@ -204,6 +204,54 @@ double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w,tObjType /*Ob
 	{
 		j--;
 		norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+		ptr2++;
+	}
+	Sim/=(sqrt(norm1)*sqrt(norm2));
+	return(Sim);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType ObjType) const
+{
+	double Sim=0.0;
+	GIWordWeight** ptr=Tab;
+	GIWordWeight** ptr2=w->Tab;
+	unsigned int i=NbPtr+1;
+	unsigned int j=w->NbPtr;
+	double norm1=0.0;
+	double norm2=0.0;
+	double max1=GetMaxWeight();
+	double max2=w->GetMaxWeight();
+	double TotalRef=Lang->GetRef(ObjType);
+	double w1,w2;
+
+	while(--i)
+	{
+		w1=((*ptr)->GetWeight()/max1)*log(TotalRef/Lang->GetRef((*ptr)->GetId(),ObjType));
+		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
+		{
+			j--;
+			w2=((*ptr2)->GetWeight()/max2)*log(TotalRef/Lang->GetRef((*ptr2)->GetId(),ObjType));
+			norm2+=w2*w2;
+			ptr2++;
+		}
+		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
+		{
+			j--;
+			w2=((*ptr2)->GetWeight()/max2)*log(TotalRef/Lang->GetRef((*ptr2)->GetId(),ObjType));
+			norm2+=w2*w2;
+			Sim+=w1*w2;
+			ptr2++;
+		}
+		norm1+=w1;
+		ptr++;
+	}
+	while(j)
+	{
+		j--;
+		w2=((*ptr2)->GetWeight()/max2)*log(TotalRef/Lang->GetRef((*ptr2)->GetId(),ObjType));
+		norm2+=w2*w2;
 		ptr2++;
 	}
 	Sim/=(sqrt(norm1)*sqrt(norm2));

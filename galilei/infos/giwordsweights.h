@@ -43,19 +43,13 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <infos/ginfo.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GIWordWeight;
-class GDoc;
-class GLang;
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -175,9 +169,16 @@ public:
 	/**
 	* Compute similarity between two vectors.
 	* @param w              Vector to compare with.
+	*/
+	double Similarity(const GIWordsWeights* w) const;
+
+	/**
+	* Compute similarity between two vectors by using the idf factors rather
+	* than the weights.
+	* @param w              Vector to compare with.
 	* @param ObjType        Type of the reference.
 	*/
-	double Similarity(const GIWordsWeights* w,tObjType ObjType) const;
+	double SimilarityIdf(const GIWordsWeights* w,tObjType ObjType) const;
 
 	/**
 	* Add the references for the words contained in the vector for a given
