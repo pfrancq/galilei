@@ -45,6 +45,7 @@ CREATE TABLE enhtmlsbykwds (
 CREATE TABLE enkwds (
   kwdid int(11) NOT NULL auto_increment,
   kwd varchar(50) default NULL,
+  type int(11) default '1',
   PRIMARY KEY  (kwdid)
 ) TYPE=MyISAM;
 
@@ -56,6 +57,7 @@ CREATE TABLE enkwds (
 CREATE TABLE enstopkwds (
   kwdid int(11) NOT NULL auto_increment,
   kwd varchar(50) NOT NULL default '',
+  type int(11) default '1',
   PRIMARY KEY  (kwdid)
 ) TYPE=MyISAM;
 
@@ -100,6 +102,7 @@ CREATE TABLE frhtmlsbykwds (
 CREATE TABLE frkwds (
   kwdid int(11) NOT NULL auto_increment,
   kwd varchar(50) default NULL,
+  type int(11) default '1',
   PRIMARY KEY  (kwdid)
 ) TYPE=MyISAM;
 
@@ -111,6 +114,7 @@ CREATE TABLE frkwds (
 CREATE TABLE frstopkwds (
   kwdid int(11) NOT NULL auto_increment,
   kwd varchar(50) NOT NULL default '',
+  type int(11) default '1',
   PRIMARY KEY  (kwdid)
 ) TYPE=MyISAM;
 
@@ -150,10 +154,6 @@ CREATE TABLE htmls (
   calculated date default NULL,
   mimetype varchar(50) default NULL,
   failed int(11) default '0',
-  n int(20) default '0',
-  ndiff int(20) default '0',
-  v int(20) default '0',
-  vdiff int(20) default '0',
   PRIMARY KEY  (htmlid),
   KEY index_html (html)
 ) TYPE=MyISAM;
