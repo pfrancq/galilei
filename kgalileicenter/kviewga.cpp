@@ -65,9 +65,9 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewGA::KViewGA(KDoc* doc,const char* l,unsigned int pop,QWidget* parent,const char* name,int wflags)
+KViewGA::KViewGA(KDoc* doc,const char* l,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), RGASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>(),
-	  CurId(0), Instance(0), Gen(0), PopSize(pop),SubProfiles(0), Objs(0), Sims(0)
+	  CurId(0), Instance(0), Gen(0), PopSize(0),SubProfiles(0), Objs(0), Sims(0)
 {
 	static char tmp[100];
 	GLang* lang;
@@ -96,8 +96,8 @@ KViewGA::KViewGA(KDoc* doc,const char* l,unsigned int pop,QWidget* parent,const 
 	TabWidget->insertTab(StatSplitter,"Statistic");
 	StatSplitter->setGeometry(rect());
 	Monitor=new QGAMonitor(StatSplitter);
-	Monitor->setMaxGen(pop);
-	Monitor->setMaxFitness(PopSize+2);
+	Monitor->setMaxGen(MaxGen);
+	Monitor->setMaxFitness(MaxGen+1.1);
 	connect(this,SIGNAL(signalSetGen(const unsigned int,const unsigned int,const double)),Monitor,SLOT(slotSetGen(const unsigned int,const unsigned int,const double)));
 	Debug=new QXMLContainer(StatSplitter,"GALILEI Genetic Algorithms","Pascal Francq");
 

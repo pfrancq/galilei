@@ -446,7 +446,7 @@ void KGALILEICenterApp::slotGAInit(void)
 		else
 			strcpy(tmp,"fr");
 		setDocParams(Doc);
-		createClient(Doc,new KViewGA(Doc,tmp,16,pWorkspace,"Genetic Algorithm",0));
+		createClient(Doc,new KViewGA(Doc,tmp,pWorkspace,"Genetic Algorithm",0));
 		gaPause->setEnabled(true);
 		gaStart->setEnabled(true);
 		gaStop->setEnabled(true);
