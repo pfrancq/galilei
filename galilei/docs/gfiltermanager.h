@@ -132,10 +132,9 @@ public:
 	GMIMEFilter* GetMIMEType(const char* mime) const;
 
 	/**
-	* Get the list of filters activ.
-	* Return Pointer to RContainer<GFilter,unsigned int,true,false>.
+	* Get a cursor over the filters of the system.
 	*/
-	RStd::RContainer<GFilter,unsigned int,true,true>* GetFilters(void) {return(&Filters);}
+	GFilterCursor& GetFiltersCursor(void);
 
 	/**
 	* Destructor of URL manager.

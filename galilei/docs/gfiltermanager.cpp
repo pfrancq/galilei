@@ -167,6 +167,15 @@ GMIMEFilter* GALILEI::GURLManager::GetMIMEType(const char* mime) const
 
 
 //-----------------------------------------------------------------------------
+GFilterCursor& GALILEI::GURLManager::GetFiltersCursor(void)
+{
+	GFilterCursor *cur=GFilterCursor::GetTmpCursor();
+	cur->Set(Filters);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GURLManager::~GURLManager(void)
 {
 }
