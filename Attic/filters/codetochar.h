@@ -52,7 +52,7 @@ namespace GALILEI{
 * The CodeToChar class provides a representation for a correspondance between
 * a HTML code (&...;) and a specific character.
 * @author Pascal Francq and Julien Lamoral.
-* @hsort HTML Code/Character Correspondance.
+* @short HTML Code/Character Correspondance.
 */
 class CodeToChar
 {
