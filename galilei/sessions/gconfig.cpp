@@ -361,6 +361,13 @@ void GConfig::Read(GPostGroupManager& mng)
 	{
 		Cur()->ReadConfig(PostGroups);
 	}
+	try
+	{
+		mng.SetCurrentMethod(PostGroups->GetAttrValue("Current"));
+	}
+	catch(GException)
+	{
+	}
 }
 
 
@@ -368,12 +375,18 @@ void GConfig::Read(GPostGroupManager& mng)
 void GConfig::Store(GPostGroupManager& mng)
 {
 	GFactoryPostGroupCursor Cur;
+	GPostGroup* calc;
 
 	Cur=mng.GetPostGroupCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(PostGroups);
 	}
+	calc=mng.GetCurrentMethod();
+	if(calc)
+		PostGroups->InsertAttr("Current",calc->GetFactory()->GetName());
+	else
+		PostGroups->InsertAttr("Current","None");
 }
 
 

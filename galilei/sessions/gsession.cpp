@@ -102,7 +102,6 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0),
 	  bGroups(false),bFdbks(false), Random(0),
 	  SessParams(sessparams)
-
 {
 	// Init Part
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
@@ -632,6 +631,17 @@ void GSession::CalcProfile(GProfile* prof) throw(GException)
 			LinkCalc->Compute(Subs());
 		}
 		Profiling->Compute(Subs());
+}
+
+
+//-----------------------------------------------------------------------------
+void GSession::CalcPostGroup() throw(GException)
+{
+	GPostGroup* PostGrouping=PostGroupMng->GetCurrentMethod();
+	if(!PostGrouping)
+		throw GException("No postgroup method chosen.");
+	cout << "postgroup method found "<<endl;
+	PostGrouping->Compute();
 }
 
 

@@ -461,6 +461,11 @@ public:
 	void CalcProfile(GProfile* prof) throw(GException);
 
 	/**
+	* Apply the postgroup treatment.
+	*/
+	void CalcPostGroup(void) throw(GException);
+
+	/**
 	* Make the groups.
 	* @param rec            Receiver of the signals.
 	* @param modified       Recompute only modified elements or all.
@@ -677,6 +682,21 @@ public:
 	* @returns Number of rows.
 	*/
 	virtual unsigned int GetCount(const char* tbl)=0;
+
+	/**
+	* Create a dummy table to store different kid of
+	* data.
+	* @ param name              name of the dummy object.
+	*/
+	virtual void CreateDummy(const char* name)=0;
+
+	/**
+	* Add a dummy entry into a dummy table;
+	* @param name               name of the dummy table.
+	 * @param id                id of the dymmy entry.
+	 * @param desc              description of the dymmy entry.
+	*/
+	virtual void AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid)=0;
 
 	/**
 	* Destructor.
