@@ -49,7 +49,6 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rio.h>
 #include <rstd/rxmlfile.h>
 #include <rstd/rxmlstruct.h>
 using namespace R;
@@ -60,6 +59,7 @@ using namespace R;
 #include <galilei.h>
 #include <galilei/gurlmanagerkde.h>
 #include <sessions/gsessionmysql.h>
+#include <sessions/gslotlog.h>
 #include <profiles/gsubprofiledesc.h>
 #include <profiles/gsubprofilevector.h>
 #include <profiles/gprofilecalcfeedback.h>
@@ -88,7 +88,7 @@ static KCmdLineOptions options[] =
 //------------------------------------------------------------------------------
 // Global Variables
 RXMLStruct Config;
-RTextFile* Log=0;
+GSlotLog* Log=0;
 GIRParams IRParams;
 GFeedbackParams FeedbackParams;
 GCalcGravitationParams CalcGravitationParams;
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 	try
 	{
 		// Create Config files
-		Log=new RTextFile(Config.GetTag("Log")->GetAttrValue("File"),Append);
+		Log=new GSlotLog(Config.GetTag("Log")->GetAttrValue("File"));
 		Log->WriteLog("GALILEI Update started");
 		cout<<"Connect to Session"<<endl;
 
