@@ -156,9 +156,9 @@ double GALILEI::GProfilesBehaviour::GetAgreementRatio(GSubProfile* sub1,GSubProf
 		b2->SetState(osUpToDate);
 		nbcommon=sub1->GetCommonDocs(sub2);
 		if (nbcommon&&nbcommon>=MinSameDocs)
-			okratio=100.0*(sub1->GetCommonOKDocs(sub2)/nbcommon);
+			okratio=sub1->GetCommonOKDocs(sub2)/nbcommon;
 		if (nbcommon&&nbcommon>=MinDiffDocs)
-			diffratio=100.0*(sub1->GetCommonDiffDocs(sub2)/nbcommon);
+			diffratio=sub1->GetCommonDiffDocs(sub2)/nbcommon;
 		 b2->SetAgreementRatio(okratio);
 		 b2->SetDisAgreementRatio(diffratio);
  		 return (okratio);
@@ -204,11 +204,12 @@ double GALILEI::GProfilesBehaviour::GetDisAgreementRatio(GSubProfile* sub1,GSubP
 		b2->SetState(osUpToDate);
 		nbcommon=sub1->GetCommonDocs(sub2);
 		if (nbcommon&&nbcommon>=MinSameDocs)
-			okratio=100.0*(sub1->GetCommonOKDocs(sub2)/nbcommon);
+			okratio=sub1->GetCommonOKDocs(sub2)/nbcommon;
 		if (nbcommon&&nbcommon>=MinDiffDocs)
-			diffratio=100.0*(sub1->GetCommonDiffDocs(sub2)/nbcommon);
+			diffratio=sub1->GetCommonDiffDocs(sub2)/nbcommon;
 		 b2->SetAgreementRatio(okratio);
 		 b2->SetDisAgreementRatio(diffratio);
+
  		 return (diffratio);
 	}
 

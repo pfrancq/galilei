@@ -587,7 +587,6 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 			{
 				if((!modified)||(Subs()->GetState()!=osUpdated))
 				{
-					cout<<"    Compute subprofile "<<sub->GetId()<<endl;
 					if(LinkCalc)
 						LinkCalc->Compute(Subs());
 					Profiling->Compute(Subs());
