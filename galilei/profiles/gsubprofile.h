@@ -147,7 +147,7 @@ public:
 	* Get the corresponding profile.
 	* @return Pointer to the profile.
 	*/
-	const GProfile* GetProfile(void) const {return(Owner);}
+	GProfile* GetProfile(void) const {return(Owner);}
 
 	/**
 	* Get the list of word for OK.

@@ -41,7 +41,9 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 GALILEI::GSession::GSession(const unsigned int d,const unsigned int u,GURLManager* mng) throw(bad_alloc,GException)
 	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(2,5), Mng(mng),
-	  bDics(false), bDocs(false), bUsers(false), bGroups(false)
+	  bDics(false), bDocs(false), bUsers(false), bGroups(false),
+	  bGroupsMember(false), bUsersFdbk(false)
+	
 {
 	GLang* l;
 

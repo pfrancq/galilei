@@ -281,7 +281,7 @@ void GALILEI::GSessionMySQL::LoadGroupsMember(GGroup* grp) throw(bad_alloc,GExce
 			for(usr->Start(); !usr->End();usr->Next())
 			{
 				GProfile* prof=(*usr)();
-				GSubProfile* s=prof->GetPtr<int>(atoi(sub[1]));
+				GSubProfile* s=prof->GetPtr<unsigned int>(atoi(sub[1]),false);
 				if(s)
 					grp->InsertPtr(s);
 			}
