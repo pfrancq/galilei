@@ -6,7 +6,7 @@
 
 	Dutch Language - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Nicolas Kumps (nkumps@ulb.ac.be).
@@ -60,47 +60,47 @@ class GLangNL : public GLang
 	/**
 	* List of Rules '1a'.
 	*/
-	R::RContainer<DutchPorterRule,unsigned int,true,false>* Rules1a;
+	R::RContainer<DutchPorterRule,true,false>* Rules1a;
 
 	/**
 	* List of Rules '1b'.
 	*/
-	R::RContainer<DutchPorterRule,unsigned int,true,false>* Rules1b;
+	R::RContainer<DutchPorterRule,true,false>* Rules1b;
 
 	/**
 	* List of Rules '1c'.
 	*/
-	R::RContainer<DutchPorterRule,unsigned int,true,false>* Rules1c;
+	R::RContainer<DutchPorterRule,true,false>* Rules1c;
 
 	/**
 	* List of Rules '2a'.
 	*/
-	R::RContainer<DutchPorterRule,unsigned int,true,false>* Rules2a;
+	R::RContainer<DutchPorterRule,true,false>* Rules2a;
 
 	/**
 	* List of Rules '2aa'.
 	*/
-	R::RContainer<DutchPorterRule,unsigned int,true,false>* Rules2aa;
+	R::RContainer<DutchPorterRule,true,false>* Rules2aa;
 
 	/**
 	* List of Rules '3a'.
 	*/
-	R::RContainer<DutchPorterRule,unsigned int,true,false>* Rules3a;
+	R::RContainer<DutchPorterRule,true,false>* Rules3a;
 
 	/**
 	* List of Rules '3b'.
 	*/
-	R::RContainer<DutchPorterRule,unsigned int,true,false>* Rules3b;
+	R::RContainer<DutchPorterRule,true,false>* Rules3b;
 
 	/**
 	* List of Rules '4'.
 	*/
-	R::RContainer<DutchPorterRule,unsigned int,true,false>* Rules4;
+	R::RContainer<DutchPorterRule,true,false>* Rules4;
 
 	/**
 	* List of Rules '5'.
 	*/
-	R::RContainer<DutchPorterRule,unsigned int,true,false>* Rules5;
+	R::RContainer<DutchPorterRule,true,false>* Rules5;
 
 public:
 
@@ -179,7 +179,7 @@ private:
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	bool ApplyRules(char* kwd,char* &end,R::RContainer<DutchPorterRule,unsigned int,true,false>* rules);
+	bool ApplyRules(char* kwd,char* &end,R::RContainer<DutchPorterRule,true,false>* rules);
 
 public:
 

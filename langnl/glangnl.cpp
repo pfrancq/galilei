@@ -114,26 +114,26 @@ GALILEI::GLangNL::GLangNL(GFactoryLang* fac) throw(bad_alloc)
 	  Rules2aa(0), Rules3a(0), Rules3b(0), Rules4(0), Rules5(0)
 {
 	//Rules 1a
-	Rules1a=new RContainer<DutchPorterRule,unsigned int,true,false>(1,2);
+	Rules1a=new RContainer<DutchPorterRule,true,false>(1,2);
 	Rules1a->InsertPtr(new DutchPorterRule("heden","heid",4,3,0));
 
 
 	// Rules 1b
-	Rules1b=new RContainer<DutchPorterRule,unsigned int,true,false>(2,2);
+	Rules1b=new RContainer<DutchPorterRule,true,false>(2,2);
 	Rules1b->InsertPtr(new DutchPorterRule("ene","",2,-1,0,DutchPorterRule::CondEndsWithCons));
 	Rules1b->InsertPtr(new DutchPorterRule("en","",1,-1,0,DutchPorterRule::CondEndsWithCons));
 
 	// Rules 1c
-	Rules1c=new RContainer<DutchPorterRule,unsigned int,true,false>(2,2);
+	Rules1c=new RContainer<DutchPorterRule,true,false>(2,2);
 	Rules1c->InsertPtr(new DutchPorterRule("se","",1,-1,0,DutchPorterRule::CondEndsWithCons));
 	Rules1c->InsertPtr(new DutchPorterRule("s","",0,-1,0,DutchPorterRule::CondEndsWithCons));
 
 	//Rules 2a
-	Rules2a=new RContainer<DutchPorterRule,unsigned int,true,false>(1,2);
+	Rules2a=new RContainer<DutchPorterRule,true,false>(1,2);
 	Rules2a->InsertPtr(new DutchPorterRule("e","",0,-1,0,DutchPorterRule::CondEndsWithCons,true));
 
 	//Rules 2aa
-	Rules2aa=new RContainer<DutchPorterRule,unsigned int,true,false>(20,5);
+	Rules2aa=new RContainer<DutchPorterRule,true,false>(20,5);
 	Rules2aa->InsertPtr(new DutchPorterRule("bb","b",1,0));
 	Rules2aa->InsertPtr(new DutchPorterRule("cc","c",1,0));
 	Rules2aa->InsertPtr(new DutchPorterRule("dd","d",1,0));
@@ -156,11 +156,11 @@ GALILEI::GLangNL::GLangNL(GFactoryLang* fac) throw(bad_alloc)
 	Rules2aa->InsertPtr(new DutchPorterRule("zz","z",1,0));
 
 	//Rules 3a
-	Rules3a=new RContainer<DutchPorterRule,unsigned int,true,false>(1,2);
+	Rules3a=new RContainer<DutchPorterRule,true,false>(1,2);
 	Rules3a->InsertPtr(new DutchPorterRule("heid","",3,-1,1,DutchPorterRule::CondNotc,true));
 
 	// Rules 3b
-	Rules3b=new RContainer<DutchPorterRule,unsigned int,true,false>(6,5);
+	Rules3b=new RContainer<DutchPorterRule,true,false>(6,5);
 	Rules3b->InsertPtr(new DutchPorterRule("end","",2,-1,1));
 	Rules3b->InsertPtr(new DutchPorterRule("ing","",2,-1,1,DutchPorterRule::CondNote));
 	Rules3b->InsertPtr(new DutchPorterRule("ig","",1,-1,1,DutchPorterRule::CondNote));
@@ -169,14 +169,14 @@ GALILEI::GLangNL::GLangNL(GFactoryLang* fac) throw(bad_alloc)
 	Rules3b->InsertPtr(new DutchPorterRule("bar","",2,-1,1));
 
 	//Rules 4
-	Rules4=new RContainer<DutchPorterRule,unsigned int,true,false>(4,2);
+	Rules4=new RContainer<DutchPorterRule,true,false>(4,2);
 	Rules4->InsertPtr(new DutchPorterRule("aa","a",2,1,-1,DutchPorterRule::CondUndouble));
 	Rules4->InsertPtr(new DutchPorterRule("oo","o",2,1,-1,DutchPorterRule::CondUndouble));
 	Rules4->InsertPtr(new DutchPorterRule("uu","u",2,1,-1,DutchPorterRule::CondUndouble));
 	Rules4->InsertPtr(new DutchPorterRule("ee","e",2,1,-1,DutchPorterRule::CondUndouble));
 
 	//Rule 5
-	Rules5=new RContainer<DutchPorterRule,unsigned int,true,false>(1,2);
+	Rules5=new RContainer<DutchPorterRule,true,false>(1,2);
 	Rules5->InsertPtr(new DutchPorterRule("v","f",0,0,-1));
 
 
@@ -265,7 +265,7 @@ bool GALILEI::GLangNL::EndsWithCVD(char* tmp,char* newend)
 }
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangNL::ApplyRules(char* kwd,char* &end,RContainer<DutchPorterRule,unsigned int,true,false>* rules)
+bool GALILEI::GLangNL::ApplyRules(char* kwd,char* &end,RContainer<DutchPorterRule,true,false>* rules)
 {
 	DutchPorterRule* ptr;
 	char* ending;

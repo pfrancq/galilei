@@ -108,7 +108,7 @@ GLangFR::GLangFR(GFactoryLang* fac) throw(bad_alloc)
 	: GLang(fac,"French","fr"), Rules1(0), Rules2(0), Rules3(0)
 {
 
-	Rules1=new RContainer<FrenchPorterRule,unsigned int,true,false>(130,10);
+	Rules1=new RContainer<FrenchPorterRule,true,false>(130,10);
 	Rules1->InsertPtr(new FrenchPorterRule("issaient","", 7,-1 ,0));
 	Rules1->InsertPtr(new FrenchPorterRule("ellement","el", 7,1,0));
 	Rules1->InsertPtr(new FrenchPorterRule("issement","", 7,-1 ,0));
@@ -371,7 +371,7 @@ GLangFR::GLangFR(GFactoryLang* fac) throw(bad_alloc)
 	Rules1->InsertPtr(new FrenchPorterRule("au","",2 ,-1 ,0));
 
 
-	Rules2=new RContainer<FrenchPorterRule,unsigned int,true,false>(5,10);
+	Rules2=new RContainer<FrenchPorterRule,true,false>(5,10);
 
 	Rules2->InsertPtr(new FrenchPorterRule("ent","", 2,-1,1));
 	Rules2->InsertPtr(new FrenchPorterRule("ation","",4 ,-1,1));
@@ -380,7 +380,7 @@ GLangFR::GLangFR(GFactoryLang* fac) throw(bad_alloc)
 	Rules2->InsertPtr(new FrenchPorterRule("el","", 1,-1,1));
 	Rules2->InsertPtr(new FrenchPorterRule("i","", 0,-1,0));
 
-	Rules3=new RContainer<FrenchPorterRule,unsigned int,true,false>(5,10);
+	Rules3=new RContainer<FrenchPorterRule,true,false>(5,10);
 
 	Rules3->InsertPtr(new FrenchPorterRule("nn","n",1 ,0,0));
 	Rules3->InsertPtr(new FrenchPorterRule("ll","l",1 ,0,0));
@@ -447,7 +447,7 @@ bool GLangFR::ContainsVowel(const char* kwd)
 
 
 //-----------------------------------------------------------------------------
-bool GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,unsigned int,true,false>* rules,int /*ruleslevel*/)
+bool GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,true,false>* rules,int /*ruleslevel*/)
 {
 	FrenchPorterRule* ptr;
 	char* ending;

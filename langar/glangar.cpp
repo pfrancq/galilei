@@ -183,13 +183,13 @@ GALILEI::GLangAR::GLangAR(GFactoryLang* fac) throw(bad_alloc,GException)
 		 Rules5(0), Rules6(0), Rules7(0)
 {
 	// Create Rules
-	Rules1=new RContainer<ArabicRule,unsigned int,true,false>(5,5);
-	Rules2=new RContainer<ArabicRule,unsigned int,true,false>(5,5);
-	Rules3=new RContainer<ArabicRule,unsigned int,true,false>(5,5);
-	Rules4=new RContainer<ArabicRule,unsigned int,true,false>(5,5);
-	Rules5=new RContainer<ArabicRule,unsigned int,true,false>(5,5);
-	Rules6=new RContainer<ArabicRule,unsigned int,true,false>(5,5);
-	Rules7=new RContainer<ArabicRule,unsigned int,true,false>(5,5);
+	Rules1=new RContainer<ArabicRule,true,false>(5,5);
+	Rules2=new RContainer<ArabicRule,true,false>(5,5);
+	Rules3=new RContainer<ArabicRule,true,false>(5,5);
+	Rules4=new RContainer<ArabicRule,true,false>(5,5);
+	Rules5=new RContainer<ArabicRule,true,false>(5,5);
+	Rules6=new RContainer<ArabicRule,true,false>(5,5);
+	Rules7=new RContainer<ArabicRule,true,false>(5,5);
 
 	//Load rules;
 	LoadRules();
@@ -297,7 +297,7 @@ void GALILEI::GLangAR::LoadRules(void) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLangAR::ApplyRules(RString kwd,RContainer<ArabicRule,unsigned int,true,false>* rules)
+void GALILEI::GLangAR::ApplyRules(RString kwd,RContainer<ArabicRule,true,false>* rules)
 {
 	for(rules->Start();!rules->End();rules->Next())
 	{

@@ -6,7 +6,7 @@
 
 	English Language - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -60,47 +60,47 @@ class GLangEN : public GLang
 	/**
 	* List of Rules '1a'.
 	*/
-	R::RContainer<PorterRule,unsigned int,true,false>* Rules1a;
+	R::RContainer<PorterRule,true,false>* Rules1a;
 
 	/**
 	* List of Rules '1b'.
 	*/
-	R::RContainer<PorterRule,unsigned int,true,false>* Rules1b;
+	R::RContainer<PorterRule,true,false>* Rules1b;
 
 	/**
 	* List of Rules '1bb'.
 	*/
-	R::RContainer<PorterRule,unsigned int,true,false>* Rules1bb;
+	R::RContainer<PorterRule,true,false>* Rules1bb;
 
 	/**
 	* List of Rules '1c'.
 	*/
-	R::RContainer<PorterRule,unsigned int,true,false>* Rules1c;
+	R::RContainer<PorterRule,true,false>* Rules1c;
 
 	/**
 	* List of Rules '2'.
 	*/
-	R::RContainer<PorterRule,unsigned int,true,false>* Rules2;
+	R::RContainer<PorterRule,true,false>* Rules2;
 
 	/**
 	* List of Rules '3'.
 	*/
-	R::RContainer<PorterRule,unsigned int,true,false>* Rules3;
+	R::RContainer<PorterRule,true,false>* Rules3;
 
 	/**
 	* List of Rules '4'.
 	*/
-	R::RContainer<PorterRule,unsigned int,true,false>* Rules4;
+	R::RContainer<PorterRule,true,false>* Rules4;
 
 	/**
 	* List of Rules '5a'.
 	*/
-	R::RContainer<PorterRule,unsigned int,true,false>* Rules5a;
+	R::RContainer<PorterRule,true,false>* Rules5a;
 
 	/**
 	* List of Rules '5b'.
 	*/
-	R::RContainer<PorterRule,unsigned int,true,false>* Rules5b;
+	R::RContainer<PorterRule,true,false>* Rules5b;
 
 public:
 
@@ -160,7 +160,7 @@ private:
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	bool ApplyRules(char* kwd,char* &end,R::RContainer<PorterRule,unsigned int,true,false>* rules);
+	bool ApplyRules(char* kwd,char* &end,R::RContainer<PorterRule,true,false>* rules);
 
 public:
 

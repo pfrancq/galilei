@@ -6,7 +6,7 @@
 
 	Arabic Language - Header.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -61,37 +61,37 @@ class GLangAR : public GLang
 	/**
 	* List of Rules '1a'.
 	*/
-	R::RContainer<ArabicRule,unsigned int,true,false>* Rules1;
+	R::RContainer<ArabicRule,true,false>* Rules1;
 
 	/**
 	* List of Rules '2'.
 	*/
-	R::RContainer<ArabicRule,unsigned int,true,false>* Rules2;
+	R::RContainer<ArabicRule,true,false>* Rules2;
 
 	/**
 	* List of Rules '3'.
 	*/
-	R::RContainer<ArabicRule,unsigned int,true,false>* Rules3;
+	R::RContainer<ArabicRule,true,false>* Rules3;
 
 	/**
 	* List of Rules '4'.
 	*/
-	R::RContainer<ArabicRule,unsigned int,true,false>* Rules4;
+	R::RContainer<ArabicRule,true,false>* Rules4;
 
 	/**
 	* List of Rules '5'.
 	*/
-	R::RContainer<ArabicRule,unsigned int,true,false>* Rules5;
+	R::RContainer<ArabicRule,true,false>* Rules5;
 
 	/**
 	* List of Rules '6'.
 	*/
-	R::RContainer<ArabicRule,unsigned int,true,false>* Rules6;
+	R::RContainer<ArabicRule,true,false>* Rules6;
 
 	/**
 	* List of Rules '7'.
 	*/
-	R::RContainer<ArabicRule,unsigned int,true,false>* Rules7;
+	R::RContainer<ArabicRule,true,false>* Rules7;
 
 
 public:
@@ -124,7 +124,7 @@ private:
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	void ApplyRules(R::RString kwd,R::RContainer<ArabicRule,unsigned int,true,false>* rules);
+	void ApplyRules(R::RString kwd,R::RContainer<ArabicRule,true,false>* rules);
 
 public:
 

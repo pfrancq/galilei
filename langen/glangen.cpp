@@ -114,20 +114,20 @@ GALILEI::GLangEN::GLangEN(GFactoryLang* fac) throw(bad_alloc)
 	  Rules2(0), Rules3(0), Rules4(0), Rules5a(0), Rules5b(0)
 {
 	// Rules 1a
-	Rules1a=new RContainer<PorterRule,unsigned int,true,false>(4,2);
+	Rules1a=new RContainer<PorterRule,true,false>(4,2);
 	Rules1a->InsertPtr(new PorterRule("sses","ss",3,1));
 	Rules1a->InsertPtr(new PorterRule("ies","i",2,0));
 	Rules1a->InsertPtr(new PorterRule("ss","ss",1,1));
 	Rules1a->InsertPtr(new PorterRule("s","",0,-1));
 
 	// Rules 1b
-	Rules1b=new RContainer<PorterRule,unsigned int,true,false>(3,2);
+	Rules1b=new RContainer<PorterRule,true,false>(3,2);
 	Rules1b->InsertPtr(new PorterRule("eed","ee",2,1,0,PorterRule::CondNothing,true));
 	Rules1b->InsertPtr(new PorterRule("ed","",1,-1,-1,PorterRule::CondContainsVowel,true));
 	Rules1b->InsertPtr(new PorterRule("ing","",2,-1,-1,PorterRule::CondContainsVowel,true));
 
 	// Rules 1bb
-	Rules1bb=new RContainer<PorterRule,unsigned int,true,false>(15,5);
+	Rules1bb=new RContainer<PorterRule,true,false>(15,5);
 	Rules1bb->InsertPtr(new PorterRule("at","ate",1,2));
 	Rules1bb->InsertPtr(new PorterRule("bl","ble",1,2));
 	Rules1bb->InsertPtr(new PorterRule("iz","ize",1,2));
@@ -145,11 +145,11 @@ GALILEI::GLangEN::GLangEN(GFactoryLang* fac) throw(bad_alloc)
 	Rules1bb->InsertPtr(new PorterRule("","e",0,0));
 
 	// Rules 1c
-	Rules1c=new RContainer<PorterRule,unsigned int,true,false>(1,2);
+	Rules1c=new RContainer<PorterRule,true,false>(1,2);
 	Rules1c->InsertPtr(new PorterRule("y","i",0,0,-1,PorterRule::CondContainsVowel));
 
 	// Rules 2
-	Rules2=new RContainer<PorterRule,unsigned int,true,false>(20,5);
+	Rules2=new RContainer<PorterRule,true,false>(20,5);
 	Rules2->InsertPtr(new PorterRule("ational","ate",6,2,0));
 	Rules2->InsertPtr(new PorterRule("tional","tion",5,3,0));
 	Rules2->InsertPtr(new PorterRule("enci","ence",3,3,0));
@@ -172,7 +172,7 @@ GALILEI::GLangEN::GLangEN(GFactoryLang* fac) throw(bad_alloc)
 	Rules2->InsertPtr(new PorterRule("biliti","ble",5,2,0));
 
 	// Rules 3
-	Rules3=new RContainer<PorterRule,unsigned int,true,false>(7,5);
+	Rules3=new RContainer<PorterRule,true,false>(7,5);
 	Rules3->InsertPtr(new PorterRule("icate","ic",4,1,0));
 	Rules3->InsertPtr(new PorterRule("ative","",4,-1,0));
 	Rules3->InsertPtr(new PorterRule("alize","al",4,1,0));
@@ -182,7 +182,7 @@ GALILEI::GLangEN::GLangEN(GFactoryLang* fac) throw(bad_alloc)
 	Rules3->InsertPtr(new PorterRule("ness","",3,-1,0));
 
 	// Rules 4
-	Rules4=new RContainer<PorterRule,unsigned int,true,false>(20,5);
+	Rules4=new RContainer<PorterRule,true,false>(20,5);
 	Rules4->InsertPtr(new PorterRule("al","",1,-1,1));
 	Rules4->InsertPtr(new PorterRule("ance","",3,-1,1));
 	Rules4->InsertPtr(new PorterRule("ence","",3,-1,1));
@@ -205,12 +205,12 @@ GALILEI::GLangEN::GLangEN(GFactoryLang* fac) throw(bad_alloc)
 	Rules4->InsertPtr(new PorterRule("ize","",2,-1,1));
 
 	// Rules 5a
-	Rules5a=new RContainer<PorterRule,unsigned int,true,false>(2,5);
+	Rules5a=new RContainer<PorterRule,true,false>(2,5);
 	Rules5a->InsertPtr(new PorterRule("e","",0,-1,1));
 	Rules5a->InsertPtr(new PorterRule("e","",0,-1,-1,PorterRule::CondRemoveAnE));
 
 	// Rules 5b
-	Rules5b=new RContainer<PorterRule,unsigned int,true,false>(1,5);
+	Rules5b=new RContainer<PorterRule,true,false>(1,5);
 	Rules5b->InsertPtr(new PorterRule("ll","l",1,0,1));
 
 	// Skip Words
@@ -277,7 +277,7 @@ bool GALILEI::GLangEN::EndsWithCVC(char* kwd,char* &end)
 }
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,unsigned int,true,false>* rules)
+bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,true,false>* rules)
 {
 	PorterRule* ptr;
 	char* ending;
