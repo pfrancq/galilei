@@ -210,7 +210,7 @@ void KViewStems::LoadFile(const char* filename)
 	GrWord* gptr;
 
 	// Read the File
-	f.Open(Read);
+	f.Open(RIO::Read);
 	while(!f.Eof())
 	{
 		// Read a line

@@ -350,7 +350,7 @@ void KViewDoc::SaveDocXML(const char* name)
 {
 	if(!Struct) return;
 	RXMLFile f(name,Struct);
-	f.Open(R::Create);
+	f.Open(R::RIO::Create);
 }
 
 

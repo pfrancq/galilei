@@ -287,7 +287,7 @@ void QCreateDB::DoIt(void)
 
 		RTextFile fileU(path,"Latin1");
 
-		fileU.Open(Read);
+		fileU.Open(RIO::Read);
 		while((!fileU.Eof())&&(!GSession::Break()))
 		{
 			line=fileU.GetLine();
