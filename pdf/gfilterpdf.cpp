@@ -68,6 +68,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterpdf.h>
+#include <filters/gurlmanager.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;

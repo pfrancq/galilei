@@ -9,7 +9,7 @@
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Vandaele Valery (vavdaele@ulb.ac.be).
 
 	Version $Revision$
 
@@ -48,19 +48,17 @@
 #endif
 #include <fcntl.h>
 
-//---------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-#include <rstd/rxmltag.h>
-#include <rstd/rtextfile.h>
-using namespace R;
+
 
 
 //---------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfiltersgml.h>
 #include <filters/codetochar.h>
+#include <filters/gurlmanager.h>
+#include <docs/gdocxml.h>
 using namespace GALILEI;
+using namespace R;
 
 
 

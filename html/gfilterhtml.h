@@ -10,6 +10,7 @@
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
+		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	Version $Revision$
 
@@ -39,16 +40,14 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rstring.h>
-#include <rstd/rcontainer.h>
-#include <rstd/rxmlfile.h>
-#include <rstd/rxmlstruct.h>
-#include <rstd/rxmltag.h>
+//#include <rstd/rxmlfile.h>
+//#include <rstd/rxmlstruct.h>
+//#include <rstd/rxmltag.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/codetochar.h>
+//#include <filters/codetochar.h>
 #include <filters/gfilter.h>
 
 

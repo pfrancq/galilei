@@ -9,7 +9,7 @@
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Vandaele Valery (vavdaele@ulb.ac.be).
 
 	Version $Revision$
 
@@ -38,18 +38,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rstring.h>
-#include <rstd/rcontainer.h>
-#include <rstd/rxmlfile.h>
-#include <rstd/rxmlstruct.h>
-#include <rstd/rtextfile.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/codetochar.h>
+#include <galilei.h>
 #include <filters/gfilter.h>
 
 
@@ -62,8 +52,8 @@ namespace GALILEI{
 /**
 * The GFilterSGML class provides a representation of a document to filter in a
 * XML structure.
-* @author Pascal Francq
-* @short HTML's Filter.
+* @author Vandaele Valery
+* @short SGML's Filter.
 */
 class GFilterSGML: public GFilter
 {
@@ -122,7 +112,7 @@ class GFilterSGML: public GFilter
 	/**
 	* The container of SGML code
 	*/
-	RContainer<CodeToChar,unsigned int,true,true> Chars;
+	R::RContainer<CodeToChar,unsigned int,true,true> Chars;
 
 	/**
 	* Determine if the current tag is a closing tag or an open one.
@@ -138,7 +128,7 @@ class GFilterSGML: public GFilter
 	/**
 	*  TAG containing the content of the document.
 	*/
-	RXMLTag* contentT;
+	R::RXMLTag* contentT;
 	
 public:
 

@@ -50,6 +50,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfiltertxt.h>
+#include <filters/gurlmanager.h>
+#include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;
 

@@ -47,9 +47,15 @@
 #include <fcntl.h>
 
 
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI Plugins
+#include <gfilteremail.h>
+
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gfilteremail.h>
+#include <docs/gdocxml.h>
+#include <filters/gurlmanager.h>
 using namespace GALILEI;
 using namespace R;
 

@@ -39,24 +39,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rstring.h>
-#include <rstd/rcontainer.h>
-using namespace R;
-#include <rstd/rxmlfile.h>
-#include <rstd/rxmlstruct.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <rstd/rtextfile.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/codetochar.h>
+#include <galilei.h>
 #include <filters/gfilter.h>
 
 
@@ -129,7 +113,7 @@ class GFilterXML: public GFilter
 	/**
 	* The container of XML code
 	*/
-	RContainer<CodeToChar,unsigned int,true,true> Chars;
+	R::RContainer<CodeToChar,unsigned int,true,true> Chars;
 
 	/**
 	* Determine if the current tag is a closing tag or an open one.
@@ -145,7 +129,7 @@ class GFilterXML: public GFilter
 	/**
 	*  TAG containing the content of the document.
 	*/
-	RXMLTag* contentT;
+	R::RXMLTag* contentT;
 	
 public:
 

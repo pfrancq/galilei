@@ -38,24 +38,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rstring.h>
-#include <rstd/rcontainer.h>
-using namespace R;
-#include <rstd/rxmlfile.h>
-#include <rstd/rxmlstruct.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-//#include <rstd/rtextfile.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/codetochar.h>
+#include <galilei.h>
 #include <filters/gfilter.h>
 
 
@@ -66,7 +50,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GFilterREU class provides a representation of a document to filter in a
+* The GFilterREU class provides a representation of a document REU to filter in a
 * XML structure.
 * @author Pascal Francq
 * @short Reu's Filter.
@@ -128,7 +112,7 @@ class GFilterReu: public GFilter
 	/**
 	* The container of HTML code
 	*/
-	RContainer<CodeToChar,unsigned int,true,true> Chars;
+	R::RContainer<CodeToChar,unsigned int,true,true> Chars;
 
 	/**
 	* Determine if the current tag is a closing tag or an open one.
@@ -182,7 +166,7 @@ protected:
 	* @param params         Parameters of the META tag.
 	* @param metaData       XML Tag representing the meta data of the document.
 	*/
-	void ReadMetaTag(char* params,RXMLTag* metaData);
+	void ReadMetaTag(char* params,R::RXMLTag* metaData);
 
 	/**
 	* This function replace codes by the corresponding characters.
