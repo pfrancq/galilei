@@ -124,7 +124,14 @@ void GALILEI::GSession::InitDocs(void) throw(bad_alloc,GException)
 }
 
 
-//---------------------------------------------------------------------------
+//---------------------------------------------
+GDocXML* GALILEI::GSession::CreateDocXML(const GDoc* doc)
+{
+	return(Mng->CreateDocXML(doc));
+}
+
+
+//--------------------------------------------------------------------------
 void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 {
 	// If users already loaded, do nothing.

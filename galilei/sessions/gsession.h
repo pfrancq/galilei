@@ -268,6 +268,13 @@ public:
 		*/
 		void InitDocs(void) throw(bad_alloc,GException);
 
+		/**
+		* Create a XML structure of the content of a document. The structure
+		* created has to be desallocate by the caller.
+		* @param doc        Document to analyse.
+		*/
+		GDocXML* CreateDocXML(const GDoc* doc);
+
 	//@}
 
 	/**
