@@ -86,10 +86,10 @@ public:
 	int Compare(const GFilter& f) const {return(-1);}
 
 	/**
-	* Add a specific extension for this filter.
-	* @param ext            Extension.
+	* Add a specific MIME-Type for this filter.
+	* @param mime           Name of the MIME-Type.
 	*/
-	void AddExt(const RString& ext);
+	void AddMIME(const RString& mime);
 
 	/**
 	* Analyze the document and fill the XML structure with the information

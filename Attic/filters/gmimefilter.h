@@ -29,6 +29,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <gdocs/gmimetype.h>
 #include <filters/gfilter.h>
 
 
@@ -39,8 +40,8 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GMIMEFilter class provides a representation of a file extension
-* representing a specific filter.
+* The GMIMEFilter class provides a representation of a link between a MIME-Type
+* and a filter.
 * @author Pascal Francq
 */
 class GMIMEFilter
@@ -50,7 +51,7 @@ protected:
 	/**
 	* File extension.
 	*/
-	RString Ext;
+	GMIMEType* Type;
 
 	/**
 	* Filter corresponding.
@@ -61,10 +62,10 @@ public:
 
 	/**
 	* Construct the mime.
-	* @param ext            Extension.
+	* @param t              MIME-Type.
 	* @param f              Filter corresponding.
 	*/
-	GMIMEFilter(const RString& ext,GFilter* f);
+	GMIMEFilter(GMIMEType* t,GFilter* f);
 
 	/**
 	* Compare function used by RContainer.
@@ -79,12 +80,12 @@ public:
 	/**
 	* Compare function used by RContainer.
 	*/
-	int Compare(const RString& ext) const;
+	int Compare(const RString& t) const;
 
 	/**
 	* Compare function used by RContainer.
 	*/
-	int Compare(const char* ext) const;
+	int Compare(const char* t) const;
 
 	/**
 	* Destructor of the filter.

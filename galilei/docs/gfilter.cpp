@@ -43,9 +43,9 @@ GALILEI::GFilter::GFilter(const RString& url,GURLManager* mng)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GFilter::AddExt(const RString& ext)
+void GALILEI::GFilter::AddMIME(const RString& name)
 {
-	Manager->AddMIME(ext,this);
+	Manager->AddMIME(name,this);
 }
 
 

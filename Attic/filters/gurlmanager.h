@@ -40,6 +40,11 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
+// Forward class declaration
+class GSession;
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GURLManager class provides a representation for a manager responsible to
 * transform generic URL into a local file. If needed, the file has to be
@@ -49,6 +54,11 @@ namespace GALILEI{
 */
 class GURLManager
 {
+	/**
+	* Corresponding Session.
+	*/
+	GSession* Session;
+
 	/**
 	* List of all mime types avalaible.
 	*/
@@ -63,8 +73,9 @@ public:
 
 	/**
 	* Construct a URL manager.
+	* @param session        Session.
 	*/
-	GURLManager(void);
+	GURLManager(GSession* session);
 
 	/**
 	* Download and store locally a document given by an URL.
@@ -81,20 +92,13 @@ public:
 	virtual void Delete(RString& tmpFile);
 
 	/**
-	* Transform a file of a given MIME type in a GDocXML.
-	* @param URL            URL of the document.
-	* @param mime           Mime type of document.
-	* Return Pointer to a GDocXML.
-	*/
-	GDocXML* CreateDocXML(const char* URL,const char* mime);
-
-	/**
 	* Transform a file in a GDocXML. Try to find the type of the document by
 	* analysing the extension of it.
 	* @param URL            URL of the document.
+	* @param mime           MIME-Type of the document.
 	* Return Pointer to a GDocXML.
 	*/
-	GDocXML* CreateDocXML(const char* URL);
+	GDocXML* CreateDocXML(const char* URL,const char* mime);
 
 	/**
 	* Add a mime type and a filter.

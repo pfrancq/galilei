@@ -29,8 +29,8 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GMIMEFilter::GMIMEFilter(const RString& ext,GFilter* f)
-	: Ext(ext), Filter(f)
+GALILEI::GMIMEFilter::GMIMEFilter(GMIMEType* t,GFilter* f)
+	: Type(t), Filter(f)
 {
 }
 
@@ -38,26 +38,28 @@ GALILEI::GMIMEFilter::GMIMEFilter(const RString& ext,GFilter* f)
 //-----------------------------------------------------------------------------
 int GALILEI::GMIMEFilter::Compare(const GMIMEFilter* f) const
 {
-	return(Ext.Compare(f->Ext));
+	return(Type->Compare(f->Type));
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GMIMEFilter::Compare(const GMIMEFilter& f) const
 {
-	return(Ext.Compare(f.Ext));
-}
-//-----------------------------------------------------------------------------
-int GALILEI::GMIMEFilter::Compare(const RString& ext) const
-{
-	return(Ext.Compare(ext));
+	return(Type->Compare(f.Type));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GMIMEFilter::Compare(const char* ext) const
+int GALILEI::GMIMEFilter::Compare(const RString& t) const
 {
-	return(Ext.Compare(ext));
+	return(Type->Compare(t));
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GMIMEFilter::Compare(const char* t) const
+{
+	return(Type->Compare(t));
 }
 
 

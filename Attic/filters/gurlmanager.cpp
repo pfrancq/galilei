@@ -41,8 +41,8 @@
 #include <urlmanagers/gurlmanager.h>
 #include <filters/gmimefilter.h>
 #include <filters/gfilter.h>
+#include <gsessions/gsession.h>
 using namespace GALILEI;
-
 
 
 
@@ -53,8 +53,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GURLManager::GURLManager(void)
-	: MIMES(50,25), Filters(50,25)
+GALILEI::GURLManager::GURLManager(GSession* session)
+	: Session(session), MIMES(50,25), Filters(50,25)
 {
 }
 
@@ -106,23 +106,11 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(const char* URL,const char* mime)
 
 
 //-----------------------------------------------------------------------------
-GDocXML* GALILEI::GURLManager::CreateDocXML(const char* URL)
-{
-	char mime[10];
-
-	// Find mimetype
-
-	// Return XML structure
-	return(CreateDocXML(URL,mime));
-}
-
-
-//-----------------------------------------------------------------------------
 void GALILEI::GURLManager::AddMIME(const RString& ext,GFilter* f)
 {
 	if(!Filters.IsIn(f))
 		Filters.InsertPtr(f);
-	MIMES.InsertPtr(new GMIMEFilter(ext,f));
+	//MIMES.InsertPtr(new GMIMEFilter(ext,f));
 }
 
 
