@@ -220,9 +220,9 @@ GGroups* GALILEI::GSession::GetGroups(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
-GGroup* GALILEI::GSession::NewGroup(void)
+GGroup* GALILEI::GSession::NewGroup( GLang* lang)
 {
-	return(new GGroup());
+	return(new GGroup(lang));
 }
 
 

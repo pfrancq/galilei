@@ -428,8 +428,9 @@ public:
 
 		/**
 		* Create a new group.
+		* @param lang       Language of the group to create.
 		*/
-		GGroup* NewGroup(void);
+		GGroup* NewGroup(GLang* lang);
 
 	//@}
 
