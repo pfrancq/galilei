@@ -61,6 +61,15 @@ GALILEI::GGroupingSim::GGroupingSim(GSession* s) throw(bad_alloc)
 {
 }
 
+
+//-----------------------------------------------------------------------------
+GALILEI::GGroupingSim::GGroupingSim(const char* n,GSession* s) throw(bad_alloc)
+	: GGrouping(n,s), FullSim(true), LevelSim(0.3),
+	  GlobalSim(false)
+{
+}
+
+
 //-----------------------------------------------------------------------------
 const char* GALILEI::GGroupingSim::GetSettings(void)
 {

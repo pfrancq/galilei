@@ -86,6 +86,13 @@ public:
 	GGroupingSim(GSession* s) throw(bad_alloc);
 
 	/**
+	* Constructor.
+	* @param n              Name of the grouping.
+	* @param s              Session.
+	*/
+	GGroupingSim(const char* n,GSession* s) throw(bad_alloc);
+
+	/**
 	* Get the settings of the method coded in a string.
 	* return Pointer to a C string.
 	*/
