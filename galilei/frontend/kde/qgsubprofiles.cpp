@@ -103,11 +103,9 @@ GALILEI::QGSubProfiles::SubProfile::SubProfile(QWidget* parent,GSession* session
 	QtLayout->addWidget(Info);
 
 	// Create the 'Vector' ListView
-	sprintf(tmp,"Words (%u)",Desc->GetNbNoNull());
 	Vector = new QListView(this, "Vector" );
-	Vector->addColumn(tmp);
-	Vector->addColumn(QString("Weights"));
-	Vector->setSorting(2);
+	Vector->addColumn("Information Entity");
+	Vector->addColumn(QString("Weight"));
 	Construct();
 	QtLayout->addWidget(Vector);
 }
@@ -116,7 +114,6 @@ GALILEI::QGSubProfiles::SubProfile::SubProfile(QWidget* parent,GSession* session
 //-----------------------------------------------------------------------------
 void GALILEI::QGSubProfiles::SubProfile::Construct(void)
 {
-	GWeightInfoCursor Cur;
 	char tmp[20];
 	class LocalItem : QListViewItem
 	{
@@ -138,13 +135,9 @@ void GALILEI::QGSubProfiles::SubProfile::Construct(void)
     	}
 	};
 
-	// Change the label of the first column
-	sprintf(tmp,"Words (%u)",Desc->GetNbNoNull());
-	Vector->setColumnText(0,tmp);
-
 	// Read 'Ok'
 	Vector->clear();
-	Cur=Desc->GetWeightInfoCursor();
+	RCursor<GWeightInfo> Cur=Desc->GetWeightInfoCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		new LocalItem(Vector,ToQString(Session->GetStorage()->LoadWord(Cur()->GetId(),Desc->GetLang()->GetCode())),Cur()->GetWeight());
@@ -198,7 +191,7 @@ GALILEI::QGSubProfiles::QGSubProfiles(QTabWidget* parent,GSession* session,GProf
 		else
 			w->hide();
 	}
-	parent->insertTab(this,"Description");
+	parent->insertTab(this,"Descriptions");
 }
 
 
