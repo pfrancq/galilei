@@ -405,7 +405,24 @@ void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
 		if(!prof) continue;
 		doc=GetDoc(atoi(fdbks[0]));
 		if(!doc) continue;
-		InsertFdbk(prof,doc,fdbks[1][0],fdbks[4]);
+		switch(fdbks[1][0])
+		{
+			case 'O':
+				InsertFdbk(prof,doc,djOK,fdbks[4]);
+				break;
+			case 'N':
+				InsertFdbk(prof,doc,djNav,fdbks[4]);
+				break;
+			case 'K':
+				InsertFdbk(prof,doc,djKO,fdbks[4]);
+				break;
+			case 'H':
+				InsertFdbk(prof,doc,djOutScope,fdbks[4]);
+				break;
+			default:
+				InsertFdbk(prof,doc,djUnknow,fdbks[4]);
+				break;
+		}
 	}
 }
 

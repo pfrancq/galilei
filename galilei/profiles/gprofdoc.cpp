@@ -47,7 +47,7 @@ using namespace GALILEI;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GALILEI::GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,char fdbk,const char* date)
+GALILEI::GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,const char* date)
   : Doc(doc), Profile(prof), Fdbk(fdbk), Updated(date)
 {
 }
@@ -72,4 +72,11 @@ int GALILEI::GProfDoc::Compare(const GProfDoc* profdoc) const
 	diff=Doc->GetId()-profdoc->Doc->GetId();
 	if(diff) return(diff);
 	return(Profile->GetId()-profdoc->Profile->GetId());
+}
+
+
+//---------------------------------------------------------------------------
+int GALILEI::GProfDoc::Compare(const GDoc* doc) const
+{
+	return(Doc->GetId()-doc->GetId());
 }

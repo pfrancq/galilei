@@ -124,6 +124,17 @@ enum tObjState{osUnknow   /** Unknow state.*/,
 
 //-----------------------------------------------------------------------------
 /**
+* Represent different judgment on a document.
+*/
+enum tDocJudgement{djUnknow   /** Unknow judgement.*/,
+                   djOK       /** Document is OK.*/,
+                   djKO       /** Document is KO.*/,
+                   djNav      /** Document is an interesting navigation document.*/,
+                   djOutScope /** Document is out of scope.*/};
+
+
+//-----------------------------------------------------------------------------
+/**
 * Represent different methods to describe subprofiles.
 */
 enum tSubProfileDesc{sdNothing=0,sdVector=1};

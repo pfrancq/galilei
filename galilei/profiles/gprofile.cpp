@@ -126,6 +126,13 @@ void GALILEI::GProfile::UpdateFinished(void)
 
 
 //-----------------------------------------------------------------------------
+GProfDoc* GALILEI::GProfile::GetFeedback(const GDoc* doc) const
+{
+	return(Fdbks.GetPtr<const GDoc*>(doc));
+}
+
+
+//-----------------------------------------------------------------------------
 GProfDocCursor& GALILEI::GProfile::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();

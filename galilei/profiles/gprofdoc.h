@@ -39,18 +39,16 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rtimedate/rdate.h>
-#include <rstd/rcursor.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI {
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GDoc;
-class GProfile;
 
 
 //-----------------------------------------------------------------------------
@@ -75,7 +73,7 @@ class GProfDoc
 	/**
 	* Feedback of the profile.
 	*/
-	char Fdbk;
+	tDocJudgement Fdbk;
 
 	/**
 	* Last Updated of this feedback.
@@ -91,7 +89,7 @@ public:
 	* @param fdbk           Feedback.
 	* @param date           Date.
 	*/
-    GProfDoc(GDoc* doc,GProfile* prof,char fdbk,const char* date);
+    GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,const char* date);
 
 	/**
 	* Compare mathod used by RStd::RContainer.
@@ -104,10 +102,16 @@ public:
 	int Compare(const GProfDoc *profdoc) const;
 
 	/**
+	* Compare mathod used by RStd::RContainer for the document part.
+	* @param doc            Pointer to the document.
+	*/
+	int Compare(const GDoc* doc) const;
+
+	/**
 	* Get the feedback for the document.
 	* @returns Profile's feedback.
 	*/
-	char GetFdbk(void) const {return(Fdbk);}
+	tDocJudgement GetFdbk(void) const {return(Fdbk);}
 
 	/**
 	* Get the document judged.

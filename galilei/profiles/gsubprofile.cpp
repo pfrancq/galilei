@@ -32,10 +32,11 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
+// include files for GALILEI
+#include<langs/glang.h>
+#include<docs/gdoc.h>
 #include<profiles/gsubprofile.h>
 #include<profiles/gprofile.h>
-#include<langs/glang.h>
 #include<profiles/gprofdoc.h>
 #include<groups/ggroup.h>
 using namespace GALILEI;
@@ -106,6 +107,41 @@ void GALILEI::GSubProfile::SetGroup(GGroup* grp)
 bool GALILEI::GSubProfile::IsUpdated(void) const
 {
 	return(Attached<(*Profile->GetUpdated()));
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof) const
+{
+	tDocJudgement f;
+	GProfDoc* cor;
+	unsigned int nb;
+
+	// Verify that the two profile have the same language
+	if(Lang!=prof->Lang) return(0);
+	nb=0;
+
+	// Go through the document judged by the corresponding profile
+	GProfDocCursor Fdbks=Profile->GetProfDocCursor();
+	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+	{
+		// If the document is not "good" or not the same language that the
+		// same profile -> Nothing
+		f=Fdbks()->GetFdbk();
+		if((f!=djOK)&&(f!=djNav)) continue;
+		if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
+
+		// Look for the same document in the other profile. If not found or the
+		// document is not "good" -> Nothing
+		cor=prof->Profile->GetFeedback(Fdbks()->GetDoc());
+		if(!cor) continue;
+		f=cor->GetFdbk();
+		if((f!=djOK)&&(f!=djNav)) continue;
+
+		// Increase the number of common documents
+		nb++;
+	}
+	return(nb);
 }
 
 

@@ -118,12 +118,12 @@ void GALILEI::GProfileCalcReWeighting::ComputeOKKO(GProfile* profile) throw(bad_
 		// Verify Feedback
 		switch(Docs()->GetFdbk())
 		{
-			case 'O':
-			case 'N':
+			case djOK:
+			case djNav:
 //				OK.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
 				break;
 			
-			case 'K':
+			case djKO:
 //				KO.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
 				break;
 		}

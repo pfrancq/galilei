@@ -156,12 +156,12 @@ void GALILEI::GProfileCalcVector::ComputeOKKO(GProfile* profile) throw(bad_alloc
 		// Find list in function of the feedback
 		switch(Docs()->GetFdbk())
 		{
-			case 'O':
-			case 'N':
+			case djOK:
+			case djNav:
 				Weights=OK.GetPtr<GLang*>(CurLang);
 				break;
 			
-			case 'K':
+			case djKO:
 				Weights=KO.GetPtr<GLang*>(CurLang);
 				break;
 

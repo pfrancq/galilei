@@ -203,6 +203,14 @@ public:
 	void UpdateFinished(void);
 
 	/**
+	* Get the feedback of the profile on a specific document.
+	* @param doc            Pointer to the document.
+	* return Pointer to the feedback or 0 if the document wasn't judged by the
+	*        profile.
+	*/
+	GProfDoc* GetFeedback(const GDoc* doc) const;
+
+	/**
 	* Get a Cursor on the feedback for the profile.
 	* @return GProfDocCursor.
 	*/

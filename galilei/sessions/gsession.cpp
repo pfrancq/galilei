@@ -331,7 +331,7 @@ void GALILEI::GSession::InitFdbks(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,char j,const char* date) throw(bad_alloc)
+void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const char* date) throw(bad_alloc)
 {
 	GProfDoc* f;
 
