@@ -11,8 +11,8 @@
     </keywords>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <version/>
-    <description/>
+    <version></version>
+    <description></description>
     <ignoreparts/>
     <secondaryLanguages/>
   </general>
@@ -39,17 +39,17 @@
       <cxxflags>\s-O0 -g3 -Wall</cxxflags>
     </compiler>
     <run>
-      <mainprogram>kgalileicenter/kgalileicenter</mainprogram>
-      <programargs/>
+      <mainprogram>/home/pfrancq/prj/kgalileicenter/kgalileicenter/kgalileicenter</mainprogram>
+      <programargs></programargs>
       <terminal>false</terminal>
       <envvars/>
       <autocompile>true</autocompile>
-      <directoryradio>executable</directoryradio>
+      <directoryradio>custom</directoryradio>
       <customdirectory>/</customdirectory>
     </run>
     <configurations>
       <default>
-        <configargs>--prefix=/usr --enable-debug=full --enable-kde=yes</configargs>
+        <configargs>--prefix=/usr --enable-debug=full</configargs>
         <builddir/>
         <topsourcedir/>
         <cppflags/>
@@ -149,15 +149,15 @@
   <kdevdebugger>
     <general>
       <dbgshell>libtool</dbgshell>
-      <programargs/>
-      <gdbpath/>
+      <programargs></programargs>
+      <gdbpath></gdbpath>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
       <runappinappdirectory>true</runappinappdirectory>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
     </general>
     <display>
       <staticmembers>false</staticmembers>
