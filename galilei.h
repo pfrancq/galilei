@@ -77,6 +77,7 @@ class GIWordsWeights;
 class GLang;
 class GLangCursor;
 class GLangs;
+class GWord;
 class GDict;
 class GDicts;
 
