@@ -6,7 +6,7 @@
 
 	Generic Profile Computing Method - Header.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -40,13 +40,26 @@
 
 
 //-----------------------------------------------------------------------------
+// include file for LibTool--
+#include <ltmm/loader.hh>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <sessions/gplugin.h>
+#include <profiles/gprofilecalcmanager.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+// API VERSION
+#define API_PROFILECALC_VERSION "1.0"
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -55,13 +68,8 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Profile Computing Method.
 */
-class GProfileCalc
+class GProfileCalc : public GPlugin<GFactoryProfileCalc>
 {
-	/**
-	* Name of the computing method.
-	*/
-	R::RString ComputingName;
-
 protected:
 
 	/**
@@ -72,70 +80,28 @@ protected:
 public:
 
 	/**
-	* Constructor.
-	* @param name           Name.
-	* @param session        Session.
+	* Construct the computing method.
+	* @param fac             Factory of the plugin.
 	*/
-	GProfileCalc(const char* name,GSession* session) throw(bad_alloc);
+	GProfileCalc(GFactoryProfileCalc* fac) throw(bad_alloc);
 
 	/**
-	* Set a parameter of the grouping method.
-	* @param param          Name of the parameter.
-	* @param value          Value of the parameter.
+	* Connect to a Session.
+	* @param session         The session.
 	*/
-	virtual void SetParam(const char* param,const char* value);
+	virtual void Connect(GSession* session);
+
+	/**
+	* Disconnect from a Session.
+	* @param session         The session.
+	*/
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Compute a profile.
-	* @param profile        Profile to compute.
+	* @param subprofile      Profile to compute.
 	*/
 	virtual void Compute(GSubProfile* subprofile)=0;
-
-	/**
-	* Get the name of the computing method.
-	* @returns Pointer to a C string.
-	*/
-	const char* GetComputingName(void) const {return(ComputingName());}
-
-	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
-	*/
-	virtual const char* GetSettings(void) {return("");}
-
-	/**
-	* Set the settings for the method using a string.
-	* @param char*          C string coding the settings.
-	*/
-	virtual void SetSettings(const char*) {}
-
-	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const GProfileCalc& desc) const;
-
-	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const GProfileCalc* desc) const;
-
-	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const char* name) const;
-
-	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const tSubProfileDesc t) const;
-
-	/**
-	* Get the type of the method implemented. This is used to find the
-	* correspondance between a profiles description and the compute method
-	* associated.
-	* @returns tSubProfileDesc enum type.
-	*/
-	virtual tSubProfileDesc GetType(void) const=0;
 
 	/**
 	* Destructor.
@@ -145,12 +111,94 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GFactoryProfileCalc : public GFactoryPlugin<GFactoryProfileCalc,GProfileCalc,GProfileCalcManager>
+{
+public:
+	/**
+	* Constructor.
+	* @param mng             Manager of the plugin.
+	* @param n               Name of the Factory/Plugin.
+	* @param f               Lib of the Factory/Plugin.
+	*/
+	GFactoryProfileCalc(GProfileCalcManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryProfileCalc,GProfileCalc,GProfileCalcManager>(mng,n,f) {}
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GFactoryProfileCalc(void) {}
+};
+
+
+//-----------------------------------------------------------------------------
+typedef GFactoryProfileCalc*(*GFactoryProfileCalcInit)(GProfileCalcManager*,const char*);
+
+
+//------------------------------------------------------------------------------
+#define CREATE_PROFILECALC_FACTORY(name,C,about,config)                                         \
+class TheFactory : public GFactoryProfileCalc                                                   \
+{                                                                                               \
+private:                                                                                        \
+	static GFactoryProfileCalc* Inst;                                                           \
+	TheFactory(GProfileCalcManager* mng,const char* l) : GFactoryProfileCalc(mng,name,l)        \
+	{                                                                                           \
+		C::CreateParams(this);                                                                  \
+	}                                                                                           \
+	virtual ~TheFactory(void) {}                                                                \
+public:                                                                                         \
+	static GFactoryProfileCalc* CreateInst(GProfileCalcManager* mng,const char* l)              \
+	{                                                                                           \
+		if(!Inst)                                                                               \
+			Inst = new TheFactory(mng,l);                                                       \
+		return(Inst);                                                                           \
+	}                                                                                           \
+	virtual void About(void) {C::About();}                                                      \
+	virtual bool HasAbout(void) const {return(about);}                                          \
+	virtual void Configure(void) {C::Configure(this);}                                          \
+	virtual bool HasConfigure(void) const {return(config);}                                     \
+	virtual const char* GetAPIVersion(void) const {return(API_PROFILECALC_VERSION);}            \
+	virtual void Create(void) throw(GException)                                                 \
+	{                                                                                           \
+		if(Plugin) return;                                                                      \
+		Plugin=new C(this);                                                                     \
+		Plugin->ApplyConfig();                                                                  \
+	}                                                                                           \
+	virtual void Delete(void) throw(GException)                                                 \
+	{                                                                                           \
+		if(!Plugin) return;                                                                     \
+		delete Plugin;                                                                          \
+		Plugin=0;                                                                               \
+	}                                                                                           \
+};                                                                                              \
+                                                                                                \
+GFactoryProfileCalc* TheFactory::Inst = 0;                                                      \
+                                                                                                \
+extern "C"                                                                                      \
+{                                                                                               \
+	GFactoryProfileCalc* FactoryCreate(GProfileCalcManager* mng,const char* l)                  \
+	{                                                                                           \
+		return(TheFactory::CreateInst(mng,l));                                                  \
+	}                                                                                           \
+}
+
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GProfileCalcCursor class provides a way to go trough a set of computing
 * method for the profiles.
 * @short Profiles Computing Methods Cursor
 */
 CLASSCURSOR(GProfileCalcCursor,GProfileCalc,unsigned int)
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GFactoryProfileCalcCursor class provides a way to go trough a set of
+* factories.
+* @short Profiles Computing Methods Factories Cursor
+*/
+CLASSCURSOR(GFactoryProfileCalcCursor,GFactoryProfileCalc,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

@@ -37,6 +37,7 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <profiles/gprofilecalc.h>
+#include <profiles/gprofilecalc.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 
@@ -49,47 +50,27 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::GProfileCalc(const char* name,GSession* session) throw(bad_alloc)
-	: ComputingName(name),Session(session)
+GProfileCalc::GProfileCalc(GFactoryProfileCalc* fac) throw(bad_alloc)
+	: GPlugin<GFactoryProfileCalc>(fac), Session(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalc::SetParam(const char*,const char*)
+void GProfileCalc::Connect(GSession* session)
 {
+	Session=session;
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc& desc) const
+void GProfileCalc::Disconnect(GSession*)
 {
-	return(ComputingName.Compare(desc.ComputingName));
+	Session=0;
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc* desc) const
-{
-	return(ComputingName.Compare(desc->ComputingName));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const char* name) const
-{
-	return(ComputingName.Compare(name));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const tSubProfileDesc t) const
-{
-	return(GetType()-t);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::~GProfileCalc(void)
+GProfileCalc::~GProfileCalc(void)
 {
 }
