@@ -148,7 +148,7 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 	RQuery insert(this,sSql);
 
 	// Get the next id
-	sprintf(sSql,"SELECT last_insert_id() FROM %skwds",dict->GetLang()->GetCode());
+	sprintf(sSql,"SELECT kwdid FROM %skwds WHERE kwdid=LAST_INSERT_ID()",dict->GetLang()->GetCode());
 	RQuery getinsert(this,sSql);
 	getinsert.Begin();
 	return(strtoul(getinsert[0],0,10));
