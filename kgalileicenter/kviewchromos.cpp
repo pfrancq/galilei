@@ -174,6 +174,7 @@ public:
 	double FiPlus;
 	double FiMinus;
 	double Fi;
+	unsigned int NbGroups;
 
 	Stat(void) : Id(NullId), Precision(0.0), Recall(0.0), Global(0.0), AvgSim(0.0), J(0.0),
 		AvgRatio(0.0), MinRatio(0.0), Ratio(0.0), WOverB(0.0), SimWB(0.0), Fitness(0.0),
@@ -211,7 +212,8 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,bool sim,QWidget*
 		General->addColumn("Ratio");
 		General->addColumn("W Over B");
 		General->addColumn("Sim WB");
-		for(int i=0;i<11;i++)
+		General->addColumn("Nb Groups");
+		for(int i=0;i<12;i++)
 		{
 			General->setColumnWidthMode(i,QListView::Maximum);
 			General->setColumnAlignment(i,Qt::AlignHCenter);
@@ -233,7 +235,8 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,bool sim,QWidget*
 		General->addColumn("Fi+");
 		General->addColumn("Fi-");
 		General->addColumn("Fi");
-		for(int i=0;i<13;i++)
+		General->addColumn("Nb Groups");
+		for(int i=0;i<14;i++)
 		{
 			General->setColumnWidthMode(i,QListView::Maximum);
 			General->setColumnAlignment(i,Qt::AlignHCenter);
@@ -260,8 +263,6 @@ void KViewChromos::ConstructChromosomesSim(void)
 	// Initialise the dialog box
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
 	d->Begin();
-	d->show();
-	KApplication::kApplication()->processEvents();
 
 	// Load Ideal Groups;
 	d->PutText("Load Ideal Groups");
@@ -345,6 +346,10 @@ void KViewChromos::ConstructChromosomesSim(void)
 		s->SimWB=c->GetSimCriterion();
 		sprintf(tmp,"%f",c->GetSimCriterion());
 		g->setText(10,tmp);
+
+		s->NbGroups=c->Used.NbPtr;
+		sprintf(tmp,"%u",c->Used.NbPtr);
+		g->setText(11,tmp);
 	}
 
 	// Finish.
@@ -395,8 +400,6 @@ void KViewChromos::ConstructChromosomesRanking(void)
 	// Initialise the dialog box
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
 	d->Begin();
-	d->show();
-	KApplication::kApplication()->processEvents();
 
 	// Load Ideal Groups;
 	d->PutText("Load Ideal Groups");
@@ -482,6 +485,9 @@ void KViewChromos::ConstructChromosomesRanking(void)
 		s->Fi=c->GetFi();
 		sprintf(tmp,"%f",c->GetFi());
 		g->setText(12,tmp);
+		s->NbGroups=c->Used.NbPtr;
+		sprintf(tmp,"%u",c->Used.NbPtr);
+		g->setText(13,tmp);
 	}
 
 	// Finish.
@@ -527,19 +533,22 @@ void KViewChromos::slotMenu(int)
 	RTextFile Res(url.path().latin1(),RIO::Create);
 	Res.SetSeparator("\t");
 	if(Sim)
-		Res<<"Id"<<"Precision"<<"Recall"<<"Global"<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"W Over B"<<"Sim WB"<<endl;
+		Res<<"Id"<<"Precision"<<"Recall"<<"Global"<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"WOverB"<<"SimWB"<<"NbGroups"<<endl;
 	else
-		Res<<"Id"<<"Precision"<<"Recall"<<"Global"<<"Ranking"<<"CritSim"<<"CritInfo"<<"CritSame"<<"CritDiff"<<"CritSocial"<<"Fi+"<<"Fi-"<<"Fi"<<endl;
+		Res<<"Id"<<"Precision"<<"Recall"<<"Global"<<"Ranking"<<"CritSim"<<"CritInfo"<<"CritSame"<<"CritDiff"<<"CritSocial"<<"Fi+"<<"Fi-"<<"Fi"<<"NbGroups"<<endl;
 	Cur.Set(Stats);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Res<<Cur()->Id<<Cur()->Precision<<Cur()->Recall<<Cur()->Global;
 		if(Sim)
-			Res<<Cur()->AvgSim<<Cur()->J<<Cur()->AvgRatio<<Cur()->MinRatio<<Cur()->Ratio<<Cur()->WOverB<<Cur()->SimWB<<endl;
+		{
+			Res<<Cur()->AvgSim<<Cur()->J<<Cur()->AvgRatio<<Cur()->MinRatio;
+			Res<<Cur()->Ratio<<Cur()->WOverB<<Cur()->SimWB<<Cur()->NbGroups<<endl;
+		}
 		else
 		{
-			Res<<Cur()->Fitness<<Cur()->CritSim<<Cur()->CritInfo<<Cur()->CritSame;
-			Res<<Cur()->CritDiff<<Cur()->CritSocial<<Cur()->FiPlus<<Cur()->FiMinus<<Cur()->Fi<<endl;
+			Res<<Cur()->Fitness<<Cur()->CritSim<<Cur()->CritInfo<<Cur()->CritSame<<Cur()->CritDiff;
+			Res<<Cur()->CritSocial<<Cur()->FiPlus<<Cur()->FiMinus<<Cur()->Fi<<Cur()->NbGroups<<endl;
 		}
 	}
 }
