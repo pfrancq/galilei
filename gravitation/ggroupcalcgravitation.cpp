@@ -55,16 +55,52 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
+//  GCalcGravitationParams
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GALILEI::GCalcGravitationParams::GCalcGravitationParams(void)
+	: GGroupCalcParams("Relevant SubProfile")
+{
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GCalcGravitationParams::GetSettings(void)
+{
+	static char tmp[300];
+
+	sprintf(tmp,"%u",MaxNonZero);
+	return(tmp);
+
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GCalcGravitationParams::SetSettings(const char* s)
+{
+	if(!(*s)) return;
+	sscanf(s,"%u",&MaxNonZero);
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
 //  class GGroupCalcGravitation
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupCalcGravitation::GGroupCalcGravitation(GSession* session) throw(bad_alloc)
-	: GGroupCalc("Gravitational Point",session), MaxNonZero(60), Order(0),
-	  MaxOrderSize(5000), Vector(0)
+GALILEI::GGroupCalcGravitation::GGroupCalcGravitation(GSession* session, GCalcGravitationParams* p) throw(bad_alloc)
+	: GGroupCalc("Gravitational Point",session), Params(p), Order(0), Vector(0)
 {
-	Order=new GIWordWeight*[MaxOrderSize];
+	//init parameters
+	Params->MaxNonZero=60;
+	Params->MaxOrderSize=5000;
+
+	Order=new GIWordWeight*[Params->MaxOrderSize];
 	Vector=new GIWordsWeights(60);
 }
 
@@ -100,18 +136,18 @@ void GALILEI::GGroupCalcGravitation::Compute(GGroup* grp)
 	}
 
 	// Copy the information of the relevant subprofile to the group.
-	if(Vector->NbPtr+1>MaxOrderSize)
+	if(Vector->NbPtr+1>Params->MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<unsigned int>((Vector->NbPtr+1)*1.1);
-		Order=new GIWordWeight*[MaxOrderSize];
+		Params->MaxOrderSize=static_cast<unsigned int>((Vector->NbPtr+1)*1.1);
+		Order=new GIWordWeight*[Params->MaxOrderSize];
 	}
 	memcpy(Order,Vector->Tab,Vector->NbPtr*sizeof(GIWordWeight*));
 	qsort(static_cast<void*>(Order),Vector->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
 	Order[Vector->NbPtr]=0;
-	if(MaxNonZero)
+	if(Params->MaxNonZero)
 	{
-		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
+		for(i=Params->MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
 				Desc->InsertPtr(new GIWordWeight((*w)->GetId(),(*w)->GetWeight()/grp->NbPtr));
@@ -136,7 +172,7 @@ const char* GALILEI::GGroupCalcGravitation::GetSettings(void)
 {
 	static char tmp[300];
 
-	sprintf(tmp,"%u",MaxNonZero);
+	sprintf(tmp,"%u",Params->MaxNonZero);
 	return(tmp);
 
 }
@@ -146,7 +182,7 @@ const char* GALILEI::GGroupCalcGravitation::GetSettings(void)
 void GALILEI::GGroupCalcGravitation::SetSettings(const char* s)
 {
 	if(!(*s)) return;
-	sscanf(s,"%u",&MaxNonZero);
+	sscanf(s,"%u",&Params->MaxNonZero);
 }
 
 

@@ -43,11 +43,56 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <groups/ggroupcalc.h>
+#include <groups/ggroupcalcparams.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+/**
+* The GCalcGravitationParam represents all the parameter used in the KMeans module.
+* @short GCalcGravitation Parameters.
+*/
+class GCalcGravitationParams : public GGroupCalcParams
+{
+public:
+
+	/**
+	* Maximal number of the non-zero weights in the vector.
+	*/
+	unsigned int MaxNonZero;
+
+	/**
+	* Maximal size allocate for a profile.
+	*/
+	unsigned int MaxOrderSize;
+
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*);
+
+	/**
+	* Assignment operator.
+	* @param p              Parameters used as source.
+	*/
+	GCalcGravitationParams& operator=(const GCalcGravitationParams& src);
+
+	/**
+	* Constructor.
+	*/
+	GCalcGravitationParams(void);
+};
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -59,20 +104,16 @@ namespace GALILEI{
 */
 class GGroupCalcGravitation : public GGroupCalc
 {
+
 	/**
-	* Maximal number of the non-zero weights in the vector.
+	* description computing parameters
 	*/
-	unsigned int MaxNonZero;
+	GCalcGravitationParams* Params;
 
 	/**
 	* Ordered vector for current computed profile.
 	*/
 	GIWordWeight** Order;
-
-	/**
-	* Maximal size allocate for a profile.
-	*/
-	unsigned int MaxOrderSize;
 
 	/*
 	* List of words used for computation.
@@ -85,18 +126,7 @@ public:
 	* Constructor.
 	* @param session        Session.
 	*/
-	GGroupCalcGravitation(GSession* session) throw(bad_alloc);
-
-	/**
-	* Get the number of non-zero weights in the vector.
-	*/
-	unsigned int GetMaxNonZero(void) const {return(MaxNonZero);}
-
-	/**
-	* Set the number of non-zero weights in the vector.
-	* @param n              Number of non-zero weights.
-	*/
-	void SetMaxNonZero(unsigned int n) {MaxNonZero=n;}
+	GGroupCalcGravitation(GSession* session, GCalcGravitationParams* p) throw(bad_alloc);
 
 	/**
 	* Compute a group.
