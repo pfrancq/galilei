@@ -93,7 +93,7 @@ public:
 GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session) throw(bad_alloc)
 	: GProfileCalc("User Feedback",session), Vectors(Session->GetNbLangs()),
 	  NbDocsWords(Session->GetNbLangs()), NbDocsLangs(Session->GetNbLangs()),
-	  MaxNonZero(60), Beta(1.0), Gamma(1.0), AddKO(false)
+	  MaxNonZero(60), RelFactor(1.0), FuzzyFactor(1.0), AddFuzzy(false), IdfFactor(true)
 {
 	GLangCursor Langs;
 
@@ -111,10 +111,11 @@ GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session) throw(bad
 const char* GALILEI::GProfileCalcFeedback::GetSettings(void)
 {
 	static char tmp[100];
-	char c;
+	char c,c2;
 
-	if(AddKO) c='1'; else c='0';
-	sprintf(tmp,"%u %lf %lf %c",MaxNonZero,Beta,Gamma,c);
+	if(AddFuzzy) c='1'; else c='0';
+	if(IdfFactor) c2='1'; else c2='0';
+	sprintf(tmp,"%u %lf %lf %lf %c %c",MaxNonZero,RelFactor,FuzzyFactor,NoRelFactor,c,c2);
 	return(tmp);
 }
 
@@ -122,11 +123,12 @@ const char* GALILEI::GProfileCalcFeedback::GetSettings(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GProfileCalcFeedback::SetSettings(const char* s)
 {
-	char c;
+	char c,c2;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %lf %lf %c",&MaxNonZero,&Beta,&Gamma,&c);
-	if(c=='1') AddKO=true; else AddKO=false;
+	sscanf(s,"%u %lf %lf %lf %c %c",&MaxNonZero,&RelFactor,&FuzzyFactor,&NoRelFactor,&c,&c2);
+	if(c=='1') AddFuzzy=true; else AddFuzzy=false;
+ 	if(c2=='1') IdfFactor=true; else IdfFactor=false;
 }
 
 
@@ -140,11 +142,11 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 	GDoc* CurDoc;
 	GIWordWeight* w;
 	bool Add;
-	bool Cont;
 	GIWordsWeights* NbDocs;
 	tDocJudgement Fdbk;
 	unsigned int NbDocsJudged;
 	double MaxFreq;
+	double Factor;
 	double Freq;
 
 	// Clear all containers before computing
@@ -166,7 +168,7 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		CurLang=CurDoc->GetLang();
 		if(!CurLang) continue;
 		Fdbk=Docs()->GetFdbk();
-		if((Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
+		if((NoRelFactor==0.0)&&(Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
 
 		// Determine the lists corresponding to the language of the document
 		NbDocs=NbDocsWords.GetPtr<GLang*>(CurLang);
@@ -195,19 +197,23 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		Vector=Vectors.GetPtr<const GLang*>(CurLang);
 
 		// Find list in function of the feedback
-		if((Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
+		if((NoRelFactor==0.0)&&(Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
 		switch(Docs()->GetFdbk())
 		{
 			case djOK:
 			case djNav:
 				Add=true;
+				Factor=RelFactor;
 				break;
 			
 			case djKO:
-				Add=false;
+				Add=false||AddFuzzy;
+				Factor=FuzzyFactor;
 				break;
 
 			default:
+				Add=false;
+				Factor=NoRelFactor;
 				break;
 		}
 
@@ -222,11 +228,14 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=Vector->GetInsertPtr<unsigned int>(Words()->GetId());
-			Freq=(Words()->GetWeight()/MaxFreq)*log(NbDocsJudged/NbDocs->GetPtr<unsigned int>(Words()->GetId())->GetWeight());
-			if(Add||AddKO)
-				w->AddWeight(Beta*Freq);
+			if(IdfFactor)
+				Freq=(Words()->GetWeight()/MaxFreq)*log(NbDocsJudged/NbDocs->GetPtr<unsigned int>(Words()->GetId())->GetWeight());
 			else
-				w->SubstractWeight(Gamma*Freq);
+				Freq=Words()->GetWeight()/MaxFreq;
+			if(Add)
+				w->AddWeight(Factor*Freq);
+			else
+				w->SubstractWeight(Factor*Freq);
 		}
 	}
 

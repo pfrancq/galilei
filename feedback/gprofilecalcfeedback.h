@@ -60,10 +60,26 @@ class GSubProfileVector;
 
 //-----------------------------------------------------------------------------
 /**
-* The GProfileCalcFeedback class provides a representation for a method to compute
-* a specific profile, i.e. its sub-profiles by using the vector method.
+* The GProfileCalcFeedback class provides an implementation of the computing
+* method "Feedback" inspired from the user relevance methods of the search
+* engines. The vector of the profile is computed with a linear combinaison of
+* the vectors of documents judged by the profile.
+*
+* The different parameters of the method:
+* @param MaxNonZero         Maximal number of weights of the profile vector not
+*                           to be zero. If this paramater is null, all the
+*                           weights are left.
+* @param IdfFactor          Specify if for the weights of documents the idf
+*                           factor of the vector model theory must be computed.
+* @param Relfactor          Factor corresponding to the relevant documents
+*                           (OK+N).
+* @param Fuzzyfactor        Factor corresponding to the fuzzy documents (KO).
+* @param NoRelfactor        Factor corresponding to the no relevant documents
+*                           (H).
+* @param AddFuzzy           Specify if the fuzzy part must be added or
+*                           substract.
 * @author Pascal Francq
-* @short Vector Profile Computing Method.
+* @short "Feedbacks" Profile Computing Method.
 */
 class GProfileCalcFeedback : public GProfileCalc
 {
@@ -92,19 +108,32 @@ protected:
 	unsigned int MaxNonZero;
 
 	/**
-	* "Beta" Parameter of the standard user feedback theory.
+	* Factor associated with the vectors corresponding to the relevant part
+	* (OK and N).
 	*/
-	double Beta;
+	double RelFactor;
 
 	/**
-	* "Gamma" Parameter of the standard user feedback theory.
+	* Factor associated with the vectors corresponding to the fuzzy relevant
+	* part (KO).
 	*/
-	double Gamma;
+	double FuzzyFactor;
 
 	/**
-	* Add the informations from the KO doc or substract them.
+	* Factor associated with the vectors corresponding to the non relevant part
+	* (H).
 	*/
-	bool AddKO;
+	double NoRelFactor;
+
+	/**
+	* Add the vectors from the fuzzy relevant documents.
+	*/
+	bool AddFuzzy;
+
+	/**
+	* Must the idf factor be computed.
+	*/
+	bool IdfFactor;
 
 public:
 
@@ -138,42 +167,64 @@ public:
 	void SetMaxNonZero(unsigned int n) {MaxNonZero=n;}
 
 	/**
-	* Get the "Beta" Parameter.
-	* @returns double value of the "beta" parameter.
+	* Get the "IdfFactor" parameter
+	* @returns boolean.
 	*/
-	double GetBeta(void) const {return(Beta);}
+	bool GetIdfFactor(void) const {return(IdfFactor);}
 
 	/**
-	* Set the "Beta" Parameter.
-	* @param b              Value of the "gamma" parameter.
+	* Set the "IdfFactor" pamater.
+	* @param b              true if the idf factor must be computed.
 	*/
-	void SetBeta(double b) {Beta=b;}
+	void SetIdfFactor(bool b) {IdfFactor=b;}
 
 	/**
-	* Get the "Gamma" Parameter.
-	* @returns double value of the "gamma" parameter.
+	* Get the "RelFactor" Parameter.
+	* @returns double.
 	*/
-	double GetGamma(void) const {return(Gamma);}
+	double GetRelFactor(void) const {return(RelFactor);}
 
 	/**
-	* Set the "Gamma" Parameter.
-	* @param g              Value of the "gamma" parameter.
+	* Set the "RelFactor" Parameter.
+	* @param b              Value of the "RelFactor" parameter.
 	*/
-	void SetGamma(double g) {Gamma=g;}
+	void SetRelFactor(double b) {RelFactor=b;}
 
 	/**
-	* See if the KO documents are added or substract while compiling the
-	* profile.
-	* @returns true if there are added.
+	* Get the "FuzzyFactor" Parameter.
+	* @returns double.
 	*/
-	bool GetAddKO(void) const {return(AddKO);}
+	double GetFuzzyFactor(void) const {return(FuzzyFactor);}
 
 	/**
-	* Set if the KO documents are added or substract while compiling the
-	* profile.
-	* @param b              true if there are added.
+	* Set the "FuzzyFactor" Parameter.
+	* @param g              Value of the "FuzzyFactor" parameter.
 	*/
-	void SetAddKO(bool b) {AddKO=b;}
+	void SetFuzzyFactor(double g) {FuzzyFactor=g;}
+
+	/**
+	* Get the "NoRelFactor" Parameter.
+	* @returns double.
+	*/
+	double GetNoRelFactor(void) const {return(NoRelFactor);}
+
+	/**
+	* Set the "NoRelFactor" Parameter.
+	* @param b              Value of the "NoRelFactor" parameter.
+	*/
+	void SetNoRelFactor(double b) {NoRelFactor=b;}
+
+	/**
+	* Get the "AddFuzzy" parameter
+	* @returns boolean.
+	*/
+	bool GetAddFuzzy(void) const {return(AddFuzzy);}
+
+	/**
+	* Set the "AddFuzzy" pamater.
+	* @param b              true if the fuzzy part must be added.
+	*/
+	void SetAddFuzzy(bool b) {AddFuzzy=b;}
 
 	/**
 	* Compute the global vectors.
