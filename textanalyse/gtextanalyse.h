@@ -61,6 +61,11 @@ class GTextAnalyse : public GDocAnalyse
 	class WordWeight;
 
 	/**
+	* Current document to analyse (has to be a vector).
+	*/
+	GDocVector* DocVector;
+
+	/**
 	* Cursor on the different languages defined in the system.
 	*/
 	GFactoryLangCursor CurLangs;
@@ -234,13 +239,13 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session);
+	virtual void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session);
+	virtual void Disconnect(GSession* session) throw(GException);
 
 protected:
 
@@ -314,9 +319,12 @@ public:
 	/**
 	* Analyse a XML representation of a document for a session and store the
 	* results in this document.
+	*
+	* During the analysis of the document, if links point to document that does
+	* not exist in the system, these documents are added in a container.
 	* @param xml            XML Representation used.
 	* @param doc            Corresponding document.
-	* @param tmpDocs        A container of docs to maintain the documents ro be added.
+	* @param tmpDocs        Container that will hold the added docs.
 	*/
 	virtual void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException);
 

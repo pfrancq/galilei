@@ -164,7 +164,7 @@ void GTextAnalyse::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Connect(GSession* session)
+void GTextAnalyse::Connect(GSession* session) throw(GException)
 {
 	WordWeight** ptr;
 	unsigned int i;
@@ -187,7 +187,7 @@ void GTextAnalyse::Connect(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Disconnect(GSession* session)
+void GTextAnalyse::Disconnect(GSession* session) throw(GException)
 {
 
 	WordWeight** ptr;
@@ -761,7 +761,7 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 		if(stem.GetLen()>=MinStemSize)
 		{
 			GWord w(stem);
-			Occur=Doc->GetInsertPtr(dic->InsertData(&w));
+			Occur=DocVector->GetInsertPtr(dic->InsertData(&w));
 			if(!Occur->GetWeight())
 				Vdiff++;
 			V+=(*wrd)->Nb;
@@ -802,12 +802,12 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 
 	// Verify that each occurences is not under the minimal.
 	if(MinOccur<2) return;
-	for(i=Doc->NbPtr+1,Tab=Doc->Tab;--i;Tab++)
+	for(i=DocVector->NbPtr+1,Tab=DocVector->Tab;--i;Tab++)
 	{
 		Occur=(*Tab);
 		if(Occur->GetWeight()<MinOccur)
 		{
-			Doc->DeletePtr(Occur);
+			DocVector->DeletePtr(Occur);
 			Tab--;
 		}
 	}
@@ -815,7 +815,7 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,false,true>* tmpDocs)throw(GException)
+void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,false,true>* tmpDocs) throw(GException)
 {
 	RXMLTag* content;
 	RXMLTag* metadata;
@@ -831,7 +831,8 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,f
 	RAssert(content);
 	metadata=xml->GetMetaData();
 	RAssert(metadata);
-	Doc=dynamic_cast<GDocVector*>(doc);
+	Doc=doc;
+	DocVector=dynamic_cast<GDocVector*>(doc);
 
 	// Analyse the doc structure.
 	Clear();
