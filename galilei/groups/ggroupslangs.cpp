@@ -65,13 +65,14 @@ GGroupsLangs::GGroupsLangs(GSession *session) throw(bad_alloc)
  * Returns:
  *
  *---------------------------------------------------------------------------*/
+/*
 void GGroupsLangs::Load(void)
 {
 	for(Start();!End();Next())
 		(*this)()->Load();
 }
 
-
+*/
 /*-----------------------------------------------------------------------------
  *
  * Parameters:
@@ -93,13 +94,14 @@ void GGroupsLangs::Calc(void)
  * Returns:
  *
  *---------------------------------------------------------------------------*/
+/*
 void GGroupsLangs::Save(void)
 {
 	for(Start();!End();Next())
 		(*this)()->Save();
 }
 
-
+*/
 
 
 

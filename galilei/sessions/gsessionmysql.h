@@ -71,7 +71,7 @@ public:
 	/**
 	* Loading Users function.
 	*/
-	void LoadUsersFromDB(GSessionMySQL* mysqlsess);
+	void LoadUsersFromDB();
 	
 	/**
 	* Loading Profiles function
@@ -110,6 +110,12 @@ public:
 	*
 	*/
 	unsigned DicNextId(const RString& word);
+
+	
+	/**
+	* Loading the groupment from database.
+	*/
+	void LoadGroupsFromDB(void);
 
 	/**
 	*

@@ -75,7 +75,7 @@ public:
 	/**
 	* virtual Load function.
 	*/
-	virtual void Load(void);
+	//virtual void Load(void);
 
 	/*
 	* Calculation of each "groups".	
@@ -85,7 +85,7 @@ public:
     /*
 	* virtual Save function.
 	*/
-	virtual void Save(void);
+	//virtual void Save(void);
 };
 
 }  //-------- End of namespace GALILEI ----------------------------------------

@@ -74,6 +74,14 @@ GGroup::GGroup(GGroups *owner,unsigned int id) throw(bad_alloc)
  * Returns:
  *
  *---------------------------------------------------------------------------*/
+
+int GGroup::Compare(const unsigned int &id)
+{
+	return(Id-id);
+}
+
+//-----------------------------------------------------------------------------
+
 int GGroup::Compare(const GGroup &group)
 {
 	return(Id-group.Id);

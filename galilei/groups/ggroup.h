@@ -87,6 +87,11 @@ public:
 	/**
 	* comparaison function.
 	*/
+	int Compare(const unsigned int &id);
+
+	/**
+	* comparaison function.
+	*/
 	int Compare(const GGroup &group);
 	
 	/**
@@ -97,12 +102,12 @@ public:
 	/**
 	* virtual load function.
 	*/
-	virtual void Load(void)=0;
+	//virtual void Load(void)=0;
 	
     /**
 	* virtual save function.
 	*/
-	virtual void Save(void)=0;
+	//virtual void Save(void)=0;
 	
 	/**
 	* can the group attache the subprofile ?

@@ -43,7 +43,7 @@ using namespace GALILEI;
 #include <rstd/rcontainer.h>
 //-----------------------------------------------------------------------------
  namespace GALILEI{
- class GGroup;
+class GGroup;
 class GGroupsLangs;
 //-----------------------------------------------------------------------------
 /**
@@ -57,9 +57,9 @@ public:
 	GGroups(GGroupsLangs *owner,GLang *lang) throw(bad_alloc);
 	int Compare(const GGroups &groups);
 	int Compare(const GGroups *groups);	
-	virtual void Load(void)=0;
-	virtual void Save(void)=0;
-	virtual GGroup* NewGroup(void)=0;
+	//virtual void Load(void)=0;
+	//virtual void Save(void)=0;
+	//virtual GGroup* NewGroup(void)=0;
 	void Calc(void);
 };
 }

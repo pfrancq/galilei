@@ -69,9 +69,9 @@ GSessionMySQL::~GSessionMySQL()
 
 
 //-----------------------------------------------------------------------------
-void GSessionMySQL::LoadUsersFromDB(GSessionMySQL* mysqlsess)
+void GSessionMySQL::LoadUsersFromDB()
 {	
-	Users = new GUsers(10,mysqlsess);
+	Users = new GUsers(10,this);
 	GUser* usr;
     RQuery users (db, "SELECT userid,user FROM users");
 	for(users.Begin();users.IsMore();users++)
@@ -245,5 +245,45 @@ unsigned GSessionMySQL::DicNextId(const RString& word)   // function to get 'nex
 }
 
 
+//-----------------------------------------------------------------------------
+void GSessionMySQL::LoadGroupsFromDB()
+{	
+	GroupsLangs = new GGroupsLangs(this);
+	char ssql[100], ssql2[100], ssql3[100];
+	sprintf(ssql, "SELECT langid FROM languages");
+	RQuery group1 (db,ssql);
+	for(group1.Begin();group1.IsMore();group1++)
+	{
+		GLang* lang = Langs->GetLang(group1[0]);
+		GGroups* groups=new GGroups(GroupsLangs, lang);
+		GroupsLangs->InsertPtr(groups);
+		sprintf(ssql2,"SELECT groupid, langid  FROM groups WHERE langid=\"%s\"",group1[0] );
+
+		RQuery group2 (db, ssql2);
+		for(group2.Begin();group2.IsMore();group2++)
+		{
+			GGroup* group=new GGroup(groups);
+			group->Id=atoi(group2[0]);
+			groups->InsertPtr(group);
+			sprintf(ssql3, "SELECT groupid, subprofileid, attach FROM groupsbysubprofiles WHERE groupid=%u", group->Id);
+			RQuery group3 (db, ssql3);
+			for(group3.Begin(); group3.IsMore(); group3++)
+			{
+				for (Users->Start(); !Users->End(); Users->Next())
+				{
+					GUser* usr = (*Users)();
+					for (usr->Start(); !usr->End();usr->Next())
+					{
+						GProfile* prof=(*usr)();
+						GSubProfile* sub=prof->GetPtr<int>(atoi(group3[1]));
+						if (sub)
+							group->InsertPtr(sub);
+					}
+				}
+			}
+		}
+	}
+	
+}
 
 //-----------------------------------------------------------------------------

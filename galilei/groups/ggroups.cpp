@@ -87,7 +87,7 @@ void GGroups::Calc(void)
 			Next();
 		if(End())
 		{
-			grp=NewGroup();
+			grp=new GGroup(this);
 			InsertPtr(grp);
 		}
 		else
