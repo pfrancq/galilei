@@ -55,19 +55,11 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfile::GProfile(GUser *usr,unsigned int id,const char* name,bool s,const char* u,const char* a,unsigned int nb,unsigned int nbf) throw(bad_alloc)
+GALILEI::GProfile::GProfile(GUser *usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf) throw(bad_alloc)
   : RContainer<GSubProfile,unsigned,false,true>(nb,nb/2), User(usr),Id(id),Name(name),
-    Fdbks(nbf+nbf/2,nbf/2), Updated(u), Computed(a), Social(s)
+    Fdbks(nbf+nbf/2,nbf/2), Social(s)
 {
-	if(Updated>Computed)
-	{
-		if(Computed==RDate::null)
-			State=osCreated;
-		else
-			State=osModified;
-	}
-	else
-		State=osUpToDate;
+
 	User->InsertPtr(this);
 }
 
@@ -101,61 +93,32 @@ GSubProfile* GALILEI::GProfile::GetSubProfile(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfile::SetState(tObjState state)
-{
-	GGroup* grp;
-
-	State=state;
-
-	// If the profile was updated -> the groups containing the subprofiles
-	// are modified.
-	if(State==osUpdated)
-	{
-		for(Start();!End();Next())
-		{
-			grp=(*this)()->GetGroup();
-			if(grp)
-				grp->SetState(osModified);
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GProfile::UpdateFinished(void)
-{
-	SetState(osUpdated);
-	Computed.SetToday();
-}
-
-
-//-----------------------------------------------------------------------------
 GProfDoc* GALILEI::GProfile::GetFeedback(const GDoc* doc) const
 {
-	return(Fdbks.GetPtr<const GDoc*>(doc));
+	GLang* lang;
+
+	lang=doc->GetLang();
+	if( lang)
+		return(GetSubProfile(lang)->GetFeedback(doc));
+	else
+		return(Fdbks.GetPtr<const GDoc*>(doc));
 }
 
 
 //-----------------------------------------------------------------------------
 unsigned int GALILEI::GProfile::GetNbJudgedDocs(const GLang* lang) const
 {
-	unsigned int sum,i;
-	GProfDoc** ptr;
-
-	for(i=Fdbks.NbPtr+1,sum=0,ptr=Fdbks.Tab;--i;ptr++)
-		if((*ptr)->GetDoc()->GetLang()==lang)
-			sum++;
-	return(sum);
+	return(GetSubProfile(lang)->GetNbJudgedDocs());
 }
 
 
-//-----------------------------------------------------------------------------
-GProfDocCursor& GALILEI::GProfile::GetProfDocCursor(void)
-{
-	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
-	cur->Set(Fdbks);
-	return(*cur);
-}
+////-----------------------------------------------------------------------------
+//GProfDocCursor& GALILEI::GProfile::GetProfDocCursor(void)
+//{
+//	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
+//	cur->Set(Fdbks);
+//	return(*cur);
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -175,17 +138,67 @@ void GALILEI::GProfile::ClearFdbks(void)
 	Fdbks.Clear();
 	Cur.Set(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
+	{
 		Cur()->ClearFdbks();
-	State=osModified;
+		Cur()->SetState(osModified);
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GProfile::AddJudgement(GProfDoc* j) throw(bad_alloc)
 {
-	Fdbks.InsertPtr(j);
-	SetState(osModified);
+	GLang* l;
+
+	l=j->GetDoc()->GetLang();
+	if(!l)
+	{
+		Fdbks.InsertPtr(j);
+//		SetState(osModified);
+	}
+	else
+		GetSubProfile(l)->AddJudgement(j);
 }
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang)
+{
+	GLang* lang;
+	GSubProfile* sub;
+
+	lang=profdoc->GetDoc()->GetLang();
+
+	// if the old lang is not defined and the new lang is defined.
+	if (!oldlang)
+	{
+		lang=profdoc->GetDoc()->GetLang();
+		sub=GetSubProfile(lang);
+		sub->AddJudgement(profdoc);
+		sub->SetState(osModified);
+		Fdbks.DeletePtr(profdoc);
+		return;
+	}
+
+	//if the new lang is not defined and the old one is defined.
+	if(!lang)
+	{
+		Fdbks.InsertPtr(profdoc);
+		sub=GetSubProfile(oldlang);
+		sub->RemoveJudgement(profdoc);
+		sub->SetState(osModified);
+		return;
+	}
+
+	// if the two langs are defined (but different)
+	sub=GetSubProfile(lang);
+	sub->AddJudgement(profdoc);
+	sub->SetState(osModified);
+	sub=GetSubProfile(oldlang);
+	sub->RemoveJudgement(profdoc);
+	sub->SetState(osModified);
+}
+
 
 
 #if GALILEITEST

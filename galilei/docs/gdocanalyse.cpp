@@ -598,6 +598,7 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsign
 	RXMLTag* content;
 	RXMLTag* metadata;
 	RXMLTag* link;
+	GLang* oldlang;
 
 	// Init Part and verification
 	if(!xml)
@@ -632,8 +633,9 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsign
 	// Determine the Language if necessary.
 	if(FindLang)
 	{
+		oldlang=Lang;
 		DetermineLang();
-		if(!Lang) return;
+		UpdateFdbks(oldlang, Lang);
 	}
 
 	// Construct Information
@@ -665,6 +667,27 @@ void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
 	DetermineLang();
 	if(!Lang) return;
 	ConstructInfos();
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang)
+{
+	GProfileCursor profcur;
+	GProfDocCursor profdoccursor;
+
+	// if the old lang and the new lang are not defined.
+	if (!oldlang&&!Lang)
+		return;
+        //if the oldlang is different to the new lang.
+	if (oldlang!=Lang)
+	{
+		profdoccursor=Doc->GetProfDocCursor();
+		for (profdoccursor.Start(); !profdoccursor.End(); profdoccursor.Next())
+			profdoccursor()->GetProfile()->DispatchFdbks(profdoccursor(), oldlang);
+	}
+
+
 }
 
 

@@ -577,6 +577,7 @@ void GALILEI::GAlgobase::CalcHierarchy()
 {
 	GDocVector* docu;
 	GProfDocCursor MyDoc;
+	GSubProfileCursor SubCur;
 	bool contains = 0;	
 	int trouve = 0;
 	int pastrouve = 0;
@@ -587,24 +588,27 @@ void GALILEI::GAlgobase::CalcHierarchy()
 	GCpovCursor curs2 = GetGCpovCursor();
 	//GCpov *tmp;
    
-	MyDoc = (GetCurPrf())->GetProfile()->GetProfDocCursor();
-  
-	for(curs1.Start(); !curs1.End(); curs1.Next())
-	{ 
-		for(MyDoc.Start(); !MyDoc.End(); MyDoc.Next())
-		{
-			docu = dynamic_cast<GDocVector*>(MyDoc()->GetDoc());
-    
-			if(contains = docu->IsIn(curs1()->GetId()) )
+	SubCur=(GetCurPrf())->GetProfile()->GetSubProfilesCursor();
+	for (SubCur.Start(); !SubCur.End(); SubCur.Next())
+	{
+		MyDoc = SubCur()->GetProfDocCursor();
+		for(curs1.Start(); !curs1.End(); curs1.Next())
+		{ 
+			for(MyDoc.Start(); !MyDoc.End(); MyDoc.Next())
 			{
-				trouve++;  // insert dans container
-  				occdoc = new ExpertKwds(MyDoc()->GetDoc()->GetId());
-				curs1()->IsInDocs->InsertPtr(occdoc);
-   			}
-			else
-				pastrouve++;
+				docu = dynamic_cast<GDocVector*>(MyDoc()->GetDoc());
+    
+				if(contains = docu->IsIn(curs1()->GetId()) )
+				{
+					trouve++;  // insert dans container
+  					occdoc = new ExpertKwds(MyDoc()->GetDoc()->GetId());
+					curs1()->IsInDocs->InsertPtr(occdoc);
+   				}
+				else
+					pastrouve++;
+			}
+			trouve = pastrouve = 0; 
 		}
-		trouve = pastrouve = 0; 
 	}
 // ***************$ debug
 //	 for(curs1.Start(); !curs1.End(); curs1.Next())

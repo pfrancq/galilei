@@ -141,31 +141,6 @@ void GALILEI::GGroupingKCos::SetSettings(const char* s)
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingKCos::Run(void) throw(GException)
 {
-//	GGroup* g,*gr;
-//	RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>* kmeans;
-//	kmeans=new  RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups> (&SubProfiles) ;
-//	// init parameters of kmeans
-//	kmeans->SetNbTests(1);
-//	kmeans->SetGroupsNumber(Params->NbGroups);
-//	kmeans->SetInitial(RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>::Refined);
-//	kmeans->SetEpsilon(Params->Epsilon);
-//	kmeans->SetIterNumber(Params->NbIters);
-//	kmeans->SetSubSamplesNumber(Params->NbSubSamples);
-//	kmeans->SetSubSamplesRate(Params->SubSamplesRate);
-//	kmeans->SetVerifyKMeansMaxIters(1000);
-//	// run the kmeans
-//	kmeans->Run();
-//	// save the grouping in the session
-//	RContainer<GGroup,unsigned int,false,false>* grps=kmeans->GetGrouping();
-//	for (grps->Start(); !grps->End(); grps->Next())
-//	{
-//			gr=(*grps)();
-//			g=new GGroupVector(gr->GetId(), Groups->GetLang());
-//			for (gr->Start(); !gr->End(); gr->Next())
-//				g->InsertPtr((*gr)());
-//			Groups->InsertPtr(g);
-//	}
-
 //	unsigned int i;
 	if (!SubProfiles.NbPtr)  return;
 	GGroup* g,*gr;

@@ -62,7 +62,7 @@ class GProfilesSim
 	/**
 	* The similarities.
 	*/
-	RStd::RContainer<GSims,unsigned int,true,true> Sims;
+	RStd::RContainer<GSims,unsigned int,true,false> Sims;
 
 	/**
 	* Global similarities used?
@@ -78,7 +78,7 @@ class GProfilesSim
 	* mean of similarites
 	*/
 	double MeanSim;
-	
+
 	/**
 	* standart deviation of similarities
 	*/
@@ -88,6 +88,16 @@ class GProfilesSim
 	*  old number of comparison in computation of Mean and Deviation.
 	*/
 	unsigned int OldNbComp;
+
+	/**
+	* list of all modified profiles whom sim have to be updated.
+	*/
+	unsigned int * ModifiedProfs;
+
+	/**
+	* number of modified subprofiles.
+	*/
+	unsigned int NbModified;
 
 public:
 
@@ -100,34 +110,19 @@ public:
 	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* lang=0) throw(bad_alloc);
 
 	/**
-	* Constructor.
-	* @param s              Subprofiles of the system.
-	* @param global         Global approach.
-	* @param lang           Lang of the profilesSim
-	*/
-	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global,GLang* lang=0) throw(bad_alloc);
-
-	/**
-	* Constructor.
-	* @param s              Cursor over the Subprofiles.
-	* @param global         Global approach.
-	*/
-	GProfilesSim(GSubProfileCursor& s,bool global) throw(bad_alloc);
-
-	/**
 	* Analyse the similarity of the two subprofiles and insert when necessary.
 	*/
 	void AnalyseSim(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2);
 
-	/**
-	* Get the similarities between two profiles, i.e. the subprofiles of a same
-	* language.
-	* @param i              Identificator of the first subprofile.
-	* @param j              Identificator of the second subprofile.
-	* @param users          Pointer to a list of users.
-	* @return double.
-	*/
-	double GetSim(GUsers* users, unsigned int i,unsigned int j);
+//	/**
+//	* Get the similarities between two profiles, i.e. the subprofiles of a same
+//	* language.
+//	* @param i              Identificator of the first subprofile.
+//	* @param j              Identificator of the second subprofile.
+//	* @param users          Pointer to a list of users.
+//	* @return double.
+//	*/
+//	double GetSim(GUsers* users, unsigned int i,unsigned int j);
 
 	/**
 	* Get the similarities between two profiles, i.e. the subprofiles of a same
@@ -170,11 +165,10 @@ public:
 	* the corresponding sim will be set to state="osModified".
 	* If the similarity for a given subprofile doesn't exist, the element
 	* is created but not computed ( -> state to osModified ).
-	* @param users              The pointer to the list of users.
 	* @param global             use the Global/Local similarity
 	* @param lang               the language used by the subProfiles
 	*/
-	void UpdateProfSim(GUsers* users,bool global,GLang* lang)throw(bad_alloc);
+	void UpdateProfSim(bool global,GLang* lang)throw(bad_alloc);
 
 	/**
 	* Update the state of the profiles sims : If the subprofile has changed
@@ -185,7 +179,7 @@ public:
 	* @param global             use the Global/Local similarity
 	* @param lang               the language used by the subProfiles
 	*/
-	void UpdateProfSim(GUsers& users ,bool global,GLang* lang)throw(bad_alloc);
+	void UpdateProfSim(bool global)throw(bad_alloc);
 
 	/**
 	* update the Analyse de similarity  of the two subprofiles and insert when necessary
@@ -207,6 +201,12 @@ public:
 	* returns mean of similaritries
 	*/ 
 	double GetDeviation(void){return(Deviation);}
+
+	/**
+	* add a modified profile to the table.
+	* @param id             id of the subprofile to add.
+	*/
+	void AddModifiedProfile(unsigned int id);
 
 	/**
 	* Destructor.

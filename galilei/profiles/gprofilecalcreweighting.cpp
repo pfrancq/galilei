@@ -1,4 +1,4 @@
-/*
+ /*
 
 	GALILEI Research Project
 
@@ -173,7 +173,7 @@ void GALILEI::GProfileCalcReWeighting::SetSettings(const char* s)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcReWeighting::ComputeGlobal(GProfile* profile) throw(bad_alloc)
+void GALILEI::GProfileCalcReWeighting::ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc)
 {
 	GProfDocCursor Docs;
 	GLang* CurLang;
@@ -186,35 +186,30 @@ void GALILEI::GProfileCalcReWeighting::ComputeGlobal(GProfile* profile) throw(ba
 	for(Vectors.Start();!Vectors.End();Vectors.Next())
 			Vectors()->Clear();
 
+	CurLang=subprofile->GetLang();
+	Vec=Vectors.GetPtr<GLang*>(CurLang);
+
 	// Go through all documents, to compute for each documents "OK", "KO" and "N"
 	// for each language as index term.
-	Docs=profile->GetProfDocCursor();
+	Docs=subprofile->GetProfDocCursor();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		// If the document hasn't a language or its judgement is not relevant
-		// -> don't treat for the profiles computing
 		CurDoc=dynamic_cast<GDocVector*>(Docs()->GetDoc());
-		CurLang=CurDoc->GetLang();
-		if(!CurLang) continue;
 		Fdbk=Docs()->GetFdbk();
-
+		
 		// Determine the lists corresponding to the language of the document
 		// and insert a word corresponding to the documents id.
 		switch(Fdbk & djMaskJudg)
 		{
 			case djOK:
 			case djNav:
-				Vec=Vectors.GetPtr<GLang*>(CurLang);
 				w=Vec->GetInsertPtr<unsigned int>(Docs()->GetDoc()->GetId());
 				w->AddWeight(1.0);
 				break;
-
-			case djOutScope:
-				Vec=Vectors.GetPtr<GLang*>(CurLang);
+				case djOutScope:
 				w=Vec->GetInsertPtr<unsigned int>(Docs()->GetDoc()->GetId());
 				w->AddWeight(-1.0);
 				break;
-
 			default: break;
 		}
 	}
@@ -267,21 +262,20 @@ void GALILEI::GProfileCalcReWeighting::ComputeSubProfile(GSubProfileVector* s) t
 
 	// Update the references of the vector.
 	s->UpdateRefs();
+
+	//Tell the subprofile that the udpate is finished.
+	s->UpdateFinished();
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcReWeighting::Compute(GProfile* profile)
+void GALILEI::GProfileCalcReWeighting::Compute(GSubProfile* subprofile)
 {
 	// Compute the OK and KO lists.
-	ComputeGlobal(profile);
+	ComputeGlobal(subprofile);
 
 	// Compute the vector for each subprofile
-	for(profile->Start();!profile->End();profile->Next())
-		ComputeSubProfile((GSubProfileVector*)((*profile)()));
-
-	// Tell the profile that the udpate is finished.
-	profile->UpdateFinished();
+	ComputeSubProfile((GSubProfileVector*)subprofile);
 }
 
 

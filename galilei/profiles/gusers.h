@@ -57,7 +57,7 @@ namespace GALILEI{
 class GUsers : public RStd::RContainer<GUser,unsigned,true,true>
 {
 	/**
-	* SubProfiles handled by the system.
+	* Profiles handled by the system.
 	*/
 	RStd::RContainer<GProfile,unsigned int,true,true>* Profiles;
 

@@ -70,7 +70,7 @@ public:
 	* @param grp            Group.
 	* @param a              String representing the date where it was attached.
 	*/
-	GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a) throw(bad_alloc);
+	GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.
@@ -86,7 +86,7 @@ public:
 	* @param grp            Group.
 	* @param a              String representing the date where it was attached.
 	*/
-	static GSubProfile* NewSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a);
+	static GSubProfile* NewSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c);
 
 	/**
 	* Method called when the profiles feedbacks were cleared.

@@ -216,14 +216,11 @@ void GALILEI::GGroup::NotJudgedDocsList(RStd::RContainer<GProfDoc,unsigned,false
 		if((*tab)==s) continue;
 
 		// Go through the judgments
-		Fdbks=(*tab)->GetProfile()->GetProfDocCursor();
+		Fdbks=(*tab)->GetProfDocCursor();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
-			// Must be the same language than the group.
-			if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
-
 			// Verify that it was not judged by s
-			if(s->GetProfile()->GetFeedback(Fdbks()->GetDoc())) continue;
+			if(s->GetFeedback(Fdbks()->GetDoc())) continue;
 
 			// Verify if already inserted:
 			// If not -> insert it in docs.
@@ -282,15 +279,12 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 		if((*tab)==s) continue;
 
 		// Go through the judgments
-		Fdbks=(*tab)->GetProfile()->GetProfDocCursor();
+		Fdbks=(*tab)->GetProfDocCursor();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
-			// Must be the same language than the group.
-			if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
-
 			// Verify if already inserted in Docs or if it was not judged by the
 			// subprofile s
-			if((Docs.GetPtr<const GProfDoc*>(Fdbks()))||(s->GetProfile()->GetFeedback(Fdbks()->GetDoc()))) continue;
+			if((Docs.GetPtr<const GProfDoc*>(Fdbks()))||(s->GetFeedback(Fdbks()->GetDoc()))) continue;
 
 			// If not -> insert it in docs if relevant.
 			j=Fdbks()->GetFdbk();

@@ -607,7 +607,6 @@ void GALILEI::GGroupIR::NotJudgedDocsRelList(RStd::RContainer<GDocSim,unsigned,t
 	GProfDocCursor Fdbks;
 	tDocJudgement j;
 	bool global=Owner->Instance->Params->GlobalSim;
-	GLang* Lang=Owner->Instance->Lang;
 	GSubProfile* sub;
 
 	// Clear container.
@@ -620,15 +619,12 @@ void GALILEI::GGroupIR::NotJudgedDocsRelList(RStd::RContainer<GDocSim,unsigned,t
 		if((*ptr)==s) continue;
 
 		// Go through the judgments
-		Fdbks=(*ptr)->GetSubProfile()->GetProfile()->GetProfDocCursor();
+		Fdbks=(*ptr)->GetSubProfile()->GetProfDocCursor();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
-			// Must be the same language than the group.
-			if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
-
 			// Verify if already inserted in Docs or if it was not judged by the
 			// subprofile s
-			if((docs->GetPtr<const GDoc*>(Fdbks()->GetDoc()))||(sub->GetProfile()->GetFeedback(Fdbks()->GetDoc()))) continue;
+			if((docs->GetPtr<const GDoc*>(Fdbks()->GetDoc()))||(sub->GetFeedback(Fdbks()->GetDoc()))) continue;
 
 			// If not -> insert it in docs if relevant.
 			j=Fdbks()->GetFdbk();
@@ -673,13 +669,13 @@ double GALILEI::GGroupIR::ComputeEntropy(void)
 			if(Docs()->GetLang()!=Lang) continue;
 
 			// Verify if document was not judged by the subprofile sub
-			if(sub->GetProfile()->GetFeedback(Docs())) continue;
+			if(sub->GetFeedback(Docs())) continue;
 
 			// Verify that document was judged by another subprofile of the group
 			for(l=NbSubObjects+1,ptr2=Owner->GetObjs(SubObjects),Proposed=false;--l;ptr2++)
 			{
 				if((*ptr2)==(*ptr)) continue;
-				if((*ptr2)->GetSubProfile()->GetProfile()->GetFeedback(Docs()))
+				if((*ptr2)->GetSubProfile()->GetFeedback(Docs()))
 				{
 					Proposed=true;
 					break;
@@ -739,13 +735,13 @@ double GALILEI::GGroupIR::ComputeLikelihood(void)
 			if(Docs()->GetLang()!=Lang) continue;
 
 			// Verify if document was not judged by the subprofile sub
-			if(sub->GetProfile()->GetFeedback(Docs())) continue;
+			if(sub->GetFeedback(Docs())) continue;
 
 			// Verify that document was judged by another subprofile of the group
 			for(l=NbSubObjects+1,ptr2=Owner->GetObjs(SubObjects),Proposed=false;--l;ptr2++)
 			{
 				if((*ptr2)==(*ptr)) continue;
-				if((*ptr2)->GetSubProfile()->GetProfile()->GetFeedback(Docs()))
+				if((*ptr2)->GetSubProfile()->GetFeedback(Docs()))
 				{
 					Proposed=true;
 					break;

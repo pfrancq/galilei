@@ -370,7 +370,7 @@ void  GALILEI::GDocProfSim::UpdateDocProfSim(GDocs* docs,GUsers* users,bool glob
 			{
 				for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
 				{
-					stateSP = Cur_p()->GetProfile()->GetState();
+					stateSP = Cur_p()->GetState();
 					if((stateSP == osUpdated) || (stateSP == osCreated))    //The second profile has been modified -> state de sim(id1,id2) = modified
 					{
 						sim = sims->GetPtr<unsigned int>(Cur_p()->GetId());
@@ -448,7 +448,7 @@ void  GALILEI::GDocProfSim::UpdateDocProfSim(GDocs* docs , GUsers& users,bool gl
 			{
 				for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
 				{
-					stateSP = Cur_p()->GetProfile()->GetState();
+					stateSP = Cur_p()->GetState();
 					if((stateSP == osUpdated) || (stateSP == osCreated))    //The second profile has been modified -> state de sim(id1,id2) = modified
 					{
 						sim = sims->GetPtr<unsigned int>(Cur_p()->GetId());

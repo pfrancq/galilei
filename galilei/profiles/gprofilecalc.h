@@ -89,7 +89,7 @@ public:
 	* Compute a profile.
 	* @param profile        Profile to compute.
 	*/
-	virtual void Compute(GProfile* profile)=0;
+	virtual void Compute(GSubProfile* subprofile)=0;
 
 	/**
 	* Get the name of the computing method.

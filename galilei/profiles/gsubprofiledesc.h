@@ -73,7 +73,7 @@ protected:
 	/**
 	* Pointer a function used for creating a subprofile description.
 	*/
-	GSubProfile* (*Create)(GProfile* prof,unsigned int id,GLang*,GGroup*,const char*);
+	GSubProfile* (*Create)(GProfile* prof,unsigned int id,GLang*,GGroup*,const char* , tObjState state , const char*);
 
 public:
 
@@ -83,7 +83,7 @@ public:
 	* @param func           Function used to create such a subprofile
 	*                       description.
 	*/
-	GSubProfileDesc(const char* name,GSubProfile* (*func)(GProfile* prof,unsigned int id,GLang*,GGroup*,const char*)) throw(bad_alloc);
+	GSubProfileDesc(const char* name,GSubProfile* (*func)(GProfile* prof,unsigned int id,GLang*,GGroup*,const char* , tObjState state , const char*)) throw(bad_alloc);
 
 	/**
 	* Compare methods used by RStd::RContainer.

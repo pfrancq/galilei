@@ -133,6 +133,9 @@ class GProfileCalcVector;
 class GProfileCalcCursor;
 class GProfilesSim;
 class GProfilesSims;
+class GProfilesBehaviour;
+class GProfilesBehaviourCursor;
+class GProfilesBehaviours;
 class GSubProfilesSameDocs;
 
 

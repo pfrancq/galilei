@@ -414,193 +414,157 @@ struct GLinkCalcHITS::BestValue GALILEI::GLinkCalcHITS::findMin(struct BestValue
 void GALILEI::GLinkCalcHITS::Compute(GProfile* Prof)
 {
 
-	RContainer<GDoc,unsigned int, false,true>* BaseSet;
-	RStd::RContainer<GBalancedLinks,unsigned int,true,true>* out_Links;
-	RStd::RContainer<GBalancedLinks,unsigned int,true,true>* in_Links  ;
-	RContainer<GBalancedLinks,unsigned int,true,false>* best_Links_Out;
-	RContainer<GBalancedLinks,unsigned int,true,false>* best_Links_In;
-
-	GLink* tmpLink;
-	RTimeDate::RDate date;
-	tDocJudgement Fdbk;
-	GProfDocCursor profCur;
-	GDocCursor docCur ;
-	GLinkCursor linkCur;
-	GLinksCursor linksCur;
-	GBalancedLinksCursor balLinksCur;
-	
-	unsigned int currentDocId , k;
-	//test var
-	unsigned int nbAdd=0;
-
-	//test                                     
-//	cout<< "Params"<<endl;
-//	cout  << "NbIt "<<Params->NbIteration<<endl;
-//	cout<< "Nb Hubs : "<< Params->NbResultsHub<<endl;
-//	cout << "Nb Auto ; "<< Params->NbResultsAuto<<endl;
-//	cout << "Use Multiple Links "<<Params->UseMultipleLink<<endl;
-//	cout <<" Limitation Liens "<<Params->LimitLink<<endl;
-//	cout<< "Nb Links : "<<Params->NbLinks<<endl;
-
-
-	// Init Part
-	BaseSet = new RContainer<GDoc,unsigned int, false,true>(100,50);
-    profCur = Prof->GetProfDocCursor();
-    currentDocId=k=0;
-
-	//---------------------------------------------------------------
-	// Init Root Set( all the docs juged OK by the profile
-	// Store these docs in the BaseSet.
-	for (profCur.Start(); !profCur.End(); profCur.Next() )
-	{
-		Fdbk = profCur()->GetFdbk();
-		// if current doc was juged OK by the profile Insert it
-		if (Fdbk & djOK)
-		{
-			currentDocId = profCur()->GetDoc()->GetId();
-			BaseSet->InsertPtr( profCur()->GetDoc() );
-
-			// Expansion of Root Set :
-			// Add all Docs pointed by the current doc
-			if ( Links_Out->GetPtr( currentDocId ) );
-			{
-				linkCur= Links_Out->GetPtr( currentDocId )->GetLinkCursor();
-				for (linkCur.Start(); ! linkCur.End(); linkCur.Next() )
-				{
-					// If the pointed doc is not in the BaseSet yet ->insert it
-					if (! BaseSet->IsIn( linkCur()->GetDoc()->GetId() ) )
-					{
-						BaseSet->InsertPtr( linkCur()->GetDoc() );
-					}
-				}
-			}
-
-			// Add all docs which point to the current doc-> If q point to current doc p then insert doc q
-			linksCur.Set(Links_Out);
-			for (linksCur.Start(); ! linksCur.End(); linksCur.Next() )
-			{
-				if ( linksCur()->IsIn( currentDocId ) )
-				{
-					if (! BaseSet->IsIn(linksCur()->GetDoc()->GetId() ) )
-					{
-						BaseSet->InsertPtr( linksCur()->GetDoc());
-					}
-				}
-			}
-		}
-	}
-
-	//---------------------------------------------------------------
-	// Creation of Vector Needed for links computation
-	 // Init Part
-	out_Links=new RStd::RContainer<GBalancedLinks,unsigned int,true,true>(50,10);
-	in_Links = new RStd::RContainer<GBalancedLinks,unsigned int,true,true>(50,10);
-
-	docCur.Set(BaseSet);
-	for (docCur.Start(); ! docCur.End() ; docCur.Next())
-	{
-		out_Links->InsertPtr(new GBalancedLinks( docCur() ) );
-		in_Links->InsertPtr(new GBalancedLinks(docCur() ) );
-	}
-
-	for (docCur.Start(); ! docCur.End() ; docCur.Next())
-	{
-		currentDocId= docCur()->GetId();
-		if (Links_Out->GetPtr( currentDocId ) )
-		{
-			linkCur = Links_Out->GetPtr( currentDocId )->GetLinkCursor();
-			for (linkCur.Start(); ! linkCur.End() ; linkCur.Next() )
-			{
-				if ( BaseSet->IsIn(linkCur()->GetId() ) )
-				{
-					out_Links->GetPtr( currentDocId )->InsertPtr( linkCur() );
-					in_Links->GetPtr( linkCur()->GetDoc()->GetId() )->InsertPtr( tmpLink =new GLink(docCur() ) )  ;
-					tmpLink->SetOccurs( linkCur()->GetOccurs());
-				}
-			}
-		}
-	}
-
-	//test
-//	linksCur.Set(in_Links);
+//	RContainer<GDoc,unsigned int, false,true>* BaseSet;
+//	RStd::RContainer<GBalancedLinks,unsigned int,true,true>* out_Links;
+//	RStd::RContainer<GBalancedLinks,unsigned int,true,true>* in_Links  ;
+//	RContainer<GBalancedLinks,unsigned int,true,false>* best_Links_Out;
+//	RContainer<GBalancedLinks,unsigned int,true,false>* best_Links_In;
 //
-//	for (linksCur.Start();!linksCur.End();linksCur.Next())
+//	GLink* tmpLink;
+//	RTimeDate::RDate date;
+//	tDocJudgement Fdbk;
+//	GProfDocCursor profCur;
+//	GDocCursor docCur ;
+//	GLinkCursor linkCur;
+//	GLinksCursor linksCur;
+//	GBalancedLinksCursor balLinksCur;
+//
+//	unsigned int currentDocId , k;
+//	//test var
+//	unsigned int nbAdd=0;
+//
+//	//test
+////	cout<< "Params"<<endl;
+////	cout  << "NbIt "<<Params->NbIteration<<endl;
+////	cout<< "Nb Hubs : "<< Params->NbResultsHub<<endl;
+////	cout << "Nb Auto ; "<< Params->NbResultsAuto<<endl;
+////	cout << "Use Multiple Links "<<Params->UseMultipleLink<<endl;
+////	cout <<" Limitation Liens "<<Params->LimitLink<<endl;
+////	cout<< "Nb Links : "<<Params->NbLinks<<endl;
+//
+//
+//	// Init Part
+//	BaseSet = new RContainer<GDoc,unsigned int, false,true>(100,50);
+//	profCur = Prof->GetProfDocCursor();
+//	currentDocId=k=0;
+//
+//	//---------------------------------------------------------------
+//	// Init Root Set( all the docs juged OK by the profile
+//	// Store these docs in the BaseSet.
+//	for (profCur.Start(); !profCur.End(); profCur.Next() )
 //	{
-//		linkCur = linksCur()->GetLinkCursor();
-//		cout<< "le document parent :" << linksCur()->GetDoc()->GetId()<<" et le poid calcule : "<<linksCur()->GetWeight()<<endl;
-//		for (linkCur.Start();!linkCur.End();linkCur.Next())
+//		Fdbk = profCur()->GetFdbk();
+//		// if current doc was juged OK by the profile Insert it
+//		if (Fdbk & djOK)
 //		{
-//			cout<< "le doc qui pointe a l'id : "<< linkCur()->GetDoc()->GetId() <<" et nombre d'occurence :"<< linkCur()->GetOccurs()<<endl;
+//			currentDocId = profCur()->GetDoc()->GetId();
+//			BaseSet->InsertPtr( profCur()->GetDoc() );
+//
+//			// Expansion of Root Set :
+//			// Add all Docs pointed by the current doc
+//			if ( Links_Out->GetPtr( currentDocId ) );
+//			{
+//				linkCur= Links_Out->GetPtr( currentDocId )->GetLinkCursor();
+//				for (linkCur.Start(); ! linkCur.End(); linkCur.Next() )
+//				{
+//					// If the pointed doc is not in the BaseSet yet ->insert it
+//					if (! BaseSet->IsIn( linkCur()->GetDoc()->GetId() ) )
+//					{
+//						BaseSet->InsertPtr( linkCur()->GetDoc() );
+//					}
+//				}
+//			}
+//
+//			// Add all docs which point to the current doc-> If q point to current doc p then insert doc q
+//			linksCur.Set(Links_Out);
+//			for (linksCur.Start(); ! linksCur.End(); linksCur.Next() )
+//			{
+//				if ( linksCur()->IsIn( currentDocId ) )
+//				{
+//					if (! BaseSet->IsIn(linksCur()->GetDoc()->GetId() ) )
+//					{
+//						BaseSet->InsertPtr( linksCur()->GetDoc());
+//					}
+//				}
+//			}
 //		}
 //	}
-
-	//---------------------------------------------------------------
-	// Compute Hubs and Autorities.
-	while (k< Params->NbIteration)
-	{
-		Operation_I(out_Links, in_Links);
-		Operation_O(out_Links,in_Links);
-		Normalization(out_Links,Norme_Out);
-		Normalization(in_Links,Norme_In);
-		k++;
-	}
-
-	//---------------------------------------------------------------
-	// Sort Results and Find Best Values for the Hubs and Authorities.
-	// Init Part
-	best_Links_Out = new RContainer<GBalancedLinks,unsigned int,true,false>(Params->NbResultsHub,5);
-	best_Links_In = new RContainer<GBalancedLinks,unsigned int,true,false>(Params->NbResultsAuto,5);
-
-	// find best results for out_Links
-	balLinksCur.Set(out_Links);
-	FindBestValues(Params->NbResultsHub,balLinksCur,best_Links_Out);
-
-	// Find best results for in_Links
-	balLinksCur.Set(in_Links);
-	FindBestValues(Params->NbResultsAuto,balLinksCur,best_Links_In);
-
-	// Add Best Results to current Profile.
-
-	// Add documents considered as Best Hubs
-	balLinksCur.Set(best_Links_Out);
-
-	nbAdd=0; //test
-	for (balLinksCur.Start();!balLinksCur.End();balLinksCur.Next())
-	{
-		// If the profile hasn't judged the doc -> Insert a judgement for the doc.
-		if (! Prof->GetFeedback( balLinksCur()->GetDoc() ))
-		{
-			Prof->AddJudgement( new GProfDoc(balLinksCur()->GetDoc(), Prof ,tDocJudgement( djNav | djHub ), date)) ;
-			nbAdd++;
-			//cout << "Document Hub add to profile: "<< linksCur()->GetDoc()->GetURL()<<endl;
-		}
-	}
-	nbEtapes++;    //test
-	MeanAddHub = (( MeanAddHub*(nbEtapes-1) + (double)nbAdd/Params->NbResultsHub)/ nbEtapes);  //moyenne incrementale    //test
-	cout <<" pourcent d'ajout Hubs :" << (float)nbAdd/Params->NbResultsHub <<" et nouvelle moyenne : "<<MeanAddHub<<endl;
-	nbAdd=0;
-
-	// Add documents considered as Best Autorities
-	balLinksCur.Set(best_Links_In);
-	for (balLinksCur.Start();!balLinksCur.End();balLinksCur.Next())
-	{
-		// If the profile hasn't judged the doc -> Insert a judgement for the doc.
-		if (! Prof->GetFeedback( balLinksCur()->GetDoc() ))
-		{
-			Prof->AddJudgement( new GProfDoc(balLinksCur()->GetDoc(), Prof ,tDocJudgement( djOK | djAutority ), date )) ;
-			nbAdd++;
-			//cout << "Document Autorte add to profile: "<< linksCur()->GetDoc()->GetURL()<<endl;
-		}
-	}
-	MeanAddAuto = (( MeanAddAuto*(nbEtapes-1) + (double)nbAdd/Params->NbResultsAuto)/ nbEtapes);  //moyenne incrementale    //test
-	cout <<" pourcent d'ajout Auto :" << (float)nbAdd/Params->NbResultsAuto <<" et nouvelle moyenne : "<<MeanAddAuto<<endl;
-
-
-	//test
+//
+//	//---------------------------------------------------------------
+//	// Creation of Vector Needed for links computation
+//	 // Init Part
+//	out_Links=new RStd::RContainer<GBalancedLinks,unsigned int,true,true>(50,10);
+//	in_Links = new RStd::RContainer<GBalancedLinks,unsigned int,true,true>(50,10);
+//
+//	docCur.Set(BaseSet);
+//	for (docCur.Start(); ! docCur.End() ; docCur.Next())
+//	{
+//		out_Links->InsertPtr(new GBalancedLinks( docCur() ) );
+//		in_Links->InsertPtr(new GBalancedLinks(docCur() ) );
+//	}
+//
+//	for (docCur.Start(); ! docCur.End() ; docCur.Next())
+//	{
+//		currentDocId= docCur()->GetId();
+//		if (Links_Out->GetPtr( currentDocId ) )
+//		{
+//			linkCur = Links_Out->GetPtr( currentDocId )->GetLinkCursor();
+//			for (linkCur.Start(); ! linkCur.End() ; linkCur.Next() )
+//			{
+//				if ( BaseSet->IsIn(linkCur()->GetId() ) )
+//				{
+//					out_Links->GetPtr( currentDocId )->InsertPtr( linkCur() );
+//					in_Links->GetPtr( linkCur()->GetDoc()->GetId() )->InsertPtr( tmpLink =new GLink(docCur() ) )  ;
+//					tmpLink->SetOccurs( linkCur()->GetOccurs());
+//				}
+//			}
+//		}
+//	}
+//
+//	//test
+////	linksCur.Set(in_Links);
+////
+////	for (linksCur.Start();!linksCur.End();linksCur.Next())
+////	{
+////		linkCur = linksCur()->GetLinkCursor();
+////		cout<< "le document parent :" << linksCur()->GetDoc()->GetId()<<" et le poid calcule : "<<linksCur()->GetWeight()<<endl;
+////		for (linkCur.Start();!linkCur.End();linkCur.Next())
+////		{
+////			cout<< "le doc qui pointe a l'id : "<< linkCur()->GetDoc()->GetId() <<" et nombre d'occurence :"<< linkCur()->GetOccurs()<<endl;
+////		}
+////	}
+//
+//	//---------------------------------------------------------------
+//	// Compute Hubs and Autorities.
+//	while (k< Params->NbIteration)
+//	{
+//		Operation_I(out_Links, in_Links);
+//		Operation_O(out_Links,in_Links);
+//		Normalization(out_Links,Norme_Out);
+//		Normalization(in_Links,Norme_In);
+//		k++;
+//	}
+//
+//	//---------------------------------------------------------------
+//	// Sort Results and Find Best Values for the Hubs and Authorities.
+//	// Init Part
+//	best_Links_Out = new RContainer<GBalancedLinks,unsigned int,true,false>(Params->NbResultsHub,5);
+//	best_Links_In = new RContainer<GBalancedLinks,unsigned int,true,false>(Params->NbResultsAuto,5);
+//
+//	// find best results for out_Links
 //	balLinksCur.Set(out_Links);
+//	FindBestValues(Params->NbResultsHub,balLinksCur,best_Links_Out);
+//
+//	// Find best results for in_Links
+//	balLinksCur.Set(in_Links);
+//	FindBestValues(Params->NbResultsAuto,balLinksCur,best_Links_In);
+//
+//	// Add Best Results to current Profile.
+//
+//	// Add documents considered as Best Hubs
+//	balLinksCur.Set(best_Links_Out);
 //
 //	nbAdd=0; //test
-//	unsigned int nbTotal=balLinksCur.GetNb();
 //	for (balLinksCur.Start();!balLinksCur.End();balLinksCur.Next())
 //	{
 //		// If the profile hasn't judged the doc -> Insert a judgement for the doc.
@@ -611,24 +575,13 @@ void GALILEI::GLinkCalcHITS::Compute(GProfile* Prof)
 //			//cout << "Document Hub add to profile: "<< linksCur()->GetDoc()->GetURL()<<endl;
 //		}
 //	}
-//	if(! nbTotal)
-//	{
-//		cout << "zero doc added on zero docs hubs."<<endl;
-//	}
-//	else
-//	{
-//		nbEtapes++;    //test
-//		cout << "nbr doc added :" <<nbAdd<<endl;
-//		MeanAddHub = (( MeanAddHub*(nbEtapes-1) + (double)nbAdd/nbTotal )/ nbEtapes);  //moyenne incrementale    //test
-//		cout <<" pourcent d'ajout Hubs :" << (float)nbAdd/nbTotal <<" et nouvelle moyenne : "<<MeanAddHub<<endl;
-//		nbAdd=0;
-//	}
-
-	// Add documents considered as Best Autorities
-//	balLinksCur.Set(in_Links);
-//	unsigned int  nbTotal=balLinksCur.GetNb();
-////	nbEtapes++;
-////	nbAdd=0;
+//	nbEtapes++;    //test
+//	MeanAddHub = (( MeanAddHub*(nbEtapes-1) + (double)nbAdd/Params->NbResultsHub)/ nbEtapes);  //moyenne incrementale    //test
+//	cout <<" pourcent d'ajout Hubs :" << (float)nbAdd/Params->NbResultsHub <<" et nouvelle moyenne : "<<MeanAddHub<<endl;
+//	nbAdd=0;
+//
+//	// Add documents considered as Best Autorities
+//	balLinksCur.Set(best_Links_In);
 //	for (balLinksCur.Start();!balLinksCur.End();balLinksCur.Next())
 //	{
 //		// If the profile hasn't judged the doc -> Insert a judgement for the doc.
@@ -639,45 +592,92 @@ void GALILEI::GLinkCalcHITS::Compute(GProfile* Prof)
 //			//cout << "Document Autorte add to profile: "<< linksCur()->GetDoc()->GetURL()<<endl;
 //		}
 //	}
-//    	if(! nbTotal)
-//	{
-//		cout << "zero doc added on zero docs auto."<<endl;
-//	}
-//	else
-//	{
-//	cout << "nbr doc added :" <<nbAdd<<endl;
-//	MeanAddAuto = (( MeanAddAuto*(nbEtapes-1) + (double)nbAdd/nbTotal)/ nbEtapes);  //moyenne incrementale    //test
-//	cout <<" pourcent d'ajout Auto :" << (float)nbAdd/nbTotal <<" et nouvelle moyenne : "<<MeanAddAuto<<endl;
-//	}
-
-	
-	//---------------------------------------------------------------
-	// test all results and print it.
-//	cout<<endl<< "----------------------------------------------"<<endl;
-//	cout<< "----------------------------------------------"<<endl;
-//	cout<<"trie resultats"<<endl;
-//	cout << "les meilleur resultats OUT :"<<endl;
-//	RCursor<GLinks,unsigned int> Cur(best_Links_Out);
-//	for (Cur.Start();!Cur.End();Cur.Next())
-//	{
-//		cout<< Cur()->GetWeight()<< "pour "<<Cur()->GetDoc()->GetId()<<" dont url : "<<Cur()->GetDoc()->GetURL()<<endl;
-//	}
-//	cout<<endl<< "----------------------------------------------"<<endl<<endl;
-//	cout << "les meilleur resultats :"<<endl;
-//	Cur.Set(best_Links_In);
-//	for (Cur.Start();!Cur.End();Cur.Next())
-//	{
-//		cout<< Cur()->GetWeight()<< "pour "<<Cur()->GetDoc()->GetId()<<" dont url : "<<Cur()->GetDoc()->GetURL()<<endl;
-//	}
-
-	
-
-	// delete all the container no more used.
-	delete(BaseSet);
-	delete(out_Links);
-	delete(in_Links);
-	delete(best_Links_Out);
-	delete(best_Links_In);
+//	MeanAddAuto = (( MeanAddAuto*(nbEtapes-1) + (double)nbAdd/Params->NbResultsAuto)/ nbEtapes);  //moyenne incrementale    //test
+//	cout <<" pourcent d'ajout Auto :" << (float)nbAdd/Params->NbResultsAuto <<" et nouvelle moyenne : "<<MeanAddAuto<<endl;
+//
+//
+//	//test
+////	balLinksCur.Set(out_Links);
+////
+////	nbAdd=0; //test
+////	unsigned int nbTotal=balLinksCur.GetNb();
+////	for (balLinksCur.Start();!balLinksCur.End();balLinksCur.Next())
+////	{
+////		// If the profile hasn't judged the doc -> Insert a judgement for the doc.
+////		if (! Prof->GetFeedback( balLinksCur()->GetDoc() ))
+////		{
+////			Prof->AddJudgement( new GProfDoc(balLinksCur()->GetDoc(), Prof ,tDocJudgement( djNav | djHub ), date)) ;
+////			nbAdd++;
+////			//cout << "Document Hub add to profile: "<< linksCur()->GetDoc()->GetURL()<<endl;
+////		}
+////	}
+////	if(! nbTotal)
+////	{
+////		cout << "zero doc added on zero docs hubs."<<endl;
+////	}
+////	else
+////	{
+////		nbEtapes++;    //test
+////		cout << "nbr doc added :" <<nbAdd<<endl;
+////		MeanAddHub = (( MeanAddHub*(nbEtapes-1) + (double)nbAdd/nbTotal )/ nbEtapes);  //moyenne incrementale    //test
+////		cout <<" pourcent d'ajout Hubs :" << (float)nbAdd/nbTotal <<" et nouvelle moyenne : "<<MeanAddHub<<endl;
+////		nbAdd=0;
+////	}
+//
+//	// Add documents considered as Best Autorities
+////	balLinksCur.Set(in_Links);
+////	unsigned int  nbTotal=balLinksCur.GetNb();
+//////	nbEtapes++;
+//////	nbAdd=0;
+////	for (balLinksCur.Start();!balLinksCur.End();balLinksCur.Next())
+////	{
+////		// If the profile hasn't judged the doc -> Insert a judgement for the doc.
+////		if (! Prof->GetFeedback( balLinksCur()->GetDoc() ))
+////		{
+////			Prof->AddJudgement( new GProfDoc(balLinksCur()->GetDoc(), Prof ,tDocJudgement( djOK | djAutority ), date )) ;
+////			nbAdd++;
+////			//cout << "Document Autorte add to profile: "<< linksCur()->GetDoc()->GetURL()<<endl;
+////		}
+////	}
+////    	if(! nbTotal)
+////	{
+////		cout << "zero doc added on zero docs auto."<<endl;
+////	}
+////	else
+////	{
+////	cout << "nbr doc added :" <<nbAdd<<endl;
+////	MeanAddAuto = (( MeanAddAuto*(nbEtapes-1) + (double)nbAdd/nbTotal)/ nbEtapes);  //moyenne incrementale    //test
+////	cout <<" pourcent d'ajout Auto :" << (float)nbAdd/nbTotal <<" et nouvelle moyenne : "<<MeanAddAuto<<endl;
+////	}
+//
+//
+//	//---------------------------------------------------------------
+//	// test all results and print it.
+////	cout<<endl<< "----------------------------------------------"<<endl;
+////	cout<< "----------------------------------------------"<<endl;
+////	cout<<"trie resultats"<<endl;
+////	cout << "les meilleur resultats OUT :"<<endl;
+////	RCursor<GLinks,unsigned int> Cur(best_Links_Out);
+////	for (Cur.Start();!Cur.End();Cur.Next())
+////	{
+////		cout<< Cur()->GetWeight()<< "pour "<<Cur()->GetDoc()->GetId()<<" dont url : "<<Cur()->GetDoc()->GetURL()<<endl;
+////	}
+////	cout<<endl<< "----------------------------------------------"<<endl<<endl;
+////	cout << "les meilleur resultats :"<<endl;
+////	Cur.Set(best_Links_In);
+////	for (Cur.Start();!Cur.End();Cur.Next())
+////	{
+////		cout<< Cur()->GetWeight()<< "pour "<<Cur()->GetDoc()->GetId()<<" dont url : "<<Cur()->GetDoc()->GetURL()<<endl;
+////	}
+//
+//
+//
+//	// delete all the container no more used.
+//	delete(BaseSet);
+//	delete(out_Links);
+//	delete(in_Links);
+//	delete(best_Links_Out);
+//	delete(best_Links_In);
 }
 
 

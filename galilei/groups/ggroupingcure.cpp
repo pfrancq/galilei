@@ -326,10 +326,10 @@ double GALILEI::GGroupingCure::Similarity(GSubProfile* s1, GSubProfile* s2)
 //-----------------------------------------------------------------------------
 double  GALILEI::GGroupingCure::CostFunction(RContainer<GGroup,unsigned int,false,true>* grps)     // calculates the intra/min(inter)
 {
-	unsigned int i,j;
-	double intra, inter;
+	unsigned int i /*,j;*/;
+	double intra /*, inter*/;
 	GSubProfile **s1;
-	GGroup *grp, **g1, **g2;
+	GGroup *grp/*, **g1, **g2*/;
 	intra=0.0;
 	for (grps->Start(); !grps->End(); grps->Next())
 	{

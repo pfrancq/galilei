@@ -165,22 +165,22 @@ void GALILEI::GGroupingSupKMeans::AdaptMinSimToDatabase(double distcoeff)
 	etype=0.0 ;
 
 	//tmp david
-	int comp2=0;
-	RTextFile* text= new RTextFile("../../../simprofs.txt", RIO::Create);
-	for (s1=SubProfiles.Tab, i=SubProfiles.NbPtr; i--; s1++)
-		(*text) << "\t"<<(*s1)->GetProfile()->GetId();
-	(*text) <<endl;
-	for (s1=SubProfiles.Tab, i=SubProfiles.NbPtr; i--; s1++)
-	{
-		comp2++;
-		(*text)  << (*s1)->GetProfile()->GetId();
-		for (s2=SubProfiles.Tab, j=SubProfiles.NbPtr; j--; s2++)
-		{
-				(*text)  << "\t"<<Session->GetSimProf(*s1,*s2) ;
-		}
-		(*text) <<endl;
-	}
-	cout << "file written"<<endl;
+//	int comp2=0;
+// 	RTextFile* text= new RTextFile("../../../simprofs.txt", RIO::Create);
+// 	for (s1=SubProfiles.Tab, i=SubProfiles.NbPtr; i--; s1++)
+// 		(*text) << "\t"<<(*s1)->GetProfile()->GetId();
+// 	(*text) <<endl;
+// 	for (s1=SubProfiles.Tab, i=SubProfiles.NbPtr; i--; s1++)
+// 	{
+// 		comp2++;
+// 		(*text)  << (*s1)->GetProfile()->GetId();
+// 		for (s2=SubProfiles.Tab, j=SubProfiles.NbPtr; j--; s2++)
+// 		{
+// 				(*text)  << "\t"<<Session->GetSimProf(*s1,*s2) ;
+// 		}
+// 		(*text) <<endl;
+// 	}
+// 	cout << "file written"<<endl;
 	// end tmp dav
 
 	for (s1=SubProfiles.Tab, i=SubProfiles.NbPtr; i--; s1++)
@@ -208,11 +208,9 @@ void GALILEI::GGroupingSupKMeans::Run(void) throw(GException)
 
 	if (!SubProfiles.NbPtr) return;
 
-	//tmp dav
-	double dav;
 
-	cout << "dav = " <<dav<<endl;
-	AdaptMinSimToDatabase(1.5);
+	//AdaptMinSimToDatabase(1.5);
+	Params->MinSim=Session->GetMinimumOfSimilarity(&SubProfiles);
 
 //	if (Params->Debug)
 //	{
@@ -293,7 +291,7 @@ unsigned int GALILEI::GGroupingSupKMeans::Execute(bool doublekmeans)
 	error=1;
 	while (iter<Params->NbIters&&error!=0)
 	{
-//		if (Params->Debug)
+		if (Params->Debug)
 			cout <<"---------------------------------- Iter "<< iter<<"-----------------------------"<<endl;
 
 		Groups->Clear();
@@ -318,14 +316,14 @@ unsigned int GALILEI::GGroupingSupKMeans::Execute(bool doublekmeans)
 		}
 		iter++;
 	}
-//	if (Params->Debug)
-//	{
-//		DisplayGroups();
+	if (Params->Debug)
+	{
+		DisplayGroups();
 		cout <<endl<<"**********************************"<<endl;
-//		cout <<"Clustering done in :"<<iter<< " loops"<<endl;
+		cout <<"Clustering done in :"<<iter<< " loops"<<endl;
 		cout <<"Number of groups found = "<<Groups->NbPtr<<endl;
 		cout <<"**********************************"<<endl;
-//	 }
+	 }
 
 	if (Params->UsedAsInitialization)
 	{
@@ -493,82 +491,39 @@ GGroup* GALILEI::GGroupingSupKMeans::FindGroup(GSubProfile* subprof)
 //-----------------------------------------------------------------------------
 bool  GALILEI::GGroupingSupKMeans::IsAPcSameValidGroup(GGroup* group, GSubProfile* sub)
 {
-	GProfDocCursor profdoc1;
-	GProfDocCursor profdoc2;
-	unsigned int nbcomp, percent;
+	GSubProfile* s;
+	double pcsame;
 
-	profdoc1=sub->GetProfile()->GetProfDocCursor();
-
+	pcsame=0.0;
 	for (group->Start(); ! group->End(); group->Next())
 	{
-		nbcomp=percent=0;
-		profdoc2=(*group)()->GetProfile()->GetProfDocCursor();
-
-		for (profdoc1.Start(); !profdoc1.End(); profdoc1.Next())
-			for (profdoc2.Start(); !profdoc2.End(); profdoc2.Next())
-				if (profdoc1()->GetDoc()->GetId()==profdoc2()->GetDoc()->GetId())
-				{
-					nbcomp++;              // number of common documents
-					if ((profdoc1()->GetFdbk() & djOK)&&(profdoc2()->GetFdbk() & djOK))
-					{
-						percent++;       // number of same judgements on a common document
-						if (Params->Debug) cout << "same judgements"<<endl;
-					}
-					else
-						if (Params->Debug) cout <<"  diiferents judgements"<<endl;
-				}
-
-		if(nbcomp)
-		{
-			percent=int(100.0*(double(percent)/double(nbcomp)));
-			if (Params->Debug)  cout << "pcsame"<<"%=  "<< percent<< "("<<nbcomp<<")"<<"   entre  "<< (*group)()->GetProfile()->GetId()<<"  ET  "<<sub->GetProfile()->GetId()<<endl;
-			if (percent >=Params->NbPcSame)
-			{
-				return(true) ;
-			}
-		}
+		s=(*group)();
+		pcsame=Session->GetAgreementRatio(s,sub,0);
+		if (pcsame >=Params->NbPcSame)
+				return(true) ;            // return 1 if pcsame>rate
 	}
 
-	return(false);
+	return(false);  //or return 0 if pcdiff >rate
+
 }
 
 
 //-----------------------------------------------------------------------------
 bool GALILEI::GGroupingSupKMeans::IsAPcDiffValidGroup(GGroup* group, GSubProfile* sub)
 {
-	GProfDocCursor profdoc1;
-	GProfDocCursor profdoc2;
-	unsigned int nbcomp, percent;
+	GSubProfile* s;
+	double pcdiff;
 
-	profdoc1=sub->GetProfile()->GetProfDocCursor();
-
-
+	pcdiff=0.0;
 	for (group->Start(); ! group->End(); group->Next())
 	{
-		nbcomp=percent=0;
-		profdoc2=(*group)()->GetProfile()->GetProfDocCursor();
-
-		for (profdoc1.Start(); !profdoc1.End(); profdoc1.Next())
-			for (profdoc2.Start(); !profdoc2.End(); profdoc2.Next())
-				if (profdoc1()->GetDoc()->GetId()==profdoc2()->GetDoc()->GetId())
-				{
-					nbcomp++;              // number of common documents
-					if (profdoc1()->GetFdbk()!=profdoc2()->GetFdbk())
-						percent++;       // number of same (or diff) judgements on a common document
-				}
-
-		if(nbcomp)
-		{
-			percent=int(100*(percent/nbcomp));
-			if (Params->Debug)  cout << "pcdiff"<<"%=  "<< percent<< "("<<nbcomp<<")"<<"   entre  "<< (*group)()->GetProfile()->GetId()<<"  ET  "<<sub->GetProfile()->GetId()<<endl;
-			if (percent >=Params->NbPcDiff)
-			{
-				return(true) ;            // return 1 if pcsame>rate or return 0 if pcdiff >rate
-			}
-		}
+		s=(*group)();
+		pcdiff=Session->GetDisAgreementRatio(s,sub,0);
+		if (pcdiff >=Params->NbPcDiff)
+				return(true) ;            // return 1 if pcdiff>rate
 	}
 
-	return(false);
+	return(false);  //or return 0 if pcdiff >rate
 }
 
 

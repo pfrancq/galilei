@@ -64,6 +64,8 @@ using namespace RIO;
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofilessim.h>
 #include <profiles/gprofilessims.h>
+#include <profiles/gprofilesbehaviour.h>
+#include <profiles/gprofilesbehaviours.h>
 #include <profiles/gsubprofiledesc.h>
 #include <profiles/gprofdoc.h>
 #include <groups/ggroups.h>
@@ -462,6 +464,9 @@ void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 	// Initialise the profiles sims  
 	InitProfilesSims();
 
+	// Initilaise the profiles behaviour.
+	InitProfilesBehaviours();
+
 	// Initialise the sims between documents and subprofiles
 	InitDocProfSims();  
 }
@@ -534,7 +539,7 @@ void GALILEI::GSession::InitProfilesSims(void)
 	RContainer<GSubProfile,unsigned int,false,true>* subProf;
 	GProfilesSim* profSim;
 
-	ProfilesSims = new GProfilesSims(100);
+	ProfilesSims = new GProfilesSims(5);
 	
 	for(langs.Start();!langs.End(); langs.Next())
 	{
@@ -555,7 +560,7 @@ void GALILEI::GSession::InitProfilesSims(void)
 void GALILEI::GSession::ChangeProfilesSimState(bool global,GLang* lang)throw(bad_alloc)
 {
 	GProfilesSim* profSim = ProfilesSims->GetPtr<GLang*>(lang);
-	profSim->UpdateProfSim(this, global,lang);
+	profSim->UpdateProfSim(global);
 
 }
 
@@ -572,19 +577,71 @@ void GALILEI::GSession::ChangeAllProfilesSimState(bool global)throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSession::GetSimProf(GLang* l,unsigned int id1, unsigned int id2)
-{
-	GProfilesSim* profSim = ProfilesSims->GetPtr<GLang*>(l);
-	return profSim->GetSim(this,id1,id2);
-}
-
-
-//-----------------------------------------------------------------------------
 double GALILEI::GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
 {
 
 	GProfilesSim* profSim = ProfilesSims->GetPtr<GLang*>(sub1->GetLang());
 	return profSim->GetSim(sub1,sub2);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::InitProfilesBehaviours(void)
+{
+	GLangCursor langs = GetLangsCursor();
+
+	RContainer<GSubProfile,unsigned int,false,true>* subProf;
+	GProfilesBehaviour* profBehaviour;
+
+	ProfilesBehaviours = new GProfilesBehaviours(5);
+
+	for(langs.Start();!langs.End(); langs.Next())
+	{
+		subProf = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
+		GSubProfileCursor subProfCur = GetSubProfilesCursor(langs());
+
+		for(subProfCur.Start();!subProfCur.End();subProfCur.Next())
+		{
+			subProf->InsertPtr(subProfCur());
+		}
+		profBehaviour= new GProfilesBehaviour(subProf,langs());
+		ProfilesBehaviours->InsertPtr(profBehaviour);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::ChangeProfilesBehaviourState(GLang* lang)throw(bad_alloc)
+{
+	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<GLang*>(lang);
+	profBehaviour->UpdateProfBehaviour();
+
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::ChangeAllProfilesBehaviourState(void) throw(bad_alloc)
+{
+	GLangCursor langs = GetLangsCursor();
+	for( langs.Start(); !langs.End(); langs.Next())
+	{
+		ChangeProfilesBehaviourState(langs());
+	}
+}
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold)
+{
+	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<GLang*>(sub1->GetLang());
+	return profBehaviour->GetAgreementRatio(sub1,sub2, threshold);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSession::GetDisAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold)
+{
+	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<GLang*>(sub1->GetLang());
+	return profBehaviour->GetDisAgreementRatio(sub1,sub2, threshold);
 }
 
 
@@ -602,7 +659,6 @@ double GALILEI::GSession::GetMinimumOfSimilarity(RStd::RContainer<GSubProfile,un
 	deviation=profSim->GetDeviation();
 	minSim=meanSim+deviationrate*sqrt(deviation);
 
-	cout << "Minimum of Similarity from Session = "<<minSim<<endl;
 	return(minSim);
 }
 
@@ -629,7 +685,11 @@ void GALILEI::GSession::InitLinks()
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
 {
+	GSubProfileCursor Subs;
+	GSubProfile* sub;
 	GProfileCursor Prof=GetProfilesCursor();
+	GProfilesSim* profSim;
+	GProfilesBehaviour* profBehaviour;
 
 	if(!ProfileCalc)
 		throw GException("No computing method chosen.");
@@ -638,38 +698,49 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		if(modified&&(Prof()->GetState()==osUpToDate)) continue;
 		rec->receiveNextProfile(Prof());
-		try
+		Subs=Prof()->GetSubProfilesCursor();
+		for (Subs.Start(); !Subs.End(); Subs.Next())
 		{
-			if((!modified)||(Prof()->GetState()!=osUpdated))
+			sub=(Subs)();
+			if(modified&&(Subs()->GetState()==osUpToDate)) continue;
+			try
 			{
-				cout << "Utilisation des liens : "<< DocOptions->UseLink<<endl;
-				if (DocOptions->UseLink)
+				if((!modified)||(Subs()->GetState()!=osUpdated))
 				{
-					LinkCalc->Compute(Prof());
+					if (DocOptions->UseLink)
+					{ 
+						LinkCalc->Compute(Prof());
+					}
+					ProfileCalc->Compute(Subs());
+					// add the mofified profile to the list of modified profiles  for similarities
+					profSim = ProfilesSims->GetPtr<GLang*>(Subs()->GetLang());
+					profSim->AddModifiedProfile(Subs()->GetProfile()->GetId());
+					// add the mofified profile to the list of modified profiles  for behaviours
+					profBehaviour = ProfilesBehaviours->GetPtr<GLang*>(Subs()->GetLang());
+					profBehaviour->AddModifiedProfile(Subs()->GetProfile()->GetId());	
 				}
-				ProfileCalc->Compute(Prof());
 			}
-		}
-		catch(GException& e)
-		{
-			
+			catch(GException& e)
+			{
+			}
 		}
 	}
 
 	// update the state of all the sims. 
-	ChangeAllProfilesSimState(true);   /// !!!!  check if 'true' is the corect value !?!
+	ChangeAllProfilesSimState(true);   /// !!!!  check if 'true' is the correct value !?!
+
+	//updtae the state of the behaviours
+	ChangeAllProfilesBehaviourState();
 
 	//   save profiles if necessary and set their state to UpToDate.
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		if(save&&(Prof()->GetState()==osUpdated))
+		if(save)
 		{
 			try
 			{
 				SaveProfile(Prof());
-				Prof()->SetState(osUpToDate);
 			}
 			catch(GException& e)
 			{
@@ -682,8 +753,11 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::CalcProfile(GProfile* prof) throw(GException)
 {
-	LinkCalc->Compute(prof);
-	ProfileCalc->Compute(prof);
+	GSubProfileCursor Subs;
+
+	Subs=prof->GetSubProfilesCursor();
+	for (Subs.Start(); !Subs.End(); Subs.Next())
+		ProfileCalc->Compute(Subs());
 }
 
 
@@ -745,7 +819,6 @@ void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const cha
 	Fdbks.InsertPtr(f=new GProfDoc(d,p,j,date));
 	p->AddJudgement(f);
 	d->AddJudgement(f);
-	p->SetState(osModified);
 }
 
 
@@ -959,6 +1032,9 @@ void GALILEI::GSession::ReInit(bool)
 
 	//re-init similarities between profiles;
 	InitProfilesSims();
+
+	//re-init the behaviours inter-profiles.
+	InitProfilesBehaviours();
 
 	// re-Init the sims between documents and subprofiles
 	InitDocProfSims();  

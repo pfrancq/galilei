@@ -412,6 +412,7 @@ public:
 	*/
 	GLinkCursor& GetLinkCursor(void);
 
+
 #if GALILEITEST
 
 	/**

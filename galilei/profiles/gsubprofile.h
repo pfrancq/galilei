@@ -40,6 +40,11 @@
 
 
 //-----------------------------------------------------------------------------
+//include files for R Project
+#include <rtimedate/rdate.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
@@ -81,9 +86,29 @@ protected:
 	GGroup* Group;
 
 	/**
+	* State of the subprofile.
+	*/
+	tObjState State;
+
+	/**
 	* Date of attachment to the group.
 	*/
 	RTimeDate::RDate Attached;
+
+	/**
+	* Date of Update.
+	*/
+	RTimeDate::RDate Updated;
+
+	/**
+	* Date of last document's analysis.
+	*/
+	RTimeDate::RDate Computed;
+
+	/**
+	* Documents juged by the subprofile.
+	*/
+	RStd::RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
 #if GALILEITEST
 	/**
@@ -102,7 +127,7 @@ public:
 	* @param grp            Group.
 	* @param a              String representing the date where it was attached.
 	*/
-	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a) throw(bad_alloc);
+	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.
@@ -140,6 +165,17 @@ public:
 	*/
 	int Compare(const GSubProfile* subprofile) const;
 
+	/*
+	* add a judgement for the subprofile.
+	*/
+	void AddJudgement(GProfDoc* j) throw(bad_alloc);
+
+	/**
+	* Remove a judgement for this subprofile.
+	* @param j              Judgement.
+	*/
+	void RemoveJudgement(GProfDoc* j) throw(bad_alloc);
+
 	/**
 	* Method called when the profiles feedbacks were cleared.
 	*/
@@ -156,6 +192,17 @@ public:
 	* @param id             Identifier.
 	*/
 	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+
+	/**
+	* returns the state of the subprofile
+	*/
+	tObjState GetState(void) const {return State;}
+
+	/*
+	* set the state of the subprofile
+	*/
+	void SetState(tObjState state);
+	
 
 	/**
 	* Get the language of the subprofile.
@@ -194,6 +241,18 @@ public:
 	const RTimeDate::RDate* GetAttached(void) const {return(&Attached);}
 
 	/**
+	* Get the date of the last update of the subprofile.
+	* @returns Pointer to date.
+	*/
+	const RTimeDate::RDate* GetUpdated(void) const {return(&Updated);}
+
+	/**
+	* Get the date of the last analysis of the subprofile.
+	* @returns Pointer to date.
+	*/
+	const RTimeDate::RDate* GetComputed(void) const {return(&Computed);}
+
+	/**
 	* See if the subprofiles was updated until the last attachment to a group.
 	* @returns Boolean.
 	*/
@@ -204,28 +263,41 @@ public:
 	* practice, it computes the number of the common documents of the
 	* corresponding profiles which are of the language of the profile.
 	*/
-	unsigned int GetCommonOKDocs(const GSubProfile* prof) const;
+	unsigned int GetCommonOKDocs(const GSubProfile* prof);
 
 	/**
 	* Get the number of common document between two subprofiles. In
 	* practice, it computes the number of the common documents of the
 	* corresponding profiles which are of the language of the profile.
 	*/
-	unsigned int GetCommonDocs(const GSubProfile* prof) const;
+	unsigned int GetCommonDocs(const GSubProfile* prof) ;
 
 	/**
 	* Get the number of common document with different judgement between two
 	* subprofiles. In practice, it computes the number of the common documents
 	* of the corresponding profiles which are of the language of the profile.
 	*/
-	unsigned int GetCommonDiffDocs(const GSubProfile* prof) const;
+	unsigned int GetCommonDiffDocs(const GSubProfile* prof);
 
 	/**
-	* Get the number of documents judged by the subprofile. In practice, it
-	* computes the number of the common documents of the corresponding profiles
-	* which are of the language of the profile.
+	* Get the number of judged documents.
+	* @returns unsigned int.
 	*/
-	unsigned int GetNbJudgedDocs(void) const;
+	unsigned int GetNbJudgedDocs(void) const {return (Fdbks.NbPtr);}
+
+	/**
+	* Get the feedback of the subprofile on a specific document.
+	* @param doc            Pointer to the document.
+	* return Pointer to the feedback or 0 if the document wasn't judged by the
+	*        profile.
+	*/
+	GProfDoc* GetFeedback(const GDoc* doc) const;
+
+	/**
+	* Get a Cursor on the feedback for the profile.
+	* @return GProfDocCursor.
+	*/
+	GProfDocCursor& GetProfDocCursor(void);
 
 	/**
 	* Compute the similarity between a subprofile and a document.
@@ -258,6 +330,11 @@ public:
 	virtual double GlobalSimilarity(const GGroup* grp) const;
 
 	virtual GIWordWeightCursor& GetVectorCursor(void)=0;
+
+	/**
+	* Tell the subprofile that its updated is finished.
+	*/
+	void UpdateFinished(void);
 
 #if GALILEITEST
 

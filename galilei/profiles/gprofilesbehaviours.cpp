@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GSubProfileDesc.cpp
+	GProfilesBehaviours.cpp
 
-	Generic Subprofile Description Method - Implementation.
+	Agreement and DisAgreement Ratios for subprofiles - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		David Wartel (dwartel@ulb.ac.be).
 
 	Version $Revision$
 
@@ -35,48 +35,36 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
-#include<profiles/gsubprofiledesc.h>
-#include<profiles/gsubprofile.h>
+// include files for GALILEI
+#include <profiles/gprofilesbehaviours.h>
+#include <langs/glang.h>
+#include <profiles/gprofilesbehaviour.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
 
 //-----------------------------------------------------------------------------
 //
-//  GSubProfileDesc
+//   GProfilesBehaviours
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSubProfileDesc::GSubProfileDesc(const char* name,GSubProfile* (*func)(GProfile* prof,unsigned int id,GLang*,GGroup*,const char* , tObjState state , const char*)) throw(bad_alloc)
-	: ProfDescName(name), Create(func)
+GALILEI::GProfilesBehaviours::GProfilesBehaviours(unsigned int s) throw(bad_alloc)
+	: RContainer<GProfilesBehaviour,unsigned int,true,true>(s,s/2)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GSubProfileDesc::Compare(const GSubProfileDesc& desc) const
+void GALILEI::GProfilesBehaviours::InsertProfilesBehaviour(GProfilesBehaviour* p) throw(bad_alloc)
 {
-	return(ProfDescName.Compare(desc.ProfDescName));
+	InsertPtr(p);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GSubProfileDesc::Compare(const GSubProfileDesc* desc) const
-{
-	return(ProfDescName.Compare(desc->ProfDescName));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GSubProfileDesc::Compare(const char* name) const
-{
-	return(ProfDescName.Compare(name));
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GSubProfileDesc::~GSubProfileDesc(void)
+GALILEI::GProfilesBehaviours::~GProfilesBehaviours(void)
 {
 }

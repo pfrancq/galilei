@@ -289,27 +289,27 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 	unsigned int id;
 	GLangCursor Langs;
 
-	sprintf(sSql,"INSERT INTO profiles(userid,description,updated) VALUES(%u,%s,CURDATE())",
+	sprintf(sSql,"INSERT INTO profiles(userid,description) VALUES(%u,%s",
 		usr->GetId(),ValidSQLValue(desc,sDes));
 	RQuery insertprof(this,sSql);
 
 	// Get Id and updated
-	sprintf(sSql,"SELECT profileid,updated FROM profiles WHERE profileid=LAST_INSERT_ID()");
+	sprintf(sSql,"SELECT profileid FROM profiles WHERE profileid=LAST_INSERT_ID()");
 	RQuery selectprofile(this,sSql);
 	selectprofile.Start();
 	id=strtoul(selectprofile[0],0,10);
-	InsertProfile(prof=new GProfile(usr,id,desc,true,selectprofile[1],0,GetNbLangs()));
+	InsertProfile(prof=new GProfile(usr,id,desc,true,GetNbLangs()));
 
 	// Construct SubProfiles
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		sprintf(sSql,"INSERT INTO subprofiles(profileid,langid) VALUES(%u,'%s')",id,Langs()->GetCode());
+		sprintf(sSql,"INSERT INTO subprofiles(profileid,langid, state) VALUES(%u,'%s', %u)",id,Langs()->GetCode(), static_cast<int>(osCreated));
 		RQuery insertsub(this,sSql);
-		sprintf(sSql,"SELECT subprofileid from subprofiles WHERE subprofileid=LAST_INSERT_ID())");
+		sprintf(sSql,"SELECT subprofileid, state from subprofiles WHERE subprofileid=LAST_INSERT_ID())");
 		RQuery selectsub(this,sSql);
 		selectsub.Start();
-		InsertSubProfile(new GSubProfileVector(prof,strtoul(selectsub[0],0,10),Langs(),0,0));
+		InsertSubProfile(new GSubProfileVector(prof,strtoul(selectsub[0],0,10),Langs(),0,0,(static_cast<tObjState>(atoi(selectsub[1]))),0));
 	}
 
 	// Return new created profile
@@ -321,8 +321,15 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 void GALILEI::GSessionMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 {
 	char sSql[200];
+	char scomputed[15];
 	GIWordWeightCursor Cur;
 	const char* l;
+
+
+	//update the subprofile;
+	sprintf(sSql,"UPDATE subprofiles SET state=%u, calculated=%s WHERE subprofileid=%u",
+			 static_cast<int>(sub->GetState()), GetDateToMySQL(sub->GetComputed(),scomputed), sub->GetId());
+	RQuery updatesubprof(this,sSql);
 
 	// Delete keywords
 	l=sub->GetLang()->GetCode();
@@ -337,6 +344,8 @@ void GALILEI::GSessionMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 		              l,sub->GetId(),Cur()->GetId(),Cur()->GetWeight());
 		RQuery insertkwds(this,sSql);
 	}
+
+	sub->SetState(osUpToDate);
 }
 
 
@@ -363,8 +372,6 @@ void GALILEI::GSessionMySQL::SaveProfile(GProfile* prof) throw(GException)
 {
 	char sSql[500];
 	char sname[200];
-	char supdated[15];
-	char scomputed[15];
 	unsigned int profid;
 	unsigned int social;
 	GSubProfileCursor CurSub=prof->GetSubProfilesCursor();
@@ -374,15 +381,17 @@ void GALILEI::GSessionMySQL::SaveProfile(GProfile* prof) throw(GException)
 
 	// Save the Subprofile
 	for(CurSub.Start();!CurSub.End();CurSub.Next())
-		SaveSubProfile(CurSub());
+	{
+		if (CurSub()->GetState()==osUpdated)
+			SaveSubProfile(CurSub());
+	}
 
 
 	// Update profiles
-	if (prof->IsSocial()) social=1;	
+	if (prof->IsSocial()) social=1;
 	else social =0;
-	sprintf(sSql,"UPDATE profiles SET description=%s,updated=%s,calculated=%s,social=%u WHERE profileid=%u",
-	        ValidSQLValue(prof->GetName(),sname),GetDateToMySQL(prof->GetUpdated(),supdated),
-	        GetDateToMySQL(prof->GetComputed(),scomputed),social,profid);
+	sprintf(sSql,"UPDATE profiles SET description=%s,social=%u WHERE profileid=%u",
+	        ValidSQLValue(prof->GetName(),sname),social,profid);
 	RQuery updateprof(this,sSql);
 }
 
@@ -411,9 +420,9 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 		{
 			userid=atoi(users[0]);
 			#if GALILEITEST
-				sprintf(sSql,"SELECT profileid,description,updated,calculated,social,topicid FROM profiles WHERE userid=%u",userid);
+				sprintf(sSql,"SELECT profileid,description,social,topicid FROM profiles WHERE userid=%u",userid);
 			#else
-				sprintf(sSql,"SELECT profileid,description,updated,calculated,social FROM profiles WHERE userid=%u",userid);
+				sprintf(sSql,"SELECT profileid,description,social FROM profiles WHERE userid=%u",userid);
 			#endif
 			RQuery profiles(this,sSql);
 			InsertUser(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
@@ -421,13 +430,13 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 			{
 				profileid=atoi(profiles[0]);
 				#if GALILEITEST
-					s=Subjects.GetPtr<unsigned int>(atoi(profiles[5]));
+					s=Subjects.GetPtr<unsigned int>(atoi(profiles[3]));
 				#endif
 				Social=false;
-				if(atoi(profiles[4])==1) Social=true;
-				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,profiles[2],profiles[3],GetNbLangs()));
+				if(atoi(profiles[2])==1) Social=true;
+				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,GetNbLangs()));
 				prof->SetSubject(s);
-				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid FROM subprofiles WHERE profileid=%u",profileid);
+				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid, state, calculated FROM subprofiles WHERE profileid=%u",profileid);
 				RQuery subprofil (this,sSql);
 				for(subprofil.Start();!subprofil.End();subprofil.Next())
 				{
@@ -437,7 +446,7 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 						grp=Groups.GetPtr<const GLang*>(lang)->GetPtr<const unsigned int>(atoi(subprofil[3]));
 					else
 						grp=0;
-					InsertSubProfile(sub=new GSubProfileVector(prof,subid,lang,grp,subprofil[2]));
+					InsertSubProfile(sub=new GSubProfileVector(prof,subid,lang,grp,subprofil[2], (static_cast<tObjState>(atoi(subprofil[4]))), subprofil[5]));
 					#if GALILEITEST
 						if(sub->GetLang()==s->GetLang())
 						{

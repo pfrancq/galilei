@@ -157,6 +157,11 @@ protected:
 	GProfilesSims* ProfilesSims;
 
 	/**
+	* behaviour inter profiles.
+	*/
+	GProfilesBehaviours* ProfilesBehaviours;
+
+	/**
 	*  Similarity between documents and  profiles for each langage.
 	*/
 	GDocProfSims* DocProfSims ;
@@ -467,20 +472,45 @@ public:
 	void ChangeAllProfilesSimState(bool global)throw(bad_alloc);
 
 	/**
-	* Return the similarity between two subProfiles for a given language.
-	* @param l              The language used
-	* @param id1            the first subprofile id
-	* @param id2            The second subprofile id
-	*/                  
-	double GetSimProf(GLang* l,unsigned int id1, unsigned int id2);
-
-	/**
 	* Return the similarity between two subProfiles .
-	* @param sub1           The Pointer to the first subprofile 
+	* @param sub1           The Pointer to the first subprofile
 	* @param sub2           The Pointer to the second subprofile
 	*/
 	double GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2);
-	
+
+	/**
+	* Initialise the table of similarity between the profiles
+	*/
+	void InitProfilesBehaviours(void);
+
+	/**
+	* Update the state of similarity between the subProfiles for a given language.
+	* @param global         use the Global/Locale similarity
+	* @param lang           The lang of the subprofiles
+	*/
+	void ChangeProfilesBehaviourState(GLang* lang)throw(bad_alloc);
+
+	/**
+	* Update the state of similarity between the subProfiles for all language in the system.
+	*/
+	void ChangeAllProfilesBehaviourState(void) throw(bad_alloc);
+
+	/**
+	* Return the similarity between two subProfiles .
+	* @param sub1           The Pointer to the first subprofile
+	* @param sub2           The Pointer to the second subprofile
+	* @param threshold       minimum of common documents
+	*/
+	double GetDisAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold=0);
+
+	/**
+	* Return the similarity between two subProfiles .
+	* @param sub1           The Pointer to the first subprofile
+	* @param sub2           The Pointer to the second subprofile
+	* @param threshold       minimum of common documents
+	*/
+	double GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold=0);
+
 	/**
 	* return the minim of similarityof the subprofiles, needed by clusteirng algorithms.
 	* @param subprofiles    set of subprofiles on which mean minsim must be

@@ -125,7 +125,7 @@ void GALILEI::GGetFeedback::Run(bool Save)
 						}
 					}
 				}
-				SubProfile()->GetProfile()->SetState(osModified);
+				SubProfile()->SetState(osModified);
 			}
 		}
 	}

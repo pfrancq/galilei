@@ -60,16 +60,16 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSubProfileVector::GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a) throw(bad_alloc)
-  : GSubProfile(prof,id,lang,grp,a), GIWordsWeights(60)
+GALILEI::GSubProfileVector::GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(bad_alloc)
+  : GSubProfile(prof,id,lang,grp,a, state, c), GIWordsWeights(60)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GSubProfileVector::NewSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a)
+GSubProfile* GALILEI::GSubProfileVector::NewSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c)
 {
-	return(new GSubProfileVector(prof,id,lang,grp,a));
+	return(new GSubProfileVector(prof,id,lang,grp,a,state,c));
 }
 
 

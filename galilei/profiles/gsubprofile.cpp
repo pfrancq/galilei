@@ -44,6 +44,7 @@
 #include<groups/ggroup.h>
 using namespace GALILEI;
 using namespace RStd;
+using namespace RTimeDate;
 
 
 
@@ -54,10 +55,11 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a) throw(bad_alloc)
-  :  Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a)
+GALILEI::GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,tObjState state, const char* c) throw(bad_alloc)
+  :  Id(id), Profile(prof), Lang(lang), Group(grp), State(state), Attached(a),  Computed(c), Fdbks(20,10)
 {
-	#if GALILEITEST
+
+#if GALILEITEST
 		Subject=0;
 	#endif
 	Profile->InsertPtr(this);
@@ -95,10 +97,43 @@ int GALILEI::GSubProfile::Compare(const GSubProfile* subprofile) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubProfile::ClearFdbks(void)
+void GALILEI::GSubProfile::AddJudgement(GProfDoc* j) throw(bad_alloc)
 {
+	Fdbks.InsertPtr(j);
+	State=osModified;
 }
 
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSubProfile::RemoveJudgement(GProfDoc* j) throw(bad_alloc)
+{
+	Fdbks.DeletePtr(j);
+	State=osModified;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSubProfile::ClearFdbks(void)
+{
+	Fdbks.Clear();
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSubProfile::SetState(tObjState state)
+{
+	GGroup* grp;
+	State=state;
+
+	// If the profile was updated -> the groups containing the subprofiles
+	// are modified.
+	if(State==osUpdated)
+	{
+		grp=GetGroup();
+		if(grp)
+			grp->SetState(osModified);
+	}
+}
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSubProfile::SetGroup(GGroup* grp)
@@ -112,12 +147,12 @@ void GALILEI::GSubProfile::SetGroup(GGroup* grp)
 //-----------------------------------------------------------------------------
 bool GALILEI::GSubProfile::IsUpdated(void) const
 {
-	return(Attached<(*Profile->GetUpdated()));
+	return(Attached<Updated);
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof) const
+unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
 {
 	tDocJudgement f;
 	GProfDoc* cor;
@@ -128,18 +163,16 @@ unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof) cons
 	nb=0;
 
 	// Go through the document judged by the corresponding profile
-	GProfDocCursor Fdbks=Profile->GetProfDocCursor();
+	GProfDocCursor Fdbks=GetProfDocCursor();
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 	{
-		// If the document is not "good" or not the same language that the
-		// same profile -> Nothing
+		// If the document is not "good"  -> Nothing
 		f=Fdbks()->GetFdbk();
-		if((!(f & djOK))&&(!(f & djNav))) continue;
-		if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
+		if((f!=djOK)&&(f!=djNav)) continue;
 
 		// Look for the same document in the other profile. If not found or the
 		// document is not "good" -> Nothing
-		cor=prof->Profile->GetFeedback(Fdbks()->GetDoc());
+		cor=prof->GetFeedback(Fdbks()->GetDoc());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 		if((!(f & djOK))&&(!(f & djNav))) continue;
@@ -152,7 +185,7 @@ unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof) cons
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GSubProfile::GetCommonDocs(const GSubProfile* prof) const
+unsigned int GALILEI::GSubProfile::GetCommonDocs(const GSubProfile* prof)
 {
 	tDocJudgement f;
 	GProfDoc* cor;
@@ -163,16 +196,13 @@ unsigned int GALILEI::GSubProfile::GetCommonDocs(const GSubProfile* prof) const
 	nb=0;
 
 	// Go through the document judged by the corresponding profile
-	GProfDocCursor Fdbks=Profile->GetProfDocCursor();
+	GProfDocCursor Fdbks=GetProfDocCursor();
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 	{
-		// If the document is not the same language that the subprofile -> Nothing
 		f=Fdbks()->GetFdbk();
-		if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
-
 		// Look for the same document in the other profile. If not found or the
 		// document is not "good" -> Nothing
-		cor=prof->Profile->GetFeedback(Fdbks()->GetDoc());
+		cor=prof->GetFeedback(Fdbks()->GetDoc());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 
@@ -184,7 +214,7 @@ unsigned int GALILEI::GSubProfile::GetCommonDocs(const GSubProfile* prof) const
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) const
+unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
 {
 	tDocJudgement f;
 	GProfDoc* cor;
@@ -196,17 +226,15 @@ unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) co
 	nb=0;
 
 	// Go through the document judged by the corresponding profile
-	GProfDocCursor Fdbks=Profile->GetProfDocCursor();
+	GProfDocCursor Fdbks=GetProfDocCursor();
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 	{
-		// If the document is not the same language that the profile -> Nothing
 		f=Fdbks()->GetFdbk();
-		bOK=((f & djOK)||(f & djNav));
-		if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
+		bOK=((f==djOK)||(f==djNav));
 
 		// If the document was not judged by the other profile or have not the
 		// same judgment -> Nothing
-		cor=prof->Profile->GetFeedback(Fdbks()->GetDoc());
+		cor=prof->GetFeedback(Fdbks()->GetDoc());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 		bOK2=((f & djOK)||(f & djNav));
@@ -220,15 +248,18 @@ unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) co
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GSubProfile::GetNbJudgedDocs(void) const
+GProfDocCursor& GALILEI::GSubProfile::GetProfDocCursor(void)
 {
-	unsigned int Total=0;
-	GProfDocCursor CurDoc=GetProfile()->GetProfDocCursor();
+	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
+	cur->Set(Fdbks);
+	return(*cur);
+}
 
-	for(CurDoc.Start();!CurDoc.End();CurDoc.Next())
-		if(CurDoc()->GetDoc()->GetLang()==GetLang())
-			Total++;
-	return(Total);
+
+//-----------------------------------------------------------------------------
+GProfDoc* GALILEI::GSubProfile::GetFeedback(const GDoc* doc) const
+{
+	return(Fdbks.GetPtr<const GDoc*>(doc));
 }
 
 
@@ -287,6 +318,14 @@ GSubject* GALILEI::GSubProfile::GetSubject(void) const
 	return(Subject);
 }
 #endif
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSubProfile::UpdateFinished(void)
+{
+	State=osUpdated;
+	Computed.SetToday();
+}
 
 
 //-----------------------------------------------------------------------------

@@ -194,7 +194,7 @@ void GALILEI::GProfileCalcVector::SetSettings(const char* s)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcVector::ComputeGlobal(GProfile* profile) throw(bad_alloc)
+void GALILEI::GProfileCalcVector::ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc)
 {
 	GIWordWeightCursor Words;
 	GProfDocCursor Docs;
@@ -217,21 +217,21 @@ void GALILEI::GProfileCalcVector::ComputeGlobal(GProfile* profile) throw(bad_all
 	for(NbDocsLangs.Start();!NbDocsLangs.End();NbDocsLangs.Next())
 			NbDocsLangs()->Clear();
 
+	// Determine the lists corresponding to the language of the document
+	CurLang=subprofile->GetLang();
+	NbDocs=NbDocsWords.GetPtr<GLang*>(CurLang);
+	Weights=Vector.GetPtr<GLang*>(CurLang);
+
 	// Construct one big "document" from all the documents judged as "OK" or "N"
-	Docs=profile->GetProfDocCursor();
+	Docs=subprofile->GetProfDocCursor();
+
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		// If the document hasn't a language or its judgement is not relevant
+		// If the assesment of the document is not relevant
 		// or fuzzy relevant -> don't treat for the profiles computing
 		CurDoc=dynamic_cast<GDocVector*>(Docs()->GetDoc());
-		CurLang=CurDoc->GetLang();
-		if(!CurLang) continue;
 		Fdbk=Docs()->GetFdbk();
 		if((!(Fdbk & djOK))&&(!(Fdbk & djNav))) continue;
-
-		// Determine the lists corresponding to the language of the document
-		NbDocs=NbDocsWords.GetPtr<GLang*>(CurLang);
-		Weights=Vector.GetPtr<GLang*>(CurLang);
 
 		// Add total number of document judged for the current language
 		NbDocsLangs.GetPtr<GLang*>(CurLang)->Inc();
@@ -249,6 +249,7 @@ void GALILEI::GProfileCalcVector::ComputeGlobal(GProfile* profile) throw(bad_all
 			w->AddWeight(1.0);
 		}
 	}
+
 
 	// Compute the weight for the big document
 	for(Vector.Start();!Vector.End();Vector.Next())
@@ -313,21 +314,21 @@ void GALILEI::GProfileCalcVector::ComputeSubProfile(GSubProfileVector* s) throw(
 
 	// Update the references of the vector.
 	s->UpdateRefs();
+
+	//Tell the subprofile that the udpate is finished.
+	s->UpdateFinished();
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcVector::Compute(GProfile* profile)
+void GALILEI::GProfileCalcVector::Compute(GSubProfile* subprofile)
 {
-	// Compute the Vector lists.
-	ComputeGlobal(profile);
+	// Compute the global Vector lists.
+	ComputeGlobal(subprofile);
 
-	// Compute the vector for each subprofile
-	for(profile->Start();!profile->End();profile->Next())
-		ComputeSubProfile((GSubProfileVector*)((*profile)()));
+	// Compute the vector for the subprofile
+	ComputeSubProfile((GSubProfileVector*)subprofile);
 
-	// Tell the profile that the udpate is finished.
-	profile->UpdateFinished();
 }
 
 

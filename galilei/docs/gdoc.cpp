@@ -148,7 +148,7 @@ void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned in
 	State=osUpdated;
 	Computed.SetToday();
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
-		Fdbks()->GetProfile()->SetState(osModified);
+		Fdbks()->GetProfile()->GetSubProfile(l)->SetState(osModified);
 }
 
 

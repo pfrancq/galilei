@@ -99,24 +99,19 @@ protected:
 	RStd::RString Name;
 
 	/**
-	* State of the profile.
-	*/
-	tObjState State;
-
-	/**
 	* Documents juged by profile.
 	*/
 	RStd::RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
-	/**
-	* Date of Update.
-	*/
-	RTimeDate::RDate Updated;
-
-	/**
-	* Date of last document's analysis.
-	*/
-	RTimeDate::RDate Computed;
+//	/**
+//	* Date of Update.
+//	*/
+//	RTimeDate::RDate Updated;
+//
+//	/**
+//	* Date of last document's analysis.
+//	*/
+//	RTimeDate::RDate Computed;
 
 	/**
 	* Determine if the profile is social, i.e. prefer to be grouped with
@@ -144,7 +139,7 @@ public:
 	* @param nb             Number of subprofiles.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,unsigned int id,const char* name,bool s,const char* u,const char* a,unsigned int nb,unsigned int nbf=100) throw(bad_alloc);
+	GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Clear The Fdbks Container
@@ -210,35 +205,6 @@ public:
 	GSubProfile* GetSubProfile(const GLang* lang) const;
 
 	/**
-	* Get the date of the last update of the profile's.
-	* @returns Pointer to date.
-	*/
-	const RTimeDate::RDate* GetUpdated(void) const {return(&Updated);}
-
-	/**
-	* Get the date of the last analysis of the profile.
-	* @returns Pointer to date.
-	*/
-	const RTimeDate::RDate* GetComputed(void) const {return(&Computed);}
-
-	/**
-	* Return the state of the profile.
-	* @returns GALILEI::tObjState value.
-	*/
-	tObjState GetState(void) const {return(State);}
-
-	/**
-	* Set the state of the profile.
-	* @param state          New state.
-	*/
-	void SetState(tObjState state);
-
-	/**
-	* Tell the profile that its updated is finished.
-	*/
-	void UpdateFinished(void);
-
-	/**
 	* Get the feedback of the profile on a specific document.
 	* @param doc            Pointer to the document.
 	* return Pointer to the feedback or 0 if the document wasn't judged by the
@@ -253,11 +219,11 @@ public:
 	*/
 	unsigned int GetNbJudgedDocs(const GLang* lang) const;
 
-	/**
-	* Get a Cursor on the feedback for the profile.
-	* @return GProfDocCursor.
-	*/
-	GProfDocCursor& GetProfDocCursor(void);
+//	/**
+//	* Get a Cursor on the feedback for the profile.
+//	* @return GProfDocCursor.
+//	*/
+//	GProfDocCursor& GetProfDocCursor(void);
 
 	/**
 	* Get a Cursor on the subprofiles.
@@ -270,6 +236,15 @@ public:
 	* @param j              Judgement.
 	*/
 	void AddJudgement(GProfDoc* j) throw(bad_alloc);
+
+	/**
+	* Store the profdoc in the feedbacks of the subprofile
+	* coressponding to the lang of the profdoc.
+	* this function is called when at least one of the two lang is defined
+	* and the two lang are different.
+	*/
+	void DispatchFdbks(GProfDoc* profdoc, GLang* oldlang);
+
 
 #if GALILEITEST
 

@@ -84,7 +84,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GALILEI::GProfilesSim::GSims : public RStd::RContainer<GSim,unsigned int,true,true>
+class GALILEI::GProfilesSim::GSims : public RStd::RContainer<GSim,unsigned int,true,false>
 {
 public:
 	unsigned int Id;         // Identifier of the first profile
@@ -98,7 +98,7 @@ public:
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_alloc)
-	: RStd::RContainer<GSim,unsigned int,true,true>(max,max/2), Id(id)
+	: RStd::RContainer<GSim,unsigned int,true,false>(max,max/2), Id(id)
 {
 }
 
@@ -111,23 +111,27 @@ GALILEI::GProfilesSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* l) throw(bad_alloc)
-	: Sims(s->NbPtr,s->NbPtr<50?50:s->NbPtr/2), GlobalSim(global), Lang(l) , OldNbComp(0)
+	: Sims(s->NbPtr,s->NbPtr<50?50:s->NbPtr/2), GlobalSim(global), Lang(l) 
 {
-	GSubProfileCursor Cur1;
-	GSubProfileCursor Cur2;
-	unsigned int i,j;
+	GSubProfileCursor Cur1, Cur2;
+	unsigned int i,j, pos;
 	GSims* sim;
 
+	//initialize table of modified subprofiles;
+	ModifiedProfs=new unsigned int [s->NbPtr];
+	NbModified=0;
+
+	//builds the left inferior triangular matrix.
 	Cur1.Set(s);
 	Cur2.Set(s);
 	if(!Cur1.GetNb()) return;
-	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
+	for(Cur1.Start(), i=0; !Cur1.End();Cur1.Next(),i++)
 	{
-		Sims.InsertPtr(sim=new GSims(Cur1()->GetId(),j));
-		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-		{
-			AnalyseSim(sim,Cur1(),Cur2());
-		}
+		pos=Cur1()->GetProfile()->GetId();
+		sim=new GSims(Cur1()->GetId(),pos-1);
+		Sims.InsertPtrAt(sim,pos);
+		for(Cur2.Start(), j=0;j<i;Cur2.Next(),j++)
+			 AnalyseSim(sim,Cur1(),Cur2());
 	}
 	
 	//mean calculation & deviation calculation
@@ -156,7 +160,6 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 		deviation-=MeanSim*MeanSim;
 		Deviation=deviation;
 		OldNbComp=nbcomp;
-		cout <<"Old Nb Comparison initilized to "<<OldNbComp<<endl;
 	}
 	else
 		MeanSim=Deviation=0.0;
@@ -164,100 +167,20 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global,GLang* l) throw(bad_alloc)
-	: Sims(s.NbPtr,s.NbPtr<50?50:s.NbPtr/2), GlobalSim(global), Lang(l)
-{
-	GSubProfileCursor Cur1;
-	GSubProfileCursor Cur2;
-	unsigned int i,j;
-	GSims* sim;
-
-	Cur1.Set(s);
-	Cur2.Set(s);
-	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
-	{
-		Sims.InsertPtr(sim=new GSims(Cur1()->GetId(),j));
-		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-		{
-			AnalyseSim(sim,Cur1(),Cur2());
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GProfilesSim::GProfilesSim(GSubProfileCursor& s,bool global) throw(bad_alloc)
-	: Sims(s.GetNb(),s.GetNb()<50?50:s.GetNb()/2), GlobalSim(global)
-{
-	GSubProfileCursor Cur1;
-	GSubProfileCursor Cur2;
-	unsigned int i,j;
-	GSims* sim;
-
-	Cur1=s;
-	Cur2=s;
-	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
-	{
-		Sims.InsertPtr(sim=new GSims(Cur1()->GetId(),j));
-		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-			AnalyseSim(sim,Cur1(),Cur2());
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void GALILEI::GProfilesSim::AnalyseSim(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2)
 {
 	double tmp;
+	unsigned int pos;
 
 	if(GlobalSim)
 		tmp=sub1->GlobalSimilarity(sub2);
 	else
 		tmp=sub1->Similarity(sub2);
-	if(fabs(tmp)<1e-10) return;   
-	sim->InsertPtr(new GSim(sub2->GetId(),tmp,osUpdated));
+//	if(fabs(tmp)<1e-10) return;
+	pos=sub2->GetProfile()->GetId();
+	sim->InsertPtrAt(new GSim(pos,tmp,osUpdated), pos);
 }
 
-
-//-----------------------------------------------------------------------------
-double GALILEI::GProfilesSim::GetSim(GUsers* users, unsigned int i,unsigned int j)
-{
-	GSims* s;
-	GSim* s2;
-	unsigned int tmp;
-
-	if(i==j) return(1.0);
-	if(i>j)
-	{
-		tmp=i;
-		i=j;
-		j=tmp;
-	}
-	s=Sims.GetPtr<unsigned int>(i);
-	if(!s) return(0.0);
-	s2=s->GetPtr<unsigned int>(j);
-	if(!s2) return(0.0);
-
-	if( (s2->State == osUpdated) || (s2->State == osUpToDate))  return s2->Sim;
-
-	if(s2->State == osModified)
-	{
-		s2->State = osUpToDate ;
-		if (GlobalSim)
-		{
-			  s2->Sim=users->GetSubProfile(i,Lang)->GlobalSimilarity(users->GetSubProfile(j,Lang));
-			  return (s2->Sim);
-		}
-		else
-		{
-			 s2->Sim=users->GetSubProfile(i,Lang)->Similarity(users->GetSubProfile(j,Lang));
-			 return (s2->Sim);
-		}
-	}
-	if (s2->State == osDelete)  return (0.0);   //-------------------------A MODIFIER
-	
-	return(0.0);
-}
 
 
 //-----------------------------------------------------------------------------          
@@ -267,23 +190,24 @@ double GALILEI::GProfilesSim::GetSim(const GSubProfile* sub1,const GSubProfile* 
 	GSim* s2;
 	int i,j,tmp;
 
-
-	i = sub1->GetId();
-	j = sub2->GetId();
+	// get the position of the subprofiles in the double container
+	i = sub1->GetProfile()->GetId();
+	j = sub2->GetProfile()->GetId();
 
 	if(i==j) return (1.0);
-	if (i>j)
+	if (i<j)
 	{
 		tmp=i;
 		i=j;
 		j=tmp;
 	}
-	s=Sims.GetPtr<unsigned int>(i);
+	s=Sims.GetPtrAt(i);
 	if(!s) return(0.0);
-	s2=s->GetPtr<unsigned int>(j);
+	s2=s->GetPtrAt(j);
 	if(!s2) return(0.0);
 
-	if( (s2->State == osUpdated) || (s2->State == osUpToDate))  return s2->Sim;
+	if( (s2->State == osUpdated) || (s2->State == osUpToDate))
+		return s2->Sim;
 
 	if(s2->State == osModified)
 	{
@@ -333,7 +257,7 @@ tObjState GALILEI::GProfilesSim::GetState(unsigned int id1, unsigned int id2)
 	GSim* sim;
 	int tmp;
 	
-	if (id1>id2)
+	if (id1<id2)
 	{
 		tmp=id1;
 		id1=id2;
@@ -350,153 +274,30 @@ tObjState GALILEI::GProfilesSim::GetState(unsigned int id1, unsigned int id2)
 }
 
 //-----------------------------------------------------------------------------
-void  GALILEI::GProfilesSim::UpdateProfSim(GUsers* users,bool global,GLang* lang)throw(bad_alloc)
+void  GALILEI::GProfilesSim::UpdateProfSim(bool global)throw(bad_alloc)
 {
-	Lang = lang;
-	GSubProfileCursor Cur1;
-	GSubProfileCursor Cur2;
-	unsigned int i,j;
+	unsigned int i;
 	GSims* sims;
-	GSim* sim;
-	tObjState stateSP;
 
-
-	Cur1 = users->GetSubProfilesCursor(Lang);
-	Cur2 = users->GetSubProfilesCursor(Lang);
-
-	if(global == GlobalSim) // The type of similarity hasn't changed -> some values of sim can be UpToDate
+	// change status of modified subprofiles and add sims of created subprofiles
+	for (i=NbModified; i; i--)
 	{
-		if(!Cur1.GetNb()) return;
-		for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
-		{
-
-			sims = Sims.GetPtr<unsigned int>(Cur1()->GetId());
-			if(!sims) Sims.InsertPtr(sims = new GSims(Cur1()->GetId() ,j) );
-
-			stateSP = Cur1()->GetProfile()->GetState();                                                            // --------------------------------------------------------
-			if ((stateSP == osUpdated) || (stateSP == osCreated))      // The sub1 is modified -> all the sims must be recalculated
-			{
-				for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-				{
-					sim = sims->GetPtr<unsigned int>(Cur2()->GetId());
-					if(!sim) sims->InsertPtr(sim = new GSim(Cur2()->GetId(),0,osModified));
-					else sim->State = osModified;
-				}
-			}                                   //----------------------------------------------------------------
-			else if(stateSP == osUpToDate)       // The sub1 hasn't changed -> somes profiles sims can be unchanged
-			{
-				for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-				{
-					stateSP = Cur2()->GetProfile()->GetState();
-					if((stateSP == osUpdated) || (stateSP == osCreated))    //The second profile has been modified -> state de sim(id1,id2) = modified
-					{
-						sim = sims->GetPtr<unsigned int>(Cur2()->GetId());
-						if (!sim) sims->InsertPtr(sim = new GSim(Cur2()->GetId(),0,osModified));
-						else sim->State = osModified;
-					}
-				}
-			}
-		}
+		sims = Sims.GetPtrAt(ModifiedProfs[i-1]);
+		if(!sims)            
+			Sims.InsertPtrAt(sims = new GSims(ModifiedProfs[i-1] , ModifiedProfs[i-1]-1), ModifiedProfs[i-1]);
+		for (sims->Start(); !sims->End(); sims->Next())
+			(*sims)()->State=osModified;
 	}
-	else  // the type of similarity has changed => All the sim's values must be updated. //The type of similarity is stocked in the param GlobalSim
+
+	if(global!=GlobalSim) // the type of similarity has changed => All the sims values must be updated.
 	{
-		GlobalSim = global;
-		if(!Cur1.GetNb()) return;
-		for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
-		{
-			sims= Sims.GetPtr<unsigned int>(Cur1()->GetId());
-			if(!sims) // If sims doesn't exist -> Insert a new sims
-			{
-				Sims.InsertPtr(sims = new GSims(Cur1()->GetId(),j) );
-				for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-				{
-					sims->InsertPtr(sim = new GSim(Cur2()->GetId(),0,osModified));
-				}
-			}
-			else{  // If Sims exists -> overwrite each sims
-				for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-				{
-					sim = sims->GetPtr<unsigned int >(Cur2()->GetId());
-					if (!sim ) sims->InsertPtr(sim = new GSim(Cur2()->GetId(),0,osModified));
-					else sim->State = osModified;
-				}
-			}
-		}
+		 for (Sims.Start(); !Sims.End(); Sims.Next())
+		 	for (Sims()->Start(); !Sims()->End(); Sims()->Next())
+		  		(*Sims())()->State=osModified;
 	}
-	#warning osDelete to add
-	#warning when all the sim between the subprofiles are computed -> set Profile State to osUpdated
-}
 
-
-//-----------------------------------------------------------------------------
-void  GALILEI::GProfilesSim::UpdateProfSim(GUsers& users,bool global,GLang* lang)throw(bad_alloc)
-{
-	Lang = lang;
-	GlobalSim = global;
-	GSubProfileCursor Cur1;
-	GSubProfileCursor Cur2;
-	unsigned int i,j;
-	GSims* sims;
-	GSim* sim;
-	tObjState stateSP;
-
-	Cur1 = users.GetSubProfilesCursor(Lang);
-	Cur2 = users.GetSubProfilesCursor(Lang);
-	if(global == GlobalSim) // The type of similarity hasn't changed -> some values of sim can be UpToDate
-	{
-		for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
-		{
-			sims = Sims.GetPtr<unsigned int>(Cur1()->GetId());
-			if(!sims) Sims.InsertPtr(sims = new GSims(Cur1()->GetId() ,j) );
-
-			stateSP = Cur1()->GetProfile()->GetState();                                                            // --------------------------------------------------------
-			if ((stateSP == osUpdated) || (stateSP == osCreated))      // The sub1 is modified -> all the sims must be recalculated
-			{
-				for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-				{
-					sim = sims->GetPtr<unsigned int>(Cur2()->GetId());
-					if(!sim) sims->InsertPtr(sim = new GSim(Cur2()->GetId(),0,osModified));
-					else sim->State = osModified;
-				}
-			}                                   //----------------------------------------------------------------
-			else if(stateSP == osUpToDate)       // The sub1 hasn't changed -> somes profiles sims can be unchanged
-						{
-				for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-				{
-					stateSP = Cur2()->GetProfile()->GetState();
-					if((stateSP == osUpdated) || (stateSP == osCreated))    //The second profile has been modified -> state de sim(id1,id2) = modified
-					{
-						sim = sims->GetPtr<unsigned int>(Cur2()->GetId());
-						if (!sim) sims->InsertPtr(sim = new GSim(Cur2()->GetId(),0,osModified));
-						else sim->State = osModified;
-					}
-				}
-			}
-		}
-	}
-	else  // the type of similarity has changed => All the sim's values must be updated.
-	{
-		for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
-		{
-			sims= Sims.GetPtr<unsigned int>(Cur1()->GetId());
-			if(!sims) // If sims doesn't exist -> Insert a new sims
-			{
-				Sims.InsertPtr(sims = new GSims(Cur1()->GetId(),j) );
-				for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-				{
-					sims->InsertPtr(sim = new GSim(Cur2()->GetId(),0,osModified));
-				}
-			}
-			else{  // If Sims exists -> overwrite each sims
-				for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-				{
-					sim = sims->GetPtr<unsigned int >(Cur2()->GetId());
-					if (!sim ) sims->InsertPtr(sim = new GSim(Cur2()->GetId(),0,osModified));
-					else sim->State = osModified;
-				}
-			}
-		}
-	}
+	//reset the number of modified subprofiles.
+	NbModified=0;
 	#warning osDelete to add
 	#warning when all the sim between the subprofiles are computed -> set Profile State to osUpdated
 }
@@ -508,7 +309,6 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 	GSim* sim;
 	GSims* sims;
 	unsigned int nbcomp,i,j;
-	unsigned int nbmodifiedsims=0;
 	double oldsim,newsim;
 	GSubProfile** sub1, **sub2;
 	double newmean, oldmean, newdev, olddev;
@@ -518,31 +318,22 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 	//manage number of comparisons.
 	nbcomp=(subprofiles->NbPtr)*(subprofiles->NbPtr-1)/2;
 
-//	cout << "ancienne meansim= "<<MeanSim<<endl;
-//	cout << "ancien ecart type"<< Deviation <<endl;
-//	cout <<"Oldcomp ="<<OldNbComp<<endl;
-//	cout <<"nbcomp ="<<nbcomp<<endl;
-	
-//	cout <<" new similarities "<<endl;
-
 	newmean=OldNbComp*oldmean;
 	newdev=OldNbComp*(olddev+(oldmean*oldmean));
 	
 	for (sub1=subprofiles->Tab, i=subprofiles->NbPtr; i--; sub1++)
 	{
-		sims=Sims.GetPtr((*sub1)->GetId());
-		for (sub2=sub1+1, j=0; j<i; sub2++,j++)
+		sims=Sims.GetPtrAt((*sub1)->GetProfile()->GetId());
+		for (sub2=subprofiles->Tab; sub2<sub1; sub2++)
 		{
-			sim=sims->GetPtr((*sub2)->GetId());
+			sim=sims->GetPtrAt((*sub2)->GetProfile()->GetId());
 			// if the similarity isn't in profsim, continue
 			if(!sim) continue;
 			//if ths similarity is in "modified" state :
 			if (sim->State==osModified)
 			{
 				oldsim=sim->Sim;
-//				cout << "oldsim="<< oldsim<<endl;
 				newsim=GetSim((*sub1),(*sub2));
-//				cout <<newsim<<","<<endl;
 				// deviation is calculated as follow : {sum (xi"2/n)} - mean"2
 				//removing the modified element
 				newdev-=(oldsim*oldsim);
@@ -550,13 +341,9 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 				newdev+=(newsim*newsim);
 				//update the mean of similarities
 				newmean=newmean-oldsim+newsim;
-//				cout <<" temp mean ="<<newmean<<endl;
-				//tmp dav
-				nbmodifiedsims++;
 			}
 		}
 	}
-
 	newmean/=nbcomp;
 	newdev/=nbcomp;
 	newdev-=(newmean*newmean);
@@ -564,13 +351,18 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 	//re-affect thhe global parameters
 	MeanSim=newmean;
 	Deviation=newdev;
-//	cout << "en of new similarities !!"<<endl;
-//	cout << "MEan ="<<MeanSim<< "    Dev=  "<<Deviation <<endl;
 	if (Deviation <0)
 		cout << " ************ WARNING ! BUG in Deviation !!!!!!!!!!!! ************"<<endl;
 	OldNbComp=nbcomp;
 }
 
+
+//-----------------------------------------------------------------------------
+void GALILEI::GProfilesSim::AddModifiedProfile(unsigned int id)
+{
+	ModifiedProfs[NbModified]=id;
+	NbModified++;
+}
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesSim::~GProfilesSim(void)
