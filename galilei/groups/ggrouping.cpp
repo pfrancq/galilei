@@ -48,6 +48,7 @@ using namespace RStd;
 #include <profiles/gsubprofile.h>
 #include <profiles/gsubprofiledesc.h>
 #include <sessions/gsession.h>
+#include <sessions/gslot.h>
 using namespace GALILEI;
 
 
@@ -93,7 +94,7 @@ void GALILEI::GGrouping::Init(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGrouping::Grouping(GSessionSignalsReceiver* rec,bool modified)
+void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
 	GProfileCursor cur;

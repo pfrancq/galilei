@@ -105,26 +105,11 @@ void GALILEI::GIWordsWeights::Clear(void)
 }
 
 
-//---------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::Analyse(GDoc* doc)
-{
-	GIWordWeight* w;
-	GIWordOccurCursor Words=doc->GetWordOccurCursor();
-
-	NbWordsDocs+=doc->GetV();
-	for(Words.Start();!Words.End();Words.Next())
-	{
-		w=GetInsertPtr<unsigned int>(Words()->GetId());
-		w->Weight+=Words()->GetNbOccurs();
-	}
-}
-
-
 //--------------------------------------------------------------------------
 int GALILEI::GIWordsWeights::sortOrder(const void *a,const void *b)
 {
-  double af=(*((GIWordWeight**)(a)))->Weight;
-  double bf=(*((GIWordWeight**)(b)))->Weight;
+  double af=(*((GIWordWeight**)(a)))->GetWeight();
+  double bf=(*((GIWordWeight**)(b)))->GetWeight();
 
   if(af==bf) return(0);
   if(af>bf)
@@ -147,20 +132,6 @@ void GALILEI::GIWordsWeights::Sort(void)
 	}
 	Order[NbPtr]=0;
 	CurOrder=Order;
-}
-
-
-//---------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::EndCalc(void)
-{
-	GIWordWeight **c;
-	unsigned int i;
-
-	// Calculate Frequences
-	for(i=NbPtr+1,c=Tab;--i;c++)
-		(*c)->Weight/=NbWordsDocs;
-
-	Sort();
 }
 
 

@@ -61,6 +61,28 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
+//
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class GALILEI::GProfileCalcVector::GNbWordsDocs
+{
+public:
+	GLang* Lang;
+	double NbWords;
+
+	GNbWordsDocs(GLang* l) : Lang(l), NbWords(0.0) {}
+	void Clear(void) {NbWords=0.0;}
+	int Compare(const GNbWordsDocs* p) const {return(Lang->Compare(p->Lang));}
+	int Compare(const GLang* l) const {return(Lang->Compare(l));}
+	void AddNb(unsigned int n) {NbWords+=n;}
+	double GetNb(void) const {return(NbWords);}
+};
+
+
+//-----------------------------------------------------------------------------
+//
 //  GProfileCalcVector
 //
 //-----------------------------------------------------------------------------
@@ -68,15 +90,17 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session) throw(bad_alloc)
 	: GProfileCalc("Statistical",session), OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
-	  MaxNonZero(60)
+	  NbWords(0), MaxNonZero(60)
 {
 	GLangCursor Langs;
 
+	NbWords=new RStd::RContainer<GNbWordsDocs,unsigned int,true,true>(Session->GetNbLangs());
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		OK.InsertPtr(new GIWordsWeights(Langs(),Session->GetDic(Langs())->GetMaxId()));
 		KO.InsertPtr(new GIWordsWeights(Langs(),Session->GetDic(Langs())->GetMaxId()));
+		NbWords->InsertPtr(new GNbWordsDocs(Langs()));
 	}
 }
 
@@ -99,41 +123,78 @@ void GALILEI::GProfileCalcVector::SetSettings(const char* s)
 //-----------------------------------------------------------------------------
 void GALILEI::GProfileCalcVector::ComputeOKKO(GProfile* profile) throw(bad_alloc)
 {
+	GIWordOccurCursor Words;
 	GProfDocCursor Docs;
+	GIWordsWeights* Weights;
+	GNbWordsDocs* NbW;
+	GLang* CurLang;
+	GDoc* CurDoc;
+	GIWordWeight* w;
+	GIWordWeight **c;
+	unsigned int i;
 
-	// Clear
+	// Init Part
 	for(OK.Start();!OK.End();OK.Next())
 			OK()->Clear();
 	for(KO.Start();!KO.End();KO.Next())
 			KO()->Clear();
+	for(NbWords->Start();!NbWords->End();NbWords->Next())
+		(*NbWords)()->Clear();
 
-	// Go through all documents judged
+	// Construct two big "documents": one with all the documents judged as "OK"
+	// and one with all the documents judged as "KO".
 	Docs=profile->GetProfDocCursor();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		// If the document hasn't a language, don't treat for the profiles' computing.
-		if(!Docs()->GetDoc()->GetLang())
+		CurDoc=Docs()->GetDoc();
+		CurLang=CurDoc->GetLang();
+		if(!CurLang)
 			continue;
+		NbW=NbWords->GetPtr<GLang*>(CurLang);
 
-		// Verify Feedback
+		// Find list in function of the feedback
 		switch(Docs()->GetFdbk())
 		{
 			case 'O':
 			case 'N':
-				OK.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
+				Weights=OK.GetPtr<GLang*>(CurLang);
 				break;
 			
 			case 'K':
-				KO.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
+				Weights=KO.GetPtr<GLang*>(CurLang);
 				break;
+
+			default:
+				Weights=0;
+		}
+		if(!Weights) continue;
+
+ 		// Add total number of words and the occurences of each word of the current document.
+		Words=CurDoc->GetWordOccurCursor();
+		NbW->AddNb(CurDoc->GetV());
+		for(Words.Start();!Words.End();Words.Next())
+		{
+			w=Weights->GetInsertPtr<unsigned int>(Words()->GetId());
+			w->AddWeight(Words()->GetNbOccurs());
 		}
 	}
 
-	// Compute the frequences
+	// Calculate Frequences
 	for(OK.Start();!OK.End();OK.Next())
-			OK()->EndCalc();
+	{
+		NbW=NbWords->GetPtr<GLang*>(OK()->GetLang());
+		for(i=OK()->NbPtr+1,c=OK()->Tab;--i;c++)
+			(*c)->SetWeight((*c)->GetWeight()/NbW->GetNb());
+		OK()->Sort();
+	}
 	for(KO.Start();!KO.End();KO.Next())
-			KO()->EndCalc();
+	{
+		NbW=NbWords->GetPtr<GLang*>(KO()->GetLang());
+		for(i=KO()->NbPtr+1,c=KO()->Tab;--i;c++)
+			(*c)->SetWeight((*c)->GetWeight()/NbW->GetNb());
+		KO()->Sort();
+	}
 }
 
 
@@ -148,6 +209,7 @@ void GALILEI::GProfileCalcVector::ComputeSubProfile(GSubProfileVector* s) throw(
 	Vector->Clear();
 
 	// Choose the elements to stay.
+	if(MOK->IsEmpty()) return;
 	for(unsigned int Nb=MaxNonZero+1;--Nb;)
 	{
 		if(!MOK->IsNextWord()) break;
@@ -178,4 +240,6 @@ void GALILEI::GProfileCalcVector::Compute(GProfile* profile)
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcVector::~GProfileCalcVector(void)
 {
+	if(NbWords)
+		delete NbWords;
 }

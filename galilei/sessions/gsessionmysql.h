@@ -208,6 +208,13 @@ public:
 	virtual void DeleteGroup(GGroup* grp);
 
 	/**
+	* Execute a sequence of steps needed to construct data. Typically, this
+	* can be a SQL file.
+	* @param filename       Name of the file.
+	*/
+	virtual void ExecuteData(const char* filename) throw(GException);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSessionMySQL(void);

@@ -35,12 +35,16 @@
 // include files for R Project
 #include <rstd/rcontainercursor.h>
 using namespace RStd;
+#include <rio/rtextfile.h>
+using namespace RIO;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <langs/glang.h>
 #include <sessions/gsession.h>
+#include <sessions/gslot.h>
+#include <sessions/gsessionprg.h>
 #include <docs/gdoc.h>
 #include <docs/gdocanalyse.h>
 #include <docs/gdocxml.h>
@@ -58,36 +62,6 @@ using namespace RStd;
 #include <filters/gfilter.h>
 #include <filters/gmimefilter.h>
 using namespace GALILEI;
-
-
-
-//-----------------------------------------------------------------------------
-//
-//  class GSessionSignalsReceiver
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GALILEI::GSessionSignalsReceiver::GSessionSignalsReceiver(void)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionSignalsReceiver::receiveNextDoc(const GDoc*)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionSignalsReceiver::receiveNextProfile(const GProfile*)
-{
-}
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionSignalsReceiver::NextGroupLang(const GLang*)
-{
-}
 
 
 
@@ -159,8 +133,16 @@ void GALILEI::GSession::SetCurrentComputingMethod(const char* name) throw(GExcep
 
 	tmp=ProfileCalcs->GetPtr<const char*>(name);
 	if(!tmp)
-		throw GException(RString("Computing method'")+name+"' doesn't exists.");
+		throw GException(RString("Computing method '")+name+"' doesn't exists.");
 	ProfileCalc=tmp;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::SetCurrentComputingMethodSettings(const char* s) throw(GException)
+{
+	if((!ProfileCalc)||(!(*s))) return;
+	ProfileCalc->SetSettings(s);
 }
 
 
@@ -193,6 +175,14 @@ void GALILEI::GSession::SetCurrentGroupingMethod(const char* name) throw(GExcept
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSession::SetCurrentGroupingMethodSettings(const char* s) throw(GException)
+{
+	if((!Grouping)||(!(*s))) return;
+	Grouping->SetSettings(s);
+}
+
+
+//-----------------------------------------------------------------------------
 GGroupingCursor& GALILEI::GSession::GetGroupingsCursor(void)
 {
 	GGroupingCursor *cur=GGroupingCursor::GetTmpCursor();
@@ -209,7 +199,7 @@ GDocXML* GALILEI::GSession::CreateDocXML(GDoc* doc) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::AnalyseDocs(GSessionSignalsReceiver* rec,bool modified) throw(GException)
+void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 {
 	GDocXML* xml=0;
 	GDocCursor Docs=GetDocsCursor();
@@ -272,7 +262,7 @@ GUser* GALILEI::GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const 
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::CalcProfiles(GSessionSignalsReceiver* rec,bool modified) throw(GException)
+void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified) throw(GException)
 {
 	GProfileCursor Prof=GetProfilesCursor();
 
@@ -305,7 +295,7 @@ void GALILEI::GSession::CalcProfile(GProfile* prof) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::GroupingProfiles(GSessionSignalsReceiver* rec,bool modified)  throw(GException)
+void GALILEI::GSession::GroupingProfiles(GSlot* rec,bool modified)  throw(GException)
 {
 	Grouping->Grouping(rec,modified);
 }
@@ -410,6 +400,14 @@ GFilter* GALILEI::GSession::GetCurFilters(void)
 GMIMEFilter* GALILEI::GSession::GetMIMEType(const char* mime) const
 {
 	return(Mng->GetMIMEType(mime));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::RunPrg(GSlot* rec,const char* filename) throw(GException)
+{
+	GSessionPrg Prg(filename,this,rec);
+	Prg.Exec();
 }
 
 

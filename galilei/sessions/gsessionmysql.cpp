@@ -40,6 +40,8 @@
 // include files for R Project
 #include <rstd/rcontainercursor.h>
 using namespace RStd;
+#include <rio/rtextfile.h>
+using namespace RIO;
 
 
 //-----------------------------------------------------------------------------
@@ -565,6 +567,13 @@ void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 			groups->InsertPtr(group=new GGroup(atoi(group2[0]),Langs()));
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::ExecuteData(const char* filename) throw(GException)
+{
+	RTextFile Sql(filename);
 }
 
 

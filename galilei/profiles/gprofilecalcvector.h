@@ -68,6 +68,7 @@ class GSubProfileVector;
 class GProfileCalcVector : public GProfileCalc
 {
 protected:
+	class GNbWordsDocs;
 
 	/**
 	* List of words' frequences in the "OK" and "N" documents for the different
@@ -80,6 +81,10 @@ protected:
 	* languages.
 	*/
 	RStd::RContainer<GIWordsWeights,unsigned int,true,true> KO;
+
+	/**
+	*/
+	RStd::RContainer<GNbWordsDocs,unsigned int,true,true>* NbWords;
 
 	/**
 	* Maximal number of the non-zero weights in the vector.

@@ -45,18 +45,6 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GSession;
-class GGroup;
-class GGroups;
-class GSubProfile;
-class GLang;
-class GGroupingOptions;
-class GSessionSignalsReceiver;
-
-
 //-----------------------------------------------------------------------------
 /**
 * The GGrouping provides a representation for a generic method to group some
@@ -163,7 +151,7 @@ public:
 	* @param rec            Receiver of the signals.
 	* @param modified       Recompute only modified elements or all.
 	*/
-	void Grouping(GSessionSignalsReceiver* rec=0,bool modified=true);
+	void Grouping(GSlot* rec=0,bool modified=true);
 
 	/**
 	* Destructor.

@@ -120,20 +120,14 @@ void GALILEI::GProfileCalcReWeighting::ComputeOKKO(GProfile* profile) throw(bad_
 		{
 			case 'O':
 			case 'N':
-				OK.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
+//				OK.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
 				break;
 			
 			case 'K':
-				KO.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
+//				KO.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
 				break;
 		}
 	}
-
-	// Compute the frequences
-	for(OK.Start();!OK.End();OK.Next())
-			OK()->EndCalc();
-	for(KO.Start();!KO.End();KO.Next())
-			KO()->EndCalc();
 }
 
 

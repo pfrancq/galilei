@@ -67,16 +67,15 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session) throw(bad_alloc)
-	: GProfileCalc("User Feedback",session), OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
-	  MaxNonZero(60)
+	: GProfileCalc("User Feedback",session), Vectors(Session->GetNbLangs()),
+	  MaxNonZero(60), Beta(1.0), Gamma(1.0), AddKO(false)
 {
 	GLangCursor Langs;
 
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		OK.InsertPtr(new GIWordsWeights(Langs(),Session->GetDic(Langs())->GetMaxId()));
-		KO.InsertPtr(new GIWordsWeights(Langs(),Session->GetDic(Langs())->GetMaxId()));
+		Vectors.InsertPtr(new GIWordsWeights(Langs(),Session->GetDic(Langs())->GetMaxId()));
 	}
 }
 
@@ -84,56 +83,91 @@ GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session) throw(bad
 //-----------------------------------------------------------------------------
 const char* GALILEI::GProfileCalcFeedback::GetSettings(void)
 {
-	return(itoa(MaxNonZero));
+	static char tmp[100];
+	char c;
+
+	if(AddKO) c='1'; else c='0';
+	sprintf(tmp,"%u %lf %lf %c",MaxNonZero,Beta,Gamma,c);
+	return(tmp);
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GProfileCalcFeedback::SetSettings(const char* s)
 {
+	char c;
+
 	if(!(*s)) return;
-	MaxNonZero=strtoul(s,0,10);
+	sscanf(s,"%u %lf %lf %c",&MaxNonZero,&Beta,&Gamma,&c);
+	if(c=='1') AddKO=true; else AddKO=false;
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcFeedback::ComputeOKKO(GProfile* profile) throw(bad_alloc)
+void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_alloc)
 {
+	GIWordOccurCursor Words;
 	GProfDocCursor Docs;
+	GIWordsWeights* Vector;
+	GLang* CurLang;
+	GDoc* CurDoc;
+	GIWordWeight* w;
+	bool Add;
+	bool Cont;
+	double BNbWords;
+	double GNbWords;
 
-	// Clear
-	for(OK.Start();!OK.End();OK.Next())
-			OK()->Clear();
-	for(KO.Start();!KO.End();KO.Next())
-			KO()->Clear();
+	// Init Part
+	for(Vectors.Start();!Vectors.End();Vectors.Next())
+			Vectors()->Clear();
 
-	// Go through all documents judged
+	// Go through all documents, add the frequences of the words of "OK"
+	// documents and substract the frequences of the words of "KO" documents.
 	Docs=profile->GetProfDocCursor();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		// If the document hasn't a language, don't treat for the profiles' computing.
-		if(!Docs()->GetDoc()->GetLang())
+		CurDoc=Docs()->GetDoc();
+		CurLang=CurDoc->GetLang();
+		if(!CurLang)
 			continue;
+		Cont=true;
+		Vector=Vectors.GetPtr<const GLang*>(CurLang);
 
-		// Verify Feedback
+		// Find list in function of the feedback
 		switch(Docs()->GetFdbk())
 		{
 			case 'O':
 			case 'N':
-				OK.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
+				Add=true;
 				break;
 			
 			case 'K':
-				KO.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
+				Add=false;
 				break;
+
+			default:
+				Cont=false;
+		}
+		if(!Cont) continue;
+
+ 		// Add total number of words and the occurences of each word of the current document.
+		Words=CurDoc->GetWordOccurCursor();
+		BNbWords=Beta/CurDoc->GetV();
+		GNbWords=Gamma/CurDoc->GetV();
+		for(Words.Start();!Words.End();Words.Next())
+		{
+			w=Vector->GetInsertPtr<unsigned int>(Words()->GetId());
+			if(Add||AddKO)
+				w->AddWeight(BNbWords*Words()->GetNbOccurs());
+			else
+				w->SubstractWeight(GNbWords*Words()->GetNbOccurs());
 		}
 	}
 
-	// Compute the frequences
-	for(OK.Start();!OK.End();OK.Next())
-			OK()->EndCalc();
-	for(KO.Start();!KO.End();KO.Next())
-			KO()->EndCalc();
+	// Sort Part
+	for(Vectors.Start();!Vectors.End();Vectors.Next())
+			Vectors()->Sort();
 }
 
 
@@ -142,16 +176,17 @@ void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) thro
 {
 	GIWordWeight* ptr;
 	GIWordsWeights* Vector=s->GetVector();
-	GIWordsWeights* MOK=OK.GetPtr<GLang*>(s->GetLang());
+	GIWordsWeights* Global=Vectors.GetPtr<GLang*>(s->GetLang());
 
 	// Clear the Vector.
 	Vector->Clear();
 
 	// Choose the elements to stay.
+	if(Global->IsEmpty()) return;
 	for(unsigned int Nb=MaxNonZero+1;--Nb;)
 	{
-		if(!MOK->IsNextWord()) break;
-		ptr=MOK->NextWord();
+		if(!Global->IsNextWord()) break;
+		ptr=Global->NextWord();
 		Vector->InsertPtr(new GIWordWeight(ptr->GetId(),ptr->GetWeight()));
 	}
 
@@ -163,8 +198,8 @@ void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) thro
 //-----------------------------------------------------------------------------
 void GALILEI::GProfileCalcFeedback::Compute(GProfile* profile)
 {
-	// Compute the OK and KO lists.
-	ComputeOKKO(profile);
+	// Compute the global vectors.
+	ComputeGlobal(profile);
 
 	// Compute the vector for each subprofile
 	for(profile->Start();!profile->End();profile->Next())

@@ -94,6 +94,7 @@ class GGroupingCursor;
 class GTest;
 class GTests;
 class GSession;
+class GSlot;
 class GFilter;
 class GMIMEFilter;
 class GURLManager;

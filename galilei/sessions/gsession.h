@@ -50,40 +50,6 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-/**
-* The GSessionSignalsReceiver provides a representation for a reciever of
-* signals of a session.
-*/
-class GSessionSignalsReceiver
-{
-public:
-	/**
-	* Constructor.
-	*/
-	GSessionSignalsReceiver(void);
-
-	/**
-	* The traitment for a specific document will begin.
-	* @param doc            Document.
-	*/
-	virtual void receiveNextDoc(const GDoc* doc);
-
-	/**
-	* The traitment for a specific document will begin.
-	* @param prof           Profile.
-	*/
-	virtual void receiveNextProfile(const GProfile* prof);
-
-	/**
-	* Method called by GGrouping each time a new language is analysed.
-	* @param lang           Pointer to the current lang.
-	*/
-	virtual void NextGroupLang(const GLang* lang);
-};
-
-
 //-----------------------------------------------------------------------------
 /**
 * The GSession provides a representation for a GALILEI session. The way the
@@ -233,6 +199,12 @@ public:
 	void SetCurrentComputingMethod(const char* name) throw(GException);
 
 	/**
+	* Set the settings to the current computing method.
+	* @param s              Settings of the current computing method.
+	*/
+	void SetCurrentComputingMethodSettings(const char* s) throw(GException);
+
+	/**
 	* Get the current computing method.
 	* @returns Pointer to a GProfileCalc class.
 	*/
@@ -255,6 +227,12 @@ public:
 	* @param name           Name of the grouping method.
 	*/
 	void SetCurrentGroupingMethod(const char* name) throw(GException);
+
+	/**
+	* Set the settings for the current grouping method.
+	* @param s              Settings of the current grouping method.
+	*/
+	void SetCurrentGroupingMethodSettings(const char* s) throw(GException);
 
 	/**
 	* Get the current grouping method.
@@ -280,7 +258,7 @@ public:
 	* @param rec        Receiver for the signals.
 	* @param modified   Recompute only modified elements or all.
 	*/
-	void AnalyseDocs(GSessionSignalsReceiver* rec=0,bool modified=true) throw(GException);
+	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
 
 	/**
 	* @name Method for Users/Profiles.
@@ -314,7 +292,7 @@ public:
 		* @param rec        Receiver for the signals.
 		* @param modified   Recompute only modified elements or all.
 		*/
-		void CalcProfiles(GSessionSignalsReceiver* rec,bool modified=true) throw(GException);
+		void CalcProfiles(GSlot* rec,bool modified=true) throw(GException);
 
 		/**
 		* Compute a profile.
@@ -327,7 +305,7 @@ public:
 	* @param rec            Receiver of the signals.
 	* @param modified       Recompute only modified elements or all.
 	*/
-	void GroupingProfiles(GSessionSignalsReceiver* rec=0,bool modified=true)  throw(GException);
+	void GroupingProfiles(GSlot* rec=0,bool modified=true)  throw(GException);
 
 	//@}
 
@@ -459,6 +437,19 @@ public:
 		GMIMEFilter* GetMIMEType(const char* mime) const;
 
 	//@}
+
+	/**
+	* Execute a sequence of steps needed to construct data. Typically, this
+	* can be a SQL file.
+	* @param filename       Name of the file.
+	*/
+	virtual void ExecuteData(const char* filename) throw(GException)=0;
+
+	/**
+	* Run a "program" for this session.
+	* @param filename       Name of the file.
+	*/
+	void RunPrg(GSlot* rec,const char* filename) throw(GException);
 
 	/**
 	* Destructor.

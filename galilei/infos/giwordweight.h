@@ -107,12 +107,27 @@ public:
 	double GetWeight(void) const {return(Weight);}
 
 	/**
+	* Set the weight of the word.
+	* @param w              Weight.
+	*/
+	void SetWeight(double w) {Weight=w;}
+
+	/**
+	* Add a weight to the current one.
+	* @param w              Weight to add.
+	*/
+	void AddWeight(double w) {Weight+=w;}
+
+	/**
+	* Substract a weight to the current one.
+	* @param w              Weight to add.
+	*/
+	void SubstractWeight(double w) {Weight-=w;}
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GIWordWeight(void);
-
-	// friend classes
-	friend class GIWordsWeights;
 };
 
 

@@ -121,6 +121,11 @@ public:
 	*/
 	int Compare(const GLang* l) const;
 
+	/**
+	* Return the language assigned to this vector.
+	*/
+	GLang* GetLang(void) const {return(Lang);}
+
 private:
 
 	/**
@@ -136,20 +141,9 @@ public:
 	void Clear(void);
 
 	/**
-	* Analyse a document and udpated the statistics.
-	* @param doc            Document to analyse.
-	*/
-	void Analyse(GDoc* doc);
-
-	/**
 	* Construct an ordered view of the vector.
 	*/
 	void Sort(void);
-
-	/**
-	* When all the documents are analysed, call this method to compute the frequencies.
-	*/
-	void EndCalc(void);
 
 	/**
 	* Move the pointer in the ordered list to the beginning.
@@ -166,6 +160,11 @@ public:
 	* Look if there a word to treat.
 	*/
 	bool IsNextWord(void) const {return(*CurOrder);}
+
+	/**
+	* Look if the list is empty.
+	*/
+	bool IsEmpty(void) const {return(!NbPtr);}
 
 	/**
 	* Destructor.
