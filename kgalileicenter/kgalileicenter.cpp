@@ -479,7 +479,6 @@ void KGALILEICenterApp::slotGroupsCalc(void)
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Make Groups");
 	d->GroupProfiles(!groupAlwaysCalc->isChecked(),groupAlwaysSave->isChecked());
-	Doc->GetSession()->SaveGroups();
 	Doc->updateAllViews(2);
 }
 
