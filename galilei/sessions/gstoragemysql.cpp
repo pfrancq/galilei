@@ -1606,7 +1606,7 @@ void GStorageMySQL::GetSugsProfiles(const R::RString& name,R::RContainer<GSugs,t
 	try
 	{
 		res.Clear();
-		sSql="SELECT profileid,htmlid,rank,test FROM sugsbyprofiles ORDER BY profileid,rank WHERE test="+RQuery::SQLValue(name);
+		sSql="SELECT profileid,htmlid,rank,test FROM sugsbyprofiles WHERE test="+RQuery::SQLValue(name)+" ORDER BY profileid,rank";
 		RQuery load(Db,sSql);
 		for(load.Start(),profileid=cNoRef;!load.End();load.Next())
 		{
