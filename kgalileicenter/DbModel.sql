@@ -332,3 +332,29 @@ CREATE TABLE users (
   PRIMARY KEY  (userid)
 ) TYPE=MyISAM;
 
+
+--
+-- Table structure for table 'expertkwds'
+--
+
+CREATE TABLE expertkwds (
+  PROFILEID integer not null,
+  GROUPID integer not null,
+  IDW_MOT numeric(7) not null,
+  MOT_EXPERT varchar(50) not null,
+  LEVEL integer ,
+  FREQ varchar(128) ,
+  PARENTS varchar(128)
+)TYPE=MyISAM;
+
+
+--
+-- Table structure for table 'expertdoclist'
+--
+
+CREATE TABLE expkwdsdoclist (
+  PROFILEID integer not null,
+  GROUPID integer not null,
+  IDW_MOT numeric(7) not null,
+  NOM_DOC varchar(255)
+)TYPE=MyISAM;
