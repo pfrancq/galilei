@@ -640,7 +640,7 @@ public:
 	* @param j          Feedback.
 	* @param date       Date on the last feedback.
 	*/
-	void InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const char* date) throw(bad_alloc);
+	void InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,R::RDate date) throw(bad_alloc);
 
 public:
 

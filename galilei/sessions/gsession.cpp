@@ -914,7 +914,7 @@ void GALILEI::GSession::ClearFdbks(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const char* date) throw(bad_alloc)
+void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,R::RDate date) throw(bad_alloc)
 {
 	GProfDoc* f;
 
