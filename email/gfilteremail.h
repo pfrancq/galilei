@@ -45,8 +45,22 @@ public:
 	*/
 	GFilterEMail(const RString& url);
 
+protected:
+
+	/**
+	* Try to extract the command and the info after.
+	* @param line           Line to analyse.
+	* @param metaData       Pointer to the tag representing the metaData.
+	* @return true if a command can be extracted, false if it is the end.
+	*/
+	bool ExtractCmd(char* line,RXMLTag* metaData);
+
+public:
+
 	/**
 	* Analyze an email and fill the XML structure with the information content.
+	*
+	* Actually, only local files can be treated.
 	* @param doc            XML Structure that will represent the email.
 	*/
 	virtual bool Analyze(GDocXML* doc);
