@@ -186,13 +186,11 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 		// Compute the description of the groups and Save the information.
 		CalcDesc=Session->GetCurrentGroupCalcMethod();
 		for(Groups->Start();!Groups->End();Groups->Next())
-		{
 			CalcDesc->Compute((*Groups)());
-			if(SaveGroups)
-				Session->Save((*Groups)());
-		}
 	}
 	Lang=0;
+	if(SaveGroups)
+		Session->SaveGroups();
 }
 
 
