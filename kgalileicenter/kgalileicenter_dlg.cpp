@@ -70,6 +70,7 @@ using namespace R;
 #include <galilei/qlinkcalchitspluginconf.h>
 #include <galilei/qlinkcalccorrespondencepluginconf.h>
 #include <galilei/qlinkcalcsalsapluginconf.h>
+#include <galilei/qlinkcalctreshpluginconf.h>
 
 using namespace GALILEI;
 
@@ -195,5 +196,6 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.RegisterLinkCalcPluginConf(new QLinkCalcHITSPluginConf(&LinkCalcHITSParams));
 	dlg.RegisterLinkCalcPluginConf(new QLinkCalcCorrespondencePluginConf(&LinkCalcCorrespondenceParams));
 	dlg.RegisterLinkCalcPluginConf(new QLinkCalcSALSAPluginConf(&LinkCalcSALSAParams));
+	dlg.RegisterLinkCalcPluginConf(new QLinkCalcTreshPluginConf(&LinkCalcTreshParams));
 	dlg.exec();
 }

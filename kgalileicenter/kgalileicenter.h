@@ -59,6 +59,7 @@
 #include <docs/glinkcalchits.h>
 #include <docs/glinkcalccorrespondence.h>
 #include <docs/glinkcalcsalsa.h>
+#include <docs/glinkcalctresh.h>
 #include <profiles/gprofilecalcfeedback.h>
 #include <profiles/gprofilecalcreweighting.h>
 #include <profiles/gprofilecalcvector.h>
@@ -183,7 +184,7 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	GLinkCalcHITSParams LinkCalcHITSParams;
 
 	/**
-	* Parameters for 'HITS Algorithm' link description computing
+	* Parameters for 'Correspondence Algorithm' link description computing
 	*/
 	GLinkCalcCorrespondenceParams LinkCalcCorrespondenceParams;
 
@@ -191,6 +192,11 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	* Parameters for 'SALSA Algorithm' link description computing
 	*/
 	GLinkCalcSALSAParams LinkCalcSALSAParams;
+
+	/**
+	* Parameters for 'Treshold Kleinberg Algorithm' link description computing
+	*/
+	GLinkCalcTreshParams LinkCalcTreshParams;
 
     /**
 	* Current Profile Description Method

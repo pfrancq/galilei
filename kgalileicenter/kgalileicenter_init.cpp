@@ -95,10 +95,8 @@ KGALILEICenterApp::KGALILEICenterApp(void)
 	initStatusBar();
 	initView();
 	initActions();
-
 	// read options
 	readOptions();
-
 	// disable actions at startup
 	DisableAllActions();
 }
@@ -404,12 +402,23 @@ void KGALILEICenterApp::saveOptions(void)
 
 	// Write Config of LinkCalcSALSA
 	Config->setGroup(LinkCalcSALSAParams.GetComputingName());
-	Config->writeEntry("NbIteration",LinkCalcSALSAParams.NbIteration);
 	Config->writeEntry("NbResultsHub",LinkCalcSALSAParams.NbResultsHub);
 	Config->writeEntry("NbResultsAuto",LinkCalcSALSAParams.NbResultsAuto);
 	Config->writeEntry("LimitLink",LinkCalcSALSAParams.LimitLink);
 	Config->writeEntry("NbLinks",LinkCalcSALSAParams.NbLinks);
 	Config->writeEntry("UseMultipleLink",LinkCalcSALSAParams.UseMultipleLink);
+
+	// Write Config of LinkCalcTresh
+	Config->setGroup(LinkCalcTreshParams.GetComputingName());
+	Config->writeEntry("NbIteration",LinkCalcTreshParams.NbIteration);
+	Config->writeEntry("NbResultsHub",LinkCalcTreshParams.NbResultsHub);
+	Config->writeEntry("NbResultsAuto",LinkCalcTreshParams.NbResultsAuto);
+	Config->writeEntry("HTresh",LinkCalcTreshParams.HTresh);
+	Config->writeEntry("ATresh",LinkCalcTreshParams.ATresh);
+	Config->writeEntry("FTresh",LinkCalcTreshParams.FTresh);
+	Config->writeEntry("AKTresh",LinkCalcTreshParams.AKTresh);
+	Config->writeEntry("FKTresh",LinkCalcTreshParams.FKTresh);
+	Config->writeEntry("Kvalue",LinkCalcTreshParams.Kvalue);
 
 }
 
@@ -512,6 +521,7 @@ void KGALILEICenterApp::readOptions(void)
 	LinkCalcMethod->InsertPtr(new R::RString("HITS Algorithm"));
 	LinkCalcMethod->InsertPtr(new R::RString("Correspondence Algorithm"));
 	LinkCalcMethod->InsertPtr(new R::RString("SALSA Algorithm"));
+	LinkCalcMethod->InsertPtr(new R::RString("Treshold Kleinberg Algorithm"));
 	Config->setGroup("Session Options");
 	CurrentProfileDesc=Config->readEntry("Description Method","Vector space");
 	CurrentComputingMethod=Config->readEntry("Computing Method","Statistical");
@@ -630,12 +640,24 @@ void KGALILEICenterApp::readOptions(void)
 
 	// Read Config of LinkCalcSALSA
 	Config->setGroup(LinkCalcSALSAParams.GetComputingName());
-	LinkCalcSALSAParams.NbIteration=Config->readNumEntry("NbIteration",5);
 	LinkCalcSALSAParams.NbResultsHub=Config->readNumEntry("NbResultsHub",5);
 	LinkCalcSALSAParams.NbResultsAuto=Config->readNumEntry("NbResultsAuto",5);
 	LinkCalcSALSAParams.LimitLink=Config->readBoolEntry("LimitLink",false);
 	LinkCalcSALSAParams.NbLinks=Config->readNumEntry("NbLinks",10);
 	LinkCalcSALSAParams.UseMultipleLink=Config->readBoolEntry("UseMultipleLink",true);
+
+	// Read Config of LinkCalcTresh
+	Config->setGroup(LinkCalcTreshParams.GetComputingName());
+	LinkCalcTreshParams.NbIteration=Config->readNumEntry("NbIteration",5);
+	LinkCalcTreshParams.NbResultsHub=Config->readNumEntry("NbResultsHub",5);
+	LinkCalcTreshParams.NbResultsAuto=Config->readNumEntry("NbResultsAuto",5);
+	LinkCalcTreshParams.HTresh=Config->readBoolEntry("HTresh",true);
+	LinkCalcTreshParams.ATresh=Config->readBoolEntry("ATresh",false);
+	LinkCalcTreshParams.FTresh=Config->readBoolEntry("FTresh",false);
+	LinkCalcTreshParams.AKTresh=Config->readBoolEntry("AKTresh",false);
+	LinkCalcTreshParams.FKTresh=Config->readBoolEntry("FKTresh",false);
+	LinkCalcTreshParams.Kvalue=Config->readNumEntry("Kvalue",60);
+
 }
 
 

@@ -53,6 +53,8 @@ using namespace R;
 #include <docs/gdocxml.h>
 #include <docs/gdocoptions.h>
 #include <docs/glinkcalchits.h>
+#include <docs/glinkcalctresh.h>
+
 #include <sessions/gsessionmysql.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gsubprofiledesc.h>
@@ -199,6 +201,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess, &LinkCalcHITSParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess, &LinkCalcCorrespondenceParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
+			Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
 			Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 			Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 			Sess->SetCurrentComputingMethod(CurrentComputingMethod);
@@ -272,6 +275,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess,&LinkCalcHITSParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess,&LinkCalcCorrespondenceParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
+	Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
 	Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 	Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 	Sess->SetCurrentComputingMethod(CurrentComputingMethod);
@@ -498,6 +502,7 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 
 		cmdline+= "\n";
 
+		cout <<"commande line "<<cmdline<<endl;
 		// creation of the database using a shell script.
 		KShellProcess *process = new KShellProcess("/bin/bash");
 
