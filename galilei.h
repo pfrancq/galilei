@@ -81,7 +81,7 @@ class GFilterCursor;
 class GFactoryFilter;
 class GFactoryFilterCursor;
 class GURLManager;
-
+class CodeToChar;
 
 //-----------------------------------------------------------------------------
 // forward class declaration - Information Part
@@ -109,39 +109,45 @@ class GDicts;
 
 //-----------------------------------------------------------------------------
 // forward class declaration - Document Part
-class GDoc;
 class GDCMetaData;
-class GDocVector;
-class GDocCursor;
-class GDocXML;
-class GDocs;
+class GDoc;
 class GDocAnalyse;
-class GFactoryDocAnalyse;
-class GFactoryDocAnalyseCursor;
 class GDocAnalyseManager;
-class GDocSim;
-class GDocsSim;
-class GDocsLang;
-class GDocsLangCursor;
-class GDocProfSim;
-class GDocProfSims;
+class GDocCursor;
 class GPostDoc;
 class GPostDocManager;
+class GDocProfSim;
+class GDocProfSims;
+class GDocRefUrl;
+class GDocsLang;
+class GDocsLangCursor;
+class GDocs;
+class GDocSim;
+class GDocsSim;
+class GDocVector;
+class GDocXML;
+class GFactoryDocAnalyse;
+class GFactoryDocAnalyseCursor;
 class GFactoryPostDoc;
 class GFactoryPostDocCursor;
 
+//-----------------------------------------------------------------------------
+// forward class declaration - Link Part
+class GIWordWeight;
+class GIWordWeights;
 
 //-----------------------------------------------------------------------------
 // forward class declaration - Link Part
-class GLink;
 class GBalancedLinks;
-class GLinkCursor;
-class GLinks;
-class GLinkCalc;
-class GLinkCalcCursor;
+class GBalancedLinksCursor;
 class GFactoryLinkCalc;
 class GFactoryLinkCalcCursor;
+class GLink;
+class GLinkCalc;
+class GLinkCalcCursor;
 class GLinkCalcManager;
+class GLinkCursor;
+class GLinks;
 
 
 //-----------------------------------------------------------------------------
