@@ -310,7 +310,8 @@ void KViewGroup::slotMenu(int)
 	}
 
 	// Open Document and write header
-	RTextFile Res(url.path().latin1(),R::Create);
+	RTextFile Res(url.path().latin1());
+	Res.Open(R::Create);
 	Res.SetSeparator("");
 	Res<<"<?xml version=\"1.0\" ?>\n<!DOCTYPE Hierarchical-Data>\n<Hierarchical-Data>\n\t<Objects>\n";
 

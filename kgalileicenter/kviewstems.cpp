@@ -210,6 +210,7 @@ void KViewStems::LoadFile(const char* filename)
 	GrWord* gptr;
 
 	// Read the File
+	f.Open(Read);
 	while(!f.Eof())
 	{
 		// Read a line
@@ -217,7 +218,7 @@ void KViewStems::LoadFile(const char* filename)
 		ptr=line();
 
 		// Read Word
-		
+
 		ptr++;
 		len=0;
 		while((!ptr->IsNull())&&((*ptr)!=RChar('"')))
@@ -259,7 +260,7 @@ void KViewStems::LoadFile(const char* filename)
 
 	// Fill the list 'Roots'
 	ConstructTh(0,0);
-	ConstructPr(0,0);        
+	ConstructPr(0,0);
 }
 
 
@@ -429,7 +430,7 @@ void KViewStems::ComputeTotal(void)
 	RContainer<GrWord,true,true>** ptr2;
 	unsigned int i,j;
 	char tmp[100];
-	
+
 	// Init part
 	NbWords=0;
 	Total=0.0;

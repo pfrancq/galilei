@@ -159,6 +159,7 @@ void KViewThGroups::LoadGroups(const char* filename)
 	GSubProfile* sub;
 
 	RTextFile f(filename);
+	f.Open(Read);
 	f>>nb;
 	Groups=new GGroups(nb);
 	for(i=0;i<nb;i++)
