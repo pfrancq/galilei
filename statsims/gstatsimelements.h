@@ -226,7 +226,7 @@ template<class E,class C>
 	RXMLTag* LangTag;
 
 	// Go through the languages
-	Langs=Session->GetLangs()->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		LangTag=0;
