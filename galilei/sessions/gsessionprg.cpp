@@ -972,7 +972,7 @@ void GSetStatParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,fal
 
 	if(args->NbPtr!=3)
 		throw RException("Method needs three parameters");
-	mng=dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatCalc"));
+	mng=dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc"));
 	if(!mng)
 		throw RException("No statistics method selected.");
 	calc=mng->Get(args->Tab[0]->GetValue(prg));
@@ -995,7 +995,7 @@ void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args
 	if(args->NbPtr)
 		throw RException("Method needs no parameter");
 
-	GStatsCalcManager* Mng=(dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatCalc")));
+	GStatsCalcManager* Mng=(dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc")));
 	if(!Mng)
 		throw RException("No manager for the statistics plug-ins");
 
