@@ -58,7 +58,7 @@ struct DwnFile
 
 
 //------------------------------------------------------------------------------
-int WriteTmpFile(void* buffer, size_t size, size_t nmemb, void* stream)
+int GFilterManagerCURL::WriteTmpFile(void* buffer, size_t size, size_t nmemb, void* stream)
 {
 	struct DwnFile* out=(struct DwnFile*)stream;
 
@@ -114,7 +114,7 @@ void GFilterManagerCURL::Download(const char* URL,RString& tmpFile) throw(GExcep
 
 	// Download the file
 	curl_easy_setopt(Lib, CURLOPT_URL, URL);
-	curl_easy_setopt(Lib, CURLOPT_WRITEFUNCTION,WriteTmpFile);
+	curl_easy_setopt(Lib, CURLOPT_WRITEFUNCTION,GFilterManagerCURL::WriteTmpFile);
 	curl_easy_setopt(Lib, CURLOPT_FILE, &tmpfile);
 	err=curl_easy_perform(Lib);
 	if(tmpfile.stream)

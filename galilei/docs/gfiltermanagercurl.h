@@ -6,7 +6,7 @@
 
 	Filter manager handling URL using the CURL library - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -74,6 +74,11 @@ public:
 	GFilterManagerCURL(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
 
 protected:
+
+	/**
+	* Parameter function gived to curl_easy_setopt
+	*/
+	static int WriteTmpFile(void* buffer, size_t size, size_t nmemb, void* stream);
 
 	/**
 	* Try to guess the MIME types of a temporary file. This method looks for the
