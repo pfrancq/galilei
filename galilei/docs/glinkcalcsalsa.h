@@ -68,11 +68,6 @@ class GLinkCalcSALSAParams : public GLinkCalcParams
 public:
 
 	/**
-	* number iteration for the algo.
-	*/
-	unsigned int NbIteration;
-
-	/**
 	* Number of results for Hubs.
 	*/
 	unsigned int NbResultsHub;

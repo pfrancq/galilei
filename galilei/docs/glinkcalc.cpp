@@ -148,6 +148,7 @@ int GALILEI::GLinkCalc::Compare(const char* name) const
 //-----------------------------------------------------------------------------
 GALILEI::GLinkCalc::~GLinkCalc(void)
 {
+	delete Links_Out;
 }
 
 

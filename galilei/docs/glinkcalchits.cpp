@@ -509,20 +509,7 @@ void GALILEI::GLinkCalcHITS::Compute(GSubProfile* Subprof)
 		tmpDoc=balLinksCur()->GetDoc();
 		if (! Subprof->GetFeedback( tmpDoc))
 		{
-			Subprof->AddJudgement( new GProfDoc(tmpDoc, Subprof->GetProfile() ,tDocJudgement( djNav | djHub ), date)) ;
-			nbAdd++;
-// 			if (Subprof->GetLang() == tmpDoc->GetLang())
-// 			{
-// 				Subprof->AddJudgement( new GProfDoc(tmpDoc, Subprof->GetProfile() ,tDocJudgement( djNav | djHub ), date)) ;
-// 				nbAdd++;
-// 				cout << "Document Hub add to SubProfile: "<<Subprof->GetProfile()->GetName()<<"URL" << tmpDoc->GetURL()<<endl;
-// 			}
-// 			else
-// 			{
-// 				Subprof->GetProfile()->AddJudgement( new GProfDoc(tmpDoc, Subprof->GetProfile() ,tDocJudgement( djNav | djHub ), date)) ;
-// 				nbAdd++;
-// 				cout << "Document Hub add to Profile !!!!: "<<Subprof->GetProfile()->GetName()<<" URL " << tmpDoc->GetURL()<<endl;
-// 			}
+			Session->InsertFdbk(Subprof->GetProfile(), balLinksCur()->GetDoc(),tDocJudgement( djNav | djHub ), date);
 		}
 	}
 	nbEtapes++;    //test
@@ -538,19 +525,7 @@ void GALILEI::GLinkCalcHITS::Compute(GSubProfile* Subprof)
 		tmpDoc=balLinksCur()->GetDoc();
 		if (! Subprof->GetFeedback( tmpDoc) )
 		{
-			Subprof->AddJudgement( new GProfDoc(tmpDoc, Subprof->GetProfile() ,tDocJudgement( djOK | djAutority ), date )) ;
-			nbAdd++;
-// 			if  (Subprof->GetLang() == tmpDoc->GetLang())
-// 			{
-// 				Subprof->AddJudgement( new GProfDoc(tmpDoc, Subprof->GetProfile() ,tDocJudgement( djOK | djAutority ), date )) ;
-// 				nbAdd++;
-// 				cout << "Document Autorite add to SubProfile: "<< Subprof->GetProfile()->GetName()<<" URL "<<tmpDoc->GetURL()<<endl;
-// 			}
-// 			else
-// 			{
-// 				Subprof->GetProfile()->AddJudgement( new GProfDoc(tmpDoc,Subprof->GetProfile(),tDocJudgement( djOK | djAutority ), date));
-// 				nbAdd++;
-// 			}
+			Session->InsertFdbk(Subprof->GetProfile(),balLinksCur()->GetDoc(),tDocJudgement( djOK | djAutority ), date);
 		}
 	}
 	MeanAddAuto = (( MeanAddAuto*(nbEtapes-1) + (double)nbAdd/Params->NbResultsAuto)/ nbEtapes);  //moyenne incrementale    //test
@@ -670,8 +645,7 @@ void GALILEI::GLinkCalcHITS::SetSettings(const char* s)
 
 //-----------------------------------------------------------------------------
 GALILEI::GLinkCalcHITS::~GLinkCalcHITS(void)
-{
-	delete(Links_Out);
+{ 
 }
 
 

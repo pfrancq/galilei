@@ -69,7 +69,7 @@ const char* GALILEI::GLinkCalcSALSAParams::GetSettings(void)
 	char c;
 
 	if(LimitLink) c='1'; else c='0';
-	sprintf(tmp,"%u %u %u %c %u",NbIteration,NbResultsHub,NbResultsAuto,c,NbLinks);
+	sprintf(tmp,"%u %u %c %u",NbResultsHub,NbResultsAuto,c,NbLinks);
 	return(tmp);
 }
 
@@ -80,7 +80,7 @@ void GALILEI::GLinkCalcSALSAParams::SetSettings(const char* s)
 	char c;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %u %u %c %u",&NbIteration,&NbResultsHub,&NbResultsAuto,&c,&NbLinks);
+	sscanf(s,"%u %u %c %u",&NbResultsHub,&NbResultsAuto,&c,&NbLinks);
 	if(c=='1') LimitLink=true; else LimitLink=false;
 
 }
@@ -512,17 +512,7 @@ void GALILEI::GLinkCalcSALSA::Compute(GSubProfile* Subprof)
 		tmpDoc=Session->GetDoc(cellCur()->GetValue());
 		if (! Subprof->GetFeedback( tmpDoc) )
 		{
-			if (Subprof->GetLang() == tmpDoc->GetLang())
-			{
-				Subprof->AddJudgement( new GProfDoc(tmpDoc, Subprof->GetProfile() ,tDocJudgement( djNav | djHub ), date)) ;
-				nbAdd++;
-				cout << "Document Hub add to profile: "<< tmpDoc->GetURL()<<endl;
-			}
-			else
-			{
-				Subprof->GetProfile()->AddJudgement( new GProfDoc(tmpDoc, Subprof->GetProfile() ,tDocJudgement( djNav | djHub ), date), Session) ;
-				nbAdd++;
-			}
+			Session->InsertFdbk(Subprof->GetProfile(),tmpDoc,tDocJudgement( djNav | djHub ), date);
 		}
 	}
 	nbEtapes++;    //test
@@ -538,24 +528,11 @@ void GALILEI::GLinkCalcSALSA::Compute(GSubProfile* Subprof)
 		tmpDoc=Session->GetDoc(cellCur()->GetValue());
 		if (! Subprof->GetFeedback(tmpDoc))
 		{
-			if (Subprof->GetLang()==tmpDoc->GetLang())
-			{
-				Subprof->AddJudgement( new GProfDoc(tmpDoc, Subprof->GetProfile() ,tDocJudgement( djOK | djAutority ), date )) ;
-				nbAdd++;
-				cout << "Document Autorte add to profile: "<< tmpDoc->GetURL()<<endl;
-			}
-			else
-			{
-				Subprof->GetProfile()->AddJudgement( new GProfDoc(tmpDoc,Subprof->GetProfile(),tDocJudgement( djOK | djAutority ),date), Session);
-				nbAdd++;
-			}
+			Session->InsertFdbk(Subprof->GetProfile(),tmpDoc,tDocJudgement( djOK | djAutority ), date);
 		}
 	}
 	MeanAddAuto = (( MeanAddAuto*(nbEtapes-1) + (double)nbAdd/Params->NbResultsAuto)/ nbEtapes);  //moyenne incrementale    //test
 	cout <<" pourcent d'ajout Auto :" << (float)nbAdd/Params->NbResultsAuto <<" et nouvelle moyenne : "<<MeanAddAuto<<endl;
-
-
-
 
 	//test
 //	balLinksCur.Set(out_Links);
@@ -655,7 +632,7 @@ const char* GALILEI::GLinkCalcSALSA::GetSettings(void)
 	char c;
 
 	if(Params->LimitLink) c='1'; else c='0';
-	sprintf(tmp,"%u %u %u %c %u",Params->NbIteration,Params->NbResultsHub,Params->NbResultsAuto,c,Params->NbLinks);
+	sprintf(tmp,"%u %u %c %u",Params->NbResultsHub,Params->NbResultsAuto,c,Params->NbLinks);
 	return(tmp);
 }
 
@@ -664,12 +641,12 @@ const char* GALILEI::GLinkCalcSALSA::GetSettings(void)
 void GALILEI::GLinkCalcSALSA::SetSettings(const char* s)
 {
 	if(!(*s)) return;
-	sscanf(s,"%u %u %u",&Params->NbIteration,&Params->NbResultsHub,&Params->NbResultsAuto);
+	sscanf(s,"%u %u",&Params->NbResultsHub,&Params->NbResultsAuto);
 
 	char c;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %u %u %c %u",&Params->NbIteration,&Params->NbResultsHub,&Params->NbResultsAuto,&c,&Params->NbLinks);
+	sscanf(s,"%u %u %c %u",&Params->NbResultsHub,&Params->NbResultsAuto,&c,&Params->NbLinks);
 	if(c=='1') Params->LimitLink=true; else Params->LimitLink=false;
 }
 
@@ -677,5 +654,4 @@ void GALILEI::GLinkCalcSALSA::SetSettings(const char* s)
 //-----------------------------------------------------------------------------
 GALILEI::GLinkCalcSALSA::~GLinkCalcSALSA(void)
 {
-	delete(Links_Out);
 }

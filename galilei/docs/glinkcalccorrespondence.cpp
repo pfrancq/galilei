@@ -912,7 +912,7 @@ void GALILEI::GLinkCalcCorrespondence::Compute(GSubProfile* Subprof)
 	vectCur.Set(Qa);
 	for( vectCur.Start();!vectCur.End(); vectCur.Next())
 	{
-		cout <<endl<< "Ligne "<< vectCur()->GetId()<<endl;
+//		cout <<endl<< "Ligne "<< vectCur()->GetId()<<endl;
 		cellCur.Set(vectCur());
 		for (cellCur.Start();!cellCur.End();cellCur.Next())
 		{
@@ -1077,7 +1077,6 @@ void GALILEI::GLinkCalcCorrespondence::SetSettings(const char* s)
 //-----------------------------------------------------------------------------
 GALILEI::GLinkCalcCorrespondence::~GLinkCalcCorrespondence(void)
 {
-	delete(Links_Out);
 }
 
 
