@@ -112,7 +112,7 @@ public:
 	unsigned int Pos;
 
 	GrWordId(GrWord* grp,unsigned int pos) : Grp(grp), Pos(pos) {}
- 	int Compare(const GrWord* grp) const {return(Grp->Compare(grp));}
+	int Compare(const GrWord* grp) const {return(Grp->Compare(grp));}
 	int Compare(const GrWordId* grp) const {return(Grp->Compare(grp->Grp));}
 	int Compare(const GrWordId& grp) const {return(Grp->Compare(grp.Grp));}
 };
@@ -199,7 +199,6 @@ void KViewStems::LoadFile(const char* filename)
 	char root[200];
 	Word* wptr;
 	GrWord* gptr;
-//	RContainer<RString,unsigned,true,true> Genres(20,10);
 
 	// Read the File
 	while(!f.Eof())
@@ -213,6 +212,9 @@ void KViewStems::LoadFile(const char* filename)
 			(*(ptr++))=(*(line++));
 		(*ptr)=0;
 		wptr=Words->GetInsertPtr<const char*>(word);
+		if(wptr->Stem) continue; // Word alreay exists
+
+		// Compute Stem
 		gptr=Stems->GetInsertPtr<const RString>(Lang->GetStemming(word));
 		wptr->Stem=gptr;
 		gptr->Words.InsertPtr(wptr);
@@ -336,14 +338,14 @@ void KViewStems::ComputeRecallPrecision(void)
 	unsigned int NbStem;
 	unsigned int InStem;
 	unsigned int InRoot;
-	unsigned int NbWords;
+	double NbWords;
 	char tmp[100];
 	RContainer<GrWord,unsigned int,true,true>*** ptr;
 	RContainer<GrWord,unsigned int,true,true>** ptr2;
 	unsigned int i,j;
 
 	Precision=Recall=0.0;
-	NbWords=0;
+	NbWords=0.0;
 	for(i=27+1,ptr=Stems->Hash;--i;ptr++)
 	{
 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
@@ -374,7 +376,6 @@ void KViewStems::ComputeRecallPrecision(void)
 						if(root->Words.NbPtr==1)
 						{
 							stem->Recall+=1.0;
-							Recall+=1.0;
 						}
 						else
 						{
@@ -396,8 +397,8 @@ void KViewStems::ComputeRecallPrecision(void)
 	}
 	if(NbWords)
 	{
-		Precision/=(double)NbWords;
-		Recall/=(double)NbWords;
+		Precision/=NbWords;
+		Recall/=NbWords;
 	}
 	sprintf(tmp," - Precision=%1.3f - Recall=%1.3f",Precision,Recall);
 	setCaption(caption()+tmp);
