@@ -25,14 +25,14 @@ GProfDoc::GProfDoc(GDoc  *doc,char fdbk)
 //---------------------------------------------------------------------------
 int GProfDoc::Compare(const GProfDoc &profdoc)
 {
-  return(Doc->Id-profdoc.Doc->Id);
+  return(Doc->GetId()-profdoc.Doc->GetId());
 }
 
 
 //---------------------------------------------------------------------------
 int GProfDoc::Compare(const GProfDoc *profdoc)
 {
-  return(Doc->Id-profdoc->Doc->Id);
+  return(Doc->GetId()-profdoc->Doc->GetId());
 }
 
 
