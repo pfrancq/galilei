@@ -228,11 +228,11 @@ public:
 	*/
 	unsigned int GetNbJudgedDocs(const GLang* lang) const;
 
-//	/**
-//	* Get a Cursor on the feedback for the profile.
-//	* @return GProfDocCursor.
-//	*/
-//	GProfDocCursor& GetProfDocCursor(void);
+	/**
+	* Get a Cursor on the feedback for the profile.
+	* @return GProfDocCursor.
+	*/
+	GProfDocCursor& GetProfDocCursor(void);
 
 	/**
 	* Get a Cursor on the subprofiles.

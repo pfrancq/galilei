@@ -131,13 +131,13 @@ unsigned int GALILEI::GProfile::GetNbJudgedDocs(const GLang* lang) const
 }
 
 
-////-----------------------------------------------------------------------------
-//GProfDocCursor& GALILEI::GProfile::GetProfDocCursor(void)
-//{
-//	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
-//	cur->Set(Fdbks);
-//	return(*cur);
-//}
+//-----------------------------------------------------------------------------
+GProfDocCursor& GALILEI::GProfile::GetProfDocCursor(void)
+{
+	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
+	cur->Set(Fdbks);
+	return(*cur);
+}
 
 
 //-----------------------------------------------------------------------------
