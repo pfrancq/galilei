@@ -66,7 +66,7 @@ using namespace GALILEI;
 
 GSessionMySQL::GSessionMySQL(RDb* _db)
 {
-                db=_db;
+                db=_db; 
 }
 
 
@@ -293,9 +293,9 @@ void GSessionMySQL::LoadDocs(void)
 				doc->Words->InsertPtr(ptr);        
 			}        
 		}             
-	Docs->InsertPtr (doc);
-	LoadProfilesDocs();                  
+	Docs->InsertPtr (doc);                  
 	}
+	LoadProfilesDocs();
 }
 
 
@@ -353,47 +353,37 @@ void GSessionMySQL::LoadGroupsFromDB()
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadProfilesDocs()
 {
-	/*for (Users->Start();!Users->End();Users->Next())
+	for (Users->Start();!Users->End();Users->Next())
 	{
 		GUser* user=(*Users)();
 		for (user->Start();!user->End();user->Next())
 		{
 			LoadProfileDocs((*user)());
 		}
-	}*/
-	cout <<Docs->NbPtr<<endl;
-	for (Docs->Start(); !Docs->End(); Docs->Next())
-	{
-		
-		//cout << (*Docs)()->Id<<endl;
 	}
+	
 }
 
 
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadProfileDocs(GProfile* profile)
 {
-	/*
+	
 	char ssql[100];
 	sprintf(ssql,"SELECT htmlid, judgement  FROM htmlsbyprofiles WHERE profileid=%u", profile->Id);
 	RQuery docs (db, ssql);
 
 	for(docs.Begin();docs.IsMore();docs++)
 	{
-		/*char temp=atoi(docs[1]);
+		char temp=atoi(docs[1]);
 		GDoc* doc=Docs->GetPtr<const unsigned>(atoi(docs[0]));
 		if (doc)
 		{
 			GProfDoc* profdoc=new GProfDoc(doc, temp);
 			profile->FdbkDocs.InsertPtr(profdoc);
-			cout << profile->Owner->Name<<endl;
-			cout << profile->Name<<endl;
-			cout <<profile->FdbkDocs.NbPtr<<endl;
 		}
 		
 	}
-	*/
-	
 }
 
 

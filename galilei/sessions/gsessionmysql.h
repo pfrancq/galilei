@@ -72,7 +72,7 @@ public:
 	GSessionMySQL(RDb* _db);
 	~GSessionMySQL(void);
 
-	RDb* db;
+	RDb* db; 
 
 	/**
 	* Loading Users function.
