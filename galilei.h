@@ -42,7 +42,9 @@
 #include <rstd/rstring.h>
 #include <rstd/rcontainer.h>
 #include <rstd/rcursor.h>
+#include <rstd/rdblhashcontainer.h>
 #include <rtimedate/rdate.h>
+#include <rxml/rxmltag.h>
 
 
 //-----------------------------------------------------------------------------
