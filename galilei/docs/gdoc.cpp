@@ -303,6 +303,13 @@ void GDoc::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
+unsigned int GDoc::GetNbFdbks(void) const
+{
+	return(Fdbks.GetNb());
+}
+
+
+//------------------------------------------------------------------------------
 unsigned int GDoc::GetNbLinks(void)
 {
 	unsigned int res = LinkSet.NbPtr;

@@ -354,6 +354,11 @@ proxy:
 	void ClearFdbks(void);
 
 	/**
+	* Get the number of times the documents was assessed.
+	*/
+	unsigned int GetNbFdbks(void) const;
+
+	/**
 	* Get the number of outgoing links
 	* @return unsigned int.
 	*/
