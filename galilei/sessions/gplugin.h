@@ -139,6 +139,12 @@ public:
 		: GParams(n), Mng(m), Plugin(0), Lib(f), AboutDlg(0), ConfigDlg(0) {}
 
 	/**
+	* Get the manager of the factory.
+	* @return Pointer to the manager.
+	*/
+	mng* GetMng(void) const {return(Mng);}
+
+	/**
 	* Set the about box.
 	* @param dlg             Param to the function.
 	*/
