@@ -200,7 +200,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	PostDoc=PostDocManager->GetPostDocsCursor();
 	for(PostDoc.Start(),idx=1;!PostDoc.End();PostDoc.Next(),idx++)
 	{
-		pdorder=new GFactoryPostDocOrder;
+		pdorder=new GFactoryPostDocOrder; 
 		pdorder->Fac=PostDoc();
 		postdocsordered.InsertPtr(pdorder);
 	}

@@ -163,7 +163,7 @@ void KViewThGroups::LoadGroups(const char* filename)
 	Groups=new GGroups(nb);
 	for(i=0;i<nb;i++)
 	{
-		lang=Doc->GetSession()->GetLangs()->GetLang(f.GetWord());
+		lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(f.GetWord());
 		f>>nbprof;
 		Groups->InsertGroup(group=new GGroup(i,lang,false));
 		for(j=nbprof+1;--j;)
@@ -201,7 +201,7 @@ void KViewThGroups::ConstructThGroups(void)
 	RCursor<GSubProfile> Sub;
 
 	thGroups->clear();
-	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
+	CurLang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();
@@ -239,7 +239,7 @@ void KViewThGroups::ConstructGroups(void)
 	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());
 	setCaption(tmp1);
 	prGroups->clear();
-	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
+	CurLang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();

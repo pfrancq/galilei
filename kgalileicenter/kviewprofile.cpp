@@ -248,7 +248,7 @@ void KViewProfile::ConstructGroups(void)
 	RCursor<GSubProfile> Sub;
 
 	Groups->clear();
-	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
+	CurLang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();
@@ -361,7 +361,7 @@ void KViewProfile::ConstructPov2(GProfile* /*profile*/)
 	char lword[128];
 	QListViewItem *p = 0;
 
-	lang=Doc->GetSession()->GetLangs()->GetLang("en");   // A CORRIGER ERREUR POUR DEVELOPPEMENT
+	lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang("en");   // A CORRIGER ERREUR POUR DEVELOPPEMENT
 	datainput = Doc->GetSession()->LoadPointOfView(profile->GetSubProfile(lang));
 
 	for(j = 0; j < x; j++)

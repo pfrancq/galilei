@@ -346,7 +346,7 @@ void KGALILEICenterApp::slotExportMatrix(void)
 {
 	QExportMatrixDlg dlg(this, 0, true);
 	R::RCursor<GFactoryLang> langs;
-	langs=Doc->GetSession()->GetLangs()->GetLangsCursor();
+	langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for (langs.Start(); !langs.End(); langs.Next())
 	{
 		if (!langs()->GetPlugin()) continue;
@@ -366,7 +366,7 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			if(!strcmp(dlg.ProfilesFile->url(),""))
 				return;
 			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Profiles");
-			if(!Dlg.Run(new QExportMatrix("Profiles", dlg.ProfilesFile->url(), Doc->GetSession()->GetLangs()->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+			if(!Dlg.Run(new QExportMatrix("Profiles", dlg.ProfilesFile->url(), (dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
 				return;
 		}
 
@@ -376,7 +376,7 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			if(!strcmp(dlg.DocumentsFile->url(),""))
 				return;
 			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Documents");
-			if(!Dlg.Run(new QExportMatrix("Documents", dlg.DocumentsFile->url(), Doc->GetSession()->GetLangs()->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+			if(!Dlg.Run(new QExportMatrix("Documents", dlg.DocumentsFile->url(), (dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
 				return;
 		}
 
@@ -386,7 +386,7 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			if(!strcmp(dlg.GroupsFile->url(),""))
 				return;
 			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Groups");
-			if(!Dlg.Run(new QExportMatrix("Groups", dlg.GroupsFile->url(), Doc->GetSession()->GetLangs()->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+			if(!Dlg.Run(new QExportMatrix("Groups", dlg.GroupsFile->url(), (dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
 				return;
 		}
 	}
@@ -518,7 +518,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 	{
 		if((*select)[2]=="groups")
 		{
-			R::RCursor<GFactoryLang> langscur=Doc->GetSession()->GetLangs()->GetLangsCursor();
+			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -534,7 +534,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 		}
 		if((*select)[2]=="profiles")
 		{
-			R::RCursor<GFactoryLang> langscur=Doc->GetSession()->GetLangs()->GetLangsCursor();
+			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -550,7 +550,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 		}
 		if((*select)[2]=="documents")
 		{
-			R::RCursor<GFactoryLang> langscur=Doc->GetSession()->GetLangs()->GetLangsCursor();
+			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -747,7 +747,7 @@ void KGALILEICenterApp::slotShowHistory(void)
 	R::RCursor<GFactoryLang> curlang;
 	unsigned int size, min, max;
 
-	curlang=Doc->GetSession()->GetLangs()->GetLangsCursor();
+	curlang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	size=Doc->GetSession()->GetStorage()->GetHistorySize();
 
 	if (!size)
@@ -1060,7 +1060,7 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 	if (Langs) delete Langs;
 	if (URLManager) delete URLManager;
 	if (DocAnalyseManager) delete DocAnalyseManager;
-	if(ProfilingManager) delete ProfilingManager;
+	if(ProfilingManager) delete ProfilingManager; 
 	if(GroupingManager) delete GroupingManager;
 	if(GroupCalcManager) delete GroupCalcManager;
 	if(StatsCalcManager) delete StatsCalcManager;

@@ -54,6 +54,7 @@
 #include <groups/ggroupcalcmanager.h>
 #include <sessions/gsession.h>
 #include <groups/gpostgroupmanager.h>
+#include <profiles/gpostprofilemanager.h>
 #include <sessions/gstatscalcmanager.h>
 #include <frontend/kde/gfiltermanagerkde.h>
 using namespace GALILEI;

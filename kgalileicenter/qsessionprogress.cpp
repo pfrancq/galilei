@@ -160,8 +160,8 @@ QLoadSession::QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyse
 //-----------------------------------------------------------------------------
 void QLoadSession::DoIt(void)
 {
-	Parent->PutText("Connect (Loading Dicionnaries/Stoplists) ...");
-	Session->Connect(Langs,Umng,Dmng,Lmng,Pmng,Gmng,GCmng,Smng,PDmng, PPmng,PGmng,Emng);
+	Parent->PutText("Loading Dicionnaries/Stoplists ...");
+	Session->Connect();
 	if(GSession::Break())
 		return;
 	Parent->PutText("Load Subject Tree ...");
@@ -546,9 +546,9 @@ void QAnalyzeXML::DoIt(void)
 	if(GSession::Break())
 		return;
 	Parent->PutText("Analysing XML Structure ...");
-	if(!Session->GetDocAnalyseMng()->GetCurrentMethod())
+	if(!(dynamic_cast<GDocAnalyseManager*>(GPluginManager::GetManager("DocAnalyse")))->GetCurrentMethod())
 		throw GException("Error: No Text Analyse method chosen.");
-	Session->GetDocAnalyseMng()->GetCurrentMethod()->Analyze(XML,Doc);
+	(dynamic_cast<GDocAnalyseManager*>(GPluginManager::GetManager("DocAnalyse")))->GetCurrentMethod()->Analyze(XML,Doc);
 }
 
 

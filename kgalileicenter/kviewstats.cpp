@@ -142,7 +142,7 @@ void KViewStats::ComputeStats(void)
 	GStatsCalc* Calc;
 	RXMLStruct xml;
 	RXMLTag* Root;
-	QProgressDialog Dlg( "Compute Statistics", "Abort Compute", Doc->GetSession()->GetStatsCalcMng()->NbPtr +1 ,this, "progress", TRUE );
+	QProgressDialog Dlg( "Compute Statistics", "Abort Compute", (dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc")))->NbPtr +1 ,this, "progress", TRUE );
 	int i;
 
 	// Create the root node
@@ -153,7 +153,7 @@ void KViewStats::ComputeStats(void)
 	Dlg.setMinimumDuration(0);
 	Dlg.setProgress(0);
 	KApplication::kApplication()->processEvents();
-	Cur.Set(Doc->GetSession()->GetStatsCalcMng());
+	Cur.Set((dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc"))));
 	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
 	{
 		Dlg.setProgress(i);

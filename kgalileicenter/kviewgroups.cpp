@@ -111,7 +111,7 @@ void KViewGroups::ConstructGroups(void)
 	RCursor<GSubProfile> Sub;
 
 	Groups->clear();
-	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
+	CurLang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();

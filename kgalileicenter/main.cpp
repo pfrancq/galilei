@@ -4,7 +4,7 @@
 
 	Main program - Implementation.
 
-	Copyright 2001 by the Universit� Libre de Bruxelles.
+	Copyright 2001 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,8 +34,9 @@
 using namespace std;
 
 
-
-#include <sessions/galilei.h>
+//-----------------------------------------------------------------------------
+// include files for R
+#include <rstd/rdate.h>
 
 //-----------------------------------------------------------------------------
 // include files for KDE
@@ -70,10 +71,10 @@ static KCmdLineOptions options[] =
 int main(int argc, char *argv[])
 {
 	setlocale(LC_CTYPE,"");
+	QString year=QString("(c) 1998-")+QString::number(RDate::GetToday().GetYear())+QString(", Université Libre de Bruxelles\nCAD/CAM Department");
 
 	KAboutData aboutData( "kgalileicenter", I18N_NOOP("KGALILEICenter"),
-		VERSION, description, KAboutData::License_GPL,
-		"(c) 1998-2002, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+		VERSION, description, KAboutData::License_GPL,year, 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Project Manager"), "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Nicolas Kumps",I18N_NOOP("Researcher"), "nkumps@ulb.ac.be");
 	aboutData.addAuthor("Marjorie Paternostre",I18N_NOOP("Researcher"), "Marjorie.Paternostre@ulb.ac.be");

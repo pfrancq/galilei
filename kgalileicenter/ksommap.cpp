@@ -6,7 +6,7 @@
 
 	Widget to represent a self organizing map- Implementation.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -30,6 +30,10 @@
 
 
 
+//-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <math.h>
+#include <limits.h>
 
 
 //-----------------------------------------------------------------------------
@@ -37,7 +41,6 @@
 #include "ksommap.h"
 #include <kmainwindow.h>
 #include <klocale.h>
-#include <limits.h>
 
 
 //-----------------------------------------------------------------------------
@@ -59,7 +62,7 @@ KSomMap::KSomMap(QWidget* parent)
 	//init the reference color
 	Color= new QColor (255,0,0);
 	Color_Vary=Green;
-	
+
 	//init the geometry of neurons
 	Neuron_Type=Hexagonal;
 }

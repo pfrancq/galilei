@@ -37,7 +37,7 @@ void QPlugins::slotAboutFilter()
 
 void QPlugins::slotConfigFilter()
 {
-        	if(!Filters->currentItem()) return;
+        if(!Filters->currentItem()) return;
 	QFilterItem* f=dynamic_cast<QFilterItem*>(Filters->currentItem());
 	f->Fac->Configure();
 }

@@ -114,7 +114,7 @@ KViewMetaEngine::KViewMetaEngine(KDoc* doc,QWidget* parent,const char* name,int 
 	NbRes = new KIntSpinBox( groupBoxSearch, "NbRes" );
 	NbRes->setMaxValue(1000);
 	//Set Value: default = the value from meta engine option
-	unsigned int tmp=Doc->GetSession()->GetEngineMng()->GetCurrentMethod()->GetNbResUsed();
+	unsigned int tmp=(dynamic_cast<GEngineManager*>(GPluginManager::GetManager("Engine")))->GetCurrentMethod()->GetNbResUsed();
 	if(tmp==-1)
 		NbRes->setValue(100);
 	else
@@ -190,7 +190,7 @@ GEngineDoc* KViewMetaEngine::GetCurrentEngineDoc(void)
 void KViewMetaEngine::CreateMetaEngineResultsListView(void)
 {
 	R::RCursor<GEngineDoc> engCur;
-	engCur=Doc->GetSession()->GetEngineMng()->GetCurrentMethod()->GetEngineDocsCursor();
+	engCur=(dynamic_cast<GEngineManager*>(GPluginManager::GetManager("Engine")))->GetCurrentMethod()->GetEngineDocsCursor();
 	QListViewItemType* urlitem=0, *afteritem=0;
 	QListViewItemType* desc;
 	unsigned int i=1;

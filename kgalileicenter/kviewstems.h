@@ -46,6 +46,7 @@ using namespace R;
 namespace GALILEI
 {
 	class GLang;
+	class GLangManager;
 };
 
 

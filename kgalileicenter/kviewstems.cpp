@@ -140,7 +140,8 @@ KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget*
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
 	char tmp[10];
 
-	Lang=doc->GetSession()->GetLangs()->GetLang(code);
+	GLangManager* langMng=dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang"));
+	Lang=langMng->GetLang(code);
 
 	// initialisation of the tab widget
 	Indexes=new QLabel(this,"Indexes");
