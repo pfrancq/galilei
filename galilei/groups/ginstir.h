@@ -186,6 +186,13 @@ public:
 	GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
 
 	/**
+	* Initialisation of the instance.
+	* @param gdata          The Data to use for the construction of the groups.
+	* @param grps           Pointer to the current solutions.
+	*/
+	virtual void Init(GGroupDataIR* gdata,GGroups* grps=0) throw(bad_alloc);
+
+	/**
 	* This function determines if the GA must be stopped. Actually, it is the case
 	* when the maximal number of generation is calculated.
 	* @return	The function returns true if the GA must stop.

@@ -84,6 +84,11 @@ protected:
 	*/
 	double AvgSim;
 
+	/**
+	* Relevant object of the group.
+	*/
+	GSubProfile* Relevant;
+
 public:
 
 	/**
@@ -140,6 +145,20 @@ public:
 	* @returns result.
 	*/
 	double ComputeAvgSim(void);
+
+	/**
+	* Compute the sum of the similarities of a given profile to all the others.
+	* @param obj            Profile used as reference.
+	* @returns result.
+	*/
+	double ComputeSumSim(GObjIR* obj);
+
+	/**
+	* Compute the relevant profile of the group, i.a. the profile which is the
+	* most similar to all the others profiles.
+	* @returns Sum of similarities to the relevant profile.
+	*/
+	double ComputeRelevant(void);
 
 	/**
 	* Assignment operator.

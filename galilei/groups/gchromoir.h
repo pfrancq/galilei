@@ -109,6 +109,11 @@ public:
 	virtual void Init(GThreadDataIR* thData) throw(bad_alloc);
 
 	/**
+	* Construct the chromosome to be the same as grps.
+	*/
+	void ConstructChromo(GGroups* grps);
+
+	/**
 	* Evaluation of the chromosomes. Actually, it is just the average of the
 	* intern similarities.
 	*/

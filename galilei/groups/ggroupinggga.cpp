@@ -210,9 +210,9 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 		{
 			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
 		}
-		GProfilesSim Sims(SubProfiles);
+		GProfilesSim Sims(SubProfiles,false);
 		GInstIR Instance(MinSimLevel,MaxGen,PopSize,&Objs,&Sims,RGGA::FirstFit,0);
-		Instance.Init(&data);
+		Instance.Init(&data,Groups);
 		Instance.SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
 		Instance.SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
 		Instance.SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);

@@ -69,21 +69,21 @@ class GSubProfilesSameGroupIR;
 * @author Pascal Francq
 * @short IR Fitness.
 */
-class GFitnessIR : public RGA::RFitness<double,true>
+class GFitnessIR : public RGA::RFitness<double,false>
 {
 public:
 
 	/**
 	* Constructor of the fitness function used for the Bin Packing.
 	*/
-	GFitnessIR(void) : RGA::RFitness<double,true>() {}
+	GFitnessIR(void) : RGA::RFitness<double,false>() {}
 
 	/**
 	* Assignment operator with a fitness f.
 	*/
 	GFitnessIR& operator=(const GFitnessIR &f)
 	{
-		RFitness<double,true>::operator=(f);
+		RFitness<double,false>::operator=(f);
 		return(*this);
 	}
 
@@ -92,7 +92,7 @@ public:
 	*/
 	GFitnessIR& operator=(const double val)
 	{
-		RFitness<double,true>::operator=(val);
+		RFitness<double,false>::operator=(val);
 		return(*this);
 	}
 };

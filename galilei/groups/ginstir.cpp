@@ -116,6 +116,30 @@ GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RO
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GInstIR::Init(GGroupDataIR* gdata,GGroups* grps) throw(bad_alloc)
+{
+	GChromoIR** C;
+	unsigned int i;
+
+	// Called Init for the parent
+	RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(gdata);
+	if(!grps) return;
+
+	// Construct the best chromosome and the first chromosome one as the actual groups
+	BestChromosome->ConstructChromo(grps);
+	C=Chromosomes;
+	(*C)->ConstructChromo(grps);
+
+	// For the rest of the population, do a mutation of the best one.
+	for(i=PopSize;--i;C++)
+	{
+		(*C)->ConstructChromo(grps);
+		(*C)->Mutation();
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 bool GALILEI::GInstIR::StopCondition(void)
 {
 	return(Gen==MaxGen);
@@ -131,6 +155,9 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	RPromSol** Res;
 	RPromSol** ptr;
 	double r;
+	#ifdef RGADEBUG
+		char Tmp[300];
+	#endif
 
 	#ifdef RGADEBUG
 		if(Debug) Debug->BeginFunc("PostEvaluate","GInstIR");
@@ -153,54 +180,96 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 
 	// Look if the best chromosome ever is still the best -> If not, change
 	// the fitness of the best solution.
-	cout<<"Id\t\tAvg. Sim\t\tAvg. Prof\t\tOK Factor\t\tDiff Factor"<<endl;
-	cout<<(*ptr)->GetId()<<"\t\t";
+//	cout<<"Id\t\tAvg. Sim\t\tAvg. Prof\t\tOK Factor\t\tDiff Factor"<<endl;
+//	cout<<(*ptr)->GetId()<<"\t\t";
 	if((*ptr)->GetId())
 	{
-		(*Chromosomes[(*ptr)->GetId()-1]->Fitness)=Gen+1.1;
 		s=Chromosomes[(*ptr)->GetId()-1];
-		cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
+		(*s->Fitness)=Gen+1.1;
+//		cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
+		#ifdef RGADEBUG
+			if(Debug)
+			{
+				sprintf(Tmp,"Chromosome %u: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",s->Id,s->AvgSim,s->AvgProf,s->OKFactor,s->DiffFactor);
+				Debug->PrintInfo(Tmp);
+			}
+		#endif
 	}
 	else
 	{
-		cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
+		#ifdef RGADEBUG
+			if(Debug)
+			{
+				sprintf(Tmp,"Best Chromosome: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",BestChromosome->AvgSim,BestChromosome->AvgProf,BestChromosome->OKFactor,BestChromosome->DiffFactor);
+				Debug->PrintInfo(Tmp);
+			}
+		#endif
+//		cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
 	}
 	ptr++;
 
 	//  The second best has the fitness of 1
-	cout<<(*ptr)->GetId()<<"\t\t";
-	if((*ptr)->GetId()==0)
+//	cout<<(*ptr)->GetId()<<"\t\t";
+	if((*ptr)->GetId())
 	{
-		(*BestChromosome->Fitness)=1.0;
-		cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
+		s=Chromosomes[(*ptr)->GetId()-1];
+		(*s->Fitness)=1.0;
+//		cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
+		#ifdef RGADEBUG
+			if(Debug)
+			{
+				sprintf(Tmp,"Chromosome %u: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",s->Id,s->AvgSim,s->AvgProf,s->OKFactor,s->DiffFactor);
+				Debug->PrintInfo(Tmp);
+			}
+		#endif
 	}
 	else
 	{
-		(*Chromosomes[(*ptr)->GetId()-1]->Fitness)=1.0;
-		s=Chromosomes[(*ptr)->GetId()-1];
-		cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
+		(*BestChromosome->Fitness)=1.0;
+//		cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
+		#ifdef RGADEBUG
+			if(Debug)
+			{
+				sprintf(Tmp,"Best Chromosome: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",BestChromosome->AvgSim,BestChromosome->AvgProf,BestChromosome->OKFactor,BestChromosome->DiffFactor);
+				Debug->PrintInfo(Tmp);
+			}
+		#endif
 	}
 
 	// Look for the rest
 	for(i=PopSize,ptr++;--i;ptr++)
 	{
 		r=((double)i)/((double)(PopSize));
-		cout<<(*ptr)->GetId()<<"\t\t";
-		if((*ptr)->GetId()==0)
+//		cout<<(*ptr)->GetId()<<"\t\t";
+		if((*ptr)->GetId())
 		{
-			(*BestChromosome->Fitness)=r;
-			cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
+			s=Chromosomes[(*ptr)->GetId()-1];
+			(*s->Fitness)=r;
+//			cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
+			#ifdef RGADEBUG
+				if(Debug)
+				{
+					sprintf(Tmp,"Chromosome %u: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",s->Id,s->AvgSim,s->AvgProf,s->OKFactor,s->DiffFactor);
+					Debug->PrintInfo(Tmp);
+				}
+			#endif
 		}
 		else
 		{
-			(*Chromosomes[(*ptr)->GetId()-1]->Fitness)=r;
-			s=Chromosomes[(*ptr)->GetId()-1];
-			cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
+			(*BestChromosome->Fitness)=r;
+//			cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
+			#ifdef RGADEBUG
+				if(Debug)
+				{
+					sprintf(Tmp,"Best Chromosome: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",BestChromosome->AvgSim,BestChromosome->AvgProf,BestChromosome->OKFactor,BestChromosome->DiffFactor);
+					Debug->PrintInfo(Tmp);
+				}
+			#endif
 		}
 	}
 
 	// Delete the resulting array
-	cout<<endl<<endl;
+//	cout<<endl<<endl;
 	delete[] Res;
 
 	#ifdef RGADEBUG

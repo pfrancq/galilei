@@ -36,7 +36,11 @@
 #include <groups/gchromoir.h>
 #include <groups/ginstir.h>
 #include <groups/ggroupir.h>
+#include <groups/ggroups.h>
+#include <groups/ggroup.h>
 #include <groups/gobjir.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gprofilessim.h>
 using namespace GALILEI;
 using namespace RGGA;
 using namespace RGA;
@@ -54,7 +58,7 @@ GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
   : RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
     Sims(0), MinSimLevel(0), AvgSim(0.0), AvgProf(0.0), OKFactor(0.0), DiffFactor(1.0)
 {
-	(*Fitness)=0.0;
+	(*Fitness)=1.0;
 }
 
 
@@ -69,14 +73,46 @@ void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GChromoIR::ConstructChromo(GGroups* grps)
+{
+	GGroupCursor Grp;
+	GSubProfileCursor SubProfile;
+	GGroupIR* grp;
+
+	// Go through the groups
+	Grp=grps->GetGroupCursor();
+	for(Grp.Start();!Grp.End();Grp.Next())
+	{
+		grp=ReserveGroup();
+		SubProfile=Grp()->GetSubProfileCursor();
+		for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
+		{
+			for(Objs->Start();!Objs->End();Objs->Next())
+				if((*Objs)()->GetSubProfile()==SubProfile())
+				{
+					grp->Insert((*Objs)());
+					break;
+				}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::Evaluate(void)
 {
 	GSubProfilesSameGroupIR* ptr;
 
-	// Compute Average Similarity inside the groups
-	AvgSim=AvgProf=0.0;
+	// Some groups must exists
 	if(!Used.NbPtr)
+	{
+		OKFactor=AvgSim=AvgProf=0.0;
+		DiffFactor=1.0;
 		return;
+	}
+
+	// Compute Average Similarity and the average number of profiles.
+	AvgSim=AvgProf=0.0;
 	for(Used.Start();!Used.End();Used.Next())
 	{
 		AvgSim+=Used()->ComputeAvgSim();
@@ -86,15 +122,15 @@ void GALILEI::GChromoIR::Evaluate(void)
 	AvgProf/=((double)Used.NbPtr);
 
 	// Number of subprofiles having common OK documents and being in the same group.
-	OKFactor=0.0;
-	for(Instance->SameGroups.Start();!Instance->SameGroups.End();Instance->SameGroups.Next())
-	{
-		ptr=Instance->SameGroups();
-		if(ObjectsAss[ptr->Id1]==ObjectsAss[ptr->Id2])
-			OKFactor+=1.0;
-	}
 	if(Instance->SameGroups.NbPtr)
 	{
+		OKFactor=0.0;
+		for(Instance->SameGroups.Start();!Instance->SameGroups.End();Instance->SameGroups.Next())
+		{
+			ptr=Instance->SameGroups();
+			if(ObjectsAss[ptr->Id1]==ObjectsAss[ptr->Id2])
+				OKFactor+=1.0;
+		}
 		OKFactor/=Instance->SameGroups.NbPtr;
 	}
 	else
@@ -114,6 +150,36 @@ void GALILEI::GChromoIR::Evaluate(void)
 	{
 		DiffFactor/=Instance->DiffGroups.NbPtr;
 	}
+//
+//	double AvgSim;
+//	double MinRel;
+//	double Rel;
+//	GGroupIR** ptr;
+//	GGroupIR** ptr2;
+//	unsigned int i,j;
+//
+//	// Compute the Relevant profile for each group and sum the similairities
+//	AvgSim=0.0;
+//	for(Used.Start();!Used.End();Used.Next())
+//		AvgSim+=Used()->ComputeRelevant();
+//	AvgSim/=static_cast<double>(Objs->GetNb());
+//
+//	// Compute Minimal similarity between the relevant profiles of each group
+//	MinRel=1.0;
+//	for(i=Used.NbPtr,ptr=Used.Tab;--i;ptr++)
+//	{
+//		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
+//		{
+//			Rel=1-Sims->GetSim((*ptr)->Relevant,(*ptr2)->Relevant);
+//			if(Rel<MinRel)
+//				MinRel=Rel;
+//		}
+//	}
+//
+//	// Allocate Similarity
+//	if(MinRel<=0.0001)
+//		cout<<MinRel<<endl;
+//	(*Fitness)=AvgSim/MinRel;
 }
 
 

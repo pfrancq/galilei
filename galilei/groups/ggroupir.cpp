@@ -34,6 +34,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gprofilessim.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gprofile.h>
 #include <groups/ggroupir.h>
 #include <groups/gchromoir.h>
 #include <groups/ginstir.h>
@@ -41,6 +43,35 @@
 using namespace GALILEI;
 using namespace RGGA;
 using namespace RGA;
+
+
+//-----------------------------------------------------------------------------
+//
+// class SubProfileLocal
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class SubProfileLocal
+{
+public:
+	GObjIR* Prof;
+	double AvgSim;
+};
+
+
+//-----------------------------------------------------------------------------
+int sort_function(const void* a,const void* b)
+{
+	double af=(static_cast<const SubProfileLocal*>(a))->AvgSim;
+	double bf=(static_cast<const SubProfileLocal*>(b))->AvgSim;
+
+	if(af==bf) return(0);
+	if(af>bf)
+		return(-1);
+	else
+		return(1);
+}
 
 
 
@@ -52,14 +83,16 @@ using namespace RGA;
 
 //-----------------------------------------------------------------------------
 GGroupIR::GGroupIR(GGroupIR* grp)
-	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(grp), AvgSim(0.0)
+	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(grp), AvgSim(0.0),
+	  Relevant(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupIR::GGroupIR(GChromoIR* owner,const unsigned int id,const GGroupDataIR* data)
-	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(owner,id,data), AvgSim(0.0)
+	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(owner,id,data), AvgSim(0.0),
+	Relevant(0)
 {
 }
 
@@ -78,6 +111,7 @@ void GALILEI::GGroupIR::Clear(void)
 {
 	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Clear();
 	AvgSim=0.0;
+	Relevant=0;
 }
 
 
@@ -144,49 +178,181 @@ double  GALILEI::GGroupIR::ComputeAvgSim(void)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GGroupIR::DoOptimisation(void)
+double GALILEI::GGroupIR::ComputeSumSim(GObjIR* obj)
 {
-	unsigned int Nb;
 	unsigned int i;
 	GObjIR** ptr;
-	double Avg;
+	double AvgSim;
 	GSubProfile* sub;
-	GSubProfile* obj;
-	GObjIR** tab;
+
+//	if(NbSubObjects==1)
+//		return(1.0);
+	sub=obj->GetSubProfile();
+	AvgSim=0.0;
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+	{
+		if((*ptr)==obj) continue;
+		AvgSim+=1-Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+	}
+	return(AvgSim);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeRelevant(void)
+{
+	unsigned int i;
+	GObjIR** ptr;
+	double BestSumSim;
+	double SumSim;
+
+	// If no objects -> No relevant one.
+	if(!NbSubObjects)
+	{
+		Relevant=0;
+		AvgSim=0.0;
+		return(0.0);
+	}
+
+	// Suppose the first element is the most relevant.
+	ptr=Owner->GetObjs(SubObjects);
+	Relevant=(*ptr)->GetSubProfile();
+	BestSumSim=ComputeSumSim(*ptr);
+
+	// Look if in the other objects, there is a better one
+	for(i=NbSubObjects;--i;ptr++)
+	{
+		SumSim=ComputeSumSim(*ptr);
+		if(SumSim>BestSumSim)
+		{
+			Relevant=(*ptr)->GetSubProfile();
+			BestSumSim=SumSim;
+		}
+	}
+
+	// Return results
+	AvgSim=BestSumSim;
+	return(BestSumSim);
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GGroupIR::DoOptimisation(void)
+{
+	unsigned int i,Pos;
+	SubProfileLocal* tab;
+	SubProfileLocal* t;
+	GObjIR** ptr;
+	GObjIR*/*GSubProfile*/ sub;
+	GObjIR*/*GSubProfile*/ obj;
+	double Avg,tmp;
 	GGroupIR* grp;
 
 	if(NbSubObjects<2) return;
-	tab=new GObjIR*[NbSubObjects];
-	sub=Owner->GetObj(SubObjects+Owner->Instance->RRand(NbSubObjects))->GetSubProfile();
+
+	// Init: Construct an arry and select randomly a subprofile
+	tab=new SubProfileLocal[NbSubObjects-1];
+	sub=Owner->GetObj(SubObjects+Owner->Instance->RRand(NbSubObjects))/*->GetSubProfile()*/;
+//	cout<<sub->GetProfile()->GetName()<<"\t";
+
+	// Go the other profiles, compute the average similarity to the selected
+	// one. Classify them in descending order.
 	Avg=0.0;
-	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),t=tab;--i;ptr++)
 	{
-		obj=(*ptr)->GetSubProfile();
+		obj=(*ptr)/*->GetSubProfile()*/;
 		if(obj==sub) continue;
-		Avg+=Owner->Sims->GetSim(sub,obj);
+		t->Prof=obj;
+		t->AvgSim=Owner->Sims->GetSim(sub->GetSubProfile(),obj->GetSubProfile());
+		Avg+=t->AvgSim;
+		t++;
 	}
+	qsort(static_cast<void*>(tab),NbSubObjects-1,sizeof(SubProfileLocal),sort_function);
 	Avg/=NbSubObjects-1;
-	Nb=0;
-	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+
+	// Go through the ordered subprofiles to find where eventually to cut
+	Pos=i=0;
+	t=tab;
+	Avg=t->AvgSim;
+//	cout<<t->Prof->GetProfile()->GetName()<<"="<<t->AvgSim<<"\t";
+	for(t++,i++;i<NbSubObjects-1;t++,i++)
 	{
-		obj=(*ptr)->GetSubProfile();
-		if(obj==sub) continue;
-		if(Owner->Sims->GetSim(sub,obj)>Avg)
+		if(!Pos)
 		{
-			tab[Nb++]=(*ptr);
+			tmp=(Avg-t->AvgSim)/Avg;
+			if(tmp>0.2)
+			{
+//				cout<<"\t|\t";
+				Pos=i;
+				break;
+			}
+			Avg=t->AvgSim;
 		}
+//		cout<<t->Prof->GetProfile()->GetName()<<"="<<t->AvgSim<<"\t";
 	}
-	if(Nb)
+//	cout<<endl;
+
+
+	// If cut found do it.
+	if(Pos)
 	{
 		grp=Owner->ReserveGroup();
-		for(i=Nb+1,ptr=tab;--i;ptr++)
+		for(;i<NbSubObjects-1;t++,i++)
 		{
-			Delete(*ptr);
-			grp->Insert(*ptr);
+			Delete(t->Prof);
+			grp->Insert(t->Prof);
 		}
 	}
+
+	// Delete the created array.
 	delete[] tab;
 }
+
+
+//---------------------------------------------------------------------------
+//void GALILEI::GGroupIR::DoOptimisation(void)
+//{
+//	unsigned int Nb;
+//	unsigned int i;
+//	GObjIR** ptr;
+//	double Avg;
+//	GSubProfile* sub;
+//	GSubProfile* obj;
+//	GObjIR** tab;
+//	GGroupIR* grp;
+//
+//	if(NbSubObjects<2) return;
+//	tab=new GObjIR*[NbSubObjects];
+//	sub=Owner->GetObj(SubObjects+Owner->Instance->RRand(NbSubObjects))->GetSubProfile();
+//	Avg=0.0;
+//	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+//	{
+//		obj=(*ptr)->GetSubProfile();
+//		if(obj==sub) continue;
+//		Avg+=Owner->Sims->GetSim(sub,obj);
+//	}
+//	Avg/=NbSubObjects-1;
+//	Nb=0;
+//	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+//	{
+//		obj=(*ptr)->GetSubProfile();
+//		if(obj==sub) continue;
+//		if(Owner->Sims->GetSim(sub,obj)>Avg)
+//		{
+//			tab[Nb++]=(*ptr);
+//		}
+//	}
+//	if(Nb)
+//	{
+//		grp=Owner->ReserveGroup();
+//		for(i=Nb+1,ptr=tab;--i;ptr++)
+//		{
+//			Delete(*ptr);
+//			grp->Insert(*ptr);
+//		}
+//	}
+//	delete[] tab;
+//}
 
 
 //---------------------------------------------------------------------------
