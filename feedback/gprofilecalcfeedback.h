@@ -43,7 +43,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <profiles/gprofilecalc.h>
-#include <infos/giwordsweights.h>
+#include <infos/gweightinfos.h>
 
 
 //-----------------------------------------------------------------------------
@@ -113,13 +113,13 @@ protected:
 	/**
 	* Global vector computed.
 	*/
-	GIWordsWeights Vectors;
+	GWeightInfos Vectors;
 
 	/**
 	* Number of documents where each index term of the "OK" and "N" documents
 	* for the different languages appears.
 	*/
-	GIWordsWeights NbDocsWords;
+	GWeightInfos NbDocsWords;
 
 	/**
 	* Number of documents.
@@ -129,7 +129,7 @@ protected:
 	/**
 	* Ordered vector for current computed profile.
 	*/
-	GIWordWeight** Order;
+	GWeightInfo** Order;
 
 	/**
 	* Maximal size allocate for a profile.

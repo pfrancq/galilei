@@ -44,12 +44,10 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gprofilecalcfeedback.h>
-
 #include <docs/gdocvector.h>
 #include <profiles/gprofdoc.h>
 #include <profiles/gsubprofilevector.h>
-#include <infos/giwordweight.h>
-
+#include <infos/gweightinfo.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -67,7 +65,7 @@ GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac) throw(bad_a
 	  IrrelFactor(0.75), Positive(false), isf(true), Vectors(5000),
 	  NbDocsWords(5000), NbDocs(0), MaxOrderSize(5000)
 {
-	Order=new GIWordWeight*[MaxOrderSize];
+	Order=new GWeightInfo*[MaxOrderSize];
 }
 
 
@@ -100,10 +98,10 @@ void GProfileCalcFeedback::Disconnect(GSession* session)
 //-----------------------------------------------------------------------------
 void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc)
 {
-	GIWordWeightCursor Words;
+	GWeightInfoCursor Words;
 	GProfDocCursor Docs;
 	GDocVector* CurDoc;
-	GIWordWeight* w;
+	GWeightInfo* w;
 	bool Add;
 	tDocJudgement Fdbk;
 	double MaxFreq;
@@ -130,11 +128,10 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 		NbDocs++;
 
 		// Update number of documents where appear each index term.
-		Words=CurDoc->GetWordWeightCursor();
+		Words=CurDoc->GetWeightInfoCursor();
 		for(Words.Start();!Words.End();Words.Next())
 		{
-			w=NbDocsWords.GetInsertPtr<unsigned int>(Words()->GetId());
-			if(Words()->InfoType()==infoWordList) w->SetInfoType(infoWordList);
+			w=NbDocsWords.GetInsertPtr<GWeightInfo*>(Words());
 			w->AddWeight(1.0);
 		}
 	}
@@ -168,12 +165,11 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 		}
 
 		// Add total number of words and the occurences of each word of the current document.
-		Words=CurDoc->GetWordWeightCursor();
+		Words=CurDoc->GetWeightInfoCursor();
 		MaxFreq=CurDoc->GetMaxWeight();
 		for(Words.Start();!Words.End();Words.Next())
 		{
-			w=Vectors.GetInsertPtr<unsigned int>(Words()->GetId());
-			if(Words()->InfoType()==infoWordList) w->SetInfoType(infoWordList);
+			w=Vectors.GetInsertPtr<GWeightInfo*>(Words());
 			Freq=Words()->GetWeight()/MaxFreq;
 			if((isf)&&(NbDocs>1))
 				Freq*=log(NbDocs/NbDocsWords.GetPtr<unsigned int>(Words()->GetId())->GetWeight());
@@ -189,9 +185,9 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 //-----------------------------------------------------------------------------
 void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc)
 {
-	GIWordWeight** ptr;
+	GWeightInfo** ptr;
 	unsigned int i,nb;
-	GIWordsWeights* Vector=s->GetVector();
+	GWeightInfos* Vector=s->GetVector();
 
 	// Clear the Vector.
 	s->RemoveRefs();
@@ -209,10 +205,10 @@ void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_all
 	{
 		if(Order) delete[] Order;
 		MaxOrderSize=static_cast<unsigned int>((Vectors.NbPtr+1)*1.1);
-		Order=new GIWordWeight*[MaxOrderSize];
+		Order=new GWeightInfo*[MaxOrderSize];
 	}
-	memcpy(Order,Vectors.Tab,Vectors.NbPtr*sizeof(GIWordWeight*));
-	qsort(static_cast<void*>(Order),Vectors.NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
+	memcpy(Order,Vectors.Tab,Vectors.NbPtr*sizeof(GWeightInfo*));
+	qsort(static_cast<void*>(Order),Vectors.NbPtr,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
 	Order[Vectors.NbPtr]=0;
 
 	//If MaxNonZero is null -> take all the words.
@@ -221,7 +217,7 @@ void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_all
 	else
 		nb=Vectors.NbPtr;
 	for(i=nb+1,ptr=Order;(--i)&&(*ptr);ptr++)
-		Vector->InsertPtr(new GIWordWeight(*ptr));
+		Vector->InsertPtr(new GWeightInfo(*ptr));
 
 	// Update the references of the vector.
 	s->UpdateRefs();
