@@ -59,8 +59,8 @@ using namespace R;
 #include <groups/gsubject.h>
 #include <groups/gsubjecttree.h>
 #include <sessions/gmixidealgroups.h>
-#include <langs/glang.h>
-#include <langs/gdict.h>
+#include <infos/glang.h>
+#include <infos/gdict.h>
 using namespace GALILEI;
 
 

@@ -50,8 +50,8 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/giwordweight.h>
-#include <infos/giwordsweights.h>
+#include <infos/gweightinfo.h>
+#include <infos/gweightinfos.h>
 #include <galilei/qlistviewitemtype.h>
 #include <galilei/qgdocxml.h>
 #include <docs/gdocvector.h>
@@ -59,7 +59,7 @@ using namespace R;
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
-#include <langs/glang.h>
+#include <infos/glang.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 
@@ -263,7 +263,7 @@ void KViewDoc::ConstructResults(void)
     	}
 	};
 
-	GIWordWeightCursor Words=Document->GetWordWeightCursor();
+	GWeightInfoCursor Words=Document->GetWeightInfoCursor();
 
 	for (Words.Start();!Words.End();Words.Next())
 	{

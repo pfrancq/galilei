@@ -47,7 +47,7 @@ using namespace R;
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <groups/ggroup.h>
-#include <langs/glang.h>
+#include <infos/glang.h>
 #include <groups/ggroups.h>
 #include <sessions/gsession.h>
 #include <galilei/qlistviewitemtype.h>

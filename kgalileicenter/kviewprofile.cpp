@@ -49,7 +49,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <langs/glang.h>
+#include <infos/glang.h>
 #include <galilei/qgprofile.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>

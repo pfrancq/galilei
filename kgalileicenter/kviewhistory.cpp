@@ -46,8 +46,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <langs/glang.h>
-#include <langs/glangs.h>
+#include <infos/glang.h>
+#include <infos/glangs.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <groups/gsubject.h>
@@ -56,8 +56,8 @@
 #include <profiles/gprofile.h>
 #include <profiles/gprofilessim.h>
 #include <sessions/gsession.h>
-#include <infos/giwordsweights.h>
-#include <infos/giwordweight.h>
+#include <infos/gweightinfos.h>
+#include <infos/gweightinfo.h>
 using namespace GALILEI;
 
 

@@ -44,8 +44,8 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gsession.h>
-#include <langs/glang.h>
-#include <langs/glangs.h>
+#include <infos/glang.h>
+#include <infos/glangs.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>

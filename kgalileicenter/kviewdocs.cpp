@@ -45,8 +45,8 @@ using namespace R;
 // include files for GALILEI
 #include <galilei/qlistviewitemtype.h>
 #include <docs/gdoc.h>
-#include <langs/glang.h>
-#include <langs/glangs.h>
+#include <infos/glang.h>
+#include <infos/glangs.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 

@@ -48,7 +48,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <langs/glangs.h>
+#include <infos/glangs.h>
 #include <docs/glinkcalcmanager.h>
 #include <docs/gdocanalysemanager.h>
 #include <docs/gpostdocmanager.h>
@@ -56,7 +56,7 @@
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalcmanager.h>
 #include <sessions/gsession.h>
-#include <postgroups/gpostgroupmanager.h>
+#include <groups/gpostgroupmanager.h>
 #include <sessions/gstatscalcmanager.h>
 #include <galilei/gurlmanagerkde.h>
 

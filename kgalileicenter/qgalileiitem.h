@@ -48,9 +48,9 @@
 #include <sessions/gstatscalc.h>
 #include <docs/glinkcalc.h>
 #include <docs/gpostdoc.h>
-#include <langs/glang.h>
+#include <infos/glang.h>
 #include <docs/gdocanalyse.h>
-#include <postgroups/gpostgroup.h>
+#include <groups/gpostgroup.h>
 
 using namespace GALILEI;
 

@@ -11,11 +11,11 @@ kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui \
 	kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kviewstats.cpp \
 	kview.cpp kdoc.cpp kgalileicenter.cpp main.cpp qplugins.ui qsessionoptions.ui
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
-kgalileicenter_LDADD = $(GALILEI_LIB)/postgroups/libgalilei_postgroups.la /usr/lib/libmysqlclient.la \
+kgalileicenter_LDADD = /usr/lib/libmysqlclient.la \
 	$(QTWIDGETS_LIB)/galilei/libkde_galilei.la $(QTWIDGETS_LIB)/rpromethee/libkde_rpromethee.la \
 	$(QTWIDGETS_LIB)/rga/libkde_rga.la \
 	$(GALILEI_LIB)/sessions/libgalilei_sessions.la $(GALILEI_LIB)/profiles/libgalilei_profiles.la \
-	$(GALILEI_LIB)/langs/libgalilei_langs.la $(GALILEI_LIB)/infos/libgalilei_infos.la \
+	$(GALILEI_LIB)/infos/libgalilei_infos.la \
 	$(GALILEI_LIB)/groups/libgalilei_groups.la $(GALILEI_LIB)/historic/libgalilei_historic.la \
 	$(GALILEI_LIB)/filters/libgalilei_filters.la $(GALILEI_LIB)/docs/libgalilei_docs.la \
 	$(R_LIB)/rgga/librgga.la $(R_LIB)/rpromethee/librpromethee.la $(R_LIB)/rstd/librstd.la \

@@ -43,7 +43,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdoc.h>
-#include <langs/glang.h>
+#include <infos/glang.h>
 #include <galilei/gurlmanagerkde.h>
 #include <galilei/qlistviewitemtype.h>
 #include <sessions/gsession.h>
@@ -53,8 +53,8 @@ using namespace R;
 #include <profiles/gsubprofiledesc.h>
 #include <groups/ggrouping.h>
 #include <profiles/gprofilecalc.h>
-#include <langs/glang.h>
-#include <langs/glangs.h>
+#include <infos/glang.h>
+#include <infos/glangs.h>
 using namespace GALILEI;
 
 

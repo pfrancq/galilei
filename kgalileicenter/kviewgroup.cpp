@@ -43,7 +43,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <langs/glang.h>
+#include <infos/glang.h>
 #include <sessions/gsession.h>
 #include <profiles/gprofdoc.h>
 #include <docs/gdocvector.h>
@@ -52,7 +52,7 @@ using namespace R;
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <galilei/qlistviewitemtype.h>
-#include <infos/giwordweight.h>
+#include <infos/gweightinfo.h>
 using namespace GALILEI;
 
 
@@ -236,7 +236,7 @@ void KViewGroup::ConstructDocs(void)
 //-----------------------------------------------------------------------------
 void KViewGroup::ConstructDescription(void)
 {
-	GIWordWeightCursor Cur;
+	GWeightInfoCursor Cur;
 	char tmp[20];
 	class LocalItem : QListViewItem
 	{
@@ -264,7 +264,7 @@ void KViewGroup::ConstructDescription(void)
 
 	// Read 'Ok'
 	Vector->clear();
-	Cur=static_cast<GGroupVector*>(Group)->GetVectorCursor();
+	Cur=static_cast<GGroupVector*>(Group)->GetWeightInfoCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		new LocalItem(Vector,Doc->GetSession()->LoadWord(Cur()->GetId(),Group->GetLang()->GetCode()),Cur()->GetWeight());
@@ -300,8 +300,8 @@ void KViewGroup::slotMenu(int)
 	GDocCursor theDocs;
 	GDocVector* doc;
 	unsigned int i,size,maxsize,newsize,j;
-	GIWordWeight** tab;
-	GIWordWeight** tmp;
+	GWeightInfo** tab;
+	GWeightInfo** tmp;
 
 	dlg=KMessageBox::No;
 	while(dlg!=KMessageBox::Yes)
@@ -337,17 +337,17 @@ void KViewGroup::slotMenu(int)
 			if(size>maxsize)
 			{
 				newsize=size+static_cast<unsigned int>(0.5*size);
-				tmp=new GIWordWeight*[newsize];
+				tmp=new GWeightInfo*[newsize];
 				if(tab)
 				{
-					memcpy(tmp,tab,maxsize*sizeof(GIWordWeight*));
+					memcpy(tmp,tab,maxsize*sizeof(GWeightInfo*));
 					delete[] tab;
 				}
 				maxsize=newsize;
 				tab=tmp;
 			}
-			memcpy(tab,doc->Tab,size*sizeof(GIWordWeight*));
-			qsort(static_cast<void*>(tab),size,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
+			memcpy(tab,doc->Tab,size*sizeof(GWeightInfo*));
+			qsort(static_cast<void*>(tab),size,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
 			for(j=21,size++,tmp=tab;(--j)&&(--size);tmp++)
 				Res<<"\t\t\t<Include Attribute=\""<<Doc->GetSession()->LoadWord((*tmp)->GetId(),theDocs()->GetLang()->GetCode())<<"\"/>\n";
 		}

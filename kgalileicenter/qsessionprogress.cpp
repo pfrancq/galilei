@@ -50,7 +50,7 @@
 // include files for GALILEI
 #include <sessions/gsession.h>
 #include <docs/gdoc.h>
-#include <langs/glang.h>
+#include <infos/glang.h>
 #include <docs/gdocanalyse.h>
 #include <docs/gdocxml.h>
 #include <docs/gpostdoc.h>
