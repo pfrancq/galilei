@@ -1,13 +1,10 @@
-INCLUDES = $(all_includes) -I$(top_srcdir) -I$(R_LIB) -I$(GALILEI_LIB) -I$(QTDIR)/include
-lib_LTLIBRARIES =  ../liben.la ../liben_dlg.la
+INCLUDES = $(all_includes) -I$(top_srcdir)
+langslib_LTLIBRARIES =  ../liben.la
 ___liben_la_LDFLAGS = -module -avoid-version
 ___liben_la_SOURCES = glangen.cpp
-___liben_la_LIBADD=$(GALILEI_LIB)/infos/libgalilei_infos.la
-___liben_dlg_la_LDFLAGS = -module -avoid-version
-___liben_dlg_la_SOURCES = glangen_kde.cpp
-___liben_dlg_la_LIBADD=$(GALILEI_LIB)/infos/libgalilei_infos.la
+___liben_la_LIBADD=
 AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =
-SUBDIRS =
+SUBDIRS =$(FRONTEND)
 
