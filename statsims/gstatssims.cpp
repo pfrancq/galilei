@@ -268,7 +268,7 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)
 		try
 		{
 			Details=new RTextFile(Name);
-			Details->Open(R::Create);
+			Details->Open(RIO::Create);
 		}
 		catch(...)
 		{
