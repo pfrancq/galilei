@@ -103,6 +103,11 @@ protected:
 	unsigned int StepGen;
 
 	/**
+	* Maximal Number of KMeans.
+	*/
+	unsigned int MaxKMeans;
+
+	/**
 	* Type of measure used for the similarity criterion.
 	*/
 	SimType SimMeasure;
@@ -269,6 +274,18 @@ public:
 	* @returns unsigned int representing the number of generations.
 	*/
 	unsigned int GetStepGen(void) const {return(StepGen);}
+
+	/**
+	* Set the maximal number of K-Means iterations.
+	* @param i              Maximal number of iterations.
+	*/
+	void SetMaxKMeans(unsigned int i) {MaxKMeans=i;}
+
+	/**
+	* Get the maximal number of K-Means iterations.
+	* @returns unsigned int representing the maxiaml number of iterations.
+	*/
+	unsigned int GetMaxKMeans(void) const {return(MaxKMeans);}
 
 	/**
 	* Set the parameters for a particular criterion of PROMETHEE.

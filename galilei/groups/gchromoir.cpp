@@ -658,7 +658,7 @@ void GALILEI::GChromoIR::DoKMeans(void) throw(RGA::eGA)
 		Grp()->ComputeRelevant();
 
 	// Max Iterations
-	for(itermax=0,error=1,IterNumber=10;(itermax<IterNumber)&&(error!=0);itermax++)
+	for(itermax=0,error=1,IterNumber=Instance->MaxKMeans;(itermax<IterNumber)&&(error!=0);itermax++)
 	{
 		ReAllocate();
 		error=CalcNewProtosNb();

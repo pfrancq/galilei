@@ -72,7 +72,7 @@ using namespace RGA;
 GALILEI::GGroupingGGA::GGroupingGGA(GSession* s) throw(bad_alloc)
 	: GGrouping("Grouping Genetic Algorithms",s), PopSize(16), MinSimLevel(0.1),
 	  MinCommonOK(1.0), MinCommonDiff(1.0), MaxGen(20), Step(false), StepGen(5),
-	  SimMeasure(stAvgSim), ParamsSim(0.2,0.05,1.0), ParamsInfo(0.2,0.05,1.0),
+	  MaxKMeans(10), SimMeasure(stAvgSim), ParamsSim(0.2,0.05,1.0), ParamsInfo(0.2,0.05,1.0),
 	  ParamsSameFeedbacks(0.2,0.05,1.0), ParamsDiffFeedbacks(0.2,0.05,1.0),
 	  ParamsSocial(0.2,0.05,1.0), GlobalSim(false), Objs(0)
 {
@@ -87,8 +87,8 @@ const char* GALILEI::GGroupingGGA::GetSettings(void)
 
 	if(Step) c='1'; else c='0';
 	if(GlobalSim) c1='1'; else c1='0';
-	sprintf(tmp,"%u %c %u %u %c %u %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
-	        SimMeasure,c1,PopSize,MaxGen,c,StepGen,MinSimLevel,MinCommonOK,MinCommonDiff,
+	sprintf(tmp,"%u %c %u %u %c %u %f %f %f %u %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+	        SimMeasure,c1,PopSize,MaxGen,c,StepGen,MinSimLevel,MinCommonOK,MinCommonDiff,MaxKMeans,
 	        ParamsSim.P,ParamsSim.Q,ParamsSim.Weight,
 	        ParamsInfo.P,ParamsInfo.Q,ParamsInfo.Weight,
 	        ParamsSameFeedbacks.P,ParamsSameFeedbacks.Q,ParamsSameFeedbacks.Weight,
@@ -105,8 +105,8 @@ void GALILEI::GGroupingGGA::SetSettings(const char* s)
 	unsigned int t;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	       &t,&c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
+	sscanf(s,"%u %c %u %u %c %u %lf %lf %lf %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &t,&c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,&MaxKMeans,
 	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
 	       &ParamsInfo.P,&ParamsInfo.Q,&ParamsInfo.Weight,
 	       &ParamsSameFeedbacks.P,&ParamsSameFeedbacks.Q,&ParamsSameFeedbacks.Weight,
@@ -287,6 +287,7 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 		Instance->SetCriterionParam("Diff Feedbacks",ParamsDiffFeedbacks.P,ParamsDiffFeedbacks.Q,ParamsDiffFeedbacks.Weight);
 		Instance->SetCriterionParam("Social",ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
 		Instance->SetMinRatios(MinCommonOK,MinCommonDiff);
+		Instance->SetMaxKMeans(MaxKMeans);
 		#ifdef RGADEBUG
 			if(IdealGroups) Instance->SetIdealGroups(IdealGroups);
 		#endif

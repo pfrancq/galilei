@@ -133,6 +133,11 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	unsigned long MaxGen;
 
 	/**
+	* Maximal Number of KMeans.
+	*/
+	unsigned int MaxKMeans;
+
+	/**
 	* Type of measure used for the similarity criterion.
 	*/
 	SimType SimMeasure;
@@ -335,6 +340,18 @@ public:
 	* @return double.
 	*/
 	double GetMinCommonDiff(void) const {return(MinCommonDiff);}
+
+	/**
+	* Set the maximal number of K-Means iterations.
+	* @param i              Maximal number of iterations.
+	*/
+	void SetMaxKMeans(unsigned int i) {MaxKMeans=i;}
+
+	/**
+	* Get the maximal number of K-Means iterations.
+	* @returns unsigned int representing the maxiaml number of iterations.
+	*/
+	unsigned int GetMaxKMeans(void) const {return(MaxKMeans);}
 
 	/**
 	* Destruct the instance.
