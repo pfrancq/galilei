@@ -54,7 +54,6 @@ using namespace R;
 #include <docs/gdocanalyse.h>
 #include <docs/gdocxml.h>
 #include <docs/gdocslang.h>
-#include <docs/gdocoptions.h>
 #include <docs/gdocprofsim.h>
 #include <docs/gdocprofsims.h>
 #include <docs/gwordsclustering.h>
@@ -95,19 +94,17 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
-	GDocOptions* opt, GSessionParams* sessparams,bool tests) throw(bad_alloc,GException)
+ GSessionParams* sessparams,bool tests) throw(bad_alloc,GException)
 	: GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(0), Fdbks(f+f/2,f/2),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
 	  StatsCalcMng(0), LinkCalcMng(0),
-	  DocAnalyse(0), bGroups(false),bFdbks(false),
-	  DocOptions(opt),SessParams(sessparams)
+	  bGroups(false),bFdbks(false),
+	  SessParams(sessparams)
 
 {
 	// Init Part
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
-	DocOptions=new GDocOptions(opt);
-	DocAnalyse=new GDocAnalyse(this,DocOptions);
 	CurrentRandom=0;
 	Random = new RRandomGood(CurrentRandom);
 
@@ -122,7 +119,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 
 
 //-----------------------------------------------------------------------------
-void GSession::Connect(GLangs* langs,GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+void GSession::Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 	GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(bad_alloc,GException)
 {
 	GLang* lang;
@@ -141,6 +138,9 @@ void GSession::Connect(GLangs* langs,GURLManager* umng, GProfileCalcManager* pmn
 		}
 	}
 	URLMng=umng;
+	DocAnalyseMng=dmng;
+	if(DocAnalyseMng)
+		DocAnalyseMng->Connect(this);
 	ProfilingMng=pmng;
 	if(ProfilingMng)
 		ProfilingMng->Connect(this);
@@ -176,16 +176,6 @@ GDocXML* GSession::CreateDocXML(GDoc* doc) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GSession::SetCurrentWordsClusteringMethodSettings(unsigned minocc,unsigned s,double c,unsigned ndm)
-{
-	DocOptions->MinOccurCluster=minocc;
-	DocOptions->WindowSize=s;
-	DocOptions->MinConfidence=c;
-	DocOptions->NbDocsMin=ndm;
-}
-
-
-//-----------------------------------------------------------------------------
 void GSession::AnalyseAssociation(bool save)
 {
 	GDocCursor Docs=GetDocsCursor();
@@ -193,7 +183,7 @@ void GSession::AnalyseAssociation(bool save)
 	unsigned int i,n=1;
 	bool end=false;
 	Docs.Start();
-	test= new GWordsClustering(Docs()->GetLang()->GetDict(),DocOptions->MinDocs,DocOptions->MaxDocs,DocOptions->MinOccurCluster,DocOptions->WindowSize,DocOptions->MinConfidence,DocOptions->NbDocsMin,GetDbName());
+	test= new GWordsClustering(Docs()->GetLang()->GetDict(),5,10,2,2,2,2,GetDbName());
 	for(i=Docs.GetNb(),Docs.Start();i--;Docs.Next())
 	{
 		test->AddDoc(dynamic_cast<GDocVector*>(Docs()));
@@ -201,21 +191,21 @@ void GSession::AnalyseAssociation(bool save)
 	test->CleanWords();
 
 	// Teste de la nouvelle mthode
-	if(DocOptions->Distance)
+// 	if(DocOptions->Distance)
 	{
 		cout<<"warning : Use of distance in words clustering"<<endl;
 		test->InsertNeighbor();
 		test->ConceptSpace();
 		test->SaveConceptSpace(save);
 	}
-	else
+/*	else
 	{
 		for(i=0;i<DocOptions->NbIteration;i++)
 		{
 		  end=test->OrdreByDocs(i);
 		}
 		test->SaveAssociations(save);
-	}
+	}*/
 	test->View();
 	Docs.Start();
 	if(save)
@@ -272,7 +262,7 @@ void GSession::RemoveAssociation()
 	GWordsClustering* test;
 	unsigned int i,n=1;
 	Docs.Start();
-	test= new GWordsClustering(Docs()->GetLang()->GetDict(),DocOptions->MinDocs,DocOptions->MaxDocs,DocOptions->MinOccurCluster,DocOptions->WindowSize,DocOptions->MinConfidence,DocOptions->NbDocsMin,GetDbName());
+	test= new GWordsClustering(Docs()->GetLang()->GetDict(),5,10,2,2,2,2,GetDbName());
 	for(i=Docs.GetNb(),Docs.Start();i--;Docs.Next())
 	{
 		test->AddDoc(dynamic_cast<GDocVector*>(Docs()));
@@ -300,7 +290,11 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	GDocXML* xml=0;
 	GDocCursor Docs=GetDocsCursor();
 	RContainer<GDoc,unsigned int,false,true>* tmpDocs = new RContainer<GDoc,unsigned int,false,true>(5,2);
+	GDocAnalyse* Analyse;
 
+	Analyse=DocAnalyseMng->GetCurrentMethod();
+	if(!Analyse)
+		throw GException("No document analysis method chosen.");
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		if(modified&&(Docs()->GetState()==osUpToDate)) continue;
@@ -315,7 +309,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 				if(xml)
 				{
 					Docs()->InitFailed();
-					DocAnalyse->Analyse(xml,Docs(),tmpDocs);
+					Analyse->Analyse(xml,Docs(),tmpDocs);
 					delete xml;
 					xml=0;
 					if ((undefLang)&&(Docs()->GetLang()))
@@ -987,13 +981,11 @@ GSession::~GSession(void) throw(GException)
 	if(StatsCalcMng) StatsCalcMng->Disconnect(this);
 	if(LinkCalcMng) LinkCalcMng->Disconnect(this);
 	if(Langs) Langs->Disconnect(this);
+	if(DocAnalyseMng) DocAnalyseMng->Disconnect(this);
 
 	// Delete stuctures
-	if(DocAnalyse) delete DocAnalyse;
-	if(DocOptions) delete DocOptions;
 	if(SubProfileDescs) delete SubProfileDescs;
 	if(Subjects) delete Subjects;
-	if(Langs) delete Langs;
 }
 
 

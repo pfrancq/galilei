@@ -59,7 +59,6 @@
 #include <sessions/gprginstmethod.h>
 #include <sessions/gprgvarconst.h>
 #include <sessions/gprgvarref.h>
-#include <docs/gdocoptions.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -129,20 +128,13 @@ void GSOutputI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int
 
 
 //-----------------------------------------------------------------------------
-void GSetLinksUseI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSetLinksMethodI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=1)
-		throw GException("The method needs one parameter (\"0\" or \"1\") to specify if the links are used.");
-	if((args->Tab[0]->GetValue(prg))[0]=='0')
-	{
-		r->WriteStr("Set Use of Links : false");
-		Owner->Session->GetDocOptions()->UseLink=false;
-	}
-	else
-	{
-		r->WriteStr("Set Use of Links : true");
-		Owner->Session->GetDocOptions()->UseLink=true;
-	}
+		throw GException("The method needs one parameter to specify the name of the link computing method (or \"None\").");
+	sprintf(tmp,"Link Computing Method: %s",args->Tab[0]->GetValue(prg));
+	r->WriteStr(tmp);
+	Owner->Session->GetLinkCalcMng()->SetCurrentMethod(args->Tab[0]->GetValue(prg));
 }
 
 
@@ -608,16 +600,11 @@ void GComputeTimeI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int
 
 
 //-----------------------------------------------------------------------------
-void GWordsClusteringI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GWordsClusteringI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
-	if(args->NbPtr!=4)
-		throw GException("Method needs four parameters.");
+	if(args->NbPtr)
+		throw GException("Method needs no parameters.");
 	r->WriteStr("Create New Concepts");
-	sprintf(tmp,"Words Clustering: Settings=\"%s\",\"%s\",\"%s\",\"%s\"",
-	        args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg),args->Tab[2]->GetValue(prg),
-	        args->Tab[3]->GetValue(prg));
-	r->WriteStr(tmp);
-	Owner->Session->SetCurrentWordsClusteringMethodSettings(atoi(args->Tab[0]->GetValue(prg)),atoi(args->Tab[1]->GetValue(prg)),atof(args->Tab[2]->GetValue(prg)),atoi(args->Tab[3]->GetValue(prg)));
 	Owner->Session->RemoveAssociation();
 	Owner->Session->AnalyseAssociation(true);
 }
@@ -637,7 +624,7 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GOutputI(this));
 	Methods.InsertPtr(new GGOutputI(this));
 	Methods.InsertPtr(new GSOutputI(this));
-	Methods.InsertPtr(new GSetLinksUseI(this));
+	Methods.InsertPtr(new GSetLinksMethodI(this));
 	Methods.InsertPtr(new GSetAutoSaveI(this));
 	Methods.InsertPtr(new GTestI(this));
 	Methods.InsertPtr(new GLogI(this));

@@ -116,7 +116,9 @@ class GDocCursor;
 class GDocXML;
 class GDocs;
 class GDocAnalyse;
-class GDocOptions;
+class GFactoryDocAnalyse;
+class GFactoryDocAnalyseCursor;
+class GDocAnalyseManager;
 class GDocSim;
 class GDocsSim;
 class GDocsLang;
@@ -225,15 +227,13 @@ class GCpov;
 class GCpovCursor;
 class GStandardInOutPutCursor;
 
+
 //-----------------------------------------------------------------------------
 // forward class declaration - Parameters Part
 // Grouping parameters
 class GParams;
 class GParam;
 class GConfig;
-// Link Description parameters
-class GLinkCalcHITSParams;
-// Session parameters
 class GSessionParams;
 
 

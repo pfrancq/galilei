@@ -42,7 +42,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <langs/glang.h>
+#include <sessions/gplugin.h>
+#include <docs/gdocanalysemanager.h>
 
 
 //-----------------------------------------------------------------------------
@@ -50,14 +51,19 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
+// API VERSION
+#define API_DOCANALYSE_VERSION "1.0"
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GDocAnalyse class provides a method to analyse a document.
 * @author Pascal Francq
 * @short Vector Model Documents Analyse.
 */
-class GDocAnalyse
+class GDocAnalyse : public GPlugin<GFactoryDocAnalyse>
 {
-	class WordWeight;
+protected:
 
 	/**
 	* Corresponding session;
@@ -65,242 +71,39 @@ class GDocAnalyse
 	GSession* Session;
 
 	/**
-	* Cursor on the different languages defined in the system.
-	*/
-	GFactoryLangCursor CurLangs;
-
-	/**
-	* All the word appaering in the current document.
-	*/
-	R::RDblHashContainer<WordWeight,unsigned,27,27,false>* Weights;
-
-	/**
 	* Current document to analyse.
 	*/
 	GDocVector* Doc;
-
-	/**
-	* Direct access to the words.
-	*/
-	WordWeight** Direct;
-
-	/**
-	* Number of elements allocated in Direct;
-	*/
-	unsigned int NbDirect;
-
-	/**
-	* Order of the words in the document.
-	*/
-	GWord** Order;
-
-	/**
-	* Number of elements allocated in Order.
-	*/
-	unsigned int NbOrder;
-	
-	/**
-	* Number of words in the document.
-	*/
-	unsigned int N;
-
-	/**
-	* Number of different words in the document.
-	*/
-	unsigned int Ndiff;
-
-	/**
-	* Number of words not in the stoplist.
-	*/
-	unsigned int Nwords;
-	/**
-	* Total number of valid words.
-	*/
-	unsigned int V;
-
-	/**
-	* Number of different valid words.
-	*/
-	unsigned int Vdiff;
-
-	/**
-	* Number of words of the stoplist for the different languages that are in
-	* the document.
-	*/
-	unsigned int* Sl;
-
-	/**
-	* Number of different words of the stoplist for the different languages
-	* that are in the document.
-	*/
-	unsigned int* Sldiff;
-
-	/**
-	* Number of words of the stoplist of the selected language that are in the
-	* document.
-	*/
-	unsigned int Sdiff;
-
-	/**
-	* Number of different words of the stoplist of the selected language that
-	* are in the document.
-	*/
-	unsigned int S;
-
-	/**
-	* Language actually considered.
-	*/
-	GLang* Lang;
-
-	/**
-	* Determine if the language must be find for the current document.
-	*/
-	bool FindLang;
-
-	/**
-	* Determine if the current word has only letters.
-	*/
-	bool OnlyLetters;
-
-	/**
-	* Index of the language when defined.
-	*/
-	unsigned int LangIndex;
-
-	/**
-	* Options.
-	*/
-	GDocOptions* Options;
 
 public:
 
 	/**
 	* Constructor.
-	* @param s              Session.
-	* @param opt            Options.
+	* @param fac             Factory of the plugin.
 	*/
-	GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc);
-
-protected:
+	GDocAnalyse(GFactoryDocAnalyse* fac) throw(bad_alloc);
 
 	/**
-	* Do some cleaning operations before a analyse.
+	* Connect to a Session.
+	* @param session         The session.
 	*/
-	void Clear(void);
+	virtual void Connect(GSession* session);
 
 	/**
-	* Verify the size of direct and reallocate when necessary.
+	* Disconnect from a Session.
+	* @param session         The session.
 	*/
-	void VerifyDirect(void) throw(bad_alloc);
-
-	/**
-	* Verify the size of direct and reallocate when necessary.
-	*/
-	void VerifyOrder(void) throw(bad_alloc);
-
-	/**
-	* Add a word to the document.
-	* @param word           Word to add.
-	* @param weight         Weights of the words added during this analyze.
-	*/
-	void AddWord(const char* word,double weight) throw(bad_alloc);
-
-	/**
-	* This function construct a word.
-	* @param ptr            Pointer that will be moved to the next word.
-	* @param word           Where to store the word.
-	* @param weight         Weights of the words added during this analyze.
-	* @returns true if a word was extract.
-	*/
-	bool ExtractWord(const char* &ptr,R::RString& word,double weight);
-
-	/**
-	* Analyse a tag.
-	* @param tag            Tag to analyse.
-	* @param weight         Weights of the words added during this analyze.
-	*/
-	void AnalyseTag(R::RXMLTag* tag,double weight) throw(GException);
-
-	/**
-	* Analyse a link tag.
-	* @param tag            Tag to analyse.
-	* @param tmpDocs        A pointer to a container of docs to maintain the documents to be added.
-	*/
-	void AnalyseLinksTag(R::RXMLTag* tag,bool externalLinks ,R::RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException);
-
-	/**
-	* This methods determine the language of the current structure studied,
-	* i.e. the language with the maximal number of words of the stop-list
-	* contained in the document and with a minimal value for the ratio of
-	* stopwords that are in the document.
-	*/
-	void DetermineLang(void) throw(GException);
-
-	/**
-	* Construct the information about the current document and store it in
-	* Words.
-	*/
-	void ConstructInfos(void) throw(GException);
-
-public:
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Analyse a XML representation of a document for a session and store the
-	* results in this document.
+	* results in this document. Set the document variable of the class to the
+	* current document passed as argument.
 	* @param xml            XML Representation used.
 	* @param doc            Corresponding document.
 	* @param tmpDocs        A container of docs to maintain the documents ro be added.
 	*/
-	void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException);
-
-	/**
-	* Analyse a XML representation of a document for a session and computes
-	* statistics about it.
-	* @param xml            XML Representation used.
-	*/
-	void ComputeStats(GDocXML* xml) throw(GException);
-
-	/**
-	* @return Total number of words in the documents with stoplist.
-	*/
-	unsigned int GetN(void) {return(N);}
-
-	/**
-	* @return Total number of words in the documents.
-	*/
-	unsigned int GetV(void) {return(V);}
-
-	/**
-	* @return Total number of words in the stop-list.
-	*/
-	unsigned int GetS(void) {return(S);}
-
-	/**
-	* @param l              Index of the language.
-	* @return Total number of words in the stop-list.
-	*/
-	unsigned int GetS(unsigned int l) {return(Sl[l]);}
-
-	/**
-	* @return Number of different words in the documents.
-	*/
-	unsigned int GetNdiff(void) {return(Ndiff);}
-
-	/**
-	* @return Number of different words in the documents.
-	*/
-	unsigned int GetVdiff(void) {return(Vdiff);}
-
-	/**
-	* @return Number of different words in the stop-list.
-	*/
-	unsigned int GetSdiff(void) {return(Sdiff);}
-
-	/**
-	* @param l              Index of the language.
-	* @return Number of different words in the stop-list.
-	*/
-	unsigned int GetSdiff(unsigned int l) {return(Sldiff[l]);}
+	virtual void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException);
 
 	/**
 	*  update the feedback of the profiles and subprofiles
@@ -312,6 +115,101 @@ public:
 	*/
 	virtual ~GDocAnalyse(void);
 };
+
+
+//-----------------------------------------------------------------------------
+class GFactoryDocAnalyse : public GFactoryPlugin<GFactoryDocAnalyse,GDocAnalyse,GDocAnalyseManager>
+{
+public:
+	/**
+	* Constructor.
+	* @param mng             Manager of the plugin.
+	* @param n               Name of the Factory/Plugin.
+	* @param f               Lib of the Factory/Plugin.
+	*/
+	GFactoryDocAnalyse(GDocAnalyseManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryDocAnalyse,GDocAnalyse,GDocAnalyseManager>(mng,n,f) {}
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GFactoryDocAnalyse(void) {}
+};
+
+
+//-----------------------------------------------------------------------------
+typedef GFactoryDocAnalyse*(*GFactoryDocAnalyseInit)(GDocAnalyseManager*,const char*);
+
+
+//------------------------------------------------------------------------------
+#define CREATE_DOCANALYSE_FACTORY(name,C)                                                       \
+class TheFactory : public GFactoryDocAnalyse                                                    \
+{                                                                                               \
+private:                                                                                        \
+	static GFactoryDocAnalyse* Inst;                                                            \
+	TheFactory(GDocAnalyseManager* mng,const char* l) : GFactoryDocAnalyse(mng,name,l)          \
+	{                                                                                           \
+		C::CreateParams(this);                                                                  \
+	}                                                                                           \
+	virtual ~TheFactory(void) {}                                                                \
+public:                                                                                         \
+	static GFactoryDocAnalyse* CreateInst(GDocAnalyseManager* mng,const char* l)                \
+	{                                                                                           \
+		if(!Inst)                                                                               \
+			Inst = new TheFactory(mng,l);                                                       \
+		return(Inst);                                                                           \
+	}                                                                                           \
+	virtual const char* GetAPIVersion(void) const {return(API_DOCANALYSE_VERSION);}             \
+	virtual void Create(void) throw(GException)                                                 \
+	{                                                                                           \
+		if(Plugin) return;                                                                      \
+		Plugin=new C(this);                                                                     \
+		Plugin->ApplyConfig();                                                                  \
+	}                                                                                           \
+	virtual void Delete(void) throw(GException)                                                 \
+	{                                                                                           \
+		if(!Plugin) return;                                                                     \
+		delete Plugin;                                                                          \
+		Plugin=0;                                                                               \
+	}                                                                                           \
+	virtual void Create(GSession* ses) throw(GException)                                        \
+	{                                                                                           \
+		if(!Plugin)                                                                             \
+		{                                                                                       \
+			Plugin=new C(this);                                                                 \
+			Plugin->ApplyConfig();                                                              \
+		}                                                                                       \
+		if(ses)                                                                                 \
+			Plugin->Connect(ses);                                                               \
+	}                                                                                           \
+	virtual void Delete(GSession* ses) throw(GException)                                        \
+	{                                                                                           \
+		if(!Plugin) return;                                                                     \
+		if(ses)                                                                                 \
+			Plugin->Disconnect(ses);                                                            \
+		delete Plugin;                                                                          \
+		Plugin=0;                                                                               \
+	}                                                                                           \
+};                                                                                              \
+                                                                                                \
+GFactoryDocAnalyse* TheFactory::Inst = 0;                                                       \
+                                                                                                \
+extern "C"                                                                                      \
+{                                                                                               \
+	GFactoryDocAnalyse* FactoryCreate(GDocAnalyseManager* mng,const char* l)                    \
+	{                                                                                           \
+		return(TheFactory::CreateInst(mng,l));                                                  \
+	}                                                                                           \
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GFactoryDocAnalyseCursor class provides a way to go trough a set of
+* factories.
+* @short Doc Analysis Factories Cursor
+*/
+CLASSCURSOR(GFactoryDocAnalyseCursor,GFactoryDocAnalyse,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

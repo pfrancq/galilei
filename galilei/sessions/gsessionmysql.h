@@ -87,7 +87,7 @@ public:
 	* @param test           Test mode.
 	*/
 	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
-		GDocOptions* opt,GSessionParams* sessparams,bool tests) throw(bad_alloc,GException,R::RMySQLError);
+		GSessionParams* sessparams,bool tests) throw(bad_alloc,GException,R::RMySQLError);
 
 	/**
 	* Count the number of rows of a table.

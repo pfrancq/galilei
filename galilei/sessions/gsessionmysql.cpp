@@ -94,10 +94,10 @@ const char GALILEI::GSessionMySQL::SQLNULL[5]="NULL";
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
-	GDocOptions* opt,GSessionParams* sessparams,bool tests) throw(bad_alloc,GException,RMySQLError)
+	GSessionParams* sessparams,bool tests) throw(bad_alloc,GException,RMySQLError)
 	: RDb(host,user,pwd,db),
 	  GSession(GetCount("htmls"),GetCount("users"),GetCount("profiles"),GetCount("htmlsbyprofiles"),GetCount("groups"),
-	  	opt,sessparams,tests)
+	  	sessparams,tests)
 {
 	DbName=db;
 }

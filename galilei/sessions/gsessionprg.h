@@ -210,10 +210,10 @@ public:
 
 
 //-----------------------------------------------------------------------------
-class GSetLinksUseI : public GSM
+class GSetLinksMethodI : public GSM
 {
 public:
-	GSetLinksUseI(GPrgClassSession* o) : GSM("SetLinksUse",o) {}
+	GSetLinksMethodI(GPrgClassSession* o) : GSM("SetLinksMethod",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 

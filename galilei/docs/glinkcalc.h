@@ -37,10 +37,6 @@
 #ifndef GLinkCalcH
 #define GLinkCalcH
 
-//-----------------------------------------------------------------------------
-// include file for LibTool--
-#include <ltmm/loader.hh>
-
 
 //-----------------------------------------------------------------------------
 //include file for GALILEI

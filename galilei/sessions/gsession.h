@@ -132,7 +132,7 @@ protected:
 	/**
 	* Analyser used for the document.
 	*/
-	GDocAnalyse* DocAnalyse;
+	GDocAnalyseManager* DocAnalyseMng;
 
 	/**
 	* Similarity between the  profiles.
@@ -158,11 +158,6 @@ protected:
 	* State of the User's feedbacks.
 	*/
 	bool bFdbks;
-
-	/**
-	* Options about the documents.
-	*/
-	GDocOptions* DocOptions;
 
 	/**
 	* The current seek for this session.
@@ -191,26 +186,27 @@ public:
 	* @param test           Test mode.
 	*/
 	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
-		GDocOptions* opt,GSessionParams* sessparams,bool tests) throw(bad_alloc,GException);
+		GSessionParams* sessparams,bool tests) throw(bad_alloc,GException);
 
 	/**
 	* Connect the session to the different managers.
 	* @param langs          Languages.
 	* @param umng           URL Manager.
+	* @param dmng           Document Analysis Manager.
 	* @param pmng           Profiling Manager.
 	* @param gmng           Grouping Manager.
 	* @param gcmng          Group Computing Manager.
 	* @param smng           Statistical Manager.
 	* @param lmng           Linking Manager.
 	*/
-	void Connect(GLangs* langs,GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+	void Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(bad_alloc,GException);
 
 	/**
 	* Get the documents' analyser.
 	* @returns Pointer to a GDocAnalyse class.
 	*/
-	GDocAnalyse* GetDocAnalyse(void) const {return(DocAnalyse);}
+	GDocAnalyseManager* GetDocAnalyseMng(void) const {return(DocAnalyseMng);}
 
 	/**
 	* Get the languages.
@@ -229,6 +225,11 @@ public:
 	GGroupingManager* GetGroupingMng(void) {return(GroupingMng);}
 
 	/**
+	* Get the link computing manager used by this session.
+	*/
+	GLinkCalcManager* GetLinkCalcMng(void) {return(LinkCalcMng);}
+
+	/**
 	* Get the group computing manager used by this session.
 	*/
 	GGroupCalcManager* GetGroupCalcMng(void) {return(GroupCalcMng);}
@@ -239,15 +240,9 @@ public:
 	GStatsCalcManager* GetStatsCalcMng(void) {return(StatsCalcMng);}
 
 	/**
-	* Get a pointer to the document options.
-	* @returns Pointer to GDocOptions.
-	*/
-	GDocOptions* GetDocOptions(void) {return(DocOptions);}
-
-	/**
 	* Return a pointer to a tree of subjects
 	*/
-	GSubjectTree* GetSubjects() {return(Subjects);}
+	GSubjectTree* GetSubjects(void) {return(Subjects);}
 
 	/**
 	* Get the current description method.
@@ -267,11 +262,6 @@ public:
 	* @param doc        Document to analyse.
 	*/
 	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
-
-	/**
-	* Set the setting of the clustering method.
-	*/
-	void SetCurrentWordsClusteringMethodSettings(unsigned minocc,unsigned s,double c,unsigned ndm);
 
 	/**
 	* Create concept in the whole set of documents.

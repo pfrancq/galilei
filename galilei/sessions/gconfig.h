@@ -104,6 +104,11 @@ class GConfig : R::RXMLStruct
 	*/
 	R::RXMLTag* Langs;
 
+	/**
+	* Document Analysis Methods.
+	*/
+	R::RXMLTag* DocAnalyses;
+
 public:
 
 	/**
@@ -205,6 +210,18 @@ public:
 	* @param mng             Manager.
 	*/
 	void Store(GLangs& mng);
+
+	/**
+	* Read the links computing methods from the structure.
+	* @param mng             Manager.
+	*/
+	void Read(GDocAnalyseManager& mng);
+
+	/**
+	* Store the links computing methods in the structure.
+	* @param mng             Manager.
+	*/
+	void Store(GDocAnalyseManager& mng);
 
 	/**
 	* Destructor.

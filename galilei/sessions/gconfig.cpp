@@ -58,6 +58,8 @@ using namespace R;
 #include <docs/glinkcalc.h>
 #include <langs/glang.h>
 #include <langs/glangs.h>
+#include <docs/gdocanalyse.h>
+#include <docs/gdocanalysemanager.h>
 using namespace GALILEI;
 
 
@@ -82,6 +84,7 @@ GConfig::GConfig(const char* f) throw(bad_alloc)
 	AddNode(t,StatsCalcs=new RXMLTag("galileiconfig:statsCalcs"));
 	AddNode(t,LinkCalcs=new RXMLTag("galileiconfig:linkCalcs"));
 	AddNode(t,Langs=new RXMLTag("galileiconfig:langs"));
+	AddNode(t,DocAnalyses=new RXMLTag("galileiconfig:docanalyses"));
 }
 
 
@@ -99,6 +102,7 @@ void GConfig::Load(void)
 		StatsCalcs=GetTop()->GetTag("galileiconfig:statsCalcs");
 		LinkCalcs=GetTop()->GetTag("galileiconfig:linkCalcs");
 		Langs=GetTop()->GetTag("galileiconfig:langs");
+		DocAnalyses=GetTop()->GetTag("galileiconfig:docanalyses");
 	}
 	catch(...)
 	{
@@ -353,6 +357,46 @@ void GConfig::Store(GLangs& mng)
 	{
 		Cur()->SaveConfig(Langs);
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GDocAnalyseManager& mng)
+{
+	GFactoryDocAnalyseCursor Cur;
+
+	if(!DocAnalyses) return;
+	Cur=mng.GetDocAnalysesCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(DocAnalyses);
+	}
+	try
+	{
+		mng.SetCurrentMethod(DocAnalyses->GetAttrValue("Current"));
+	}
+	catch(GException)
+	{
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GDocAnalyseManager& mng)
+{
+	GFactoryDocAnalyseCursor Cur;
+	GDocAnalyse* lcalc;
+
+	Cur=mng.GetDocAnalysesCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(DocAnalyses);
+	}
+	lcalc=mng.GetCurrentMethod();
+	if(lcalc)
+		DocAnalyses->InsertAttr("Current",lcalc->GetFactory()->GetName());
+	else
+		DocAnalyses->InsertAttr("Current","None");
 }
 
 

@@ -7,11 +7,11 @@ SUBDIRS =
 libgalilei_docs_la_SOURCES = gbalancedlinks.cpp gdoc.cpp gdocprofsim.cpp gdocs.cpp \
 			 	gdocssim.cpp gwordsclustering.cpp \
 				gdcmetadata.cpp gdoclist.cpp gdocprofsims.cpp gdocsim.cpp gdocvector.cpp glinkcalc.cpp \
-				glink.cpp gdocanalyse.cpp gdocoptions.cpp gdocrefurl.cpp gdocslang.cpp gdocxml.cpp \
-				glinkcalcmanager.cpp glinks.cpp
+				glink.cpp gdocanalyse.cpp gdocrefurl.cpp gdocslang.cpp gdocxml.cpp \
+				glinkcalcmanager.cpp gdocanalysemanager.cpp glinks.cpp
 
 docsincludedir = $(includedir)/galilei/docs
 docsinclude_HEADERS = gbalancedlinks.h gdocanalyse.h gdoclist.h gdocprofsim.h gdocrefurl.h \
 					gdocsim.h gdocssim.h gdocxml.h glinkcalc.h glinks.h \
-					gdcmetadata.h gdoc.h gdocoptions.h gdocprofsims.h gdocs.h gdocslang.h \
-					gdocvector.h glink.h gwordsclustering.h glinkcalcmanager.h
+					gdcmetadata.h gdoc.h gdocprofsims.h gdocs.h gdocslang.h \
+					gdocvector.h glink.h gwordsclustering.h glinkcalcmanager.h gdocanalysemanager.h
