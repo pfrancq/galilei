@@ -6,7 +6,7 @@
 
 	Compare a ideal groupement with a computed one - Implementation
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq and J. Lamoral.
 
 	Version $Revision$
 
@@ -36,12 +36,50 @@
 #include<groups/gcomparegrouping.h>
 #include<groups/ggroup.h>
 #include<groups/ggroups.h>
+#include<langs/glangs.h>
+#include<langs/glang.h>
 #include<profiles/gprofile.h>
 #include<profiles/gsubprofile.h>
 #include<sessions/gsession.h>
 #include<sessions/gslot.h>
 using namespace GALILEI;
 
+
+
+//-----------------------------------------------------------------------------
+//
+//  GGroupId
+//
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+class GALILEI::GCompareGrouping::GGroupId
+{
+public:
+	/**
+	*the id of the groupment.
+	*/
+	int GrpId;
+
+	/**
+	*the position of the group.
+	*/
+	int position;
+
+	/**
+	* Construct the Real ID .
+	* @Real Id              the id of the groupment.
+	*/
+	GGroupId(int RealId,int Position) : GrpId(RealId), position(Position) {}
+
+	int Compare(const GGroupId* grp) const {return(GrpId-grp->GrpId);}
+
+	int Compare(const int ID) const {return(GrpId-ID);}
+
+	int Compare(const GGroupId& grp) const {return(GrpId-grp.GrpId);}
+	
+};
 
 
 //-----------------------------------------------------------------------------
@@ -169,126 +207,119 @@ void GALILEI::GCompareGrouping::ComputeRecallPrecision(GSlot* /*rec*/)
 //-----------------------------------------------------------------------------
 void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 {
-	GGroupsCursor ComputedGroup=Session->GetGroupsCursor();
-	GGroups* Grp;
-	GGroups* GrpComputed;
-	GGroup* grp;
-	GGroup* grpcomputed;
-	int u,v,subprofileid,NbTot;
-	int** ptr;
- 	int* ptr2;
-	int i,j;
-
-	// Compute number of elements in ideal and computed groups.
-	u=0;
-	v=0;
-	NbTot=0;
-	for(Groups->Start();!Groups->End();Groups->Next())
-	{
-		Grp=(*Groups)();
-		u=u+Grp->NbPtr;
-	}
-	for(ComputedGroup.Start();!ComputedGroup.End();ComputedGroup.Next())
-	{
-		Grp=ComputedGroup();
-		v=v+Grp->NbPtr;
-	}
-
-	//initalisation of the matrix
-	int** matrix;
-	matrix=new int*[u];
-	for(int i=0;i<u;i++)
-	{
-		matrix[i]=new int[v];
-		for(int j=0;j<v;j++)
-		{
-			matrix[i][j]=0;
-		}
-	}
-
-	// Element i,j of the matrix is the number of profiles who are in the i eme ideal groups and j eme computed group
-	int u1,v1;
-	u1=0;
-	for(Groups->Start();!Groups->End();Groups->Next())
-	{
-		Grp=(*Groups)();
-		for(Grp->Start();!Grp->End();Grp->Next())
-		{
-			grp=(*Grp)();
-			for(grp->Start();!grp->End();grp->Next())
-			{
-				subprofileid=(*grp)()->GetId();
-				v1=0;
-				for(ComputedGroup.Start();!ComputedGroup.End();ComputedGroup.Next())
-				{
-					GrpComputed=ComputedGroup();
-					for(GrpComputed->Start();!GrpComputed->End();GrpComputed->Next())
-					{
-						grpcomputed=(*GrpComputed)();
-						for(grpcomputed->Start();!grpcomputed->End();grpcomputed->Next())
-						{
-							if (subprofileid==(*grpcomputed)()->GetId())
-							{
-								matrix[u1][v1]++;
-								NbTot++;
-							}
-						}
-						v1++;
-					}
-				}
-			}
-			u1++;
-		}
-	}
-
-	// calculation of the different terms of the total = a-(b*c)/d)/((1/2*(b+c))-(b*c)/d)
-	double a,b,c,d,num,den;
-
-	a=0;
+	GGroups* GroupsIdeal;                         // Pointer to the ideal groups for a given language
+	GGroups* GroupsComputed;                      // Pointer to the computed groups for a given language
+	GGroup* GroupIdeal;                           // Pointer to a ideal group
+	unsigned int** matrix;                        // Matrix representing all assignation ideal/computed
+	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
+	unsigned int MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
+	unsigned int NbProfiles;                      // Total Number of profiles
+	unsigned int NbTot;
+	unsigned int** ptr;
+	unsigned int* ptr2;
+	double total;
+	GLangCursor Langs=Session->GetLangsCursor();
+	unsigned int row,col;
 	
-	for(i=u+1,ptr=matrix;--i;ptr++)
+	// Init part
+	Total=0.0;
+	NbProfiles=0;
+
+	// Go through the languages to define the maximal sizes and allocate the matrix
+	MaxRows=MaxCols=0;
+	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		for(j=v+1,ptr2=(*ptr);--j;ptr2++)
+		NbRows=Groups->GetPtr<GLang*>(Langs())->NbPtr;
+		NbCols=Session->GetGroups(Langs())->NbPtr;
+		if(NbRows>MaxRows) MaxRows=NbRows;
+		if(NbCols>MaxCols) MaxCols=NbCols;
+	}
+	matrix=new unsigned int*[MaxRows];
+	for(row=MaxRows+1,ptr=matrix;--row;ptr++)
+		(*ptr)=new unsigned int[MaxCols];
+
+	// we take the total for each languages multiplied by the number of subprofiles
+	// in the idealgroup for this language.
+	for(Langs.Start();!Langs.End();Langs.Next())
+	{
+		// Compute number of elements in ideal and computed groups.
+		// and assign the groups to the current language.
+		GroupsIdeal=Groups->GetPtr<GLang*>(Langs());
+		NbRows=GroupsIdeal->NbPtr;
+		GroupsComputed=Session->GetGroups(Langs());
+		NbCols=GroupsComputed->NbPtr;
+		if((!NbRows)||(!NbCols)) continue;
+
+		// Initalisation of the matrix
+		for(row=NbRows+1,ptr=matrix;--row;ptr++)
 		{
-			a+=(((*ptr2)*((*ptr2)-1))/2);
+			memset((*ptr),0,NbCols*sizeof(int));
 		}
+
+		// Construction of the container for relation between id and column in the matrix.
+		RContainer<GGroupId,unsigned int,true,true> GroupsId(NbCols,NbCols/2);
+		for(GroupsComputed->Start(),col=0;!GroupsComputed->End();GroupsComputed->Next(),col++)
+		{
+			GroupsId.InsertPtr(new GGroupId(((*GroupsComputed)())->GetId(),col));
+		}
+
+		// Element i,j of the matrix is the number of profiles who are in the ith ideal groups
+		// and jth computed group. NbTot is number of profiles.
+		for(GroupsIdeal->Start(),ptr=matrix,NbTot=0;!GroupsIdeal->End();GroupsIdeal->Next(),ptr++)
+		{
+			GroupIdeal=(*GroupsIdeal)();
+			// for each subprofiles in this idealgroup add 1 in the case corresponding to the
+			// id of the computedgroup where the subprofile is.
+			for(GroupIdeal->Start();!GroupIdeal->End();GroupIdeal->Next())
+			{
+				(*ptr)[GroupsId.GetPtr(GroupsComputed->GetGroup((*GroupIdeal)())->GetId())->position]++;
+				NbTot++;
+			}
+		}
+
+		//Calculation of the different terms of the total = a-(b*c)/d)/((1/2*(b+c))-(b*c)/d)
+		double a,b,c,d,num,den;
+		a=0;
+		b=0;
+		c=0;
+
+		for(row=NbRows+1,ptr=matrix;--row;ptr++)
+		{
+			int sum=0;
+			for(col=NbCols+1,ptr2=(*ptr);--col;ptr2++)
+			{
+				a+=(((*ptr2)*((*ptr2)-1))/2);
+				sum+=(*ptr2);
+			}
+			b+=((sum*(sum-1))/2);
+		}
+
+		for(col=NbCols+1;--col;)
+		{
+			int sum=0;
+			for(row=NbRows+1,ptr=matrix;--row;ptr++)
+			{
+				sum+=(*ptr)[col-1];
+			}
+			c+=((sum*(sum-1))/2);
+		}
+
+		d=(NbTot*(NbTot-1))/2;
+		num=a-((b*c)/d);
+		den=(0.5*(b+c))-(b*c/d);
+		total=num/den;
+		NbProfiles+=NbTot;
+		Total+=total*NbTot;
+
 	}
 
-	b=0;
+	// Comute Total
+	Total=Total/NbProfiles;
 
-	for(int i=0;i<u;i++)
+	// Delete the matrix
+ 	for(row=MaxRows+1,ptr=matrix;--row;ptr++)
 	{
-		int sum=0;
-		for(int j=0;j<v;j++)
-		{
-			sum+=matrix[i][j];
-		}
-		b+=((sum*(sum-1))/2);
-	}
-
-	c=0;
-
-	for(int j=0;j<v;j++)
-	{
-		int sum=0;
-		for(int i=0;i<u;i++)
-		{
-			sum+=matrix[i][j];
-		}
-		c+=((sum*(sum-1))/2);
-	}
-
-	d=(NbTot*(NbTot-1))/2;
-
-	num=a-((b*c)/d);
-	den=(0.5*(b+c))-(b*c/d);
-
-
-	Total=num/den;
-
-	for(int i=0;i<u;i++)
-	{
-		delete[] matrix[i];
+		delete[] (*ptr);
 	}
 	delete[] matrix;
 }

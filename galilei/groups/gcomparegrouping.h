@@ -6,7 +6,7 @@
 
 	Compare a ideal groupement with a computed one - Header.
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq and J. Lamoral.
 
 	Version $Revision$
 
@@ -55,13 +55,14 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 * The GCompareGrouping provides a way to compare the groupement obtained with a
-* ideal one.
-* @author Pascal Francq
-* @short Generic Grouping.
+* ideal one by computed the precision, the recall and the adjusted rand index.
+* @author Pascal Francq and Julien Lamoral
+* @short Clustering Comparaison.
 */
 class GCompareGrouping
 {
 	class GroupScore;
+	class GGroupId;
 	CLASSCURSOR(GroupScoreCursor,GroupScore,unsigned int)
 
 protected:
@@ -120,7 +121,9 @@ protected:
 	void ComputeRecallPrecision(GSlot* rec=0);
 
 	/**
-	* Compute the Total Evaluation.
+	* Compute the Total based on the Adjusted Rand Index (Hubert and Arabie)
+	* The total is the mean of the total for each languages pondered by the
+	* number of subprofiles by languages.
 	* @param rec            Receiver of the signals.
 	*/
 	void ComputeTotal(GSlot* rec=0);
