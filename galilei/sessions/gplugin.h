@@ -268,6 +268,9 @@ public:
 		if(tag->GetAttrValue("Enable")=="True")
 			Create();
 		GParams::ReadConfig(tag);
+
+		// Apply the information.
+		Apply();
 	}
 
 	/**
