@@ -103,7 +103,7 @@ GSubject* GProfile::GetSubject(void) const
 void GProfile::SetId(unsigned int id) throw(GException)
 {
 	if(Id==cNoRef)
-		throw GException("Cannot assign cNoRef to a user");
+		throw GException("Cannot assign cNoRef to a profile");
 	Id=id;
 }
 

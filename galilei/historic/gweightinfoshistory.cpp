@@ -4,9 +4,9 @@
 
 	GWeightInfosHistory.cpp
 
-	Weights of a list of words - Implementation.
+	List of weighted information entities for history  - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -33,7 +33,8 @@
 */
 
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <historic/gweightinfoshistory.h>
 #include <profiles/gsubprofile.h>
@@ -42,101 +43,71 @@ using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GGWeightInfosHistory
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GALILEI::GWeightInfosHistory::GWeightInfosHistory(GSubProfile* sub, unsigned int nb)
-	: GWeightInfos(nb)
+//------------------------------------------------------------------------------
+GWeightInfosHistory::GWeightInfosHistory(GSubProfile* sub, unsigned int max) throw(std::bad_alloc)
+	: GWeightInfos(max)
 {
 	SubProfile=sub;
 	WellGrouped=NewSubProfile=false;
 }
 
 
-//-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GWeightInfosHistory::GetSubProfile(void)
-{
-	return SubProfile;
-}
-
-
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GWeightInfosHistory::GetId(void)
-{
-	return SubProfile->GetId();
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GWeightInfosHistory::SetParent(GGroupHistory* p)
-{
-	Parent=p;
-}
-
-
-//-----------------------------------------------------------------------------
-bool GALILEI::GWeightInfosHistory::IsWellGrouped(void)
-{
-	if (WellGrouped) return true;
-	 else return false;
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GWeightInfosHistory::SetWellGrouped(bool b)
-{
-	WellGrouped=b;
-}
-
-
-//-----------------------------------------------------------------------------
-bool GALILEI::GWeightInfosHistory::IsNewSubProfile(void)
-{
-	return(NewSubProfile==true);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GWeightInfosHistory::SetNewSubProfile(bool b)
-{
-	NewSubProfile=b;
-}
-
-
-//-----------------------------------------------------------------------------
-GGroupHistory* GALILEI::GWeightInfosHistory::GetParent(void)
-{
-	return Parent;
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GWeightInfosHistory::Compare(const GWeightInfosHistory& giwwh) const
+//------------------------------------------------------------------------------
+int GWeightInfosHistory::Compare(const GWeightInfosHistory& giwwh) const
 {
 	return(SubProfile->GetId()-giwwh.SubProfile->GetId());
 }
 
 
-//-----------------------------------------------------------------------------
- int GALILEI::GWeightInfosHistory::Compare(const GWeightInfosHistory* giwwh) const
- {
+//------------------------------------------------------------------------------
+int GWeightInfosHistory::Compare(const GWeightInfosHistory* giwwh) const
+{
 	 return(SubProfile->GetId()-giwwh->SubProfile->GetId());
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GWeightInfosHistory::Compare(unsigned int id) const
+//------------------------------------------------------------------------------
+int GWeightInfosHistory::Compare(unsigned int id) const
 {
 	return(SubProfile->GetId()-id);
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GWeightInfosHistory::~GWeightInfosHistory(void)
+//------------------------------------------------------------------------------
+unsigned int GWeightInfosHistory::GetId(void) const
 {
+return(SubProfile->GetId());
 }
 
+
+//------------------------------------------------------------------------------
+void GWeightInfosHistory::SetParent(GGroupHistory* p)
+{
+	Parent=p;
+}
+
+
+//------------------------------------------------------------------------------
+void GWeightInfosHistory::SetWellGrouped(bool b)
+{
+	WellGrouped=b;
+}
+
+
+//------------------------------------------------------------------------------
+void GWeightInfosHistory::SetNewSubProfile(bool b)
+{
+	NewSubProfile=b;
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfosHistory::~GWeightInfosHistory(void)
+{
+}

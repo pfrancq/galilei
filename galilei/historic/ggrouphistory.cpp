@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GGroupHistory.cpp
+	GGroupHistoryHistory.cpp
 
 	History of Group for a given language  - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -51,7 +51,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(std::bad_alloc)
-	: RContainer<GWeightInfosHistory,unsigned int,false,true>(20,10)
+	: RContainer<GWeightInfosHistory,unsigned int,false,true>(20,10)//, Childrens(2,1), Parents(2,1)
 {
 	 Id=id;
 	 Lang=lang;
@@ -59,7 +59,6 @@ GALILEI::GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroups
 	 Parent=grps;
 	 Childrens=new  RContainer<GGroupHistory,unsigned int,false,true>(2,1);
 	 Parents=new  RContainer<GGroupHistory,unsigned int,false,true>(2,1);
-
 }
 
 //-----------------------------------------------------------------------------

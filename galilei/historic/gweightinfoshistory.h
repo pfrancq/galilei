@@ -4,9 +4,9 @@
 
 	GWeightInfosHistory.h
 
-	Weights of a list of words - Header.
+	List of weighted information entities for history - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -34,124 +34,143 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GWeightInfosHistoryH
 #define GWeightInfosHistoryH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/gweightinfos.h>
-#include <historic/gweightinfoshistory.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GGroupsHistory class provides a representation for all the historic subprofile
+* The GWeightInfosHistory class provides a representation for a list of weighted
+* information entities used to hold a history.
 * @author David Wartel
-* @short historic subprofile.
+* @short Weighted Information Entity List for History.
 */
 class GWeightInfosHistory : public GWeightInfos
 {
 protected:
 
 	/**
-	* SubProfile.
+	* Subprofile.
 	*/
-	 GSubProfile* SubProfile;
+	GSubProfile* SubProfile;
 
-	 /**
-	 * parent
-	 */
-	 GGroupHistory* Parent;
+	/**
+	* Historical group containing the subprofile.
+	*/
+	GGroupHistory* Parent;
 
-	 /**
-	 * is the subprofile well grouped?
-	 */
-	 bool WellGrouped;
+	/**
+	* Is the subprofile well grouped?
+	*/
+	bool WellGrouped;
 
-	 /**
-	 * is this subprofile a new one?
-	 */
-	 bool NewSubProfile;
+	/**
+	* Is this subprofile a new one?
+	*/
+	bool NewSubProfile;
 
 public :
 
 	/**
-	* constructor
+	* Constructor.
+	* @param sub             Subprofile.
+	* @param max             Maximal number of word created at initialisation.
 	*/
-	GWeightInfosHistory(GSubProfile* sub, unsigned int nb) ;
+	GWeightInfosHistory(GSubProfile* sub, unsigned int max) throw(std::bad_alloc);
 
 	/**
-	* get the subprofile.
+	* Compare two lists by comparing the identificator of their subprofile.
+	* @see R::RContainer
+	* @param giwwh           List.
+	* @return int
 	*/
-	GSubProfile* GetSubProfile(void);
+	int Compare(const GWeightInfosHistory& giwwh) const;
 
 	/**
-	*  get the id.
+	* Compare two lists by comparing the identificator of their subprofile.
+	* @see R::RContainer
+	* @param giwwh           POinter to the list.
+	* @return int
 	*/
-	unsigned int GetId(void);
+	 int Compare(const GWeightInfosHistory* giwwh) const;
 
 	/**
-	*  set the parent.
+	* Compare the identificator of the subprofile of a list with another
+	* identificator.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
 	*/
-	void SetParent(GGroupHistory* p) ;
+	int Compare(unsigned int id) const;
 
 	/**
-	*  return true if the subprofile is well-grouped.
+	* Get the subprofile.
+	* @return Pointer to a GSubProfile.
 	*/
-	bool IsWellGrouped(void) ;
+	GSubProfile* GetSubProfile(void) const {return(SubProfile);}
 
 	/**
-	*  set tthe stauts (well grouped- not well grouped) of the subprofile..
+	* Get the identificator of the subprofile.
+	* @return unsigned int.
+	*/
+	unsigned int GetId(void) const;
+
+	/**
+	* Get the parent of the subprofile.
+	* @return Pointer to a GGroupHistory.
+	*/
+	GGroupHistory* GetParent(void) const {return(Parent);}
+
+	/**
+	* Set the parent of a list.
+	* @param p               Pointer to the parent.
+	*/
+	void SetParent(GGroupHistory* p);
+
+	/**
+	* Look if the subprofile is well-grouped.
+	* @return bool.
+	*/
+	bool IsWellGrouped(void) const {return(WellGrouped);}
+
+	/**
+	* Set if the subprofile is correctly grouped or not.
+	* @param b               Correctly grouped?
 	*/
 	void SetWellGrouped(bool b);
 
 	/**
-	*  return true if the subprofile is a new one.
+	* Look if the subprofile is a new one.
+	* @return bool.
 	*/
-	bool IsNewSubProfile(void) ;
+	bool IsNewSubProfile(void) const {return(NewSubProfile);}
 
 	/**
-	*  set tthe stauts (new one, old one) of the subprofile..
+	* Set if the subprofile is a new one or not.
+	* @param b               New one?
 	*/
 	void SetNewSubProfile(bool b);
 
 	/**
-	*  get the parent.
-	*/
-	GGroupHistory* GetParent(void);
-
-	/**
-	* Compare method needed by R::RContainer.
-	*/
-	int Compare(const GWeightInfosHistory& giwwh) const ;
-
-	/**
-	* Compare method needed by R::RContainer.
-	*/
-	 int Compare(const GWeightInfosHistory* giwwh) const ;
-
-	/**
-	* Compare method needed by R::RContainer.
-	*/
-	int Compare(unsigned int id) const ;
-
-	/**
-	*   Destructor
+	*  Destructor.
 	*/
 	~GWeightInfosHistory(void);
-
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

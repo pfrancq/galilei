@@ -62,7 +62,7 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,
 	#if GALILEITEST
 		Subject=0;
 	#endif
-	if(Updated>Computed)
+	if(Updated>=Computed)
 	{
 		if(Computed==RDate::null)
 			State=osCreated;
@@ -122,8 +122,8 @@ void GSubProfile::AddAssessment(GProfDoc* j) throw(std::bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 
-	// The profile is updated only if a document assessed was updated later
-	if(j->GetDoc()->GetUpdated()>Updated)
+	// The profile is modified only if a assessment was made later
+	if(j->GetUpdated()>=Updated)
 	{
 		State=osModified;
 		Updated.SetToday();
@@ -136,7 +136,7 @@ void GSubProfile::RemoveAssessment(GProfDoc* j) throw(std::bad_alloc)
 {
 	Fdbks.DeletePtr(j);
 
-	// When an assessment is removed -> the profile is always updated
+	// When an assessment is removed -> the profile is always modified
 	State=osModified;
 	Updated.SetToday();
 }
@@ -145,7 +145,10 @@ void GSubProfile::RemoveAssessment(GProfDoc* j) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GSubProfile::ClearFdbks(void) throw(std::bad_alloc)
 {
+	// When all assessments are removed -> the profile is always modified
 	Fdbks.Clear();
+	State=osModified;
+	Updated.SetToday();
 }
 
 
@@ -153,6 +156,7 @@ void GSubProfile::ClearFdbks(void) throw(std::bad_alloc)
 void GSubProfile::SetId(unsigned int id) throw(GException)
 {
 	if(Id==cNoRef)
+		throw GException("Cannot assign cNoRef to a subprofile");
 	Id=id;
 }
 

@@ -202,7 +202,7 @@ void GSubjects::CreateSet(void) throw(std::bad_alloc)
 		Docs=new GDoc*[Session->GetNbDocs()];
 
 //	Session->ClearFdbks();
-//	Session->ReInit();
+	Session->ReInit(false);
 //	Session->ClearSubProfilesGroups();
 
 	// Go through all the subjects which are used

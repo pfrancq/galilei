@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GGroup.h
+	GGroupHistory.h
 
 	History of Group for a given language - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be)..
@@ -34,36 +34,35 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GGroupHistoryH
 #define GGroupHistoryH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <historic/gweightinfoshistory.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* This class represent a historic group of sub-profiles. In fact, it is
-*  implemented as aa  container of GSubProfile.
+* This class represent a historical group of sub-profiles. In fact, it is
+* implemented as aa  container of GSubProfile.
 * @author David Wartel
-* @short GroupHistory.
+* @short Historical Group.
 */
 class GGroupHistory : public R::RContainer<GWeightInfosHistory,unsigned int,false,true>
 {
-
 protected:
 
 	/**
-	* identifier
+	* Identificator.
 	*/
 	unsigned int Id;
 
@@ -73,27 +72,27 @@ protected:
 	GLang* Lang;
 
 	/**
-	* modified in comparison with the same group at step s-1 ?
+	* Is the group modified since previous step.
 	*/
-	bool Modified ;
+	bool Modified;
 
 	/**
-	* dominant subject of the group;
+	* Subject associated to the group.
 	*/
 	GSubject* Subject;
 
 	/**
-	* parent
+	* Parent.
 	*/
 	GGroupsHistory* Parent;
 
 	/**
-	* container of childrens.
+	* Container of childrens.
 	*/
 	R::RContainer<GGroupHistory, unsigned int, false,true>* Childrens;
 
 	/**
-	* container of parents.
+	* Container of parents.
 	*/
 	R::RContainer<GGroupHistory, unsigned int, false,true>* Parents;
 
