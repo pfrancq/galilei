@@ -162,7 +162,6 @@ R_INC_CHK(rdb,rmysql.h)
 R_INC_CHK(rga,rga.h)
 R_INC_CHK(rga2d,rga2d.h)
 R_INC_CHK(rgga,rgga.h)
-R_INC_CHK(rhga,rhga.h)
 R_INC_CHK(rmath,rgraph.h)
 R_INC_CHK(rprg,rprg.h)
 R_INC_CHK(rpromethee,rpromethee.h)
@@ -170,7 +169,7 @@ R_INC_CHK(rstd,rcontainer.h)
 
 
 # ---- check the presence of all R libraries
-for l in rdb rga rga2d rgga rhga rmath rprg rpromethee rstd; do
+for l in rdb rga rga2d rgga rmath rprg rpromethee rstd; do
 
 	#AC_MSG_CHECKING(checking for lib$l)
 	for i in $R_LIB $R_INC_PATH /usr /usr/local /usr/local/r/; do
