@@ -83,7 +83,7 @@ class KGALILEICenterApp;
 * @author Pascal Francq
 * @version $Revision$
 */
-class KDoc : public QObject, public GStorageMySQL
+class KDoc : public QObject//, public GStorageMySQL
 {
 	Q_OBJECT
 
@@ -122,6 +122,11 @@ class KDoc : public QObject, public GStorageMySQL
 	*/
 	KGALILEICenterApp* Owner;
 
+	/**
+	* A GALILEI Database.
+	*/
+	GStorageMySQL* Db;
+
 public:
 
 	/**
@@ -143,6 +148,11 @@ public:
 	* @returns Pointer to a GALILEI::GSession.
 	*/
 	GALILEI::GSession* GetSession(void) {return(Session);}
+
+	/**
+	* Get the storage representing GALILEI data.
+	*/
+	GStorage* GetStorage(void) const {return(Db);}
 
 	/**
 	* Get the window showing the documents.

@@ -150,7 +150,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	QString method;
 	GSession* Sess;
 	char status[100];
-	QSessionProgressDlg* d;
+	QSessionProgressDlg* d=0;
 
 	dlg.txtDb->setText(dbName.Latin1());
 	dlg.txtLogin->setText(dbUser.Latin1());
@@ -166,7 +166,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		try
 		{
 			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName);
-			Sess = new GSession(Doc,2000,2000,2000,2000,2000,&SessionParams,true);
+			Sess = new GSession(Doc->GetStorage(),&SessionParams,true);
 			Doc->SetSession(Sess);
 			d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,
@@ -179,12 +179,13 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		catch(GException& e)
 		{
 			QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-			if(Doc)
+/*			if(Doc)
 			{
-				delete Doc;
+				delete Doc;*/
 				Doc=0;
-			}
-			d->close();
+//			}
+			if(d)
+				d->close();
 			return;
 		}
 		sprintf(status,"User %s connected to database %s on %s",dbUser.Latin1(),dbName.Latin1(), dbHost.Latin1());
@@ -197,7 +198,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user,const char* passwd,const char* db)
 {
 	char status[100];
-	QSessionProgressDlg* d;
+	QSessionProgressDlg* d=0;
 
 	try
 	{
@@ -208,7 +209,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 		QConnectMySQL dlg(this,0,true);
 		GSession* Sess;
 		Doc=new KDoc(this,host,user,passwd,db);
-		Sess = new GSession(Doc,2000,2000,2000,2000,2000,&SessionParams,true);
+		Sess = new GSession(Doc->GetStorage(),&SessionParams,true);
 		Doc->SetSession(Sess);
 		d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 		d->LoadSession(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
@@ -220,12 +221,13 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	catch(GException& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-		if(Doc)
+/*		if(Doc)
 		{
-			delete Doc;
+			delete Doc;*/
 			Doc=0;
-		}
-		d->close();
+//		}
+		if(d)
+			d->close();
 		return;
 	}
 	sprintf(status,"User %s connected to database %s on %s",dbUser.Latin1(),dbName.Latin1(), dbHost.Latin1());
