@@ -101,6 +101,11 @@ class GFilterHTML: public GFilter
 	unsigned int BlockLen;
 
 	/**
+	* Must the block be inserted (is there something else than spaces?)
+	*/
+	bool bBlockIns;
+
+	/**
 	* Total length of the current tag.
 	*/
 	unsigned int TagLen;
@@ -121,9 +126,19 @@ class GFilterHTML: public GFilter
 	char* Params;
 
 	/**
+	* Pointer to parameters of the next tag.
+	*/
+	char* NextParams;
+
+	/**
 	* Current tag.
 	*/
 	Tag* CurTag;
+
+	/**
+	* Next tag.
+	*/
+	Tag* NextTag;
 
 	/**
 	* The container of HTML code
@@ -134,6 +149,11 @@ class GFilterHTML: public GFilter
 	* Determine if the current tag is a closing tag or an open one.
 	*/
 	bool bEndTag;
+
+	/**
+	* Determine if the next tag is a closing tag or an open one.
+	*/
+	bool bEndNextTag;
 
 	/**
 	* Holds the most opened level in the structure.
@@ -184,13 +204,11 @@ protected:
 	void AnalyseBody(void);
 
 	/**
-	* Function who analyze the tag "LINKS" of the html document
-	* @param params        Parameters of the LINKS Tag
-	* @param content       the description of the link
+	* Analyze the tag "LINKS" of the html document.
 	*/
-	void AnalyseLink(char* params,char* content);
+	void AnalyseLink(void);
 
-  /**
+	/**
 	* Function who analyze the tag "LINKS" of the html document
 	* @param params        the parameters of the BASE tag
 	*/
@@ -226,15 +244,20 @@ protected:
 	void ReplaceCode(void);
 
 	/**
-	* Read the next tag. In particular, the pointers BeginTag and Params are
-	* set correctly. Set bEndTag to true if it is a ending tag.
+	* Read the next HTML tag. In particular, the pointers BeginTag and Params
+	* are set correctly. Set bEndTag to true if it is a ending tag.
 	*/
-	void NextTag(void);
+	void ReadNextTag(void);
 
 	/**
 	* Call NexTag to read the next tag. If the tag is not valid, it is replace by
 	* spaces. Everythin in comments or between two <SCRIPT> tags are also
-	* replace by spaces.
+	* replace by spaces. At the end:
+	* - CurTag points to the current tag to handle.
+	* - Block contains the string between CurTag and the next valid tag of the file.
+	* - bBlockIns is true if the block contains non-space characters.
+	* - Params contains the parameter of the tag.
+	* - bEndTag is true if the current is a closing one.
 	*/
 	void NextValidTag(void);
 

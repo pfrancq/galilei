@@ -68,7 +68,7 @@ using namespace GALILEI;
 class GALILEI::GFilterHTML::Tag
 {
 public:
-	enum tTag{tNULL,tHTML,tSCRIPT,tHEAD,tTITLE,tMETA,tBODY,tLINK,tBASE,tH1,tH2,tH3,tH4,tH5,tH6,tP/*,tTD*/};
+	enum tTag{tNULL,tHTML,tSCRIPT,tHEAD,tTITLE,tMETA,tBODY,tLINK,tBASE,tH1,tH2,tH3,tH4,tH5,tH6,tP,tTD};
 	RString Name;
 	RString XMLName;
 	tTag Type;
@@ -104,7 +104,7 @@ GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 	Tags->InsertPtr(new Tag("META","",Tag::tMETA,true,8,true));
 	Tags->InsertPtr(new Tag("TITLE","docxml:title",Tag::tTITLE,true,8,true));
 	Tags->InsertPtr(new Tag("BASE","",Tag::tBASE,true,8,true));
-	Tags->InsertPtr(new Tag("BODY","",Tag::tBODY,false,8,false));
+	Tags->InsertPtr(new Tag("BODY","docxml:p",Tag::tBODY,false,7,false));
 	Tags->InsertPtr(new Tag("H1","docxml:h1",Tag::tH1,false,1,true));
 	Tags->InsertPtr(new Tag("H2","docxml:h2",Tag::tH2,false,2,true));
 	Tags->InsertPtr(new Tag("H3","docxml:h3",Tag::tH3,false,3,true));
@@ -112,8 +112,8 @@ GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 	Tags->InsertPtr(new Tag("H5","docxml:h5",Tag::tH5,false,5,true));
 	Tags->InsertPtr(new Tag("H6","docxml:h6",Tag::tH6,false,6,true));
 	Tags->InsertPtr(new Tag("P","docxml:p",Tag::tP,false,7,true));
-//	Tags->InsertPtr(new Tag("TD","docxml:p",Tag::tTD,false,7,true));
-//	Tags->InsertPtr(new Tag("LI","docxml:p",Tag::tTD,false,7,true));
+	Tags->InsertPtr(new Tag("TD","docxml:p",Tag::tTD,false,7,true));
+	Tags->InsertPtr(new Tag("LI","docxml:p",Tag::tTD,false,7,true));
 	Tags->InsertPtr(new Tag("DIV","docxml:p",Tag::tP,false,7,true));
 	Tags->InsertPtr(new Tag("A","",Tag::tLINK,false,8,true));
 
@@ -142,6 +142,9 @@ bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
 	Buffer[statbuf.st_size]=0;
 	close(handle);
 	SkipSpaces();
+	CurTag=NextTag=0;
+	Params=NextParams=0;
+	bEndTag=bEndNextTag=false;
 
 	// Traitement of the document
 	AnalyseHeader();
@@ -265,115 +268,92 @@ void GALILEI::GFilterHTML::InitCharContainer(void)
 //---------------------------------------------------------------------------
 void GALILEI::GFilterHTML::AnalyseBody(void)
 {
-	RXMLTag* content;
-	RXMLTag* links;        
-	RXMLTag* act;
+	RXMLTag* content;    // Pointer to the content part of DocXML.
+	RXMLTag* links;      // Pointer to the links part of DocXML.
+	RXMLTag* act;        // Actual tag representing a paragraph
 	RXMLTag* Open[9];    // Remember all tag open.
-	RXMLTag** ptr;
-	int Level;
-	char* OldBlock;
-	char* oldParams;
-	char* Ins;
+	int Level;           // Actual level of tags.
 	int i;
+	RXMLTag** ptr;
 
 	// Init Part
 	memset(Open,0,9*sizeof(RXMLTag*));
 	Open[0]=content=Doc->GetContent();
 	links= Doc->GetLinks();
 	Level=0;
-	OldBlock=0;
-	oldParams=0;
 	MinOpenLevel=0;
 
 	// Parse it
-	while((*Pos)&&(CurTag))
+	while(*Pos)
 	{
+		// Read Next Tag
+		NextValidTag();
+		if(!CurTag) continue;
+
+		// If the current tag is a open link
+		// -> Insert the link and read next tag
+		if((CurTag->Type == Tag::tLINK)&&(!bEndTag))
+		{
+			AnalyseLink();
+			continue;
+		}
+
+		// Find the DocXML tag where the current block is to insert
 		if(bEndTag)
 		{
-			Ins=Block;
-			OldBlock=0;
-			Block=Pos;
+			// Closing HTML tag
+			// Once the text was inserted -> the DocXML tag must be closed.
+			// Of course, all the lowest DocXML tags are closed also.
+			// Ex.: If docxml:H2 is closed -> then also close docxml:H3, ..., docxml:P
+			if(CurTag->Level)
+			{
+				for(ptr=&Open[7],i=7;i>=CurTag->Level;ptr--,i--)
+					(*ptr)=0;
+			}
 
-			// Find the lowest tag open and assign the text to it.
+			// Find the lowest DocXML tag that was opened -> it will contain the text.
 			for(ptr=&Open[7],Level=7;!(*ptr);ptr--,Level--);
 			act=(*ptr);
-//			if(!act->NbPtr)
-//			{
-//			}
-			// All the lowest tag and himself (not if Content) are closed.
-			Level=CurTag->Level;
-			if(!Level)
-				Level=1;
 		}
 		else
 		{
-			Ins=OldBlock;
-			OldBlock=Block;
-			// Find the highest open tag above the current one
+			// Opening HTML Tag
+			// If there are opened DocXML tags from a lowest level -> close them
+			for(ptr=&Open[7],i=7;i>CurTag->Level;ptr--,i--)
+				(*ptr)=0;
+
+			// Find the highest opened DocXML tag above the current one
+			// Create a new DocXML tag and insert it in the highest opened DocXML tag.
 			for(ptr=&Open[CurTag->Level-1],Level=CurTag->Level-1;!(*ptr);ptr--,Level--);
-			if(Ins)
-			{
-				// Text to attach. If the lowest level is the content,
-				// create a 'P' tag else attach to it.
-				if(Level)
-					act=(*ptr);
-				else
-					act=0;
-			}
-			if((CurTag->Ins)&&(CurTag->Type!=Tag::tBODY))
-				if (CurTag->Type == Tag::tLINK)                                         
-				{    
-					oldParams= Params;
-				}
-				else                                                                  
-					Doc->AddNode(*ptr,Open[CurTag->Level]=new RXMLTag(CurTag->XMLName));
-			else
-			{
-				OldBlock=0;
-			}
-//			if(CurTag->Type==Tag::tBODY)
-//				Block=Pos;
-			if(!act)
-				act=Open[CurTag->Level];
-			// All the lowest tag are closed.
-			Level=CurTag->Level+1;
+			Doc->AddNode(*ptr,act=Open[CurTag->Level]=new RXMLTag(CurTag->XMLName));
 		}
-		if(Ins)
+
+		// Analyse the block and insert it in the current DocXML tag.
+		// If block contains only spaces -> do not insert it.
+		if(bBlockIns)
 		{
-			if (CurTag->Type == Tag::tLINK)
-			{
-				AnalyseLink(oldParams,Ins);
-			}
-			else
-			{
-				AnalyzeBlock(Ins,act);
-			}
+			// If this tag is the content -> a new tag must be created
+			if(act==content)
+				Doc->AddNode(*ptr,act=Open[7]=new RXMLTag("docxml:p"));
+			AnalyzeBlock(Block,act);
 		}
-		// All the tag lower than 'Level' are closed.
-		for(ptr=&Open[7],i=7;i>=Level;ptr--,i--)
-			(*ptr)=0;
-		// find highest tag not null
-		for(MinOpenLevel=i-1,ptr--;(*ptr);ptr--,MinOpenLevel--);
-		NextValidTag();
 	}
 
-	// Delete all the empty tags of the content and of the links.
 	content->DeleteEmptyTags(Doc);
-	links->DeleteEmptyTags(Doc);
 }
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::AnalyseLink(char* params,char* content)
+void GALILEI::GFilterHTML::AnalyseLink(void)
 {
 	RXMLTag* metalink;
 
-	metalink = AnalyseLinkParams(params);
-
-	if (metalink)
+	metalink = AnalyseLinkParams(Params);
+	if(metalink)
 	{
 		Doc->AddFormat("text/html",metalink);
-		AnalyzeBlock(content,Doc->AddTitle(metalink));
+		if(bBlockIns)
+			AnalyzeBlock(Block,Doc->AddTitle(metalink));
 	}
 
 }
@@ -382,44 +362,35 @@ void GALILEI::GFilterHTML::AnalyseLink(char* params,char* content)
 void GALILEI::GFilterHTML::AnalyseHeader(void)
 {
 	RXMLTag* meta;
-	Tag::tTag LastType=Tag::tNULL;;
-	char* OldBlock;
-	char* OldParams;
-
 
 	// Init Part.
 	meta=Doc->GetMetaData();
 	Doc->AddIdentifier(Doc->GetURL());
 	Doc->AddFormat("text/html");
 
-
 	// Parse it.
 	NextValidTag();
 	while((*Pos)&&CurTag)
 	{
-		switch(LastType)
+		if(!bEndTag)
 		{
-			 case Tag::tTITLE:
-				AnalyzeBlock(OldBlock,Doc->AddTitle());
-				break;
-			case Tag::tMETA:
-				ReadMetaTag(OldParams,meta);
-				break;
-			case Tag::tBASE:
-				AnalyseBase(OldParams);
-				break;
-			default:
-				break;
-		};
-		if(bEndTag)
-			LastType=Tag::tNULL;
-		else
-		{
-			OldBlock=Block;
-			OldParams=Params;
-			LastType=CurTag->Type;
+			switch(CurTag->Type)
+			{
+				 case Tag::tTITLE:
+					AnalyzeBlock(Block,Doc->AddTitle());
+					break;
+				case Tag::tMETA:
+					ReadMetaTag(Params,meta);
+					break;
+				case Tag::tBASE:
+					AnalyseBase(Params);
+					break;
+				default:
+					break;
+			}
 		}
-		if((bEndTag&&(CurTag->Type==Tag::tHEAD))||(!CurTag->Head)) return;
+		if((bEndTag&&(CurTag->Type==Tag::tHEAD))||(!NextTag->Head))
+			return;
 		NextValidTag();
 	}
 }
@@ -456,7 +427,7 @@ void GALILEI::GFilterHTML::AnalyseBase(char* params)
 		delimiter=(*(ptr++));
 		if((delimiter!='\'')&&(delimiter!='"')) return;
 
-   // Read the content of HREF or CLASS
+		// Read the content of HREF or CLASS
 		content=ptr;
 		while((*ptr)&&((*ptr)!=delimiter))
 			ptr++ ;
@@ -473,6 +444,7 @@ void GALILEI::GFilterHTML::AnalyseBase(char* params)
 	}
 	cout<< "la base : "<<Base<<endl;
 }
+
 
 //---------------------------------------------------------------------------
 RXMLTag* GALILEI::GFilterHTML::AnalyseLinkParams(char* params)
@@ -708,7 +680,6 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 		ptr++;
 	(*(ptr++))=0;  // Skip the second delimiter
 
-
 	if (!strcmp(params,"HTTP-EQUIV")) //metaData with parameter "HTTP-EQUIV"
 	{
 		if (!strcmp(name,"REFRESH"))
@@ -757,88 +728,7 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 			Doc->AddRights(content);
 		}
 	}
-	
-//	if(!strcmp(name,"DESCRIPTION"))
-//	{
-//		AnalyzeBlock(content,Doc->AddSubject());
-//	}
-//	else if(!strcmp(name,"KEYWORDS"))
-//	{
-//		AnalyzeKeywords(content,',',Doc->AddSubject());
-//	}
 }
-
-
-//---------------------------------------------------------------------------
-//void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
-//{
-//	char* ptr;
-//	char delimiter;
-//	char* name;    // Name of the tag.
-//	char* content; // Content of the tag.
-//	bool bSpaces;
-//
-//	// Read the name of the META Data
-//	if(!params) return;
-//	ptr=params;
-//	while((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
-//		(*(ptr++))=RString::ToUpper(*ptr);
-//	bSpaces=isspace(*ptr);
-//	(*(ptr++))=0;
-//	if(bSpaces)
-//	{
-//		while((*ptr)&&((*ptr)!='='))
-//			ptr++;
-//		ptr++;    // Skip '=';
-//	}
-//
-//	// The name must be 'HTTP-EQUIV'
-//	if((!(*ptr))||(strcmp(params,"HTTP-EQUIV"))) return;
-//
-//	// Skip spaces and read the delimiter which must be a ' or a "
-//	while((*ptr)&&(isspace(*ptr)))
-//		ptr++;
-//	delimiter=(*(ptr++));
-//	if((delimiter!='\'')&&(delimiter!='"')) return;
-//
-//	// Read the type of HTTP-EQUIV
-//	name=ptr;
-//	while((*ptr)&&((*ptr)!=delimiter))
-//		(*(ptr++))=RString::ToUpper(*ptr);
-//	(*(ptr++))=0;  // Skip the second delimiter
-//
-//	// Search for 'CONTENT'
-//	while((*ptr)&&(RString::ToUpper(*ptr)!='C'))
-//		ptr++;
-//	if((!(*ptr))||strncasecmp(ptr,"CONTENT",7)) return;
-//	ptr+=7;
-//
-//	// Search '='
-//	while((*ptr)&&((*ptr)!='='))
-//		ptr++;
-//	ptr++;
-//
-//	// Skip spaces and read the delimiter which must be a ' or a "
-//	while((*ptr)&&(isspace(*ptr)))
-//		ptr++;
-//	delimiter=(*(ptr++));
-//	if((delimiter!='\'')&&(delimiter!='"')) return;
-//
-//	// Read the type of HTTP-EQUIV
-//	content=ptr;
-//	while((*ptr)&&((*ptr)!=delimiter))
-//		ptr++;
-//	(*(ptr++))=0;  // Skip the second delimiter
-//
-//	if(!strcmp(name,"DESCRIPTION"))
-//	{
-//		AnalyzeBlock(content,Doc->AddSubject());
-//	}
-//	else if(!strcmp(name,"KEYWORDS"))
-//	{
-//		AnalyzeKeywords(content,',',Doc->AddSubject());
-//	}
-//}
 
 
 //---------------------------------------------------------------------------
@@ -887,7 +777,7 @@ void GALILEI::GFilterHTML::ReplaceCode(void)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::NextTag(void)
+void GALILEI::GFilterHTML::ReadNextTag(void)
 {
 	bool bParams;            // Look if there are parameters.
 
@@ -897,7 +787,12 @@ beginread:
 	while((*Pos)&&((*Pos)!='<'))
 	{
 		if((*Pos)=='&')
+		{
 			ReplaceCode();
+			bBlockIns=true;
+		}
+		else
+			bBlockIns=bBlockIns||(!isspace(*Pos));
 		Pos++;
 		BlockLen++;
 	}
@@ -1017,38 +912,53 @@ beginread:
 //---------------------------------------------------------------------------
 void GALILEI::GFilterHTML::NextValidTag(void)
 {
-	// Look if it is a known tag. If not, replace all by spaces and continue.
+	char* CurParams;  // Pointer to current Params;
+	bool bEndCurTag;
+
+	// Next Tag becomes the current tag
+	// Store in Block and Params the parameters of the current tag
+	CurTag=NextTag;
+	CurParams=NextParams;
+	Block=Pos;
+	bBlockIns=false;
+	bEndCurTag=bEndNextTag;
+
+	// Look for a known tag.
+	// All other tags are replaced by spaces.
 	do
 	{
 		if(!(*Pos)) return;
-		NextTag();
-		CurTag=Tags->GetPtr<const char*>(BeginTag);
-		if(!CurTag)
+		ReadNextTag();
+		NextTag=Tags->GetPtr<const char*>(BeginTag);
+		if(!NextTag)
 		{
 			memset(SkipTag,' ',TagLen*sizeof(char));
 		}
-		else if((CurTag->Type==Tag::tSCRIPT)&&(!bEndTag))
+		else if((NextTag->Type==Tag::tSCRIPT)&&(!bEndTag))
 		{
 			char* SkipScript=SkipTag;
 			BlockLen=TagLen;
-			while((!CurTag)||(!((CurTag->Type==Tag::tSCRIPT)&&bEndTag)))
+			while((!NextTag)||(!((NextTag->Type==Tag::tSCRIPT)&&bEndTag)))
 			{
-				NextTag();
-				CurTag=Tags->GetPtr<const char*>(BeginTag);
+				ReadNextTag();
+				NextTag=Tags->GetPtr<const char*>(BeginTag);
 				BlockLen+=TagLen;
 			}
 			memset(SkipScript,' ',BlockLen*sizeof(char));
-			CurTag=0;
+			NextTag=0;
 			Block=0;
 		}
-	} while(!CurTag);
+	} while(!NextTag);
 
-	// Return
-	BlockLen=0;
-	if((!bEndTag)/*||(!MinOpenLevel)*/)
-	{
-		Block=Pos;
-	}
+	// Remember Params
+	NextParams=Params;
+	Params=CurParams;
+	bEndNextTag=bEndTag;
+	bEndTag=bEndCurTag;
+
+	// If not CurTag and there is something to read -> read another tag.
+	if((!CurTag)&&(*Pos))
+		NextValidTag();
 }
 
 
