@@ -1,0 +1,211 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>QMixIdealConfig</class>
+<author>David Wartel &lt;dwartel@ulb.ac.be&gt;</author>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>QMixIdealConfig</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>270</width>
+            <height>329</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Mix Ideal Groups</string>
+    </property>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>init_parameters</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>250</width>
+                <height>101</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Initial Parameters</string>
+        </property>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>LELevel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>148</x>
+                    <y>60</y>
+                    <width>90</width>
+                    <height>22</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>60</y>
+                    <width>120</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Level:</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>30</y>
+                    <width>120</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Number of solutions:</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>LENbMixedGroups</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>148</x>
+                    <y>30</y>
+                    <width>90</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string></string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>Mixing_Option</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>120</y>
+                <width>250</width>
+                <height>170</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Mixing Parameters</string>
+        </property>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>RBMergeDiff</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>60</y>
+                    <width>180</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Merge different categories</string>
+            </property>
+        </widget>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>RBSplit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>90</y>
+                    <width>190</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Split</string>
+            </property>
+        </widget>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>RBRandom</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>120</y>
+                    <width>190</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Random grouping</string>
+            </property>
+        </widget>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>RBMergeSame</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>30</y>
+                    <width>190</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Merge same category</string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>apply</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>100</x>
+                <y>292</y>
+                <width>84</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Apply</string>
+        </property>
+    </widget>
+</widget>
+<connections>
+    <connection>
+        <sender>apply</sender>
+        <signal>clicked()</signal>
+        <receiver>QMixIdealConfig</receiver>
+        <slot>accept()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>LENbMixedGroups</tabstop>
+    <tabstop>LELevel</tabstop>
+    <tabstop>RBMergeSame</tabstop>
+    <tabstop>RBMergeDiff</tabstop>
+    <tabstop>RBSplit</tabstop>
+    <tabstop>RBRandom</tabstop>
+    <tabstop>apply</tabstop>
+</tabstops>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

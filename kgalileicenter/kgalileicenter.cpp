@@ -83,6 +83,7 @@ using namespace GALILEI;
 #include <qworkspace.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
+#include <qradiobutton.h>
 
 
 //-----------------------------------------------------------------------------
@@ -124,6 +125,7 @@ using namespace GALILEI;
 #include "qsessionprogress.h"
 #include "qlanguages.h"
 #include "qviewchromos.h"
+#include "qmixidealconfig.h"
 
 
 
@@ -849,19 +851,49 @@ void KGALILEICenterApp::slotRunQuery(void)
 
 
 //-----------------------------------------------------------------------------
+//void KGALILEICenterApp::slotMixIdealGroups(void)
+//{
+//	GMixIdealGroups* mix;
+//	GSubjectTree* subjecttree=new GSubjectTree(0, 0, 0);
+//	RContainer<GGroups,unsigned int,true,true>* idealgroups;
+//	idealgroups= new RContainer<GGroups,unsigned int,true,true>(5,2);
+//	RContainer<GGroupIdParentId,unsigned int,true,true>* parent;
+//	parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,5);
+//
+//	Doc->GetSession()->LoadIdealGroupment(idealgroups);
+//	Doc->GetSession()->LoadSubjectTree(subjecttree);
+//	subjecttree->CreateParent(parent);
+//	mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups);
+//	mix->Run();
+//}
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotMixIdealGroups(void)
-{
+ {
 	GMixIdealGroups* mix;
+	const char *nbgroups, *level;
+	bool random, mergesame, mergediff, split;
 	GSubjectTree* subjecttree=new GSubjectTree(0, 0, 0);
 	RContainer<GGroups,unsigned int,true,true>* idealgroups;
-	idealgroups= new RContainer<GGroups,unsigned int,true,true>(5,2);
 	RContainer<GGroupIdParentId,unsigned int,true,true>* parent;
-	parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,5);
+	idealgroups= new RContainer<GGroups,unsigned int,true,true>(5,2);
 
+	parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,5);
 	Doc->GetSession()->LoadIdealGroupment(idealgroups);
 	Doc->GetSession()->LoadSubjectTree(subjecttree);
 	subjecttree->CreateParent(parent);
-	mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups);
+	QMixIdealConfig dlg(this,0,true);
+	if(dlg.exec())
+	{
+		slotStatusMsg(i18n("Connecting..."));
+		nbgroups=dlg.LENbMixedGroups->text().latin1();
+		level=dlg.LELevel->text().latin1();
+		random=dlg.RBRandom->isChecked();
+		mergesame=dlg.RBMergeSame->isChecked();
+		mergediff=dlg.RBMergeDiff->isChecked();
+		split=dlg.RBSplit->isChecked();
+	}
+	mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups, atoi(nbgroups), atoi(level), mergesame, mergediff, split, random);
 	mix->Run();
 }
 

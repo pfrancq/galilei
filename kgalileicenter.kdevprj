@@ -23,7 +23,7 @@ cflags=
 cppflags=
 cxxflags=\s-O0 -g3 -Wall
 ldadd=/usr/lib/libmysqlclient.so ${GCENTER}/galilei/sessions/libsessions.a ${GCENTER}/galilei/profiles/libprofiles.a ${GCENTER}/galilei/langs/liblangs.a ${GCENTER}/galilei/docs/libdocs.a ${GCENTER}/galilei/groups/libgroups.a ${GCENTER}/r/rinter/librinter.a ${GCENTER}/r/rxml/librxml.a ${GCENTER}/r/rio/librio.a ${GCENTER}/galilei/infos/libinfos.a ${GCENTER}/qtwidgets/rga/librga.a ${GCENTER}/r/rga/librga.a ${GCENTER}/galilei/filters/libfilters.a ${GCENTER}/r/rmysql/librmysql.a ${GCENTER}/r/rstd/librstd.a ${GCENTER}/r/rtimedate/librtimedate.a ${GCENTER}/r/rpromethee/librpromethee.a $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT)
-ldflags=\s                    \s
+ldflags=\s                       \s
 
 [General]
 AMChanged=false
@@ -153,7 +153,7 @@ install_location=
 type=DATA
 
 [kgalileicenter/Makefile.am]
-files=kgalileicenter/main.cpp,kgalileicenter/kgalileicenter.cpp,kgalileicenter/kgalileicenter.h,kgalileicenter/kgalileicenterui.rc,kgalileicenter/kgalileicenter.desktop,kgalileicenter/lo32-app-kgalileicenter.png,kgalileicenter/lo16-app-kgalileicenter.png,kgalileicenter/kdoc.cpp,kgalileicenter/kdoc.h,kgalileicenter/kview.cpp,kgalileicenter/kview.h,kgalileicenter/kviewdoc.cpp,kgalileicenter/kviewdoc.h,kgalileicenter/kviewdocs.cpp,kgalileicenter/kviewdocs.h,kgalileicenter/kviewgroup.cpp,kgalileicenter/kviewgroup.h,kgalileicenter/kviewgroups.cpp,kgalileicenter/kviewgroups.h,kgalileicenter/kviewprofile.cpp,kgalileicenter/kviewprofile.h,kgalileicenter/kviewstat.cpp,kgalileicenter/kviewstat.h,kgalileicenter/kviewthgroups.cpp,kgalileicenter/kviewthgroups.h,kgalileicenter/kviewusers.cpp,kgalileicenter/kviewusers.h,kgalileicenter/qconnectmysql.ui,kgalileicenter/qdocsoptionsdlg.ui,kgalileicenter/qsessionprogress.cpp,kgalileicenter/qsessionprogress.h,kgalileicenter/kviewstems.cpp,kgalileicenter/kviewstems.h,kgalileicenter/kviewga.cpp,kgalileicenter/kviewga.h,kgalileicenter/kgalileicenter_dlg.cpp,kgalileicenter/kgalileicenter_init.cpp,kgalileicenter/qpluginsdlg.cpp,kgalileicenter/qpluginsdlg.h,kgalileicenter/kviewprg.cpp,kgalileicenter/kviewprg.h,kgalileicenter/kviewr.cpp,kgalileicenter/kviewr.h,kgalileicenter/qlanguages.ui,kgalileicenter/kviewgroupsevaluation.cpp,kgalileicenter/kviewgroupsevaluation.h,kgalileicenter/kviewevaluategroup.cpp,kgalileicenter/kviewevaluategroup.h,kgalileicenter/kviewchromos.cpp,kgalileicenter/kviewchromos.h,kgalileicenter/kviewquery.cpp,kgalileicenter/kviewquery.h,kgalileicenter/qviewchromos.ui
+files=kgalileicenter/main.cpp,kgalileicenter/kgalileicenter.cpp,kgalileicenter/kgalileicenter.h,kgalileicenter/kgalileicenterui.rc,kgalileicenter/kgalileicenter.desktop,kgalileicenter/lo32-app-kgalileicenter.png,kgalileicenter/lo16-app-kgalileicenter.png,kgalileicenter/kdoc.cpp,kgalileicenter/kdoc.h,kgalileicenter/kview.cpp,kgalileicenter/kview.h,kgalileicenter/kviewdoc.cpp,kgalileicenter/kviewdoc.h,kgalileicenter/kviewdocs.cpp,kgalileicenter/kviewdocs.h,kgalileicenter/kviewgroup.cpp,kgalileicenter/kviewgroup.h,kgalileicenter/kviewgroups.cpp,kgalileicenter/kviewgroups.h,kgalileicenter/kviewprofile.cpp,kgalileicenter/kviewprofile.h,kgalileicenter/kviewstat.cpp,kgalileicenter/kviewstat.h,kgalileicenter/kviewthgroups.cpp,kgalileicenter/kviewthgroups.h,kgalileicenter/kviewusers.cpp,kgalileicenter/kviewusers.h,kgalileicenter/qconnectmysql.ui,kgalileicenter/qdocsoptionsdlg.ui,kgalileicenter/qsessionprogress.cpp,kgalileicenter/qsessionprogress.h,kgalileicenter/kviewstems.cpp,kgalileicenter/kviewstems.h,kgalileicenter/kviewga.cpp,kgalileicenter/kviewga.h,kgalileicenter/kgalileicenter_dlg.cpp,kgalileicenter/kgalileicenter_init.cpp,kgalileicenter/qpluginsdlg.cpp,kgalileicenter/qpluginsdlg.h,kgalileicenter/kviewprg.cpp,kgalileicenter/kviewprg.h,kgalileicenter/kviewr.cpp,kgalileicenter/kviewr.h,kgalileicenter/qlanguages.ui,kgalileicenter/kviewgroupsevaluation.cpp,kgalileicenter/kviewgroupsevaluation.h,kgalileicenter/kviewevaluategroup.cpp,kgalileicenter/kviewevaluategroup.h,kgalileicenter/kviewchromos.cpp,kgalileicenter/kviewchromos.h,kgalileicenter/kviewquery.cpp,kgalileicenter/kviewquery.h,kgalileicenter/qviewchromos.ui,kgalileicenter/qmixidealconfig.ui
 sub_dirs=galilei,r,qtwidgets
 type=prog_main
 
@@ -1522,6 +1522,12 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/qlanguages.ui]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/qmixidealconfig.ui]
 dist=true
 install=false
 install_location=
