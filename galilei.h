@@ -242,32 +242,14 @@ class GException
 	*/
 	RStd::RString Msg;
 
-	/**
-	* A code representing the exception.
-	*/
-	unsigned int Code;
-
 public:
-
-	/**
-	* Predefined Constants for Errors.
-	*/
-	enum eErrorType{NoDefinedError=0,OpenSessionError=1,Languages=2,Dic=3,Docs=4};
 
 	/**
 	* Construct an exception.
 	* @param str                      Message of the error.
 	*/
 	GException(const RStd::RString& str) throw(bad_alloc)
-		: Msg(str), Code(NoDefinedError) {}
-
-	/**
-	* Construct an exception.
-	* @param code                     Code of the error.
-	* @param str                      Message of the error.
-	*/
-	GException(const unsigned code,const RStd::RString& str) throw(bad_alloc)
-		: Msg(str), Code(code) {}
+		: Msg(str) {}
 
 	/**
 	* Get the content of the exception.
