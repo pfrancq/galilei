@@ -59,6 +59,7 @@ using namespace R;
 #include <filters/gmimefilter.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
+#include <rstd/rrecfile.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 
@@ -96,18 +97,18 @@ public:
 		{return(strcmp(Word,word));}
 
 	static char HashIndex(const WordWeight* w)
-		{return(RString::HashIndex(w->Word));}
+		{return(R::RString::HashIndex(w->Word));}
 	static char HashIndex(const WordWeight& w)
-		{return(RString::HashIndex(w.Word));}
+		{return(R::RString::HashIndex(w.Word));}
 	static char HashIndex(const char* word)
-		{return(RString::HashIndex(word));}
+		{return(R::RString::HashIndex(word));}
 
 	static char HashIndex2(const WordWeight* w)
-		{return(RString::HashIndex2(w->Word));}
+		{return(R::RString::HashIndex2(w->Word));}
 	static char HashIndex2(const WordWeight& w)
-		{return(RString::HashIndex2(w.Word));}
+		{return(R::RString::HashIndex2(w.Word));}
 	static char HashIndex2(const char* word)
-		{return(RString::HashIndex2(word));}
+		{return(R::RString::HashIndex2(word));}
 
 	~WordWeight(void);
 };
@@ -138,10 +139,11 @@ GALILEI::GDocAnalyse::WordWeight::~WordWeight(void)
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocAnalyse::GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc)
-	: Session(s), Weights(0), Doc(0), Direct(0),
-	  NbDirect(5000), Sl(0), Sldiff(0), Lang(0), Options(opt)
+	: Session(s), Weights(0), Doc(0), Direct(0), NbDirect(5000),
+	  Order(0), NbOrder(5000), Sl(0), Sldiff(0), Lang(0), Options(opt)
 {
 	WordWeight** ptr;
+	GWord** pt;
 	unsigned int i;
 
 	CurLangs.Set(Session->GetLangs());
@@ -151,6 +153,9 @@ GALILEI::GDocAnalyse::GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc)
 	Direct=new WordWeight*[NbDirect];
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)=new WordWeight(Session->GetNbLangs());
+	Order=new GWord*[NbOrder];
+	for(i=NbOrder+1,pt=Order;--i;pt++)
+		(*pt)=new GWord();
 }
 
 
@@ -158,15 +163,18 @@ GALILEI::GDocAnalyse::GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc)
 void GALILEI::GDocAnalyse::Clear(void)
 {
 	WordWeight** ptr;
+	GWord** pt;
 	unsigned int i,j;
 	RContainer<WordWeight,unsigned int,false,true>*** ptr1;
 	RContainer<WordWeight,unsigned int,false,true>** ptr2;
 
 	memset(Sl,0,sizeof(unsigned int)*Session->GetNbLangs());
 	memset(Sldiff,0,sizeof(unsigned int)*Session->GetNbLangs());
-	N=Ndiff=V=Vdiff=S=Sdiff=0;
+	N=Ndiff=Nwords=V=Vdiff=S=Sdiff=0;
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)->Clear();
+	for(i=NbOrder+1,pt=Order;--i;pt++)
+		(*pt)->Clear();
 	for(i=27+1,ptr1=Weights->Hash;--i;ptr1++)
 		for(j=27+1,ptr2=*ptr1;--j;ptr2++)
     {
@@ -190,6 +198,25 @@ void GALILEI::GDocAnalyse::VerifyDirect(void) throw(bad_alloc)
 		for(i=2500+1,ptr=&Direct[NbDirect];--i;ptr++)
 			(*ptr)=new WordWeight(Session->GetNbLangs());
 		NbDirect+=2500;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocAnalyse::VerifyOrder(void) throw(bad_alloc)
+{
+	unsigned int i;
+	GWord** ptr;
+
+	if(NbOrder==Nwords)
+	{
+		ptr=new GWord*[NbOrder+2500];
+		memcpy(ptr,Order,NbOrder*sizeof(GWord*));
+		delete[] Order;
+		Order=ptr;
+		for(i=2500+1,ptr=&Order[NbOrder];--i;ptr++)
+			(*ptr)=new GWord();
+		NbOrder+=2500;
 	}
 }
 
@@ -267,6 +294,13 @@ void GALILEI::GDocAnalyse::AddWord(const char* word,double weight) throw(bad_all
 			if(w->InStop[LangIndex])
 				Sl[LangIndex]++;
 		}
+	}
+	if((!w->InStop[LangIndex])&&(Options->Distance))
+	{
+		VerifyOrder();
+		Order[Nwords++]=new GWord(word);
+		if(OnlyLetters) Order[Nwords-1]->SetId(1);
+		else Order[Nwords-1]->SetId(0);
 	}
 	N++;
 	w->Nb++;
@@ -435,11 +469,11 @@ void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RCon
 	url=new char[250];
 	type=new char[100];
 	format=new char[100];
-	
+
 	if (tag->GetName()== "docxml:metaData")
 	{
 		bUrl=false;
-		
+
 		type=0;
 		format=0;
 		for (tag->Start();!tag->End();tag->Next())
@@ -465,7 +499,7 @@ void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RCon
 //				}
 			}
 		}
-		if (bUrl) 
+		if (bUrl)
 		{
 			ptr=strdup(url);
 			// keep only html links (-> whith html extension)
@@ -573,6 +607,32 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 		}
 	}
 
+	//Save the order of appearance of the valid words of the document in a binary file.
+	if(Options->Distance)
+	{
+		cout<<"warning : analyse with document struct needs /var/galilei/bin/DB_name"<<endl;
+		RString name;
+		name="/var/galilei/bin/";
+		name+=Session->GetDbName();
+		name+="/Doc";
+		name+=itoa(Doc->GetId());
+		R::RRecFile<GWord,sizeof(unsigned int),false> f(name,R::Create);
+		for(i=0;i<Nwords;i++)
+		{
+			if(Order[i]->GetId()==1)
+			{
+				stem=Lang->GetStemming(Order[i]->GetWord());
+				if(stem.GetLen()>=Options->MinStemSize)
+					f<<dic->GetId(stem);
+			}
+			else
+			{
+				stem=(Order[i]->GetWord());
+				f<<dic->GetId(stem);
+			}
+		}
+		close(R::Create);
+	}
 
 	// Verify that each occurences is not under the minimal.
 	MinOccur=Options->MinOccur;
@@ -669,8 +729,9 @@ void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* /*newlang*/)
+void GALILEI::GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang)
 {
+	GProfileCursor profcur;
 	GProfDocCursor profdoccursor;
 
 	// if the old lang and the new lang are not defined.
@@ -692,6 +753,7 @@ void GALILEI::GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* /*newlang*/)
 GALILEI::GDocAnalyse::~GDocAnalyse(void)
 {
 	WordWeight** ptr;
+	GWord** pt;
 	unsigned int i;
 
 	if(Weights) delete Weights;
@@ -700,6 +762,12 @@ GALILEI::GDocAnalyse::~GDocAnalyse(void)
 		for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 			delete(*ptr);
 		delete[] Direct;
+	}
+	if(Order)
+	{
+		for(i=NbOrder+1,pt=Order;--i;pt++)
+			delete(*pt);
+		delete[] Order;
 	}
 	if(Sldiff) delete[] Sldiff;
 	if(Sl) delete[] Sl;

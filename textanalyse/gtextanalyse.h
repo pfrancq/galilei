@@ -90,6 +90,16 @@ class GDocAnalyse
 	unsigned int NbDirect;
 
 	/**
+	* Order of the words in the document.
+	*/
+	GWord** Order;
+
+	/**
+	* Number of elements allocated in Order.
+	*/
+	unsigned int NbOrder;
+	
+	/**
 	* Number of words in the document.
 	*/
 	unsigned int N;
@@ -99,6 +109,10 @@ class GDocAnalyse
 	*/
 	unsigned int Ndiff;
 
+	/**
+	* Number of words not in the stoplist.
+	*/
+	unsigned int Nwords;
 	/**
 	* Total number of valid words.
 	*/
@@ -180,6 +194,11 @@ protected:
 	void VerifyDirect(void) throw(bad_alloc);
 
 	/**
+	* Verify the size of direct and reallocate when necessary.
+	*/
+	void VerifyOrder(void) throw(bad_alloc);
+
+	/**
 	* Add a word to the document.
 	* @param word           Word to add.
 	* @param weight         Weights of the words added during this analyze.
@@ -207,7 +226,7 @@ protected:
 	* @param tag            Tag to analyse.
 	* @param tmpDocs        A pointer to a container of docs to maintain the documents to be added.
 	*/
-	void AnalyseLinksTag(R::RXMLTag* tag,bool externalLinks,R::RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException);
+	void AnalyseLinksTag(R::RXMLTag* tag,bool externalLinks ,R::RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException);
 
 	/**
 	* This methods determine the language of the current structure studied,
