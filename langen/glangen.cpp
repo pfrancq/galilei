@@ -24,7 +24,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <glangs/glangen.h>
+#include <langs/glangen.h>
 using namespace GALILEI;
 using namespace RStd;
 
