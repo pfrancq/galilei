@@ -36,6 +36,7 @@
 #include <profiles/gprofdoc.h>
 #include <docs/gdoc.h>
 #include <profiles/gprofile.h>
+#include <profiles/gsubprofile.h>
 using namespace GALILEI;
 
 
@@ -79,4 +80,18 @@ int GALILEI::GProfDoc::Compare(const GProfDoc* profdoc) const
 int GALILEI::GProfDoc::Compare(const GDoc* doc) const
 {
 	return(Doc->GetId()-doc->GetId());
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GProfDoc::Similarity(void)
+{
+	GSubProfile* sub;
+	GLang* lang;
+
+	lang=Doc->GetLang();
+	if(!lang) return(0.0);
+	sub=Profile->GetPtr<const GLang*>(lang);
+	if(!sub) return(0.0);
+	return(sub->Similarity(Doc));
 }

@@ -130,6 +130,12 @@ public:
 	* @returns Pointer to a date.
 	*/
 	const RTimeDate::RDate* GetUpdated(void) const {return(&Updated);}
+
+	/**
+	* Get the similarity between the document and the profile.
+	* @return dobule.
+	*/
+	double Similarity(void);
 };
 
 
