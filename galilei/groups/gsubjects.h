@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 	
-	GSubjectTree.h
+	GSubjects.h
 
 	Tree of Subjects - Implementation.
 
@@ -58,12 +58,12 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GSubjectTree class provides a representation for a tree of subject
+* The GSubjects class provides a representation for a tree of subject
 * handled by the system.
 * @author GALILEI Team
 * @short Tree of the Galilei subject.
 */
-class GSubjectTree : public R::RTree<GSubject,true,false>, public GParams
+class GSubjects : public R::RTree<GSubject,true,false>, public GParams
 {
 protected:
 
@@ -154,7 +154,7 @@ protected:
 	/**
 	* Ideal groups created.
 	*/
-	R::RContainer<GGroups,unsigned int,true,true> IdealGroups;
+	GGroups* IdealGroups;
 
 	/**
 	* Precision of the groupement.
@@ -181,7 +181,7 @@ public:
 	/**
 	* Constructor.
 	*/
-	GSubjectTree(GSession* session);
+	GSubjects(GSession* session);
 
 	/**
 	* Assign the values of the parameters to the corresponding variables.
@@ -214,7 +214,7 @@ protected:
 	* Get the ideal group of the subprofile.
 	* @param sub            SubProfile.
 	*/
-	GGroup* GetIdealGroup(GSubProfile* sub) const;
+	GGroup* GetIdealGroup(GSubProfile* sub) const throw(GException);
 
 	/**
 	* Compute the Recall and the Precision.
@@ -325,20 +325,26 @@ public:
 	double GetRecall(GGroup* grp);
 
 	/**
+	* Get a cursor on the ideal groups.
+	* @return GGroupCursor.
+	*/
+	GGroupCursor& GetGroupsCursor(void) throw(GException);
+
+	/**
 	* Get the ideal groups of the session
 	* @return Pointer to R::RContainer<GGroups,unsigned int,true,true>.
 	*/
-	R::RContainer<GGroups,unsigned int,true,true>* GetIdealGroups(void);
+	GGroups* GetIdealGroups(void);
 
 	/**
 	* Get a cursor over the ideal groups of the system.
 	*/
-	GGroupsCursor& GetIdealGroupsCursor(void);
+	//GGroupsCursor& GetIdealGroupsCursor(void);
 
 	/**
 	* Destructor
 	*/
-	~GSubjectTree(void);
+	~GSubjects(void);
 };
 
 

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GSubjectTree.cpp
+	GSubjects.cpp
 
 	Tree of Subjects - Implementation.
 
@@ -38,7 +38,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/gsubjecttree.h>
+#include <groups/gsubjects.h>
 #include <groups/gsubject.h>
 #include <groups/ggroups.h>
 #include <docs/gdoc.h>
@@ -60,7 +60,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GSubjectTree::GGroupId
+class GSubjects::GGroupId
 {
 public:
 	/**
@@ -96,7 +96,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GSubjectTree::GroupScore
+class GSubjects::GroupScore
 {
 public:
 	GGroup* Group;
@@ -112,14 +112,14 @@ public:
 
 //-----------------------------------------------------------------------------
 //
-// class GSubjectTree
+// class GSubjects
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GSubjectTree::GSubjectTree(GSession* session)
+GSubjects::GSubjects(GSession* session)
 	: RTree<GSubject,true,false>(100,50),GParams("Subjects"), Session(session),
-	  Docs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25), IdealGroups(100,50),
+	  Docs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25), IdealGroups(0),
 	  GroupsScore(100,50)
 {
 	GParams::InsertPtr(new GParamDouble("PercOK",10.0));
@@ -133,12 +133,13 @@ GSubjectTree::GSubjectTree(GSession* session)
 	GParams::InsertPtr(new GParamUInt("NbMinDocsGrp",50));
 	GParams::InsertPtr(new GParamUInt("NbDocsAssess",30));
 	GParams::InsertPtr(new GParamBool("idf",true));
+	IdealGroups=new GGroups(100);
 	Apply();
 }
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::Apply(void)
+void GSubjects::Apply(void)
 {
 	PercOK=GetDouble("PercOK");
 	PercKO=GetDouble("PercKO");
@@ -155,7 +156,7 @@ void GSubjectTree::Apply(void)
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::ChooseSubjects(void)
+void GSubjects::ChooseSubjects(void)
 {
 	GSubjectCursor Subs;
 	unsigned int compt;
@@ -188,27 +189,27 @@ void GSubjectTree::ChooseSubjects(void)
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::CreateSet(void)
+void GSubjects::CreateSet(void)
 {
 	GSubjectCursor Subs;
 	GSubProfileCursor Prof;
 	unsigned int nbprof,nbsocial;
-	GGroups* CurGrps;
+//	GGroups* CurGrps;
 	GGroup* Grp;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
 	GFactoryLangCursor CurLang;
-	GLang* lang;
+//	GLang* lang;
 
 	// Init Part
 	LastAdded.Clear();
-	IdealGroups.Clear();
+	IdealGroups->Clear();
 	CurLang=Session->GetLangs()->GetLangsCursor();
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
+/*	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
 		IdealGroups.InsertPtr(new GGroups(lang));
-	}
+	}*/
 	if(!Docs)
 		Docs=new GDoc*[Session->GetNbDocs()];
 
@@ -223,8 +224,7 @@ void GSubjectTree::CreateSet(void)
 		if(!Subs()->IsUsed()) continue;
 
 		// Create an ideal group for this subject
-		CurGrps=IdealGroups.GetPtr<const GLang*>(Subs()->GetLang());
-		CurGrps->InsertPtr(Grp=new GGroupVector(CurGrps->NbPtr,Subs()->GetLang()));
+		IdealGroups->InsertGroup(Grp=new GGroupVector(IdealGroups->GetNbGroups(),Subs()->GetLang()));
 
 		// Copy the documents of the same language of the session in Docs;
 		NbDocs=Session->FillDocs(Docs,Subs()->GetLang());
@@ -268,7 +268,7 @@ void GSubjectTree::CreateSet(void)
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH)
+void GSubjects::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH)
 {
 	unsigned int nbDocsOK,nbDocsKO,nbDocsH;
 	unsigned int i;
@@ -315,18 +315,14 @@ void GSubjectTree::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDo
 
 
 //-----------------------------------------------------------------------------
-GGroup* GSubjectTree::GetIdealGroup(GSubProfile* sub) const
+GGroup* GSubjects::GetIdealGroup(GSubProfile* sub) const throw(GException)
 {
-	GGroups* grps;
-
-	grps=IdealGroups.GetPtr<const GLang*>(sub->GetLang());
-	if(!grps) return(0);
-	return(grps->GetGroup(sub));
+	return(IdealGroups->GetGroup(sub));
 }
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::ComputeRecallPrecision(GSlot* /*rec*/)
+void GSubjects::ComputeRecallPrecision(GSlot* /*rec*/)
 {
 	GroupScoreCursor Grp;
 	GSubProfileCursor Sub;
@@ -391,10 +387,10 @@ void GSubjectTree::ComputeRecallPrecision(GSlot* /*rec*/)
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::ComputeTotal(GSlot* /*rec*/)
+void GSubjects::ComputeTotal(GSlot* /*rec*/)
 {
-	GGroups* GroupsIdeal;                         // Pointer to the ideal groups for a given language
-	GGroups* GroupsComputed;                      // Pointer to the computed groups for a given language
+	GGroupCursor GroupsIdeal;                         // Pointer to the ideal groups for a given language
+	GGroupCursor GroupsComputed;                      // Pointer to the computed groups for a given language
 	GGroup* GroupIdeal;                           // Pointer to a ideal group
 	GGroup* GroupComputed;                        // Pointer to a computed group
 	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
@@ -421,12 +417,9 @@ void GSubjectTree::ComputeTotal(GSlot* /*rec*/)
 	{
 		lang=Langs()->GetPlugin();
 		if(!lang) continue;
-		GroupsIdeal=IdealGroups.GetPtr<GLang*>(lang);
-		if(GroupsIdeal)
-			NbRows=GroupsIdeal->NbPtr;
-		else
-			NbRows=0;
-		NbCols=Session->GetGroups(lang)->NbPtr;
+		GroupsIdeal=IdealGroups->GetGroupsCursor(lang);
+		NbRows=GroupsIdeal.GetNb();
+		NbCols=Session->GetGroupsCursor(lang).GetNb();
 		if(NbRows>MaxRows) MaxRows=NbRows;
 		if(NbCols>MaxCols) MaxCols=NbCols;
 	}
@@ -444,19 +437,16 @@ void GSubjectTree::ComputeTotal(GSlot* /*rec*/)
 
 		// Compute number of elements in ideal and computed groups.
 		// and assign the groups to the current language.
-		GroupsIdeal=IdealGroups.GetPtr<GLang*>(lang);
-		if(GroupsIdeal)
-			NbRows=GroupsIdeal->NbPtr;
-		else
-			NbRows=0;
-		GroupsComputed=Session->GetGroups(lang);
-		NbCols=GroupsComputed->NbPtr;
+		GroupsIdeal=IdealGroups->GetGroupsCursor(lang);
+		NbRows=GroupsIdeal.GetNb();
+		GroupsComputed=Session->GetGroupsCursor(lang);
+		NbCols=GroupsComputed.GetNb();
 		if((!NbRows)||(!NbCols)) continue;
 
 		// Construction of the container for relation between id and column in the matrix.
 		RContainer<GGroupId,unsigned int,true,true> GroupsId(NbCols,NbCols/2);
-		for(GroupsComputed->Start(),col=0;!GroupsComputed->End();GroupsComputed->Next())
-			GroupsId.InsertPtr(new GGroupId(((*GroupsComputed)())->GetId(),col++));
+		for(GroupsComputed.Start(),col=0;!GroupsComputed.End();GroupsComputed.Next())
+			GroupsId.InsertPtr(new GGroupId((GroupsComputed())->GetId(),col++));
 
 		//Initialisation of the variable used for computing the subtotal
 		a=b=c=d=0.0;
@@ -468,13 +458,13 @@ void GSubjectTree::ComputeTotal(GSlot* /*rec*/)
 		//for each group of ideal group and for each profiles in this group compute the differents terms of the total
 		int row,position;
 		row=0;
-		for(GroupsIdeal->Start(),NbTot=0;!GroupsIdeal->End();GroupsIdeal->Next())
+		for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
 		{
 			memset(VectorColsTemp,0,NbCols*sizeof(double));
-			GroupIdeal=(*GroupsIdeal)();
+			GroupIdeal=(GroupsIdeal)();
 			for(GroupIdeal->Start();!GroupIdeal->End();GroupIdeal->Next())
 			{
-				GroupComputed=GroupsComputed->GetGroup((*GroupIdeal)());
+				GroupComputed=(*GroupIdeal)()->GetGroup();//GroupsComputed->GetGroup((*GroupIdeal)());
 				if(GroupComputed)
 				{
 					position=GroupsId.GetPtr(GroupComputed->GetId())->position;
@@ -518,7 +508,7 @@ void GSubjectTree::ComputeTotal(GSlot* /*rec*/)
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::CreateIdeal(bool Save)
+void GSubjects::CreateIdeal(bool Save)
 {
 	// Apply Config
 	Apply();
@@ -532,17 +522,16 @@ void GSubjectTree::CreateIdeal(bool Save)
 	if(Save)
 	{
 		Session->SaveFdbks();
-		Session->SaveIdealGroupment(&IdealGroups);
+		Session->SaveIdealGroupment(IdealGroups);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::FdbksCycle(bool Save)
+void GSubjects::FdbksCycle(bool Save)
 {
-	GGroupsCursor Grps;
+	GGroupCursor Grps;
 	GSubProfileCursor SubProfile;
-	GGroupCursor Grp;
 	unsigned int i;
 
 	// Apply Config
@@ -552,38 +541,33 @@ void GSubjectTree::FdbksCycle(bool Save)
 	Grps=Session->GetGroupsCursor();
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
-		// Go through the groups of the current language.
-		Grp=Grps()->GetGroupCursor();
-		for(Grp.Start();!Grp.End();Grp.Next())
+		// Go through the subprofile contained in the group.
+		SubProfile=Grps()->GetSubProfilesCursor();
+		for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
 		{
-			// Go through the subprofile contained in the group.
-			SubProfile=Grp()->GetSubProfilesCursor();
-			for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
+			Grps()->NotJudgedDocsRelList(&NewDocs,SubProfile(),Global);
+			for(NewDocs.Start(),i=NbDocsAssess+1;(!NewDocs.End())&&(--i);NewDocs.Next())
 			{
-				Grp()->NotJudgedDocsRelList(&NewDocs,SubProfile(),Global);
-				for(NewDocs.Start(),i=NbDocsAssess+1;(!NewDocs.End())&&(--i);NewDocs.Next())
+				// Look if 'OK'
+				if(NewDocs()->GetDoc()->IsFromSubject(SubProfile()->GetSubject()))
 				{
-					// Look if 'OK'
-					if(NewDocs()->GetDoc()->IsFromSubject(SubProfile()->GetSubject()))
+					Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
+				}
+				else
+				{
+					// Look If 'KO'
+					if(NewDocs()->GetDoc()->IsFromParentSubject(SubProfile()->GetSubject()))
 					{
-						Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 					else
 					{
-						// Look If 'KO'
-						if(NewDocs()->GetDoc()->IsFromParentSubject(SubProfile()->GetSubject()))
-						{
-							Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
-						}
-						else
-						{
-							// Must be H
-							Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
-						}
+						// Must be H
+						Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 				}
-				SubProfile()->SetState(osModified);
 			}
+			SubProfile()->SetState(osModified);
 		}
 	}
 
@@ -593,7 +577,7 @@ void GSubjectTree::FdbksCycle(bool Save)
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::AddAssessments(bool Save)
+void GSubjects::AddAssessments(bool Save)
 {
 	GSubjectCursor Subs;
 	GSubProfileCursor Prof;
@@ -656,7 +640,7 @@ void GSubjectTree::AddAssessments(bool Save)
 
 
 //-----------------------------------------------------------------------------
-bool GSubjectTree::AddTopic(bool Save)
+bool GSubjects::AddTopic(bool Save)
 {
 	GSubject** tab;
 	GSubject** ptr;
@@ -664,7 +648,7 @@ bool GSubjectTree::AddTopic(bool Save)
 	GSubject* newSubject;
 	GSubProfileCursor Prof;
 	unsigned int nbprof,nbsocial;
-	GGroups* CurGrps;
+//	GGroups* CurGrps;
 	GGroup* Grp;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
 
@@ -693,8 +677,7 @@ bool GSubjectTree::AddTopic(bool Save)
 	newSubject->SetUsed(true);
 
 	// Create an ideal group for this subject
-	CurGrps=IdealGroups.GetPtr<const GLang*>(newSubject->GetLang());
-	CurGrps->InsertPtr(Grp=new GGroupVector(CurGrps->NbPtr,newSubject->GetLang()));
+	IdealGroups->InsertGroup(Grp=new GGroupVector(IdealGroups->GetNbGroups(),newSubject->GetLang()));
 
 	// Copy the documents of the same language of the session in Docs;
 	NbDocs=Session->FillDocs(Docs,newSubject->GetLang());
@@ -737,14 +720,14 @@ bool GSubjectTree::AddTopic(bool Save)
 	if(Save)
 	{
 		Session->SaveFdbks();
-		Session->SaveIdealGroupment(&IdealGroups);
+		Session->SaveIdealGroupment(IdealGroups);
 	}
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GSubjectTree::AddProfiles(bool Save)
+unsigned int GSubjects::AddProfiles(bool Save)
 {
 	GSubject** tab;
 	GSubject** ptr;
@@ -752,7 +735,7 @@ unsigned int GSubjectTree::AddProfiles(bool Save)
 	unsigned int nbprof, nbsocial, nbprofilescreated;
 	GSubject* usedSubject;
 	GSubProfileCursor Prof;
-	GGroups* CurGrps;
+	GGroupCursor CurGrps;
 	GGroup* Grp;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
 
@@ -782,12 +765,12 @@ unsigned int GSubjectTree::AddProfiles(bool Save)
 	if(!usedSubject) return 0;
 
 	// catch the ideal group for this subject
-	CurGrps=IdealGroups.GetPtr<const GLang*>(usedSubject->GetLang());
-	for(CurGrps->Start(),Grp=0;!CurGrps->End();CurGrps->Next())
+	CurGrps=IdealGroups->GetGroupsCursor(usedSubject->GetLang());
+	for(CurGrps.Start(),Grp=0;!CurGrps.End();CurGrps.Next())
 	{
-		if ( (*(*CurGrps)()->Tab)->GetSubject()->GetId()==usedSubject->GetId())
+		if ( (*CurGrps()->Tab)->GetSubject()->GetId()==usedSubject->GetId())
 		{
-			Grp=(*CurGrps)();
+			Grp=CurGrps();
 			break;
 		}
 	}
@@ -839,7 +822,7 @@ unsigned int GSubjectTree::AddProfiles(bool Save)
 	if(Save)
 	{
 		Session->SaveFdbks();
-		Session->SaveIdealGroupment(&IdealGroups);
+		Session->SaveIdealGroupment(IdealGroups);
 	}
 
 	//returns the number of created profiles
@@ -848,7 +831,7 @@ unsigned int GSubjectTree::AddProfiles(bool Save)
 
 
 //-----------------------------------------------------------------------------
-double GSubjectTree::ComputePercAss(void)
+double GSubjects::ComputePercAss(void)
 {
 	GSubProfileCursor Cur1;
 	GProfileCursor Cur2;
@@ -898,39 +881,36 @@ double GSubjectTree::ComputePercAss(void)
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::ClearLastAdded(void)
+void GSubjects::ClearLastAdded(void)
 {
 	LastAdded.Clear();
 }
 
 
 //-----------------------------------------------------------------------------
-GSubject* GSubjectTree::GetSubject(unsigned int id)
+GSubject* GSubjects::GetSubject(unsigned int id)
 {
 	return(RTree<GSubject,true,false>::GetPtr<unsigned int>(id));
 }
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::ClearSubjects(void)
+void GSubjects::ClearSubjects(void)
 {
 	RTree<GSubject,true,false>::Clear();
 }
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::Compare(GSlot* rec)
+void GSubjects::Compare(GSlot* rec)
 {
-	GGroupsCursor Cur;
-	GGroupCursor Grp;
+	GGroupCursor Cur;
 
 	GroupsScore.Clear();
 	Cur=Session->GetGroupsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Grp=Cur()->GetGroupCursor();
-		for(Grp.Start();!Grp.End();Grp.Next())
-			GroupsScore.InsertPtr(new GroupScore(Grp()));
+		GroupsScore.InsertPtr(new GroupScore(Cur()));
 	}
 	ComputeRecallPrecision(rec);
 	ComputeTotal(rec);
@@ -938,7 +918,7 @@ void GSubjectTree::Compare(GSlot* rec)
 
 
 //-----------------------------------------------------------------------------
-double GSubjectTree::GetPrecision(GGroup* grp)
+double GSubjects::GetPrecision(GGroup* grp)
 {
 	GroupScore* g=GroupsScore.GetPtr<const GGroup*>(grp);
 
@@ -948,7 +928,7 @@ double GSubjectTree::GetPrecision(GGroup* grp)
 
 
 //-----------------------------------------------------------------------------
-double GSubjectTree::GetRecall(GGroup* grp)
+double GSubjects::GetRecall(GGroup* grp)
 {
 	GroupScore* g=GroupsScore.GetPtr<const GGroup*>(grp);
 
@@ -958,24 +938,33 @@ double GSubjectTree::GetRecall(GGroup* grp)
 
 
 //-----------------------------------------------------------------------------
-RContainer<GGroups,unsigned int,true,true>* GSubjectTree::GetIdealGroups(void)
+GGroups* GSubjects::GetIdealGroups(void)
 {
-	return(&IdealGroups);
+	return(IdealGroups);
 }
 
 
 //-----------------------------------------------------------------------------
-GGroupsCursor& GSubjectTree::GetIdealGroupsCursor(void)
+/*GGroupsCursor& GSubjects::GetIdealGroupsCursor(void)
 {
 	GGroupsCursor *cur=GGroupsCursor::GetTmpCursor();
 	cur->Set(IdealGroups);
 	return(*cur);
+}*/
+
+
+//-----------------------------------------------------------------------------
+GGroupCursor& GSubjects::GetGroupsCursor(void) throw(GException)
+{
+	return(IdealGroups->GetGroupsCursor());
 }
 
 
 //-----------------------------------------------------------------------------
-GSubjectTree::~GSubjectTree(void)
+GSubjects::~GSubjects(void)
 {
+	if(IdealGroups)
+		delete IdealGroups;
 	if(Docs)
 		delete[] Docs;
 }
