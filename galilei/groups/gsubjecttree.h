@@ -107,12 +107,6 @@ protected:
 	unsigned int NbMinDocsGrp;
 
 	/**
-	* Parameter to initialyse the random function for autocreate jugment.
-	* 0 to use randomly, >0 to use whit the same su sequence
-	*/
-	int Rand;
-
-	/**
 	* The maximal number of profiles in a group.
 	*/
 	unsigned int NbProfMax;
@@ -194,12 +188,12 @@ public:
 	*/
 	GSubjectTree(GSession* session);
 
-protected:
-
 	/**
 	* Assign the values of the parameters to the corresponding variables.
 	*/
 	void Apply(void);
+
+protected:
 
 	/**
 	* Choose the subjects that will be used.

@@ -145,7 +145,6 @@ GSubjectTree::GSubjectTree(GSession* session)
 	GParams::InsertPtr(new GParamDouble("PercSocial",100.0));
 	GParams::InsertPtr(new GParamDouble("PercGrp",100.0));
 	GParams::InsertPtr(new GParamUInt("NbMinDocsGrp",50));
-	GParams::InsertPtr(new GParamInt("Rand",0));
 	GParams::InsertPtr(new GParamUInt("NbDocsAssess",30));
 	GParams::InsertPtr(new GParamBool("idf",true));
 	Apply();
@@ -165,11 +164,8 @@ void GSubjectTree::Apply(void)
 	PercSocial=GetDouble("PercSocial");
 	PercGrp=GetDouble("PercGrp");
 	NbMinDocsGrp=GetUInt("NbMinDocsGrp");
-	Rand=GetInt("Rand");
 	NbDocsAssess=GetUInt("NbDocsAssess");
 	Global=GetBool("idf");
-	if(Rand!=0)
-		Session->SetCurrentRandom(Rand);
 }
 
 
@@ -256,7 +252,7 @@ void GSubjectTree::CreateSet(void)
 		nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
 
 		// Number of profiles that are social
-		nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100)+1;
+		nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
 
 		// Number of documents to judged by each subprofile
 		maxDocsOK=static_cast<unsigned int>(Subs()->GetNbDocs()*PercOK/100);
@@ -524,7 +520,10 @@ void GSubjectTree::ComputeTotal(GSlot* /*rec*/)
 	}
 
 	// Compute Total
-	Total=Total/NbProfiles;
+	if(NbProfiles)
+		Total=Total/(double)NbProfiles;
+	else
+		Total=0.0;
 
 	//delete the vectors
 	if (VectorRows) delete[] VectorRows;

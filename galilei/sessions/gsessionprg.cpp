@@ -85,7 +85,6 @@ void GSetRandI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int
 	if(Rand!=0)
 	{
 		Owner->Session->SetCurrentRandom(Rand);
-		cout<<"Set Rand "<<Rand<<endl;
 	}
 
 }
