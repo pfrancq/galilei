@@ -6,7 +6,7 @@
 
 	Window for manipulating a specific document - Header.
 
-	(C) 2001 by Pascal Francq and David Wartel
+	(C) 2001-2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -61,7 +61,7 @@ using namespace GALILEI;
 //---------------------------------------------------------------------------
 /**
 * The KViewDoc class represents the window to describe a specific document.
-* @author Pascal Francq and David Wartel
+* @author Pascal Francq
 * @version $Revision$
 * @short Document's Window.
 */

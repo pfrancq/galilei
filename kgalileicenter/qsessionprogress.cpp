@@ -252,7 +252,7 @@ void QSessionProgressDlg::ComputeProfiles(GProfileCalc* method,bool modified)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::GroupProfiles(GGrouping* method,bool modified)
+void QSessionProgressDlg::GroupProfiles(tSubProfileDesc t,GGrouping* method,bool modified)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -260,7 +260,7 @@ void QSessionProgressDlg::GroupProfiles(GGrouping* method,bool modified)
 	{
 		txtRem->setText("Groups Profiles ...");
 		KApplication::kApplication()->processEvents();
-		method->Grouping(this,modified);
+		method->Grouping(t,this,modified);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
@@ -272,7 +272,7 @@ void QSessionProgressDlg::GroupProfiles(GGrouping* method,bool modified)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::ComputeAll(GProfileCalc* method,GGrouping* grpmethod,bool modified)
+void QSessionProgressDlg::ComputeAll(tSubProfileDesc t,GProfileCalc* method,GGrouping* grpmethod,bool modified)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -286,7 +286,7 @@ void QSessionProgressDlg::ComputeAll(GProfileCalc* method,GGrouping* grpmethod,b
 		Session->CalcProfiles(this,method,modified);
 		txtRem->setText("Groups Profiles ...");
 		KApplication::kApplication()->processEvents();
-		grpmethod->Grouping(this,modified);
+		grpmethod->Grouping(t,this,modified);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)

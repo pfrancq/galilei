@@ -90,7 +90,6 @@ KViewThGroups::KViewThGroups(KDoc* doc,const char* filename,QWidget* parent,cons
 	thGroups->resize(size());
 	thGroups->addColumn(QString("Profiles"));
 	thGroups->addColumn(QString("Users"));
-	thGroups->addColumn(QString("Attached"));
 	thGroups->setRootIsDecorated(true);
 	connect(thGroups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	ConstructThGroups();
@@ -100,8 +99,8 @@ KViewThGroups::KViewThGroups(KDoc* doc,const char* filename,QWidget* parent,cons
 	Infos->insertTab(prGroups,"Computed Groupement");
 	prGroups->resize(size());
 	prGroups->addColumn(QString("Profiles"));
-	prGroups->addColumn(QString("Users"));
-	prGroups->addColumn(QString("Attached"));
+	prGroups->addColumn(QString("Precision"));
+	prGroups->addColumn(QString("Recall"));
 	prGroups->setRootIsDecorated(true);
 	connect(prGroups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	ConstructGroups();
@@ -163,8 +162,6 @@ GGroup* KViewThGroups::GetCurrentGroup(void)
 void KViewThGroups::ConstructThGroups(void)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Doc->GetSession()->GetLangs());
-	char sDate[20];
-	const RDate* d;
 
 	thGroups->clear();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
@@ -173,7 +170,7 @@ void KViewThGroups::ConstructThGroups(void)
 		if(!grs) continue;
 		QListViewItemType* grsitem = new QListViewItemType(thGroups,CurLang()->GetName());
 		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
-		for (grs->Start(); !grs->End(); grs->Next())
+		for(grs->Start(); !grs->End(); grs->Next())
 		{
 			GGroup* gr=(*grs)();
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group");
@@ -181,9 +178,7 @@ void KViewThGroups::ConstructThGroups(void)
 			for(gr->Start(); !gr->End(); gr->Next())
 			{
 				GSubProfile* sub=(*gr)();
-				d=sub->GetAttached();
-				sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName(),sDate);
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName());
 				subitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
 			}
 		}
@@ -195,14 +190,12 @@ void KViewThGroups::ConstructThGroups(void)
 void KViewThGroups::ConstructGroups(void)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Doc->GetSession()->GetLangs());
-	char sDate[20];
-	const RDate* d;
 	GCompareGrouping Comp(Doc->GetSession(),Groups);
 	char tmp1[70];
 	char tmp2[30];
 
 	Comp.Compare(0);
-	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f",Comp.GetPrecision(),Comp.GetRecall());
+	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Comp.GetPrecision(),Comp.GetRecall(),Comp.GetTotal());
 	setCaption(tmp1);
 	prGroups->clear();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
@@ -220,9 +213,8 @@ void KViewThGroups::ConstructGroups(void)
 			for(gr->Start(); !gr->End(); gr->Next())
 			{
 				GSubProfile* sub=(*gr)();
-				d=sub->GetAttached();
-				sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName(),sDate);
+				sprintf(tmp1,"%s (%s)",sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName());
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,tmp1);
 				subitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
 			}
 		}

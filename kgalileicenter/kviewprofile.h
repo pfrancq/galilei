@@ -48,7 +48,7 @@ class QTabWidget;
 class QListView;
 namespace GALILEI
 {
-	class QGSubProfiles;
+	class QGSubProfileDescs;
 	class GProfile;
 	class QGProfile;
 }
@@ -98,7 +98,7 @@ class KViewProfile : public KView
 	/**
 	* Widget to handle profile information.
 	*/
-	GALILEI::QGSubProfiles* Desc;
+	GALILEI::QGSubProfileDescs* Desc;
 
 public:
 

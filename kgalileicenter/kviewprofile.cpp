@@ -54,7 +54,6 @@ using namespace RStd;
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
 #include <galilei/qlistviewitemtype.h>
-#include <galilei/qgsubprofiles.h>
 #include <galilei/qgsubprofiledescs.h>
 using namespace GALILEI;
 
@@ -97,12 +96,8 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	User->addColumn("Value");
 	ConstructUser();
 
-	// Initialisation of the Description Widget
-	Desc=new QGSubProfiles(Infos,Doc->GetSession(),Profile);
-	Infos->insertTab(Desc,"Description");
-
 	// Initialisation of the Descriptions Widget
-	new QGSubProfileDescs(Infos,Doc->GetSession(),Profile,sdVector);
+	Desc=new QGSubProfileDescs(Infos,Doc->GetSession(),Profile,sdVector);
 
 	// Initialisation of the Groups Widget
 	Groups=new QListView(Infos);
@@ -133,9 +128,9 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 void KViewProfile::ConstructFdbks(void)
 {
 	QListViewItem *p;
-	GProfDoc* j;
 	const RDate* d;
 	char sDate[20];
+	GProfDocCursor Docs;
 
 	if(!Fdbks) return;
 
@@ -151,10 +146,10 @@ void KViewProfile::ConstructFdbks(void)
 	hs->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
 
 	// Add Judgements
-	for(Profile->DocsStart();!Profile->DocsEnd();Profile->DocsNext())
+	Docs=Profile->GetProfDocCursor();
+	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		j=Profile->GetCurDocs();
-		switch(j->GetFdbk())
+		switch(Docs()->GetFdbk())
 		{
 			case 'O':
 				p=ok;
@@ -173,9 +168,9 @@ void KViewProfile::ConstructFdbks(void)
 				break;
 		}
 		if(!p) continue;
-		d=j->GetUpdated();
+		d=Docs()->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
-		QListViewItemType* prof = new QListViewItemType(j->GetDoc(),p,j->GetDoc()->GetName(),j->GetDoc()->GetURL(),sDate);
+		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName(),Docs()->GetDoc()->GetURL(),sDate);
 		prof->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/personal.png"));
 	}
 }

@@ -6,7 +6,7 @@
 
 	Window for manipulating a specific document - Implementation.
 
-	(C) 2001 by Pascal Francq and David Wartel
+	(C) 2001-2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -125,9 +125,9 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 void KViewDoc::ConstructFdbks(void)
 {
 	QListViewItem *p;
-	GProfDoc* j;
 	const RDate* d;
 	char sDate[20];
+	GProfDocCursor Profiles;
 
 	if(!Fdbks) return;
 
@@ -142,10 +142,10 @@ void KViewDoc::ConstructFdbks(void)
 	hs->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
 
 	// Add Judgements
-	for(Document->ProfilesStart();!Document->ProfilesEnd();Document->ProfilesNext())
+	Profiles=Document->GetProfDocCursor();
+	for(Profiles.Start();!Profiles.End();Profiles.Next())
 	{
-		j=Document->GetCurProfiles();
-		switch(j->GetFdbk())
+		switch(Profiles()->GetFdbk())
 		{
 			case 'O':
 				p=ok;
@@ -164,9 +164,9 @@ void KViewDoc::ConstructFdbks(void)
 				break;
 		}
 		if(!p) continue;
-		d=j->GetUpdated();
+		d=Profiles()->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
-		QListViewItemType* prof = new QListViewItemType(j->GetProfile(),p,j->GetProfile()->GetName(),j->GetProfile()->GetUser()->GetFullName(),sDate);
+		QListViewItemType* prof = new QListViewItemType(Profiles()->GetProfile(),p,Profiles()->GetProfile()->GetName(),Profiles()->GetProfile()->GetUser()->GetFullName(),sDate);
 		prof->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/personal.png"));
 	}
 }
@@ -174,12 +174,12 @@ void KViewDoc::ConstructFdbks(void)
 
 //-----------------------------------------------------------------------------
 void KViewDoc::ConstructResults(void)
-{                           
-	// filling of the tree
-	for (Document->WordsStart();!Document->WordsEnd();Document->WordsNext())
+{
+	GIWordOccurCursor Words=Document->GetWordOccurCursor();
+
+	for (Words.Start();!Words.End();Words.Next())
 	{
-		GIWordOccur* wrd= Document->GetCurWords();
-		new QListViewItem(Results,Doc->GetSession()->GetWord(wrd->GetId(),Document->GetLang()), QString(itoa(wrd->GetNbOccurs())));
+		new QListViewItem(Results,Doc->GetSession()->GetWord(Words()->GetId(),Document->GetLang()), QString(itoa(Words()->GetNbOccurs())));
 	}
 }
 

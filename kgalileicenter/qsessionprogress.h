@@ -132,18 +132,20 @@ public:
 
 	/**
 	* Groups the profiles.
+	* @param t              Type of the description used.
 	* @param method         Method used to group.
 	* @param modified       Recompute only modified elements or all.
 	*/
-	void GroupProfiles(GGrouping* method,bool modified=true);
+	void GroupProfiles(tSubProfileDesc t,GGrouping* method,bool modified=true);
 
 	/**
 	* Compute all the elements.
+	* @param t              Type of the description used.
 	* @param method         Method used to compute.
 	* @param methodgrp      Method used to group.
 	* @param modified       Recompute only modified elements or all.
 	*/
-	void ComputeAll(GProfileCalc* method,GGrouping* grpmethod,bool modified=true);
+	void ComputeAll(tSubProfileDesc t,GProfileCalc* method,GGrouping* grpmethod,bool modified=true);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.

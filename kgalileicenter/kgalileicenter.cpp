@@ -456,7 +456,7 @@ void KGALILEICenterApp::slotSessionCompute(void)
 {
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Complete Session");
-	d->ComputeAll(Doc->GetCurComputeProfile(),Doc->GetCurGrouping(),!sessionAlwaysCalc->isChecked());
+	d->ComputeAll(sdVector,Doc->GetCurComputeProfile(),Doc->GetCurGrouping(),!sessionAlwaysCalc->isChecked());
 	Doc->updateAllViews(0);
 	Doc->updateAllViews(1);
 	Doc->updateAllViews(2);
@@ -573,7 +573,7 @@ void KGALILEICenterApp::slotGroupsCalc(void)
 {
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Make Groups");
-	d->GroupProfiles(Doc->GetCurGrouping(),!groupAlwaysCalc->isChecked());
+	d->GroupProfiles(sdVector,Doc->GetCurGrouping(),!groupAlwaysCalc->isChecked());
 	Doc->updateAllViews(2);
 }
 
@@ -740,6 +740,8 @@ void KGALILEICenterApp::slotAddJudgement(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotEditJudgement(void)
 {
+	GProfDocCursor Cur;
+
 	// rajouter les 2 cas avec fenetre selectionne = gdocs et fenetre selectionne =  gusers
 	KView* m = (KView*)pWorkspace->activeWindow();
 	// if the current window is a profile
@@ -751,9 +753,10 @@ void KGALILEICenterApp::slotEditJudgement(void)
 		dlg.TLTitle->setText(QString(profile->GetName()));
 		dlg.TLURL->setText(QString(profile->GetUser()->GetName()));
 		QListViewItem* docitem = new QListViewItem (dlg.LVUsers, "Doc");
-		for (profile->DocsStart();!profile->DocsEnd();profile->DocsNext())
+		Cur=profile->GetProfDocCursor();
+		for (Cur.Start();!Cur.End();Cur.Next())
 		{
-			QListViewItemType* useritem = new QListViewItemType(profile->GetCurDocs()->GetDoc(),docitem, QString (profile->GetCurDocs()->GetDoc()->GetName()), QString (QChar(profile->GetCurDocs()->GetFdbk())));
+			QListViewItemType* useritem = new QListViewItemType(Cur()->GetDoc(),docitem,Cur()->GetDoc()->GetName(), QString(QChar(Cur()->GetFdbk())));
 			docitem->setOpen(true);
 			useritem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/personal.png"));
 		}
@@ -787,9 +790,10 @@ void KGALILEICenterApp::slotEditJudgement(void)
 		if(doc->GetLang()) dlg2.TLLang->setText(doc->GetLang()->GetName());
 		else dlg2.TLLang->setText(" Le Documnt n a pas encore ete analyse");
 		dlg2.MimeFilter->setText(doc->GetMIMEType()->GetName());
-		for (doc->ProfilesStart();!doc->ProfilesEnd();doc->ProfilesNext())
+		Cur=doc->GetProfDocCursor();
+		for (Cur.Start();!Cur.End();Cur.Next())
 		{
-			QListViewItem* useritem = new QListViewItem (dlg2.LVUsers, QString (doc->GetCurProfiles()->GetProfile()->GetName()), QString (QChar(doc->GetCurProfiles()->GetFdbk())));
+			QListViewItem* useritem = new QListViewItem (dlg2.LVUsers,Cur()->GetProfile()->GetName(), QString(QChar(Cur()->GetFdbk())));
 			useritem->setOpen(true);
 			useritem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/personal.png"));
 		}
