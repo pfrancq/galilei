@@ -58,6 +58,7 @@
 #include <docs/gfiltermanager.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 

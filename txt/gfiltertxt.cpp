@@ -54,6 +54,7 @@
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
