@@ -140,6 +140,7 @@ class GGroupCursor;
 class GGroupVector;
 class GGrouping;
 class GGroupingKCos;
+class GGroupingSupKMeans;
 class GGroupingCure;
 class GGroupingGGA;
 class GGroupingSim;
@@ -206,6 +207,7 @@ class GIRParams;
 class GKMeansParams;
 class GKProtosParams;
 class GCureParams;
+class GSupKMeansParams;
 class GSimParams;
 // Computing parameters
 class GCalcParams;
