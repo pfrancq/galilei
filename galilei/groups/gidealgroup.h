@@ -119,6 +119,11 @@ protected:
 	GDoc** Docs;
 
 	/**
+	* Number of documents actually in Docs.
+	*/
+	unsigned int NbDocs;
+
+	/**
 	* The date of today.
 	*/
 	char today[12];
@@ -151,6 +156,16 @@ public:
 	*/
 	void CreateSet(void);
 
+	/**
+	* Simulatation of judgments for a profile for a given subject.
+	* @param prof           Profile that judges the documents.
+	* @param sub            Subject.
+	* @param maxDocOK       Maximal OK Documents to judge.
+	* @param maxDocKO       Maximal KO Documents to judge.
+	* @param maxDocH        Maximal H Documents to judge.
+	*/
+	void ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH);
+	
 	/**
 	* Add profiles of a new not used topic.
 	* @param Save           Save the results.

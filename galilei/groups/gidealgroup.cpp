@@ -78,7 +78,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 GALILEI::GIdealGroup::GIdealGroup(GSession* session)
-	: Session(session), Docs(0)
+	: Session(session), Docs(0), NbDocs(0)
 {
 	RTimeDate::RDate date;
 
@@ -153,10 +153,7 @@ void GALILEI::GIdealGroup::CreateSet(void)
 	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
 	GGroups* CurGrps;
 	GGroup* Grp;
-	unsigned int nbDocsOK,nbDocsKO,nbDocsH,nbDocs;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
-	unsigned int i;
-	GDoc** ptr;
 	GLangCursor CurLang;
 
 	// Init Part
@@ -175,12 +172,13 @@ void GALILEI::GIdealGroup::CreateSet(void)
 	for(Subs.Start();!Subs.End();Subs.Next())
 	{
 		if(!Subs()->IsUsed()) continue;
+
 		// Create an ideal group for this subject
 		CurGrps=IdealGroups->GetPtr<const GLang*>(Subs()->GetLang());
 		CurGrps->InsertPtr(Grp=new GGroupVector(CurGrps->NbPtr,Subs()->GetLang()));
 
 		// Copy the documents of the same language of the session in Docs;
-		nbDocs=Session->FillDocs(Docs,Subs()->GetLang());
+		NbDocs=Session->FillDocs(Docs,Subs()->GetLang());
 
 		// Number of subprofiles that will judge documents
 		if(NbProfMax>Subs()->GetNbSubProfiles())
@@ -190,7 +188,7 @@ void GALILEI::GIdealGroup::CreateSet(void)
 		nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
 
 		// Number of profiles that are social
-		nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
+		nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100)+1;
 
 		// Number of documents to judged by each subprofile
 		maxDocsOK=static_cast<unsigned int>(Subs()->GetNbDocs()*PercOK/100);
@@ -201,7 +199,6 @@ void GALILEI::GIdealGroup::CreateSet(void)
 		Prof=Subs()->GetSubProfilesCursor();
 		for(Prof.Start(),nbprof++;(!Prof.End())&&(--nbprof);Prof.Next())
 		{
-			cout<<"Profile Id:"<<Prof()->GetProfile()->GetId()<<"\tSubProfile Id"<<Prof()->GetId()<<" ("<<Prof()->GetLang()->GetName()<<")"<<endl;
 			// Look if current subprofile is social or not
 			if(nbsocial)
 			{
@@ -214,44 +211,53 @@ void GALILEI::GIdealGroup::CreateSet(void)
 			// Insert current subprofile in the ideal group
 			Grp->InsertPtr(Prof());
 
-			// Mix the documents
-			Session->GetRandom()->RandOrder<GDoc*>(Docs,nbDocs);
+			// Judges documents
+			ProfileJudges(Prof()->GetProfile(),Subs(),maxDocsOK,maxDocsKO,maxDocsH);
+		}
+	}
+}
 
-			// Go trought the documents to create the judgements
-			for(i=nbDocs+1,ptr=Docs,nbDocsOK=maxDocsOK,nbDocsKO=maxDocsKO,nbDocsH=maxDocsH;(--i)&&((nbDocsOK)||(nbDocsKO)||(nbDocsH));ptr++)
+
+//-----------------------------------------------------------------------------
+void GALILEI::GIdealGroup::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH)
+{
+	unsigned int nbDocsOK,nbDocsKO,nbDocsH;
+	unsigned int i;
+	GDoc** ptr;
+
+	// Mix the documents
+	Session->GetRandom()->RandOrder<GDoc*>(Docs,NbDocs);
+
+	// Go trought the documents to create the judgements
+	for(i=NbDocs+1,ptr=Docs,nbDocsOK=maxDocsOK,nbDocsKO=maxDocsKO,nbDocsH=maxDocsH;(--i)&&((nbDocsOK)||(nbDocsKO)||(nbDocsH));ptr++)
+	{
+		// Look if 'OK'
+		if((*ptr)->IsFromSubject(sub))
+		{
+			if(nbDocsOK)
 			{
-				// Look if 'OK'
-				if((*ptr)->IsFromSubject(Subs()))
+				nbDocsOK--;
+				Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),today);
+			}
+		}
+		else
+		{
+			// Look If 'KO'
+			if((*ptr)->IsFromParentSubject(sub))
+			{
+				if(nbDocsKO)
 				{
-					if(nbDocsOK)
-					{
-						nbDocsOK--;
-//						cout<<"\tDoc Id:"<<(*ptr)->GetId()<<endl;
-						Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),today);
-					}
+					nbDocsKO--;
+					Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),today);
 				}
-				else
+			}
+			else
+			{
+				// Must be H
+				if(nbDocsH)
 				{
-					// Look If 'KO'
-					if((*ptr)->IsFromParentSubject(Subs()))
-					{
-						if(nbDocsKO)
-						{
-							nbDocsKO--;
-//							cout<<"\tDoc Id:"<<(*ptr)->GetId()<<endl;
-							Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),today);
-						}
-					}
-					else
-					{
-						// Must be H
-						if(nbDocsH)
-						{
-							nbDocsH--;
-//							cout<<"\tDoc Id:"<<(*ptr)->GetId()<<endl;
-							Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),today);
-						}
-					}
+					nbDocsH--;
+					Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),today);
 				}
 			}
 		}
@@ -260,8 +266,87 @@ void GALILEI::GIdealGroup::CreateSet(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIdealGroup::AddJudgement(bool)
+void GALILEI::GIdealGroup::AddJudgement(bool Save)
 {
+	GSubject** tab;
+	GSubject** ptr;
+	unsigned int i;
+	GSubjectTree* Subjects;
+	GSubject* newSubject;
+	GSubProfileCursor Prof;
+	unsigned int nbprof,nbsocial;
+	GGroups* CurGrps;
+	GGroup* Grp;
+	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
+
+	// Randomly mix the subjects in tab
+	Subjects=Session->GetSubjects();
+	tab=new GSubject*[Subjects->NbPtr];
+	memcpy(tab,Subjects->Tab,sizeof(GSubject*)*(Subjects->NbPtr));
+	Session->GetRandom()->RandOrder<GSubject*>(tab,Subjects->NbPtr);
+
+	// Find the first not used subject having at least NbDocPerGrp documents.
+	for(ptr=tab,i=Subjects->NbPtr+1,newSubject=0;--i;ptr++)
+	{
+		if((*ptr)->GetNbDocs()<NbDocPerGrp) continue;
+		if((*ptr)->IsUsed()) continue;
+		newSubject=(*ptr);
+		break;
+	}
+
+	// delete tab;
+	delete[] tab;
+
+	// If no subject found -> do nothing
+	if(!newSubject) return;
+	newSubject->SetUsed(true);
+
+	// Create an ideal group for this subject
+	CurGrps=Session->GetIdealGroups()->GetPtr<const GLang*>(newSubject->GetLang());
+	CurGrps->InsertPtr(Grp=new GGroupVector(CurGrps->NbPtr,newSubject->GetLang()));
+
+	// Copy the documents of the same language of the session in Docs;
+	NbDocs=Session->FillDocs(Docs,newSubject->GetLang());
+
+	// Number of subprofiles that will judge documents
+	if(NbProfMax>newSubject->GetNbSubProfiles())
+		NbProfMax=newSubject->GetNbSubProfiles();
+	if(NbProfMin>newSubject->GetNbSubProfiles())
+		NbProfMin=newSubject->GetNbSubProfiles();
+	nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
+
+	// Number of profiles that are social
+	nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100)+1;
+
+	// Number of documents to judged by each subprofile
+	maxDocsOK=static_cast<unsigned int>(newSubject->GetNbDocs()*PercOK/100);
+	maxDocsKO=static_cast<unsigned int>(newSubject->GetNbDocs()*PercKO/100);
+	maxDocsH=static_cast<unsigned int>(maxDocsOK*PercHS/100);
+
+	// Go through the nbprof first subprofiles attached to the subject
+	Prof=newSubject->GetSubProfilesCursor();
+	for(Prof.Start(),nbprof++;(!Prof.End())&&(--nbprof);Prof.Next())
+	{
+		// Look if current subprofile is social or not
+		if(nbsocial)
+		{
+			Prof()->GetProfile()->SetSocial(true);
+			nbsocial--;
+		}
+		else
+			Prof()->GetProfile()->SetSocial(false);
+		
+		// Insert current subprofile in the ideal group
+		Grp->InsertPtr(Prof());
+
+		// Judges documents
+		ProfileJudges(Prof()->GetProfile(),newSubject,maxDocsOK,maxDocsKO,maxDocsH);
+	}
+	if(Save)
+	{
+		Session->SaveFdbks();
+		Session->SaveIdealGroupment(Session->GetIdealGroups());
+	}
 }
 
 
