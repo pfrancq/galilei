@@ -594,7 +594,7 @@ void KGALILEICenterApp::slotStatusMsg(const QString& text)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotRunProgram(void)
 {
- 	QString tmpfile;
+	QString tmpfile;
 	char tmp[100];
 	KViewPrg* o;
 
