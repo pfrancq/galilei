@@ -52,6 +52,7 @@ using namespace RStd;
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
+#include <profiles/gsubprofiledescvector.h>
 #include <profiles/gprofdoc.h>
 #include <docs/gdoc.h>
 #include <docs/gdocs.h>
@@ -285,6 +286,20 @@ void GALILEI::GSessionMySQL::Save(const GSubProfile* sub) throw(GException)
 	char sSql[200];
 	char sattached[15];
 	unsigned int grpid;
+	GIWordWeightCursor Cur;
+	const char* l;
+
+	// Delete keywords
+	l=sub->GetLang()->GetCode();
+	sprintf(sSql,"DELETE FROM %ssubprofilesbykwds WHERE subprofileid=%u",l,sub->GetId());
+	RQuery deletekwds(this,sSql);
+	Cur=((GSubProfileDescVector*)sub->GetPtr<const tSubProfileDesc>(sdVector))->GetVectorCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		sprintf(sSql,"INSERT INTO  %ssubprofilesbykwds(subprofileid,kwdid,weight) VALUES (%u,%u,'%e')",
+		              l,sub->GetId(),Cur()->GetId(),Cur()->GetWeight());
+		RQuery insertkwds(this,sSql);
+	}
 
 	if(sub->GetGroup())
 		grpid=sub->GetGroup()->GetId();
@@ -382,6 +397,21 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 				}
 			}
 		}
+
+		// Load the subprofile's description
+		for(Langs.Start();!Langs.End();Langs.Next())
+		{
+			sprintf(sSql,"SELECT subprofileid,kwdid,Weight FROM %ssubprofilesbykwds",Langs()->GetCode());
+			RQuery sel(this,sSql);
+			for(sel.Begin();sel.IsMore();sel++)
+			{
+				sub=SubProfiles->GetPtr<const unsigned int>(atoi(sel[0]));
+				if(sub)
+				{
+					((GSubProfileDescVector*)sub->GetPtr<const tSubProfileDesc>(sdVector))->AddWord(atoi(sel[1]),atof(sel[2]));
+				}
+			}
+		}
 	}
 	catch(RMySQLError& e)
 	{
@@ -429,7 +459,7 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 		lang=GetLang(quer[4]);
 		Docs.InsertPtr(doc=new GDoc(quer[1],quer[2],docid,lang,Mng->GetMIMEType(quer[3]),quer[5],quer[6],atoi(quer[7]),atoi(quer[8]),atoi(quer[9]),atoi(quer[10]),atoi(quer[11])));
 	}
-	
+
 	// Load the document's description
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{

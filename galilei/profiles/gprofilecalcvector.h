@@ -99,10 +99,11 @@ public:
 	virtual void Compute(GProfile* profile);
 
 	/**
-	* Get the type of the method implemented.
-	* @returns tProfileCompute type.
+	* Get the type of the method implemented. This method is used for the
+	* vector model.
+	* @returns tSubProfileDesc enum type.
 	*/
-	virtual tProfilesCompute GetType(void) const {return(pcStatistical);}
+	virtual tSubProfileDesc GetType(void) const {return(sdVector);}
 
 	/**
 	* Get the size of the lists OK/KO.

@@ -34,6 +34,7 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<profiles/gsubprofile.h>
+#include<profiles/gsubprofiledescvector.h>
 #include<profiles/gprofile.h>
 #include<langs/glang.h>
 #include<infos/giword.h>
@@ -41,6 +42,7 @@
 #include<profiles/gprofdoc.h>
 #include<groups/ggroup.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
 
@@ -53,11 +55,12 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a) throw(bad_alloc)
-  : Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a), OK(0), KO(0), Common(0)
+  :  RContainer<GSubProfileDesc,unsigned,true,true>(2,1),Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a), OK(0), KO(0), Common(0)
 {
 	OK=new GIWordList();
 	KO=new GIWordList();
 	Common=new GIWordList();
+	InsertPtr(new GSubProfileDescVector(this,grp,a));
 	Profile->InsertPtr(this);
 	if(grp)
 		grp->InsertPtr(this);
@@ -81,14 +84,14 @@ int GALILEI::GSubProfile::Compare(const GLang* lang) const
 //-----------------------------------------------------------------------------
 int GALILEI::GSubProfile::Compare(const GSubProfile& subprofile) const
 {
-	return(Lang->Compare(subprofile.Lang));
+	return(Id-subprofile.Id);
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GSubProfile::Compare(const GSubProfile* subprofile) const
 {
-	return(Lang->Compare(subprofile->Lang));
+	return(Id-subprofile->Id);
 }
 
 

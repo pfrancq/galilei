@@ -39,6 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gsubprofiledesc.h>
+#include <infos/giwordweight.h>
 
 
 //-----------------------------------------------------------------------------
@@ -78,15 +79,39 @@ public:
 	GSubProfileDescVector(GSubProfile* sub,GGroup* grp,const char* a) throw(bad_alloc);
 
 	/**
+	* Get the type of the description.
+	* @returns tSubProfileDesc enum type.
+	*/
+	virtual tSubProfileDesc GetType(void) const {return(sdVector);}
+
+	/**
 	* See if the subprpfile is defined, i.e. if it is computed. A subprofile
 	* that isn't computed, isn't attached.
 	*/
 	virtual bool IsDefined(void) const;
 
 	/**
+	* Add a word with the corresponding weight to the description.
+	* @param id             Identificator of the word.
+	* @param w              Weight of the word.
+	*/
+	void AddWord(unsigned int id,double w) throw(bad_alloc);
+
+	/**
 	* Compute similarity between SubProfiles.
 	*/
 	virtual double Similarity(const GSubProfileDesc* desc) const;
+	
+	/**
+	* Get a cursor over the vector.
+	* @return GIWordWeightCursor element.
+	*/
+	GIWordWeightCursor& GetVectorCursor(void);
+
+	/**
+	* Get the number of elements of the vector that are not null.
+	*/
+	unsigned int GetNbNoNull(void) const;
 
 	/**
 	*Destructor.

@@ -6,7 +6,7 @@
 
 	Vector Computing Method  - Implementation.
 
-	(C) 2001 by P. Francq.
+	(C) 2001-2002 by P. Francq.
 
 	Version $Revision$
 
@@ -39,14 +39,15 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include<profiles/gprofilecalcvector.h>
-#include<docs/gdoc.h>
-#include<profiles/gsubprofile.h>
-#include<profiles/gprofdoc.h>
-#include<infos/giword.h>
-#include<infos/giwordlist.h>
-#include<infos/giwordsweights.h>
-#include<sessions/gsession.h>
+#include <profiles/gprofilecalcvector.h>
+#include <docs/gdoc.h>
+#include <profiles/gprofile.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gprofdoc.h>
+#include <infos/giword.h>
+#include <infos/giwordlist.h>
+#include <infos/giwordsweights.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 
 

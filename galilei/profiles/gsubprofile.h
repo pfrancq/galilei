@@ -41,6 +41,7 @@
 // include files for R Project
 #include <rstd/rcursor.h>
 #include <rtimedate/rdate.h>
+#include <rstd/rcontainer.h>
 
 
 //-----------------------------------------------------------------------------
@@ -67,11 +68,12 @@ class GGroup;
 //-----------------------------------------------------------------------------
 /**
 * This class represents a sub-profile for a specific language. The sub-profiles
-* are ordered by language.
+* are ordered by identificator. A sub-profile is in reality a container of
+* sub-profile descriptions.
 * @author Pascal Francq.
 * @short Sub-Profile.
 */
-class GSubProfile
+class GSubProfile : public RStd::RContainer<GSubProfileDesc,unsigned,true,true>
 {
 	/**
 	* Identifier of the subprofile.

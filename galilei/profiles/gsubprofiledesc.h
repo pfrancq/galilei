@@ -69,12 +69,6 @@ class GGroup;
 */
 class GSubProfileDesc
 {
-public:
-	/**
-	* Type of the description.
-	*/
-	enum DescType {Vector /** Vector Representation.*/};
-
 protected:
 
 	/**
@@ -111,7 +105,18 @@ public:
 	* Compare methods used by RStd::RContainer.
 	*/
 	int Compare(const GSubProfileDesc* desc) const;
-	
+
+	/**
+	* Compare methods used by RStd::RContainer.
+	*/
+	int Compare(const tSubProfileDesc t) const;
+
+	/**
+	* Get the type of the description.
+	* @returns tSubProfileDesc enum type.
+	*/
+	virtual tSubProfileDesc GetType(void) const=0;
+
 	/**
 	* Get the identifier of the subprofile.
 	* @return Identificator.

@@ -61,14 +61,21 @@ GALILEI::GSubProfileDesc::GSubProfileDesc(GSubProfile* sub,GGroup* grp,const cha
 //-----------------------------------------------------------------------------
 int GALILEI::GSubProfileDesc::Compare(const GSubProfileDesc& desc) const
 {
-	return(-1);
+	return(GetType()-desc.GetType());
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GSubProfileDesc::Compare(const GSubProfileDesc* desc) const
 {
-	return(-1);
+	return(GetType()-desc->GetType());
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GSubProfileDesc::Compare(const tSubProfileDesc t) const
+{
+	return(GetType()-t);
 }
 
 

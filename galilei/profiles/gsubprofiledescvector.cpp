@@ -33,6 +33,7 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
+#include<profiles/gsubprofile.h>
 #include<profiles/gsubprofiledescvector.h>
 #include<langs/glang.h>
 #include<infos/giword.h>
@@ -53,6 +54,7 @@ using namespace GALILEI;
 GALILEI::GSubProfileDescVector::GSubProfileDescVector(GSubProfile* sub,GGroup* grp,const char* a) throw(bad_alloc)
   : GSubProfileDesc(sub,grp,a), Vector(0)
 {
+	Vector = new GIWordsWeights(sub->GetLang(),60);
 }
 
 
@@ -61,6 +63,13 @@ bool GALILEI::GSubProfileDescVector::IsDefined(void) const
 {
 	// The Vector can't be empty.
 	return(Vector&&(Vector->NbPtr));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSubProfileDescVector::AddWord(unsigned int id,double w) throw(bad_alloc)
+{
+	Vector->InsertPtr(new GIWordWeight(id,w));
 }
 
 
@@ -79,6 +88,22 @@ double GALILEI::GSubProfileDescVector::Similarity(const GSubProfileDesc* desc) c
 	NbComp=Vector->NbPtr+CompVector->NbPtr;
 	Sim=(2.0*Sim)/static_cast<double>(NbComp);
 	return(Sim);
+}
+
+
+//-----------------------------------------------------------------------------
+GIWordWeightCursor& GALILEI::GSubProfileDescVector::GetVectorCursor(void)
+{
+	GIWordWeightCursor *cur=GIWordWeightCursor::GetTmpCursor();
+	cur->Set(Vector);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GSubProfileDescVector::GetNbNoNull(void) const
+{
+	return(Vector->NbPtr);
 }
 
 

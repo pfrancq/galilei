@@ -38,8 +38,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gprofile.h>
-
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------
@@ -50,6 +49,7 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 // forward class declaration
 class GSession;
+class GProfile;
 
 
 //-----------------------------------------------------------------------------
@@ -83,10 +83,12 @@ public:
 	virtual void Compute(GProfile* profile)=0;
 
 	/**
-	* Get the type of the method implemented.
-	* @returns tProfileCompute type.
+	* Get the type of the method implemented. This is used to find the
+	* correspondance between a profiles description and the compute method
+	* associated.
+	* @returns tSubProfileDesc enum type.
 	*/
-	virtual tProfilesCompute GetType(void) const {return(pcNothing);}
+	virtual tSubProfileDesc GetType(void) const=0;
 
 	/**
 	* Destructor.
