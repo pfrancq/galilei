@@ -200,6 +200,7 @@ void KViewProfile::ConstructGroups(void)
 		QListViewItemType* grsitem = new QListViewItemType(Groups,CurLang()->GetName());
 		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
 		sub=Profile->GetSubProfile(CurLang());
+		if(!sub) continue;
 		for (grs->Start(); !grs->End(); grs->Next())
 		{
 			GGroup* gr=(*grs)();
