@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGrouping.h
+	GGrouping.cpp
 
 	Generic Grouping Method - Implementation
 
@@ -82,21 +82,21 @@ GALILEI::GGrouping::GGrouping(const char* n,GSession* s) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GGrouping::Compare(const GGrouping* grp)
+int GALILEI::GGrouping::Compare(const GGrouping* grp) const
 {
 	return(GroupingName.Compare(grp->GroupingName));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GGrouping::Compare(const GGrouping& grp)
+int GALILEI::GGrouping::Compare(const GGrouping& grp) const
 {
 	return(GroupingName.Compare(grp.GroupingName));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GGrouping::Compare(const char* name)
+int GALILEI::GGrouping::Compare(const char* name) const
 {
 	return(GroupingName.Compare(name));
 }
