@@ -104,7 +104,7 @@ GGroup* KViewGroups::GetCurrentGroup(void)
 //-----------------------------------------------------------------------------
 void KViewGroups::ConstructGroups(void)
 {
-	GFactoryLangCursor CurLang;
+	R::RCursor<GFactoryLang> CurLang;
 	GLang* lang;
 	char sDate[20];
 	RDate d;
@@ -116,7 +116,7 @@ void KViewGroups::ConstructGroups(void)
 	{
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
-		GGroupCursor grs=Doc->GetSession()->GetGroupsCursor(lang);
+		R::RCursor<GGroup> grs=Doc->GetSession()->GetGroupsCursor(lang);
 		QListViewItemType* grsitem = new QListViewItemType(Groups,ToQString(lang->GetName()));
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		for (grs.Start(); !grs.End(); grs.Next())

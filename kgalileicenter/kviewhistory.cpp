@@ -6,7 +6,7 @@
 
 	Window to display history of groups - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -359,7 +359,7 @@ void KViewHistory::DisplaySimilarities(void)
 void KViewHistory::DisplayRelationShip(GGroupHistory* grp)
 {
 	char tmp[100];
-	GGroupHistoryCursor cur;
+	R::RCursor<GGroupHistory> cur;
 	QListViewItemType* grpitem;
 	char num1[50];
 	char num2[50];
@@ -384,7 +384,7 @@ void KViewHistory::DisplayRelationShip(GGroupHistory* grp)
 void KViewHistory::DisplayChildrenRelationShip(GGroupHistory* grp, QListViewItemType* attach )
 {
 	char tmp[100];
-	GGroupHistoryCursor cur;
+	R::RCursor<GGroupHistory> cur;
 	QListViewItemType* grpitem;
 	char num1[50];
 	char num2[50];

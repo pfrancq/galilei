@@ -97,7 +97,7 @@ GUser* KViewUsers::GetCurrentUser(void)
 //-----------------------------------------------------------------------------
 void KViewUsers::CreateUsersListView(void)
 {
-	GUserCursor CurUsr=Doc->GetSession()->GetUsersCursor();
+	R::RCursor<GUser> CurUsr=Doc->GetSession()->GetUsersCursor();
 	QListViewItemType* useritem=0;
 	QListViewItemType* prof;
 

@@ -504,7 +504,7 @@ RString strTmp;
 void KGALILEICenterApp::slotExportMatrix(void)
 {
 	QExportMatrixDlg dlg(this, 0, true);
-	GFactoryLangCursor langs;
+	R::RCursor<GFactoryLang> langs;
 	langs=Doc->GetSession()->GetLangs()->GetLangsCursor();
 	for (langs.Start(); !langs.End(); langs.Next())
 	{
@@ -709,7 +709,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 	{
 		if((*select)[2]=="groups")
 		{
-			GFactoryLangCursor langscur=Doc->GetSession()->GetLangs()->GetLangsCursor();
+			R::RCursor<GFactoryLang> langscur=Doc->GetSession()->GetLangs()->GetLangsCursor();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -725,7 +725,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 		}
 		if((*select)[2]=="profiles")
 		{
-			GFactoryLangCursor langscur=Doc->GetSession()->GetLangs()->GetLangsCursor();
+			R::RCursor<GFactoryLang> langscur=Doc->GetSession()->GetLangs()->GetLangsCursor();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -741,7 +741,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 		}
 		if((*select)[2]=="documents")
 		{
-			GFactoryLangCursor langscur=Doc->GetSession()->GetLangs()->GetLangsCursor();
+			R::RCursor<GFactoryLang> langscur=Doc->GetSession()->GetLangs()->GetLangsCursor();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -934,7 +934,7 @@ void KGALILEICenterApp::slotTextEnglish(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotShowHistory(void)
 {
-	GFactoryLangCursor curlang;
+	R::RCursor<GFactoryLang> curlang;
 	unsigned int size, min, max;
 
 	curlang=Doc->GetSession()->GetLangs()->GetLangsCursor();

@@ -196,7 +196,7 @@ GGroup* KViewThGroups::GetCurrentGroup(void)
 //-----------------------------------------------------------------------------
 void KViewThGroups::ConstructThGroups(void)
 {
-	GFactoryLangCursor CurLang;
+	R::RCursor<GFactoryLang> CurLang;
 	GLang* lang;
 	RCursor<GSubProfile> Sub;
 
@@ -206,7 +206,7 @@ void KViewThGroups::ConstructThGroups(void)
 	{
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
-		GGroupCursor grs=Groups->GetGroupsCursor(lang);
+		R::RCursor<GGroup> grs=Groups->GetGroupsCursor(lang);
 		QListViewItemType* grsitem = new QListViewItemType(thGroups,ToQString(lang->GetName()));
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		for(grs.Start(); !grs.End(); grs.Next())
@@ -229,12 +229,12 @@ void KViewThGroups::ConstructThGroups(void)
 //-----------------------------------------------------------------------------
 void KViewThGroups::ConstructGroups(void)
 {
-	GFactoryLangCursor CurLang;
+	R::RCursor<GFactoryLang> CurLang;
 	GLang* lang;
 	char tmp1[70];
 	char tmp2[30];
 	RCursor<GSubProfile> Sub;
-	
+
 	Doc->GetSession()->GetSubjects()->Compare();
 	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());
 	setCaption(tmp1);
@@ -244,7 +244,7 @@ void KViewThGroups::ConstructGroups(void)
 	{
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
-		GGroupCursor grs=Doc->GetSession()->GetGroupsCursor(lang);
+		R::RCursor<GGroup> grs=Doc->GetSession()->GetGroupsCursor(lang);
 		QListViewItemType* grsitem = new QListViewItemType(prGroups,ToQString(lang->GetName()));
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		for (grs.Start(); !grs.End(); grs.Next())

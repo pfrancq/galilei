@@ -102,7 +102,7 @@ void KViewStats::update(unsigned int /*cmd*/)
 //-----------------------------------------------------------------------------
 void KViewStats::ConstructTag(RXMLTag* t,QListViewItem* parent)
 {
-	RXMLTagCursor Cur=t->GetXMLTagsCursor();
+	R::RCursor<RXMLTag> Cur=t->GetXMLTagsCursor();
 	QListViewItem* ptr=0,*ptr2;
 	QListViewItem* prec=0;
 	RString Val;
@@ -138,7 +138,7 @@ void KViewStats::ConstructTag(RXMLTag* t,QListViewItem* parent)
 //-----------------------------------------------------------------------------
 void KViewStats::ComputeStats(void)
 {
-	GFactoryStatsCalcCursor Cur;
+	R::RCursor<GFactoryStatsCalc> Cur;
 	GStatsCalc* Calc;
 	RXMLStruct xml;
 	RXMLTag* Root;
@@ -148,7 +148,7 @@ void KViewStats::ComputeStats(void)
 	// Create the root node
 	Root=new RXMLTag("Statistics");
 	xml.AddTag(0,Root);
-	
+
 	// Compute the statistics
 	Dlg.setMinimumDuration(0);
 	Dlg.setProgress(0);
