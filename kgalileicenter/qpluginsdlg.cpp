@@ -179,8 +179,8 @@ QPluginsDlg::QPluginsDlg(GSession* s,QWidget* parent,const char* name)
 	resize(320,480);
 
 	QVBoxLayout* QPluginsDlgLayout = new QVBoxLayout(this);
-	QPluginsDlgLayout->setSpacing(6);
-	QPluginsDlgLayout->setMargin(11);
+	QPluginsDlgLayout->setSpacing(5);
+	QPluginsDlgLayout->setMargin(5);
 
 	// initialisation of the tab widget
 	Main=new QTabWidget(this);
@@ -194,8 +194,8 @@ QPluginsDlg::QPluginsDlg(GSession* s,QWidget* parent,const char* name)
 	QPluginsDlgLayout->addWidget(Main);
 
 	QHBoxLayout* Layout1 = new QHBoxLayout;
-	Layout1->setSpacing( 6 );
-	Layout1->setMargin( 0 );
+	Layout1->setSpacing( 5 );
+	Layout1->setMargin( 5 );
 
 	buttonApply = new QPushButton( this, "buttonOk" );
 	buttonApply->setText( i18n( "&Apply" ) );
