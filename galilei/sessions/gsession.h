@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	(C) 2001-2002 by Pascal Francq
+	(C) 2001-2002 by the GALILEI Team
 
 	Version $Revision$
 
@@ -55,7 +55,7 @@ namespace GALILEI{
 * The GSession provides a representation for a GALILEI session. The way the
 * data are stored and loaded is dedicated to a child class of GSession through
 * a set of pure virtual methods defined.
-* @author Pascal Francq
+* @author GALILEI Team
 * @short Generic Session.
 */
 class GSession : public GLangs, public GDocs, public GUsers
@@ -324,9 +324,14 @@ public:
 	bool IsFdbksLoad(void) const {return(bFdbks);}
 
 	/**
-	* Load the Users' feedback.
+	* Load the Users feedback.
 	*/
 	void InitFdbks(void) throw(bad_alloc,GException);
+
+	/**
+	* Clear all the feedbacks.
+	*/
+	void ClearFdbks(void);
 
 	/**
 	* Insert a new Feedback.
@@ -422,7 +427,6 @@ public:
 	* @param filename       Name of the file.
 	*/
 	virtual void ExecuteData(const char* filename) throw(GException)=0;
-
 
 	/**
 	* Export the words,document matrix into a file.

@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Implementation.
 
-	(C) 2001-2002 by P. Francq.
+	(C) 2001-2002 by GALILEI Team.
 
 	Version $Revision$
 
@@ -327,6 +327,23 @@ void GALILEI::GSession::InitFdbks(void) throw(bad_alloc,GException)
 	// Load the users
 	LoadFdbks();
 	bFdbks=true;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::ClearFdbks(void)
+{
+	GDocCursor cur=GetDocsCursor();
+	for(cur.Start();!cur.End();cur.Next())
+	{
+		cur()->ClearFdbks();
+	}
+	GProfileCursor cur2=GetProfilesCursor();
+	for(cur2.Start();!cur2.End(); cur2.Next())
+	{
+		cur2()->ClearFdbks();
+	}
+	Fdbks.Clear();
 }
 
 
