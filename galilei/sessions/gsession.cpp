@@ -76,6 +76,8 @@ using namespace R;
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofilecalc.h>
 #include <profiles/gprofilecalcmanager.h>
+#include <profiles/gpostprofile.h>
+#include <profiles/gpostprofilemanager.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <groups/ggrouping.h>
@@ -114,8 +116,8 @@ GSession::GSession(GStorage* str)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(0,0),
 	  GGroups(0), Subjects(0),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
-	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0), DocAnalyseMng(0),
-	  EngineMng(0),ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
+	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0), PostProfileMng(0),
+	  DocAnalyseMng(0),  EngineMng(0),ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
 	  SessParams(0), Storage(str)
 {
 	// Init Part
@@ -136,8 +138,8 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 //	: GDocs(2000), GUsers(2000,2000),
 //	  GGroups(200), Subjects(0), Fdbks(100,50),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
-	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0), DocAnalyseMng(0),
-	  EngineMng(0),ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
+	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0), PostProfileMng(0),
+	  DocAnalyseMng(0),  EngineMng(0),ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
 	  SessParams(sessparams), Storage(str)
 {
 	// Init Part
@@ -158,7 +160,7 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 //------------------------------------------------------------------------------
 void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GLinkCalcManager* lmng, GProfileCalcManager* pmng,
 	GGroupingManager* gmng, GGroupCalcManager* gcmng,GStatsCalcManager* smng,
-	GPostDocManager* pdmng,GPostGroupManager* pgmng,GEngineManager* emng)
+	GPostDocManager* pdmng,GPostProfileManager* ppmng,GPostGroupManager* pgmng,GEngineManager* emng)
 
 {
 	Langs=langs;
@@ -186,10 +188,12 @@ void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseMana
 	PostGroupMng=pgmng;
 	if(PostGroupMng)
 		PostGroupMng->Connect(this);
-
 	PostDocMng=pdmng;
 	if(PostDocMng)
 		PostDocMng->Connect(this);
+	PostProfileMng=ppmng;
+	if(PostProfileMng)
+		PostProfileMng->Connect(this);
 
 	EngineMng=emng;
 
@@ -693,17 +697,57 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 	//update the state of the behaviours
 	if (!SessParams->GetBool("DebugBehaviour"))
 		ProfilesBehaviours->Update();
+
+	//runs the post profiling methds;
+	ComputePostProfile(rec);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory)
+void GSession::ComputePostProfile(GSlot* rec)
+{
+	char tmp[100];
+
+	// Run all post-group methods that are enabled
+	R::RCursor<GFactoryPostProfile> PostProfile=PostProfileMng->GetPostProfileCursor();
+
+	//first sort the plugins by level
+	RContainer<GFactoryPostProfileOrder,true,true> ordered(PostProfile.GetNb());
+	for(PostProfile.Start();!PostProfile.End();PostProfile.Next())
+	{
+		GFactoryPostProfileOrder* order=new GFactoryPostProfileOrder;
+		order->Fac=PostProfile();
+		ordered.InsertPtr(order);
+	}
+	if(rec)
+		rec->Interact();
+	if(ExternBreak) return;
+
+	//then run
+	RCursor<GFactoryPostProfileOrder> Cur(ordered);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if(rec)
+			rec->Interact();
+		if(ExternBreak) return;
+		if(Cur()->Fac->GetPlugin())
+		{
+			sprintf(tmp, "PostGroup : Running %s",Cur()->Fac->GetName().Latin1());
+			rec->WriteStr(tmp);
+			Cur()->Fac->GetPlugin()->Run();
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException)
 {
 	GGrouping* Grouping=GroupingMng->GetCurrentMethod();
 
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
-	Grouping->Grouping(rec,modified,save, savehistory);
+	Grouping->Grouping(rec,modified,save);
 	// Run all post-group methods that are enabled
 	ComputePostGroup(rec);
 }
@@ -1013,6 +1057,8 @@ GSession::~GSession(void)
 		if(GroupCalcMng) GroupCalcMng->Disconnect(this);
 		if(StatsCalcMng) StatsCalcMng->Disconnect(this);
 		if(LinkCalcMng) LinkCalcMng->Disconnect(this);
+		if(PostDocMng) PostGroupMng->Disconnect(this);
+		if(PostProfileMng) PostGroupMng->Disconnect(this);
 		if(PostGroupMng) PostGroupMng->Disconnect(this);
 		if(DocAnalyseMng) DocAnalyseMng->Disconnect(this);
 		if(Langs) Langs->Disconnect(this);

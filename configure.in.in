@@ -34,13 +34,24 @@ fi
 AC_SUBST(FRONTEND)
 
 
-#--------------------- END CHECK THE USE OF KDE FRONTEND ---------
+#--------------------- END CHECK THE USE OF KDE FRONTEND -----
 
-#--------------- Check R INCLUDES and LIBs ------------------
 
+#-------------------- Check R INCLUDES and LIBs --------------
+
+
+##----- Test if macro for 'R' is available on the system ------
+if !(test -f "/usr/share/aclocal/libr.m4");
+then
+        AC_MSG_ERROR(Cannot find macro (libr.m4) for R project configuration  
+                Make sure that R libraries have been installed on the system 
+                (using make install))
+fi
+
+##--------------- Call the macro for 'R' -----------------------
 R_CHK($FRONTEND)
 
-#---------- END of R INCLUDES and LIBs ----------------------
+#---------- END of R INCLUDES and LIBs -----------------------
 
 
 #--------------------- CHECK FOR RDEBUG ----------------------

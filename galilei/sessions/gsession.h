@@ -114,6 +114,11 @@ protected:
 	GPostDocManager* PostDocMng;
 
 	/**
+	* Documents Post-Analysis Methods Manager.
+	*/
+	GPostProfileManager* PostProfileMng;
+
+	/**
 	* Document Analysis Methods Manager.
 	*/
 	GDocAnalyseManager* DocAnalyseMng;
@@ -223,10 +228,11 @@ public:
 	* @param gcmng           Group Computing Methods Manager.
 	* @param smng            Statistics Methods Manager.
 	* @param pdmng           Documents Post-Analysis Methods Manager.
+	* @param ppmng           Post-Profile Computing Methods Manager
 	* @param pgmng           Post-Group Computing Methods Manager
 	*/
 	void Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GLinkCalcManager* lmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostGroupManager* pgmng, GEngineManager* egmng);
+		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostProfileManager* ppmng,GPostGroupManager* pgmng, GEngineManager* egmng);
 
 	//--------------------------------------------------------------------------
 	// Manager methods
@@ -425,14 +431,19 @@ public:
 	void CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks);
 
 	/**
+	* run post-profiling methods are called.
+	* @param rec            Receiver of the signals.
+	*/
+	void ComputePostProfile(GSlot* rec);
+
+	/**
 	* Groups the subprofile into virtual communities. At the end, all the
 	* enabled post-grouping methods are called.
 	* @param rec            Receiver of the signals.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
-	* @param savehistory    Save groups in history.
 	*/
-	void GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory);
+	void GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException);
 
 	/**
 	* run post-grouping methods are called.

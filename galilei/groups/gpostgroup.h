@@ -107,6 +107,14 @@ public:
 */
 class GFactoryPostGroup : public GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>
 {
+
+public:
+
+	/**
+	* Level of the plugin: specifies in wich order to apply the plugin
+	*/
+	unsigned int Level;
+
 public:
 	/**
 	* Constructor.
@@ -115,12 +123,27 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryPostGroup(GPostGroupManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f) {}
+		 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f) {InsertPtr(new GParamUInt("Level",0));}
+
+	/**
+	* Method needed by R::RContainer.
+	*/
+	int Compare(const GFactoryPostGroup f) const {return(Level-f.Level);}
+
+	/**
+	* Method needed by R::RContainer.
+	*/
+	int Compare(const GFactoryPostGroup* f) const {return(Level-f->Level);}
+
+	/**
+	* Method needed by R::RContainer.
+	*/
+	int Compare(unsigned int level) const {return(Level-level);}
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GFactoryPostGroup(void) {}
+//	virtual ~GFactoryPostGroup(void) {}
 };
 
 

@@ -137,6 +137,9 @@ class GFactoryProfileCalc;
 class GProfileCalcManager;
 class GProfilesSims;
 class GProfilesBehaviours;
+class GPostProfile;
+class GFactoryPostProfile;
+class GPostProfileManager;
 
 
 //------------------------------------------------------------------------------

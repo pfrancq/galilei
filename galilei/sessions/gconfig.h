@@ -105,6 +105,11 @@ class GConfig : R::RXMLStruct
 	R::RXMLTag* PostDocs;
 
 	/**
+	* Tag holding words clustering methods.
+	*/
+	R::RXMLTag* PostProfile;
+
+	/**
 	* Tag holding the languages.
 	*/
 	R::RXMLTag* Langs;
@@ -232,6 +237,17 @@ public:
 	*/
 	void Store(GPostGroupManager* mng);
 
+	/**
+	* Read the Post Profile computing methods from the structure.
+	* @param mng             Manager.
+	*/
+	void Read(GPostProfileManager* mng);
+
+	/**
+	* Store the Post Profile computing methods in the structure.
+	* @param mng             Manager.
+	*/
+	void Store(GPostProfileManager* mng);
 
 	/**
 	* Read the words clustering methods from the structure.

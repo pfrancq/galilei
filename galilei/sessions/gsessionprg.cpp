@@ -138,24 +138,6 @@ public:
 
 
 //------------------------------------------------------------------------------
-class GSetSaveGroupsHistoryl : public GSM
-{
-public:
-	GSetSaveGroupsHistoryl(GPrgClassSession* o) : GSM("SetSaveGroupsHistory",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
-};
-
-
-//------------------------------------------------------------------------------
-class GSetSaveProfilesHistoryl : public GSM
-{
-public:
-	GSetSaveProfilesHistoryl(GPrgClassSession* o) : GSM("SetSaveProfilesHistory",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
-};
-
-
-//------------------------------------------------------------------------------
 class GTestI : public GSM
 {
 public:
@@ -293,7 +275,6 @@ public:
 class GRealLifeI : public GSM
 {
 	char What[2];
-	bool History;
 	void CommonTasks(R::RPrgOutput* o) throw(RException);
 public:
 	GRealLifeI(GPrgClassSession* o) : GSM("RealLife",o) {}
@@ -324,15 +305,6 @@ class GClearNewProfilesI : public GSM
 {
 public:
 	GClearNewProfilesI(GPrgClassSession* o) : GSM("ClearNewProfiles",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
-};
-
-
-//------------------------------------------------------------------------------
-class GStoreInHistoryI : public GSM
-{
-public:
-	GStoreInHistoryI(GPrgClassSession* o) : GSM("StoreInHistory",o) {}
 	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
@@ -485,41 +457,6 @@ void GSetAutoSaveLinksI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tr
 
 
 //------------------------------------------------------------------------------
-void GSetSaveGroupsHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
-{
-	if(args->NbPtr!=1)
-		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the results must be stored.");
-	if((args->Tab[0]->GetValue(prg))[0]=='0')
-	{
-		o->WriteStr("Set SaveGroupsHistory: false");
-		Owner->Session->GetSessionParams()->Set("SaveGroupsHistory",false);
-	}
-	else
-	{
-		o->WriteStr("Set SaveGroupsHistory: true");
-		Owner->Session->GetSessionParams()->Set("SaveGroupsHistory",true);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GSetSaveProfilesHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
-{
-	if(args->NbPtr!=1)
-		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the results must be stored.");
-	if((args->Tab[0]->GetValue(prg))[0]=='0')
-	{
-		o->WriteStr("Set SaveProfilesHistory: false");
-		Owner->Session->GetSessionParams()->Set("SaveProfilesHistory",false);
-	}
-	else
-	{
-		o->WriteStr("Set SaveHistory: true");
-		Owner->Session->GetSessionParams()->Set("SaveProfilesHistory",true);
-	}
-}
-
-//------------------------------------------------------------------------------
 void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
@@ -608,7 +545,7 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,
 	if(!Owner->Session->GetGroupCalcMng()->GetCurrentMethod())
 		throw RException (" No Group Description Method chosen.");
 	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o),Owner->FirstGroup,Owner->AutoSave, Owner->SaveHistory);
+	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o),Owner->FirstGroup,Owner->AutoSave);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 }
 
@@ -780,21 +717,8 @@ void GRealLifeI::CommonTasks(RPrgOutput* o) throw(RException)
 	}
 	Owner->Session->GetGroupingMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->GroupingProfiles(rec,Owner->FirstGroup,Owner->AutoSave, Owner->SaveHistory);
+	Owner->Session->GroupingProfiles(rec,Owner->FirstGroup,Owner->AutoSave);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
-
-	// Store History
-	if(History)
-	{
-		sprintf(tmp,"Store History n%u",Owner->NbHistory);
-		if(rec)
-		{
-			rec->Interact();
-			rec->WriteStr(tmp);
-		}
-		if(GSession::Break()) return;
-		Owner->Session->GetStorage()->SaveMixedGroups(Owner->Session,Owner->NbHistory++);
-	}
 
 	// Compare Ideal
 	if(rec)
@@ -850,7 +774,6 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 	MinFBStep=atoi(args->Tab[1]->GetValue(prg));
 	MaxFBStep=atoi(args->Tab[2]->GetValue(prg))-MinFBStep+1;
 	Proba=atof(args->Tab[3]->GetValue(prg));
-	History=atoi(args->Tab[4]->GetValue(prg));
 	What[1]=0;
 	for(NbStep=0;;)
 	{
@@ -994,18 +917,6 @@ void GClearNewProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,f
 
 
 //------------------------------------------------------------------------------
-void GStoreInHistoryI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
-{
-	if(args->NbPtr)
-		throw RException("Method needs no parameter.");
-	sprintf(tmp,"Store History n%u",Owner->NbHistory);
-	o->WriteStr(tmp);
-	Owner->Session->GetStorage()->SaveMixedGroups(Owner->Session,Owner->NbHistory, true);
-	Owner->Session->GetStorage()->SaveHistoricProfiles(Owner->Session,Owner->NbHistory++);
-}
-
-
-//------------------------------------------------------------------------------
 void GResetTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr)
@@ -1040,7 +951,7 @@ void GComputeTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 //------------------------------------------------------------------------------
 GPrgClassSession::GPrgClassSession(GSession* s) throw(std::bad_alloc)
 	: RPrgClass("Session"), Session(s), OFile(0),
-	  GOFile(0), SOFile(0),DSOFile(0), NbHistory(0), AutoSave(false),AutoSaveLinks(false), SaveHistory(false), TrackNewProfiles(false)
+	  GOFile(0), SOFile(0),DSOFile(0),  AutoSave(false),AutoSaveLinks(false), TrackNewProfiles(false)
 {
 	Methods.InsertPtr(new GOutputI(this));
 	Methods.InsertPtr(new GGOutputI(this));
@@ -1048,8 +959,6 @@ GPrgClassSession::GPrgClassSession(GSession* s) throw(std::bad_alloc)
 	Methods.InsertPtr(new GSetLinksMethodI(this));
 	Methods.InsertPtr(new GSetAutoSaveLinksI(this));
 	Methods.InsertPtr(new GSetAutoSaveI(this));
-	Methods.InsertPtr(new GSetSaveGroupsHistoryl(this));
-	Methods.InsertPtr(new GSetSaveProfilesHistoryl(this));
 	Methods.InsertPtr(new GTestI(this));
 	Methods.InsertPtr(new GLogI(this));
 	Methods.InsertPtr(new GSqlI(this));
@@ -1069,7 +978,6 @@ GPrgClassSession::GPrgClassSession(GSession* s) throw(std::bad_alloc)
 	Methods.InsertPtr(new GAddAssessmentsI(this));
 	Methods.InsertPtr(new GTrackNewProfilesI(this));
 	Methods.InsertPtr(new GClearNewProfilesI(this));
-	Methods.InsertPtr(new GStoreInHistoryI(this));
 	Methods.InsertPtr(new GResetTimeI(this));
 	Methods.InsertPtr(new GComputeTimeI(this));
 	Methods.InsertPtr(new GSetRandI(this));

@@ -94,11 +94,6 @@ public:
 	R::RTextFile* DSOFile;
 
 	/**
-	* Number of histories stored.
-	*/
-	unsigned int NbHistory;
-
-	/**
 	* Precision of the current groupement.
 	*/
 	double Precision;
@@ -137,11 +132,6 @@ public:
 	* When Autosave is true, after each computing, the results is saved.
 	*/
 	bool AutoSaveLinks;
-
-	/**
-	* When Autosave is true, after each computing, the results is saved.
-	*/
-	bool SaveHistory;
 
 	/**
 	* When TrackNewProfile is true, the system

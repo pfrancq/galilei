@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GGrouping.h
+	GPostProfile.h
 
-	Generic Grouping Method - Header.
+	Generic Post-Profiling Computing Method - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		David Wartel(dwartel@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,13 +31,12 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GGroupingH
-#define GGroupingH
+#ifndef GPostProfileH
+#define GPostProfileH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
 #include <sessions/gplugin.h>
 
 
@@ -48,17 +47,18 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_GROUPING_VERSION "1.0"
+#define API_POSTGROUP_VERSION "1.0"
+
 
 
 //------------------------------------------------------------------------------
 /**
-* The GGrouping provides a representation for a generic method to group some
-* subprofiles.
-* @author Pascal Francq
-* @short Generic Grouping Method.
+* The GPostProfile class provides a representation for a generic method to compute
+* the post-profiling methods.
+* @author Wartel David
+* @short Generic Post-Profiling Computing Method.
 */
-class GGrouping : public GPlugin<GFactoryGrouping>
+class GPostProfile : public GPlugin<GFactoryPostProfile>
 {
 protected:
 
@@ -67,38 +67,13 @@ protected:
 	*/
 	GSession* Session;
 
-	/**
-	* Current language treated.
-	*/
-	GLang* Lang;
-
-	/**
-	* Pointer to groups to form.
-	*/
-	GGroups* Groups;
-
-	/**
-	* SubProfiles that must be grouped.
-	*/
-	R::RContainer<GSubProfile,false,true> SubProfiles;
-
-	/**
-	* Should the method starts from the current clustering.
-	*/
-	bool Modified;
-
-	/**
-	* Ideal clustering.
-	*/
-	GGroups* IdealGroups;
-
 public:
 
 	/**
-	* Constructor of the grouping method.
+	* Constructor.
 	* @param fac             Factory of the plugin.
 	*/
-	GGrouping(GFactoryGrouping* fac) throw(std::bad_alloc);
+	GPostProfile(GFactoryPostProfile* fac) throw(std::bad_alloc);
 
 	/**
 	* Connect to a Session.
@@ -113,46 +88,24 @@ public:
 	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
-	* Set the ideal groups.
-	* @param ideal          Pointer to the ideal groups.
+	* Run the post-group method.
 	*/
-	void SetIdealGroups(GGroups* ideal){IdealGroups=ideal;}
-
-protected:
+	virtual void Run(void) throw(GException)=0 ;
 
 	/**
-	* Make the grouping for a specific Language. SubProfiles contains all the
-	* subprofiles for a given language. This variables must be set before
-	* calling this function. This is done by the Grouping method.
+	* Destructor.
 	*/
-	virtual void Run(void) throw(GException)=0;
-
-public:
-
-	/**
-	* Make the groups.
-	* @param rec            Receiver of the signals.
-	* @param modified       Should the method restart from the current
-	*                       clustering (true) or start from scratch (false).
-	* @param save           Save modified elements.
-	* @param savehistory    Save history of grouping.
-	*/
-	void Grouping(GSlot* rec,bool modified,bool save) throw(GException);
-
-	/**
-	* Destructor of tghe grouping method.
-	*/
-	virtual ~GGrouping(void);
+	virtual ~GPostProfile(void);
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* The GFactoryGrouping represent a factory for a given grouping method.
+* The GFactoryPostProfile represent a factory for a given post grouping method.
 * @author Pascal Francq
-* @short Generic Grouping Factory.
+* @short Generic Post Grouping Factory.
 */
-class GFactoryGrouping : public GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>
+class GFactoryPostProfile : public GFactoryPlugin<GFactoryPostProfile,GPostProfile,GPostProfileManager>
 {
 public:
 	/**
@@ -161,42 +114,41 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryGrouping(GGroupingManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>(mng,n,f) {}
+	GFactoryPostProfile(GPostProfileManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryPostProfile,GPostProfile,GPostProfileManager>(mng,n,f) {}
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GFactoryGrouping(void) {}
+	virtual ~GFactoryPostProfile(void) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a grouping factory.
+* Signature of the method used to initiliaze a post profiling factory.
 */
-typedef GFactoryGrouping* GFactoryGroupingInit(GGroupingManager*,const char*);
+typedef GFactoryPostProfile* GFactoryPostProfileInit(GPostProfileManager*,const char*);
 
-
-//-------------------------------------------------------------------------------
-#define CREATE_GROUPING_FACTORY(name,C)                                                   \
-class TheFactory : public GFactoryGrouping                                                \
+//------------------------------------------------------------------------------
+#define CREATE_POSTPROFILE_FACTORY(name,C)                                                  \
+class TheFactory : public GFactoryPostProfile                                               \
 {                                                                                         \
 private:                                                                                  \
-	static GFactoryGrouping* Inst;                                                        \
-	TheFactory(GGroupingManager* mng,const char* l) : GFactoryGrouping(mng,name,l)        \
+	static GFactoryPostProfile* Inst;                                                       \
+	TheFactory(GPostProfileManager* mng,const char* l) : GFactoryPostProfile(mng,name,l)      \
 	{                                                                                     \
-		C::CreateParams(this);                                                            \
+		C::CreateParams(this);                                                \
 	}                                                                                     \
 	virtual ~TheFactory(void) {}                                                          \
 public:                                                                                   \
-	static GFactoryGrouping* CreateInst(GGroupingManager* mng,const char* l)              \
+	static GFactoryPostProfile* CreateInst(GPostProfileManager* mng,const char* l)            \
 	{                                                                                     \
 		if(!Inst)                                                                         \
 			Inst = new TheFactory(mng,l);                                                 \
 		return(Inst);                                                                     \
 	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_GROUPING_VERSION);}         \
+	virtual const char* GetAPIVersion(void) const {return(API_POSTGROUP_VERSION);}        \
 	virtual void Create(void) throw(GException)                                           \
 	{                                                                                     \
 		if(Plugin) return;                                                                \
@@ -229,15 +181,32 @@ public:                                                                         
 	}                                                                                     \
 };                                                                                        \
                                                                                           \
-GFactoryGrouping* TheFactory::Inst = 0;                                                   \
+GFactoryPostProfile* TheFactory::Inst = 0;                                                  \
                                                                                           \
 extern "C"                                                                                \
 {                                                                                         \
-	GFactoryGrouping* FactoryCreate(GGroupingManager* mng,const char* l)                  \
+	GFactoryPostProfile* FactoryCreate(GPostProfileManager* mng,const char* l)                \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
 	}                                                                                     \
 }
+
+
+//------------------------------------------------------------------------------
+/**
+* struture to order factory by their level
+*/
+struct GFactoryPostProfileOrder
+{
+	GFactoryPostProfile* Fac;
+	int Compare(const GFactoryPostProfileOrder* fpgo)
+	{
+		return((Fac->GetUInt("Level"))-(fpgo->Fac->GetUInt("Level")));
+	}
+	RString GetLib(void) const {return(Fac->GetLib());}
+	RString GetName(void) const {return(Fac->GetName());}
+	GPostProfile* GetPlugin(void) const {return(Fac->GetPlugin());}
+};
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

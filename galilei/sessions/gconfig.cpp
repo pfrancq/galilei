@@ -48,6 +48,8 @@
 #include <engines/genginemanager.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <profiles/gprofilecalc.h>
+#include <profiles/gpostprofilemanager.h>
+#include <profiles/gpostprofile.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggrouping.h>
 #include <groups/ggroupcalcmanager.h>
@@ -91,6 +93,7 @@ GConfig::GConfig(const char* f) throw(std::bad_alloc)
 	AddTag(t,StatsCalcs=new RXMLTag("galileiconfig:statsCalcs"));
 	AddTag(t,LinkCalcs=new RXMLTag("galileiconfig:linkCalcs"));
 	AddTag(t,PostDocs=new RXMLTag("galileiconfig:postDocs"));
+	AddTag(t,PostProfile=new RXMLTag("galileiconfig:postProfile"));
 	AddTag(t,Langs=new RXMLTag("galileiconfig:langs"));
 	AddTag(t,DocAnalyses=new RXMLTag("galileiconfig:docanalyses"));
 	AddTag(t,PostGroups=new RXMLTag("galileiconfig:postgroups"));
@@ -115,6 +118,7 @@ void GConfig::Load(void) throw(GException)
 		StatsCalcs=GetTop()->GetTag("galileiconfig:statsCalcs");
 		LinkCalcs=GetTop()->GetTag("galileiconfig:linkCalcs");
 		PostDocs=GetTop()->GetTag("galileiconfig:postDocs");
+		PostProfile=GetTop()->GetTag("galileiconfig:postProfile");
 		Langs=GetTop()->GetTag("galileiconfig:langs");
 		DocAnalyses=GetTop()->GetTag("galileiconfig:docanalyses");
 		PostGroups=GetTop()->GetTag("galileiconfig:postgroups");
@@ -410,6 +414,33 @@ void GConfig::Store(GPostDocManager* mng)
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(this,PostDocs);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GPostProfileManager* mng)
+{
+	R::RCursor<GFactoryPostProfile> Cur;
+
+	if(!PostProfile) return;
+	Cur=mng->GetPostProfileCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(PostProfile);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GPostProfileManager* mng)
+{
+	R::RCursor<GFactoryPostProfile> Cur;
+
+	Cur=mng->GetPostProfileCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(this,PostProfile);
 	}
 }
 
