@@ -6,7 +6,7 @@
 
 	Filter manager handling URL using the CURL library - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -108,6 +108,7 @@ void GFilterManagerCURL::Download(const char* URL,RString& tmpFile) throw(GExcep
 
 	// Fill structure -> find a local temporary file
 	tmpfile.stream=0;
+	(*tmpfile.filename)=0;
 	tmpnam(tmpfile.filename);
 	tmpFile=tmpfile.filename;
 
