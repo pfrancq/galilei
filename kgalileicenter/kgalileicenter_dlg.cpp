@@ -148,14 +148,14 @@ void KGALILEICenterApp::slotPlugins(void)
 {
 	QPluginsDlg dlg(this,"Plugins Dialog");
 
-	dlg.RegisterComputingPluginConf(new QComputingPluginConfStat());
-	dlg.RegisterComputingPluginConf(new QComputingPluginConfReWeighting());
-	dlg.RegisterComputingPluginConf(new QComputingPluginConfFeedback());
-	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfSim());
+	dlg.RegisterComputingPluginConf(new QComputingPluginConfStat(&StatisticalParams));
+	dlg.RegisterComputingPluginConf(new QComputingPluginConfReWeighting(&ReWeightingParams));
+	dlg.RegisterComputingPluginConf(new QComputingPluginConfFeedback(&FeedbackParams));
+	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfSim(&SimParams));
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfGGA(&IRParams));
-	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKCos());
-	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKProtos());
-	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfCure());
+	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKCos(&KMeansParams));
+//	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKProtos());
+	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfCure(&CureParams));
 	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfRelevant());
 	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfGravitation());
 	dlg.exec();

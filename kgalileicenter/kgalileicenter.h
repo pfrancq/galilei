@@ -49,6 +49,12 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <groups/gir.h>
+#include <groups/ggroupingkcos.h>
+#include <groups/ggroupingcure.h>
+#include <groups/ggroupingsim.h>
+#include <profiles/gprofilecalcfeedback.h>
+#include <profiles/gprofilecalcreweighting.h>
+#include <profiles/gprofilecalcvector.h>
 #include <urlmanagers/gurlmanagerkde.h>
 using namespace GALILEI;
 
@@ -109,6 +115,36 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	* Parameters of the GA.
 	*/
 	GIRParams IRParams;
+
+	/**
+	* Parameters of the KMeans.
+	*/
+	GKMeansParams KMeansParams;
+
+	/**
+	* Parameters of Cure.
+	*/
+	GCureParams CureParams;
+
+	/**
+	* Parameters of first fit
+	*/
+	GSimParams SimParams;
+
+	/**
+	* Parameters of the feedback computing method.
+	*/
+	GFeedbackParams FeedbackParams;
+
+	/**
+	* Parameters for reweighting calc method.
+	*/
+	GReWeightingParams ReWeightingParams;
+
+	/**
+	* Parameters for statistical calc method.
+	*/
+	GStatisticalParams StatisticalParams;
 
 	/**
 	* Database server's host.

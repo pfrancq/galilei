@@ -332,7 +332,7 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 			if(!Conf)
 				Conf=NoConf;
 			else
-				((QComputingPluginConf*)Conf)->Set(p->Ptr.Calc);
+				((QComputingPluginConf*)Conf)->Set();
 			Cur=p;
 			break;
 
@@ -343,7 +343,7 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 			if(!Conf)
 				Conf=NoConf;
 			else
-				((QGroupingPluginConf*)Conf)->Set(p->Ptr.Grp);
+				((QGroupingPluginConf*)Conf)->Set();
 			Cur=p;
 			break;
 

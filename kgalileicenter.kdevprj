@@ -912,11 +912,23 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/profiles/Makefile.am]
-files=kgalileicenter/galilei/profiles/gprofdoc.cpp,kgalileicenter/galilei/profiles/gprofdoc.h,kgalileicenter/galilei/profiles/gprofile.cpp,kgalileicenter/galilei/profiles/gprofile.h,kgalileicenter/galilei/profiles/gprofilecalc.cpp,kgalileicenter/galilei/profiles/gprofilecalc.h,kgalileicenter/galilei/profiles/gprofilecalcvector.cpp,kgalileicenter/galilei/profiles/gprofilecalcvector.h,kgalileicenter/galilei/profiles/gsubprofile.cpp,kgalileicenter/galilei/profiles/gsubprofile.h,kgalileicenter/galilei/profiles/gsubprofiledesc.cpp,kgalileicenter/galilei/profiles/gsubprofiledesc.h,kgalileicenter/galilei/profiles/guser.cpp,kgalileicenter/galilei/profiles/guser.h,kgalileicenter/galilei/profiles/gusers.cpp,kgalileicenter/galilei/profiles/gusers.h,kgalileicenter/galilei/profiles/gsubprofilevector.cpp,kgalileicenter/galilei/profiles/gsubprofilevector.h,kgalileicenter/galilei/profiles/gprofilecalcfeedback.cpp,kgalileicenter/galilei/profiles/gprofilecalcfeedback.h,kgalileicenter/galilei/profiles/gprofilecalcreweighting.cpp,kgalileicenter/galilei/profiles/gprofilecalcreweighting.h,kgalileicenter/galilei/profiles/gprofilessim.h,kgalileicenter/galilei/profiles/gprofilessim.cpp,kgalileicenter/galilei/profiles/ggetfeedback.cpp,kgalileicenter/galilei/profiles/ggetfeedback.h,kgalileicenter/galilei/profiles/gsubprofiles.cpp,kgalileicenter/galilei/profiles/gsubprofiles.h,kgalileicenter/galilei/profiles/gsubprofilessamedocs.cpp,kgalileicenter/galilei/profiles/gsubprofilessamedocs.h
+files=kgalileicenter/galilei/profiles/gprofdoc.cpp,kgalileicenter/galilei/profiles/gprofdoc.h,kgalileicenter/galilei/profiles/gprofile.cpp,kgalileicenter/galilei/profiles/gprofile.h,kgalileicenter/galilei/profiles/gprofilecalc.cpp,kgalileicenter/galilei/profiles/gprofilecalc.h,kgalileicenter/galilei/profiles/gprofilecalcvector.cpp,kgalileicenter/galilei/profiles/gprofilecalcvector.h,kgalileicenter/galilei/profiles/gsubprofile.cpp,kgalileicenter/galilei/profiles/gsubprofile.h,kgalileicenter/galilei/profiles/gsubprofiledesc.cpp,kgalileicenter/galilei/profiles/gsubprofiledesc.h,kgalileicenter/galilei/profiles/guser.cpp,kgalileicenter/galilei/profiles/guser.h,kgalileicenter/galilei/profiles/gusers.cpp,kgalileicenter/galilei/profiles/gusers.h,kgalileicenter/galilei/profiles/gsubprofilevector.cpp,kgalileicenter/galilei/profiles/gsubprofilevector.h,kgalileicenter/galilei/profiles/gprofilecalcfeedback.cpp,kgalileicenter/galilei/profiles/gprofilecalcfeedback.h,kgalileicenter/galilei/profiles/gprofilecalcreweighting.cpp,kgalileicenter/galilei/profiles/gprofilecalcreweighting.h,kgalileicenter/galilei/profiles/gprofilessim.h,kgalileicenter/galilei/profiles/gprofilessim.cpp,kgalileicenter/galilei/profiles/ggetfeedback.cpp,kgalileicenter/galilei/profiles/ggetfeedback.h,kgalileicenter/galilei/profiles/gsubprofiles.cpp,kgalileicenter/galilei/profiles/gsubprofiles.h,kgalileicenter/galilei/profiles/gsubprofilessamedocs.cpp,kgalileicenter/galilei/profiles/gsubprofilessamedocs.h,kgalileicenter/galilei/profiles/gcalcparams.cpp,kgalileicenter/galilei/profiles/gcalcparams.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=profiles
 sub_dirs=
 type=static_library
+
+[kgalileicenter/galilei/profiles/gcalcparams.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/profiles/gcalcparams.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [kgalileicenter/galilei/profiles/ggetfeedback.cpp]
 dist=true
@@ -2243,7 +2255,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/r/rgga/Makefile.am]
-files=kgalileicenter/r/rgga/rchromog.h,kgalileicenter/r/rgga/rchromog.hh,kgalileicenter/r/rgga/rfirstfitheuristic.h,kgalileicenter/r/rgga/rfirstfitheuristic.hh,kgalileicenter/r/rgga/rgga.cpp,kgalileicenter/r/rgga/rgga.h,kgalileicenter/r/rgga/rgroup.h,kgalileicenter/r/rgga/rgroup.hh,kgalileicenter/r/rgga/rgroupingheuristic.h,kgalileicenter/r/rgga/rgroupingheuristic.hh,kgalileicenter/r/rgga/rgroups.h,kgalileicenter/r/rgga/rgroups.hh,kgalileicenter/r/rgga/rinstg.h,kgalileicenter/r/rgga/rinstg.hh,kgalileicenter/r/rgga/robjg.cpp,kgalileicenter/r/rgga/robjg.h
+files=kgalileicenter/r/rgga/rchromog.h,kgalileicenter/r/rgga/rchromog.hh,kgalileicenter/r/rgga/rfirstfitheuristic.h,kgalileicenter/r/rgga/rfirstfitheuristic.hh,kgalileicenter/r/rgga/rgga.cpp,kgalileicenter/r/rgga/rgga.h,kgalileicenter/r/rgga/rgroup.h,kgalileicenter/r/rgga/rgroup.hh,kgalileicenter/r/rgga/rgroupingheuristic.h,kgalileicenter/r/rgga/rgroupingheuristic.hh,kgalileicenter/r/rgga/rgroups.h,kgalileicenter/r/rgga/rgroups.hh,kgalileicenter/r/rgga/rinstg.h,kgalileicenter/r/rgga/rinstg.hh,kgalileicenter/r/rgga/robjg.cpp,kgalileicenter/r/rgga/robjg.h,kgalileicenter/r/rgga/rgroupingkmeans.h,kgalileicenter/r/rgga/rgroupingkmeans.hh
 sub_dirs=
 type=static_library
 
@@ -2302,6 +2314,18 @@ install_location=
 type=HEADER
 
 [kgalileicenter/r/rgga/rgroupingheuristic.hh]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rgroupingkmeans.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rgroupingkmeans.hh]
 dist=true
 install=false
 install_location=
