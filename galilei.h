@@ -111,6 +111,7 @@ class GDocProfSim;
 class GDocProfSims;
 class GWordsClustering;
 
+
 //-----------------------------------------------------------------------------
 // forward class declaration - User Part
 class GUsers;
@@ -289,6 +290,8 @@ enum tSubProfileDesc
 	sdNothing               /** Unknow Model.*/,
 	sdVector                /** Vector Model.*/
 };
+
+
 //-----------------------------------------------------------------------------
 /**
 * Models used to describe informations.
@@ -303,14 +306,16 @@ enum GInfoType
 	infoWordCalc,
 	infoWordCalcs
 };
+
+
 //-----------------------------------------------------------------------------
 /**
 * Models used to describe informations in the dictionnary
 */
 enum GWordType
 {
-	tWord					/** Word.*/,
-	tWordList				/** List of words.*/
+	tWord                   /** Word.*/,
+	tWordList               /** List of words.*/
 };
 
 
