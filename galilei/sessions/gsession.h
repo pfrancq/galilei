@@ -498,11 +498,10 @@ public:
 	* @param lang           The lang of the subprofiles in the chromosome.
 	* @param objs           Objects.
 	* @param sim            Similarities.
-	* @param global         Global Similarities.
-	* @param s              Sim type.
+	* @param p              Parameters.
 	* @return pointer to a Ginstir
 	*/
-	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global,SimType s)=0;
+	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,GIRParams* p)=0;
 
 	/**
 	* Save The Documents Simylarities into the database.

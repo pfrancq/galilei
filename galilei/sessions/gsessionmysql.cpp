@@ -465,6 +465,7 @@ void GALILEI::GSessionMySQL::LoadIdealGroupment(RContainer<GGroups,unsigned int,
 	char sSql[100];
 
 	idealgroup->Clear();
+
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
@@ -942,7 +943,7 @@ void GALILEI::GSessionMySQL::SaveChromo(GChromoIR* chromo,unsigned int id,RGA::R
 
 
 //-----------------------------------------------------------------------------
-GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global,SimType s)
+GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,GIRParams* p)
 {
 	GInstIR* InstIR;
 	char sSql[200];
@@ -966,7 +967,7 @@ GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs
 	popsize=atoi(count[0]);
 	if(!popsize) return(0);
 
-	InstIR=new GInstIR(this,lang,0.0,0,popsize,0,objs,global,sim,s,0);
+	InstIR=new GInstIR(this,lang,0,objs,sim,p,0);
 	InstIR->Init(&data);
 	sprintf(sSql,"SELECT chromoid,groupid,subprofileid FROM tempchromo WHERE lang='%s' ORDER by chromoid,groupid",lang->GetCode());
 	RQuery GA(this,sSql);

@@ -560,7 +560,6 @@ void GALILEI::GSession::SetCurrentRandom(int rand)
 {
 	CurrentRandom=rand;
 	Random->Reset(CurrentRandom);
-	cout<<Random->Value(100)<<endl;
 }
 
 
