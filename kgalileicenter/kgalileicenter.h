@@ -213,6 +213,11 @@ public:
 	*/
 	KGALILEICenterApp(void);
 
+	/**
+	* Returns a pointer to the document connected to the view.
+	*/
+	KDoc* getDocument(void) const;
+
 protected:
 
 	/**

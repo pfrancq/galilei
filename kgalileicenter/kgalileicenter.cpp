@@ -138,6 +138,13 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
+KDoc* KGALILEICenterApp::getDocument(void) const
+{
+	return(Doc);
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionConnect(void)
 {
 	QConnectMySQL dlg(this,0,true);
