@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -63,6 +59,24 @@ void GSlot::receiveNextDoc(const GDoc*) throw(std::bad_alloc,RException)
 
 //------------------------------------------------------------------------------
 void GSlot::receiveNextProfile(const GProfile*) throw(std::bad_alloc,RException)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GSlot::receiveNextProfileExport(const GProfile*) throw(std::bad_alloc,RException)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GSlot::receiveNextDocumentExport(const GDoc*) throw(std::bad_alloc,RException)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GSlot::receiveNextGroupExport(const GGroup*) throw(std::bad_alloc,RException)
 {
 }
 

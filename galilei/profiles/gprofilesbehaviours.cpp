@@ -12,10 +12,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -46,6 +42,7 @@
 #include <infos/glangmanager.h>
 using namespace R;
 using namespace GALILEI;
+
 
 
 
@@ -117,7 +114,7 @@ public:
 	RContainer<GSubProfile,unsigned int,false,true>* ModifiedProfs;
 
 	// Constructor and Compare methods.
-	GProfilesBehaviour(GProfilesBehaviours* manager,GSubProfileCursor& s,GLang* lang, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc);
+	GProfilesBehaviour(GProfilesBehaviours* manager,GSubProfileCursor s,GLang* lang, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GProfilesBehaviour* p) const {return(Lang->Compare(p->Lang));}
 
@@ -143,16 +140,16 @@ public:
 	GBehaviours* AddNewBehaviours(GSubProfile* subprof);
 
 	// Destructor.
-	virtual ~GProfilesBehaviour(void) {}
+	~GProfilesBehaviour(void);
 };
 
 
 //------------------------------------------------------------------------------
-GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GProfilesBehaviours* manager, GSubProfileCursor& s,GLang* l, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc)
+GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GProfilesBehaviours* manager, GSubProfileCursor s,GLang* l, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc)
 	: Lang(l), MinSameDocs(minsamedocs), MinDiffDocs(mindiffdocs), Manager(manager)
 {
 	GSubProfileCursor Cur1, Cur2;
-	unsigned int i,j, pos;
+	unsigned int i,pos;
 	GBehaviours* behaviours;
 
 	//initialize the container of GSBehavirous (calculate size)
@@ -168,13 +165,21 @@ GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GProfilesBehaviours*
 	Cur1=s;
 	Cur2=s;
 	if(!Cur1.GetNb()) return;
+
 	for(Cur1.Start(), i=0; !Cur1.End();Cur1.Next(),i++)
 	{
+		if (Cur1()->GetProfile()->GetId()==1) continue;
 		pos=Cur1()->GetProfile()->GetId();
 		behaviours=new GBehaviours(Cur1()->GetProfile()->GetId(),pos);
 		Behaviours->InsertPtrAt(behaviours,pos);
-		for(Cur2.Start(), j=0;j<i;Cur2.Next(),j++)
- 			behaviours->InsertPtrAt(new GBehaviour(Cur2()->GetProfile()->GetId(),0.0,0.0,osModified),Cur2()->GetProfile()->GetId());
+		if (!Cur1()->IsDefined()) continue;
+		for(Cur2.Start(); !Cur2.End(); Cur2.Next())
+		{
+			if (!Cur2()->IsDefined()) continue;
+			if (Cur2()->GetId()==Cur1()->GetId()) continue;
+			if(Cur1()->GetProfile()->GetId()>Cur2()->GetProfile()->GetId())
+				behaviours->InsertPtrAt(new GBehaviour(Cur2()->GetProfile()->GetId(),0.0,0.0,osModified),Cur2()->GetProfile()->GetId());
+		}
 	}
 }
 
@@ -182,19 +187,22 @@ GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GProfilesBehaviours*
 //------------------------------------------------------------------------------
 void GProfilesBehaviours::GProfilesBehaviour::AnalyseBehaviour(GBehaviours* behaviours,GSubProfile* sub1,GSubProfile* sub2)
 {
-	unsigned int pos, nbcommon, nbsame, nbdiff;
-	double pcsame, pcdiff;
+	unsigned int pos, nbsame, nbdiff;
+	double pcsame, pcdiff, nbcommon;
 
 	pcsame=pcdiff=0.0;
 	nbsame=sub1->GetCommonOKDocs(sub2);
 	nbdiff=sub1->GetCommonDiffDocs(sub2);
-	nbcommon=sub1->GetCommonDocs(sub2);
+	nbcommon=double(sub1->GetCommonDocs(sub2));
 	if (nbcommon&&nbcommon>=MinDiffDocs)
 		pcdiff=nbdiff/nbcommon;
 	if (nbcommon&&nbcommon>=MinSameDocs)
 		pcsame=nbsame/nbcommon;
-	pos=sub2->GetProfile()->GetId();
-	behaviours->InsertPtrAt(new GBehaviour(pos,pcsame, pcdiff,osUpdated), pos);
+	if (pcsame!=0.0 || pcdiff !=0.0)
+	{
+		pos=sub2->GetProfile()->GetId();
+		behaviours->InsertPtrAt(new GBehaviour(pos,pcsame, pcdiff,osUpdated), pos);
+	}
 }
 
 
@@ -217,9 +225,9 @@ GBehaviour* GProfilesBehaviours::GProfilesBehaviour::GetRatio(GSubProfile* sub1,
 		i=j;
 		j=tmp;
 	}
-	b=Behaviours->GetPtr<unsigned int>(i);
+	b=Behaviours->GetPtrAt(i);
 	if(!b) return(0);
-	b2=b->GetPtr<unsigned int>(j);
+	b2=b->GetPtrAt(j);
 	if(!b2) return(0);
 
 	if((b2->State == osUpdated)||(b2->State == osUpToDate))
@@ -227,7 +235,6 @@ GBehaviour* GProfilesBehaviours::GProfilesBehaviour::GetRatio(GSubProfile* sub1,
 
 	if(b2->State == osModified)
 	{
-		okratio=diffratio=0.0;
 		b2->State=osUpToDate;
 		nbcommon=sub1->GetCommonDocs(sub2);
 		if (nbcommon&&nbcommon>=MinSameDocs)
@@ -281,6 +288,11 @@ void GProfilesBehaviours::GProfilesBehaviour::AddModifiedProfile(GSubProfile* s)
 void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(std::bad_alloc)
 {
 	GBehaviours* behaviours;
+	GBehaviour* behaviour;
+	GSubProfileCursor subscur;
+	GSubProfileCursor subscur2;
+	subscur.Set(ModifiedProfs);
+	subscur2=Manager->GetSession()->GetSubProfilesCursor(Lang);
 
 	// if memory is false, no update is needed
 	// since sims are claulctaed each time
@@ -289,14 +301,27 @@ void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(std::bad_alloc
 
 
 	// change status of modified subprofiles and add Behaviours of created subprofiles
-	for (ModifiedProfs->Start(); !ModifiedProfs->End(); ModifiedProfs->Next())
+	for (subscur.Start(); !subscur.End(); subscur.Next())
 	{
-		if (!(*ModifiedProfs)()->IsDefined()) continue;
-		behaviours = Behaviours->GetPtrAt((*ModifiedProfs)()->GetProfile()->GetId());
+		if (!subscur()->IsDefined()) continue;
+		behaviours = Behaviours->GetPtrAt(subscur()->GetProfile()->GetId());
 		if(!behaviours)
-			behaviours=AddNewBehaviours((*ModifiedProfs)());
+			behaviours=AddNewBehaviours(subscur());
+		//else if they exist, they have to be update
+		else
+		{
+			for (subscur2.Start(); !subscur2.End(); subscur2.Next())
+			{
+				if (!subscur2()->IsDefined()) continue;
+				//take only less ID
+				if (!(subscur()->GetProfile()->GetId()>subscur2()->GetProfile()->GetId())) continue;
+				behaviour=behaviours->GetPtrAt(subscur2()->GetProfile()->GetId());
+				if (!behaviour)
+					AnalyseBehaviour(behaviours, subscur(), subscur2());
+			}
+		}
 		for (behaviours->Start(); !behaviours->End(); behaviours->Next())
-			(*behaviours)()->State=osModified;
+				(*behaviours)()->State=osModified;
 	}
 
 	//reset the number of modified subprofiles.
@@ -334,6 +359,19 @@ GBehaviours*  GProfilesBehaviours::GProfilesBehaviour::AddNewBehaviours(GSubProf
 	return behaviours;
 
 }
+
+
+//------------------------------------------------------------------------------
+GProfilesBehaviours::GProfilesBehaviour::~GProfilesBehaviour(void)
+{
+	if (ModifiedProfs)
+		delete ModifiedProfs;
+	if (Behaviours)
+		delete Behaviours;
+}
+
+
+
 //------------------------------------------------------------------------------
 //
 //   GProfilesBehaviours

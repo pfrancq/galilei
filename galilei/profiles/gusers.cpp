@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -69,7 +65,7 @@ public:
 	int Compare(const GSubProfiles* s) const {return(Lang->Compare(s->Lang));}
 
 	// Get a cursor over the subprofiles of the system.
-	GSubProfileCursor& GetSubProfilesCursor(void);
+	GSubProfileCursor GetSubProfilesCursor(void);
 
 	// Destructor.
 	virtual ~GSubProfiles(void) {}
@@ -77,11 +73,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-GSubProfileCursor& GUsers::GSubProfiles::GetSubProfilesCursor(void)
+GSubProfileCursor GUsers::GSubProfiles::GetSubProfilesCursor(void)
 {
-	GSubProfileCursor *cur=GSubProfileCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GSubProfileCursor cur(this);
+	return(cur);
 }
 
 
@@ -94,19 +89,18 @@ GSubProfileCursor& GUsers::GSubProfiles::GetSubProfilesCursor(void)
 
 //------------------------------------------------------------------------------
 GUsers::GUsers(unsigned int u,unsigned int p) throw(std::bad_alloc)
-	: RContainer<GUser,unsigned,true,true>(u,u/2)
+	: RContainer<GUser,unsigned,true,true>(u,u/2),
+	  Profiles(new RContainer<GProfile,unsigned int,true,true>(p,p/2)),
+	  SubProfiles(new RContainer<GSubProfiles,unsigned int,true,true>(p,p/2))
 {
-	Profiles=new RContainer<GProfile,unsigned int,true,true>(p,p/2);
-	SubProfiles=new RContainer<GSubProfiles,unsigned int,true,true>(p,p/2);
 }
 
 
 //------------------------------------------------------------------------------
-GUserCursor& GUsers::GetUsersCursor(void)
+GUserCursor GUsers::GetUsersCursor(void)
 {
-	GUserCursor *cur=GUserCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GUserCursor cur(this);
+	return(cur);
 }
 
 
@@ -140,7 +134,7 @@ unsigned int GUsers::GetNewId(tObjType obj) throw(GException)
 			break;
 
 		case otSubProfile:
-			Cur.Set(SubProfiles);
+			Cur.Set(*SubProfiles);
 			for(Cur.Start(),id=0;!Cur.End();Cur.Next())
 			{
 				if(!Cur()->NbPtr) continue;
@@ -181,11 +175,10 @@ GProfile* GUsers::GetProfile(const unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-GProfileCursor& GUsers::GetProfilesCursor(void)
+GProfileCursor GUsers::GetProfilesCursor(void)
 {
-	GProfileCursor *cur=GProfileCursor::GetTmpCursor();
-	cur->Set(Profiles);
-	return(*cur);
+	GProfileCursor cur(*Profiles);
+	return(cur);
 }
 
 
@@ -216,7 +209,7 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id) const throw(GException
 	RCursor<GSubProfiles,unsigned int> Cur;
 	GSubProfile* ptr;
 
-	Cur.Set(SubProfiles);
+	Cur.Set(*SubProfiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		ptr=Cur()->GetPtr<unsigned int>(id);
@@ -234,14 +227,14 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id,GLang* lang) const thro
 
 
 //------------------------------------------------------------------------------
-GSubProfileCursor& GUsers::GetSubProfilesCursor(GLang* lang) throw(GException)
+GSubProfileCursor GUsers::GetSubProfilesCursor(GLang* lang) throw(GException)
 {
 	GSubProfiles* ptr=SubProfiles->GetPtr<const GLang*>(lang);
 	if(ptr)
 		return(ptr->GetSubProfilesCursor());
-	GSubProfileCursor* cur=GSubProfileCursor::GetTmpCursor();
-	cur->Set(static_cast<GSubProfiles*>(0));
-	return(*cur);
+	GSubProfileCursor cur;
+	cur.Set(static_cast<GSubProfiles*>(0));
+	return(cur);
 }
 
 
@@ -251,7 +244,7 @@ void GUsers::ClearSubProfilesGroups(void) throw(GException)
 	RCursor<GSubProfiles,unsigned int> Cur;
 	GSubProfileCursor Cur2;
 
-	Cur.Set(SubProfiles);
+	Cur.Set(*SubProfiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur2.Set(Cur());
@@ -264,24 +257,6 @@ void GUsers::ClearSubProfilesGroups(void) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GUsers::Clear(void) throw(GException)
- {
-	if(SubProfiles)
-	{
-		delete SubProfiles;
-		SubProfiles=0;
-	}
-	if(Profiles)
-	{
-		delete Profiles;
-		Profiles=0;
-	}
-	RContainer<GUser,unsigned,true,true>::Clear();
- }
-
-
-//------------------------------------------------------------------------------
 GUsers::~GUsers(void)
 {
-	Clear();
 }

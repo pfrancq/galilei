@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -81,11 +77,10 @@ void GGroupVector::AddInfo(GWeightInfo* info) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GWeightInfoCursor& GGroupVector::GetWeightInfoCursor(void)
+GWeightInfoCursor GGroupVector::GetWeightInfoCursor(void)
 {
-	GWeightInfoCursor *cur=GWeightInfoCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GWeightInfoCursor cur(this);
+	return(cur);
 }
 
 
@@ -148,7 +143,13 @@ void GGroupVector::RemoveRefs(void) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-GGroupVector::~GGroupVector(void) throw(GException)
+GGroupVector::~GGroupVector(void)
 {
-	RemoveRefs();
+	try
+	{
+		RemoveRefs();
+	}
+	catch(...)
+	{
+	}
 }

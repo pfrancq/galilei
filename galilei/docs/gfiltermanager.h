@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -65,11 +61,17 @@ class GFilterManager : public R::RContainer<GFactoryFilter,unsigned int,true,tru
 protected:
 
 	class GMIMEFilter;
+	class GMIMEExt;
 
 	/**
 	* List of all pairs (MIME type,filter) available.
 	*/
 	R::RContainer<GMIMEFilter,unsigned int,true,true> MIMES;
+
+	/**
+	* List of all pairs (extension, MIME type) available.
+	*/
+	R::RContainer<GMIMEExt,unsigned int,true,true> Exts;
 
 public:
 
@@ -91,8 +93,9 @@ protected:
 
 	/**
 	* Try to guess the MIME types of a temporary file. By default, this method
-	* does nothing.
-	* @param tmpFile        Temporary file created.
+	* looks in the list of association between the file extension and a MIME
+	* type.
+	* @param tmpfile        Temporary file created.
 	* @return Name fo of the MIME type.
 	*/
 	virtual const char* DetermineMIMEType(const char* tmpfile) throw(GException);
@@ -139,7 +142,7 @@ public:
 	* Get a cursor over the filters of the system.
 	* @return GFactoryFilterCursor.
 	*/
-	GFactoryFilterCursor& GetFiltersCursor(void);
+	GFactoryFilterCursor GetFiltersCursor(void);
 
 	/**
 	* Destructor of filter manager.

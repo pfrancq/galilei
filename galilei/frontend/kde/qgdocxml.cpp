@@ -11,10 +11,6 @@
 	Authors:
 		Julien Lamoral (jlamoral@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -47,6 +43,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <qgdocxml.h>
+#include <frontend/kde/rqt.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -125,13 +122,13 @@ void GALILEI::QGDocXML::ConstructTag(RXMLTag* t,QListViewItem* parent)
 	{
 		if(!prec)
 		{
-			prec=ptr=new QListViewItemXMLTag(parent,Cur(),Cur()->GetName());
+			prec=ptr=new QListViewItemXMLTag(parent,Cur(),ToQString(Cur()->GetName()));
 		}
 		else
 		{
-			prec=ptr=new QListViewItemXMLTag(parent,prec,Cur(),Cur()->GetName());
+			prec=ptr=new QListViewItemXMLTag(parent,prec,Cur(),ToQString(Cur()->GetName()));
 		}
-		if(strlen(Cur()->GetContent()))
+		if(!Cur()->GetContent().IsEmpty())
 		{
 			ptr2=new QListViewItemXMLTag(ptr,0,Cur()->GetContent());
 			ptr2->setPixmap(0,QPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("xml_text.png",KIcon::Small))));
@@ -145,16 +142,15 @@ void GALILEI::QGDocXML::ConstructTag(RXMLTag* t,QListViewItem* parent)
 void GALILEI::QGDocXML::slotSelectionTag(QListViewItem* item)
 {
 	QListViewItemXMLTag* t=(QListViewItemXMLTag*)item;
+	RXMLAttrCursor Cur;
 
 	if(t->Tag)
 	{
 		TagInfos->setTabEnabled(TagAttributes,true);
 		TagAttributes->clear();
-		for(t->Tag->AttrsStart();!t->Tag->AttrsEnd();t->Tag->AttrsNext())
-		{
-			RXMLAttr* a=t->Tag->GetCurAttrs();
-			new QListViewItem(TagAttributes,a->GetName().Latin1(),QString(a->GetValue().Latin1()));
-		}
+		Cur=t->Tag->GetXMLAttrCursor();
+		for(Cur.Start();!Cur.End();Cur.Next())
+			new QListViewItem(TagAttributes,ToQString(Cur()->GetName()),ToQString(Cur()->GetValue()));
 		TagInfos->setTabEnabled(TagContent,false);
 	}
 	else

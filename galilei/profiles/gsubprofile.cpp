@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -143,7 +139,7 @@ void GSubProfile::RemoveAssessment(GProfDoc* j) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::ClearFdbks(void) throw(std::bad_alloc)
+void GSubProfile::ClearFdbks(void) throw(std::bad_alloc,GException)
 {
 	// When all assessments are removed -> the profile is always modified
 	Fdbks.Clear();
@@ -155,7 +151,7 @@ void GSubProfile::ClearFdbks(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GSubProfile::SetId(unsigned int id) throw(GException)
 {
-	if(Id==cNoRef)
+	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a subprofile");
 	Id=id;
 }
@@ -196,32 +192,23 @@ void GSubProfile::SetGroup(GGroup* grp)
 
 
 //------------------------------------------------------------------------------
-RDate& GSubProfile::GetAttached(void) const
+RDate GSubProfile::GetAttached(void) const
 {
-	RDate* d=RDate::GetDate();
-
-	(*d)=Attached;
-	return(*d);
+	return(Attached);
 }
 
 
 //------------------------------------------------------------------------------
-RDate& GSubProfile::GetUpdated(void) const
+RDate GSubProfile::GetUpdated(void) const
 {
-	RDate* d=RDate::GetDate();
-
-	(*d)=Updated;
-	return(*d);
+	return(Updated);
 }
 
 
 //------------------------------------------------------------------------------
-R::RDate& GSubProfile::GetComputed(void) const
+RDate GSubProfile::GetComputed(void) const
 {
-	RDate* d=RDate::GetDate();
-
-	(*d)=Computed;
-	return(*d);
+	return(Computed);
 }
 
 
@@ -328,11 +315,10 @@ unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
 
 
 //------------------------------------------------------------------------------
-GProfDocCursor& GSubProfile::GetProfDocCursor(void)
+GProfDocCursor GSubProfile::GetProfDocCursor(void)
 {
-	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
-	cur->Set(Fdbks);
-	return(*cur);
+	GProfDocCursor cur(Fdbks);
+	return(cur);
 }
 
 
@@ -410,6 +396,6 @@ void GSubProfile::UpdateFinished(void)
 
 
 //------------------------------------------------------------------------------
-GSubProfile::~GSubProfile(void) throw(GException)
+GSubProfile::~GSubProfile(void)
 {
 }

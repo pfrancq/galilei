@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -99,6 +95,7 @@ public:
 	/**
 	* Construct a data. Its idenfiticator is invalid (cNoRef).
 	* @param name           Name.
+	* @param type           Type of the data.
 	*/
 	GData(const R::RString& name,GInfoType type) throw(std::bad_alloc);
 
@@ -106,6 +103,7 @@ public:
 	* Construct a data with a known identificator.
 	* @param id             Identificator of the data.
 	* @param name           Name.
+	* @param type           Type of the data.
 	*/
 	GData(unsigned int id,const R::RString& name,GInfoType type) throw(std::bad_alloc);
 
@@ -113,7 +111,7 @@ public:
 	* Copy constructor of a data.
 	* @param d               Data.
 	*/
-	GData(const GData& data) throw(std::bad_alloc);
+	GData(const GData& d) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a data.
@@ -271,7 +269,7 @@ public:
 	/**
 	* @return A string representing the word.
 	*/
-	R::RString& GetName(void) const;
+	R::RString GetName(void) const;
 
 	/**
 	* Increase the number of references on this data for a given object type.
@@ -324,7 +322,7 @@ public:
 * The GDataCursor class provides a way to go trough a vector of words.
 * @short Word Cursor
 */
-CLASSCURSOR(GDataCursor,GData,unsigned int)
+CLASSCURSOR(GDataCursor,GData,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

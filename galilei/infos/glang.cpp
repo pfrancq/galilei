@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -56,7 +52,7 @@ class GLang::SkipWord
 {
 public:
 	R::RString Word;
-	SkipWord(const char* w) : Word(w) {}
+	SkipWord(const RString& w) : Word(w) {}
 	int Compare(const SkipWord* w) {return(Word.Compare(w->Word));}
 	int Compare(const SkipWord& w) {return(Word.Compare(w.Word));}
 	int Compare(const R::RChar* w) {return(Word.Compare(w));}
@@ -168,13 +164,9 @@ void GLang::SkipSequence(const RString& word) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RString& GLang::GetStemming(const RString& _kwd) throw(GException)
+RString GLang::GetStemming(const RString& _kwd) throw(GException)
 {
-	RString *res=RString::GetString();
-
-	(*res)=_kwd;
-	res->StrLwr();
-	return((*res));
+	return(_kwd.ToLower());
 }
 
 

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -171,6 +167,8 @@ double GWeightInfos::Similarity(const GWeightInfos* w) const
 		norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
 		ptr2++;
 	}
+	if(norm1==0.0 || norm2==0.0)
+		return (0.0);
 	Sim/=(sqrt(norm1)*sqrt(norm2));
 	return(Sim);
 }
@@ -239,6 +237,8 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 		norm2+=w2*w2;
 		ptr2++;
 	}
+	if(norm1==0.0 || norm2==0.0)
+		return (0.0);
 	Sim/=(sqrt(norm1)*sqrt(norm2));
 	return(Sim);
 }

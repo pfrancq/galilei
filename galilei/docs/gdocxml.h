@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -90,25 +86,24 @@ class GDocXML : public R::RXMLStruct
 	R::RXMLTag* Links;
 
 public:
-
 	/**
 	* Construct a DocXML document.
 	* @param url            URL of the document.
 	* @param filename       File of the document.
 	*/
-	GDocXML(const char* url,const char* filename) throw(std::bad_alloc);
+	GDocXML(R::RString url,R::RString filename) throw(std::bad_alloc);
 
 	/**
 	* Get the URL.
 	* @returns Pointer to a C string.
 	*/
-	R::RString& GetURL(void) const;
+	R::RString GetURL(void) const;
 
 	/**
 	* Get the File Name.
 	* @returns Pointer to a C string.
 	*/
-	R::RString& GetFile(void) const;
+	R::RString GetFile(void) const;
 
 	/**
 	* Get an access to the metadata of the document.
@@ -143,7 +138,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddTitle(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddTitle(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a title tag to a metadata.
@@ -159,7 +154,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddCreator(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddCreator(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a creator tag to a metadata.
@@ -175,7 +170,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddSubject(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddSubject(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a subject tag to a metadata.
@@ -191,7 +186,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddDescription(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddDescription(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a description tag to a metadata.
@@ -207,7 +202,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddPublisher(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddPublisher(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a publisher tag to a metadata.
@@ -223,7 +218,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddContributor(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddContributor(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a contributor tag to a metadata.
@@ -239,7 +234,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddDate(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddDate(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a date tag to a metadata.
@@ -255,7 +250,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddType(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddType(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a type tag to a metadata.
@@ -271,7 +266,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddFormat(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddFormat(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a format tag to a metadata.
@@ -287,7 +282,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddIdentifier(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddIdentifier(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add an identifier tag to a metadata.
@@ -303,7 +298,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddSource(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddSource(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a source tag to a metadata.
@@ -319,7 +314,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddLanguage(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddLanguage(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a language tag to a metadata.
@@ -335,7 +330,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddRelation(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddRelation(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a relation tag to a metadata.
@@ -351,7 +346,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddCoverage(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddCoverage(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a coverage tag to a metadata.
@@ -367,7 +362,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddRights(const char* val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
+	void AddRights(R::RString val,R::RXMLTag* metaData=0) throw(std::bad_alloc);
 
 	/**
 	* Add a rights tag to a metadata.

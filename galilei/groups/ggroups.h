@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -86,14 +82,14 @@ public:
 	* Get a cursor on all the groups.
 	* @return GGroupCursor.
 	*/
-	GGroupCursor& GetGroupsCursor(void);
+	GGroupCursor GetGroupsCursor(void);
 
 	/**
 	* Get a cursor on the groups of a given langage.
 	* @param lang            Language of the groups.
 	* @return GGroupCursor.
 	*/
-	GGroupCursor& GetGroupsCursor(GLang* lang) throw(GException);
+	GGroupCursor GetGroupsCursor(GLang* lang) throw(GException);
 
 	/**
 	* Insert a group. The group is also stored in the container correspondong to
@@ -118,7 +114,7 @@ public:
 	/**
 	* Get a group corresponding to a given identificator.
 	* @param id         Identificator of the group.
-	* @apram Pointer to GGroup.
+	* @return Pointer to GGroup.
 	*/
 	GGroup* GetGroup(unsigned int id) throw(std::bad_alloc);
 

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -91,7 +87,7 @@ void GGrouping::Disconnect(GSession*) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GGrouping::Grouping(GSlot* rec,bool modified,bool save, bool savehistory) throw(GException)
+void GGrouping::Grouping(GSlot* rec,bool modified,bool save,bool savehistory) throw(GException)
 {
 	GFactoryLangCursor CurLang;
 	GGroupCalc* CalcDesc;
@@ -124,7 +120,6 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save, bool savehistory) t
 				SubProfiles.InsertPtr(cur());
 			#endif
 		}
-
 		// Make the grouping
 		Run();
 	}
@@ -136,11 +131,11 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save, bool savehistory) t
 	for(Groups.Start();!Groups.End();Groups.Next())
 		CalcDesc->Compute(Groups());
 
+	// Save if necessary
 	if(save)
 		Session->GetStorage()->SaveGroups(Session);
-	if(Session->GetSessionParams()->GetBool("SaveGroupsHistory"))
+	if(savehistory)
 		Session->GetStorage()->SaveGroupsHistory(Session);
-
 }
 
 

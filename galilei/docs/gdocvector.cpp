@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -74,7 +70,7 @@ bool GDocVector::IsDefined(void) const
 
 
 //------------------------------------------------------------------------------
-void GDocVector::ClearInfos(bool l)
+void GDocVector::ClearInfos(bool l) throw(std::bad_alloc,GException)
 {
 	GDoc::ClearInfos(l);
 	RemoveRefs();
@@ -90,11 +86,10 @@ void GDocVector::AddInfo(GWeightInfo* info) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GWeightInfoCursor& GDocVector::GetWeightInfoCursor(void)
+GWeightInfoCursor GDocVector::GetWeightInfoCursor(void)
 {
-	GWeightInfoCursor *cur=GWeightInfoCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GWeightInfoCursor cur(this);
+	return(cur);
 }
 
 
@@ -157,7 +152,13 @@ void GDocVector::RemoveRefs(void) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-GDocVector::~GDocVector(void) throw(GException)
+GDocVector::~GDocVector(void)
 {
-	RemoveRefs();
+	try
+	{
+		RemoveRefs();
+	}
+	catch(...)
+	{
+	}
 }

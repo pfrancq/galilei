@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -57,16 +53,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf) throw(std::bad_alloc)
+GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const RString& u,const RString& a,unsigned int f,unsigned int nbf) throw(std::bad_alloc)
 	: URL(url), Name(name), Id(id),
 	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
-	  Failed(f)
+	  Failed(f), LinkSet(5,2)
 #if GALILEITEST
 	  ,Subjects(2,1)
 #endif
 {
-	LinkSet=new RContainer<GLink,unsigned int,false,true>(5,2);
-
 	if(Updated>Computed)
 	{
 		if(Computed==RDate::null)
@@ -80,16 +74,14 @@ GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const ch
 
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const char* url,const char* name,const char* mime) throw(std::bad_alloc)
+GDoc::GDoc(const RString& url,const RString& name,const RString& mime) throw(std::bad_alloc)
 	: URL(url), Name(name), Id(cNoRef),
 	  Lang(0), MIMEType(mime), Updated(), Computed(), Fdbks(50,25),
-	  Failed(0)
+	  Failed(0), LinkSet(5,2)
 #if GALILEITEST
 	  ,Subjects(2,1)
 #endif
 {
-	LinkSet=new RContainer<GLink,unsigned int,false,true>(5,2);
-
 	if(Updated>Computed)
 	{
 		if(Computed==RDate::null)
@@ -153,58 +145,49 @@ void GDoc::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
-RString& GDoc::GetURL(void) const
+RString GDoc::GetURL(void) const
 {
-	RString* tmp=RString::GetString();
-
-	(*tmp)=URL;
-	return(*tmp);
+	return(URL);
 }
 
 
 //------------------------------------------------------------------------------
-RString& GDoc::GetName(void) const
+RString GDoc::GetName(void) const
 {
-	RString* tmp=RString::GetString();
-
-	(*tmp)=Name;
-	return(*tmp);
+	return(Name);
 }
 
 
 //------------------------------------------------------------------------------
-RDate& GDoc::GetUpdated(void) const
+void GDoc::SetName(const R::RString& name) throw(std::bad_alloc)
 {
-	RDate* d=RDate::GetDate();
-
-	(*d)=Updated;
-	return(*d);
+	Name=name;
 }
 
 
 //------------------------------------------------------------------------------
-RDate& GDoc::GetComputed(void) const
+RDate GDoc::GetUpdated(void) const
 {
-	RDate* d=RDate::GetDate();
-
-	(*d)=Computed;
-	return(*d);
+	return(Updated);
 }
 
 
 //------------------------------------------------------------------------------
-RString& GDoc::GetMIMEType(void) const
+RDate GDoc::GetComputed(void) const
 {
-	RString* tmp=RString::GetString();
-
-	(*tmp)=MIMEType;
-	return(*tmp);
-
+	return(Computed);
 }
 
 
 //------------------------------------------------------------------------------
-void GDoc::SetMIMEType(const char* mime)
+RString GDoc::GetMIMEType(void) const
+{
+	return(MIMEType);
+}
+
+
+//------------------------------------------------------------------------------
+void GDoc::SetMIMEType(const RString& mime)
 {
 	MIMEType=mime;
 }
@@ -258,11 +241,10 @@ unsigned int GDoc::GetNbFdbks(void) const
 
 
 //------------------------------------------------------------------------------
-GProfDocCursor& GDoc::GetProfDocCursor(void)
+GProfDocCursor GDoc::GetProfDocCursor(void)
 {
-	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
-	cur->Set(Fdbks);
-	return(*cur);
+	GProfDocCursor cur(Fdbks);
+	return(cur);
 }
 
 
@@ -318,7 +300,7 @@ void GDoc::AddAssessment(GProfDoc* j) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 unsigned int GDoc::GetNbLinks(void)
 {
-	unsigned int res = LinkSet->NbPtr;
+	unsigned int res = LinkSet.NbPtr;
 	return(res);
 }
 
@@ -327,7 +309,7 @@ unsigned int GDoc::GetNbLinks(void)
 void GDoc::InsertLink(const GDoc* doc) throw(std::bad_alloc)
 {
 	GLink* link ;
-	link = LinkSet->GetInsertPtr(doc);
+	link = LinkSet.GetInsertPtr(doc);
 	link->IncOccurs();
 }
 
@@ -336,17 +318,16 @@ void GDoc::InsertLink(const GDoc* doc) throw(std::bad_alloc)
 void GDoc::InsertLink(const GDoc* doc,unsigned int nbOccurs) throw(std::bad_alloc)
 {
 	GLink* link ;
-	link = LinkSet->GetInsertPtr(doc);
+	link = LinkSet.GetInsertPtr(doc);
 	link->SetOccurs(nbOccurs);
 }
 
 
 //------------------------------------------------------------------------------
-GLinkCursor& GDoc::GetLinkCursor(void)
+GLinkCursor GDoc::GetLinkCursor(void)
 {
-	GLinkCursor *cur = GLinkCursor::GetTmpCursor();
-	cur->Set(LinkSet);
-	return(*cur);
+	GLinkCursor cur(LinkSet);
+	return(cur);
 }
 
 
@@ -382,17 +363,24 @@ bool GDoc::IsFromParentSubject(const GSubject* s)
 
 
 //------------------------------------------------------------------------------
-GSubjectCursor& GDoc::GetSubjectCursor(void)
+GSubjectCursor GDoc::GetSubjectCursor(void)
 {
-	GSubjectCursor *cur=GSubjectCursor::GetTmpCursor();
-	cur->Set(Subjects);
-	return(*cur);
+	GSubjectCursor cur(Subjects);
+	return(cur);
 }
+
+
+//------------------------------------------------------------------------------
+unsigned int GDoc::GetNbSubjects(void)
+{
+	return(Subjects.GetNb());
+}
+
+
 #endif
 
 
 //------------------------------------------------------------------------------
-GDoc::~GDoc(void) throw(GException)
+GDoc::~GDoc(void)
 {
-	delete LinkSet;
 }

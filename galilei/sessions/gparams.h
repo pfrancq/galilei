@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation; either version 2 of the License, or
@@ -70,12 +66,12 @@ public:
 	* Construct the list of parameters.
 	* @param n               Name of the parameter.
 	*/
-	GParams(const char* n) throw(std::bad_alloc);
+	GParams(const R::RString& n) throw(std::bad_alloc);
 
 	/**
 	* Get the name of the set of parameters.
 	*/
-	const char* GetName(void) const;
+	R::RString GetName(void) const {return(Name);}
 
 	/**
 	* Read a configuration from a XML Tag.
@@ -86,9 +82,10 @@ public:
 	/**
 	* Save a configuration to a XML Tag.
 	* this tag.
+	* @param xml             XML Structure.
 	* @param tag             Tag.
 	*/
-	void SaveConfig(R::RXMLTag* tag);
+	void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* tag);
 
 	/**
 	* Get the content of the parameter.

@@ -11,10 +11,6 @@
 	Authors
 		 Kumps Nicolas (nkumps@ulb.ac.be)
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -40,11 +36,6 @@
 
 
 //------------------------------------------------------------------------------
-// include file for LibTool--
-#include <ltmm/loader.hh>
-
-
-//------------------------------------------------------------------------------
 // include file for GALILEI
 #include <sessions/gplugin.h>
 
@@ -64,7 +55,7 @@ namespace GALILEI{
 * The GPostDoc provides a representation for a generic documents post-analysis
 * method.
 * @author Nicolas Kumps
-* @short Generic Documents Post-Analysis.
+* @short Generic Document Post Analysis Method.
 */
 class GPostDoc : public GPlugin<GFactoryPostDoc>
 {
@@ -108,6 +99,12 @@ public :
 
 
 //------------------------------------------------------------------------------
+/**
+* The GFactoryPostDoc represent a factory for a given document post analysis
+* method.
+* @author Nicolas Kumps
+* @short Generic Document Post Analysis Factory.
+*/
 class GFactoryPostDoc : public GFactoryPlugin<GFactoryPostDoc,GPostDoc,GPostDocManager>
 {
 public:
@@ -128,7 +125,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-typedef GFactoryPostDoc*(*GFactoryPostDocInit)(GPostDocManager*,const char*);
+/**
+* Signature of the method used to initiliaze a document post analysis factory.
+*/
+typedef GFactoryPostDoc* GFactoryPostDocInit(GPostDocManager*,const char*);
 
 
 //-------------------------------------------------------------------------------
@@ -199,8 +199,21 @@ extern "C"                                                                      
 * factories of documets post-analysis methods.
 * @short Documents Post-Analysis Factories Cursor
 */
-CLASSCURSOR(GFactoryPostDocCursor,GFactoryPostDoc,unsigned int)
+CLASSCURSOR(GFactoryPostDocCursor,GFactoryPostDoc,unsigned int);
 
+
+//------------------------------------------------------------------------------
+/**
+* struture to order factory by their level
+*/
+struct GFactoryPostDocOrder
+{
+	GFactoryPostDoc* Fac;
+	int Compare(const GFactoryPostDocOrder* fpdo)
+	{
+		return((Fac->GetUInt("Level"))-(fpdo->Fac->GetUInt("Level")));
+	}
+};
 
 }  //-------- End of namespace GALILEI -----------------------------------------
 

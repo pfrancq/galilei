@@ -13,10 +13,6 @@
 		Julien Lamoral (jlamoral@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -90,7 +86,7 @@ public:
 	* Constructor of a subject.
 	* @param id              Identificator of the subject.
 	* @param name            Name of the subject.
-	* @param lang            Language.
+	* @param l               Language.
 	* @param u               Used?
 	*/
 	GSubject(unsigned int id,const char* name,GLang* l,bool u) throw(std::bad_alloc);
@@ -136,7 +132,7 @@ public:
 	* Get a cursor over the documents contained in the subject.
 	* @return GDocCursor.
 	*/
-	GDocCursor& GetDocsCursor(void);
+	GDocCursor GetDocsCursor(void);
 
 	/**
 	* Get the number of documents associated to this subject.
@@ -148,7 +144,7 @@ public:
 	* Return the name of the Subject.
 	* @return RString.
 	*/
-	R::RString& GetName(void) const;
+	R::RString GetName(void) const;
 
 	/**
 	* Get the identificator of the Subject.
@@ -170,7 +166,7 @@ public:
 	/**
 	* Destructor of a subject.
 	*/
-	~GSubject(void) throw(GException);
+	~GSubject(void);
 };
 
 
@@ -179,7 +175,7 @@ public:
 * The GSubjectCursor class provides a way to go trough a set of subjects.
 * @short Subject Cursor
 */
-CLASSCURSOR(GSubjectCursor,GSubject,unsigned int)
+CLASSCURSOR(GSubjectCursor,GSubject,unsigned int);
 
 
 

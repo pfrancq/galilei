@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -109,12 +105,9 @@ void GProfile::SetId(unsigned int id) throw(GException)
 
 
 //------------------------------------------------------------------------------
-RString& GProfile::GetName(void) const
+RString GProfile::GetName(void) const
 {
-	RString* tmp=RString::GetString();
-
-	(*tmp)=Name;
-	return(*tmp);
+	return(Name);
 }
 
 
@@ -146,7 +139,10 @@ GSubProfile* GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
 
 	// If subprofile does not exist -> create it
 	if(!sub)
+	{
 		sub=new GSubProfileVector(s,this,lang);
+		s->InsertSubProfile(sub);
+	}
 
 	return(sub);
 }
@@ -173,20 +169,18 @@ unsigned int GProfile::GetNbAssessedDocs(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-GProfDocCursor& GProfile::GetProfDocCursor(void)
+GProfDocCursor GProfile::GetProfDocCursor(void)
 {
-	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
-	cur->Set(Fdbks);
-	return(*cur);
+	GProfDocCursor cur(Fdbks);
+	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-GSubProfileCursor& GProfile::GetSubProfilesCursor(void)
+GSubProfileCursor GProfile::GetSubProfilesCursor(void)
 {
-	GSubProfileCursor *cur=GSubProfileCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GSubProfileCursor cur(this);
+	return(cur);
 }
 
 

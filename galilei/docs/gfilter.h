@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -89,6 +85,12 @@ protected:
 	void AddMIME(const char* mime) throw(std::bad_alloc);
 
 	/**
+	* Add a specific MIME-Type for the filter.
+	* @param mime           Name of the MIME-Type.
+	*/
+	void AddMIME(RString mime) throw(std::bad_alloc);
+
+	/**
 	* Test if a given character represent the end of a sentence.
 	* @param c               8-bit character to test.
 	* @return true if it is a end sentence character.
@@ -108,6 +110,8 @@ protected:
 		return((c.Latin1()=='.')||(c.Latin1()=='!')||(c.Latin1()=='?')||(c.Latin1()==';')||(c.Latin1()==':'));
 	}
 
+public:
+
 	/**
 	* Analyse a block of text and create a list of tags 'docxml:sentence'.
 	* @param block          Block containing the text.
@@ -121,6 +125,13 @@ protected:
 	* @param attach         XML tag where the sentences must be attach.
 	*/
 	void AnalyzeBlock(R::RChar* block,R::RXMLTag* attach) throw(std::bad_alloc,GException);
+
+	/**
+	* Analyse a block of text and create a list of tags 'docxml:sentence'.
+	* @param block          Block containing the text.
+	* @param attach         XML tag where the sentences must be attach.
+	*/
+	void AnalyzeBlock(const R::RString& block,R::RXMLTag* attach) throw(std::bad_alloc,GException);
 
 	/**
 	* Analyse a list of keywords sepating by a single character.
@@ -138,7 +149,13 @@ protected:
 	*/
 	void AnalyzeKeywords(R::RChar* list,R::RChar sep,R::RXMLTag* attach) throw(std::bad_alloc,GException);
 
-public:
+	/**
+	* Analyse a list of keywords sepating by a single character.
+	* @param list           List of keywords.
+	* @param sep            Separator to use.
+	* @param attach         XML tag where the sentences must be attach.
+	*/
+	void AnalyzeKeywords(const R::RString& list,R::RChar sep,R::RXMLTag* attach) throw(std::bad_alloc,GException);
 
 	/**
 	* Analyze the document and construct the DocXML document with the
@@ -156,6 +173,11 @@ public:
 
 
 //------------------------------------------------------------------------------
+/**
+* The GFactoryDocFilter represent a factory for a given filter.
+* @author Pascal Francq
+* @short Generic Filter Factory.
+*/
 class GFactoryFilter : public GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>
 {
 public:
@@ -165,7 +187,7 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryFilter(GFilterManager* mng,const char* n,const char* f) : GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>(mng,n,f) {}
+	GFactoryFilter(GFilterManager* mng,RString n,RString f) : GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>(mng,n,f) {}
 
 	/**
 	* Destructor.
@@ -175,7 +197,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-typedef GFactoryFilter*(*GFactoryFilterInit)(GFilterManager*,const char*);
+/**
+* Signature of the method used to initiliaze a filter factory.
+*/
+typedef GFactoryFilter* GFactoryFilterInit(GFilterManager*,const char*);
 
 
 //-------------------------------------------------------------------------------
@@ -231,7 +256,7 @@ extern "C"                                                                      
 * of filters.
 * @short Filters Factories Cursor
 */
-CLASSCURSOR(GFactoryFilterCursor,GFactoryFilter,unsigned int)
+CLASSCURSOR(GFactoryFilterCursor,GFactoryFilter,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

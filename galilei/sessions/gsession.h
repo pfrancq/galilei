@@ -14,10 +14,6 @@
 		Julien Lamoral (jlamoral@ulb.ac.be).
 		Valery Vandaele (vavdaele@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -172,7 +168,7 @@ public:
 	* Constructor.
 	* @param str             Storage manager.
 	* @param sessparams      Parameters of the session.
-	* @param test            Test mode.
+	* @param tests           Test mode.
 	*/
 	GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(std::bad_alloc,GException);
 
@@ -265,7 +261,7 @@ public:
 
 	/**
 	* Get the parameters of the session.
-	* @param Pointer to GSessionParams.
+	* @return Pointer to GSessionParams.
 	*/
 	GSessionParams* GetSessionParams(void) const {return(SessParams);}
 
@@ -273,19 +269,19 @@ public:
 	* Get a cursor over the factories of the link methods.
 	* @return GLinkCalcCursor.
 	*/
-	GFactoryLinkCalcCursor& GetLinkCalcsCursor(void);
+	GFactoryLinkCalcCursor GetLinkCalcsCursor(void);
 
 	/**
 	* Get a cursor over the factories of the document post-analysis methods.
 	* @return GPostDocCursor.
 	*/
-	GFactoryPostDocCursor& GetPostDocsCursor(void);
+	GFactoryPostDocCursor GetPostDocsCursor(void);
 
 	/**
 	* Get a cursor over the assessments made.
 	* @return GProfDocCursor.
 	*/
-	GProfDocCursor& GetProfDocsCursor(void);
+	GProfDocCursor GetProfDocsCursor(void);
 
 	/**
 	* Assign an identifier to a new data of a given dictionary.
@@ -298,7 +294,7 @@ public:
 	* Assign an identifier to a new group.
 	* @param grp            Group.
 	*/
-	virtual void AssignId(GGroup* data);
+	virtual void AssignId(GGroup* grp);
 
 	/**
 	* Assign an identifier to a new document.
@@ -321,20 +317,28 @@ public:
 	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
 
 	/**
-	* Analyse the documents. At the end, all the enabled post-docsmethods are
+	* Analyse the documents. At the end, all the enabled post-docs methods are
 	* run.
 	* @param rec             Receiver for the signals.
 	* @param modified        Recompute only modified elements or all.
+	* @param save            Document must be saved.
 	*/
-	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
+	void AnalyseDocs(GSlot* rec=0,bool modified=true,bool save=true) throw(GException);
+
+	/**
+	* run post-grouping methods are called.
+	* @param rec            Receiver of the signals.
+	*/
+	void ComputePostDoc(GSlot* rec)  throw(GException);
 
 	/**
 	* Compute the (sub)profiles.
 	* @param rec            Receiver for the signals.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
+	* @param saveLinks      Save links informations.
 	*/
-	void CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException);
+	void CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) throw(GException);
 
 	/**
 	* Groups the subprofile into virtual communities. At the end, all the
@@ -342,9 +346,15 @@ public:
 	* @param rec            Receiver of the signals.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
-	* @param savehsitory    Save groups in history.
+	* @param savehistory    Save groups in history.
 	*/
 	void GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory)  throw(GException);
+
+	/**
+	* run post-grouping methods are called.
+	* @param rec            Receiver of the signals.
+	*/
+	void ComputePostGroup(GSlot* rec)  throw(GException);
 
 	/**
 	* Set if the Inverse Frequency Factor should be used for the similarities
@@ -398,16 +408,10 @@ public:
 	/**
 	* Return the similarity between a document and a subProfiles.
 	* @param doc           The Pointer to the document.
-	* @param sub2          The Pointer to the subprofile.
+	* @param sub           The Pointer to the subprofile.
 	*/
 	double GetSimDocProf(const GDoc* doc,const GSubProfile* sub) throw(GException);
        
-	/**
-	* Get a Cursor on the feedbacks.
-	* @return GProfDocCursor.
-	*/
-	GProfDocCursor& GetProfDocCursor(void);
-
 	/**
 	* Clear all the feedbacks.
 	*/
@@ -420,7 +424,7 @@ public:
 	* @param j          Feedback.
 	* @param date       Date on the last feedback.
 	*/
-	void InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate& date) throw(std::bad_alloc);
+	void InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate date) throw(std::bad_alloc);
 
 	/**
 	* Insert a new Feedback.
@@ -440,7 +444,7 @@ public:
 	/**
 	* Get a cursor over the filters of the system.
 	*/
-	GFactoryFilterCursor& GetFiltersCursor(void);
+	GFactoryFilterCursor GetFiltersCursor(void);
 
 	/**
 	* Get the filter for a specific mime type.
@@ -451,6 +455,7 @@ public:
 
 	/**
 	* Run a "program" for this session.
+	* @param rec            Slot that receive information.
 	* @param filename       Name of the file.
 	*/
 	void RunPrg(GSlot* rec,const char* filename) throw(GException);
@@ -504,9 +509,19 @@ public:
 	void ReInit(bool Save);
 
 	/**
+	* Export the vectors/words matrix
+	* @param rec            Slot that can receive ionformation.
+	* @param type           type of export ("Profiles", "Documents" or "Groups")
+	* @param filename       export file name
+	* @param lang           lang of the export
+	* @param label          display words id aned vectors id ?
+	*/
+	virtual void ExportMatrix(GSlot* rec,const char* type, const char* filename, GLang* lang, bool label);
+
+	/**
 	* Destructor.
 	*/
-	virtual ~GSession(void) throw(GException);
+	virtual ~GSession(void);
 };
 
 

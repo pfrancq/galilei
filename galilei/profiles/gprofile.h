@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -101,8 +97,6 @@ public:
 	* @param id             Identificator of the profile.
 	* @param name           Name of the profile.
 	* @param s              Social?
-	* @param u              String representing the date of updated.
-	* @param a              String representing the date of the last analysis.
 	* @param nb             Number of subprofiles.
 	* @param nbf            Number of Feedbacks.
 	*/
@@ -168,7 +162,7 @@ public:
 	* Get the name of the profile.
 	* @return RString.
 	*/
-	R::RString& GetName(void) const;
+	R::RString GetName(void) const;
 
 	/**
 	* Get the user of the profile.
@@ -223,13 +217,13 @@ public:
 	* Get a Cursor on the feedback for the profile.
 	* @return GProfDocCursor.
 	*/
-	GProfDocCursor& GetProfDocCursor(void);
+	GProfDocCursor GetProfDocCursor(void);
 
 	/**
 	* Get a Cursor on the subprofiles.
 	* @return GSubProfileCursor.
 	*/
-	GSubProfileCursor& GetSubProfilesCursor(void);
+	GSubProfileCursor GetSubProfilesCursor(void);
 
 	/**
 	* Add an assessment for the profile.
@@ -244,7 +238,9 @@ public:
 	*
 	* This function is called when at least one of the two lang is defined
 	* and the two lang are different.
-	* @param s                  Session.
+	* @param profdoc        Pointer to the feedback.
+	* @param oldlang        Old language of the document.  
+	* @param s              Session.
 	*/
 	void DispatchFdbks(GProfDoc* profdoc, GLang* oldlang,GSession* s);
 
@@ -260,7 +256,7 @@ public:
 * The GProfileCursor class provides a way to go trough a set of profiles.
 * @short Profiles Cursor
 */
-CLASSCURSOR(GProfileCursor,GProfile,unsigned int)
+CLASSCURSOR(GProfileCursor,GProfile,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

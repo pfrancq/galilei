@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -76,6 +72,7 @@ public:
 
 	/**
 	* Constructor of the subprofile.
+	* @param session         Session.
 	* @param prof            Profile.
 	* @param lang            Language of the subprofile.
 	*/
@@ -90,7 +87,7 @@ public:
 	/**
 	* Clear all the assessments of the subprofile.
 	*/
-	virtual void ClearFdbks(void) throw(std::bad_alloc);
+	virtual void ClearFdbks(void) throw(std::bad_alloc,GException);
 
 	/**
 	* Verify if the subprofile is defined, i.e. if it is computed.
@@ -153,7 +150,7 @@ public:
 	* Get a cursor over the vector.
 	* @return GWeightInfoCursor element.
 	*/
-	GWeightInfoCursor& GetWeightInfoCursor(void);
+	GWeightInfoCursor GetWeightInfoCursor(void);
 
 	/**
 	* Get the number of elements of the vector that are not null.
@@ -173,7 +170,7 @@ public:
 	/**
 	* Destructor of a subprofile represented by a vector.
 	*/
-	virtual ~GSubProfileVector(void) throw(GException);
+	virtual ~GSubProfileVector(void);
 };
 
 

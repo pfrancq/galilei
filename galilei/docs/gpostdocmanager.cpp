@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -38,8 +34,6 @@
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
-#include <dirent.h>
-
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
@@ -48,7 +42,6 @@
 #include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
-using namespace ltmm;
 
 
 
@@ -62,69 +55,11 @@ using namespace ltmm;
 GPostDocManager::GPostDocManager(const char* path,bool dlg) throw(GException)
 	: RContainer<GFactoryPostDoc,unsigned int,true,true>(10,5)
 {
-	DIR* dp;
-	struct dirent* ep;
+
 	RString Path(path);
-	RString Msg;
-	RString Name;
-	char DlgLib[100];
-	int len;
-
-	loader<>& l=loader<>::instance();
 	Path+="/postdoc";
-	dp=opendir(Path);
-	Path+="/";
-	if(!dp) return;
-	while((ep=readdir(dp)))
-	{
-		len=strlen(ep->d_name);
-		if(strcmp(&ep->d_name[len-3],".la")) continue;
-		if(!strcmp(&ep->d_name[len-7],"_dlg.la")) continue;
-		try
-		{
-			// Create the factory and insert it
-			Name=Path+ep->d_name;
-			handle<>& myhandle = l.load(Name);
-			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
-			GFactoryPostDoc* myfactory = ((GFactoryPostDocInit)(*(*myinit)))(this,ep->d_name);
-			if(strcmp(API_POSTDOC_VERSION,myfactory->GetAPIVersion()))
-			{
-				Msg+=ep->d_name;
-				Msg+=" - Plugin not compatible with API Version\n";
-				continue;
-			}
-			InsertPtr(myfactory);
 
-			// Look if dialog boxes are available
-			if(!dlg) continue;
-			try
-			{
-				strcpy(DlgLib,Name);
-				DlgLib[Name.GetLen()-3]=0;
-				strcat(DlgLib,"_dlg.la");
-				handle<>& myhandle2 = l.load(DlgLib);
-				myfactory->SetAbout(myhandle2.find_symbol("About"));
-				myfactory->SetConfig(myhandle2.find_symbol("Configure"));
-			}
-			catch(...)
-			{
-			}
-		}
-		catch(std::exception& e)
-		{
-			Msg+=ep->d_name;
-			Msg+=" - ";
-			Msg+=e.what();
-			Msg+="\n";
-		}
-	}
-	closedir(dp);
-
-	// If something in Msg -> error
-	if(Msg.GetLen())
-	{
-		throw(GException(Msg));
-	}
+	LoadPlugins<GFactoryPostDoc,GFactoryPostDocInit,GPostDocManager>(this,Path.Latin1(),API_POSTDOC_VERSION, dlg);
 }
 
 
@@ -161,11 +96,10 @@ void GPostDocManager::Disconnect(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
-GFactoryPostDocCursor& GPostDocManager::GetPostDocsCursor(void)
+GFactoryPostDocCursor GPostDocManager::GetPostDocsCursor(void)
 {
-	GFactoryPostDocCursor *cur=GFactoryPostDocCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GFactoryPostDocCursor cur(this);
+	return(cur);
 }
 
 

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -112,7 +108,7 @@ public:
 	/**
 	* Compare two weighted information entities by comparing their identificator.
 	* @see R::RContainer
-	* @param i               Weighted information entity.
+	* @param calc           Weighted information entity.
 	* @return int
 	*/
 	int Compare(const GWeightInfo& calc) const;
@@ -120,7 +116,7 @@ public:
 	/**
 	* Compare two weighted information entities by comparing their identificator.
 	* @see R::RContainer
-	* @param i               Pointer to a weighted information entity.
+	* @param calc            Pointer to a weighted information entity.
 	* @return int
 	*/
 	int Compare(const GWeightInfo* calc) const;
@@ -158,9 +154,21 @@ public:
 
 	/**
 	* Substract a weight to the current one.
-	* @param w              Weight to add.
+	* @param w              Weight to substract.
 	*/
 	GWeightInfo& operator-=(double w);
+
+	/**
+	* Multiply a weight to the current one.
+	* @param w              Weight to multiply.
+	*/
+	GWeightInfo& operator*=(double w);
+
+	/**
+	* Divide a weight to the current one.
+	* @param w              Weight to divide.
+	*/
+	GWeightInfo& operator/=(double w);
 
 	/**
 	* Compute the transformed weight of a given information entity using a
@@ -186,7 +194,7 @@ public:
 * weighted information entities.
 * @short Weighted Information Entity Cursor.
 */
-CLASSCURSOR(GWeightInfoCursor,GWeightInfo,unsigned int)
+CLASSCURSOR(GWeightInfoCursor,GWeightInfo,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -48,11 +44,9 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
-
 //------------------------------------------------------------------------------
 // API VERSION
 #define API_DOCANALYSE_VERSION "1.0"
-
 
 //------------------------------------------------------------------------------
 /**
@@ -119,6 +113,12 @@ public:
 
 
 //------------------------------------------------------------------------------
+/**
+* The GFactoryDocAnalyse represent a factory for a given document analysis
+* method.
+* @author Pascal Francq
+* @short Generic Document Analysis Factory.
+*/
 class GFactoryDocAnalyse : public GFactoryPlugin<GFactoryDocAnalyse,GDocAnalyse,GDocAnalyseManager>
 {
 public:
@@ -139,7 +139,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-typedef GFactoryDocAnalyse*(*GFactoryDocAnalyseInit)(GDocAnalyseManager*,const char*);
+/**
+* Signature of the method used to initiliaze a document analysis factory.
+*/
+typedef GFactoryDocAnalyse* GFactoryDocAnalyseInit(GDocAnalyseManager*,const char*);
 
 
 //-------------------------------------------------------------------------------
@@ -210,7 +213,7 @@ extern "C"                                                                      
 * factories of document analysis method.
 * @short Document Analysis Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryDocAnalyseCursor,GFactoryDocAnalyse,unsigned int)
+CLASSCURSOR(GFactoryDocAnalyseCursor,GFactoryDocAnalyse,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

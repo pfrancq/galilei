@@ -9,12 +9,7 @@
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		
 		David Wartel (dwartel@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -54,6 +49,7 @@
 // include files for GALILEI
 #include <qgprofile.h>
 #include <profiles/gprofile.h>
+#include <frontend/kde/rqt.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -81,8 +77,8 @@ void GALILEI::QGProfile::slotProfileChanged(void)
 {
 
 	General->clear();
-	new QListViewItem(General,"ID",QString().setNum(Profile->GetId()));
-	new QListViewItem(General,"Name",Profile->GetName().Latin1());
+	new QListViewItem(General,"ID",QString::number(Profile->GetId()));
+	new QListViewItem(General,"Name",ToQString(Profile->GetName()));
 	if(Profile->IsSocial())
 		new QListViewItem(General,"Social","Yes");
 	else

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -108,7 +104,7 @@ public:
 * The GWordCursor class provides a way to go trough a vector of words.
 * @short Word Cursor
 */
-CLASSCURSOR(GWordCursor,GWord,unsigned int)
+CLASSCURSOR(GWordCursor,GWord,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -123,13 +119,13 @@ public:
 	* Get the name of the user.
 	* @return RString.
 	*/
-	R::RString& GetName(void) const;
+	R::RString GetName(void) const;
 
 	/**
 	* Get the full name of the user.
 	* @return Pointer to a C String.
 	*/
-	R::RString& GetFullName(void) const;
+	R::RString GetFullName(void) const;
 
 	/**
 	* Destructor of a user.
@@ -143,7 +139,7 @@ public:
 * The GUserCursor class provides a way to go trough a set of users.
 * @short users Cursor
 */
-CLASSCURSOR(GUserCursor,GUser,unsigned int)
+CLASSCURSOR(GUserCursor,GUser,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

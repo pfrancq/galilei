@@ -12,10 +12,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be)
 		Nicolas Kumps (nkumps@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -92,7 +88,7 @@ public:
 	* Create a cursor for the list of words.
 	* @return GWordCursor.
 	*/
-	GWordCursor& GetWordCursor(void) throw(std::bad_alloc);
+	GWordCursor GetWordCursor(void) throw(std::bad_alloc);
 
 	/**
 	* This method creates a copy of a list.

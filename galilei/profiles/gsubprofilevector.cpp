@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -66,7 +62,7 @@ GSubProfileVector::GSubProfileVector(GSession* session,GProfile* prof,GLang* lan
 
 
 //------------------------------------------------------------------------------
-void GSubProfileVector::ClearFdbks(void) throw(std::bad_alloc)
+void GSubProfileVector::ClearFdbks(void) throw(std::bad_alloc,GException)
 {
 	RemoveRefs();
 	GWeightInfos::Clear();
@@ -131,11 +127,10 @@ double GSubProfileVector::SimilarityIFF(const GGroup* grp) const throw(GExceptio
 
 
 //------------------------------------------------------------------------------
-GWeightInfoCursor& GSubProfileVector::GetWeightInfoCursor(void)
+GWeightInfoCursor GSubProfileVector::GetWeightInfoCursor(void)
 {
-	GWeightInfoCursor *cur=GWeightInfoCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GWeightInfoCursor cur(this);
+	return(cur);
 }
 
 
@@ -161,7 +156,13 @@ void GSubProfileVector::RemoveRefs(void) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-GSubProfileVector::~GSubProfileVector(void) throw(GException)
+GSubProfileVector::~GSubProfileVector(void)
 {
-	RemoveRefs();
+	try
+	{
+		RemoveRefs();
+	}
+	catch(...)
+	{
+	}
 }

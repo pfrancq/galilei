@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation; either version 2 of the License, or
@@ -124,9 +120,10 @@ public:
 	* Save a configuration to a XML Tag. By default, it supposes that there is
 	* only a node without child and call WriteAttributes to add attributes to
 	* this tag.
+	* @param xml             XML Structure.
 	* @param parent          Parent tag.
 	*/
-	virtual void SaveConfig(R::RXMLTag* parent);
+	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent);
 
 	/**
 	* Read attributes from a tag. Need to be overloaded in child classes of
@@ -586,7 +583,7 @@ public:
 * The GParamCursor class provides a way to go trough a set of parameters.
 * @short Parameters Cursor
 */
-CLASSCURSOR(GParamCursor,GParam,unsigned int)
+CLASSCURSOR(GParamCursor,GParam,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

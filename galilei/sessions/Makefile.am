@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)
+INCLUDES = -I$(top_srcdir)  $(all_includes)
 pkglib_LTLIBRARIES =  libgalilei_sessions.la
 AM_CFLAGS =
 AM_CXXFLAGS =

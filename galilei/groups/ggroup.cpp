@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -213,16 +209,15 @@ void GGroup::DeleteSubProfiles(void) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GSubProfileCursor& GGroup::GetSubProfilesCursor(void)
+GSubProfileCursor GGroup::GetSubProfilesCursor(void)
 {
-	GSubProfileCursor* cur=GSubProfileCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GSubProfileCursor cur(this);
+	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-GSubProfileCursor& GGroup::GetCursor(void)
+GSubProfileCursor GGroup::GetCursor(void)
 {
 	return(GetSubProfilesCursor());
 }
@@ -319,7 +314,24 @@ void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,false>* doc
 	// Go through the subprofiles
 	for(i=NbPtr+1,tab=Tab;--i;tab++)
 	{
-		if((*tab)==s) continue;
+		//If current treated subprofile is the subprofile "s" ->Then only add links docs
+		if((*tab)==s)
+		{
+			// Go through the judgments
+			Fdbks=(*tab)->GetProfDocCursor();
+			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+			{
+				// Verify if the document is a relevant hub or authority.
+				j=Fdbks()->GetFdbk();
+				if(!( (j & (djOK & djHub)) || (j & (djOK & djAutority)))) continue;
+
+				// Verify if already inserted in Docs.
+				if(Docs.GetPtr<const GProfDoc*>(Fdbks())) continue;
+				// Insert it.
+				Docs.InsertPtr(new GProfDocRef(Fdbks(),session->GetSimDocProf(Fdbks()->GetDoc(),s)));
+			}
+			continue;
+		}
 
 		// Go through the judgments
 		Fdbks=(*tab)->GetProfDocCursor();
@@ -448,14 +460,19 @@ double GGroup::SimilarityIFF(const GGroup*) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-GGroup::~GGroup(void) throw(GException)
+GGroup::~GGroup(void)
 {
-	GSubProfileCursor Sub;
-
-	if(Community)
+	try
 	{
-		Sub.Set(this);
-		for(Sub.Start();!Sub.End();Sub.Next())
-			Sub()->SetGroup(0);
+		if(Community)
+		{
+			GSubProfileCursor Sub;
+			Sub.Set(this);
+			for(Sub.Start();!Sub.End();Sub.Next())
+				Sub()->SetGroup(0);
+		}
+	}
+	catch(...)
+	{
 	}
 }

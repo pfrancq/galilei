@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -112,7 +108,7 @@ protected:
 	/**
 	* Links "out" of the document.
 	*/
-	R::RContainer<GLink,unsigned int,false,true>* LinkSet;
+	R::RContainer<GLink,unsigned int,true,true> LinkSet;
 
 #if GALILEITEST
 	/**
@@ -126,7 +122,7 @@ public:
 	/**
 	* Construct a document.
 	* @param url            URL of the document.
-	* @param title          Name of the document.
+	* @param name           Name of the document.
 	* @param id             Identifier of the document.
 	* @param lang           Language of the document.
 	* @param mime           MIME type of the document.
@@ -135,15 +131,15 @@ public:
 	* @param f              Number of fails.
 	* @param nbf            Number of assessments.
 	*/
-	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf=100) throw(std::bad_alloc);
+	GDoc(const R::RString& url,const R::RString& name,unsigned int id,GLang* lang,const R::RString&  mime,const R::RString& u,const R::RString& a,unsigned int f,unsigned int nbf=100) throw(std::bad_alloc);
 
 	/**
 	* Construct a document.
 	* @param url            URL of the document.
-	* @param title          Name of the document.
+	* @param name           Name of the document.
 	* @param mime           MIME type of the document.
 	*/
-	GDoc(const char* url,const char* name,const char* mime) throw(std::bad_alloc);
+	GDoc(const R::RString& url,const R::RString& name,const R::RString& mime) throw(std::bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.
@@ -203,39 +199,45 @@ public:
 
 	/**
 	* Get the URL.
-	* @returns Pointer to a C string.
+	* @returns RString.
 	*/
-	R::RString& GetURL(void) const;
+	R::RString GetURL(void) const;
 
 	/**
-	* Get the Name.
-	* @returns Pointer to a C string.
+	* Get the name of the document.
+	* @returns RString.
 	*/
-	R::RString& GetName(void) const;
+	R::RString GetName(void) const;
+
+	/**
+	* Set the name of the document.
+	* @param name            Name.
+	*/
+	void SetName(const R::RString& name) throw(std::bad_alloc);
 
 	/**
 	* Get the date of the last update of the document content.
 	* @returns Pointer to date.
 	*/
-	R::RDate& GetUpdated(void) const;
+	R::RDate GetUpdated(void) const;
 
 	/**
 	* Get the date of the last analysis of the document.
 	* @returns Pointer to date.
 	*/
-	R::RDate& GetComputed(void) const;
+	R::RDate GetComputed(void) const;
 
 	/**
 	* Get the MIME type of the document.
 	* @returns String.
 	*/
-	R::RString& GetMIMEType(void) const;
+	R::RString GetMIMEType(void) const;
 
 	/**
 	* Set the MIME type of the document.
 	* @param mime            C String representing the MIME type.
 	*/
-	void SetMIMEType(const char* mime);
+	void SetMIMEType(const R::RString& mime);
 
 	/**
 	* Return the state of the document.
@@ -303,7 +305,7 @@ public:
 	* Get a Cursor on the feedback on the document.
 	* @return GProfDocCursor.
 	*/
-	GProfDocCursor& GetProfDocCursor(void);
+	GProfDocCursor GetProfDocCursor(void);
 
 	/**
 	* Get the number of feedbacks on the document.
@@ -364,7 +366,7 @@ public:
 
 	/**
 	* Add a new link to the document
-	* @params doc           The document representing the link to be inserted.
+	* @param doc            The document representing the link to be inserted.
 	*/
 	void InsertLink(const GDoc* doc) throw(std::bad_alloc);
 
@@ -381,7 +383,7 @@ public:
 	* Get a cursor on the Links of the document.
 	* @return GLinkCursor.
 	*/
-	GLinkCursor& GetLinkCursor(void);
+	GLinkCursor GetLinkCursor(void);
 
 #if GALILEITEST
 
@@ -409,14 +411,19 @@ public:
 	* Get a Cursor on the subjects.
 	* @return GSubjectCursor.
 	*/
-	GSubjectCursor& GetSubjectCursor(void);
+	GSubjectCursor GetSubjectCursor(void);
+
+	/**
+	* Get the number of subjects associated with the document.
+	*/
+	unsigned int GetNbSubjects(void);
 
 #endif
 
 	/**
 	* Destruct the document.
 	*/
-	virtual ~GDoc(void) throw(GException);
+	virtual ~GDoc(void);
 };
 
 
@@ -425,7 +432,7 @@ public:
 * The GDocCursor class provides a way to go trough a set of documents.
 * @short Documents Cursor
 */
-CLASSCURSOR(GDocCursor,GDoc,unsigned int)
+CLASSCURSOR(GDocCursor,GDoc,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

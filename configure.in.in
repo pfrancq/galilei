@@ -7,7 +7,7 @@
 #------------------------------------------------------------------------------#
 
 
-AM_INIT_AUTOMAKE(galilei, 1.0)
+AM_INIT_AUTOMAKE(galilei, 1.86)
 AC_C_BIGENDIAN
 
 
@@ -25,6 +25,7 @@ if test "$enable_kde" != "no"; then
 	AC_PATH_KDE
 	AC_CHECK_KDEMAXPATHLEN
 	FRONTEND="kde"
+	CXXFLAGS="$CXXFLAGS -D_USE_KDE"
 	echo " -----------------------------------"
 	echo " -- KDE Frontend will be compiled --"
 	echo " -----------------------------------"
@@ -78,41 +79,6 @@ AC_SUBST(CURL_INCLUDES)
 AC_SUBST(CURL_LIBS)
 #--------------------- END CURL -----------------------------
 
-
-#--------------------- LTMM -----------------------------
-# ---- add configure option : --with-ltmm=DIR ----
-AC_ARG_WITH(ltmm,
-	AC_HELP_STRING(
-		[--with-ltmm=DIR],
-		[use LTMM includes directory [[/usr/include/ltmm]]]),
-	[LTMM_DIR="$withval"],
-	[LTMM_DIR="/usr/include/ltmm"])
-
-AC_MSG_CHECKING(for ltmm/loader.hh)
-
-# ---- Determine LTMM installation paths   -----
-for i in $LTMM_DIR /usr/include /usr/local /usr/local/ltmm; do
-   test -f $i/loader.hh                    && LTMM_INC_DIR=$i/
-   test -f $i/ltmm/loader.hh              && LTMM_INC_DIR=$i/ltmm
-   test -f $i/include/ltmm/loader.hh              && LTMM_INC_DIR=$i/include/ltmm
-done
-
-if test -z "$LTMM_INC_DIR"; then
-	if test "x$LTMM_DIR" != "x"; then
-		AC_MSG_RESULT(no)
-		AC_MSG_ERROR(Cannot find LTMM header files under $LTMM_DIR)
-	else
-		AC_MSG_RESULT(no)
-		AC_MSG_ERROR(Cannot find LTMM headers.  Use --with-ltmm= to specify non-default path.)
-	fi
-fi
-
-AC_MSG_RESULT(yes)
-
-CPPFLAGS=" -I$LTMM_DIR $CPPFLAGS"
-
-#--------------------- END LTMM -----------------------------
-
 #--------------------- R LIB -----------------------------
 #VARIABLES USE :
 #	$R_LIB environnement variable used for developpment
@@ -154,7 +120,7 @@ AC_ARG_WITH(r-libs,
 
 # ---- def function to check for a specific R library on the system
 AC_DEFUN(R_LIB_CHK,[
-	str="$1/lib$2.*"
+	str="$1/$2.*"
 	R_LIB_DIR=""
 	for j in `echo $str`; do
 		if test -r $j; then
@@ -204,15 +170,19 @@ R_INC_CHK(rprg,rprg.h)
 R_INC_CHK(rpromethee,rpromethee.h)
 R_INC_CHK(rstd,rcontainer.h)
 
+if test "$enable_kde" != "no"; then
+	# ---- check the presence of the includes for all the R frontend libraries ----
+	R_INC_CHK(frontend/kde,rqt.h)
+fi
 
 # ---- check the presence of all R libraries
 for l in rdb rga rga2d rgga rmath rprg rpromethee rstd; do
 
 	#AC_MSG_CHECKING(for lib$l)
 	for i in $R_LIB_PATH ; do
-		R_LIB_CHK($i/$l,$l)  #check for local presence
-		R_LIB_CHK($i,$l)
-		R_LIB_CHK($i/r,$l)
+		R_LIB_CHK($i/$l,lib$l)  #check for local presence
+		R_LIB_CHK($i,lib$l)
+		R_LIB_CHK($i/r,lib$l)
 	done
 	AC_MSG_CHECKING(for lib$l)
 	if test -z "$R_LIB_DIR"; then
@@ -228,9 +198,48 @@ PAST_R_LIB_DIR="$R_LIB_DIR"
 
 done
 
+if test "$enable_kde" != "no"; then
+	# ---- check the presence of all R frontend libraries ----
+	# --------------------------------------------------------------
+	for i in $R_LIB_PATH ; do
+		R_LIB_CHK($i/frontend/kde,libkde_r)
+		R_LIB_CHK($i,libkde_r)
+		R_LIB_CHK($i/r,libkde_r)
+	done
+
+	AC_MSG_CHECKING(for libkde_r)
+	if test -z "$R_LIB_DIR"; then
+		AC_MSG_RESULT(no)
+		AC_MSG_ERROR(Cannot find libkde_r.
+No GUI will be available for r libraries.
+Verify that R was installed
+using the --enable-kde=yes option !!!
+-------------------------------------)
+
+	else
+		AC_MSG_RESULT(yes in $R_LIB_DIR)
+	
+		if test "x$R_LIB_DIR" != "x$PAST_R_LIB_DIR"; then
+        	
+			LDFLAGS="-L$R_LIB_DIR $LDFLAGS"
+		fi
+
+	fi
+
+	PAST_R_LIB_DIR="$R_LIB_DIR"
+	
+fi
+
 
 #--------------------- END R LIB -----------------------------
 
 
+#--------------------- CHECK FOR RDEBUG ----------------------
+#---------------------Test if enable-debug is used -----------
+if test "$enable_debug" != "no"; then
+	CXXFLAGS="$CXXFLAGS -D_RDEBUG"
+fi
 
-CXXFLAGS="$CXXFLAGS $USE_EXCEPTIONS"
+#----------------- END CHECK FOR RDEBUG ----------------------
+
+CXXFLAGS="-ldl $CXXFLAGS $USE_EXCEPTIONS"

@@ -11,10 +11,6 @@
 	Authors:
 		
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -37,6 +33,11 @@
 //-----------------------------------------------------------------------------
 // include files for Qt
 #include <qlayout.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for R
+#include <frontend/kde/rqt.h>
 
 
 //-----------------------------------------------------------------------------
@@ -72,7 +73,7 @@ GALILEI::QGSubProfileVector::QGSubProfileVector(QWidget* parent,GSession* sessio
 	Info = new QListView(this,"Information");
 	Info->addColumn("Variable");
 	Info->addColumn("Value");
-	new QListViewItem(Info,"ID",itou(desc->GetId()).Latin1());
+	new QListViewItem(Info,"ID",QString::number(desc->GetId()));
 	d=desc->GetUpdated();
 	sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 	new QListViewItem(Info,"Last Updated",sDate);
@@ -106,7 +107,7 @@ void GALILEI::QGSubProfileVector::Construct(void)
 	public:
 		double Val;
 
-		LocalItem(QListView* v,QString str,double d) : QListViewItem(v,str, dtou(d).Latin1()), Val(d) {}
+		LocalItem(QListView* v,QString str,double d) : QListViewItem(v,str, QString::number(d)), Val(d) {}
 		virtual int compare( QListViewItem *i, int col, bool ascending ) const
     	{
 			if(col==1)
@@ -130,7 +131,7 @@ void GALILEI::QGSubProfileVector::Construct(void)
 	Cur=Desc->GetWeightInfoCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		new LocalItem(Vector,Session->GetStorage()->LoadWord(Cur()->GetId(),Desc->GetLang()->GetCode()),Cur()->GetWeight());
+		new LocalItem(Vector,ToQString(Session->GetStorage()->LoadWord(Cur()->GetId(),Desc->GetLang()->GetCode())),Cur()->GetWeight());
 	}
 }
 

@@ -11,10 +11,6 @@
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -66,20 +62,18 @@ GGroupsHistoryManager::GGroupsHistoryManager(unsigned int max) throw(std::bad_al
 
 
 //-------------------------------------------------------------------------------
-GGroupsHistoryCursor& GGroupsHistoryManager::GetGroupsHistoryCursor(void)
+GGroupsHistoryCursor GGroupsHistoryManager::GetGroupsHistoryCursor(void)
 {
-	GGroupsHistoryCursor *cur=GGroupsHistoryCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GGroupsHistoryCursor cur(this);
+	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
 void GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen) throw(std::bad_alloc)
 {
-	GGroupsHistoryCursor Cur;
+	GGroupsHistoryCursor Cur(this);
 
-	Cur.Set(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->CheckModifiedGroups(minGen);
 }
@@ -88,9 +82,8 @@ void GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen) throw(std::
 //------------------------------------------------------------------------------
 void GGroupsHistoryManager::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 {
-	GGroupsHistoryCursor Cur;
+	GGroupsHistoryCursor Cur(this);
 
-	Cur.Set(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SetGroupsSubject();
@@ -102,9 +95,8 @@ void GGroupsHistoryManager::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GGroupsHistoryManager::CheckNewProfiles(void) throw(std::bad_alloc)
 {
-	GGroupsHistoryCursor Cur;
+	GGroupsHistoryCursor Cur(this);
 
-	Cur.Set(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->CheckNewProfiles();
 }
@@ -119,14 +111,15 @@ void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxge
 	GWeightInfosHistory* subprof;
 	bool treated;
 	unsigned int** tab;
+	GGroupsHistoryCursor Cur(this);
 
-	for (Start(); !End(); Next())
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		//if the groups is the last one, no child
-		if ((*this)()->GetId()==maxgen) continue;
+		// If the groups is the last one, no child
+		if(Cur()->GetId()==maxgen) continue;
 
-		curgrps=(*this)();
-		nextgrps=this->GetPtr(curgrps->GetId()+1);
+		curgrps=Cur();
+		nextgrps=GetPtr(curgrps->GetId()+1);
 		if (!nextgrps)
 			return;
 
@@ -214,12 +207,9 @@ GGroupsHistory::GGroupsHistory(unsigned int id, RString date) throw(std::bad_all
 
 
 //------------------------------------------------------------------------------
-R::RDate& GGroupsHistory::GetDate(void) const
+R::RDate GGroupsHistory::GetDate(void) const
 {
-	RDate* d=RDate::GetDate();
-
-	(*d)=Date;
-	return(*d);
+	return(Date);
 }
 
 
@@ -296,6 +286,12 @@ void GGroupsHistory::CheckModifiedGroups(unsigned int minGen) throw(std::bad_all
 
 		//get the equivalent last subprofile
 		lastsub=lastsubs->GetPtr(sub->GetId());
+		//if none has been found -> the subprofile is new
+		if (!lastsub)
+		{
+			grp->SetModified(true);
+			continue;
+		}
 		//get the equivalent last group.
 		lastgroup=lastgroups->GetPtr(lastsub->GetParent());
 		//if the number of pointers is different, the group is modified
@@ -320,6 +316,7 @@ void GGroupsHistory::CheckModifiedGroups(unsigned int minGen) throw(std::bad_all
 			grp->Next();
 		}
 	}
+
 	delete lastsubs;
 }
 

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -89,14 +85,14 @@ public:
 	* Get a cursor on all the documents.
 	* @return GDocCursor.
 	*/
-	GDocCursor& GetDocsCursor(void);
+	GDocCursor GetDocsCursor(void);
 
 	/**
 	* Get a cursor on the documents of a given langage.
 	* @param lang            Language of the documents.
 	* @return GDocCursor.
 	*/
-	GDocCursor& GetDocsCursor(GLang* lang) throw(GException);
+	GDocCursor GetDocsCursor(GLang* lang) throw(GException);
 
 	/**
 	* Fill a given array with all the documents of a given language. The array
@@ -145,14 +141,14 @@ public:
 	/**
 	* Get a document corresponding to a given identificator.
 	* @param id         Identificator of the document.
-	* @apram Pointer to GDoc.
+	* @return Pointer to GDoc.
 	*/
 	GDoc* GetDoc(unsigned int id) throw(std::bad_alloc, GException);
 
 	/**
 	* Get a document corresponding to a given URL.
 	* @param url        URL of the document.
-	* @apram Pointer to GDoc or null if the document does no exist.
+	* @return Pointer to GDoc or null if the document does no exist.
 	*/
 	GDoc* GetDoc(const char* url) throw(std::bad_alloc);
 

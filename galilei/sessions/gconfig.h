@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -146,123 +142,123 @@ public:
 	* Read the filters from the structure.
 	* @param mng             Manager.
 	*/
-	void Read(GFilterManager& mng);
+	void Read(GFilterManager* mng);
 
 	/**
 	* Store the filters in the structure.
 	* @param mng             Manager.
 	*/
-	void Store(GFilterManager& mng);
+	void Store(GFilterManager* mng);
 
 	/**
 	* Read the profiles computing methods from the structure.
 	* @param mng             Manager.
 	*/
-	void Read(GProfileCalcManager& mng);
+	void Read(GProfileCalcManager* mng);
 
 	/**
 	* Store the profiles computing methods in the structure.
 	* @param mng             Manager.
 	*/
-	void Store(GProfileCalcManager& mng);
+	void Store(GProfileCalcManager* mng);
 
 	/**
 	* Read the grouping methods from the structure.
 	* @param mng             Manager.
 	*/
-	void Read(GGroupingManager& mng);
+	void Read(GGroupingManager* mng);
 
 	/**
 	* Store the grouping methods in the structure.
 	* @param mng             Manager.
 	*/
-	void Store(GGroupingManager& mng);
+	void Store(GGroupingManager* mng);
 
 	/**
 	* Read the groups computing methods from the structure.
 	* @param mng             Manager.
 	*/
-	void Read(GGroupCalcManager& mng);
+	void Read(GGroupCalcManager* mng);
 
 	/**
 	* Store the groups computing methods in the structure.
 	* @param mng             Manager.
 	*/
-	void Store(GGroupCalcManager& mng);
+	void Store(GGroupCalcManager* mng);
 
 	/**
 	* Read the statistics from the structure.
 	* @param mng             Manager.
 	*/
-	void Read(GStatsCalcManager& mng);
+	void Read(GStatsCalcManager* mng);
 
 	/**
 	* Store the statistics in the structure.
 	* @param mng             Manager.
 	*/
-	void Store(GStatsCalcManager& mng);
+	void Store(GStatsCalcManager* mng);
 
 	/**
 	* Read the links computing methods from the structure.
 	* @param mng             Manager.
 	*/
-	void Read(GLinkCalcManager& mng);
+	void Read(GLinkCalcManager* mng);
 
 	/**
 	* Store the links computing methods in the structure.
 	* @param mng             Manager.
 	*/
-	void Store(GLinkCalcManager& mng);
+	void Store(GLinkCalcManager* mng);
 
 
 	/**
 	* Read the Post Group computing methods from the structure.
 	* @param mng             Manager.
 	*/
-	void Read(GPostGroupManager& mng);
+	void Read(GPostGroupManager* mng);
 
 	/**
 	* Store the Post Group computing methods in the structure.
 	* @param mng             Manager.
 	*/
-	void Store(GPostGroupManager& mng);
+	void Store(GPostGroupManager* mng);
 
 
 	/**
 	* Read the words clustering methods from the structure.
 	* @param mng             Manager.
 	*/
-	void Read(GPostDocManager& mng);
+	void Read(GPostDocManager* mng);
 
 	/**
 	* Store the words clustering methods in the structure.
 	* @param mng             Manager.
 	*/
-	void Store(GPostDocManager& mng);
+	void Store(GPostDocManager* mng);
 
 	/**
 	* Read the langauges.
 	* @param mng             Manager.
 	*/
-	void Read(GLangManager& mng);
+	void Read(GLangManager* mng);
 
 	/**
 	* Store the languages.
 	* @param mng             Manager.
 	*/
-	void Store(GLangManager& mng);
+	void Store(GLangManager* mng);
 
 	/**
 	* Read the DocAnalyse computing methods from the structure.
 	* @param mng             Manager.
 	*/
-	void Read(GDocAnalyseManager& mng);
+	void Read(GDocAnalyseManager* mng);
 
 	/**
 	* Store the DocAnalyse computing methods in the structure.
 	* @param mng             Manager.
 	*/
-	void Store(GDocAnalyseManager& mng);
+	void Store(GDocAnalyseManager* mng);
 
 	/**
 	* Read the Session params in the structure.

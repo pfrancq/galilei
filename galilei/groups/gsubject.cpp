@@ -13,10 +13,6 @@
 		Julien Lamoral (jlamoral@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -96,11 +92,10 @@ void GSubject::InsertDoc(GDoc* d) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GDocCursor& GALILEI::GSubject::GetDocsCursor(void)
+GDocCursor GALILEI::GSubject::GetDocsCursor(void)
 {
-	GDocCursor *cur=GDocCursor::GetTmpCursor();
-	cur->Set(Docs);
-	return(*cur);
+	GDocCursor cur(Docs);
+	return(cur);
 }
 
 
@@ -112,12 +107,9 @@ unsigned int GALILEI::GSubject::GetNbDocs(void) const
 
 
 //------------------------------------------------------------------------------
-RString& GSubject::GetName(void) const
+RString GSubject::GetName(void) const
 {
-	RString* tmp=RString::GetString();
-
-	(*tmp)=Name;
-	return(*tmp);
+	return(Name);
 }
 
 
@@ -129,6 +121,6 @@ void GSubject::SetUsed(bool b)
 
 
 //------------------------------------------------------------------------------
-GSubject::~GSubject(void) throw(GException)
+GSubject::~GSubject(void)
 {
 }

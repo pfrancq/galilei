@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -63,12 +59,12 @@ class GUsers : public R::RContainer<GUser,unsigned,true,true>
 	/**
 	* Profiles handled by the system.
 	*/
-	R::RContainer<GProfile,unsigned int,true,true>* Profiles;
+	std::auto_ptr< R::RContainer<GProfile,unsigned int,true,true> > Profiles;
 
 	/**
 	* SubProfiles handled by the system.
 	*/
-	R::RContainer<GSubProfiles,unsigned int,true,true>* SubProfiles;
+	std::auto_ptr< R::RContainer<GSubProfiles,unsigned int,true,true> > SubProfiles;
 
 public:
 
@@ -82,7 +78,7 @@ public:
 	/**
 	* Get a cursor over the users used in the system.
 	*/
-	GUserCursor& GetUsersCursor(void);
+	GUserCursor GetUsersCursor(void);
 
 	/**
 	* Get the number of users treated by the system.
@@ -125,7 +121,7 @@ public:
 	/**
 	* Get a cursor over the profiles of the system.
 	*/
-	GProfileCursor& GetProfilesCursor(void);
+	GProfileCursor GetProfilesCursor(void);
 
 	/**
 	* Get the number of profiles defined in the system.
@@ -155,17 +151,12 @@ public:
 	* Get a cursor over the subprofiles of the system for a given language.
 	* @param lang           Language.
 	*/
-	GSubProfileCursor& GetSubProfilesCursor(GLang* lang) throw(GException);
+	GSubProfileCursor GetSubProfilesCursor(GLang* lang) throw(GException);
 
 	/**
 	* Clear all the subprofiles assignement.
 	*/
 	void ClearSubProfilesGroups(void) throw(GException);
-
-	/**
-	* Clear all the users, profiles and subprofiles.
-	*/
-	void Clear(void) throw(GException);
 
 	/**
 	* Destructor of the users.

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -42,6 +38,7 @@
 #include <infos/glang.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
@@ -77,7 +74,7 @@ void GALILEI::GSlotLog::receiveNextProfile(const GProfile* prof) throw(std::bad_
 //------------------------------------------------------------------------------
 void GALILEI::GSlotLog::NextGroupLang(const GLang* lang) throw(std::bad_alloc,RException)
 {
-	sprintf(Buf,"Group %s Profiles",lang->GetName());
+	sprintf(Buf,"Group %s Profiles",lang->GetName().Latin1());
 	WriteLog(Buf);
 }
 

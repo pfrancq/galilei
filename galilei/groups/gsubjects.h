@@ -13,10 +13,6 @@
 		Julien Lamoral (jlamoral@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -74,7 +70,7 @@ protected:
 	// Internal Classes
 	class GroupScore;
 	class GGroupId;
-	CLASSCURSOR(GroupScoreCursor,GroupScore,unsigned int)
+	CLASSCURSOR(GroupScoreCursor,GroupScore,unsigned int);
 
 	/**
 	* Session.
@@ -211,9 +207,9 @@ protected:
 	* Simulatation of judgments for a profile on a given subject.
 	* @param prof           Profile that assesses the documents.
 	* @param sub            Subject.
-	* @param maxDocOK       Maximal relevant Documents to assess.
-	* @param maxDocKO       Maximal fuzzy relevant Documents to assess.
-	* @param maxDocH        Maximal irrelevant Documents to assess.
+	* @param maxDocsOK      Maximal relevant Documents to assess.
+	* @param maxDocsKO      Maximal fuzzy relevant Documents to assess.
+	* @param maxDocsH       Maximal irrelevant Documents to assess.
 	*/
 	void ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH) throw(std::bad_alloc);
 
@@ -225,7 +221,6 @@ protected:
 
 	/**
 	* Compute the Recall and the Precision.
-	* @param rec            Receiver of the signals.
 	*/
 	void ComputeRecallPrecision(void);
 
@@ -233,7 +228,6 @@ protected:
 	* Compute the Total based on the Adjusted Rand Index (Hubert and Arabie)
 	* The total is the mean of the total for each languages pondered by the
 	* number of subprofiles by languages.
-	* @param rec            Receiver of the signals.
 	*/
 	void ComputeTotal(void);
 
@@ -241,8 +235,6 @@ public:
 
 	/**
 	* Create randomly the judgment for all the users.
-	* @param parent         The container to assign groupid and parent id.
-	* @param groups         The ideal groupment into a GGroups container.
 	* @param Save           Save the results.
 	*/
 	void CreateIdeal(bool Save) throw(std::bad_alloc);
@@ -298,9 +290,7 @@ public:
 	void Clear(void) throw(std::bad_alloc);
 
 	/**
-	* Make the groups.
-	* @param rec            Receiver of the signals.
-	* @param modified   Recompute only modified elements or all.
+	* Compare the clustering.
 	*/
 	void Compare(void);
 

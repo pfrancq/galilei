@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -192,13 +188,13 @@ public:
 	* type.
 	* @param type            Information type.
 	*/
-	GDataCursor& GetDataCursor(GInfoType type) throw(std::bad_alloc,GException);
+	GDataCursor GetDataCursor(GInfoType type) throw(std::bad_alloc,GException);
 
 	/**
 	* Get the name of the dictionary.
 	* @returns RString.
 	*/
-	R::RString& GetName(void) const throw(std::bad_alloc);
+	R::RString GetName(void) const throw(std::bad_alloc);
 
 	/**
 	* Get the language holding the dictionary.

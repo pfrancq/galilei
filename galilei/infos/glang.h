@@ -11,8 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -162,7 +160,7 @@ public:
 	* @param kwd            Word for which the stem must be computed.
 	* @return A R::RString representing the stem of the word.
 	*/
-	virtual R::RString& GetStemming(const R::RString& kwd) throw(GException);
+	virtual R::RString GetStemming(const R::RString& kwd) throw(GException);
 
 	/**
 	* Get the session.
@@ -262,6 +260,11 @@ public:
 
 
 //-----------------------------------------------------------------------------
+/**
+* The GFactoryLang represent a factory for a given language.
+* @author Pascal Francq
+* @short Generic Language Factory.
+*/
 class GFactoryLang : public GFactoryPlugin<GFactoryLang,GLang,GLangManager>
 {
 	/**
@@ -282,13 +285,13 @@ public:
 
 	/**
 	* Compare function like strcmp used in particular for RContainer class.
-	* @param code           Code used for the comparaison.
+	* @param lang           Factory used for the comparaison.
 	*/
 	int Compare(const GFactoryLang* lang) const {return(strcmp(Code,lang->Code));}
 
 	/**
 	* Compare function like strcmp used in particular for RContainer class.
-	* @param code           Code used for the comparaison.
+	* @param lang           Factory used for the comparaison.
 	*/
 	int Compare(const GFactoryLang& lang) const {return(strcmp(Code,lang.Code));}
 
@@ -306,7 +309,10 @@ public:
 
 
 //-----------------------------------------------------------------------------
-typedef GFactoryLang*(*GFactoryLangInit)(GLangManager*,const char*);
+/**
+* Signature of the method used to initiliaze a language factory.
+*/
+typedef GFactoryLang* GFactoryLangInit(GLangManager*,const char*);
 
 
 //------------------------------------------------------------------------------
@@ -376,7 +382,7 @@ extern "C"                                                                      
 * The GFactoryLangCursor class provides a way to go trough a set of factories.
 * @short Language Factory Cursor
 */
-CLASSCURSOR(GFactoryLangCursor,GFactoryLang,unsigned int)
+CLASSCURSOR(GFactoryLangCursor,GFactoryLang,unsigned int);
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

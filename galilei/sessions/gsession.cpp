@@ -10,10 +10,6 @@
 
 	Authors:
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -84,6 +80,7 @@ using namespace R;
 #include <groups/gsubjects.h>
 #include <docs/gfiltermanager.h>
 #include <docs/gfilter.h>
+#include <docs/gpostdoc.h>
 #include <infos/gweightinfo.h>
 #include <historic/ggroupshistory.h>
 #include <groups/gpostgroup.h>
@@ -118,6 +115,7 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(st
 	if(tests)
 		Subjects=new GSubjects(this);
 
+	// create the groups history manager.
 	GroupsHistoryMng=new GGroupsHistoryManager(2);
 }
 
@@ -128,21 +126,9 @@ void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseMana
 	GPostDocManager* pdmng,GPostGroupManager* pgmng) throw(std::bad_alloc,GException)
 
 {
-//	GLang* lang;
-
 	Langs=langs;
 	if(Langs)
-	{
 		Langs->Connect(this);
-/*		GFactoryLangCursor Cur;
-		Cur=Langs->GetLangsCursor();
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			lang=Cur()->GetPlugin();
-			if(!lang) continue;
-			Groups.InsertPtr(new GGroups(lang));
-		}*/
-	}
 	URLMng=umng;
 	DocAnalyseMng=dmng;
 	if(DocAnalyseMng)
@@ -177,26 +163,26 @@ void GSession::PostConnect(GLinkCalcManager* lmng) throw(std::bad_alloc,GExcepti
 		LinkCalcMng->Connect(this);
 
 	// Create Similarities Managers (IFF used by default)
-	ProfilesSims = new GProfilesSims(this,true, true);
-	ProfilesBehaviours = new GProfilesBehaviours(this,true);
+	if (!SessParams->GetBool("DebugSim"))
+		ProfilesSims = new GProfilesSims(this,true, true);
+	if (!SessParams->GetBool("DebugBehaviour"))
+		ProfilesBehaviours = new GProfilesBehaviours(this,true);
 	DocProfSims = new GDocProfSims(this,true,false);
 }
 
 //------------------------------------------------------------------------------
-GFactoryLinkCalcCursor& GSession::GetLinkCalcsCursor(void)
+GFactoryLinkCalcCursor GSession::GetLinkCalcsCursor(void)
 {
-	GFactoryLinkCalcCursor *cur=GFactoryLinkCalcCursor::GetTmpCursor();
-	cur->Set(LinkCalcMng);
-	return(*cur);
+	GFactoryLinkCalcCursor cur(LinkCalcMng);
+	return(cur);
 }
 
 
 //-------------------------------------------------------------------------------
-GFactoryPostDocCursor& GSession::GetPostDocsCursor(void)
+GFactoryPostDocCursor GSession::GetPostDocsCursor(void)
 {
-	GFactoryPostDocCursor *cur=GFactoryPostDocCursor::GetTmpCursor();
-	cur->Set(PostDocMng);
-	return(*cur);
+	GFactoryPostDocCursor cur(PostDocMng);
+	return(cur);
 }
 
 
@@ -208,11 +194,10 @@ GDocXML* GSession::CreateDocXML(GDoc* doc) throw(GException)
 
 
 //------------------------------------------------------------------------------
-GProfDocCursor& GSession::GetProfDocsCursor(void)
+GProfDocCursor GSession::GetProfDocsCursor(void)
 {
-	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
-	cur->Set(Fdbks);
-	return(*cur);
+	GProfDocCursor cur(Fdbks);
+	return(cur);
 }
 
 
@@ -245,7 +230,7 @@ void GSession::AssignId(GSubProfile* sub)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
+void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 {
 	bool undefLang;
 	GDocXML* xml=0;
@@ -254,14 +239,11 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	GDocAnalyse* Analyse;
 	RString err;
 	bool Cont;               // Continue the analysuis
-	GPostDoc* PostDoc;
-	char tmp[100];
 
 	// Verify that the textanalyse method is selected
 	Analyse=DocAnalyseMng->GetCurrentMethod();
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
-
 
 	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
@@ -300,7 +282,9 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 					else
 						Docs()->IncFailed();
 				}
-				Storage->SaveDoc(Docs());
+				if(save)
+					Storage->SaveDoc(Docs());
+
 				if(Docs()->GetState()==osUpdated)
 					Docs()->SetState(osUpToDate);
 			}
@@ -312,6 +296,8 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 				// Write error message to the log file handled by the GSlot.
 				if(rec)
 					rec->WriteStr(e.GetMsg());
+				else
+					throw GException(e.GetMsg());
 			}
 		}
 
@@ -326,15 +312,35 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	while(Cont);
 
 	// Run all post-doc methods that are enabled
+	ComputePostDoc(rec);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ComputePostDoc(GSlot* rec)  throw(GException)
+{
+	char tmp[100];
+
+	// Run all post-group methods that are enabled
 	GFactoryPostDocCursor PostDocs=PostDocMng->GetPostDocsCursor();
+	//first sort the plugins by level
+	RContainer<GFactoryPostDocOrder, unsigned int, true, true>* ordered;
+	ordered=new RContainer<GFactoryPostDocOrder, unsigned int, true, true>(PostDocs.GetNb());
 	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
 	{
-		PostDoc=PostDocs()->GetPlugin();
-		if(PostDoc)
+		GFactoryPostDocOrder* order=new GFactoryPostDocOrder;
+		order->Fac=PostDocs();
+		ordered->InsertPtr(order);
+	}
+
+	//then run
+	for (ordered->Start(); !ordered->End(); ordered->Next())
+	{
+		if ((*ordered)()->Fac->GetPlugin())
 		{
-			sprintf(tmp,"Post-Doc : %s",PostDocs()->GetName());
+			sprintf(tmp, "PostDoc : Running %s",(*ordered)()->Fac->GetName().Latin1());
 			rec->WriteStr(tmp);
-			PostDoc->Run();
+			(*ordered)()->Fac->GetPlugin()->Run();
 		}
 	}
 }
@@ -364,33 +370,103 @@ void GSession::UseIFFProfs(bool iff)
 //------------------------------------------------------------------------------
 double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2) throw(GException)
 {
+	if (SessParams->GetBool("DebugSim"))
+		return(sub1->SimilarityIFF(sub2));
 	return(ProfilesSims->GetSim(sub1,sub2));
+
 }
 
 
 //------------------------------------------------------------------------------
 double GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException)
 {
-	return(ProfilesBehaviours->GetAgreementRatio(sub1,sub2));
+	double nbcommon, okratio;
+
+	if (SessParams->GetBool("DebugBehaviour"))
+	{
+		nbcommon=sub1->GetCommonDocs(sub2);
+		if (nbcommon&&nbcommon>=SessParams->GetUInt("SameBehaviourMinDocs"))
+			okratio=sub1->GetCommonOKDocs(sub2)/nbcommon;
+ 		else okratio=0.0;
+		return okratio;
+	}
+	else
+		return(ProfilesBehaviours->GetAgreementRatio(sub1,sub2));
 }
 
 
 //------------------------------------------------------------------------------
 double GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException)
 {
-	return(ProfilesBehaviours->GetDisagreementRatio(sub1,sub2));
+	double nbcommon, diffratio;
+
+	if (SessParams->GetBool("DebugBehaviour"))
+	{
+		nbcommon=sub1->GetCommonDocs(sub2);
+		if (nbcommon&&nbcommon>=SessParams->GetUInt("DiffBehaviourMinDocs"))
+			diffratio=sub1->GetCommonDiffDocs(sub2)/nbcommon;
+ 		else diffratio=0.0;
+		return diffratio;
+	}
+	else
+		return(ProfilesBehaviours->GetDisagreementRatio(sub1,sub2));
 }
 
 
 //------------------------------------------------------------------------------
 double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate) throw(GException)
 {
-	return(ProfilesSims->GetMinimumOfSimilarity(lang,deviationrate));
+	double tmpsim, simssum, deviation, MeanSim;
+	unsigned int nbcomp, i, j;
+	GSubProfileCursor s, s2;
+
+	//if min sim is not automatic, returnthe fixed value
+	if (!SessParams->GetBool("AutomaticMinSim"))
+	{
+		return(SessParams->GetDouble("MinSim"));
+	}
+
+	//else return the computed min sim
+	s=this->GetSubProfilesCursor(lang);
+	s2=this->GetSubProfilesCursor(lang);
+
+	//if debug mode, force min sim recomputing
+	if (SessParams->GetBool("DebugMinSim"))
+	{
+		simssum=deviation=0.0;
+		nbcomp=0;
+
+		for(s.Start(),i=0,j=s.GetNb();--j;s.Next(),i++)
+		{
+			if (!s()->IsDefined()) continue;
+			for(s2.GoTo(i+1);!s2.End();s2.Next())
+			{
+				if (!s2()->IsDefined()) continue;
+				tmpsim=s()->SimilarityIFF(s2());
+				simssum+=tmpsim;
+				deviation+=tmpsim*tmpsim;
+				nbcomp++;
+			}
+		}
+		if (nbcomp)
+		{
+			MeanSim=simssum/double(nbcomp);
+			deviation/=double(nbcomp);
+			deviation-=MeanSim*MeanSim;
+		}
+		return(MeanSim+deviationrate*sqrt(deviation));
+	}
+	//else return the stored min sim
+	else
+	{
+		return(ProfilesSims->GetMinimumOfSimilarity(lang,deviationrate));
+	}
+
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
+void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) throw(GException)
 {
 	GSubProfileCursor Subs;
 	GProfileCursor Prof=GetProfilesCursor();
@@ -419,9 +495,14 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 					if(save)
 						Storage->SaveSubProfile(Subs());
 
-					// add the mofified profile to the list of modified profiles
-					ProfilesSims->AddModifiedProfile(Subs());
-					ProfilesBehaviours->AddModifiedProfile(Subs());
+					// add the mofified profile to the list of modified profiles (if it is defined!)
+					if (Subs()->IsDefined())
+					{
+						if (!SessParams->GetBool("DebugSim"))
+							ProfilesSims->AddModifiedProfile(Subs());
+						if (!SessParams->GetBool("DebugBehaviour"))
+							ProfilesBehaviours->AddModifiedProfile(Subs());
+					}
 				}
 			}
 			catch(GException& e)
@@ -430,11 +511,17 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 		}
 	}
 
+	//Save the best computed Links (As Hub and Authority)
+	if((saveLinks) &&(LinkCalc))
+		Storage->SaveLinks(this);
+
 	// update the state of all the sims.
-	ProfilesSims->Update();
+	if (!SessParams->GetBool("DebugSim"))
+		ProfilesSims->Update();
 
 	//update the state of the behaviours
-	ProfilesBehaviours->Update();
+	if (!SessParams->GetBool("DebugBehaviour"))
+		ProfilesBehaviours->Update();
 }
 
 
@@ -442,34 +529,42 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory)  throw(GException)
 {
 	GGrouping* Grouping=GroupingMng->GetCurrentMethod();
-	GPostGroup* PostGrouping;
-	char tmp[100];
 
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
 	Grouping->Grouping(rec,modified,save, savehistory);
-
 	// Run all post-group methods that are enabled
-	GFactoryPostGroupCursor PostGroups=PostGroupMng->GetPostGroupsCursor();
-	for(PostGroups.Start();!PostGroups.End();PostGroups.Next())
-	{
-		PostGrouping=PostGroups()->GetPlugin();
-		if(PostGrouping)
-		{
-			sprintf(tmp,"Post-Group : %s",PostGroups()->GetName());
-			rec->WriteStr(tmp);
-			PostGrouping->Run();
-		}
-	}
+	ComputePostGroup(rec);
 }
 
 
 //------------------------------------------------------------------------------
-GProfDocCursor& GSession::GetProfDocCursor(void)
+void GSession::ComputePostGroup(GSlot* rec)  throw(GException)
 {
-	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
-	cur->Set(Fdbks);
-	return(*cur);
+	char tmp[100];
+
+	// Run all post-group methods that are enabled
+	GFactoryPostGroupCursor PostGroups=PostGroupMng->GetPostGroupsCursor();
+	//first sort the plugins by level
+	RContainer<GFactoryPostGroupOrder, unsigned int, true, true>* ordered;
+	ordered=new RContainer<GFactoryPostGroupOrder, unsigned int, true, true>(PostGroups.GetNb());
+	for(PostGroups.Start();!PostGroups.End();PostGroups.Next())
+	{
+		GFactoryPostGroupOrder* order=new GFactoryPostGroupOrder;
+		order->Fac=PostGroups();
+		ordered->InsertPtr(order);
+	}
+
+	//then run
+	for (ordered->Start(); !ordered->End(); ordered->Next())
+	{
+		if ((*ordered)()->Fac->GetPlugin())
+		{
+			sprintf(tmp, "PostGroup : Running %s",(*ordered)()->Fac->GetName().Latin1());
+			rec->WriteStr(tmp);
+			(*ordered)()->Fac->GetPlugin()->Run();
+		}
+	}
 }
 
 
@@ -491,7 +586,7 @@ void GSession::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate& date) throw(std::bad_alloc)
+void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate date) throw(std::bad_alloc)
 {
 	GProfDoc* f;
 
@@ -554,21 +649,7 @@ void GSession::CopyIdealGroups(bool save) throw(std::bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-/*void GSession::Save(GGroup* grp) throw(GException)
-{
-	GSubProfileCursor Sub;
-
-	if(grp->GetState()==osUpToDate) return;
-	Sub=grp->GetSubProfilesCursor();
-	for(Sub.Start();!Sub.End();Sub.Next())
-		SaveSubProfile(Sub());
-	if(grp->GetState()==osUpdated)
-		grp->SetState(osUpToDate);
-}*/
-
-
-//------------------------------------------------------------------------------
-GFactoryFilterCursor& GSession::GetFiltersCursor(void)
+GFactoryFilterCursor GSession::GetFiltersCursor(void)
 {
 	return(URLMng->GetFiltersCursor());
 }
@@ -701,39 +782,56 @@ void GSession::ReInit(bool)
 	ClearSubProfilesGroups();
 
 	// Re-Init the sims and behaviorsbetween documents and subprofiles
-	ProfilesSims->ReInit();
-	ProfilesBehaviours->ReInit();
+	if (!SessParams->GetBool("DebugSim"))
+		ProfilesSims->ReInit();
+	if (!SessParams->GetBool("DebugBehaviour"))
+		ProfilesBehaviours->ReInit();
 	DocProfSims->ReInit();
 }
 
 
 //------------------------------------------------------------------------------
-GSession::~GSession(void) throw(GException)
+void GSession::ExportMatrix(GSlot* rec, const char* type, const char* filename, GLang* lang, bool label)
 {
-	// Delete Similarities Managers
-	if(DocProfSims) delete DocProfSims;
-	if(ProfilesBehaviours) delete ProfilesBehaviours;
-	if(ProfilesSims) delete ProfilesSims;
-
-	// Clear all entities
-	GGroups::Clear();
-	GUsers::Clear();
-	GDocs::Clear();
-
-	// Disconnect from the different managers
-	if(ProfilingMng) ProfilingMng->Disconnect(this);
-	if(GroupingMng) GroupingMng->Disconnect(this);
-	if(GroupCalcMng) GroupCalcMng->Disconnect(this);
-	if(StatsCalcMng) StatsCalcMng->Disconnect(this);
-	if(LinkCalcMng) LinkCalcMng->Disconnect(this);
-	if(PostGroupMng) PostGroupMng->Disconnect(this);
-	if(DocAnalyseMng) DocAnalyseMng->Disconnect(this);
-	if(Langs) Langs->Disconnect(this);
-
-	// Delete stuctures
-	if(Random) delete Random;
-	if(Subjects) delete Subjects;
+	Storage->ExportMatrix(this, rec, type, filename, lang, label);
 }
+
+
+//------------------------------------------------------------------------------
+GSession::~GSession(void)
+{
+	try
+	{
+		// Delete Similarities Managers
+		if(DocProfSims) delete DocProfSims;
+		if(ProfilesBehaviours) delete ProfilesBehaviours;
+		if(ProfilesSims) delete ProfilesSims;
+	
+		// Clear all entities
+		GGroups::Clear();
+		GUsers::Clear();
+		GDocs::Clear();
+	
+		// Disconnect from the different managers
+		if(ProfilingMng) ProfilingMng->Disconnect(this);
+		if(GroupingMng) GroupingMng->Disconnect(this);
+		if(GroupCalcMng) GroupCalcMng->Disconnect(this);
+		if(StatsCalcMng) StatsCalcMng->Disconnect(this);
+		if(LinkCalcMng) LinkCalcMng->Disconnect(this);
+		if(PostGroupMng) PostGroupMng->Disconnect(this);
+		if(DocAnalyseMng) DocAnalyseMng->Disconnect(this);
+		if(Langs) Langs->Disconnect(this);
+	
+		// Delete stuctures
+		if(Random) delete Random;
+		if(Subjects) delete Subjects;
+		if(GroupsHistoryMng) delete GroupsHistoryMng;
+	}
+	catch(...)
+	{
+	}
+}
+
 
 
 
@@ -751,4 +849,10 @@ GSessionParams::GSessionParams(void)
 	InsertPtr(p=new GParamDouble("NullSimLevel",0.00001));
 	InsertPtr(p=new GParamBool("SaveGroupsHistory",false));
 	InsertPtr(p=new GParamBool("SaveProfilesHistory",false));
+	InsertPtr(p=new GParamBool("DebugSim",false));
+	InsertPtr(p=new GParamBool("DebugBehaviour",false));
+	InsertPtr(p=new GParamBool("DebugMinSim",false));
+	InsertPtr(p=new GParamDouble("MinSim",0.05));
+	InsertPtr(p=new GParamBool("AutomaticMinSim",true));
+	InsertPtr(p=new GParamString("PathtoBinary","/var/galilei/bin/"));
 }

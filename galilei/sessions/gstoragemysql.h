@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -62,12 +58,12 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short MySQL-based Storage Manager.
 */
-class GStorageMySQL : private R::RDb, public GStorage
+class GStorageMySQL : public GStorage
 {
 	/**
-	* String representing the null value.
+	* MySQL Database.
 	*/
-	static const char SQLNULL[5];
+	std::auto_ptr<R::RDb> Db;
 
 public:
 
@@ -77,8 +73,9 @@ public:
 	* @param user           User to connect with.
 	* @param pwd            Password of the user.
 	* @param db             Name of the database.
+	* @param coding         Coding used by the MySQL database.
 	*/
-	GStorageMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(std::bad_alloc,GException,R::RMySQLError);
+	GStorageMySQL(R::RString host,R::RString user,R::RString pwd,R::RString db,R::RString coding="Latin1") throw(std::bad_alloc,GException);
 
 protected:
 
@@ -87,7 +84,7 @@ protected:
 	* @param tbl            Table to analyse.
 	* @returns Number of rows.
 	*/
-	virtual unsigned int GetCount(const char* tbl) throw(R::RMySQLError);
+	virtual unsigned int GetCount(R::RString tbl) throw(R::RMySQLError);
 
 	/**
 	* Count the maximal value for a field of a table.
@@ -95,22 +92,15 @@ protected:
 	* @param fld            Field to analyse.
 	* @returns Maximal value.
 	*/
-	unsigned int GetMax(const char* tbl,const char* fld) throw(R::RMySQLError);
+	unsigned int GetMax(R::RString tbl,R::RString fld) throw(R::RMySQLError);
 
 	/**
-	* Transform a RTimeDate::RDate to a C string with the MySQL format.
-	* @param d              Date to transform.
-	* @param tmp            C String containing the date.
-	* @returns Pointer to the tmp C string.
+	* Transform a MySQL date into a C string, in particular when the
+	* parameter is null, it chooses '1970-01-01'.
+	* @param date           MySQL date.
+	* @return string.
 	*/
-	const char* GetDateToMySQL(const R::RDate& d,char* tmp) throw(R::RMySQLError);
-
-	/**
-	* Parse a field and when for quotes and double them.
-	* @param tmp            C String containing the date.
-	* @returns Pointer to the tmp C string.
-	*/
-	const char* ValidSQLValue(const char* val,char* tmp) throw(R::RMySQLError);
+	R::RString GetMySQLToDate(R::RString date);
 
 public:
 
@@ -131,8 +121,8 @@ public:
 	/**
 	* Loading a dictionary/stoplist.
 	* @param dic            Pointer to the dictionary.
-	* @param code           Languague.
-	* @param stop           Is it a stop list.
+	* @param lang           Languague.
+	* @param s              Is it a stop list.
 	*/
 	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc,GException);
 
@@ -141,12 +131,12 @@ public:
 	* @param id             Idenfificator of the word.
 	* @param code           Code of the languague.
 	*/
-	virtual const char* LoadWord(unsigned int id,const char* code) throw(std::bad_alloc,GException);
+	virtual R::RString LoadWord(unsigned int id,const char* code) throw(std::bad_alloc,GException);
 
 	/**
 	* Load a specific wordlist from a dictionary.
 	* @param w              WordList to load.
-	* @param code           Code of the languague.
+	* @param lang           Languague.
 	*/
 	virtual void LoadWordList(GWordList* w,GLang* lang) throw(std::bad_alloc,GException);
 
@@ -159,38 +149,37 @@ public:
 
 	/**
 	* Load the documents.
-	* @param wg             Enable the use of wordlists.
-	* @param w              Enable the use of words.
+	* @param session        Session.
 	*/
 	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
-	*  Load the users.
+	* Load the users.
 	* @param session         Session.
 	*/
 	virtual void LoadUsers(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
-	*  Load the users Feedback.
+	* Load the users Feedback.
+	* @param session        Session.
 	*/
 	virtual void LoadFdbks(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
 	* Load the groups.
-	* @param wg             Enable the use of wordlists.
-	* @param w              Enable the use of words.
+	* @param session        Session.
 	*/
 	virtual void LoadGroups(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
 	* Load the Subjectree.
-	* @param subjects     The tree of subjects.
+	* @param session        Session.
 	*/
 	virtual void LoadSubjectTree(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
 	* Load the ideal groupment.
-	* @param idealgroup   The ideal container of group
+	* @param session        Session.
 	*/
 	virtual void LoadIdealGroupment(GSession* session) throw(std::bad_alloc,GException);
 
@@ -215,8 +204,15 @@ public:
 
 	/**
 	* Save a the users feedback.
+	* @param session        Session.
 	*/
 	virtual void SaveFdbks(GSession* session) throw(GException);
+
+	/*
+	* Save Links of the users feedback.
+	* @param session        Session.
+	*/
+	virtual void SaveLinks(GSession* session) throw(GException);
 
 	/**
 	* Save information about the groupement (Group and attachment date) of
@@ -227,9 +223,10 @@ public:
 
 	/**
 	* Save Subprofiles in histoty
-	* @param sub        Subprofile to save.
+	* @param sub            Subprofile to save.
+	* @param historicID     Identificator of the historic.
 	*/
-	virtual void SaveSubProfileInHistory(GSubProfile* sub, unsigned int historicid) throw(GException);
+	virtual void SaveSubProfileInHistory(GSubProfile* sub, unsigned int historicID) throw(GException);
 
 	/**
 	* Save a profile.
@@ -237,16 +234,15 @@ public:
 	*/
 	virtual void SaveProfile(GProfile* prof) throw(GException);
 
-
 	/**
 	* Save the groups description.
-	* @param session        opened session.
+	* @param session        Session.
 	*/
 	virtual void SaveGroups(GSession* session) throw(GException);
 
 	/**
 	* Save the groups in history.
-	* @param session        opened session.
+	* @param session        Session.
 	*/
 	virtual void SaveGroupsHistory(GSession* session) throw(GException);
 
@@ -260,8 +256,10 @@ public:
 
 	/**
 	* Save the Profiles in history.
+	* @param session        Session.
+	* @param historicID     Identificator of the historic.
 	*/
-	virtual void SaveHistoricProfiles(GSession* session,unsigned int historicid) throw(GException);
+	virtual void SaveHistoricProfiles(GSession* session,unsigned int historicID) throw(GException);
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
@@ -271,45 +269,82 @@ public:
 	virtual void ExecuteData(const char* filename) throw(GException);
 
 	/**
-	* load the historic groups.
+	* Load an historic groups.
+	* @param session        Session.
+	* @param historicID     Identificator of the historic.
+	* @return Pointer to a historic group.
 	*/
-	GGroupsHistory* LoadAnHistoricGroups(GSession* session, unsigned int historicaID) throw(std::bad_alloc,GException);
+	GGroupsHistory* LoadAnHistoricGroups(GSession* session, unsigned int historicID) throw(std::bad_alloc,GException);
 
 	/**
-	* load the historic groups.
+	* Load the historic groups.
+	* @param session        Session.
+	* @param mindate        Date of the first historic to load.
+	* @param maxdate        Date of the last historic to load.
 	*/
 	void LoadHistoricGroupsByDate(GSession* session, R::RString mindate, R::RString maxdate);
 
 	/**
-	*returns the number of historic groups stored in database.
+	* @return the number of historic groups stored in database.
 	*/
 	virtual unsigned int GetHistorySize(void) throw(GException);
 
 	/**
-	* Create a dummy table to store different kid of
-	* data.
-	* @ param name              name of the dummy object.
+	* Create a dummy table to store different kid of data.
+	* @param name              name of the dummy object.
 	*/
-	virtual void CreateDummy(const char* name) throw(GException);
+	virtual void CreateDummy(R::RString name) throw(GException);
 
 	/**
 	* Delete all the data of a given dummy table.
-	* @ param name              name of the dummy object.
+	* @param name              name of the dummy object.
 	*/
-	virtual void ClearDummy(const char* name) throw(GException);
+	virtual void ClearDummy(R::RString name) throw(GException);
 
 	/**
 	* Add a dummy entry into a dummy table;
-	* @param name               name of the dummy table.
-	* @param id                id of the dymmy entry.
-	* @param desc              description of the dymmy entry.
+	* @param name              Name of the dummy table.
+	* @param id                Identificator of the dymmy entry.
+	* @param desc              Description of the dymmy entry.
+	* @param parentid          Identificator of the parent.
 	*/
-	virtual void AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid) throw(GException);
+	virtual void AddDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid) throw(GException);
+
+	/**
+	* Select a dummy entry from a dummy table;
+	* @param name              Name of the dummy table.
+	* @param id                Identificator of the dymmy entry.
+	* @param desc              description of the dymmy entry.
+	* @param parentid          Identificator of the parent.
+	* @param filter            Filter to set the fields on which the select is done.
+	*/
+	virtual R::RQuery* SelectDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException);
+
+	/**
+	* Clear a dummy entry from a dummy table;
+	* @param name              Name of the dummy table.
+	* @param id                Identificator of the dymmy entry.
+	* @param desc              description of the dymmy entry.
+	* @param parentid          Identificator of the parent.
+	* @param filter            Filter to set the fields on which the select is done.
+	*/
+	virtual void ClearDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException);
+
+	/**
+	* Export the vectors/words matrix
+	* @param session        Session.
+	* @param rec            Slot to receive information.
+	* @param type           Type of export ("Profiles", "Documents" or "Groups").
+	* @param filename       Export file name.
+	* @param lang           Language of the export.
+	* @param label          Display words id and vectors id ?
+	*/
+	virtual void ExportMatrix(GSession* session, GSlot* rec,R::RString type,R::RString filename,GLang* lang,bool label=false);
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GStorageMySQL(void) throw(GException);
+	virtual ~GStorageMySQL(void);
 };
 
 

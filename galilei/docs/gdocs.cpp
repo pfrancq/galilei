@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -126,28 +122,27 @@ GDocs::GDocs(unsigned int nb) throw(std::bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GDocCursor& GDocs::GetDocsCursor(void)
+GDocCursor GDocs::GetDocsCursor(void)
 {
-	GDocCursor *cur=GDocCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GDocCursor cur(this);
+	return(cur);
 }
 
 
 //-----------------------------------------------------------------------------
-GDocCursor& GDocs::GetDocsCursor(GLang* lang) throw(GException)
+GDocCursor GDocs::GetDocsCursor(GLang* lang) throw(GException)
 {
 	GDocsLang* ptr;
-	GDocCursor *cur=GDocCursor::GetTmpCursor();
+	GDocCursor cur;
 
 	ptr=DocsLang.GetPtr<GLang*>(lang);
 	if(!ptr)
 	{
-		cur->Clear();
-		return(*cur);
+		cur.Clear();
+		return(cur);
 	}
-	cur->Set(ptr);
-	return(*cur);
+	cur.Set(ptr);
+	return(cur);
 }
 
 

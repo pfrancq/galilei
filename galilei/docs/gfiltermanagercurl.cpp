@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -89,6 +85,18 @@ GFilterManagerCURL::GFilterManagerCURL(const char* path,bool dlg) throw(std::bad
 	: GFilterManager(path,dlg)
 {
 	Lib = curl_easy_init();
+}
+
+
+//------------------------------------------------------------------------------
+const char* GFilterManagerCURL::DetermineMIMEType(const char* tmpfile) throw(GException)
+{
+	char* MIME;
+
+	curl_easy_getinfo(Lib,CURLINFO_CONTENT_TYPE,MIME);
+	if(MIME)
+		return(MIME); 
+	return(GFilterManager::DetermineMIMEType(tmpfile));
 }
 
 

@@ -11,10 +11,6 @@
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be)
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -83,25 +79,25 @@ public :
 
 	/**
 	* Construct the computing method.
-	* @param fac             Factory of the plugin.
+	* @param fac            Factory of the plugin.
 	*/
 	GLinkCalc(GFactoryLinkCalc* fac) throw(std::bad_alloc);
 
 	/**
 	* Compute the links for a given subprofile.
-	* @params Prof       The profile to compute.
+	* @param subprof        Subprofile to compute.
 	*/
 	virtual void Compute(GSubProfile* subprof) throw(GException)=0;
 
 	/**
 	* Connect to a Session.
-	* @param session         The session.
+	* @param session        Session.
 	*/
 	virtual void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
-	* @param session         The session.
+	* @param session        Session.
 	*/
 	virtual void Disconnect(GSession* session) throw(GException);
 
@@ -112,6 +108,7 @@ public :
 
 	/**
 	* Add a new doc (not present in the initAlgo phase).
+	* @param doc            Document.
 	*/
 	void AddDoc(GDoc* doc) throw(GException);
 
@@ -123,6 +120,11 @@ public :
 
 
 //------------------------------------------------------------------------------
+/**
+* The GFactoryLinkCalc represent a factory for a given link method.
+* @author Vandaele Valery
+* @short Generic Link Factory.
+*/
 class GFactoryLinkCalc : public GFactoryPlugin<GFactoryLinkCalc,GLinkCalc,GLinkCalcManager>
 {
 public:
@@ -143,7 +145,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-typedef GFactoryLinkCalc*(*GFactoryLinkCalcInit)(GLinkCalcManager*,const char*);
+/**
+* Signature of the method used to initiliaze a link factory.
+*/
+typedef GFactoryLinkCalc* GFactoryLinkCalcInit(GLinkCalcManager*,const char*);
 
 
 //-------------------------------------------------------------------------------
@@ -214,7 +219,7 @@ extern "C"                                                                      
 * factories of link methods.
 * @short Links Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryLinkCalcCursor,GFactoryLinkCalc,unsigned int)
+CLASSCURSOR(GFactoryLinkCalcCursor,GFactoryLinkCalc,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

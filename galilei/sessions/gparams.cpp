@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation; either version 2 of the License, or
@@ -48,16 +44,9 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GParams::GParams(const char* n) throw(std::bad_alloc)
+GParams::GParams(const RString& n) throw(std::bad_alloc)
 	: RContainer<GParam,unsigned int,true,true>(10,5), Name(n)
 {
-}
-
-
-//------------------------------------------------------------------------------
-const char* GParams::GetName(void) const
-{
-	return(Name);
 }
 
 
@@ -73,13 +62,13 @@ void GParams::ReadConfig(RXMLTag* tag)
 
 
 //------------------------------------------------------------------------------
-void GParams::SaveConfig(RXMLTag* tag)
+void GParams::SaveConfig(RXMLStruct* xml,RXMLTag* tag)
 {
 	GParamCursor Cur;
 
 	Cur.Set(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->SaveConfig(tag);
+		Cur()->SaveConfig(xml,tag);
 }
 
 
@@ -147,7 +136,6 @@ bool GParams::GetBool(const char* p)
 	if(!param) return(0);
 	return(param->GetBool());
 }
-
 
 //------------------------------------------------------------------------------
 void GParams::Set(const char* p,int v)

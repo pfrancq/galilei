@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation; either version 2 of the License, or
@@ -40,6 +36,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <docs/gdocxml.h>
 #include <sessions/gparam.h>
 using namespace GALILEI;
 using namespace R;
@@ -92,6 +89,7 @@ void GParam::ReadConfig(RXMLTag* parent)
 {
 	R::RXMLTagCursor Cur=parent->GetXMLTagsCursor();
 	RXMLTag* tag=0;
+
 	// Find Tag
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
@@ -109,14 +107,14 @@ void GParam::ReadConfig(RXMLTag* parent)
 
 
 //------------------------------------------------------------------------------
-void GParam::SaveConfig(RXMLTag* parent)
+void GParam::SaveConfig(RXMLStruct* xml,RXMLTag* parent)
 {
 	RXMLTag* tag;
 
 	tag=new RXMLTag("Param");
 	tag->InsertAttr("Name",Name);
 	WriteAttributes(tag);
-	parent->AddTag(tag);
+	xml->AddTag(parent,tag);
 }
 
 
@@ -456,7 +454,7 @@ const char* GParamString::GetString(void)
 //------------------------------------------------------------------------------
 void GParamString::Set(const char* v)
 {
-	Value=(*v);
+	Value=v;
 }
 
 

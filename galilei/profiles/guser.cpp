@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -90,22 +86,16 @@ void GUser::SetId(unsigned int id) throw(GException)
 
 
 //------------------------------------------------------------------------------
-RString& GUser::GetName(void) const
+RString GUser::GetName(void) const
 {
-	RString* tmp=RString::GetString();
-
-	(*tmp)=Name;
-	return(*tmp);
+	return(Name);
 }
 
 
 //------------------------------------------------------------------------------
-RString& GUser::GetFullName(void) const
+RString GUser::GetFullName(void) const
 {
-	RString* tmp=RString::GetString();
-
-	(*tmp)=FullName;
-	return(*tmp);
+	return(FullName);
 }
 
 

@@ -10,10 +10,6 @@
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be)
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -88,7 +84,7 @@ public:
 	* Get a cursor on the list of links.
 	* @return GLinkCursor.
 	*/
-	GLinkCursor& GetLinkCursor(void);
+	GLinkCursor GetLinkCursor(void);
 
 	/**
 	* Compare two lists by comparing their identificator.
@@ -126,7 +122,7 @@ public:
 * The GLinksCursor class provides a way to go trough a set of links.
 * @short Links Cursor
 */
-CLASSCURSOR(GLinksCursor,GLinks,unsigned int)
+CLASSCURSOR(GLinksCursor,GLinks,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -59,6 +55,7 @@
 #include <sessions/gmixidealgroups.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
@@ -128,6 +125,14 @@ class GSetAutoSaveI : public GSM
 {
 public:
 	GSetAutoSaveI(GPrgClassSession* o) : GSM("SetAutoSave",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+};
+
+//------------------------------------------------------------------------------
+class GSetAutoSaveLinksI : public GSM
+{
+public:
+	GSetAutoSaveLinksI(GPrgClassSession* o) : GSM("SetAutoSaveLinks",o) {}
 	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
 };
 
@@ -461,6 +466,23 @@ void GSetAutoSaveI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigne
 	}
 }
 
+//------------------------------------------------------------------------------
+void GSetAutoSaveLinksI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+{
+	if(args->NbPtr!=1)
+		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the links results must be stored.");
+	if((args->Tab[0]->GetValue(prg))[0]=='0')
+	{
+		o->WriteStr("Set AutoSaveLinks: false");
+		Owner->AutoSaveLinks=false;
+	}
+	else
+	{
+		o->WriteStr("Set AutoSaveLinks: true");
+		Owner->AutoSaveLinks=true;
+	}
+}
+
 
 //------------------------------------------------------------------------------
 void GSetSaveGroupsHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
@@ -555,8 +577,10 @@ void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,uns
 		Owner->Session->GetProfilingMng()->SetCurrentMethod(args->Tab[0]->GetValue(prg));
 	if(Owner->Session->GetLinkCalcMng()->GetCurrentMethod())
 		Owner->Session->GetLinkCalcMng()->GetCurrentMethod()->ApplyConfig();
+	if(!Owner->Session->GetProfilingMng()->GetCurrentMethod())
+		throw GException (" No Profiling Method chosen.");
 	Owner->Session->GetProfilingMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o),Owner->FirstProfile,Owner->AutoSave);
+	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o),Owner->FirstProfile,Owner->AutoSave,Owner->AutoSaveLinks);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 }
 
@@ -578,7 +602,11 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsig
 		GGrouping* algo=Owner->Session->GetGroupingMng()->GetCurrentMethod();
 		algo->SetIdealGroups(Owner->Session->GetSubjects()->GetIdealGroups());
 	}
+	if(!Owner->Session->GetGroupingMng()->GetCurrentMethod())
+		throw RException (" No Grouping Method chosen.");
 	Owner->Session->GetGroupingMng()->GetCurrentMethod()->ApplyConfig();
+	if(!Owner->Session->GetGroupCalcMng()->GetCurrentMethod())
+		throw RException (" No Group Description Method chosen.");
 	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o),Owner->FirstGroup,Owner->AutoSave, Owner->SaveHistory);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
@@ -728,7 +756,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o) throw(RException)
 	if(Owner->Session->GetLinkCalcMng()->GetCurrentMethod())
 		Owner->Session->GetLinkCalcMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GetProfilingMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o),Owner->FirstProfile,Owner->AutoSave);
+	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o),Owner->FirstProfile,Owner->AutoSave,Owner->AutoSaveLinks);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 
 	// Group Profiles
@@ -970,12 +998,13 @@ void GComputeTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned in
 //------------------------------------------------------------------------------
 GPrgClassSession::GPrgClassSession(GSession* s) throw(std::bad_alloc)
 	: RPrgClass("Session"), Session(s), OFile(0),
-	  GOFile(0), SOFile(0),DSOFile(0), NbHistory(0), AutoSave(false), SaveHistory(false), TrackNewProfiles(false)
+	  GOFile(0), SOFile(0),DSOFile(0), NbHistory(0), AutoSave(false),AutoSaveLinks(false), SaveHistory(false), TrackNewProfiles(false)
 {
 	Methods.InsertPtr(new GOutputI(this));
 	Methods.InsertPtr(new GGOutputI(this));
 	Methods.InsertPtr(new GSOutputI(this));
 	Methods.InsertPtr(new GSetLinksMethodI(this));
+	Methods.InsertPtr(new GSetAutoSaveLinksI(this));
 	Methods.InsertPtr(new GSetAutoSaveI(this));
 	Methods.InsertPtr(new GSetSaveGroupsHistoryl(this));
 	Methods.InsertPtr(new GSetSaveProfilesHistoryl(this));

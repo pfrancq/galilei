@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -54,7 +50,7 @@ namespace GALILEI{
 * The GStatsCalcManager class provides a representation for a manager
 * responsible to manage all the statistics.
 * @author Pascal Francq
-* @short Sstatistics Methods Manager.
+* @short Statistics Methods Manager.
 */
 class GStatsCalcManager : public R::RContainer<GFactoryStatsCalc,unsigned int,true,true>
 {
@@ -90,7 +86,7 @@ public:
 	* Get a cursor over the statistics methods managed.
 	* return GFactoryStatsCalcCursor.
 	*/
-	GFactoryStatsCalcCursor& GetStatsCalcsCursor(void);
+	GFactoryStatsCalcCursor GetStatsCalcsCursor(void);
 
 	/**
 	* Destructor of the statistics methods manager.

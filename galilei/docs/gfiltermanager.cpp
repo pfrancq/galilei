@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -38,8 +34,12 @@
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
-#include <dirent.h>
-using namespace std;
+#include <fnmatch.h>
+
+
+//------------------------------------------------------------------------------
+// include files for R Library
+#include <rstd/rxmlfile.h>
 
 
 //------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ using namespace std;
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;
-using namespace ltmm;
+
 
 
 
@@ -78,76 +78,67 @@ public:
 
 //------------------------------------------------------------------------------
 //
+// class GFilterManager::GMIMEExt
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GFilterManager::GMIMEExt
+{
+public:
+	RString Name;
+	RString Ext;
+
+	GMIMEExt(const RString& n,const RString& e) : Name(n), Ext(e) {}
+	int Compare(const GMIMEExt* f) const {return(Name.Compare(f->Ext));}
+	int Compare(const GMIMEExt& f) const {return(Name.Compare(f.Ext));}
+	int Compare(const R::RString& e) const {return(Name.Compare(e));}
+	int Compare(const char* e) const {return(Name.Compare(e));}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
 // class GFilterManager
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 GFilterManager::GFilterManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: R::RContainer<GFactoryFilter,unsigned int,true,true>(10,5), MIMES(50,25)
+	: R::RContainer<GFactoryFilter,unsigned int,true,true>(10,5), MIMES(50,25),
+	  Exts(50,25)
 {
-	DIR* dp;
-	struct dirent* ep;
 	RString Path(path);
-	RString Msg;
-	RString Name;
-	char DlgLib[100];
-	int len;
-
-	loader<>& l=loader<>::instance();
+	RString MIME;
 	Path+="/filters";
-	dp=opendir(Path);
-	Path+="/";
-	if(!dp) return;
-	while((ep=readdir(dp)))
+	LoadPlugins<GFactoryFilter,GFactoryFilterInit,GFilterManager>(this,Path.Latin1(),API_FILTER_VERSION, dlg);
+	
+	// Try to open list of MIME types
+	try
 	{
-		len=strlen(ep->d_name);
-		if(len<3) continue;
-		if(strcmp(&ep->d_name[len-3],".la")) continue;
-		if((len>7)&&(!strcmp(&ep->d_name[len-7],"_dlg.la"))) continue;
-		try
-		{
-			// Create the factory and insert it
-			Name=Path+ep->d_name;
-			handle<>& myhandle = l.load(Name);
-			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
-			GFactoryFilter* myfactory = ((GFactoryFilterInit)(*(*myinit)))(this,ep->d_name);
-			if(strcmp(API_FILTER_VERSION,myfactory->GetAPIVersion()))
-			{
-				Msg+=ep->d_name;
-				Msg+=" - Plugin not compatible with API Version\n";
-				continue;
-			}
-			InsertPtr(myfactory);
+		RXMLStruct xml;
+		RXMLFile File("/etc/galilei/galilei.mimes",&xml);
+		RXMLTagCursor Cur,Cur2;
 
-			// Look if dialog boxes are available
-			if(!dlg) continue;
-			try
-			{
-				strcpy(DlgLib,Name);
-				DlgLib[Name.GetLen()-3]=0;
-				strcat(DlgLib,"_dlg.la");
-				handle<>& myhandle2 = l.load(DlgLib);
-				myfactory->SetAbout(myhandle2.find_symbol("About"));
-				myfactory->SetConfig(myhandle2.find_symbol("Configure"));
-			}
-			catch(...)
-			{
-			}
-		}
-		catch(std::exception& e)
+		File.Process();
+
+		// Go trough all MIME types
+		Cur=xml.GetTag("mimeTypes")->GetXMLTagsCursor();
+		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			Msg+=ep->d_name;
-			Msg+=" - ";
-			Msg+=e.what();
-			Msg+="\n";
+			MIME=Cur()->GetAttrValue("code");
+
+			// Go through all file extension
+			Cur2=Cur()->GetXMLTagsCursor();
+			for(Cur2.Start();!Cur2.End();Cur2.Next())
+				Exts.InsertPtr(new GMIMEExt(MIME,Cur2()->GetAttrValue("ext")));
 		}
 	}
-	closedir(dp);
-
-	// If something in Msg -> error
-	if(Msg.GetLen())
-		throw(GException(Msg));
+	catch(...)
+	{
+		// No MIME types found
+	}
 }
 
 
@@ -158,8 +149,14 @@ void GFilterManager::Download(const char*,RString&) throw(GException)
 
 
 //------------------------------------------------------------------------------
-const char* GFilterManager::DetermineMIMEType(const char*) throw(GException)
+const char* GFilterManager::DetermineMIMEType(const char* tmpfile) throw(GException)
 {
+	RCursor<GMIMEExt,unsigned int> Cur(Exts);
+
+	// Go through each extension
+	for(Cur.Start();!Cur.End();Cur.Next())
+		if(fnmatch(Cur()->Ext.Latin1(),tmpfile,0)!=FNM_NOMATCH)
+			return(Cur()->Name.Latin1());
 	return(0);
 }
 
@@ -181,7 +178,7 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
 	bool Dwn;
 	bool Url;
 	GMIMEFilter* f=0;
-	const char* mime;
+	RString mime;
 
 	// Look for the protocol
 	ptr=doc->GetURL();
@@ -223,10 +220,10 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
 
 	// Verify if the MIME type is defined -> if not try to guess
 	mime=doc->GetMIMEType();
-	if(!mime)
+	if(mime.IsEmpty())
 	{
 		mime=DetermineMIMEType(tmpFile);
-		if(mime)
+		if(!mime.IsEmpty())
 			doc->SetMIMEType(mime);
 	}
 
@@ -234,8 +231,9 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
 	xml=new GDocXML(doc->GetURL(),tmpFile);
 
 	// If MIME type defined -> analyze it.
-	if(mime)
+	if(!mime.IsEmpty())
 	{
+		xml->AddFormat(mime);
 		f=MIMES.GetPtr<const char*>(mime);
 		if(f)
 			f->Filter->Analyze(xml);
@@ -288,11 +286,10 @@ const char* GFilterManager::GetMIMEType(const char* mime) const
 
 
 //------------------------------------------------------------------------------
-GFactoryFilterCursor& GFilterManager::GetFiltersCursor(void)
+GFactoryFilterCursor GFilterManager::GetFiltersCursor(void)
 {
-	GFactoryFilterCursor *cur=GFactoryFilterCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GFactoryFilterCursor cur(this);
+	return(cur);
 }
 
 

@@ -11,10 +11,6 @@
 	Authors:
 		Vandaele Vaélery(vavdaele@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -40,11 +36,6 @@
 
 
 //------------------------------------------------------------------------------
-// include file for LibTool--
-#include <ltmm/loader.hh>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gplugin.h>
 
@@ -57,6 +48,7 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 // API VERSION
 #define API_POSTGROUP_VERSION "1.0"
+
 
 
 //------------------------------------------------------------------------------
@@ -108,6 +100,11 @@ public:
 
 
 //------------------------------------------------------------------------------
+/**
+* The GFactoryPostGroup represent a factory for a given post grouping method.
+* @author Pascal Francq
+* @short Generic Post Grouping Factory.
+*/
 class GFactoryPostGroup : public GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>
 {
 public:
@@ -128,8 +125,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-typedef GFactoryPostGroup*(*GFactoryPostGroupInit)(GPostGroupManager*,const char*);
-
+/**
+* Signature of the method used to initiliaze a post grouping factory.
+*/
+typedef GFactoryPostGroup* GFactoryPostGroupInit(GPostGroupManager*,const char*);
 
 //------------------------------------------------------------------------------
 #define CREATE_POSTGROUP_FACTORY(name,C)                                                  \
@@ -139,7 +138,7 @@ private:                                                                        
 	static GFactoryPostGroup* Inst;                                                       \
 	TheFactory(GPostGroupManager* mng,const char* l) : GFactoryPostGroup(mng,name,l)      \
 	{                                                                                     \
-		C::CreateParams(this);                                                            \
+		C::CreateParams(this);                                                \
 	}                                                                                     \
 	virtual ~TheFactory(void) {}                                                          \
 public:                                                                                   \
@@ -199,8 +198,21 @@ extern "C"                                                                      
 * factories.
 * @short Post Groups Computing Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryPostGroupCursor,GFactoryPostGroup,unsigned int)
+CLASSCURSOR(GFactoryPostGroupCursor,GFactoryPostGroup,unsigned int);
 
+
+//------------------------------------------------------------------------------
+/**
+* struture to order factory by their level
+*/
+struct GFactoryPostGroupOrder
+{
+	GFactoryPostGroup* Fac;
+	int Compare(const GFactoryPostGroupOrder* fpgo)
+	{
+		return((Fac->GetUInt("Level"))-(fpgo->Fac->GetUInt("Level")));
+	}
+};
 
 }  //-------- End of namespace GALILEI -----------------------------------------
 

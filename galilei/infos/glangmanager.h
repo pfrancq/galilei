@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -88,9 +84,9 @@ public:
 
 	/**
 	* Create a cursor on the container of plugins representing the languages.
-	* @param GFactoryLangCursor.
+	* @return GFactoryLangCursor.
 	*/
-	GFactoryLangCursor& GetLangsCursor(void);
+	GFactoryLangCursor GetLangsCursor(void);
 
 	/**
 	* Destructor of the manager.

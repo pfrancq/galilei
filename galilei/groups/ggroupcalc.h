@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -37,11 +33,6 @@
 //------------------------------------------------------------------------------
 #ifndef GGroupCalcH
 #define GGroupCalcH
-
-
-//------------------------------------------------------------------------------
-// include file for LibTool--
-#include <ltmm/loader.hh>
 
 
 //------------------------------------------------------------------------------
@@ -115,6 +106,11 @@ public:
 
 
 //------------------------------------------------------------------------------
+/**
+* The GFactoryGroupCalc represent a factory for a given group computing method.
+* @author Pascal Francq
+* @short Generic Grouping Computing Factory.
+*/
 class GFactoryGroupCalc : public GFactoryPlugin<GFactoryGroupCalc,GGroupCalc,GGroupCalcManager>
 {
 public:
@@ -135,7 +131,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-typedef GFactoryGroupCalc*(*GFactoryGroupCalcInit)(GGroupCalcManager*,const char*);
+/**
+* Signature of the method used to initiliaze a group computing factory.
+*/
+typedef GFactoryGroupCalc* GFactoryGroupCalcInit(GGroupCalcManager*,const char*);
 
 
 //------------------------------------------------------------------------------
@@ -206,7 +205,7 @@ extern "C"                                                                      
 * factories.
 * @short Groups Computing Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryGroupCalcCursor,GFactoryGroupCalc,unsigned int)
+CLASSCURSOR(GFactoryGroupCalcCursor,GFactoryGroupCalc,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

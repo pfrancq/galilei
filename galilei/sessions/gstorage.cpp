@@ -10,10 +10,6 @@
 
 	Authors:
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -48,24 +44,21 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorage::GStorage(const char* n) throw(std::bad_alloc,GException)
+GStorage::GStorage(RString n) throw(std::bad_alloc,GException)
 	: Name(n)
 {
 }
 
 
 //------------------------------------------------------------------------------
-RString& GStorage::GetName(void) const
+RString GStorage::GetName(void) const
 {
-	RString* tmp=RString::GetString();
-
-	(*tmp)=Name;
-	return(*tmp);
+	return(Name);
 }
 
 
 //------------------------------------------------------------------------------
-GStorage::~GStorage(void) throw(GException)
+GStorage::~GStorage(void)
 {
 
 }

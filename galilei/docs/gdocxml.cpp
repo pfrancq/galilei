@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -47,40 +43,32 @@ using namespace R;
 // class GDocXML
 //
 //------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GDocXML::GDocXML(const char* url,const char* filename) throw(std::bad_alloc)
+GDocXML::GDocXML(RString url,RString filename) throw(std::bad_alloc)
 	: RXMLStruct(), URL(url), FileName(filename)
 {
 	RXMLTag* t;
 
-	AddNode(0,t=new RXMLTag("rdf:RDF"));
+	AddTag(0,t=new RXMLTag("rdf:RDF"));
 	InsertEntity("xmlns:rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 	InsertEntity("xmlns:dc","http://purl.org/dc/elements/1.1/");
 	InsertEntity("xmlns:docxml","http://cfao30.ulb.ac.be/cfao/projetcs/GALILEI/public/document/docxml#");
-	AddNode(t,MetaData=new RXMLTag("docxml:metaData"));
-	AddNode(t,Content=new RXMLTag("docxml:content"));
-	AddNode(t,Links=new RXMLTag("docxml:links"));
+	AddTag(t,MetaData=new RXMLTag("docxml:metaData"));
+	AddTag(t,Content=new RXMLTag("docxml:content"));
+	AddTag(t,Links=new RXMLTag("docxml:links"));
 }
 
 
 //------------------------------------------------------------------------------
-RString& GDocXML::GetURL(void) const
+RString GDocXML::GetURL(void) const
 {
-	RString* tmp=RString::GetString();
-
-	(*tmp)=URL;
-	return(*tmp);
+	return(URL);
 }
 
 
 //------------------------------------------------------------------------------
-RString& GDocXML::GetFile(void) const
+RString GDocXML::GetFile(void) const
 {
-	RString* tmp=RString::GetString();
-
-	(*tmp)=FileName;
-	return(*tmp);
+	return(FileName);
 }
 
 
@@ -110,22 +98,23 @@ RXMLTag* GDocXML::AddLink(void) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(Links,t=new RXMLTag("docxml:metaData"));
+	AddTag(Links,t=new RXMLTag("docxml:metaData"));
 	return(t);
 
 }
 
+
 //------------------------------------------------------------------------------
-void GDocXML::AddTitle(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddTitle(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 	if (! metaData)
 	{
-		AddNode(MetaData,t=new RXMLTag("dc:title"));
+		AddTag(MetaData,t=new RXMLTag("dc:title"));
 	}
 	else
 	{
-		AddNode(metaData,t=new RXMLTag("dc:title"));
+		AddTag(metaData,t=new RXMLTag("dc:title"));
 	}
 	t->AddContent(val);
 }
@@ -137,22 +126,22 @@ RXMLTag* GDocXML::AddTitle(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:title"));
+		AddTag(MetaData,t=new RXMLTag("dc:title"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:title"));
+		AddTag(metaData,t=new RXMLTag("dc:title"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddCreator(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddCreator(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:creator"));
+		AddTag(MetaData,t=new RXMLTag("dc:creator"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:creator"));
+		AddTag(metaData,t=new RXMLTag("dc:creator"));
 	t->AddContent(val);
 }
 
@@ -163,22 +152,22 @@ RXMLTag* GDocXML::AddCreator(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:creator"));
+		AddTag(MetaData,t=new RXMLTag("dc:creator"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:creator"));
+		AddTag(metaData,t=new RXMLTag("dc:creator"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddSubject(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddSubject(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:subject"));
+		AddTag(MetaData,t=new RXMLTag("dc:subject"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:subject"));
+		AddTag(metaData,t=new RXMLTag("dc:subject"));
 	t->AddContent(val);
 }
 
@@ -189,22 +178,22 @@ RXMLTag* GDocXML::AddSubject(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:subject"));
+		AddTag(MetaData,t=new RXMLTag("dc:subject"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:subject"));
+		AddTag(metaData,t=new RXMLTag("dc:subject"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddDescription(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddDescription(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:description"));
+		AddTag(MetaData,t=new RXMLTag("dc:description"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:description"));
+		AddTag(metaData,t=new RXMLTag("dc:description"));
 	t->AddContent(val);
 }
 
@@ -215,22 +204,22 @@ RXMLTag* GDocXML::AddDescription(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:description"));
+		AddTag(MetaData,t=new RXMLTag("dc:description"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:description"));
+		AddTag(metaData,t=new RXMLTag("dc:description"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddPublisher(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddPublisher(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:publisher"));
+		AddTag(MetaData,t=new RXMLTag("dc:publisher"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:publisher"));
+		AddTag(metaData,t=new RXMLTag("dc:publisher"));
 	t->AddContent(val);
 }
 
@@ -241,22 +230,22 @@ RXMLTag* GDocXML::AddPublisher(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:publisher"));
+		AddTag(MetaData,t=new RXMLTag("dc:publisher"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:publisher"));
+		AddTag(metaData,t=new RXMLTag("dc:publisher"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddContributor(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddContributor(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:contributor"));
+		AddTag(MetaData,t=new RXMLTag("dc:contributor"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:contributor"));
+		AddTag(metaData,t=new RXMLTag("dc:contributor"));
 	t->AddContent(val);
 }
 
@@ -267,22 +256,22 @@ RXMLTag* GDocXML::AddContributor(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:contributor"));
+		AddTag(MetaData,t=new RXMLTag("dc:contributor"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:contributor"));
+		AddTag(metaData,t=new RXMLTag("dc:contributor"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddDate(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddDate(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:date"));
+		AddTag(MetaData,t=new RXMLTag("dc:date"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:date"));
+		AddTag(metaData,t=new RXMLTag("dc:date"));
 	t->AddContent(val);
 }
 
@@ -293,22 +282,22 @@ RXMLTag* GDocXML::AddDate(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:date"));
+		AddTag(MetaData,t=new RXMLTag("dc:date"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:date"));
+		AddTag(metaData,t=new RXMLTag("dc:date"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddType(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddType(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:type"));
+		AddTag(MetaData,t=new RXMLTag("dc:type"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:type"));
+		AddTag(metaData,t=new RXMLTag("dc:type"));
 	t->AddContent(val);
 }
 
@@ -319,22 +308,22 @@ RXMLTag* GDocXML::AddType(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:type"));
+		AddTag(MetaData,t=new RXMLTag("dc:type"));
 	else
-		AddNode(MetaData,t=new RXMLTag("dc:type"));
+		AddTag(MetaData,t=new RXMLTag("dc:type"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddFormat(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddFormat(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:format"));
+		AddTag(MetaData,t=new RXMLTag("dc:format"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:format"));
+		AddTag(metaData,t=new RXMLTag("dc:format"));
 	t->AddContent(val);
 }
 
@@ -345,22 +334,22 @@ RXMLTag* GDocXML::AddFormat(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:format"));
+		AddTag(MetaData,t=new RXMLTag("dc:format"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:format"));
+		AddTag(metaData,t=new RXMLTag("dc:format"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddIdentifier(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddIdentifier(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:identifier"));
+		AddTag(MetaData,t=new RXMLTag("dc:identifier"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:identifier"));
+		AddTag(metaData,t=new RXMLTag("dc:identifier"));
 	t->AddContent(val);
 }
 
@@ -371,22 +360,22 @@ RXMLTag* GDocXML::AddIdentifier(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:identifier"));
+		AddTag(MetaData,t=new RXMLTag("dc:identifier"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:identifier"));
+		AddTag(metaData,t=new RXMLTag("dc:identifier"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddSource(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddSource(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:source"));
+		AddTag(MetaData,t=new RXMLTag("dc:source"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:source"));
+		AddTag(metaData,t=new RXMLTag("dc:source"));
 	t->AddContent(val);
 }
 
@@ -397,22 +386,22 @@ RXMLTag* GDocXML::AddSource(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:source"));
+		AddTag(MetaData,t=new RXMLTag("dc:source"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:source"));
+		AddTag(metaData,t=new RXMLTag("dc:source"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddLanguage(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddLanguage(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:language"));
+		AddTag(MetaData,t=new RXMLTag("dc:language"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:language"));
+		AddTag(metaData,t=new RXMLTag("dc:language"));
 	t->AddContent(val);
 }
 
@@ -423,22 +412,22 @@ RXMLTag* GDocXML::AddLanguage(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:language"));
+		AddTag(MetaData,t=new RXMLTag("dc:language"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:language"));
+		AddTag(metaData,t=new RXMLTag("dc:language"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddRelation(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddRelation(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:relation"));
+		AddTag(MetaData,t=new RXMLTag("dc:relation"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:relation"));
+		AddTag(metaData,t=new RXMLTag("dc:relation"));
 	t->AddContent(val);
 }
 
@@ -449,22 +438,22 @@ RXMLTag* GDocXML::AddRelation(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:relation"));
+		AddTag(MetaData,t=new RXMLTag("dc:relation"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:relation"));
+		AddTag(metaData,t=new RXMLTag("dc:relation"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddCoverage(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddCoverage(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:coverage"));
+		AddTag(MetaData,t=new RXMLTag("dc:coverage"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:coverage"));
+		AddTag(metaData,t=new RXMLTag("dc:coverage"));
 	t->AddContent(val);
 }
 
@@ -475,22 +464,22 @@ RXMLTag* GDocXML::AddCoverage(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:coverage"));
+		AddTag(MetaData,t=new RXMLTag("dc:coverage"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:coverage"));
+		AddTag(metaData,t=new RXMLTag("dc:coverage"));
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddRights(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
+void GDocXML::AddRights(RString val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:rights"));
+		AddTag(MetaData,t=new RXMLTag("dc:rights"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:rights"));
+		AddTag(metaData,t=new RXMLTag("dc:rights"));
 	t->AddContent(val);
 }
 
@@ -501,9 +490,9 @@ RXMLTag* GDocXML::AddRights(RXMLTag* metaData) throw(std::bad_alloc)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddNode(MetaData,t=new RXMLTag("dc:rights"));
+		AddTag(MetaData,t=new RXMLTag("dc:rights"));
 	else
-		AddNode(metaData,t=new RXMLTag("dc:rights"));
+		AddTag(metaData,t=new RXMLTag("dc:rights"));
 	return(t);
 }
 

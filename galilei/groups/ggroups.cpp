@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -126,28 +122,27 @@ GGroups::GGroups(unsigned int g)
 
 
 //------------------------------------------------------------------------------
-GGroupCursor& GGroups::GetGroupsCursor(void)
+GGroupCursor GGroups::GetGroupsCursor(void)
 {
-	GGroupCursor *cur=GGroupCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GGroupCursor cur(this);
+	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-GGroupCursor& GGroups::GetGroupsCursor(GLang* lang) throw(GException)
+GGroupCursor GGroups::GetGroupsCursor(GLang* lang) throw(GException)
 {
 	GGroupsLang* ptr;
-	GGroupCursor *cur=GGroupCursor::GetTmpCursor();
+	GGroupCursor cur;
 
 	ptr=GroupsLang.GetPtr<GLang*>(lang);
 	if(!ptr)
 	{
-		cur->Clear();
-		return(*cur);
+		cur.Clear();
+		return(cur);
 	}
-	cur->Set(ptr);
-	return(*cur);
+	cur.Set(ptr);
+	return(cur);
 }
 
 

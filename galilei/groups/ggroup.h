@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -223,14 +219,14 @@ public:
 	/**
 	* Get a cursor over the subprofiles.
 	*/
-	GSubProfileCursor& GetSubProfilesCursor(void);
+	GSubProfileCursor GetSubProfilesCursor(void);
 
 	/**
 	* Get a cursor over the subprofiles. This signature is needed by a generic
 	* k-Means.
 	* @see R::RGroupingKMeans.
 	*/
-	GSubProfileCursor& GetCursor(void);
+	GSubProfileCursor GetCursor(void);
 
 	/**
 	* Compute the number of subprofiles of a given group that are also in the
@@ -336,7 +332,7 @@ public:
 	/**
 	* Destructor of a group.
 	*/
-	~GGroup(void) throw(GException);
+	~GGroup(void);
 };
 
 
@@ -345,7 +341,7 @@ public:
 * The GGroupCursor class provides a way to go trough a set of group.
 * @short Group Cursor.
 */
-CLASSCURSOR(GGroupCursor,GGroup,unsigned int)
+CLASSCURSOR(GGroupCursor,GGroup,unsigned int);
 
 
 

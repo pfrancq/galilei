@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -37,11 +33,6 @@
 //------------------------------------------------------------------------------
 #ifndef GStatsCalcH
 #define GStatsCalcH
-
-
-//------------------------------------------------------------------------------
-// include file for LibTool--
-#include <ltmm/loader.hh>
 
 
 //------------------------------------------------------------------------------
@@ -97,9 +88,28 @@ public:
 
 	/**
 	* Compute the statistics.
+	* @param xml             XML Structure.
 	* @param res             XML tag that will be hold the results.
 	*/
-	virtual void Compute(R::RXMLTag& res) throw(GException)=0;
+	virtual void Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)=0;
+
+	/**
+	* Add a tag representing an element with a value.
+	* @param xml             XML Structure.
+	* @param parent          XML tag that will be hold the result.
+	* @param element         Name of the element.
+	* @param val             Value.
+	*/
+	void AddTag(R::RXMLStruct* xml,R::RXMLTag* parent,R::RString element,double val);
+
+	/**
+	* Add a tag representing an element with a value.
+	* @param xml             XML Structure.
+	* @param parent          XML tag that will be hold the result.
+	* @param element         Name of the element.
+	* @param val             Value.
+	*/
+	void AddTag(R::RXMLStruct* xml,R::RXMLTag* parent,R::RString element,R::RString val);
 
 	/**
 	* Destructor of the statistics method.
@@ -109,6 +119,11 @@ public:
 
 
 //------------------------------------------------------------------------------
+/**
+* The GFactoryStatsCalc represent a factory for a given statistics method.
+* @author Pascal Francq
+* @short Generic Statistics Factory.
+*/
 class GFactoryStatsCalc : public GFactoryPlugin<GFactoryStatsCalc,GStatsCalc,GStatsCalcManager>
 {
 public:
@@ -129,7 +144,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-typedef GFactoryStatsCalc*(*GFactoryStatsCalcInit)(GStatsCalcManager*,const char*);
+/**
+* Signature of the method used to initiliaze a statistics factory.
+*/
+typedef GFactoryStatsCalc* GFactoryStatsCalcInit(GStatsCalcManager*,const char*);
 
 
 //-------------------------------------------------------------------------------
@@ -200,7 +218,7 @@ extern "C"                                                                      
 * factories.
 * @short Statss Computing Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryStatsCalcCursor,GFactoryStatsCalc,unsigned int)
+CLASSCURSOR(GFactoryStatsCalcCursor,GFactoryStatsCalc,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -109,7 +105,7 @@ public:
 
 	/**
 	* The traitment for a specific method will begin.
-	* @param id             The id describing the step in the method.
+	* @param num            Number of the current step.
 	*/
 	virtual void receiveNextMethod(unsigned int num) throw(std::bad_alloc,R::RException);
 

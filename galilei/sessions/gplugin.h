@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -40,10 +36,21 @@
 
 
 //------------------------------------------------------------------------------
-// include file for LibTool--
-#include <ltmm/loader.hh>
+// include file for R
 #include <rstd/rxmltag.h>
 
+//------------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <ctype.h>
+#include <stdexcept>
+#include <dirent.h>
+using namespace std;
+using namespace R;
+
+
+//------------------------------------------------------------------------------
+// include file for dlopen
+#include <dlfcn.h>
 
 //------------------------------------------------------------------------------
 // include file for GALILEI
@@ -99,13 +106,28 @@ public:
 
 //------------------------------------------------------------------------------
 /**
-* The GPLuginPlugin class provides a template for a generic plugin.
+* Type of a function used to show the about box of a plugin.
+*/
+typedef void (*About_t)();
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+/**
+* The GPLuginPlugin class provides a template for a generic plugin factory. A
+* factory handles the loading of the dynamic library containing the plugin.
 * @author Pascal Francq
 * @short Generic Plugin Factory.
 */
 template<class factory,class plugin,class mng>
 	class GFactoryPlugin : public GParams
 {
+public:
+	/**
+	* Type of a function used to show dialog box of a plugin.
+	*/
+	typedef void* (*Configure_t)(GFactoryPlugin*);
+
 protected:
 
 	/**
@@ -126,13 +148,24 @@ protected:
 	/**
 	* Pointer to a function showing the about box.
 	*/
-	ltmm::symbol* AboutDlg;
+	About_t AboutDlg;
 
 	/**
 	* Pointer to a function showing the configure box.
 	* @param f               Factory of the pluging to configure.
 	*/
-	ltmm::symbol* ConfigDlg;
+	void* ConfigDlg;
+
+	/**
+	* The Handle(void *) to maintain the (dlopen)handler for the opened library
+	*/
+	void* Handle;
+
+	/**
+	* The Handle(void *) to maintain the (dlopen)handler for the opened library
+	*/
+	void* HandleDlg;
+
 
 public:
 	/**
@@ -142,7 +175,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryPlugin(mng* m,const char* n,const char* f)
-		: GParams(n), Mng(m), Plugin(0), Lib(f), AboutDlg(0), ConfigDlg(0) {}
+		: GParams(n), Mng(m), Plugin(0), Lib(f), AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0) {}
 
 	/**
 	* Get the manager of the factory.
@@ -154,13 +187,25 @@ public:
 	* Set the about box.
 	* @param dlg             Param to the function.
 	*/
-	void SetAbout(ltmm::symbol* dlg) {AboutDlg=dlg;}
+	void SetAbout(About_t dlg) {AboutDlg=dlg;}
 
 	/**
 	* Set the configure box.
 	* @param dlg             Param to the function.
 	*/
-	void SetConfig(ltmm::symbol* dlg) {ConfigDlg=dlg;}
+	void SetConfig(void* dlg) {ConfigDlg=dlg;}
+
+	/**
+	* Set the handler of the library.
+	* @param handle         Handle of the library.
+	*/
+	void SetHandler(void* handle) {Handle=handle;}
+
+	/**
+	* Set the Handler of the Dlg library.
+	* @param handleDlg      Handle of the dialog library
+	*/
+	void SetDlgHandler(void* handleDlg) {HandleDlg=handleDlg;}
 
 	/**
 	* Method needed by R::RContainer.
@@ -203,7 +248,7 @@ public:
 	void About(void)
 	{
 		if(AboutDlg)
-			((void(*)(void))(AboutDlg->ptr()))();
+			AboutDlg();
 	}
 
 	/**
@@ -212,7 +257,10 @@ public:
 	void Configure(void)
 	{
 		if(ConfigDlg)
-			((void(*)(factory*))(ConfigDlg->ptr()))(dynamic_cast<factory*>(this));
+		{
+			Configure_t config= (Configure_t) ConfigDlg ;
+			config(dynamic_cast<factory*>(this));
+		}
 	}
 
 	/**
@@ -249,7 +297,7 @@ public:
 	/**
 	* Get the library of the plugin.
 	*/
-	const char* GetLib(void) const {return(Lib);}
+	RString GetLib(void) const {return(Lib);}
 
 	/**
 	* Return the version of the plugin.
@@ -288,25 +336,178 @@ public:
 	/**
 	* Save a configuration to a XML Tag.
 	* this tag.
+	* @param xml             XML Structure.
 	* @param parent          Parent tag.
 	*/
-	void SaveConfig(R::RXMLTag* parent)
+	void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent)
 	{
 		R::RXMLTag* tag=new R::RXMLTag("Plugin");
 		tag->InsertAttr("Name",Name);
-		parent->AddTag(tag);
+		xml->AddTag(parent,tag);
 		if(Plugin)
 			tag->InsertAttr("Enable","True");
 		else
 			tag->InsertAttr("Enable","False");
-		GParams::SaveConfig(tag);
+		GParams::SaveConfig(xml,tag);
 	}
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GFactoryPlugin(void) {if(Plugin) delete Plugin;}
+	virtual ~GFactoryPlugin(void)
+	{
+		if(Plugin)
+			delete Plugin;
+
+		if (Handle)
+			dlclose(Handle);
+
+		if (HandleDlg)
+			dlclose(HandleDlg);
+	}
 };
+
+
+//------------------------------------------------------------------------------
+/**
+* Template function to load a given type of plugins in a given directory.
+* @param factory            Generic Factory.
+* @param factoryInit        Type of the function used to initialize a factory.
+* @param manager            Type of the manager.
+* @param mng                Pointer to the manager.
+* @param path               Path of the directory to look at.
+* @param API_version        The API version of the plugins handled.
+* @param dlg                Specify if the dialog boxes shared libraries must be
+*                           loaded (true) or not (false).
+*/
+template<class factory,class factoryInit,class manager>
+	void LoadPlugins(manager* mng, const char* path, const char* API_version,bool dlg) throw(std::bad_alloc, GException)
+{
+
+	DIR* dp;
+	struct dirent* ep;
+	RString Path(path);
+	RString Msg;
+	RString Name;
+	char DlgLib[100];
+	int len;
+	bool found=false;
+	bool end=false;
+
+	while (!end)
+	{
+		dp=opendir(Path);
+		Path+="/";
+		if(!dp) return;
+		while((ep=readdir(dp)))
+		{
+			len=strlen(ep->d_name);
+			if(len<3) continue;
+			if(strcmp(&ep->d_name[len-3],".so")) continue;
+			if((len>7)&&(!strcmp(&ep->d_name[len-7],"_dlg.so"))) continue;
+			try
+			{
+
+				// Create the factory and insert it
+				Name=Path+ep->d_name;
+				void *handle=dlopen(Name,RTLD_LAZY);
+
+				if (handle == NULL)
+				{
+					char *error=dlerror();
+					Msg+="ERROR :";
+					Msg+=error;
+					continue;
+				}
+
+				factoryInit* initFac= (factoryInit*) dlsym(handle,"FactoryCreate");
+				char *error=NULL;
+				if((error=dlerror())!=NULL)
+				{
+					Msg+="ERROR :";
+					Msg+=error;
+					continue;
+				}
+
+				factory *myfactory= initFac(mng ,ep->d_name);
+
+				if(strcmp(API_version,myfactory->GetAPIVersion()))
+				{
+					Msg+=ep->d_name;
+					Msg+=" - Plugin not compatible with API Version\n";
+					continue;
+				}
+				mng->InsertPtr(myfactory);
+				found=true;
+
+				// Look if dialog boxes are available
+				if(!dlg) continue;
+				// LOAD DLG PLUGINS
+				try
+				{
+					strcpy(DlgLib,Name);
+					DlgLib[Name.GetLen()-3]=0;
+					strcat(DlgLib,"_dlg.so");
+
+					void* handleDLG=dlopen(DlgLib,RTLD_LAZY);
+					if (handleDLG == NULL)
+					{
+						continue;
+					}
+
+					// -- Get Symbol on the About method
+					About_t about = (About_t) dlsym(handleDLG,"About");
+					char *error=NULL;
+					if((error=dlerror())!=NULL)
+					{
+						continue;
+					}
+
+					//register method
+					myfactory->SetAbout(about);
+
+
+					// -- Get Symbol on the Configure  method
+					void* config= dlsym(handleDLG,"Configure");
+			 		char *errorDlg=NULL;
+					if((errorDlg=dlerror())!=NULL)
+					{
+						continue;
+					}
+
+					//register method
+					myfactory->SetConfig(config);
+
+				}
+				catch(...)
+				{
+				}
+			}
+			catch(std::exception& e)
+			{
+				Msg+=ep->d_name;
+				Msg+=" - ";
+				Msg+=e.what();
+				Msg+="\n";
+			}
+		}
+
+		//if the libaries are found then stop the search
+		if (found)
+		{
+			end=true;
+		}
+		// else continue the search in the sub dir ".libs"
+		else
+		{
+			Path+=".libs";
+		}
+		closedir(dp);
+	}
+	// If something in Msg -> error
+	if(Msg.GetLen())
+		throw(GException(Msg));
+}
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

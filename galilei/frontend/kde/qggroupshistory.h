@@ -11,10 +11,6 @@
 	Authors:
 		David Wartel <dwartel@ulb.ac.be>	
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -83,7 +79,7 @@ public:
 	/**
 	* Constructor of the Widget.
 	* @param parent         Parent of the widget.
-	* @param gps            groups to display.
+	* @param grps           Groups to display.
 	* @param name           Name of the widget.
 	*/
 	QGGroupsHistory(QWidget* parent,GGroupsHistory* grps, const char* name=0);
@@ -95,6 +91,7 @@ public:
 
 	/**
 	* Set the groups.
+	* @param grps           Groups to display.
 	*/
 	void setGroups(GGroupsHistory* grps);
 

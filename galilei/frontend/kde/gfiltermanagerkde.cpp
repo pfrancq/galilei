@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -37,6 +33,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfiltermanagerkde.h>
+#include <frontend/kde/rqt.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -81,6 +78,11 @@ void GALILEI::GFilterManagerKDE::Download(const char* URL,RString& tmpFile) thro
 //-----------------------------------------------------------------------------
 const char* GALILEI::GFilterManagerKDE::DetermineMIMEType(const char* tmpfile) throw(GException)
 {
+	const char* res;
+
+	res=GFilterManager::DetermineMIMEType(tmpfile);
+	if(res)
+		return(res);
 	KMimeMagicResult *result = KMimeMagic::self()->findFileType(tmpfile);
 	if((!result)||(!result->isValid()))
 		return(0);
@@ -91,7 +93,7 @@ const char* GALILEI::GFilterManagerKDE::DetermineMIMEType(const char* tmpfile) t
 //-----------------------------------------------------------------------------
 void GALILEI::GFilterManagerKDE::Delete(RString& tmpFile) throw(GException)
 {
-	KIO::NetAccess::removeTempFile(tmpFile.Latin1());
+	KIO::NetAccess::removeTempFile(ToQString(tmpFile));
 }
 
 

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -37,11 +33,6 @@
 //------------------------------------------------------------------------------
 #ifndef GGroupingH
 #define GGroupingH
-
-
-//------------------------------------------------------------------------------
-// include file for LibTool--
-#include <ltmm/loader.hh>
 
 
 //------------------------------------------------------------------------------
@@ -141,6 +132,8 @@ public:
 	/**
 	* Make the groups.
 	* @param rec            Receiver of the signals.
+	* @param modified       Should the method restart from the current
+	*                       clustering (true) or start from scratch (false).
 	* @param save           Save modified elements.
 	* @param savehistory    Save history of grouping.
 	*/
@@ -154,6 +147,11 @@ public:
 
 
 //------------------------------------------------------------------------------
+/**
+* The GFactoryGrouping represent a factory for a given grouping method.
+* @author Pascal Francq
+* @short Generic Grouping Factory.
+*/
 class GFactoryGrouping : public GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>
 {
 public:
@@ -174,7 +172,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-typedef GFactoryGrouping*(*GFactoryGroupingInit)(GGroupingManager*,const char*);
+/**
+* Signature of the method used to initiliaze a grouping factory.
+*/
+typedef GFactoryGrouping* GFactoryGroupingInit(GGroupingManager*,const char*);
 
 
 //-------------------------------------------------------------------------------
@@ -245,7 +246,7 @@ extern "C"                                                                      
 * factories.
 * @short Grouping Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryGroupingCursor,GFactoryGrouping,unsigned int)
+CLASSCURSOR(GFactoryGroupingCursor,GFactoryGrouping,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

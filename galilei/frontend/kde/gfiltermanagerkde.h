@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -79,7 +75,7 @@ protected:
 
 	/**
 	* Look for the mime types of a temporary file.
-	* @param tmpFile        Temporary file created.
+	* @param tmpfile        Temporary file created.
 	* @return Pointer to a GMIMEFilter.
 	*/
 	virtual const char* DetermineMIMEType(const char* tmpfile) throw(GException);

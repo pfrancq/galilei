@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -63,30 +59,32 @@ public:
 
 	/**
 	* Constructor of a list of weighted information entities.
-	* @param max             Maximal number of word created at initialisation.
+	* @param max            Maximal number of word created at initialisation.
 	*/
 	GWeightInfos(unsigned int max) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a list of weighted information entities.
-	* @param max             List of weighted information entities.
+	* @param w              List of weighted information entities.
 	*/
 	GWeightInfos(const GWeightInfos& w) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a list of weighted information entities.
-	* @param max             Pointer to a list of weighted information entities.
+	* @param w              Pointer to a list of weighted information entities.
 	*/
 	GWeightInfos(const GWeightInfos* w) throw(std::bad_alloc);
 
 	/**
 	* Assignement operator for lists of weighted information entities.
-	* @param src             List of weighted information entity.
+	* @param w              Source list of weighted information entity.
 	*/
 	GWeightInfos& operator=(const GWeightInfos& w) throw(std::bad_alloc);
 
 	/**
 	* Static function used to order the information entities by weights.
+	* @param a              Pointer to the first object.
+	* @param b              Pointer to the second object.
 	*/
 	static int sortOrder(const void* a,const void* b);
 
@@ -118,6 +116,15 @@ public:
 
 	/**
 	* Compute a similarity between two lists of weighted information entities.
+	* The method uses the cosinus of the corresponding vectors build directly
+	* from the lists. If one of the list is empty, the similarity is null.
+	* @param w              Reference to a list of weighted information entities.
+	*/
+	double Similarity(const GWeightInfos& w) const
+	{return(Similarity(&w));}
+
+	/**
+	* Compute a similarity between two lists of weighted information entities.
 	* The method uses the cosinus of the corresponding vectors. A vector of a
 	* list is build using this list and a Inverse Frequence Factor (IFF) of the
 	* object type (idf, isf or ivf) for a given information entity space
@@ -127,6 +134,19 @@ public:
 	* @param lang           Information entity space (Language).
 	*/
 	double SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang* lang) const throw(GException);
+
+	/**
+	* Compute a similarity between two lists of weighted information entities.
+	* The method uses the cosinus of the corresponding vectors. A vector of a
+	* list is build using this list and a Inverse Frequence Factor (IFF) of the
+	* object type (idf, isf or ivf) for a given information entity space
+	* (language). If one of the list is empty, the similarity is null.
+	* @param w              Reference to a list of weighted information entities.
+	* @param ObjType        Type of the object.
+	* @param lang           Information entity space (Language).
+	*/
+	double SimilarityIFF(const GWeightInfos& w,tObjType ObjType,GLang* lang) const throw(GException)
+	{ return(SimilarityIFF(&w,ObjType,lang));}
 
 	/**
 	* Add the references for the information entities of the object type in a

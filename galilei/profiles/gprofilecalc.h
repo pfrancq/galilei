@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -37,11 +33,6 @@
 //------------------------------------------------------------------------------
 #ifndef GProfileCalcH
 #define GProfileCalcH
-
-
-//------------------------------------------------------------------------------
-// include file for LibTool--
-#include <ltmm/loader.hh>
 
 
 //------------------------------------------------------------------------------
@@ -109,6 +100,12 @@ public:
 
 
 //------------------------------------------------------------------------------
+/**
+* The GFactoryProfileCalc represent a factory for a given profile computing
+* method.
+* @author Pascal Francq
+* @short Generic Profile Computing Factory.
+*/
 class GFactoryProfileCalc : public GFactoryPlugin<GFactoryProfileCalc,GProfileCalc,GProfileCalcManager>
 {
 public:
@@ -129,7 +126,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-typedef GFactoryProfileCalc*(*GFactoryProfileCalcInit)(GProfileCalcManager*,const char*);
+/**
+* Signature of the method used to initiliaze a profile computing factory.
+*/
+typedef GFactoryProfileCalc* GFactoryProfileCalcInit(GProfileCalcManager*,const char*);
 
 
 //-------------------------------------------------------------------------------
@@ -200,7 +200,7 @@ extern "C"                                                                      
 * factories.
 * @short Profiles Computing Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryProfileCalcCursor,GFactoryProfileCalc,unsigned int)
+CLASSCURSOR(GFactoryProfileCalcCursor,GFactoryProfileCalc,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -6,14 +6,10 @@
 
 	Generic Filter for documents - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -36,6 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <docs/gdocxml.h>
 #include <docs/gfilter.h>
 #include <docs/gfiltermanager.h>
 using namespace GALILEI;
@@ -56,12 +53,18 @@ GFilter::GFilter(GFactoryFilter* fac) throw(std::bad_alloc)
 }
 
 
-// //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 void GFilter::AddMIME(const char* name) throw(std::bad_alloc)
 {
 	GetFactory()->GetMng()->AddMIME(name,this);
 }
 
+
+//---------------------------------------------------------------------------
+void GFilter::AddMIME(RString name) throw(std::bad_alloc)
+{
+	GetFactory()->GetMng()->AddMIME(name,this);
+}
 
 //------------------------------------------------------------------------------
 void GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(std::bad_alloc,GException)
@@ -114,7 +117,7 @@ void GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(std::bad_alloc,GEx
 					}
 					if(i>len)      // Look if there more than one space character.
 					{
-						memcpy(hold,ptr,(len+1)*sizeof(char));
+						memmove(hold,ptr,(len+1)*sizeof(char));
 						ptr=hold;
 					}
 					NbWords++;
@@ -147,7 +150,7 @@ void GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(std::bad_alloc,GEx
 			// Verify that it is not a single '.'
 			if((!ispunct(*block))||(*(block+1)))
 			{
-				attach->AddTag(sent=new RXMLTag("docxml:sentence"));
+				Doc->AddTag(attach,sent=new RXMLTag("docxml:sentence"));
 				sent->AddContent(block);
 			}
 			block=ptr;
@@ -241,10 +244,94 @@ void GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach) throw(std::bad_alloc,GE
 			// Verify that it is not a single '.'
 			if((!block->IsPunct())||((block+1)->IsNull()))
 			{
-				attach->AddTag(sent=new RXMLTag("docxml:sentence"));
+				Doc->AddTag(attach,sent=new RXMLTag("docxml:sentence"));
 				sent->AddContent(block);
 			}
 			block=ptr;
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach) throw(std::bad_alloc,GException)
+{
+	RXMLTag* sent;
+	int pos;
+	int NbWords;
+	bool EndSentence;
+	RString sentence;
+	RCharCursor Cur(block);
+
+	// Look at block
+	if(!block.GetLen()) return;
+
+	// Search Sentences
+	while(!Cur.End())
+	{
+		// Skip leading spaces.
+		while((!Cur.End())&&(Cur().IsSpace()))
+			Cur.Next();
+
+		// Seach sentence
+		NbWords=0;
+		EndSentence=false;
+		pos=Cur.GetPos();
+
+		// If Only 1 word or no space between a punctation and the next
+		// word, no sentence created.
+		while((!Cur.End())&&(!EndSentence))
+		{
+			// While not ending of a sentence, go through
+			while((!Cur.End())&&(!IsEndSentence(Cur())))
+			{
+				// If the next characters are spaces, it is a word
+				if(Cur().IsSpace())
+				{
+					// Add the word
+					if(!sentence.IsEmpty())
+						sentence+=' ';
+					sentence+=block.Mid(pos,Cur.GetPos()-pos);
+
+					// Next word can be read
+					while((!Cur.End())&&(Cur().IsSpace()))
+						Cur.Next();
+					NbWords++;
+					pos=Cur.GetPos();
+				}
+				else
+					Cur.Next();
+			}
+
+			// Verify if it is a correct end of sentence
+			if((!Cur.End())&&(Cur.GetPos()+1<Cur.GetNb())&&(!Cur[Cur.GetPos()+1].IsNull())&&/*((NbWords<1)||*/ (!Cur[Cur.GetPos()+1].IsSpace()))
+				Cur.Next(); // Skip the punctation
+			else
+			{
+				EndSentence=true;      // End of sentence.
+				if(!sentence.IsEmpty())
+					sentence+=' ';
+				sentence+=block.Mid(pos,Cur.GetPos()-pos);
+				pos=Cur.GetPos();
+			}
+		}
+
+		if(!Cur.End())
+		{
+			Cur.Next();
+			pos=Cur.GetPos();
+		}
+
+		// Insert sentence
+		if(!sentence.IsEmpty())
+		{
+			// Verify that it is not a single '.'
+			if((!sentence[static_cast<unsigned int>(0)].IsPunct())||(sentence.GetLen()>1))
+			{
+				Doc->AddTag(attach,sent=new RXMLTag("docxml:sentence"));
+				sent->AddContent(sentence);
+			}
+			sentence.Clear();
 		}
 	}
 }
@@ -274,7 +361,7 @@ void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach) throw(std::ba
 		}
 		if(len)
 		{
-			attach->AddTag(kwd=new RXMLTag("docxml:keyword"));
+			Doc->AddTag(attach,kwd=new RXMLTag("docxml:keyword"));
 			if(*ptr)
 				(*(ptr++))=0;          // Skip separator.
 			kwd->InsertAttr("docxml:value",list);
@@ -312,7 +399,7 @@ void GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach) throw(std::
 		}
 		if(len)
 		{
-			attach->AddTag(kwd=new RXMLTag("docxml:keyword"));
+			Doc->AddTag(attach,kwd=new RXMLTag("docxml:keyword"));
 			if(!ptr->IsNull())
 				(*(ptr++))=0;          // Skip separator.
 			kwd->InsertAttr("docxml:value",list);
@@ -321,6 +408,38 @@ void GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach) throw(std::
 		{
 			ptr++;
 			list=ptr;
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* attach) throw(std::bad_alloc,GException)
+{
+	RCharCursor Cur;
+	RXMLTag* kwd;
+	unsigned int pos;
+
+	Cur.Set(list);
+	while(!Cur.End())
+	{
+		// Skip Spaces.
+		while((!Cur.End())&&(Cur().IsSpace()))
+			Cur.Next();
+
+		// Search the next keywords.
+		pos=Cur.GetPos();
+		while((!Cur.End())&&(!Cur().IsSpace())&&(Cur()!=sep))
+			Cur.Next();
+		if(Cur.GetPos()-pos)
+		{
+			Doc->AddTag(attach,kwd=new RXMLTag("docxml:keyword"));
+			kwd->InsertAttr("docxml:value",list.Mid(pos,Cur.GetPos()-pos));
+		}
+		else
+		{
+			if(!Cur.End())
+				Cur.Next();
 		}
 	}
 }

@@ -10,10 +10,6 @@
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be))
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -58,11 +54,10 @@ GLinks::GLinks(GDoc* d) throw(std::bad_alloc, GException)
 
 
 //------------------------------------------------------------------------------
-GLinkCursor& GLinks::GetLinkCursor(void)
+GLinkCursor GLinks::GetLinkCursor(void)
 {
-	GLinkCursor *cur = GLinkCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GLinkCursor cur(this);
+	return(cur);
 }
 
 

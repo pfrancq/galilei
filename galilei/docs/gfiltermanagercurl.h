@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -78,6 +74,14 @@ public:
 	GFilterManagerCURL(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
 
 protected:
+
+	/**
+	* Try to guess the MIME types of a temporary file. This method looks for the
+	* information using the libCurl library.
+	* @param tmpfile        Temporary file created.
+	* @return Name fo of the MIME type.
+	*/
+	virtual const char* DetermineMIMEType(const char* tmpfile) throw(GException);
 
 	/**
 	* Download and store locally a document given by an URL.

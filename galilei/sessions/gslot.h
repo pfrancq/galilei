@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -83,6 +79,24 @@ public:
 	virtual void receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,R::RException);
 
 	/**
+	* The traitment for a specific profile will begin.
+	* @param prof           Profile.
+	*/
+	virtual void receiveNextProfileExport(const GProfile* prof) throw(std::bad_alloc,R::RException);
+
+	/**
+	* The traitment for a specific document will begin.
+	* @param doc           Document
+	*/
+	virtual void receiveNextDocumentExport(const GDoc* doc) throw(std::bad_alloc,R::RException);
+
+	/**
+	* The traitment for a specific group will begin.
+	* @param grp           Group.
+	*/
+	virtual void receiveNextGroupExport(const GGroup* grp) throw(std::bad_alloc,R::RException);
+
+	/**
 	* Method called by GGrouping each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
@@ -96,7 +110,7 @@ public:
 
 	/**
 	* The traitment for a specific method will begin.
-	* @param id             The id describing the step in the method.
+	* @param num            Number of the current step.
 	*/
 	virtual void receiveNextMethod(unsigned int num) throw(std::bad_alloc,R::RException);
 

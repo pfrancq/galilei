@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -127,6 +123,7 @@ public:
 
 	/**
 	* Constructor of the subprofile.
+	* @param session         Session.
 	* @param prof            Profile.
 	* @param lang            Language of the subprofile.
 	*/
@@ -170,13 +167,13 @@ public:
 	*/
 	int Compare(const GLang* lang) const;
 
-	/*
+	/**
 	* Add an assessment for the subprofile.
 	* @param j               Pointer to an assessment.
 	*/
 	void AddAssessment(GProfDoc* j) throw(std::bad_alloc);
 
-	/*
+	/**
 	* Remove an assessment for the subprofile.
 	* @param j               Pointer to an assessment.
 	*/
@@ -185,7 +182,7 @@ public:
 	/**
 	* Clear all the assessments of the subprofile.
 	*/
-	virtual void ClearFdbks(void) throw(std::bad_alloc);
+	virtual void ClearFdbks(void) throw(std::bad_alloc,GException);
 
 	/**
 	* Get the identificator of the subprofile.
@@ -205,7 +202,7 @@ public:
 	*/
 	tObjState GetState(void) const {return(State);}
 
-	/*
+	/**
 	* Set the state of the subprofile
 	* @param state           New state of the subprofile.
 	*/
@@ -239,7 +236,7 @@ public:
 
 	/**
 	* Set the group holding the subprofile.
-	* @params grp            Pointer to the group.
+	* @param grp            Pointer to the group.
 	*/
 	void SetGroup(GGroup* grp);
 
@@ -247,19 +244,19 @@ public:
 	* Get the date of the last attachment.
 	* @returns R::RDate.
 	*/
-	R::RDate& GetAttached(void) const;
+	R::RDate GetAttached(void) const;
 
 	/**
 	* Get the date of the last update of the subprofile.
 	* @returns R::RDate.
 	*/
-	R::RDate& GetUpdated(void) const;
+	R::RDate GetUpdated(void) const;
 
 	/**
 	* Get the date of the last analysis of the subprofile.
 	* @returns R::RDate.
 	*/
-	R::RDate& GetComputed(void) const;
+	R::RDate GetComputed(void) const;
 
 	/**
 	* See if the subprofile was updated until the last time he was inserted into
@@ -313,7 +310,7 @@ public:
 	* Get a cursor on the feedback for the profile.
 	* @return GProfDocCursor.
 	*/
-	GProfDocCursor& GetProfDocCursor(void);
+	GProfDocCursor GetProfDocCursor(void);
 
 	/**
 	* Compute the similarity between a subprofile and a document.
@@ -377,7 +374,7 @@ public:
 	/**
 	* Destructor of a subprofile.
 	*/
-	virtual ~GSubProfile(void) throw(GException);
+	virtual ~GSubProfile(void);
 };
 
 
@@ -386,7 +383,7 @@ public:
 * The GSubProfileCursor class provides a way to go trough a set of subprofiles.
 * @short SubProfiles Cursor
 */
-CLASSCURSOR(GSubProfileCursor,GSubProfile,unsigned int)
+CLASSCURSOR(GSubProfileCursor,GSubProfile,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

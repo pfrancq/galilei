@@ -12,10 +12,6 @@
 		
 		David Wartel (dwartel@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -43,6 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcursor.h>
+#include <frontend/kde/rqt.h>
 using namespace R;
 
 
@@ -53,6 +50,7 @@ using namespace R;
 #include <qgsubprofilevector.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
+#include <profiles/gsubprofilevector.h>
 #include <sessions/gsession.h>
 #include <profiles/gsubprofile.h>
 using namespace GALILEI;
@@ -70,11 +68,8 @@ GALILEI::QGSubProfileDescs::QGSubProfileDescs(QTabWidget* parent,GSession* sessi
 	: QWidget(parent,"QGSubProfileDescs"), Session(session), Profile(profile), SubProfilesDesc(profile->NbPtr,5), DescType(t)
 {
 	QSize act=size(),tmp, cbsize;
-	GSubProfile* s;
+	GSubProfileCursor s;
 	QGSubProfileDesc* w;
-
-	// title of the window
-//
 
 	// Construct the combo box
 	Lang=new QComboBox(this);
@@ -85,13 +80,16 @@ GALILEI::QGSubProfileDescs::QGSubProfileDescs(QTabWidget* parent,GSession* sessi
 	connect(Lang,SIGNAL(activated(int)),this,SLOT(slotLangChanged(int)));
 
 	// For each subprofile create a widget
-	for(Profile->Start();!Profile->End();Profile->Next())
+	s=Profile->GetSubProfilesCursor();
+	for(s.Start();!s.End();s.Next())
 	{
-		s=(*Profile)();
+		// If language is not handled -> do not treat it
+		if(!s()->GetLang()) 
+			continue;
 		switch(DescType)
 		{
 			case sdVector:
-				w=new QGSubProfileVector(this,Session,(GSubProfileVector*)s);
+				w=new QGSubProfileVector(this,Session,dynamic_cast<GSubProfileVector*>(s()));
 				break;
 
 			case sdNothing:
@@ -100,7 +98,7 @@ GALILEI::QGSubProfileDescs::QGSubProfileDescs(QTabWidget* parent,GSession* sessi
 		}
 		if(!w) return;
 		SubProfilesDesc.InsertPtr(w);
-		Lang->insertItem(s->GetLang()->GetName(),SubProfilesDesc.NbPtr-1);
+		Lang->insertItem(ToQString(s()->GetLang()->GetName()),SubProfilesDesc.NbPtr-1);
 		w->move(0,cbsize.height());
 		w->resize(act.width(),act.height()-cbsize.height());
 		if(SubProfilesDesc.NbPtr==1)

@@ -12,10 +12,6 @@
 		David Wartel (dwartel@ulb.ac.be).
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -131,26 +127,27 @@ public:
 
 	/**
 	* Constructor
-	* @param sess           opened session
-	* @param idealgroups    groups to mix
-	* @param nbgroups       Number of groups needed
-	* @param nbsubprofiles  Number of subprofiles.
-	* @param level          maximum number of each type of mix.
-	* @param m              merge same?
-	* @param s              split category?
-	* @param r              random grouping?
+	* @param sess           Session.
+	* @param idealgroups    Groups to mix.
+	* @param nbgroups       Number of groups needed.
+	* @param level          Maximum number of each type of mix.
+	* @param m              Merge same?
+	* @param s              Split category?
+	* @param r              Random grouping?
+	* @param i              Ideal group should be integrated.
 	*/
 	GMixIdealGroups(GSession* sess,GGroups* idealgroups, int nbgroups=10, int level=3, bool m=true, bool s=true, bool r=true, bool i=true);
 
 	/**
-	* set the settings.
+	* Set the settings.
+	* @param s              C String representing the settings.
 	*/
 	void SetSettings(const char* s);
 
 	/**
 	* Get the ideal group of a given subprofile.
 	* @param s              Pointer to the subprofile.
-	* @reutns GGroup pointer.
+	* @return GGroup pointer.
 	*/
 	GGroup* GetIdealGroup(GSubProfile* s);
 

@@ -12,10 +12,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be).
 		Vandaele Valery (vavdaele@ulb.ac.be)
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -112,11 +108,11 @@ public:
 	double Deviation;                                     // Standart deviation of similarities
 	unsigned int OldNbComp;                               // Old number of comparisons
 	GProfilesSims* Manager;                               //manger of the gprofsim
-	// Identificators of modified profiles
+	// Identificators of modified (and defined) )profiles
 	RContainer<GSubProfile,unsigned int,false,true>* ModifiedProfs;
 
 	// Constructor and Compare methods.
-	GProfilesSim(GProfilesSims* manager,GSubProfileCursor& s,bool iff,GLang* lang) throw(std::bad_alloc, GException);
+	GProfilesSim(GProfilesSims* manager,GSubProfileCursor s,bool iff,GLang* lang) throw(std::bad_alloc, GException);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GProfilesSim* profilesSim) const {return(Lang->Compare(profilesSim->Lang));}
 
@@ -141,9 +137,9 @@ public:
 
 
 	// Update the deviation od similarities.
-	void UpdateDeviationAndMeanSim(GSubProfileCursor& subprofiles) throw (GException); // general function
-	void UpdateDevMeanSim(GSubProfileCursor& subprofiles) throw (GException); // memory on
-	void RecomputeDevMeanSim(GSubProfileCursor& subprofiles) throw (GException); //memory off
+	void UpdateDeviationAndMeanSim(GSubProfileCursor subprofiles) throw (GException); // general function
+	void UpdateDevMeanSim(GSubProfileCursor subprofiles) throw (GException); // memory on
+	void RecomputeDevMeanSim(GSubProfileCursor subprofiles) throw (GException); //memory off
 
 	// Add a subprofile to the listof the modified one.
 	void AddModifiedProfile(GSubProfile* s);
@@ -154,7 +150,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCursor& s,bool iff,GLang* l) throw(std::bad_alloc, GException)
+GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCursor s,bool iff,GLang* l) throw(std::bad_alloc, GException)
 	:  IFF(iff),Lang(l),Manager(manager)
 {
 	GSubProfileCursor Cur1, Cur2;
@@ -183,14 +179,19 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 	if(!Cur1.GetNb()) return;
 	for(Cur1.Start(), i=0; !Cur1.End();Cur1.Next(),i++)
 	{
-		if ((!Cur1()->IsDefined())||(Cur1()->GetProfile()->GetId()==1)) continue;
+		// if the profile is the first one -> no need to create sim
+		if (Cur1()->GetProfile()->GetId()==1) continue;
 		pos=Cur1()->GetProfile()->GetId();
 		sim=new GSims(pos,pos);
 		Sims->InsertPtrAt(sim,pos);
-		for(Cur2.Start(), j=0;j<i;Cur2.Next(),j++)
+		//if the sub is not defined, no need to analyse sim (but the simS must be created!!)
+		if (!Cur1()->IsDefined()) continue;
+		for(Cur2.Start(); !Cur2.End(); Cur2.Next())
 		{
 			if (!Cur2()->IsDefined()) continue;
-		 	AnalyseSim(sim,Cur1(),Cur2());
+			if (Cur2()->GetId()==Cur1()->GetId()) continue;
+			if(Cur1()->GetProfile()->GetId()>Cur2()->GetProfile()->GetId())
+		 		AnalyseSim(sim,Cur1(),Cur2());
 		}
 	}
 
@@ -312,21 +313,52 @@ double GProfilesSims::GProfilesSim::GetSim(const GSubProfile* sub1,const GSubPro
 void GProfilesSims::GProfilesSim::Update(void) throw(std::bad_alloc)
 {
 	GSims* sims;
+	GSim* sim;
+	GSubProfileCursor subscur;
+	GSubProfileCursor subscur2;
+	subscur.Set(ModifiedProfs);
+	subscur2=Manager->GetSession()->GetSubProfilesCursor(Lang);
 
 	// if memory is false, no update is needed
 	// since sims are claulctaed each time
 	if(!Manager->GetMemory())
 		return;
 
+	if (!subscur.GetNb()) return;
+
 	// change status of modified subprofiles and add sims of created subprofiles
-	for (ModifiedProfs->Start(); !ModifiedProfs->End(); ModifiedProfs->Next())
+	for (subscur.Start(); !subscur.End(); subscur.Next())
 	{
-		if(!(*ModifiedProfs)()->IsDefined()) continue;
-		sims = Sims->GetPtrAt((*ModifiedProfs)()->GetProfile()->GetId());
+		if(!subscur()->IsDefined()) continue;
+		sims = Sims->GetPtrAt(subscur()->GetProfile()->GetId());
+		//if the sims don't exist, they must be created.
 		if(!sims)
-			sims=AddNewSims((*ModifiedProfs)());
+			sims=AddNewSims(subscur());
+		//else if they exist, they have to be update
+		else
+		{
+			for (subscur2.Start(); !subscur2.End(); subscur2.Next())
+			{
+				if(!subscur2()->IsDefined()) continue;
+				//take only less ID
+				if (!(subscur()->GetProfile()->GetId()>subscur2()->GetProfile()->GetId())) continue;
+				sim=sims->GetPtrAt(subscur2()->GetProfile()->GetId());
+				if (!sim)
+					AnalyseSim(sims, subscur(), subscur2(),true);
+			}
+		}
+		if (IFF) continue; //if IFF all the sims will be set to osModified later.
 		for (sims->Start(); !sims->End(); sims->Next())
 			(*sims)()->State=osModified;
+	}
+
+	if (IFF) //if IFF all sims must be set to osModified since at least one sub is modified.
+	{
+		for (Sims->Start(); !Sims->End(); Sims->Next())
+		{
+			for ((*Sims)()->Start(); !(*Sims)()->End(); (*Sims)()->Next())
+				(*(*Sims)())()->State=osModified;
+		}
 	}
 
 	//reset the number of modified subprofiles.
@@ -369,7 +401,7 @@ GSims*  GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 	{
 		if (subcur()->GetProfile()->GetId()<sub->GetProfile()->GetId())
 		{
-			// if the sim exists, it hs to be set to 0.0 not to influence devaition!
+			// if the sim exists, it hs to be set to 0.0 not to influence deviation!
 			AnalyseSim(sims, sub,subcur(), true);
 		}
 		if (subcur()->GetProfile()->GetId()>sub->GetProfile()->GetId())
@@ -387,7 +419,7 @@ GSims*  GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 
 
 //------------------------------------------------------------------------------
-void GProfilesSims::GProfilesSim::UpdateDeviationAndMeanSim(GSubProfileCursor& subprofiles) throw (GException)
+void GProfilesSims::GProfilesSim::UpdateDeviationAndMeanSim(GSubProfileCursor subprofiles) throw (GException)
 {
 	if (Manager->GetMemory())
 		UpdateDevMeanSim(subprofiles);
@@ -395,8 +427,9 @@ void GProfilesSims::GProfilesSim::UpdateDeviationAndMeanSim(GSubProfileCursor& s
 		RecomputeDevMeanSim(subprofiles);
 }
 
+
 //------------------------------------------------------------------------------
-void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor& subprofiles) throw (GException)
+void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor subprofiles) throw (GException)
 {
 	GSim* sim;
 	GSims* sims;
@@ -462,9 +495,9 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor& subprofile
 
 
 //------------------------------------------------------------------------------
-void GProfilesSims::GProfilesSim::RecomputeDevMeanSim(GSubProfileCursor& subprofiles) throw (GException)
+void GProfilesSims::GProfilesSim::RecomputeDevMeanSim(GSubProfileCursor subprofiles) throw (GException)
 {
-	unsigned int i,j, pos, nbcomp;
+	unsigned int i,j, nbcomp;
 	double simssum, deviation, tmpsim;
 	GSubProfileCursor s2;
 
@@ -514,6 +547,7 @@ GProfilesSims::GProfilesSim::~GProfilesSim(void)
 	if(ModifiedProfs)
 		delete ModifiedProfs;
 }
+
 
 
 //------------------------------------------------------------------------------

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -98,12 +94,12 @@ int GProfDoc::Compare(const GDoc* doc) const
 void GProfDoc::UpdateFdbk(tDocAssessment fdbk,const char* date)
 {
 	Fdbk=fdbk;
-	Updated=date;
+	Updated.SetDate(date);
 }
 
 
 //------------------------------------------------------------------------------
-void GProfDoc::UpdateFdbk(tDocAssessment fdbk,RDate& date)
+void GProfDoc::UpdateFdbk(tDocAssessment fdbk,RDate date)
 {
 	Fdbk=fdbk;
 	Updated=date;
@@ -111,12 +107,9 @@ void GProfDoc::UpdateFdbk(tDocAssessment fdbk,RDate& date)
 
 
 //------------------------------------------------------------------------------
-RDate& GProfDoc::GetUpdated(void) const
+RDate GProfDoc::GetUpdated(void) const
 {
-	RDate* d=RDate::GetDate();
-
-	(*d)=Updated;
-	return(*d);
+	return(Updated);
 }
 
 

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -35,8 +31,15 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <rstd/rxmlfile.h>
+using namespace R;
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gstatscalc.h>
+#include <rstd/rxmlfile.h>
 using namespace GALILEI;
 
 
@@ -65,6 +68,24 @@ void GStatsCalc::Connect(GSession* session) throw(GException)
 void GStatsCalc::Disconnect(GSession*) throw(GException)
 {
 	Session=0;
+}
+
+
+//------------------------------------------------------------------------------
+void GStatsCalc::AddTag(RXMLStruct* xml,RXMLTag* parent,RString element,double val)
+{
+	RXMLTag* tag=new RXMLTag(element);
+	tag->InsertAttr("Value",dtou(val));
+	xml->AddTag(parent,tag);
+}
+
+
+//------------------------------------------------------------------------------
+void GStatsCalc::AddTag(RXMLStruct* xml,RXMLTag* parent,RString element,RString val)
+{
+	RXMLTag* tag=new RXMLTag(element);
+	tag->InsertAttr("Value",val);
+	xml->AddTag(parent,tag);
 }
 
 

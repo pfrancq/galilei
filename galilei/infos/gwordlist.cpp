@@ -12,10 +12,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be)
 		Nicolas Kumps (nkumps@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation; either version 2 of the License, or
@@ -81,11 +77,10 @@ void GWordList::InsertWord(const GWord* word) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GWordCursor& GWordList::GetWordCursor(void) throw(std::bad_alloc)
+GWordCursor GWordList::GetWordCursor(void) throw(std::bad_alloc)
 {
-	GWordCursor *cur=GWordCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	GWordCursor cur(this);
+	return(cur);
 }
 
 

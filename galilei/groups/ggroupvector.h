@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -103,7 +99,7 @@ public:
 	* Get a cursor over the vector.
 	* @return GWeightInfoCursor element.
 	*/
-	GWeightInfoCursor& GetWeightInfoCursor(void);
+	GWeightInfoCursor GetWeightInfoCursor(void);
 
 	/**
 	* Compute the similarity between a group and a document.
@@ -159,7 +155,7 @@ public:
 	/**
 	* Destructor of a group.
 	*/
-	~GGroupVector(void) throw(GException);
+	~GGroupVector(void);
 };
 
 

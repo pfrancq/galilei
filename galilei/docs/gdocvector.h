@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -64,7 +60,7 @@ public:
 	/**
 	* Construct the document.
 	* @param url            URL of the document.
-	* @param title          Name of the document.
+	* @param name           Name of the document.
 	* @param id             Identifier of the document.
 	* @param lang           Language of the document.
 	* @param mime           MIME type of the document.
@@ -78,7 +74,7 @@ public:
 	/**
 	* Construct the document.
 	* @param url            URL of the document.
-	* @param title          Name of the document.
+	* @param name           Name of the document.
 	* @param mime           MIME type of the document.
 	*/
 	GDocVector(const char* url,const char* name,const char* mime) throw(std::bad_alloc);
@@ -105,7 +101,7 @@ public:
 	* This function clears the information related to the document.
 	* @param l              Must the language be removed.
 	*/
-	virtual void ClearInfos(bool l);
+	virtual void ClearInfos(bool l) throw(std::bad_alloc,GException);
 
 	/**
 	* Add a given information to the document.
@@ -117,7 +113,7 @@ public:
 	* Get a Cursor on the weights of the document.
 	* @return GWordWeightCursor.
 	*/
-	GWeightInfoCursor& GetWeightInfoCursor(void);
+	GWeightInfoCursor GetWeightInfoCursor(void);
 
 	/**
 	* Compute a similarity between two documents.
@@ -170,7 +166,7 @@ public:
 	/**
 	* Destruct the document.
 	*/
-	virtual ~GDocVector(void) throw(GException);
+	virtual ~GDocVector(void);
 };
 
 

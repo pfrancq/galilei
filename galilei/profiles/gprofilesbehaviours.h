@@ -12,10 +12,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -81,8 +77,8 @@ public:
 
 	/**
 	* Constructor of Users
-	* @param lang           Language of the subprofile.
-	* @param memory      use container to stock behaviours in memory?
+	* @param session        Session.
+	* @param memory         Use container to stock behaviours in memory?
 	*/
 	GProfilesBehaviours(GSession* session, bool memory) throw(std::bad_alloc);
 

@@ -12,10 +12,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -73,6 +69,9 @@ class QListViewItemType : public QListViewItem
 {
 public:
 
+	/**
+	* Pointer to the element representend by the QListViewItemType.
+	*/
 	union 
 	{
 		GGroup* Group;
@@ -91,7 +90,7 @@ public:
 	unsigned int Level;
 
 	/**
-	*  enumeration type of the item.
+	* Enumeration type of the item.
 	*/
 	enum tType {tNothing,tGroup,tUser,tProfile,tSubProfile,tGiwwh, tGroupHistory,tDocument};
 

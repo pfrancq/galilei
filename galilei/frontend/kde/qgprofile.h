@@ -9,12 +9,7 @@
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		
 		David Wartel (dwartel@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -61,7 +56,6 @@ class GProfile;
 /**
 * The QGProfile class provides a widget to show a profile.
 * @author Pascal Francq
-* @version $Revision$
 * @short Profile's Widget.
 */
 class QGProfile : public QWidget

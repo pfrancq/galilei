@@ -11,10 +11,6 @@
 	Authors:
 		
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -45,6 +41,7 @@
 #include <historic/gweightinfoshistory.h>
 #include <qlistviewitemtype.h>
 #include <qggroupshistory.h>
+#include <frontend/kde/rqt.h>
 using namespace GALILEI;
 
 
@@ -104,7 +101,7 @@ void GALILEI::QGGroupsHistory::setGroups(GGroupsHistory* grps)
 			sprintf(tmp,"%i",(*gr)()->GetId());
 			p=(*gr)()->GetSubProfile()->GetProfile();
 			sprintf(tmp2,"%i",p->GetId());
-			QListViewItemType* subitem=new QListViewItemType((*gr)(),gritem,tmp,tmp2,p->GetName().Latin1(),p->GetUser()->GetFullName().Latin1());
+			QListViewItemType* subitem=new QListViewItemType((*gr)(),gritem,tmp,tmp2,ToQString(p->GetName()),ToQString(p->GetUser()->GetFullName()));
 			if ((*gr)()->IsWellGrouped()==true) subitem->Level=0; else subitem->Level=2;
 			subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 		}

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -174,26 +170,23 @@ GData* GDict::GetData(const unsigned int id) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-GDataCursor& GDict::GetDataCursor(GInfoType type) throw(std::bad_alloc,GException)
+GDataCursor GDict::GetDataCursor(GInfoType type) throw(std::bad_alloc,GException)
 {
-	GDataCursor* cur=GDataCursor::GetTmpCursor();
+	GDataCursor cur;
 	GDataTypes* tp;
 
 	tp=DataTypes.GetPtr<GInfoType>(type);
 	if(!tp)
 		throw GException("Unknown information type");
-	cur->Set(tp);
-	return(*cur);
+	cur.Set(tp);
+	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-RString& GDict::GetName(void) const throw(std::bad_alloc)
+RString GDict::GetName(void) const throw(std::bad_alloc)
 {
-	RString* tmp=RString::GetString();
-
-	(*tmp)=Name;
-	return(*tmp);
+	return(Name);
 }
 
 

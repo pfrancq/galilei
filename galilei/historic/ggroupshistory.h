@@ -11,10 +11,6 @@
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -70,7 +66,7 @@ public :
 	* Get a cursor on the history of all groupments.
 	* @return GGroupCursor.
 	*/
-	GGroupsHistoryCursor& GetGroupsHistoryCursor(void);
+	GGroupsHistoryCursor GetGroupsHistoryCursor(void);
 
 	/**
 	* Check which groups are modified.
@@ -149,7 +145,7 @@ public :
 	* Get the date where this groupment was computed.
 	* @return R::RDate.
 	*/
-	R::RDate& GetDate(void) const;
+	R::RDate GetDate(void) const;
 
 	/**
 	* Get the history of a subprofile corresponding to a given identificator.
@@ -220,7 +216,7 @@ public :
 * The GGroupCursor class provides a way to go trough a set of group.
 * @short Group Cursor.
 */
-CLASSCURSOR(GGroupsHistoryCursor,GGroupsHistory,unsigned int)
+CLASSCURSOR(GGroupsHistoryCursor,GGroupsHistory,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

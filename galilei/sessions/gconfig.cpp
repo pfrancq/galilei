@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -84,18 +80,18 @@ GConfig::GConfig(const char* f) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(0,t=new RXMLTag("rdf:RDF"));
-	AddNode(t,Filters=new RXMLTag("galileiconfig:filters"));
-	AddNode(t,ProfileCalcs=new RXMLTag("galileiconfig:profileCalcs"));
-	AddNode(t,Groupings=new RXMLTag("galileiconfig:groupings"));
-	AddNode(t,GroupCalcs=new RXMLTag("galileiconfig:groupCalcs"));
-	AddNode(t,StatsCalcs=new RXMLTag("galileiconfig:statsCalcs"));
-	AddNode(t,LinkCalcs=new RXMLTag("galileiconfig:linkCalcs"));
-	AddNode(t,PostDocs=new RXMLTag("galileiconfig:postDocs"));
-	AddNode(t,Langs=new RXMLTag("galileiconfig:langs"));
-	AddNode(t,DocAnalyses=new RXMLTag("galileiconfig:docanalyses"));
-	AddNode(t,PostGroups=new RXMLTag("galileiconfig:postgroups"));
-	AddNode(t,SessionParams=new RXMLTag("galileiconfig:session"));
+	AddTag(0,t=new RXMLTag("rdf:RDF"));
+	AddTag(t,Filters=new RXMLTag("galileiconfig:filters"));
+	AddTag(t,ProfileCalcs=new RXMLTag("galileiconfig:profileCalcs"));
+	AddTag(t,Groupings=new RXMLTag("galileiconfig:groupings"));
+	AddTag(t,GroupCalcs=new RXMLTag("galileiconfig:groupCalcs"));
+	AddTag(t,StatsCalcs=new RXMLTag("galileiconfig:statsCalcs"));
+	AddTag(t,LinkCalcs=new RXMLTag("galileiconfig:linkCalcs"));
+	AddTag(t,PostDocs=new RXMLTag("galileiconfig:postDocs"));
+	AddTag(t,Langs=new RXMLTag("galileiconfig:langs"));
+	AddTag(t,DocAnalyses=new RXMLTag("galileiconfig:docanalyses"));
+	AddTag(t,PostGroups=new RXMLTag("galileiconfig:postgroups"));
+	AddTag(t,SessionParams=new RXMLTag("galileiconfig:session"));
 }
 
 
@@ -106,6 +102,7 @@ void GConfig::Load(void) throw(GException)
 	try
 	{
 		RXMLFile File(FileName,this,R::Read);
+		File.Process();
 		Filters=GetTop()->GetTag("galileiconfig:filters");
 		ProfileCalcs=GetTop()->GetTag("galileiconfig:profileCalcs");
 		Groupings=GetTop()->GetTag("galileiconfig:groupings");
@@ -133,6 +130,7 @@ void GConfig::Save(void) throw(GException)
 	try
 	{
 		RXMLFile File(FileName,this,R::Create);
+		File.Process();
 	}
 	catch(...)
 	{
@@ -142,12 +140,12 @@ void GConfig::Save(void) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GFilterManager& mng)
+void GConfig::Read(GFilterManager* mng)
 {
 	GFactoryFilterCursor Cur;
 
 	if(!Filters) return;
-	Cur=mng.GetFiltersCursor();
+	Cur=mng->GetFiltersCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(Filters);
@@ -156,32 +154,32 @@ void GConfig::Read(GFilterManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GFilterManager& mng)
+void GConfig::Store(GFilterManager* mng)
 {
 	GFactoryFilterCursor Cur;
 
-	Cur=mng.GetFiltersCursor();
+	Cur=mng->GetFiltersCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->SaveConfig(Filters);
+		Cur()->SaveConfig(this,Filters);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GProfileCalcManager& mng)
+void GConfig::Read(GProfileCalcManager* mng)
 {
 	GFactoryProfileCalcCursor Cur;
 
 	if(!ProfileCalcs) return;
-	Cur=mng.GetProfileCalcsCursor();
+	Cur=mng->GetProfileCalcsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(ProfileCalcs);
 	}
 	try
 	{
-		mng.SetCurrentMethod(ProfileCalcs->GetAttrValue("Current"));
+		mng->SetCurrentMethod(ProfileCalcs->GetAttrValue("Current"));
 	}
 	catch(GException)
 	{
@@ -190,17 +188,17 @@ void GConfig::Read(GProfileCalcManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GProfileCalcManager& mng)
+void GConfig::Store(GProfileCalcManager* mng)
 {
 	GFactoryProfileCalcCursor Cur;
 	GProfileCalc* calc;
 
-	Cur=mng.GetProfileCalcsCursor();
+	Cur=mng->GetProfileCalcsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->SaveConfig(ProfileCalcs);
+		Cur()->SaveConfig(this,ProfileCalcs);
 	}
-	calc=mng.GetCurrentMethod();
+	calc=mng->GetCurrentMethod();
 	if(calc)
 		ProfileCalcs->InsertAttr("Current",calc->GetFactory()->GetName());
 	else
@@ -209,19 +207,19 @@ void GConfig::Store(GProfileCalcManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GGroupingManager& mng)
+void GConfig::Read(GGroupingManager* mng)
 {
 	GFactoryGroupingCursor Cur;
 
 	if(!Groupings) return;
-	Cur=mng.GetGroupingsCursor();
+	Cur=mng->GetGroupingsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(Groupings);
 	}
 	try
 	{
-		mng.SetCurrentMethod(Groupings->GetAttrValue("Current"));
+		mng->SetCurrentMethod(Groupings->GetAttrValue("Current"));
 	}
 	catch(GException)
 	{
@@ -230,17 +228,17 @@ void GConfig::Read(GGroupingManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GGroupingManager& mng)
+void GConfig::Store(GGroupingManager* mng)
 {
 	GFactoryGroupingCursor Cur;
 	GGrouping* calc;
 
-	Cur=mng.GetGroupingsCursor();
+	Cur=mng->GetGroupingsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->SaveConfig(Groupings);
+		Cur()->SaveConfig(this,Groupings);
 	}
-	calc=mng.GetCurrentMethod();
+	calc=mng->GetCurrentMethod();
 	if(calc)
 		Groupings->InsertAttr("Current",calc->GetFactory()->GetName());
 	else
@@ -249,19 +247,19 @@ void GConfig::Store(GGroupingManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GGroupCalcManager& mng)
+void GConfig::Read(GGroupCalcManager* mng)
 {
 	GFactoryGroupCalcCursor Cur;
 
 	if(!GroupCalcs) return;
-	Cur=mng.GetGroupCalcsCursor();
+	Cur=mng->GetGroupCalcsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(GroupCalcs);
 	}
 	try
 	{
-		mng.SetCurrentMethod(GroupCalcs->GetAttrValue("Current"));
+		mng->SetCurrentMethod(GroupCalcs->GetAttrValue("Current"));
 	}
 	catch(GException)
 	{
@@ -270,17 +268,17 @@ void GConfig::Read(GGroupCalcManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GGroupCalcManager& mng)
+void GConfig::Store(GGroupCalcManager* mng)
 {
 	GFactoryGroupCalcCursor Cur;
 	GGroupCalc* calc;
 
-	Cur=mng.GetGroupCalcsCursor();
+	Cur=mng->GetGroupCalcsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->SaveConfig(GroupCalcs);
+		Cur()->SaveConfig(this,GroupCalcs);
 	}
-	calc=mng.GetCurrentMethod();
+	calc=mng->GetCurrentMethod();
 	if(calc)
 		GroupCalcs->InsertAttr("Current",calc->GetFactory()->GetName());
 	else
@@ -289,12 +287,12 @@ void GConfig::Store(GGroupCalcManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GStatsCalcManager& mng)
+void GConfig::Read(GStatsCalcManager* mng)
 {
 	GFactoryStatsCalcCursor Cur;
 
 	if(!StatsCalcs) return;
-	Cur=mng.GetStatsCalcsCursor();
+	Cur=mng->GetStatsCalcsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(StatsCalcs);
@@ -303,32 +301,32 @@ void GConfig::Read(GStatsCalcManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GStatsCalcManager& mng)
+void GConfig::Store(GStatsCalcManager* mng)
 {
 	GFactoryStatsCalcCursor Cur;
 
-	Cur=mng.GetStatsCalcsCursor();
+	Cur=mng->GetStatsCalcsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->SaveConfig(StatsCalcs);
+		Cur()->SaveConfig(this,StatsCalcs);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GLinkCalcManager& mng)
+void GConfig::Read(GLinkCalcManager* mng)
 {
 	GFactoryLinkCalcCursor Cur;
 
 	if(!LinkCalcs) return;
-	Cur=mng.GetLinkCalcsCursor();
+	Cur=mng->GetLinkCalcsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(LinkCalcs);
 	}
 	try
 	{
-		mng.SetCurrentMethod(LinkCalcs->GetAttrValue("Current"));
+		mng->SetCurrentMethod(LinkCalcs->GetAttrValue("Current"));
 	}
 	catch(GException)
 	{
@@ -337,17 +335,17 @@ void GConfig::Read(GLinkCalcManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GLinkCalcManager& mng)
+void GConfig::Store(GLinkCalcManager* mng)
 {
 	GFactoryLinkCalcCursor Cur;
 	GLinkCalc* lcalc;
 
-	Cur=mng.GetLinkCalcsCursor();
+	Cur=mng->GetLinkCalcsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->SaveConfig(LinkCalcs);
+		Cur()->SaveConfig(this,LinkCalcs);
 	}
-	lcalc=mng.GetCurrentMethod();
+	lcalc=mng->GetCurrentMethod();
 	if(lcalc)
 		LinkCalcs->InsertAttr("Current",lcalc->GetFactory()->GetName());
 	else
@@ -356,12 +354,12 @@ void GConfig::Store(GLinkCalcManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GPostGroupManager& mng)
+void GConfig::Read(GPostGroupManager* mng)
 {
 	GFactoryPostGroupCursor Cur;
 
 	if(!PostGroups) return;
-	Cur=mng.GetPostGroupsCursor();
+	Cur=mng->GetPostGroupsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(PostGroups);
@@ -370,25 +368,25 @@ void GConfig::Read(GPostGroupManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GPostGroupManager& mng)
+void GConfig::Store(GPostGroupManager* mng)
 {
 	GFactoryPostGroupCursor Cur;
 
-	Cur=mng.GetPostGroupsCursor();
+	Cur=mng->GetPostGroupsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->SaveConfig(PostGroups);
+		Cur()->SaveConfig(this,PostGroups);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GPostDocManager& mng)
+void GConfig::Read(GPostDocManager* mng)
 {
 	GFactoryPostDocCursor Cur;
 
 	if(!PostDocs) return;
-	Cur=mng.GetPostDocsCursor();
+	Cur=mng->GetPostDocsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(PostDocs);
@@ -397,25 +395,25 @@ void GConfig::Read(GPostDocManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GPostDocManager& mng)
+void GConfig::Store(GPostDocManager* mng)
 {
 	GFactoryPostDocCursor Cur;
 
-	Cur=mng.GetPostDocsCursor();
+	Cur=mng->GetPostDocsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->SaveConfig(PostDocs);
+		Cur()->SaveConfig(this,PostDocs);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GLangManager& mng)
+void GConfig::Read(GLangManager* mng)
 {
 	GFactoryLangCursor Cur;
 
 	if(!Langs) return;
-	Cur=mng.GetLangsCursor();
+	Cur=mng->GetLangsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(Langs);
@@ -424,32 +422,32 @@ void GConfig::Read(GLangManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GLangManager& mng)
+void GConfig::Store(GLangManager* mng)
 {
 	GFactoryLangCursor Cur;
 
-	Cur=mng.GetLangsCursor();
+	Cur=mng->GetLangsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->SaveConfig(Langs);
+		Cur()->SaveConfig(this,Langs);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GDocAnalyseManager& mng)
+void GConfig::Read(GDocAnalyseManager* mng)
 {
 	GFactoryDocAnalyseCursor Cur;
 
 	if(!DocAnalyses) return;
-	Cur=mng.GetDocAnalysesCursor();
+	Cur=mng->GetDocAnalysesCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(DocAnalyses);
 	}
 	try
 	{
-		mng.SetCurrentMethod(DocAnalyses->GetAttrValue("Current"));
+		mng->SetCurrentMethod(DocAnalyses->GetAttrValue("Current"));
 	}
 	catch(GException)
 	{
@@ -458,17 +456,17 @@ void GConfig::Read(GDocAnalyseManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GDocAnalyseManager& mng)
+void GConfig::Store(GDocAnalyseManager* mng)
 {
 	GFactoryDocAnalyseCursor Cur;
 	GDocAnalyse* lcalc;
 
-	Cur=mng.GetDocAnalysesCursor();
+	Cur=mng->GetDocAnalysesCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->SaveConfig(DocAnalyses);
+		Cur()->SaveConfig(this,DocAnalyses);
 	}
-	lcalc=mng.GetCurrentMethod();
+	lcalc=mng->GetCurrentMethod();
 	if(lcalc)
 		DocAnalyses->InsertAttr("Current",lcalc->GetFactory()->GetName());
 	else
@@ -494,7 +492,7 @@ void GConfig::Read(GSessionParams& p)
 void GConfig::Store(GSessionParams& p)
 {
 	if (!SessionParams) return;
-	p.SaveConfig(SessionParams);
+	p.SaveConfig(this,SessionParams);
 }
 
 

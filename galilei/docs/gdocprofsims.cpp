@@ -12,10 +12,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be).
 		Vandaele Valery (vavdaele@ulb.ac.be)
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -112,7 +108,7 @@ public:
 	GDocProfSims* Manager;                             // Owner.
 
 	// Constructor and Compare functions.
-	GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor& s,bool iff,GLang* l) throw(std::bad_alloc);
+	GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor s,bool iff,GLang* l) throw(std::bad_alloc);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GDocProfSim* docProfSim) const {return(Lang->Compare(docProfSim->Lang));}
 
@@ -140,7 +136,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-GDocProfSims::GDocProfSim::GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor& s,bool iff,GLang* l) throw(std::bad_alloc)
+GDocProfSims::GDocProfSim::GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor s,bool iff,GLang* l) throw(std::bad_alloc)
 	: Sims(d->GetNbDocs(l)+2,d->GetNbDocs(l)/2 +1), IFF(iff),Lang(l), Manager(manager)
 {
 	GDocCursor Cur_d;
@@ -283,6 +279,8 @@ void  GDocProfSims::GDocProfSim::Update(bool iff) throw (std::bad_alloc)
 	}
 
 }
+
+
 
 //------------------------------------------------------------------------------
 //

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -87,7 +83,7 @@ public:
 	* @param fdbk           Assessment.
 	* @param date           Date.
 	*/
-    GProfDoc(GDoc* doc,GProfile* prof,tDocAssessment fdbk,const char* date);
+	GProfDoc(GDoc* doc,GProfile* prof,tDocAssessment fdbk,const char* date);
 
 	/**
 	* Constructor.
@@ -137,7 +133,7 @@ public:
 	* @param fdbk           Assessment.
 	* @param date           Date.
 	*/
-	void UpdateFdbk(tDocAssessment fdbk,R::RDate& date);
+	void UpdateFdbk(tDocAssessment fdbk,R::RDate date);
 
 	/**
 	* Get the assessment for the document.
@@ -161,7 +157,7 @@ public:
 	* Get the date of the last assessment of the profile on the document.
 	* @returns R::RDate.
 	*/
-	R::RDate& GetUpdated(void) const;
+	R::RDate GetUpdated(void) const;
 
 	/**
 	* Look if the assessment is considered to be treated. If the assessment was
@@ -206,7 +202,7 @@ public:
 * The GProfDocCursor class provides a way to go trough a set of feedbacks.
 * @short Feedbacks Cursor
 */
-CLASSCURSOR(GProfDocCursor,GProfDoc,unsigned int)
+CLASSCURSOR(GProfDocCursor,GProfDoc,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -10,10 +10,6 @@
 	Authors
 		 Vandaele valery(vavdaele@ulb.ac.be)
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -73,7 +69,7 @@ public :
 
 	/**
 	* Constructor of a link.
-	* @doc                   Pointer to the document.
+	* @param doc            Pointer to the document.
 	*/
 	GLink(const GDoc* doc);
 
@@ -81,7 +77,7 @@ public :
 	* Compare two links by comparing the identificators of the corresponding
 	* documents.
 	* @see R::RContainer
-	* @param link            Pointer to a link.
+	* @param link           Pointer to a link.
 	* @return int
 	*/
 	int Compare(const GLink* link) const;
@@ -90,7 +86,7 @@ public :
 	* Compare two links by comparing the identificators of the corresponding
 	* documents.
 	* @see R::RContainer
-	* @param link            Link.
+	* @param link           Link.
 	* @return int
 	*/
 	int Compare(const GLink& link) const;
@@ -98,7 +94,7 @@ public :
 	/**
 	* Compare an identificator of the document of a link with an identificator.
 	* @see R::RContainer
-	* @param id              Identificator.
+	* @param id             Identificator.
 	* @return int
 	*/
 	int Compare(const unsigned int id) const;
@@ -107,7 +103,7 @@ public :
 	* Compare an identificator of the document of a link with another document.
 	* documents.
 	* @see R::RContainer
-	* @param doc             Pointer to a document.
+	* @param doc            Pointer to a document.
 	* @return int
 	*/
 	int Compare(const GDoc* doc) const;
@@ -116,7 +112,7 @@ public :
 	* Compare an identificator of the document of a link with another document.
 	* documents.
 	* @see R::RContainer
-	* @param doc             Document.
+	* @param doc            Document.
 	* @return int
 	*/
 	int Compare(const GDoc& doc) const;
@@ -128,7 +124,7 @@ public :
 
 	/**
 	* Set the number of occurence of the link.
-	* @param nbO          The Number of occurences.
+	* @param nbO            The Number of occurences.
 	*/
 	void SetOccurs(unsigned int nbO) {Occurs = nbO;}
 
@@ -142,7 +138,7 @@ public :
 	* Get the url of the document corresponding to the link.
 	* @return RString representing the URL.
 	*/
-	R::RString& GetURL(void) const {return(DocTO->GetURL());}
+	R::RString GetURL(void) const {return(DocTO->GetURL());}
 
 	/**
 	* Get the document pointed by the link.
@@ -168,7 +164,7 @@ public :
 * The GLinkCursor class provides a way to go trough a set of links.
 * @short Link Cursor
 */
-CLASSCURSOR(GLinkCursor,GLink,unsigned int)
+CLASSCURSOR(GLinkCursor,GLink,unsigned int);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------
