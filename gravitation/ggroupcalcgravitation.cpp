@@ -94,7 +94,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 {
 	unsigned int i,j;
 	GSubProfile** ptr;
-	GWeightInfos* Desc=static_cast<GGroupVector*>(grp)->GetVector();
+	GWeightInfos* Desc=static_cast<GGroupVector*>(grp);
 	GWeightInfos* Ref;
 	GWeightInfo** w;
 	GWeightInfo* ins;
