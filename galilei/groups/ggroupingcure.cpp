@@ -166,7 +166,7 @@ void  GALILEI::GGroupingCure::Run(void) throw(GException)
 	GGroup *gr1, *gr2,**g1, **g2;
 
 	if (SubProfiles.NbPtr==0) return;
-//	DisplayInfos();
+	DisplayInfos();
 	InitGroups();
 	InitProtos();
 
@@ -178,14 +178,11 @@ void  GALILEI::GGroupingCure::Run(void) throw(GException)
 //	for(s1=SubProfiles.Tab,i=SubProfiles.NbPtr;--i;s1++)
 //		for(s2=s1+1,j=i+1;--j;s2++)
 // 			file << "sim entre " <<(*s1)->GetId()<< "et "<<(*s2)->GetId()<<" = "<< ProfSim->GetSim((*s1)->GetId(), (*s2)->GetId())<<endl;
-	return;
-	
-
 	while (Grps->NbPtr>Params->NbGroups)
 	{
 		// find the two closest groups.
 //		cout << "calculating closest groups ....."<<endl;
-		dist=1.0;
+		dist=2.0;
 		for(g1=Grps->Tab,i=Grps->NbPtr;--i;g1++)
 			for(g2=g1+1,j=i+1;--j;g2++)
 			{
@@ -202,7 +199,7 @@ void  GALILEI::GGroupingCure::Run(void) throw(GException)
 		MergeGroups(gr1, gr2);
 //		cout << "number of group at this time = " << Grps->NbPtr<<endl;
 //		cout << "cost function  : "<< CostFunction(Grps) <<endl;
-//		cout << CostFunction(Grps)<<",";
+		cout << CostFunction(Grps)<<","<<endl;
 	}
 
 	Groups->Clear();
@@ -343,6 +340,7 @@ double  GALILEI::GGroupingCure::CostFunction(RContainer<GGroup,unsigned int,true
 		}
 	}
 	intra/=SubProfiles.NbPtr;
+	return(intra);
 
 	inter=1.0;
 	for(g1=grps->Tab,i=grps->NbPtr;--i;g1++)
@@ -350,7 +348,8 @@ double  GALILEI::GGroupingCure::CostFunction(RContainer<GGroup,unsigned int,true
 			if(SubProfDistance((*g1)->RelevantSubProfile(0),(*g2)->RelevantSubProfile(0))<inter)
 				inter=SubProfDistance((*g1)->RelevantSubProfile(0),(*g2)->RelevantSubProfile(0));
 
-	return(intra/inter);
+//	return(intra/inter);
+
 }
 
 
