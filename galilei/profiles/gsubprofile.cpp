@@ -162,16 +162,15 @@ unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
 	nb=0;
 
 	// Go through the document judged by the corresponding profile
-	GProfDocCursor Fdbks=GetProfDocCursor();
-	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+	GProfDocCursor fdbks=GetProfDocCursor();
+	for(fdbks.Start();!fdbks.End();fdbks.Next())
 	{
 		// If the document is not "good"  -> Nothing
-		f=Fdbks()->GetFdbk();
-		if((f!=djOK)&&(f!=djNav)) continue;
-
+		f=fdbks()->GetFdbk();
+		if((!(f & djOK))&&(!(f & djNav))) continue;
 		// Look for the same document in the other profile. If not found or the
 		// document is not "good" -> Nothing
-		cor=prof->GetFeedback(Fdbks()->GetDoc());
+		cor=prof->GetFeedback(fdbks()->GetDoc());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 		if((!(f & djOK))&&(!(f & djNav))) continue;
@@ -229,7 +228,7 @@ unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 	{
 		f=Fdbks()->GetFdbk();
-		bOK=((f==djOK)||(f==djNav));
+		bOK=((f & djOK)||(f & djNav));
 
 		// If the document was not judged by the other profile or have not the
 		// same judgment -> Nothing
