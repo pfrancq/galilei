@@ -118,6 +118,12 @@ public:
 	* @return GIWordWeightCursor element.
 	*/
 	GIWordWeightCursor& GetVectorCursor(void);
+
+	/**
+	* Add a new word in the container of words.
+	* @param  word          The word who will be aded.
+	*/
+	void AddWord(GIWordWeight* word);
 };
 
 

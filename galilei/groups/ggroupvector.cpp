@@ -122,3 +122,9 @@ GIWordWeightCursor& GALILEI::GGroupVector::GetVectorCursor(void)
 	cur->Set(this);
 	return(*cur);
 }
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroupVector::AddWord(GIWordWeight* word)
+{
+	GIWordsWeights::InsertPtr(word);
+}
