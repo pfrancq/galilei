@@ -49,7 +49,6 @@
 using namespace RMySQL;
 
 
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsessions/gsession.h>
@@ -112,6 +111,16 @@ public:
 	*/
 	void LoadStopsFromDB(const RString &name,GLang *lang);
 
+    /**
+	* Loads all the documents for all  profiles.
+	*/
+	void LoadProfilesDocs();
+
+	/**
+	* Loads all the documents for a given  profiles.
+	* @param profile        given profile.
+	*/
+	void LoadProfileDocs(GProfile* profile);
 
 	/**
 	*
@@ -135,12 +144,7 @@ public:
 	void LoadDocs(void);
 
 
-	/**
-	*  downloading doc ...
-	*/
-	
-	void DownloadDoc(const RString& URL) ;
-	
+
 };
 
 }  //-------- End of namespace GALILEI ----------------------------------------

@@ -48,9 +48,6 @@
 #include <glangs/glangen.h>
 #include <glangs/glangfr.h>
 #include <gsessionsmysql/gsessionmysql.h>
-#include <kurl.h>
-#include <kio/netaccess.h>
-
 using namespace GALILEI;
 
 
@@ -81,17 +78,22 @@ GSessionMySQL::~GSessionMySQL()
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadUsersFromDB()
 {        
-        Users = new GUsers(10,this);
-        GUser* usr;
-    RQuery users (db, "SELECT userid,user FROM users");
-        for(users.Begin();users.IsMore();users++)
-        {
+	if (Langs)
+	{
+		Users = new GUsers(10,this);
+		GUser* usr;
+		RQuery users (db, "SELECT userid,user FROM users");
+		for(users.Begin();users.IsMore();users++)
+		{
 			usr=new GUser(Users);
-                usr->Id=atoi(users[0]);
-                usr->Name=RString(users[1]);
-                LoadProfilesFromDB(usr);        
-                Users->InsertPtr(usr);
-        }
+			usr->Id=atoi(users[0]);
+			usr->Name=RString(users[1]);
+			LoadProfilesFromDB(usr);        
+			Users->InsertPtr(usr);
+		}
+	}
+	else
+		cout << "please loas Langs (dics) first" <<endl;
 }
 
 
@@ -253,90 +255,47 @@ void GSessionMySQL::FillDict(GDict* dict)
 
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadDocs(void)
-{
-
-                        
-          char sSql1[100],sSql2[100],sSql3[100],sSql4[100];
-                        sprintf(sSql1,"SELECT COUNT(*) FROM htmls" );
-                        RQuery count(db,sSql1);
-      count.Begin();
-                        Docs =         new  GDocs (atoi(count[0]),true,this);
-                        sprintf(sSql2,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title  FROM htmls");
-      RQuery quer (db,sSql2);
-      for(quer.Begin();quer.IsMore();quer++)
-      {
-              GDoc* doc = new GDoc( Docs,&RString(quer[0]) );
-                                doc->Calc=(quer[3]=="0");   // demander pal ce qui sort quand NULL
-              if (!doc->Calc)
-               {
-                       doc->bSave=false;
-                       doc->NbWords=atoi(quer[4]);
-                       doc->NbDiffWords=atoi(quer[5]);
-                       doc->Id=atoi(quer[0]);
-                       doc->Lang = Langs->GetLang(quer[2]);                       
-               }
-               
-              sprintf(sSql3,"SELECT COUNT(*) FROM %shtmlsbykwds WHERE htmlid=%u",doc->Lang->Code,doc->Id);
-                                RQuery count(db,sSql3);
-              count.Begin();
-              
-
-              doc->Words=new GWordOccurs(doc,atoi(count[0]));
-
-                                sprintf(sSql4,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",doc->Lang->Code,doc->Id);
-                                
-                                RQuery doc2(db,sSql4);
-                                
-                                
-                                doc2.Begin();
-                                if (doc2.IsMore())
-                                {
-                                for(int i=0;doc2.IsMore();doc2++)
-                                        {        
-                                                GWordOccur* ptr;
-                                                  ptr= new GWordOccur(atoi(doc2[0]));
-                                          ptr->Doc=doc;
-                                          ptr->Occur=atoi(doc2[1]);
-                                          doc->Words->InsertPtr(ptr);        
-                                        }        
-        }
-
-                   
-               
-                                Docs->InsertPtr (doc);
-                        
-                        }
-                        
-
-}
-
-void GSessionMySQL::DownloadDoc(const RString& URL)
-{
-
-        QString tmp("");
-        char *body;
-        struct stat statbuf;
-         int handle;
-
-        if((KIO::NetAccess::download(KURL(URL),tmp)))
-        {
-                handle=open(tmp,O_RDONLY);
-                fstat(handle, &statbuf);
-                body=new char[statbuf.st_size+1];
-                read(handle,body,statbuf.st_size);
-                
-                body[statbuf.st_size]=0;
-                GDoc doc(Docs, URL);
-                doc.Analyse(body);
-                RString body2(body);
-                cout << body2 << endl;
-                
-                //        Analyse(body);
-                delete[] body;
-                close(handle);
-          KIO::NetAccess::removeTempFile(tmp);
-    //  Save();
-        }
+{                      
+	char sSql1[100],sSql2[100],sSql3[100],sSql4[100];
+	sprintf(sSql1,"SELECT COUNT(*) FROM htmls" );
+	RQuery count(db,sSql1);
+	count.Begin();
+	Docs = new  GDocs (atoi(count[0]),true,this);
+	sprintf(sSql2,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title  FROM htmls");
+	RQuery quer (db,sSql2);
+	for(quer.Begin();quer.IsMore();quer++)
+	{
+		GDoc* doc = new GDoc( Docs,&RString(quer[0]) );
+		doc->Calc=(quer[3]=="0");   // demander pal ce qui sort quand NULL
+		if (!doc->Calc)
+		{
+			doc->bSave=false;
+			doc->NbWords=atoi(quer[4]);
+			doc->NbDiffWords=atoi(quer[5]);
+			doc->Id=atoi(quer[0]);
+			doc->Lang = Langs->GetLang(quer[2]);                       
+		}               
+		sprintf(sSql3,"SELECT COUNT(*) FROM %shtmlsbykwds WHERE htmlid=%u",doc->Lang->Code,doc->Id);
+		RQuery count(db,sSql3);
+		count.Begin();
+		doc->Words=new GWordOccurs(doc,atoi(count[0]));
+		sprintf(sSql4,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",doc->Lang->Code,doc->Id);                              
+		RQuery doc2(db,sSql4);                               
+		doc2.Begin();
+		if (doc2.IsMore())
+		{
+			for(int i=0;doc2.IsMore();doc2++)
+			{        
+				GWordOccur* ptr;
+				ptr= new GWordOccur(atoi(doc2[0]));
+				ptr->Doc=doc;
+				ptr->Occur=atoi(doc2[1]);
+				doc->Words->InsertPtr(ptr);        
+			}        
+		}             
+	Docs->InsertPtr (doc);
+	LoadProfilesDocs();                  
+	}
 }
 
 
@@ -392,3 +351,50 @@ void GSessionMySQL::LoadGroupsFromDB()
 }
 
 //-----------------------------------------------------------------------------
+void GSessionMySQL::LoadProfilesDocs()
+{
+	/*for (Users->Start();!Users->End();Users->Next())
+	{
+		GUser* user=(*Users)();
+		for (user->Start();!user->End();user->Next())
+		{
+			LoadProfileDocs((*user)());
+		}
+	}*/
+	cout <<Docs->NbPtr<<endl;
+	for (Docs->Start(); !Docs->End(); Docs->Next())
+	{
+		
+		//cout << (*Docs)()->Id<<endl;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GSessionMySQL::LoadProfileDocs(GProfile* profile)
+{
+	/*
+	char ssql[100];
+	sprintf(ssql,"SELECT htmlid, judgement  FROM htmlsbyprofiles WHERE profileid=%u", profile->Id);
+	RQuery docs (db, ssql);
+
+	for(docs.Begin();docs.IsMore();docs++)
+	{
+		/*char temp=atoi(docs[1]);
+		GDoc* doc=Docs->GetPtr<const unsigned>(atoi(docs[0]));
+		if (doc)
+		{
+			GProfDoc* profdoc=new GProfDoc(doc, temp);
+			profile->FdbkDocs.InsertPtr(profdoc);
+			cout << profile->Owner->Name<<endl;
+			cout << profile->Name<<endl;
+			cout <<profile->FdbkDocs.NbPtr<<endl;
+		}
+		
+	}
+	*/
+	
+}
+
+
+
