@@ -42,6 +42,45 @@
 
 //-----------------------------------------------------------------------------
 //
+// GSimMeasure
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GALILEI::GSimMeasure::GSimMeasure(const char* n,SimType t,bool u,double w)
+  : Name(n), Type(t), Use(u), Weight(w)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GSimMeasure::Compare(const GALILEI::GSimMeasure* s) const
+{
+	return(Name.Compare(s->Name));
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GSimMeasure::Compare(const char* s) const
+{
+	return(Name.Compare(s));
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GSimMeasure& GALILEI::GSimMeasure::operator=(const GALILEI::GSimMeasure& src)
+{
+	Name=src.Name;
+	Type=src.Type;
+	Use=src.Use;
+	Weight=src.Weight;
+	return(*this);
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
 // GIRParams
 //
 //-----------------------------------------------------------------------------
@@ -96,4 +135,35 @@ void GALILEI::GIRParams::SetSettings(const char* s)
 	SimMeasures=static_cast<SimCritType>(t);
 	if(c=='1') Step=true; else Step=false;
 	if(c1=='1') GlobalSim=true; else GlobalSim=false;
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GIRParams& GALILEI::GIRParams::operator=(const GALILEI::GIRParams& src)
+{
+	GSimMeasure** tab;
+	GSimMeasure** tab2;
+	unsigned int i;
+
+	GGroupingParams::operator=(src);
+	PopSize=src.PopSize;
+	MaxGen=src.MaxGen;
+	Step=src.MaxGen;
+	StepGen=src.StepGen;
+	MinSimLevel=src.MinSimLevel;
+	MinCommonOK=src.MinCommonOK;
+	MinCommonDiff=src.MinCommonDiff;
+	MaxKMeans=src.MaxKMeans;
+	SimMeasures=src.SimMeasures;
+	for(i=Measures.NbPtr+1,tab2=src.Measures.Tab,tab=Measures.Tab;--i;tab++,tab2++)
+	{
+		(**tab)=(**tab2);
+	}
+	ParamsSim=src.ParamsSim;
+	ParamsInfo=src.ParamsInfo;
+	ParamsSameFeedbacks=src.ParamsSameFeedbacks;
+	ParamsDiffFeedbacks=src.ParamsDiffFeedbacks;
+	ParamsSocial=src.ParamsSocial;
+	GlobalSim=src.GlobalSim;
+	return(*this);
 }

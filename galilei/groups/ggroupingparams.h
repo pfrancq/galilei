@@ -109,6 +109,12 @@ public:
 	int Compare(const char* name) const;
 
 	/**
+	* Assignment operator.
+	* @param p              Parameters used as source.
+	*/
+	GGroupingParams& operator=(const GGroupingParams& src);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GGroupingParams(void);

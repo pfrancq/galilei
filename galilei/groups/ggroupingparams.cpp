@@ -84,6 +84,14 @@ int GALILEI::GGroupingParams::Compare(const char* name) const
 
 
 //-----------------------------------------------------------------------------
+GALILEI::GGroupingParams& GALILEI::GGroupingParams::operator=(const GALILEI::GGroupingParams& src)
+{
+	GroupingName=src.GroupingName;
+	return(*this);
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GGroupingParams::~GGroupingParams(void)
 {
 }

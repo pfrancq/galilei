@@ -108,9 +108,10 @@ public:
 	bool Use;
 	double Weight;
 
-	GSimMeasure(const char* n,SimType t,bool u=false,double w=0.0) : Name(n), Type(t), Use(u), Weight(w) {}
-	int Compare(const GSimMeasure* s) const {return(Name.Compare(s->Name));}
-	int Compare(const char* s) const {return(Name.Compare(s));}
+	GSimMeasure(const char* n,SimType t,bool u=false,double w=0.0);
+	int Compare(const GSimMeasure* s) const;
+	int Compare(const char* s) const;
+	GSimMeasure& operator=(const GSimMeasure& src);
 };
 
 
@@ -252,6 +253,12 @@ public:
 	* @param char*          C string coding the settings.
 	*/
 	virtual void SetSettings(const char*);
+
+	/**
+	* Assignment operator.
+	* @param p              Parameters used as source.
+	*/
+	GIRParams& operator=(const GIRParams& src);
 
 	/**
 	* Constructor.
