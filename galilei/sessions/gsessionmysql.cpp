@@ -382,6 +382,11 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 				}
 			}
 		}
+
+		// Update References of the loaded subprofiles.
+		GSubProfileCursor SubProfiles=GetSubProfilesCursor();
+		for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
+			((GSubProfileVector*)SubProfiles())->UpdateRefs();
 	}
 	catch(RMySQLError& e)
 	{
@@ -461,6 +466,11 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 				doc->AddWord(atoi(sel[1]),atof(sel[2]));
 		}
 	}
+
+	// Update References of the loaded documents.
+	GDocCursor Docs=GetDocsCursor();
+	for(Docs.Start();!Docs.End();Docs.Next())
+		Docs()->UpdateRefs();
 }
 
 

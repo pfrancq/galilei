@@ -139,6 +139,7 @@ void GALILEI::GProfileCalcReWeighting::ComputeSubProfile(GSubProfileVector* s) t
 	GIWordsWeights* MOK=OK.GetPtr<GLang*>(s->GetLang());
 
 	// Clear the Vector.
+	s->RemoveRefs();
 	Vector->Clear();
 
 	// Choose the elements to stay.
@@ -151,6 +152,7 @@ void GALILEI::GProfileCalcReWeighting::ComputeSubProfile(GSubProfileVector* s) t
 
 	// Sort the vector.
 	Vector->Sort();
+	s->UpdateRefs();
 }
 
 

@@ -212,6 +212,7 @@ void GALILEI::GProfileCalcVector::ComputeSubProfile(GSubProfileVector* s) throw(
 	GIWordsWeights* LangVector=Vector.GetPtr<GLang*>(s->GetLang());
 
 	// Clear the Vector.
+	s->RemoveRefs();
 	Desc->Clear();
 
 	// Verify that there was something computed
@@ -238,6 +239,7 @@ void GALILEI::GProfileCalcVector::ComputeSubProfile(GSubProfileVector* s) throw(
 
 	// Sort the vector.
 	Desc->Sort();
+	s->UpdateRefs();
 }
 
 
