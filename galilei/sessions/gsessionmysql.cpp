@@ -45,7 +45,9 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include "gsessionmysql.h"
+#include <glangs/glangen.h>
+#include <glangs/glangfr.h>
+#include <gsessionsmysql/gsessionmysql.h>
 #include <kurl.h>
 #include <kio/netaccess.h>
 
@@ -157,21 +159,21 @@ void GSessionMySQL::LoadSubProfilesFromDB (GProfile* prof)
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadLangsFromDB()
 {
-        RQuery compt(db,"SELECT COUNT(*) FROM languages");
-        compt.Begin();
-        Dics=new GDicts(atoi(compt[0]), this);
-        Stops=new GDicts(atoi(compt[0]), this);
-        Langs = new GLangs(5);
-        RQuery langs(db,"SELECT langid,language FROM languages");
-        for(langs.Begin();langs.IsMore();langs++)
-        {
-                GLang* lang=new GLang (langs[1], langs[0]);
-                Langs->InsertPtr(lang);
-                RString dictablename=RString (langs[0])+RString("kwds");
-                LoadDicFromDB( dictablename,lang) ;
-                dictablename=RString (langs[0])+RString("stopkwds");
-                LoadStopsFromDB( dictablename,lang) ;
-        }
+	GLang* lang;
+
+	RQuery compt(db,"SELECT COUNT(*) FROM languages");
+	compt.Begin();
+	Dics=new GDicts(atoi(compt[0]), this);
+	Stops=new GDicts(atoi(compt[0]), this);
+	Langs = new GLangs(atoi(compt[0]));
+	lang=new GLangEN();
+	Langs->InsertPtr(lang);
+	LoadDicFromDB("enkwds",lang) ;
+	LoadStopsFromDB("enstopkwds",lang) ;
+	lang=new GLangFR();
+	Langs->InsertPtr(lang);
+	LoadDicFromDB("frkwds",lang) ;
+	LoadStopsFromDB("frstopkwds",lang) ;
 }
 
 
@@ -344,6 +346,7 @@ void GSessionMySQL::DownloadDoc(const RString& URL)
 //-----------------------------------------------------------------------------
 unsigned GSessionMySQL::DicNextId(const RString& word)   // function to get 'next id' for dic. (to devellop!)
 {
+	return(0);
 }
 
 
