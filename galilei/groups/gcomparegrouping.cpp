@@ -169,40 +169,128 @@ void GALILEI::GCompareGrouping::ComputeRecallPrecision(GSlot* /*rec*/)
 //-----------------------------------------------------------------------------
 void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 {
-	GGroup* thGrp;
-	GGroup* thGrp2;
-	double NbComp;
-	bool IsInGrp,IsInthGrp;
-	unsigned int i,j;
-	GSubProfileCursor Cur1=Session->GetSubProfilesCursor();
-	GSubProfileCursor Cur2=Session->GetSubProfilesCursor();
+	GGroupsCursor ComputedGroup=Session->GetGroupsCursor();
+	GGroups* Grp;
+	GGroups* GrpComputed;
+	GGroup* grp;
+	GGroup* grpcomputed;
+	int u,v,subprofileid,NbTot;
+	int** ptr;
+ 	int* ptr2;
+	int i,j;
 
-	Total=0.0;
-	NbComp=0.0;
-	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
+	// Compute number of elements in ideal and computed groups.
+	u=0;
+	v=0;
+	NbTot=0;
+	for(Groups->Start();!Groups->End();Groups->Next())
 	{
-		thGrp=GetIdealGroup(Cur1());
-		if(!thGrp) continue;
-		if(!Cur1()->GetGroup())
-		{
-			NbComp+=Cur1.GetNb()-1-i;
-		}
-		else
-			for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-			{
-				if((Cur1()->GetLang()!=Cur2()->GetLang())||(!Cur2()->GetGroup())) continue;
-				thGrp2=GetIdealGroup(Cur2());
-				if(!thGrp2) continue;
-				NbComp+=1.0;
-				IsInGrp=(Cur1()->GetGroup()==(Cur2()->GetGroup()));
-				IsInthGrp=(thGrp==thGrp2);
-				if(IsInGrp==IsInthGrp) Total+=1.0;
-			}
+		Grp=(*Groups)();
+		u=u+Grp->NbPtr;
 	}
-	if(NbComp)
-		Total/=NbComp;
-	else
-		Total=1.0;
+	for(ComputedGroup.Start();!ComputedGroup.End();ComputedGroup.Next())
+	{
+		Grp=ComputedGroup();
+		v=v+Grp->NbPtr;
+	}
+
+	//initalisation of the matrix
+	int** matrix;
+	matrix=new int*[u];
+	for(int i=0;i<u;i++)
+	{
+		matrix[i]=new int[v];
+		for(int j=0;j<v;j++)
+		{
+			matrix[i][j]=0;
+		}
+	}
+
+	// Element i,j of the matrix is the number of profiles who are in the i eme ideal groups and j eme computed group
+	int u1,v1;
+	u1=0;
+	for(Groups->Start();!Groups->End();Groups->Next())
+	{
+		Grp=(*Groups)();
+		for(Grp->Start();!Grp->End();Grp->Next())
+		{
+			grp=(*Grp)();
+			for(grp->Start();!grp->End();grp->Next())
+			{
+				subprofileid=(*grp)()->GetId();
+				v1=0;
+				for(ComputedGroup.Start();!ComputedGroup.End();ComputedGroup.Next())
+				{
+					GrpComputed=ComputedGroup();
+					for(GrpComputed->Start();!GrpComputed->End();GrpComputed->Next())
+					{
+						grpcomputed=(*GrpComputed)();
+						for(grpcomputed->Start();!grpcomputed->End();grpcomputed->Next())
+						{
+							if (subprofileid==(*grpcomputed)()->GetId())
+							{
+								matrix[u1][v1]++;
+								NbTot++;
+							}
+						}
+						v1++;
+					}
+				}
+			}
+			u1++;
+		}
+	}
+
+	// calculation of the different terms of the total = a-(b*c)/d)/((1/2*(b+c))-(b*c)/d)
+	double a,b,c,d,num,den;
+
+	a=0;
+	
+	for(i=u+1,ptr=matrix;--i;ptr++)
+	{
+		for(j=v+1,ptr2=(*ptr);--j;ptr2++)
+		{
+			a+=(((*ptr2)*((*ptr2)-1))/2);
+		}
+	}
+
+	b=0;
+
+	for(int i=0;i<u;i++)
+	{
+		int sum=0;
+		for(int j=0;j<v;j++)
+		{
+			sum+=matrix[i][j];
+		}
+		b+=((sum*(sum-1))/2);
+	}
+
+	c=0;
+
+	for(int j=0;j<v;j++)
+	{
+		int sum=0;
+		for(int i=0;i<u;i++)
+		{
+			sum+=matrix[i][j];
+		}
+		c+=((sum*(sum-1))/2);
+	}
+
+	d=(NbTot*(NbTot-1))/2;
+
+	num=a-((b*c)/d);
+	den=(0.5*(b+c))-(b*c/d);
+
+
+	Total=num/den;
+
+	for(int i=0;i<u;i++)
+	{
+		delete[] matrix[i];
+	}
+	delete[] matrix;
 }
 
 
