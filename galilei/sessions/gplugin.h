@@ -6,7 +6,7 @@
 
 	Generic Plugin - Header.
 
-	Copyright 2003-2204 by the Université libre de Bruxelles.
+	Copyright 2003-2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -30,7 +30,7 @@
 
 
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 #ifndef GPluginH
 #define GPluginH
 
@@ -39,7 +39,7 @@
 // include file for R
 #include <rstd/rxmltag.h>
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
@@ -48,22 +48,22 @@ using namespace std;
 using namespace R;
 
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // include file for dlopen
 #include <dlfcn.h>
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // include file for GALILEI
 #include <sessions/galilei.h>
 #include <sessions/gparams.h>
 
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 namespace GALILEI{
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * The GPLugin class provides a template for a generic plugin.
 * @author Pascal Francq
@@ -104,15 +104,15 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * Type of a function used to show the about box of a plugin.
 */
 typedef void (*About_t)();
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * The GPLuginPlugin class provides a template for a generic plugin factory. A
 * factory handles the loading of the dynamic library containing the plugin.
@@ -368,15 +368,23 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * Starting from a directory, this function looks for all shared libraries in the
 * sub-dirs and add them in the containers.
+* @param dir                 Root directory to scan.
+* @param plugins             Strings for each main plug-ins.
+* @param dlgs                Strings for each dialog plug-ins.
+*
 */
-void FindPlugins(const R::RString& dir,R::RContainer<R::RString,true,true>& plugins,R::RContainer<R::RString,true,true>& dlgs);
+void FindPlugins(const R::RString dir,R::RContainer<R::RString,true,false>& plugins,R::RContainer<R::RString,true,false>& dlgs);
 
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+R::RString FindPlugin(const R::RString plugin,const R::RContainer<R::RString,true,false>& plugins);
+
+
+//-----------------------------------------------------------------------------
 /**
 * Template function to load a given type of plugins in a given directory.
 * @param factory            Generic Factory.
@@ -391,125 +399,80 @@ void FindPlugins(const R::RString& dir,R::RContainer<R::RString,true,true>& plug
 template<class factory,class factoryInit,class manager>
 	void LoadPlugins(manager* mng, const char* path, const char* API_version,bool dlg) throw(std::bad_alloc, GException)
 {
-
-	DIR* dp;
-	struct dirent* ep;
 	RString Path(path);
 	RString Msg;
-	RString Name;
-	char DlgLib[100];
-	int len;
-	bool found=false;
-	bool end=false;
+	RString Dlg;
+	RString Short;
+	R::RContainer<R::RString,true,false> PlugIns(50,25);
+	R::RContainer<R::RString,true,false> Dlgs(50,25);
+	char* error;
 
-	while (!end)
+	// Find the plugins
+	FindPlugins(path,PlugIns,Dlgs);
+
+	// Go through the main plug-ins
+	R::RCursor<RString> Cur(PlugIns);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		dp=opendir(Path);
-		Path+="/";
-		if(!dp) return;
-		while((ep=readdir(dp)))
+		// Create the factory
+		void *handle=dlopen(Cur()->Latin1(),RTLD_LAZY);
+		if(!handle)
 		{
-			len=strlen(ep->d_name);
-			if(len<3) continue;
-			if(strcmp(&ep->d_name[len-3],".so")) continue;
-			if((len>7)&&(!strcmp(&ep->d_name[len-7],"_dlg.so"))) continue;
-			try
-			{
+			char *error=dlerror();
+			Msg+="ERROR :";
+			Msg+=error;
+			continue;
+		}
+		factoryInit* initFac= (factoryInit*) dlsym(handle,"FactoryCreate");
+		error=dlerror();
+		if(error)
+		{
+			Msg+="ERROR :";
+			Msg+=error;
+			continue;
+		}
+		Short=Cur()->Mid(Cur()->Find(RTextFile::GetDirSeparator(),-1)+1);
+		factory *myfactory= initFac(mng,Short);
 
-				// Create the factory and insert it
-				Name=Path+ep->d_name;
-				void *handle=dlopen(Name,RTLD_LAZY);
-
-				if (handle == NULL)
-				{
-					char *error=dlerror();
-					Msg+="ERROR :";
-					Msg+=error;
-					continue;
-				}
-
-				factoryInit* initFac= (factoryInit*) dlsym(handle,"FactoryCreate");
-				char *error=NULL;
-				if((error=dlerror())!=NULL)
-				{
-					Msg+="ERROR :";
-					Msg+=error;
-					continue;
-				}
-
-				factory *myfactory= initFac(mng ,ep->d_name);
-
-				if(strcmp(API_version,myfactory->GetAPIVersion()))
-				{
-					Msg+=ep->d_name;
-					Msg+=" - Plugin not compatible with API Version\n";
-					continue;
-				}
-				mng->InsertPtr(myfactory);
-				found=true;
-
-				// Look if dialog boxes are available
-				if(!dlg) continue;
-				// LOAD DLG PLUGINS
-				try
-				{
-					strcpy(DlgLib,Name);
-					DlgLib[Name.GetLen()-3]=0;
-					strcat(DlgLib,"_dlg.so");
-
-					void* handleDLG=dlopen(DlgLib,RTLD_LAZY);
-					if (handleDLG == NULL)
-					{
-						continue;
-					}
-
-					// -- Get Symbol on the About method
-					About_t about = (About_t) dlsym(handleDLG,"About");
-					char *error=NULL;
-					if((error=dlerror())!=NULL)
-					{
-						continue;
-					}
-
-					//register method
-					myfactory->SetAbout(about);
-
-
-					// -- Get Symbol on the Configure  method
-					void* config= dlsym(handleDLG,"Configure");
-			 		char *errorDlg=NULL;
-					if((errorDlg=dlerror())!=NULL)
-					{
-						continue;
-					}
-
-					//register method
-					myfactory->SetConfig(config);
-				}
-				catch(...)
-				{
-				}
-			}
-			catch(std::exception& e)
-			{
-				Msg+=ep->d_name;
-				Msg+=" - ";
-				Msg+=e.what();
-				Msg+="\n";
-			}
+		// Verify the versions of the factory and the session
+		if(strcmp(API_version,myfactory->GetAPIVersion()))
+		{
+			Msg+=(*Cur())+" plug-in not compatible with API Version\n";
+			continue;
 		}
 
-		//if the libaries are found then stop the search
-		if (found)
+		// Register main plugin
+		mng->InsertPtr(myfactory);
+
+		// Look if dialogs shoudl be loaded and if a corresponding dialog
+		// plug-in exist.
+		if(!dlg) continue;
+		Dlg=Short.Mid(0,Short.GetLen()-3)+"_dlg.so";
+		Dlg=FindPlugin(Dlg,Dlgs);
+		if(Dlg.IsEmpty()) continue;
+
+		// Register About method
+		void* handleDLG=dlopen(Dlg.Latin1(),RTLD_LAZY);
+		if (handleDLG == NULL)
 		{
-			end=true;
+			continue;
 		}
-		// else continue the search in the sub dir ".libs"
-		else
+		About_t about = (About_t) dlsym(handleDLG,"About");
+		error=dlerror();
+		if(error)
 		{
-			Path+=".libs";
+			continue;
 		}
-		closedir(dp);
+		myfactory->SetAbout(about);
+
+		// Register Config method
+		void* config= dlsym(handleDLG,"Configure");
+		error=dlerror();
+		if(error)
+		{
+			continue;
+		}
+		myfactory->SetConfig(config);
 	}
 	// If something in Msg -> error
 	if(Msg.GetLen())
@@ -517,8 +480,8 @@ template<class factory,class factoryInit,class manager>
 }
 
 
-}  //-------- End of namespace GALILEI -----------------------------------------
+}  //-------- End of namespace GALILEI ----------------------------------------
 
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 #endif

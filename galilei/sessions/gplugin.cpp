@@ -46,49 +46,64 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void FindPlugins(const RString& dir,RContainer<RString,true,true>& plugins,RContainer<RString,true,true>& dlgs)
+void GALILEI::FindPlugins(const RString dir,RContainer<RString,true,false>& plugins,RContainer<RString,true,false>& dlgs)
 {
 	DIR* dp;
 	struct dirent* ep;
 	RString Path(dir);
 	RString Name;
-	int len;
 
 	dp=opendir(Path);
-	Path+="/";
+	Path+=RTextFile::GetDirSeparator();
 	if(!dp) return;
 	while((ep=readdir(dp)))
 	{
 		// Name og the 'file"
-		Name=Path+ep->d_name;
+		Name=ep->d_name;
 
 		// Look if it is a directoy
 		if(ep->d_type==DT_DIR)
 		{
 			// If not '.' and '..' -> goes though it
-/*			if((Name!=".")&&(Name!=".."))
-				FindPlugins(Name,plugins,dlgs);*/
+			if((Name!=".")&&(Name!=".."))
+				FindPlugins(Path+Name,plugins,dlgs);
 			continue;
 		}
 
 		// Must be a regular file
-		if(ep->d_type==DT_REG)
+		if(ep->d_type!=DT_REG)
 			continue;
 
-		len=strlen(ep->d_name);
+		// Must be a library finishing with '.so'
 		if(Name.GetLen()<3)
 			continue;
+		if(Name.FindStr(".so",-1)==-1) continue;
 
-		if(strcmp(&ep->d_name[len-3],".so")) continue;
-
-		// Is it a dialog box?
-		if((len>7)&&(!strcmp(&ep->d_name[len-7],"_dlg.so")))
+		// Is it a dialog plug-in?
+		if(Name.FindStr("_dlg.so",-1)!=-1)
 		{
-			dlgs.InsertPtr(new RString(Name));
+			dlgs.InsertPtr(new RString(Path+Name));
+			continue;
 		}
 
-		// Msut be the main plugin
-		plugins.InsertPtr(new RString(Name));
+		// Must be the main plugin
+		plugins.InsertPtr(new RString(Path+Name));
 	}
 	closedir(dp);
+}
+
+
+//------------------------------------------------------------------------------
+RString GALILEI::FindPlugin(const RString plugin,const RContainer<R::RString,true,false>& plugins)
+{
+	RString ret;
+
+	// Go through the dialog plugins to see if a a plugin has this name
+	RCursor<RString> Cur(plugins);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if(Cur()->FindStr(plugin,-plugin.GetLen())!=-1)
+			return(*Cur());
+	}
+	return(ret);
 }
