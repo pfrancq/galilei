@@ -59,9 +59,12 @@ class GDocsLang : public RStd::RContainer<GDoc,unsigned int,false,true>
 {
 protected:
 
+	/**
+	* Language of the documents.
+	*/
+	GLang* Lang;
 
 public:
-	GLang* Lang;
 
 	/**
 	* Constructor of Users

@@ -77,6 +77,11 @@ GDocCursor& GALILEI::GDocsLang::GetDocsLangCursor()
 //-----------------------------------------------------------------------------
 int GALILEI::GDocsLang::Compare(const GDocsLang& docLang) const
 {
+	if(!Lang)
+	{
+		if(!docLang.Lang) return(0);
+		return(-1);
+	}
 	return(Lang->Compare(docLang.Lang));
 }
 
@@ -84,6 +89,11 @@ int GALILEI::GDocsLang::Compare(const GDocsLang& docLang) const
 //-----------------------------------------------------------------------------
 int GALILEI::GDocsLang::Compare(const GDocsLang* docLang) const
 {
+	if(!Lang)
+	{
+		if(!docLang->Lang) return(0);
+		return(-1);
+	}
 	return(Lang->Compare(docLang->Lang));
 }
 
@@ -91,6 +101,11 @@ int GALILEI::GDocsLang::Compare(const GDocsLang* docLang) const
 //-----------------------------------------------------------------------------
 int GALILEI::GDocsLang::Compare(const GLang* lang) const
 {
+	if(!Lang)
+	{
+		if(!lang) return(0);
+		return(-1);
+	}
 	return(Lang->Compare(lang));
 }
 
