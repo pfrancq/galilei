@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 		GGroupCalcManager GroupCalcManager(lib,false);
 		GStatsCalcManager StatsCalcManager (lib,false);
 		GLinkCalcManager LinkCalcManager(lib,false);
-		GLangManager Langs(lib,false);
+		GLangManager Langs(lib,true,false);
 		GDocAnalyseManager DocAnalyseManager(lib,false);
 		GPostDocManager PostDocManager(lib,false);
 		GPostGroupManager PostGroupManager(lib,false);
