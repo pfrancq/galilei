@@ -26,7 +26,7 @@
 <group pattern="*kdoc*.h,*kview*.h,*kgalileicenter.h,*qsession*.h,*qplugins*.h" name="Headers" />
    <group pattern="*tests/*.h" name="Headers - Tests" />
    <group pattern="*/galilei/galilei.h,*/galilei/gplugin.h" name="Headers - GALILEI" />
-   <group pattern="*r/rga/*.h" name="Headers R - GA" />
+   <group pattern="*/r/rga/*.h" name="Headers R - GA" />
    <group pattern="*r/rgga/*.h" name="Headers R - GGA" />
    <group pattern="*qtwidgets/*.h" name="Headers - Qt Widgets" />
    <group pattern="*rmath/*.h" name="Headers R - Math" />
@@ -86,5 +86,4 @@
 <dbgshell>libtool</dbgshell>  </general>
   <breakpoints/> </kdevdebugger>
  <workspace>
-<openfiles>
-<file url="file:/home/pfrancq/prj/kgalileicenter/kgalileicenter/kviewchromos.cpp" />  </openfiles> </workspace></kdevelop>
+<openfiles/> </workspace></kdevelop>

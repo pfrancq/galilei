@@ -326,7 +326,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/filters/Makefile.am]
-files=kgalileicenter/galilei/filters/codetochar.cpp,kgalileicenter/galilei/filters/codetochar.h,kgalileicenter/galilei/filters/gfilter.cpp,kgalileicenter/galilei/filters/gfilter.h,kgalileicenter/galilei/filters/gfilteremail.cpp,kgalileicenter/galilei/filters/gfilteremail.h,kgalileicenter/galilei/filters/gfilterhtml.cpp,kgalileicenter/galilei/filters/gfilterhtml.h,kgalileicenter/galilei/filters/gmimefilter.cpp,kgalileicenter/galilei/filters/gmimefilter.h
+files=kgalileicenter/galilei/filters/codetochar.cpp,kgalileicenter/galilei/filters/codetochar.h,kgalileicenter/galilei/filters/gfilter.cpp,kgalileicenter/galilei/filters/gfilter.h,kgalileicenter/galilei/filters/gfilteremail.cpp,kgalileicenter/galilei/filters/gfilteremail.h,kgalileicenter/galilei/filters/gfilterhtml.cpp,kgalileicenter/galilei/filters/gfilterhtml.h,kgalileicenter/galilei/filters/gmimefilter.cpp,kgalileicenter/galilei/filters/gmimefilter.h,kgalileicenter/galilei/filters/gfilterreu.cpp,kgalileicenter/galilei/filters/gfilterreu.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=filters
 sub_dirs=
@@ -375,6 +375,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/filters/gfilterhtml.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/filters/gfilterreu.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/filters/gfilterreu.h]
 dist=true
 install=false
 install_location=
