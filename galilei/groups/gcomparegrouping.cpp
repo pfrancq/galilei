@@ -109,12 +109,15 @@ void GALILEI::GCompareGrouping::ComputeRecallPrecision(GSlot* /*rec*/)
 	unsigned int NbGrp;
 	unsigned int InGrp;
 	unsigned int InthGrp;
+	unsigned int NbProf;
 
 	Precision=Recall=0.0;
+	NbProf=0;
 	Grp.Set(GroupsScore);
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
 		NbGrp=Grp()->Group->NbPtr;
+		NbProf+=NbGrp;
 		Grp()->Precision=Grp()->Recall=0.0;
 		if(!NbGrp) continue;
 		if(NbGrp==1)
@@ -124,6 +127,8 @@ void GALILEI::GCompareGrouping::ComputeRecallPrecision(GSlot* /*rec*/)
 			Grp()->Precision=1.0;
 			if(thGrp->NbPtr==1)
 				Grp()->Recall=1.0;
+			Precision+=Grp()->Precision;
+			Recall+=Grp()->Recall;
 		}
 		else
 		{
@@ -135,6 +140,7 @@ void GALILEI::GCompareGrouping::ComputeRecallPrecision(GSlot* /*rec*/)
 				if(thGrp->NbPtr==1)
 				{
 					Grp()->Recall+=1.0;
+					Recall+=1.0;
 				}
 				else
 				{
@@ -146,16 +152,16 @@ void GALILEI::GCompareGrouping::ComputeRecallPrecision(GSlot* /*rec*/)
 						Grp()->Recall+=((double)(InGrp))/((double)(thGrp->NbPtr-1));
 				}
 			}
+			Precision+=Grp()->Precision;
+			Recall+=Grp()->Recall;
 			Grp()->Precision/=NbGrp;
 			Grp()->Recall/=NbGrp;
 		}
-		Precision+=Grp()->Precision;
-		Recall+=Grp()->Recall;
 	}
-	if(GroupsScore->NbPtr)
+	if(NbProf)
 	{
-		Precision/=(double)GroupsScore->NbPtr;
-		Recall/=(double)GroupsScore->NbPtr;
+		Precision/=(double)NbProf;
+		Recall/=(double)NbProf;
 	}
 }
 
