@@ -477,7 +477,6 @@ template<class factory,class factoryInit,class manager>
 
 					//register method
 					myfactory->SetConfig(config);
-
 				}
 				catch(...)
 				{

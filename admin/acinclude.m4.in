@@ -31,6 +31,7 @@ dnl Forward compatibility macros (make autoconf 2.13 look like 2.50),
 dnl thanks to Raja R Harinath.
 dnl ------------------------------------------------------------------------
 dnl
+
 ifdef([_AC_PATH_X_XMKMF],[],
    [AC_DEFUN([_AC_PATH_X_XMKMF],[AC_PATH_X_XMKMF])])
 ifdef([AC_OUTPUT_SUBDIRS],[],

@@ -43,6 +43,9 @@
 #include <sessions/gplugin.h>
 #include <docs/gfiltermanager.h>
 #include <docs/gfilter.h>
+#include <engines/gengine.h>
+#include <engines/gmetaengine.h>
+#include <engines/genginemanager.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <profiles/gprofilecalc.h>
 #include <groups/ggroupingmanager.h>
@@ -91,6 +94,8 @@ GConfig::GConfig(const char* f) throw(std::bad_alloc)
 	AddTag(t,Langs=new RXMLTag("galileiconfig:langs"));
 	AddTag(t,DocAnalyses=new RXMLTag("galileiconfig:docanalyses"));
 	AddTag(t,PostGroups=new RXMLTag("galileiconfig:postgroups"));
+	AddTag(t,Engines=new RXMLTag("galileiconfig:engines"));
+	AddTag(t,MetaEngines=new RXMLTag("galileiconfig:metaengines"));
 	AddTag(t,SessionParams=new RXMLTag("galileiconfig:session"));
 }
 
@@ -113,6 +118,8 @@ void GConfig::Load(void) throw(GException)
 		Langs=GetTop()->GetTag("galileiconfig:langs");
 		DocAnalyses=GetTop()->GetTag("galileiconfig:docanalyses");
 		PostGroups=GetTop()->GetTag("galileiconfig:postgroups");
+		Engines=GetTop()->GetTag("galileiconfig:engines");
+		MetaEngines=GetTop()->GetTag("galileiconfig:metaengines");
 		SessionParams=GetTop()->GetTag("galileiconfig:session");
 	}
 	catch(...)
@@ -471,6 +478,63 @@ void GConfig::Store(GDocAnalyseManager* mng)
 		DocAnalyses->InsertAttr("Current",lcalc->GetFactory()->GetName());
 	else
 		DocAnalyses->InsertAttr("Current","None");
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GEngineManager* mng)
+{
+	GFactoryEngineCursor Cur;
+	GFactoryMetaEngineCursor CurM;
+	
+	if(Engines) 
+	{
+		Cur=mng->GetEnginesCursor();
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			Cur()->ReadConfig(Engines);
+		}
+	}
+	
+	if(!MetaEngines) return;
+	CurM=mng->GetMetaEnginesCursor();
+	for(CurM.Start();!CurM.End();CurM.Next())
+	{
+		CurM()->ReadConfig(MetaEngines);
+	}
+	try
+	{
+		mng->SetCurrentMethod(MetaEngines->GetAttrValue("Current"));
+	}
+	catch(GException)
+	{
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GEngineManager* mng)
+{
+	GFactoryEngineCursor Cur;
+	GFactoryMetaEngineCursor CurM;
+	GMetaEngine* meta;
+	
+	Cur=mng->GetEnginesCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(this,Engines);
+	}
+
+	CurM=mng->GetMetaEnginesCursor();
+	for(CurM.Start();!CurM.End();CurM.Next())
+	{
+		CurM()->SaveConfig(this,MetaEngines);
+	}
+	meta=mng->GetCurrentMethod();
+	if(meta)
+		MetaEngines->InsertAttr("Current",meta->GetFactory()->GetName());
+	else
+		MetaEngines->InsertAttr("Current","None");
 }
 
 

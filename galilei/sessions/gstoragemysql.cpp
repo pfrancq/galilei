@@ -766,6 +766,66 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
+void GStorageMySQL::GetDocAssessments(GSession* session,const GDocRef& ref,R::RContainer<GProfDoc,true,false>& assess)
+{
+	GDoc* doc;
+	GProfile* prof;
+	tDocAssessment jug;
+
+	doc=session->GetDoc(ref.GetId());
+	if(!doc)
+		throw GException(itou(ref.GetId())+" is an invalid document identificator");
+	try
+	{
+		RQuery fdbks(Db,"SELECT judgement,profileid,when2 FROM htmlsbyprofiles WHERE htmlid="+itou(ref.GetId()));
+		for(fdbks.Start();!fdbks.End();fdbks.Next())
+		{
+			// Get the profile
+			prof=session->GetProfile(atoi(fdbks[1]));
+			if(!prof) continue;
+
+			// Get the assessments
+			switch(fdbks[0][0].Unicode())
+			{
+				case 'O':
+					jug=djOK;
+					break;
+				case 'K':
+					jug=djKO;
+					break;
+				case 'H':
+					jug= djOutScope;
+					break;
+				default:
+					jug=djUnknow;
+					break;
+			}
+			switch(fdbks[0][1].Unicode())
+			{
+				case 'H':
+					jug = tDocAssessment(jug | djHub);
+					break;
+				case 'A':
+					jug = tDocAssessment(jug | djAutority);
+					break;
+				//case 'U':
+					//break;
+				default:
+					break;
+			}
+
+			// Insert in the container
+			assess.InsertPtr(new GProfDoc(doc,prof,jug,fdbks[2]));
+		}
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 {
 	RString sSql;

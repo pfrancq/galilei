@@ -61,6 +61,10 @@ using namespace R;
 #include <docs/glink.h>
 #include <docs/gpostdoc.h>
 #include <docs/gpostdocmanager.h>
+#include <engines/gengine.h>
+#include <engines/gmetaengine.h>
+#include <engines/genginemanager.h>
+#include <engines/genginedoc.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -96,6 +100,11 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+// Global variables
+GSession* GSession::Session=0;
+
+
+//------------------------------------------------------------------------------
 GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(std::bad_alloc,GException)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(str->GetNbSaved(otUser),str->GetNbSaved(otProfile)),
 	  GGroups(str->GetNbSaved(otGroup)), Subjects(0), Fdbks(str->GetNbSaved(otFdbk)+str->GetNbSaved(otFdbk)/2,str->GetNbSaved(otFdbk)/2),
@@ -103,10 +112,12 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(st
 //	  GGroups(200), Subjects(0), Fdbks(100,50),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
 	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0), DocAnalyseMng(0),
-	ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
+	  EngineMng(0),ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
 	  SessParams(sessparams), Storage(str)
 {
 	// Init Part
+	if(!Session)
+		Session=this;
 	CurrentRandom=0;
 	Random = new RRandomGood(CurrentRandom);
 
@@ -122,7 +133,7 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(st
 //------------------------------------------------------------------------------
 void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng,
 	GGroupingManager* gmng, GGroupCalcManager* gcmng,GStatsCalcManager* smng,
-	GPostDocManager* pdmng,GPostGroupManager* pgmng) throw(std::bad_alloc,GException)
+	GPostDocManager* pdmng,GPostGroupManager* pgmng,GEngineManager* emng) throw(std::bad_alloc,GException)
 
 {
 	Langs=langs;
@@ -151,6 +162,8 @@ void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseMana
 	PostDocMng=pdmng;
 	if(PostDocMng)
 		PostDocMng->Connect(this);
+		
+	EngineMng=emng;
 }
 
 
@@ -177,7 +190,7 @@ GFactoryLinkCalcCursor GSession::GetLinkCalcsCursor(void)
 }
 
 
-//-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GFactoryPostDocCursor GSession::GetPostDocsCursor(void)
 {
 	GFactoryPostDocCursor cur(PostDocMng);
@@ -185,7 +198,32 @@ GFactoryPostDocCursor GSession::GetPostDocsCursor(void)
 }
 
 
-//-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+GFactoryEngineCursor GSession::GetEnginesCursor(void)
+{
+	GFactoryEngineCursor cur(EngineMng);
+	return(cur);
+}
+
+
+//------------------------------------------------------------------------------
+GFactoryMetaEngineCursor GSession::GetMetaEnginesCursor(void)
+{
+	GFactoryMetaEngineCursor cur(EngineMng);
+	return(cur);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::GetDocAssessments(const GDocRef& ref,R::RContainer<GProfDoc,true,false>& assess)
+{
+	if(!Storage)
+		throw GException("Cannot retrieve assessment for document "+itou(ref.GetId()));
+	Storage->GetDocAssessments(this,ref,assess);
+}
+
+
+//------------------------------------------------------------------------------
 GDocXML* GSession::CreateDocXML(GDoc* doc) throw(GException)
 {
 	return(URLMng->CreateDocXML(doc));
@@ -345,6 +383,19 @@ void GSession::ComputePostDoc(GSlot* rec)  throw(GException)
 			(*ordered)()->Fac->GetPlugin()->Run();
 		}
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords) throw(GException)
+{
+	GMetaEngine* metaEngine;
+	// Verify that a meta engine is selected
+	metaEngine=EngineMng->GetCurrentMethod();
+	if(!metaEngine)
+		throw GException("No meta engine method chosen.");
+	metaEngine->Query(keyWords,true); //true ->Use all keywords passed to the meta engine
+	metaEngine->Process();
 }
 
 

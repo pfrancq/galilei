@@ -38,11 +38,11 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rstd.h>
+#include <rstd/rdate.h>
+#include <rstd/rlang.h>
 #include <rstd/rstring.h>
 #include <rstd/rcontainer.h>
 #include <rstd/rcursor.h>
-#include <rstd/rdblhashcontainer.h>
-#include <rstd/rdate.h>
 #include <rstd/rxmltag.h>
 #include <rstd/rtextfile.h>
 #include <rstd/random.h>
@@ -63,6 +63,7 @@
 #ifndef GALILEITEST
 	#define GALILEITEST 1
 #endif
+#define proxy public
 
 
 //------------------------------------------------------------------------------
@@ -97,6 +98,7 @@ class GFactoryFilter;
 class GFactoryFilterCursor;
 class GFilterManager;
 class GDoc;
+class GDocRef;
 class GDocAnalyse;
 class GDocAnalyseManager;
 class GDocCursor;
@@ -123,12 +125,28 @@ class GLinks;
 
 
 //------------------------------------------------------------------------------
+// forward class declaration - Engines Part
+class GEngine;
+class GFactoryEngine;
+class GFactoryEngineCursor;
+class GEngineManager;
+class GEngineDoc;
+class GRanking;
+class GMetaEngine;
+class GFactoryMetaEngine;
+class GFactoryMetaEngineCursor;
+class GMetaEngineManager;
+
+
+//------------------------------------------------------------------------------
 // forward class declaration - Profiles Part
 class GUsers;
 class GUser;
 class GUserCursor;
 class GProfile;
+class GProfileRef;
 class GSubProfile;
+class GSubProfileRef;
 class GSubProfileCursor;
 class GProfDoc;
 class GProfDocCursor;
@@ -147,6 +165,7 @@ class GGroupsHistory;
 class GGroupsHistoryCursor;
 class GGroupsHistoryManager;
 class GGroup;
+class GGroupRef;
 class GGroupCursor;
 class GGroupHistory;
 class GGrouping;

@@ -154,6 +154,13 @@ public:
 	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
+	* Get all the assessments on a given document.
+	* @param ref              Reference of the document.
+	* @param assess           Container to fill with the assessments.
+	*/
+	virtual void GetDocAssessments(GSession* session,const GDocRef& ref,R::RContainer<GProfDoc,true,false>& assess);
+
+	/**
 	* Load the users.
 	* @param session         Session.
 	*/

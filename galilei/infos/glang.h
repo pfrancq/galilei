@@ -135,12 +135,22 @@ public:
 	int Compare(const GLang* lang) const;
 
 	/**
+	* Compare two languages by comparing their code.
+	* @see R::RContainer
+	* @param lang            Pointer to a language.
+	* @return int
+	*/
+	int Compare(const R::RLang* lang) const;
+
+	/**
 	* Compare a code of a language with a string representing a code.
 	* @see R::RContainer
 	* @param code            Code.
 	* @return int
 	*/
 	int Compare(const char* code) const;
+
+proxy:
 
 	/**
 	* During the analysis of a document, some words beginning with a number may
@@ -251,6 +261,8 @@ public:
 	* @return true if the sequence must be skipped.
 	*/
 	bool MustSkipSequence(const R::RChar* seq) throw(GException);
+
+public:
 
 	/**
 	* Destructor.

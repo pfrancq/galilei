@@ -99,7 +99,7 @@ protected:
 	/**
 	* Profiles which have assessed the document.
 	*/
-	R::RContainer<GProfDoc,false,true> Fdbks;
+//	R::RContainer<GProfDoc,false,true> Fdbks;
 
 	/**
 	* Count the number of downloads failed.
@@ -173,6 +173,8 @@ public:
 	* @return int
 	*/
 	int Compare(const GLang* lang) const;
+
+proxy:
 
 	/**
 	* Verify if the document is defined. By default, a document is suppose to be
@@ -290,17 +292,19 @@ public:
 	*/
 	void DecFailed(void) {Failed--;}
 
+public:
+
 	/**
 	* Get a Cursor on the feedback on the document.
 	* @return GProfDocCursor.
 	*/
-	GProfDocCursor GetProfDocCursor(void);
+//	GProfDocCursor GetProfDocCursor(void);
 
 	/**
 	* Get the number of feedbacks on the document.
 	* @return unsigned int
 	*/
-	unsigned int GetNbFdbks(void) const;
+//	unsigned int GetNbFdbks(void) const;
 
 	/**
 	* Get a Cursor on the weights of the document.

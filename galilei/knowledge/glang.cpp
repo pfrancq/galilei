@@ -150,6 +150,15 @@ int GLang::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
+int GLang::Compare(const RLang* lang) const
+{
+	if(!lang)
+		return(1);
+	return(strcmp(Code,lang->GetCode()));
+}
+
+
+//------------------------------------------------------------------------------
 int GLang::Compare(const char* code) const
 {
 	return(strcmp(Code,code));

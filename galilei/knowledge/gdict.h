@@ -35,6 +35,10 @@
 #define GDictH
 
 
+//------------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rdblhashcontainer.h>
+
 
 //------------------------------------------------------------------------------
 // include files for GALILEI

@@ -244,6 +244,19 @@ public:
 	*/
 	void DispatchFdbks(GProfDoc* profdoc, GLang* oldlang,GSession* s);
 
+	/**
+	* Store the profdoc in the feedbacks of the subprofile
+	* coressponding to the lang of the profdoc.
+	*
+	* This function is called when at least one of the two lang is defined
+	* and the two lang are different.
+	* @param session        Pointer to the session.
+	* @param profdoc        Pointer to the feedback.
+	* @param oldlang        Old language of the document.  
+	* @param s              Session.
+	*/
+	void Modify(GSession* session,GDocRef& profdoc,GLang* newlang,GLang* oldlang);
+
 	/*
 	* Destructor of the profile.
 	*/

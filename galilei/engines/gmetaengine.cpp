@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GDocAnalyse.cpp
+	GMetaEngine.cpp
 
-	AGeneric Document Analysis - Implementation.
+	Meta Engine for extraction of results from different search engines - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Valery Vandaele (vavdaele@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,76 +32,49 @@
 
 //------------------------------------------------------------------------------
 // include files for ANSI C/C++
-#include <ctype.h>
+#include <stdio.h>
+#include <iostream>
+#include <cstdlib>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocanalyse.h>
-#include <docs/gdoc.h>
-#include <profiles/gprofile.h>
-#include <profiles/gprofdoc.h>
-using namespace R;
+#include <engines/gengine.h>
+#include <engines/gmetaengine.h>
 using namespace GALILEI;
-
-
-//------------------------------------------------------------------------------
-// Constance
-const unsigned int MaxWordLen=50;
+using namespace R;
+using namespace std;
 
 
 
 //------------------------------------------------------------------------------
 //
-// class GDocAnalyse
+// class GMetaEngine
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocAnalyse::GDocAnalyse(GFactoryDocAnalyse* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryDocAnalyse>(fac), Session(0)
+GMetaEngine::GMetaEngine(GFactoryMetaEngine* fac) throw(std::bad_alloc)
+	: GPlugin<GFactoryMetaEngine>(fac), Session(0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyse::Connect(GSession* session) throw(GException)
+void GMetaEngine::Connect(GSession* session) throw(GException)
 {
 	Session=session;
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyse::Disconnect(GSession*) throw(GException)
+void GMetaEngine::Disconnect(GSession*) throw(GException)
 {
 	Session=0;
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang, GDoc* doc) throw(GException)
-{
-/*	GProfDocCursor profdoccursor;
-
-	if(!doc)
-		throw GException("No document selected");
-
-	// if the old lang and the new lang are not defined.
-	if (!oldlang&&!newlang)
-		return;
-
-	// if the oldlang is different to the new lang.
-	if (oldlang!=newlang)
-	{
-		profdoccursor=doc->GetProfDocCursor();
-		for (profdoccursor.Start(); !profdoccursor.End(); profdoccursor.Next())
-			profdoccursor()->GetProfile()->DispatchFdbks(profdoccursor(), oldlang,Session);
-	}*/
-	#warning Update has move
-}
-
-
-//------------------------------------------------------------------------------
-GDocAnalyse::~GDocAnalyse(void)
+GMetaEngine::~GMetaEngine(void)
 {
 }

@@ -99,7 +99,6 @@ class GConfig : R::RXMLStruct
 	*/
 	R::RXMLTag* PostGroups;
 
-
 	/**
 	* Tag holding words clustering methods.
 	*/
@@ -114,7 +113,17 @@ class GConfig : R::RXMLStruct
 	* Document Analysis Methods.
 	*/
 	R::RXMLTag* DocAnalyses;
-
+	
+	/**
+	* Document Analysis Methods.
+	*/
+	R::RXMLTag* Engines;
+	
+	/**
+	* Document Analysis Methods.
+	*/
+	R::RXMLTag* MetaEngines;
+	
 	/**
 	* Document Analysis Methods.
 	*/
@@ -259,6 +268,18 @@ public:
 	* @param mng             Manager.
 	*/
 	void Store(GDocAnalyseManager* mng);
+	
+	/**
+	* Read the (meta) Engine methods from the structure.
+	* @param mng             Manager.
+	*/
+	void Read(GEngineManager* mng);
+
+	/**
+	* Store the (meta) engine methods in the structure.
+	* @param mng             Manager.
+	*/
+	void Store(GEngineManager* mng);
 
 	/**
 	* Read the Session params in the structure.

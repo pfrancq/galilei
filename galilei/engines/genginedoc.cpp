@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GDocAnalyse.cpp
+	GEngineDoc.cpp
 
-	AGeneric Document Analysis - Implementation.
+	Class to store the results of the extraction from a search engine - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Valery Vandaele (vavdaele@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,76 +32,77 @@
 
 //------------------------------------------------------------------------------
 // include files for ANSI C/C++
-#include <ctype.h>
+#include <stdio.h>
+#include <iostream>
+#include <cstdlib>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocanalyse.h>
-#include <docs/gdoc.h>
-#include <profiles/gprofile.h>
-#include <profiles/gprofdoc.h>
-using namespace R;
+#include <engines/genginedoc.h>
 using namespace GALILEI;
-
-
-//------------------------------------------------------------------------------
-// Constance
-const unsigned int MaxWordLen=50;
+using namespace R;
+using namespace std;
 
 
 
 //------------------------------------------------------------------------------
 //
-// class GDocAnalyse
+// class GEngineDoc
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocAnalyse::GDocAnalyse(GFactoryDocAnalyse* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryDocAnalyse>(fac), Session(0)
+GEngineDoc::GEngineDoc(RString url,RString title,RString description,int rank, RString engine)
+	:Url(url),Title(title),Description(description),GlobalRank(0),GlobalRank2(0),Rankings(10,5)
 {
+	Rankings.InsertPtr(new GRanking(rank,engine));
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyse::Connect(GSession* session) throw(GException)
+void GEngineDoc::AddRanking(GRanking* r)
 {
-	Session=session;
+	Rankings.InsertPtr(r);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyse::Disconnect(GSession*) throw(GException)
+void GEngineDoc::AddRanking(int rank,R::RString engine)
 {
-	Session=0;
+	Rankings.InsertPtr(new GRanking(rank,engine));
+}
+
+//------------------------------------------------------------------------------
+int GEngineDoc::Compare(const GEngineDoc* d) const
+{
+	return(Url.Compare(d->GetUrl()));
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang, GDoc* doc) throw(GException)
+int GEngineDoc::Compare(const R::RString url) const
 {
-/*	GProfDocCursor profdoccursor;
-
-	if(!doc)
-		throw GException("No document selected");
-
-	// if the old lang and the new lang are not defined.
-	if (!oldlang&&!newlang)
-		return;
-
-	// if the oldlang is different to the new lang.
-	if (oldlang!=newlang)
-	{
-		profdoccursor=doc->GetProfDocCursor();
-		for (profdoccursor.Start(); !profdoccursor.End(); profdoccursor.Next())
-			profdoccursor()->GetProfile()->DispatchFdbks(profdoccursor(), oldlang,Session);
-	}*/
-	#warning Update has move
+	return(Url.Compare(url));
 }
 
 
 //------------------------------------------------------------------------------
-GDocAnalyse::~GDocAnalyse(void)
+int GEngineDoc::Compare(const GEngineDoc& d) const
+{
+	return(Url.Compare(d.GetUrl()));
+}
+
+
+//-----------------------------------------------------------------------------
+GRankingCursor GEngineDoc::GetRankingsCursor(void) throw(GException)
+{
+	GRankingCursor cur(Rankings);
+	return(cur);
+}
+
+
+//------------------------------------------------------------------------------
+GEngineDoc::~GEngineDoc(void)
 {
 }

@@ -56,6 +56,7 @@ class GProfile;
 class GSubProfile;
 class GWeightInfosHistory;
 class GDoc;
+class GEngineDoc;
 
 
 //-----------------------------------------------------------------------------
@@ -81,6 +82,7 @@ public:
 		GWeightInfosHistory* Giwwh;
 		GGroupHistory* GroupHistory;
 		GDoc* Doc;
+		GEngineDoc* EngineDoc;
 	} Obj;
 
 
@@ -92,7 +94,7 @@ public:
 	/**
 	* Enumeration type of the item.
 	*/
-	enum tType {tNothing,tGroup,tUser,tProfile,tSubProfile,tGiwwh, tGroupHistory,tDocument};
+	enum tType {tNothing,tGroup,tUser,tProfile,tSubProfile,tGiwwh, tGroupHistory,tDocument,tEngineDoc};
 
 	/**
 	* type of the item  
@@ -169,6 +171,16 @@ public:
 	*/
 	QListViewItemType(GDoc* doc, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
+	/**
+	* constructor for a enginedoc, attached to a listviewitem.
+	*/
+	QListViewItemType(GEngineDoc* engineDoc, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
+
+	/**
+	* constructor for a enginedoc, attached to a listview.
+	*/
+	QListViewItemType(GEngineDoc* engineDoc, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
+	
 	/**
 	* method to color the item.
 	*/

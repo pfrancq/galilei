@@ -43,8 +43,10 @@
 #include <sessions/galilei.h>
 #include <profiles/gusers.h>
 #include <docs/gdocs.h>
+#include <engines/genginedoc.h>
 #include <groups/ggroups.h>
 #include <sessions/gparams.h>
+#include <sessions/gobjref.h>
 
 
 //------------------------------------------------------------------------------
@@ -128,6 +130,11 @@ protected:
 	GGroupsHistoryManager* GroupsHistoryMng;
 
 	/**
+	* Document Analysis Methods Manager.
+	*/
+	GEngineManager* EngineMng;
+	
+	/**
 	* Similarities between the subprofiles.
 	*/
 	GProfilesSims* ProfilesSims;
@@ -162,6 +169,11 @@ protected:
 	*/
 	GStorage* Storage;
 
+	/**
+	* Pointer representing the unique session of a process.
+	*/
+	static GSession* Session;
+
 public:
 
 	/**
@@ -171,6 +183,12 @@ public:
 	* @param tests           Test mode.
 	*/
 	GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(std::bad_alloc,GException);
+
+	/**
+	* Get a pointer to the unique session of the process.
+	* @return Pointer to a GSession.
+	*/
+	static GSession* Get(void) {return(Session);}
 
 	/**
 	* Connect the session to managers.
@@ -185,7 +203,7 @@ public:
 	* @param pgmng           Post-Group Computing Methods Manager
 	*/
 	void Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(std::bad_alloc,GException);
+		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostGroupManager* pgmng, GEngineManager* egmng) throw(std::bad_alloc,GException);
 
 	/**
 	* Post-connect the session to other manager.
@@ -252,6 +270,12 @@ public:
 	GGroupsHistoryManager* GetGroupsHistoryManager(void) {return(GroupsHistoryMng);}
 
 	/**
+	* Get the (meta) engine methods manager.
+	* @return Pointer to GEngineManager.
+	*/
+	GEngineManager* GetEngineMng(void) {return(EngineMng);}
+	
+	/**
 	* Get the storage manager.
 	* @return Pointer to GStorage.
 	*/
@@ -290,7 +314,18 @@ public:
 	* @return GProfDocCursor.
 	*/
 	GProfDocCursor GetProfDocsCursor(void);
-
+	
+	/**
+	* Get a cursor over the factories of the search engines.
+	* @return GEngineCursor.
+	*/
+	GFactoryEngineCursor GetEnginesCursor(void);
+	
+	/**
+	* Get a cursor over the factories of the meta search engines.
+	* @return GMetaEngineCursor.
+	*/
+	GFactoryMetaEngineCursor GetMetaEnginesCursor(void);
 
 	//--------------------------------------------------------------------------
 	// Assign identifier methods
@@ -320,6 +355,19 @@ public:
 	*/
 	virtual void AssignId(GSubProfile* sub);
 
+	/**
+	* @name Documents method.
+	*/
+	//@{
+
+	/**
+	* Get all the assessments on a given document.
+	* @param ref              Reference of the document.
+	* @param assess           Container to fill with the assessments.
+	*/
+	void GetDocAssessments(const GDocRef& ref,R::RContainer<GProfDoc,true,false>& assess);
+
+	//@}
 
 	//--------------------------------------------------------------------------
 	// Computing methods
@@ -347,6 +395,13 @@ public:
 	*/
 	void ComputePostDoc(GSlot* rec)  throw(GException);
 
+	/**
+	* Send a Query to the Meta engine selected. The pages are researched, ranked and return
+	* @param &keyWords      The set of keywords to form the query
+	* @param &results       The set of results returned by the meta engine
+	*/
+	void QueryMetaEngine(R::RContainer<R::RString,true,false> &keyWords) throw(GException);
+	
 	/**
 	* Compute the (sub)profiles.
 	* @param rec            Receiver for the signals.

@@ -56,7 +56,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const RString& u,const RString& a,unsigned int f,unsigned int nbf) throw(std::bad_alloc)
 	:  GWeightInfos(60), URL(url), Name(name), Id(id),
-	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
+	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), //Fdbks(nbf+nbf/2,nbf/2),
 	  Failed(f), LinkSet(5,2)
 #if GALILEITEST
 	  ,Subjects(2,1)
@@ -77,7 +77,7 @@ GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,co
 //------------------------------------------------------------------------------
 GDoc::GDoc(const RString& url,const RString& name,const RString& mime) throw(std::bad_alloc)
 	: GWeightInfos(60), URL(url), Name(name), Id(cNoRef),
-	  Lang(0), MIMEType(mime), Updated(), Computed(), Fdbks(50,25),
+	  Lang(0), MIMEType(mime), Updated(), Computed(), //Fdbks(50,25),
 	  Failed(0), LinkSet(5,2)
 #if GALILEITEST
 	  ,Subjects(2,1)
@@ -143,7 +143,7 @@ void GDoc::ClearInfos(bool l)
 //------------------------------------------------------------------------------
 void GDoc::ClearFdbks(void)
 {
-	Fdbks.Clear();
+// 	Fdbks.Clear();
 }
 
 
@@ -218,12 +218,12 @@ void GDoc::SetLang(GLang *l)
 	Lang=l;
 	State=osUpdated;
 	Computed.SetToday();
-	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+/*	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 	{
 		sub=Fdbks()->GetProfile()->GetSubProfile(l);
 		if(sub)
 			sub->SetState(osModified);
-	}
+	}*/
 }
 
 
@@ -237,18 +237,18 @@ void GDoc::SetId(unsigned int id) throw(GException)
 
 
 //------------------------------------------------------------------------------
-unsigned int GDoc::GetNbFdbks(void) const
-{
-	return(Fdbks.NbPtr);
-}
-
-
-//------------------------------------------------------------------------------
-GProfDocCursor GDoc::GetProfDocCursor(void)
-{
-	GProfDocCursor cur(Fdbks);
-	return(cur);
-}
+// unsigned int GDoc::GetNbFdbks(void) const
+// {
+// 	return(Fdbks.NbPtr);
+// }
+// 
+// 
+// //------------------------------------------------------------------------------
+// GProfDocCursor GDoc::GetProfDocCursor(void)
+// {
+// 	GProfDocCursor cur(Fdbks);
+// 	return(cur);
+// }
 
 
 //------------------------------------------------------------------------------
@@ -320,7 +320,7 @@ void GDoc::RemoveRefs(void) const throw(GException)
 //------------------------------------------------------------------------------
 void GDoc::AddAssessment(GProfDoc* j) throw(std::bad_alloc)
 {
-	Fdbks.InsertPtr(j);
+//	Fdbks.InsertPtr(j);
 }
 
 

@@ -179,6 +179,24 @@ GALILEI::QListViewItemType::QListViewItemType(GDoc* doc, QListView* parent,QStri
 
 
 //-----------------------------------------------------------------------------
+GALILEI::QListViewItemType::QListViewItemType(GEngineDoc* engineDoc, QListViewItem* parent,QString str1,QString str2,QString str3)
+	: QListViewItem(parent,str1,str2,str3), Type(tEngineDoc)
+{
+	Obj.EngineDoc=engineDoc;
+	Level=0;
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::QListViewItemType::QListViewItemType(GEngineDoc* engineDoc, QListView* parent,QString str1,QString str2,QString str3)
+	: QListViewItem(parent,str1,str2,str3), Type(tEngineDoc)
+{
+	Obj.EngineDoc=engineDoc;
+	Level=0;
+}
+  
+
+//-----------------------------------------------------------------------------
 void GALILEI::QListViewItemType::paintCell( QPainter * p, const QColorGroup & cg, int column, int width, int align )
 {
 	// declaration of new colorr

@@ -43,9 +43,11 @@
 #include <rstd/rstring.h>
 #include <rdb/rmysql.h>
 
+
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <sessions/gobjref.h>
 
 
 //------------------------------------------------------------------------------
@@ -126,6 +128,14 @@ public:
 	* @param session        Session.
 	*/
 	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException)=0;
+
+	/**
+	* Get all the assessments on a given document.
+	* @param session          Session.
+	* @param ref              Reference of the document.
+	* @param assess           Container to fill with the assessments.
+	*/
+	virtual void GetDocAssessments(GSession* session,const GDocRef& ref,R::RContainer<GProfDoc,true,false>& assess)=0;
 
 	/**
 	* Save a document where it is stored. This method is called after an

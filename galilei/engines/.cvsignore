@@ -1,0 +1,9 @@
+Makefile
+Makefile.in
+*.moc.cpp
+*.moc
+*.lo
+*.a
+*.la
+.libs
+.deps
