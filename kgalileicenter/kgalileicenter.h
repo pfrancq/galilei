@@ -345,6 +345,12 @@ private slots:
 	void slotGroupsEvaluation(void);
 
 	/**
+	* mix the ideal groupment.
+	*/
+	void slotMixIdealGroups(void);
+
+
+	/**
 	* Show the documents window.
 	*/
 	void slotShowDocs(void);
@@ -533,6 +539,7 @@ public:
 	KAction* groupsCalc;
 	KAction* groupingCompare;
 	KAction* groupsEvaluation;
+	KAction* mixIdealGroups;
 
 	KToggleAction* docAlwaysCalc;
 	KAction* showDocs;

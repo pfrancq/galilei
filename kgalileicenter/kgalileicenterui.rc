@@ -35,6 +35,8 @@
 		<Action name="groupingCompare"/>
 		<Action name="groupsEvaluation"/>
 		<Action name="runQuery"/>
+		<Separator/>
+		<Action name="mixIdealGroups"/>
 	</Menu>
 	<Menu name="Documents"><text>&amp;Documents</text>
 		<Action name="docAlwaysCalc"/>

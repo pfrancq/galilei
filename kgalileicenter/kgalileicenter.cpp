@@ -44,7 +44,9 @@
 // include files for R Project
 #include <rxml/rxmlfile.h>
 #include <rstd/rstring.h>
+#include <rstd/rcontainer.h>
 using namespace RIO;
+using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
@@ -66,6 +68,9 @@ using namespace RIO;
 #include <groups/gidealgroup.h>
 #include <groups/ggroupcalcgravitation.h>
 #include <groups/ggroupcalcrelevant.h>
+#include <groups/gsubject.h>
+#include <groups/gsubjecttree.h>
+#include <tests/gmixidealgroups.h>
 #include <langs/glang.h>
 #include <langs/gdict.h>
 using namespace GALILEI;
@@ -159,7 +164,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterGroupingMethod(new GGroupingSim(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingKCos(Sess));
-			Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
+//			Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess));
 			Config->setGroup("Session Options");
@@ -239,7 +244,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterGroupingMethod(new GGroupingSim(Sess));
 	Sess->RegisterGroupingMethod(new GGroupingGGA(Sess));
 	Sess->RegisterGroupingMethod(new GGroupingKCos(Sess));
-	Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
+//	Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess));
 	Config->setGroup("Session Options");
@@ -840,6 +845,24 @@ void KGALILEICenterApp::slotRunProgram(void)
 void KGALILEICenterApp::slotRunQuery(void)
 {
 	createClient(Doc,new KViewQuery(Doc,pWorkspace,"Run Query",0));
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotMixIdealGroups(void)
+{
+	GMixIdealGroups* mix;
+	GSubjectTree* subjecttree=new GSubjectTree(0, 0, 0);
+	RContainer<GGroups,unsigned int,true,true>* idealgroups;
+	idealgroups= new RContainer<GGroups,unsigned int,true,true>(5,2);
+	RContainer<GGroupIdParentId,unsigned int,true,true>* parent;
+	parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,5);
+
+	Doc->GetSession()->LoadIdealGroupment(idealgroups);
+	Doc->GetSession()->LoadSubjectTree(subjecttree);
+	subjecttree->CreateParent(parent);
+	mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups);
+	mix->Run();
 }
 
 

@@ -133,7 +133,9 @@ void KGALILEICenterApp::initActions(void)
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
 	groupingCompare=new KAction(i18n("&Compare Grouping"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
 	groupsEvaluation=new KAction(i18n("&Evaluate Grouping"),"fileopen",0,this,SLOT(slotGroupsEvaluation()),actionCollection(),"groupsEvaluation");
-	runQuery=new KAction(i18n("Run &Query"),"help",0,this,SLOT(slotRunQuery()),actionCollection(),"runQuery");;
+	runQuery=new KAction(i18n("Run &Query"),"help",0,this,SLOT(slotRunQuery()),actionCollection(),"runQuery");
+	mixIdealGroups=new KAction(i18n("Load&Mix Ideal Groups"),"exec",0,this,SLOT(slotMixIdealGroups()),actionCollection(),"mixIdealGroups");
+
 
 
 	// Menu "Document"
@@ -338,6 +340,7 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	groupsCalc->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad()&&Doc->GetSession()->IsUsersLoad());
 	groupingCompare->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
 	groupsEvaluation->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
+	mixIdealGroups->setEnabled(true);
 
 
 	// Menu "Document"
@@ -370,6 +373,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	analyseXML->setEnabled(false);
 	sessionLoadIdealGroupInGroups->setEnabled(false);
 	groupsCalc->setEnabled(false);
+	mixIdealGroups->setEnabled(false);
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);
