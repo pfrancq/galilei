@@ -116,6 +116,7 @@ void KViewGroups::ConstructGroups(void)
 	GLang* lang;
 	char sDate[20];
 	RDate d;
+	GSubProfileCursor Sub;
 
 	Groups->clear();
 	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
@@ -131,9 +132,10 @@ void KViewGroups::ConstructGroups(void)
 			GGroup* gr=grs();
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group");
 			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
-			for(gr->Start(); !gr->End(); gr->Next())
+			Sub=grs()->GetSubProfilesCursor();
+			for(Sub.Start(); !Sub.End(); Sub.Next())
 			{
-				GSubProfile* sub=(*gr)();
+				GSubProfile* sub=Sub();
 				d=sub->GetAttached();
 				sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1(),sDate);

@@ -256,6 +256,7 @@ void KViewProfile::ConstructGroups(void)
 	GLang* lang;
 	char sDate[20];
 	RDate d;
+	GSubProfileCursor Sub;
 
 	Groups->clear();
 	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
@@ -271,9 +272,10 @@ void KViewProfile::ConstructGroups(void)
 		{
 			GGroup* gr=grs();
 			if(!gr->IsIn(sub)) continue;
-			for(gr->Start(); !gr->End(); gr->Next())
+			Sub=grs()->GetSubProfilesCursor();
+			for(Sub.Start(); !Sub.End(); Sub.Next())
 			{
-				GSubProfile* sub=(*gr)();
+				GSubProfile* sub=Sub();
 
 				d=sub->GetAttached();
 				sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());

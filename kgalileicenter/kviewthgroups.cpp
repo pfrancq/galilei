@@ -169,7 +169,7 @@ void KViewThGroups::LoadGroups(const char* filename)
 	{
 		lang=Doc->GetSession()->GetLangs()->GetLang(f.GetWord());
 		f>>nbprof;
-		Groups->InsertGroup(group=new GGroupVector(i,lang));
+		Groups->InsertGroup(group=new GGroupVector(i,lang,false));
 		for(j=nbprof+1;--j;)
 		{
 			f>>id;
@@ -177,7 +177,7 @@ void KViewThGroups::LoadGroups(const char* filename)
 			if(!prof) continue;
 			sub=prof->GetSubProfile(lang);
 			if(!sub) continue;
-			group->InsertPtr(sub);
+			group->InsertSubProfile(sub);
 		}
 	}
 }
@@ -202,6 +202,7 @@ void KViewThGroups::ConstructThGroups(void)
 {
 	GFactoryLangCursor CurLang;
 	GLang* lang;
+	GSubProfileCursor Sub;
 
 	thGroups->clear();
 	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
@@ -217,9 +218,10 @@ void KViewThGroups::ConstructThGroups(void)
 			GGroup* gr=grs();
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group");
 			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
-			for(gr->Start(); !gr->End(); gr->Next())
+			Sub=grs()->GetSubProfilesCursor();
+			for(Sub.Start(); !Sub.End(); Sub.Next())
 			{
-				GSubProfile* sub=(*gr)();
+				GSubProfile* sub=Sub();
 				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1());
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
@@ -235,7 +237,8 @@ void KViewThGroups::ConstructGroups(void)
 	GLang* lang;
 	char tmp1[70];
 	char tmp2[30];
-
+	GSubProfileCursor Sub;
+	
 	Doc->GetSession()->GetSubjects()->Compare();
 	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());
 	setCaption(tmp1);
@@ -255,9 +258,10 @@ void KViewThGroups::ConstructGroups(void)
 			sprintf(tmp2,"Recall: %1.3f",Doc->GetSession()->GetSubjects()->GetRecall(gr));
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group",tmp1,tmp2);
 			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
-			for(gr->Start(); !gr->End(); gr->Next())
+			Sub=grs()->GetSubProfilesCursor();
+			for(Sub.Start(); !Sub.End(); Sub.Next())
 			{
-				GSubProfile* sub=(*gr)();
+				GSubProfile* sub=Sub();
 				sprintf(tmp1,"%s (%s)",sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1());
 				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,tmp1);
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));

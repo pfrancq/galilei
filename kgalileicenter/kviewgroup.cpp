@@ -138,11 +138,13 @@ void KViewGroup::ConstructProfiles(void)
 {
 	char sDate[20];
 	RDate d;
+	GSubProfileCursor Sub;
 
 	Profiles->clear();
-	for(Group->Start();!Group->End();Group->Next())
+	Sub=Group->GetSubProfilesCursor();
+	for(Sub.Start(); !Sub.End(); Sub.Next())
 	{
-		GSubProfile* sub=(*Group)();
+				GSubProfile* sub=Sub();
 		d=sub->GetAttached();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 		QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),Profiles,sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1(),sDate);
@@ -194,6 +196,7 @@ void KViewGroup::ConstructDocs(void)
  	char sDate[20];
  	GProfDocCursor docs;
 	GDocCursor docs2;
+	GSubProfileCursor Sub;
 
 	// Clear the Widget
 	Docs->clear();
@@ -201,9 +204,10 @@ void KViewGroup::ConstructDocs(void)
 
 	// Goes trough the subprofiles of the group
 	// And put in OkDocs all the relevant documents
-	for(Group->Start();!Group->End();Group->Next())
+	Sub=Group->GetSubProfilesCursor();
+	for(Sub.Start(); !Sub.End(); Sub.Next())
 	{
-		GSubProfile* sub=(*Group)();
+		GSubProfile* sub=Sub();
 		docs=sub->GetProfDocCursor();
 		for(docs.Start();!docs.End();docs.Next())
 		{
