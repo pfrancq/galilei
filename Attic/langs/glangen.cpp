@@ -88,8 +88,8 @@ GLangEN::PorterRule::PorterRule(const char* os,const char* ns,int oo,int no,int 
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangEN::GLangEN(void) throw(bad_alloc)
-	: GLang("English","en"), Rules1a(0), Rules1b(0), Rules1bb(0), Rules1c(0),
+GALILEI::GLangEN::GLangEN(GDict* dict) throw(bad_alloc)
+	: GLang("English","en",dict), Rules1a(0), Rules1b(0), Rules1bb(0), Rules1c(0),
 	  Rules2(0), Rules3(0), Rules4(0), Rules5a(0), Rules5b(0)
 {
 	// Rules 1a

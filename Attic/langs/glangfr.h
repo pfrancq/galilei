@@ -78,7 +78,7 @@ public:
 	/**
 	* Constructor of the french language.
 	*/
-	GLangFR(void) throw(bad_alloc);
+	GLangFR(GDict* dict) throw(bad_alloc);
 
 	/**
 	* Function that return stemming of a word. The "French" Porter's algorithm is

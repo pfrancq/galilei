@@ -52,8 +52,8 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLang::GLang(const RString& lang,const char* code) throw(bad_alloc)
-	: RLang(lang,code), Activ(true), SkipWords(50,20)
+GALILEI::GLang::GLang(const RString& lang,const char* code,GDict* dict) throw(bad_alloc)
+	: RLang(lang,code), Activ(true), Dict(dict), SkipWords(50,20)
 {
 	SkipWords.InsertPtr(new SkipWord("min"));
 	SkipWords.InsertPtr(new SkipWord("sec"));
@@ -158,6 +158,13 @@ bool GALILEI::GLang::ValidWord(const RStd::RString& kwd)
 		}
 	}
 	return(v);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GLang::AssignDict(GDict* dict)
+{
+	Dict=dict;
 }
 
 

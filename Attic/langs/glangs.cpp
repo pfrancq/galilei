@@ -63,10 +63,10 @@ using namespace RStd;
 GALILEI::GLangs::GLangs(unsigned nb) throw(bad_alloc)
   : RContainer<GLang,unsigned,true,true>(nb,nb/2), bDics(false), Stops(0), Dics(0)
 {
-	InsertPtr(new GLangEN());
-	InsertPtr(new GLangFR());
 	Dics=new GDicts(nb);
 	Stops=new GDicts(nb);
+	InsertPtr(new GLangEN(0));
+	InsertPtr(new GLangFR(0));
 }
 
 

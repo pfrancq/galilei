@@ -114,6 +114,21 @@ class GDict : public RStd::RDblHashContainer<GWord,unsigned,27,27,true>
 	*/
 	bool Stop;
 
+	/**
+	* Number of references in documents.
+	*/
+	unsigned int NbRefDocs;
+
+	/**
+	* Number of references in subprofiles.
+	*/
+	unsigned int NbRefSubProfiles;
+
+	/**
+	* Number of references in groups.
+	*/
+	unsigned int NbRefGroups;
+
 public:
 
 	/**
@@ -181,6 +196,13 @@ public:
 	const char* GetWord(const unsigned int id) const;
 
 	/**
+	* Get the element with a specific identificator.
+	* @param id             Identificator.
+	* @return Pointer to a GWord.
+	*/
+	GWord* GetElement(const unsigned int id) const;
+
+	/**
 	* Test if the dictionnary is a stop list.
 	* @returns true if it is a stop list.
 	*/
@@ -201,6 +223,35 @@ public:
 	* Compare function used in the RStd::RContainer.
 	*/
 	int Compare(const GLang* lang) const;
+
+	/**
+	* Increase the number of references on a word.
+	* @param id             Identificator.
+	* @param ObjType        Type of the reference.
+	*/
+	void IncRef(unsigned int id,tObjType ObjType);
+
+	/**
+	* Decrease the number of references on a word.
+	* @param id             Identificator.
+	* @param ObjType        Type of the reference.
+	*/
+	void DecRef(unsigned int id,tObjType ObjType);
+
+	/**
+	* Get the number of references on a word.
+	* @param id             Identificator.
+	* @param ObjType        Type of the reference.
+	* @returns unsigned int.
+	*/
+	unsigned int GetRef(unsigned int id,tObjType ObjType);
+
+	/**
+	* Get the total number of references.
+	* @param ObjType        Type of the reference.
+	* @returns unsigned int.
+	*/
+	unsigned int GetRef(tObjType ObjType);
 
 	/**
 	* Destructor of the dictionnary.

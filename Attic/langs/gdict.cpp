@@ -55,8 +55,9 @@ using namespace RStd;
 
 //---------------------------------------------------------------------------
 GALILEI::GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(bad_alloc)
-  : RDblHashContainer<GWord,unsigned,27,27,true>(ml+(ml/4),ml/4), Session(s), Direct(0),
-    MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false), Stop(st)
+	: RDblHashContainer<GWord,unsigned,27,27,true>(ml+(ml/4),ml/4), Session(s), Direct(0),
+	  MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false), Stop(st),
+	  NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
 {
 	Direct=new GWord*[MaxId];
 	memset(Direct,0,MaxId*sizeof(GWord*));
@@ -125,6 +126,13 @@ const char* GALILEI::GDict::GetWord(const unsigned int id) const
 
 
 //---------------------------------------------------------------------------
+GWord* GALILEI::GDict::GetElement(const unsigned int id) const
+{
+	return(Direct[id]);
+}
+
+
+//---------------------------------------------------------------------------
 int GALILEI::GDict::Compare(const GDict* dict) const
 {
 	return(Name.Compare(dict->Name));
@@ -142,6 +150,77 @@ int GALILEI::GDict::Compare(const GDict& dict) const
 int GALILEI::GDict::Compare(const GLang* lang) const
 {
 	return(Lang->Compare(lang));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType)
+{
+	switch(ObjType)
+	{
+		case otDoc:
+			NbRefDocs++;
+			break;
+		case otSubProfile:
+			NbRefSubProfiles++;
+			break;
+		case otGroup:
+			NbRefGroups++;
+			break;
+		default:
+			break;
+	}
+	Direct[id]->IncRef(ObjType);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType)
+{
+	switch(ObjType)
+	{
+		case otDoc:
+			NbRefDocs--;
+			break;
+		case otSubProfile:
+			NbRefSubProfiles--;
+			break;
+		case otGroup:
+			NbRefGroups--;
+			break;
+		default:
+			break;
+	}
+	Direct[id]->DecRef(ObjType);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GDict::GetRef(unsigned int id,tObjType ObjType)
+{
+	return(Direct[id]->GetRef(ObjType));
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GDict::GetRef(tObjType ObjType)
+{
+	switch(ObjType)
+	{
+		case otDoc:
+			return(NbRefDocs);
+			break;
+		case otSubProfile:
+			return(NbRefSubProfiles);
+			break;
+		case otGroup:
+			return(NbRefGroups);
+			break;
+		default:
+			return(NbRefDocs+NbRefSubProfiles+NbRefGroups);
+			break;
+	}
+	return(0);
 }
 
 

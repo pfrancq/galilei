@@ -58,12 +58,27 @@ class GWord
 	/**
 	* Identificator of the word.
 	*/
-	unsigned Id;
+	unsigned int Id;
 
 	/**
 	* The word.
 	*/
 	RStd::RString Word;
+
+	/**
+	* Number of references in documents.
+	*/
+	unsigned int NbRefDocs;
+
+	/**
+	* Number of references in subprofiles.
+	*/
+	unsigned int NbRefSubProfiles;
+
+	/**
+	* Number of references in groups.
+	*/
+	unsigned int NbRefGroups;
 
 public:
 
@@ -167,6 +182,25 @@ public:
 	* @return A C string representing the word.
 	*/
 	const char* GetWord(void) const {return(Word);}
+
+	/**
+	* Increase the number of references on this word.
+	* @param ObjType        Type of the reference.
+	*/
+	void IncRef(tObjType ObjType);
+
+	/**
+	* Decrease the number of references on this word.
+	* @param ObjType        Type of the reference.
+	*/
+	void DecRef(tObjType ObjType);
+
+	/**
+	* Get the number of references on this word.
+	* @param ObjType        Type of the reference.
+	* @returns unsigned int.
+	*/
+	unsigned int GetRef(tObjType ObjType);
 
 	// friend classes
 	friend class GDict;

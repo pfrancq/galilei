@@ -69,6 +69,11 @@ protected:
 	bool Activ;
 
 	/**
+	* Dictionnary.
+	*/
+	GDict* Dict;
+
+	/**
 	* This class represents words that must be skipped when numbers are
 	* presented. For example: 16nd, or 12h20.
 	*/
@@ -95,7 +100,7 @@ public:
 	* @param lang           Name of the language.
 	* @param code           Code of the language.
 	*/
-	GLang(const RStd::RString& lang,const char* code) throw(bad_alloc);
+	GLang(const RStd::RString& lang,const char* code,GDict* dict) throw(bad_alloc);
 
 	/**
 	* Comparaison function used by the Container.
@@ -127,6 +132,11 @@ public:
 	* are to skip.
 	*/
 	bool ValidWord(const RStd::RString& kwd);
+
+	/**
+	* Assign the dictionnary to the lang.
+	*/
+	void AssignDict(GDict* dict);
 
 	/**
 	* Destructor.
