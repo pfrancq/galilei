@@ -43,8 +43,8 @@ using namespace RXML;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDoc::GDoc (const RString& url,const RStd::RString& name,const unsigned int id,const unsigned int nbdiff) throw(bad_alloc)
-  : URL(url), Name(name), Id(id),Words(nbdiff),NbWords(0),NbDiffWords(), Lang(0),
+GALILEI::GDoc::GDoc (const RString& url,const RStd::RString& name,const unsigned int id,unsigned int nbdiff) throw(bad_alloc)
+  : URL(url), Name(name), Id(id), Words(nbdiff>300?nbdiff:300),NbWords(0),NbDiffWords(nbdiff), Lang(0),
     Calc(true), bSave(false)
 {
 }
@@ -52,7 +52,7 @@ GALILEI::GDoc::GDoc (const RString& url,const RStd::RString& name,const unsigned
 
 //-----------------------------------------------------------------------------
 GALILEI::GDoc::GDoc(const RString& url,const RStd::RString& name,const unsigned int id,GLang* lang,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc)
-	: URL(url), Name(name), Id(id), Words(nbdiff),NbWords(nb), NbDiffWords(nbdiff),
+	: URL(url), Name(name), Id(id), Words(nbdiff>300?nbdiff:300),NbWords(nb), NbDiffWords(nbdiff),
 	  Lang(lang), Calc(true), bSave(false)
 {
 }

@@ -71,93 +71,60 @@ public:
 	*/
 	unsigned int GetMax(const char* tbl,const char* fld);
 
-	/**
-	* Loading Users function.
-	*/
-	void LoadAllFromDB();
+protected:
 
 	/**
-	* Loading Users function.
+	* Return the identifier of a new word of a dictionnary.
+	* @param word           Word to find.
+	* @param dict           Dictionnary.
 	*/
-	void LoadUsersFromDB();
-	
-	/**
-	* Loading Profiles function
-	*@param usr             User owner of profiles.
-	*/
-	void LoadProfilesFromDB(GUser* usr);
-	
-	/**
-	* Loading SubProfiles function
-	*@param prof            Profile owner of the subprofiles.
-	*/
-	void LoadSubProfilesFromDB(GProfile* prof);
-	
-	/**
-	* Loading Langs into the 'Langs' container
-	*/
-	void LoadLangsFromDB(void);
-
-	virtual void LoadDics(void) throw(bad_alloc,GException);
+	virtual unsigned int GetDicNextId(const char* word,const GDict* dict);
 
 	/**
-	* Loading Dics into the 'Dics' container from Database.
-	*@param name            name of the database table containing the kwds.
-	*@param lang            languague of the dic.
+	* Loading a dictionnary/stoplist.
+	* @param code           Code of the languague.
+	* @param stop           Is it a stop list.
 	*/
-	void LoadDicFromDB(const RString &name,GLang *lang);
-
-	
-    /**
-	* Loading Dics into the 'Stops' container from Database.
-	*@param name            name of the database table containing the kwds.
-	*@param lang            languague of the dic.
-	*/
-	void LoadStopsFromDB(const RString &name,GLang *lang);
-
-    /**
-	* Loads all the documents for all  profiles.
-	*/
-	void LoadProfilesDocs();
+	virtual void LoadDic(const char* code,bool s) throw(bad_alloc,GException);
 
 	/**
-	* Loads all the documents for a given  profiles.
-	* @param profile        given profile.
+	* Load a specific word from a dictionnary.
+	* @param id             Idenfificator of the word.
+	* @param code           Code of the languague.
 	*/
-	void LoadProfileDocs(GProfile* profile);
+	virtual const char* LoadWord(const unsigned int id,const char* code);
 
 	/**
-	*
+	*  Load the documents.
 	*/
-	unsigned DicNextId(const RString& word);
-
-	
-	/**
-	* Loading the groupment from database.
-	*/
-	void LoadGroupsFromDB(void);
+	virtual void LoadDocs(void) throw(bad_alloc,GException);
 
 	/**
-	* Add a judgement by a profile for a document.
+	*  Load the Users.
 	*/
-	void AddDocJudgement(GDoc* doc, GProfile* profile, char fdbk) {}
+	virtual void LoadUsers(void) throw(bad_alloc,GException);
 
 	/**
-	*
+	*  Load the Users' Feedback.
 	*/
-	void FillDict(GDict* dict) ;
-	
+	virtual void LoadUsersFdbk(void) throw(bad_alloc,GException);
+
 	/**
-	*  loading docs ...
+	* Load the groups.
 	*/
-	void LoadDocs(void);
+	virtual void LoadGroups(void) throw(bad_alloc,GException);
+
+	/**
+	* Load the groups' member.
+	*/
+	virtual void LoadGroupsMember(GGroup* grp) throw(bad_alloc,GException);
 
 public:
 
 	/**
 	* Destructor.
 	*/
-	~GSessionMySQL(void);
+	virtual ~GSessionMySQL(void);
 };
 
 

@@ -92,16 +92,20 @@ public:
 	/**
 	* Constructor.
 	* @param owner          User of the profile.
+	* @param nb             Number of subprofiles.
+	* @param nbf            Number of Feedbacks.
 	*/
-    GProfile(GUser *owner) throw(bad_alloc);
+    GProfile(GUser *owner,const unsigned int nb,const unsigned int nbf=100) throw(bad_alloc);
 	
     /**
 	* Constructor og GProfile
 	* @param owner          User of the profile.
 	* @param id             Identificator of the profile.
 	* @param name           Name of the profile.
+	* @param nb             Number of subprofiles.
+	* @param nbf            Number of Feedbacks.
 	*/
-	GProfile(GUser *owner,const unsigned int id,const char* name) throw(bad_alloc);
+	GProfile(GUser *owner,const unsigned int id,const char* name,const unsigned int nb,const unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Comparaison function

@@ -34,7 +34,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocs::GDocs(unsigned int nb,GSession* session) throw(bad_alloc)
-	: RContainer<GDoc,unsigned,true,false>(nb+(nb/2),nb/2),Session(session)
+	: RContainer<GDoc,unsigned,true,true>(nb+(nb/2),nb/2),Session(session)
 {
 }
 

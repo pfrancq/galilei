@@ -17,6 +17,12 @@
 
 
 //---------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainercursor.h>
+using namespace RStd;
+
+
+//---------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsessions/gsession.h>
 #include <glangs/glangen.h>
@@ -33,8 +39,9 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GALILEI::GSession::GSession(void) throw(bad_alloc,GException)
-  : Langs(2),Stops(0),Dics(0),Users(0),Docs(0),Groups(2,5), MIMETypes(0)
+GALILEI::GSession::GSession(const unsigned int d,const unsigned int u) throw(bad_alloc,GException)
+	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(2,5), MIMETypes(0),
+	  bDics(false), bDocs(false), bUsers(false), bGroups(false)
 {
 	GLang* l;
 
@@ -47,7 +54,7 @@ GALILEI::GSession::GSession(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-GLang* GALILEI::GSession::GetLang(const char* code)
+GLang* GALILEI::GSession::GetLang(const char* code) const
 {
 	RReturnValIfFail(code,0);
 	return(Langs.GetPtr<const char*>(code));
@@ -55,65 +62,94 @@ GLang* GALILEI::GSession::GetLang(const char* code)
 
 
 //---------------------------------------------------------------------------
-GDict* GALILEI::GSession::GetDic(const GLang *lang) throw(GException)
+void GALILEI::GSession::InitDics(void) throw(bad_alloc,GException)
 {
-  if(!lang) throw(GException("Error in ""GSession::GetDic"": Language not defined"));
-  if(!Dics) throw(GException("Error in ""GSession::GetDic"": Dictionnaries not created"));
-  return(Dics->GetPtr<const GLang*>(lang,false));
+	// If dictionnary already loaded, do nothing.
+	if(bDics) return;
+
+	// For each Lang, create a dictionnary and a stop list
+	RContainerCursor<GLang,unsigned int,true,true> CurLang(Langs);
+	for(CurLang.Start();!CurLang.End();CurLang.Next())
+	{
+		LoadDic(CurLang()->GetCode(),true) ;
+		LoadDic(CurLang()->GetCode(),false) ;
+	}
+	bDics=true;
 }
 
 
 //---------------------------------------------------------------------------
-GDict* GALILEI::GSession::GetStop(const GLang *lang) throw(GException)
+GDict* GALILEI::GSession::GetDic(const GLang *lang) const throw(GException)
 {
-  if(!lang) throw(GException("Error in ""GSession::GetStop"": Language not defined"));
-  if(!Stops) throw(GException("Error in ""GSession::GetStop"": StopLists not created"));
-  return(Stops->GetPtr<const GLang*>(lang,false));
+	return(Dics.GetPtr<const GLang*>(lang,false));
 }
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GSession::ClearDics(void) throw(GException)
+GDict* GALILEI::GSession::GetStop(const GLang *lang) const throw(GException)
 {
-  if(!Dics) throw(GException("Error in ""GSession::ClearDics"": Dictionnaries not created"));
-  Dics->Clear();
+	return(Stops.GetPtr<const GLang*>(lang,false));
 }
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GSession::ClearStops(void) throw(GException)
+const char* GALILEI::GSession::GetWord(const unsigned int id,const GLang* lang)
 {
-  if(!Stops) throw(GException("Error in ""GSession::ClearStops"": StopLists not created"));
-  Stops->Clear();
-}
-
-
-////---------------------------------------------------------------------------
-//void GSession::PutAllDocs(bool alldocs)
-//{
-//  AllDocs=alldocs;
-//  if(Docs) Docs->AllDocs=AllDocs;
-//}
-
-
-//---------------------------------------------------------------------------
-unsigned GALILEI::GSession::GetNbDocs(void)
-{
-	return(Docs->NbPtr);
+	if(bDics)
+		return(Dics.GetPtr<const GLang*>(lang,false)->GetWord(id));
+	return(LoadWord(id,lang->GetCode()));
 }
 
 
 //---------------------------------------------------------------------------
-//void GSession::AnalyseDocs(URLFunc *urlfunc,InfoFunc *infofunc) throw(bad_alloc,GException)
-//{
-//  Docs->Analyse(urlfunc,infofunc);
-//}
+const char* GALILEI::GSession::GetWord(const unsigned int id,const GDict* dict) const
+{
+	if(bDics&&dict)
+		return(dict->GetWord(id));
+	return(0);
+}
+
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GSession::ClearDocs(void) throw(GException)
+void GALILEI::GSession::InitDocs(void) throw(bad_alloc,GException)
 {
-  Docs->Clear();
+	// If documents already loaded, do nothing.
+	if(bDocs) return;
+
+	// Load the documents
+	LoadDocs();
+	bDocs=true;
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
+{
+	// If users already loaded, do nothing.
+	if(bUsers) return;
+
+	// Load the users
+	LoadUsers();
+	bUsers=true;
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GSession::InitUsersFdbk(void) throw(bad_alloc,GException)
+{
+	// If users' feedback already loaded, do nothing.
+	if(bUsersFdbk) return;
+
+	// Verify that users and docs are loaded
+	if(!bUsers)
+		InitUsers();
+	if(!bDocs)
+		InitDocs();
+
+	// Load the users
+	LoadUsersFdbk();
+	bUsersFdbk=true;
 }
 
 
@@ -123,6 +159,38 @@ GUser* GALILEI::GSession::CreateUser(const char* usr,const char* pwd,const char*
 	                  const char* addr2,const char* city,const char* country) throw(bad_alloc)
 {
 	return(0);
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GSession::InitGroups(void) throw(bad_alloc,GException)
+{
+	// If groups already loaded, do nothing.
+	if(bGroups) return;
+
+	// Load the users
+	LoadGroups();
+	bGroups=true;
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GSession::InitGroupsMember(void) throw(bad_alloc,GException)
+{
+	// If users' feedback already loaded, do nothing.
+	if(bGroupsMember) return;
+
+	// Verify that users and groups are loaded
+	if(!bUsers)
+		InitUsers();
+	if(!bGroups)
+		InitGroups();
+
+	// Load the groups' member.
+	for(Groups.Start();!Groups.End();Groups.Next())
+		for((Groups)()->Start();!(Groups)()->End();(Groups)()->Next())
+			LoadGroupsMember((*(Groups)())());
+	bGroupsMember=true;
 }
 
 
@@ -143,11 +211,6 @@ GGroup* GALILEI::GSession::NewGroup(void)
 //---------------------------------------------------------------------------
 GALILEI::GSession::~GSession(void) throw(GException)
 {
-	if(Stops) delete Stops;
-	if(Dics) delete Dics;
-	if(Docs) delete Docs;
-	if(Users) delete Users;
-//	if(GroupsLangs) delete GroupsLangs;
 	if(MIMETypes) delete MIMETypes;
 }
 

@@ -30,17 +30,17 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfile::GProfile(GUser* owner) throw(bad_alloc)
-  : RContainer<GSubProfile,unsigned,true,true>(10,5),Owner(owner),Id(cNoRef),Name(),
-    Modified(false),FdbkDocs(100,50)
+GALILEI::GProfile::GProfile(GUser* owner,const unsigned int nb,const unsigned int nbf) throw(bad_alloc)
+  : RContainer<GSubProfile,unsigned,true,true>(nb,nb/2),Owner(owner),Id(cNoRef),Name(),
+    Modified(false),FdbkDocs(nbf+nbf/2,nbf/2)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfile::GProfile(GUser *owner,const unsigned int id,const char* name) throw(bad_alloc)
-  : RContainer<GSubProfile,unsigned,true,true>(10,5),Owner(owner),Id(id),Name(name),
-    Modified(false),FdbkDocs(100,50)
+GALILEI::GProfile::GProfile(GUser *owner,const unsigned int id,const char* name,const unsigned int nb,const unsigned int nbf=100) throw(bad_alloc)
+  : RContainer<GSubProfile,unsigned,true,true>(nb,nb/2),Owner(owner),Id(id),Name(name),
+    Modified(false),FdbkDocs(nbf+nbf/2,nbf/2)
 {
 }
 

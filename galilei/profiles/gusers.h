@@ -49,7 +49,7 @@ public:
 
 	/**
 	* Constructor of Users
-	* @param nb				number of User in Users
+	* @param nb             Number of User in Users
 	*/
 	GUsers(unsigned int nb) throw(bad_alloc);
 	

@@ -6,11 +6,11 @@
 
 	GALILEI Session using a MySQL Database - Implementation.
 
-        (C) 2001 by Pascal Francq
+	(C) 2001 by Pascal Francq
 
-        Version $Revision$
+	Version $Revision$
 
-        Last Modify: $Date$
+	Last Modify: $Date$
 
 */
 
@@ -18,12 +18,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
-//#include <stdio.h>      // Defining size_t
 #include <stdlib.h>
-//#include <string.h>     // String functions
-//#include <sys/stat.h>
-//#include <unistd.h>
-//#include <fcntl.h>
 
 
 //-----------------------------------------------------------------------------
@@ -42,7 +37,7 @@ using namespace RMySQL;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,RMySQLError)
-	: RDb(host,user,pwd,db), GSession()
+	: RDb(host,user,pwd,db), GSession(GetCount("htmls"),GetCount("users"))
 {
 }
 
@@ -72,214 +67,186 @@ unsigned int GALILEI::GSessionMySQL::GetMax(const char* tbl,const char* fld)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadUsersFromDB()
-{        
-	Users = new GUsers(10);
+unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* dict)
+{
+	char sSql[100];
+
+	// Verify that the word didn't already exist.
+	sprintf(sSql,"SELECT kwdid FROM %skwds WHERE kwd='%s'",dict->GetLang()->GetCode(),word);
+	RQuery find(this,sSql);
+	if(find.GetNbRows())
+	{
+		find.Begin();
+		return(strtoul(find[0],0,10));
+	}
+
+	// Insert the new word
+	sprintf(sSql,"INSERT INTO %skwds(kwd) VALUES('%s')",dict->GetLang()->GetCode(),word);
+	RQuery insert(this,sSql);
+
+	// Get the next id
+	sprintf(sSql,"SELECT last_insert_id() FROM %skwds",dict->GetLang()->GetCode());
+	RQuery getinsert(this,sSql);
+	getinsert.Begin();
+	return(strtoul(getinsert[0],0,10));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::LoadDic(const char* code,bool s) throw(bad_alloc,GException)
+{
+	GDict* dict;
+	unsigned int MaxCount=100;
+	unsigned int MaxId=0;
+	char sSql[100];
+	char tbl[20];
+
+	// Construct the table name
+	if(s)
+		sprintf(tbl,"%sstopkwds",code);
+	else
+		sprintf(tbl,"%skwds",code);
+
+	// Search the values to initialise the dictionnary
+	for(char i='a';i<='z';i++)
+	{
+		sprintf(sSql,"SELECT COUNT(*) FROM %s WHERE kwd LIKE '%c%%'",tbl,i);
+		RQuery count(this,sSql);
+		count.Begin();
+		if(strtoul(count[0],0,10)>MaxCount) MaxCount=strtoul(count[0],0,10);
+	}
+	if(MaxCount==0) MaxCount=100;
+	MaxId=GetMax(tbl,"kwdid");
+	if(!MaxId)
+		MaxId=100;
+
+	// Create and insert the dictionnary
+	if(s)
+		Stops.InsertPtr(dict=new GDict(this,tbl,"Stop List",GetLang(code),MaxId,MaxCount,true));
+	else
+		Dics.InsertPtr(dict=new GDict(this,tbl,"Dictionnary",GetLang(code),MaxId,MaxCount,false));
+
+	// Load the dictionnary from the database
+	sprintf(sSql,"SELECT kwdid, kwd  FROM %s",tbl);
+	RQuery dicts (this, sSql);
+	for(dicts.Begin();dicts.IsMore();dicts++)
+		dict->Put(atoi(dicts[0]), dicts[1]);
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GSessionMySQL::LoadWord(const unsigned int id,const char* code)
+{
+	char sSql[100];
+
+	sprintf(sSql,"SELECT kwd FROM %skwds WHERE kwdid=%i",code,id);
+	RQuery w(this,sSql);
+	if(!w.GetNbRows())
+		return(0);
+	w.Begin();
+	return(w[0]);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
+{
+	char sSql[100];
 	GUser* usr;
-	RQuery users (this, "SELECT userid,user FROM users");
+	GProfile* prof;
+	GLang* lang;
+	GSubProfile* sub;
+	unsigned int userid,profileid;
+
+	// Go through the users
+	RQuery users(this, "SELECT userid,user,fullname FROM users");
 	for(users.Begin();users.IsMore();users++)
 	{
-		usr=new GUser(atoi(users[0]),users[1]);
-		LoadProfilesFromDB(usr);
-		Users->InsertPtr(usr);
+		userid=atoi(users[0]);
+		sprintf(sSql,"SELECT profileid, description, updated FROM profiles WHERE userid=%u",userid);
+		RQuery profiles(this,sSql);
+		Users.InsertPtr(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
+		for(profiles.Begin();profiles.IsMore();profiles++)
+		{
+			profileid=atoi(profiles[0]);
+			usr->InsertPtr(prof=new GProfile(usr,profileid,profiles[1],GetNbLangs()));
+			sprintf(sSql,"SELECT subprofileid,langid FROM subprofiles WHERE profileid=%u",profileid);
+			RQuery subprofil (this,sSql);
+			for(subprofil.Begin();subprofil.IsMore();subprofil++)
+			{
+				lang=GetLang(subprofil[1]);
+				prof->InsertPtr(sub=new GSubProfile(prof,atoi(subprofil[0]),lang));
+
+				// Load GWordList 'OK'
+				sprintf(sSql,"SELECT kwdid FROM %sokkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
+				RQuery ok(this,sSql);
+				for(ok.Begin();ok.IsMore();ok++)
+					sub->GetOK()->InsertPtr(new GIWord(atoi(ok[0])));
+
+				// Load GWordList 'KO'
+				sprintf(sSql,"SELECT kwdid FROM %skokwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
+				RQuery ko(this,sSql);
+				for(ko.Begin();ko.IsMore();ko++)
+					sub->GetKO()->InsertPtr(new GIWord(atoi(ko[0])));
+
+				// Load GWordList 'Common'
+				sprintf(sSql,"SELECT kwdid FROM %scomkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
+				RQuery com(this,sSql);
+				for(com.Begin();com.IsMore();com++)
+					sub->GetCommon()->InsertPtr(new GIWord(atoi(com[0])));
+			}
+		}
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadProfilesFromDB (GUser* usr)
+void GALILEI::GSessionMySQL::LoadUsersFdbk() throw(bad_alloc,GException)
 {
-	// load profiles of this user
+	char sSql[100];
 	GProfile* prof;
-	char sSql[100];
-	sprintf(sSql,"SELECT profileid, description, updated FROM profiles WHERE userid=%u",usr->GetId());
-        
-	RQuery profiles(this,sSql);
-	for(profiles.Begin();profiles.IsMore();profiles++)
+
+	// Go trough each User
+	for(Users.Start();!Users.End();Users.Next())
 	{
-		prof=new GProfile(usr,atoi(profiles[0]),profiles[1]);
-		LoadSubProfilesFromDB(prof);
-		usr->InsertPtr(prof);
-	}
-}
-        
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadSubProfilesFromDB (GProfile* prof)
-{
-	GSubProfile* sub ;
-	char ssql[100], sSql[100];
-	GLang* lang;
-
-	sprintf(ssql,"SELECT subprofileid, langid FROM subprofiles WHERE profileid=%u",prof->GetId());
-	RQuery subprofil (this,ssql);
-	for(subprofil.Begin();subprofil.IsMore();subprofil++)
-	{
-		lang=GetLang(subprofil[1]);
-		sub=new GSubProfile(prof,atoi(subprofil[0]),lang);
-
-		// Load GWordList 'OK'
-		sprintf(sSql,"SELECT kwdid FROM %sokkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
-		RQuery ok(this,sSql);
-		for(ok.Begin();ok.IsMore();ok++)
-			sub->GetOK()->InsertPtr(new GIWord(atoi(ok[0])));
-
-		// Load GWordList 'KO'
-		sprintf(sSql,"SELECT kwdid FROM %skokwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
-		RQuery ko(this,sSql);
-		for(ko.Begin();ko.IsMore();ko++)
-			sub->GetKO()->InsertPtr(new GIWord(atoi(ko[0])));
-
-		// Load GWordList 'Common'
-		sprintf(sSql,"SELECT kwdid FROM %scomkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
-		RQuery com(this,sSql);
-		for(com.Begin();com.IsMore();com++)
-			sub->GetCommon()->InsertPtr(new GIWord(atoi(com[0])));
-
-		prof->InsertPtr(sub);
-
+		for (Users()->Start();!Users()->End();Users()->Next())
+		{
+			prof=(*Users())();
+			sprintf(sSql,"SELECT htmlid, judgement FROM htmlsbyprofiles WHERE profileid=%u",prof->GetId());
+			RQuery fdbks(this,sSql);
+			for(fdbks.Begin();fdbks.IsMore();fdbks++)
+				prof->AddDocJudged(Docs.GetPtr<const unsigned>(atoi(fdbks[0])),atoi(fdbks[1]));
+		}
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadDics(void) throw(bad_alloc,GException)
-{
-	char str[30];
-
-	if(!Dics) Dics=new GDicts(Langs.NbPtr);
-	if(!Stops) Stops=new GDicts(Langs.NbPtr);
-	for(Langs.Start();!Langs.End();Langs.Next())
-	{
-		sprintf(str,"%skwds",Langs()->GetCode());
-//        LoadDicFromDB(str,lang,Dics);
-		sprintf(str,"%sstopkwds",Langs()->GetCode());
-//        LoadDicFromDb(str,lang,Stops);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadLangsFromDB()
-{
-	Dics=new GDicts(Langs.NbPtr);
-	Stops=new GDicts(Langs.NbPtr);
-	LoadDicFromDB("enkwds",GetLang("en")) ;
-	LoadStopsFromDB("enstopkwds",GetLang("en")) ;
-	LoadDicFromDB("frkwds",GetLang("fr")) ;
-	LoadStopsFromDB("frstopkwds",GetLang("fr")) ;
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadDicFromDB(const RString &name,GLang *lang)
-{
-	GDict* dict;
-	unsigned int MaxCount=0;
-	char sSql[100];
-
-	for(char i='a';i<='z';i++)
-	{
-		sprintf(sSql,"SELECT COUNT(*) FROM %s WHERE kwd LIKE '%c%%'",name(),i);
-		RQuery count(this,sSql);
-		count.Begin();
-		if(strtoul(count[0],0,10)>MaxCount) MaxCount=strtoul(count[0],0,10);
-	}
-	if(MaxCount==0) MaxCount=100;
-	sprintf(sSql,"SELECT MAX(kwdid) FROM %s",name());
-	RQuery max(this,sSql);
-	max.Begin();
-	if(max[0])
-		dict=new GDict(this,name,"Dictionnary",lang,strtoul(max[0],0,10),MaxCount);
-	else
-		dict=new GDict(this,name,"Dictionnary",lang,100,MaxCount);
-	FillDict(dict);
-	Dics->InsertPtr(dict);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadStopsFromDB(const RString &name,GLang *lang)
-{
-	GDict* dict;
-	unsigned int MaxCount=0;
-	char sSql[100];
-
-	for(char i='a';i<='z';i++)
-	{
-		sprintf(sSql,"SELECT COUNT(*) FROM %s WHERE kwd LIKE '%c%%'",name(),i);
-		RQuery count(this,sSql);
-		count.Begin();
-		if(strtoul(count[0],0,10)>MaxCount) MaxCount=strtoul(count[0],0,10);
-	}
-	if(MaxCount==0) MaxCount=100;
-	sprintf(sSql,"SELECT MAX(kwdid) FROM %s",name());
-	RQuery max(this,sSql);
-	max.Begin();
-	if(max[0])
-		dict=new GDict(this,name,"Dictionnary",lang,strtoul(max[0],0,10),MaxCount);
-	else
-		dict=new GDict(this,name,"Dictionnary",lang,100,MaxCount);
-	FillDict(dict);
-	Stops->InsertPtr(dict);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::FillDict(GDict* dict)
-{
-	char ssql[100];
-	sprintf(ssql,"SELECT kwdid, kwd  FROM %s", dict->GetName());
-	RQuery dicts (this, ssql);
-	for(dicts.Begin();dicts.IsMore();dicts++)
-	{
-		dict->Put(atoi(dicts[0]), RString(dicts[1]));
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadDocs(void)
+void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 {
 	GDoc* doc;
 	int docid;
+	char sSql[100];
 
-	char sSql1[100],sSql2[100],sSql3[100],sSql4[100];
-	sprintf(sSql1,"SELECT COUNT(*) FROM htmls" );
-	RQuery count(this,sSql1);
-	count.Begin();
-	Docs = new  GDocs (atoi(count[0]),this);
-	sprintf(sSql2,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title  FROM htmls");
-	RQuery quer (this,sSql2);
+	sprintf(sSql,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title  FROM htmls");
+	RQuery quer (this,sSql);
 	for(quer.Begin();quer.IsMore();quer++)
 	{
 		docid=atoi(quer[0]);
-		Docs->InsertPtr(doc=new GDoc(quer[1],quer[6],docid,GetLang(quer[2]),atoi(quer[4]),atoi(quer[5])));
-		sprintf(sSql3,"SELECT COUNT(*) FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
-		RQuery count(this,sSql3);
-		count.Begin();
-		sprintf(sSql4,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
-		RQuery doc2(this,sSql4);
+		Docs.InsertPtr(doc=new GDoc(quer[1],quer[6],docid,GetLang(quer[2]),atoi(quer[4]),atoi(quer[5])));
+		sprintf(sSql,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
+		RQuery doc2(this,sSql);
 		for(doc2.Begin();doc2.IsMore();doc2++)
-		{
 			doc->AddWord(atoi(doc2[0]),atoi(doc2[1]));
-		}
 	}
-	LoadProfilesDocs();
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned GALILEI::GSessionMySQL::DicNextId(const RString& word)   // function to get 'next id' for dic. (to devellop!)
-{
-	return(0);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadGroupsFromDB()
+void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 {
 	char sSql[100];
+	GGroup* group;
 
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
@@ -288,48 +255,33 @@ void GALILEI::GSessionMySQL::LoadGroupsFromDB()
 		RQuery group2 (this,sSql);
 		for(group2.Begin();group2.IsMore();group2++)
 		{
-			GGroup* group=new GGroup(atoi(group2[0]));
-			groups->InsertPtr(group);
-			sprintf(sSql, "SELECT groupid, subprofileid, attach FROM groupsbysubprofiles WHERE groupid=%u", group->GetId());
-			RQuery group3 (this,sSql);
-			for(group3.Begin(); group3.IsMore(); group3++)
-			{
-				for(Users->Start(); !Users->End(); Users->Next())
-				{
-					GUser* usr = (*Users)();
-					for(usr->Start(); !usr->End();usr->Next())
-					{
-						GProfile* prof=(*usr)();
-						GSubProfile* sub=prof->GetPtr<int>(atoi(group3[1]));
-						if(sub)
-							group->InsertPtr(sub);
-					}
-				}
-			}
+			groups->InsertPtr(group=new GGroup(atoi(group2[0])));
 		}
 	}
 }
 
+
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadProfilesDocs()
+void GALILEI::GSessionMySQL::LoadGroupsMember(GGroup* grp) throw(bad_alloc,GException)
 {
-	for (Users->Start();!Users->End();Users->Next())
+	char sSql[100];
+
+	sprintf(sSql, "SELECT groupid, subprofileid, attach FROM groupsbysubprofiles WHERE groupid=%u", grp->GetId());
+	RQuery sub(this,sSql);
+	for(sub.Begin();sub.IsMore();sub++)
 	{
-		GUser* user=(*Users)();
-		for (user->Start();!user->End();user->Next())
-			LoadProfileDocs((*user)());
+		for(Users.Start(); !Users.End(); Users.Next())
+		{
+			GUser* usr = Users();
+			for(usr->Start(); !usr->End();usr->Next())
+			{
+				GProfile* prof=(*usr)();
+				GSubProfile* s=prof->GetPtr<int>(atoi(sub[1]));
+				if(s)
+					grp->InsertPtr(s);
+			}
+		}
 	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadProfileDocs(GProfile* profile)
-{
-	char ssql[100];
-	sprintf(ssql,"SELECT htmlid, judgement  FROM htmlsbyprofiles WHERE profileid=%u", profile->GetId());
-	RQuery docs (this, ssql);
-	for(docs.Begin();docs.IsMore();docs++)
-		profile->AddDocJudged(Docs->GetPtr<const unsigned>(atoi(docs[0])),atoi(docs[1]));
 }
 
 

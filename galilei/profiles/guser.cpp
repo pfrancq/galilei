@@ -32,8 +32,9 @@ using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
-GUser::GUser(const unsigned int id,const char* name) throw(bad_alloc)
-  : RContainer<GProfile,unsigned,true,true>(20,10),Id(id),Name(name)
+GUser::GUser(const unsigned int id,const char* name,const char* fullname,const unsigned int nb) throw(bad_alloc)
+	: RContainer<GProfile,unsigned,true,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
+	  FullName(fullname)
 {
 }
 

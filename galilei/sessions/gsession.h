@@ -53,72 +53,99 @@ namespace GALILEI{
 class GSession
 {
 protected:
+
 	/**
 	* Languages handled by the system.
 	*/
 	GLangs Langs;
 
-	GDicts* Stops;
-	GDicts* Dics;
-	GUsers* Users;
-	GDocs* Docs;
+	/**
+	* Stoplists of the different languages.
+	*/
+	GDicts Stops;
+
+	/**
+	* Dictionnaries of the different languages.
+	*/
+	GDicts Dics;
+
+	/**
+	* Users handled by the system.
+	*/
+	GUsers Users;
+
+	/**
+	* Documents handled by the system.
+	*/
+	GDocs Docs;
+
+	/**
+	* Groups handled by the system.
+	*/
 	RStd::RContainer<GGroups,unsigned int,true,true> Groups;
+
+	/**
+	* MIME types handled by the system.
+	*/
 	RStd::RContainer<GMIMEType,unsigned int,true,true>* MIMETypes;
 
+	/**
+	* State of the dictionnaries and stoplists.
+	*/
+	bool bDics;
+
+	/**
+	* State of the documents.
+	*/
+	bool bDocs;
+
+	/**
+	* State of the users.
+	*/
+	bool bUsers;
+
+	/**
+	* State of the groups.
+	*/
+	bool bGroups;
+
+	/**
+	* State of the groups' Member.
+	*/
+	bool bGroupsMember;
+
+	/**
+	* State of the User feedback.
+	*/
+	bool bUsersFdbk;
+
 public:
 
-  // Constructor & Init part
-  GSession(void) throw(bad_alloc,GException);
-
-  // Dictionnaries
-  virtual void LoadDics(void) throw(bad_alloc,GException)=0;
-  GDict* GetDic(const GLang* lang) throw(GException);
-  GDict* GetStop(const GLang* lang) throw(GException);
-  void ClearDics(void) throw(GException);
-  void ClearStops(void) throw(GException);
-	virtual unsigned DicNextId(const RString& word)=0;
-	
-
-protected:
-
-public:
+	/**
+	* Constructor.
+	* @param d              Number of documents.
+	* @param u              Number of users.
+	*/
+	GSession(const unsigned int d,const unsigned int u) throw(bad_alloc,GException);
 
 	/**
-	* Create a new user in the system.
-	* @param usr            User.
-	* @param pwd            Password.
-	* @param name           Name.
-	* @param email          EMail.
-	* @param title          Title.
-	* @param org            Organisation.
-	* @param addr1          Address (Part 1).
-	* @param addr2          Address (Part 2).
-	* @param city           City.
-	* @param country        Country.
-	*
+	* @name Method for MIME types.
 	*/
-	GUser* CreateUser(const char* usr,const char* pwd,const char* name,const char* email,
-	                  const char* title,const char* org,const char* addr1,
-	                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
+	//@{
 
-  // Documents
-  unsigned GetNbDocs(void);
-  void ClearDocs(void) throw(GException);
+		/**
+		* @return Pointer to the mime type.
+		*/
+		GMIMEType* GetMIMEType(const char* name)
+			{return(MIMETypes->GetPtr<const char*>(name));}
 
-  	unsigned int GetNbUsers(void) const {return(Users->NbPtr);}
+		/**
+		* @return Pointer to the mime type.
+		*/
+		GMIMEType* GetMIMEType(const RString& name)
+			{return(MIMETypes->GetPtr<const RString>(name));}
 
-
-	/**
-	* @return Pointer to the mime type.
-	*/
-	GMIMEType* GetMIMEType(const char* name)
-		{return(MIMETypes->GetPtr<const char*>(name));}
-
-	/**
-	* @return Pointer to the mime type.
-	*/
-	GMIMEType* GetMIMEType(const RString& name)
-		{return(MIMETypes->GetPtr<const RString>(name));}
+	//@}
 
 	/**
 	* @name Method for Languages.
@@ -127,6 +154,19 @@ public:
 
 protected:
 
+		/**
+		* Loading a dictionnary/stoplist.
+		* @param code           Code of the languague.
+		* @param stop           Is it a stop list.
+		*/
+		virtual void LoadDic(const char* code,bool s) throw(bad_alloc,GException)=0;
+
+		/**
+		* Load a specific word from a dictionnary.
+		* @param id             Idenfificator of the word.
+		* @param code           Code of the languague.
+		*/
+		virtual const char* LoadWord(const unsigned int id,const char* code)=0;
 
 public:
 		/**
@@ -148,7 +188,54 @@ public:
 		* @param code             Code of the language.
 		* @returns Pointer to the language.
 		*/
-		GLang* GetLang(const char* code);
+		GLang* GetLang(const char* code) const;
+
+		/**
+		* Verify if the dictionnaries/stoplists are loaded.
+		* @returns true, if loaded.
+		*/
+		bool IsDicsLoad(void) const {return(bDics);}
+
+		/**
+		* Load the dictionnaries and stoplists.
+		*/
+		void InitDics(void) throw(bad_alloc,GException);
+
+		/**
+		* Get a pointer to a dictionnary corresponding to a given language.
+		* @param lang       Pointer to the language.
+		* @returns Pointer to a dictionnary.
+		*/
+		GDict* GetDic(const GLang* lang) const throw(GException);
+
+		/**
+		* Get a pointer to a stoplist corresponding to a given language.
+		* @param lang       Pointer to the language.
+		* @returns Pointer to a stoplist.
+		*/
+		GDict* GetStop(const GLang* lang) const throw(GException);
+
+		/**
+		* Get the word corresponding to a given identificator for a language.
+		* @param id         Identificator.
+		* @param lang       Pointer to the corresponding language.
+		* @returns Pointer to a C string.
+		*/
+		const char* GetWord(const unsigned int id,const GLang* lang);
+
+		/**
+		* Get the word corresponding to a given identificator of a dictionnary.
+		* @param dic        Pointer to the corresponding dictionnary.
+		* @returns Pointer to a C string.
+		*/
+		const char* GetWord(const unsigned int id,const GDict* dict) const;
+
+		/**
+		* Return the identifier of a new word of a dictionnary.
+		* @param word           Word to find.
+		* @param dict           Dictionnary.
+		*/
+		virtual unsigned int GetDicNextId(const char* word,const GDict* dict)=0;
 
 	//@}
 
@@ -163,19 +250,40 @@ public:
 	* @name Method for Documents.
 	*/
 	//@{
+
+protected:
+
+		/**
+		* Load the documents.
+		*/
+		virtual void LoadDocs(void) throw(bad_alloc,GException)=0;
+
+public:
+
 		/**
 		* Get the number of documents treated by the system.
 		* @returns Number of documents.
 		*/
 		unsigned int GetNbDocs(void) const
-			{return(Docs->NbPtr);}
+			{return(Docs.NbPtr);}
 
 		/**
 		* Get a pointer to the documents.
 		* @returns Pointer to the documents.
 		*/
 		const GDocs* GetDocs(void) const
-			{return(Docs);}
+			{return(&Docs);}
+
+		/**
+		* Verify if the documents are loaded.
+		* @returns true, if loaded.
+		*/
+		bool IsDocsLoad(void) const {return(bDocs);}
+
+		/**
+		* Load the documents.
+		*/
+		void InitDocs(void) throw(bad_alloc,GException);
 
 	//@}
 
@@ -184,12 +292,72 @@ public:
 	*/
 	//@{
 
+protected:
+
+		/**
+		* Load the Users.
+		*/
+		virtual void LoadUsers(void) throw(bad_alloc,GException)=0;
+
+		/**
+		* Load the Users.
+		*/
+		virtual void LoadUsersFdbk(void) throw(bad_alloc,GException)=0;
+
+public:
+
+		/**
+		* Get the number of users treated by the system.
+		* @returns Number of Users.
+		*/
+		unsigned int GetNbUsers(void) const {return(Users.NbPtr);}
+
 		/**
 		* Get a pointer to the Users.
 		* @returns Pointer to the users.
 		*/
 		const GUsers* GetUsers(void) const
-			{return(Users);}
+			{return(&Users);}
+
+		/**
+		* Verify if the users are loaded.
+		* @returns true, if loaded.
+		*/
+		bool IsUsersLoad(void) const {return(bUsers);}
+
+		/**
+		* Load the Users.
+		*/
+		void InitUsers(void) throw(bad_alloc,GException);
+
+		/**
+		* Verify if the users' feedback are loaded.
+		* @returns true, if loaded.
+		*/
+		bool IsUsersFdbkLoad(void) const {return(bUsers);}
+
+		/**
+		* Load the Users' feedback.
+		*/
+		void InitUsersFdbk(void) throw(bad_alloc,GException);
+
+		/**
+		* Create a new user in the system.
+		* @param usr            User.
+		* @param pwd            Password.
+		* @param name           Name.
+		* @param email          EMail.
+		* @param title          Title.
+		* @param org            Organisation.
+		* @param addr1          Address (Part 1).
+		* @param addr2          Address (Part 2).
+		* @param city           City.
+		* @param country        Country.
+		*
+		*/
+		GUser* CreateUser(const char* usr,const char* pwd,const char* name,const char* email,
+		                  const char* title,const char* org,const char* addr1,
+		                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
 
 	//@}
 
@@ -198,22 +366,61 @@ public:
 	*/
 	//@{
 
-	/**
-	* Find the groups for a specific language.
-	* @param lang           Pointer to the language.
-	* @returns Pointer to the group.
-	*/
-	GGroups* GetGroups(const GLang* lang) const;
+protected:
 
-	/**
-	* Create a new group.
-	*/
-	GGroup* NewGroup(void);
+		/**
+		* Load the groups.
+		*/
+		virtual void LoadGroups(void) throw(bad_alloc,GException)=0;
+
+		/**
+		* Load the group's member.
+		* @param grp        Group to load the members.
+		*/
+		virtual void LoadGroupsMember(GGroup* grp) throw(bad_alloc,GException)=0;
+
+public:
+
+		/**
+		* Verify if the groups are loaded.
+		* @returns true, if loaded.
+		*/
+		bool IsGroupsLoad(void) const {return(bGroups);}
+
+		/**
+		* Load the Groups.
+		*/
+		void InitGroups(void) throw(bad_alloc,GException);
+
+		/**
+		* Verify if the groups' members are loaded.
+		* @returns true, if loaded.
+		*/
+		bool IsGroupsMember(void) const {return(bGroupsMember);}
+
+		/**
+		* Load the Groups' Member.
+		*/
+		void InitGroupsMember(void) throw(bad_alloc,GException);
+
+		/**
+		* Find the groups for a specific language.
+		* @param lang           Pointer to the language.
+		* @returns Pointer to the group.
+		*/
+		GGroups* GetGroups(const GLang* lang) const;
+
+		/**
+		* Create a new group.
+		*/
+		GGroup* NewGroup(void);
 
 	//@}
 
-  // Destructor
-  virtual ~GSession(void) throw(GException);
+	/**
+	* Destructor.
+	*/
+	virtual ~GSession(void) throw(GException);
 };
 
 

@@ -50,7 +50,7 @@ class GSession;
 * @author Pascal Francq
 * @short List of documents.
 */
-class GDocs : public RStd::RContainer<GDoc,unsigned,true,false>
+class GDocs : public RStd::RContainer<GDoc,unsigned,true,true>
 {
 	/**
 	* Sesssion.

@@ -70,7 +70,7 @@ class GDoc
 	/**
 	* Identifier of the document.
 	*/
-	unsigned Id;
+	unsigned int Id;
 
 	/**
 	* Information about the words containted in the document. Actually, only
@@ -81,12 +81,12 @@ class GDoc
 	/**
 	* Total number of words.
 	*/
-	unsigned NbWords;
+	unsigned int NbWords;
 
 	/**
 	* Number of different words.
 	*/
-	unsigned NbDiffWords;
+	unsigned int NbDiffWords;
 
 	/**
 	* Pointer to the language.
@@ -112,7 +112,7 @@ public:
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
 	*/
-	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,const unsigned int nbdiff=500) throw(bad_alloc);
+	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,unsigned int nbdiff=500) throw(bad_alloc);
 
 	/**
 	* Construct the document.

@@ -56,14 +56,21 @@ class GUser : public RStd::RContainer<GProfile,unsigned,true,true>
 	*/
 	RStd::RString Name;
 
+	/*
+	* FullName of the user.
+	*/
+	RStd::RString FullName;
+
 public:
 
 	/**
 	* Construct a GUser.
 	* @param id             Identificator.
 	* @param name           Name of the user.
+	* @param fullname       FullName of the user.
+	* @param nb             Number of profiles.
 	*/
-	GUser(const unsigned int id,const char* name) throw(bad_alloc);
+	GUser(const unsigned int id,const char* name,const char* fullname,const unsigned int nb) throw(bad_alloc);
 
 	/**
 	* Compare method used by RStd::RContainer.
@@ -91,6 +98,12 @@ public:
 	* @return Pointer to a C String.
 	*/
 	const char* GetName(void) const {return(Name());}
+
+	/**
+	* Get the full name of the user.
+	* @return Pointer to a C String.
+	*/
+	const char* GetFullName(void) const {return(FullName());}
 
 };
 

@@ -37,9 +37,9 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GALILEI::GDict::GDict(GSession* session,const RString& name,const RString& desc,GLang *lang,unsigned max,unsigned maxletter) throw(bad_alloc)
-  : RHashContainer<GWord,unsigned,27,true>(maxletter+(maxletter/4),maxletter/4), Session(session), Direct(0),
-    MaxId(max+max/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false)
+GALILEI::GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(bad_alloc)
+  : RHashContainer<GWord,unsigned,27,true>(ml+(ml/4),ml/4), Session(s), Direct(0),
+    MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false), Stop(st)
 {
 	Direct=new GWord*[MaxId];
 	memset(Direct,0,MaxId*sizeof(GWord*));
@@ -84,7 +84,7 @@ unsigned GALILEI::GDict::GetId(const RString& word) throw(bad_alloc)
 	ptr=GetInsertPtr(Word);
 	if(ptr->Id == cNoRef)
 	{
-		ptr->Id=Session->DicNextId(word);
+		ptr->Id=Session->GetDicNextId(word,this);
 		PutDirect(ptr);
 	}
 	return(ptr->Id);
