@@ -56,7 +56,6 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for Qt
-#include <qstring.h>
 class QWorkspace;
 class QListViewItem;
 
@@ -109,22 +108,22 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	/**
 	* Database server's host.
 	*/
-	QString dbHost;
+	RStd::RString dbHost;
 
 	/**
 	* Database's name.
 	*/
-	QString dbName;
+	RStd::RString dbName;
 
 	/**
 	* Name of the user used to access the database.
 	*/
-	QString dbUser;
+	RStd::RString dbUser;
 
 	/**
 	* Password used to access the database.
 	*/
-	QString dbPwd;
+	RStd::RString dbPwd;
 
 	/**
 	* Label to hold an image representing the status of the database connection.
@@ -418,9 +417,9 @@ private slots:
 	void slotPlugins(void);
 
 	/**
-	* Load a program text file.
+	* Run a program text file.
 	*/
-	void slotLoadProgram(void);
+	void slotRunProgram(void);
 
 	/**
 	* Called when the option about the profile's has to be changed.
@@ -435,14 +434,17 @@ private slots:
 
 	/**
 	* Activates the MDI child widget when it gets selected from the window
-	* menu. */
+	* menu.
+	*/
 	void windowMenuActivated(int id);
 
 	/**
+	* Called when the windows must be tiled.
 	*/
 	void slotWindowTile(void);
 
 	/**
+	* Called when the windows must be cascaded.
 	*/
 	void slotWindowCascade(void);
 
@@ -517,15 +519,13 @@ public:
 	KAction* plugins;
 	KAction* docsOptions;
 
-	KAction* loadProgram;
+	KAction* runProgram;
 
 	KAction* windowTile;
 	KAction* windowCascade;
 	KToggleAction* viewToolBar;
 	KToggleAction* viewStatusBar;
 	KActionMenu* windowMenu;
-
-
 };
 
 

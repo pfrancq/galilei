@@ -5,10 +5,12 @@
 		<Action name="sessionAlwaysCalc"/>
 		<Separator/>
 		<Action name="sessionConnect"/>
-		<Action name="sessionCompute"/>
 		<Action name="sessionDisconnect"/>
 		<separator/>
-		<Action name="sessionTest"/>
+		<Action name="sessionCompute"/>
+		<Action name="runProgram"/>
+		<separator/>
+ 		<Action name="sessionTest"/>
 		<separator/>
 		<Action name="sessionQuit"/>
 	</Menu>
@@ -57,9 +59,6 @@
 	<Menu name="settings"><text>&amp;Settings</text>
 		<Action name="plugins"/>
 		<Action name="docsOptions"/>
-	</Menu>
-	<Menu name="program"><text>&amp;Program</text>
-		<Action name="loadProgram"/>
 	</Menu>
 	<Action name="window_menu"/>
 </MenuBar>

@@ -6,7 +6,7 @@
 
 	Basic Window for the application - Header.
 
-	(C) 2001 by Pascal Francq
+	(C) 2001-2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -57,7 +57,7 @@ class KDoc;
 /**
 * Defines all the possible type of view for a document.
 */
-enum GViewType{gNothing,gUsers,gDocs,gDoc,gProfile,gGroups,gGroup,gThGroups,gDocsStat,gStems,gGA};
+enum GViewType{gNothing,gUsers,gDocs,gDoc,gProfile,gGroups,gGroup,gThGroups,gDocsStat,gStems,gGA,gPrg};
 
 
 //-----------------------------------------------------------------------------

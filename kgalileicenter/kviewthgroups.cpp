@@ -41,6 +41,7 @@ using namespace RIO;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <sessions/gsession.h>
 #include <langs/glang.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>

@@ -38,6 +38,7 @@
 #include <groups/ggroupingsim.h>
 #include <docs/gdocoptions.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
@@ -79,8 +80,8 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void)
-	: KMainWindow(0,"KGALILEICenterApp"), GURLManagerKDE(), Doc(0),
-	  DocOptions(0)
+	: KMainWindow(0,"KGALILEICenterApp"), GURLManagerKDE(),
+	  dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0),DocOptions(0)
 {
 	Config=kapp->config();
 	Printer = new QPrinter;
@@ -103,7 +104,8 @@ void KGALILEICenterApp::initActions(void)
 	// Menu "Connect"
 	sessionAlwaysCalc=new KToggleAction(i18n("Enables/disables session' Recomputing"),0,0,0,actionCollection(),"sessionAlwaysCalc");
 	sessionConnect=new KAction(i18n("&Connect Database"),"connect_established",0,this,SLOT(slotSessionConnect()),actionCollection(),"sessionConnect");
-	sessionCompute=new KAction(i18n("Compute &Session"),0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
+	sessionCompute=new KAction(i18n("Compute &Session"),"make_kdevelop",0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
+	runProgram=new KAction(i18n("&Run Program"),"rebuild",0,this,SLOT(slotRunProgram()),actionCollection(),"runProgram");
 	sessionDisconnect=new KAction(i18n("&Disconnect Database"),"connect_no",0,this,SLOT(slotSessionDisconnect()),actionCollection(),"sessionDisconnect");
 	sessionTest=new KAction(i18n("&Test"),"gohome",0,this,SLOT(slotSessionTest()),actionCollection(),"sessionTest");
 	sessionQuit=new KAction(i18n("E&xit"),"exit",0,this,SLOT(slotSessionQuit()),actionCollection(),"sessionQuit");
@@ -116,12 +118,11 @@ void KGALILEICenterApp::initActions(void)
 	profilesCalc=new KAction(i18n("&Calc Profiles"),"run",0,this,SLOT(slotProfilesCalc()),actionCollection(),"profilesCalc");
 	profileCalc=new KAction(i18n("&Calc Profile"),"run",0,this,SLOT(slotProfileCalc()),actionCollection(),"profilecalc");
 
-
 	// Menu "Groups"
 	groupAlwaysCalc=new KToggleAction(i18n("Enables/disables groups' Recomputing"),0,0,0,actionCollection(),"groupAlwaysCalc");
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
-	groupingCompare=new KAction(i18n("&Compare Grouping"),0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
+	groupingCompare=new KAction(i18n("&Compare Grouping"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
 
 	// Menu "Document"
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents' Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
@@ -151,9 +152,6 @@ void KGALILEICenterApp::initActions(void)
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
 	docsOptions=new KAction(i18n("&Documents Options"),"configure",0,this,SLOT(slotDocsOptions()),actionCollection(),"docsOptions");
 	plugins=new KAction(i18n("&Plugins"),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
-
-	// Menu "Program"
-	loadProgram=new KAction(i18n("&Load Program"),"configure",0,this,SLOT(slotLoadProgram()),actionCollection(),"loadProgram");
 
 	// Menu "Window"
 	windowTile = new KAction(i18n("&Tile"), 0, this, SLOT(slotWindowTile()), actionCollection(),"window_tile");
@@ -199,7 +197,7 @@ void KGALILEICenterApp::createClient(KDoc* doc,KView* view)
 {
 	view->installEventFilter(this);
 	doc->addView(view);
-	view->resize(pWorkspace->sizeHint());
+	view->resize(600,400);
 	view->show();
 	view->setFocus();
 }
@@ -215,10 +213,10 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("ToolBarPos", (int) toolBar("mainToolBar")->barPos());
 
 	Config->setGroup("Database Options");
-	Config->writeEntry("Host", dbHost);
-	Config->writeEntry("Name", dbName);
-	Config->writeEntry("User", dbUser);
-	Config->writeEntry("Password", dbPwd);
+	Config->writeEntry("Host", dbHost());
+	Config->writeEntry("Name", dbName());
+	Config->writeEntry("User", dbUser());
+	Config->writeEntry("Password", dbPwd());
 
 	Config->setGroup("GALILEI Options");
 	Config->writeEntry("Static Language",DocOptions->StaticLang);
@@ -350,6 +348,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	gaStart->setEnabled(false);
 	gaStop->setEnabled(false);
 	plugins->setEnabled(false);
+	runProgram->setEnabled(false);
 }
 
 

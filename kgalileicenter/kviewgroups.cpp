@@ -45,6 +45,7 @@ using namespace RStd;
 #include <groups/ggroup.h>
 #include <langs/glang.h>
 #include <groups/ggroups.h>
+#include <sessions/gsession.h>
 #include <galilei/qlistviewitemtype.h>
 using namespace GALILEI;
 

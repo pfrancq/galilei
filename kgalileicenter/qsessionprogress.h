@@ -38,8 +38,7 @@
 
 //-----------------------------------------------------------------------------
 // forward class declaration for GALIEI
-#include <sessions/gsession.h>
-#include <groups/ggrouping.h>
+#include <sessions/gslot.h>
 using namespace GALILEI;
 
 
@@ -58,7 +57,7 @@ using namespace GALILEI;
 * @author Pascal Francq
 * @short Progress Dialog Box.
 */
-class QSessionProgressDlg : public QSemiModal, public GSessionSignalsReceiver
+class QSessionProgressDlg : public QSemiModal, public GSlot
 {
 	Q_OBJECT
 	QFrame* Line;

@@ -55,6 +55,7 @@ using namespace RGA;
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
 #include <langs/glang.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 
 

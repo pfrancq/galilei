@@ -41,7 +41,7 @@ using namespace RIO;
 // include files for GALILEI
 #include <docs/gdocxml.h>
 #include <docs/gdocoptions.h>
-#include <sessions/gsession.h>
+#include <sessions/gsessionmysql.h>
 #include <profiles/gsubprofiledesc.h>
 #include <profiles/gsubprofilevector.h>
 #include <profiles/gprofilecalcvector.h>
@@ -53,16 +53,11 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEIInterface
-#include <python/galileiprogram.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for Qt
 #include <qprinter.h>
 #include <qmessagebox.h>
-#include <qfiledialog.h>
 #include <qworkspace.h>
+#include <qlineedit.h>
 
 
 //-----------------------------------------------------------------------------
@@ -72,6 +67,8 @@ using namespace GALILEI;
 #include <kmessagebox.h>
 #include <kfiledialog.h>
 #include <klocale.h>
+#include <kio/job.h>
+#include <kio/netaccess.h>
 
 
 //-----------------------------------------------------------------------------
@@ -86,6 +83,7 @@ using namespace GALILEI;
 #include "kviewgroups.h"
 #include "kviewgroup.h"
 #include "kviewstat.h"
+#include "kviewprg.h"
 #include "kviewstems.h"
 #include "kviewprofile.h"
 #include "kviewga.h"
@@ -107,10 +105,10 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	QString method;
 	GSessionMySQL* Sess;
 
-	dlg.txtDb->setText(dbName);
-	dlg.txtLogin->setText(dbUser);
-	dlg.txtPwd->setText(dbPwd);
-	dlg.txtHost->setText(dbHost);
+	dlg.txtDb->setText(dbName());
+	dlg.txtLogin->setText(dbUser());
+	dlg.txtPwd->setText(dbPwd());
+	dlg.txtHost->setText(dbHost());
 	if(dlg.exec())
 	{
 		slotStatusMsg(i18n("Connecting..."));
@@ -152,12 +150,22 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			textFrench->setEnabled(true);
 			textEnglish->setEnabled(true);
 			plugins->setEnabled(true);
+			runProgram->setEnabled(true);
 			UpdateMenusEntries();
 			dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
 		}
 		catch(GException& e)
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
+			if(Doc)
+			{
+				delete Doc;
+				Doc=0;
+			}
+		}
+		catch(RMySQL::RMySQLError& e)
+		{
+			QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
 			if(Doc)
 			{
 				delete Doc;
@@ -184,24 +192,32 @@ void KGALILEICenterApp::slotSessionCompute(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionDisconnect(void)
 {
-	Config->setGroup("Session Options");
-	Config->writeEntry("Description Method",Doc->GetSession()->GetCurrentProfileDesc()->GetProfDescName());
-	Config->writeEntry("Grouping Method",Doc->GetSession()->GetCurrentGroupingMethod()->GetGroupingName());
-	Config->writeEntry("Computing Method",Doc->GetSession()->GetCurrentComputingMethod()->GetComputingName());
-	Config->setGroup("Computing Options");
-	GProfileCalcCursor Computings=Doc->GetSession()->GetComputingsCursor();
-	for(Computings.Start();!Computings.End();Computings.Next())
-		Config->writeEntry(Computings()->GetComputingName(),Computings()->GetSettings());
-	Config->setGroup("Grouping Options");
-	GGroupingCursor Groupings=Doc->GetSession()->GetGroupingsCursor();
-	for(Groupings.Start();!Groupings.End();Groupings.Next())
-		Config->writeEntry(Groupings()->GetGroupingName(),Groupings()->GetSettings());
-	Doc->closeDocument();
-	delete Doc;
-	Doc=0;
+	if(Doc)
+	{
+		Config->setGroup("Session Options");
+		Config->writeEntry("Description Method",Doc->GetSession()->GetCurrentProfileDesc()->GetProfDescName());
+		Config->writeEntry("Grouping Method",Doc->GetSession()->GetCurrentGroupingMethod()->GetGroupingName());
+		Config->writeEntry("Computing Method",Doc->GetSession()->GetCurrentComputingMethod()->GetComputingName());
+		Config->setGroup("Computing Options");
+		GProfileCalcCursor Computings=Doc->GetSession()->GetComputingsCursor();
+		for(Computings.Start();!Computings.End();Computings.Next())
+			Config->writeEntry(Computings()->GetComputingName(),Computings()->GetSettings());
+		Config->setGroup("Grouping Options");
+		GGroupingCursor Groupings=Doc->GetSession()->GetGroupingsCursor();
+		for(Groupings.Start();!Groupings.End();Groupings.Next())
+			Config->writeEntry(Groupings()->GetGroupingName(),Groupings()->GetSettings());
+		Doc->closeDocument();
+		delete Doc;
+		Doc=0;
+	}
 	DisableAllActions();
 	sessionConnect->setEnabled(true);
 	sessionDisconnect->setEnabled(false);
+	sessionCompute->setEnabled(false);
+	runProgram->setEnabled(false);
+	textFrench->setEnabled(false);
+	textEnglish->setEnabled(false);
+	plugins->setEnabled(false);
 	statusBar()->changeItem("Not Connected !",1);
 }
 
@@ -209,30 +225,33 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionTest(void)
 {
-//	GDocXML *s=0;
-//	GSessionMySQL Sess(dbHost,dbUser,dbPwd,dbName,new GURLManagerKDE());
-//	QSessionProgressDlg* d=new QSessionProgressDlg(this,&Sess,"Test");
-//	GDoc doc("/home/pfrancq/docE24.html","Test",cNoRef,0,Sess.GetMIMEType("text/html"),0,0,0,0,0,0);
-//	d->CreateDocXML(s,&doc);
-//	RXMLFile f("/home/pfrancq/test.xml",s,RIO::RTextFile::Create);
 }
 
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionQuit(void)
 {
-	KMainWindow* w;
-
 	slotStatusMsg(i18n("Exiting..."));
-	saveOptions();
-	if(memberList)
+	if(Doc)
 	{
-		for(w=memberList->first();w!=0;w=memberList->first())
-		{
-			if(!w->close())
-			break;
-		}
+		Config->setGroup("Session Options");
+		Config->writeEntry("Description Method",Doc->GetSession()->GetCurrentProfileDesc()->GetProfDescName());
+		Config->writeEntry("Grouping Method",Doc->GetSession()->GetCurrentGroupingMethod()->GetGroupingName());
+		Config->writeEntry("Computing Method",Doc->GetSession()->GetCurrentComputingMethod()->GetComputingName());
+		Config->setGroup("Computing Options");
+		GProfileCalcCursor Computings=Doc->GetSession()->GetComputingsCursor();
+		for(Computings.Start();!Computings.End();Computings.Next())
+			Config->writeEntry(Computings()->GetComputingName(),Computings()->GetSettings());
+		Config->setGroup("Grouping Options");
+		GGroupingCursor Groupings=Doc->GetSession()->GetGroupingsCursor();
+		for(Groupings.Start();!Groupings.End();Groupings.Next())
+			Config->writeEntry(Groupings()->GetGroupingName(),Groupings()->GetSettings());
+		Doc->closeDocument();
+		delete Doc;
+		Doc=0;
 	}
+	saveOptions();
+	close();
 	slotStatusMsg(i18n("Ready."));
 }
 
@@ -514,19 +533,39 @@ void KGALILEICenterApp::slotStatusMsg(const QString& text)
 	statusBar()->changeItem(text,1);
 }
 
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotLoadProgram()
-{
-	QFileDialog* dlg=new QFileDialog ( QString::null, "Program file (*.txt)", this );
-	QString s=dlg->getOpenFileName( QString::null, "Program file (*.txt)", this );
-	if (s)
-	{
-		GALILEIProgram* prog = new GALILEIProgram (RString(s));
-		prog->Load();
-		prog->Run();
-	}
-}
 
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotRunProgram()
+{
+ 	QString tmpfile;
+	char tmp[100];
+	KViewPrg* o;
+
+	KURL url=KFileDialog::getOpenURL("/home/pfrancq",i18n("*.kprg|KGALILEICenter Programs"), this, i18n("Open File..."));
+	if(url.isEmpty())
+	{
+		QMessageBox::critical(this,"KGALILEICenter","File could not be found");
+		return;
+	}
+	KIO::NetAccess::download(url,tmpfile);
+	strcpy(tmp,tmpfile);
+	try
+	{
+		createClient(Doc,o=new KViewPrg(Doc,pWorkspace,tmp,0));
+		KApplication::kApplication()->processEvents();
+		Doc->GetSession()->RunPrg(o,tmp);
+ 		QMessageBox::information(this,"KGALILEICenter","Program Executed");
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
+	}
+	catch(RMySQL::RMySQLError& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
+	}
+	KIO::NetAccess::removeTempFile( tmpfile );
+}
 
 
 //-----------------------------------------------------------------------------
@@ -670,6 +709,7 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 {
 	delete Printer;
 	if(Doc)
-		slotSessionDisconnect();
-	if(DocOptions) delete(DocOptions);
+		delete Doc;
+	if(DocOptions)
+		delete(DocOptions);
 }

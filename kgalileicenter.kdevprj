@@ -22,8 +22,8 @@ bin_program=kgalileicenter
 cflags=
 cppflags=
 cxxflags=\s-O0 -g3 -Wall
-ldadd=/usr/lib/libmysqlclient.so  ${GCENTER}/galilei/sessions/libsessions.a  ${GCENTER}/galilei/profiles/libprofiles.a ${GCENTER}/galilei/langs/liblangs.a ${GCENTER}/galilei/docs/libdocs.a ${GCENTER}/galilei/groups/libgroups.a ${GCENTER}/r/rinter/librinter.a ${GCENTER}/r/rxml/librxml.a ${GCENTER}/r/rio/librio.a ${GCENTER}/galilei/infos/libinfos.a ${GCENTER}/qtwidgets/rga/librga.a ${GCENTER}/r/rga/librga.a ${GCENTER}/galilei/filters/libfilters.a ${GCENTER}/r/rmysql/librmysql.a ${GCENTER}/r/rstd/librstd.a ${GCENTER}/r/rtimedate/librtimedate.a ${GCENTER}/r/rpython/librpython.a ${GCENTER}/qtwidgets/rpython/librpython.a ${GCENTER}/galilei/python/libpython.a $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT)
-ldflags=\s       \s
+ldadd=/usr/lib/libmysqlclient.so  ${GCENTER}/galilei/sessions/libsessions.a  ${GCENTER}/galilei/profiles/libprofiles.a ${GCENTER}/galilei/langs/liblangs.a ${GCENTER}/galilei/docs/libdocs.a ${GCENTER}/galilei/groups/libgroups.a ${GCENTER}/r/rinter/librinter.a ${GCENTER}/r/rxml/librxml.a ${GCENTER}/r/rio/librio.a ${GCENTER}/galilei/infos/libinfos.a ${GCENTER}/qtwidgets/rga/librga.a ${GCENTER}/r/rga/librga.a ${GCENTER}/galilei/filters/libfilters.a ${GCENTER}/r/rmysql/librmysql.a ${GCENTER}/r/rstd/librstd.a ${GCENTER}/r/rtimedate/librtimedate.a $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT)
+ldflags=\s         \s
 
 [General]
 AMChanged=false
@@ -34,7 +34,7 @@ email=pfrancq@ulb.ac.be
 kdevprj_version=1.3
 lfv_open_groups=
 make_options=\s-j1
-makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/python/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/r/rpython/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/qtwidgets/rpython/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am,kgalileicenter/r/rgga/Makefile.am
+makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am,kgalileicenter/r/rgga/Makefile.am
 modifyMakefiles=true
 project_name=KGalileiCenter
 project_type=mdi_kde2
@@ -61,7 +61,6 @@ Headers - Groups=*groups/*.h
 Headers - Infos=*infos/*.h
 Headers - Langs=*langs/*.h
 Headers - Profiles=*profiles/*.h
-Headers - Python=*/python/*.h
 Headers - Qt Widgets=*qtwidgets/*.h
 Headers - Sessions=*sessions/*.h
 Headers - URL Managers=*urlmanagers/*.h
@@ -71,7 +70,6 @@ Headers R - IO=*rio/*.h
 Headers R - Inter=*rinter/*.h
 Headers R - Math=*rmath/*.h
 Headers R - MySQL=*rmysql/*.h
-Headers R - Python=*rpython/*.h
 Headers R - Std=*rstd/*.h
 Headers R - Time/Date=*rtimedate/*.h
 Headers R - XML=*rxml/*.h
@@ -84,7 +82,6 @@ Sources - Groups=*groups/*.cpp
 Sources - Infos=*infos/*.cpp
 Sources - Langs=*langs/*.cpp
 Sources - Profiles=*profiles/*.cpp
-Sources - Python=*/python/*.cpp
 Sources - Qt Widgets=*qtwidgets/*.cpp,*qtwidgets/*.hh
 Sources - Sessions=*sessions/*.cpp
 Sources - URL Managers=*urlmanagers/*.cpp
@@ -94,13 +91,12 @@ Sources R - IO=*rio/*.cpp
 Sources R - Inter=*rinter/*.cpp
 Sources R - Math=*rmath/*.cpp
 Sources R - MySQL=*rmysql/*.cpp
-Sources R - Python=*rpython/*.cpp
 Sources R - Std=*rstd/*.cpp,*rstd/*.hh
 Sources R - Time/Date=*rtimedate/*.cpp
 Sources R - XML=*rxml/*.cpp
 Translations=*.po
 User Interface=*.kdevdlg,*.ui,*.rc
-groups=Headers,Headers - GALILEI,Headers R - GA,Headers R - GGA,Headers - Qt Widgets,Headers R - Math,Headers R - Python,Headers R - MySQL,Headers R - Time/Date,Headers R - IO,Headers R - Std,Headers - URL Managers,Headers - Sessions,Headers - Python,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - GALILEI,Sources - Infos,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources R - Python,Sources - Sessions,Sources - Python,Sources R - Time/Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,Sources R - GGA,User Interface,Translations,GNU,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
+groups=Headers,Headers - GALILEI,Headers R - GA,Headers R - GGA,Headers - Qt Widgets,Headers R - Math,Headers R - MySQL,Headers R - Time/Date,Headers R - IO,Headers R - Std,Headers - URL Managers,Headers - Sessions,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - GALILEI,Sources - Infos,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources - Sessions,Sources R - Time/Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,Sources R - GGA,User Interface,Translations,GNU,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
 
 [Makefile.am]
 files=kgalileicenter.kdevprj,admin,AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,kgalileicenter.lsm
@@ -153,13 +149,13 @@ install_location=
 type=DATA
 
 [kgalileicenter/Makefile.am]
-files=kgalileicenter/main.cpp,kgalileicenter/kgalileicenter.cpp,kgalileicenter/kgalileicenter.h,kgalileicenter/kgalileicenterui.rc,kgalileicenter/kgalileicenter.desktop,kgalileicenter/lo32-app-kgalileicenter.png,kgalileicenter/lo16-app-kgalileicenter.png,kgalileicenter/kdoc.cpp,kgalileicenter/kdoc.h,kgalileicenter/kview.cpp,kgalileicenter/kview.h,kgalileicenter/kviewdoc.cpp,kgalileicenter/kviewdoc.h,kgalileicenter/kviewdocs.cpp,kgalileicenter/kviewdocs.h,kgalileicenter/kviewgroup.cpp,kgalileicenter/kviewgroup.h,kgalileicenter/kviewgroups.cpp,kgalileicenter/kviewgroups.h,kgalileicenter/kviewprofile.cpp,kgalileicenter/kviewprofile.h,kgalileicenter/kviewstat.cpp,kgalileicenter/kviewstat.h,kgalileicenter/kviewthgroups.cpp,kgalileicenter/kviewthgroups.h,kgalileicenter/kviewusers.cpp,kgalileicenter/kviewusers.h,kgalileicenter/qaddjudgementselectdoc.ui,kgalileicenter/qaddjudgementselectprofile.ui,kgalileicenter/qaddnewdocument.ui,kgalileicenter/qaddnewuser.ui,kgalileicenter/qaddprofile.ui,kgalileicenter/qconnectmysql.ui,kgalileicenter/qdocsoptionsdlg.ui,kgalileicenter/qeditjudgementselectdoc.ui,kgalileicenter/qeditjudgementselectprofile.ui,kgalileicenter/qsessionprogress.cpp,kgalileicenter/qsessionprogress.h,kgalileicenter/kviewstems.cpp,kgalileicenter/kviewstems.h,kgalileicenter/kviewga.cpp,kgalileicenter/kviewga.h,kgalileicenter/qloadonedoc.ui,kgalileicenter/kgalileicenter_dlg.cpp,kgalileicenter/kgalileicenter_init.cpp,kgalileicenter/qpluginsdlg.cpp,kgalileicenter/qpluginsdlg.h
+files=kgalileicenter/main.cpp,kgalileicenter/kgalileicenter.cpp,kgalileicenter/kgalileicenter.h,kgalileicenter/kgalileicenterui.rc,kgalileicenter/kgalileicenter.desktop,kgalileicenter/lo32-app-kgalileicenter.png,kgalileicenter/lo16-app-kgalileicenter.png,kgalileicenter/kdoc.cpp,kgalileicenter/kdoc.h,kgalileicenter/kview.cpp,kgalileicenter/kview.h,kgalileicenter/kviewdoc.cpp,kgalileicenter/kviewdoc.h,kgalileicenter/kviewdocs.cpp,kgalileicenter/kviewdocs.h,kgalileicenter/kviewgroup.cpp,kgalileicenter/kviewgroup.h,kgalileicenter/kviewgroups.cpp,kgalileicenter/kviewgroups.h,kgalileicenter/kviewprofile.cpp,kgalileicenter/kviewprofile.h,kgalileicenter/kviewstat.cpp,kgalileicenter/kviewstat.h,kgalileicenter/kviewthgroups.cpp,kgalileicenter/kviewthgroups.h,kgalileicenter/kviewusers.cpp,kgalileicenter/kviewusers.h,kgalileicenter/qaddjudgementselectdoc.ui,kgalileicenter/qaddjudgementselectprofile.ui,kgalileicenter/qaddnewdocument.ui,kgalileicenter/qaddnewuser.ui,kgalileicenter/qaddprofile.ui,kgalileicenter/qconnectmysql.ui,kgalileicenter/qdocsoptionsdlg.ui,kgalileicenter/qeditjudgementselectdoc.ui,kgalileicenter/qeditjudgementselectprofile.ui,kgalileicenter/qsessionprogress.cpp,kgalileicenter/qsessionprogress.h,kgalileicenter/kviewstems.cpp,kgalileicenter/kviewstems.h,kgalileicenter/kviewga.cpp,kgalileicenter/kviewga.h,kgalileicenter/qloadonedoc.ui,kgalileicenter/kgalileicenter_dlg.cpp,kgalileicenter/kgalileicenter_init.cpp,kgalileicenter/qpluginsdlg.cpp,kgalileicenter/qpluginsdlg.h,kgalileicenter/kviewprg.cpp,kgalileicenter/kviewprg.h
 sub_dirs=galilei,r,qtwidgets
 type=prog_main
 
 [kgalileicenter/galilei/Makefile.am]
 files=kgalileicenter/galilei/galilei.h,kgalileicenter/galilei/gplugin.cpp,kgalileicenter/galilei/gplugin.h
-sub_dirs=docs,filters,groups,infos,langs,profiles,python,sessions,urlmanagers
+sub_dirs=docs,filters,groups,infos,langs,profiles,sessions,urlmanagers
 type=static_library
 
 [kgalileicenter/galilei/docs/Makefile.am]
@@ -798,39 +794,8 @@ install=false
 install_location=
 type=HEADER
 
-[kgalileicenter/galilei/python/Makefile.am]
-files=kgalileicenter/galilei/python/galileiprogfunc.cpp,kgalileicenter/galilei/python/galileiprogfunc.h,kgalileicenter/galilei/python/galileiprogram.cpp,kgalileicenter/galilei/python/galileiprogram.h
-sharedlib_LDFLAGS=-version-info 0:0:1
-sharedlib_rootname=python
-sub_dirs=
-type=static_library
-
-[kgalileicenter/galilei/python/galileiprogfunc.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/galilei/python/galileiprogfunc.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/galilei/python/galileiprogram.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/galilei/python/galileiprogram.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
 [kgalileicenter/galilei/sessions/Makefile.am]
-files=kgalileicenter/galilei/sessions/gsession.cpp,kgalileicenter/galilei/sessions/gsession.h,kgalileicenter/galilei/sessions/gsessionmysql.cpp,kgalileicenter/galilei/sessions/gsessionmysql.h,kgalileicenter/galilei/sessions/gdataloader.cpp,kgalileicenter/galilei/sessions/gdataloader.h,kgalileicenter/galilei/sessions/gtest.cpp,kgalileicenter/galilei/sessions/gtest.h,kgalileicenter/galilei/sessions/gtests.cpp,kgalileicenter/galilei/sessions/gtests.h
+files=kgalileicenter/galilei/sessions/gsession.cpp,kgalileicenter/galilei/sessions/gsession.h,kgalileicenter/galilei/sessions/gsessionmysql.cpp,kgalileicenter/galilei/sessions/gsessionmysql.h,kgalileicenter/galilei/sessions/gdataloader.cpp,kgalileicenter/galilei/sessions/gdataloader.h,kgalileicenter/galilei/sessions/gtest.cpp,kgalileicenter/galilei/sessions/gtest.h,kgalileicenter/galilei/sessions/gtests.cpp,kgalileicenter/galilei/sessions/gtests.h,kgalileicenter/galilei/sessions/gsessionprg.cpp,kgalileicenter/galilei/sessions/gsessionprg.h,kgalileicenter/galilei/sessions/gslot.cpp,kgalileicenter/galilei/sessions/gslot.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=sessions
 sub_dirs=
@@ -867,6 +832,30 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/sessions/gsessionmysql.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/sessions/gsessionprg.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/sessions/gsessionprg.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/sessions/gslot.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/sessions/gslot.h]
 dist=true
 install=false
 install_location=
@@ -1047,6 +1036,18 @@ install=false
 install_location=
 type=HEADER
 
+[kgalileicenter/kviewprg.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/kviewprg.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [kgalileicenter/kviewprofile.cpp]
 dist=true
 install=false
@@ -1208,10 +1209,6 @@ dist=true
 install=false
 install_location=
 type=HEADER
-
-[kgalileicenter/qtwidgets/Makefile.am]
-sub_dirs=rga,galilei,rpython
-type=normal
 
 [kgalileicenter/qtwidgets/galilei/Makefile.am]
 files=kgalileicenter/qtwidgets/galilei/qgdocxml.cpp,kgalileicenter/qtwidgets/galilei/qgdocxml.h,kgalileicenter/qtwidgets/galilei/qgprofile.cpp,kgalileicenter/qtwidgets/galilei/qgprofile.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.h,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.h,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.h
@@ -1413,27 +1410,8 @@ install=false
 install_location=
 type=HEADER
 
-[kgalileicenter/qtwidgets/rpython/Makefile.am]
-files=kgalileicenter/qtwidgets/rpython/qpyoutput.cpp,kgalileicenter/qtwidgets/rpython/qpyoutput.h
-sharedlib_LDFLAGS=-version-info 0:0:1
-sharedlib_rootname=rpython
-sub_dirs=
-type=static_library
-
-[kgalileicenter/qtwidgets/rpython/qpyoutput.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/qtwidgets/rpython/qpyoutput.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
 [kgalileicenter/r/Makefile.am]
-sub_dirs=rstd,rio,rxml,rtimedate,rinter,rmysql,rpython,rga,rmath,rgga
+sub_dirs=rstd,rio,rxml,rtimedate,rinter,rmysql,rga,rmath,rgga
 type=normal
 
 [kgalileicenter/r/rga/Makefile.am]
@@ -1691,127 +1669,6 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/r/rmysql/rmysql.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/r/rpython/Makefile.am]
-files=kgalileicenter/r/rpython/rpyobjectfunc.cpp,kgalileicenter/r/rpython/rpyobjectfunc.h,kgalileicenter/r/rpython/rpyoutput.h,kgalileicenter/r/rpython/rpyprogassign.cpp,kgalileicenter/r/rpython/rpyprogassign.h,kgalileicenter/r/rpython/rpyprogclass.cpp,kgalileicenter/r/rpython/rpyprogclass.h,kgalileicenter/r/rpython/rpyprogfunc.cpp,kgalileicenter/r/rpython/rpyprogfunc.h,kgalileicenter/r/rpython/rpyprogfunction.cpp,kgalileicenter/r/rpython/rpyprogfunction.h,kgalileicenter/r/rpython/rpyprogline.cpp,kgalileicenter/r/rpython/rpyprogline.h,kgalileicenter/r/rpython/rpyprogram.cpp,kgalileicenter/r/rpython/rpyprogram.h,kgalileicenter/r/rpython/rpyprogvar.cpp,kgalileicenter/r/rpython/rpyprogvar.h,kgalileicenter/r/rpython/rpython.cpp,kgalileicenter/r/rpython/rpython.h
-sharedlib_LDFLAGS=-version-info 0:0:1
-sharedlib_rootname=rpython
-sub_dirs=
-type=static_library
-
-[kgalileicenter/r/rpython/rpyobjectfunc.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/r/rpython/rpyobjectfunc.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/r/rpython/rpyoutput.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/r/rpython/rpyprogassign.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/r/rpython/rpyprogassign.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/r/rpython/rpyprogclass.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/r/rpython/rpyprogclass.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/r/rpython/rpyprogfunc.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/r/rpython/rpyprogfunc.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/r/rpython/rpyprogfunction.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/r/rpython/rpyprogfunction.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/r/rpython/rpyprogline.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/r/rpython/rpyprogline.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/r/rpython/rpyprogram.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/r/rpython/rpyprogram.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/r/rpython/rpyprogvar.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/r/rpython/rpyprogvar.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/r/rpython/rpython.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/r/rpython/rpython.h]
 dist=true
 install=false
 install_location=

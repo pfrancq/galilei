@@ -54,6 +54,7 @@ using namespace RStd;
 #include <profiles/gprofdoc.h>
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
+#include <sessions/gsession.h>
 #include <galilei/qlistviewitemtype.h>
 #include <galilei/qgsubprofiledescs.h>
 using namespace GALILEI;

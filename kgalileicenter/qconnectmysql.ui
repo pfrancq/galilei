@@ -11,7 +11,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>368</width>
+            <width>364</width>
             <height>285</height>
         </rect>
     </property>
@@ -329,4 +329,13 @@
         <slot>reject()</slot>
     </connection>
 </connections>
+<tabstops>
+    <tabstop>btnConnect</tabstop>
+    <tabstop>btnCancel</tabstop>
+    <tabstop>txtHost</tabstop>
+    <tabstop>txtDb</tabstop>
+    <tabstop>txtLogin</tabstop>
+    <tabstop>txtPwd</tabstop>
+    <tabstop>cbLoad</tabstop>
+</tabstops>
 </UI>

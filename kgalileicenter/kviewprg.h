@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	KViewThGroups.h
+	KViewPrg.h
 
-	Window to manipulate theoritical groups - Header.
+	Window to run a program - Header.
 
-	(C) 2001 by Pascal Francq
+	(C) 2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -32,27 +32,19 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef KViewThGroupsH
-#define KViewThGroupsH
-
-
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-using namespace RStd;
+#ifndef KViewPrgH
+#define KViewPrgH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/gslot.h>
 using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qwidget.h>
-class QListView;
-class QTabWidget;
+// forward declaration
+class QMultiLineEdit;
 
 
 //-----------------------------------------------------------------------------
@@ -60,72 +52,37 @@ class QTabWidget;
 #include "kview.h"
 
 
-
 //-----------------------------------------------------------------------------
 /**
-* The KViewThGroups class represents a window to manipulate the groups of the
-* system.
-*
-* @author Pascal Francq and David Wartel.
+* The KViewPrg class provides the view widget for running an application.
+* @author Pascal Francq.
 * @version $Revision$
-* @short Theoritical Groups' Window.
+* @short Window for Programs.
 */
-class KViewThGroups : public KView
+class KViewPrg : public KView, public GSlot
 {
 	Q_OBJECT
 
 	/**
-	* Ideal Groups.
+	* Widget to see the output.
 	*/
-	RContainer<GGroups,unsigned int,true,true>* Groups;
-
-	/**
-	* Widget to handle the different information of the document.
-	*/
-	QTabWidget* Infos;
-
-	/**
-	* Theoritical Groups.
-	*/
-	QListView* thGroups;
-
-	/**
-	* Pratical Groups.
-	*/
-	QListView* prGroups;
+	QMultiLineEdit* Output;
 
 public:
 
 	/**
-	* Constructor for the view
+	* Constructor for the view.
 	* @param doc            Document instance that the view represents.
-	* @param filename       Name of the file containing the ideal groupement.
 	* @param parent         Parent of the window.
-	* @param name           Name of the window.
+	* @param name           Name of the program.
 	* @param wflags         Flags.
 	*/
-	KViewThGroups(KDoc* doc,const char* filename,QWidget* parent,const char* name,int wflags);
+	KViewPrg(KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.
 	*/
-	virtual GViewType getType(void) {return(gThGroups);}
-
-	/**
-	* Get the current group selected in this window.
-	* @returns Pointer to GGroup or 0 if no group is currently selected.
-	*/
-	GGroup* GetCurrentGroup(void);
-
-	/**
-	* Construct the groups' widget.
-	*/
-	void ConstructThGroups(void);
-
-	/**
-	* Construct the groups' widget.
-	*/
-	void ConstructGroups(void);
+	virtual GViewType getType(void) {return(gPrg);}
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.
@@ -133,13 +90,14 @@ public:
 	*/
 	virtual void update(unsigned int cmd);
 
-protected:
-
 	/**
-	* Load the groups from the file.
-	* @param filename       Name of the file containing the ideal groupement.
+	* Method called when executing a sequence of instruction to output some
+	* information.
+	* @param str            String to output.
 	*/
-	void LoadGroups(const char* filename);
+	virtual void WriteStr(const char* str);
+
+protected:
 
 	/**
 	* Called when the main window is resize by the user.
@@ -149,9 +107,9 @@ protected:
 public:
 
 	/**
-	* Destructor for the main view.
+	* Destructor for the view.
 	*/
-	~KViewThGroups(void);
+	~KViewPrg(void);
 };
 
 

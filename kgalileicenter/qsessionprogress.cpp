@@ -39,6 +39,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <sessions/gsession.h>
 #include <docs/gdoc.h>
 #include <langs/glang.h>
 #include <docs/gdocanalyse.h>
@@ -66,7 +67,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 QSessionProgressDlg::QSessionProgressDlg( QWidget* parent,GSession* s,const char* c)
-    : QSemiModal(parent,"QSessionProgressDlg",true),GSessionSignalsReceiver(), Session(s)
+    : QSemiModal(parent,"QSessionProgressDlg",true),GSlot(), Session(s)
 {
 	resize( 311, 78 );
 	setCaption(i18n(c));

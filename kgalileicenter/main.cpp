@@ -74,16 +74,24 @@ int main(int argc, char *argv[])
 	KCmdLineArgs::init( argc, argv, &aboutData );
 	KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
 
-	KApplication app;
- 
-	if(app.isRestored())
+	try
 	{
-		RESTORE(KGALILEICenterApp);
+		KApplication app;
+
+		if(app.isRestored())
+		{
+			RESTORE(KGALILEICenterApp);
+		}
+		else
+		{
+			KGALILEICenterApp *testmdi = new KGALILEICenterApp();
+			testmdi->show();
+		}
+			return app.exec();
 	}
-	else
+	catch(...)
 	{
-		KGALILEICenterApp *testmdi = new KGALILEICenterApp();
-		testmdi->show();
+		cout<<"Problem"<<endl;
 	}
-	return app.exec();
+ 	return(0);
 }  
