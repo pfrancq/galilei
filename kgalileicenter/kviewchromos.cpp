@@ -112,13 +112,13 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	General->addColumn("Precision");
 	General->addColumn("Recall");
 	General->addColumn("Global");
-	General->addColumn("Avg Similarity");
-	General->addColumn("Proto: Sum(intra)/Min(inter)");
-	General->addColumn("Avg min(intra)/max(inter)");
-	General->addColumn("Min min(intra)/max(inter)");
-	General->addColumn("Proto: Min Max(intra)/Min(inter)");
-	General->addColumn("Proto: Avg Max(intra)/Min(inter)");
-	General->addColumn("Avg Var(intra)/Avg Var(inter)");
+	General->addColumn("AvgSim");
+	General->addColumn("J");
+	General->addColumn("AvgRatio");
+	General->addColumn("MinRatio");
+	General->addColumn("Ratio");
+	General->addColumn("W Over B");
+	General->addColumn("Sim WB");
 	for(int i=0;i<11;i++)
 	{
 		General->setColumnWidthMode(i,QListView::Maximum);
@@ -179,27 +179,27 @@ void KViewChromos::ConstructChromosomes(void)
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(4,tmp);
 
-		(*c)->EvaluateSumRel();
+		(*c)->EvaluateJ();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(5,tmp);
 
-		(*c)->EvaluateAvgMinMax();
+		(*c)->EvaluateAvgRatio();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(6,tmp);
 
-		(*c)->EvaluateMinMinMax();
+		(*c)->EvaluateMinRatio();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(7,tmp);
 
-		(*c)->EvaluateMinRel();
+		(*c)->EvaluateRatio();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(8,tmp);
 
-		(*c)->EvaluateAvgVarMinRel();
+		(*c)->EvaluateWOverB();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(9,tmp);
 
-		(*c)->EvaluateAvgVar();
+		(*c)->EvaluateSimWB();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(10,tmp);
 	}
