@@ -302,18 +302,17 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
  		Main->removePage(Conf);
 		Conf->disconnect();
 	}
-	RStd::RString coucou=App->GetCurrentComputingMethod();
+	RStd::RString coucou=App->GetCurrentGroupingMethod();
+	sprintf(tmp,"Configure [%s]",(p->Name).StrDup());
 	switch(p->Type)
 	{
 		case 1:
 			Conf=NoConf;
-			sprintf(tmp,"Configure [%s]",(App->GetCurrentProfileDesc()).StrDup());
 			Cur=p;
 			break;
 
 		case 2:
-			sprintf(tmp,"Configure [%s]",(App->GetCurrentComputingMethod()).StrDup());
-			Conf=Computings->GetPtr<const char*>(App->GetCurrentComputingMethod());
+			Conf=Computings->GetPtr<const char*>(p->Name);
 			if(!Conf)
 				Conf=NoConf;
 			else
@@ -323,8 +322,7 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 
 		case 3:
 			Conf=NoConf;
-			sprintf(tmp,"Configure [%s]",(App->GetCurrentGroupingMethod()).StrDup());
-			Conf=Groupings->GetPtr<const char*>(App->GetCurrentGroupingMethod());
+			Conf=Groupings->GetPtr<const char*>(p->Name);
 			if(!Conf)
 				Conf=NoConf;
 			else
@@ -334,8 +332,7 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 
 		case 4:
 			Conf=NoConf;
-			sprintf(tmp,"Configure [%s]",(App->GetCurrentGroupCalcMethod()).StrDup());
-			Conf=GroupCalcs->GetPtr<const char*>(App->GetCurrentGroupCalcMethod());
+			Conf=GroupCalcs->GetPtr<const char*>(p->Name);
 			if(!Conf)
 				Conf=NoConf;
 			else
