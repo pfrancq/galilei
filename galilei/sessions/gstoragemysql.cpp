@@ -459,8 +459,10 @@ void GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
 
 
 		// Update profiles
-		if (prof->IsSocial()) social=1;
-		else social =0;
+		if(prof->IsSocial())
+			social=1;
+		else
+			social =0;
 		sprintf(sSql,"UPDATE profiles SET description=%s,social=%u WHERE profileid=%u",
 				ValidSQLValue(prof->GetName(),sname),social,profid);
 		RQuery updateprof(this,sSql);
@@ -500,7 +502,10 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(bad_alloc,GException)
 			{
 				profileid=atoi(profiles[0]);
 				#if GALILEITEST
-					s=session->GetSubjects()->GetSubject(atoi(profiles[3]));
+					if(session->GetSubjects())
+						s=session->GetSubjects()->GetSubject(atoi(profiles[3]));
+					else
+						s=0;
 				#else
 					s=0;
 				#endif
@@ -757,10 +762,10 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(bad_alloc,GException)
 		RQuery querLinks (this,sSql);
 		for (querLinks.Start(); !querLinks.End() ; querLinks.Next())
 		{
-			session->GetDoc(atoi(querLinks[0]) )->InsertLink(session->GetDoc(atoi( querLinks[1]) ), atoi(querLinks[2]));
+			session->GetDoc(atoi(querLinks[0]))->InsertLink(session->GetDoc(atoi(querLinks[1])), atoi(querLinks[2]));
 		}
 
-		// Load the document's description
+		// Load the document description
 		langs=session->GetLangs()->GetLangsCursor();
 		for(langs.Start();!langs.End();langs.Next())
 		{
@@ -777,19 +782,21 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(bad_alloc,GException)
 		}
 
 		//  Make Link between documents and topics
-		RQuery subdocs(this,"SELECT htmlid,topicid FROM topicsbyhtmls");
-		for(subdocs.Start();!subdocs.End();subdocs.Next())
+		#if GALILEITEST
+		if(session->GetSubjects())
 		{
-			d=session->GetDoc(atoi(subdocs[0]));
-			if(!d) continue;
-			if(session->GetSubjects())
+			RQuery subdocs(this,"SELECT htmlid,topicid FROM topicsbyhtmls");
+			for(subdocs.Start();!subdocs.End();subdocs.Next())
+			{
+				d=session->GetDoc(atoi(subdocs[0]));
+				if(!d) continue;
 				s=session->GetSubjects()->GetSubject(atoi(subdocs[1]));
-			else
-				s=0;
-			if(!s) continue;
-			s->InsertDoc(d);
-			d->InsertSubject(s);
+				if(!s) continue;
+				s->InsertDoc(d);
+				d->InsertSubject(s);
+			}
 		}
+		#endif
 
 		// Update References of the loaded documents.
 		GDocCursor Docs=session->GetDocsCursor();
@@ -1199,6 +1206,14 @@ void GStorageMySQL::ExecuteData(const char* filename) throw(GException)
 	{
 		throw GException(e.GetMsg());
 	}
+	catch(RString str)
+	{
+		throw GException(str);
+	}
+	catch(bad_alloc)
+	{
+		throw GException("Memory Problem");
+	}
 }
 
 
@@ -1236,12 +1251,12 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsi
 				grps->InsertPtr(grp);
 			}
 
-			// Create the historic subprofile     and add it to the group
+			// Create the historic subprofile and add it to the group
 			subprofid=atoi(grquery[1]);
 			historicsubprof=new GIWordsWeightsHistory(subprofiles->GetPtr(subprofid),100);
 			grp->AddSubProfile(historicsubprof);
 
-			//fill the vector of the subprofile
+			// fill the vector of the subprofile
 			sprintf(sSql,"SELECT kwdid,weight FROM %shistoricsubprofiles WHERE historicid=%u AND subprofileid=%u",lang->GetCode(), historicid,subprofid);
 			RQuery subprofdesc(this,sSql);
 			for(subprofdesc.Start();!subprofdesc.End();subprofdesc.Next())

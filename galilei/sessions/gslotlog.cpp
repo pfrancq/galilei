@@ -61,24 +61,24 @@ GALILEI::GSlotLog::GSlotLog(const char* name) throw(bad_alloc,RException)
 //------------------------------------------------------------------------------
 void GALILEI::GSlotLog::receiveNextDoc(const GDoc* doc) throw(bad_alloc,RException)
 {
-	sprintf(Buffer,"Analyse Doc %u",doc->GetId());
-	WriteLog(Buffer);
+	sprintf(Buf,"Analyse Doc %u",doc->GetId());
+	WriteLog(Buf);
 }
 
 
 //------------------------------------------------------------------------------
 void GALILEI::GSlotLog::receiveNextProfile(const GProfile* prof) throw(bad_alloc,RException)
 {
-	sprintf(Buffer,"Compute Profile %u",prof->GetId());
-	WriteLog(Buffer);
+	sprintf(Buf,"Compute Profile %u",prof->GetId());
+	WriteLog(Buf);
 }
 
 
 //------------------------------------------------------------------------------
 void GALILEI::GSlotLog::NextGroupLang(const GLang* lang) throw(bad_alloc,RException)
 {
-	sprintf(Buffer,"Group %s Profiles",lang->GetName());
-	WriteLog(Buffer);
+	sprintf(Buf,"Group %s Profiles",lang->GetName());
+	WriteLog(Buf);
 }
 
 
