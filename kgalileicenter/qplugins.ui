@@ -807,7 +807,7 @@
                                     <bool>false</bool>
                                 </property>
                                 <property name="text">
-                                    <string>Enable filter</string>
+                                    <string>Enable statistic</string>
                                 </property>
                             </widget>
                         </hbox>

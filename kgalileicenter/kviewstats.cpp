@@ -138,6 +138,8 @@ void KViewStats::ComputeStats(void)
 	int i;
 
 	// Compute the statistics
+	Dlg.setMinimumDuration(0);
+	KApplication::kApplication()->processEvents();
 	Cur.Set(Doc->GetSession()->GetStatsCalcMng());
 	for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
 	{
@@ -155,9 +157,6 @@ void KViewStats::ComputeStats(void)
 	// Show the results
 	ConstructTag(&Root,new QListViewItem(Res,"Statistics"));
 }
-
-
-
 
 
 //-----------------------------------------------------------------------------
