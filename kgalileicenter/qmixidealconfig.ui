@@ -9,24 +9,24 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>317</width>
-            <height>345</height>
+            <width>260</width>
+            <height>252</height>
         </rect>
     </property>
     <property name="caption">
         <string>Mix Ideal Groups</string>
     </property>
-    <grid>
+    <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
         <property name="margin">
-            <number>5</number>
+            <number>11</number>
         </property>
         <property name="spacing">
-            <number>5</number>
+            <number>6</number>
         </property>
-        <widget class="QGroupBox" row="0" column="0">
+        <widget class="QGroupBox">
             <property name="name">
                 <cstring>init_parameters</cstring>
             </property>
@@ -39,7 +39,7 @@
             <property name="title">
                 <string>Initial Parameters</string>
             </property>
-            <grid>
+            <vbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
@@ -49,11 +49,11 @@
                 <property name="spacing">
                     <number>6</number>
                 </property>
-                <widget class="QLayoutWidget" row="0" column="0">
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>Layout4</cstring>
+                        <cstring>Layout5</cstring>
                     </property>
-                    <grid>
+                    <hbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
@@ -63,160 +63,178 @@
                         <property name="spacing">
                             <number>6</number>
                         </property>
-                        <widget class="QLayoutWidget" row="0" column="0">
+                        <widget class="QLabel">
                             <property name="name">
-                                <cstring>Layout2</cstring>
+                                <cstring>TextLabel1</cstring>
                             </property>
-                            <hbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <property name="margin">
-                                    <number>0</number>
-                                </property>
-                                <property name="spacing">
-                                    <number>6</number>
-                                </property>
-                                <widget class="QLabel">
-                                    <property name="name">
-                                        <cstring>TextLabel1</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>Number of solutions:</string>
-                                    </property>
-                                </widget>
-                                <widget class="QLineEdit">
-                                    <property name="name">
-                                        <cstring>LENbMixedGroups</cstring>
-                                    </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string></string>
-                                    </property>
-                                </widget>
-                            </hbox>
+                            <property name="text">
+                                <string>Number of solutions:</string>
+                            </property>
                         </widget>
-                        <widget class="QLayoutWidget" row="1" column="0">
+                        <spacer>
                             <property name="name">
-                                <cstring>Layout3</cstring>
+                                <cstring>Spacer3</cstring>
                             </property>
-                            <hbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <property name="margin">
-                                    <number>0</number>
-                                </property>
-                                <property name="spacing">
-                                    <number>6</number>
-                                </property>
-                                <widget class="QLabel">
-                                    <property name="name">
-                                        <cstring>TextLabel1_2</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>Level:</string>
-                                    </property>
-                                </widget>
-                                <widget class="QLineEdit">
-                                    <property name="name">
-                                        <cstring>LELevel</cstring>
-                                    </property>
-                                </widget>
-                            </hbox>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>30</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>LENbMixedGroups</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>4</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>400</width>
+                                    <height>32767</height>
+                                </size>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string></string>
+                            </property>
                         </widget>
-                    </grid>
+                    </hbox>
                 </widget>
-            </grid>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>Layout6</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <property name="spacing">
+                            <number>6</number>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Level:</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>Spacer4</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>30</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>LELevel</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>4</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>400</width>
+                                    <height>32767</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
         </widget>
-        <widget class="QGroupBox" row="1" column="0">
+        <widget class="QGroupBox">
             <property name="name">
                 <cstring>Mixing_Option</cstring>
             </property>
             <property name="title">
                 <string>Mixing Parameters</string>
             </property>
-            <widget class="QRadioButton">
+            <vbox>
                 <property name="name">
-                    <cstring>RBMergeDiff</cstring>
+                    <cstring>unnamed</cstring>
                 </property>
-                <property name="geometry">
-                    <rect>
-                        <x>20</x>
-                        <y>60</y>
-                        <width>180</width>
-                        <height>20</height>
-                    </rect>
+                <property name="margin">
+                    <number>11</number>
                 </property>
-                <property name="text">
-                    <string>Merge different categories</string>
+                <property name="spacing">
+                    <number>6</number>
                 </property>
-            </widget>
-            <widget class="QRadioButton">
-                <property name="name">
-                    <cstring>RBSplit</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>20</x>
-                        <y>90</y>
-                        <width>190</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Split</string>
-                </property>
-            </widget>
-            <widget class="QRadioButton">
-                <property name="name">
-                    <cstring>RBMergeSame</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>20</x>
-                        <y>30</y>
-                        <width>190</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Merge same category</string>
-                </property>
-            </widget>
-            <widget class="QRadioButton">
-                <property name="name">
-                    <cstring>RBRandom</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>20</x>
-                        <y>120</y>
-                        <width>190</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Random grouping</string>
-                </property>
-            </widget>
-            <widget class="QRadioButton">
-                <property name="name">
-                    <cstring>RBIdeal</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>20</x>
-                        <y>150</y>
-                        <width>190</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Ideal groupment</string>
-                </property>
-            </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>RBMerge</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Merge groups</string>
+                    </property>
+                    <property name="checked">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>RBSplit</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Split Groups</string>
+                    </property>
+                    <property name="checked">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>RBRandom</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Random grouping</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>RBIdeal</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Ideal groupment</string>
+                    </property>
+                    <property name="checked">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </vbox>
         </widget>
-        <widget class="QLayoutWidget" row="2" column="0">
+        <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>Layout1</cstring>
             </property>
@@ -239,6 +257,12 @@
                     </property>
                     <property name="sizeType">
                         <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>0</height>
+                        </size>
                     </property>
                 </spacer>
                 <widget class="QPushButton">
@@ -267,10 +291,16 @@
                     <property name="sizeType">
                         <enum>Expanding</enum>
                     </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>0</height>
+                        </size>
+                    </property>
                 </spacer>
             </hbox>
         </widget>
-    </grid>
+    </vbox>
 </widget>
 <connections>
     <connection>
@@ -283,11 +313,6 @@
 <tabstops>
     <tabstop>LENbMixedGroups</tabstop>
     <tabstop>LELevel</tabstop>
-    <tabstop>RBMergeSame</tabstop>
-    <tabstop>RBMergeDiff</tabstop>
-    <tabstop>RBSplit</tabstop>
-    <tabstop>RBRandom</tabstop>
-    <tabstop>RBIdeal</tabstop>
     <tabstop>apply</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>

@@ -888,7 +888,7 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
  {
 	GMixIdealGroups* mix;
 	const char *nbgroups, *level;
-	bool random, ideal, mergesame, mergediff, split;
+	bool random, ideal, merge, split;
 	GSubjectTree* subjecttree=new GSubjectTree(0, 0, 0);
 	RContainer<GGroups,unsigned int,true,true>* idealgroups;
 	RContainer<GGroupIdParentId,unsigned int,true,true>* parent;
@@ -903,8 +903,7 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 		level=dlg.LELevel->text().latin1();
 		random=dlg.RBRandom->isChecked();
 		ideal=dlg.RBIdeal->isChecked();
-		mergesame=dlg.RBMergeSame->isChecked();
-		mergediff=dlg.RBMergeDiff->isChecked();
+		merge=dlg.RBMerge->isChecked();
 		split=dlg.RBSplit->isChecked();
 
 		// Initialise the dialog box
@@ -920,7 +919,7 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 
 		// Create new solution
 		d->PutText("Create new solutions");
-		mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups, atoi(nbgroups), atoi(level), mergesame, mergediff, split, random,ideal);
+		mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups, atoi(nbgroups), atoi(level), merge, split, random,ideal);
 		mix->Run(d);
 		d->Finish();
 	}
