@@ -1,5 +1,5 @@
-INCLUDES = $(all_includes) -I$(top_srcdir) -I$(R_LIB) -I$(GALILEI_LIB) -I$(QTDIR)/include -I.. -Igoo -Ixpdf
-lib_LTLIBRARIES =  ../libpdf.la ../libpdf_dlg.la
+INCLUDES = $(all_includes) -I$(top_srcdir) -I.. -Igoo -Ixpdf
+filterslib_LTLIBRARIES =  ../libpdf.la
 ___libpdf_la_LDFLAGS = -module -avoid-version
 ___libpdf_la_SOURCES = gfilterpdf.cpp \
 	goo/GHash.cc \
@@ -45,12 +45,9 @@ ___libpdf_la_SOURCES = gfilterpdf.cpp \
 	xpdf/Annot.cc \
 	xpdf/PSTokenizer.cc \
 	xpdf/XRef.cc
-___libpdf_la_LIBADD=$(GALILEI_LIB)/docs/libgalilei_docs.la
-___libpdf_dlg_la_LDFLAGS = -module -avoid-version
-___libpdf_dlg_la_SOURCES = gfilterpdf_kde.cpp
-___libpdf_dlg_la_LIBADD=$(GALILEI_LIB)/docs/libgalilei_docs.la
+___libpdf_la_LIBADD=
 AM_CFLAGS = -DHAVE_CONFIG_H
 AM_CXXFLAGS = -DHAVE_CONFIG_H
 AM_FFLAGS =
-SUBDIRS =
+SUBDIRS =$(FRONTEND)
 
