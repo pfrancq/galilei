@@ -4,13 +4,9 @@
 
 	GSugs.h
 
-	Heuristic using Similarity - Header.
+	Create suggestions - Header.
 
-	(C) 2001 by David Wartel.
-
-	Version $Revision$
-
-	Last Modify: $Date$
+	(C) 2001 by Pjascal Francq, Vandaele Valery.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -50,7 +46,7 @@ namespace GALILEI{
 /**
 * The GSugs provides a method to compute for each profile a set of potential
 * relevant documents ordred by similarity.
-* @author Pascal Francq
+* @author Pascal Francq, Vandaele Valery
 * @short Suggestions.
 */
 class GSugs  : public GPostGroup

@@ -4,13 +4,9 @@
 
 	GSugs.cpp
 
-	Heuristic using Similarity - Implementation
+	Create suggestions  - Implementation
 
-	(C) 2001 by David Wartel.
-
-	Version $Revision$
-
-	Last Modify: $Date$
+	(C) 2001 by Pascal Franq, Vandaele Valery.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -49,11 +45,7 @@
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
 #include <profiles/gsubprofile.h>
-//#include <infos/gweightinfos.h>
-//#include <infos/gweightinfo.h>
-//#include <infos/ginfo.h>
 #include <docs/gdoc.h>
-//#include <docs/gdocvector.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <infos/glang.h>
@@ -77,8 +69,10 @@ GSugs::GSugs(GFactoryPostGroup* fac) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSugs::CreateParams(GParams*)
+void GSugs::CreateParams(GParams* params)
 {
+	//level param
+	params->InsertPtr(new GParamUInt("Level",0));
 }
 
 
@@ -115,6 +109,7 @@ void GSugs::Run(void) throw(GException)
 	// Clear the table
 	Session->GetStorage()->ClearDummy("sugs");
 
+	// -1- Store sugestion with description= S+order
 	// Go through the groups
 	Grps=Session->GetGroupsCursor();
 	for(Grps.Start();!Grps.End();Grps.Next())
@@ -123,18 +118,32 @@ void GSugs::Run(void) throw(GException)
 		Sub=Grps()->GetSubProfilesCursor();
 		for(Sub.Start();!Sub.End();Sub.Next())
 		{
-			// Get all relevant documents ordred
+			// Get all relevant documents ordered
 			Grps()->NotJudgedDocsRelList(&Docs,Sub(),Session);
 
 			// Store them in the database
 			Doc.Set(Docs);
 			for(Doc.Start(),i=0;!Doc.End();Doc.Next(),i++)
 			{
-				sprintf(tmp,"%u",i);
+				switch(Doc()->GetFdbk())
+				{
+					case (djOK | djHub):
+						sprintf(tmp,"H%u",i);
+						break;
+
+					case (djOK | djAutority):
+						sprintf(tmp,"A%u",i);
+						break;
+
+					default :
+						sprintf(tmp,"S%u",i);
+						break;
+				}
 				Session->GetStorage()->AddDummyEntry("sugs",Sub()->GetId(),tmp,Doc()->GetDoc()->GetId());
 			}
 		}
 	}
+
 }
 
 
