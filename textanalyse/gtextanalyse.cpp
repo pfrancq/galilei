@@ -289,28 +289,28 @@ void GTextAnalyse::VerifyOrder(void) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 bool GTextAnalyse::ValidWord(const RString& kwd)
 {
-	char look[10];
-	const char* ptr=kwd();
-	char* ptr2;
+	RChar look[10];
+	const RChar* ptr=kwd();
+	RChar* ptr2;
 	char len;
 	bool v;
 
 	// The first character must be a number.
-	if(!isdigit(*ptr)) return(true);
+	if(!ptr->IsDigit()) return(true);
 
 	// Analyse word
 	v=true;
-	while(*ptr)
+	while(!ptr->IsNull())
 	{
 		// Look for a number
-		while((*ptr)&&(isdigit(*ptr)))
+		while((!ptr->IsNull())&&(ptr->IsDigit()))
 			ptr++;
-		if(!(*ptr)) return(true);     // If not number found -> Valid word
+		if(ptr->IsNull()) return(true);     // If not number found -> Valid word
 
 		// put letters in look with maximal 10
 		ptr2=look;
 		len=0;
-		while((*ptr)&&(!isdigit(*ptr))&&(!ispunct(*ptr)))
+		while((!ptr->IsNull())&&(!ptr->IsDigit())&&(!ptr->IsPunct()))
 		{
 			if(len<9)
 				(*(ptr2++))=(*ptr);
@@ -488,7 +488,7 @@ BeginExtract:
 	}
 	word.Copy(begin,len);
 	word.StrLwr();
-	AddWord(word(),weight);
+	AddWord(word,weight);
 	return(true);
 }
 
@@ -724,7 +724,7 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 		name="/var/galilei/bin/";
 		name+=Session->GetDbName();
 		name+="/Doc";
-		name+=itoa(Doc->GetId());
+		name+=itou(Doc->GetId());
 		R::RRecFile<GWord,sizeof(unsigned int),false> f(name,R::Create);
 		for(i=0;i<Nwords;i++)
 		{
