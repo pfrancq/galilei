@@ -205,11 +205,6 @@ class KGALILEICenterApp : public KMainWindow
 	QWorkspace* pWorkspace;
 
 	/**
-	* The printer instance.
-	*/
-	QPrinter* Printer;
-
-	/**
 	* A pointer to the "document" which represents a specific GALILEI System.
 	*/
 	KDoc* Doc;

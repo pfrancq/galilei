@@ -188,7 +188,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		}
 		catch(GException& e)
 		{
-			QMessageBox::critical(this,"KGALILEICenter",e.GetMsg().Latin1());
+			QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
 			if(Doc)
 			{
 				delete Doc;
@@ -872,7 +872,7 @@ void KGALILEICenterApp::slotRunProgram(void)
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg().Latin1());
+		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
 	}
 	catch(R::RMySQLError& e)
 	{
@@ -924,7 +924,7 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg().Latin1());
+		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
 	}
 	catch(R::RMySQLError& e)
 	{
@@ -1052,7 +1052,6 @@ void KGALILEICenterApp::slotRRunR(void)
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::~KGALILEICenterApp(void)
 {
-	delete Printer;
 	if(Doc)
 		delete Doc;
 }

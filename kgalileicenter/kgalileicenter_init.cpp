@@ -92,13 +92,10 @@ KGALILEICenterApp::KGALILEICenterApp(void)
 	  PostGroupManager(getenv("GALILEI_PLUGINS_LIB")),dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0)
 {
 	Config=kapp->config();
-	Printer = new QPrinter;
 	initStatusBar();
 	initView();
 	initActions();
-	// read options
 	readOptions();
-	// disable actions at startup
 	DisableAllActions();
 }
 
@@ -176,7 +173,7 @@ void KGALILEICenterApp::initActions(void)
 void KGALILEICenterApp::initStatusBar(void)
 {
 	dbStatus= new QLabel(statusBar());
-	dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_no.png"));
+	dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_no.png",KIcon::Small)));
 	statusBar()->addWidget(dbStatus, 0, true );
 	statusBar()->insertItem(i18n("Ready."),1);
 }
