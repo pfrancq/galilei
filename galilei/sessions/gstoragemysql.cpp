@@ -179,6 +179,7 @@ void GStorageMySQL::AssignId(GData* data,const GDict* dict) throw(GException)
 
 		// Get the next id
 		sSql=RString("SELECT kwdid FROM kwds WHERE kwdautoid=LAST_INSERT_ID()");
+
 		RQuery getinsert(Db,sSql);
 		getinsert.Start();
 		data->SetId(strtoul(getinsert[0],0,10));
@@ -852,7 +853,7 @@ void GStorageMySQL::SaveLinks(GSession* session) throw(GException)
 
 		// Reinsert all the feedbacks
 		RCursor<GProfile> Profiles=session->GetProfilesCursor();
-		for(Profiles.Start();!Profiles.End();Profiles.End())
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
 		{
 			Fdbks=Profiles()->GetFdbks();
 			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
@@ -860,15 +861,15 @@ void GStorageMySQL::SaveLinks(GSession* session) throw(GException)
 				switch(Fdbks()->GetFdbk() & djMaskHubAuto)
 				{
 					case djHub:
-						j="H";
+						j="OH";
 						break;
 					case djAutority:
-						j="A";
+						j="OA";
 						break;
 					default:
 						continue;
 				}
-				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES("+itou(Fdbks()->GetDoc()->GetId())+"'"+j+"',"+itou(Profiles()->GetId())+RQuery::SQLValue(Fdbks()->GetUpdated());
+				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES("+itou(Fdbks()->GetDoc()->GetId())+",'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetUpdated())+")";
 				RQuery fdbks(Db,sSql);
 			}
 		}
