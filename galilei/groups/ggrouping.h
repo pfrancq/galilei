@@ -139,17 +139,17 @@ public:
 	/**
 	* Compare method used for RStd::RContainer.
 	*/
-	int Compare(const GGrouping* grp);
+	int Compare(const GGrouping* grp) const;
 
 	/**
 	* Compare method used for RStd::RContainer.
 	*/
-	int Compare(const GGrouping& grp);
+	int Compare(const GGrouping& grp) const;
 
 	/**
 	* Compare method used for RStd::RContainer.
 	*/
-	int Compare(const char* name);
+	int Compare(const char* name) const;
 
 	/**
 	* Initialisation of the method.

@@ -34,12 +34,13 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef RIRH
-#define RIRH
+#ifndef GIRH
+#define GIRH
 
 
 //-----------------------------------------------------------------------------
 // includes files for R Project
+#include <rpromethee/rpromcriterion.h>
 #include <rga/rfitness.h>
 #include <rgga/rgga.h>
 
@@ -47,6 +48,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <groups/ggroupingparams.h>
 
 
 //-----------------------------------------------------------------------------
@@ -67,6 +69,17 @@ class GIRHeuristic;
 
 //-----------------------------------------------------------------------------
 /**
+* Define the type of similarity measures used.
+*/
+enum SimCritType
+{
+	sctCorl                 /** Correlation function used as one criterion.*/,
+	sctCrits                /** Multiple measures are used as criteria.*/
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * Define the type of measure used for the corresponding similarity criterion.
 */
 enum SimType {
@@ -76,7 +89,29 @@ enum SimType {
 	stMinRatio              /** Min min(intra)/max(inter).*/,
 	stRatio                 /** Min(intra)/Max(inter).*/,
 	stWOverB                /** Sb/Sw.*/,
-	stSimWB                 /** Simb/Simw.*/};
+	stSimWB                 /** Simb/Simw.*/
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GSimMeasure class provides a representation for a similarity measure that
+* may be used for the evaluation of the chromosome.
+* @author Pascal Francq
+* @short Measure of Similarity.
+*/
+class GSimMeasure
+{
+public:
+	RStd::RString Name;
+	SimType Type;
+	bool Use;
+	double Weight;
+
+	GSimMeasure(const char* n,SimType t,bool u=false,double w=0.0) : Name(n), Type(t), Use(u), Weight(w) {}
+	int Compare(const GSimMeasure* s) const {return(Name.Compare(s->Name));}
+	int Compare(const char* s) const {return(Name.Compare(s));}
+};
 
 
 //-----------------------------------------------------------------------------
@@ -112,6 +147,116 @@ public:
 		RGA::RFitness<double,true>::operator=(val);
 		return(*this);
 	}
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GIRParam represents all the parameter used in the GIR module.
+* @short GIR Parameters.
+*/
+class GIRParams : public GGroupingParams
+{
+public:
+
+	/**
+	* Size of the population of the GA.
+	*/
+	unsigned int PopSize;
+
+	/**
+	* Maximal number of generation to run.
+	*/
+	unsigned int MaxGen;
+
+	/**
+	* Is the GA in step mode?
+	*/
+	bool Step;
+
+	/**
+	* Number of generation for each step.
+	*/
+	unsigned int StepGen;
+
+	/**
+	* Minimum similarity level between the profiles of a group.
+	*/
+	double MinSimLevel;
+
+	/**
+	* Minimum number of common OK documents needed to force two profiles to be
+	* in the same group.
+	*/
+	double MinCommonOK;
+
+	/**
+	* Minimum number of common documents judged differently needed to force two
+	* profiles to be in two different groups.
+	*/
+	double MinCommonDiff;
+
+	/**
+	* Maximal Number of KMeans.
+	*/
+	unsigned int MaxKMeans;
+
+	/**
+	* Type of measure used for the similarity criterion.
+	*/
+	SimCritType SimMeasures;
+
+	/**
+	* Measures.
+	*/
+	RStd::RContainer<GSimMeasure,unsigned int,true,true> Measures;
+
+	/**
+	* Parameter for the criterion "Similariry".
+	*/
+	RPromethee::RPromCriterionParams ParamsSim;
+
+	/**
+	* Parameter for the criterion "Information".
+	*/
+	RPromethee::RPromCriterionParams ParamsInfo;
+
+	/**
+	* Parameter for the criterion "Same Feedbacks".
+	*/
+	RPromethee::RPromCriterionParams ParamsSameFeedbacks;
+
+	/**
+	* Parameter for the criterion "Diff Feedbacks".
+	*/
+	RPromethee::RPromCriterionParams ParamsDiffFeedbacks;
+
+	/**
+	* Parameter for the criterion "Social".
+	*/
+	RPromethee::RPromCriterionParams ParamsSocial;
+
+	/**
+	* Global similarities used.
+	*/
+	bool GlobalSim;
+
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*);
+
+	/**
+	* Constructor.
+	*/
+	GIRParams(void);
 };
 
 

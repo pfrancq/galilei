@@ -123,6 +123,11 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	RStd::RContainer<GSubProfilesSameDocs,unsigned int,true,true> DiffFeedbacks;
 
 	/**
+	* Parameter of the GA.
+	*/
+	GIRParams* Params;
+
+	/**
 	* Minimum similarity level between the profiles of a group.
 	*/
 	double MinSimLevel;

@@ -37,3 +37,63 @@
 //-----------------------------------------------------------------------------
 // includes files for GALILEI
 #include <groups/gir.h>
+
+
+
+//-----------------------------------------------------------------------------
+//
+// GIRParams
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GALILEI::GIRParams::GIRParams(void)
+	: GGroupingParams("Grouping Genetic Algorithms"), Measures(20,10)
+{
+	Measures.InsertPtr(new GSimMeasure("AvgSim",stAvgSim));
+	Measures.InsertPtr(new GSimMeasure("J",stJ));
+	Measures.InsertPtr(new GSimMeasure("AvgRatio",stAvgRatio));
+	Measures.InsertPtr(new GSimMeasure("MinRatio",stMinRatio));
+	Measures.InsertPtr(new GSimMeasure("Ratio",stRatio));
+	Measures.InsertPtr(new GSimMeasure("WOverB",stWOverB));
+	Measures.InsertPtr(new GSimMeasure("Sim WB",stSimWB));
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GIRParams::GetSettings(void)
+{
+	static char tmp[200];
+	char c,c1;
+
+	if(Step) c='1'; else c='0';
+	if(GlobalSim) c1='1'; else c1='0';
+	sprintf(tmp,"%u %c %u %u %c %u %f %f %f %u %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+	        SimMeasures,c1,PopSize,MaxGen,c,StepGen,MinSimLevel,MinCommonOK,MinCommonDiff,MaxKMeans,
+	        ParamsSim.P,ParamsSim.Q,ParamsSim.Weight,
+	        ParamsInfo.P,ParamsInfo.Q,ParamsInfo.Weight,
+	        ParamsSameFeedbacks.P,ParamsSameFeedbacks.Q,ParamsSameFeedbacks.Weight,
+	        ParamsDiffFeedbacks.P,ParamsDiffFeedbacks.Q,ParamsDiffFeedbacks.Weight,
+	        ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
+	return(tmp);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GIRParams::SetSettings(const char* s)
+{
+	char c,c1;
+	unsigned int t;
+
+	if(!(*s)) return;
+	sscanf(s,"%u %c %u %u %c %u %lf %lf %lf %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &t,&c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,&MaxKMeans,
+	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
+	       &ParamsInfo.P,&ParamsInfo.Q,&ParamsInfo.Weight,
+	       &ParamsSameFeedbacks.P,&ParamsSameFeedbacks.Q,&ParamsSameFeedbacks.Weight,
+	       &ParamsDiffFeedbacks.P,&ParamsDiffFeedbacks.Q,&ParamsDiffFeedbacks.Weight,
+	       &ParamsSocial.P,&ParamsSocial.Q,&ParamsSocial.Weight);
+	SimMeasures=static_cast<SimCritType>(t);
+	if(c=='1') Step=true; else Step=false;
+	if(c1=='1') GlobalSim=true; else GlobalSim=false;
+}

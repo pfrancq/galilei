@@ -40,11 +40,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rpromethee/rpromcriterion.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ggrouping.h>
 #include <groups/gir.h>
