@@ -24,6 +24,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <filters/gfilter.h>
+#include <urlmanagers/gurlmanager.h>
+using namespace GALILEI;
 
 
 
@@ -34,14 +36,21 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilter::GFilter(const RString& url)
-	: URL(url), Doc(0)
+GALILEI::GFilter::GFilter(const RString& url,GURLManager* mng)
+	: Manager(mng),URL(url), Doc(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
+void GALILEI::GFilter::AddExt(const RString& ext)
+{
+	Manager->AddMIME(ext,this);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 {
 	char* ptr;
 	char* hold;
@@ -127,7 +136,7 @@ void GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 
 
 //-----------------------------------------------------------------------------
-void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
+void GALILEI::GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 {
 	char* ptr;
 	RXMLTag* kwd;
@@ -155,6 +164,6 @@ void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 
 
 //-----------------------------------------------------------------------------
-GFilter::~GFilter(void)
+GALILEI::GFilter::~GFilter(void)
 {
 }

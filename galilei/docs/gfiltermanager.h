@@ -30,6 +30,8 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdocs/gdocxml.h>
+#include <filters/gfilter.h>
+#include <filters/gmimefilter.h>
 
 
 //-----------------------------------------------------------------------------
@@ -47,6 +49,16 @@ namespace GALILEI{
 */
 class GURLManager
 {
+	/**
+	* List of all mime types avalaible.
+	*/
+	RContainer<GMIMEFilter,unsigned int,true,true> MIMES;
+
+	/**
+	* List of all filters avalaible.
+	*/
+	RContainer<GFilter,unsigned int,true,false> Filters;
+
 public:
 
 	/**
@@ -83,6 +95,13 @@ public:
 	* Return Pointer to a GDocXML.
 	*/
 	GDocXML* CreateDocXML(const char* URL);
+
+	/**
+	* Add a mime type and a filter.
+	* @param ext            Extension.
+	* @param f              Filter.
+	*/
+	void AddMIME(const RString& ext,GFilter* f);
 
 	/**
 	* Destructor of URL manager.

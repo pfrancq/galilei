@@ -38,6 +38,11 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
+// forward class declaration
+class GURLManager;
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GFilter class provides a representation of a document to filter in a XML
 * structure.
@@ -46,7 +51,11 @@ namespace GALILEI{
 class GFilter
 {	
 protected:
-	
+	/**
+	* Manager.
+	*/
+	GURLManager* Manager;
+
 	/**
 	* URL of the document to filter.
 	*/
@@ -62,8 +71,25 @@ public:
 	/**
 	* Construct the filter for a specific document.
 	* @param url            URL of the document.
+	* @param mng            Manager.
 	*/
-	GFilter(const RString& url);
+	GFilter(const RString& url,GURLManager* mng);
+
+	/**
+	* Compare method used by RContainer.
+	*/
+	int Compare(const GFilter* f) const {return(-1);}
+
+	/**
+	* Compare method used by RContainer.
+	*/
+	int Compare(const GFilter& f) const {return(-1);}
+
+	/**
+	* Add a specific extension for this filter.
+	* @param ext            Extension.
+	*/
+	void AddExt(const RString& ext);
 
 	/**
 	* Analyze the document and fill the XML structure with the information

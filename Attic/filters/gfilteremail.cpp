@@ -43,12 +43,13 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterEMail::GFilterEMail(const RString& url)
-	: GFilter(url), Buffer(0)
+GFilterEMail::GFilterEMail(const RString& url,GURLManager* mng)
+	: GFilter(url,mng), Buffer(0)
 {
 	int accessmode,handle;
 	struct stat statbuf;
 
+	AddExt("text/email");
 	accessmode=O_RDONLY;
 	#if !unix
 		accessmode=O_BINARY;

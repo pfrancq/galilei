@@ -62,8 +62,9 @@ public:
 	/**
 	* Construct the email filter for a specific email.
 	* @param url            URL of the document.
+	* @param mng            Manager.
 	*/
-	GFilterEMail(const RString& url);
+	GFilterEMail(const RString& url,GURLManager* mng);
 
 protected:
 
