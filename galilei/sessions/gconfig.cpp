@@ -1,0 +1,170 @@
+/*
+
+	GALILEI Research Project
+
+	GConfig.cpp
+
+	XML Structure representing a configuration - Implementation.
+
+	Copyright 2003 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
+
+	Version $Revision$
+
+	Last Modify: $Date$
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Library General Public
+	License as published by the Free Software Foundation; either
+	version 2.0 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Library General Public License for more details.
+
+	You should have received a copy of the GNU Library General Public
+	License along with this library, as a file COPYING.LIB; if not, write
+	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+	Boston, MA  02111-1307  USA
+
+*/
+
+
+
+//------------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rio.h>
+#include <rstd/rxmlfile.h>
+using namespace R;
+
+
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <sessions/gconfig.h>
+#include <sessions/gtest.h>
+#include <filters/gurlmanager.h>
+#include <filters/gfilter.h>
+#include <profiles/gprofilecalcmanager.h>
+#include <profiles/gprofilecalc.h>
+using namespace GALILEI;
+
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GConfig
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GConfig::GConfig(const char* f) throw(bad_alloc)
+	: RXMLStruct(), FileName(f)
+{
+	RXMLTag* t;
+
+	AddNode(0,t=new RXMLTag("rdf:RDF"));
+	AddNode(t,Filters=new RXMLTag("galileiconfig:filters"));
+	AddNode(t,ProfileCalcs=new RXMLTag("galileiconfig:profileCalcs"));
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Load(void)
+{
+	Clear();
+	try
+	{
+		RXMLFile File(FileName,this,R::Read);
+		Filters=GetTop()->GetTag("galileiconfig:filters");
+		ProfileCalcs=GetTop()->GetTag("galileiconfig:profileCalcs");
+	}
+	catch(...)
+	{
+		Filters=0;
+		ProfileCalcs=0;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Save(void)
+{
+	RXMLFile File(FileName,this,R::Create);
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GURLManager& mng)
+{
+	GFactoryFilterCursor Cur;
+
+	if(!Filters) return;
+	Cur=mng.GetFiltersCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(Filters);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GURLManager& mng)
+{
+	GFactoryFilterCursor Cur;
+
+	Cur=mng.GetFiltersCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(Filters);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GProfileCalcManager& mng)
+{
+	GFactoryProfileCalcCursor Cur;
+
+	if(!ProfileCalcs) return;
+	Cur=mng.GetProfileCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(ProfileCalcs);
+	}
+	try
+	{
+		mng.SetCurrentMethod(ProfileCalcs->GetAttrValue("Current"));
+	}
+	catch(GException)
+	{
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GProfileCalcManager& mng)
+{
+	GFactoryProfileCalcCursor Cur;
+	GProfileCalc* calc;
+
+	Cur=mng.GetProfileCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(ProfileCalcs);
+	}
+	calc=mng.GetCurrentMethod();
+	if(calc)
+		ProfileCalcs->InsertAttr("Current",calc->GetFactory()->GetName());
+	else
+		ProfileCalcs->InsertAttr("Current","None");
+}
+
+
+//-----------------------------------------------------------------------------
+GConfig::~GConfig(void)
+{
+}
