@@ -42,6 +42,7 @@
 
 //---------------------------------------------------------------------------
 // include files for Qt
+#include <qwidget.h>
 #include <qmessagebox.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
@@ -57,6 +58,8 @@
 
 //---------------------------------------------------------------------------
 // include files for current project
+#include "kgalileicenter.h"
+#include "kdoc.h"
 #include "qpluginsdlg.h"
 
 
@@ -166,8 +169,8 @@ void QPluginsDlg::QPluginListView::activate(void)
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-QPluginsDlg::QPluginsDlg(GSession* s,QWidget* parent,const char* name)
-	: QDialog(parent,name,true), Cur(0), Conf(0), Computings(0), Groupings(0)
+QPluginsDlg::QPluginsDlg(KGALILEICenterApp* app,const char* name)
+	: QDialog(app,name,true), Cur(0), Conf(0), Computings(0), Groupings(0), App(app)
 {
 	Computings=new RStd::RContainer<QComputingPluginConf,unsigned int,true,true>(3,3);
 	Groupings=new RStd::RContainer<QGroupingPluginConf,unsigned int,true,true>(3,3);
@@ -176,7 +179,7 @@ QPluginsDlg::QPluginsDlg(GSession* s,QWidget* parent,const char* name)
 	// Window initialisation
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
 	setCaption("Plugins");
-	resize(320,480);
+	resize(320,650);
 
 	QVBoxLayout* QPluginsDlgLayout = new QVBoxLayout(this);
 	QPluginsDlgLayout->setSpacing(5);
@@ -209,7 +212,7 @@ QPluginsDlg::QPluginsDlg(GSession* s,QWidget* parent,const char* name)
 	// signals and slots connections
 	connect(Plugins,SIGNAL(selectionChanged(QListViewItem*)),this,SLOT(slotPlugin(QListViewItem*)));
 
-	ConstructPlugins(s);
+	ConstructPlugins(App->Doc->GetSession());
 }
 
 

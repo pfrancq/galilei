@@ -223,6 +223,23 @@ void KGALILEICenterApp::createClient(KDoc* doc,KView* view)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::saveOptions(GSimMeasure* s)
+{
+	Config->writeEntry(QString(s->Name)+" Measure Weight",s->Weight);
+	Config->writeEntry(QString(s->Name)+" Measure Use",s->Use);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::saveOptions(const char* n,RPromethee::RPromCriterionParams& c)
+{
+	Config->writeEntry(QString(n)+" Weight",c.Weight);
+	Config->writeEntry(QString(n)+" P",c.P);
+	Config->writeEntry(QString(n)+" Q",c.Q);
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::saveOptions(void)
 {
 	Config->setGroup("General Options");
@@ -250,6 +267,43 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Minimum Stem's Size",DocOptions->MinStemSize);
 	Config->writeEntry("Minimum Occurence",DocOptions->MinOccur);
 	Config->writeEntry("Accept Non-Letter words",DocOptions->NonLetterWords);
+
+	// Write Config of GA
+	Config->setGroup(IRParams.GetGroupingName());
+	Config->writeEntry("Population Size",IRParams.PopSize);
+	Config->writeEntry("Maximal Generations",IRParams.MaxGen);
+	Config->writeEntry("Step Mode",IRParams.Step);
+	Config->writeEntry("Step Generations",IRParams.StepGen);
+	Config->writeEntry("Minimum similarity",IRParams.MinSimLevel);
+	Config->writeEntry("Minimum Common OK",IRParams.MinCommonOK);
+	Config->writeEntry("Minimum Common Diff",IRParams.MinCommonDiff);
+	Config->writeEntry("Maximum K-Means Interation",IRParams.MaxKMeans);
+	Config->writeEntry("Type of Similarity Criterion",IRParams.SimMeasures);
+	for(IRParams.Measures.Start();!IRParams.Measures.End();IRParams.Measures.Next())
+		saveOptions(IRParams.Measures());
+	saveOptions("Similarity Criterion",IRParams.ParamsSim);
+	saveOptions("Information Criterion",IRParams.ParamsInfo);
+	saveOptions("Same Feedbacks Criterion",IRParams.ParamsSameFeedbacks);
+	saveOptions("Different Feedbacks Criterion",IRParams.ParamsDiffFeedbacks);
+	saveOptions("Social Criterion",IRParams.ParamsSocial);
+	Config->writeEntry("Global Similarity",IRParams.GlobalSim);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::readOptions(GSimMeasure* s)
+{
+	s->Weight=Config->readDoubleNumEntry(QString(s->Name)+" Measure Weight",0.0);
+	s->Use=Config->readBoolEntry(QString(s->Name)+" Use",false);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::readOptions(const char* n,RPromethee::RPromCriterionParams& c)
+{
+	c.Weight=Config->readDoubleNumEntry(QString(n)+" Weight",1.0);
+	c.P=Config->readDoubleNumEntry(QString(n)+" P",0.2);
+	c.Q=Config->readDoubleNumEntry(QString(n)+" Q",0.05);
 }
 
 
@@ -298,6 +352,26 @@ void KGALILEICenterApp::readOptions(void)
 	DocOptions->MinStemSize=Config->readUnsignedNumEntry("Minimum Stem's Size",3);
 	DocOptions->MinOccur=Config->readUnsignedNumEntry("Minimum Occurence",1);
 	DocOptions->NonLetterWords=Config->readBoolEntry("Accept Non-Letter words",true);
+
+	// Read Config of GA
+	Config->setGroup(IRParams.GetGroupingName());
+	IRParams.PopSize=Config->readNumEntry("Population Size",16);
+	IRParams.MaxGen=Config->readNumEntry("Maximal Generations",30);
+	IRParams.Step=Config->readBoolEntry("Step Mode",false);
+	IRParams.StepGen=Config->readNumEntry("Step Generations",0);
+	IRParams.MinSimLevel=Config->readDoubleNumEntry("Minimum similarity",0.1);
+	IRParams.MinCommonOK=Config->readDoubleNumEntry("Minimum Common OK",0.6);
+	IRParams.MinCommonDiff=Config->readDoubleNumEntry("Minimum Common Diff",0.6);
+	IRParams.MaxKMeans=Config->readNumEntry("Maximum K-Means Interation",60);
+	IRParams.SimMeasures=static_cast<SimCritType>(Config->readNumEntry("Type of Similarity Criterion",sctCrits));
+	for(IRParams.Measures.Start();!IRParams.Measures.End();IRParams.Measures.Next())
+		readOptions(IRParams.Measures());
+	readOptions("Similarity Criterion",IRParams.ParamsSim);
+	readOptions("Information Criterion",IRParams.ParamsInfo);
+	readOptions("Same Feedbacks Criterion",IRParams.ParamsSameFeedbacks);
+	readOptions("Different Feedbacks Criterion",IRParams.ParamsDiffFeedbacks);
+	readOptions("Social Criterion",IRParams.ParamsSocial);
+	IRParams.GlobalSim=Config->readBoolEntry("Global Similarity",true);
 }
 
 

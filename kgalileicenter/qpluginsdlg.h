@@ -59,6 +59,11 @@ class QTextView;
 
 
 //-----------------------------------------------------------------------------
+// include files for current application
+class KGALILEICenterApp;
+
+
+//-----------------------------------------------------------------------------
 /**
 * The QPluginsDlg provides a dialog box for managing the plugins of galilei.
 * @author Pascal Francq
@@ -115,15 +120,19 @@ class QPluginsDlg : public QDialog
 	*/
 	RStd::RContainer<QGroupCalcPluginConf,unsigned int,true,true>* GroupCalcs;
 
+	/**
+	* Application to condfigure.
+	*/
+	KGALILEICenterApp* App;
+
 public:
 
 	/**
 	* Constructor.
-	* @param s              Session that handles the plugins.
-	* @param parent         Parent of this dialog box.
+	* @param app            Application to configure.
 	* @param name           Name of the dialog box.
 	*/
-	QPluginsDlg(GSession* s,QWidget* parent=0, const char* name=0);
+	QPluginsDlg(KGALILEICenterApp* app,const char* name=0);
 
 	/**
 	* Register a plugin to configure a computing method.

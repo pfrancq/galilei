@@ -146,13 +146,13 @@ void KGALILEICenterApp::slotDocsOptions(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotPlugins(void)
 {
-	QPluginsDlg dlg(Doc->GetSession(),this,"Plugins Dialog");
+	QPluginsDlg dlg(this,"Plugins Dialog");
 
 	dlg.RegisterComputingPluginConf(new QComputingPluginConfStat());
 	dlg.RegisterComputingPluginConf(new QComputingPluginConfReWeighting());
 	dlg.RegisterComputingPluginConf(new QComputingPluginConfFeedback());
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfSim());
-	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfGGA());
+	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfGGA(&IRParams));
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKCos());
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKProtos());
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfCure());

@@ -48,6 +48,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <groups/gir.h>
 #include <urlmanagers/gurlmanagerkde.h>
 using namespace GALILEI;
 
@@ -103,6 +104,11 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	* The configuration object of the application.
 	*/
 	KConfig* Config;
+
+	/**
+	* Parameters of the GA.
+	*/
+	GIRParams IRParams;
 
 	/**
 	* Database server's host.
@@ -194,10 +200,36 @@ protected:
 	void createClient(KDoc* doc,KView* view);
 
 	/**
+	* Write the option corresponding to a similarity measure.
+	* @param s              Pointer to the measure.
+	*/
+	void saveOptions(GSimMeasure* s);
+
+	/**
+	* Write the option corresponding to a promethee criterion.
+	* @param n              Name of the criterion.
+	* @param c              Pointer to the criterion.
+	*/
+	void saveOptions(const char* n,RPromethee::RPromCriterionParams& c);
+
+	/**
 	* Save general Options like all bar positions and status as well as the
 	* geometry and the recent file list to the configuration file.
 	*/
 	void saveOptions(void);
+
+	/**
+	* Read the option corresponding to a similarity measure.
+	* @param s              Pointer to the measure.
+	*/
+	void readOptions(GSimMeasure* s);
+
+	/**
+	* Read the option corresponding to a promethee criterion.
+	* @param n              Name of the criterion.
+	* @param c              Pointer to the criterion.
+	*/
+	void readOptions(const char* n,RPromethee::RPromCriterionParams& c);
 
 	/**
 	* Read general Options again and initialize all variables like the recent
@@ -518,6 +550,8 @@ public:
 	* Destructor.
 	*/
 	~KGALILEICenterApp(void);
+
+	friend class QPluginsDlg;
 
 public:
 
