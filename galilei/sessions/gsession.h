@@ -439,6 +439,11 @@ public:
 	virtual void NewGroup(GLang* lang,GGroup* grp)=0;
 
 	/**
+	* Save the groups of the session.
+	*/
+	virtual void SaveGroups(void)=0;
+
+	/**
 	* Delete a group.
 	* @param grp        Group to delete.
 	*/

@@ -278,7 +278,6 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 void GALILEI::GSessionMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 {
 	char sSql[200];
-	char sattached[15];
 	unsigned int grpid;
 	GIWordWeightCursor Cur;
 	const char* l;
@@ -294,13 +293,6 @@ void GALILEI::GSessionMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 		              l,sub->GetId(),Cur()->GetId(),Cur()->GetWeight());
 		RQuery insertkwds(this,sSql);
 	}
-
-	if(sub->GetGroup())
-		grpid=sub->GetGroup()->GetId();
-	else
-		grpid=0;
-	sprintf(sSql,"UPDATE subprofiles SET groupid=%u,attached=%s WHERE subprofileid=%u",grpid,GetDateToMySQL(sub->GetAttached(),sattached),sub->GetId());
-	RQuery update(this,sSql);
 }
 
 
@@ -735,6 +727,56 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 }
 
 
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::SaveGroups(void)
+{
+	GGroups* groups;
+ 	GGroup* g;
+	GIWordWeightCursor WordCur;
+	GGroupsCursor GroupsCursor; 
+	char sSql[100];
+	GLangCursor Langs;
+	GSubProfile* sub;
+	char sattached[15];
+
+	Langs=GetLangsCursor();
+	for(Langs.Start();!Langs.End();Langs.Next())
+	{
+		sprintf(sSql,"DELETE FROM %sgroupsbykwds ",Langs()->GetCode());
+		RQuery delete2(this,sSql);
+	}
+
+	GroupsCursor=this->GetGroupsCursor();
+	for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
+	{
+		groups=GroupsCursor();
+		for(groups->Start();!groups->End();groups->Next())
+		{
+			g=(*groups)();
+
+			// Save SubProfiles infos
+			for(g->Start();!g->End();g->Next())
+			{
+				sub=(*g)();
+				sprintf(sSql,"UPDATE subprofiles SET groupid=%u,attached=%s WHERE subprofileid=%u",g->GetId(),GetDateToMySQL(sub->GetAttached(),sattached),sub->GetId());
+				RQuery update(this,sSql);
+			}
+
+			// Save the description part
+			WordCur=static_cast<GGroupVector*>((*groups)())->GetVectorCursor();
+			for(WordCur.Start();!WordCur.End();WordCur.Next())
+			{
+				sprintf(sSql,"INSERT INTO %sgroupsbykwds(groupid,kwdid,occurs) VALUES(%u,%u,%lf)",g->GetLang()->GetCode(),g->GetId(),WordCur()->GetId(),WordCur()->GetWeight());
+				RQuery InsertWord(this,sSql);
+			}
+
+		}
+	}        
+
+}
+
+
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::NewGroup(GLang* lang,GGroup* grp)
 {
@@ -769,9 +811,9 @@ void GALILEI::GSessionMySQL::DeleteGroup(GGroup* grp)
 void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 {
 	char sSql[100];
-	GGroup* group;
+	GGroupVector* group;
 	GLangCursor Langs;
-
+    GIWordWeight* Word;
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
@@ -780,7 +822,15 @@ void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 		RQuery group2 (this,sSql);
 		for(group2.Begin();group2.IsMore();group2++)
 		{
-			groups->InsertPtr(group=new GGroupVector(atoi(group2[0]),Langs()));
+			group=new GGroupVector(atoi(group2[0]),Langs());
+			sprintf(sSql,"SELECT kwdid,occurs FROM %sgroupsbykwds where groupid=%u",Langs()->GetCode(),atoi(group2[0]));
+			RQuery sel(this,sSql);
+			for(sel.Begin();sel.IsMore();sel++)
+			{
+				Word= new GIWordWeight(atoi(sel[0]),atof(sel[1]));
+				group->AddWord(Word);
+			}
+			groups->InsertPtr(group);
 		}
 	}
 }

@@ -232,6 +232,13 @@ public:
 	virtual void NewGroup(GLang* lang,GGroup* grp);
 
 	/**
+	* Create a new group.
+	* @param lang       Language of the group to create.
+	* @param grp        Group created.
+	*/
+	virtual void SaveGroups(void);
+
+	/**
 	* Delete a group.
 	* @param grp        Group to delete.
 	*/
