@@ -213,7 +213,7 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 	unsigned int MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
 	unsigned int NbProfiles;                      // Total Number of profiles
 	unsigned int NbTot;
-	GLangCursor Langs=Session->GetLangsCursor();
+	GLangCursor Langs;
 	unsigned int col;
 	double a,b,c,d,num,den,subtotal;
 	double* VectorRows;                           // Sum of the rows of the matrix
@@ -227,6 +227,7 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
+	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		NbRows=Groups->GetPtr<GLang*>(Langs())->NbPtr;
@@ -252,10 +253,8 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 
 		// Construction of the container for relation between id and column in the matrix.
 		RContainer<GGroupId,unsigned int,true,true> GroupsId(NbCols,NbCols/2);
-		for(GroupsComputed->Start(),col=0;!GroupsComputed->End();GroupsComputed->Next(),col++)
-		{
-			GroupsId.InsertPtr(new GGroupId(((*GroupsComputed)())->GetId(),col));
-		}
+		for(GroupsComputed->Start(),col=0;!GroupsComputed->End();GroupsComputed->Next())
+			GroupsId.InsertPtr(new GGroupId(((*GroupsComputed)())->GetId(),col++));
 
 		//Initialisation of the variable used for computing the subtotal
 		a=b=c=d=0.0;
@@ -269,7 +268,6 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 		row=0;
 		for(GroupsIdeal->Start(),NbTot=0;!GroupsIdeal->End();GroupsIdeal->Next())
 		{
-			
 			memset(VectorColsTemp,0,NbCols*sizeof(double));
 			GroupIdeal=(*GroupsIdeal)();
 			for(GroupIdeal->Start();!GroupIdeal->End();GroupIdeal->Next())
@@ -281,17 +279,23 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 				NbTot++;
 			}
 			row++;
-			for(col=NbCols+1,ptr=VectorColsTemp;--col;ptr++) a+=(((*ptr)*((*ptr)-1))/2);
+			for(col=NbCols+1,ptr=VectorColsTemp;--col;ptr++)
+				a+=(((*ptr)*((*ptr)-1))/2);
 		}
 
-		for(col=NbCols+1,ptr=VectorCols;--col;ptr++) b+=(((*ptr)*((*ptr)-1))/2);
-		for(row=NbRows+1,ptr=VectorRows;--row;ptr++) c+=(((*ptr)*((*ptr)-1))/2);
+		for(col=NbCols+1,ptr=VectorCols;--col;ptr++)
+			b+=(((*ptr)*((*ptr)-1))/2);
+		for(row=NbRows+1,ptr=VectorRows;--row;ptr++)
+			c+=(((*ptr)*((*ptr)-1))/2);
 		d=(NbTot*(NbTot-1))/2;
 		num=a-((b*c)/d);
 		den=(0.5*(b+c))-(b*c/d);
-		subtotal=num/den;
+		if(den)
+			subtotal=num/den;
+		else
+			subtotal=1.0;
 		NbProfiles+=NbTot;
-		Total+=subtotal*NbTot;	
+		Total+=subtotal*NbTot;
 	}
 
 	// Compute Total
