@@ -116,12 +116,12 @@ bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
 	TagLen=0;
 	read(handle,Buffer,statbuf.st_size);
 	Buffer[statbuf.st_size]=0;
+	close(handle);
 	SkipSpaces();
 
 	// Traitement of the document
 	AnalyseHeader();
 	AnalyseBody();
-	doc->AddNode(doc->GetTop(),/**links=*/new RXMLTag("Links"));
 
 	// Done
 	if(Block)
@@ -252,7 +252,7 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 
 	// Init Part
 	memset(Open,0,9*sizeof(RXMLTag*));
-	Doc->AddNode(Doc->GetTop(),Open[0]=content=new RXMLTag("Content"));
+	Open[0]=content=Doc->GetContent();
 	Level=0;
 	OldBlock=0;
 	MinOpenLevel=0;
@@ -325,11 +325,9 @@ void GALILEI::GFilterHTML::AnalyseHeader(void)
 	char* OldParams;
 
 	// Init Part.
-	Doc->AddNode(Doc->GetTop(),meta=new RXMLTag("MetaData"));
-	Doc->AddNode(meta,act=new RXMLTag("URL"));
-	act->InsertAttr(new RXMLAttr("value",Doc->GetURL()));
-	Doc->AddNode(meta,act=new RXMLTag("TypeDoc"));
-	act->InsertAttr(new RXMLAttr("code","text/html"));
+	meta=Doc->GetMetaData();
+	Doc->AddIdentifier(Doc->GetURL());
+	Doc->AddFormat("text/html");
 
 	// Parse it.
 	NextValidTag();
@@ -338,8 +336,7 @@ void GALILEI::GFilterHTML::AnalyseHeader(void)
 		switch(LastType)
 		{
 			 case Tag::tTITLE:
-				Doc->AddNode(meta,act=new RXMLTag("Title"));
-				AnalyzeBlock(OldBlock,act);
+				AnalyzeBlock(OldBlock,Doc->AddTitle());
 				break;
 			case Tag::tMETA:
 				ReadMetaTag(OldParams,meta);
@@ -425,13 +422,11 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* metaData)
 
 	if(!strcmp(name,"DESCRIPTION"))
 	{
-		Doc->AddNode(metaData,tag=new RXMLTag("Abstract"));
-		AnalyzeBlock(content,tag);
+		AnalyzeBlock(content,Doc->AddSubject());
 	}
 	else if(!strcmp(name,"KEYWORDS"))
 	{
-		Doc->AddNode(metaData,tag=new RXMLTag("Keywords"));
-		AnalyzeKeywords(content,',',tag);
+		AnalyzeKeywords(content,',',Doc->AddSubject());
 	}
 }
 

@@ -54,7 +54,6 @@ GFilterEMail::GFilterEMail(GURLManager* mng)
 bool GFilterEMail::ExtractCmd(char* line,RXMLTag* metaData)
 {
 	char* ptr=line;
-	RXMLTag* tag;
 
 	// Look an the first word
 	while((*ptr)&&((isalnum(*ptr))||((*ptr)=='-')))
@@ -75,23 +74,19 @@ bool GFilterEMail::ExtractCmd(char* line,RXMLTag* metaData)
 	// Analyse the different metaData possible.
 	if(!strcasecmp(line,"subject"))
 	{
-		Doc->AddNode(metaData,tag=new RXMLTag("Title"));
-		AnalyzeBlock(ptr,tag);
+		AnalyzeBlock(ptr,Doc->AddTitle());
 	}
 	else if(!strcasecmp(line,"summary"))
 	{
-		Doc->AddNode(metaData,tag=new RXMLTag("Abstract"));
-		AnalyzeBlock(ptr,tag);
+		AnalyzeBlock(ptr,Doc->AddSubject());
 	}
 	else if(!strcasecmp(line,"Date"))
 	{
-		Doc->AddNode(metaData,tag=new RXMLTag("Date"));
-		tag->InsertAttr("Value",ptr);
+		Doc->AddDate(ptr);
 	}
 	else if(!strcasecmp(line,"keywords"))
 	{
-		Doc->AddNode(metaData,tag=new RXMLTag("Keywords"));
-		AnalyzeKeywords(ptr,',',tag);
+		AnalyzeKeywords(ptr,',',Doc->AddSubject());
 	}
 
 	return(true);
@@ -120,15 +115,14 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 	Begin=Pos=Buffer=new char[statbuf.st_size+1];
 	read(handle,Buffer,statbuf.st_size);
 	Buffer[statbuf.st_size]=0;
+	close(handle);
 	SkipSpaces();
 	Begin=Pos;
 
 	// Create the metaData tag and the first information
-	Doc->AddNode(Doc->GetTop(),part=new RXMLTag("MetaData"));
-	Doc->AddNode(part,tag=new RXMLTag("URL"));
-	tag->InsertAttr("value",Doc->GetURL());
-	Doc->AddNode(part,tag=new RXMLTag("TypeDoc"));
-	tag->InsertAttr("TypeDoc","email/text");
+	part=Doc->GetMetaData();
+	Doc->AddIdentifier(Doc->GetURL());
+	Doc->AddFormat("text/email");
 
 	// Email have and the beginning information on each line.
 	Header=true;        // There headers to read.
@@ -163,7 +157,7 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 		Begin[strlen(Begin)-1]='\n';
 
 	// Look for the content
-	Doc->AddNode(Doc->GetTop(),part=new RXMLTag("Content"));
+	part=Doc->GetContent();
 	while(*Pos)
 	{
 		part->AddTag(tag=new RXMLTag("P"));
@@ -189,9 +183,6 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 		}
 		AnalyzeBlock(Begin,tag);
 	}
-
-	// Look for the links
-	Doc->AddNode(Doc->GetTop(),part=new RXMLTag("links"));
 
 	// Done Part
 	if(Buffer)
