@@ -231,7 +231,7 @@ void KViewDoc::ConstructFdbks(void)
 		if(!p) continue;
 		d=Profiles()->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof = new QListViewItemType(Profiles()->GetProfile(),p,Profiles()->GetProfile()->GetName(),Profiles()->GetProfile()->GetUser()->GetFullName().Latin1(),sDate);
+		QListViewItemType* prof = new QListViewItemType(Profiles()->GetProfile(),p,Profiles()->GetProfile()->GetName().Latin1(),Profiles()->GetProfile()->GetUser()->GetFullName().Latin1(),sDate);
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
 	}
 }

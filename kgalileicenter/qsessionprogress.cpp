@@ -237,7 +237,7 @@ void QSessionProgressDlg::ComputeProfile(GProfile* prof)
 
 	try
 	{
-		txtRem->setText(QString("Compute Profile '")+prof->GetName()+"' ...");
+		txtRem->setText(QString("Compute Profile '")+prof->GetName().Latin1()+"' ...");
 		KApplication::kApplication()->processEvents();
 		Session->CalcProfile(prof);
 		txtRem->setText("Finish");
@@ -363,7 +363,7 @@ void QSessionProgressDlg::receiveNextDoc(const GDoc* doc)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::receiveNextProfile(const GProfile* prof)
 {
-	txtRem->setText(QString("Analyse Profile '")+prof->GetName()+"' of User '"+prof->GetUser()->GetName().Latin1()+"' ...");
+	txtRem->setText(QString("Analyse Profile '")+prof->GetName().Latin1()+"' of User '"+prof->GetUser()->GetName().Latin1()+"' ...");
 	KApplication::kApplication()->processEvents();
 }
 

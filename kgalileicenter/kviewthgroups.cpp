@@ -233,7 +233,7 @@ void KViewThGroups::ConstructThGroups(void)
 			for(gr->Start(); !gr->End(); gr->Next())
 			{
 				GSubProfile* sub=(*gr)();
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName().Latin1());
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1());
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}
@@ -271,7 +271,7 @@ void KViewThGroups::ConstructGroups(void)
 			for(gr->Start(); !gr->End(); gr->Next())
 			{
 				GSubProfile* sub=(*gr)();
-				sprintf(tmp1,"%s (%s)",sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName().Latin1());
+				sprintf(tmp1,"%s (%s)",sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1());
 				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,tmp1);
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}

@@ -90,7 +90,7 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 {
 	// Window initialisation
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
-	setCaption("Profile \""+QString(Profile->GetName())+"\"");
+	setCaption("Profile \""+QString(Profile->GetName().Latin1())+"\"");
 
 	// initialisation of the tab widget
 	Infos=new QTabWidget(this);
@@ -280,7 +280,7 @@ void KViewProfile::ConstructGroups(void)
 
 				d=sub->GetAttached();
 				sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName().Latin1(),sDate);
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1(),sDate);
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}

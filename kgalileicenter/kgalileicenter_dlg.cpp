@@ -50,7 +50,6 @@ using namespace R;
 #include <profiles/guser.h>
 #include <profiles/gprofdoc.h>
 #include <profiles/gprofile.h>
-#include <profiles/gsubprofiledesc.h>
 #include <groups/ggrouping.h>
 #include <profiles/gprofilecalc.h>
 #include <infos/glang.h>

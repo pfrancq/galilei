@@ -112,7 +112,7 @@ void KViewUsers::CreateUsersListView(void)
 		useritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
 		for (CurUsr()->Start(); !CurUsr()->End(); CurUsr()->Next())
 		{
-			prof=new QListViewItemType((*CurUsr())(), useritem, (*CurUsr())()->GetName());
+			prof=new QListViewItemType((*CurUsr())(), useritem, (*CurUsr())()->GetName().Latin1());
 			prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("kdict.png",KIcon::Small)));
 		}
 	}

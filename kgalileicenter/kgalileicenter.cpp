@@ -53,7 +53,6 @@ using namespace R;
 #include <docs/gdocxml.h>
 #include <sessions/gsessionmysql.h>
 #include <profiles/gsubprofile.h>
-#include <profiles/gsubprofiledesc.h>
 #include <profiles/gsubprofilevector.h>
 #include <groups/ggroup.h>
 #include <groups/gsubject.h>
