@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GCompareGrouping.h
+	GCompareGrouping.cpp
 
 	Compare a ideal groupement with a computed one - Implementation
 
@@ -209,17 +209,18 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 	GGroups* GroupsIdeal;                         // Pointer to the ideal groups for a given language
 	GGroups* GroupsComputed;                      // Pointer to the computed groups for a given language
 	GGroup* GroupIdeal;                           // Pointer to a ideal group
-	unsigned int** matrix;                        // Matrix representing all assignation ideal/computed
 	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
 	unsigned int MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
 	unsigned int NbProfiles;                      // Total Number of profiles
 	unsigned int NbTot;
-	unsigned int** ptr;
-	unsigned int* ptr2;
-	double total;
 	GLangCursor Langs=Session->GetLangsCursor();
-	unsigned int row,col;
-	
+	unsigned int col;
+	double a,b,c,d,num,den,subtotal;
+	double* VectorRows;                           // Sum of the rows of the matrix
+	double* VectorCols;                           // Sum of the columns of the matrix
+	double* VectorColsTemp;                       // temp sum of the columns of the matrix
+	double* ptr;
+
 	// Init part
 	Total=0.0;
 	NbProfiles=0;
@@ -233,9 +234,9 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 		if(NbRows>MaxRows) MaxRows=NbRows;
 		if(NbCols>MaxCols) MaxCols=NbCols;
 	}
-	matrix=new unsigned int*[MaxRows];
-	for(row=MaxRows+1,ptr=matrix;--row;ptr++)
-		(*ptr)=new unsigned int[MaxCols];
+	VectorRows=new double[MaxRows];
+	VectorCols=new double[MaxCols];
+	VectorColsTemp=new double[MaxCols];
 
 	// we take the total for each languages multiplied by the number of subprofiles
 	// in the idealgroup for this language.
@@ -249,12 +250,6 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 		NbCols=GroupsComputed->NbPtr;
 		if((!NbRows)||(!NbCols)) continue;
 
-		// Initalisation of the matrix
-		for(row=NbRows+1,ptr=matrix;--row;ptr++)
-		{
-			memset((*ptr),0,NbCols*sizeof(int));
-		}
-
 		// Construction of the container for relation between id and column in the matrix.
 		RContainer<GGroupId,unsigned int,true,true> GroupsId(NbCols,NbCols/2);
 		for(GroupsComputed->Start(),col=0;!GroupsComputed->End();GroupsComputed->Next(),col++)
@@ -262,65 +257,50 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 			GroupsId.InsertPtr(new GGroupId(((*GroupsComputed)())->GetId(),col));
 		}
 
-		// Element i,j of the matrix is the number of profiles who are in the ith ideal groups
-		// and jth computed group. NbTot is number of profiles.
-		for(GroupsIdeal->Start(),ptr=matrix,NbTot=0;!GroupsIdeal->End();GroupsIdeal->Next(),ptr++)
+		//Initialisation of the variable used for computing the subtotal
+		a=b=c=d=0.0;
+
+		// Initalisation of the vectors
+		memset(VectorRows,0,NbRows*sizeof(double));
+		memset(VectorCols,0,NbCols*sizeof(double));
+
+		//for each group of ideal group and for each profiles in this group compute the differents terms of the total
+		int row,position;
+		row=0;
+		for(GroupsIdeal->Start(),NbTot=0;!GroupsIdeal->End();GroupsIdeal->Next())
 		{
+			
+			memset(VectorColsTemp,0,NbCols*sizeof(double));
 			GroupIdeal=(*GroupsIdeal)();
-			// for each subprofiles in this idealgroup add 1 in the case corresponding to the
-			// id of the computedgroup where the subprofile is.
 			for(GroupIdeal->Start();!GroupIdeal->End();GroupIdeal->Next())
 			{
-				(*ptr)[GroupsId.GetPtr(GroupsComputed->GetGroup((*GroupIdeal)())->GetId())->position]++;
+				position=GroupsId.GetPtr(GroupsComputed->GetGroup((*GroupIdeal)())->GetId())->position;
+				VectorRows[row]++;
+				VectorCols[position]++;
+				VectorColsTemp[position]++;
 				NbTot++;
 			}
+			row++;
+			for(col=NbCols+1,ptr=VectorColsTemp;--col;ptr++) a+=(((*ptr)*((*ptr)-1))/2);
 		}
 
-		//Calculation of the different terms of the total = a-(b*c)/d)/((1/2*(b+c))-(b*c)/d)
-		double a,b,c,d,num,den;
-		a=0;
-		b=0;
-		c=0;
-
-		for(row=NbRows+1,ptr=matrix;--row;ptr++)
-		{
-			int sum=0;
-			for(col=NbCols+1,ptr2=(*ptr);--col;ptr2++)
-			{
-				a+=(((*ptr2)*((*ptr2)-1))/2);
-				sum+=(*ptr2);
-			}
-			b+=((sum*(sum-1))/2);
-		}
-
-		for(col=NbCols+1;--col;)
-		{
-			int sum=0;
-			for(row=NbRows+1,ptr=matrix;--row;ptr++)
-			{
-				sum+=(*ptr)[col-1];
-			}
-			c+=((sum*(sum-1))/2);
-		}
-
+		for(col=NbCols+1,ptr=VectorCols;--col;ptr++) b+=(((*ptr)*((*ptr)-1))/2);
+		for(row=NbRows+1,ptr=VectorRows;--row;ptr++) c+=(((*ptr)*((*ptr)-1))/2);
 		d=(NbTot*(NbTot-1))/2;
 		num=a-((b*c)/d);
 		den=(0.5*(b+c))-(b*c/d);
-		total=num/den;
+		subtotal=num/den;
 		NbProfiles+=NbTot;
-		Total+=total*NbTot;
-
+		Total+=subtotal*NbTot;	
 	}
 
-	// Comute Total
+	// Compute Total
 	Total=Total/NbProfiles;
 
-	// Delete the matrix
- 	for(row=MaxRows+1,ptr=matrix;--row;ptr++)
-	{
-		delete[] (*ptr);
-	}
-	delete[] matrix;
+	//delete the vectors
+	if (VectorRows) delete[] VectorRows;
+	if (VectorCols) delete[] VectorCols;
+	if (VectorColsTemp) delete[] VectorColsTemp;
 }
 
 
