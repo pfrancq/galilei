@@ -236,7 +236,7 @@ public:
 	virtual void NewGroup(GLang* lang,GGroup* grp);
 
 	/**
-	* Create a new group.
+	* Save the groups description.
 	* @param lang       Language of the group to create.
 	* @param grp        Group created.
 	*/

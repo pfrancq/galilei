@@ -49,6 +49,7 @@
 #include <profiles/gsubprofile.h>
 #include <docs/gdocs.h>
 #include <groups/ggroupir.h>
+#include <groups/ggroupsmng.h>
 
 
 
@@ -64,14 +65,9 @@ namespace GALILEI{
 * @author GALILEI Team
 * @short Generic Session.
 */
-class GSession : public GLangs, public GDocs, public GUsers
+class GSession : public GLangs, public GDocs, public GUsers, public GGroupsMng
 {
 protected:
-
-	/**
-	* Groups handled by the system.
-	*/
-	RStd::RContainer<GGroups,unsigned int,true,true> Groups;
 
 	/**
 	* Ideal Groups handled by the system.
@@ -409,13 +405,6 @@ public:
 	*/
 	void InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const char* date) throw(bad_alloc);
 
-protected:
-
-	/**
-	* Load the groups.
-	*/
-	virtual void LoadGroups(void) throw(bad_alloc,GException)=0;
-
 public:
 
 	/**
@@ -430,35 +419,11 @@ public:
 	void InitGroups(void) throw(bad_alloc,GException);
 
 	/**
-	* Get a cursor over the groups of the system.
-	*/
-	GGroupsCursor& GetGroupsCursor(void);
-
-	/**
-	* Find the groups for a specific language.
-	* @param lang           Pointer to the language.
-	* @returns Pointer to the group.
-	*/
-	GGroups* GetGroups(const GLang* lang) const;
-
-	/**
 	* Save a group, i.e. save all the information of the subprofiles
 	* concerning the groupement.
 	* @param grp        Group to save.
 	*/
-	void Save(GGroup* grp) throw(GException);
-
-	/**
-	* Create a new group.
-	* @param lang       Language of the group to create.
-	* @param grp        Group created.
-	*/
-	virtual void NewGroup(GLang* lang,GGroup* grp)=0;
-
-	/**
-	* Save the groups of the session.
-	*/
-	virtual void SaveGroups(void)=0;
+	virtual void Save(GGroup* grp) throw(GException);
 
 	/**
 	* Save the groups of the session
@@ -466,18 +431,6 @@ public:
 	*@param nbmixedgroups   mixedgroups number
 	*/
 	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true> * mixedgroups, int nbmixedgroups)=0;
-
-	/**
-	* Delete a group.
-	* @param grp        Group to delete.
-	*/
-	virtual void DeleteGroup(GGroup* grp)=0;
-
-	/**
-	* Clear the groups of a given language.
-	* @param lang       Language of the groups to delete.
-	*/
-	void ClearGroups(GLang* lang);
 
 	/**
 	* Get a cursor over the filters of the system.
@@ -555,7 +508,6 @@ public:
 	* Save The Documents Simylarities into the database.
 	*/
 	virtual void SaveDocSim(void)=0;
-
 
 	/**
 	* Run a "program" for this session.

@@ -835,6 +835,8 @@ void GALILEI::GSessionMySQL::DeleteGroup(GGroup* grp)
 	char sSql[100];
 
 	if(!grp) return;
+	sprintf(sSql,"UPDATE subprofiles SET groupid=0 WHERE groupid=%u",grp->GetId());
+	RQuery up(this,sSql);
 	sprintf(sSql,"DELETE FROM groups WHERE groupid=%u",grp->GetId());
 	RQuery del(this,sSql);
 	grp->SetId(cNoRef);

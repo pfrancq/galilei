@@ -81,7 +81,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException)
-	: GLangs(2),GDocs(d),GUsers(u,p), Groups(g+g/2,g/2), IdealGroups(g+g/2,g/2), Fdbks(f+f/2,f/2),
+	: GLangs(2),GDocs(d),GUsers(u,p), GGroupsMng(g), IdealGroups(g+g/2,g/2), Fdbks(f+f/2,f/2),
 	  ProfileCalcs(0), ProfileCalc(0), Groupings(0), Grouping(0), Mng(mng), DocAnalyse(0),
 	  bGroups(false),bFdbks(false), DocOptions(0)
 	
@@ -433,22 +433,6 @@ void GALILEI::GSession::InitGroups(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-GGroupsCursor& GALILEI::GSession::GetGroupsCursor(void)
-{
-	GGroupsCursor *cur=GGroupsCursor::GetTmpCursor();
-	cur->Set(Groups);
-	return(*cur);
-}
-
-
-//-----------------------------------------------------------------------------
-GGroups* GALILEI::GSession::GetGroups(const GLang* lang) const
-{
-	return(Groups.GetPtr<const GLang*>(lang));
-}
-
-
-//-----------------------------------------------------------------------------
 void GALILEI::GSession::Save(GGroup* grp) throw(GException)
 {
 	if(grp->GetState()==osUpToDate) return;
@@ -479,26 +463,7 @@ void GALILEI::GSession::LoadIdealGroupmentInGroups(void)
 			group=(*groups)();
 			Calc->Compute(group);
 		}
-	}
-	
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::ClearGroups(GLang* lang)
-{
-	unsigned int i;
-	GGroups* grps=Groups.GetPtr<const GLang*>(lang);
-	GGroup* grp;
-
-	// Go through the groups and delete all invalid groups.
-	for(i=grps->NbPtr+1;--i;)
-	{
-		grp=(*grps->Tab);
- 		grp->DeleteSubProfiles();
-		DeleteGroup(grp);
-		grps->DeletePtr(grp);
-	}
+	}	
 }
 
 
