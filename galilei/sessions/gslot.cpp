@@ -37,8 +37,9 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gslot.h>
-
 using namespace GALILEI;
+using namespace R;
+
 
 
 //-----------------------------------------------------------------------------
@@ -48,48 +49,43 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSlot::GSlot(void)
+GSlot::GSlot(void)
+	: RPrgOutput()
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextDoc(const GDoc*)
+void GSlot::receiveNextDoc(const GDoc*)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextProfile(const GProfile*)
+void GSlot::receiveNextProfile(const GProfile*)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::NextGroupLang(const GLang*)
+void GSlot::NextGroupLang(const GLang*)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::WriteStr(const char*)
+void GSlot::receiveNextChromosome(unsigned int)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextChromosome(unsigned int)
+void GSlot::receiveNextMethod(unsigned int)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextMethod(unsigned int)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GSlot::~GSlot(void)
+GSlot::~GSlot(void)
 {
 }

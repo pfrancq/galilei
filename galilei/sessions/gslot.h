@@ -40,6 +40,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rprg/rprgoutput.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
@@ -57,7 +62,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Slot.
 */
-class GSlot
+class GSlot : public R::RPrgOutput
 {
 public:
 	/**
@@ -82,13 +87,6 @@ public:
 	* @param lang           Pointer to the current lang.
 	*/
 	virtual void NextGroupLang(const GLang* lang);
-
-	/**
-	* Method called when executing a sequence of instruction to output some
-	* information.
-	* @param str            String to output.
-	*/
-	virtual void WriteStr(const char* str);
 
 	/**
 	* The traitment for a specific chromosome will begin.

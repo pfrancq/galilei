@@ -35,23 +35,18 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdlib.h>
+// include files for R Project
+/*#include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
+#include <ctype.h>*/
+#include <rprg/rprgvar.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gsessionprg.h>
-
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
-//#include <profiles/gprofile.h>
-/*#include <profiles/gsubprofiledesc.h>
-#include <groups/ggroups.h>
-#include <groups/ggroupvector.h>
-*/
 #include <groups/ggrouping.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalcmanager.h>
@@ -63,14 +58,289 @@
 #include <docs/glinkcalcmanager.h>
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
-#include <sessions/gprginstfor.h>
-#include <sessions/gprginstmethod.h>
-#include <sessions/gprgvarconst.h>
-#include <sessions/gprgvarref.h>
 #include <sessions/gmixidealgroups.h>
-
 using namespace GALILEI;
 using namespace R;
+
+
+
+//-----------------------------------------------------------------------------
+//
+// Declare all the instructions of the class 'Session'.
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class GSM : public R::RPrgFunc
+{
+public:
+	char tmp[3000];
+	GPrgClassSession* Owner;
+	GSM(const char* name,GPrgClassSession* o)
+		: RPrgFunc(name), Owner(o) {}
+};
+
+
+//-----------------------------------------------------------------------------
+class GSetRandI : public GSM
+{
+public:
+	GSetRandI(GPrgClassSession* o) : GSM("SetRand",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+//-----------------------------------------------------------------------------
+class GOutputI : public GSM
+{
+public:
+	GOutputI(GPrgClassSession* o) : GSM("SetOutput",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GGOutputI : public GSM
+{
+public:
+	GGOutputI(GPrgClassSession* o) : GSM("SetGraphOutput",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSOutputI : public GSM
+{
+public:
+	GSOutputI(GPrgClassSession* o) : GSM("SetStatsOutput",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSetLinksMethodI : public GSM
+{
+public:
+	GSetLinksMethodI(GPrgClassSession* o) : GSM("SetLinksMethod",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSetAutoSaveI : public GSM
+{
+public:
+	GSetAutoSaveI(GPrgClassSession* o) : GSM("SetAutoSave",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GTestI : public GSM
+{
+public:
+	GTestI(GPrgClassSession* o) : GSM("Test",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GLogI : public GSM
+{
+public:
+	GLogI(GPrgClassSession* o) : GSM("Log",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSqlI : public GSM
+{
+public:
+	GSqlI(GPrgClassSession* o) : GSM("ExecSql",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GModifyProfilesI : public GSM
+{
+public:
+	GModifyProfilesI(GPrgClassSession* o) : GSM("ModifyProfiles",o) {}
+	virtual void Run(R::RPrg*,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GComputeProfilesI : public GSM
+{
+public:
+	GComputeProfilesI(GPrgClassSession* o) : GSM("ComputeProfiles",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GGroupProfilesI : public GSM
+{
+public:
+	GGroupProfilesI(GPrgClassSession* o) : GSM("GroupProfiles",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+//-----------------------------------------------------------------------------
+class GCreateIdealI : public GSM
+{
+public:
+	GCreateIdealI(GPrgClassSession* o) : GSM("CreateIdeal",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GMixIdealI : public GSM
+{
+public:
+	GMixIdealI(GPrgClassSession* o) : GSM("MixIdeal",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GFdbksCycleI : public GSM
+{
+public:
+	GFdbksCycleI(GPrgClassSession* o) : GSM("FdbksCycle",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GCompareIdealI : public GSM
+{
+public:
+	GCompareIdealI(GPrgClassSession* o) : GSM("CompareIdeal",o) {}
+	virtual void Run(R::RPrg*,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSetSubjectsParamI : public GSM
+{
+public:
+	GSetSubjectsParamI(GPrgClassSession* o) : GSM("SetSubjectsParam",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSetComputingParamI : public GSM
+{
+public:
+	GSetComputingParamI(GPrgClassSession* o) : GSM("SetComputingParam",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSetGroupingParamI : public GSM
+{
+public:
+	GSetGroupingParamI(GPrgClassSession* o) : GSM("SetGroupingParam",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GAddIdealI : public GSM
+{
+public:
+	GAddIdealI(GPrgClassSession* o) : GSM("AddIdeal",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GAddProfilesI : public GSM
+{
+public:
+	GAddProfilesI(GPrgClassSession* o) : GSM("AddProfiles",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GRealLifeI : public GSM
+{
+	char What[2];
+	bool History;
+	void CommonTasks(R::RPrgOutput* o) throw(GException);
+public:
+	GRealLifeI(GPrgClassSession* o) : GSM("RealLife",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GAddAssessmentsI : public GSM
+{
+public:
+	GAddAssessmentsI(GPrgClassSession* o) : GSM("AddAssessments",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GTrackNewProfilesI : public GSM
+{
+public:
+	GTrackNewProfilesI(GPrgClassSession* o) : GSM("TrackNewProfiles",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GClearNewProfilesI : public GSM
+{
+public:
+	GClearNewProfilesI(GPrgClassSession* o) : GSM("ClearNewProfiles",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GStoreInHistoryI : public GSM
+{
+public:
+	GStoreInHistoryI(GPrgClassSession* o) : GSM("StoreInHistory",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GResetTimeI : public GSM
+{
+public:
+	GResetTimeI(GPrgClassSession* o) : GSM("ResetTime",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GComputeTimeI : public GSM
+{
+public:
+	GComputeTimeI(GPrgClassSession* o) : GSM("ComputeTime",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GWordsClusteringI : public GSM
+{
+public:
+	GWordsClusteringI(GPrgClassSession* o) : GSM("WordsClustering",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(GException);
+};
 
 
 
@@ -81,14 +351,14 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void GSetRandI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSetRandI::Run(RPrg* prg,RPrgOutput* o,RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	int Rand;
 
 	if(args->NbPtr!=1)
 		throw GException("The rand value must be specified.");
 	sprintf(tmp,"Set Rand value '%s'",args->Tab[0]->GetValue(prg));
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	Rand=atoi(args->Tab[0]->GetValue(prg));
 	if(Rand!=0)
 	{
@@ -99,12 +369,12 @@ void GSetRandI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int
 
 
 //-----------------------------------------------------------------------------
-void GOutputI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=1)
 		throw GException("A filename must be specified.");
 	sprintf(tmp,"Create Output file '%s'",args->Tab[0]->GetValue(prg));
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	if(Owner->OFile)
 	{
 		delete Owner->OFile;
@@ -122,12 +392,12 @@ void GOutputI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,
 
 
 //-----------------------------------------------------------------------------
-void GGOutputI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GGOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=1)
 		throw GException("A filename must be specified.");
 	sprintf(tmp,"Create Graph Output file '%s'",args->Tab[0]->GetValue(prg));
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	if(Owner->GOFile)
 	{
 		delete Owner->GOFile;
@@ -139,12 +409,12 @@ void GGOutputI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int
 
 
 //-----------------------------------------------------------------------------
-void GSOutputI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=1)
 		throw GException("A filename must be specified.");
 	sprintf(tmp,"Create Statistics Output file '%s'",args->Tab[0]->GetValue(prg));
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	if(Owner->SOFile)
 	{
 		delete Owner->SOFile;
@@ -156,81 +426,81 @@ void GSOutputI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int
 
 
 //-----------------------------------------------------------------------------
-void GSetLinksMethodI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSetLinksMethodI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=1)
 		throw GException("The method needs one parameter to specify the name of the link computing method (or \"None\").");
 	sprintf(tmp,"Link Computing Method: %s",args->Tab[0]->GetValue(prg));
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	Owner->Session->GetLinkCalcMng()->SetCurrentMethod(args->Tab[0]->GetValue(prg));
 }
 
 
 
 //-----------------------------------------------------------------------------
-void GSetAutoSaveI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSetAutoSaveI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=1)
 		throw GException("The method needs one parameter (\"0\" or \"1\") to specify if the results must be stored.");
 	if((args->Tab[0]->GetValue(prg))[0]=='0')
 	{
-		r->WriteStr("Set AutoSave: false");
+		o->WriteStr("Set AutoSave: false");
 		Owner->AutoSave=false;
 	}
 	else
 	{
-		r->WriteStr("Set AutoSave: true");
+		o->WriteStr("Set AutoSave: true");
 		Owner->AutoSave=true;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GTestI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=1)
 		throw GException("The method needs the name of the test.");
 	if(args->NbPtr)
 	sprintf(tmp,"Current Test Name '%s'",args->Tab[0]->GetValue(prg));
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	Owner->TestName=args->Tab[0]->GetValue(prg);
 }
 
 
 
 //-----------------------------------------------------------------------------
-void GLogI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GLogI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=1)
 		throw GException("The method needs the name of the log file.");
 	sprintf(tmp,"Create Log file '%s'",args->Tab[0]->GetValue(prg));
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 }
 
 
 //-----------------------------------------------------------------------------
-void GSqlI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSqlI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=1)
 		throw GException("The method needs the name of the SQL file.");
 	sprintf(tmp,"Execute Sql file '%s'",args->Tab[0]->GetValue(prg));
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	Owner->Session->ExecuteData(args->Tab[0]->GetValue(prg));
 }
 
 
 //-----------------------------------------------------------------------------
-void GModifyProfilesI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GModifyProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 		throw GException("The method needs no parameters.");
 	Owner->FirstProfile=false;
-	r->WriteStr("Profiles are considered as modified");
+	o->WriteStr("Profiles are considered as modified");
 }
 
 
 //-----------------------------------------------------------------------------
-void GComputeProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr>1)
 		throw GException("The method needs maximum one parameter.");
@@ -238,19 +508,19 @@ void GComputeProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsi
 		sprintf(tmp,"Compute Profiles: Method=\"%s\"",args->Tab[0]->GetValue(prg));
 	else
 		strcpy(tmp,"Compute Profiles: Current Method");
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	if(args->NbPtr==1)
 		Owner->Session->GetProfilingMng()->SetCurrentMethod(args->Tab[0]->GetValue(prg));
 	if(Owner->Session->GetLinkCalcMng()->GetCurrentMethod())
 		Owner->Session->GetLinkCalcMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GetProfilingMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->CalcProfiles(r,Owner->FirstProfile,Owner->AutoSave);
+	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o),Owner->FirstProfile,Owner->AutoSave);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr>1)
 		throw GException("The method needs maximum one parameter.");
@@ -258,7 +528,7 @@ void GGroupProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsign
 		sprintf(tmp,"Group Profiles: Method=\"%s\" ",args->Tab[0]->GetValue(prg));
 	else
 		strcpy(tmp,"Group Profiles: Current Method");
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	if(args->NbPtr==1)
 		Owner->Session->GetGroupingMng()->SetCurrentMethod(args->Tab[0]->GetValue(prg));
 	if(Owner->Session->GetSubjects()->GetIdealGroups())
@@ -268,17 +538,17 @@ void GGroupProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsign
 	}
 	Owner->Session->GetGroupingMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->GroupingProfiles(r,Owner->FirstGroup,Owner->AutoSave);
+	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o),Owner->FirstGroup,Owner->AutoSave);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 }
 
 
 //-----------------------------------------------------------------------------
-void GCreateIdealI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GCreateIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
-	r->WriteStr("Create Ideal Groups");
+	o->WriteStr("Create Ideal Groups");
 	Owner->Session->GetSubjects()->Apply();
 	Owner->Session->GetSubjects()->CreateIdeal(Owner->AutoSave);
 	Owner->FirstGroup=Owner->FirstProfile=false;
@@ -286,7 +556,7 @@ void GCreateIdealI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int
 
 
 //-----------------------------------------------------------------------------
-void GMixIdealI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GMixIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr>1)
 		throw GException("The method needs maximum one parameter.");
@@ -294,7 +564,7 @@ void GMixIdealI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 		sprintf(tmp,"Creating Mixed Groups: Settings=\"%s\"",args->Tab[0]->GetValue(prg));
 	else
 		sprintf(tmp,"Creating Mixed Groups");
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	GMixIdealGroups mix(Owner->Session,Owner->Session->GetSubjects()->GetIdealGroups());
 	if(args->NbPtr==1)
 		mix.SetSettings(args->Tab[0]->GetValue(prg));
@@ -303,23 +573,23 @@ void GMixIdealI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 
 
 //-----------------------------------------------------------------------------
-void GFdbksCycleI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GFdbksCycleI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
-	r->WriteStr("Create Feedbacks Cycle");
+	o->WriteStr("Create Feedbacks Cycle");
 	Owner->Session->GetSubjects()->Apply();
 	Owner->Session->GetSubjects()->FdbksCycle(Owner->AutoSave);
 }
 
 
 //-----------------------------------------------------------------------------
-void GCompareIdealI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GCompareIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
-	r->WriteStr("Compare with Ideal Groups");
-	Owner->Session->GetSubjects()->Compare(r);
+	o->WriteStr("Compare with Ideal Groups");
+	Owner->Session->GetSubjects()->Compare(dynamic_cast<GSlot*>(o));
 	Owner->Precision=Owner->Session->GetSubjects()->GetPrecision();
 	Owner->Recall=Owner->Session->GetSubjects()->GetRecall();
 	Owner->Total=Owner->Session->GetSubjects()->GetTotal();
@@ -330,7 +600,7 @@ void GCompareIdealI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned in
 	}
 	else
 		sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f",Owner->Recall,Owner->Precision,Owner->Total);
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	if(Owner->OFile)
 	{
 		(*Owner->OFile)<<Owner->TestName<<Owner->Recall<<Owner->Precision<<Owner->Total;
@@ -349,7 +619,7 @@ void GCompareIdealI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned in
 
 
 //-----------------------------------------------------------------------------
-void GSetSubjectsParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSetSubjectsParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=2)
 		throw GException("Method needs two parameters.");
@@ -358,7 +628,7 @@ void GSetSubjectsParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsig
 
 
 //-----------------------------------------------------------------------------
-void GSetComputingParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSetComputingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	GProfileCalc* calc;
 
@@ -372,7 +642,7 @@ void GSetComputingParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsi
 
 
 //-----------------------------------------------------------------------------
-void GSetGroupingParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GSetGroupingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	GGrouping* calc;
 
@@ -386,41 +656,41 @@ void GSetGroupingParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsig
 
 
 //-----------------------------------------------------------------------------
-void GAddIdealI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GAddIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
-	r->WriteStr("Create New Ideal Group");
+	o->WriteStr("Create New Ideal Group");
 	Owner->Session->GetSubjects()->Apply();
 	Owner->Session->GetSubjects()->AddTopic(Owner->AutoSave);
 }
 
 
 //-----------------------------------------------------------------------------
-void GAddProfilesI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GAddProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
-	r->WriteStr("Adding Profiles");
+	o->WriteStr("Adding Profiles");
 	Owner->Session->GetSubjects()->Apply();
 	sprintf(tmp, "%u new profiles created",Owner->Session->GetSubjects()->AddProfiles(Owner->AutoSave));
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 }
 
 
 //-----------------------------------------------------------------------------
-void GRealLifeI::CommonTasks(GSlot* r) throw(GException)
+void GRealLifeI::CommonTasks(RPrgOutput* o) throw(GException)
 {
 	// Compute Profiles
-	r->WriteStr("Compute Profiles: Current Method");
+	o->WriteStr("Compute Profiles: Current Method");
 	if(Owner->Session->GetLinkCalcMng()->GetCurrentMethod())
 		Owner->Session->GetLinkCalcMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GetProfilingMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->CalcProfiles(r,Owner->FirstProfile,Owner->AutoSave);
+	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o),Owner->FirstProfile,Owner->AutoSave);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 
 	// Group Profiles
-	r->WriteStr("Group Profiles: Current Method");
+	o->WriteStr("Group Profiles: Current Method");
 	if(Owner->Session->GetSubjects()->GetIdealGroups())
 	{
 		GGrouping* algo=Owner->Session->GetGroupingMng()->GetCurrentMethod();
@@ -428,25 +698,25 @@ void GRealLifeI::CommonTasks(GSlot* r) throw(GException)
 	}
 	Owner->Session->GetGroupingMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->GroupingProfiles(r,Owner->FirstGroup,Owner->AutoSave);
+	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o),Owner->FirstGroup,Owner->AutoSave);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 
 	// Store History
 	if(History)
 	{
 		sprintf(tmp,"Store History n°%u",Owner->NbHistory);
-		r->WriteStr(tmp);
+		o->WriteStr(tmp);
 		Owner->Session->SaveMixedGroups(Owner->Session->GetGroups(),Owner->NbHistory++);
 	}
 
 	// Compare Ideal
-	r->WriteStr("Compare with Ideal Groups");
-	Owner->Session->GetSubjects()->Compare(r);
+	o->WriteStr("Compare with Ideal Groups");
+	Owner->Session->GetSubjects()->Compare(dynamic_cast<GSlot*>(o));
 	Owner->Precision=Owner->Session->GetSubjects()->GetPrecision();
 	Owner->Recall=Owner->Session->GetSubjects()->GetRecall();
 	Owner->Total=Owner->Session->GetSubjects()->GetTotal();
 	sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f",Owner->Recall,Owner->Precision,Owner->Total);
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	if(Owner->OFile)
 		(*Owner->OFile)<<Owner->TestName<<Owner->Recall<<Owner->Precision<<Owner->Total<<What<<endl;
 	if(Owner->GOFile)
@@ -455,7 +725,7 @@ void GRealLifeI::CommonTasks(GSlot* r) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	unsigned int MaxStep;
 	unsigned int MinFBStep;
@@ -472,7 +742,7 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 	sprintf(tmp,"Real Life: Settings=\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
 	        args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg),args->Tab[2]->GetValue(prg),
 	        args->Tab[3]->GetValue(prg),args->Tab[4]->GetValue(prg));
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	Random=Owner->Session->GetRandom();
 	MaxStep=atoi(args->Tab[0]->GetValue(prg));
 	MinFBStep=atoi(args->Tab[1]->GetValue(prg));
@@ -490,11 +760,11 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 			Owner->TestName=itou(NbStep);
 
 			// Create Feedbacks
-			r->WriteStr("Create Feedbacks Cycle");
+			o->WriteStr("Create Feedbacks Cycle");
 			What[0]='F';
 			Owner->Session->GetSubjects()->Apply();
 			Owner->Session->GetSubjects()->FdbksCycle(Owner->AutoSave);
-			CommonTasks(r);
+			CommonTasks(o);
 
 			// Verify Nb Steps
 			if(NbStep>MaxStep) break;
@@ -508,7 +778,7 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 		Owner->TestName=itou(NbStep);
 
 		// Create 1 new profile
-		r->WriteStr("Create 1 new profile");
+		o->WriteStr("Create 1 new profile");
 		if(Random->Value()<Proba)
 		{
 			// Create One profile of an existing topic
@@ -561,7 +831,7 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 			}
 		}
 		Owner->Session->GetSubjects()->Apply();
-		CommonTasks(r);
+		CommonTasks(o);
 
 		// Verify Nb Steps
 		if(NbStep>MaxStep) break;
@@ -570,18 +840,18 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 
 
 //-----------------------------------------------------------------------------
-void GAddAssessmentsI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GAddAssessmentsI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
-	r->WriteStr("Adding Assessments");
+	o->WriteStr("Adding Assessments");
 	Owner->Session->GetSubjects()->Apply();
 	Owner->Session->GetSubjects()->AddAssessments(Owner->AutoSave);
 }
 
 
 //-----------------------------------------------------------------------------
-void GTrackNewProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GTrackNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=1)
 		throw GException("The method needs one parameter (\"0\" or \"1\") to specify if the profiles must be tracked.");
@@ -589,12 +859,12 @@ void GTrackNewProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,uns
 	{
 		if(((args->Tab[0]->GetValue(prg))[0]=='0')||(args->Tab[0]->GetValue(prg)=="true"))
 		{
-			r->WriteStr("Track New Profiles: false");
+			o->WriteStr("Track New Profiles: false");
 			Owner->TrackNewProfiles=false;
 		}
 		else
 		{
-			r->WriteStr("Track New Profiles: true");
+			o->WriteStr("Track New Profiles: true");
 			Owner->TrackNewProfiles=true;
 		}
 	}
@@ -602,39 +872,39 @@ void GTrackNewProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,uns
 
 
 //-----------------------------------------------------------------------------
-void GClearNewProfilesI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GClearNewProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 		throw GException("Method needs no parameter.");
-	r->WriteStr("Clear New Profiles");
+	o->WriteStr("Clear New Profiles");
 	Owner->Session->GetSubjects()->ClearLastAdded();
 }
 
 
 //-----------------------------------------------------------------------------
-void GStoreInHistoryI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GStoreInHistoryI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 		throw GException("Method needs no parameter.");
 	sprintf(tmp,"Store History n°%u",Owner->NbHistory);
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 	Owner->Session->SaveMixedGroups(Owner->Session->GetGroups(),Owner->NbHistory, true);
 	Owner->Session->SaveHistoricProfiles(Owner->NbHistory++);
 }
 
 
 //-----------------------------------------------------------------------------
-void GResetTimeI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GResetTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 		throw GException("Method needs no parameter.");
-	r->WriteStr("Reset Time");
+	o->WriteStr("Reset Time");
 	Owner->ClockRef=time(0);
 }
 
 
 //-----------------------------------------------------------------------------
-void GComputeTimeI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GComputeTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	time_t end;
 	double cpu_time;
@@ -644,17 +914,17 @@ void GComputeTimeI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int
 		throw GException("Method needs no parameter.");
 	cpu_time=difftime(end,Owner->ClockRef);
 	sprintf(tmp,"Ellapsed Time %f",cpu_time);
-	r->WriteStr(tmp);
+	o->WriteStr(tmp);
 }
 
 
 
 //-----------------------------------------------------------------------------
-void GWordsClusteringI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GWordsClusteringI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
-	r->WriteStr("Create New Concepts");
+	o->WriteStr("Create New Concepts");
 	Owner->Session->RemoveAssociation();
 	Owner->Session->AnalyseAssociation(true);
 }
@@ -668,8 +938,8 @@ void GWordsClusteringI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
-	: GPrgClass("Session"), /*IdealMethod(0),*/ Session(s), OFile(0),
+GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
+	: RPrgClass("Session"), /*IdealMethod(0),*/ Session(s), OFile(0),
 	  GOFile(0), SOFile(0),DSOFile(0), NbHistory(0), AutoSave(false), TrackNewProfiles(false) 
 {
 	Methods.InsertPtr(new GOutputI(this));
@@ -705,7 +975,7 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 
 
 // //-----------------------------------------------------------------------------
-// GIdealGroup* GALILEI::GPrgClassSession::GetIdealMethod(void)
+// GIdealGroup* GPrgClassSession::GetIdealMethod(void)
 // {
 // 	if(!IdealMethod)
 // 		IdealMethod=new GIdealGroup(Session);
@@ -714,7 +984,7 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GPrgClassSession::~GPrgClassSession(void)
+GPrgClassSession::~GPrgClassSession(void)
 {
 	if(OFile)
 		delete OFile;
@@ -749,222 +1019,15 @@ GALILEI::GPrgClassSession::~GPrgClassSession(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_alloc,GException)
-	: FileName(f), Rec(r), Insts(40), Vars(10,5), Classes(10,5), Prg(FileName)
+GSessionPrg::GSessionPrg(RString f,GSession* s,RPrgOutput* o) throw(bad_alloc,GException)
+	: RPrg(f,o)
 {
-	GPrgInst* i;
-
-	// Init Part
 	Classes.InsertPtr(new GPrgClassSession(s));
-
-	Prg.SetRem("#");
-	ReadLine=true;
-	while((!ReadLine)||(!Prg.Eof()&&(ReadLine)))
-	{
-		i=AnalyseLine(Prg);
-		if(i)
-			Insts.InsertPtr(i);
-	}
+	Load();
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GSessionPrg::CountTabs(char* line)
-{
-	int tabs;
-	char* ptr;
-
-	// Count tabs
-	ptr=line;
-	tabs=0;
-	while((*ptr)&&((*ptr)=='\t'))
-	{
-		tabs++;
-		ptr++;
-	}
-	return(tabs);
-}
-
-
-//-----------------------------------------------------------------------------
-GPrgInst* GALILEI::GSessionPrg::AnalyseLine(RTextFile& prg) throw(bad_alloc,GException)
-{
-	RString l;
-	char* ptr;
-	char* obj;
-	char* line;
-	char* name;
-	char what;
-	char tabs;
-	GPrgVar* r;
-	char buf[200];
-	char* tbuf;
-
-	// Read the line
-	if(ReadLine)
-	{
-		tbuf=prg.GetLine();
-		strcpy(tmp,tbuf);
-	}
-	line=tmp;
-
-	// Skip Spaces and count tabs
-	tabs=CountTabs(line);
-	ptr=line;
-	while((*ptr)&&(isspace(*ptr)))
-	{
-		ptr++;
-	}
-
-	// Read if it is an Object or instruction
-	obj=ptr;
-	while((*ptr)&&((*ptr)!='.')&&((*ptr)!='=')&&((*ptr)!='('))
-		ptr++;
-	what=(*ptr);
-	(*(ptr++))=0;
-
-	// Look if instruction
-	if(what=='(')
-	{
-		// If is "for"
-		if(!strcmp(obj,"for"))
-		{
-			GPrgInstFor* f=new GPrgInstFor(ptr,tabs);
-
-			// Read the next lines
-			tbuf=Prg.GetLine();
-			if(!tbuf) return(f);
-			strcpy(tmp,tbuf);
-			ReadLine=false;
-			while((!ReadLine)||(!Prg.Eof()&&(ReadLine)))
-			{
-				if(CountTabs(tmp)<=f->GetTabs())
-					break;
-				f->AddInst(AnalyseLine(prg));
-				if(ReadLine)
-				{
-					tbuf=prg.GetLine();
-					if(!tbuf) return(f);
-					strcpy(tmp,tbuf);
-					ReadLine=false;
-				}
-			}
-			return(f);
-		}
-		throw GException(RString("Instruction \"")+RString(obj)+"\" does not exist.");
-	}
-
-	// Look if call to an object
-	if(what=='.')
-	{
-		// Look if the object is known
-		GPrgClass* c=Classes.GetPtr<const char*>(obj);
-		if(!c)
-			throw GException(RString("Object \"")+obj+"\" unknown");
-
-		// Read the methods name
-		name=ptr;
-		while((*ptr)&&((*ptr)!='('))
-			ptr++;
-		(*(ptr++))=0;
-		GPrgFunc* method=c->GetMethod(name);
-		if(!method)
-		{
-			sprintf(buf,"Method \"%s\" unknown for object \"%s\"",name,obj);
-			throw GException(buf);
-		}
-
-		// Create the instruction
-		GPrgInstMethod* inst=new GPrgInstMethod(method);
-		while((*ptr))
-		{
-			r=GSessionPrg::AnalyseParam(ptr);
-			if(r)
-				inst->AddParam(r);
-		}
-		ReadLine=true;
-		return(inst);
-	}
-
-	ReadLine=true;
-	return(0);
-}
-
-
-//-----------------------------------------------------------------------------
-GPrgVar* GALILEI::GSessionPrg::AnalyseParam(char* &param) throw(bad_alloc,GException)
-{
-	char* ptr;
-
-	// Skip before something
-	while((*param)&&((*param)!='"')&&(!isalpha(*param)))
-		param++;
-	if(!(*param))
-		return(0);
-
-	if((*param)=='"')
-	{
-		// Skip "
-		param++;
-
-		// Read Value and skip " and next thing
-		ptr=param;
-		while((*param)&&((*param)!='"'))
-			param++;
-		(*(param++))=0;
-		param++;
-
-		// Value
-		return(new GPrgVarConst(ptr));
-	}
-	else
-	{
-		// Look until , or )
-		ptr=param;
-		while((*param)&&((*param)!=',')&&((*param)!=')'))
-			param++;
-		(*(param++))=0;
-
-		// Ref
-		return(new GPrgVarRef(ptr));
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionPrg::Exec(void) throw(GException)
-{
-	if(!Rec) return;
-	for(Insts.Start();!Insts.End();Insts.Next())
-		Insts()->Run(this,Rec);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionPrg::AddVar(GPrgVar* var) throw(bad_alloc,GException)
-{
-	Vars.InsertPtr(var);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionPrg::DelVar(GPrgVar* var) throw(bad_alloc,GException)
-{
-	Vars.DeletePtr(var);
-}
-
-
-//-----------------------------------------------------------------------------
-const char* GALILEI::GSessionPrg::GetValue(const char* var) throw(GException)
-{
-	GPrgVar* v=Vars.GetPtr<const char*>(var);
-
-	if(!v) return(0);
-	return(v->GetValue(this));
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GSessionPrg::~GSessionPrg(void)
+GSessionPrg::~GSessionPrg(void)
 {
 }

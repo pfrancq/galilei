@@ -198,8 +198,6 @@ class GTest;
 class GTests;
 class GSession;
 class GSessionPrg;
-class GPrgInst;
-class GPrgVar;
 class GSlot;
 class GStatsCalc;
 class GFactoryStatsCalc;
@@ -307,27 +305,16 @@ enum GInfoType
 * @author Pascal Francq
 * @short Basic Exception.
 */
-class GException
+class GException : public R::RException
 {
-	/**
-	* Message holding some information.
-	*/
-	R::RString Msg;
-
 public:
 
 	/**
 	* Construct an exception.
 	* @param str                      Message of the error.
 	*/
-	GException(const R::RString& str) throw(bad_alloc)
-		: Msg(str) {}
-
-	/**
-	* Get the content of the exception.
-	* @returns Pointer to a C String.
-	*/
-	R::RString& GetMsg(void) const {R::RString* tmp=R::RString::GetString(); (*tmp)=Msg; return(*tmp);}
+	GException(const char* str) throw(bad_alloc)
+		: R::RException(str) {}
 };
 
 
