@@ -133,6 +133,13 @@ public:
 
 
 //------------------------------------------------------------------------------
+class GSetSaveHistoryl : public GSM
+{
+public:
+	GSetSaveHistoryl(GPrgClassSession* o) : GSM("SetSaveHistory",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+};
+//------------------------------------------------------------------------------
 class GTestI : public GSM
 {
 public:
@@ -445,6 +452,24 @@ void GSetAutoSaveI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigne
 
 
 //------------------------------------------------------------------------------
+void GSetSaveHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+{
+	if(args->NbPtr!=1)
+		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the results must be stored.");
+	if((args->Tab[0]->GetValue(prg))[0]=='0')
+	{
+		o->WriteStr("Set SaveHistory: false");
+		Owner->SaveHistory=false;
+	}
+	else
+	{
+		o->WriteStr("Set SaveHistory: true");
+		Owner->SaveHistory=true;
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
@@ -527,7 +552,7 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsig
 	}
 	Owner->Session->GetGroupingMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o),Owner->FirstGroup,Owner->AutoSave);
+	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o),Owner->FirstGroup,Owner->AutoSave, Owner->SaveHistory);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 }
 
@@ -687,7 +712,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o) throw(RException)
 	}
 	Owner->Session->GetGroupingMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o),Owner->FirstGroup,Owner->AutoSave);
+	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o),Owner->FirstGroup,Owner->AutoSave, Owner->SaveHistory);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 
 	// Store History
@@ -917,13 +942,14 @@ void GComputeTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned in
 //------------------------------------------------------------------------------
 GPrgClassSession::GPrgClassSession(GSession* s) throw(std::bad_alloc)
 	: RPrgClass("Session"), Session(s), OFile(0),
-	  GOFile(0), SOFile(0),DSOFile(0), NbHistory(0), AutoSave(false), TrackNewProfiles(false) 
+	  GOFile(0), SOFile(0),DSOFile(0), NbHistory(0), AutoSave(false), SaveHistory(false), TrackNewProfiles(false)
 {
 	Methods.InsertPtr(new GOutputI(this));
 	Methods.InsertPtr(new GGOutputI(this));
 	Methods.InsertPtr(new GSOutputI(this));
 	Methods.InsertPtr(new GSetLinksMethodI(this));
 	Methods.InsertPtr(new GSetAutoSaveI(this));
+	Methods.InsertPtr(new GSetSaveHistoryl(this));
 	Methods.InsertPtr(new GTestI(this));
 	Methods.InsertPtr(new GLogI(this));
 	Methods.InsertPtr(new GSqlI(this));

@@ -194,8 +194,15 @@ public:
 
 	/**
 	* Save the groups of the session.
+	* @param session        opened session.
 	*/
 	virtual void SaveGroups(GSession* session) throw(GException)=0;
+
+	/**
+	* Save the groups in history.
+	* @param session        opened session.
+	*/
+	virtual void SaveGroupsHistory(GSession* session) throw(GException)=0;
 
 	/**
 	* Load the ideal groupment.

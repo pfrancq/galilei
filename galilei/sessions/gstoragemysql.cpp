@@ -1031,6 +1031,44 @@ void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
+void GStorageMySQL::SaveGroupsHistory(GSession* session) throw(GException)
+{
+	GGroupCursor GroupsCursor;
+	GSubProfileCursor Sub;
+	unsigned int historicid;
+	char sSql[100];
+
+	try
+	{
+		// if historic needed, gget the last historic id
+		historicid=0;
+		RQuery histcount(this,"SELECT MAX(historicid) from historicgroups");
+		histcount.Start();
+		if(histcount[0])
+			historicid=atoi(histcount[0]);
+		historicid++;
+
+		// save the groups in history
+		GroupsCursor=session->GetGroupsCursor();
+		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
+		{
+			Sub=GroupsCursor()->GetSubProfilesCursor();
+			for(Sub.Start();!Sub.End();Sub.Next())
+			{
+				sprintf(sSql,"INSERT INTO historicgroups SET historicid=%u, groupid=%u, subprofileid=%u, lang='%s'",
+				historicid,GroupsCursor()->GetId(),Sub()->GetId(),GroupsCursor()->GetLang()->GetCode());
+				RQuery history(this,sSql);
+			}
+		}
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic) throw(GException)
 {
 	char sSql[100];
@@ -1277,6 +1315,13 @@ void GStorageMySQL::CreateDummy(const char* name) throw(GException)
 
 	try
 	{
+		// Verify if the table exists
+		sprintf(sSql,"SHOW TABLES LIKE '%s'",name);
+		RQuery verify(this,sSql);
+		if(verify.GetNbRows())
+			return;
+
+		// Table not find -> create it.
 		sprintf(sSql,"CREATE TABLE %s (id INT(11), parentid INT(11), description TEXT) ",name);
 		RQuery create(this, sSql);
 	}

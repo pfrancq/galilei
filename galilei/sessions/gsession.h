@@ -331,8 +331,8 @@ public:
 	* @param rec            Receiver of the signals.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
-	*/
-	void GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException);
+	* @param savehsitory    Save groups in history.*/
+	void GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory)  throw(GException);
 
 	/**
 	* Set if the Inverse Frequency Factor should be used for the similarities

@@ -142,8 +142,9 @@ public:
 	* Make the groups.
 	* @param rec            Receiver of the signals.
 	* @param save           Save modified elements.
+	* @param savehistory    Save history of grouping.
 	*/
-	void Grouping(GSlot* rec,bool modified,bool save) throw(GException);
+	void Grouping(GSlot* rec,bool modified,bool save, bool savehistory) throw(GException);
 
 	/**
 	* Destructor of tghe grouping method.

@@ -91,7 +91,7 @@ void GGrouping::Disconnect(GSession*) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
+void GGrouping::Grouping(GSlot* rec,bool modified,bool save, bool savehistory) throw(GException)
 {
 	GFactoryLangCursor CurLang;
 	GGroupCalc* CalcDesc;
@@ -138,6 +138,9 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
 
 	if(save)
 		Session->GetStorage()->SaveGroups(Session);
+	if(savehistory)
+		Session->GetStorage()->SaveGroupsHistory(Session);
+
 }
 
 

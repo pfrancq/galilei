@@ -426,13 +426,13 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 
 
 //------------------------------------------------------------------------------
-void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException)
+void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory)  throw(GException)
 {
 	GGrouping* Grouping=GroupingMng->GetCurrentMethod();
 
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
-	Grouping->Grouping(rec,modified,save);
+	Grouping->Grouping(rec,modified,save, savehistory);
 	GPostGroup* PostGrouping=PostGroupMng->GetCurrentMethod();
 	if(PostGrouping)
 		PostGrouping->Run();

@@ -240,10 +240,15 @@ public:
 
 	/**
 	* Save the groups description.
-	* @param lang       Language of the group to create.
-	* @param grp        Group created.
+	* @param session        opened session.
 	*/
 	virtual void SaveGroups(GSession* session) throw(GException);
+
+	/**
+	* Save the groups in history.
+	* @param session        opened session.
+	*/
+	virtual void SaveGroupsHistory(GSession* session) throw(GException);
 
 	/**
 	* Save the mixed groups of the session.

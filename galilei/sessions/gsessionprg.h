@@ -138,6 +138,11 @@ public:
 	bool AutoSave;
 
 	/**
+	* When Autosave is true, after each computing, the results is saved.
+	*/
+	bool SaveHistory;
+
+	/**
 	* When TrackNewProfile is true, the system
 	*/
 	bool TrackNewProfiles;
