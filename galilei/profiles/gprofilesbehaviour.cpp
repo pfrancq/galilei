@@ -73,11 +73,17 @@ GALILEI::GBehaviours::GBehaviours(unsigned int id,unsigned int max) throw(bad_al
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesBehaviour::GProfilesBehaviour(RContainer<GSubProfile,unsigned int,false,true>* s,GLang* l) throw(bad_alloc)
-	: Behaviours(s->NbPtr,s->NbPtr<50?50:s->NbPtr/2),Lang(l)
+	: Lang(l)
 {
 	GSubProfileCursor Cur1, Cur2;
 	unsigned int i,j, pos;
 	GBehaviours* behaviours;
+
+	//initialize the container of GSBehavirous (calculate size)
+	for (s->Start(), i=0; !s->End(); s->Next())
+		if ((*s)()->GetProfile()->GetId()>i)
+			i=(*s)()->GetProfile()->GetId();
+	Behaviours=new RContainer<GBehaviours,unsigned int,true,false>(i+1,1);
 
 	//initializes table of modified subprofiles;
 	ModifiedProfs=new unsigned int [s->NbPtr];
@@ -91,7 +97,7 @@ GALILEI::GProfilesBehaviour::GProfilesBehaviour(RContainer<GSubProfile,unsigned 
 	{
 		pos=Cur1()->GetProfile()->GetId();
 		behaviours=new GBehaviours(Cur1()->GetProfile()->GetId(),pos-1);
-		Behaviours.InsertPtrAt(behaviours,pos);
+		Behaviours->InsertPtrAt(behaviours,pos);
 		for(Cur2.Start(), j=0;j<i;Cur2.Next(),j++)
 			 AnalyseBehaviour(behaviours,Cur1(),Cur2());
 	}
@@ -137,7 +143,7 @@ double GALILEI::GProfilesBehaviour::GetAgreementRatio(GSubProfile* sub1,GSubProf
 		i=j;
 		j=tmp;
 	}
-	b=Behaviours.GetPtr<unsigned int>(i);
+	b=Behaviours->GetPtr<unsigned int>(i);
 	if(!b) return(0.0);
 	b2=b->GetPtr<unsigned int>(j);
 	if(!b2) return(0.0);
@@ -185,7 +191,7 @@ double GALILEI::GProfilesBehaviour::GetDisAgreementRatio(GSubProfile* sub1,GSubP
 		i=j;
 		j=tmp;
 	}
-	b=Behaviours.GetPtr<unsigned int>(i);
+	b=Behaviours->GetPtr<unsigned int>(i);
 	if(!b) return(0.0);
 	b2=b->GetPtr<unsigned int>(j);
 	if(!b2) return(0.0);
@@ -251,7 +257,7 @@ tObjState GALILEI::GProfilesBehaviour::GetState(unsigned int id1, unsigned int i
 		id2=tmp;
 	}
 
-	behaviours = Behaviours.GetPtr<unsigned int>(id1);
+	behaviours = Behaviours->GetPtr<unsigned int>(id1);
 	if (!behaviours) return osUnknow;
 	behaviour = behaviours->GetPtr<unsigned int>(id2);
 	if (!behaviour) return osUnknow;
@@ -278,9 +284,9 @@ void  GALILEI::GProfilesBehaviour::UpdateProfBehaviour(void) throw(bad_alloc)
 	// change status of modified subprofiles and add Behaviours of created subprofiles
 	for (i=NbModified; i; i--)
 	{
-		behaviours = Behaviours.GetPtrAt(ModifiedProfs[i-1]);
+		behaviours = Behaviours->GetPtrAt(ModifiedProfs[i-1]);
 		if(!behaviours)
-			Behaviours.InsertPtrAt(behaviours = new GBehaviours(ModifiedProfs[i-1] , ModifiedProfs[i-1]-1), ModifiedProfs[i-1]);
+			Behaviours->InsertPtrAt(behaviours = new GBehaviours(ModifiedProfs[i-1] , ModifiedProfs[i-1]-1), ModifiedProfs[i-1]);
 		for (behaviours->Start(); !behaviours->End(); behaviours->Next())
 			(*behaviours)()->SetState(osModified);
 	}

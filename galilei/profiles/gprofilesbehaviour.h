@@ -184,7 +184,7 @@ class GProfilesBehaviour
 	/**
 	* The similarities.
 	*/
-	R::RContainer<GBehaviours,unsigned int,true,false> Behaviours;
+	R::RContainer<GBehaviours,unsigned int,true,false>* Behaviours;
 
 	/**
 	* Global similarities used?
