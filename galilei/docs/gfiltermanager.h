@@ -57,6 +57,8 @@ class GMIMEFilter;
 */
 class GURLManager
 {
+protected:
+
 	/**
 	* List of all mime types avalaible.
 	*/
