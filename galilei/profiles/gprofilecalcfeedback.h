@@ -49,6 +49,7 @@ using namespace R;
 // include files for GALILEI
 #include <profiles/gprofilecalc.h>
 #include <profiles/gcalcparams.h>
+#include <infos/giwordsweights.h>
 
 
 //-----------------------------------------------------------------------------
@@ -165,20 +166,20 @@ protected:
 	GFeedbackParams* Params;
 
 	/**
-	* Global vectors computed.
+	* Global vector computed.
 	*/
-	R::RContainer<InternVector,unsigned int,true,true> Vectors;
+	GIWordsWeights Vectors;
 
 	/**
 	* Number of documents where each index term of the "OK" and "N" documents
 	* for the different languages appears.
 	*/
-	R::RContainer<InternVector,unsigned int,true,true> NbDocsWords;
+	GIWordsWeights NbDocsWords;
 
 	/**
 	* Number of documents per languages.
 	*/
-	R::RContainer<GNbDocsLangs,unsigned int,true,true> NbDocsLangs;
+	unsigned int NbDocs;
 
 	/**
 	* Ordered vector for current computed profile.
