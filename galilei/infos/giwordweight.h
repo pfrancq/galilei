@@ -37,6 +37,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcursor.h>
+
+
+//-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <infos/giword.h>
 
@@ -69,6 +74,13 @@ public:
 	GIWordWeight(const unsigned int id) throw(bad_alloc);
 
 	/**
+	* Constructor.
+	* @param id             Identificator of the word.
+	* @param w              Weight of the word.
+	*/
+	GIWordWeight(const unsigned int id,double w) throw(bad_alloc);
+
+	/**
 	* Return the name of the class.
 	*/
 	virtual const RStd::RString ClassName(void) const;
@@ -89,6 +101,12 @@ public:
 	int Compare(const GIWordWeight *calc) const;
 
 	/**
+	* Get the weight of the word.
+	* @return Weight as double.
+	*/
+	double GetWeight(void) const {return(Weight);}
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GIWordWeight(void);
@@ -96,6 +114,15 @@ public:
 	// friend classes
 	friend class GIWordsWeights;
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GWordWeightCursor class provides a way to go trough a vector of pairs
+* (keyword/weight).
+* @short Word Weight Cursor
+*/
+CLASSCURSOR(GIWordWeightCursor,GIWordWeight,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------
