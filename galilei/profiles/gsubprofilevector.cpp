@@ -43,6 +43,7 @@
 #include<infos/giword.h>
 #include<infos/giwordweight.h>
 #include<infos/giwordsweights.h>
+#include<docs/gdoc.h>
 using namespace GALILEI;
 
 
@@ -94,6 +95,47 @@ double GALILEI::GSubProfileVector::Similarity(const GSubProfile* desc) const
 	double norm1=0.0;
 	double norm2=0.0;
 
+	while(--i)
+	{
+		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
+		{
+			j--;
+			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+			ptr2++;
+		}
+		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
+		{
+			j--;
+			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+			Sim+=(*ptr)->GetWeight()*(*ptr2)->GetWeight();
+			ptr2++;
+		}
+		norm1+=(*ptr)->GetWeight()*(*ptr)->GetWeight();
+		ptr++;
+	}
+	while(j)
+	{
+		j--;
+		norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+		ptr2++;
+	}
+	Sim/=(sqrt(norm1)*sqrt(norm2));
+	return(Sim);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSubProfileVector::Similarity(const GDoc* doc) const
+{
+	double Sim=0.0;
+	GIWordWeight** ptr=Vector->Tab;
+	GIWordWeight** ptr2;
+	unsigned int i=Vector->NbPtr+1;
+	unsigned int j;
+	double norm1=0.0;
+	double norm2=0.0;
+
+	doc->GetWordWeights(ptr2,j);
 	while(--i)
 	{
 		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))

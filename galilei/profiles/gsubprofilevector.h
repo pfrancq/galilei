@@ -106,7 +106,12 @@ public:
 	* Compute similarity between SubProfiles.
 	*/
 	virtual double Similarity(const GSubProfile* desc) const;
-	
+
+	/**
+	* Compute similarity between a subprofile and a subprofile.
+	*/
+	virtual double Similarity(const GDoc* doc) const;
+
 	/**
 	* Get a cursor over the vector.
 	* @return GIWordWeightCursor element.
