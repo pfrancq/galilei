@@ -132,7 +132,8 @@ void GALILEI::GIdealGroup::ChooseSubjects(void)
 	Session->GetRandom()->RandOrder<GSubject*>(tab,Subjects->NbPtr);
 
 	// Choose the first percgrp subjects having at least NbDocPerGrp documents.
-	for(ptr=tab,i=Subjects->NbPtr+1,compt=static_cast<unsigned int>((Subjects->NbPtr*PercGrp)/100)+1;(--i)&&compt;ptr++)
+	compt=static_cast<unsigned int>((Subjects->NbPtr*PercGrp)/100)+1;
+	for(ptr=tab,i=Subjects->NbPtr+1;(--i)&&compt;ptr++)
 	{
 		if((*ptr)->GetNbDocs()<NbDocPerGrp) continue;
 		(*ptr)->SetUsed(true);
@@ -219,6 +220,66 @@ void GALILEI::GIdealGroup::CreateSet(void)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GIdealGroup::AddAssessments(bool Save,unsigned int nbDocs)
+{
+	GSubjectCursor Subs;
+	GSubProfileCursor Prof;
+	unsigned int i;
+	GDoc** ptr;
+
+	// Go through all the subjects which are used
+	Subs.Set(Session->GetSubjects());
+	for(Subs.Start();!Subs.End();Subs.Next())
+	{
+		if(!Subs()->IsUsed()) continue;
+	
+		// Copy the documents of the same language of the session in Docs;
+		NbDocs=Session->FillDocs(Docs,Subs()->GetLang());
+
+		// Go through the subprofiles attached to the subject
+		Prof=Subs()->GetSubProfilesCursor();
+		for(Prof.Start();!Prof.End();Prof.Next())
+		{
+			// Look if current subprofile has already judged documents.
+			if(!Prof()->GetNbJudgedDocs()) continue;
+
+			// Mix the documents
+			Session->GetRandom()->RandOrder<GDoc*>(Docs,NbDocs);
+
+			// Go trought the documents to create the judgements
+			for(i=nbDocs+1,ptr=Docs;--i;ptr++)
+			{
+				// Verify that the document is not already assigned to the profile
+				if(Prof()->GetProfile()->GetFeedback(*ptr)) continue;
+
+				// Look if 'OK'
+				if((*ptr)->IsFromSubject(Subs()))
+				{
+					Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),today);
+				}
+				else
+				{
+					// Look If 'KO'
+					if((*ptr)->IsFromParentSubject(Subs()))
+					{
+						Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),today);
+					}
+					else
+					{
+						Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),today);
+					}
+				}
+			}
+		}
+	}
+	if(Save)
+	{
+		Session->SaveFdbks();
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GIdealGroup::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH)
 {
 	unsigned int nbDocsOK,nbDocsKO,nbDocsH;
@@ -266,7 +327,7 @@ void GALILEI::GIdealGroup::ProfileJudges(GProfile* prof,GSubject* sub,unsigned i
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIdealGroup::AddJudgement(bool Save)
+bool GALILEI::GIdealGroup::AddJudgement(bool Save)
 {
 	GSubject** tab;
 	GSubject** ptr;
@@ -298,7 +359,7 @@ void GALILEI::GIdealGroup::AddJudgement(bool Save)
 	delete[] tab;
 
 	// If no subject found -> do nothing
-	if(!newSubject) return;
+	if(!newSubject) return(false);
 	newSubject->SetUsed(true);
 
 	// Create an ideal group for this subject
@@ -347,6 +408,7 @@ void GALILEI::GIdealGroup::AddJudgement(bool Save)
 		Session->SaveFdbks();
 		Session->SaveIdealGroupment(Session->GetIdealGroups());
 	}
+	return(true);
 }
 
 

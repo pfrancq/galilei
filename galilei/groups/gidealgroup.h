@@ -157,6 +157,13 @@ public:
 	void CreateSet(void);
 
 	/**
+	* Add assessments to the profiles creates.
+	* @param Save           Save the results.
+	* @param nbDocs         Number of Documents to judge.
+	*/
+	void AddAssessments(bool Save,unsigned int nbDocs);
+
+	/**
 	* Simulatation of judgments for a profile for a given subject.
 	* @param prof           Profile that judges the documents.
 	* @param sub            Subject.
@@ -169,8 +176,9 @@ public:
 	/**
 	* Add profiles of a new not used topic.
 	* @param Save           Save the results.
+	* @return true if a not used topic was found.
 	*/
-	void AddJudgement(bool Save);
+	bool AddJudgement(bool Save);
 
 	/**
 	* Add judgements for some new not used profiles.
