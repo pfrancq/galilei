@@ -168,7 +168,6 @@ void KViewPrg::Run(void)
 //-----------------------------------------------------------------------------
 void KViewPrg::resizeEvent(QResizeEvent *)
 {
-	std::cout<<"resize"<<std::endl;
 	Output->resize(size());
 }
 
