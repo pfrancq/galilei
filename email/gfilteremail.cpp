@@ -177,6 +177,7 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 
 	// Look for the content
 	part=Doc->GetContent();
+	Pos=Begin; // Remember the first line which is not a command
 	while(*Pos)
 	{
 		part->AddTag(tag=new RXMLTag("docxml:p"));
