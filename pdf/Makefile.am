@@ -45,6 +45,61 @@ ___libpdf_la_SOURCES = gfilterpdf.cpp \
 	xpdf/Annot.cc \
 	xpdf/PSTokenizer.cc \
 	xpdf/XRef.cc
+
+EXTRA_DIST=	goo/GHash.h \
+	goo/GList.h \
+	goo/GString.h \
+	goo/GMutex.h \
+	goo/gfile.h \
+	goo/gtypes.h \
+	goo/gmem.h \
+	xpdf/Array.h \
+	xpdf/BuiltinFont.h \
+	xpdf/BuiltinFontTables.h \
+	xpdf/CMap.h \
+	xpdf/Catalog.h \
+	xpdf/CharCodeToUnicode.h \
+	xpdf/Decrypt.h \
+	xpdf/Dict.h \
+	xpdf/Error.h \
+	xpdf/FontEncodingTables.h \
+	xpdf/FontFile.h \
+	xpdf/Function.h \
+	xpdf/Gfx.h \
+	xpdf/GfxFont.h \
+	xpdf/GfxState.h \
+	xpdf/GlobalParams.h \
+	xpdf/JBIG2Stream.h \
+	xpdf/Lexer.h \
+	xpdf/Link.h \
+	xpdf/NameToCharCode.h \
+	xpdf/Object.h \
+	xpdf/Outline.h \
+	xpdf/OutputDev.h \
+	xpdf/PDFDoc.h \
+	xpdf/PDFDocEncoding.h \
+	xpdf/Page.h \
+	xpdf/Parser.h \
+	xpdf/SFont.h \
+	xpdf/Stream.h \
+	xpdf/T1Font.h \
+	xpdf/TTFont.h \
+	xpdf/TextOutputDev.h \
+	TextBufOutputDev.h \
+	xpdf/UnicodeMap.h \
+	xpdf/Annot.h \
+	xpdf/PSTokenizer.h \
+	xpdf/XRef.h \
+	xpdf/CharTypes.h \
+	xpdf/config.h \
+	xpdf/CompactFontTables.h \
+	xpdf/NameToUnicodeTable.h \
+	xpdf/UnicodeMapTables.h \
+	xpdf/DisplayFontTable.h \
+	xpdf/UTF8.h \
+	xpdf/Stream-CCITT.h \
+	xpdf/ErrorCodes.h
+
 ___libpdf_la_LIBADD=
 AM_CFLAGS = -DHAVE_CONFIG_H
 AM_CXXFLAGS = -DHAVE_CONFIG_H
