@@ -67,7 +67,7 @@ void GLinkCalc::InitGraph(void)
 	GLinks* links_out=0;
 	int size=0;
 
-	if(( !Inited) && (Session->GetCount("htmlsbylinks") ))
+	if(!Inited)
 	{
 		// Create a container of  outgoing links for all document present in the system
 		size = cur.GetNb() * sizeof(GLinks);
@@ -145,7 +145,7 @@ void GLinkCalc::Disconnect(GSession*)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GLinkCalc::~GLinkCalc(void)
+GLinkCalc::~GLinkCalc(void)
 {
 	if(Links_Out)
 		delete Links_Out;

@@ -153,7 +153,7 @@ void GStatsCalcManager::Disconnect(GSession* session)
 	{
 		calc=Cur()->GetPlugin();
 		if(calc)
-			calc->Connect(session);
+			calc->Disconnect(session);
 	}
 }
 
