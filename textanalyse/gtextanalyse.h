@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -200,7 +196,7 @@ class GTextAnalyse : public GDocAnalyse
 	* Determine if the distance between words in a document is use.
 	*/
 	bool Distance;
-	
+
 	/**
 	* Determine if External links must be treated.
 	*/
@@ -263,7 +259,7 @@ protected:
 	* See if a given word is a valid one, don't content text and numbers that
 	* are to skip.
 	*/
-	bool ValidWord(const R::RString& kwd);
+	bool ValidWord(const R::RString kwd);
 
 	/**
 	* Verify the size of direct and reallocate when necessary.
@@ -275,16 +271,15 @@ protected:
 	* @param word           Word to add.
 	* @param weight         Weights of the words added during this analyze.
 	*/
-	void AddWord(const R::RString& word,double weight) throw(std::bad_alloc);
+	void AddWord(const R::RString word,double weight) throw(std::bad_alloc);
 
 	/**
 	* This function construct a word.
 	* @param ptr            Pointer that will be moved to the next word.
-	* @param word           Where to store the word.
 	* @param weight         Weights of the words added during this analyze.
 	* @returns true if a word was extract.
 	*/
-	bool ExtractWord(const R::RChar* &ptr,R::RString& word,double weight);
+	bool ExtractWord(const R::RChar* &ptr,double weight);
 
 	/**
 	* Analyse a tag.

@@ -11,10 +11,13 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
+<<<<<<< gtextanalyse.cpp
 	Version $Revision$
 
 	Last Modify: $Date$
 
+=======
+>>>>>>> 1.58.2.12
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -90,21 +93,21 @@ public:
 		{return(Word.Compare(word.Word));}
 	int Compare(const WordWeight* word) const
 		{return(Word.Compare(word->Word));}
-	int Compare(const char* word) const
+	int Compare(const RString& word) const
 		{return(Word.Compare(word));}
 
 	static char HashIndex(const WordWeight* w)
 		{return(RString::HashIndex(w->Word));}
 	static char HashIndex(const WordWeight& w)
 		{return(RString::HashIndex(w.Word));}
-	static char HashIndex(const char* word)
+	static char HashIndex(const RString& word)
 		{return(RString::HashIndex(word));}
 
 	static char HashIndex2(const WordWeight* w)
 		{return(RString::HashIndex2(w->Word));}
 	static char HashIndex2(const WordWeight& w)
 		{return(RString::HashIndex2(w.Word));}
-	static char HashIndex2(const char* word)
+	static char HashIndex2(const RString& word)
 		{return(RString::HashIndex2(word));}
 
 	~WordWeight(void);
@@ -139,12 +142,6 @@ GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac) throw(bad_alloc)
 	: GDocAnalyse(fac), Weights(0), Direct(0), NbDirect(5000),
 	  Order(0), NbOrder(5000), Sl(0), Sldiff(0), Lang(0)
 {
-	GWord** pt;
-	unsigned int i;
-
-	Order=new GWord*[NbOrder];
-	for(i=NbOrder+1,pt=Order;--i;pt++)
-		(*pt)=new GWord();
 }
 
 
@@ -169,6 +166,7 @@ void GTextAnalyse::ApplyConfig(void)
 void GTextAnalyse::Connect(GSession* session) throw(GException)
 {
 	WordWeight** ptr;
+	GWord** pt;
 	unsigned int i;
 
 	// First init
@@ -179,12 +177,13 @@ void GTextAnalyse::Connect(GSession* session) throw(GException)
 	CurLangs=Session->GetLangs()->GetLangsCursor();
 	Sl=new unsigned int[CurLangs.GetNb()];
 	Sldiff=new unsigned int[CurLangs.GetNb()];
-	Sl=new unsigned int[2];
-	Sldiff=new unsigned int[2];
 	Weights=new RDblHashContainer<WordWeight,unsigned,27,27,false>(500,250);
 	Direct=new WordWeight*[NbDirect];
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)=new WordWeight(CurLangs.GetNb());
+	Order=new GWord*[NbOrder];
+	for(i=NbOrder+1,pt=Order;--i;pt++)
+		(*pt)=new GWord();
 }
 
 
@@ -193,6 +192,7 @@ void GTextAnalyse::Disconnect(GSession* session) throw(GException)
 {
 
 	WordWeight** ptr;
+	GWord** pt;
 	unsigned int i;
 
 	if(!Session) return;
@@ -209,6 +209,13 @@ void GTextAnalyse::Disconnect(GSession* session) throw(GException)
 			delete(*ptr);
 		delete[] Direct;
 		Direct=0;
+	}
+	if(Order)
+	{
+		for(i=NbOrder+1,pt=Order;--i;pt++)
+			delete(*pt);
+		delete[] Order;
+		Order=0;
 	}
 	if(Sldiff)
 	{
@@ -240,12 +247,12 @@ void GTextAnalyse::Clear(void)
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)->Clear();
 	for(i=NbOrder+1,pt=Order;--i;pt++)
-		(*pt)->Clear();
+		if(*pt) (*pt)->Clear();
 	for(i=27+1,ptr1=Weights->Hash;--i;ptr1++)
 		for(j=27+1,ptr2=*ptr1;--j;ptr2++)
-    {
-		(*ptr2)->LastPtr=(*ptr2)->NbPtr=0;
-	}
+		{
+			(*ptr2)->LastPtr=(*ptr2)->NbPtr=0;
+		}
 }
 
 
@@ -289,7 +296,7 @@ void GTextAnalyse::VerifyOrder(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-bool GTextAnalyse::ValidWord(const RString& kwd)
+bool GTextAnalyse::ValidWord(const RString kwd)
 {
 /*	RChar look[10];
 	const RChar* ptr=kwd();
@@ -370,7 +377,7 @@ bool GTextAnalyse::ValidWord(const RString& kwd)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AddWord(const RString& word,double weight) throw(bad_alloc)
+void GTextAnalyse::AddWord(const RString word,double weight) throw(bad_alloc)
 {
 	bool Find;
 	unsigned int Index;
@@ -452,9 +459,13 @@ void GTextAnalyse::AddWord(const RString& word,double weight) throw(bad_alloc)
 	if((!w->InStop[LangIndex])&&(Distance))
 	{
 		VerifyOrder();
+		delete(Order[Nwords]);
 		Order[Nwords++]=new GWord(word);
-		if(OnlyLetters) Order[Nwords-1]->SetId(1);
-		else Order[Nwords-1]->SetId(0);
+		//Nwords++;
+		if(OnlyLetters)
+			Order[Nwords-1]->SetId(1);
+		else
+			Order[Nwords-1]->SetId(0);
 	}
 	N++;
 	w->Nb++;
@@ -463,7 +474,7 @@ void GTextAnalyse::AddWord(const RString& word,double weight) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-bool GTextAnalyse::ExtractWord(const RChar* &ptr,RString& word,double weight)
+bool GTextAnalyse::ExtractWord(const RChar* &ptr/*,RString& word*/,double weight)
 {
 	unsigned len;
 	const RChar* begin;
@@ -471,6 +482,7 @@ bool GTextAnalyse::ExtractWord(const RChar* &ptr,RString& word,double weight)
 	bool Letter=false;
 	static RString Test1("-.@\\/");
 	static RString Test2("\'\\");
+	RString word;
 
 BeginExtract:
 
@@ -535,8 +547,7 @@ BeginExtract:
 		}
 	}
 	word.Copy(begin,len);
-	word.StrLwr();
-	AddWord(word,weight);
+	AddWord(word.ToLower(),weight);
 	return(true);
 }
 
@@ -545,13 +556,12 @@ BeginExtract:
 void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
 {
 	const RChar* ptr;
-	RString word(MaxWordLen);
 
 	if(tag->GetName()=="docxml:sentence")
 	{
 		ptr=tag->GetContent()();
 		while(!ptr->IsNull())
-			ExtractWord(ptr,word,weight);
+			ExtractWord(ptr,weight);
 	}
 	else
 	{
@@ -613,26 +623,22 @@ void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
 //-----------------------------------------------------------------------------
 void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
 {
-	const char* ptr;
-	const char* endPtr;
-	const char* url;
-	char* type;
-	char* format;
+//	const char* ptr;
+//	const char* endPtr;
+	RString url;
+	const RChar* ptr;
 	GDoc* tmpDoc=0;
 	bool bUrl;
 
-	endPtr=ptr=0;
+//	endPtr=ptr=0;
 	bUrl=false;
-	url=new char[250];
-	type=new char[100];
-	format=new char[100];
 
 	if (tag->GetName()== "docxml:metaData")
 	{
 		bUrl=false;
 
-		type=0;
-		format=0;
+//		type=0;
+//		format=0;
 		for (tag->Start();!tag->End();tag->Next())
 		{
 			if ((*tag)()->GetName()=="dc:identifier")
@@ -640,11 +646,11 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 				bUrl=true;
 				url=(*tag)()->GetContent();
 			}
-			if ((*tag)()->GetName()=="dc:format")
+			if((*tag)()->GetName()=="dc:format")
 			{
 				//format=(*tag)()->GetContent();
 			}
-			if ((*tag)()->GetName()=="dc:type")
+			if((*tag)()->GetName()=="dc:type")
 			{
 //				type=(*tag)()->GetContent();
 //				if (!strcmp(type,"REFRESH"))
@@ -658,25 +664,24 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 		}
 		if (bUrl)
 		{
-			ptr=strdup(url);
+			ptr=url();
 			// keep only html links (-> whith html extension)
-			endPtr=ptr;
-			while (*endPtr)
+			while(!ptr->IsNull())
 			{
-				endPtr++;
+				ptr++;
 			}
-			while ((*endPtr)!='.')
+			while(ptr->Latin1()!='.')
 			{
-				endPtr--;
+				ptr--;
 			}
-			if ((!strncasecmp(endPtr,".html",5)) || (!strncasecmp(endPtr,".htm",4)))
+			if ((!RChar::StrCmp(ptr,".html")) || (!RChar::StrCmp(ptr,".htm")))
 			{
-				tmpDoc = Session->GetDoc(ptr);   //where ptr is the url.
+				tmpDoc = Session->GetDoc(url);   //where ptr is the url.
 				if (! tmpDoc)
 				{
 					if (externalLinks)
 					{
-						tmpDoc=new GDocVector(ptr,ptr,"text/html");
+						tmpDoc=new GDocVector(url,url,"text/html");
 						Session->AssignId(tmpDoc);
 						DocsToAdd->InsertPtr(tmpDoc);
 						tmpDoc->SetState(osNotNeeded);
@@ -694,7 +699,7 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 		for (tag->Start();!tag->End();tag->Next())
 			AnalyseLinksTag((*tag)(),externalLinks,DocsToAdd);
 	}
-#pragma warn "ici il faut rajouter les proprietes des liens." ;
+	#warning Add properties of links
 }
 
 
@@ -711,6 +716,7 @@ void GTextAnalyse::DetermineLang(void) throw(GException)
 	Lang=0;
 	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 	{
+		if(!CurLangs()->GetPlugin()) continue;
 		Frac=((double)(*tmp1))/((double)Ndiff);
 		if(((*tmp2)>S)&&(Frac>=MinFrac))
 		{
@@ -766,40 +772,60 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 			(*Occur)+=(*wrd)->Weight;
 		}
 	}
-
 	//Save the order of appearance of the valid words of the document in a binary file.
 	if(Distance)
 	{
-		cout<<"warning : analyse with document struct needs /var/galilei/bin/DB_name"<<endl;
+		DIR* dp;
 		RString name;
-		name="/var/galilei/bin/";
+		name=Session->GetSessionParams()->GetString("PathtoBinary");
+		dp=opendir(name);
+		if(!dp)
+			throw GException("the specified path doesn't exist.");
+		closedir(dp);
 		name+=Session->GetStorage()->GetName();
+		dp=opendir(name);
+		if(!dp)
+			mkdir(name,448);
+		closedir(dp);
+		name+="/DocumentStuct";
+		dp=opendir(name);
+		if(!dp)
+			mkdir(name,448);
+		closedir(dp);
 		name+="/Doc";
 		name+=itou(Doc->GetId());
-		R::RRecFile<GWord,sizeof(unsigned int),false> f(name,R::Create);
-		for(i=0;i<Nwords;i++)
+		try
 		{
-			if(Order[i]->GetId()==1)
+			R::RRecFile<GWord,sizeof(unsigned int),false> f(name,Create);
+			for(i=0;i<Nwords;i++)
 			{
-				stem=Lang->GetStemming(Order[i]->GetName());
-				if(stem.GetLen()>=MinStemSize)
+				if(Order[i]->GetId()==1)
 				{
+					stem=Lang->GetStemming(Order[i]->GetName());
+					if(stem.GetLen()>=MinStemSize)
+					{
+						GWord w(stem);
+						f<<dic->InsertData(&w);
+					}
+				}
+				else
+				{
+					stem=(Order[i]->GetName());
 					GWord w(stem);
 					f<<dic->InsertData(&w);
 				}
 			}
-			else
-			{
-				stem=(Order[i]->GetName());
-				GWord w(stem);
-				f<<dic->InsertData(&w);
-			}
+			close(R::Create);
 		}
-		close(R::Create);
+		catch (...)
+		{
+			throw GException("Cannot create binary files");
+		}
 	}
-
 	// Verify that each occurences is not under the minimal.
 	if(MinOccur<2) return;
+
+
 	for(i=DocVector->NbPtr+1,Tab=DocVector->Tab;--i;Tab++)
 	{
 		Occur=(*Tab);
@@ -818,11 +844,14 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,f
 	RXMLTag* content;
 	RXMLTag* metadata;
 	RXMLTag* link;
+	RXMLTag* Title;
+	RString Name;
 	GLang* oldlang;
+	RCursor<RXMLTag,unsigned int> Tags;
 
 	// Init Part and verification
 	if(!xml)
-		throw GException("No XML Structure for document '"+RString(doc->GetURL())+"'");
+		throw GException("No XML Structure for document '"+doc->GetURL()+"'");
 	Lang=doc->GetLang();
 	FindLang=((!Lang)||(!StaticLang));
 	content=xml->GetContent();
@@ -843,6 +872,21 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,f
 	AnalyseTag(metadata,2.0);
 	AnalyseTag(content,1.0);
 
+	// Look if a title meta is defined
+	Title=metadata->GetPtr<const char*>("dc:title");
+	if(Title)
+	{
+		Name="";
+		Tags.Set(Title);
+		for(Tags.Start();!Tags.End();Tags.Next())
+		{
+			if(Tags()->GetName()!="docxml:sentence") continue;
+			Name+=Tags()->GetContent();
+		}
+		if(!Name.IsEmpty())
+			doc->SetName(Name);
+	}
+
 	// Analyse the content of link tags
 	link = xml->GetLinks ();
 	RAssert(link);
@@ -851,12 +895,12 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,f
 	// Determine the Language if necessary.
 	if(FindLang)
 	{
-		// Remember old language and determine the new one
+		// Remember old language and determine the new one.
 		oldlang=Lang;
 		DetermineLang();
 		doc->SetLang(Lang);
 
-		// Dispatch the document through all profiles which have assessed it.
+		// Dispatch the document through the profiles which have assessed it.
 		UpdateFdbks(oldlang, Lang);
 	}
 
@@ -889,25 +933,25 @@ void GTextAnalyse::CreateParams(GParams* params)
 //-----------------------------------------------------------------------------
 GTextAnalyse::~GTextAnalyse(void)
 {
-	WordWeight** ptr;
-	GWord** pt;
-	unsigned int i;
+//	WordWeight** ptr;
+//	GWord** pt;
+//	unsigned int i;
 
-	if(Weights) delete Weights;
+/*	if(Weights) delete Weights;
 	if(Direct)
 	{
 		for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 			delete(*ptr);
 		delete[] Direct;
-	}
-	if(Order)
+	}*/
+/*	if(Order)
 	{
 		for(i=NbOrder+1,pt=Order;--i;pt++)
 			delete(*pt);
 		delete[] Order;
-	}
-	if(Sldiff) delete[] Sldiff;
-	if(Sl) delete[] Sl;
+	}*/
+/*	if(Sldiff) delete[] Sldiff;
+	if(Sl) delete[] Sl;*/
 }
 
 

@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
 <class>DlgConfig_Qt</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>381</width>
-            <height>489</height>
+            <width>418</width>
+            <height>554</height>
         </rect>
     </property>
     <property name="caption">
@@ -24,11 +24,11 @@
     <property name="whatsThis" stdset="0">
         <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
     </property>
-    <vbox>
+    <grid>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QGroupBox">
+        <widget class="QGroupBox" row="0" column="0">
             <property name="name">
                 <cstring>groupBox1</cstring>
             </property>
@@ -107,7 +107,7 @@ When the languages are not static, the language of a document is always determin
                 </widget>
             </vbox>
         </widget>
-        <widget class="QGroupBox">
+        <widget class="QGroupBox" row="1" column="0">
             <property name="name">
                 <cstring>groupBox2</cstring>
             </property>
@@ -272,18 +272,18 @@ When the languages are not static, the language of a document is always determin
                 </widget>
             </vbox>
         </widget>
-        <widget class="QGroupBox">
+        <widget class="QGroupBox" row="2" column="0">
             <property name="name">
-                <cstring>groupBox3</cstring>
+                <cstring>kURLRequester2</cstring>
             </property>
             <property name="title">
                 <string>Various</string>
             </property>
-            <vbox>
+            <grid>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QCheckBox">
+                <widget class="QCheckBox" row="0" column="0">
                     <property name="name">
                         <cstring>Distance</cstring>
                     </property>
@@ -297,7 +297,7 @@ When the languages are not static, the language of a document is always determin
                         <string>When a document is analysed, it is possible to create &lt;b&gt;distance files&lt;/b&gt;. These files contain information on the distances between words in the document. This information is used by the post-doc traitment.</string>
                     </property>
                 </widget>
-                <widget class="QCheckBox">
+                <widget class="QCheckBox" row="1" column="0">
                     <property name="name">
                         <cstring>UseExternalLinks</cstring>
                     </property>
@@ -312,9 +312,9 @@ When the languages are not static, the language of a document is always determin
 Be carefull, because it can explose the size of information on documents.</string>
                     </property>
                 </widget>
-            </vbox>
+            </grid>
         </widget>
-        <widget class="QGroupBox">
+        <widget class="QGroupBox" row="3" column="0">
             <property name="name">
                 <cstring>groupFiltering</cstring>
             </property>
@@ -421,7 +421,24 @@ Be carefull, because it can explose the size of information on documents.</strin
                 </widget>
             </vbox>
         </widget>
-        <widget class="QLayoutWidget">
+        <spacer row="4" column="0">
+            <property name="name">
+                <cstring>spacer16</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>31</width>
+                    <height>16</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QLayoutWidget" row="5" column="0">
             <property name="name">
                 <cstring>Layout1</cstring>
             </property>
@@ -485,7 +502,7 @@ Be carefull, because it can explose the size of information on documents.</strin
                 </widget>
             </hbox>
         </widget>
-    </vbox>
+    </grid>
 </widget>
 <connections>
     <connection>
@@ -521,6 +538,8 @@ Be carefull, because it can explose the size of information on documents.</strin
 </connections>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
