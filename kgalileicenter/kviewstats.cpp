@@ -120,7 +120,7 @@ void KViewStats::ConstructTag(RXMLTag* t,QListViewItem* parent)
  		}
  		if(strlen(Cur()->GetContent()))
  		{
- 			ptr2=new QListViewItem(ptr,Cur()->GetContent());
+ 			ptr2=new QListViewItem(ptr,Cur()->GetContent().Latin1());
 			ptr2->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("xml_etext.png",KIcon::Small)));
  		}
  		ConstructTag(Cur(),ptr);

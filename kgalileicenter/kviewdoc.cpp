@@ -243,11 +243,31 @@ void KViewDoc::ConstructFdbks(void)
 //-----------------------------------------------------------------------------
 void KViewDoc::ConstructResults(void)
 {
+	class LocalItem : QListViewItem
+	{
+	public:
+		double Val;
+
+		LocalItem(QListView* v,QString str,double d) : QListViewItem(v,str, dtou(d).Latin1()), Val(d) {}
+		virtual int compare( QListViewItem *i, int col, bool ascending ) const
+    	{
+			if(col==1)
+			{
+				double d=Val-static_cast<LocalItem*>(i)->Val;
+				if(d==0.0) return(key(0, ascending ).compare( i->key(0, ascending)));
+				if(d>0)
+					return(1);
+				return(-1);
+			}
+			return(key( col, ascending ).compare( i->key( col, ascending)));
+    	}
+	};
+
 	GIWordWeightCursor Words=Document->GetWordWeightCursor();
 
 	for (Words.Start();!Words.End();Words.Next())
 	{
-		new QListViewItem(Results,Doc->GetSession()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode()), dtou(Words()->GetWeight()).Latin1());
+		new LocalItem(Results,Doc->GetSession()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode()), Words()->GetWeight());
 	}
 }
 
@@ -262,6 +282,7 @@ void KViewDoc::ConstructGeneral(void)
 	new QListViewItem(General,"ID",itou(Document->GetId()).Latin1());
 	new QListViewItem(General,"URL",Document->GetURL());
 	new QListViewItem(General,"Name",Document->GetName());
+	new QListViewItem(General,"MIME",Document->GetMIMEType());
 	l=Document->GetLang();
 	if(l)
 		new QListViewItem(General,"Language",l->GetName());

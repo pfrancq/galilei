@@ -237,8 +237,26 @@ void KViewGroup::ConstructDocs(void)
 void KViewGroup::ConstructDescription(void)
 {
 	GIWordWeightCursor Cur;
-	QString W;
 	char tmp[20];
+	class LocalItem : QListViewItem
+	{
+	public:
+		double Val;
+
+		LocalItem(QListView* v,QString str,double d) : QListViewItem(v,str, dtou(d).Latin1()), Val(d) {}
+		virtual int compare( QListViewItem *i, int col, bool ascending ) const
+    	{
+			if(col==1)
+			{
+				double d=Val-static_cast<LocalItem*>(i)->Val;
+				if(d==0.0) return(key(0, ascending ).compare( i->key(0, ascending)));
+				if(d>0)
+					return(1);
+				return(-1);
+			}
+			return(key( col, ascending ).compare( i->key( col, ascending)));
+    	}
+	};
 
 	// Change the label of the first column
 	sprintf(tmp,"Words (%u)",static_cast<GGroupVector*>(Group)->GetNbNoNull());
@@ -249,8 +267,7 @@ void KViewGroup::ConstructDescription(void)
 	Cur=static_cast<GGroupVector*>(Group)->GetVectorCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		W.setNum(Cur()->GetWeight());
-		new QListViewItem(Vector,Doc->GetSession()->LoadWord(Cur()->GetId(),Group->GetLang()->GetCode()),W);
+		new LocalItem(Vector,Doc->GetSession()->LoadWord(Cur()->GetId(),Group->GetLang()->GetCode()),Cur()->GetWeight());
 	}
 }
 
