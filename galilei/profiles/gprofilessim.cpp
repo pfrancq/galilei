@@ -212,8 +212,16 @@ double GALILEI::GProfilesSim::GetSim(GUsers* users, unsigned int i,unsigned int 
 	if(s2->State == osModified)
 	{
 		s2->State = osUpToDate ;
-		if (GlobalSim)  return (users->GetSubProfile(i,Lang)->GlobalSimilarity(users->GetSubProfile(j,Lang)));
-		else return ( users->GetSubProfile(i,Lang)->Similarity(users->GetSubProfile(j,Lang)) );
+		if (GlobalSim)
+		{
+			  s2->Sim=users->GetSubProfile(i,Lang)->GlobalSimilarity(users->GetSubProfile(j,Lang));
+			  return (s2->Sim);
+		}
+		else
+		{
+			 s2->Sim=users->GetSubProfile(i,Lang)->Similarity(users->GetSubProfile(j,Lang));
+			 return (s2->Sim);
+		}
 	}
 	if (s2->State == osDelete)  return (0.0);   //-------------------------A MODIFIER
 	
@@ -249,9 +257,16 @@ double GALILEI::GProfilesSim::GetSim(const GSubProfile* sub1,const GSubProfile* 
 	if(s2->State == osModified)
 	{
 		s2->State = osUpToDate ;
-		if (GlobalSim) return ( sub1->GlobalSimilarity(sub2));
-		else return ( sub1->Similarity(sub2) );
-		
+		if (GlobalSim)
+		{
+			s2->Sim=sub1->GlobalSimilarity(sub2);
+			return ( s2->Sim);
+		}
+		else
+		{
+			 s2->Sim=sub1->Similarity(sub2);
+			 return ( s2->Sim);
+		}
 	}
 	if (s2->State == osDelete)  return (0.0);   //-------------------------A MODIFIER
 

@@ -235,8 +235,16 @@ double GALILEI::GDocProfSim::GetSim(GDocs* docs,GUsers* users, unsigned int i,un
 	if(s2->State == osModified)
 	{
 		s2->State = osUpToDate ;
-		if (GlobalSim)  return (docs->GetDoc(i,Lang)->GlobalSimilarity(users->GetSubProfile(j,Lang)));
-		else return ( docs->GetDoc(i,Lang)->Similarity(users->GetSubProfile(j,Lang)) );
+		if (GlobalSim)
+		{
+			s2->Sim=docs->GetDoc(i,Lang)->GlobalSimilarity(users->GetSubProfile(j,Lang));
+			return (s2->Sim);
+		}
+		else
+		{
+			s2->Sim=docs->GetDoc(i,Lang)->Similarity(users->GetSubProfile(j,Lang));
+			return (s2->Sim);
+		}
 	}
 	if (s2->State == osDelete)  return (0.0);   //-------------------------A MODIFIER
 
@@ -267,8 +275,16 @@ double GALILEI::GDocProfSim::GetSim(const GDoc* doc,const GSubProfile* sub)
 	if(s2->State == osModified)
 	{
 		s2->State = osUpToDate ;
-		if (GlobalSim) return ( doc->GlobalSimilarity(sub));
-		else return ( doc->Similarity(sub) );
+		if (GlobalSim)
+		{
+			s2->Sim=doc->GlobalSimilarity(sub);
+			return ( s2->Sim);
+		}
+		else
+		{
+			s2->Sim=doc->Similarity(sub);
+			return ( s2->Sim);
+		}
 
 	}
 	if (s2->State == osDelete)  return (0.0);   //-------------------------A MODIFIER
