@@ -32,6 +32,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <stdlib.h>
+
+
+//-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <groups/ggroup.h>
 #include <docs/gdoc.h>
@@ -40,6 +45,26 @@
 #include <profiles/gprofdoc.h>
 using namespace GALILEI;
 using namespace RStd;
+
+
+
+//-----------------------------------------------------------------------------
+//
+//  GProfDocRef
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class GProfDocRef
+{
+public:
+	GProfDoc* Doc;
+	double Sim;
+
+	GProfDocRef(GProfDoc* d,double s) : Doc(d), Sim(s) {}
+	int Compare(const GProfDocRef*) const {return(-1);}
+	int Compare(const GProfDocRef&) const {return(-1);}
+};
 
 
 
@@ -54,6 +79,20 @@ GALILEI::GGroup::GGroup(const unsigned int id,GLang* lang) throw(bad_alloc)
 	: RContainer<GSubProfile,unsigned int,false,true>(20,10), Id(id),
 	  State(osUpToDate), Lang(lang)
 {
+}
+
+
+//--------------------------------------------------------------------------
+int GALILEI::GGroup::sortOrder(const void *a,const void *b)
+{
+  double af=(*((GProfDoc**)(a)))->Similarity();
+  double bf=(*((GProfDoc**)(b)))->Similarity();
+
+  if(af==bf) return(0);
+  if(af>bf)
+    return(-1);
+  else
+    return(1);
 }
 
 
@@ -201,10 +240,12 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 	GProfDocCursor Fdbks;
 	GProfDoc* ptr;
 	tDocJudgement j;
+	RContainer<GProfDocRef,unsigned int,true,false> Docs(50,25);
 
 	// Clear container.
 	docs->Clear();
 
+	// Go through the subprofiles
 	for(i=NbPtr+1,tab=Tab;--i;tab++)
 	{
 		if((*tab)==s) continue;
@@ -226,7 +267,14 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 			if(ptr) continue;
 			j=Fdbks()->GetFdbk();
 			if((j==djNav)||(j==djOK))
-				docs->InsertPtr(Fdbks());
+				Docs.InsertPtr(new GProfDocRef(Fdbks(),s->Similarity(Fdbks()->GetDoc())));
 		}
 	}
+
+	// Sort the container by similarity
+	qsort(static_cast<void*>(Docs.Tab),Docs.NbPtr,sizeof(GProfDocRef*),sortOrder);
+
+	// Copy the result in docs
+	for(Docs.Start();!Docs.End();Docs.Next())
+		docs->InsertPtr(Docs()->Doc);
 }

@@ -52,14 +52,6 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GLang;
-class GSubProfile;
-class GSubProfileCursor;
-
-
 //-----------------------------------------------------------------------------
 /**
 * This class represent a group of sub-profiles. In fact, it is implemented as a
@@ -69,6 +61,8 @@ class GSubProfileCursor;
 */
 class GGroup : public RStd::RContainer<GSubProfile,unsigned int,false,true>
 {
+protected:
+
 	/**
 	* identifier
 	*/
@@ -83,6 +77,13 @@ class GGroup : public RStd::RContainer<GSubProfile,unsigned int,false,true>
 	* Language of the group.
 	*/
 	GLang* Lang;
+
+private:
+
+	/**
+	* Static function used to ordered by similarity.
+	*/
+	static int sortOrder(const void *a,const void *b);
 
 public:
 
@@ -177,9 +178,11 @@ public:
 
 	/**
 	* Construct the list of all relevant documents of the subprofiles of a
-	* group not already judged by a given subprofile.
+	* group not already judged by a given subprofile and ordered in descending
+	* order of their similarity with the chosen subprofile.
 	* @param docs           Documents not judged.
 	* @param s              Subprofile.
+	* \warning This method uses an internal container which is not optimal.
 	*/
 	void NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s);
 };
