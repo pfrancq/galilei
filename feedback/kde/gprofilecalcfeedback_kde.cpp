@@ -74,8 +74,8 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData( "feedback", I18N_NOOP("Feedback Subprofile Computing Method "),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+		"1.1", description, KAboutData::License_GPL,
+		"(c) 1998-2004, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
 	KAboutApplication dlg(&aboutData);
 	dlg.exec();
@@ -88,7 +88,8 @@ void Configure(GFactoryProfileCalc* params)
  	DlgConfig_Qt dlg;
 
 	dlg.MaxSize->setValue(params->GetUInt("MaxSize"));
-	dlg.isf->setChecked(params->GetBool("isf"));
+	dlg.Localisf->setChecked(params->GetBool("Localisf"));
+	dlg.idf->setChecked(params->GetBool("idf"));
 	dlg.Positive->setChecked(params->GetBool("Positive"));
 	dlg.RelFactor->setValue(params->GetDouble("RelFactor"));
 	dlg.FuzzyFactor->setValue(params->GetDouble("FuzzyFactor"));
@@ -97,7 +98,8 @@ void Configure(GFactoryProfileCalc* params)
 	if(dlg.exec())
 	{
 		params->Set("MaxSize",dlg.MaxSize->value());
-		params->Set("isf",dlg.isf->isChecked());
+		params->Set("Localisf",dlg.Localisf->isChecked());
+		params->Set("idf",dlg.idf->isChecked());
 		params->Set("Positive",dlg.Positive->isChecked());
 		params->Set("RelFactor",dlg.RelFactor->value());
 		params->Set("FuzzyFactor",dlg.FuzzyFactor->value());

@@ -60,7 +60,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac) throw(bad_alloc)
 	: GProfileCalc(fac), Infos(5000,2500), MaxNonZero(60), RelFactor(1.0), FuzzyFactor(0.25),
-	  IrrelFactor(0.75), Positive(false), isf(true), Vectors(5000),
+	  IrrelFactor(0.75), Positive(false), Localisf(false), idf(true), Vectors(5000),
 	  NbDocsWords(5000), NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
@@ -75,7 +75,8 @@ void GProfileCalcFeedback::ApplyConfig(void)
 	FuzzyFactor=Factory->GetDouble("FuzzyFactor");
 	IrrelFactor=Factory->GetDouble("IrrelFactor");
 	Positive=Factory->GetBool("Positive");
-	isf=Factory->GetBool("isf");
+	Localisf=Factory->GetBool("Localisf");
+	idf=Factory->GetBool("idf");
 	IncrementalMode=Factory->GetBool("IncrementalMode");
 }
 
@@ -104,33 +105,41 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 	double MaxFreq;
 	double Factor;
 	double Freq;
+	unsigned int TotalRef;
 
 	// Clear all containers before computing
 	Vectors.Clear();
 	NbDocsWords.Clear();
 	NbDocs=0;
 
-	// Go through all documents, to compute the number of documents "OK", "KO"
-	// and "N" for each language and the number of documents for each index term.
-	Docs=SubProfile->GetFdbks();
-	for(Docs.Start();!Docs.End();Docs.Next())
+	// Get the total number of document analyzed
+	TotalRef=SubProfile->GetLang()->GetRef(otDoc);
+
+	// If the local isf factor must be computed, go through all documents, to
+	// compute the number of documents "OK", "KO" and "N" for each language and
+	// the number of documents for each index term.
+	if(Localisf)
 	{
-		// If the assessment of the document is not relevant
-		// -> don't treat for the profiles computing
-		if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
-
-		// If incremental mode and document has no change -> continue
-		if(IncrementalMode&&SubProfile->SameDescription(Docs())) continue;
-
-		// Add total number of document judged for the current language
-		NbDocs++;
-
-		// Update number of documents where appear each index term.
-		Words=Docs()->GetDoc()->GetWeightInfoCursor();
-		for(Words.Start();!Words.End();Words.Next())
+		Docs=SubProfile->GetFdbks();
+		for(Docs.Start();!Docs.End();Docs.Next())
 		{
-			w=NbDocsWords.GetInsertPtr<GInfo*>(Words());
-			(*w)+=1.0;
+			// If the assessment of the document is not relevant
+			// -> don't treat for the profiles computing
+			if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
+
+			// If incremental mode and document has no change -> continue
+			if(IncrementalMode&&SubProfile->SameDescription(Docs())) continue;
+
+			// Add total number of document judged for the current language
+			NbDocs++;
+
+			// Update number of documents where appear each index term.
+			Words=Docs()->GetDoc()->GetWeightInfoCursor();
+			for(Words.Start();!Words.End();Words.Next())
+			{
+				w=NbDocsWords.GetInsertPtr<GInfo*>(Words());
+				(*w)+=1.0;
+			}
 		}
 	}
 
@@ -172,8 +181,16 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 		{
 			w=Vectors.GetInsertPtr<GInfo*>(Words());
 			Freq=Words()->GetWeight()/MaxFreq;
-			if((isf)&&(NbDocs>1))
+
+			// If local isf is needed, multiply the frequence by it
+			if((Localisf)&&(NbDocs>1))
 				Freq*=log(NbDocs/NbDocsWords.GetPtr<unsigned int>(Words()->GetId())->GetWeight());
+
+			// If local idf is needed, multiply the frequence by it
+			if(idf)
+				Freq*=log(TotalRef/static_cast<double>(SubProfile->GetLang()->GetRef(Words()->GetId(),otDoc)));;
+
+			// Add the frequence to the global vector
 			if(Add)
 				(*w)+=Factor*Freq;
 			else
@@ -239,7 +256,7 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(GException)
 		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
 		{
 			Infos.InsertPtrAt(ptr=new GWeightInfo(Cur()),i);
-			if(ptr&&isf)
+			if(ptr&&idf)
 			{
 				(*ptr)/=log(TotalRef/static_cast<double>(subprofile->GetLang()->GetRef(Cur()->GetId(),otDoc)));
 			}
@@ -265,7 +282,8 @@ void GProfileCalcFeedback::CreateParams(GParams* params)
 	params->InsertPtr(new GParamDouble("FuzzyFactor",0.25));
 	params->InsertPtr(new GParamDouble("IrrelFactor",0.75));
 	params->InsertPtr(new GParamBool("Positive",false));
-	params->InsertPtr(new GParamBool("isf",true));
+	params->InsertPtr(new GParamBool("Localisf",false));
+	params->InsertPtr(new GParamBool("idf",true));
 	params->InsertPtr(new GParamBool("IncrementalMode",false));
 }
 

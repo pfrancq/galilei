@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>293</width>
-            <height>339</height>
+            <width>380</width>
+            <height>376</height>
         </rect>
     </property>
     <property name="caption">
@@ -87,16 +87,30 @@
                 </widget>
                 <widget class="QCheckBox">
                     <property name="name">
-                        <cstring>isf</cstring>
+                        <cstring>Localisf</cstring>
                     </property>
                     <property name="text">
-                        <string>isf factor used</string>
+                        <string>Local isf factor used</string>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Specify if the isf factor must be used.</string>
+                        <string>Specify if a local isf factor must be used.</string>
                     </property>
                     <property name="whatsThis" stdset="0">
-                        <string>When this parameter is checked, the inverse subprofile factor is used when computing the weight of the information entities used for the description.</string>
+                        <string>When this parameter is checked, a local inverse subprofile factor is computed using only the assessed documents. This factor is then used when computing the weight of the information entities used for the description.</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>idf</cstring>
+                    </property>
+                    <property name="text">
+                        <string>idf factor used</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Specify if the idf factor must be used.</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>When this parameter is checked, the inverse document factor is used when computing the weight of the information entities used for the description.</string>
                     </property>
                 </widget>
                 <widget class="QCheckBox">

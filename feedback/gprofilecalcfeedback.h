@@ -73,6 +73,9 @@ namespace GALILEI{
 class GProfileCalcFeedback : public GProfileCalc
 {
 protected:
+	enum
+	{
+	};
 
 	/**
 	* Information computed.
@@ -85,20 +88,17 @@ protected:
 	unsigned int MaxNonZero;
 
 	/**
-	* Factor associated with the vectors corresponding to the relevant part
-	* (OK and N).
+	* Factor of the vectors corresponding to the relevant part.
 	*/
 	double RelFactor;
 
 	/**
-	* Factor associated with the vectors corresponding to the fuzzy relevant
-	* part (KO).
+	* Factor of the vectors corresponding to the fuzzy relevant part.
 	*/
 	double FuzzyFactor;
 
 	/**
-	* Factor associated with the vectors corresponding to the irrelevant part
-	* (H).
+	* Factor of the vectors corresponding to the irrelevant part.
 	*/
 	double IrrelFactor;
 
@@ -108,9 +108,14 @@ protected:
 	bool Positive;
 
 	/**
-	* Must the inverse subprofile factor be computed.
+	* Must a local inverse subprofile factor be computed.
 	*/
-	bool isf;
+	bool Localisf;
+
+	/**
+	* Must the inverse document factor be computed.
+	*/
+	bool idf;
 
 	/**
 	* Global vector computed.
@@ -118,13 +123,13 @@ protected:
 	GWeightInfos Vectors;
 
 	/**
-	* Number of documents where each index term of the "OK" and "N" documents
-	* for the different languages appears.
+	* Number of documents assessed by a profile used for the computing where
+	* each index term appears.
 	*/
 	GWeightInfos NbDocsWords;
 
 	/**
-	* Number of documents.
+	* Number of documents assessed by a profile used for the computing.
 	*/
 	unsigned int NbDocs;
 
