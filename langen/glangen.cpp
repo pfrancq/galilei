@@ -359,7 +359,7 @@ RString& GALILEI::GLangEN::GetStemming(const RString& _kwd)
 	(*res)=_kwd;
 	res->StrLwr();
 	if(res->GetLen()>50) return(*res);
-	strcpy(kwd,(*res)());
+	strcpy(kwd,(*res));
 	len=_kwd.GetLen()-1;
 	end=&kwd[len];
 
