@@ -6,14 +6,10 @@
 
 	Window to manipulate theoritical groups - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -37,6 +33,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rtextfile.h>
+#include <frontend/kde/rqt.h>
 using namespace R;
 
 
@@ -210,7 +207,7 @@ void KViewThGroups::ConstructThGroups(void)
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
 		GGroupCursor grs=Groups->GetGroupsCursor(lang);
-		QListViewItemType* grsitem = new QListViewItemType(thGroups,lang->GetName());
+		QListViewItemType* grsitem = new QListViewItemType(thGroups,ToQString(lang->GetName()));
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		for(grs.Start(); !grs.End(); grs.Next())
 		{
@@ -221,7 +218,7 @@ void KViewThGroups::ConstructThGroups(void)
 			for(Sub.Start(); !Sub.End(); Sub.Next())
 			{
 				GSubProfile* sub=Sub();
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1());
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()));
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}
@@ -248,7 +245,7 @@ void KViewThGroups::ConstructGroups(void)
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
 		GGroupCursor grs=Doc->GetSession()->GetGroupsCursor(lang);
-		QListViewItemType* grsitem = new QListViewItemType(prGroups,lang->GetName());
+		QListViewItemType* grsitem = new QListViewItemType(prGroups,ToQString(lang->GetName()));
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		for (grs.Start(); !grs.End(); grs.Next())
 		{
@@ -261,8 +258,7 @@ void KViewThGroups::ConstructGroups(void)
 			for(Sub.Start(); !Sub.End(); Sub.Next())
 			{
 				GSubProfile* sub=Sub();
-				sprintf(tmp1,"%s (%s)",sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1());
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,tmp1);
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,ToQString(sub->GetProfile()->GetName())+" ("+ToQString(sub->GetProfile()->GetUser()->GetFullName())+")");
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}

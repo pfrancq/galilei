@@ -9,10 +9,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -32,7 +28,6 @@
 
 
 //-----------------------------------------------------------------------------
-#include <ltmm/loader.hh>
 #include <cstdlib>
 #include <stdexcept>
 #include <iostream>
@@ -71,11 +66,9 @@ static KCmdLineOptions options[] =
 };
 
 
-
 //-----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-	map<string,ltmm::symbol_list>& preloaded =ltmm::loader<>::preloaded();
 	setlocale(LC_CTYPE,"");
 
 	KAboutData aboutData( "kgalileicenter", I18N_NOOP("KGALILEICenter"),
@@ -95,19 +88,13 @@ int main(int argc, char *argv[])
 	try
 	{
 		KApplication app;
-		char* lib=getenv("GALILEI_PLUGINS_LIB");
-		if(!lib)
-			lib=getenv("GALILEI_LIB");
-		if(!lib)
-			throw GException("GALILEI_LIB or GALILEI_PLUGINS_LIB must be defined");
-
 		if(app.isRestored())
 		{
-			RESTORE(KGALILEICenterApp(lib));
+			RESTORE(KGALILEICenterApp());
 		}
 		else
 		{
-			KGALILEICenterApp *testmdi = new KGALILEICenterApp(lib);
+			KGALILEICenterApp *testmdi = new KGALILEICenterApp();
 			testmdi->show();
 		}
 		return app.exec();

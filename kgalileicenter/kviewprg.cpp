@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -76,6 +72,7 @@ KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,const char* name,int wflags) throw
 void KViewPrg::update(unsigned int /*cmd*/)
 {
 }
+
 
 //-----------------------------------------------------------------------------
 void KViewPrg::receiveNextDoc(const GDoc*) throw(std::bad_alloc,RException)

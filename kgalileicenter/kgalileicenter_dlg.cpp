@@ -6,14 +6,10 @@
 
 	Main Window - Implementation of the Dialog part.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,6 +28,11 @@
 
 */
 
+
+
+//-----------------------------------------------------------------------------
+// include files for R
+#include <frontend/kde/rqt.h>
 
 
 //-----------------------------------------------------------------------------
@@ -75,6 +76,8 @@ using namespace std;
 // include files for KDE
 #include <kapp.h>
 #include <klocale.h>
+#include <kurlrequester.h>
+#include <knuminput.h>
 
 
 //-----------------------------------------------------------------------------
@@ -108,22 +111,30 @@ void KGALILEICenterApp::slotPlugins(void)
 	GFactoryGroupingCursor Grouping;
 	GFactoryStatsCalcCursor StatsCalc;
 	GFactoryPostDocCursor PostDoc;
+	GFactoryPostDocOrder* pdorder;
 	GFactoryDocAnalyseCursor DocAnalyse;
 	GFactoryPostGroupCursor PostGroup;
+	GFactoryPostGroupOrder* pgorder;
 	QPlugins dlg(this,"Plugins Dialog");
 	QString str;
 	QListViewItem* def;
 	QListViewItem* cur;
+	unsigned int i;
 	int idx;
+
+
+	//set the plugins path
+	dlg.PluginsPath->setMode(KFile::Directory);
+	dlg.PluginsPath->setURL(ToQString(pluginsPath));
 
 	// Goes through filters
 	def=cur=0;
-	Filter=URLManager.GetFiltersCursor();
+	Filter=URLManager->GetFiltersCursor();
 	for(Filter.Start();!Filter.End();Filter.Next())
 	{
-		str=Filter()->GetName();
+		str=ToQString(Filter()->GetName());
 		str+=" [";
-		str+=Filter()->GetLib();
+		str+=ToQString(Filter()->GetLib());
 		str+="]";
 		cur=new QFilterItem(dlg.Filters,Filter(),str);
 		if(!def)
@@ -138,17 +149,17 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	// Goes through the profiles computing method
 	def=cur=0;
-	ProfileCalc=ProfilingManager.GetProfileCalcsCursor();
+	ProfileCalc=ProfilingManager->GetProfileCalcsCursor();
 	dlg.CurrentProfileCalc->insertItem("None",0);
 	for(ProfileCalc.Start(),idx=1;!ProfileCalc.End();ProfileCalc.Next(),idx++)
 	{
-		str=ProfileCalc()->GetName();
+		str=ToQString(ProfileCalc()->GetName());
 		str+=" [";
-		str+=ProfileCalc()->GetLib();
+		str+=ToQString(ProfileCalc()->GetLib());
 		str+="]";
 		cur=new QProfileCalcItem(dlg.ProfileCalcs,ProfileCalc(),str);
-		dlg.CurrentProfileCalc->insertItem(ProfileCalc()->GetName(),idx);
-		if((ProfileCalc()->GetPlugin())&&(ProfileCalc()->GetPlugin()==ProfilingManager.GetCurrentMethod()))
+		dlg.CurrentProfileCalc->insertItem(ToQString(ProfileCalc()->GetName()),idx);
+		if((ProfileCalc()->GetPlugin())&&(ProfileCalc()->GetPlugin()==ProfilingManager->GetCurrentMethod()))
 			dlg.CurrentProfileCalc->setCurrentItem(idx);
 		if(!def)
 			def=cur;
@@ -163,17 +174,17 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	// Goes through the grouping method
 	def=cur=0;
-	Grouping=GroupingManager.GetGroupingsCursor();
+	Grouping=GroupingManager->GetGroupingsCursor();
 	dlg.CurrentGrouping->insertItem("None",0);
 	for(Grouping.Start(),idx=1;!Grouping.End();Grouping.Next(),idx++)
 	{
-		str=Grouping()->GetName();
+		str=ToQString(Grouping()->GetName());
 		str+=" [";
-		str+=Grouping()->GetLib();
+		str+=ToQString(Grouping()->GetLib());
 		str+="]";
 		cur=new QGroupingItem(dlg.Groupings,Grouping(),str);
-		dlg.CurrentGrouping->insertItem(Grouping()->GetName(),idx);
-		if((Grouping()->GetPlugin())&&(Grouping()->GetPlugin()==GroupingManager.GetCurrentMethod()))
+		dlg.CurrentGrouping->insertItem(ToQString(Grouping()->GetName()),idx);
+		if((Grouping()->GetPlugin())&&(Grouping()->GetPlugin()==GroupingManager->GetCurrentMethod()))
 			dlg.CurrentGrouping->setCurrentItem(idx);
 		if(!def)
 			def=cur;
@@ -188,17 +199,17 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	// Goes through the group computing method
 	def=cur=0;
-	GroupCalc=GroupCalcManager.GetGroupCalcsCursor();
+	GroupCalc=GroupCalcManager->GetGroupCalcsCursor();
 	dlg.CurrentGroupCalc->insertItem("None",0);
 	for(GroupCalc.Start(),idx=1;!GroupCalc.End();GroupCalc.Next(),idx++)
 	{
-		str=GroupCalc()->GetName();
+		str=ToQString(GroupCalc()->GetName());
 		str+=" [";
-		str+=GroupCalc()->GetLib();
+		str+=ToQString(GroupCalc()->GetLib());
 		str+="]";
 		cur=new QGroupCalcItem(dlg.GroupCalcs,GroupCalc(),str);
-		dlg.CurrentGroupCalc->insertItem(GroupCalc()->GetName(),idx);
-		if((GroupCalc()->GetPlugin())&&(GroupCalc()->GetPlugin()==GroupCalcManager.GetCurrentMethod()))
+		dlg.CurrentGroupCalc->insertItem(ToQString(GroupCalc()->GetName()),idx);
+		if((GroupCalc()->GetPlugin())&&(GroupCalc()->GetPlugin()==GroupCalcManager->GetCurrentMethod()))
 			dlg.CurrentGroupCalc->setCurrentItem(idx);
 		if(!def)
 			def=cur;
@@ -213,12 +224,12 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	// Goes through statistics
 	def=cur=0;
-	StatsCalc=StatsCalcManager.GetStatsCalcsCursor();
+	StatsCalc=StatsCalcManager->GetStatsCalcsCursor();
 	for(StatsCalc.Start();!StatsCalc.End();StatsCalc.Next())
 	{
-		str=StatsCalc()->GetName();
+		str=ToQString(StatsCalc()->GetName());
 		str+=" [";
-		str+=StatsCalc()->GetLib();
+		str+=ToQString(StatsCalc()->GetLib());
 		str+="]";
 		cur=new QStatsCalcItem(dlg.Stats,StatsCalc(),str);
 		if(!def)
@@ -233,17 +244,17 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	// Goes through the linking method
 	def=cur=0;
-	LinkCalc=LinkCalcManager.GetLinkCalcsCursor();
+	LinkCalc=LinkCalcManager->GetLinkCalcsCursor();
 	dlg.CurrentLinkCalc->insertItem("None",0);
 	for(LinkCalc.Start(),idx=1;!LinkCalc.End();LinkCalc.Next(),idx++)
 	{
-		str=LinkCalc()->GetName();
+		str=ToQString(LinkCalc()->GetName());
 		str+=" [";
-		str+=LinkCalc()->GetLib();
+		str+=ToQString(LinkCalc()->GetLib());
 		str+="]";
 		cur=new QLinkCalcItem(dlg.LinkCalcs,LinkCalc(),str);
-		dlg.CurrentLinkCalc->insertItem(LinkCalc()->GetName(),idx);
-		if((LinkCalc()->GetPlugin())&&(LinkCalc()->GetPlugin()==LinkCalcManager.GetCurrentMethod()))
+		dlg.CurrentLinkCalc->insertItem(ToQString(LinkCalc()->GetName()),idx);
+		if((LinkCalc()->GetPlugin())&&(LinkCalc()->GetPlugin()==LinkCalcManager->GetCurrentMethod()))
 			dlg.CurrentLinkCalc->setCurrentItem(idx);
 		if(!def)
 			def=cur;
@@ -258,14 +269,22 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	// Goes through PostGroups
 	def=cur=0;
-	PostGroup=PostGroupManager.GetPostGroupsCursor();
+	PostGroup=PostGroupManager->GetPostGroupsCursor();
+	RContainer<GFactoryPostGroupOrder, unsigned int, true, true>* postgroupsordered;
+	postgroupsordered=new RContainer<GFactoryPostGroupOrder, unsigned int, true, true>(PostGroup.GetNb());
 	for(PostGroup.Start(),idx=1;!PostGroup.End();PostGroup.Next(), idx++)
 	{
-		str=PostGroup()->GetName();
+		pgorder=new GFactoryPostGroupOrder;
+		pgorder->Fac=PostGroup();
+		postgroupsordered->InsertPtr(pgorder);
+	}
+	for (i=postgroupsordered->NbPtr; i;i--)
+	{
+		str=ToQString(postgroupsordered->GetPtrAt(i-1)->Fac->GetName());
 		str+=" [";
-		str+=PostGroup()->GetLib();
+		str+=ToQString(postgroupsordered->GetPtrAt(i-1)->Fac->GetLib());
 		str+="]";
-		cur=new QPostGroupItem(dlg.PostGroups,PostGroup(),str);
+		cur=new QPostGroupItem(dlg.PostGroups,postgroupsordered->GetPtrAt(i-1)->Fac,str);
 		if(!def)
 			def=cur;
 	}
@@ -278,14 +297,22 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	// Goes through the PostDoc method
 	def=cur=0;
-	PostDoc=PostDocManager.GetPostDocsCursor();
+	PostDoc=PostDocManager->GetPostDocsCursor();
+	RContainer<GFactoryPostDocOrder, unsigned int, true, true>* postdocsordered;
+	postdocsordered=new RContainer<GFactoryPostDocOrder, unsigned int, true, true>(PostDoc.GetNb());
 	for(PostDoc.Start(),idx=1;!PostDoc.End();PostDoc.Next(),idx++)
 	{
-		str=PostDoc()->GetName();
+		pdorder=new GFactoryPostDocOrder;
+		pdorder->Fac=PostDoc();
+		postdocsordered->InsertPtr(pdorder);
+	}
+	for (i=postdocsordered->NbPtr; i;i--)
+	{
+		str=ToQString(postdocsordered->GetPtrAt(i-1)->Fac->GetName());
 		str+=" [";
-		str+=PostDoc()->GetLib();
+		str+=ToQString(postdocsordered->GetPtrAt(i-1)->Fac->GetLib());
 		str+="]";
-		cur=new QPostDocItem(dlg.PostDocs,PostDoc(),str);
+		cur=new QPostDocItem(dlg.PostDocs,postdocsordered->GetPtrAt(i-1)->Fac,str);
 		if(!def)
 			def=cur;
 	}
@@ -298,12 +325,12 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	// Goes through languages
 	def=cur=0;
-	Lang=Langs.GetLangsCursor();
+	Lang=Langs->GetLangsCursor();
 	for(Lang.Start();!Lang.End();Lang.Next())
 	{
-		str=Lang()->GetName();
+		str=ToQString(Lang()->GetName());
 		str+=" [";
-		str+=Lang()->GetLib();
+		str+=ToQString(Lang()->GetLib());
 		str+="]";
 		cur=new QLangItem(dlg.Langs,Lang(),str);
 		if(!def)
@@ -318,17 +345,17 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	// Goes through the document analysis method
 	def=cur=0;
-	DocAnalyse=DocAnalyseManager.GetDocAnalysesCursor();
+	DocAnalyse=DocAnalyseManager->GetDocAnalysesCursor();
 	dlg.CurrentDocAnalyse->insertItem("None",0);
 	for(DocAnalyse.Start(),idx=1;!DocAnalyse.End();DocAnalyse.Next(),idx++)
 	{
-		str=DocAnalyse()->GetName();
+		str=ToQString(DocAnalyse()->GetName());
 		str+=" [";
-		str+=DocAnalyse()->GetLib();
+		str+=ToQString(DocAnalyse()->GetLib());
 		str+="]";
 		cur=new QDocAnalyseItem(dlg.DocAnalyses,DocAnalyse(),str);
-		dlg.CurrentDocAnalyse->insertItem(DocAnalyse()->GetName(),idx);
-		if((DocAnalyse()->GetPlugin())&&(DocAnalyse()->GetPlugin()==DocAnalyseManager.GetCurrentMethod()))
+		dlg.CurrentDocAnalyse->insertItem(ToQString(DocAnalyse()->GetName()),idx);
+		if((DocAnalyse()->GetPlugin())&&(DocAnalyse()->GetPlugin()==DocAnalyseManager->GetCurrentMethod()))
 			dlg.CurrentDocAnalyse->setCurrentItem(idx);
 		if(!def)
 			def=cur;
@@ -343,6 +370,12 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	if(dlg.exec())
 	{
+		// read the plugins path
+		if (strcmp(pluginsPath, dlg.PluginsPath->url()))
+		{
+			pluginsPath=RString(dlg.PluginsPath->url().ascii());
+			QMessageBox::information(this,"Plugins Path has changed","You changed the plugins path, please restart KGALILEICenter.");
+		}
 		// Goes through filters
 		QFilterItem* item=dynamic_cast<QFilterItem*>(dlg.Filters->firstChild());
 		while(item)
@@ -366,7 +399,7 @@ void KGALILEICenterApp::slotPlugins(void)
 		}
 		try
 		{
-			ProfilingManager.SetCurrentMethod(dlg.CurrentProfileCalc->currentText());
+			ProfilingManager->SetCurrentMethod(dlg.CurrentProfileCalc->currentText());
 		}
 		catch(GException)
 		{
@@ -384,7 +417,7 @@ void KGALILEICenterApp::slotPlugins(void)
 		}
 		try
 		{
-			GroupingManager.SetCurrentMethod(dlg.CurrentGrouping->currentText());
+			GroupingManager->SetCurrentMethod(dlg.CurrentGrouping->currentText());
 		}
 		catch(GException)
 		{
@@ -402,7 +435,7 @@ void KGALILEICenterApp::slotPlugins(void)
 		}
 		try
 		{
-			GroupCalcManager.SetCurrentMethod(dlg.CurrentGroupCalc->currentText());
+			GroupCalcManager->SetCurrentMethod(dlg.CurrentGroupCalc->currentText());
 		}
 		catch(GException)
 		{
@@ -431,7 +464,7 @@ void KGALILEICenterApp::slotPlugins(void)
 		}
 		try
 		{
-			LinkCalcManager.SetCurrentMethod(dlg.CurrentLinkCalc->currentText());
+			LinkCalcManager->SetCurrentMethod(dlg.CurrentLinkCalc->currentText());
 		}
 		catch(GException)
 		{
@@ -453,7 +486,16 @@ void KGALILEICenterApp::slotPlugins(void)
 		while(item8)
 		{
 			if(item8->Enable)
-				item8->Fac->Create(getSession());
+			{
+				try
+				{
+					item8->Fac->Create(getSession());
+				}
+				catch(GException &e)
+				{
+					QMessageBox::information(this,"Error",e.GetMsg());
+				}
+			}
 			else
 				item8->Fac->Delete(getSession());
 			item8=dynamic_cast<QLangItem*>(item8->itemBelow());
@@ -471,7 +513,7 @@ void KGALILEICenterApp::slotPlugins(void)
 		}
 		try
 		{
-			DocAnalyseManager.SetCurrentMethod(dlg.CurrentDocAnalyse->currentText());
+			DocAnalyseManager->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText());
 		}
 		catch(GException)
 		{
@@ -496,13 +538,23 @@ void KGALILEICenterApp::slotPlugins(void)
 void KGALILEICenterApp::slotSessionOptions(void)
 {
 	char tmp[10];
-	sprintf(tmp,"%f",SessionParams.GetDouble("NullSimLevel"));
+
 	QSessionOptions dlg(this, "Session Options");
+	sprintf(tmp,"%f",SessionParams.GetDouble("NullSimLevel"));
+	dlg.NullSim->setText(tmp);
 	dlg.SBDiffBehaviour->setValue(SessionParams.GetUInt("DiffBehaviourMinDocs"));
 	dlg.SBSameBehaviour->setValue(SessionParams.GetUInt("SameBehaviourMinDocs"));
 	dlg.CBGroupsHistory->setChecked(SessionParams.GetBool("SaveGroupsHistory"));
 	dlg.CBProfilesHistory->setChecked(SessionParams.GetBool("SaveProfilesHistory"));
-	dlg.NullSim->setText(tmp);
+	dlg.PathtoBinary->setMode(KFile::Directory);
+	dlg.PathtoBinary->setURL(ToQString(SessionParams.GetString("PathtoBinary")));
+	dlg.CBDebugSim->setChecked(SessionParams.GetBool("DebugSim"));
+	dlg.CBDebugBehaviour->setChecked(SessionParams.GetBool("DebugBehaviour"));
+	dlg.CBDebugMinSim->setChecked(SessionParams.GetBool("DebugMinSim"));
+	dlg.CBAutomaticMinSim->setChecked(SessionParams.GetBool("AutomaticMinSim"));
+	dlg.CBFixedMinSim->setChecked(!SessionParams.GetBool("AutomaticMinSim"));
+	sprintf(tmp,"%f",SessionParams.GetDouble("MinSim"));
+	dlg.MinSim->setText(tmp);
 
 	if(dlg.exec())
 	{
@@ -511,10 +563,20 @@ void KGALILEICenterApp::slotSessionOptions(void)
 		SessionParams.Set("NullSimLevel", atof(dlg.NullSim->text()));
 		SessionParams.Set("SaveGroupsHistory", dlg.CBGroupsHistory->isChecked());
 		SessionParams.Set("SaveProfilesHistory", dlg.CBProfilesHistory->isChecked());
+		SessionParams.Set("PathtoBinary",RString(dlg.PathtoBinary->url().ascii()));
+		SessionParams.Set("DebugSim", dlg.CBDebugSim->isChecked());
+		SessionParams.Set("DebugBehaviour", dlg.CBDebugBehaviour->isChecked());
+		SessionParams.Set("DebugMinSim", dlg.CBDebugMinSim->isChecked());
+		SessionParams.Set("AutomaticMinSim", dlg.CBAutomaticMinSim->isChecked());
+		SessionParams.Set("MinSim",atof(dlg.MinSim->text()));
 		if(dlg.CBProfilesHistory->isChecked()&&!dlg.CBGroupsHistory->isChecked())
 		{
 			QMessageBox::information(this,"Historic Options","historical groups will be saved (needed to save histoical profiles)");
 			SessionParams.Set("SaveGroupsHistory", true);
 		}
+		QMessageBox::information(this," Warning "," Remember: the session has to be restarted to take your modifications into account !");
+		if (dlg.CBDebugSim->isChecked()||dlg.CBDebugMinSim->isChecked())
+			QMessageBox::information(this," Warning "," Debug similarities mode if available for IFF configuration only!");
 	}
 }
+

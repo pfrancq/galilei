@@ -1,33 +1,73 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
-<class>QSessionOptions</class>
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<class>QExportMatrixDlg</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>QSessionOptions</cstring>
+        <cstring>QExportMatrixDlg</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>359</width>
-            <height>707</height>
+            <width>295</width>
+            <height>366</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Session Options</string>
+        <string>Export Module</string>
     </property>
-    <property name="sizeGripEnabled">
-        <bool>true</bool>
+    <property name="icon">
+        <pixmap>image0</pixmap>
     </property>
     <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout8</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabel2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Choose language:</string>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer8</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>40</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QComboBox">
+                    <property name="name">
+                        <cstring>CBLangs</cstring>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
         <widget class="QGroupBox">
             <property name="name">
                 <cstring>groupBox1</cstring>
             </property>
             <property name="title">
-                <string>Profiles Behaviour</string>
+                <string>Profiles</string>
             </property>
             <vbox>
                 <property name="name">
@@ -35,7 +75,42 @@
                 </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout3</cstring>
+                        <cstring>layout1</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>CBProfiles</cstring>
+                            </property>
+                            <property name="text">
+                                <string>activate profiles export</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer1</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout12</cstring>
                     </property>
                     <hbox>
                         <property name="name">
@@ -43,11 +118,10 @@
                         </property>
                         <widget class="QLabel">
                             <property name="name">
-                                <cstring>textLabel1_2</cstring>
+                                <cstring>textLabel1</cstring>
                             </property>
                             <property name="text">
-                                <string>Minimum of documents for the 
-"diff behaviour" parameter :</string>
+                                <string>Ouput file:</string>
                             </property>
                         </widget>
                         <spacer>
@@ -62,55 +136,14 @@
                             </property>
                             <property name="sizeHint">
                                 <size>
-                                    <width>40</width>
+                                    <width>90</width>
                                     <height>20</height>
                                 </size>
                             </property>
                         </spacer>
-                        <widget class="QSpinBox">
+                        <widget class="KURLRequester">
                             <property name="name">
-                                <cstring>SBDiffBehaviour</cstring>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout4</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel1</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Minimum of documents for the 
-"same behaviour" parameter :</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer3</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QSpinBox">
-                            <property name="name">
-                                <cstring>SBSameBehaviour</cstring>
+                                <cstring>ProfilesFile</cstring>
                             </property>
                         </widget>
                     </hbox>
@@ -122,7 +155,7 @@
                 <cstring>groupBox1_2</cstring>
             </property>
             <property name="title">
-                <string>Similarities</string>
+                <string>Documents</string>
             </property>
             <vbox>
                 <property name="name">
@@ -130,66 +163,7 @@
                 </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout11</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel1_2_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Null Similarity Level :</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer8</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>101</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QLineEdit">
-                            <property name="name">
-                                <cstring>NullSim</cstring>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabel1_2_2_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Minimum of similarity (clustering hard constraint) :</string>
-                    </property>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>CBAutomaticMinSim</cstring>
-                    </property>
-                    <property name="text">
-                        <string>automatic</string>
-                    </property>
-                    <property name="checked">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout13</cstring>
+                        <cstring>layout1_2</cstring>
                     </property>
                     <hbox>
                         <property name="name">
@@ -197,205 +171,15 @@
                         </property>
                         <widget class="QCheckBox">
                             <property name="name">
-                                <cstring>CBFixedMinSim</cstring>
+                                <cstring>CBDocuments</cstring>
                             </property>
                             <property name="text">
-                                <string>fixed :</string>
+                                <string>activate documents export</string>
                             </property>
                         </widget>
                         <spacer>
                             <property name="name">
-                                <cstring>spacer8_2</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>135</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QLineEdit">
-                            <property name="name">
-                                <cstring>MinSim</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-            </vbox>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>groupBox1_2_2</cstring>
-            </property>
-            <property name="title">
-                <string>Groups Historic Options</string>
-            </property>
-            <vbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>CBGroupsHistory</cstring>
-                    </property>
-                    <property name="text">
-                        <string>save historical groups</string>
-                    </property>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>CBProfilesHistory</cstring>
-                    </property>
-                    <property name="text">
-                        <string>save historical profiles</string>
-                    </property>
-                </widget>
-            </vbox>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>groupBox1_2_2_2</cstring>
-            </property>
-            <property name="title">
-                <string>Debug Mode</string>
-            </property>
-            <vbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>CBDebugSim</cstring>
-                    </property>
-                    <property name="text">
-                        <string>debug similarities between profiles</string>
-                    </property>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>CBDebugBehaviour</cstring>
-                    </property>
-                    <property name="text">
-                        <string>debug behaviours between profiles</string>
-                    </property>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>CBDebugMinSim</cstring>
-                    </property>
-                    <property name="text">
-                        <string>debug minimum of similarity</string>
-                    </property>
-                </widget>
-            </vbox>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>groupBox14</cstring>
-            </property>
-            <property name="title">
-                <string>PostDoc</string>
-            </property>
-            <vbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout44</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Path to binary files</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer40</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>51</width>
-                                    <height>21</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="KURLRequester">
-                            <property name="name">
-                                <cstring>PathtoBinary</cstring>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-            </vbox>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>groupBox2</cstring>
-            </property>
-            <property name="paletteForegroundColor">
-                <color>
-                    <red>255</red>
-                    <green>0</green>
-                    <blue>0</blue>
-                </color>
-            </property>
-            <property name="title">
-                <string>** Warning **</string>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout6</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel1_3</cstring>
-                            </property>
-                            <property name="paletteForegroundColor">
-                                <color>
-                                    <red>255</red>
-                                    <green>0</green>
-                                    <blue>0</blue>
-                                </color>
-                            </property>
-                            <property name="text">
-                                <string>This parameters will be taken into account
- the next time a session is opened !!!</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer5</cstring>
+                                <cstring>spacer1_2</cstring>
                             </property>
                             <property name="orientation">
                                 <enum>Horizontal</enum>
@@ -412,56 +196,155 @@
                         </spacer>
                     </hbox>
                 </widget>
-            </hbox>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout13</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel1_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Ouput file:</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer2_2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>100</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="KURLRequester">
+                            <property name="name">
+                                <cstring>DocumentsFile</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
         </widget>
-        <spacer>
+        <widget class="QGroupBox">
             <property name="name">
-                <cstring>spacer4</cstring>
+                <cstring>groupBox1_3</cstring>
             </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
+            <property name="title">
+                <string>Groups</string>
             </property>
-            <property name="sizeType">
-                <enum>Expanding</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>20</width>
-                    <height>70</height>
-                </size>
-            </property>
-        </spacer>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout1_3</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>CBGroups</cstring>
+                            </property>
+                            <property name="text">
+                                <string>activate groups export</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer1_3</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout14</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel1_3</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Ouput file:</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer2_3</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>100</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="KURLRequester">
+                            <property name="name">
+                                <cstring>GroupsFile</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
+        </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>Layout1</cstring>
+                <cstring>layout7</cstring>
             </property>
             <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <property name="margin">
-                    <number>0</number>
-                </property>
-                <property name="spacing">
-                    <number>6</number>
-                </property>
                 <widget class="QPushButton">
                     <property name="name">
-                        <cstring>buttonHelp</cstring>
+                        <cstring>pushButton1_2</cstring>
                     </property>
                     <property name="text">
-                        <string>&amp;Help</string>
-                    </property>
-                    <property name="accel">
-                        <string>F1</string>
-                    </property>
-                    <property name="autoDefault">
-                        <bool>true</bool>
+                        <string>&amp;Cancel</string>
                     </property>
                 </widget>
                 <spacer>
                     <property name="name">
-                        <cstring>Horizontal Spacing2</cstring>
+                        <cstring>spacer7</cstring>
                     </property>
                     <property name="orientation">
                         <enum>Horizontal</enum>
@@ -471,87 +354,50 @@
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>20</width>
+                            <width>40</width>
                             <height>20</height>
                         </size>
                     </property>
                 </spacer>
                 <widget class="QPushButton">
                     <property name="name">
-                        <cstring>buttonOk</cstring>
+                        <cstring>pushButton1</cstring>
                     </property>
                     <property name="text">
-                        <string>&amp;OK</string>
-                    </property>
-                    <property name="accel">
-                        <string></string>
-                    </property>
-                    <property name="autoDefault">
-                        <bool>true</bool>
-                    </property>
-                    <property name="default">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>buttonCancel</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;Cancel</string>
-                    </property>
-                    <property name="accel">
-                        <string></string>
-                    </property>
-                    <property name="autoDefault">
-                        <bool>true</bool>
+                        <string>&amp;Export</string>
                     </property>
                 </widget>
             </hbox>
         </widget>
     </vbox>
 </widget>
+<images>
+    <image name="image0">
+        <data format="XPM.GZ" length="3838">789ccd95596f1a491080dffd2b90ebcd8a2ae61a40d13ed86018131f180c384479988bd380cd611b56fbdf53d35dd59ee1d42a5a693591a2cf5dfd75757575f3f52cf154bb4d9c7d3d992f9cc5c04b787d679638f397e3f1eae7afbffe3e394da712f42f799e4ca44ebf9c9c3e2c125ee26e3a0942409b00b24ed6cfb98a6b215b292b994f870c15e6ac66bc30ace261aad8b10acc7d669fe7bf18d6fe7be142468d5f879c4be764bdb161edeb0a73fcdcb0a77c6d66c9c711d6f1f8c3b08a87b2623727f9f6841ded0766ce1706c2ecb384753c560ceb7c5221e7d379ce1f0bc29c6f4758c7c31533e70b2561f64d855dbddea562375fe0f885611d7f2eccf93585797edeb0aff88559f6f76458e7670bb3af2eace78317722153e0f3c1b4619d4f5798f7eb0b733e7786753e6b612fab38c72ce7d932acfddf85f9fc02c37abd4b615e2f23ccfe47c37afda162af20f50461f6af0cebf10761f65f19d6f57917e6f51a86f57a0e33d71bdf84d9bf14667f5598e7bf86ec649c249fcfc0b0deff4c58cf879130cf2f09fb2a3f786396fa3d0bf37e26c2bc9fa2b09e8fae62cf7178fe5098e7a330c7279903ceef5598f35b0873bcbabf6ec64df1f84ad8d7efd93bb3c5f181613daefad5f55d47e70f1f86b5cfb08e079759d6bf36ac7d37217b594ff21909733d978675fc4438b014f7982d9eef0bf37a59618e57efabe77b9c1fde0aeb71b86096fce6c23caececbcffabc3eac0debf831b3c5acfac70f7c87f99939d0fcb0f8b3efbf7620c4c8f9370e74d1431f03ecc6fedac33e0e8e3b7088237ca66f8c139ce24b64e4156738c7052e8fe7816ff88e1fb8c2355ee065e4ef23320458c4125e1ddf0b9629728d15b43ff3c0015e93a18455fad6f8fd481e37788b77788f35b4237f7dc03a7d6b6c90e3119bd83a508f1baa44953268d367c7dc4ff8033bcad220dbf93e0726c9b0a20cda8a521b7b4c1b4b86fe6fed71f4318b163972bbfb802c16e6692f0d3ab3c22e07653107c41ac06e035b9a2a933c38bb1ce0521675b4c1dbefa0289f761256e4fe334e1ce8505705e14e0e19c811a8b3a943f7b37b8c833a00107ad03feca04e2ed1470e186c3a6048dd593ceea0c811f560b817d8723cd3a916b103e3a38e0955be0ed39d8e05399af072d4f14aabd5a903525b8e19d9c37dcee37dbca32265aafd947a79bba6a0ee2475201ccb63892b5a29727ec6315477323cf9ce41c31b755155ee43dc41a3efea3e8596ee01c707f55127ba939823a09d3c2a4b0656fbb28035d5cd8e7740e4be0ce9dd589325dc5375d342efab830e5ce0843ab416bf0fb17bdba55ba9df197ab1e0128711c70c8a64984389b2d8780d638e214534d952a7d72272bfa99259eae446b42f763928b245b76e4a16eae5e80da6dbf4413df84863ed4dc3f67b0a0bba4d3dcac18672c43d20c31dcca112d673b30bb7df75f0c2c8f86b46bf186167da5081f26635f6fcceb5b01d7fcdc0866b4ced7b9dfe37bffbff7c3bf90d88123f32</data>
+    </image>
+</images>
 <connections>
     <connection>
-        <sender>buttonOk</sender>
+        <sender>pushButton1</sender>
         <signal>clicked()</signal>
-        <receiver>QSessionOptions</receiver>
+        <receiver>QExportMatrixDlg</receiver>
         <slot>accept()</slot>
     </connection>
     <connection>
-        <sender>buttonCancel</sender>
+        <sender>pushButton1_2</sender>
         <signal>clicked()</signal>
-        <receiver>QSessionOptions</receiver>
+        <receiver>QExportMatrixDlg</receiver>
         <slot>reject()</slot>
     </connection>
-    <connection>
-        <sender>CBAutomaticMinSim</sender>
-        <signal>clicked()</signal>
-        <receiver>CBFixedMinSim</receiver>
-        <slot>toggle()</slot>
-    </connection>
-    <connection>
-        <sender>CBFixedMinSim</sender>
-        <signal>clicked()</signal>
-        <receiver>CBAutomaticMinSim</receiver>
-        <slot>toggle()</slot>
-    </connection>
-    <connection>
-        <sender>CBFixedMinSim</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>MinSim</receiver>
-        <slot>setEnabled(bool)</slot>
-    </connection>
 </connections>
-<tabstops>
-    <tabstop>SBDiffBehaviour</tabstop>
-    <tabstop>SBSameBehaviour</tabstop>
-    <tabstop>buttonHelp</tabstop>
-    <tabstop>buttonOk</tabstop>
-    <tabstop>buttonCancel</tabstop>
-</tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>kurlrequester.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kurlrequester.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kpushbutton.h</includehint>
     <includehint>kurlrequester.h</includehint>
     <includehint>klineedit.h</includehint>
     <includehint>kpushbutton.h</includehint>

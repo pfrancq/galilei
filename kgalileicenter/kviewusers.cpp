@@ -6,14 +6,10 @@
 
 	Window for manipulating the users - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,6 +28,11 @@
 
 */
 
+
+
+//-----------------------------------------------------------------------------
+// include files for R
+#include <frontend/kde/rqt.h>
 
 
 //-----------------------------------------------------------------------------
@@ -102,11 +103,11 @@ void KViewUsers::CreateUsersListView(void)
 
 	for(CurUsr.Start();!CurUsr.End();CurUsr.Next())
 	{
-		useritem = new QListViewItemType(CurUsr(),Users,CurUsr()->GetFullName().Latin1());
+		useritem = new QListViewItemType(CurUsr(),Users,ToQString(CurUsr()->GetFullName()));
 		useritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
 		for (CurUsr()->Start(); !CurUsr()->End(); CurUsr()->Next())
 		{
-			prof=new QListViewItemType((*CurUsr())(), useritem, (*CurUsr())()->GetName().Latin1());
+			prof=new QListViewItemType((*CurUsr())(), useritem,ToQString((*CurUsr())()->GetName()));
 			prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("kdict.png",KIcon::Small)));
 		}
 	}

@@ -6,14 +6,10 @@
 
 	Basic Window for the application - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -37,6 +33,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rtextfile.h>
+#include <frontend/kde/rqt.h>
 using namespace R;
 
 
@@ -203,25 +200,32 @@ void KViewStems::update(unsigned int /*cmd*/)
 void KViewStems::LoadFile(const char* filename)
 {
 	RTextFile f(filename);
-	char* line;
-	char* ptr;
-	char word[200];
-	char root[200];
+	RString line;
+	const RChar* ptr;
+	unsigned int pos;
+	unsigned int len;
+	RString word;
 	Word* wptr;
 	GrWord* gptr;
 
 	// Read the File
 	while(!f.Eof())
 	{
+		// Read a line
 		line=f.GetLine();
-		line++;  // Skip ".
+		ptr=line();
 
 		// Read Word
-		ptr=word;
-		while((*line)&&((*line)!='"'))
-			(*(ptr++))=(*(line++));
-		(*ptr)=0;
-		wptr=Words->GetInsertPtr<const char*>(word);
+		
+		ptr++;
+		len=0;
+		while((!ptr->IsNull())&&((*ptr)!=RChar('"')))
+		{
+			ptr++;
+			len++;
+		}
+		word=line.Mid(1,len);
+		wptr=Words->GetInsertPtr<RString>(word);
 		if(wptr->Stem) continue; // Word alreay exists
 
 		// Compute Stem
@@ -230,31 +234,23 @@ void KViewStems::LoadFile(const char* filename)
 		gptr->Words.InsertPtr(wptr);
 
 		// Skip '" = "'
-		line+=5;
+		ptr+=5;
+		pos=len+6;
 
 		// Read Root
-		ptr=root;
-		while((*line)&&((*line)!='"'))
-			(*(ptr++))=(*(line++));
-		(*ptr)=0;
-		gptr=Roots->GetInsertPtr<const char*>(root);
+		len=0;
+		while((!ptr->IsNull())&&((*ptr)!=RChar('"')))
+		{
+			ptr++;
+			len++;
+		}
+		gptr=Roots->GetInsertPtr<RString>(line.Mid(pos,len));
 		wptr->Root=gptr;
 		gptr->Words.InsertPtr(wptr);
-		
-		// Skip '" '
-		line+=2;
-
-		// Read Genres
-//		ptr=root;
-//		while((*line)&&((*line)!='['))
-//			(*(ptr++))=(*(line++));
-//		(*ptr)=0;
-//		Genres.GetInsertPtr<const char*>(root);
 	}
 
 	// Set the caption
-	sprintf(word,"%s - Words: %u - Roots: %u - Stems: %u",Lang->GetName(),Words->GetNb(),Roots->GetNb(),Stems->GetNb());
-	setCaption(word);
+	setCaption(ToQString(Lang->GetName())+" - Words: "+QString::number(Words->GetNb())+" - Roots: - "+QString::number(Roots->GetNb())+" - Stems: "+QString::number(Stems->GetNb()));
 
 	// Compute Stats
 	ComputeRecallPrecision();
@@ -262,7 +258,7 @@ void KViewStems::LoadFile(const char* filename)
 
 	// Fill the list 'Roots'
 	ConstructTh(0,0);
-	ConstructPr(0,0);
+	ConstructPr(0,0);        
 }
 
 
@@ -279,11 +275,11 @@ void KViewStems::ConstructTh(char index,char index2)
 	for(ptr2->Start();!ptr2->End();ptr2->Next())
 	{
 		gptr=(*ptr2)();
-		QListViewItem* grsitem = new QListViewItem(thGroups,gptr->Latin1());
+		QListViewItem* grsitem = new QListViewItem(thGroups,ToQString(*gptr));
 		for(gptr->Words.Start();!gptr->Words.End();gptr->Words.Next())
 		{
 			wptr=gptr->Words();
-			sprintf(word,"Word: '%s'  -  Stem: '%s'",wptr->Latin1(),wptr->Stem->Latin1());
+			sprintf(word,"Word: '%s'  -  Stem: '%s'",wptr,wptr->Stem);
 			new QListViewItem(grsitem,word);
 		}
 	}
@@ -294,7 +290,8 @@ void KViewStems::ConstructTh(char index,char index2)
 void KViewStems::ConstructPr(char index,char index2)
 {
 	RContainer<GrWord,unsigned,true,true>* ptr2;
-	char word[200];
+//	char word[200];
+	QString word;
 	Word* wptr;
 	GrWord* gptr;
 
@@ -303,12 +300,12 @@ void KViewStems::ConstructPr(char index,char index2)
 	for(ptr2->Start();!ptr2->End();ptr2->Next())
 	{
 		gptr=(*ptr2)();
-		sprintf(word,"Stem: '%s'  -  Precision=%1.3f - Recall=%1.3f",gptr->Latin1(),gptr->Precision,gptr->Recall);
+		word="Stem: '"+ToQString(*gptr)+"'  -  Precision="+QString::number(gptr->Precision)+"  -  Recall="+QString::number(gptr->Recall);
 		QListViewItem* grsitem = new QListViewItem(prGroups,word);
 		for(gptr->Words.Start();!gptr->Words.End();gptr->Words.Next())
 		{
 			wptr=gptr->Words();
-			sprintf(word,"Word: '%s'  -  Root: '%s'",wptr->Latin1(),wptr->Root->Latin1());
+			word="Word: '"+ToQString(*wptr)+"'  -  Root: '"+ToQString(*wptr->Root)+"'";
 			new QListViewItem(grsitem,word);
 		}
 	}

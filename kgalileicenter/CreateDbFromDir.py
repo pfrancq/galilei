@@ -80,7 +80,7 @@ def parseDir(dir_to_treat,parent,level):
 				#print "level",level,"catid=parent"
 				catId = parent
 			parseDir(fullname,catId,level+1)
-		elif os.path.isfile(fullname) and ( os.path.splitext(fullname)[1] == '.html' or os.path.splitext(fullname)[1] == '.htm' ):
+		elif os.path.isfile(fullname) and ( os.path.splitext(string.lower(fullname))[1] == '.html' or os.path.splitext(string.lower(fullname))[1] == '.htm'  or os.path.splitext(string.lower(fullname))[1] == '.rtf'  or os.path.splitext(string.lower(fullname))[1] == ''  or os.path.splitext(string.lower(fullname))[1] == '.doc' or os.path.splitext(string.lower(fullname))[1] == '.pdf'):
 			#print ("Processing file "), dirname
 			#print "parent ", parent
 			insertdocument(fullname,parent,lang)
@@ -144,7 +144,7 @@ def createprofiles():
 	print "Processing Creation of profiles ..."
 
 	profileid=0
-	langs=["en","fr"]
+	langs=["en","fr","nl"]
 	SQL = "SELECT count(*) FROM users"
 	cur.execute(SQL)
 	nbuser=cur.fetchone()[0]

@@ -6,15 +6,11 @@
 
 	Window to manipulate a given profile - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -55,6 +51,7 @@
 #include <sessions/gsession.h>
 #include <frontend/kde/qlistviewitemtype.h>
 #include <frontend/kde/qgsubprofiledescs.h>
+#include <frontend/kde/rqt.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -85,7 +82,7 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 {
 	// Window initialisation
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
-	setCaption("Profile \""+QString(Profile->GetName().Latin1())+"\"");
+	setCaption("Profile \""+QString(ToQString(Profile->GetName()))+"\"");
 
 	// initialisation of the tab widget
 	Infos=new QTabWidget(this);
@@ -123,6 +120,7 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	Fdbks->addColumn(QString("Date"));
 	Fdbks->setRootIsDecorated(true);
 	connect(Fdbks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	ConstructFdbks();
 
 	FdbksLinks = new QListView(Infos);
 	Infos->insertTab(FdbksLinks,"Links");
@@ -131,16 +129,13 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	FdbksLinks->addColumn(QString("Date"));
 	FdbksLinks->setRootIsDecorated(true);
 	connect(FdbksLinks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-
-	ConstructFdbks();
+	ConstructLinks();
 
 	Pov = new QListView(Infos);
 	Infos->insertTab(Pov,"Point Of View");
 	Pov->addColumn(QString("Point of view list of documents"));
 	//Pov->addColumn(QString("attached words"));
 	Pov->setRootIsDecorated(true);
-
-
 }
 
 
@@ -154,8 +149,6 @@ void KViewProfile::ConstructFdbks(void)
 	GSubProfileCursor SubCur;
 
 	if(!Fdbks) return;
-	if(!FdbksLinks) return;
-
 
 	// Init different judgements
 	Fdbks->clear();
@@ -166,14 +159,6 @@ void KViewProfile::ConstructFdbks(void)
 	QListViewItemType* hs= new QListViewItemType(Fdbks, "Irrelevant Documents");
 	hs->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("stop.png",KIcon::Small)));
 
-	// Init different judgements for document from link analysis.
-	FdbksLinks->clear();
-	QListViewItemType* lh= new QListViewItemType(FdbksLinks, "Hub Documents");
-	//lh->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("",KIcon::Small)));
-	QListViewItemType* la= new QListViewItemType(FdbksLinks, "Authority Documents");
-	//la->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("",KIcon::Small)));
-
-
 	// Add Judgements from profiles.
 	Docs=Profile->GetProfDocCursor();
 	for(Docs.Start();!Docs.End();Docs.Next())
@@ -183,14 +168,8 @@ void KViewProfile::ConstructFdbks(void)
 			case djOK:
 				p=ok;
 				break;
-			case (djOK|djAutority):
-				p=la;
-				break;
 			case djKO:
 				p=ko;
-				break;
-			case djHub:
-				p=lh;
 				break;
 			case djOutScope:
 				p=hs;
@@ -202,7 +181,7 @@ void KViewProfile::ConstructFdbks(void)
 		if(!p) continue;
 		d=Docs()->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName().Latin1(),Docs()->GetDoc()->GetURL().Latin1(),sDate);
+		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,ToQString(Docs()->GetDoc()->GetName()),ToQString(Docs()->GetDoc()->GetURL()),sDate);
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
 	}
 
@@ -218,17 +197,11 @@ void KViewProfile::ConstructFdbks(void)
 				case djOK:
 					p=ok;
 					break;
-				case (djOK| djAutority):
-					p=la;
-					break;
 				case djKO:
 					p=ko;
 					break;
-				case djHub:
-					p=lh;
-					break;
 				case djOutScope:
-					p=hs;
+ 					p=hs;
 					break;
 				default:
 					p=0;
@@ -237,11 +210,86 @@ void KViewProfile::ConstructFdbks(void)
 			if(!p) continue;
 			d=Docs()->GetUpdated();
 			sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-			QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName().Latin1(),Docs()->GetDoc()->GetURL().Latin1(),sDate);
+			QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,ToQString(Docs()->GetDoc()->GetName()),ToQString(Docs()->GetDoc()->GetURL()),sDate);
 			prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
 		}
 	}
 }
+
+
+//-----------------------------------------------------------------------------
+void KViewProfile::ConstructLinks(void)
+{
+	QListViewItem *p;
+	RDate d;
+	RString iconName="";
+	char sDate[20];
+	GProfDocCursor Docs;
+	GSubProfileCursor SubCur;
+
+	if(!FdbksLinks) return;
+
+	// Init different judgements for document from link analysis.
+	FdbksLinks->clear();
+	QListViewItemType* lh= new QListViewItemType(FdbksLinks, "Hub Documents");
+	lh->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("ok.png",KIcon::Small)));
+	QListViewItemType* la= new QListViewItemType(FdbksLinks, "Authority Documents");
+	la->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("ok.png",KIcon::Small)));
+
+	// Add Judgements from profiles.
+	Docs=Profile->GetProfDocCursor();
+	for(Docs.Start();!Docs.End();Docs.Next())
+	{
+		switch(Docs()->GetFdbk())
+		{
+			case (djOK | djAutority):
+				p=la;
+				iconName="konquerorAutho.png";
+			case (djOK | djHub):
+				p=lh;
+				iconName="konquerorHub.png";
+				break;
+			default:
+				p=0;
+				break;
+		}
+		if(!p) continue;
+		d=Docs()->GetUpdated();
+		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
+		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,ToQString(Docs()->GetDoc()->GetName()),ToQString(Docs()->GetDoc()->GetURL()),sDate);
+		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon(ToQString(iconName),KIcon::Small)));
+	}
+
+	// Add Judgements from subprofiles.
+	SubCur=Profile->GetSubProfilesCursor();
+	for (SubCur.Start(); !SubCur.End(); SubCur.Next())
+	{
+		Docs=SubCur()->GetProfDocCursor();
+		for(Docs.Start();!Docs.End();Docs.Next())
+		{
+			switch(Docs()->GetFdbk())
+			{
+				case (djOK | djAutority):
+					p=la;
+					iconName="konquerorAutho.png";
+					break;
+				case (djOK | djHub):
+					p=lh;
+					iconName="konquerorHub.png";
+					break;
+				default:
+					p=0;
+					break;
+			}
+			if(!p) continue;
+			d=Docs()->GetUpdated();
+			sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
+			QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,ToQString(Docs()->GetDoc()->GetName()),ToQString(Docs()->GetDoc()->GetURL()),sDate);
+			prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon(ToQString(iconName),KIcon::Small)));
+		}
+	}
+}
+
 
 //-----------------------------------------------------------------------------
 void KViewProfile::ConstructGroups(void)
@@ -260,7 +308,7 @@ void KViewProfile::ConstructGroups(void)
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
 		GGroupCursor grs=Doc->GetSession()->GetGroupsCursor(lang);
-		QListViewItemType* grsitem = new QListViewItemType(Groups,lang->GetName());
+		QListViewItemType* grsitem = new QListViewItemType(Groups,ToQString(lang->GetName()));
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		sub=Profile->GetSubProfile(lang);
 		if(!sub) continue;
@@ -275,7 +323,7 @@ void KViewProfile::ConstructGroups(void)
 
 				d=sub->GetAttached();
 				sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1(),sDate);
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),sDate);
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}
@@ -289,9 +337,9 @@ void KViewProfile::ConstructUser(void)
 	const GUser* usr=Profile->GetUser();
 
 	User->clear();
-	new QListViewItem(User,"ID",itou(usr->GetId()).Latin1());
-	new QListViewItem(User,"Full Name",usr->GetFullName().Latin1());
-	new QListViewItem(User,"Name",usr->GetName().Latin1());
+	new QListViewItem(User,"ID",ToQString(itou(usr->GetId())));
+	new QListViewItem(User,"Full Name",ToQString(usr->GetFullName()));
+	new QListViewItem(User,"Name",ToQString(usr->GetName()));
 }
 
 
@@ -306,6 +354,10 @@ void KViewProfile::update(unsigned int cmd)
 	if(cmd==2)
 	{
 		ConstructGroups();
+	}
+	if(cmd==3)
+	{
+		ConstructLinks();
 	}
 }
 

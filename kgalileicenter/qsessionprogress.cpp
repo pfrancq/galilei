@@ -6,14 +6,10 @@
 
 	Dialog Box to show the progress of the something done on a session  - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,6 +28,19 @@
 
 */
 
+
+
+//-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <ctype.h>
+#include <stdexcept>
+#include <dirent.h>
+#include <fnmatch.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for R
+#include <frontend/kde/rqt.h>
 
 
 //-----------------------------------------------------------------------------
@@ -55,11 +64,13 @@
 #include <docs/gdocanalyse.h>
 #include <docs/gdocxml.h>
 #include <docs/gpostdoc.h>
+#include <docs/gdoc.h>
 #include <profiles/guser.h>
 #include <sessions/gsession.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofilecalc.h>
 #include <groups/ggrouping.h>
+#include <groups/ggroup.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -165,7 +176,15 @@ void QSessionProgressDlg::CreateDocXML(GDocXML* &xml,GDoc* doc)
 	}
 	catch(GException& e)
 	{
-		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
+		txtRem->setText((QString("Error: ")+ToQString(e.GetMsg())));
+	}
+	catch(bad_alloc)
+	{
+		txtRem->setText("Memory error");
+	}
+	catch(...)
+	{
+		txtRem->setText("Unexpected error");
 	}
 	btnOk->setEnabled(true);
 }
@@ -190,7 +209,7 @@ void QSessionProgressDlg::AnalyseXML(GDocXML* &xml,GDoc* doc)
 		KApplication::kApplication()->processEvents();
 		//doc->Analyse(xml,Session);
 		if(!Session->GetDocAnalyseMng()->GetCurrentMethod())
-			 txtRem->setText( RString("Error: No Text Analyse method chosen.").Latin1());
+			 txtRem->setText(QString("Error: No Text Analyse method chosen."));
 		else
 		{
 			Session->GetDocAnalyseMng()->GetCurrentMethod()->Analyse(xml,doc);
@@ -199,14 +218,22 @@ void QSessionProgressDlg::AnalyseXML(GDocXML* &xml,GDoc* doc)
 	}
 	catch(GException& e)
 	{
-		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
+		txtRem->setText((QString("Error: ")+ToQString(e.GetMsg())));
+	}
+		catch(bad_alloc)
+	{
+		txtRem->setText("Memory error");
+	}
+	catch(...)
+	{
+		txtRem->setText("Unexpected error");
 	}
 	btnOk->setEnabled(true);
 }
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::AnalyseDocs(bool modified)
+void QSessionProgressDlg::AnalyseDocs(bool modified,bool save)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -216,19 +243,27 @@ void QSessionProgressDlg::AnalyseDocs(bool modified)
 	{
 		txtRem->setText("Analyse Documents ...");
 		KApplication::kApplication()->processEvents();
-		Session->AnalyseDocs(this,modified);
+		Session->AnalyseDocs(this,modified,save);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
 	{
-		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
+		txtRem->setText((QString("Error: ")+ToQString(e.GetMsg())));
+	}
+	catch(bad_alloc)
+	{
+		txtRem->setText("Memory error");
+	}
+	catch(...)
+	{
+		txtRem->setText("Unexpected error");
 	}
 	btnOk->setEnabled(true);
 }
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::ComputeProfiles(bool modified,bool save)
+void QSessionProgressDlg::ComputeProfiles(bool modified,bool save,bool saveLinks)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -238,12 +273,20 @@ void QSessionProgressDlg::ComputeProfiles(bool modified,bool save)
 	{
 		txtRem->setText("Compute Profiles ...");
 		KApplication::kApplication()->processEvents();
-		Session->CalcProfiles(this,modified,save);
+		Session->CalcProfiles(this,modified,save,saveLinks);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
 	{
-		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
+		txtRem->setText((QString("Error: ")+ToQString(e.GetMsg())));
+	}
+	catch(bad_alloc)
+	{
+		txtRem->setText("Memory error");
+	}
+	catch(...)
+	{
+		txtRem->setText("Unexpected error");
 	}
 	btnOk->setEnabled(true);
 }
@@ -260,19 +303,79 @@ void QSessionProgressDlg::GroupProfiles(bool modified,bool save, bool savehistor
 	{
 		txtRem->setText("Groups Profiles ...");
 		KApplication::kApplication()->processEvents();
-		Session->GroupingProfiles(this,modified,save, savehistory);
+		Session->GroupingProfiles(this,modified,save,savehistory);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
 	{
-		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
+		txtRem->setText((QString("Error: ")+ToQString(e.GetMsg())));
+	}
+	catch(bad_alloc)
+	{
+		txtRem->setText("Memory error");
+	}
+	catch(...)
+	{
+		txtRem->setText("Unexpected error");
 	}
 	btnOk->setEnabled(true);
 }
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::ComputeAll(bool modified,bool save, bool savehistory)
+void QSessionProgressDlg::ComputePostGroup(void)
+{
+	btnOk->setEnabled(false);
+	show();
+	KApplication::kApplication()->processEvents();
+
+	try
+	{
+		txtRem->setText("Computing PostGroup ...");
+		KApplication::kApplication()->processEvents();
+		Session->ComputePostGroup(this);
+		txtRem->setText("Finish");
+	}
+	catch(GException& e)
+	{
+		txtRem->setText((QString("Error: ")+ToQString(e.GetMsg())));
+	}
+	btnOk->setEnabled(true);
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::ExportMatrix(const char* type, const char* filename, GLang* lang, bool label)
+{
+	btnOk->setEnabled(false);
+	show();
+	KApplication::kApplication()->processEvents();
+
+	try
+	{
+		txtRem->setText("Export vectors/words matrix...");
+		KApplication::kApplication()->processEvents();
+		Session->ExportMatrix(this, type, filename, lang, label);
+		txtRem->setText("Finish");
+	}
+	catch(GException& e)
+	{
+		txtRem->setText((QString("Error: ")+ToQString(e.GetMsg())));
+	}
+	catch(bad_alloc)
+	{
+		txtRem->setText("Memory error");
+	}
+	catch(...)
+	{
+		txtRem->setText("Unexpected error");
+	}
+	btnOk->setEnabled(true);
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::ComputeAll(bool modified,bool save,bool saveLinks, bool savehistory)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -285,15 +388,23 @@ void QSessionProgressDlg::ComputeAll(bool modified,bool save, bool savehistory)
 		Session->AnalyseDocs(this,modified);
 		txtRem->setText("Compute Profiles ...");
 		KApplication::kApplication()->processEvents();
-		Session->CalcProfiles(this,modified,save);
+		Session->CalcProfiles(this,modified,save,saveLinks);
 		txtRem->setText("Groups Profiles ...");
 		KApplication::kApplication()->processEvents();
-		Session->GroupingProfiles(this,modified,save, savehistory);
+		Session->GroupingProfiles(this,modified,save,savehistory);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
 	{
-		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
+		txtRem->setText((QString("Error: ")+ToQString(e.GetMsg())));
+	}
+	catch(bad_alloc)
+	{
+		txtRem->setText("Memory error");
+	}
+	catch(...)
+	{
+		txtRem->setText("Unexpected error");
 	}
 	btnOk->setEnabled(true);
 }
@@ -302,7 +413,7 @@ void QSessionProgressDlg::ComputeAll(bool modified,bool save, bool savehistory)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextGroupLang(const GLang* lang) throw(std::bad_alloc,RException)
 {
-	txtRem->setText(QString("Groups Profiles for '")+lang->GetName()+"' ...");
+	txtRem->setText(QString("Groups Profiles for '")+ToQString(lang->GetName())+"' ...");
 	KApplication::kApplication()->processEvents();
 }
 
@@ -310,7 +421,7 @@ void QSessionProgressDlg::NextGroupLang(const GLang* lang) throw(std::bad_alloc,
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::receiveNextDoc(const GDoc* doc) throw(std::bad_alloc,RException)
 {
-	txtRem->setText(QString("Analyse Doc '")+doc->GetName().Latin1()+"' ...");
+	txtRem->setText(QString("Analyse Doc '")+ToQString(doc->GetName())+"' ...");
 	KApplication::kApplication()->processEvents();
 }
 
@@ -318,19 +429,146 @@ void QSessionProgressDlg::receiveNextDoc(const GDoc* doc) throw(std::bad_alloc,R
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,RException)
 {
-	txtRem->setText(QString("Analyse Profile '")+prof->GetName().Latin1()+"' of User '"+prof->GetUser()->GetName().Latin1()+"' ...");
+	txtRem->setText(QString("Analyse Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetName())+"' ...");
 	KApplication::kApplication()->processEvents();
 }
 
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::receiveNextProfileExport(const GProfile* prof) throw(std::bad_alloc,RException)
+{
+	txtRem->setText("Exporting Profile "+QString::number(prof->GetId())+ToQString(prof->GetName()));
+	KApplication::kApplication()->processEvents();
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::receiveNextGroupExport(const GGroup* grp) throw(std::bad_alloc,RException)
+{
+	char tmp[100];
+	sprintf(tmp,"Exporting  Group %u", grp->GetId());
+	txtRem->setText(tmp);
+	KApplication::kApplication()->processEvents();
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::receiveNextDocumentExport(const GDoc* doc) throw(std::bad_alloc,RException)
+{
+	char tmp[100];
+	sprintf(tmp,"Exporting  Document %u", doc->GetId());
+	txtRem->setText(tmp);
+	KApplication::kApplication()->processEvents();
+}
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::receiveNextChromosome(unsigned int id) throw(std::bad_alloc,RException)
 {
 	char tmp[50];
 
-	sprintf(tmp,"Analyse Chromosome n°%u ...",id);
+	sprintf(tmp,"Analyse Chromosome n%u ...",id);
 	txtRem->setText(tmp);
 	KApplication::kApplication()->processEvents();
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::receiveNextMIMEPath(const char* path,RXMLStruct& xml)
+{
+//	unsigned int Len;
+//	int pos,next;
+//	bool Desktop;
+	DIR* dp;
+	struct dirent* ep;
+	RString Full;
+
+	dp=opendir(path);
+	if(!dp)
+	{
+		txtRem->setText("OK");
+		btnOk->setEnabled(true);
+		return;
+	}
+	while((ep=readdir(dp)))
+	{
+		if((!strcmp(ep->d_name,"."))||(!strcmp(ep->d_name,"..")))
+			continue;
+		Full=RString(path)+"/"+ep->d_name;
+		if(ep->d_type==DT_DIR)
+			receiveNextMIMEPath(Full.Latin1(),xml);
+		if((ep->d_type==DT_REG)&&(fnmatch("*.desktop",ep->d_name,0)==0))
+		{
+			txtRem->setText(ep->d_name);
+			KApplication::kApplication()->processEvents();
+			cout<<Full.Latin1()<<endl;
+/*			RTextFile File(Full);
+			RString Type;
+			RString Comment;
+			RString MIME;
+			RString Patterns;
+			RString Encoding;
+			RString Line;
+
+			Desktop=false;
+			while(!File.Eof())
+			{
+				if(!strcmp(path,"%"))
+					cout<<debug<<endl;
+				Line=File.GetLine();
+				Len=Line.GetLen();
+				if(Len<5) continue;
+				if(Line[static_cast<unsigned int>(0)]==RChar('['))
+					Desktop=(Line=="[Desktop Entry]");
+				if(!Desktop) continue;
+
+				// Read Information
+				if(Line.Mid(0,4)=="Type")
+					Type=Line.Mid(5,Len-5);
+				if(Line.Mid(0,8)=="Encoding")
+					Encoding=Line.Mid(9,Len-9);
+				if(Line.Mid(0,8)=="Patterns")
+					Patterns=Line.Mid(9,Len-9);
+				if((Line.Mid(0,7)=="Comment")&&(Line[static_cast<unsigned int>(7)]!=RChar('[')))
+					Comment=Line.Mid(8,Len-8);
+				if(Line.Mid(0,8)=="MimeType")
+					MIME=Line.Mid(9,Len-9);
+				if(!strcmp(path,"%"))
+					cout<<debug<<endl;
+			}
+			if((!Patterns.IsEmpty())&&(!MIME.IsEmpty())&&(Type=="MimeType"))
+			{
+				cout<<"<mimeType description=\""<<Comment.Latin1()<<"\" code=\""<<MIME.Latin1()<<"\"";
+				if(!Encoding.IsEmpty())
+				{
+					cout<<" encoding=\""<<Encoding.Latin1()<<"\"";
+				}
+				cout<<">"<<endl;
+				pos=0;
+				while(pos!=-1)
+				{
+					next=Patterns.Find(';',pos+1);
+					if(next>0)
+						cout<<"<file type=\""<<Comment.Latin1()<<"\" ext=\""<<Patterns.Mid(pos,next-pos).Latin1()<<"\"/>"<<endl;
+					pos=next;
+				}
+				cout<<"</mimeType"<<endl;
+			}*/
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::FillMIMETypes(const char* path)
+{
+	RXMLStruct xml;
+
+	btnOk->setEnabled(false);
+	show();
+	KApplication::kApplication()->processEvents();
+	receiveNextMIMEPath(path,xml);
+	txtRem->setText("OK");
+	btnOk->setEnabled(true);
 }
 
 

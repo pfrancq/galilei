@@ -4,15 +4,16 @@ bin_PROGRAMS = kgalileicenter
 ## INCLUDES were found outside kdevelop specific part
 
 kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui \
-	qcreatedatabase.ui qmixidealconfig.ui \
+	qcreatedatabase.ui qmixidealconfig.ui qexportmatrixdlg.ui \
 	kviewprg.cpp \
 	kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewstems.cpp \
 	qsessionprogress.cpp qconnectmysql.ui kviewusers.cpp kviewthgroups.cpp \
 	kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kviewstats.cpp \
-	kview.cpp kdoc.cpp kgalileicenter.cpp main.cpp qplugins.ui qsessionoptions.ui
-kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH) -dlopen self
+	kview.cpp kdoc.cpp kviewsom.cpp ksommap.cpp kgalileicenter.cpp main.cpp qplugins.ui qsessionoptions.ui \
+	qchoosemap.ui qsommapconfig.ui
+kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
 kgalileicenter_LDADD = /usr/lib/libmysqlclient.la $(KGALILEICENTER_ADD) \
-	-lcurl $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET) -lltdl
+	-lcurl $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
 
 SUBDIRS =
 
@@ -29,38 +30,7 @@ EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kg
 	hi16-app-kgalileicenter.png hi32-app-kgalileicenter.png kviewhistory.cpp kviewhistory.h \
 	qhistorydlg.ui kviewstats.h
 
-install-data-local:
-	$(mkinstalldirs) $$(kde_appsdir)/Applications/
-	$(INSTALL_DATA) $(srcdir)/kgalileicenter.desktop $$(kde_appsdir)/Applications/kgalileicenter.desktop
-	$(mkinstalldirs) $$(kde_icondir)/locolor/32x32/apps/
-	$(INSTALL_DATA) $(srcdir)/lo32-app-kgalileicenter.png $$(kde_icondir)/locolor/32x32/apps/kgalileicenter.png
-	$(mkinstalldirs) $$(kde_icondir)/locolor/16x16/apps/
-	$(INSTALL_DATA) $(srcdir)/lo16-app-kgalileicenter.png $$(kde_icondir)/locolor/16x16/apps/kgalileicenter.png
-	$(mkinstalldirs) $$(kde_icondir)/hicolor/16x16/apps/
-	$(INSTALL_DATA) $(srcdir)/hi16-app-kgalileicenter.png $$(kde_icondir)/hicolor/16x16/apps/kgalileicenter.png
-	$(mkinstalldirs) $$(kde_icondir)/hicolor/32x32/apps/
-	$(INSTALL_DATA) $(srcdir)/hi32-app-kgalileicenter.png $$(kde_icondir)/hicolor/32x32/apps/kgalileicenter.png
-
-uninstall-local:
-	-rm -f $$(kde_appsdir)/Applications/kgalileicenter.desktop
-	-rm -f $$(kde_icondir)/locolor/32x32/apps/kgalileicenter.png
-	-rm -f $$(kde_icondir)/locolor/16x16/apps/kgalileicenter.png
-	-rm -f $$(kde_icondir)/hicolor/16x16/apps/kgalileicenter.png
-	-rm -f $$(kde_icondir)/hicolor/32x32/apps/kgalileicenter.png
-
-####### kdevelop will overwrite this part!!! (end)############
-# this 10 paths are KDE specific. Use them:
-# kde_htmldir       Where your docs should go to. (contains lang subdirs)
-# kde_appsdir       Where your application file (.kdelnk) should go to.
-# kde_icondir       Where your icon should go to.
-# kde_minidir       Where your mini icon should go to.
-# kde_datadir       Where you install application data. (Use a subdir)
-# kde_locale        Where translation files should go to.(contains lang subdirs)
-# kde_cgidir        Where cgi-bin executables should go to.
-# kde_confdir       Where config files should go to.
-# kde_mimedir       Where mimetypes should go to.
-# kde_toolbardir    Where general toolbar icons should go to.
-# kde_wallpaperdir  Where general wallpapers should go to.
+KDE_ICON = kgalileicenter konquerorHub konquerorAutho
 
 # set the include path for X, qt and KDE
 INCLUDES = $(all_includes)
@@ -81,5 +51,4 @@ AM_CFLAGS =
 AM_CXXFLAGS = 
 AM_FFLAGS =
 
-self:
-	touch $@
+

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -83,19 +79,32 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KGALILEICenterApp::KGALILEICenterApp(const char* path) throw(GException)
-	: KMainWindow(0,"KGALILEICenterApp"), Langs(path),URLManager(path),
-	  DocAnalyseManager(path),
-	  ProfilingManager(path), GroupingManager(path),
-	  GroupCalcManager(path), StatsCalcManager(path),
-	  LinkCalcManager(path),PostDocManager(path),
-	  PostGroupManager(path),dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0)
+KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
+	: KMainWindow(0,"KGALILEICenterApp"), dbHost("salut"),dbName("pasl"),dbUser("as"),dbPwd("as"),pluginsPath("coucou"),Doc(0)
 {
 	Config=kapp->config();
 	initStatusBar();
 	initView();
 	initActions();
+
+	//read the kgalileicenter options
 	readOptions();
+
+	//init the plugins managers;
+	Langs=new GLangManager(pluginsPath.Latin1());
+	URLManager=new GFilterManagerKDE(pluginsPath.Latin1());
+	DocAnalyseManager=new GDocAnalyseManager(pluginsPath.Latin1()),
+	ProfilingManager=new GProfileCalcManager(pluginsPath);
+	GroupingManager=new GGroupingManager(pluginsPath.Latin1());
+	GroupCalcManager=new GGroupCalcManager(pluginsPath.Latin1());
+	StatsCalcManager=new GStatsCalcManager(pluginsPath.Latin1());
+	LinkCalcManager=new GLinkCalcManager(pluginsPath.Latin1());
+	PostDocManager=new GPostDocManager(pluginsPath.Latin1());
+	PostGroupManager=new GPostGroupManager(pluginsPath.Latin1());
+
+	//read the galilei & galilei_plugins options
+	readGALILEIOptions();
+
 	DisableAllActions();
 }
 
@@ -108,6 +117,7 @@ void KGALILEICenterApp::initActions(void)
 	sessionConnect=new KAction(i18n("&Connect Database"),"connect_established",0,this,SLOT(slotSessionConnect()),actionCollection(),"sessionConnect");
 	sessionCompute=new KAction(i18n("Compute &Session"),"make_kdevelop",0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
 	createDatabase=new KAction(i18n("Create &Database"),"exec",0,this,SLOT(slotCreateDatabase()),actionCollection(),"createDatabase");
+	sessionExportMatrix=new KAction(i18n("Export Matrix from Database"),"exec",0,this,SLOT(slotExportMatrix()),actionCollection(),"sessionExportMatrix");
 	fillEmptyDb=new KAction(i18n("&Fill Empty Database"),"exec",0,this,SLOT(slotFillEmptyDb()),actionCollection(),"fillEmptyDb");
 	runProgram=new KAction(i18n("&Run Program"),"rebuild",0,this,SLOT(slotRunProgram()),actionCollection(),"runProgram");
 	sessionDisconnect=new KAction(i18n("&Disconnect Database"),"connect_no",0,this,SLOT(slotSessionDisconnect()),actionCollection(),"sessionDisconnect");
@@ -117,6 +127,7 @@ void KGALILEICenterApp::initActions(void)
 	// Menu "Users"
 	profileAlwaysCalc=new KToggleAction(i18n("Enables/disables users Recomputing"),0,0,0,actionCollection(),"profileAlwaysCalc");
 	profileAlwaysSave=new KToggleAction(i18n("Enables/disables users Saving"),0,0,0,actionCollection(),"profileAlwaysSave");
+	linkAlwaysSave=new KToggleAction(i18n("Enables/disables links Saving"),0,0,0,actionCollection(),"linkAlwaysSave");
 	showUsers=new KAction(i18n("&Show Users"),"kdmconfig",0,this,SLOT(slotShowUsers()),actionCollection(),"showUsers");
 	profilesCalc=new KAction(i18n("&Calc Profiles"),"run",0,this,SLOT(slotProfilesCalc()),actionCollection(),"profilesCalc");
 
@@ -126,6 +137,8 @@ void KGALILEICenterApp::initActions(void)
 	groupHistorySave=new KToggleAction(i18n("Enables/disables historic Saving"),0,0,0,actionCollection(),"groupHistorySave");
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
+	postgroupCalc=new KAction(i18n("Compute &PostGroup"),"exec",0,this,SLOT(slotPostGroupCalc()),actionCollection(),"postgroupCalc");
+	somView=new KAction(i18n("View Self-Organizing Map"),"exec",0,this,SLOT(slotChooseSOM()),actionCollection(),"somView");
 	groupingCompareFromFile=new KAction(i18n("From &File"),"fileopen",0,this,SLOT(slotGroupingCompareFromFile()),actionCollection(),"groupingCompareFromFile");
 	groupingCompare=new KAction(i18n("From &Memory"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
 	mixIdealGroups=new KAction(i18n("Load&Mix Ideal Groups"),"exec",0,this,SLOT(slotMixIdealGroups()),actionCollection(),"mixIdealGroups");
@@ -133,12 +146,14 @@ void KGALILEICenterApp::initActions(void)
 
 	// Menu "Document"
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
+	docAlwaysSave=new KToggleAction(i18n("Enables/disables documents Saving"),0,0,0,actionCollection(),"docAlwaysSave");
 	showDocs=new KAction(i18n("&Show Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
 	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
 	docsAnalyse=new KAction(i18n("&Analyse Documents"),"kfind",0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
 	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
 	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
 	analyseXML=new KAction(i18n("&Analyse XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
+	fillMIMETypes=new KAction(i18n("Construct &MIME types from KDE"),"desktop",0,this,SLOT(slotFillMIMETypes()),actionCollection(),"fillMIMETypes");
 
 	// Menu "Texts"
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
@@ -206,31 +221,41 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Always Calc Session",sessionAlwaysCalc->isChecked());
 	Config->writeEntry("Always Calc Profiles",profileAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Profiles",profileAlwaysSave->isChecked());
+	Config->writeEntry("Always Save Links",linkAlwaysSave->isChecked());
 	Config->writeEntry("Always Calc Groups",groupAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Groups",groupAlwaysSave->isChecked());
 	Config->writeEntry("History Save Groups",groupHistorySave->isChecked());
 	Config->writeEntry("Always Calc Docs",docAlwaysCalc->isChecked());
+	Config->writeEntry("Always Save Docs",docAlwaysSave->isChecked());
+	Config->writeEntry("PluginsPath", pluginsPath);
 
 	Config->setGroup("Database Options");
 	Config->writeEntry("Host", dbHost);
 	Config->writeEntry("Name", dbName);
 	Config->writeEntry("User", dbUser);
 	Config->writeEntry("Password", dbPwd);
+	Config->writeEntry("Encoding", dbEncoding);
 
 	// Save Config
-	GConfig Conf("/etc/galilei/galilei.galileiconfig");
-	Conf.Store(Langs);
-	Conf.Store(URLManager);
-	Conf.Store(DocAnalyseManager);
-	Conf.Store(ProfilingManager);
-	Conf.Store(GroupingManager);
-	Conf.Store(GroupCalcManager);
-	Conf.Store(StatsCalcManager);
-	Conf.Store(LinkCalcManager);
-	Conf.Store(PostDocManager);
-	Conf.Store(PostGroupManager);
-	Conf.Store(SessionParams);
-	Conf.Save();
+	try
+	{
+		GConfig Conf("/etc/galilei/galilei.galileiconfig");
+		Conf.Store(Langs);
+		Conf.Store(URLManager);
+		Conf.Store(DocAnalyseManager);
+		Conf.Store(ProfilingManager);
+		Conf.Store(GroupingManager);
+		Conf.Store(GroupCalcManager);
+		Conf.Store(StatsCalcManager);
+		Conf.Store(LinkCalcManager);
+		Conf.Store(PostDocManager);
+		Conf.Store(PostGroupManager);
+		Conf.Store(SessionParams);
+		Conf.Save();
+	}
+	catch(...)
+	{
+	}
 }
 
 
@@ -256,10 +281,15 @@ void KGALILEICenterApp::readOptions(void)
 	sessionAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Session",false));
 	profileAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Profiles",false));
 	profileAlwaysSave->setChecked(Config->readBoolEntry("Always Save Profiles",true));
+	linkAlwaysSave->setChecked(Config->readBoolEntry("Always Save Links",true));
 	groupAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Groups",false));
 	groupAlwaysSave->setChecked(Config->readBoolEntry("Always Save Groups",true));
-	groupHistorySave->setChecked(Config->readBoolEntry("History Save Groups",false));
+ 	groupHistorySave->setChecked(Config->readBoolEntry("History Save Groups",false));
 	docAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Docs",false));
+	docAlwaysSave->setChecked(Config->readBoolEntry("Always Save Docs",false));
+
+	//plugins path
+	pluginsPath=Config->readPathEntry("PluginsPath","/home").ascii();
 
 	// Size
 	QSize size=Config->readSizeEntry("Geometry");
@@ -269,12 +299,18 @@ void KGALILEICenterApp::readOptions(void)
 	}
 
 	Config->setGroup("Database Options");
-	dbHost=Config->readEntry("Host","cfao20.ulb.ac.be").ascii();
-	dbName=Config->readEntry("Name","hp").ascii();
-	dbUser=Config->readEntry("User","admin").ascii();
-	dbPwd=Config->readEntry("Password","gillian").ascii();
+	dbHost=Config->readEntry("Host","127.0.0.1").ascii();
+	dbName=Config->readEntry("Name","galilei").ascii();
+	dbUser=Config->readEntry("User","root").ascii();
+	dbPwd=Config->readEntry("Password","").ascii();
+	dbEncoding=Config->readEntry("Encoding","latin1").ascii();
+}
 
-	// Read Config
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::readGALILEIOptions(void)
+{
+	// Read GALILEI Config
 	try
 	{
 		GConfig Conf("/etc/galilei/galilei.galileiconfig");
@@ -334,11 +370,14 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	showGroups->setEnabled(true);
 	profilesCalc->setEnabled(true);
 	sessionCompute->setEnabled(true);
+	sessionExportMatrix->setEnabled(true);
 	groupingCompare->setEnabled(true);
 	groupingCompareFromFile->setEnabled(true);
+	somView->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
 	groupsCalc->setEnabled(true);
+	postgroupCalc->setEnabled(true);
 	mixIdealGroups->setEnabled(true);
 	showGroupsHistory->setEnabled(true);
 	showDocs->setEnabled(true);
@@ -357,14 +396,17 @@ void KGALILEICenterApp::DisableAllActions(void)
 	showGroups->setEnabled(false);
 	profilesCalc->setEnabled(false);
 	sessionCompute->setEnabled(false);
+	sessionExportMatrix->setEnabled(false);
 	groupingCompare->setEnabled(false);
 	groupingCompareFromFile->setEnabled(false);
+	somView->setEnabled(false);
 	textFrench->setEnabled(false);
 	textEnglish->setEnabled(false);
 	createXML->setEnabled(false);
 	saveXML->setEnabled(false);
 	analyseXML->setEnabled(false);
 	groupsCalc->setEnabled(false);
+	postgroupCalc->setEnabled(false);
 	mixIdealGroups->setEnabled(false);
 	showGroupsHistory->setEnabled(false);
 	showDocs->setEnabled(false);

@@ -14,8 +14,38 @@
 -- MODIFICATION OF THIS FILE CAN DRIVE TO THE INCAPACITY OF CREATE NEW EMPTY
 -- DATABASES IN GALILEI ENVIRONEMENT !!!
 ---------------------------------------------------------------------------- 
----------------------------------------------------------------------------- 
-  
+----------------------------------------------------------------------------
+
+--
+-- Table structure for table 'bookmarks'
+--
+
+CREATE TABLE bookmarks (
+  bookmarkid int(11) NOT NULL,
+  profileid int(11) NOT NULL,
+  bookmark varchar(100) default NULL,
+  parentid int(11) DEFAULT '0',
+  icon VARCHAR(255) DEFAULT NULL,
+  pos int(11),
+  PRIMARY KEY (bookmarkid,profileid)
+) TYPE=MyISAM;
+
+
+--
+-- Table structure for table 'bookmarksbyhtmls'
+--
+
+CREATE TABLE bookmarksbyhtmls (
+  bookmarkid int(11) NOT NULL,
+  profileid int(11) NOT NULL,
+  title varchar(100) DEFAULT NULL,
+  htmlid int(11) NOT NULL,
+  icon VARCHAR(255) DEFAULT NULL,
+  pos int(11),
+  KEY index_bookmarkid(bookmarkid,profileid)
+) TYPE=MyISAM;
+
+
 --
 -- Table structure for table 'engroupsbykwds'
 --

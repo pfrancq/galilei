@@ -6,15 +6,11 @@
 
 	Window to manipulate the groups - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -45,6 +41,7 @@
 #include <groups/ggroups.h>
 #include <sessions/gsession.h>
 #include <frontend/kde/qlistviewitemtype.h>
+#include <frontend/kde/rqt.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -120,7 +117,7 @@ void KViewGroups::ConstructGroups(void)
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
 		GGroupCursor grs=Doc->GetSession()->GetGroupsCursor(lang);
-		QListViewItemType* grsitem = new QListViewItemType(Groups,lang->GetName());
+		QListViewItemType* grsitem = new QListViewItemType(Groups,ToQString(lang->GetName()));
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		for (grs.Start(); !grs.End(); grs.Next())
 		{
@@ -133,7 +130,7 @@ void KViewGroups::ConstructGroups(void)
 				GSubProfile* sub=Sub();
 				d=sub->GetAttached();
 				sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1(),sDate);
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),sDate);
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}

@@ -6,14 +6,10 @@
 
 	Window for the running some instruction to the session - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -36,8 +32,10 @@
 
 //-----------------------------------------------------------------------------
 // include file for R Project
+#include <rstd/rxmlstruct.h>
 #include <rstd/rstring.h>
 #include <rstd/rtextfile.h>
+#include <frontend/kde/rqt.h>
 using namespace R;
 
 
@@ -82,7 +80,8 @@ KViewStats::KViewStats(KDoc* doc, QWidget* parent,const char* name,int wflags)
 
 	// Results
 	Res = new QListView(this,"Results");
-	Res->addColumn("tag name");
+	Res->addColumn("Element");
+	Res->addColumn("Value");
 	Res->setRootIsDecorated(true);
 	Res->setSorting(0,false);
 	Res->setSorting(1,false);
@@ -103,24 +102,32 @@ void KViewStats::update(unsigned int /*cmd*/)
 //-----------------------------------------------------------------------------
 void KViewStats::ConstructTag(RXMLTag* t,QListViewItem* parent)
 {
- 	RXMLTagCursor Cur=t->GetXMLTagsCursor();
- 	QListViewItem* ptr=0,*ptr2;
- 	QListViewItem* prec=0;
+	RXMLTagCursor Cur=t->GetXMLTagsCursor();
+	QListViewItem* ptr=0,*ptr2;
+	QListViewItem* prec=0;
+	RString Val;
 
 	parent->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("xml_element.png",KIcon::Small)));
  	for(Cur.Start();!Cur.End();Cur.Next())
  	{
+		Val=Cur()->GetAttrValue("Value");
  		if(!prec)
  		{
- 			prec=ptr=new QListViewItem(parent,Cur()->GetName().Latin1());
+			if(Val.IsEmpty())
+ 				prec=ptr=new QListViewItem(parent,ToQString(Cur()->GetName()));
+			else
+				prec=ptr=new QListViewItem(parent,ToQString(Cur()->GetName()),ToQString(Val));
  		}
  		else
  		{
- 			prec=ptr=new QListViewItem(parent,prec,Cur()->GetName().Latin1());
+			if(Val.IsEmpty())
+ 				prec=ptr=new QListViewItem(parent,prec,ToQString(Cur()->GetName()));
+			else
+				prec=ptr=new QListViewItem(parent,prec,ToQString(Cur()->GetName()),ToQString(Val));
  		}
- 		if(strlen(Cur()->GetContent()))
+ 		if(!Cur()->GetContent().IsEmpty())
  		{
- 			ptr2=new QListViewItem(ptr,Cur()->GetContent().Latin1());
+ 			ptr2=new QListViewItem(ptr,ToQString(Cur()->GetContent()));
 			ptr2->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("xml_etext.png",KIcon::Small)));
  		}
  		ConstructTag(Cur(),ptr);
@@ -133,10 +140,15 @@ void KViewStats::ComputeStats(void)
 {
 	GFactoryStatsCalcCursor Cur;
 	GStatsCalc* Calc;
-	RXMLTag Root("Statistics");
+	RXMLStruct xml;
+	RXMLTag* Root;
 	QProgressDialog Dlg( "Compute Statistics", "Abort Compute", Doc->GetSession()->GetStatsCalcMng()->NbPtr +1 ,this, "progress", TRUE );
 	int i;
 
+	// Create the root node
+	Root=new RXMLTag("Statistics");
+	xml.AddTag(0,Root);
+	
 	// Compute the statistics
 	Dlg.setMinimumDuration(0);
 	Dlg.setProgress(0);
@@ -145,18 +157,20 @@ void KViewStats::ComputeStats(void)
 	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
 	{
 		Dlg.setProgress(i);
-		Dlg.setLabelText(Cur()->GetName());
+		Dlg.setLabelText(ToQString(Cur()->GetName()));
 		KApplication::kApplication()->processEvents();
 		if(Dlg.wasCancelled())
 			break;
 		Calc=Cur()->GetPlugin();
 		if(Calc)
-			Calc->Compute(Root);
+		{
+			Calc->Compute(&xml,*Root);
+		}
 	}
 	Dlg.setProgress(i);
 
 	// Show the results
-	ConstructTag(&Root,new QListViewItem(Res,"Statistics"));
+	ConstructTag(Root,new QListViewItem(Res,"Statistics"));
 }
 
 

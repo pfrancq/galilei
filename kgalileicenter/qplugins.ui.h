@@ -11,6 +11,12 @@
 
 #include "qgalileiitem.h"
 
+void QPlugins::init()
+{
+    PostDocs->setSorting(-1);
+    PostGroups->setSorting(-1);
+}
+
 void QPlugins::changeFilter(QListViewItem* item)
 {
         	if(!item) return;
@@ -339,9 +345,75 @@ void QPlugins::slotAboutPostGroup()
 
 void QPlugins::changePostGroup(QListViewItem * item)
 {
-        if(!item) return;
+    if(!item) return;
 	QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(item);
 	EnablePostGroup->setChecked(f->Enable);
 	ConfigPostGroup->setEnabled(f->Fac->HasConfigure());
 	AboutPostGroup->setEnabled(f->Fac->HasAbout());
 }
+
+
+void QPlugins::postDocMoveDown( void )
+{
+  QListViewItem* f=PostDocs->currentItem();
+  if (!f) return;
+  if (f->itemBelow())
+     f->moveItem(f->itemBelow());
+ }
+
+void QPlugins::postDocMoveUp( void )
+{
+       QListViewItem* f=PostDocs->currentItem();
+    if (!f) return;
+    if (f->itemAbove() && f->itemAbove()->itemAbove())
+    {
+	f->moveItem(f->itemAbove()->itemAbove());
+    }
+    else
+    {
+	PostDocs->takeItem(f);
+	PostDocs->insertItem(f);
+	PostDocs->setSelected(f,true);
+    }
+}
+
+void QPlugins::postGroupMoveDown( void )
+{
+  QListViewItem* f=PostGroups->currentItem();
+  if (!f) return;
+  if (f->itemBelow())
+     f->moveItem(f->itemBelow());
+ }
+
+void QPlugins::postGroupMoveUp( void )
+{
+    QListViewItem* f=PostGroups->currentItem();
+    if (!f) return;
+    if (f->itemAbove() && f->itemAbove()->itemAbove())
+    {
+	f->moveItem(f->itemAbove()->itemAbove());
+    }
+    else
+    {
+	PostGroups->takeItem(f);
+	PostGroups->insertItem(f);
+	PostGroups->setSelected(f,true);
+    }
+}
+
+void QPlugins::updateLevels(void)
+{
+    QListViewItemIterator it(PostGroups);
+    unsigned int level=0;
+    for (level=0; it.current();++it, level++)
+    {
+	QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(it.current());
+	f->Fac->Set("Level",level);
+    }
+     QListViewItemIterator it2(PostDocs);
+     for (level=0; it2.current();++it2, level++)
+    {
+	QPostDocItem* f=dynamic_cast<QPostDocItem*>(it2.current());
+	f->Fac->Set("Level",level);
+    } 
+  }

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -38,6 +34,7 @@
 // include files for GALILEI
 #include <sessions/gsession.h>
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -68,13 +65,13 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KDoc::KDoc(KGALILEICenterApp* owner,const char* host,const char* user,const char* pwd,const char* db) throw(std::bad_alloc,GException,R::RMySQLError)
-	: QObject()/*, GStorageMySQL(host,user,pwd,db)*/, Session(0), WinDocs(0),
-	  WinUsers(0), WinGroups(0), Owner(owner)
+KDoc::KDoc(KGALILEICenterApp* owner,RString host,RString user,RString pwd,RString db,RString encoding) throw(std::bad_alloc,GException)
+	: QObject(), Session(0), WinDocs(0),
+	  WinUsers(0), WinGroups(0), Owner(owner), Db(0)
 {
 	pViewList = new QList<KView>;
 	pViewList->setAutoDelete(true);
-	Db=new GStorageMySQL(host,user,pwd,db);
+	Db=new GStorageMySQL(host,user,pwd,db,encoding);
 }
 
 

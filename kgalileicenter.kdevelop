@@ -49,14 +49,14 @@
     </run>
     <configurations>
       <default>
-        <configargs>--prefix=/usr --enable-debug=full</configargs>
+        <configargs>--prefix=/usr --enable-debug=full --enable-kde=yes</configargs>
         <builddir/>
         <topsourcedir/>
         <cppflags/>
         <ldflags/>
-        <ccompiler>GccOptions</ccompiler>
-        <cxxcompiler>GppOptions</cxxcompiler>
-        <f77compiler>G77Options</f77compiler>
+        <ccompiler>kdevgccoptions</ccompiler>
+        <cxxcompiler>kdevgppoptions</cxxcompiler>
+        <f77compiler>kdevpgf77options</f77compiler>
         <ccompilerbinary/>
         <cxxcompilerbinary/>
         <f77compilerbinary/>
@@ -121,10 +121,11 @@
       <group pattern="*langs/*.h" name="Headers - Langs" />
       <group pattern="*" name="Others" />
       <hidenonprojectfiles>false</hidenonprojectfiles>
+      <hidenonlocation>false</hidenonlocation>
     </groups>
     <tree>
       <hidenonprojectfiles>false</hidenonprojectfiles>
-      <hidepatterns></hidepatterns>
+      <hidepatterns>*.o,*.lo,CVS</hidepatterns>
       <showvcsfields>false</showvcsfields>
     </tree>
   </kdevfileview>
@@ -184,13 +185,13 @@
   </kdevclassview>
   <kdevcvs>
     <cvsoptions>-f</cvsoptions>
-    <commitoptions></commitoptions>
+    <commitoptions/>
     <updateoptions>-dP</updateoptions>
-    <addoptions></addoptions>
+    <addoptions/>
     <removeoptions>-f</removeoptions>
     <diffoptions>-u3 -p</diffoptions>
-    <logoptions></logoptions>
-    <rshoptions></rshoptions>
+    <logoptions/>
+    <rshoptions/>
     <revertoptions>-C -d -P</revertoptions>
   </kdevcvs>
   <kdevcppsupport>
@@ -208,4 +209,11 @@
     </codecompletion>
     <references/>
   </kdevcppsupport>
+  <kdevcvsservice>
+    <recursivewhenupdate>true</recursivewhenupdate>
+    <prunedirswhenupdate>true</prunedirswhenupdate>
+    <createdirswhenupdate>true</createdirswhenupdate>
+    <recursivewhencommitremove>true</recursivewhencommitremove>
+    <revertoptions>-C</revertoptions>
+  </kdevcvsservice>
 </kdevelop>

@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -127,31 +123,45 @@ public:
 	/**
 	* Analyse all the documents.
 	* @param modified   Recompute only modified elements or all.
+	* @param save       Save the computed elements.
 	*/
-	void AnalyseDocs(bool modified=true);
+	void AnalyseDocs(bool modified=true,bool save=true);
 
 	/**
 	* Compute the profiles.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
+	* @param saveLinks      Save modified links informations
 	*/
-	void ComputeProfiles(bool modified,bool save);
+	void ComputeProfiles(bool modified,bool save,bool saveLinks);
 
 	/**
 	* Groups the profiles.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
-	* @param savehsitory   szve the history of groupment.
 	*/
 	void GroupProfiles(bool modified,bool save, bool savehistory);
+
+	/**
+	* Run the Post-clustering algorithm.
+	*/
+	void ComputePostGroup(void);
+
+	/**
+	* export the doucuments/words matrix
+	* @param type           type of export ("Profiles", "Documents" or "Groups")
+	* @param filrname       export file name
+	* @param lang           lang of the export
+	* @param label          display words id aned vectors id ?
+	*/
+	void ExportMatrix(const char* type, const char* filename, GLang* lang, bool label);
 
 	/**
 	* Compute all the elements.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
-	* @param savehsitory   szve the history of groupment.
 	*/
-	void ComputeAll(bool modified,bool save, bool savehistory);
+	void ComputeAll(bool modified,bool save,bool saveLinks, bool savehistory);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.
@@ -172,10 +182,45 @@ public:
 	virtual void receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,RException);
 
 	/**
+	* The export for a specific profile will begin.
+	* @param prof           Profile.
+	*/
+	virtual void receiveNextProfileExport(const GProfile* prof) throw(std::bad_alloc,RException);
+
+	/**
+	* The export for a specific group will begin.
+	* @param grp           Group.
+	*/
+	virtual void receiveNextGroupExport(const GGroup* grp) throw(std::bad_alloc,RException);
+
+	/**
+	* The export for a specific document will begin.
+	* @param doc           Document
+	*/
+	virtual void receiveNextDocumentExport(const GDoc* doc) throw(std::bad_alloc,RException);
+
+	/**
 	* The traitment for a specific chromosome will begin.
 	* @param id             Identificator of the chromosome.
 	*/
 	virtual void receiveNextChromosome(unsigned int id) throw(std::bad_alloc,RException);
+
+private:
+
+	/**
+	* Analayse next MIME path for MIME types.
+	* @param path           Path to a KDE desktop files.
+	* @param xml            XML structure holding the actual mime types.
+	*/
+	void receiveNextMIMEPath(const char* path,RXMLStruct& xml);
+
+public:
+
+	/**
+	* Re-creates a XML file using the KDE MIME types.
+	* @param path           Path to the root KDE desktop files.
+	*/
+	void FillMIMETypes(const char* path);
 
 	/**
 	* Put some text.

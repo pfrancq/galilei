@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -59,7 +55,6 @@
 #include <groups/gpostgroupmanager.h>
 #include <sessions/gstatscalcmanager.h>
 #include <frontend/kde/gfiltermanagerkde.h>
-
 using namespace GALILEI;
 
 
@@ -116,52 +111,52 @@ class KGALILEICenterApp : public KMainWindow
 	/**
 	* Languages.
 	*/
-	GLangManager Langs;
+	GLangManager* Langs;
 
 	/**
 	* URL Manager.
 	*/
-	GFilterManagerKDE URLManager;
+	GFilterManagerKDE* URLManager;
 
 	/**
 	* Doc Analyse Manager.
 	*/
-	GDocAnalyseManager DocAnalyseManager;
+	GDocAnalyseManager* DocAnalyseManager;
 
 	/**
 	* Profiling Method Manager.
 	*/
-	GProfileCalcManager ProfilingManager;
+	GProfileCalcManager* ProfilingManager;
 
 	/**
 	* Grouping Method Manager.
 	*/
-	GGroupingManager GroupingManager;
+	GGroupingManager* GroupingManager;
 
 	/**
 	* Computing Method Manager.
 	*/
-	GGroupCalcManager GroupCalcManager;
+	GGroupCalcManager* GroupCalcManager;
 
 	/**
 	* Statistics Manager.
 	*/
-	GStatsCalcManager StatsCalcManager;
+	GStatsCalcManager* StatsCalcManager;
 
 	/**
 	* Linking Manager.
 	*/
-	GLinkCalcManager LinkCalcManager;
+	GLinkCalcManager* LinkCalcManager;
 
 	/**
 	* PostDocManager Manager.
 	*/
-	GPostDocManager PostDocManager;
+	GPostDocManager* PostDocManager;
 
 	/**
 	* PostGroup Manager.
 	*/
-	GPostGroupManager PostGroupManager;
+	GPostGroupManager* PostGroupManager;
 
 	/**
 	* The configuration object of the application.
@@ -192,6 +187,16 @@ class KGALILEICenterApp : public KMainWindow
 	* Password used to access the database.
 	*/
 	R::RString dbPwd;
+
+	/**
+	* Enconding of the database.
+	*/
+	R::RString dbEncoding;
+
+	/**
+	* path to plugins.
+	*/
+	R::RString pluginsPath;
 
 	/**
 	* Label to hold an image representing the status of the database connection.
@@ -226,7 +231,7 @@ public:
 	* application.
 	* @see initMenuBar initToolBar
 	*/
-	KGALILEICenterApp(const char* path) throw(GException);
+	KGALILEICenterApp(void) throw(GException);
 
 	/**
 	* Returns a pointer to the document connected to the view.
@@ -277,6 +282,12 @@ protected:
 	* file list.
 	*/
 	void readOptions(void);
+
+	/**
+	* Read GALILEI Options again and initialize all variables like the recent
+	* file list.
+	*/
+	void readGALILEIOptions(void);
 
 	/**
 	* Saves the window properties for each open window during session end to
@@ -349,8 +360,9 @@ private slots:
 	* @param user           The user name.
 	* @param passwd         The passwd.
 	* @param db             The database.
+	* @param encoding       Encoding of the database.
 	*/
-	void slotSessionAutoConnect(const char* host,const char* user,const char* passwd,const char* db);
+	void slotSessionAutoConnect(R::RString host,R::RString user,R::RString passwd,R::RString db,R::RString encoding);
 
 	/**
 	* Compute an entire session.
@@ -383,6 +395,11 @@ private slots:
 	void slotCreateDatabase(void);
 
 	/**
+	* slot to export a matrix from database.
+	*/
+	void slotExportMatrix(void);
+
+	/**
 	*  retrieve shell StdOut -------------------------------------------!!
 	*/
 	void slotStdout(KProcess* proc,char* buffer,int buflen);
@@ -408,6 +425,16 @@ private slots:
 	void slotProfilesCalc(void);
 
 	/**
+	* slot to choose the self organizing map
+	*/
+	void slotChooseSOM(void);
+
+	/**
+	* slot to view the self organizing map
+	*/
+	void slotViewSOM(QListViewItem* item);
+
+	/**
 	* Show the groups window.
 	*/
 	void slotShowGroups(void);
@@ -416,6 +443,11 @@ private slots:
 	* Compute the groups.
 	*/
 	void slotGroupsCalc(void);
+
+	/**
+	* Compute the groups.
+	*/
+	void slotPostGroupCalc(void);
 
 	/**
 	* Compare the current grouping with a theoritic one given in a file.
@@ -461,6 +493,11 @@ private slots:
 	* Analyse the XML structure of the current document.
 	*/
 	void slotAnalyseXML(void);
+
+	/**
+	* Construct the XML structure of the MIME types based on the one of KDE.
+	*/
+	void slotFillMIMETypes(void);
 
 	/**
 	* Do some computing on the stems in french.
@@ -560,6 +597,7 @@ public:
 	KAction* sessionCompute;
 	KAction* sessionStats;
 	KAction* createDatabase;
+	KAction* sessionExportMatrix;
 	KAction* sessionDisconnect;
 	KAction* fillEmptyDb;
 	KAction* sessionQuit;
@@ -567,6 +605,7 @@ public:
 
 	KToggleAction* profileAlwaysCalc;
 	KToggleAction* profileAlwaysSave;
+	KToggleAction* linkAlwaysSave;
 	KAction* showUsers;
 	KAction* profilesCalc;
 
@@ -575,18 +614,22 @@ public:
 	KToggleAction* groupHistorySave;
 	KAction* showGroups;
 	KAction* groupsCalc;
+	KAction* postgroupCalc;
+	KAction* somView;
 	KAction* groupingCompareFromFile;
 	KAction* groupingCompare;
 	KAction* mixIdealGroups;
 	KAction* showGroupsHistory;
 
 	KToggleAction* docAlwaysCalc;
+	KToggleAction* docAlwaysSave;
 	KAction* showDocs;
 	KAction* docAnalyse;
 	KAction* docsAnalyse;
 	KAction* createXML;
 	KAction* saveXML;
 	KAction* analyseXML;
+	KAction* fillMIMETypes;
 
 	KAction* textFrench;
 	KAction* textEnglish;

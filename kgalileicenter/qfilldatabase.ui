@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
 <class>QFillEmptyDatabase</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,368 +8,461 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>412</width>
-            <height>517</height>
+            <width>376</width>
+            <height>415</height>
         </rect>
     </property>
     <property name="caption">
         <string>Fill Database from Directory</string>
     </property>
-    <widget class="QGroupBox">
+    <grid>
         <property name="name">
-            <cstring>GroupBox1</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>290</y>
-                <width>380</width>
-                <height>120</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>Box</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Sunken</enum>
-        </property>
-        <property name="title">
-            <string>Configuration</string>
-        </property>
-        <widget class="QLabel">
+        <widget class="QGroupBox" row="0" column="0">
             <property name="name">
-                <cstring>TextLabel1</cstring>
+                <cstring>GroupBox2</cstring>
             </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>30</y>
-                    <width>150</width>
-                    <height>20</height>
-                </rect>
+            <property name="title">
+                <string>Database Parameters</string>
             </property>
-            <property name="text">
-                <string>Path to Directory :</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>70</y>
-                    <width>150</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Path to script (.py) :</string>
-            </property>
-        </widget>
-        <widget class="KURLRequester">
-            <property name="name">
-                <cstring>KUDirectory</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>170</x>
-                    <y>30</y>
-                    <width>200</width>
-                    <height>28</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="KURLRequester">
-            <property name="name">
-                <cstring>KUScript</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>170</x>
-                    <y>70</y>
-                    <width>200</width>
-                    <height>28</height>
-                </rect>
-            </property>
-        </widget>
-    </widget>
-    <widget class="QGroupBox">
-        <property name="name">
-            <cstring>GroupBox2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>10</y>
-                <width>380</width>
-                <height>260</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>Database Parameters</string>
-        </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_3</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>40</y>
-                    <width>150</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Database Name :</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_4</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>80</y>
-                    <width>150</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Host :</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_5</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>120</y>
-                    <width>150</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>User :</string>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>LEName</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>170</x>
-                    <y>40</y>
-                    <width>190</width>
-                    <height>24</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>LEHost</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>170</x>
-                    <y>80</y>
-                    <width>190</width>
-                    <height>24</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>LEUser</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>170</x>
-                    <y>120</y>
-                    <width>190</width>
-                    <height>24</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>LEPassword</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>170</x>
-                    <y>160</y>
-                    <width>190</width>
-                    <height>24</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_6</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>160</y>
-                    <width>150</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Password :</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_6_2_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>220</y>
-                    <width>150</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Mime Type:</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_6_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>190</y>
-                    <width>150</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Language :</string>
-            </property>
-        </widget>
-        <widget class="QComboBox">
-            <item>
-                <property name="text">
-                    <string>en</string>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
                 </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>fr</string>
-                </property>
-            </item>
-            <property name="name">
-                <cstring>CBLang</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>270</x>
-                    <y>190</y>
-                    <width>90</width>
-                    <height>24</height>
-                </rect>
-            </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout53</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1_3</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Database Name :</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer61</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>51</width>
+                                    <height>21</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>LEName</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout56</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1_4</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Host :</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer62</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>111</width>
+                                    <height>21</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>LEHost</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout57</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1_5</cstring>
+                            </property>
+                            <property name="text">
+                                <string>User :</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer63</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>111</width>
+                                    <height>21</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>LEUser</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout58</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1_6</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Password :</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer64</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>81</width>
+                                    <height>21</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>LEPassword</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout59</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1_6_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Language :</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer65</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>171</width>
+                                    <height>21</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QComboBox">
+                            <item>
+                                <property name="text">
+                                    <string>en</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>fr</string>
+                                </property>
+                            </item>
+                            <property name="name">
+                                <cstring>CBLang</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout61</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1_6_2_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Mime Type:</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer66</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>171</width>
+                                    <height>21</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QComboBox">
+                            <item>
+                                <property name="text">
+                                    <string>text/html</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>text/email</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>text/sgml</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>text/pdf</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>text/ps</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>text/reuters</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>text/xml</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>text/msdoc</string>
+                                </property>
+                            </item>
+                            <property name="name">
+                                <cstring>CBMimeType</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
         </widget>
-        <widget class="QComboBox">
-            <item>
-                <property name="text">
-                    <string>text/html</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>text/email</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>text/sgml</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>text/pdf</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>text/ps</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>text/reuters</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>text/xml</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>text/msdoc</string>
-                </property>
-            </item>
+        <widget class="QGroupBox" row="1" column="0">
             <property name="name">
-                <cstring>CBMimeType</cstring>
+                <cstring>GroupBox1</cstring>
             </property>
-            <property name="geometry">
-                <rect>
-                    <x>270</x>
-                    <y>220</y>
-                    <width>90</width>
-                    <height>24</height>
-                </rect>
+            <property name="frameShape">
+                <enum>Box</enum>
             </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="title">
+                <string>Configuration</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout62</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Path to Directory :</string>
+                            </property>
+                        </widget>
+                        <widget class="KURLRequester">
+                            <property name="name">
+                                <cstring>KUDirectory</cstring>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>200</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout63</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TextLabel1_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Path to script (.py) :</string>
+                            </property>
+                        </widget>
+                        <widget class="KURLRequester">
+                            <property name="name">
+                                <cstring>KUScript</cstring>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>200</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
         </widget>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButton2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>290</x>
-                <y>420</y>
-                <width>92</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>&amp;OK</string>
-        </property>
-        <property name="default">
-            <bool>true</bool>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButton2_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>160</x>
-                <y>420</y>
-                <width>92</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>&amp;Cancel</string>
-        </property>
-    </widget>
+        <widget class="QLayoutWidget" row="3" column="0">
+            <property name="name">
+                <cstring>layout64</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer69</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>141</width>
+                            <height>21</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>PushButton2_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Cancel</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>PushButton2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;OK</string>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+        <spacer row="2" column="0">
+            <property name="name">
+                <cstring>spacer70</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>21</width>
+                    <height>16</height>
+                </size>
+            </property>
+        </spacer>
+    </grid>
 </widget>
 <connections>
     <connection>

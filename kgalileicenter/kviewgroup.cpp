@@ -6,14 +6,10 @@
 
 	Window to manipulate a specific group - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -38,7 +34,6 @@
 // include files for R Project
 #include <rstd/rstring.h>
 #include <rstd/rtextfile.h>
-using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -53,9 +48,10 @@ using namespace R;
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <frontend/kde/qlistviewitemtype.h>
+#include <frontend/kde/rqt.h>
 #include <infos/gweightinfo.h>
 using namespace GALILEI;
-
+using namespace R;
 
 //-----------------------------------------------------------------------------
 // includes files for Qt/KDE
@@ -148,7 +144,7 @@ void KViewGroup::ConstructProfiles(void)
 				GSubProfile* sub=Sub();
 		d=sub->GetAttached();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),Profiles,sub->GetProfile()->GetName().Latin1(),sub->GetProfile()->GetUser()->GetFullName().Latin1(),sDate);
+		QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),Profiles,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),sDate);
 		subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find",KIcon::Small)));
 	}
 }
@@ -161,10 +157,10 @@ void KViewGroup::ConstructGeneral(void)
 	char sDate[20];
 
 	General->clear();
-	new QListViewItem(General,"ID",itou(Group->GetId()).Latin1());
+	new QListViewItem(General,"ID",ToQString(itou(Group->GetId())));
 	l=Group->GetLang();
 	if(l)
-		new QListViewItem(General,"Language",l->GetName());
+		new QListViewItem(General,"Language",ToQString(l->GetName()));
 	else
 		new QListViewItem(General,"Language","Unknow");
 	switch(Group->GetState())
@@ -230,7 +226,7 @@ void KViewGroup::ConstructDocs(void)
 	{
 		d=docs2()->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof = new QListViewItemType(docs2(),Docs,docs2()->GetName().Latin1(),docs2()->GetURL().Latin1(),sDate);
+		QListViewItemType* prof = new QListViewItemType(docs2(),Docs,ToQString(docs2()->GetName()),ToQString(docs2()->GetURL()),sDate);
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror",KIcon::Small)));
 	}
 }
@@ -245,7 +241,7 @@ void KViewGroup::ConstructDescription(void)
 	public:
 		double Val;
 
-		LocalItem(QListView* v,QString str,double d) : QListViewItem(v,str, dtou(d).Latin1()), Val(d) {}
+		LocalItem(QListView* v,QString str,double d) : QListViewItem(v,str, QString::number(d)), Val(d) {}
 		virtual int compare( QListViewItem *i, int col, bool ascending ) const
     	{
 			if(col==1)
@@ -268,7 +264,7 @@ void KViewGroup::ConstructDescription(void)
 	Cur=static_cast<GGroupVector*>(Group)->GetWeightInfoCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		new LocalItem(Vector,Doc->GetSession()->GetStorage()->LoadWord(Cur()->GetId(),Group->GetLang()->GetCode()),Cur()->GetWeight());
+		new LocalItem(Vector,ToQString(Doc->GetSession()->GetStorage()->LoadWord(Cur()->GetId(),Group->GetLang()->GetCode())),Cur()->GetWeight());
 	}
 }
 
@@ -309,7 +305,7 @@ void KViewGroup::slotMenu(int)
 	{
 		url=KFileDialog::getSaveURL(QString::null,i18n("*.hd"), this, i18n("Save List..."));
 		if(url.isEmpty()) return;
-		QFile Test(url.path().latin1());
+		QFile Test(url.path());
 		if(Test.exists())
 		{
 			dlg=KMessageBox::warningYesNoCancel(this,"A Document with this Name exists.\nDo you want to overwrite it?","Warning");

@@ -12,10 +12,6 @@
 		Pascal Francq (pfrancq@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -154,6 +150,11 @@ public:
 	void ConstructFdbks(void);
 
 	/**
+	* Constructs the links' widget.
+	*/
+	void ConstructLinks(void);
+
+	/**
 	* Construct the groups' widget.
 	*/
 	void ConstructGroups(void);
@@ -185,7 +186,7 @@ public:
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups,3=Links)
 	*/
 	virtual void update(unsigned int cmd);
 

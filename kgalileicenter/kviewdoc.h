@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -102,6 +98,11 @@ class KViewDoc : public KView
 	* General information about the document.
 	*/
 	QListView* General;
+
+	/**
+	* Listview item containing the MIME type of the file.
+	*/
+	QListViewItem* InfoMIME;
 
 	/**
 	* Widget to show XML structure representing the content of the document.

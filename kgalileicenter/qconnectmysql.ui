@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
 <class>QConnectMySQL</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>270</width>
-            <height>179</height>
+            <width>197</width>
+            <height>190</height>
         </rect>
     </property>
     <property name="caption">
@@ -24,7 +24,7 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout8</cstring>
+                <cstring>layout6</cstring>
             </property>
             <hbox>
                 <property name="name">
@@ -50,7 +50,7 @@
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>40</width>
+                            <width>130</width>
                             <height>20</height>
                         </size>
                     </property>
@@ -58,6 +58,14 @@
                 <widget class="QLineEdit">
                     <property name="name">
                         <cstring>txtHost</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>1</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
                     </property>
                     <property name="autoMask">
                         <bool>false</bool>
@@ -96,7 +104,7 @@
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>40</width>
+                            <width>90</width>
                             <height>20</height>
                         </size>
                     </property>
@@ -105,12 +113,20 @@
                     <property name="name">
                         <cstring>txtDb</cstring>
                     </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>1</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
                 </widget>
             </hbox>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout6</cstring>
+                <cstring>layout8</cstring>
             </property>
             <hbox>
                 <property name="name">
@@ -136,7 +152,7 @@
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>40</width>
+                            <width>90</width>
                             <height>20</height>
                         </size>
                     </property>
@@ -145,12 +161,20 @@
                     <property name="name">
                         <cstring>txtLogin</cstring>
                     </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>1</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
                 </widget>
             </hbox>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout5</cstring>
+                <cstring>layout9</cstring>
             </property>
             <hbox>
                 <property name="name">
@@ -176,7 +200,7 @@
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>40</width>
+                            <width>80</width>
                             <height>20</height>
                         </size>
                     </property>
@@ -185,11 +209,69 @@
                     <property name="name">
                         <cstring>txtPwd</cstring>
                     </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>1</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
                     <property name="autoMask">
                         <bool>false</bool>
                     </property>
                     <property name="echoMode">
                         <enum>Password</enum>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout6</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabel1</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Encoding</string>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer6</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QComboBox">
+                    <item>
+                        <property name="text">
+                            <string>latin1</string>
+                        </property>
+                    </item>
+                    <item>
+                        <property name="text">
+                            <string>utf-8</string>
+                        </property>
+                    </item>
+                    <property name="name">
+                        <cstring>cbEncoding</cstring>
                     </property>
                 </widget>
             </hbox>

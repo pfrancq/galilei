@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -132,10 +128,13 @@ public:
 	/**
 	* Constructor for the fileclass of the application.
 	* @param owner          Owner of the document.
-	* @param session        GALILEI session.
+	* @param host           The host name.
+	* @param user           The user name.
+	* @param passwd         The passwd.
+	* @param db             The database.
+	* @param encoding       Encoding of the database.
 	*/
-	KDoc(KGALILEICenterApp* owner,const char* host,const char* user,const char* pwd,const char* db) throw(std::bad_alloc,GException,R::RMySQLError);
-
+	KDoc(KGALILEICenterApp* owner,R::RString host,R::RString user,R::RString pwd,R::RString db,R::RString encoding) throw(std::bad_alloc,GException);
 
 	/**
 	* Set the session corresponding of the document.
@@ -242,7 +241,7 @@ public slots:
 	* Calls repaint() on all views connected to the document object and is
 	* called by the view by which the document has been changed. As this view
 	* normally repaints itself, it is excluded from the paintEvent.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups,3=Links)
 	*/
 	void updateAllViews(unsigned int cmd);
 

@@ -11,6 +11,8 @@
 			<Action name="fillEmptyDb"/>
 		</Menu>
 		<separator/>
+		<Action name="sessionExportMatrix"/>
+		<separator/>
 		<Action name="sessionCompute"/>
 		<Action name="runProgram"/>
 		<separator/>
@@ -23,6 +25,8 @@
 		<Action name="profileAlwaysCalc"/>
 		<Action name="profileAlwaysSave"/>
 		<Separator/>
+		<Action name="linkAlwaysSave"/>
+		<Separator/>
 		<Action name="showUsers"/>
 		<Action name="profilesCalc"/>
 	</Menu>
@@ -33,6 +37,10 @@
 		<Separator/>
 		<Action name="showGroups"/>
 		<Action name="groupsCalc"/>
+		<Menu name="Post-Clustering"><text>&amp;Post Clustering</text>
+			<Action name="postgroupCalc"/>
+			<Action name="somView"/>
+		</Menu>
 		<Separator/>
 		<Menu name="Compare"><text>&amp;Compare</text>
 			<Action name="groupingCompareFromFile"/>
@@ -45,6 +53,7 @@
 	</Menu>
 	<Menu name="Documents"><text>&amp;Documents</text>
 		<Action name="docAlwaysCalc"/>
+		<Action name="docAlwaysSave"/>
 		<Separator/>
 		<Action name="showDocs"/>
 		<separator/>
@@ -54,6 +63,8 @@
 		<Action name="createXML"/>
  		<Action name="saveXML"/>
 		<Action name="analyseXML"/>
+		<separator/>
+		<Action name="fillMIMETypes"/>
 	</Menu>
 	<Menu name="Text"><text>&amp;Text</text>
 		<Separator/>

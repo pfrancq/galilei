@@ -6,14 +6,10 @@
 
 	Window for manipulating a specific document - Implementation.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -43,6 +39,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rxmlfile.h>
+#include <frontend/kde/rqt.h>
 using namespace R;
 
 
@@ -94,7 +91,7 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 {
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
-	setCaption("Description of \" "+QString(Document->GetName().Latin1())+"\"");
+	setCaption("Description of \" "+QString(ToQString(Document->GetName()))+"\"");
 
 	// initialisation of the tab widget
 	Infos=new QTabWidget(this);
@@ -149,7 +146,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
-	setCaption("Description of \" "+QString(Document->GetName().Latin1())+"\"");
+	setCaption("Description of \" "+QString(ToQString(Document->GetName()))+"\"");
 
 	// initialisation of the tab widget
 	Infos=new QTabWidget(this);
@@ -197,9 +194,9 @@ void KViewDoc::ConstructFdbks(void)
 
 	//init different judgements for documents from link analysis.
 	QListViewItemType* lh= new QListViewItemType(FdbksLinks , "Hub Documents");
-	//lh->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("stop.png",KIcon::Small)));
+	lh->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("ok.png",KIcon::Small)));
 	QListViewItemType* la= new QListViewItemType(FdbksLinks, "Authority Documents");
-	//la->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("stop.png",KIcon::Small)));
+	la->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("ok.png",KIcon::Small)));
 
 
 	// Add Judgements for profile.
@@ -230,7 +227,7 @@ void KViewDoc::ConstructFdbks(void)
 		if(!p) continue;
 		d=Profiles()->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof = new QListViewItemType(Profiles()->GetProfile(),p,Profiles()->GetProfile()->GetName().Latin1(),Profiles()->GetProfile()->GetUser()->GetFullName().Latin1(),sDate);
+		QListViewItemType* prof = new QListViewItemType(Profiles()->GetProfile(),p,ToQString(Profiles()->GetProfile()->GetName()),ToQString(Profiles()->GetProfile()->GetUser()->GetFullName()),sDate);
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
 	}
 }
@@ -244,7 +241,7 @@ void KViewDoc::ConstructResults(void)
 	public:
 		double Val;
 
-		LocalItem(QListView* v,QString str,double d) : QListViewItem(v,str, dtou(d).Latin1()), Val(d) {}
+		LocalItem(QListView* v,QString str,double d) : QListViewItem(v,str, QString::number(d)), Val(d) {}
 		virtual int compare( QListViewItem *i, int col, bool ascending ) const
     	{
 			if(col==1)
@@ -263,7 +260,7 @@ void KViewDoc::ConstructResults(void)
 	GWeightInfoCursor Words=Document->GetWeightInfoCursor();
 	for (Words.Start();!Words.End();Words.Next())
 	{
-		new LocalItem(Results,Doc->GetSession()->GetStorage()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode()), Words()->GetWeight());
+		new LocalItem(Results,ToQString(Doc->GetSession()->GetStorage()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode())), Words()->GetWeight());
 	}
 }
 
@@ -275,13 +272,13 @@ void KViewDoc::ConstructGeneral(void)
 	RDate d;
 	char sDate[20];
 
-	new QListViewItem(General,"ID",itou(Document->GetId()).Latin1());
-	new QListViewItem(General,"URL",Document->GetURL().Latin1());
-	new QListViewItem(General,"Name",Document->GetName().Latin1());
-	new QListViewItem(General,"MIME",Document->GetMIMEType().Latin1());
+	new QListViewItem(General,"ID",QString::number(Document->GetId()));
+	new QListViewItem(General,"URL",ToQString(Document->GetURL()));
+	new QListViewItem(General,"Name",ToQString(Document->GetName()));
+	InfoMIME=new QListViewItem(General,"MIME",ToQString(Document->GetMIMEType()));
 	l=Document->GetLang();
 	if(l)
-		new QListViewItem(General,"Language",l->GetName());
+		new QListViewItem(General,"Language",ToQString(l->GetName()));
 	else
 		new QListViewItem(General,"Language","Unknow");
 	d=Document->GetUpdated();
@@ -311,7 +308,7 @@ void KViewDoc::ConstructGeneral(void)
 	}
 	new QListViewItem(General,"Status",sDate);
 	if(Document->GetFailed())
-		new QListViewItem(General,"Number of failed",itou(Document->GetFailed()).Latin1());
+		new QListViewItem(General,"Number of failed",QString::number(Document->GetFailed()));
 }
 
 
@@ -341,6 +338,7 @@ void KViewDoc::CreateDocXML(void)
 	if(Struct)
 	{
 		XML->SetDocXML(Struct);
+		InfoMIME->setText(1,ToQString(Struct->GetTag("dc:format")->GetContent()));
 		bDocXML=true;
 	}
 }
@@ -351,6 +349,7 @@ void KViewDoc::SaveDocXML(const char* name)
 {
 	if(!Struct) return;
 	RXMLFile f(name,Struct,R::Create);
+	f.Process();
 }
 
 

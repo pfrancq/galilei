@@ -6,15 +6,11 @@
 
 	Window to show all the documents - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
-
-	Version $Revision$
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -38,6 +34,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <frontend/kde/qlistviewitemtype.h>
+#include <frontend/kde/rqt.h>
 #include <docs/gdoc.h>
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
@@ -168,7 +165,7 @@ void KViewDocs::CreateDocsListView(void)
 	{
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
-		LangItems.InsertPtr(new LangItem(lang,new QListViewItemType(Docs,lang->GetName())));
+		LangItems.InsertPtr(new LangItem(lang,new QListViewItemType(Docs,ToQString(lang->GetName()))));
 	}
 	LangItems.InsertPtr(new LangItem(0,new QListViewItemType(Docs, "????")));
 
@@ -180,7 +177,7 @@ void KViewDocs::CreateDocsListView(void)
 			ptr=t;
 		else
 			ptr=det;
-		QListViewItemType* docitem= new QListViewItemType(CurDocs(),LangItems.GetPtr<const GLang*>(CurDocs()->GetLang())->Item,CurDocs()->GetName().Latin1(),CurDocs()->GetURL().Latin1(),ptr);
+		QListViewItemType* docitem= new QListViewItemType(CurDocs(),LangItems.GetPtr<const GLang*>(CurDocs()->GetLang())->Item,ToQString(CurDocs()->GetName()),ToQString(CurDocs()->GetURL()),ptr);
 		docitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
 		docitem->setPixmap(1,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
 	}
@@ -201,8 +198,9 @@ void KViewDocs::resizeEvent(QResizeEvent *)
 {
 	//resize of the listview
 	Docs->setGeometry(0,0,this->width(),this->height());
-	Docs->setColumnWidth(0,(this->width()/2)-2);
-	Docs->setColumnWidth(1,(this->width()/2)-2);
+	Docs->setColumnWidth(0,(this->width()/3)-2);
+	Docs->setColumnWidth(1,(this->width()/3)-2);
+	Docs->setColumnWidth(2,(this->width()/3)-2);
 }
 
 
