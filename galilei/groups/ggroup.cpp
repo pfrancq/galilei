@@ -64,6 +64,10 @@ public:
 	GProfDocRef(GProfDoc* d,double s) : Doc(d), Sim(s) {}
 	int Compare(const GProfDocRef*) const {return(-1);}
 	int Compare(const GProfDocRef&) const {return(-1);}
+	int Compare(const GProfDoc* d) const
+	{
+		return(Doc->GetDoc()->GetId()-d->GetDoc()->GetId());
+	}
 };
 
 
@@ -259,10 +263,9 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 			// Verify that it was not judged by s
 			if(s->GetProfile()->GetFeedback(Fdbks()->GetDoc())) continue;
 
-			// Veify if already inserted in docs or if it was not judged by the
+			// Veify if already inserted in Docs or if it was not judged by the
 			// subprofile s
-
-			if((docs->GetPtr<const GProfDoc*>(Fdbks()))||(s->GetProfile()->GetFeedback(Fdbks()->GetDoc()))) continue;
+			if((Docs.GetPtr<const GProfDoc*>(Fdbks()))||(s->GetProfile()->GetFeedback(Fdbks()->GetDoc()))) continue;
 
 			// If not -> insert it in docs if relevant.
 			j=Fdbks()->GetFdbk();
