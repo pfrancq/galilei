@@ -143,7 +143,7 @@ void GALILEI::GGroupIR::PostDelete(const GObjIR* /*obj*/)
 
 
 //---------------------------------------------------------------------------
-double  GALILEI::GGroupIR::ComputeAvgSim(void)
+double GALILEI::GGroupIR::ComputeAvgSim(void)
 {
 	unsigned int i,j;
 	GObjIR** ptr;
@@ -190,7 +190,7 @@ double GALILEI::GGroupIR::ComputeSumSim(GObjIR* obj)
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
 	{
 		if((*ptr)==obj) continue;
-		AvgSim+=1-Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+		AvgSim+=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
 	}
 	return(AvgSim);
 }

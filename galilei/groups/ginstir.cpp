@@ -150,7 +150,7 @@ GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,GGroups
 //-----------------------------------------------------------------------------
 bool GALILEI::GInstIR::StopCondition(void)
 {
-	return((Gen==MaxGen)||(AgeBest==30));
+	return((Gen==MaxGen)/*||(AgeBest==30)*/);
 }
 
 
@@ -302,6 +302,13 @@ void GALILEI::GInstIR::SetCriterionParam(const char* crit,double p,double q,doub
 		CritDiffDocs->SetQ(q);
 		CritDiffDocs->SetWeight(w);
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GInstIR::SetMaxGen(unsigned int max)
+{
+	MaxGen=max;
 }
 
 

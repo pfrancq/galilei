@@ -209,6 +209,7 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 	GGroups* GroupsIdeal;                         // Pointer to the ideal groups for a given language
 	GGroups* GroupsComputed;                      // Pointer to the computed groups for a given language
 	GGroup* GroupIdeal;                           // Pointer to a ideal group
+	GGroup* GroupComputed;                        // Pointer to a computed group
 	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
 	unsigned int MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
 	unsigned int NbProfiles;                      // Total Number of profiles
@@ -272,10 +273,14 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 			GroupIdeal=(*GroupsIdeal)();
 			for(GroupIdeal->Start();!GroupIdeal->End();GroupIdeal->Next())
 			{
-				position=GroupsId.GetPtr(GroupsComputed->GetGroup((*GroupIdeal)())->GetId())->position;
+				GroupComputed=GroupsComputed->GetGroup((*GroupIdeal)());
+				if(GroupComputed)
+				{
+					position=GroupsId.GetPtr(GroupComputed->GetId())->position;
+					VectorCols[position]++;
+					VectorColsTemp[position]++;
+				}
 				VectorRows[row]++;
-				VectorCols[position]++;
-				VectorColsTemp[position]++;
 				NbTot++;
 			}
 			row++;

@@ -60,8 +60,6 @@ namespace GALILEI {
 */
 class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
 {
-	class GroupsPair;
-
 	/**
 	* Similarities between the subprofiles to group.
 	*/
@@ -95,28 +93,6 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 	double DiffFactor;
 
 	/**
-	* Average similarity of the groups.
-	*/
-	double LocalAvgSim;
-
-	/**
-	* Average number of profiles in the groups.
-	*/
-	double LocalAvgProf;
-
-	/**
-	* Factor representing the part of subprofiles having common OK documents
-	* and that are in the same group.
-	*/
-	double LocalOKFactor;
-
-	/**
-	* Factor representing the part of subprofiles having common documents but
-	* with different judgements and that are in the same group.
-	*/
-	double LocalDiffFactor;
-
-	/**
 	* Temporary array of Objects (Thread dependent data).
 	*/
 	GObjIR** thObjs1;
@@ -125,20 +101,16 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 	* Temporary array of Objects (Thread dependent data).
 	*/
 	GObjIR** thObjs2;
-	unsigned int NbObjs1;
-	unsigned int NbObjs2;
 
+	/**
+	* Array representing the pairs of groups not tested for merging.
+	*/
 	bool** Pairs;
 
+	/**
+	* Number of rows allocated by pairs.
+	*/
 	unsigned int NbRows;
-
-	RPromethee::RPromKernel* Prom;
-	RPromethee::RPromCriterion* CritSim;
-	RPromethee::RPromCriterion* CritNb;
-	RPromethee::RPromCriterion* CritOKDocs;
-	RPromethee::RPromCriterion* CritDiffDocs;
-	RPromethee::RPromSol* Sol1;
-	RPromethee::RPromSol* Sol2;
 
 public:
 
@@ -154,6 +126,21 @@ public:
 	* @param thData         Pointer to the "thread-dependent" data.
 	*/
 	virtual void Init(GThreadDataIR* thData) throw(bad_alloc);
+
+	/**
+	* Compute the sum of the similarities of a given profile to all the others.
+	* @param obj            Profile used as reference.
+	* @returns result.
+	*/
+	double ComputeSumSim(GObjIR** grp,unsigned int nb,GObjIR* obj);
+
+	/**
+	* Compute the relevant profile of the group, i.a. the profile which is the
+	* most similar to all the others profiles.
+	* @rel                  Relevant profile computed.
+	* @returns Sum of similarities to the relevant profile.
+	*/
+	double ComputeRelevant(GObjIR** grp,unsigned int nb,GSubProfile* &rel);
 
 	/**
 	* Look if two groups were merged together.
@@ -188,18 +175,6 @@ public:
 	virtual void Evaluate(void);
 
 	/**
-	* Evaluation of the chromosomes. Actually, it is just the average of the
-	* intern similarities.
-	*/
-	virtual void LocalEvaluate(unsigned int id);
-
-	/**
-	* Evaluation of the chromosomes. Actually, it is just the average of the
-	* intern similarities.
-	*/
-	virtual void LocalEvaluate(unsigned int id1,unsigned int id2);
-
-	/**
 	* Do the standard crossover of the GGA and do a reorganisation after.
 	*/
 	virtual bool Crossover(GChromoIR* parent1,GChromoIR* parent2);
@@ -209,10 +184,33 @@ public:
 	*/
 	virtual bool Mutation(void);
 
+	/**
+	* Do the standard mutation of the GGA.
+	*/
+	virtual bool Modify(void);
+
+	/**
+	* Set if the pair of groups (id1,id2) was tested for merging or not.
+	* @param id1            Identificator of the first group.
+	* @param id2            Identificator of the second group.
+	* @param s              If true, the pair must be tested.
+	*/
 	void Set(unsigned int id1,unsigned int id2,bool s);
 
+	/**
+	* Verify if the pair of groups (id1,id2) was tested for merging or not.
+	* @param id1            Identificator of the first group.
+	* @param id2            Identificator of the second group.
+	* @returns If true, the pair must be tested.
+	*/
 	bool Get(unsigned int id1,unsigned int id2);
 
+	/**
+	* Set if the all pair containing the group id1 was tested for merging or
+	* not.
+	* @param id1            Identificator of the group.
+	* @param s              If true, the pair must be tested.
+	*/
 	void Set(unsigned int id1,bool s);
 
 	/**

@@ -54,16 +54,16 @@ using namespace RGA;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GALILEI::GChromoIR::GroupsPair
-{
-public:
-	GGroupIR* Grp1;
-	GGroupIR* Grp2;
-
-	GroupsPair(GGroupIR* g1,GGroupIR* g2) : Grp1(g1), Grp2(g2) {}
-	GroupsPair(GroupsPair* p) : Grp1(p->Grp1), Grp2(p->Grp2) {}
-	int Compare(const GroupsPair*) const {return(-1);}
-};
+//class GALILEI::GChromoIR::GroupsPair
+//{
+//public:
+//	GGroupIR* Grp1;
+//	GGroupIR* Grp2;
+//
+//	GroupsPair(GGroupIR* g1,GGroupIR* g2) : Grp1(g1), Grp2(g2) {}
+//	GroupsPair(GroupsPair* p) : Grp1(p->Grp1), Grp2(p->Grp2) {}
+//	int Compare(const GroupsPair*) const {return(-1);}
+//};
 
 
 
@@ -79,13 +79,6 @@ GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
 	  Sims(0), MinSimLevel(0), AvgSim(0.0), AvgProf(0.0), OKFactor(0.0), DiffFactor(1.0)
 {
 	(*Fitness)=0.0;
-	Prom=new RPromKernel("GALILEI-Internal",2,4);
-	CritSim=Prom->NewCriterion(Maximize,"Similarities",0.2,0.05,1.0);
-	CritNb=Prom->NewCriterion(Maximize,"Profiles",0.2,0.05,1.0);
-	CritOKDocs=Prom->NewCriterion(Maximize,"Common OK Documents",0.2,0.05,1.0);
-	CritDiffDocs=Prom->NewCriterion(Minimize,"Common Documents with different Judgment",0.2,0.05,1.0);
-	Sol1=Prom->NewSol();
-	Sol2=Prom->NewSol();
 }
 
 
@@ -107,8 +100,55 @@ void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
 	// Pairs
 	NbRows=200;
 	Pairs=new bool*[NbRows];
-	for(i=NbRows+1,ptr=Pairs;--i;ptr++)
+	(*Pairs)=new bool[NbRows];
+	for(i=NbRows,ptr=Pairs+1;--i;ptr++)
 		(*ptr)=new bool[i-1];
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GChromoIR::ComputeSumSim(GObjIR** grp,unsigned int nb,GObjIR* obj)
+{
+	unsigned int i;
+	double AvgSim;
+
+	AvgSim=0.0;
+	for(i=nb+1;--i;grp++)
+	{
+		if((*grp)==obj) continue;
+		AvgSim+=1-Sims->GetSim(obj->GetSubProfile(),(*grp)->GetSubProfile());
+	}
+	return(AvgSim);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GChromoIR::ComputeRelevant(GObjIR** grp,unsigned int nb,GSubProfile* &rel)
+{
+	unsigned int i;
+	double BestSumSim;
+	double SumSim;
+	GObjIR** ptr;
+
+	// Suppose the first element is the most relevant.
+	rel=(*grp)->GetSubProfile();
+	ptr=grp;
+	BestSumSim=ComputeSumSim(grp,nb,*ptr);
+
+	// Look if in the other objects, there is a better one
+	for(i=nb;--i;ptr++)
+	{
+		SumSim=ComputeSumSim(grp,nb,*ptr);
+		if(SumSim>BestSumSim)
+		{
+			rel=(*ptr)->GetSubProfile();
+			BestSumSim=SumSim;
+		}
+	}
+
+	// Return results
+	AvgSim=BestSumSim;
+	return(BestSumSim);
 }
 
 
@@ -118,12 +158,21 @@ bool GALILEI::GChromoIR::MergeGroups(GGroupIR* grp1,GGroupIR* grp2)
 	GObjIR** ptr;
 	GObjIR** ptr2;
 	unsigned int i,j;
-	double LocalAvgSim,NbComp,LocalOKFactor;
+	double LocalAvgSim,NbComp,LocalOKFactor,max,tmp,localmax;
 	int NbCrit=0;
 	GSubProfilesSameGroupIR* same;
 	unsigned int id1=grp1->Id;
 	unsigned int id2=grp2->Id;
 	unsigned int a1,a2;
+	unsigned NbObjs1;
+	GGroupIRCursor Cur1,Cur2;
+	GSubProfile* rel1;
+
+	//  Verify that the groups may be grouped together -> each subprofile of
+	// grp1 can be inserted in grp2.
+	for(ptr2=grp1->GetObjects(),i=grp1->GetNbObjs()+1;--i;ptr2++)
+		if(!grp2->CanInsert(*ptr2))
+			return(false);
 
 	// Put in thObjs1 the merge of the two groups
 	for(ptr2=grp1->GetObjects(),ptr=thObjs1,i=grp1->GetNbObjs()+1,NbObjs1=0;--i;ptr2++,ptr++,NbObjs1++)
@@ -132,16 +181,56 @@ bool GALILEI::GChromoIR::MergeGroups(GGroupIR* grp1,GGroupIR* grp2)
 		(*ptr)=(*ptr2);
 
 	// Compute Avg Similarity for the new created group
-	for(ptr=thObjs1,i=NbObjs1,NbComp=LocalAvgSim=0.0;--i;ptr++)
+//	for(ptr=thObjs1,i=NbObjs1,NbComp=LocalAvgSim=0.0;--i;ptr++)
+//	{
+//		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
+//		{
+//			LocalAvgSim+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
+//			NbComp+=1.0;
+//		}
+//	}
+//	LocalAvgSim/=NbComp;
+//	if(LocalAvgSim>(grp1->ComputeAvgSim()+grp2->ComputeAvgSim())/2)
+//		NbCrit++;
+
+	// Compute (Sum Intra)/(Max intra).
+	LocalAvgSim=AvgSim=0.0;
+	for(Used.Start();!Used.End();Used.Next())
 	{
-		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
-		{
-			LocalAvgSim+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
-			NbComp+=1.0;
-		}
+		AvgSim+=Used()->ComputeRelevant();
+		if((Used()==grp1)||(Used()==grp2))
+			continue;
+		LocalAvgSim+=Used()->ComputeRelevant();
 	}
-	LocalAvgSim/=NbComp;
-	if(LocalAvgSim>(grp1->ComputeAvgSim()+grp2->ComputeAvgSim())/2)
+	LocalAvgSim+=ComputeRelevant(thObjs1,NbObjs1,rel1);
+	Cur1.Set(Used);
+	Cur2.Set(Used);
+	for(Cur1.Start(),i=0,j=Cur1.GetNb(),max=0.0,localmax=0.0;--j;Cur1.Next(),i++)
+	{
+		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
+		{
+			tmp=Sims->GetSim(Cur1()->Relevant,Cur2()->Relevant);
+			if(tmp>max)
+				max=tmp;
+			if((Cur2()==grp1)||(Cur2()==grp2))
+				continue;
+			if((Cur1()==grp1)||(Cur1()==grp2))
+				continue;
+			if(tmp>localmax)
+				localmax=tmp;
+		}
+		tmp=Sims->GetSim(Cur1()->Relevant,rel1);
+		if(tmp>localmax)
+			localmax=tmp;
+	}
+	tmp=Sims->GetSim(Cur1()->Relevant,rel1);
+	if(tmp>localmax)
+		localmax=tmp;
+	if(max)
+		AvgSim/=max;
+	if(localmax)
+		LocalAvgSim/=localmax;
+	if(LocalAvgSim>AvgSim)
 		NbCrit++;
 
 	// Number of subprofiles having common OK documents and being in the same group.
@@ -169,25 +258,8 @@ bool GALILEI::GChromoIR::MergeGroups(GGroupIR* grp1,GGroupIR* grp2)
 		NbCrit++;
 	}
 
-	// Compute Promethee
-	Evaluate();
-	LocalEvaluate(id1,id2);
-	Prom->Assign(Sol1,CritSim,AvgSim);
-	Prom->Assign(Sol1,CritNb,AvgProf);
-	Prom->Assign(Sol1,CritOKDocs,OKFactor);
-	Prom->Assign(Sol1,CritDiffDocs,DiffFactor);
-	Prom->Assign(Sol2,CritSim,LocalAvgSim);
-	Prom->Assign(Sol2,CritNb,LocalAvgProf);
-	Prom->Assign(Sol2,CritOKDocs,LocalOKFactor);
-	Prom->Assign(Sol2,CritDiffDocs,LocalDiffFactor);
-	Prom->ComputePrometheeII();
-//	if(Prom->GetBestSol()->GetId())
-//		cout<<"Prom=Merge - ";
-//	else
-//		cout<<"Prom=Not Merge - ";
-
 	// Look number of criteria ameliorated
-	if(NbCrit>Instance->RRand(2))
+	if(NbCrit)
 	{
 		// Release grp1 and grp2
 		ReleaseGroup(grp1);
@@ -200,11 +272,9 @@ bool GALILEI::GChromoIR::MergeGroups(GGroupIR* grp1,GGroupIR* grp2)
 		for(ptr=thObjs1,i=NbObjs1+1;--i;ptr++)
 			grp1->Insert(*ptr);
 		Set(grp1->Id,true);
-//		cout<<"Merge"<<endl;
 		return(true);
 	}
 
-//	cout<<"Not Merge"<<endl;
 	return(false);
 }
 
@@ -221,9 +291,13 @@ bool GALILEI::GChromoIR::DivideGroup(GGroupIR* grp)
 	GSubProfile* sub;
 	GSubProfile* obj;
 	int NbCrit=0;
-	double LocalAvgSim1,LocalAvgSim2,NbComp,LocalDiffFactor;
+	double LocalAvgSim,LocalAvgSim2,NbComp,LocalDiffFactor,tmp,max,localmax;
 	unsigned int a1,a2;
 	GSubProfilesSameGroupIR* same;
+	unsigned NbObjs1,NbObjs2;
+	GGroupIRCursor Cur1,Cur2;
+	GSubProfile* rel1;
+	GSubProfile* rel2;
 
 	// If group has not at least 2 objects do nothing
 	if(grp->NbSubObjects<2) return(false);
@@ -264,25 +338,70 @@ bool GALILEI::GChromoIR::DivideGroup(GGroupIR* grp)
 	if((!NbObjs1)||(!NbObjs2)) return(false);
 
 	// Compute Avg Similarity for the two new created group
-	for(ptr=thObjs1,i=NbObjs1,LocalAvgSim1=NbComp=0.0;--i;ptr++)
+//	for(ptr=thObjs1,i=NbObjs1,LocalAvgSim1=NbComp=0.0;--i;ptr++)
+//	{
+//		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
+//		{
+//			LocalAvgSim1+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
+//			NbComp+=1.0;
+//		}
+//	}
+//	LocalAvgSim1/=NbComp;
+//	for(ptr=thObjs2,i=NbObjs2,LocalAvgSim2=NbComp=0.0;--i;ptr++)
+//	{
+//		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
+//		{
+//			LocalAvgSim2+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
+//			NbComp+=1.0;
+//		}
+//	}
+//	LocalAvgSim2/=NbComp;
+//	if((LocalAvgSim1+LocalAvgSim2)/2>grp->ComputeAvgSim())
+//		NbCrit++;
+
+	// Compute (Sum Intra)/(Max intra).
+	LocalAvgSim=AvgSim=0.0;
+	for(Used.Start();!Used.End();Used.Next())
 	{
-		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
-		{
-			LocalAvgSim1+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
-			NbComp+=1.0;
-		}
+		AvgSim+=Used()->ComputeRelevant();
+		if(Used()==grp)
+			continue;
+		LocalAvgSim+=Used()->ComputeRelevant();
 	}
-	LocalAvgSim1/=NbComp;
-	for(ptr=thObjs2,i=NbObjs2,LocalAvgSim2=NbComp=0.0;--i;ptr++)
+	LocalAvgSim+=ComputeRelevant(thObjs1,NbObjs1,rel1);
+	LocalAvgSim+=ComputeRelevant(thObjs2,NbObjs2,rel2);
+	Cur1.Set(Used);
+	Cur2.Set(Used);
+	for(Cur1.Start(),i=0,j=Cur1.GetNb(),max=0.0,localmax=0.0;--j;Cur1.Next(),i++)
 	{
-		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
+		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
-			LocalAvgSim2+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
-			NbComp+=1.0;
+			tmp=Sims->GetSim(Cur1()->Relevant,Cur2()->Relevant);
+			if(tmp>max)
+				max=tmp;
+			if((Cur2()==grp)||(Cur1()==grp))
+				continue;
+			if(tmp>localmax)
+				localmax=tmp;
 		}
+		tmp=Sims->GetSim(Cur1()->Relevant,rel1);
+		if(tmp>localmax)
+			localmax=tmp;
+		tmp=Sims->GetSim(Cur1()->Relevant,rel2);
+		if(tmp>localmax)
+			localmax=tmp;
 	}
-	LocalAvgSim2/=NbComp;
-	if((LocalAvgSim1+LocalAvgSim2)/2>grp->ComputeAvgSim())
+	tmp=Sims->GetSim(Cur1()->Relevant,rel1);
+	if(tmp>localmax)
+		localmax=tmp;
+	tmp=Sims->GetSim(Cur1()->Relevant,rel2);
+	if(tmp>localmax)
+		localmax=tmp;
+	if(max)
+		AvgSim/=max;
+	if(localmax)
+		LocalAvgSim/=localmax;
+	if(LocalAvgSim>AvgSim)
 		NbCrit++;
 
 	// Number of subprofiles having common documents with different judgment and being in the same group.
@@ -321,25 +440,8 @@ bool GALILEI::GChromoIR::DivideGroup(GGroupIR* grp)
 	else
 		NbCrit++;
 
-	// Compute Promethee
-	Evaluate();
-	LocalEvaluate(grp->Id);
-	Prom->Assign(Sol1,CritSim,AvgSim);
-	Prom->Assign(Sol1,CritNb,AvgProf);
-	Prom->Assign(Sol1,CritOKDocs,OKFactor);
-	Prom->Assign(Sol1,CritDiffDocs,DiffFactor);
-	Prom->Assign(Sol2,CritSim,LocalAvgSim);
-	Prom->Assign(Sol2,CritNb,LocalAvgProf);
-	Prom->Assign(Sol2,CritOKDocs,LocalOKFactor);
-	Prom->Assign(Sol2,CritDiffDocs,LocalDiffFactor);
-	Prom->ComputePrometheeII();
-	if(Prom->GetBestSol()->GetId())
-		cout<<"Prom=Divided - "<<endl;
-//	else
-//		cout<<"Prom=Not Divided - ";
-
-//	// Look number of criteria ameliorated
-	if(NbCrit>Instance->RRand(3))
+	// Look number of criteria ameliorated
+	if(NbCrit==2)
 	{
 		// Release grp
 		ReleaseGroup(grp);
@@ -355,12 +457,10 @@ bool GALILEI::GChromoIR::DivideGroup(GGroupIR* grp)
 		grp->Done=false;
 		for(ptr=thObjs2,i=NbObjs2+1;--i;ptr++)
 			grp->Insert(*ptr);
-//		cout<<"Divided"<<endl;
 		return(true);
 	}
 
 	// Group can not be divided
-//	cout<<"Not Divided"<<endl;
 	return(false);
 }
 
@@ -394,20 +494,20 @@ void GALILEI::GChromoIR::ConstructChromo(GGroups* grps)
 //-----------------------------------------------------------------------------
 bool GALILEI::GChromoIR::RandomConstruct(void)
 {
-	bool b;
-
 	// Look if already a solution in the session
 	if(Instance->CurrentGroups)
 		 ConstructChromo(Instance->CurrentGroups);
 
 	// Call classic heuristic for non-assigned objects
-	b=RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::RandomConstruct();
+	if(!RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::RandomConstruct())
+		return(false);
 
-	// If not first element, do a mutation
-	if(Instance->CurrentGroups&&Id)
-		b=RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Mutation();
+	// If first element, do nothing.
+	if((!Instance->CurrentGroups)||(!Id))
+		return(true);
 
-	return(b);
+	// Do a mutation
+	return(Mutation());
 }
 
 
@@ -415,25 +515,42 @@ bool GALILEI::GChromoIR::RandomConstruct(void)
 void GALILEI::GChromoIR::Evaluate(void)
 {
 	GSubProfilesSameGroupIR* ptr;
+	GGroupIRCursor Cur1,Cur2;
+	double tmp;
+	double max;
+	unsigned int i,j;
 
 	// Some groups must exists
-	if(!Used.NbPtr)
-	{
-		OKFactor=AvgSim=AvgProf=0.0;
-		DiffFactor=1.0;
-		return;
-	}
+	if(!Used.NbPtr) return;
 
 	// Compute Average number of profiles.
 	AvgProf=((double)Objs->GetNb())/((double)Used.NbPtr);
 
 	// Compute Average Similarity.
+//	AvgSim=0.0;
+//	for(Used.Start();!Used.End();Used.Next())
+//	{
+//		AvgSim+=Used()->ComputeAvgSim();
+//	}
+//	AvgSim/=((double)Used.NbPtr);
+
+	// Compute (Sum Intra)/(Max intra).
 	AvgSim=0.0;
 	for(Used.Start();!Used.End();Used.Next())
 	{
-		AvgSim+=Used()->ComputeAvgSim();
+		AvgSim+=Used()->ComputeRelevant();
 	}
-	AvgSim/=((double)Used.NbPtr);
+	Cur1.Set(Used);
+	Cur2.Set(Used);
+	for(Cur1.Start(),i=0,j=Cur1.GetNb(),max=0.0;--j;Cur1.Next(),i++)
+		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
+		{
+			tmp=Sims->GetSim(Cur1()->Relevant,Cur2()->Relevant);
+			if(tmp>max)
+				max=tmp;
+		}
+	if(max)
+		AvgSim/=max;
 
 	// Number of subprofiles having common OK documents and being in the same group.
 	if(Instance->SameGroups.NbPtr)
@@ -468,193 +585,12 @@ void GALILEI::GChromoIR::Evaluate(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::LocalEvaluate(unsigned int id)
-{
-	GSubProfilesSameGroupIR* same;
-	unsigned int i,j;
- 	unsigned int a1,a2;
-	GObjIR** ptr;
-	GObjIR** ptr2;
-	double NbComp;
-	double tmp;
-
-	// Compute Average number of profiles.
-	LocalAvgProf=((double)Objs->GetNb())/((double)Used.NbPtr+1);
-
-	// Compute Average Similarity (- id).
-	LocalAvgSim=0.0;
-	for(Used.Start();!Used.End();Used.Next())
-	{
-		if(Used()->Id==id) continue;
-		LocalAvgSim+=Used()->ComputeAvgSim();
-	}
-	for(ptr=thObjs1,i=NbObjs1,tmp=NbComp=0.0;--i;ptr++)
-	{
-		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
-		{
-			tmp+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
-			NbComp+=1.0;
-		}
-	}
-	if(NbComp)
-		tmp/=NbComp;
-	LocalAvgSim+=tmp;
-	for(ptr=thObjs2,i=NbObjs2,tmp=NbComp=0.0;--i;ptr++)
-	{
-		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
-		{
-			tmp+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
-			NbComp+=1.0;
-		}
-	}
-	if(NbComp)
-		tmp/=NbComp;
-	LocalAvgSim+=tmp;
-	LocalAvgSim/=((double)Used.NbPtr+1);
-
-	// Number of subprofiles having common OK documents and being in the same group.
-	if(Instance->SameGroups.NbPtr)
-	{
-		LocalOKFactor=0.0;
-		for(Instance->SameGroups.Start();!Instance->SameGroups.End();Instance->SameGroups.Next())
-		{
-			same=Instance->SameGroups();
-			a1=ObjectsAss[same->Id1];
-			a2=ObjectsAss[same->Id2];
-			if(a1==a2)
-			{
-				if(a1==id)
-				{
-					// Go through thObjs1 and count (j) number of objects of same
-					for(ptr=thObjs1,i=NbObjs1+1,j=0;--i;ptr++)
-					{
-						if(same->IsIn(*ptr)) j++;
-					}
-
-					// If j<>1 -> In Same group
-					if(j!=1)
-						LocalOKFactor+=1.0;
-				}
-				else
-					LocalOKFactor+=1.0;
-			}
-		}
-		LocalOKFactor/=Instance->SameGroups.NbPtr;
-	}
-	else
-	{
-		LocalOKFactor=1.0;
-	}
-
-	// Number of subprofiles having common documents with different judgment and being in the same group.
-	LocalDiffFactor=0.0;
-	for(Instance->DiffGroups.Start();!Instance->DiffGroups.End();Instance->DiffGroups.Next())
-	{
-		same=Instance->DiffGroups();
-		a1=ObjectsAss[same->Id1];
-		a2=ObjectsAss[same->Id2];
-		if(a1==a2)
-		{
-			if(a1==id)
-			{
-				// Go through thObjs1 and count (j) number of objects of same
-				for(ptr=thObjs1,i=NbObjs1+1,j=0;--i;ptr++)
-				{
-					if(same->IsIn(*ptr)) j++;
-				}
-
-				// If j<>1 -> In Same group
-				if(j!=1)
-					LocalDiffFactor+=1.0;
-			}
-			else
-				LocalDiffFactor+=1.0;
-		}
-	}
-	if(Instance->DiffGroups.NbPtr)
-	{
-		LocalDiffFactor/=Instance->DiffGroups.NbPtr;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::LocalEvaluate(unsigned int id1,unsigned int id2)
-{
-	GSubProfilesSameGroupIR* same;
-	double tmp;
-	unsigned int i,j;
- 	unsigned int a1,a2;
-	GObjIR** ptr;
-	GObjIR** ptr2;
-	double NbComp;
-
-	// Compute Averageaverage number of profiles
-	LocalAvgProf=((double)Objs->GetNb())/((double)Used.NbPtr-1);
-
-	// Compute Average Similarity (-id1,-id2).
-	LocalAvgSim=0.0;
-	for(Used.Start();!Used.End();Used.Next())
-	{
-		if((Used()->Id==id1)||(Used()->Id==id2)) continue;
-		LocalAvgSim+=Used()->ComputeAvgSim();
-	}
-	// Compute Avg Similarity for the new created group
-	for(ptr=thObjs1,i=NbObjs1,NbComp=tmp=0.0;--i;ptr++)
-	{
-		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
-		{
-			tmp+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
-			NbComp+=1.0;
-		}
-	}
-	if(NbComp)
-		tmp/=NbComp;
-	LocalAvgSim=(LocalAvgSim+tmp)/((double)Used.NbPtr-1);
-
-	// Number of subprofiles having common OK documents and being in the same group.
-	if(Instance->SameGroups.NbPtr)
-	{
-		LocalOKFactor=0.0;
-		for(Instance->SameGroups.Start();!Instance->SameGroups.End();Instance->SameGroups.Next())
-		{
-			same=Instance->SameGroups();
-			a1=ObjectsAss[same->Id1];
-			a2=ObjectsAss[same->Id2];
-			if((a1==a2)||((a1==id1||a1==id2)&&(a2==id1||a2==id2)))
-				LocalOKFactor+=1.0;
-		}
-		LocalOKFactor/=Instance->SameGroups.NbPtr;
-	}
-	else
-	{
-		LocalOKFactor=1.0;
-	}
-
-	// Number of subprofiles having common documents with different judgment and being in the same group.
-	LocalDiffFactor=0.0;
-	for(Instance->DiffGroups.Start();!Instance->DiffGroups.End();Instance->DiffGroups.Next())
-	{
-		same=Instance->DiffGroups();
-		a1=ObjectsAss[same->Id1];
-		a2=ObjectsAss[same->Id2];
-		if((a1==a2)||((a1==id1||a1==id2)&&(a2==id1||a2==id2)))
-			LocalDiffFactor+=1.0;
-	}
-	if(Instance->DiffGroups.NbPtr)
-	{
-		LocalDiffFactor/=Instance->DiffGroups.NbPtr;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 bool GALILEI::GChromoIR::Crossover(GChromoIR* parent1,GChromoIR* parent2)
 {
 	bool b;
 
 	b=RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Crossover(parent1,parent2);
-	ReOrganisation();
+//	ReOrganisation();
 	return(b);
 }
 
@@ -669,6 +605,12 @@ bool GALILEI::GChromoIR::Mutation(void)
 	return(b);
 }
 
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GChromoIR::Modify(void)
+{
+	return(RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Mutation());
+}
 
 
 //-----------------------------------------------------------------------------
@@ -716,14 +658,14 @@ void GALILEI::GChromoIR::ReOrganisation(void)
 	unsigned int i,j;
 	bool** ptr;
 
-//	cout<<"Reorganisation ("<<Id<<"-"<<Instance->Gen<<")... ";
-	cout.flush();
-
+//	cout<<"ReOrganisation Gen="<<Instance->Gen<<" ; Id="<<Id<<endl;
 	Cur1.Set(Used);
 	for(Cur1.Start();(!Cur1.End())&&(!Cont);Cur1.Next())
 		Cur1()->Done=false;
 
 	// Try to divided groups until it is not possible anymore
+//	cout<<"\tDivision... ";
+//	memset(*ptr,0x0,NbRows*sizeof(bool));
 	for(Cont=true;Cont;)
 	{
 		Cont=false;
@@ -737,10 +679,11 @@ void GALILEI::GChromoIR::ReOrganisation(void)
 				Cur1()->Done=true;
 		}
 	}
+//	cout<<"Done"<<endl;
 
 	// Init Pairs
 	for(i=NbRows+1,ptr=Pairs;--i;ptr++)
-		memset(*ptr,0x0,sizeof(i-1)*sizeof(bool));
+		memset(*ptr,0x0,(i-1)*sizeof(bool));
 	Cur1.Set(Used);
 	Cur2.Set(Used);
 	for(Cur1.Start(),i=0,j=Cur1.GetNb();(--j)&&(!Cont);Cur1.Next(),i++)
@@ -748,6 +691,7 @@ void GALILEI::GChromoIR::ReOrganisation(void)
 			Set(Cur1()->Id,Cur2()->Id,true);
 
 	// Try to regroup groups until it is not possible anymore
+//	cout<<"\tRegroups... ";
 	for(Cont=true;Cont;)
 	{
 		Cont=false;
@@ -765,8 +709,9 @@ void GALILEI::GChromoIR::ReOrganisation(void)
 			}
 		}
 	}
+//	cout<<"Done"<<endl;
 
-//	cout<<"OK"<<endl;
+//	cout<<"Done"<<endl;
 	ComputeOrd();
 }
 
@@ -796,7 +741,6 @@ GALILEI::GChromoIR::~GChromoIR(void)
 	unsigned int i;
 	bool** ptr;
 
-	delete Prom;
 	for(i=NbRows+1,ptr=Pairs;--i;ptr++)
 		delete[] (*ptr);
 	delete[] Pairs;

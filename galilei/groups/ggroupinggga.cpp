@@ -189,8 +189,15 @@ bool GALILEI::GGroupingGGA::IsCoherent(const GGroup* /*grp*/,const GSubProfile* 
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GGroupingGGA::IsValid(GGroup* /*grp*/)
+bool GALILEI::GGroupingGGA::IsValid(GGroup* grp)
 {
+//	unsigned int i,j;
+//	GSubProfile** sub1;
+//	GSubProfile** sub2;
+//
+//	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+//		if(Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile())<Owner->MinSimLevel)
+//			return(false);
 	return(true);
 }
 

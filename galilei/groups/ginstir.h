@@ -251,6 +251,12 @@ public:
 	bool IsGlobalSim(void) const {return(GlobalSim);}
 
 	/**
+	* Set the maximal number of generations to run.
+	* @param max            Maximal number of generations.
+	*/
+	void SetMaxGen(unsigned int max);
+
+	/**
 	* Destruct the instance.
 	*/
 	virtual ~GInstIR(void);
