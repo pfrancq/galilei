@@ -30,7 +30,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //
-// class FrenchPorterRule;
+// class FrenchPorterRule
 //
 //-----------------------------------------------------------------------------
 
@@ -231,10 +231,6 @@ GALILEI::GLangFR::GLangFR(void) throw(bad_alloc)
 	Rules1->InsertPtr(new FrenchPorterRule("eau"," ",2 ,0 ,1));
 	Rules1->InsertPtr(new FrenchPorterRule("au"," ",2 ,0 ,1)); // a moi
 	Rules1->InsertPtr(new FrenchPorterRule("uction"," ",2 ,0 ,1)); // a moi
-	
-
-
-
 
 	Rules2=new RContainer<FrenchPorterRule,unsigned int,true,false>(130,10);
 	Rules2->InsertPtr(new FrenchPorterRule("nn","n",1 ,0 ,1));
@@ -272,6 +268,7 @@ int GALILEI::GLangFR::GetWordSize(char* kwd)
 	return(Result);
 }
 
+
 //-----------------------------------------------------------------------------
 bool GALILEI::GLangFR::ContainsVowel(const char* kwd)
 {
@@ -280,7 +277,6 @@ bool GALILEI::GLangFR::ContainsVowel(const char* kwd)
 	else
 		return((IsVowel(*kwd))||(!strpbrk(kwd+1,"aeiouy")));
 }
-
 
 
 //-----------------------------------------------------------------------------
