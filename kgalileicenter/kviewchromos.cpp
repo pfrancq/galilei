@@ -154,6 +154,7 @@ void QListViewChromos::mousePressEvent(QMouseEvent* e)
 class KViewChromos::Stat
 {
 public:
+	GChromoIR* Chromo;
 	tId Id;
 	double Precision;
 	double Recall;
@@ -179,7 +180,7 @@ public:
 	double Fi;
 	unsigned int NbGroups;
 
-	Stat(void) : Id(NullId), Precision(0.0), Recall(0.0), E1(0.0), E05(0.0), E15(0.0), Global(0.0), J(0.0), AvgSim(0.0),
+	Stat(GChromoIR* c) : Chromo(c), Id(NullId), Precision(0.0), Recall(0.0), E1(0.0), E05(0.0), E15(0.0), Global(0.0), J(0.0), AvgSim(0.0),
 		AvgRatio(0.0), MinRatio(0.0), Ratio(0.0), WOverB(0.0), SimWB(0.0), Fitness(0.0),
 		CritSim(0.0), CritInfo(0.0), CritSame(0.0), CritDiff(0.0), CritSocial(0.0),
 		FiPlus(0.0), FiMinus(0.0), Fi(0.0) {}
@@ -313,7 +314,7 @@ void KViewChromos::ConstructChromosomesSim(void)
 		else
 			c=Instance->Chromosomes[i];
 	
-		Stats.InsertPtr(s=new Stat());
+		Stats.InsertPtr(s=new Stat(c));
 
 		s->Id=c->Id;
 		sprintf(tmp,"%u",c->Id);
@@ -445,7 +446,7 @@ void KViewChromos::ConstructChromosomesRanking(void)
 			c=Instance->Chromosomes[i];
 
 
-		Stats.InsertPtr(s=new Stat());
+		Stats.InsertPtr(s=new Stat(c));
 
 		s->Id=c->Id;
 		sprintf(tmp,"%u",c->Id);
