@@ -50,6 +50,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for Qt
 #include <qprogressdialog.h>
+#include <qmessagebox.h>
 
 
 //-----------------------------------------------------------------------------
@@ -83,9 +84,7 @@ KViewStats::KViewStats(KDoc* doc, QWidget* parent,const char* name,int wflags)
 	Res->addColumn("Element");
 	Res->addColumn("Value");
 	Res->setRootIsDecorated(true);
-	Res->setSorting(0,false);
-	Res->setSorting(1,false);
-	Res->setSorting(2,false);
+	Res->setSorting(-1);
 	Res->setResizeMode(QListView::AllColumns);
 
 	// Compute Statistics
@@ -142,8 +141,16 @@ void KViewStats::ComputeStats(void)
 	GStatsCalc* Calc;
 	RXMLStruct xml;
 	RXMLTag* Root;
-	QProgressDialog Dlg( "Compute Statistics", "Abort Compute", (dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc")))->NbPtr +1 ,this, "progress", TRUE );
 	int i;
+	GStatsCalcManager* Mng=(dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatCalc")));
+
+	if(!Mng)
+	{
+		QMessageBox::critical(this,"KGALILEICenter","No manager for the statistics plug-ins");
+		return;
+	}
+	QProgressDialog Dlg( "Compute Statistics", "Abort Compute", Mng->NbPtr +1 ,this, "progress", TRUE );
+
 
 	// Create the root node
 	Root=new RXMLTag("Statistics");
@@ -153,7 +160,7 @@ void KViewStats::ComputeStats(void)
 	Dlg.setMinimumDuration(0);
 	Dlg.setProgress(0);
 	KApplication::kApplication()->processEvents();
-	Cur.Set((dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc"))));
+	Cur.Set(Mng);
 	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
 	{
 		Dlg.setProgress(i);
