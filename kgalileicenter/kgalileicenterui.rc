@@ -6,6 +6,7 @@
 		<Separator/>
 		<Action name="sessionConnect"/>
 		<Action name="sessionDisconnect"/>
+		<Action name="createDatabase"/>
 		<separator/>
 		<Action name="sessionCompute"/>
 		<Action name="runProgram"/>

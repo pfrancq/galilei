@@ -100,6 +100,12 @@ using namespace GALILEI;
 #include <kio/netaccess.h>
 #include <kpopupmenu.h>
 #include <kstatusbar.h>
+#include <kurlrequester.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for process running
+#include <kprocess.h>
 
 
 //-----------------------------------------------------------------------------
@@ -128,6 +134,7 @@ using namespace GALILEI;
 #include "qlanguages.h"
 #include "qviewchromos.h"
 #include "qmixidealconfig.h"
+#include "qcreatedatabase.h"
 
 
 
@@ -309,6 +316,204 @@ void KGALILEICenterApp::slotSessionQuit(void)
 	saveOptions();
 	slotStatusMsg(i18n("Ready."));
 	close();
+}
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotCreateDatabase(void)
+{
+
+//	RString arg = RString(" ");
+	QString strTmp;
+	QString modeleDb , stopList , users;
+	ErrMsgList = QString();
+	
+	KApplication::kApplication()->processEvents();
+	QCreateDatabase dlg(this,0,true);
+	
+	dlg.DBdatabasesql->setURL("$HOME/prj/kgalileicenter/kgalileicenter/DbModel.sql");
+	dlg.DBstoplistsql->setURL("$HOME/prj/kgalileicenter/kgalileicenter/DbStopList.sql");
+	dlg.DBUserssql->setURL("$HOME/prj/kgalileicenter/kgalileicenter/DbUsers.sql");
+
+	// set the moreGroup unvisible
+	dlg.moreGroup->hide();
+	dlg.adjustSize();
+
+       // after ok button clicked
+	if(dlg.exec())
+	{
+		QString dbName = dlg.DbName->text().latin1();
+		QString host = dlg.hostName->text().latin1();
+		QString user = dlg.userName->text().latin1();
+		QString pass = dlg.password->text().latin1();
+		if (pass.length() == 0){pass="\\  ";} // put a space caracter if no password is entered
+
+      // if the database name field is empty -> ERROR
+		if( dbName.length() == 0)
+    {
+			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a name for the database! "));
+      return;
+    }
+     // if the user or host is not specified -> ERROR
+		if( (host.length()== 0) || (user.length() == 0))
+		{
+			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a user and a host for the database! "));
+			return;
+		}
+
+     
+//************************* ------------- Find a Database Modele -----------------------*************************
+//
+		strTmp = dlg.DBdatabasesql->url();
+     // if no url is specified then return error
+		if (strTmp.length() == 0)
+		{
+			QMessageBox::critical(this,"KGALILEICenter",QString("You must select a database shema file ! "));
+			return;
+		}
+
+		if (strTmp.find("://",0) < 0 )   // if the file is a locale one -> ok
+		{
+			modeleDb = strTmp;
+		}
+		else
+		{
+			QString tmp= QString("");
+			if (!KIO::NetAccess::download(KURL(*strTmp),tmp) )     // if the file can't be downloaded ->error
+			{
+				QMessageBox::critical(this,"KGALILEICenter",QString("Can't download url : ") + *strTmp );
+				return;
+			}
+			modeleDb = tmp.latin1();
+		}
+
+//************************* ------------- Find a kwds Stop List  -----------------------*************************
+		strTmp = dlg.DBstoplistsql->url();
+      // if no url is specified then return error
+		if (strTmp.length() == 0)
+		{
+			QMessageBox::critical(this,"KGALILEICenter",QString("You must select a Database Stop List File ! "));
+			return;
+		}
+
+		if (strTmp.find("://",0) < 0 )   // if the file is a locale one -> ok
+		{
+			stopList = strTmp;
+		}
+		else
+		{
+			QString tmp= QString("");
+			
+
+			if (!KIO::NetAccess::download(KURL(*strTmp),tmp) )     // if the file can't be downloaded ->error
+			{
+				QMessageBox::critical(this,"KGALILEICenter",QString("Can't download url : ") + *strTmp );
+				return;
+			}
+			stopList = tmp.latin1();
+		}
+
+
+//************************* ------------- Find a  List of Users -----------------------*************************
+		strTmp = dlg.DBUserssql->url();
+      // if no url is specified then return error
+		if (strTmp.length() == 0)
+		{
+			QMessageBox::critical(this,"KGALILEICenter",QString("You must select a Database Users File ! "));
+			return;
+		}
+
+		if (strTmp.find("://",0) < 0 )   // if the file is a locale one -> ok
+		{
+			users = strTmp;
+		}
+		else
+		{
+			QString tmp= QString("");
+			
+
+			if (!KIO::NetAccess::download(KURL(*strTmp),tmp) )     // if the file can't be downloaded ->error
+			{
+				QMessageBox::critical(this,"KGALILEICenter",QString("Can't download url : ") + *strTmp );
+				return;
+			}
+			users = tmp.latin1();
+		}
+
+//************************* ---------find the OS used----------*************************
+		cout <<"text="<<dlg.execFile->currentText().latin1()<<endl; //scriptName
+		strTmp = dlg.execFile->currentText().latin1(); //scriptName
+		if (strTmp.find("Linux",0) <0)
+		{
+			QMessageBox::critical(this,"KGALILEICenter", *strTmp + QString("version : Not yet implemented !")  );
+			return;
+		}
+
+       // enter all the arg in this sequence:
+       // scriptName "DbName" "host" "user" "pass" "DbModele" "DbStopList  "DbUsers"  ...
+		RString cmdline = RString("");
+		cmdline+= "./DbCreation-mysql ";
+		cmdline+=" ";
+		cmdline+= dbName;
+		cmdline+= " ";
+		cmdline+= host;
+		cmdline+= " ";
+		cmdline+= user;
+		cmdline+= " ";
+		cmdline+= pass;
+		cmdline+=" ";
+		cmdline+= modeleDb;
+		cmdline+= " ";
+		cmdline+= stopList;
+		cmdline+= " ";
+		cmdline+= users;
+
+		cmdline+= "\n";
+
+    // creation of the database using a shell script.
+		KShellProcess *process = new KShellProcess("/bin/bash");
+
+		connect(process,SIGNAL(receivedStdout(KProcess*,char*,int)),this,SLOT(slotStdout(KProcess*,char*,int)));
+		connect(process,SIGNAL(receivedStderr(KProcess*,char*,int)),this,SLOT(slotStderr(KProcess*,char*,int)));
+		connect(process,SIGNAL(processExited(KProcess*)),this,SLOT(slotProcessExited(KProcess*)));
+
+		d=new QSessionProgressDlg(this,0,"create database ...");       
+		d->Begin();
+
+		*process << cmdline;
+		 process->start(KProcess::NotifyOnExit,KProcess::All);
+	}
+}
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotStdout(KProcess* /*proc*/,char* buffer,int buflen)
+{
+	char tmp[250];
+  strncpy(tmp,buffer,buflen);
+  tmp[buflen-1] = '\0';
+	d->PutText(tmp);
+}
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotStderr(KProcess* /*proc*/,char* buffer,int buflen)
+{
+	char tmp[250];
+	strncpy(tmp,buffer,buflen);
+	tmp[buflen] = '\0';
+	ErrMsgList+=tmp;
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotProcessExited(KProcess*)
+{
+	if ( !ErrMsgList.isEmpty())
+	{
+		d->close();
+		QMessageBox::critical(this,"KGALILEICenter",ErrMsgList);
+	}
+  else
+	d->Finish();
+
 }
 
 

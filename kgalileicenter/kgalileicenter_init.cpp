@@ -117,6 +117,8 @@ void KGALILEICenterApp::initActions(void)
 	sessionTest=new KAction(i18n("&Test"),"gohome",0,this,SLOT(slotSessionTest()),actionCollection(),"sessionTest");
 	sessionStat=new KAction(i18n("&Stat"),"gohome",0,this,SLOT(slotSessionStat()),actionCollection(),"sessionStat");
 	sessionQuit=new KAction(i18n("E&xit"),"exit",0,this,SLOT(slotSessionQuit()),actionCollection(),"sessionQuit");
+	createDatabase=new KAction(i18n("Create &Database"),"exec",0,this,SLOT(slotCreateDatabase()),actionCollection(),"createDatabase");
+	
 
 	// Menu "Users"
 	profileAlwaysCalc=new KToggleAction(i18n("Enables/disables users Recomputing"),0,0,0,actionCollection(),"profileAlwaysCalc");

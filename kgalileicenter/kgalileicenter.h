@@ -62,15 +62,19 @@
 using namespace GALILEI;
 
 
+
 //-----------------------------------------------------------------------------
 // include files for Qt
 class QWorkspace;
 class QListViewItem;
 class QLabel;
 
+class QSessionProgressDlg;
 
 //-----------------------------------------------------------------------------
 // include files for KDE
+#include <qstring.h>
+#include <kprocess.h>
 #include <kmainwindow.h>
 class KAction;
 class KToggleAction;
@@ -229,6 +233,17 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	* Options of the documents.
 	*/
 	GDocOptions* DocOptions;
+
+	/**
+	* the list containing all the error messages
+	*/
+	QString ErrMsgList;
+
+	/**
+	* progressDlg -> maintain the progress of database creation
+	*/
+	QSessionProgressDlg *d;
+
 public:
 
 	/**
@@ -478,6 +493,27 @@ private slots:
 	void slotSessionQuit(void);
 
 	/**
+	* Create a new database with all required tables and fiels + all the value of 'stopkwds' tables.
+	*/
+	void slotCreateDatabase(void);
+
+	/**
+	*  retrieve shell StdOut -------------------------------------------!!
+	*/
+	void slotStdout(KProcess* proc,char* buffer,int buflen);
+
+	/**
+	*  retrieve shell Stderr  -------------------------------------------!!
+	*/
+	void slotStderr(KProcess* proc,char* buffer,int buflen);
+
+	/**
+	*  retrieve the end signal emmited by a shell process.
+	*/
+	void slotProcessExited(KProcess*);
+
+	
+	/**
 	* Show the users' window.
 	*/
 	void slotShowUsers(void);
@@ -699,6 +735,8 @@ public:
 	KAction* sessionTest;
 	KAction* sessionStat;
 	KAction* sessionQuit;
+	KAction* createDatabase;
+	
 
 	KToggleAction* profileAlwaysCalc;
 	KToggleAction* profileAlwaysSave;
