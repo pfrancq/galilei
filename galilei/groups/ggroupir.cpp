@@ -146,25 +146,47 @@ double  GALILEI::GGroupIR::ComputeAvgSim(void)
 //---------------------------------------------------------------------------
 void GALILEI::GGroupIR::DoOptimisation(void)
 {
-//	unsigned int Pos;
-//	unsigned int i;
-//	GObjIR** ptr;
-//	double Avg;
-//	GSubProfile* sub;
-//	GSubProfile* obj;
-//
-//	if(NbSubObjects<=1) return;
-//	Pos=Owner->Instance->RRand(NbSubObjects);
-//	sub=Owner->GetObj(SubObjects+Pos)->GetSubProfile();
-//	Avg=0.0;
-//	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
-//	{
-//		obj=(*ptr)->GetSubProfile();
-//		if(obj==sub) continue;
-//		Avg+=Owner->Sims->GetSim(sub,obj);
-//	}
-//	Avg/=NbSubObjects-1;
-//	return;
+	unsigned int Nb;
+	unsigned int i;
+	GObjIR** ptr;
+	double Avg;
+	GSubProfile* sub;
+	GSubProfile* obj;
+	GObjIR** tab;
+	GGroupIR* grp;
+
+	if(NbSubObjects<=1) return;
+	tab=new GObjIR*[NbSubObjects];
+	sub=Owner->GetObj(SubObjects+Owner->Instance->RRand(NbSubObjects))->GetSubProfile();
+	Avg=0.0;
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+	{
+		obj=(*ptr)->GetSubProfile();
+		if(obj==sub) continue;
+		Avg+=Owner->Sims->GetSim(sub,obj);
+	}
+	Avg/=NbSubObjects-1;
+	Nb=0;
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+	{
+		obj=(*ptr)->GetSubProfile();
+		if(obj==sub) continue;
+		if(Owner->Sims->GetSim(sub,obj)>Avg)
+		{
+			tab[Nb++]=(*ptr);
+		}
+	}
+	if(Nb)
+	{
+//		grp=Owner->ReserveGroup();
+//		for(i=Nb+1,ptr=tab;--i;ptr++)
+//		{
+//			Delete(*ptr);
+//			Verify();
+//			grp->Insert(*ptr);
+//		}
+	}
+	delete[] tab;
 }
 
 
