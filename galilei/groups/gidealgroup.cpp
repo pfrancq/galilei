@@ -67,7 +67,6 @@ using namespace RStd;
 #include <sessions/gsession.h>
 #include <profiles/gusers.h>
 #include <groups/gsubject.h>
-#include <tests/ggroupsevaluate.h>
 using namespace GALILEI;
 
 

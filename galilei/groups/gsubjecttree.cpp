@@ -61,7 +61,6 @@ using namespace RIO;
 #include <profiles/gprofile.h>
 #include <profiles/guser.h>
 #include <profiles/gprofdoc.h>
-#include <tests/ggroupsevaluate.h>
 using namespace GALILEI;
 using namespace RMath;
 using namespace RStd;
