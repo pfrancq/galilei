@@ -781,7 +781,7 @@ void GFilterXML::AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent
 		if(currentTag->IsAttrDefined(attrCur()->Name))
 		{
 			//If the Tag Attribute has no child attribute --> The attribue can be add with its value
-			if(!attrCur()->SubAttrs.NbPtr)
+			if(!attrCur()->SubAttrs.GetNb())
 			{
 				attrTag=InsertTag(attrCur()->Type,currentTag);
 				if(attrTag)
@@ -834,7 +834,7 @@ bool GFilterXML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 			//Load definitions from file
 			LoadDefinitions();
 		}
-		if((!Definitions->NbPtr)||(!MimeDefinitions->NbPtr))
+		if((!Definitions->GetNb())||(!MimeDefinitions->GetNb()))
 		{
 			throw GException("No definitions found for filter XML! Verify that the path to the definition is correct.");
 		}
@@ -860,7 +860,7 @@ bool GFilterXML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 			tag=fileStruct.GetTop();
 
 			//Go through all the definitions of the tags and look if the main tag is the same
-			defCur.Set(Definitions);
+			defCur.Set(*Definitions);
 			for(defCur.Start();!defCur.End();defCur.Next())
 			{
 				if(defCur()->Tags.GetPtr<TagStruct>(TagStruct(tag->GetName(),"")))
@@ -910,7 +910,7 @@ bool GFilterXML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 //------------------------------------------------------------------------------
 R::RCursor<GFilterXML::Def> GFilterXML::GetDefinitionsCursor(void)
 {
-	R::RCursor<Def> cur(Definitions);
+	R::RCursor<Def> cur(*Definitions);
 	return(cur);
 }
 
@@ -918,7 +918,7 @@ R::RCursor<GFilterXML::Def> GFilterXML::GetDefinitionsCursor(void)
 //------------------------------------------------------------------------------
 R::RCursor<GFilterXML::MimeDef> GFilterXML::GetMimeDefinitionsCursor(void)
 {
-	R::RCursor<MimeDef> cur(MimeDefinitions);
+	R::RCursor<MimeDef> cur(*MimeDefinitions);
 	return(cur);
 }
 
