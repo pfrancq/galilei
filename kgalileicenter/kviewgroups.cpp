@@ -49,6 +49,10 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // includes files for Qt
 #include <qpixmap.h>
+#include <qpushbutton.h>
+#include <qlabel.h>
+#include <qlineedit.h>
+#include <qlayout.h>
 
 
 //-----------------------------------------------------------------------------
@@ -76,12 +80,39 @@ KViewGroups::KViewGroups(KDoc* doc,QWidget* parent,const char* name,int wflags)
 {
 	setCaption("List of Groups");
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
+
+	// Main Layout
+	QVBoxLayout* MainLayout = new QVBoxLayout(this,0,0,"MainLayout");
+
+	// Search Bar
+	QHBoxLayout* SearchLayout = new QHBoxLayout(0,0,0,"SearchLayout");
+	SearchLayout->setAlignment(Qt::AlignTop);
+	QLabel* lbl=new QLabel(this,"lbl");
+	lbl->setText("Find: ");
+	SearchLayout->addWidget(lbl);
+//	SearchLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum ));
+	What=new QLineEdit(this);
+	What->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)1, (QSizePolicy::SizeType)0, 0, 0, What->sizePolicy().hasHeightForWidth() ) );
+	What->setAutoMask( FALSE );
+	What->setEchoMode( QLineEdit::Normal );
+	connect(What,SIGNAL(returnPressed()),this,SLOT(FindNext()));
+	SearchLayout->addWidget(What);
+	Search=new QPushButton(this);
+	Search->setAutoDefault(TRUE);
+	Search->setText("Find Next");
+	connect(Search,SIGNAL(clicked()),this,SLOT(FindNext()));
+	SearchLayout->addWidget(Search);
+	SearchLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum ));
+    MainLayout->addLayout(SearchLayout);
+
+	// Groups
 	Groups = new QListView(this);
 	Groups->resize(size());
 	Groups->addColumn(QString("Profiles"));
 	Groups->addColumn(QString("Users"));
 	Groups->addColumn(QString("Attached"));
 	Groups->setRootIsDecorated(true);
+	MainLayout->addWidget(Groups);
 	connect(Groups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	ConstructGroups();
 }
@@ -135,6 +166,7 @@ void KViewGroups::ConstructGroups(void)
 			}
 		}
 	}
+	Groups->setCurrentItem(Groups->firstChild());
 }
 
 
@@ -147,16 +179,55 @@ void KViewGroups::update(unsigned int cmd)
 
 
 //-----------------------------------------------------------------------------
-void KViewGroups::resizeEvent(QResizeEvent *)
+void KViewGroups::FindNext(void)
 {
-	if(Groups->height())
+	QListViewItemIterator* it;
+	bool Cont=true;
+	bool LastTimeFound;
+	QString str=What->text();
+
+	if(Groups->currentItem())
 	{
-		int l=width()/3;
-		Groups->setGeometry(0,0,this->width(),this->height());
-		Groups->setColumnWidth(0,l-2);
-		Groups->setColumnWidth(1,this->width()-2*l-1);
-		Groups->setColumnWidth(2,l-2);
+		it=new QListViewItemIterator(Groups->currentItem());
+		LastTimeFound=true;
+		// If starting from current item, begin with the next one
+		if(it->current())
+			(++(*it));
 	}
+	else
+	{
+		it=new QListViewItemIterator(Groups);
+		LastTimeFound=false;
+	}
+	while(Cont)
+	{
+		while(it->current()&&Cont)
+		{
+			QListViewItemType* item = dynamic_cast<QListViewItemType*>(it->current());
+			if((item)&&(item->Type==QListViewItemType::tProfile))
+			{
+				if((item->text(0).contains(str,false))||(item->text(1).contains(str,false)))
+				{
+					Cont=false;
+					Groups->setCurrentItem(item);
+					Groups->ensureItemVisible(item);
+				}
+			}
+			(++(*it));
+		}
+		if(Cont)
+		{
+			if(LastTimeFound)
+			{
+				delete it;
+				it=new QListViewItemIterator(Groups);
+				LastTimeFound=false;
+			}
+			else
+				Cont=false;
+		}
+	}
+	delete it;
 }
 
 

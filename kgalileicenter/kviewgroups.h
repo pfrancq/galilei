@@ -6,7 +6,7 @@
 
 	Window to manipulate the groups - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -49,7 +49,8 @@ using namespace GALILEI;
 // include files for Qt
 #include <qwidget.h>
 class QListView;
-
+class QLineEdit;
+class QPushButton;
 
 //-----------------------------------------------------------------------------
 // include files for current application
@@ -71,6 +72,17 @@ class KViewGroups : public KView
 	*  List view of groups containing the the profile.
 	*/
 	QListView* Groups;
+
+	/**
+	* Edit field for the text to search (if the return key is pressed, the
+	* search is launched).
+	*/
+	QLineEdit* What;
+
+	/**
+	* Button to press to launch the search.
+	*/
+	QPushButton* Search;
 
 public:
 
@@ -105,12 +117,12 @@ public:
 	*/
 	virtual void update(unsigned int cmd);
 
-protected:
+protected slots:
 
 	/**
-	* Called when the main window is resize by the user.
+	* Slot that search the next item containing the text of the edit field.
 	*/
-	void resizeEvent(QResizeEvent *);
+	void FindNext(void);
 
 public:
 
