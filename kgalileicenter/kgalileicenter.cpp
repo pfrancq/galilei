@@ -41,9 +41,14 @@ using namespace RIO;
 // include files for GALILEI
 #include <docs/gdocxml.h>
 #include <docs/gdocoptions.h>
-#include <profiles/gprofoptions.h>
-#include <groups/ggroupingoptions.h>
 #include <sessions/gsession.h>
+#include <profiles/gsubprofiledesc.h>
+#include <profiles/gsubprofilevector.h>
+#include <profiles/gprofilecalcvector.h>
+#include <profiles/gprofilecalcfeedback.h>
+#include <profiles/gprofilecalcreweighting.h>
+#include <groups/ggroupingsim.h>
+#include <groups/ggroupinggga.h>
 using namespace GALILEI;
 
 
@@ -99,6 +104,9 @@ using namespace GALILEI;
 void KGALILEICenterApp::slotSessionConnect(void)
 {
 	QConnectMySQL dlg(this,0,true);
+	QString method;
+	GSessionMySQL* Sess;
+
 	dlg.txtDb->setText(dbName);
 	dlg.txtLogin->setText(dbUser);
 	dlg.txtPwd->setText(dbPwd);
@@ -110,18 +118,52 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbHost=dlg.txtHost->text().latin1();
 		dbUser=dlg.txtLogin->text().latin1();
 		dbPwd=dlg.txtPwd->text().latin1();
-		GSessionMySQL* Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,this);
-		unsigned int cmd=dlg.cbLoad->currentItem();
-		QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
-		d->LoadSession(cmd);
-		Doc=new KDoc(this,Sess);
-		sessionDisconnect->setEnabled(true);
-		sessionCompute->setEnabled(true);
-		sessionConnect->setEnabled(false);
-		textFrench->setEnabled(true);
-		textEnglish->setEnabled(true);
-		UpdateMenusEntries();
-		dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
+		try
+		{
+			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,this);
+			unsigned int cmd=dlg.cbLoad->currentItem();
+			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
+			d->LoadSession(cmd);
+			Doc=new KDoc(this,Sess);
+			Sess->RegisterProfileDesc(new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile));
+			Sess->RegisterComputingMethod(new GProfileCalcVector(Sess));
+			Sess->RegisterComputingMethod(new GProfileCalcFeedback(Sess));
+			Sess->RegisterComputingMethod(new GProfileCalcReWeighting(Sess));
+			Sess->RegisterGroupingMethod(new GGroupingSim(Sess));
+			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess));
+			Config->setGroup("Session Options");
+			method=Config->readEntry("Description Method","Vector space");
+			Sess->SetCurrentProfileDesc(method);
+			method=Config->readEntry("Grouping Method","First-Fit Heuristic");
+			Sess->SetCurrentGroupingMethod(method);
+			method=Config->readEntry("Computing Method","Statistical");
+			Sess->SetCurrentComputingMethod(method);
+			Config->setGroup("Computing Options");
+			GProfileCalcCursor Computings=Sess->GetComputingsCursor();
+			for(Computings.Start();!Computings.End();Computings.Next())
+				Computings()->SetSettings(Config->readEntry(Computings()->GetComputingName(),""));
+			Config->setGroup("Grouping Options");
+			GGroupingCursor Groupings=Sess->GetGroupingsCursor();
+			for(Groupings.Start();!Groupings.End();Groupings.Next())
+				Groupings()->SetSettings(Config->readEntry(Groupings()->GetGroupingName(),""));
+			sessionDisconnect->setEnabled(true);
+			sessionCompute->setEnabled(true);
+			sessionConnect->setEnabled(false);
+			textFrench->setEnabled(true);
+			textEnglish->setEnabled(true);
+			plugins->setEnabled(true);
+			UpdateMenusEntries();
+			dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
+		}
+		catch(GException& e)
+		{
+			QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
+			if(Doc)
+			{
+				delete Doc;
+				Doc=0;
+			}
+		}
 		slotStatusMsg(i18n("Ready"));
 	}
 }
@@ -132,7 +174,7 @@ void KGALILEICenterApp::slotSessionCompute(void)
 {
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Complete Session");
-	d->ComputeAll(sdVector,Doc->GetCurComputeProfile(),Doc->GetCurGrouping(),!sessionAlwaysCalc->isChecked());
+	d->ComputeAll(!sessionAlwaysCalc->isChecked());
 	Doc->updateAllViews(0);
 	Doc->updateAllViews(1);
 	Doc->updateAllViews(2);
@@ -142,6 +184,18 @@ void KGALILEICenterApp::slotSessionCompute(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionDisconnect(void)
 {
+	Config->setGroup("Session Options");
+	Config->writeEntry("Description Method",Doc->GetSession()->GetCurrentProfileDesc()->GetProfDescName());
+	Config->writeEntry("Grouping Method",Doc->GetSession()->GetCurrentGroupingMethod()->GetGroupingName());
+	Config->writeEntry("Computing Method",Doc->GetSession()->GetCurrentComputingMethod()->GetComputingName());
+	Config->setGroup("Computing Options");
+	GProfileCalcCursor Computings=Doc->GetSession()->GetComputingsCursor();
+	for(Computings.Start();!Computings.End();Computings.Next())
+		Config->writeEntry(Computings()->GetComputingName(),Computings()->GetSettings());
+	Config->setGroup("Grouping Options");
+	GGroupingCursor Groupings=Doc->GetSession()->GetGroupingsCursor();
+	for(Groupings.Start();!Groupings.End();Groupings.Next())
+		Config->writeEntry(Groupings()->GetGroupingName(),Groupings()->GetSettings());
 	Doc->closeDocument();
 	delete Doc;
 	Doc=0;
@@ -205,7 +259,7 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 {
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Documents");
-	d->ComputeProfiles(Doc->GetCurComputeProfile(),!profileAlwaysCalc->isChecked());
+	d->ComputeProfiles(!profileAlwaysCalc->isChecked());
 	Doc->updateAllViews(1);
 }
 
@@ -222,7 +276,7 @@ void KGALILEICenterApp::slotGroupsCalc(void)
 {
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Make Groups");
-	d->GroupProfiles(sdVector,Doc->GetCurGrouping(),!groupAlwaysCalc->isChecked());
+	d->GroupProfiles(!groupAlwaysCalc->isChecked());
 	Doc->updateAllViews(2);
 }
 
@@ -615,8 +669,7 @@ void KGALILEICenterApp::slotHandleItem(QListViewItem* item)
 KGALILEICenterApp::~KGALILEICenterApp(void)
 {
 	delete Printer;
-	if(Doc) delete(Doc);
+	if(Doc)
+		slotSessionDisconnect();
 	if(DocOptions) delete(DocOptions);
-	if(ProfOptions) delete(ProfOptions);
-	if(GroupingOptions) delete(GroupingOptions);
 }

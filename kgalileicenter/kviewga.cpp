@@ -36,7 +36,7 @@
 #include <groups/gchromoir.h>
 #include <groups/ginstir.h>
 #include <groups/ggroupir.h>
-#include <profiles/gsubprofiledesc.h>
+#include <profiles/gsubprofile.h>
 using namespace GALILEI;
 
 
@@ -148,29 +148,29 @@ void KViewGA::receiveBestSig(BestSig* sig)
 //---------------------------------------------------------------------------
 void KViewGA::RunGA(void)
 {
-	if(Instance)
-	{
-		try
-		{
-			if(Doc->GetMaxGen()>Gen)
-			{
-				if(Doc->GetStepGen()==0)
-					Gen=Doc->GetMaxGen();
-				else
-				{
-					Gen+=Doc->GetStepGen();
-					if(Gen>Doc->GetMaxGen()) Gen=Doc->GetMaxGen();
-				}
-			}
-			Instance->MaxGen=Gen;
-			Instance->Run();
-			KMessageBox::information(this,"Done");
-		}
-		catch(eGA& e)
-		{
-			KMessageBox::error(this,QString(e.Msg));
-		}
-	}
+//	if(Instance)
+//	{
+//		try
+//		{
+//			if(Doc->GetMaxGen()>Gen)
+//			{
+//				if(Doc->GetStepGen()==0)
+//					Gen=Doc->GetMaxGen();
+//				else
+//				{
+//					Gen+=Doc->GetStepGen();
+//					if(Gen>Doc->GetMaxGen()) Gen=Doc->GetMaxGen();
+//				}
+//			}
+//			Instance->MaxGen=Gen;
+//			Instance->Run();
+//			KMessageBox::information(this,"Done");
+//		}
+//		catch(eGA& e)
+//		{
+//			KMessageBox::error(this,QString(e.Msg));
+//		}
+//	}
 }
 
 

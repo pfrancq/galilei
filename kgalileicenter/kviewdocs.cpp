@@ -150,8 +150,9 @@ GDoc* KViewDocs::GetCurrentDoc(void)
 //-----------------------------------------------------------------------------
 void KViewDocs::CreateDocsListView(void)
 {
-	RContainerCursor<GLang,unsigned int,true,true> CurLang(Doc->GetSession()->GetLangs());
-	RContainerCursor<GDoc,unsigned int,true,true> CurDocs(Doc->GetSession()->GetDocs());
+	GDocCursor CurDocs=Doc->GetSession()->GetDocsCursor();
+	GLangCursor CurLang=Doc->GetSession()->GetLangsCursor();
+
 	RContainer<LangItem,unsigned int,true,true> LangItems(Doc->GetSession()->GetNbLangs());
 	const GMIMEFilter* t;
 	const char det[]="Unknown";

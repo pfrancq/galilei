@@ -34,8 +34,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gsession.h>
-#include <profiles/gprofilecalcvector.h>
-#include <groups/ggroupingsim.h>
 using namespace GALILEI;
 
 
@@ -68,27 +66,11 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 KDoc::KDoc(KGALILEICenterApp* owner,GSession* session)
-	: QObject(), Session(session), Stat(0), Sim(0), WinDocs(0),
+	: QObject(), Session(session), WinDocs(0),
 	  WinUsers(0), WinGroups(0), Owner(owner)
 {
 	pViewList = new QList<KView>;
 	pViewList->setAutoDelete(false);
-	Stat=new GProfileCalcVector(session);
-	Sim=new GGroupingSim(session);
-}
-
-
-//-----------------------------------------------------------------------------
-GProfileCalc* KDoc::GetCurComputeProfile(void)
-{
-	return(Stat);
-}
-
-
-//-----------------------------------------------------------------------------
-GGrouping* KDoc::GetCurGrouping(void)
-{
-	return(Sim);
 }
 
 
@@ -149,20 +131,6 @@ void KDoc::removeView(KView* view)
 //-----------------------------------------------------------------------------
 void KDoc::changedViewList(void)
 {
-}
-
-
-//-----------------------------------------------------------------------------
-unsigned int KDoc::GetMaxGen(void)
-{
-	return(50);
-}
-
-
-//-----------------------------------------------------------------------------
-unsigned int KDoc::GetStepGen(void)
-{
-	return(0);
 }
 
 
@@ -234,8 +202,6 @@ bool KDoc::canCloseFrame(KView* /*pFrame*/)
 //-----------------------------------------------------------------------------
 KDoc::~KDoc(void)
 {
-	if(Stat) delete Stat;
-	if(Sim) delete Sim;
 	delete pViewList;
 	delete Session;
 }

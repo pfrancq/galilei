@@ -43,6 +43,7 @@ using namespace RStd;
 #include <rga/qxmlcontainer.h>
 using namespace RGA;
 
+
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei/qlistviewitemtype.h>
@@ -53,6 +54,7 @@ using namespace RGA;
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
+#include <langs/glang.h>
 using namespace GALILEI;
 
 

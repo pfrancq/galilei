@@ -32,7 +32,14 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rstring.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <langs/glang.h>
 #include <groups/ggroup.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>

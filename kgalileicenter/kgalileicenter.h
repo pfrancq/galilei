@@ -152,16 +152,6 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	*/
 	GDocOptions* DocOptions;
 
-	/**
-	* Options of the documents.
-	*/
-	GProfOptions* ProfOptions;
-
-	/**
-	* Options of the grouping methods.
-	*/
-	GGroupingOptions* GroupingOptions;
-
 public:
 
 	/**
@@ -423,14 +413,9 @@ private slots:
 	void slotViewStatusBar(void);
 
 	/**
-	* Show the dialog box for the profiles.
+	* Configure all the plugins of the system.
 	*/
-	void slotProfilesOptions(void);
-
-	/**
-	* Show the dialog box for the groups.
-	*/
-	void slotGroupsOptions(void);
+	void slotPlugins(void);
 
 	/**
 	* Load a program text file.
@@ -529,9 +514,8 @@ public:
 	KAction* gaPause;
 	KAction* gaStop;
 
+	KAction* plugins;
 	KAction* docsOptions;
-	KAction* profilesOptions;
-	KAction* groupsOptions;
 
 	KAction* loadProgram;
 

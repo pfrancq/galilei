@@ -43,6 +43,7 @@ using namespace RStd;
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <groups/ggroup.h>
+#include <langs/glang.h>
 #include <groups/ggroups.h>
 #include <galilei/qlistviewitemtype.h>
 using namespace GALILEI;

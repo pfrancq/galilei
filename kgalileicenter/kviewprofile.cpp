@@ -45,6 +45,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <langs/glang.h>
 #include <galilei/qgprofile.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
@@ -246,7 +247,7 @@ void KViewProfile::resizeEvent(QResizeEvent *)
 void KViewProfile::ComputeProfile(void)
 {
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Profile");
-	d->ComputeProfile(Profile,Doc->GetCurComputeProfile());
+	d->ComputeProfile(Profile);
 	Desc->slotProfileChanged();
 	General->slotProfileChanged();
 }

@@ -40,6 +40,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdoc.h>
+#include <langs/glang.h>
 #include <docs/gdocanalyse.h>
 #include <docs/gdocxml.h>
 #include <profiles/guser.h>
@@ -65,8 +66,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 QSessionProgressDlg::QSessionProgressDlg( QWidget* parent,GSession* s,const char* c)
-    : QSemiModal(parent,"QSessionProgressDlg",true), GGroupingSignalsReceiver(),
-      GSessionSignalsReceiver(), Session(s)
+    : QSemiModal(parent,"QSessionProgressDlg",true),GSessionSignalsReceiver(), Session(s)
 {
 	resize( 311, 78 );
 	setCaption(i18n(c));
@@ -212,7 +212,7 @@ void QSessionProgressDlg::AnalyseDocs(bool modified)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::ComputeProfile(GProfile* prof,GProfileCalc* method)
+void QSessionProgressDlg::ComputeProfile(GProfile* prof)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -220,7 +220,7 @@ void QSessionProgressDlg::ComputeProfile(GProfile* prof,GProfileCalc* method)
 	{
 		txtRem->setText(QString("Compute Profile'")+prof->GetName()+"' ...");
 		KApplication::kApplication()->processEvents();
-		method->Compute(prof);
+		Session->CalcProfile(prof);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
@@ -232,7 +232,7 @@ void QSessionProgressDlg::ComputeProfile(GProfile* prof,GProfileCalc* method)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::ComputeProfiles(GProfileCalc* method,bool modified)
+void QSessionProgressDlg::ComputeProfiles(bool modified)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -240,7 +240,7 @@ void QSessionProgressDlg::ComputeProfiles(GProfileCalc* method,bool modified)
 	{
 		txtRem->setText("Compute Profiles ...");
 		KApplication::kApplication()->processEvents();
-		Session->CalcProfiles(this,method,modified);
+		Session->CalcProfiles(this,modified);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
@@ -252,7 +252,7 @@ void QSessionProgressDlg::ComputeProfiles(GProfileCalc* method,bool modified)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::GroupProfiles(tSubProfileDesc t,GGrouping* method,bool modified)
+void QSessionProgressDlg::GroupProfiles(bool modified)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -260,7 +260,7 @@ void QSessionProgressDlg::GroupProfiles(tSubProfileDesc t,GGrouping* method,bool
 	{
 		txtRem->setText("Groups Profiles ...");
 		KApplication::kApplication()->processEvents();
-		method->Grouping(t,this,modified);
+		Session->GroupingProfiles(this,modified);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
@@ -272,7 +272,7 @@ void QSessionProgressDlg::GroupProfiles(tSubProfileDesc t,GGrouping* method,bool
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::ComputeAll(tSubProfileDesc t,GProfileCalc* method,GGrouping* grpmethod,bool modified)
+void QSessionProgressDlg::ComputeAll(bool modified)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -283,10 +283,10 @@ void QSessionProgressDlg::ComputeAll(tSubProfileDesc t,GProfileCalc* method,GGro
 		Session->AnalyseDocs(this,modified);
 		txtRem->setText("Compute Profiles ...");
 		KApplication::kApplication()->processEvents();
-		Session->CalcProfiles(this,method,modified);
+		Session->CalcProfiles(this,modified);
 		txtRem->setText("Groups Profiles ...");
 		KApplication::kApplication()->processEvents();
-		grpmethod->Grouping(t,this,modified);
+		Session->GroupingProfiles(this,modified);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
@@ -298,7 +298,7 @@ void QSessionProgressDlg::ComputeAll(tSubProfileDesc t,GProfileCalc* method,GGro
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextGroupLang(GLang* lang)
+void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 {
 	txtRem->setText(QString("Groups Profiles for '")+lang->GetName()+"' ...");
 	KApplication::kApplication()->processEvents();

@@ -58,7 +58,7 @@ using namespace GALILEI;
 * @author Pascal Francq
 * @short Progress Dialog Box.
 */
-class QSessionProgressDlg : public QSemiModal, public GGroupingSignalsReceiver, public GSessionSignalsReceiver
+class QSessionProgressDlg : public QSemiModal, public GSessionSignalsReceiver
 {
 	Q_OBJECT
 	QFrame* Line;
@@ -119,39 +119,32 @@ public:
 	/**
 	* Compute a profile.
 	* @param prof           Profile to compute.
-	* @param method         Method used to compute.
 	*/
-	void ComputeProfile(GProfile* prof,GProfileCalc* method);
+	void ComputeProfile(GProfile* prof);
 
 	/**
 	* Compute the profiles.
-	* @param method         Method used to compute.
 	* @param modified       Recompute only modified elements or all.
 	*/
-	void ComputeProfiles(GProfileCalc* method,bool modified=true);
+	void ComputeProfiles(bool modified=true);
 
 	/**
 	* Groups the profiles.
-	* @param t              Type of the description used.
-	* @param method         Method used to group.
 	* @param modified       Recompute only modified elements or all.
 	*/
-	void GroupProfiles(tSubProfileDesc t,GGrouping* method,bool modified=true);
+	void GroupProfiles(bool modified=true);
 
 	/**
 	* Compute all the elements.
-	* @param t              Type of the description used.
-	* @param method         Method used to compute.
-	* @param methodgrp      Method used to group.
 	* @param modified       Recompute only modified elements or all.
 	*/
-	void ComputeAll(tSubProfileDesc t,GProfileCalc* method,GGrouping* grpmethod,bool modified=true);
+	void ComputeAll(bool modified=true);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
-	virtual void NextGroupLang(GLang* lang);
+	virtual void NextGroupLang(const GLang* lang);
 
 	/**
 	* The traitment for a specific document will begin.

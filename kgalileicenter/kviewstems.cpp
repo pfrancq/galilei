@@ -33,6 +33,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
+#include <rstd/rdblhashcontainer.h>
+using namespace RStd;
 #include <rio/rtextfile.h>
 using namespace RIO;
 

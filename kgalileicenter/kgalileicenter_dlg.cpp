@@ -40,9 +40,8 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdoc.h>
+#include <langs/glang.h>
 #include <docs/gdocoptions.h>
-#include <profiles/gprofoptions.h>
-#include <groups/ggroupingoptions.h>
 #include <urlmanagers/gurlmanagerkde.h>
 #include <galilei/qlistviewitemtype.h>
 #include <sessions/gsession.h>
@@ -51,6 +50,14 @@ using namespace RStd;
 #include <profiles/guser.h>
 #include <profiles/gprofdoc.h>
 #include <profiles/gprofile.h>
+#include <profiles/gsubprofiledesc.h>
+#include <groups/ggrouping.h>
+#include <profiles/gprofilecalc.h>
+#include <galilei/qcomputingpluginconfstat.h>
+#include <galilei/qcomputingpluginconfreweighting.h>
+#include <galilei/qcomputingpluginconffeedback.h>
+#include <galilei/qgroupingpluginconfsim.h>
+#include <galilei/qgroupingpluginconfgga.h>
 using namespace GALILEI;
 
 
@@ -95,10 +102,8 @@ using namespace GALILEI;
 #include "qeditjudgementselectprofile.h"
 #include "qaddnewdocument.h"
 #include "qaddprofile.h"
-#include "qgroupsoptionsdlg.h"
 #include "qdocsoptionsdlg.h"
-#include "qprofilesoptionsdlg.h"
-
+#include "qpluginsdlg.h"
 
 
 
@@ -138,13 +143,13 @@ void KGALILEICenterApp::slotAddProfile(void)
 void KGALILEICenterApp::slotAddJudgement(void)
 {
 	KView* m = (KView*)pWorkspace->activeWindow();
+
 	// if the current window is a profile
 	if (m->getType()==gProfile)
 	{
 		QAddJudgementSelectDoc dlg(this,0,true);
 		GProfile* profile =((KViewProfile*)m)->GetProfile();
-		
-		RContainerCursor<GDoc,unsigned int,true,true> CurDoc (Doc->GetSession()->GetDocs());
+		GDocCursor CurDoc=Doc->GetSession()->GetDocsCursor();
 		dlg.TLTitle->setText(QString(profile->GetName()));
 		dlg.TLURL->setText(QString(profile->GetUser()->GetName()));
 		QListViewItem* docitem = new QListViewItem (dlg.LVUsers, "Doc");
@@ -181,7 +186,7 @@ void KGALILEICenterApp::slotAddJudgement(void)
 	{
 		QAddJudgementSelectProfile dlg2(this,0,true);
 		GDoc* doc=((KViewDoc*)m)->GetDoc();
-		RContainerCursor<GUser,unsigned int,true,true> CurUsr(Doc->GetSession()->GetUsers());
+		GUserCursor CurUsr=Doc->GetSession()->GetUsersCursor();
 		dlg2.TLTitle->setText(QString(doc->GetName()));
 		dlg2.TLURL->setText(QString(doc->GetURL()));
 		if(doc->GetLang()) dlg2.TLLang->setText(doc->GetLang()->GetName());
@@ -343,86 +348,6 @@ void KGALILEICenterApp::slotAddDoc(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotProfilesOptions(void)
-{
-	QProfilesOptionsDlg dlg(this,0,true);
-	dlg.cbModel->setCurrentItem(ProfOptions->Model-1);
-	dlg.vsListSize->setValue(ProfOptions->ListSize);
-	dlg.vsMethod->setCurrentItem(ProfOptions->VectorMethod-1);
-	if(dlg.exec())
-	{
-		switch(dlg.cbModel->currentItem())
-		{
-			case 0:
-				ProfOptions->Model=sdVector;
-				break;
-			default:
-				ProfOptions->Model=sdNothing;
-				break;
-			
-		}
-		switch(dlg.vsMethod->currentItem())
-		{
-			case 0:
-				ProfOptions->VectorMethod=vmQueryExpansion;
-				break;
-			case 1:
-				ProfOptions->VectorMethod=vmDirectReweighting;
-				break;
-			default:
-				ProfOptions->VectorMethod=vmNothing;
-				break;
-			
-		}
-		ProfOptions->ListSize=dlg.vsListSize->value();
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGroupsOptions(void)
-{
-	QString tmp;
-
-	QGroupsOptionsDlg dlg(this,0,true);
-	dlg.LevelSim->setValidator(new QDoubleValidator(0.0,1.0,3,dlg.LevelSim));
-	tmp.setNum(GroupingOptions->LevelSim);
-	dlg.LevelSim->setText(tmp);
-	dlg.FullSim->setChecked(GroupingOptions->FullSim);
-	dlg.Method->setCurrentItem(GroupingOptions->Method-1);
-	dlg.GAPopSize->setValue(GroupingOptions->GAPopSize);
-	dlg.GAMaxGen->setValue(GroupingOptions->GAMaxGen);
-	dlg.GAStep->setChecked(GroupingOptions->GAStep);
-	dlg.GAStepGen->setEnabled(GroupingOptions->GAStep);
-	dlg.GAStepGen->setValue(GroupingOptions->GAStepGen);
-	if(dlg.exec())
-	{
-		double d=dlg.LevelSim->text().toDouble();
-		if((d>=0.0)&&(d<=1.0))
-			GroupingOptions->LevelSim=d;
-		switch(dlg.Method->currentItem())
-		{
-			case 0:
-				GroupingOptions->Method=pgHeuristicSim;
-				break;
-			case 1:
-				GroupingOptions->Method=pgGA;
-				break;
-			default:
-				GroupingOptions->Method=pgNothing;
-				break;
-		
-		}
-		GroupingOptions->FullSim=dlg.FullSim->isChecked();
-		GroupingOptions->GAPopSize=dlg.GAPopSize->value();
-		GroupingOptions->GAMaxGen=dlg.GAMaxGen->value();
-		GroupingOptions->GAStep=dlg.GAStep->isChecked();
-		GroupingOptions->GAStepGen=dlg.GAStepGen->value();
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotDocsOptions(void)
 {
 	QString tmp;
@@ -449,4 +374,18 @@ void KGALILEICenterApp::slotDocsOptions(void)
 		DocOptions->MinOccur=dlg.txtMinOcc->value();
 		DocOptions->NonLetterWords=dlg.cbNonWord->isChecked();
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotPlugins(void)
+{
+	QPluginsDlg dlg(Doc->GetSession(),this,"Plugins Dialog");
+
+	dlg.RegisterComputingPluginConf(new QComputingPluginConfStat());
+	dlg.RegisterComputingPluginConf(new QComputingPluginConfReWeighting());
+	dlg.RegisterComputingPluginConf(new QComputingPluginConfFeedback());
+	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfSim());
+	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfGGA());
+	dlg.exec();
 }

@@ -46,10 +46,6 @@
 // include files for GALILEI
 namespace GALILEI
 {
-	class GProfileCalc;
-	class GProfileCalcVector;
-	class GGrouping;
-	class GGroupingSim;
 	class GSession;
 }
 
@@ -106,16 +102,6 @@ class KDoc : public QObject
 	GALILEI::GSession* Session;
 
 	/**
-	* Statistical method.
-	*/
-	GALILEI::GProfileCalcVector* Stat;
-
-	/**
-	* Grouping method based on similarity.
-	*/
-	GALILEI::GGroupingSim* Sim;
-
-	/**
 	* Window of the documents.
 	*/
 	KViewDocs* WinDocs;
@@ -149,30 +135,6 @@ public:
 	* @returns Pointer to a GALILEI::GSession.
 	*/
 	GALILEI::GSession* GetSession(void) {return(Session);}
-
-	/**
-	* Get the statistical method.
-	* @returns Pointer to a GALILEI::GProfileCalcVector.
-	*/
-	GALILEI::GProfileCalcVector* GetStat(void) {return(Stat);}
-
-	/**
-	* Get the current method use to compute the profiles.
-	* @returns Pointer to a GALILEI::GProfileCalc.
-	*/
-	GALILEI::GProfileCalc* GetCurComputeProfile(void);
-
-	/**
-	* Get the grouping method based on similarity.
-	* @returns Pointer to a GALILEI::GProfileCalcList.
-	*/
-	GALILEI::GGroupingSim* GetGroupingSim(void) {return(Sim);}
-
-	/**
-	* Get the current method use to compute the profiles.
-	* @returns Pointer to a GALILEI::GGrouping.
-	*/
-	GALILEI::GGrouping* GetCurGrouping(void);
 
 	/**
 	* Get the window showing the documents.
@@ -255,16 +217,6 @@ public:
 	* closes the acutal document.
 	*/
 	void closeDocument(void);
-
-	/**
-	* Return the maximal number of generation.
-	*/
-	unsigned int GetMaxGen(void);
-
-	/**
-	* Return the number of generation for each step.
-	*/
-	unsigned int GetStepGen(void);
 
 public slots:
 

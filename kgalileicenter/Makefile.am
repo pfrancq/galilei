@@ -1,24 +1,24 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
 bin_PROGRAMS = kgalileicenter
-kgalileicenter_SOURCES = kgalileicenter_dlg.cpp kgalileicenter_init.cpp kviewga.cpp kviewstems.cpp qsessionprogress.cpp qprofilesoptionsdlg.ui qloadonedoc.ui qgroupsoptionsdlg.ui qeditjudgementselectprofile.ui qeditjudgementselectdoc.ui qdocsoptionsdlg.ui qconnectmysql.ui qaddprofile.ui qaddnewuser.ui qaddnewdocument.ui qaddjudgementselectprofile.ui qaddjudgementselectdoc.ui kviewusers.cpp kviewthgroups.cpp kviewstat.cpp kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kview.cpp kdoc.cpp kgalileicenter.cpp main.cpp 
+kgalileicenter_SOURCES = qpluginsdlg.cpp kgalileicenter_init.cpp kgalileicenter_dlg.cpp qloadonedoc.ui kviewga.cpp kviewstems.cpp qsessionprogress.cpp qeditjudgementselectprofile.ui qeditjudgementselectdoc.ui qdocsoptionsdlg.ui qconnectmysql.ui qaddprofile.ui qaddnewuser.ui qaddnewdocument.ui qaddjudgementselectprofile.ui qaddjudgementselectdoc.ui kviewusers.cpp kviewthgroups.cpp kviewstat.cpp kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kview.cpp kdoc.cpp kgalileicenter.cpp main.cpp 
 kgalileicenter_LDADD   = ./galilei/docs/libdocs.a ./galilei/libgalilei.a ./galilei/filters/libfilters.a ./galilei/groups/libgroups.a ./galilei/infos/libinfos.a ./galilei/langs/liblangs.a ./galilei/profiles/libprofiles.a ./galilei/python/libpython.a ./galilei/sessions/libsessions.a ./galilei/urlmanagers/liburlmanagers.a ./r/rstd/librstd.a ./r/rio/librio.a ./r/rxml/librxml.a ./r/rtimedate/librtimedate.a ./r/rinter/librinter.a ./r/rmysql/librmysql.a ./r/rpython/librpython.a ./qtwidgets/rga/librga.a ./qtwidgets/galilei/libgalilei.a ./qtwidgets/rpython/librpython.a ./r/rga/librga.a ./r/rmath/librmath.a ./r/rgga/librgga.a /usr/lib/libmysqlclient.so  ${GCENTER}/galilei/sessions/libsessions.a  ${GCENTER}/galilei/profiles/libprofiles.a ${GCENTER}/galilei/langs/liblangs.a ${GCENTER}/galilei/docs/libdocs.a ${GCENTER}/galilei/groups/libgroups.a ${GCENTER}/r/rinter/librinter.a ${GCENTER}/r/rxml/librxml.a ${GCENTER}/r/rio/librio.a ${GCENTER}/galilei/infos/libinfos.a ${GCENTER}/qtwidgets/rga/librga.a ${GCENTER}/r/rga/librga.a ${GCENTER}/galilei/filters/libfilters.a ${GCENTER}/r/rmysql/librmysql.a ${GCENTER}/r/rstd/librstd.a ${GCENTER}/r/rtimedate/librtimedate.a ${GCENTER}/r/rpython/librpython.a ${GCENTER}/qtwidgets/rpython/librpython.a ${GCENTER}/galilei/python/libpython.a $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
 
 SUBDIRS = galilei r qtwidgets 
 
-EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kgalileicenter.desktop lo32-app-kgalileicenter.png lo16-app-kgalileicenter.png kdoc.cpp kdoc.h kview.cpp kview.h kviewdoc.cpp kviewdoc.h kviewdocs.cpp kviewdocs.h kviewgroup.cpp kviewgroup.h kviewgroups.cpp kviewgroups.h kviewprofile.cpp kviewprofile.h kviewstat.cpp kviewstat.h kviewthgroups.cpp kviewthgroups.h kviewusers.cpp kviewusers.h qaddjudgementselectdoc.ui qaddjudgementselectprofile.ui qaddnewdocument.ui qaddnewuser.ui qaddprofile.ui qconnectmysql.ui qdocsoptionsdlg.ui qeditjudgementselectdoc.ui qeditjudgementselectprofile.ui qgroupsoptionsdlg.ui qloadonedoc.ui qprofilesoptionsdlg.ui qsessionprogress.cpp qsessionprogress.h kviewstems.cpp kviewstems.h kviewga.cpp kviewga.h kgalileicenter_init.cpp kgalileicenter_dlg.cpp 
+EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kgalileicenter.desktop lo32-app-kgalileicenter.png lo16-app-kgalileicenter.png kdoc.cpp kdoc.h kview.cpp kview.h kviewdoc.cpp kviewdoc.h kviewdocs.cpp kviewdocs.h kviewgroup.cpp kviewgroup.h kviewgroups.cpp kviewgroups.h kviewprofile.cpp kviewprofile.h kviewstat.cpp kviewstat.h kviewthgroups.cpp kviewthgroups.h kviewusers.cpp kviewusers.h qaddjudgementselectdoc.ui qaddjudgementselectprofile.ui qaddnewdocument.ui qaddnewuser.ui qaddprofile.ui qconnectmysql.ui qdocsoptionsdlg.ui qeditjudgementselectdoc.ui qeditjudgementselectprofile.ui qsessionprogress.cpp qsessionprogress.h kviewstems.cpp kviewstems.h kviewga.cpp kviewga.h qloadonedoc.ui kgalileicenter_dlg.cpp kgalileicenter_init.cpp qpluginsdlg.cpp qpluginsdlg.h 
 
 install-data-local:
-	$(mkinstalldirs) $(kde_appsdir)/Applications/
-	$(INSTALL_DATA) $(srcdir)/kgalileicenter.desktop $(kde_appsdir)/Applications/kgalileicenter.desktop
-	$(mkinstalldirs) $(kde_icondir)/locolor/32x32/apps/
-	$(INSTALL_DATA) $(srcdir)/lo32-app-kgalileicenter.png $(kde_icondir)/locolor/32x32/apps/kgalileicenter.png
-	$(mkinstalldirs) $(kde_icondir)/locolor/16x16/apps/
-	$(INSTALL_DATA) $(srcdir)/lo16-app-kgalileicenter.png $(kde_icondir)/locolor/16x16/apps/kgalileicenter.png
+	$(mkinstalldirs) $$(kde_appsdir)/Applications/
+	$(INSTALL_DATA) $(srcdir)/kgalileicenter.desktop $$(kde_appsdir)/Applications/kgalileicenter.desktop
+	$(mkinstalldirs) $$(kde_icondir)/locolor/32x32/apps/
+	$(INSTALL_DATA) $(srcdir)/lo32-app-kgalileicenter.png $$(kde_icondir)/locolor/32x32/apps/kgalileicenter.png
+	$(mkinstalldirs) $$(kde_icondir)/locolor/16x16/apps/
+	$(INSTALL_DATA) $(srcdir)/lo16-app-kgalileicenter.png $$(kde_icondir)/locolor/16x16/apps/kgalileicenter.png
 
 uninstall-local:
-	-rm -f $(kde_appsdir)/Applications/kgalileicenter.desktop
-	-rm -f $(kde_icondir)/locolor/32x32/apps/kgalileicenter.png
-	-rm -f $(kde_icondir)/locolor/16x16/apps/kgalileicenter.png
+	-rm -f $$(kde_appsdir)/Applications/kgalileicenter.desktop
+	-rm -f $$(kde_icondir)/locolor/32x32/apps/kgalileicenter.png
+	-rm -f $$(kde_icondir)/locolor/16x16/apps/kgalileicenter.png
 
 ####### kdevelop will overwrite this part!!! (end)############
 # this 10 paths are KDE specific. Use them:

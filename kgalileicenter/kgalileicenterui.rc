@@ -55,9 +55,8 @@
 		<Action name="gaStop"/>
 	</Menu>
 	<Menu name="settings"><text>&amp;Settings</text>
+		<Action name="plugins"/>
 		<Action name="docsOptions"/>
-		<Action name="profilesOptions"/>
-		<Action name="groupsOptions"/>
 	</Menu>
 	<Menu name="program"><text>&amp;Program</text>
 		<Action name="loadProgram"/>

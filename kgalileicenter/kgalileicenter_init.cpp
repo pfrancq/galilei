@@ -37,8 +37,6 @@
 #include <sessions/gsessionmysql.h>
 #include <groups/ggroupingsim.h>
 #include <docs/gdocoptions.h>
-#include <profiles/gprofoptions.h>
-#include <groups/ggroupingoptions.h>
 using namespace GALILEI;
 
 
@@ -82,16 +80,16 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void)
 	: KMainWindow(0,"KGALILEICenterApp"), GURLManagerKDE(), Doc(0),
-	  DocOptions(0), ProfOptions(0), GroupingOptions(0)
+	  DocOptions(0)
 {
 	Config=kapp->config();
 	Printer = new QPrinter;
 	DocOptions=new GDocOptions();
-	ProfOptions=new GProfOptions();
-	GroupingOptions=new GGroupingOptions();
 	initStatusBar();
 	initView();
 	initActions();
+
+	// read options
 	readOptions();
 
 	// disable actions at startup
@@ -152,8 +150,7 @@ void KGALILEICenterApp::initActions(void)
 	viewToolBar->setStatusText(i18n("Enables/disables the toolbar"));
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
 	docsOptions=new KAction(i18n("&Documents Options"),"configure",0,this,SLOT(slotDocsOptions()),actionCollection(),"docsOptions");
-	groupsOptions=new KAction(i18n("&Groups Options"),"configure",0,this,SLOT(slotGroupsOptions()),actionCollection(),"groupsOptions");
-	profilesOptions=new KAction(i18n("&Profiles Options"),"configure",0,this,SLOT(slotProfilesOptions()),actionCollection(),"profilesOptions");
+	plugins=new KAction(i18n("&Plugins"),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
 
 	// Menu "Program"
 	loadProgram=new KAction(i18n("&Load Program"),"configure",0,this,SLOT(slotLoadProgram()),actionCollection(),"loadProgram");
@@ -193,8 +190,6 @@ void KGALILEICenterApp::initView(void)
 void KGALILEICenterApp::setDocParams(KDoc* doc)
 {
 	if(!doc) return;
-	(*doc->GetSession()->GetGroupingOptions())=(*GroupingOptions);
-	(*doc->GetSession()->GetProfOptions())=(*ProfOptions);
 	(*doc->GetSession()->GetDocOptions())=(*DocOptions);
 }
 
@@ -226,16 +221,6 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Password", dbPwd);
 
 	Config->setGroup("GALILEI Options");
-	Config->writeEntry("Profile Model",ProfOptions->Model);
-	Config->writeEntry("Vector Method",ProfOptions->VectorMethod);
-	Config->writeEntry("Size of Lists",ProfOptions->ListSize);
-	Config->writeEntry("Grouping Method",GroupingOptions->Method);
-	Config->writeEntry("Full Similarity",GroupingOptions->FullSim);
-	Config->writeEntry("GA Population Size",GroupingOptions->GAPopSize);
-	Config->writeEntry("GA Max Generations",GroupingOptions->GAMaxGen);
-	Config->writeEntry("GA Step Mode",GroupingOptions->GAStep);
-	Config->writeEntry("GA Step Generations",GroupingOptions->GAStepGen);
-	Config->writeEntry("Level of Similarity",GroupingOptions->LevelSim);
 	Config->writeEntry("Static Language",DocOptions->StaticLang);
 	Config->writeEntry("Minimum Stop Percentage",DocOptions->MinStopWords);
 	Config->writeEntry("Minimum Word's Size",DocOptions->MinWordSize);
@@ -249,7 +234,6 @@ void KGALILEICenterApp::saveOptions(void)
 void KGALILEICenterApp::readOptions(void)
 {
 	Config->setGroup("General Options");
-	unsigned int i;
 
 	// bar status settings
 	bool bViewToolbar = Config->readBoolEntry("Show Toolbar", true);
@@ -276,52 +260,6 @@ void KGALILEICenterApp::readOptions(void)
 	dbUser=Config->readEntry("User","admin");
 	dbPwd=Config->readEntry("Password","gillian");
 	Config->setGroup("GALILEI Options");
-	i=Config->readUnsignedNumEntry("Profile Model",1);
-	switch(i)
-	{
-		case 1:
-			ProfOptions->Model=sdVector;
-			break;
-		default:
-			ProfOptions->Model=sdNothing;
-			break;
-		
-	}
-	i=Config->readUnsignedNumEntry("Vector Method",1);
-	switch(i)
-	{
-		case 1:
-			ProfOptions->VectorMethod=vmQueryExpansion;
-			break;
-		case 2:
-			ProfOptions->VectorMethod=vmDirectReweighting;
-			break;
-		default:
-			ProfOptions->VectorMethod=vmNothing;
-			break;
-		
-	}
-	i=Config->readUnsignedNumEntry("Grouping Method",1);
-	switch(i)
-	{
-		case 1:
-			GroupingOptions->Method=pgHeuristicSim;
-			break;
-		case 2:
-			GroupingOptions->Method=pgGA;
-			break;
-		default:
-			GroupingOptions->Method=pgNothing;
-			break;
-		
-	}
-	ProfOptions->ListSize=Config->readUnsignedNumEntry("Size of Lists",50);
-	GroupingOptions->FullSim=Config->readBoolEntry("Full Similarity",true);
-	GroupingOptions->LevelSim=Config->readDoubleNumEntry("Level of Similarity",0.5);
-	GroupingOptions->GAPopSize=Config->readUnsignedNumEntry("GA Population Size",16);
-	GroupingOptions->GAMaxGen=Config->readUnsignedNumEntry("GA Max Generations",20);
-	GroupingOptions->GAStep=Config->readBoolEntry("GA Step Mode",false);
-	GroupingOptions->GAStepGen=Config->readUnsignedNumEntry("GA Step Generations",10);
 	DocOptions->StaticLang=Config->readBoolEntry("Static Language",true);
 	DocOptions->MinStopWords=Config->readDoubleNumEntry("Minimum Stop Percentage",0.1);
 	DocOptions->MinWordSize=Config->readUnsignedNumEntry("Minimum Word's Size",4);
@@ -411,6 +349,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	gaPause->setEnabled(false);
 	gaStart->setEnabled(false);
 	gaStop->setEnabled(false);
+	plugins->setEnabled(false);
 }
 
 
