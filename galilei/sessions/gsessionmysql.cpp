@@ -670,13 +670,13 @@ void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException
 	GDoc* d;
 	GSubject* s;
 
-	sprintf(sSql,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed,n,ndiff,v,vdiff FROM htmls");
+	sprintf(sSql,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed FROM htmls");
 	RQuery quer (this,sSql);
 	for(quer.Start();!quer.End();quer.Next())
 	{
 		docid=atoi(quer[0]);
 		lang=Langs->GetLang(quer[4]);
-		InsertDoc(doc=new GDocVector(quer[1],quer[2],docid,lang,quer[3],quer[5],quer[6],atoi(quer[7]),atoi(quer[8]),atoi(quer[9]),atoi(quer[10]),atoi(quer[11])));
+		InsertDoc(doc=new GDocVector(quer[1],quer[2],docid,lang,quer[3],quer[5],quer[6],atoi(quer[7])));
 	}
 
 	// Load the links of the document loaded.
@@ -703,12 +703,14 @@ void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException
 				if(lang->GetDict()->GetData(atoi(sel[1]))->GetType()==infoWordList)
 				{
 					if(wg)
-						doc->AddWordList(atoi(sel[1]),atof(sel[2]));
+						doc->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWordList));
+						//doc->AddWordList(atoi(sel[1]),atof(sel[2]));
 				}
 				else
 				{
 					if(w)
-						doc->AddWord(atoi(sel[1]),atof(sel[2]));
+						doc->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWord));
+						//doc->AddWord(atoi(sel[1]),atof(sel[2]));
 				}
 			}
 		}
@@ -753,7 +755,7 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 	sprintf(sSql,"SELECT htmlid,updated FROM htmls WHERE htmlid=LAST_INSERT_ID()");
 	RQuery selectdoc(this,sSql);
 	selectdoc.Start();
-	doc=new GDocVector(url,name,strtoul(selectdoc[0],0,10),0,mime,selectdoc[1],0,0,0,0,0,0);
+	doc=new GDocVector(url,name,strtoul(selectdoc[0],0,10),0,mime,selectdoc[1],0,0);
 //	InsertDoc(doc);
 	return(doc);
 }
@@ -852,10 +854,10 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 	sprintf(sSql,"UPDATE htmls SET "
 	             "html=%s,title=%s,mimetype=%s,langid=%s,"
 	             "updated=%s,calculated=%s,"
-	             "n=%u,ndiff=%u,v=%u,vdiff=%u,failed=%u WHERE htmlid=%u",
+	             "failed=%u WHERE htmlid=%u",
 	             ValidSQLValue(doc->GetURL(),surl),ValidSQLValue(doc->GetName(),sname),fn,l,
 	             GetDateToMySQL(doc->GetUpdated(),supdated),GetDateToMySQL(doc->GetComputed(),scomputed),
-	             doc->GetN(),doc->GetNdiff(),doc->GetV(),doc->GetVdiff(),doc->GetFailed(),id);
+	             doc->GetFailed(),id);
 	RQuery updatedoc(this,sSql);
 
 	// Update links to others documents
@@ -1040,10 +1042,10 @@ void GALILEI::GSessionMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GExcepti
 	sprintf(sSql,"UPDATE htmls SET "
 	             "html=%s,title=%s,mimetype=%s,langid=%s,"
 	             "updated=%s,calculated=%s,"
-	             "n=%u,ndiff=%u,v=%u,vdiff=%u,failed=%u WHERE htmlid=%u",
+	             "failed=%u WHERE htmlid=%u",
 	             ValidSQLValue(doc->GetURL(),surl),ValidSQLValue(doc->GetName(),sname),fn,l,
 	             GetDateToMySQL(doc->GetUpdated(),supdated),GetDateToMySQL(doc->GetComputed(),scomputed),
-	             doc->GetN(),doc->GetNdiff(),doc->GetV(),doc->GetVdiff(),doc->GetFailed(),id);
+	             doc->GetFailed(),id);
 	RQuery updatedoc(this,sSql);
 
 }

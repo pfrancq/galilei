@@ -72,13 +72,9 @@ public:
 	* @param u              String representing the date of the last update.
 	* @param a              String representing the date of the last analysis.
 	* @param f              Number of fails.
-	* @param n              Total number of words.
-	* @param ndiff          Number of different words.
-	* @param v              Total number of valid words.
-	* @param vdiff          Number of different valid words.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf=100) throw(bad_alloc);
+	GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.
@@ -104,28 +100,10 @@ public:
 	virtual void ClearInfos(bool l);
 
 	/**
-	* Set the information for the document.
-	* @param l              Language of the document.
-	* @param n              Total number of words.
-	* @param nd             Total number of different words.
-	* @param v              Total number of valid words.
-	* @param vd             Total number of different valid words.
+	* Add a given information to the document.
+	* @param info            Pointer to the information.
 	*/
-	virtual void SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd);
-
-	/**
-	* Add a word with a certain occurences in the document.
-	* @param id             Identificator of the word.
-	* @param nb             Occurences of the word.
-	*/
-	virtual void AddWord(const unsigned int id,const double nb);
-
-	/**
-	* Add a wordlist with a certain occurences in the document.
-	* @param id             Identificator of the word.
-	* @param nb             Occurences of the word.
-	*/
-	virtual void AddWordList(const unsigned int id,const double nb);
+	virtual void AddInfo(GWeightInfo* info) throw(bad_alloc);
 
 	/**
 	* Get a Cursor on the weights of the document.

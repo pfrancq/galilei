@@ -6,7 +6,7 @@
 
 	Document - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -58,8 +58,8 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
-	: URL(url), Name(name), Id(id), N(n), V(v), Ndiff(ndiff), Vdiff(vdiff),
+GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf) throw(bad_alloc)
+	: URL(url), Name(name), Id(id),
 	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
 	  Failed(f)
 #if GALILEITEST
@@ -121,10 +121,6 @@ void GDoc::ClearInfos(bool l)
 {
 	if(l)
 		Lang=0;
-	N=0;
-	Ndiff=0;
-	V=0;
-	Vdiff=0;
 }
 
 
@@ -170,10 +166,13 @@ const R::RDate* GDoc::GetComputed(void) const
 
 
 //-----------------------------------------------------------------------------
-const char* GDoc::GetMIMEType(void) const
+RString& GDoc::GetMIMEType(void) const
 {
-	if(MIMEType.IsEmpty()) return(0);
-	return(MIMEType);
+	RString* tmp=RString::GetString();
+
+	(*tmp)=MIMEType;
+	return(*tmp);
+
 }
 
 
@@ -199,15 +198,11 @@ void GDoc::SetState(tObjState state)
 
 
 //-----------------------------------------------------------------------------
-void GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd)
+void GDoc::SetLang(GLang *l)
 {
 	GSubProfile* sub;
 
 	Lang=l;
-	N=n;
-	Ndiff=nd;
-	V=v;
-	Vdiff=vd;
 	State=osUpdated;
 	Computed.SetToday();
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())

@@ -6,7 +6,7 @@
 
 	Document - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,30 +34,31 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GDocH
 #define GDocH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GDoc class provides a representation of a document.
+* The GDoc class provides a representation of a analyzed document.
 * @author Pascal Francq
 * @short Document.
 */
 class GDoc
 {
 protected:
+
 	/**
 	* URL of the document.
 	*/
@@ -74,27 +75,7 @@ protected:
 	unsigned int Id;
 
 	/**
-	* Total number of words.
-	*/
-	unsigned int N;
-
-	/**
-	* Total number of valid words.
-	*/
-	unsigned int V;
-
-	/**
-	* Number of different words.
-	*/
-	unsigned int Ndiff;
-
-	/**
-	* Number of different valid words.
-	*/
-	unsigned int Vdiff;
-
-	/**
-	* Pointer to the language.
+	* Pointer to the language of the document.
 	*/
 	GLang* Lang;
 
@@ -109,7 +90,7 @@ protected:
 	R::RString MIMEType;
 
 	/**
-	* Date of last update of document's content.
+	* Date of last update of document content.
 	*/
 	R::RDate Updated;
 
@@ -119,7 +100,7 @@ protected:
 	R::RDate Computed;
 
 	/**
-	* Profiles which have judge the current document.
+	* Profiles which have assessed the document.
 	*/
 	R::RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
@@ -129,13 +110,13 @@ protected:
 	unsigned int Failed;
 
 	/**
-	* Container of Link.
+	* Links "out" of the document.
 	*/
 	R::RContainer<GLink,unsigned int,false,true>* LinkSet;
 
 #if GALILEITEST
 	/**
-	* Subjects of the documents.
+	* Subjects of the document.
 	*/
 	R::RContainer<GSubject,unsigned int,false,true> Subjects;
 #endif
@@ -143,7 +124,7 @@ protected:
 public:
 
 	/**
-	* Construct the document.
+	* Construct a document.
 	* @param url            URL of the document.
 	* @param title          Name of the document.
 	* @param id             Identifier of the document.
@@ -152,49 +133,54 @@ public:
 	* @param u              String representing the date of the last update.
 	* @param a              String representing the date of the last analysis.
 	* @param f              Number of fails.
-	* @param n              Total number of words.
-	* @param ndiff          Number of different words.
-	* @param v              Total number of valid words.
-	* @param vdiff          Number of different valid words.
-	* @param nbf            Number of Feedbacks.
+	* @param nbf            Number of assessments.
 	*/
-	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf=100) throw(bad_alloc);
+	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.
-	* @return C String.                                                 
+	* @return C String.
 	*/
 	virtual const char* GetModelName(void) const=0;
 
 	/**
-	* Look if the document has a representation?
-	* @return bool.
+	* Verify if the document has a representation. By default, a document does
+	* not have a representation
+	* @return false.
 	*/
 	virtual bool HasRepresentation(void) const;
 
 	/**
-	* Compare function needed by R::RContainer.
-	* @param doc            Document used for the comparaison.
+	* Compare two documents by comparing their identificator.
+	* @see R::RContainer
+	* @param doc             Document.
+	* @return int
 	*/
 	int Compare(const GDoc& doc) const;
 
 	/**
-	* Compare function needed by R::RContainer.
-	* @param doc            Pointer to the document used for the comparaison.
+	* Compare two documents by comparing their identificator.
+	* @see R::RContainer
+	* @param doc             Pointer to the document.
+	* @return int
 	*/
 	int Compare(const GDoc* doc) const;
 
 	/**
-	* Compare function needed by R::RContainer.
-	* @param id            Identificator used for the comparaison.
+	* Compare the identificator of a documents with a given identificator.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
 	*/
 	int Compare(const unsigned id) const;
 
 	/**
-	* Compare function needed by R::RContainer.
-	* @param lang           Language used for the comparaison.
+	* Compare the language of a document with a given language.
+	* @see R::RContainer and GDocs.
+	* @param lang            Pointer to the language.
+	* @return int
 	*/
-	int Compare(const GLang*) const;
+	int Compare(const GLang* lang) const;
 
 	/**
 	* This function clears the information related to the document.
@@ -203,7 +189,7 @@ public:
 	virtual void ClearInfos(bool l);
 
 	/**
-	* Clear The Fdbks Container
+	* Clear all the assessments on the document.
 	*/
 	void ClearFdbks(void);
 
@@ -220,7 +206,7 @@ public:
 	R::RString& GetName(void) const;
 
 	/**
-	* Get the date of the last update of the document's content.
+	* Get the date of the last update of the document content.
 	* @returns Pointer to date.
 	*/
 	const R::RDate* GetUpdated(void) const;
@@ -232,20 +218,20 @@ public:
 	const R::RDate* GetComputed(void) const;
 
 	/**
-	* Get the MIME type.
-	* @returns Pointer to a MIME type.
+	* Get the MIME type of the document.
+	* @returns String.
 	*/
-	const char* GetMIMEType(void) const;
+	R::RString& GetMIMEType(void) const;
 
 	/**
-	* Set the MIME type.
-	* @param mime           Pointer to a MIME type.
+	* Set the MIME type of the document.
+	* @param mime            C String representing the MIME type.
 	*/
 	void SetMIMEType(const char* mime);
 
 	/**
 	* Return the state of the document.
-	* @returns GALILEI::tObjState value.
+	* @returns tObjState value.
 	*/
 	tObjState GetState(void) const;
 
@@ -256,53 +242,21 @@ public:
 	void SetState(tObjState state);
 
 	/**
-	* Set the information for the document.
-	* @param l              Language of the document.
-	* @param n              Total number of words.
-	* @param nd             Total number of different words.
-	* @param v              Total number of valid words.
-	* @param vd             Total number of different valid words.
+	* Add a given information to the document.
+	* @param info            Pointer to the information.
 	*/
-	virtual void SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd);
-
-	/**
-	* Add a word with a certain occurences in the document.
-	* @param id             Identificator of the word.
-	* @param nb             Occurences of the word.
-	*/
-	virtual void AddWord(const unsigned int id,const double nb)=0;
-
-	/**
-	* Add a wordlist with a certain occurences in the document.
-	* @param id             Identificator of the word.
-	* @param nb             Occurences of the word.
-	*/
-	virtual void AddWordList(const unsigned int id,const double nb)=0;
-
-	/**
-	* @return Total number of words in the documents with stoplist.
-	*/
-	unsigned int GetN(void) {return(N);}
-                                                                           
-	/**
-	* @return Total number of words in the documents.
-	*/
-	unsigned int GetV(void) {return(V);}
-
-	/**
-	* @return Number of different words in the documents.
-	*/
-	unsigned int GetNdiff(void) {return(Ndiff);}
-
-	/**
-	* @return Number of different words in the documents.
-	*/
-	unsigned int GetVdiff(void) {return(Vdiff);}
+	virtual void AddInfo(GWeightInfo* info) throw(bad_alloc)=0;
 
 	/**
 	* @return Pointer to the Language.
 	*/
 	GLang* GetLang(void) const {return(Lang);}
+
+	/**
+	* Set the language of the document.
+	* @param l              POinter to the lLanguage.
+	*/
+	void SetLang(GLang* l);
 
 	/**
 	* @return Identificator of the document.

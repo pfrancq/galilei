@@ -60,9 +60,9 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
-	: GDoc(url,name,id,lang,mime,u,a,f,n,ndiff,v,vdiff,nbf),
-	  GWeightInfos(vdiff>600?vdiff:600)
+GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf) throw(bad_alloc)
+	: GDoc(url,name,id,lang,mime,u,a,f,nbf),
+	  GWeightInfos(100)
 {
 }
 
@@ -84,23 +84,9 @@ void GALILEI::GDocVector::ClearInfos(bool l)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocVector::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd)
+void GDocVector::AddInfo(GWeightInfo* info) throw(bad_alloc)
 {
-	GDoc::SetInfos(l,n,nd,v,vd);
-	UpdateRefs();
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GDocVector::AddWord(const unsigned int id,const double nb)
-{
-	InsertPtr(new GWeightInfo(id,nb));
-}
-
-//-----------------------------------------------------------------------------
-void GALILEI::GDocVector::AddWordList(const unsigned int id,const double nb)
-{
-	InsertPtr(new GWeightInfo(id,nb,infoWordList));
+	InsertPtr(info);
 }
 
 

@@ -216,7 +216,11 @@ GDoc* GDocs::GetDoc(unsigned int id) throw(bad_alloc, GException)
 //-------------------------------------------------------------------------------
 GDoc* GDocs::GetDoc(const char* url) throw(bad_alloc)
 {
-	return(DocsRefUrl.GetPtr(url)->Doc);
+	GDocRefURL* ref;
+
+	ref=DocsRefUrl.GetPtr(url);
+	if(!ref) return(0);
+	return(ref->Doc);
 }
 
 
