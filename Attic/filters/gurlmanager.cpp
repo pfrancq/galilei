@@ -47,6 +47,7 @@
 #include <filters/gfilteremail.h>
 #include <filters/gfilterhtml.h>
 #include <filters/gfilterreu.h>
+#include <filters/gfilterxml.h>
 #include <docs/gdocxml.h>
 #include <docs/gdoc.h>
 #include <sessions/gsession.h>
@@ -68,6 +69,7 @@ GALILEI::GURLManager::GURLManager(void)
 	new GFilterHTML(this);
 	new GFilterEMail(this);
 	new GFilterReu(this);
+	new GFilterXML(this);
 }
 
 
