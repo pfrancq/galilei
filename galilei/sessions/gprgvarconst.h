@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgVar.h
+	GPrgInstConst.h
 
-	Variable of a Program - Header.
+	Const Variable - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -35,13 +35,14 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GPrgVarH
-#define GPrgVarH
+#ifndef GPrgVarConstH
+#define GPrgVarConstH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <sessions/gprgvar.h>
 
 
 //-----------------------------------------------------------------------------
@@ -50,42 +51,20 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GPrgVar provides a class for a generic variable.
+* The GPrgVarCons provides a class for a const variable.
 * @author Pascal Francq
-* @short Program Variable.
+* @short Const Variable.
 */
-class GPrgVar
+class GPrgVarConst : public GPrgVar
 {
-protected:
-
-	/**
-	* Name of the variable.
-	*/
-	RStd::RString Name;
-
-	/**
-	* Owner of the variable.
-	*/
-	GPrgVar* Owner;
-
 public:
 
 	/**
 	* Create a variable.
-	* @param name           Name.
 	* @param owner          Owner.
+	* @param value          Value
 	*/
-	GPrgVar(const char* name,GPrgVar* owner) throw(bad_alloc);
-
-	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const GPrgVar* v) const;
-
-	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const char* v) const;
+	GPrgVarConst(GPrgVar* owner,const char* value) throw(bad_alloc);
 
 	/**
 	* Assign some data to the variable.
@@ -102,7 +81,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GPrgVar(void);
+	virtual ~GPrgVarConst(void);
 };
 
 

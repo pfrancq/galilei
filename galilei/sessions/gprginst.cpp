@@ -44,6 +44,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gprginst.h>
+#include <sessions/gprgvar.h>
 using namespace GALILEI;
 
 
@@ -55,7 +56,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GPrgInst::GPrgInst(const char* name) throw(bad_alloc)
-	: Name(name)
+	: Name(name), Params(10,5)
 {
 }
 
@@ -75,7 +76,7 @@ int GALILEI::GPrgInst::Compare(const char* t) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GPrgInst::Run(GSessionPrg*) throw(GException)
+void GALILEI::GPrgInst::Run(GSessionPrg*,GSlot*) throw(GException)
 {
 }
 

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgVar.h
+	GPrgClass.cpp
 
-	Variable of a Program - Header.
+	Generic Class - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -33,81 +33,51 @@
 */
 
 
-
+   
 //-----------------------------------------------------------------------------
-#ifndef GPrgVarH
-#define GPrgVarH
+// include files for ANSI C/C++
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/gprgclass.h>
+#include <sessions/gprgvar.h>
+#include <sessions/gprginst.h>
+using namespace GALILEI;
+
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
+//
+// GPrgClass
+//
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-/**
-* The GPrgVar provides a class for a generic variable.
-* @author Pascal Francq
-* @short Program Variable.
-*/
-class GPrgVar
+GALILEI::GPrgClass::GPrgClass(const char* name) throw(bad_alloc)
+	: Name(name), Vars(20,10), Methods(30,15)
 {
-protected:
-
-	/**
-	* Name of the variable.
-	*/
-	RStd::RString Name;
-
-	/**
-	* Owner of the variable.
-	*/
-	GPrgVar* Owner;
-
-public:
-
-	/**
-	* Create a variable.
-	* @param name           Name.
-	* @param owner          Owner.
-	*/
-	GPrgVar(const char* name,GPrgVar* owner) throw(bad_alloc);
-
-	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const GPrgVar* v) const;
-
-	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const char* v) const;
-
-	/**
-	* Assign some data to the variable.
-	* @param data           Data.
-	*/
-	virtual void Assign(const void* data) throw(GException);
-
-	/**
-	* Get the value of the variable.
-	* @param prg            Program.
-	*/
-	virtual const char* GetValue(GSessionPrg* prg) throw(GException);
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GPrgVar(void);
-};
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
+}
 
 
 //-----------------------------------------------------------------------------
-#endif 
+int GALILEI::GPrgClass::Compare(const GPrgClass* c) const
+{
+	return(Name.Compare(c->Name));
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GPrgClass::Compare(const char* c) const
+{
+	return(Name.Compare(c));
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GPrgClass::~GPrgClass(void)
+{
+}

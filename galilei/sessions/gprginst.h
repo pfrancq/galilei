@@ -56,10 +56,17 @@ namespace GALILEI{
 */
 class GPrgInst
 {
+protected:
+
 	/**
 	* Name of the instruction.
 	*/
 	RStd::RString Name;
+
+	/**
+	* Parameters for the method.
+	*/
+	RStd::RContainer<GPrgVar,unsigned int,true,false> Params;
 
 public:
 
@@ -82,8 +89,9 @@ public:
 	/**
 	* Program holding the instruction.
 	* @param prg            Program.
+	* @param r              Receiver.
 	*/
-	virtual void Run(GSessionPrg* prg) throw(GException);
+	virtual void Run(GSessionPrg* prg,GSlot* r) throw(GException);
 	
 	/**
 	* Destructor.

@@ -48,6 +48,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <sessions/gprgvar.h>
+#include <sessions/gprgclass.h>
 
 
 //-----------------------------------------------------------------------------
@@ -56,12 +57,103 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
+* The GPrgSessionClass provides a class for a GALILEI session.
+* @author Pascal Francq
+* @short GALILEI Session.
+*/
+class GPrgClassSession : public GPrgClass
+{
+public:
+
+	/**
+	* Session.
+	*/
+	GSession* Session;
+
+	/**
+	* Name of the current test.
+	*/
+	RStd::RString TestName;
+
+	/**
+	* Output file.
+	*/
+	RIO::RTextFile* OFile;
+
+	/**
+	* Graph Output file.
+	*/
+	RIO::RTextFile* GOFile;
+
+	/**
+	* Statistics Output file.
+	*/
+	RIO::RTextFile* SOFile;
+
+	/**
+	* Ideal Groups.
+	*/
+	RContainer<GGroups,unsigned int,true,true>* Groups;
+
+	/**
+	* Container used to create subjects catagories.
+	*/
+	RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* Parents;
+
+	/**
+	* Precision of the current groupement.
+	*/
+	double Precision;
+
+	/**
+	* Recall of the current groupement.
+	*/
+	double Recall;
+
+	/**
+	* Total comparaison between for the current groupment.
+	*/
+	double Total;
+
+	/**
+	* First profile computing has be done.
+	*/
+	bool FirstProfile;
+
+	/**
+	* First groupment has be done.
+	*/
+	bool FirstGroup;
+
+	/**
+	* When Autosave is true, after each computing, the results is saved.
+	*/
+	bool AutoSave;
+
+	/**
+	* Create a class.
+	* @param s              Session.
+	*/
+	GPrgClassSession(GSession* s) throw(bad_alloc);
+
+	/**
+	* Load the groups from the file.
+	* @param filename       Name of the file containing the ideal groupement.
+	*/
+	void LoadGroups(const char* filename) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * The GSessionPrg provides a class for executing a GALILEI Program.
 * @author Pascal Francq
 * @short GALILEI Program.
 */
-class GSessionPrg : public GPrgVar
+class GSessionPrg
 {
+public:
+
 	class Inst;
 	class InstType;
 
@@ -70,7 +162,7 @@ protected:
 	/**
 	* Represent the different instruction allowed.
 	*/
-	enum tInst{Log,Output,GOutput,Sql,Comp,Group,CreateIdeal,LoadIdeal,MixIdeal,Test,CmpIdeal,Fdbks,SetAutoSave,SOutput,StatProf,StatDoc,ModifyProf};
+	enum tInst{Log,Output,GOutput,Sql,Comp,Group,CreateIdeal,LoadIdeal,MixIdeal,Test,CmpIdeal,Fdbks,SetAutoSave,SOutput,StatProf,StatDoc,ModifyProf,forinst};
 
 	/**
 	* Name of the file to execute.
@@ -90,7 +182,7 @@ protected:
 	/**
 	* List of all possible "instructions" to execute.
 	*/
-	RStd::RContainer<InstType,unsigned int,true,true> InstTypes;
+	static RStd::RContainer<InstType,unsigned int,true,true> InstTypes;
 
 	/**
 	* List of all "Instructions" to execute.
@@ -172,6 +264,16 @@ protected:
 	*/
 	GStatSimSubProf* StatSimSubProf;
 
+	/**
+	* Variables.
+	*/
+	RStd::RContainer<GPrgVar,unsigned int,true,false> Vars;
+
+	/**
+	* Classes.
+	*/
+	RStd::RContainer<GPrgClass,unsigned int,true,false> Classes;
+
 public:
 
 	/**
@@ -181,6 +283,21 @@ public:
 	* @param r              Receiver.
 	*/
 	GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_alloc,GException);
+
+	/**
+	* Analyse a line of source code.
+	* @param line           Line to analyze.
+	* @returns Instruction to insert.
+	*/
+	static Inst* AnalyseLine(char* line) throw(bad_alloc,GException);
+
+	/**
+	* Analyse a parameter.
+	* @param param          Parameter to analyse.
+	* @param owner          Owner.
+	* @returns Variable created.
+	*/
+	static GPrgVar* AnalyseParam(GPrgVar* owner,char* &param) throw(bad_alloc,GException);
 
 protected:
 

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgVar.h
+	GPrgVarRef.cpp
 
-	Variable of a Program - Header.
+	Reference to a Variable - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -33,81 +33,48 @@
 */
 
 
-
+   
 //-----------------------------------------------------------------------------
-#ifndef GPrgVarH
-#define GPrgVarH
+// include files for ANSI C/C++
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/gprgvarref.h>
+using namespace GALILEI;
 
 
+
 //-----------------------------------------------------------------------------
-namespace GALILEI{
+//
+// GPrgVarRef
+//
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-/**
-* The GPrgVar provides a class for a generic variable.
-* @author Pascal Francq
-* @short Program Variable.
-*/
-class GPrgVar
+GALILEI::GPrgVarRef::GPrgVarRef(GPrgVar* owner,const char* ref) throw(bad_alloc)
+	: GPrgVar(ref,owner)
 {
-protected:
-
-	/**
-	* Name of the variable.
-	*/
-	RStd::RString Name;
-
-	/**
-	* Owner of the variable.
-	*/
-	GPrgVar* Owner;
-
-public:
-
-	/**
-	* Create a variable.
-	* @param name           Name.
-	* @param owner          Owner.
-	*/
-	GPrgVar(const char* name,GPrgVar* owner) throw(bad_alloc);
-
-	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const GPrgVar* v) const;
-
-	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const char* v) const;
-
-	/**
-	* Assign some data to the variable.
-	* @param data           Data.
-	*/
-	virtual void Assign(const void* data) throw(GException);
-
-	/**
-	* Get the value of the variable.
-	* @param prg            Program.
-	*/
-	virtual const char* GetValue(GSessionPrg* prg) throw(GException);
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GPrgVar(void);
-};
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
+}
 
 
 //-----------------------------------------------------------------------------
-#endif 
+void GALILEI::GPrgVarRef::Assign(const void*) throw(GException)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GPrgVarRef::GetValue(GSessionPrg*) throw(GException)
+{
+	return(0);
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GPrgVarRef::~GPrgVarRef(void)
+{
+}

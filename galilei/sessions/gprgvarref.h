@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgVar.h
+	GPrgVarRef.h
 
-	Variable of a Program - Header.
+	Reference to a Variable - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -35,13 +35,14 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GPrgVarH
-#define GPrgVarH
+#ifndef GPrgVarRefH
+#define GPrgVarRefH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <sessions/gprgvar.h>
 
 
 //-----------------------------------------------------------------------------
@@ -54,38 +55,16 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Program Variable.
 */
-class GPrgVar
+class GPrgVarRef : public GPrgVar
 {
-protected:
-
-	/**
-	* Name of the variable.
-	*/
-	RStd::RString Name;
-
-	/**
-	* Owner of the variable.
-	*/
-	GPrgVar* Owner;
-
 public:
 
 	/**
 	* Create a variable.
-	* @param name           Name.
 	* @param owner          Owner.
+	* @param ref            Reference.
 	*/
-	GPrgVar(const char* name,GPrgVar* owner) throw(bad_alloc);
-
-	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const GPrgVar* v) const;
-
-	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const char* v) const;
+	GPrgVarRef(GPrgVar* owner,const char* ref) throw(bad_alloc);
 
 	/**
 	* Assign some data to the variable.
@@ -102,7 +81,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GPrgVar(void);
+	virtual ~GPrgVarRef(void);
 };
 
 

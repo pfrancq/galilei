@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgVar.h
+	GPrgInstFor.cpp
 
-	Variable of a Program - Header.
+	"for" Instruction - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -33,81 +33,80 @@
 */
 
 
-
+   
 //-----------------------------------------------------------------------------
-#ifndef GPrgVarH
-#define GPrgVarH
+// include files for ANSI C/C++
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/gprginstfor.h>
+#include <sessions/gsessionprg.h>
+using namespace GALILEI;
+
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
+//
+// GPrgInstFor
+//
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-/**
-* The GPrgVar provides a class for a generic variable.
-* @author Pascal Francq
-* @short Program Variable.
-*/
-class GPrgVar
+GALILEI::GPrgInstFor::GPrgInstFor(char* line) throw(bad_alloc)
+	: GPrgInst("for"), Values(20,10), Insts(50,25)
 {
-protected:
+	char* var;
+	GPrgVar* r;
 
-	/**
-	* Name of the variable.
-	*/
-	RStd::RString Name;
+	// read name of variable
+	var=line;
+	while((*line)&&((*line)!=' '))
+		line++;
+	(*(line++))=0;
+	Var=var;
 
-	/**
-	* Owner of the variable.
-	*/
-	GPrgVar* Owner;
+	// Skip "in "
+	while((*line)&&((*line)!=' '))
+		line++;
+	(*(line++))=0;
+	while((*line)&&((*line)==' '))
+		line++;
 
-public:
-
-	/**
-	* Create a variable.
-	* @param name           Name.
-	* @param owner          Owner.
-	*/
-	GPrgVar(const char* name,GPrgVar* owner) throw(bad_alloc);
-
-	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const GPrgVar* v) const;
-
-	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const char* v) const;
-
-	/**
-	* Assign some data to the variable.
-	* @param data           Data.
-	*/
-	virtual void Assign(const void* data) throw(GException);
-
-	/**
-	* Get the value of the variable.
-	* @param prg            Program.
-	*/
-	virtual const char* GetValue(GSessionPrg* prg) throw(GException);
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GPrgVar(void);
-};
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
+	// Read Values
+	while((*line))
+	{
+		r=GSessionPrg::AnalyseParam(0,line);
+		if(r)
+			Values.InsertPtr(r);
+	}
+}
 
 
 //-----------------------------------------------------------------------------
-#endif 
+void GALILEI::GPrgInstFor::AddInst(GPrgInst* ins) throw(bad_alloc)
+{
+	Insts.InsertPtr(ins);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GPrgInstFor::Run(GSessionPrg* prg,GSlot* r) throw(GException)
+{
+	for(Values.Start();!Values.End();Values.Next())
+	{
+		for(Insts.Start();!Insts.End();Insts.Next())
+		{
+			Insts()->Run(prg,r);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GPrgInstFor::~GPrgInstFor(void)
+{
+}

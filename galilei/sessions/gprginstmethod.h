@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgVar.h
+	GPrgInstMethod.h
 
-	Variable of a Program - Header.
+	Method of a class - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -35,13 +35,14 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GPrgVarH
-#define GPrgVarH
+#ifndef GPrgInstMethodH
+#define GPrgInstMethodH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <sessions/gprginst.h>
 
 
 //-----------------------------------------------------------------------------
@@ -50,59 +51,37 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GPrgVar provides a class for a generic variable.
+* The GPrgInstMethod provides a class for a class method.
 * @author Pascal Francq
-* @short Program Variable.
+* @short Class Method.
 */
-class GPrgVar
+class GPrgInstMethod : public GPrgInst
 {
 protected:
 
 	/**
-	* Name of the variable.
+	* Owner of the method.
 	*/
-	RStd::RString Name;
-
-	/**
-	* Owner of the variable.
-	*/
-	GPrgVar* Owner;
+	GSessionPrg* Owner;
 
 public:
 
 	/**
-	* Create a variable.
+	* Create a Instruction.
 	* @param name           Name.
-	* @param owner          Owner.
 	*/
-	GPrgVar(const char* name,GPrgVar* owner) throw(bad_alloc);
+	GPrgInstMethod(const char* name) throw(bad_alloc);
 
 	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const GPrgVar* v) const;
-
-	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const char* v) const;
-
-	/**
-	* Assign some data to the variable.
-	* @param data           Data.
-	*/
-	virtual void Assign(const void* data) throw(GException);
-
-	/**
-	* Get the value of the variable.
+	* Program holding the instruction.
 	* @param prg            Program.
 	*/
-	virtual const char* GetValue(GSessionPrg* prg) throw(GException);
-
+	virtual void Run(GSessionPrg* prg) throw(GException);
+	
 	/**
 	* Destructor.
 	*/
-	virtual ~GPrgVar(void);
+	virtual ~GPrgInstMethod(void);
 };
 
 

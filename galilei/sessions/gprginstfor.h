@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgVar.h
+	GPrgInstFor.h
 
-	Variable of a Program - Header.
+	"for" Instruction - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -35,13 +35,14 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GPrgVarH
-#define GPrgVarH
+#ifndef GPrgInstForH
+#define GPrgInstForH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <sessions/gprginst.h>
 
 
 //-----------------------------------------------------------------------------
@@ -50,59 +51,50 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GPrgVar provides a class for a generic variable.
+* The GPrgInstFor provides a class for a "for" instruction.
 * @author Pascal Francq
-* @short Program Variable.
+* @short "for" Instruction.
 */
-class GPrgVar
+class GPrgInstFor : public GPrgInst
 {
-protected:
+	/**
+	* Variable defined in the for.
+	*/
+	RStd::RString Var;
 
 	/**
-	* Name of the variable.
+	* Values of the variable.
 	*/
-	RStd::RString Name;
+	RStd::RContainer<GPrgVar,unsigned int,true,false> Values;
 
 	/**
-	* Owner of the variable.
+	* List of all "Instructions" to execute.
 	*/
-	GPrgVar* Owner;
+	RStd::RContainer<GPrgInst,unsigned int,true,false> Insts;
 
 public:
-
 	/**
-	* Create a variable.
-	* @param name           Name.
-	* @param owner          Owner.
+	* Create a Instruction.
+	* @param line           Rest of the line.
 	*/
-	GPrgVar(const char* name,GPrgVar* owner) throw(bad_alloc);
+	GPrgInstFor(char* line) throw(bad_alloc);
 
 	/**
-	* Method needed by RStd::Rcontainer.
+	* Add an instruction to the for.
 	*/
-	int Compare(const GPrgVar* v) const;
+	void AddInst(GPrgInst* ins) throw(bad_alloc);
 
 	/**
-	* Method needed by RStd::Rcontainer.
-	*/
-	int Compare(const char* v) const;
-
-	/**
-	* Assign some data to the variable.
-	* @param data           Data.
-	*/
-	virtual void Assign(const void* data) throw(GException);
-
-	/**
-	* Get the value of the variable.
+	* Program holding the instruction.
 	* @param prg            Program.
+	* @param r              Receiver.
 	*/
-	virtual const char* GetValue(GSessionPrg* prg) throw(GException);
-
+	virtual void Run(GSessionPrg* prg,GSlot* r) throw(GException);
+	
 	/**
 	* Destructor.
 	*/
-	virtual ~GPrgVar(void);
+	virtual ~GPrgInstFor(void);
 };
 
 

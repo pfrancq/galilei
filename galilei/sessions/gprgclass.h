@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgVar.h
+	GPrgClass.h
 
-	Variable of a Program - Header.
+	Generic Class - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -35,8 +35,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GPrgVarH
-#define GPrgVarH
+#ifndef GPrgClassH
+#define GPrgClassH
 
 
 //-----------------------------------------------------------------------------
@@ -50,59 +50,51 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GPrgVar provides a class for a generic variable.
+* The GPrgClass provides a class for a generic class.
 * @author Pascal Francq
-* @short Program Variable.
+* @short Generic Class.
 */
-class GPrgVar
+class GPrgClass
 {
 protected:
 
 	/**
-	* Name of the variable.
+	* Name of the class.
 	*/
 	RStd::RString Name;
 
 	/**
-	* Owner of the variable.
+	* Variables.
 	*/
-	GPrgVar* Owner;
+	RStd::RContainer<GPrgVar,unsigned int,true,false> Vars;
+
+	/**
+	* Methods.
+	*/
+	RStd::RContainer<GPrgInst,unsigned int,true,false> Methods;
 
 public:
 
 	/**
-	* Create a variable.
+	* Create a class.
 	* @param name           Name.
-	* @param owner          Owner.
 	*/
-	GPrgVar(const char* name,GPrgVar* owner) throw(bad_alloc);
+	GPrgClass(const char* name) throw(bad_alloc);
 
 	/**
 	* Method needed by RStd::Rcontainer.
 	*/
-	int Compare(const GPrgVar* v) const;
+	int Compare(const GPrgClass* c) const;
 
 	/**
 	* Method needed by RStd::Rcontainer.
 	*/
-	int Compare(const char* v) const;
-
-	/**
-	* Assign some data to the variable.
-	* @param data           Data.
-	*/
-	virtual void Assign(const void* data) throw(GException);
-
-	/**
-	* Get the value of the variable.
-	* @param prg            Program.
-	*/
-	virtual const char* GetValue(GSessionPrg* prg) throw(GException);
+	int Compare(const char* c) const;
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GPrgVar(void);
+	virtual ~GPrgClass(void);
 };
 
 

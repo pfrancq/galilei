@@ -81,6 +81,13 @@ void GALILEI::GPrgVar::Assign(const void*) throw(GException)
 
 
 //-----------------------------------------------------------------------------
+const char* GALILEI::GPrgVar::GetValue(GSessionPrg*) throw(GException)
+{
+	return(0);
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GPrgVar::~GPrgVar(void)
 {
 }
