@@ -5,7 +5,7 @@
 
 	Statistics on doc juged by the profiles. - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors
 		 Vandaele Valery(vavdaele@ulb.ac.be)
@@ -83,10 +83,10 @@ void GALILEI::GStatProfDoc::WriteLine(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 {
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* lang;
-	GProfileCursor Profs1,Profs2;
-	GDocCursor Docs;
+	R::RCursor<GProfile> Profs1,Profs2;
+	R::RCursor<GDoc> Docs;
 	unsigned int nbProfJugDoc,nbDocs ;
 	unsigned int i,j;
 	double sum, tmp,nbSame,nbDiff;
@@ -146,7 +146,7 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 				{
 					nbSame /=tmp;
 					MeanSame += nbSame;
-				
+
 					nbDiff /= tmp;
 					MeanDiff += nbDiff;
 					sum++;

@@ -205,11 +205,11 @@ template<class E,class C>
 template<class E,class C>
 	void GStatSimElements<E,C>::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 {
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* lang;
 	C Cur1;
 	C Cur2;
-	GSubjectCursor Sub1;
+	R::RCursor<GSubject> Sub1;
 	double SimIntraL;
 	double SimExtraL;
 	double SimIntraG;

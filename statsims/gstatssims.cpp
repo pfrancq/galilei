@@ -72,18 +72,18 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // Statistics between documents
-class GStatSimDoc : public GStatSimElements<GDoc,GDocCursor>
+class GStatSimDoc : public GStatSimElements<GDoc,R::RCursor<GDoc> >
 {
 public:
 	GStatSimDoc(GSession* ses,R::RTextFile* f,bool g,bool l)
-		: GStatSimElements<GDoc,GDocCursor>(ses,f,g,l) {}
+		: GStatSimElements<GDoc,R::RCursor<GDoc> >(ses,f,g,l) {}
 
-	GDocCursor GetElementCursor(GLang* Lang)
+	R::RCursor<GDoc> GetElementCursor(GLang* Lang)
 	{ return(Session->GetDocsCursor(Lang));}
 
 	bool SameSubject(GDoc* doc1,GDoc* doc2)
 	{
-		GSubjectCursor Subjects(doc1->GetSubjectCursor());
+		R::RCursor<GSubject> Subjects(doc1->GetSubjectCursor());
 		for(Subjects.Start();!Subjects.End();Subjects.Next())
 			if(doc2->IsFromSubject(Subjects()))
 				return(true);
@@ -95,7 +95,7 @@ public:
 
 	virtual void OverlapTopics(GDoc* doc,bool global)
 	{
-		GSubjectCursor Subjects=doc->GetSubjectCursor();
+		R::RCursor<GSubject> Subjects=doc->GetSubjectCursor();
 		for(Subjects.Start();!Subjects.End();Subjects.Next())
 		{
 			LocalStat* t=Sub.GetInsertPtr<GSubject*>(Subjects());
@@ -121,7 +121,7 @@ public:
 
 	bool SameSubject(GSubProfile* sub1,GSubProfile* sub2)
 	{return(sub1->GetSubject()==sub2->GetSubject());}
-	
+
 	bool HasSubject(GSubProfile* sub)
 	{return(sub->GetSubject());}
 
@@ -138,14 +138,14 @@ public:
 
 //------------------------------------------------------------------------------
 // Statistics between documents/groups
-class GStatSimDocGrp : public GStatSimDocs<GGroup,GGroupCursor>
+class GStatSimDocGrp : public GStatSimDocs<GGroup,R::RCursor<GGroup> >
 {
 public:
 
 	GStatSimDocGrp(GSession* ses,R::RTextFile* f,bool g,bool l)
-		: GStatSimDocs<GGroup,GGroupCursor>(ses,f,g,l) {}
+		: GStatSimDocs<GGroup,R::RCursor<GGroup> >(ses,f,g,l) {}
 
-	GGroupCursor GetElementCursor(GLang* Lang)
+	R::RCursor<GGroup> GetElementCursor(GLang* Lang)
 	{ return(Session->GetGroupsCursor(Lang));}
 
 	bool HasSubject(GGroup* grp)
