@@ -243,6 +243,9 @@
                     <property name="text">
                         <string>C&amp;onnect</string>
                     </property>
+                    <property name="default">
+                        <bool>true</bool>
+                    </property>
                 </widget>
             </hbox>
         </widget>
@@ -268,12 +271,12 @@
     </connection>
 </connections>
 <tabstops>
-    <tabstop>btnConnect</tabstop>
-    <tabstop>btnCancel</tabstop>
     <tabstop>txtHost</tabstop>
     <tabstop>txtDb</tabstop>
     <tabstop>txtLogin</tabstop>
     <tabstop>txtPwd</tabstop>
+    <tabstop>btnCancel</tabstop>
+    <tabstop>btnConnect</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -1717,6 +1717,59 @@
         <slot>changePostGroup(QListViewItem*)</slot>
     </connection>
 </connections>
+<tabstops>
+    <tabstop>tabWidget</tabstop>
+    <tabstop>Filters</tabstop>
+    <tabstop>ConfigFilter</tabstop>
+    <tabstop>AboutFilter</tabstop>
+    <tabstop>EnableFilter</tabstop>
+    <tabstop>buttonHelp</tabstop>
+    <tabstop>buttonOk</tabstop>
+    <tabstop>buttonCancel</tabstop>
+    <tabstop>Langs</tabstop>
+    <tabstop>ConfigLang</tabstop>
+    <tabstop>AboutLang</tabstop>
+    <tabstop>EnableLang</tabstop>
+    <tabstop>CurrentPostDoc</tabstop>
+    <tabstop>PostDocs</tabstop>
+    <tabstop>ConfigPostDoc</tabstop>
+    <tabstop>AboutPostDoc</tabstop>
+    <tabstop>EnablePostDoc</tabstop>
+    <tabstop>CurrentDocAnalyse</tabstop>
+    <tabstop>DocAnalyses</tabstop>
+    <tabstop>ConfigDocAnalyse</tabstop>
+    <tabstop>AboutDocAnalyse</tabstop>
+    <tabstop>EnableDocAnalyse</tabstop>
+    <tabstop>CurrentLinkCalc</tabstop>
+    <tabstop>LinkCalcs</tabstop>
+    <tabstop>ConfigLinkCalc</tabstop>
+    <tabstop>AboutLinkCalc</tabstop>
+    <tabstop>EnableLinkCalc</tabstop>
+    <tabstop>CurrentProfileCalc</tabstop>
+    <tabstop>ProfileCalcs</tabstop>
+    <tabstop>ConfigProfileCalc</tabstop>
+    <tabstop>AboutProfileCalc</tabstop>
+    <tabstop>EnableProfileCalc</tabstop>
+    <tabstop>CurrentGrouping</tabstop>
+    <tabstop>Groupings</tabstop>
+    <tabstop>ConfigGrouping</tabstop>
+    <tabstop>AboutGrouping</tabstop>
+    <tabstop>EnableGrouping</tabstop>
+    <tabstop>CurrentGroupCalc</tabstop>
+    <tabstop>GroupCalcs</tabstop>
+    <tabstop>ConfigGroupCalc</tabstop>
+    <tabstop>AboutGroupCalc</tabstop>
+    <tabstop>EnableGroupCalc</tabstop>
+    <tabstop>CurrentPostGroup</tabstop>
+    <tabstop>PostGroups</tabstop>
+    <tabstop>ConfigPostGroup</tabstop>
+    <tabstop>AboutPostGroup</tabstop>
+    <tabstop>EnablePostGroup</tabstop>
+    <tabstop>Stats</tabstop>
+    <tabstop>ConfigStat</tabstop>
+    <tabstop>AboutStat</tabstop>
+    <tabstop>EnableStat</tabstop>
+</tabstops>
 <includes>
     <include location="local" impldecl="in implementation">qplugins.ui.h</include>
 </includes>

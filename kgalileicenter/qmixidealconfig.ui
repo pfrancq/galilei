@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>QMixIdealConfig</class>
 <author>David Wartel &lt;dwartel@ulb.ac.be&gt;</author>
 <widget class="QDialog">
@@ -10,7 +10,7 @@
             <x>0</x>
             <y>0</y>
             <width>260</width>
-            <height>252</height>
+            <height>270</height>
         </rect>
     </property>
     <property name="caption">
@@ -278,7 +278,10 @@
                         </sizepolicy>
                     </property>
                     <property name="text">
-                        <string>Apply</string>
+                        <string>&amp;Apply</string>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
                     </property>
                 </widget>
                 <spacer>
@@ -313,6 +316,10 @@
 <tabstops>
     <tabstop>LENbMixedGroups</tabstop>
     <tabstop>LELevel</tabstop>
+    <tabstop>RBMerge</tabstop>
+    <tabstop>RBSplit</tabstop>
+    <tabstop>RBRandom</tabstop>
+    <tabstop>RBIdeal</tabstop>
     <tabstop>apply</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>

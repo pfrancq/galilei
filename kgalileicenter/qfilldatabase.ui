@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>QFillEmptyDatabase</class>
 <widget class="QDialog">
     <property name="name">
@@ -15,38 +15,6 @@
     <property name="caption">
         <string>Fill Database from Directory</string>
     </property>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButton2_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>160</x>
-                <y>420</y>
-                <width>92</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Cancel</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButton2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>290</x>
-                <y>420</y>
-                <width>92</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>OK</string>
-        </property>
-    </widget>
     <widget class="QGroupBox">
         <property name="name">
             <cstring>GroupBox1</cstring>
@@ -329,6 +297,31 @@
                     <string>text/sgml</string>
                 </property>
             </item>
+            <item>
+                <property name="text">
+                    <string>text/pdf</string>
+                </property>
+            </item>
+            <item>
+                <property name="text">
+                    <string>text/ps</string>
+                </property>
+            </item>
+            <item>
+                <property name="text">
+                    <string>text/reuters</string>
+                </property>
+            </item>
+            <item>
+                <property name="text">
+                    <string>text/xml</string>
+                </property>
+            </item>
+            <item>
+                <property name="text">
+                    <string>text/msdoc</string>
+                </property>
+            </item>
             <property name="name">
                 <cstring>CBMimeType</cstring>
             </property>
@@ -341,6 +334,41 @@
                 </rect>
             </property>
         </widget>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButton2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>290</x>
+                <y>420</y>
+                <width>92</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&amp;OK</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButton2_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>160</x>
+                <y>420</y>
+                <width>92</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&amp;Cancel</string>
+        </property>
     </widget>
 </widget>
 <connections>
@@ -357,5 +385,25 @@
         <slot>reject()</slot>
     </connection>
 </connections>
+<tabstops>
+    <tabstop>LEName</tabstop>
+    <tabstop>LEHost</tabstop>
+    <tabstop>LEUser</tabstop>
+    <tabstop>LEPassword</tabstop>
+    <tabstop>CBLang</tabstop>
+    <tabstop>CBMimeType</tabstop>
+    <tabstop>KUDirectory</tabstop>
+    <tabstop>KUScript</tabstop>
+    <tabstop>PushButton2_2</tabstop>
+    <tabstop>PushButton2</tabstop>
+</tabstops>
 <layoutdefaults spacing="6" margin="11"/>
+<includehints>
+    <includehint>kurlrequester.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kurlrequester.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+</includehints>
 </UI>
