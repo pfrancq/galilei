@@ -199,11 +199,6 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 {
 	char Tmp[300];
 	double Precision,Recall,Total;
-	GGroupIR* gr;
-	GGroup* g;
-	GObjIR** ptr;
-	unsigned int i;
-	GGroups* Cur;
 //	RPromSol* s;
 
 	if(!Debug) return;
@@ -212,25 +207,10 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 	Total=0.0;
 	if(IdealGroups)
 	{
-		// Make the current chromosome the current groupement
-		Session->ClearGroups(Lang);
-		Cur=Session->GetGroups(Lang);
-		for(c->Used.Start();!c->Used.End();c->Used.Next())
-		{
-			gr=c->Used();
-			g=new GGroupVector(cNoRef,Lang);
-			Session->NewGroup(Lang,g);
-			Cur->InsertPtr(g);
-			for(i=gr->NbSubObjects+1,ptr=c->GetObjs(gr->SubObjects);--i;ptr++)
-				g->InsertSubProfile((*ptr)->GetSubProfile());
-		}
-
-		// Make the comparison with the ideal group
-		GCompareGrouping Comp(Session,IdealGroups);
-		Comp.Compare(0);
-		Precision=Comp.GetPrecision();
-		Recall=Comp.GetRecall();
-		c->Global=Total=Comp.GetTotal();
+		c->CompareIdeal(Session,IdealGroups);
+		Precision=c->Precision;
+		Recall=c->Recall;
+		Total=c->Global;
 	}
 //	if(c->Id==PopSize) s=Sols[0]; else s=Sols[c->Id+1];
 //	sprintf(Tmp,"Id %2u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Nb=%1.3f - OK=%1.3f - Diff=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",

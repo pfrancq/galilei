@@ -45,8 +45,10 @@ using namespace RPromethee;
 #include <groups/ginstir.h>
 #include <groups/ggroupir.h>
 #include <groups/ggroups.h>
-#include <groups/ggroup.h>
+#include <groups/ggroupvector.h>
 #include <groups/gobjir.h>
+#include <groups/gcomparegrouping.h>
+#include <sessions/gsession.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofilessim.h>
@@ -91,12 +93,45 @@ void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
 	thObjs2=thData->tmpObjs2;
 
 	// Pairs
-	NbRows=200;
+	NbRows=Objs->GetNb();
 	Pairs=new bool*[NbRows];
 	(*Pairs)=new bool[NbRows];
 	for(i=NbRows,ptr=Pairs+1;--i;ptr++)
 		(*ptr)=new bool[i-1];
 }
+
+
+#ifdef RGADEBUG
+//-----------------------------------------------------------------------------
+void GALILEI::GChromoIR::CompareIdeal(GSession* s,RStd::RContainer<GGroups,unsigned int,true,true>* ideal)
+{
+	GGroupIR* gr;
+	GGroup* g;
+	GObjIR** ptr;
+	unsigned int i;
+	GGroups* Cur;
+
+	// Make the current chromosome the current groupement
+	s->ClearGroups(Instance->Lang);
+	Cur=s->GetGroups(Instance->Lang);
+	for(Used.Start();!Used.End();Used.Next())
+	{
+		gr=Used();
+		g=new GGroupVector(cNoRef,Instance->Lang);
+		s->NewGroup(Instance->Lang,g);
+		Cur->InsertPtr(g);
+		for(i=gr->NbSubObjects+1,ptr=GetObjs(gr->SubObjects);--i;ptr++)
+			g->InsertSubProfile((*ptr)->GetSubProfile());
+	}
+
+	// Make the comparison with the ideal group
+	GCompareGrouping Comp(s,ideal);
+	Comp.Compare(0);
+	Precision=Comp.GetPrecision();
+	Recall=Comp.GetRecall();
+	Global=Comp.GetTotal();
+}
+#endif
 
 
 //---------------------------------------------------------------------------

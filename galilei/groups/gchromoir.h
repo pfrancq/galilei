@@ -164,6 +164,16 @@ private:
 	*/
 	double Global;
 
+	/**
+	* Global Factor	
+	*/
+	double Precision;
+
+	/**
+	* Global Factor	
+	*/
+	double Recall;
+
 #endif
 
 public:
@@ -187,6 +197,24 @@ public:
 	* Get the global value for the chromosome.
 	*/
 	double GetGlobal(void) const {return(Global);}
+
+	/**
+	* Get the precision value for the chromosome.
+	*/
+	double GetPrecision(void) const {return(Precision);}
+
+	/**
+	* Get the global value for the chromosome.
+	*/
+	double GetRecall(void) const {return(Recall);}
+
+	/**
+	* Make a comparision with the ideal groupement and compute the recall,
+	* precision and global measure for the current chromosome.
+	* @param s              Session.
+	* param ideal           Ideal grouprement.
+	*/
+	void CompareIdeal(GSession* s,RStd::RContainer<GGroups,unsigned int,true,true>* ideal);
 
 #endif
 
@@ -288,7 +316,7 @@ public:
 	* @param grp1           First group.
 	* @param grp2           Second group.
 	*/
-	void EvaluateAvgSim(GGroupIR* grp1,GGroupIR* grp2);
+	void EvaluateAvgSim(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
 	* Evaluate the similarity of the solution where eventually grp1 must be
@@ -297,7 +325,7 @@ public:
 	* @param grp1           First group.
 	* @param grp2           Second group.
 	*/
-	void EvaluateSumRel(GGroupIR* grp1,GGroupIR* grp2);
+	void EvaluateSumRel(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
 	* Evaluate the similarity of the solution where eventually grp1 must be
@@ -306,7 +334,7 @@ public:
 	* @param grp1           First group.
 	* @param grp2           Second group.
 	*/
-	void EvaluateAvgMinMax(GGroupIR* grp1,GGroupIR* grp2);
+	void EvaluateAvgMinMax(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
 	* Evaluate the similarity of the solution where eventually grp1 must be
@@ -315,7 +343,7 @@ public:
 	* @param grp1           First group.
 	* @param grp2           Second group.
 	*/
-	void EvaluateMinMinMax(GGroupIR* grp1,GGroupIR* grp2);
+	void EvaluateMinMinMax(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
 	* Evaluate the similarity of the solution where eventually grp1 must be
@@ -324,7 +352,7 @@ public:
 	* @param grp1           First group.
 	* @param grp2           Second group.
 	*/
-	void EvaluateMinRel(GGroupIR* grp1,GGroupIR* grp2);
+	void EvaluateMinRel(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
 	* Evaluate the similarity of the solution where eventually grp1 must be
@@ -333,7 +361,7 @@ public:
 	* @param grp1           First group.
 	* @param grp2           Second group.
 	*/
-	void EvaluateAvgVarMinRel(GGroupIR* grp1,GGroupIR* grp2);
+	void EvaluateAvgVarMinRel(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
 	* Evaluate the similarity of the solution where eventually grp1 must be
@@ -342,7 +370,7 @@ public:
 	* @param grp1           First group.
 	* @param grp2           Second group.
 	*/
-	void EvaluateAvgVar(GGroupIR* grp1,GGroupIR* grp2);
+	void EvaluateAvgVar(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
 	* Evaluate the similarity of the solution where eventually grp1 must be
@@ -436,6 +464,12 @@ public:
 	* @param chromo         The chromosome used as source.
 	*/
 	GChromoIR& operator=(const GChromoIR& chromo);
+
+	/**
+	* Get the value of the similarity criterion for the chromosome.
+	* @returns double.
+	*/
+	double GetSimCriterion(void) const {return(AvgSim);}
 
 	/**
 	* Destructor.
