@@ -124,7 +124,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,QWidget* parent,const char* name,int wf
 	}
 	for(SubProfiles->Start(),i=0;!SubProfiles->End();SubProfiles->Next(),i++)
 			Objs->InsertPtr(new GObjIR(i,(*SubProfiles)()));
-	Sims=new GProfilesSim(SubProfiles);
+	Sims=new GProfilesSim(SubProfiles,false);
 	Monitor->setMaxFitness((SubProfiles->NbPtr)*(SubProfiles->NbPtr));
 
 	// Create GA

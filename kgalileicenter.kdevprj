@@ -43,7 +43,7 @@ short_info=
 sub_dir=kgalileicenter/
 version=0.2
 version_control=CVS
-workspace=1016049877
+workspace=126062085
 
 [INSTALL]
 dist=true
