@@ -349,7 +349,6 @@ private slots:
 	*/
 	void slotMixIdealGroups(void);
 
-
 	/**
 	* Show the documents window.
 	*/
