@@ -128,9 +128,9 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 
 	// Initialisation of the AnalyseResults Widget
 	Results = new QListView(Infos);
-	Infos->insertTab(Results,"Analyse Results");
-	Results->addColumn("Word");
-	Results->addColumn("Occurence");
+	Infos->insertTab(Results,"Description");
+	Results->addColumn("Information Entity");
+	Results->addColumn("Weight");
 	ConstructResults();
 }
 
@@ -255,7 +255,7 @@ void KViewDoc::ConstructResults(void)
 			return(key( col, ascending ).compare( i->key( col, ascending)));
     	}
 	};
-
+	Results->clear();
 	if(!Document->GetLang()) return;
 	RCursor<GWeightInfo> Words=Document->GetWeightInfoCursor();
 	for (Words.Start();!Words.End();Words.Next())

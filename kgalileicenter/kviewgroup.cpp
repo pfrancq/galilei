@@ -109,11 +109,10 @@ KViewGroup::KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,in
 	ConstructProfiles();
 
 	// Initialisation of Description
-	// Create the 'Vector' ListView
-	Vector = new QListView(this, "Vector" );
+	Vector = new QListView(Infos,"Vector");
 	Infos->insertTab(Vector,"Description");
-	Vector->addColumn(QString("Weights"));
-	Vector->setSorting(2);
+	Vector->addColumn("Information Entity");
+	Vector->addColumn(QString("Weight"));
 	ConstructDescription();
 
 	// Initialisation of the Documentss Widget
@@ -235,7 +234,6 @@ void KViewGroup::ConstructDocs(void)
 //-----------------------------------------------------------------------------
 void KViewGroup::ConstructDescription(void)
 {
-	GWeightInfoCursor Cur;
 	class LocalItem : QListViewItem
 	{
 	public:
@@ -256,15 +254,12 @@ void KViewGroup::ConstructDescription(void)
     	}
 	};
 
-	// Change the label of the first column
-	Vector->setColumnText(0,"Words");
-
 	// Read 'Ok'
 	Vector->clear();
-	Cur=Group->GetWeightInfoCursor();
-	for(Cur.Start();!Cur.End();Cur.Next())
+	RCursor<GWeightInfo> Words=Group->GetWeightInfoCursor();
+	for (Words.Start();!Words.End();Words.Next())
 	{
-		new LocalItem(Vector,ToQString(Doc->GetSession()->GetStorage()->LoadWord(Cur()->GetId(),Group->GetLang()->GetCode())),Cur()->GetWeight());
+		new LocalItem(Vector,ToQString(Doc->GetSession()->GetStorage()->LoadWord(Words()->GetId(),Group->GetLang()->GetCode())), Words()->GetWeight());
 	}
 }
 
