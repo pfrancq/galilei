@@ -107,7 +107,6 @@ public:
 
 	R::RContainer<GSims,unsigned int,true,false>* Sims;  // Similarities
 	bool IFF;                                             // Inverse Frequency Factor
-	bool Memory;                                      // use memory to stock sims?
 	GLang* Lang;                                          // Language
 	double MeanSim;                                       // Mean of similarities
 	double Deviation;                                     // Standart deviation of similarities
@@ -119,7 +118,7 @@ public:
 	R::RTextFile* debug;
 
 	// Constructor and Compare methods.
-	GProfilesSim(GProfilesSims* manager,GSubProfileCursor& s,bool iff, bool memory,GLang* lang) throw(bad_alloc, GException);
+	GProfilesSim(GProfilesSims* manager,GSubProfileCursor& s,bool iff,GLang* lang) throw(bad_alloc, GException);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GProfilesSim* profilesSim) const {return(Lang->Compare(profilesSim->Lang));}
 
@@ -156,8 +155,8 @@ public:
 
 
 //------------------------------------------------------------------------------
-GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCursor& s,bool iff,bool memory,GLang* l) throw(bad_alloc, GException)
-	: IFF(iff), Memory(memory), Lang(l), Manager(manager)
+GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCursor& s,bool iff,GLang* l) throw(bad_alloc, GException)
+	:  IFF(iff),Lang(l),Manager(manager)
 {
 	GSubProfileCursor Cur1, Cur2;
 	unsigned int i,j, pos, nbcomp;
@@ -167,7 +166,7 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 
 	// if memory is false, we don't stock a container of similarities.
 	// sims will be re-calculated eacht time.
-	if (!memory)
+	if (!Manager->GetMemory())
 		return;
 
 	//initialize the container of GSims (calculate size)
@@ -197,16 +196,16 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 	}
 
 	//tmp debug
-// 	debug=new RTextFile("../../../debug.txt", R::Append);
-// 	(*debug)<<"******************************** Lang = "<< Lang->GetCode()<<" *******************************"<<endl;
-// 	for (Sims->Start(); !Sims->End(); Sims->Next())
-// 	{
-// 		if (!(*Sims)()->NbPtr)
-// 			(*debug)<<"("<<(*Sims)()->SubId<<",X) = 0 elements"<<endl;
-// 		for ((*Sims)()->Start(); !(*Sims)()->End(); (*Sims)()->Next())
-// 			(*debug)<<"("<<(*Sims)()->SubId<<","<<(*(*Sims)())()->SubId<<")="<<(*(*Sims)())()->Sim<<"  ";;
-// 		(*debug)<<endl;
-// 	}
+	debug=new RTextFile("../../../debug.txt", R::Append);
+	(*debug)<<"******************************** Lang = "<< Lang->GetCode()<<" *******************************"<<endl;
+	for (Sims->Start(); !Sims->End(); Sims->Next())
+	{
+		if (!(*Sims)()->NbPtr)
+			(*debug)<<"("<<(*Sims)()->SubId<<",X) = 0 elements"<<endl;
+		for ((*Sims)()->Start(); !(*Sims)()->End(); (*Sims)()->Next())
+			(*debug)<<"("<<(*Sims)()->SubId<<","<<(*(*Sims)())()->SubId<<")="<<(*(*Sims)())()->Sim<<"  ";;
+		(*debug)<<endl;
+	}
 
 
 
@@ -238,7 +237,7 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 		MeanSim=Deviation=0.0;
 	if(Deviation<0)
 		throw("Negative Deviation in creating profiles similarities !");
- 
+
 }
 
 
@@ -270,7 +269,7 @@ double GProfilesSims::GProfilesSim::GetSim(const GSubProfile* sub1,const GSubPro
 	int i,j,tmp;
 
 	//if memory is false, re-calculate similarity
-	if (!Memory)
+	if (!Manager->GetMemory())
 	{
 		if (IFF)
 			return (sub1->SimilarityIFF(sub2));
@@ -324,7 +323,7 @@ void GProfilesSims::GProfilesSim::Update(void) throw(bad_alloc)
 
 	// if memory is false, no update is needed
 	// since sims are claulctaed each time
-	if(!Memory)
+	if(!Manager->GetMemory())
 		return;
 
 	// change status of modified subprofiles and add sims of created subprofiles
@@ -352,8 +351,8 @@ void GProfilesSims::GProfilesSim::Update(bool iff) throw(bad_alloc)
 	{
 		IFF=iff;
 		// if memory is false, no update is needed
-		// since sims are claulctaed each time
-		if(!Memory)
+		// since sims are calculated each time
+		if(!Manager->GetMemory())
 			return;
 		 for (Sims->Start(); !Sims->End(); Sims->Next())
 		 	for ((*Sims)()->Start(); !(*Sims)()->End(); (*Sims)()->Next())
@@ -363,12 +362,12 @@ void GProfilesSims::GProfilesSim::Update(bool iff) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GSims* GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
+GSims*  GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 {
 	GSims* sims, *tmpsims;
 	GSubProfileCursor subcur;
 
-	if (!sub->IsDefined()) return(0);
+	if (!sub->IsDefined()) return 0;
 	sims=new GSims(sub->GetProfile()->GetId(),sub->GetProfile()->GetId()-1);
 	Sims->InsertPtrAt(sims, sub->GetProfile()->GetId());
         subcur=Manager->GetSession()->GetSubProfilesCursor(Lang);
@@ -387,14 +386,13 @@ GSims* GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 		}
 	}
 	return sims;
-
 }
 
 
 //------------------------------------------------------------------------------
 void GProfilesSims::GProfilesSim::UpdateDeviationAndMeanSim(GSubProfileCursor& subprofiles) throw (GException)
 {
-	if (Memory)
+	if (Manager->GetMemory())
 		UpdateDevMeanSim(subprofiles);
 	else
 		RecomputeDevMeanSim(subprofiles);
@@ -523,7 +521,7 @@ GProfilesSims::GProfilesSims(GSession* session,bool iff, bool memory) throw(bad_
 	{
 		Lang=Langs()->GetPlugin();
 		if(!Lang) continue;
-		Sims.InsertPtr(new GProfilesSim(this, Session->GetSubProfilesCursor(Lang),IFF, Memory, Lang));
+		Sims.InsertPtr(new GProfilesSim(this, Session->GetSubProfilesCursor(Lang),IFF,Lang));
 	}
 }
 
@@ -533,13 +531,14 @@ void GProfilesSims::ReInit(void) throw(bad_alloc)
 	GFactoryLangCursor Langs;
 	GLang* Lang;
 
+	if (!GetMemory()) return;
 	Sims.Clear();
 	Langs=Session->GetLangs()->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();
 		if(!Lang) continue;
-		Sims.InsertPtr(new GProfilesSim(this, Session->GetSubProfilesCursor(Lang),IFF,Memory,Lang));
+		Sims.InsertPtr(new GProfilesSim(this, Session->GetSubProfilesCursor(Lang),IFF,Lang));
 	}
 }
 

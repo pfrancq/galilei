@@ -109,9 +109,10 @@ public:
 	R::RContainer<GSims,unsigned int,true,true> Sims;  // Similarities.
 	bool IFF;                                          // Use IFF factor.
 	GLang* Lang;                                       // Language.
+	GDocProfSims* Manager;                             // Owner.
 
 	// Constructor and Compare functions.
-	GDocProfSim(GDocs* d, GSubProfileCursor& s,bool iff, GLang* l) throw(bad_alloc);
+	GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor& s,bool iff,GLang* l) throw(bad_alloc);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GDocProfSim* docProfSim) const {return(Lang->Compare(docProfSim->Lang));}
 
@@ -127,7 +128,11 @@ public:
 	// set to state="osModified".
 	// If the similarity for a given subprofile doesn't exist, the element is
 	// created but not computed ( -> state to osModified ).
-	void Update(GDocs* docs, GUsers* users,bool iff) throw(bad_alloc);
+	void Update(GDocs* docs, GUsers* users) throw(bad_alloc);
+
+	//change tye type of similarity (local <-> IFF)
+	void Update(bool iff) throw(bad_alloc);
+
 
 	// Destructor.
 	~GDocProfSim(void) {}
@@ -135,13 +140,18 @@ public:
 
 
 //------------------------------------------------------------------------------
-GDocProfSims::GDocProfSim::GDocProfSim(GDocs* d, GSubProfileCursor& s,bool iff,GLang* l) throw(bad_alloc)
-	: Sims(d->GetNbDocs(l)+2,d->GetNbDocs(l)/2 +1), IFF(iff), Lang(l)
+GDocProfSims::GDocProfSim::GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor& s,bool iff,GLang* l) throw(bad_alloc)
+	: Sims(d->GetNbDocs(l)+2,d->GetNbDocs(l)/2 +1), IFF(iff),Lang(l), Manager(manager)
 {
 	GDocCursor Cur_d;
 	GSubProfileCursor Cur_p;
 	unsigned int nbrSubProf;
 	GSims* sim;
+
+	// if memory is false, we don't stock a container of similarities.
+	// sims will be re-calculated eacht time.
+	if (!Manager->GetMemory())
+		return;
 
 	Cur_d= d->GetDocsCursor(Lang);
 	Cur_p=s;
@@ -177,6 +187,15 @@ double GDocProfSims::GDocProfSim::GetSim(const GDoc* doc,const GSubProfile* sub)
 	GSims* s;
 	GSim* s2;
 
+	//if memory is false, re-calculate similarity
+	if (!Manager->GetMemory())
+	{
+		if (IFF)
+			return (doc->SimilarityIFF(sub));
+		else
+			 return (doc->Similarity(sub));
+	}
+
 	s=Sims.GetPtr<unsigned int>(doc->GetId());
 	if(!s) return(0.0);
 	s2=s->GetPtr<unsigned int>(sub->GetId());
@@ -197,7 +216,7 @@ double GDocProfSims::GDocProfSim::GetSim(const GDoc* doc,const GSubProfile* sub)
 
 
 //------------------------------------------------------------------------------
-void  GDocProfSims::GDocProfSim::Update(GDocs* docs,GUsers* users,bool iff) throw(bad_alloc)
+void  GDocProfSims::GDocProfSim::Update(GDocs* docs,GUsers* users) throw(bad_alloc)
 {
 	GDocCursor Cur_d;
 	GSubProfileCursor Cur_p;
@@ -206,76 +225,64 @@ void  GDocProfSims::GDocProfSim::Update(GDocs* docs,GUsers* users,bool iff) thro
 	GSim* sim;
 	tObjState stateDoc , stateSP;
 
+	// if memory is false, no update is needed
+	// since sims are claulctaed each time
+	if(!Manager->GetMemory())
+		return;
 
 	Cur_d = docs->GetDocsCursor(Lang);
 	Cur_p = users->GetSubProfilesCursor(Lang);
 	nbrSubProf = Cur_p.GetNb() ;
 
-	if(iff == IFF)
+	// The type of similarity hasn't changed -> some values of sim can be UpToDate
+	for(Cur_d.Start();!Cur_d.End();Cur_d.Next())
 	{
-		// The type of similarity hasn't changed -> some values of sim can be UpToDate
-		for(Cur_d.Start();!Cur_d.End();Cur_d.Next())
+		sims = Sims.GetPtr<unsigned int>(Cur_d()->GetId());
+		if(!sims) Sims.InsertPtr(sims = new GSims(Cur_d()->GetId(), nbrSubProf ) );
+		stateDoc = Cur_d()->GetState();                              // --------------------------------------------------------
+		if ((stateDoc == osUpdated) || (stateDoc == osCreated))      // The sub1 is modified -> all the sims must be recalculated
 		{
-
-			sims = Sims.GetPtr<unsigned int>(Cur_d()->GetId());
-			if(!sims) Sims.InsertPtr(sims = new GSims(Cur_d()->GetId(), nbrSubProf ) );
-			stateDoc = Cur_d()->GetState();                              // --------------------------------------------------------
-			if ((stateDoc == osUpdated) || (stateDoc == osCreated))      // The sub1 is modified -> all the sims must be recalculated
+			for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
 			{
-				for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
+				sim = sims->GetPtr<unsigned int>(Cur_p()->GetId());
+				if(!sim) sims->InsertPtr(sim = new GSim(Cur_p()->GetId(),0,osModified));
+				else sim->State = osModified;
+			}
+		}                                   //----------------------------------------------------------------
+		else if(stateDoc == osUpToDate)       // The sub1 hasn't changed -> somes profiles sims can be unchanged
+		{
+			for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
+			{
+				stateSP = Cur_p()->GetState();
+				if((stateSP == osUpdated) || (stateSP == osCreated))    //The second profile has been modified -> state de sim(id1,id2) = modified
 				{
 					sim = sims->GetPtr<unsigned int>(Cur_p()->GetId());
-					if(!sim) sims->InsertPtr(sim = new GSim(Cur_p()->GetId(),0,osModified));
-					else sim->State = osModified;
-				}
-			}                                   //----------------------------------------------------------------
-			else if(stateDoc == osUpToDate)       // The sub1 hasn't changed -> somes profiles sims can be unchanged
-			{
-				for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
-				{
-					stateSP = Cur_p()->GetState();
-					if((stateSP == osUpdated) || (stateSP == osCreated))    //The second profile has been modified -> state de sim(id1,id2) = modified
-					{
-						sim = sims->GetPtr<unsigned int>(Cur_p()->GetId());
-						if (!sim) sims->InsertPtr(sim = new GSim(Cur_p()->GetId(),0,osModified));
-						else sim->State = osModified;
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		// the type of similarity has changed => All the sim's values must be updated.
-		// The type of similarity is stocked in the param IFF.
-		IFF = iff;
-		for(Cur_d.Start();!Cur_d.End();Cur_d.Next())
-		{
-			sims= Sims.GetPtr<unsigned int>(Cur_d()->GetId());
-			if(!sims) // If sims doesn't exist -> Insert a new sims
-			{
-				Sims.InsertPtr(sims = new GSims(Cur_d()->GetId(),nbrSubProf ) );
-				for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
-				{
-					sims->InsertPtr(sim = new GSim(Cur_p()->GetId(),0,osModified));
-				}
-			}
-			else
-			{  // If Sims exists -> overwrite the state of each sims
-				for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
-				{
-					sim = sims->GetPtr<unsigned int >(Cur_p()->GetId());
-					if (!sim ) sims->InsertPtr(sim = new GSim(Cur_p()->GetId(),0,osModified));
+					if (!sim) sims->InsertPtr(sim = new GSim(Cur_p()->GetId(),0,osModified));
 					else sim->State = osModified;
 				}
 			}
 		}
 	}
-	#warning pragm osDelete to add
-	#warning when all the sim between the subprofiles are computed -> set Profile State to osUpdated
 }
 
 
+
+//------------------------------------------------------------------------------
+void  GDocProfSims::GDocProfSim::Update(bool iff) throw (bad_alloc)
+{
+	if(iff!=IFF)
+	{
+		IFF=iff;
+		// if memory is false, no update is needed
+		// since sims are calculated each time
+		if(!Manager->GetMemory())
+			return;
+		 for (Sims.Start(); !Sims.End(); Sims.Next())
+		 	for (Sims()->Start(); !Sims()->End(); Sims()->Next())
+				(*Sims())()->State=osModified;
+	}
+
+}
 
 //------------------------------------------------------------------------------
 //
@@ -284,8 +291,8 @@ void  GDocProfSims::GDocProfSim::Update(GDocs* docs,GUsers* users,bool iff) thro
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocProfSims::GDocProfSims::GDocProfSims(GSession* session,bool iff) throw(bad_alloc)
-	: Sims(10,5), Session(session), IFF(iff)
+GDocProfSims::GDocProfSims::GDocProfSims(GSession* session,bool iff,bool memory) throw(bad_alloc)
+	: Sims(10,5), Session(session), IFF(iff), Memory(memory)
 {
 	GFactoryLangCursor Langs;
 	GLang* Lang;
@@ -295,7 +302,7 @@ GDocProfSims::GDocProfSims::GDocProfSims(GSession* session,bool iff) throw(bad_a
 	{
 		Lang=Langs()->GetPlugin();
 		if(!Lang) continue;
-		Sims.InsertPtr(new GDocProfSim(Session,Session->GetSubProfilesCursor(Lang),IFF,Lang));
+		Sims.InsertPtr(new GDocProfSim(this,Session,Session->GetSubProfilesCursor(Lang),IFF,Lang));
 	}
 }
 
@@ -303,6 +310,8 @@ GDocProfSims::GDocProfSims::GDocProfSims(GSession* session,bool iff) throw(bad_a
 //------------------------------------------------------------------------------
 void GDocProfSims::ReInit(void) throw(bad_alloc)
 {
+	if (!Memory) return;
+
 	GFactoryLangCursor Langs;
 	GLang* Lang;
 
@@ -312,7 +321,7 @@ void GDocProfSims::ReInit(void) throw(bad_alloc)
 	{
 		Lang=Langs()->GetPlugin();
 		if(!Lang) continue;
-		Sims.InsertPtr(new GDocProfSim(Session,Session->GetSubProfilesCursor(Lang),IFF,Lang));
+		Sims.InsertPtr(new GDocProfSim(this,Session,Session->GetSubProfilesCursor(Lang),IFF,Lang));
 	}
 }
 
@@ -330,7 +339,7 @@ void GDocProfSims::UseIFF(bool iff) throw(bad_alloc)
 		Lang=Langs()->GetPlugin();
 		if(!Lang) continue;
 		GDocProfSim* docProfSim = Sims.GetPtr<GLang*>(Lang);
-		docProfSim->Update(Session,Session,iff);
+		docProfSim->Update(iff);
 	}
 }
 

@@ -76,14 +76,26 @@ class GDocProfSims
 	*/
 	bool IFF;
 
+	/*
+	* Must the sims be stock in a container
+	* or be recomputed each time
+	*/
+	bool Memory;
+
+	/**
+	* level under which a similarity is cinsidered as null;
+	*/
+	double NullSimLevel;
+
 public:
 
 	/**
 	* Constructor of the similarities between documents and subprofiles.
 	* @param session         Session.
 	* @param iff             Use Inverse Frequency Factor.
+	* @param memory      use container to stock sims?
 	*/
-	GDocProfSims(GSession* session,bool iff) throw(bad_alloc);
+	GDocProfSims(GSession* session,bool iff, bool memory) throw(bad_alloc);
 
 	/**
 	* Re-initialize the similarities. This method can be used for testing
@@ -96,6 +108,16 @@ public:
 	* @param iff             Use Inverse Frequency Factor.
 	*/
 	void UseIFF(bool iff) throw(bad_alloc);
+
+	/**
+	* returns the status of memory
+	*/
+	bool GetMemory(void) {return Memory;}
+
+	/**
+	* returns the minimum level for a similarity not to be null.
+	*/
+	double GetNullSimLevel(void) {return NullSimLevel;}
 
 	/**
 	* Get the similarity between a document and a subprofile.

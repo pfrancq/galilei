@@ -115,6 +115,11 @@ public:
 	void Update(void);
 
 	/**
+	* returns the status of memory
+	*/
+	bool GetMemory(void) {return Memory;}
+
+	/**
 	* returns the minimum level for a similarity not to be null.
 	*/
 	double GetNullSimLevel(void) {return NullSimLevel;}

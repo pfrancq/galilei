@@ -109,13 +109,15 @@ public:
 
 	R::RContainer<GBehaviours,unsigned int,true,false>* Behaviours;     // Ratios
 	GLang* Lang;                                                        // Language.
-	unsigned int* ModifiedProfs;                                        // Identificators of modified profiles
 	unsigned int NbModified;                                            // Number of modified subprofiles
 	unsigned int MinSameDocs;                                           // Minimum number fo documents for Agreement
 	unsigned int MinDiffDocs;                                           // Minimum number fo documents for Disagreement
+	GProfilesBehaviours* Manager;                                       //manger
+	// Identificators of modified profiles
+	RContainer<GSubProfile,unsigned int,false,true>* ModifiedProfs;
 
 	// Constructor and Compare methods.
-	GProfilesBehaviour(GSubProfileCursor& s,GLang* lang, unsigned int minsamedocs, unsigned int mindiffdocs) throw(bad_alloc);
+	GProfilesBehaviour(GProfilesBehaviours* manager,GSubProfileCursor& s,GLang* lang, unsigned int minsamedocs, unsigned int mindiffdocs) throw(bad_alloc);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GProfilesBehaviour* p) const {return(Lang->Compare(p->Lang));}
 
@@ -135,7 +137,10 @@ public:
 	void Update(void) throw(bad_alloc);
 
 	// Add a subprofile to the listof the modified one.
-	void AddModifiedProfile(unsigned int id);
+	void AddModifiedProfile(GSubProfile* s);
+
+	// add a new GBehaviours fo a new subprofile subprof
+	GBehaviours* AddNewBehaviours(GSubProfile* subprof);
 
 	// Destructor.
 	virtual ~GProfilesBehaviour(void) {}
@@ -143,8 +148,8 @@ public:
 
 
 //------------------------------------------------------------------------------
-GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GSubProfileCursor& s,GLang* l, unsigned int minsamedocs, unsigned int mindiffdocs) throw(bad_alloc)
-	: Lang(l), MinSameDocs(minsamedocs), MinDiffDocs(mindiffdocs)
+GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GProfilesBehaviours* manager, GSubProfileCursor& s,GLang* l, unsigned int minsamedocs, unsigned int mindiffdocs) throw(bad_alloc)
+	: Lang(l), MinSameDocs(minsamedocs), MinDiffDocs(mindiffdocs), Manager(manager)
 {
 	GSubProfileCursor Cur1, Cur2;
 	unsigned int i,j, pos;
@@ -156,9 +161,8 @@ GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GSubProfileCursor& s
 			i=s()->GetProfile()->GetId();
 	Behaviours=new RContainer<GBehaviours,unsigned int,true,false>(i+1,1);
 
-	//initializes table of modified subprofiles;
-	ModifiedProfs=new unsigned int [s.GetNb()];
-	NbModified=0;
+	//initialize table of modified subprofiles;
+	ModifiedProfs=new RContainer<GSubProfile,unsigned int,false,true>(5,1);
 
 	//builds the left inferior triangular matrix.
 	Cur1=s;
@@ -267,31 +271,35 @@ double GProfilesBehaviours::GProfilesBehaviour::GetDisagreementRatio(GSubProfile
 
 
 //------------------------------------------------------------------------------
-void GProfilesBehaviours::GProfilesBehaviour::AddModifiedProfile(unsigned int id)
+void GProfilesBehaviours::GProfilesBehaviour::AddModifiedProfile(GSubProfile* s)
 {
-	ModifiedProfs[NbModified]=id;
-	NbModified++;
+	ModifiedProfs->InsertPtr(s);
 }
 
 
 //------------------------------------------------------------------------------
 void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(bad_alloc)
 {
-	unsigned int i;
 	GBehaviours* behaviours;
 
+	// if memory is false, no update is needed
+	// since sims are claulctaed each time
+	if(!Manager->GetMemory())
+		return;
+
+
 	// change status of modified subprofiles and add Behaviours of created subprofiles
-	for (i=NbModified; i; i--)
+	for (ModifiedProfs->Start(); !ModifiedProfs->End(); ModifiedProfs->Next())
 	{
-		behaviours = Behaviours->GetPtrAt(ModifiedProfs[i-1]);
+		behaviours = Behaviours->GetPtrAt((*ModifiedProfs)()->GetProfile()->GetId());
 		if(!behaviours)
-			Behaviours->InsertPtrAt(behaviours = new GBehaviours(ModifiedProfs[i-1] , ModifiedProfs[i-1]-1), ModifiedProfs[i-1]);
+			behaviours=AddNewBehaviours((*ModifiedProfs)());
 		for (behaviours->Start(); !behaviours->End(); behaviours->Next())
 			(*behaviours)()->State=osModified;
 	}
 
 	//reset the number of modified subprofiles.
-	NbModified=0;
+	ModifiedProfs->Clear();
 	#warning osDelete to add
 	#warning when all the sim between the subprofiles are computed -> set Profile State to osUpdated
 }
@@ -299,14 +307,41 @@ void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
+GBehaviours*  GProfilesBehaviours::GProfilesBehaviour::AddNewBehaviours(GSubProfile* sub)
+{
+	GBehaviours* behaviours, *tmpbehaviours;
+	GSubProfileCursor subcur;
+
+	if (!sub->IsDefined()) return 0;
+	behaviours=new GBehaviours(sub->GetProfile()->GetId(),sub->GetProfile()->GetId());
+	Behaviours->InsertPtrAt(behaviours, sub->GetProfile()->GetId());
+        subcur=Manager->GetSession()->GetSubProfilesCursor(Lang);
+
+	for (subcur.Start(); !subcur.End(); subcur.Next())
+	{
+		if (subcur()->GetProfile()->GetId()<sub->GetProfile()->GetId())
+		{
+			AnalyseBehaviour(behaviours, sub,subcur());
+		}
+		if (subcur()->GetProfile()->GetId()>sub->GetProfile()->GetId())
+		{
+			tmpbehaviours=Behaviours->GetPtrAt(subcur()->GetProfile()->GetId());
+			if(tmpbehaviours)
+				AnalyseBehaviour(tmpbehaviours, subcur(), sub);
+		}
+	}
+	return behaviours;
+
+}
+//------------------------------------------------------------------------------
 //
 //   GProfilesBehaviours
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfilesBehaviours::GProfilesBehaviours(GSession* session) throw(bad_alloc)
-	: Ratios(10,5), Session(session)
+GProfilesBehaviours::GProfilesBehaviours(GSession* session,bool memory) throw(bad_alloc)
+	: Ratios(10,5), Session(session), Memory(memory)
 {
 	GFactoryLangCursor Langs;
 	GLang* Lang;
@@ -319,7 +354,7 @@ GProfilesBehaviours::GProfilesBehaviours(GSession* session) throw(bad_alloc)
 	{
 		Lang=Langs()->GetPlugin();
 		if(!Lang) continue;
-		Ratios.InsertPtr(new GProfilesBehaviour(Session->GetSubProfilesCursor(Lang),Lang,agree,disagree));
+		Ratios.InsertPtr(new GProfilesBehaviour(this,Session->GetSubProfilesCursor(Lang),Lang,agree,disagree));
 	}
 }
 
@@ -331,6 +366,8 @@ void GProfilesBehaviours::ReInit(void) throw(bad_alloc)
 	GLang* Lang;
 	unsigned int agree,disagree;
 
+	if (!Memory) return;
+
 	Ratios.Clear();
 	agree=Session->GetSessionParams()->GetUInt("SameBehaviourMinDocs");
 	disagree=Session->GetSessionParams()->GetUInt("DiffBehaviourMinDocs");
@@ -339,7 +376,7 @@ void GProfilesBehaviours::ReInit(void) throw(bad_alloc)
 	{
 		Lang=Langs()->GetPlugin();
 		if(!Lang) continue;
-		Ratios.InsertPtr(new GProfilesBehaviour(Session->GetSubProfilesCursor(Lang),Lang,agree,disagree));
+		Ratios.InsertPtr(new GProfilesBehaviour(this,Session->GetSubProfilesCursor(Lang),Lang,agree,disagree));
 	}
 }
 
@@ -390,7 +427,7 @@ void GProfilesBehaviours::AddModifiedProfile(GSubProfile* sub) throw(bad_alloc,G
 	profBehaviour = Ratios.GetPtr<GLang*>(sub->GetLang());
 	if(!profBehaviour)
 		throw GException("Language not defined");
-	profBehaviour->AddModifiedProfile(sub->GetProfile()->GetId());
+	profBehaviour->AddModifiedProfile(sub);
 }
 
 

@@ -505,7 +505,13 @@ void GConfig::Store(GDocAnalyseManager& mng)
 void GConfig::Read(GSessionParams& p)
 {
 	if (!Session) return;
-	p.ReadConfig(Session);
+	try
+	{
+		p.ReadConfig(Session);
+	}
+	catch(GException)
+	{
+	}
 }
 
 

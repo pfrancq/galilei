@@ -83,7 +83,7 @@ void GSubProfileVector::AddInfo(GWeightInfo* info) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-double GSubProfileVector::Similarity(const GDoc* doc) const throw(GException)
+double GSubProfileVector::Similarity(const GDoc* doc) const
 {
 	return(GWeightInfos::Similarity(dynamic_cast<const GDocVector*>(doc)));
 }
@@ -97,7 +97,7 @@ double GSubProfileVector::SimilarityIFF(const GDoc* doc) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-double GSubProfileVector::Similarity(const GSubProfile* sub) const throw(GException)
+double GSubProfileVector::Similarity(const GSubProfile* sub) const
 {
 	return(GWeightInfos::Similarity((dynamic_cast<const GSubProfileVector*>(sub))));
 }
@@ -111,7 +111,7 @@ double GSubProfileVector::SimilarityIFF(const GSubProfile* sub) const throw(GExc
 
 
 //------------------------------------------------------------------------------
-double GSubProfileVector::Similarity(const GGroup* grp) const throw(GException)
+double GSubProfileVector::Similarity(const GGroup* grp) const
 {
 	return(GWeightInfos::Similarity((dynamic_cast<const GGroupVector*>(grp))));
 }

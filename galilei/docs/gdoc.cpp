@@ -251,7 +251,7 @@ double GDoc::Similarity(const GDoc*) const
 
 
 //------------------------------------------------------------------------------
-double GDoc::SimilarityIFF(const GDoc*) const
+double GDoc::SimilarityIFF(const GDoc*) const throw(GException)
 {
 	return(0.0);
 }
@@ -265,7 +265,7 @@ double GDoc::Similarity(const GSubProfile*) const
 
 
 //------------------------------------------------------------------------------
-double GDoc::SimilarityIFF(const GSubProfile*) const
+double GDoc::SimilarityIFF(const GSubProfile*) const throw(GException)
 {
 	return(0.0);
 }
@@ -279,7 +279,7 @@ double GDoc::Similarity(const GGroup*) const
 
 
 //------------------------------------------------------------------------------
-double GDoc::SimilarityIFF(const GGroup*) const
+double GDoc::SimilarityIFF(const GGroup*) const throw(GException)
 {
 	return(0.0);
 }

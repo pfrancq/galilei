@@ -148,7 +148,7 @@ public:
 	unsigned int GetNbDocs(GLang* lang) const;
 
 	/**
-	* Insert a document. The document is stored in the different language.
+	* Insert a document. The document is stored in the different containers.
 	* @param d               Pointer to the document.
 	*/
 	void InsertDoc(GDoc* d) throw(bad_alloc);

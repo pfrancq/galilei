@@ -531,7 +531,7 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 	GProfile* prof;
 	GFactoryLangCursor langs;
 	GLang* lang;
-	GSubProfile* sub;
+	GSubProfileVector* sub;
 	unsigned int userid,profileid,subid;
 	GGroup* grp;
 	bool Social;
@@ -589,18 +589,18 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 			RQuery sel(this,sSql);
 			for(sel.Start();!sel.End();sel.Next())
 			{
-				sub=GetSubProfile(atoi(sel[0]),lang);
+				sub=dynamic_cast<GSubProfileVector*>(GetSubProfile(atoi(sel[0]),lang));
 				if(sub)
 				{
 					if(lang->GetDict()->GetData(atoi(sel[1]))->GetType()==infoWordList)
 					{
 						if(wg)
-							dynamic_cast<GSubProfileVector*>(sub)->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWordList));
+							sub->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWordList));
 					}
 					else
 					{
 						if(w)
-							dynamic_cast<GSubProfileVector*>(sub)->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWord));
+							sub->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWord));
 					}
 				}
 			}
@@ -615,6 +615,7 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 			for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 				dynamic_cast<GSubProfileVector*>(SubProfiles())->UpdateRefs();
 		}
+
 		// Load the ideal Groups.
 		LoadIdealGroupment();
 	}
@@ -695,7 +696,7 @@ void GALILEI::GSessionMySQL::LoadSubjectTree()
 	GSubject* subsubject;
 
 	if(!Subjects) return;
-	Subjects->ClearSubjects();
+	Subjects->Clear();
 	RQuery sub(this,"SELECT topicid,name,used,langid FROM topics WHERE parent=0");
 	for(sub.Start();!sub.End();sub.Next())
 	{
@@ -806,13 +807,11 @@ void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException
 				{
 					if(wg)
 						doc->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWordList));
-						//doc->AddWordList(atoi(sel[1]),atof(sel[2]));
 				}
 				else
 				{
 					if(w)
 						doc->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),infoWord));
-						//doc->AddWord(atoi(sel[1]),atof(sel[2]));
 				}
 			}
 		}
@@ -1182,34 +1181,35 @@ void GALILEI::GSessionMySQL::DeleteGroup(GGroup* grp)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadGroups(bool wg,bool w) throw(bad_alloc,GException)
+void GALILEI::GSessionMySQL::LoadGroups(bool /*wg*/,bool /*w*/) throw(bad_alloc,GException)
 {
 	char sSql[100];
 	GGroupVector* group;
 	GGroupCursor GroupsCursor;
 	GLang* lang;
+	GFactoryLangCursor langs;
 
 	RQuery group2 (this,"SELECT groupid, langid  FROM groups");
 	for(group2.Start();!group2.End();group2.Next())
 	{
 		lang=GetLangs()->GetLang(group2[1]);
 		group=new GGroupVector(atoi(group2[0]),lang);
-		sprintf(sSql,"SELECT kwdid,occurs FROM %sgroupsbykwds where groupid=%u",lang->GetCode(),atoi(group2[0]));
+		InsertGroup(group);
+	}
+
+	// Load the groups description
+	langs=Langs->GetLangsCursor();
+	for(langs.Start();!langs.End();langs.Next())
+	{
+		lang=langs()->GetPlugin();
+		if(!lang) continue;
+		sprintf(sSql,"SELECT groupid,kwdid,occurs FROM %sgroupsbykwds",lang->GetCode());
 		RQuery sel(this,sSql);
 		for(sel.Start();!sel.End();sel.Next())
 		{
-			if(lang->GetDict()->GetData(atoi(sel[0]))->GetType()==infoWordList)
-			{
-				if(wg)
-					group->AddWordList(atoi(sel[0]),atof(sel[1]));
-			}
-			else
-			{
-				if(w)
-					group->AddWord(new GWeightInfo(atoi(sel[0]),atof(sel[1])));
-			}
+			group=dynamic_cast<GGroupVector*>(GetGroup(atoi(sel[0])));
+			group->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
 		}
-		InsertGroup(group);
 	}
 
 	// Update References of the loaded groups.

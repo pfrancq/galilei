@@ -6,7 +6,7 @@
 
 	Group in the Vector Model- Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,13 +34,8 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdlib.h>
-
-
-//-----------------------------------------------------------------------------
-//include files for GALILEI
+//------------------------------------------------------------------------------
+// include files for GALILEI
 #include <groups/ggroupvector.h>
 #include <profiles/gsubprofilevector.h>
 #include <docs/gdocvector.h>
@@ -51,83 +46,41 @@ using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GGroupVector
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GGroupVector::GGroupVector(const unsigned int id,GLang* lang) throw(bad_alloc)
+//------------------------------------------------------------------------------
+GGroupVector::GGroupVector(unsigned int id,GLang* lang) throw(bad_alloc)
 	: GGroup(id,lang), GWeightInfos(60)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-void GGroupVector::UpdateRefs(void) const
+//------------------------------------------------------------------------------
+GGroupVector::GGroupVector(GLang* lang) throw(bad_alloc)
+	: GGroup(lang), GWeightInfos(60)
 {
-	AddRefs(otGroup,Lang);
 }
 
 
-//-----------------------------------------------------------------------------
-void GGroupVector::RemoveRefs(void) const
+//------------------------------------------------------------------------------
+bool GGroupVector::IsDefined(void) const
 {
-	DelRefs(otGroup,Lang);
+	return(!GWeightInfos::IsEmpty());
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GGroupVector::GetNbNoNull(void) const
+//------------------------------------------------------------------------------
+void GGroupVector::AddInfo(GWeightInfo* info) throw(bad_alloc)
 {
-	return(GWeightInfos::NbPtr);
+	GWeightInfos::InsertPtr(info);
 }
 
 
-//-----------------------------------------------------------------------------
-double GGroupVector::Similarity(const GGroup* desc) const
-{
-	return(GWeightInfos::Similarity((dynamic_cast<const GGroupVector*>(desc))));
-}
-
-
-//-----------------------------------------------------------------------------
-double GGroupVector::SimilarityIFF(const GGroup* desc) const
-{
-	return(GWeightInfos::SimilarityIFF((dynamic_cast<const GGroupVector*>(desc)),otGroup,Lang));
-}
-
-
-//-----------------------------------------------------------------------------
-double GGroupVector::Similarity(const GDoc* doc) const
-{
-	return(GWeightInfos::Similarity(dynamic_cast<const GDocVector*>(doc)));
-}
-
-
-//-----------------------------------------------------------------------------
-double GGroupVector::SimilarityIFF(const GDoc* doc) const
-{
-	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GDocVector*>(doc),otDocGroup,Lang));
-}
-
-
-//-----------------------------------------------------------------------------
-double GGroupVector::Similarity(const GSubProfile* doc) const
-{
-	return(GWeightInfos::Similarity(dynamic_cast<const GSubProfileVector*>(doc)));
-}
-
-
-//-----------------------------------------------------------------------------
-double GGroupVector::SimilarityIFF(const GSubProfile* doc) const
-{
-	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GSubProfileVector*>(doc),otSubProfileGroup,Lang));
-}
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GWeightInfoCursor& GGroupVector::GetWeightInfoCursor(void)
 {
 	GWeightInfoCursor *cur=GWeightInfoCursor::GetTmpCursor();
@@ -136,20 +89,62 @@ GWeightInfoCursor& GGroupVector::GetWeightInfoCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
-void GGroupVector::AddWord(GWeightInfo* word)
+//------------------------------------------------------------------------------
+double GGroupVector::Similarity(const GGroup* desc) const
 {
-	GWeightInfos::InsertPtr(word);
+	return(GWeightInfos::Similarity((dynamic_cast<const GGroupVector*>(desc))));
 }
 
 
-//-----------------------------------------------------------------------------
-void GGroupVector::AddWordList(unsigned id,double w)
+//------------------------------------------------------------------------------
+double GGroupVector::SimilarityIFF(const GGroup* desc) const throw(GException)
 {
-	GWeightInfos::InsertPtr(new GWeightInfo(id,w,infoWordList));
+	return(GWeightInfos::SimilarityIFF((dynamic_cast<const GGroupVector*>(desc)),otGroup,Lang));
 }
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+double GGroupVector::Similarity(const GDoc* doc) const
+{
+	return(GWeightInfos::Similarity(dynamic_cast<const GDocVector*>(doc)));
+}
+
+
+//------------------------------------------------------------------------------
+double GGroupVector::SimilarityIFF(const GDoc* doc) const throw(GException)
+{
+	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GDocVector*>(doc),otDocGroup,Lang));
+}
+
+
+//------------------------------------------------------------------------------
+double GGroupVector::Similarity(const GSubProfile* doc) const
+{
+	return(GWeightInfos::Similarity(dynamic_cast<const GSubProfileVector*>(doc)));
+}
+
+
+//------------------------------------------------------------------------------
+double GGroupVector::SimilarityIFF(const GSubProfile* doc) const throw(GException)
+{
+	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GSubProfileVector*>(doc),otSubProfileGroup,Lang));
+}
+
+//------------------------------------------------------------------------------
+void GGroupVector::UpdateRefs(void) const throw(GException)
+{
+	AddRefs(otGroup,Lang);
+}
+
+
+//------------------------------------------------------------------------------
+void GGroupVector::RemoveRefs(void) const throw(GException)
+{
+	DelRefs(otGroup,Lang);
+}
+
+
+//------------------------------------------------------------------------------
 GGroupVector::~GGroupVector(void) throw(GException)
 {
 	RemoveRefs();

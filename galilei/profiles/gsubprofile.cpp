@@ -306,7 +306,7 @@ GProfDoc* GSubProfile::GetFeedback(const GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-double GSubProfile::Similarity(const GDoc*) const throw(GException)
+double GSubProfile::Similarity(const GDoc*) const
 {
 	return(0.0);
 }
@@ -320,7 +320,7 @@ double GSubProfile::SimilarityIFF(const GDoc*) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-double GSubProfile::Similarity(const GSubProfile*) const throw(GException)
+double GSubProfile::Similarity(const GSubProfile*) const
 {
 	return(0.0);
 }
@@ -334,7 +334,7 @@ double GSubProfile::SimilarityIFF(const GSubProfile*) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-double GSubProfile::Similarity(const GGroup*) const throw(GException)
+double GSubProfile::Similarity(const GGroup*) const
 {
 	return(0.0);
 }

@@ -4,9 +4,9 @@
 
 	GSubjects.cpp
 
-	Tree of Subjects - Implementation.
+	Subjects - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,11 +32,11 @@
 	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	Boston, MA  02111-1307  USA
 
-*/ 
+*/
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gsubjects.h>
 #include <groups/gsubject.h>
@@ -53,56 +53,43 @@ using namespace GALILEI;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GGroupId
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class GSubjects::GGroupId
 {
 public:
-	/**
-	*the id of the groupment.
-	*/
-	int GrpId;
+	int GrpId;       // Group Identificator.
+	int position;    // Position of the group.
 
-	/**
-	*the position of the group.
-	*/
-	int position;
-
-	/**
-	* Construct the Real ID .
-	* @Real Id              the id of the groupment.
-	*/
+	// Constructor and Compare methods.
 	GGroupId(int RealId,int Position) : GrpId(RealId), position(Position) {}
-
 	int Compare(const GGroupId* grp) const {return(GrpId-grp->GrpId);}
-
 	int Compare(const int ID) const {return(GrpId-ID);}
-
 	int Compare(const GGroupId& grp) const {return(GrpId-grp.GrpId);}
-
 };
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GroupScore
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class GSubjects::GroupScore
 {
 public:
-	GGroup* Group;
-	double Precision;
-	double Recall;
+	GGroup* Group;                 // Pointer to the group.
+	double Precision;              // Precision inside the group.
+	double Recall;                 // Recall inside the group.
 
+	// Constructor and Compare methods.
 	GroupScore(GGroup* grp) : Group(grp), Precision(0.0), Recall(0.0) {}
 	int Compare(const GroupScore* grp) const {return(Group->Compare(grp->Group));}
 	int Compare(const GGroup* grp) const {return(Group->Compare(grp));}
@@ -110,15 +97,15 @@ public:
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GSubjects
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GSubjects::GSubjects(GSession* session)
-	: RTree<GSubject,true,false>(100,50),GParams("Subjects"), Session(session),
+//------------------------------------------------------------------------------
+GSubjects::GSubjects(GSession* session) throw(bad_alloc)
+	: RTree<GSubject,true,false>(100,50), GParams("Subjects"), Session(session),
 	  Docs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25), IdealGroups(0),
 	  GroupsScore(100,50)
 {
@@ -129,8 +116,8 @@ GSubjects::GSubjects(GSession* session)
 	GParams::InsertPtr(new GParamUInt("NbProfMin",2));
 	GParams::InsertPtr(new GParamUInt("NbProfMax",10));
 	GParams::InsertPtr(new GParamDouble("PercSocial",100.0));
-	GParams::InsertPtr(new GParamDouble("PercGrp",100.0));
-	GParams::InsertPtr(new GParamUInt("NbMinDocsGrp",50));
+	GParams::InsertPtr(new GParamDouble("PercSubjects",100.0));
+	GParams::InsertPtr(new GParamUInt("NbMinDocsSubject",50));
 	GParams::InsertPtr(new GParamUInt("NbDocsAssess",30));
 	GParams::InsertPtr(new GParamBool("idf",true));
 	IdealGroups=new GGroups(100);
@@ -138,7 +125,7 @@ GSubjects::GSubjects(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GSubjects::Apply(void)
 {
 	PercOK=GetDouble("PercOK");
@@ -148,15 +135,15 @@ void GSubjects::Apply(void)
 	NbProfMin=GetUInt("NbProfMin");
 	NbProfMax=GetUInt("NbProfMax");
 	PercSocial=GetDouble("PercSocial");
-	PercGrp=GetDouble("PercGrp");
-	NbMinDocsGrp=GetUInt("NbMinDocsGrp");
+	PercSubjects=GetDouble("PercSubjects");
+	NbMinDocsSubject=GetUInt("NbMinDocsSubject");
 	NbDocsAssess=GetUInt("NbDocsAssess");
-	Global=GetBool("idf");
+	IFF=GetBool("idf");
 }
 
 
-//-----------------------------------------------------------------------------
-void GSubjects::ChooseSubjects(void)
+//------------------------------------------------------------------------------
+void GSubjects::ChooseSubjects(void) throw(bad_alloc)
 {
 	GSubjectCursor Subs;
 	unsigned int compt;
@@ -174,11 +161,11 @@ void GSubjects::ChooseSubjects(void)
 	memcpy(tab,RTree<GSubject,true,false>::Tab,sizeof(GSubject*)*(GetNbNodes()));
 	Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
-	// Choose the first percgrp subjects having at least NbMinDocsGrp documents.
-	compt=static_cast<unsigned int>((GetNbNodes()*PercGrp)/100)+1;
+	// Choose the first percgrp subjects having at least NbMinDocsSubject documents.
+	compt=static_cast<unsigned int>((GetNbNodes()*PercSubjects)/100)+1;
 	for(ptr=tab,i=GetNbNodes()+1;(--i)&&compt;ptr++)
 	{
-		if((*ptr)->GetNbDocs()<NbMinDocsGrp) continue;
+		if((*ptr)->GetNbDocs()<NbMinDocsSubject) continue;
 		(*ptr)->SetUsed(true);
 		compt--;
 	}
@@ -188,8 +175,8 @@ void GSubjects::ChooseSubjects(void)
 }
 
 
-//-----------------------------------------------------------------------------
-void GSubjects::CreateSet(void)
+//------------------------------------------------------------------------------
+void GSubjects::CreateSet(void) throw(bad_alloc)
 {
 	GSubjectCursor Subs;
 	GSubProfileCursor Prof;
@@ -267,8 +254,8 @@ void GSubjects::CreateSet(void)
 }
 
 
-//-----------------------------------------------------------------------------
-void GSubjects::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH)
+//------------------------------------------------------------------------------
+void GSubjects::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH) throw(bad_alloc)
 {
 	unsigned int nbDocsOK,nbDocsKO,nbDocsH;
 	unsigned int i;
@@ -314,15 +301,15 @@ void GSubjects::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsO
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroup* GSubjects::GetIdealGroup(GSubProfile* sub) const throw(GException)
 {
 	return(IdealGroups->GetGroup(sub));
 }
 
 
-//-----------------------------------------------------------------------------
-void GSubjects::ComputeRecallPrecision(GSlot* /*rec*/)
+//------------------------------------------------------------------------------
+void GSubjects::ComputeRecallPrecision(void)
 {
 	GroupScoreCursor Grp;
 	GSubProfileCursor Sub;
@@ -387,7 +374,7 @@ void GSubjects::ComputeRecallPrecision(GSlot* /*rec*/)
 
 
 //-----------------------------------------------------------------------------
-void GSubjects::ComputeTotal(GSlot* /*rec*/)
+void GSubjects::ComputeTotal(void)
 {
 	GGroupCursor GroupsIdeal;                         // Pointer to the ideal groups for a given language
 	GGroupCursor GroupsComputed;                      // Pointer to the computed groups for a given language
@@ -507,8 +494,8 @@ void GSubjects::ComputeTotal(GSlot* /*rec*/)
 }
 
 
-//-----------------------------------------------------------------------------
-void GSubjects::CreateIdeal(bool Save)
+//------------------------------------------------------------------------------
+void GSubjects::CreateIdeal(bool Save) throw(bad_alloc)
 {
 	// Apply Config
 	Apply();
@@ -527,8 +514,8 @@ void GSubjects::CreateIdeal(bool Save)
 }
 
 
-//-----------------------------------------------------------------------------
-void GSubjects::FdbksCycle(bool Save)
+//------------------------------------------------------------------------------
+void GSubjects::FdbksCycle(bool Save) throw(bad_alloc)
 {
 	GGroupCursor Grps;
 	GSubProfileCursor SubProfile;
@@ -545,7 +532,7 @@ void GSubjects::FdbksCycle(bool Save)
 		SubProfile=Grps()->GetSubProfilesCursor();
 		for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
 		{
-			Grps()->NotJudgedDocsRelList(&NewDocs,SubProfile(),Global);
+			Grps()->NotJudgedDocsRelList(&NewDocs,SubProfile(),IFF);
 			for(NewDocs.Start(),i=NbDocsAssess+1;(!NewDocs.End())&&(--i);NewDocs.Next())
 			{
 				// Look if 'OK'
@@ -576,8 +563,8 @@ void GSubjects::FdbksCycle(bool Save)
 }
 
 
-//-----------------------------------------------------------------------------
-void GSubjects::AddAssessments(bool Save)
+//------------------------------------------------------------------------------
+void GSubjects::AddAssessments(bool Save) throw(bad_alloc)
 {
 	GSubjectCursor Subs;
 	GSubProfileCursor Prof;
@@ -639,8 +626,8 @@ void GSubjects::AddAssessments(bool Save)
 }
 
 
-//-----------------------------------------------------------------------------
-bool GSubjects::AddTopic(bool Save)
+//------------------------------------------------------------------------------
+bool GSubjects::AddTopic(bool Save) throw(bad_alloc)
 {
 	GSubject** tab;
 	GSubject** ptr;
@@ -660,10 +647,10 @@ bool GSubjects::AddTopic(bool Save)
 	memcpy(tab,RTree<GSubject,true,false>::Tab,sizeof(GSubject*)*(GetNbNodes()));
 	Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
-	// Find the first not used subject having at least NbMinDocsGrp documents.
+	// Find the first not used subject having at least NbMinDocsSubject documents.
 	for(ptr=tab,i=GetNbNodes()+1,newSubject=0;--i;ptr++)
 	{
-		if((*ptr)->GetNbDocs()<NbMinDocsGrp) continue;
+		if((*ptr)->GetNbDocs()<NbMinDocsSubject) continue;
 		if((*ptr)->IsUsed()) continue;
 		newSubject=(*ptr);
 		break;
@@ -726,8 +713,8 @@ bool GSubjects::AddTopic(bool Save)
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GSubjects::AddProfiles(bool Save)
+//------------------------------------------------------------------------------
+unsigned int GSubjects::AddProfiles(bool Save) throw(bad_alloc)
 {
 	GSubject** tab;
 	GSubject** ptr;
@@ -750,7 +737,7 @@ unsigned int GSubjects::AddProfiles(bool Save)
 	memcpy(tab,RTree<GSubject,true,false>::Tab,sizeof(GSubject*)*(GetNbNodes()));
 	Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
-	// Find the first used subject having at least NbMinDocsGrp documents.
+	// Find the first used subject having at least NbMinDocsSubject documents.
 	for(ptr=tab,i=GetNbNodes()+1,usedSubject=0;--i;ptr++)
 	{
 		if(!(*ptr)->IsUsed()) continue;  //check if the subject is already in use..
@@ -830,7 +817,7 @@ unsigned int GSubjects::AddProfiles(bool Save)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GSubjects::ComputePercAss(void)
 {
 	GSubProfileCursor Cur1;
@@ -880,29 +867,29 @@ double GSubjects::ComputePercAss(void)
 }
 
 
-//-----------------------------------------------------------------------------
-void GSubjects::ClearLastAdded(void)
+//------------------------------------------------------------------------------
+void GSubjects::ClearLastAdded(void) throw(bad_alloc)
 {
 	LastAdded.Clear();
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GSubject* GSubjects::GetSubject(unsigned int id)
 {
 	return(RTree<GSubject,true,false>::GetPtr<unsigned int>(id));
 }
 
 
-//-----------------------------------------------------------------------------
-void GSubjects::ClearSubjects(void)
+//------------------------------------------------------------------------------
+void GSubjects::Clear(void) throw(bad_alloc)
 {
 	RTree<GSubject,true,false>::Clear();
 }
 
 
-//-----------------------------------------------------------------------------
-void GSubjects::Compare(GSlot* rec)
+//------------------------------------------------------------------------------
+void GSubjects::Compare(void)
 {
 	GGroupCursor Cur;
 
@@ -912,12 +899,12 @@ void GSubjects::Compare(GSlot* rec)
 	{
 		GroupsScore.InsertPtr(new GroupScore(Cur()));
 	}
-	ComputeRecallPrecision(rec);
-	ComputeTotal(rec);
+	ComputeRecallPrecision();
+	ComputeTotal();
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GSubjects::GetPrecision(GGroup* grp)
 {
 	GroupScore* g=GroupsScore.GetPtr<const GGroup*>(grp);
@@ -927,7 +914,7 @@ double GSubjects::GetPrecision(GGroup* grp)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GSubjects::GetRecall(GGroup* grp)
 {
 	GroupScore* g=GroupsScore.GetPtr<const GGroup*>(grp);
@@ -937,7 +924,7 @@ double GSubjects::GetRecall(GGroup* grp)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroups* GSubjects::GetIdealGroups(void)
 {
 	return(IdealGroups);
@@ -953,14 +940,14 @@ GGroups* GSubjects::GetIdealGroups(void)
 }*/
 
 
-//-----------------------------------------------------------------------------
-GGroupCursor& GSubjects::GetGroupsCursor(void) throw(GException)
+//------------------------------------------------------------------------------
+/*GGroupCursor& GSubjects::GetGroupsCursor(void) throw(GException)
 {
 	return(IdealGroups->GetGroupsCursor());
-}
+}*/
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GSubjects::~GSubjects(void)
 {
 	if(IdealGroups)

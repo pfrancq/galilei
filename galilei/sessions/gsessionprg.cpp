@@ -589,7 +589,7 @@ void GCompareIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned i
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
 	o->WriteStr("Compare with Ideal Groups");
-	Owner->Session->GetSubjects()->Compare(dynamic_cast<GSlot*>(o));
+	Owner->Session->GetSubjects()->Compare();
 	Owner->Precision=Owner->Session->GetSubjects()->GetPrecision();
 	Owner->Recall=Owner->Session->GetSubjects()->GetRecall();
 	Owner->Total=Owner->Session->GetSubjects()->GetTotal();
@@ -711,7 +711,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o) throw(GException)
 
 	// Compare Ideal
 	o->WriteStr("Compare with Ideal Groups");
-	Owner->Session->GetSubjects()->Compare(dynamic_cast<GSlot*>(o));
+	Owner->Session->GetSubjects()->Compare();
 	Owner->Precision=Owner->Session->GetSubjects()->GetPrecision();
 	Owner->Recall=Owner->Session->GetSubjects()->GetRecall();
 	Owner->Total=Owner->Session->GetSubjects()->GetTotal();

@@ -173,8 +173,8 @@ void GSession::PostConnect(GLinkCalcManager* lmng) throw(bad_alloc,GException)
 
 	// Create Similarities Managers (IFF used by default)
 	ProfilesSims = new GProfilesSims(this,true, true);
-	ProfilesBehaviours = new GProfilesBehaviours(this);
-	DocProfSims = new GDocProfSims(this,true);
+	ProfilesBehaviours = new GProfilesBehaviours(this,true);
+	DocProfSims = new GDocProfSims(this,true,false);
 }
 
 //-----------------------------------------------------------------------------
@@ -551,7 +551,7 @@ void GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
 	GGroups::Clear();
 
 	// Go through each languages
-	Grps=Subjects->GetGroupsCursor();
+	Grps=Subjects->GetIdealGroups()->GetGroupsCursor();
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Create a new group in groups

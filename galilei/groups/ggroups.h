@@ -4,9 +4,9 @@
 
 	GGroups.h
 
-	Groups for a given language - Header.
+	Groups - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -50,24 +50,27 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroups class provides a manager for all the groups of the system.
-* @author Pascal Francq
-* @short Groups Manager.
+* The GGroups class provides a manager for all the groups managed by a GALILEI
+* session.
+* @author Pascal Francq.
+* @short Session Groups.
 */
 class GGroups : protected R::RContainer<GGroup,unsigned int,true,true>
 {
 protected:
+
+	// Internal Class
 	class GGroupsLang;
 
 	/**
-	* Groups handled by the system.
+	* Groups ordered by language and identificator.
 	*/
 	R::RContainer<GGroupsLang,unsigned int,true,true> GroupsLang;
 
 public:
 
 	/**
-	* Constructor of the groups manager.
+	* Constructor.
 	* @param g              Number of groups.
 	*/
 	GGroups(unsigned int g);
@@ -110,7 +113,8 @@ public:
 	virtual void SaveGroups(void) {};
 
 	/**
-	* Insert a group. The group is stored in the different language.
+	* Insert a group. The group is also stored in the container correspondong to
+	* its language.
 	* @param grp             Pointer to the group.
 	*/
 	void InsertGroup(GGroup* grp) throw(bad_alloc);
@@ -148,6 +152,7 @@ public:
 	unsigned int GetNbGroups(GLang* lang) const;
 
 	/**
+	* Get the highest identificator of the groups managed.
 	*/
 	unsigned int GetMaxId(void) const;
 
@@ -163,16 +168,14 @@ public:
 	void Clear(void) throw(GException);
 
 	/**
-	* Destructor.
+	* Destructor of the groups.
 	*/
 	virtual ~GGroups(void);
 };
 
 
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

@@ -144,13 +144,6 @@ public:
 	virtual const char* GetModelName(void) const=0;
 
 	/**
-	* Verify if the document is defined. By default, a document is suppose to be
-	* undefined.
-	* @return false.
-	*/
-	virtual bool IsDefined(void) const;
-
-	/**
 	* Compare two documents by comparing their identificator.
 	* @see R::RContainer
 	* @param doc             Document.
@@ -181,6 +174,13 @@ public:
 	* @return int
 	*/
 	int Compare(const GLang* lang) const;
+
+	/**
+	* Verify if the document is defined. By default, a document is suppose to be
+	* undefined.
+	* @return false.
+	*/
+	virtual bool IsDefined(void) const;
 
 	/**
 	* This function clears the information related to the document.
@@ -314,7 +314,7 @@ public:
 	* Factor (IFF).
 	* @param doc             Pointer to a document.
 	*/
-	virtual double SimilarityIFF(const GDoc* doc) const;
+	virtual double SimilarityIFF(const GDoc* doc) const throw(GException);
 
 	/**
 	* Compute a similarity between a document and a subprofile.
@@ -327,7 +327,7 @@ public:
 	* Frequence Factor (IFF).
 	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double SimilarityIFF(const GSubProfile* sub) const;
+	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException);
 
 	/**
 	* Compute a similarity between a document and a group.
@@ -340,7 +340,7 @@ public:
 	* Frequence Factor (IFF).
 	* @param grp             Pointer to a group.
 	*/
-	virtual double SimilarityIFF(const GGroup* grp) const;
+	virtual double SimilarityIFF(const GGroup* grp) const throw(GException);
 
 	/**
 	* Add a assessment for this document.

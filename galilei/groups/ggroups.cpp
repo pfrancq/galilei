@@ -1,12 +1,12 @@
 /*
 
-	 Research Project
+	GALILEI Research Project
 
 	GGroups.cpp
 
-	Groups for a given language - Implementation.
+	Groups - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,8 +34,8 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for 
+//------------------------------------------------------------------------------
+// include files for GALILEI
 #include<groups/ggroups.h>
 #include<groups/ggroupvector.h>
 #include<infos/glang.h>
@@ -45,18 +45,13 @@ using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
-// class GGroups
+// class GGroups::GroupsLang
 //
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-/**
-* The GGroups class provides a representation for all the groups of a given
-* language. The GGroups are ordered by languages.
-* @author Pascal Francq
-* @short Languages Groups.
-*/
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 class GGroups::GGroupsLang : public R::RContainer<GGroup,unsigned int,false,true>
 {
 public:
@@ -77,7 +72,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroup* GGroups::GGroupsLang::GetGroup(const GSubProfile* sub)
 {
 	GGroupCursor Groups;
@@ -93,19 +88,20 @@ GGroup* GGroups::GGroupsLang::GetGroup(const GSubProfile* sub)
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GGroups
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroups::GGroups(unsigned int g)
 	: RContainer<GGroup,unsigned int,true,true>(g+(g/2),g/2), GroupsLang(2,1)
 {
 }
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 GGroupCursor& GGroups::GetGroupsCursor(void)
 {
 	GGroupCursor *cur=GGroupCursor::GetTmpCursor();
@@ -114,7 +110,7 @@ GGroupCursor& GGroups::GetGroupsCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroupCursor& GGroups::GetGroupsCursor(GLang* lang) throw(GException)
 {
 	GGroupsLang* ptr;
@@ -131,9 +127,7 @@ GGroupCursor& GGroups::GetGroupsCursor(GLang* lang) throw(GException)
 }
 
 
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GGroups::InsertGroup(GGroup* grp) throw(bad_alloc)
 {
 	GGroupsLang* groupsLang;
@@ -144,7 +138,7 @@ void GGroups::InsertGroup(GGroup* grp) throw(bad_alloc)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroup* GGroups::GetGroup(const GSubProfile* sub) throw(GException)
 {
 	GGroupsLang* groupsLang;
@@ -156,7 +150,7 @@ GGroup* GGroups::GetGroup(const GSubProfile* sub) throw(GException)
 }
 
 
-//-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroup* GGroups::GetGroup(unsigned int id) throw(bad_alloc)
 {
 	GGroup* grp;
@@ -166,7 +160,7 @@ GGroup* GGroups::GetGroup(unsigned int id) throw(bad_alloc)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 unsigned int GGroups::GetNbGroups(GLang* lang) const
 {
 	GGroupsLang* grps;
@@ -178,7 +172,7 @@ unsigned int GGroups::GetNbGroups(GLang* lang) const
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 unsigned int GGroups::GetMaxId(void) const
 {
 	if(NbPtr) return(0);
@@ -186,7 +180,7 @@ unsigned int GGroups::GetMaxId(void) const
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GGroups::Clear(GLang* lang)
 {
 	unsigned int i;
@@ -205,15 +199,14 @@ void GGroups::Clear(GLang* lang)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GGroups::Clear(void) throw(GException)
 {
 	GroupsLang.Clear();
 }
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroups::~GGroups(void)
 {
 }

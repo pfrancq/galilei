@@ -100,7 +100,7 @@ double GDocVector::Similarity(const GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-double GDocVector::SimilarityIFF(const GDoc* doc) const
+double GDocVector::SimilarityIFF(const GDoc* doc) const throw(GException)
 {
 	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GDocVector*>(doc),otDoc,Lang));
 }
@@ -114,7 +114,7 @@ double GDocVector::Similarity(const GSubProfile* sub) const
 
 
 //------------------------------------------------------------------------------
-double GDocVector::SimilarityIFF(const GSubProfile* sub) const
+double GDocVector::SimilarityIFF(const GSubProfile* sub) const throw(GException)
 {
 	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GSubProfileVector*>(sub),otDocSubProfile,Lang));
 }
@@ -128,7 +128,7 @@ double GDocVector::Similarity(const GGroup* grp) const
 
 
 //------------------------------------------------------------------------------
-double GDocVector::SimilarityIFF(const GGroup* grp) const
+double GDocVector::SimilarityIFF(const GGroup* grp) const throw(GException)
 {
 	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GGroupVector*>(grp),otDocGroup,Lang));
 }

@@ -6,7 +6,7 @@
 
 	Group in the Vector Model - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,27 +34,26 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GGroupVectorH
 #define GGroupVectorH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ggroup.h>
 #include <infos/gweightinfos.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GGroupVector provides a representation for a group described as a vector
-* corresponding to a list of pairs {keyword,weight}.
+* The GGroupVector provides a representation for a group in the vector model
 * @author Pascal Francq.
-* @short Vector model group.
+* @short Vector Group.
 */
 class GGroupVector : public GGroup, public GWeightInfos
 {
@@ -65,7 +64,13 @@ public:
 	* @param id             Identificator.
 	* @param lang           Language.
 	*/
-	GGroupVector(const unsigned int id,GLang* lang) throw(bad_alloc);
+	GGroupVector(unsigned int id,GLang* lang) throw(bad_alloc);
+
+	/**
+	* Construct a group with an invalid identificator.
+	* @param lang           Language.
+	*/
+	GGroupVector(GLang* lang) throw(bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.
@@ -74,55 +79,16 @@ public:
 	virtual const char* GetModelName(void) const {return("Vector");}
 
 	/**
-	* Update the references of the group.
+	* Verify if the group is defined.
+	* @return bool.
 	*/
-	void UpdateRefs(void) const;
+	virtual bool IsDefined(void) const;
 
 	/**
-	* Remove the references of the group.
+	* Add a given information to the group.
+	* @param info            Pointer to the information.
 	*/
-	void RemoveRefs(void) const;
-
-	/**
-	* Get the number of elements of the vector that are not null.
-	*/
-	unsigned int GetNbNoNull(void) const;
-
-	/**
-	* Get the vector representing the group.
-	* @returns Pointer to GWeightInfos.
-	*/
-	GWeightInfos* GetVector(void) {return(this);}
-
-	/**
-	* Compute the similarity between a group and a document.
-	*/
-	virtual double Similarity(const GDoc* doc) const;
-
-	/**
-	* Compute the global similarity between a group and a document.
-	*/
-	virtual double SimilarityIFF(const GDoc* doc) const;
-
-	/**
-	* Compute the similarity between a group and subprofile.
-	*/
-	virtual double Similarity(const GSubProfile* sub) const;
-
-	/**
-	* Compute the global similarity between a group and a subprofile.
-	*/
-	virtual double SimilarityIFF(const GSubProfile* sub) const;
-
-	/**
-	* Compute the similarity between groups.
-	*/
-	virtual double Similarity(const GGroup* grp) const;
-
-	/**
-	* Compute the global similarity between groups.
-	*/
-	virtual double SimilarityIFF(const GGroup* grp) const;
+	virtual void AddInfo(GWeightInfo* info) throw(bad_alloc);
 
 	/**
 	* Get a cursor over the vector.
@@ -131,25 +97,63 @@ public:
 	GWeightInfoCursor& GetWeightInfoCursor(void);
 
 	/**
-	* Add a new word in the container of words.
-	* @param  word          The word who will be aded.
+	* Compute the similarity between a group and a document.
+	* @param doc             Pointer to a document.
 	*/
-	void AddWord(GWeightInfo* word);
+	virtual double Similarity(const GDoc* doc) const;
 
 	/**
-	* Add a word list in the container of words
+	* Compute a similarity between a group and a document using a Inverse
+	* Frequence Factor (IFF).
+	* @param doc             Pointer to a document.
 	*/
-	void AddWordList(unsigned id,double w);
+	virtual double SimilarityIFF(const GDoc* doc) const throw(GException);
 
 	/**
-	* Destructor
+	* Compute the similarity between a group and subprofile.
+	* @param sub             Pointer to a subprofile.
+	*/
+	virtual double Similarity(const GSubProfile* sub) const;
+
+	/**
+	* Compute a similarity between a group and a subprofile using a Inverse
+	* Frequence Factor (IFF).
+	* @param sub             Pointer to a subprofile.
+	*/
+	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException);
+
+	/**
+	* Compute the similarity between groups.
+	* @param grp             Pointer to a group.
+	*/
+	virtual double Similarity(const GGroup* grp) const;
+
+	/**
+	* Compute a similarity between two groups using a Inverse Frequence Factor
+	* (IFF).
+	* @param grp             Pointer to a group.
+	*/
+	virtual double SimilarityIFF(const GGroup* grp) const throw(GException);
+
+	/**
+	* Update the references of the group.
+	*/
+	void UpdateRefs(void) const throw(GException);
+
+	/**
+	* Remove the references of the group.
+	*/
+	void RemoveRefs(void) const throw(GException);
+
+	/**
+	* Destructor of a group.
 	*/
 	~GGroupVector(void) throw(GException);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

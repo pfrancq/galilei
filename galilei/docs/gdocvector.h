@@ -122,7 +122,7 @@ public:
 	* Factor (IFF).
 	* @param doc             Pointer to a document.
 	*/
-	virtual double SimilarityIFF(const GDoc* doc) const;
+	virtual double SimilarityIFF(const GDoc* doc) const throw(GException);
 
 	/**
 	* Compute a similarity between a document and a subprofile.
@@ -135,7 +135,7 @@ public:
 	* Frequence Factor (IFF).
 	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double SimilarityIFF(const GSubProfile* sub) const;
+	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException);
 
 	/**
 	* Compute a similarity between a document and a group.
@@ -147,7 +147,7 @@ public:
 	* Compute a similarity between a document and a group using a Inverse
 	* Frequence Factor (IFF).
 	*/
-	virtual double SimilarityIFF(const GGroup* grp) const;
+	virtual double SimilarityIFF(const GGroup* grp) const throw(GException);
 
 	/**
 	* Update the references of the document.

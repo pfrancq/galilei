@@ -87,7 +87,8 @@ void GGrouping::Connect(GSession* session)
 		if(!lang) continue;
 		DeletedGroups.InsertPtr(new GGroups(lang));
 	}*/
-	Session=Groups=session;
+	Session=session;
+	Groups=session;
 	IdealGroups=0;
 }
 
@@ -95,7 +96,8 @@ void GGrouping::Connect(GSession* session)
 //-----------------------------------------------------------------------------
 void GGrouping::Disconnect(GSession*)
 {
-	Groups=Session=0;
+	Session=0;
+	Groups=0;
 //	DeletedGroups.Clear();
 	IdealGroups=0;
 }

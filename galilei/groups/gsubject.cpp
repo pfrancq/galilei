@@ -6,7 +6,7 @@
 
 	Subject - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be)
@@ -35,40 +35,68 @@
 */ 
 
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gsubject.h>
 #include <profiles/gsubprofile.h>
 #include <docs/gdoc.h>
-
 using namespace R;
 using namespace GALILEI;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GSubject
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GSubject::GSubject(unsigned int id,const char* name,GLang* l,bool u)
+//------------------------------------------------------------------------------
+GSubject::GSubject(unsigned int id,const char* name,GLang* l,bool u) throw(bad_alloc)
 	 : RNode<GSubject,false>(10,2), GGroupVector(id,l), Name(name), Used(u),
 	   Docs(1000,500)
 {
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+int GSubject::Compare(const GSubject* sub) const
+{
+	return(Id-sub->Id);
+}
+
+
+//------------------------------------------------------------------------------
+int GSubject::Compare(const GSubject& sub) const
+{
+	return(Id-sub.Id);
+}
+
+
+//------------------------------------------------------------------------------
+int GSubject::Compare(const unsigned int id) const
+{
+	return(Id-id);
+}
+
+
+//------------------------------------------------------------------------------
+int GSubject::Compare(const char* name) const
+{
+	return(Name.Compare(name));
+}
+
+
+//------------------------------------------------------------------------------
 void GSubject::InsertDoc(GDoc* d) throw(bad_alloc)
 {
 	Docs.InsertPtr(d);
 }
 
 
-//-----------------------------------------------------------------------------
-GDocCursor& GALILEI::GSubject::GetDocsCursor()
+//------------------------------------------------------------------------------
+GDocCursor& GALILEI::GSubject::GetDocsCursor(void)
 {
 	GDocCursor *cur=GDocCursor::GetTmpCursor();
 	cur->Set(Docs);
@@ -76,14 +104,31 @@ GDocCursor& GALILEI::GSubject::GetDocsCursor()
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 unsigned int GALILEI::GSubject::GetNbDocs(void) const
 {
 	return(Docs.NbPtr);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+RString& GSubject::GetName(void) const
+{
+	RString* tmp=RString::GetString();
+
+	(*tmp)=Name;
+	return(*tmp);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubject::SetUsed(bool b)
+{
+	Used=b;
+}
+
+
+//------------------------------------------------------------------------------
 GSubject::~GSubject(void) throw(GException)
 {
 }

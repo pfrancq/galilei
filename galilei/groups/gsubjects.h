@@ -4,14 +4,14 @@
 	
 	GSubjects.h
 
-	Tree of Subjects - Implementation.
+	Subjects - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		David Wartel (dwartel@ulb.ac.be).
 		Julien Lamoral (jlamoral@ulb.ac.be).
+		David Wartel (dwartel@ulb.ac.be).
 
 	Version $Revision$
 
@@ -58,66 +58,71 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GSubjects class provides a representation for a tree of subject
-* handled by the system.
-* @author GALILEI Team
-* @short Tree of the Galilei subject.
+* The GSubjects class provides a representation for a set of subjects
+* representing ideal groups. Since different subjects may be part of a main
+* subject, it is in fact a tree of subjects which are stored.
+*
+* This class is used for validation purposes.
+* @author Pascal Francq, Julien Lamoral and David Wartel.
+* @short Subjects.
 */
 class GSubjects : public R::RTree<GSubject,true,false>, public GParams
 {
 protected:
 
+	// Internal Classes
 	class GroupScore;
 	class GGroupId;
 	CLASSCURSOR(GroupScoreCursor,GroupScore,unsigned int)
 
 	/**
-	* The Users of the galilei system.
+	* Session.
 	*/
 	GSession* Session;
 
 	/**
-	* The percentage of ok documents.
+	* Percentage of relevant documents to create.
 	*/
 	double PercOK;
 
 	/**
-	* The percentage of ko documents.
+	* Percentage of fuzzy relevant documents to create.
 	*/
 	double PercKO;
 
 	/**
-	* The percentage of out of the scope documents compare to Ok documents.
+	* Percentage of irrelevant documents to create (Computed as a percentage of
+	* the relevant documents created).
 	*/
 	double PercH;
 
 	/**
-	* The Percentage of documents judged whith error.
+	* Percentage of documents assessed whith an error.
 	*/
 	double PercErr;
 
 	/**
-	* The Percentage of Group to use.
+	* Percentage of subjects to use.
 	*/
-	double PercGrp;
+	double PercSubjects;
 
 	/**
-	* The minimal number of docs in the group to keep it.
+	* Minimal number of documents in a subject to use it.
 	*/
-	unsigned int NbMinDocsGrp;
+	unsigned int NbMinDocsSubject;
 
 	/**
-	* The maximal number of profiles in a group.
+	* Maximal number of profiles to create in a subject.
 	*/
 	unsigned int NbProfMax;
 
 	/**
-	* The minimal number of profiles in a group.
+	* Minimal number of profiles to create in a subject.
 	*/
 	unsigned int NbProfMin;
 
 	/**
-	* The % of profiles who are social	
+	* Percentage of profiles that are social.
 	*/
 	double PercSocial;
 
@@ -127,29 +132,29 @@ protected:
 	GDoc** Docs;
 
 	/**
-	* Number of documents actually in Docs.
+	* Number of documents actually managed.
 	*/
 	unsigned int NbDocs;
 
 	/**
-	* New documents to judge.
+	* New documents to assess.
 	*/
 	R::RContainer<GProfDoc,unsigned,false,false> NewDocs;
 
 	/**
-	* Container of last added subprofiles.
+	* Lastest added subprofiles.
 	*/
 	R::RContainer<GSubProfile,unsigned int,false,true> LastAdded;
 
 	/**
-	* The number of documents judged by user feeddback.
+	* Number of documents to be assessed during a feeddback process.
 	*/
 	unsigned int NbDocsAssess;
 
 	/**
-	* Global Similarity must be used to compute the relevance of documents.
+	* Inverse Frequency Factor must be used.
 	*/
-	bool Global;
+	bool IFF;
 
 	/**
 	* Ideal groups created.
@@ -157,17 +162,17 @@ protected:
 	GGroups* IdealGroups;
 
 	/**
-	* Precision of the groupement.
+	* Precision of the clustering.
 	*/
 	double Precision;
 
 	/**
-	* Recall of the groupement.
+	* Recall of the clustering.
 	*/
 	double Recall;
 
 	/**
-	* Total comparaison between for groupment.
+	* Total comparaison between for the clustering.
 	*/
 	double Total;
 
@@ -179,9 +184,10 @@ protected:
 public:
 
 	/**
-	* Constructor.
+	* Constructor of the subjects.
+	* @param session         Session.
 	*/
-	GSubjects(GSession* session);
+	GSubjects(GSession* session) throw(bad_alloc);
 
 	/**
 	* Assign the values of the parameters to the corresponding variables.
@@ -193,22 +199,22 @@ protected:
 	/**
 	* Choose the subjects that will be used.
 	*/
-	void ChooseSubjects(void);
+	void ChooseSubjects(void) throw(bad_alloc);
 
 	/**
 	* Create the set based on the subjects used.
 	*/
-	void CreateSet(void);
+	void CreateSet(void) throw(bad_alloc);
 
 	/**
-	* Simulatation of judgments for a profile for a given subject.
-	* @param prof           Profile that judges the documents.
+	* Simulatation of judgments for a profile on a given subject.
+	* @param prof           Profile that assesses the documents.
 	* @param sub            Subject.
-	* @param maxDocOK       Maximal OK Documents to judge.
-	* @param maxDocKO       Maximal KO Documents to judge.
-	* @param maxDocH        Maximal H Documents to judge.
+	* @param maxDocOK       Maximal relevant Documents to assess.
+	* @param maxDocKO       Maximal fuzzy relevant Documents to assess.
+	* @param maxDocH        Maximal irrelevant Documents to assess.
 	*/
-	void ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH);
+	void ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH) throw(bad_alloc);
 
 	/**
 	* Get the ideal group of the subprofile.
@@ -220,7 +226,7 @@ protected:
 	* Compute the Recall and the Precision.
 	* @param rec            Receiver of the signals.
 	*/
-	void ComputeRecallPrecision(GSlot* rec=0);
+	void ComputeRecallPrecision(void);
 
 	/**
 	* Compute the Total based on the Adjusted Rand Index (Hubert and Arabie)
@@ -228,7 +234,7 @@ protected:
 	* number of subprofiles by languages.
 	* @param rec            Receiver of the signals.
 	*/
-	void ComputeTotal(GSlot* rec=0);
+	void ComputeTotal(void);
 
 public:
 
@@ -238,33 +244,33 @@ public:
 	* @param groups         The ideal groupment into a GGroups container.
 	* @param Save           Save the results.
 	*/
-	void CreateIdeal(bool Save);
+	void CreateIdeal(bool Save) throw(bad_alloc);
 
 	/**
 	* Create new feedback for the different users of the system.
 	* @param Save           Save the results.
 	*/
-	void FdbksCycle(bool Save);
+	void FdbksCycle(bool Save) throw(bad_alloc);
 
 	/**
 	* Add assessments to the profiles creates.
 	* @param Save           Save the results.
 	*/
-	void AddAssessments(bool Save);
+	void AddAssessments(bool Save) throw(bad_alloc);
 
 	/**
 	* Add profiles of a new not used topic.
 	* @param Save           Save the results.
 	* @return true if a not used topic was found.
 	*/
-	bool AddTopic(bool Save);
+	bool AddTopic(bool Save) throw(bad_alloc);
 
 	/**
 	* Add judgements for some new not used profiles.
 	* @param Save           Save the results.
 	* @return Number of profiles created.
 	*/
-	unsigned int AddProfiles(bool Save);
+	unsigned int AddProfiles(bool Save) throw(bad_alloc);
 
 	/**
 	* Computed the percentage of correct assignments for the subprofiles last
@@ -276,7 +282,7 @@ public:
 	/**
 	* Clear the container of last added subprofiles.
 	*/
-	void ClearLastAdded(void);
+	void ClearLastAdded(void) throw(bad_alloc);
 
 	/**
 	* Get a subject.
@@ -288,14 +294,14 @@ public:
 	/**
 	* Clear the subjects.
 	*/
-	void ClearSubjects(void);
+	void Clear(void) throw(bad_alloc);
 
 	/**
 	* Make the groups.
 	* @param rec            Receiver of the signals.
 	* @param modified   Recompute only modified elements or all.
 	*/
-	void Compare(GSlot* rec=0);
+	void Compare(void);
 
 	/**
 	* Get the total precision of the groupement.
@@ -328,7 +334,7 @@ public:
 	* Get a cursor on the ideal groups.
 	* @return GGroupCursor.
 	*/
-	GGroupCursor& GetGroupsCursor(void) throw(GException);
+//	GGroupCursor& GetGroupsCursor(void) throw(GException);
 
 	/**
 	* Get the ideal groups of the session
@@ -342,14 +348,14 @@ public:
 	//GGroupsCursor& GetIdealGroupsCursor(void);
 
 	/**
-	* Destructor
+	* Destructor of a subject.
 	*/
 	~GSubjects(void);
 };
 
 
-} //-------- End of namespace GALILEI -----------------------------------------
+} //-------- End of namespace GALILEI ------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

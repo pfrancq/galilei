@@ -6,7 +6,7 @@
 
 	Group - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,13 +34,13 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <stdlib.h>
 
 
-//-----------------------------------------------------------------------------
-//include files for GALILEI
+//------------------------------------------------------------------------------
+// include files for GALILEI
 #include <groups/ggroup.h>
 #include <docs/gdoc.h>
 #include <profiles/gsubprofile.h>
@@ -50,13 +50,13 @@ using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GProfDocRef
 //
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class GProfDocRef
 {
 public:
@@ -74,37 +74,30 @@ public:
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GGroup
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GALILEI::GGroup::GGroup(void) throw(bad_alloc)
-	: RContainer<GSubProfile,unsigned int,false,true>(20,10)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GGroup::GGroup(const unsigned int id,GLang* lang) throw(bad_alloc)
+//------------------------------------------------------------------------------
+GGroup::GGroup(unsigned int id,GLang* lang) throw(bad_alloc)
 	: RContainer<GSubProfile,unsigned int,false,true>(20,10), Id(id),
 	  State(osUpToDate), Lang(lang)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GGroup::GGroup(GLang* lang) throw(bad_alloc)
+//------------------------------------------------------------------------------
+GGroup::GGroup(GLang* lang) throw(bad_alloc)
 	: RContainer<GSubProfile,unsigned int,false,true>(20,10), Id(cNoRef),
 	  State(osCreated), Lang(lang)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GGroup::GGroup(GGroup* grp) throw(bad_alloc)
+//------------------------------------------------------------------------------
+GGroup::GGroup(GGroup* grp) throw(bad_alloc)
 	: RContainer<GSubProfile,unsigned int,false,true>(grp->NbPtr), Id(grp->Id),
 	  State(grp->State), Lang(grp->Lang)
 {
@@ -113,8 +106,8 @@ GALILEI::GGroup::GGroup(GGroup* grp) throw(bad_alloc)
 }
 
 
-//--------------------------------------------------------------------------
-int GALILEI::GGroup::sortOrder(const void *a,const void *b)
+//------------------------------------------------------------------------------
+int GGroup::sortOrder(const void *a,const void *b)
 {
 	double af=(*((GProfDocRef**)(a)))->Sim;
 	double bf=(*((GProfDocRef**)(b)))->Sim;
@@ -127,44 +120,67 @@ int GALILEI::GGroup::sortOrder(const void *a,const void *b)
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GGroup::Compare(const unsigned int id) const
+//------------------------------------------------------------------------------
+int GGroup::Compare(const GGroup& grp) const
+{
+	return(Id-grp.Id);
+}
+
+
+//------------------------------------------------------------------------------
+int GGroup::Compare(const GGroup* grp) const
+{
+	return(Id-grp->Id);
+}
+
+
+//------------------------------------------------------------------------------
+int GGroup::Compare(const unsigned int id) const
 {
 	return(Id-id);
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GGroup::Compare(const GGroup& group) const
+//------------------------------------------------------------------------------
+bool GGroup::IsDefined(void) const
 {
-	return(Id-group.Id);
+	return(false);
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GGroup::Compare(const GGroup* group) const
-{
-	return(Id-group->Id);
-}
-
-
-//-----------------------------------------------------------------------------
-bool GALILEI::GGroup::IsEmpty(void) const
+//------------------------------------------------------------------------------
+bool GGroup::IsEmpty(void) const
 {
 	return(NbPtr==0);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroup::DeleteSubProfile(GSubProfile* sp)
+//------------------------------------------------------------------------------
+void GGroup::SetId(unsigned int id) throw(GException)
+{
+	if(id==cNoRef)
+		throw GException("Cannot assign cNoRef to a group");
+	Id=id;
+}
+
+
+//------------------------------------------------------------------------------
+void GGroup::SetState(tObjState state)
+{
+	State=state;
+}
+
+
+//------------------------------------------------------------------------------
+void GGroup::DeleteSubProfile(GSubProfile* sp) throw(bad_alloc)
 {
 	DeletePtr(sp);
 	State=osUpdated;
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroup::InsertSubProfile(GSubProfile* sp)
+//------------------------------------------------------------------------------
+void GGroup::InsertSubProfile(GSubProfile* sp) throw(bad_alloc)
 {
 	InsertPtr(sp);
 	State=osUpdated;
@@ -172,8 +188,8 @@ void GALILEI::GGroup::InsertSubProfile(GSubProfile* sp)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroup::DeleteSubProfiles(void)
+//------------------------------------------------------------------------------
+void GGroup::DeleteSubProfiles(void) throw(bad_alloc)
 {
 	State=osUpdated;
 	for(Start();!End();Next())
@@ -182,8 +198,8 @@ void GALILEI::GGroup::DeleteSubProfiles(void)
 }
 
 
-//-----------------------------------------------------------------------------
-GSubProfileCursor& GALILEI::GGroup::GetSubProfilesCursor(void)
+//------------------------------------------------------------------------------
+GSubProfileCursor& GGroup::GetSubProfilesCursor(void)
 {
 	GSubProfileCursor* cur=GSubProfileCursor::GetTmpCursor();
 	cur->Set(this);
@@ -191,29 +207,29 @@ GSubProfileCursor& GALILEI::GGroup::GetSubProfilesCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GGroup::GetNbSubProfiles(GGroup* grp)
+//------------------------------------------------------------------------------
+unsigned int GGroup::GetNbSubProfiles(const GGroup* grp) const
 {
 	unsigned int tot=0;
-	GSubProfileCursor Sub;
+	GSubProfile** ptr;
+	unsigned int i;
 
-	Sub.Set(this);
-	for(Sub.Start();!Sub.End();Sub.Next())
-		if(grp->IsIn<const GSubProfile*>(Sub()))
+	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
+		if(grp->IsIn<const GSubProfile*>(*ptr))
 			tot++;
 	return(tot);
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GGroup::GetNbSubProfiles(void) const
+//------------------------------------------------------------------------------
+unsigned int GGroup::GetNbSubProfiles(void) const
 {
 	return(NbPtr);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s)
+//------------------------------------------------------------------------------
+void GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s) const throw(bad_alloc)
 {
 	GSubProfile** tab;
 	unsigned int i;
@@ -267,8 +283,8 @@ void GALILEI::GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global)
+//------------------------------------------------------------------------------
+void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global) const throw(bad_alloc)
 {
 	GSubProfile** tab;
 	unsigned int i;
@@ -314,8 +330,8 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,fa
 }
 
 
-//-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GGroup::RelevantSubProfile(bool g) const
+//------------------------------------------------------------------------------
+GSubProfile* GGroup::RelevantSubProfile(bool iff) const
 {
 	GSubProfile* rel;
 	GSubProfile** sub;
@@ -328,12 +344,12 @@ GSubProfile* GALILEI::GGroup::RelevantSubProfile(bool g) const
 	// Suppose the first element is the most relevant.
 	sub=Tab;
 	rel=(*Tab);
-	refsum=ComputeSumSim(rel,g);
+	refsum=ComputeSumSim(rel,iff);
 
 	// Look if in the other objects, there is a better one
 	for(i=NbPtr,sub++;--i;sub++)
 	{
-		sum=ComputeSumSim(*sub,g);
+		sum=ComputeSumSim(*sub,iff);
 		if (sum>=refsum)
 		{
 			rel=(*sub);
@@ -346,8 +362,8 @@ GSubProfile* GALILEI::GGroup::RelevantSubProfile(bool g) const
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GGroup::ComputeSumSim(const GSubProfile* s,bool g) const
+//------------------------------------------------------------------------------
+double GGroup::ComputeSumSim(const GSubProfile* s,bool iff) const
 {
 	double sum=0.0;
 	GSubProfile** sub1;
@@ -356,7 +372,7 @@ double GALILEI::GGroup::ComputeSumSim(const GSubProfile* s,bool g) const
 	for(sub1=Tab,i=NbPtr+1;--i;sub1++)
 	{
 		if((*sub1)==s) continue;
-		if(g)
+		if(iff)
 			sum=sum+s->SimilarityIFF((*sub1));
 		else
 			sum=sum+s->Similarity((*sub1));
@@ -365,49 +381,55 @@ double GALILEI::GGroup::ComputeSumSim(const GSubProfile* s,bool g) const
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GGroup::Similarity(const GDoc*) const
+//------------------------------------------------------------------------------
+void GGroup::AddInfo(GWeightInfo* info) throw(bad_alloc)
+{
+}
+
+
+//------------------------------------------------------------------------------
+double GGroup::Similarity(const GDoc*) const
 {
 	return(0.0);
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GGroup::SimilarityIFF(const GDoc*) const
+//------------------------------------------------------------------------------
+double GGroup::SimilarityIFF(const GDoc*) const throw(GException)
 {
 	return(0.0);
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GGroup::Similarity(const GSubProfile*) const
+//------------------------------------------------------------------------------
+double GGroup::Similarity(const GSubProfile*) const
 {
 	return(0.0);
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GGroup::SimilarityIFF(const GSubProfile*) const
+//------------------------------------------------------------------------------
+double GGroup::SimilarityIFF(const GSubProfile*) const throw(GException)
 {
 	return(0.0);
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GGroup::Similarity(const GGroup*) const
+//------------------------------------------------------------------------------
+double GGroup::Similarity(const GGroup*) const
 {
 	return(0.0);
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GGroup::SimilarityIFF(const GGroup*) const
+//------------------------------------------------------------------------------
+double GGroup::SimilarityIFF(const GGroup*) const throw(GException)
 {
 	return(0.0);
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GGroup::~GGroup(void) throw(GException)
+//------------------------------------------------------------------------------
+GGroup::~GGroup(void) throw(GException)
 {
 }

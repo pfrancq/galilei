@@ -309,7 +309,7 @@ public:
 	* Compute the similarity between a subprofile and a document.
 	* @param doc             Pointer to a document.
 	*/
-	virtual double Similarity(const GDoc* doc) const throw(GException);
+	virtual double Similarity(const GDoc* doc) const;
 
 	/**
 	* Compute the similarity between a subprofile and a document using a Inverse
@@ -322,7 +322,7 @@ public:
 	* Compute the similarity between subprofiles.
 	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double Similarity(const GSubProfile* sub) const throw(GException);
+	virtual double Similarity(const GSubProfile* sub) const;
 
 	/**
 	* Compute the similarity between subprofiles using a Inverse Frequence
@@ -335,7 +335,7 @@ public:
 	* Compute the similarity between a subprofile and a group.
 	* @param grp             Pointer to a group.
 	*/
-	virtual double Similarity(const GGroup* grp) const throw(GException);
+	virtual double Similarity(const GGroup* grp) const;
 
 	/**
 	* Compute the similarity between a subprofile and a group using a Inverse

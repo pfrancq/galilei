@@ -4,9 +4,9 @@
 
 	Gsubjects.h
 
-	Subject - Implementation.
+	Subject - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be)
@@ -36,43 +36,45 @@
 
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GSubjectH
 #define GSubjectH
 
 
-//-----------------------------------------------------------------------------
-//include files for R Project
+//------------------------------------------------------------------------------
+// include files for R Project
 #include <rstd/rnode.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
 #include <groups/ggroupvector.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* This Class implement a representation for a subject used to create judgment
-* and feedback.
-* @author Pascal Francq & Julien Lamoral & David Wartel
-* @short  Subject
+* This Class implement a representation for a subject, i.e. an ideal group. A
+* subject is supposed to be associated with one language.
+*
+* This class is used for validation purposes.
+* @author Pascal Francq, Julien Lamoral and David Wartel.
+* @short Subject
 */
 class GSubject: public R::RNode<GSubject,false>, public GGroupVector
 {
 protected:
+
 	/**
-	* The name of the subject.
+	* Name of the subject.
 	*/
 	R::RString Name;
 
 	/**
-	* true if the subsubject is used.
+	* Determine if the subject is used.
 	*/
 	bool Used;
 
@@ -84,23 +86,56 @@ protected:
 public:
 
 	/**
-	* Constructor
-	* @param id              Identificator.
+	* Constructor of a subject.
+	* @param id              Identificator of the subject.
 	* @param name            Name of the subject.
 	* @param lang            Language.
 	* @param u               Used?
 	*/
-	GSubject(unsigned int id,const char* name,GLang* l,bool u);
+	GSubject(unsigned int id,const char* name,GLang* l,bool u) throw(bad_alloc);
 
 	/**
-	* Insert a document.
+	* Compare two subjects by comparing their identificator.
+	* @see R::RContainer
+	* @param sub             Pointer to a subject.
+	* @return int
+	*/
+	int Compare(const GSubject* sub) const;
+
+	/**
+	* Compare two subjects by comparing their identificator.
+	* @see R::RContainer
+	* @param sub             Subject.
+	* @return int
+	*/
+	int Compare(const GSubject& sub) const;
+
+	/**
+	* Compare the identificator of a subject with another one.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
+	*/
+	int Compare(const unsigned int id) const;
+
+	/**
+	* Compare the name of a subject with a given string.
+	* @see R::RContainer
+	* @param name            String.
+	* @return int
+	*/
+	int Compare(const char* name) const;
+
+	/**
+	* Insert a document to the list of those contained in the subject.
 	*/
 	void InsertDoc(GDoc* d) throw(bad_alloc);
 
 	/**
-	* Get a cursor over the documents used in the system.
+	* Get a cursor over the documents contained in the subject.
+	* @return GDocCursor.
 	*/
-	GDocCursor& GetDocsCursor();
+	GDocCursor& GetDocsCursor(void);
 
 	/**
 	* Get the number of documents associated to this subject.
@@ -109,64 +144,36 @@ public:
 	unsigned int GetNbDocs(void) const;
 
 	/**
-	* Compare a subject with a given name.
-	* @param name           Name used for the comparaison.
-	* @returns 0 if the same, -1 or +1 if different.
-	*/
-	int Compare(const char* name) const {return(Name.Compare(name));}
-
-	/**
-	* Compare two subject.
-	* @param sub            Subject used for the comparaison.
-	* @returns 0 if the same, -1 or +1 if different.
-	*/
-	int Compare(const GSubject *sub) const {return(Id-sub->Id);}
-
-	/**
-	* Compare two subject.
-	* @param sub            Subject used for the comparaison.
-	* @returns 0 if the same, -1 or +1 if different.
-	*/
-	int Compare(const GSubject &sub) const {return(Id-sub.Id);}
-
-	/**
-	* Comparaison two id.
-	* @param id            id used for the comparaison.
-	* @returns 0 if the same, -1 or +1 if different.
-	*/
-	int Compare(const unsigned int id) const {return(Id-id);};
-
-	/**
 	* Return the name of the Subject.
-	* @returns a string containing the name.
+	* @return RString.
 	*/
-	const char* GetName(void) {return(Name);};
+	R::RString& GetName(void) const;
 
 	/**
-	* Return the id of the Subject.
+	* Get the identificator of the Subject.
 	* @returns The id of the subject.
 	*/
-	unsigned int GetId(void) {return(GGroup::GetId());};
+	unsigned int GetId(void) const {return(GGroup::GetId());}
 
 	/**
-	* Return true if the subject is Used
-	* @returns bool.
+	* Verify if the subject is used.
+	* @return bool.
 	*/
-	bool IsUsed(void) {return(Used);}
+	bool IsUsed(void) const {return(Used);}
 
 	/**
 	* Set the status of the subject.
 	*/
-	void SetUsed(bool b) {Used=b;}
+	void SetUsed(bool b);
 
 	/**
-	* Destructor.
+	* Destructor of a subject.
 	*/
 	~GSubject(void) throw(GException);
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GSubjectCursor class provides a way to go trough a set of subjects.
 * @short Subject Cursor
@@ -175,8 +182,8 @@ CLASSCURSOR(GSubjectCursor,GSubject,unsigned int)
 
 
 
-}; //-------- End of namespace GALIELI ----------------------------------------
+}; //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

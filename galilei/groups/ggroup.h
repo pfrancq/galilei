@@ -6,7 +6,7 @@
 
 	Group - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,24 +34,23 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GGroupH
 #define GGroupH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* This class represent a group of sub-profiles. In fact, it is implemented as a
-* container of GSubProfile.
+* This class represent a virtual community, i.e. a group of sub-profiles.
 * @author Pascal Francq
 * @short Group.
 */
@@ -60,12 +59,12 @@ class GGroup : public R::RContainer<GSubProfile,unsigned int,false,true>
 protected:
 
 	/**
-	* identifier
+	* identificator of the group.
 	*/
 	unsigned int Id;
 
 	/**
-	* State of the document.
+	* State of the group.
 	*/
 	tObjState State;
 
@@ -74,26 +73,14 @@ protected:
 	*/
 	GLang* Lang;
 
-private:
-
-	/**
-	* Static function used to ordered by similarity.
-	*/
-	static int sortOrder(const void *a,const void *b);
-
 public:
-
-	/**
-	* Default Constructor.
-	*/
-	GGroup(void)throw(bad_alloc);
 
 	/**
 	* Construct a group with a specific identificator.
 	* @param id             Identificator.
 	* @param lang           Language.
 	*/
-	GGroup(const unsigned int id,GLang* lang) throw(bad_alloc);
+	GGroup(unsigned int id,GLang* lang) throw(bad_alloc);
 
 	/**
 	* Construct a group with an invalid identificator.
@@ -107,6 +94,15 @@ public:
 	*/
 	GGroup(GGroup* grp) throw(bad_alloc);
 
+private:
+
+	/**
+	* Static function used to ordered by similarity.
+	*/
+	static int sortOrder(const void *a,const void *b);
+
+public:
+
 	/**
 	* Get the name of the model used for the description.
 	* @return C String.
@@ -114,19 +110,35 @@ public:
 	virtual const char* GetModelName(void) const {return (0);};
 
 	/**
-	* Compare method needed by R::RContainer.
+	* Compare two groups by comparing their identificator.
+	* @see R::RContainer
+	* @param grp             Group.
+	* @return int
+	*/
+	int Compare(const GGroup& grp) const;
+
+	/**
+	* Compare two groups by comparing their identificator.
+	* @see R::RContainer
+	* @param grp             Pointer to a group.
+	* @return int
+	*/
+	int Compare(const GGroup* grp) const;
+
+	/**
+	* Compare the idenfiticator of a group with another one.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
 	*/
 	int Compare(const unsigned int id) const;
 
 	/**
-	* Compare method needed by R::RContainer.
+	* Verify if the group is defined. By default, a document is suppose to be
+	* undefined.
+	* @return false.
 	*/
-	int Compare(const GGroup& group) const;
-
-	/**
-	* Compare method needed by R::RContainer.
-	*/
-	int Compare(const GGroup* group) const;
+	virtual bool IsDefined(void) const;
 
 	/**
 	* Verify if the group is empty, i.e. it does not have any subprofiles.
@@ -144,7 +156,7 @@ public:
 	* Set the identifier.
 	* @param id             Identifier.
 	*/
-	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+	void SetId(unsigned int id) throw(GException);
 
 	/**
 	* Return the state of the group.
@@ -156,7 +168,7 @@ public:
 	* Set the state of the group.
 	* @param state          New state.
 	*/
-	void SetState(tObjState state) {State=state;}
+	void SetState(tObjState state);
 
 	/**
 	* Get the language of the set of groups.
@@ -168,18 +180,18 @@ public:
 	* Delete a subprofile from the group.
 	* @param sp             SubProfile to delete.
 	*/
-	void DeleteSubProfile(GSubProfile* sp);
+	void DeleteSubProfile(GSubProfile* sp) throw(bad_alloc);
 
 	/**
 	* Insert a subprofile in the group.
 	* @param sp             SubProfile to insert.
 	*/
-	void InsertSubProfile(GSubProfile* sp);
+	void InsertSubProfile(GSubProfile* sp) throw(bad_alloc);
 
 	/**
 	* Delete all subprofiles.
 	*/
-	void DeleteSubProfiles(void);
+	void DeleteSubProfiles(void) throw(bad_alloc);
 
 	/**
 	* Get a cursor over the subprofiles.
@@ -187,96 +199,114 @@ public:
 	GSubProfileCursor& GetSubProfilesCursor(void);
 
 	/**
-	* Compute the number of subprofiles of grp that are in the current group.
-	* @param grp            Group to compare with.
+	* Compute the number of subprofiles of a given group that are also in the
+	* current one.
+	* @param grp            Group.
 	*/
-	unsigned int GetNbSubProfiles(GGroup* grp);
+	unsigned int GetNbSubProfiles(const GGroup* grp) const;
 
 	/**
 	* Get the number of subprofiles in the group.
-	* @param grp            Group to compare with.
 	*/
 	unsigned int GetNbSubProfiles(void) const;
 
 	/**
 	* Construct the list of all feedbacks of the subprofiles of a group not
-	* already judged by a given subprofile. If a document is judged multiple
+	* already assessed by a given subprofile. If a document is assessed multiple
 	* times differently, most important OK>N>KO>H.
-	* @param docs           Documents not judged.
+	* @param docs           Documents not assessed.
 	* @param s              Subprofile.
 	*/
-	void NotJudgedDocsList(R::RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s);
+	void NotJudgedDocsList(R::RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s) const throw(bad_alloc);
 
 	/**
 	* Construct the list of all relevant documents of the subprofiles of a
-	* group not already judged by a given subprofile and ordered in descending
+	* group not already assessed by a given subprofile and ordered in descending
 	* order of their similarity with the chosen subprofile.
-	* @param docs           Documents not judged.
+	* @param docs           Documents not assessed.
 	* @param s              Subprofile.
 	* @param global         Global Similarities.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(R::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global);
+	void NotJudgedDocsRelList(R::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global) const throw(bad_alloc);
 
 	/**
 	* Compute the relevant subprofile, i.e. the subprofiles whith the highest
 	* average similarity with all the other subprofiles.
-	* @param g              Global similarities to use.
+	* @param iff             Use the Inverse Frequency Factor.
 	* @returns Pointer to GSubProfile representing the relevant one.
 	*/
-	GSubProfile* RelevantSubProfile(bool g) const;
+	GSubProfile* RelevantSubProfile(bool iff) const;
 
 	/**
-	* returns the relevant subprofiles (needed for kmeans).
+	* Compute the relevant subprofile
+	* @see R::RGroupingKMeans<cGroup, cObj, cGroupData, cGroups>.
+	* @returns Pointer to GSubProfile representing the relevant one.
 	*/
-	GSubProfile* RelevantObj() const {return(RelevantSubProfile(0));}
+	GSubProfile* RelevantObj(void) const {return(RelevantSubProfile(true));}
 
 	/**
-	* Compute the sum of the similarities of a given profile to all the others.
-	* @param s              Profile used as reference.
-	* @param g              Global similarities to use.
+	* Compute the sum of the similarities of a given subprofile to all the
+	* others.
+	* @param s              Subprofile used as reference.
+	* @param iff            Use the Inverse Frequency Factor.
 	* @returns result.
 	*/
-	double ComputeSumSim(const GSubProfile* s,bool g) const;
+	double ComputeSumSim(const GSubProfile* s,bool iff) const;
+
+	/**
+	* Add a given information to the group.
+	* @param info            Pointer to the information.
+	*/
+	virtual void AddInfo(GWeightInfo* info) throw(bad_alloc);
 
 	/**
 	* Compute the similarity between a group and a document.
+	* @param doc             Pointer to a document.
 	*/
 	virtual double Similarity(const GDoc* doc) const;
 
 	/**
-	* Compute the global similarity between a group and a document.
+	* Compute a similarity between a group and a document using a Inverse
+	* Frequence Factor (IFF).
+	* @param doc             Pointer to a document.
 	*/
-	virtual double SimilarityIFF(const GDoc* doc) const;
+	virtual double SimilarityIFF(const GDoc* doc) const throw(GException);
 
 	/**
 	* Compute the similarity between a group and subprofile.
+	* @param sub             Pointer to a subprofile.
 	*/
 	virtual double Similarity(const GSubProfile* sub) const;
 
 	/**
-	* Compute the global similarity between a group and a subprofile.
+	* Compute a similarity between a group and a subprofile using a Inverse
+	* Frequence Factor (IFF).
+	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double SimilarityIFF(const GSubProfile* sub) const;
+	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException);
 
 	/**
 	* Compute the similarity between groups.
+	* @param grp             Pointer to a group.
 	*/
 	virtual double Similarity(const GGroup* grp) const;
 
 	/**
-	* Compute the global similarity between groups.
+	* Compute a similarity between two groups using a Inverse Frequence Factor
+	* (IFF).
+	* @param grp             Pointer to a group.
 	*/
-	virtual double SimilarityIFF(const GGroup* grp) const;
+	virtual double SimilarityIFF(const GGroup* grp) const throw(GException);
 
 	/**
-	* Destructor
+	* Destructor of a group.
 	*/
 	~GGroup(void) throw(GException);
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GGroupCursor class provides a way to go trough a set of group.
 * @short Group Cursor.
@@ -285,8 +315,8 @@ CLASSCURSOR(GGroupCursor,GGroup,unsigned int)
 
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

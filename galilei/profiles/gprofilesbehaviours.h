@@ -70,13 +70,20 @@ class GProfilesBehaviours
 	*/
 	GSession* Session;
 
+	/*
+	* Must the behaviours be stock in a container
+	* or be recomputed each time
+	*/
+	bool Memory;
+
 public:
 
 	/**
 	* Constructor of Users
 	* @param lang           Language of the subprofile.
+	* @param memory      use container to stock behaviours in memory?
 	*/
-	GProfilesBehaviours(GSession* session) throw(bad_alloc);
+	GProfilesBehaviours(GSession* session, bool memory) throw(bad_alloc);
 
 	/**
 	* Re-initialize the similarities. This method can be used for testing
@@ -88,6 +95,11 @@ public:
 	* Updates the different ratios.
 	*/
 	void Update(void) throw(bad_alloc);
+
+	/**
+	* returns the status of memory
+	*/
+	bool GetMemory(void) {return Memory;}
 
 	/**
 	* Return the disagreement ratio between two subprofiles .
@@ -108,6 +120,11 @@ public:
 	* @param sub             Pointer to the subprofile.
 	*/
 	void AddModifiedProfile(GSubProfile* sub) throw(bad_alloc,GException);
+
+	/**
+	* returns the current session
+	*/
+	GSession* GetSession(void) {return Session;}
 
 	/**
 	* Destructor.
