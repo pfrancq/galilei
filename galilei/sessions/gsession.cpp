@@ -174,7 +174,7 @@ GDocXML* GALILEI::GSession::CreateDocXML(GDoc* doc) throw(GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::AnalyseDocs(GSessionSignalsReceiver* rec,bool modified) throw(GException)
 {
-	GDocXML* xml;
+	GDocXML* xml=0;
 
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
