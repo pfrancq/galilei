@@ -80,11 +80,11 @@ GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 	AddMIME("text/html");
 	InitCharContainer();
 	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
-	Tags->InsertPtr(new Tag("HEAD","",Tag::tHEAD,true,1,false));
-	Tags->InsertPtr(new Tag("SCRIPT","",Tag::tSCRIPT,true,1,false));
-	Tags->InsertPtr(new Tag("META","",Tag::tMETA,true,1,true));
-	Tags->InsertPtr(new Tag("TITLE","Title",Tag::tTITLE,true,1,true));
-	Tags->InsertPtr(new Tag("BODY","",Tag::tBODY,false,1,false));
+	Tags->InsertPtr(new Tag("HEAD","",Tag::tHEAD,true,8,false));
+	Tags->InsertPtr(new Tag("SCRIPT","",Tag::tSCRIPT,true,8,false));
+	Tags->InsertPtr(new Tag("META","",Tag::tMETA,true,8,true));
+	Tags->InsertPtr(new Tag("TITLE","Title",Tag::tTITLE,true,8,true));
+	Tags->InsertPtr(new Tag("BODY","",Tag::tBODY,false,8,false));
 	Tags->InsertPtr(new Tag("H1","H1",Tag::tH1,false,1,true));
 	Tags->InsertPtr(new Tag("H2","H2",Tag::tH2,false,2,true));
 	Tags->InsertPtr(new Tag("H3","H3",Tag::tH3,false,3,true));
@@ -242,7 +242,7 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 {
 	RXMLTag* content;
 	RXMLTag* act;
-	RXMLTag* Open[8];    // Remember all tag open.
+	RXMLTag* Open[9];    // Remember all tag open.
 	RXMLTag** ptr;
 	int Level;
 	char* OldBlock;
@@ -250,7 +250,7 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 	int i;
 
 	// Init Part
-	memset(Open,0,8*sizeof(RXMLTag*));
+	memset(Open,0,9*sizeof(RXMLTag*));
 	Doc->AddNode(Doc->GetTop(),Open[0]=content=new RXMLTag("Content"));
 	Level=0;
 	OldBlock=0;
@@ -286,7 +286,9 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 			if(CurTag->Ins)
 				Doc->AddNode(*ptr,Open[CurTag->Level]=new RXMLTag(CurTag->XMLName));
 			else
+			{
 				OldBlock=0;
+			}
 			if(!act)
 				act=Open[CurTag->Level];
 			// All the lowest tag are closed.
@@ -614,13 +616,15 @@ void GALILEI::GFilterHTML::NextValidTag(void)
 		{
 			char* SkipScript=SkipTag;
 			BlockLen=TagLen;
-			while(!((CurTag->Type==Tag::tSCRIPT)&&bEndTag))
+			while((!CurTag)||(!((CurTag->Type==Tag::tSCRIPT)&&bEndTag)))
 			{
 				NextTag();
+				CurTag=Tags->GetPtr<const char*>(BeginTag);
 				BlockLen=+TagLen;
 			}
 			memset(SkipScript,' ',BlockLen*sizeof(char));
 			CurTag=0;
+			Block=0;
 		}
 	} while(!CurTag);
 

@@ -123,10 +123,11 @@ void GALILEI::GCompareGrouping::Compare(GCompareGroupingSignalsReceiver* rec)
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
 		NbGrp=Grp()->Group->NbPtr;
+		Grp()->Precision=Grp()->Recall=0.0;
 		if(NbGrp==1)
 		{
 			grp=GetIdealGroup(Grp()->Group->Tab[0]);
-			if(!grp) continue;
+			if((!grp)||(grp->GetLang()!=Grp()->Group->GetLang())) continue;
 			Grp()->Precision=1.0;
 			if(grp->NbPtr==1)
 				Grp()->Recall=1.0;
@@ -135,12 +136,11 @@ void GALILEI::GCompareGrouping::Compare(GCompareGroupingSignalsReceiver* rec)
 		}
 		else
 		{
-			Grp()->Precision=Grp()->Recall=0.0;
 			Sub=Grp()->Group->GetSubProfileCursor();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				grp=GetIdealGroup(Sub());
-				if(!grp) continue;
+				if((!grp)||(grp->GetLang()!=Grp()->Group->GetLang())) continue;
 				if(grp->NbPtr==1)
 				{
 					Grp()->Precision+=1.0/((double)(NbGrp-1));

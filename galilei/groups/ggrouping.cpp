@@ -81,7 +81,6 @@ void GALILEI::GGrouping::Grouping(GGroupingSignalsReceiver* rec,bool modified)
 	GProfileCursor cur;
 	GSubProfile* sub;
 	GGroup* Grp;
-	bool needComputed;
 
 	// Go trough each language.
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
@@ -95,8 +94,7 @@ void GALILEI::GGrouping::Grouping(GGroupingSignalsReceiver* rec,bool modified)
 		for(Groups->Start();!Groups->End();Groups->Next())
 		{
 			Grp=(*Groups)();
-			needComputed=((Grp->GetState()!=osUpToDate)&&(Grp->GetState()!=osUpdated));
-			if((!modified)||(modified&&needComputed&&(!IsValid(Grp))))
+			if((!modified)||(((Grp->GetState()!=osUpToDate)&&(Grp->GetState()!=osUpdated))&&(!IsValid(Grp))))
 			{
 				Grp->DeleteSubProfiles();
 				Session->DeleteGroup(Grp);

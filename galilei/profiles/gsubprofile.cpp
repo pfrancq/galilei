@@ -21,6 +21,7 @@
 #include<gprofiles/gsubprofile.h>
 #include <gprofiles/gprofile.h>
 #include <glangs/glang.h>
+#include <ginfos/giword.h>
 #include <ginfos/giwordlist.h>
 #include <gprofiles/gprofdoc.h>
 #include <ggroups/ggroup.h>

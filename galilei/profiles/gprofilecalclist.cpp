@@ -28,6 +28,7 @@ using namespace RStd;
 #include <gdocs/gdoc.h>
 #include <gprofiles/gsubprofile.h>
 #include <gprofiles/gprofdoc.h>
+#include <ginfos/giword.h>
 #include <ginfos/giwordlist.h>
 #include <gsessions/gsession.h>
 using namespace GALILEI;
