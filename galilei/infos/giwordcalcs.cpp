@@ -106,9 +106,12 @@ void GALILEI::GIWordCalcs::EndCalc(void)
 	// ReOrder by Frequence
 	if(Order) delete[] Order;
 	Order=new GIWordCalc*[NbPtr+1];
-	memcpy(Order,Tab,NbPtr*sizeof(GIWordCalc*));
+	if(NbPtr)
+	{
+		memcpy(Order,Tab,NbPtr*sizeof(GIWordCalc*));
+		qsort(static_cast<void*>(Order),NbPtr,sizeof(GIWordCalc*),sortOrder);
+	}
 	Order[NbPtr]=0;
-	qsort(static_cast<void*>(Order),NbPtr,sizeof(GIWordCalc*),sortOrder);
 	CurOrder=Order;
 }
 
