@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GLang.h
+	GLangEN.h
 
-	Basic Language - Header.
+	English Language - Header.
 
 	(C) 2001 by P. Francq.
 
@@ -32,22 +32,20 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GLangH
-#define GLangH
+#ifndef GLangENH
+#define GLangENH
 
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rstring.h>
+#include <rstd/rcontainer.h>
 using namespace RStd;
-#include <rinter/rlang.h>
-using namespace RInter;
 
 
 //-----------------------------------------------------------------------------
 // include files for Galilei
 #include <galilei.h>
-
+#include <glangs/glang.h>
 
 
 //-----------------------------------------------------------------------------
@@ -57,54 +55,66 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GLang class provides a representation for a basic language. The virtual
-* function GetStemming must be implemented for the different languages.
+* The GLangEN class provides a representation for the english language.
 */
-class GLang : public RInter::RLang
+class GLangEN : public GLang
 {
+	class PorterRule;
+
+	RContainer<PorterRule,unsigned int,true,false>* Rules1a;
+	RContainer<PorterRule,unsigned int,true,false>* Rules1b;
+	RContainer<PorterRule,unsigned int,true,false>* Rules1bb;
+	RContainer<PorterRule,unsigned int,true,false>* Rules1c;
+	RContainer<PorterRule,unsigned int,true,false>* Rules2;
+	RContainer<PorterRule,unsigned int,true,false>* Rules3;
+	RContainer<PorterRule,unsigned int,true,false>* Rules4;
+	RContainer<PorterRule,unsigned int,true,false>* Rules5a;
+	RContainer<PorterRule,unsigned int,true,false>* Rules5b;
+
 public:
-
 	/**
-	* Defines if the language is activ.
+	* Constructor of the english language.
 	*/
-	bool Activ;
+	GLangEN(void) throw(bad_alloc);
 
 	/**
-	* Constructor of a language.
-	* @param lang           Name of the language.
-	* @param code           Code of the language.
-	*/
-	GLang(const RString& lang,const char* code) throw(bad_alloc);
-
-	/**
-	* Comparaison function used by the Container.
-	* @param lang           Pointer of the language used for comparaison.
-	*/
-	int Compare(const GLang& lang) const;
-
-	/**
-	* Comparaison function used by the Container.
-	* @param lang           Language used of the comparaison.
-	*/
-	int Compare(const GLang* lang) const;
-
-	/**
-	* Compare function like strcmp used in particular for RContainer class.
-	* @param code           Code used for the comparaison.
-	*/
-	int Compare(const char* code) const;
-
-	/**
-	* Function that return stemming of a word.
-	* @param kwd            Word to find the stemming.
+	* Function that return stemming of a word. The Porter's algorithm is
+	* implemented.
+	* @param _kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/
-	virtual RString& GetStemming(const RString& kwd)=0;
+	virtual RString& GetStemming(const RString& _kwd);
 
+private:
+
+	/**
+	* Test if the character is a "normal" vowel, i.e. if it is one of:
+	* 'a', 'e', 'i', 'o' or 'u'.
+	* @return True if the character is a "normal" vowel.
+	*/
+	inline bool IsVowel(char c)
+	{
+		return((c=='a')||(c=='e')||(c=='i')||(c=='o')||(c=='u'));
+	}
+
+	bool ContainsVowel(const char* kwd);
+	bool EndsWithCVC(char* kwd,char* &end);
+
+	/**
+	* Count the syllables in a way describes in Porter. To compute this, a
+	* finite state machine is used.
+	*/
+	int GetWordSize(char* kwd);
+
+	/**
+	*/
+	bool ApplyRules(char* kwd,char* &end,RContainer<PorterRule,unsigned int,true,false>* rules);
+
+public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GLang(void);
+	virtual ~GLangEN(void);
 };
 
 

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GLang.h
+	GLangFR.h
 
-	Basic Language - Header.
+	French Language - Header.
 
 	(C) 2001 by P. Francq.
 
@@ -32,22 +32,14 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GLangH
-#define GLangH
-
-
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rstring.h>
-using namespace RStd;
-#include <rinter/rlang.h>
-using namespace RInter;
+#ifndef GLangFRH
+#define GLangFRH
 
 
 //-----------------------------------------------------------------------------
 // include files for Galilei
 #include <galilei.h>
-
+#include <glangs/glang.h>
 
 
 //-----------------------------------------------------------------------------
@@ -57,54 +49,27 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GLang class provides a representation for a basic language. The virtual
-* function GetStemming must be implemented for the different languages.
+* The GLangFR class provides a representation for the french language.
 */
-class GLang : public RInter::RLang
+class GLangFR : public GLang
 {
 public:
-
 	/**
-	* Defines if the language is activ.
+	* Constructor of the french language.
 	*/
-	bool Activ;
-
-	/**
-	* Constructor of a language.
-	* @param lang           Name of the language.
-	* @param code           Code of the language.
-	*/
-	GLang(const RString& lang,const char* code) throw(bad_alloc);
-
-	/**
-	* Comparaison function used by the Container.
-	* @param lang           Pointer of the language used for comparaison.
-	*/
-	int Compare(const GLang& lang) const;
-
-	/**
-	* Comparaison function used by the Container.
-	* @param lang           Language used of the comparaison.
-	*/
-	int Compare(const GLang* lang) const;
-
-	/**
-	* Compare function like strcmp used in particular for RContainer class.
-	* @param code           Code used for the comparaison.
-	*/
-	int Compare(const char* code) const;
+	GLangFR(void) throw(bad_alloc);
 
 	/**
 	* Function that return stemming of a word.
 	* @param kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/
-	virtual RString& GetStemming(const RString& kwd)=0;
+	virtual RString& GetStemming(const RString& kwd);
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GLang(void);
+	virtual ~GLangFR(void);
 };
 
 
