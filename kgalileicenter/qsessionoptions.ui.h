@@ -10,3 +10,11 @@
 ** destructor.
 *****************************************************************************/
 #include <kurlrequester.h>
+
+
+
+void QSessionOptions::clickDebug( bool state )
+{
+ if(state)
+       CBDebugMinSim->setChecked(true);
+}

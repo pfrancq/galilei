@@ -544,6 +544,12 @@
         <receiver>MinSim</receiver>
         <slot>setEnabled(bool)</slot>
     </connection>
+    <connection>
+        <sender>CBDebugSim</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QSessionOptions</receiver>
+        <slot>clickDebug(bool)</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>SBDiffBehaviour</tabstop>
@@ -555,6 +561,9 @@
 <includes>
     <include location="local" impldecl="in implementation">qsessionoptions.ui.h</include>
 </includes>
+<slots>
+    <slot>clickDebug( bool state )</slot>
+</slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>kurlrequester.h</includehint>
