@@ -485,6 +485,44 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::SaveFdbks(void) throw(GException)
+{
+	char sSql[500];
+	char j;
+
+	// Clear the all feedbacks
+	sprintf(sSql,"DELETE FROM htmlsbyprofiles");
+	RQuery delete1(this,sSql);
+
+	// Reinsert all the feedbacks
+	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+	{
+		switch(Fdbks()->GetFdbk())
+		{
+			case djOK:
+				j='O';
+				break;
+			case djNav:
+				j='N';
+				break;
+			case djOutScope:
+				j='H';
+				break;
+			case djKO:
+				j='K';
+				break;
+			default:
+				throw GException("No Valid Judgement");
+		}
+		sprintf(sSql,"INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES(%u,%c,%u,CURDATE())",
+		        Fdbks()->GetDoc()->GetId(),j,Fdbks()->GetProfile()->GetId());
+		RQuery fdbks(this,sSql);
+
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 {
 	char sSql[1000];

@@ -143,12 +143,12 @@ protected:
 	virtual void LoadDocs(void) throw(bad_alloc,GException);
 
 	/**
-	*  Load the Users.
+	*  Load the users.
 	*/
 	virtual void LoadUsers(void) throw(bad_alloc,GException);
 
 	/**
-	*  Load the Users' Feedback.
+	*  Load the users Feedback.
 	*/
 	virtual void LoadFdbks(void) throw(bad_alloc,GException);
 
@@ -173,6 +173,11 @@ public:
 	* @param doc            Document to save.
 	*/
 	virtual void SaveDoc(GDoc* doc) throw(GException);
+
+	/**
+	* Save a the users feedback.
+	*/
+	virtual void SaveFdbks(void) throw(GException);
 
 	/**
 	* Create a new profile.
