@@ -75,6 +75,7 @@ class KViewStems : public KView
 {
 	class Word;
 	class GrWord;
+	class GrWordId;
 
 	Q_OBJECT
 
@@ -127,6 +128,38 @@ class KViewStems : public KView
 	* Words defined in the dictionnary.
 	*/
 	RDblHashContainer<Word,unsigned,27,27,true>* Words;
+
+	/**
+	* Precision of the stemming.
+	*/
+	double Precision;
+
+	/**
+	* Recall of the stemming.
+	*/
+	double Recall;
+
+	/**
+	* Total index between for stemming.
+	*/
+	double Total;
+
+	/**
+	* Compute the number of words of grp2 that are in grp1.
+	* @param grp1           First Group.
+	* @param grp2           Second Group.
+	*/
+	unsigned int GetNbWords(GrWord* grp1,GrWord* grp2);
+
+	/**
+	* Compute the Recall and the Precision.
+	*/
+	void ComputeRecallPrecision(void);
+
+	/**
+	* Compute the Total based on the Adjusted Rand Index (Hubert and Arabie).
+	*/
+	void ComputeTotal(void);
 
 public:
 

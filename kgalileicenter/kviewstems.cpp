@@ -77,15 +77,46 @@ public:
 };
 
 
+
+//-----------------------------------------------------------------------------
+//
+// class GrWord
+//
+//-----------------------------------------------------------------------------
+
 //-----------------------------------------------------------------------------
 class KViewStems::GrWord : public RString
 {
 public:
-	RContainer<Word,unsigned int,false,false> Words;
+	RContainer<Word,unsigned int,false,true> Words;
+	double Precision;
+	double Recall;
 
 	GrWord(const char* s) : RString(s),Words(30,20) {}
 	GrWord(const RString& s) : RString(s),Words(30,20) {}
 };
+
+
+
+//-----------------------------------------------------------------------------
+//
+//  class GrWordId
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class KViewStems::GrWordId
+{
+public:
+	GrWord* Grp;
+	unsigned int Pos;
+
+	GrWordId(GrWord* grp,unsigned int pos) : Grp(grp), Pos(pos) {}
+ 	int Compare(const GrWord* grp) const {return(Grp->Compare(grp));}
+	int Compare(const GrWordId* grp) const {return(Grp->Compare(grp->Grp));}
+	int Compare(const GrWordId& grp) const {return(Grp->Compare(grp.Grp));}
+};
+
 
 
 //-----------------------------------------------------------------------------
@@ -96,7 +127,8 @@ public:
 
 //-----------------------------------------------------------------------------
 KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Roots(0), Stems(0), Words(0)
+	: KView(doc,parent,name,wflags), Roots(0), Stems(0), Words(0),
+	  Precision(0.0), Recall(0.0)
 {
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/kmultiple.png"));
 	char tmp[10];
@@ -212,6 +244,10 @@ void KViewStems::LoadFile(const char* filename)
 	sprintf(word,"%s - Words: %u - Roots: %u - Stems: %u",Lang->GetName(),Words->GetNb(),Roots->GetNb(),Stems->GetNb());
 	setCaption(word);
 
+	// Compute Stats
+	ComputeRecallPrecision();
+	ComputeTotal();
+
 	// Fill the list 'Roots'
 	ConstructTh(0,0);
 	ConstructPr(0,0);
@@ -255,7 +291,8 @@ void KViewStems::ConstructPr(char index,char index2)
 	for(ptr2->Start();!ptr2->End();ptr2->Next())
 	{
 		gptr=(*ptr2)();
-		QListViewItem* grsitem = new QListViewItem(prGroups,(*gptr)());
+		sprintf(word,"Stem: '%s'  -  Precision=%1.3f - Recall=%1.3f",(*gptr)(),gptr->Precision,gptr->Recall);
+		QListViewItem* grsitem = new QListViewItem(prGroups,word);
 		for(gptr->Words.Start();!gptr->Words.End();gptr->Words.Next())
 		{
 			wptr=gptr->Words();
@@ -273,6 +310,217 @@ void KViewStems::resizeEvent(QResizeEvent *)
 	Index->setGeometry(width()-120,0,60,30);
 	Index2->setGeometry(width()-60,0,60,30);
 	Infos->setGeometry(0,30,width(),height()-30);
+}
+
+
+
+//-----------------------------------------------------------------------------
+unsigned int KViewStems::GetNbWords(GrWord* grp1,GrWord* grp2)
+{
+	unsigned int tot=0;
+
+	for(grp1->Words.Start();!grp1->Words.End();grp1->Words.Next())
+		if(grp2->Words.IsIn<const Word*>(grp1->Words()))
+			tot++;
+	return(tot);
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewStems::ComputeRecallPrecision(void)
+{
+	GrWord* root;
+	GrWord* stem;
+	unsigned int NbStem;
+	unsigned int InStem;
+	unsigned int InRoot;
+	unsigned int NbWords;
+	char tmp[100];
+	RContainer<GrWord,unsigned int,true,true>*** ptr;
+	RContainer<GrWord,unsigned int,true,true>** ptr2;
+	unsigned int i,j;
+
+	Precision=Recall=0.0;
+	NbWords=0;
+	for(i=27+1,ptr=Stems->Hash;--i;ptr++)
+	{
+		for(j=27+1,ptr2=*ptr;--j;ptr2++)
+		{
+			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
+			{
+				stem=(**ptr2)();
+				NbStem=stem->Words.NbPtr;
+				NbWords+=NbStem;
+				stem->Precision=stem->Recall=0.0;
+				if(!NbStem) continue;
+				if(NbStem==1)
+				{
+					root=stem->Words.Tab[0]->Root;
+					if(!root) continue;
+					stem->Precision=1.0;
+					if(root->Words.NbPtr==1);
+						stem->Recall=1.0;
+					Precision+=stem->Precision;
+					Recall+=stem->Recall;
+				}
+				else
+				{
+					for(stem->Words.Start();!stem->Words.End();stem->Words.Next())
+					{
+						root=stem->Words()->Root;
+						if(!root) continue;
+						if(root->Words.NbPtr==1)
+						{
+							stem->Recall+=1.0;
+							Recall+=1.0;
+						}
+						else
+						{
+							InRoot=GetNbWords(root,stem)-1;
+							if(InRoot)
+								stem->Precision+=((double)(InRoot))/((double)(NbStem-1));
+							InStem=GetNbWords(stem,root)-1;
+							if(InStem)
+								stem->Recall+=((double)(InStem))/((double)(root->Words.NbPtr-1));
+						}
+					}
+					Precision+=stem->Precision;
+					Recall+=stem->Recall;
+					stem->Precision/=NbStem;
+					stem->Recall/=NbStem;
+				}
+			}
+		}
+	}
+	if(NbWords)
+	{
+		Precision/=(double)NbWords;
+		Recall/=(double)NbWords;
+	}
+	sprintf(tmp," - Precision=%1.3f - Recall=%1.3f",Precision,Recall);
+	setCaption(caption()+tmp);
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewStems::ComputeTotal(void)
+{
+	GrWord* root;
+	GrWord* stem;
+	unsigned int** matrix;                        // Matrix representing all assignation ideal/computed
+	unsigned int NbRows,NbCols;                   // Rows and Cols for matrix
+	unsigned int NbWords;                         // Number of Words.
+	unsigned int** mat;
+	unsigned int* mat2;
+	unsigned int row,col;
+	RContainer<GrWord,unsigned int,true,true>*** ptr;
+	RContainer<GrWord,unsigned int,true,true>** ptr2;
+	unsigned int i,j;
+	char tmp[100];
+	
+	// Init part
+	NbWords=0;
+	Total=0.0;
+	NbRows=Roots->GetNb();
+	NbCols=Stems->GetNb();
+	if((!NbRows)||(!NbCols)) return;
+	matrix=new unsigned int*[NbRows];
+	for(row=NbRows+1,mat=matrix;--row;mat++)
+	{
+		(*mat)=new unsigned int[NbCols];
+		memset((*mat),0,NbCols*sizeof(int));
+	}
+
+	// Construction of the container for relation between root and column in the matrix.
+	RContainer<GrWordId,unsigned int,true,true> RootsId(NbRows,NbRows/2);
+	for(i=27+1,col=0,ptr=Stems->Hash;--i;ptr++)
+	{
+		for(j=27+1,ptr2=*ptr;--j;ptr2++)
+		{
+			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
+			{
+				root=(**ptr2)();
+				RootsId.InsertPtr(new GrWordId(root,col));
+				col++;
+			}
+		}
+	}
+
+	// Construction of the container for relation between stem and column in the matrix.
+	RContainer<GrWordId,unsigned int,true,true> StemsId(NbCols,NbCols/2);
+	for(i=27+1,col=0,ptr=Stems->Hash;--i;ptr++)
+	{
+		for(j=27+1,ptr2=*ptr;--j;ptr2++)
+		{
+			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
+			{
+				stem=(**ptr2)();
+				StemsId.InsertPtr(new GrWordId(stem,col));
+				col++;
+			}
+		}
+	}
+
+	// Element i,j of the matrix is the number of words who are in the ith root
+	// and jth stem.
+	for(i=27+1,col=0,ptr=Roots->Hash;--i;ptr++)
+	{
+		for(j=27+1,ptr2=*ptr;--j;ptr2++)
+		{
+			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
+			{
+				root=(**ptr2)();
+				row=RootsId.GetPtr<const GrWord*>(root)->Pos;
+				// for each word in this root add 1 in the case corresponding to the
+				// id of the computedgroup where the subprofile is.
+				for(root->Words.Start();!root->Words.End();root->Words.Next())
+				{
+					col=StemsId.GetPtr<const GrWord*>(root->Words()->Stem)->Pos;
+					matrix[row][col]++;
+					NbWords++;
+				}
+			}
+		}
+	}
+
+	//Calculation of the different terms of the total = a-(b*c)/d)/((1/2*(b+c))-(b*c)/d)
+	double a,b,c,d,num,den;
+	a=b=c=0.0;
+
+	for(row=NbRows+1,mat=matrix;--row;mat++)
+	{
+		int sum=0;
+		for(col=NbCols+1,mat2=(*mat);--col;mat2++)
+		{
+			a+=(((*mat2)*((*mat2)-1))/2);
+			sum+=(*mat2);
+		}
+		b+=((sum*(sum-1))/2);
+	}
+
+	for(col=NbCols+1;--col;)
+	{
+		int sum=0;
+		for(row=NbRows+1,mat=matrix;--row;mat++)
+		{
+			sum+=(*mat)[col-1];
+		}
+		c+=((sum*(sum-1))/2);
+	}
+
+	d=(NbWords*(NbWords-1))/2;
+	num=a-((b*c)/d);
+	den=(0.5*(b+c))-(b*c/d);
+	Total=num/(den*NbWords);
+
+	// Delete the matrix
+ 	for(row=NbRows+1,mat=matrix;--row;mat++)
+	{
+		delete[] (*mat);
+	}
+	delete[] matrix;
+	sprintf(tmp," - Total=%1.3f",Total);
+	setCaption(caption()+tmp);
 }
 
 
