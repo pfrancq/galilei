@@ -218,6 +218,7 @@ void KViewProfile::ConstructLinks(void)
 			case (djOK | djAutority):
 				p=la;
 				iconName="konquerorAutho.png";
+				break;
 			case (djOK | djHub):
 				p=lh;
 				iconName="konquerorHub.png";
