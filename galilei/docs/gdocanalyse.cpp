@@ -57,7 +57,7 @@ using namespace RTimeDate;
 class GALILEI::GDocAnalyse::WordOccur
 {
 public:
-	char Word[50];
+	char Word[250];
 	bool* InStop;
 	unsigned int Nb;
 	bool OnlyLetters;
@@ -283,8 +283,8 @@ BeginExtract:
 	// If len null, return (nothing else to extract)
 	if(!len) return(false);
 
-	// if len<4, extract next word.
-	if(len<4)
+	// if len<MinWordSize, extract next word.
+	if(len<Session->GetMinWordSize())
 	{
 		Letter=false;
 		goto BeginExtract;
@@ -355,6 +355,7 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 	// fraction of stopwords that are in the document.
 	if(FindLang)
 	{
+		Doc->Lang=Lang=0;
 		for(CurLangs.Start(),i=0,tmp1=tmpNbDiffStopWords,tmp2=tmpNbStopWords;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 		{
 			Frac=((double)(*tmp1))/((double)NbDiffWords);
