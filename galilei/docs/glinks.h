@@ -39,7 +39,7 @@
 
 
 //------------------------------------------------------------------------------
-//include file for GALILEI
+// include files for GALILEI
 #include <docs/gdoc.h>
 
 
@@ -50,30 +50,30 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* This class provides a representation of a set of links. The list is not
-* responsible for the desalocation of the list.
+* This class provides a representation of a list of links contained in a
+* document. The list is not responsible for the desallocation of the links.
 * @author Vandaele Valery
 * @short List of Links.
 */
 class GLinks : public R::RContainer<GLink,unsigned,false,true>
 {
-protected :
+protected:
 
 	/**
-	* The document containing a set of link.
+	* Document containing the set of links.
 	*/
 	GDoc* Doc;
 
-public :
+public:
 
 	/**
 	* Constructor of a list of links.
-	* @param doc             Document containing all the links.
+	* @param doc             Document containing the links.
 	*/
 	GLinks(GDoc* doc) throw(bad_alloc, GException);
 
 	/**
-	* Get the document containing all the links.
+	* Get the document containing the links.
 	* @return Pointer to a GDoc.
 	*/
 	GDoc* GetDoc(void) const {return(Doc);}

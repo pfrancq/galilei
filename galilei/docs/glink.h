@@ -33,26 +33,26 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GLinkH
 #define GLinkH
 
 
-//-----------------------------------------------------------------------------
-//include file for GALILEI
-#include <sessions/galilei.h>
+//------------------------------------------------------------------------------
+// include files for GALILEI
 #include <docs/gdoc.h>
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GLink class provides a representation of a hyperlink. The link is maintain by
-* a pointer to a GDoc (document pointed by the link)
-* @author  Vandaele valery
+* The GLink class provides a representation of a hyperlink. The link is maintain
+* by a pointer to a GDoc (document pointed by the link).
+* @author Vandaele valery
 * @short Link.
 */
 class GLink
@@ -60,63 +60,71 @@ class GLink
 private:
 
 	/**
-	* The Document pointed by the link.
+	* Document pointed by the link.
 	*/
 	const GDoc* DocTO;
-	
+
 	/**
-	* The number of occurence of the link.
+	* Number of occurence of the link.
 	*/
 	unsigned int Occurs;
-
 
 public :
 
 	/**
-	* constructor of GLink
-	* @url                    The url of the link.
+	* Constructor of a link.
+	* @doc                   Pointer to the document.
 	*/
 	GLink(const GDoc* doc);
 
 	/**
-	* Compare two links.
-	* @param link            Link used for the comparaison.
-	* @returns 0 if the same, -1 or +1 if different.
+	* Compare two links by comparing the identificators of the corresponding
+	* documents.
+	* @see R::RContainer
+	* @param link            Pointer to a link.
+	* @return int
 	*/
-	int Compare(const GLink* link) const { return(DocTO->GetId() - link->GetDoc()->GetId());}
+	int Compare(const GLink* link) const;
 
 	/**
-	* Compare two links.
-	* @param link            Link used for the comparaison.
-	* @returns 0 if the same, -1 or +1 if different.
+	* Compare two links by comparing the identificators of the corresponding
+	* documents.
+	* @see R::RContainer
+	* @param link            Link.
+	* @return int
 	*/
-	int Compare(const GLink& link) const{ return(DocTO->GetId()-link.GetDoc()->GetId() ); }
+	int Compare(const GLink& link) const;
 
 	/**
-	* Compare two links.
-	* @param id             The id of the document used for the comparaison.
-	* @returns 0 if the same, -1 or +1 if different.
+	* Compare an identificator of the document of a link with an identificator.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
 	*/
-	int Compare( const unsigned int id) const{return (DocTO->GetId()- id );};
+	int Compare(const unsigned int id) const;
 
 	/**
-	* Compare two links.
-	* @param doc            Pointer to a Gdoc used for the comparaison.
-	* @return 0 if the same, -1 or +1 if different.
+	* Compare an identificator of the document of a link with another document.
+	* documents.
+	* @see R::RContainer
+	* @param doc             Pointer to a document.
+	* @return int
 	*/
-	int Compare(const GDoc* doc) const{ return( DocTO->GetId()- doc->GetId() );}
+	int Compare(const GDoc* doc) const;
 
 	/**
-	* Compare two links.
-	* @param doc            Gdoc id used for the comparaison.
-	* @return 0 if the same, -1 or +1 if different.
+	* Compare an identificator of the document of a link with another document.
+	* documents.
+	* @see R::RContainer
+	* @param doc             Document.
+	* @return int
 	*/
-	int Compare(const GDoc& doc) const {return (DocTO->GetId() - doc.GetId() );}
+	int Compare(const GDoc& doc) const;
 
 	/**
-	* increase the number of same link.
+	* Increase the number of occurences of the link.
 	*/
-	void AddOccurence() {Occurs++;}
+	void IncOccurs(void) {Occurs++;}
 
 	/**
 	* Set the number of occurence of the link.
@@ -126,36 +134,36 @@ public :
 
 	/**
 	* Get the number of occurences of the link.
-	* @return int         The number of links.
+	* @return unsigned int.
 	*/
-	unsigned int GetOccurs() {return Occurs;}
+	unsigned int GetOccurs(void) const {return(Occurs);}
 
 	/**
-	* Get the url of the link.
-	* @return RString     the url of the link.
+	* Get the url of the document corresponding to the link.
+	* @return RString representing the URL.
 	*/
-	R::RString GetUrl(void) {return DocTO->GetURL();}
+	R::RString& GetURL(void) const {return(DocTO->GetURL());}
 
 	/**
-	* Get the doc pointed by the link
-	* @return GDoc        the pointer to the doc Pointed.
+	* Get the document pointed by the link.
+	* @return Pointer to GDoc.
 	*/
-	const GDoc* GetDoc(void) const {return DocTO;}
+	const GDoc* GetDoc(void) const {return(DocTO);}
 
 	/**
-	* Get the id of the document.
-	* @return int         the id of the link.
+	* Get the identificator of the document pointed by the link.
+	* @return unsigned int.
 	*/
-	unsigned int GetId(void) {return DocTO->GetId();}
+	unsigned int GetId(void) const {return DocTO->GetId();}
 
 	/**
-	* destructor of GLink
+	* Destructor of a link.
 	*/
 	virtual ~GLink(void);
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GLinkCursor class provides a way to go trough a set of links.
 * @short Link Cursor
@@ -163,8 +171,8 @@ public :
 CLASSCURSOR(GLinkCursor,GLink,unsigned int)
 
 
-}  //-------- End of namespace [GALILEI] ----------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

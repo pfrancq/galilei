@@ -48,7 +48,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GBalancedLinks::GBalancedLinks(GDoc* d,float w) throw(bad_alloc, GException)
+GBalancedLinks::GBalancedLinks(GDoc* d,double w) throw(bad_alloc, GException)
 	: GLinks(d) , Weight(w)
 {
 }
@@ -62,7 +62,7 @@ GBalancedLinks::GBalancedLinks(GDoc* d) throw(bad_alloc, GException)
 
 
 //------------------------------------------------------------------------------
-void GBalancedLinks::SetWeight(float w)
+void GBalancedLinks::SetWeight(double w)
 {
 	Weight=w;
 }

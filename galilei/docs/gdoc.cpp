@@ -305,7 +305,7 @@ void GDoc::InsertLink(const GDoc* doc) throw(bad_alloc)
 {
 	GLink* link ;
 	link = LinkSet->GetInsertPtr(doc);
-	link->AddOccurence();
+	link->IncOccurs();
 }
 
 

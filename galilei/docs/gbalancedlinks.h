@@ -51,7 +51,8 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* This class provides a representation of a weighted list of links.
+* This class provides a representation of a weighted list of links associated
+* with a document.
 * @author Vandaele Valery
 * @short Weighted List of Links.
 */
@@ -60,42 +61,42 @@ class GBalancedLinks : public GLinks
 protected:
 
 	/**
-	* The weight associated with the list.
+	* Weight associated with the list.
 	*/
-	float Weight;
+	double Weight;
 
 public :
 
 	/**
 	* Constructor of a weighted list of links.
-	* @param doc             Document containing all the links.
+	* @param doc             Document containing the links.
 	* @param weight          Weight associated with the link.
 	*/
-	GBalancedLinks(GDoc* doc,float weight) throw(bad_alloc, GException);
+	GBalancedLinks(GDoc* doc,double weight) throw(bad_alloc, GException);
 
 	/**
-	* Constructor of GBalancedLinks of a weighted list of links.
-	* @param doc               the document containing all the links.
+	* Constructor of a weighted list of links.
+	* @param doc             Document containing the links.
 	*/
 	GBalancedLinks(GDoc* doc) throw(bad_alloc, GException);
 
 	/**
-	* Get the id of the doc
-	* @return id            the id of the document.
+	* Get the identificator of the document.
+	* @return unsigned int.
 	*/
-	unsigned int GetId(void) const {return Doc->GetId() ; }
+	unsigned int GetId(void) const {return(Doc->GetId());}
 
 	/**
 	* Get the weight of the links.
-	* return                  float containing the weight.
+	* return double.
 	*/
-	float GetWeight(void) const {return(Weight);}
+	double GetWeight(void) const {return(Weight);}
 
 	/**
 	* Set the weight of a links.
 	* @param w                the weight.
 	*/
-	void SetWeight(float w);
+	void SetWeight(double w);
 
 	/**
 	* Compare two weighted lists by comparing their identificator.

@@ -4,12 +4,13 @@
 
 	GDocProfSims.h
 
-	List of SubProfiles for a given Language - Implementation.
+	Similarities between documents and subprofiles - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
+		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	Version $Revision$
 
@@ -34,71 +35,85 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GDocProfSimsH
 #define GDocProfSimsH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <docs/gdocprofsim.h>
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GDocProfSims class provides a representation for a set of Similarity between Documents and Profiles of
-* a given language.
-* @author Pascal Francq , Valery Vandaele
-* @short SubProfiles.
+* The GDocProfSims class provides a representation for the similarities between
+* documents and profiles.
+* @author Pascal Francq and Valery Vandaele
+* @short SubProfiles-Documents Similarities.
 */
-class GDocProfSims : public R::RContainer<GDocProfSim,unsigned int,true,true>
+class GDocProfSims
 {
+	// Internal class
+	class GDocProfSim;
+
+	/**
+	* Similarities.
+	*/
+ 	R::RContainer<GDocProfSim,unsigned int,true,true> Sims;
+
+	/**
+	* Session managing the (sub)profiles and the documents.
+	*/
+	GSession* Session;
+
+	/**
+	* Inverse Frequency Factor must be used to compute the similarities.
+	*/
+	bool IFF;
 
 public:
 
 	/**
-	* Constructor of Users
-	* @param lang           Language of the document and subprofile.
-	* @param s              Initial number of profilesSim.
+	* Constructor of the similarities between documents and subprofiles.
+	* @param lang            Language of the document and subprofile.
+	* @param s               Initial number of profilesSim.
+	* @param iff             Use Inverse Frequency Factor.
 	*/
-	GDocProfSims(unsigned int s) throw(bad_alloc);
-
+	GDocProfSims(GSession* session,unsigned int s,bool iff) throw(bad_alloc);
 
 	/**
-	* Insert a DocProfSims in the container.
-	* @param s              Pointer to the subprofile to add.
+	* Re-initialize the similarities. This method can be used for testing
+	* purpose when it is necessary to start from different initial conditions.
 	*/
-	void InsertDocProfSim(GDocProfSim* p) throw(bad_alloc);
+	void ReInit(void) throw(bad_alloc);
 
 	/**
-	* Get a cursor over the profilesSims of the system.
+	* Set if the Inverse Frequency Factor should be used.
+	* @param iff             Use Inverse Frequency Factor.
 	*/
-	GDocProfSimCursor& GetProfilesSimCursor(GLang* l);
-
-public:
+	void UseIFF(bool iff) throw(bad_alloc);
 
 	/**
-	* Destructor.
+	* Get the similarity between a document and a subprofile.
+	* @param doc             Pointer to the document.
+	* @param sub             Pointer to the subprofile.
+	*/
+	double GetSim(const GDoc* doc,const GSubProfile* sub) throw(GException);
+
+	/**
+	* Destructor of the similarities between documents and subprofiles.
 	*/
 	virtual ~GDocProfSims(void);
 };
 
 
-//-----------------------------------------------------------------------------
-/**
-* The GDocProfSimCursor class provides a way to go trough a set of profilesSim
-* of a given language.
-* @short ProfilesSims Cursor.
-*/
-CLASSCURSOR(GDocProfSimsCursor,GDocProfSims,unsigned int)
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

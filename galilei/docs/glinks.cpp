@@ -34,7 +34,7 @@
 
 
 //------------------------------------------------------------------------------
-//include file for GALILEI
+// include files for GALILEI
 #include <docs/glinks.h>
 #include <docs/glink.h>
 using namespace GALILEI;
@@ -53,7 +53,7 @@ GLinks::GLinks(GDoc* d) throw(bad_alloc, GException)
 	: RContainer<GLink,unsigned int,false,true>(3,2), Doc(d)
 {
 	if(!d)
-		throw GException("Document cannot be null in a list of links");
+		throw GException("Document cannot be null for a list of links");
 }
 
 
