@@ -37,7 +37,10 @@ class GSession;
 
 
 //-----------------------------------------------------------------------------
-//
+/**
+* The GGroupingSignalsReceiver provides a representation for a reciever of
+* signals of a grouping method.
+*/
 class GGroupingSignalsReceiver
 {
 public:
