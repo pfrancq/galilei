@@ -167,7 +167,7 @@ public:
 	* Computes the subprofile of a profile.
 	* @param s              SubProfile to compute.
 	*/
-	void ComputeSubProfile(GSubProfileVector* s) throw(std::bad_alloc,GException);
+	void ComputeSubProfile(GSubProfile* s) throw(std::bad_alloc,GException);
 
 	/**
 	* Compute a profile.

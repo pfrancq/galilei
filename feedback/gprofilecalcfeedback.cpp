@@ -40,9 +40,9 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gprofilecalcfeedback.h>
-#include <docs/gdocvector.h>
+#include <docs/gdoc.h>
 #include <profiles/gprofdoc.h>
-#include <profiles/gsubprofilevector.h>
+#include <profiles/gsubprofile.h>
 #include <infos/gweightinfo.h>
 #include <sessions/gobjref.h>
 #include <sessions/gsession.h>
@@ -99,7 +99,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 {
 	GWeightInfoCursor Words;
 	GProfDocCursor Docs;
-	GDocVector* CurDoc;
+	GDoc* CurDoc;
 	GWeightInfo* w;
 	bool Add;
 	tDocAssessment Fdbk;
@@ -119,7 +119,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 	{
 		// If the assessment of the document  is not relevant
 		// -> don't treat for the profiles computing
-		CurDoc=dynamic_cast<GDocVector*>(Docs()->GetDoc());
+		CurDoc=Docs()->GetDoc();
 		Fdbk=Docs()->GetFdbk();
 		if((IrrelFactor==0.0)&&(Fdbk & djOutScope)) continue;
 
@@ -140,7 +140,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 	Docs=subprofile->GetProfDocCursor();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		CurDoc=dynamic_cast<GDocVector*>(Docs()->GetDoc());
+		CurDoc=Docs()->GetDoc();
 
 		// Find list in function of the feedback
 		Fdbk=Docs()->GetFdbk();
@@ -182,7 +182,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc,GException)
+void GProfileCalcFeedback::ComputeSubProfile(GSubProfile* s) throw(bad_alloc,GException)
 {
 	GWeightInfo** ptr;
 	unsigned int i,nb;
@@ -231,10 +231,10 @@ void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_all
 void GProfileCalcFeedback::Compute(GSubProfileRef subprofile) throw(GException)
 {
 	// Compute the global vectors.
-	ComputeGlobal(dynamic_cast<GSubProfileVector*>(Session->GetSubProfile(subprofile.GetId())));
+	ComputeGlobal(Session->GetSubProfile(subprofile.GetId()));
 
 	// Compute the vector for each subprofile
-	ComputeSubProfile(dynamic_cast<GSubProfileVector*>(Session->GetSubProfile(subprofile.GetId())));
+	ComputeSubProfile(Session->GetSubProfile(subprofile.GetId()));
 }
 
 
