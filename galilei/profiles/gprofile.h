@@ -81,7 +81,7 @@ class GProfile : public RStd::RContainer<GSubProfile,unsigned,true,true>
 	/**
 	* Documents juged by profile.
 	*/
-	RContainer<GProfDoc,unsigned,true,false> Fdbks;
+	RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
 	/**
 	* Date of Update.

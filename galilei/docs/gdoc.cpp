@@ -172,10 +172,7 @@ int GALILEI::GDoc::AnalyseTagForStopKwd(RXMLTag* tag,GDict* stop)
 	else
 	{
 		for(tag->Start();!tag->End();tag->Next())
-		{
-			RAssert((*tag)());
 			nb+=AnalyseTagForStopKwd((*tag)(),stop);
-		}
 	}
 	return(nb);
 }
@@ -212,10 +209,7 @@ void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw
 	else
 	{
 		for(tag->Start();!tag->End();tag->Next())
-		{
-			RAssert((*tag)());
 			AnalyseContentTag((*tag)(),stop,dic);
-		}
 	}
 }
 
@@ -241,7 +235,7 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 
 	// Find Language with the maximal number of words of the stoplist contained
 	// in the document.
-	if(Lang)
+	if(Lang&&session->IsStaticLang())
 	{
 		stop=session->GetStop(Lang);
 	}

@@ -117,7 +117,7 @@ class GDoc
 	/**
 	* Profiles which have judge the current document.
 	*/
-	RContainer<GProfDoc,unsigned,true,false> Fdbks;
+	RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
 public:
 
