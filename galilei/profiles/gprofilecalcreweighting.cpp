@@ -48,7 +48,7 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <profiles/gprofilecalcreweighting.h>
-#include <docs/gdoc.h>
+#include <docs/gdocvector.h>
 #include <langs/gdict.h>
 #include <langs/glang.h>
 #include <profiles/gprofile.h>
@@ -91,6 +91,30 @@ void GALILEI::GReWeightingParams::SetSettings(const char* s)
 }
 
 
+
+//-----------------------------------------------------------------------------
+//
+// class GProfileCalcReWeighting::GNbDocsLangs
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class GALILEI::GProfileCalcReWeighting::GNbDocsLangs
+{
+public:
+	GLang* Lang;
+	unsigned int NbDocs;
+
+	GNbDocsLangs(GLang* l) : Lang(l), NbDocs(0) {}
+	void Clear(void) {NbDocs=0;}
+	int Compare(const GNbDocsLangs* p) const {return(Lang->Compare(p->Lang));}
+	int Compare(const GLang* l) const {return(Lang->Compare(l));}
+	void Inc(void) {NbDocs++;}
+	unsigned int GetNb(void) const {return(NbDocs);}
+};
+
+
+
 //-----------------------------------------------------------------------------
 //
 // InternVector
@@ -119,7 +143,7 @@ public:
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcReWeighting::GProfileCalcReWeighting(GSession* session, GReWeightingParams* p) throw(bad_alloc)
-	: GProfileCalc("Direct Reweighting",session), Params(p),  OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
+	: GProfileCalc("Direct Reweighting",session), Params(p), Vectors(Session->GetNbLangs()),
 	  Order(0), MaxOrderSize(5000)
 {
 	GLangCursor Langs;
@@ -127,8 +151,7 @@ GALILEI::GProfileCalcReWeighting::GProfileCalcReWeighting(GSession* session, GRe
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		OK.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
-		KO.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
+		Vectors.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 	}
 	Order=new GIWordWeight*[MaxOrderSize];
 }
@@ -150,35 +173,49 @@ void GALILEI::GProfileCalcReWeighting::SetSettings(const char* s)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcReWeighting::ComputeOKKO(GProfile* profile) throw(bad_alloc)
+void GALILEI::GProfileCalcReWeighting::ComputeGlobal(GProfile* profile) throw(bad_alloc)
 {
 	GProfDocCursor Docs;
+	GLang* CurLang;
+	GDocVector* CurDoc;
+	GIWordWeight* w;
+	GIWordsWeights* Vec;
+	tDocJudgement Fdbk;
 
-	// Clear
-	for(OK.Start();!OK.End();OK.Next())
-			OK()->Clear();
-	for(KO.Start();!KO.End();KO.Next())
-			KO()->Clear();
+	// Clear all containers before computing
+	for(Vectors.Start();!Vectors.End();Vectors.Next())
+			Vectors()->Clear();
 
-	// Go through all documents judged
+	// Go through all documents, to compute for each documents "OK", "KO" and "N"
+	// for each language as index term.
 	Docs=profile->GetProfDocCursor();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		// If the document hasn't a language, don't treat for the profiles' computing.
-		if(!Docs()->GetDoc()->GetLang())
-			continue;
+		// If the document hasn't a language or its judgement is not relevant
+		// -> don't treat for the profiles computing
+		CurDoc=dynamic_cast<GDocVector*>(Docs()->GetDoc());
+		CurLang=CurDoc->GetLang();
+		if(!CurLang) continue;
+		Fdbk=Docs()->GetFdbk();
 
-		// Verify Feedback
-		switch(Docs()->GetFdbk())
+		// Determine the lists corresponding to the language of the document
+		// and insert a word corresponding to the documents id.
+		switch(Fdbk)
 		{
 			case djOK:
 			case djNav:
-//				OK.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
+				Vec=Vectors.GetPtr<GLang*>(CurLang);
+				w=Vec->GetInsertPtr<unsigned int>(Docs()->GetDoc()->GetId());
+				w->AddWeight(1.0);
 				break;
-			
-			case djKO:
-//				KO.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
+
+			case djOutScope:
+				Vec=Vectors.GetPtr<GLang*>(CurLang);
+				w=Vec->GetInsertPtr<unsigned int>(Docs()->GetDoc()->GetId());
+				w->AddWeight(-1.0);
 				break;
+
+			default: break;
 		}
 	}
 }
@@ -190,22 +227,25 @@ void GALILEI::GProfileCalcReWeighting::ComputeSubProfile(GSubProfileVector* s) t
 	GIWordWeight** ptr;
 	unsigned int i;
 	GIWordsWeights* Vector=s->GetVector();
-	GIWordsWeights* MOK=OK.GetPtr<GLang*>(s->GetLang());
+	GIWordsWeights* Global=Vectors.GetPtr<GLang*>(s->GetLang());
 
 	// Clear the Vector.
 	s->RemoveRefs();
 	Vector->Clear();
 
-	// Put in Order an ordered version of MOK
-	if(MOK->NbPtr>MaxOrderSize)
+	// Choose the elements to stay.
+	if(Global->IsEmpty()) return;
+
+	// Put in Order an ordered version of Global
+	if(Global->NbPtr+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<unsigned int>((MOK->NbPtr+1)*1.1);
+		MaxOrderSize=static_cast<unsigned int>((Global->NbPtr+1)*1.1);
 		Order=new GIWordWeight*[MaxOrderSize];
 	}
-	memcpy(Order,MOK->Tab,MOK->NbPtr*sizeof(GIWordWeight*));
-	qsort(static_cast<void*>(Order),MOK->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
-	Order[MOK->NbPtr]=0;
+	memcpy(Order,Global->Tab,Global->NbPtr*sizeof(GIWordWeight*));
+	qsort(static_cast<void*>(Order),Global->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
+	Order[Global->NbPtr]=0;
 
 	//If MaxNonZero is null -> take all the words.
 	if(Params->MaxNonZero)
@@ -234,7 +274,7 @@ void GALILEI::GProfileCalcReWeighting::ComputeSubProfile(GSubProfileVector* s) t
 void GALILEI::GProfileCalcReWeighting::Compute(GProfile* profile)
 {
 	// Compute the OK and KO lists.
-	ComputeOKKO(profile);
+	ComputeGlobal(profile);
 
 	// Compute the vector for each subprofile
 	for(profile->Start();!profile->End();profile->Next())

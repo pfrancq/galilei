@@ -54,7 +54,8 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GReWeightingParam represents all the parameter used in the CalcReWeighting module.
+* The GReWeightingParam represents all the parameter used in the
+* CalcReWeighting module.
 * @short GReWeighting Parameters.
 */
 class GReWeightingParams : public GCalcParams
@@ -65,6 +66,7 @@ public:
 	* Maximal number of the non-zero weights in the vector.
 	*/
 	unsigned int MaxNonZero;
+
 	/**
 	* Get the settings of the method coded in a string.
 	* return Pointer to a C string.
@@ -89,16 +91,19 @@ public:
 	GReWeightingParams(void);
 };
 
+
 //-----------------------------------------------------------------------------
 /**
-* The GProfileCalcReWeighting class provides a representation for a method to compute
-* a specific profile, i.e. its sub-profiles by using the vector method.
+* The GProfileCalcReWeighting class provides a representation for a method to
+* compute a specific profile, i.e. its sub-profiles by using the vector method.
+* The documents are used "as innformation entities".
 * @author Pascal Francq
-* @short Vector Profile Computing Method.
+* @short Re-weighting Subprofile Computing Method.
 */
 class GProfileCalcReWeighting : public GProfileCalc
 {
 	class InternVector;
+	class GNbDocsLangs;
 protected:
 
 	/**
@@ -107,16 +112,9 @@ protected:
 	GReWeightingParams* Params;
 
 	/**
-	* List of words frequences in the "OK" and "N" documents for the different
-	* languages.
+	* Global vectors computed.
 	*/
-	RStd::RContainer<InternVector,unsigned int,true,true> OK;
-
-	/**
-	* List of words frequences in the "KO" documents for the different
-	* languages.
-	*/
-	RStd::RContainer<InternVector,unsigned int,true,true> KO;
+	RStd::RContainer<InternVector,unsigned int,true,true> Vectors;
 
 	/**
 	* Ordered vector for current computed profile.
@@ -149,10 +147,10 @@ public:
 	virtual void SetSettings(const char* s);
 
 	/**
-	* Computes the OK and KO lists for a profile.
+	* Computes the global lists for a profile.
 	* @param profile        Profile to compute.
 	*/
-	void ComputeOKKO(GProfile* profile) throw(bad_alloc);
+	void ComputeGlobal(GProfile* profile) throw(bad_alloc);
 
 	/**
 	* Computes the subprofile of a profile.
