@@ -90,38 +90,38 @@ class GDocAnalyse
 	unsigned int NbDirect;
 
 	/**
-	* Number of different words in the document.
-	*/
-	unsigned int NbDiffWords;
-
-	/**
 	* Number of words in the document.
 	*/
-	unsigned int NbWords;
+	unsigned int N;
 
 	/**
-	* Number of different words of the stoplist for the different languages
-	* that are in the document.
+	* Number of different words in the document.
 	*/
-	unsigned int* tmpNbDiffStopWords;
+	unsigned int Ndiff;
 
 	/**
 	* Number of words of the stoplist for the different languages that are in
 	* the document.
 	*/
-	unsigned int* tmpNbStopWords;
+	unsigned int* Sl;
 
 	/**
-	* Number of different words of the stoplist of the selected language that
-	* are in the document.
+	* Number of different words of the stoplist for the different languages
+	* that are in the document.
 	*/
-	unsigned int NbDiffStopWords;
+	unsigned int* Sldiff;
 
 	/**
 	* Number of words of the stoplist of the selected language that are in the
 	* document.
 	*/
-	unsigned int NbStopWords;
+	unsigned int Sdiff;
+
+	/**
+	* Number of different words of the stoplist of the selected language that
+	* are in the document.
+	*/
+	unsigned int S;
 
 	/**
 	* Language actually considered.
@@ -192,6 +192,13 @@ public:
 	* @param doc            Corresponding document.
 	*/
 	void Analyse(GDocXML* xml,GDoc* doc) throw(GException);
+
+	/**
+	* Analyse a XML representation of a document for a session and computes
+	* statistics about it.
+	* @param xml            XML Representation used.
+	*/
+	void ComputeStats(GDocXML* xml) throw(GException);
 
 public:
 
