@@ -168,7 +168,9 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&SessionParams,true);
 			unsigned int cmd=dlg.cbLoad->currentItem();
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
-			d->LoadSession(cmd,&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager,&PostDocManager);
+			d->LoadSession(cmd,&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,
+			&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager,&PostDocManager,
+			&PostGroupManager);
 			Doc=new KDoc(this,Sess);
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
@@ -215,7 +217,8 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess = new GSessionMySQL(host,user,passwd,db,&SessionParams,true);
 	unsigned int cmd=dlg.cbLoad->currentItem();
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
-	d->LoadSession(cmd,&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager,&PostDocManager);
+	d->LoadSession(cmd,&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
+	&GroupCalcManager,&StatsCalcManager,&LinkCalcManager, &PostDocManager, &PostGroupManager);
 	Doc=new KDoc(this,Sess);
 	sessionDisconnect->setEnabled(true);
 	sessionCompute->setEnabled(true);

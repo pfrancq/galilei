@@ -311,3 +311,37 @@ void QPlugins::slotDocAnalyseEnable( bool state )
 	QDocAnalyseItem* f=dynamic_cast<QDocAnalyseItem*>(DocAnalyses->currentItem());
 	f->Enable=state;
 }
+
+
+void QPlugins::slotPostGroupEnable( bool state )
+{
+                if(!PostGroups->currentItem()) return;
+	QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(PostGroups->currentItem());
+	f->Enable=state;
+}
+
+
+void QPlugins::slotConfigPostGroup()
+{
+                if(!PostGroups->currentItem()) return;
+	QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(PostGroups->currentItem());
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotAboutPostGroup()
+{
+                if(!PostGroups->currentItem()) return;
+	QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(PostGroups->currentItem());
+	f->Fac->About();
+}
+
+
+void QPlugins::changePostGroup(QListViewItem * item)
+{
+        if(!item) return;
+	QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(item);
+	EnablePostGroup->setChecked(f->Enable);
+	ConfigPostGroup->setEnabled(f->Fac->HasConfigure());
+	AboutPostGroup->setEnabled(f->Fac->HasAbout());
+}

@@ -50,6 +50,8 @@
 #include <docs/gpostdoc.h>
 #include <langs/glang.h>
 #include <docs/gdocanalyse.h>
+#include <postgroups/gpostgroup.h>
+
 using namespace GALILEI;
 
 
@@ -159,6 +161,18 @@ public:
 	GFactoryDocAnalyse* Fac;
 	bool Enable;
 	QDocAnalyseItem(QListView* lst,GFactoryDocAnalyse* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+
+class QPostGroupItem : public QListViewItem
+{
+public:
+	GFactoryPostGroup* Fac;
+	bool Enable;
+	QPostGroupItem(QListView* lst,GFactoryPostGroup* fac,const char* desc)
 		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}

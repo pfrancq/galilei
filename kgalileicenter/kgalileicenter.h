@@ -57,6 +57,8 @@
 #include <langs/glangs.h>
 #include <sessions/gsession.h>
 #include <docs/gdocanalysemanager.h>
+#include <postgroups/gpostgroupmanager.h>
+
 using namespace GALILEI;
 
 
@@ -150,6 +152,12 @@ class KGALILEICenterApp : public KMainWindow
 	* Linking Manager.
 	*/
 	GLinkCalcManager LinkCalcManager;
+
+		/**
+	* Linking Manager.
+	*/
+	GPostGroupManager PostGroupManager;
+
 
 	/**
 	* Linking Manager.

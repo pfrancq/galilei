@@ -89,7 +89,7 @@ KGALILEICenterApp::KGALILEICenterApp(void)
 	  ProfilingManager(getenv("GALILEI_PLUGINS_LIB")), GroupingManager(getenv("GALILEI_PLUGINS_LIB")),
 	  GroupCalcManager(getenv("GALILEI_PLUGINS_LIB")), StatsCalcManager(getenv("GALILEI_PLUGINS_LIB")),
 	  LinkCalcManager(getenv("GALILEI_PLUGINS_LIB")),PostDocManager(getenv("GALILEI_PLUGINS_LIB")),
-	  dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0)
+	  PostGroupManager(getenv("GALILEI_PLUGINS_LIB")),dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0)
 {
 	Config=kapp->config();
 	Printer = new QPrinter;
@@ -241,6 +241,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Conf.Store(StatsCalcManager);
 	Conf.Store(LinkCalcManager);
 	Conf.Store(PostDocManager);
+	Conf.Store(PostGroupManager);
 	Conf.Save();
 }
 
@@ -304,6 +305,7 @@ void KGALILEICenterApp::readOptions(void)
 		Conf.Read(StatsCalcManager);
 		Conf.Read(LinkCalcManager);
 		Conf.Read(PostDocManager);
+		Conf.Read(PostGroupManager);
 	}
 	catch(...)
 	{

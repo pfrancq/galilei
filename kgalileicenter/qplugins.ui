@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>610</width>
-            <height>455</height>
+            <width>634</width>
+            <height>461</height>
         </rect>
     </property>
     <property name="caption">
@@ -963,6 +963,101 @@
                     <cstring>tab</cstring>
                 </property>
                 <attribute name="title">
+                    <string>PostGroups</string>
+                </attribute>
+                <vbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QListView">
+                        <column>
+                            <property name="text">
+                                <string>Methods</string>
+                            </property>
+                            <property name="clickable">
+                                <bool>true</bool>
+                            </property>
+                            <property name="resizable">
+                                <bool>true</bool>
+                            </property>
+                        </column>
+                        <property name="name">
+                            <cstring>PostGroups</cstring>
+                        </property>
+                        <property name="resizePolicy">
+                            <enum>Manual</enum>
+                        </property>
+                        <property name="resizeMode">
+                            <enum>AllColumns</enum>
+                        </property>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout2_2_2</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>ConfigPostGroup</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>Configure</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>AboutPostGroup</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>About</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer2_2_2</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Horizontal</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>40</width>
+                                        <height>20</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>EnablePostGroup</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>Enable statistic</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
                     <string>Statistics</string>
                 </attribute>
                 <vbox>
@@ -1507,6 +1602,30 @@
         <receiver>QPlugins</receiver>
         <slot>slotDocAnalyseEnable(bool)</slot>
     </connection>
+    <connection>
+        <sender>ConfigPostGroup</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigPostGroup()</slot>
+    </connection>
+    <connection>
+        <sender>AboutPostGroup</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutPostGroup()</slot>
+    </connection>
+    <connection>
+        <sender>EnablePostGroup</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotPostGroupEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>PostGroups</sender>
+        <signal>clicked(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changePostGroup(QListViewItem*)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">qplugins.ui.h</include>
@@ -1548,6 +1667,10 @@
     <slot>slotAboutDocAnalyse()</slot>
     <slot>slotConfigDocAnalyse()</slot>
     <slot>slotDocAnalyseEnable( bool state )</slot>
+    <slot>slotPostGroupEnable( bool state )</slot>
+    <slot>slotConfigPostGroup()</slot>
+    <slot>slotAboutPostGroup()</slot>
+    <slot>changePostGroup(QListViewItem * item)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

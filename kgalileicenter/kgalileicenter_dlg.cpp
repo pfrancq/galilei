@@ -115,6 +115,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	GFactoryStatsCalcCursor StatsCalc;
 	GFactoryPostDocCursor PostDoc;
 	GFactoryDocAnalyseCursor DocAnalyse;
+	GFactoryPostGroupCursor PostGroup;
 	QPlugins dlg(this,"Plugins Dialog");
 	QString str;
 	QListViewItem* def;
@@ -259,6 +260,26 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.changeLinkCalc(def);
 		dlg.EnableLinkCalc->setEnabled(true);
 		dlg.CurrentLinkCalc->setEnabled(true);
+	}
+
+	// Goes through PostGroups
+	def=cur=0;
+	PostGroup=PostGroupManager.GetPostGroupCursor();
+	for(PostGroup.Start();!PostGroup.End();PostGroup.Next())
+	{
+		str=PostGroup()->GetName();
+		str+=" [";
+		str+=PostGroup()->GetLib();
+		str+="]";
+		cur=new QPostGroupItem(dlg.PostGroups,PostGroup(),str);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.PostGroups->setSelected(def,true);
+		dlg.changePostGroup(def);
+		dlg.EnablePostGroup->setEnabled(true);
 	}
 
 	// Goes through the PostDoc method
@@ -473,6 +494,18 @@ void KGALILEICenterApp::slotPlugins(void)
 		catch(GException)
 		{
 		}
+
+		// Goes through PostGroups
+		QPostGroupItem* item10=dynamic_cast<QPostGroupItem*>(dlg.PostGroups->firstChild());
+		while(item)
+		{
+			if(item10->Enable)
+				item10->Fac->Create(getSession());
+			else
+				item10->Fac->Delete(getSession());
+			item10=dynamic_cast<QPostGroupItem*>(item10->itemBelow());
+		}
+
 	}
 
 }
