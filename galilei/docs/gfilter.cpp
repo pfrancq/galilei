@@ -207,6 +207,11 @@ void GALILEI::GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 				(*(ptr++))=0;          // Skip separator.
 			kwd->InsertAttr("docxml:value",list);
 		}
+		else
+		{
+			ptr++;
+			list=ptr;
+		}
 	}
 }
 

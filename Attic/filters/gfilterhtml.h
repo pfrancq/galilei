@@ -179,6 +179,36 @@ protected:
 	void AnalyseBody(void);
 
 	/**
+	* Function who analyze the tag "LINKS" of the html document
+	* @param params        Parameters of the LINKS Tag
+	* @param content       the description of the link
+	*/
+	void AnalyseLink(char* params,char* content,bool use=false);
+
+//  /**
+//	* Function who analyze the tag "LINKS" of the html document
+//	* @param params        the parameters of the BASE tag
+//	* @param metaData      XML Tag representing the meta data of the document
+//	*/
+//	void AnalyseBase(char* params,RXMLTag* metaData);
+	
+	/**
+	* Function who reconstruct the partial url of a link
+	* @param u             The url to modify
+	* @param char*         A pointer to the new URL
+	*/
+	char* ConstructURL(char* u);
+
+	
+	/**
+	* Analyse the differents parameters contained in the link tag
+	* @param params         the parameters to be analysed
+	* @returns RXMLTag      pointer to the parent Tag
+	*/
+	RXMLTag* AnalyseLinkParams(char* params);
+
+	
+	/**
 	* Treat a META tag.
 	* @param params         Parameters of the META tag.
 	* @param metaData       XML Tag representing the meta data of the document.
