@@ -93,7 +93,6 @@ GWordCursor& GWordList::GetWordCursor(void) throw(bad_alloc)
 GData* GWordList::CreateCopy(void) const throw(bad_alloc)
 {
 	GWordList* ptr=new GWordList(this);
-	ptr->Id=cNoRef;
 	return(ptr);
 }
 

@@ -87,7 +87,6 @@ GALILEI::GWord::GWord(const GWord* word) throw(bad_alloc)
 GData* GWord::CreateCopy(void) const throw(bad_alloc)
 {
 	GWord* ptr=new GWord(this);
-	ptr->Id=cNoRef;
 	return(ptr);
 }
 
