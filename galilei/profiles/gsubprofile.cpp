@@ -146,6 +146,39 @@ unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof) cons
 
 
 //-----------------------------------------------------------------------------
+unsigned int GALILEI::GSubProfile::GetCommonDocs(const GSubProfile* prof) const
+{
+	tDocJudgement f;
+	GProfDoc* cor;
+	unsigned int nb;
+
+	// Verify that the two profile have the same language
+	if(Lang!=prof->Lang) return(0);
+	nb=0;
+
+	// Go through the document judged by the corresponding profile
+	GProfDocCursor Fdbks=Profile->GetProfDocCursor();
+	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+	{
+		// If the document is not "good" or not the same language that the
+		// same profile -> Nothing
+		f=Fdbks()->GetFdbk();
+		if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
+
+		// Look for the same document in the other profile. If not found or the
+		// document is not "good" -> Nothing
+		cor=prof->Profile->GetFeedback(Fdbks()->GetDoc());
+		if(!cor) continue;
+		f=cor->GetFdbk();
+
+		// Increase the number of common documents
+		nb++;
+	}
+	return(nb);
+}
+
+
+//-----------------------------------------------------------------------------
 unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) const
 {
 	tDocJudgement f;
@@ -178,6 +211,19 @@ unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) co
 		nb++;
 	}
 	return(nb);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GSubProfile::GetNbJudgedDocs(void) const
+{
+	unsigned int Total=0;
+	GProfDocCursor CurDoc=GetProfile()->GetProfDocCursor();
+
+	for(CurDoc.Start();!CurDoc.End();CurDoc.Next())
+		if(CurDoc()->GetDoc()->GetLang()==GetLang())
+			Total++;
+	return(Total);
 }
 
 
