@@ -9,8 +9,8 @@
       <keyword>KDE</keyword>
       <keyword>Qt</keyword>
     </keywords>
-    <projectdirectory>/home/pfrancq/prj/kgalileicenter</projectdirectory>
-    <absoluteprojectpath>true</absoluteprojectpath>
+    <projectdirectory>.</projectdirectory>
+    <absoluteprojectpath>false</absoluteprojectpath>
     <version></version>
     <description></description>
     <ignoreparts/>
@@ -113,8 +113,8 @@
       <toc>perl</toc>
     </ignoretocs>
     <projectdoc>
-      <userdocDir>/home/pfrancq/prj/kgalileicenter/html/</userdocDir>
-      <apidocDir>/home/pfrancq/prj/kgalileicenter/html/</apidocDir>
+      <userdocDir>./html/</userdocDir>
+      <apidocDir>./html/</apidocDir>
     </projectdoc>
   </kdevdoctreeview>
   <kdevdebugger>
