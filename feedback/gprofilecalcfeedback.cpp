@@ -82,14 +82,14 @@ void GProfileCalcFeedback::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Connect(GSession* session)
+void GProfileCalcFeedback::Connect(GSession* session) throw(GException)
 {
 	GProfileCalc::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Disconnect(GSession* session)
+void GProfileCalcFeedback::Disconnect(GSession* session) throw(GException)
 {
 	GProfileCalc::Disconnect(session);
 }
@@ -229,7 +229,7 @@ void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_all
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(bad_alloc,GException)
+void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(GException)
 {
 	// Compute the global vectors.
 	ComputeGlobal(subprofile);

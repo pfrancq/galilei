@@ -153,13 +153,13 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session);
+	virtual void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session);
+	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Compute the global vectors.
@@ -177,7 +177,7 @@ public:
 	* Compute a profile.
 	* @param profile        Profile to compute.
 	*/
-	virtual void Compute(GSubProfile* subprofile) throw(bad_alloc,GException);
+	virtual void Compute(GSubProfile* subprofile) throw(GException);
 
 	/**
 	* Get the type of the method implemented. This method is used for the
