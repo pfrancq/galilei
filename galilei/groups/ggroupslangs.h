@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	ggroupslangs.h
 
 	Basic Information - Implementation.
 
@@ -29,20 +29,34 @@
 
 */
 
+
+//-----------------------------------------------------------------------------
 #ifndef GGroupsLangsH
 #define GGroupsLangsH
+
+
+//-----------------------------------------------------------------------------
+// include files for Rainbw
+#include <rstd/rcontainer.h>
+using namespace RStd;
+
+
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <ggroups/ggroups.h>
 #include <gsessions/gsession.h>
-
 using namespace GALILEI;
+
+
+//-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-// include files for Rainbw
-#include <rstd/rcontainer.h>
+
 //-----------------------------------------------------------------------------
+// forward class declaration
 class GGroups;
+
+
 //-----------------------------------------------------------------------------
 /**
 */
@@ -52,11 +66,31 @@ public:
 	
 	GSession* Session;
 
+	/**
+	* Constructor
+	* @param session        opened session
+	*/
 	GGroupsLangs(GSession *session) throw(bad_alloc);
+	
+	/**
+	* virtual Load function.
+	*/
 	virtual void Load(void);
+
+	/*
+	* Calculation of each "groups".	
+	*/
 	void Calc(void);
+	
+    /*
+	* virtual Save function.
+	*/
 	virtual void Save(void);
 };
-}
+
+}  //-------- End of namespace GALILEI ----------------------------------------
+
+//-----------------------------------------------------------------------------
+
 #endif
 

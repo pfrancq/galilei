@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	gsubprofile.h
 
 	Basic Information - Implementation.
 
@@ -29,8 +29,22 @@
 
 */
 
+
+
+//-----------------------------------------------------------------------------
 #ifndef GSubProfileH
 #define GSubProfileH
+
+
+//-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <time.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+
+
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <glangs/glang.h>
@@ -38,18 +52,22 @@
 #include <gdocs/gwordlist.h>
 #include <gprofiles/gprofdoc.h>
 #include <gprofiles/gprofile.h>
- #include <time.h>
-
 using namespace GALILEI;
-//-----------------------------------------------------------------------------
-// include files for Rainbow
+
+
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
+//-----------------------------------------------------------------------------
 
+
+//-----------------------------------------------------------------------------
+// forward declaration
 class GProfDoc;
 class GProfile;
 class GWordCalcs;
+
+
 //-----------------------------------------------------------------------------
 /**
 * This class represents a sub-profile for a specific language.
@@ -59,34 +77,95 @@ class GWordCalcs;
 class GSubProfile
 {
 public:
+	/**
+	* Owner profile of the subprofile.
+	*/
 	GProfile *Owner;
-	unsigned Id;     		 // Identifier
-	GLang *Lang;          // Language
-	GWordCalcs *MOK;		
-	GWordCalcs *MKO;		
-	GWordList *OK;        // List OK
-	GWordList *KO;        // List KO
-	GWordList *Common;    // List Common
-   unsigned int NbOK;
+
+	/**
+	* Identifier
+	*/
+	unsigned Id;
+
+	/**
+	* Language
+	*/
+	GLang *Lang;
+
+	GWordCalcs *MOK;
+	GWordCalcs *MKO;
+	
+	/**
+	* List OK.
+	*/
+	GWordList *OK;
+
+	/**
+	* List KO.
+	*/
+	GWordList *KO;
+
+	/**
+	* List Common.
+	*/
+	GWordList *Common;
+	
+	unsigned int NbOK;
 	unsigned int NbKO;
-	bool bToAttach;                   // Must Attach to group
+	
+	/**
+	* Must Attach to group ? (T/F).
+	*/
+	bool bToAttach;
+
 	time_t Attached;
 
+	/**
+	* Default Constructor.
+	*/
 	GSubProfile(void) throw(bad_alloc);
+
+
+	/** Constructor of the subprofile.
+	* @param owner          owner profile
+	* @param id             identifier
+	* @param lang           Language of the subprofile
+	*/
 	GSubProfile(GProfile *owner,unsigned int id,GLang *lang) throw(bad_alloc);
+
+	/** boolean functions for calculation of OK, KO and Common lists.
+	*/
 	bool NeedOK(void);
 	bool NeedKO(void);
+
+	/**
+	* Comparaison functions
+	*/
 	int Compare(const unsigned int id);
 	int Compare(const GLang* lang);
 	int Compare(const GSubProfile &subprofile);
 	int Compare(const GSubProfile *subprofile);	
+
+	/**
+	* Analyse of the subprofile
+	*/
 	void Analyse(GProfDoc *profdoc);
 	void Analyse(void);
+
+	/**
+	* Boolean function for calculation of similarity between SubProfiles.
+	*/
 	bool Similar(GSubProfile *sub);
+
+	/**
+	*Destructor
+	*/
 	~GSubProfile(void);
 };
 
-}
+}  //-------- End of namespace GALILEI ----------------------------------------
+
+//-----------------------------------------------------------------------------
 
 #endif
 

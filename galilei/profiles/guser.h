@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	guser.h
 
 	Basic Information - Implementation.
 
@@ -31,25 +31,33 @@
 
 
 
+//-----------------------------------------------------------------------------
 #ifndef GUserH
 #define GUserH
-//---------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+//include files for R Project
+#include <rstd/rcontainer.h>
+#include <rstd/rstring.h>
+
+
+//-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gprofiles/gusers.h>
 #include <gprofiles/gprofile.h>
 using namespace GALILEI;
 
 
-//---------------------------------------------------------------------------
-//include files for Rainbow
-#include <rstd/rcontainer.h>
-#include <rstd/rstring.h>
-//---------------------------------------------------------------------------
-
+//-----------------------------------------------------------------------------
 namespace GALILEI{
+//-----------------------------------------------------------------------------
+// forward declaration
 class GUsers;
 class GProfile;
-//---------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
 // class GUser
 
 class GUser : public RStd::RContainer<GProfile,unsigned,true,true>
@@ -57,17 +65,49 @@ class GUser : public RStd::RContainer<GProfile,unsigned,true,true>
 public:
 
 	GUsers *Owner;
-	unsigned Id;         // Identifier
-	RString Name;        // Name
+	/**
+	* Identifier
+	*/
+	unsigned Id;
+	
+	/*
+	* Name
+	*/
+	RString Name;
+	
+	/**
+	* Number of session
+	*/
 	unsigned SessNum;    // Number of session
 
+	/**
+	* Construct a GUser
+	* @param owner			parent owners
+	*/
 	GUser(GUsers *owner) throw(bad_alloc);
+	
+	/** comparaison functions
+	*/
 	int Compare(const unsigned int id);
+	
+	/** comparaison functions
+	*/
 	int Compare(const GUser &user);
+	
+	/** comparaison functions
+	*/
 	int Compare(const GUser *user);
+	
+	/** virtual Load function
+	*/
 	virtual void Load(void) throw(bad_alloc,GException)=0;
+
 };
-}
+
+}  //-------- End of namespace GALILEI ----------------------------------------
+
+//-----------------------------------------------------------------------------
+
 #endif
 
 

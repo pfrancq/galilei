@@ -28,30 +28,46 @@
 	Boston, MA  02111-1307  USA
 
 */
+
+
+
+//---------------------------------------------------------------------------
 #ifndef GProfileH
 #define GProfileH
+
+
+//-----------------------------------------------------------------------------
+//include file for ANSI C/C++
+#include <time.h>
+
+
+//---------------------------------------------------------------------------
+//include files for R Project
+#include <rstd/rcontainer.h>
+#include <rstd/rstring.h>
+using namespace RStd;
+
+
 //---------------------------------------------------------------------------
 // include files for GALILEI
 #include <gprofiles/gsubprofile.h>
 #include <gprofiles/gprofdoc.h>
 #include <gprofiles/guser.h>
-
 using namespace GALILEI ;
-//---------------------------------------------------------------------------
-//include files for Rainbow
-#include <rstd/rcontainer.h>
-#include <rstd/rstring.h>
 
-//---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 //include file for ANSI C/C++
 #include <time.h>
-//---------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
 namespace GALILEI{
 
 class GUser;
 //class GWordCalcs;
 class GSubProfile;
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // class GProfile
 class GProfile : public RStd::RContainer<GSubProfile,unsigned,true,true>
 {
@@ -62,20 +78,73 @@ public:
 	*/
 	GUser *Owner;
 
-	unsigned Id;       		// Identifier
-	RString Name;           // Name
-	bool Modified;          // Profile modified since last analyse?
-	RContainer<GProfDoc,unsigned,true,true> FdbkDocs; // Documents juged by profile
-	time_t	Updated;			// Date of updated
+	/**
+	* Identifier
+	*/
+	unsigned Id;
 
-	GProfile(GUser *owner) throw(bad_alloc);
+	/**
+	*
+	*/ name
+	RString Name;
+
+	/**
+	* Profile modified since last analyse ? (T/F)
+	*/
+	bool Modified;
+	
+	/**
+	* Documents juged by profile
+	*/
+	RContainer<GProfDoc,unsigned,true,true> FdbkDocs;
+	
+
+	/**
+	* Date of Update
+	*/
+	time_t	Updated;
+
+	/**
+	* Default Constructor.
+	*/
+    GProfile(GUser *owner) throw(bad_alloc);
+	
+    /**
+	* Constructor og GProfile
+	* @param owner          the owner of the profile.
+	* @param id             id of the profile.
+	* @param name           name of the profile.
+	*/
 	GProfile(GUser *owner,unsigned int id,RString &name) throw(bad_alloc);
+	
+	/**
+	* Comparaison function
+	*/
 	int Compare(const unsigned int &id);
+	
+	/**
+	* Comparaison function
+	*/
 	int Compare(const GProfile &profile);
+	
+	/**
+	* Comparaison function
+	*/
 	int Compare(const GProfile *profile);
+
+	/**
+	* Calculation of the profile
+	*/
 	void Calc(void);
+
+	/**
+	* Load and Save virtual functions.
+	*/
 	virtual void Load(void) throw(bad_alloc,GException)=0;
 	virtual void Save(void) throw(bad_alloc,GException)=0;
+
 };
-}
+}  //-------- End of namespace GALILEI ----------------------------------------
+
+//-----------------------------------------------------------------------------
 #endif

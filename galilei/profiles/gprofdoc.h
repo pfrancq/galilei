@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	gprofdoc.h
 
 	Basic Information - Implementation.
 
@@ -30,25 +30,32 @@
 */
 #ifndef GProfDocH
 #define GProfDocH
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //include file for GALILEI
 #include <gdocs/gdoc.h>
 using namespace GALILEI;
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 namespace GALILEI {
 
 class GDoc;
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 class GProfDoc
 {
 public:
-  GDoc *Doc;
-  char Fdbk;
+	GDoc *Doc;
+    char Fdbk;
 
-  GProfDoc(GDoc *doc,char fdbk);
-  int Compare(const GProfDoc &profdoc);
-  int Compare(const GProfDoc *profdoc);
+	/** constructor of GProfDoc
+	*/
+    GProfDoc(GDoc *doc,char fdbk);
+
+	/** comparaison functions
+	*/
+	int Compare(const GProfDoc &profdoc);
+	int Compare(const GProfDoc *profdoc);
 };
-}
+}  //-------- End of namespace GALILEI ----------------------------------------
+
+//-----------------------------------------------------------------------------
 #endif

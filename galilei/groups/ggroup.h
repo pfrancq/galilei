@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	ggroup.h
 
 	Basic Information - Implementation.
 
@@ -29,21 +29,31 @@
 
 */
 
+
+//-----------------------------------------------------------------------------
 #ifndef GGroupH
 #define GGroupH
+
+
+//-----------------------------------------------------------------------------
+//include files for Rainbow
+#include <rstd/rcontainer.h>
+
+
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gprofiles/gsubprofile.h>
 #include <ggroups/ggroups.h>
 using namespace GALILEI;
 
-//-----------------------------------------------------------------------------
-//include files for Rainbow
-#include <rstd/rcontainer.h>
+
 //-----------------------------------------------------------------------------
 namespace GALILEI{
+//-----------------------------------------------------------------------------
+// forward classes declaration
 class GGroups;
 class GSubProfile;
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -56,7 +66,11 @@ class GGroup : public RStd::RContainer<GSubProfile,unsigned int,false,true>
 {
 public:
 	
+	/**
+	* identifier
+	*/
 	unsigned int Id;
+	
 	GGroups *Owner;	
 
 	/**
@@ -70,12 +84,37 @@ public:
 	*/
 	GGroup(GGroups *owner,unsigned int id) throw(bad_alloc);
 
+	/**
+	* comparaison function.
+	*/
 	int Compare(const GGroup &group);
+	
+	/**
+	* comparaison function.
+	*/
 	int Compare(const GGroup *group);
+
+	/**
+	* virtual load function.
+	*/
 	virtual void Load(void)=0;
+	
+    /**
+	* virtual save function.
+	*/
 	virtual void Save(void)=0;
+	
+	/**
+	* can the group attache the subprofile ?
+	* @param sub            subprofile to attach.
+	*/
 	bool CanAttach(GSubProfile *sub);
+
 };
 
-}
+
+}  //-------- End of namespace GALILEI ----------------------------------------
+
+//-----------------------------------------------------------------------------
+
 #endif
