@@ -137,6 +137,62 @@ void GALILEI::GDoc::ClearFdbks(void)
 
 
 //-----------------------------------------------------------------------------
+const char* GALILEI::GDoc::GetURL(void) const
+{
+return(URL());
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GDoc::GetName(void) const
+{
+	return(Name());
+}
+
+
+//-----------------------------------------------------------------------------
+const R::RDate* GALILEI::GDoc::GetUpdated(void) const
+{
+	return(&Updated);
+}
+
+
+//-----------------------------------------------------------------------------
+const R::RDate* GALILEI::GDoc::GetComputed(void) const
+{
+	return(&Computed);
+}
+
+
+//-----------------------------------------------------------------------------
+GMIMEFilter* GALILEI::GDoc::GetMIMEType(void) const
+{
+	return(Type);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::SetMIMEType(GMIMEFilter* type)
+{
+	Type=type;
+}
+
+
+//-----------------------------------------------------------------------------
+tObjState GALILEI::GDoc::GetState(void) const
+{
+	return(State);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::SetState(tObjState state)
+{
+	State=state;
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd)
 {
 	Lang=l;

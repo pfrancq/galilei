@@ -207,49 +207,55 @@ public:
 	/**
 	* Clear The Fdbks Container
 	*/
-	void ClearFdbks (void);
+	void ClearFdbks(void);
 
 	/**
 	* Get the URL.
 	* @returns Pointer to a C string.
 	*/
-	const char* GetURL(void) const {return(URL());}
+	const char* GetURL(void) const;
 
 	/**
 	* Get the Name.
 	* @returns Pointer to a C string.
 	*/
-	const char* GetName(void) const {return(Name());}
+	const char* GetName(void) const;
 
 	/**
 	* Get the date of the last update of the document's content.
 	* @returns Pointer to date.
 	*/
-	const R::RDate* GetUpdated(void) const {return(&Updated);}
+	const R::RDate* GetUpdated(void) const;
 
 	/**
 	* Get the date of the last analysis of the document.
 	* @returns Pointer to date.
 	*/
-	const R::RDate* GetComputed(void) const {return(&Computed);}
+	const R::RDate* GetComputed(void) const;
 
 	/**
 	* Get the MIME type.
-	* @returns Pointer to a MIME type.                                     
+	* @returns Pointer to a MIME type.
 	*/
-	GMIMEFilter* GetMIMEType(void) const {return(Type);}
+	GMIMEFilter* GetMIMEType(void) const;
+
+	/**
+	* Set the MIME type.
+	* @param type           Pointer to a MIME type.
+	*/
+	void SetMIMEType(GMIMEFilter* type);
 
 	/**
 	* Return the state of the document.
 	* @returns GALILEI::tObjState value.
 	*/
-	tObjState GetState(void) const {return(State);}
+	tObjState GetState(void) const;
 
 	/**
 	* Set the state of the document.
 	* @param state          New state.
 	*/
-	void SetState(tObjState state) {State=state;}
+	void SetState(tObjState state);
 
 	/**
 	* Set the information for the document.
