@@ -255,6 +255,14 @@ public:
 	double GetAvgSim(void) const {return(AvgSim);}
 
 	/**
+	* Get the maximal value of the ratio of same feedbacks of a subprofile and
+	* the ones of the group.
+	* @param obj            Object to test.
+	* @return double
+	*/
+	double GetMaxRatioSame(GObjIR* obj);
+
+	/**
 	* Destruct the group.
 	*/
 	virtual ~GGroupIR(void);

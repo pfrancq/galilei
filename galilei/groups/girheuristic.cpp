@@ -36,10 +36,13 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <profiles/gsubprofile.h>
+#include <profiles/gprofile.h>
 #include <groups/girheuristic.h>
 #include <groups/gchromoir.h>
 #include <groups/ggroupir.h>
 #include <groups/gobjir.h>
+#include <groups/ginstir.h>
 using namespace GALILEI;
 using namespace RGGA;
 
@@ -55,6 +58,7 @@ using namespace RGGA;
 GALILEI::GIRHeuristic::GIRHeuristic(RRandom* r,RStd::RCursor<GObjIR,unsigned int>* objs)
 	: RGGA::RFirstFitHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(r,objs)
 {
+	Name="IR Heuristic";
 }
 
 
@@ -66,26 +70,83 @@ void GALILEI::GIRHeuristic::Init(GChromoIR* groups)
 
 
 //-----------------------------------------------------------------------------
-GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGGA::RGroupingHeuristicException)
+GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGA::eGA)
 {
-	GGroupIR* grp=0;
-	double max=-0.1;
-	double tmp;
+	GGroupIR* grp;
+	double maxsim;
+	double ratio;
+	double maxratio;
+	double sim;
 
-	for(Groups->Used.Start();!Groups->Used.End();Groups->Used.Next())
+	for(Groups->Used.Start(),maxsim=maxratio=-1.0,grp=0;!Groups->Used.End();Groups->Used.Next())
 	{
 		if(!Groups->Used()->CanInsert(CurObj)) continue;
-		tmp=Groups->Used()->ComputeAvgSim(CurObj);
-		if(tmp>max)
+		sim=Groups->Used()->ComputeAvgSim(CurObj);
+		ratio=Groups->Used()->GetMaxRatioSame(CurObj);
+		if(ratio>=Groups->Instance->GetMinCommonSame())
 		{
-			max=tmp;
-			grp=Groups->Used();
+			// Take the group with the highest ratio
+			if(ratio>maxratio)
+			{
+				maxratio=ratio;
+				grp=Groups->Used();
+				maxsim=2.0;
+			}
+		}
+		else
+		{
+			if(sim>maxsim)
+			{
+				maxsim=sim;
+				grp=Groups->Used();
+			}
 		}
 //		return(Groups->Used());
 	}
 	if(!grp)
 		grp=Groups->ReserveGroup();
 	return(grp);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GIRHeuristic::PostRun(void) throw(RGA::eGA)
+{
+	GObjIR* obj;
+	GGroupIRCursor Cur1,Cur2;
+	GGroupIR* grp=0;
+	double tmp,max;
+	unsigned int i;
+
+	for(i=0;i<Groups->Used.NbPtr;i++)
+	{
+		Cur1.Set(Groups->Used);
+		Cur2.Set(Groups->Used);
+		for(Cur1.GoTo(i);!Cur1.End();Cur1.Next(),i++)
+		{
+			if(Cur1()->GetNbObjs()!=1) continue;
+			obj=Cur1()->GetObjPos(0);
+			if(!obj->GetSubProfile()->GetProfile()->IsSocial()) continue;
+			for(Cur2.Start(),max=-1.0,grp=0;!Cur2.End();Cur2.Next())
+			{
+				if(Cur1()==Cur2()) continue;
+//				if(!Cur2()->CanInsert(obj)) continue;
+				tmp=Cur2()->ComputeAvgSim(obj);
+				if(tmp>max)
+				{
+					max=tmp;
+					grp=Cur2();
+				}
+			}
+			if(grp)
+			{
+				Groups->ReleaseGroup(Cur1());
+				grp->Insert(obj);
+				i--;
+				break;
+			}
+		}
+	}
 }
 
 

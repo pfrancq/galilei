@@ -123,12 +123,16 @@ bool GALILEI::GGroupIR::CanInsert(const GObjIR* obj)
 {
 	unsigned int i;
 	GObjIR** ptr;
-	GSubProfile* sub;
+	GSubProfile* sub1;
+	GSubProfile* sub2;
 
-	sub=obj->GetSubProfile();
+	sub1=obj->GetSubProfile();
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
-		if(Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile())<Owner->MinSimLevel)
+	{
+		sub2=(*ptr)->GetSubProfile();
+		if((Owner->Sims->GetSim(sub1,sub2)<=Owner->MinSimLevel)||(Owner->Instance->GetRatioDiff(sub1,sub2)>=Owner->Instance->MinCommonDiff))
 			return(false);
+	}
 	return(true);
 }
 
@@ -227,7 +231,7 @@ double GALILEI::GGroupIR::ComputeMaxSim(GObjIR* obj)
 	GSubProfile* sub;
 
 	sub=obj->GetSubProfile();
-	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),MaxSim=0.0;--i;ptr++)
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),MaxSim=-1.0;--i;ptr++)
 	{
 		if((*ptr)==obj) continue;
 		tmp=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
@@ -284,7 +288,7 @@ double GALILEI::GGroupIR::ComputeMaxSim(GGroupIR* grp)
 	GObjIR** ptr;
 	double MaxSim,tmp;
 
-	for(i=grp->NbSubObjects+1,ptr=Owner->GetObjs(grp->SubObjects),MaxSim=0.0;--i;ptr++)
+	for(i=grp->NbSubObjects+1,ptr=Owner->GetObjs(grp->SubObjects),MaxSim=-1.0;--i;ptr++)
 	{
 		tmp=ComputeMaxSim(*ptr);
 		if(tmp>MaxSim)
@@ -299,7 +303,7 @@ double GALILEI::GGroupIR::ComputeMaxSim(GObjIR** grp,unsigned int nb)
 {
 	double MaxSim,tmp;
 
-	for(nb++,MaxSim=0.0;--nb;grp++)
+	for(nb++,MaxSim=-1.0;--nb;grp++)
 	{
 		tmp=ComputeMaxSim(*grp);
 		if(tmp>MaxSim)
@@ -548,6 +552,25 @@ GGroupIR& GALILEI::GGroupIR::operator=(const GGroupIR& grp)
 	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::operator=(grp);
 	AvgSim=grp.AvgSim;
 	return(*this);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GGroupIR::GetMaxRatioSame(GObjIR* obj)
+{
+	double max,tmp;
+	GSubProfile* sub=obj->GetSubProfile();
+	unsigned int i;
+	GObjIR** ptr;
+
+	// Look if in the other objects, there is a better one
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),max=0.0;--i;ptr++)
+	{
+		tmp=Owner->Instance->GetRatioSame(sub,(*ptr)->GetSubProfile());
+		if(tmp>max)
+			max=tmp;
+	}
+	return(max);
 }
 
 

@@ -72,9 +72,9 @@ using namespace RGA;
 GALILEI::GGroupingGGA::GGroupingGGA(GSession* s) throw(bad_alloc)
 	: GGrouping("Grouping Genetic Algorithms",s), PopSize(16), MinSimLevel(0.1),
 	  MinCommonOK(1.0), MinCommonDiff(1.0), MaxGen(20), Step(false), StepGen(5),
-	  SimMeasure(stAvgSim), ParamsSim(0.2,0.05,1.0), ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0),
-	  ParamsDiff(0.2,0.05,1.0),ParamsSocial(0.2,0.05,1.0), GlobalSim(false),
-	  Objs(0)
+	  SimMeasure(stAvgSim), ParamsSim(0.2,0.05,1.0), ParamsInfo(0.2,0.05,1.0),
+	  ParamsSameFeedbacks(0.2,0.05,1.0), ParamsDiffFeedbacks(0.2,0.05,1.0),
+	  ParamsSocial(0.2,0.05,1.0), GlobalSim(false), Objs(0)
 {
 }
 
@@ -90,9 +90,9 @@ const char* GALILEI::GGroupingGGA::GetSettings(void)
 	sprintf(tmp,"%u %c %u %u %c %u %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
 	        SimMeasure,c1,PopSize,MaxGen,c,StepGen,MinSimLevel,MinCommonOK,MinCommonDiff,
 	        ParamsSim.P,ParamsSim.Q,ParamsSim.Weight,
-	        ParamsNb.P,ParamsNb.Q,ParamsNb.Weight,
-	        ParamsOK.P,ParamsOK.Q,ParamsOK.Weight,
-	        ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight,
+	        ParamsInfo.P,ParamsInfo.Q,ParamsInfo.Weight,
+	        ParamsSameFeedbacks.P,ParamsSameFeedbacks.Q,ParamsSameFeedbacks.Weight,
+	        ParamsDiffFeedbacks.P,ParamsDiffFeedbacks.Q,ParamsDiffFeedbacks.Weight,
 	        ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
 	return(tmp);
 }
@@ -108,9 +108,9 @@ void GALILEI::GGroupingGGA::SetSettings(const char* s)
 	sscanf(s,"%u %c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
 	       &t,&c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
 	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
-	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
-	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,
-	       &ParamsDiff.P,&ParamsDiff.Q,&ParamsDiff.Weight,
+	       &ParamsInfo.P,&ParamsInfo.Q,&ParamsInfo.Weight,
+	       &ParamsSameFeedbacks.P,&ParamsSameFeedbacks.Q,&ParamsSameFeedbacks.Weight,
+	       &ParamsDiffFeedbacks.P,&ParamsDiffFeedbacks.Q,&ParamsDiffFeedbacks.Weight,
 	       &ParamsSocial.P,&ParamsSocial.Q,&ParamsSocial.Weight);
 	SimMeasure=static_cast<SimType>(t);
 	if(c=='1') Step=true; else Step=false;
@@ -133,25 +133,25 @@ void GALILEI::GGroupingGGA::SetCriterionParam(const char* crit,double p,double q
 		ParamsSim.Q=q;
 		ParamsSim.Weight=w;
 	}
-	else if(!strcmp(crit,"Nb Profiles"))
+	else if(!strcmp(crit,"Information"))
 	{
-		ParamsNb.P=p;
-		ParamsNb.Q=q;
-		ParamsNb.Weight=w;
+		ParamsInfo.P=p;
+		ParamsInfo.Q=q;
+		ParamsInfo.Weight=w;
 	}
-	else if(!strcmp(crit,"OK Factor"))
+	else if(!strcmp(crit,"Same Feedbacks"))
 	{
-		ParamsOK.P=p;
-		ParamsOK.Q=q;
-		ParamsOK.Weight=w;
+		ParamsSameFeedbacks.P=p;
+		ParamsSameFeedbacks.Q=q;
+		ParamsSameFeedbacks.Weight=w;
 	}
-	else if(!strcmp(crit,"Diff Factor"))
+	else if(!strcmp(crit,"Diff Feedbacks"))
 	{
-		ParamsDiff.P=p;
-		ParamsDiff.Q=q;
-		ParamsDiff.Weight=w;
+		ParamsDiffFeedbacks.P=p;
+		ParamsDiffFeedbacks.Q=q;
+		ParamsDiffFeedbacks.Weight=w;
 	}
-	else if(!strcmp(crit,"Social Factor"))
+	else if(!strcmp(crit,"Social"))
 	{
 		ParamsSocial.P=p;
 		ParamsSocial.Q=q;
@@ -169,25 +169,25 @@ void GALILEI::GGroupingGGA::GetCriterionParam(const char* crit,double& p,double&
 		q=ParamsSim.Q;
 		w=ParamsSim.Weight;
 	}
-	else if(!strcmp(crit,"Nb Profiles"))
+	else if(!strcmp(crit,"Information"))
 	{
-		p=ParamsNb.P;
-		q=ParamsNb.Q;
-		w=ParamsNb.Weight;
+		p=ParamsInfo.P;
+		q=ParamsInfo.Q;
+		w=ParamsInfo.Weight;
 	}
-	else if(!strcmp(crit,"OK Factor"))
+	else if(!strcmp(crit,"Same Feedbacks"))
 	{
-		p=ParamsOK.P;
-		q=ParamsOK.Q;
-		w=ParamsOK.Weight;
+		p=ParamsSameFeedbacks.P;
+		q=ParamsSameFeedbacks.Q;
+		w=ParamsSameFeedbacks.Weight;
 	}
-	else if(!strcmp(crit,"Diff Factor"))
+	else if(!strcmp(crit,"Diff Feedbacks"))
 	{
-		p=ParamsDiff.P;
-		q=ParamsDiff.Q;
-		w=ParamsDiff.Weight;
+		p=ParamsDiffFeedbacks.P;
+		q=ParamsDiffFeedbacks.Q;
+		w=ParamsDiffFeedbacks.Weight;
 	}
-	else if(!strcmp(crit,"Social Factor"))
+	else if(!strcmp(crit,"Social"))
 	{
 		p=ParamsSocial.P;
 		q=ParamsSocial.Q;
@@ -281,10 +281,11 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 			Instance=new GInstIR(Session,Lang,MinSimLevel,MaxGen,PopSize,0,Objs,GlobalSim,&Sims,SimMeasure,0/*&file*/);
 		Instance->Init(&data);
 		Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
-		Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
-		Instance->SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
-		Instance->SetCriterionParam("Diff Factor",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
-		Instance->SetCriterionParam("Social Factor",ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
+		Instance->SetCriterionParam("Information",ParamsInfo.P,ParamsInfo.Q,ParamsInfo.Weight);
+		Instance->SetCriterionParam("Same Feedbacks",ParamsSameFeedbacks.P,ParamsSameFeedbacks.Q,ParamsSameFeedbacks.Weight);
+		Instance->SetCriterionParam("Diff Feedbacks",ParamsDiffFeedbacks.P,ParamsDiffFeedbacks.Q,ParamsDiffFeedbacks.Weight);
+		Instance->SetCriterionParam("Social",ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
+		Instance->SetMinRatios(MinCommonOK,MinCommonDiff);
 		#ifdef RGADEBUG
 			if(IdealGroups) Instance->SetIdealGroups(IdealGroups);
 		#endif

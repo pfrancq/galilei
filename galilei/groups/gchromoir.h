@@ -75,32 +75,29 @@ private:
 	double MinSimLevel;
 
 	/**
-	* Average similarity of the groups.
+	* Value of the "Similarity" criterion.
 	*/
-	double AvgSim;
+	double CritSim;
 
 	/**
-	* Average number of profiles in the groups.
+	* Value of the "Information" criterion.
 	*/
-	double AvgProf;
+	double CritInfo;
 
 	/**
-	* Factor representing the part of subprofiles having common OK documents
-	* and that are in the same group.
+	* Value of the "Same Feedbacks" criterion.
 	*/
-	double OKFactor;
+	double CritSameFeedbacks;
 
 	/**
-	* Factor representing the part of subprofiles having common documents but
-	* with different judgements and that are in the same group.
+	* Value of the "Diff Feedbacks" criterion.
 	*/
-	double DiffFactor;
+	double CritDiffFeedbacks;
 
 	/**
-	* Factor representing the part of subprofiles that don't want to be alone
-	* but that are really alone.
+	* Value of the "Social" criterion.
 	*/
-	double SocialFactor;
+	double CritSocial;
 
 	/**
 	* Fi minus value.
@@ -118,32 +115,29 @@ private:
 	double Fi;
 
 	/**
-	* Local average similarity of the groups.
+	* Value of the "Similarity" criterion with local changes.
 	*/
-	double LocalAvgSim;
+	double LocalCritSim;
 
 	/**
-	* Local average number of profiles in the groups.
+	* Value of the "Information" criterion with local changes.
 	*/
-	double LocalAvgProf;
+	double LocalCritInfo;
 
 	/**
-	* Local factor representing the part of subprofiles having common OK
-	* documents and that are in the same group.
+	* Value of the "Same Feedbacks" criterion with local changes.
 	*/
-	double LocalOKFactor;
+	double LocalCritSameFeedbacks;
 
 	/**
-	* Local factor representing the part of subprofiles having common documents
-	* but with different judgements and that are in the same group.
+	* Value of the "Diff Feedbacks" criterion with local changes.
 	*/
-	double LocalDiffFactor;
+	double LocalCritDiffFeedbacks;
 
 	/**
-	* Local factor representing the part of subprofiles that don't want to be
-	* alone but that are really alone.
+	* Value of the "Social" criterion with local changes.
 	*/
-	double LocalSocialFactor;
+	double LocalCritSocial;
 
 	/**
 	* Temporary array of Objects (Thread dependent data).
@@ -164,16 +158,6 @@ private:
 	* Number of objects in thObjs2.
 	*/
 	unsigned int NbObjs2;
-
-	/**
-	* Array representing the pairs of groups not tested for merging.
-	*/
-	bool** Pairs;
-
-	/**
-	* Number of rows allocated by pairs.
-	*/
-	unsigned int NbRows;
 
 #ifdef RGADEBUG
 
@@ -235,6 +219,14 @@ public:
 	void CompareIdeal(GSession* s,RStd::RContainer<GGroups,unsigned int,true,true>* ideal);
 
 #endif
+
+	/**
+	* Compute the sum of the similarities of a given subprofile to all the
+	* others.
+	* @param obj            subprofile used as reference.
+	* @returns result.
+	*/
+	bool IsInGroup(GObjIR** grp,unsigned int nb,GObjIR* obj);
 
 	/**
 	* Compute the sum of the similarities of a given subprofile to all the
@@ -357,10 +349,19 @@ public:
 	double ComputeRelevantMax(GObjIR** grp,unsigned int nb,GObjIR*  &rel);
 
 	/**
+	* Evaluation of the chromosome and the changed one (OldNew).
+	* @param nbcrit         Minimal number of criteria to be ameliorated. If
+	*                       null, use PROMETHEE to evaluate.
+	* @return true if the new one seems to be the best.
+	*/
+	bool EvaluateOldNew(unsigned int nbcrit);
+
+	/**
 	* Look if two groups were merged together.
 	* @param grp1           First group.
 	* @param grp2           Second group.
-	* @param nbcrit         Minimal number of criteria to be ameliorated.
+	* @param nbcrit         Minimal number of criteria to be ameliorated. If
+	*                       null, use PROMETHEE to evaluate.
 	* @return bool.
 	*/
 	bool MergeGroups(GGroupIR* grp1,GGroupIR* grp2,unsigned int nbcrit);
@@ -368,7 +369,8 @@ public:
 	/**
 	* Look if a group was be divided.
 	* @param grp            Group to analyse.
-	* @param nbcrit         Minimal number of criteria to be ameliorated.
+	* @param nbcrit         Minimal number of criteria to be ameliorated. If
+	*                       null, use PROMETHEE to evaluate.
 	* @return bool.
 	*/
 	bool DivideGroup(GGroupIR* grp,unsigned int nbcrit);
@@ -441,39 +443,78 @@ public:
 	void EvaluateSimWB(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
-	* Evaluate the similarity of the solution where eventually grp1 must be
-	* devided, or grp1 and grp2 must be merged.
+	* Evaluate the 'Similarity' criterion of the chromosome where eventually
+	* grp1 must be devided, or grp1 and grp2 must be merged.
 	* @param grp1           First group.
 	* @param grp2           Second group.
 	*/
 	void EvaluateSim(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
-	* Evaluate the OK factor of the solution where eventually grp1 must be
-	* devided, or grp1 and grp2 must be merged.
+	* Evaluate the 'Info' criterion of the chromosome where eventually where
+	* must be devided, or grp1 and grp2 must be merged.
 	* @param grp1           First group.
 	* @param grp2           Second group.
 	*/
-	void EvaluateOKFactor(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateInfo(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
-	* Evaluate the Diff factor of the solution where eventually grp1 must be
-	* devided, or grp1 and grp2 must be merged.
+	* Evaluate the 'Same Feebacks' criterion of the chromosome where eventually
+	* grp1 must be devided, or grp1 and grp2 must be merged.
 	* @param grp1           First group.
 	* @param grp2           Second group.
 	*/
-	void EvaluateDiffFactor(GGroupIR* grp1=0,GGroupIR* grp2=0);
+	void EvaluateSameFeedbacks(GGroupIR* grp1=0,GGroupIR* grp2=0);
 
 	/**
-	* Evaluation of the chromosomes. Actually, it is just the average of the
-	* intern similarities.
+	* Evaluate the 'Diff Feebacks' criterion of the chromosome where eventually
+	* grp1 must be devided, or grp1 and grp2 must be merged.
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateDiffFeedbacks(GGroupIR* grp1=0,GGroupIR* grp2=0);
+
+	/**
+	* Evaluate the 'Social' criterion of the chromosome where eventually grp1
+	* must be devided, or grp1 and grp2 must be merged.
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void EvaluateSocial(GGroupIR* grp1=0,GGroupIR* grp2=0);
+
+	/**
+	* Evaluation of the chromosome where eventually grp1 must be devided, or
+	* grp1 and grp2 must be merged.
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	*/
+	void Evaluate(GGroupIR* grp1,GGroupIR* grp2);
+
+	/**
+	* Evaluation of the chromosome.
 	*/
 	virtual void Evaluate(void);
 
 	/**
-	* Perform a local optimisation.
+	* Try some divisions.
+	* @param nbcrit         Minimal number of criteria to be ameliorated. If
+	*                       null, use PROMETHEE to evaluate.
+	* @param true if at least a division was done.
 	*/
-	virtual void LocalOptimisation(void);
+	bool TryDivisions(unsigned int nbcrit=0);
+
+	/**
+	* Try some merges.
+	* @param nbcrit         Minimal number of criteria to be ameliorated. If
+	*                       null, use PROMETHEE to evaluate.
+	* @param true if at least a merge was done.
+	*/
+	bool TryMerges(unsigned int nbcrit=0);
+
+	/**
+	* Perform an optimisation.
+	*/
+	virtual void Optimisation(void);
 
 	/**
 	* Do the standard crossover of the GGA and do a reorganisation after.
@@ -489,30 +530,6 @@ public:
 	* Do the standard mutation of the GGA.
 	*/
 	virtual bool Modify(void);
-
-	/**
-	* Set if the pair of groups (id1,id2) was tested for merging or not.
-	* @param id1            Identificator of the first group.
-	* @param id2            Identificator of the second group.
-	* @param s              If true, the pair must be tested.
-	*/
-	void Set(unsigned int id1,unsigned int id2,bool s);
-
-	/**
-	* Verify if the pair of groups (id1,id2) was tested for merging or not.
-	* @param id1            Identificator of the first group.
-	* @param id2            Identificator of the second group.
-	* @returns If true, the pair must be tested.
-	*/
-	bool Get(unsigned int id1,unsigned int id2);
-
-	/**
-	* Set if the all pair containing the group id1 was tested for merging or
-	* not.
-	* @param id1            Identificator of the group.
-	* @param s              If true, the pair must be tested.
-	*/
-	void Set(unsigned int id1,bool s);
 
 	/**
 	* Does a reorganisation of the chromosome.
@@ -537,31 +554,31 @@ public:
 	* Get the value of the similarity criterion for the chromosome.
 	* @returns double.
 	*/
-	double GetSimCriterion(void) const {return(AvgSim);}
+	double GetSimCriterion(void) const {return(CritSim);}
 
 	/**
 	* Get the value of the information criterion for the chromosome.
 	* @returns double.
 	*/
-	double GetInfoCriterion(void) const {return(AvgProf);}
+	double GetInfoCriterion(void) const {return(CritInfo);}
 
 	/**
 	* Get the value of the same criterion for the chromosome.
 	* @returns double.
 	*/
-	double GetSameCriterion(void) const {return(OKFactor);}
+	double GetSameFeedbacksCriterion(void) const {return(CritSameFeedbacks);}
 
 	/**
 	* Get the value of the diff criterion for the chromosome.
 	* @returns double.
 	*/
-	double GetDiffCriterion(void) const {return(DiffFactor);}
+	double GetDiffFeedbacksCriterion(void) const {return(CritDiffFeedbacks);}
 
 	/**
 	* Get the value of the social criterion for the chromosome.
 	* @returns double.
 	*/
-	double GetSocialCriterion(void) const {return(SocialFactor);}
+	double GetSocialCriterion(void) const {return(CritSocial);}
 
 	/**
 	* @return Fi of the solution.

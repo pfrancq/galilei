@@ -113,22 +113,22 @@ protected:
 	RPromethee::RPromCriterionParams ParamsSim;
 
 	/**
-	* Parameter for the criterion "NB Profiles".
+	* Parameter for the criterion "Information".
 	*/
-	RPromethee::RPromCriterionParams ParamsNb;
+	RPromethee::RPromCriterionParams ParamsInfo;
 
 	/**
-	* Parameter for the criterion "OK Factor".
+	* Parameter for the criterion "Same Feedbacks".
 	*/
-	RPromethee::RPromCriterionParams ParamsOK;
+	RPromethee::RPromCriterionParams ParamsSameFeedbacks;
 
 	/**
-	* Parameter for the criterion "Diff Factor".
+	* Parameter for the criterion "Diff Feedbacks".
 	*/
-	RPromethee::RPromCriterionParams ParamsDiff;
+	RPromethee::RPromCriterionParams ParamsDiffFeedbacks;
 
 	/**
-	* Parameter for the criterion "Social Factor".
+	* Parameter for the criterion "Social".
 	*/
 	RPromethee::RPromCriterionParams ParamsSocial;
 

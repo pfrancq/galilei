@@ -96,53 +96,6 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* The GSubProfileSamesGroupIR class provides a representation of a couple of
-* subprofiles having a number of documents in common.
-*/
-class GSubProfilesSameGroupIR
-{
-public:
-
-	/**
-	* Identificator of the first subprofile.
-	*/
-	unsigned int Id1;
-
-	/**
-	* Identificator of the Second subprofile.
-	*/
-	unsigned int Id2;
-
-	/**
-	* Number of judgement documents in common.
-	*/
-	unsigned int NbDocs;
-
-	/**
-	* Constructor.
-	* @param i1             Identificator of the first subprofile.
-	* @param i2             Identificator of the second subprofile.
-	* @param nb             Number of common documents judged.
-	*/
-	GSubProfilesSameGroupIR(unsigned int i1,unsigned int i2,unsigned int nb)
-		: Id1(i1), Id2(i2), NbDocs(nb) {}
-
-	/**
-	* Compare method by RStd::RContainer.
-	*/
-	int Compare(const GSubProfilesSameGroupIR*) const {return(-1);}
-
-	/**
-	* Look if a given subprofile is one of the couple.
-	* @param obj            Subprofile to test.
-	* @return bool.
-	*/
-	bool IsIn(const GObjIR* obj) const;
-};
-
-
-//-----------------------------------------------------------------------------
-/**
 * The instance of the IR problem.
 * @author Pascal Francq
 * @short IR Instance.
@@ -155,14 +108,14 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	GProfilesSim* Sims;
 
 	/**
-	* Couples of subprofiles having common OK documents.
+	* Couples of subprofiles having same feedbacks on common documents.
 	*/
-	RStd::RContainer<GSubProfilesSameGroupIR,unsigned int,true,false> SameGroups;
+	RStd::RContainer<GSubProfilesSameDocs,unsigned int,true,true> SameFeedbacks;
 
 	/**
-	* Couples of subprofiles having common documents with different judgement.
+	* Couples of subprofiles having different feedbacks on common documents.
 	*/
-	RStd::RContainer<GSubProfilesSameGroupIR,unsigned int,true,false> DiffGroups;
+	RStd::RContainer<GSubProfilesSameDocs,unsigned int,true,true> DiffFeedbacks;
 
 	/**
 	* Minimum similarity level between the profiles of a group.
@@ -188,19 +141,19 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	/**
 	* Criteria representing the average number of profiles per groups.
 	*/
-	RPromethee::RPromCriterion* CritNb;
+	RPromethee::RPromCriterion* CritInfo;
 
 	/**
 	* Criteria representing the factor depending on the subprofiles having
 	* common OK documents.
 	*/
-	RPromethee::RPromCriterion* CritOKDocs;
+	RPromethee::RPromCriterion* CritSameFeedbacks;
 
 	/**
 	* Criteria representing the factor depending on the subprofiles having
 	* common documents but with opposite judgement.
 	*/
-	RPromethee::RPromCriterion* CritDiffDocs;
+	RPromethee::RPromCriterion* CritDiffFeedbacks;
 
 	/**
 	* Criteria representing the factor depending on the subprofiles that are
@@ -233,6 +186,18 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	*/
 	GLang* Lang;
 
+	/**
+	* Minimum number of common OK documents needed to force two profiles to be
+	* in the same group.
+	*/
+	double MinCommonSame;
+
+	/**
+	* Minimum number of common documents judged differently needed to force two
+	* profiles to be in two different groups.
+	*/
+	double MinCommonDiff;
+	
 	/**
 	* Social Profiles.
 	*/
@@ -325,12 +290,48 @@ public:
 	void SetMaxGen(unsigned int max);
 
 	/**
+	* Get the ratio of the number of documents judged differently by two
+	* subprofiles over the total number of common documents judged.
+	* @param sub1           First SubProfile.
+	* @param sub2           Second SubProfile.
+	*/
+	double GetRatioDiff(GSubProfile* sub1,GSubProfile* sub2) const;
+
+	/**
+	* Get the ratio of the number of documents judged identically by two
+	* subprofiles over the total number of common documents judged.
+	* @param sub1           First SubProfile.
+	* @param sub2           Second SubProfile.
+	*/
+	double GetRatioSame(GSubProfile* sub1,GSubProfile* sub2) const;
+
+	/**
+	* Set the minimal ratios used by the GA.
+	*/
+	void SetMinRatios(double same,double diff);
+
+	/**
+	* Get the minimum ratio of common OK documents needed to force two
+	* subprofiles to be in the same group.
+	* @return double.
+	*/
+	double GetMinCommonSame(void) const {return(MinCommonSame);}
+
+	/**
+	* Get the minimum ratio of common documents judged differently needed to
+	* force two subprofiles to be in two different groups.
+	* @return double.
+	*/
+	double GetMinCommonDiff(void) const {return(MinCommonDiff);}
+
+	/**
 	* Destruct the instance.
 	*/
 	virtual ~GInstIR(void);
 
 	// friend classes
 	friend class GChromoIR;
+	friend class GGroupIR;
 	friend class GThreadDataIR;
 };
 
@@ -340,3 +341,4 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
+

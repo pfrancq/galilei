@@ -36,9 +36,6 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-//#include <rio/rtextfile.h>
-//using namespace RIO;
-//RTextFile file("/home/pfrancq/prom.txt",RTextFile::Create);
 #include <rpromethee/rpromsol.h>
 #include <rpromethee/rpromcriterion.h>
 using namespace RPromethee;
@@ -62,6 +59,7 @@ using namespace RGA;
 #include <profiles/gprofilessim.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
+#include <profiles/gsubprofilessamedocs.h>
 #include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
 #include <sessions/gsession.h>
@@ -103,20 +101,6 @@ GALILEI::GThreadDataIR::~GThreadDataIR(void)
 
 //-----------------------------------------------------------------------------
 //
-// GSubProfilesSameGroupIR
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-bool GSubProfilesSameGroupIR::IsIn(const GObjIR* obj) const
-{
-	return((obj->GetId()==Id1)||(obj->GetId()==Id2));
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
 // GInstIR
 //
 //-----------------------------------------------------------------------------
@@ -124,15 +108,18 @@ bool GSubProfilesSameGroupIR::IsIn(const GObjIR* obj) const
 //-----------------------------------------------------------------------------
 GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,SimType st,RGA::RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(popsize,objs,FirstFit,debug),
-	  RPromKernel("GALILEI",PopSize+1,5), Sims(s), SameGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
-	  DiffGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
-	  MinSimLevel(m), MaxGen(max), SimMeasure(st), CritSim(0), CritNb(0), CritOKDocs(0), Sols(0), GlobalSim(g),
+	  RPromKernel("GALILEI",PopSize+1,5), Sims(s), SameFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1),
+	  DiffFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1),
+	  MinSimLevel(m), MaxGen(max), SimMeasure(st),
+	  CritSim(0), CritInfo(0), CritSameFeedbacks(0), CritDiffFeedbacks(0), CritSocial(0),
+	  Sols(0), GlobalSim(g),
 	  CurrentGroups(grps), Session(ses), Lang(l), NoSocialSubProfiles(objs->NbPtr)
 {
 	RPromSol** ptr;
 	RCursor<GObjIR,unsigned int> Cur1;
 	RCursor<GObjIR,unsigned int> Cur2;
-	unsigned int i,j,nb;
+	unsigned int i,j;
+	double nb,tmp;
 
 	#ifdef RGADEBUG
 		IdealGroups=0;
@@ -153,26 +140,22 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsig
 			NoSocialSubProfiles.InsertPtr(Cur1());
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
+			tmp=Cur1()->GetSubProfile()->GetCommonDocs(Cur2()->GetSubProfile());
 			nb=Cur1()->GetSubProfile()->GetCommonOKDocs(Cur2()->GetSubProfile());
-//			if(nb)
-//			{
-//				double tmp=(2*nb*100)/((double)(Cur1()->GetSubProfile()->GetNbJudgedDocs()+Cur2()->GetSubProfile()->GetNbJudgedDocs()));
-//				cout<<"% Common OK: "<<tmp<<endl;
-//			}
 			if(nb)
-				SameGroups.InsertPtr(new GSubProfilesSameGroupIR(Cur1()->GetId(),Cur2()->GetId(),nb));
+				SameFeedbacks.InsertPtr(new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
 			nb=Cur1()->GetSubProfile()->GetCommonDiffDocs(Cur2()->GetSubProfile());
 			if(nb)
-				DiffGroups.InsertPtr(new GSubProfilesSameGroupIR(Cur1()->GetId(),Cur2()->GetId(),nb));
+				DiffFeedbacks.InsertPtr(new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
 		}
 	}
 
 	// Init Criterion and Solutions of the PROMETHEE part
-	CritSim=NewCriterion(Maximize,"Similarities",0.2,0.05,1.0);
-	CritNb=NewCriterion(Maximize,"Profiles",0.2,0.05,1.0);
-	CritOKDocs=NewCriterion(Maximize,"Common OK Documents",0.2,0.05,1.0);
-	CritDiffDocs=NewCriterion(Minimize,"Common Documents with different Judgment",0.2,0.05,1.0);
-	CritSocial=NewCriterion(Minimize,"Social Factor",0.2,0.05,1.0);
+	CritSim=NewCriterion(Maximize,"Similarity",0.2,0.05,1.0);
+	CritInfo=NewCriterion(Maximize,"Information",0.2,0.05,1.0);
+	CritSameFeedbacks=NewCriterion(Maximize,"Same Feedbacks",0.2,0.05,1.0);
+	CritDiffFeedbacks=NewCriterion(Minimize,"Diff Feedbacks",0.2,0.05,1.0);
+	CritSocial=NewCriterion(Minimize,"Social",0.2,0.05,1.0);
 	Sols=new RPromSol*[PopSize+1];
 	if(Sols)
 	{
@@ -218,8 +201,8 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 //	if(c->Id==PopSize) s=Sols[0]; else s=Sols[c->Id+1];
 //	sprintf(Tmp,"Id %2u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Nb=%1.3f - OK=%1.3f - Diff=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
 //	        c->Id,s->GetFi(),s->GetFiPlus(),s->GetFiMinus(),c->AvgSim,c->AvgProf,c->OKFactor,c->DiffFactor,c->SocialFactor,Recall,Precision,Total);
-	sprintf(Tmp,"Id %2u: Sim=%1.3f - Nb=%1.3f - OK=%1.3f - Diff=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
-	        c->Id,c->AvgSim,c->AvgProf,c->OKFactor,c->DiffFactor,c->SocialFactor,Recall,Precision,Total);
+	sprintf(Tmp,"Id %2u: Sim=%1.3f - Info=%1.3f - SameFdbk=%1.3f - DiffFdbk=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
+	        c->Id,c->CritSim,c->CritInfo,c->CritSameFeedbacks,c->CritDiffFeedbacks,c->CritSocial,Recall,Precision,Total);
 //	file<<c->Id<<c->AvgSim<<c->AvgProf<<c->OKFactor<<c->DiffFactor<<c->SocialFactor<<Total<<endl;
 	Debug->PrintInfo(Tmp);
 }
@@ -240,18 +223,18 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 		if(Debug) Debug->BeginFunc("PostEvaluate","GInstIR");
 	#endif
 	ptr=Sols;
-	Assign((*ptr),CritSim,BestChromosome->AvgSim);
-	Assign((*ptr),CritNb,BestChromosome->AvgProf);
-	Assign((*ptr),CritOKDocs,BestChromosome->OKFactor);
-	Assign((*ptr),CritDiffDocs,BestChromosome->DiffFactor);
-	Assign((*ptr),CritSocial,BestChromosome->SocialFactor);
+	Assign((*ptr),CritSim,BestChromosome->CritSim);
+	Assign((*ptr),CritInfo,BestChromosome->CritInfo);
+	Assign((*ptr),CritSameFeedbacks,BestChromosome->CritSameFeedbacks);
+	Assign((*ptr),CritDiffFeedbacks,BestChromosome->CritDiffFeedbacks);
+	Assign((*ptr),CritSocial,BestChromosome->CritSocial);
 	for(i=PopSize+1,C=Chromosomes,ptr++;--i;C++,ptr++)
 	{
-		Assign((*ptr),CritSim,(*C)->AvgSim);
-		Assign((*ptr),CritNb,(*C)->AvgProf);
-		Assign((*ptr),CritOKDocs,(*C)->OKFactor);
-		Assign((*ptr),CritDiffDocs,(*C)->DiffFactor);
-		Assign((*ptr),CritSocial,(*C)->SocialFactor);
+		Assign((*ptr),CritSim,(*C)->CritSim);
+		Assign((*ptr),CritInfo,(*C)->CritInfo);
+		Assign((*ptr),CritSameFeedbacks,(*C)->CritSameFeedbacks);
+		Assign((*ptr),CritDiffFeedbacks,(*C)->CritDiffFeedbacks);
+		Assign((*ptr),CritSocial,(*C)->CritSocial);
 	}
 	ComputePrometheeII();
 	Res=GetSols();
@@ -267,6 +250,8 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	else
 	{
 		s=BestChromosome;
+		if(s->Fitness->Value==0.0)
+			(*s->Fitness)=1.1;
 	}
 	s->FiPlus=(*ptr)->GetFiPlus();
 	s->FiMinus=(*ptr)->GetFiMinus();
@@ -324,25 +309,25 @@ void GALILEI::GInstIR::SetCriterionParam(const char* crit,double p,double q,doub
 		CritSim->SetQ(q);
 		CritSim->SetWeight(w);
 	}
-	else if(!strcmp(crit,"Nb Profiles"))
+	else if(!strcmp(crit,"Information"))
 	{
-		CritNb->SetP(p);
-		CritNb->SetQ(q);
-		CritNb->SetWeight(w);
+		CritInfo->SetP(p);
+		CritInfo->SetQ(q);
+		CritInfo->SetWeight(w);
 	}
-	else if(!strcmp(crit,"OK Factor"))
+	else if(!strcmp(crit,"Same Feedbacks"))
 	{
-		CritOKDocs->SetP(p);
-		CritOKDocs->SetQ(q);
-		CritOKDocs->SetWeight(w);
+		CritSameFeedbacks->SetP(p);
+		CritSameFeedbacks->SetQ(q);
+		CritSameFeedbacks->SetWeight(w);
 	}
-	else if(!strcmp(crit,"Diff Factor"))
+	else if(!strcmp(crit,"Diff Feedbacks"))
 	{
-		CritDiffDocs->SetP(p);
-		CritDiffDocs->SetQ(q);
-		CritDiffDocs->SetWeight(w);
+		CritDiffFeedbacks->SetP(p);
+		CritDiffFeedbacks->SetQ(q);
+		CritDiffFeedbacks->SetWeight(w);
 	}
-	else if(!strcmp(crit,"Social Factor"))
+	else if(!strcmp(crit,"Social"))
 	{
 		CritSocial->SetP(p);
 		CritSocial->SetQ(q);
@@ -355,6 +340,40 @@ void GALILEI::GInstIR::SetCriterionParam(const char* crit,double p,double q,doub
 void GALILEI::GInstIR::SetMaxGen(unsigned int max)
 {
 	MaxGen=max;
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GInstIR::GetRatioDiff(GSubProfile* sub1,GSubProfile* sub2) const
+{
+	GSubProfilesSameDocs Test(sub1->GetId(),sub2->GetId(),0.0);
+	GSubProfilesSameDocs* ptr;
+
+	ptr=SameFeedbacks.GetPtr<const GSubProfilesSameDocs&>(Test);
+	if(ptr)
+		return(ptr->GetRatio());
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GInstIR::GetRatioSame(GSubProfile* sub1,GSubProfile* sub2) const
+{
+	GSubProfilesSameDocs Test(sub1->GetId(),sub2->GetId(),0.0);
+	GSubProfilesSameDocs* ptr;
+
+	ptr=DiffFeedbacks.GetPtr<const GSubProfilesSameDocs&>(Test);
+	if(ptr)
+		return(ptr->GetRatio());
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GInstIR::SetMinRatios(double same,double diff)
+{
+	MinCommonSame=same;
+	MinCommonDiff=diff;
 }
 
 

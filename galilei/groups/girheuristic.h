@@ -80,8 +80,13 @@ public:
 	/**
 	* Find a group for the next object.
 	*/
-	virtual GGroupIR* FindGroup(void) throw(RGGA::RGroupingHeuristicException);
+	virtual GGroupIR* FindGroup(void) throw(RGA::eGA);
 
+	/**
+	* Verify that no social profiles is alone.
+	*/
+	virtual void PostRun(void) throw(RGA::eGA);
+	
 	/**
 	* Destruct the grouping heuristic.
 	*/
