@@ -91,7 +91,7 @@ void GALILEI::GGroupingSim::SetSettings(const char* s)
 	char c,c1;
 
 	if(!(*s)) return;
-	sscanf(s,"%c %f %c",&c,&LevelSim,&c1);
+	sscanf(s,"%c %lf %c",&c,&LevelSim,&c1);
 	if(c=='1') FullSim=true; else FullSim=false;
 	if(c1=='1') GlobalSim=true; else GlobalSim=false;
 }
