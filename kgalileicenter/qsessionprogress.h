@@ -141,15 +141,17 @@ public:
 	* Groups the profiles.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
+	* @param savehsitory   szve the history of groupment.
 	*/
-	void GroupProfiles(bool modified,bool save);
+	void GroupProfiles(bool modified,bool save, bool savehistory);
 
 	/**
 	* Compute all the elements.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
+	* @param savehsitory   szve the history of groupment.
 	*/
-	void ComputeAll(bool modified,bool save);
+	void ComputeAll(bool modified,bool save, bool savehistory);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.

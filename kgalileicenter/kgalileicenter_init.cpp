@@ -123,6 +123,7 @@ void KGALILEICenterApp::initActions(void)
 	// Menu "Groups"
 	groupAlwaysCalc=new KToggleAction(i18n("Enables/disables groups Recomputing"),0,0,0,actionCollection(),"groupAlwaysCalc");
 	groupAlwaysSave=new KToggleAction(i18n("Enables/disables groups Saving"),0,0,0,actionCollection(),"groupAlwaysSave");
+	groupHistorySave=new KToggleAction(i18n("Enables/disables historic Saving"),0,0,0,actionCollection(),"groupHistorySave");
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
 	groupingCompareFromFile=new KAction(i18n("From &File"),"fileopen",0,this,SLOT(slotGroupingCompareFromFile()),actionCollection(),"groupingCompareFromFile");
@@ -207,6 +208,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Always Save Profiles",profileAlwaysSave->isChecked());
 	Config->writeEntry("Always Calc Groups",groupAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Groups",groupAlwaysSave->isChecked());
+	Config->writeEntry("History Save Groups",groupHistorySave->isChecked());
 	Config->writeEntry("Always Calc Docs",docAlwaysCalc->isChecked());
 
 	Config->setGroup("Database Options");
@@ -256,6 +258,7 @@ void KGALILEICenterApp::readOptions(void)
 	profileAlwaysSave->setChecked(Config->readBoolEntry("Always Save Profiles",true));
 	groupAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Groups",false));
 	groupAlwaysSave->setChecked(Config->readBoolEntry("Always Save Groups",true));
+	groupHistorySave->setChecked(Config->readBoolEntry("History Save Groups",false));
 	docAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Docs",false));
 
 	// Size

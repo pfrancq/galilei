@@ -315,7 +315,7 @@ void QPlugins::slotDocAnalyseEnable( bool state )
 
 void QPlugins::slotPostGroupEnable( bool state )
 {
-                if(!PostGroups->currentItem()) return;
+         	 if(!PostGroups->currentItem()) return;
 	QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(PostGroups->currentItem());
 	f->Enable=state;
 }

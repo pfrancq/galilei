@@ -29,6 +29,7 @@
 	<Menu name="Groups"><text>&amp;Groups</text>
 		<Action name="groupAlwaysCalc"/>
 		<Action name="groupAlwaysSave"/>
+		<Action name="groupHistorySave"/>
 		<Separator/>
 		<Action name="showGroups"/>
 		<Action name="groupsCalc"/>

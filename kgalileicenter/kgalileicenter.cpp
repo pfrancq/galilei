@@ -240,7 +240,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 void KGALILEICenterApp::slotSessionCompute(void)
 {
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Complete Session");
-	d->ComputeAll(!sessionAlwaysCalc->isChecked(),profileAlwaysSave->isChecked()||groupAlwaysSave->isChecked());
+	d->ComputeAll(!sessionAlwaysCalc->isChecked(),profileAlwaysSave->isChecked()||groupAlwaysSave->isChecked(),groupHistorySave->isChecked());
 	Doc->updateAllViews(0);
 	Doc->updateAllViews(1);
 	Doc->updateAllViews(2);
@@ -569,7 +569,7 @@ void KGALILEICenterApp::slotShowGroups(void)
 void KGALILEICenterApp::slotGroupsCalc(void)
 {
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Make Groups");
-	d->GroupProfiles(!groupAlwaysCalc->isChecked(),groupAlwaysSave->isChecked());
+	d->GroupProfiles(!groupAlwaysCalc->isChecked(),groupAlwaysSave->isChecked(),groupHistorySave->isChecked());
 	Doc->updateAllViews(2);
 }
 

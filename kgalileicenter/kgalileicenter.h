@@ -572,6 +572,7 @@ public:
 
 	KToggleAction* groupAlwaysCalc;
 	KToggleAction* groupAlwaysSave;
+	KToggleAction* groupHistorySave;
 	KAction* showGroups;
 	KAction* groupsCalc;
 	KAction* groupingCompareFromFile;
