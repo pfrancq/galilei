@@ -720,6 +720,8 @@ void KGALILEICenterApp::slotRImportDC(void)
 		Doc->GetSession()->ImportDC(url.path().latin1());	
 	}
 	slotStatusMsg(i18n("Ready."));
+	slotSessionDisconnect();
+	slotSessionConnect();
 
 }
 
@@ -735,18 +737,33 @@ void KGALILEICenterApp::slotRImportG(void)
 		Doc->GetSession()->ImportG(url.path().latin1());	
 	}
 	slotStatusMsg(i18n("Ready."));
+	slotSessionDisconnect();
+	slotSessionConnect();
 }
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotRExportDM(void)
 {
-	Doc->GetSession()->ExportDM();
+	slotStatusMsg(i18n("Saving file..."));
+	KApplication::kApplication()->processEvents();
+	KURL url=KFileDialog::getSaveURL(QString::null,i18n("*.dm|Document Mot"), this, i18n("Save File..."));
+	if(!url.isEmpty())
+	{
+		Doc->GetSession()->ExportDM(url.path().latin1());
+	}
 }
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotRExportP(void)
 {
-	Doc->GetSession()->ExportP();
+	slotStatusMsg(i18n("Saving file..."));
+	KApplication::kApplication()->processEvents();
+	KURL url=KFileDialog::getSaveURL(QString::null,i18n("*.p|Profile"), this, i18n("Save File..."));
+	if(!url.isEmpty())
+	{
+		Doc->GetSession()->ExportP(url.path().latin1());
+	}
+	
 }
 
 //-----------------------------------------------------------------------------
