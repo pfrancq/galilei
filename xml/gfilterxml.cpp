@@ -735,11 +735,6 @@ void GALILEI::GFilterXML::NextValidTag(void)
 	}
 }
 
-//------------------------------------------------------------------------------
-void GFilterXML::Configure(GFactoryFilter*)
-{
-}
-
 
 //------------------------------------------------------------------------------
 void GFilterXML::CreateParams(GParams*)
@@ -755,4 +750,4 @@ GALILEI::GFilterXML::~GFilterXML()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("XML Filter",GFilterXML,true,false)
+CREATE_FILTER_FACTORY("XML Filter",GFilterXML)
