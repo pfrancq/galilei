@@ -84,7 +84,7 @@ void GALILEI::GURLManager::Download(const char* /*URL*/,RString& /*tmpFile*/) th
 
 
 //-----------------------------------------------------------------------------
-GMIMEFilter*  GALILEI::GURLManager::DetermineMIMEType(const char* /*tmpfile*/)
+GMIMEFilter* GALILEI::GURLManager::DetermineMIMEType(const char* /*tmpfile*/)
 {
 	return(0);
 }
@@ -106,7 +106,7 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 	GDocXML* xml=0;
 	bool Dwn;
 	bool Url;
-	GMIMEFilter* f;
+	GMIMEFilter* f=0;
 
 	// Look for the protocol
 	ptr=doc->GetURL();
@@ -152,15 +152,19 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 	}
 
 	// Verify if the MIME type is defined -> if not try to guess
-	if(!doc->GetMIMEType())
-		doc->SetMIMEType(DetermineMIMEType(tmpFile()));
-
-	// Analyse it.
-	xml=new GDocXML(doc->GetURL(),tmpFile());
 	f=doc->GetMIMEType();
 	if(!f)
-		return(0);
-	f->GetFilter()->Analyze(xml);
+	{
+		f=DetermineMIMEType(tmpFile());
+		doc->SetMIMEType(f);
+	}
+
+	// Create a DocXML.
+	xml=new GDocXML(doc->GetURL(),tmpFile());
+
+	// If MIME type defined -> analyze it.
+	if(f)
+		f->GetFilter()->Analyze(xml);
 
 	// Delete it
 	if(Dwn)
