@@ -134,6 +134,13 @@ public:
 	virtual R::RString LoadWord(unsigned int id,const char* code) throw(std::bad_alloc,GException);
 
 	/**
+	* Load the identificator of a specific word from a dictionary.
+	* @param word           Word.
+	* @param code           Code of the languague.
+	*/
+	virtual unsigned int LoadWord(const R::RString word,const char* code) throw(std::bad_alloc,GException);
+
+	/**
 	* Load a specific wordlist from a dictionary.
 	* @param w              WordList to load.
 	* @param lang           Languague.
@@ -154,11 +161,20 @@ public:
 	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
+	* Method that load the documents having given information in their
+	* description from where they are stored. This method must be overloaded.
+	* @param session        Session.
+	* @param list           List of information that must be contained in the documents.
+	* @param code           Code of the languague.
+	*/
+	virtual void LoadDocs(GSession* session,GInfoList& list,GLang* lang) throw(std::bad_alloc,GException);
+
+	/**
 	* Load the new documents.
 	* @param session        Session.
 	*/
 	virtual void LoadNewDocs(GSession* session) throw(std::bad_alloc,GException);
-	
+
 	/**
 	* Load the users.
 	* @param session         Session.

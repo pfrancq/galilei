@@ -253,8 +253,8 @@ double GDoc::SimilarityIFF(const GGroup* grp) const throw(GException)
 //------------------------------------------------------------------------------
 void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
-	// If document had a language -> remove its references
-	if(Lang)
+	// If document had a language (and a dictionnary) -> remove its references
+	if(Lang&&Lang->GetDict())
 		DelRefs(otDoc,Lang);
 
 	// Assign language and information
@@ -270,8 +270,8 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 	// Clear infos
 	infos->Clear();
 
-	// if document has a language -> update its references
-	if(Lang)
+	// if document has a language (and a dictionnary) -> update its references
+	if(Lang&&Lang->GetDict())
 		AddRefs(otDoc,Lang);
 
 	// Signal to the profiles that the document has changed

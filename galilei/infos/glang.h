@@ -345,7 +345,6 @@ public:                                                                         
 			Inst = new TheFactory(mng,l);                                                 \
 		return(Inst);                                                                     \
 	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_LANG_VERSION);}             \
 	virtual void Create(void) throw(GException)                                           \
 	{                                                                                     \
 		if(Plugin) return;                                                                \
@@ -376,6 +375,7 @@ public:                                                                         
 		delete Plugin;                                                                    \
 		Plugin=0;                                                                         \
 	}                                                                                     \
+	virtual const char* GetAPIVersion(void) const {return(API_LANG_VERSION);}             \
 };                                                                                        \
                                                                                           \
 GFactoryLang* TheFactory::Inst = 0;                                                       \

@@ -227,6 +227,13 @@ public:
 	bool IsIn(const R::RString& name) const;
 
 	/**
+	* Get a given data from the dictionary.
+	* @param name            Name fo the data to look for.
+	* @return Pointer to the data.
+	*/
+	GData* GetData(const R::RString& name) const;
+
+	/**
 	* Test if the data of the dictionary are stopwords.
 	* @returns true if the data are stopwords.
 	*/

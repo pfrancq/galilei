@@ -51,8 +51,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLangManager::GLangManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-  : RContainer<GFactoryLang,true,true>(10,5),GPluginManager("Lang",path)
+GLangManager::GLangManager(const char* path,bool load,bool dlg) throw(std::bad_alloc,GException)
+  : RContainer<GFactoryLang,true,true>(10,5),GPluginManager("Lang",path), Load(load)
 {
 
 	RString Path(path);
@@ -120,7 +120,7 @@ R::RCursor<GFactoryLang> GLangManager::GetLangsCursor(void)
 void GLangManager::ReadConfig(RXMLTag* t)
 {
 	R::RCursor<GFactoryLang> Cur;
-	
+
 	if(!t) return;
 	Cur=GetLangsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())

@@ -6,7 +6,7 @@
 
 	Generic Language - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -33,6 +33,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/glang.h>
+#include <infos/glangmanager.h>
 #include <infos/gdict.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
@@ -107,7 +108,8 @@ GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code) throw(std::
 void GLang::Connect(GSession* session) throw(GException)
 {
 	Session=session;
-	if(Dict&&Stop) return;
+	if((Dict&&Stop)||(!Factory->GetMng()->LoadDict()))
+		return;
 	if(!Dict)
 		session->GetStorage()->LoadDic(Dict,this,false);
 	if(!Stop)

@@ -42,6 +42,8 @@
 #include <infos/gdict.h>
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
+#include <infos/ginfo.h>
+#include <infos/ginfolist.h>
 #include <infos/gword.h>
 #include <infos/gwordlist.h>
 #include <infos/gweightinfo.h>
@@ -272,6 +274,28 @@ RString GStorageMySQL::LoadWord(unsigned int id,const char* code) throw(std::bad
 		{
 			w.Start();
 			res=w[0];
+		}
+		return(res);
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GStorageMySQL::LoadWord(const R::RString word,const char* code) throw(std::bad_alloc,GException)
+{
+	try
+	{
+		unsigned int res=0;
+		RString sSql("SELECT kwdid FROM kwds WHERE langid='"+RString(code)+"' AND kwd="+RQuery::SQLValue(word));
+		RQuery w(Db,sSql);
+		if(w.GetNbRows())
+		{
+			w.Start();
+			res=atoi(w[0].Latin1());
 		}
 		return(res);
 	}
@@ -738,7 +762,12 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 				i=0;
 			}
 			if(lang)
-				Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
+			{
+				if(lang->GetDict())
+					Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
+				else
+					Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),infoNothing),i,false);
+			}
 		}
 		if(docid!=cNoRef)
 		{
@@ -761,6 +790,116 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 				d->InsertSubject(s);
 			}
 		}
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadDocs(GSession* session,GInfoList& list,GLang* lang) throw(std::bad_alloc,GException)
+{
+	GDoc* doc;
+//	GLang* lang;
+	R::RCursor<GFactoryLang> langs;
+	GDoc* d;
+	GSubject* s;
+	unsigned int i,idx,docid;
+	RContainer<GWeightInfo,false,true> Infos(1000,500);
+ 	RString sSql;
+
+	if((!list.GetNb())||(!lang))
+		return;
+	try
+	{
+		// Create a SQL clause with all documents id having all the information contained
+		//select distinct(htmlid),count(htmlid) as t  from htmlsbykwds where langid='en' and (kwdid=37 or kwdid=2016)  group by htmlid having t=2
+		sSql="SELECT DISTINCT(htmlid), count(htmlid) as t from htmlsbykwds WHERE langid='"+RString(lang->GetCode())+"' and (";
+		RCursor<GInfo> List(list);
+		for(List.Start();!List.End();)
+		{
+			sSql+="kwdid="+itou(List()->GetId());
+			List.Next();
+			if(!List.End())
+				sSql+=" or ";
+		}
+		sSql+=")  group by htmlid having t="+itou(list.GetNb());
+		RQuery DocsId(Db,sSql);
+		sSql=" WHERE ";
+		for(DocsId.Start();!DocsId.End();)
+		{
+			sSql+="htmlid="+DocsId[0];
+			DocsId.Next();
+			if(!DocsId.End())
+				sSql+=" or ";
+		}
+
+		//
+		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed FROM htmls"+sSql);
+		for(quer.Start();!quer.End();quer.Next())
+		{
+			docid=atoi(quer[0]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(quer[4]);
+			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7])));
+		}
+
+		// Load the links of the document loaded.
+		RQuery querLinks (Db,"SELECT htmlid,linkid,occurs FROM htmlsbylinks"+sSql);
+		for (querLinks.Start(); !querLinks.End() ; querLinks.Next())
+		{
+			session->GetDoc(atoi(querLinks[0]))->InsertLink(session->GetDoc(atoi(querLinks[1])), atoi(querLinks[2]));
+		}
+
+		// Load the document description
+		RQuery sel(Db,"SELECT htmlid,kwdid,langid,occurs FROM htmlsbykwds"+sSql+" ORDER BY htmlid,kwdid");
+		for(sel.Start(),docid=cNoRef;!sel.End();sel.Next(),i++)
+		{
+			// Get the id
+			idx=atoi(sel[0]);
+
+			// If not the same -> new doc
+			if(idx!=docid)
+			{
+				// If valid document -> assign the information to it
+				if(docid!=cNoRef)
+				{
+					doc=session->GetDoc(docid);
+					if(doc)
+						doc->Update(doc->GetLang(),&Infos,false);
+				}
+
+				// New doc
+				docid=idx;
+				i=0;
+			}
+			if(lang->GetDict())
+				Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
+			else
+				Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),infoNothing),i,false);
+		}
+		if(docid!=cNoRef)
+		{
+			doc=session->GetDoc(docid);
+			if(doc)
+				doc->Update(doc->GetLang(),&Infos,false);
+		}
+
+		//  Make Link between documents and topics
+/*		if(session->GetSubjects())
+		{
+			RQuery subdocs(Db,"SELECT htmlid,topicid FROM topicsbyhtmls"+sSql);
+			for(subdocs.Start();!subdocs.End();subdocs.Next())
+			{
+				d=session->GetDoc(atoi(subdocs[0]));
+				if(!d) continue;
+				s=session->GetSubjects()->GetSubject(atoi(subdocs[1]));
+				if(!s) continue;
+				s->InsertDoc(d);
+				d->InsertSubject(s);
+			}
+		}*/
 	}
 	catch(RMySQLError e)
 	{

@@ -71,6 +71,7 @@ class GPluginManager;
 //------------------------------------------------------------------------------
 // forward class declaration - Infos Part
 class GInfo;
+class GInfoList;
 class GWeightInfo;
 class GWeightInfos;
 class GInfosWeightsHistory;

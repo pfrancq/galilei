@@ -4,7 +4,7 @@
 
 	GPlugin.h
 
-	Generic Plugin - Header.
+	Generic Plug-In - Header.
 
 	Copyright 2003-2004 by the Université libre de Bruxelles.
 
@@ -53,6 +53,7 @@ using namespace R;
 // include file for dlopen
 #include <dlfcn.h>
 
+
 //-----------------------------------------------------------------------------
 // include file for GALILEI
 #include <sessions/galilei.h>
@@ -65,9 +66,9 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GPluginManager class provides a template for a generic plugin.
+* The GPluginManager class provides a template for a generic plug-in.
 * @author Vandaele Valery
-* @short Manager for Plugins manager.
+* @short Plug-ins manager.
 */
 class GPluginManager
 {
@@ -83,76 +84,76 @@ class GPluginManager
 
 public :
 	/**
-	* A static container containing all the managers
+	* A static container containing all the managers.
 	*/
 	static R::RContainer<GPluginManager,false,true> Managers;
 
 public :
 	/**
-	* Constructor for the manager of plugins manager
+	* Constructor for the manager of plug-ins manager
 	*/
 	GPluginManager(R::RString name,R::RString path);
 
 	/**
-	* Connect to the session
+	* Connect to the session.
 	*/
 	virtual void Connect(GSession* sess);
 
 	/**
-	* Disconnect to the session
+	* Disconnect to the session.
 	*/
 	virtual void Disconnect(GSession* sess);
 
 	/**
-	* Read Config for the current manager
+	* Read Config for the current manager.
 	*/
 	virtual void ReadConfig(R::RXMLTag* t);
 
 	/**
-	* Save Config for the current manager
+	* Save Config for the current manager.
 	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**
-	* Method used to compare element from a Container
+	* Method used to compare element from a Container.
 	*/
 	int Compare(const GPluginManager* pm) const;
 
 	/**
-	* Method used to compare element from a Container
+	* Method used to compare element from a Container.
 	*/
 	int Compare(const GPluginManager& pm) const;
 
 	/**
-	* Method used to compare element from a Container
+	* Method used to compare element from a Container.
 	*/
 	int Compare(const R::RString& name) const;
 
 	/**
-	* Get the name of the current Manager
+	* Get the name of the current Manager.
 	*/
 	R::RString GetName(void) const{return Name;};
 
 	/**
-	* Get the path associated to the current manager
+	* Get the path associated to the current manager.
 	*/
 	R::RString GetPath(void) const{return Path;};
 
 	/**
-	* Get the manager associated to the "name"
+	* Get the manager associated to the "name".
 	* @param name         The name of the manager to be found
-	* @return GPluginManager The plugins manager
+	* @return GPluginManager The plug-ins manager.
 	*/
 	static GPluginManager* GetManager(R::RString name);
 
 	/**
-	* Get a cursor over all the managers
+	* Get a cursor over all the managers.
 	* @return GPluginManager A cursor on the managers
 	*/
 	static R::RCursor<GPluginManager> GetCursor(void);
 
 	/**
-	* The destructor
+	* The destructor.
 	*/
 	virtual ~GPluginManager(void);
 };
@@ -226,7 +227,7 @@ public:
 protected:
 
 	/**
-	* URL Manager associated.
+	* Plug-in Manager associated.
 	*/
 	mng* Mng;
 

@@ -54,16 +54,21 @@ namespace GALILEI{
 * @short Languages.
 */
 class GLangManager : public R::RContainer<GFactoryLang,true,true>, public GPluginManager
-
 {
+	/**
+	* Must be the dictionnaries (and stoplists) be loaded.
+	*/
+	bool Load;
+
 public:
 
 	/**
 	* Constructor of the manager.
 	* @param path            Path to find the plugins.
+	* @param load            Must the dictionnaries be loaded?
 	* @param dlg             Load the existing dialog.
 	*/
-	GLangManager(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
+	GLangManager(const char* path,bool load,bool dlg=true) throw(std::bad_alloc,GException);
 
 	/**
 	* Connect to a Session.
@@ -85,6 +90,11 @@ public:
 	GLang* GetLang(const char* code) const;
 
 	/**
+	* Look if the dictionnaries must be loaded
+	*/
+	bool LoadDict(void) const {return(Load);}
+
+	/**
 	* Create a cursor on the container of plugins representing the languages.
 	* @return GFactoryLangCursor.
 	*/
@@ -94,10 +104,10 @@ public:
 	* Read config of the manager
 	*/
 	virtual void ReadConfig(RXMLTag* t);
-	
+
 	/**
 	* Store config of the manager
-	*/	
+	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**

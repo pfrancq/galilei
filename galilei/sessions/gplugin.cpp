@@ -4,7 +4,7 @@
 
 	GPlugin.cpp
 
-	Generic Plugin - Implementation.
+	Generic Plug-In - Implementation.
 
 	Copyright 2003-2004 by the Université libre de Bruxelles.
 
@@ -175,7 +175,7 @@ void GALILEI::FindPlugins(const RString dir,RContainer<RString,true,false>& plug
 			continue;
 		}
 
-		// Must be the main plugin
+		// Must be the main plug-in
 		plugins.InsertPtr(new RString(Path+Name));
 	}
 	closedir(dp);
@@ -187,7 +187,7 @@ RString GALILEI::FindPlugin(const RString plugin,const RContainer<R::RString,tru
 {
 	RString ret;
 
-	// Go through the dialog plugins to see if a a plugin has this name
+	// Go through the dialog plug-ins to see if a a plugin has this name
 	RCursor<RString> Cur(plugins);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{

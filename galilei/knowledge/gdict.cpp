@@ -210,6 +210,13 @@ bool GDict::IsIn(const RString& name) const
 
 
 //------------------------------------------------------------------------------
+GData* GDict::GetData(const RString& name) const
+{
+	return(RDblHashContainer<GData,27,27,true>::GetPtr<const RString>(name));
+}
+
+
+//------------------------------------------------------------------------------
 void GDict::IncRef(unsigned int id,tObjType ObjType) throw(GException)
 {
 	GData* data;

@@ -157,17 +157,20 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 void GSession::Connect(void)
 {
 	RCursor<GPluginManager> cur = GPluginManager::GetCursor();
-	
+
 	for(cur.Start();!cur.End();cur.Next())
 	{
 		cur()->Connect(this);
 	}
-	
+
 	// Create Similarities Managers (IFF used by default)
-	if(!SessParams->GetBool("DebugSim"))
-		ProfilesSims = new GProfilesSims(this,true, true);
-	if(!SessParams->GetBool("DebugBehaviour"))
-		ProfilesBehaviours = new GProfilesBehaviours(this,true);
+	if(SessParams)
+	{
+		if(!SessParams->GetBool("DebugSim"))
+			ProfilesSims = new GProfilesSims(this,true, true);
+		if(!SessParams->GetBool("DebugBehaviour"))
+			ProfilesBehaviours = new GProfilesBehaviours(this,true);
+	}
 	DocProfSims = new GDocProfSims(this,true,false);
 }
 
@@ -564,7 +567,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 	R::RCursor<GProfile> Prof=GetProfilesCursor();
 	GProfileCalc* Profiling=(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod();
 	GLinkCalc* LinkCalc=(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod();
-	
+
 	if(!Profiling)
 		throw GException("No computing method chosen.");
 
@@ -945,7 +948,7 @@ GSession::~GSession(void)
 		{
 			cur()->Disconnect(this);
 		}
-		
+
 		// Delete stuctures
 		if(Random) delete Random;
 		if(Subjects) delete Subjects;
