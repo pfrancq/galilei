@@ -274,17 +274,17 @@ void GDict::DecRef(tObjType ObjType) throw(GException)
 	{
 		case otDoc:
 			if(!NbRefDocs)
-				throw GException("Cannot decrease null number of references");
+				throw GException("Cannot decrease null number of references for documents");
 			NbRefDocs--;
 			break;
 		case otSubProfile:
 			if(!NbRefSubProfiles)
-				throw GException("Cannot decrease null number of references");
+				throw GException("Cannot decrease null number of references for subprofiles");
 			NbRefSubProfiles--;
 			break;
 		case otGroup:
 			if(!NbRefGroups)
-				throw GException("Cannot decrease null number of references");
+				throw GException("Cannot decrease null number of references for groups");
 			NbRefGroups--;
 			break;
 		default:
