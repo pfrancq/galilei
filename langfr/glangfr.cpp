@@ -71,15 +71,27 @@ public:
 GLangFR::FrenchPorterRule::FrenchPorterRule(const char* os,const char* ns,int oo,int no,int mr)
 	: OldSuffix(0), NewSuffix(0), OldOffset(oo), NewOffset(no), MinRootSize(mr)
 {
-	OldSuffix=strdup(os);
-	NewSuffix=strdup(ns);
+	int l;
+	l=strlen(os);
+	OldSuffix=new char[l+1];
+	if(l)
+		memcpy(OldSuffix,os,sizeof(char)*l);
+	else
+		(*OldSuffix)=0;
+	l=strlen(ns);
+	NewSuffix=new char[l+1];
+	if(l)
+		memcpy(NewSuffix,ns,sizeof(char)*l);
+	else
+		(*NewSuffix)=0;
 }
+
 
 //-----------------------------------------------------------------------------
 GLangFR::FrenchPorterRule::~FrenchPorterRule(void)
 {
-	if(OldSuffix) free(OldSuffix);
-	if(NewSuffix) free(NewSuffix);
+	if(OldSuffix) delete[] OldSuffix;
+	if(NewSuffix) delete[] NewSuffix;
 }
 
 
