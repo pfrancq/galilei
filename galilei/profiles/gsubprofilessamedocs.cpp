@@ -36,19 +36,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-//#include <groups/ginstir.h>
-//#include <groups/gchromoir.h>
-//#include <groups/ggroupir.h>
-//#include <groups/gobjir.h>
-//#include <groups/girheuristic.h>
-//#include <groups/gcomparegrouping.h>
 #include <profiles/gsubprofilessamedocs.h>
-//#include <profiles/gprofilessim.h>
-//#include <profiles/gsubprofile.h>
-//#include <profiles/gprofile.h>
-//#include <groups/ggroupvector.h>
-//#include <groups/ggroups.h>
-//#include <sessions/gsession.h>
 using namespace GALILEI;
 
 
