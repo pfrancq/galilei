@@ -201,6 +201,22 @@ class GTextAnalyse : public GDocAnalyse
 	*/
 	bool UseExternalLinks;
 
+	/**
+	* Filter the word extracted?
+	*/
+	bool Filtering;
+
+	/**
+	* Maximal occurences of a same word in a row to consider a word non-valid.
+	*/
+	unsigned int NbSameOccur;
+
+	/**
+	* Value of the ratio of normal letters on the total number of letters to be
+	* considered as a valid.
+	*/
+	double NormalRatio;
+
 public:
 
 	/**

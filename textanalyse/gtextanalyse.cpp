@@ -160,6 +160,9 @@ void GTextAnalyse::ApplyConfig(void)
 	NonLetterWords=Factory->GetBool("NonLetterWords");
 	Distance=Factory->GetBool("Distance");
 	UseExternalLinks=Factory->GetBool("UseExternalLinks");
+	Filtering=Factory->GetBool("Filtering");
+	NbSameOccur=Factory->GetUInt("NbSameOccur");
+	NormalRatio=Factory->GetDouble("NormalRatio");
 }
 
 
@@ -289,7 +292,7 @@ void GTextAnalyse::VerifyOrder(void) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 bool GTextAnalyse::ValidWord(const RString& kwd)
 {
-	RChar look[10];
+/*	RChar look[10];
 	const RChar* ptr=kwd();
 	RChar* ptr2;
 	char len;
@@ -324,8 +327,48 @@ bool GTextAnalyse::ValidWord(const RString& kwd)
 			if(v) return(true);
 		}
 	}
-	return(v);
+	return(v);*/
+
+	unsigned int nb;
+	const RChar* ptr;
+	UChar old,act,lw;
+	double fracnorm;
+	int nbnorm;
+	UChar a,z;
+
+	if(!kwd.GetLen()) return(false);
+
+	// Init part
+	a=RChar('a').Unicode();
+	z=RChar('z').Unicode();
+
+	ptr=kwd();
+	old=ptr->Unicode();
+	nb=1;
+	nbnorm=0;
+
+	lw=RChar::ToLower(*ptr).Unicode();
+	if(((lw>=a)&&(lw<=z))||(ptr->IsDigit()))
+		nbnorm++;
+
+	for(ptr++;(!ptr->IsNull())&&(nb<NbSameOccur);ptr++)
+	{
+		act=ptr->Unicode();
+		if(act!=old)
+		{
+			old=act;
+			nb=1;
+			lw=RChar::ToLower(*ptr).Unicode();
+			if(((lw>=a)&&(lw<=z))||(ptr->IsDigit()))
+				nbnorm++;
+		}
+		else
+			nb++;
+	}
+	fracnorm=(double)nbnorm/(double)kwd.GetLen();
+	return((nb<NbSameOccur)&&(fracnorm>NormalRatio));
 }
+
 
 //-----------------------------------------------------------------------------
 void GTextAnalyse::AddWord(const RString& word,double weight) throw(bad_alloc)
@@ -339,6 +382,9 @@ void GTextAnalyse::AddWord(const RString& word,double weight) throw(bad_alloc)
 	unsigned int* tmp1;
 	unsigned int* tmp2;
 	GLang* lang;
+
+	// If word not valid, skip it
+	if((Filtering)&&(!ValidWord(word))) return;
 
 	// Find the section of double hash table concerned by the current word.
 	Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
@@ -665,7 +711,7 @@ void GTextAnalyse::DetermineLang(void) throw(GException)
 	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 	{
 		Frac=((double)(*tmp1))/((double)Ndiff);
-/*		cout<<CurLangs()->GetName()<<endl;
+		/*cout<<CurLangs()->GetName()<<endl;
 		cout<<"       Sdiff  "<<(*tmp1)<<endl;
 		cout<<"       Ndiff  "<<Ndiff<<endl;
 		cout<<"       Frac   "<<Frac<<endl;
@@ -829,6 +875,9 @@ void GTextAnalyse::CreateParams(GParams* params)
 	params->InsertPtr(new GParamBool("NonLetterWords",true));
 	params->InsertPtr(new GParamBool("Distance",false));
 	params->InsertPtr(new GParamBool("UseExternalLinks",false));
+	params->InsertPtr(new GParamBool("Filtering",true));
+	params->InsertPtr(new GParamUInt("NbSameOccur",3));
+	params->InsertPtr(new GParamDouble("NormalRatio",0.3));
 }
 
 

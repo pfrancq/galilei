@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>381</width>
-            <height>371</height>
+            <height>489</height>
         </rect>
     </property>
     <property name="caption">
@@ -17,6 +17,12 @@
     </property>
     <property name="sizeGripEnabled">
         <bool>true</bool>
+    </property>
+    <property name="toolTip" stdset="0">
+        <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
+    </property>
+    <property name="whatsThis" stdset="0">
+        <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
     </property>
     <vbox>
         <property name="name">
@@ -308,6 +314,113 @@ Be carefull, because it can explose the size of information on documents.</strin
                 </widget>
             </vbox>
         </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>groupBox4</cstring>
+            </property>
+            <property name="title">
+                <string>Filtering</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>Filtering</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Use Word Filtering?</string>
+                    </property>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout6</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel1_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Maximal occurences</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer6</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="KIntNumInput">
+                            <property name="name">
+                                <cstring>NbSameOccur</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>of a same word in a row to consider a word non-valid</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>of a same word in a row to consider a word non-valid</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout7</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel2_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Normal Ratio</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer7</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="KDoubleNumInput">
+                            <property name="name">
+                                <cstring>NormalRatio</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
+        </widget>
         <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>Layout1</cstring>
@@ -387,9 +500,24 @@ Be carefull, because it can explose the size of information on documents.</strin
         <receiver>DlgConfig_Qt</receiver>
         <slot>reject()</slot>
     </connection>
+    <connection>
+        <sender>Filtering</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>NbSameOccur</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>Filtering</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>NormalRatio</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
 </connections>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>

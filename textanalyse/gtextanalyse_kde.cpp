@@ -101,6 +101,11 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.NonLetterWords->setChecked(params->GetBool("NonLetterWords"));
 	dlg.Distance->setChecked(params->GetBool("Distance"));
 	dlg.UseExternalLinks->setChecked(params->GetBool("UseExternalLinks"));
+	dlg.Filtering->setChecked(params->GetBool("Filtering"));
+	dlg.NbSameOccur->setValue(params->GetUInt("NbSameOccur"));
+	dlg.NormalRatio->setValue(params->GetDouble("NormalRatio"));
+	dlg.NbSameOccur->setEnabled(params->GetBool("Filtering"));
+	dlg.NormalRatio->setEnabled(params->GetBool("Filtering"));
 	if(dlg.exec())
 	{
 		params->Set("StaticLang",dlg.StaticLang->isChecked());
@@ -111,6 +116,9 @@ void Configure(GFactoryDocAnalyse* params)
 		params->Set("NonLetterWords",dlg.NonLetterWords->isChecked());
 		params->Set("Distance",dlg.NonLetterWords->isChecked());
 		params->Set("UseExternalLinks",dlg.UseExternalLinks->isChecked());
+		params->Set("Filtering",dlg.Filtering->isChecked());
+		params->Set("NbSameOccur",dlg.NbSameOccur->value());
+		params->Set("NormalRatio",dlg.NormalRatio->value());
 		params->Apply();
 	}
 }
