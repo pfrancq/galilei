@@ -561,6 +561,14 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotPostGroupCalc(void)
+{
+	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Computing Post-Groupment Treatment");
+	d->PostGroupCalc();
+
+}
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotShowGroups(void)
 {
 	createClient(Doc,new KViewGroups(Doc,pWorkspace,"View Groups",0));
