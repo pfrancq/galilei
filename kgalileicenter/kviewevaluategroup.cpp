@@ -168,7 +168,7 @@ void KViewEvaluateGroup::ConstructGeneral(void)
 {
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* groups = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 	GSession* session=Doc->GetSession();
-	groups=session->GetIdealDoc();
+	groups=session->GetIdealDocs();
 	
 	GEvaluateGroupingCalinski Cal (session, groups);
 	GEvaluateGroupingVariance Var (session, groups);
@@ -245,7 +245,7 @@ void KViewEvaluateGroup::ConstructVarianceDoc(void)
 
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 
-	GroupsDoc = session->GetIdealDoc();
+	GroupsDoc = session->GetIdealDocs();
 	
 	for(GroupsDoc->Start();!GroupsDoc->End();GroupsDoc->Next())
 	{
@@ -383,7 +383,7 @@ void KViewEvaluateGroup::ConstructSimilarityDocGroup(bool relevant,bool global)
 	SimilarityDoc->clear();
 
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
-	GroupsDoc = session->GetIdealDoc();
+	GroupsDoc = session->GetIdealDocs();
 
 	RContainer<GGroups,unsigned int,true,true>* IdealGroups=new RContainer<GGroups,unsigned int,true,true> (2,2);
 	IdealGroups = session->GetIdealGroups();
@@ -478,6 +478,7 @@ void KViewEvaluateGroup::ConstructSimilarityDocGroup(bool relevant,bool global)
 
 }
 
+
 //-----------------------------------------------------------------------------
 void KViewEvaluateGroup::ConstructSimilarityDoc(bool global)
 {
@@ -503,7 +504,7 @@ void KViewEvaluateGroup::ConstructSimilarityDoc(bool global)
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 
 	// load the ideal document container.
-	GroupsDoc = session->GetIdealDoc();
+	GroupsDoc = session->GetIdealDocs();
 
 	for(GroupsDoc->Start();!GroupsDoc->End();GroupsDoc->Next())
 	{
