@@ -127,7 +127,8 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		Order=new GWeightInfo*[MaxOrderSize];
 	}
 	memcpy(Order,Vector->Tab,Vector->NbPtr*sizeof(GWeightInfo*));
-	qsort(static_cast<void*>(Order),Vector->NbPtr,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
+	if(Vector->NbPtr)
+		qsort(static_cast<void*>(Order),Vector->NbPtr,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
 	Order[Vector->NbPtr]=0;
 	if(MaxNonZero)
 	{
