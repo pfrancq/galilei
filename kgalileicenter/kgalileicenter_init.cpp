@@ -148,9 +148,6 @@ void KGALILEICenterApp::initActions(void)
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
 
-	// Menu "R Stat
-	rRunR=new KAction(i18n("Run &R"),0,this,SLOT(slotRRunR()),actionCollection(),"rRunR");
-
 	// Menu "Settings"
 	viewToolBar = KStdAction::showToolbar(this, SLOT(slotViewToolBar()), actionCollection());
 	viewStatusBar = KStdAction::showStatusbar(this, SLOT(slotViewStatusBar()), actionCollection());
@@ -194,7 +191,8 @@ void KGALILEICenterApp::initView(void)
 void KGALILEICenterApp::createClient(KDoc* doc,KView* view)
 {
 	view->installEventFilter(this);
-	doc->addView(view);
+	if(doc)
+		doc->addView(view);
 	view->resize(600,400);
 	view->show();
 	view->setFocus();
@@ -342,22 +340,31 @@ bool KGALILEICenterApp::queryExit(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::UpdateMenusEntries(void)
 {
-	// Menu "Users"
-	showUsers->setEnabled(Doc);
-	profilesCalc->setEnabled(Doc);
-	profileCalc->setEnabled(Doc);
-
-	// Menu "Groups"
-	showGroups->setEnabled(Doc);
-	groupsCalc->setEnabled(Doc);
-	groupingCompare->setEnabled(Doc);
+	sessionDisconnect->setEnabled(true);
+	showUsers->setEnabled(true);
+	showGroups->setEnabled(true);
+	profileCalc->setEnabled(true);
+	profilesCalc->setEnabled(true);
+	sessionConnect->setEnabled(true);
+	sessionCompute->setEnabled(true);
+	groupingCompare->setEnabled(true);
+	groupingCompareFromFile->setEnabled(true);
+	textFrench->setEnabled(true);
+	textEnglish->setEnabled(true);
+	createXML->setEnabled(true);
+	saveXML->setEnabled(true);
+	analyseXML->setEnabled(true);
+	wordsClustering->setEnabled(true);
+	removeCluster->setEnabled(true);
+	groupsCalc->setEnabled(true);
 	mixIdealGroups->setEnabled(true);
-
-	// Menu "Document"
-	showDocs->setEnabled(Doc);
-	docAnalyse->setEnabled(Doc);
-	docsAnalyse->setEnabled(Doc);
-	//linksCalc->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
+	showGroupsHistory->setEnabled(true);
+	showDocs->setEnabled(true);
+	docAnalyse->setEnabled(true);
+	docsAnalyse->setEnabled(true);
+	runProgram->setEnabled(true);
+	sessionStats->setEnabled(true);
+	postgroupCalc->setEnabled(true);
 }
 
 
@@ -372,6 +379,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	sessionConnect->setEnabled(true);
 	sessionCompute->setEnabled(false);
 	groupingCompare->setEnabled(false);
+	groupingCompareFromFile->setEnabled(false);
 	textFrench->setEnabled(false);
 	textEnglish->setEnabled(false);
 	createXML->setEnabled(false);
@@ -386,8 +394,8 @@ void KGALILEICenterApp::DisableAllActions(void)
 	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);
 	runProgram->setEnabled(false);
-	rRunR->setEnabled(false);
 	sessionStats->setEnabled(false);
+	postgroupCalc->setEnabled(false);
 }
 
 
@@ -399,14 +407,22 @@ bool KGALILEICenterApp::eventFilter(QObject* object, QEvent* event)
 		QCloseEvent* e=(QCloseEvent*)event;
 		KView* pView=(KView*)object;
 		KDoc* pDoc=pView->getDocument();
-		if(pDoc->canCloseFrame(pView))
+		if(pDoc)
 		{
-			pDoc->removeView(pView);
-			e->accept();
+			if(pDoc->canCloseFrame(pView))
+			{
+				pDoc->removeView(pView);
+				e->accept();
+			}
+			else
+				e->ignore();
+			return(true);
 		}
 		else
-			e->ignore();
-		return(true);
+		{
+			e->accept();
+			return(true);
+		}
 	}
 	else
 		return(QWidget::eventFilter(object,event));

@@ -112,7 +112,6 @@ using namespace GALILEI;
 #include "kviewprg.h"
 #include "kviewstems.h"
 #include "kviewprofile.h"
-#include "kviewr.h"
 #include "kviewhistory.h"
 #include "qconnectmysql.h"
 #include "qsessionprogress.h"
@@ -171,17 +170,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager,&PostDocManager,
 			&PostGroupManager);
 			Doc=new KDoc(this,Sess);
-			sessionDisconnect->setEnabled(true);
-			sessionCompute->setEnabled(true);
-			sessionStats->setEnabled(true);
 			sessionConnect->setEnabled(false);
-			wordsClustering->setEnabled(true);
-			removeCluster->setEnabled(true);
-			showGroupsHistory->setEnabled(true);
- 			rRunR->setEnabled(true);
-			textFrench->setEnabled(true);
-			textEnglish->setEnabled(true);
-			runProgram->setEnabled(true);
 			UpdateMenusEntries();
 			dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
 		}
@@ -220,17 +209,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 		d->LoadSession(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
 		&GroupCalcManager,&StatsCalcManager,&LinkCalcManager, &PostDocManager, &PostGroupManager);
 		Doc=new KDoc(this,Sess);
-		sessionDisconnect->setEnabled(true);
-		sessionCompute->setEnabled(true);
 		sessionConnect->setEnabled(false);
-		wordsClustering->setEnabled(true);
-		removeCluster->setEnabled(true);
-		showGroupsHistory->setEnabled(true);
- 		rRunR->setEnabled(true);
-		textFrench->setEnabled(true);
-		textEnglish->setEnabled(true);
-		runProgram->setEnabled(true);
-		sessionStats->setEnabled(true);
 		UpdateMenusEntries();
 		dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
 	}
@@ -1055,14 +1034,6 @@ void KGALILEICenterApp::slotHandleItem(QListViewItem* item)
 		default:
 			break;
 	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotRRunR(void)
-{
-	KApplication::kApplication()->processEvents();
-	createClient(Doc,new KViewR(Doc,pWorkspace,"Run R",0));
 }
 
 

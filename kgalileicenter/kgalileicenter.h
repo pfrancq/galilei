@@ -551,11 +551,6 @@ private slots:
 	*/
 	void slotStatusMsg(const QString& text);
 
-	/**
-	* Slot called when a R session must be launched.
-	*/
-	void slotRRunR(void);
-
 public slots:
 
 	/**
@@ -619,8 +614,6 @@ public:
 
 	KAction* textFrench;
 	KAction* textEnglish;
-
-	KAction* rRunR;
 
 	KAction* plugins;
 	KAction* sessionOptions;

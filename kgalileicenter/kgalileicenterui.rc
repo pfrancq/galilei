@@ -67,10 +67,6 @@
 		<Action name="textFrench"/>
 		<Action name="textEnglish"/>
 	</Menu>
-	<Menu name="R"><text>&amp;R</text>
-		<Separator/>
-		<Action name="rRunR"/>
-	</Menu>
 	<Menu name="settings"><text>&amp;Settings</text>
 		<Action name="plugins"/>
 		<Action name="sessionOptions"/>
