@@ -539,6 +539,13 @@ double GALILEI::GGroupIR::ComputeNonRelevant(void)
 
 
 //---------------------------------------------------------------------------
+GSubProfile* GALILEI::GGroupIR::GetRelevantSubProfile(void) const
+{
+	return(Relevant->GetSubProfile());
+}
+
+
+//---------------------------------------------------------------------------
 GGroupIR& GALILEI::GGroupIR::operator=(const GGroupIR& grp)
 {
 	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::operator=(grp);

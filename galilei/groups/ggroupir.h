@@ -81,6 +81,7 @@ public:
 class GGroupIR : public RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
 {
 protected:
+
 	bool Done;
 
 	/**
@@ -235,6 +236,20 @@ public:
 	* the most similar to all the others profiles.
 	*/
 	void ComputeRelevant(void);
+
+	/**
+	* Get the relevant profile of the group, i.a. the profile which is the must
+	* similar to all the others profiles.
+	* @return Pointer to GObjIR
+	*/
+	GObjIR* GetRelevant(void) const {return(Relevant);}
+
+	/**
+	* Get the relevant profile of the group, i.a. the profile which is the must
+	* similar to all the others profiles.
+	* @return Pointer to GSubProfile
+	*/
+	GSubProfile* GetRelevantSubProfile(void) const;
 
 	/**
 	* Assignment operator.
