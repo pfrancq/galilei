@@ -80,7 +80,9 @@ using namespace R;
 #include <groups/ggroupir.h>
 #include <groups/gobjir.h>
 #include <groups/ggroupcalcgravitation.h>
-#include <postgroups/gpointofview.h>
+#include <postgroups/gstandartinoutput.h>
+#include <postgroups/ginoutputbase.h>
+#include <postgroups/gdispatchpov.h>
 using namespace GALILEI;
 
 
@@ -1423,36 +1425,169 @@ unsigned int GALILEI::GSessionMySQL::GetHistorySize(void)
 	return(atoi(size[0]));
 }
 
+
 //-----------------------------------------------------------------------------
-int GALILEI::GSessionMySQL::Alreadyexist(void)
+unsigned int GALILEI::GSessionMySQL::SavePointOfView(RContainer<GStandardInOutPut,unsigned,false,true>*spov)
 {
-	char sSql[100];
+	char sSql[200];
 
-	sprintf(sSql,"SELECT * FROM expertkwds");
-	RQuery all(this,sSql);
+	for(spov->Start(); !spov->End(); spov->Next())
+	{
+		sprintf(sSql, "INSERT INTO expertkwds (PROFILEID,GROUPID,IDW_MOT,MOT_EXPERT,LEVEL,FREQ,PARENTS )VALUES(%u,%u,%i,'%s',%i,'%s','%s')"
+				,(*spov)()->GetCurProfile()->GetId(),(*spov)()->GetGroup()->GetId()
+				,(*spov)()->GetIdw(),(char *)(*spov)()->GetWord(),(*spov)()->GetLevel(),(char*)(*spov)()->GetFreq()
+				,(char *)(*spov)()->GetParent());
+		RQuery insert(this, sSql);	}
 
-	if(!all.GetNbRows())
+	return 1;
+}
+
+//-----------------------------------------------------------------------------
+int GALILEI::GSessionMySQL::LevelExist(int level, int profileid)
+{
+	char sSql[200];
+
+	sprintf(sSql,"SELECT * FROM expertkwds WHERE LEVEL=%u and PROFILEID=%u ",level,profileid);
+	RQuery ProfileExpertKwds(this,sSql);
+	if(!ProfileExpertKwds.GetNbRows())
 		return(0);
 
 	return(1);
 
 }
 
+//-----------------------------------------------------------------------------
+GInOutputBase * GALILEI::GSessionMySQL::LoadPointOfView(GSubProfile *prf)
+{
+	unsigned int i = 0;
+	unsigned int j = 0;
+	int incr = 0;
+	int position = 0;
+	char sSql[200];
+	char parent[129]; // +1 for \0
+	char freq[129];
+	char parentvalue[129];
+	char freqvalue[129];
+	GInOutputBase *DataInput;
+	GStandardInOutPut *tmp;
+	unsigned int possp = 0;
+	unsigned int possf = 0;
+
+	sprintf(sSql,"SELECT * FROM expertkwds WHERE profileid=%u order by LEVEL",prf->GetId());
+	RQuery ProfileExpertKwds(this,sSql);
+	if(!ProfileExpertKwds.GetNbRows())
+		return(0);
+	DataInput = new GInOutputBase();
+	for(ProfileExpertKwds.Start(); !ProfileExpertKwds.End(); ProfileExpertKwds.Next())
+	{
+		tmp = new GStandardInOutPut();
+		tmp->SetProfile(prf);
+		tmp->SetId(atoi(ProfileExpertKwds[0])+incr++);
+		tmp->SetGroup(prf->GetGroup());   //GetGroup(ProfileExpertKwds[1]));
+		tmp->SetIdw(atoi(ProfileExpertKwds[2]));
+		tmp->SetWord((char *)ProfileExpertKwds[3]);
+		tmp->SetLevel(atoi(ProfileExpertKwds[4]));
+		strcpy(parent,ProfileExpertKwds[6]);
+		strcpy(freq,ProfileExpertKwds[5]);
+		memset(parentvalue,0,129);
+		memset(freqvalue,0,129);
+		for(possp = 0,i = 0,position = 0,j=0; i < strlen(parent); i++)
+		{
+			if(parent[i] != '/')
+			{
+				parentvalue[possp] = parent[i];
+				possp++;
+			}
+
+			for(possf = 0 ; freq[j] != '/' && freq[j] != '\0'; j++)
+			{
+				freqvalue[possf] = freq[j];
+				possf++;
+			}
+			if(parent[i+1] == '/' || parent[i+1] == '\0')
+			{
+				tmp->SetParent(position, atoi(parentvalue), atoi(freqvalue));
+				position++;
+				j++;
+				possp=possf=0;  // jump '/'
+				memset(parentvalue,0,129);
+				memset(freqvalue,0,129);
+			}
+		}
+		DataInput->StdInOutPut->InsertPtr(new GStandardInOutPut(tmp));
+		delete(tmp);
+	}
+	return DataInput;
+}
+
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::PrepearPoV(GGroup* grp)
+GInOutputBase * GALILEI::GSessionMySQL::GetDocList(int grp, int profile, int idw)
+{
+	GInOutputBase * listdoc;
+	GStandardInOutPut *tmp;
+	char sSql[100];
+
+	int v = 1;
+	sprintf(sSql,"SELECT * FROM expkwdsdoclist WHERE GROUPID = %i AND PROFILEID = %i AND IDW_MOT = %i",grp,profile,idw);
+	RQuery alldocsforakwds(this,sSql);
+
+	if(!alldocsforakwds.GetNbRows())
+		return(0);
+
+	listdoc = new GInOutputBase();
+	for( alldocsforakwds.Start(); !alldocsforakwds.End(); alldocsforakwds.Next() )
+	{
+		tmp = new GStandardInOutPut();
+		tmp->SetProfile(GetSubProfile(atoi(alldocsforakwds[0])));
+//              tmp->SetGroup(GetSubProfile(atoi(alldocsforakwds[0]))->GetGroup());
+		tmp->SetId(atoi(alldocsforakwds[2])+v++);
+		tmp->SetDocRef((char *)alldocsforakwds[3]);
+		listdoc->StdInOutPut->InsertPtr(new GStandardInOutPut(tmp));
+		delete(tmp);
+	}
+
+	return listdoc;
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GSessionMySQL::Alreadyexist(int idgrp)
+{
+	char sSql[100];
+
+	sprintf(sSql,"SELECT * FROM expertkwds WHERE GROUPID = %u",idgrp);
+	RQuery all(this,sSql);
+
+	if(!all.GetNbRows())
+		return(0);
+
+	return(1);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::PrepearPoV(GGroup* grp, GSession *s)
 {
 	GDispatchpov *disp;
+	GSubProfileCursor subprofile;
+	GInOutputBase *datainput;
 
-	//cout << "bijor je suis le nouveau dispatch"<<endl;
-	if(/*!Alreadyexist()*/0)    // WARNING : enlever ! inversion pour debug
+	if(Alreadyexist(grp->GetId()))   // ATTENTION SENS DU TEST INVERSE POUR DEBUG
 	{
-		disp->UpdatePovForAGrp();    // exemple / all groups / one group
+		subprofile = grp->GetSubProfileCursor();
+		for(subprofile.Start(); !subprofile.End(); subprofile.Next())
+		{
+			datainput = new GInOutputBase();
+			datainput = LoadPointOfView(subprofile());
+			if(datainput != NULL)
+				disp->UpdatePovForAPrf(subprofile(),datainput,s);
+			delete(datainput);
+		}
 	}
 	else
-	{
-		disp->GeneratePoVfromScratch(grp);
-	}
+		disp->GeneratePoVfromScratch(grp, s);
+
 }
 
 

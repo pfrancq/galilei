@@ -55,6 +55,7 @@
 #include <docs/glinkcalc.h>
 
 
+
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
@@ -796,7 +797,27 @@ public:
 	* @returns Number of rows.
 	*/
 	virtual unsigned int GetCount(const char* tbl)=0;
-	
+
+	/**
+	*  save the Point of views (expert kwds for a profile)
+	*/
+	virtual unsigned int SavePointOfView(R::RContainer<GStandardInOutPut,unsigned,false,true>*spov) =0;
+
+	/**
+	*  load the Points of views (expert kwds for a profile)
+	*/
+	virtual GInOutputBase * LoadPointOfView(GSubProfile *profile)=0;
+
+	/**
+	*  load the Points of views (expert kwds for a profile)
+	*/
+	virtual GInOutputBase * GetDocList(int grp, int profile, int idw) = 0;
+
+	/**
+	*  test if a specific level exists or not
+	*/
+	virtual int LevelExist(int level, int profileid) =0;
+
 	/**
 	* Destructor.
 	*/
