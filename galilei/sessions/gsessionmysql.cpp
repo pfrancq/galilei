@@ -950,6 +950,11 @@ GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs
 	GGroupIR* grp;
 	unsigned int id;
 	unsigned int chromoid;
+	unsigned int groupid;
+	unsigned int v;
+
+	// Init part
+	chromoid=cNoRef;
 
 	// count the number of chromosome in tempchromo to assign popsize;
 	sprintf(sSql,"SELECT max(chromoid) FROM tempchromo");
@@ -961,33 +966,40 @@ GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs
 
 	InstIR=new GInstIR(this,lang,0.0,0,popsize,0,objs,global,sim,s,0);
 	InstIR->Init(&data);
-	sprintf(sSql,"SELECT DISTINCT chromoid FROM tempchromo WHERE lang='%s'",lang->GetCode());
-	RQuery qchromo (this, sSql);
-	for(qchromo.Start();!qchromo.End();qchromo.Next())
+	sprintf(sSql,"SELECT chromoid,groupid,subprofileid FROM tempchromo WHERE lang='%s' ORDER by chromoid,groupid",lang->GetCode());
+	RQuery GA(this,sSql);
+	for(GA.Start();!GA.End();GA.Next())
 	{
-		chromoid=atoi(qchromo[0]);
-		if(chromoid==popsize)
-			chromo=InstIR->BestChromosome;
-		else
-			chromo=InstIR->Chromosomes[chromoid];
-		sprintf(sSql,"SELECT DISTINCT groupid FROM tempchromo WHERE chromoid=%u",atoi(qchromo[0]));
-		RQuery qgroup(this, sSql);
-		for(qgroup.Start();!qgroup.End();qgroup.Next())
+		// Read Chromosome
+		v=atoi(GA[0]);
+		if(v!=chromoid)
+		{
+			chromoid=v;
+			groupid=cNoRef;
+			grp=0;
+			if(chromoid==popsize)
+				chromo=InstIR->BestChromosome;
+			else
+				chromo=InstIR->Chromosomes[chromoid];
+		}
+
+		// Read Group
+		v=atoi(GA[1]);
+		// If group id changed -> new group needed
+		if((v!=groupid))
 		{
 			grp=chromo->ReserveGroup();
-			sprintf(sSql,"SELECT DISTINCT subprofileid FROM tempchromo WHERE (chromoid=%u and groupid=%u) ",atoi(qchromo[0]),atoi(qgroup[0]));
-			RQuery qsubprof (this, sSql);
-			for(qsubprof.Start();!qsubprof.End();qsubprof.Next())
+			groupid=v;
+		}
+
+		// Read SubProfile
+		id=atoi(GA[2]);
+		for(objs->Start();!objs->End();objs->Next())
+		{
+			if((*objs)()->GetSubProfile()->GetId()==id)
 			{
-				id=atoi(qsubprof[0]);
-				for(objs->Start();!objs->End();objs->Next())
-				{
-					if((*objs)()->GetSubProfile()->GetId()==id)
-					{
-						grp->Insert((*objs)());
-						break;
-					}
-				}
+				grp->Insert((*objs)());
+				break;
 			}
 		}
 	}
