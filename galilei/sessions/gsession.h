@@ -52,15 +52,7 @@ public:
   // Constructor & Init part
   GSession(void) throw(bad_alloc,GException);
 
-  // Languages
-  template<class hlangs,class hdicts> void LoadLanguages(unsigned nb) throw(bad_alloc,GException);
-
-
-
-
-
   // Dictionnaries
-
   void LoadDics(void) throw(bad_alloc,GException);
   void LoadStops(void) throw(bad_alloc,GException);
   GDict* GetDic(GLang *lang) throw(GException);
@@ -71,26 +63,15 @@ public:
 	
 
   // Documents
-  template<class hdocs> void LoadDocuments(unsigned nb) throw(bad_alloc,GException);
-  template<class hdocs> void LoadDocuments(unsigned nb,GProfile* profile) throw(bad_alloc,GException);
   void PutAllDocs(bool alldocs);
   bool GetAllDocs(void) { return(AllDocs); }
   unsigned GetNbDocs(void);
   void AnalyseDocs(URLFunc *urlfunc,InfoFunc *infofunc) throw(bad_alloc,GException);
   void ClearDocs(void) throw(GException);
 
-  // Users
-  template<class husers> void LoadUsers(unsigned nb) throw(bad_alloc,GException);
-
-	// Groups
-	template<class hgroupslangs,class hgroups> void LoadGrps(void) throw(bad_alloc,GException);
-
   // Destructor
   virtual ~GSession(void) throw(GException);
 };
-
-
-#include "gsession.hh" // Template implementation
 
 
 }  //-------- End of namespace Galilei-----------------------------------
