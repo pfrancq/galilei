@@ -64,7 +64,7 @@ using namespace GALILEI;
 GFilterEMail::GFilterEMail(GURLManager* mng)
 	: GFilter(mng,"EMail Filter","text/email","$Revision$"), Buffer(0)
 {
-	AddMIME("text/email");
+	AddMIME(mng,"text/email");
 }
 
 

@@ -40,24 +40,14 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rstring.h>
-#include <rstd/rcursor.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <docs/gdocxml.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GURLManager;
 
 
 //-----------------------------------------------------------------------------
@@ -70,11 +60,6 @@ class GURLManager;
 class GFilter
 {	
 protected:
-
-	/**
-	* Manager.
-	*/
-	GURLManager* Manager;
 
 	/**
 	* Structure corresponding to the document currently analyzed.
@@ -141,9 +126,10 @@ protected:
 
 	/**
 	* Add a specific MIME-Type for this filter.
+	* @param mng            Manager.
 	* @param mime           Name of the MIME-Type.
 	*/
-	void AddMIME(const char* mime);
+	void AddMIME(GURLManager* mng,const char* mime);
 
 	/**
 	* @return true if the character represent a end of sentence.

@@ -54,8 +54,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GFilter::GFilter(GURLManager* mng,const char* name,const char* mimes,const char* ver)
-	: Manager(mng), Doc(0), Name(name), MIMES(mimes), Version(strlen(ver))
+GALILEI::GFilter::GFilter(GURLManager*,const char* name,const char* mimes,const char* ver)
+	: Doc(0), Name(name), MIMES(mimes), Version(strlen(ver))
 {
 	const char* ptr=ver;
 	const char* begin;
@@ -81,9 +81,10 @@ GALILEI::GFilter::GFilter(GURLManager* mng,const char* name,const char* mimes,co
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GFilter::AddMIME(const char* name)
+void GALILEI::GFilter::AddMIME(GURLManager* mng,const char* name)
 {
-	Manager->AddMIME(name,this);
+	if(!mng) return;
+	mng->AddMIME(name,this);
 }
 
 
