@@ -35,6 +35,7 @@
 // include files for ANSI C/C++
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 
 //-----------------------------------------------------------------------------
@@ -67,6 +68,7 @@ public:
 
 	PorterRule(const char* os,const char* ns,int oo,int no,int mr=-1,tCondition c=CondNothing,bool n=false);
 	int Compare(const PorterRule*) {return(-1);}
+	~PorterRule(void);
 };
 
 
@@ -77,6 +79,14 @@ GLangEN::PorterRule::PorterRule(const char* os,const char* ns,int oo,int no,int 
 {
 	OldSuffix=strdup(os);
 	NewSuffix=strdup(ns);
+}
+
+
+//-----------------------------------------------------------------------------
+GLangEN::PorterRule::~PorterRule(void)
+{
+	if(OldSuffix) free(OldSuffix);
+	if(NewSuffix) free(NewSuffix);
 }
 
 

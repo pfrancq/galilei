@@ -55,16 +55,17 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupingKCos::GGroupingKCos(GSession* s) throw(bad_alloc)
-	: GGrouping("KMeansCosinus",s), Random(true), GroupsNumber(13), IterNumber(10)
-		, NbTests(1), FindGroupsNumber(false), MaxNbGroups(13), MinNbGroups(13)
+	: GGrouping("KMeansCosinus",s), Random(true), GroupsNumber(13), IterNumber(10),
+	  NbTests(1), FindGroupsNumber(false), MaxNbGroups(13), MinNbGroups(13),
+	  protos(0), protoserror(0), grpstemp(0), grpstemp2(0), grpsfinal(0)
 {
 	protos = new RContainer<GSubProfile,unsigned int,false,false> (GroupsNumber, 2);
 	protoserror = new RContainer<GSubProfile,unsigned int,false,false> (GroupsNumber, 2);
 	grpstemp = new RContainer<GGroup,unsigned int,false,false>  (GroupsNumber, 2);
 	grpstemp2 = new RContainer<GGroup,unsigned int,false,false>  (GroupsNumber, 2);
 	grpsfinal = new RContainer<GGroup,unsigned int,false,false>  (GroupsNumber, 2);
-
 }
+
 
 //-----------------------------------------------------------------------------
 const char* GALILEI::GGroupingKCos::GetSettings(void)
@@ -78,6 +79,7 @@ const char* GALILEI::GGroupingKCos::GetSettings(void)
 	sprintf(tmp,"%c %u %u %c %u %u",c,GroupsNumber, IterNumber, FindGroupsNumber, MaxNbGroups, MinNbGroups);
 	return(tmp);
 }
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingKCos::SetSettings(const char* s)
@@ -127,12 +129,11 @@ void GALILEI::GGroupingKCos::RelevantInitSubProfiles(int nbsubs)
 					refsum=sum;
 					subprof=(SubProfiles)();
 				} 
-			}	
+			}
 		}
 		protos->InsertPtr(subprof);
 	}
 }
-
 
 
 //-----------------------------------------------------------------------------
@@ -234,9 +235,10 @@ void  GALILEI::GGroupingKCos::ReAllocate()
 		}
 		GGroup* gr=FindGroup(parent);
 		gr->InsertPtr(s);
-	}	
-
+	}
 }
+
+
 //-----------------------------------------------------------------------------
 void  GALILEI::GGroupingKCos::ReCenter()
 {
@@ -305,7 +307,7 @@ GSubProfile* GALILEI::GGroupingKCos::RelevantSubProfile(GGroup* grp)
 		{
 			finalsub=sub1;
 			refsum=sum;
-		}	
+		}
 	}
 	return(finalsub);
 }
@@ -426,4 +428,9 @@ double GALILEI::GGroupingKCos::StatMeasure()
 //-----------------------------------------------------------------------------
 GALILEI::GGroupingKCos::~GGroupingKCos(void)
 {
+	if(protos) delete protos;
+	if(protoserror) delete protoserror;
+	if(grpstemp) delete grpstemp;
+	if(grpstemp2) delete grpstemp2;
+	if(grpsfinal) delete grpsfinal;
 }

@@ -112,13 +112,11 @@ protected:
 	* needed to calculate the error between two iterations
 	*/
 	RContainer<GSubProfile,unsigned int,false,false>* protoserror;
-	
 
 	/**
 	* Temporary container of groupment, needed to run tests
 	*/
 	RContainer<GGroup,unsigned int,false,false>* grpstemp;
-
 
 	/**
 	* Temporary container of groupment, needed to run tests
@@ -129,7 +127,6 @@ protected:
 	* Container of the final groupment
 	*/
 	RContainer<GGroup,unsigned int,false,false>* grpsfinal;
-
 
 public:
 
@@ -301,9 +298,7 @@ public:
 	*/
 	double StatMeasure(void);
 
-
 protected:
-
 
 	/**
 	* Test if a group is valid. If a group isn't not valid, the group is
@@ -315,7 +310,6 @@ protected:
 	* Make the grouping for a specific Language.
 	*/
 	virtual void Run(void) throw(GException);
-
 
 public:
 
