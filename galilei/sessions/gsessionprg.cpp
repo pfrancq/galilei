@@ -135,7 +135,7 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 	{
 		// Read the line
 		strcpy(tmp,Prg.GetLine());
-		ptr=Prg.GetLine();
+		ptr=tmp;
 
 		// Skip Spaces
 		while((*ptr)&&(isspace(*ptr)))
