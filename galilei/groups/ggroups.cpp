@@ -1,6 +1,6 @@
 /*
 
-	GALILEI Research Project
+	 Research Project
 
 	GGroups.cpp
 
@@ -35,7 +35,7 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
+// include files for 
 #include<groups/ggroups.h>
 #include<groups/ggroupvector.h>
 #include<infos/glang.h>
@@ -50,48 +50,35 @@ using namespace R;
 // class GGroups
 //
 //-----------------------------------------------------------------------------
-
 //-----------------------------------------------------------------------------
-GALILEI::GGroups::GGroups(GLang* lang) throw(bad_alloc)
-	: RContainer<GGroup,unsigned int,true,true>(20,10), Lang(lang)
+/**
+* The GGroups class provides a representation for all the groups of a given
+* language. The GGroups are ordered by languages.
+* @author Pascal Francq
+* @short Languages Groups.
+*/
+class GGroups::GGroupsLang : public R::RContainer<GGroup,unsigned int,false,true>
 {
-}
+public:
+
+	GLang* Lang;              // Language
+
+	// Constructor and Compare methods.
+	GGroupsLang(GLang* lang) throw(bad_alloc)
+		: RContainer<GGroup,unsigned int,false,true>(20,10), Lang(lang) {}
+	int Compare(const GGroupsLang* groups) const {return(Lang->Compare(groups->Lang));}
+	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
+
+	// Get the group of a given subprofile
+	GGroup* GetGroup(const GSubProfile* sub);
+
+	// Destructor
+	~GGroupsLang(void) {}
+};
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroups::GGroups(GGroups* grps) throw(bad_alloc)
-	: RContainer<GGroup,unsigned int,true,true>(grps->NbPtr,10),Lang(grps->Lang)
-{
-	GGroup* group;
-
-	for(grps->Start();!grps->End();grps->Next())
-		InsertPtr(new GGroup(group=(*grps)()));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GGroups::Compare(const GGroups& groups) const
-{
-	return(Lang->Compare(groups.Lang));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GGroups::Compare(const GGroups* groups) const
-{
-	return(Lang->Compare(groups->Lang));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GGroups::Compare(const GLang* lang) const
-{
-	return(Lang->Compare(lang));
-}
-
-
-//-----------------------------------------------------------------------------
-GGroup* GALILEI::GGroups::GetGroup(const GSubProfile* sub)
+GGroup* GGroups::GGroupsLang::GetGroup(const GSubProfile* sub)
 {
 	GGroupCursor Groups;
 
@@ -105,20 +92,21 @@ GGroup* GALILEI::GGroups::GetGroup(const GSubProfile* sub)
 }
 
 
-//-----------------------------------------------------------------------------
-GGroup* GALILEI::GGroups::GetGroup(unsigned int id)
-{
-	GGroup* grp;
 
-	grp=GetPtr<unsigned int>(id);
-	if(!grp)
-		InsertPtr(grp=new GGroupVector(id,Lang));
-	return(grp);
+//-----------------------------------------------------------------------------
+//
+// class GGroups
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GGroups::GGroups(unsigned int g)
+	: RContainer<GGroup,unsigned int,true,true>(g+(g/2),g/2), GroupsLang(2,1)
+{
 }
 
-
 //-----------------------------------------------------------------------------
-GGroupCursor& GALILEI::GGroups::GetGroupCursor(void)
+GGroupCursor& GGroups::GetGroupsCursor(void)
 {
 	GGroupCursor *cur=GGroupCursor::GetTmpCursor();
 	cur->Set(this);
@@ -127,30 +115,105 @@ GGroupCursor& GALILEI::GGroups::GetGroupCursor(void)
 
 
 //-----------------------------------------------------------------------------
-GGroup* GALILEI::GGroups::NewGroup(void) throw(bad_alloc)
+GGroupCursor& GGroups::GetGroupsCursor(GLang* lang) throw(GException)
 {
-	unsigned int id;
-	GGroupCursor Groups;
+	GGroupsLang* ptr;
+	GGroupCursor *cur=GGroupCursor::GetTmpCursor();
+
+	ptr=GroupsLang.GetPtr<GLang*>(lang);
+	if(!ptr)
+	{
+		cur->Clear();
+		return(*cur);
+	}
+	cur->Set(ptr);
+	return(*cur);
+}
+
+
+
+
+//-----------------------------------------------------------------------------
+void GGroups::InsertGroup(GGroup* grp) throw(bad_alloc)
+{
+	GGroupsLang* groupsLang;
+
+	InsertPtr(grp);
+	groupsLang = GroupsLang.GetInsertPtr<GLang*>(grp->GetLang());
+	groupsLang->InsertPtr(grp);
+}
+
+
+//-----------------------------------------------------------------------------
+GGroup* GGroups::GetGroup(const GSubProfile* sub) throw(GException)
+{
+	GGroupsLang* groupsLang;
+
+	groupsLang = GroupsLang.GetInsertPtr<GLang*>(sub->GetLang());
+	if(!groupsLang)
+		throw GException("No language defined");
+	return(groupsLang->GetGroup(sub));
+}
+
+
+//-------------------------------------------------------------------------------
+GGroup* GGroups::GetGroup(unsigned int id) throw(bad_alloc)
+{
 	GGroup* grp;
 
-	// Go through the groups to find the first not used index.
-	Groups.Set(this);
-	for(Groups.Start(),id=0;!Groups.End();Groups.Next(),id++)
-		if(id!=Groups()->GetId())
-			break;
-
-	// Create the group with the founded index
-	InsertPtr(grp=new GGroupVector(id,Lang));
+	grp=GetPtr<unsigned int>(id);
 	return(grp);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroups::DeleteGroup(GGroup* grp)
+unsigned int GGroups::GetNbGroups(GLang* lang) const
 {
-	DeletePtr(grp);
+	GGroupsLang* grps;
+
+	grps=GroupsLang.GetPtr<const GLang*>(lang);
+	if(!grps)
+		return(0);
+	return(grps->NbPtr);
 }
 
-GALILEI::GGroups::~GGroups(void)
+
+//-----------------------------------------------------------------------------
+unsigned int GGroups::GetMaxId(void) const
+{
+	if(NbPtr) return(0);
+	return(Tab[NbPtr]->GetId());
+}
+
+
+//-----------------------------------------------------------------------------
+void GGroups::Clear(GLang* lang)
+{
+	unsigned int i;
+	GGroupsLang* grps=GroupsLang.GetPtr<const GLang*>(lang);
+	GGroup* grp;
+
+	// Go through the groups and delete all invalid groups.
+	if(!grps) return;
+	for(i=grps->NbPtr+1;--i;)
+	{
+		grp=(*grps->Tab);
+ 		grp->DeleteSubProfiles();
+		DeleteGroup(grp);
+		grps->DeletePtr(grp);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GGroups::Clear(void) throw(GException)
+{
+	GroupsLang.Clear();
+}
+
+
+
+//-----------------------------------------------------------------------------
+GGroups::~GGroups(void)
 {
 }

@@ -35,11 +35,6 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <math.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include<profiles/gsubprofilevector.h>
 #include <groups/ggroupvector.h>
@@ -160,7 +155,7 @@ void GSubProfileVector::RemoveRefs(void) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-GSubProfileVector::~GSubProfileVector(void)
+GSubProfileVector::~GSubProfileVector(void) throw(GException)
 {
 	RemoveRefs();
 }

@@ -150,7 +150,7 @@ void GGroupVector::AddWordList(unsigned id,double w)
 }
 
 //-----------------------------------------------------------------------------
-GGroupVector::~GGroupVector(void)
+GGroupVector::~GGroupVector(void) throw(GException)
 {
 	RemoveRefs();
 }

@@ -67,15 +67,16 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GGrouping::GGrouping(GFactoryGrouping* fac) throw(bad_alloc)
-	: GPlugin<GFactoryGrouping>(fac), Lang(0), Groups(0), SubProfiles(100,50),
-	  DeletedGroups(200,100), IdealGroups(0)
+	: GPlugin<GFactoryGrouping>(fac), Lang(0), /*Groups(0),*/ SubProfiles(100,50),
+	  /*DeletedGroups(200,100),*/ IdealGroups(0)
 {
 }
+
 
 //-----------------------------------------------------------------------------
 void GGrouping::Connect(GSession* session)
 {
-	GFactoryLangCursor Langs;
+/*	GFactoryLangCursor Langs;
 	GLang* lang;
 
 	Session=session;
@@ -85,7 +86,8 @@ void GGrouping::Connect(GSession* session)
 		lang=Langs()->GetPlugin();
 		if(!lang) continue;
 		DeletedGroups.InsertPtr(new GGroups(lang));
-	}
+	}*/
+	Session=Groups=session;
 	IdealGroups=0;
 }
 
@@ -93,8 +95,8 @@ void GGrouping::Connect(GSession* session)
 //-----------------------------------------------------------------------------
 void GGrouping::Disconnect(GSession*)
 {
-	Session=0;
-	DeletedGroups.Clear();
+	Groups=Session=0;
+//	DeletedGroups.Clear();
 	IdealGroups=0;
 }
 
@@ -108,18 +110,18 @@ void GGrouping::Init(void) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GGrouping::Clear(void) throw(bad_alloc)
 {
-	unsigned int i;
+//	unsigned int i;
 
 	// Go through the groups and delete all invalid groups.
-	for(i=Groups->NbPtr+1;--i;)
+/*	for(i=Groups->NbPtr+1;--i;)
 	{
 		DeleteGroup(*Groups->Tab);
-	}
+	}*/
 }
 
 
 //-----------------------------------------------------------------------------
-GGroup* GGrouping::NewGroup(GLang* lang)
+/*GGroup* GGrouping::NewGroup(GLang* lang)
 {
 	GGroup* grp;
 
@@ -140,11 +142,11 @@ void GGrouping::DeleteGroup(GGroup* grp)
 	if(SaveGroups)
 		Session->DeleteGroup(grp);
 	Groups->DeletePtr(grp);
-}
+}*/
 
 
 //-----------------------------------------------------------------------------
-void GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
+void GGrouping::Grouping(GSlot* rec,bool modified,bool save)
 {
 	GFactoryLangCursor CurLang;
 	GGroupCalc* CalcDesc;
@@ -152,8 +154,9 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 	GGroup* Grp;
 	GGroup** Tab;
 	unsigned int i;
+	GGroupCursor Groups;
 
-	SaveGroups=/*save*/true;
+//	SaveGroups=/*save*/true;
 	Modified=modified;
 
 	// Go trough each language.
@@ -164,12 +167,12 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 		if(!Lang) continue;
 
 		SubProfiles.Clear();
-		Groups=Session->GetGroups(Lang);
+//		Groups=Session->GetGroups(Lang);
 		if(rec)
 			rec->NextGroupLang(Lang);
 
 		// Go through the groups and delete all invalid groups.
-		for(i=Groups->NbPtr+1,Tab=Groups->Tab;--i;Tab++)
+/*		for(i=Groups->NbPtr+1,Tab=Groups->Tab;--i;Tab++)
 		{
 			Grp=(*Tab);
 			if((!modified)||(((Grp->GetState()!=osUpToDate)&&(Grp->GetState()!=osUpdated))&&(!IsValid(Grp))))
@@ -177,7 +180,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 				DeleteGroup(Grp);
 				Tab--;
 			}
-		}
+		}*/
 
 		// Go through the profiles corresponding to the language and that are
 		// to inserted.
@@ -185,7 +188,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 		for(cur.Start();!cur.End();cur.Next())
 		{
 			#ifdef GROUP_SUBPROFILES_NOT_DEFINED
-			if(cur()->IsDefined()||cur()->GetProfile()->GetNbJudgedDocs(Lang)
+			if(cur()->IsDefined()||cur()->GetProfile()->GetNbJudgedDocs(Lang))
 				SubProfiles.InsertPtr(cur());
 			#else
 			if(cur()->IsDefined())
@@ -195,14 +198,15 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 
 		// Make the grouping
 		Run();
-
-		// Compute the description of the groups and Save the information.
-		CalcDesc=Session->GetGroupCalcMng()->GetCurrentMethod();
-		for(Groups->Start();!Groups->End();Groups->Next())
-			CalcDesc->Compute((*Groups)());
 	}
 	Lang=0;
-	if(SaveGroups)
+	// Compute the description of the groups and Save the information.
+	CalcDesc=Session->GetGroupCalcMng()->GetCurrentMethod();
+	Groups=Session->GetGroupsCursor();
+	for(Groups.Start();!Groups.End();Groups.Next())
+		CalcDesc->Compute(Groups());
+
+	if(save)
 		Session->SaveGroups();
 }
 

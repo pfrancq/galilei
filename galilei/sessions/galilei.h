@@ -75,7 +75,7 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Information Part
+// forward class declaration - Infos Part
 class GInfo;
 class GWeightInfo;
 class GWeightInfoCursor;
@@ -95,7 +95,7 @@ class GDicts;
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Document Part
+// forward class declaration - Docs Part
 class GFilter;
 class GFactoryFilter;
 class GFactoryFilterCursor;
@@ -128,7 +128,7 @@ class GLinks;
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - User Part
+// forward class declaration - Profiles Part
 class GUsers;
 class GUser;
 class GUserCursor;
@@ -148,13 +148,12 @@ class GProfilesBehaviours;
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Grouping Part
+// forward class declaration - Groups Part
 class GGroups;
 class GGroupsHistory;
-class GGroupsCursor;
 class GGroup;
-class GGroupHistory;
 class GGroupCursor;
+class GGroupHistory;
 class GGroupVector;
 class GGrouping;
 class GFactoryGrouping;
@@ -166,7 +165,7 @@ class GFactoryGroupCalcCursor;
 class GGroupCalcManager;
 class GSubject;
 class GSubjectCursor;
-class GSubjectTree;
+class GSubjects;
 class GPostGroup;
 class GPostGroupManager;
 class GFactoryPostGroup;
@@ -182,7 +181,7 @@ class GGroupsHistory;
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Session Part
+// forward class declaration - Sessions Part
 class GTest;
 class GTests;
 class GSession;

@@ -162,7 +162,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	~GSubject(void);
+	~GSubject(void) throw(GException);
 };
 
 

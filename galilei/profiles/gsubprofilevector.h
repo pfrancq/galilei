@@ -157,7 +157,7 @@ public:
 	/**
 	* Destructor of a subprofile represented by a vector.
 	*/
-	virtual ~GSubProfileVector(void);
+	virtual ~GSubProfileVector(void) throw(GException);
 };
 
 

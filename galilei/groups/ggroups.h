@@ -50,98 +50,125 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroups class provides a representation for all the groups of a given
-* language. The GGroups are ordered by languages.
+* The GGroups class provides a manager for all the groups of the system.
 * @author Pascal Francq
-* @short Languages Groups.
+* @short Groups Manager.
 */
-class GGroups : public R::RContainer<GGroup,unsigned int,true,true>
+class GGroups : protected R::RContainer<GGroup,unsigned int,true,true>
 {
+protected:
+	class GGroupsLang;
+
 	/**
-	* Language corresponding to the set of groups.
+	* Groups handled by the system.
 	*/
-	GLang* Lang;
+	R::RContainer<GGroupsLang,unsigned int,true,true> GroupsLang;
 
 public:
 
 	/**
-	* Constructor.
-	* @param lang           Pointer to the corresponding language.
+	* Constructor of the groups manager.
+	* @param g              Number of groups.
 	*/
-	GGroups(GLang* lang) throw(bad_alloc);
+	GGroups(unsigned int g);
 
 	/**
-	* Copy Constructor.
-	* @param grps           Pointer to the original groups.
+	* Get a cursor on all the groups.
+	* @return GGroupCursor.
 	*/
-	GGroups(GGroups* grps) throw(bad_alloc);
+	GGroupCursor& GetGroupsCursor(void);
 
 	/**
-	* Compare method needed by R::RContainer.
+	* Get a cursor on the groups of a given langage.
+	* @param lang            Language of the groups.
+	* @return GGroupCursor.
 	*/
-	int Compare(const GGroups& groups) const;
+	GGroupCursor& GetGroupsCursor(GLang* lang) throw(GException);
 
 	/**
-	* Compare method needed by R::RContainer.
+	* Load the groups.
 	*/
-	int Compare(const GGroups* groups) const;
+	virtual void LoadGroups(bool wg,bool w) throw(bad_alloc,GException) {};
 
 	/**
-	* Compare method needed by R::RContainer.
+	* Save a group, i.e. save all the information of the subprofiles
+	* concerning the groupement.
+	* @param grp        Group to save.
 	*/
-	int Compare(const GLang* lang) const;
+	virtual void Save(GGroup* grp) throw(GException) {};
 
 	/**
-	* Get the language of the set of groups.
-	* @return Pointer to the language.
+	* Create a new group.
+	* @param lang       Language of the group to create.
+	* @param grp        Group created.
 	*/
-	GLang* GetLang(void) const {return(Lang);}
+	virtual void NewGroup(GLang* lang,GGroup* grp) {};
+
+	/**
+	* Save the groups of the session.
+	*/
+	virtual void SaveGroups(void) {};
+
+	/**
+	* Insert a group. The group is stored in the different language.
+	* @param grp             Pointer to the group.
+	*/
+	void InsertGroup(GGroup* grp) throw(bad_alloc);
+
+	/**
+	* Delete a group.
+	* @param grp        Group to delete.
+	*/
+	virtual void DeleteGroup(GGroup* grp) {};
 
 	/**
 	* Get the group where the given subprofile is attached.
 	* @param sub            Subprofile used.
 	* @returns Pointer to the group.
 	*/
-	GGroup* GetGroup(const GSubProfile* sub);
+	GGroup* GetGroup(const GSubProfile* sub) throw(GException);
 
 	/**
-	* Get the group with a given identificator. If the group doesn't exist
-	* -> create it.
-	* @param id             Identificator.
-	* @returns Pointer to the group.
+	* Get a group corresponding to a given identificator.
+	* @param id         Identificator of the group.
+	* @apram Pointer to GGroup.
 	*/
-	GGroup* GetGroup(unsigned int id);
+	GGroup* GetGroup(unsigned int id) throw(bad_alloc);
 
 	/**
-	* Get a cursor over the groups.
+	* Get the number of groups handled.
+	* @returns Number of groups.
 	*/
-	GGroupCursor& GetGroupCursor(void);
+	unsigned int GetNbGroups(void) const {return(NbPtr);}
 
 	/**
-	* Create a new group.
-	* @returns Pointer to the group.
+	* Get the number of groups of a given langauge handled.
+	* @returns Number of groups.
 	*/
-	GGroup* NewGroup(void) throw(bad_alloc);
+	unsigned int GetNbGroups(GLang* lang) const;
 
 	/**
-	* Delete a group.
-	* @param grp            Group to delete.
 	*/
-	void DeleteGroup(GGroup* grp);
+	unsigned int GetMaxId(void) const;
 
 	/**
-	* Destructor
+	* Clear the groups of a given language.
+	* @param lang       Language of the groups to delete.
 	*/
-	~GGroups(void);
+	void Clear(GLang* lang);
+
+	/**
+	* Clear all the groups.
+	*/
+	void Clear(void) throw(GException);
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GGroups(void);
 };
 
 
-//-----------------------------------------------------------------------------
-/**
-* The GGroupsCursor class provides a way to go trough a set of groups.
-* @short Groups Cursor
-*/
-CLASSCURSOR(GGroupsCursor,GGroups,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

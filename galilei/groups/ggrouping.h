@@ -99,12 +99,12 @@ protected:
 	/**
 	* Groups to destruct after the grouping.
 	*/
-	R::RContainer<GGroups,unsigned int,true,true> DeletedGroups;
+//	R::RContainer<GGroup,unsigned int,true,true> DeletedGroups;
 
 	/**
 	* Must the groups be save in the database.
 	*/
-	bool SaveGroups;
+//	bool SaveGroups;
 
 	/**
 	* Must the groups be used without reconstruction.
@@ -114,7 +114,7 @@ protected:
 	/**
 	* Ideal Groups.
 	*/
-	R::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+	GGroups* IdealGroups;
 
 public:
 
@@ -150,7 +150,7 @@ public:
 	* Set the ideal groups.
 	* @param ideal          Pointer to the ideal groups.
 	*/
-	void SetIdealGroups(R::RContainer<GGroups,unsigned int,true,true>* ideal) {IdealGroups=ideal;}
+	void SetIdealGroups(GGroups* ideal) {IdealGroups=ideal;}
 
 protected:
 
@@ -168,14 +168,14 @@ protected:
 	* one.
 	* @param lang       Language of the group to create.
 	*/
-	GGroup* NewGroup(GLang* lang);
+//	GGroup* NewGroup(GLang* lang);
 
 	/**
 	* Delete an existing group. In practice a list of all removed groups are
 	* hold and an existing group not more necessary is first put in a container
 	* before being destructed.
 	*/
-	void DeleteGroup(GGroup* grp);
+//	void DeleteGroup(GGroup* grp);
 
 public:
 
@@ -183,12 +183,11 @@ public:
 	* Test if a group is valid. If a group isn't not valid, the group is
 	* deleted and all profiles are to be inserted again.
 	*/
-	virtual bool IsValid(GGroup* grp)=0;
+//	virtual bool IsValid(GGroup* grp)=0;
 
 	/**
 	* Make the groups.
 	* @param rec            Receiver of the signals.
-	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
 	*/
 	void Grouping(GSlot* rec,bool modified,bool save);
@@ -242,7 +241,7 @@ public:                                                                         
 			Inst = new TheFactory(mng,l);                                                       \
 		return(Inst);                                                                           \
 	}                                                                                           \
-	virtual const char* GetAPIVersion(void) const {return(API_GROUPING_VERSION);}               \
+	virtual const char* GetAPIVersion(void) const {return(API_GROUPING_VERSION);}         \
 	virtual void Create(void) throw(GException)                                                 \
 	{                                                                                           \
 		if(Plugin) return;                                                                      \

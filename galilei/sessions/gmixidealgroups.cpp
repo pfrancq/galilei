@@ -67,11 +67,11 @@ using namespace R;
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GMixIdealGroups::GMixIdealGroups(GSession* sess,RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups, int level, bool m, bool s, bool r, bool i)
-	:  IdealGroups(idealgroups), MixedGroups(IdealGroups->NbPtr,2), Tab(0), Tabs(0), TabS(0)
+GALILEI::GMixIdealGroups::GMixIdealGroups(GSession* sess,GGroups* idealgroups, int nbgroups, int level, bool m, bool s, bool r, bool i)
+	//:  IdealGroups(idealgroups), MixedGroups(0), Tab(0),/* Tabs(0),*/ TabS(0)
 {
 	//init parameters
-	Random=r;
+/*	Random=r;
 	Ideal=i;
 	Merge=m;
 	Split=s;
@@ -81,28 +81,29 @@ GALILEI::GMixIdealGroups::GMixIdealGroups(GSession* sess,RContainer<GGroups,unsi
 	Rand=new RRandomGood(0);
 	Rand->Reset(10);
 	Tab=new GGroup*[Session->GetProfilesNb()];
-	Tabs=new GGroups*[IdealGroups->NbPtr];
+//	Tabs=new GGroups*[IdealGroups->NbPtr];
 	TabS=new GSubProfile*[Session->GetProfilesNb()];
+	MixedGroups=new GGroups(IdealGroups->GetNbGroups());*/
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GMixIdealGroups::SetSettings(const char* s)
 {
-	char c, d, f;
+/*	char c, d, f;
 
 	if(!(*s)) return;
 	sscanf(s,"%u %u %c %c %c",&NbMixedGroups, &Level, &c, &d, &f);
 	if(c=='1') Random=true; else Random=false;
 	if(d=='1') Merge=true; else Merge=false;
-	if(f=='1') Split=true; else Split=false;
+	if(f=='1') Split=true; else Split=false;*/
 }
 
 
 //-----------------------------------------------------------------------------
 GGroup* GALILEI::GMixIdealGroups::GetIdealGroup(GSubProfile* s)
 {
-	GGroupsCursor Cur;
+/*	GGroupsCursor Cur;
 	GGroupCursor Cur2;
 
 	Cur.Set(IdealGroups);
@@ -114,15 +115,15 @@ GGroup* GALILEI::GMixIdealGroups::GetIdealGroup(GSubProfile* s)
 			if(Cur2()->IsIn(s))
 				return(Cur2());
 		}
-	}
-	return(0);
+	}*/
+	return(IdealGroups->GetGroup(s));
 }
 
 
 //-----------------------------------------------------------------------------
 bool GALILEI::GMixIdealGroups::MergeGroups(void)
 {
-	GGroup* g;
+/*	GGroup* g;
 	GSubProfileCursor Cur;
 
 	// At least two groups must be presented
@@ -138,14 +139,14 @@ bool GALILEI::GMixIdealGroups::MergeGroups(void)
 		g->InsertPtr(Cur());
 	Current->DeletePtr(Tab[1]);
 
-	return(true);
+	return(true);*/
 }
 
 
 //-----------------------------------------------------------------------------
 bool GALILEI::GMixIdealGroups::SplitGroups(void)
 {
-	unsigned int r1, i;
+/*	unsigned int r1, i;
 	GGroup* g1;
 	GGroup* g2;
 	GGroup** ptr;
@@ -177,14 +178,14 @@ bool GALILEI::GMixIdealGroups::SplitGroups(void)
 	}
 	Current->InsertPtr(g2);
 
-	return(true);
+	return(true);*/
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GMixIdealGroups::RandomGroups(void)
 {
-	unsigned int r;
+/*	unsigned int r;
 	GGroups *igrps, *grps;
 	GGroup *igrp, *grp;
 
@@ -218,14 +219,14 @@ void GALILEI::GMixIdealGroups::RandomGroups(void)
 				grps->GetPtrAt(r)->InsertPtr((*igrp)());
 			}
 		}
-	}
+	}*/
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GMixIdealGroups::Run(GSlot* g)
 {
-	unsigned int r, nbgroups;
+/*	unsigned int r, nbgroups;
 	unsigned  int i,u;
 	unsigned int id;
 	bool b;
@@ -313,14 +314,14 @@ void GALILEI::GMixIdealGroups::Run(GSlot* g)
 			g->receiveNextChromosome(i);
 		InitMixedGroups(cNoRef);
 		StockInDatabase(id);
-	}
+	}*/
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GMixIdealGroups::InitMixedGroups(unsigned int mingroups)
 {
-	unsigned int i;
+/*	unsigned int i;
 	GGroups *igrps, *grps,**ptr;
 	GGroup *igrp, *grp;
 
@@ -352,30 +353,30 @@ void GALILEI::GMixIdealGroups::InitMixedGroups(unsigned int mingroups)
 			Current=(*ptr);
 			break;
 		}
-	}
+	}*/
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GMixIdealGroups::RandOrderTab(void)
 {
-	if(!Current) return;
+/*	if(!Current) return;
 	memcpy(Tab,Current->Tab,Current->NbPtr*sizeof(GGroup*));
-	Rand->RandOrder<GGroup*>(Tab,Current->NbPtr);
+	Rand->RandOrder<GGroup*>(Tab,Current->NbPtr);*/
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GMixIdealGroups::StockInDatabase(int nbmixedgroups)
 {
-	Session->SaveMixedGroups(&MixedGroups, nbmixedgroups);
+//	Session->SaveMixedGroups(&MixedGroups, nbmixedgroups);
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GMixIdealGroups::IShow()
 {
-	cout <<endl <<endl;
+/*	cout <<endl <<endl;
 	for (IdealGroups->Start(); !IdealGroups->End(); IdealGroups->Next())
 	{
 		GGroups * grps = (*IdealGroups)();
@@ -390,14 +391,14 @@ void GALILEI::GMixIdealGroups::IShow()
 			}
 			cout << endl;
 		}
-	}
+	}*/
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GMixIdealGroups::Show()
 {
-	cout <<endl <<endl;
+/*	cout <<endl <<endl;
 	for (MixedGroups.Start(); !MixedGroups.End(); MixedGroups.Next())
 	{
 		GGroups * grps = MixedGroups();
@@ -412,17 +413,19 @@ void GALILEI::GMixIdealGroups::Show()
 			}
 			cout << endl;
 		}
-	}
+	}*/
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GMixIdealGroups::~GMixIdealGroups(void)
 {
+/*	if(MixedGroups)
+		delete MixedGroups;
 	if(Tab)
 		delete[] Tab;
 	if(Tabs)
 		delete[] Tabs;
 	if(TabS)
-		delete[] TabS;
+		delete[] TabS;*/
 }

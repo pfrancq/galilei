@@ -68,17 +68,17 @@ protected:
 	/**
 	* Ideal groupment.
 	*/
-	R::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+	GGroups* IdealGroups;
 
 	/**
 	* Mixed groups.
 	*/
-	R::RContainer<GGroups,unsigned int,true,true> MixedGroups;
+	GGroups* MixedGroups;
 
 	/**
 	* Current Language.
 	*/
-	GGroups* Current;
+//	GGroups* Current;
 
 	/**
 	* Tamporary array of pointer to groups.
@@ -88,7 +88,7 @@ protected:
 	/**
 	* Temporary array of pointer to languages.
 	*/
-	GGroups** Tabs;
+//	GGroups** Tabs;
 
 	/**
 	* Temporary array of pointer to subprofiles.
@@ -143,7 +143,7 @@ public:
 	* @param s              split category?
 	* @param r              random grouping?
 	*/
-	GMixIdealGroups(GSession* sess,R::RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups=10, int level=3, bool m=true, bool s=true, bool r=true, bool i=true);
+	GMixIdealGroups(GSession* sess,GGroups* idealgroups, int nbgroups=10, int level=3, bool m=true, bool s=true, bool r=true, bool i=true);
 
 	/**
 	* set the settings.

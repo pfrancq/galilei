@@ -47,7 +47,7 @@
 #include <sessions/galilei.h>
 #include <profiles/gusers.h>
 #include <docs/gdocs.h>
-#include <groups/ggroupsmng.h>
+#include <groups/ggroups.h>
 #include <sessions/gparams.h>
 
 
@@ -64,13 +64,13 @@ namespace GALILEI{
 * @author GALILEI Team
 * @short Generic Session.
 */
-class GSession : public GDocs, public GUsers, public GGroupsMng
+class GSession : public GDocs, public GUsers, public GGroups
 {
 protected:
 	/**
 	* Pointer to a tree of subject
 	*/
-	GSubjectTree* Subjects;
+	GSubjects* Subjects;
 
 	/**
 	* Name of the current database.
@@ -240,7 +240,7 @@ public:
 	/**
 	* Return a pointer to a tree of subjects
 	*/
-	GSubjectTree* GetSubjects(void) {return(Subjects);}
+	GSubjects* GetSubjects(void) {return(Subjects);}
 
 	/**
 	* Get the parameters of the session.
@@ -284,11 +284,17 @@ public:
 	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
 
 	/**
-	* Return the identifier of a new word of a dictionary.
-	* @param data           Word to find.
+	* Assign an identifier to a new data of a given dictionary.
+	* @param data           Data.
 	* @param dict           Dictionary.
 	*/
-	virtual unsigned int GetDicNextId(const GData* data,const GDict* dict)=0;
+	virtual void AssignId(GData* data,const GDict* dict)=0;
+
+	/**
+	* Assign an identifier to a new grou.
+	* @param grp            Group.
+	*/
+	virtual void AssignId(GGroup* data);
 
 	/**
 	* Loading a dictionary/stoplist.
@@ -482,7 +488,7 @@ public:
 	* @param id             Identificator.
 	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
 	*/
-	virtual void SaveMixedGroups(R::RContainer<GGroups,unsigned int,true,true> * mixedgroups,unsigned int id, bool historic=false)=0;
+	virtual void SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic=false)=0;
 
 	/**
 	* Save profiles in history
@@ -516,15 +522,15 @@ public:
 
 	/**
 	* Load the ideal groupment.
-	* @param idealgroup   The ideal container of group	
+	* @param idealgroup   The ideal container of group
 	*/
 	virtual void LoadIdealGroupment()=0;
 
 	/**
 	* Save the ideal groupment
-	* @param idealgroup   The ideal container of group	
+	* @param idealgroup   The ideal container of group
 	*/
-	virtual void SaveIdealGroupment(R::RContainer<GGroups,unsigned int,true,true>* idealgroup)=0;
+	virtual void SaveIdealGroupment(GGroups* idealgroup)=0;
 
 	/**
 	* Save the feedbaks

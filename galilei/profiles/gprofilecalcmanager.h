@@ -4,7 +4,7 @@
 
 	GProfileCalcManager.h
 
-	Manager to handle profile computing method. - Header.
+	Profile Computing Methods Manager - Header.
 
 	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
@@ -34,27 +34,26 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GProfileCalcManagerH
 #define GProfileCalcManagerH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GProfileCalcManager class provides a representation for a manager
 * responsible to manage all the profile computing methods.
 * @author Pascal Francq
-* @short Profiles Computing Method Manager.
+* @short Profile Computing Methods Manager.
 */
 class GProfileCalcManager : public R::RContainer<GFactoryProfileCalc,unsigned int,true,true>
 {
@@ -66,7 +65,7 @@ class GProfileCalcManager : public R::RContainer<GFactoryProfileCalc,unsigned in
 public:
 
 	/**
-	* Construct a URL manager.
+	* Construct the profile computing methods manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
@@ -76,13 +75,13 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	void Connect(GSession* session);
+	void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	void Disconnect(GSession* session);
+	void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Set the current method.
@@ -97,19 +96,19 @@ public:
 	GProfileCalc* GetCurrentMethod(void);
 
 	/**
-	* Get a cursor over the filters of the system.
+	* Get a cursor over the profile computing methods managed.
 	*/
 	GFactoryProfileCalcCursor& GetProfileCalcsCursor(void);
 
 	/**
-	* Destructor of URL manager.
+	* Destructor of the profile computing methods manager.
 	*/
 	virtual ~GProfileCalcManager(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

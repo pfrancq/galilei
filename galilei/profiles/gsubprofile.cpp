@@ -372,6 +372,6 @@ void GSubProfile::UpdateFinished(void)
 
 
 //------------------------------------------------------------------------------
-GSubProfile::~GSubProfile(void)
+GSubProfile::~GSubProfile(void) throw(GException)
 {
 }

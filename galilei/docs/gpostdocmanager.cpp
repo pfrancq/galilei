@@ -123,7 +123,6 @@ GPostDocManager::GPostDocManager(const char* path,bool dlg) throw(GException)
 	// If something in Msg -> error
 	if(Msg.GetLen())
 	{
-		cout<<Msg<<endl;
 		throw(GException(Msg));
 	}
 }

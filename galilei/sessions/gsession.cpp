@@ -80,7 +80,7 @@ using namespace R;
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalc.h>
 #include <groups/ggroupcalcmanager.h>
-#include <groups/gsubjecttree.h>
+#include <groups/gsubjects.h>
 #include <docs/gfiltermanager.h>
 #include <docs/gfilter.h>
 #include <infos/gweightinfo.h>
@@ -101,7 +101,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
  GSessionParams* sessparams,bool tests) throw(bad_alloc,GException)
-	: GDocs(d), GUsers(u,p), GGroupsMng(g),
+	: GDocs(d), GUsers(u,p), GGroups(g),
 	  Subjects(0), Fdbks(f+f/2,f/2),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
 	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0),
@@ -113,7 +113,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 
 	// Create SubjectTree
 	if(tests)
-		Subjects=new GSubjectTree(this);
+		Subjects=new GSubjects(this);
 }
 
 
@@ -123,20 +123,20 @@ void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseMana
 	GPostDocManager* pdmng,GPostGroupManager* pgmng) throw(bad_alloc,GException)
 
 {
-	GLang* lang;
+//	GLang* lang;
 
 	Langs=langs;
 	if(Langs)
 	{
 		Langs->Connect(this);
-		GFactoryLangCursor Cur;
+/*		GFactoryLangCursor Cur;
 		Cur=Langs->GetLangsCursor();
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			lang=Cur()->GetPlugin();
 			if(!lang) continue;
 			Groups.InsertPtr(new GGroups(lang));
-		}
+		}*/
 	}
 	URLMng=umng;
 	DocAnalyseMng=dmng;
@@ -172,7 +172,7 @@ void GSession::PostConnect(GLinkCalcManager* lmng) throw(bad_alloc,GException)
 		LinkCalcMng->Connect(this);
 
 	// Create Similarities Managers (IFF used by default)
-	ProfilesSims = new GProfilesSims(this,true);
+	ProfilesSims = new GProfilesSims(this,true, true);
 	ProfilesBehaviours = new GProfilesBehaviours(this);
 	DocProfSims = new GDocProfSims(this,true);
 }
@@ -237,6 +237,13 @@ void GSession::RemoveAssociation(void) throw(GException)
 	}
 
 	DeleteWordList(dic);
+}
+
+
+//-----------------------------------------------------------------------------
+void GSession::AssignId(GGroup* data)
+{
+	data->SetId(GGroups::GetMaxId()+1);
 }
 
 
@@ -337,20 +344,11 @@ void GSession::UseIFFProfs(bool iff)
 }
 
 
-
 //-----------------------------------------------------------------------------
 double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2) throw(GException)
 {
 	return(ProfilesSims->GetSim(sub1,sub2));
 }
-
-
-//-----------------------------------------------------------------------------
-void GSession::UpdateBehaviours(void) throw(bad_alloc)
-{
-	ProfilesBehaviours->Update();
-}
-
 
 
 //-----------------------------------------------------------------------------
@@ -425,10 +423,10 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 	}
 
 	// update the state of all the sims.
-	UseIFFProfs(true);   /// !!!!  check if 'true' is the correct value !?!
+	ProfilesSims->Update();
 
-	//updtae the state of the behaviours
-	UpdateBehaviours();
+	//update the state of the behaviours
+	ProfilesBehaviours->Update();
 
 	//   save profiles if necessary and set their state to UpToDate.
 	for(Prof.Start();!Prof.End();Prof.Next())
@@ -473,7 +471,6 @@ void GSession::CalcPostGroup() throw(GException)
 	GPostGroup* PostGrouping=PostGroupMng->GetCurrentMethod();
 	if(!PostGrouping)
 		throw GException("No postgroup method chosen.");
-	cout << "postgroup method found "<<endl;
 	PostGrouping->Compute();
 }
 
@@ -540,44 +537,41 @@ void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,const char* date)
 //-----------------------------------------------------------------------------
 void GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
 {
-	GGroupsCursor Grps;
-	GGroupCursor Ideal;
+	GGroupCursor Grps;
+//	GGroupCursor Ideal;
 	GSubProfileCursor Sub;
-	GGroups* grps;
+//	GGroups* grps;
 	GGroup* grp;
 	GGroupCalc* CalcDesc;
 
 	// Get current grouping description method
 	CalcDesc=GroupCalcMng->GetCurrentMethod();
 
+	// Clear current group
+	GGroups::Clear();
+
 	// Go through each languages
-	Grps=Subjects->GetIdealGroupsCursor();
+	Grps=Subjects->GetGroupsCursor();
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
-		// Find corresponding groups and clear it
-		grps=Groups.GetPtr<const GLang*>(Grps()->GetLang());
-		grps->Clear();
+		// Create a new group in groups
+		grp=new GGroupVector(cNoRef,Grps()->GetLang());
+		grp->SetId(GGroups::GetMaxId()+1);
+		InsertGroup(grp);
 
-		// Go trough each group
-		Ideal=Grps()->GetGroupCursor();
-		for(Ideal.Start();!Ideal.End();Ideal.Next())
+		// Go through each subprofile
+		Sub=Grps()->GetSubProfilesCursor();
+		for(Sub.Start();!Sub.End();Sub.Next())
 		{
-			// Create a new group in groups
-			grp=new GGroupVector(cNoRef,Grps()->GetLang());
-			NewGroup(Grps()->GetLang(),grp);
-			grps->InsertPtr(grp);
-
-			// Go through each subprofile
-			Sub=Ideal()->GetSubProfilesCursor();
-			for(Sub.Start();!Sub.End();Sub.Next())
-			{
-				grp->InsertSubProfile(Sub());
-			}
-
-			// Compute Description
-			CalcDesc->Compute(grp);
+			grp->InsertSubProfile(Sub());
 		}
+
+		// Compute Description
+		CalcDesc->Compute(grp);
 	}
+
+/*	if(save)
+		Session->SaveGroups();*/
 }
 
 
@@ -663,7 +657,6 @@ void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 				test[i]=false;
 			}
 	}
-	// cout<<compt<<" nbre de mots restants"<<endl;
 
 	for(DocCursor.Start();!DocCursor.End();DocCursor.Next())
 	{
@@ -743,7 +736,7 @@ GSession::~GSession(void) throw(GException)
 	if(ProfilesSims) delete ProfilesSims;
 
 	// Clear all entities
-	GGroupsMng::Clear();
+	GGroups::Clear();
 	GUsers::Clear();
 	GDocs::Clear();
 
@@ -772,5 +765,6 @@ GSessionParams::GSessionParams(void)
 	GParam* p;
 	InsertPtr(p=new GParamUInt("SameBehaviourMinDocs"));
 	InsertPtr(p=new GParamUInt("DiffBehaviourMinDocs"));
+	InsertPtr(p=new GParamDouble("NullSimLevel"));
 }
 

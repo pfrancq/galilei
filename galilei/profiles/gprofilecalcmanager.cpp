@@ -4,9 +4,9 @@
 
 	GProfileCalcManager.cpp
 
-	Generic Manager to handle URL file - Implementation.
+	Profile Computing Methods Manager - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,14 +34,14 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gprofilecalcmanager.h>
 #include <profiles/gprofilecalc.h>
@@ -51,13 +51,13 @@ using namespace ltmm;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GProfileCalcManager
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GProfileCalcManager::GProfileCalcManager(const char* path,bool dlg) throw(GException)
 	: RContainer<GFactoryProfileCalc,unsigned int,true,true>(10,5), Current(0)
 {
@@ -125,8 +125,8 @@ GProfileCalcManager::GProfileCalcManager(const char* path,bool dlg) throw(GExcep
 }
 
 
-//-----------------------------------------------------------------------------
-void GProfileCalcManager::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GProfileCalcManager::Connect(GSession* session) throw(GException)
 {
 	GFactoryProfileCalcCursor Cur;
 	GProfileCalc* calc;
@@ -141,8 +141,8 @@ void GProfileCalcManager::Connect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
-void GProfileCalcManager::Disconnect(GSession* session)
+//------------------------------------------------------------------------------
+void GProfileCalcManager::Disconnect(GSession* session) throw(GException)
 {
 	GFactoryProfileCalcCursor Cur;
 	GProfileCalc* calc;
@@ -157,7 +157,7 @@ void GProfileCalcManager::Disconnect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GProfileCalcManager::SetCurrentMethod(const char* name) throw(GException)
 {
 	GFactoryProfileCalc* fac;
@@ -174,14 +174,14 @@ void GProfileCalcManager::SetCurrentMethod(const char* name) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GProfileCalc* GProfileCalcManager::GetCurrentMethod(void)
 {
 	return(Current);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GFactoryProfileCalcCursor& GProfileCalcManager::GetProfileCalcsCursor(void)
 {
 	GFactoryProfileCalcCursor *cur=GFactoryProfileCalcCursor::GetTmpCursor();
@@ -190,7 +190,7 @@ GFactoryProfileCalcCursor& GProfileCalcManager::GetProfileCalcsCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GProfileCalcManager::~GProfileCalcManager(void)
 {
 }

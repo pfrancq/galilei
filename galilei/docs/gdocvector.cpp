@@ -151,7 +151,7 @@ void GDocVector::RemoveRefs(void) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-GDocVector::~GDocVector(void)
+GDocVector::~GDocVector(void) throw(GException)
 {
 	RemoveRefs();
 }

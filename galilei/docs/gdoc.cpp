@@ -369,7 +369,7 @@ GSubjectCursor& GDoc::GetSubjectCursor(void)
 
 
 //------------------------------------------------------------------------------
-GDoc::~GDoc(void)
+GDoc::~GDoc(void) throw(GException)
 {
 	delete LinkSet;
 }

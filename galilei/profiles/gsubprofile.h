@@ -367,7 +367,7 @@ public:
 	/**
 	* Destructor of a subprofile.
 	*/
-	virtual ~GSubProfile(void);
+	virtual ~GSubProfile(void) throw(GException);
 };
 
 

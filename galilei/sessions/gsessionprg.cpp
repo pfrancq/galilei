@@ -51,7 +51,7 @@
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalcmanager.h>
 #include <groups/ggroupcalc.h>
-#include <groups/gsubjecttree.h>
+#include <groups/gsubjects.h>
 #include <profiles/gprofilecalc.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <docs/glinkcalc.h>
@@ -706,7 +706,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o) throw(GException)
 	{
 		sprintf(tmp,"Store History n°%u",Owner->NbHistory);
 		o->WriteStr(tmp);
-		Owner->Session->SaveMixedGroups(Owner->Session->GetGroups(),Owner->NbHistory++);
+		Owner->Session->SaveMixedGroups(Owner->Session,Owner->NbHistory++);
 	}
 
 	// Compare Ideal
@@ -888,7 +888,7 @@ void GStoreInHistoryI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned
 		throw GException("Method needs no parameter.");
 	sprintf(tmp,"Store History n°%u",Owner->NbHistory);
 	o->WriteStr(tmp);
-	Owner->Session->SaveMixedGroups(Owner->Session->GetGroups(),Owner->NbHistory, true);
+	Owner->Session->SaveMixedGroups(Owner->Session,Owner->NbHistory, true);
 	Owner->Session->SaveHistoricProfiles(Owner->NbHistory++);
 }
 

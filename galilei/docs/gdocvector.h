@@ -162,7 +162,7 @@ public:
 	/**
 	* Destruct the document.
 	*/
-	virtual ~GDocVector(void);
+	virtual ~GDocVector(void) throw(GException);
 };
 
 

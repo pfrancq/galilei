@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GProfilesSims.h
+	GSubProfiles.h
 
 	List of SubProfiles for a given Language - Implementation.
 
@@ -76,14 +76,26 @@ class GProfilesSims
 	*/
 	bool IFF;
 
+	/*
+	* Must the sims be stock in a container
+	* or be recomputed each time
+	*/
+	bool Memory;
+
+	/**
+	* level under which a similarity is cinsidered as null;
+	*/
+	double NullSimLevel;
+
 public:
 
 	/**
 	* Constructor of the similarities between subprofiles.
 	* @param session         Session.
 	* @param iff             Use Inverse Frequency Factor.
+	* @param memory      use container to stock sims?
 	*/
-	GProfilesSims(GSession* session,bool iff) throw(bad_alloc);
+	GProfilesSims(GSession* session,bool iff, bool memory) throw(bad_alloc);
 
 	/**
 	* Re-initialize the similarities. This method can be used for testing
@@ -96,6 +108,16 @@ public:
 	* @param iff             Use Inverse Frequency Factor.
 	*/
 	void UseIFF(bool iff) throw(bad_alloc);
+
+	/**
+	*  update the similairties
+	*/
+	void Update(void);
+
+	/**
+	* returns the minimum level for a similarity not to be null.
+	*/
+	double GetNullSimLevel(void) {return NullSimLevel;}
 
 	/**
 	* Get the similarity between two subprofiles.
@@ -113,10 +135,15 @@ public:
 	double GetMinimumOfSimilarity(GLang* lang, double deviationrate=1.5) throw(GException);
 
 	/**
-	* Add a subprofile to the listof the modified one.
+	* Add a subprofile to the list of the modified one.
 	* @param sub             Pointer to the subprofile.
 	*/
 	void AddModifiedProfile(GSubProfile* sub) throw(bad_alloc,GException);
+
+	/**
+	* returns the current session
+	*/
+	GSession* GetSession(void) {return Session;}
 
 	/**
 	* Destructor.

@@ -119,6 +119,11 @@ class GConfig : R::RXMLStruct
 	*/
 	R::RXMLTag* DocAnalyses;
 
+	/**
+	* Document Analysis Methods.
+	*/
+	R::RXMLTag* Session;
+
 public:
 
 	/**
@@ -258,6 +263,18 @@ public:
 	* @param mng             Manager.
 	*/
 	void Store(GDocAnalyseManager& mng);
+
+	/**
+	* Read the Session params in the structure.
+	* @param p             Session parameters.
+	*/
+	void Read(GSessionParams& p);
+
+	/**
+	* Store the Session params in the structure.
+	* @param p             Session parameters.
+	*/
+	void Store(GSessionParams& p);
 
 	/**
 	* Destructor.

@@ -408,7 +408,7 @@ public:
 	/**
 	* Destruct the document.
 	*/
-	virtual ~GDoc(void);
+	virtual ~GDoc(void) throw(GException);
 };
 
 

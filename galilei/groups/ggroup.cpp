@@ -96,6 +96,14 @@ GALILEI::GGroup::GGroup(const unsigned int id,GLang* lang) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
+GALILEI::GGroup::GGroup(GLang* lang) throw(bad_alloc)
+	: RContainer<GSubProfile,unsigned int,false,true>(20,10), Id(cNoRef),
+	  State(osCreated), Lang(lang)
+{
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GGroup::GGroup(GGroup* grp) throw(bad_alloc)
 	: RContainer<GSubProfile,unsigned int,false,true>(grp->NbPtr), Id(grp->Id),
 	  State(grp->State), Lang(grp->Lang)
@@ -398,6 +406,8 @@ double GALILEI::GGroup::SimilarityIFF(const GGroup*) const
 	return(0.0);
 }
 
-GALILEI::GGroup::~GGroup(void)
+
+//-----------------------------------------------------------------------------
+GALILEI::GGroup::~GGroup(void) throw(GException)
 {
 }

@@ -121,7 +121,6 @@ unsigned int GDict::InsertData(const GData* data) throw(bad_alloc, GException)
 {
 	GData* ptr;
 	bool InDirect=false;
-	unsigned int Id;
 
 	// Empty data are not inserted
 	if(data->IsEmpty())
@@ -142,18 +141,15 @@ unsigned int GDict::InsertData(const GData* data) throw(bad_alloc, GException)
 	// Look if data has an identificator. If not, assign one.
 	if(ptr->GetId()==cNoRef)
 	{
-		Id=Lang->GetSession()->GetDicNextId(ptr,this);
-		ptr->SetId(Id);
+		Lang->GetSession()->AssignId(ptr,this);
 		InDirect=true;
 	}
-	else
-		Id=ptr->GetId();
 
 	// Finally, if an identificator has been assigned and/or a new one -> Direct
 	if(InDirect)
 		PutDirect(ptr);
 
-	return(Id);
+	return(ptr->GetId());
 }
 
 

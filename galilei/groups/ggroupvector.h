@@ -144,7 +144,7 @@ public:
 	/**
 	* Destructor
 	*/
-	~GGroupVector(void);
+	~GGroupVector(void) throw(GException);
 };
 
 

@@ -96,6 +96,12 @@ public:
 	GGroup(const unsigned int id,GLang* lang) throw(bad_alloc);
 
 	/**
+	* Construct a group with an invalid identificator.
+	* @param lang           Language.
+	*/
+	GGroup(GLang* lang) throw(bad_alloc);
+
+	/**
 	* Copy constructor for group.
 	* @param grp            Group.
 	*/
@@ -266,7 +272,7 @@ public:
 	/**
 	* Destructor
 	*/
-	~GGroup(void);
+	~GGroup(void) throw(GException);
 };
 
 

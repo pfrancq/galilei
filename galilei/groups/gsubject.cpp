@@ -84,6 +84,6 @@ unsigned int GALILEI::GSubject::GetNbDocs(void) const
 
 
 //-----------------------------------------------------------------------------
-GSubject::~GSubject(void)
+GSubject::~GSubject(void) throw(GException)
 {
 }

@@ -121,11 +121,11 @@ protected:
 	const char* ValidSQLValue(const char* val,char* tmp);
 
 	/**
-	* Return the identifier of a new word of a dictionary.
-	* @param word           Word to find.
+	* Assign an identifier to a new data of a given dictionary.
+	* @param data           Data.
 	* @param dict           Dictionary.
 	*/
-	virtual unsigned int GetDicNextId(const GData* data,const GDict* dict);
+	virtual void AssignId(GData* data,const GDict* dict);
 
 public :
 
@@ -207,7 +207,7 @@ public :
 	* Save the ideal groupment
 	* @param idealgroup   The ideal container of group
 	*/
-	virtual void SaveIdealGroupment(R::RContainer<GGroups,unsigned int,true,true>* idealgroup);
+	virtual void SaveIdealGroupment(GGroups* idealgroup);
 
 	/**
 	* Create a new document.
@@ -291,7 +291,7 @@ public :
 	* @param id             Identificator.
 	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
 	*/
-	virtual void SaveMixedGroups(R::RContainer<GGroups,unsigned int,true,true>* mixedgroups,unsigned int id, bool historic=false);
+	virtual void SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic=false);
 
 	/**
 	* Save the Profiles in history.

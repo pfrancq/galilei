@@ -101,7 +101,7 @@ public:
 	/**
 	* Fill a given array with all the documents of a given language. The array
 	* must be created and must be large enough to hold all the documents.
-	* @see This method is used in GSubjectTree to create assessments for
+	* @see This method is used in GSubjects to create assessments for
 	*      profiles during a simulation of a real system.
 	* @param docs            Pointer to the array.
 	* @param lang            Language of the documents.

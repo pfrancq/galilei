@@ -55,6 +55,7 @@
 #include <groups/ggroupcalc.h>
 #include <sessions/gstatscalcmanager.h>
 #include <sessions/gstatscalc.h>
+#include <sessions/gsession.h>
 #include <docs/glinkcalcmanager.h>
 #include <docs/glinkcalc.h>
 #include <docs/gpostdocmanager.h>
@@ -94,6 +95,7 @@ GConfig::GConfig(const char* f) throw(bad_alloc)
 	AddNode(t,Langs=new RXMLTag("galileiconfig:langs"));
 	AddNode(t,DocAnalyses=new RXMLTag("galileiconfig:docanalyses"));
 	AddNode(t,PostGroups=new RXMLTag("galileiconfig:postgroups"));
+	AddNode(t,Session=new RXMLTag("galileiconfig:session"));
 }
 
 
@@ -496,6 +498,22 @@ void GConfig::Store(GDocAnalyseManager& mng)
 		DocAnalyses->InsertAttr("Current",lcalc->GetFactory()->GetName());
 	else
 		DocAnalyses->InsertAttr("Current","None");
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GSessionParams& p)
+{
+	if (!Session) return;
+	p.ReadConfig(Session);
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GSessionParams& p)
+{
+	if (!Session) return;
+	p.SaveConfig(Session);
 }
 
 
