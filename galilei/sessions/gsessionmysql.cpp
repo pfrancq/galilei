@@ -1343,6 +1343,24 @@ unsigned int GALILEI::GSessionMySQL::GetHistorySize(void)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::CreateDummy(const char* name) throw(GException)
+{
+	char sSql[200];
+	sprintf(sSql,"CREATE TABLE %s (id INT(11), parentid INT(11), description TEXT) ",name);
+	RQuery create(this, sSql);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid)
+{
+	char sSql[500];
+	sprintf(sSql, "INSERT INTO %s (id, parentid, description) values (%u, %u, '%s')", name, id, parentid, desc);
+	RQuery add(this, sSql);
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GSessionMySQL::~GSessionMySQL() throw(GException)
 {
 

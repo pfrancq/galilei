@@ -320,6 +320,22 @@ public:
 	virtual unsigned int GetHistorySize(void) ;
 
 	/**
+	* Create a dummy table to store different kid of
+	* data.
+	* @ param name              name of the dummy object.
+	*/
+	virtual void CreateDummy(const char* name) throw(GException);
+
+	/**
+	* Add a dummy entry into a dummy table;
+	* @param name               name of the dummy table.
+	 * @param id                id of the dymmy entry.
+	 * @param desc              description of the dymmy entry.
+	*/
+	virtual void AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid);
+
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSessionMySQL(void) throw(GException);
