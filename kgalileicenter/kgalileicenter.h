@@ -129,7 +129,7 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	GCureParams CureParams;
 
 	/**
-	* Parameters of first fit
+	* Parameters of First-Fit.
 	*/
 	GSimParams SimParams;
 

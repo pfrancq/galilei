@@ -359,55 +359,6 @@ void KGALILEICenterApp::slotLoadIdealGroupInGroups(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionStat(void)
 {
-//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
-//	cout<<"hplemonde 1 doc 1 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(1,1);
-//	GIdealGroup judgmentlemonde (Doc->GetSession());
-//	slotProfilesCalc();
-//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-//	slotSessionDisconnect();
-//
-//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
-//	cout<<"hplemonde 1 doc 2 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(1,2);
-//	slotProfilesCalc();
-//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-//	slotSessionDisconnect();
-
-//	slotSessionAutoConnect("127.0.0.1","root","","hp1500");
-//	cout<<"hp1500 1 doc 1 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(1,1);
-//	GIdealGroup judgment1500 (Doc->GetSession());
-//	judgment1500.SetSettings("10 10 12345 2 0 100");
-//	judgment1500.CreateJudgement(parent,idealgroup,true);
-
-//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
-//	cout<<"hplemonde 1 doc 1 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(1,1);
-//	GIdealGroup judgmentlemonde (Doc->GetSession());
-//	judgmentlemonde.SetSettings("10 10 12345 2 0 100");
-//	judgmentlemonde.CreateJudgement(parent,idealgroup,true);
-//	slotProfilesCalc();
-//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-//	slotSessionDisconnect();
-//
-//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
-//	cout<<"hplemonde 1 doc 2 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(1,2);
-//	slotProfilesCalc();
-//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-//	slotSessionDisconnect();
-////
-//	slotSessionAutoConnect("127.0.0.1","root","","hp20000");
-//	cout<<"hp20000 1 doc 1 occur max"<<endl;
-////	Doc->GetSession()->DocsFilter(1,1);
-//	GIdealGroup judgment20000 (Doc->GetSession());
-//	judgment20000.SetSettings("10 10 12345 2 0 100");
-//	judgment20000.CreateJudgement(parent,idealgroup,true);
-//	slotProfilesCalc();
-//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-//	slotSessionDisconnect();
-
 }
 
 
@@ -417,23 +368,23 @@ void KGALILEICenterApp::slotSessionQuit(void)
 	slotStatusMsg(i18n("Exiting..."));
 	if(Doc)
 	{
-		Config->setGroup("Session Options");
-		Config->writeEntry("Description Method",Doc->GetSession()->GetCurrentProfileDesc()->GetProfDescName());
-		Config->writeEntry("Grouping Method",Doc->GetSession()->GetCurrentGroupingMethod()->GetGroupingName());
-		Config->writeEntry("Computing Method",Doc->GetSession()->GetCurrentComputingMethod()->GetComputingName());
-		Config->writeEntry("Group Description Method",Doc->GetSession()->GetCurrentGroupCalcMethod()->GetComputingName());
-		Config->setGroup("Computing Options");
-		GProfileCalcCursor Computings=Doc->GetSession()->GetComputingsCursor();
-		for(Computings.Start();!Computings.End();Computings.Next())
-			Config->writeEntry(Computings()->GetComputingName(),Computings()->GetSettings());
-		Config->setGroup("Grouping Options");
-		GGroupingCursor Groupings=Doc->GetSession()->GetGroupingsCursor();
-		for(Groupings.Start();!Groupings.End();Groupings.Next())
-			Config->writeEntry(Groupings()->GetGroupingName(),Groupings()->GetSettings());
-		Config->setGroup("Group Description Options");
-		GGroupCalcCursor GroupCalcs=Doc->GetSession()->GetGroupCalcsCursor();
-		for(GroupCalcs.Start();!GroupCalcs.End();GroupCalcs.Next())
-			Config->writeEntry(GroupCalcs()->GetComputingName(),GroupCalcs()->GetSettings());
+//		Config->setGroup("Session Options");
+//		Config->writeEntry("Description Method",Doc->GetSession()->GetCurrentProfileDesc()->GetProfDescName());
+//		Config->writeEntry("Grouping Method",Doc->GetSession()->GetCurrentGroupingMethod()->GetGroupingName());
+//		Config->writeEntry("Computing Method",Doc->GetSession()->GetCurrentComputingMethod()->GetComputingName());
+//		Config->writeEntry("Group Description Method",Doc->GetSession()->GetCurrentGroupCalcMethod()->GetComputingName());
+//		Config->setGroup("Computing Options");
+//		GProfileCalcCursor Computings=Doc->GetSession()->GetComputingsCursor();
+//		for(Computings.Start();!Computings.End();Computings.Next())
+//			Config->writeEntry(Computings()->GetComputingName(),Computings()->GetSettings());
+//		Config->setGroup("Grouping Options");
+//		GGroupingCursor Groupings=Doc->GetSession()->GetGroupingsCursor();
+//		for(Groupings.Start();!Groupings.End();Groupings.Next())
+//			Config->writeEntry(Groupings()->GetGroupingName(),Groupings()->GetSettings());
+//		Config->setGroup("Group Description Options");
+//		GGroupCalcCursor GroupCalcs=Doc->GetSession()->GetGroupCalcsCursor();
+//		for(GroupCalcs.Start();!GroupCalcs.End();GroupCalcs.Next())
+//			Config->writeEntry(GroupCalcs()->GetComputingName(),GroupCalcs()->GetSettings());
 		Doc->closeDocument();
 		delete Doc;
 		Doc=0;
