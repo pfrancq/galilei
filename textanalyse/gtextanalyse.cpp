@@ -862,7 +862,8 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,f
 		ConstructInfos();
 
 	// Set the Variable of the document
-	doc->SetInfos(Lang,N,Ndiff,V,Vdiff);
+	doc->SetLang(Lang);
+	dynamic_cast<GDocVector*>(doc)->UpdateRefs();
 }
 
 
