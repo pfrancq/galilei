@@ -133,6 +133,7 @@ void GALILEI::GStatSimDoc::Run(void)
 		// Go through each document
 		for(Doc1.Start();!Doc1.End();Doc1.Next())
 		{
+			if(!Doc1()->HasRepresentation()) continue;
 			nbDocs++;
 
 			// Init Local Data
@@ -146,6 +147,7 @@ void GALILEI::GStatSimDoc::Run(void)
 			for(Doc2.Start();!Doc2.End();Doc2.Next())
 			{
 				if(Doc1()==Doc2()) continue;
+				if(!Doc2()->HasRepresentation()) continue;
 
 				// Look if Same topic
 				Same=false;
@@ -189,10 +191,10 @@ void GALILEI::GStatSimDoc::Run(void)
 			}
 
 			// Compute Overlap
-				for(Sub1.Start();(!Sub1.End())&&(!Same);Sub1.Next())
-				{
-					t=Sub.GetInsertPtr<GSubject*>(Sub1());
-				}
+			for(Sub1.Start();(!Sub1.End())&&(!Same);Sub1.Next())
+			{
+				t=Sub.GetInsertPtr<GSubject*>(Sub1());
+			}
 
 			if(Global&&(MaxExtraG>MinIntraG))
 			{
@@ -219,37 +221,62 @@ void GALILEI::GStatSimDoc::Run(void)
 				(*File)<<Doc1()->GetId();
 				if(Global)
 				{
-					SimIntraG/=nbIntra;
-					SimExtraG/=nbExtra;
+					if(nbIntra)
+						SimIntraG/=nbIntra;
+					else
+						SimIntraG=1.0;
+					if(nbExtra)
+						SimExtraG/=nbExtra;
+					else
+						SimExtraG=1.0;
 					MeanIntraMG+=SimIntraG;
 					MeanExtraMG+=SimExtraG;
-					tmp=(SimIntraG-SimExtraG)/SimIntraG;
+					if(SimIntraG==0.0)
+						tmp=0.0;
+					else
+						tmp=(SimIntraG-SimExtraG)/SimIntraG;
 					(*File)<<tmp;
 				}
 				if(Local)
 				{
-					SimIntraL/=nbIntra;
-					SimExtraL/=nbExtra;
+					if(nbIntra)
+						SimIntraL/=nbIntra;
+					else
+						SimIntraL=1.0;
+					if(nbExtra)
+						SimExtraL/=nbExtra;
+					else
+						SimExtraL=1.0;
 					MeanIntraML+=SimIntraL;
 					MeanExtraML+=SimExtraL;
-					tmp=(SimIntraL-SimExtraL)/SimIntraL;
+					if(SimIntraL==0.0)
+						tmp=0.0;
+					else
+						tmp=(SimIntraL-SimExtraL)/SimIntraL;
 					(*File)<<tmp;
 				}
 				(*File)<<endl;
 			}
 		}
 	}
+	if(!nbDocs) return;
 	if(Global)
 	{
 		MeanIntraMG/=nbDocs;
 		MeanExtraMG/=nbDocs;
-		RieG=(MeanIntraMG-MeanExtraMG)/MeanIntraMG;
+		if(MeanIntraMG==0.0)
+			RieG=0.0;
+		else
+			RieG=(MeanIntraMG-MeanExtraMG)/MeanIntraMG;
 	}
 	if(Local)
 	{
 		MeanIntraML/=nbDocs;
 		MeanExtraML/=nbDocs;
-		RieL=(MeanIntraML-MeanExtraML)/MeanIntraML;
+		if(MeanIntraML==0.0)
+			RieL=0.0;
+		else
+			RieL=(MeanIntraML-MeanExtraML)/MeanIntraML;
 	}
 	OverlapL/=nbDocs;
 	OverlapG/=nbDocs;
