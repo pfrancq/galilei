@@ -221,7 +221,7 @@ void KViewDoc::ConstructFdbks(void)
 			case djKO:
 				p=ko;
 				break;
-			case (djNav | djHub):
+			case (djOK | djHub):
 				p=lh;
 				break;
 			case djOutScope:

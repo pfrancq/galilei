@@ -210,7 +210,7 @@ void KViewGroup::ConstructDocs(void)
 		for(docs.Start();!docs.End();docs.Next())
 		{
 			// If not a relevant document -> goes next
-			if((docs()->GetFdbk()!=djOK)&&(docs()->GetFdbk()!=djNav))
+			if(docs()->GetFdbk()!=djOK)
 				continue;
 
 			// If doc already in OkDocs -> goes next
