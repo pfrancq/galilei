@@ -432,6 +432,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 		}
 	}
 
+
 	// Verify that each occurences is not under the minimal.
 	MinOccur=Options->MinOccur;
 	if(MinOccur<2) return;
