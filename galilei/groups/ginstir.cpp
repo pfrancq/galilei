@@ -40,11 +40,19 @@ using namespace RPromethee;
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rgga/rgroupingheuristic.h>
+using namespace RGGA;
+using namespace RGA;
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ginstir.h>
 #include <groups/gchromoir.h>
 #include <groups/ggroupir.h>
 #include <groups/gobjir.h>
+#include <groups/girheuristic.h>
 #include <groups/gcomparegrouping.h>
 #include <profiles/gprofilessim.h>
 #include <profiles/gsubprofile.h>
@@ -53,8 +61,6 @@ using namespace RPromethee;
 #include <groups/ggroups.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
-using namespace RGGA;
-using namespace RGA;
 
 
 
@@ -113,7 +119,7 @@ bool GSubProfilesSameGroupIR::IsIn(const GObjIR* obj) const
 //-----------------------------------------------------------------------------
 GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,HeuristicType h,RGA::RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(popsize,objs,h,debug),
-	  RPromKernel("GALILEI",PopSize+1,4), Sims(s), SameGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
+	  RPromKernel("GALILEI",PopSize+1,5), Sims(s), SameGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
 	  DiffGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
 	  MinSimLevel(m), MaxGen(max), CritSim(0), CritNb(0), CritOKDocs(0), Sols(0), GlobalSim(g),
 	  CurrentGroups(grps), Session(ses), Lang(l), NoSocialSubProfiles(objs->NbPtr)
@@ -127,6 +133,12 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsig
 		IdealGroups=0;
 	#endif
 
+	// Change Freq
+	MaxBestPopAge=5;
+	MaxBestAge=8;
+	AgeNextMutation=MaxBestPopAge;
+	AgeNextBestMutation=MaxBestAge;
+
 	// Init subprofiles that are in the same group
 	Cur1.Set(objs);
 	Cur2.Set(objs);
@@ -137,6 +149,11 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsig
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
 			nb=Cur1()->GetSubProfile()->GetCommonOKDocs(Cur2()->GetSubProfile());
+//			if(nb)
+//			{
+//				double tmp=(2*nb*100)/((double)(Cur1()->GetSubProfile()->GetNbJudgedDocs()+Cur2()->GetSubProfile()->GetNbJudgedDocs()));
+//				cout<<"% Common OK: "<<tmp<<endl;
+//			}
 			if(nb)
 				SameGroups.InsertPtr(new GSubProfilesSameGroupIR(Cur1()->GetId(),Cur2()->GetId(),nb));
 			nb=Cur1()->GetSubProfile()->GetCommonDiffDocs(Cur2()->GetSubProfile());
@@ -161,6 +178,13 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsig
 
 
 //-----------------------------------------------------------------------------
+RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* GALILEI::GInstIR::CreateHeuristic(void) throw(bad_alloc)
+{
+	return(new GIRHeuristic(Random,Objs));
+}
+
+
+//-----------------------------------------------------------------------------
 bool GALILEI::GInstIR::StopCondition(void)
 {
 	return((Gen==MaxGen)/*||(AgeBest==30)*/);
@@ -178,6 +202,7 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 	GObjIR** ptr;
 	unsigned int i;
 	GGroups* Cur;
+	RPromSol* s;
 
 	if(!Debug) return;
 	Precision=0.0;
@@ -203,10 +228,11 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 		Comp.Compare(0);
 		Precision=Comp.GetPrecision();
 		Recall=Comp.GetRecall();
-		Total=Comp.GetTotal();
+		c->Global=Total=Comp.GetTotal();
 	}
-	sprintf(Tmp,"Chromosome %u: Sim=%1.3f - NbProf=%1.3f - OK=%1.3f - Diff=%1.3f - Social=%1.3f - Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
-	        c->Id,c->AvgSim,c->AvgProf,c->OKFactor,c->DiffFactor,c->SocialFactor,Recall,Precision,Total);
+	if(c->Id==PopSize) s=Sols[0]; else s=Sols[c->Id+1];
+	sprintf(Tmp,"Id %u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Nb=%1.3f - OK=%1.3f - Diff=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
+	        c->Id,s->GetFi(),s->GetFiPlus(),s->GetFiMinus(),c->AvgSim,c->AvgProf,c->OKFactor,c->DiffFactor,c->SocialFactor,Recall,Precision,Total);
 	Debug->PrintInfo(Tmp);
 }
 #endif
@@ -237,7 +263,7 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 		Assign((*ptr),CritNb,(*C)->AvgProf);
 		Assign((*ptr),CritOKDocs,(*C)->OKFactor);
 		Assign((*ptr),CritDiffDocs,(*C)->DiffFactor);
-		Assign((*ptr),CritSocial,BestChromosome->SocialFactor);
+		Assign((*ptr),CritSocial,(*C)->SocialFactor);
 	}
 	ComputePrometheeII();
 	Res=GetSols();

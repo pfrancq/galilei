@@ -51,6 +51,7 @@ using namespace RStd;
 #include <infos/giwordlist.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
+#include <profiles/gsubprofile.h>
 #include <profiles/gsubprofilevector.h>
 #include <profiles/gprofdoc.h>
 #include <docs/gdoc.h>
@@ -85,7 +86,7 @@ GALILEI::GIdealGroup::GIdealGroup(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups)
+void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups,bool Save)
 {
 	if(!groups)
 		groups=new RContainer<GGroups,unsigned int,true,true>(2,2);
@@ -101,15 +102,25 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 	Session->ClearFdbks();
 
 	// Create the different judgments.
-	Subjects->Judgments(Session,Rand);
+	Subjects->Judgments(Session,Rand,PercOK,PercKO);
 
 	// Create the ideal groupment corresponding to the precedent judgment.
 	Subjects->IdealGroupment(groups,Session,parent);
-	
-	Session->SaveFdbks();
-	
-	// Save the ideal groupment into the database.
-	Session->SaveIdealGroupment(groups);
+
+	if(Save)
+	{ 
+		// Save the  feedbacks into the database.
+		Session->SaveFdbks();  
+		// Save the ideal groupment into the database.
+		Session->SaveIdealGroupment(groups);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GIdealGroup::CreateIdealGroupmentFile(const char* url)
+{
+	Subjects->IdealGroupmentFile(url);
 }
 
 
@@ -130,12 +141,3 @@ void GALILEI::GIdealGroup::SetSettings(const char* s)
 	if(!(*s)) return;
 	sscanf(s,"%u %u %i",&PercOK,&PercKO,&Rand);
 }
-
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GIdealGroup::CreateIdealGroupmentFile(char * url)
-{
-	Subjects->IdealGroupmentFile(url);
-}
-

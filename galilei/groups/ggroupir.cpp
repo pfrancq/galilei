@@ -186,13 +186,31 @@ double GALILEI::GGroupIR::ComputeSumSim(GObjIR* obj)
 	GSubProfile* sub;
 
 	sub=obj->GetSubProfile();
-	AvgSim=0.0;
-	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),AvgSim=0.0;--i;ptr++)
 	{
 		if((*ptr)==obj) continue;
 		AvgSim+=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
 	}
 	return(AvgSim);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeAvgSim(GObjIR* obj)
+{
+	unsigned int i;
+	GObjIR** ptr;
+	double AvgSim,NbComp;
+	GSubProfile* sub;
+
+	sub=obj->GetSubProfile();
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),NbComp=AvgSim=0.0;--i;ptr++)
+	{
+		if((*ptr)==obj) continue;
+		AvgSim+=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+		NbComp+=1.0;
+	}
+	return(AvgSim/NbComp);
 }
 
 

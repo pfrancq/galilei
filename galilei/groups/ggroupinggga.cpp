@@ -245,7 +245,7 @@ void GALILEI::GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo) throw(b
 void GALILEI::GGroupingGGA::Run(void) throw(GException)
 {
 	unsigned int i;
-	RDebugXML file(RString("/home/pfrancq/text")+Lang->GetCode()+".xml","GIR","Pascal Francq");
+//	RDebugXML file(RString("/home/pfrancq/text")+Lang->GetCode()+".xml","GIR","Pascal Francq");
 
 	if(!SubProfiles.NbPtr) return;
 	try
@@ -258,9 +258,9 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 		}
 		GProfilesSim Sims(SubProfiles,GlobalSim);
 		if(Modified)
-			Instance=new GInstIR(Session,Lang,MinSimLevel,MaxGen,PopSize,Groups,Objs,GlobalSim,&Sims,RGGA::FirstFit,&file);
+			Instance=new GInstIR(Session,Lang,MinSimLevel,MaxGen,PopSize,Groups,Objs,GlobalSim,&Sims,RGGA::FirstFit,0/*&file*/);
 		else
-			Instance=new GInstIR(Session,Lang,MinSimLevel,MaxGen,PopSize,0,Objs,GlobalSim,&Sims,RGGA::FirstFit,&file);
+			Instance=new GInstIR(Session,Lang,MinSimLevel,MaxGen,PopSize,0,Objs,GlobalSim,&Sims,RGGA::FirstFit,0/*&file*/);
 		Instance->Init(&data);
 		Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
 		Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);

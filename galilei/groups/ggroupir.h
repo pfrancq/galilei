@@ -149,6 +149,13 @@ public:
 	double ComputeSumSim(GObjIR* obj);
 
 	/**
+	* Compute the average of the similarities of a given profile to the one of the group.
+	* @param obj            Profile used as reference.
+	* @returns result.
+	*/
+	double ComputeAvgSim(GObjIR* obj);
+
+	/**
 	* Compute the relevant profile of the group, i.a. the profile which is the
 	* most similar to all the others profiles.
 	* @returns Sum of similarities to the relevant profile.

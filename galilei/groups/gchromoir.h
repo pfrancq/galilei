@@ -118,6 +118,15 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 	*/
 	unsigned int NbRows;
 
+#ifdef RGADEBUG
+
+	/**
+	* Global Factor	
+	*/
+	double Global;
+
+#endif
+
 public:
 
 	/**
@@ -132,6 +141,15 @@ public:
 	* @param thData         Pointer to the "thread-dependent" data.
 	*/
 	virtual void Init(GThreadDataIR* thData) throw(bad_alloc);
+
+#ifdef RGADEBUG
+
+	/**
+	* Get the global value for the chromosome.
+	*/
+	double GetGlobal(void) const {return(Global);}
+
+#endif
 
 	/**
 	* Compute the sum of the similarities of a given profile to all the others.
@@ -152,16 +170,18 @@ public:
 	* Look if two groups were merged together.
 	* @param grp1           First group.
 	* @param grp2           Second group.
+	* @param nbcrit         Minimal number of criteria to be ameliorated.
 	* @return bool.
 	*/
-	bool MergeGroups(GGroupIR* grp1,GGroupIR* grp2);
+	bool MergeGroups(GGroupIR* grp1,GGroupIR* grp2,unsigned int nbcrit);
 
 	/**
 	* Look if a group was be divided.
 	* @param grp            Group to analyse.
+	* @param nbcrit         Minimal number of criteria to be ameliorated.
 	* @return bool.
 	*/
-	bool DivideGroup(GGroupIR* grp);
+	bool DivideGroup(GGroupIR* grp,unsigned int nbcrit);
 
 	/**
 	* Construct the chromosome to be the same as grps.
@@ -179,6 +199,11 @@ public:
 	* intern similarities.
 	*/
 	virtual void Evaluate(void);
+
+	/**
+	* Perform a local optimisation.
+	*/
+	virtual void LocalOptimisation(void);
 
 	/**
 	* Do the standard crossover of the GGA and do a reorganisation after.

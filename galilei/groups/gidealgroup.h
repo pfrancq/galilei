@@ -94,14 +94,15 @@ public:
 	* Create randomly the judgment for all the users.
 	* @param parent         The container to assign groupid and parent id.
 	* @param groups         The ideal groupment into a GGroups container.
+	* @param Save           Save the results.
 	*/
-	void CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups);
+	void CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups,bool Save);
 
 	/**
 	* Write the ideal groupment into a file
 	* @param url            The url where the file is saved.
 	*/
-	void CreateIdealGroupmentFile(char * url);
+	void CreateIdealGroupmentFile(const char* url);
 	
 	/**
 	* Get the settings of the method coded in a string.

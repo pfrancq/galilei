@@ -1,12 +1,12 @@
 /*
 
-	GALILEI Research Project
+	GALILEI Project Library
 
-	GIR.h
+	GIRHeuristic.h
 
-	GA for the Information Retrieval Problem - Header.
+	Heuristic for an IR Problem - Header
 
-	(C) 2002 by Pascal Francq
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -30,72 +30,59 @@
 */
 
 
+
 //-----------------------------------------------------------------------------
-#ifndef RIRH
-#define RIRH
+#ifndef GIRHeuristicH
+#define GIRHeuristicH
 
 
 //-----------------------------------------------------------------------------
-// includes files for R Project
-#include <rga/rfitness.h>
-#include <rgga/rgga.h>
+// include files for R Project
+#include <rgga/rfirstfitheuristic.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <groups/gir.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-// Forward class declaration
-class GSubProfile;
-class GGroupIR;
-class GGroupDataIR;
-class GThreadDataIR;
-class GChromoIR;
-class GInstIR;
-class GObjIR;
-class GSubProfilesSameGroupIR;
-class GIRHeuristic;
-
 
 //-----------------------------------------------------------------------------
 /**
-* The RFitnessIR provides a representation for a fitness function for the
-* information retrieval problem.
+* The GIRHeuristic class provides a specific heuristic for the IR problem.
 * @author Pascal Francq
-* @short IR Fitness.
+* @short IR Heuristic.
 */
-class GFitnessIR : public RGA::RFitness<double,true>
+class GIRHeuristic : public RGGA::RFirstFitHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
 {
 public:
 
 	/**
-	* Constructor of the fitness function used for the Bin Packing.
+	* Construct the IR heuristic.
+	* @param r              The random genrator to use.
+	* @param objs           Pointer to the objects.
 	*/
-	GFitnessIR(void) : RGA::RFitness<double,true>() {}
+	 GIRHeuristic(RRandom* r,RStd::RCursor<GObjIR,unsigned int>* objs);
 
 	/**
-	* Assignment operator with a fitness f.
+	* Initialize the heuristic.
+	* @param groups         Pointer to the groups.
 	*/
-	GFitnessIR& operator=(const GFitnessIR &f)
-	{
-		RGA::RFitness<double,true>::operator=(f);
-		return(*this);
-	}
+	virtual void Init(GChromoIR* groups);
 
 	/**
-	* Assignment operator with a double value.
+	* Find a group for the next object.
 	*/
-	GFitnessIR& operator=(const double val)
-	{
-		RGA::RFitness<double,true>::operator=(val);
-		return(*this);
-	}
+	virtual GGroupIR* FindGroup(void) throw(RGGA::RGroupingHeuristicException);
+
+	/**
+	* Destruct the grouping heuristic.
+	*/
+	virtual ~GIRHeuristic(void);
 };
 
 

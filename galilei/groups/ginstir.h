@@ -94,7 +94,7 @@ public:
 //-----------------------------------------------------------------------------
 /**
 * The GSubProfileSamesGroupIR class provides a representation of a couple of
-* subprofiles having a number of OK documents in common.
+* subprofiles having a number of documents in common.
 */
 class GSubProfilesSameGroupIR
 {
@@ -255,6 +255,11 @@ public:
 	* @param debug          Debugger.
 	*/
 	GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,RGGA::HeuristicType h,RGA::RDebug *debug=0) throw(bad_alloc);
+
+	/**
+	* Create a specific heuristic for the IR problem.
+	*/
+	virtual RGGA::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* CreateHeuristic(void) throw(bad_alloc);
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case
