@@ -218,6 +218,13 @@ public:
 	/**
 	* Compute the most relevant profile of the group, i.a. the profile which is
 	* the most similar to all the others profiles.
+	* @returns Minimum of similarities to the relevant profile.
+	*/
+	double ComputeRelevantMin(void);
+
+	/**
+	* Compute the most relevant profile of the group, i.a. the profile which is
+	* the most similar to all the others profiles.
 	* @returns Max of similarities to the relevant profile.
 	*/
 	double ComputeRelevantMax(void);

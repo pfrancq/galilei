@@ -323,6 +323,16 @@ public:
 
 	/**
 	* Compute the relevant subprofile of the group, i.a. the subprofile which
+	* is the most similar to all the others subprofiles.
+	* @param grp            Array of subprofiles.
+	* @param nb             Number of subprofiles.
+	* @rel                  Relevant subprofile computed.
+	* @returns Minimum of similarities to the relevant subprofile.
+	*/
+	double ComputeRelevantMin(GObjIR** grp,unsigned int nb,GSubProfile* &rel);
+
+	/**
+	* Compute the relevant subprofile of the group, i.a. the subprofile which
 	* is the most similar to all the others profiles.
 	* @param grp            Array of subprofiles.
 	* @param nb             Number of subprofiles.

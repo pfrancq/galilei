@@ -404,6 +404,45 @@ double GALILEI::GGroupIR::ComputeRelevantSumDist(void)
 
 
 //---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeRelevantMin(void)
+{
+	unsigned int i;
+	GObjIR** ptr;
+	double BestSumSim;
+ 	double MinSumSim;
+	double SumSim;
+
+	// If no objects -> No relevant one.
+	if(!NbSubObjects)
+	{
+		Relevant=0;
+		return(0.0);
+	}
+
+	// Suppose the first element is the most relevant.
+	ptr=Owner->GetObjs(SubObjects);
+	Relevant=(*ptr)->GetSubProfile();
+	BestSumSim=ComputeSumSim(*ptr);
+	MinSumSim=ComputeMinSim(*ptr);
+
+	// Look if in the other objects, there is a better one
+	for(i=NbSubObjects,ptr++;--i;ptr++)
+	{
+		SumSim=ComputeSumSim(*ptr);
+		if(SumSim>BestSumSim)
+		{
+			Relevant=(*ptr)->GetSubProfile();
+			BestSumSim=SumSim;
+			MinSumSim=ComputeMinSim(*ptr);
+		}
+	}
+
+	// Return results
+	return(MinSumSim);
+}
+
+
+//---------------------------------------------------------------------------
 double GALILEI::GGroupIR::ComputeRelevantMax(void)
 {
 	unsigned int i;
