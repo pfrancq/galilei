@@ -310,6 +310,12 @@ public:
 	bool IsGlobalSim(void) const {return(GlobalSim);}
 
 	/**
+	* return the Language actually grouped.
+	* @return lang.
+	*/
+	GLang* GetLang(void) const {return(Lang);}
+
+	/**
 	* Set the maximal number of generations to run.
 	* @param max            Maximal number of generations.
 	*/
