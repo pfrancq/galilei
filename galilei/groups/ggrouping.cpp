@@ -142,7 +142,7 @@ void GALILEI::GGrouping::DeleteGroup(GGroup* grp)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
+void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool save)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
 	GGroupCalc* CalcDesc;
@@ -151,7 +151,7 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 	GGroup** Tab;
 	unsigned int i;
 
-	SaveGroups=true;
+	SaveGroups=save;
 	Modified=modified;
 
 	// Go trough each language.
