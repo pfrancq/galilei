@@ -414,7 +414,6 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup)
 {
-
 	char sSql[100];
 	GGroupsEvaluate* groups;
 	GGroupEvaluateDoc* group;
@@ -532,7 +531,7 @@ void GALILEI::GSessionMySQL::LoadSubjectTree(GSubjectTree* subjects)
 			RQuery doc(this,sSql);
 			for(doc.Start();!doc.End();doc.Next())
 			{
-				subsubject->urls->InsertPtr(this->GetDoc(atoi(doc[0])));
+				subsubject->InsertDoc(this->GetDoc(atoi(doc[0])));
 				subsubject->SetLang(this->GetDoc(atoi(doc[0]))->GetLang());
 				temp++;
 			}
