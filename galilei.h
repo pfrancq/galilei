@@ -48,6 +48,7 @@
 #include <rstd/rdblhashcontainer.h>
 #include <rtimedate/rdate.h>
 #include <rxml/rxmltag.h>
+#include <rio/rtextfile.h>
 
 
 //-----------------------------------------------------------------------------
