@@ -61,14 +61,14 @@ GALILEI::GPrgInst::GPrgInst(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GPrgInst::Compare(const GPrgInst* t) const
+int GALILEI::GPrgInst::Compare(const GPrgInst*) const
 {
 	return(-1);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GPrgInst::Compare(const char* t) const
+int GALILEI::GPrgInst::Compare(const char*) const
 {
 	return(-1);
 }
