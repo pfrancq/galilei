@@ -71,8 +71,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 KViewStoreChromos::KViewStoreChromos(KDoc* doc,const char* l,GIRParams* p,bool global,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags),
-	  CurId(0), Instance(0), SubProfiles(0), Objs(0), Sims(0)
+	: KView(doc,parent,name,wflags), CurId(0), Instance(0), SubProfiles(0), Objs(0)
 {
 	static char tmp[100];
 	GLang* lang;
@@ -105,10 +104,9 @@ KViewStoreChromos::KViewStoreChromos(KDoc* doc,const char* l,GIRParams* p,bool g
 	}
 	for(SubProfiles->Start(),i=0;!SubProfiles->End();SubProfiles->Next(),i++)
 			Objs->InsertPtr(new GObjIR(i,(*SubProfiles)()));
-	Sims=new GProfilesSim(SubProfiles,global);
 
 	// Load the chromosomes from the db
-	Instance=Doc->GetSession()->LoadInstIR(lang,Objs,Sims,p);
+	Instance=Doc->GetSession()->LoadInstIR(lang,Objs,p);
 	if(!Instance) return;
 
 	// Solutions Part
@@ -189,8 +187,6 @@ KViewStoreChromos::~KViewStoreChromos(void)
 		delete Instance;
 	if(SubProfiles)
 		delete SubProfiles;
-	if(Sims)
-		delete Sims;
 	if(Objs)
 		delete Objs;
 }

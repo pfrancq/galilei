@@ -112,11 +112,6 @@ class KViewStoreChromos : public KView
 	*/
 	RGA::RObjs<GObjIR>* Objs;
 
-	/**
-	* Similarities between the subprofiles to group.
-	*/
-	GProfilesSim* Sims;
-
 public:
 
 	/**

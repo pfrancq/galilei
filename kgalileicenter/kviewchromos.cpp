@@ -345,11 +345,10 @@ void KViewChromos::ConstructChromosomesSim(void)
 	}
 	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
 			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
-	GProfilesSim Sims(SubProfiles,Params->GlobalSim);
 
 	// Load the chromosomes from the db
 	d->PutText("Load chromosomes");
-	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Params);
+	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,Params);
 	if(!Instance) return;
 	Instance->SetIdealGroups(IdealGroups);
 
@@ -463,11 +462,10 @@ void KViewChromos::ConstructChromosomesRanking(void)
 	}
 	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
 			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
-	GProfilesSim Sims(SubProfiles,Params->GlobalSim);
 
 	// Load the chromosomes from the db
 	d->PutText("Load Chromosomes");
-	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Params);
+	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,Params);
 	if(!Instance) return;
 	Instance->SetIdealGroups(IdealGroups);
 	d->PutText("Evaluate the solutions");
