@@ -93,11 +93,11 @@ void GGroupCalcGravitation::Disconnect(GSession* session)
 void GGroupCalcGravitation::Compute(GGroup* grp)
 {
 	unsigned int i,j;
-	GSubProfile** ptr;
 	GWeightInfos* Desc=static_cast<GGroupVector*>(grp);
 	GWeightInfos* Ref;
 	GWeightInfo** w;
 	GWeightInfo* ins;
+	GSubProfileCursor Sub;
 
 	// Clear the Vector.
 	(static_cast<GGroupVector*>(grp))->RemoveRefs();
@@ -105,13 +105,14 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 	Vector->Clear();
 
 	// If no subprofiles -> No relevant one.
-	if(!grp->NbPtr) return;
+	if(!grp->GetNbSubProfiles()) return;
 
 	// Go through the subprofiles and sum the weigths.
-	for(i=grp->NbPtr+1,ptr=grp->Tab;--i;ptr++)
+	Sub=grp->GetSubProfilesCursor();
+	for(Sub.Start();!Sub.End();Sub.Next())
 	{
 		// Go trough the words of the current subprofile
-		Ref=static_cast<GSubProfileVector*>(*ptr);
+		Ref=static_cast<GSubProfileVector*>(Sub());
 		for(j=Ref->NbPtr+1,w=Ref->Tab;--j;w++)
 		{
 			ins=Vector->GetInsertPtr<unsigned int>((*w)->GetId());
@@ -135,7 +136,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Desc->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->NbPtr));
+				Desc->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
 		}
 	}
 	else
@@ -143,7 +144,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(w=Order;(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Desc->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->NbPtr));
+				Desc->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
 		}
 	}
 
