@@ -6,7 +6,7 @@
 
 	Dialog Box to show the progress of the something done on a session - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -45,11 +45,216 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for Qt
 #include <qsemimodal.h>
+#include <qthread.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for current application
 #include "kgalileicenter.h"
+
+
+//-----------------------------------------------------------------------------
+/**
+* The QSessionThread provides a generic thread for doing something in the
+* session.
+*/
+class QSessionThread : public QThread
+{
+protected:
+	QSessionProgressDlg* Parent;
+	GSession* Session;
+public:
+	QSessionThread(void);
+	void Set(GSession* session,QSessionProgressDlg* parent);
+	virtual void run(void);
+	virtual void DoIt(void)=0;
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Load a session.
+* @param cmd            What to load.
+* @param langs          Languages.
+* @param umng           URL Manager.
+* @param dmng           Document Analyse Manager.
+* @param pmng           Profiling Manager.
+* @param gmng           Grouping Manager.
+* @param gcmng          Group Computing Manager.
+* @param smng           Statistical Manager.
+* @param lmng           Linking Manager.
+* @param emng           Engine Manager.
+*/
+class QLoadSession : public QSessionThread
+{
+	GLangManager* Langs;
+	GFilterManager* Umng;
+	GDocAnalyseManager* Dmng;
+	GProfileCalcManager* Pmng;
+	GGroupingManager* Gmng;
+	GGroupCalcManager* GCmng;
+	GStatsCalcManager* Smng;
+	GLinkCalcManager* Lmng;
+	GPostDocManager* PDmng;
+	GPostGroupManager* PGmng;
+	GEngineManager* Emng;
+public:
+	QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostGroupManager* pgmng, GEngineManager* emng);
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Create a XML structure.
+* @param xml            The structure that will hold the result.
+* @param doc            The corresponding document.
+*/
+class QCreateDocXML : public QSessionThread
+{
+	GDocXML* &XML;
+	GDoc* Doc;
+public:
+	QCreateDocXML(GDocXML* &xml,GDoc* doc) : XML(xml), Doc(doc) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Analyse a XML structure.
+* @param xml            The structure that will hold the result.
+* @param doc            The corresponding document.
+*/
+class QAnalyzeXML : public QSessionThread
+{
+	GDocXML* &XML;
+	GDoc* Doc;
+public:
+	QAnalyzeXML(GDocXML* &xml,GDoc* doc) : XML(xml), Doc(doc) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Analyse all the documents.
+* @param modified   Recompute only modified elements or all.
+* @param save       Save the computed elements.
+*/
+class QAnalyzeDocs : public QSessionThread
+{
+	bool Modified;
+	bool Save;
+public:
+	QAnalyzeDocs(bool modified=true,bool save=true) : Modified(modified), Save(save) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Compute the profiles.
+* @param modified       Recompute only modified elements or all.
+* @param save           Save modified elements.
+* @param saveLinks      Save modified links informations
+*/
+class QComputeProfiles : public QSessionThread
+{
+	bool Modified;
+	bool Save;
+	bool SaveLinks;
+public:
+	QComputeProfiles(bool modified,bool save,bool saveLinks) : Modified(modified), Save(save), SaveLinks(saveLinks) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Groups the profiles.
+* @param modified       Recompute only modified elements or all.
+* @param save           Save modified elements.
+*/
+class QGroupProfiles : public QSessionThread
+{
+	bool Modified;
+	bool Save;
+	bool SaveHistory;
+public:
+	QGroupProfiles(bool modified,bool save, bool savehistory) : Modified(modified), Save(save), SaveHistory(savehistory) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Run the Post-clustering algorithm.
+*/
+class QComputePostGroup : public QSessionThread
+{
+public:
+	QComputePostGroup(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Export the documents/words matrix in R.
+* @param type           type of export ("Profiles", "Documents" or "Groups")
+* @param filrname       export file name
+* @param lang           lang of the export
+* @param label          display words id aned vectors id ?
+*/
+class QExportMatrix : public QSessionThread
+{
+	const char* Type;
+	const char* Name;
+	GLang* Lang;
+	bool Label;
+public:
+	QExportMatrix(const char* type, const char* filename, GLang* lang, bool label)
+		: Type(type), Name(filename), Lang(lang), Label(label) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Compute all the elements.
+* @param modified       Recompute only modified elements or all.
+* @param save           Save modified elements.
+*/
+class QComputeAll : public QSessionThread
+{
+	bool Modified;
+	bool Save;
+	bool SaveLinks;
+	bool SaveHistory;
+public:
+	QComputeAll(bool modified,bool save,bool saveLinks, bool savehistory)
+		: Modified(modified), Save(save), SaveLinks(saveLinks), SaveHistory(savehistory) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Analayse next MIME path for MIME types.
+* @param path           Path to a KDE desktop files.
+* @param xml            XML structure holding the actual mime types.
+*/
+class QFillMIMETypes : public QSessionThread
+{
+	const char* Path;
+public:
+	QFillMIMETypes(const char* path) : Path(path) {}
+	virtual void DoIt(void);
+private:
+	void receiveNextMIMEPath(const char* path,RXMLStruct& xml);
+};
 
 
 //-----------------------------------------------------------------------------
@@ -62,6 +267,7 @@ using namespace R;
 class QSessionProgressDlg : public QSemiModal, public GSlot
 {
 	Q_OBJECT
+
 	QFrame* Line;
 	char tmpStr[250];
 
@@ -81,6 +287,11 @@ class QSessionProgressDlg : public QSemiModal, public GSlot
 	*/
 	GSession* Session;
 
+	/**
+	* Thread running the task.
+	*/
+	QSessionThread* Task;
+
 public:
 
 	/**
@@ -92,77 +303,10 @@ public:
 	QSessionProgressDlg(QWidget* parent,GSession* s,const char* c) throw(std::bad_alloc,RException);
 
 	/**
-	* Load a session.
-	* @param cmd            What to load.
-	* @param langs          Languages.
-	* @param umng           URL Manager.
-	* @param dmng           Document Analyse Manager.
-	* @param pmng           Profiling Manager.
-	* @param gmng           Grouping Manager.
-	* @param gcmng          Group Computing Manager.
-	* @param smng           Statistical Manager.
-	* @param lmng           Linking Manager.
-	* @param emng           Engine Manager.
+	* Run a thread "in" this dialog box.
+	* @param task            Task to execute.
 	*/
-	void LoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng,  GPostGroupManager* pgmng, GEngineManager* emng) throw(GException,std::bad_alloc);
-
-	/**
-	* Create a XML structure.
-	* @param xml            The structure that will hold the result.
-	* @param doc            The corresponding document.
-	*/
-	void CreateDocXML(GDocXML* &xml,GDoc* doc);
-
-	/**
-	* Analyse a XML structure.
-	* @param xml            The structure that will hold the result.
-	* @param doc            The corresponding document.
-	*/
-	void AnalyseXML(GDocXML* &xml,GDoc* doc);
-
-	/**
-	* Analyse all the documents.
-	* @param modified   Recompute only modified elements or all.
-	* @param save       Save the computed elements.
-	*/
-	void AnalyseDocs(bool modified=true,bool save=true);
-
-	/**
-	* Compute the profiles.
-	* @param modified       Recompute only modified elements or all.
-	* @param save           Save modified elements.
-	* @param saveLinks      Save modified links informations
-	*/
-	void ComputeProfiles(bool modified,bool save,bool saveLinks);
-
-	/**
-	* Groups the profiles.
-	* @param modified       Recompute only modified elements or all.
-	* @param save           Save modified elements.
-	*/
-	void GroupProfiles(bool modified,bool save, bool savehistory);
-
-	/**
-	* Run the Post-clustering algorithm.
-	*/
-	void ComputePostGroup(void);
-
-	/**
-	* export the doucuments/words matrix
-	* @param type           type of export ("Profiles", "Documents" or "Groups")
-	* @param filrname       export file name
-	* @param lang           lang of the export
-	* @param label          display words id aned vectors id ?
-	*/
-	void ExportMatrix(const char* type, const char* filename, GLang* lang, bool label);
-
-	/**
-	* Compute all the elements.
-	* @param modified       Recompute only modified elements or all.
-	* @param save           Save modified elements.
-	*/
-	void ComputeAll(bool modified,bool save,bool saveLinks, bool savehistory);
+	bool Run(QSessionThread* task);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.
@@ -206,50 +350,30 @@ public:
 	*/
 	virtual void receiveNextChromosome(unsigned int id) throw(std::bad_alloc,RException);
 
-	/**
-	* Verify if Qt has nothing to do.
-	*/
-	virtual void Interact(void);
-
-private:
-
-	/**
-	* Analayse next MIME path for MIME types.
-	* @param path           Path to a KDE desktop files.
-	* @param xml            XML structure holding the actual mime types.
-	*/
-	void receiveNextMIMEPath(const char* path,RXMLStruct& xml);
-
 public slots:
 
 	/**
 	* Slot when button is pressed.
 	*/
-	bool receiveButton();
+	void receiveButton();
 
 public:
 
 	/**
-	* Re-creates a XML file using the KDE MIME types.
-	* @param path           Path to the root KDE desktop files.
-	*/
-	void FillMIMETypes(const char* path);
-
-	/**
 	* Put some text.
-	* @param text           Text to show.
+	* @param text            Text to show.
 	*/
 	void PutText(const char* text);
 
 	/**
-	* Begin.
+	* Put the dialog in the beginning state.
 	*/
 	void Begin(void);
 
 	/**
-	* Finish.
+	* Put the dialog in the final state.
 	*/
-	void Finish(void);
+	void Finish(bool Cancel);
 
 	/**
 	* Destructor.

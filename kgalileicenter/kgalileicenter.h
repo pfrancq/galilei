@@ -6,7 +6,7 @@
 
 	Main Window - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -33,7 +33,7 @@
 //-----------------------------------------------------------------------------
 #ifndef KGALILEICenterH
 #define KGALILEICenterH
- 
+
 
 //-----------------------------------------------------------------------------
 #ifdef HAVE_CONFIG_H
@@ -157,7 +157,7 @@ class KGALILEICenterApp : public KMainWindow
 	* PostGroup Manager.
 	*/
 	GPostGroupManager* PostGroupManager;
-	
+
 	/**
 	* Engine & meta engine Manager.
 	*/
@@ -202,17 +202,17 @@ class KGALILEICenterApp : public KMainWindow
 	* path to plugins.
 	*/
 	R::RString pluginsPath;
-	
+
 	/**
 	* the path where the sql file for the database creation are stored
 	*/
 	R::RString CreateDbSQLpath;
-	
+
 	/**
 	* specifies if the stoplists table must be filled when a new Db is created
 	*/
 	bool CreateDbUseStopList;
-	
+
 	/**
 	* specifies if the users table must be filled when a new Db is created
 	*/
@@ -375,16 +375,6 @@ private slots:
 	void slotSessionConnect(void);
 
 	/**
-	* AutoConnect to the default MySQL database.
-	* @param host           The host name.
-	* @param user           The user name.
-	* @param passwd         The passwd.
-	* @param db             The database.
-	* @param encoding       Encoding of the database.
-	*/
-	void slotSessionAutoConnect(R::RString host,R::RString user,R::RString passwd,R::RString db,R::RString encoding);
-
-	/**
 	* Compute an entire session.
 	*/
 	void slotSessionCompute(void);
@@ -513,7 +503,7 @@ private slots:
 	* Analyse the XML structure of the current document.
 	*/
 	void slotAnalyseXML(void);
-	
+
 	/**
 	* Query the meta engine
 	*/

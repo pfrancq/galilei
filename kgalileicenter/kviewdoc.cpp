@@ -333,8 +333,9 @@ void KViewDoc::resizeEvent(QResizeEvent *)
 //-----------------------------------------------------------------------------
 void KViewDoc::CreateDocXML(void)
 {
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Create Doc XML");
-	d->CreateDocXML(Struct,Document);
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Doc XML");
+	if(!Dlg.Run(new QCreateDocXML(Struct,Document)))
+		return;
 	if(Struct)
 	{
 		XML->SetDocXML(Struct);
@@ -359,8 +360,8 @@ void KViewDoc::AnalyseDocXML(void)
 	bool b;
 
 	b=Struct;
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Document");
-	d->AnalyseXML(Struct,Document);
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Analyse Document");
+	if(!Dlg.Run(new QAnalyzeXML(Struct,Document))) return;
 	if((!b)&&Struct)
 		XML->SetDocXML(Struct);
 	General->clear();

@@ -152,7 +152,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	QConnectMySQL dlg(this,0,true);
 	QString method;
 	GSession* Sess;
-	QSessionProgressDlg* d=0;
+//	QSessionProgressDlg* d=0;
 
 	dlg.txtDb->setText(ToQString(dbName));
 	dlg.txtLogin->setText(ToQString(dbUser));
@@ -172,13 +172,27 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName,dbEncoding);
 			Sess = new GSession(Doc->GetStorage(),&SessionParams,true);
 			Doc->SetSession(Sess);
-			d=new QSessionProgressDlg(this,Sess,"Loading from Database");
-			d->LoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,
+// 			d=new QSessionProgressDlg(this,Sess,"Loading from Database");
+// 			d->LoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,
+// 			GroupingManager,GroupCalcManager,StatsCalcManager,LinkCalcManager,PostDocManager,
+// 			PostGroupManager,EngineManager);
+			QSessionProgressDlg dlg(this,Sess,"Loading from Database");
+			if(dlg.Run(new QLoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,
 			GroupingManager,GroupCalcManager,StatsCalcManager,LinkCalcManager,PostDocManager,
-			PostGroupManager,EngineManager);
-			sessionConnect->setEnabled(false);
-			UpdateMenusEntries();
-			dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
+			PostGroupManager,EngineManager)))
+			{
+				sessionConnect->setEnabled(false);
+				UpdateMenusEntries();
+				dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
+			}
+			else
+			{
+				if(Doc)
+				{
+					delete Doc;
+					Doc=0;
+				}
+			}
 		}
 		catch(GException& e)
 		{
@@ -188,8 +202,8 @@ void KGALILEICenterApp::slotSessionConnect(void)
 				delete Doc;*/
 				Doc=0;
 //			}
-			if(d)
-				d->close();
+/*			if(d)
+				d->close();*/
 			return;
 		}
 		slotStatusMsg(i18n("User "+ToQString(dbUser)+" connected to database "+ToQString(dbName)+" on "+ToQString(dbHost)));
@@ -198,47 +212,11 @@ void KGALILEICenterApp::slotSessionConnect(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSessionAutoConnect(RString host,RString user,RString passwd,RString db,RString encoding)
-{
-	QSessionProgressDlg* d=0;
-
-	try
-	{
-		dbName=db;
-		dbHost=host;
-		dbUser=user;
-		dbPwd=passwd;
-		dbEncoding=encoding;
-		QConnectMySQL dlg(this,0,true);
-		GSession* Sess;
-		Doc=new KDoc(this,host,user,passwd,db,encoding);
-		Sess = new GSession(Doc->GetStorage(),&SessionParams,true);
-		Doc->SetSession(Sess);
-		d=new QSessionProgressDlg(this,Sess,"Loading from Database");
-		d->LoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,GroupingManager,
-		GroupCalcManager,StatsCalcManager,LinkCalcManager, PostDocManager, PostGroupManager,EngineManager);
-		sessionConnect->setEnabled(false);
-		UpdateMenusEntries();
-		dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-		Doc=0;
-		if(d)
-			d->close();
-		return;
-	}
-	QString status="User "+ToQString(dbUser)+" connected to database "+ToQString(dbName)+" on "+ToQString(dbHost);
-	slotStatusMsg(i18n(status));
-}
-
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionCompute(void)
 {
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Complete Session");
-	d->ComputeAll(!sessionAlwaysCalc->isChecked(),profileAlwaysSave->isChecked()||groupAlwaysSave->isChecked(),linkAlwaysSave->isChecked(),groupHistorySave->isChecked());
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Complete Session");
+	if(!Dlg.Run(new QComputeAll(!sessionAlwaysCalc->isChecked(),profileAlwaysSave->isChecked()||groupAlwaysSave->isChecked(),linkAlwaysSave->isChecked(),groupHistorySave->isChecked())))
+		return;
 	Doc->updateAllViews(0);
 	Doc->updateAllViews(1);
 	Doc->updateAllViews(2);
@@ -473,7 +451,7 @@ RString strTmp;
 					sql="";
 				}
 			}
-			d->Finish();
+			d->Finish(true);
 		}
 		catch (RMySQLError& e)
 		{
@@ -524,8 +502,9 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			//check if output file has been set
 			if(!strcmp(dlg.ProfilesFile->url(),""))
 				return;
-			QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Export Profiles");
-			d->ExportMatrix("Profiles", dlg.ProfilesFile->url(), Doc->GetSession()->GetLangs()->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false);
+			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Profiles");
+			if(!Dlg.Run(new QExportMatrix("Profiles", dlg.ProfilesFile->url(), Doc->GetSession()->GetLangs()->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+				return;
 		}
 
 		if(dlg.CBDocuments->isChecked())
@@ -533,8 +512,9 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			//check if output file has been set
 			if(!strcmp(dlg.DocumentsFile->url(),""))
 				return;
-			QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Export Documents");
-			d->ExportMatrix("Documents", dlg.DocumentsFile->url(), Doc->GetSession()->GetLangs()->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false);
+			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Documents");
+			if(!Dlg.Run(new QExportMatrix("Documents", dlg.DocumentsFile->url(), Doc->GetSession()->GetLangs()->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+				return;
 		}
 
 		if(dlg.CBGroups->isChecked())
@@ -542,8 +522,9 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			//check if output file has been set
 			if(!strcmp(dlg.GroupsFile->url(),""))
 				return;
-			QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Export Groups");
-			d->ExportMatrix("Groups", dlg.GroupsFile->url(), Doc->GetSession()->GetLangs()->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false);
+			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Groups");
+			if(!Dlg.Run(new QExportMatrix("Groups", dlg.GroupsFile->url(), Doc->GetSession()->GetLangs()->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+				return;
 		}
 	}
 }
@@ -633,7 +614,7 @@ void KGALILEICenterApp::slotProcessExited(KProcess*)
 		QMessageBox::critical(this,"KGALILEICenter",ErrMsgList);
 	}
   else
-	d->Finish();
+	d->Finish(true);
 }
 
 
@@ -647,8 +628,9 @@ void KGALILEICenterApp::slotShowUsers(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfilesCalc(void)
 {
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Profiles");
-	d->ComputeProfiles(!profileAlwaysCalc->isChecked(),profileAlwaysSave->isChecked(),linkAlwaysSave->isChecked());
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Profiles");
+	if(!Dlg.Run(new QComputeProfiles(!profileAlwaysCalc->isChecked(),profileAlwaysSave->isChecked(),linkAlwaysSave->isChecked())))
+		return;
 	Doc->updateAllViews(1);
 	//test whether a linking method has been used during Profile computation.
 	//if true -->refresh Links
@@ -670,8 +652,9 @@ void KGALILEICenterApp::slotShowGroups(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotGroupsCalc(void)
 {
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Make Groups");
-	d->GroupProfiles(!groupAlwaysCalc->isChecked(),groupAlwaysSave->isChecked(),groupHistorySave->isChecked());
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Make Groups");
+	if(!Dlg.Run(new QGroupProfiles(!groupAlwaysCalc->isChecked(),groupAlwaysSave->isChecked(),groupHistorySave->isChecked())))
+		return;
 	Doc->updateAllViews(2);
 }
 
@@ -679,8 +662,8 @@ void KGALILEICenterApp::slotGroupsCalc(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotPostGroupCalc(void)
 {
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute PostGroup");
-	d->ComputePostGroup();
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute PostGroup");
+	Dlg.Run(new QComputePostGroup());
 }
 
 
@@ -838,8 +821,9 @@ void KGALILEICenterApp::slotDocAnalyse(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotDocsAnalyse(void)
 {
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Documents");
-	d->AnalyseDocs(!docAlwaysCalc->isChecked(),docAlwaysSave->isChecked());
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Analyse Documents");
+	if(!Dlg.Run(new QAnalyzeDocs(!docAlwaysCalc->isChecked(),docAlwaysSave->isChecked())))
+		return;
 	Doc->updateAllViews(0);
 }
 
@@ -898,8 +882,8 @@ void KGALILEICenterApp::slotQueryMetaEngine(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotFillMIMETypes(void)
 {
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,0,"Analyse KDE MIME types");
-	d->FillMIMETypes("/usr/share/mimelnk");
+	QSessionProgressDlg Dlg(this,0,"Analyse KDE MIME types");
+	Dlg.Run(new QFillMIMETypes("/usr/share/mimelnk"));
 }
 
 
@@ -1120,7 +1104,7 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 		d->PutText("Create new solutions");
 		mix = new GMixIdealGroups(Doc->GetSession(),(Doc->GetSession()->GetSubjects()->GetIdealGroups()), nbgroups, level, merge, split, random,ideal);
 		mix->Run(d);
-		d->Finish();
+		d->Finish(true);
 	}
 	catch(GException& e)
 	{
