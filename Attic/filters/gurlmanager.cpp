@@ -49,20 +49,19 @@ GALILEI::GURLManager::GURLManager(void)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GURLManager::Download(const char* URL,RString& tmpFile)
-{
-	return(false);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GURLManager::Delete(RString& tmpFile)
+void GALILEI::GURLManager::Download(const char* URL,RString& tmpFile) throw(GException)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GDocXML* GALILEI::GURLManager::CreateDocXML(const GDoc* doc)
+void GALILEI::GURLManager::Delete(RString& tmpFile) throw(GException)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+GDocXML* GALILEI::GURLManager::CreateDocXML(const GDoc* doc) throw(GException)
 {
 	RString tmpFile(50);
 	const char* ptr;
@@ -80,8 +79,7 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(const GDoc* doc)
 	}
 	if(i&&((*ptr)==':')&&(strncmp(ptr,"file",i)))
 	{
-		if(!Download(doc->GetURL(),tmpFile))
-			return(xml);
+		Download(doc->GetURL(),tmpFile);
 		Dwn=true;
 	}
 	else

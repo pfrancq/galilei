@@ -29,6 +29,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <gdocs/gdocxml.h>
 #include <gdocs/gdoc.h>
 #include <filters/gfilter.h>
@@ -79,15 +80,14 @@ protected:
 	* Download and store locally a document given by an URL.
 	* @param URL            URL of the document.
 	* @param tmpFile        Temporary file created.
-	* @return true if the document could be downloaded.
 	*/
-	virtual bool Download(const char* URL,RString& tmpFile);
+	virtual void Download(const char* URL,RString& tmpFile) throw(GException);
 
 	/**
 	* Delete the file locally.
 	* @param tmpFile        Temporary file to delete.
 	*/
-	virtual void Delete(RString& tmpFile);
+	virtual void Delete(RString& tmpFile) throw(GException);
 
 public:
 
@@ -97,7 +97,7 @@ public:
 	* @param doc            Document to analyze
 	* Return Pointer to a GDocXML.
 	*/
-	GDocXML* CreateDocXML(const GDoc* doc);
+	GDocXML* CreateDocXML(const GDoc* doc) throw(GException);
 
 	/**
 	* Add a mime type and a filter.
