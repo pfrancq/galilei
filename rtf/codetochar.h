@@ -115,7 +115,6 @@ public:
 	~CodeToChar(void);
 };
 
-CLASSCURSOR(CodeToCharCursor,CodeToChar);
 
 }  //-------- End of namespace GALILEI ----------------------------------------
 

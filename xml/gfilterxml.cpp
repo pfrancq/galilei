@@ -6,7 +6,7 @@
 
 	A XML filter - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be)
@@ -68,9 +68,9 @@ public:
 	int Compare(const RString* a) const {return(Name.Compare(a));}
 	int Compare(const RString& a) const {return(Name.Compare(a));}
 	void InsertSubAttribute(Attribut* a){SubAttrs.InsertPtr(a);}
-	AttributCursor GetSubAttributsCursor(void)
+	R::RCursor<Attribut> GetSubAttributsCursor(void)
 	{
-		AttributCursor cur(SubAttrs);
+		R::RCursor<Attribut> cur(SubAttrs);
 		return(cur);
 	}
 };
@@ -102,9 +102,9 @@ public:
 	int Compare(const TagStruct& t) const {return(Name.Compare(t));}
 	int Compare(const TagStruct* t) const {return(Name.Compare(t));}
 	void InsertAttribute(Attribut* t){Attrs.InsertPtr(t);}
-	AttributCursor GetAttributsCursor(void)
+	R::RCursor<Attribut> GetAttributsCursor(void)
 	{
-		AttributCursor cur(Attrs);
+		R::RCursor<Attribut> cur(Attrs);
 		return(cur);
 	}
 };
@@ -125,9 +125,9 @@ public:
 	int Compare(const Def& d) const {return(Name.Compare(d.Name));}
 	int Compare(const RString& d) const {return(Name.Compare(d));}
 	void InsertTag(Tag* t){Tags.InsertPtr(t);}
-	TagCursor GetTagsCursor(void)
+	R::RCursor<Tag> GetTagsCursor(void)
 	{
-		TagCursor cur(Tags);
+		R::RCursor<Tag> cur(Tags);
 		return(cur);
 	}
 };
@@ -389,8 +389,8 @@ void GFilterXML::LoadDefinitions(void) throw(GException)
 void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag) throw(bad_alloc,GException)
 {
 	Def* definition;
-	RXMLAttrCursor xmlAttrCur;
-	RXMLTagCursor tagCur;
+	R::RCursor<RXMLAttr> xmlAttrCur;
+	R::RCursor<RXMLTag> tagCur;
 
 	if(!currentTag) return;
 
@@ -433,8 +433,8 @@ void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag) throw(bad_alloc,GExc
 //---------------------------------------------------------------------------
 void GFilterXML::FillTagsDefinition(RXMLTag* currentTag,Def* def) throw(GException)
 {
-	RXMLAttrCursor xmlAttrCur;
-	RXMLTagCursor tagCur;
+	R::RCursor<RXMLAttr> xmlAttrCur;
+	R::RCursor<RXMLTag> tagCur;
 	RString tagName;
 	RString docxmlName;
 	RString parentName;
@@ -479,8 +479,8 @@ void GFilterXML::FillTagsDefinition(RXMLTag* currentTag,Def* def) throw(GExcepti
 //---------------------------------------------------------------------------
 void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag) throw(GException)
 {
-	RXMLAttrCursor xmlAttrCur;
-	RXMLTagCursor tagCur,subTagCur;
+	R::RCursor<RXMLAttr> xmlAttrCur;
+	R::RCursor<RXMLTag> tagCur,subTagCur;
 	RString tagName;
 	RString docxmlName;
 	RString value;
@@ -553,8 +553,8 @@ void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag) throw(GE
 //---------------------------------------------------------------------------
 void GFilterXML::FillMimeDefinition(RXMLTag* currentTag,Def* def) throw(GException)
 {
-	RXMLAttrCursor xmlAttrCur;
-	RXMLTagCursor tagCur;
+	R::RCursor<RXMLAttr> xmlAttrCur;
+	R::RCursor<RXMLTag> tagCur;
 
 	tagCur=currentTag->GetXMLTagsCursor();
 	for(tagCur.Start();!tagCur.End();tagCur.Next())
@@ -691,8 +691,8 @@ RXMLTag* GFilterXML::InsertTag(tTag t,RXMLTag* parentTag) throw(std::bad_alloc,G
 void GFilterXML::AnalyseTag(RXMLTag* currentTag,RXMLTag* currentTagParent ,RXMLTag* docXMLparentTag) throw(std::bad_alloc,GException)
 {
 	Tag *t;
-	RXMLTagCursor tagCur;
-	RXMLAttrCursor attrCur;
+	R::RCursor<RXMLTag> tagCur;
+	R::RCursor<RXMLAttr> attrCur;
 	RXMLTag* newTag;
 
 	bool description=false;
@@ -763,7 +763,7 @@ void GFilterXML::AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent
 	Tag* t;
 	RXMLTag* attrTag;
 	Attribut* subattr;
-	AttributCursor attrCur,subAttrCur;
+	R::RCursor<Attribut> attrCur,subAttrCur;
 
 	RString attrName;
 	RString valueName;
@@ -818,11 +818,11 @@ bool GFilterXML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 {
 	RString mime;
 	MimeDef* mimeDef;
-	DefCursor defCur;
+	R::RCursor<Def> defCur;
 	//Def* def;
 	RXMLTag* part;
 	RXMLTag* tag;
-	RXMLTagCursor Cur;
+	R::RCursor<RXMLTag> Cur;
 	RXMLStruct fileStruct;
 
 	try
@@ -908,17 +908,17 @@ bool GFilterXML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-GFilterXML::DefCursor GFilterXML::GetDefinitionsCursor(void)
+R::RCursor<GFilterXML::Def> GFilterXML::GetDefinitionsCursor(void)
 {
-	DefCursor cur(Definitions);
+	R::RCursor<Def> cur(Definitions);
 	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-GFilterXML::MimeDefCursor GFilterXML::GetMimeDefinitionsCursor(void)
+R::RCursor<GFilterXML::MimeDef> GFilterXML::GetMimeDefinitionsCursor(void)
 {
-	MimeDefCursor cur(MimeDefinitions);
+	R::RCursor<MimeDef> cur(MimeDefinitions);
 	return(cur);
 }
 

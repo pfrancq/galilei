@@ -93,18 +93,6 @@ class GFilterXML: public GFilter
 	class Def;
 	class MimeDef;
 
-	// Define Cursor on Attributs objects
-	CLASSCURSOR(AttributCursor,Attribut);
-
-	// Define Cursor on Tags objects
-	CLASSCURSOR(TagCursor,Tag);
-
-	// Define Cursor on Tags objects
-	CLASSCURSOR(DefCursor,Def);
-
-	// Define Cursor on Tags objects
-	CLASSCURSOR(MimeDefCursor,MimeDef);
-
 	/*
 	* Structure to maintain Tags name and eventually the parent associated to the tag
 	*/
@@ -235,13 +223,13 @@ protected:
 	/**
 	* Get a cursor over the container of definitions
 	*/
-	DefCursor GetDefinitionsCursor(void);
+	R::RCursor<Def> GetDefinitionsCursor(void);
 
 	/**
 	* Get a cursor over the container of mimedefinitions
 	* (link between one mime type and its corresponding tag definition)
 	*/
-	MimeDefCursor GetMimeDefinitionsCursor(void);
+	R::RCursor<MimeDef> GetMimeDefinitionsCursor(void);
 
 public:
 

@@ -6,7 +6,7 @@
 
 	A RTF filter - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Kumps Nicolas (nkumps@ulb.ac.be)
@@ -385,72 +385,72 @@ bool GFilterRTF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 //------------------------------------------------------------------------------
 void GALILEI::GFilterRTF::InitCharContainer(void)
 {
-	Chars.InsertPtr(new CodeToChar("\\u224\\\'00\\\'E0",'à'));
-	Chars.InsertPtr(new CodeToChar("\\u225\\\'00\\\'E1",'á'));
-	Chars.InsertPtr(new CodeToChar("\\u226\\\'00\\\'E2",'â'));
-	Chars.InsertPtr(new CodeToChar("\\u228\\\'00\\\'E4",'ä'));
+	Chars.InsertPtr(new CodeToChar("\\u224\\\'00\\\'E0",'Ã '));
+	Chars.InsertPtr(new CodeToChar("\\u225\\\'00\\\'E1",'Ã¡'));
+	Chars.InsertPtr(new CodeToChar("\\u226\\\'00\\\'E2",'Ã¢'));
+	Chars.InsertPtr(new CodeToChar("\\u228\\\'00\\\'E4",'Ã¤'));
 	Chars.InsertPtr(new CodeToChar("\\u230\\\'00\\\'E6",'?'));
-	Chars.InsertPtr(new CodeToChar("\\u231\\\'00\\\'E7",'ç'));
-	Chars.InsertPtr(new CodeToChar("\\u232\\\'00\\\'E8",'è'));
-	Chars.InsertPtr(new CodeToChar("\\u233\\\'00\\\'E9",'é'));
-	Chars.InsertPtr(new CodeToChar("\\u234\\\'00\\\'EA",'ê'));
-	Chars.InsertPtr(new CodeToChar("\\u235\\\'00\\\'EB",'ë'));
-	Chars.InsertPtr(new CodeToChar("\\u236\\\'00\\\'EC",'ì'));
-	Chars.InsertPtr(new CodeToChar("\\u237\\\'00\\\'ED",'í'));
-	Chars.InsertPtr(new CodeToChar("\\u238\\\'00\\\'EE",'î'));
-	Chars.InsertPtr(new CodeToChar("\\u239\\\'00\\\'EF",'ï'));
-	Chars.InsertPtr(new CodeToChar("\\u242\\\'00\\\'F2",'ò'));
-	Chars.InsertPtr(new CodeToChar("\\u243\\\'00\\\'F3",'ó'));
-	Chars.InsertPtr(new CodeToChar("\\u244\\\'00\\\'F4",'ô'));
-	Chars.InsertPtr(new CodeToChar("\\u246\\\'00\\\'F6",'ö'));
-	Chars.InsertPtr(new CodeToChar("\\u249\\\'00\\\'F9",'ù'));
-	Chars.InsertPtr(new CodeToChar("\\u250\\\'00\\\'FA",'ú'));
-	Chars.InsertPtr(new CodeToChar("\\u251\\\'00\\\'FB",'û'));
-	Chars.InsertPtr(new CodeToChar("\\u253\\\'00\\\'FD",'ü'));
-	Chars.InsertPtr(new CodeToChar("\\\'e0",'à'));
-	Chars.InsertPtr(new CodeToChar("\\\'e1",'á'));
-	Chars.InsertPtr(new CodeToChar("\\\'e2",'â'));
-	Chars.InsertPtr(new CodeToChar("\\\'e4",'ä'));
+	Chars.InsertPtr(new CodeToChar("\\u231\\\'00\\\'E7",'Ã§'));
+	Chars.InsertPtr(new CodeToChar("\\u232\\\'00\\\'E8",'Ã¨'));
+	Chars.InsertPtr(new CodeToChar("\\u233\\\'00\\\'E9",'Ã©'));
+	Chars.InsertPtr(new CodeToChar("\\u234\\\'00\\\'EA",'Ãª'));
+	Chars.InsertPtr(new CodeToChar("\\u235\\\'00\\\'EB",'Ã«'));
+	Chars.InsertPtr(new CodeToChar("\\u236\\\'00\\\'EC",'Ã¬'));
+	Chars.InsertPtr(new CodeToChar("\\u237\\\'00\\\'ED",'Ã­'));
+	Chars.InsertPtr(new CodeToChar("\\u238\\\'00\\\'EE",'Ã®'));
+	Chars.InsertPtr(new CodeToChar("\\u239\\\'00\\\'EF",'Ã¯'));
+	Chars.InsertPtr(new CodeToChar("\\u242\\\'00\\\'F2",'Ã²'));
+	Chars.InsertPtr(new CodeToChar("\\u243\\\'00\\\'F3",'Ã³'));
+	Chars.InsertPtr(new CodeToChar("\\u244\\\'00\\\'F4",'Ã´'));
+	Chars.InsertPtr(new CodeToChar("\\u246\\\'00\\\'F6",'Ã¶'));
+	Chars.InsertPtr(new CodeToChar("\\u249\\\'00\\\'F9",'Ã¹'));
+	Chars.InsertPtr(new CodeToChar("\\u250\\\'00\\\'FA",'Ãº'));
+	Chars.InsertPtr(new CodeToChar("\\u251\\\'00\\\'FB",'Ã»'));
+	Chars.InsertPtr(new CodeToChar("\\u253\\\'00\\\'FD",'Ã¼'));
+	Chars.InsertPtr(new CodeToChar("\\\'e0",'Ã '));
+	Chars.InsertPtr(new CodeToChar("\\\'e1",'Ã¡'));
+	Chars.InsertPtr(new CodeToChar("\\\'e2",'Ã¢'));
+	Chars.InsertPtr(new CodeToChar("\\\'e4",'Ã¤'));
 	Chars.InsertPtr(new CodeToChar("\\\'e6",'?'));
-	Chars.InsertPtr(new CodeToChar("\\\'e7",'ç'));
-	Chars.InsertPtr(new CodeToChar("\\\'e8",'è'));
-	Chars.InsertPtr(new CodeToChar("\\\'e9",'é'));
-	Chars.InsertPtr(new CodeToChar("\\\'ea",'ê'));
-	Chars.InsertPtr(new CodeToChar("\\\'eb",'ë'));
-	Chars.InsertPtr(new CodeToChar("\\\'ec",'ì'));
-	Chars.InsertPtr(new CodeToChar("\\\'ed",'í'));
-	Chars.InsertPtr(new CodeToChar("\\\'ee",'î'));
-	Chars.InsertPtr(new CodeToChar("\\\'ef",'ï'));
-	Chars.InsertPtr(new CodeToChar("\\\'f2",'ò'));
-	Chars.InsertPtr(new CodeToChar("\\\'f3",'ó'));
-	Chars.InsertPtr(new CodeToChar("\\\'f4",'ô'));
-	Chars.InsertPtr(new CodeToChar("\\\'f6",'ö'));
-	Chars.InsertPtr(new CodeToChar("\\\'f9",'ù'));
-	Chars.InsertPtr(new CodeToChar("\\\'fa",'ú'));
-	Chars.InsertPtr(new CodeToChar("\\\'fb",'û'));
-	Chars.InsertPtr(new CodeToChar("\\\'fd",'ü'));
-	Chars.InsertPtr(new CodeToChar("\\\'E0",'à'));
-	Chars.InsertPtr(new CodeToChar("\\\'E1",'á'));
-	Chars.InsertPtr(new CodeToChar("\\\'E2",'â'));
-	Chars.InsertPtr(new CodeToChar("\\\'E4",'ä'));
+	Chars.InsertPtr(new CodeToChar("\\\'e7",'Ã§'));
+	Chars.InsertPtr(new CodeToChar("\\\'e8",'Ã¨'));
+	Chars.InsertPtr(new CodeToChar("\\\'e9",'Ã©'));
+	Chars.InsertPtr(new CodeToChar("\\\'ea",'Ãª'));
+	Chars.InsertPtr(new CodeToChar("\\\'eb",'Ã«'));
+	Chars.InsertPtr(new CodeToChar("\\\'ec",'Ã¬'));
+	Chars.InsertPtr(new CodeToChar("\\\'ed",'Ã­'));
+	Chars.InsertPtr(new CodeToChar("\\\'ee",'Ã®'));
+	Chars.InsertPtr(new CodeToChar("\\\'ef",'Ã¯'));
+	Chars.InsertPtr(new CodeToChar("\\\'f2",'Ã²'));
+	Chars.InsertPtr(new CodeToChar("\\\'f3",'Ã³'));
+	Chars.InsertPtr(new CodeToChar("\\\'f4",'Ã´'));
+	Chars.InsertPtr(new CodeToChar("\\\'f6",'Ã¶'));
+	Chars.InsertPtr(new CodeToChar("\\\'f9",'Ã¹'));
+	Chars.InsertPtr(new CodeToChar("\\\'fa",'Ãº'));
+	Chars.InsertPtr(new CodeToChar("\\\'fb",'Ã»'));
+	Chars.InsertPtr(new CodeToChar("\\\'fd",'Ã¼'));
+	Chars.InsertPtr(new CodeToChar("\\\'E0",'Ã '));
+	Chars.InsertPtr(new CodeToChar("\\\'E1",'Ã¡'));
+	Chars.InsertPtr(new CodeToChar("\\\'E2",'Ã¢'));
+	Chars.InsertPtr(new CodeToChar("\\\'E4",'Ã¤'));
 	Chars.InsertPtr(new CodeToChar("\\\'E6",'?'));
-	Chars.InsertPtr(new CodeToChar("\\\'E7",'ç'));
-	Chars.InsertPtr(new CodeToChar("\\\'E8",'è'));
-	Chars.InsertPtr(new CodeToChar("\\\'E9",'é'));
-	Chars.InsertPtr(new CodeToChar("\\\'EA",'ê'));
-	Chars.InsertPtr(new CodeToChar("\\\'EB",'ë'));
-	Chars.InsertPtr(new CodeToChar("\\\'EC",'ì'));
-	Chars.InsertPtr(new CodeToChar("\\\'ED",'í'));
-	Chars.InsertPtr(new CodeToChar("\\\'EE",'î'));
-	Chars.InsertPtr(new CodeToChar("\\\'EF",'ï'));
-	Chars.InsertPtr(new CodeToChar("\\\'F2",'ò'));
-	Chars.InsertPtr(new CodeToChar("\\\'F3",'ó'));
-	Chars.InsertPtr(new CodeToChar("\\\'F4",'ô'));
-	Chars.InsertPtr(new CodeToChar("\\\'F6",'ö'));
-	Chars.InsertPtr(new CodeToChar("\\\'F9",'ù'));
-	Chars.InsertPtr(new CodeToChar("\\\'FA",'ú'));
-	Chars.InsertPtr(new CodeToChar("\\\'FB",'û'));
-	Chars.InsertPtr(new CodeToChar("\\\'FD",'ü'));
+	Chars.InsertPtr(new CodeToChar("\\\'E7",'Ã§'));
+	Chars.InsertPtr(new CodeToChar("\\\'E8",'Ã¨'));
+	Chars.InsertPtr(new CodeToChar("\\\'E9",'Ã©'));
+	Chars.InsertPtr(new CodeToChar("\\\'EA",'Ãª'));
+	Chars.InsertPtr(new CodeToChar("\\\'EB",'Ã«'));
+	Chars.InsertPtr(new CodeToChar("\\\'EC",'Ã¬'));
+	Chars.InsertPtr(new CodeToChar("\\\'ED",'Ã­'));
+	Chars.InsertPtr(new CodeToChar("\\\'EE",'Ã®'));
+	Chars.InsertPtr(new CodeToChar("\\\'EF",'Ã¯'));
+	Chars.InsertPtr(new CodeToChar("\\\'F2",'Ã²'));
+	Chars.InsertPtr(new CodeToChar("\\\'F3",'Ã³'));
+	Chars.InsertPtr(new CodeToChar("\\\'F4",'Ã´'));
+	Chars.InsertPtr(new CodeToChar("\\\'F6",'Ã¶'));
+	Chars.InsertPtr(new CodeToChar("\\\'F9",'Ã¹'));
+	Chars.InsertPtr(new CodeToChar("\\\'FA",'Ãº'));
+	Chars.InsertPtr(new CodeToChar("\\\'FB",'Ã»'));
+	Chars.InsertPtr(new CodeToChar("\\\'FD",'Ã¼'));
 	Chars.InsertPtr(new CodeToChar("\\rquote",'\''));
 	Chars.InsertPtr(new CodeToChar("\\rdblquote",'\"'));
 	Chars.InsertPtr(new CodeToChar("\\RQUOTE",'\''));
@@ -466,7 +466,7 @@ void GALILEI::GFilterRTF::InitCharContainer(void)
 RString GALILEI::GFilterRTF::ReplaceCodes(RString str)
 {
 	RCharCursor cur(str);
-	CodeToCharCursor codeCur;
+	R::RCursor<CodeToChar> codeCur;
 	RString code("");
 	RString resStr("");
 	CodeToChar *c;
