@@ -172,6 +172,41 @@ GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session, GFeedback
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GProfileCalcFeedback::SetParam(const char* param,const char* value)
+{
+	if(!strcmp(param,"IDF"))
+	{
+		Params->IdfFactor=atoi(value);
+	}
+	else
+	if(!strcmp(param,"Size"))
+	{
+		Params->MaxNonZero=atoi(value);
+	}
+	else
+	if(!strcmp(param,"FactorR"))
+	{
+		Params->RelFactor=atof(value);
+	}
+	else
+	if(!strcmp(param,"FactorF"))
+	{
+		Params->FuzzyFactor=atof(value);
+	}
+	else
+	if(!strcmp(param,"FactorN"))
+	{
+		Params->NoRelFactor=atof(value);
+	}
+	else
+	if(!strcmp(param,"Optimist"))
+	{
+		Params->AddFuzzy=atoi(value);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 const char* GALILEI::GProfileCalcFeedback::GetSettings(void)
 {
 	static char tmp[100];

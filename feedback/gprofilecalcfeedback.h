@@ -199,6 +199,13 @@ public:
 	GProfileCalcFeedback(GSession* session, GFeedbackParams* p) throw(bad_alloc);
 
 	/**
+	* Set a parameter of the grouping method.
+	* @param param          Name of the parameter.
+	* @param value          Value of the parameter.
+	*/
+	virtual void SetParam(const char* param,const char* value);
+
+	/**
 	* Get the settings of the method coded in a string.
 	* return Pointer to a C string.
 	*/
