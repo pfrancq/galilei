@@ -94,6 +94,7 @@ GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 	Tags->InsertPtr(new Tag("P","P",Tag::tP,false,7,true));
 	Tags->InsertPtr(new Tag("TD","P",Tag::tTD,false,7,true));
 	Tags->InsertPtr(new Tag("LI","P",Tag::tTD,false,7,true));
+	Tags->InsertPtr(new Tag("DIV","P",Tag::tP,false,7,true));
 }
 
 
@@ -120,7 +121,7 @@ bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
 	// Traitement of the document
 	AnalyseHeader();
 	AnalyseBody();
-	doc->AddNode(doc->GetTop(),/**links=*/new RXMLTag("links"));
+	doc->AddNode(doc->GetTop(),/**links=*/new RXMLTag("Links"));
 
 	// Done
 	if(Block)
@@ -254,6 +255,7 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 	Doc->AddNode(Doc->GetTop(),Open[0]=content=new RXMLTag("Content"));
 	Level=0;
 	OldBlock=0;
+	MinOpenLevel=0;
 
 	// Parse it
 	while((*Pos)&&(CurTag))
@@ -261,12 +263,15 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 		if(bEndTag)
 		{
 			Ins=Block;
-			Block=OldBlock=0;
+			OldBlock=0;
+			Block=Pos;
 			// Find the lowest tag open and assign the text to it.
 			for(ptr=&Open[7],Level=7;!(*ptr);ptr--,Level--);
 			act=(*ptr);
-			// All the lowest tag and himself are closed.
+			// All the lowest tag and himself (not if Content) are closed.
 			Level=CurTag->Level;
+			if(!Level)
+				Level=1;
 		}
 		else
 		{
@@ -283,12 +288,14 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 				else
 					act=0;
 			}
-			if(CurTag->Ins)
+			if((CurTag->Ins)&&(CurTag->Type!=Tag::tBODY))
 				Doc->AddNode(*ptr,Open[CurTag->Level]=new RXMLTag(CurTag->XMLName));
 			else
 			{
 				OldBlock=0;
 			}
+//			if(CurTag->Type==Tag::tBODY)
+//				Block=Pos;
 			if(!act)
 				act=Open[CurTag->Level];
 			// All the lowest tag are closed.
@@ -300,9 +307,9 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 		}
 		// All the tag lower than 'Level' are closed.
 		for(ptr=&Open[7],i=7;i>=Level;ptr--,i--)
-		{
 			(*ptr)=0;
-		}
+		// find highest tag not null
+		for(MinOpenLevel=i-1,ptr--;(*ptr);ptr--,MinOpenLevel--);
 		NextValidTag();
 	}
 }
@@ -630,7 +637,7 @@ void GALILEI::GFilterHTML::NextValidTag(void)
 
 	// Return
 	BlockLen=0;
-	if(!bEndTag)
+	if((!bEndTag)/*||(!MinOpenLevel)*/)
 	{
 		Block=Pos;
 	}

@@ -117,6 +117,11 @@ class GFilterHTML: public GFilter
 	*/
 	bool bEndTag;
 
+	/**
+	* Holds the most opened level in the structure.
+	*/
+	unsigned int MinOpenLevel;
+
 public:
 
 	/**
