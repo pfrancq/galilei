@@ -421,7 +421,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 		}
 		if(stem.GetLen()>=Options->MinStemSize)
 		{
-			Occur=Words->GetPtr(dic->GetId(stem));
+			Occur=Words->GetInsertPtr(dic->GetId(stem));
 			if(!Occur->GetWeight())
 				Vdiff++;
 			V+=(*wrd)->Nb;
