@@ -114,6 +114,7 @@ void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,t
 					}
 					i++;
 				}
+				Prof1()->GetProfile()->SetState(osModified);
 			}
 		}
 	}
