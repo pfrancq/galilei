@@ -72,12 +72,18 @@ class GPrgInstFor : public GPrgInst
 	*/
 	RStd::RContainer<GPrgInst,unsigned int,true,false> Insts;
 
+	/**
+	* Identation of for.
+	*/
+	unsigned int Tabs;
+
 public:
 	/**
 	* Create a Instruction.
 	* @param line           Rest of the line.
+	* @param t              Identation.
 	*/
-	GPrgInstFor(char* line) throw(bad_alloc);
+	GPrgInstFor(char* line,unsigned int t) throw(bad_alloc);
 
 	/**
 	* Add an instruction to the for.
@@ -90,7 +96,13 @@ public:
 	* @param r              Receiver.
 	*/
 	virtual void Run(GSessionPrg* prg,GSlot* r) throw(GException);
-	
+
+	/**
+	* Get the number of tabs.
+	* @returns unsigned int.
+	*/
+	unsigned int GetTabs(void) const {return(Tabs);}
+
 	/**
 	* Destructor.
 	*/

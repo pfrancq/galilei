@@ -436,7 +436,7 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GSessionPrg::CountTabs(char* line)
+unsigned int GALILEI::GSessionPrg::CountTabs(char* line)
 {
 	int tabs;
 	char* ptr;
@@ -476,6 +476,7 @@ GPrgInst* GALILEI::GSessionPrg::AnalyseLine(RIO::RTextFile& prg) throw(bad_alloc
 	line=tmp;
 
 	// Skip Spaces and count tabs
+	cout<<"Analyse: "<<line<<endl;
 	tabs=CountTabs(line);
 	ptr=line;
 	while((*ptr)&&(isspace(*ptr)))
@@ -496,7 +497,7 @@ GPrgInst* GALILEI::GSessionPrg::AnalyseLine(RIO::RTextFile& prg) throw(bad_alloc
 		// If is "for"
 		if(!strcmp(obj,"for"))
 		{
-			GPrgInstFor* f=new GPrgInstFor(ptr);
+			GPrgInstFor* f=new GPrgInstFor(ptr,tabs);
 
 			// Read the next lines
 			tbuf=Prg.GetLine();
@@ -505,12 +506,19 @@ GPrgInst* GALILEI::GSessionPrg::AnalyseLine(RIO::RTextFile& prg) throw(bad_alloc
 			ReadLine=false;
 			while((!ReadLine)||(!Prg.Eof()&&(ReadLine)))
 			{
-				if(CountTabs(tmp)<=tabs) break;
+				if(CountTabs(tmp)<=f->GetTabs())
+				{
+					cout<<"Skip: "<<tmp<<endl;
+					break;
+				}
 				f->AddInst(AnalyseLine(prg));
-				tbuf=prg.GetLine();
-				if(!tbuf) return(f);
-				strcpy(tmp,tbuf);
-				ReadLine=false;
+				if(ReadLine)
+				{
+					tbuf=prg.GetLine();
+					if(!tbuf) return(f);
+					strcpy(tmp,tbuf);
+					ReadLine=false;
+				}
 			}
 			return(f);
 		}

@@ -57,8 +57,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GPrgInstFor::GPrgInstFor(char* line) throw(bad_alloc)
-	: GPrgInst(), Values(20,10), Insts(50,25)
+GALILEI::GPrgInstFor::GPrgInstFor(char* line,unsigned int t) throw(bad_alloc)
+	: GPrgInst(), Values(20,10), Insts(50,25), Tabs(t)
 {
 	char* var;
 	GPrgVar* r;

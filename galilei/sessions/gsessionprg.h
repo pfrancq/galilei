@@ -395,7 +395,7 @@ public:
 	* @param line           Line to analyze.
 	* @returns Instruction to insert.
 	*/
-	static int CountTabs(char* line);
+	static unsigned int CountTabs(char* line);
 
 	/**
 	* Analyse a line of source code.
