@@ -212,14 +212,17 @@ public:
 	*/
 	GWord* GetElement(const unsigned int id) const;
 
-	unsigned GetNbGroupsList(){return(GroupsList.NbPtr);}
+	/**
+	* Get the number of group of information entities.
+	* @returns Number of groups.
+	*/
+	unsigned int GetNbGroupsList(void) const;
 
 	/**
 	* Test if the dictionnary is a stop list.
 	* @returns true if it is a stop list.
 	*/
-	bool IsStopList(void) const
-		{return(Stop);}
+	bool IsStopList(void) const;
 
 	/**
 	* Compare function used in the R::RContainer.

@@ -37,6 +37,9 @@
 //-----------------------------------------------------------------------------
 // include file for ANSI C/C++
 #include <string.h>
+#include <ctype.h>
+#include <stdexcept>
+#include <dirent.h>
 
 
 //-----------------------------------------------------------------------------
@@ -48,12 +51,9 @@
 // include file for Galilei
 #include <langs/glangs.h>
 #include <langs/glang.h>
-#include <langs/glangen.h>
-#include <langs/glangfr.h>
-#include <langs/gdicts.h>
 using namespace GALILEI;
 using namespace R;
-
+using namespace ltmm;
 
 
 //-----------------------------------------------------------------------------
@@ -63,86 +63,128 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangs::GLangs(unsigned nb) throw(bad_alloc)
-  : RContainer<GLang,unsigned,true,true>(nb,nb/2), bDics(false), Stops(0), Dics(0)
+GLangs::GLangs(const char* path,bool dlg) throw(GException)
+  : RContainer<GFactoryLang,unsigned,true,true>(10,5)
 {
-	Dics=new GDicts(nb);
-	Stops=new GDicts(nb);
-	InsertPtr(new GLangEN(0));
-	InsertPtr(new GLangFR(0));
+	DIR* dp;
+	struct dirent* ep;
+	RString Path(path);
+	RString Msg;
+	RString Name;
+	char DlgLib[100];
+	int len;
+
+	loader<>& l=loader<>::instance();
+	Path+="/langs";
+	dp=opendir(Path);
+	Path+="/";
+	if(!dp) return;
+	while((ep=readdir(dp)))
+	{
+		len=strlen(ep->d_name);
+		if(strcmp(&ep->d_name[len-3],".la")) continue;
+		if(!strcmp(&ep->d_name[len-7],"_dlg.la")) continue;
+		try
+		{
+			// Create the factory and insert it
+			Name=Path+ep->d_name;
+			handle<>& myhandle = l.load(Name());
+			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
+			GFactoryLang* myfactory = ((GFactoryLangInit)(*(*myinit)))(this,ep->d_name);
+			if(strcmp(API_LANG_VERSION,myfactory->GetAPIVersion()))
+			{
+				Msg+=ep->d_name;
+				Msg+=" - Plugin not compatible with API Version\n";
+				continue;
+			}
+			InsertPtr(myfactory);
+
+			// Look if dialog boxes are available
+			if(!dlg) continue;
+			try
+			{
+				strcpy(DlgLib,Name());
+				DlgLib[Name.GetLen()-3]=0;
+				strcat(DlgLib,"_dlg.la");
+				handle<>& myhandle2 = l.load(DlgLib);
+				myfactory->SetAbout(myhandle2.find_symbol("About"));
+				myfactory->SetConfig(myhandle2.find_symbol("Configure"));
+			}
+			catch(...)
+			{
+			}
+		}
+		catch(std::exception& e)
+		{
+			Msg+=ep->d_name;
+			Msg+=" - ";
+			Msg+=e.what();
+			Msg+="\n";
+		}
+	}
+	closedir(dp);
+
+	// If something in Msg -> error
+	if(Msg.GetLen())
+		throw(GException(Msg));
+}
+
+//-----------------------------------------------------------------------------
+void GLangs::Connect(GSession* session)
+{
+	GFactoryLangCursor Cur;
+	GLang* lang;
+
+	Cur.Set(this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		lang=Cur()->GetPlugin();
+		if(lang)
+			lang->Connect(session);
+	}
 }
 
 
 //-----------------------------------------------------------------------------
-GLang* GALILEI::GLangs::GetLang(const char* code)
+void GLangs::Disconnect(GSession* session)
 {
+	GFactoryLangCursor Cur;
+	GLang* lang;
+
+	Cur.Set(this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		lang=Cur()->GetPlugin();
+		if(lang)
+			lang->Disconnect(session);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+GLang* GLangs::GetLang(const char* code) const
+{
+	GFactoryLang* fac;
+
 	if(!code)
 		return(0);
-	return(GetPtr<const char*>(code));
+	fac=GetPtr<const char*>(code);
+	if(!fac)
+		return(0);
+	return(fac->GetPlugin());
 }
 
 
 //-----------------------------------------------------------------------------
-GLangCursor& GALILEI::GLangs::GetLangsCursor(void)
+GFactoryLangCursor& GLangs::GetLangsCursor(void)
 {
-	GLangCursor *cur=GLangCursor::GetTmpCursor();
+	GFactoryLangCursor *cur=GFactoryLangCursor::GetTmpCursor();
 	cur->Set(this);
 	return(*cur);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLangs::InitDics(void) throw(bad_alloc,GException)
+GLangs::~GLangs(void)
 {
-	// If dictionnary already loaded, do nothing.
-	if(bDics) return;
-
-	// For each Lang, create a dictionnary and a stop list
-	GLangCursor CurLang=GetLangsCursor();
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
-	{ 
-		LoadDic(CurLang()->GetCode(),true);
-		LoadDic(CurLang()->GetCode(),false);
-	}
-	bDics=true;
-}
-
-
-//-----------------------------------------------------------------------------
-GDict* GALILEI::GLangs::GetDic(const GLang *lang) const throw(GException)
-{
-	return(Dics->GetPtr<const GLang*>(lang,false));
-}
-
-
-//-----------------------------------------------------------------------------
-GDict* GALILEI::GLangs::GetStop(const GLang *lang) const throw(GException)
-{
-	return(Stops->GetPtr<const GLang*>(lang,false));
-}
-
-
-//-----------------------------------------------------------------------------
-const char* GALILEI::GLangs::GetWord(const unsigned int id,const GLang* lang)
-{
-	if(bDics)
-		return(Dics->GetPtr<const GLang*>(lang,false)->GetWord(id));
-	return(LoadWord(id,lang->GetCode()));
-}
-
-
-//-----------------------------------------------------------------------------
-const char* GALILEI::GLangs::GetWord(const unsigned int id,const GDict* dict) const
-{
-	if(bDics&&dict)
-		return(dict->GetWord(id));
-	return(0);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GLangs::~GLangs(void)
-{
-	if(Dics) delete Dics;
-	if(Stops) delete Stops;
 }

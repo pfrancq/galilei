@@ -95,9 +95,14 @@ class GConfig : R::RXMLStruct
 	R::RXMLTag* StatsCalcs;
 
 	/**
-	* Tag holding the profile computation methods.
+	* Tag holding the linking computation methods.
 	*/
 	R::RXMLTag* LinkCalcs;
+
+	/**
+	* Tag holding the languages.
+	*/
+	R::RXMLTag* Langs;
 
 public:
 
@@ -188,6 +193,18 @@ public:
 	* @param mng             Manager.
 	*/
 	void Store(GLinkCalcManager& mng);
+
+	/**
+	* Read the langauges.
+	* @param mng             Manager.
+	*/
+	void Read(GLangs& mng);
+
+	/**
+	* Store the languages.
+	* @param mng             Manager.
+	*/
+	void Store(GLangs& mng);
 
 	/**
 	* Destructor.

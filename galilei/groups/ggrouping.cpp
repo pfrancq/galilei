@@ -76,12 +76,17 @@ GGrouping::GGrouping(GFactoryGrouping* fac) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GGrouping::Connect(GSession* session)
 {
-	GLangCursor Langs;
+	GFactoryLangCursor Langs;
+	GLang* lang;
 
 	Session=session;
-	Langs=Session->GetLangsCursor();
+	Langs=Session->GetLangs()->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
-		DeletedGroups.InsertPtr(new GGroups(Langs()));
+	{
+		lang=Langs()->GetPlugin();
+		if(!lang) continue;
+		DeletedGroups.InsertPtr(new GGroups(lang));
+	}
 	IdealGroups=0;
 }
 
@@ -142,7 +147,7 @@ void GGrouping::DeleteGroup(GGroup* grp)
 //-----------------------------------------------------------------------------
 void GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 {
-	RCursor<GLang,unsigned int> CurLang(Session->GetLangs());
+	GFactoryLangCursor CurLang;
 	GGroupCalc* CalcDesc;
 	GSubProfileCursor cur;
 	GGroup* Grp;
@@ -153,13 +158,16 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 	Modified=modified;
 
 	// Go trough each language.
+	CurLang=Session->GetLangs()->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
-		Lang=CurLang();
+		Lang=CurLang()->GetPlugin();
+		if(!Lang) continue;
+
 		SubProfiles.Clear();
-		Groups=Session->GetGroups(CurLang());
+		Groups=Session->GetGroups(Lang);
 		if(rec)
-			rec->NextGroupLang(CurLang());
+			rec->NextGroupLang(Lang);
 
 		// Go through the groups and delete all invalid groups.
 		for(i=Groups->NbPtr+1,Tab=Groups->Tab;--i;Tab++)
@@ -174,11 +182,11 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 
 		// Go through the profiles corresponding to the language and that are
 		// to inserted.
-		cur=Session->GetSubProfilesCursor(CurLang());
+		cur=Session->GetSubProfilesCursor(Lang);
 		for(cur.Start();!cur.End();cur.Next())
 		{
 			#ifdef GROUP_SUBPROFILES_NOT_DEFINED
-			if(cur()->IsDefined()||cur()->GetProfile()->GetNbJudgedDocs(CurLang()))
+			if(cur()->IsDefined()||cur()->GetProfile()->GetNbJudgedDocs(Lang)
 				SubProfiles.InsertPtr(cur());
 			#else
 			if(cur()->IsDefined())

@@ -67,7 +67,7 @@ class GDocAnalyse
 	/**
 	* Cursor on the different languages defined in the system.
 	*/
-	GLangCursor CurLangs;
+	GFactoryLangCursor CurLangs;
 
 	/**
 	* All the word appaering in the current document.

@@ -47,11 +47,18 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <sessions/gplugin.h>
+#include <langs/glangs.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+// API VERSION
+#define API_LANG_VERSION "1.0"
 
 
 //-----------------------------------------------------------------------------
@@ -61,21 +68,19 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Generic Language.
 */
-class GLang : public R::RLang
+class GLang : public R::RLang, public GPlugin<GFactoryLang>
 {
 protected:
-
-	/**
-	* Defines if the language is activ.
-	*/
-	bool Activ;
-
-	double mult;
 
 	/**
 	* Dictionnary.
 	*/
 	GDict* Dict;
+
+	/**
+	* Stop words.
+	*/
+	GDict* Stop;
 
 	/**
 	* This class represents words that must be skipped when numbers are
@@ -85,7 +90,7 @@ protected:
 	{
 	public:
 		R::RString Word;
-	
+
 		SkipWord(const char* w) : Word(w) {}
 		int Compare(const SkipWord* w)
 			{return(Word.Compare(w->Word));}
@@ -101,10 +106,23 @@ public:
 
 	/**
 	* Constructor of a language.
+	* @param fac            Factory;
 	* @param lang           Name of the language.
 	* @param code           Code of the language.
 	*/
-	GLang(const R::RString& lang,const char* code,GDict* dict) throw(bad_alloc);
+	GLang(GFactoryLang* fac,const R::RString& lang,const char* code) throw(bad_alloc);
+
+	/**
+	* Connect to a Session.
+	* @param session         The session.
+	*/
+	virtual void Connect(GSession* session);
+
+	/**
+	* Disconnect from a Session.
+	* @param session         The session.
+	*/
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Comparaison function used by the Container.
@@ -131,9 +149,6 @@ public:
 	*/
 	virtual R::RString& GetStemming(const R::RString& kwd);
 
-	void SetMult(double m) {mult=m;}
-	double GetMult() {return(mult);}
-
 	/**
 	* See if a given word is a valid one, don't content text and numbers that
 	* are to skip.
@@ -141,15 +156,16 @@ public:
 	bool ValidWord(const R::RString& kwd);
 
 	/**
-	* Assign the dictionnary to the lang.
-	*/
-	void AssignDict(GDict* dict);
-
-	/**
 	* Get the dictionnary attached to the language.
 	* @return Pointer to GDict.
 	*/
-	GDict* GetDict(void) {return(Dict);}
+	GDict* GetDict(void) const;
+
+	/**
+	* Get the soptlist attached to the language.
+	* @return Pointer to GDict.
+	*/
+	GDict* GetStop(void) const;
 
 	/**
 	* Get the number of references on a word.
@@ -159,16 +175,24 @@ public:
 	*/
 	unsigned int GetRef(unsigned int id,tObjType ObjType);
 
-	unsigned int GetTotal();
-
-	unsigned int GetNbWordList();
-
 	/**
 	* Get the total number of references.
 	* @param ObjType        Type of the reference.
 	* @returns unsigned int.
 	*/
 	unsigned int GetRef(tObjType ObjType,GWordType WordType);
+
+	/**
+	* Get the number of elements in the hash container.
+	* @returns Number of elements.
+	*/
+	unsigned int GetTotal(void) const;
+
+	/**
+	* Get the number of group of information entities.
+	* @returns Number of groups.
+	*/
+	unsigned int GetNbWordList(void) const;
 
 	/**
 	* Destructor.
@@ -178,11 +202,129 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GFactoryLang : public GFactoryPlugin<GFactoryLang,GLang,GLangs>
+{
+	/**
+	* Code of the language.
+	*/
+	char Code[3];
+
+public:
+	/**
+	* Constructor.
+	* @param mng             Manager of the plugin.
+	* @param n               Name of the Factory/Plugin.
+	* @param f               Lib of the Factory/Plugin.
+	* @param c               Code of the language.
+	*/
+	GFactoryLang(GLangs* mng,const char* n,const char* f,const char* c)
+		: GFactoryPlugin<GFactoryLang,GLang,GLangs>(mng,n,f) {strcpy(Code,c);}
+
+	/**
+	* Compare function like strcmp used in particular for RContainer class.
+	* @param code           Code used for the comparaison.
+	*/
+	int Compare(const GFactoryLang* lang) const {return(strcmp(Code,lang->Code));}
+
+	/**
+	* Compare function like strcmp used in particular for RContainer class.
+	* @param code           Code used for the comparaison.
+	*/
+	int Compare(const GFactoryLang& lang) const {return(strcmp(Code,lang.Code));}
+
+	/**
+	* Compare function like strcmp used in particular for RContainer class.
+	* @param code           Code used for the comparaison.
+	*/
+	int Compare(const char* code) const {return(strcmp(Code,code));}
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GFactoryLang(void) {}
+};
+
+
+//-----------------------------------------------------------------------------
+typedef GFactoryLang*(*GFactoryLangInit)(GLangs*,const char*);
+
+
+//------------------------------------------------------------------------------
+#define CREATE_LANG_FACTORY(name,C,code)                                       \
+class TheFactory : public GFactoryLang                                         \
+{                                                                              \
+private:                                                                       \
+	static GFactoryLang* Inst;                                                 \
+	TheFactory(GLangs* mng,const char* l) : GFactoryLang(mng,name,l,code)      \
+	{                                                                          \
+		C::CreateParams(this);                                                 \
+	}                                                                          \
+	virtual ~TheFactory(void) {}                                               \
+public:                                                                        \
+	static GFactoryLang* CreateInst(GLangs* mng,const char* l)                 \
+	{                                                                          \
+		if(!Inst)                                                              \
+			Inst = new TheFactory(mng,l);                                      \
+		return(Inst);                                                          \
+	}                                                                          \
+	virtual const char* GetAPIVersion(void) const {return(API_LANG_VERSION);}  \
+	virtual void Create(void) throw(GException)                                \
+	{                                                                          \
+		if(Plugin) return;                                                     \
+		Plugin=new C(this);                                                    \
+		Plugin->ApplyConfig();                                                 \
+	}                                                                          \
+	virtual void Delete(void) throw(GException)                                \
+	{                                                                          \
+		if(!Plugin) return;                                                    \
+		delete Plugin;                                                         \
+		Plugin=0;                                                              \
+	}                                                                          \
+	virtual void Create(GSession* ses) throw(GException)                       \
+	{                                                                          \
+		if(!Plugin)                                                            \
+		{                                                                      \
+			Plugin=new C(this);                                                \
+			Plugin->ApplyConfig();                                             \
+		}                                                                      \
+		if(ses)                                                                \
+			Plugin->Connect(ses);                                              \
+	}                                                                          \
+	virtual void Delete(GSession* ses) throw(GException)                       \
+	{                                                                          \
+		if(!Plugin) return;                                                    \
+		if(ses)                                                                \
+			Plugin->Disconnect(ses);                                           \
+		delete Plugin;                                                         \
+		Plugin=0;                                                              \
+	}                                                                          \
+};                                                                             \
+                                                                               \
+GFactoryLang* TheFactory::Inst = 0;                                            \
+                                                                               \
+extern "C"                                                                     \
+{                                                                              \
+	GFactoryLang* FactoryCreate(GLangs* mng,const char* l)                     \
+	{                                                                          \
+		return(TheFactory::CreateInst(mng,l));                                 \
+	}                                                                          \
+}
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GLangCursor class provides a way to go trough a set of languages.
 * @short Language Cursor
 */
 CLASSCURSOR(GLangCursor,GLang,unsigned int)
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GFactoryLangCursor class provides a way to go trough a set of factories.
+* @short Language Factory Cursor
+*/
+CLASSCURSOR(GFactoryLangCursor,GFactoryLang,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

@@ -4,8 +4,8 @@ AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =
 SUBDIRS =
-libgalilei_langs_la_SOURCES = gdict.cpp gdicts.cpp glang.cpp glangen.cpp glangfr.cpp \
+libgalilei_langs_la_SOURCES = gdict.cpp glang.cpp \
 						glangs.cpp gword.cpp gwordlist.cpp
 langsincludedir = $(includedir)/galilei/langs
-langsinclude_HEADERS = gdict.h gdicts.h glangen.h glangfr.h glang.h glangs.h gword.h gwordlist.h
+langsinclude_HEADERS = gdict.h glang.h glangs.h gword.h gwordlist.h
 

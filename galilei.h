@@ -98,6 +98,8 @@ class GIWordsWeightsHistory;
 // forward class declaration - Language Part
 class GLang;
 class GLangCursor;
+class GFactoryLang;
+class GFactoryLangCursor;
 class GLangs;
 class GWord;
 class GWordList;

@@ -58,7 +58,7 @@ using namespace R;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GALILEI::GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(bad_alloc)
+GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(bad_alloc)
 	: RDblHashContainer<GWord,unsigned,27,27,true>(ml+(ml/4),ml/4), Session(s), Direct(0),
 	  NbGroupsList(0), MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false), Stop(st),
 	  GroupsList(500)
@@ -75,7 +75,7 @@ GALILEI::GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang 
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GDict::Clear(void)
+void GDict::Clear(void)
 {
 	RDblHashContainer<GWord,unsigned,27,27,true>::Clear();
 	memset(Direct,0,MaxId*sizeof(GWord*));
@@ -85,7 +85,7 @@ void GALILEI::GDict::Clear(void)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GDict::PutDirect(GWord* word) throw(bad_alloc)
+void GDict::PutDirect(GWord* word) throw(bad_alloc)
 {
 	GWord **tmp;
 	unsigned n;
@@ -105,7 +105,7 @@ void GALILEI::GDict::PutDirect(GWord* word) throw(bad_alloc)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GDict::Put(unsigned id,const R::RString& word) throw(bad_alloc)
+void GDict::Put(unsigned id,const R::RString& word) throw(bad_alloc)
 {
 	GWordList* wordlist;
 	GWord Word(id,word),*ptr;
@@ -142,7 +142,7 @@ void GALILEI::GDict::Put(unsigned id,const R::RString& word) throw(bad_alloc)
 }
 
 //---------------------------------------------------------------------------
-void GALILEI::GDict::InsertNewWordList(GWordList& wordlist,bool save)
+void GDict::InsertNewWordList(GWordList& wordlist,bool save)
 {
 	GWord *ptr;
 //	wordlist.Start();
@@ -170,7 +170,7 @@ void GALILEI::GDict::InsertNewWordList(GWordList& wordlist,bool save)
 }
 
 //---------------------------------------------------------------------------
-unsigned GALILEI::GDict::GetId(const RString& word) throw(bad_alloc)
+unsigned GDict::GetId(const RString& word) throw(bad_alloc)
 {
 	GWord Word(word),*ptr;
 
@@ -185,55 +185,70 @@ unsigned GALILEI::GDict::GetId(const RString& word) throw(bad_alloc)
 
 
 //---------------------------------------------------------------------------
-const char* GALILEI::GDict::GetWord(const unsigned int id) const
+const char* GDict::GetWord(const unsigned int id) const
 {
 	return(Direct[id]->GetWord());
 }
 
+
 //---------------------------------------------------------------------------
-GWord* GALILEI::GDict::GetElement(const unsigned int id) const
+GWord* GDict::GetElement(const unsigned int id) const
 {
 	return(Direct[id]);
 }
 
 
 //---------------------------------------------------------------------------
-int GALILEI::GDict::Compare(const GDict* dict) const
+unsigned int GDict::GetNbGroupsList(void) const
+{
+	return(GroupsList.NbPtr);
+}
+
+
+//---------------------------------------------------------------------------
+bool GDict::IsStopList(void) const
+{
+	return(Stop);
+}
+
+
+//---------------------------------------------------------------------------
+int GDict::Compare(const GDict* dict) const
 {
 	return(Name.Compare(dict->Name));
 }
 
 
 //---------------------------------------------------------------------------
-int GALILEI::GDict::Compare(const GDict& dict) const
+int GDict::Compare(const GDict& dict) const
 {
 	return(Name.Compare(dict.Name));
 }
 
 
 //---------------------------------------------------------------------------
-int GALILEI::GDict::Compare(const GLang* lang) const
+int GDict::Compare(const GLang* lang) const
 {
 	return(Lang->Compare(lang));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType,GWordType WordType)
+void GDict::IncRef(unsigned int id,tObjType ObjType,GWordType WordType)
 {
 	Direct[id]->IncRef(ObjType);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType,GWordType WordType)
+void GDict::DecRef(unsigned int id,tObjType ObjType,GWordType WordType)
 {
 	Direct[id]->DecRef(ObjType);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::IncRef(tObjType ObjType,GWordType WordType)
+void GDict::IncRef(tObjType ObjType,GWordType WordType)
 {
 	switch(ObjType)
 	{
@@ -253,7 +268,7 @@ void GALILEI::GDict::IncRef(tObjType ObjType,GWordType WordType)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::DecRef(tObjType ObjType,GWordType WordType)
+void GDict::DecRef(tObjType ObjType,GWordType WordType)
 {
 	switch(ObjType)
 	{
@@ -273,14 +288,14 @@ void GALILEI::GDict::DecRef(tObjType ObjType,GWordType WordType)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GDict::GetRef(unsigned int id,tObjType ObjType)
+unsigned int GDict::GetRef(unsigned int id,tObjType ObjType)
 {
 	return(Direct[id]->GetRef(ObjType));
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GDict::GetRef(tObjType ObjType,GWordType WordType)
+unsigned int GDict::GetRef(tObjType ObjType,GWordType WordType)
 {
 	switch(ObjType)
 	{
@@ -302,7 +317,7 @@ unsigned int GALILEI::GDict::GetRef(tObjType ObjType,GWordType WordType)
 
 
 //---------------------------------------------------------------------------
-GALILEI::GDict::~GDict(void)
+GDict::~GDict(void)
 {
 	if(Direct) delete[] Direct;
 }

@@ -44,6 +44,7 @@
 // include files for GALILEI
 #include <langs/glang.h>
 #include <langs/gdict.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -56,8 +57,8 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLang::GLang(const RString& lang,const char* code,GDict* dict) throw(bad_alloc)
-	: RLang(lang,code), Activ(true), Dict(dict), SkipWords(50,20)
+GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code) throw(bad_alloc)
+	: RLang(lang,code), GPlugin<GFactoryLang>(fac), Dict(0), Stop(0), SkipWords(50,20)
 {
 	SkipWords.InsertPtr(new SkipWord("min"));
 	SkipWords.InsertPtr(new SkipWord("sec"));
@@ -92,14 +93,42 @@ GALILEI::GLang::GLang(const RString& lang,const char* code,GDict* dict) throw(ba
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GLang::Compare(const GLang& lang) const
+void GLang::Connect(GSession* session)
+{
+	if(Dict&&Stop) return;
+	if(!Dict)
+		session->LoadDic(Dict,this,false);
+	if(!Stop)
+		session->LoadDic(Stop,this,true);
+}
+
+
+//-----------------------------------------------------------------------------
+void GLang::Disconnect(GSession* session)
+{
+	if((!Dict)&&(!Stop)) return;
+	if(Dict)
+	{
+		delete Dict;
+		Dict=0;
+	}
+	if(Stop)
+	{
+		delete Stop;
+		Stop=0;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+int GLang::Compare(const GLang& lang) const
 {
 	return(strcmp(Code,lang.Code));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GLang::Compare(const GLang* lang) const
+int GLang::Compare(const GLang* lang) const
 {
 	if(!lang)
 		return(1);
@@ -108,14 +137,14 @@ int GALILEI::GLang::Compare(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GLang::Compare(const char* code) const
+int GLang::Compare(const char* code) const
 {
 	return(strcmp(Code,code));
 }
 
 
 //-------------------------------------------------------------------------------
-RString& GALILEI::GLang::GetStemming(const RString& _kwd)
+RString& GLang::GetStemming(const RString& _kwd)
 {
 	RString *res=RString::GetString();
 
@@ -126,7 +155,7 @@ RString& GALILEI::GLang::GetStemming(const RString& _kwd)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLang::ValidWord(const RString& kwd)
+bool GLang::ValidWord(const RString& kwd)
 {
 	char look[10];
 	const char* ptr=kwd();
@@ -168,14 +197,21 @@ bool GALILEI::GLang::ValidWord(const RString& kwd)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLang::AssignDict(GDict* dict)
+GDict* GLang::GetDict(void) const
 {
-	Dict=dict;
+	return(Dict);
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GLang::GetRef(unsigned int id,tObjType ObjType)
+GDict* GLang::GetStop(void) const
+{
+	return(Stop);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GLang::GetRef(unsigned int id,tObjType ObjType)
 {
 	if(!Dict) return(0);
 	return(Dict->GetRef(id,ObjType));
@@ -183,24 +219,34 @@ unsigned int GALILEI::GLang::GetRef(unsigned int id,tObjType ObjType)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GLang::GetRef(tObjType ObjType,GWordType WordType)
+unsigned int GLang::GetRef(tObjType ObjType,GWordType WordType)
 {
 	if(!Dict) return(0);
 	return(Dict->GetRef(ObjType,WordType));
 }
+
+
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GLang::GetTotal()
+unsigned int GLang::GetTotal(void) const
 {
 	if(!Dict) return(0);
 	return(Dict->GetNb());
 }
+
+
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GLang::GetNbWordList()
+unsigned int GLang::GetNbWordList(void) const
 {
 	if(!Dict) return(0);
 	return(Dict->GetNbGroupsList());
 }
+
+
 //-----------------------------------------------------------------------------
-GALILEI::GLang::~GLang(void)
+GLang::~GLang(void)
 {
+	if(Dict)
+		delete Dict;
+	if(Stop)
+		delete Stop;
 }

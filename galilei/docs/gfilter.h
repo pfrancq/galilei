@@ -40,11 +40,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include file for LibTool--
-#include <ltmm/loader.hh>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <docs/gdocxml.h>

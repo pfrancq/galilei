@@ -60,122 +60,40 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Languages.
 */
-class GLangs : public R::RContainer<GLang,unsigned,true,true>
+class GLangs : public R::RContainer<GFactoryLang,unsigned,true,true>
 {
-protected:
-
-	/**
-	* State of the dictionnaries and stoplists.
-	*/
-	bool bDics;
-
-	/**
-	* Stoplists of the different languages.
-	*/
-	GDicts* Stops;
-
-	/**
-	* Dictionnaries of the different languages.
-	*/
-	GDicts* Dics;
-
 public:
 
 	/**
 	* Constructor.
-	* @param nb             Number of Languages.
+	* @param path            Path to find the plugins.
+	* @param dlg             Load the existing dialog.
 	*/
-	GLangs(unsigned nb) throw(bad_alloc);
+	GLangs(const char* path,bool dlg=true) throw(GException);
+
+	/**
+	* Connect to a Session.
+	* @param session         The session.
+	*/
+	void Connect(GSession* session);
+
+	/**
+	* Disconnect from a Session.
+	* @param session         The session.
+	*/
+	void Disconnect(GSession* session);
 
 	/**
 	* Get a pointer to a language while having its code.
 	* @param code             Code of the language.
 	* @returns Pointer to the language.
 	*/
-	GLang* GetLang(const char* code);
-
-	/**
-	* Get the number of languages treated by the system.
-	* @returns Number of languages.
-	*/
-	unsigned int GetNbLangs(void) const
-		{return(NbPtr);}
-
-	/**
-	* Get a pointer to the languages.
-	* @returns Pointer to the languages.
-	*/
-	GLangs* GetLangs(void) {return(this);}
+	GLang* GetLang(const char* code) const;
 
 	/**
 	* Get a cursor over the profiles used in the system.
 	*/
-	GLangCursor& GetLangsCursor(void);
-
-	/**
-	* Verify if the dictionnaries/stoplists are loaded.
-	* @returns true, if loaded.
-	*/
-	bool IsDicsLoad(void) const {return(bDics);}
-
-	/**
-	* Load the dictionnaries and stoplists.
-	*/
-	void InitDics(void) throw(bad_alloc,GException);
-
-	/**
-	* Get a pointer to a dictionnary corresponding to a given language.
-	* @param lang       Pointer to the language.
-	* @returns Pointer to a dictionnary.
-	*/
-	GDict* GetDic(const GLang* lang) const throw(GException);
-
-	/**
-	* Get a pointer to a stoplist corresponding to a given language.
-	* @param lang       Pointer to the language.
-	* @returns Pointer to a stoplist.
-	*/
-	GDict* GetStop(const GLang* lang) const throw(GException);
-
-	/**
-	* Get the word corresponding to a given identificator for a language.
-	* @param id         Identificator.
-	* @param lang       Pointer to the corresponding language.
-	* @returns Pointer to a C string.
-	*/
-	const char* GetWord(const unsigned int id,const GLang* lang);
-
-	/**
-	* Get the word corresponding to a given identificator of a dictionnary.
-	* @param dic        Pointer to the corresponding dictionnary.
-	* @returns Pointer to a C string.
-	*/
-	const char* GetWord(const unsigned int id,const GDict* dict) const;
-
-	/**
-	* Return the identifier of a new word of a dictionnary.
-	* @param word           Word to find.
-	* @param dict           Dictionnary.
-	*/
-	virtual unsigned int GetDicNextId(const char* word,const GDict* dict)=0;
-
-protected:
-
-	/**
-	* Loading a dictionnary/stoplist.
-	* @param code           Code of the languague.
-	* @param stop           Is it a stop list.
-	*/
-	virtual void LoadDic(const char* code,bool s) throw(bad_alloc,GException)=0;
-
-	/**
-	* Load a specific word from a dictionnary.
-	* @param id             Idenfificator of the word.
-	* @param code           Code of the languague.
-	*/
-	virtual const char* LoadWord(const unsigned int id,const char* code)=0;
-
-public:
+	GFactoryLangCursor& GetLangsCursor(void);
 
 	/**
 	* Destructor.

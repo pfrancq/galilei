@@ -130,17 +130,18 @@ protected:
 
 	/**
 	* Loading a dictionnary/stoplist.
-	* @param code           Code of the languague.
+	* @param dic            Pointer to the dictionnary.
+	* @param code           Languague.
 	* @param stop           Is it a stop list.
 	*/
-	virtual void LoadDic(const char* code,bool s) throw(bad_alloc,GException);
+	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException);
 
 	/**
 	* Load a specific word from a dictionnary.
 	* @param id             Idenfificator of the word.
 	* @param code           Code of the languague.
 	*/
-	virtual const char* LoadWord(const unsigned int id,const char* code);
+	virtual const char* LoadWord(unsigned int id,const char* code);
 
 	/**
 	* Load the documents.

@@ -44,6 +44,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <langs/glang.h>
+#include <langs/glangs.h>
 #include <langs/gdict.h>
 #include <langs/gwordlist.h>
 #include <sessions/gsession.h>
@@ -95,19 +96,15 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
 	GDocOptions* opt, GSessionParams* sessparams,bool tests) throw(bad_alloc,GException)
-	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g),
+	: GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(0), Fdbks(f+f/2,f/2),
-	  URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
+	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
 	  StatsCalcMng(0), LinkCalcMng(0),
 	  DocAnalyse(0), bGroups(false),bFdbks(false),
 	  DocOptions(opt),SessParams(sessparams)
 
 {
 	// Init Part
-	GLangCursor Langs;
-	Langs=GetLangsCursor();
-	for(Langs.Start();!Langs.End();Langs.Next())
-		Groups.InsertPtr(new GGroups(Langs()));
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
 	DocOptions=new GDocOptions(opt);
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
@@ -125,9 +122,24 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 
 
 //-----------------------------------------------------------------------------
-void GSession::Connect(GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+void GSession::Connect(GLangs* langs,GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 	GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(bad_alloc,GException)
 {
+	GLang* lang;
+
+	Langs=langs;
+	if(Langs)
+	{
+		Langs->Connect(this);
+		GFactoryLangCursor Cur;
+		Cur=Langs->GetLangsCursor();
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			lang=Cur()->GetPlugin();
+			if(!lang) continue;
+			Groups.InsertPtr(new GGroups(lang));
+		}
+	}
 	URLMng=umng;
 	ProfilingMng=pmng;
 	if(ProfilingMng)
@@ -181,7 +193,7 @@ void GSession::AnalyseAssociation(bool save)
 	unsigned int i,n=1;
 	bool end=false;
 	Docs.Start();
-	test= new GWordsClustering(GetDic(Docs()->GetLang()),DocOptions->MinDocs,DocOptions->MaxDocs,DocOptions->MinOccurCluster,DocOptions->WindowSize,DocOptions->MinConfidence,DocOptions->NbDocsMin,GetDbName());
+	test= new GWordsClustering(Docs()->GetLang()->GetDict(),DocOptions->MinDocs,DocOptions->MaxDocs,DocOptions->MinOccurCluster,DocOptions->WindowSize,DocOptions->MinConfidence,DocOptions->NbDocsMin,GetDbName());
 	for(i=Docs.GetNb(),Docs.Start();i--;Docs.Next())
 	{
 		test->AddDoc(dynamic_cast<GDocVector*>(Docs()));
@@ -208,12 +220,12 @@ void GSession::AnalyseAssociation(bool save)
 	Docs.Start();
 	if(save)
 	{
-		SaveWordsGroups(GetDic(Docs()->GetLang()));
+		SaveWordsGroups(Docs()->GetLang()->GetDict());
 	}
-	GetDic(Docs()->GetLang())->GroupsList.Start();
-	if (GetDic(Docs()->GetLang())->GroupsList.NbPtr!=0)
+	Docs()->GetLang()->GetDict()->GroupsList.Start();
+	if (Docs()->GetLang()->GetDict()->GroupsList.NbPtr!=0)
 	{
-		n=(GetDic(Docs()->GetLang())->GroupsList)()->GetId();
+		n=(Docs()->GetLang()->GetDict()->GroupsList)()->GetId();
 		for(i=Docs.GetNb(),Docs.Start();--i;Docs.Next())
 		{
 			test->UpdateDocbis(dynamic_cast<GDocVector*>(Docs()));
@@ -260,30 +272,24 @@ void GSession::RemoveAssociation()
 	GWordsClustering* test;
 	unsigned int i,n=1;
 	Docs.Start();
-	test= new GWordsClustering(GetDic(Docs()->GetLang()),DocOptions->MinDocs,DocOptions->MaxDocs,DocOptions->MinOccurCluster,DocOptions->WindowSize,DocOptions->MinConfidence,DocOptions->NbDocsMin,GetDbName());
+	test= new GWordsClustering(Docs()->GetLang()->GetDict(),DocOptions->MinDocs,DocOptions->MaxDocs,DocOptions->MinOccurCluster,DocOptions->WindowSize,DocOptions->MinConfidence,DocOptions->NbDocsMin,GetDbName());
 	for(i=Docs.GetNb(),Docs.Start();i--;Docs.Next())
 	{
 		test->AddDoc(dynamic_cast<GDocVector*>(Docs()));
 	}
 	Docs.Start();
-	GetDic(Docs()->GetLang())->GroupsList.Start();
-	if (GetDic(Docs()->GetLang())->GroupsList.NbPtr!=0)
+	Docs()->GetLang()->GetDict()->GroupsList.Start();
+	if (Docs()->GetLang()->GetDict()->GroupsList.NbPtr!=0)
   {
-  	n=(GetDic(Docs()->GetLang())->GroupsList)()->GetId();
+  	n=(Docs()->GetLang()->GetDict()->GroupsList)()->GetId();
   	for(i=Docs.GetNb(),Docs.Start();--i;Docs.Next())
   	{
   		test->ReverseUpdateDoc(dynamic_cast<GDocVector*>(Docs()));
   		SaveUpDatedDoc(Docs(),n);/*n=id du premier mot a sauver.*/
   	}
   }
-	DeleteWordsGroups(GetDic(Docs()->GetLang()));
+	DeleteWordsGroups(Docs()->GetLang()->GetDict());
 	delete(test);
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::Test()
-{
 }
 
 
@@ -370,22 +376,26 @@ void GSession::InitUsers(bool wg,bool w) throw(bad_alloc,GException)
 //-----------------------------------------------------------------------------
 void GSession::InitDocProfSims(void)
 {
-	GLangCursor langs = GetLangsCursor();
+	GFactoryLangCursor langs;
+	GLang* lang;
 	RContainer<GSubProfile,unsigned int,false,true>* subProf;
 	GDocProfSim* docProfSim;
 
 	DocProfSims = new GDocProfSims(100);
 
-	for(langs.Start();!langs.End(); langs.Next())                                                     
+	langs= Langs->GetLangsCursor();
+	for(langs.Start();!langs.End(); langs.Next())
 	{
+		lang=langs()->GetPlugin();
+		if(!lang) continue;
 		subProf = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
-		GSubProfileCursor subProfCur = GetSubProfilesCursor(langs());
+		GSubProfileCursor subProfCur = GetSubProfilesCursor(lang);
 
 		for(subProfCur.Start();!subProfCur.End();subProfCur.Next())
 		{
 			subProf->InsertPtr( subProfCur());
 		}
-		docProfSim= new GDocProfSim(this,subProf, false,langs());
+		docProfSim= new GDocProfSim(this,subProf, false,lang);
 		DocProfSims->InsertPtr(docProfSim);
 	}
 }
@@ -402,10 +412,15 @@ void GSession::ChangeDocProfState(bool global,GLang* lang)throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GSession::ChangeAllDocProfState(bool global)throw(bad_alloc)
 {
-	GLangCursor langs = GetLangsCursor();
-	for (langs.Start();!langs.End();langs.Next())
+	GFactoryLangCursor langs;
+	GLang* lang;
+
+	langs = Langs->GetLangsCursor();
+	for(langs.Start();!langs.End();langs.Next())
 	{
-		ChangeDocProfState(global,langs());
+		lang=langs()->GetPlugin();
+		if(!lang) continue;
+		ChangeDocProfState(global,lang);
 	}
 }
 
@@ -431,7 +446,8 @@ void GSession::InitProfilesSims(void)
 {
 	GProfilesSim* profSim;
 	RContainer<GSubProfile,unsigned int,false,true>* subProfs;
-	GLangCursor langs = GetLangsCursor();
+	GFactoryLangCursor langs = Langs->GetLangsCursor();
+	GLang* lang;
 
 	//init a profilsims contianing a profilesim for each langs
 	ProfilesSims = new GProfilesSims(langs.GetNb());
@@ -439,15 +455,17 @@ void GSession::InitProfilesSims(void)
 	//for each languages
 	for(langs.Start();!langs.End(); langs.Next())
 	{
+		lang=langs()->GetPlugin();
+		if(!lang) continue;
 		subProfs = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
-		GSubProfileCursor subProfCur = GetSubProfilesCursor(langs());
+		GSubProfileCursor subProfCur = GetSubProfilesCursor(lang);
 
 		for(subProfCur.Start();!subProfCur.End();subProfCur.Next())
 		{
 			subProfs->InsertPtr( subProfCur());
 		}
 		//init the profsim with a global=false (can be 'true').
-		profSim= new GProfilesSim(subProfs, false,langs());
+		profSim= new GProfilesSim(subProfs, false,lang);
 		// insert the profsim in the container of profsims
 		ProfilesSims->InsertPtr(profSim);
 	}
@@ -468,10 +486,14 @@ void GSession::ChangeProfilesSimState(bool global,GLang* lang)throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GSession::ChangeAllProfilesSimState(bool global)throw(bad_alloc)
 {
-	GLangCursor langs = GetLangsCursor();
+	GFactoryLangCursor langs = Langs->GetLangsCursor();
+	GLang* lang;
+
 	for( langs.Start(); !langs.End(); langs.Next())
 	{
-		ChangeProfilesSimState(global,langs());
+		lang=langs()->GetPlugin();
+		if(!lang) continue;
+		ChangeProfilesSimState(global,lang);
 	}
 }
 
@@ -491,7 +513,8 @@ double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
 //-----------------------------------------------------------------------------
 void GSession::InitProfilesBehaviours(void)
 {
-	GLangCursor langs = GetLangsCursor();
+	GFactoryLangCursor langs = Langs->GetLangsCursor();
+	GLang* lang;
 
 	RContainer<GSubProfile,unsigned int,false,true>* subProfs;
 	GProfilesBehaviour* profBehaviour;
@@ -500,14 +523,16 @@ void GSession::InitProfilesBehaviours(void)
 
 	for(langs.Start();!langs.End(); langs.Next())
 	{
+		lang=langs()->GetPlugin();
+		if(!lang) continue;
 		subProfs = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
-		GSubProfileCursor subProfCur = GetSubProfilesCursor(langs());
+		GSubProfileCursor subProfCur = GetSubProfilesCursor(lang);
 
 		for(subProfCur.Start();!subProfCur.End();subProfCur.Next())
 		{
 			subProfs->InsertPtr(subProfCur());
 		}
-		profBehaviour= new GProfilesBehaviour(subProfs,langs(),SessParams->GetUInt("SameBehaviourMinDocs"), SessParams->GetUInt("DiffBehaviourMinDocs"));
+		profBehaviour= new GProfilesBehaviour(subProfs,lang,SessParams->GetUInt("SameBehaviourMinDocs"), SessParams->GetUInt("DiffBehaviourMinDocs"));
 		ProfilesBehaviours->InsertPtr(profBehaviour);
 	}
 }
@@ -525,10 +550,14 @@ void GSession::ChangeProfilesBehaviourState(GLang* lang)throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GSession::ChangeAllProfilesBehaviourState(void) throw(bad_alloc)
 {
-	GLangCursor langs = GetLangsCursor();
+	GFactoryLangCursor langs = Langs->GetLangsCursor();
+	GLang* lang;
+
 	for( langs.Start(); !langs.End(); langs.Next())
 	{
-		ChangeProfilesBehaviourState(langs());
+		lang=langs()->GetPlugin();
+		if(!lang) continue;
+		ChangeProfilesBehaviourState(lang);
 	}
 }
 
@@ -555,7 +584,7 @@ double GSession::GetMinimumOfSimilarity(R::RContainer<GSubProfile,unsigned int,f
 	double meanSim;
 	double deviation;
 	double minSim;
-        
+
 	subprofiles->Start();
 	GProfilesSim* profSim = ProfilesSims->GetPtr<const GLang*>((*subprofiles)()->GetLang());
 	profSim->UpdateDeviationAndMeanSim(subprofiles);
@@ -824,9 +853,9 @@ void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 	//The number of word in current lang.
 	GDocCursor DocCursorTemp =GetDocsCursor();
 	DocCursorTemp.Start();
-	
+
 	int NbKwd;
-	GDict* CurDic=GetDic(DocCursorTemp()->GetLang());
+	GDict* CurDic=DocCursorTemp()->GetLang()->GetDict();
 	NbKwd=CurDic->GetMaxId();
 
 	int* j;
@@ -944,7 +973,7 @@ void GSession::ReInit(bool)
 	InitProfilesBehaviours();
 
 	// re-Init the sims between documents and subprofiles
-	InitDocProfSims();  
+	InitDocProfSims();
 }
 
 
@@ -957,12 +986,14 @@ GSession::~GSession(void) throw(GException)
 	if(GroupCalcMng) GroupCalcMng->Disconnect(this);
 	if(StatsCalcMng) StatsCalcMng->Disconnect(this);
 	if(LinkCalcMng) LinkCalcMng->Disconnect(this);
+	if(Langs) Langs->Disconnect(this);
 
 	// Delete stuctures
 	if(DocAnalyse) delete DocAnalyse;
 	if(DocOptions) delete DocOptions;
 	if(SubProfileDescs) delete SubProfileDescs;
 	if(Subjects) delete Subjects;
+	if(Langs) delete Langs;
 }
 
 

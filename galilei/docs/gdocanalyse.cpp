@@ -145,13 +145,16 @@ GALILEI::GDocAnalyse::GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc)
 	GWord** pt;
 	unsigned int i;
 
-	CurLangs.Set(Session->GetLangs());
-	Sl=new unsigned int[Session->GetNbLangs()];
-	Sldiff=new unsigned int[Session->GetNbLangs()];
+
+/*	Sl=new unsigned int[Session->GetLangs()->NbPtr];
+	Sldiff=new unsigned int[Session->GetLangs()->NbPtr];*/
+	Sl=new unsigned int[2];
+	Sldiff=new unsigned int[2];
 	Weights=new RDblHashContainer<WordWeight,unsigned,27,27,false>(500,250);
 	Direct=new WordWeight*[NbDirect];
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
-		(*ptr)=new WordWeight(Session->GetNbLangs());
+		//(*ptr)=new WordWeight(Session->GetLangs()->NbPtr);
+		(*ptr)=new WordWeight(2);
 	Order=new GWord*[NbOrder];
 	for(i=NbOrder+1,pt=Order;--i;pt++)
 		(*pt)=new GWord();
@@ -167,8 +170,10 @@ void GALILEI::GDocAnalyse::Clear(void)
 	RContainer<WordWeight,unsigned int,false,true>*** ptr1;
 	RContainer<WordWeight,unsigned int,false,true>** ptr2;
 
-	memset(Sl,0,sizeof(unsigned int)*Session->GetNbLangs());
-	memset(Sldiff,0,sizeof(unsigned int)*Session->GetNbLangs());
+/*	memset(Sl,0,sizeof(unsigned int)*Session->GetLangs()->NbPtr);
+	memset(Sldiff,0,sizeof(unsigned int)*Session->GetLangs()->NbPtr);*/
+	memset(Sl,0,sizeof(unsigned int)*2);
+	memset(Sldiff,0,sizeof(unsigned int)*2);
 	N=Ndiff=Nwords=V=Vdiff=S=Sdiff=0;
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)->Clear();
@@ -195,7 +200,7 @@ void GALILEI::GDocAnalyse::VerifyDirect(void) throw(bad_alloc)
 		delete[] Direct;
 		Direct=ptr;
 		for(i=2500+1,ptr=&Direct[NbDirect];--i;ptr++)
-			(*ptr)=new WordWeight(Session->GetNbLangs());
+			(*ptr)=new WordWeight(Session->GetLangs()->NbPtr);
 		NbDirect+=2500;
 	}
 }
@@ -231,6 +236,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word,double weight) throw(bad_all
 	bool *is;
 	unsigned int* tmp1;
 	unsigned int* tmp2;
+	GLang* lang;
 
 	// Find the section of double hash table concerned by the current word.
 	Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
@@ -256,7 +262,9 @@ void GALILEI::GDocAnalyse::AddWord(const char* word,double weight) throw(bad_all
 		{
 			for(CurLangs.Start(),is=w->InStop,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),is++,tmp1++,tmp2++)
 			{
-				(*is)=Session->GetStop(CurLangs())->IsIn<const char*>(word);
+				lang=CurLangs()->GetPlugin();
+				if(!lang) continue;
+				(*is)=lang->GetStop()->IsIn<const char*>(word);
 				if(*is)
 				{
 					// In the stoplist -> Inc different words of the stop lists.
@@ -267,7 +275,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word,double weight) throw(bad_all
 		}
 		else
 		{
-			if(Session->GetStop(Lang)->IsIn<const char*>(word))
+			if(Lang->GetStop()->IsIn<const char*>(word))
 			{
 				w->InStop[LangIndex]=true;
 				Sl[LangIndex]++;
@@ -282,7 +290,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word,double weight) throw(bad_all
 		w=Section->Tab[Index];
 		if(FindLang)
 		{
-			for(i=Session->GetNbLangs()+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
+			for(i=Session->GetLangs()->NbPtr+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
 			{
 				if(*is)
 					(*tmp2)++;
@@ -554,7 +562,7 @@ void GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
 		Frac=((double)(*tmp1))/((double)Ndiff);
 		if(((*tmp2)>S)&&(Frac>=MinFrac))
 		{
-			Lang=CurLangs();
+			Lang=CurLangs()->GetPlugin();
 			S=(*tmp2);
 			Sdiff=(*tmp1);
 			LangIndex=i;
@@ -574,7 +582,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 	GDict* dic;
 
 	// Insert all the occurences of the valid words
-	dic=Session->GetDic(Lang);
+	dic=Lang->GetDict();
 
 	for(i=Ndiff+1,wrd=Direct;--i;wrd++)
 	{
@@ -659,6 +667,7 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsign
 	// Init Part and verification
 	if(!xml)
 		throw GException("No XML Structure for document '"+RString(doc->GetURL())+"'");
+	CurLangs=Session->GetLangs()->GetLangsCursor();
 	Lang=doc->GetLang();
 	FindLang=((!Lang)||(!Options->StaticLang));
 	content=xml->GetContent();
@@ -673,7 +682,7 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsign
 	if(!FindLang)
 	{
 		// if Language defined -> Compute LangIndex
-		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
+		for(CurLangs.Start(),LangIndex=0;CurLangs()->GetPlugin()!=Lang;CurLangs.Next(),LangIndex++);
 	}
 	AnalyseTag(metadata,2.0);
 	AnalyseTag(content,1.0);
@@ -730,13 +739,15 @@ void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang)
 {
-	GProfileCursor profcur;
 	GProfDocCursor profdoccursor;
+
+	//Lang=newlang;
 
 	// if the old lang and the new lang are not defined.
 	if (!oldlang&&!Lang)
 		return;
-        //if the oldlang is different to the new lang.
+
+	// if the oldlang is different to the new lang.
 	if (oldlang!=Lang)
 	{
 		profdoccursor=Doc->GetProfDocCursor();

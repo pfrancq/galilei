@@ -215,14 +215,19 @@ void GSubjectTree::CreateSet(void)
 	GGroups* CurGrps;
 	GGroup* Grp;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
-	GLangCursor CurLang;
+	GFactoryLangCursor CurLang;
+	GLang* lang;
 
 	// Init Part
 	LastAdded.Clear();
 	IdealGroups.Clear();
-	CurLang=Session->GetLangsCursor();
+	CurLang=Session->GetLangs()->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
-		IdealGroups.InsertPtr(new GGroups(CurLang()));
+	{
+		lang=CurLang()->GetPlugin();
+		if(!lang) continue;
+		IdealGroups.InsertPtr(new GGroups(lang));
+	}
 	if(!Docs)
 		Docs=new GDoc*[Session->GetNbDocs()];
 
@@ -415,7 +420,8 @@ void GSubjectTree::ComputeTotal(GSlot* /*rec*/)
 	unsigned int MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
 	unsigned int NbProfiles;                      // Total Number of profiles
 	unsigned int NbTot;
-	GLangCursor Langs;
+	GFactoryLangCursor Langs;
+	GLang* lang;
 	unsigned int col;
 	double a,b,c,d,num,den,subtotal;
 	double* VectorRows;                           // Sum of the rows of the matrix
@@ -429,15 +435,17 @@ void GSubjectTree::ComputeTotal(GSlot* /*rec*/)
 
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
-	Langs=Session->GetLangsCursor();
+	Langs=Session->GetLangs()->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		GroupsIdeal=IdealGroups.GetPtr<GLang*>(Langs());
+		lang=Langs()->GetPlugin();
+		if(!lang) continue;
+		GroupsIdeal=IdealGroups.GetPtr<GLang*>(lang);
 		if(GroupsIdeal)
 			NbRows=GroupsIdeal->NbPtr;
 		else
 			NbRows=0;
-		NbCols=Session->GetGroups(Langs())->NbPtr;
+		NbCols=Session->GetGroups(lang)->NbPtr;
 		if(NbRows>MaxRows) MaxRows=NbRows;
 		if(NbCols>MaxCols) MaxCols=NbCols;
 	}
@@ -450,14 +458,17 @@ void GSubjectTree::ComputeTotal(GSlot* /*rec*/)
 	// in the idealgroup for this language.
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
+		lang=Langs()->GetPlugin();
+		if(!lang) continue;
+
 		// Compute number of elements in ideal and computed groups.
 		// and assign the groups to the current language.
-		GroupsIdeal=IdealGroups.GetPtr<GLang*>(Langs());
+		GroupsIdeal=IdealGroups.GetPtr<GLang*>(lang);
 		if(GroupsIdeal)
 			NbRows=GroupsIdeal->NbPtr;
 		else
 			NbRows=0;
-		GroupsComputed=Session->GetGroups(Langs());
+		GroupsComputed=Session->GetGroups(lang);
 		NbCols=GroupsComputed->NbPtr;
 		if((!NbRows)||(!NbCols)) continue;
 

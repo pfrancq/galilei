@@ -45,7 +45,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <langs/glangs.h>
 #include <profiles/gusers.h>
 #include <profiles/gsubprofile.h>
 #include <docs/gdocs.h>
@@ -67,7 +66,7 @@ namespace GALILEI{
 * @author GALILEI Team
 * @short Generic Session.
 */
-class GSession : public GLangs, public GDocs, public GUsers, public GGroupsMng
+class GSession : public GDocs, public GUsers, public GGroupsMng
 {
 protected:
 	/**
@@ -94,6 +93,11 @@ protected:
 	* Current method used to computed the profiles.
 	*/
 	GSubProfileDesc* SubProfileDesc;
+
+	/**
+	* Pointer to the languages.
+	*/
+	GLangs* Langs;
 
 	/**
 	* URL Manager used by this session.
@@ -191,6 +195,7 @@ public:
 
 	/**
 	* Connect the session to the different managers.
+	* @param langs          Languages.
 	* @param umng           URL Manager.
 	* @param pmng           Profiling Manager.
 	* @param gmng           Grouping Manager.
@@ -198,7 +203,7 @@ public:
 	* @param smng           Statistical Manager.
 	* @param lmng           Linking Manager.
 	*/
-	void Connect(GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+	void Connect(GLangs* langs,GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(bad_alloc,GException);
 
 	/**
@@ -206,6 +211,12 @@ public:
 	* @returns Pointer to a GDocAnalyse class.
 	*/
 	GDocAnalyse* GetDocAnalyse(void) const {return(DocAnalyse);}
+
+	/**
+	* Get the languages.
+	* @returns Pointer to a GLangs class.
+	*/
+	GLangs* GetLangs(void) const {return(Langs);}
 
 	/**
 	* Get the profiling manager used by this session.
@@ -273,14 +284,34 @@ public:
 	*/
 	void RemoveAssociation();
 
-	void Test();
-
 	/**
 	* Analyse all the necessary documents.
 	* @param rec        Receiver for the signals.
 	* @param modified   Recompute only modified elements or all.
 	*/
 	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
+
+	/**
+	* Return the identifier of a new word of a dictionnary.
+	* @param word           Word to find.
+	* @param dict           Dictionnary.
+	*/
+	virtual unsigned int GetDicNextId(const char* word,const GDict* dict)=0;
+
+	/**
+	* Loading a dictionnary/stoplist.
+	* @param dic            Pointer to the dictionary.
+	* @param lang           Languague.
+	* @param stop           Is it a stop list.
+	*/
+	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException)=0;
+
+	/**
+	* Load a specific word from a dictionnary.
+	* @param id             Idenfificator of the word.
+	* @param code           Code of the languague.
+	*/
+	virtual const char* LoadWord(unsigned int id,const char* code)=0;
 
 	/**
 	* Load the Users.

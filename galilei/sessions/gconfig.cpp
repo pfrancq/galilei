@@ -44,7 +44,6 @@ using namespace R;
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gconfig.h>
-#include <sessions/gtest.h>
 #include <filters/gurlmanager.h>
 #include <filters/gfilter.h>
 #include <profiles/gprofilecalcmanager.h>
@@ -57,6 +56,8 @@ using namespace R;
 #include <sessions/gstatscalc.h>
 #include <docs/glinkcalcmanager.h>
 #include <docs/glinkcalc.h>
+#include <langs/glang.h>
+#include <langs/glangs.h>
 using namespace GALILEI;
 
 
@@ -80,6 +81,7 @@ GConfig::GConfig(const char* f) throw(bad_alloc)
 	AddNode(t,GroupCalcs=new RXMLTag("galileiconfig:groupCalcs"));
 	AddNode(t,StatsCalcs=new RXMLTag("galileiconfig:statsCalcs"));
 	AddNode(t,LinkCalcs=new RXMLTag("galileiconfig:linkCalcs"));
+	AddNode(t,Langs=new RXMLTag("galileiconfig:langs"));
 }
 
 
@@ -96,6 +98,7 @@ void GConfig::Load(void)
 		GroupCalcs=GetTop()->GetTag("galileiconfig:groupCalcs");
 		StatsCalcs=GetTop()->GetTag("galileiconfig:statsCalcs");
 		LinkCalcs=GetTop()->GetTag("galileiconfig:linkCalcs");
+		Langs=GetTop()->GetTag("galileiconfig:langs");
 	}
 	catch(...)
 	{
@@ -323,6 +326,33 @@ void GConfig::Store(GLinkCalcManager& mng)
 		LinkCalcs->InsertAttr("Current",lcalc->GetFactory()->GetName());
 	else
 		LinkCalcs->InsertAttr("Current","None");
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GLangs& mng)
+{
+	GFactoryLangCursor Cur;
+
+	if(!Langs) return;
+	Cur=mng.GetLangsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(Langs);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GLangs& mng)
+{
+	GFactoryLangCursor Cur;
+
+	Cur=mng.GetLangsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(Langs);
+	}
 }
 
 

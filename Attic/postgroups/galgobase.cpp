@@ -193,11 +193,11 @@ void GALILEI::GAlgobase::AnalysePoVProfile(GSession *s)
 		
 		Data->InsertIdfFactor( (poid/max)*log(TotalRef/Lng->GetRef(Data->GetIdw(),otSubProfile)) );
 
-    lang = Vect->GetLang();
-		dic = s->GetDic(lang);
+		lang = Vect->GetLang();
+		dic = lang->GetDict();
 		dic->GetWord(Ccur()->GetId());
 		memset(theword,0,128);
-    strcpy(theword,dic->GetWord(Ccur()->GetId()));
+		strcpy(theword,dic->GetWord(Ccur()->GetId()));
 		Data->SetWord(theword);
 
 		InsertNewExpertKwds();
