@@ -4,7 +4,7 @@
 
 	GProfilesSim.cpp
 
-	Similarities between profiles - Implementation
+	Similarities between Profiles - Implementation
 
 	(C) 2002 by P. Francq.
 
@@ -49,8 +49,8 @@ using namespace GALILEI;
 class GSim
 {
 public:
-	unsigned int Id;
-	double Sim;
+	unsigned int Id;         // identifier of the second profile
+	double Sim;              // Similarity between the profiles.
 
 	GSim(unsigned int id,double s) : Id(id), Sim(s) {};
 	int Compare(const GSim* s) const {return(Id-s->Id);}
@@ -70,7 +70,7 @@ public:
 class GALILEI::GProfilesSim::GSims : public RStd::RContainer<GSim,unsigned int,true,true>
 {
 public:
-	unsigned int Id;
+	unsigned int Id;         // Identifier of the first profile
 
 	GSims(unsigned int id,unsigned int max) throw(bad_alloc);
 	int Compare(const GSims* s) const {return(Id-s->Id);}

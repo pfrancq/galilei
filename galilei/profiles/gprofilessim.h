@@ -4,7 +4,7 @@
 
 	GProfilesSim.h
 
-	Similarities between profiles - Header
+	Similarities between Profiles - Header
 
 	(C) 2002 by P. Francq.
 
