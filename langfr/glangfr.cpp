@@ -343,7 +343,7 @@ bool GALILEI::GLangFR::ContainsVowel(const char* kwd)
 	if(!(*kwd))
 		return(false);
 	else
-		return((IsVowel(*kwd))||(!strpbrk(kwd+1,"aeiouy")));
+		return((IsVowel(*kwd))||(!strpbrk(kwd+1,"aeiouyéàèîö")));
 }
 
 
@@ -399,18 +399,10 @@ RString& GALILEI::GLangFR::GetStemming(const RString& _kwd)
 	len=_kwd.GetLen()-1;
 	end=&kwd[len];
 
-	// Do the unique step(for the moment) of the french adapation ofPorter algorithm.
-	cout<<" pas de regle "<<kwd<<"123"<<endl;
+	// Do the unique step(for the moment) of the french adapation of Porter algorithm.
 	ApplyRules(kwd,end,Rules1,1);
-	cout<<"regle1"<<kwd<<"123"<<endl;
-	if(!strcmp(kwd,"employ"))
-	{
-	cout<<"tamere                111111111111111111111111111111111111111111"<<endl;
-	}
 	ApplyRules(kwd,end,Rules2,2);
-	cout<<"regle2"<<kwd<<"123"<<endl;
 	ApplyRules(kwd,end,Rules3,3);
-	cout<<"regle3"<<kwd<<"123"<<endl;
 	
 	// Put the result in res and return it.
 	while((*end)&&(!isspace(*end)))
