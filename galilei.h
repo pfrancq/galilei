@@ -94,6 +94,7 @@ class GDocXML;
 class GDocs;
 class GDocAnalyse;
 class GDocOptions;
+class GDocSim;
 class GDocsSim;
 
 
