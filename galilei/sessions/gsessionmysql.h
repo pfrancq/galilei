@@ -37,6 +37,13 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <stdio.h>      // Defining size_t
+#include <stdlib.h>
+#include <string.h>     // String functions
+
+
+//-----------------------------------------------------------------------------
 // include files for R Project
 #include <rmysql/rmysql.h>
 using namespace RMySQL;
