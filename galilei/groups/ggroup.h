@@ -182,9 +182,10 @@ public:
 	* order of their similarity with the chosen subprofile.
 	* @param docs           Documents not judged.
 	* @param s              Subprofile.
+	* @param global         Global Similarities.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s);
+	void NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global);
 };
 
 

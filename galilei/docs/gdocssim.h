@@ -67,14 +67,16 @@ public:
 	/**
 	* Constructor.
 	* @param d              Documents of the system.
+	* @param global         Global approach.
 	*/
-	GDocsSim(GDocs* d) throw(bad_alloc);
+	GDocsSim(GDocs* d,bool global) throw(bad_alloc);
 
 	/**
 	* Constructor.
 	* @param d              documents of the system.
+	* @param global         Global approach.
 	*/
-	GDocsSim(GDocs& d) throw(bad_alloc);
+	GDocsSim(GDocs& d,bool global) throw(bad_alloc);
 
 	/**
 	* Get the similarities between two documents.

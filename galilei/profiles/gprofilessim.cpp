@@ -93,7 +93,7 @@ GALILEI::GProfilesSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s) throw(bad_alloc)
+GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global) throw(bad_alloc)
 	: Sims(s->NbPtr,s->NbPtr/2)
 {
 	GSubProfileCursor Cur1;
@@ -108,14 +108,17 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 		Sims.InsertPtr(sim=new GSims(Cur1()->GetId(),j));
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
-			sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->Similarity(Cur2())));
+			if(global)
+				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->GlobalSimilarity(Cur2())));
+			else
+				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->Similarity(Cur2())));
 		}
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s) throw(bad_alloc)
+GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global) throw(bad_alloc)
 	: Sims(s.NbPtr,s.NbPtr/2)
 {
 	GSubProfileCursor Cur1;
@@ -130,7 +133,10 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 		Sims.InsertPtr(sim=new GSims(Cur1()->GetId(),j));
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
-			sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->Similarity(Cur2())));
+			if(global)
+				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->GlobalSimilarity(Cur2())));
+			else
+				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->Similarity(Cur2())));
 		}
 	}
 }

@@ -237,7 +237,7 @@ void GALILEI::GGroup::NotJudgedDocsList(RStd::RContainer<GProfDoc,unsigned,false
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s)
+void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global)
 {
 	GSubProfile** tab;
 	unsigned int i;
@@ -270,7 +270,12 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 			// If not -> insert it in docs if relevant.
 			j=Fdbks()->GetFdbk();
 			if((j==djNav)||(j==djOK))
-				Docs.InsertPtr(new GProfDocRef(Fdbks(),s->Similarity(Fdbks()->GetDoc())));
+			{
+				if(global)
+					Docs.InsertPtr(new GProfDocRef(Fdbks(),s->GlobalSimilarity(Fdbks()->GetDoc())));
+				else
+					Docs.InsertPtr(new GProfDocRef(Fdbks(),s->Similarity(Fdbks()->GetDoc())));
+			}
 		}
 	}
 

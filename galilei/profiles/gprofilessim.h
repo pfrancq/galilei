@@ -66,14 +66,16 @@ public:
 	/**
 	* Constructor.
 	* @param s              Subprofiles of the system.
+	* @param global         Global approach.
 	*/
-	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s) throw(bad_alloc);
+	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global) throw(bad_alloc);
 
 	/**
 	* Constructor.
 	* @param s              Subprofiles of the system.
+	* @param global         Global approach.
 	*/
-	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s) throw(bad_alloc);
+	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global) throw(bad_alloc);
 
 	/**
 	* Get the similarities between two profiles, i.e. the subprofiles of a same
