@@ -217,12 +217,12 @@ GALILEI::GLangEN::GLangEN(GFactoryLang* fac) throw(bad_alloc)
 	Rules5b->InsertPtr(new PorterRule("ll","l",1,0,1));
 
 	// Skip Words
-	SkipWords.InsertPtr(new SkipWord("th"));
-	SkipWords.InsertPtr(new SkipWord("st"));
-	SkipWords.InsertPtr(new SkipWord("nd"));
-	SkipWords.InsertPtr(new SkipWord("rd"));
-	SkipWords.InsertPtr(new SkipWord("s"));
-	SkipWords.InsertPtr(new SkipWord("ies"));
+	SkipSequence("th");
+	SkipSequence("st");
+	SkipSequence("nd");
+	SkipSequence("rd");
+	SkipSequence("s");
+	SkipSequence("ies");
 }
 
 
@@ -348,7 +348,7 @@ bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,uns
 
 
 //-----------------------------------------------------------------------------
-RString& GALILEI::GLangEN::GetStemming(const RString& _kwd)
+RString& GALILEI::GLangEN::GetStemming(const RString& _kwd) throw(GException)
 {
 	RString *res=RString::GetString();
 	char kwd[51];

@@ -393,20 +393,20 @@ GLangFR::GLangFR(GFactoryLang* fac) throw(bad_alloc)
 	Rules3->InsertPtr(new FrenchPorterRule("qu","c",1 ,0,0));
 
 
-	SkipWords.InsertPtr(new SkipWord("ier"));
-	SkipWords.InsertPtr(new SkipWord("iers"));
-	SkipWords.InsertPtr(new SkipWord("èm"));
-	SkipWords.InsertPtr(new SkipWord("ème"));
-	SkipWords.InsertPtr(new SkipWord("èmes"));
-	SkipWords.InsertPtr(new SkipWord("er"));
-	SkipWords.InsertPtr(new SkipWord("ers"));
-	SkipWords.InsertPtr(new SkipWord("re"));
-	SkipWords.InsertPtr(new SkipWord("res"));
-	SkipWords.InsertPtr(new SkipWord("e"));
-	SkipWords.InsertPtr(new SkipWord("aine"));
-	SkipWords.InsertPtr(new SkipWord("aines"));
-	SkipWords.InsertPtr(new SkipWord("ième"));
-	SkipWords.InsertPtr(new SkipWord("ièmes"));
+	SkipSequence("ier");
+	SkipSequence("iers");
+	SkipSequence("èm");
+	SkipSequence("ème");
+	SkipSequence("èmes");
+	SkipSequence("er");
+	SkipSequence("ers");
+	SkipSequence("re");
+	SkipSequence("res");
+	SkipSequence("e");
+	SkipSequence("aine");
+	SkipSequence("aines");
+	SkipSequence("ième");
+	SkipSequence("ièmes");
 }
 
 
@@ -489,7 +489,7 @@ bool GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,unsign
 
 
 //-----------------------------------------------------------------------------
-RString& GLangFR::GetStemming(const RString& _kwd)
+RString& GLangFR::GetStemming(const RString& _kwd) throw(GException)
 {
 	RString *res=RString::GetString();
 	char kwd[51];
