@@ -137,6 +137,14 @@ public:
 	void CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent/*,RStd::RContainer<GGroups,unsigned int,true,true>* &groups*/,bool Save);
 
 	/**
+	* Create randomly the judgment for a profile.
+	* @param parent         The container to assign groupid and parent id.
+	* @param groups         The ideal groupment into a GGroups container.
+	* @param Save           Save the results.
+	*/
+	void AddJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,bool Save);
+
+	/**
 	* Write the ideal groupment into a file
 	* @param url            The url where the file is saved.
 	*/

@@ -128,6 +128,12 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GIdealGroup::AddJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,bool Save)
+{
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GIdealGroup::CreateIdealGroupmentFile(const char* url)
 {
 	Subjects->IdealGroupmentFile(url);
