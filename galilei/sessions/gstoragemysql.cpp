@@ -513,8 +513,8 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 				subprofileid=idx;
 				i=0;
 			}
-
-			Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
+			if(lang)
+				Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
 		}
 		if(subprofileid!=cNoRef)
 		{
@@ -735,8 +735,8 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 				docid=idx;
 				i=0;
 			}
-
-			Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
+			if(lang)
+				Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
 		}
 		if(docid!=cNoRef)
 		{
@@ -1196,8 +1196,8 @@ void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GExceptio
 				groupid=idx;
 				i=0;
 			}
-
-			Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
+			if(lang)
+				Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
 		}
 		if(groupid!=cNoRef)
 		{
