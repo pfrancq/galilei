@@ -58,7 +58,7 @@ GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
   : RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
     Sims(0), MinSimLevel(0), AvgSim(0.0), AvgProf(0.0), OKFactor(0.0), DiffFactor(1.0)
 {
-	(*Fitness)=1.0;
+	(*Fitness)=0.0;
 }
 
 
@@ -132,7 +132,6 @@ bool GALILEI::GChromoIR::MergeGroups(GGroupIR* grp1,GGroupIR* grp2)
 	}
 	if(LocalOKFactor>OKFactor)
 	{
-		cout<<LocalOKFactor<<">"<<OKFactor<<endl;
 		NbCrit++;
 	}
 
@@ -287,6 +286,7 @@ bool GALILEI::GChromoIR::DivideGroup(GGroupIR* grp)
 		return(true);
 	}
 
+	// Group can not be divided
 	return(false);
 }
 
@@ -312,7 +312,6 @@ void GALILEI::GChromoIR::ConstructChromo(GGroups* grps)
 					grp->Insert((*Objs)());
 					break;
 				}
-			Verify();
 		}
 	}
 }
@@ -430,7 +429,8 @@ void GALILEI::GChromoIR::ReOrganisation(void)
 		Cur1.Set(Used);
 		for(Cur1.Start();(!Cur1.End())&&(!Cont);Cur1.Next())
 		{
-			if(DivideGroup(Cur1())) Cont=true;
+			if(DivideGroup(Cur1()))
+				Cont=true;
 		}
 	}
 
