@@ -132,7 +132,7 @@
                     <cstring>tab</cstring>
                 </property>
                 <attribute name="title">
-                    <string>Profiles</string>
+                    <string>Profiling</string>
                 </attribute>
                 <vbox>
                     <property name="name">
