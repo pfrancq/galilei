@@ -65,7 +65,6 @@ public:
 		: Name(n), Type(t),Value(v),SubAttrs(5,2) {}
 	int Compare(const Attribut* a) const {return(Name.Compare(a->Name));}
 	int Compare(const Attribut& a) const {return(Name.Compare(a.Name));}
-	int Compare(const RString* a) const {return(Name.Compare(a));}
 	int Compare(const RString& a) const {return(Name.Compare(a));}
 	void InsertSubAttribute(Attribut* a){SubAttrs.InsertPtr(a);}
 	R::RCursor<Attribut> GetSubAttributsCursor(void)
