@@ -89,6 +89,24 @@ public:
 	static int sortOrder(const void* a,const void* b);
 
 	/**
+	* Insert an information.
+	* @param info           Weighted information.
+	*/
+	void InsertInfo(GWeightInfo* info) throw(std::bad_alloc);
+
+	/**
+	* Delete an information.
+	* @param info           Weighted information.
+	*/
+	void DeleteInfo(GWeightInfo* info) throw(std::bad_alloc);
+
+	/**
+	* Get an information based on its identifier.
+	* @param id             Identifier.
+	*/
+	GWeightInfo* GetInfo(unsigned int id) const throw(std::bad_alloc);
+
+	/**
 	* Clear the container.
 	*/
 	void Clear(void);

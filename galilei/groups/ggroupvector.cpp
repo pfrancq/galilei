@@ -143,6 +143,20 @@ void GGroupVector::RemoveRefs(void) const throw(GException)
 
 
 //------------------------------------------------------------------------------
+void GGroupVector::InsertPtr(GWeightInfo* info) throw(bad_alloc)
+{
+	GWeightInfos::InsertPtr(info);
+}
+
+
+//------------------------------------------------------------------------------
+void GGroupVector::Clear(void)
+{
+	GWeightInfos::Clear();
+}
+
+
+//------------------------------------------------------------------------------
 GGroupVector::~GGroupVector(void)
 {
 	try

@@ -47,7 +47,12 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_GROUPCALC_VERSION "1.0"
+#define API_GROUPCALC_VERSION "2.0"
+
+
+//------------------------------------------------------------------------------
+// forward declaration
+class GGroupRef;
 
 
 //------------------------------------------------------------------------------
@@ -88,9 +93,9 @@ public:
 
 	/**
 	* Compute a group.
-	* @param grp            Group to compute.
+	* @param grp            Reference to the group to compute.
 	*/
-	virtual void Compute(GGroup* grp) throw(GException)=0;
+	virtual void Compute(GGroupRef grp) throw(GException)=0;
 
 	/**
 	* Get the name of the model used for the description.

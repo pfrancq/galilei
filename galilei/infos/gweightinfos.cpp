@@ -99,6 +99,27 @@ void GWeightInfos::Clear(void)
 
 
 //------------------------------------------------------------------------------
+void GWeightInfos::InsertInfo(GWeightInfo* info) throw(std::bad_alloc)
+{
+	InsertPtr(info);
+}
+
+
+//------------------------------------------------------------------------------
+void GWeightInfos::DeleteInfo(GWeightInfo* info) throw(std::bad_alloc)
+{
+	DeletePtr(info);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfo* GWeightInfos::GetInfo(unsigned int id) const throw(std::bad_alloc)
+{
+	return(GetPtr<unsigned int>(id));
+}
+
+
+//------------------------------------------------------------------------------
 double GWeightInfos::GetMaxWeight(void) const throw(GException)
 {
 	double max;

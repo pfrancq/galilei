@@ -59,7 +59,7 @@ const unsigned int MaxWordLen=50;
 
 //------------------------------------------------------------------------------
 GDocAnalyse::GDocAnalyse(GFactoryDocAnalyse* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryDocAnalyse>(fac), Session(0), Doc(0)
+	: GPlugin<GFactoryDocAnalyse>(fac), Session(0)
 {
 }
 
@@ -79,11 +79,11 @@ void GDocAnalyse::Disconnect(GSession*) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang) throw(GException)
+void GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang, GDoc* doc) throw(GException)
 {
 	GProfDocCursor profdoccursor;
 
-	if(!Doc)
+	if(!doc)
 		throw GException("No document selected");
 
 	// if the old lang and the new lang are not defined.
@@ -93,7 +93,7 @@ void GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang) throw(GException)
 	// if the oldlang is different to the new lang.
 	if (oldlang!=newlang)
 	{
-		profdoccursor=Doc->GetProfDocCursor();
+		profdoccursor=doc->GetProfDocCursor();
 		for (profdoccursor.Start(); !profdoccursor.End(); profdoccursor.Next())
 			profdoccursor()->GetProfile()->DispatchFdbks(profdoccursor(), oldlang,Session);
 	}

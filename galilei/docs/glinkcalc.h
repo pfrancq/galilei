@@ -47,7 +47,12 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_LINKCALC_VERSION "1.0"
+#define API_LINKCALC_VERSION "2.0"
+
+
+//------------------------------------------------------------------------------
+// forward declaration
+class GSubProfileRef;
 
 
 //------------------------------------------------------------------------------
@@ -85,9 +90,9 @@ public :
 
 	/**
 	* Compute the links for a given subprofile.
-	* @param subprof        Subprofile to compute.
+	* @param subprof        Reference to the subprofile to compute.
 	*/
-	virtual void Compute(GSubProfile* subprof) throw(GException)=0;
+	virtual void Compute(GSubProfileRef subprof) throw(GException)=0;
 
 	/**
 	* Connect to a Session.

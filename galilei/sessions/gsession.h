@@ -193,6 +193,10 @@ public:
 	*/
 	void PostConnect(GLinkCalcManager* lmng) throw(std::bad_alloc,GException);
 
+
+	//--------------------------------------------------------------------------
+	// Manager methods
+
 	/**
 	* Get the languages manager.
 	* @return Pointer to GLangManager.
@@ -265,6 +269,10 @@ public:
 	*/
 	GSessionParams* GetSessionParams(void) const {return(SessParams);}
 
+	
+	//--------------------------------------------------------------------------
+	// Cursor methods
+
 	/**
 	* Get a cursor over the factories of the link methods.
 	* @return GLinkCalcCursor.
@@ -282,6 +290,10 @@ public:
 	* @return GProfDocCursor.
 	*/
 	GProfDocCursor GetProfDocsCursor(void);
+
+
+	//--------------------------------------------------------------------------
+	// Assign identifier methods
 
 	/**
 	* Assign an identifier to a new data of a given dictionary.
@@ -307,6 +319,10 @@ public:
 	* @param sub             Subprofile.
 	*/
 	virtual void AssignId(GSubProfile* sub);
+
+
+	//--------------------------------------------------------------------------
+	// Computing methods
 
 	/**
 	* Create a XML structure with the content of a document. The structure

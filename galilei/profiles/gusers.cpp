@@ -107,14 +107,14 @@ GUserCursor GUsers::GetUsersCursor(void)
 //------------------------------------------------------------------------------
 void GUsers::InsertUser(GUser* usr) throw(std::bad_alloc)
 {
-	InsertPtr(usr);
+	InsertPtrAt(usr,usr->GetId());
 }
 
 
 //------------------------------------------------------------------------------
 GUser* GUsers::GetUser(unsigned int id) const
 {
-	return(GetPtr<unsigned int>(id));
+	return(Tab[id]);
 }
 
 
@@ -163,14 +163,14 @@ unsigned int GUsers::GetNewId(tObjType obj) throw(GException)
 //------------------------------------------------------------------------------
 void GUsers::InsertProfile(GProfile* p) throw(std::bad_alloc)
 {
-	Profiles->InsertPtr(p);
+	Profiles->InsertPtrAt(p,p->GetId());
 }
 
 
 //------------------------------------------------------------------------------
 GProfile* GUsers::GetProfile(const unsigned int id) const
 {
-	return(Profiles->GetPtr<unsigned int>(id));
+	return(Profiles->GetPtrAt(id));
 }
 
 
@@ -199,6 +199,7 @@ void GUsers::InsertSubProfile(GSubProfile* s) throw(std::bad_alloc,GException)
 	list=SubProfiles->GetPtr<const GLang*>(l);
 	if(!list)
 		SubProfiles->InsertPtr(list=new GSubProfiles(l,Profiles->MaxPtr));
+//	list->InsertPtrAt(s,s->GetId());
 	list->InsertPtr(s);
 }
 
@@ -212,8 +213,10 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id) const throw(GException
 	Cur.Set(*SubProfiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		ptr=Cur()->GetPtr<unsigned int>(id);
-		if(ptr) return(ptr);
+		//ptr=Cur()->GetPtrAt(id);
+		ptr=Cur()->GetPtr(id);
+		if(ptr)
+			return(ptr);
 	}
 	return(0);
 }
@@ -222,7 +225,8 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id) const throw(GException
 //------------------------------------------------------------------------------
 GSubProfile* GUsers::GetSubProfile(const unsigned int id,GLang* lang) const throw(GException)
 {
-	return(SubProfiles->GetPtr<const GLang*>(lang)->GetPtr<unsigned int>(id));
+	//return(SubProfiles->GetPtr<const GLang*>(lang)->GetPtrAt(id));
+	return(SubProfiles->GetPtr<const GLang*>(lang)->GetPtr(id));
 }
 
 

@@ -44,6 +44,7 @@
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
 #include <sessions/gslot.h>
+#include <sessions/gobjref.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -129,7 +130,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save,bool savehistory) th
 	CalcDesc=Session->GetGroupCalcMng()->GetCurrentMethod();
 	Groups=Session->GetGroupsCursor();
 	for(Groups.Start();!Groups.End();Groups.Next())
-		CalcDesc->Compute(Groups());
+		CalcDesc->Compute(Groups()->GetId());
 
 	// Save if necessary
 	if(save)

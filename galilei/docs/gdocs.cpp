@@ -180,7 +180,12 @@ void GDocs::InsertDoc(GDoc* d) throw(std::bad_alloc)
 {
 	GDocsLang* docsLang;
 
-	InsertPtr(d);
+	// Test if the document has an id
+	if(d->GetId()==cNoRef)
+		d->SetId(GetNewId());
+
+	// Insert the document
+	InsertPtrAt(d,d->GetId());
 	docsLang = DocsLang.GetInsertPtr<GLang*>(d->GetLang());
 	docsLang->InsertPtr(d);
 
@@ -209,7 +214,7 @@ GDoc* GDocs::GetDoc(unsigned int id) throw(std::bad_alloc, GException)
 {
 	GDoc* d;
 
-	d=GetPtr<unsigned int>(id);
+	d=Tab[id];
 	if(!d)
 		throw GException("Unknown document");
 	return(d);

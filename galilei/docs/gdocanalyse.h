@@ -44,9 +44,16 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_DOCANALYSE_VERSION "1.0"
+#define API_DOCANALYSE_VERSION "2.0"
+
+
+//------------------------------------------------------------------------------
+// forward declaration
+class GDocRef;
+
 
 //------------------------------------------------------------------------------
 /**
@@ -62,11 +69,6 @@ protected:
 	* Corresponding session;
 	*/
 	GSession* Session;
-
-	/**
-	* Document to analyse;
-	*/
-	GDoc* Doc;
 
 public:
 
@@ -95,15 +97,16 @@ public:
 	* During the analysis of the document, if links point to document that does
 	* not exist in the system, these documents are added in a container.
 	* @param xml            DocXML document used.
-	* @param doc            Corresponding document.
-	* @param tmpDocs        Container that will hold the added docs.
+	* @param doc            Reference to the document to analyze.
+	* @param tmpDocs        Container that will hold the references of the added
+	*                       docs.
 	*/
-	virtual void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,false,true>* tmpDocs=0) throw(GException)=0;
+	virtual void Analyze(GDocXML* xml,GDocRef doc,R::RContainer<GDocRef,true,true>* tmpDocs=0) throw(GException)=0;
 
 	/**
 	* Update the feedbacks of the profiles and subprofiles.
 	*/
-	void UpdateFdbks(GLang* oldlang, GLang* newlang) throw(GException);
+	void UpdateFdbks(GLang* oldlang, GLang* newlang, GDoc* doc) throw(GException);
 
 	/**
 	* Destructor of the document analysis method.

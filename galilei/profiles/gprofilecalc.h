@@ -47,7 +47,12 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_PROFILECALC_VERSION "1.0"
+#define API_PROFILECALC_VERSION "2.0"
+
+
+//------------------------------------------------------------------------------
+// forward declaration
+class GSubProfileRef;
 
 
 //------------------------------------------------------------------------------
@@ -87,10 +92,10 @@ public:
 	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
-	* Compute a profile.
-	* @param subprofile      Profile to compute.
+	* Compute a subprofile.
+	* @param subprofile      Reference to the subprofile to compute.
 	*/
-	virtual void Compute(GSubProfile* subprofile) throw(GException)=0;
+	virtual void Compute(GSubProfileRef subprofile) throw(GException)=0;
 
 	/**
 	* Destructor of the computing method.

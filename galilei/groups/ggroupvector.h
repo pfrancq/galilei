@@ -153,6 +153,17 @@ public:
 	void RemoveRefs(void) const throw(GException);
 
 	/**
+	* Insert a information in the description.
+	* @param info            Information to add.
+	*/
+	void InsertPtr(GWeightInfo* info) throw(std::bad_alloc);
+
+	/**
+	* Clear the vector representing the group.
+	*/
+	void Clear(void);
+
+	/**
 	* Destructor of a group.
 	*/
 	~GGroupVector(void);

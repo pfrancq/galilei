@@ -85,7 +85,7 @@ using namespace R;
 #include <historic/ggroupshistory.h>
 #include <groups/gpostgroup.h>
 #include <groups/gpostgroupmanager.h>
-
+#include <sessions/gobjref.h>
 using namespace GALILEI;
 
 
@@ -235,7 +235,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 	bool undefLang;
 	GDocXML* xml=0;
 	GDocCursor Docs=GetDocsCursor();
-	RContainer<GDoc,false,true> tmpDocs(5,2);
+	RContainer<GDocRef,true,true> tmpDocs(5,2);
 	GDocAnalyse* Analyse;
 	RString err;
 	bool Cont;               // Continue the analysuis
@@ -271,7 +271,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 					if(xml)
 					{
 						Docs()->InitFailed();
-						Analyse->Analyse(xml,Docs(),&tmpDocs);
+						Analyse->Analyze(xml,Docs()->GetId(),&tmpDocs);
 						delete xml;
 						xml=0;
 						if((undefLang)&&(Docs()->GetLang()))
@@ -303,10 +303,13 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 
 		// Add the new documents.
 		// Continue the analysis if documents were added.
-		RCursor<GDoc> Cur(tmpDocs);
+		RCursor<GDocRef> Cur(tmpDocs);
 		Cont=tmpDocs.NbPtr;
 		for(Cur.Start();!Cur.End();Cur.Next())
-			InsertDoc(Cur());
+		{
+			//InsertDoc(Cur());
+			#warning add the document with the Cur()->GetId()
+		}
 		tmpDocs.Clear();
 	}
 	while(Cont);
@@ -489,8 +492,8 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) t
 				if((!modified)||(Subs()->GetState()!=osUpdated))
 				{
 					if(LinkCalc)
-						LinkCalc->Compute(Subs());
-					Profiling->Compute(Subs());
+						LinkCalc->Compute(Subs()->GetId());
+					Profiling->Compute(Subs()->GetId());
 
 					if(save)
 						Storage->SaveSubProfile(Subs());
