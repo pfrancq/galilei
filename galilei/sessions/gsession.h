@@ -72,16 +72,6 @@ protected:
 	*/
 	RStd::RContainer<GProfDoc,unsigned,true,true> Fdbks;
 
-//	/**
-//	* SubProfiles handled by the system.
-//	*/
-//	RStd::RContainer<GProfile,unsigned int,true,true>* Profiles;
-//
-//	/**
-//	* SubProfiles handled by the system.
-//	*/
-//	RStd::RContainer<GSubProfile,unsigned int,true,true>* SubProfiles;
-
 	/**
 	* Container of computing method for the profiles.
 	*/
@@ -427,30 +417,6 @@ public:
 	* @param filename       Name of the file.
 	*/
 	virtual void ExecuteData(const char* filename) throw(GException)=0;
-
-	/**
-	* Export the words,document matrix into a file.
-	* @param url            The url of the matrix file.
-	*/
-	virtual void ExportDM(const char * url)=0;
-
-	/**
-	* IMPORT the words,document matrix from a file.
-	* @param url            The url of the matrix file.
-	*/
-	virtual void ImportDC(const char * url)=0;
-
-	/**
-	* Export the prolife,word matrix into a file.
-	* @param url            The url of the matrix file.
-	*/
-	virtual void ExportP(const char * url)=0;
-
-	/**
-	* Import the groupment matrix from a file.
-	* @param url            The url of the matrix file.
-	*/
-	virtual void ImportG(const char * url)=0;
 
 	/**
 	* Run a "program" for this session.
