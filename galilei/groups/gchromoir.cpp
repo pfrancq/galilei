@@ -520,10 +520,11 @@ void GALILEI::GChromoIR::EvaluateAvgSim(GGroupIR* grp1,GGroupIR* grp2)
 	GObjIR** ptr;
 	double tmp;
 
+	LocalAvgSim=0.0;
 	// Compute Avg Similarity for grp1
 	if(grp1)
 	{
-		for(ptr=thObjs1,i=NbObjs1,NbComp=LocalAvgSim=0.0;--i;ptr++)
+		for(ptr=thObjs1,i=NbObjs1,NbComp=0.0;--i;ptr++)
 		{
 			for(j=i+1,ptr2=ptr+1;--j;ptr2++)
 			{
@@ -899,6 +900,7 @@ void GALILEI::GChromoIR::EvaluateMinRel(GGroupIR* grp1,GGroupIR* grp2)
 //-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::EvaluateAvgVarMinRel(GGroupIR* grp1,GGroupIR* grp2)
 {
+	AvgSim=LocalAvgSim=0.0;
 // Average(Var_intra)/Average(Var_inter)
 }
 
@@ -906,6 +908,7 @@ void GALILEI::GChromoIR::EvaluateAvgVarMinRel(GGroupIR* grp1,GGroupIR* grp2)
 //-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::EvaluateAvgVar(GGroupIR* grp1,GGroupIR* grp2)
 {
+	AvgSim=LocalAvgSim=0.0;
 // Average max_proto(intra)/min_proto(inter)"
 }
 
