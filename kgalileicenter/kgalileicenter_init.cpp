@@ -127,6 +127,7 @@ void KGALILEICenterApp::initActions(void)
 	// Menu "Document"
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents' Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
 	showDocs=new KAction(i18n("&Show Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
+	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");;
 	docsAnalyse=new KAction(i18n("&Analyse Documents"),0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");;
 	docsStats=new KAction(i18n("S&tatistics about Documents"),0,this,SLOT(slotDocsStats()),actionCollection(),"docsStats");;
 	addDoc=new KAction(i18n("Add &Document"),0,this,SLOT(slotAddDoc()),actionCollection(),"addDoc");
@@ -140,10 +141,11 @@ void KGALILEICenterApp::initActions(void)
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
 
 	// Menu "R Stat
-	RImportDC=new KAction(i18n("&RImportDC"),0,this,SLOT(slotRImportDC()),actionCollection(),"RImportDC");
-	RImportG=new KAction(i18n("&RImportG"),0,this,SLOT(slotRImportG()),actionCollection(),"RImportG");
-	RExportDM=new KAction(i18n("&RExportDM"),0,this,SLOT(slotRExportDM()),actionCollection(),"RExportDM");
-	RExportP=new KAction(i18n("&RExportP"),0,this,SLOT(slotRExportP()),actionCollection(),"RExportP");
+	RImportDC=new KAction(i18n("RImport&DC"),0,this,SLOT(slotRImportDC()),actionCollection(),"RImportDC");
+	RImportG=new KAction(i18n("RImport&G"),0,this,SLOT(slotRImportG()),actionCollection(),"RImportG");
+	RExportDM=new KAction(i18n("RExportD&M"),0,this,SLOT(slotRExportDM()),actionCollection(),"RExportDM");
+	RExportP=new KAction(i18n("RExport&P"),0,this,SLOT(slotRExportP()),actionCollection(),"RExportP");
+	rRunR=new KAction(i18n("Run &R"),0,this,SLOT(slotRRunR()),actionCollection(),"rRunR");
 
 	// Menu "GA"
 	gaInit=new KAction(i18n("&Initialize"),"reload",KAccel::stringToKey("Alt+I"),this,SLOT(slotGAInit(void)),actionCollection(),"gaInit");
@@ -316,6 +318,7 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 
 	// Menu "Document"
 	showDocs->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
+	docAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDicsLoad());
 	docsAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad()&&Doc->GetSession()->IsDicsLoad());
 	docsStats->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad()&&Doc->GetSession()->IsDicsLoad());
 	addDoc->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
@@ -345,6 +348,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	groupsCalc->setEnabled(false);
 	showDocs->setEnabled(false);
 	addDoc->setEnabled(false);
+	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);
 	docsStats->setEnabled(false);
 	addJudgement->setEnabled(false);
@@ -359,6 +363,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	RImportG->setEnabled(false);
 	RExportDM->setEnabled(false);
 	RExportP->setEnabled(false);
+	rRunR->setEnabled(false);
 }
 
 

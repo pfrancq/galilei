@@ -342,6 +342,11 @@ private slots:
 	void slotAddDoc(void);
 
 	/**
+	* Analyse a document.
+	*/
+	void slotDocAnalyse(void);
+
+	/**
 	* Analyse all the documents.
 	*/
 	void slotDocsAnalyse(void);
@@ -458,22 +463,27 @@ private slots:
 	/**
 	* Called to import a R Document/Concept Matrix.
 	*/
-	void slotRImportDC ();
+	void slotRImportDC(void);
 
 	/**
 	* Called to import a R Groupment Matrix.
 	*/
-	void slotRImportG();
+	void slotRImportG(void);
 
 	/**
 	* Called to export a Document/Word Matrix.
 	*/
-	void slotRExportDM();
+	void slotRExportDM(void);
 
 	/**
 	* Called to export a Profile Matrix.
 	*/
-	void slotRExportP();
+	void slotRExportP(void);
+
+	/**
+	* Slot called when a R session must be launched.
+	*/
+	void slotRRunR(void);
 
 public slots:
 
@@ -521,6 +531,7 @@ public:
 	KToggleAction* docAlwaysCalc;
 	KAction* showDocs;
 	KAction* addDoc;
+	KAction* docAnalyse;
 	KAction* docsAnalyse;
 	KAction* docsStats;
 	KAction* addJudgement;
@@ -540,7 +551,7 @@ public:
 	KAction* RImportG;
 	KAction* RExportDM;
 	KAction* RExportP;
-
+	KAction* rRunR;
 
 	KAction* plugins;
 	KAction* docsOptions;

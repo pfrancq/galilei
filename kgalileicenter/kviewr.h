@@ -38,8 +38,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for KDE
-class KProcess;
-
+class CKonsoleWidgetPrivate;
 
 //-----------------------------------------------------------------------------
 // include files for current application
@@ -58,6 +57,7 @@ class KViewR : public KView
 	Q_OBJECT
 
 protected:
+	CKonsoleWidgetPrivate* d;
 
 public:
 
@@ -86,9 +86,13 @@ public slots:
 	/**
 	* Slot called each time an output is done by the process.
 	*/
-	void slotStdout(KProcess *proc, char *buffer, int buflen);
+//	void slotStdout(KProcess *proc, char *buffer, int buflen);
+
+	void setDirectory(QString dirname);
 
 protected:
+
+	virtual void showEvent(QShowEvent *ev);
 
 	/**
 	* Called when the main window is resize by the user.

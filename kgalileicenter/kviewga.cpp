@@ -97,7 +97,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,unsigned int pop,QWidget* parent,const 
 	StatSplitter->setGeometry(rect());
 	Monitor=new QGAMonitor(StatSplitter);
 	Monitor->setMaxGen(pop);
-	Monitor->setMaxFitness(1.0);
+	Monitor->setMaxFitness(PopSize+2);
 	connect(this,SIGNAL(signalSetGen(const unsigned int,const unsigned int,const double)),Monitor,SLOT(slotSetGen(const unsigned int,const unsigned int,const double)));
 	Debug=new QXMLContainer(StatSplitter,"GALILEI Genetic Algorithms","Pascal Francq");
 

@@ -104,6 +104,11 @@ class KViewDoc : public KView
 	*/
 	GDocXML* Struct;
 
+	/**
+	* Delete the Document when deleting the window?
+	*/
+	bool DelDoc;
+
 public:
 
 	/**
@@ -115,6 +120,16 @@ public:
 	* @param wflags         Flags.
 	*/
 	KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int wflags);
+
+	/**
+	* Constructor for the view
+	* @param file           Document to represent.
+	* @param doc            Document instance that the view represents.
+	* @param parent         Parent of the window.
+	* @param name           Name of the window.
+	* @param wflags         Flags.
+	*/
+	KViewDoc(const char* file,KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.

@@ -153,16 +153,16 @@ void KViewProfile::ConstructFdbks(void)
 	{
 		switch(Docs()->GetFdbk())
 		{
-			case 'O':
+			case djOK:
 				p=ok;
 				break;
-			case 'K':
+			case djKO:
 				p=ko;
 				break;
-			case 'N':
+			case djNav:
 				p=n;
 				break;
-			case 'H':
+			case djOutScope:
 				p=hs;
 				break;
 			default:

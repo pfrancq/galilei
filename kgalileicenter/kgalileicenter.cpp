@@ -153,6 +153,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			RImportG->setEnabled(true);
 			RExportDM->setEnabled(true);
 			RExportP->setEnabled(true);
+ 			rRunR->setEnabled(true);
 			textFrench->setEnabled(true);
 			textEnglish->setEnabled(true);
 			plugins->setEnabled(true);
@@ -231,8 +232,6 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionTest(void)
 {
-	KApplication::kApplication()->processEvents();
-	createClient(Doc,new KViewR(Doc,pWorkspace,"Run R",0));
 }
 
 
@@ -331,6 +330,22 @@ void KGALILEICenterApp::slotShowDocs(void)
 	editJudgement->setEnabled(true);
 }
 
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotDocAnalyse(void)
+{
+	KViewDoc* m;
+
+	slotStatusMsg(i18n("Opening file..."));
+	KApplication::kApplication()->processEvents();
+	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.*"), this, i18n("Open File..."));
+	if(!url.isEmpty())
+	{
+		createClient(Doc,m=new KViewDoc(url.path(),Doc,pWorkspace,"View Document",0));
+		m->CreateDocXML();
+	}
+	slotStatusMsg(i18n("Ready."));
+}
 
 
 //-----------------------------------------------------------------------------
@@ -779,6 +794,15 @@ void KGALILEICenterApp::slotRExportP(void)
 	}
 	
 }
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotRRunR(void)
+{
+	KApplication::kApplication()->processEvents();
+	createClient(Doc,new KViewR(Doc,pWorkspace,"Run R",0));
+}
+
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::~KGALILEICenterApp(void)

@@ -34,13 +34,17 @@
 //-----------------------------------------------------------------------------
 // include files for Qt
 #include <qmultilineedit.h>
-QMultiLineEdit* Interface;
+//QMultiLineEdit* Interface;
+#include <qframe.h>
 
+#include <qlayout.h>
+#include <kparts/part.h>
+#include <klibloader.h>
 
 //-----------------------------------------------------------------------------
 // include files for KDE
-#include <kprocess.h>
-KShellProcess* Proc=0;
+//#include <kprocess.h>
+//KShellProcess* Proc=0;
 
 
 //-----------------------------------------------------------------------------
@@ -48,6 +52,61 @@ KShellProcess* Proc=0;
 #include "kviewr.h"
 
 
+class CKonsoleWidgetPrivate
+{
+public:
+
+  CKonsoleWidgetPrivate()
+    : part(0)
+  {
+  }
+
+  void setDirectory(QString dirname)
+  {
+    if (url == dirname)
+      return;
+    url = dirname;
+    if (part) {
+      KURL url(dirname);
+      part->openURL(url);
+    }
+  }
+
+  void activate(QWidget *parent)
+  {
+    if (part)
+      return;
+
+    KLibFactory *factory = KLibLoader::self()->factory("libkonsolepart");
+    if (!factory)
+      return;
+
+    part = (KParts::ReadOnlyPart *) factory->create(parent);
+    if (!part)
+      return;
+    part->widget()->setFocusPolicy(QWidget::WheelFocus);
+    parent->setFocusProxy(part->widget());
+    part->widget()->setFocus();
+
+    if (part->widget()->inherits("QFrame"))
+      ((QFrame*)part->widget())->setFrameStyle(QFrame::Panel|QFrame::Sunken);
+
+    QVBoxLayout *vbox = new QVBoxLayout(parent);
+    vbox->addWidget(part->widget());
+
+    if (part && !url.isEmpty())
+      setDirectory(url);
+
+    part->widget()->show();
+  }
+
+
+private:
+
+  QString url;
+  KParts::ReadOnlyPart *part;
+
+};
 
 //-----------------------------------------------------------------------------
 //
@@ -59,13 +118,15 @@ KShellProcess* Proc=0;
 KViewR::KViewR(KDoc* doc, QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags)
 {
-	Proc=new KShellProcess("/bin/sh");
-	(*Proc)<<"R";
-	Interface = new QMultiLineEdit(this);
-	Interface->resize(size());
-	connect(Proc,SIGNAL(receivedStdout(KProcess*,char*,int)),this,SLOT(slotStdout(KProcess*,char*,int)));
- 	connect(Proc,SIGNAL(receivedStderr(KProcess*,char*,int)),this,SLOT(slotStdout(KProcess*,char*,int)));
-	Proc->start(KProcess::NotifyOnExit,KProcess::All);
+	d = new CKonsoleWidgetPrivate();
+    d->setDirectory("R");
+//	Proc=new KShellProcess("/bin/sh");
+//	(*Proc)<<"R";
+//	Interface = new QMultiLineEdit(this);
+//	Interface->resize(size());
+//	connect(Proc,SIGNAL(receivedStdout(KProcess*,char*,int)),this,SLOT(slotStdout(KProcess*,char*,int)));
+// 	connect(Proc,SIGNAL(receivedStderr(KProcess*,char*,int)),this,SLOT(slotStdout(KProcess*,char*,int)));
+//	Proc->start(KProcess::NotifyOnExit,KProcess::All);
 //QString cmd = "write.table(4,'/home/jlamoral/tables')";
 //if(proc.writeStdin(cmd.data(),cmd.length())) cout<<1<<endl;
 //if(proc.isRunning ())cout<<4<<endl;
@@ -79,23 +140,36 @@ void KViewR::update(unsigned int /*cmd*/)
 
 
 //-----------------------------------------------------------------------------
-void KViewR::slotStdout(KProcess* /*proc*/,char* buffer,int /*buflen*/)
-{
-	QString s(buffer);
-	Interface->append(s);
-}
+//void KViewR::slotStdout(KProcess* /*proc*/,char* buffer,int /*buflen*/)
+//{
+//	QString s(buffer);
+//	Interface->append(s);
+//}
 
 
 //-----------------------------------------------------------------------------
 void KViewR::resizeEvent(QResizeEvent *)
 {
-	Interface->resize(size());
+//	Interface->resize(size());
+}
+
+void KViewR::setDirectory(QString dirname)
+{
+  d->setDirectory(dirname);
+}
+
+
+void KViewR::showEvent(QShowEvent *ev)
+{
+  QWidget::showEvent(ev);
+  d->activate(this);
 }
 
 
 //-----------------------------------------------------------------------------
 KViewR::~KViewR(void)
 {
-	if(Proc)
-		delete Proc;
+//	if(Proc)
+//		delete Proc;
+  delete d;
 }

@@ -82,7 +82,7 @@ using namespace RTimeDate;
 
 //-----------------------------------------------------------------------------
 KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Document(document), Fdbks(0), Struct(0)
+	: KView(doc,parent,name,wflags), Document(document), Fdbks(0), Struct(0), DelDoc(false)
 {
 	// Window proprieties
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/document.png"));
@@ -126,6 +126,41 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 
 
 //-----------------------------------------------------------------------------
+KViewDoc::KViewDoc(const char* file,KDoc* doc,QWidget* parent,const char* name,int wflags)
+	: KView(doc,parent,name,wflags), Document(0), Fdbks(0), Struct(0), DelDoc(true)
+{
+	// Construct the document
+	Document=Doc->GetSession()->NewDoc(file,file,"text/html");
+
+	// Window proprieties
+	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/document.png"));
+	setCaption("Description of \" "+QString(Document->GetName())+"\"");
+
+	// initialisation of the tab widget
+	Infos=new QTabWidget(this);
+	Infos->resize(size());
+
+	// Initialisation of the General Information Widget
+	General = new QListView(Infos);
+	Infos->insertTab(General,"General Information");
+	General->addColumn("Variable");
+	General->addColumn("Value");
+	ConstructGeneral();
+
+	// Initialisation of the XML Widget
+	XML = new QGDocXML(Infos);
+	Infos->insertTab(XML,"XML Structure");
+
+	// Initialisation of the AnalyseResults Widget
+	Results = new QListView(Infos);
+	Infos->insertTab(Results,"Analyse Results");
+	Results->addColumn("Word");
+	Results->addColumn("Occurence");
+	ConstructResults();
+}
+
+
+//-----------------------------------------------------------------------------
 void KViewDoc::ConstructFdbks(void)
 {
 	QListViewItem *p;
@@ -151,16 +186,16 @@ void KViewDoc::ConstructFdbks(void)
 	{
 		switch(Profiles()->GetFdbk())
 		{
-			case 'O':
+			case djOK:
 				p=ok;
 				break;
-			case 'K':
+			case djKO:
 				p=ko;
 				break;
-			case 'N':
+			case djNav:
 				p=n;
 				break;
-			case 'H':
+			case djOutScope:
 				p=hs;
 				break;
 			default:
@@ -287,4 +322,6 @@ void KViewDoc::AnalyseDocXML(void)
 KViewDoc::~KViewDoc(void)
 {
 	if(Struct) delete Struct;
+	if(DelDoc)
+		delete Document;
 }
