@@ -109,7 +109,7 @@ unsigned int GALILEI::GSessionMySQL::GetCount(const char* tbl)
 
 	sprintf(sSql,"SELECT COUNT(*) FROM %s",tbl);
 	RQuery count(this,sSql);
-	count.Begin();
+	count.Start();
 	c=count[0];
 	if(!c) return(0);
 	return(atoi(c));
@@ -124,7 +124,7 @@ unsigned int GALILEI::GSessionMySQL::GetMax(const char* tbl,const char* fld)
 
 	sprintf(sSql,"SELECT MAX(%s) FROM %s",fld,tbl);
 	RQuery count(this,sSql);
-	count.Begin();
+	count.Start();
 	c=count[0];
 	if(!c) return(0);
 	return(atoi(c));
@@ -170,7 +170,7 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 	RQuery find(this,sSql);
 	if(find.GetNbRows())
 	{
-		find.Begin();
+		find.Start();
 		return(strtoul(find[0],0,10));
 	}
 
@@ -181,7 +181,7 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 	// Get the next id
 	sprintf(sSql,"SELECT kwdid FROM %skwds WHERE kwdid=LAST_INSERT_ID()",dict->GetLang()->GetCode());
 	RQuery getinsert(this,sSql);
-	getinsert.Begin();
+	getinsert.Start();
 	return(strtoul(getinsert[0],0,10));
 }
 
@@ -206,7 +206,7 @@ void GALILEI::GSessionMySQL::LoadDic(const char* code,bool s) throw(bad_alloc,GE
 	{
 		sprintf(sSql,"SELECT COUNT(*) FROM %s WHERE kwd LIKE '%c%%'",tbl,i);
 		RQuery count(this,sSql);
-		count.Begin();
+		count.Start();
 		if(strtoul(count[0],0,10)>MaxCount) MaxCount=strtoul(count[0],0,10);
 	}
 	if(MaxCount==0) MaxCount=2000;
@@ -226,7 +226,7 @@ void GALILEI::GSessionMySQL::LoadDic(const char* code,bool s) throw(bad_alloc,GE
 	// Load the dictionnary from the database
 	sprintf(sSql,"SELECT kwdid, kwd  FROM %s",tbl);
 	RQuery dicts (this, sSql);
-	for(dicts.Begin();dicts.IsMore();dicts++)
+	for(dicts.Start();!dicts.End();dicts.Next())
 		dict->Put(atoi(dicts[0]), dicts[1]);
 }
 
@@ -240,7 +240,7 @@ const char* GALILEI::GSessionMySQL::LoadWord(const unsigned int id,const char* c
 	RQuery w(this,sSql);
 	if(!w.GetNbRows())
 		return(0);
-	w.Begin();
+	w.Start();
 	return(w[0]);
 }
 
@@ -261,7 +261,7 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 	// Get Id and updated
 	sprintf(sSql,"SELECT profileid,updated FROM profiles WHERE profileid=LAST_INSERT_ID()");
 	RQuery selectprofile(this,sSql);
-	selectprofile.Begin();
+	selectprofile.Start();
 	id=strtoul(selectprofile[0],0,10);
 	InsertProfile(prof=new GProfile(usr,id,desc,true,selectprofile[1],0,GetNbLangs()));
 
@@ -273,7 +273,7 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 		RQuery insertsub(this,sSql);
 		sprintf(sSql,"SELECT subprofileid from subprofiles WHERE subprofileid=LAST_INSERT_ID())");
 		RQuery selectsub(this,sSql);
-		selectsub.Begin();
+		selectsub.Start();
 		InsertSubProfile(new GSubProfileVector(prof,strtoul(selectsub[0],0,10),Langs(),0,0));
 	}
 
@@ -349,13 +349,13 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 	try
 	{
 		RQuery users(this, "SELECT userid,user,fullname FROM users");
-		for(users.Begin();users.IsMore();users++)
+		for(users.Start();!users.End();users.Next())
 		{
 			userid=atoi(users[0]);
 			sprintf(sSql,"SELECT profileid,description,updated,calculated,social FROM profiles WHERE userid=%u",userid);
 			RQuery profiles(this,sSql);
 			InsertUser(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
-			for(profiles.Begin();profiles.IsMore();profiles++)
+			for(profiles.Start();!profiles.End();profiles.Next())
 			{
 				profileid=atoi(profiles[0]);
 				Social=false;
@@ -363,7 +363,7 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,profiles[2],profiles[3],GetNbLangs()));
 				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid FROM subprofiles WHERE profileid=%u",profileid);
 				RQuery subprofil (this,sSql);
-				for(subprofil.Begin();subprofil.IsMore();subprofil++)
+				for(subprofil.Start();!subprofil.End();subprofil.Next())
 				{
 					lang=GetLang(subprofil[1]);
 					subid=atoi(subprofil[0]);
@@ -382,7 +382,7 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 		{
 			sprintf(sSql,"SELECT subprofileid,kwdid,Weight FROM %ssubprofilesbykwds",Langs()->GetCode());
 			RQuery sel(this,sSql);
-			for(sel.Begin();sel.IsMore();sel++)
+			for(sel.Start();!sel.End();sel.Next())
 			{
 				sub=GetSubProfile(atoi(sel[0]),Langs());
 				if(sub)
@@ -425,22 +425,22 @@ void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsign
 		groups = new GGroupsEvaluate(Langs());
 		sprintf(sSql,"SELECT distinct groupid FROM idealgroup WHERE langid='%s'",Langs()->GetCode());
 		RQuery sel(this,sSql);
-		for(sel.Begin();sel.IsMore();sel++)
+		for(sel.Start();!sel.End();sel.Next())
 		{
 			RContainer<GDoc,unsigned int,false,true>* doc=new RContainer<GDoc,unsigned int,false,true>(100,50);
 			sprintf(sSql,"SELECT htmlid FROM htmls where subsubjectid=%u",atoi(sel[0]));
 			RQuery sub(this,sSql);
-			for(sub.Begin();sub.IsMore();sub++)
+			for(sub.Start();!sub.End();sub.Next())
 			{
 				doc->InsertPtr(GetDoc(atoi(sub[0])));
 			}
 			sprintf(sSql,"SELECT subsubjectname,subjectid FROM subsubject where subsubjectid=%u",atoi(sel[0]));
 			RQuery subname(this,sSql);
-			for(subname.Begin();subname.IsMore();subname++)
+			for(subname.Start();!subname.End();subname.Next())
 			{
 				sprintf(sSql,"SELECT subjectname FROM subject where subjectid=%u",atoi(subname[1]));
 				RQuery name(this,sSql);
-				for(name.Begin();name.IsMore();name++)
+				for(name.Start();!name.End();name.Next())
 				{
 					RString temp(name[0]);
 					temp+="/";
@@ -470,15 +470,14 @@ void GALILEI::GSessionMySQL::LoadIdealGroupment(RContainer<GGroups,unsigned int,
 		idealgroup->InsertPtr(groups=new GGroups(Langs()));
 		sprintf(sSql,"SELECT DISTINCT(groupid) FROM idealgroup WHERE langid='%s'",Langs()->GetCode());
 		RQuery sel(this,sSql);
-		for(sel.Begin();sel.IsMore();sel++)
+		for(sel.Start();!sel.End();sel.Next())
 		{
  			groups->InsertPtr(group=new GGroupVector(atoi(sel[0]),Langs()));
 			sprintf(sSql,"SELECT profileid FROM idealgroup where groupid=%u",atoi(sel[0]));
 			RQuery sub(this,sSql);
-			for(sub.Begin();sub.IsMore();sub++)
+			for(sub.Start();!sub.End();sub.Next())
 				group->InsertPtr(GetProfile(atoi(sub[0]))->GetSubProfile(Langs()));
 		}
-
 	}
 }
 
@@ -508,8 +507,6 @@ void GALILEI::GSessionMySQL::SaveIdealGroupment(RContainer<GGroups,unsigned int,
 			}
 		}
 	}
-
-	
 }
 
 
@@ -520,17 +517,17 @@ void GALILEI::GSessionMySQL::LoadSubjectTree(GSubjectTree* subjects)
 	
 	sprintf(sSql,"SELECT subjectid,subjectname from subject");
 	RQuery sub(this,sSql);
-	for(sub.Begin();sub.IsMore();sub++)
+	for(sub.Start();!sub.End();sub.Next())
 	{
 		GSubject* subject=new GSubject(sub[1],atoi(sub[0]));
 		sprintf(sSql,"SELECT subsubjectid,subsubjectname from subsubject where subjectid=%u",atoi(sub[0]));
 		RQuery subsub(this,sSql);
-		for(subsub.Begin();subsub.IsMore();subsub++)
+		for(subsub.Start();!subsub.End();subsub.Next())
 		{
 			GSubject* subsubject=new GSubject(subsub[1],atoi(subsub[0]));
 			sprintf(sSql,"SELECT htmlid from htmls where subsubjectid=%u",atoi(subsub[0]));
 			RQuery doc(this,sSql);
-			for(doc.Begin();doc.IsMore();doc++)
+			for(doc.Start();!doc.End();doc.Next())
 			{
 				subsubject->urls->InsertPtr(this->GetDoc(atoi(doc[0])));
 				subsubject->SetLang(this->GetDoc(atoi(doc[0]))->GetLang());
@@ -552,7 +549,7 @@ void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
 
 	sprintf(sSql,"SELECT htmlid, judgement, profiles.profileid, userid, when2 FROM htmlsbyprofiles,profiles WHERE profiles.profileid=htmlsbyprofiles.profileid");
 	RQuery fdbks(this,sSql);
-	for(fdbks.Begin();fdbks.IsMore();fdbks++)
+	for(fdbks.Start();!fdbks.End();fdbks.Next())
 	{
 		usr=GetUser(atoi(fdbks[3]));
 		if(!usr) continue;
@@ -593,7 +590,7 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 
 	sprintf(sSql,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed,n,ndiff,v,vdiff FROM htmls");
 	RQuery quer (this,sSql);
-	for(quer.Begin();quer.IsMore();quer++)
+	for(quer.Start();!quer.End();quer.Next())
 	{
 		docid=atoi(quer[0]);
 		lang=GetLang(quer[4]);
@@ -606,7 +603,7 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 	{
 		sprintf(sSql,"SELECT htmlid,kwdid,occurs FROM %shtmlsbykwds",Langs()->GetCode());
 		RQuery sel(this,sSql);
-		for(sel.Begin();sel.IsMore();sel++)
+		for(sel.Start();!sel.End();sel.Next())
 		{
 			doc=GetDoc(atoi(sel[0]));
 			if(doc)
@@ -637,7 +634,7 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 	// Get Id and updated
 	sprintf(sSql,"SELECT htmlid,updated FROM htmls WHERE htmlid=LAST_INSERT_ID()");
 	RQuery selectdoc(this,sSql);
-	selectdoc.Begin();
+	selectdoc.Start();
 	doc=new GDoc(url,name,strtoul(selectdoc[0],0,10),0,Mng->GetMIMEType(mime),selectdoc[1],0,0,0,0,0,0);
 	InsertDoc(doc);
 	return(doc);
@@ -796,7 +793,7 @@ void GALILEI::GSessionMySQL::NewGroup(GLang* lang,GGroup* grp)
 	// Get Id and updated
 	sprintf(sSql,"SELECT groupid FROM groups WHERE groupid=LAST_INSERT_ID()");
 	RQuery select(this,sSql);
-	select.Begin();
+	select.Start();
 	grp->SetId(strtoul(select[0],0,10));
 }
 
@@ -829,12 +826,12 @@ void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 		GGroups* groups=GetGroups(Langs());
 		sprintf(sSql,"SELECT groupid, langid  FROM groups WHERE langid='%s'",Langs()->GetCode());
 		RQuery group2 (this,sSql);
-		for(group2.Begin();group2.IsMore();group2++)
+		for(group2.Start();!group2.End();group2.Next())
 		{
 			group=new GGroupVector(atoi(group2[0]),Langs());
 			sprintf(sSql,"SELECT kwdid,occurs FROM %sgroupsbykwds where groupid=%u",Langs()->GetCode(),atoi(group2[0]));
 			RQuery sel(this,sSql);
-			for(sel.Begin();sel.IsMore();sel++)
+			for(sel.Start();!sel.End();sel.Next())
 			{
 				Word= new GIWordWeight(atoi(sel[0]),atof(sel[1]));
 				group->AddWord(Word);
@@ -920,7 +917,7 @@ GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs
 	// count the number of chromosome in tempchromo to assign popsize;
 	sprintf(sSql,"SELECT max(chromoid) FROM tempchromo");
 	RQuery count(this,sSql);
-	count.Begin();
+	count.Start();
 	if(count.End()) return(0);
 	popsize=atoi(count[0]);
 	if(!popsize) return(0);
@@ -929,7 +926,7 @@ GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs
 	InstIR->Init(&data);
 	sprintf(sSql,"SELECT DISTINCT chromoid FROM tempchromo WHERE lang='%s'",lang->GetCode());
 	RQuery qchromo (this, sSql);
-	for(qchromo.Begin();!qchromo.End();qchromo.Next())
+	for(qchromo.Start();!qchromo.End();qchromo.Next())
 	{
 		chromoid=atoi(qchromo[0]);
 		if(chromoid==popsize)
@@ -938,12 +935,12 @@ GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs
 			chromo=InstIR->Chromosomes[chromoid];
 		sprintf(sSql,"SELECT DISTINCT groupid FROM tempchromo WHERE chromoid=%u",atoi(qchromo[0]));
 		RQuery qgroup(this, sSql);
-		for(qgroup.Begin();!qgroup.End();qgroup.Next())
+		for(qgroup.Start();!qgroup.End();qgroup.Next())
 		{
 			grp=chromo->ReserveGroup();
 			sprintf(sSql,"SELECT DISTINCT subprofileid FROM tempchromo WHERE (chromoid=%u and groupid=%u) ",atoi(qchromo[0]),atoi(qgroup[0]));
 			RQuery qsubprof (this, sSql);
-			for(qsubprof.Begin();!qsubprof.End();qsubprof.Next())
+			for(qsubprof.Start();!qsubprof.End();qsubprof.Next())
 			{
 				id=atoi(qsubprof[0]);
 				for(objs->Start();!objs->End();objs->Next())
