@@ -75,13 +75,13 @@ GLangFR::FrenchPorterRule::FrenchPorterRule(const char* os,const char* ns,int oo
 	l=strlen(os);
 	OldSuffix=new char[l+1];
 	if(l)
-		memcpy(OldSuffix,os,sizeof(char)*l);
+		memcpy(OldSuffix,os,sizeof(char)*(l+1));
 	else
 		(*OldSuffix)=0;
 	l=strlen(ns);
 	NewSuffix=new char[l+1];
 	if(l)
-		memcpy(NewSuffix,ns,sizeof(char)*l);
+		memcpy(NewSuffix,ns,sizeof(char)*(l+1));
 	else
 		(*NewSuffix)=0;
 }
