@@ -165,22 +165,21 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 {
 	GGroup* thGrp;
 	GGroup* thGrp2;
-	unsigned int NbComp;
+	double NbComp;
 	bool IsInGrp,IsInthGrp;
 	unsigned int i,j;
 	GSubProfileCursor Cur1=Session->GetSubProfilesCursor();
 	GSubProfileCursor Cur2=Session->GetSubProfilesCursor();
 
 	Total=0.0;
-	NbComp=0;
+	NbComp=0.0;
 	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
 	{
 		thGrp=GetIdealGroup(Cur1());
 		if(!thGrp) continue;
 		if(!Cur1()->GetGroup())
 		{
-			if(thGrp)
-				NbComp+=thGrp->NbPtr-1;
+			NbComp+=Cur1.GetNb()-1-i;
 		}
 		else
 			for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
@@ -188,10 +187,10 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 				if((Cur1()->GetLang()!=Cur2()->GetLang())||(!Cur2()->GetGroup())) continue;
 				thGrp2=GetIdealGroup(Cur2());
 				if(!thGrp2) continue;
-				NbComp++;
-				IsInGrp=Cur1()->GetGroup()->IsIn<const GSubProfile*>(Cur2());
-				IsInthGrp=thGrp->IsIn<const GSubProfile*>(Cur2());
-				if((IsInGrp&&IsInthGrp)||((!IsInGrp)&&(!IsInthGrp))) Total+=1.0;
+				NbComp+=1.0;
+				IsInGrp=(Cur1()->GetGroup()==(Cur2()->GetGroup()));
+				IsInthGrp=(thGrp==thGrp2);
+				if(IsInGrp==IsInthGrp) Total+=1.0;
 			}
 	}
 	if(NbComp)
