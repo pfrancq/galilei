@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 							Config.GetTag("World")->GetAttrValue("Encoding"));
 		GSession Session(&Str,&SessionParams,false);
 		Session.Connect(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
-			&GroupCalcManager,&StatsCalcManager,&PostDocManager,&PostGroupManager);
+			&GroupCalcManager,&StatsCalcManager,&PostDocManager,&PostGroupManager,0);
 		Log->WriteLog("Session created");
 
 		// Load Data from MySQL database
