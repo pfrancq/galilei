@@ -1,4 +1,5 @@
 /*
+
 	GALILEI Research Project
 
 	GBalancedLinks.h
@@ -33,53 +34,50 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GBalancedLinksH
 #define GBalancedLinksH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //include file for GALILEI
-#include <sessions/galilei.h>
 #include <docs/glinks.h>
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* This class provides a representation of a set of links with each a weight.
-* @author  Vandaele Valery
-* @short List of Links whith a weight.
+* This class provides a representation of a weighted list of links.
+* @author Vandaele Valery
+* @short Weighted List of Links.
 */
 class GBalancedLinks : public GLinks
 {
-private :
+protected:
 
 	/**
-	* The weight
+	* The weight associated with the list.
 	*/
 	float Weight;
 
 public :
 
 	/**
-	* constructor of GBalancedLinks
-	* @param doc               the document containing all the links.
-	* @param weight           the weight associated whith the link
+	* Constructor of a weighted list of links.
+	* @param doc             Document containing all the links.
+	* @param weight          Weight associated with the link.
 	*/
-	GBalancedLinks(GDoc* doc,float weight);
+	GBalancedLinks(GDoc* doc,float weight) throw(bad_alloc, GException);
 
 	/**
-	* constructor of GBalancedLinks
+	* Constructor of GBalancedLinks of a weighted list of links.
 	* @param doc               the document containing all the links.
 	*/
-	GBalancedLinks(GDoc* doc);
-
+	GBalancedLinks(GDoc* doc) throw(bad_alloc, GException);
 
 	/**
 	* Get the id of the doc
@@ -91,49 +89,56 @@ public :
 	* Get the weight of the links.
 	* return                  float containing the weight.
 	*/
-	float GetWeight(void) {return Weight;}
+	float GetWeight(void) const {return(Weight);}
 
 	/**
 	* Set the weight of a links.
 	* @param w                the weight.
 	*/
-	void SetWeight(float w){Weight=w;}
+	void SetWeight(float w);
 
 	/**
-	* Compare function needed by R::RContainer.
-	* @param lnk            Pointer to the links used for the comparaison.
+	* Compare two weighted lists by comparing their identificator.
+	* @see R::RContainer
+	* @param lnk             Pointer to a weighted list.
+	* @return int
 	*/
-	int Compare(const GBalancedLinks* lnk) const {return(Doc->GetId()- lnk->GetDoc()->GetId());}
+	int Compare(const GBalancedLinks* lnk) const;
 
 	/**
-	* Compare function needed by R::RContainer.
-	* @param lnk            Links used for the comparaison.
+	* Compare two weighted lists by comparing their identificator.
+	* @see R::RContainer
+	* @param lnk             Weighted list.
+	* @return int
 	*/
-	int Compare(GBalancedLinks& lnk) const {return(Doc->GetId()- lnk.GetDoc()->GetId());}
+	int Compare(GBalancedLinks& lnk) const;
 
 	/**
-	* Compare function needed by R::RContainer.
-	* @param ID             ID used for the comparaison.
+	* Compare the idenfiticator of a weighted list with another one.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
 	*/
-	int Compare(const unsigned int id) const {return(Doc->GetId()-id);}
+	int Compare(const unsigned int id) const;
 
 	/**
-	* destructor of GLinks
+	* Destructor of a weighted list of links.
 	*/
 	virtual ~GBalancedLinks(void);
 };
 
+
 //-----------------------------------------------------------------------------
 /**
-* The GLinksCursor class provides a way to go trough a set of links.
-* @short Links Cursor
+* The GLinksCursor class provides a way to go trough a set of a weighted list
+* of links.
+* @short Weighted List of Links Cursor
 */
 CLASSCURSOR(GBalancedLinksCursor,GBalancedLinks,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

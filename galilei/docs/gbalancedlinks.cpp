@@ -33,7 +33,7 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //include file for GALILEI
 #include <docs/gbalancedlinks.h>
 using namespace GALILEI;
@@ -41,29 +41,55 @@ using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // GBalancedLinks
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GALILEI::GBalancedLinks::GBalancedLinks(GDoc* d,float w)
+//------------------------------------------------------------------------------
+GBalancedLinks::GBalancedLinks(GDoc* d,float w) throw(bad_alloc, GException)
 	: GLinks(d) , Weight(w)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GBalancedLinks::GBalancedLinks(GDoc* d)
+//------------------------------------------------------------------------------
+GBalancedLinks::GBalancedLinks(GDoc* d) throw(bad_alloc, GException)
 	: GLinks(d) , Weight(1)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GBalancedLinks::~GBalancedLinks(void)
+//------------------------------------------------------------------------------
+void GBalancedLinks::SetWeight(float w)
 {
+	Weight=w;
 }
 
 
+//------------------------------------------------------------------------------
+int GBalancedLinks::Compare(const GBalancedLinks* lnk) const
+{
+	return(Doc->GetId()- lnk->GetDoc()->GetId());
+}
+
+
+//------------------------------------------------------------------------------
+int GBalancedLinks::Compare(GBalancedLinks& lnk) const
+{
+	return(Doc->GetId()- lnk.GetDoc()->GetId());
+}
+
+
+//------------------------------------------------------------------------------
+int GBalancedLinks::Compare(const unsigned int id) const
+{
+	return(Doc->GetId()-id);
+}
+
+
+//------------------------------------------------------------------------------
+GBalancedLinks::~GBalancedLinks(void)
+{
+}

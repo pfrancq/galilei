@@ -34,32 +34,25 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-//#include <ctype.h>
-//#include <math.h>
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdocvector.h>
 #include <profiles/gsubprofilevector.h>
 #include <groups/ggroupvector.h>
 #include <infos/gweightinfo.h>
 #include <infos/glang.h>
-
 using namespace R;
 using namespace GALILEI;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GDocVector
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf) throw(bad_alloc)
 	: GDoc(url,name,id,lang,mime,u,a,f,nbf),
 	  GWeightInfos(100)
@@ -67,14 +60,14 @@ GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool GALILEI::GDocVector::HasRepresentation(void) const
 {
 	return(!GWeightInfos::IsEmpty());
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GALILEI::GDocVector::ClearInfos(bool l)
 {
 	GDoc::ClearInfos(l);
@@ -83,14 +76,14 @@ void GALILEI::GDocVector::ClearInfos(bool l)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GDocVector::AddInfo(GWeightInfo* info) throw(bad_alloc)
 {
 	InsertPtr(info);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GWeightInfoCursor& GALILEI::GDocVector::GetWeightInfoCursor(void)
 {
 	GWeightInfoCursor *cur=GWeightInfoCursor::GetTmpCursor();
@@ -99,49 +92,49 @@ GWeightInfoCursor& GALILEI::GDocVector::GetWeightInfoCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GALILEI::GDocVector::Similarity(const GDoc* doc) const
 {
 	return(GWeightInfos::Similarity(dynamic_cast<const GDocVector*>(doc)));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GALILEI::GDocVector::SimilarityIFF(const GDoc* doc) const
 {
 	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GDocVector*>(doc),otDoc,Lang));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GALILEI::GDocVector::Similarity(const GSubProfile* sub) const
 {
 	return(GWeightInfos::Similarity(dynamic_cast<const GSubProfileVector*>(sub)));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GALILEI::GDocVector::SimilarityIFF(const GSubProfile* sub) const
 {
 	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GSubProfileVector*>(sub),otDocSubProfile,Lang));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GALILEI::GDocVector::Similarity(const GGroup* grp) const
 {
 	return(GWeightInfos::Similarity(dynamic_cast<const GGroupVector*>(grp)));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 double GALILEI::GDocVector::SimilarityIFF(const GGroup* grp) const
 {
 	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GGroupVector*>(grp),otDocGroup,Lang));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GALILEI::GDocVector::UpdateRefs(void) const
 {
 	if(!Lang) return;
@@ -149,7 +142,7 @@ void GALILEI::GDocVector::UpdateRefs(void) const
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GALILEI::GDocVector::RemoveRefs(void) const
 {
 	if(!Lang) return;
@@ -157,7 +150,7 @@ void GALILEI::GDocVector::RemoveRefs(void) const
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GALILEI::GDocVector::~GDocVector(void)
 {
 	RemoveRefs();

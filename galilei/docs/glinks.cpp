@@ -33,7 +33,7 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //include file for GALILEI
 #include <docs/glinks.h>
 #include <docs/glink.h>
@@ -42,21 +42,23 @@ using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // GLinks
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GALILEI::GLinks::GLinks(GDoc* d)
-	: RContainer<GLink,unsigned int,false,true>(3,2), Doc(d) 
+//------------------------------------------------------------------------------
+GLinks::GLinks(GDoc* d) throw(bad_alloc, GException)
+	: RContainer<GLink,unsigned int,false,true>(3,2), Doc(d)
 {
+	if(!d)
+		throw GException("Document cannot be null in a list of links");
 }
 
 
-//-----------------------------------------------------------------------------
-GLinkCursor& GALILEI::GLinks::GetLinkCursor(void)
+//------------------------------------------------------------------------------
+GLinkCursor& GLinks::GetLinkCursor(void)
 {
 	GLinkCursor *cur = GLinkCursor::GetTmpCursor();
 	cur->Set(this);
@@ -64,9 +66,28 @@ GLinkCursor& GALILEI::GLinks::GetLinkCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GLinks::~GLinks(void)
+//------------------------------------------------------------------------------
+int GLinks::Compare(const GLinks* lnk) const
 {
+	return(Doc->GetId()- lnk->GetDoc()->GetId());
 }
 
 
+//------------------------------------------------------------------------------
+int GLinks::Compare(GLinks& lnk) const
+{
+	return(Doc->GetId()- lnk.GetDoc()->GetId());
+}
+
+
+//------------------------------------------------------------------------------
+int GLinks::Compare(const unsigned int id) const
+{
+	return(Doc->GetId()-id);
+}
+
+
+//------------------------------------------------------------------------------
+GLinks::~GLinks(void)
+{
+}

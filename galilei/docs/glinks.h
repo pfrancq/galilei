@@ -33,26 +33,26 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GLinksH
 #define GLinksH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //include file for GALILEI
-#include <sessions/galilei.h>
 #include <docs/gdoc.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* This class provides a representation of a set of links.
-* @author  Vandaele Valery
+* This class provides a representation of a set of links. The list is not
+* responsible for the desalocation of the list.
+* @author Vandaele Valery
 * @short List of Links.
 */
 class GLinks : public R::RContainer<GLink,unsigned,false,true>
@@ -67,55 +67,61 @@ protected :
 public :
 
 	/**
-	* constructor of GLinks
-	* @param doc               the document containing all the links.
+	* Constructor of a list of links.
+	* @param doc             Document containing all the links.
 	*/
-	GLinks(GDoc* doc);
+	GLinks(GDoc* doc) throw(bad_alloc, GException);
 
 	/**
 	* Get the document containing all the links.
-	* return doc              the document.
+	* @return Pointer to a GDoc.
 	*/
-	GDoc* GetDoc(void) const {return Doc;}
+	GDoc* GetDoc(void) const {return(Doc);}
 
 	/**
-	* Get the id of the doc
-	* @return id            the id of the document.
+	* Get the Identificator of the document.
+	* @return unsigned int.
 	*/
-	unsigned int GetId(void) const {return Doc->GetId() ; }
+	unsigned int GetId(void) const {return(Doc->GetId());}
 
 	/**
-	* Get a cursor on the Links of the document.
+	* Get a cursor on the list of links.
 	* @return GLinkCursor.
 	*/
 	GLinkCursor& GetLinkCursor(void);
 
 	/**
-	* Compare function needed by R::RContainer.
-	* @param lnk            Pointer to the links used for the comparaison.
+	* Compare two lists by comparing their identificator.
+	* @see R::RContainer
+	* @param lnk             Pointer to a list.
+	* @return int
 	*/
-	int Compare(const GLinks* lnk) const {return(Doc->GetId()- lnk->GetDoc()->GetId());}
+	int Compare(const GLinks* lnk) const;
 
-  /**
-	* Compare function needed by R::RContainer.
-	* @param lnk            Links used for the comparaison.
-	*/
-	int Compare(GLinks& lnk) const {return(Doc->GetId()- lnk.GetDoc()->GetId());}
-	
 	/**
-	* Compare function needed by R::RContainer.
-	* @param ID             ID used for the comparaison.
+	* Compare two lists by comparing their identificator.
+	* @see R::RContainer
+	* @param lnk             List.
+	* @return int
 	*/
-	int Compare(const unsigned int id) const {return(Doc->GetId()-id);}
-	
+	int Compare(GLinks& lnk) const;
+
 	/**
-	* destructor of GLinks
+	* Compare the idenfiticator of a weighted list with another one.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
+	*/
+	int Compare(const unsigned int id) const;
+
+	/**
+	* Destructor of a list of links.
 	*/
 	virtual ~GLinks(void);
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GLinksCursor class provides a way to go trough a set of links.
 * @short Links Cursor
@@ -123,8 +129,8 @@ public :
 CLASSCURSOR(GLinksCursor,GLinks,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif
