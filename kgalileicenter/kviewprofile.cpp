@@ -108,7 +108,7 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	ConstructUser();
 
 	// Initialisation of the Descriptions Widget
-	Desc=new QGSubProfileDescs(Infos,Doc->GetSession(),Profile,sdVector);         
+	Desc=new QGSubProfileDescs(Infos,Doc->GetSession(),Profile,sdVector);
 
 	// Initialisation of the Groups Widget
 	Groups=new QListView(Infos);
@@ -145,10 +145,7 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	//Pov->addColumn(QString("attached words"));
 	Pov->setRootIsDecorated(true);
 
-	connect(Pov,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	//connect(Pov,SIGNAL(clicked(int row, int col, int bttn, QPoint mousePos)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	ConstructPov2(profile);	
-	
+
 }
 
 
@@ -335,111 +332,6 @@ void KViewProfile::ComputeProfile(void)
 //-----------------------------------------------------------------------------
 void KViewProfile::ConstructPov(GProfile* /*profile*/)
 {
-// 	GInOutputBase *datainput = NULL;
-// 	GStandardInOutPutCursor Outpt; //= GetGOutPutCursor();
-// 	GStandardInOutPutCursor liste;
-// 	GInOutputBase *listdoc;
-// 	GLang *lang;
-// 	int rows[200][200];
-// 	int x = 200;
-// 	int y = 200;
-// 	datainput = new GInOutputBase();
-// 	char str[256];
-// 	int i,j,k,z,l,pos;
-// 	int result = 0;
-// 	QTable *table;
-// 	lang=Doc->GetSession()->GetLangs()->GetLang("en");   // A CORRIGER ERREUR POUR DEVELOPPEMENT
-// 
-// // 	datainput = Doc->GetSession()->LoadPointOfView(profile->GetSubProfile(lang));
-// // 	i = Doc->GetSession()->LevelExist(1, profile->GetSubProfile(lang)->GetId());
-// // 	i = profile->GetId();
-// 
-// 	table = new QTable(x,y,this);
-// 	QStringList items;
-// 
-// 	for(j = 0; j < x; j++)
-// 		for(k=0; k < y; k++)
-// 			rows[j][k] = -1;
-// 
-// 	if(datainput)
-// 	{
-// 		Outpt = datainput->GetGStandardInOutPutCursor();
-// //		if(!Doc->GetSession()->LevelExist(1,profile->GetId())) // no level 1
-// //		{
-// //			for(i = 2; Doc->GetSession()->LevelExist(i,profile->GetId())== 0; i++)
-// //			; // boucle de positionnement
-// //			for(Outpt.Start(); !Outpt.End(); Outpt.Next())
-// //		  {
-// //				if(Outpt()->GetLevel() == i)
-// //					Outpt()->SetLevel(1);
-// //			}
-// //		}
-// 
-// 		for( i = 1, pos = 0; Doc->GetSession()->LevelExist(i,profile->GetSubProfile(lang)->GetId()); i++) // scan all the levels
-// 		{
-// 			for(Outpt.Start(); !Outpt.End(); Outpt.Next()) // for each level scan the container
-// 			  {
-// 				if(i == 1 && Outpt()->GetLevel() == 1) // heads
-// 				{
-// 					rows[pos][0] = Outpt()->GetIdw();
-// 					//table->setItem( 0, pos,  new QTableItem( table, QTableItem::WhenCurrent, QString( Outpt()->GetWord() ) ) );
-// 					QStringList items;
-// 					listdoc = new GInOutputBase();
-// 					if(listdoc = Doc->GetSession()->GetDocList(profile->GetSubProfile(lang)->GetGroup()->GetId(),Outpt()->GetCurProfile()->GetId(), Outpt()->GetIdw())) // recupere liste documents
-// 					{
-// 						liste = listdoc->GetGStandardInOutPutCursor();
-// 						items<<Outpt()->GetWord();
-// 						for(liste.Start(); !liste.End(); liste.Next())
-// 						{
-// 							strcpy(str,GetNameDoc(liste()->DocRef));
-// 							items<<str; 		//items<<liste()->DocRef;
-// 						}
-// 						table->setItem(0,pos,new QComboTableItem(table, items, true));
-// 						delete(listdoc);
-// 						pos++;
-// 					}
-// 				}
-// 				else
-// 				{
-//          				if(Outpt()->GetLevel() == i)
-// 					{
-// 						for( k = 0; (result = Outpt()->GetParentPos(k)) != 0; k++)
-// 						{
-//            						for( j = 0; rows[j][0] != -1; j++)
-// 							{
-// 						 		for( l = 0; rows[j][l] != -1; l++)
-// 								{
-//              								if(rows[j][l] == result )
-// 									{
-// 										z = 0;
-// 										while( rows[j][z] != -1) z++;
-// 										rows[j][z] = Outpt()->GetIdw();
-//  										QListViewItem *item = new QListViewItem( Pov );
-// 										QStringList items;
-// 										listdoc = new GInOutputBase();
-// 										if(listdoc = Doc->GetSession()->GetDocList(profile->GetSubProfile(lang)->GetGroup()->GetId(),Outpt()->GetCurProfile()->GetId(), Outpt()->GetIdw())) // recupere liste documents
-// 										{
-// 											liste = listdoc->GetGStandardInOutPutCursor();
-// 											items<<Outpt()->GetWord();
-// 											for(liste.Start(); !liste.End(); liste.Next())
-// 											{
-// 												strcpy(str,GetNameDoc(liste()->DocRef));
-// 												items<<str;
-// 												//items<<liste()->DocRef;
-// 											}
-// 											table->setItem(z,j,new QComboTableItem(table, items, true));
-// 											delete(listdoc);
-// 										}
-// 										break;
-// 									}
-// 								}
-// 							}
-// 						}
-// 					}
-// 				}
-// 			}
-// 		}
-// 	 }// fin if datainput
 }
 
 
