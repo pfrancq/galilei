@@ -6,7 +6,7 @@
 
 	A HTML filter - Implementation.
 
-	(C) 2001 by Lamoral Julien
+	(C) 2001 by Pascal Francq
 
 	Version $Revision$
 
@@ -20,7 +20,6 @@
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <string.h>
-#include <fstream.h>
 #include <iostream.h> // for cout only.
 #include <stdio.h>
 #include <sys/stat.h>
@@ -42,15 +41,59 @@ using namespace GALILEI;
 
 //---------------------------------------------------------------------------
 //
+// class Tag
+//
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+class GALILEI::GFilterHTML::Tag
+{
+public:
+	enum tTag{tNULL,tHTML,tSCRIPT,tHEAD,tTITLE,tMETA,tBODY,tH1,tH2,tH3,tH4,tH5,tH6,tP,tTD};
+	RString Name;
+	RString XMLName;
+	tTag Type;
+	bool Head;
+	int Level;
+	bool Ins;
+
+	Tag(const char* n,const char* x,tTag t,bool h,int l,bool i)
+		: Name(n), XMLName(x), Type(t), Head(h), Level(l),Ins(i) {}
+	int Compare(const Tag* t) const {return(Name.Compare(t->Name));}
+	int Compare(const Tag& t) const {return(Name.Compare(t.Name));}
+	int Compare(const char* t) const {return(Name.Compare(t));}
+};
+
+
+
+//---------------------------------------------------------------------------
+//
 // class GFilterHTML
 //
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
-	: GFilter(mng,"HTML Filter","text/html","$Revision$"), Buffer(0), Chars(50,5)
+	: GFilter(mng,"HTML Filter","text/html","$Revision$"), Tags(0),
+	 Buffer(0), Chars(50,5)
 {
 	AddMIME("text/html");
+	InitCharContainer();
+	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
+	Tags->InsertPtr(new Tag("HEAD","",Tag::tHEAD,true,1,false));
+	Tags->InsertPtr(new Tag("SCRIPT","",Tag::tSCRIPT,true,1,false));
+	Tags->InsertPtr(new Tag("META","",Tag::tMETA,true,1,true));
+	Tags->InsertPtr(new Tag("TITLE","Title",Tag::tTITLE,true,1,true));
+	Tags->InsertPtr(new Tag("BODY","",Tag::tBODY,false,1,false));
+	Tags->InsertPtr(new Tag("H1","H1",Tag::tH1,false,1,true));
+	Tags->InsertPtr(new Tag("H2","H2",Tag::tH2,false,2,true));
+	Tags->InsertPtr(new Tag("H3","H3",Tag::tH3,false,3,true));
+	Tags->InsertPtr(new Tag("H4","H4",Tag::tH4,false,4,true));
+	Tags->InsertPtr(new Tag("H5","H5",Tag::tH5,false,5,true));
+	Tags->InsertPtr(new Tag("H6","H6",Tag::tH6,false,6,true));
+	Tags->InsertPtr(new Tag("P","P",Tag::tP,false,7,true));
+	Tags->InsertPtr(new Tag("TD","P",Tag::tTD,false,7,true));
+	Tags->InsertPtr(new Tag("LI","P",Tag::tTD,false,7,true));
 }
 
 
@@ -68,463 +111,30 @@ bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
 	#endif
 	handle=open(Doc->GetFile(),accessmode);
 	fstat(handle, &statbuf);
-	Begin=Pos=Buffer=new char[statbuf.st_size+1];
+	Block=Pos=Buffer=new char[statbuf.st_size+1];
+	TagLen=0;
 	read(handle,Buffer,statbuf.st_size);
 	Buffer[statbuf.st_size]=0;
 	SkipSpaces();
 
-	//Initialisation of the different variable
-	InitCharContainer();
-	
-	for (int i=0;i<8;i++)
-	{
-		ClassementVector[i]=0;
-	}
-	
-	NextWirteTag=true;
+	// Traitement of the document
+	AnalyseHeader();
+	AnalyseBody();
+	doc->AddNode(doc->GetTop(),/**links=*/new RXMLTag("links"));
 
-	// Begin  the parsing of the HTML Structure
-	doc->AddNode(doc->GetTop(),meta=new RXMLTag("MetaData"));
-	doc->AddNode(meta,act=new RXMLTag("URL"));
-	act->InsertAttr(new RXMLAttr("value",Doc->GetURL()));
-	doc->AddNode(meta,act=new RXMLTag("TypeDoc"));
-	act->InsertAttr(new RXMLAttr("code","text/html"));
-
-	// Traitement of Headers
-	AnalyseHeader(doc);
-
-	// Traitement of Content
-	doc->AddNode(doc->GetTop(),content=new RXMLTag("Content"));
-	AnalyseBody(doc);
-
-	// Traitment of links
-	doc->AddNode(doc->GetTop(),links=new RXMLTag("links"));
 	// Done
-	if (Begin)
+	if(Block)
 	{
-		delete[] Begin;
-		Begin=0;
+		delete[] Buffer;
+		Buffer=0;
 	}
 	return(true);
 }
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::AnalyseBody(GDocXML* doc)
-{
-	bool body=true;
-
-	while (body)
-	{
-		//initialisation of body
-		NextWirteTag= true;
-		NextTag();
-		// if  there is a h1 or .. before le body stop
-		if (TagCompare("h1")||TagCompare("h2")||TagCompare("h3")||TagCompare("h4")||TagCompare("h5")||TagCompare("h6")||TagCompare("p")||TagCompare("/html"))
-		{
-			body=false;
-		}
-		else if (TagCompare("body"))
-		{
-			while((*Buffer)&&(!TagCompare("/body"))&&(!end))
-			{
-				// go to the next tag
-				NextTag();
-				//  if compare to ...  search to the good fonction
-				if (TagCompare("h1")||TagCompare("h2")||TagCompare("h3")||TagCompare("h4")||TagCompare("h5")||TagCompare("h6")||TagCompare("p"))
-				{
-					
-					GetValueCurentTag (OldTag.StrDup(), doc);
-				}
-				//for the element of table
-				else if(TagCompare("td")||TagCompare("li")||TagCompare("hr"))
-				{
-				GetValueCurentTag ("p", doc);
-				}
-				else if (TagCompare("script"))
-				{
-					NextTag();
-					while (!TagCompare("/script"))
-					{
-						NextTag();
-					}
-				}
-				else if (TagCompare("/body"))
-				{
-					end=true;
-				}
-				else
-				{
-				}
-			}
-			body= false;
-		}
-	}
-	
-}
-
-
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::AnalyseHeader(GDocXML* doc)
-{
-// analyse of html header
-	bool head=true;
-	while (head)
-	{
-		NextTag();
-		if (TagCompare("body")||TagCompare("h1")||TagCompare("h2")||TagCompare("h3")||TagCompare("h4")||TagCompare("h5")||TagCompare("h6")||TagCompare("p")||TagCompare("/html"))
-		{
-			head = false;
-		}
-		else if (TagCompare("head"))
-		{
-		   while(!TagCompare("/head"))
-			{
-				NextTag();
-				if (TagCompare("title")||TagCompare("meta") )
-				{
-					if (TagCompare("title"))
-					{
-						GetValue(doc);
-					}
-					else // meta
-					{
-						GetMetaValue(doc);
-					}
-				
-				}
-				 // add here other head data
-			}
-			head= false;
-		}
-	}
-}
-
-
-//---------------------------------------------------------------------------
-bool GALILEI::GFilterHTML::TagCompare(const char* current)
-{
-	if (TAG==current)
-	{
-		OldTag=TAG;
-		return(true);
-	}
-	return(false);
-}
-
-
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::GetValue(GDocXML* doc)
-{
-	bool ok=true;
-	Pos=Buffer;
-	// we are just next the <title> tag
-	// if we are at </title> we go out and place the good value into the tag value
-	while((*Buffer)&&ok)
-	{
-		if ((*Buffer)=='<')
-		{
-			ok=false;
-		}
-		else
-		{
-			Buffer++;
-		}
-	}
-
-	// the buffer is "on" a '<'
-	(*Buffer)=0;
-
-	doc->AddNode(meta,act=new RXMLTag("Title"));
-	AnalyzeBlock(Pos,act);
-	// replace the buffer with'<'
-	(*Buffer)='<';
-}
-
-
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::GetValueCurentTag(char* curent,GDocXML* doc)
-{
-	SkipSpaces();
-	bool ok2=false;
-	bool ok4=true;
-	ptrvalue=Buffer;
-	end = false;
-
-	// "save" in ptrvalue all the value of the currentTag
-	// whit <a> </a> ,... on stop if we are on a  <h'x'> </p> </body>,....
-	while((*Buffer)&&ok4)
-	{
-		if(!(*Buffer)) end=true;
-		if ((*Buffer)=='<')
-		{
-			char* temporarybuffer;
-			temporarybuffer = Buffer;
-			temporarybuffer++;
-			if ( (*temporarybuffer)=='h' ||(*temporarybuffer)=='p'||(*temporarybuffer)=='H'||(*temporarybuffer)=='P')
-			{
-				ok4=false;
-				(*Buffer)=0;
-				
-			}
-			else if((*temporarybuffer)=='t'||(*temporarybuffer)=='T')
-			{
-				temporarybuffer++;
-				if ( (*temporarybuffer)=='d'||(*temporarybuffer)=='D')
-				{
-					ok4=false;
-					(*Buffer)=0;
-				}
-				else
-				{
-					while ((*Buffer)&&(*Buffer!='>'))
-					{
-						Buffer++;
-					}
-					if ((*Buffer)) Buffer++;
-				}
-			}
-			else if((*temporarybuffer)=='l'||(*temporarybuffer)=='L')
-			{
-				temporarybuffer++;
-				if ( (*temporarybuffer)=='i'||(*temporarybuffer)=='I')
-				{
-					ok4=false;
-					(*Buffer)=0;
-				}
-				else
-				{
-					while ((*Buffer)&&(*Buffer!='>'))
-					{
-						Buffer++;
-					}
-					if ((*Buffer)) Buffer++;
-				}
-			}
-			else if (((*temporarybuffer)=='/'))
-			{
-				temporarybuffer++;
-				if ( (*temporarybuffer)=='h'||(*temporarybuffer)=='p'||(*temporarybuffer)=='H'||(*temporarybuffer)=='P'||(*temporarybuffer)=='t'||(*temporarybuffer)=='T')
-				{
-				ok4=false;
-				(*Buffer)=0;
-				}
-				else if((*temporarybuffer)=='t'||(*temporarybuffer)=='T')
-				{	
-					temporarybuffer++;
-					if ( (*temporarybuffer)=='d'||(*temporarybuffer)=='D')
-					{
-						ok4=false;
-						(*Buffer)=0;
-					}
-					else
-					{
-						while ((*Buffer)&&(*Buffer!='>'))
-						{
-							Buffer++;
-						}
-						if ((*Buffer)) Buffer++;
-					}
-				}
-				else if((*temporarybuffer)=='l'||(*temporarybuffer)=='L')
-				{	
-					temporarybuffer++;
-					if ( (*temporarybuffer)=='i'||(*temporarybuffer)=='I')
-					{
-						ok4=false;
-						(*Buffer)=0;
-					}
-					else
-					{
-						while ((*Buffer)&&(*Buffer!='>'))
-						{
-							Buffer++;
-						}
-						if ((*Buffer)) Buffer++;
-					}
-				}
-				else if (  (*temporarybuffer)=='b'||(*temporarybuffer)=='B')
-				{
-					temporarybuffer++;
-					if ( (*temporarybuffer)=='o'||(*temporarybuffer)=='O' )
-					{
-						ok4=false;
-						(*Buffer)=0;
-					}
-					else Buffer++;
-				}
-				else Buffer++;
-			}	
-			else
-			{
-				while ((*Buffer)&&(*Buffer!='>'))
-				{
-					Buffer++;
-				}
-				if ((*Buffer)) Buffer++;
-				
-			}
-		}
-		else Buffer++;
-	}
-
-	// we enter to Pos the interessant value into the 2inetresting tags and whe retire the unintresting inforation	
-//	Pos=ptrvalue;
-	RString sentence (200);
-	while((*ptrvalue))
-	{
-		bool ok3=true;
-
-		// if  char is a & it is a special html code
-		if((*ptrvalue)=='&')
-		{
-			(*ptrvalue)=' ';
-			ptrvalue++;
-			hold=ptrvalue;
-			while((*ptrvalue)&&ok3)
-			{
-				if((*ptrvalue)==';')
-				{
-					ok3=false;
-					(*ptrvalue)=0;
-				}
-				else
-				{
-					ptrvalue++;
-				}
-			}
-			CodeToChar* ptr;
-			ptr = (Chars.GetPtr<const char*>(hold));
-			// we search the corresponding value
-			while(*hold)
-			{
-				(*hold)=' ';
-				if ((*hold))hold++;
-			}
-
-			if (ptr)
-			{
-				sentence+=ptr->Return;
-				(*ptrvalue)=ptr->Return;
-				ptrvalue++;
-			}
-			else
-			{
-			 (*ptrvalue)=' ';
-			 sentence+=' ';
-			}
-		}
-		
-		// if there is a tag it is a unintresting tag
-		else if ((*ptrvalue)=='<')
-		{
-			while ((*ptrvalue)&&(*ptrvalue!='>'))
-				{
-					(*ptrvalue)=' ';
-					ptrvalue++;
-					
-				}
-				(*ptrvalue)=' ';
-				ptrvalue++;	
-		}
-		else
-		{
-			sentence+=(*ptrvalue);
-			ptrvalue++;
-			ok2=true;
-		}
-	}
-
-	
-	// whe analyse only if there is a containt
-	if (ok2)
-	{
-		
-		Pos=sentence.StrDup();	
-		bool contents=true;
-
-		// we compare the current tag  .. and case the value of this tag
-		// if the tag must be attached to the current we attach his  to
-		// the precednent tag else we attach to the content level
-
-		if (!strcmp(curent,"h1"))
-		{
-			contents= true;
-			for (int i=0;i<8;i++)
-			{
-				ClassementVector[i]=0;
-			}
-
-			ClassementVector [1]=1;
-			doc->AddNode(content,TagVector [1]=new RXMLTag("h1"));
-			AnalyzeBlock(Pos,TagVector [1]);
-		}
-
-		if (!strcmp(curent,"h2"))
-		{
-			AddTag(2,curent, doc);
-		}
-		if (!strcmp(curent,"h3"))
-		{
-			AddTag(3,curent, doc);
-		}
-		if (!strcmp(curent,"h4"))
-		{
-			AddTag(4,curent, doc);
-		}
-		if (!strcmp(curent,"h5"))
-		{
-			AddTag(5,curent, doc);
-		}
-		if (!strcmp(curent,"h6"))
-		{
-			AddTag(6,curent, doc);
-		}
-		if (!strcmp(curent,"p"))
-		{
-		    AddTag(7,curent, doc);
-		}
-	}
-
-	// on remet le buffer a <
-	(*Buffer)='<';
-}
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::AddTag(int level,char* tag,GDocXML* doc)
-{
-	bool contents=true;
-	int curTag;
-	for (int i=1;i<level;i++)
-	{
-		if (ClassementVector[i]!=0)
-		{
-			contents=false;
-			curTag=i;
-		}
-	}
-	if(contents)
-	{
-		for (int i=0;i<level+1;i++)
-		{
-			ClassementVector[i]=0;
-		}
-		ClassementVector [level]=1;
-		doc->AddNode(content,TagVector [level]=new RXMLTag(tag));
-		AnalyzeBlock(Pos,TagVector [level]);
-	}
-	else
-	{
-		ClassementVector [level]=1;
-		doc->AddNode(TagVector [curTag],TagVector [level]=new RXMLTag(tag));
-		AnalyzeBlock(Pos,TagVector [level]);
-	}
-
-}
-
-//---------------------------------------------------------------------------
 void GALILEI::GFilterHTML::InitCharContainer(void)
 {
-	//  intialisation of the  char container ... attention one & is remplace by a  blanc
 	Chars.InsertPtr(new CodeToChar("Ucirc",'Û'));
 	Chars.InsertPtr(new CodeToChar("nbsp",' '));
 	Chars.InsertPtr(new CodeToChar("#190",'¾'));
@@ -574,6 +184,8 @@ void GALILEI::GFilterHTML::InitCharContainer(void)
 	Chars.InsertPtr(new CodeToChar("oacute",'ó'));
 	Chars.InsertPtr(new CodeToChar("Igrave",'Ì'));
 	Chars.InsertPtr(new CodeToChar("#169",'©'));
+	Chars.InsertPtr(new CodeToChar("raquo",'»'));
+	Chars.InsertPtr(new CodeToChar("laquo",'«'));
 	Chars.InsertPtr(new CodeToChar("ocirc",'ô'));
 	Chars.InsertPtr(new CodeToChar("Iuml",'Ï'));
 	Chars.InsertPtr(new CodeToChar("#164",'¤'));
@@ -625,189 +237,404 @@ void GALILEI::GFilterHTML::InitCharContainer(void)
 }
 
 
+//---------------------------------------------------------------------------
+void GALILEI::GFilterHTML::AnalyseBody(void)
+{
+	RXMLTag* content;
+	RXMLTag* act;
+	RXMLTag* Open[8];    // Remember all tag open.
+	RXMLTag** ptr;
+	int Level;
+	char* OldBlock;
+	char* Ins;
+	int i;
+
+	// Init Part
+	memset(Open,0,8*sizeof(RXMLTag*));
+	Doc->AddNode(Doc->GetTop(),Open[0]=content=new RXMLTag("Content"));
+	Level=0;
+	OldBlock=0;
+
+	// Parse it
+	while((*Pos)&&(CurTag))
+	{
+		if(bEndTag)
+		{
+			Ins=Block;
+			Block=OldBlock=0;
+			// Find the lowest tag open and assign the text to it.
+			for(ptr=&Open[7],Level=7;!(*ptr);ptr--,Level--);
+			act=(*ptr);
+			// All the lowest tag and himself are closed.
+			Level=CurTag->Level;
+		}
+		else
+		{
+			Ins=OldBlock;
+			OldBlock=Block;
+			// Find the highest open tag above the current one
+			for(ptr=&Open[CurTag->Level-1],Level=CurTag->Level-1;!(*ptr);ptr--,Level--);
+			if(Ins)
+			{
+				// Text to attach. If the lowest level is the content,
+				// create a 'P' tag else attach to it.
+				if(Level)
+					act=(*ptr);
+				else
+					act=0;
+			}
+			if(CurTag->Ins)
+				Doc->AddNode(*ptr,Open[CurTag->Level]=new RXMLTag(CurTag->XMLName));
+			else
+				OldBlock=0;
+			if(!act)
+				act=Open[CurTag->Level];
+			// All the lowest tag are closed.
+			Level=CurTag->Level+1;
+		}
+		if(Ins)
+		{
+			AnalyzeBlock(Ins,act);
+		}
+		// All the tag lower than 'Level' are closed.
+		for(ptr=&Open[7],i=7;i>=Level;ptr--,i--)
+		{
+			(*ptr)=0;
+		}
+		NextValidTag();
+	}
+}
+
 
 //---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::GetMetaValue (GDocXML* doc)
+void GALILEI::GFilterHTML::AnalyseHeader(void)
 {
+	RXMLTag* meta;
+	RXMLTag* act;
+	Tag::tTag LastType=Tag::tNULL;;
+	char* OldBlock;
+	char* OldParams;
 
-	RString temp2 (100);
-	bool ok=true;
-	bool ok1=false;
-	bool ok2=true;
+	// Init Part.
+	Doc->AddNode(Doc->GetTop(),meta=new RXMLTag("MetaData"));
+	Doc->AddNode(meta,act=new RXMLTag("URL"));
+	act->InsertAttr(new RXMLAttr("value",Doc->GetURL()));
+	Doc->AddNode(meta,act=new RXMLTag("TypeDoc"));
+	act->InsertAttr(new RXMLAttr("code","text/html"));
 
-	// looking for meta name ( keywords or description and stop the buffer after the   ="
-	while((*Buffer)&&ok2)
+	// Parse it.
+	NextValidTag();
+	while((*Pos)&&CurTag)
 	{
-		if ((*Buffer)=='"')
+		switch(LastType)
 		{
-			ok2 = false ;
-			Buffer++;
-		}
+			 case Tag::tTITLE:
+				Doc->AddNode(meta,act=new RXMLTag("Title"));
+				AnalyzeBlock(OldBlock,act);
+				break;
+			case Tag::tMETA:
+				ReadMetaTag(OldParams,meta);
+				break;
+			default:
+				break;
+		};
+		if(bEndTag)
+			LastType=Tag::tNULL;
 		else
 		{
-			Buffer++;
+			OldBlock=Block;
+			OldParams=Params;
+			LastType=CurTag->Type;
 		}
+		if((bEndTag&&(CurTag->Type==Tag::tHEAD))||(!CurTag->Head)) return;
+		NextValidTag();
 	}
-	ok2=true;
-	// the information is the name of the metatag
+}
 
-	while((*Buffer)&&ok2)
-	{
-		if ((*Buffer)=='"')
-		{
-			ok2 = false ;
-			Buffer++;
-		}
-		else
-		{
-			temp2+=(*Buffer);
-			Buffer++;
-		}
-	}
-	char* cur1;
-	char* cur2;
-	cur1="keywords";
-	cur2="description";
-	temp2.StrLwr();
-	ok=false;
-	if ((temp2==cur1)||(temp2==cur2))
-	{
-		TAG=temp2;
-		ok2=true;
-		ok=true;
-		ok1=true;
-	}
 
-	while((*Buffer)&&ok2)
+//---------------------------------------------------------------------------
+void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* metaData)
+{
+	char* ptr;
+	char delimiter;
+	char* name;    // Name of the tag.
+	char* content; // Content of the tag.
+	bool bSpaces;
+	RXMLTag* tag;
+
+	// Read the name of the META Data
+	if(!params) return;
+	ptr=params;
+	while((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
+		(*(ptr++))=toupper(*ptr);
+	bSpaces=isspace(*ptr);
+	(*(ptr++))=0;
+	if(bSpaces)
 	{
-		if ((*Buffer)=='"')
-		{
-			ok2 = false ;
-			Buffer++;
-		}
-		else
-		{
-			Buffer++;
-		}
+		while((*ptr)&&((*ptr)!='='))
+			ptr++;
+		ptr++;    // Skip '=';
 	}
 
-	Pos=Buffer;
-	// we save the information into Pos
-	while((*Buffer)&&ok)
+	// The name must be 'HTTP-EQUIV'
+	if((!(*ptr))||(strcmp(params,"HTTP-EQUIV"))) return;
+
+	// Skip spaces and read the delimiter which must be a ' or a "
+	while((*ptr)&&(isspace(*ptr)))
+		ptr++;
+	delimiter=(*(ptr++));
+	if((delimiter!='\'')&&(delimiter!='"')) return;
+
+	// Read the type of HTTP-EQUIV
+	name=ptr;
+	while((*ptr)&&((*ptr)!=delimiter))
+		(*(ptr++))=toupper(*ptr);
+	(*(ptr++))=0;  // Skip the second delimiter
+
+	// Search for 'CONTENT'
+	while((*ptr)&&(toupper(*ptr)!='C'))
+		ptr++;
+	if((!(*ptr))||strncasecmp(ptr,"CONTENT",7)) return;
+	ptr+=7;
+
+	// Search '='
+	while((*ptr)&&((*ptr)!='='))
+		ptr++;
+	ptr++;
+
+	// Skip spaces and read the delimiter which must be a ' or a "
+	while((*ptr)&&(isspace(*ptr)))
+		ptr++;
+	delimiter=(*(ptr++));
+	if((delimiter!='\'')&&(delimiter!='"')) return;
+
+	// Read the type of HTTP-EQUIV
+	content=ptr;
+	while((*ptr)&&((*ptr)!=delimiter))
+		ptr++;
+	(*(ptr++))=0;  // Skip the second delimiter
+
+	if(!strcmp(name,"DESCRIPTION"))
 	{
-		if((*Buffer)==13||(*Buffer)==10||(*Buffer)=='\t')
+		Doc->AddNode(metaData,tag=new RXMLTag("Abstract"));
+		AnalyzeBlock(content,tag);
+	}
+	else if(!strcmp(name,"KEYWORDS"))
+	{
+		Doc->AddNode(metaData,tag=new RXMLTag("Keywords"));
+		AnalyzeKeywords(content,',',tag);
+	}
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GFilterHTML::ReplaceCode(void)
+{
+	char* ptr=Pos+1;
+	char tmp[11];
+	char* ptr2=tmp;
+	int len;
+	CodeToChar *c;
+
+	// Search maximal 10 letter ending with a ';' or spaces
+	len=0;
+	while((*ptr)&&((*ptr)!=';')&&(!isspace(*ptr))&&(len<10))
+	{
+		(*(ptr2++))=(*(ptr++));
+		len++;
+	}
+
+	// If not ';' -> not a code
+	if((!(*ptr))||((*ptr)!=';')) return;
+	ptr++; // Skip ';'.
+
+	// Find the code
+	(*ptr2)=0;
+	c=Chars.GetPtr<const char*>(tmp);
+	if(!c) return;
+
+	// Replace character.
+	(*Pos)=c->GetChar();
+
+	// Search end of word from end of the code.
+	len=1;
+	ptr2=ptr;
+	while((*ptr2)&&(!isspace(*ptr2)))
+	{
+		ptr2++;
+		len++;
+	}
+
+	// Move end of the word to skip the code and replace by spaces.
+	memcpy(Pos+1,ptr,len*sizeof(char));
+	len=c->GetLen()+1;
+	memset(ptr2-len,' ',len*sizeof(char));
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GFilterHTML::NextTag(void)
+{
+	bool bParams;            // Look if there are parameters.
+
+beginread:
+
+	// Find Begin of Tag ('<')
+	while((*Pos)&&((*Pos)!='<'))
+	{
+		if((*Pos)=='&')
+			ReplaceCode();
+		Pos++;
+		BlockLen++;
+	}
+
+	// Skip '<'
+	if(!(*Pos))
+	{
+		CurTag=0;
+		return;
+	}
+	SkipTag=Pos;
+	(*SkipTag)=0;    // If valid tag, don't treat it.
+	TagLen=1;
+	Pos++;
+
+	// Is it a comment?
+	if(!strncmp(Pos,"!--",3))
+	{
+		char* SkipComments=Pos-1;
+		unsigned len=1;
+		Pos+=3; TagLen+=3; len+=3;// Skip '!--'
+		// Search end of comments
+		do
 		{
-			(*Buffer)=' ';
-			Buffer++;
-		}
-		if ((*Buffer)=='"')
-		{
-	 		ok = false ;
-		}
-		else
-		{
-	 		Buffer++;
-		}
+			while((*Pos)&&((*Pos)!='-'))
+			{
+				Pos++;
+				TagLen++;
+				len++;
+			}
+			if(*Pos) // Skip '-'
+			{
+				Pos++;
+				TagLen++;
+				len++;
+			}
+		} while((*Pos)&&strncmp(Pos,"->",2));
+		Pos+=2; TagLen+=2; len+=2;// Skip '->'
+		memset(SkipComments,' ',len*sizeof(char));
+		goto beginread;
 	}
 	
-	// the buffer is "on" a '"'
-	(*Buffer)=0;
-
-	if(ok1)
+	// Is it a ending tag ('</')?
+	bEndTag=((*Pos)==('/'));
+	if(bEndTag)
 	{
-		if (temp2==cur1)
-		{
-			doc->AddNode(meta,act=new RXMLTag("KeyWord"));
-			AnalyzeKeywords(Pos,' ',act);
-		}
-		else if (temp2==cur2)
-		{
-
-		}
-		doc->AddNode(meta,act=new RXMLTag("Resume"));
-		AnalyzeBlock(Pos,act);
-	}
-	(*Buffer)='"';
-	Buffer++;
-}
-
-
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::NextTag (void)
-{
-	bool ok=true;
-	end = false;
-
-	while((*Buffer)&&ok)
-	{
-	 	SkipSpaces();
-	 	if (*Buffer=='<')
-	 	{
-	 	ok = false;
-	 	}
-	 	Buffer++;
-	 	if(!(*Buffer)) end=true;
+		Pos++; TagLen++; // Skip '/'.
 	}
 
-	RString temp5 (10);
-
-	if (!ok)
+	// Skip spaces between '<' or '</' and the name of te tag.
+	while((*Pos)&&isspace(*Pos))
 	{
-		while((*Buffer)&&(!ok))
+		Pos++;
+		TagLen++;
+	}
+
+	// Find end of tag name (In uppercase) -> End if space or '>' or '/'
+	BeginTag=Pos;
+	while((*Pos)&&((*Pos)!='>')&&(!(((*Pos)=='/')&&((*(Pos+1))=='>')))&&(!isspace(*Pos)))
+	{
+		if((*Pos)=='&')
+			ReplaceCode();
+		(*(Pos++))=toupper(*Pos);
+		TagLen++;
+	}
+	bParams=isspace(*Pos); // If name ending with a space -> Possible parameters.
+	(*(Pos++))=0;
+	TagLen++;
+
+	// If Possible parameters
+	if(bParams)
+	{
+		// Slip spaces after name of the tag.
+		while((*Pos)&&isspace(*Pos))
 		{
-			if (IsSpace())
+			Pos++;
+			TagLen++;
+		}
+
+		// If next character is '/' or '>' -> No parameters for the tag.
+		bParams=(!(((*Pos)=='/')&&((*(Pos+1))=='>'))&&((*Pos)!='>'));
+
+		// Parameters are store until  '/>' or '>'
+		if(bParams)
+		{
+			Params=Pos;
+			while((*Pos)&&((*Pos)!='>')&&(!(((*Pos)=='/')&&((*(Pos+1))=='>'))))
 			{
-				temp5.StrLwr();
-				if (temp5=="meta")
-				{
-					ok = true;
-				}
-				else
-				{
-					while ((*Buffer)&&*Buffer!='>')
-					{
-						Buffer++;
-					}
-					ok = true;
-				}
+				if((*Pos)=='&')
+					ReplaceCode();
+				Pos++;
+				TagLen++;
 			}
-			else if (*Buffer=='>')
-				{
-					ok = true;
-				}
-				else
-				{
-					temp5+=(*Buffer);
-				}
-			Buffer++;
-			if(!(*Buffer)) end=true;
 		}
+		else
+			Params=0;
 
-		temp5.StrLwr();
-		TAG=temp5;
+		// Skip '>' or '/'.
+		Pos++;
+		TagLen++;
+	}
+	else
+		Params=0;
 
+	// Skip '>' or '/>'
+	if((*Pos)=='>')
+	{
+		TagLen++;
+		Pos++;
 	}
 }
 
 
 //---------------------------------------------------------------------------
-bool GALILEI::GFilterHTML::IsSpace(void)
+void GALILEI::GFilterHTML::NextValidTag(void)
 {
-	if((*Buffer)==13||(*Buffer)==10||(*Buffer)=='\t'||(*Buffer)==' ')
-		return(true);
-	return(false);
-}
+	// Look if it is a known tag. If not, replace all by spaces and continue.
+	do
+	{
+		if(!(*Pos)) return;
+		NextTag();
+		CurTag=Tags->GetPtr<const char*>(BeginTag);
+		if(!CurTag)
+		{
+			memset(SkipTag,' ',TagLen*sizeof(char));
+		}
+		else if((CurTag->Type==Tag::tSCRIPT)&&(!bEndTag))
+		{
+			char* SkipScript=SkipTag;
+			BlockLen=TagLen;
+			while(!((CurTag->Type==Tag::tSCRIPT)&&bEndTag))
+			{
+				NextTag();
+				BlockLen=+TagLen;
+			}
+			memset(SkipScript,' ',BlockLen*sizeof(char));
+			CurTag=0;
+		}
+	} while(!CurTag);
 
-
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::SkipSpaces(void)
-{
-	while((*Buffer)&&IsSpace())
-		Buffer++;
+	// Return
+	BlockLen=0;
+	if(!bEndTag)
+	{
+		Block=Pos;
+	}
 }
 
 
 //---------------------------------------------------------------------------
 GALILEI::GFilterHTML::~GFilterHTML()
 {
+	if(Tags) delete Tags;
 }
