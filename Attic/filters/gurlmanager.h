@@ -79,6 +79,7 @@ protected:
 	* Download and store locally a document given by an URL.
 	* @param URL            URL of the document.
 	* @param tmpFile        Temporary file created.
+	* @returns true if the document was download;
 	*/
 	virtual void Download(const char* URL,RStd::RString& tmpFile) throw(GException);
 
@@ -106,7 +107,9 @@ public:
 	void AddMIME(const char* mime,GFilter* f);
 
 	/**
+	* Get the filter for a specific mime type.
 	* @param mime           Name of the mimetype.
+	* @return Pointer to a GMIMEFilter.
 	*/
 	GMIMEFilter* GetMIMEType(const char* mime) const;
 

@@ -69,6 +69,7 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 	int i;
 	GDocXML* xml=0;
 	bool Dwn;
+	GMIMEFilter* f;
 
 	// Verify it is a local file (file:/) or nothing.
 	ptr=doc->GetURL();
@@ -80,12 +81,15 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 	}
 	if(i&&((*ptr)==':')&&(strncmp(ptr,"file",i)))
 	{
-		// Suppose the download failed
-		doc->IncFailed();
-		Download(doc->GetURL(),tmpFile);
+		try
+		{
+			Download(doc->GetURL(),tmpFile);
+		}
+		catch(GException& e)
+		{
+			return(0);
+		}
 		Dwn=true;
-		// Download OK
-		doc->DecFailed();
 	}
 	else
 	{
@@ -95,7 +99,10 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 
 	// Analyse it.
 	xml=new GDocXML(doc->GetURL(),tmpFile());
-	doc->GetMIMEType()->GetFilter()->Analyze(xml);
+	f=doc->GetMIMEType();
+	if(!f)
+		return(0);
+	f->GetFilter()->Analyze(xml);
 
 	// Delete it
 	if(Dwn)
