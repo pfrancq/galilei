@@ -263,7 +263,8 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 
 	// opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	err= "Documents Filtering and Analysis on Data Set : "+GetDbName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear());
-	rec->WriteStr(err.Latin1());
+	if(rec)
+		rec->WriteStr(err.Latin1());
 
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
@@ -302,7 +303,8 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 
 			cout<< "error "<<e.GetMsg()<<endl;
 			// write error message to the log file handled by the GSlot.
-			rec->WriteStr(e.GetMsg());
+			if(rec)
+				rec->WriteStr(e.GetMsg());
 		}
 	}
 
