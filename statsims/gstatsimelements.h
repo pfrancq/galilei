@@ -51,7 +51,7 @@ public:
 		bool OverlapG;
 
 		LocalStat(GSubject* s) : Sub(s), OverlapL(false), OverlapG(false) {}
-		int Compare(const LocalStat* l) const {return(Sub->Compare(l->Sub));}
+		int Compare(const LocalStat& l) const {return(Sub->Compare(*l.Sub));}
 		int Compare(const GSubject* s) const {return(Sub->Compare(s));}
 	};
 
