@@ -802,6 +802,8 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GTrackNewProfilesI(this));
 	Methods.InsertPtr(new GClearNewProfilesI(this));
 	Methods.InsertPtr(new GStoreInHistoryI(this));
+	Methods.InsertPtr(new GResetTimeI(this));
+	Methods.InsertPtr(new GComputeTimeI(this));
 };
 
 
