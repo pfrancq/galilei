@@ -36,10 +36,100 @@
 #include <sessions/gsession.h>
 #include <profiles/guser.h>
 #include <profiles/gsubprofile.h>
-#include <profiles/gprofdoc.h>
-#include <docs/gdoc.h>
+#include <docs/gdocproxy.h>
 using namespace GALILEI;
 using namespace R;
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GFdbk
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GFdbk::GFdbk(unsigned int id,tDocAssessment fdbk,RDate& date)
+  : Doc(New<GDocProxy>(id)), Fdbk(fdbk), Updated(date)
+{
+}
+
+
+//------------------------------------------------------------------------------
+int GFdbk::Compare(const GFdbk& profdoc) const
+{
+	return(Doc->GetId()-profdoc.Doc->GetId());
+}
+
+
+//------------------------------------------------------------------------------
+int GFdbk::Compare(const GFdbk* profdoc) const
+{
+	return(Doc->GetId()-profdoc->Doc->GetId());
+}
+
+
+//------------------------------------------------------------------------------
+int GFdbk::Compare(const unsigned id) const
+{
+	return(Doc->GetId()-id);
+}
+
+
+//------------------------------------------------------------------------------
+void GFdbk::UpdateFdbk(tDocAssessment fdbk,RDate date)
+{
+	Fdbk=fdbk;
+	Updated=date;
+}
+
+
+//------------------------------------------------------------------------------
+RDate GFdbk::GetUpdated(void) const
+{
+	return(Updated);
+}
+
+
+//------------------------------------------------------------------------------
+tDocAssessment GFdbk::ErrorJudgment(tDocAssessment fdbk,double PercErr,RRandom* rand)
+{
+	double random=rand->Value()*100+1.0;
+
+	// If there is Random change the judgment.
+	if(random<PercErr)
+	{
+		random=rand->Value()*100+1.0;;
+		switch(fdbk & djMaskJudg)
+		{
+			case djOK:
+				if(random<25.0)
+					return(djOutScope);
+				else
+					return(djKO);
+			case djKO:
+				if(random<50.0)
+					return(djOK);
+				else
+					return(djOutScope);
+			case djOutScope:
+				if(random<25.0)
+					return(djOK);
+				else
+					return(djKO);
+				break;
+		}
+	}
+	return(fdbk);
+}
+
+
+//------------------------------------------------------------------------------
+GFdbk::~GFdbk(void)
+{
+	if(Doc)
+		delete Doc;
+}
 
 
 
@@ -147,19 +237,6 @@ GSubProfile* GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
 
 
 //------------------------------------------------------------------------------
-GProfDoc* GProfile::GetFeedback(const GDoc* doc) const
-{
-	GLang* lang;
-
-	lang=doc->GetLang();
-	if( lang)
-		return(GetSubProfile(lang)->GetFeedback(doc));
-	else
-		return(Fdbks.GetPtr<const GDoc*>(doc));
-}
-
-
-//------------------------------------------------------------------------------
 unsigned int GProfile::GetNbAssessedDocs(const GLang* lang) const
 {
 	return(GetSubProfile(lang)->GetNbAssessedDocs());
@@ -167,9 +244,9 @@ unsigned int GProfile::GetNbAssessedDocs(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-GProfDocCursor GProfile::GetProfDocCursor(void)
+RCursor<GFdbk> GProfile::GetFdbks(void)
 {
-	GProfDocCursor cur(Fdbks);
+	RCursor<GFdbk> cur(Fdbks);
 	return(cur);
 }
 
@@ -183,81 +260,72 @@ GSubProfileCursor GProfile::GetSubProfilesCursor(void)
 
 
 //------------------------------------------------------------------------------
+void GProfile::InsertFdbk(unsigned int id,tDocAssessment assess,R::RDate date) throw(std::bad_alloc)
+{
+	Fdbks.InsertPtr(new GFdbk(id,assess,date));
+}
+
+
+//------------------------------------------------------------------------------
+void GProfile::DeleteFdbk(unsigned int id) throw(std::bad_alloc)
+{
+	Fdbks.DeletePtr(Fdbks.GetPtr<unsigned int>(id));
+}
+
+
+//------------------------------------------------------------------------------
 void GProfile::ClearFdbks(void)
 {
-	GSubProfileCursor Cur;
-
 	Fdbks.Clear();
-	Cur.Set(this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		Cur()->ClearFdbks();
-		Cur()->SetState(osModified);
-	}
 }
 
 
 //------------------------------------------------------------------------------
-void GProfile::InsertFdbk(GProfDoc* j,GSession* s) throw(std::bad_alloc)
+GFdbk* GProfile::GetFdbk(unsigned int id) const
 {
-	GLang* l;
-
-	l=j->GetDoc()->GetLang();
-	if(!l)
-	{
-		Fdbks.InsertPtr(j);
-	}
-	else
-	{
-		GetInsertSubProfile(l,s)->InsertFdbk(j);
-	}
+	return(Fdbks.GetPtr<unsigned int>(id));
 }
 
 
 //------------------------------------------------------------------------------
-void GProfile::Modify(GDoc* doc,GLang* newlang,GLang* oldlang)
+void GProfile::HasUpdate(unsigned int id)
+{
+	GDoc* doc=GSession::Get()->GetDoc(id);
+	if(doc)
+		std::cout<<"Document has change"<<std::endl;
+}
+
+
+//------------------------------------------------------------------------------
+void GProfile::Update(void)
 {
 	GSubProfile* sub;
-	GProfDoc* assess=0;
+	GLang* lang;
 
-	// If no languages are defined -> nothing to do
-	if((!newlang)&&(!oldlang))
-		return;
+	// Go through each subprofiles and clear the feedbacks
+	RCursor<GSubProfile> SubProfiles(this);
+	for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
+		SubProfiles()->ClearFdbks();
 
-	// If a new language is defined -> modify the corresponding subprofile
-	if(newlang)
+	// Go through each assessed document
+	// If a language is defined -> put it in the corresponding subprofile.
+	RCursor<GFdbk> Docs(Fdbks);
+	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		sub=GetInsertSubProfile(newlang,GSession::Get());
-		sub->SetState(osModified);
-	}
+		lang=Docs()->GetDoc()->GetLang();
+		if(!lang) continue;
 
-	// If the languages are identical -> nothing else to do
-	if(newlang==oldlang)
-		return;
+		// Get the subprofile (if subprofile does not exist -> create it).
+		sub=GetPtr<const GLang*>(lang,false);
+		if(!sub)
+		{
+			sub=new GSubProfile(GSession::Get(),this,lang);
+			GSession::Get()->InsertSubProfile(sub);
+		}
 
-	// Find the corresponding assessment and delete it
-	if(oldlang)
-	{
-		GSubProfile* sub2=GetInsertSubProfile(oldlang,GSession::Get());
-		assess=sub2->GetFeedback(doc);
-		if(assess)
-			sub2->DeleteFdbk(assess);
-		sub2->SetState(osModified);
+		// Add the assessment
+		sub->InsertFdbk(Docs());
 	}
-	else
-	{
-		assess=Fdbks.GetPtr<const GDoc*>(doc);
-		if(assess)
-			Fdbks.DeletePtr(assess);
-	}
-
-	// Re-insert the assessment
-	if(!assess)
-		return;
-	if(!newlang)
-		Fdbks.InsertPtr(assess);
-	else
-		sub->InsertFdbk(assess);
 }
 
 

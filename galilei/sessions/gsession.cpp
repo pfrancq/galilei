@@ -71,7 +71,6 @@ using namespace R;
 #include <profiles/gprofilessims.h>
 #include <profiles/gprofilesbehaviours.h>
 #include <profiles/gsubprofile.h>
-#include <profiles/gprofdoc.h>
 #include <profiles/gprofilecalc.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <groups/ggroups.h>
@@ -109,7 +108,7 @@ GSession* GSession::Session=0;
 //------------------------------------------------------------------------------
 GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(std::bad_alloc,GException)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(str->GetNbSaved(otUser),str->GetNbSaved(otProfile)),
-	  GGroups(str->GetNbSaved(otGroup)), Subjects(0), Fdbks(str->GetNbSaved(otFdbk)+str->GetNbSaved(otFdbk)/2,str->GetNbSaved(otFdbk)/2),
+	  GGroups(str->GetNbSaved(otGroup)), Subjects(0),
 //	: GDocs(2000), GUsers(2000,2000),
 //	  GGroups(200), Subjects(0), Fdbks(100,50),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
@@ -218,26 +217,9 @@ GFactoryMetaEngineCursor GSession::GetMetaEnginesCursor(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::GetDocAssessments(const GDoc* ref,R::RContainer<GProfDoc,true,false>& assess)
-{
-	if(!Storage)
-		throw GException("Cannot retrieve assessment for document "+itou(ref->GetId()));
-	Storage->GetDocAssessments(this,ref,assess);
-}
-
-
-//------------------------------------------------------------------------------
 GDocXML* GSession::CreateDocXML(GDoc* doc) throw(GException)
 {
 	return(URLMng->CreateDocXML(doc));
-}
-
-
-//------------------------------------------------------------------------------
-GProfDocCursor GSession::GetProfDocsCursor(void)
-{
-	GProfDocCursor cur(Fdbks);
-	return(cur);
 }
 
 
@@ -417,6 +399,13 @@ double GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub) throw(GEx
 
 
 //------------------------------------------------------------------------------
+double GSession::GetSimDocProf(unsigned int doc,unsigned int sub) throw(GException)
+{
+	return(DocProfSims->GetSim(GetDoc(doc),GetSubProfile(sub)));
+}
+
+
+//------------------------------------------------------------------------------
 void GSession::UseIFFProfs(bool iff)
 {
 	ProfilesSims->UseIFF(iff);
@@ -536,6 +525,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) t
 	{
 		if(rec)
 			rec->receiveNextProfile(Prof());
+		Prof()->Update();
 		Subs=Prof()->GetSubProfilesCursor();
 		for (Subs.Start(); !Subs.End(); Subs.Next())
 		{
@@ -625,41 +615,26 @@ void GSession::ComputePostGroup(GSlot* rec)  throw(GException)
 
 
 //------------------------------------------------------------------------------
+void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date) throw(std::bad_alloc)
+{
+	GetProfile(p)->InsertFdbk(d,assess,date);
+	GetDoc(d)->InsertFdbk(p);
+}
+
+
+//------------------------------------------------------------------------------
 void GSession::ClearFdbks(void)
 {
-	GDocCursor cur=GetDocsCursor();
-	for(cur.Start();!cur.End();cur.Next())
+	RCursor<GDoc> Docs(this);
+	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		cur()->ClearFdbks();
+		Docs()->ClearFdbks();
 	}
-	GProfileCursor cur2=GetProfilesCursor();
-	for(cur2.Start();!cur2.End(); cur2.Next())
+	RCursor<GProfile> Profiles=GetProfilesCursor();
+	for(Profiles.Start();!Profiles.End();Profiles.Next())
 	{
-		cur2()->ClearFdbks();
+		Profiles()->ClearFdbks();
 	}
-	Fdbks.Clear();
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate date) throw(std::bad_alloc)
-{
-	GProfDoc* f;
-
-	Fdbks.InsertPtr(f=new GProfDoc(d,p,j,date));
-	p->InsertFdbk(f,this);
-	d->InsertFdbk(p->GetId());
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,const char* date) throw(std::bad_alloc)
-{
-	GProfDoc* f;
-
-	Fdbks.InsertPtr(f=new GProfDoc(d,p,j,date));
-	p->InsertFdbk(f,this);
-	d->InsertFdbk(p->GetId());
 }
 
 

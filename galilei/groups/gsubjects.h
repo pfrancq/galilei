@@ -136,7 +136,7 @@ protected:
 	/**
 	* New documents to assess.
 	*/
-	R::RContainer<GProfDoc,false,false> NewDocs;
+	R::RContainer<GFdbk,false,false> NewDocs;
 
 	/**
 	* Lastest added subprofiles.

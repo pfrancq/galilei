@@ -69,11 +69,6 @@ protected:
 	GSubjects* Subjects;
 
 	/**
-	* All the assessments.
-	*/
-	R::RContainer<GProfDoc,true,true> Fdbks;
-
-	/**
 	* Languages Manager.
 	*/
 	GLangManager* Langs;
@@ -307,12 +302,6 @@ public:
 	* @return GPostDocCursor.
 	*/
 	GFactoryPostDocCursor GetPostDocsCursor(void);
-
-	/**
-	* Get a cursor over the assessments made.
-	* @return GProfDocCursor.
-	*/
-	GProfDocCursor GetProfDocsCursor(void);
 	
 	/**
 	* Get a cursor over the factories of the search engines.
@@ -359,12 +348,6 @@ public:
 	*/
 	//@{
 
-	/**
-	* Get all the assessments on a given document.
-	* @param ref              Reference of the document.
-	* @param assess           Container to fill with the assessments.
-	*/
-	void GetDocAssessments(const GDoc* ref,R::RContainer<GProfDoc,true,false>& assess);
 
 	//@}
 
@@ -481,29 +464,27 @@ public:
 	* @param sub           The Pointer to the subprofile.
 	*/
 	double GetSimDocProf(const GDoc* doc,const GSubProfile* sub) throw(GException);
+
+	/**
+	* Return the similarity between a document and a subProfiles.
+	* @param doc           Identificator of the document.
+	* @param sub           Identificator of the subprofile.
+	*/
+	double GetSimDocProf(unsigned int doc,unsigned int sub) throw(GException);
        
+	/**
+	* Insert a new Feedback.
+	* @param p                Identificator of the profile.
+	* @param d                Identificator of the document.
+	* @param assess           Feedback.
+	* @param date             Date on the last feedback.
+	*/
+	void InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date) throw(std::bad_alloc);
+
 	/**
 	* Clear all the feedbacks.
 	*/
 	void ClearFdbks(void);
-
-	/**
-	* Insert a new Feedback.
-	* @param p          Pointer to the profile.
-	* @param d          Pointer to the document.
-	* @param j          Feedback.
-	* @param date       Date on the last feedback.
-	*/
-	void InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate date) throw(std::bad_alloc);
-
-	/**
-	* Insert a new Feedback.
-	* @param p          Pointer to the profile.
-	* @param d          Pointer to the document.
-	* @param j          Feedback.
-	* @param date       String representing the date on the last feedback.
-	*/
-	void InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,const char* date) throw(std::bad_alloc);
 
 	/**
 	* Copy the ideal groupment in the current one.

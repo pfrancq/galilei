@@ -51,21 +51,21 @@ public:
 	GLangProxy(void) {}
 	virtual int Compare(const GLangProxy* ptr) const=0;
 	virtual int Compare(const unsigned int id) const=0;
-	virtual void SkipSequence(const R::RString& word)=0;
-	virtual R::RString GetStemming(const R::RString& kwd)=0;
-	virtual GSession* GetSession(void)=0;
-	virtual GDict* GetDict(void)=0;
-	virtual GDict* GetStop(void)=0;
-	virtual bool InStop(const R::RString& name)=0;
-	virtual void IncRef(unsigned int id,tObjType ObjType)=0;
-	virtual void DecRef(unsigned int id,tObjType ObjType)=0;
-	virtual unsigned int GetRef(unsigned int id,tObjType ObjType)=0;
-	virtual void IncRef(tObjType ObjType)=0;
-	virtual void DecRef(tObjType ObjType)=0;
-	virtual unsigned int GetRef(tObjType ObjType)=0;
-	virtual unsigned int GetTotal(void)=0;
-	virtual const GData** GetDatas(void)=0;
-	virtual bool MustSkipSequence(const R::RChar* seq)=0;
+	virtual void SkipSequence(const R::RString& word) throw(std::bad_alloc)=0;
+	virtual R::RString GetStemming(const R::RString& kwd) throw(GException)=0;
+	virtual GSession* GetSession(void) const=0;
+	virtual GDict* GetDict(void) const=0;
+	virtual GDict* GetStop(void) const=0;
+	virtual bool InStop(const R::RString& name) const throw(GException)=0;
+	virtual void IncRef(unsigned int id,tObjType ObjType) throw(GException)=0;
+	virtual void DecRef(unsigned int id,tObjType ObjType) throw(GException)=0;
+	virtual unsigned int GetRef(unsigned int id,tObjType ObjType) throw(GException)=0;
+	virtual void IncRef(tObjType ObjType) throw(GException)=0;
+	virtual void DecRef(tObjType ObjType) throw(GException)=0;
+	virtual unsigned int GetRef(tObjType ObjType) throw(GException)=0;
+	virtual unsigned int GetTotal(void) const throw(GException)=0;
+	virtual const GData** GetDatas(void) const throw(GException)=0;
+	virtual bool MustSkipSequence(const R::RChar* seq) throw(GException)=0;
 	virtual ~GLangProxy(void) {}
 };
 

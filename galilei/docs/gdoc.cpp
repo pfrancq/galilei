@@ -36,7 +36,6 @@
 #include <docs/glink.h>
 #include <infos/glang.h>
 #include <profiles/gprofileproxy.h>
-#include <profiles/gprofdoc.h>
 #include <infos/gweightinfo.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
@@ -122,13 +121,6 @@ int GDoc::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::ClearFdbks(void)
-{
- 	Fdbks.Clear();
-}
-
-
-//------------------------------------------------------------------------------
 RString GDoc::GetURL(void) const
 {
 	return(URL);
@@ -209,9 +201,9 @@ RCursor<GProfileProxy> GDoc::GetFdbks(void)
 
 
 //------------------------------------------------------------------------------
-GWeightInfoCursor GDoc::GetWeightInfoCursor(void)
+RCursor<GWeightInfo> GDoc::GetWeightInfoCursor(void)
 {
-	GWeightInfoCursor cur(this);
+	RCursor<GWeightInfo> cur(this);
 	return(cur);
 }
 
@@ -261,11 +253,9 @@ double GDoc::SimilarityIFF(const GGroup* grp) const throw(GException)
 //------------------------------------------------------------------------------
 void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos)
 {
-	GLang* Old(Lang);
-
 	// If document had a language -> remove its references
-	if(Old)
-		DelRefs(otDoc,Old);
+	if(Lang)
+		DelRefs(otDoc,Lang);
 
 	// Assign language and information
 	GWeightInfos::Clear();
@@ -284,7 +274,7 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos)
 	// Signal to the profiles that the document has changed
 	RCursor<GProfileProxy> Cur(Fdbks);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Modify(this,Lang,Old);
+		Cur()->HasUpdate(Id);
 }
 
 
@@ -299,6 +289,13 @@ void GDoc::InsertFdbk(unsigned int id) throw(std::bad_alloc)
 void GDoc::DeleteFdbk(unsigned int id) throw(std::bad_alloc)
 {
 	Fdbks.DeletePtr(Fdbks.GetPtr<unsigned int>(id));
+}
+
+
+//------------------------------------------------------------------------------
+void GDoc::ClearFdbks(void)
+{
+ 	Fdbks.Clear();
 }
 
 

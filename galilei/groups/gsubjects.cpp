@@ -37,14 +37,13 @@
 #include <groups/gsubjects.h>
 #include <groups/gsubject.h>
 #include <groups/ggroups.h>
-#include <docs/gdoc.h>
+#include <docs/gdocproxy.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
-#include <profiles/gprofdoc.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -270,7 +269,7 @@ void GSubjects::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsO
 			if(nbDocsOK)
 			{
 				nbDocsOK--;
-				Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
+				Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
 			}
 		}
 		else
@@ -281,7 +280,7 @@ void GSubjects::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsO
 				if(nbDocsKO)
 				{
 					nbDocsKO--;
-					Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
+					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 			}
 			else
@@ -290,7 +289,7 @@ void GSubjects::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsO
 				if(nbDocsH)
 				{
 					nbDocsH--;
-					Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
+					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 			}
 		}
@@ -542,19 +541,19 @@ void GSubjects::FdbksCycle(bool Save) throw(std::bad_alloc)
 				// Look if 'OK'
 				if(NewDocs()->GetDoc()->IsFromSubject(SubProfile()->GetSubject()))
 				{
-					Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
+					Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),NewDocs()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 				else
 				{
 					// Look If 'KO'
 					if(NewDocs()->GetDoc()->IsFromParentSubject(SubProfile()->GetSubject()))
 					{
-						Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),NewDocs()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 					else
 					{
 						// Must be H
-						Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),NewDocs()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 				}
 			}
@@ -601,23 +600,23 @@ void GSubjects::AddAssessments(bool Save) throw(std::bad_alloc)
 			for(i=NbDocsAssess+1,ptr=Docs;--i;ptr++)
 			{
 				// Verify that the document is not already assigned to the profile
-				if(Prof()->GetProfile()->GetFeedback(*ptr)) continue;
+				if(Prof()->GetProfile()->GetFdbk((*ptr)->GetId())) continue;
 
 				// Look if 'OK'
 				if((*ptr)->IsFromSubject(Subs()))
 				{
-					Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
+					Session->InsertFdbk(Prof()->GetProfile()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 				else
 				{
 					// Look If 'KO'
 					if((*ptr)->IsFromParentSubject(Subs()))
 					{
-						Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(Prof()->GetProfile()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 					else
 					{
-						Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(Prof()->GetProfile()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 				}
 			}

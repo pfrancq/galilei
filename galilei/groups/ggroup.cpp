@@ -38,9 +38,8 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ggroup.h>
-#include <docs/gdoc.h>
+#include <docs/gdocproxy.h>
 #include <profiles/gsubprofile.h>
-#include <profiles/gprofdoc.h>
 #include <sessions/gsession.h>
 #include <infos/gweightinfo.h>
 using namespace GALILEI;
@@ -50,21 +49,21 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GProfDocRef
+//  GFdbkRef
 //
 //-----------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GProfDocRef
+class GFdbkRef
 {
 public:
-	GProfDoc* Doc;
+	GFdbk* Doc;
 	double Sim;
 
-	GProfDocRef(GProfDoc* d,double s) : Doc(d), Sim(s) {}
-	int Compare(const GProfDocRef*) const {return(-1);}
-	int Compare(const GProfDocRef&) const {return(-1);}
-	int Compare(const GProfDoc* d) const
+	GFdbkRef(GFdbk* d,double s) : Doc(d), Sim(s) {}
+	int Compare(const GFdbkRef*) const {return(-1);}
+	int Compare(const GFdbkRef&) const {return(-1);}
+	int Compare(const GFdbk* d) const
 	{
 		return(Doc->GetDoc()->GetId()-d->GetDoc()->GetId());
 	}
@@ -97,8 +96,8 @@ GGroup::GGroup(GLang* lang,bool com) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 int GGroup::sortOrder(const void *a,const void *b)
 {
-	double af=(*((GProfDocRef**)(a)))->Sim;
-	double bf=(*((GProfDocRef**)(b)))->Sim;
+	double af=(*((GFdbkRef**)(a)))->Sim;
+	double bf=(*((GFdbkRef**)(b)))->Sim;
 
 	if(af==bf) return(0);
 	if(af>bf)
@@ -245,11 +244,11 @@ unsigned int GGroup::GetNbSubProfiles(void) const
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsList(RContainer<GProfDoc,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc)
+void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc)
 {
 	GSubProfileCursor sub(this);
-	GProfDocCursor Fdbks;
-	GProfDoc* ptr;
+	RCursor<GFdbk> Fdbks;
+	GFdbk* ptr;
 	tDocAssessment j;
 
 	// Clear container.
@@ -260,16 +259,16 @@ void GGroup::NotJudgedDocsList(RContainer<GProfDoc,false,true>* docs, GSubProfil
 		if(sub()==s) continue;
 
 		// Go through the judgments
-		Fdbks=sub()->GetProfDocCursor();
+		Fdbks=sub()->GetFdbks();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
 			// Verify that it was not judged by s
-			if(s->GetFeedback(Fdbks()->GetDoc())) continue;
+			if(s->GetProfile()->GetFdbk(Fdbks()->GetDoc()->GetId())) continue;
 
 			// Verify if already inserted:
 			// If not -> insert it in docs.
 			// If yes -> Verify judgement
-			ptr=docs->GetPtr<const GProfDoc*>(Fdbks());
+			ptr=docs->GetPtr<const GFdbk*>(Fdbks());
 			if(ptr)
 			{
 				j=ptr->GetFdbk();
@@ -299,12 +298,12 @@ void GGroup::NotJudgedDocsList(RContainer<GProfDoc,false,true>* docs, GSubProfil
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc)
+void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc)
 {
 	GSubProfileCursor sub(this);
-	GProfDocCursor Fdbks;
+	RCursor<GFdbk> Fdbks;
 	tDocAssessment j;
-	RContainer<GProfDocRef,true,false> Docs(50,25);
+	RContainer<GFdbkRef,true,false> Docs(50,25);
 
 	// Clear container.
 	docs->Clear();
@@ -316,7 +315,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,false,false>* docs, GSubPr
 		if(sub()==s)
 		{
 			// Go through the judgments
-			Fdbks=sub()->GetProfDocCursor();
+			Fdbks=sub()->GetFdbks();
 			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 			{
 				// Verify if the document is a relevant hub or authority.
@@ -324,15 +323,15 @@ void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,false,false>* docs, GSubPr
 				if(!( (j & (djOK & djHub)) || (j & (djOK & djAutority)))) continue;
 
 				// Verify if already inserted in Docs.
-				if(Docs.GetPtr<const GProfDoc*>(Fdbks())) continue;
+				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
 				// Insert it.
-				Docs.InsertPtr(new GProfDocRef(Fdbks(),session->GetSimDocProf(Fdbks()->GetDoc(),s)));
+				Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetSimDocProf(Fdbks()->GetDoc()->GetId(),s->GetId())));
 			}
 			continue;
 		}
 
 		// Go through the judgments
-		Fdbks=sub()->GetProfDocCursor();
+		Fdbks=sub()->GetFdbks();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
 			// Verify if the document is relevant.
@@ -341,16 +340,16 @@ void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,false,false>* docs, GSubPr
 
 			// Verify if already inserted in Docs or if it was not judged by the
 			// subprofile s.
-			if((Docs.GetPtr<const GProfDoc*>(Fdbks()))||(s->GetFeedback(Fdbks()->GetDoc()))) continue;
+			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(s->GetProfile()->GetFdbk(Fdbks()->GetDoc()->GetId()))) continue;
 
 			// Insert it.
-			Docs.InsertPtr(new GProfDocRef(Fdbks(),session->GetSimDocProf(Fdbks()->GetDoc(),s)));
+			Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetSimDocProf(Fdbks()->GetDoc()->GetId(),s->GetId())));
 		}
 	}
 
 	// Sort the container by similarity
 	if(Docs.NbPtr)
-		qsort(static_cast<void*>(Docs.Tab),Docs.NbPtr,sizeof(GProfDocRef*),sortOrder);
+		qsort(static_cast<void*>(Docs.Tab),Docs.NbPtr,sizeof(GFdbkRef*),sortOrder);
 
 	// Copy the result in docs
 	for(Docs.Start();!Docs.End();Docs.Next())

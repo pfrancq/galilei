@@ -53,41 +53,41 @@ public:
 	GSubProfileProxyMem(GSubProfile* obj) : GSubProfileProxy(), Obj(obj) {}
 	virtual int Compare(const GSubProfileProxy* ptr) const { return(Obj->Compare(dynamic_cast<const GSubProfileProxyMem*>(ptr)->Obj)); }
 	virtual int Compare(const unsigned int id) const { return(Obj->Compare(id)); }
-	virtual void InsertFdbk(GProfDoc* j){ Obj->InsertFdbk(j); }
-	virtual void DeleteFdbk(GProfDoc* j){ Obj->DeleteFdbk(j); }
-	virtual void ClearFdbks(void){ Obj->ClearFdbks(); }
-	virtual unsigned int GetId(void){ return(Obj->GetId()); }
-	virtual void SetId(unsigned int id){ Obj->SetId(id); }
-	virtual tObjState GetState(void){ return(Obj->GetState()); }
-	virtual void SetState(tObjState state){ Obj->SetState(state); }
-	virtual GLang* GetLang(void){ return(Obj->GetLang()); }
-	virtual GProfile* GetProfile(void){ return(Obj->GetProfile()); }
-	virtual bool IsDefined(void){ return(Obj->IsDefined()); }
-	virtual GGroup* GetGroup(void){ return(Obj->GetGroup()); }
-	virtual void SetGroup(GGroup* grp){ Obj->SetGroup(grp); }
-	virtual R::RDate GetAttached(void){ return(Obj->GetAttached()); }
-	virtual R::RDate GetUpdated(void){ return(Obj->GetUpdated()); }
-	virtual R::RDate GetComputed(void){ return(Obj->GetComputed()); }
-	virtual bool IsUpdated(void){ return(Obj->IsUpdated()); }
-	virtual unsigned int GetCommonOKDocs(const GSubProfile* prof){ return(Obj->GetCommonOKDocs(prof)); }
-	virtual unsigned int GetCommonDocs(const GSubProfile* prof){ return(Obj->GetCommonDocs(prof)); }
-	virtual unsigned int GetCommonDiffDocs(const GSubProfile* prof){ return(Obj->GetCommonDiffDocs(prof)); }
-	virtual unsigned int GetNbAssessedDocs(void){ return(Obj->GetNbAssessedDocs()); }
-	virtual GProfDoc* GetFeedback(const GDoc* doc){ return(Obj->GetFeedback(doc)); }
-	virtual GProfDocCursor GetProfDocCursor(void){ return(Obj->GetProfDocCursor()); }
-	virtual GWeightInfoCursor GetWeightInfoCursor(void){ return(Obj->GetWeightInfoCursor()); }
-	virtual unsigned int GetNbNoNull(void){ return(Obj->GetNbNoNull()); }
-	virtual double Similarity(const GDoc* doc){ return(Obj->Similarity(doc)); }
-	virtual double SimilarityIFF(const GDoc* doc){ return(Obj->SimilarityIFF(doc)); }
-	virtual double Similarity(const GSubProfile* sub){ return(Obj->Similarity(sub)); }
-	virtual double SimilarityIFF(const GSubProfile* sub){ return(Obj->SimilarityIFF(sub)); }
-	virtual double Similarity(const GGroup* grp){ return(Obj->Similarity(grp)); }
-	virtual double SimilarityIFF(const GGroup* grp){ return(Obj->SimilarityIFF(grp)); }
-	virtual void UpdateFinished(void){ Obj->UpdateFinished(); }
-	virtual void SetSubject(GSubject* s){ Obj->SetSubject(s); }
-	virtual GSubject* GetSubject(void){ return(Obj->GetSubject()); }
-	virtual void UpdateRefs(void){ Obj->UpdateRefs(); }
-	virtual void RemoveRefs(void){ Obj->RemoveRefs(); }
+	virtual void InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc) {Obj->InsertFdbk(fdbk);}
+	virtual void ClearFdbks(void) throw(std::bad_alloc,GException) {Obj->ClearFdbks();}
+	virtual unsigned int GetId(void) const {return(Obj->GetId());}
+	virtual void SetId(unsigned int id) throw(GException) {Obj->SetId(id);}
+	virtual tObjState GetState(void) const {return(Obj->GetState());}
+	virtual void SetState(tObjState state) {Obj->SetState(state);}
+	virtual GLang* GetLang(void) const {return(Obj->GetLang());}
+	virtual GProfile* GetProfile(void) const {return(Obj->GetProfile());}
+	virtual bool IsDefined(void) const {return(Obj->IsDefined());}
+	virtual GGroup* GetGroup(void) const {return(Obj->GetGroup());}
+	virtual void SetGroup(GGroup* grp) {Obj->SetGroup(grp);}
+	virtual R::RDate GetAttached(void) const {return(Obj->GetAttached());}
+	virtual R::RDate GetUpdated(void) const {return(Obj->GetUpdated());}
+	virtual R::RDate GetComputed(void) const {return(Obj->GetComputed());}
+	virtual bool IsUpdated(void) const {return(Obj->IsUpdated());}
+	virtual unsigned int GetCommonOKDocs(const GSubProfile* prof) {return(Obj->GetCommonOKDocs(prof));}
+	virtual unsigned int GetCommonDocs(const GSubProfile* prof)  {return(Obj->GetCommonDocs(prof));}
+	virtual unsigned int GetCommonDiffDocs(const GSubProfile* prof) {return(Obj->GetCommonDiffDocs(prof));}
+	virtual unsigned int GetNbAssessedDocs(void) const {return(Obj->GetNbAssessedDocs());}
+	virtual R::RCursor<GFdbk> GetFdbks(void) {return(Obj->GetFdbks());}
+	virtual GWeightInfoCursor GetWeightInfoCursor(void) {return(Obj->GetWeightInfoCursor());}
+	virtual unsigned int GetNbNoNull(void) const {return(Obj->GetNbNoNull());}
+	virtual double Similarity(const GDoc* doc) const {return(Obj->Similarity(doc));}
+	virtual double SimilarityIFF(const GDoc* doc) const throw(GException) {return(Obj->SimilarityIFF(doc));}
+	virtual double Similarity(const GDocProxy* doc) const {return(Obj->Similarity(doc));}
+	virtual double SimilarityIFF(const GDocProxy* doc) const throw(GException) {return(Obj->SimilarityIFF(doc));}
+	virtual double Similarity(const GSubProfile* sub) const {return(Obj->Similarity(sub));}
+	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException) {return(Obj->SimilarityIFF(sub));}
+	virtual double Similarity(const GGroup* grp) const {return(Obj->Similarity(grp));}
+	virtual double SimilarityIFF(const GGroup* grp) const throw(GException) {return(Obj->SimilarityIFF(grp));}
+	virtual void UpdateFinished(void) {Obj->UpdateFinished();}
+	virtual void SetSubject(GSubject* s) {Obj->SetSubject(s);}
+	virtual GSubject* GetSubject(void) const {return(Obj->GetSubject());}
+	virtual void UpdateRefs(void) const throw(GException) {Obj->UpdateRefs();}
+	virtual void RemoveRefs(void) const throw(GException) {Obj->RemoveRefs();}
 	virtual ~GSubProfileProxyMem(void) {}
 };
 

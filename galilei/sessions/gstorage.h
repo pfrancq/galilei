@@ -129,14 +129,6 @@ public:
 	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
-	* Get all the assessments on a given document.
-	* @param session          Session.
-	* @param ref              Reference of the document.
-	* @param assess           Container to fill with the assessments.
-	*/
-	virtual void GetDocAssessments(GSession* session,const GDoc* ref,R::RContainer<GProfDoc,true,false>& assess)=0;
-
-	/**
 	* Save a document where it is stored. This method is called after an
 	* analsyis of a document if the result has to be saved. This method must be
 	* overloaded.

@@ -52,21 +52,24 @@ public:
 	virtual int Compare(const GProfileProxy* ptr) const=0;
 	virtual int Compare(const unsigned int id) const=0;
 	virtual void SetSubject(GSubject* s)=0;
-	virtual GSubject* GetSubject(void)=0;
-	virtual unsigned int GetId(void)=0;
-	virtual void SetId(unsigned int id)=0;
-	virtual R::RString GetName(void)=0;
-	virtual const GUser* GetUser(void)=0;
-	virtual bool IsSocial(void)=0;
+	virtual GSubject* GetSubject(void) const=0;
+	virtual unsigned int GetId(void) const=0;
+	virtual void SetId(unsigned int id)  throw(GException)=0;
+	virtual R::RString GetName(void) const=0;
+	virtual const GUser* GetUser(void) const=0;
+	virtual bool IsSocial(void) const=0;
 	virtual void SetSocial(bool social)=0;
-	virtual GSubProfile* GetSubProfile(const GLang* lang)=0;
+	virtual GSubProfile* GetSubProfile(const GLang* lang) const=0;
 	virtual GSubProfile* GetInsertSubProfile(GLang* lang,GSession* s)=0;
-	virtual GProfDoc* GetFeedback(const GDoc* doc)=0;
-	virtual unsigned int GetNbAssessedDocs(const GLang* lang)=0;
-	virtual GProfDocCursor GetProfDocCursor(void)=0;
+	virtual unsigned int GetNbAssessedDocs(const GLang* lang) const=0;
+	virtual R::RCursor<GFdbk> GetFdbks(void)=0;
 	virtual GSubProfileCursor GetSubProfilesCursor(void)=0;
-	virtual void InsertFdbk(GProfDoc* j,GSession* s)=0;
-	virtual void Modify(GDoc* doc,GLang* newlang,GLang* oldlang)=0;
+	virtual void InsertFdbk(unsigned int id,tDocAssessment assess,R::RDate date) throw(std::bad_alloc)=0;
+	virtual void DeleteFdbk(unsigned int id) throw(std::bad_alloc)=0;
+	virtual void ClearFdbks(void)=0;
+	virtual GFdbk* GetFdbk(unsigned int id) const=0;
+	virtual void HasUpdate(unsigned int id)=0;
+	virtual void Update(void)=0;
 	virtual ~GProfileProxy(void) {}
 };
 

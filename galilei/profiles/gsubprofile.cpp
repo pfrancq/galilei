@@ -6,7 +6,7 @@
 
 	Subprofile - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,8 +34,7 @@
 // include files for GALILEI
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
-#include <profiles/gprofdoc.h>
-#include <docs/gdoc.h>
+#include <docs/gdocproxy.h>
 #include <infos/gweightinfo.h>
 #include <infos/glang.h>
 #include <groups/ggroup.h>
@@ -110,7 +109,14 @@ int GSubProfile::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::InsertFdbk(GProfDoc* j) throw(std::bad_alloc)
+void GSubProfile::InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc)
+{
+	Fdbks.InsertPtr(fdbk);
+}
+
+
+//------------------------------------------------------------------------------
+/*void GSubProfile::InsertFdbk(GFdbk* j) throw(std::bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 
@@ -124,14 +130,14 @@ void GSubProfile::InsertFdbk(GProfDoc* j) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::DeleteFdbk(GProfDoc* j) throw(std::bad_alloc)
+void GSubProfile::DeleteFdbk(GFdbk* j) throw(std::bad_alloc)
 {
 	Fdbks.DeletePtr(j);
 
 	// When an assessment is removed -> the profile is always modified
 	State=osModified;
 	Updated.SetToday();
-}
+}*/
 
 
 //------------------------------------------------------------------------------
@@ -222,7 +228,7 @@ bool GSubProfile::IsUpdated(void) const
 unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
 {
 	tDocAssessment f;
-	GProfDoc* cor;
+	GFdbk* cor;
 	unsigned int nb;
 
 	// Verify that the two profile have the same language
@@ -230,7 +236,7 @@ unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
 	nb=0;
 
 	// Go through the document judged by the corresponding profile
-	GProfDocCursor fdbks=GetProfDocCursor();
+	RCursor<GFdbk> fdbks=GetFdbks();
 	for(fdbks.Start();!fdbks.End();fdbks.Next())
 	{
 		// If the document is not "good"  -> Nothing
@@ -238,7 +244,7 @@ unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
 		if(!(f & djOK)) continue;
 		// Look for the same document in the other profile. If not found or the
 		// document is not "good" -> Nothing
-		cor=prof->GetFeedback(fdbks()->GetDoc());
+		cor=prof->GetProfile()->GetFdbk(fdbks()->GetDoc()->GetId());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 		if(!(f & djOK)) continue;
@@ -254,7 +260,7 @@ unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
 unsigned int GSubProfile::GetCommonDocs(const GSubProfile* prof)
 {
 	tDocAssessment f;
-	GProfDoc* cor;
+	GFdbk* cor;
 	unsigned int nb;
 
 	// Verify that the two profile have the same language
@@ -262,13 +268,13 @@ unsigned int GSubProfile::GetCommonDocs(const GSubProfile* prof)
 	nb=0;
 
 	// Go through the document judged by the corresponding profile
-	GProfDocCursor Fdbks=GetProfDocCursor();
+	RCursor<GFdbk> Fdbks=GetFdbks();
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 	{
 		f=Fdbks()->GetFdbk();
 		// Look for the same document in the other profile. If not found or the
 		// document is not "good" -> Nothing
-		cor=prof->GetFeedback(Fdbks()->GetDoc());
+		cor=prof->GetProfile()->GetFdbk(Fdbks()->GetDoc()->GetId());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 
@@ -283,7 +289,7 @@ unsigned int GSubProfile::GetCommonDocs(const GSubProfile* prof)
 unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
 {
 	tDocAssessment f;
-	GProfDoc* cor;
+	GFdbk* cor;
 	unsigned int nb;
 	bool bOK,bOK2;
 
@@ -292,7 +298,7 @@ unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
 	nb=0;
 
 	// Go through the document judged by the corresponding profile
-	GProfDocCursor Fdbks=GetProfDocCursor();
+	RCursor<GFdbk> Fdbks=GetFdbks();
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 	{
 		f=Fdbks()->GetFdbk();
@@ -300,7 +306,7 @@ unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
 
 		// If the document was not judged by the other profile or have not the
 		// same judgment -> Nothing
-		cor=prof->GetFeedback(Fdbks()->GetDoc());
+		cor=prof->GetProfile()->GetFdbk(Fdbks()->GetDoc()->GetId());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 		bOK2=(f & djOK);
@@ -314,17 +320,10 @@ unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
 
 
 //------------------------------------------------------------------------------
-GProfDocCursor GSubProfile::GetProfDocCursor(void)
+RCursor<GFdbk> GSubProfile::GetFdbks(void)
 {
-	GProfDocCursor cur(Fdbks);
+	RCursor<GFdbk> cur(Fdbks);
 	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
-GProfDoc* GSubProfile::GetFeedback(const GDoc* doc) const
-{
-	return(Fdbks.GetPtr<const GDoc*>(doc));
 }
 
 
@@ -339,6 +338,20 @@ double GSubProfile::Similarity(const GDoc* doc) const
 double GSubProfile::SimilarityIFF(const GDoc* doc) const throw(GException)
 {
 	return(GWeightInfos::SimilarityIFF(doc,otDocSubProfile,Lang));
+}
+
+
+//------------------------------------------------------------------------------
+double GSubProfile::Similarity(const GDocProxy* doc) const
+{
+	return(GWeightInfos::Similarity(doc->GetInfos()));
+}
+
+
+//------------------------------------------------------------------------------
+double GSubProfile::SimilarityIFF(const GDocProxy* doc) const throw(GException)
+{
+	return(GWeightInfos::SimilarityIFF(doc->GetInfos(),otDocSubProfile,Lang));
 }
 
 

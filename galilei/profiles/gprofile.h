@@ -47,6 +47,118 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
+* The GFdbk class provides a representation for assessment on a document.
+* @author Pascal Francq
+* @short Documment Assessment.
+*/
+class GFdbk
+{
+	/**
+	* Document assessed.
+	*/
+	GDocProxy* Doc;
+
+	/**
+	* Assessment of the profile.
+	*/
+	tDocAssessment Fdbk;
+
+	/**
+	* Last update of this assessment.
+	*/
+	R::RDate Updated;
+
+public:
+
+	/**
+	* Constructor.
+	* @param id             Identificator of the document.
+	* @param fdbk           Assessment.
+	* @param date           Date.
+	*/
+	GFdbk(unsigned int id,tDocAssessment fdbk,R::RDate& date);
+
+	/**
+	* Compare two assessements to order them using the document identificator.
+	* @see R::RContainer
+	* @param profdoc        Assessement.
+	* @return int
+	*/
+	int Compare(const GFdbk &profdoc) const;
+
+	/**
+	* Compare two assessements to order them using the document identificator.
+	* @see R::RContainer
+	* @param profdoc        Pointer to an assessement.
+	* @return int
+	*/
+	int Compare(const GFdbk *profdoc) const;
+
+	/**
+	* Compare the document assessed with another document using their
+	* identificators.
+	* @see R::RContainer
+	* @param doc             Identificator of the document.
+	* @return int
+	*/
+	int Compare(unsigned int id) const;
+
+	/**
+	* Update the assessment on a given date.
+	* @param fdbk           Assessment.
+	* @param date           Date.
+	*/
+	void UpdateFdbk(tDocAssessment fdbk,R::RDate date);
+
+	/**
+	* Get the assessment for the document.
+	* @returns Profile's assessment.
+	*/
+	tDocAssessment GetFdbk(void) const {return(Fdbk);}
+
+	/**
+	* Get the document assessed.
+	* @returns Pointer to the document.
+	*/
+	GDocProxy* GetDoc(void) const {return(Doc);}
+
+	/**
+	* Get the date of the assessment on the document.
+	* @returns R::RDate.
+	*/
+	R::RDate GetUpdated(void) const;
+
+	/**
+	* Create an erronous assessment with a given percentage. The percentage
+	* represents the number of assessments that will be changed in comparison to
+	* the original.
+	*
+	* The changed assessment depends on the original assessment :
+	* - If the original assessment is relevant, the changed assessment has a
+	*   probability of 0.75 to be fuzzy relevant and a probability of 0.25 to be
+	*   irrelevant.
+	* - If the original assessment is fuzzy relevant, the changed assessment has
+	*   a probability of 0.5 to be relevant and a probability of 0.5 to be
+	*   irrelevant.
+	* - If the original assessment is irrelevant, the changed assessment has a
+	*   probability of 0.75 to be fuzzy relevant and a probability of 0.25 to be
+	*   relevant.
+	* @param fdbk           Original assessment.
+	* @param PercErr        Percentage of error.
+	* @param rand           Pointer to the random number generator to use.
+	* @returns tDocAssessment
+	*/
+	static tDocAssessment ErrorJudgment(tDocAssessment fdbk,double PercErr,R::RRandom* rand);
+
+	/*
+	* Destructor
+	*/
+	~GFdbk(void);
+};
+
+
+//------------------------------------------------------------------------------
+/**
 * The GProfile class provides a representation of a profile. In fact, it is a
 * container of subprofiles, each subprofile corresponding to a language.
 * @author Pascal Francq
@@ -74,7 +186,7 @@ protected:
 	/**
 	* Documents assessed by profile.
 	*/
-	R::RContainer<GProfDoc,false,true> Fdbks;
+	R::RContainer<GFdbk,true,true> Fdbks;
 
 	/**
 	* Determine if the profile is social, i.e. prefer to be grouped with
@@ -99,11 +211,6 @@ public:
 	* @param nbf            Number of Feedbacks.
 	*/
 	GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf=100) throw(std::bad_alloc);
-
-	/**
-	* Clear the assessment of the profile.
-	*/
-	void ClearFdbks (void);
 
 	/**
 	* Compare two profiles by comparing their identificator.
@@ -195,14 +302,6 @@ proxy:
 	GSubProfile* GetInsertSubProfile(GLang* lang,GSession* s);
 
 	/**
-	* Get the feedback of the profile on a specific document.
-	* @param doc            Pointer to the document.
-	* return Pointer to the feedback or 0 if the document wasn't judged by the
-	*        profile.
-	*/
-	GProfDoc* GetFeedback(const GDoc* doc) const;
-
-	/**
 	* Get the number of assessed documents of a given language.
 	* @param lang           Pointer to the language.
 	* @returns unsigned int.
@@ -211,9 +310,9 @@ proxy:
 
 	/**
 	* Get a Cursor on the feedback for the profile.
-	* @return GProfDocCursor.
+	* @return GFdbkCursor.
 	*/
-	GProfDocCursor GetProfDocCursor(void);
+	R::RCursor<GFdbk> GetFdbks(void);
 
 	/**
 	* Get a Cursor on the subprofiles.
@@ -222,20 +321,43 @@ proxy:
 	GSubProfileCursor GetSubProfilesCursor(void);
 
 	/**
-	* Add an assessment for the profile.
-	* @param j              Assessment.
-	* @param s              Session.
+	* Insert an assessment to the list of the profile.
+	* @param id               Identificator of the document.
+	* @param assess           Assessment.
+	* @param date             Date.
 	*/
-	void InsertFdbk(GProfDoc* j,GSession* s) throw(std::bad_alloc);
+	void InsertFdbk(unsigned int id,tDocAssessment assess,R::RDate date) throw(std::bad_alloc);
 
 	/**
-	* This method is call when a document was modified.
-	* @param doc            Pointer to the document.
-	* @param newlang        New language of the document.  
-	* @param oldlang        Old language of the document. 
-	* The document must have been assessed by the profile. 
+	* Delete an assessment from the list of the profile.
+	* @param id               Identificator of the document.
 	*/
-	void Modify(GDoc* doc,GLang* newlang,GLang* oldlang);
+	void DeleteFdbk(unsigned int id) throw(std::bad_alloc);
+
+	/**
+	* Clear the assessment of the profile.
+	*/
+	void ClearFdbks(void);
+
+	/**
+	* Get the feedback of the profile on a specific document.
+	* @param id               Identificator of the document.
+	*/
+	GFdbk* GetFdbk(unsigned int id) const;
+
+	/**
+	* This method is call by a document when it was modified (either because it
+	* as analyzed for the first time or because the content has changed).
+	* @param id             Identificator of the document.
+	*/
+	void HasUpdate(unsigned int id);
+
+	/**
+	* Update the profile. In practice, it constructs for each subprofile the
+	* list of assessed documents from the corresponding language.
+	* subprofiles.
+	*/
+	void Update(void);
 
 public:
 

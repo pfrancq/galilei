@@ -182,13 +182,6 @@ proxy:
 	*/
 	bool IsDefined(void) const;
 
-proxy:
-
-	/**
-	* Clear all the assessments on the document.
-	*/
-	void ClearFdbks(void);
-
 	/**
 	* Get the URL.
 	* @returns RString.
@@ -248,8 +241,6 @@ proxy:
 	*/
 	GLang* GetLang(void) const {return(Lang);}
 
-proxy:
-
 	/**
 	* Get the identificator of the document.
 	* @return unsigned int.
@@ -293,7 +284,19 @@ proxy:
 	* Get a Cursor on the weights of the document.
 	* @return GWordWeightCursor.
 	*/
-	GWeightInfoCursor GetWeightInfoCursor(void);
+	R::RCursor<GWeightInfo> GetWeightInfoCursor(void);
+
+	/**
+	* Get the list of information entities representing the document.
+	* @return Constant pointer to a GWeightInfos.
+	*/
+	const GWeightInfos* GetInfos(void) const {return(this);}
+
+	/**
+	* Compute the maximal weight of the information entities in the document.
+	* @return double.
+	*/
+	double GetMaxWeight(void) const throw(GException) {return(GWeightInfos::GetMaxWeight());}
 
 	/**
 	* Compute a similarity between two documents.
@@ -345,6 +348,11 @@ proxy:
 	* @param id               Identificator of the profile.
 	*/
 	void DeleteFdbk(unsigned int id) throw(std::bad_alloc);
+
+	/**
+	* Clear all the assessments on the document.
+	*/
+	void ClearFdbks(void);
 
 	/**
 	* Get the number of outgoing links

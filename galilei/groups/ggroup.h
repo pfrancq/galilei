@@ -248,7 +248,7 @@ public:
 	* @param docs           Documents not assessed.
 	* @param s              Subprofile.
 	*/
-	void NotJudgedDocsList(R::RContainer<GProfDoc,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc);
+	void NotJudgedDocsList(R::RContainer<GFdbk,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc);
 
 	/**
 	* Construct the list of all relevant documents of the subprofiles of a
@@ -259,7 +259,7 @@ public:
 	* @param session        Session.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(R::RContainer<GProfDoc,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc);
+	void NotJudgedDocsRelList(R::RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc);
 
 	/**
 	* Compute the relevant subprofile, i.e. the subprofiles whith the highest

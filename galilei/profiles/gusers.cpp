@@ -37,7 +37,6 @@
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <infos/glang.h>
-#include <profiles/gprofdoc.h>
 using namespace R;
 using namespace GALILEI;
 

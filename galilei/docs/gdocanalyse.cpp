@@ -40,7 +40,6 @@
 #include <docs/gdocanalyse.h>
 #include <docs/gdoc.h>
 #include <profiles/gprofile.h>
-#include <profiles/gprofdoc.h>
 using namespace R;
 using namespace GALILEI;
 

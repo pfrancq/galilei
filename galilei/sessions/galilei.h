@@ -6,7 +6,7 @@
 
 	GALILEI Header - Header.
 
-	Copyright 2001-2004 by the Université Libre de Bruxelles.
+	Copyright 2001-2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -146,8 +146,7 @@ class GProfileProxy;
 class GSubProfile;
 class GSubProfileProxy;
 class GSubProfileCursor;
-class GProfDoc;
-class GProfDocCursor;
+class GFdbk;
 class GProfileCalc;
 class GFactoryProfileCalc;
 class GFactoryProfileCalcCursor;

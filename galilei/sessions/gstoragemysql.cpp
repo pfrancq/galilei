@@ -46,12 +46,11 @@
 #include <infos/gwordlist.h>
 #include <infos/gweightinfo.h>
 #include <infos/gweightinfos.h>
-#include <docs/gdoc.h>
+#include <docs/gdocproxy.h>
 #include <docs/glink.h>
 #include <profiles/guser.h>
 #include <profiles/gusers.h>
 #include <profiles/gprofile.h>
-#include <profiles/gprofdoc.h>
 #include <profiles/gsubprofile.h>
 #include <sessions/gstoragemysql.h>
 #include <sessions/gslot.h>
@@ -631,23 +630,13 @@ void GStorageMySQL::LoadSubjectTree(GSession* session) throw(std::bad_alloc,GExc
 //------------------------------------------------------------------------------
 void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException)
 {
-	GProfile* prof;
-	GUser* usr;
-	GDoc* doc;
 	tDocAssessment jug;
 
 	try
 	{
-		RQuery fdbks(Db,"SELECT htmlid, judgement, profiles.profileid, userid, when2 FROM htmlsbyprofiles,profiles WHERE profiles.profileid=htmlsbyprofiles.profileid");
+		RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2 FROM htmlsbyprofiles");
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
 		{
-			usr=session->GetUser(atoi(fdbks[3]));
-			if(!usr) continue;
-			prof=usr->GetPtr<unsigned int>(atoi(fdbks[2]));
-			if(!prof) continue;
-			doc=session->GetDoc(atoi(fdbks[0]));
-			if(!doc) continue;
-
 			switch(fdbks[1][0].Unicode())
 			{
 				case 'O':
@@ -676,7 +665,7 @@ void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException
 				default:
 					break;
 			}
-			session->InsertFdbk(prof,doc,jug,RDate(fdbks[4]));
+			session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),jug,RDate(fdbks[3]));
 		}
 	}
 	catch(RMySQLError e)
@@ -770,69 +759,11 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::GetDocAssessments(GSession* session,const GDoc* ref,R::RContainer<GProfDoc,true,false>& assess)
-{
-	GProfile* prof;
-	tDocAssessment jug;
-
-	if(!ref)
-		throw GException("Invalid document identificator");
-	try
-	{
-		RQuery fdbks(Db,"SELECT judgement,profileid,when2 FROM htmlsbyprofiles WHERE htmlid="+itou(ref->GetId()));
-		for(fdbks.Start();!fdbks.End();fdbks.Next())
-		{
-			// Get the profile
-			prof=session->GetProfile(atoi(fdbks[1]));
-			if(!prof) continue;
-
-			// Get the assessments
-			switch(fdbks[0][0].Unicode())
-			{
-				case 'O':
-					jug=djOK;
-					break;
-				case 'K':
-					jug=djKO;
-					break;
-				case 'H':
-					jug= djOutScope;
-					break;
-				default:
-					jug=djUnknow;
-					break;
-			}
-			switch(fdbks[0][1].Unicode())
-			{
-				case 'H':
-					jug = tDocAssessment(jug | djHub);
-					break;
-				case 'A':
-					jug = tDocAssessment(jug | djAutority);
-					break;
-				//case 'U':
-					//break;
-				default:
-					break;
-			}
-
-			// Insert in the container
-			assess.InsertPtr(new GProfDoc(const_cast<GDoc*>(ref),prof,jug,fdbks[2]));
-		}
-	}
-	catch(RMySQLError e)
-	{
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
 void GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 {
 	RString sSql;
 	RString j;
-	GProfDocCursor Fdbks;
+	RCursor<GFdbk> Fdbks;
 
 	try
 	{
@@ -840,25 +771,29 @@ void GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 		RQuery delete1(Db,"DELETE FROM htmlsbyprofiles");
 
 		// Reinsert all the feedbacks
-		Fdbks=session->GetProfDocsCursor();
-		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+		RCursor<GProfile> Profiles=session->GetProfilesCursor();
+		for(Profiles.Start();!Profiles.End();Profiles.End())
 		{
-			switch(Fdbks()->GetFdbk() & djMaskJudg)
+			Fdbks=Profiles()->GetFdbks();
+			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 			{
-				case djOK:
-					j="O";
-					break;
-				case djOutScope:
-					j="H";
-					break;
-				case djKO:
-					j="K";
-					break;
-				default:
-					throw GException("No Valid Assessment");
+				switch(Fdbks()->GetFdbk() & djMaskJudg)
+				{
+					case djOK:
+						j="O";
+						break;
+					case djOutScope:
+						j="H";
+						break;
+					case djKO:
+						j="K";
+						break;
+					default:
+						throw GException("No Valid Assessment");
+				}
+				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES("+itou(Fdbks()->GetDoc()->GetId())+"'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetUpdated());
+				RQuery fdbks(Db,sSql);
 			}
-			sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES("+itou(Fdbks()->GetDoc()->GetId())+"'"+j+"',"+itou(Fdbks()->GetProfile()->GetId())+",CURDATE())";
-			RQuery fdbks(Db,sSql);
 		}
 	}
 	catch(RMySQLError e)
@@ -873,31 +808,34 @@ void GStorageMySQL::SaveLinks(GSession* session) throw(GException)
 {
 	RString sSql;
 	RString j;
-	GProfDocCursor Fdbks;
+	RCursor<GFdbk> Fdbks;
 
 	try
 	{
 		// Clear the all the links (where judg= Hub or Authority)
 		RQuery delete1(Db,"DELETE FROM htmlsbyprofiles WHERE judgement='H' OR judgement='A'");
 
-
 		// Reinsert all the feedbacks
-		Fdbks=session->GetProfDocsCursor();
-		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+		RCursor<GProfile> Profiles=session->GetProfilesCursor();
+		for(Profiles.Start();!Profiles.End();Profiles.End())
 		{
-			switch(Fdbks()->GetFdbk() & djMaskHubAuto)
+			Fdbks=Profiles()->GetFdbks();
+			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 			{
-				case djHub:
-					j="H";
-					break;
-				case djAutority:
-					j="A";
-					break;
-				default:
-					continue;
+				switch(Fdbks()->GetFdbk() & djMaskHubAuto)
+				{
+					case djHub:
+						j="H";
+						break;
+					case djAutority:
+						j="A";
+						break;
+					default:
+						continue;
+				}
+				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES("+itou(Fdbks()->GetDoc()->GetId())+"'"+j+"',"+itou(Profiles()->GetId())+RQuery::SQLValue(Fdbks()->GetUpdated());
+				RQuery fdbks(Db,sSql);
 			}
-			sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES("+itou(Fdbks()->GetDoc()->GetId())+"'"+j+"',"+itou(Fdbks()->GetProfile()->GetId())+",CURDATE())";
-			RQuery fdbks(Db,sSql);
 		}
 	}
 	catch(RMySQLError e)

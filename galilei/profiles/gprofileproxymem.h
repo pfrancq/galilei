@@ -53,22 +53,25 @@ public:
 	GProfileProxyMem(GProfile* obj) : GProfileProxy(), Obj(obj) {}
 	virtual int Compare(const GProfileProxy* ptr) const { return(Obj->Compare(dynamic_cast<const GProfileProxyMem*>(ptr)->Obj)); }
 	virtual int Compare(const unsigned int id) const { return(Obj->Compare(id)); }
-	virtual void SetSubject(GSubject* s){ Obj->SetSubject(s); }
-	virtual GSubject* GetSubject(void){ return(Obj->GetSubject()); }
-	virtual unsigned int GetId(void){ return(Obj->GetId()); }
-	virtual void SetId(unsigned int id){ Obj->SetId(id); }
-	virtual R::RString GetName(void){ return(Obj->GetName()); }
-	virtual const GUser* GetUser(void){ return(Obj->GetUser()); }
-	virtual bool IsSocial(void){ return(Obj->IsSocial()); }
-	virtual void SetSocial(bool social){ Obj->SetSocial(social); }
-	virtual GSubProfile* GetSubProfile(const GLang* lang){ return(Obj->GetSubProfile(lang)); }
-	virtual GSubProfile* GetInsertSubProfile(GLang* lang,GSession* s){ return(Obj->GetInsertSubProfile(lang,s)); }
-	virtual GProfDoc* GetFeedback(const GDoc* doc){ return(Obj->GetFeedback(doc)); }
-	virtual unsigned int GetNbAssessedDocs(const GLang* lang){ return(Obj->GetNbAssessedDocs(lang)); }
-	virtual GProfDocCursor GetProfDocCursor(void){ return(Obj->GetProfDocCursor()); }
-	virtual GSubProfileCursor GetSubProfilesCursor(void){ return(Obj->GetSubProfilesCursor()); }
-	virtual void InsertFdbk(GProfDoc* j,GSession* s){ Obj->InsertFdbk(j,s); }
-	virtual void Modify(GDoc* doc,GLang* newlang,GLang* oldlang){ Obj->Modify(doc,newlang,oldlang); }
+	virtual void SetSubject(GSubject* s) {Obj->SetSubject(s);}
+	virtual GSubject* GetSubject(void) const {return(Obj->GetSubject());}
+	virtual unsigned int GetId(void) const {return(Obj->GetId());}
+	virtual void SetId(unsigned int id)  throw(GException) {Obj->SetId(id);}
+	virtual R::RString GetName(void) const {return(Obj->GetName());}
+	virtual const GUser* GetUser(void) const {return(Obj->GetUser());}
+	virtual bool IsSocial(void) const {return(Obj->IsSocial());}
+	virtual void SetSocial(bool social) {Obj->SetSocial(social);}
+	virtual GSubProfile* GetSubProfile(const GLang* lang) const {return(Obj->GetSubProfile(lang));}
+	virtual GSubProfile* GetInsertSubProfile(GLang* lang,GSession* s) {return(Obj->GetInsertSubProfile(lang,s));}
+	virtual unsigned int GetNbAssessedDocs(const GLang* lang) const {return(Obj->GetNbAssessedDocs(lang));}
+	virtual R::RCursor<GFdbk> GetFdbks(void) {return(Obj->GetFdbks());}
+	virtual GSubProfileCursor GetSubProfilesCursor(void) {return(Obj->GetSubProfilesCursor());}
+	virtual void InsertFdbk(unsigned int id,tDocAssessment assess,R::RDate date) throw(std::bad_alloc) {Obj->InsertFdbk(id,assess,date);}
+	virtual void DeleteFdbk(unsigned int id) throw(std::bad_alloc) {Obj->DeleteFdbk(id);}
+	virtual void ClearFdbks(void) {Obj->ClearFdbks();}
+	virtual GFdbk* GetFdbk(unsigned int id) const {return(Obj->GetFdbk(id));}
+	virtual void HasUpdate(unsigned int id) {Obj->HasUpdate(id);}
+	virtual void Update(void) {Obj->Update();}
 	virtual ~GProfileProxyMem(void) {}
 };
 

@@ -53,21 +53,21 @@ public:
 	GLangProxyMem(GLang* obj) : GLangProxy(), Obj(obj) {}
 	virtual int Compare(const GLangProxy* ptr) const { return(Obj->Compare(dynamic_cast<const GLangProxyMem*>(ptr)->Obj)); }
 	virtual int Compare(const unsigned int id) const { return(Obj->Compare(id)); }
-	virtual void SkipSequence(const R::RString& word){ Obj->SkipSequence(word); }
-	virtual R::RString GetStemming(const R::RString& kwd){ return(Obj->GetStemming(kwd)); }
-	virtual GSession* GetSession(void){ return(Obj->GetSession()); }
-	virtual GDict* GetDict(void){ return(Obj->GetDict()); }
-	virtual GDict* GetStop(void){ return(Obj->GetStop()); }
-	virtual bool InStop(const R::RString& name){ return(Obj->InStop(name)); }
-	virtual void IncRef(unsigned int id,tObjType ObjType){ Obj->IncRef(id,ObjType); }
-	virtual void DecRef(unsigned int id,tObjType ObjType){ Obj->DecRef(id,ObjType); }
-	virtual unsigned int GetRef(unsigned int id,tObjType ObjType){ return(Obj->GetRef(id,ObjType)); }
-	virtual void IncRef(tObjType ObjType){ Obj->IncRef(ObjType); }
-	virtual void DecRef(tObjType ObjType){ Obj->DecRef(ObjType); }
-	virtual unsigned int GetRef(tObjType ObjType){ return(Obj->GetRef(ObjType)); }
-	virtual unsigned int GetTotal(void){ return(Obj->GetTotal()); }
-	virtual const GData** GetDatas(void){ return(Obj->GetDatas()); }
-	virtual bool MustSkipSequence(const R::RChar* seq){ return(Obj->MustSkipSequence(seq)); }
+	virtual void SkipSequence(const R::RString& word) throw(std::bad_alloc) {Obj->SkipSequence(word);}
+	virtual R::RString GetStemming(const R::RString& kwd) throw(GException) {return(Obj->GetStemming(kwd));}
+	virtual GSession* GetSession(void) const {return(Obj->GetSession());}
+	virtual GDict* GetDict(void) const {return(Obj->GetDict());}
+	virtual GDict* GetStop(void) const {return(Obj->GetStop());}
+	virtual bool InStop(const R::RString& name) const throw(GException) {return(Obj->InStop(name));}
+	virtual void IncRef(unsigned int id,tObjType ObjType) throw(GException) {Obj->IncRef(id,ObjType);}
+	virtual void DecRef(unsigned int id,tObjType ObjType) throw(GException) {Obj->DecRef(id,ObjType);}
+	virtual unsigned int GetRef(unsigned int id,tObjType ObjType) throw(GException) {return(Obj->GetRef(id,ObjType));}
+	virtual void IncRef(tObjType ObjType) throw(GException) {Obj->IncRef(ObjType);}
+	virtual void DecRef(tObjType ObjType) throw(GException) {Obj->DecRef(ObjType);}
+	virtual unsigned int GetRef(tObjType ObjType) throw(GException) {return(Obj->GetRef(ObjType));}
+	virtual unsigned int GetTotal(void) const throw(GException) {return(Obj->GetTotal());}
+	virtual const GData** GetDatas(void) const throw(GException) {return(Obj->GetDatas());}
+	virtual bool MustSkipSequence(const R::RChar* seq) throw(GException) {return(Obj->MustSkipSequence(seq));}
 	virtual ~GLangProxyMem(void) {}
 };
 

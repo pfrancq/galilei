@@ -35,7 +35,6 @@
 #include<profiles/guser.h>
 #include<profiles/gprofile.h>
 #include<profiles/gsubprofile.h>
-#include<profiles/gprofdoc.h>
 using namespace GALILEI;
 using namespace R;
 

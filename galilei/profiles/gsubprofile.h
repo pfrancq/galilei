@@ -99,7 +99,7 @@ protected:
 	/**
 	* Documents assessed by the subprofile.
 	*/
-	R::RContainer<GProfDoc,false,true> Fdbks;
+	R::RContainer<GFdbk,false,false> Fdbks;
 
 	/**
 	* Subject of the subprofile.
@@ -163,21 +163,15 @@ public:
 proxy:
 
 	/**
-	* Add an assessment for the subprofile.
-	* @param j               Pointer to an assessment.
+	* Insert a document into the list of those used to compute the subprofile.
+	* @param fddk             Pointer to the feedback.
 	*/
-	void InsertFdbk(GProfDoc* j) throw(std::bad_alloc);
-
-	/**
-	* Remove an assessment for the subprofile.
-	* @param j               Pointer to an assessment.
-	*/
-	void DeleteFdbk(GProfDoc* j) throw(std::bad_alloc);
+	void InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc);
 
 	/**
 	* Clear all the assessments of the subprofile.
 	*/
-	virtual void ClearFdbks(void) throw(std::bad_alloc,GException);
+	void ClearFdbks(void) throw(std::bad_alloc,GException);
 
 	/**
 	* Get the identificator of the subprofile.
@@ -294,18 +288,10 @@ proxy:
 	unsigned int GetNbAssessedDocs(void) const {return(Fdbks.NbPtr);}
 
 	/**
-	* Get the assessment of the subprofile on a specific document.
-	* @param doc             Pointer to the document.
-	* return Pointer to the feedback or 0 if the document wasn't judged by the
-	*        profile.
-	*/
-	GProfDoc* GetFeedback(const GDoc* doc) const;
-
-	/**
 	* Get a cursor on the feedback for the profile.
-	* @return GProfDocCursor.
+	* @return GFdbkCursor.
 	*/
-	GProfDocCursor GetProfDocCursor(void);
+	R::RCursor<GFdbk> GetFdbks(void);
 
 	/**
 	* Get a cursor over the vector.
@@ -330,6 +316,19 @@ proxy:
 	* @param doc             Pointer to a document.
 	*/
 	virtual double SimilarityIFF(const GDoc* doc) const throw(GException);
+
+	/**
+	* Compute the similarity between a subprofile and a document.
+	* @param doc             Pointer to a proxy on a document.
+	*/
+	virtual double Similarity(const GDocProxy* doc) const;
+
+	/**
+	* Compute the similarity between a subprofile and a document using a Inverse
+	* Frequence Factor (IFF).
+	* @param doc             Pointer to a proxy on a document.
+	*/
+	virtual double SimilarityIFF(const GDocProxy* doc) const throw(GException);
 
 	/**
 	* Compute the similarity between subprofiles.
