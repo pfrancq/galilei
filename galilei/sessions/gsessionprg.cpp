@@ -267,10 +267,9 @@ void GFdbksCycleI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsign
 //-----------------------------------------------------------------------------
 void GCompareIdealI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>*) throw(GException)
 {
-	strcpy(tmp,"Compare with Ideal Groups");
-	r->WriteStr(tmp);
+	r->WriteStr("Compare with Ideal Groups");
 	GCompareGrouping CompMethod(Owner->Session,Owner->Session->GetIdealGroups());
-	CompMethod.Compare(0);
+	CompMethod.Compare(r);
 	Owner->Precision=CompMethod.GetPrecision();
 	Owner->Recall=CompMethod.GetRecall();
 	Owner->Total=CompMethod.GetTotal();
@@ -517,11 +516,149 @@ void GAddProfiles::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsign
 		Owner->GetIdealMethod()->SetSettings(args->Tab[0]->GetValue(prg));
 	cout <<atoi(args->Tab[0]->GetValue(prg)) <<endl;
 	cout <<atoi(args->Tab[1]->GetValue(prg)) <<endl;
-	
 	sprintf(tmp, "%u new profiles created",Owner->GetIdealMethod()->AddProfiles(atoi(args->Tab[0]->GetValue(prg)), atoi(args->Tab[1]->GetValue(prg)),Owner->AutoSave));
 	r->WriteStr(tmp);
 }
 
+
+//-----------------------------------------------------------------------------
+void GRealLife::CommonTasks(GSlot* r) throw(GException)
+{
+	// Compute Profiles
+	r->WriteStr("Compute Profiles: Current Method and Settings");
+
+	Owner->Session->CalcProfiles(r,Owner->FirstProfile,Owner->AutoSave);
+	if(!Owner->FirstProfile) Owner->FirstProfile=true;
+
+	// Group Profiles
+	r->WriteStr("Group Profiles: Current Method and Settings");
+	if(Owner->Session->GetIdealGroups())
+	{
+		GGrouping* algo=Owner->Session->GetCurrentGroupingMethod();
+		algo->SetIdealGroups(Owner->Session->GetIdealGroups());
+	}
+	Owner->Session->GroupingProfiles(r,Owner->FirstGroup,Owner->AutoSave);
+	if(!Owner->FirstGroup) Owner->FirstGroup=true;
+
+	// Compare Ideal
+	r->WriteStr("Compare with Ideal Groups");
+	GCompareGrouping CompMethod(Owner->Session,Owner->Session->GetIdealGroups());
+	CompMethod.Compare(r);
+	Owner->Precision=CompMethod.GetPrecision();
+	Owner->Recall=CompMethod.GetRecall();
+	Owner->Total=CompMethod.GetTotal();
+	sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f",Owner->Recall,Owner->Precision,Owner->Total);
+	r->WriteStr(tmp);
+	if(Owner->OFile)
+		(*Owner->OFile)<<Owner->TestName<<Owner->Recall<<Owner->Precision<<Owner->Total<<What<<endl;
+	if(Owner->GOFile)
+		(*Owner->GOFile)<<Owner->Recall<<Owner->Precision<<Owner->Total<<What<<endl;
+}
+
+
+//-----------------------------------------------------------------------------
+void GRealLife::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	unsigned int MaxStep;
+	unsigned int MinFBStep;
+	unsigned int MaxFBStep;
+	unsigned int NbStep;
+	double Proba;
+	RRandom* Random;
+	unsigned int nb;
+	unsigned int NewProf;
+
+	if(args->NbPtr!=4)
+		throw GException("Method needs four parameters");
+	sprintf(tmp,"Real Life: Settings=\"%s\",\"%s\",\"%s\",\"%s\"",
+	        args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg),args->Tab[2]->GetValue(prg),args->Tab[3]->GetValue(prg));
+	r->WriteStr(tmp);
+	Random=Owner->Session->GetRandom();
+	MaxStep=atoi(args->Tab[0]->GetValue(prg));
+	MinFBStep=atoi(args->Tab[1]->GetValue(prg));
+	MaxFBStep=atoi(args->Tab[2]->GetValue(prg))-MinFBStep+1;
+	Proba=atof(args->Tab[3]->GetValue(prg));
+	What[1]=0;
+	for(NbStep=0;;)
+	{
+		// Feedback process
+		for(nb=Random->Value(MaxFBStep)+MinFBStep+1;--nb;)
+		{
+			// Set TestName
+			NbStep++;
+			Owner->TestName=itoa(NbStep);
+
+			// Create Feedbacks
+			r->WriteStr("Create Feedbacks Cycle");
+			What[0]='F';
+			FdbksMethod.Run(Owner->AutoSave);
+			CommonTasks(r);
+
+			// Verify Nb Steps
+			if(NbStep>MaxStep) break;
+		}
+
+		// Verify Nb Steps
+		if(NbStep>MaxStep) break;
+		NbStep++;
+
+		// Set TestName
+		Owner->TestName=itoa(NbStep);
+
+		// Create 1 new profile
+		r->WriteStr("Create 1 new profile");
+		if(Random->Value()<Proba)
+		{
+			// Create One profile of an existing topic
+			NewProf=Owner->GetIdealMethod()->AddProfiles(1,1,Owner->AutoSave);
+			if(NewProf)
+				What[0]='E';
+			else
+			{
+				What[0]='F';
+				FdbksMethod.Run(Owner->AutoSave);
+			}
+		}
+		else
+		{
+			// Create one profile of a new topic
+			if(Owner->GetIdealMethod()->AddJudgement(Owner->AutoSave))
+			{
+				What[0]='N';
+			}
+			else
+			{
+				Proba=1.0;
+				NewProf=Owner->GetIdealMethod()->AddProfiles(1,1,Owner->AutoSave);
+				if(NewProf)
+					What[0]='E';
+				else
+				{
+					What[0]='F';
+					FdbksMethod.Run(Owner->AutoSave);
+				}
+			}
+		}
+		CommonTasks(r);
+
+		// Verify Nb Steps
+		if(NbStep>MaxStep) break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GAddAssessments::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	unsigned int nbDocs;
+
+	if(args->NbPtr!=1)
+		throw GException("Method needs one parameters");
+	nbDocs=atoi(args->Tab[0]->GetValue(prg));
+	sprintf(tmp,"Adding Assessments: Settings=\"%u\"",nbDocs);
+	r->WriteStr(tmp);
+	Owner->GetIdealMethod()->AddAssessments(Owner->AutoSave,nbDocs);
+}
 
 
 
@@ -559,6 +696,8 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GStatsGroupsDocsI(this));
 	Methods.InsertPtr(new GAddIdealI(this));
 	Methods.InsertPtr(new GAddProfiles(this));
+	Methods.InsertPtr(new GRealLife(this));
+	Methods.InsertPtr(new GAddAssessments(this));
 };
 
 

@@ -371,6 +371,27 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GRealLife : public GSM
+{
+	GGetFeedback FdbksMethod;
+	char What[2];
+	void CommonTasks(GSlot* r) throw(GException);
+public:
+	GRealLife(GPrgClassSession* o) : GSM("RealLife",o),FdbksMethod(Owner->Session) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GAddAssessments : public GSM
+{
+public:
+	GAddAssessments(GPrgClassSession* o) : GSM("AddAssessments",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GSessionPrg provides a class for executing a GALILEI Program.
 * @author Pascal Francq
