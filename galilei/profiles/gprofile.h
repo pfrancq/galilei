@@ -80,7 +80,7 @@ class GProfile : public RStd::RContainer<GSubProfile,unsigned,true,true>
 	/**
 	* Documents juged by profile.
 	*/
-	RContainer<GProfDoc,unsigned,true,true> FdbkDocs;
+	RContainer<GProfDoc,unsigned,true,false> Fdbks;
 
 	/**
 	* Date of Update.
@@ -89,14 +89,6 @@ class GProfile : public RStd::RContainer<GSubProfile,unsigned,true,true>
 
 public:
 
-	/**
-	* Constructor.
-	* @param owner          User of the profile.
-	* @param nb             Number of subprofiles.
-	* @param nbf            Number of Feedbacks.
-	*/
-    GProfile(GUser *owner,const unsigned int nb,const unsigned int nbf=100) throw(bad_alloc);
-	
     /**
 	* Constructor og GProfile
 	* @param owner          User of the profile.
@@ -157,32 +149,32 @@ public:
 	* Start the iterator to go trough the documents judged.
 	*/
 	inline void DocsStart(void)
-		{FdbkDocs.Start();}
+		{Fdbks.Start();}
 
 	/**
 	* Test if the end of the container of documents judged is reached.
 	*/
 	inline bool DocsEnd(void) const
-		{return(FdbkDocs.End());}
+		{return(Fdbks.End());}
 
 	/**
 	* Goto the next element, if the end is reached, go to the beginning.
 	*/
 	inline void DocsNext(void)
-		{FdbkDocs.Next();}
+		{Fdbks.Next();}
 
 	/**
 	* Get the current document judge.
 	* @returns Pointer to the current document udge.
 	*/
-	GProfDoc* GetCurDocs(void) {return(FdbkDocs());}
+	GProfDoc* GetCurDocs(void) {return(Fdbks());}
 
 	/**
-	* Add a new document judged for this profile.
-	* @param doc            Pointer to the document.
+	* Add a judgement for this profile.
 	* @param j              Judgement.
 	*/
-	void AddDocJudged(GDoc* doc,char j) throw(bad_alloc);
+	void AddJudgement(GProfDoc* j) throw(bad_alloc)
+		{ Fdbks.InsertPtr(j); }
 };
 
 

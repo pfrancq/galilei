@@ -30,17 +30,9 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfile::GProfile(GUser* owner,const unsigned int nb,const unsigned int nbf) throw(bad_alloc)
-  : RContainer<GSubProfile,unsigned,true,true>(nb,nb/2),Owner(owner),Id(cNoRef),Name(),
-    Modified(false),FdbkDocs(nbf+nbf/2,nbf/2)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GProfile::GProfile(GUser *owner,const unsigned int id,const char* name,const unsigned int nb,const unsigned int nbf=100) throw(bad_alloc)
+GALILEI::GProfile::GProfile(GUser *owner,const unsigned int id,const char* name,const unsigned int nb,const unsigned int nbf) throw(bad_alloc)
   : RContainer<GSubProfile,unsigned,true,true>(nb,nb/2),Owner(owner),Id(id),Name(name),
-    Modified(false),FdbkDocs(nbf+nbf/2,nbf/2)
+    Modified(false), Fdbks(nbf+nbf/2,nbf/2)
 {
 }
 
@@ -70,12 +62,4 @@ int GALILEI::GProfile::Compare(const GProfile *profile) const
 const GSubProfile* GALILEI::GProfile::GetSubProfile(const GLang* lang) const
 {
 	return(GetPtr<const GLang*>(lang,false));
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GProfile::AddDocJudged(GDoc* doc,char j) throw(bad_alloc)
-{
-	if(doc)
-		FdbkDocs.InsertPtr(new GProfDoc(doc,j));
 }
