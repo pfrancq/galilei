@@ -184,3 +184,19 @@ void GALILEI::GProfile::AddJudgement(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 }
+
+
+#if GALILEITEST
+//-----------------------------------------------------------------------------
+void GALILEI::GProfile::SetSubject(GSubject* s)
+{
+	Subject=s;
+}
+
+
+//-----------------------------------------------------------------------------
+GSubject* GALILEI::GProfile::GetSubject(void) const
+{
+	return(Subject);
+}
+#endif

@@ -377,8 +377,8 @@ void  GALILEI::GProfilesSim::UpdateProfSim(GUsers* users,bool global,GLang* lang
 			}
 		}
 	}
-	#pragma message osDelete to add
-	#pragma message when all the sim between the subprofiles are computed -> set Profile State to osUpdated
+	#warning osDelete to add
+	#warning when all the sim between the subprofiles are computed -> set Profile State to osUpdated
 }
 
 
@@ -451,32 +451,9 @@ void  GALILEI::GProfilesSim::UpdateProfSim(GUsers& users,bool global,GLang* lang
 			}
 		}
 	}
-	#pragma message osDelete to add
-	#pragma message when all the sim between the subprofiles are computed -> set Profile State to osUpdated
+	#warning osDelete to add
+	#warning when all the sim between the subprofiles are computed -> set Profile State to osUpdated
 }
-
-
-////-----------------------------------------------------------------------------
-//void GALILEI::GProfilesSim::AnalyseSim2(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2)
-//{
-//	double tmp;
-//  GSim* s;
-//
-//	if(GlobalSim)
-//		tmp=sub1->GlobalSimilarity(sub2);
-//	else
-//		tmp=sub1->Similarity(sub2);
-//	if(fabs(tmp)<1e-10) return;
-//	s = sim->GetPtr(sub2->GetId());
-//	if (!s)
-//	{
-//		sim->InsertPtr(new GSim(sub2->GetId(),tmp));
-//	}
-//	else
-//	{
-//		s->changeValue(tmp);
-//	}
-//}
 
 
 //-----------------------------------------------------------------------------

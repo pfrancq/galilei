@@ -387,8 +387,8 @@ void  GALILEI::GDocProfSim::UpdateDocProfSim(GDocs* docs,GUsers* users,bool glob
 			}
 		}
 	}
-	#pragma message osDelete to add
-	#pragma message when all the sim between the subprofiles are computed -> set Profile State to osUpdated
+	#warning osDelete to add
+	#warning when all the sim between the subprofiles are computed -> set Profile State to osUpdated
 }
 
 
@@ -465,8 +465,8 @@ void  GALILEI::GDocProfSim::UpdateDocProfSim(GDocs* docs , GUsers& users,bool gl
 			}
 		}
 	}
-	#pragma message osDelete to add
-	#pragma message when all the sim between the subprofiles are computed -> set Profile State to osUpdated
+	#warning osDelete to add
+	#warning when all the sim between the subprofiles are computed -> set Profile State to osUpdated
 }
 
 

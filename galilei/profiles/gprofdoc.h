@@ -139,6 +139,15 @@ public:
 	* @return dobule.
 	*/
 	double Similarity(void);
+
+	/**
+	* Create an erronous judment with a given percentage.
+	* @param fdbk           Original Judgment.
+	* @param PercErr        Percentage of error.
+	* @param rand           Pointer to the random number generator to use.
+	* @returns tDocJudgement
+	*/
+	static tDocJudgement ErrorJudgment(tDocJudgement fdbk,double PercErr,RMath::RRandom* rand);
 };
 
 

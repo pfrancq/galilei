@@ -9,7 +9,7 @@
 	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
-		Julien Lamoral (jlamoral@ulb.ac.be).
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 
@@ -75,179 +75,63 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGetFeedback::GGetFeedback(GSession* session)
-	: Session(session), NbDoc(30), Global(true), PercErr(0),IdealGroup(0), Parent(0)
+	: Session(session), NbDocs(30), Global(true), PercErr(0), Docs(NbDocs)
 {
-	IdealDocs=Session->GetIdealDocs();
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent,RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup,bool Save)
-{
-	//Compare each profiles whith all profiles in the same computed group an juge the Nbdocuments most relevant for the user
-	RStd::RContainer<GProfDoc,unsigned,false,false>* docs=new RStd::RContainer<GProfDoc,unsigned,false,false>(100,50);
-	unsigned int prof1;
-	GGroupsCursor Cur;
-	GSubProfileCursor Prof1;
-	GGroupCursor Grp;
-
-	// Init Part
-	IdealGroup=idealgroup;
-	Parent=parent;
-
-	// Go through the groups
-	Cur=Session->GetGroupsCursor();
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		Grp=Cur()->GetGroupCursor();
-		for(Grp.Start();!Grp.End();Grp.Next())
-		{
-			Prof1=Grp()->GetSubProfileCursor();
-			for(Prof1.Start();!Prof1.End();Prof1.Next())
-			{
-				Grp()->NotJudgedDocsRelList(docs, Prof1(),Global);
-				unsigned int i=0;
-				prof1=Prof1()->GetProfile()->GetSubProfile(Grp()->GetLang())->GetId();
-				for(docs->Start();!docs->End();docs->Next())
-				{
-					if(i<NbDoc)
-					{
-						CreateNewFeedback(JudgType(Prof1(),(*docs)()->GetDoc()),Prof1(),(*docs)()->GetDoc());
-					}
-					else
-						break;
-					i++;
-				}
-				Prof1()->GetProfile()->SetState(osModified);
-			}
-		}
-	}
-	
-	delete docs;
-	if(Save)
-		Session->SaveFdbks();
-}
-
-
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GGetFeedback::JudgType(GSubProfile* SubProf,GDoc* Doc)
-{
-	unsigned int GrpDocId;
-	unsigned int GrpProfId;
-	unsigned int tempres=3;
-	unsigned int nbgrp=0;
-	unsigned int compt=0;
-
-	for(IdealGroup->Start();!IdealGroup->End();IdealGroup->Next())
-	{
-		GGroupCursor Grp=(*IdealGroup)()->GetGroupCursor();
-		for(Grp.Start();!Grp.End();Grp.Next())
-		{
-			nbgrp++;
-		}
-	}
-	
-	unsigned int* tab;
-	tab=new unsigned int [nbgrp];
-	for (unsigned int i=0; i<nbgrp;i++)
-		tab[i]=0;
-
-	// Find The id of the group where the document is.
-	for(IdealDocs->Start();! IdealDocs->End();  IdealDocs->Next())
-	{
-		GGroupEvaluateCursor Grp=(*IdealDocs)()->GetGroupEvaluateCursor();
-		for(Grp.Start();!Grp.End();Grp.Next())
-		{
-			if(Grp()->IsIn(Doc->GetId()))
-			{
-				GrpDocId=Grp()->GetId();
-				tab[compt]=GrpDocId;
-				compt++;
-			}
-		}
-	}
-
-	// Find the id of the group  where the subprofile is.
-	for(IdealGroup->Start();!IdealGroup->End();IdealGroup->Next())
-	{
-		GGroupCursor Grp=(*IdealGroup)()->GetGroupCursor();
-		for(Grp.Start();!Grp.End();Grp.Next())
-		{
-			GSubProfileCursor Prof=Grp()->GetSubProfileCursor();
-			for(Prof.Start();!Prof.End();Prof.Next())
-			{
-				if (SubProf->GetId()==Prof()->GetId())
-				{
-					GrpProfId=Grp()->GetId();
-				}
-			}
-		}
-	}
-
-	if(GrpProfId!=0)
-	{
-		// Compare his two id.
-		// Same grp.  
-		for(unsigned int i=0;i<nbgrp;i++)
-		{
-			if(tab[i]!=0)
-			{
-				if(tab[i]==GrpProfId) tempres=1;
-			}
-			else continue;
-		}
-
-		// Same parent.
-		if(tempres==3)
-		{
-			unsigned int b=Parent->GetPtr(GrpProfId)->ParentId;
-			for(unsigned  int i=0;i<nbgrp;i++)
-			{
-				if(tab[i]!=0)
-				{
-					unsigned int a=Parent->GetPtr(tab[i])->ParentId;
-					if(a==b) tempres=2;
-				}
-				else continue;
-			}
-		
-		}
-	}
-
-	// If there is Random change the judgment.
-	if(Session->GetCurrentRandomValue(100)<int(PercErr))
-	{
-		tempres=int(Session->GetCurrentRandomValue(3)+1);
-	}
-
-	delete [] tab;
-	return(tempres);
-	
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GGetFeedback::CreateNewFeedback(unsigned int fdbk,GSubProfile* sub,GDoc* doc)
-{
-	//Auto create Judgement for prof11 on a % of ok, ko or hs documents from prof22.
-	char today[12];
 	RTimeDate::RDate date;
 
-	sprintf(today,"'%u-%u-%u'",date.GetYear(),date.GetMonth(),date.GetDay());
-	switch(fdbk)
+	sprintf(today,"%u-%u-%u",date.GetYear(),date.GetMonth(),date.GetDay());
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGetFeedback::Run(bool Save)
+{
+	GGroupsCursor Grps;
+	GSubProfileCursor SubProfile;
+	GGroupCursor Grp;
+	unsigned int i;
+
+	// Go through the languages
+	Grps=Session->GetGroupsCursor();
+	for(Grps.Start();!Grps.End();Grps.Next())
 	{
-		case 1:
-			Session->InsertFdbk(sub->GetProfile(),doc,djOK,today);
-			break;
-
-		case 2:
-			Session->InsertFdbk(sub->GetProfile(),doc,djKO,today);
-			break;
-
-		case 3:
-			Session->InsertFdbk(sub->GetProfile(),doc,djOutScope,today);
-			break;
+		// Go through the groups of the current language.
+		Grp=Grps()->GetGroupCursor();
+		for(Grp.Start();!Grp.End();Grp.Next())
+		{
+			// Go through the subprofile contained in the group.
+			SubProfile=Grp()->GetSubProfileCursor();
+			for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
+			{
+				Grp()->NotJudgedDocsRelList(&Docs,SubProfile(),Global);
+				for(Docs.Start(),i=NbDocs+1;(!Docs.End())&&(--i);Docs.Next())
+				{
+					// Look if 'OK'
+					if(Docs()->GetDoc()->IsFromSubject(SubProfile()->GetSubject()))
+					{
+						Session->InsertFdbk(SubProfile()->GetProfile(),Docs()->GetDoc(),GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),today);
+					}
+					else
+					{
+						// Look If 'KO'
+						if(Docs()->GetDoc()->IsFromParentSubject(SubProfile()->GetSubject()))
+						{
+							Session->InsertFdbk(SubProfile()->GetProfile(),Docs()->GetDoc(),GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),today);
+						}
+						else
+						{
+							// Must be H
+							Session->InsertFdbk(SubProfile()->GetProfile(),Docs()->GetDoc(),GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),today);
+						}
+					}
+				}
+				SubProfile()->GetProfile()->SetState(osModified);
+			}
+		}
 	}
+
+	if(Save)
+		Session->SaveFdbks();
 }
 
 
@@ -257,7 +141,7 @@ void GALILEI::GGetFeedback::SetSettings(const char* s)
 	char c;
 	
 	if(!(*s)) return;
-	sscanf(s,"%c %u %u",&c,&NbDoc,&PercErr);
+	sscanf(s,"%c %u %u",&c,&NbDocs,&PercErr);
 	if(c=='1') Global=true; else Global=false;
 }
 
@@ -269,7 +153,7 @@ const char* GALILEI::GGetFeedback::GetSettings(void)
 	char c;
 	
 	if(Global) c='1'; else c='0';
-	sprintf(tmp,"%c %u %u",c,NbDoc,PercErr);
+	sprintf(tmp,"%c %u %u",c,NbDocs,PercErr);
 	return(tmp);
 }
 

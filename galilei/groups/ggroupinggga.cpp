@@ -78,6 +78,11 @@ GALILEI::GGroupingGGA::GGroupingGGA(GSession* s,GIRParams* p) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingGGA::SetParam(const char* param,const char* value)
 {
+	if(!strcmp(param,"MaxGen"))
+	{
+		Params->MaxGen=atoi(value);
+	}
+	else
 	if(!strcmp(param,"Global"))
 	{
 		Params->GlobalSim=atoi(value);

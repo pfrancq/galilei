@@ -72,25 +72,19 @@ class GDocsLang;
 */
 class GDocs : public RStd::RContainer<GDoc,unsigned,true,true>
 {
+protected:
 
 	/**
 	* State of the documents.
 	*/
 	bool bDocs;
 
-
-protected :
-	/**
-	*  Create one document container (GDocsLang) for each langage.
-	*/
-	void InsertDocsByLang(void);
-
 public:
 
 	/**
 	* A container of GDocsLang in which all the docs from a specific langage are stocked
 	*/
-	RStd::RContainer<GDocsLang,unsigned int,false,true>* DocsLang;
+	RStd::RContainer<GDocsLang,unsigned int,true,true> DocsLang;
 
 	/**
 	* Constructor.
@@ -108,6 +102,12 @@ public:
 	*/
 	GDocCursor& GetDocsCursor(GLang* lang) throw(GException);
 
+	/**
+	* Fill an array with al the documents of a given language.
+	* @returns Number of documents contained.
+	*/
+	unsigned int FillDocs(GDoc** docs,GLang* lang) throw(GException,bad_alloc);
+	
 	/**
 	* Load the documents.
 	*/
@@ -171,37 +171,11 @@ public:
 	*/
 	GDoc* GetDoc(unsigned int id, GLang* lang) throw(bad_alloc);
 
-
 	/**
 	* Get the list of document from the container including all the doc for each langage.
 	* @param lang       The langage of the documents to be returned.
 	*/
 	GDocsLang* GetDocsLang(GLang* lang)throw(bad_alloc);
-
-	/**
-	* Get the langage of the documents contained in the list.
-	*/
-	//GLang* GetLang(void) const {return Lang;}
-
-
-	/**
-	* Compare function needed by RStd::RContainer
-	* @param doc             Documents used for the comparaison.
-	*/
-	//int Compare(const GDocs& doc) const;
-
-	/**
-	* Compare function needed by RStd::RContainer.
-	* @param doc            Pointer to the document used for the comparaison.
-	*/
-	//int Compare(const GDocs* doc) const;
-
-
-	/**
-	* Compare function needed by RStd::RContainer.
-	* @param lang           Language used for the comparaison.
-	*/
-	//int Compare(const GLang*) const;
 
 	/**
 	* Destructor.

@@ -84,11 +84,6 @@ public:
 	/**
 	* Get a cursor over the documents of the system.
 	*/
-//	GDocsLangCursor& GetDocsLangCursor(GLang* l);
-
-	/**
-	* Get a cursor over the documents of the system.
-	*/
 	GLang* GetLang(void) const {return Lang;}
 
 	/**
@@ -103,12 +98,12 @@ public:
 	*/
 	int Compare(const GDocsLang* docLang) const;
 
-
 	/**
 	* Compare function needed by RStd::RContainer.
 	* @param lang           Language used for the comparaison.
 	*/
 	int Compare(const GLang*) const;
+
 public:
 
 	/**

@@ -55,9 +55,8 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocs::GDocs(unsigned int nb) throw(bad_alloc)
-	: RContainer<GDoc,unsigned,true,true>(nb+(nb/2),nb/2), bDocs(false)
+	: RContainer<GDoc,unsigned,true,true>(nb+(nb/2),nb/2), bDocs(false), DocsLang(2,1)
 {
-	DocsLang = new RContainer<GDocsLang,unsigned int, false, true>(2,1);
 }
 
 
@@ -75,7 +74,7 @@ GDocCursor& GALILEI::GDocs::GetDocsCursor(GLang* lang) throw(GException)
 {
 	GDocsLang* ptr;
 
-	ptr=DocsLang->GetPtr<GLang*>(lang);
+	ptr=DocsLang.GetPtr<GLang*>(lang);
 	if(!ptr)
 	{
 		GDocCursor* cur= GDocCursor::GetTmpCursor();
@@ -83,6 +82,18 @@ GDocCursor& GALILEI::GDocs::GetDocsCursor(GLang* lang) throw(GException)
 		return(*cur);
 	}
 	return(ptr->GetDocsLangCursor());
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GDocs::FillDocs(GDoc** docs,GLang* lang) throw(GException,bad_alloc)
+{
+	GDocsLang* ptr;
+
+	ptr=DocsLang.GetPtr<GLang*>(lang);
+	if(!ptr) return(0);
+	memcpy(docs,ptr->Tab,sizeof(GDoc*)*ptr->NbPtr);
+	return(ptr->NbPtr);
 }
 
 
@@ -95,31 +106,20 @@ void GALILEI::GDocs::InitDocs(void) throw(bad_alloc,GException)
 	// Load the documents
 	LoadDocs();
 	bDocs=true;
-
-	InsertDocsByLang();
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GDocs::InsertDoc(GDoc* d) throw(bad_alloc)
 {
+	GDocsLang* docsLang;
+
 	InsertPtr(d);
-
-	GDocsLang* docsLang = DocsLang->GetInsertPtr<GLang*>(d->GetLang()  );
-	docsLang->InsertDoc(d);
+	docsLang = DocsLang.GetInsertPtr<GLang*>(d->GetLang());
+	if(docsLang)
+		docsLang->InsertDoc(d);
 }
 
-
-//-----------------------------------------------------------------------------
-void GALILEI::GDocs::InsertDocsByLang(void)
-{
-	GDocCursor cur= GetDocsCursor();
-	for(cur.Start();!cur.End();cur.Next())
-	{
-		GDocsLang* docsLang =DocsLang->GetInsertPtr<GLang*>(cur()->GetLang());
-		docsLang->InsertDoc( cur() );
-	}
-}
 
 //-------------------------------------------------------------------------------
 GDoc* GALILEI::GDocs::GetDoc(unsigned int id) throw(bad_alloc)
@@ -127,47 +127,28 @@ GDoc* GALILEI::GDocs::GetDoc(unsigned int id) throw(bad_alloc)
 	return(GetPtr<unsigned int>(id));
 }
 
+
 //-------------------------------------------------------------------------------
 GDoc* GALILEI::GDocs::GetDoc(unsigned int id, GLang* lang) throw(bad_alloc)
 {
-	return ( DocsLang->GetPtr(lang)->GetPtr<unsigned int>(id) );
+	return(DocsLang.GetPtr(lang)->GetPtr<unsigned int>(id));
 }
+
 
 //-------------------------------------------------------------------------------
 GDocsLang* GALILEI::GDocs::GetDocsLang(GLang* lang)throw(bad_alloc)
 {
-	return DocsLang->GetPtr<GLang*>(lang);
+	return(DocsLang.GetPtr<GLang*>(lang));
 }
 
 
 //-------------------------------------------------------------------------------
 unsigned int GALILEI::GDocs::GetNbDocs(GLang* lang) const
-{ GDocsLang* docL = DocsLang->GetPtr<GLang* >(lang);
+{
+	GDocsLang* docL = DocsLang.GetPtr<GLang*>(lang);
 	if (!docL) return 1;
 	return(docL->NbPtr);
 }
-
-
-////-----------------------------------------------------------------------------
-//int GALILEI::GDocs::Compare(const GDocs& docs) const
-//{
-//	return(Lang->Compare(docs.GetLang() ));
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//int GALILEI::GDoc::Compare(const GDocs* docs) const
-//{
-//	return(Lang->Compare( docs->GetLang() ));
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//int GALILEI::GDoc::Compare(const GLang* lang) const
-//{
-//	return(Lang->Compare(lang));
-//}
-//
 
 
 //-----------------------------------------------------------------------------

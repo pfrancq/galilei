@@ -375,6 +375,13 @@ public:
 	bool IsFromSubject(const GSubject* s);
 
 	/**
+	* Look if a document is in the parent subject.
+	* @param s              Subject.
+	* @return bool
+	*/
+	bool IsFromParentSubject(const GSubject* s);
+
+	/**
 	* Get a Cursor on the subjects.
 	* @return GSubjectCursor.
 	*/

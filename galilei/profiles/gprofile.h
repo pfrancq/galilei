@@ -124,6 +124,13 @@ protected:
 	*/
 	bool Social;
 
+#if GALILEITEST
+	/**
+	* Subject of the profile.
+	*/
+	GSubject* Subject;
+#endif
+
 public:
 
     /**
@@ -263,6 +270,21 @@ public:
 	* @param j              Judgement.
 	*/
 	void AddJudgement(GProfDoc* j) throw(bad_alloc);
+
+#if GALILEITEST
+
+	/**
+	* Set the Subject of the subprofile.
+	* @param s              Subject.
+	*/
+	void SetSubject(GSubject* s);
+
+	/**
+	* Get the subject of the subprofile.
+	*/
+	GSubject* GetSubject(void) const;
+
+#endif
 };
 
 

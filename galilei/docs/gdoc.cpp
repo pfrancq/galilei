@@ -222,6 +222,22 @@ bool GALILEI::GDoc::IsFromSubject(const GSubject* s)
 
 
 //-----------------------------------------------------------------------------
+bool GALILEI::GDoc::IsFromParentSubject(const GSubject* s)
+{
+	GSubjectCursor Sub;
+
+	if(!s->Parent) return(false);
+	Sub.Set(s->Parent);
+	for(Sub.Start();!Sub.End();Sub.Next())
+	{
+		if(Sub()==s) continue;
+		if(Subjects.IsIn(Sub())) return(true);
+	}
+	return(false);
+}
+
+
+//-----------------------------------------------------------------------------
 GSubjectCursor& GALILEI::GDoc::GetSubjectCursor(void)
 {
 	GSubjectCursor *cur=GSubjectCursor::GetTmpCursor();

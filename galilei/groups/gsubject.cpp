@@ -6,9 +6,10 @@
 
 	GSubject - Implementation.
 
-	Copyright 1999-2001 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be)
 		Julien Lamoral (jlamoral@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
 
@@ -49,6 +50,7 @@ using namespace RStd;
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
 #include <profiles/gprofile.h>
+#include <profiles/gsubprofile.h>
 #include <profiles/guser.h>
 #include <profiles/gprofdoc.h>
 #include <langs/glang.h>
@@ -71,58 +73,74 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GSubject::GSubject(RString name,unsigned int id)
-	 : RNode<GSubject,false>(10,2)
+GSubject::GSubject(unsigned int id,const char* name,GLang* l,bool u)
+	 : RNode<GSubject,false>(10,2), Id(id), Name(name), Used(u), Lang(l),
+	   Docs(1000,500), SubProfiles(20,10)
 {
-	IsJudged=0;
-	IsUsed=false;
-	urls=new RContainer<GDoc,unsigned,false,false> (100,50);
-	Name=name;
-	Id=id;
 }
 
 
 //-----------------------------------------------------------------------------
 void GSubject::InsertDoc(GDoc* d) throw(bad_alloc)
 {
-	urls->InsertPtr(d);
+	Docs.InsertPtr(d);
+}
+
+
+//-----------------------------------------------------------------------------
+GDocCursor& GALILEI::GSubject::GetDocsCursor()
+{
+	GDocCursor *cur=GDocCursor::GetTmpCursor();
+	cur->Set(Docs);
+	return(*cur);
 }
 
 
 //-----------------------------------------------------------------------------
 unsigned int GSubject::GetNbDocs(void) const
 {
-	return(urls->NbPtr);
+	return(Docs.NbPtr);
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GSubject::SubSubjectMinId(void)
+void GSubject::InsertSubProfile(GSubProfile* s) throw(bad_alloc)
 {
-	unsigned int min;
-	GSubject** s1;
-	unsigned int i;
-
-	s1=Tab;
-	min=(*s1)->GetId();
-	for(i=NbPtr;--i;s1++)
-	{
-		GSubject* subject=(*s1);
-		if (subject->GetId()<min) min=subject->GetId();
-	}
-	return(min);
+	SubProfiles.InsertPtr(s);
 }
 
 
 //-----------------------------------------------------------------------------
-void GSubject::SetLang(const GLang* lang)
+GSubProfileCursor& GALILEI::GSubject::GetSubProfilesCursor(void)
 {
-	Lang=lang->GetCode();
+	GSubProfileCursor *cur=GSubProfileCursor::GetTmpCursor();
+	cur->Set(SubProfiles);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GSubject::GetNbSubProfiles(void) const
+{
+	return(SubProfiles.NbPtr);
+}
+
+
+//-----------------------------------------------------------------------------
+GLang* GALILEI::GSubject::GetLang(void) const
+{
+	return(Lang);
+}
+
+
+//-----------------------------------------------------------------------------
+void GSubject::SetLang(GLang* lang)
+{
+	Lang=lang;
 }
 
 
 //-----------------------------------------------------------------------------
 GSubject::~GSubject(void)
 {
-	delete urls;
 }

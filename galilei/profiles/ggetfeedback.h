@@ -9,7 +9,7 @@
 	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
-		Julien Lamoral (jlamoral@ulb.ac.be).
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 
@@ -54,7 +54,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**  This Class implement a representation to the user feedback for GALILEI
-*  @author Julien Lamoral
+*  @author Pascal Francq
 *  @short  auto create a user feedback.
 */
 class GGetFeedback
@@ -67,12 +67,12 @@ protected:
 	GSession* Session;
 
 	/**
-	* The number of documents judget by user feeddback.
+	* The number of documents judged by user feeddback.
 	*/
-	unsigned int NbDoc;
+	unsigned int NbDocs;
 
 	/**
-	* The Similarity used to calc document to judge.
+	* Global Similarity must be used to compute the relevance of documents.
 	*/
 	bool Global;
 
@@ -82,37 +82,14 @@ protected:
 	unsigned int PercErr;
 
 	/**
-	* The ideal groupment.
+	* New documents to judge.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroup;
+	RStd::RContainer<GProfDoc,unsigned,false,false> Docs;
 
 	/**
-	* The id of the parent of the different subsubject.
+	* The date of today.
 	*/
-	RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* Parent;
-
-	/**
-	* The ideal groupment of documents.
-	*/
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDocs;
-
-	/**
-	* Return 1 if the profiles judge the doc OK.
-	* Return 2 if the profiles judge the doc KO.
-	* Return 3 if the profiles judge the doc HS.
-	* If PercErr is not null the judgment can be different from the ideal judgment.
-	* @param Subprof          the subprofiles who judg the document.
-	* @param Doc              the Document who will be judged.
-	*/
-	unsigned int JudgType(GSubProfile* SubProf,GDoc* Doc);
-
-	/**
-	* Create a feedback for the user whith profil id prof1 whith the documents doc.
-	* @param fdbk             1 if the feedback is ok,2 for ko and 3 for hs.
-	* @param sub              the subprofile.
-	* @param doc              the doc who will be judged
-	*/
-	void CreateNewFeedback(unsigned int fdbk,GSubProfile* sub,GDoc* doc);
+	char today[12];
 
 public:
 
@@ -124,11 +101,9 @@ public:
 
 	/**
 	* Create new feedback for the different users of the system.
-	* @param parent         the id of the parent of a subsubject.
-	* @param idealgroup     the idealgroupment.
 	* @param Save           Save the results.
 	*/
-	void Run(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent,RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup,bool Save);
+	void Run(bool Save);
 	
 	/**
 	* Get the settings of the method coded in a string.

@@ -9,7 +9,7 @@
 	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
-		Julien Lamoral (jlamoral@ulb.ac.be).
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 
@@ -50,17 +50,12 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**  This Class implement a representation of a ideal groupment for GALILEI
-*  @author Julien Lamoral
-*  @short  Ideal Groupment
+*  @author Pascal Francq
+*  @short Ideal Groupment
 */
 class GIdealGroup
 {
 protected:
-
-	 /**
-	* The differents Subjects of the ideal groupment.
-	*/
-	GSubjectTree* Subjects;
 
 	/**
 	* The Users of the galilei system.
@@ -118,6 +113,16 @@ protected:
 	*/
 	double PercSocial;
 
+	/**
+	* Temporary Array of documents.
+	*/
+	GDoc** Docs;
+
+	/**
+	* The date of today.
+	*/
+	char today[12];
+
 public:
 
 	/**
@@ -134,22 +139,24 @@ public:
 	* @param groups         The ideal groupment into a GGroups container.
 	* @param Save           Save the results.
 	*/
-	void CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent/*,RStd::RContainer<GGroups,unsigned int,true,true>* &groups*/,bool Save);
+	void Run(bool Save);
 
 	/**
-	* Create randomly the judgment for a profile.
-	* @param parent         The container to assign groupid and parent id.
-	* @param groups         The ideal groupment into a GGroups container.
+	* Choose the subjects that will be used.
+	*/
+	void ChooseSubjects(void);
+
+	/**
+	* Create the set based on the subjects used.
+	*/
+	void CreateSet(void);
+
+	/**
+	* Add profiles of a new not used topic.
 	* @param Save           Save the results.
 	*/
-	void AddJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,bool Save);
+	void AddJudgement(bool Save);
 
-	/**
-	* Write the ideal groupment into a file
-	* @param url            The url where the file is saved.
-	*/
-	void CreateIdealGroupmentFile(const char* url);
-	
 	/**
 	* Get the settings of the method coded in a string.
 	* return Pointer to a C string.

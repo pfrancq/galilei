@@ -74,7 +74,6 @@ double GALILEI::GEvaluateGroupingCalinski::CalcCalinski()
 	double refsum=-1.0, ssw=0.0, ssb=0.0;
 	double sum;
 	double cal;
-	unsigned int k=GetNbGroups();
 	int n;
 
 	n=0;

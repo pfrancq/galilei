@@ -98,3 +98,36 @@ double GALILEI::GProfDoc::Similarity(void)
 	if(!sub) return(0.0);
 	return(sub->Similarity(Doc));
 }
+
+
+//-----------------------------------------------------------------------------
+tDocJudgement GALILEI::GProfDoc::ErrorJudgment(tDocJudgement fdbk,double PercErr,RMath::RRandom* rand)
+{
+	double random=rand->Value()*100+1.0;
+
+	// If there is Random change the judgment.
+	if(random<PercErr)
+	{
+		random=rand->Value()*100+1.0;;
+		switch(fdbk)
+		{
+			case djOK:
+				if(random<25.0)
+					return(djOutScope);
+				else
+					return(djKO);
+			case djKO:
+				if(random<50.0)
+					return(djOK);
+				else
+					return(djOutScope);
+			case djOutScope:
+				if(random<25.0)
+					return(djOK);
+				else
+					return(djKO);
+				break;
+		}
+	}
+	return(fdbk);
+}

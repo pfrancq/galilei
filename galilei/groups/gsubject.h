@@ -6,9 +6,10 @@
 
 	GSubject - Implementation.
 
-	Copyright 1999-2001 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be)
 		Julien Lamoral (jlamoral@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
 
@@ -57,54 +58,9 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* This Class implement a representation for a groupid and the parentid of the
-* group.
-* @author Julien Lamoral
-* @short  Subject
-*/
-class GGroupIdParentId
-{
-public:
-
-	/**
-	*The id of the groupment.
-	*/
-	unsigned int GrpId;
-
-	/**
-	*The Id of the parent of the group.
-	*/
-	unsigned int ParentId;
-
-	/**
-	* Construct the Real ID .
-	* @RealId              the id of the groupment.
-	* @parentid Id          the id of the parent
-	*/
-	GGroupIdParentId(unsigned int RealId, unsigned int parentid) : GrpId(RealId), ParentId(parentid) {}
-
-	/**
-	* Compare method needed by RStd::RContainer.
-	*/
-	int Compare(const GGroupIdParentId* grp) const {return(GrpId-grp->GrpId);}
-
-	/**
-	* Compare method needed by RStd::RContainer.
-	*/
-	int Compare(const int ID) const {return(GrpId-ID);}
-
-	/**
-	* Compare method needed by RStd::RContainer.
-	*/
-	int Compare(const GGroupIdParentId& grp) const {return(GrpId-grp.GrpId);}
-};
-
-
-//-----------------------------------------------------------------------------
-/**
 * This Class implement a representation for a subject used to create judgment
 * and feedback.
-* @author Julien Lamoral
+* @author Pascal Francq & Julien Lamoral
 * @short  Subject
 */
 class GSubject: public RStd::RNode<GSubject,false>
@@ -112,81 +68,105 @@ class GSubject: public RStd::RNode<GSubject,false>
 protected:
 
 	/**
-	* The name of the subject.
-	*/
-	RString Name;
-
-	/**
 	* The id of the subject.
 	*/
 	unsigned int Id;
 
 	/**
-	* true if the subsubject is judged.
+	* The name of the subject.
 	*/
-	bool IsJudged;
+	RString Name;
 
 	/**
-	* true if the subsubject is used .
+	* true if the subsubject is used.
 	*/
-	bool IsUsed;
+	bool Used;
 
 	/**
 	* The language of a subsubject
 	*/
-	RStd::RString Lang;
+	GLang* Lang;
 
 	/**
-	* The container of document in the subject.
+	* Documents in the subject.
 	*/
-	RStd::RContainer<GDoc,unsigned,false,false>* urls;
+	RStd::RContainer<GDoc,unsigned,false,true> Docs;
+
+	/**
+	* Sub-profiles in the subject.
+	*/
+	RStd::RContainer<GSubProfile,unsigned,false,true> SubProfiles;
 
 public:
 
 	/**
 	* Constructor
-	* @param name            The name of the subsubject.
-	* @param id              the subject id.
+	* @param id              Identificator.
+	* @param name            Name of the subject.
+	* @param lang            Language.
+	* @param u               Used?
 	*/
-	GSubject(RStd::RString name, unsigned int id);
+	GSubject(unsigned int id,const char* name,GLang* l,bool u);
 
 	/**
-	* Insert a document in the container.
+	* Insert a document.
 	*/
 	void InsertDoc(GDoc* d) throw(bad_alloc);
 
 	/**
-	* Return the number of documents associated to this subject.
+	* Get a cursor over the documents used in the system.
+	*/
+	GDocCursor& GetDocsCursor();
+
+	/**
+	* Get the number of documents associated to this subject.
+	* @returns unsigned int
 	*/
 	unsigned int GetNbDocs(void) const;
+
+	/**
+	* Insert a subprofile.
+	*/
+	void InsertSubProfile(GSubProfile* s) throw(bad_alloc);
+
+	/**
+	* Get a cursor over the subprofiles of the system.
+	*/
+	GSubProfileCursor& GetSubProfilesCursor(void);
+
+	/**
+	* Get the number of subprofiles associated to this subject.
+	* @returns unsigned int
+	*/
+	unsigned int GetNbSubProfiles(void) const;
 
 	/**
 	* Compare a subject with a given name.
 	* @param name           Name used for the comparaison.
 	* @returns 0 if the same, -1 or +1 if different.
 	*/
-	int Compare(const char* name) {return(Name.Compare(name));}
+	int Compare(const char* name) const {return(Name.Compare(name));}
 
 	/**
 	* Compare two subject.
 	* @param sub            Subject used for the comparaison.
 	* @returns 0 if the same, -1 or +1 if different.
 	*/
-	int Compare(const GSubject *sub) {return(Name.Compare(sub->Name));}
+	int Compare(const GSubject *sub) const {return(Id-sub->Id);}
 
 	/**
 	* Compare two subject.
 	* @param sub            Subject used for the comparaison.
 	* @returns 0 if the same, -1 or +1 if different.
 	*/
-	int Compare(const GSubject &sub) {return(Name.Compare(sub.Name));}
+	int Compare(const GSubject &sub) const {return(Id-sub.Id);}
 
 	/**
 	* Comparaison two id.
 	* @param id            id used for the comparaison.
 	* @returns 0 if the same, -1 or +1 if different.
 	*/
-	int Compare(const unsigned int &id) const {return(Id-id);};
+	int Compare(const unsigned int id) const {return(Id-id);};
 
 	/**
 	* Return the name of the Subject.
@@ -201,57 +181,32 @@ public:
 	unsigned int GetId(void) {return(Id);};
 
 	/**
-	* Return true if the subject is judged
-	* @returns IsJudged.
-	*/
-	bool isJudged(void) {return(IsJudged);}
-
-	/**
-	* Set the bool isjudged.
-	*/
-	void setIsJudged(bool b) {IsJudged=b;}
-
-	/**
 	* Return true if the subject is Used
-	* @returns IsUsed.
+	* @returns bool.
 	*/
-	bool isUsed(void) {return(IsUsed);}
+	bool IsUsed(void) {return(Used);}
 
 	/**
-	* Set the bool IsUsed.
+	* Set the status of the subject.
 	*/
-	void setIsUsed(bool b) {IsUsed=b;}
-
-	/**
-	* Set the bool isjudged.
-	*/
-	unsigned int SubSubjectMinId(void);
+	void SetUsed(bool b) {Used=b;}
 
 	/**
 	* Return the Lang of the Subject.
 	* @returns a string containing the lang.
 	*/
-	const char* GetLang(void) {return(Lang());}
-
-	/**
-	* Return the Lang of the Subject.
-	* @param lg              The lang of the subject.
-	*/
-	void SetLang(const char* lg) {Lang=lg;}
+	GLang* GetLang(void) const;
 
 	/**
 	* Return the Lang of the Subject.
 	* @param lang              The lang of the subject.
 	*/
-	void SetLang(const GLang* lang);
+	void SetLang(GLang* lang);
 
 	/**
 	* Destructor.
 	*/
 	~GSubject(void);
-
-	// friend classes
-	friend class GSubjectTree;
 };
 
 

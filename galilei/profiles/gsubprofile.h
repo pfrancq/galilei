@@ -271,6 +271,7 @@ public:
 	GSubject* GetSubject(void) const;
 
 #endif
+
 	/**
 	*Destructor
 	*/

@@ -53,7 +53,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocsLang::GDocsLang(GLang* lang) throw(bad_alloc)
-	: RContainer<GDoc,unsigned int,false,true>(100,50), Lang(lang)
+	: RContainer<GDoc,unsigned int,false,true>(10000,5000), Lang(lang)
 {
 }
 
@@ -73,17 +73,18 @@ GDocCursor& GALILEI::GDocsLang::GetDocsLangCursor()
 	return(*cur);
 }
 
+
 //-----------------------------------------------------------------------------
 int GALILEI::GDocsLang::Compare(const GDocsLang& docLang) const
 {
-	return(Lang->Compare(docLang.GetLang() ));
+	return(Lang->Compare(docLang.Lang));
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GDocsLang::Compare(const GDocsLang* docLang) const
 {
-	return(Lang->Compare(docLang->GetLang() ));
+	return(Lang->Compare(docLang->Lang));
 }
 
 
@@ -92,8 +93,6 @@ int GALILEI::GDocsLang::Compare(const GLang* lang) const
 {
 	return(Lang->Compare(lang));
 }
-
-
 
 
 //-----------------------------------------------------------------------------
