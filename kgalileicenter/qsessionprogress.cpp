@@ -94,7 +94,7 @@ QSessionProgressDlg::QSessionProgressDlg( QWidget* parent,GSession* s,const char
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::LoadSession(unsigned int cmd)
+void QSessionProgressDlg::LoadSession(unsigned int cmd) throw(GException,bad_alloc)
 {
 	btnOk->setEnabled(false);
 	show();

@@ -96,7 +96,7 @@ public:
 	* Load a session.
 	* @param cmd            What to load.
 	*/
-	void LoadSession(unsigned int cmd);
+	void LoadSession(unsigned int cmd) throw(GException,bad_alloc);
 
 	/**
 	* Create a XML structure.
