@@ -90,6 +90,12 @@ public:
 	virtual void WriteStr(const char* str);
 
 	/**
+	* The traitment for a specific chromosome will begin.
+	* @param id             Identificator of the chromosome.
+	*/
+	virtual void receiveNextChromosome(unsigned int id);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSlot(void);

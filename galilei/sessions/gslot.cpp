@@ -78,6 +78,12 @@ void GALILEI::GSlot::WriteStr(const char*)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSlot::receiveNextChromosome(unsigned int)
+{
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GSlot::~GSlot(void)
 {
 }
