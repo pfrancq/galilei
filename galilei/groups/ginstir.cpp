@@ -1,6 +1,4 @@
-/*                                                            	CritSim=Prom.NewCriterion(Maximize,"Similarities",0.05,0.2,1.0);
-	CritNb=Prom.NewCriterion(Maximize,"Profiles",0.05,0.2,1.0);
-
+/*
 
 	GALILEI Research Project
 
@@ -35,7 +33,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rpromethee/rpromkernel.h>
+//#include <rpromethee/rpromkernel.h>
 #include <rpromethee/rpromsol.h>
 #include <rpromethee/rpromcriterion.h>
 using namespace RPromethee;
@@ -77,8 +75,20 @@ GALILEI::GThreadDataIR::GThreadDataIR(GInstIR* owner)
 //-----------------------------------------------------------------------------
 GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,HeuristicType h,RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(popsize,objs,h,debug),
-	  Sims(s), MinSimLevel(m), MaxGen(max)
+	  RPromKernel("GALILEI",PopSize+1,2),
+	  Sims(s), MinSimLevel(m), MaxGen(max),CritSim(0),CritNb(0), Sols(0)
 {
+	RPromSol** ptr;
+	unsigned int i;
+
+	CritSim=NewCriterion(Maximize,"Similarities",0.2,0.05,1.0);
+	CritNb=NewCriterion(Maximize,"Profiles",0.2,0.05,1.0);
+	Sols=new RPromSol*[PopSize+1];
+	if(Sols)
+	{
+		for(i=PopSize+2,ptr=Sols;--i;ptr++)
+			(*ptr)=NewSol();
+	}
 }
 
 
@@ -94,10 +104,6 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 {
 	unsigned int i;
 	GChromoIR **C;
-	RPromCriterion* CritSim;
-	RPromCriterion* CritNb;
-	RPromKernel Prom("GALILEI",PopSize,2);
-	RPromSol* s;
 	RPromSol** Res;
 	RPromSol** ptr;
 	double r;
@@ -105,27 +111,43 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	#ifdef RGADEBUG
 		if(Debug) Debug->BeginFunc("PostEvaluate","GInstIR");
 	#endif
-	CritSim=Prom.NewCriterion(Maximize,"Similarities",0.2,0.05,1.0);
-	CritNb=Prom.NewCriterion(Maximize,"Profiles",0.2,0.05,1.0);
-	for(i=PopSize+1,C=Chromosomes;--i;C++)
+	ptr=Sols;
+	Assign((*ptr),CritSim,BestChromosome->AvgSim);
+	Assign((*ptr),CritNb,BestChromosome->AvgProf);
+	for(i=PopSize+1,C=Chromosomes,ptr++;--i;C++,ptr++)
 	{
-		s=Prom.NewSol();
-		Prom.Assign(s,CritSim,(*C)->AvgSim);
-		Prom.Assign(s,CritNb,(*C)->AvgProf);
+		Assign((*ptr),CritSim,(*C)->AvgSim);
+		Assign((*ptr),CritNb,(*C)->AvgProf);
 	}
-	s=Prom.NewSol();
-	Prom.Assign(s,CritSim,BestChromosome->AvgSim);
-	Prom.Assign(s,CritNb,BestChromosome->AvgProf);
-	Prom.ComputePrometheeII();
-	Res=Prom.GetSols();
-	for(i=PopSize+2,ptr=Res;--i;ptr++)
+	ComputePrometheeII();
+	Res=GetSols();
+	ptr=Res;
+
+	// Look if the best chromosome ever is still the best -> If not, change
+	// the fitness of the best solution.
+	if((*ptr)->GetId())
+		(*Chromosomes[(*ptr)->GetId()-1]->Fitness)=Gen+1.1;
+	ptr++;
+
+	//  The second best has the fitness of 1
+	if((*ptr)->GetId()==0)
+		(*BestChromosome->Fitness)=1.0;
+	else
+		(*Chromosomes[(*ptr)->GetId()-1]->Fitness)=1.0;
+
+	// Look for the rest
+	for(i=PopSize,ptr++;--i;ptr++)
 	{
-		r=(Gen+(((double)i)/((double)(PopSize+2))))/((double)MaxGen);
-		if((*ptr)->GetId()==PopSize)
+		r=((double)i)/((double)(PopSize));
+		if((*ptr)->GetId()==0)
 			(*BestChromosome->Fitness)=r;
 		else
-			(*Chromosomes[(*ptr)->GetId()]->Fitness)=r;
+			(*Chromosomes[(*ptr)->GetId()-1]->Fitness)=r;
 	}
+
+	// Delete the resulting array
+	delete[] Res;
+
 	#ifdef RGADEBUG
 		if(Debug) Debug->EndFunc("PostEvaluate","GInstIR");
 	#endif
@@ -135,4 +157,6 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 //-----------------------------------------------------------------------------
 GALILEI::GInstIR::~GInstIR(void)
 {
+	if(Sols)
+		delete[] Sols;
 }

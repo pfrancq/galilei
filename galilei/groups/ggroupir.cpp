@@ -178,13 +178,12 @@ void GALILEI::GGroupIR::DoOptimisation(void)
 	}
 	if(Nb)
 	{
-//		grp=Owner->ReserveGroup();
-//		for(i=Nb+1,ptr=tab;--i;ptr++)
-//		{
-//			Delete(*ptr);
-//			Verify();
-//			grp->Insert(*ptr);
-//		}
+		grp=Owner->ReserveGroup();
+		for(i=Nb+1,ptr=tab;--i;ptr++)
+		{
+			Delete(*ptr);
+			grp->Insert(*ptr);
+		}
 	}
 	delete[] tab;
 }

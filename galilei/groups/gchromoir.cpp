@@ -52,7 +52,7 @@ using namespace RGA;
 //-----------------------------------------------------------------------------
 GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
   : RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
-    Sims(0), MinSimLevel(0)
+    Sims(0), MinSimLevel(0), AvgSim(0.0), AvgProf(0.0)
 {
 	(*Fitness)=0.0;
 }

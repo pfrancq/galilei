@@ -39,6 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rgga/rinstg.h>
+#include <rpromethee/rpromkernel.h>
 
 
 //-----------------------------------------------------------------------------
@@ -76,7 +77,7 @@ public:
 * @author Pascal Francq
 * @short IR Instance.
 */
-class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
+class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>, public RPromethee::RPromKernel
 {
 	/**
 	* Similarities between the subprofiles to group.
@@ -92,6 +93,22 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	* The maximum number of generations.
 	*/
 	unsigned long MaxGen;
+
+	/**
+	* Criteria representing the average similarity of the profiles with the
+	* ones of the same group.
+	*/
+	RPromethee::RPromCriterion* CritSim;
+
+	/**
+	* Criteria representing the average number of profiles per groups.
+	*/
+	RPromethee::RPromCriterion* CritNb;
+
+	/**
+	* Solutions corresponding to the chromosome.
+	*/
+	RPromSol** Sols;
 
 public:
 
