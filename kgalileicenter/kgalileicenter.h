@@ -317,6 +317,12 @@ private slots:
 	void slotGroupingCompare(void);
 
 	/**
+	* evaluate a clustering.
+	*/
+	void slotGroupsEvaluation(void);
+
+
+	/**
 	* Show the documents' window.
 	*/
 	void slotShowDocs(void);
@@ -485,6 +491,7 @@ public:
 	KAction* showGroups;
 	KAction* groupsCalc;
 	KAction* groupingCompare;
+	KAction* groupsEvaluation;
 
 	KToggleAction* docAlwaysCalc;
 	KAction* showDocs;

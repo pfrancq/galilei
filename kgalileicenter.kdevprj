@@ -151,7 +151,7 @@ install_location=
 type=DATA
 
 [kgalileicenter/Makefile.am]
-files=kgalileicenter/main.cpp,kgalileicenter/kgalileicenter.cpp,kgalileicenter/kgalileicenter.h,kgalileicenter/kgalileicenterui.rc,kgalileicenter/kgalileicenter.desktop,kgalileicenter/lo32-app-kgalileicenter.png,kgalileicenter/lo16-app-kgalileicenter.png,kgalileicenter/kdoc.cpp,kgalileicenter/kdoc.h,kgalileicenter/kview.cpp,kgalileicenter/kview.h,kgalileicenter/kviewdoc.cpp,kgalileicenter/kviewdoc.h,kgalileicenter/kviewdocs.cpp,kgalileicenter/kviewdocs.h,kgalileicenter/kviewgroup.cpp,kgalileicenter/kviewgroup.h,kgalileicenter/kviewgroups.cpp,kgalileicenter/kviewgroups.h,kgalileicenter/kviewprofile.cpp,kgalileicenter/kviewprofile.h,kgalileicenter/kviewstat.cpp,kgalileicenter/kviewstat.h,kgalileicenter/kviewthgroups.cpp,kgalileicenter/kviewthgroups.h,kgalileicenter/kviewusers.cpp,kgalileicenter/kviewusers.h,kgalileicenter/qconnectmysql.ui,kgalileicenter/qdocsoptionsdlg.ui,kgalileicenter/qsessionprogress.cpp,kgalileicenter/qsessionprogress.h,kgalileicenter/kviewstems.cpp,kgalileicenter/kviewstems.h,kgalileicenter/kviewga.cpp,kgalileicenter/kviewga.h,kgalileicenter/kgalileicenter_dlg.cpp,kgalileicenter/kgalileicenter_init.cpp,kgalileicenter/qpluginsdlg.cpp,kgalileicenter/qpluginsdlg.h,kgalileicenter/kviewprg.cpp,kgalileicenter/kviewprg.h,kgalileicenter/kviewr.cpp,kgalileicenter/kviewr.h,kgalileicenter/qlanguages.ui
+files=kgalileicenter/main.cpp,kgalileicenter/kgalileicenter.cpp,kgalileicenter/kgalileicenter.h,kgalileicenter/kgalileicenterui.rc,kgalileicenter/kgalileicenter.desktop,kgalileicenter/lo32-app-kgalileicenter.png,kgalileicenter/lo16-app-kgalileicenter.png,kgalileicenter/kdoc.cpp,kgalileicenter/kdoc.h,kgalileicenter/kview.cpp,kgalileicenter/kview.h,kgalileicenter/kviewdoc.cpp,kgalileicenter/kviewdoc.h,kgalileicenter/kviewdocs.cpp,kgalileicenter/kviewdocs.h,kgalileicenter/kviewgroup.cpp,kgalileicenter/kviewgroup.h,kgalileicenter/kviewgroups.cpp,kgalileicenter/kviewgroups.h,kgalileicenter/kviewprofile.cpp,kgalileicenter/kviewprofile.h,kgalileicenter/kviewstat.cpp,kgalileicenter/kviewstat.h,kgalileicenter/kviewthgroups.cpp,kgalileicenter/kviewthgroups.h,kgalileicenter/kviewusers.cpp,kgalileicenter/kviewusers.h,kgalileicenter/qconnectmysql.ui,kgalileicenter/qdocsoptionsdlg.ui,kgalileicenter/qsessionprogress.cpp,kgalileicenter/qsessionprogress.h,kgalileicenter/kviewstems.cpp,kgalileicenter/kviewstems.h,kgalileicenter/kviewga.cpp,kgalileicenter/kviewga.h,kgalileicenter/kgalileicenter_dlg.cpp,kgalileicenter/kgalileicenter_init.cpp,kgalileicenter/qpluginsdlg.cpp,kgalileicenter/qpluginsdlg.h,kgalileicenter/kviewprg.cpp,kgalileicenter/kviewprg.h,kgalileicenter/kviewr.cpp,kgalileicenter/kviewr.h,kgalileicenter/qlanguages.ui,kgalileicenter/kviewgroupsevaluation.cpp,kgalileicenter/kviewgroupsevaluation.h
 sub_dirs=galilei,r,qtwidgets
 type=prog_main
 
@@ -349,7 +349,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/groups/Makefile.am]
-files=kgalileicenter/galilei/groups/gcomparegrouping.cpp,kgalileicenter/galilei/groups/gcomparegrouping.h,kgalileicenter/galilei/groups/ggroup.cpp,kgalileicenter/galilei/groups/ggroup.h,kgalileicenter/galilei/groups/ggrouping.cpp,kgalileicenter/galilei/groups/ggrouping.h,kgalileicenter/galilei/groups/ggroupingsim.cpp,kgalileicenter/galilei/groups/ggroupingsim.h,kgalileicenter/galilei/groups/ggroups.cpp,kgalileicenter/galilei/groups/ggroups.h,kgalileicenter/galilei/groups/gchromoir.cpp,kgalileicenter/galilei/groups/gchromoir.h,kgalileicenter/galilei/groups/ggroupir.cpp,kgalileicenter/galilei/groups/ggroupir.h,kgalileicenter/galilei/groups/ginstir.cpp,kgalileicenter/galilei/groups/ginstir.h,kgalileicenter/galilei/groups/gir.cpp,kgalileicenter/galilei/groups/gir.h,kgalileicenter/galilei/groups/ggroupslang.cpp,kgalileicenter/galilei/groups/ggroupslang.h,kgalileicenter/galilei/groups/ggroupinggga.cpp,kgalileicenter/galilei/groups/ggroupinggga.h,kgalileicenter/galilei/groups/gobjir.cpp,kgalileicenter/galilei/groups/gobjir.h,kgalileicenter/galilei/groups/ggroupingkcos.cpp,kgalileicenter/galilei/groups/ggroupingkcos.h,kgalileicenter/galilei/groups/gidealgroup.cpp,kgalileicenter/galilei/groups/gidealgroup.h,kgalileicenter/galilei/groups/gsubject.cpp,kgalileicenter/galilei/groups/gsubject.h,kgalileicenter/galilei/groups/gsubjecttree.cpp,kgalileicenter/galilei/groups/gsubjecttree.h
+files=kgalileicenter/galilei/groups/gcomparegrouping.cpp,kgalileicenter/galilei/groups/gcomparegrouping.h,kgalileicenter/galilei/groups/ggroup.cpp,kgalileicenter/galilei/groups/ggroup.h,kgalileicenter/galilei/groups/ggrouping.cpp,kgalileicenter/galilei/groups/ggrouping.h,kgalileicenter/galilei/groups/ggroupingsim.cpp,kgalileicenter/galilei/groups/ggroupingsim.h,kgalileicenter/galilei/groups/ggroups.cpp,kgalileicenter/galilei/groups/ggroups.h,kgalileicenter/galilei/groups/gchromoir.cpp,kgalileicenter/galilei/groups/gchromoir.h,kgalileicenter/galilei/groups/ggroupir.cpp,kgalileicenter/galilei/groups/ggroupir.h,kgalileicenter/galilei/groups/ginstir.cpp,kgalileicenter/galilei/groups/ginstir.h,kgalileicenter/galilei/groups/gir.cpp,kgalileicenter/galilei/groups/gir.h,kgalileicenter/galilei/groups/ggroupslang.cpp,kgalileicenter/galilei/groups/ggroupslang.h,kgalileicenter/galilei/groups/ggroupinggga.cpp,kgalileicenter/galilei/groups/ggroupinggga.h,kgalileicenter/galilei/groups/gobjir.cpp,kgalileicenter/galilei/groups/gobjir.h,kgalileicenter/galilei/groups/ggroupingkcos.cpp,kgalileicenter/galilei/groups/ggroupingkcos.h,kgalileicenter/galilei/groups/gidealgroup.cpp,kgalileicenter/galilei/groups/gidealgroup.h,kgalileicenter/galilei/groups/gsubject.cpp,kgalileicenter/galilei/groups/gsubject.h,kgalileicenter/galilei/groups/gsubjecttree.cpp,kgalileicenter/galilei/groups/gsubjecttree.h,kgalileicenter/galilei/groups/gevaluategroupingcalinski.cpp,kgalileicenter/galilei/groups/gevaluategroupingcalinski.h,kgalileicenter/galilei/groups/gevaluategrouping.cpp,kgalileicenter/galilei/groups/gevaluategrouping.h,kgalileicenter/galilei/groups/gevaluategroupingintramininter.cpp,kgalileicenter/galilei/groups/gevaluategroupingintramininter.h,kgalileicenter/galilei/groups/gevaluategroupingmethods.cpp,kgalileicenter/galilei/groups/gevaluategroupingmethods.h,kgalileicenter/galilei/groups/gevaluategroupingvariance.cpp,kgalileicenter/galilei/groups/gevaluategroupingvariance.h,kgalileicenter/galilei/groups/ggroupingkprotos.cpp,kgalileicenter/galilei/groups/ggroupingkprotos.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=groups
 sub_dirs=
@@ -374,6 +374,66 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/groups/gcomparegrouping.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/groups/gevaluategrouping.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/gevaluategrouping.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/groups/gevaluategroupingcalinski.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/gevaluategroupingcalinski.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/groups/gevaluategroupingintramininter.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/gevaluategroupingintramininter.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/groups/gevaluategroupingmethods.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/gevaluategroupingmethods.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/groups/gevaluategroupingvariance.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/gevaluategroupingvariance.h]
 dist=true
 install=false
 install_location=
@@ -422,6 +482,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/groups/ggroupingkcos.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/groups/ggroupingkprotos.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/ggroupingkprotos.h]
 dist=true
 install=false
 install_location=
@@ -1110,6 +1182,18 @@ install=false
 install_location=
 type=HEADER
 
+[kgalileicenter/kviewgroupsevaluation.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/kviewgroupsevaluation.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [kgalileicenter/kviewprg.cpp]
 dist=true
 install=false
@@ -1258,7 +1342,7 @@ type=HEADER
 sub_dirs=galilei,rga,rpromethee
 
 [kgalileicenter/qtwidgets/galilei/Makefile.am]
-files=kgalileicenter/qtwidgets/galilei/qgdocxml.cpp,kgalileicenter/qtwidgets/galilei/qgdocxml.h,kgalileicenter/qtwidgets/galilei/qgprofile.cpp,kgalileicenter/qtwidgets/galilei/qgprofile.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.h,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.h,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.h,kgalileicenter/qtwidgets/galilei/qggroupsir.h,kgalileicenter/qtwidgets/galilei/qggroupsir.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.h
+files=kgalileicenter/qtwidgets/galilei/qgdocxml.cpp,kgalileicenter/qtwidgets/galilei/qgdocxml.h,kgalileicenter/qtwidgets/galilei/qgprofile.cpp,kgalileicenter/qtwidgets/galilei/qgprofile.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.h,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.h,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.h,kgalileicenter/qtwidgets/galilei/qggroupsir.h,kgalileicenter/qtwidgets/galilei/qggroupsir.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=galilei
 sub_dirs=
@@ -1379,6 +1463,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.h]
 dist=true
 install=false
 install_location=

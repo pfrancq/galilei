@@ -57,7 +57,7 @@ class KDoc;
 /**
 * Defines all the possible type of view for a document.
 */
-enum GViewType{gNothing,gUsers,gDocs,gDoc,gProfile,gGroups,gGroup,gThGroups,gDocsStat,gStems,gGA,gPrg,gR,gInsts};
+enum GViewType{gNothing,gUsers,gDocs,gDoc,gProfile,gGroups,gGroup,gThGroups, gGroupsEvaluation,gDocsStat,gStems,gGA,gPrg,gR,gInsts};
 
 
 //-----------------------------------------------------------------------------

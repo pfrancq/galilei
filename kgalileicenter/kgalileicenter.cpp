@@ -50,6 +50,7 @@ using namespace RIO;
 #include <groups/ggroupingsim.h>
 #include <groups/ggroupinggga.h>
 #include <groups/ggroupingkcos.h>
+#include <groups/ggroupingkprotos.h>
 using namespace GALILEI;
 
 
@@ -84,6 +85,7 @@ using namespace GALILEI;
 #include "kviewthgroups.h"
 #include "kviewgroups.h"
 #include "kviewgroup.h"
+#include "kviewgroupsevaluation.h"
 #include "kviewstat.h"
 #include "kviewprg.h"
 #include "kviewstems.h"
@@ -134,6 +136,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterGroupingMethod(new GGroupingSim(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingKCos(Sess));
+			Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
 			Config->setGroup("Session Options");
 			method=Config->readEntry("Description Method","Vector space");
 			Sess->SetCurrentProfileDesc(method);
@@ -319,6 +322,13 @@ void KGALILEICenterApp::slotGroupingCompare(void)
 		createClient(Doc,new KViewThGroups(Doc,url.path(),pWorkspace,"View Theoritical Groups",0));
 	}
 	slotStatusMsg(i18n("Ready."));
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotGroupsEvaluation(void)
+{
+	createClient(Doc,new KViewGroupsEvaluation(Doc,pWorkspace,"View Docs",0));
 }
 
 

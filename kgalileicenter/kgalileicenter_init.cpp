@@ -122,6 +122,8 @@ void KGALILEICenterApp::initActions(void)
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
 	groupingCompare=new KAction(i18n("&Compare Grouping"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
+	groupsEvaluation=new KAction(i18n("&Evaluate Grouping"),"fileopen",0,this,SLOT(slotGroupsEvaluation()),actionCollection(),"groupsEvaluation");
+
 
 	// Menu "Document"
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents' Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
@@ -307,6 +309,8 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	showGroups->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
 	groupsCalc->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad()&&Doc->GetSession()->IsUsersLoad());
 	groupingCompare->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
+	groupsEvaluation->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
+
 
 	// Menu "Document"
 	showDocs->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
@@ -330,6 +334,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	sessionConnect->setEnabled(true);
 	sessionCompute->setEnabled(false);
 	groupingCompare->setEnabled(false);
+	groupsEvaluation->setEnabled(false);
 	textFrench->setEnabled(false);
 	textEnglish->setEnabled(false);
 	createXML->setEnabled(false);
@@ -362,12 +367,13 @@ bool KGALILEICenterApp::eventFilter(QObject* object, QEvent* event)
 		if(pDoc->canCloseFrame(pView))
 		{
 			pDoc->removeView(pView);
+			delete pView;
 			e->accept();
 		}
 		else
 			e->ignore();
+		return(true);
 	}
-
-	// standard event processing
-	return (QWidget::eventFilter(object,event));
+	else
+		return(QWidget::eventFilter(object,event));
 }
