@@ -73,11 +73,14 @@ GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const ch
 unsigned int GALILEI::GSessionMySQL::GetCount(const char* tbl)
 {
 	char sSql[100];
+	const char* c;
 
 	sprintf(sSql,"SELECT COUNT(*) FROM %s",tbl);
 	RQuery count(this,sSql);
 	count.Begin();
-	return(strtoul(count[0],0,10));
+	c=count[0];
+	if(!c) return(0);
+	return(atoi(c));
 }
 
 
@@ -85,11 +88,14 @@ unsigned int GALILEI::GSessionMySQL::GetCount(const char* tbl)
 unsigned int GALILEI::GSessionMySQL::GetMax(const char* tbl,const char* fld)
 {
 	char sSql[100];
+	const char* c;
 
 	sprintf(sSql,"SELECT MAX(%s) FROM %s",fld,tbl);
 	RQuery count(this,sSql);
 	count.Begin();
-	return(strtoul(count[0],0,10));
+	c=count[0];
+	if(!c) return(0);
+	return(atoi(c));
 }
 
 
@@ -172,10 +178,10 @@ void GALILEI::GSessionMySQL::LoadDic(const char* code,bool s) throw(bad_alloc,GE
 		count.Begin();
 		if(strtoul(count[0],0,10)>MaxCount) MaxCount=strtoul(count[0],0,10);
 	}
-	if(MaxCount==0) MaxCount=100;
+	if(MaxCount==0) MaxCount=2000;
 	MaxId=GetMax(tbl,"kwdid");
 	if(!MaxId)
-		MaxId=100;
+		MaxId=2000;
 
 	// Create and insert the dictionnary
 	if(s)
