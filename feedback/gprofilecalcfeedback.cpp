@@ -137,12 +137,12 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		// Find list in function of the feedback
 		switch(Docs()->GetFdbk())
 		{
-			case 'O':
-			case 'N':
+			case djOK:
+			case djNav:
 				Add=true;
 				break;
 			
-			case 'K':
+			case djKO:
 				Add=false;
 				break;
 
