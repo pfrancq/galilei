@@ -33,9 +33,11 @@
 #include <sessions/gsession.h>
 #include <profiles/gsubprofiledesc.h>
 #include <groups/ggrouping.h>
+#include <groups/ggroupcalc.h>
 #include <profiles/gprofilecalc.h>
 #include <galilei/qcomputingpluginconf.h>
 #include <galilei/qgroupingpluginconf.h>
+#include <galilei/qgroupcalcpluginconf.h>
 
 
 //---------------------------------------------------------------------------
@@ -76,12 +78,14 @@ public:
 		GSubProfileDesc* Desc;
 		GGrouping* Grp;
 		GProfileCalc* Calc;
+		GGroupCalc* GrpDesc;
 	} Ptr;
 
 	QPluginListView(GSession* s,QListView* v,int t,const char* str) : QCheckListItem(v,str,QCheckListItem::Controller), Session(s), Type(t) {setOpen(true);}
 	QPluginListView(GSession* s,QCheckListItem* v,GSubProfileDesc* p,const char* str);
-	QPluginListView(GSession* s,QCheckListItem* v,GGrouping* p,const char* str);
 	QPluginListView(GSession* s,QCheckListItem* v,GProfileCalc* p,const char* str);
+	QPluginListView(GSession* s,QCheckListItem* v,GGrouping* p,const char* str);
+	QPluginListView(GSession* s,QCheckListItem* v,GGroupCalc* p,const char* str);
 	virtual void activate(void);
 };
 
@@ -98,6 +102,17 @@ QPluginsDlg::QPluginListView::QPluginListView(GSession* s,QCheckListItem* v,GSub
 
 
 //---------------------------------------------------------------------------
+QPluginsDlg::QPluginListView::QPluginListView(GSession* s,QCheckListItem* v,GProfileCalc* p,const char* str)
+	: QCheckListItem(v,str,QCheckListItem::RadioButton), Session(s), Type(2)
+{
+	setOpen(true);
+	Ptr.Calc=p;
+	if(p==Session->GetCurrentComputingMethod())
+		setOn(true);
+}
+
+
+//---------------------------------------------------------------------------
 QPluginsDlg::QPluginListView::QPluginListView(GSession* s,QCheckListItem* v,GGrouping* p,const char* str)
 	: QCheckListItem(v,str,QCheckListItem::RadioButton), Session(s), Type(3)
 {
@@ -109,12 +124,12 @@ QPluginsDlg::QPluginListView::QPluginListView(GSession* s,QCheckListItem* v,GGro
 
 
 //---------------------------------------------------------------------------
-QPluginsDlg::QPluginListView::QPluginListView(GSession* s,QCheckListItem* v,GProfileCalc* p,const char* str)
-	: QCheckListItem(v,str,QCheckListItem::RadioButton), Session(s), Type(2)
+QPluginsDlg::QPluginListView::QPluginListView(GSession* s,QCheckListItem* v,GGroupCalc* p,const char* str)
+	: QCheckListItem(v,str,QCheckListItem::RadioButton), Session(s), Type(4)
 {
 	setOpen(true);
-	Ptr.Calc=p;
-	if(p==Session->GetCurrentComputingMethod())
+	Ptr.GrpDesc=p;
+	if(p==Session->GetCurrentGroupCalcMethod())
 		setOn(true);
 }
 
@@ -136,6 +151,9 @@ void QPluginsDlg::QPluginListView::activate(void)
 		case 3:
 			Session->SetCurrentGroupingMethod(Ptr.Grp->GetGroupingName());
 			break;
+		case 4:
+			Session->SetCurrentGroupCalcMethod(Ptr.GrpDesc->GetComputingName());
+			break;
 	}
 }
 
@@ -153,6 +171,7 @@ QPluginsDlg::QPluginsDlg(GSession* s,QWidget* parent,const char* name)
 {
 	Computings=new RStd::RContainer<QComputingPluginConf,unsigned int,true,true>(3,3);
 	Groupings=new RStd::RContainer<QGroupingPluginConf,unsigned int,true,true>(3,3);
+	GroupCalcs=new RStd::RContainer<QGroupCalcPluginConf,unsigned int,true,true>(3,3);
 
 	// Window initialisation
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
@@ -209,12 +228,20 @@ void QPluginsDlg::RegisterGroupingPluginConf(QGroupingPluginConf* ins) throw(bad
 
 
 //---------------------------------------------------------------------------
+void QPluginsDlg::RegisterGroupCalcPluginConf(QGroupCalcPluginConf* ins) throw(bad_alloc)
+{
+	GroupCalcs->InsertPtr(ins);
+}
+
+
+//---------------------------------------------------------------------------
 void QPluginsDlg::ConstructPlugins(GSession* s) throw(bad_alloc)
 {
 	QPluginListView* item;
 	GSubProfileDescCursor DescsCur=s->GetProfileDescsCursor();
 	GProfileCalcCursor ComputingsCur=s->GetComputingsCursor();
 	GGroupingCursor& GroupingsCur=s->GetGroupingsCursor();
+	GGroupCalcCursor& GroupCalcsCur=s->GetGroupCalcsCursor();
 
 	item=new QPluginListView(s,Plugins,0,"Description Methods");
 	item->setSelectable(false);
@@ -228,6 +255,10 @@ void QPluginsDlg::ConstructPlugins(GSession* s) throw(bad_alloc)
 	item->setSelectable(false);
 	for(GroupingsCur.Start();!GroupingsCur.End();GroupingsCur.Next())
 		new QPluginListView(s,item,GroupingsCur(),GroupingsCur()->GetGroupingName());
+	item=new QPluginListView(s,Plugins,0,"Group Descritpion Methods");
+	item->setSelectable(false);
+	for(GroupCalcsCur.Start();!GroupCalcsCur.End();GroupCalcsCur.Next())
+		new QPluginListView(s,item,GroupCalcsCur(),GroupCalcsCur()->GetComputingName());
 }
 
 
@@ -253,6 +284,9 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 					break;
 				case 3:
 					b=((QGroupingPluginConf*)Conf)->ConfigChanged();
+					break;
+				case 4:
+					b=((QGroupCalcPluginConf*)Conf)->ConfigChanged();
 					break;
 			}
 			if(b)
@@ -310,6 +344,17 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 			Cur=p;
 			break;
 
+		case 4:
+			Conf=NoConf;
+			sprintf(tmp,"Configure [%s]",p->Ptr.GrpDesc->GetComputingName());
+			Conf=GroupCalcs->GetPtr<const char*>(p->Ptr.GrpDesc->GetComputingName());
+			if(!Conf)
+				Conf=NoConf;
+			else
+				((QGroupCalcPluginConf*)Conf)->Set(p->Ptr.GrpDesc);
+			Cur=p;
+			break;
+
 		default:
 			Conf=0;
 			Cur=0;
@@ -334,4 +379,5 @@ QPluginsDlg::~QPluginsDlg(void)
 	if(NoConf) delete NoConf;
 	if(Computings) delete Computings;
 	if(Groupings) delete Groupings;
+	if(GroupCalcs) delete GroupCalcs;
 }

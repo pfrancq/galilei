@@ -41,6 +41,7 @@ namespace GALILEI
 	class QProfileDescPluginConf;
 	class QComputingPluginConf;
 	class QGroupingPluginConf;
+	class QGroupCalcPluginConf;
 }
 using namespace GALILEI;
 
@@ -109,6 +110,11 @@ class QPluginsDlg : public QDialog
 	*/
 	RStd::RContainer<QGroupingPluginConf,unsigned int,true,true>* Groupings;
 
+	/**
+	* List of all configuration for the group description method.
+	*/
+	RStd::RContainer<QGroupCalcPluginConf,unsigned int,true,true>* GroupCalcs;
+
 public:
 
 	/**
@@ -128,6 +134,11 @@ public:
 	* Register a plugin to configure a grouping method.
 	*/
 	void RegisterGroupingPluginConf(QGroupingPluginConf* ins) throw(bad_alloc);
+
+	/**
+	* Register a plugin to configure a group description method.
+	*/
+	void RegisterGroupCalcPluginConf(QGroupCalcPluginConf* ins) throw(bad_alloc);
 
 	/**
 	* Construct the list of plugins.
