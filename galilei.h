@@ -6,7 +6,7 @@
 
 	GALILEI Header - Header.
 
-	(C) 2001 by P. Francq.
+	(C) 2001-2002 by P. Francq.
 
 	Version $Revision$
 
@@ -74,9 +74,9 @@ enum tObjState{osUnknow /** Unknow state.*/,
 
 //-----------------------------------------------------------------------------
 /**
-* Represent different methods to compute the profiles.
+* Represent different methods to describe subprofiles.
 */
-enum tProfilesCompute{pcNothing,pcStatistical};
+enum tSubProfileDesc{sdNothing,sdVector};
 
 
 //-----------------------------------------------------------------------------
