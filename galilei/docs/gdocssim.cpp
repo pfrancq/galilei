@@ -97,7 +97,7 @@ GALILEI::GDocsSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_allo
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocsSim::GDocsSim(GDocs* d,bool global) throw(bad_alloc)
+GALILEI::GDocsSim::GDocsSim(const char*,GDocs* d,bool global) throw(bad_alloc)
 	: Sims(d->GetNbDocs(),d->GetNbDocs()/2)
 {
 	GDocCursor Cur1;
@@ -126,7 +126,7 @@ GALILEI::GDocsSim::GDocsSim(GDocs* d,bool global) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocsSim::GDocsSim(GDocs& d,bool global) throw(bad_alloc)
+GALILEI::GDocsSim::GDocsSim(const char*,GDocs& d,bool global) throw(bad_alloc)
 	: Sims(d.GetNbDocs(),d.GetNbDocs()/2)
 {
 	GDocCursor Cur1;

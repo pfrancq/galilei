@@ -69,17 +69,19 @@ public:
 
 	/**
 	* Constructor.
+	* @param filename       Name of the file containing the similarities.
 	* @param d              Documents of the system.
 	* @param global         Global approach.
 	*/
-	GDocsSim(GDocs* d,bool global) throw(bad_alloc);
+	GDocsSim(const char* filename,GDocs* d,bool global) throw(bad_alloc);
 
 	/**
 	* Constructor.
+	* @param filename       Name of the file containing the similarities.
 	* @param d              documents of the system.
 	* @param global         Global approach.
 	*/
-	GDocsSim(GDocs& d,bool global) throw(bad_alloc);
+	GDocsSim(const char* filename,GDocs& d,bool global) throw(bad_alloc);
 
 	/**
 	* Get the similarities between two documents.
