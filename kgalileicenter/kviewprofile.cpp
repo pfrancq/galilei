@@ -61,8 +61,6 @@ using namespace R;
 #include <sessions/gsession.h>
 #include <galilei/qlistviewitemtype.h>
 #include <galilei/qgsubprofiledescs.h>
-#include <postgroups/gstandartinoutput.h>
-#include <postgroups/ginoutputbase.h>
 using namespace GALILEI;
 
 
