@@ -49,7 +49,7 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <profiles/gprofilecalcfeedback.h>
-#include <docs/gdoc.h>
+#include <docs/gdocvector.h>
 #include <langs/gdict.h>
 #include <langs/glang.h>
 #include <profiles/gprofile.h>
@@ -166,7 +166,7 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 	GProfDocCursor Docs;
 	GIWordsWeights* Vector;
 	GLang* CurLang;
-	GDoc* CurDoc;
+	GDocVector* CurDoc;
 	GIWordWeight* w;
 	bool Add;
 	GIWordsWeights* NbDocs;
@@ -191,7 +191,7 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 	{
 		// If the document hasn't a language or its judgement is not relevant
 		// -> don't treat for the profiles computing
-		CurDoc=Docs()->GetDoc();
+		CurDoc=dynamic_cast<GDocVector*>(Docs()->GetDoc());
 		CurLang=CurDoc->GetLang();
 		if(!CurLang) continue;
 		Fdbk=Docs()->GetFdbk();
@@ -218,7 +218,7 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		// If the document hasn't a language, don't treat for the profiles' computing.
-		CurDoc=Docs()->GetDoc();
+		CurDoc=dynamic_cast<GDocVector*>(Docs()->GetDoc());
 		CurLang=CurDoc->GetLang();
 		if(!CurLang) continue;
 		Vector=Vectors.GetPtr<const GLang*>(CurLang);

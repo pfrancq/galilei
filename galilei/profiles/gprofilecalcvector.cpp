@@ -49,7 +49,7 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <profiles/gprofilecalcvector.h>
-#include <docs/gdoc.h>
+#include <docs/gdocvector.h>
 #include <langs/gdict.h>
 #include <langs/glang.h>
 #include <profiles/gprofile.h>
@@ -164,7 +164,7 @@ void GALILEI::GProfileCalcVector::ComputeGlobal(GProfile* profile) throw(bad_all
 	GIWordsWeights* Weights;
 	GIWordsWeights* NbDocs;
 	GLang* CurLang;
-	GDoc* CurDoc;
+	GDocVector* CurDoc;
 	GIWordWeight* w;
 	GIWordWeight** v;
 	GIWordWeight** d;
@@ -186,7 +186,7 @@ void GALILEI::GProfileCalcVector::ComputeGlobal(GProfile* profile) throw(bad_all
 	{
 		// If the document hasn't a language or its judgement is not relevant
 		// or fuzzy relevant -> don't treat for the profiles computing
-		CurDoc=Docs()->GetDoc();
+		CurDoc=dynamic_cast<GDocVector*>(Docs()->GetDoc());
 		CurLang=CurDoc->GetLang();
 		if(!CurLang) continue;
 		Fdbk=Docs()->GetFdbk();

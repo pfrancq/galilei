@@ -53,7 +53,7 @@ namespace GALILEI{
 /**
 * The GDocAnalyse class provides a method to analyse a document.
 * @author Pascal Francq
-* @short Document's Analyse.
+* @short Vector Model Documents Analyse.
 */
 class GDocAnalyse
 {
@@ -77,7 +77,7 @@ class GDocAnalyse
 	/**
 	* Current document to analyse.
 	*/
-	GDoc* Doc;
+	GDocVector* Doc;
 
 	/**
 	* Direct access to the words.

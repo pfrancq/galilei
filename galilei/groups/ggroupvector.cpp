@@ -42,7 +42,7 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <groups/ggroupvector.h>
-#include <docs/gdoc.h>
+#include <docs/gdocvector.h>
 #include <profiles/gsubprofile.h>
 #include <infos/giwordweight.h>
 #include <langs/glang.h>
@@ -93,28 +93,28 @@ unsigned int GALILEI::GGroupVector::GetNbNoNull(void) const
 //-----------------------------------------------------------------------------
 double GALILEI::GGroupVector::Similarity(const GGroup* desc) const
 {
-	return(GIWordsWeights::Similarity((static_cast<const GGroupVector*>(desc))));
+	return(GIWordsWeights::Similarity((dynamic_cast<const GGroupVector*>(desc))));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GGroupVector::GlobalSimilarity(const GGroup* desc) const
 {
-	return(SimilarityIdf((static_cast<const GGroupVector*>(desc)),otGroup,Lang));
+	return(SimilarityIdf((dynamic_cast<const GGroupVector*>(desc)),otGroup,Lang));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GGroupVector::Similarity(const GDoc* doc) const
 {
-	return(GIWordsWeights::Similarity(doc));
+	return(GIWordsWeights::Similarity(dynamic_cast<const GDocVector*>(doc)));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GGroupVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(SimilarityIdf(doc,otNoClass,Lang));
+	return(SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otNoClass,Lang));
 }
 
 

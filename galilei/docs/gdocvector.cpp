@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GDoc.cpp
+	GDocVector.cpp
 
-	Document - Implementation.
+	Document in the Vector model - Implementation.
 
 	Copyright 2001 by the Université Libre de Bruxelles.
 
@@ -35,9 +35,25 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <ctype.h>
+#include <math.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainercursor.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdoc.h>
+#include <docs/gdocvector.h>
 #include <docs/gdocxml.h>
+#include <infos/giwordweight.h>
+#include <infos/giwordsweights.h>
+#include <langs/gword.h>
+#include <langs/gdict.h>
 #include <langs/glang.h>
 #include <filters/gmimefilter.h>
 #include <profiles/gprofile.h>
@@ -51,121 +67,90 @@ using namespace RTimeDate;
 
 //-----------------------------------------------------------------------------
 //
-// class GDoc
+// class GDocVector
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
-	: URL(url), Name(name), Id(id), N(n), V(v), Ndiff(ndiff), Vdiff(vdiff),
-	  Lang(lang), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
-	  Failed(f)
+GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
+	: GDoc(url,name,id,lang,t,u,a,f,n,ndiff,v,vdiff,nbf),
+	  GIWordsWeights(vdiff>600?vdiff:600)
 {
-	if(Updated>Computed)
-	{
-		if(Computed==RDate::null)
-			State=osCreated;
-		else
-			State=osModified;
-	}
-	else
-		State=osUpToDate;
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::Compare(const GDoc& doc) const
+void GALILEI::GDocVector::ClearInfos(bool l)
 {
-	return(Id-doc.Id);
+	GDoc::ClearInfos(l);
+	RemoveRefs();
+	Clear();
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::Compare(const GDoc* doc) const
+void GALILEI::GDocVector::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd)
 {
-	return(Id-doc->Id);
+	GDoc::SetInfos(l,n,nd,v,vd);
+	UpdateRefs();
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::Compare(const unsigned id) const
+void GALILEI::GDocVector::AddWord(const unsigned int id,const double nb)
 {
-	return(Id-id);
+	InsertPtr(new GIWordWeight(id,nb));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::Compare(const GLang* lang) const
+GIWordWeightCursor& GALILEI::GDocVector::GetWordWeightCursor(void)
 {
-	return(Lang->Compare(lang));
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GDoc::ClearInfos(bool l)
-{
-	if(l)
-		Lang=0;
-	N=0;
-	Ndiff=0;
-	V=0;
-	Vdiff=0;
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GDoc::ClearFdbks(void)
-{
-	Fdbks.Clear();
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd)
-{
-	Lang=l;
-	N=n;
-	Ndiff=nd;
-	V=v;
-	Vdiff=vd;
-	State=osUpdated;
-	Computed.SetToday();
-	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
-		Fdbks()->GetProfile()->SetState(osModified);
-}
-
-
-//-----------------------------------------------------------------------------
-GProfDocCursor& GALILEI::GDoc::GetProfDocCursor(void)
-{
-	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
-	cur->Set(Fdbks);
+	GIWordWeightCursor *cur=GIWordWeightCursor::GetTmpCursor();
+	cur->Set(this);
 	return(*cur);
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GDoc::Similarity(const GDoc*) const
+double GALILEI::GDocVector::Similarity(const GDoc* doc) const
 {
-	return(0.0);
+	return(GIWordsWeights::Similarity(dynamic_cast<const GDocVector*>(doc)));
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GDoc::GlobalSimilarity(const GDoc*) const
+double GALILEI::GDocVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(0.0);
+	return(GIWordsWeights::SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otDoc,Lang));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::AddJudgement(GProfDoc* j) throw(bad_alloc)
+void GALILEI::GDocVector::UpdateRefs(void) const
 {
-	Fdbks.InsertPtr(j);
+	GDict* d;
+
+	if(!Lang) return;
+	d=Lang->GetDict();
+	if(d)
+		AddRefs(otDoc,d);
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDoc::~GDoc(void)
+void GALILEI::GDocVector::RemoveRefs(void) const
+{
+	GDict* d;
+
+	if(!Lang) return;
+	d=Lang->GetDict();
+	if(d)
+		DelRefs(otDoc,d);
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GDocVector::~GDocVector(void)
 {
 }

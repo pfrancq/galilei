@@ -46,7 +46,7 @@
 #include<infos/giword.h>
 #include<infos/giwordweight.h>
 #include<infos/giwordsweights.h>
-#include<docs/gdoc.h>
+#include<docs/gdocvector.h>
 using namespace GALILEI;
 
 
@@ -88,28 +88,28 @@ void GALILEI::GSubProfileVector::AddWord(unsigned int id,double w) throw(bad_all
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::Similarity(const GSubProfile* desc) const
 {
-	return(GIWordsWeights::Similarity((static_cast<const GSubProfileVector*>(desc))));
+	return(GIWordsWeights::Similarity((dynamic_cast<const GSubProfileVector*>(desc))));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::GlobalSimilarity(const GSubProfile* desc) const
 {
-	return(SimilarityIdf((static_cast<const GSubProfileVector*>(desc)),otSubProfile,Lang));
+	return(SimilarityIdf((dynamic_cast<const GSubProfileVector*>(desc)),otSubProfile,Lang));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::Similarity(const GDoc* doc) const
 {
-	return(GIWordsWeights::Similarity(doc));
+	return(GIWordsWeights::Similarity(dynamic_cast<const GDocVector*>(doc)));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(SimilarityIdf(doc,otNoClass,Lang));
+	return(SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otNoClass,Lang));
 }
 
 

@@ -49,7 +49,7 @@ using namespace RIO;
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
 #include <sessions/gsessionprg.h>
-#include <docs/gdoc.h>
+#include <docs/gdocvector.h>
 #include <docs/gdocanalyse.h>
 #include <docs/gdocxml.h>
 #include <docs/gdocoptions.h>
@@ -516,10 +516,10 @@ void GALILEI::GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 		j[i]=0;
 		k[i]=0;
 	}
-	GDocCursor DocCursor =GetDocsCursor();
+	GDocCursor DocCursor=GetDocsCursor();
 	for(DocCursor.Start();!DocCursor.End();DocCursor.Next())
 	{
-		GDoc* Doc=DocCursor();
+		GDocVector* Doc=dynamic_cast<GDocVector*>(DocCursor());
 		for(Doc->Start();!Doc->End();Doc->Next())
 		{
 			GIWordWeight* WW=(*Doc)();
@@ -547,7 +547,7 @@ void GALILEI::GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 
 	for(DocCursor.Start();!DocCursor.End();DocCursor.Next())
 	{
-		GDoc* Doc=DocCursor();
+		GDocVector* Doc=dynamic_cast<GDocVector*>(DocCursor());
 		for(int i=0;i<NbKwd;i++)
 		{
 			if(!test[i])

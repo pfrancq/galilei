@@ -61,7 +61,7 @@ using namespace RIO;
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofilevector.h>
 #include <profiles/gprofdoc.h>
-#include <docs/gdoc.h>
+#include <docs/gdocvector.h>
 #include <docs/gdocs.h>
 #include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
@@ -413,11 +413,11 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup)
 {
-
 	char sSql[100];
 	GGroupsEvaluate* groups;
 	GGroupEvaluateDoc* group;
 	GLangCursor Langs;
+
 	idealgroup->Clear();
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
@@ -582,7 +582,7 @@ void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 {
-	GDoc* doc;
+	GDocVector* doc;
 	GLang* lang;
 	int docid;
 	char sSql[100];
@@ -594,7 +594,7 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 	{
 		docid=atoi(quer[0]);
 		lang=GetLang(quer[4]);
-		InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,Mng->GetMIMEType(quer[3]),quer[5],quer[6],atoi(quer[7]),atoi(quer[8]),atoi(quer[9]),atoi(quer[10]),atoi(quer[11])));
+		InsertDoc(doc=new GDocVector(quer[1],quer[2],docid,lang,Mng->GetMIMEType(quer[3]),quer[5],quer[6],atoi(quer[7]),atoi(quer[8]),atoi(quer[9]),atoi(quer[10]),atoi(quer[11])));
 	}
 
 	// Load the document's description
@@ -605,7 +605,7 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 		RQuery sel(this,sSql);
 		for(sel.Start();!sel.End();sel.Next())
 		{
-			doc=GetDoc(atoi(sel[0]));
+			doc=dynamic_cast<GDocVector*>(GetDoc(atoi(sel[0])));
 			if(doc)
 				doc->AddWord(atoi(sel[1]),atof(sel[2]));
 		}
@@ -614,7 +614,7 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 	// Update References of the loaded documents.
 	GDocCursor Docs=GetDocsCursor();
 	for(Docs.Start();!Docs.End();Docs.Next())
-		Docs()->UpdateRefs();
+		dynamic_cast<GDocVector*>(Docs())->UpdateRefs();
 }
 
 
@@ -635,7 +635,7 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 	sprintf(sSql,"SELECT htmlid,updated FROM htmls WHERE htmlid=LAST_INSERT_ID()");
 	RQuery selectdoc(this,sSql);
 	selectdoc.Start();
-	doc=new GDoc(url,name,strtoul(selectdoc[0],0,10),0,Mng->GetMIMEType(mime),selectdoc[1],0,0,0,0,0,0);
+	doc=new GDocVector(url,name,strtoul(selectdoc[0],0,10),0,Mng->GetMIMEType(mime),selectdoc[1],0,0,0,0,0,0);
 	InsertDoc(doc);
 	return(doc);
 }
@@ -701,7 +701,7 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 		l=doc->GetLang()->GetCode();
 		sprintf(sSql,"DELETE FROM %shtmlsbykwds WHERE htmlid=%u",l,id);
 		RQuery deletekwds(this,sSql);
-		Words=doc->GetWordWeightCursor();
+		Words=dynamic_cast<GDocVector*>(doc)->GetWordWeightCursor();
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%lf)",l,id,Words()->GetId(),Words()->GetWeight());

@@ -88,6 +88,7 @@ class GDicts;
 //-----------------------------------------------------------------------------
 // forward class declaration - Document Part
 class GDoc;
+class GDocVector;
 class GDocCursor;
 class GDocXML;
 class GDocs;

@@ -42,7 +42,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <infos/giwordsweights.h>
 
 
 //-----------------------------------------------------------------------------
@@ -51,12 +50,13 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GDoc class provides a representation of the analysis of a document.
+* The GDoc class provides a representation of a document.
 * @author Pascal Francq
 * @short Document.
 */
-class GDoc : public GIWordsWeights
+class GDoc
 {
+protected:
 	/**
 	* URL of the document.
 	*/
@@ -148,6 +148,12 @@ public:
 	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
+	* Get the name of the model used for the description.
+	* @return C String.
+	*/
+	virtual const char* GetModelName(void) const=0;
+
+	/**
 	* Compare function needed by RStd::RContainer.
 	* @param doc            Document used for the comparaison.
 	*/
@@ -175,7 +181,7 @@ public:
 	* This function clears the information related to the document.
 	* @param l              Must the language be removed.
 	*/
-	void ClearInfos(bool l);
+	virtual void ClearInfos(bool l);
 
 	/**
 	* Clear The Fdbks Container
@@ -232,7 +238,7 @@ public:
 	* @param v              Total number of valid words.
 	* @param vd             Total number of different valid words.
 	*/
-	void SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd);
+	virtual void SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd);
 
 	/**
 	* Add a word with a certain occurences in the document.
@@ -299,12 +305,6 @@ public:
 	void DecFailed(void) {Failed--;}
 
 	/**
-	* Get a Cursor on the weights of the document.
-	* @return GProfDocCursor.
-	*/
-	GIWordWeightCursor& GetWordWeightCursor(void);
-
-	/**
 	* Get a Cursor on the feedback for the profile.
 	* @return GProfDocCursor.
 	*/
@@ -313,28 +313,18 @@ public:
 	/**
 	* Compute similarity between document.
 	*/
-	double Similarity(const GDoc* doc) const;
+	virtual double Similarity(const GDoc* doc) const;
 
 	/**
 	* Compute similarity between document using the idf factors.
 	*/
-	double GlobalSimilarity(const GDoc* doc) const;
+	virtual double GlobalSimilarity(const GDoc* doc) const;
 
 	/**
 	* Add a judgement for this document.
 	* @param j              Judgement.
 	*/
 	void AddJudgement(GProfDoc* j) throw(bad_alloc);
-
-	/**
-	* Update the references of the document.
-	*/
-	void UpdateRefs(void) const;
-
-	/**
-	* Remove the references of the document.
-	*/
-	void RemoveRefs(void) const;
 
 	/**
 	* Destruct the document.
