@@ -162,6 +162,8 @@ public:
 	*/
 	int Compare(const GLang* lang) const;
 
+proxy:
+	
 	/**
 	* Add an assessment for the subprofile.
 	* @param j               Pointer to an assessment.
@@ -362,8 +364,6 @@ public:
 	*/
 	void UpdateFinished(void);
 
-#if GALILEITEST
-
 	/**
 	* Set the Subject of the subprofile.
 	* @param s              Subject.
@@ -375,7 +375,6 @@ public:
 	*/
 	GSubject* GetSubject(void) const;
 
-#endif
 	/**
 	* Update the references of the document.
 	*/
@@ -386,6 +385,8 @@ public:
 	*/
 	void RemoveRefs(void) const throw(GException);
 
+public:
+	
 	/**
 	* Destructor of a subprofile.
 	*/

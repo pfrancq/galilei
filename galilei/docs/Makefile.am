@@ -16,4 +16,5 @@ docsinclude_HEADERS = gbalancedlinks.h gdocanalyse.h  \
 					gdocxml.h glinkcalc.h glinks.h \
 					gdoc.h gdocprofsims.h gdocs.h  \
 					glink.h glinkcalcmanager.h gdocanalysemanager.h \
-					gpostdoc.h gpostdocmanager.h gfilter.h gfiltermanager.h gfiltermanagercurl.h
+					gpostdoc.h gpostdocmanager.h gfilter.h gfiltermanager.h gfiltermanagercurl.h \
+					gdocproxy.h gdocproxymem.h

@@ -255,7 +255,7 @@ public:
 	* @param oldlang        Old language of the document.  
 	* @param s              Session.
 	*/
-	void Modify(GSession* session,GDocRef& profdoc,GLang* newlang,GLang* oldlang);
+//	void Modify(GSession* session,GDocRef& profdoc,GLang* newlang,GLang* oldlang);
 
 	/*
 	* Destructor of the profile.

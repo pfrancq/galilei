@@ -51,11 +51,6 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// forward declaration
-class GSubProfileRef;
-
-
-//------------------------------------------------------------------------------
 /**
 * The GLinkCalc provides a representation for a generic method to compute links.
 * @author Vandaele Valery
@@ -92,7 +87,7 @@ public :
 	* Compute the links for a given subprofile.
 	* @param subprof        Reference to the subprofile to compute.
 	*/
-	virtual void Compute(GSubProfileRef subprof) throw(GException)=0;
+	virtual void Compute(GSubProfile* subprof) throw(GException)=0;
 
 	/**
 	* Connect to a Session.

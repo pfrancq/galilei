@@ -10,5 +10,5 @@ libgalilei_sessions_la_SOURCES = gsession.cpp gsessionprg.cpp gslot.cpp gslotlog
 sessionsincludedir = $(includedir)/galilei/sessions
 sessionsinclude_HEADERS = gsession.h gsessionprg.h galilei.h gstorage.h gstoragemysql.h \
 		 gslot.h gslotlog.h gparam.h gparams.h gplugin.h gconfig.h gstatscalc.h \
-		 gstatscalcmanager.h gmixidealgroups.h gobjref.h
+		 gstatscalcmanager.h gmixidealgroups.h
 

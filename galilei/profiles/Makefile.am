@@ -13,4 +13,5 @@ profilesincludedir = $(includedir)/galilei/profiles
 profilesinclude_HEADERS =  gprofdoc.h gprofilecalc.h  \
 					 gusers.h \
 					 gprofile.h gprofilesbehaviours.h  \
-					 gprofilessims.h gsubprofile.h guser.h gprofilecalcmanager.h
+					 gprofilessims.h gsubprofile.h guser.h gprofilecalcmanager.h \
+					 gsubprofileproxy.h gsubprofileproxymem.h

@@ -46,7 +46,6 @@
 #include <engines/genginedoc.h>
 #include <groups/ggroups.h>
 #include <sessions/gparams.h>
-#include <sessions/gobjref.h>
 
 
 //------------------------------------------------------------------------------
@@ -365,7 +364,7 @@ public:
 	* @param ref              Reference of the document.
 	* @param assess           Container to fill with the assessments.
 	*/
-	void GetDocAssessments(const GDocRef& ref,R::RContainer<GProfDoc,true,false>& assess);
+	void GetDocAssessments(const GDoc* ref,R::RContainer<GProfDoc,true,false>& assess);
 
 	//@}
 
@@ -588,6 +587,11 @@ public:
 	* @param label          display words id aned vectors id ?
 	*/
 	virtual void ExportMatrix(GSlot* rec,const char* type, const char* filename, GLang* lang, bool label);
+
+	/**
+	* R
+	*/
+	std::auto_ptr<GDocProxy> GetDocProxy(unsigned int id);
 
 	/**
 	* Destructor.

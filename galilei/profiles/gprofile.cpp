@@ -79,7 +79,6 @@ int GProfile::Compare(const unsigned int id) const
 }
 
 
-#if GALILEITEST
 //------------------------------------------------------------------------------
 void GProfile::SetSubject(GSubject* s)
 {
@@ -92,7 +91,6 @@ GSubject* GProfile::GetSubject(void) const
 {
 	return(Subject);
 }
-#endif
 
 
 //------------------------------------------------------------------------------
@@ -259,46 +257,46 @@ void GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang, GSession* s)
 
 
 //------------------------------------------------------------------------------
-void GProfile::Modify(GSession* session,GDocRef& profdoc,GLang* newlang,GLang* oldlang)
-{
-	GSubProfile* sub;
-
-	// If no languages are defined -> nothing to do
-	if((!newlang)&&(!oldlang))
-		return;
-
-	// If a new language is defined -> modify the corresponding subprofile
-	if(newlang)
-	{
-		sub=GetInsertSubProfile(newlang,session);
-		sub->SetState(osModified);
-	}
-
-	// If the languages are identical -> nothing else to do
-	if(newlang==oldlang)
-		return;
-
-	#warning profdoc must be create/delete
-
-	// If the old language was defined -> delete the assessment on the document
-	if(oldlang)
-	{
-		GSubProfile* sub2=GetInsertSubProfile(oldlang,session);
-//		subs->RemoveAssessment(profdoc);
-		sub2->SetState(osModified);
-	}
-
-	if(!newlang)
-	{
-		// if the new language is not defined -> create an assessment in the profile
-//		Fdbks.InsertPtr(profdoc);
-	}
-	else
-	{
-		// if the new language is defined -> create an asessment in the subprofile
-//		sub->AddAssessment(profdoc);
-	}
-}
+// void GProfile::Modify(GSession* session,GDocRef& profdoc,GLang* newlang,GLang* oldlang)
+// {
+// 	GSubProfile* sub;
+// 
+// 	// If no languages are defined -> nothing to do
+// 	if((!newlang)&&(!oldlang))
+// 		return;
+// 
+// 	// If a new language is defined -> modify the corresponding subprofile
+// 	if(newlang)
+// 	{
+// 		sub=GetInsertSubProfile(newlang,session);
+// 		sub->SetState(osModified);
+// 	}
+// 
+// 	// If the languages are identical -> nothing else to do
+// 	if(newlang==oldlang)
+// 		return;
+// 
+// 	#warning profdoc must be create/delete
+// 
+// 	// If the old language was defined -> delete the assessment on the document
+// 	if(oldlang)
+// 	{
+// 		GSubProfile* sub2=GetInsertSubProfile(oldlang,session);
+// //		subs->RemoveAssessment(profdoc);
+// 		sub2->SetState(osModified);
+// 	}
+// 
+// 	if(!newlang)
+// 	{
+// 		// if the new language is not defined -> create an assessment in the profile
+// //		Fdbks.InsertPtr(profdoc);
+// 	}
+// 	else
+// 	{
+// 		// if the new language is defined -> create an asessment in the subprofile
+// //		sub->AddAssessment(profdoc);
+// 	}
+// }
 
 
 //------------------------------------------------------------------------------

@@ -158,7 +158,7 @@ public:
 	* @param ref              Reference of the document.
 	* @param assess           Container to fill with the assessments.
 	*/
-	virtual void GetDocAssessments(GSession* session,const GDocRef& ref,R::RContainer<GProfDoc,true,false>& assess);
+	virtual void GetDocAssessments(GSession* session,const GDoc* ref,R::RContainer<GProfDoc,true,false>& assess);
 
 	/**
 	* Load the users.

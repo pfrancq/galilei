@@ -88,7 +88,7 @@ using namespace R;
 #include <historic/ggroupshistory.h>
 #include <groups/gpostgroup.h>
 #include <groups/gpostgroupmanager.h>
-#include <sessions/gobjref.h>
+#include <docs/gdocproxymem.h>
 using namespace GALILEI;
 
 
@@ -215,10 +215,10 @@ GFactoryMetaEngineCursor GSession::GetMetaEnginesCursor(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::GetDocAssessments(const GDocRef& ref,R::RContainer<GProfDoc,true,false>& assess)
+void GSession::GetDocAssessments(const GDoc* ref,R::RContainer<GProfDoc,true,false>& assess)
 {
 	if(!Storage)
-		throw GException("Cannot retrieve assessment for document "+itou(ref.GetId()));
+		throw GException("Cannot retrieve assessment for document "+itou(ref->GetId()));
 	Storage->GetDocAssessments(this,ref,assess);
 }
 
@@ -272,7 +272,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 	bool undefLang;
 	GDocXML* xml=0;
 	GDocCursor Docs=GetDocsCursor();
-	RContainer<GDocRef,true,true> tmpDocs(5,2);
+	RContainer<GDoc,false,true> tmpDocs(5,2);
 	GDocAnalyse* Analyse;
 	RString err;
 	bool Cont;               // Continue the analysuis
@@ -308,7 +308,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 					if(xml)
 					{
 						Docs()->InitFailed();
-						Analyse->Analyze(xml,Docs()->GetId(),&tmpDocs);
+						Analyse->Analyze(xml,Docs(),&tmpDocs);
 						delete xml;
 						xml=0;
 						if((undefLang)&&(Docs()->GetLang()))
@@ -340,12 +340,12 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 
 		// Add the new documents.
 		// Continue the analysis if documents were added.
-		RCursor<GDocRef> Cur(tmpDocs);
+		RCursor<GDoc> Cur(tmpDocs);
 		Cont=tmpDocs.NbPtr;
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			//InsertDoc(Cur());
-			#warning add the document with the Cur()->GetId()
+			InsertDoc(Cur());
+			//#warning add the document with the Cur()->GetId()
 		}
 		tmpDocs.Clear();
 	}
@@ -542,8 +542,8 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) t
 				if((!modified)||(Subs()->GetState()!=osUpdated))
 				{
 					if(LinkCalc)
-						LinkCalc->Compute(Subs()->GetId());
-					Profiling->Compute(Subs()->GetId());
+						LinkCalc->Compute(Subs());
+					Profiling->Compute(Subs());
 
 					if(save)
 						Storage->SaveSubProfile(Subs());
@@ -847,6 +847,14 @@ void GSession::ReInit(bool)
 void GSession::ExportMatrix(GSlot* rec, const char* type, const char* filename, GLang* lang, bool label)
 {
 	Storage->ExportMatrix(this, rec, type, filename, lang, label);
+}
+
+
+//------------------------------------------------------------------------------
+auto_ptr<GDocProxy> GSession::GetDocProxy(unsigned int id)
+{
+	GDoc* doc=GetDoc(id);
+	return(auto_ptr<GDocProxy>(new GDocProxyMem(doc)));
 }
 
 

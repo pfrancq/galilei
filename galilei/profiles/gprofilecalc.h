@@ -95,7 +95,7 @@ public:
 	* Compute a subprofile.
 	* @param subprofile      Reference to the subprofile to compute.
 	*/
-	virtual void Compute(GSubProfileRef subprofile) throw(GException)=0;
+	virtual void Compute(GSubProfile* subprofile) throw(GException)=0;
 
 	/**
 	* Destructor of the computing method.

@@ -766,18 +766,16 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::GetDocAssessments(GSession* session,const GDocRef& ref,R::RContainer<GProfDoc,true,false>& assess)
+void GStorageMySQL::GetDocAssessments(GSession* session,const GDoc* ref,R::RContainer<GProfDoc,true,false>& assess)
 {
-	GDoc* doc;
 	GProfile* prof;
 	tDocAssessment jug;
 
-	doc=session->GetDoc(ref.GetId());
-	if(!doc)
-		throw GException(itou(ref.GetId())+" is an invalid document identificator");
+	if(!ref)
+		throw GException("Invalid document identificator");
 	try
 	{
-		RQuery fdbks(Db,"SELECT judgement,profileid,when2 FROM htmlsbyprofiles WHERE htmlid="+itou(ref.GetId()));
+		RQuery fdbks(Db,"SELECT judgement,profileid,when2 FROM htmlsbyprofiles WHERE htmlid="+itou(ref->GetId()));
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
 		{
 			// Get the profile
@@ -815,7 +813,7 @@ void GStorageMySQL::GetDocAssessments(GSession* session,const GDocRef& ref,R::RC
 			}
 
 			// Insert in the container
-			assess.InsertPtr(new GProfDoc(doc,prof,jug,fdbks[2]));
+			assess.InsertPtr(new GProfDoc(const_cast<GDoc*>(ref),prof,jug,fdbks[2]));
 		}
 	}
 	catch(RMySQLError e)
