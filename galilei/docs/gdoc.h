@@ -217,41 +217,6 @@ public:
 	*/
 	void SetState(tObjState state) {State=state;}
 
-protected:
-
-	/**
-	* This function construct a word.
-	* @param ptr            Pointer that will be moved to the next word.
-	* @param word           Where to store the word.
-	* @returns true if a word was extract.
-	*/
-	bool ExtractWord(const char* &ptr,RStd::RString& word);
-
-public:
-
-	/**
-	* Analyse a tag to find how much words are in a stoplist.
-	* @param tag            Tag to analyse.
-	* @param stop           Stoplist to use.
-	*/
-	int AnalyseTagForStopKwd(RXML::RXMLTag* tag,GDict* stop) throw(GException);
-
-	/**
-	* Analyse a content tag.
-	* @param tag            Tag to analyse.
-	* @param stop           Stoplist to use.
-	* @param dic            Dictionnary to use.
-	*/
-	void AnalyseContentTag(RXML::RXMLTag* tag,GDict* stop,GDict* dic) throw(GException);
-
-	/**
-	* Analyse a XML representation of a document for a session and store the
-	* results in this document.
-	* @param xml            XML Representation used.
-	* @param session        Corresponding session.
-	*/
-	void Analyse(GDocXML* xml,GSession* session) throw(GException);
-
 	/**
 	* Add a word with a certain occurences in the document.
 	* @param id             Identificator of the word.
@@ -369,6 +334,9 @@ public:
 	* Destruct the document.
 	*/
 	virtual ~GDoc(void);
+	
+	// friend class
+	friend class GDocAnalyse;
 };
 
 
