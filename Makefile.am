@@ -1,6 +1,6 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
 
-SUBDIRS = kgalileicenter po doc
+SUBDIRS = kgalileicenter po doc 
 
 EXTRA_DIST = kgalileicenter.kdevprj admin AUTHORS COPYING ChangeLog INSTALL README TODO kgalileicenter.lsm 
 
