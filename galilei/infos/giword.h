@@ -68,6 +68,7 @@ public:
 
 	/**
 	* The constructor.
+	* @param id             Identificator of the information.
 	*/
 	GIWord(unsigned int id);
 
