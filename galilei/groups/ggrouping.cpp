@@ -113,7 +113,15 @@ void GALILEI::GGrouping::Clear(void) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 GGroup* GALILEI::GGrouping::NewGroup(GLang* lang)
 {
-	return(Session->NewGroup(lang));
+	GGroup* grp;
+
+	grp=new GGroup(cNoRef,lang);
+	if(SaveGroups)
+		Session->NewGroup(lang,grp);
+	else
+		grp->SetId(Groups->Tab[Groups->NbPtr-1]->GetId()+1);
+	Groups->InsertPtr(grp);
+	return(grp);
 }
 
 
@@ -121,13 +129,14 @@ GGroup* GALILEI::GGrouping::NewGroup(GLang* lang)
 void GALILEI::GGrouping::DeleteGroup(GGroup* grp)
 {
 	grp->DeleteSubProfiles();
+	if(SaveGroups)
+		Session->DeleteGroup(grp);
 	Groups->DeletePtr(grp);
-	Session->DeleteGroup(grp);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified)
+void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
 	GProfileCursor cur;
@@ -135,6 +144,8 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified)
 	GGroup* Grp;
 	GGroup** Tab;
 	unsigned int i;
+
+	SaveGroups=true;
 
 	// Go trough each language.
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
@@ -170,8 +181,9 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified)
 		Run();
 
 		// Save the information about the groupement
-		for(Groups->Start();!Groups->End();Groups->Next())
-			Session->Save((*Groups)());
+		if(SaveGroups)
+			for(Groups->Start();!Groups->End();Groups->Next())
+				Session->Save((*Groups)());
 	}
 	Lang=0;
 }

@@ -225,7 +225,7 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 		for(Instance.BestChromosome->Used.Start();!Instance.BestChromosome->Used.End();Instance.BestChromosome->Used.Next())
 		{
 			gr=Instance.BestChromosome->Used();
-			Groups->InsertPtr(g=NewGroup(Lang));
+			g=NewGroup(Lang);
 			ptr=tab=gr->GetObjectsId();
 			while((*ptr)!=RGGA::NoObject)
 				g->InsertSubProfile(Objs.Tab[*(ptr++)]->GetSubProfile());

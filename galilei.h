@@ -91,8 +91,6 @@ class GSubProfileDesc;
 class GSubProfileDescCursor;
 class GGroup;
 class GGroupCursor;
-class GGroupsLang;
-class GGroupsLangCursor;
 class GGroups;
 class GGroupsCursor;
 class GGrouping;

@@ -220,7 +220,7 @@ void GALILEI::GGroupingSim::Run(void) throw(GException)
 
 		// If no group found create one and insert it in Groups.
 		if(!g)
-			Groups->InsertPtr(g=Session->NewGroup(Groups->GetLang()));
+			g=NewGroup(Groups->GetLang());
 
 		// Attach the subprofile to the group found/created.
 		g->InsertSubProfile(s);

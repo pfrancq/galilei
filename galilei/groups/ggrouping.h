@@ -91,6 +91,11 @@ protected:
 	*/
 	RStd::RContainer<GGroups,unsigned int,true,true> DeletedGroups;
 
+	/**
+	* Must the groups be save in the database.
+	*/
+	bool SaveGroups;
+
 public:
 
 	/**
@@ -180,8 +185,9 @@ public:
 	* Make the groups.
 	* @param rec            Receiver of the signals.
 	* @param modified       Recompute only modified elements or all.
+	* @param save           Save modified elements.
 	*/
-	void Grouping(GSlot* rec=0,bool modified=true);
+	void Grouping(GSlot* rec,bool modified,bool save);
 
 	/**
 	* Destructor.
