@@ -97,6 +97,8 @@ GALILEI::GIdealGroup::GIdealGroup(GSession* session)
 //-----------------------------------------------------------------------------
 void GALILEI::GIdealGroup::Run(bool Save)
 {
+	// re-init the session
+	Session->ReInit(Save);
 	if(!Docs)
 		Docs=new GDoc*[Session->GetNbDocs()];
 	ChooseSubjects();
@@ -165,8 +167,10 @@ void GALILEI::GIdealGroup::CreateSet(void)
 		IdealGroups->InsertPtr(new GGroups(CurLang()));
 	if(!Docs)
 		Docs=new GDoc*[Session->GetNbDocs()];
-	Session->ClearFdbks();
-	Session->ClearSubProfilesGroups();
+
+//	Session->ClearFdbks();
+//	Session->ReInit();
+//	Session->ClearSubProfilesGroups();
 
 	// Go through all the subjects which are used
 	Subs.Set(Session->GetSubjects());
