@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GDocAnalyse.h
+	GTextAnalyse.h
 
 	Analyse a document - Header.
 
@@ -35,13 +35,14 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GDocAnalyseH
-#define GDocAnalyseH
+#ifndef GTextAnalyseH
+#define GTextAnalyseH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <docs/gdocanalyse.h>
 #include <langs/glang.h>
 
 
@@ -51,18 +52,13 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GDocAnalyse class provides a method to analyse a document.
+* The GTextAnalyse class provides a method to analyse a document.
 * @author Pascal Francq
 * @short Vector Model Documents Analyse.
 */
-class GDocAnalyse
+class GTextAnalyse : public GDocAnalyse
 {
 	class WordWeight;
-
-	/**
-	* Corresponding session;
-	*/
-	GSession* Session;
 
 	/**
 	* Cursor on the different languages defined in the system.
@@ -70,14 +66,9 @@ class GDocAnalyse
 	GFactoryLangCursor CurLangs;
 
 	/**
-	* All the word appaering in the current document.
+	* All the word appearing in the current document.
 	*/
 	R::RDblHashContainer<WordWeight,unsigned,27,27,false>* Weights;
-
-	/**
-	* Current document to analyse.
-	*/
-	GDocVector* Doc;
 
 	/**
 	* Direct access to the words.
@@ -98,7 +89,7 @@ class GDocAnalyse
 	* Number of elements allocated in Order.
 	*/
 	unsigned int NbOrder;
-	
+
 	/**
 	* Number of words in the document.
 	*/
@@ -113,6 +104,7 @@ class GDocAnalyse
 	* Number of words not in the stoplist.
 	*/
 	unsigned int Nwords;
+
 	/**
 	* Total number of valid words.
 	*/
@@ -168,18 +160,71 @@ class GDocAnalyse
 	unsigned int LangIndex;
 
 	/**
-	* Options.
+	* Define if the language are static.
 	*/
-	GDocOptions* Options;
+	bool StaticLang;
+
+	/**
+	* Minimum percentage of words of a document which must be in the stop list
+	* of a language to make the language the current one.
+	*/
+	double MinStopWords;
+
+	/**
+	* Minimum number of characters to have a valid word.
+	*/
+	unsigned int MinWordSize;
+
+	/**
+	* Minimum number of characters to have a valid stem.
+	*/
+	unsigned int MinStemSize;
+
+	/**
+	* Minimum number of occurences needed to insert a valid word in the list of
+	* information for a document.
+	*/
+	unsigned int MinOccur;
+
+	/**
+	* Determine if the extracted words may contain other things than letters.
+	*/
+	bool NonLetterWords;
+	
+	/**
+	* Determine if the distance between words in a document is use.
+	*/
+	bool Distance;
+	
+	/**
+	* Determine if External links must be treated.
+	*/
+	bool UseExternalLinks;
 
 public:
 
 	/**
 	* Constructor.
-	* @param s              Session.
-	* @param opt            Options.
+	* @param fac             Factory.
 	*/
-	GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc);
+	GTextAnalyse(GFactoryDocAnalyse* fac) throw(bad_alloc);
+
+	/**
+	* Configurations were applied from the factory.
+	*/
+	virtual void ApplyConfig(void);
+
+	/**
+	* Connect to a Session.
+	* @param session         The session.
+	*/
+	virtual void Connect(GSession* session);
+
+	/**
+	* Disconnect from a Session.
+	* @param session         The session.
+	*/
+	virtual void Disconnect(GSession* session);
 
 protected:
 
@@ -192,6 +237,12 @@ protected:
 	* Verify the size of direct and reallocate when necessary.
 	*/
 	void VerifyDirect(void) throw(bad_alloc);
+
+	/**
+	* See if a given word is a valid one, don't content text and numbers that
+	* are to skip.
+	*/
+	bool ValidWord(const R::RString& kwd);
 
 	/**
 	* Verify the size of direct and reallocate when necessary.
@@ -251,66 +302,18 @@ public:
 	* @param doc            Corresponding document.
 	* @param tmpDocs        A container of docs to maintain the documents ro be added.
 	*/
-	void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException);
+	virtual void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException);
 
 	/**
-	* Analyse a XML representation of a document for a session and computes
-	* statistics about it.
-	* @param xml            XML Representation used.
+	* Create the parameters.
+	* @param params          Parameters to configure.
 	*/
-	void ComputeStats(GDocXML* xml) throw(GException);
-
-	/**
-	* @return Total number of words in the documents with stoplist.
-	*/
-	unsigned int GetN(void) {return(N);}
-
-	/**
-	* @return Total number of words in the documents.
-	*/
-	unsigned int GetV(void) {return(V);}
-
-	/**
-	* @return Total number of words in the stop-list.
-	*/
-	unsigned int GetS(void) {return(S);}
-
-	/**
-	* @param l              Index of the language.
-	* @return Total number of words in the stop-list.
-	*/
-	unsigned int GetS(unsigned int l) {return(Sl[l]);}
-
-	/**
-	* @return Number of different words in the documents.
-	*/
-	unsigned int GetNdiff(void) {return(Ndiff);}
-
-	/**
-	* @return Number of different words in the documents.
-	*/
-	unsigned int GetVdiff(void) {return(Vdiff);}
-
-	/**
-	* @return Number of different words in the stop-list.
-	*/
-	unsigned int GetSdiff(void) {return(Sdiff);}
-
-	/**
-	* @param l              Index of the language.
-	* @return Number of different words in the stop-list.
-	*/
-	unsigned int GetSdiff(unsigned int l) {return(Sldiff[l]);}
-
-	/**
-	*  update the feedback of the profiles and subprofiles
-	*/
-	void UpdateFdbks(GLang* oldlang, GLang* newlang);
+	static void CreateParams(GParams* params);
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GDocAnalyse(void);
+	virtual ~GTextAnalyse(void);
 };
 
 

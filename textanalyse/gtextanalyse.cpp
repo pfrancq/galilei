@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GDocAnalyse.cpp
+	GTextAnalyse.cpp
 
 	Analyse a document - Implementation.
 
@@ -47,9 +47,8 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocanalyse.h>
+#include <gtextanalyse.h>
 #include <docs/gdocvector.h>
-#include <docs/gdocoptions.h>
 #include <docs/gdocxml.h>
 #include <langs/gword.h>
 #include <infos/giwordweight.h>
@@ -76,7 +75,7 @@ const unsigned int MaxWordLen=50;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GALILEI::GDocAnalyse::WordWeight
+class GTextAnalyse::WordWeight
 {
 public:
 	char Word[MaxWordLen+1];
@@ -114,7 +113,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocAnalyse::WordWeight::WordWeight(unsigned int nb) throw(bad_alloc)
+GTextAnalyse::WordWeight::WordWeight(unsigned int nb) throw(bad_alloc)
 	: InStop(0)
 {
 	InStop=new bool[nb];
@@ -123,7 +122,7 @@ GALILEI::GDocAnalyse::WordWeight::WordWeight(unsigned int nb) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocAnalyse::WordWeight::~WordWeight(void)
+GTextAnalyse::WordWeight::~WordWeight(void)
 {
 	if(InStop) delete[] InStop;
 }
@@ -132,29 +131,18 @@ GALILEI::GDocAnalyse::WordWeight::~WordWeight(void)
 
 //-----------------------------------------------------------------------------
 //
-// class GDocAnalyse
+// class GTextAnalyse
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocAnalyse::GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc)
-	: Session(s), Weights(0), Doc(0), Direct(0), NbDirect(5000),
-	  Order(0), NbOrder(5000), Sl(0), Sldiff(0), Lang(0), Options(opt)
+GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac) throw(bad_alloc)
+	: GDocAnalyse(fac), Weights(0), Direct(0), NbDirect(5000),
+	  Order(0), NbOrder(5000), Sl(0), Sldiff(0), Lang(0)
 {
-	WordWeight** ptr;
 	GWord** pt;
 	unsigned int i;
 
-
-/*	Sl=new unsigned int[Session->GetLangs()->NbPtr];
-	Sldiff=new unsigned int[Session->GetLangs()->NbPtr];*/
-	Sl=new unsigned int[2];
-	Sldiff=new unsigned int[2];
-	Weights=new RDblHashContainer<WordWeight,unsigned,27,27,false>(500,250);
-	Direct=new WordWeight*[NbDirect];
-	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
-		//(*ptr)=new WordWeight(Session->GetLangs()->NbPtr);
-		(*ptr)=new WordWeight(2);
 	Order=new GWord*[NbOrder];
 	for(i=NbOrder+1,pt=Order;--i;pt++)
 		(*pt)=new GWord();
@@ -162,7 +150,81 @@ GALILEI::GDocAnalyse::GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::Clear(void)
+void GTextAnalyse::ApplyConfig(void)
+{
+	StaticLang=Factory->GetBool("StaticLang");
+	MinStopWords=Factory->GetDouble("MinStopWords");
+	MinWordSize=Factory->GetUInt("MinWordSize");
+	MinStemSize=Factory->GetUInt("MinStemSize");
+	MinOccur=Factory->GetUInt("MinOccur");
+	NonLetterWords=Factory->GetBool("NonLetterWords");
+	Distance=Factory->GetBool("Distance");
+	UseExternalLinks=Factory->GetBool("UseExternalLinks");
+}
+
+
+//-----------------------------------------------------------------------------
+void GTextAnalyse::Connect(GSession* session)
+{
+	WordWeight** ptr;
+	unsigned int i;
+
+	// First init
+	if(Session) return;
+	GDocAnalyse::Connect(session);
+
+	// Create local structures
+	CurLangs=Session->GetLangs()->GetLangsCursor();
+	Sl=new unsigned int[CurLangs.GetNb()];
+	Sldiff=new unsigned int[CurLangs.GetNb()];
+	Sl=new unsigned int[2];
+	Sldiff=new unsigned int[2];
+	Weights=new RDblHashContainer<WordWeight,unsigned,27,27,false>(500,250);
+	Direct=new WordWeight*[NbDirect];
+	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
+		(*ptr)=new WordWeight(CurLangs.GetNb());
+}
+
+
+//-----------------------------------------------------------------------------
+void GTextAnalyse::Disconnect(GSession* session)
+{
+
+	WordWeight** ptr;
+	unsigned int i;
+
+	if(!Session) return;
+
+	// Local Structure
+	if(Weights)
+	{
+		delete Weights;
+		Weights=0;
+	}
+	if(Direct)
+	{
+		for(i=NbDirect+1,ptr=Direct;--i;ptr++)
+			delete(*ptr);
+		delete[] Direct;
+		Direct=0;
+	}
+	if(Sldiff)
+	{
+		delete[] Sldiff;
+		Sldiff=0;
+	}
+	if(Sl)
+	{
+		delete[] Sl;
+		Sl=0;
+	}
+
+	GDocAnalyse::Disconnect(session);
+}
+
+
+//-----------------------------------------------------------------------------
+void GTextAnalyse::Clear(void)
 {
 	WordWeight** ptr;
 	GWord** pt;
@@ -170,10 +232,8 @@ void GALILEI::GDocAnalyse::Clear(void)
 	RContainer<WordWeight,unsigned int,false,true>*** ptr1;
 	RContainer<WordWeight,unsigned int,false,true>** ptr2;
 
-/*	memset(Sl,0,sizeof(unsigned int)*Session->GetLangs()->NbPtr);
-	memset(Sldiff,0,sizeof(unsigned int)*Session->GetLangs()->NbPtr);*/
-	memset(Sl,0,sizeof(unsigned int)*2);
-	memset(Sldiff,0,sizeof(unsigned int)*2);
+	memset(Sl,0,sizeof(unsigned int)*CurLangs.GetNb());
+	memset(Sldiff,0,sizeof(unsigned int)*CurLangs.GetNb());
 	N=Ndiff=Nwords=V=Vdiff=S=Sdiff=0;
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)->Clear();
@@ -188,7 +248,7 @@ void GALILEI::GDocAnalyse::Clear(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::VerifyDirect(void) throw(bad_alloc)
+void GTextAnalyse::VerifyDirect(void) throw(bad_alloc)
 {
 	unsigned int i;
 	WordWeight** ptr;
@@ -207,7 +267,7 @@ void GALILEI::GDocAnalyse::VerifyDirect(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::VerifyOrder(void) throw(bad_alloc)
+void GTextAnalyse::VerifyOrder(void) throw(bad_alloc)
 {
 	unsigned int i;
 	GWord** ptr;
@@ -225,8 +285,50 @@ void GALILEI::GDocAnalyse::VerifyOrder(void) throw(bad_alloc)
 }
 
 
+
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::AddWord(const char* word,double weight) throw(bad_alloc)
+bool GTextAnalyse::ValidWord(const RString& kwd)
+{
+	char look[10];
+	const char* ptr=kwd();
+	char* ptr2;
+	char len;
+	bool v;
+
+	// The first character must be a number.
+	if(!isdigit(*ptr)) return(true);
+
+	// Analyse word
+	v=true;
+	while(*ptr)
+	{
+		// Look for a number
+		while((*ptr)&&(isdigit(*ptr)))
+			ptr++;
+		if(!(*ptr)) return(true);     // If not number found -> Valid word
+
+		// put letters in look with maximal 10
+		ptr2=look;
+		len=0;
+		while((*ptr)&&(!isdigit(*ptr))&&(!ispunct(*ptr)))
+		{
+			if(len<9)
+				(*(ptr2++))=(*ptr);
+			ptr++;
+		}
+		if(len<9)
+		{
+			// Look if it is a skipword
+			(*ptr2)=0;
+			v=!(Lang->ToSkip(look));
+			if(v) return(true);
+		}
+	}
+	return(v);
+}
+
+//-----------------------------------------------------------------------------
+void GTextAnalyse::AddWord(const char* word,double weight) throw(bad_alloc)
 {
 	bool Find;
 	unsigned int Index;
@@ -302,7 +404,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word,double weight) throw(bad_all
 				Sl[LangIndex]++;
 		}
 	}
-	if((!w->InStop[LangIndex])&&(Options->Distance))
+	if((!w->InStop[LangIndex])&&(Distance))
 	{
 		VerifyOrder();
 		Order[Nwords++]=new GWord(word);
@@ -316,7 +418,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word,double weight) throw(bad_all
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GDocAnalyse::ExtractWord(const char* &ptr,RString& word,double weight)
+bool GTextAnalyse::ExtractWord(const char* &ptr,RString& word,double weight)
 {
 	unsigned len;
 	const char* begin;
@@ -366,7 +468,7 @@ BeginExtract:
 	if(!len) return(false);
 
 	// if not only letters and non-letter words not enabled -> extract next word.
-	if((!OnlyLetters)&&(!Options->NonLetterWords))
+	if((!OnlyLetters)&&(!NonLetterWords))
 		goto BeginExtract;
 
 	// If just numbers or special characters or it doesn't begin with a letter, extract next word.
@@ -392,10 +494,10 @@ BeginExtract:
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
+void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
 {
 	const char* ptr;
-	RString word(50);
+	RString word(MaxWordLen);
 
 	if(tag->GetName()=="docxml:sentence")
 	{
@@ -412,7 +514,7 @@ void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GExcepti
 
 
 ////-----------------------------------------------------------------------------
-//void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
+//void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
 //{
 //	const char* ptr;
 //	const char* endPtr;
@@ -461,7 +563,7 @@ void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GExcepti
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
+void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
 {
 	const char* ptr;
 	const char* endPtr;
@@ -547,7 +649,7 @@ void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RCon
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
+void GTextAnalyse::DetermineLang(void) throw(GException)
 {
 	double Frac,MinFrac;
 	unsigned int i;
@@ -555,7 +657,7 @@ void GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
 	unsigned int* tmp2;
 
 	LangIndex=cNoRef;
-	MinFrac=Options->MinStopWords;
+	MinFrac=MinStopWords;
 	Lang=0;
 	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 	{
@@ -572,13 +674,13 @@ void GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
+void GTextAnalyse::ConstructInfos(void) throw(GException)
 {
 	WordWeight** wrd;
 	GIWordWeight** Tab;
 	GIWordWeight* Occur;
-	unsigned int i,MinOccur;
-	RString stem(50);
+	unsigned int i;
+	RString stem(MaxWordLen);
 	GDict* dic;
 
 	// Insert all the occurences of the valid words
@@ -590,7 +692,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 		if((*wrd)->InStop[LangIndex]) continue;
 
 		// if len<MinWordSize -> do not treat it.
-		if(strlen((*wrd)->Word)<Options->MinWordSize) continue;
+		if(strlen((*wrd)->Word)<MinWordSize) continue;
 
 		// If only letters -> apply stemming algorithm.
 		if((*wrd)->OnlyLetters)
@@ -604,7 +706,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 			//	continue;
 			stem=(*wrd)->Word;
 		}
-		if(stem.GetLen()>=Options->MinStemSize)
+		if(stem.GetLen()>=MinStemSize)
 		{
 			Occur=Doc->GetInsertPtr(dic->GetId(stem));
 			if(!Occur->GetWeight())
@@ -615,7 +717,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 	}
 
 	//Save the order of appearance of the valid words of the document in a binary file.
-	if(Options->Distance)
+	if(Distance)
 	{
 		cout<<"warning : analyse with document struct needs /var/galilei/bin/DB_name"<<endl;
 		RString name;
@@ -629,7 +731,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 			if(Order[i]->GetId()==1)
 			{
 				stem=Lang->GetStemming(Order[i]->GetWord());
-				if(stem.GetLen()>=Options->MinStemSize)
+				if(stem.GetLen()>=MinStemSize)
 					f<<dic->GetId(stem);
 			}
 			else
@@ -642,7 +744,6 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 	}
 
 	// Verify that each occurences is not under the minimal.
-	MinOccur=Options->MinOccur;
 	if(MinOccur<2) return;
 	for(i=Doc->NbPtr+1,Tab=Doc->Tab;--i;Tab++)
 	{
@@ -657,7 +758,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,false,true>* tmpDocs)throw(GException)
+void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,false,true>* tmpDocs)throw(GException)
 {
 	RXMLTag* content;
 	RXMLTag* metadata;
@@ -667,9 +768,8 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsign
 	// Init Part and verification
 	if(!xml)
 		throw GException("No XML Structure for document '"+RString(doc->GetURL())+"'");
-	CurLangs=Session->GetLangs()->GetLangsCursor();
 	Lang=doc->GetLang();
-	FindLang=((!Lang)||(!Options->StaticLang));
+	FindLang=((!Lang)||(!StaticLang));
 	content=xml->GetContent();
 	RAssert(content);
 	metadata=xml->GetMetaData();
@@ -687,13 +787,10 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsign
 	AnalyseTag(metadata,2.0);
 	AnalyseTag(content,1.0);
 
-	// if option link is active -> Analyse the content of link tags
-	if (Options->UseLink)
-	{
-		link = xml->GetLinks ();
-		RAssert(link);
-		AnalyseLinksTag(link,Options->UseExternalLink,tmpDocs);
-	}
+	// Analyse the content of link tags
+	link = xml->GetLinks ();
+	RAssert(link);
+	AnalyseLinksTag(link,UseExternalLinks,tmpDocs);
 
 	// Determine the Language if necessary.
 	if(FindLang)
@@ -712,55 +809,22 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsign
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
+//------------------------------------------------------------------------------
+void GTextAnalyse::CreateParams(GParams* params)
 {
-	RXMLTag* content;
-
-	// Init Part and verification
-	if(!xml)
-		throw GException("No XML Structure");
-	content=xml->GetContent();
-	RAssert(content);
-	Lang=0;
-	FindLang=true;
-	Clear();
-
-	// Analyse the doc structure.
-	AnalyseTag(content,1.0);
-
-	// Compute everything for current structure.
-	DetermineLang();
-	if(!Lang) return;
-	ConstructInfos();
+	params->InsertPtr(new GParamBool("StaticLang",false));
+	params->InsertPtr(new GParamDouble("MinStopWords",0.09));
+	params->InsertPtr(new GParamUInt("MinWordSize",3));
+	params->InsertPtr(new GParamUInt("MinStemSize",3));
+	params->InsertPtr(new GParamUInt("MinOccur",1));
+	params->InsertPtr(new GParamBool("NonLetterWords",true));
+	params->InsertPtr(new GParamBool("Distance",false));
+	params->InsertPtr(new GParamBool("UseExternalLinks",false));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang)
-{
-	GProfDocCursor profdoccursor;
-
-	//Lang=newlang;
-
-	// if the old lang and the new lang are not defined.
-	if (!oldlang&&!Lang)
-		return;
-
-	// if the oldlang is different to the new lang.
-	if (oldlang!=Lang)
-	{
-		profdoccursor=Doc->GetProfDocCursor();
-		for (profdoccursor.Start(); !profdoccursor.End(); profdoccursor.Next())
-			profdoccursor()->GetProfile()->DispatchFdbks(profdoccursor(), oldlang,Session);
-	}
-
-
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GDocAnalyse::~GDocAnalyse(void)
+GTextAnalyse::~GTextAnalyse(void)
 {
 	WordWeight** ptr;
 	GWord** pt;
@@ -782,3 +846,7 @@ GALILEI::GDocAnalyse::~GDocAnalyse(void)
 	if(Sldiff) delete[] Sldiff;
 	if(Sl) delete[] Sl;
 }
+
+
+//------------------------------------------------------------------------------
+CREATE_DOCANALYSE_FACTORY("Text Analyse",GTextAnalyse)
