@@ -100,7 +100,7 @@ EXTRA_DIST=	goo/GHash.h \
 	xpdf/Stream-CCITT.h \
 	xpdf/ErrorCodes.h
 
-___libpdf_la_LIBADD=
+libpdf_la_LIBADD=
 AM_CFLAGS = -DHAVE_CONFIG_H
 AM_CXXFLAGS = -DHAVE_CONFIG_H
 AM_FFLAGS =
