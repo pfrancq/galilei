@@ -95,7 +95,7 @@ double GALILEI::GSubProfileVector::Similarity(const GSubProfile* desc) const
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::GlobalSimilarity(const GSubProfile* desc) const
 {
-	return(SimilarityIdf((dynamic_cast<const GSubProfileVector*>(desc)),otSubProfile,Lang));
+	return(GIWordsWeights::SimilarityIdf((dynamic_cast<const GSubProfileVector*>(desc)),otSubProfile,Lang));
 }
 
 
@@ -109,7 +109,7 @@ double GALILEI::GSubProfileVector::Similarity(const GDoc* doc) const
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otNoClass,Lang));
+	return(GIWordsWeights::SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otNoClass,Lang));
 }
 
 
