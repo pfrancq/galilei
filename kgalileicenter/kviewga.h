@@ -122,6 +122,26 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	unsigned int Gen;
 
 	/**
+	* Maximal number of generation to execute.
+	*/
+	unsigned int MaxGen;
+
+	/**
+	* Number of generation to execute at each step.
+	*/
+	unsigned int StepGen;
+
+	/**
+	* Execute GA by steps.
+	*/
+	bool Step;
+
+	/**
+	* Minimum similarity level between the profiles of a group.
+	*/
+	double MinSimLevel;
+
+	/**
 	* Size of the Population.
 	*/
 	unsigned int PopSize;

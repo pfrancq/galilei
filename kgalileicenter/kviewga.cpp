@@ -74,10 +74,15 @@ KViewGA::KViewGA(KDoc* doc,const char* l,unsigned int pop,QWidget* parent,const 
 	GSubProfile* sub;
 	GGroupDataIR g;
 	unsigned int i;
+	char c;
 
 	// Window
 	lang=Doc->GetSession()->GetLang(l);
 	setCaption(QString("GALILEI Genetic Algorithms - ")+lang->GetName());
+
+	// Values
+	sscanf(Doc->GetSession()->GetGroupingMethodSettings("Grouping Genetic Algorithms"),"%u %u %c %u %lf",&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel);
+	if(c=='1') Step=true; else Step=false;
 
 	// Tab
 	setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)1, (QSizePolicy::SizeType)1, sizePolicy().hasHeightForWidth() ) );
@@ -90,8 +95,9 @@ KViewGA::KViewGA(KDoc* doc,const char* l,unsigned int pop,QWidget* parent,const 
 	StatSplitter=new QSplitter(QSplitter::Vertical,TabWidget,"Statistic");
 	TabWidget->insertTab(StatSplitter,"Statistic");
 	StatSplitter->setGeometry(rect());
-	Monitor=new	QGAMonitor(StatSplitter);
+	Monitor=new QGAMonitor(StatSplitter);
 	Monitor->setMaxGen(pop);
+	Monitor->setMaxFitness(1.0);
 	connect(this,SIGNAL(signalSetGen(const unsigned int,const unsigned int,const double)),Monitor,SLOT(slotSetGen(const unsigned int,const unsigned int,const double)));
 	Debug=new QXMLContainer(StatSplitter,"GALILEI Genetic Algorithms","Pascal Francq");
 
@@ -106,25 +112,17 @@ KViewGA::KViewGA(KDoc* doc,const char* l,unsigned int pop,QWidget* parent,const 
 		if(sub->IsDefined())
 		{
 			SubProfiles->InsertPtr(sub);
-			Objs->InsertPtr(new GObjIR(i,sub));
 			i++;
 		}
 	}
+	for(SubProfiles->Start(),i=0;!SubProfiles->End();SubProfiles->Next(),i++)
+			Objs->InsertPtr(new GObjIR(i,(*SubProfiles)()));
 	Sims=new GProfilesSim(SubProfiles);
-
-	// Solutions and Best Part
-	Best = new QGGroupsIR(TabWidget,Objs);
-	TabWidget->insertTab(Best,"Best Solution");
-	connect(Best,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	Sol = new QGGroupsIR(TabWidget,Objs);
-	sprintf(tmp,"Solution (0/%u)",PopSize-1);
-	TabWidget->insertTab(Sol,tmp);
-	connect(Sol,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 
 	// Create GA
 	try
 	{
-		Instance=new GInstIR(60,PopSize,Objs,Sims,RGGA::FirstFit,Debug);
+		Instance=new GInstIR(MinSimLevel,MaxGen,PopSize,Objs,Sims,RGGA::FirstFit,Debug);
 		Instance->AddReceiver(this);
 		Instance->Init(&g);
 	}
@@ -143,6 +141,15 @@ KViewGA::KViewGA(KDoc* doc,const char* l,unsigned int pop,QWidget* parent,const 
 		KMessageBox::error(this,"Unknow Problem");
 		Instance=0;
 	}
+
+	// Solutions and Best Part
+	Best = new QGGroupsIR(TabWidget,Objs);
+	TabWidget->insertTab(Best,"Best Solution");
+	connect(Best,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	Sol = new QGGroupsIR(TabWidget,Objs);
+	sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
+	TabWidget->insertTab(Sol,tmp);
+	connect(Sol,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 }
 
 
@@ -155,9 +162,13 @@ void KViewGA::update(unsigned int /*cmd*/)
 //---------------------------------------------------------------------------
 void KViewGA::receiveGenSig(GenSig* sig)
 {
+	static char tmp[100];
+
 	emit signalSetGen(sig->Gen,sig->BestGen,sig->Best->Fitness->Value);
 	Sol->setGroups(Instance->Chromosomes[CurId]);
 	Sol->setChanged();
+	sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
+	TabWidget->changeTab(Sol,tmp);
 }
 
 
@@ -173,7 +184,7 @@ void KViewGA::receiveBestSig(BestSig* sig)
 {
 	static char tmp[100];
 
-	sprintf(tmp,"Best Solution (Id=%u)",sig->Best->Id);
+	sprintf(tmp,"Best Solution (Id=%u) - Fitness=%lf",sig->Best->Id,sig->Best->Fitness->Value);
 	TabWidget->changeTab(Best,tmp);
 	Best->setGroups(sig->Best);
 	Best->setChanged();
@@ -237,7 +248,7 @@ void KViewGA::keyReleaseEvent(QKeyEvent* e)
 	{
 		case Key_PageUp:
 			if(CurId<PopSize-1) CurId++; else CurId=0;
-			sprintf(tmp,"Solution (%u/%u)",CurId,PopSize-1);
+			sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
 			TabWidget->changeTab(Sol,tmp);
 			Sol->setGroups(Instance->Chromosomes[CurId]);
 			Sol->setChanged();
@@ -245,7 +256,7 @@ void KViewGA::keyReleaseEvent(QKeyEvent* e)
 
 		case Key_PageDown:
 			if(CurId>0) CurId--; else CurId=PopSize-1;
-			sprintf(tmp,"Solution (%u/%u)",CurId,PopSize-1);
+			sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
 			TabWidget->changeTab(Sol,tmp);
 			Sol->setGroups(Instance->Chromosomes[CurId]);
 			Sol->setChanged();
