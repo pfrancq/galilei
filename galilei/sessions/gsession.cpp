@@ -398,30 +398,9 @@ void GALILEI::GSession::Save(GGroup* grp) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::FiltersStart(void)
+GFilterCursor& GALILEI::GSession::GetFiltersCursor(void)
 {
-	Mng->GetFilters()->Start();
-}
-
-
-//-----------------------------------------------------------------------------
-bool GALILEI::GSession::FiltersEnd(void) const
-{
-	return(Mng->GetFilters()->End());
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::FiltersNext(void)
-{
-	Mng->GetFilters()->Next();
-}
-
-
-//-----------------------------------------------------------------------------
-GFilter* GALILEI::GSession::GetCurFilters(void)
-{
-	return((*Mng->GetFilters())());
+	return(Mng->GetFiltersCursor());
 }
 
 

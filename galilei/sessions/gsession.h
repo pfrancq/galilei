@@ -384,25 +384,9 @@ public:
 	virtual void DeleteGroup(GGroup* grp)=0;
 
 	/**
-	* Start the iterator to go trough the filters.
+	* Get a cursor over the filters of the system.
 	*/
-	void FiltersStart(void);
-
-	/**
-	* Test if the end of the container of filters is reached.
-	*/
-	bool FiltersEnd(void) const;
-
-	/**
-	* Goto the next element, if the end is reached, go to the beginning.
-	*/
-	void FiltersNext(void);
-
-	/**
-	* Get the current filter.
-	* @returns Pointer to the current filter.
-	*/
-	GFilter* GetCurFilters(void);
+	GFilterCursor& GetFiltersCursor(void);
 
 	/**
 	* Get the filter for a specific mime type.
