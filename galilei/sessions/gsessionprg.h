@@ -99,11 +99,6 @@ public:
 	RIO::RTextFile* SOFile;
 
 	/**
-	* Ideal Groups.
-	*/
-	RContainer<GGroups,unsigned int,true,true>* Groups;
-
-	/**
 	* Container used to create subjects catagories.
 	*/
 	RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* Parents;
@@ -143,12 +138,6 @@ public:
 	* @param s              Session.
 	*/
 	GPrgClassSession(GSession* s) throw(bad_alloc);
-
-	/**
-	* Load the groups from the file.
-	* @param filename       Name of the file containing the ideal groupement.
-	*/
-	void LoadGroups(const char* filename) throw(GException);
 
 	/**
 	*/
@@ -253,15 +242,6 @@ class GGroupProfilesI : public GSM
 {
 public:
 	GGroupProfilesI(GPrgClassSession* o) : GSM("GroupProfiles",o) {}
-	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
-};
-
-
-//-----------------------------------------------------------------------------
-class GLoadIdealI : public GSM
-{
-public:
-	GLoadIdealI(GPrgClassSession* o) : GSM("LoadIdeal",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 

@@ -208,25 +208,14 @@ void GGroupProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,uns
 		Owner->Session->SetCurrentGroupingMethod(args->Tab[0]->GetValue(prg));
 	if(args->NbPtr==2)
 		Owner->Session->SetCurrentGroupingMethodSettings(args->Tab[1]->GetValue(prg));
-	if(Owner->Groups)
+	if(Owner->Session->GetIdealGroups())
 	{
 		GGrouping* algo=Owner->Session->GetCurrentGroupingMethod();
-		algo->SetIdealGroups(Owner->Groups);    
+		algo->SetIdealGroups(Owner->Session->GetIdealGroups());    
 
 	}
 	Owner->Session->GroupingProfiles(r,Owner->FirstGroup,Owner->AutoSave);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
-}
-
-
-//-----------------------------------------------------------------------------
-void GLoadIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
-{
-	if(args->NbPtr==1)
-		throw GException("No file Defined");
-	sprintf(tmp,"Load Ideal Groups from file '%s'",args->Tab[0]->GetValue(prg));
-	r->WriteStr(tmp);
-	Owner->LoadGroups(args->Tab[0]->GetValue(prg));
 }
 
 
@@ -240,7 +229,7 @@ void GCreateIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsig
 	r->WriteStr(tmp);
 	if(args->NbPtr==1)
 		IdealMethod.SetSettings(args->Tab[0]->GetValue(prg));
-	IdealMethod.CreateJudgement(Owner->Parents,Owner->Groups,Owner->AutoSave);
+	IdealMethod.CreateJudgement(Owner->Parents/*,Owner->Session->GetIdealGroups()*/,Owner->AutoSave);
 	Owner->FirstGroup=Owner->FirstProfile=false;
 }
 
@@ -248,14 +237,12 @@ void GCreateIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsig
 //-----------------------------------------------------------------------------
 void GMixIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
-	if(!Owner->Groups)
-		throw GException("No Ideal Groups Defined");
 	if(args->NbPtr==1)
 		sprintf(tmp,"Creating Mixed Groups: Settings=\"%s\"",args->Tab[0]->GetValue(prg));
 	else
 		sprintf(tmp,"Creating Mixed Groups");
 	r->WriteStr(tmp);
-	GMixIdealGroups mix(Owner->Session,Owner->Parents,Owner->Groups);
+	GMixIdealGroups mix(Owner->Session,Owner->Parents,Owner->Session->GetIdealGroups());
 	if(args->NbPtr==1)
 		mix.SetSettings(args->Tab[0]->GetValue(prg));
 	mix.Run(0);
@@ -273,18 +260,16 @@ void GFdbksCycleI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsign
 	r->WriteStr(tmp);
 	if(args->NbPtr==1)
 		FdbksMethod.SetSettings(args->Tab[0]->GetValue(prg));
-	FdbksMethod.Run(Owner->Parents,Owner->Groups,Owner->AutoSave);
+	FdbksMethod.Run(Owner->Parents,Owner->Session->GetIdealGroups(),Owner->AutoSave);
 }
 
 
 //-----------------------------------------------------------------------------
 void GCompareIdealI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>*) throw(GException)
 {
-	if(!Owner->Groups)
-		throw GException("No Ideal Groups Defined");
 	strcpy(tmp,"Compare with Ideal Groups");
 	r->WriteStr(tmp);
-	GCompareGrouping CompMethod(Owner->Session,Owner->Groups);
+	GCompareGrouping CompMethod(Owner->Session,Owner->Session->GetIdealGroups());
 	CompMethod.Compare(0);
 	Owner->Precision=CompMethod.GetPrecision();
 	Owner->Recall=CompMethod.GetRecall();
@@ -301,14 +286,12 @@ void GCompareIdealI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 //-----------------------------------------------------------------------------
 void GStatsProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
-	if(!Owner->Groups)
-		throw GException("No Ideal Groups Defined");
 	if(args->NbPtr==1)
 		sprintf(tmp,"Statistics on Profiles: Settings=\"%s\"",args->Tab[0]->GetValue(prg));
 	else
 		strcpy(tmp,"Statistics on Profiles");
 	r->WriteStr(tmp);
-	GStatSimSubProf ProfStats(Owner->Session,Owner->Groups);
+	GStatSimSubProf ProfStats(Owner->Session,Owner->Session->GetIdealGroups());
 	if(args->NbPtr==1)
 		ProfStats.SetSettings(args->Tab[0]->GetValue(prg));
 	ProfStats.Run();
@@ -323,8 +306,6 @@ void GStatsProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,uns
 //-----------------------------------------------------------------------------
 void GStatsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
-	if(!Owner->Groups)
-		throw GException("No Ideal Groups Defined");
 	if(args->NbPtr==1)
 		sprintf(tmp,"Statistics on Documents : Settings=\"%s\"",args->Tab[0]->GetValue(prg));
 	else
@@ -381,7 +362,7 @@ void GRunQueriesI::Run(GSessionPrg* /*prg*/,GSlot* r,RStd::RContainer<GPrgVar,un
 //-----------------------------------------------------------------------------
 GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	: GPrgClass("Session"), Session(s), OFile(0),
-	  GOFile(0), SOFile(0), Groups(0), Parents(0), AutoSave(false)
+	  GOFile(0), SOFile(0), /*Groups(0),*/ Parents(0), AutoSave(false)
 {
 	Methods.InsertPtr(new GOutputI(this));
 	Methods.InsertPtr(new GGOutputI(this));
@@ -393,7 +374,6 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GModifyProfilesI(this));
 	Methods.InsertPtr(new GComputeProfilesI(this));
 	Methods.InsertPtr(new GGroupProfilesI(this));
-	Methods.InsertPtr(new GLoadIdealI(this));
 	Methods.InsertPtr(new GCreateIdealI(this));
 	Methods.InsertPtr(new GMixIdealI(this));
 	Methods.InsertPtr(new GFdbksCycleI(this));
@@ -407,50 +387,8 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GPrgClassSession::LoadGroups(const char* filename) throw(GException)
-{
-	unsigned int nb;
-	unsigned int i,j,id;
-	GGroups* groups;
-	GGroup* group;
-	unsigned int nbprof;
-	GLang* lang;
-	GProfile* prof;
-	GSubProfile* sub;
-	GLangCursor CurLang;
-
-	CurLang=Session->GetLangsCursor();
-	RTextFile f(filename);
-	f>>nb;
-	if(Groups)
-		Groups->Clear();
-	Groups=new RContainer<GGroups,unsigned int,true,true>(nb,nb/2);
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
-		Groups->InsertPtr(new GGroups(CurLang()));
-	for(i=0;i<nb;i++)
-	{
-		lang=Session->GetLang(f.GetWord());
-		f>>nbprof;
-		groups=Groups->GetPtr<const GLang*>(lang);
-		groups->InsertPtr(group=new GGroupVector(i,lang));
-		for(j=nbprof+1;--j;)
-		{
-			f>>id;
-			prof=Session->GetProfile(id);
-			if(!prof) continue;
-			sub=prof->GetSubProfile(lang);
-			if(!sub) continue;
-			group->InsertPtr(sub);
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 GALILEI::GPrgClassSession::~GPrgClassSession(void)
 {
-	if(Groups)
-		delete Groups;
 	if(OFile)
 		delete OFile;
 	if(GOFile)

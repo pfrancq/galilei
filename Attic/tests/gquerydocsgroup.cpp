@@ -121,13 +121,20 @@ void GALILEI::GQueryDocsGroup::Run(void)
 	RContainer<GroupSim,unsigned int,false,false> Groups(50);
 	GroupSim** ptr;
 	unsigned int j;
-	GGroupsCursor idealgroups;
+	GGroupsCursor IdealGroups;
 	GGroupCursor Group;
+	GGroupCalc* Calc=Session->GetCurrentGroupCalcMethod();
 
 	// Init Part
-	Session->LoadIdealGroupmentInGroups();
-	idealgroups=Session->GetGroupsCursor();
+	IdealGroups=Session->GetIdealGroupsCursor();
 	SimQueryIntra=SimQueryInter=Targets=comptintra=comptinter=0.0;
+
+	// Compute Ideal Group Description
+	for(IdealGroups.Start();!IdealGroups.End();IdealGroups.Next())
+	{
+		for(IdealGroups()->Start();!IdealGroups()->End();IdealGroups()->Next())
+			Calc->Compute((*IdealGroups())());
+	}
 
 	// Compute Queries
 	for(idealgroup->Start();!idealgroup->End();idealgroup->Next())
@@ -180,9 +187,9 @@ void GALILEI::GQueryDocsGroup::Run(void)
 				// Parse all the groups and insert those which have a sim with
 				// the query greater than 0.0
 				Groups.Clear();
-				for(idealgroups.Start();!idealgroups.End();idealgroups.Next())
+				for(IdealGroups.Start();!IdealGroups.End();IdealGroups.Next())
 				{
-					Group=idealgroups()->GetGroupCursor();
+					Group=IdealGroups()->GetGroupCursor();
 					for(Group.Start();!Group.End();Group.Next())
 					{
 						GGroup* Grp=Group();

@@ -71,6 +71,12 @@ public:
 	GGroups(GLang* lang) throw(bad_alloc);
 
 	/**
+	* Copy Constructor.
+	* @param grps           Pointer to the original groups.
+	*/
+	GGroups(GGroups* grps) throw(bad_alloc);
+
+	/**
 	* Compare method needed by RStd::RContainer.
 	*/
 	int Compare(const GGroups& groups) const;

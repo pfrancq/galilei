@@ -195,9 +195,15 @@ public:
 	GDocOptions* GetDocOptions(void) {return(DocOptions);}
 
 	/**
-	* Get a pointer to the ideal groups
+	* Get the ideal groups of the session
+	* @return Pointer to RStd::RContainer<GGroups,unsigned int,true,true>.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true>* GetIdealGroups();
+	RStd::RContainer<GGroups,unsigned int,true,true>* GetIdealGroups(void);
+
+	/**
+	* Get a cursor over the ideal groups of the system.
+	*/
+	GGroupsCursor& GetIdealGroupsCursor(void);
 
 	/**
 	* Get a pointer to the ideal docs
@@ -529,11 +535,6 @@ public:
 	* @param idealgroup   The ideal container of group	
 	*/
 	virtual void LoadIdealGroupment()=0;
-
-	/**
-	* Load the ideal groupment in the groups container.                                                F
-	*/
-	void LoadIdealGroupmentInGroups(void);
 
 	/**
 	* Load the ideal groupment of document.

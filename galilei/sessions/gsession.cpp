@@ -140,6 +140,15 @@ RStd::RContainer<GGroups,unsigned int,true,true>* GALILEI::GSession::GetIdealGro
 
 
 //-----------------------------------------------------------------------------
+GGroupsCursor& GALILEI::GSession::GetIdealGroupsCursor(void)
+{
+	GGroupsCursor *cur=GGroupsCursor::GetTmpCursor();
+	cur->Set(IdealGroups);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
 RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* GALILEI::GSession::GetIdealDoc(void)
 {
 	return(IdealDoc);
@@ -524,28 +533,6 @@ void GALILEI::GSession::Save(GGroup* grp) throw(GException)
 		SaveSubProfile((*grp)());
 	if(grp->GetState()==osUpdated)
 		grp->SetState(osUpToDate);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::LoadIdealGroupmentInGroups(void)
-{
-	GGroupCalc* Calc;
-	Calc=GetCurrentGroupCalcMethod();
-	GGroups* groups;
-	GGroup* group;
-
-	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
-	{
-		groups=(*IdealGroups)();
-		ClearGroups(groups->GetLang());
-		Groups.InsertPtr(groups);
-		for(groups->Start();!groups->End();groups->Next())
-		{
-			group=(*groups)();
-			Calc->Compute(group);
-		}
-	}	
 }
 
 

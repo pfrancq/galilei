@@ -91,6 +91,12 @@ public:
 	GGroup(const unsigned int id,GLang* lang) throw(bad_alloc);
 
 	/**
+	* Copy constrcutor for group.
+	* @param grp            Group.
+	*/
+	GGroup(GGroup* grp) throw(bad_alloc);
+
+	/**
 	* Get the name of the model used for the description.
 	* @return C String.
 	*/

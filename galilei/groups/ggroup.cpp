@@ -89,6 +89,16 @@ GALILEI::GGroup::GGroup(const unsigned int id,GLang* lang) throw(bad_alloc)
 }
 
 
+//-----------------------------------------------------------------------------
+GALILEI::GGroup::GGroup(GGroup* grp) throw(bad_alloc)
+	: RContainer<GSubProfile,unsigned int,false,true>(grp->NbPtr), Id(grp->Id),
+	  State(grp->State), Lang(grp->Lang)
+{
+	for(grp->Start();!grp->End();grp->Next())
+		InsertPtr((*grp)());
+}
+
+
 //--------------------------------------------------------------------------
 int GALILEI::GGroup::sortOrder(const void *a,const void *b)
 {

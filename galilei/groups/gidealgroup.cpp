@@ -89,35 +89,18 @@ GALILEI::GIdealGroup::GIdealGroup(GSession* session)
 	PercSocial=100;
 	PercGrp=100;
 	NbDocPerGrp=0;
-	Subjects=new GSubjectTree(PercOK,PercKO,Session->GetNbUsers());
 	Subjects=Session->GetSubjects();
 	Subjects->InsertProfiles();
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups,bool Save)
+void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,bool Save)
 {
-	// Delete Groupments
-	if(!groups)
-		groups=new RContainer<GGroups,unsigned int,true,true>(2,2);
-	else
-	{
-		if(Save)
-		{
-			GGroupsCursor Cur;
-			GGroupCursor Cur2;
+	RStd::RContainer<GGroups,unsigned int,true,true>* groups=Session->GetIdealGroups();
 
-			Cur.Set(groups);
-			for(Cur.Start();!Cur.End();Cur.Next())
-			{
-				Cur2.Set(Cur());
-				for(Cur2.Start();!Cur2.End();Cur2.Next())
-					Session->DeleteGroup(Cur2());
-			}
-		}
-		groups->Clear();
-	};
+	// Delete Groupments
+	groups->Clear();
 
 	if(!parent)
 		parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,10);
@@ -175,4 +158,10 @@ void GALILEI::GIdealGroup::SetSettings(const char* s)
 
 	if(Rand!=0)
 		Session->SetCurrentRandom(Rand);
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GIdealGroup::~GIdealGroup(void)
+{
 }

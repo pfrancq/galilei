@@ -81,6 +81,7 @@ void GALILEI::GGroupsMng::ClearGroups(GLang* lang)
 	GGroup* grp;
 
 	// Go through the groups and delete all invalid groups.
+	if(!grps) return;
 	for(i=grps->NbPtr+1;--i;)
 	{
 		grp=(*grps->Tab);

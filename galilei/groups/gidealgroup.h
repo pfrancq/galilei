@@ -134,7 +134,7 @@ public:
 	* @param groups         The ideal groupment into a GGroups container.
 	* @param Save           Save the results.
 	*/
-	void CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups,bool Save);
+	void CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent/*,RStd::RContainer<GGroups,unsigned int,true,true>* &groups*/,bool Save);
 
 	/**
 	* Write the ideal groupment into a file
@@ -154,6 +154,10 @@ public:
 	*/
 	void SetSettings(const char* s);
 
+	/**
+	* Destructor.
+	*/
+	virtual ~GIdealGroup(void);
 };
 
 }  //------- End of namespace GALILEI -----------------------------------------

@@ -61,6 +61,17 @@ GALILEI::GGroups::GGroups(GLang* lang) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
+GALILEI::GGroups::GGroups(GGroups* grps) throw(bad_alloc)
+	: RContainer<GGroup,unsigned int,true,true>(grps->NbPtr,10),Lang(grps->Lang)
+{
+	GGroup* group;
+
+	for(grps->Start();!grps->End();grps->Next())
+		InsertPtr(new GGroup(group=(*grps)()));
+}
+
+
+//-----------------------------------------------------------------------------
 int GALILEI::GGroups::Compare(const GGroups& groups) const
 {
 	return(Lang->Compare(groups.Lang));

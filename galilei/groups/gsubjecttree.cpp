@@ -146,7 +146,7 @@ void GALILEI::GSubjectTree::ChooseSubject(GSession* ses,double percgrp,unsigned 
 		tab[i]=ses->GetCurrentRandomValue(100);
 		tab1[i]=tab[i];
 	}
-	qsort(tab, nbrsububjects, sizeof(int),sortOrder);
+	qsort(tab, nbrsububjects, sizeof(unsigned int),sortOrder);
 	unsigned int nb= int(nbrsububjects*PercGrp/100);
 	if(nb>nbrsububjects-1) nb=nbrsububjects-1;
 	unsigned int minvalue=tab[nb];
@@ -520,6 +520,7 @@ void GALILEI::GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int
 		}
 	}
 
+	Groups->Clear();
 	nb=nbrsubsubjects;
 	CurLang=ses->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
