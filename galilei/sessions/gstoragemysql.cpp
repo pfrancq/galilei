@@ -378,14 +378,15 @@ void GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 {
 	char sSql[200];
 	char scomputed[15];
+	char supdated[15];
 	GWeightInfoCursor Cur;
 	const char* l;
 
 	try
 	{
 		//update the subprofile;
-		sprintf(sSql,"UPDATE subprofiles SET state=%u, calculated=%s WHERE subprofileid=%u",
-				static_cast<int>(sub->GetState()), GetDateToMySQL(sub->GetComputed(),scomputed), sub->GetId());
+		sprintf(sSql,"UPDATE subprofiles SET udpated=%s, calculated=%s WHERE subprofileid=%u",
+				GetDateToMySQL(sub->GetUpdated(),supdated), GetDateToMySQL(sub->GetComputed(),scomputed), sub->GetId());
 		RQuery updatesubprof(this,sSql);
 
 		// Delete keywords
@@ -516,14 +517,14 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 					if(s)
 						prof->SetSubject(s);
 				#endif
-				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid, state, calculated FROM subprofiles WHERE profileid=%u",profileid);
+				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid, updated, calculated FROM subprofiles WHERE profileid=%u",profileid);
 				RQuery subprofil (this,sSql);
 				for(subprofil.Start();!subprofil.End();subprofil.Next())
 				{
 					lang=session->GetLangs()->GetLang(subprofil[1]);
 					subid=atoi(subprofil[0]);
 					grp=session->GetGroup(atoi(subprofil[3]));
-					session->InsertSubProfile(sub=new GSubProfileVector(prof,subid,lang,grp,subprofil[2], (static_cast<tObjState>(atoi(subprofil[4]))), subprofil[5]));
+					session->InsertSubProfile(sub=new GSubProfileVector(prof,subid,lang,grp,subprofil[2], subprofil[4], subprofil[5]));
 					#if GALILEITEST
 						if((s)&&(sub->GetLang()==s->GetLang()))
 						{

@@ -69,8 +69,10 @@ public:
 	* @param lang            Language of the subprofile.
 	* @param grp             Group.
 	* @param a               String representing the date where it was attached.
+	* @param u               String representing the date of the last updated.
+	* @param c               String representing the date of the last computation.
 	*/
-	GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(std::bad_alloc);
+	GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,const char* u,const char* c) throw(std::bad_alloc);
 
 	/**
 	* Constructor of the subprofile.

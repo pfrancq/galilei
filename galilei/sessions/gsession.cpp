@@ -380,7 +380,6 @@ double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate) throw
 void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
 {
 	GSubProfileCursor Subs;
-	GSubProfile* sub;
 	GProfileCursor Prof=GetProfilesCursor();
 	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
 	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
@@ -395,7 +394,6 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 		Subs=Prof()->GetSubProfilesCursor();
 		for (Subs.Start(); !Subs.End(); Subs.Next())
 		{
-			sub=Subs();
 			if(modified&&(Subs()->GetState()==osUpToDate)) continue;
 			try
 			{
@@ -404,6 +402,9 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 					if(LinkCalc)
 						LinkCalc->Compute(Subs());
 					Profiling->Compute(Subs());
+
+					if(save)
+						Storage->SaveSubProfile(Subs());
 
 					// add the mofified profile to the list of modified profiles
 					ProfilesSims->AddModifiedProfile(Subs());
@@ -421,21 +422,6 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 
 	//update the state of the behaviours
 	ProfilesBehaviours->Update();
-
-	//   save profiles if necessary and set their state to UpToDate.
-	for(Prof.Start();!Prof.End();Prof.Next())
-	{
-		if(save)
-		{
-			try
-			{
-				Storage->SaveProfile(Prof());
-			}
-			catch(GException& e)
-			{
-			}
-		}
-	}
 }
 
 

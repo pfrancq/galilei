@@ -52,8 +52,8 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfileVector::GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(std::bad_alloc)
-  : GSubProfile(prof,id,lang,grp,a, state, c), GWeightInfos(60)
+GSubProfileVector::GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,const char* u,const char* c) throw(std::bad_alloc)
+  : GSubProfile(prof,id,lang,grp,a, u, c), GWeightInfos(60)
 {
 }
 

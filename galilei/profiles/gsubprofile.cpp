@@ -39,6 +39,7 @@
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
+#include <docs/gdoc.h>
 #include <infos/glang.h>
 #include <groups/ggroup.h>
 #include <sessions/gsession.h>
@@ -54,13 +55,22 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,tObjState state, const char* c) throw(std::bad_alloc)
-  :  Id(id), Profile(prof), Lang(lang), Group(grp), State(state), Attached(a),  Computed(c), Fdbks(20,10)
+GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,const char* u, const char* c) throw(std::bad_alloc)
+  :  Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
 {
 
 	#if GALILEITEST
 		Subject=0;
 	#endif
+	if(Updated>Computed)
+	{
+		if(Computed==RDate::null)
+			State=osCreated;
+		else
+			State=osModified;
+	}
+	else
+		State=osUpToDate;
 	Profile->InsertPtr(this);
 	if(grp)
 		grp->InsertSubProfile(this);
@@ -69,7 +79,7 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,
 
 //------------------------------------------------------------------------------
 GSubProfile::GSubProfile(GSession* session,GProfile *prof,GLang *lang) throw(std::bad_alloc)
-  :  Id(cNoRef), Profile(prof), Lang(lang), Group(0), State(osCreated), Attached(""),  Computed(""), Fdbks(20,10)
+  :  Id(cNoRef), Profile(prof), Lang(lang), Group(0), State(osCreated), Attached(""), Updated(""), Computed(""), Fdbks(20,10)
 {
 	#if GALILEITEST
 		Subject=0;
@@ -111,7 +121,13 @@ int GSubProfile::Compare(const GLang* lang) const
 void GSubProfile::AddAssessment(GProfDoc* j) throw(std::bad_alloc)
 {
 	Fdbks.InsertPtr(j);
-	State=osModified;
+
+	// The profile is updated only if a document assessed was updated later
+	if(j->GetDoc()->GetUpdated()>Updated)
+	{
+		State=osModified;
+		Updated.SetToday();
+	}
 }
 
 
@@ -119,7 +135,10 @@ void GSubProfile::AddAssessment(GProfDoc* j) throw(std::bad_alloc)
 void GSubProfile::RemoveAssessment(GProfDoc* j) throw(std::bad_alloc)
 {
 	Fdbks.DeletePtr(j);
+
+	// When an assessment is removed -> the profile is always updated
 	State=osModified;
+	Updated.SetToday();
 }
 
 
@@ -137,14 +156,16 @@ void GSubProfile::SetId(unsigned int id) throw(GException)
 	Id=id;
 }
 
+
 //------------------------------------------------------------------------------
 void GSubProfile::SetState(tObjState state)
 {
 	GGroup* grp;
 	State=state;
 
-	// If the profile was updated -> the groups containing the subprofiles
-	// are modified.
+	// If the profile was updated
+	//   -> the group containing the subprofile is modified.
+	//   -> the subprofile was just computed
 	if(State==osUpdated)
 	{
 		grp=GetGroup();
