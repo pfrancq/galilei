@@ -88,7 +88,7 @@ public:
 class KViewStems::GrWord : public RString
 {
 public:
-	RContainer<Word,unsigned int,false,true> Words;
+	RContainer<Word,unsigned int,false,false> Words;
 	double Precision;
 	double Recall;
 
@@ -318,9 +318,11 @@ void KViewStems::resizeEvent(QResizeEvent *)
 unsigned int KViewStems::GetNbWords(GrWord* grp1,GrWord* grp2)
 {
 	unsigned int tot=0;
+	unsigned int i;
+	Word** tab;
 
-	for(grp1->Words.Start();!grp1->Words.End();grp1->Words.Next())
-		if(grp2->Words.IsIn<const Word*>(grp1->Words()))
+	for(i=grp1->Words.NbPtr+1,tab=grp1->Words.Tab;--i;tab++)
+		if(grp2->Words.IsIn<const Word*>(*tab))
 			tot++;
 	return(tot);
 }
@@ -431,17 +433,17 @@ void KViewStems::ComputeTotal(void)
 		memset((*mat),0,NbCols*sizeof(int));
 	}
 
-	// Construction of the container for relation between root and column in the matrix.
+	// Construction of the container for relation between root and rows in the matrix.
 	RContainer<GrWordId,unsigned int,true,true> RootsId(NbRows,NbRows/2);
-	for(i=27+1,col=0,ptr=Stems->Hash;--i;ptr++)
+	for(i=27+1,row=0,ptr=Roots->Hash;--i;ptr++)
 	{
 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
 		{
 			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
 			{
 				root=(**ptr2)();
-				RootsId.InsertPtr(new GrWordId(root,col));
-				col++;
+				RootsId.InsertPtr(new GrWordId(root,row));
+				row++;
 			}
 		}
 	}
