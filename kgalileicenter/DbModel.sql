@@ -208,6 +208,7 @@ CREATE TABLE profiles (
   calculated date default NULL,
   social tinyint(1) default '0',
   topicid int(11) NOT NULL default '0',
+  icon varchar(255) default NULL,
   PRIMARY KEY  (profileid)
 ) TYPE=MyISAM;
 
@@ -327,6 +328,7 @@ CREATE TABLE users (
   address2 varchar(100) default NULL,
   city varchar(100) default NULL,
   country varchar(50) default NULL,
+  default_profile int(11) default '0',
   PRIMARY KEY  (userid)
 ) TYPE=MyISAM;
 

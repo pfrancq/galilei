@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 			KGALILEICenterApp *testmdi = new KGALILEICenterApp();
 			testmdi->show();
 		}
-			return app.exec();
+		return app.exec();
 	}
 	catch(...)
 	{

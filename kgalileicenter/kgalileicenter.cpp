@@ -46,7 +46,6 @@
 #include <rstd/rstring.h>
 #include <rstd/rcontainer.h>
 using namespace R;
-using namespace R;
 
 
 //-----------------------------------------------------------------------------
