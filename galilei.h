@@ -48,9 +48,27 @@ const unsigned cNoRef=0xFFFFFFFF;        // A undefined identificator reference
 
 //-----------------------------------------------------------------------------
 /**
+* Represent different state of a GALILEI object.
+*/
+enum tObjState{osUnknow /** Unknow state.*/,
+	           osCreated /** Object was created.*/,
+	           osUpToDate /** Object is up to date.*/,
+	           osModified /** Object was modified and computation must be update.*/,
+	           osUpdated /** Object is updated and needs to be save.*/};
+
+
+//-----------------------------------------------------------------------------
+/**
 * Represent different methods to compute the profiles.
 */
-enum tProfileCompute{pcNothing,pcStatistical};
+enum tProfilesCompute{pcNothing,pcStatistical};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Represent different methods to group the profiles.
+*/
+enum tProfilesGroup{pgNothing,pgHeuristicSim};
 
 
 //-----------------------------------------------------------------------------
