@@ -239,7 +239,7 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::AddRefs(tObjType ObjType,GDict* dic)
+void GALILEI::GIWordsWeights::AddRefs(tObjType ObjType,GDict* dic) const
 {
 	GIWordWeight** ptr;
 	unsigned int i;
@@ -250,7 +250,7 @@ void GALILEI::GIWordsWeights::AddRefs(tObjType ObjType,GDict* dic)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::DelRefs(tObjType ObjType,GDict* dic)
+void GALILEI::GIWordsWeights::DelRefs(tObjType ObjType,GDict* dic) const
 {
 	GIWordWeight** ptr;
 	unsigned int i;

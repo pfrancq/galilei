@@ -161,7 +161,7 @@ public:
 	* @param ObjType        Type of the reference.
 	* @param dic            Dictionnary.
 	*/
-	void AddRefs(tObjType ObjType,GDict* dic);
+	void AddRefs(tObjType ObjType,GDict* dic) const;
 
 	/**
 	* Delete the references for the words contained in the vector for a given
@@ -169,7 +169,7 @@ public:
 	* @param ObjType        Type of the reference.
 	* @param dic            Dictionnary.
 	*/
- 	void DelRefs(tObjType ObjType,GDict* dic);
+ 	void DelRefs(tObjType ObjType,GDict* dic) const;
 
 	/**
 	* Destructor.
