@@ -150,6 +150,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	QString method;
 	GSession* Sess;
 	char status[100];
+	QSessionProgressDlg* d;
 
 	dlg.txtDb->setText(dbName.Latin1());
 	dlg.txtLogin->setText(dbUser.Latin1());
@@ -167,7 +168,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName);
 			Sess = new GSession(Doc,2000,2000,2000,2000,2000,&SessionParams,true);
 			Doc->SetSession(Sess);
-			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
+			d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,
 			&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager,&PostDocManager,
 			&PostGroupManager);
@@ -177,21 +178,14 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		}
 		catch(GException& e)
 		{
-			QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+			QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
 			if(Doc)
 			{
 				delete Doc;
 				Doc=0;
 			}
-		}
-		catch(R::RMySQLError& e)
-		{
-			QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
-			if(Doc)
-			{
-				delete Doc;
-				Doc=0;
-			}
+			d->close();
+			return;
 		}
 		sprintf(status,"User %s connected to database %s on %s",dbUser.Latin1(),dbName.Latin1(), dbHost.Latin1());
 		slotStatusMsg(i18n(status));
@@ -202,14 +196,21 @@ void KGALILEICenterApp::slotSessionConnect(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user,const char* passwd,const char* db)
 {
+	char status[100];
+	QSessionProgressDlg* d;
+
 	try
 	{
+		dbName=db;
+		dbHost=host;
+		dbUser=user;
+		dbPwd=passwd;
 		QConnectMySQL dlg(this,0,true);
 		GSession* Sess;
 		Doc=new KDoc(this,host,user,passwd,db);
 		Sess = new GSession(Doc,2000,2000,2000,2000,2000,&SessionParams,true);
 		Doc->SetSession(Sess);
-		QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
+		d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 		d->LoadSession(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
 		&GroupCalcManager,&StatsCalcManager,&LinkCalcManager, &PostDocManager, &PostGroupManager);
 		sessionConnect->setEnabled(false);
@@ -218,13 +219,17 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
 		if(Doc)
 		{
 			delete Doc;
 			Doc=0;
 		}
+		d->close();
+		return;
 	}
+	sprintf(status,"User %s connected to database %s on %s",dbUser.Latin1(),dbName.Latin1(), dbHost.Latin1());
+	slotStatusMsg(i18n(status));
 }
 
 
@@ -840,15 +845,15 @@ void KGALILEICenterApp::slotRunProgram(void)
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
-	}
-	catch(RException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
 	}
 	catch(R::RMySQLError& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",e.GetError());
+		QMessageBox::critical(this,"KGALILEICenter - RDB Exception",e.GetMsg());
+	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
 	}
 	catch(bad_alloc)
 	{
@@ -896,11 +901,11 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
 	}
 	catch(R::RMySQLError& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
+		QMessageBox::critical(this,"KGALILEICenter - RDB Exception",QString(e.GetMsg()));
 	}
 	catch(bad_alloc)
 	{

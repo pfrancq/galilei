@@ -364,4 +364,5 @@ void QSessionProgressDlg::Finish(void)
 //-----------------------------------------------------------------------------
 QSessionProgressDlg::~QSessionProgressDlg(void)
 {
+//	hide();
 }
