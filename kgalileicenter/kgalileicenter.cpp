@@ -712,7 +712,9 @@ void KGALILEICenterApp::slotGAAnalyse(void)
 	char tmp[3];
 
 	KApplication::kApplication()->processEvents();
-	if(dlg.exec())
+	if(!dlg.exec()) return;
+
+	try
 	{
 		if(dlg.cbLangs->currentItem()==0)
 			strcpy(tmp,"en");
@@ -720,6 +722,22 @@ void KGALILEICenterApp::slotGAAnalyse(void)
 			strcpy(tmp,"fr");
 		setDocParams(Doc);
 		createClient(Doc,new KViewChromos(Doc,tmp,dlg.cbGlobal->isChecked(),dlg.cbSim->isChecked(),pWorkspace,"View Chromosomes",0));
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
+	}
+	catch(RMySQL::RMySQLError& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
+	}
+	catch(bad_alloc)
+	{
+		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
+	}
+	catch(...)
+	{
+		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
 	}
 }
 
@@ -876,9 +894,10 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 	RContainer<GGroupIdParentId,unsigned int,true,true>* parent;
 	idealgroups= new RContainer<GGroups,unsigned int,true,true>(5,2);
 
-	QMixIdealConfig dlg(this,0,true);
-	if(dlg.exec())
+	try
 	{
+		QMixIdealConfig dlg(this,0,true);
+		if(!dlg.exec()) return;
 		slotStatusMsg(i18n("Connecting..."));
 		nbgroups=dlg.LENbMixedGroups->text().latin1();
 		level=dlg.LELevel->text().latin1();
@@ -887,26 +906,40 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 		mergesame=dlg.RBMergeSame->isChecked();
 		mergediff=dlg.RBMergeDiff->isChecked();
 		split=dlg.RBSplit->isChecked();
+
+		// Initialise the dialog box
+		QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Mix Ideal Groups");
+		d->Begin();
+
+		// Init Part
+		d->PutText("Initialisation");
+		parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,5);
+		Doc->GetSession()->LoadIdealGroupment(idealgroups);
+		Doc->GetSession()->LoadSubjectTree(subjecttree);
+		subjecttree->CreateParent(parent);
+
+		// Create new solution
+		d->PutText("Create new solutions");
+		mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups, atoi(nbgroups), atoi(level), mergesame, mergediff, split, random,ideal);
+		mix->Run(d);
+		d->Finish();
 	}
-
-	// Initialise the dialog box
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Mix Ideal Groups");
-	d->Begin();
-	d->show();
-	KApplication::kApplication()->processEvents();
-
-	// Init Part
-	d->PutText("Initialisation");
-	parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,5);
-	Doc->GetSession()->LoadIdealGroupment(idealgroups);
-	Doc->GetSession()->LoadSubjectTree(subjecttree);
-	subjecttree->CreateParent(parent);
-
-	// Create new solution
-	d->PutText("Create new solutions");
-	mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups, atoi(nbgroups), atoi(level), mergesame, mergediff, split, random,ideal);
-	mix->Run();
-	d->Finish();
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
+	}
+	catch(RMySQL::RMySQLError& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
+	}
+	catch(bad_alloc)
+	{
+		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
+	}
+	catch(...)
+	{
+		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
+	}
 }
 
 
