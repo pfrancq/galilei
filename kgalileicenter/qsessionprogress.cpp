@@ -84,6 +84,7 @@ QSessionProgressDlg::QSessionProgressDlg( QWidget* parent,GSession* s,const char
 
 	txtRem = new QLabel( this, "txtRem" );
 	txtRem->setGeometry( QRect( 10, 10, 580, 20 ) );
+	txtRem->setText(c+QString(" ..."));
 
 	connect(btnOk,SIGNAL(clicked()),this,SLOT(close()));
 }
@@ -333,6 +334,25 @@ void QSessionProgressDlg::receiveNextDoc(const GDoc* doc)
 void QSessionProgressDlg::receiveNextProfile(const GProfile* prof)
 {
 	txtRem->setText(QString("Analyse Profile '")+prof->GetName()+"' of User '"+prof->GetUser()->GetName()+"' ...");
+	KApplication::kApplication()->processEvents();
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::receiveNextChromosome(unsigned int id)
+{
+	char tmp[50];
+
+	sprintf(tmp,"Analyse Chromosome n°%u ...",id);
+	txtRem->setText(tmp);
+	KApplication::kApplication()->processEvents();
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::Finish(void)
+{
+	btnOk->setEnabled(true);
 	KApplication::kApplication()->processEvents();
 }
 

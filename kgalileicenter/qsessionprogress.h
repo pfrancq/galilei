@@ -155,10 +155,21 @@ public:
 	virtual void receiveNextDoc(const GDoc* doc);
 
 	/**
-	* The traitment for a specific document will begin.
+	* The traitment for a specific profile will begin.
 	* @param prof           Profile.
 	*/
 	virtual void receiveNextProfile(const GProfile* prof);
+
+	/**
+	* The traitment for a specific chromosome will begin.
+	* @param id             Identificator of the chromosome.
+	*/
+	virtual void receiveNextChromosome(unsigned int id);
+
+	/**
+	* Finish.
+	*/
+	void Finish(void);
 
 	/**
 	* Destructor.
