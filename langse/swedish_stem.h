@@ -36,22 +36,22 @@ namespace stemming
 				}
 
 			//reset internal data
-			m_r1 = m_r2 = m_rv =0;
+			this->m_r1 = this->m_r2 = this->m_rv =0;
 
 			trim_western_punctuation(text);
 
 			//see where the R1 and R2 sections begin
 			//R1 is the first consanant after the first vowel
 			find_r1(text, "aeiouyåäöAEIOUYÅÄÖ");
-			if (m_r1 == static_cast<int>(text.length() ) )
+			if (this->m_r1 == static_cast<int>(text.length() ) )
 				{
 				return;
 				}
 
 			//R1 must have at least 3 characters in front of it
-			if (m_r1 < 3)
+			if (this->m_r1 < 3)
 				{
-				m_r1 = 3;	
+				this->m_r1 = 3;	
 				}
 			//swedish does not use R2
 

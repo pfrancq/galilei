@@ -39,18 +39,18 @@ namespace stemming
 			trim_western_punctuation(text);
 
 			//reset internal data
-			m_altered_suffix_index = 0;
-			m_step1_step2_altered = false;
-			m_r1 = m_r2 = m_rv =0;
+			this->m_altered_suffix_index = 0;
+			this->m_step1_step2_altered = false;
+			this->m_r1 = this->m_r2 = this->m_rv =0;
 
-			string_util::replace_all(text, "„", "a~");
-			string_util::replace_all(text, "√", "A~");
-			string_util::replace_all(text, "ı", "o~");
-			string_util::replace_all(text, "’", "O~");
+			string_util::replace_all(text, "√£", "a~");
+			string_util::replace_all(text, "√É", "A~");
+			string_util::replace_all(text, "√µ", "o~");
+			string_util::replace_all(text, "√ï", "O~");
 
-			find_r1(text, "aeiou·ÈÌÛ˙‚ÍÙEIOU¡…Õ”⁄¬ ‘");
-			find_r2(text, "aeiou·ÈÌÛ˙‚ÍÙEIOU¡…Õ”⁄¬ ‘");
-			find_spanish_rv(text, "aeiou·ÈÌÛ˙‚ÍÙEIOU¡…Õ”⁄¬ ‘");
+			find_r1(text, "aeiou√°√©√≠√≥√∫√¢√™√¥EIOU√Å√â√ç√ì√ö√Ç√ä√î");
+			find_r2(text, "aeiou√°√©√≠√≥√∫√¢√™√¥EIOU√Å√â√ç√ì√ö√Ç√ä√î");
+			find_spanish_rv(text, "aeiou√°√©√≠√≥√∫√¢√™√¥EIOU√Å√â√ç√ì√ö√Ç√ä√î");
 
 			step_1(text);
 			//intermediate steps handled by step 1
@@ -60,10 +60,10 @@ namespace stemming
 				}
 			step_5(text);
 
-			string_util::replace_all(text, "a~", "„");
-			string_util::replace_all(text, "A~", "√");
-			string_util::replace_all(text, "o~", "ı");
-			string_util::replace_all(text, "O~", "’");
+			string_util::replace_all(text, "a~", "√£");
+			string_util::replace_all(text, "A~", "√É");
+			string_util::replace_all(text, "o~", "√µ");
+			string_util::replace_all(text, "O~", "√ï");
 			}
 	private:
 		//---------------------------------------------
@@ -101,18 +101,18 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_r2(text, "aÁo~es", 6) )
+			else if (delete_if_is_in_r2(text, "a√ßo~es", 6) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (is_suffix_in_r2(text, "Íncias", 6) )
+			else if (is_suffix_in_r2(text, "√™ncias", 6) )
 				{
 				text.replace(text.end()-6, text.end(), "ente");
 				m_altered_suffix_index = text.length()-4;
 				update_r_sections(text);
 				//NOOP (fall through to branching statement)
 				}
-			else if (is_suffix_in_r2(text, "logÌas", 6) )
+			else if (is_suffix_in_r2(text, "log√≠as", 6) )
 				{
 				text.erase(text.end()-3, text.end() );
 				m_altered_suffix_index = text.length()-3;
@@ -145,22 +145,22 @@ namespace stemming
 					//NOOP (fall through to branching statement)
 					}
 				//NOOP (fall through to branching statement)
-				}			
-			else if (is_suffix_in_r2(text, "logÌa", 5) )
+				}
+			else if (is_suffix_in_r2(text, "log√≠a", 5) )
 				{
 				text.erase(text.end()-2, text.end() );
 				m_altered_suffix_index = text.length()-3;
 				update_r_sections(text);
 				//NOOP (fall through to branching statement)
-				}			
-			else if (is_suffix_in_r2(text, "uciÛn", 5) )
+				}
+			else if (is_suffix_in_r2(text, "uci√≥n", 5) )
 				{
 				text.erase(text.end()-4, text.end() );
 				m_altered_suffix_index = text.length()-1;
 				update_r_sections(text);
 				//NOOP (fall through to branching statement)
 				}
-			else if (is_suffix_in_r2(text, "Íncia", 5) )
+			else if (is_suffix_in_r2(text, "√™ncia", 5) )
 				{
 				text.replace(text.end()-5, text.end(), "ente");
 				m_altered_suffix_index = text.length()-4;
@@ -188,7 +188,7 @@ namespace stemming
 				}
 			else if (is_suffix(text, "eiras", 5) )
 				{
-				if (m_rv <= static_cast<int>(text.length()-4) )
+				if (this->m_rv <= static_cast<int>(text.length()-4) )
 					{
 					text.erase(text.end()-2, text.end() );
 					m_altered_suffix_index = text.length()-3;
@@ -208,7 +208,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_r2(text, "aÁa~o", 5) )
+			else if (delete_if_is_in_r2(text, "a√ßa~o", 5) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -228,11 +228,11 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_r2(text, "·vel", 4) )
+			else if (delete_if_is_in_r2(text, "√°vel", 4) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_r2(text, "Ìvel", 4) )
+			else if (delete_if_is_in_r2(text, "√≠vel", 4) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -267,10 +267,10 @@ namespace stemming
 					//NOOP (fall through to branching statement)
 					}
 				//NOOP (fall through to branching statement)
-				}			
+				}
 			else if (is_suffix(text, "eira", 4) )
 				{
-				if (m_rv <= static_cast<int>(text.length()-3) )
+				if (this->m_rv <= static_cast<int>(text.length()-3) )
 					{
 					text.erase(text.end()-1, text.end() );
 					m_altered_suffix_index = text.length()-3;
@@ -330,68 +330,68 @@ namespace stemming
 		void step_2(std::basic_string<Tchar_type, Tchar_traits>& text)
 			{
 			size_t original_length = text.length();
-			
-			if (delete_if_is_in_rv(text, "arÌamos", 7, false) )
+
+			if (delete_if_is_in_rv(text, "ar√≠amos", 7, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "erÌamos", 7, false) )
+			else if (delete_if_is_in_rv(text, "er√≠amos", 7, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "irÌamos", 7, false) )
+			else if (delete_if_is_in_rv(text, "ir√≠amos", 7, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "·ssemos", 7, false) )
+			else if (delete_if_is_in_rv(text, "√°ssemos", 7, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "Íssemos", 7, false) )
+			else if (delete_if_is_in_rv(text, "√™ssemos", 7, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "Ìssemos", 7, false) )
+			else if (delete_if_is_in_rv(text, "√≠ssemos", 7, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "arÌeis", 6, false) )
+			else if (delete_if_is_in_rv(text, "ar√≠eis", 6, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "erÌeis", 6, false) )
+			else if (delete_if_is_in_rv(text, "er√≠eis", 6, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "irÌeis", 6, false) )
+			else if (delete_if_is_in_rv(text, "ir√≠eis", 6, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "·sseis", 6, false) )
+			else if (delete_if_is_in_rv(text, "√°sseis", 6, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "Èsseis", 6, false) )
+			else if (delete_if_is_in_rv(text, "√©sseis", 6, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "Ìsseis", 6, false) )
+			else if (delete_if_is_in_rv(text, "√≠sseis", 6, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "·ramos", 6, false) )
+			else if (delete_if_is_in_rv(text, "√°ramos", 6, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "Èramos", 6, false) )
+			else if (delete_if_is_in_rv(text, "√©ramos", 6, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "Ìramos", 6, false) )
+			else if (delete_if_is_in_rv(text, "√≠ramos", 6, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "·vamos", 6, false) )
+			else if (delete_if_is_in_rv(text, "√°vamos", 6, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -491,7 +491,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "·reis", 5,false) )
+			else if (delete_if_is_in_rv(text, "√°reis", 5,false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -499,7 +499,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "Èreis", 5,false) )
+			else if (delete_if_is_in_rv(text, "√©reis", 5,false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -507,7 +507,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "Ìreis", 5,false) )
+			else if (delete_if_is_in_rv(text, "√≠reis", 5,false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -515,11 +515,11 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "·veis", 5,false) )
+			else if (delete_if_is_in_rv(text, "√°veis", 5,false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "Ìamos", 5,false) )
+			else if (delete_if_is_in_rv(text, "√≠amos", 5,false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -631,7 +631,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "ar·s", 4, false) )
+			else if (delete_if_is_in_rv(text, "ar√°s", 4, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -639,7 +639,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "er·s", 4, false) )
+			else if (delete_if_is_in_rv(text, "er√°s", 4, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -647,7 +647,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "ir·s", 4, false) )
+			else if (delete_if_is_in_rv(text, "ir√°s", 4, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -667,7 +667,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "Ìeis", 4, false) )
+			else if (delete_if_is_in_rv(text, "√≠eis", 4, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -679,7 +679,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "·mos", 4, false) )
+			else if (delete_if_is_in_rv(text, "√°mos", 4, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -707,7 +707,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "ar·", 3, false) )
+			else if (delete_if_is_in_rv(text, "ar√°", 3, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -715,7 +715,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "er·", 3, false) )
+			else if (delete_if_is_in_rv(text, "er√°", 3, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -723,7 +723,7 @@ namespace stemming
 				{
 				//NOOP (fall through to branching statement)
 				}
-			else if (delete_if_is_in_rv(text, "ir·", 3, false) )
+			else if (delete_if_is_in_rv(text, "ir√°", 3, false) )
 				{
 				//NOOP (fall through to branching statement)
 				}
@@ -819,10 +819,10 @@ namespace stemming
 				}
 			}
 		//---------------------------------------------
-		void step_3(std::basic_string<Tchar_type, Tchar_traits>& text) 
+		void step_3(std::basic_string<Tchar_type, Tchar_traits>& text)
 			{
 			if (is_suffix(text, "ci", 2) &&
-				m_rv <= text.length()-1)
+				this->m_rv <= text.length()-1)
 				{
 				text.erase(text.end()-1, text.end() );
 				update_r_sections(text);
@@ -837,7 +837,7 @@ namespace stemming
 				}
 			}
 		//---------------------------------------------
-		void step_4(std::basic_string<Tchar_type, Tchar_traits>& text) 
+		void step_4(std::basic_string<Tchar_type, Tchar_traits>& text)
 			{
 			if (delete_if_is_in_rv(text, "os", 2) )
 				{
@@ -855,25 +855,25 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "·", 1) )
+			else if (delete_if_is_in_rv(text, "√°", 1) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "Ì", 1) )
+			else if (delete_if_is_in_rv(text, "√≠", 1) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "Û", 1) )
+			else if (delete_if_is_in_rv(text, "√≥", 1) )
 				{
 				return;
 				}
 			}
 		//---------------------------------------------
-		void step_5(std::basic_string<Tchar_type, Tchar_traits>& text) 
+		void step_5(std::basic_string<Tchar_type, Tchar_traits>& text)
 			{
 			if (delete_if_is_in_rv(text, "e", 1, false) )
 				{
-				if (m_rv <= text.length()-1 &&
+				if (this->m_rv <= text.length()-1 &&
 					(is_suffix(text, "gu", 2) ||
 					is_suffix(text, "ci", 2)) )
 					{
@@ -882,9 +882,9 @@ namespace stemming
 					}
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "È", 1, false) )
+			else if (delete_if_is_in_rv(text, "√©", 1, false) )
 				{
-				if (m_rv <= text.length()-1 &&
+				if (this->m_rv <= text.length()-1 &&
 					(is_suffix(text, "gu", 2) ||
 					is_suffix(text, "ci", 2)) )
 					{
@@ -893,9 +893,9 @@ namespace stemming
 					}
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "Í", 1, false) )
+			else if (delete_if_is_in_rv(text, "√™", 1, false) )
 				{
-				if (m_rv <= text.length()-1 &&
+				if (this->m_rv <= text.length()-1 &&
 					(is_suffix(text, "gu", 2) ||
 					is_suffix(text, "ci", 2)) )
 					{
@@ -904,15 +904,15 @@ namespace stemming
 					}
 				return;
 				}
-			else if (text[text.length()-1] == '«')
+			else if (text[text.length()-1] == '√á')
 				{
 				text[text.length()-1] = 'C';
 				}
-			else if (text[text.length()-1] == 'Á')
+			else if (text[text.length()-1] == '√ß')
 				{
 				text[text.length()-1] = 'c';
 				}
-			}		
+			}
 		//internal data specific to Portuguese stemmer
 		bool m_step1_step2_altered;
 		size_t m_altered_suffix_index;

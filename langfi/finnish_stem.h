@@ -38,7 +38,7 @@ namespace stemming
 
 			//reset internal data
 			m_step_3_successful = false;
-			m_r1 = m_r2 = m_rv =0;
+			this->m_r1 = this->m_r2 = this->m_rv =0;
 
 			trim_western_punctuation(text);
 
@@ -352,7 +352,7 @@ namespace stemming
 		//---------------------------------------------
 		void step_6a(std::basic_string<Tchar_type, Tchar_traits>& text)
 			{
-			if (m_r1 <= text.length()-2 &&
+			if (this->m_r1 <= text.length()-2 &&
 				string_util::is_one_of(text[text.length()-1], "aeiouäöAEIOUÄÖ") &&
 				text[text.length()-1] == text[text.length()-2])
 				{
@@ -363,7 +363,7 @@ namespace stemming
 		//---------------------------------------------
 		void step_6b(std::basic_string<Tchar_type, Tchar_traits>& text)
 			{
-			if (m_r1 <= text.length()-2 &&
+			if (this->m_r1 <= text.length()-2 &&
 				!string_util::is_one_of(text[text.length()-2], "aeiouyäöAEIOUYÄÖ") &&
 				string_util::is_one_of(text[text.length()-1], "aeiäAEIÄ") )
 				{

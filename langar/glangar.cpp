@@ -6,7 +6,7 @@
 
 	Arabic Language - Implementation.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -74,7 +74,7 @@ public:
 	RString Equality;
 	int ForbiddenPos;
 	RChar ForbiddenLetter;
-	ArabicRule(unsigned int id, unsigned int level, RString os, RString ns, int before_pos, int after_pos, 
+	ArabicRule(unsigned int id, unsigned int level, RString os, RString ns, int before_pos, int after_pos,
 		unsigned int nb_min_letters, int equality_pos, RString equality, int forbidden_pos, RChar forbidden_letter);
 	int Compare(const ArabicRule*) {return(-1);} // force rules to be sorted as entered;
 	bool Apply(RString& kwd); //function to apply the rule -> returns true if a stemmer is applied
@@ -84,7 +84,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-GLangAR::ArabicRule::ArabicRule(unsigned int id, unsigned int level, RString os, RString ns,  int before_pos, int after_pos, 
+GLangAR::ArabicRule::ArabicRule(unsigned int id, unsigned int level, RString os, RString ns,  int before_pos, int after_pos,
 		unsigned int nb_min_letters, int equality_pos, RString equality, int forbidden_pos, RChar forbidden_letter)
 	: Id(id), Level(level), OldSuffix(os), NewSuffix(ns), BeforePos(before_pos), AfterPos(after_pos), NbMinLetters(nb_min_letters),
 		EqualityPos(equality_pos), Equality(equality), ForbiddenPos(forbidden_pos), ForbiddenLetter(forbidden_letter)
@@ -117,13 +117,13 @@ int GLangAR::ArabicRule::CheckConditions(RString kwd)
 	}
 
 	// checking before pos condtions
-	if((kwd.Mid(position, OldSuffix.GetLen()).Compare(OldSuffix))) 
+	if((kwd.Mid(position, OldSuffix.GetLen()).Compare(OldSuffix)))
 		return(-1); //before pos
 
 	// checking before condtions
-	if(AfterPos!=-1&&(((kwd.GetLen()-OldSuffix.GetLen()-position)!=AfterPos))) 
+	if(AfterPos!=-1&&(((kwd.GetLen()-OldSuffix.GetLen()-position)!=AfterPos)))
 		return(-1);
-	
+
 
 	//check miminum of letters
 	if(kwd.GetLen()<NbMinLetters)
@@ -131,11 +131,11 @@ int GLangAR::ArabicRule::CheckConditions(RString kwd)
 
 	//check for equality index and letters
 	if(EqualityPos!=-1)
-		if((kwd.Mid(EqualityPos, Equality.GetLen()).Compare(Equality))) 
+		if((kwd.Mid(EqualityPos, Equality.GetLen()).Compare(Equality)))
 			return(-1);
 
 	//check for forbidden letter
-	if((ForbiddenPos!=-1)&&(kwd[ForbiddenPos].Unicode()==ForbiddenLetter.Unicode())) 
+	if((ForbiddenPos!=-1)&&(kwd[ForbiddenPos].Unicode()==ForbiddenLetter.Unicode()))
 		return(-1);
 
 	return(position);
@@ -223,7 +223,8 @@ void GALILEI::GLangAR::LoadRules(void) throw(GException)
 	//treat on read line
 	try
 	{
-		rules_file=new RTextFile(Factory->GetString("RulesFile"), R::Read, Factory->GetString("Encoding"));
+		rules_file=new RTextFile(Factory->GetString("RulesFile"), Factory->GetString("Encoding"));
+		rules_file->Open(Read);
 	}
 	catch(...)
 	{

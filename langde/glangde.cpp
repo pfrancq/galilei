@@ -72,8 +72,6 @@ GLangDE::GLangDE(GFactoryLang* fac) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 RString GLangDE::GetStemming(const RString& _kwd) throw(GException)
 {
-	char* end;
-	unsigned int len;
 	string word;
 	 word=_kwd.ToString();
 	(*this)(word);

@@ -28,6 +28,12 @@
 
 namespace string_util
 	{
+
+	//strlen
+	inline size_t strlen(const char* text) { return std::strlen(text); }
+	inline size_t strlen(const wchar_t* text)
+		{ return std::wcslen(text); }
+
 	template<typename Tchar_type>
 	bool is_one_of(const Tchar_type character, const Tchar_type* char_string)
 		{
@@ -240,10 +246,7 @@ namespace string_util
 		return std::wctomb(s, wc);
 		}
 
-	//strlen
-	inline size_t strlen(const char* text) { return std::strlen(text); }
-	inline size_t strlen(const wchar_t* text)
-		{ return std::wcslen(text); }
+
 	//strncmp
 	inline int strncmp(const char* string1, const char* string2, size_t count)
 		{

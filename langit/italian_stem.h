@@ -37,7 +37,7 @@ namespace stemming
 				}
 
 			//reset internal data
-			m_r1 = m_r2 = m_rv =0;
+			this->m_r1 = this->m_r2 = this->m_rv =0;
 
 			trim_western_punctuation(text);
 			italian_acutes_to_graves(text);
@@ -259,7 +259,7 @@ namespace stemming
 		bool step_0a(std::basic_string<Tchar_type, Tchar_traits>& text, size_t suffix_length)
 			{
 			if ((text.length() >= suffix_length + 4) &&
-				m_rv <= text.length()-4-suffix_length &&
+				this->m_rv <= text.length()-4-suffix_length &&
 				(text.compare(text.length()-4-suffix_length, 4, "ando", 4) == 0 ||
 				text.compare(text.length()-4-suffix_length, 4, "endo", 4) == 0) )
 				{
@@ -273,7 +273,7 @@ namespace stemming
 		bool step_0b(std::basic_string<Tchar_type, Tchar_traits>& text, size_t suffix_length)
 			{
 			if ((text.length() >= suffix_length + 2) &&
-				m_rv <= text.length()-2-suffix_length &&
+				this->m_rv <= text.length()-2-suffix_length &&
 				(text.compare(text.length()-2-suffix_length, 2, "ar", 2) == 0 ||
 				text.compare(text.length()-2-suffix_length, 2, "er", 2) == 0 ||
 				text.compare(text.length()-2-suffix_length, 2, "ir", 2) == 0) )
@@ -837,12 +837,12 @@ namespace stemming
 		//---------------------------------------------
 		void step_3a(std::basic_string<Tchar_type, Tchar_traits>& text)
 			{
-			if (m_rv <= text.length()-1 &&
+			if (this->m_rv <= text.length()-1 &&
 				string_util::is_one_of(text[text.length()-1], "aeioàèìòAEIOÀÈÌÒ") )
 				{
 				text.erase(text.end()-1, text.end() );
 				update_r_sections(text);
-				if (m_rv <= text.length()-1 &&					
+				if (this->m_rv <= text.length()-1 &&					
 					string_util::is_one_of(text[text.length()-1], "iI") )
 					{
 					text.erase(text.end()-1, text.end() );

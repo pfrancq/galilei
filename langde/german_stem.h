@@ -30,8 +30,8 @@ namespace stemming
 		//---------------------------------------------
 		void operator()(std::basic_string<Tchar_type, Tchar_traits>& text)
 			{
-			//change 'ß' to "ss"
-			string_util::replace_all(text, "ß", "ss");
+			//change 'ÃŸ' to "ss"
+			string_util::replace_all(text, "ÃŸ", "ss");
 			if (text.length() < 3)
 				{
 				remove_german_umlauts(text);
@@ -39,24 +39,24 @@ namespace stemming
 				}
 
 			//reset internal data
-			m_r1 = m_r2 = m_rv =0;
+			this->m_r1 = this->m_r2 = this->m_rv =0;
 
 			trim_western_punctuation(text);
 
-			hash_german_yu(text, "aeiouüyäöAÄEIOÖUÜY");
+			hash_german_yu(text, "aeiouÃ¼yÃ¤Ã¶AÃ„EIOÃ–UÃœY");
 
-			find_r1(text, "aeiouüyäöAÄEIOÖUÜY");
-			if (m_r1 == text.length() )
+			find_r1(text, "aeiouÃ¼yÃ¤Ã¶AÃ„EIOÃ–UÃœY");
+			if (this->m_r1 == text.length() )
 				{
 				remove_german_umlauts(text);
 				unhash_german_yu(text);
 				return;
 				}
-			find_r2(text, "aeiouüyäöAÄEIOÖUÜY");
+			find_r2(text, "aeiouÃ¼yÃ¤Ã¶AÃ„EIOÃ–UÃœY");
 			//R1 must have at least 3 characters in front of it
-			if (m_r1 < 3)
+			if (this->m_r1 < 3)
 				{
-				m_r1 = 3;	
+				this->m_r1 = 3;
 				}
 
 			//step 1:
@@ -136,7 +136,7 @@ namespace stemming
 			}
 
 		//---------------------------------------------
-		void step_3(std::basic_string<Tchar_type, Tchar_traits>& text) 
+		void step_3(std::basic_string<Tchar_type, Tchar_traits>& text)
 			{
 			if (delete_if_is_in_r2(text, "heit", 4) ||
 				delete_if_is_in_r2(text, "lich", 4) )
@@ -159,7 +159,7 @@ namespace stemming
 				}
 			else if (is_suffix(text,"isch", 4) )
 				{
-				if (m_r2 <= static_cast<int>(text.length()-4) &&
+				if (this->m_r2 <= static_cast<int>(text.length()-4) &&
 					!(text[text.length()-5] == 'e' || text[text.length()-5] == 'E'))
 					{
 					text.erase(text.end()-4, text.end() );
@@ -190,7 +190,7 @@ namespace stemming
 				}
 			else if (is_suffix(text,"ig", 2) )
 				{
-				if (m_r2 <= static_cast<int>(text.length()-2) &&
+				if (this->m_r2 <= static_cast<int>(text.length()-2) &&
 					!(text[static_cast<int>(text.length()-3)] == 'e' || text[static_cast<int>(text.length()-3)] == 'E'))
 					{
 					text.erase(text.end()-2, text.end() );
@@ -199,14 +199,14 @@ namespace stemming
 				}
 			else if (is_suffix(text,"ik", 2) )
 				{
-				if (m_r2 <= static_cast<int>(text.length()-2) &&
+				if (this->m_r2 <= static_cast<int>(text.length()-2) &&
 					!(text[static_cast<int>(text.length()-3)] == 'e' || text[static_cast<int>(text.length()-3)] == 'E'))
 					{
 					text.erase(text.end()-2, text.end() );
 					update_r_sections(text);
 					}
 				}
-			}		
+			}
 		};
 	}
 
