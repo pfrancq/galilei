@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gword.cpp
+	GWord.cpp
 
-	Basic Information - Implementation.
+	Word - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -77,30 +77,30 @@ GWord::GWord(const GWord& word)
 
 
 //---------------------------------------------------------------------------
-int GWord::Compare(const GWord& word)
+int GWord::Compare(const GWord& word) const
 {
   return(Word.Compare(word.Word));
 }
 
 
 //---------------------------------------------------------------------------
-int GWord::Compare(const GWord* word)
+int GWord::Compare(const GWord* word) const
 {
   return(Word.Compare(word->Word));
 }
 
 
 //---------------------------------------------------------------------------
-int GWord::Compare(const RString& word)
+int GWord::Compare(const RString& word) const
 {
   return(Word.Compare(word));
 }
 
 
 //---------------------------------------------------------------------------
-int GWord::Compare(const GIWord* ref)
+int GWord::Compare(const GIWord* ref) const
 {
-  return(Id-ref->Id);
+  return(Id-ref->GetId());
 }
 
 

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gword.h
+	GWord.h
 
-	Basic Information - Implementation.
+	Word - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -29,36 +29,50 @@
 
 */
 
-//---------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
 #ifndef GWordH
 #define GWordH
 
 
-//---------------------------------------------------------------------------
-// include files for Rainbow
+//-----------------------------------------------------------------------------
+// include files for R Project
 #include <rstd/rstring.h>
 using namespace RStd;
 
 
-//---------------------------------------------------------------------------
-// include files for HyperPRISME
+//-----------------------------------------------------------------------------
+// include files for GALILEI
 #include <ginfos/giword.h>
 #include <galilei.h>
 using namespace GALILEI;
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 namespace GALILEI{
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 
-//---------------------------------------------------------------------------
-// class GWord
+//-----------------------------------------------------------------------------
+/**
+* The GWord class provides a representation for a word.
+* @author Pascal Francq
+* @short Word.
+*/
 class GWord
 {
+	/**
+	* Identificator of the word.
+	*/
+	unsigned Id;
+
+	/**
+	* The word.
+	*/
+	RString Word;
+
 public:
-  unsigned Id;                // Id of the word
-  RString Word;           // The word
 
   // Constructors
   GWord(void);
@@ -67,15 +81,30 @@ public:
   GWord(const GWord& word);
 
   // Functions needed by GDict (-> RHashContainer)
-  int Compare(const GWord& word);
-  int Compare(const GWord* word);
-  int Compare(const RString& word);
-  int Compare(const GIWord* ref);
-  char HashIndex(void) const { return(Word.HashIndex());
-}
+  int Compare(const GWord& word) const;
+  int Compare(const GWord* word) const;
+  int Compare(const RString& word) const;
+  int Compare(const GIWord* ref) const;
+	char HashIndex(void) const
+		{ return(Word.HashIndex());}
+
+	/**
+	* @return Identificator of the word.
+	*/
+	unsigned int GetId(void) {return(Id);}
+
+	/**
+	* @return A C string representing the word.
+	*/
+	const char* GetWord(void) {return(Word);}
+
+	// friend classes
+	friend class GDict;
 };
 
 
-}
+}  //-------- End of namespace GALILEI ----------------------------------------
 
+
+//-----------------------------------------------------------------------------
 #endif
