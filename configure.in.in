@@ -267,7 +267,7 @@ for i in $GALILEI_LIB_PATH ; do
 	GALILEI_LIB_CHK($i,libkde_galilei)
 	GALILEI_LIB_CHK($i/galilei,libkde_galilei)
 done
-echo "GALILEI frontend" $GALILEI_LIB_DIR
+
 AC_MSG_CHECKING(for libkde_galilei)
 if test -z "$GALILEI_LIB_DIR"; then
 	AC_MSG_RESULT(no)
