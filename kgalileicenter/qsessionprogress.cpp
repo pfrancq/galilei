@@ -70,7 +70,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 QSessionProgressDlg::QSessionProgressDlg( QWidget* parent,GSession* s,const char* c)
-    : QSemiModal(parent,"QSessionProgressDlg",true),GSlot(), Session(s)
+    : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), Session(s)
 {
 	resize(600, 78 );
 	setCaption(i18n(c));
@@ -365,6 +365,8 @@ void QSessionProgressDlg::Begin(void)
 {
 	txtRem->setText("Finish");
 	btnOk->setEnabled(false);
+	show();
+	KApplication::kApplication()->processEvents();
 }
 
 
