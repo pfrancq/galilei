@@ -585,7 +585,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 	}
 
 	delete select;
-	if (select2) 
+	if (select2)
 		delete select2;
 }
 
@@ -1042,6 +1042,10 @@ void KGALILEICenterApp::slotHandleItem(QListViewItem* item)
 			createClient(Doc,new KViewGroup(obj->Obj.Group,Doc,pWorkspace,"View Group",0));
 			break;
 
+		case QListViewItemType::tSubProfile:
+			createClient(Doc,new KViewProfile(obj->Obj.SubProfile->GetProfile(),Doc,pWorkspace,"View Profile",0));
+			break;
+
 		case QListViewItemType::tNothing:
 		default:
 			break;
@@ -1065,7 +1069,7 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 	if (Langs) delete Langs;
 	if (URLManager) delete URLManager;
 	if (DocAnalyseManager) delete DocAnalyseManager;
-	if(ProfilingManager) delete ProfilingManager; 
+	if(ProfilingManager) delete ProfilingManager;
 	if(GroupingManager) delete GroupingManager;
 	if(GroupCalcManager) delete GroupCalcManager;
 	if(StatsCalcManager) delete StatsCalcManager;

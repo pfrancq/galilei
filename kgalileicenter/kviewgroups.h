@@ -51,6 +51,8 @@ using namespace GALILEI;
 class QListView;
 class QLineEdit;
 class QPushButton;
+class QCheckBox;
+
 
 //-----------------------------------------------------------------------------
 // include files for current application
@@ -83,6 +85,10 @@ class KViewGroups : public KView
 	* Button to press to launch the search.
 	*/
 	QPushButton* Search;
+
+	/**
+	*/
+	QCheckBox* Desc;
 
 public:
 

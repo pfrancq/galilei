@@ -38,6 +38,9 @@
 #include <profiles/gsubprofile.h>
 #include <groups/ggroup.h>
 #include <infos/glang.h>
+#include <infos/gdict.h>
+#include <infos/gdata.h>
+#include <infos/gweightinfo.h>
 #include <groups/ggroups.h>
 #include <sessions/gsession.h>
 #include <frontend/kde/qlistviewitemtype.h>
@@ -50,6 +53,7 @@ using namespace R;
 // includes files for Qt
 #include <qpixmap.h>
 #include <qpushbutton.h>
+#include <qcheckbox.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
@@ -102,6 +106,8 @@ KViewGroups::KViewGroups(KDoc* doc,QWidget* parent,const char* name,int wflags)
 	Search->setText("Find Next");
 	connect(Search,SIGNAL(clicked()),this,SLOT(FindNext()));
 	SearchLayout->addWidget(Search);
+	Desc=new QCheckBox("Description",this);
+	SearchLayout->addWidget(Desc);
 	SearchLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum ));
     MainLayout->addLayout(SearchLayout);
 
@@ -148,20 +154,21 @@ void KViewGroups::ConstructGroups(void)
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
 		R::RCursor<GGroup> grs=Doc->GetSession()->GetGroupsCursor(lang);
-		QListViewItemType* grsitem = new QListViewItemType(Groups,ToQString(lang->GetName()));
+		QListViewItemType* grsitem = new QListViewItemType(Groups,ToQString(lang->GetName())+" ("+QString::number(grs.GetNb())+")");
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-		for (grs.Start(); !grs.End(); grs.Next())
+		for(grs.Start(); !grs.End(); grs.Next())
 		{
 			GGroup* gr=grs();
-			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group");
-			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 			Sub=grs()->GetSubProfilesCursor();
+			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group ("+QString::number(Sub.GetNb())+")");
+			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 			for(Sub.Start(); !Sub.End(); Sub.Next())
 			{
 				GSubProfile* sub=Sub();
 				d=sub->GetAttached();
 				sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),sDate);
+				//QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),sDate);
+				QListViewItemType* subitem=new QListViewItemType(sub,gritem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),sDate);
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}
@@ -204,7 +211,7 @@ void KViewGroups::FindNext(void)
 		while(it->current()&&Cont)
 		{
 			QListViewItemType* item = dynamic_cast<QListViewItemType*>(it->current());
-			if((item)&&(item->Type==QListViewItemType::tProfile))
+			if((item)&&(item->Type==QListViewItemType::tSubProfile))
 			{
 				if((item->text(0).contains(str,false))||(item->text(1).contains(str,false)))
 				{
@@ -212,6 +219,18 @@ void KViewGroups::FindNext(void)
 					Groups->setCurrentItem(item);
 					Groups->ensureItemVisible(item);
 				}
+				else
+					if(Desc->isChecked())
+					{
+						GSubProfile* sub=item->Obj.SubProfile;
+						GData* find=sub->GetLang()->GetDict()->GetData(sub->GetLang()->GetStemming(str.latin1()));
+						if(find&&(sub->IsIn<unsigned int>(find->GetId())))
+						{
+							Cont=false;
+							Groups->setCurrentItem(item);
+							Groups->ensureItemVisible(item);
+						}
+					}
 			}
 			(++(*it));
 		}
