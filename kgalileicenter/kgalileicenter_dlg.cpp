@@ -138,9 +138,7 @@ void KGALILEICenterApp::slotDocsOptions(void)
 		new QListViewItem(dlg.lvFilters,Filters()->GetName(),Filters()->GetMIMES(),Filters()->GetVersion());
 	dlg.cbUseLink->setChecked(DocOptions->UseLink);
 	dlg.cbExternalLink->setChecked(DocOptions->UseExternalLink);
-	dlg.cbLimit->setChecked(DocOptions->LimitLink);
-	dlg.frameLimit->setEnabled(DocOptions->LimitLink);
-	dlg.txtNbLinks->setValue(DocOptions->NbLinks);
+	dlg.cbRedirection->setChecked(DocOptions->UseRedirection);
 
 	if(dlg.exec())
 	{
@@ -158,8 +156,7 @@ void KGALILEICenterApp::slotDocsOptions(void)
 		DocOptions->NonLetterWords=dlg.cbNonWord->isChecked();
 		DocOptions->UseLink=dlg.cbUseLink->isChecked();
 		DocOptions->UseExternalLink=dlg.cbExternalLink->isChecked();
-		DocOptions->LimitLink=dlg.cbLimit->isChecked();
-		DocOptions->NbLinks=dlg.txtNbLinks->value();
+		DocOptions->UseRedirection=dlg.cbRedirection->isChecked();
 	}
 }
 
