@@ -337,7 +337,7 @@ void KViewHistory::DisplaySimilarities(void)
 	{
 		for (j=i, giwwh2=giwwh1+1; j--; giwwh2++)
 		{
-			if (Global) similarity=(*giwwh1)->SimilarityIdf(*giwwh2, otSubProfile,Lang) ;
+			if (Global) similarity=(*giwwh1)->SimilarityIFF(*giwwh2, otSubProfile,Lang) ;
 			else similarity=(*giwwh1)->Similarity(*giwwh2);
 			sprintf(num1,"%u",(*giwwh1)->GetId());
 			sprintf(num2,"%u",(*giwwh2)->GetId());
