@@ -61,6 +61,11 @@ class GDoc
 	RStd::RString URL;
 
 	/**
+	* Name of the document.
+	*/
+	RStd::RString Name;
+
+	/**
 	* Identifier of the document.
 	*/
 	unsigned Id;
@@ -105,7 +110,7 @@ public:
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
 	*/
-	GDoc(const RStd::RString& url,const unsigned int id,const unsigned int nbdiff=500) throw(bad_alloc);
+	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,const unsigned int nbdiff=500) throw(bad_alloc);
 
 	/**
 	* Construct the document.
@@ -116,7 +121,7 @@ public:
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
 	*/
-	GDoc(const RStd::RString& url,const unsigned int id,GLang* lang,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc);
+	GDoc(const RStd::RString& url,const RStd::RString& name,const unsigned int id,GLang* lang,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc);
 
 	/**
 	* Compare function needed by RStd::RContainer.
@@ -135,6 +140,18 @@ public:
 	* @param id            Identificator used for the comparaison.
 	*/
 	int Compare(const unsigned id);
+
+	/**
+	* Get the URL.
+	* @returns Pointer to a C string.
+	*/
+	const char* GetURL(void) const {return(URL());}
+
+	/**
+	* Get the Name.
+	* @returns Pointer to a C string.
+	*/
+	const char* GetName(void) const {return(Name());}
 
 protected:
 
