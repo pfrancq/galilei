@@ -186,7 +186,7 @@ public:
 	* @param g              Global similarities to use.
 	* @returns Pointer to GSubProfile representing the relevant one.
 	*/
-	/*const*/ GSubProfile* RelevantSubProfile(bool g) const;
+	GSubProfile* RelevantSubProfile(bool g) const;
 
 	/**
 	* Compute the sum of the similarities of a given profile to all the others.
