@@ -33,7 +33,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/ginfo.h>
+#include <ginfos/ginfo.h>
 
 
 
@@ -81,7 +81,7 @@ const RString GALILEI::GInfo::ClassName(void) const
 //-----------------------------------------------------------------------------
 const GALILEI::GInfo::GInfoType GALILEI::GInfo::InfoType(void) const
 {
-	return(Nothing);
+	return(infoNothing);
 }
 
 

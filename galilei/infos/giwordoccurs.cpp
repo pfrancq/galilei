@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GInfo.cpp
-
-	Basic Information - Implementation.
+	giwordoccurs.cpp
+	
+	Container of word occurencies - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -32,8 +32,21 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <infos/giwordoccurs.h>
+// include files for ANSI C/C++
+#include <ctype.h>
+#include <string.h>
+#include <fstream.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for Galilei
+#include <ginfos/giwordoccurs.h>
+#include <gdocs/gdoc.h>
+using namespace GALILEI;
 
 
 
@@ -43,59 +56,31 @@
 //
 //-----------------------------------------------------------------------------
 
-
 //-----------------------------------------------------------------------------
-GALILEI::GIWordOccurs::GIWordOccurs(unsigned int id)
-	: GALILEI::GIWord(id), Occurs(0)
+GALILEI::GIWordOccurs::GIWordOccurs (GDoc *owner,unsigned nb) throw(bad_alloc)
+	: RContainer<GIWordOccur,unsigned,true,true>(nb+nb/2,nb/2), Owner(owner)
+
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GIWordOccurs::Compare(const GInfo* i) const
+void GALILEI::GIWordOccurs::Insert(unsigned id,GDoc* /*doc*/) throw(bad_alloc)
 {
-	if(SameClass(i))
-		return(Id-(static_cast<const GIWordOccurs*>(i))->Id);
-	else
-		return(GALILEI::GInfo::Compare(i));
+	GIWordOccur* ptr;
+
+	ptr= new GIWordOccur(id);
+//	ptr->Doc=doc;
+	InsertPtr(ptr);
 }
 
 
 //-----------------------------------------------------------------------------
-float GALILEI::GIWordOccurs::Similarity(const GInfo* i) const
+GIWordOccur* GALILEI::GIWordOccurs::GetPtr(unsigned id,GDoc* /*doc*/) throw(bad_alloc)
 {
-	if(SameClass(i))
-		return((Id-(static_cast<const GIWordOccurs*>(i))->Id)==0);
-	else
-		return(GALILEI::GInfo::Similarity(i));
-}
+	GIWordOccur *ptr;
 
-
-//-----------------------------------------------------------------------------
-float GALILEI::GIWordOccurs::DisSimilarity(const GInfo* i) const
-{
-	if(SameClass(i))
-		return((Id-(static_cast<const GIWordOccurs*>(i))->Id)!=0);
-	else
-		return(GALILEI::GInfo::DisSimilarity(i));
-}
-
-
-//-----------------------------------------------------------------------------
-const RString GALILEI::GIWordOccurs::ClassName(void) const
-{
-	return("GIWordOccurs");
-}
-
-
-//-----------------------------------------------------------------------------
-const GALILEI::GInfo::GInfoType GALILEI::GIWordOccurs::InfoType(void) const
-{
-	return(IWordOccurs);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GIWordOccurs::~GIWordOccurs(void)
-{
+	ptr=GetInsertPtr<unsigned>(id);
+//	if(!ptr->Doc) ptr->Doc=doc;
+	return(ptr);
 }

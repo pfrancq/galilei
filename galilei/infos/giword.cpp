@@ -33,7 +33,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/giword.h>
+#include <ginfos/giword.h>
 
 
 
@@ -91,7 +91,7 @@ const RString GALILEI::GIWord::ClassName(void) const
 //-----------------------------------------------------------------------------
 const GALILEI::GInfo::GInfoType GALILEI::GIWord::InfoType(void) const
 {
-	return(IWord);
+	return(infoWord);
 }
 
 

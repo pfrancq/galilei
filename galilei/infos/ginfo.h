@@ -43,11 +43,6 @@ using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <info/ginfotype.h>
-
-
-//-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
@@ -65,7 +60,7 @@ public:
 	/**
 	* The different type of information
 	*/
-	enum GInfoType {Nothing,IWord,IWordOccurs};
+	enum GInfoType {infoNothing,infoWord,infoWordOccur};
 
 	/**
 	* The constructor.

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GIWord.h
+	GIWordOccur.h
 
-	Word Information - Header.
+	Word Occurences Information - Header.
 
 	(C) 2001 by P. Francq.
 
@@ -32,13 +32,13 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GIWordH
-#define GIWordH
+#ifndef GIWordOccurH
+#define GIWordOccurH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ginfos/ginfo.h>
+#include <ginfos/giword.h>
 
 
 //-----------------------------------------------------------------------------
@@ -48,25 +48,34 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GInfo class provides a representation for a basic information entity.
+* The GIWordOccur class provides a representation for the number of occurencies
+* of a word in the document.
 * @author Pascal Francq.
-* @short Basic Information.
+* @short Word's Occurences Information.
 */
-class GIWord : public GALILEI::GInfo
+class GIWordOccur : public GIWord
 {
 protected:
 
 	/**
-	* The identificator of a word.
+	* The number of occurences of the word.
 	*/
-	unsigned int Id;
+	unsigned int Occurs;
 
 public:
 
 	/**
 	* The constructor.
+	* @param id             Identificator of the word.
 	*/
-	GIWord(unsigned int id);
+	GIWordOccur(const unsigned int id);
+
+	/**
+	* The constructor.
+	* @param id             Identificator of the word.
+	* @param nb             Occurences of the word.
+	*/
+	GIWordOccur(const unsigned int id,const unsigned int nb);
 
 	/**
 	* Compare two information. This function is needed by the container.
@@ -76,17 +85,28 @@ public:
 	virtual int Compare(const GInfo* i) const;
 
 	/**
-	* Compare two word's references.
-	* @param i              Pointer to the word's reference ued for the
-	*                       comparaison.
+	* Compare two word (occurences). This function is needed by the container.
+	* @return 0 if i refers the same object, +1 else.
+	* @see RContainer
 	*/
-	int Compare(const GIWord* i) {return(Id-i->Id);}
+	int Compare(const GIWordOccur* i) const
+		{return(Id-i->Id);}
 
 	/**
-	* Compare two word's references.
-	* @param i              Word's reference ued for the comparaison.
+	* Compare two word (occurences). This function is needed by the container.
+	* @return 0 if i refers the same object, +1 else.
+	* @see RContainer
 	*/
-	int Compare(const GIWord& i) {return(Id-i.Id);}
+	int Compare(const GIWordOccur& i) const
+		{return(Id-i.Id);}
+
+	/**
+	* Compare two word (occurences). This function is needed by the container.
+	* @return 0 if i refers the same object, +1 else.
+	* @see RContainer
+	*/
+	int Compare(const unsigned int id) const
+		{return(Id-id);}
 
 	/**
 	* Compute a similarity between two information objects. If the two objects
@@ -105,24 +125,29 @@ public:
 	virtual float DisSimilarity(const GInfo* i) const;
 
 	/**
-	* @returns Name of the class.
+	* @returns the name of the class.
 	*/
 	virtual const RString ClassName(void) const;
 
 	/**
-	* @returns Type of the information.
+	* @returns the type of the information.
 	*/
 	virtual const GInfoType InfoType(void) const;
 
 	/**
-	* @returns Identificator of the word.
+	* @returns the number of occurences of the word.
 	*/
-	unsigned int GetId(void) {return(Id);}
+	unsigned int GetNbOccurs(void) {return(Occurs);}
+
+	/**
+	* Increase the number of occurences of the word.
+	*/
+	void IncOccurs(void) {Occurs++;}
 
 	/**
 	* The destructor.
 	*/
-	virtual ~GIWord(void);
+	virtual ~GIWordOccur(void);
 };
 
 
