@@ -43,6 +43,8 @@ using namespace R;
 #include <groups/ggroups.h>
 #include <profiles/gsubprofile.h>
 #include <groups/gsubject.h>
+#include <sessions/gsession.h>
+#include <groups/gsubjects.h>
 using namespace GALILEI;
 
 
@@ -55,8 +57,8 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-GGroupsHistoryManager::GGroupsHistoryManager(unsigned int max) throw(std::bad_alloc)
-	: RContainer<GGroupsHistory,true,true>(max,max/2)
+GGroupsHistoryManager::GGroupsHistoryManager(GSession* session,unsigned int max) throw(std::bad_alloc)
+	: RContainer<GGroupsHistory,true,true>(max,max/2), Session(session)
 {
 }
 
@@ -182,6 +184,12 @@ void GGroupsHistoryManager::InsertGroupsHistory(GGroupsHistory* gh) throw(std::b
 	gh->SetManager(this);
 }
 
+
+//------------------------------------------------------------------------------
+GSession* GGroupsHistoryManager::GetSession(void) const
+{
+	return(Session);
+}
 
 //------------------------------------------------------------------------------
 GGroupsHistoryManager::~GGroupsHistoryManager(void)
@@ -341,7 +349,7 @@ void GGroupsHistory::SetGroupsSubject(void) throw(std::bad_alloc)
 		subjects=new R::RContainer<GSubject,false,true>(5,2);
 		for (grp->Start(); !grp->End(); grp->Next())
 		{
-			subjects->InsertPtr((*grp)()->GetSubProfile()->GetSubject());
+			subjects->InsertPtr(Manager->GetSession()->GetSubjects()->GetSubject((*grp)()->GetSubProfile()));
 		}
 
 		// find the most dominant one
@@ -351,7 +359,7 @@ void GGroupsHistory::SetGroupsSubject(void) throw(std::bad_alloc)
 			occur=0;
 			for (grp->Start(); !grp->End(); grp->Next())
 			{
-				if ((*grp)()->GetSubProfile()->GetSubject()->GetId()==(*subjects)()->GetId())
+				if(Manager->GetSession()->GetSubjects()->GetSubject((*grp)()->GetSubProfile())->GetId()==(*subjects)()->GetId())
 					occur++;
 			}
 			knownsubject+=occur;
@@ -376,7 +384,7 @@ void GGroupsHistory::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 	{
 		grp=(*this)();
 		for (grp->Start(); !grp->End(); grp->Next())
-			if((*grp)()->GetSubProfile()->GetSubject()->GetId()==grp->GetSubject()->GetId())
+			if(Manager->GetSession()->GetSubjects()->GetSubject((*grp)()->GetSubProfile())->GetId()==grp->GetSubject()->GetId())
 				(*grp)()->SetWellGrouped(true);
 			else
 				(*grp)()->SetWellGrouped(false);

@@ -173,6 +173,8 @@ public:
 	* Destructor of a subject.
 	*/
 	~GSubject(void);
+
+	friend class GSubjects;
 };
 
 

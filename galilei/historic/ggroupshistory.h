@@ -53,13 +53,19 @@ namespace GALILEI{
 */
 class GGroupsHistoryManager : public R::RContainer<GGroupsHistory,true,true>
 {
+	/**
+	* Pointer to the session.
+	*/
+	GSession* Session;
+
 public :
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param max             Maximal number of word created at initialisation.
 	*/
-	GGroupsHistoryManager(unsigned int max) throw(std::bad_alloc);
+	GGroupsHistoryManager(GSession* session,unsigned int max) throw(std::bad_alloc);
 
 	/**
 	* Get a cursor on the history of all groupments.
@@ -93,6 +99,11 @@ public :
 	* @param gh              History of a groupment.
 	*/
 	void InsertGroupsHistory(GGroupsHistory* gh)  throw(std::bad_alloc);
+
+	/**
+	* Get the associated session.
+	*/
+	GSession* GetSession(void) const;
 
 	/**
 	*   Destructor.

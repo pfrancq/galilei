@@ -195,11 +195,6 @@ protected:
 	*/
 	bool Social;
 
-	/**
-	* Subject of the profile.
-	*/
-	GSubject* Subject;
-
 public:
 
     /**
@@ -238,17 +233,6 @@ public:
 	int Compare(const unsigned int id) const;
 
 proxy:
-
-	/**
-	* Set the Subject of the subprofile.
-	* @param s              Subject.
-	*/
-	void SetSubject(GSubject* s);
-
-	/**
-	* Get the subject of the subprofile.
-	*/
-	GSubject* GetSubject(void) const;
 
 	/**
 	* Get the identificator of the profile.

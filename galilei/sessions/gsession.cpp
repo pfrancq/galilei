@@ -128,7 +128,7 @@ GSession::GSession(GStorage* str)
 	Random = new RRandomGood(CurrentRandom);
 
 	// create the groups history manager.
-	GroupsHistoryMng=new GGroupsHistoryManager(2);
+	GroupsHistoryMng=new GGroupsHistoryManager(this,2);
 }
 
 
@@ -152,7 +152,7 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 		Subjects=new GSubjects(this);
 
 	// create the groups history manager.
-	GroupsHistoryMng=new GGroupsHistoryManager(2);
+	GroupsHistoryMng=new GGroupsHistoryManager(this,2);
 }
 
 

@@ -6,7 +6,7 @@
 
 	Proxy for class GSubProfile - Header.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		CProxy program
@@ -84,8 +84,6 @@ public:
 	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException) {return(Obj->SimilarityIFF(sub));}
 	virtual double Similarity(const GGroup* grp) const {return(Obj->Similarity(grp));}
 	virtual double SimilarityIFF(const GGroup* grp) const throw(GException) {return(Obj->SimilarityIFF(grp));}
-	virtual void SetSubject(GSubject* s) {Obj->SetSubject(s);}
-	virtual GSubject* GetSubject(void) const {return(Obj->GetSubject());}
 	virtual void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed) {Obj->Update(infos,computed);}
 	virtual void ClearFdbks(void) {Obj->ClearFdbks();}
 	virtual ~GSubProfileProxyMem(void) {}

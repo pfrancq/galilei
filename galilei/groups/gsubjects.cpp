@@ -103,7 +103,7 @@ public:
 GSubjects::GSubjects(GSession* session) throw(std::bad_alloc)
 	: RTree<GSubject,true,false>(100,50), GParams("Subjects"), Session(session),
 	  Docs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25), IdealGroups(0),
-	  GroupsScore(100,50)
+	  GroupsScore(100,50), SubProfiles(1000)
 {
 	GParams::InsertPtr(new GParamDouble("PercOK",10.0));
 	GParams::InsertPtr(new GParamDouble("PercKO",10.0));
@@ -539,14 +539,14 @@ void GSubjects::FdbksCycle(bool Save) throw(std::bad_alloc)
 			for(NewDocs.Start(),i=NbDocsAssess+1;(!NewDocs.End())&&(--i);NewDocs.Next())
 			{
 				// Look if 'OK'
-				if(NewDocs()->GetDoc()->IsFromSubject(SubProfile()->GetSubject()))
+				if(NewDocs()->GetDoc()->IsFromSubject(GetSubject(SubProfile())))
 				{
 					Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),NewDocs()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 				else
 				{
 					// Look If 'KO'
-					if(NewDocs()->GetDoc()->IsFromParentSubject(SubProfile()->GetSubject()))
+					if(NewDocs()->GetDoc()->IsFromParentSubject(GetSubject(SubProfile())))
 					{
 						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),NewDocs()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
@@ -764,7 +764,7 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(std::bad_alloc)
 		Sub=CurGrps()->GetSubProfilesCursor();
 		Sub.Start();
 		if(Sub.End()) continue;
-		if(Sub()->GetSubject()->GetId()==usedSubject->GetId())
+		if(GetSubject(Sub())->GetId()==usedSubject->GetId())
 		{
 			Grp=CurGrps();
 			break;
@@ -861,7 +861,7 @@ double GSubjects::ComputePercAss(void)
 			if(Cur1()==Sub) continue;
 
 			// If both subprofiles are not related to the same topic, skip it.
-			if(Cur1()->GetSubject()!=Sub->GetSubject()) continue;
+			if(GetSubject(Cur1())!=GetSubject(Sub)) continue;
 
 			// Make comparaisons
 			nb++;
@@ -894,6 +894,7 @@ GSubject* GSubjects::GetSubject(unsigned int id)
 void GSubjects::Clear(void) throw(std::bad_alloc)
 {
 	RTree<GSubject,true,false>::Clear();
+	SubProfiles.Clear();
 }
 
 
@@ -937,6 +938,27 @@ double GSubjects::GetRecall(GGroup* grp)
 GGroups* GSubjects::GetIdealGroups(void)
 {
 	return(IdealGroups);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubjects::InsertSubProfileSubject(GSubProfile* sub,unsigned int subjectid)
+{
+	GSubject* subject=RTree<GSubject,true,false>::GetPtr<unsigned int>(subjectid);
+
+	if(!subject)
+		return;
+	if(subject->GetLang()!=sub->GetLang())
+		return;
+	SubProfiles.InsertPtrAt(subject,sub->GetId(),true);
+	subject->InsertSubProfile(sub);
+}
+
+
+//------------------------------------------------------------------------------
+GSubject* GSubjects::GetSubject(GSubProfile* sub)
+{
+	return(SubProfiles[sub->GetId()]);
 }
 
 

@@ -172,20 +172,6 @@ int GProfile::Compare(const unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::SetSubject(GSubject* s)
-{
-	Subject=s;
-}
-
-
-//------------------------------------------------------------------------------
-GSubject* GProfile::GetSubject(void) const
-{
-	return(Subject);
-}
-
-
-//------------------------------------------------------------------------------
 void GProfile::SetId(unsigned int id) throw(GException)
 {
 	if(Id==cNoRef)

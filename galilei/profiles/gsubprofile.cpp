@@ -56,7 +56,6 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,
 {
 	if(!Profile)
 		throw GException("Subprofile "+itou(id)+" has no parent profile");
-	Subject=0;
 	if(Updated>=Computed)
 	{
 		if(Computed==RDate::null)
@@ -78,7 +77,6 @@ GSubProfile::GSubProfile(GSession* session,GProfile *prof,GLang *lang)
 {
 	if(!Profile)
 		throw GException("Subprofile has no parent profile");
-	Subject=0;
 	session->AssignId(this);
 	Profile->InsertPtr(this);
 }
@@ -390,20 +388,6 @@ double GSubProfile::SimilarityIFF(const GGroup* grp) const throw(GException)
 unsigned int GSubProfile::GetNbNoNull(void) const
 {
 	return(NbPtr);
-}
-
-
-//------------------------------------------------------------------------------
-void GSubProfile::SetSubject(GSubject* s)
-{
-	Subject=s;
-}
-
-
-//------------------------------------------------------------------------------
-GSubject* GSubProfile::GetSubject(void) const
-{
-	return(Subject);
 }
 
 

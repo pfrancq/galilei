@@ -536,15 +536,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 		// Load profiles
 		RQuery Profiles(Db,"SELECT profileid,description,social,topicid,userid FROM profiles");
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
-		{
 			session->InsertProfile(prof=new GProfile(session->GetUser(atoi(Profiles[4])),atoi(Profiles[0]),Profiles[1],(atoi(Profiles[2])==1),5));
-			if(session->GetSubjects())
-			{
-				s=session->GetSubjects()->GetSubject(atoi(Profiles[3]));
-				if(s)
-					prof->SetSubject(s);
-			}
-		}
 
 		// Load subprofiles
 		RQuery SubProfiles(Db,"SELECT subprofiles.subprofileid,subprofiles.langid,subprofiles.attached,subprofiles.groupid,subprofiles.updated,subprofiles.calculated,subprofiles.profileid,profiles.topicid FROM subprofiles,profiles WHERE subprofiles.profileid=profiles.profileid");
@@ -559,12 +551,8 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 			session->InsertSubProfile(sub=new GSubProfile(prof,atoi(SubProfiles[0]),lang,
 			                                     session->GetGroup(atoi(SubProfiles[3])),SubProfiles[2],
 			                                     GetMySQLToDate(SubProfiles[4]),GetMySQLToDate(SubProfiles[5])));
-			s=session->GetSubjects()->GetSubject(atoi(SubProfiles[7]));
-			if((s)&&(sub->GetLang()==s->GetLang()))
-			{
-				sub->SetSubject(s);
-				s->InsertSubProfile(sub);
-			}
+			if(session->GetSubjects())
+				session->GetSubjects()->InsertSubProfileSubject(sub,atoi(SubProfiles[7]));
 		}
 
 		// Load subprofiles description
@@ -675,7 +663,7 @@ void GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup) throw(GException)
 			sub=groups()->GetSubProfilesCursor();
 			for(sub.Start();!sub.End();sub.Next())
 			{
-				sSql="INSERT INTO idealgroup(profileid,langid,groupid) VALUES("+itou(sub()->GetProfile()->GetId())+",'"+groups()->GetLang()->GetCode()+"',"+itou(groups()->GetId())+")";
+				sSql="INSERT INTO idealgroup(profileid,langid,groupid) VALUES("+itou(sub()->GetProfile()->GetId())+",'"+sub()->GetLang()->GetCode()+"',"+itou(groups()->GetId())+")";
 				RQuery insert(Db,sSql);
 			}
 		}

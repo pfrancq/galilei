@@ -101,11 +101,6 @@ protected:
 	*/
 	R::RContainer<GFdbk,false,false> Fdbks;
 
-	/**
-	* Subject of the subprofile.
-	*/
-	GSubject* Subject;
-
 public:
 
 	/**
@@ -359,17 +354,6 @@ proxy:
 	* @param grp             Pointer to a group.
 	*/
 	double SimilarityIFF(const GGroup* grp) const throw(GException);
-
-	/**
-	* Set the Subject of the subprofile.
-	* @param s              Subject.
-	*/
-	void SetSubject(GSubject* s);
-
-	/**
-	* Get the subject of the subprofile.
-	*/
-	GSubject* GetSubject(void) const;
 
 	/**
 	* Update the subprofile by assigning it a set of information and a language.

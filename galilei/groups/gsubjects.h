@@ -40,6 +40,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rtree.h>
+#include <rmath/rvectorint.h>
 
 
 //-----------------------------------------------------------------------------
@@ -176,6 +177,11 @@ protected:
 	* SubProfiles that where changed and must be grouped again.
 	*/
 	R::RContainer<GroupScore,true,true> GroupsScore;
+
+	/**
+	* Identificator of the subjects for the subprofiles.
+	*/
+	R::RContainer<GSubject,false,false> SubProfiles;
 
 public:
 
@@ -325,6 +331,19 @@ public:
 	* @return Pointer to R::RContainer<GGroups,true,true>.
 	*/
 	GGroups* GetIdealGroups(void);
+
+	/**
+	* Add a given subprofile to a subject.
+	* @param sub            Pointer to the subprofile.
+	* @param subjectid      Identificator of the subject.
+	*/
+	void InsertSubProfileSubject(GSubProfile* sub,unsigned int subjectid);
+
+	/**
+	* Get the subject of a given subprofile.
+	* @param sub            Pointer to the subprofile.
+	*/
+	GSubject* GetSubject(GSubProfile* sub);
 
 	/**
 	* Destructor of a subject.

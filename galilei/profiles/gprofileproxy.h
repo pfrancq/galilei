@@ -6,7 +6,7 @@
 
 	Proxy for class GProfile - Header.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		CProxy program
@@ -51,12 +51,10 @@ public:
 	GProfileProxy(void) {}
 	virtual int Compare(const GProfileProxy* ptr) const=0;
 	virtual int Compare(const unsigned int id) const=0;
-	virtual void SetSubject(GSubject* s)=0;
-	virtual GSubject* GetSubject(void) const=0;
 	virtual unsigned int GetId(void) const=0;
 	virtual void SetId(unsigned int id)  throw(GException)=0;
 	virtual R::RString GetName(void) const=0;
-	virtual const GUser* GetUser(void) const=0;
+	virtual GUser* GetUser(void) const=0;
 	virtual bool IsSocial(void) const=0;
 	virtual void SetSocial(bool social)=0;
 	virtual GSubProfile* GetSubProfile(const GLang* lang) const=0;
