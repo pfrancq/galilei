@@ -115,8 +115,8 @@ GALILEI::GDocAnalyse::WordOccur::~WordOccur(void)
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocAnalyse::GDocAnalyse(GSession* s) throw(bad_alloc)
-	: Session(s), CurLangs(Session->GetLangs()), Occurs(0), Direct(0),
-	  NbDirect(5000), Sl(0), Sldiff(0), Lang(0), Doc(0)
+	: Session(s), CurLangs(Session->GetLangs()), Occurs(0), Words(0), Direct(0),
+	  NbDirect(5000), Sl(0), Sldiff(0), Lang(0)
 {
 	WordOccur** ptr;
 	unsigned int i;
@@ -140,7 +140,7 @@ void GALILEI::GDocAnalyse::Clear(void)
 
 	memset(Sl,0,sizeof(unsigned int)*Session->GetNbLangs());
 	memset(Sldiff,0,sizeof(unsigned int)*Session->GetNbLangs());
-	N=Ndiff=S=Sdiff=0;
+	N=Ndiff=V=Vdiff=S=Sdiff=0;
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)->Clear();
 	for(i=27+1,ptr1=Occurs->Hash;--i;ptr1++)
@@ -323,125 +323,16 @@ void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
+unsigned int GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
 {
-	RXMLTag* content;
-	GDict* dic;
+	unsigned int LangIndex=cNoRef;
 	double Frac,MinFrac;
 	unsigned int i;
 	unsigned int* tmp1;
 	unsigned int* tmp2;
-	WordOccur** wrd;
-	RString stem(50);
-	unsigned int LangIndex;
-	GIWordOccur* Occur;
 
-	// Init Part and verification
-	if(!xml)
-		throw GException("No XML Structure for document '"+doc->URL+"'");
-	Doc=doc;
-	Lang=Doc->GetLang();
 	MinFrac=Session->GetMinStopWords();
-	FindLang=((!Doc->Lang)||(!Session->IsStaticLang()));
-	content=xml->GetContent();
-	RAssert(content);
-	Clear();
-
-	// Analyse the doc structure.
-	AnalyseTag(content);
-
-	// Find Language (if necessary) with the maximal number of words of the
-	// stoplist contained in the document and with the minimal value for the
-	// fraction of stopwords that are in the document.
-	if(FindLang)
-	{
-		Doc->Lang=Lang=0;
-		for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
-		{
-			Frac=((double)(*tmp1))/((double)Ndiff);
-			if(((*tmp2)>S)&&(Frac>=MinFrac))
-			{
-				Lang=CurLangs();
-				S=(*tmp2);
-				Sdiff=(*tmp1);
-				LangIndex=i;
-			}
-		}
-		if(!Lang) return;
-	}
-	else
-	{
-		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
-	}
-
-	// Set the Variable of the document
-	Doc->Lang=Lang;
-	Doc->N=N;
-	Doc->Ndiff=Ndiff;
-	Doc->V=0;
-	Doc->Vdiff=0;
-	dic=Session->GetDic(Lang);
-
-	// Analyse it
-	Doc->Words->Clear();
-	for(i=Ndiff+1,wrd=Direct;--i;wrd++)
-	{
-		if((*wrd)->InStop[LangIndex]) continue;
-		if((*wrd)->OnlyLetters)
-		{
-			stem=Doc->Lang->GetStemming((*wrd)->Word);
-		}
-		else
-		{
-			// Not necessary because when not begin with a letter, word not extract
-			// if(!Lang->ValidWord((*wrd)->Word))
-			//	continue;
-			stem=(*wrd)->Word;
-		}
-		if(stem.GetLen()>=Session->GetMinStemSize())
-		{
-			Occur=Doc->Words->GetPtr(dic->GetId(stem));
-			if(!Occur->GetNbOccurs())
-				Doc->Vdiff++;
-			Doc->V+=(*wrd)->Nb;
-			Occur->AddNbOccurs((*wrd)->Nb);
-		}
-	}
-
-	// Make it 'Updated' and tell all the profiles that have judge this
-	// document that they are 'Modified'.
-	Doc->State=osUpdated;
-	Doc->Computed.SetToday();
-	for(Doc->Fdbks.Start();!Doc->Fdbks.End();Doc->Fdbks.Next())
-		Doc->Fdbks()->GetProfile()->SetState(osModified);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
-{
-	RXMLTag* content;
-	double Frac,MinFrac;
-	unsigned int i;
-	unsigned int* tmp1;
-	unsigned int* tmp2;
-	RString stem(50);
-	unsigned int LangIndex;
-
-	// Init Part and verification
-	if(!xml)
-		throw GException("No XML Structure");
-	MinFrac=Session->GetMinStopWords();
-	content=xml->GetContent();
-	RAssert(content);
 	Lang=0;
-	Clear();
-
-	// Analyse the doc structure.
-	AnalyseTag(content);
-
-	// Determine Lang and LangIndex for current analyse.
-	// Computes General Statistics
 	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 	{
 		Frac=((double)(*tmp1))/((double)Ndiff);
@@ -453,9 +344,128 @@ void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
 			LangIndex=i;
 		}
 	}
-	if(!Lang) return;
+	return(LangIndex);
+}
 
-	// Computes Statictics dependant of the language
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocAnalyse::ConstructInfos(unsigned int LangIndex) throw(GException)
+{
+	WordOccur** wrd;
+	GIWordOccur* Occur;
+	unsigned int i;
+	RString stem(50);
+	GDict* dic;
+
+	dic=Session->GetDic(Lang);
+	if(Words)
+		Words->Clear();
+	else
+		Words=new GIWordOccurs(Ndiff);
+	for(i=Ndiff+1,wrd=Direct;--i;wrd++)
+	{
+		if((*wrd)->InStop[LangIndex]) continue;
+		if((*wrd)->OnlyLetters)
+		{
+			stem=Lang->GetStemming((*wrd)->Word);
+		}
+		else
+		{
+			// Not necessary because when not begin with a letter, word not extract
+			// if(!Lang->ValidWord((*wrd)->Word))
+			//	continue;
+			stem=(*wrd)->Word;
+		}
+		if(stem.GetLen()>=Session->GetMinStemSize())
+		{
+			Occur=Words->GetPtr(dic->GetId(stem));
+			if(!Occur->GetNbOccurs())
+				Vdiff++;
+			V+=(*wrd)->Nb;
+			Occur->AddNbOccurs((*wrd)->Nb);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
+{
+	RXMLTag* content;
+	unsigned int LangIndex;
+
+	// Init Part and verification
+	if(!xml)
+		throw GException("No XML Structure for document '"+doc->URL+"'");
+	Lang=doc->GetLang();
+	FindLang=((!doc->Lang)||(!Session->IsStaticLang()));
+	content=xml->GetContent();
+	RAssert(content);
+
+	// Analyse the doc structure.
+	Clear();
+	AnalyseTag(content);
+
+	// Determine the Language if necessary.
+	if(FindLang)
+		LangIndex=DetermineLang();
+	else
+	{
+		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
+	}
+	if(!Lang)
+	{
+		doc->Lang=0;
+		if(doc->Words)
+			doc->Words->Clear();
+		return;
+	}
+
+	// Construct Information
+	ConstructInfos(LangIndex);
+
+	// Set the Variable of the document
+	doc->Lang=Lang;
+	doc->N=N;
+	doc->Ndiff=Ndiff;
+	doc->V=V;
+	doc->Vdiff=Vdiff;
+	if(doc->Words)
+		delete doc->Words;
+
+	// Make it 'Updated' and tell all the profiles that have judge this
+	// document that they are 'Modified'.
+	doc->Words=Words;
+	Words=0;
+	doc->State=osUpdated;
+	doc->Computed.SetToday();
+	for(doc->Fdbks.Start();!doc->Fdbks.End();doc->Fdbks.Next())
+		doc->Fdbks()->GetProfile()->SetState(osModified);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
+{
+	RXMLTag* content;
+	unsigned int LangIndex;
+
+	// Init Part and verification
+	if(!xml)
+		throw GException("No XML Structure");
+	content=xml->GetContent();
+	RAssert(content);
+	Lang=0;
+	FindLang=true;
+	Clear();
+
+	// Analyse the doc structure.
+	AnalyseTag(content);
+
+	// Compute everything for current structure.
+	LangIndex=DetermineLang();
+	if(!Lang) return;
+	ConstructInfos(LangIndex);
 }
 
 
@@ -474,4 +484,5 @@ GALILEI::GDocAnalyse::~GDocAnalyse(void)
 	}
 	if(Sldiff) delete[] Sldiff;
 	if(Sl) delete[] Sl;
+	if(Words) delete Words;
 }
