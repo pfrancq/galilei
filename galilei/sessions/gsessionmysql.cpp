@@ -171,6 +171,7 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 	RQuery getinsert(this,sSql);
 	getinsert.Begin();
 	return(strtoul(getinsert[0],0,10));
+	
 }
 
 
@@ -490,11 +491,11 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 		sprintf(sSql,"DELETE FROM %shtmlsbykwds WHERE htmlid=%u",l,id);
 		RQuery deletekwds(this,sSql);
 		Words=doc->GetWordWeightCursor();
-		for(Words.Start();!Words.End();Words.Next())
-		{
-			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%lf)",l,id,Words()->GetId(),Words()->GetWeight());
-			RQuery insertkwds(this,sSql);
-		}
+		//for(Words.Start();!Words.End();Words.Next())
+		//{
+		//	sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%lf)",l,id,Words()->GetId(),Words()->GetWeight());
+		//	RQuery insertkwds(this,sSql);
+		//}
 		l=ValidSQLValue(l,slang);
 	}
 	else
@@ -585,17 +586,13 @@ void GALILEI::GSessionMySQL::ExecuteData(const char* filename) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::ExportDM(void)
+void GALILEI::GSessionMySQL::ExportDM(const char* url)
 {
 	char sSql[200];
 	// s arrenger pour voir ou on peut sauver le fichier
-	RTextFile* text= new RTextFile ("../../../dataen",RTextFile::Create);
-	text->SetSeparator("");
-	char* separator;
-	char* separatordata;
-	separator=" ";
-	separatordata=" ";
-
+	RTextFile text(url,RTextFile::Create);
+	text.SetSeparator("");
+	
 	int maxid;
 	sprintf(sSql,"SELECT max(kwdid) FROM enkwds ");
 	RMySQL::RQuery maxd (this,sSql);
@@ -618,17 +615,17 @@ void GALILEI::GSessionMySQL::ExportDM(void)
 			vector[i]=1;
 		}
 	}
-	(*text)<< separatordata;
+	(text)<<" ";
 	int compt =0;
 	for(int i=1;i<maxid+1;i++)
 	{
 		if((vector[i]==1))
 		{
-		(*text)<<separatordata<<i;
-		compt++;
+			(text)<<" "<<i;
+			compt++;
 		}
 	}
-	(*text)<<endl;
+	(text)<<endl;
 	
 	sprintf(sSql,"SELECT htmlid  FROM htmls where langid like('en') order by htmlid");
 	RMySQL::RQuery docs (this,sSql);
@@ -646,15 +643,15 @@ void GALILEI::GSessionMySQL::ExportDM(void)
 		{
 			wvector[atoi(query[1])]=atof(query[0]);
 		}
-		(*text)<<docs[0];
+		(text)<<docs[0];
 		for(int i=1;i<maxid+1;i++)
 		{
 			if(vector[i]==1)
 			{
-				(*text)<<separatordata<<wvector[i];
+				(text)<<" "<<wvector[i];
 			}
 		}
-		(*text)<<endl;
+		(text)<<endl;
 	}
 }
 
@@ -662,7 +659,7 @@ void GALILEI::GSessionMySQL::ExportDM(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::ImportDC(const char* url)
 {
-	RTextFile* group= new RTextFile (url,RTextFile::Read);
+	RTextFile group (url,RTextFile::Read);
 	char sSql[200];
 
 	sprintf(sSql,"delete from enkwds");
@@ -671,39 +668,37 @@ void GALILEI::GSessionMySQL::ImportDC(const char* url)
 	sprintf(sSql,"delete from enhtmlsbykwds");
 	RMySQL::RQuery delete2(this,sSql);
 
+	sprintf(sSql,"delete from ensubprofilesbykwds");
+	RMySQL::RQuery delete3(this,sSql);
+
 	int i=1;
 	int nbword;
-	while(group->ActualLine()==1)
+	while(group.ActualLine()==1)
 	{
-		sprintf(sSql,"insert into enkwds(kwd,kwdid) values('%s',%u)",group->GetWord(),i);
+		sprintf(sSql,"insert into enkwds(kwd,kwdid) values('%s',%u)",group.GetWord(),i);
 		RMySQL::RQuery insert1(this,sSql);
 		i++;
 	}
 	i--;
 	nbword=i;
 	int htmlid;
-	while (!(group->Eof()))
+	while (!(group.Eof()))
 	{
-		htmlid=atoi(group->GetWord());
+		htmlid=atoi(group.GetWord());
 		for (int j=1;j<nbword+1;j++)
 		{
-			sprintf(sSql,"insert into enhtmlsbykwds(htmlid,kwdid,occurs) values(%u,%u,%s)",htmlid,j,group->GetWord());
+			sprintf(sSql,"insert into enhtmlsbykwds(htmlid,kwdid,occurs) values(%u,%u,%s)",htmlid,j,group.GetWord());
 			RMySQL::RQuery insert1(this,sSql);
 		}
 	}
 }
 
-
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::ExportP(void)
+void GALILEI::GSessionMySQL::ExportP(const char* url)
 {
 	char sSql[200];
-	RTextFile* prof= new RTextFile ("../../../profen",RTextFile::Create);
-	prof->SetSeparator("");
-	char* separator;
-	char* separatordata;
-	separator=" ";
-	separatordata=" ";
+	RTextFile prof(url,RTextFile::Create);
+	prof.SetSeparator("");
 
 	int maxid;
 	sprintf(sSql,"SELECT max(kwdid) FROM enkwds ");
@@ -727,19 +722,19 @@ void GALILEI::GSessionMySQL::ExportP(void)
 			vector[i]=1;
 		}
 	}
-	(*prof)<< separatordata;
+	(prof)<<" ";
 	int compt;
 	compt =0;
 	for(int i=1;i<maxid+1;i++)
 	{
 		if((vector[i]==1))
 		{
-			(*prof)<<separatordata<<i;
+			(prof)<<" "<<i;
 			compt++;
 		}
 	}
 
-	(*prof)<<endl;
+	(prof)<<endl;
 	sprintf(sSql,"SELECT distinct(subprofileid) FROM ensubprofilesbykwds ");
 	RMySQL::RQuery profi (this,sSql);
 	for(profi.Begin();profi.IsMore();profi++)
@@ -759,40 +754,39 @@ void GALILEI::GSessionMySQL::ExportP(void)
 		RMySQL::RQuery query20(this,sSql);
 		for(query20.Begin();query20.IsMore();query20++)
 		{
-			(*prof)<<query20[0];
+			(prof)<<query20[0];
 		}
 		for(int i=1;i<maxid+1;i++)
 		{
 			if(vector[i]==1)
 			{
-				(*prof)<<separatordata<<wvector[i];
+				(prof)<<" "<<wvector[i];
 			}
 		}
-		(*prof)<<endl;
+		(prof)<<endl;
 	}
 }
-
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::ImportG(const char* url)
 {
-	RTextFile* group= new RTextFile (url,RTextFile::Read);
+	RTextFile group (url,RTextFile::Read);
 	char sSql[200];
-	group->GetWord();
-	group->GetWord();
+	group.GetWord();
+	group.GetWord();
 	sprintf(sSql,"delete from groups");
 	RMySQL::RQuery delete1(this,sSql);
 	sprintf(sSql,"delete from subprofiles");
 	RMySQL::RQuery delete2(this,sSql);
 	char* profile;
 	char* groupe;
-	while (!(group->Eof()))
+	while (!(group.Eof()))
 	{
 		char* ptmp;
 		char* gtmp;
-		group->GetWord();
-		groupe=group->GetWord();
-		profile=group->GetWord();
+		group.GetWord();
+		groupe=group.GetWord();
+		profile=group.GetWord();
 		profile++;
 		ptmp=profile;
 		groupe++;
@@ -816,7 +810,6 @@ void GALILEI::GSessionMySQL::ImportG(const char* url)
 		RMySQL::RQuery insert1(this,sSql);
 	}
 }
-
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionMySQL::~GSessionMySQL()

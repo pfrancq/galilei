@@ -216,8 +216,9 @@ public:
 
 	/**
 	* Export the words,document matrix into a file.
+	* @param url            The url of the matrix file.
 	*/
-	virtual void ExportDM(void);
+	virtual void ExportDM(const char* url);
 
 	/**
 	* IMPORT the words,document matrix from a file.
@@ -227,8 +228,9 @@ public:
 
 	/**
 	* Export the prolife,word matrix into a file.
+	* @param url            The url of the matrix file.
 	*/
-	virtual void ExportP(void);
+	virtual void ExportP(const char* url);
 
 	/**
 	* Import the groupment matrix from a file.
