@@ -42,6 +42,8 @@
 #include <rga/qgamonitor.h>
 #include <rga/qxmlcontainer.h>
 using namespace RGA;
+#include <rpromethee/rpromcriterion.h>
+using namespace RPromethee;
 
 
 //-----------------------------------------------------------------------------
@@ -145,6 +147,26 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	* Size of the Population.
 	*/
 	unsigned int PopSize;
+
+	/**
+	* Parameter for the criterion "Similariry".
+	*/
+	RPromethee::RPromCriterionParams ParamsSim;
+
+	/**
+	* Parameter for the criterion "NB Profiles".
+	*/
+	RPromethee::RPromCriterionParams ParamsNb;
+
+	/**
+	* Parameter for the criterion "OK Factor".
+	*/
+	RPromethee::RPromCriterionParams ParamsOK;
+
+	/**
+	* Parameter for the criterion "Diff Factor".
+	*/
+	RPromethee::RPromCriterionParams ParamsDiff;
 
 	/**
 	* SubProfiles that must be grouped again.

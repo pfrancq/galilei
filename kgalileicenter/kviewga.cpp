@@ -67,7 +67,9 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 KViewGA::KViewGA(KDoc* doc,const char* l,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), RGASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>(),
-	  CurId(0), Instance(0), Gen(0), PopSize(0),SubProfiles(0), Objs(0), Sims(0)
+	  CurId(0), Instance(0), Gen(0), PopSize(0),ParamsSim(0.2,0.05,1.0),
+	  ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0), ParamsDiff(0.2,0.05,1.0),
+	  SubProfiles(0), Objs(0), Sims(0)
 {
 	static char tmp[100];
 	GLang* lang;
@@ -81,7 +83,12 @@ KViewGA::KViewGA(KDoc* doc,const char* l,QWidget* parent,const char* name,int wf
 	setCaption(QString("GALILEI Genetic Algorithms - ")+lang->GetName());
 
 	// Values
-	sscanf(Doc->GetSession()->GetGroupingMethodSettings("Grouping Genetic Algorithms"),"%u %u %c %u %lf",&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel);
+	sscanf(Doc->GetSession()->GetGroupingMethodSettings("Grouping Genetic Algorithms"),"%u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,
+	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
+	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
+	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,
+	       &ParamsDiff.P,&ParamsDiff.Q,&ParamsDiff.Weight);
 	if(c=='1') Step=true; else Step=false;
 
 	// Tab
@@ -123,6 +130,10 @@ KViewGA::KViewGA(KDoc* doc,const char* l,QWidget* parent,const char* name,int wf
 	try
 	{
 		Instance=new GInstIR(MinSimLevel,MaxGen,PopSize,Objs,Sims,RGGA::FirstFit,Debug);
+		Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
+		Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
+		Instance->SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
+		Instance->SetCriterionParam("Diff Factor",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
 		Instance->AddReceiver(this);
 		Instance->Init(&g);
 	}
