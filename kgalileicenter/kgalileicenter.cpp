@@ -878,101 +878,101 @@ void KGALILEICenterApp::slotRunInsts(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotWindowActivated(QWidget*)
 {
-	KView* m = (KView*)pWorkspace->activeWindow();
+	KView* m = dynamic_cast<KView*>(pWorkspace->activeWindow());
+	GViewType type;
+
 	if(m)
 	{
 		// Update caption
 		setCaption(m->caption());
-
-		// Update menu
-		switch(m->getType())
-		{
-			case gUsers:
-				createXML->setEnabled(false);
-				saveXML->setEnabled(false);
-				analyseXML->setEnabled(false);
-				profileCalc->setEnabled(false);
-				gaStart->setEnabled(false);
-				gaPause->setEnabled(false);
-				gaStop->setEnabled(false);
-				gaSave->setEnabled(false);
-				break;
-
-			case gDocs:
-				createXML->setEnabled(false);
-				saveXML->setEnabled(false);
-				analyseXML->setEnabled(false);
-				profileCalc->setEnabled(false);
-				gaStart->setEnabled(false);
-				gaPause->setEnabled(false);
-				gaStop->setEnabled(false);
-				gaSave->setEnabled(false);
-				break;
-
-			case gDoc:
-				createXML->setEnabled(!(((KViewDoc*)m)->IsDocXML()));
-				saveXML->setEnabled(((KViewDoc*)m)->IsDocXML());
-				analyseXML->setEnabled(((KViewDoc*)m)->IsDocXML());
-				profileCalc->setEnabled(false);
-				gaStart->setEnabled(false);
-				gaPause->setEnabled(false);
-				gaStop->setEnabled(false);
-				gaSave->setEnabled(false);
-				break;
-
-			case gProfile:
-				createXML->setEnabled(false);
-				saveXML->setEnabled(false);
-				analyseXML->setEnabled(false);
-				profileCalc->setEnabled(true);
-				gaStart->setEnabled(false);
-				gaPause->setEnabled(false);
-				gaStop->setEnabled(false);
-				gaSave->setEnabled(false);
-				break;
-
-			case gGroups:
-				saveXML->setEnabled(false);
-				createXML->setEnabled(false);
-				analyseXML->setEnabled(false);
-				profileCalc->setEnabled(false);
-				gaStart->setEnabled(false);
-				gaPause->setEnabled(false);
-				gaStop->setEnabled(false);
-				gaSave->setEnabled(false);
-				break;
-
-			case gGA:
-				createXML->setEnabled(false);
-				saveXML->setEnabled(false);
-				analyseXML->setEnabled(false);
-				profileCalc->setEnabled(false);
-				gaStart->setEnabled(true);
-				gaPause->setEnabled(true);
-				gaStop->setEnabled(true);
-				gaSave->setEnabled(true);
-				break;
-
-			case gNothing:
-			default:
-				createXML->setEnabled(false);
-				saveXML->setEnabled(false);
-				analyseXML->setEnabled(false);
-				profileCalc->setEnabled(false);
-				gaStart->setEnabled(false);
-				gaPause->setEnabled(false);
-				gaStop->setEnabled(false);
-				gaSave->setEnabled(false);
-				break;
-		}
+		type=m->getType();
 	}
 	else
 	{
 		setCaption("");
-		saveXML->setEnabled(false);
-		createXML->setEnabled(false);
-		analyseXML->setEnabled(false);
-		profileCalc->setEnabled(false);
+		type=gNothing;
+	}
+
+	// Update menu
+	switch(type)
+	{
+		case gUsers:
+			createXML->setEnabled(false);
+			saveXML->setEnabled(false);
+			analyseXML->setEnabled(false);
+			profileCalc->setEnabled(false);
+			gaStart->setEnabled(false);
+			gaPause->setEnabled(false);
+			gaStop->setEnabled(false);
+			gaSave->setEnabled(false);
+			break;
+
+		case gDocs:
+			createXML->setEnabled(false);
+			saveXML->setEnabled(false);
+			analyseXML->setEnabled(false);
+			profileCalc->setEnabled(false);
+			gaStart->setEnabled(false);
+			gaPause->setEnabled(false);
+			gaStop->setEnabled(false);
+			gaSave->setEnabled(false);
+			break;
+
+		case gDoc:
+			createXML->setEnabled(!(((KViewDoc*)m)->IsDocXML()));
+			saveXML->setEnabled(((KViewDoc*)m)->IsDocXML());
+			analyseXML->setEnabled(((KViewDoc*)m)->IsDocXML());
+			profileCalc->setEnabled(false);
+			gaStart->setEnabled(false);
+			gaPause->setEnabled(false);
+			gaStop->setEnabled(false);
+			gaSave->setEnabled(false);
+			break;
+
+		case gProfile:
+			createXML->setEnabled(false);
+			saveXML->setEnabled(false);
+			analyseXML->setEnabled(false);
+			profileCalc->setEnabled(true);
+			gaStart->setEnabled(false);
+			gaPause->setEnabled(false);
+			gaStop->setEnabled(false);
+			gaSave->setEnabled(false);
+			break;
+
+		case gGroups:
+			saveXML->setEnabled(false);
+			createXML->setEnabled(false);
+			analyseXML->setEnabled(false);
+			profileCalc->setEnabled(false);
+			gaStart->setEnabled(false);
+			gaPause->setEnabled(false);
+			gaStop->setEnabled(false);
+			gaSave->setEnabled(false);
+			break;
+
+		case gGA:
+			createXML->setEnabled(false);
+			saveXML->setEnabled(false);
+			analyseXML->setEnabled(false);
+			profileCalc->setEnabled(false);
+			gaStart->setEnabled(true);
+			gaPause->setEnabled(true);
+			gaStop->setEnabled(true);
+			gaSave->setEnabled(true);
+			break;
+
+		case gNothing:
+		default:
+			createXML->setEnabled(false);
+			saveXML->setEnabled(false);
+			analyseXML->setEnabled(false);
+			profileCalc->setEnabled(false);
+			gaStart->setEnabled(false);
+			gaPause->setEnabled(false);
+			gaStop->setEnabled(false);
+			gaSave->setEnabled(false);
+			break;
 	}
 }
 
