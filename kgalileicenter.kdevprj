@@ -1051,7 +1051,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/sessions/Makefile.am]
-files=kgalileicenter/galilei/sessions/gsession.cpp,kgalileicenter/galilei/sessions/gsession.h,kgalileicenter/galilei/sessions/gsessionmysql.cpp,kgalileicenter/galilei/sessions/gsessionmysql.h,kgalileicenter/galilei/sessions/gdataloader.cpp,kgalileicenter/galilei/sessions/gdataloader.h,kgalileicenter/galilei/sessions/gtest.cpp,kgalileicenter/galilei/sessions/gtest.h,kgalileicenter/galilei/sessions/gtests.cpp,kgalileicenter/galilei/sessions/gtests.h,kgalileicenter/galilei/sessions/gsessionprg.cpp,kgalileicenter/galilei/sessions/gsessionprg.h,kgalileicenter/galilei/sessions/gslot.cpp,kgalileicenter/galilei/sessions/gslot.h,kgalileicenter/galilei/sessions/gprginst.cpp,kgalileicenter/galilei/sessions/gprginst.h,kgalileicenter/galilei/sessions/gprgvar.cpp,kgalileicenter/galilei/sessions/gprgvar.h,kgalileicenter/galilei/sessions/gprginstfor.cpp,kgalileicenter/galilei/sessions/gprginstfor.h,kgalileicenter/galilei/sessions/gprgvarconst.cpp,kgalileicenter/galilei/sessions/gprgvarconst.h,kgalileicenter/galilei/sessions/gprgvarref.cpp,kgalileicenter/galilei/sessions/gprgvarref.h,kgalileicenter/galilei/sessions/gprginstmethod.cpp,kgalileicenter/galilei/sessions/gprginstmethod.h,kgalileicenter/galilei/sessions/gprgclass.cpp,kgalileicenter/galilei/sessions/gprgclass.h,kgalileicenter/galilei/sessions/gprgfunc.cpp,kgalileicenter/galilei/sessions/gprgfunc.h
+files=kgalileicenter/galilei/sessions/gsession.cpp,kgalileicenter/galilei/sessions/gsession.h,kgalileicenter/galilei/sessions/gsessionmysql.cpp,kgalileicenter/galilei/sessions/gsessionmysql.h,kgalileicenter/galilei/sessions/gdataloader.cpp,kgalileicenter/galilei/sessions/gdataloader.h,kgalileicenter/galilei/sessions/gtest.cpp,kgalileicenter/galilei/sessions/gtest.h,kgalileicenter/galilei/sessions/gtests.cpp,kgalileicenter/galilei/sessions/gtests.h,kgalileicenter/galilei/sessions/gsessionprg.cpp,kgalileicenter/galilei/sessions/gsessionprg.h,kgalileicenter/galilei/sessions/gslot.cpp,kgalileicenter/galilei/sessions/gslot.h,kgalileicenter/galilei/sessions/gprginst.cpp,kgalileicenter/galilei/sessions/gprginst.h,kgalileicenter/galilei/sessions/gprgvar.cpp,kgalileicenter/galilei/sessions/gprgvar.h,kgalileicenter/galilei/sessions/gprginstfor.cpp,kgalileicenter/galilei/sessions/gprginstfor.h,kgalileicenter/galilei/sessions/gprgvarconst.cpp,kgalileicenter/galilei/sessions/gprgvarconst.h,kgalileicenter/galilei/sessions/gprgvarref.cpp,kgalileicenter/galilei/sessions/gprgvarref.h,kgalileicenter/galilei/sessions/gprginstmethod.cpp,kgalileicenter/galilei/sessions/gprginstmethod.h,kgalileicenter/galilei/sessions/gprgclass.cpp,kgalileicenter/galilei/sessions/gprgclass.h,kgalileicenter/galilei/sessions/gprgfunc.cpp,kgalileicenter/galilei/sessions/gprgfunc.h,kgalileicenter/galilei/sessions/gprgvarval.cpp,kgalileicenter/galilei/sessions/gprgvarval.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=sessions
 sub_dirs=
@@ -1160,6 +1160,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/sessions/gprgvarref.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/sessions/gprgvarval.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/sessions/gprgvarval.h]
 dist=true
 install=false
 install_location=
