@@ -49,6 +49,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GDocProfSims class provides a representation for the similarities between
@@ -95,19 +96,19 @@ public:
 	* @param iff             Use Inverse Frequency Factor.
 	* @param memory      use container to stock sims?
 	*/
-	GDocProfSims(GSession* session,bool iff, bool memory) throw(bad_alloc);
+	GDocProfSims(GSession* session,bool iff, bool memory) throw(std::bad_alloc);
 
 	/**
 	* Re-initialize the similarities. This method can be used for testing
 	* purpose when it is necessary to start from different initial conditions.
 	*/
-	void ReInit(void) throw(bad_alloc);
+	void ReInit(void) throw(std::bad_alloc);
 
 	/**
 	* Set if the Inverse Frequency Factor should be used.
 	* @param iff             Use Inverse Frequency Factor.
 	*/
-	void UseIFF(bool iff) throw(bad_alloc);
+	void UseIFF(bool iff) throw(std::bad_alloc);
 
 	/**
 	* returns the status of memory

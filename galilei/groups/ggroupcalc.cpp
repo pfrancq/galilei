@@ -49,7 +49,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupCalc::GGroupCalc(GFactoryGroupCalc* fac) throw(bad_alloc)
+GGroupCalc::GGroupCalc(GFactoryGroupCalc* fac) throw(std::bad_alloc)
 	: GPlugin<GFactoryGroupCalc>(fac), Session(0)
 {
 }

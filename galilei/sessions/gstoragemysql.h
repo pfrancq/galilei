@@ -54,6 +54,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GStorageMySQL class provides a representation for a storage manager using
@@ -77,7 +78,7 @@ public:
 	* @param pwd            Password of the user.
 	* @param db             Name of the database.
 	*/
-	GStorageMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,R::RMySQLError);
+	GStorageMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(std::bad_alloc,GException,R::RMySQLError);
 
 protected:
 
@@ -133,21 +134,21 @@ public:
 	* @param code           Languague.
 	* @param stop           Is it a stop list.
 	*/
-	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException);
+	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc,GException);
 
 	/**
 	* Load a specific word from a dictionary.
 	* @param id             Idenfificator of the word.
 	* @param code           Code of the languague.
 	*/
-	virtual const char* LoadWord(unsigned int id,const char* code) throw(bad_alloc,GException);
+	virtual const char* LoadWord(unsigned int id,const char* code) throw(std::bad_alloc,GException);
 
 	/**
 	* Load a specific wordlist from a dictionary.
 	* @param w              WordList to load.
 	* @param code           Code of the languague.
 	*/
-	virtual void LoadWordList(GWordList* w,GLang* lang) throw(bad_alloc,GException);
+	virtual void LoadWordList(GWordList* w,GLang* lang) throw(std::bad_alloc,GException);
 
 	/**
 	* Save a specific wordlist in the database.
@@ -161,37 +162,37 @@ public:
 	* @param wg             Enable the use of wordlists.
 	* @param w              Enable the use of words.
 	*/
-	virtual void LoadDocs(GSession* session) throw(bad_alloc,GException);
+	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
 	*  Load the users.
 	* @param session         Session.
 	*/
-	virtual void LoadUsers(GSession* session) throw(bad_alloc,GException);
+	virtual void LoadUsers(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
 	*  Load the users Feedback.
 	*/
-	virtual void LoadFdbks(GSession* session) throw(bad_alloc,GException);
+	virtual void LoadFdbks(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
 	* Load the groups.
 	* @param wg             Enable the use of wordlists.
 	* @param w              Enable the use of words.
 	*/
-	virtual void LoadGroups(GSession* session) throw(bad_alloc,GException);
+	virtual void LoadGroups(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
 	* Load the Subjectree.
 	* @param subjects     The tree of subjects.
 	*/
-	virtual void LoadSubjectTree(GSession* session) throw(bad_alloc,GException);
+	virtual void LoadSubjectTree(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
 	* Load the ideal groupment.
 	* @param idealgroup   The ideal container of group
 	*/
-	virtual void LoadIdealGroupment(GSession* session) throw(bad_alloc,GException);
+	virtual void LoadIdealGroupment(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
 	* Save the ideal groupment
@@ -267,7 +268,7 @@ public:
 	/**
 	* load the historic groups.
 	*/
-	GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID) throw(bad_alloc,GException);
+	GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID) throw(std::bad_alloc,GException);
 
 	/**
 	*returns the number of historic groups stored in database.

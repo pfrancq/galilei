@@ -81,7 +81,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroup::GGroup(unsigned int id,GLang* lang,bool com) throw(bad_alloc)
+GGroup::GGroup(unsigned int id,GLang* lang,bool com) throw(std::bad_alloc)
 	: RContainer<GSubProfile,unsigned int,false,true>(20,10), Id(id),
 	  State(osUpToDate), Lang(lang), Community(com)
 {
@@ -89,7 +89,7 @@ GGroup::GGroup(unsigned int id,GLang* lang,bool com) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GGroup::GGroup(GLang* lang,bool com) throw(bad_alloc)
+GGroup::GGroup(GLang* lang,bool com) throw(std::bad_alloc)
 	: RContainer<GSubProfile,unsigned int,false,true>(20,10), Id(cNoRef),
 	  State(osCreated), Lang(lang), Community(com)
 {
@@ -169,7 +169,7 @@ bool GGroup::IsIn(const GSubProfile* sp) const
 
 
 //------------------------------------------------------------------------------
-void GGroup::DeleteSubProfile(GSubProfile* sp) throw(bad_alloc)
+void GGroup::DeleteSubProfile(GSubProfile* sp) throw(std::bad_alloc)
 {
 	if(Community)
 		sp->SetGroup(0);
@@ -179,7 +179,7 @@ void GGroup::DeleteSubProfile(GSubProfile* sp) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GGroup::InsertSubProfile(GSubProfile* sp) throw(bad_alloc)
+void GGroup::InsertSubProfile(GSubProfile* sp) throw(std::bad_alloc)
 {
 	R::RContainer<GSubProfile,unsigned int,false,true>::InsertPtr(sp);
 	State=osUpdated;
@@ -189,14 +189,14 @@ void GGroup::InsertSubProfile(GSubProfile* sp) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GGroup::InsertPtr(GSubProfile* sp) throw(bad_alloc)
+void GGroup::InsertPtr(GSubProfile* sp) throw(std::bad_alloc)
 {
 	InsertSubProfile(sp);
 }
 
 
 //------------------------------------------------------------------------------
-void GGroup::DeleteSubProfiles(void) throw(bad_alloc)
+void GGroup::DeleteSubProfiles(void) throw(std::bad_alloc)
 {
 	GSubProfileCursor Sub;
 
@@ -249,7 +249,7 @@ unsigned int GGroup::GetNbSubProfiles(void) const
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s) const throw(bad_alloc)
+void GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc)
 {
 	GSubProfile** tab;
 	unsigned int i;
@@ -304,7 +304,7 @@ void GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>* docs, G
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global) const throw(bad_alloc)
+void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global) const throw(std::bad_alloc)
 {
 	GSubProfile** tab;
 	unsigned int i;
@@ -402,7 +402,7 @@ double GGroup::ComputeSumSim(const GSubProfile* s,bool iff) const
 
 
 //------------------------------------------------------------------------------
-void GGroup::AddInfo(GWeightInfo*) throw(bad_alloc)
+void GGroup::AddInfo(GWeightInfo*) throw(std::bad_alloc)
 {
 }
 

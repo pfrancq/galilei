@@ -70,7 +70,7 @@ public:
 	* Constructor of a list of links.
 	* @param doc             Document containing the links.
 	*/
-	GLinks(GDoc* doc) throw(bad_alloc, GException);
+	GLinks(GDoc* doc) throw(std::bad_alloc, GException);
 
 	/**
 	* Get the document containing the links.

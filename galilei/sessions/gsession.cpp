@@ -100,7 +100,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(bad_alloc,GException)
+GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(std::bad_alloc,GException)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(str->GetNbSaved(otUser),str->GetNbSaved(otProfile)),
 	  GGroups(str->GetNbSaved(otGroup)), Subjects(0), Fdbks(str->GetNbSaved(otFdbk)+str->GetNbSaved(otFdbk)/2,str->GetNbSaved(otFdbk)/2),
 //	: GDocs(2000), GUsers(2000,2000),
@@ -122,7 +122,7 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(ba
 //------------------------------------------------------------------------------
 void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng,
 	GGroupingManager* gmng, GGroupCalcManager* gcmng,GStatsCalcManager* smng,
-	GPostDocManager* pdmng,GPostGroupManager* pgmng) throw(bad_alloc,GException)
+	GPostDocManager* pdmng,GPostGroupManager* pgmng) throw(std::bad_alloc,GException)
 
 {
 //	GLang* lang;
@@ -167,7 +167,7 @@ void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseMana
 
 
 //------------------------------------------------------------------------------
-void GSession::PostConnect(GLinkCalcManager* lmng) throw(bad_alloc,GException)
+void GSession::PostConnect(GLinkCalcManager* lmng) throw(std::bad_alloc,GException)
 {
 	LinkCalcMng=lmng;
 	if(LinkCalcMng)
@@ -480,7 +480,7 @@ void GSession::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate& date) throw(bad_alloc)
+void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate& date) throw(std::bad_alloc)
 {
 	GProfDoc* f;
 
@@ -491,7 +491,7 @@ void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate& date) t
 
 
 //------------------------------------------------------------------------------
-void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,const char* date) throw(bad_alloc)
+void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,const char* date) throw(std::bad_alloc)
 {
 	GProfDoc* f;
 
@@ -502,7 +502,7 @@ void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,const char* date)
 
 
 //------------------------------------------------------------------------------
-void GSession::CopyIdealGroups(bool save) throw(bad_alloc,GException)
+void GSession::CopyIdealGroups(bool save) throw(std::bad_alloc,GException)
 {
 	GGroupCursor Grps;
 //	GGroupCursor Ideal;

@@ -84,7 +84,7 @@ class GSims : public RContainer<GSim,unsigned int,true,false>
 public:
 	unsigned int SubId;         // Identifier of the first profile
 
-	GSims(unsigned int id,unsigned int max) throw(bad_alloc)
+	GSims(unsigned int id,unsigned int max) throw(std::bad_alloc)
 		: RContainer<GSim,unsigned int,true,false>(max,max/2), SubId(id) {}
 	int Compare(const GSims* s) const {return(SubId-s->SubId);}
 	int Compare(const unsigned int id) const {return(SubId-id);}
@@ -116,7 +116,7 @@ public:
 	RContainer<GSubProfile,unsigned int,false,true>* ModifiedProfs;
 
 	// Constructor and Compare methods.
-	GProfilesSim(GProfilesSims* manager,GSubProfileCursor& s,bool iff,GLang* lang) throw(bad_alloc, GException);
+	GProfilesSim(GProfilesSims* manager,GSubProfileCursor& s,bool iff,GLang* lang) throw(std::bad_alloc, GException);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GProfilesSim* profilesSim) const {return(Lang->Compare(profilesSim->Lang));}
 
@@ -130,10 +130,10 @@ public:
 	// the corresponding sim will be set to state="osModified".
 	// If the similarity for a given subprofile doesn't exist, the element
 	// is created but not computed ( -> state to osModified )
-	void Update(void) throw(bad_alloc);
+	void Update(void) throw(std::bad_alloc);
 
 	// Set all the sims to osModified if the iff bolean has changed.
-	void Update(bool iff)throw(bad_alloc);
+	void Update(bool iff)throw(std::bad_alloc);
 
 	// add a new GSims fo a new subprofile subprof
 	GSims* AddNewSims(GSubProfile* subprof);
@@ -153,7 +153,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCursor& s,bool iff,GLang* l) throw(bad_alloc, GException)
+GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCursor& s,bool iff,GLang* l) throw(std::bad_alloc, GException)
 	:  IFF(iff),Lang(l),Manager(manager)
 {
 	GSubProfileCursor Cur1, Cur2;
@@ -301,7 +301,7 @@ double GProfilesSims::GProfilesSim::GetSim(const GSubProfile* sub1,const GSubPro
 
 
 //------------------------------------------------------------------------------
-void GProfilesSims::GProfilesSim::Update(void) throw(bad_alloc)
+void GProfilesSims::GProfilesSim::Update(void) throw(std::bad_alloc)
 {
 	GSims* sims;
 
@@ -329,7 +329,7 @@ void GProfilesSims::GProfilesSim::Update(void) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GProfilesSims::GProfilesSim::Update(bool iff) throw(bad_alloc)
+void GProfilesSims::GProfilesSim::Update(bool iff) throw(std::bad_alloc)
 {
 	// the type of similarity has changed => All the sims values must be updated.
 	if(iff!=IFF)
@@ -440,10 +440,7 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor& subprofile
 	if (fabs(Deviation)<0.00001)
 		Deviation=0.0;
 	if (Deviation <0.0)
-	{
-		cout <<"Negative Deviation in profiles similarities : "<< Deviation<<endl;
 		throw(GException("Negative Deviation in profiles similarities"));
-	}
 	OldNbComp=nbcomp;
 }
 
@@ -510,7 +507,7 @@ GProfilesSims::GProfilesSim::~GProfilesSim(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfilesSims::GProfilesSims(GSession* session,bool iff, bool memory) throw(bad_alloc)
+GProfilesSims::GProfilesSims(GSession* session,bool iff, bool memory) throw(std::bad_alloc)
 	: Sims(10,5), Session(session), IFF(iff), Memory(memory),
 	  NullSimLevel(session->GetSessionParams()->GetDouble("NullSimLevel"))
 {
@@ -528,7 +525,7 @@ GProfilesSims::GProfilesSims(GSession* session,bool iff, bool memory) throw(bad_
 }
 
 //------------------------------------------------------------------------------
-void GProfilesSims::ReInit(void) throw(bad_alloc)
+void GProfilesSims::ReInit(void) throw(std::bad_alloc)
 {
 	GFactoryLangCursor Langs;
 	GLang* Lang;
@@ -546,7 +543,7 @@ void GProfilesSims::ReInit(void) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GProfilesSims::UseIFF(bool iff) throw(bad_alloc)
+void GProfilesSims::UseIFF(bool iff) throw(std::bad_alloc)
 {
 	GFactoryLangCursor Langs;
 	GLang* Lang;
@@ -596,7 +593,7 @@ double GProfilesSims::GetMinimumOfSimilarity(GLang* lang, double deviationrate) 
 
 
 //------------------------------------------------------------------------------
-void GProfilesSims::AddModifiedProfile(GSubProfile* sub) throw(bad_alloc,GException)
+void GProfilesSims::AddModifiedProfile(GSubProfile* sub) throw(std::bad_alloc,GException)
 {
 	GProfilesSim* profSim;
 

@@ -75,7 +75,7 @@ public:
 	* @param path            Path to find the plugins.
 	* @param dlg             Should the dialog box be loaded.
 	*/
-	GFilterManagerCURL(const char* path,bool dlg=true) throw(bad_alloc,GException);
+	GFilterManagerCURL(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
 
 protected:
 

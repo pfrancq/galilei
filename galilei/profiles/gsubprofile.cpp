@@ -54,7 +54,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,tObjState state, const char* c) throw(bad_alloc)
+GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,tObjState state, const char* c) throw(std::bad_alloc)
   :  Id(id), Profile(prof), Lang(lang), Group(grp), State(state), Attached(a),  Computed(c), Fdbks(20,10)
 {
 
@@ -68,7 +68,7 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,
 
 
 //------------------------------------------------------------------------------
-GSubProfile::GSubProfile(GSession* session,GProfile *prof,GLang *lang) throw(bad_alloc)
+GSubProfile::GSubProfile(GSession* session,GProfile *prof,GLang *lang) throw(std::bad_alloc)
   :  Id(cNoRef), Profile(prof), Lang(lang), Group(0), State(osCreated), Attached(""),  Computed(""), Fdbks(20,10)
 {
 	#if GALILEITEST
@@ -108,7 +108,7 @@ int GSubProfile::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::AddAssessment(GProfDoc* j) throw(bad_alloc)
+void GSubProfile::AddAssessment(GProfDoc* j) throw(std::bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 	State=osModified;
@@ -116,7 +116,7 @@ void GSubProfile::AddAssessment(GProfDoc* j) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::RemoveAssessment(GProfDoc* j) throw(bad_alloc)
+void GSubProfile::RemoveAssessment(GProfDoc* j) throw(std::bad_alloc)
 {
 	Fdbks.DeletePtr(j);
 	State=osModified;
@@ -124,7 +124,7 @@ void GSubProfile::RemoveAssessment(GProfDoc* j) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::ClearFdbks(void) throw(bad_alloc)
+void GSubProfile::ClearFdbks(void) throw(std::bad_alloc)
 {
 	Fdbks.Clear();
 }

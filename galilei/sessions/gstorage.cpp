@@ -48,7 +48,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorage::GStorage(const char* n) throw(bad_alloc,GException)
+GStorage::GStorage(const char* n) throw(std::bad_alloc,GException)
 	: Name(n)
 {
 }

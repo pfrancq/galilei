@@ -81,7 +81,7 @@ public:
 	* Construct the statistics method.
 	* @param fac             Factory of the plugin.
 	*/
-	GStatsCalc(GFactoryStatsCalc* fac) throw(bad_alloc);
+	GStatsCalc(GFactoryStatsCalc* fac) throw(std::bad_alloc);
 
 	/**
 	* Connect to a Session.

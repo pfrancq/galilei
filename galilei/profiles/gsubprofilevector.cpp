@@ -52,21 +52,21 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfileVector::GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(bad_alloc)
+GSubProfileVector::GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(std::bad_alloc)
   : GSubProfile(prof,id,lang,grp,a, state, c), GWeightInfos(60)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GSubProfileVector::GSubProfileVector(GSession* session,GProfile* prof,GLang* lang) throw(bad_alloc)
+GSubProfileVector::GSubProfileVector(GSession* session,GProfile* prof,GLang* lang) throw(std::bad_alloc)
   : GSubProfile(session,prof,lang), GWeightInfos(60)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSubProfileVector::ClearFdbks(void) throw(bad_alloc)
+void GSubProfileVector::ClearFdbks(void) throw(std::bad_alloc)
 {
 	RemoveRefs();
 	GWeightInfos::Clear();
@@ -82,7 +82,7 @@ bool GSubProfileVector::IsDefined(void) const
 
 
 //-------------------------------------------------------------------------------
-void GSubProfileVector::AddInfo(GWeightInfo* info) throw(bad_alloc)
+void GSubProfileVector::AddInfo(GWeightInfo* info) throw(std::bad_alloc)
 {
 	InsertPtr(info);
 }

@@ -49,6 +49,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GGroupVector provides a representation for a group in the vector model.
@@ -65,14 +66,14 @@ public:
 	* @param lang           Language.
 	* @param com            Community.
 	*/
-	GGroupVector(unsigned int id,GLang* lang,bool com) throw(bad_alloc);
+	GGroupVector(unsigned int id,GLang* lang,bool com) throw(std::bad_alloc);
 
 	/**
 	* Construct a group with an invalid identificator.
 	* @param lang           Language.
 	* @param com            Community.
 	*/
-	GGroupVector(GLang* lang,bool com) throw(bad_alloc);
+	GGroupVector(GLang* lang,bool com) throw(std::bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.
@@ -90,7 +91,7 @@ public:
 	* Add a given information to the group.
 	* @param info            Pointer to the information.
 	*/
-	virtual void AddInfo(GWeightInfo* info) throw(bad_alloc);
+	virtual void AddInfo(GWeightInfo* info) throw(std::bad_alloc);
 
 	/**
 	* Get a cursor over the vector.

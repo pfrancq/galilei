@@ -104,7 +104,7 @@ public:
 	* @param id             Identificator.
 	* @param lang           Language.
 	*/
-	GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(bad_alloc);
+	GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(std::bad_alloc);
 
 	/**
 	* get the id

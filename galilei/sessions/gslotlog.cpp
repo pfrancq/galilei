@@ -52,14 +52,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GALILEI::GSlotLog::GSlotLog(const char* name) throw(bad_alloc,RException)
+GALILEI::GSlotLog::GSlotLog(const char* name) throw(std::bad_alloc,RException)
 	: GSlot(), RTextFile(name,Append)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextDoc(const GDoc* doc) throw(bad_alloc,RException)
+void GALILEI::GSlotLog::receiveNextDoc(const GDoc* doc) throw(std::bad_alloc,RException)
 {
 	sprintf(Buf,"Analyse Doc %u",doc->GetId());
 	WriteLog(Buf);
@@ -67,7 +67,7 @@ void GALILEI::GSlotLog::receiveNextDoc(const GDoc* doc) throw(bad_alloc,RExcepti
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextProfile(const GProfile* prof) throw(bad_alloc,RException)
+void GALILEI::GSlotLog::receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,RException)
 {
 	sprintf(Buf,"Compute Profile %u",prof->GetId());
 	WriteLog(Buf);
@@ -75,7 +75,7 @@ void GALILEI::GSlotLog::receiveNextProfile(const GProfile* prof) throw(bad_alloc
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::NextGroupLang(const GLang* lang) throw(bad_alloc,RException)
+void GALILEI::GSlotLog::NextGroupLang(const GLang* lang) throw(std::bad_alloc,RException)
 {
 	sprintf(Buf,"Group %s Profiles",lang->GetName());
 	WriteLog(Buf);
@@ -83,19 +83,19 @@ void GALILEI::GSlotLog::NextGroupLang(const GLang* lang) throw(bad_alloc,RExcept
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::WriteStr(const char*) throw(bad_alloc,RException)
+void GALILEI::GSlotLog::WriteStr(const char*) throw(std::bad_alloc,RException)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextChromosome(unsigned int) throw(bad_alloc,RException)
+void GALILEI::GSlotLog::receiveNextChromosome(unsigned int) throw(std::bad_alloc,RException)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextMethod(unsigned int) throw(bad_alloc,RException)
+void GALILEI::GSlotLog::receiveNextMethod(unsigned int) throw(std::bad_alloc,RException)
 {
 }
 

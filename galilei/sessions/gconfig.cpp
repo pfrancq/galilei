@@ -79,7 +79,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GConfig::GConfig(const char* f) throw(bad_alloc)
+GConfig::GConfig(const char* f) throw(std::bad_alloc)
 	: RXMLStruct(), FileName(f)
 {
 	RXMLTag* t;

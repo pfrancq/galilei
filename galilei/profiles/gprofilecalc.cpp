@@ -48,7 +48,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfileCalc::GProfileCalc(GFactoryProfileCalc* fac) throw(bad_alloc)
+GProfileCalc::GProfileCalc(GFactoryProfileCalc* fac) throw(std::bad_alloc)
 	: GPlugin<GFactoryProfileCalc>(fac), Session(0)
 {
 }

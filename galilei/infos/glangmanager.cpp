@@ -59,7 +59,7 @@ using namespace ltmm;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLangManager::GLangManager(const char* path,bool dlg) throw(bad_alloc,GException)
+GLangManager::GLangManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
   : RContainer<GFactoryLang,unsigned,true,true>(10,5)
 {
 	DIR* dp;

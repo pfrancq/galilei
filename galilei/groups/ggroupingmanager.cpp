@@ -58,7 +58,7 @@ using namespace ltmm;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupingManager::GGroupingManager(const char* path,bool dlg) throw(bad_alloc,GException)
+GGroupingManager::GGroupingManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryGrouping,unsigned int,true,true>(10,5), Current(0)
 {
 	DIR* dp;

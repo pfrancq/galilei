@@ -48,6 +48,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GParams class provides a representation for a series of parameters.
@@ -69,7 +70,7 @@ public:
 	* Construct the list of parameters.
 	* @param n               Name of the parameter.
 	*/
-	GParams(const char* n) throw(bad_alloc);
+	GParams(const char* n) throw(std::bad_alloc);
 
 	/**
 	* Get the name of the set of parameters.

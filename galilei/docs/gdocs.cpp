@@ -56,7 +56,7 @@ class GDocs::GDocsLang : public R::RContainer<GDoc,unsigned int,false,true>
 public:
 	GLang* Lang;
 
-	GDocsLang(GLang* lang) throw(bad_alloc)
+	GDocsLang(GLang* lang) throw(std::bad_alloc)
 		: RContainer<GDoc,unsigned int,false,true>(10000,5000), Lang(lang) {}
 	int Compare(const GDocsLang* docLang) const;
 	int Compare(const GLang* lang) const;
@@ -118,7 +118,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GDocs::GDocs(unsigned int nb) throw(bad_alloc)
+GDocs::GDocs(unsigned int nb) throw(std::bad_alloc)
 	: RContainer<GDoc,unsigned int,true,true>(nb+(nb/2),nb/2), DocsLang(2,1),
 	  DocsRefUrl(nb+(nb/2),nb/2)
 {
@@ -152,7 +152,7 @@ GDocCursor& GDocs::GetDocsCursor(GLang* lang) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GDocs::FillDocs(GDoc** docs,GLang* lang) throw(GException,bad_alloc)
+unsigned int GDocs::FillDocs(GDoc** docs,GLang* lang) throw(GException,std::bad_alloc)
 {
 	GDocsLang* ptr;
 
@@ -181,7 +181,7 @@ unsigned int GDocs::GetNewId(void) const
 
 
 //-----------------------------------------------------------------------------
-void GDocs::InsertDoc(GDoc* d) throw(bad_alloc)
+void GDocs::InsertDoc(GDoc* d) throw(std::bad_alloc)
 {
 	GDocsLang* docsLang;
 
@@ -195,7 +195,7 @@ void GDocs::InsertDoc(GDoc* d) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GDocs::MoveDoc(GDoc* d) throw(bad_alloc)
+void GDocs::MoveDoc(GDoc* d) throw(std::bad_alloc)
 {
 	GDocsLang* docsLang;
 
@@ -210,7 +210,7 @@ void GDocs::MoveDoc(GDoc* d) throw(bad_alloc)
 
 
 //-------------------------------------------------------------------------------
-GDoc* GDocs::GetDoc(unsigned int id) throw(bad_alloc, GException)
+GDoc* GDocs::GetDoc(unsigned int id) throw(std::bad_alloc, GException)
 {
 	GDoc* d;
 
@@ -222,7 +222,7 @@ GDoc* GDocs::GetDoc(unsigned int id) throw(bad_alloc, GException)
 
 
 //-------------------------------------------------------------------------------
-GDoc* GDocs::GetDoc(const char* url) throw(bad_alloc)
+GDoc* GDocs::GetDoc(const char* url) throw(std::bad_alloc)
 {
 	GDocRefURL* ref;
 

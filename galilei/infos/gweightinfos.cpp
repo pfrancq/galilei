@@ -53,28 +53,28 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfos::GWeightInfos(unsigned int max) throw(bad_alloc)
+GWeightInfos::GWeightInfos(unsigned int max) throw(std::bad_alloc)
 	: RContainer<GWeightInfo,unsigned,true,true>(max,50)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfos::GWeightInfos(const GWeightInfos& w) throw(bad_alloc)
+GWeightInfos::GWeightInfos(const GWeightInfos& w) throw(std::bad_alloc)
 	: RContainer<GWeightInfo,unsigned,true,true>(w)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfos::GWeightInfos(const GWeightInfos* w) throw(bad_alloc)
+GWeightInfos::GWeightInfos(const GWeightInfos* w) throw(std::bad_alloc)
 	: RContainer<GWeightInfo,unsigned,true,true>(w)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfos& GWeightInfos::operator=(const GWeightInfos::GWeightInfos& w) throw(bad_alloc)
+GWeightInfos& GWeightInfos::operator=(const GWeightInfos::GWeightInfos& w) throw(std::bad_alloc)
 {
 	RContainer<GWeightInfo,unsigned,true,true>::operator=(w);
 	return(*this);

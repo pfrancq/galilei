@@ -81,7 +81,7 @@ public :
 	* Constructor of the documents post-analysis method.
 	* @param fac             Factory of the plugin.
 	*/
-	GPostDoc(GFactoryPostDoc* fac) throw(bad_alloc);
+	GPostDoc(GFactoryPostDoc* fac) throw(std::bad_alloc);
 
 	/**
 	* Connect to a Session.

@@ -50,21 +50,21 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilter::GFilter(GFactoryFilter* fac) throw(bad_alloc)
+GFilter::GFilter(GFactoryFilter* fac) throw(std::bad_alloc)
 	: GPlugin<GFactoryFilter>(fac), Doc(0)
 {
 }
 
 
 // //---------------------------------------------------------------------------
-void GFilter::AddMIME(const char* name) throw(bad_alloc)
+void GFilter::AddMIME(const char* name) throw(std::bad_alloc)
 {
 	GetFactory()->GetMng()->AddMIME(name,this);
 }
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(bad_alloc,GException)
+void GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(std::bad_alloc,GException)
 {
 	char* ptr;
 	char* hold;
@@ -157,7 +157,7 @@ void GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(bad_alloc,GExcepti
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach) throw(bad_alloc,GException)
+void GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach) throw(std::bad_alloc,GException)
 {
 	RChar* ptr;
 	RChar* hold;
@@ -251,7 +251,7 @@ void GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach) throw(bad_alloc,GExcept
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach) throw(bad_alloc,GException)
+void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach) throw(std::bad_alloc,GException)
 {
 	char* ptr;
 	RXMLTag* kwd;
@@ -289,7 +289,7 @@ void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach) throw(bad_all
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach) throw(bad_alloc,GException)
+void GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach) throw(std::bad_alloc,GException)
 {
 	RChar* ptr;
 	RXMLTag* kwd;

@@ -55,41 +55,41 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(unsigned int id,GInfoType type) throw(bad_alloc)
+GWeightInfo::GWeightInfo(unsigned int id,GInfoType type) throw(std::bad_alloc)
   : GInfo(id,type), Weight(0.0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(unsigned int id,double w,GInfoType type) throw(bad_alloc)
+GWeightInfo::GWeightInfo(unsigned int id,double w,GInfoType type) throw(std::bad_alloc)
   : GInfo(id,type), Weight(w)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GWeightInfo& w) throw(bad_alloc)
+GWeightInfo::GWeightInfo(const GWeightInfo& w) throw(std::bad_alloc)
   : GInfo(w.Id,w.Type), Weight(w.Weight)
 {
 }
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GWeightInfo* w) throw(bad_alloc)
+GWeightInfo::GWeightInfo(const GWeightInfo* w) throw(std::bad_alloc)
   : GInfo(w->Id,w->Type), Weight(w->Weight)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GInfo& w) throw(bad_alloc)
+GWeightInfo::GWeightInfo(const GInfo& w) throw(std::bad_alloc)
   : GInfo(w), Weight(0.0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GInfo* w) throw(bad_alloc)
+GWeightInfo::GWeightInfo(const GInfo* w) throw(std::bad_alloc)
   : GInfo(w), Weight(0.0)
 {
 }
@@ -117,7 +117,7 @@ void GWeightInfo::SetWeight(double w)
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator=(const GWeightInfo& i) throw(bad_alloc)
+GWeightInfo& GWeightInfo::operator=(const GWeightInfo& i) throw(std::bad_alloc)
 {
 	GInfo::operator=(i);
 	Weight=i.Weight;
@@ -126,7 +126,7 @@ GWeightInfo& GWeightInfo::operator=(const GWeightInfo& i) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator=(const GInfo& i) throw(bad_alloc)
+GWeightInfo& GWeightInfo::operator=(const GInfo& i) throw(std::bad_alloc)
 {
 	GInfo::operator=(i);
 	Weight=0.0;

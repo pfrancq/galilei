@@ -81,7 +81,7 @@ public:
 	* Construct the computing method.
 	* @param fac             Factory of the plugin.
 	*/
-	GProfileCalc(GFactoryProfileCalc* fac) throw(bad_alloc);
+	GProfileCalc(GFactoryProfileCalc* fac) throw(std::bad_alloc);
 
 	/**
 	* Connect to a Session.

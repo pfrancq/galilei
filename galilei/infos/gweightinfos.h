@@ -48,6 +48,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GWeightInfos provides a representation for a list of information entities.
@@ -64,25 +65,25 @@ public:
 	* Constructor of a list of weighted information entities.
 	* @param max             Maximal number of word created at initialisation.
 	*/
-	GWeightInfos(unsigned int max) throw(bad_alloc);
+	GWeightInfos(unsigned int max) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a list of weighted information entities.
 	* @param max             List of weighted information entities.
 	*/
-	GWeightInfos(const GWeightInfos& w) throw(bad_alloc);
+	GWeightInfos(const GWeightInfos& w) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a list of weighted information entities.
 	* @param max             Pointer to a list of weighted information entities.
 	*/
-	GWeightInfos(const GWeightInfos* w) throw(bad_alloc);
+	GWeightInfos(const GWeightInfos* w) throw(std::bad_alloc);
 
 	/**
 	* Assignement operator for lists of weighted information entities.
 	* @param src             List of weighted information entity.
 	*/
-	GWeightInfos& operator=(const GWeightInfos& w) throw(bad_alloc);
+	GWeightInfos& operator=(const GWeightInfos& w) throw(std::bad_alloc);
 
 	/**
 	* Static function used to order the information entities by weights.

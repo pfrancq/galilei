@@ -49,6 +49,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GProfilesBehaviours class manage the agreement and disagreeemnt ratio
@@ -83,18 +84,18 @@ public:
 	* @param lang           Language of the subprofile.
 	* @param memory      use container to stock behaviours in memory?
 	*/
-	GProfilesBehaviours(GSession* session, bool memory) throw(bad_alloc);
+	GProfilesBehaviours(GSession* session, bool memory) throw(std::bad_alloc);
 
 	/**
 	* Re-initialize the similarities. This method can be used for testing
 	* purpose when it is necessary to start from different initial conditions.
 	*/
-	void ReInit(void) throw(bad_alloc);
+	void ReInit(void) throw(std::bad_alloc);
 
 	/**
 	* Updates the different ratios.
 	*/
-	void Update(void) throw(bad_alloc);
+	void Update(void) throw(std::bad_alloc);
 
 	/**
 	* returns the status of memory
@@ -119,7 +120,7 @@ public:
 	* Add a subprofile to the listof the modified one.
 	* @param sub             Pointer to the subprofile.
 	*/
-	void AddModifiedProfile(GSubProfile* sub) throw(bad_alloc,GException);
+	void AddModifiedProfile(GSubProfile* sub) throw(std::bad_alloc,GException);
 
 	/**
 	* returns the current session

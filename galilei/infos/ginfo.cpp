@@ -50,21 +50,21 @@ using namespace R;
 
 
 //------------------------------------------------------------------------------
-GInfo::GInfo(unsigned int id,GInfoType type) throw(bad_alloc)
+GInfo::GInfo(unsigned int id,GInfoType type) throw(std::bad_alloc)
 	: Id(id), Type(type)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GInfo::GInfo(const GInfo& i) throw(bad_alloc)
+GInfo::GInfo(const GInfo& i) throw(std::bad_alloc)
 	: Id(i.Id), Type(i.Type)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GInfo::GInfo(const GInfo* i) throw(bad_alloc)
+GInfo::GInfo(const GInfo* i) throw(std::bad_alloc)
 	: Id(i->Id), Type(i->Type)
 {
 }
@@ -85,7 +85,7 @@ int GInfo::Compare(const GInfo* i) const
 
 
 //------------------------------------------------------------------------------
-GInfo& GInfo::operator=(const GInfo& i) throw(bad_alloc)
+GInfo& GInfo::operator=(const GInfo& i) throw(std::bad_alloc)
 {
 	Id=i.Id;
 	Type=i.Type;

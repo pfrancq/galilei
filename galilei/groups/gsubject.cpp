@@ -53,7 +53,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubject::GSubject(unsigned int id,const char* name,GLang* l,bool u) throw(bad_alloc)
+GSubject::GSubject(unsigned int id,const char* name,GLang* l,bool u) throw(std::bad_alloc)
 	 : RNode<GSubject,false>(10,2), GGroupVector(id,l,false), Name(name), Used(u),
 	   Docs(1000,500)
 {
@@ -89,7 +89,7 @@ int GSubject::Compare(const char* name) const
 
 
 //------------------------------------------------------------------------------
-void GSubject::InsertDoc(GDoc* d) throw(bad_alloc)
+void GSubject::InsertDoc(GDoc* d) throw(std::bad_alloc)
 {
 	Docs.InsertPtr(d);
 }

@@ -73,7 +73,7 @@ public:
 	* @param id              Identificator of the information entity.
 	* @param type            Type of the information entity.
 	*/
-	GWeightInfo(unsigned int id,GInfoType type=infoWord) throw(bad_alloc);
+	GWeightInfo(unsigned int id,GInfoType type=infoWord) throw(std::bad_alloc);
 
 	/**
 	* Constructor of a weighed information entity.
@@ -81,33 +81,33 @@ public:
 	* @param w              Weight of the information entity.
 	* @param type           Type of the information.
 	*/
-	GWeightInfo(unsigned int id,double w,GInfoType type=infoWord) throw(bad_alloc);
+	GWeightInfo(unsigned int id,double w,GInfoType type=infoWord) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a weighed information entity.
 	* @param w              Pointer to a weighted information entity.
 	*/
-	GWeightInfo(const GWeightInfo& w) throw(bad_alloc);
+	GWeightInfo(const GWeightInfo& w) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a weighed information entity.
 	* @param w              Pointer to a weighted information entity.
 	*/
-	GWeightInfo(const GWeightInfo* w) throw(bad_alloc);
+	GWeightInfo(const GWeightInfo* w) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a weighed information entity. The weight is suppose to be
 	* null.
 	* @param w              Pointer to an information entity.
 	*/
-	GWeightInfo(const GInfo& w) throw(bad_alloc);
+	GWeightInfo(const GInfo& w) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a weighed information entity. The weight is suppose to be
 	* null.
 	* @param w              Pointer to an information entity.
 	*/
-	GWeightInfo(const GInfo* w) throw(bad_alloc);
+	GWeightInfo(const GInfo* w) throw(std::bad_alloc);
 
 	/**
 	* Compare two weighted information entities by comparing their identificator.
@@ -141,14 +141,14 @@ public:
 	* Assignment operator for weighted information entities.
 	* @param i               Weighted information entity.
 	*/
-	GWeightInfo& operator=(const GWeightInfo& i) throw(bad_alloc);
+	GWeightInfo& operator=(const GWeightInfo& i) throw(std::bad_alloc);
 
 	/**
 	* Assignment operator for weighted information entities. The weight is suppose to be
 	* null.
 	* @param i               Information entity.
 	*/
-	GWeightInfo& operator=(const GInfo& i) throw(bad_alloc);
+	GWeightInfo& operator=(const GInfo& i) throw(std::bad_alloc);
 
 	/**
 	* Add a weight to the current one.

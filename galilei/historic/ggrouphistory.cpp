@@ -50,7 +50,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(bad_alloc)
+GALILEI::GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(std::bad_alloc)
 	: RContainer<GIWordsWeightsHistory,unsigned int,false,true>(20,10)
 {
 	 Id=id;

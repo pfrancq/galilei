@@ -78,7 +78,7 @@ public:
 	* @param path            Path to find the plugins.
 	* @param dlg             Should the dialog box be loaded.
 	*/
-	GFilterManager(const char* path,bool dlg=true) throw(bad_alloc,GException);
+	GFilterManager(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
 
 protected:
 
@@ -119,7 +119,7 @@ public:
 	* @param mime           Name of the MIME type.
 	* @param f              Pointer to the filter.
 	*/
-	void AddMIME(const char* mime,GFilter* f) throw(bad_alloc);
+	void AddMIME(const char* mime,GFilter* f) throw(std::bad_alloc);
 
 	/**
 	* Delete all the MIME type associated with a filter.

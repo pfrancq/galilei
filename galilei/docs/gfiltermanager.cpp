@@ -39,6 +39,7 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
+using namespace std;
 
 
 //------------------------------------------------------------------------------
@@ -82,7 +83,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterManager::GFilterManager(const char* path,bool dlg) throw(bad_alloc,GException)
+GFilterManager::GFilterManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
 	: R::RContainer<GFactoryFilter,unsigned int,true,true>(10,5), MIMES(50,25)
 {
 	DIR* dp;
@@ -250,7 +251,7 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GFilterManager::AddMIME(const char* mime,GFilter* f) throw(bad_alloc)
+void GFilterManager::AddMIME(const char* mime,GFilter* f) throw(std::bad_alloc)
 {
 	MIMES.InsertPtr(new GMIMEFilter(mime,f));
 }

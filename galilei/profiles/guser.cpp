@@ -52,7 +52,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GUser::GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb) throw(bad_alloc)
+GUser::GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb) throw(std::bad_alloc)
 	: RContainer<GProfile,unsigned,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
 	  FullName(fullname)
 {

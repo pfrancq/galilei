@@ -49,42 +49,42 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GWord::GWord(void) throw(bad_alloc)
+GWord::GWord(void) throw(std::bad_alloc)
   : GData("",infoWord)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(const RString& word) throw(bad_alloc)
+GALILEI::GWord::GWord(const RString& word) throw(std::bad_alloc)
   : GData(word,infoWord)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(unsigned id,const RString& word) throw(bad_alloc)
+GALILEI::GWord::GWord(unsigned id,const RString& word) throw(std::bad_alloc)
   : GData(id,word,infoWord)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(const GWord& word) throw(bad_alloc)
+GALILEI::GWord::GWord(const GWord& word) throw(std::bad_alloc)
   : GData(word)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(const GWord* word) throw(bad_alloc)
+GALILEI::GWord::GWord(const GWord* word) throw(std::bad_alloc)
   : GData(word)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GData* GWord::CreateCopy(void) const throw(bad_alloc)
+GData* GWord::CreateCopy(void) const throw(std::bad_alloc)
 {
 	GWord* ptr=new GWord(this);
 	return(ptr);

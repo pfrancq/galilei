@@ -65,7 +65,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGrouping::GGrouping(GFactoryGrouping* fac) throw(bad_alloc)
+GGrouping::GGrouping(GFactoryGrouping* fac) throw(std::bad_alloc)
 	: GPlugin<GFactoryGrouping>(fac), Lang(0), Groups(0), SubProfiles(100,50),
 	  IdealGroups(0)
 {

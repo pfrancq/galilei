@@ -83,7 +83,7 @@ const char GStorageMySQL::SQLNULL[5]="NULL";
 
 
 //------------------------------------------------------------------------------
-GStorageMySQL::GStorageMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,RMySQLError)
+GStorageMySQL::GStorageMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(std::bad_alloc,GException,RMySQLError)
 	: RDb(host,user,pwd,db), GStorage(db)
 {
 }
@@ -240,7 +240,7 @@ void GStorageMySQL::AssignId(GData* data,const GDict* dict) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException)
+void GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc,GException)
 {
 	unsigned int MaxCount=100;
 	unsigned int MaxId=0;
@@ -306,7 +306,7 @@ void GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GExc
 
 
 //--------------------.---------------------------------------------------------
-const char* GStorageMySQL::LoadWord(unsigned int id,const char* code) throw(bad_alloc,GException)
+const char* GStorageMySQL::LoadWord(unsigned int id,const char* code) throw(std::bad_alloc,GException)
 {
 	char sSql[100];
 
@@ -327,7 +327,7 @@ const char* GStorageMySQL::LoadWord(unsigned int id,const char* code) throw(bad_
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadWordList(GWordList* w,GLang* lang) throw(bad_alloc,GException)
+void GStorageMySQL::LoadWordList(GWordList* w,GLang* lang) throw(std::bad_alloc,GException)
 {
 	char sSql[100];
 
@@ -475,7 +475,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadUsers(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException)
 {
 	char sSql[100];
 	GUser* usr;
@@ -572,7 +572,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadIdealGroupment(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadIdealGroupment(GSession* session) throw(std::bad_alloc,GException)
 {
 	GGroups* groups;
 	GGroup* group;
@@ -648,7 +648,7 @@ void GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadSubjectTree(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadSubjectTree(GSession* session) throw(std::bad_alloc,GException)
 {
 	char sSql[200];
 	GSubject* subject;
@@ -676,7 +676,7 @@ void GStorageMySQL::LoadSubjectTree(GSession* session) throw(bad_alloc,GExceptio
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadFdbks(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException)
 {
 	char sSql[200];
 	GProfile* prof;
@@ -736,7 +736,7 @@ void GStorageMySQL::LoadFdbks(GSession* session) throw(bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadDocs(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 {
 	GDocVector* doc;
 	GLang* lang;
@@ -1143,7 +1143,7 @@ void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historic
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadGroups(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GException)
 {
 	char sSql[100];
 	GGroupVector* group;
@@ -1210,7 +1210,7 @@ void GStorageMySQL::ExecuteData(const char* filename) throw(GException)
 	{
 		throw GException(str);
 	}
-	catch(bad_alloc)
+	catch(std::bad_alloc)
 	{
 		throw GException("Memory Problem");
 	}
@@ -1218,7 +1218,7 @@ void GStorageMySQL::ExecuteData(const char* filename) throw(GException)
 
 
 //------------------------------------------------------------------------------
-GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicid) throw(bad_alloc,GException)
+GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicid) throw(std::bad_alloc,GException)
 {
 	char sSql[200];
 	GGroupHistory* grp;

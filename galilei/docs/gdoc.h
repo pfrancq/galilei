@@ -135,7 +135,7 @@ public:
 	* @param f              Number of fails.
 	* @param nbf            Number of assessments.
 	*/
-	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf=100) throw(bad_alloc);
+	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf=100) throw(std::bad_alloc);
 
 	/**
 	* Construct a document.
@@ -143,7 +143,7 @@ public:
 	* @param title          Name of the document.
 	* @param mime           MIME type of the document.
 	*/
-	GDoc(const char* url,const char* name,const char* mime) throw(bad_alloc);
+	GDoc(const char* url,const char* name,const char* mime) throw(std::bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.
@@ -253,7 +253,7 @@ public:
 	* Add a given information to the document.
 	* @param info            Pointer to the information.
 	*/
-	virtual void AddInfo(GWeightInfo* info) throw(bad_alloc)=0;
+	virtual void AddInfo(GWeightInfo* info) throw(std::bad_alloc)=0;
 
 	/**
 	* @return Pointer to the Language.
@@ -354,7 +354,7 @@ public:
 	* Add a assessment for this document.
 	* @param j              Assessment.
 	*/
-	void AddAssessment(GProfDoc* j) throw(bad_alloc);
+	void AddAssessment(GProfDoc* j) throw(std::bad_alloc);
 
 	/**
 	* Get the number of outgoing links
@@ -366,7 +366,7 @@ public:
 	* Add a new link to the document
 	* @params doc           The document representing the link to be inserted.
 	*/
-	void InsertLink(const GDoc* doc) throw(bad_alloc);
+	void InsertLink(const GDoc* doc) throw(std::bad_alloc);
 
 	/**
 	* Add a new link to the document and set the number of occurences of this
@@ -375,7 +375,7 @@ public:
 	* @param nbOccurs        The number of occurence of the link inside the
 	*                        document.
 	*/
-	void InsertLink(const GDoc* doc, unsigned int nbOccurs) throw(bad_alloc);
+	void InsertLink(const GDoc* doc, unsigned int nbOccurs) throw(std::bad_alloc);
 
 	/**
 	* Get a cursor on the Links of the document.

@@ -53,14 +53,14 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocVector::GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf) throw(bad_alloc)
+GDocVector::GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf) throw(std::bad_alloc)
 	: GDoc(url,name,id,lang,mime,u,a,f,nbf), GWeightInfos(100)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GDocVector::GDocVector(const char* url,const char* name,const char* mime) throw(bad_alloc)
+GDocVector::GDocVector(const char* url,const char* name,const char* mime) throw(std::bad_alloc)
 	: GDoc(url,name,mime), GWeightInfos(100)
 {
 }
@@ -83,7 +83,7 @@ void GDocVector::ClearInfos(bool l)
 
 
 //------------------------------------------------------------------------------
-void GDocVector::AddInfo(GWeightInfo* info) throw(bad_alloc)
+void GDocVector::AddInfo(GWeightInfo* info) throw(std::bad_alloc)
 {
 	InsertPtr(info);
 }

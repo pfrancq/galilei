@@ -56,6 +56,7 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
+
 //-----------------------------------------------------------------------------
 /**
 * The GSubjects class provides a representation for a set of subjects
@@ -187,7 +188,7 @@ public:
 	* Constructor of the subjects.
 	* @param session         Session.
 	*/
-	GSubjects(GSession* session) throw(bad_alloc);
+	GSubjects(GSession* session) throw(std::bad_alloc);
 
 	/**
 	* Assign the values of the parameters to the corresponding variables.
@@ -199,12 +200,12 @@ protected:
 	/**
 	* Choose the subjects that will be used.
 	*/
-	void ChooseSubjects(void) throw(bad_alloc);
+	void ChooseSubjects(void) throw(std::bad_alloc);
 
 	/**
 	* Create the set based on the subjects used.
 	*/
-	void CreateSet(void) throw(bad_alloc);
+	void CreateSet(void) throw(std::bad_alloc);
 
 	/**
 	* Simulatation of judgments for a profile on a given subject.
@@ -214,7 +215,7 @@ protected:
 	* @param maxDocKO       Maximal fuzzy relevant Documents to assess.
 	* @param maxDocH        Maximal irrelevant Documents to assess.
 	*/
-	void ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH) throw(bad_alloc);
+	void ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH) throw(std::bad_alloc);
 
 	/**
 	* Get the ideal group of the subprofile.
@@ -244,33 +245,33 @@ public:
 	* @param groups         The ideal groupment into a GGroups container.
 	* @param Save           Save the results.
 	*/
-	void CreateIdeal(bool Save) throw(bad_alloc);
+	void CreateIdeal(bool Save) throw(std::bad_alloc);
 
 	/**
 	* Create new feedback for the different users of the system.
 	* @param Save           Save the results.
 	*/
-	void FdbksCycle(bool Save) throw(bad_alloc);
+	void FdbksCycle(bool Save) throw(std::bad_alloc);
 
 	/**
 	* Add assessments to the profiles creates.
 	* @param Save           Save the results.
 	*/
-	void AddAssessments(bool Save) throw(bad_alloc);
+	void AddAssessments(bool Save) throw(std::bad_alloc);
 
 	/**
 	* Add profiles of a new not used topic.
 	* @param Save           Save the results.
 	* @return true if a not used topic was found.
 	*/
-	bool AddTopic(bool Save) throw(bad_alloc);
+	bool AddTopic(bool Save) throw(std::bad_alloc);
 
 	/**
 	* Add judgements for some new not used profiles.
 	* @param Save           Save the results.
 	* @return Number of profiles created.
 	*/
-	unsigned int AddProfiles(bool Save) throw(bad_alloc);
+	unsigned int AddProfiles(bool Save) throw(std::bad_alloc);
 
 	/**
 	* Computed the percentage of correct assignments for the subprofiles last
@@ -282,7 +283,7 @@ public:
 	/**
 	* Clear the container of last added subprofiles.
 	*/
-	void ClearLastAdded(void) throw(bad_alloc);
+	void ClearLastAdded(void) throw(std::bad_alloc);
 
 	/**
 	* Get a subject.
@@ -294,7 +295,7 @@ public:
 	/**
 	* Clear the subjects.
 	*/
-	void Clear(void) throw(bad_alloc);
+	void Clear(void) throw(std::bad_alloc);
 
 	/**
 	* Make the groups.

@@ -53,7 +53,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(bad_alloc)
+GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(std::bad_alloc)
 	: GPlugin<GFactoryLinkCalc>(fac), Session(0), Links_Out(0)
 {
 	Links_Out = new RContainer<GLinks,unsigned int,true,true> (100,50);

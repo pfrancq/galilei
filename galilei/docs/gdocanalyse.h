@@ -80,7 +80,7 @@ public:
 	* Constructor of the document analysis method.
 	* @param fac             Factory of the plugin.
 	*/
-	GDocAnalyse(GFactoryDocAnalyse* fac) throw(bad_alloc);
+	GDocAnalyse(GFactoryDocAnalyse* fac) throw(std::bad_alloc);
 
 	/**
 	* Connect to a Session.

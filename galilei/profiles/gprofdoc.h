@@ -48,6 +48,7 @@
 namespace GALILEI {
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GProfDoc class provides a representation for assessment of a given profile

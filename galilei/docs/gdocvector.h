@@ -73,7 +73,7 @@ public:
 	* @param f              Number of fails.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf=100) throw(bad_alloc);
+	GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf=100) throw(std::bad_alloc);
 
 	/**
 	* Construct the document.
@@ -81,7 +81,7 @@ public:
 	* @param title          Name of the document.
 	* @param mime           MIME type of the document.
 	*/
-	GDocVector(const char* url,const char* name,const char* mime) throw(bad_alloc);
+	GDocVector(const char* url,const char* name,const char* mime) throw(std::bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.
@@ -111,7 +111,7 @@ public:
 	* Add a given information to the document.
 	* @param info            Pointer to the information.
 	*/
-	virtual void AddInfo(GWeightInfo* info) throw(bad_alloc);
+	virtual void AddInfo(GWeightInfo* info) throw(std::bad_alloc);
 
 	/**
 	* Get a Cursor on the weights of the document.

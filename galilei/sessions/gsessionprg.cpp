@@ -915,7 +915,7 @@ void GComputeTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned in
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
+GPrgClassSession::GPrgClassSession(GSession* s) throw(std::bad_alloc)
 	: RPrgClass("Session"), Session(s), OFile(0),
 	  GOFile(0), SOFile(0),DSOFile(0), NbHistory(0), AutoSave(false), TrackNewProfiles(false) 
 {
@@ -981,7 +981,7 @@ GPrgClassSession::~GPrgClassSession(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSessionPrg::GSessionPrg(RString f,GSession* s,RPrgOutput* o) throw(bad_alloc,GException)
+GSessionPrg::GSessionPrg(RString f,GSession* s,RPrgOutput* o) throw(std::bad_alloc,GException)
 	: RPrg(f,o)
 {
 	Classes.InsertPtr(new GPrgClassSession(s));

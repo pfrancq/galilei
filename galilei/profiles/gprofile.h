@@ -48,6 +48,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GProfile class provides a representation of a profile. In fact, it is a
@@ -105,7 +106,7 @@ public:
 	* @param nb             Number of subprofiles.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf=100) throw(bad_alloc);
+	GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf=100) throw(std::bad_alloc);
 
 	/**
 	* Clear the assessment of the profile.
@@ -235,7 +236,7 @@ public:
 	* @param j              Assessment.
 	* @param s              Session.
 	*/
-	void AddAssessment(GProfDoc* j,GSession* s) throw(bad_alloc);
+	void AddAssessment(GProfDoc* j,GSession* s) throw(std::bad_alloc);
 
 	/**
 	* Store the profdoc in the feedbacks of the subprofile

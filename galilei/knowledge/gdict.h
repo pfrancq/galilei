@@ -137,7 +137,7 @@ public:
 	*                       for the different letters.
 	* @param st             Are the data stopwords?
 	*/
-	GDict(const R::RString& name,const R::RString& desc,GLang* lang,unsigned m,unsigned ml,bool st) throw(bad_alloc);
+	GDict(const R::RString& name,const R::RString& desc,GLang* lang,unsigned m,unsigned ml,bool st) throw(std::bad_alloc);
 
 	/**
 	* Clear the dictionary.
@@ -150,7 +150,7 @@ private:
 	* Put a data in direct.
 	* @param data           Pointer to the data to insert.
 	*/
-	void PutDirect(GData* data) throw(bad_alloc);
+	void PutDirect(GData* data) throw(std::bad_alloc);
 
 public:
 
@@ -160,13 +160,13 @@ public:
 	* @param data            Data to insert.
 	* @return Identificator of the data inserted in the dictionary.
 	*/
-	unsigned int InsertData(const GData* data) throw(bad_alloc, GException);
+	unsigned int InsertData(const GData* data) throw(std::bad_alloc, GException);
 
 	/**
 	* Delete a given data from the dictionary.
 	* @param data            Data to delete.
 	*/
-	void DeleteData(GData* data) throw(bad_alloc, GException);
+	void DeleteData(GData* data) throw(std::bad_alloc, GException);
 
 	/**
 	* Get the data with a specific identificator.
@@ -192,13 +192,13 @@ public:
 	* type.
 	* @param type            Information type.
 	*/
-	GDataCursor& GetDataCursor(GInfoType type) throw(bad_alloc,GException);
+	GDataCursor& GetDataCursor(GInfoType type) throw(std::bad_alloc,GException);
 
 	/**
 	* Get the name of the dictionary.
 	* @returns RString.
 	*/
-	R::RString& GetName(void) const throw(bad_alloc);
+	R::RString& GetName(void) const throw(std::bad_alloc);
 
 	/**
 	* Get the language holding the dictionary.

@@ -39,6 +39,7 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
+using namespace std;
 
 
 //------------------------------------------------------------------------------
@@ -58,7 +59,7 @@ using namespace ltmm;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLinkCalcManager::GLinkCalcManager(const char* path,bool dlg) throw(bad_alloc,GException)
+GLinkCalcManager::GLinkCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryLinkCalc,unsigned int,true,true>(10,5), Current(0)
 {
 	DIR* dp;

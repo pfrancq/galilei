@@ -81,7 +81,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plugin.
 	*/
-	GPostGroup(GFactoryPostGroup* fac) throw(bad_alloc);
+	GPostGroup(GFactoryPostGroup* fac) throw(std::bad_alloc);
 
 	/**
 	* Connect to a Session.

@@ -79,19 +79,19 @@ public:
 	* @param id              Identificator of the information entity.
 	* @param type            Type of the information entity.
 	*/
-	GInfo(unsigned int id,GInfoType type=infoWord) throw(bad_alloc);
+	GInfo(unsigned int id,GInfoType type=infoWord) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor for an information entity.
 	* @param i               Information entity.
 	*/
-	GInfo(const GInfo& i) throw(bad_alloc);
+	GInfo(const GInfo& i) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor for an information entity.
 	* @param i               Pointer to an nformation entity.
 	*/
-	GInfo(const GInfo* i) throw(bad_alloc);
+	GInfo(const GInfo* i) throw(std::bad_alloc);
 
 	/**
 	* Compare two information entities by comparing their identificator.
@@ -113,7 +113,7 @@ public:
 	* Assignment operator for information entities.
 	* @param i               Information entity.
 	*/
-	GInfo& operator=(const GInfo& i) throw(bad_alloc);
+	GInfo& operator=(const GInfo& i) throw(std::bad_alloc);
 
 	/**
 	* Compute a similarity between two information entities. In the default

@@ -106,7 +106,7 @@ public:
 	* @param lang           Name of the language.
 	* @param code           Code of the language.
 	*/
-	GLang(GFactoryLang* fac,const R::RString& lang,const char* code) throw(bad_alloc);
+	GLang(GFactoryLang* fac,const R::RString& lang,const char* code) throw(std::bad_alloc);
 
 	/**
 	* Connect to a Session.
@@ -154,7 +154,7 @@ public:
 	* after the numbers must be given (example "nd" for "2nd", "3nd", ...).
 	* @param word            Word to skip.
 	*/
-	void SkipSequence(const R::RString& word) throw(bad_alloc);
+	void SkipSequence(const R::RString& word) throw(std::bad_alloc);
 
 	/**
 	* Function that computes the stem of a word. Of course, this method must be

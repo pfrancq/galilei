@@ -48,6 +48,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * This class represent a virtual community, i.e. a group of sub-profiles.
@@ -86,14 +87,14 @@ public:
 	* @param lang           Language.
 	* @param com            Community.
 	*/
-	GGroup(unsigned int id,GLang* lang,bool com) throw(bad_alloc);
+	GGroup(unsigned int id,GLang* lang,bool com) throw(std::bad_alloc);
 
 	/**
 	* Construct a group with an invalid identificator.
 	* @param lang           Language.
 	* @param com            Community.
 	*/
-	GGroup(GLang* lang,bool com) throw(bad_alloc);
+	GGroup(GLang* lang,bool com) throw(std::bad_alloc);
 
 private:
 
@@ -196,7 +197,7 @@ public:
 	* of the subprofile is set to null).
 	* @param sp             SubProfile to delete.
 	*/
-	void DeleteSubProfile(GSubProfile* sp) throw(bad_alloc);
+	void DeleteSubProfile(GSubProfile* sp) throw(std::bad_alloc);
 
 	/**
 	* Insert a subprofile in the group. If the group is a community, the
@@ -204,7 +205,7 @@ public:
 	* of the subprofile is set to null).
 	* @param sp             SubProfile to insert.
 	*/
-	void InsertSubProfile(GSubProfile* sp) throw(bad_alloc);
+	void InsertSubProfile(GSubProfile* sp) throw(std::bad_alloc);
 
 	/**
 	* Insert a subprofile in the group. This signature is needed by a generic
@@ -212,12 +213,12 @@ public:
 	* @param sp             SubProfile to insert.
 	* @see R::RGroupingKMeans.
 	*/
-	void InsertPtr(GSubProfile* sp) throw(bad_alloc);
+	void InsertPtr(GSubProfile* sp) throw(std::bad_alloc);
 
 	 /**
 	* Delete all subprofiles.
 	*/
-	void DeleteSubProfiles(void) throw(bad_alloc);
+	void DeleteSubProfiles(void) throw(std::bad_alloc);
 
 	/**
 	* Get a cursor over the subprofiles.
@@ -250,7 +251,7 @@ public:
 	* @param docs           Documents not assessed.
 	* @param s              Subprofile.
 	*/
-	void NotJudgedDocsList(R::RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s) const throw(bad_alloc);
+	void NotJudgedDocsList(R::RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc);
 
 	/**
 	* Construct the list of all relevant documents of the subprofiles of a
@@ -261,7 +262,7 @@ public:
 	* @param global         Global Similarities.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(R::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global) const throw(bad_alloc);
+	void NotJudgedDocsRelList(R::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global) const throw(std::bad_alloc);
 
 	/**
 	* Compute the relevant subprofile, i.e. the subprofiles whith the highest
@@ -291,7 +292,7 @@ public:
 	* Add a given information to the group.
 	* @param info            Pointer to the information.
 	*/
-	virtual void AddInfo(GWeightInfo* info) throw(bad_alloc);
+	virtual void AddInfo(GWeightInfo* info) throw(std::bad_alloc);
 
 	/**
 	* Compute the similarity between a group and a document.

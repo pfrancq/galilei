@@ -51,6 +51,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //-----------------------------------------------------------------------------
 /**
 * The GStorage provides a representation for a storage manager. This storage
@@ -73,7 +74,7 @@ public:
 	* Constructor.
 	* @param n              Name.
 	*/
-	GStorage(const char* n) throw(bad_alloc,GException);
+	GStorage(const char* n) throw(std::bad_alloc,GException);
 
 	/**
 	* Compute the number of objects of a given type which are saved.
@@ -95,21 +96,21 @@ public:
 	* @param lang           Languague.
 	* @param stop           Is it a stop list.
 	*/
-	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException)=0;
+	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Load a specific word from a dictionary.
 	* @param id             Idenfificator of the word.
 	* @param code           Code of the languague.
 	*/
-	virtual const char* LoadWord(unsigned int id,const char* code) throw(bad_alloc,GException)=0;
+	virtual const char* LoadWord(unsigned int id,const char* code) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Load a specific wordlist from a dictionary.
 	* @param w              WordList to load.
 	* @param code           Code of the languague.
 	*/
-	virtual void LoadWordList(GWordList* w,GLang* lang) throw(bad_alloc,GException)=0;
+	virtual void LoadWordList(GWordList* w,GLang* lang) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Save a specific wordlist in the database.
@@ -122,7 +123,7 @@ public:
 	* Method that load the documents from where they are stored. This method
 	* must be overloaded.
 	*/
-	virtual void LoadDocs(GSession* session) throw(bad_alloc,GException)=0;
+	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Save a document where it is stored. This method is called after an
@@ -148,17 +149,17 @@ public:
 	/**
 	* Load the Users.
 	*/
-	virtual void LoadUsers(GSession* session) throw(bad_alloc,GException)=0;
+	virtual void LoadUsers(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Load the Feedbacks.
 	*/
-	virtual void LoadFdbks(GSession* session) throw(bad_alloc,GException)=0;
+	virtual void LoadFdbks(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Load the SubjectTree.
 	*/
-	virtual void LoadSubjectTree(GSession* session) throw(bad_alloc,GException)=0;
+	virtual void LoadSubjectTree(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Save the groups of the session
@@ -189,7 +190,7 @@ public:
 	/**
 	* Load the groups.
 	*/
-	virtual void LoadGroups(GSession* session) throw(bad_alloc,GException)=0;
+	virtual void LoadGroups(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Save the groups of the session.
@@ -200,7 +201,7 @@ public:
 	* Load the ideal groupment.
 	* @param idealgroup   The ideal container of group
 	*/
-	virtual void LoadIdealGroupment(GSession* session) throw(bad_alloc,GException)=0;
+	virtual void LoadIdealGroupment(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Save the ideal groupment
@@ -223,7 +224,7 @@ public:
 	/*
 	* Load an historic groups.
 	*/
-	virtual GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID) throw(bad_alloc,GException)=0;
+	virtual GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Returns the number of historic groups stored in the database.

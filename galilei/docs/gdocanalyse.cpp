@@ -62,7 +62,7 @@ const unsigned int MaxWordLen=50;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocAnalyse::GDocAnalyse(GFactoryDocAnalyse* fac) throw(bad_alloc)
+GDocAnalyse::GDocAnalyse(GFactoryDocAnalyse* fac) throw(std::bad_alloc)
 	: GPlugin<GFactoryDocAnalyse>(fac), Session(0), Doc(0)
 {
 }

@@ -55,6 +55,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GPrgSessionClass provides a representation of a class of a GALILEI
@@ -150,7 +151,7 @@ public:
 	* Create a class.
 	* @param s              Session.
 	*/
-	GPrgClassSession(GSession* s) throw(bad_alloc);
+	GPrgClassSession(GSession* s) throw(std::bad_alloc);
 
 	/**
 	* Destructor.
@@ -175,7 +176,7 @@ public:
 	* @param s              Session.
 	* @param o              Generic output class.
 	*/
-	GSessionPrg(R::RString f,GSession* s,R::RPrgOutput* o) throw(bad_alloc,GException);
+	GSessionPrg(R::RString f,GSession* s,R::RPrgOutput* o) throw(std::bad_alloc,GException);
 
 	/**
 	* Destructor.

@@ -55,33 +55,33 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWordList::GWordList(unsigned int id,const RString& name) throw(bad_alloc)
+GWordList::GWordList(unsigned int id,const RString& name) throw(std::bad_alloc)
 	: GData(id,name,infoWordList), RContainer<GWord,unsigned,false,true>(2)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWordList::GWordList(const GWordList& list) throw(bad_alloc)
+GWordList::GWordList(const GWordList& list) throw(std::bad_alloc)
 	: GData(list), RContainer<GWord,unsigned,false,true>(list)
 {
 }
 
 //------------------------------------------------------------------------------
-GWordList::GWordList(const GWordList* list) throw(bad_alloc)
+GWordList::GWordList(const GWordList* list) throw(std::bad_alloc)
 	: GData(list), RContainer<GWord,unsigned,false,true>(list)
 {
 }
 
 //------------------------------------------------------------------------------
-void GWordList::InsertWord(const GWord* word) throw(bad_alloc)
+void GWordList::InsertWord(const GWord* word) throw(std::bad_alloc)
 {
 	InsertPtr(word);
 }
 
 
 //------------------------------------------------------------------------------
-GWordCursor& GWordList::GetWordCursor(void) throw(bad_alloc)
+GWordCursor& GWordList::GetWordCursor(void) throw(std::bad_alloc)
 {
 	GWordCursor *cur=GWordCursor::GetTmpCursor();
 	cur->Set(this);
@@ -90,7 +90,7 @@ GWordCursor& GWordList::GetWordCursor(void) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GData* GWordList::CreateCopy(void) const throw(bad_alloc)
+GData* GWordList::CreateCopy(void) const throw(std::bad_alloc)
 {
 	GWordList* ptr=new GWordList(this);
 	return(ptr);

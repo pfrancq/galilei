@@ -74,7 +74,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDict::GDict(const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(bad_alloc)
+GDict::GDict(const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(std::bad_alloc)
 	: RDblHashContainer<GData,unsigned,27,27,true>(ml+(ml/4),ml/4), Direct(0),
 	  MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false),
 	  Stop(st), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0), DataTypes(3)
@@ -97,7 +97,7 @@ void GDict::Clear(void)
 
 
 //------------------------------------------------------------------------------
-void GDict::PutDirect(GData* data) throw(bad_alloc)
+void GDict::PutDirect(GData* data) throw(std::bad_alloc)
 {
 	GData **tmp;
 	unsigned n;
@@ -117,7 +117,7 @@ void GDict::PutDirect(GData* data) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-unsigned int GDict::InsertData(const GData* data) throw(bad_alloc, GException)
+unsigned int GDict::InsertData(const GData* data) throw(std::bad_alloc, GException)
 {
 	GData* ptr;
 	bool InDirect=false;
@@ -154,7 +154,7 @@ unsigned int GDict::InsertData(const GData* data) throw(bad_alloc, GException)
 
 
 //------------------------------------------------------------------------------
-void GDict::DeleteData(GData* data) throw(bad_alloc, GException)
+void GDict::DeleteData(GData* data) throw(std::bad_alloc, GException)
 {
 	if((!data)||(data->GetId()>MaxId))
 		throw GException("Cannot delete data");
@@ -174,7 +174,7 @@ GData* GDict::GetData(const unsigned int id) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-GDataCursor& GDict::GetDataCursor(GInfoType type) throw(bad_alloc,GException)
+GDataCursor& GDict::GetDataCursor(GInfoType type) throw(std::bad_alloc,GException)
 {
 	GDataCursor* cur=GDataCursor::GetTmpCursor();
 	GDataTypes* tp;
@@ -188,7 +188,7 @@ GDataCursor& GDict::GetDataCursor(GInfoType type) throw(bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-RString& GDict::GetName(void) const throw(bad_alloc)
+RString& GDict::GetName(void) const throw(std::bad_alloc)
 {
 	RString* tmp=RString::GetString();
 

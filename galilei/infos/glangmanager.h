@@ -65,7 +65,7 @@ public:
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
-	GLangManager(const char* path,bool dlg=true) throw(bad_alloc,GException);
+	GLangManager(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
 
 	/**
 	* Connect to a Session.

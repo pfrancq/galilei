@@ -100,26 +100,26 @@ public:
 	* Construct a data. Its idenfiticator is invalid (cNoRef).
 	* @param name           Name.
 	*/
-	GData(const R::RString& name,GInfoType type) throw(bad_alloc);
+	GData(const R::RString& name,GInfoType type) throw(std::bad_alloc);
 
 	/**
 	* Construct a data with a known identificator.
 	* @param id             Identificator of the data.
 	* @param name           Name.
 	*/
-	GData(unsigned int id,const R::RString& name,GInfoType type) throw(bad_alloc);
+	GData(unsigned int id,const R::RString& name,GInfoType type) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a data.
 	* @param d               Data.
 	*/
-	GData(const GData& data) throw(bad_alloc);
+	GData(const GData& data) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a data.
 	* @param d              Pointer to a data.
 	*/
-	GData(const GData* d) throw(bad_alloc);
+	GData(const GData* d) throw(std::bad_alloc);
 
 	/**
 	* Compare the names of two data (work like the 'strcmp' function of ANSI
@@ -169,7 +169,7 @@ public:
 	* Assignment operator for data.
 	* @param d               Data.
 	*/
-	GData& operator=(const GData& d) throw(bad_alloc);
+	GData& operator=(const GData& d) throw(std::bad_alloc);
 
 	/**
 	* Compute the first hash index of the name of a data.
@@ -303,7 +303,7 @@ public:
 	* first time it find its.
 	* @return Pointer to a GData.
 	*/
-	virtual GData* CreateCopy(void) const throw(bad_alloc)=0;
+	virtual GData* CreateCopy(void) const throw(std::bad_alloc)=0;
 
 	/**
 	* Test if the data is considered as empty. By default, every data defined by

@@ -63,38 +63,38 @@ public:
 	/**
 	* Default constructor.
 	*/
-	GWord(void) throw(bad_alloc);
+	GWord(void) throw(std::bad_alloc);
 
 	/**
 	* Construct a word. Its idenfiticator is invalid (cNoRef).
 	* @param word           Word.
 	*/
-	GWord(const R::RString& word) throw(bad_alloc);
+	GWord(const R::RString& word) throw(std::bad_alloc);
 
 	/**
 	* Construct a word.
 	* @param id             Identificator of the word.
 	* @param word           Word.
 	*/
-	GWord(unsigned int id,const R::RString& word) throw(bad_alloc);
+	GWord(unsigned int id,const R::RString& word) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a word.
 	* @param word           Word.
 	*/
-	GWord(const GWord& word) throw(bad_alloc);
+	GWord(const GWord& word) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor of a word.
 	* @param word           Pointer to a word.
 	*/
-	GWord(const GWord* word) throw(bad_alloc);
+	GWord(const GWord* word) throw(std::bad_alloc);
 
 	/**
 	* The methodes creates a copy of the word.
 	* @return Pointer to a GData.
 	*/
-	virtual GData* CreateCopy(void) const throw(bad_alloc);
+	virtual GData* CreateCopy(void) const throw(std::bad_alloc);
 
 	/**
 	* Destructor.

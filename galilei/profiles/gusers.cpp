@@ -62,7 +62,7 @@ public:
 	GLang* Lang;                 // Language
 
 	// Constructor and Compare methods.
-	GSubProfiles(GLang* lang,unsigned int s) throw(bad_alloc)
+	GSubProfiles(GLang* lang,unsigned int s) throw(std::bad_alloc)
 		: RContainer<GSubProfile,unsigned int,true,true>(s,s/2), Lang(lang) {}
 	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
 	int Compare(const GSubProfiles& s) const {return(Lang->Compare(s.Lang));}
@@ -93,7 +93,7 @@ GSubProfileCursor& GUsers::GSubProfiles::GetSubProfilesCursor(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GUsers::GUsers(unsigned int u,unsigned int p) throw(bad_alloc)
+GUsers::GUsers(unsigned int u,unsigned int p) throw(std::bad_alloc)
 	: RContainer<GUser,unsigned,true,true>(u,u/2)
 {
 	Profiles=new RContainer<GProfile,unsigned int,true,true>(p,p/2);
@@ -111,7 +111,7 @@ GUserCursor& GUsers::GetUsersCursor(void)
 
 
 //------------------------------------------------------------------------------
-void GUsers::InsertUser(GUser* usr) throw(bad_alloc)
+void GUsers::InsertUser(GUser* usr) throw(std::bad_alloc)
 {
 	InsertPtr(usr);
 }
@@ -167,7 +167,7 @@ unsigned int GUsers::GetNewId(tObjType obj) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GUsers::InsertProfile(GProfile* p) throw(bad_alloc)
+void GUsers::InsertProfile(GProfile* p) throw(std::bad_alloc)
 {
 	Profiles->InsertPtr(p);
 }
@@ -197,7 +197,7 @@ unsigned int GUsers::GetProfilesNb(void) const
 
 
 //------------------------------------------------------------------------------
-void GUsers::InsertSubProfile(GSubProfile* s) throw(bad_alloc,GException)
+void GUsers::InsertSubProfile(GSubProfile* s) throw(std::bad_alloc,GException)
 {
 	GLang* l;
 	GSubProfiles* list;

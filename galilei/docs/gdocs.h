@@ -83,7 +83,7 @@ public:
 	* Constructor.
 	* @param nb             Maximal number of documents to allocate initially.
 	*/
-	GDocs(unsigned int nb) throw(bad_alloc);
+	GDocs(unsigned int nb) throw(std::bad_alloc);
 
 	/**
 	* Get a cursor on all the documents.
@@ -107,7 +107,7 @@ public:
 	* @param lang            Language of the documents.
 	* @returns Number of documents contained in the array.
 	*/
-	unsigned int FillDocs(GDoc** docs,GLang* lang) throw(GException,bad_alloc);
+	unsigned int FillDocs(GDoc** docs,GLang* lang) throw(GException,std::bad_alloc);
 
 	/**
 	* Get the number of documents handled.
@@ -132,7 +132,7 @@ public:
 	* Insert a document. The document is stored in the different containers.
 	* @param d               Pointer to the document.
 	*/
-	void InsertDoc(GDoc* d) throw(bad_alloc);
+	void InsertDoc(GDoc* d) throw(std::bad_alloc);
 
 	/**
 	* Move a document from the container holding all the documents with an
@@ -140,21 +140,21 @@ public:
 	* method supposes that the documents was previously in the unkown container.
 	* @param d               Pointer to the document.
 	*/
-	void MoveDoc(GDoc* d) throw(bad_alloc);
+	void MoveDoc(GDoc* d) throw(std::bad_alloc);
 
 	/**
 	* Get a document corresponding to a given identificator.
 	* @param id         Identificator of the document.
 	* @apram Pointer to GDoc.
 	*/
-	GDoc* GetDoc(unsigned int id) throw(bad_alloc, GException);
+	GDoc* GetDoc(unsigned int id) throw(std::bad_alloc, GException);
 
 	/**
 	* Get a document corresponding to a given URL.
 	* @param url        URL of the document.
 	* @apram Pointer to GDoc or null if the document does no exist.
 	*/
-	GDoc* GetDoc(const char* url) throw(bad_alloc);
+	GDoc* GetDoc(const char* url) throw(std::bad_alloc);
 
 	/**
 	* Clear all the documents.

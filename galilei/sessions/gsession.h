@@ -55,6 +55,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GSession provides a representation for a generic GALILEI session.
@@ -168,7 +169,7 @@ public:
 	* @param sessparams      Parameters of the session.
 	* @param test            Test mode.
 	*/
-	GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(bad_alloc,GException);
+	GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(std::bad_alloc,GException);
 
 	/**
 	* Connect the session to managers.
@@ -183,13 +184,13 @@ public:
 	* @param pgmng           Post-Group Computing Methods Manager
 	*/
 	void Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(bad_alloc,GException);
+		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(std::bad_alloc,GException);
 
 	/**
 	* Post-connect the session to other manager.
 	* @param lmng            Link Methods Manager.
 	*/
-	void PostConnect(GLinkCalcManager* lmng) throw(bad_alloc,GException);
+	void PostConnect(GLinkCalcManager* lmng) throw(std::bad_alloc,GException);
 
 	/**
 	* Get the languages manager.
@@ -351,7 +352,7 @@ public:
 	* Update the state of agreement and disagreement ratios between the
 	* subprofiles.
 	*/
-	void UpdateBehaviours(void) throw(bad_alloc);
+	void UpdateBehaviours(void) throw(std::bad_alloc);
 
 	/**
 	* Return the disagreement ratio between two subprofiles .
@@ -407,7 +408,7 @@ public:
 	* @param j          Feedback.
 	* @param date       Date on the last feedback.
 	*/
-	void InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate& date) throw(bad_alloc);
+	void InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,R::RDate& date) throw(std::bad_alloc);
 
 	/**
 	* Insert a new Feedback.
@@ -416,13 +417,13 @@ public:
 	* @param j          Feedback.
 	* @param date       String representing the date on the last feedback.
 	*/
-	void InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,const char* date) throw(bad_alloc);
+	void InsertFdbk(GProfile* p,GDoc* d,tDocAssessment j,const char* date) throw(std::bad_alloc);
 
 	/**
 	* Copy the ideal groupment in the current one.
 	* @param save           Save modified elements.
 	*/
-	void CopyIdealGroups(bool save) throw(bad_alloc,GException);
+	void CopyIdealGroups(bool save) throw(std::bad_alloc,GException);
 
 	/**
 	* Get a cursor over the filters of the system.

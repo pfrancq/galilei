@@ -86,7 +86,7 @@ class GSims : public RContainer<GSim,unsigned int,true,true>
 public:
 	unsigned int DocId;      // Identifier of the document
 
-	GSims(unsigned int id,unsigned int max) throw(bad_alloc)
+	GSims(unsigned int id,unsigned int max) throw(std::bad_alloc)
 		: RContainer<GSim,unsigned int,true,true>(max,max/2), DocId(id) {}
 	int Compare(const GSims* s) const {return(DocId-s->DocId);}
 	int Compare(const unsigned int id) const {return(DocId-id);}
@@ -112,12 +112,12 @@ public:
 	GDocProfSims* Manager;                             // Owner.
 
 	// Constructor and Compare functions.
-	GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor& s,bool iff,GLang* l) throw(bad_alloc);
+	GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor& s,bool iff,GLang* l) throw(std::bad_alloc);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GDocProfSim* docProfSim) const {return(Lang->Compare(docProfSim->Lang));}
 
 	// Analyse the similarity of the two subprofiles and insert when necessary.
-	void AnalyseSim(GSims* sim,const GDoc* doc ,const GSubProfile* sub) throw(bad_alloc);
+	void AnalyseSim(GSims* sim,const GDoc* doc ,const GSubProfile* sub) throw(std::bad_alloc);
 
 	// Get the similarities between two profiles, i.e. the subprofiles of a same
 	// language.
@@ -128,10 +128,10 @@ public:
 	// set to state="osModified".
 	// If the similarity for a given subprofile doesn't exist, the element is
 	// created but not computed ( -> state to osModified ).
-	void Update(GDocs* docs, GUsers* users) throw(bad_alloc);
+	void Update(GDocs* docs, GUsers* users) throw(std::bad_alloc);
 
 	//change tye type of similarity (local <-> IFF)
-	void Update(bool iff) throw(bad_alloc);
+	void Update(bool iff) throw(std::bad_alloc);
 
 
 	// Destructor.
@@ -140,7 +140,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-GDocProfSims::GDocProfSim::GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor& s,bool iff,GLang* l) throw(bad_alloc)
+GDocProfSims::GDocProfSim::GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor& s,bool iff,GLang* l) throw(std::bad_alloc)
 	: Sims(d->GetNbDocs(l)+2,d->GetNbDocs(l)/2 +1), IFF(iff),Lang(l), Manager(manager)
 {
 	GDocCursor Cur_d;
@@ -166,7 +166,7 @@ GDocProfSims::GDocProfSim::GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProf
 
 
 //------------------------------------------------------------------------------
-void GDocProfSims::GDocProfSim::AnalyseSim(GSims* sim,const GDoc* doc ,const GSubProfile* sub) throw(bad_alloc)
+void GDocProfSims::GDocProfSim::AnalyseSim(GSims* sim,const GDoc* doc ,const GSubProfile* sub) throw(std::bad_alloc)
 {
 	double tmp;
 
@@ -216,7 +216,7 @@ double GDocProfSims::GDocProfSim::GetSim(const GDoc* doc,const GSubProfile* sub)
 
 
 //------------------------------------------------------------------------------
-void  GDocProfSims::GDocProfSim::Update(GDocs* docs,GUsers* users) throw(bad_alloc)
+void  GDocProfSims::GDocProfSim::Update(GDocs* docs,GUsers* users) throw(std::bad_alloc)
 {
 	GDocCursor Cur_d;
 	GSubProfileCursor Cur_p;
@@ -268,7 +268,7 @@ void  GDocProfSims::GDocProfSim::Update(GDocs* docs,GUsers* users) throw(bad_all
 
 
 //------------------------------------------------------------------------------
-void  GDocProfSims::GDocProfSim::Update(bool iff) throw (bad_alloc)
+void  GDocProfSims::GDocProfSim::Update(bool iff) throw (std::bad_alloc)
 {
 	if(iff!=IFF)
 	{
@@ -291,7 +291,7 @@ void  GDocProfSims::GDocProfSim::Update(bool iff) throw (bad_alloc)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocProfSims::GDocProfSims::GDocProfSims(GSession* session,bool iff,bool memory) throw(bad_alloc)
+GDocProfSims::GDocProfSims::GDocProfSims(GSession* session,bool iff,bool memory) throw(std::bad_alloc)
 	: Sims(10,5), Session(session), IFF(iff), Memory(memory)
 {
 	GFactoryLangCursor Langs;
@@ -308,7 +308,7 @@ GDocProfSims::GDocProfSims::GDocProfSims(GSession* session,bool iff,bool memory)
 
 
 //------------------------------------------------------------------------------
-void GDocProfSims::ReInit(void) throw(bad_alloc)
+void GDocProfSims::ReInit(void) throw(std::bad_alloc)
 {
 	if (!Memory) return;
 
@@ -327,7 +327,7 @@ void GDocProfSims::ReInit(void) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocProfSims::UseIFF(bool iff) throw(bad_alloc)
+void GDocProfSims::UseIFF(bool iff) throw(std::bad_alloc)
 {
 	GFactoryLangCursor Langs;
 	GLang* Lang;

@@ -71,7 +71,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code) throw(bad_alloc)
+GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code) throw(std::bad_alloc)
 	: RLang(lang,code), GPlugin<GFactoryLang>(fac), Session(0), Dict(0), Stop(0),
 	  SkipWords(50,20)
 {
@@ -161,7 +161,7 @@ int GLang::Compare(const char* code) const
 
 
 //------------------------------------------------------------------------------
-void GLang::SkipSequence(const RString& word) throw(bad_alloc)
+void GLang::SkipSequence(const RString& word) throw(std::bad_alloc)
 {
 	SkipWords.InsertPtr(new SkipWord(word));
 }

@@ -50,6 +50,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GSubProfileVector provides a representation for a subprofile described as
@@ -69,14 +70,14 @@ public:
 	* @param grp             Group.
 	* @param a               String representing the date where it was attached.
 	*/
-	GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(bad_alloc);
+	GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(std::bad_alloc);
 
 	/**
 	* Constructor of the subprofile.
 	* @param prof            Profile.
 	* @param lang            Language of the subprofile.
 	*/
-	GSubProfileVector(GSession* session,GProfile* prof,GLang* lang) throw(bad_alloc);
+	GSubProfileVector(GSession* session,GProfile* prof,GLang* lang) throw(std::bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.
@@ -87,7 +88,7 @@ public:
 	/**
 	* Clear all the assessments of the subprofile.
 	*/
-	virtual void ClearFdbks(void) throw(bad_alloc);
+	virtual void ClearFdbks(void) throw(std::bad_alloc);
 
 	/**
 	* Verify if the subprofile is defined, i.e. if it is computed.
@@ -99,7 +100,7 @@ public:
 	* Add a given information to the document.
 	* @param info            Pointer to the information.
 	*/
-	virtual void AddInfo(GWeightInfo* info) throw(bad_alloc);
+	virtual void AddInfo(GWeightInfo* info) throw(std::bad_alloc);
 
 	/**
 	* Compute the similarity between a subprofile and a document.

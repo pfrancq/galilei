@@ -48,6 +48,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GUsers class provides a representation for the users of the system.
@@ -76,7 +77,7 @@ public:
 	* @param u               Initial number of users.
 	* @param p               Initial number of profiles.
 	*/
-	GUsers(unsigned int u,unsigned int p) throw(bad_alloc);
+	GUsers(unsigned int u,unsigned int p) throw(std::bad_alloc);
 
 	/**
 	* Get a cursor over the users used in the system.
@@ -100,7 +101,7 @@ public:
 	* Insert an user in the container.
 	* @param usr             Pointer to the user to insert.
 	*/
-	void InsertUser(GUser* usr) throw(bad_alloc);
+	void InsertUser(GUser* usr) throw(std::bad_alloc);
 
 	/**
 	* Get a user from the container.
@@ -113,7 +114,7 @@ public:
 	* Insert a new profile in the container.
 	* @param p               Pointer to the profile to add.
 	*/
-	void InsertProfile(GProfile* p) throw(bad_alloc);
+	void InsertProfile(GProfile* p) throw(std::bad_alloc);
 
 	/**
 	* Get a profile with a specific identifier.
@@ -135,7 +136,7 @@ public:
 	* Insert a subprofiles in the container.
 	* @param s              Pointer to the subprofile to add.
 	*/
-	void InsertSubProfile(GSubProfile* s) throw(bad_alloc,GException);
+	void InsertSubProfile(GSubProfile* s) throw(std::bad_alloc,GException);
 
 	/**
 	* Get a subprofile with a specific identifier.

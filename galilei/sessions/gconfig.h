@@ -130,7 +130,7 @@ public:
 	* Constructor.
 	* @param f               Name of the file.
 	*/
-	GConfig(const char* f) throw(bad_alloc);
+	GConfig(const char* f) throw(std::bad_alloc);
 
 	/**
 	* Load a file in the structure.

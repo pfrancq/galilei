@@ -87,7 +87,7 @@ class GBehaviours : public R::RContainer<GBehaviour,unsigned int,true,false>
 public:
 	unsigned int SubId;         // Identifier of the first profile
 
-	GBehaviours(unsigned int id,unsigned int max) throw(bad_alloc)
+	GBehaviours(unsigned int id,unsigned int max) throw(std::bad_alloc)
 		: RContainer<GBehaviour,unsigned int,true,false>(max,max/2), SubId(id) {}
 	int Compare(const GBehaviours* b) const {return(SubId-b->SubId);}
 	int Compare(const unsigned int id) const {return(SubId-id);}
@@ -117,7 +117,7 @@ public:
 	RContainer<GSubProfile,unsigned int,false,true>* ModifiedProfs;
 
 	// Constructor and Compare methods.
-	GProfilesBehaviour(GProfilesBehaviours* manager,GSubProfileCursor& s,GLang* lang, unsigned int minsamedocs, unsigned int mindiffdocs) throw(bad_alloc);
+	GProfilesBehaviour(GProfilesBehaviours* manager,GSubProfileCursor& s,GLang* lang, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GProfilesBehaviour* p) const {return(Lang->Compare(p->Lang));}
 
@@ -134,7 +134,7 @@ public:
 	// the corresponding sim will be set to state="osModified".
 	// If the similarity for a given subprofile doesn't exist, the element
 	// is created but not computed ( -> state to osModified ).
-	void Update(void) throw(bad_alloc);
+	void Update(void) throw(std::bad_alloc);
 
 	// Add a subprofile to the listof the modified one.
 	void AddModifiedProfile(GSubProfile* s);
@@ -148,7 +148,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GProfilesBehaviours* manager, GSubProfileCursor& s,GLang* l, unsigned int minsamedocs, unsigned int mindiffdocs) throw(bad_alloc)
+GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GProfilesBehaviours* manager, GSubProfileCursor& s,GLang* l, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc)
 	: Lang(l), MinSameDocs(minsamedocs), MinDiffDocs(mindiffdocs), Manager(manager)
 {
 	GSubProfileCursor Cur1, Cur2;
@@ -278,7 +278,7 @@ void GProfilesBehaviours::GProfilesBehaviour::AddModifiedProfile(GSubProfile* s)
 
 
 //------------------------------------------------------------------------------
-void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(bad_alloc)
+void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(std::bad_alloc)
 {
 	GBehaviours* behaviours;
 
@@ -341,7 +341,7 @@ GBehaviours*  GProfilesBehaviours::GProfilesBehaviour::AddNewBehaviours(GSubProf
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfilesBehaviours::GProfilesBehaviours(GSession* session,bool memory) throw(bad_alloc)
+GProfilesBehaviours::GProfilesBehaviours(GSession* session,bool memory) throw(std::bad_alloc)
 	: Ratios(10,5), Session(session), Memory(memory)
 {
 	GFactoryLangCursor Langs;
@@ -361,7 +361,7 @@ GProfilesBehaviours::GProfilesBehaviours(GSession* session,bool memory) throw(ba
 
 
 //------------------------------------------------------------------------------
-void GProfilesBehaviours::ReInit(void) throw(bad_alloc)
+void GProfilesBehaviours::ReInit(void) throw(std::bad_alloc)
 {
 	GFactoryLangCursor Langs;
 	GLang* Lang;
@@ -383,7 +383,7 @@ void GProfilesBehaviours::ReInit(void) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GProfilesBehaviours::Update(void) throw(bad_alloc)
+void GProfilesBehaviours::Update(void) throw(std::bad_alloc)
 {
 	GFactoryLangCursor Langs;
 	GLang* Lang;
@@ -421,7 +421,7 @@ double GProfilesBehaviours::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* 
 
 
 //------------------------------------------------------------------------------
-void GProfilesBehaviours::AddModifiedProfile(GSubProfile* sub) throw(bad_alloc,GException)
+void GProfilesBehaviours::AddModifiedProfile(GSubProfile* sub) throw(std::bad_alloc,GException)
 {
 	GProfilesBehaviour* profBehaviour;
 

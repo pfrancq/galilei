@@ -57,7 +57,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf) throw(bad_alloc)
+GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf) throw(std::bad_alloc)
 	: URL(url), Name(name), Id(id),
 	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
 	  Failed(f)
@@ -80,7 +80,7 @@ GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const ch
 
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const char* url,const char* name,const char* mime) throw(bad_alloc)
+GDoc::GDoc(const char* url,const char* name,const char* mime) throw(std::bad_alloc)
 	: URL(url), Name(name), Id(cNoRef),
 	  Lang(0), MIMEType(mime), Updated(), Computed(), Fdbks(50,25),
 	  Failed(0)
@@ -309,7 +309,7 @@ double GDoc::SimilarityIFF(const GGroup*) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GDoc::AddAssessment(GProfDoc* j) throw(bad_alloc)
+void GDoc::AddAssessment(GProfDoc* j) throw(std::bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 }
@@ -324,7 +324,7 @@ unsigned int GDoc::GetNbLinks(void)
 
 
 //------------------------------------------------------------------------------
-void GDoc::InsertLink(const GDoc* doc) throw(bad_alloc)
+void GDoc::InsertLink(const GDoc* doc) throw(std::bad_alloc)
 {
 	GLink* link ;
 	link = LinkSet->GetInsertPtr(doc);
@@ -333,7 +333,7 @@ void GDoc::InsertLink(const GDoc* doc) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDoc::InsertLink(const GDoc* doc,unsigned int nbOccurs) throw(bad_alloc)
+void GDoc::InsertLink(const GDoc* doc,unsigned int nbOccurs) throw(std::bad_alloc)
 {
 	GLink* link ;
 	link = LinkSet->GetInsertPtr(doc);

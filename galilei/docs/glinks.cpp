@@ -49,7 +49,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLinks::GLinks(GDoc* d) throw(bad_alloc, GException)
+GLinks::GLinks(GDoc* d) throw(std::bad_alloc, GException)
 	: RContainer<GLink,unsigned int,false,true>(3,2), Doc(d)
 {
 	if(!d)

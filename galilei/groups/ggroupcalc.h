@@ -81,7 +81,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plugin.
 	*/
-	GGroupCalc(GFactoryGroupCalc* fac) throw(bad_alloc);
+	GGroupCalc(GFactoryGroupCalc* fac) throw(std::bad_alloc);
 
 	/**
 	* Connect to a Session.

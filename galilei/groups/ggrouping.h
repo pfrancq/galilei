@@ -107,7 +107,7 @@ public:
 	* Constructor of the grouping method.
 	* @param fac             Factory of the plugin.
 	*/
-	GGrouping(GFactoryGrouping* fac) throw(bad_alloc);
+	GGrouping(GFactoryGrouping* fac) throw(std::bad_alloc);
 
 	/**
 	* Connect to a Session.

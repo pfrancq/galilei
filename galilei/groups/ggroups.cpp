@@ -82,7 +82,7 @@ public:
 	GLang* Lang;              // Language
 
 	// Constructor and Compare methods.
-	GGroupsLang(GLang* lang) throw(bad_alloc)
+	GGroupsLang(GLang* lang) throw(std::bad_alloc)
 		: RContainer<GGroup,unsigned int,false,true>(20,10), Lang(lang) {}
 	int Compare(const GGroupsLang* groups) const {return(Lang->Compare(groups->Lang));}
 	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
@@ -152,7 +152,7 @@ GGroupCursor& GGroups::GetGroupsCursor(GLang* lang) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GGroups::InsertGroup(GGroup* grp) throw(bad_alloc)
+void GGroups::InsertGroup(GGroup* grp) throw(std::bad_alloc)
 {
 	GGroupsLang* groupsLang;
 
@@ -163,7 +163,7 @@ void GGroups::InsertGroup(GGroup* grp) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GGroups::DeleteGroup(GGroup* grp) throw(bad_alloc)
+void GGroups::DeleteGroup(GGroup* grp) throw(std::bad_alloc)
 {
 	GGroupsLang* groupsLang;
 
@@ -187,7 +187,7 @@ GGroup* GGroups::GetGroup(const GSubProfile* sub) throw(GException)
 
 
 //------------------------------------------------------------------------------
-GGroup* GGroups::GetGroup(unsigned int id) throw(bad_alloc)
+GGroup* GGroups::GetGroup(unsigned int id) throw(std::bad_alloc)
 {
 	GGroup* grp;
 

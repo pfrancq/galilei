@@ -85,7 +85,7 @@ public :
 	* Construct the computing method.
 	* @param fac             Factory of the plugin.
 	*/
-	GLinkCalc(GFactoryLinkCalc* fac) throw(bad_alloc);
+	GLinkCalc(GFactoryLinkCalc* fac) throw(std::bad_alloc);
 
 	/**
 	* Compute the links for a given subprofile.

@@ -59,7 +59,7 @@ using namespace ltmm;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(bad_alloc,GException)
+GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryStatsCalc,unsigned int,true,true>(10,5)
 {
 	DIR* dp;

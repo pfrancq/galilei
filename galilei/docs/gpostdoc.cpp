@@ -48,7 +48,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostDoc::GPostDoc(GFactoryPostDoc* fac) throw(bad_alloc)
+GPostDoc::GPostDoc(GFactoryPostDoc* fac) throw(std::bad_alloc)
 	: GPlugin<GFactoryPostDoc>(fac), Session(0)
 {
 }

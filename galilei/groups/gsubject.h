@@ -55,6 +55,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * This Class implement a representation for a subject, i.e. an ideal group. A
@@ -92,7 +93,7 @@ public:
 	* @param lang            Language.
 	* @param u               Used?
 	*/
-	GSubject(unsigned int id,const char* name,GLang* l,bool u) throw(bad_alloc);
+	GSubject(unsigned int id,const char* name,GLang* l,bool u) throw(std::bad_alloc);
 
 	/**
 	* Compare two subjects by comparing their identificator.
@@ -129,7 +130,7 @@ public:
 	/**
 	* Insert a document to the list of those contained in the subject.
 	*/
-	void InsertDoc(GDoc* d) throw(bad_alloc);
+	void InsertDoc(GDoc* d) throw(std::bad_alloc);
 
 	/**
 	* Get a cursor over the documents contained in the subject.

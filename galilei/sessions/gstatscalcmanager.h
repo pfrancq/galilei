@@ -48,6 +48,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GStatsCalcManager class provides a representation for a manager
@@ -64,7 +65,7 @@ public:
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
-	GStatsCalcManager(const char* path,bool dlg=true) throw(bad_alloc,GException);
+	GStatsCalcManager(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
 
 	/**
 	* Connect to a Session.

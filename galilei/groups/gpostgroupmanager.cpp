@@ -58,7 +58,7 @@ using namespace ltmm;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(bad_alloc,GException)
+GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryPostGroup,unsigned int,true,true>(10,5), Current(0)
 {
 	DIR* dp;

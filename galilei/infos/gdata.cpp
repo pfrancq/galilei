@@ -49,7 +49,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GData::GData(const RString& name,GInfoType type) throw(bad_alloc)
+GData::GData(const RString& name,GInfoType type) throw(std::bad_alloc)
 	: Id(cNoRef), Name(name), Type(type), NbRefDocs(0), NbRefSubProfiles(0),
 	  NbRefGroups(0)
 {
@@ -57,7 +57,7 @@ GData::GData(const RString& name,GInfoType type) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GData::GData(unsigned id,const RString& name,GInfoType type) throw(bad_alloc)
+GData::GData(unsigned id,const RString& name,GInfoType type) throw(std::bad_alloc)
 	: Id(id), Name(name), Type(type), NbRefDocs(0), NbRefSubProfiles(0),
 	  NbRefGroups(0)
 {
@@ -65,7 +65,7 @@ GData::GData(unsigned id,const RString& name,GInfoType type) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GData::GData(const GData& d) throw(bad_alloc)
+GData::GData(const GData& d) throw(std::bad_alloc)
 	: Id(d.Id), Name(d.Name), Type(d.Type), NbRefDocs(d.NbRefDocs),
 	  NbRefSubProfiles(d.NbRefSubProfiles), NbRefGroups(d.NbRefGroups)
 {
@@ -73,7 +73,7 @@ GData::GData(const GData& d) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GData::GData(const GData* d) throw(bad_alloc)
+GData::GData(const GData* d) throw(std::bad_alloc)
   : Id(d->Id), Name(d->Name), Type(d->Type), NbRefDocs(d->NbRefDocs),
     NbRefSubProfiles(d->NbRefSubProfiles), NbRefGroups(d->NbRefGroups)
 {
@@ -116,7 +116,7 @@ int GData::Compare(const unsigned int id) const
 
 
 //-----------------------------------------------------------------------------
-GData& GData::operator=(const GData& d) throw(bad_alloc)
+GData& GData::operator=(const GData& d) throw(std::bad_alloc)
 {
 	Id=d.Id;
 	Name=d.Name;

@@ -58,7 +58,7 @@ using namespace ltmm;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(bad_alloc,GException)
+GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryGroupCalc,unsigned int,true,true>(10,5), Current(0)
 {
 	DIR* dp;

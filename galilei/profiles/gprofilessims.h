@@ -49,6 +49,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GProfilesSims class provides a representation for a set of Similarity between Profiles of
@@ -95,19 +96,19 @@ public:
 	* @param iff             Use Inverse Frequency Factor.
 	* @param memory      use container to stock sims?
 	*/
-	GProfilesSims(GSession* session,bool iff, bool memory) throw(bad_alloc);
+	GProfilesSims(GSession* session,bool iff, bool memory) throw(std::bad_alloc);
 
 	/**
 	* Re-initialize the similarities. This method can be used for testing
 	* purpose when it is necessary to start from different initial conditions.
 	*/
-	void ReInit(void) throw(bad_alloc);
+	void ReInit(void) throw(std::bad_alloc);
 
 	/**
 	* Set if the Inverse Frequency Factor should be used.
 	* @param iff             Use Inverse Frequency Factor.
 	*/
-	void UseIFF(bool iff) throw(bad_alloc);
+	void UseIFF(bool iff) throw(std::bad_alloc);
 
 	/**
 	*  update the similairties
@@ -143,7 +144,7 @@ public:
 	* Add a subprofile to the list of the modified one.
 	* @param sub             Pointer to the subprofile.
 	*/
-	void AddModifiedProfile(GSubProfile* sub) throw(bad_alloc,GException);
+	void AddModifiedProfile(GSubProfile* sub) throw(std::bad_alloc,GException);
 
 	/**
 	* returns the current session

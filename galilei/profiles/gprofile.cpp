@@ -54,7 +54,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser *usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf) throw(bad_alloc)
+GProfile::GProfile(GUser *usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf) throw(std::bad_alloc)
   : RContainer<GSubProfile,unsigned,false,true>(nb,nb/2), User(usr),Id(id),Name(name),
     Fdbks(nbf+nbf/2,nbf/2), Social(s)
 {
@@ -206,7 +206,7 @@ void GProfile::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
-void GProfile::AddAssessment(GProfDoc* j,GSession* s) throw(bad_alloc)
+void GProfile::AddAssessment(GProfDoc* j,GSession* s) throw(std::bad_alloc)
 {
 	GLang* l;
 

@@ -53,14 +53,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupVector::GGroupVector(unsigned int id,GLang* lang,bool com) throw(bad_alloc)
+GGroupVector::GGroupVector(unsigned int id,GLang* lang,bool com) throw(std::bad_alloc)
 	: GGroup(id,lang,com), GWeightInfos(60)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GGroupVector::GGroupVector(GLang* lang,bool com) throw(bad_alloc)
+GGroupVector::GGroupVector(GLang* lang,bool com) throw(std::bad_alloc)
 	: GGroup(lang,com), GWeightInfos(60)
 {
 }
@@ -74,7 +74,7 @@ bool GGroupVector::IsDefined(void) const
 
 
 //------------------------------------------------------------------------------
-void GGroupVector::AddInfo(GWeightInfo* info) throw(bad_alloc)
+void GGroupVector::AddInfo(GWeightInfo* info) throw(std::bad_alloc)
 {
 	GWeightInfos::InsertPtr(info);
 }

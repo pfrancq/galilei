@@ -49,7 +49,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocXML::GDocXML(const char* url,const char* filename) throw(bad_alloc)
+GDocXML::GDocXML(const char* url,const char* filename) throw(std::bad_alloc)
 	: RXMLStruct(), URL(url), FileName(filename)
 {
 	RXMLTag* t;
@@ -106,7 +106,7 @@ RXMLTag* GDocXML::GetLinks(void)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddLink(void) throw(bad_alloc)
+RXMLTag* GDocXML::AddLink(void) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -116,7 +116,7 @@ RXMLTag* GDocXML::AddLink(void) throw(bad_alloc)
 }
 
 //------------------------------------------------------------------------------
-void GDocXML::AddTitle(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddTitle(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 	if (! metaData)
@@ -132,7 +132,7 @@ void GDocXML::AddTitle(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddTitle(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddTitle(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -145,7 +145,7 @@ RXMLTag* GDocXML::AddTitle(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddCreator(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddCreator(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -158,7 +158,7 @@ void GDocXML::AddCreator(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddCreator(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddCreator(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -171,7 +171,7 @@ RXMLTag* GDocXML::AddCreator(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddSubject(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddSubject(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -184,7 +184,7 @@ void GDocXML::AddSubject(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddSubject(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddSubject(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -197,7 +197,7 @@ RXMLTag* GDocXML::AddSubject(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddDescription(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddDescription(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -210,7 +210,7 @@ void GDocXML::AddDescription(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddDescription(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddDescription(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -223,7 +223,7 @@ RXMLTag* GDocXML::AddDescription(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddPublisher(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddPublisher(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -236,7 +236,7 @@ void GDocXML::AddPublisher(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddPublisher(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddPublisher(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -249,7 +249,7 @@ RXMLTag* GDocXML::AddPublisher(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddContributor(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddContributor(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -262,7 +262,7 @@ void GDocXML::AddContributor(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddContributor(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddContributor(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -275,7 +275,7 @@ RXMLTag* GDocXML::AddContributor(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddDate(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddDate(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -288,7 +288,7 @@ void GDocXML::AddDate(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddDate(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddDate(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -301,7 +301,7 @@ RXMLTag* GDocXML::AddDate(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddType(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddType(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -314,7 +314,7 @@ void GDocXML::AddType(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddType(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddType(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -327,7 +327,7 @@ RXMLTag* GDocXML::AddType(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddFormat(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddFormat(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -340,7 +340,7 @@ void GDocXML::AddFormat(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddFormat(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddFormat(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -353,7 +353,7 @@ RXMLTag* GDocXML::AddFormat(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddIdentifier(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddIdentifier(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -366,7 +366,7 @@ void GDocXML::AddIdentifier(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddIdentifier(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddIdentifier(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -379,7 +379,7 @@ RXMLTag* GDocXML::AddIdentifier(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddSource(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddSource(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -392,7 +392,7 @@ void GDocXML::AddSource(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddSource(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddSource(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -405,7 +405,7 @@ RXMLTag* GDocXML::AddSource(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddLanguage(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddLanguage(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -418,7 +418,7 @@ void GDocXML::AddLanguage(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddLanguage(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddLanguage(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -431,7 +431,7 @@ RXMLTag* GDocXML::AddLanguage(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddRelation(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddRelation(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -444,7 +444,7 @@ void GDocXML::AddRelation(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddRelation(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddRelation(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -457,7 +457,7 @@ RXMLTag* GDocXML::AddRelation(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddCoverage(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddCoverage(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -470,7 +470,7 @@ void GDocXML::AddCoverage(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddCoverage(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddCoverage(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -483,7 +483,7 @@ RXMLTag* GDocXML::AddCoverage(RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddRights(const char* val,RXMLTag* metaData) throw(bad_alloc)
+void GDocXML::AddRights(const char* val,RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 
@@ -496,7 +496,7 @@ void GDocXML::AddRights(const char* val,RXMLTag* metaData) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddRights(RXMLTag* metaData) throw(bad_alloc)
+RXMLTag* GDocXML::AddRights(RXMLTag* metaData) throw(std::bad_alloc)
 {
 	RXMLTag* t;
 

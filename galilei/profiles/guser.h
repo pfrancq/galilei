@@ -48,6 +48,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 /**
 * The GUser class provides a representation for a user.
@@ -80,7 +81,7 @@ public:
 	* @param fullname       FullName of the user.
 	* @param nb             Number of profiles.
 	*/
-	GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb) throw(bad_alloc);
+	GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb) throw(std::bad_alloc);
 
 	/**
 	* Compare two users by comparing their identificator.

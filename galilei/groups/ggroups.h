@@ -48,6 +48,7 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
+
 //-----------------------------------------------------------------------------
 /**
 * The GGroups class provides a manager for all the groups managed by a GALILEI
@@ -99,13 +100,13 @@ public:
 	* its language.
 	* @param grp             Pointer to the group.
 	*/
-	void InsertGroup(GGroup* grp) throw(bad_alloc);
+	void InsertGroup(GGroup* grp) throw(std::bad_alloc);
 
 	/**
 	* Delete a group.
 	* @param grp             Pointer to the group.
 	*/
-	void DeleteGroup(GGroup* grp) throw(bad_alloc);
+	void DeleteGroup(GGroup* grp) throw(std::bad_alloc);
 
 	/**
 	* Get the group where the given subprofile is attached.
@@ -119,7 +120,7 @@ public:
 	* @param id         Identificator of the group.
 	* @apram Pointer to GGroup.
 	*/
-	GGroup* GetGroup(unsigned int id) throw(bad_alloc);
+	GGroup* GetGroup(unsigned int id) throw(std::bad_alloc);
 
 	/**
 	* Get the number of groups handled.
