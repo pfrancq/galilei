@@ -33,6 +33,7 @@ using namespace RXML;
 GDocXML::GDocXML(const RString& url) throw(bad_alloc)
 	: RXMLStruct(), URL(url)
 {
+	AddNode(0,new RXMLTag("doc"));
 }
 
 
