@@ -409,7 +409,7 @@ void GTextAnalyse::AddWord(const RString& word,double weight) throw(bad_alloc)
 			{
 				lang=CurLangs()->GetPlugin();
 				if(!lang) continue;
-				(*is)=lang->GetStop()->IsIn<const RString&>(word);
+				(*is)=lang->InStop(word);
 				if(*is)
 				{
 					// In the stoplist -> Inc different words of the stop lists.
@@ -420,7 +420,7 @@ void GTextAnalyse::AddWord(const RString& word,double weight) throw(bad_alloc)
 		}
 		else
 		{
-			if(Lang->GetStop()->IsIn<const RString&>(word))
+			if(Lang->InStop(word))
 			{
 				w->InStop[LangIndex]=true;
 				Sl[LangIndex]++;
@@ -760,11 +760,12 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 		}
 		if(stem.GetLen()>=MinStemSize)
 		{
-			Occur=Doc->GetInsertPtr(dic->GetId(stem));
+			GWord w(stem);
+			Occur=Doc->GetInsertPtr(dic->InsertData(&w));
 			if(!Occur->GetWeight())
 				Vdiff++;
 			V+=(*wrd)->Nb;
-			Occur->AddWeight((*wrd)->Weight);
+			(*Occur)+=(*wrd)->Weight;
 		}
 	}
 
@@ -782,14 +783,18 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 		{
 			if(Order[i]->GetId()==1)
 			{
-				stem=Lang->GetStemming(Order[i]->GetWord());
+				stem=Lang->GetStemming(Order[i]->GetName());
 				if(stem.GetLen()>=MinStemSize)
-					f<<dic->GetId(stem);
+				{
+					GWord w(stem);
+					f<<dic->InsertData(&w);
+				}
 			}
 			else
 			{
-				stem=(Order[i]->GetWord());
-				f<<dic->GetId(stem);
+				stem=(Order[i]->GetName());
+				GWord w(stem);
+				f<<dic->InsertData(&w);
 			}
 		}
 		close(R::Create);
