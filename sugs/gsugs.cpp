@@ -42,13 +42,12 @@
 //------------------------------------------------------------------------------
 //include files for GALILEI
 #include <sessions/gsession.h>
-#include <profiles/gprofile.h>
-#include <profiles/gprofdoc.h>
+#include <profiles/gprofileproxy.h>
 #include <profiles/gsubprofile.h>
-#include <docs/gdoc.h>
+#include <docs/gdocproxy.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
-#include <infos/glang.h>
+#include <infos/glangproxy.h>
 #include <sessions/gstorage.h>
 using namespace GALILEI;
 using namespace std;
@@ -102,7 +101,7 @@ void GSugs::Run(void) throw(GException)
 {
 	GGroupCursor Grps;
 	GSubProfileCursor Sub;
-	GProfDocCursor Doc;
+	RCursor<GFdbk> Doc;
 	unsigned int i;
 	char tmp[10];
 
