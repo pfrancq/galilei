@@ -93,7 +93,7 @@ KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
 	try
 	{
 		//init the plugins managers;
-		Langs=new GLangManager(pluginsPath.Latin1());
+		Langs=new GLangManager(pluginsPath.Latin1(),true);
 		URLManager=new GFilterManagerKDE(pluginsPath.Latin1());
 		DocAnalyseManager=new GDocAnalyseManager(pluginsPath.Latin1()),
 		ProfilingManager=new GProfileCalcManager(pluginsPath);
