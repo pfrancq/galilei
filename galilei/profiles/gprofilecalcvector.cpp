@@ -242,10 +242,10 @@ void GALILEI::GProfileCalcVector::ComputeGlobal(GProfile* profile) throw(bad_all
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=Weights->GetInsertPtr<unsigned int>(Words()->GetId());
-			if(Words()->InfoType()==4) w->SetInfoType(infoWordList);
+			if(Words()->InfoType()==infoWordList) w->SetInfoType(infoWordList);
 			w->AddWeight(Words()->GetWeight());
 			w=NbDocs->GetInsertPtr<unsigned int>(Words()->GetId());
-			if(Words()->InfoType()==4) w->SetInfoType(infoWordList);
+			if(Words()->InfoType()==infoWordList) w->SetInfoType(infoWordList);
 			w->AddWeight(1.0);
 		}
 	}

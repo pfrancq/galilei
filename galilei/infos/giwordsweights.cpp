@@ -203,14 +203,14 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 		return(0.0);
 	while(--i)
 	{
-		if((*ptr)->InfoType()==4)
+		if((*ptr)->InfoType()==infoWordList)
 			w1=((*ptr)->Weight/max1)*log(TotalRefWL/lang->GetRef((*ptr)->GetId(),ObjType));
 		else
 			w1=((*ptr)->Weight/max1)*log(TotalRefW/lang->GetRef((*ptr)->GetId(),ObjType));
 		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
 		{
 			j--;
-			if((*ptr2)->InfoType()==4)
+			if((*ptr2)->InfoType()==infoWordList)
 				w2=((*ptr2)->Weight/max2)*log(TotalRefWL/lang->GetRef((*ptr2)->GetId(),ObjType));
 			else
 				w2=((*ptr2)->Weight/max2)*log(TotalRefW/lang->GetRef((*ptr2)->GetId(),ObjType));
@@ -222,7 +222,7 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 			j--;
 			if(((*ptr)->Weight>0)||((*ptr2)->Weight>0))
 			{
-				if((*ptr2)->InfoType()==4)
+				if((*ptr2)->InfoType()==infoWordList)
 					w2=((*ptr2)->Weight/max2)*log(TotalRefWL/lang->GetRef((*ptr2)->GetId(),ObjType));
 				else
 					w2=((*ptr2)->Weight/max2)*log(TotalRefW/lang->GetRef((*ptr2)->GetId(),ObjType));
@@ -237,7 +237,7 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 	while(j)
 	{
 		j--;
-		if((*ptr2)->InfoType()==4)
+		if((*ptr2)->InfoType()==infoWordList)
 			w2=((*ptr2)->Weight/max2)*log(TotalRefWL/lang->GetRef((*ptr2)->GetId(),ObjType));
 		else
 			w2=((*ptr2)->Weight/max2)*log(TotalRefW/lang->GetRef((*ptr2)->GetId(),ObjType));

@@ -1,10 +1,15 @@
 /*
 
+	GALILEI Research Project
+
   gwordsclustering.cpp
 
-  Description - Implementation.
+  Create concepts - Implementation.
 
-  (c) 2002 by N. Kumps (nkumps@ulb.ac.be).                            
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Nicolas Kumps (nkumps@ulb.ac.be).
 
   Version $Revision$
 
@@ -26,9 +31,12 @@
 
 */
 
+
+
 //---------------------------------------------------------------------------
 #include <stdlib.h>
 #include <math.h>
+
 //---------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gwordsclustering.h>
@@ -53,42 +61,58 @@ GALILEI::GWordsClustering::GWordDocs::GWordDocs()
 {
 	Docs=new RContainer<GDoc,unsigned,false,true>(10);
 }
+
+
 //-----------------------------------------------------------------------------
 GALILEI::GWordsClustering::GWordDocs::GWordDocs(unsigned id)
 	: Id(id)
 {
 	Docs=new RContainer<GDoc,unsigned,false,true>(10);
 }
+
+
 //-----------------------------------------------------------------------------
 int GALILEI::GWordsClustering::GWordDocs::Compare(const GWordDocs* n) const
 {
 	return(Id-(n->GetId()));
 }
+
+
 //-----------------------------------------------------------------------------
 int GALILEI::GWordsClustering::GWordDocs::Compare(const GWordDocs& n) const
 {
 	return(Id-(n.GetId()));
 }
+
+
 //-----------------------------------------------------------------------------
 int GALILEI::GWordsClustering::GWordDocs::Compare(const unsigned id) const
 {
 	return(Id-id);
 }
+
+
 //-----------------------------------------------------------------------------
 unsigned GALILEI::GWordsClustering::GWordDocs::GetId() const
 {
 	return(Id);
 }
+
+
 //-----------------------------------------------------------------------------
 double GALILEI::GWordsClustering::GWordDocs::GetIdf() const
 {
 	return(Idf);
 }
+
+
 //-----------------------------------------------------------------------------
 void GALILEI::GWordsClustering::GWordDocs::SetIdf(double idf) 
 {
 	Idf=idf;
 }
+
+
 //-----------------------------------------------------------------------------
 int GALILEI::GWordsClustering::GWordDocs::sortOrder(const void *a,const void *b)
 {
@@ -101,16 +125,21 @@ int GALILEI::GWordsClustering::GWordDocs::sortOrder(const void *a,const void *b)
 	else
 		return(1);
 }
+
+
 //-----------------------------------------------------------------------------
 void GALILEI::GWordsClustering::GWordDocs::AddDoc(GDoc* doc)
 {
 	Docs->InsertPtr(doc);
 }
+
+
 //-----------------------------------------------------------------------------
 GALILEI::GWordsClustering::GWordDocs::~GWordDocs()
 {
 	delete(Docs);
 }
+
 
 //-----------------------------------------------------------------------------
 //
@@ -128,7 +157,9 @@ GALILEI::GWordsClustering::GWordsClustering(GDict* dic,unsigned mindocs,unsigned
   NbMaxDocs=maxdocs;
 	NbMinOcc=minocc;
 }
-//---------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GWordsClustering::AddDoc(GDocVector* doc)
 {
 	GWordDocs* worddocs;
@@ -158,7 +189,9 @@ void GALILEI::GWordsClustering::AddDoc(GDocVector* doc)
 		}
 	}
 }
-//---------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GWordsClustering::Sort()
 {
 	unsigned int MaxtmpSize;
@@ -168,7 +201,9 @@ void GALILEI::GWordsClustering::Sort()
 	qsort(static_cast<void*>(Order),Words->NbPtr,sizeof(GWordDocs*),GWordDocs::sortOrder);
 	Order[Words->NbPtr]=0;
 }
-//---------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GWordsClustering::CleanWords()
 {
 	GWordDocs* del,**cur;
@@ -186,14 +221,18 @@ void GALILEI::GWordsClustering::CleanWords()
 
 }
 
-//---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 bool GALILEI::GWordsClustering::OrdreByDocs(unsigned n)
 {
 	GIWordList* tocompute,*toins,*tocompute2;
-	unsigned i,k,l,nb,nbmax,maxptr,id,it;
+	unsigned i,k,l,nb,maxptr,id,it;
 	RContainer<GDoc,unsigned,false,true>* docslist,*mem;
 	bool change,end;
-	nbmax=5;
+	double confidence,conftot,nbmax,nbmin,minconf;
+	GLang *lang=Dic->GetLang();
+	nbmax=0.1;
+	nbmin=0.1;
 	it=1;
 	change=false;
 	end=false;
@@ -238,10 +277,27 @@ bool GALILEI::GWordsClustering::OrdreByDocs(unsigned n)
 								docslist->InsertPtr((*cur1)());
 							}
 						}
-						if(docslist->NbPtr>nbmax+1)
+						conftot=0.0;
+						minconf=0.15;
+						confidence=0.0;
+						for(tocompute->Start();!tocompute->End();tocompute->Next())
+						{
+							if((double(docslist->NbPtr)/double(lang->GetRef((*tocompute)()->GetId(),otDoc)))<minconf) minconf=(double(docslist->NbPtr)/double(lang->GetRef((*tocompute)()->GetId(),otDoc)));
+							confidence+=(double(docslist->NbPtr)/double(lang->GetRef((*tocompute)()->GetId(),otDoc)));
+							conftot++;
+						}
+						for(tocompute2->Start();!tocompute2->End();tocompute2->Next())
+						{
+							if((double(docslist->NbPtr)/double(lang->GetRef((*tocompute2)()->GetId(),otDoc)))<minconf) minconf=(double(docslist->NbPtr)/double(lang->GetRef((*tocompute2)()->GetId(),otDoc)));
+							confidence+=(double(docslist->NbPtr)/double(lang->GetRef((*tocompute2)()->GetId(),otDoc)));
+							conftot++;
+						}
+						confidence=confidence/conftot;
+						if((docslist->NbPtr>5)&&(confidence>nbmax)&&(minconf>nbmin))
 						{
 							change=true;
-							nbmax=docslist->NbPtr;
+							nbmax=/*docslist->NbPtr*/confidence;
+							nbmin=minconf;
 							id=tocompute2->GetId();
 							mem=new RContainer<GDoc,unsigned,false,true>(10);
 							for(docslist->Start();!docslist->End();docslist->Next())
@@ -262,7 +318,8 @@ bool GALILEI::GWordsClustering::OrdreByDocs(unsigned n)
 				end=false;
 				change=false;
 				Groups->DeletePtr(toins);
-				nbmax=5;
+				nbmin=0.1;
+				nbmax=0.1;
 			}
 		}
 	}
@@ -270,15 +327,17 @@ bool GALILEI::GWordsClustering::OrdreByDocs(unsigned n)
 	{
 		if((*Groups)()->NbPtr>1)
 		{
+		conftot=double(Words->GetPtr((*Groups)()->GetId())->Docs->NbPtr);
 		for(((*Groups)())->Start();!((*Groups)())->End();((*Groups)())->Next())
-			cout<<Dic->GetWord(Words->GetPtr((*((*Groups)()))()->GetId())->GetId())<<" ";
-		nb=unsigned(Words->GetPtr((*Groups)()->GetId())->Docs->NbPtr);
-		cout<<" / Nombre de docs = "<<nb<<endl;
+			cout<<Dic->GetWord(Words->GetPtr((*((*Groups)()))()->GetId())->GetId())<<" : Confidence = "<<double(conftot)/double(lang->GetRef((*((*Groups)()))()->GetId(),otDoc))<<", ";
+		cout<<" / Nombre de docs = "<<conftot<<" , support = "<<double(conftot)/double(lang->GetRef(otDoc,tWordList))<<endl;
 		}
 	}
 	return(end);
 }
-//---------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GWordsClustering::View()
 {
 	for(Dic->GroupsList.Start();!Dic->GroupsList.End();Dic->GroupsList.Next())
@@ -289,7 +348,9 @@ void GALILEI::GWordsClustering::View()
 		cout<<endl;
 	}
 }
-//---------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GWordsClustering::UpdateDoc(GDocVector* doc)
 {
 	unsigned mult;
@@ -299,14 +360,15 @@ void GALILEI::GWordsClustering::UpdateDoc(GDocVector* doc)
 	{
 		if(!doc->IsIn((Dic->GroupsList)()->GetId()))
 		{
-//			nbocc=0.0;
+			nbocc=1000.0;
 			isin=true;
 			mult=0;
 			for((Dic->GroupsList)()->List->Start();!(Dic->GroupsList)()->List->End();(Dic->GroupsList)()->List->Next())
 			{
 				mult++;
 				if(doc->IsIn((*(Dic->GroupsList)()->List)()->GetId()))
-					nbocc=doc->GetPtr((*(Dic->GroupsList)()->List)()->GetId())->GetWeight();
+					if(doc->GetPtr((*(Dic->GroupsList)()->List)()->GetId())->GetWeight()<nbocc)
+						nbocc=doc->GetPtr((*(Dic->GroupsList)()->List)()->GetId())->GetWeight();
 				else isin=false;
 			}
 			if(isin) doc->AddWordList((Dic->GroupsList)()->GetId(),nbocc*mult);
@@ -314,18 +376,17 @@ void GALILEI::GWordsClustering::UpdateDoc(GDocVector* doc)
 	}
 }
 
-//---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 void GALILEI::GWordsClustering::SaveAssociations(unsigned n,bool save)
 {
 	double nb;
 	GWordList *tmp;
 	GDocVector* doc;
-//	bool tosave;
 	unsigned mult;
 	for(Groups->Start();!Groups->End();Groups->Next())
 	{
-//		tosave=true;
-		if(/*(tosave)&&*/((*Groups)()->NbPtr>1))
+		if((*Groups)()->NbPtr>1)
 		{
 			mult=0;
 			tmp=new GWordList(cNoRef,"grouplist"+itoa(Dic->GetNbGroupsList()));
@@ -349,7 +410,9 @@ void GALILEI::GWordsClustering::SaveAssociations(unsigned n,bool save)
 		}
 	}
 }
-//---------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
 void GWordsClustering::Clear()
 {
 	if(Doc)
@@ -361,12 +424,15 @@ void GWordsClustering::Clear()
 		Words->Clear();
 	}
 }
-//---------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
 GWordsClustering::~GWordsClustering()
 {
-	delete(Order);
+	if(Order) delete[] Order;
 	delete(Doc);
 	delete(Groups);
 	delete(Words);
 }
+
 

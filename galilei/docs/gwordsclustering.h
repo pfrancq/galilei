@@ -1,10 +1,15 @@
 /*
 
-  gwordsclustering.h
+	GALILEI Research Project
 
-  Description - Header.
+	gwordsclustering.h
 
-  (c) 2002 by N. Kumps (nkumps@ulb.ac.be).
+  Create concepts - Header.
+
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Nicolas Kumps (nkumps@ulb.ac.be).
 
   Version $Revision$
 
@@ -25,6 +30,9 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 */
+
+
+
 //-----------------------------------------------------------------------------
 #ifndef GWordsClusteringH
 #define GWordsClusteringH
@@ -34,6 +42,7 @@
 // include files for R Project
 #include <rio/rrecfile.h>
 #include <rstd/rcontainer.h>
+
 
 //---------------------------------------------------------------------------
 // include files for GALILEI
@@ -46,9 +55,13 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 * This class provides methods to cluster words.
+* @author Nicolas Kumps
+* @short Create concept.
 */
+
 class GWordsClustering
 {
+
 	class GWordDocs
 	{
 			unsigned Id;
@@ -121,16 +134,16 @@ public:
 
 	/**
 	* Constructor.
-	* @param dic                    global dictionnary.
-	* @param mindocs                minimum number of documents.
-	* @param maxdocs                maximum number of documents.
-	* @param minocc                 minimum occurence of the words to treat.
+	* @param dic              global dictionnary.
+	* @param mindocs          minimum number of documents.
+	* @param maxdocs          maximum number of documents.
+	* @param minocc           minimum occurence of the words to treat.
 	*/
 	GWordsClustering(GDict* dic,unsigned mindocs,unsigned maxdocs,unsigned minocc);
 
 	/**
 	* Insert a document to the list.
-	* @param doc                    document to add.
+	* @param doc              document to add.
 	*/
 	void AddDoc(GDocVector* doc) ;
 
@@ -146,15 +159,18 @@ public:
 
 	/**
 	* Create the associations of words.
-	* @param n                      number of the iteration.
+	* @param n                number of the iteration.
 	*/
 	bool OrdreByDocs(unsigned n);
 
+	/**
+	* To View the concept.
+	*/
 	void View();
 
 	/**
 	* Update the dictionnary of the document.
-	* @param doc                    document to update.
+	* @param doc              document to update.
 	*/
 	void UpdateDoc(GDocVector* doc);
 

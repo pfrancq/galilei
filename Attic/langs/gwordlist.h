@@ -1,14 +1,17 @@
 /*
 
-  gwordlist.h
+	GALILEI Research Project
 
-  Description - Header.
+	gwordlist.h
 
-  (c) 2002 by N. Kumps (nkumps@ulb.ac.be)
+	Representation of a list of words - Header.
+
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Nicolas Kumps (nkumps@ulb.ac.be).
 
   Version $Revision$
-
-  Last Modify: $Date$
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,6 +29,8 @@
 
 */
 
+
+
 //---------------------------------------------------------------------------
 #ifndef GWordListH
 #define GWordListH
@@ -40,12 +45,12 @@
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
 /**
 * The GWordList class provides a representation for a list of words.
+* @author Nicolas Kumps
+* @short List of words.
 */
+
 class GWordList : public GWord
 {
 
@@ -64,6 +69,9 @@ public:
 	*/
 	GWordList(void);
 
+	/**
+	* Constructor.
+	*/
 	GWordList(unsigned int word);
 
 	/**
@@ -78,16 +86,19 @@ public:
 
 	/**
 	* Insert a new word in the list.
+	* @param word             word to insert to the list.
 	*/
 	void InsertWord(GWord* word);
 
 	/**
-	* Set the Type
+	* Set the Type.
+	* @param type             type of the information.
 	*/
 	void SetType(GWordType type);
 
 	/**
 	* Set the id.
+	* @param id               id of the world list.
 	*/
 	void SetId(unsigned int id);
 

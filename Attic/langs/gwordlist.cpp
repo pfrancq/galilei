@@ -1,10 +1,15 @@
 /*
 
+	GALILEI Research Project
+
   gwordlist.cpp
 
-  Description - Implementation.
+  Representation of a list of words - Implementation.
 
-  (c) 2002 by N. Kumps (nkumps@ulb.ac.be)
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Nicolas Kumps (nkumps@ulb.ac.be).
 
   Version $Revision$
 
@@ -40,7 +45,6 @@
 #include <langs/gwordlist.h>
 using namespace GALILEI;
 using namespace RStd;
-
 
 
 //-----------------------------------------------------------------------------
@@ -97,9 +101,9 @@ GALILEI::GWordList::GWordList(unsigned int id,const RStd::RString& word)
 //		len++;
 //	}
 //	WordsId[i]=dic->GetId(ptr);
-
-
 }
+
+
 //-----------------------------------------------------------------------------
 GALILEI::GWordList::GWordList(GWordList* wordlist)
 	: GWord(wordlist->GetId(),wordlist->GetWord())
