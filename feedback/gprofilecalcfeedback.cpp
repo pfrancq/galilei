@@ -279,7 +279,7 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=NbDocs->GetInsertPtr<unsigned int>(Words()->GetId());
-			if(Words()->InfoType()==4) w->SetInfoType(infoWordList);
+			if(Words()->InfoType()==infoWordList) w->SetInfoType(infoWordList);
 			w->AddWeight(1.0);
 		}
 	}
@@ -328,7 +328,7 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=Vector->GetInsertPtr<unsigned int>(Words()->GetId());
-			if(Words()->InfoType()==4) w->SetInfoType(infoWordList);
+			if(Words()->InfoType()==infoWordList) w->SetInfoType(infoWordList);
 			if(Params->IdfFactor)
 				Freq=(Words()->GetWeight()/MaxFreq)*log(NbDocsJudged/NbDocs->GetPtr<unsigned int>(Words()->GetId())->GetWeight());
 			else
