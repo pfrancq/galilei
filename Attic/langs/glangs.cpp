@@ -82,13 +82,14 @@ GLangs::GLangs(const char* path,bool dlg) throw(GException)
 	while((ep=readdir(dp)))
 	{
 		len=strlen(ep->d_name);
+		if(len<3) continue;
 		if(strcmp(&ep->d_name[len-3],".la")) continue;
-		if(!strcmp(&ep->d_name[len-7],"_dlg.la")) continue;
+		if((len>7)&&(!strcmp(&ep->d_name[len-7],"_dlg.la"))) continue;
 		try
 		{
 			// Create the factory and insert it
 			Name=Path+ep->d_name;
-			handle<>& myhandle = l.load(Name());
+			handle<>& myhandle = l.load(Name);
 			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
 			GFactoryLang* myfactory = ((GFactoryLangInit)(*(*myinit)))(this,ep->d_name);
 			if(strcmp(API_LANG_VERSION,myfactory->GetAPIVersion()))
@@ -103,7 +104,7 @@ GLangs::GLangs(const char* path,bool dlg) throw(GException)
 			if(!dlg) continue;
 			try
 			{
-				strcpy(DlgLib,Name());
+				strcpy(DlgLib,Name);
 				DlgLib[Name.GetLen()-3]=0;
 				strcat(DlgLib,"_dlg.la");
 				handle<>& myhandle2 = l.load(DlgLib);

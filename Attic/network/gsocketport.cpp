@@ -95,7 +95,7 @@ GSocketPort::GSocketPort(GServer* server,SocketService *pService, TCPSocket & tc
 {
 	tpport_t port;
 	InetHostAddress ia = getPeer( & port );
-	Server->WriteLog(RString("Connecting from ")+ia.getHostname()+":"+itoa(port));
+	Server->WriteLog(RString("Connecting from ")+ia.getHostname()+":"+itou(port));
 
 	// Set up non-blocking reads
 	setCompletion( false );

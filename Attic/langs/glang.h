@@ -78,7 +78,7 @@ protected:
 		SkipWord(const char* w) : Word(w) {}
 		int Compare(const SkipWord* w) {return(Word.Compare(w->Word));}
 		int Compare(const SkipWord& w) {return(Word.Compare(w.Word));}
-		int Compare(const char* w) {return(Word.Compare(w));}
+		int Compare(const R::RChar* w) {return(Word.Compare(w));}
 	};
 
 	/**
@@ -187,7 +187,7 @@ public:
 	* Look if a given word is supposed to be skip.
 	* @param wd              Word to test.
 	*/
-	bool ToSkip(const char* wd);
+	bool ToSkip(const R::RChar* wd);
 
 	/**
 	* Destructor.

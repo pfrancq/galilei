@@ -141,7 +141,7 @@ public:
 	* Return the name of the Subject.
 	* @returns a string containing the name.
 	*/
-	const char* GetName(void) {return(Name());};
+	const char* GetName(void) {return(Name);};
 
 	/**
 	* Return the id of the Subject.

@@ -89,7 +89,7 @@ GConfig::GConfig(const char* f) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Load(void)
+void GConfig::Load(void) throw(GException)
 {
 	Clear();
 	try
@@ -108,14 +108,22 @@ void GConfig::Load(void)
 	{
 		Filters=0;
 		ProfileCalcs=0;
+		throw GException("Problem loading config file.");
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GConfig::Save(void)
+void GConfig::Save(void) throw(GException)
 {
-	RXMLFile File(FileName,this,R::Create);
+	try
+	{
+		RXMLFile File(FileName,this,R::Create);
+	}
+	catch(...)
+	{
+		throw GException("Problem loading config file.");
+	}
 }
 
 

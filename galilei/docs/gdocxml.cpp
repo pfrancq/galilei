@@ -67,14 +67,14 @@ GDocXML::GDocXML(const char* url,const char* filename) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 const char* GALILEI::GDocXML::GetURL(void) const
 {
-	return(URL());
+	return(URL);
 }
 
 
 //-----------------------------------------------------------------------------
 const char* GALILEI::GDocXML::GetFile(void) const
 {
-	return(FileName());
+	return(FileName);
 }
 
 

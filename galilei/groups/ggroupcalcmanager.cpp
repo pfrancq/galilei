@@ -84,7 +84,7 @@ GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(GException
 		try
 		{
 			Name=Path+ep->d_name;
-			handle<>& myhandle = l.load(Name());
+			handle<>& myhandle = l.load(Name);
 			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
 			GFactoryGroupCalc* myfactory = ((GFactoryGroupCalcInit)(*(*myinit)))(this,ep->d_name);
 			if(strcmp(API_GROUPCALC_VERSION,myfactory->GetAPIVersion()))
@@ -100,7 +100,7 @@ GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(GException
 			try
 			{
 				if(!dlg) continue;
-				strcpy(DlgLib,Name());
+				strcpy(DlgLib,Name);
 				DlgLib[Name.GetLen()-3]=0;
 				strcat(DlgLib,"_dlg.la");
 				handle<>& myhandle2 = l.load(DlgLib);

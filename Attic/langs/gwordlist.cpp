@@ -64,7 +64,7 @@ GALILEI::GWordList::GWordList(void)
 
 //-----------------------------------------------------------------------------
 GALILEI::GWordList::GWordList(unsigned int word)
-	: GWord(itoa(word))
+	: GWord(itou(word))
 {
 	List=new RContainer<GWord,unsigned,false,true>(2);
 	Type=tWordList;

@@ -120,12 +120,12 @@ public:
 	/**
 	* Load a file in the structure.
 	*/
-	void Load(void);
+	void Load(void) throw(GException);
 
 	/**
 	* Save a file in the structure.
 	*/
-	void Save(void);
+	void Save(void) throw(GException);
 
 	/**
 	* Read the filters from the structure.

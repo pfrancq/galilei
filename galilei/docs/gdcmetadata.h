@@ -107,7 +107,7 @@ public:
 	* Get the value of the metadata.
 	* @returns Pointer to a C string.
 	*/
-	const char* GetValue(void) {return(Value());}
+	const char* GetValue(void) {return(Value);}
 
 	/**
 	* Destructor.

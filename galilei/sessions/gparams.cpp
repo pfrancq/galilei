@@ -56,7 +56,7 @@ GParams::GParams(const char* n) throw(bad_alloc)
 //------------------------------------------------------------------------------
 const char* GParams::GetName(void) const
 {
-	return(Name());
+	return(Name);
 }
 
 

@@ -84,7 +84,7 @@ GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(GException
 		{
 			// Create the factory and insert it
 			Name=Path+ep->d_name;
-			handle<>& myhandle = l.load(Name());
+			handle<>& myhandle = l.load(Name);
 			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
 			GFactoryStatsCalc* myfactory = ((GFactoryStatsCalcInit)(*(*myinit)))(this,ep->d_name);
 			if(strcmp(API_STATSCALC_VERSION,myfactory->GetAPIVersion()))
@@ -99,7 +99,7 @@ GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(GException
 			if(!dlg) continue;
 			try
 			{
-				strcpy(DlgLib,Name());
+				strcpy(DlgLib,Name);
 				DlgLib[Name.GetLen()-3]=0;
 				strcat(DlgLib,"_dlg.la");
 				handle<>& myhandle2 = l.load(DlgLib);

@@ -104,7 +104,7 @@ void GLang::Connect(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void GLang::Disconnect(GSession* session)
+void GLang::Disconnect(GSession* /*session*/)
 {
 	if((!Dict)&&(!Stop)) return;
 	if(Dict)
@@ -201,9 +201,9 @@ unsigned int GLang::GetNbWordList(void) const
 
 
 //-----------------------------------------------------------------------------
-bool GLang::ToSkip(const char* wd)
+bool GLang::ToSkip(const RChar* wd)
 {
-	return(SkipWords.IsIn<const char*>(wd));
+	return(SkipWords.IsIn<const RChar*>(wd));
 }
 
 

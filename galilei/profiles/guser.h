@@ -127,13 +127,13 @@ public:
 	* Get the name of the user.
 	* @return Pointer to a C String.
 	*/
-	const char* GetName(void) const {return(Name());}
+	const char* GetName(void) const {return(Name);}
 
 	/**
 	* Get the full name of the user.
 	* @return Pointer to a C String.
 	*/
-	const char* GetFullName(void) const {return(FullName());}
+	const char* GetFullName(void) const {return(FullName);}
 
 };
 

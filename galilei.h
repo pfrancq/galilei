@@ -368,7 +368,7 @@ public:
 	* Get the content of the exception.
 	* @returns Pointer to a C String.
 	*/
-	const char* GetMsg(void) const {return(Msg());}
+	R::RString& GetMsg(void) const {R::RString* tmp=R::RString::GetString(); (*tmp)=Msg; return(*tmp);}
 };
 
 

@@ -138,14 +138,14 @@ void GDoc::ClearFdbks(void)
 //-----------------------------------------------------------------------------
 const char* GDoc::GetURL(void) const
 {
-return(URL());
+	return(URL);
 }
 
 
 //-----------------------------------------------------------------------------
 const char* GDoc::GetName(void) const
 {
-	return(Name());
+	return(Name);
 }
 
 
@@ -167,7 +167,7 @@ const R::RDate* GDoc::GetComputed(void) const
 const char* GDoc::GetMIMEType(void) const
 {
 	if(MIMEType.IsEmpty()) return(0);
-	return(MIMEType());
+	return(MIMEType);
 }
 
 

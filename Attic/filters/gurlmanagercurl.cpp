@@ -118,7 +118,7 @@ void GALILEI::GURLManagerCURL::Download(const char* URL,RString& tmpFile) throw(
 //-----------------------------------------------------------------------------
 void GALILEI::GURLManagerCURL::Delete(RString& tmpFile) throw(GException)
 {
-	remove(tmpFile());
+	remove(tmpFile);
 }
 
 

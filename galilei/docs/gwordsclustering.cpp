@@ -200,7 +200,7 @@ RString GALILEI::GWordsClustering::GetFileName(GDoc *doc)
 	name="/var/galilei/bin/";
 	name+=DbName;
 	name+="/Doc";
-	name+=itoa(doc->GetId());
+	name+=itou(doc->GetId());
 	return(name);
 }
 
@@ -307,11 +307,11 @@ void GALILEI::GWordsClustering::OrderByNeighbor()
 	double A,AB,Aconf,Amean,Apds,AE,AP,B,BA,Bconf,Bmean,Bpds,BE,BP,ApBA,ApBB,ApBconf,ApBmean,ApBpds,ApBE,ApBP;
 	unsigned bestdoc,Adoc,Bdoc,ApBdoc;
 	unsigned nbinsub[60];
-	RTextFile f("/home/nkumps/StatClustering"+itoa(WindowSize)+".txt",Create);
-	RTextFile g("/home/nkumps/Graphe"+itoa(WindowSize)+".txt",Create);
+	RTextFile f("/home/nkumps/StatClustering"+itou(WindowSize)+".txt",Create);
+	RTextFile g("/home/nkumps/Graphe"+itou(WindowSize)+".txt",Create);
 	f<<"C		A		B		nbdoc		conf		meanconf		prodscal		E	"<<endl;
 	g<<"nbdoc	confidence	meanconfidence	prodscal	moyenne harmonique"<<endl;
-	RTextFile best("/home/nkumps/Best"+itoa(WindowSize)+".txt",Create);
+	RTextFile best("/home/nkumps/Best"+itou(WindowSize)+".txt",Create);
 
 	//nbr de docs par categorie pour ziff.
 	if(DbName=="ziff")
@@ -1027,7 +1027,7 @@ void GALILEI::GWordsClustering::SaveAssociations(bool save)
 		if((tosave)&&((*Groups)()->NbPtr>1))
 		{
 			mult=0;
-			tmp=new GWordList(cNoRef,"grouplist"+itoa(Dic->GetNbGroupsList()));
+			tmp=new GWordList(cNoRef,"grouplist"+itou(Dic->GetNbGroupsList()));
 			((*Groups)())->Start();
 			while(!((*Groups)())->End())
 			{
@@ -1053,7 +1053,7 @@ void GALILEI::GWordsClustering::SaveConceptSpace(bool save)
 		if((tosave)&&((*Groups)()->NbPtr>1))
 		{
 			mult=0;
-			tmp=new GWordList(cNoRef,"grouplist"+itoa(Dic->GetNbGroupsList()));
+			tmp=new GWordList(cNoRef,"grouplist"+itou(Dic->GetNbGroupsList()));
 			((*Groups)())->Start();
 			while(!((*Groups)())->End())
 			{

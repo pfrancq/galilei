@@ -102,13 +102,14 @@ GALILEI::GURLManager::GURLManager(const char* path,bool dlg) throw(GException)
 	while((ep=readdir(dp)))
 	{
 		len=strlen(ep->d_name);
+		if(len<3) continue;
 		if(strcmp(&ep->d_name[len-3],".la")) continue;
-		if(!strcmp(&ep->d_name[len-7],"_dlg.la")) continue;
+		if((len>7)&&(!strcmp(&ep->d_name[len-7],"_dlg.la"))) continue;
 		try
 		{
 			// Create the factory and insert it
 			Name=Path+ep->d_name;
-			handle<>& myhandle = l.load(Name());
+			handle<>& myhandle = l.load(Name);
 			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
 			GFactoryFilter* myfactory = ((GFactoryFilterInit)(*(*myinit)))(this,ep->d_name);
 			if(strcmp(API_FILTER_VERSION,myfactory->GetAPIVersion()))
@@ -123,7 +124,7 @@ GALILEI::GURLManager::GURLManager(const char* path,bool dlg) throw(GException)
 			if(!dlg) continue;
 			try
 			{
-				strcpy(DlgLib,Name());
+				strcpy(DlgLib,Name);
 				DlgLib[Name.GetLen()-3]=0;
 				strcat(DlgLib,"_dlg.la");
 				handle<>& myhandle2 = l.load(DlgLib);
@@ -229,12 +230,12 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 	mime=doc->GetMIMEType();
 	if(!mime)
 	{
-		mime=DetermineMIMEType(tmpFile());
+		mime=DetermineMIMEType(tmpFile);
 		doc->SetMIMEType(mime);
 	}
 
 	// Create a DocXML.
-	xml=new GDocXML(doc->GetURL(),tmpFile());
+	xml=new GDocXML(doc->GetURL(),tmpFile);
 
 	// If MIME type defined -> analyze it.
 	if(mime)
@@ -286,7 +287,7 @@ const char* GALILEI::GURLManager::GetMIMEType(const char* mime) const
 	if(!mime) return(0);
 	fil=MIMES.GetPtr<const char*>(mime);
 	if(!fil) return(0);
-	return(fil->Name());
+	return(fil->Name);
 }
 
 

@@ -177,7 +177,7 @@ public:
 	* Get the name of the profile.
 	* @return Pointer to a C String.
 	*/
-	const char* GetName(void) const {return(Name());}
+	const char* GetName(void) const {return(Name);}
 
 	/**
 	* Get the user of the profile.

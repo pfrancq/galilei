@@ -206,7 +206,7 @@ void GALILEI::GStandardInOutPut::AddFreq(int freq)
 {
   if(strlen(Freq) > 0)
 		strcat(Freq,"/");
-	strcat(Freq,itoa(freq));
+	strcat(Freq,itou(freq));
 }
 
 
@@ -239,7 +239,7 @@ void GALILEI::GStandardInOutPut::AddParent(int par)
 {
 	if(strlen(Parents) > 0)
 		strcat(Parents,"/");
-	strcat(Parents,itoa(par));
+	strcat(Parents,itou(par));
 }
 
 

@@ -71,7 +71,7 @@ void GALILEI::GPrgVarConst::Assign(const void* data) throw(GException)
 //-----------------------------------------------------------------------------
 const char* GALILEI::GPrgVarConst::GetValue(GSessionPrg*) throw(GException)
 {
-	return(Name());
+	return(Name);
 }
 
 

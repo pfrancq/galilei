@@ -72,22 +72,20 @@ GGroupingManager::GGroupingManager(const char* path,bool dlg) throw(GException)
 
 	loader<>& l=loader<>::instance();
 	Path+="/grouping";
-	l.addto_search_path(Path());
-	Name=Path+"/.libs";
-	l.addto_search_path(Name());
 	dp=opendir(Path);
 	Path+="/";
 	if(!dp) return;
 	while((ep=readdir(dp)))
 	{
 		len=strlen(ep->d_name);
+		if(len<3) continue;
 		if(strcmp(&ep->d_name[len-3],".la")) continue;
-		if(!strcmp(&ep->d_name[len-7],"_dlg.la")) continue;
+		if((len>7)&&(!strcmp(&ep->d_name[len-7],"_dlg.la"))) continue;
 		try
 		{
 			// Create the factory and insert it
 			Name=Path+ep->d_name;
-			handle<>& myhandle = l.load(Name());
+			handle<>& myhandle = l.load(Name);
 			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
 			GFactoryGrouping* myfactory = ((GFactoryGroupingInit)(*(*myinit)))(this,ep->d_name);
 			if(strcmp(API_GROUPING_VERSION,myfactory->GetAPIVersion()))
@@ -102,7 +100,7 @@ GGroupingManager::GGroupingManager(const char* path,bool dlg) throw(GException)
 			if(!dlg) continue;
 			try
 			{
-				strcpy(DlgLib,Name());
+				strcpy(DlgLib,Name);
 				DlgLib[Name.GetLen()-3]=0;
 				strcat(DlgLib,"_dlg.la");
 				handle<>& myhandle2 = l.load(DlgLib);

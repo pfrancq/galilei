@@ -192,7 +192,7 @@ public:
 	* Get thye name of the dictionnary.
 	* @returns Pointer a C string.
 	*/
-	const char* GetName(void) const {return(Name());}
+	const char* GetName(void) const {return(Name);}
 
 	/**
 	* Get the language of the subprofile.

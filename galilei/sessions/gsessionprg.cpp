@@ -447,7 +447,7 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 		{
 			// Set TestName
 			NbStep++;
-			Owner->TestName=itoa(NbStep);
+			Owner->TestName=itou(NbStep);
 
 			// Create Feedbacks
 			r->WriteStr("Create Feedbacks Cycle");
@@ -464,7 +464,7 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 		NbStep++;
 
 		// Set TestName
-		Owner->TestName=itoa(NbStep);
+		Owner->TestName=itou(NbStep);
 
 		// Create 1 new profile
 		r->WriteStr("Create 1 new profile");

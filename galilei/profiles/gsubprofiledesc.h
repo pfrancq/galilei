@@ -104,7 +104,7 @@ public:
 	* Get the name of the profile description method.
 	* @returns Pointer to a C string.
 	*/
-	const char* GetProfDescName(void) {return(ProfDescName());}
+	const char* GetProfDescName(void) {return(ProfDescName);}
 
 	/**
 	*Destructor

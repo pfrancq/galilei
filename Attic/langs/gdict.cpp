@@ -109,36 +109,30 @@ void GDict::Put(unsigned id,const R::RString& word) throw(bad_alloc)
 {
 	GWordList* wordlist;
 	GWord Word(id,word),*ptr;
-	char *tmp,*tmp2;
-	bool toins,grplst=true;
-	tmp=word.StrDup();
-	tmp2="grouplist";
-	if((*tmp)) toins=true;
-	else toins=false;
-	while((*tmp)&&(*tmp2)&&(grplst))
+	const RChar* tmp;
+	const RChar* tmp2;
+	RString grp("grouplist");
+	int i;
+
+	if(word.IsEmpty()) return;
+	tmp=word();
+	tmp2=grp();
+	for(i=grp.GetLen()+1;(--i)&&(!tmp->IsNull());)
 	{
-		if((*tmp)==(*tmp2))
-			grplst=true;
-		else grplst=false;
-		tmp++;
-		tmp2++;
-		if((!(*tmp))&&(*tmp2)) grplst=false;
+		if((*tmp)!=(*tmp2)) break;
 	}
-	if (toins)
+	if(!i)
 	{
-		if(grplst)
-		{
-			ptr=GetInsertPtr<GWord>(Word,true);
-			ptr->SetType(tWordList);
-			wordlist=new GWordList(id,word);
-			wordlist->SetType(tWordList);
-			GroupsList.InsertPtr(wordlist);
-			NbGroupsList++;
-		}
-		else
-			ptr=GetInsertPtr<GWord>(Word,true);
-		PutDirect(ptr);
+		ptr=GetInsertPtr<GWord>(Word,true);
+		ptr->SetType(tWordList);
+		wordlist=new GWordList(id,word);
+		wordlist->SetType(tWordList);
+		GroupsList.InsertPtr(wordlist);
+		NbGroupsList++;
 	}
+	else
+		ptr=GetInsertPtr<GWord>(Word,true);
+	PutDirect(ptr);
 }
 
 //---------------------------------------------------------------------------
@@ -234,14 +228,14 @@ int GDict::Compare(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
-void GDict::IncRef(unsigned int id,tObjType ObjType,GWordType WordType)
+void GDict::IncRef(unsigned int id,tObjType ObjType,GWordType /*WordType*/)
 {
 	Direct[id]->IncRef(ObjType);
 }
 
 
 //-----------------------------------------------------------------------------
-void GDict::DecRef(unsigned int id,tObjType ObjType,GWordType WordType)
+void GDict::DecRef(unsigned int id,tObjType ObjType,GWordType /*WordType*/)
 {
 	Direct[id]->DecRef(ObjType);
 }

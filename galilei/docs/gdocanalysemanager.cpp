@@ -84,7 +84,7 @@ GDocAnalyseManager::GDocAnalyseManager(const char* path,bool dlg) throw(GExcepti
 		{
 			// Create the factory and insert it
 			Name=Path+ep->d_name;
-			handle<>& myhandle = l.load(Name());
+			handle<>& myhandle = l.load(Name);
 			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
 			GFactoryDocAnalyse* myfactory = ((GFactoryDocAnalyseInit)(*(*myinit)))(this,ep->d_name);
 			if(strcmp(API_DOCANALYSE_VERSION,myfactory->GetAPIVersion()))
@@ -99,7 +99,7 @@ GDocAnalyseManager::GDocAnalyseManager(const char* path,bool dlg) throw(GExcepti
 			if(!dlg) continue;
 			try
 			{
-				strcpy(DlgLib,Name());
+				strcpy(DlgLib,Name);
 				DlgLib[Name.GetLen()-3]=0;
 				strcat(DlgLib,"_dlg.la");
 				handle<>& myhandle2 = l.load(DlgLib);
