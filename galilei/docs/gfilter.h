@@ -52,6 +52,11 @@ protected:
 	*/
 	RString URL;
 
+	/**
+	* Structure corresponding to the document.
+	*/
+	GDocXML* Doc;
+
 public:
 
 	/**
@@ -67,6 +72,29 @@ public:
 	* @param doc            XML Structure that will represent the document.
 	*/
 	virtual bool Analyze(GDocXML* doc)=0;
+
+	/**
+	* @return true if the character represent a end of sentence.
+	*/
+	static inline bool IsEndSentence(char c)
+	{
+		return((c=='.')||(c=='!')||(c=='?')||(c==';')||(c==':'));
+	}
+
+	/**
+	* Analyse a block of text and create a list of tags 'sentence'.
+	* @param block          Block containing the text.
+	* @param attach         XML tag where the sentences must be attach.
+	*/
+	void AnalyzeBlock(char* block,RXMLTag* attach);
+
+	/**
+	* Analyse a list of keywords sepating by a single character.
+	* @param list           List of keywords.
+	* @param sep            Separator to use.
+	* @param attach         XML tag where the sentences must be attach.
+	*/
+	void AnalyzeKeywords(char* list,char sep,RXMLTag* attach);
 
 	/**
 	* Destructor of the filter.
