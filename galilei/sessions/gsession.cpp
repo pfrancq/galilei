@@ -220,4 +220,3 @@ GGroup* GALILEI::GSession::NewGroup(void)
 GALILEI::GSession::~GSession(void) throw(GException)
 {
 }
-
