@@ -184,34 +184,11 @@ unsigned int GStorageMySQL::GetNbSaved(tObjType type) throw(GException)
 //------------------------------------------------------------------------------
 void GStorageMySQL::AssignId(GData* data,const GDict* dict) throw(GException)
 {
+	char sSql[600];
+	char tmp[100];
+
 	try
 	{
-		// preliminary traitement of special words and composite like insert -> reinsert ...
-		#if Ins_spec
-			if (strstr(data->GetName(),"insert"))
-			{
-				data->SetId(1);
-				return;
-			}
-			if (strstr(data->GetName(),"delete"))
-			{
-				data->SetId(2);
-				return;
-			}
-			if (strstr(data->GetName(),"update"))
-			{
-				data->SetId(3);
-				return;
-			}
-			if (strstr(data->GetName(),"select"))
-			{
-				data->SetId(4);
-				return;
-			}
-		#endif
-
-		char sSql[600];
-		char tmp[100];
 		// Verify that the word didn't already exist.
 		sprintf(sSql,"SELECT kwdid FROM %skwds WHERE kwd='%s'",dict->GetLang()->GetCode(),data->GetName().Latin1());
 		RQuery find(this,sSql);
