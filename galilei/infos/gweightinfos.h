@@ -148,7 +148,7 @@ public:
 	double GetMaxWeight(void) const throw(GException);
 
 	/**
-	* Compute the maximal absolute weight of the information entities in the list. 
+	* Compute the maximal absolute weight of the information entities in the list.
 	* The list may not be empty.
 	* @return double.
 	*/
@@ -195,6 +195,30 @@ public:
 	*/
 	double SimilarityIFF(const GWeightInfos& w,tObjType ObjType,GLang* lang) const throw(GException)
 	{ return(SimilarityIFF(&w,ObjType,lang));}
+
+	/**
+	* Compute a boolean similarity between two lists of weighted information
+	* entities. The method verifies that at least a given number, nb, of
+	* entities are common to the two lists.
+	* @param w              Pointer to a list of weighted information entities.
+	* @param nb             Minimal number of entities to be common (0 means
+	*                       that the lists should be identifical).
+	* @return true if there is at least nb number of common entities.
+	*/
+	bool SimilarityBool(const GWeightInfos* w,unsigned int nb=0) const;
+
+	/**
+	* Compute a boolean similarity between two lists of weighted information
+	* entities. The method verifies that at least a given number, nb, of
+	* entities are common to the two lists.
+	* @param w              Pointer to a list of weighted information entities.
+	* @param nb             Minimal number of entities to be common (0 means
+	*                       that the all the entities of the list given as
+	*                       parameter should be present in the calling one).
+	* @return true if there is at least nb number of common entities.
+	*/
+	bool SimilarityBool(const GWeightInfos& w,unsigned int nb=0) const
+	{ return(SimilarityBool(&w,nb));}
 
 protected:
 

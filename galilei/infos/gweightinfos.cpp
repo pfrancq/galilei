@@ -329,6 +329,45 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 
 
 //------------------------------------------------------------------------------
+bool GWeightInfos::SimilarityBool(const GWeightInfos* w,unsigned int nb) const
+{
+	unsigned int same=0;
+	GWeightInfo** ptr=Tab;
+	GWeightInfo** ptr2=w->Tab;
+	unsigned int i=NbPtr+1;
+	unsigned int j=w->NbPtr;
+
+	// if one list is empty -> the boolean similarity is false
+	if((!NbPtr)||(!w->NbPtr))
+		return(false);
+
+	// If 0, verify all the entities
+	if(nb==0)
+		nb=w->NbPtr;
+
+	while(--i)
+	{
+		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
+		{
+			j--;
+			ptr2++;
+		}
+		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
+		{
+			j--;
+			if(((*ptr)->GetWeight()>0)||((*ptr2)->GetWeight()>0))
+			{
+				same++;
+			}
+			ptr2++;
+		}
+		ptr++;
+	}
+	return(same>=nb);
+}
+
+
+//------------------------------------------------------------------------------
 void GWeightInfos::AddRefs(tObjType ObjType,GLang* lang) const throw(GException)
 {
 	GWeightInfo** ptr;
