@@ -229,8 +229,8 @@ void GCreateIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsig
 		strcpy(tmp,"Create Ideal Groups");
 	r->WriteStr(tmp);
 	if(args->NbPtr==1)
-		IdealMethod.SetSettings(args->Tab[0]->GetValue(prg));
-	IdealMethod.Run(Owner->AutoSave);
+		Owner->GetIdealMethod()->SetSettings(args->Tab[0]->GetValue(prg));
+	Owner->GetIdealMethod()->Run(Owner->AutoSave);
 	Owner->FirstGroup=Owner->FirstProfile=false;
 }
 
@@ -469,11 +469,16 @@ void GStatsGroupsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,u
 
 
 //-----------------------------------------------------------------------------
-void GAddIdealI::Run(GSessionPrg* /*prg*/,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* /*args*/) throw(GException)
+void GAddIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
-	strcpy(tmp,"Create New Ideal Group");
+	if(args->NbPtr==1)
+		sprintf(tmp,"Create New Ideal Group: Settings=\"%s\"",args->Tab[0]->GetValue(prg));
+	else
+		strcpy(tmp,"Create New Ideal Group");
 	r->WriteStr(tmp);
-	IdealMethod.AddJudgement(Owner->AutoSave);
+	if(args->NbPtr==1)
+		Owner->GetIdealMethod()->SetSettings(args->Tab[0]->GetValue(prg));
+	Owner->GetIdealMethod()->AddJudgement(Owner->AutoSave);
 }
 
 
@@ -486,8 +491,8 @@ void GAddIdealI::Run(GSessionPrg* /*prg*/,GSlot* r,RStd::RContainer<GPrgVar,unsi
 
 //-----------------------------------------------------------------------------
 GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
-	: GPrgClass("Session"), Session(s), OFile(0),
-	  GOFile(0), SOFile(0), AutoSave(false)
+	: GPrgClass("Session"), IdealMethod(0), Session(s), OFile(0),
+	  GOFile(0), SOFile(0), AutoSave(false) 
 {
 	Methods.InsertPtr(new GOutputI(this));
 	Methods.InsertPtr(new GGOutputI(this));
@@ -515,6 +520,15 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
+GIdealGroup* GALILEI::GPrgClassSession::GetIdealMethod(void)
+{
+	if(!IdealMethod)
+		IdealMethod=new GIdealGroup(Session);
+	return(IdealMethod);
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GPrgClassSession::~GPrgClassSession(void)
 {
 	if(OFile)
@@ -528,6 +542,11 @@ GALILEI::GPrgClassSession::~GPrgClassSession(void)
 	{
 		delete SOFile;
 		SOFile=0;
+	}
+	if(IdealMethod)
+	{
+		delete IdealMethod;
+		IdealMethod=0;
 	}
 }
 

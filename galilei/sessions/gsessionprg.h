@@ -71,6 +71,11 @@ namespace GALILEI{
 */
 class GPrgClassSession : public GPrgClass
 {
+	/**
+	* Class used to simulate creation of profiles.
+	*/
+	GIdealGroup* IdealMethod;
+
 public:
 
 	/**
@@ -135,6 +140,12 @@ public:
 	GPrgClassSession(GSession* s) throw(bad_alloc);
 
 	/**
+	* Get a pointer to the ideal method
+	*/
+	GIdealGroup* GetIdealMethod(void);
+
+	/**
+	* Destructor.
 	*/
 	virtual ~GPrgClassSession(void);
 };
@@ -244,9 +255,8 @@ public:
 //-----------------------------------------------------------------------------
 class GCreateIdealI : public GSM
 {
-	GIdealGroup IdealMethod;
 public:
-	GCreateIdealI(GPrgClassSession* o) : GSM("CreateIdeal",o),IdealMethod(Owner->Session) {}
+	GCreateIdealI(GPrgClassSession* o) : GSM("CreateIdeal",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
@@ -345,9 +355,8 @@ public:
 //-----------------------------------------------------------------------------
 class GAddIdealI : public GSM
 {
-	GIdealGroup IdealMethod;
 public:
-	GAddIdealI(GPrgClassSession* o) : GSM("AddIdeal",o),IdealMethod(Owner->Session) {}
+	GAddIdealI(GPrgClassSession* o) : GSM("AddIdeal",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
