@@ -53,7 +53,7 @@
 		<Separator/>
 		<Action name="showDocs"/>
 		<Action name="docsStats"/>
-		<separator/>
+		<separator/>               
 		<Action name="docAnalyse"/>
 		<Action name="docsAnalyse"/>
 		<separator/>
@@ -62,6 +62,7 @@
 		<Action name="analyseXML"/>
 		<separator/>
 		<Action name="wordsClustering"/>
+		<Action name="removeCluster"/>
 	</Menu>
 	<Menu name="Text"><text>&amp;Text</text>
 		<Separator/>

@@ -134,6 +134,11 @@ void KGALILEICenterApp::slotDocsOptions(void)
 	dlg.txtMaxDocs->setValue(DocOptions->MaxDocs);
 	dlg.txtMinOccC->setValue(DocOptions->MinOccurCluster);
 	dlg.txtNbIteration->setValue(DocOptions->NbIteration);
+	dlg.txtWindowSize->setValue(DocOptions->WindowSize);
+	dlg.txtNbDocsMin->setValue(DocOptions->NbDocsMin);
+	tmp.setNum(DocOptions->MinConfidence);
+	dlg.txtMinConf->setText(tmp);
+	dlg.cbDistance->setChecked(DocOptions->Distance);
 	dlg.cbNonWord->setChecked(DocOptions->NonLetterWords);
 	dlg.frameNonWord->setEnabled(DocOptions->NonLetterWords);
 	for(Filters.Start();!Filters.End();Filters.Next())
@@ -155,6 +160,12 @@ void KGALILEICenterApp::slotDocsOptions(void)
 		DocOptions->MaxDocs=dlg.txtMaxDocs->value();
 		DocOptions->MinOccurCluster=dlg.txtMinOccC->value();
 		DocOptions->NbIteration=dlg.txtNbIteration->value();
+		DocOptions->WindowSize=dlg.txtWindowSize->value();
+		DocOptions->NbDocsMin=dlg.txtNbDocsMin->value();
+		d=dlg.txtMinConf->text().toDouble();
+		if((d>=0.0)&&(d<=1.0))
+			DocOptions->MinConfidence=d;
+		DocOptions->Distance=dlg.cbDistance->isChecked();
 		DocOptions->NonLetterWords=dlg.cbNonWord->isChecked();
 		DocOptions->UseLink=dlg.cbUseLink->isChecked();
 		DocOptions->UseExternalLink=dlg.cbExternalLink->isChecked();

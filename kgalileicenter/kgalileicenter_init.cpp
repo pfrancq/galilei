@@ -150,6 +150,7 @@ void KGALILEICenterApp::initActions(void)
 	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
 	analyseXML=new KAction(i18n("&Analyse XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
 	wordsClustering=new KAction(i18n("&Words Clustering"),0,this,SLOT(slotWordsClustering()),actionCollection(),"wordsClustering");
+	removeCluster=new KAction(i18n("&Remove Cluster"),0,this,SLOT(slotRemoveCluster()),actionCollection(),"removeCluster");
 
 	// Menu "Texts"
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
@@ -275,6 +276,10 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Maximum Documents",DocOptions->MaxDocs);
 	Config->writeEntry("Minimum Occurence Clustering",DocOptions->MinOccurCluster);
 	Config->writeEntry("Iteration Number",DocOptions->NbIteration);
+	Config->writeEntry("Window Size",DocOptions->WindowSize);
+	Config->writeEntry("Minimum Confidence",DocOptions->MinConfidence);
+	Config->writeEntry("Using Document Structure",DocOptions->Distance);
+	Config->writeEntry("Minimum of Appearance",DocOptions->NbDocsMin);
 	Config->writeEntry("Use Link",DocOptions->UseLink);
 	Config->writeEntry("Use External Link",DocOptions->UseExternalLink);
 	Config->writeEntry("Use Redirection",DocOptions->UseRedirection);
@@ -474,12 +479,16 @@ void KGALILEICenterApp::readOptions(void)
 	DocOptions->NonLetterWords=Config->readBoolEntry("Accept Non-Letter words",true);
 	DocOptions->MinDocs=Config->readUnsignedNumEntry("Minimum Documents",5);
 	DocOptions->MaxDocs=Config->readUnsignedNumEntry("Maximum Documents",300);
-	DocOptions->MinOccurCluster=Config->readUnsignedNumEntry("Minimum Occurence Clustering",2);
+	DocOptions->MinOccurCluster=Config->readUnsignedNumEntry("Minimum Occurence Clustering",1);
 	DocOptions->NbIteration=Config->readUnsignedNumEntry("Iteration Number",2);
+	DocOptions->WindowSize=Config->readUnsignedNumEntry("Window Size",10);
+	DocOptions->MinConfidence=Config->readDoubleNumEntry("Minimum Confidence",0.15);
+	DocOptions->Distance=Config->readBoolEntry("Using Document Structure",false);
+	DocOptions->NbDocsMin=Config->readUnsignedNumEntry("Minimum of Appearance",5);
 	DocOptions->UseLink=Config->readBoolEntry("Use Link",true);
 	DocOptions->UseExternalLink=Config->readBoolEntry("Use External Link",false);
 	DocOptions->UseRedirection=Config->readBoolEntry("Use Redirection",false);
-	
+
 
 	// Read Session Options
 	GroupingMethod = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
@@ -703,6 +712,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	saveXML->setEnabled(false);
 	analyseXML->setEnabled(false);
 	wordsClustering->setEnabled(false);
+	removeCluster->setEnabled(false);
 	groupsCalc->setEnabled(false);
 	mixIdealGroups->setEnabled(false);
 	showGroupsHistory->setEnabled(false);

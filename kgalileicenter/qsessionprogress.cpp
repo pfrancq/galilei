@@ -99,6 +99,22 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd) throw(GException,bad_all
 	btnOk->setEnabled(false);
 	show();
 	KApplication::kApplication()->processEvents();
+	bool wordsgroups=false;
+	bool words=true;
+
+	// Look the type of the terms use.
+	if(cmd==5)
+	{
+		wordsgroups=true;
+		cmd=0;
+	}
+	if(cmd==6)
+	{
+		wordsgroups=true;
+		words=false;
+		cmd=0;
+	}
+	
 
 	// Look if dics must be loaded)
 	if((cmd==0)||(cmd==1))
@@ -115,7 +131,7 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd) throw(GException,bad_all
 	{
 		txtRem->setText("Loading Documents ...");
 		KApplication::kApplication()->processEvents();
-		Session->InitDocs();
+		Session->InitDocs(wordsgroups,words);
 	}
 
 	// Look if groups must be loaded
@@ -123,7 +139,7 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd) throw(GException,bad_all
 	{
 		txtRem->setText("Load Groups ...");
 		KApplication::kApplication()->processEvents();
-		Session->InitGroups();
+		Session->InitGroups(wordsgroups,words);
 	}
 
 	// Look if users must be loaded
@@ -131,7 +147,7 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd) throw(GException,bad_all
 	{
 		txtRem->setText("Load Users/Profiles/SubProfiles ...");
 		KApplication::kApplication()->processEvents();
-		Session->InitUsers();
+		Session->InitUsers(wordsgroups,words);
 		Session->LoadIdealGroupment();
 	}
 

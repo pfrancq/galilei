@@ -648,6 +648,11 @@ private slots:
 	void slotWordsClustering(void);
 
 	/**
+	* Remove clusters of words.
+	*/
+	void slotRemoveCluster(void);
+
+	/**
 	* Do some computing on the stems in french.
 	*/
 	void slotTextFrench(void);
@@ -829,6 +834,7 @@ public:
 	KAction* saveXML;
 	KAction* analyseXML;
 	KAction* wordsClustering;
+	KAction* removeCluster;
 
 	KAction* textFrench;
 	KAction* textEnglish;

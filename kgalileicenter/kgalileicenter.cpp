@@ -208,6 +208,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			sessionCompute->setEnabled(true);
 			sessionConnect->setEnabled(false);
 			wordsClustering->setEnabled(true);
+			removeCluster->setEnabled(true);
 			showGroupsHistory->setEnabled(true);
  			rRunR->setEnabled(true);
 			textFrench->setEnabled(true);
@@ -280,6 +281,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	sessionCompute->setEnabled(true);
 	sessionConnect->setEnabled(false);
 	wordsClustering->setEnabled(true);
+	removeCluster->setEnabled(true);
 	showGroupsHistory->setEnabled(true);
  	rRunR->setEnabled(true);
 	textFrench->setEnabled(true);
@@ -783,6 +785,14 @@ void KGALILEICenterApp::slotWordsClustering()
 {
 	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
 	Doc->GetSession()->AnalyseAssociation(wordsClusteringSave->isChecked());
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotRemoveCluster()
+{
+	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
+	Doc->GetSession()->RemoveAssociation();
 }
 
 
