@@ -138,6 +138,11 @@ public:
 	GProfileCursor& GetProfilesCursor(void);
 
 	/**
+	* Get the number of profiles defined in the system.
+	*/
+	unsigned int GetProfilesNb(void) const;
+
+	/**
 	* Save a profile.
 	* @param prof           Profile to save.
 	*/

@@ -114,6 +114,13 @@ GProfileCursor& GALILEI::GUsers::GetProfilesCursor(void)
 
 
 //-----------------------------------------------------------------------------
+unsigned int GALILEI::GUsers::GetProfilesNb(void) const
+{
+	return(Profiles->NbPtr);
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GUsers::InsertSubProfile(GSubProfile* s) throw(bad_alloc)
 {
 	GLang* l;
