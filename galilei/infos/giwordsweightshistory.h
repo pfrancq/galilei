@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GIWordsWeights.h
+	GIWordsWeightsHistory.h
 
 	Weights of a list of words - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		David Wartel (dwartel@ulb.ac.be).
 
 	Version $Revision$
 
@@ -83,62 +83,77 @@ private :
 	 */
 	 bool WellGrouped;
 
+	 /**
+	 * is this subprofile a new one?
+	 */
+	 bool NewSubProfile;
+
 public :
 
 	/**
 	* constructor
 	*/
-	GIWordsWeightsHistory(GSubProfile* sub, unsigned int nb) : GIWordsWeights(nb) {SubProfile=sub; WellGrouped=false;}
+	GIWordsWeightsHistory(GSubProfile* sub, unsigned int nb) ;
 
 	/**
 	* get the subprofile.
 	*/
-	GSubProfile* GetSubProfile(void) {return SubProfile;}
+	GSubProfile* GetSubProfile(void);
 
 	/**
 	*  get the id.
 	*/
-	unsigned int GetId(void) {return SubProfile->GetId();}
+	unsigned int GetId(void);
 
 	/**
 	*  set the parent.
 	*/
-	void SetParent(GGroupHistory* p) {Parent=p;}
+	void SetParent(GGroupHistory* p) ;
 
 	/**
 	*  return true if the subprofile is well-grouped.
 	*/
-	bool IsWellGrouped(void) {if (WellGrouped) return true; else return false;;}
+	bool IsWellGrouped(void) ;
 
 	/**
 	*  set tthe stauts (well grouped- not well grouped) of the subprofile..
 	*/
-	void SetWellGrouped(bool b) {WellGrouped=b;}
+	void SetWellGrouped(bool b);
+
+	/**
+	*  return true if the subprofile is a new one.
+	*/
+	bool IsNewSubProfile(void) ;
+
+	/**
+	*  set tthe stauts (new one, old one) of the subprofile..
+	*/
+	void SetNewSubProfile(bool b);
 
 	/**
 	*  get the parent.
 	*/
-	GGroupHistory* GetParent(void) {return Parent;}
+	GGroupHistory* GetParent(void);
 
 	/**
 	* Compare method needed by RStd::RContainer.
 	*/
-	int Compare(const GIWordsWeightsHistory& giwwh) const {return(SubProfile->GetId()-giwwh.SubProfile->GetId());}
+	int Compare(const GIWordsWeightsHistory& giwwh) const ;
 
 	/**
 	* Compare method needed by RStd::RContainer.
 	*/
-	 int Compare(const GIWordsWeightsHistory* giwwh) const {return(SubProfile->GetId()-giwwh->SubProfile->GetId());}
+	 int Compare(const GIWordsWeightsHistory* giwwh) const ;
 
 	/**
 	* Compare method needed by RStd::RContainer.
 	*/
-	int Compare(unsigned int id) const {return(SubProfile->GetId()-id);}
+	int Compare(unsigned int id) const ;
 
 	/**
 	*   Destructor
 	*/
-	~GIWordsWeightsHistory(void) {};
+	~GIWordsWeightsHistory(void);
 
 };
 
