@@ -60,7 +60,7 @@ using namespace RIO;
 #include <profiles/gprofdoc.h>
 #include <docs/gdoc.h>
 #include <docs/gdocs.h>
-#include <groups/ggroup.h>
+#include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
 #include <tests/ggroupsevaluate.h>
 #include <tests/ggroupevaluatedoc.h>
@@ -466,7 +466,7 @@ void GALILEI::GSessionMySQL::LoadIdealGroupment(RContainer<GGroups,unsigned int,
 		RQuery sel(this,sSql);
 		for(sel.Begin();sel.IsMore();sel++)
 		{
- 			groups->InsertPtr(group=new GGroup(atoi(sel[0]),Langs()));
+ 			groups->InsertPtr(group=new GGroupVector(atoi(sel[0]),Langs()));
 			sprintf(sSql,"SELECT profileid FROM idealgroup where groupid=%u",atoi(sel[0]));
 			RQuery sub(this,sSql);
 			for(sub.Begin();sub.IsMore();sub++)
@@ -773,7 +773,7 @@ void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 		RQuery group2 (this,sSql);
 		for(group2.Begin();group2.IsMore();group2++)
 		{
-			groups->InsertPtr(group=new GGroup(atoi(group2[0]),Langs()));
+			groups->InsertPtr(group=new GGroupVector(atoi(group2[0]),Langs()));
 		}
 	}
 }

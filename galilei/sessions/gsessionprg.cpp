@@ -53,7 +53,7 @@ using namespace RStd;
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofiledesc.h>
 #include <groups/ggroups.h>
-#include <groups/ggroup.h>
+#include <groups/ggroupvector.h>
 #include <groups/ggrouping.h>
 #include <groups/gcomparegrouping.h>
 #include <profiles/gprofilecalc.h>
@@ -233,7 +233,7 @@ void GALILEI::GSessionPrg::LoadGroups(const char* filename) throw(GException)
 		lang=Session->GetLang(f.GetWord());
 		f>>nbprof;
 		groups=Groups->GetPtr<const GLang*>(lang);
-		groups->InsertPtr(group=new GGroup(i,lang));
+		groups->InsertPtr(group=new GGroupVector(i,lang));
 		for(j=nbprof+1;--j;)
 		{
 			f>>id;

@@ -59,7 +59,7 @@ using namespace RGA;
 #include <profiles/gprofilessim.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
-#include <groups/ggroup.h>
+#include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
@@ -218,7 +218,7 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 		for(c->Used.Start();!c->Used.End();c->Used.Next())
 		{
 			gr=c->Used();
-			g=new GGroup(cNoRef,Lang);
+			g=new GGroupVector(cNoRef,Lang);
 			Session->NewGroup(Lang,g);
 			Cur->InsertPtr(g);
 			for(i=gr->NbSubObjects+1,ptr=c->GetObjs(gr->SubObjects);--i;ptr++)

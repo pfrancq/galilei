@@ -48,7 +48,7 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 * This class represent a group of sub-profiles. In fact, it is implemented as a
-* container of GSubProfileRef.
+* container of GSubProfile.
 * @author Pascal Francq
 * @short Group.
 */
@@ -86,6 +86,12 @@ public:
 	* @param lang           Language.
 	*/
 	GGroup(const unsigned int id,GLang* lang) throw(bad_alloc);
+
+	/**
+	* Get the name of the model used for the description.
+	* @return C String.
+	*/
+	virtual const char* GetModelName(void) const=0;
 
 	/**
 	* Compare method needed by RStd::RContainer.

@@ -4,7 +4,7 @@
 
 	GSubProfileVector.h
 
-	Sub-Profile Description using a vector - Header.
+	Subprofile in the Vector Model - Header.
 
 	(C) 2002 by P. Francq.
 
@@ -50,10 +50,10 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GSubProfileVector provides a representation for a sub-profile
-* described as a vector corresponding to a list of pairs {keyword,weight}.
+* The GSubProfileVector provides a representation for a subprofile described as
+* a vector corresponding to a list of pairs {keyword,weight}.
 * @author Pascal Francq.
-* @short Sub-Profile Vector Description.
+* @short Vector model subprofile.
 */
 class GSubProfileVector : public GSubProfile, public GIWordsWeights
 {
@@ -68,6 +68,12 @@ public:
 	* @param a              String representing the date where it was attached.
 	*/
 	GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a) throw(bad_alloc);
+
+	/**
+	* Get the name of the model used for the description.
+	* @return C String.
+	*/
+	virtual const char* GetModelName(void) const {return("Vector");}
 
 	/**
 	* Create a new profile.

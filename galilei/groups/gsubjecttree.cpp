@@ -51,7 +51,7 @@ using namespace RIO;
 #include <docs/gdoc.h>
 #include <langs/glang.h>
 #include <groups/gsubject.h>
-#include <groups/ggroup.h>
+#include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
 #include <profiles/gprofile.h>
 #include <profiles/guser.h>
@@ -354,7 +354,7 @@ void GALILEI::GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int
 				nbprof=c;
 				groups=Groups->GetPtr<const GLang*>(lang);
 				ii++;
-				group=new GGroup(ii,lang);
+				group=new GGroupVector(ii,lang);
 				parent->InsertPtr(new GGroupIdParentId(ii,subject->GetId()));
 				groups->InsertPtr(group);
 				int temp=0 ;

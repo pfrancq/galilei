@@ -4,7 +4,7 @@
 
 	GSubProfileVector.cpp
 
-	Sub-Profile Description using a vector - Implementation.
+	Subprofile  in the Vector Model - Implementation.
 
 	(C) 2002 by P. Francq.
 

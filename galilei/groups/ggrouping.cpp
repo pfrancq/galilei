@@ -42,7 +42,7 @@ using namespace RStd;
 //include files for GALILEI
 #include <langs/glang.h>
 #include <groups/ggrouping.h>
-#include <groups/ggroup.h>
+#include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofiles.h>
@@ -117,7 +117,7 @@ GGroup* GALILEI::GGrouping::NewGroup(GLang* lang)
 {
 	GGroup* grp;
 
-	grp=new GGroup(cNoRef,lang);
+	grp=new GGroupVector(cNoRef,lang);
 	if(SaveGroups)
 		Session->NewGroup(lang,grp);
 	else

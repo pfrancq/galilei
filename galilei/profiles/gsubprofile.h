@@ -95,6 +95,12 @@ public:
 	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a) throw(bad_alloc);
 
 	/**
+	* Get the name of the model used for the description.
+	* @return C String.
+	*/
+	virtual const char* GetModelName(void) const=0;
+
+	/**
 	* Create a new profile.
 	* @param GProfile*      Pointer to the profile.
 	* @param unsigned int   Identifier.

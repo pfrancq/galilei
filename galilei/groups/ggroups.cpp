@@ -35,7 +35,7 @@
 // include files for GALILEI
 #include<groups/ggroups.h>
 #include<langs/glang.h>
-#include<groups/ggroup.h>
+#include<groups/ggroupvector.h>
 #include<profiles/gsubprofile.h>
 #include<profiles/gusers.h>
 #include<sessions/gsession.h>
@@ -100,7 +100,7 @@ GGroup* GALILEI::GGroups::GetGroup(unsigned int id)
 
 	grp=GetPtr<unsigned int>(id);
 	if(!grp)
-		InsertPtr(grp=new GGroup(id,Lang));
+		InsertPtr(grp=new GGroupVector(id,Lang));
 	return(grp);
 }
 
@@ -128,7 +128,7 @@ GGroup* GALILEI::GGroups::NewGroup(void) throw(bad_alloc)
 			break;
 
 	// Create the group with the founded index
-	InsertPtr(grp=new GGroup(id,Lang));
+	InsertPtr(grp=new GGroupVector(id,Lang));
 	return(grp);
 }
 
