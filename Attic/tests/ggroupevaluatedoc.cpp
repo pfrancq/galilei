@@ -55,7 +55,7 @@ using namespace GALILEI;
 GALILEI::GGroupEvaluateDoc::GGroupEvaluateDoc(unsigned int id,GLang* lang,RContainer<GDoc,unsigned int,false,true>* doc,GSession* session,RString  name)
 	:GGroupEvaluate(lang),Lang(lang),Id(id),Doc(doc),Ses(session)
 {
-Name=name;
+	Name=name;
 }
 
 

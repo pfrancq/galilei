@@ -92,9 +92,9 @@ void GALILEI::GStatSimProfGrp::Run(void)
 	// David
 	GGroupCalc* CalcMethod;
 	if (relevant)
-		Session->SetCurrentGroupCalcMethod("Relevant SubProfile");
+		Session->SetCurrentGroupCalcMethod("Protype");
 	else
-		Session->SetCurrentGroupCalcMethod("Gravitational Point");
+		Session->SetCurrentGroupCalcMethod("Relevant");
 	CalcMethod=Session->GetCurrentGroupCalcMethod();
 
 

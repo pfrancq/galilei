@@ -66,13 +66,12 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GALILEI::GSimDocQueryGroup::GSimDocQueryGroup(GSession* ses) throw(bad_alloc)
 {
-	Random = new RRandomGood(0);
 	unsigned int NbWordPerGroup=2;
 	int MinOccurs=100;
 	int NbTest=10;
-	ses->DocsFilter(20,20);
+//	ses->DocsFilter(20,20);
 	const char* name;
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup=new RContainer<GGroupsEvaluate,unsigned int,false,false>(2,2);
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup;
 	GGroupsEvaluate* groups;
 	GGroupEvaluateDoc* group;
 	GDoc* Doc;
@@ -92,7 +91,8 @@ GALILEI::GSimDocQueryGroup::GSimDocQueryGroup(GSession* ses) throw(bad_alloc)
 		for(idealgroup->Start();!idealgroup->End();idealgroup->Next())
 		{
 			groups=(*idealgroup)();
-			//for each group in this languages
+
+			// For each group in this language
 			for(groups->Start();!groups->End();groups->Next())
 			{
 				group=static_cast<GGroupEvaluateDoc*>((*groups)());
@@ -100,7 +100,7 @@ GALILEI::GSimDocQueryGroup::GSimDocQueryGroup(GSession* ses) throw(bad_alloc)
 				FilteredQueryWord->Clear();
 				QueryWord->Clear();
 
-				// for each doc  add the wheigth of all the words of the current doc
+				// for each doc  add the weigth of all the words of the current doc
 				// in the current container
 				for(group->Start();!group->End();group->Next())
 				{
@@ -197,7 +197,6 @@ GALILEI::GSimDocQueryGroup::GSimDocQueryGroup(GSession* ses) throw(bad_alloc)
 		}
 		cout<<NbtotTrue<<" "<<NbtotFalse<<" "<<nbtot<<endl;
 	}
-	delete(idealgroup);
 	delete(QueryWord);
 	delete(FilteredQueryWord);
 }

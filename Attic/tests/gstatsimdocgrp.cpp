@@ -171,13 +171,13 @@ void GALILEI::GStatSimDocGrp::Run(void)
 
 	// calculation of the group whith relevant or gravitation methods.
 	if (relevant)
-		Session->SetCurrentGroupCalcMethod("Relevant SubProfile");
+		Session->SetCurrentGroupCalcMethod("Prototype");
 	else
-		Session->SetCurrentGroupCalcMethod("Gravitational Point");
+		Session->SetCurrentGroupCalcMethod("Gravitation");
 	CalcMethod=Session->GetCurrentGroupCalcMethod();
 
 	// the container of Documents
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc=new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc;
 	GroupsDoc=Session->GetIdealDoc();
 
 	// For each language
