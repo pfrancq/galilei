@@ -106,6 +106,7 @@ using namespace GALILEI;
 #include "kviewgroups.h"
 #include "kviewgroup.h"
 #include "kviewstat.h"
+#include "kviewstems.h"
 #include "kviewprofile.h"
 #include "qconnectmysql.h"
 #include "qloadonedoc.h"
@@ -182,6 +183,10 @@ void KGALILEICenterApp::initActions(void)
 	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
 	analyseXML=new KAction(i18n("&Analyse XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
 
+	// Menu "Texts"
+	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
+	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
+
 	// Menu "Settings"
 	viewToolBar = KStdAction::showToolbar(this, SLOT(slotViewToolBar()), actionCollection());
 	viewStatusBar = KStdAction::showStatusbar(this, SLOT(slotViewStatusBar()), actionCollection());
@@ -193,7 +198,6 @@ void KGALILEICenterApp::initActions(void)
 
 	// Menu "Program"
 	loadProgram=new KAction(i18n("&Load Program"),"configure",0,this,SLOT(slotLoadProgram()),actionCollection(),"loadProgram");
-
 
 	// Menu "Window"
 	windowTile = new KAction(i18n("&Tile"), 0, this, SLOT(slotWindowTile()), actionCollection(),"window_tile");
@@ -238,6 +242,7 @@ void KGALILEICenterApp::setDocParams(KDoc* doc)
 	doc->GetSession()->SetMinWordSize(ParamMinWordSize);
 	doc->GetSession()->SetMinStemSize(ParamMinStemSize);
 	doc->GetSession()->SetMinOccur(ParamMinOccur);
+	doc->GetSession()->SetNonLetterWords(ParamNonLetterWords);
 }
 
 
@@ -275,6 +280,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Minimum Word's Size",ParamMinWordSize);
 	Config->writeEntry("Minimum Stem's Size",ParamMinStemSize);
 	Config->writeEntry("Minimum Occurence",ParamMinOccur);
+	Config->writeEntry("Accept Non-Letter words",ParamNonLetterWords);
 }
 
 
@@ -317,6 +323,7 @@ void KGALILEICenterApp::readOptions(void)
 	ParamMinWordSize=Config->readUnsignedNumEntry("Minimum Word's Size",4);
 	ParamMinStemSize=Config->readUnsignedNumEntry("Minimum Stem's Size",3);
 	ParamMinOccur=Config->readUnsignedNumEntry("Minimum Occurence",1);
+	ParamNonLetterWords=Config->readBoolEntry("Accept Non-Letter words",true);
 }
 
 
@@ -380,6 +387,8 @@ void KGALILEICenterApp::DisableAllActions(void)
 	sessionConnect->setEnabled(true);
 	sessionCompute->setEnabled(false);
 	groupingCompare->setEnabled(false);
+	textFrench->setEnabled(false);
+	textEnglish->setEnabled(false);
 	createXML->setEnabled(false);
 	analyseXML->setEnabled(false);
 	addProfile->setEnabled(false);
@@ -444,6 +453,8 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		sessionDisconnect->setEnabled(true);
 		sessionCompute->setEnabled(true);
 		sessionConnect->setEnabled(false);
+		textFrench->setEnabled(true);
+		textEnglish->setEnabled(true);
 		UpdateMenusEntries();
 		dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
 		slotStatusMsg(i18n("Ready"));
@@ -517,7 +528,6 @@ void KGALILEICenterApp::slotShowUsers(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotAddUser(void)
 {
-
 	QAddNewUser dlg(this,0,true);
 	if(dlg.exec())
 	{
@@ -851,6 +861,36 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotTextFrench(void)
+{
+	slotStatusMsg(i18n("Opening file..."));
+	setDocParams(Doc);
+	KApplication::kApplication()->processEvents();
+	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.mm|MMorph dictionnary files"), this, i18n("Open File..."));
+	if(!url.isEmpty())
+	{
+		createClient(Doc,new KViewStems("fr",url.path(),Doc,pWorkspace,"View Theoritical Groups",0));
+	}
+	slotStatusMsg(i18n("Ready."));
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotTextEnglish(void)
+{
+	slotStatusMsg(i18n("Opening file..."));
+	setDocParams(Doc);
+	KApplication::kApplication()->processEvents();
+	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.mm|MMorph dictionnary files"), this, i18n("Open File..."));
+	if(!url.isEmpty())
+	{
+		createClient(Doc,new KViewStems("en",url.path(),Doc,pWorkspace,"View Theoritical Groups",0));
+	}
+	slotStatusMsg(i18n("Ready."));
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotViewToolBar(void)
 {
 	slotStatusMsg(i18n("Toggle the toolbar..."));
@@ -926,6 +966,8 @@ void KGALILEICenterApp::slotDocsOptions(void)
 	dlg.txtMinWordSize->setValue(ParamMinWordSize);
 	dlg.txtMinStemSize->setValue(ParamMinStemSize);
 	dlg.txtMinOcc->setValue(ParamMinOccur);
+	dlg.cbNonWord->setChecked(ParamNonLetterWords);
+	dlg.frameNonWord->setEnabled(ParamNonLetterWords);
 	for(Filters.Start();!Filters.End();Filters.Next())
 		new QListViewItem(dlg.lvFilters,Filters()->GetName(),Filters()->GetMIMES(),Filters()->GetVersion());
 	if(dlg.exec())
@@ -937,6 +979,7 @@ void KGALILEICenterApp::slotDocsOptions(void)
 		ParamMinWordSize=dlg.txtMinWordSize->value();
 		ParamMinStemSize=dlg.txtMinStemSize->value();
 		ParamMinOccur=dlg.txtMinOcc->value();
+		ParamNonLetterWords=dlg.cbNonWord->isChecked();
 	}
 }
 

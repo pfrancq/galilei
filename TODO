@@ -6,7 +6,6 @@
 	</Bugs>
 	<NewDevs>
 		<NewDev Priority="High"> New MetaData based on RDF/Dublin. </NewDev>
-		<NewDev Priority="Medium"> New similarity for subprofiles description. </NewDev>
 	</NewDevs>
 	<Upgrates>
 		<Upgrate Modules="GFilterHTML" Priority="Low"> Add FRAME handling. </Upgrate>

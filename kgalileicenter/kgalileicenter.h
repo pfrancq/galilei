@@ -182,6 +182,11 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	*/
 	unsigned int ParamMinOccur;
 
+	/**
+	* Determine if the extracted words may contain other things than letters.
+	*/
+	bool ParamNonLetterWords;
+
 public:
 
 	/**
@@ -403,6 +408,16 @@ private slots:
 	void slotAnalyseXML(void);
 
 	/**
+	* Do some computing on the stems in french.
+	*/
+	void slotTextFrench(void);
+
+	/**
+	* Do some computing on the stems in english.
+	*/
+	void slotTextEnglish(void);
+
+	/**
 	* Toggles the toolbar.
 	*/
 	void slotViewToolBar(void);
@@ -511,6 +526,9 @@ public:
 	KAction* editJudgement;
 	KAction* createXML;
 	KAction* analyseXML;
+
+	KAction* textFrench;
+	KAction* textEnglish;
 
 	KAction* docsOptions;
 	KAction* profilesOptions;

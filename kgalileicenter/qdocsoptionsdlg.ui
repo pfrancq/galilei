@@ -11,8 +11,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>405</width>
-            <height>303</height>
+            <width>290</width>
+            <height>359</height>
         </rect>
     </property>
     <property stdset="1">
@@ -136,7 +136,7 @@
                     <class>QGroupBox</class>
                     <property stdset="1">
                         <name>name</name>
-                        <cstring>GroupBox2</cstring>
+                        <cstring>GroupBox2_2</cstring>
                     </property>
                     <property stdset="1">
                         <name>geometry</name>
@@ -144,51 +144,150 @@
                             <x>10</x>
                             <y>110</y>
                             <width>250</width>
-                            <height>90</height>
+                            <height>100</height>
                         </rect>
+                    </property>
+                    <property stdset="1">
+                        <name>frameShape</name>
+                        <enum>Box</enum>
                     </property>
                     <property stdset="1">
                         <name>title</name>
                         <string>Word Extraction</string>
                     </property>
+                    <property stdset="1">
+                        <name>alignment</name>
+                        <set>AlignLeft</set>
+                    </property>
+                    <property>
+                        <name>wordwrap</name>
+                    </property>
                     <widget>
-                        <class>QLabel</class>
+                        <class>QCheckBox</class>
                         <property stdset="1">
                             <name>name</name>
-                            <cstring>TextLabel1_2</cstring>
+                            <cstring>cbNonWord</cstring>
                         </property>
                         <property stdset="1">
                             <name>geometry</name>
                             <rect>
                                 <x>10</x>
                                 <y>20</y>
-                                <width>170</width>
+                                <width>230</width>
                                 <height>20</height>
                             </rect>
                         </property>
                         <property stdset="1">
                             <name>text</name>
-                            <string>Minimum Word's Size:</string>
+                            <string>Words with non-letter characters</string>
                         </property>
                     </widget>
                     <widget>
-                        <class>QLabel</class>
+                        <class>QFrame</class>
                         <property stdset="1">
                             <name>name</name>
-                            <cstring>TextLabel1_3</cstring>
+                            <cstring>frameNonWord</cstring>
                         </property>
                         <property stdset="1">
                             <name>geometry</name>
                             <rect>
                                 <x>10</x>
                                 <y>50</y>
+                                <width>230</width>
+                                <height>40</height>
+                            </rect>
+                        </property>
+                        <property stdset="1">
+                            <name>frameShape</name>
+                            <enum>Panel</enum>
+                        </property>
+                        <property stdset="1">
+                            <name>frameShadow</name>
+                            <enum>Sunken</enum>
+                        </property>
+                        <widget>
+                            <class>QLabel</class>
+                            <property stdset="1">
+                                <name>name</name>
+                                <cstring>TextLabel1_2_2</cstring>
+                            </property>
+                            <property stdset="1">
+                                <name>geometry</name>
+                                <rect>
+                                    <x>10</x>
+                                    <y>10</y>
+                                    <width>170</width>
+                                    <height>20</height>
+                                </rect>
+                            </property>
+                            <property stdset="1">
+                                <name>frameShadow</name>
+                                <enum>Plain</enum>
+                            </property>
+                            <property stdset="1">
+                                <name>text</name>
+                                <string>Minimum Word Size:</string>
+                            </property>
+                        </widget>
+                        <widget>
+                            <class>QSpinBox</class>
+                            <property stdset="1">
+                                <name>name</name>
+                                <cstring>txtMinWordSize</cstring>
+                            </property>
+                            <property stdset="1">
+                                <name>geometry</name>
+                                <rect>
+                                    <x>170</x>
+                                    <y>10</y>
+                                    <width>50</width>
+                                    <height>21</height>
+                                </rect>
+                            </property>
+                            <property>
+                                <name>whatsThis</name>
+                                <string>This parameter controls the minimum requested number of succesives characters needed to handle them as a valid word.</string>
+                            </property>
+                        </widget>
+                    </widget>
+                </widget>
+                <widget>
+                    <class>QGroupBox</class>
+                    <property stdset="1">
+                        <name>name</name>
+                        <cstring>GroupBox5_2</cstring>
+                    </property>
+                    <property stdset="1">
+                        <name>geometry</name>
+                        <rect>
+                            <x>10</x>
+                            <y>220</y>
+                            <width>250</width>
+                            <height>50</height>
+                        </rect>
+                    </property>
+                    <property stdset="1">
+                        <name>title</name>
+                        <string>Stemming</string>
+                    </property>
+                    <widget>
+                        <class>QLabel</class>
+                        <property stdset="1">
+                            <name>name</name>
+                            <cstring>TextLabel1_3_2</cstring>
+                        </property>
+                        <property stdset="1">
+                            <name>geometry</name>
+                            <rect>
+                                <x>10</x>
+                                <y>20</y>
                                 <width>150</width>
                                 <height>20</height>
                             </rect>
                         </property>
                         <property stdset="1">
                             <name>text</name>
-                            <string>Minimum Stem's Size:</string>
+                            <string>Minimum Stem Size:</string>
                         </property>
                     </widget>
                     <widget>
@@ -201,26 +300,6 @@
                             <name>geometry</name>
                             <rect>
                                 <x>190</x>
-                                <y>50</y>
-                                <width>50</width>
-                                <height>21</height>
-                            </rect>
-                        </property>
-                        <property>
-                            <name>whatsThis</name>
-                            <string>This parameter control the minimum size request for a stem to be handle by the system during the computation.</string>
-                        </property>
-                    </widget>
-                    <widget>
-                        <class>QSpinBox</class>
-                        <property stdset="1">
-                            <name>name</name>
-                            <cstring>txtMinWordSize</cstring>
-                        </property>
-                        <property stdset="1">
-                            <name>geometry</name>
-                            <rect>
-                                <x>190</x>
                                 <y>20</y>
                                 <width>50</width>
                                 <height>21</height>
@@ -228,7 +307,7 @@
                         </property>
                         <property>
                             <name>whatsThis</name>
-                            <string>This parameter controls the minimum requested number of succesives characters needed to handle them as a valid word.</string>
+                            <string>This parameter control the minimum size request for a stem to be handle by the system during the computation.</string>
                         </property>
                     </widget>
                 </widget>
@@ -296,8 +375,8 @@
                         <rect>
                             <x>10</x>
                             <y>10</y>
-                            <width>360</width>
-                            <height>190</height>
+                            <width>240</width>
+                            <height>260</height>
                         </rect>
                     </property>
                 </widget>
@@ -471,6 +550,12 @@
         <signal>clicked()</signal>
         <receiver>QDocsOptionsDlg</receiver>
         <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>cbNonWord</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>frameNonWord</receiver>
+        <slot>setEnabled(bool)</slot>
     </connection>
 </connections>
 </UI>
