@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 	{
 		RString lib;
 		RXMLTag* Tag;
-        
+
 		// Read Config
 		cout<<"Read Config ..."<<endl;
 		RXMLFile ConfigFile("/etc/galilei/galilei.conf",&Config,R::Read);
@@ -120,16 +120,6 @@ int main(int argc, char *argv[])
 			throw GException("Problems with the configure file '/etc/galilei/galilei.conf'");
 		GConfig Conf(Tag->GetAttrValue("File"));
 		Conf.Load();
-		Conf.Read(&Langs);
-		Conf.Read(&DocAnalyseManager);
-		Conf.Read(&URLManager);
-		Conf.Read(&ProfilingManager);
-		Conf.Read(&GroupingManager);
-		Conf.Read(&GroupCalcManager);
-		Conf.Read(&StatsCalcManager);
-		Conf.Read(&LinkCalcManager);
-		Conf.Read(&PostDocManager);
-		Conf.Read(&PostGroupManager);
 
 		// Options
 		GSessionParams SessionParams;
@@ -148,8 +138,7 @@ int main(int argc, char *argv[])
 							Config.GetTag("World")->GetAttrValue("Name"),
 							Config.GetTag("World")->GetAttrValue("Encoding"));
 		GSession Session(&Str,&SessionParams,false);
-		Session.Connect(&Langs,&URLManager,&DocAnalyseManager,&LinkCalcManager,&ProfilingManager,&GroupingManager,
-			&GroupCalcManager,&StatsCalcManager,&PostDocManager,&PostProfileManager,&PostGroupManager,0);
+		Session.Connect();
 		Log->WriteLog("Session created");
 
 		// Load Data from MySQL database
