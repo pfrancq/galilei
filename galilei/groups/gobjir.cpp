@@ -33,6 +33,10 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gobjir.h>
+#include <docs/gdoc.h>
+#include <profiles/gprofile.h>
+#include <profiles/gsubprofile.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 
 
@@ -45,7 +49,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GObjIR::GObjIR(const unsigned int id,GSubProfile* s)
-	: Id(id), SubProfile(s)
+	: Id(id), SubProfile(s), SumPjk(0.0)
 {
 }
 
@@ -75,6 +79,19 @@ int GALILEI::GObjIR::Compare(const GObjIR& obj) const
 int GALILEI::GObjIR::Compare(const GObjIR* obj) const
 {
   return(Id-obj->Id);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GObjIR::ComputeSumEntropy(GLang* lang,GSession* s)
+{
+	GDocCursor docs=s->GetDocsCursor(lang);
+	for(docs.Start(),SumPjk=0.0;!docs.End();docs.Next())
+	{
+		// If documents was judged, do not treat it
+		if(SubProfile->GetProfile()->GetFeedback(docs())) continue;
+		SumPjk+=(s->GetSimDocProf(docs(),SubProfile)+1)/2;
+	}
 }
 
 

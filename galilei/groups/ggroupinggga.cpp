@@ -278,6 +278,7 @@ void GALILEI::GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo) throw(b
 void GALILEI::GGroupingGGA::Run(void) throw(GException)
 {
 	unsigned int i;
+	GObjIR* obj;
 //	RDebugXML file(RString("/home/pfrancq/text")+Lang->GetCode()+".xml","GIR","Pascal Francq");
 
 	if(!SubProfiles.NbPtr) return;
@@ -287,9 +288,11 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 		Objs=new RGA::RObjs<GObjIR>(SubProfiles.NbPtr);
 		for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
 		{
-			Objs->InsertPtr(new GObjIR(i,SubProfiles()));
+			Objs->InsertPtr(obj=new GObjIR(i,SubProfiles()));
+			obj->ComputeSumEntropy(Lang,Session);
 		}
 		GProfilesSim Sims(SubProfiles,Params->GlobalSim);
+		Session->ChangeDocProfState(Params->GlobalSim,Lang);
 		if(Modified)
 			Instance=new GInstIR(Session,Lang,Groups,Objs,&Sims,Params,0/*&file*/);
 		else

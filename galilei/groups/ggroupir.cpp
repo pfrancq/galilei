@@ -51,6 +51,7 @@
 #include <groups/gchromoir.h>
 #include <groups/ginstir.h>
 #include <groups/gobjir.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace RGGA;
 using namespace RGA;
@@ -642,7 +643,6 @@ double GALILEI::GGroupIR::ComputeEntropy(void)
 	unsigned int i,l;
 	GProfDocCursor Fdbks;
 	tDocJudgement j;
-	bool global=Owner->Instance->Params->GlobalSim;
 	GLang* Lang=Owner->Instance->Lang;
 	GSubProfile* sub;
 	double Pjk;
@@ -673,10 +673,8 @@ double GALILEI::GGroupIR::ComputeEntropy(void)
 				j=Fdbks()->GetFdbk();
 				if((j==djNav)||(j==djOK))
 				{
-					if(global)
-						Pjk=sub->GlobalSimilarity(Fdbks()->GetDoc());
-					else
-						Pjk=sub->Similarity(Fdbks()->GetDoc());
+					Pjk=(Owner->Instance->Session->GetSimDocProf(Fdbks()->GetDoc(),sub)+1)/2;
+					Pjk/=(*ptr)->SumPjk;
 					Entropy-=Pjk*log(Pjk);
 				}
 			}

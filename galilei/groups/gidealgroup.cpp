@@ -215,6 +215,7 @@ void GALILEI::GIdealGroup::CreateSet(void)
 			ProfileJudges(Prof()->GetProfile(),Subs(),maxDocsOK,maxDocsKO,maxDocsH);
 		}
 	}
+	cout<<"Ideal"<<IdealGroups->Tab[0]->NbPtr+IdealGroups->Tab[1]->NbPtr<<endl;
 }
 
 

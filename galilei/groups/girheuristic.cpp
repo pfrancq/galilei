@@ -78,8 +78,6 @@ GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGA::eGA)
 	double sim;
 	GGroupIRCursor Cur;
 
-//	if(CurObj->GetId()==16||CurObj->GetId()==5)
-//		cout<<"Debug"<<endl;
 	Cur.Set(Groups->Used);
 	for(Cur.Start(),maxsim=maxratio=-1.0,grp=0;!Cur.End();Cur.Next())
 	{
@@ -104,7 +102,6 @@ GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGA::eGA)
 				grp=Cur();
 			}
 		}
-//		return(Groups->Used());
 	}
 	if(!grp)
 		grp=Groups->ReserveGroup();
@@ -133,7 +130,6 @@ void GALILEI::GIRHeuristic::PostRun(void) throw(RGA::eGA)
 			for(Cur2.Start(),max=-1.0,grp=0;!Cur2.End();Cur2.Next())
 			{
 				if(Cur1()==Cur2()) continue;
-//				if(!Cur2()->CanInsert(obj)) continue;
 				tmp=Cur2()->ComputeAvgSim(obj);
 				if(tmp>max)
 				{

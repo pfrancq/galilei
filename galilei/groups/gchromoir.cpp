@@ -517,7 +517,6 @@ void GALILEI::GChromoIR::EvaluateSim(void)
 {
 	GSimMeasure* s;
 	SimCritType t=Instance->Params->SimMeasures;
-	double Sum;
 
 	// Compute the necessary Measures
 	for(Instance->Params->Measures.Start();!Instance->Params->Measures.End();Instance->Params->Measures.Next())
@@ -529,44 +528,51 @@ void GALILEI::GChromoIR::EvaluateSim(void)
 
 	// If Correlation, computes the correlation
 	if(t!=sctCorl) return;
-	for(Instance->Params->Measures.Start(),Sum=0.0;!Instance->Params->Measures.End();Instance->Params->Measures.Next())
+	for(Instance->Params->Measures.Start(),CritSim=0.0;!Instance->Params->Measures.End();Instance->Params->Measures.Next())
 	{
 		s=Instance->Params->Measures();
 		switch(s->Type)
 		{
 			case stNone:
-				Sum+=1.0*s->Weight;
+				CritSim+=1.0*s->Weight;
 				break;
 
 			case stAvgSim:
-				Sum+=CritSimAvgSim*s->Weight;
+				CritSim+=CritSimAvgSim*s->Weight;
 				break;
 
 			case stJ:
-				Sum+=CritSimJ*s->Weight;
+				CritSim+=CritSimJ*s->Weight;
 				break;
 
 			case stAvgRatio:
-				Sum+=CritSimAvgRatio*s->Weight;
+				CritSim+=CritSimAvgRatio*s->Weight;
 				break;
 
 			case stMinRatio:
-				Sum+=CritSimMinRatio*s->Weight;
+				CritSim+=CritSimMinRatio*s->Weight;
 				break;
 
 			case stRatio:
-				Sum+=CritSimRatio*s->Weight;
+				CritSim+=CritSimRatio*s->Weight;
 				break;
 
 			case stWOverB:
-				Sum+=CritSimWOverB*s->Weight;
+				CritSim+=CritSimWOverB*s->Weight;
 				break;
 
 			case stSimWB:
-				Sum+=CritSimSimWB*s->Weight;
+				CritSim+=CritSimSimWB*s->Weight;
 				break;
 		}
 	}
+	// Hardcoded Polynomial correlation
+//	EvaluateSim(stAvgSim);
+//	EvaluateSim(stWOverB);
+//	EvaluateSim(stSimWB);
+//	CritSim =  (-1.796606040414872)+(2.281376990510303*CritSimAvgSim);
+//	CritSim += (0.1229260457129461*CritSimWOverB)+(0.3908263843188372*CritSimSimWB);
+//	CritSim += (CritSimWOverB-12.56794383250004)*((CritSimSimWB-4.23746030799999)*0.03116537691826378);
 }
 
 

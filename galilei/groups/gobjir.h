@@ -65,6 +65,11 @@ protected:
 	*/
 	GSubProfile* SubProfile;
 
+	/**
+	* Sum of all the "probabilities" of the documents.
+	*/
+	double SumPjk;
+
 public:
 
 	/**
@@ -106,9 +111,19 @@ public:
 	GSubProfile* GetSubProfile(void) const {return(SubProfile);}
 
 	/**
+	* Compute the sum of all the "probabilities" of the documents.
+	* @param lang           Language.
+	* @param s              Session.
+	*/
+	void ComputeSumEntropy(GLang* lang,GSession* s);
+
+	/**
 	* Destruct the object.
 	*/
 	virtual ~GObjIR(void);
+
+	// friend classes
+	friend class GGroupIR;
 };
 
 
