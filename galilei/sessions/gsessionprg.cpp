@@ -58,6 +58,7 @@
 #include <sessions/gprginstmethod.h>
 #include <sessions/gprgvarconst.h>
 #include <sessions/gprgvarref.h>
+#include <tests/gquerydocsgroup.h>
 using namespace GALILEI;
 using namespace RIO;
 using namespace RStd;
@@ -358,6 +359,18 @@ void GSetGroupingParamI::Run(GSessionPrg* prg,GSlot*,RStd::RContainer<GPrgVar,un
 }
 
 
+//-----------------------------------------------------------------------------
+void GRunQueriesI::Run(GSessionPrg* /*prg*/,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* /*args*/) throw(GException)
+{
+	GQueryDocsGroup Queries(Owner->Session);
+	Queries.Run();
+
+	sprintf(tmp,"Good: %f%%  -  SimIntra: %f  -  SimInter: %f ",
+	        Queries.GetTargets(),Queries.GetSimQueryIntra(),Queries.GetSimQueryInter());
+	r->WriteStr(tmp);
+}
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -389,6 +402,7 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GStatsDocsI(this));
 	Methods.InsertPtr(new GSetComputingParamI(this));
 	Methods.InsertPtr(new GSetGroupingParamI(this));
+	Methods.InsertPtr(new GRunQueriesI(this));
 };
 
 
