@@ -101,14 +101,28 @@ GWordOccurs* GIndexer::GetWord(const RString& word) const
 
 
 //------------------------------------------------------------------------------
+class Stem
+{
+public:
+	RContainer<RString,true,true> Forms;
+	RString Name;
+	Stem(const RString& name) : Forms(10,10),Name(name) {}
+	int Compare(const Stem* ptr) const {return(Name.Compare(ptr->Name));}
+	int Compare(const RString& name) const {return(Name.Compare(name));}
+};
+
+//------------------------------------------------------------------------------
 void GIndexer::RunQuery(R::RString query,R::RContainer<GInfo,true,false>& docs) const
 {
+
 	const RChar* ptr;
 	unsigned int pos;
 	unsigned int len;
-	RString stem;
-	RContainer<RString,true,true> Stems(30,15);
+	RString stem,Word;
+	RContainer<Stem,true,true> Stems(30,15);
 	GWordOccurs* word;
+	Stem* New;
+	bool Found;
 
 	// Init
 	docs.Clear();
@@ -125,12 +139,15 @@ void GIndexer::RunQuery(R::RString query,R::RContainer<GInfo,true,false>& docs) 
 
 		// For each existing language, insert the corresponding stem
 		RCursor<GFactoryLang> Cur=Langs->GetLangsCursor();
-		for(Cur.Start();!Cur.End();Cur.Next())
+		Word=query.Mid(pos,len);
+		for(Cur.Start(),New=0;!Cur.End();Cur.Next())
 		{
 			if(!Cur()->GetPlugin())
 				continue;
-			stem=Cur()->GetPlugin()->GetStemming(query.Mid(pos,len));
-			Stems.GetInsertPtr<RString>(stem);
+			if(!New)
+				New=Stems.GetInsertPtr<RString>(Word);
+			stem=Cur()->GetPlugin()->GetStemming(Word);
+			New->Forms.GetInsertPtr<RString>(stem);
 		}
 		pos+=len;
 		len=0;
@@ -145,18 +162,25 @@ void GIndexer::RunQuery(R::RString query,R::RContainer<GInfo,true,false>& docs) 
 
 
 	// Go trough each stems to look for the words.
-	RCursor<RString> Cur(Stems);
+	RCursor<Stem> Cur(Stems);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		word=GetPtr<RString>(Cur());
-/*		if(!word)
+		RCursor<RString> Cur2(Cur()->Forms);
+		for(Cur2.Start(),Found=false;!Cur2.End();Cur2.Next())
 		{
-			// a word Was not found -> return empty container
+			word=GetPtr<RString>(Cur2());
+			if(word)
+			{
+				word->FilterDocs(docs);
+				Found=true;
+			}
+		}
+		if(!Found)
+		{
+			// A word was not found -> return empty container
 			docs.Clear();
 			break;
-		}*/
-		if(word)
-			word->FilterDocs(docs);
+		}
 	}
 }
 
