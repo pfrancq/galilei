@@ -138,19 +138,19 @@ void GSessionMySQL::LoadSubProfilesFromDB (GProfile* prof)
 		sprintf(sSql,"SELECT kwdid FROM %sokkwds WHERE subprofileid=%u",lang->Code,sub->Id);
 		RQuery ok(db,sSql);
 		for(ok.Begin();ok.IsMore();ok++)                
-			sub->OK->InsertPtr(new GWordRef(atoi(ok[0])));
+			sub->OK->InsertPtr(new GIWord(atoi(ok[0])));
 
 		// Load GWordList 'KO'
 		sprintf(sSql,"SELECT kwdid FROM %skokwds WHERE subprofileid=%u",lang->Code,sub->Id);
 		RQuery ko(db,sSql);
 		for(ko.Begin();ko.IsMore();ko++)                
-			sub->KO->InsertPtr(new GWordRef(atoi(ko[0])));
+			sub->KO->InsertPtr(new GIWord(atoi(ko[0])));
 
 		// Load GWordList 'Common'
 		sprintf(sSql,"SELECT kwdid FROM %scomkwds WHERE subprofileid=%u",lang->Code,sub->Id);
 		RQuery com(db,sSql);
 		for(com.Begin();com.IsMore();com++)                
-			sub->Common->InsertPtr(new GWordRef(atoi(com[0])));
+			sub->Common->InsertPtr(new GIWord(atoi(com[0])));
 
 		prof->InsertPtr(sub);
 
