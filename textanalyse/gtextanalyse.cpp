@@ -371,7 +371,7 @@ void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GExcepti
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag, RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
+void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
 {
 	const char* ptr;
 	const char* endPtr;
@@ -398,8 +398,11 @@ void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag, RContainer<GDoc,unsigne
 			tmpDoc = Session->GetDoc(ptr);   //where ptr is the url.
 			if (! tmpDoc)
 			{
-				//DocsToAdd->InsertPtr(tmpDoc=Session->NewDoc(ptr,ptr,"text/html"));
-				//tmpDoc->SetState(osNotNeeded);
+				if (externalLinks)
+				{
+					DocsToAdd->InsertPtr(tmpDoc=Session->NewDoc(ptr,ptr,"text/html"));
+					tmpDoc->SetState(osNotNeeded);
+				}
 			}
 			else
 			{
@@ -410,11 +413,10 @@ void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag, RContainer<GDoc,unsigne
 	else
 	{
 		for (tag->Start();!tag->End();tag->Next())
-			AnalyseLinksTag((*tag)(),DocsToAdd);
+			AnalyseLinksTag((*tag)(),externalLinks,DocsToAdd);
 	}
 #pragma warn "ici il faut rajouter les proprietes des liens." ;
 }
-
 
 //-----------------------------------------------------------------------------
 void GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
@@ -523,10 +525,13 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsign
 	AnalyseTag(metadata,2.0);
 	AnalyseTag(content,1.0);
 
-	// Analyse the content of link tags
-	link = xml->GetLinks ();
-	RAssert(link);
-	AnalyseLinksTag(link,tmpDocs);
+	// if option link is active -> Analyse the content of link tags
+	if (Options->UseLink)
+	{
+		link = xml->GetLinks ();
+		RAssert(link);
+		AnalyseLinksTag(link,Options->UseExternalLink,tmpDocs);
+	}
 
 	// Determine the Language if necessary.
 	if(FindLang)

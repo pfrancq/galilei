@@ -207,7 +207,7 @@ protected:
 	* @param tag            Tag to analyse.
 	* @param tmpDocs        A pointer to a container of docs to maintain the documents to be added.
 	*/
-	void AnalyseLinksTag(RXML::RXMLTag* tag, RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException);
+	void AnalyseLinksTag(RXML::RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException);
 
 	/**
 	* This methods determine the language of the current structure studied,
