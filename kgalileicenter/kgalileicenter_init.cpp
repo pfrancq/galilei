@@ -384,6 +384,10 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->setGroup(LinkCalcItAlgoParams.GetComputingName());
 	Config->writeEntry("NbIteration",LinkCalcItAlgoParams.NbIteration);
 	Config->writeEntry("NbResults",LinkCalcItAlgoParams.NbResults);
+	Config->writeEntry("LimitLink",LinkCalcItAlgoParams.LimitLink);
+	Config->writeEntry("NbLinks",LinkCalcItAlgoParams.NbLinks);
+	Config->writeEntry("UseMultipleLink",LinkCalcItAlgoParams.UseMultipleLink);
+	
 }
 
 
@@ -457,6 +461,7 @@ void KGALILEICenterApp::readOptions(void)
 	DocOptions->UseLink=Config->readBoolEntry("Use Link",true);
 	DocOptions->UseExternalLink=Config->readBoolEntry("Use External Link",false);
 	DocOptions->UseRedirection=Config->readBoolEntry("Use Redirection",false);
+	
 
 	// Read Session Options
 	GroupingMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
@@ -580,6 +585,11 @@ void KGALILEICenterApp::readOptions(void)
 	Config->setGroup(LinkCalcItAlgoParams.GetComputingName());
 	LinkCalcItAlgoParams.NbIteration=Config->readNumEntry("NbIteration",5);
 	LinkCalcItAlgoParams.NbResults=Config->readNumEntry("NbResults",5);
+	LinkCalcItAlgoParams.LimitLink=Config->readBoolEntry("LimitLink",false);
+	LinkCalcItAlgoParams.NbLinks=Config->readNumEntry("NbLinks",10);
+	LinkCalcItAlgoParams.UseMultipleLink=Config->readBoolEntry("UseMultipleLink",true);
+	
+	
 }
 
 
