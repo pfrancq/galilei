@@ -168,7 +168,7 @@ void QPluginsDlg::QPluginListView::activate(void)
 
 //---------------------------------------------------------------------------
 QPluginsDlg::QPluginsDlg(KGALILEICenterApp* app,const char* name)
-	: QDialog(app,name,true), Cur(0), Conf(0), Computings(0), Groupings(0), App(app)
+	: QDialog(app,name,true,Qt::WStyle_ContextHelp), Cur(0), Conf(0), Computings(0), Groupings(0), App(app)
 {
 	Computings=new R::RContainer<QComputingPluginConf,unsigned int,true,true>(3,3);
 	Groupings=new R::RContainer<QGroupingPluginConf,unsigned int,true,true>(3,3);
