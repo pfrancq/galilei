@@ -52,8 +52,8 @@ using namespace RPromethee;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/giwordsweightshistory.h>
-#include <groups/ggroupshistory.h>
+#include <historic/giwordsweightshistory.h>
+#include <historic/ggroupshistory.h>
 using namespace GALILEI;
 
 
