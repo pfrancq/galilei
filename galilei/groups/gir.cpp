@@ -89,7 +89,7 @@ GALILEI::GSimMeasure& GALILEI::GSimMeasure::operator=(const GALILEI::GSimMeasure
 
 //-----------------------------------------------------------------------------
 GALILEI::GIRParams::GIRParams(void)
-	: GGroupingParams("Grouping Genetic Algorithms"), Measures(20,10)
+	: GGroupingParams("GVCA"), Measures(20,10)
 {
 	Measures.InsertPtr(new GSimMeasure("Constant",stNone));
 	Measures.InsertPtr(new GSimMeasure("AvgSim",stAvgSim));
