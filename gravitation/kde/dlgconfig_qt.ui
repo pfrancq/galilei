@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>DlgConfig_Qt</class>
 <widget class="QDialog">
     <property name="name">
@@ -153,6 +153,8 @@
         </widget>
     </vbox>
 </widget>
+<customwidgets>
+</customwidgets>
 <connections>
     <connection>
         <sender>buttonOk</sender>
@@ -167,6 +169,9 @@
         <slot>reject()</slot>
     </connection>
 </connections>
+<includes>
+    <include location="local" impldecl="in implementation">dlgconfig_qt.ui.h</include>
+</includes>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>knuminput.h</includehint>
