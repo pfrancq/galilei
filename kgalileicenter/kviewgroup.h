@@ -87,6 +87,11 @@ class KViewGroup : public KView
 	*/
 	QListView* General;
 
+	/**
+	* Vector representing the group.
+	*/
+	QListView* Vector;
+
 public:
 
 	/**
@@ -111,12 +116,17 @@ public:
 	GGroup* GetGroup(void) {return(Group);}
 
 	/**
-	* Construct the groups' widget.
+	* Construct the groups widget.
+	*/
+	void ConstructDescription(void);
+
+	/**
+	* Construct the profiles widget.
 	*/
 	void ConstructProfiles(void);
 
 	/**
-	* Construct the general information's widget.
+	* Construct the general information widget.
 	*/
 	void ConstructGeneral(void);
 

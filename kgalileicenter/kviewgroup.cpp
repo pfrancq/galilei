@@ -40,11 +40,13 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <langs/glang.h>
-#include <groups/ggroup.h>
+#include <sessions/gsession.h>
+#include <groups/ggroupvector.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <galilei/qlistviewitemtype.h>
+#include <infos/giwordweight.h>
 using namespace GALILEI;
 
 
@@ -55,6 +57,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for current application
+#include "kdoc.h"
 #include "kviewgroup.h"
 #include "qsessionprogress.h"
 using namespace RTimeDate;
@@ -73,7 +76,7 @@ KViewGroup::KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,in
 {
 	char title[50];
 
-	sprintf(title,"Group (Id=%u)",Group->GetId());
+	sprintf(title,"Group (Id=%u)",grp->GetId());
 	setCaption("Group");
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/actions/window_new.png"));
 
@@ -88,7 +91,7 @@ KViewGroup::KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,in
 	General->addColumn("Value");
 	ConstructGeneral();
 
-	// Initialisation of the Profile's Widget
+	// Initialisation of the Profiles Widget
 	Profiles = new QListView(Infos);
 	Infos->insertTab(Profiles,"Profiles");
 	Profiles->addColumn(QString("Profiles"));
@@ -97,6 +100,16 @@ KViewGroup::KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,in
 	Profiles->setRootIsDecorated(true);
 	connect(Profiles,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	ConstructProfiles();
+
+	// Initialisation of Description
+	// Create the 'Vector' ListView
+	Vector = new QListView(this, "Vector" );
+	Infos->insertTab(Vector,"Description");
+	sprintf(title,"Words (%u)",static_cast<GGroupVector*>(Group)->GetNbNoNull());
+	Vector->addColumn(title);
+	Vector->addColumn(QString("Weights"));
+	Vector->setSorting(2);
+	ConstructDescription();
 }
 
 
@@ -153,6 +166,27 @@ void KViewGroup::ConstructGeneral(void)
 	new QListViewItem(General,"Status",sDate);
 }
 
+//-----------------------------------------------------------------------------
+void KViewGroup::ConstructDescription(void)
+{
+	GIWordWeightCursor Cur;
+	QString W;
+	char tmp[20];
+
+	// Change the label of the first column
+	sprintf(tmp,"Words (%u)",static_cast<GGroupVector*>(Group)->GetNbNoNull());
+	Vector->setColumnText(0,tmp);
+
+	// Read 'Ok'
+	Vector->clear();
+	Cur=static_cast<GGroupVector*>(Group)->GetVectorCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		W.setNum(Cur()->GetWeight());
+		new QListViewItem(Vector,Doc->GetSession()->GetWord(Cur()->GetId(),Group->GetLang()),W);
+	}
+}
+
 
 //-----------------------------------------------------------------------------
 void KViewGroup::update(unsigned int cmd)
@@ -160,6 +194,7 @@ void KViewGroup::update(unsigned int cmd)
 	if(cmd!=2) return;
 	ConstructProfiles();
 	ConstructGeneral();
+	ConstructDescription();
 }
 
 
