@@ -407,12 +407,18 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 		docid=atoi(quer[0]);
 		lang=GetLang(quer[2]);
 		Docs.InsertPtr(doc=new GDoc(quer[1],quer[6],docid,lang,Mng->GetMIMEType(quer[7]),quer[8],quer[9],atoi(quer[10]),atoi(quer[11]),atoi(quer[4]),atoi(quer[5])));
-		if(lang)
+	}
+	
+	// Load the document's description
+	for(Langs.Start();!Langs.End();Langs.Next())
+	{
+		sprintf(sSql,"SELECT htmlid,kwdid,occurs FROM %shtmlsbykwds",Langs()->GetCode());
+		RQuery sel(this,sSql);
+		for(sel.Begin();sel.IsMore();sel++)
 		{
-			sprintf(sSql,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",lang->GetCode(),docid);
-			RQuery doc2(this,sSql);
-			for(doc2.Begin();doc2.IsMore();doc2++)
-				doc->AddWord(atoi(doc2[0]),atoi(doc2[1]));
+			doc=Docs.GetPtr<const unsigned int>(atoi(sel[0]));
+			if(doc)
+				doc->AddWord(atoi(sel[1]),atoi(sel[2]));
 		}
 	}
 }
