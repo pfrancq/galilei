@@ -91,7 +91,7 @@ using namespace GALILEI;
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng, GDocOptions* opt) throw(bad_alloc,GException)
 	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(), Fdbks(f+f/2,f/2),
-	  ProfileCalcs(0), ProfileCalc(0), Groupings(0), Grouping(0), Mng(mng), DocAnalyse(0),
+	  ProfileCalcs(0), ProfileCalc(0), Groupings(0), Grouping(0), URLMng(mng), DocAnalyse(0),
 	  bGroups(false),bFdbks(false), DocOptions(opt)
 	
 {
@@ -355,7 +355,7 @@ GLinkCalcCursor& GALILEI::GSession::GetLinkCalcsCursor(void)
 //-----------------------------------------------------------------------------
 GDocXML* GALILEI::GSession::CreateDocXML(GDoc* doc) throw(GException)
 {
-	return(Mng->CreateDocXML(doc));
+	return(URLMng->CreateDocXML(doc));
 }
 
 
@@ -501,7 +501,7 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 			if(((!modified)||(Docs()->GetState()!=osUpdated))||((Docs()->GetState()!=osNotNeeded)))
 			{
 				if (!Docs()->GetLang()) undefLang=true;
-				xml=Mng->CreateDocXML(Docs());
+				xml=URLMng->CreateDocXML(Docs());
 				if(xml)
 				{
 					Docs()->InitFailed();
@@ -993,14 +993,14 @@ void GALILEI::GSession::Save(GGroup* grp) throw(GException)
 //-----------------------------------------------------------------------------
 GFactoryFilterCursor& GALILEI::GSession::GetFiltersCursor(void)
 {
-	return(Mng->GetFiltersCursor());
+	return(URLMng->GetFiltersCursor());
 }
 
 
 //-----------------------------------------------------------------------------
 const char* GALILEI::GSession::GetMIMEType(const char* mime) const
 {
-	return(Mng->GetMIMEType(mime));
+	return(URLMng->GetMIMEType(mime));
 }
 
 

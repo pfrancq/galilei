@@ -150,7 +150,7 @@ protected:
 	/**
 	* URL Manager used by this session.
 	*/
-	GURLManager* Mng;
+	GURLManager* URLMng;
 
 	/**
 	* Analyser used for the document.
