@@ -46,6 +46,20 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
+// General function
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GProfileCursor* GetGProfileCursor(void)
+{
+	return(GetTemporaryObject<GProfileCursor,20>());
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
 //  class GSessionSignalsReceiver
 //
 //-----------------------------------------------------------------------------
@@ -170,17 +184,17 @@ GDocXML* GALILEI::GSession::CreateDocXML(GDoc* doc) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::AnalyseDocs(GSessionSignalsReceiver* rec) throw(GException)
+void GALILEI::GSession::AnalyseDocs(GSessionSignalsReceiver* rec,bool modified) throw(GException)
 {
 	GDocXML* xml;
 
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		if(Docs()->GetState()==osUpToDate) continue;
+		if(modified&&(Docs()->GetState()==osUpToDate)) continue;
 		rec->receiveNextDoc(Docs());
 		try
 		{
-			if(Docs()->GetState()!=osUpdated)
+			if(modified&&(Docs()->GetState()!=osUpdated))
 			{
 				xml=Mng->CreateDocXML(Docs());
 				if(xml)
@@ -203,6 +217,15 @@ void GALILEI::GSession::AnalyseDocs(GSessionSignalsReceiver* rec) throw(GExcepti
 				delete xml;
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+GProfileCursor& GALILEI::GSession::GetProfilesCursor(void) const
+{
+	GProfileCursor *cur=GetGProfileCursor();
+	cur->Set(Profiles);
+	return(*cur);
 }
 
 
@@ -232,18 +255,18 @@ GUser* GALILEI::GSession::NewUser(const char* usr,const char* pwd,const char* na
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::CalcProfiles(GSessionSignalsReceiver* rec,GProfileCalc* method) throw(GException)
+void GALILEI::GSession::CalcProfiles(GSessionSignalsReceiver* rec,GProfileCalc* method,bool modified) throw(GException)
 {
 	GProfile* prof;
 
 	for(Profiles->Start();!Profiles->End();Profiles->Next())
 	{
 		prof=(*Profiles)();
-		if(prof->GetState()==osUpToDate) continue;
+		if(modified&&(prof->GetState()==osUpToDate)) continue;
 		rec->receiveNextProfile(prof);
 		try
 		{
-			if(prof->GetState()!=osUpdated)
+			if(modified&&(prof->GetState()!=osUpdated))
 				method->Compute(prof);
 			Save(prof);
 			if(prof->GetState()==osUpdated)
@@ -305,9 +328,13 @@ GGroups* GALILEI::GSession::GetGroups(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
-GGroup* GALILEI::GSession::NewGroup( GLang* lang)
+void GALILEI::GSession::Save(GGroup* grp) throw(GException)
 {
-	return(new GGroup(lang));
+	if(grp->GetState()==osUpToDate) return;
+	for(grp->Start();!grp->End();grp->Next())
+		Save((*grp)());
+	if(grp->GetState()==osUpdated)
+		grp->SetState(osUpToDate);
 }
 
 

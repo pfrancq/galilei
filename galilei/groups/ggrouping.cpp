@@ -19,12 +19,14 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainercursor.h>
+#include <rstd/rcursor.h>
 using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<ggroups/ggrouping.h>
+#include<ggroups/ggroup.h>
 #include<ggroups/ggroups.h>
 #include<gprofiles/guser.h>
 #include<gprofiles/gprofile.h>
@@ -73,9 +75,12 @@ void GALILEI::GGrouping::Init(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGrouping::Grouping(GGroupingSignalsReceiver* rec)
+void GALILEI::GGrouping::Grouping(GGroupingSignalsReceiver* rec,bool modified)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
+	GProfileCursor cur;
+	GSubProfile* sub;
+	GGroup* Grp;
 
 	// Go trough each language.
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
@@ -85,20 +90,34 @@ void GALILEI::GGrouping::Grouping(GGroupingSignalsReceiver* rec)
 		if(rec)
 			rec->NextGroupLang(CurLang());
 
-		// Go through the users to find the subprofiles corresponding to the
-		// language.
-		RContainerCursor<GUser,unsigned int,true,true> CurUsr(Session->GetUsers());
-		for(CurUsr.Start();!CurUsr.End();CurUsr.Next())
+		// Go through the groups and delete all invalid groups.
+		for(Groups->Start();!Groups->End();Groups->Next())
 		{
-			// Go through each profile.
-			for(CurUsr()->Start();!CurUsr()->End();CurUsr()->Next())
+			Grp=(*Groups)();
+			if(modified&&(Grp->GetState()!=osUpToDate)&&(Grp->GetState()!=osUpdated)&&(!IsValid(Grp)))
 			{
-				SubProfiles.InsertPtr((*CurUsr())()->GetSubProfile(CurLang()));
+				Grp->DeleteSubProfiles();
+				Session->DeleteGroup(Grp);
+				Groups->DeletePtr(Grp);
 			}
+		}
+
+		// Go through the profiles corresponding to the language and that are
+		// to inserted.
+		cur=Session->GetProfilesCursor();
+		for(cur.Start();!cur.End();cur.Next())
+		{
+			sub=cur()->GetSubProfile(CurLang());
+			if(!sub->GetGroup())
+				SubProfiles.InsertPtr(sub);
 		}
 
 		// Make the grouping
 		Run();
+
+		// Save the information about the groupement
+		for(Groups->Start();!Groups->End();Groups->Next())
+			Session->Save((*Groups)());
 	}
 }
 

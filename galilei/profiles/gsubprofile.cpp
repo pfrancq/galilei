@@ -43,8 +43,8 @@ GALILEI::GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGr
 	KO=new GIWordList();
 	Common=new GIWordList();
 	Profile->InsertPtr(this);
-//	if(grp)
-//		grp->InsertPtr(this);
+	if(grp)
+		grp->InsertPtr(this);
 }
 
 
@@ -77,6 +77,14 @@ int GALILEI::GSubProfile::Compare(const GSubProfile* subprofile) const
 
 
 //-----------------------------------------------------------------------------
+bool GALILEI::GSubProfile::IsDefined(void) const
+{
+	// The OK and Common lists can't be empty.
+	return((OK->NbPtr)||(Common->NbPtr));
+}
+
+
+//-----------------------------------------------------------------------------
 double GALILEI::GSubProfile::Similarity(const GSubProfile *sub) const
 {
 	double Sim=0;
@@ -105,9 +113,9 @@ double GALILEI::GSubProfile::Similarity(const GSubProfile *sub) const
 //-----------------------------------------------------------------------------
 void GALILEI::GSubProfile::SetGroup(GGroup* grp)
 {
-	if(!grp) return;
-//	grp->InsertPtr(this);
-	Attached.SetToday();
+	Group=grp;
+	if(grp)
+		Attached.SetToday();
 }
 
 

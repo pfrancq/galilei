@@ -195,6 +195,12 @@ public:
 	bool IsUpdated(void) const;
 
 	/**
+	* See if the subprpfile is defined, i.e. if it is computed. A subprofile
+	* that isn't computed, isn't attached.
+	*/
+	bool IsDefined(void) const;
+
+	/**
 	* Compute similarity between SubProfiles.
 	*/
 	double Similarity(const GSubProfile *sub) const;

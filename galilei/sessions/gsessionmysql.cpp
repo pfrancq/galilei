@@ -400,13 +400,13 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 	int docid;
 	char sSql[100];
 
-	sprintf(sSql,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title,mimetype,updated,calculated,failed FROM htmls");
+	sprintf(sSql,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title,mimetype,updated,calculated,failed,wordtot FROM htmls");
 	RQuery quer (this,sSql);
 	for(quer.Begin();quer.IsMore();quer++)
 	{
 		docid=atoi(quer[0]);
 		lang=GetLang(quer[2]);
-		Docs.InsertPtr(doc=new GDoc(quer[1],quer[6],docid,lang,Mng->GetMIMEType(quer[7]),quer[8],quer[9],atoi(quer[10]),atoi(quer[4]),atoi(quer[5])));
+		Docs.InsertPtr(doc=new GDoc(quer[1],quer[6],docid,lang,Mng->GetMIMEType(quer[7]),quer[8],quer[9],atoi(quer[10]),atoi(quer[11]),atoi(quer[4]),atoi(quer[5])));
 		if(lang)
 		{
 			sprintf(sSql,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",lang->GetCode(),docid);
@@ -435,7 +435,7 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 	sprintf(sSql,"SELECT htmlid,updated FROM htmls WHERE htmlid=LAST_INSERT_ID()");
 	RQuery selectdoc(this,sSql);
 	selectdoc.Begin();
-	doc=new GDoc(url,name,strtoul(selectdoc[0],0,10),0,Mng->GetMIMEType(mime),selectdoc[1],0,0,0,0);
+	doc=new GDoc(url,name,strtoul(selectdoc[0],0,10),0,Mng->GetMIMEType(mime),selectdoc[1],0,0,0,0,0);
 	Docs.InsertPtr(doc);
 	return(doc);
 }
@@ -486,11 +486,41 @@ void GALILEI::GSessionMySQL::Save(GDoc* doc) throw(GException)
 	sprintf(sSql,"UPDATE htmls SET "
 	             "html=%s,title=%s,mimetype=%s,langid=%s,"
 	             "updated=%s,calculated=%s,"
-	             "wordnumtot=%u,wordnumdiff=%u,failed=%u WHERE htmlid=%u",
+	             "wordnumtot=%u,wordnumdiff=%u,failed=%u,wordtot=%u WHERE htmlid=%u",
 	             ValidSQLValue(doc->GetURL(),surl),ValidSQLValue(doc->GetName(),sname),fn,l,
 	             GetDateToMySQL(doc->GetUpdated(),supdated),GetDateToMySQL(doc->GetComputed(),scomputed),
-	             doc->GetNbWords(),doc->GetNbDiffWords(),doc->GetFailed(),id);
+	             doc->GetNbWords(),doc->GetNbDiffWords(),doc->GetFailed(),doc->GetTotalWords(),id);
 	RQuery updatedoc(this,sSql);
+}
+
+
+//-----------------------------------------------------------------------------
+GGroup* GALILEI::GSessionMySQL::NewGroup(GLang* lang)
+{
+	char sSql[100];
+
+	// Insert it
+	if(!lang) return(0);
+	sprintf(sSql,"INSERT INTO groups(langid) VALUES('%s')",lang->GetCode());
+	RQuery insert(this,sSql);
+
+	// Get Id and updated
+	sprintf(sSql,"SELECT groupid FROM groups WHERE groupid=LAST_INSERT_ID()");
+	RQuery select(this,sSql);
+	select.Begin();
+	return(new GGroup(strtoul(select[0],0,10),lang));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::DeleteGroup(GGroup* grp)
+{
+	char sSql[100];
+
+	if(!grp) return;
+	sprintf(sSql,"DELETE FROM groups WHERE groupid=%u",grp->GetId());
+	RQuery del(this,sSql);
+	grp->SetId(cNoRef);
 }
 
 

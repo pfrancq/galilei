@@ -34,6 +34,7 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 // forward class declaration
 class GSession;
+class GGroup;
 class GGroups;
 class GSubProfile;
 class GLang;
@@ -82,7 +83,7 @@ protected:
 	GGroups* Groups;
 
 	/**
-	* Sub-Profiles to group.
+	* SubProfiles that where changed and must be grouped again.
 	*/
 	RStd::RContainer<GSubProfile,unsigned int,false,false> SubProfiles;
 
@@ -112,10 +113,17 @@ protected:
 public:
 
 	/**
+	* Test if a group is valid. If a group isn't not valid, the group is
+	* deleted and all profiles are to be inserted again.
+	*/
+	virtual bool IsValid(GGroup* grp)=0;
+
+	/**
 	* Make the groups.
 	* @param rec            Receiver of the signals.
+	* @param modified   Recompute only modified elements or all.
 	*/
-	void Grouping(GGroupingSignalsReceiver* rec=0);
+	void Grouping(GGroupingSignalsReceiver* rec=0,bool modified=true);
 
 	/**
 	* Destructor.

@@ -22,6 +22,7 @@
 #include <gprofiles/guser.h>
 #include <gprofiles/gsubprofile.h>
 #include <gprofiles/gprofdoc.h>
+#include <ggroups/ggroup.h>
 using namespace GALILEI;
 using namespace RTimeDate;
 
@@ -73,16 +74,37 @@ int GALILEI::GProfile::Compare(const GProfile *profile) const
 
 
 //-----------------------------------------------------------------------------
-const GSubProfile* GALILEI::GProfile::GetSubProfile(const GLang* lang) const
+GSubProfile* GALILEI::GProfile::GetSubProfile(const GLang* lang) const
 {
 	return(GetPtr<const GLang*>(lang,false));
 }
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GProfile::SetState(tObjState state)
+{
+	GGroup* grp;
+
+	State=state;
+
+	// If the profile was updated -> the groups containing the subprofiles
+	// are modified.
+	if(State==osUpdated)
+	{
+		for(Start();!End();Next())
+		{
+			grp=(*this)()->GetGroup();
+			if(grp)
+				grp->SetState(osModified);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GProfile::UpdateFinished(void)
 {
-	State=osUpdated;
+	SetState(osUpdated);
 	Computed.SetToday();
 }
 

@@ -49,6 +49,7 @@ class GDoc;
 class GDocXML;
 class GUser;
 class GProfile;
+class GProfileCursor;
 class GProfDoc;
 class GSubProfile;
 class GGroup;
@@ -366,8 +367,9 @@ public:
 		/**
 		* Analyse all the necessary documents.
 		* @param rec        Receiver for the signals.
+		* @param modified   Recompute only modified elements or all.
 		*/
-		void AnalyseDocs(GSessionSignalsReceiver* rec) throw(GException);
+		void AnalyseDocs(GSessionSignalsReceiver* rec,bool modified=true) throw(GException);
 
 	//@}
 
@@ -405,6 +407,11 @@ public:
 		* @param prof       Profile to save.
 		*/
 		virtual void Save(const GProfile* prof) throw(GException)=0;
+
+		/**
+		* Get a cursor over the profiles used in the system.
+		*/
+		GProfileCursor& GetProfilesCursor(void) const;
 
 		/**
 		* Get the number of users treated by the system.
@@ -450,9 +457,10 @@ public:
 		/**
 		* Compute all the necessary profiles.
 		* @param rec        Receiver for the signals.
-		* @param method         Method used to compute.
+		* @param method     Method used to compute.
+		* @param modified   Recompute only modified elements or all.
 		*/
-		void CalcProfiles(GSessionSignalsReceiver* rec,GProfileCalc* method) throw(GException);
+		void CalcProfiles(GSessionSignalsReceiver* rec,GProfileCalc* method,bool modified=true) throw(GException);
 
 	//@}
 
@@ -525,10 +533,23 @@ public:
 		GGroups* GetGroups(const GLang* lang) const;
 
 		/**
+		* Save a group, i.e. save all the information of the subprofiles
+		* concerning the groupement.
+		* @param grp        Group to save.
+		*/
+		void Save(GGroup* grp) throw(GException);
+
+		/**
 		* Create a new group.
 		* @param lang       Language of the group to create.
 		*/
-		GGroup* NewGroup(GLang* lang);
+		virtual GGroup* NewGroup(GLang* lang)=0;
+
+		/**
+		* Delete a group.
+		* @param grp        Group to delete.
+		*/
+		virtual void DeleteGroup(GGroup* grp)=0;
 
 	//@}
 

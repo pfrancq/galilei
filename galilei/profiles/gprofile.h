@@ -29,6 +29,7 @@
 //-----------------------------------------------------------------------------
 //include files for R Project
 #include <rstd/rcontainer.h>
+#include <rstd/rcursor.h>
 #include <rstd/rstring.h>
 #include <rtimedate/rdate.h>
 
@@ -153,7 +154,7 @@ public:
 	* @param lang           Pointer to the language.
 	* @return Pointer to the subprofile.
 	*/
-	const GSubProfile* GetSubProfile(const GLang* lang) const;
+	GSubProfile* GetSubProfile(const GLang* lang) const;
 
 	/**
 	* Get the date of the last update of the profile's.
@@ -177,7 +178,7 @@ public:
 	* Set the state of the profile.
 	* @param state          New state.
 	*/
-	void SetState(tObjState state) {State=state;}
+	void SetState(tObjState state);
 
 	/**
 	* Tell the profile that its updated is finished.
@@ -215,9 +216,11 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-
+* The GProfileCursor class provides a way to go trough a set of profiles.
+* @short Profiles' Cursor
 */
-//CLASSCURSOR(ProfileCursor,GProfile,unsing-
+CLASSCURSOR(GProfileCursor,GProfile,unsigned int)
+
 
 }  //-------- End of namespace GALILEI ----------------------------------------
 

@@ -199,6 +199,18 @@ public:
 	virtual void Save(const GProfile* prof) throw(GException);
 
 	/**
+	* Create a new group.
+	* @param lang       Language of the group to create.
+	*/
+	virtual GGroup* NewGroup(GLang* lang);
+
+	/**
+	* Delete a group.
+	* @param grp        Group to delete.
+	*/
+	virtual void DeleteGroup(GGroup* grp);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSessionMySQL(void);

@@ -70,12 +70,6 @@ class GGroup : public RStd::RContainer<GSubProfile,unsigned int,false,false>
 public:
 
 	/**
-	* Construct a group.
-	* @param lang           Language.
-	*/
-	GGroup(GLang* lang) throw(bad_alloc);
-
-	/**
 	* Construct a group with a specific identificator.
 	* @param id             Identificator.
 	* @param lang           Language.
@@ -138,6 +132,11 @@ public:
 	* @param sp             SubProfile to insert.
 	*/
 	void InsertSubProfile(GSubProfile* sp);
+
+	/**
+	* Delete all subprofiles.
+	*/
+	void DeleteSubProfiles(void);
 };
 
 

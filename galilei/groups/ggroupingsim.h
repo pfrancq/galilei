@@ -117,6 +117,12 @@ protected:
 	bool IsCoherent(const GGroup* grp,const GSubProfile* sub) const;
 
 	/**
+	* Test if a group is valid. If a group isn't not valid, the group is
+	* deleted and all profiles are to be inserted again.
+	*/
+	virtual bool IsValid(GGroup* grp);
+
+	/**
 	* Make the grouping for a specific Language.
 	*/
 	virtual void Run(void);

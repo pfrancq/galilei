@@ -32,14 +32,6 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroup::GGroup(GLang* lang) throw(bad_alloc)
-	: RContainer<GSubProfile,unsigned int,false,false>(20,10), Id(cNoRef),
-	  State(osCreated), Lang(lang)
-{
-}
-
-
-//-----------------------------------------------------------------------------
 GALILEI::GGroup::GGroup(const unsigned int id,GLang* lang) throw(bad_alloc)
 	: RContainer<GSubProfile,unsigned int,false,false>(20,10), Id(id),
 	  State(osUpToDate), Lang(lang)
@@ -81,4 +73,15 @@ void GALILEI::GGroup::InsertSubProfile(GSubProfile* sp)
 {
 	InsertPtr(sp);
 	State=osUpdated;
+	sp->SetGroup(this);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroup::DeleteSubProfiles(void)
+{
+	State=osUpdated;
+	for(Start();!End();Next())
+		(*this)()->SetGroup(0);
+	Clear();
 }

@@ -103,6 +103,13 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp,const GSubProfile* sub)
 
 
 //-----------------------------------------------------------------------------
+bool GALILEI::GGroupingSim::IsValid(GGroup* grp)
+{
+	return(IsCoherent(grp));
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GGroupingSim::Run(void)
 {
 	GSubProfile* s;
@@ -111,18 +118,7 @@ void GALILEI::GGroupingSim::Run(void)
 	for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 	{
 		s=SubProfiles();
-		g=Groups->GetGroup(s);
-
-		// Verify if the subprofile is already attached
-		if(g)
-		{
-			// If group is still coherent -> leave it
-			if(IsCoherent(g))
-				continue;
-			
-			// Sub Profile must be deleted from the group
-			g->DeleteSubProfile(g->GetPtr<GSubProfile*>(s));
-		}
+		g=0;
 
 		// Find the first group able to receive the subprofile.
 		for(Groups->Start();!Groups->End();Groups->Next())
