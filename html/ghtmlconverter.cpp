@@ -875,7 +875,7 @@ void GHTMLConverter::InsertLink(RContainer<RXMLAttr,true,true>& attrs) throw(RIO
 	xmlAttrCur.Set(attrs);
 	for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 	{
-		if(!xmlAttrCur()->GetName().Compare("href"))
+		if(!xmlAttrCur()->GetName().ToLower().Compare("href"))
 		{
 			RString urlG;
 			RString url=xmlAttrCur()->GetValue();

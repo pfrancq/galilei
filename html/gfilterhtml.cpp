@@ -88,6 +88,10 @@ bool GFilterHTML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 		//Delete Empty Tags
 		Doc->GetContent()->DeleteEmptyTags(Doc);
 	}
+	catch(RIOException& e)
+	{
+		throw GException(e.GetMsg());
+	}
 	catch(RException& e)
 	{
 		throw GException(e.GetMsg());
