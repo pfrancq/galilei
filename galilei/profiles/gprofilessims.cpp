@@ -546,8 +546,11 @@ void GProfilesSims::GProfilesSim::RecomputeDevMeanSim(RCursor<GSubProfile> subpr
 //------------------------------------------------------------------------------
 void GProfilesSims::GProfilesSim::AddModifiedProfile(GSubProfile* s)
 {
-	if (Manager->GetMemory())
-		ModifiedProfs->InsertPtr(s);
+	if(Manager->GetMemory())
+	{
+		if(!ModifiedProfs->GetPtr(s))
+			ModifiedProfs->InsertPtr(s);
+	}
 }
 
 

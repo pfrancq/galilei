@@ -280,7 +280,11 @@ double GProfilesBehaviours::GProfilesBehaviour::GetDisagreementRatio(GSubProfile
 //------------------------------------------------------------------------------
 void GProfilesBehaviours::GProfilesBehaviour::AddModifiedProfile(GSubProfile* s)
 {
-	ModifiedProfs->InsertPtr(s);
+	if(Manager->GetMemory())
+	{
+		if(!ModifiedProfs->GetPtr(s))
+			ModifiedProfs->InsertPtr(s);
+	}
 }
 
 
