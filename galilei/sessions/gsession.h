@@ -192,6 +192,11 @@ protected:
 	*/
 	double MinStopWords;
 
+	/**
+	* Minimum number of characters to have a valid word.
+	*/
+	unsigned int MinWordSize;
+
 public:
 
 	/**
@@ -382,6 +387,18 @@ public:
 		* @param min        Minimal Percentage.
 		*/
 		void SetMinStopWords(double min) {MinStopWords=min;}
+
+		/**
+		* Get the minimum size of a word.
+		* @returns unsigned int.
+		*/
+		unsigned int GetMinWordSize(void) const {return(MinWordSize);}
+
+		/**
+		* Set the minimum size of a word.
+		* @param min        Minimal size.
+		*/
+		void SetMinWordSize(unsigned int min) {MinWordSize=min;}
 
 		/**
 		* Load the documents.
