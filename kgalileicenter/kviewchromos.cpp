@@ -162,28 +162,9 @@ public:
 	double E05;
 	double E15;
 	double Global;
-	double J;
-	double AvgSim;
-	double AvgRatio;
-	double MinRatio;
-	double Ratio;
-	double WOverB;
-	double SimWB;
-	double Fitness;
-	double CritSim;
-	double CritInfo;
-	double CritSame;
-	double CritDiff;
-	double CritSocial;
-	double FiPlus;
-	double FiMinus;
-	double Fi;
-	unsigned int NbGroups;
 
-	Stat(GChromoIR* c) : Chromo(c), Id(NullId), Precision(0.0), Recall(0.0), E1(0.0), E05(0.0), E15(0.0), Global(0.0), J(0.0), AvgSim(0.0),
-		AvgRatio(0.0), MinRatio(0.0), Ratio(0.0), WOverB(0.0), SimWB(0.0), Fitness(0.0),
-		CritSim(0.0), CritInfo(0.0), CritSame(0.0), CritDiff(0.0), CritSocial(0.0),
-		FiPlus(0.0), FiMinus(0.0), Fi(0.0) {}
+	Stat(GChromoIR* c) : Chromo(c), Id(NullId), Precision(0.0), Recall(0.0),
+	                     E1(0.0), E05(0.0), E15(0.0), Global(0.0) {}
 	int Compare(const Stat&) {return(-1);}
 	int Compare(const Stat*) {return(-1);}
 };
@@ -199,7 +180,7 @@ public:
 //-----------------------------------------------------------------------------
 KViewChromos::KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), IdealGroups(2,1), Lang(Doc->GetSession()->GetLang(l)),
-	 Sim(sim), Stats(50,25), Params(p)
+	 Sim(sim), Stats(50,25), Params(p), Instance(0)
 {
 	// Construct chromosomes
 	General = new QListViewChromos(this);
@@ -217,9 +198,9 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget
 		General->addColumn("AvgRatio");
 		General->addColumn("MinRatio");
 		General->addColumn("Ratio");
-		General->addColumn("W Over B");
-		General->addColumn("Sim WB");
-		General->addColumn("Nb Groups");
+		General->addColumn("WOverB");
+		General->addColumn("SimWB");
+		General->addColumn("NbGrps");
 		for(int i=0;i<15;i++)
 		{
 			General->setColumnWidthMode(i,QListView::Maximum);
@@ -229,6 +210,7 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget
 	}
 	else
 	{
+		unsigned NbCols=8;
 		General->addColumn("Id");
 		General->addColumn("Precision");
 		General->addColumn("Recall");
@@ -237,16 +219,81 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget
 		General->addColumn("E15");
 		General->addColumn("Global");
 		General->addColumn("Ranking");
-		General->addColumn("CritSim");
-		General->addColumn("CritInfo");
-		General->addColumn("CritSame");
-		General->addColumn("CritDiff");
-		General->addColumn("CritSocial");
+
+		if(Params->SimMeasures==sctCorl)
+		{
+			General->addColumn("CritSim");
+			NbCols++;
+		}
+		else
+		{
+			if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
+			{
+				General->addColumn("CritAvgSim");
+				NbCols++;
+			}
+			if(Params->Measures.GetPtr<const char*>("J")->Use)
+			{
+				General->addColumn("CritJ");
+				NbCols++;
+			}
+			if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
+			{
+				General->addColumn("CritAvgRatio");
+				NbCols++;
+			}
+			if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
+			{
+				General->addColumn("CritMinRatio");
+				NbCols++;
+			}
+			if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
+			{
+				General->addColumn("CritRatio");
+				NbCols++;
+			}
+			if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
+			{
+				General->addColumn("CritWoverB");
+				NbCols++;
+			}
+			if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
+			{
+				General->addColumn("CritSimWB");
+				NbCols++;
+			}
+		}
+		if(Params->ParamsInfo.Weight)
+		{
+			General->addColumn("CritInfo");
+			NbCols++;
+		}
+		if(Params->ParamsEntropy.Weight)
+		{
+			General->addColumn("CritEntropy");
+			NbCols++;
+		}
+		if(Params->ParamsSameFeedbacks.Weight)
+		{
+			General->addColumn("CritSame");
+			NbCols++;
+		}
+		if(Params->ParamsDiffFeedbacks.Weight)
+		{
+			General->addColumn("CritDiff");
+			NbCols++;
+		}
+		if(Params->ParamsSocial.Weight)
+		{
+			General->addColumn("CritSocial");
+			NbCols++;
+		}
 		General->addColumn("Fi+");
 		General->addColumn("Fi-");
 		General->addColumn("Fi");
 		General->addColumn("Nb Groups");
-		for(int i=0;i<17;i++)
+		NbCols+=4;
+		for(unsigned int i=0;i<NbCols;i++)
 		{
 			General->setColumnWidthMode(i,QListView::Maximum);
 			General->setColumnAlignment(i,Qt::AlignHCenter);
@@ -273,7 +320,6 @@ void KViewChromos::ConstructChromosomesSim(void)
 	unsigned int i;
 	QListViewItem* g;
 	char tmp[50];
-	GInstIR* Instance;
 	GSubProfileCursor Cur=Doc->GetSession()->GetSubProfilesCursor(Lang);
 	RObjs<GObjIR> Objs(Cur.GetNb());
 	RContainer<GSubProfile,unsigned int,false,true> SubProfiles(Cur.GetNb(),50);
@@ -347,48 +393,39 @@ void KViewChromos::ConstructChromosomesSim(void)
 		sprintf(tmp,"%f",c->GetGlobal());
 		g->setText(6,tmp);
 
-		c->EvaluateAvgSim();
-		s->AvgSim=c->GetSimCriterion();
-		sprintf(tmp,"%f",c->GetSimCriterion());
+		c->EvaluateSim(stAvgSim);
+		sprintf(tmp,"%f",c->GetSimAvgSim());
 		g->setText(7,tmp);
 
-		c->EvaluateJ();
-		s->J=c->GetSimCriterion();
-		sprintf(tmp,"%f",c->GetSimCriterion());
+		c->EvaluateSim(stJ);
+		sprintf(tmp,"%f",c->GetSimJ());
 		g->setText(8,tmp);
 
-		c->EvaluateAvgRatio();
-		s->AvgRatio=c->GetSimCriterion();
-		sprintf(tmp,"%f",c->GetSimCriterion());
+		c->EvaluateSim(stAvgRatio);
+		sprintf(tmp,"%f",c->GetSimAvgRatio());
 		g->setText(9,tmp);
 
-		c->EvaluateMinRatio();
-		s->MinRatio=c->GetSimCriterion();
-		sprintf(tmp,"%f",c->GetSimCriterion());
+		c->EvaluateSim(stMinRatio);
+		sprintf(tmp,"%f",c->GetSimMinRatio());
 		g->setText(10,tmp);
 
-		c->EvaluateRatio();
-		s->Ratio=c->GetSimCriterion();
-		sprintf(tmp,"%f",c->GetSimCriterion());
+		c->EvaluateSim(stRatio);
+		sprintf(tmp,"%f",c->GetSimRatio());
 		g->setText(11,tmp);
 
-		c->EvaluateWOverB();
-		s->WOverB=c->GetSimCriterion();
-		sprintf(tmp,"%f",c->GetSimCriterion());
+		c->EvaluateSim(stWOverB);
+		sprintf(tmp,"%f",c->GetSimWOverB());
 		g->setText(12,tmp);
 
-		c->EvaluateSimWB();
-		s->SimWB=c->GetSimCriterion();
-		sprintf(tmp,"%f",c->GetSimCriterion());
+		c->EvaluateSim(stSimWB);
+		sprintf(tmp,"%f",c->GetSimSimWB());
 		g->setText(13,tmp);
 
-		s->NbGroups=c->Used.NbPtr;
 		sprintf(tmp,"%u",c->Used.NbPtr);
 		g->setText(14,tmp);
 	}
 
 	// Finish.
-	delete Instance;
 	d->Finish();
 }
 
@@ -400,12 +437,12 @@ void KViewChromos::ConstructChromosomesRanking(void)
 	unsigned int i;
 	QListViewItem* g;
 	char tmp[50];
-	GInstIR* Instance;
 	GSubProfileCursor Cur=Doc->GetSession()->GetSubProfilesCursor(Lang);
 	RObjs<GObjIR> Objs(Cur.GetNb());
 	RContainer<GSubProfile,unsigned int,false,true> SubProfiles(Cur.GetNb(),50);
 	Stat* s;
 	GSubProfile* sub;
+	unsigned int NbCols;
 
 	// Initialise the dialog box
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
@@ -478,41 +515,88 @@ void KViewChromos::ConstructChromosomesRanking(void)
 		s->Global=c->GetGlobal();
 		sprintf(tmp,"%f",c->GetGlobal());
 		g->setText(6,tmp);
-
-		s->Fitness=c->Fitness->Value;
 		sprintf(tmp,"%f",c->Fitness->Value);
 		g->setText(7,tmp);
-		s->CritSim=c->GetSimCriterion();
-		sprintf(tmp,"%f",c->GetSimCriterion());
-		g->setText(8,tmp);
-		s->CritInfo=c->GetInfoCriterion();
-		sprintf(tmp,"%f",c->GetInfoCriterion());
-		g->setText(9,tmp);
-		s->CritSame=c->GetSameFeedbacksCriterion();
-		sprintf(tmp,"%f",c->GetSameFeedbacksCriterion());
-		g->setText(10,tmp);
-		s->CritDiff=c->GetDiffFeedbacksCriterion();
-		sprintf(tmp,"%f",c->GetDiffFeedbacksCriterion());
-		g->setText(11,tmp);
-		s->CritSocial=c->GetSocialCriterion();
-		sprintf(tmp,"%f",c->GetSocialCriterion());
-		g->setText(12,tmp);
-		s->FiPlus=c->GetFiPlus();
+		NbCols=8;
+		if(Params->SimMeasures==sctCorl)
+		{
+			sprintf(tmp,"%f",c->GetSimCriterion());
+			g->setText(NbCols++,tmp);
+		}
+		else
+		{
+			if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
+			{
+				sprintf(tmp,"%f",c->GetSimAvgSim());
+				g->setText(NbCols++,tmp);
+			}
+			if(Params->Measures.GetPtr<const char*>("J")->Use)
+			{
+				sprintf(tmp,"%f",c->GetSimJ());
+				g->setText(NbCols++,tmp);
+			}
+			if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
+			{
+				sprintf(tmp,"%f",c->GetSimAvgRatio());
+				g->setText(NbCols++,tmp);
+			}
+			if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
+			{
+				sprintf(tmp,"%f",c->GetSimMinRatio());
+				g->setText(NbCols++,tmp);
+			}
+			if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
+			{
+				sprintf(tmp,"%f",c->GetSimRatio());
+				g->setText(NbCols++,tmp);
+			}
+			if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
+			{
+				sprintf(tmp,"%f",c->GetSimWOverB());
+				g->setText(NbCols++,tmp);
+			}
+			if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
+			{
+				sprintf(tmp,"%f",c->GetSimSimWB());
+				g->setText(NbCols++,tmp);
+			}
+		}
+		if(Params->ParamsInfo.Weight)
+		{
+			sprintf(tmp,"%f",c->GetInfoCriterion());
+			g->setText(NbCols++,tmp);
+		}
+		if(Params->ParamsEntropy.Weight)
+		{
+			sprintf(tmp,"%f",c->GetEntropyCriterion());
+			g->setText(NbCols++,tmp);
+		}
+		if(Params->ParamsSameFeedbacks.Weight)
+		{
+			sprintf(tmp,"%f",c->GetSameFeedbacksCriterion());
+			g->setText(NbCols++,tmp);
+		}
+		if(Params->ParamsDiffFeedbacks.Weight)
+		{
+			sprintf(tmp,"%f",c->GetDiffFeedbacksCriterion());
+			g->setText(NbCols++,tmp);
+		}
+		if(Params->ParamsSocial.Weight)
+		{
+			sprintf(tmp,"%f",c->GetSocialCriterion());
+			g->setText(NbCols++,tmp);
+		}
 		sprintf(tmp,"%f",c->GetFiPlus());
-		g->setText(13,tmp);
-		s->FiMinus=c->GetFiMinus();
+		g->setText(NbCols++,tmp);
 		sprintf(tmp,"%f",c->GetFiMinus());
-		g->setText(14,tmp);
-		s->Fi=c->GetFi();
+		g->setText(NbCols++,tmp);
 		sprintf(tmp,"%f",c->GetFi());
-		g->setText(15,tmp);
-		s->NbGroups=c->Used.NbPtr;
+		g->setText(NbCols++,tmp);
 		sprintf(tmp,"%u",c->Used.NbPtr);
-		g->setText(16,tmp);
+		g->setText(NbCols,tmp);
 	}
 
 	// Finish.
-	delete Instance;
 	d->Finish();
 }
 
@@ -553,27 +637,102 @@ void KViewChromos::slotMenu(int)
 	}
 	RTextFile Res(url.path().latin1(),RIO::Create);
 	Res.SetSeparator("\t");
+	
 	Res<<"Id"<<"Precision"<<"Recall"<<"E05"<<"E1"<<"E15"<<"Global";
 	if(Sim)
 		Res<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"WOverB"<<"SimWB";
 	else
-		Res<<"Ranking"<<"CritSim"<<"CritInfo"<<"CritSame"<<"CritDiff"<<"CritSocial"<<"Fi+"<<"Fi-"<<"Fi";
+	{
+		Res<<"Ranking";
+		if(Params->SimMeasures==sctCorl)
+			Res<<"CritSim";
+		else
+		{
+			if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
+				Res<<"CritAvgSim";
+			if(Params->Measures.GetPtr<const char*>("J")->Use)
+				Res<<"CritJ";
+			if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
+				Res<<"CritAvgRatio";
+			if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
+				Res<<"CritMinRatio";
+			if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
+				Res<<"CritRatio";
+			if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
+				Res<<"CritWOverB";
+			if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
+				Res<<"CritSimWB";
+		}
+		if(Params->ParamsInfo.Weight)
+			Res<<"CritInfo";
+		if(Params->ParamsEntropy.Weight)
+			Res<<"CritEntropy";
+		if(Params->ParamsSameFeedbacks.Weight)
+			Res<<"CritSame";
+		if(Params->ParamsDiffFeedbacks.Weight)
+			Res<<"CritDiff";
+		if(Params->ParamsSocial.Weight)
+			Res<<"CritSocial";
+		Res<<"Fi+"<<"Fi-"<<"Fi";
+	}
 	Res<<"NbGroups"<<endl;
 	Cur.Set(Stats);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Res<<Cur()->Id<<Cur()->Precision<<Cur()->Recall<<Cur()->E05<<Cur()->E1<<Cur()->E15<<Cur()->Global;
+		Res<<Cur()->Id;
+		Res<<Cur()->Precision;
+		Res<<Cur()->Recall;
+		Res<<Cur()->E05;
+		Res<<Cur()->E1;
+		Res<<Cur()->E15;
+		Res<<Cur()->Global;
 		if(Sim)
 		{
-			Res<<Cur()->AvgSim<<Cur()->J<<Cur()->AvgRatio<<Cur()->MinRatio;
-			Res<<Cur()->Ratio<<Cur()->WOverB<<Cur()->SimWB;
+			Res<<Cur()->Chromo->GetSimAvgSim();
+			Res<<Cur()->Chromo->GetSimJ();
+			Res<<Cur()->Chromo->GetSimAvgRatio();
+			Res<<Cur()->Chromo->GetSimMinRatio();
+			Res<<Cur()->Chromo->GetSimRatio();
+			Res<<Cur()->Chromo->GetSimWOverB();
+			Res<<Cur()->Chromo->GetSimSimWB();
 		}
 		else
 		{
-			Res<<Cur()->Fitness<<Cur()->CritSim<<Cur()->CritInfo<<Cur()->CritSame<<Cur()->CritDiff;
-			Res<<Cur()->CritSocial<<Cur()->FiPlus<<Cur()->FiMinus<<Cur()->Fi;
+			Res<<Cur()->Chromo->Fitness->Value;
+			if(Params->SimMeasures==sctCorl)
+				Res<<Cur()->Chromo->GetSimCriterion();
+			else
+			{
+				if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
+					Res<<Cur()->Chromo->GetSimAvgSim();
+				if(Params->Measures.GetPtr<const char*>("J")->Use)
+					Res<<Cur()->Chromo->GetSimJ();
+				if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
+					Res<<Cur()->Chromo->GetSimAvgRatio();
+				if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
+					Res<<Cur()->Chromo->GetSimMinRatio();
+				if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
+					Res<<Cur()->Chromo->GetSimRatio();
+				if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
+					Res<<Cur()->Chromo->GetSimWOverB();
+				if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
+					Res<<Cur()->Chromo->GetSimSimWB();
+			}
+			if(Params->ParamsInfo.Weight)
+				Res<<Cur()->Chromo->GetInfoCriterion();
+			if(Params->ParamsEntropy.Weight)
+				Res<<Cur()->Chromo->GetEntropyCriterion();
+			if(Params->ParamsSameFeedbacks.Weight)
+				Res<<Cur()->Chromo->GetSameFeedbacksCriterion();
+			if(Params->ParamsDiffFeedbacks.Weight)
+				Res<<Cur()->Chromo->GetDiffFeedbacksCriterion();
+			if(Params->ParamsSocial.Weight)
+				Res<<Cur()->Chromo->GetSocialCriterion();
+			Res<<Cur()->Chromo->GetFiPlus();
+			Res<<Cur()->Chromo->GetFiMinus();
+			Res<<Cur()->Chromo->GetFi();
 		}
-		Res<<Cur()->NbGroups<<endl;
+		Res<<Cur()->Chromo->Used.NbPtr<<endl;
 	}
 }
 
@@ -581,4 +740,6 @@ void KViewChromos::slotMenu(int)
 //-----------------------------------------------------------------------------
 KViewChromos::~KViewChromos(void)
 {
+	if(Instance)
+		delete Instance;
 }

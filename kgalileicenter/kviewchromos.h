@@ -113,6 +113,11 @@ class KViewChromos : public KView
 	*/
 	GIRParams* Params;
 
+	/**
+	* Instance of the GA used to study the chromosomes.
+	*/
+	GInstIR* Instance;
+
 public:
 
 	/**
