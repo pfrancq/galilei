@@ -30,12 +30,20 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gsessionsmysql/gsessionmysql.h>
-#include <gprofiles/guser.h>
-#include <gprofiles/gsubprofile.h>
-#include <ggroups/gsubprofileref.h>
 #include <glangs/glang.h>
 #include <ginfos/giwordlist.h>
+#include <ginfos/giwordoccur.h>
+#include <ginfos/giwordoccurs.h>
+#include <gprofiles/guser.h>
+#include <gprofiles/gprofile.h>
+#include <gprofiles/gsubprofile.h>
 #include <gprofiles/gprofdoc.h>
+#include <gdocs/gdoc.h>
+#include <gdocs/gdocs.h>
+#include <ggroups/ggroup.h>
+#include <ggroups/ggroups.h>
+#include <filters/gmimefilter.h>
+#include <urlmanagers/gurlmanager.h>
 using namespace GALILEI;
 using namespace RMySQL;
 using namespace RTimeDate;
@@ -55,7 +63,8 @@ const char GALILEI::GSessionMySQL::SQLNULL[5]="NULL";
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,GURLManager* mng) throw(bad_alloc,GException,RMySQLError)
-	: RDb(host,user,pwd,db), GSession(GetCount("htmls"),GetCount("users"),GetCount("profiles"),GetCount("htmlsbyprofiles"),mng)
+	: RDb(host,user,pwd,db),
+	  GSession(GetCount("htmls"),GetCount("users"),GetCount("profiles"),GetCount("htmlsbyprofiles"),GetCount("groups"),mng)
 {
 }
 

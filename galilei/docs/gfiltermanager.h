@@ -23,16 +23,13 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
+#include <rstd/rcontainer.h>
 #include <rstd/rstring.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gdocs/gdocxml.h>
-#include <gdocs/gdoc.h>
-#include <filters/gfilter.h>
-#include <filters/gmimefilter.h>
 
 
 
@@ -44,6 +41,10 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 // Forward class declaration
 class GSession;
+class GDoc;
+class GDocXML;
+class GFilter;
+class GMIMEFilter;
 
 
 //-----------------------------------------------------------------------------

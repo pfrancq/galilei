@@ -25,6 +25,9 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<ggroups/ggroups.h>
+#include <glangs/glang.h>
+#include <ggroups/ggroup.h>
+#include<gprofiles/gsubprofile.h>
 #include<gprofiles/gusers.h>
 #include<gsessions/gsession.h>
 using namespace GALILEI;
@@ -67,14 +70,14 @@ int GALILEI::GGroups::Compare(const GLang* lang) const
 //-----------------------------------------------------------------------------
 GGroup* GALILEI::GGroups::GetGroup(const GSubProfile* sub) const
 {
-	RContainerCursor<GGroup,unsigned int,true,false> cur(this);
-
-	for(cur.Start();!cur.End();cur.Next())
-	{
-		if(cur()->GetPtr<const GSubProfile*>(sub))
-			return(cur());
-	}
-	return(0);
+//	RContainerCursor<GGroup,unsigned int,true,false> cur(this);
+//
+//	for(cur.Start();!cur.End();cur.Next())
+//	{
+//		if(cur()->GetPtr<const GSubProfile*>(sub))
+//			return(cur());
+//	}
+	return(sub->GetGroup());
 }
 
 

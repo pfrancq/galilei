@@ -28,6 +28,8 @@
 #include <filters/gfilter.h>
 #include <filters/gfilteremail.h>
 #include <filters/gfilterhtml.h>
+#include <gdocs/gdocxml.h>
+#include <gdocs/gdoc.h>
 #include <gsessions/gsession.h>
 using namespace GALILEI;
 using namespace RStd;

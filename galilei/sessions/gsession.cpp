@@ -25,11 +25,21 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsessions/gsession.h>
-#include <gprofiles/guser.h>
-#include <gprofiles/gsubprofile.h>
-#include <ggroups/gsubprofileref.h>
 #include <glangs/glangen.h>
 #include <glangs/glangfr.h>
+#include <glangs/gdict.h>
+#include <gdocs/gdoc.h>
+#include <gdocs/gdocxml.h>
+#include <gprofiles/guser.h>
+#include <gprofiles/gprofile.h>
+#include <gprofiles/gsubprofile.h>
+#include <gprofiles/gprofdoc.h>
+#include <ggroups/ggroups.h>
+#include <ggroups/ggroup.h>
+#include <gprofiles/gprofilecalc.h>
+#include <urlmanagers/gurlmanager.h>
+#include <filters/gfilter.h>
+#include <filters/gmimefilter.h>
 using namespace GALILEI;
 
 
@@ -66,8 +76,8 @@ void GALILEI::GSessionSignalsReceiver::receiveNextProfile(const GProfile* prof)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,GURLManager* mng) throw(bad_alloc,GException)
-	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(2,5), Fdbks(f+f/2,f/2), SubProfileRefs(0), Profiles(0), SubProfiles(0), Mng(mng),
+GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException)
+	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(g+g/2,g/2), Fdbks(f+f/2,f/2), Profiles(0), SubProfiles(0), Mng(mng),
 	  bDics(false), bDocs(false), bUsers(false), bGroups(false),
 	  bFdbks(false), StaticLang(true)
 	
@@ -78,7 +88,6 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	Groups.InsertPtr(new GGroups(l));
 	Langs.InsertPtr(l=new GLangFR());
 	Groups.InsertPtr(new GGroups(l));
-	SubProfileRefs=new RContainer<GSubProfileRef,unsigned int,true,true>(p*2,p);
 	Profiles=new RContainer<GProfile,unsigned int,true,true>(p*2,p);
 	SubProfiles=new RContainer<GSubProfile,unsigned int,true,false>(p,p/2);
 }
@@ -303,10 +312,44 @@ GGroup* GALILEI::GSession::NewGroup( GLang* lang)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSession::FiltersStart(void)
+{
+	Mng->GetFilters()->Start();
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GSession::FiltersEnd(void) const
+{
+	return(Mng->GetFilters()->End());
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::FiltersNext(void)
+{
+	Mng->GetFilters()->Next();
+}
+
+
+//-----------------------------------------------------------------------------
+GFilter* GALILEI::GSession::GetCurFilters(void)
+{
+	return((*Mng->GetFilters())());
+}
+
+
+//-----------------------------------------------------------------------------
+GMIMEFilter* GALILEI::GSession::GetMIMEType(const char* mime) const
+{
+	return(Mng->GetMIMEType(mime));
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GSession::~GSession(void) throw(GException)
 {
 	if(Mng) delete Mng;
-	if(SubProfileRefs) delete SubProfileRefs;
 	if(SubProfiles) delete SubProfiles;
 	if(Profiles) delete Profiles;
 }

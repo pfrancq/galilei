@@ -31,6 +31,13 @@ using namespace RStd;
 // include files for GALILEI
 #include <gdocs/gdoc.h>
 #include <gdocs/gdocxml.h>
+#include <ginfos/giwordoccur.h>
+#include <ginfos/giwordoccurs.h>
+#include <glangs/gdict.h>
+#include <glangs/glang.h>
+#include <filters/gmimefilter.h>
+#include <gprofiles/gprofile.h>
+#include <gprofiles/gprofdoc.h>
 #include <gsessions/gsession.h>
 using namespace GALILEI;
 using namespace RXML;
@@ -46,7 +53,7 @@ using namespace RTimeDate;
 
 //-----------------------------------------------------------------------------
 GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int nb,unsigned int nbdiff,unsigned int nbf) throw(bad_alloc)
-	: URL(url), Name(name), Id(id), Words(nbdiff>600?nbdiff:600),NbWords(nb), NbDiffWords(nbdiff),
+	: URL(url), Name(name), Id(id), Words(0),NbWords(nb), NbDiffWords(nbdiff),
 	  Lang(lang), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2), Failed(f)
 {
 	if(Updated>Computed)
@@ -58,6 +65,7 @@ GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang
 	}
 	else
 		State=osUpToDate;
+	Words=new GIWordOccurs(nbdiff>600?nbdiff:600);
 }
 
 
@@ -198,7 +206,7 @@ void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw
 					stem=Lang->GetStemming(word);
 					if(stem.GetLen()>=2)
 					{
-						Occur=Words.GetPtr(dic->GetId(stem));
+						Occur=Words->GetPtr(dic->GetId(stem));
 						if(!Occur->GetNbOccurs()) NbDiffWords++;
 						Occur->IncOccurs();
 					}
@@ -256,7 +264,7 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	}
 
 	// Analyse it
-	Words.Clear();
+	Words->Clear();
 	NbWords=NbDiffWords=0;
 	AnalyseContentTag(content,stop,session->GetDic(Lang));
 
@@ -272,15 +280,75 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GDoc::AddWord(const unsigned int id,const unsigned int nb)
 {
-	Words.InsertPtr(new GIWordOccur(id,nb));
+	Words->InsertPtr(new GIWordOccur(id,nb));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::WordsStart(void)
+{
+	Words->Start();
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GDoc::WordsEnd(void) const
+{
+	return(Words->End());
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::WordsNext(void)
+{
+	Words->Next();
+}
+
+
+//-----------------------------------------------------------------------------
+GIWordOccur* GALILEI::GDoc::GetCurWords(void)
+{
+	return((*Words)());
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::ProfilesStart(void)
+{
+	Fdbks.Start();
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GDoc::ProfilesEnd(void) const
+{
+	return(Fdbks.End());
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::ProfilesNext(void)
+{
+	Fdbks.Next();
+}
+
+
+//-----------------------------------------------------------------------------
+GProfDoc* GALILEI::GDoc::GetCurProfiles(void)
+{
+	return(Fdbks());
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::AddJudgement(GProfDoc* j) throw(bad_alloc)
+{
+	Fdbks.InsertPtr(j);
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GDoc::~GDoc(void)
 {
+	if(Words) delete Words;
 }
-
-
-
-

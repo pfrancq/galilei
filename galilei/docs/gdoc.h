@@ -27,14 +27,10 @@
 #include <rxml/rxmltag.h>
 #include <rtimedate/rdate.h>
 
+
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <glangs/gdict.h>
-#include <ginfos/giwordoccurs.h>
-#include <glangs/glang.h>
-#include <filters/gmimefilter.h>
-#include <gprofiles/gprofdoc.h>
 
 
 
@@ -48,6 +44,12 @@ namespace GALILEI{
 class GDocXML;
 class GSession;
 class GDocs;
+class GIWordOccurs;
+class GIWordOccur;
+class GMIMEFilter;
+class GLang;
+class GProfDoc;
+class GDict;
 
 
 //-----------------------------------------------------------------------------
@@ -77,7 +79,7 @@ class GDoc
 	* Information about the words containted in the document. Actually, only
 	* the number of occurences of the words are used.
 	*/
-	GIWordOccurs Words;
+	GIWordOccurs* Words;
 
 	/**
 	* Total number of words.
@@ -306,58 +308,51 @@ public:
 	/**
 	* Start the iterator to go trough the word.
 	*/
-	inline void WordsStart(void)
-		{Words.Start();}
+	void WordsStart(void);
 
 	/**
 	* Test if the end of the container of words is reached.
 	*/
-	inline bool WordsEnd(void) const
-		{return(Words.End());}
+	bool WordsEnd(void) const;
 
 	/**
 	* Goto the next element, if the end is reached, go to the beginning.
 	*/
-	inline void WordsNext(void)
-		{Words.Next();}
+	void WordsNext(void);
 
 	/**
 	* Get the current word.
 	* @returns Pointer to the current word.
 	*/
-	GIWordOccur* GetCurWords(void) {return(Words());}
+	GIWordOccur* GetCurWords(void);
 
 	/**
 	* Start the iterator to go trough the profiles judging the document.
 	*/
-	inline void ProfilesStart(void)
-		{Fdbks.Start();}
+	void ProfilesStart(void);
 
 	/**
 	* Test if the end of the container of profiles judging the document is
 	* reached.
 	*/
-	inline bool ProfilesEnd(void) const
-		{return(Fdbks.End());}
+	bool ProfilesEnd(void) const;
 
 	/**
 	* Goto the next element, if the end is reached, go to the beginning.
 	*/
-	inline void ProfilesNext(void)
-		{Fdbks.Next();}
+	void ProfilesNext(void);
 
 	/**
 	* Get the current profile judging the document.
 	* @returns Pointer to the current profile.
 	*/
-	GProfDoc* GetCurProfiles(void) {return(Fdbks());}
+	GProfDoc* GetCurProfiles(void);
 
 	/**
 	* Add a judgement for this document.
 	* @param j              Judgement.
 	*/
-	void AddJudgement(GProfDoc* j) throw(bad_alloc)
-		{ Fdbks.InsertPtr(j); }
+	void AddJudgement(GProfDoc* j) throw(bad_alloc);
 
 	/**
 	* Destruct the document.

@@ -32,10 +32,7 @@
 #include <glangs/glangs.h>
 #include <glangs/gdicts.h>
 #include <gprofiles/gusers.h>
-#include <gprofiles/gprofilecalc.h>
-#include <ggroups/ggroups.h>
 #include <gdocs/gdocs.h>
-#include <urlmanagers/gurlmanager.h>
 
 
 
@@ -46,10 +43,20 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 // forward class declaration
-class GFilter;
-class GSubProfileRef;
-class GSubProfile;
+class GLang;
+class GDict;
+class GDoc;
+class GDocXML;
+class GUser;
 class GProfile;
+class GProfDoc;
+class GSubProfile;
+class GGroup;
+class GGroups;
+class GProfileCalc;
+class GFilter;
+class GMIMEFilter;
+class GURLManager;
 
 
 //-----------------------------------------------------------------------------
@@ -127,11 +134,6 @@ protected:
 	RContainer<GProfDoc,unsigned,true,true> Fdbks;
 
 	/**
-	* SubProfiles References handled by the system.
-	*/
-	RStd::RContainer<GSubProfileRef,unsigned int,true,true>* SubProfileRefs;
-
-	/**
 	* SubProfiles handled by the system.
 	*/
 	RStd::RContainer<GProfile,unsigned int,true,true>* Profiles;
@@ -184,9 +186,10 @@ public:
 	* @param u              Number of users.
 	* @param p              Number of profiles.
 	* @param f              Number of feedbacks.
+	* @param g              Number of groups.
 	* @param mng            URL Manager.
 	*/
-	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,GURLManager* mng) throw(bad_alloc,GException);
+	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException);
 
 	/**
 	* @name Method for Languages.
@@ -537,33 +540,30 @@ public:
 		/**
 		* Start the iterator to go trough the filters.
 		*/
-		inline void FiltersStart(void)
-			{Mng->GetFilters()->Start();}
+		void FiltersStart(void);
 
 		/**
 		* Test if the end of the container of filters is reached.
 		*/
-		inline bool FiltersEnd(void) const
-			{return(Mng->GetFilters()->End());}
+		bool FiltersEnd(void) const;
 
 		/**
 		* Goto the next element, if the end is reached, go to the beginning.
 		*/
-		inline void FiltersNext(void)
-			{Mng->GetFilters()->Next();}
+		void FiltersNext(void);
 
 		/**
 		* Get the current filter.
 		* @returns Pointer to the current filter.
 		*/
-		GFilter* GetCurFilters(void) {return((*Mng->GetFilters())());}
+		GFilter* GetCurFilters(void);
 
 		/**
 		* Get the filter for a specific mime type.
 		* @param mime           Name of the mimetype.
 		* @return Pointer to a GMIMEFilter.
 		*/
-		GMIMEFilter* GetMIMEType(const char* mime) const {return(Mng->GetMIMEType(mime));}
+		GMIMEFilter* GetMIMEType(const char* mime) const;
 
 	//@}
 

@@ -28,12 +28,16 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gfilter.h>
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// forward class declaration
+class GFilter;
 
 
 //-----------------------------------------------------------------------------
@@ -78,7 +82,7 @@ public:
 	/**
 	* Compare function used by RContainer.
 	*/
-	int Compare(const RString& t) const;
+	int Compare(const RStd::RString& t) const;
 
 	/**
 	* Compare function used by RContainer.

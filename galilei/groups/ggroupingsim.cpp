@@ -25,7 +25,11 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<ggroups/ggroupingsim.h>
+#include<ggroups/ggroups.h>
+#include<ggroups/ggroup.h>
+#include<gprofiles/guser.h>
 #include<gprofiles/gsubprofile.h>
+#include<glangs/glang.h>
 #include<gsessions/gsession.h>
 using namespace GALILEI;
 
@@ -53,15 +57,15 @@ void GALILEI::GGroupingSim::Init(void) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 {
-	GSubProfileRef** s1;
-	GSubProfileRef** s2;
+	GSubProfile** s1;
+	GSubProfile** s2;
 	unsigned int i,j;
 
 	if(Full)
 	{
 		for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
 			for(s2=s1+1,j=i+1;--j;s2++)
-				if((*s1)->GetSubProfile()->Similarity((*s2)->GetSubProfile())<Level)
+				if((*s1)->Similarity(*s2)<Level)
 					return(false);
 		return(true);
 	}
@@ -69,7 +73,7 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 	{
 		for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
 			for(s2=s1+1,j=i+1;--j;s2++)
-				if((*s1)->GetSubProfile()->Similarity((*s2)->GetSubProfile())>=Level)
+				if((*s1)->Similarity(*s2)>=Level)
 					return(true);
 		return(false);
 	}
@@ -79,19 +83,19 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 //-----------------------------------------------------------------------------
 bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp,const GSubProfile* sub) const
 {
-	RContainerCursor<GSubProfileRef,unsigned int,true,true> cur(grp);
+	RContainerCursor<GSubProfile,unsigned int,false,false> cur(grp);
 
 	if(Full)
 	{
 		for(cur.Start();!cur.End();cur.Next())
-			if(cur()->GetSubProfile()->Similarity(sub)<Level)
+			if(cur()->Similarity(sub)<Level)
 				return(false);
 		return(true);
 	}
 	else
 	{
 		for(cur.Start();!cur.End();cur.Next())
-			if(cur()->GetSubProfile()->Similarity(sub)>=Level)
+			if(cur()->Similarity(sub)>=Level)
 				return(true);
 		return(false);
 	}
@@ -135,7 +139,7 @@ void GALILEI::GGroupingSim::Run(void)
 			Groups->InsertPtr(g=Session->NewGroup(Groups->GetLang()));
 
 		// Attach the subprofile to the group found/created.
-		g->InsertSubProfile(new GSubProfileRef(s));
+		g->InsertSubProfile(s);
 	}
 }
 

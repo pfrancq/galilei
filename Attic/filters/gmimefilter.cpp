@@ -19,6 +19,9 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <filters/gmimefilter.h>
+#include <filters/gfilter.h>
+using namespace GALILEI;
+using namespace RStd;
 
 
 

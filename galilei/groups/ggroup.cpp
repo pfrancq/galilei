@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <ggroups/ggroup.h>
+#include <gprofiles/gsubprofile.h>
 using namespace GALILEI;
 using namespace RStd;
 
@@ -32,7 +33,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroup::GGroup(GLang* lang) throw(bad_alloc)
-	: RContainer<GSubProfileRef,unsigned int,true,true>(20,10), Id(cNoRef),
+	: RContainer<GSubProfile,unsigned int,false,false>(20,10), Id(cNoRef),
 	  State(osCreated), Lang(lang)
 {
 }
@@ -40,7 +41,7 @@ GALILEI::GGroup::GGroup(GLang* lang) throw(bad_alloc)
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroup::GGroup(const unsigned int id,GLang* lang) throw(bad_alloc)
-	: RContainer<GSubProfileRef,unsigned int,true,true>(20,10), Id(id),
+	: RContainer<GSubProfile,unsigned int,false,false>(20,10), Id(id),
 	  State(osUpToDate), Lang(lang)
 {
 }
@@ -68,7 +69,7 @@ int GALILEI::GGroup::Compare(const GGroup* group) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroup::DeleteSubProfile(GSubProfileRef* sp)
+void GALILEI::GGroup::DeleteSubProfile(GSubProfile* sp)
 {
 	DeletePtr(sp);
 	State=osUpdated;
@@ -76,7 +77,7 @@ void GALILEI::GGroup::DeleteSubProfile(GSubProfileRef* sp)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroup::InsertSubProfile(GSubProfileRef* sp)
+void GALILEI::GGroup::InsertSubProfile(GSubProfile* sp)
 {
 	InsertPtr(sp);
 	State=osUpdated;

@@ -29,7 +29,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <ggroups/gsubprofileref.h>
 
 
 
@@ -41,6 +40,7 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 // forward class declaration
 class GLang;
+class GSubProfile;
 
 
 //-----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ class GLang;
 * @author Pascal Francq
 * @short Group.
 */
-class GGroup : public RStd::RContainer<GSubProfileRef,unsigned int,true,true>
+class GGroup : public RStd::RContainer<GSubProfile,unsigned int,false,false>
 {
 	/**
 	* identifier
@@ -131,13 +131,13 @@ public:
 	* Delete a subprofile from the group.
 	* @param sp             SubProfile to delete.
 	*/
-	void DeleteSubProfile(GSubProfileRef* sp);
+	void DeleteSubProfile(GSubProfile* sp);
 
 	/**
 	* Insert a subprofile in the group.
 	* @param sp             SubProfile to insert.
 	*/
-	void InsertSubProfile(GSubProfileRef* sp);
+	void InsertSubProfile(GSubProfile* sp);
 };
 
 
