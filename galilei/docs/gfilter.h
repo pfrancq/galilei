@@ -215,14 +215,6 @@ extern "C"                                                                     \
 
 //------------------------------------------------------------------------------
 /**
-* The GFilterCursor class provides a way to go trough a set of filters.
-* @short Filters Cursor
-*/
-CLASSCURSOR(GFilterCursor,GFilter,unsigned int)
-
-
-//------------------------------------------------------------------------------
-/**
 * The GFactoryFilterCursor class provides a way to go trough a set of factories.
 * @short Filters Factories Cursor
 */

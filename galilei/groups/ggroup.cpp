@@ -236,22 +236,15 @@ void GALILEI::GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>
 				j=ptr->GetFdbk();
 				switch( j & djMaskJudg)
 				{
-					case djNav:
+					case djKO:
 						if(Fdbks()->GetFdbk() & djOK)
 						{
 							docs->DeletePtr(ptr);
 							docs->InsertPtr(Fdbks());
 						}
 						break;
-					case djKO:
-						if((Fdbks()->GetFdbk() & djOK)&&(Fdbks()->GetFdbk() & djNav))
-						{
-							docs->DeletePtr(ptr);
-							docs->InsertPtr(Fdbks());
-						}
-						break;
 					case djOutScope:
-						if((Fdbks()->GetFdbk() & djOK)&&(Fdbks()->GetFdbk() & djNav)&&(Fdbks()->GetFdbk() & djKO))
+						if((Fdbks()->GetFdbk() & djOK)&&(Fdbks()->GetFdbk() & djKO))
 						{
 							docs->DeletePtr(ptr);
 							docs->InsertPtr(Fdbks());
@@ -293,7 +286,7 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,fa
 
 			// If not -> insert it in docs if relevant.
 			j=Fdbks()->GetFdbk();
-			if((j & djNav)||(j & djOK))
+			if(j & djOK)
 			{
 				if(global)
 					Docs.InsertPtr(new GProfDocRef(Fdbks(),s->GlobalSimilarity(Fdbks()->GetDoc())));

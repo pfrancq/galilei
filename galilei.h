@@ -77,7 +77,6 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 // forward class declaration - Filter and Download Part
 class GFilter;
-class GFilterCursor;
 class GFactoryFilter;
 class GFactoryFilterCursor;
 class GURLManager;
@@ -97,7 +96,6 @@ class GIWordsWeightsHistory;
 //-----------------------------------------------------------------------------
 // forward class declaration - Language Part
 class GLang;
-class GLangCursor;
 class GFactoryLang;
 class GFactoryLangCursor;
 class GLangs;
@@ -146,7 +144,6 @@ class GFactoryLinkCalc;
 class GFactoryLinkCalcCursor;
 class GLink;
 class GLinkCalc;
-class GLinkCalcCursor;
 class GLinkCalcManager;
 class GLinkCursor;
 class GLinks;
@@ -168,7 +165,6 @@ class GSubProfileVector;
 class GProfDoc;
 class GProfDocCursor;
 class GProfileCalc;
-class GProfileCalcCursor;
 class GFactoryProfileCalc;
 class GFactoryProfileCalcCursor;
 class GProfileCalcManager;
@@ -189,12 +185,10 @@ class GGroupHistory;
 class GGroupCursor;
 class GGroupVector;
 class GGrouping;
-class GGroupingCursor;
 class GFactoryGrouping;
 class GFactoryGroupingCursor;
 class GGroupingManager;
 class GGroupCalc;
-class GGroupCalcCursor;
 class GFactoryGroupCalc;
 class GFactoryGroupCalcCursor;
 class GGroupCalcManager;
@@ -301,7 +295,6 @@ enum tDocJudgement
 	djUnknow=0                  /** Unknow judgement.*/,
 	djOK=1                      /** Document is relevant.*/,
 	djKO=2                      /** Document is fuzzy relevant.*/,
-	djNav=4                     /** Document is an interesting navigation document.*/,
 	djOutScope=8                /** Document is irrelevant.*/,
 	djHub=16                    /** Document is a Hub.*/,
 	djAutority=32               /** Document is an Autority.*/,

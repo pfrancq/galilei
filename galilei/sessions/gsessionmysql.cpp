@@ -615,9 +615,6 @@ void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
 			case 'O':
 				jug=djOK;
 				break;
-			case 'N':
-				jug=djNav;
-				break;
 			case 'K':
 				jug=djKO;
 				break;
@@ -764,9 +761,6 @@ void GALILEI::GSessionMySQL::SaveFdbks(void) throw(GException)
 		{
 			case djOK:
 				j[0]='O';
-				break;
-			case djNav:
-				j[0]='N';
 				break;
 			case djOutScope:
 				j[0]='H';
