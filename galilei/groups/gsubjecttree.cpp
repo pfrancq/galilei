@@ -93,7 +93,7 @@ void GSubjectTree::InsertProfiles(void)
 			{
 				GSubject* sub= (*subject)();
 				GUser* usr = new GUser(0,"test","test",1);
-				this->profiles->InsertPtr(new GProfile(usr,profid,(RString(subject->GetName())+"/"+sub->GetName()),0,0,1,1));
+				this->profiles->InsertPtr(new GProfile(usr,profid,(RString(subject->GetName())+"/"+sub->GetName()),true,0,0,1,1));
 				subid++;
 				subid++;
 				profid++;
@@ -129,22 +129,22 @@ void GSubjectTree::Judgments(GSession* ses,int ran)
 		for (int i=0; i<NbProfiles; i++)
 		{
 
-			//Chose a subsubject.
+			// Chose a subsubject.
 			int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
 			GSubject* sub1=subject->GetPtr(subthema);
 			sub1->setIsJudged(true);
 
-			//Create the judgement.
-			//First, find the profile who can judge the docs
+			// Create the judgement.
+			// First, find the profile who can judge the docs
 			int profid=(tab[sub1->GetId()-1])*nbrsububjects+sub1->GetId();
 			GProfile* proftemp = profiles->GetPtr(profid);
 			proftemp->SetState(osUpdated);
 			tab[sub1->GetId()-1]=tab[sub1->GetId()-1]+1;
 		
-			//Documents OK.
+			// Documents OK.
 			JudgeDocuments(profid,sub1,1,ses);
 
-			//Documents KO.
+			// Documents KO.
 			if (subject->NbPtr>1) //If the subsuject enables the KO judgement of documents.
 			{
 				int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
