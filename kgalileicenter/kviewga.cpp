@@ -149,10 +149,11 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* paren
 		else
 			Instance=new GInstIR(Doc->GetSession(),lang,MinSimLevel,MaxGen,PopSize,Doc->GetSession()->GetGroups(lang),Objs,global,Sims,static_cast<SimType>(t),Debug);
 		Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
-		Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
-		Instance->SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
-		Instance->SetCriterionParam("Diff Factor",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
-		Instance->SetCriterionParam("Social Factor",ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
+		Instance->SetCriterionParam("Information",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
+		Instance->SetCriterionParam("Same Feedbacks",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
+		Instance->SetCriterionParam("Diff Feedbacks",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
+		Instance->SetCriterionParam("Social",ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
+		Instance->SetMinRatios(MinCommonOK,MinCommonDiff);
 		Instance->AddReceiver(this);
 		Instance->Init(&g);
 		Instance->SetIdealGroups(&IdealGroups);
@@ -290,6 +291,7 @@ void KViewGA::SaveGA(void)
 
 	if(!Instance) return;
 
+	Doc->GetSession()->ClearStoredChromos();
 	for(i=0,c=Instance->Chromosomes;i<Instance->PopSize;i++,c++)
 		Doc->GetSession()->SaveChromo((*c),i,Objs);
 	Doc->GetSession()->SaveChromo(Instance->BestChromosome,Instance->PopSize,Objs);
