@@ -263,6 +263,8 @@ unsigned int GALILEI::GGroupingSupKMeans::Execute(bool doublekmeans)
 {
 	unsigned int iter;
 	unsigned int error;
+	GGroups* groups;
+	GGroup* group;
 
 	iter=0;
 	error=1;
@@ -275,11 +277,9 @@ unsigned int GALILEI::GGroupingSupKMeans::Execute(bool doublekmeans)
 
 		// execute the hard constraints kmeans
 		ReAllocate(true);
-//		DisplayGroups();
 		// error calculation and error calculation:
 		error=ReCenterCalcError(false);
 		if (Params->Debug) cout <<" erreur = "<<error<<endl;
-
 
 		// execute the standard kmeans
 		if (doublekmeans)
@@ -302,10 +302,20 @@ unsigned int GALILEI::GGroupingSupKMeans::Execute(bool doublekmeans)
 		cout <<"Clustering done in :"<<iter<< " loops"<<endl;
 		cout <<"Number of groups found = "<<Groups->NbPtr<<endl;
 		cout <<"**********************************"<<endl;
-	}
+	 }
 
 	if (Params->UsedAsInitialization)
-		FoundGroups->InsertPtr(Groups);
+	{
+		groups= new GGroups (Groups->GetLang());
+		for (Groups->Start(); !Groups->End(); Groups->Next())
+		{
+			group=new GGroupVector((*Groups)()->GetId(),Groups->GetLang()) ;
+			for ((*Groups)()->Start(); !(*Groups)()->End(); (*Groups)()->Next())
+				group->InsertPtr((*(*Groups)())());
+			groups->InsertPtr(group);
+		}
+		FoundGroups->InsertPtr(groups);
+	}	
 
 	return(iter);
 
@@ -600,6 +610,7 @@ GGroup* GALILEI::GGroupingSupKMeans::ClosestGroup(GSubProfile* subprof, bool har
 	else return(closestGroup);
 }
 
+
 //-----------------------------------------------------------------------------
 double GALILEI::GGroupingSupKMeans::Distance(GGroup* g, GSubProfile* sub, bool hardconstraint)
 {
@@ -666,7 +677,7 @@ void GALILEI::GGroupingSupKMeans::SetConstraintsFromSamples(unsigned int** cor)
 	GGroups* sample;
 	GGroup* group;
 	GSubProfile **sub1, **sub2;
-	unsigned int**matrix, i,j, id1,id2;
+	unsigned int**matrix, i, j, k, id1,id2;
 	bool added;
 
 	HardConstraints->Clear();
@@ -692,12 +703,12 @@ void GALILEI::GGroupingSupKMeans::SetConstraintsFromSamples(unsigned int** cor)
 				{
 					id1=(*sub1)->GetId();
 					id2=(*sub2)->GetId();
-					for (j=0; j<SubProfiles.NbPtr;j++)
+					for (k=0; k<SubProfiles.NbPtr;k++)
 					{
-						if(cor[j][1]==id1)
-							id1=cor[j][0];
-						if(cor[j][1]==id2)
-							id2=cor[j][0];
+						if(cor[k][1]==id1)
+							id1=cor[k][0];
+						if(cor[k][1]==id2)
+							id2=cor[k][0];
 					}
 					if(id1<id2) matrix[id1][id2]+=1;
 					else  matrix[id2][id1]+=1;
