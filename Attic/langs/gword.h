@@ -120,12 +120,12 @@ public:
 	/**
 	* @return Identificator of the word.
 	*/
-	unsigned int GetId(void) {return(Id);}
+	unsigned int GetId(void) const {return(Id);}
 
 	/**
 	* @return A C string representing the word.
 	*/
-	const char* GetWord(void) {return(Word);}
+	const char* GetWord(void) const {return(Word);}
 
 	// friend classes
 	friend class GDict;
