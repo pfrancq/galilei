@@ -84,10 +84,11 @@ public:
 	char Word[MaxWordLen+1];
 	bool* InStop;
 	unsigned int Nb;
+	double Weight;
 	bool OnlyLetters;
 
 	WordWeight(unsigned int nb) throw(bad_alloc);
-	inline void Clear(void) {(*Word)=0; Nb=0;}
+	inline void Clear(void) {(*Word)=0; Nb=0; Weight=0.0;}
 
 	int Compare(const WordWeight& word) const
 		{return(strcmp(Word,word.Word));}
@@ -196,7 +197,7 @@ void GALILEI::GDocAnalyse::VerifyDirect(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
+void GALILEI::GDocAnalyse::AddWord(const char* word,double weight) throw(bad_alloc)
 {
 	bool Find;
 	unsigned int Index;
@@ -271,11 +272,12 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 	}
 	N++;
 	w->Nb++;
+	w->Weight+=weight;
 }
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GDocAnalyse::ExtractWord(const char* &ptr,RString& word)
+bool GALILEI::GDocAnalyse::ExtractWord(const char* &ptr,RString& word,double weight)
 {
 	unsigned len;
 	const char* begin;
@@ -343,13 +345,13 @@ BeginExtract:
 	if(len>MaxWordLen) len=MaxWordLen;
 	word.Copy(begin,len);
 	word.StrLwr();
-	AddWord(word());
+	AddWord(word(),weight);
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag) throw(GException)
+void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
 {
 	const char* ptr;
 	RString word(50);
@@ -358,12 +360,12 @@ void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag) throw(GException)
 	{
 		ptr=tag->GetContent();
 		while(*ptr)
-			ExtractWord(ptr,word);
+			ExtractWord(ptr,word,weight);
 	}
 	else
 	{
 		for(tag->Start();!tag->End();tag->Next())
-			AnalyseTag((*tag)());
+			AnalyseTag((*tag)(),weight);
 	}
 }
 
@@ -426,7 +428,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 			if(!Occur->GetWeight())
 				Vdiff++;
 			V+=(*wrd)->Nb;
-			Occur->AddWeight((*wrd)->Nb);
+			Occur->AddWeight((*wrd)->Weight);
 		}
 	}
 
@@ -449,6 +451,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 {
 	RXMLTag* content;
+	RXMLTag* metadata;
 
 	// Init Part and verification
 	if(!xml)
@@ -457,6 +460,8 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 	FindLang=((!Lang)||(!Options->StaticLang));
 	content=xml->GetContent();
 	RAssert(content);
+	metadata=xml->GetMetaData();
+	RAssert(metadata);
 	Doc=dynamic_cast<GDocVector*>(doc);
 
 	// Analyse the doc structure.
@@ -467,7 +472,8 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 		// if Language defined -> Compute LangIndex
 		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
 	}
-	AnalyseTag(content);
+	AnalyseTag(metadata,2.0);
+	AnalyseTag(content,1.0);
 
 	// Determine the Language if necessary.
 	if(FindLang)
@@ -499,7 +505,7 @@ void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
 	Clear();
 
 	// Analyse the doc structure.
-	AnalyseTag(content);
+	AnalyseTag(content,1.0);
 
 	// Compute everything for current structure.
 	DetermineLang();
