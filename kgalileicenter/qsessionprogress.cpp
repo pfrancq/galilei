@@ -335,6 +335,13 @@ void QFillDB::DoIt(void)
 	
 	Parent->PutText("Find documents and fill categories");
 
+	//Find ID of last inserted document
+	sSql="SELECT count(*) FROM htmls";
+	RQuery nbDoc(Db,sSql);
+	nbDoc.Start();
+	if((!nbDoc.End())&&(nbDoc[0]))
+		CurrentDocId=atoi(nbDoc[0]);
+	
 	//Parse directory containing files
 	dp=opendir(CatDirectory);
 	if(dp)
@@ -452,14 +459,20 @@ void QFillDB::ParseDocDir(RString path,int parentId, int level)
 				mime=FilterManager->GFilterManager::DetermineMIMEType(newPath.Latin1());
 				if(!mime.IsEmpty())
 				{
-					//Insert doc in htmls
-					sSql="INSERT INTO htmls SET html='"+newPath+"',updated='2004-01-01',mimetype='"+mime+"',title='"+newPath+"'";
-					RQuery insert(Db,sSql);
-					CurrentDocId++;
+					sSql="SELECT * FROM htmls WHERE html='"+newPath+"'";
+					RQuery allReadyExists(Db,sSql);
+					allReadyExists.Start();
+					if(allReadyExists.End())
+					{
+						//Insert doc in htmls
+						sSql="INSERT INTO htmls SET html='"+newPath+"',updated='2004-01-01',mimetype='"+mime+"',title='"+newPath+"'";
+						RQuery insert(Db,sSql);
+						CurrentDocId++;
 					
-					//Insert docid and topicid in htmlsbytopics
-					sSql="INSERT INTO topicsbyhtmls SET topicid="+itou(parentId)+",htmlid="+itou(CurrentDocId);
-					RQuery insert2(Db,sSql);
+						//Insert docid and topicid in htmlsbytopics
+						sSql="INSERT INTO topicsbyhtmls SET topicid="+itou(parentId)+",htmlid="+itou(CurrentDocId);
+						RQuery insert2(Db,sSql);
+					}
 				}
 			}
 		}
