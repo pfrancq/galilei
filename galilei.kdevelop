@@ -70,7 +70,7 @@
     </groups>
     <tree>
       <hidenonprojectfiles>false</hidenonprojectfiles>
-      <hidepatterns></hidepatterns>
+      <hidepatterns>*.o,*.lo,CVS</hidepatterns>
       <showvcsfields>false</showvcsfields>
     </tree>
   </kdevfileview>

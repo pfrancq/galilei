@@ -52,14 +52,6 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupHistoryCursor class provides a way to go trough a set of GGroupHistory.
-* @short GroupHistory Cursor
-*/
-CLASSCURSOR(GGroupHistoryCursor,GGroupHistory,unsigned int)
-
-
-//-----------------------------------------------------------------------------
-/**
 * This class represent a historic group of sub-profiles. In fact, it is
 *  implemented as aa  container of GSubProfile.
 * @author David Wartel
@@ -189,6 +181,14 @@ public:
 	*/
 	~GGroupHistory(void);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GGroupHistoryCursor class provides a way to go trough a set of GGroupHistory.
+* @short GroupHistory Cursor
+*/
+CLASSCURSOR(GGroupHistoryCursor,GGroupHistory,unsigned int)
 
 
 

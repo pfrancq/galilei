@@ -4,9 +4,9 @@
 
 	GDocAnalyse.cpp
 
-	Analyse a document - Implementation.
+	AGeneric Document Analysis - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,66 +34,61 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdocanalyse.h>
 #include <docs/gdocvector.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
-
 using namespace R;
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Constance
 const unsigned int MaxWordLen=50;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GDocAnalyse
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GDocAnalyse::GDocAnalyse(GFactoryDocAnalyse* fac) throw(bad_alloc)
-	: GPlugin<GFactoryDocAnalyse>(fac), Session(0)
+	: GPlugin<GFactoryDocAnalyse>(fac), Session(0), Doc(0)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-void GDocAnalyse::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GDocAnalyse::Connect(GSession* session) throw(GException)
 {
 	Session=session;
 }
 
 
-//-----------------------------------------------------------------------------
-void GDocAnalyse::Disconnect(GSession*)
+//------------------------------------------------------------------------------
+void GDocAnalyse::Disconnect(GSession*) throw(GException)
 {
 	Session=0;
 }
 
 
-//-----------------------------------------------------------------------------
-void GDocAnalyse::Analyse(GDocXML*,GDoc* doc,R::RContainer<GDoc,unsigned int,false,true>*) throw(GException)
-{
-	Doc= dynamic_cast<GDocVector*>(doc) ;
-}
-
-
-//-----------------------------------------------------------------------------
-void GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang)
+//------------------------------------------------------------------------------
+void GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang) throw(GException)
 {
 	GProfDocCursor profdoccursor;
+
+	if(!Doc)
+		throw GException("No document selected");
 
 	// if the old lang and the new lang are not defined.
 	if (!oldlang&&!newlang)
@@ -109,7 +104,7 @@ void GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* newlang)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GDocAnalyse::~GDocAnalyse(void)
 {
 }

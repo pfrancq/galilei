@@ -75,14 +75,6 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Filter and Download Part
-class GFilter;
-class GFactoryFilter;
-class GFactoryFilterCursor;
-class GFilterManager;
-
-
-//------------------------------------------------------------------------------
 // forward class declaration - Information Part
 class GInfo;
 class GWeightInfo;
@@ -104,12 +96,18 @@ class GDicts;
 
 //------------------------------------------------------------------------------
 // forward class declaration - Document Part
+class GFilter;
+class GFactoryFilter;
+class GFactoryFilterCursor;
+class GFilterManager;
 class GDoc;
 class GDocAnalyse;
 class GDocAnalyseManager;
 class GDocCursor;
 class GPostDoc;
 class GPostDocManager;
+class GFactoryPostDoc;
+class GFactoryPostDocCursor;
 class GDocProfSim;
 class GDocProfSims;
 class GDocs;
@@ -119,12 +117,6 @@ class GDocVector;
 class GDocXML;
 class GFactoryDocAnalyse;
 class GFactoryDocAnalyseCursor;
-class GFactoryPostDoc;
-class GFactoryPostDocCursor;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Link Part
 class GBalancedLinks;
 class GBalancedLinksCursor;
 class GFactoryLinkCalc;
@@ -186,6 +178,14 @@ class GPostGroup;
 class GPostGroupManager;
 class GFactoryPostGroup;
 class GFactoryPostGroupCursor;
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Historic Part
+class GIWordsWeightsHistory;
+class GGroupHistory;
+class GGroupHistoryCursor;
+class GGroupsHistory;
 
 
 //------------------------------------------------------------------------------
@@ -309,8 +309,14 @@ public:
 	* Construct an exception.
 	* @param str                      Message of the error.
 	*/
-	GException(const char* str) throw(bad_alloc)
+	GException(const char* str) throw()
 		: R::RException(str) {}
+
+	/**
+	* Construct an exception.
+	*/
+	GException(void) throw()
+		: R::RException() {}
 };
 
 

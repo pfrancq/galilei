@@ -4,7 +4,7 @@
 
 	GPostDocManager.cpp
 
-	Manager to handle links computing method - Implementation.
+	Documents Post-Analysis Methods Manager - Implementation.
 
 	Copyright 2001 by the Université Libre de Bruxelles.
 
@@ -34,14 +34,14 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gpostdocmanager.h>
 #include <docs/gpostdoc.h>
@@ -52,13 +52,13 @@ using namespace ltmm;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GPostDocManager
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GPostDocManager::GPostDocManager(const char* path,bool dlg) throw(GException)
 	: RContainer<GFactoryPostDoc,unsigned int,true,true>(10,5), Current(0)
 {
@@ -129,8 +129,8 @@ GPostDocManager::GPostDocManager(const char* path,bool dlg) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
-void GPostDocManager::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GPostDocManager::Connect(GSession* session) throw(GException)
 {
 	GFactoryPostDocCursor Cur;
 	GPostDoc* calc;
@@ -145,8 +145,8 @@ void GPostDocManager::Connect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
-void GPostDocManager::Disconnect(GSession* session)
+//------------------------------------------------------------------------------
+void GPostDocManager::Disconnect(GSession* session) throw(GException)
 {
 	GFactoryPostDocCursor Cur;
 	GPostDoc* calc;
@@ -161,7 +161,7 @@ void GPostDocManager::Disconnect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GPostDocManager::SetCurrentMethod(const char* name) throw(GException)
 {
 	GFactoryPostDoc* fac;
@@ -178,14 +178,14 @@ void GPostDocManager::SetCurrentMethod(const char* name) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GPostDoc* GPostDocManager::GetCurrentMethod(void)
 {
 	return(Current);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GFactoryPostDocCursor& GPostDocManager::GetPostDocsCursor(void)
 {
 	GFactoryPostDocCursor *cur=GFactoryPostDocCursor::GetTmpCursor();
@@ -194,7 +194,7 @@ GFactoryPostDocCursor& GPostDocManager::GetPostDocsCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GPostDocManager::~GPostDocManager(void)
 {
 }

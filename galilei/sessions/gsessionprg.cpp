@@ -926,7 +926,7 @@ void GWordsClusteringI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigne
 		throw GException("Method needs no parameters.");
 	o->WriteStr("Create New Concepts");
 	Owner->Session->RemoveAssociation();
-	Owner->Session->AnalyseAssociation(true);
+	Owner->Session->AnalyseAssociation();
 }
 
 

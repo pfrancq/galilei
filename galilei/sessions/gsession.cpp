@@ -208,18 +208,18 @@ GDocXML* GSession::CreateDocXML(GDoc* doc) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GSession::AnalyseAssociation(bool save)
+void GSession::AnalyseAssociation(void) throw(GException)
 {
 	GPostDoc* PostDoc=PostDocMng->GetCurrentMethod();
 	if(!PostDoc)
 		throw GException("No computing method chosen.");
 	else
-		PostDoc->Compute(save);
+		PostDoc->Run();
 }
 
 
 //-----------------------------------------------------------------------------
-void GSession::RemoveAssociation()
+void GSession::RemoveAssociation(void) throw(GException)
 {
 	unsigned i;
 	GDocCursor docs=GetDocsCursor();

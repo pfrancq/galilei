@@ -4,9 +4,9 @@
 
 	GDocAnalyse.h
 
-	Analyse a document - Header.
+	Generic Document Analysis - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,31 +34,31 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GDocAnalyseH
 #define GDocAnalyseH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
 #include <sessions/gplugin.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 // API VERSION
 #define API_DOCANALYSE_VERSION "1.0"
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GDocAnalyse class provides a method to analyse a document.
+* The GDocAnalyse class provides a generic method to analyse a document.
 * @author Pascal Francq
-* @short Vector Model Documents Analyse.
+* @short Generic Document Analysis.
 */
 class GDocAnalyse : public GPlugin<GFactoryDocAnalyse>
 {
@@ -70,14 +70,14 @@ protected:
 	GSession* Session;
 
 	/**
-	* Current document to analyse.
+	* Document to analyse;
 	*/
-	GDocVector* Doc;
+	GDoc* Doc;
 
 public:
 
 	/**
-	* Constructor.
+	* Constructor of the document analysis method.
 	* @param fac             Factory of the plugin.
 	*/
 	GDocAnalyse(GFactoryDocAnalyse* fac) throw(bad_alloc);
@@ -86,37 +86,39 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session);
+	virtual void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session);
+	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Analyse a XML representation of a document for a session and store the
-	* results in this document. Set the document variable of the class to the
-	* current document passed as argument.
-	* @param xml            XML Representation used.
+	* results in this document. The method must set the Doc variable.
+	*
+	* During the analysis of the document, if links point to document that does
+	* not exist in the system, these documents are added in a container.
+	* @param xml            DocXML document used.
 	* @param doc            Corresponding document.
-	* @param tmpDocs        A container of docs to maintain the documents ro be added.
+	* @param tmpDocs        Container that will hold the added docs.
 	*/
-	virtual void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException);
+	virtual void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException)=0;
 
 	/**
-	*  update the feedback of the profiles and subprofiles
+	* Update the feedbacks of the profiles and subprofiles.
 	*/
-	void UpdateFdbks(GLang* oldlang, GLang* newlang);
+	void UpdateFdbks(GLang* oldlang, GLang* newlang) throw(GException);
 
 	/**
-	* Destructor.
+	* Destructor of the document analysis method.
 	*/
 	virtual ~GDocAnalyse(void);
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class GFactoryDocAnalyse : public GFactoryPlugin<GFactoryDocAnalyse,GDocAnalyse,GDocAnalyseManager>
 {
 public:
@@ -136,83 +138,83 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 typedef GFactoryDocAnalyse*(*GFactoryDocAnalyseInit)(GDocAnalyseManager*,const char*);
 
 
-//------------------------------------------------------------------------------
-#define CREATE_DOCANALYSE_FACTORY(name,C)                                                       \
-class TheFactory : public GFactoryDocAnalyse                                                    \
-{                                                                                               \
-private:                                                                                        \
-	static GFactoryDocAnalyse* Inst;                                                            \
-	TheFactory(GDocAnalyseManager* mng,const char* l) : GFactoryDocAnalyse(mng,name,l)          \
-	{                                                                                           \
-		C::CreateParams(this);                                                                  \
-	}                                                                                           \
-	virtual ~TheFactory(void) {}                                                                \
-public:                                                                                         \
-	static GFactoryDocAnalyse* CreateInst(GDocAnalyseManager* mng,const char* l)                \
-	{                                                                                           \
-		if(!Inst)                                                                               \
-			Inst = new TheFactory(mng,l);                                                       \
-		return(Inst);                                                                           \
-	}                                                                                           \
-	virtual const char* GetAPIVersion(void) const {return(API_DOCANALYSE_VERSION);}             \
-	virtual void Create(void) throw(GException)                                                 \
-	{                                                                                           \
-		if(Plugin) return;                                                                      \
-		Plugin=new C(this);                                                                     \
-		Plugin->ApplyConfig();                                                                  \
-	}                                                                                           \
-	virtual void Delete(void) throw(GException)                                                 \
-	{                                                                                           \
-		if(!Plugin) return;                                                                     \
-		delete Plugin;                                                                          \
-		Plugin=0;                                                                               \
-	}                                                                                           \
-	virtual void Create(GSession* ses) throw(GException)                                        \
-	{                                                                                           \
-		if(!Plugin)                                                                             \
-		{                                                                                       \
-			Plugin=new C(this);                                                                 \
-			Plugin->ApplyConfig();                                                              \
-		}                                                                                       \
-		if(ses)                                                                                 \
-			Plugin->Connect(ses);                                                               \
-	}                                                                                           \
-	virtual void Delete(GSession* ses) throw(GException)                                        \
-	{                                                                                           \
-		if(!Plugin) return;                                                                     \
-		if(ses)                                                                                 \
-			Plugin->Disconnect(ses);                                                            \
-		delete Plugin;                                                                          \
-		Plugin=0;                                                                               \
-	}                                                                                           \
-};                                                                                              \
-                                                                                                \
-GFactoryDocAnalyse* TheFactory::Inst = 0;                                                       \
-                                                                                                \
-extern "C"                                                                                      \
-{                                                                                               \
-	GFactoryDocAnalyse* FactoryCreate(GDocAnalyseManager* mng,const char* l)                    \
-	{                                                                                           \
-		return(TheFactory::CreateInst(mng,l));                                                  \
-	}                                                                                           \
+//-------------------------------------------------------------------------------
+#define CREATE_DOCANALYSE_FACTORY(name,C)                                                 \
+class TheFactory : public GFactoryDocAnalyse                                              \
+{                                                                                         \
+private:                                                                                  \
+	static GFactoryDocAnalyse* Inst;                                                      \
+	TheFactory(GDocAnalyseManager* mng,const char* l) : GFactoryDocAnalyse(mng,name,l)    \
+	{                                                                                     \
+		C::CreateParams(this);                                                            \
+	}                                                                                     \
+	virtual ~TheFactory(void) {}                                                          \
+public:                                                                                   \
+	static GFactoryDocAnalyse* CreateInst(GDocAnalyseManager* mng,const char* l)          \
+	{                                                                                     \
+		if(!Inst)                                                                         \
+			Inst = new TheFactory(mng,l);                                                 \
+		return(Inst);                                                                     \
+	}                                                                                     \
+	virtual const char* GetAPIVersion(void) const {return(API_DOCANALYSE_VERSION);}       \
+	virtual void Create(void) throw(GException)                                           \
+	{                                                                                     \
+		if(Plugin) return;                                                                \
+		Plugin=new C(this);                                                               \
+		Plugin->ApplyConfig();                                                            \
+	}                                                                                     \
+	virtual void Delete(void) throw(GException)                                           \
+	{                                                                                     \
+		if(!Plugin) return;                                                               \
+		delete Plugin;                                                                    \
+		Plugin=0;                                                                         \
+	}                                                                                     \
+	virtual void Create(GSession* ses) throw(GException)                                  \
+	{                                                                                     \
+		if(!Plugin)                                                                       \
+		{                                                                                 \
+			Plugin=new C(this);                                                           \
+			Plugin->ApplyConfig();                                                        \
+		}                                                                                 \
+		if(ses)                                                                           \
+			Plugin->Connect(ses);                                                         \
+	}                                                                                     \
+	virtual void Delete(GSession* ses) throw(GException)                                  \
+	{                                                                                     \
+		if(!Plugin) return;                                                               \
+		if(ses)                                                                           \
+			Plugin->Disconnect(ses);                                                      \
+		delete Plugin;                                                                    \
+		Plugin=0;                                                                         \
+	}                                                                                     \
+};                                                                                        \
+                                                                                          \
+GFactoryDocAnalyse* TheFactory::Inst = 0;                                                 \
+                                                                                          \
+extern "C"                                                                                \
+{                                                                                         \
+	GFactoryDocAnalyse* FactoryCreate(GDocAnalyseManager* mng,const char* l)              \
+	{                                                                                     \
+		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GFactoryDocAnalyseCursor class provides a way to go trough a set of
-* factories.
-* @short Doc Analysis Factories Cursor
+* factories of document analysis method.
+* @short Document Analysis Methods Factories Cursor
 */
 CLASSCURSOR(GFactoryDocAnalyseCursor,GFactoryDocAnalyse,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

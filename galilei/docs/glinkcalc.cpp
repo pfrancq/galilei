@@ -1,4 +1,5 @@
 /*
+
 	GALILEI Research Project
 
 	GLinkCalc.cpp
@@ -33,10 +34,9 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //include file for GALILEI
 #include <docs/glinkcalc.h>
-
 #include <docs/glink.h>
 #include <docs/glinks.h>
 #include <docs/gdoc.h>
@@ -45,13 +45,14 @@ using namespace GALILEI;
 using namespace R;
 
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 //
 // GLinkCalc
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(bad_alloc)
 	: GPlugin<GFactoryLinkCalc>(fac), Session(0), Links_Out(0)
 {
@@ -60,8 +61,8 @@ GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(bad_alloc)
 }
 
 
-//-----------------------------------------------------------------------------
-void GLinkCalc::InitGraph(void)
+//------------------------------------------------------------------------------
+void GLinkCalc::InitGraph(void) throw(GException)
 {
 	GDocCursor cur = Session->GetDocsCursor();
 	GLinkCursor lcur;
@@ -93,15 +94,12 @@ void GLinkCalc::InitGraph(void)
 		}
 
 		Inited =true;
-
-		cout << "la taille d'un entier" << sizeof(int)<<endl;
-		cout << "la taille du graph: "<<size<<endl;
 	}
 }
 
 
-//-----------------------------------------------------------------------------
-void GLinkCalc::AddDoc(GDoc* doc)
+//------------------------------------------------------------------------------
+void GLinkCalc::AddDoc(GDoc* doc) throw(GException)
 {
 	GLinkCursor lcur;
 	GLinks* links_out=0;
@@ -125,16 +123,16 @@ void GLinkCalc::AddDoc(GDoc* doc)
 }
 
 
-//-----------------------------------------------------------------------------
-void GLinkCalc::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GLinkCalc::Connect(GSession* session) throw(GException)
 {
 	Session=session;
 	InitGraph();
 }
 
 
-//-----------------------------------------------------------------------------
-void GLinkCalc::Disconnect(GSession*)
+//------------------------------------------------------------------------------
+void GLinkCalc::Disconnect(GSession*) throw(GException)
 {
 	Session=0;
 	if(Links_Out)
@@ -145,11 +143,9 @@ void GLinkCalc::Disconnect(GSession*)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLinkCalc::~GLinkCalc(void)
 {
 	if(Links_Out)
 		delete Links_Out;
 }
-
-

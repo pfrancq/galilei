@@ -4,7 +4,7 @@
 
 	GPostDocManager.h
 
-	Manager to handle links computing method. - Header.
+	Documents Post-Analysis Methods Manager - Header.
 
 	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
@@ -34,27 +34,27 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GPostDocManagerH
 #define GPostDocManagerH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GPostDocManager class provides a representation for a manager
-* responsible to manage all the links computing methods.
+* responsible to manage all the documents post-analysis methods.
 * @author Pascal Francq
-* @short Links Computing Method Manager.
+* @short Documents Post-Analysis Methods Manager.
 */
 class GPostDocManager : public R::RContainer<GFactoryPostDoc,unsigned int,true,true>
 {
@@ -66,7 +66,7 @@ class GPostDocManager : public R::RContainer<GFactoryPostDoc,unsigned int,true,t
 public:
 
 	/**
-	* Construct a URL manager.
+	* Constructor of a manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
@@ -76,13 +76,13 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	void Connect(GSession* session);
+	void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	void Disconnect(GSession* session);
+	void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Set the current method.
@@ -97,19 +97,19 @@ public:
 	GPostDoc* GetCurrentMethod(void);
 
 	/**
-	* Get a cursor over the filters of the system.
+	* Get a cursor on the factories handled by the manager.
 	*/
 	GFactoryPostDocCursor& GetPostDocsCursor(void);
 
 	/**
-	* Destructor of URL manager.
+	* Destructor of the manager.
 	*/
 	virtual ~GPostDocManager(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

@@ -1,12 +1,12 @@
 /*
 
-	R Project Library
+	GALILEI Research Project
 
 	GDocAnalyseManager.cpp
 
-	Manager to handle links computing method - Implementation.
+	Document Analysis Methods Manager - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,14 +34,14 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdocanalysemanager.h>
 #include <docs/gdocanalyse.h>
@@ -51,13 +51,13 @@ using namespace ltmm;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GDocAnalyseManager
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GDocAnalyseManager::GDocAnalyseManager(const char* path,bool dlg) throw(GException)
 	: RContainer<GFactoryDocAnalyse,unsigned int,true,true>(10,5), Current(0)
 {
@@ -128,8 +128,8 @@ GDocAnalyseManager::GDocAnalyseManager(const char* path,bool dlg) throw(GExcepti
 }
 
 
-//-----------------------------------------------------------------------------
-void GDocAnalyseManager::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GDocAnalyseManager::Connect(GSession* session) throw(GException)
 {
 	GFactoryDocAnalyseCursor Cur;
 	GDocAnalyse* calc;
@@ -144,8 +144,8 @@ void GDocAnalyseManager::Connect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
-void GDocAnalyseManager::Disconnect(GSession* session)
+//------------------------------------------------------------------------------
+void GDocAnalyseManager::Disconnect(GSession* session) throw(GException)
 {
 	GFactoryDocAnalyseCursor Cur;
 	GDocAnalyse* calc;
@@ -160,7 +160,7 @@ void GDocAnalyseManager::Disconnect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GDocAnalyseManager::SetCurrentMethod(const char* name) throw(GException)
 {
 	GFactoryDocAnalyse* fac;
@@ -177,14 +177,14 @@ void GDocAnalyseManager::SetCurrentMethod(const char* name) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GDocAnalyse* GDocAnalyseManager::GetCurrentMethod(void)
 {
 	return(Current);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GFactoryDocAnalyseCursor& GDocAnalyseManager::GetDocAnalysesCursor(void)
 {
 	GFactoryDocAnalyseCursor *cur=GFactoryDocAnalyseCursor::GetTmpCursor();
@@ -193,7 +193,7 @@ GFactoryDocAnalyseCursor& GDocAnalyseManager::GetDocAnalysesCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GDocAnalyseManager::~GDocAnalyseManager(void)
 {
 }

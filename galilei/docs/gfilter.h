@@ -184,13 +184,13 @@ class TheFactory : public GFactoryFilter                                        
 {                                                                                         \
 private:                                                                                  \
 	static GFactoryFilter* Inst;                                                          \
-	TheFactory(GFilterManager* mng,const char* l) : GFactoryFilter(mng,name,l)               \
+	TheFactory(GFilterManager* mng,const char* l) : GFactoryFilter(mng,name,l)            \
 	{                                                                                     \
 		C::CreateParams(this);                                                            \
 	}                                                                                     \
 	virtual ~TheFactory(void) {}                                                          \
 public:                                                                                   \
-	static GFactoryFilter* CreateInst(GFilterManager* mng,const char* l)                     \
+	static GFactoryFilter* CreateInst(GFilterManager* mng,const char* l)                  \
 	{                                                                                     \
 		if(!Inst)                                                                         \
 			Inst = new TheFactory(mng,l);                                                 \
@@ -218,7 +218,7 @@ GFactoryFilter* TheFactory::Inst = 0;                                           
                                                                                           \
 extern "C"                                                                                \
 {                                                                                         \
-	GFactoryFilter* FactoryCreate(GFilterManager* mng,const char* l)                         \
+	GFactoryFilter* FactoryCreate(GFilterManager* mng,const char* l)                      \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
 	}                                                                                     \

@@ -4,9 +4,9 @@
 
 	GLinkCalcManager.h
 
-	Manager to handle links computing method. - Header.
+	Generic Link Methods Manager - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be).
@@ -34,27 +34,27 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GLinkCalcManagerH
 #define GLinkCalcManagerH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GLinkCalcManager class provides a representation for a manager
 * responsible to manage all the links computing methods.
 * @author Vandaele Valery
-* @short Links Computing Method Manager.
+* @short Generic Link Methods Manager.
 */
 class GLinkCalcManager : public R::RContainer<GFactoryLinkCalc,unsigned int,true,true>
 {
@@ -66,7 +66,7 @@ class GLinkCalcManager : public R::RContainer<GFactoryLinkCalc,unsigned int,true
 public:
 
 	/**
-	* Construct a URL manager.
+	* Constructor of a manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
@@ -76,13 +76,13 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	void Connect(GSession* session);
+	void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	void Disconnect(GSession* session);
+	void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Set the current method.
@@ -97,19 +97,20 @@ public:
 	GLinkCalc* GetCurrentMethod(void);
 
 	/**
-	* Get a cursor over the filters of the system.
+	* Get a cursor over the factories handled by the manager.
+	* @return GFactoryLinkCalcCursor
 	*/
 	GFactoryLinkCalcCursor& GetLinkCalcsCursor(void);
 
 	/**
-	* Destructor of URL manager.
+	* Destructor of the manager.
 	*/
 	virtual ~GLinkCalcManager(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

@@ -279,14 +279,13 @@ public:
 
 	/**
 	* Create concept in the whole set of documents.
-	* @param save        Enable de concept saving.
 	*/
-	void AnalyseAssociation(bool save);
+	void AnalyseAssociation(void) throw(GException);
 
 	/**
 	* Remove concepts from the whole set of documents.
 	*/
-	void RemoveAssociation();
+	void RemoveAssociation(void) throw(GException);
 
 	/**
 	* Analyse all the necessary documents.

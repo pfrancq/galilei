@@ -310,73 +310,65 @@ typedef GFactoryLang*(*GFactoryLangInit)(GLangManager*,const char*);
 
 
 //------------------------------------------------------------------------------
-#define CREATE_LANG_FACTORY(name,C,code)                                       \
-class TheFactory : public GFactoryLang                                         \
-{                                                                              \
-private:                                                                       \
-	static GFactoryLang* Inst;                                                 \
-	TheFactory(GLangManager* mng,const char* l) : GFactoryLang(mng,name,l,code)      \
-	{                                                                          \
-		C::CreateParams(this);                                                 \
-	}                                                                          \
-	virtual ~TheFactory(void) {}                                               \
-public:                                                                        \
-	static GFactoryLang* CreateInst(GLangManager* mng,const char* l)                 \
-	{                                                                          \
-		if(!Inst)                                                              \
-			Inst = new TheFactory(mng,l);                                      \
-		return(Inst);                                                          \
-	}                                                                          \
-	virtual const char* GetAPIVersion(void) const {return(API_LANG_VERSION);}  \
-	virtual void Create(void) throw(GException)                                \
-	{                                                                          \
-		if(Plugin) return;                                                     \
-		Plugin=new C(this);                                                    \
-		Plugin->ApplyConfig();                                                 \
-	}                                                                          \
-	virtual void Delete(void) throw(GException)                                \
-	{                                                                          \
-		if(!Plugin) return;                                                    \
-		delete Plugin;                                                         \
-		Plugin=0;                                                              \
-	}                                                                          \
-	virtual void Create(GSession* ses) throw(GException)                       \
-	{                                                                          \
-		if(!Plugin)                                                            \
-		{                                                                      \
-			Plugin=new C(this);                                                \
-			Plugin->ApplyConfig();                                             \
-		}                                                                      \
-		if(ses)                                                                \
-			Plugin->Connect(ses);                                              \
-	}                                                                          \
-	virtual void Delete(GSession* ses) throw(GException)                       \
-	{                                                                          \
-		if(!Plugin) return;                                                    \
-		if(ses)                                                                \
-			Plugin->Disconnect(ses);                                           \
-		delete Plugin;                                                         \
-		Plugin=0;                                                              \
-	}                                                                          \
-};                                                                             \
-                                                                               \
-GFactoryLang* TheFactory::Inst = 0;                                            \
-                                                                               \
-extern "C"                                                                     \
-{                                                                              \
-	GFactoryLang* FactoryCreate(GLangManager* mng,const char* l)                     \
-	{                                                                          \
-		return(TheFactory::CreateInst(mng,l));                                 \
-	}                                                                          \
+#define CREATE_LANG_FACTORY(name,C,code)                                                  \
+class TheFactory : public GFactoryLang                                                    \
+{                                                                                         \
+private:                                                                                  \
+	static GFactoryLang* Inst;                                                            \
+	TheFactory(GLangManager* mng,const char* l) : GFactoryLang(mng,name,l,code)           \
+	{                                                                                     \
+		C::CreateParams(this);                                                            \
+	}                                                                                     \
+	virtual ~TheFactory(void) {}                                                          \
+public:                                                                                   \
+	static GFactoryLang* CreateInst(GLangManager* mng,const char* l)                      \
+	{                                                                                     \
+		if(!Inst)                                                                         \
+			Inst = new TheFactory(mng,l);                                                 \
+		return(Inst);                                                                     \
+	}                                                                                     \
+	virtual const char* GetAPIVersion(void) const {return(API_LANG_VERSION);}             \
+	virtual void Create(void) throw(GException)                                           \
+	{                                                                                     \
+		if(Plugin) return;                                                                \
+		Plugin=new C(this);                                                               \
+		Plugin->ApplyConfig();                                                            \
+	}                                                                                     \
+	virtual void Delete(void) throw(GException)                                           \
+	{                                                                                     \
+		if(!Plugin) return;                                                               \
+		delete Plugin;                                                                    \
+		Plugin=0;                                                                         \
+	}                                                                                     \
+	virtual void Create(GSession* ses) throw(GException)                                  \
+	{                                                                                     \
+		if(!Plugin)                                                                       \
+		{                                                                                 \
+			Plugin=new C(this);                                                           \
+			Plugin->ApplyConfig();                                                        \
+		}                                                                                 \
+		if(ses)                                                                           \
+			Plugin->Connect(ses);                                                         \
+	}                                                                                     \
+	virtual void Delete(GSession* ses) throw(GException)                                  \
+	{                                                                                     \
+		if(!Plugin) return;                                                               \
+		if(ses)                                                                           \
+			Plugin->Disconnect(ses);                                                      \
+		delete Plugin;                                                                    \
+		Plugin=0;                                                                         \
+	}                                                                                     \
+};                                                                                        \
+                                                                                          \
+GFactoryLang* TheFactory::Inst = 0;                                                       \
+                                                                                          \
+extern "C"                                                                                \
+{                                                                                         \
+	GFactoryLang* FactoryCreate(GLangManager* mng,const char* l)                          \
+	{                                                                                     \
+		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
 }
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GLangCursor class provides a way to go trough a set of languages.
-* @short Language Cursor
-*/
-CLASSCURSOR(GLangCursor,GLang,unsigned int)
 
 
 //-----------------------------------------------------------------------------

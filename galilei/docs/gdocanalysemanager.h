@@ -4,9 +4,9 @@
 
 	GDocAnalyseManager.h
 
-	Manager to handle doc analysis method. - Header.
+	Document Analysis Methods Manager - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,23 +34,23 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GDocAnalyseManagerH
 #define GDocAnalyseManagerH
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GDocAnalyseManager class provides a representation for a manager
 * responsible to manage all the doc analysis methods.
@@ -67,7 +67,7 @@ class GDocAnalyseManager : public R::RContainer<GFactoryDocAnalyse,unsigned int,
 public:
 
 	/**
-	* Construct a URL manager.
+	* Constructor of a manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
@@ -77,13 +77,13 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	void Connect(GSession* session);
+	void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	void Disconnect(GSession* session);
+	void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Set the current method.
@@ -98,12 +98,13 @@ public:
 	GDocAnalyse* GetCurrentMethod(void);
 
 	/**
-	* Get a cursor over the filters of the system.
+	* Get a cursor over the factories handled by the manager.
+	* @return GFactoryDocAnalyseCursor.
 	*/
 	GFactoryDocAnalyseCursor& GetDocAnalysesCursor(void);
 
 	/**
-	* Destructor of URL manager.
+	* Destructor of the manager.
 	*/
 	virtual ~GDocAnalyseManager(void);
 };

@@ -1,12 +1,12 @@
 /*
 
-	R Project Library
+	GALILEI Research Project
 
 	GLinkCalcManager.cpp
 
-	Manager to handle links computing method - Implementation.
+	Generic Link Methods Manager - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be).
@@ -34,14 +34,14 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/glinkcalcmanager.h>
 #include <docs/glinkcalc.h>
@@ -51,13 +51,13 @@ using namespace ltmm;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GLinkCalcManager
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLinkCalcManager::GLinkCalcManager(const char* path,bool dlg) throw(GException)
 	: RContainer<GFactoryLinkCalc,unsigned int,true,true>(10,5), Current(0)
 {
@@ -128,8 +128,8 @@ GLinkCalcManager::GLinkCalcManager(const char* path,bool dlg) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
-void GLinkCalcManager::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GLinkCalcManager::Connect(GSession* session) throw(GException)
 {
 	GFactoryLinkCalcCursor Cur;
 	GLinkCalc* calc;
@@ -144,8 +144,8 @@ void GLinkCalcManager::Connect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
-void GLinkCalcManager::Disconnect(GSession* session)
+//------------------------------------------------------------------------------
+void GLinkCalcManager::Disconnect(GSession* session) throw(GException)
 {
 	GFactoryLinkCalcCursor Cur;
 	GLinkCalc* calc;
@@ -160,7 +160,7 @@ void GLinkCalcManager::Disconnect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLinkCalcManager::SetCurrentMethod(const char* name) throw(GException)
 {
 	GFactoryLinkCalc* fac;
@@ -177,14 +177,14 @@ void GLinkCalcManager::SetCurrentMethod(const char* name) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLinkCalc* GLinkCalcManager::GetCurrentMethod(void)
 {
 	return(Current);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GFactoryLinkCalcCursor& GLinkCalcManager::GetLinkCalcsCursor(void)
 {
 	GFactoryLinkCalcCursor *cur=GFactoryLinkCalcCursor::GetTmpCursor();
@@ -193,7 +193,7 @@ GFactoryLinkCalcCursor& GLinkCalcManager::GetLinkCalcsCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLinkCalcManager::~GLinkCalcManager(void)
 {
 }
