@@ -10,7 +10,7 @@
 
 void putbundle(BUNDLE b, FILE *f)
 {
-  char **ppLine = b;
+  const char **ppLine = b;
   for (ppLine = b; *ppLine!=NULL; ppLine++) {
     fputs(*ppLine, f);
   }
