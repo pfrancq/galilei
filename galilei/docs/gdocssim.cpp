@@ -155,6 +155,7 @@ double GALILEI::GDocsSim::GetSim(unsigned int i,unsigned int j)
 	GSim* s2;
 	unsigned int tmp;
 
+	if(i==j) return(1.0);
 	if(i>j)
 	{
 		tmp=i;
