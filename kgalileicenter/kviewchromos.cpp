@@ -210,7 +210,7 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,QWidget* parent,c
 //-----------------------------------------------------------------------------
 void KViewChromos::ConstructChromosomes(void)
 {
-	GChromoIR** c;
+	GChromoIR* c;
 	unsigned int i;
 	QListViewItem* g;
 	char tmp[20];
@@ -230,16 +230,6 @@ void KViewChromos::ConstructChromosomes(void)
 	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
 
 	// Construct the GA Objects
-//	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next())
-//	{
-//		sub=SubProfiles();
-//		if(sub->IsDefined())
-//		{
-//			Objs.InsertPtr(new GObjIR(i,sub));
-// 			i++;
-//		}
-//	}
-//	GProfileCursor cur=Doc->GetSession()->GetProfilesCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		sub=Cur();
@@ -256,59 +246,64 @@ void KViewChromos::ConstructChromosomes(void)
 	Instance->SetIdealGroups(&IdealGroups);
 
 	// Display the chromosomes
-	for(i=Instance->PopSize+1,c=Instance->Chromosomes;--i;c++)
+	for(i=0;i<=Instance->PopSize;i++)
 	{
+		if(i==Instance->PopSize)
+			c=Instance->BestChromosome;
+		else
+			c=Instance->Chromosomes[i];
+	
 		Stats.InsertPtr(s=new Stat());
 
-		s->Id=(*c)->Id;
-		sprintf(tmp,"%u",(*c)->Id);
-		d->receiveNextChromosome((*c)->Id);
+		s->Id=c->Id;
+		sprintf(tmp,"%u",c->Id);
+		d->receiveNextChromosome(c->Id);
 		g=new MyListViewItem(General,tmp);
 
-		(*c)->CompareIdeal(Doc->GetSession(),&IdealGroups);
-		s->Precision=(*c)->GetPrecision();
-		sprintf(tmp,"%f",(*c)->GetPrecision());
+		c->CompareIdeal(Doc->GetSession(),&IdealGroups);
+		s->Precision=c->GetPrecision();
+		sprintf(tmp,"%f",c->GetPrecision());
 		g->setText(1,tmp);
-		s->Recall=(*c)->GetRecall();
-		sprintf(tmp,"%f",(*c)->GetRecall());
+		s->Recall=c->GetRecall();
+		sprintf(tmp,"%f",c->GetRecall());
 		g->setText(2,tmp);
-		s->Global=(*c)->GetGlobal();
-		sprintf(tmp,"%f",(*c)->GetGlobal());
+		s->Global=c->GetGlobal();
+		sprintf(tmp,"%f",c->GetGlobal());
 		g->setText(3,tmp);
 
-		(*c)->EvaluateAvgSim();
-		s->AvgSim=(*c)->GetSimCriterion();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		c->EvaluateAvgSim();
+		s->AvgSim=c->GetSimCriterion();
+		sprintf(tmp,"%f",c->GetSimCriterion());
 		g->setText(4,tmp);
 
-		(*c)->EvaluateJ();
-		s->J=(*c)->GetSimCriterion();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		c->EvaluateJ();
+		s->J=c->GetSimCriterion();
+		sprintf(tmp,"%f",c->GetSimCriterion());
 		g->setText(5,tmp);
 
-		(*c)->EvaluateAvgRatio();
-		s->AvgRatio=(*c)->GetSimCriterion();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		c->EvaluateAvgRatio();
+		s->AvgRatio=c->GetSimCriterion();
+		sprintf(tmp,"%f",c->GetSimCriterion());
 		g->setText(6,tmp);
 
-		(*c)->EvaluateMinRatio();
-		s->MinRatio=(*c)->GetSimCriterion();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		c->EvaluateMinRatio();
+		s->MinRatio=c->GetSimCriterion();
+		sprintf(tmp,"%f",c->GetSimCriterion());
 		g->setText(7,tmp);
 
-		(*c)->EvaluateRatio();
-		s->Ratio=(*c)->GetSimCriterion();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		c->EvaluateRatio();
+		s->Ratio=c->GetSimCriterion();
+		sprintf(tmp,"%f",c->GetSimCriterion());
 		g->setText(8,tmp);
 
-		(*c)->EvaluateWOverB();
-		s->WOverB=(*c)->GetSimCriterion();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		c->EvaluateWOverB();
+		s->WOverB=c->GetSimCriterion();
+		sprintf(tmp,"%f",c->GetSimCriterion());
 		g->setText(9,tmp);
 
-		(*c)->EvaluateSimWB();
-		s->SimWB=(*c)->GetSimCriterion();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		c->EvaluateSimWB();
+		s->SimWB=c->GetSimCriterion();
+		sprintf(tmp,"%f",c->GetSimCriterion());
 		g->setText(10,tmp);
 	}
 
