@@ -67,7 +67,7 @@ void GALILEI::GSessionSignalsReceiver::receiveNextProfile(const GProfile* prof)
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int f,GURLManager* mng) throw(bad_alloc,GException)
 	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(2,5), Fdbks(f+f/2,f/2), Mng(mng),
 	  bDics(false), bDocs(false), bUsers(false), bGroups(false),
-	  bGroupsMember(false), bFdbks(false)
+	  bGroupsMember(false), bFdbks(false), StaticLang(true)
 	
 {
 	GLang* l;
@@ -307,4 +307,5 @@ GGroup* GALILEI::GSession::NewGroup( GLang* lang)
 //-----------------------------------------------------------------------------
 GALILEI::GSession::~GSession(void) throw(GException)
 {
+	if(Mng) delete Mng;
 }

@@ -44,6 +44,10 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 
 
+//-----------------------------------------------------------------------------
+// forward class declaration
+class GFilter;
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -153,6 +157,11 @@ protected:
 	* State of the User's feedbacks.
 	*/
 	bool bFdbks;
+
+	/**
+	* Define if the language of the language must be static.
+	*/
+	bool StaticLang;
 
 public:
 
@@ -297,6 +306,18 @@ public:
 		* @returns true, if loaded.
 		*/
 		bool IsDocsLoad(void) const {return(bDocs);}
+
+		/**
+		* See if the languages are static for the documents.
+		* @returns Boolean.
+		*/
+		bool IsStaticLang(void) const {return(StaticLang);}
+
+		/**
+		* Set if the languages are static for the document.
+		* @param s          Static?
+		*/
+		void SetStaticLang(bool s) {StaticLang=s;}
 
 		/**
 		* Load the documents.
@@ -472,6 +493,37 @@ public:
 		* @param lang       Language of the group to create.
 		*/
 		GGroup* NewGroup(GLang* lang);
+
+	//@}
+
+	/**
+	* @name Method for URL Manager and Filters.
+	*/
+	//@{
+
+		/**
+		* Start the iterator to go trough the filters.
+		*/
+		inline void FiltersStart(void)
+			{Mng->GetFilters()->Start();}
+
+		/**
+		* Test if the end of the container of filters is reached.
+		*/
+		inline bool FiltersEnd(void) const
+			{return(Mng->GetFilters()->End());}
+
+	/**
+	* Goto the next element, if the end is reached, go to the beginning.
+	*/
+	inline void FiltersNext(void)
+		{Mng->GetFilters()->Next();}
+
+	/**
+	* Get the current word.
+	* @returns Pointer to the current word.
+	*/
+	GFilter* GetCurFilters(void) {return((*Mng->GetFilters())());}
 
 	//@}
 
