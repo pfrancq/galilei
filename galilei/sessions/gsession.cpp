@@ -557,8 +557,8 @@ void GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Create a new group in groups
-		grp=new GGroupVector(cNoRef,Grps()->GetLang());
-		grp->SetId(GGroups::GetMaxId()+1);
+		grp=new GGroupVector(cNoRef,Grps()->GetLang(),true);
+		AssignId(grp);
 		InsertGroup(grp);
 
 		// Go through each subprofile
@@ -580,9 +580,12 @@ void GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
 //-----------------------------------------------------------------------------
 void GSession::Save(GGroup* grp) throw(GException)
 {
+	GSubProfileCursor Sub;
+
 	if(grp->GetState()==osUpToDate) return;
-	for(grp->Start();!grp->End();grp->Next())
-		SaveSubProfile((*grp)());
+	Sub=grp->GetSubProfilesCursor();
+	for(Sub.Start();!Sub.End();Sub.Next())
+		SaveSubProfile(Sub());
 	if(grp->GetState()==osUpdated)
 		grp->SetState(osUpToDate);
 }

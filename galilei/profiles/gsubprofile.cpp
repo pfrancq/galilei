@@ -57,12 +57,12 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,
   :  Id(id), Profile(prof), Lang(lang), Group(grp), State(state), Attached(a),  Computed(c), Fdbks(20,10)
 {
 
-#if GALILEITEST
+	#if GALILEITEST
 		Subject=0;
 	#endif
 	Profile->InsertPtr(this);
 	if(grp)
-		grp->InsertPtr(this);
+		grp->InsertSubProfile(this);
 }
 
 

@@ -54,7 +54,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Group.
 */
-class GGroup : public R::RContainer<GSubProfile,unsigned int,false,true>
+class GGroup : protected R::RContainer<GSubProfile,unsigned int,false,true>
 {
 protected:
 
@@ -73,26 +73,27 @@ protected:
 	*/
 	GLang* Lang;
 
+	/**
+	* Is the group a virtual community.
+	*/
+	bool Community;
+
 public:
 
 	/**
 	* Construct a group with a specific identificator.
 	* @param id             Identificator.
 	* @param lang           Language.
+	* @param com            Community.
 	*/
-	GGroup(unsigned int id,GLang* lang) throw(bad_alloc);
+	GGroup(unsigned int id,GLang* lang,bool com) throw(bad_alloc);
 
 	/**
 	* Construct a group with an invalid identificator.
 	* @param lang           Language.
+	* @param com            Community.
 	*/
-	GGroup(GLang* lang) throw(bad_alloc);
-
-	/**
-	* Copy constructor for group.
-	* @param grp            Group.
-	*/
-	GGroup(GGroup* grp) throw(bad_alloc);
+	GGroup(GLang* lang,bool com) throw(bad_alloc);
 
 private:
 
@@ -142,9 +143,15 @@ public:
 
 	/**
 	* Verify if the group is empty, i.e. it does not have any subprofiles.
-	* @returns bool
+	* @return bool.
 	*/
 	bool IsEmpty(void) const;
+
+	/**
+	* Look if the group is a community.
+	* @return bool.
+	*/
+	bool IsCommunity(void) const {return(Community);}
 
 	/**
 	* Get the identificator of the group.
@@ -177,13 +184,24 @@ public:
 	GLang* GetLang(void) const {return(Lang);}
 
 	/**
-	* Delete a subprofile from the group.
+	* Look if a given subprofile is contained in the group.
+	* @param sp             SubProfile to Search.
+	* @return true if the subprofile is contained, false else.
+	*/
+	bool IsIn(const GSubProfile* sp) const;
+
+	/**
+	* Delete a subprofile from the group. If the group is a community, the
+	* method modifies the assignation of the subprofile (the 'Group' pointer).
+	* of the subprofile is set to null).
 	* @param sp             SubProfile to delete.
 	*/
 	void DeleteSubProfile(GSubProfile* sp) throw(bad_alloc);
 
 	/**
-	* Insert a subprofile in the group.
+	* Insert a subprofile in the group. If the group is a community, the
+	* method modifies the assignation of the subprofile (the 'Group' pointer).
+	* of the subprofile is set to null).
 	* @param sp             SubProfile to insert.
 	*/
 	void InsertSubProfile(GSubProfile* sp) throw(bad_alloc);

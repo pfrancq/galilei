@@ -63,14 +63,16 @@ public:
 	* Construct a group with a specific identificator.
 	* @param id             Identificator.
 	* @param lang           Language.
+	* @param com            Community.
 	*/
-	GGroupVector(unsigned int id,GLang* lang) throw(bad_alloc);
+	GGroupVector(unsigned int id,GLang* lang,bool com) throw(bad_alloc);
 
 	/**
 	* Construct a group with an invalid identificator.
 	* @param lang           Language.
+	* @param com            Community.
 	*/
-	GGroupVector(GLang* lang) throw(bad_alloc);
+	GGroupVector(GLang* lang,bool com) throw(bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.

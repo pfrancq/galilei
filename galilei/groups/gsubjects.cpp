@@ -211,7 +211,7 @@ void GSubjects::CreateSet(void) throw(bad_alloc)
 		if(!Subs()->IsUsed()) continue;
 
 		// Create an ideal group for this subject
-		IdealGroups->InsertGroup(Grp=new GGroupVector(IdealGroups->GetNbGroups(),Subs()->GetLang()));
+		IdealGroups->InsertGroup(Grp=new GGroupVector(IdealGroups->GetNbGroups(),Subs()->GetLang(),false));
 
 		// Copy the documents of the same language of the session in Docs;
 		NbDocs=Session->FillDocs(Docs,Subs()->GetLang());
@@ -245,7 +245,7 @@ void GSubjects::CreateSet(void) throw(bad_alloc)
 				Prof()->GetProfile()->SetSocial(false);
 
 			// Insert current subprofile in the ideal group
-			Grp->InsertPtr(Prof());
+			Grp->InsertSubProfile(Prof());
 
 			// Judges documents
 			ProfileJudges(Prof()->GetProfile(),Subs(),maxDocsOK,maxDocsKO,maxDocsH);
@@ -324,16 +324,18 @@ void GSubjects::ComputeRecallPrecision(void)
 	Grp.Set(GroupsScore);
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
-		NbGrp=Grp()->Group->NbPtr;
+		NbGrp=Grp()->Group->GetNbSubProfiles();
 		NbProf+=NbGrp;
 		Grp()->Precision=Grp()->Recall=0.0;
 		if(!NbGrp) continue;
 		if(NbGrp==1)
 		{
-			thGrp=GetIdealGroup(Grp()->Group->Tab[0]);
+			Sub=Grp()->Group->GetSubProfilesCursor();
+			Sub.Start();
+			thGrp=GetIdealGroup(Sub());
 			if((!thGrp)||(thGrp->GetLang()!=Grp()->Group->GetLang())) continue;
 			Grp()->Precision=1.0;
-			if(thGrp->NbPtr==1)
+			if(thGrp->GetNbSubProfiles()==1)
 				Grp()->Recall=1.0;
 			Precision+=Grp()->Precision;
 			Recall+=Grp()->Recall;
@@ -345,7 +347,7 @@ void GSubjects::ComputeRecallPrecision(void)
 			{
 				thGrp=GetIdealGroup(Sub());
 				if((!thGrp)||(thGrp->GetLang()!=Grp()->Group->GetLang())) continue;
-				if(thGrp->NbPtr==1)
+				if(thGrp->GetNbSubProfiles()==1)
 				{
 					Grp()->Recall+=1.0;
 				}
@@ -356,7 +358,7 @@ void GSubjects::ComputeRecallPrecision(void)
 						Grp()->Precision+=((double)(InthGrp))/((double)(NbGrp-1));
 					InGrp=Grp()->Group->GetNbSubProfiles(thGrp)-1;
 					if(InGrp)
-						Grp()->Recall+=((double)(InGrp))/((double)(thGrp->NbPtr-1));
+						Grp()->Recall+=((double)(InGrp))/((double)(thGrp->GetNbSubProfiles()-1));
 				}
 			}
 			Precision+=Grp()->Precision;
@@ -378,7 +380,6 @@ void GSubjects::ComputeTotal(void)
 {
 	GGroupCursor GroupsIdeal;                     // Pointer to the ideal groups for a given language
 	GGroupCursor GroupsComputed;                  // Pointer to the computed groups for a given language
-	GGroup* GroupIdeal;                           // Pointer to a ideal group
 	GGroup* GroupComputed;                        // Pointer to a computed group
 	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
 	unsigned int MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
@@ -392,6 +393,7 @@ void GSubjects::ComputeTotal(void)
 	double* VectorCols;                           // Sum of the columns of the matrix
 	double* VectorColsTemp;                       // temp sum of the columns of the matrix
 	double* ptr;
+	GSubProfileCursor Sub;
 
 	// Init part
 	Total=0.0;
@@ -449,11 +451,12 @@ void GSubjects::ComputeTotal(void)
 		for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
 		{
 			memset(VectorColsTemp,0,NbCols*sizeof(double));
-			GroupIdeal=(GroupsIdeal)();
-			for(GroupIdeal->Start();!GroupIdeal->End();GroupIdeal->Next())
+			Sub=GroupsIdeal()->GetSubProfilesCursor();
+			for(Sub.Start();!Sub.End();Sub.Next())
 			{
-				for(GroupsComputed.Start(),GroupComputed=0;(!GroupsComputed.End())&&(!GroupComputed);GroupsComputed.Next())
-					if((GroupsComputed)()->IsIn((*GroupIdeal)()))
+				GroupComputed=0;
+				for(GroupsComputed.Start();!GroupsComputed.End()&&!GroupComputed;GroupsComputed.Next())
+					if((GroupsComputed)()->IsIn(Sub()))
 						GroupComputed=(GroupsComputed)();
 				//GroupComputed=(*GroupIdeal)()->GetGroup();//GroupsComputed->GetGroup((*GroupIdeal)());
 				if(GroupComputed)
@@ -668,7 +671,7 @@ bool GSubjects::AddTopic(bool Save) throw(bad_alloc)
 	newSubject->SetUsed(true);
 
 	// Create an ideal group for this subject
-	IdealGroups->InsertGroup(Grp=new GGroupVector(IdealGroups->GetNbGroups(),newSubject->GetLang()));
+	IdealGroups->InsertGroup(Grp=new GGroupVector(IdealGroups->GetNbGroups(),newSubject->GetLang(),false));
 
 	// Copy the documents of the same language of the session in Docs;
 	NbDocs=Session->FillDocs(Docs,newSubject->GetLang());
@@ -702,7 +705,7 @@ bool GSubjects::AddTopic(bool Save) throw(bad_alloc)
 			Prof()->GetProfile()->SetSocial(false);
 
 		// Insert current subprofile in the ideal group and are hold as last inserted.
-		Grp->InsertPtr(Prof());
+		Grp->InsertSubProfile(Prof());
 		LastAdded.InsertPtr(Prof());
 
 		// Judges documents
@@ -729,6 +732,7 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(bad_alloc)
 	GGroupCursor CurGrps;
 	GGroup* Grp;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
+	GSubProfileCursor Sub;
 
 	// Apply Config
 	Apply();
@@ -755,11 +759,16 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(bad_alloc)
 	// If no subject found -> do nothing
 	if(!usedSubject) return 0;
 
-	// catch the ideal group for this subject
+	// Catch the ideal group for this subject
+	// It is suppose that the subject of the group is the subject of any
+	// subprofile contained in it.
 	CurGrps=IdealGroups->GetGroupsCursor(usedSubject->GetLang());
 	for(CurGrps.Start(),Grp=0;!CurGrps.End();CurGrps.Next())
 	{
-		if ( (*CurGrps()->Tab)->GetSubject()->GetId()==usedSubject->GetId())
+		Sub=CurGrps()->GetSubProfilesCursor();
+		Sub.Start();
+		if(Sub.End()) continue;
+		if(Sub()->GetSubject()->GetId()==usedSubject->GetId())
 		{
 			Grp=CurGrps();
 			break;
@@ -798,7 +807,7 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(bad_alloc)
 			Prof()->GetProfile()->SetSocial(false);
 
 		// Insert current subprofile in the ideal group and are hold as last inserted.
-		Grp->InsertPtr(Prof());
+		Grp->InsertSubProfile(Prof());
 		LastAdded.InsertPtr(Prof());
 
 		// Judges documents

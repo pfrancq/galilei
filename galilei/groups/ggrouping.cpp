@@ -95,9 +95,6 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
 	GFactoryLangCursor CurLang;
 	GGroupCalc* CalcDesc;
 	GSubProfileCursor cur;
-	GGroup* Grp;
-	GGroup** Tab;
-	unsigned int i;
 	GGroupCursor Groups;
 
 	Modified=modified;

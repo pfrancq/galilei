@@ -53,15 +53,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupVector::GGroupVector(unsigned int id,GLang* lang) throw(bad_alloc)
-	: GGroup(id,lang), GWeightInfos(60)
+GGroupVector::GGroupVector(unsigned int id,GLang* lang,bool com) throw(bad_alloc)
+	: GGroup(id,lang,com), GWeightInfos(60)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GGroupVector::GGroupVector(GLang* lang) throw(bad_alloc)
-	: GGroup(lang), GWeightInfos(60)
+GGroupVector::GGroupVector(GLang* lang,bool com) throw(bad_alloc)
+	: GGroup(lang,com), GWeightInfos(60)
 {
 }
 

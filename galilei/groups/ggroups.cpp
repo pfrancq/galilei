@@ -80,7 +80,7 @@ GGroup* GGroups::GGroupsLang::GetGroup(const GSubProfile* sub)
 	Groups.Set(this);
 	for(Groups.Start();!Groups.End();Groups.Next())
 	{
-		if(Groups()->IsIn<const unsigned int>(sub->GetId()))
+		if(Groups()->IsIn(sub))
 			return(Groups());
 	}
 	return(0);

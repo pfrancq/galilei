@@ -81,28 +81,18 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroup::GGroup(unsigned int id,GLang* lang) throw(bad_alloc)
+GGroup::GGroup(unsigned int id,GLang* lang,bool com) throw(bad_alloc)
 	: RContainer<GSubProfile,unsigned int,false,true>(20,10), Id(id),
-	  State(osUpToDate), Lang(lang)
+	  State(osUpToDate), Lang(lang), Community(com)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GGroup::GGroup(GLang* lang) throw(bad_alloc)
+GGroup::GGroup(GLang* lang,bool com) throw(bad_alloc)
 	: RContainer<GSubProfile,unsigned int,false,true>(20,10), Id(cNoRef),
-	  State(osCreated), Lang(lang)
+	  State(osCreated), Lang(lang), Community(com)
 {
-}
-
-
-//------------------------------------------------------------------------------
-GGroup::GGroup(GGroup* grp) throw(bad_alloc)
-	: RContainer<GSubProfile,unsigned int,false,true>(grp->NbPtr), Id(grp->Id),
-	  State(grp->State), Lang(grp->Lang)
-{
-	for(grp->Start();!grp->End();grp->Next())
-		InsertPtr((*grp)());
 }
 
 
@@ -172,8 +162,17 @@ void GGroup::SetState(tObjState state)
 
 
 //------------------------------------------------------------------------------
+bool GGroup::IsIn(const GSubProfile* sp) const
+{
+	return(R::RContainer<GSubProfile,unsigned int,false,true>::IsIn(sp));
+}
+
+
+//------------------------------------------------------------------------------
 void GGroup::DeleteSubProfile(GSubProfile* sp) throw(bad_alloc)
 {
+	if(Community)
+		sp->SetGroup(0);
 	DeletePtr(sp);
 	State=osUpdated;
 }
@@ -184,16 +183,22 @@ void GGroup::InsertSubProfile(GSubProfile* sp) throw(bad_alloc)
 {
 	InsertPtr(sp);
 	State=osUpdated;
-	sp->SetGroup(this);
+	if(Community)
+		sp->SetGroup(this);
 }
-
 
 //------------------------------------------------------------------------------
 void GGroup::DeleteSubProfiles(void) throw(bad_alloc)
 {
+	GSubProfileCursor Sub;
+
 	State=osUpdated;
-	for(Start();!End();Next())
-		(*this)()->SetGroup(0);
+	if(Community)
+	{
+		Sub.Set(this);
+		for(Sub();!Sub();Sub())
+			Sub()->SetGroup(0);
+	}
 	Clear();
 }
 
@@ -215,7 +220,7 @@ unsigned int GGroup::GetNbSubProfiles(const GGroup* grp) const
 	unsigned int i;
 
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
-		if(grp->IsIn<const GSubProfile*>(*ptr))
+		if(grp->IsIn(*ptr))
 			tot++;
 	return(tot);
 }
@@ -382,7 +387,7 @@ double GGroup::ComputeSumSim(const GSubProfile* s,bool iff) const
 
 
 //------------------------------------------------------------------------------
-void GGroup::AddInfo(GWeightInfo* info) throw(bad_alloc)
+void GGroup::AddInfo(GWeightInfo*) throw(bad_alloc)
 {
 }
 
@@ -432,4 +437,12 @@ double GGroup::SimilarityIFF(const GGroup*) const throw(GException)
 //------------------------------------------------------------------------------
 GGroup::~GGroup(void) throw(GException)
 {
+	GSubProfileCursor Sub;
+
+	if(Community)
+	{
+		Sub.Set(this);
+		for(Sub();!Sub();Sub())
+			Sub()->SetGroup(0);
+	}
 }
