@@ -24,13 +24,13 @@
       <useconfiguration>default</useconfiguration>
     </general>
     <run>
-      <mainprogram>../kgalileicenter/kgalileicenter/kgalileicenter</mainprogram>
+      <mainprogram>/home/pfrancq/prj/kgalileicenter/kgalileicenter/kgalileicenter</mainprogram>
       <programargs/>
       <terminal>false</terminal>
       <envvars/>
       <autocompile>true</autocompile>
       <directoryradio>custom</directoryradio>
-      <customdirectory>~/prj/</customdirectory>
+      <customdirectory>/</customdirectory>
     </run>
     <make>
       <envvars>
