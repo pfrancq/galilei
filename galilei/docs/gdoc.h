@@ -113,15 +113,9 @@ protected:
 	R::RContainer<GLink,true,true> LinkSet;
 
 	/**
-	* Subjects of the document.
-	*/
-	R::RContainer<GSubject,false,true> Subjects;
-	
-	/**
 	* Id of the owner
 	*/
 	unsigned int OwnerId;
-	
 
 public:
 
@@ -397,37 +391,6 @@ proxy:
 	* @return GLinkCursor.
 	*/
 	R::RCursor<GLink> GetLinkCursor(void);
-
-	/**
-	* Insert a new subject for this document.
-	* @param s              Subject.
-	*/
-	void InsertSubject(GSubject* s);
-
-	/**
-	* Look if a document is from a given subject.
-	* @param s              Subject.
-	* @return bool
-	*/
-	bool IsFromSubject(const GSubject* s);
-
-	/**
-	* Look if a document is in the parent subject.
-	* @param s              Subject.
-	* @return bool
-	*/
-	bool IsFromParentSubject(const GSubject* s);
-
-	/**
-	* Get a Cursor on the subjects.
-	* @return GSubjectCursor.
-	*/
-	R::RCursor<GSubject> GetSubjectCursor(void);
-
-	/**
-	* Get the number of subjects associated with the document.
-	*/
-	unsigned int GetNbSubjects(void);
 
 	/**
 	* Update the document by assigning it a set of information and a language.

@@ -832,10 +832,8 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 			{
 				d=session->GetDoc(atoi(subdocs[0]));
 				if(!d) continue;
-				s=session->GetSubjects()->GetSubject(atoi(subdocs[1]));
-				if(!s) continue;
-				s->InsertDoc(d);
-				d->InsertSubject(s);
+				if(session->GetSubjects())
+					session->GetSubjects()->InsertDocSubject(d,atoi(subdocs[1]));
 			}
 		}
 	}

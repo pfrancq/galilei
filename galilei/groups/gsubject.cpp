@@ -127,6 +127,7 @@ RString GSubject::GetFullName(void) const
 	return(ret);
 }
 
+
 //------------------------------------------------------------------------------
 void GSubject::SetUsed(bool b)
 {

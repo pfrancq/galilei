@@ -6,7 +6,7 @@
 
 	Proxy for class GDoc - Header.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		CProxy program
@@ -66,7 +66,7 @@ public:
 	virtual GLang* GetLang(void) const {return(Obj->GetLang());}
 	virtual unsigned int GetId(void) const {return(Obj->GetId());}
 	virtual void SetId(unsigned int id) throw(GException) {Obj->SetId(id);}
-	virtual unsigned int GetOwnerId(void) const {return(Obj->GetOwnerId());};
+	virtual unsigned int GetOwnerId(void) const {return(Obj->GetOwnerId());}
 	virtual unsigned int GetFailed(void) const {return(Obj->GetFailed());}
 	virtual void InitFailed(void) {Obj->InitFailed();}
 	virtual void IncFailed(void) {Obj->IncFailed();}
@@ -84,15 +84,11 @@ public:
 	virtual void InsertFdbk(unsigned int id) throw(std::bad_alloc) {Obj->InsertFdbk(id);}
 	virtual void DeleteFdbk(unsigned int id) throw(std::bad_alloc) {Obj->DeleteFdbk(id);}
 	virtual void ClearFdbks(void) {Obj->ClearFdbks();}
+	virtual unsigned int GetNbFdbks(void) const {return(Obj->GetNbFdbks());}
 	virtual unsigned int GetNbLinks(void) {return(Obj->GetNbLinks());}
 	virtual void InsertLink(const GDoc* doc) throw(std::bad_alloc) {Obj->InsertLink(doc);}
 	virtual void InsertLink(const GDoc* doc, unsigned int nbOccurs) throw(std::bad_alloc) {Obj->InsertLink(doc,nbOccurs);}
 	virtual R::RCursor<GLink> GetLinkCursor(void) {return(Obj->GetLinkCursor());}
-	virtual void InsertSubject(GSubject* s) {Obj->InsertSubject(s);}
-	virtual bool IsFromSubject(const GSubject* s) {return(Obj->IsFromSubject(s));}
-	virtual bool IsFromParentSubject(const GSubject* s) {return(Obj->IsFromParentSubject(s));}
-	virtual R::RCursor<GSubject> GetSubjectCursor(void) {return(Obj->GetSubjectCursor());}
-	virtual unsigned int GetNbSubjects(void) {return(Obj->GetNbSubjects());}
 	virtual void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed) {Obj->Update(lang,infos,computed);}
 	virtual ~GDocProxyMem(void) {}
 };

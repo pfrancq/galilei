@@ -53,7 +53,7 @@ using namespace R;
 GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const RString& u,const RString& a,unsigned int f,unsigned int ownerid,unsigned int nbf) throw(std::bad_alloc)
 	:  GWeightInfos(60), URL(url), Name(name), Id(id),
 	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
-	  Failed(f), LinkSet(5,2),Subjects(2,1), OwnerId(ownerid)
+	  Failed(f), LinkSet(5,2)/*,Subjects(2,1)*/, OwnerId(ownerid)
 {
 	if(Updated>Computed)
 	{
@@ -71,7 +71,7 @@ GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,co
 GDoc::GDoc(const RString& url,const RString& name,const RString& mime) throw(std::bad_alloc)
 	: GWeightInfos(60), URL(url), Name(name), Id(cNoRef),
 	  Lang(0), MIMEType(mime), Updated(), Computed(), Fdbks(50,25),
-	  Failed(0), LinkSet(5,2),Subjects(2,1)
+	  Failed(0), LinkSet(5,2)//,Subjects(2,1)
 {
 	if(Updated>Computed)
 	{
@@ -340,51 +340,6 @@ R::RCursor<GLink> GDoc::GetLinkCursor(void)
 {
 	R::RCursor<GLink> cur(LinkSet);
 	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::InsertSubject(GSubject* s)
-{
-	Subjects.InsertPtr(s);
-}
-
-
-//------------------------------------------------------------------------------
-bool GDoc::IsFromSubject(const GSubject* s)
-{
-	return(Subjects.IsIn(s));
-}
-
-
-//------------------------------------------------------------------------------
-bool GDoc::IsFromParentSubject(const GSubject* s)
-{
-	R::RCursor<GSubject> Sub;
-
-	if(!s->Parent) return(false);
-	Sub.Set(s->Parent);
-	for(Sub.Start();!Sub.End();Sub.Next())
-	{
-		if(Sub()==s) continue;
-		if(Subjects.IsIn(Sub())) return(true);
-	}
-	return(false);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GSubject> GDoc::GetSubjectCursor(void)
-{
-	R::RCursor<GSubject> cur(Subjects);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
-unsigned int GDoc::GetNbSubjects(void)
-{
-	return(Subjects.GetNb());
 }
 
 

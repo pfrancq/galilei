@@ -126,7 +126,7 @@ protected:
 	/**
 	* Temporary Array of documents.
 	*/
-	GDoc** Docs;
+	GDoc** tmpDocs;
 
 	/**
 	* Number of documents actually managed.
@@ -179,9 +179,14 @@ protected:
 	R::RContainer<GroupScore,true,true> GroupsScore;
 
 	/**
-	* Identificator of the subjects for the subprofiles.
+	* Subjects for the subprofiles.
 	*/
 	R::RContainer<GSubject,false,false> SubProfiles;
+
+	/**
+	* Subjects for the documents.
+	*/
+	R::RContainer<R::RContainer<GSubject,false,false>,true,false> Docs;
 
 public:
 
@@ -344,6 +349,71 @@ public:
 	* @param sub            Pointer to the subprofile.
 	*/
 	GSubject* GetSubject(GSubProfile* sub);
+
+	/**
+	* Add a given document to a subject.
+	* @param doc            Pointer to the document.
+	* @param subjectid      Identificator of the subject.
+	*/
+	void InsertDocSubject(GDoc* doc,unsigned int subjectid);
+
+	/**
+	* Look if a document is from a given subject.
+	* @param doc            Pointer to the document.
+	* @param s              Pointer to the subject.
+	* @return bool
+	*/
+	bool IsFromSubject(GDoc* doc,const GSubject* s);
+
+	/**
+	* Look if a document is from a given subject.
+	* @param docid          Identificator of the document.
+	* @param s              Pointer to the subject.
+	* @return bool
+	*/
+	bool IsFromSubject(unsigned int docid,const GSubject* s);
+
+	/**
+	* Look if a document is in the parent subject.
+	* @param doc            Pointer to the document.
+	* @param s              Subject.
+	* @return bool
+	*/
+	bool IsFromParentSubject(GDoc* doc,const GSubject* s);
+
+	/**
+	* Look if a document is in the parent subject.
+	* @param docid          Identificator of the document.
+	* @param s              Subject.
+	* @return bool
+	*/
+	bool IsFromParentSubject(unsigned int doc,const GSubject* s);
+
+	/**
+	* Get a Cursor on the subjects of a given document.
+	* @param doc            Pointer to the document.
+	* @return GSubjectCursor.
+	*/
+	R::RCursor<GSubject> GetSubjectCursor(GDoc* doc);
+
+	/**
+	* Get a Cursor on the subjects of a given document.
+	* @param docid          Identificator of the document.
+	* @return GSubjectCursor.
+	*/
+	R::RCursor<GSubject> GetSubjectCursor(unsigned int docid);
+
+	/**
+	* Get the number of subjects associated with a given document.
+	* @param doc            Pointer to the document.
+	*/
+	unsigned int GetNbSubjects(GDoc* doc);
+
+	/**
+	* Get the number of subjects associated with a given document.
+	* @param docid          Identificator of the document.
+	*/
+	unsigned int GetNbSubjects(unsigned int docid);
 
 	/**
 	* Destructor of a subject.

@@ -102,8 +102,8 @@ public:
 //------------------------------------------------------------------------------
 GSubjects::GSubjects(GSession* session) throw(std::bad_alloc)
 	: RTree<GSubject,true,false>(100,50), GParams("Subjects"), Session(session),
-	  Docs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25), IdealGroups(0),
-	  GroupsScore(100,50), SubProfiles(1000)
+	  tmpDocs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25), IdealGroups(0),
+	  GroupsScore(100,50), SubProfiles(1000), Docs(5000)
 {
 	GParams::InsertPtr(new GParamDouble("PercOK",10.0));
 	GParams::InsertPtr(new GParamDouble("PercKO",10.0));
@@ -193,8 +193,8 @@ void GSubjects::CreateSet(void) throw(std::bad_alloc)
 		if(!lang) continue;
 		IdealGroups.InsertPtr(new GGroups(lang));
 	}*/
-	if(!Docs)
-		Docs=new GDoc*[Session->GetNbDocs()];
+	if(!tmpDocs)
+		tmpDocs=new GDoc*[Session->GetNbDocs()];
 
 //	Session->ClearFdbks();
 	Session->ReInit(false);
@@ -210,7 +210,7 @@ void GSubjects::CreateSet(void) throw(std::bad_alloc)
 		IdealGroups->InsertGroup(Grp=new GGroup(IdealGroups->GetNbGroups(),Subs()->GetLang(),false));
 
 		// Copy the documents of the same language of the session in Docs;
-		NbDocs=Session->FillDocs(Docs,Subs()->GetLang());
+		NbDocs=Session->FillDocs(tmpDocs,Subs()->GetLang());
 
 		// Number of subprofiles that will judge documents
 		if(NbProfMax>Subs()->GetNbSubProfiles())
@@ -258,13 +258,13 @@ void GSubjects::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsO
 	GDoc** ptr;
 
 	// Mix the documents
-	Session->GetRandom()->RandOrder<GDoc*>(Docs,NbDocs);
+	Session->GetRandom()->RandOrder<GDoc*>(tmpDocs,NbDocs);
 
 	// Go trought the documents to create the judgements
-	for(i=NbDocs+1,ptr=Docs,nbDocsOK=maxDocsOK,nbDocsKO=maxDocsKO,nbDocsH=maxDocsH;(--i)&&((nbDocsOK)||(nbDocsKO)||(nbDocsH));ptr++)
+	for(i=NbDocs+1,ptr=tmpDocs,nbDocsOK=maxDocsOK,nbDocsKO=maxDocsKO,nbDocsH=maxDocsH;(--i)&&((nbDocsOK)||(nbDocsKO)||(nbDocsH));ptr++)
 	{
 		// Look if 'OK'
-		if((*ptr)->IsFromSubject(sub))
+		if(IsFromSubject((*ptr),sub))
 		{
 			if(nbDocsOK)
 			{
@@ -275,7 +275,7 @@ void GSubjects::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsO
 		else
 		{
 			// Look If 'KO'
-			if((*ptr)->IsFromParentSubject(sub))
+			if(IsFromParentSubject((*ptr),sub))
 			{
 				if(nbDocsKO)
 				{
@@ -505,8 +505,8 @@ void GSubjects::CreateIdeal(bool Save) throw(std::bad_alloc)
 
 	// re-init the session
 	Session->ReInit(Save);
-	if(!Docs)
-		Docs=new GDoc*[Session->GetNbDocs()];
+	if(!tmpDocs)
+		tmpDocs=new GDoc*[Session->GetNbDocs()];
 	ChooseSubjects();
 	CreateSet();
 	if(Save)
@@ -539,14 +539,14 @@ void GSubjects::FdbksCycle(bool Save) throw(std::bad_alloc)
 			for(NewDocs.Start(),i=NbDocsAssess+1;(!NewDocs.End())&&(--i);NewDocs.Next())
 			{
 				// Look if 'OK'
-				if(NewDocs()->GetDoc()->IsFromSubject(GetSubject(SubProfile())))
+				if(IsFromSubject(NewDocs()->GetDoc()->GetId(),GetSubject(SubProfile())))
 				{
 					Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),NewDocs()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 				else
 				{
 					// Look If 'KO'
-					if(NewDocs()->GetDoc()->IsFromParentSubject(GetSubject(SubProfile())))
+					if(IsFromParentSubject(NewDocs()->GetDoc()->GetId(),GetSubject(SubProfile())))
 					{
 						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),NewDocs()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
@@ -584,7 +584,7 @@ void GSubjects::AddAssessments(bool Save) throw(std::bad_alloc)
 		if(!Subs()->IsUsed()) continue;
 
 		// Copy the documents of the same language of the session in Docs;
-		NbDocs=Session->FillDocs(Docs,Subs()->GetLang());
+		NbDocs=Session->FillDocs(tmpDocs,Subs()->GetLang());
 
 		// Go through the subprofiles attached to the subject
 		Prof=Subs()->GetSubProfilesCursor();
@@ -594,23 +594,23 @@ void GSubjects::AddAssessments(bool Save) throw(std::bad_alloc)
 			if(!Prof()->GetNbAssessedDocs()) continue;
 
 			// Mix the documents
-			Session->GetRandom()->RandOrder<GDoc*>(Docs,NbDocs);
+			Session->GetRandom()->RandOrder<GDoc*>(tmpDocs,NbDocs);
 
 			// Go trought the documents to create the judgements
-			for(i=NbDocsAssess+1,ptr=Docs;--i;ptr++)
+			for(i=NbDocsAssess+1,ptr=tmpDocs;--i;ptr++)
 			{
 				// Verify that the document is not already assigned to the profile
 				if(Prof()->GetProfile()->GetFdbk((*ptr)->GetId())) continue;
 
 				// Look if 'OK'
-				if((*ptr)->IsFromSubject(Subs()))
+				if(IsFromSubject((*ptr),Subs()))
 				{
 					Session->InsertFdbk(Prof()->GetProfile()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 				else
 				{
 					// Look If 'KO'
-					if((*ptr)->IsFromParentSubject(Subs()))
+					if(IsFromParentSubject((*ptr),Subs()))
 					{
 						Session->InsertFdbk(Prof()->GetProfile()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
@@ -670,7 +670,7 @@ bool GSubjects::AddTopic(bool Save) throw(std::bad_alloc)
 	IdealGroups->InsertGroup(Grp=new GGroup(IdealGroups->GetNbGroups(),newSubject->GetLang(),false));
 
 	// Copy the documents of the same language of the session in Docs;
-	NbDocs=Session->FillDocs(Docs,newSubject->GetLang());
+	NbDocs=Session->FillDocs(tmpDocs,newSubject->GetLang());
 
 	// Number of subprofiles that will judge documents
 	if(NbProfMax>newSubject->GetNbSubProfiles())
@@ -772,7 +772,7 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(std::bad_alloc)
 	}
 
 	// Copy the documents of the same language of the session in Docs;
-	NbDocs=Session->FillDocs(Docs,usedSubject->GetLang());
+	NbDocs=Session->FillDocs(tmpDocs,usedSubject->GetLang());
 
 	// Number of profiles that are social
 	nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
@@ -963,10 +963,110 @@ GSubject* GSubjects::GetSubject(GSubProfile* sub)
 
 
 //------------------------------------------------------------------------------
+void GSubjects::InsertDocSubject(GDoc* doc,unsigned int subjectid)
+{
+	GSubject* subject=RTree<GSubject,true,false>::GetPtr<unsigned int>(subjectid);
+	if(!subject)
+		return;
+	if(subject->GetLang()!=doc->GetLang())
+		return;
+	R::RContainer<GSubject,false,false>* line=Docs[doc->GetId()];
+	if(!line)
+	{
+		line=new R::RContainer<GSubject,false,false>(10,5);
+		Docs.InsertPtrAt(line,doc->GetId(),true);
+	}
+	line->InsertPtr(subject);
+	subject->InsertDoc(doc);
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubjects::IsFromSubject(GDoc* doc,const GSubject* s)
+{
+	return(IsFromSubject(doc->GetId(),s));
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubjects::IsFromSubject(unsigned int docid,const GSubject* s)
+{
+	R::RContainer<GSubject,false,false>* line=Docs[docid];
+	if(!line)
+		return(false);
+	return(line->IsIn(s));
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubjects::IsFromParentSubject(GDoc* doc,const GSubject* s)
+{
+	return(IsFromParentSubject(doc->GetId(),s));
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubjects::IsFromParentSubject(unsigned int docid,const GSubject* s)
+{
+	if(!s->Parent)
+		return(false);
+	R::RContainer<GSubject,false,false>* line=Docs[docid];
+	if(!line)
+		return(false);
+	R::RCursor<GSubject> Sub;
+
+	Sub.Set(s->Parent);
+	for(Sub.Start();!Sub.End();Sub.Next())
+	{
+		if(Sub()==s)
+			continue;
+		if(line->IsIn(Sub()))
+			return(true);
+	}
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+R::RCursor<GSubject> GSubjects::GetSubjectCursor(GDoc* doc)
+{
+	return(GetSubjectCursor(doc->GetId()));
+}
+
+
+//------------------------------------------------------------------------------
+R::RCursor<GSubject> GSubjects::GetSubjectCursor(unsigned int docid)
+{
+	R::RCursor<GSubject> cur;
+	R::RContainer<GSubject,false,false>* line=Docs[docid];
+	if(line)
+		cur.Set(line);
+	return(cur);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GSubjects::GetNbSubjects(GDoc* doc)
+{
+	return(GetNbSubjects(doc->GetId()));
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GSubjects::GetNbSubjects(unsigned int docid)
+{
+	R::RContainer<GSubject,false,false>* line=Docs[docid];
+	if(!line)
+		return(0);
+	return(line->GetNb());
+}
+
+
+//------------------------------------------------------------------------------
 GSubjects::~GSubjects(void)
 {
 	if(IdealGroups)
 		delete IdealGroups;
-	if(Docs)
-		delete[] Docs;
+	if(tmpDocs)
+		delete[] tmpDocs;
 }
