@@ -13,4 +13,4 @@ sessionsinclude_HEADERS = gprgfunc.h gprginst.h gprgvarconst.h gprgvarref.h \
 		gsession.h gsessionprg.h gtest.h gprgclass.h gprginstfor.h \
 		 gprginstmethod.h gprgvar.h gprgvarval.h gsessionmysql.h \
 		 gslot.h gslotlog.h gtests.h gparam.h gparams.h \
-		 gpluginmng.h gpluginmng.hh gplugin.h
+		 gplugin.h
