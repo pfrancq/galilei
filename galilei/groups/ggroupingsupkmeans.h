@@ -38,8 +38,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainercursor.h>
-//tmp
+#include <rstd/rcursor.h>
 #include <rga/robjs.h>
 
 

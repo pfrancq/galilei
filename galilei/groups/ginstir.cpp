@@ -278,7 +278,7 @@ GObjIR* GALILEI::GInstIR::GetObj(const GSubProfile* sub) const
 //-----------------------------------------------------------------------------
 bool GALILEI::GInstIR::StopCondition(void)
 {
-	return((Gen==Params->MaxGen)/*||(AgeBest==30)*/);
+	return(Gen==Params->MaxGen);
 }
 
 

@@ -433,7 +433,7 @@ void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RCon
 {
 	const char* ptr;
 	const char* endPtr;
-	char* url;
+	const char* url;
 	char* type;
 	char* format;
 	GDoc* tmpDoc=0;

@@ -38,7 +38,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainercursor.h>
+#include <rstd/rcursor.h>
 #include <rmath/random.h>
 using namespace RMath;
 using namespace RStd;

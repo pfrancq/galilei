@@ -36,7 +36,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainercursor.h>
+#include <rstd/rcursor.h>
 using namespace RStd;
 
 

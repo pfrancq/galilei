@@ -38,7 +38,7 @@
 
 //-----------------------------------------------------------------------------
 //include files for R Project
-#include <rstd/rcontainercursor.h>
+#include <rstd/rcursor.h>
 #include <rio/rtextfile.h>
 using namespace RIO;
 using namespace RStd;
@@ -97,7 +97,7 @@ GDocCursor& GALILEI::GSubject::GetDocsCursor()
 
 
 //-----------------------------------------------------------------------------
-unsigned int GSubject::GetNbDocs(void) const
+unsigned int GALILEI::GSubject::GetNbDocs(void) const
 {
 	return(Docs.NbPtr);
 }

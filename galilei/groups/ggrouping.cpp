@@ -36,7 +36,6 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainercursor.h>
 #include <rstd/rcursor.h>
 using namespace RStd;
 
@@ -155,7 +154,7 @@ void GALILEI::GGrouping::DeleteGroup(GGroup* grp)
 //-----------------------------------------------------------------------------
 void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 {
-	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
+	RCursor<GLang,unsigned int> CurLang(Session->GetLangs());
 	GGroupCalc* CalcDesc;
 	GSubProfileCursor cur;
 	GGroup* Grp;
