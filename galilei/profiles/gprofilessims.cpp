@@ -113,9 +113,10 @@ public:
 	double Deviation;                                     // Standart deviation of similarities
 	unsigned int OldNbComp;                               // Old number of comparisons
 	GProfilesSims* Manager;                               //manger of the gprofsim
-
 	// Identificators of modified profiles
 	RContainer<GSubProfile,unsigned int,false,true>* ModifiedProfs;
+
+	R::RTextFile* debug;
 
 	// Constructor and Compare methods.
 	GProfilesSim(GProfilesSims* manager,GSubProfileCursor& s,bool iff, bool memory,GLang* lang) throw(bad_alloc, GException);
@@ -123,7 +124,7 @@ public:
 	int Compare(const GProfilesSim* profilesSim) const {return(Lang->Compare(profilesSim->Lang));}
 
 	// compute the similarity betwwen tow subprofiles
-	void AnalyseSim(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2);
+	void AnalyseSim(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2) throw (GException);
 
 	// Get the similarities between two profiles.
 	double GetSim(const GSubProfile* s1,const GSubProfile* s2);
@@ -164,7 +165,7 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 	GSims* sim;
 	GSubProfileCursor s2;
 
-	//if memory is false, we don't stock a container of similarities.
+	// if memory is false, we don't stock a container of similarities.
 	// sims will be re-calculated eacht time.
 	if (!memory)
 		return;
@@ -184,16 +185,30 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 	if(!Cur1.GetNb()) return;
 	for(Cur1.Start(), i=0; !Cur1.End();Cur1.Next(),i++)
 	{
-		if (!Cur1()->IsDefined()) continue;
+		if ((!Cur1()->IsDefined())||(Cur1()->GetProfile()->GetId()==1)) continue;
 		pos=Cur1()->GetProfile()->GetId();
-		sim=new GSims(pos,pos-1);
+		sim=new GSims(pos,pos);
 		Sims->InsertPtrAt(sim,pos);
-		for(Cur2.Start(), j=0;j<i;Cur2.Next(),j++)
+		for(Cur2.Start(), j=0;j<i&&!Cur2.End();Cur2.Next(),j++)
 		{
 			if (!Cur2()->IsDefined()) continue;
 		 	AnalyseSim(sim,Cur1(),Cur2());
 		}
 	}
+
+	//tmp debug
+// 	debug=new RTextFile("../../../debug.txt", R::Append);
+// 	(*debug)<<"******************************** Lang = "<< Lang->GetCode()<<" *******************************"<<endl;
+// 	for (Sims->Start(); !Sims->End(); Sims->Next())
+// 	{
+// 		if (!(*Sims)()->NbPtr)
+// 			(*debug)<<"("<<(*Sims)()->SubId<<",X) = 0 elements"<<endl;
+// 		for ((*Sims)()->Start(); !(*Sims)()->End(); (*Sims)()->Next())
+// 			(*debug)<<"("<<(*Sims)()->SubId<<","<<(*(*Sims)())()->SubId<<")="<<(*(*Sims)())()->Sim<<"  ";;
+// 		(*debug)<<endl;
+// 	}
+
+
 
 	//mean calculation & deviation calculation
 	simssum=deviation=0.0;
@@ -223,15 +238,17 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 		MeanSim=Deviation=0.0;
 	if(Deviation<0)
 		throw("Negative Deviation in creating profiles similarities !");
-
+ 
 }
 
 
 //------------------------------------------------------------------------------
-void GProfilesSims::GProfilesSim::AnalyseSim(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2)
+void GProfilesSims::GProfilesSim::AnalyseSim(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2) throw (GException)
 {
 	double tmp;
 	unsigned int pos;
+
+//	cout <<" ----------------------------------analysing sim bewteen "<<sub1->GetId()<<" and "<<sub2->GetId()<<endl;
 
 	if(IFF)
 		tmp=sub1->SimilarityIFF(sub2);
@@ -239,6 +256,8 @@ void GProfilesSims::GProfilesSim::AnalyseSim(GSims* sim,const GSubProfile* sub1,
 		tmp=sub1->Similarity(sub2);
 	if(fabs(tmp)<Manager->GetNullSimLevel()) return;
 	pos=sub2->GetProfile()->GetId();
+	if (pos >=sub1->GetId())
+		throw (GException("Out of Range in Analyse similarities !"));
 	sim->InsertPtrAt(new GSim(pos,tmp,osUpdated), pos);
 
 }
@@ -299,7 +318,7 @@ double GProfilesSims::GProfilesSim::GetSim(const GSubProfile* sub1,const GSubPro
 
 
 //------------------------------------------------------------------------------
-void  GProfilesSims::GProfilesSim::Update(void) throw(bad_alloc)
+void GProfilesSims::GProfilesSim::Update(void) throw(bad_alloc)
 {
 	GSims* sims;
 
@@ -326,7 +345,7 @@ void  GProfilesSims::GProfilesSim::Update(void) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void  GProfilesSims::GProfilesSim::Update(bool iff) throw(bad_alloc)
+void GProfilesSims::GProfilesSim::Update(bool iff) throw(bad_alloc)
 {
 	// the type of similarity has changed => All the sims values must be updated.
 	if(iff!=IFF)
@@ -344,12 +363,14 @@ void  GProfilesSims::GProfilesSim::Update(bool iff) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GSims*  GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
+GSims* GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 {
 	GSims* sims, *tmpsims;
 	GSubProfileCursor subcur;
 
+	if (!sub->IsDefined()) return(0);
 	sims=new GSims(sub->GetProfile()->GetId(),sub->GetProfile()->GetId()-1);
+	Sims->InsertPtrAt(sims, sub->GetProfile()->GetId());
         subcur=Manager->GetSession()->GetSubProfilesCursor(Lang);
 
 	for (subcur.Start(); !subcur.End(); subcur.Next())
@@ -401,13 +422,13 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor& subprofile
 	for(subprofiles.Start(),i=0,j=subprofiles.GetNb();--j;subprofiles.Next(),i++)
 	{
 		if(!(subprofiles)()->IsDefined()) continue;
-		for(subprofiles2.GoTo(i+1);!subprofiles2.End();subprofiles2.Next())
+		sims=Sims->GetPtrAt(subprofiles()->GetProfile()->GetId());
+		if (!sims)
+			throw(GException("Sims not present in Update Mean similarities"));
+		for(subprofiles2.Start(),j=0;!subprofiles2.End()&&j<i;subprofiles2.Next(),j++)
 		{
 			if(!(subprofiles2)()->IsDefined()) continue;
-			sims=Sims->GetPtrAt(subprofiles2()->GetProfile()->GetId());
-			if (!sims)
-				throw(GException("Sims not present in Update Mean similarities"));
-			sim=sims->GetPtrAt(subprofiles()->GetProfile()->GetId());
+			sim=sims->GetPtrAt(subprofiles2()->GetProfile()->GetId());
 			// if the similarity isn't in profsim, continue
 			if(!sim) continue;
 			// if the similarity is in "modified" state :
