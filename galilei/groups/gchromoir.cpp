@@ -52,7 +52,7 @@ using namespace RGA;
 //-----------------------------------------------------------------------------
 GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
   : RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
-    Sims(0), MinSimLevel(0), AvgSim(0.0), AvgProf(0.0)
+    Sims(0), MinSimLevel(0), AvgSim(0.0), AvgProf(0.0), OKFactor(0.0), DiffFactor(1.0)
 {
 	(*Fitness)=0.0;
 }
@@ -71,6 +71,9 @@ void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::Evaluate(void)
 {
+	GSubProfilesSameGroupIR* ptr;
+
+	// Compute Average Similarity inside the groups
 	AvgSim=AvgProf=0.0;
 	if(!Used.NbPtr)
 		return;
@@ -81,6 +84,36 @@ void GALILEI::GChromoIR::Evaluate(void)
 	}
 	AvgSim/=((double)Used.NbPtr);
 	AvgProf/=((double)Used.NbPtr);
+
+	// Number of subprofiles having common OK documents and being in the same group.
+	OKFactor=0.0;
+	for(Instance->SameGroups.Start();!Instance->SameGroups.End();Instance->SameGroups.Next())
+	{
+		ptr=Instance->SameGroups();
+		if(ObjectsAss[ptr->Id1]==ObjectsAss[ptr->Id2])
+			OKFactor+=1.0;
+	}
+	if(Instance->SameGroups.NbPtr)
+	{
+		OKFactor/=Instance->SameGroups.NbPtr;
+	}
+	else
+	{
+		OKFactor=1.0;
+	}
+
+	// Number of subprofiles having common documents with different judgment and being in the same group.
+	DiffFactor=0.0;
+	for(Instance->DiffGroups.Start();!Instance->DiffGroups.End();Instance->DiffGroups.Next())
+	{
+		ptr=Instance->DiffGroups();
+		if(ObjectsAss[ptr->Id1]==ObjectsAss[ptr->Id2])
+			DiffFactor+=1.0;
+	}
+	if(Instance->DiffGroups.NbPtr)
+	{
+		DiffFactor/=Instance->DiffGroups.NbPtr;
+	}
 }
 
 
@@ -92,14 +125,21 @@ void GALILEI::GChromoIR::LocalOptimisation(void)
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+bool GALILEI::GChromoIR::SameGroup(unsigned int obj1,unsigned int obj2) const
+{
+	return(ObjectsAss[obj1]==ObjectsAss[obj2]);
+}
+
+
+//-----------------------------------------------------------------------------
 GChromoIR& GALILEI::GChromoIR::operator=(const GChromoIR& chromo)
 {
 	RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::operator=(chromo);
-	for(Used.Start();!Used.End();Used.Next())
-		Used()->ComputeAvgSim();
 	AvgSim=chromo.AvgSim;
 	AvgProf=chromo.AvgProf;
+	OKFactor=chromo.OKFactor;
+	DiffFactor=chromo.DiffFactor;
 	return(*this);
 }
 

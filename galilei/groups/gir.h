@@ -60,7 +60,7 @@ class GThreadDataIR;
 class GChromoIR;
 class GInstIR;
 class GObjIR;
-
+class GSubProfilesSameGroupIR;
 
 //-----------------------------------------------------------------------------
 /**

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GInstIR.h
+	GInstIR.cpp
 
 	Instance for an IR Problem - Implementation
 
@@ -46,6 +46,7 @@ using namespace RPromethee;
 #include <groups/ggroupir.h>
 #include <groups/gobjir.h>
 #include <profiles/gprofilessim.h>
+#include <profiles/gsubprofile.h>
 using namespace GALILEI;
 using namespace RGGA;
 using namespace RGA;
@@ -75,14 +76,36 @@ GALILEI::GThreadDataIR::GThreadDataIR(GInstIR* owner)
 //-----------------------------------------------------------------------------
 GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,HeuristicType h,RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(popsize,objs,h,debug),
-	  RPromKernel("GALILEI",PopSize+1,2),
-	  Sims(s), MinSimLevel(m), MaxGen(max),CritSim(0),CritNb(0), Sols(0)
+	  RPromKernel("GALILEI",PopSize+1,2), Sims(s), SameGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
+	  DiffGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
+	  MinSimLevel(m), MaxGen(max), CritSim(0), CritNb(0), CritOKDocs(0), Sols(0)
 {
 	RPromSol** ptr;
-	unsigned int i;
+	RCursor<GObjIR,unsigned int> Cur1;
+	RCursor<GObjIR,unsigned int> Cur2;
+	unsigned int i,j,nb;
 
+	// Init subprofiles that are in the same group
+	Cur1.Set(objs);
+	Cur2.Set(objs);
+	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
+	{
+		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
+		{
+			nb=Cur1()->GetSubProfile()->GetCommonOKDocs(Cur2()->GetSubProfile());
+			if(nb)
+				SameGroups.InsertPtr(new GSubProfilesSameGroupIR(Cur1()->GetId(),Cur2()->GetId(),nb));
+			nb=Cur1()->GetSubProfile()->GetCommonDiffDocs(Cur2()->GetSubProfile());
+			if(nb)
+				DiffGroups.InsertPtr(new GSubProfilesSameGroupIR(Cur1()->GetId(),Cur2()->GetId(),nb));
+		}
+	}
+
+	// Init Criterion and Solutions of the PROMETHEE part
 	CritSim=NewCriterion(Maximize,"Similarities",0.2,0.05,1.0);
 	CritNb=NewCriterion(Maximize,"Profiles",0.2,0.05,1.0);
+	CritOKDocs=NewCriterion(Maximize,"Common OK Documents",0.2,0.05,1.0);
+	CritDiffDocs=NewCriterion(Minimize,"Common Documents with different Judgment",0.2,0.05,1.0);
 	Sols=new RPromSol*[PopSize+1];
 	if(Sols)
 	{
@@ -103,7 +126,8 @@ bool GALILEI::GInstIR::StopCondition(void)
 void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 {
 	unsigned int i;
-	GChromoIR **C;
+	GChromoIR** C;
+ 	GChromoIR* s;
 	RPromSol** Res;
 	RPromSol** ptr;
 	double r;
@@ -114,10 +138,14 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	ptr=Sols;
 	Assign((*ptr),CritSim,BestChromosome->AvgSim);
 	Assign((*ptr),CritNb,BestChromosome->AvgProf);
+	Assign((*ptr),CritOKDocs,BestChromosome->OKFactor);
+	Assign((*ptr),CritDiffDocs,BestChromosome->DiffFactor);
 	for(i=PopSize+1,C=Chromosomes,ptr++;--i;C++,ptr++)
 	{
 		Assign((*ptr),CritSim,(*C)->AvgSim);
 		Assign((*ptr),CritNb,(*C)->AvgProf);
+		Assign((*ptr),CritOKDocs,(*C)->OKFactor);
+		Assign((*ptr),CritDiffDocs,(*C)->DiffFactor);
 	}
 	ComputePrometheeII();
 	Res=GetSols();
@@ -125,27 +153,54 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 
 	// Look if the best chromosome ever is still the best -> If not, change
 	// the fitness of the best solution.
+	cout<<"Id\t\tAvg. Sim\t\tAvg. Prof\t\tOK Factor\t\tDiff Factor"<<endl;
+	cout<<(*ptr)->GetId()<<"\t\t";
 	if((*ptr)->GetId())
+	{
 		(*Chromosomes[(*ptr)->GetId()-1]->Fitness)=Gen+1.1;
+		s=Chromosomes[(*ptr)->GetId()-1];
+		cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
+	}
+	else
+	{
+		cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
+	}
 	ptr++;
 
 	//  The second best has the fitness of 1
+	cout<<(*ptr)->GetId()<<"\t\t";
 	if((*ptr)->GetId()==0)
+	{
 		(*BestChromosome->Fitness)=1.0;
+		cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
+	}
 	else
+	{
 		(*Chromosomes[(*ptr)->GetId()-1]->Fitness)=1.0;
+		s=Chromosomes[(*ptr)->GetId()-1];
+		cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
+	}
 
 	// Look for the rest
 	for(i=PopSize,ptr++;--i;ptr++)
 	{
 		r=((double)i)/((double)(PopSize));
+		cout<<(*ptr)->GetId()<<"\t\t";
 		if((*ptr)->GetId()==0)
+		{
 			(*BestChromosome->Fitness)=r;
+			cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
+		}
 		else
+		{
 			(*Chromosomes[(*ptr)->GetId()-1]->Fitness)=r;
+			s=Chromosomes[(*ptr)->GetId()-1];
+			cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
+		}
 	}
 
 	// Delete the resulting array
+	cout<<endl<<endl;
 	delete[] Res;
 
 	#ifdef RGADEBUG

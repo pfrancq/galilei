@@ -81,6 +81,18 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 	*/
 	double AvgProf;
 
+	/**
+	* Factor representing the part of subprofiles having common OK documents
+	* and that are in the same group.
+	*/
+	double OKFactor;
+
+	/**
+	* Factor representing the part of subprofiles having common documents but
+	* with different judgements and that are in the same group.
+	*/
+	double DiffFactor;
+
 public:
 
 	/**
@@ -106,6 +118,14 @@ public:
 	* Does a local optimisation for the chromosome.
 	*/
 	virtual void LocalOptimisation(void);
+
+	/**
+	* Look if two subprofiles are in the same group or not.
+	* @param obj1           Identificator of the first subprofile.
+	* @param obj2           Identificator of the second subprofile.
+	* @return true if they are in the same group, else false.
+	*/
+	bool SameGroup(unsigned int obj1,unsigned int obj2) const;
 
 	/**
 	* The assigment operator.

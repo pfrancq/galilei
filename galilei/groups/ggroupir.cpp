@@ -155,7 +155,7 @@ void GALILEI::GGroupIR::DoOptimisation(void)
 	GObjIR** tab;
 	GGroupIR* grp;
 
-	if(NbSubObjects<=1) return;
+	if(NbSubObjects<2) return;
 	tab=new GObjIR*[NbSubObjects];
 	sub=Owner->GetObj(SubObjects+Owner->Instance->RRand(NbSubObjects))->GetSubProfile();
 	Avg=0.0;
@@ -191,7 +191,6 @@ void GALILEI::GGroupIR::DoOptimisation(void)
 
 //---------------------------------------------------------------------------
 GGroupIR& GALILEI::GGroupIR::operator=(const GGroupIR& grp)
-
 {
 	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::operator=(grp);
 	AvgSim=grp.AvgSim;

@@ -73,6 +73,46 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
+* The GSubProfileSamesGroupIR class provides a representation of a couple of
+* subprofiles having a number of OK documents in common.
+*/
+class GSubProfilesSameGroupIR
+{
+public:
+
+	/**
+	* Identificator of the first subprofile.
+	*/
+	unsigned int Id1;
+
+	/**
+	* Identificator of the Second subprofile.
+	*/
+	unsigned int Id2;
+
+	/**
+	* Number of judgement documents in common.
+	*/
+	unsigned int NbDocs;
+
+	/**
+	* Constructor.
+	* @param i1             Identificator of the first subprofile.
+	* @param i2             Identificator of the second subprofile.
+	* @param nb             Number of common documents judged.
+	*/
+	GSubProfilesSameGroupIR(unsigned int i1,unsigned int i2,unsigned int nb)
+		: Id1(i1), Id2(i2), NbDocs(nb) {}
+
+	/**
+	* Compare method by RStd::RContainer.
+	*/
+	int Compare(const GSubProfilesSameGroupIR*) const {return(-1);}
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * The instance of the IR problem.
 * @author Pascal Francq
 * @short IR Instance.
@@ -83,6 +123,16 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	* Similarities between the subprofiles to group.
 	*/
 	GProfilesSim* Sims;
+
+	/**
+	* Couples of subprofiles having common OK documents.
+	*/
+	RStd::RContainer<GSubProfilesSameGroupIR,unsigned int,true,false> SameGroups;
+
+	/**
+	* Couples of subprofiles having common documents with different judgement.
+	*/
+	RStd::RContainer<GSubProfilesSameGroupIR,unsigned int,true,false> DiffGroups;
 
 	/**
 	* Minimum similarity level between the profiles of a group.
@@ -104,6 +154,18 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	* Criteria representing the average number of profiles per groups.
 	*/
 	RPromethee::RPromCriterion* CritNb;
+
+	/**
+	* Criteria representing the factor depending on the subprofiles having
+	* common OK documents.
+	*/
+	RPromethee::RPromCriterion* CritOKDocs;
+
+	/**
+	* Criteria representing the factor depending on the subprofiles having
+	* common documents but with opposite judgement.
+	*/
+	RPromethee::RPromCriterion* CritDiffDocs;
 
 	/**
 	* Solutions corresponding to the chromosome.
