@@ -89,9 +89,16 @@ int GALILEI::GDoc::Compare(const GLang* lang) const
 //-----------------------------------------------------------------------------
 bool GALILEI::GDoc::ExtractWord(const char* &ptr,RString& word)
 {
-	unsigned len=0;
+	unsigned len;
 	const char* begin;
-	bool Cont=true;
+	bool Cont;
+	bool Letter=false;
+
+BeginExtract:
+
+	// Init Part
+	len=0;
+	Cont=true;
 
 	// Skip spaces and punctation.
 	while((*ptr)&&(!isalnum(*ptr)))
@@ -104,15 +111,17 @@ bool GALILEI::GDoc::ExtractWord(const char* &ptr,RString& word)
 		// Read word --> look for a non alphanumeric character.
 		while((*ptr)&&(isalnum(*ptr)))
 		{
+			if(!isdigit(*ptr))
+				Letter=true;
 			len++;
 			ptr++;
 		}
 		Cont=false;   // Normally, end of the word.
 		if(!(*ptr)) continue;
 
-		// If the next character is in {-'./\@} and no blank space after,
+		// If the next character is in {-./\@} and no blank space after,
 		// then continue the word.
-		if((strchr("\'-.@\\/",*ptr))&&(isalnum(*(ptr+1))))
+		if((strchr("-.@\\/",*ptr))&&(isalnum(*(ptr+1))))
 		{
 			Cont=true;
 			ptr++;
@@ -120,9 +129,14 @@ bool GALILEI::GDoc::ExtractWord(const char* &ptr,RString& word)
 		}
 	}
 
-	// If len is not null, copy result in word and return true, else return
-	// false.
+	// If len null, return (nothing else to extract)
 	if(!len) return(false);
+
+	// If just numbers or special characters, extract next word.
+	if(!Letter)
+		goto BeginExtract;
+
+	// Copy result in word, make it lower case and return true.
 	word.Copy(begin,len);
 	word.StrLwr();
 	return(true);
@@ -159,7 +173,7 @@ void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw
 {
 	cout<<tag->GetName()<<endl;
 	const char* ptr;
-	RString word(50);
+	RString word(50),stem(50);
 	GIWordOccur* Occur;
 
 	if(tag->GetName()=="Sentence")
@@ -172,7 +186,8 @@ void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw
 				NbWords++;
 				if(!stop->IsIn(word))
 				{
-					Occur=Words.GetPtr(dic->GetId(word));
+					stem=Lang->GetStemming(word);
+					Occur=Words.GetPtr(dic->GetId(stem));
 					if(!Occur->GetNbOccurs()) NbDiffWords++;
 					Occur->IncOccurs();
 				}
@@ -202,7 +217,6 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 
 	// Find Language with the maximal number of words of the stoplist contained
 	// in the document.
-	cout<<"Nb Words: "<<AnalyseTagForStopKwd(content,0)<<endl;
 	max=0;
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
