@@ -126,6 +126,10 @@ void KGALILEICenterApp::slotDocsOptions(void)
 	dlg.txtMinWordSize->setValue(DocOptions->MinWordSize);
 	dlg.txtMinStemSize->setValue(DocOptions->MinStemSize);
 	dlg.txtMinOcc->setValue(DocOptions->MinOccur);
+	dlg.txtMinDocs->setValue(DocOptions->MinDocs);
+	dlg.txtMaxDocs->setValue(DocOptions->MaxDocs);
+	dlg.txtMinOccC->setValue(DocOptions->MinOccurCluster);
+	dlg.txtNbIteration->setValue(DocOptions->NbIteration);
 	dlg.cbNonWord->setChecked(DocOptions->NonLetterWords);
 	dlg.frameNonWord->setEnabled(DocOptions->NonLetterWords);
 	for(Filters.Start();!Filters.End();Filters.Next())
@@ -139,6 +143,10 @@ void KGALILEICenterApp::slotDocsOptions(void)
 		DocOptions->MinWordSize=dlg.txtMinWordSize->value();
 		DocOptions->MinStemSize=dlg.txtMinStemSize->value();
 		DocOptions->MinOccur=dlg.txtMinOcc->value();
+		DocOptions->MinDocs=dlg.txtMinDocs->value();
+		DocOptions->MaxDocs=dlg.txtMaxDocs->value();
+		DocOptions->MinOccurCluster=dlg.txtMinOccC->value();
+		DocOptions->NbIteration=dlg.txtNbIteration->value();
 		DocOptions->NonLetterWords=dlg.cbNonWord->isChecked();
 	}
 }

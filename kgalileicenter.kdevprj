@@ -32,7 +32,7 @@ configure_args=--prefix=/usr/lib/kde3 --enable-debug\s
 debug_args=-dograb
 email=pfrancq@ulb.ac.be
 kdevprj_version=1.3
-lfv_open_groups=
+lfv_open_groups=Headers - Langs
 make_options=\s-j2
 makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am,kgalileicenter/r/rgga/Makefile.am,kgalileicenter/r/rpromethee/Makefile.am,kgalileicenter/qtwidgets/rpromethee/Makefile.am,kgalileicenter/galilei/tests/Makefile.am
 modifyMakefiles=true
@@ -163,7 +163,7 @@ sub_dirs=docs,filters,groups,infos,langs,profiles,sessions,urlmanagers,tests
 type=static_library
 
 [kgalileicenter/galilei/docs/Makefile.am]
-files=kgalileicenter/galilei/docs/gdcmetadata.cpp,kgalileicenter/galilei/docs/gdcmetadata.h,kgalileicenter/galilei/docs/gdoc.cpp,kgalileicenter/galilei/docs/gdoc.h,kgalileicenter/galilei/docs/gdocanalyse.cpp,kgalileicenter/galilei/docs/gdocanalyse.h,kgalileicenter/galilei/docs/gdoclist.cpp,kgalileicenter/galilei/docs/gdoclist.h,kgalileicenter/galilei/docs/gdocs.cpp,kgalileicenter/galilei/docs/gdocs.h,kgalileicenter/galilei/docs/gdocxml.cpp,kgalileicenter/galilei/docs/gdocxml.h,kgalileicenter/galilei/docs/gdocoptions.cpp,kgalileicenter/galilei/docs/gdocoptions.h,kgalileicenter/galilei/docs/gdocssim.h,kgalileicenter/galilei/docs/gdocssim.cpp,kgalileicenter/galilei/docs/gdocvector.cpp,kgalileicenter/galilei/docs/gdocvector.h,kgalileicenter/galilei/docs/gdocsim.cpp,kgalileicenter/galilei/docs/gdocsim.h,kgalileicenter/galilei/docs/gdocprofsim.cpp,kgalileicenter/galilei/docs/gdocprofsim.h,kgalileicenter/galilei/docs/gdocprofsims.cpp,kgalileicenter/galilei/docs/gdocprofsims.h,kgalileicenter/galilei/docs/gdocslang.cpp,kgalileicenter/galilei/docs/gdocslang.h
+files=kgalileicenter/galilei/docs/gdcmetadata.cpp,kgalileicenter/galilei/docs/gdcmetadata.h,kgalileicenter/galilei/docs/gdoc.cpp,kgalileicenter/galilei/docs/gdoc.h,kgalileicenter/galilei/docs/gdocanalyse.cpp,kgalileicenter/galilei/docs/gdocanalyse.h,kgalileicenter/galilei/docs/gdoclist.cpp,kgalileicenter/galilei/docs/gdoclist.h,kgalileicenter/galilei/docs/gdocs.cpp,kgalileicenter/galilei/docs/gdocs.h,kgalileicenter/galilei/docs/gdocxml.cpp,kgalileicenter/galilei/docs/gdocxml.h,kgalileicenter/galilei/docs/gdocoptions.cpp,kgalileicenter/galilei/docs/gdocoptions.h,kgalileicenter/galilei/docs/gdocssim.h,kgalileicenter/galilei/docs/gdocssim.cpp,kgalileicenter/galilei/docs/gdocvector.cpp,kgalileicenter/galilei/docs/gdocvector.h,kgalileicenter/galilei/docs/gdocsim.cpp,kgalileicenter/galilei/docs/gdocsim.h,kgalileicenter/galilei/docs/gdocprofsim.cpp,kgalileicenter/galilei/docs/gdocprofsim.h,kgalileicenter/galilei/docs/gdocprofsims.cpp,kgalileicenter/galilei/docs/gdocprofsims.h,kgalileicenter/galilei/docs/gdocslang.cpp,kgalileicenter/galilei/docs/gdocslang.h,kgalileicenter/galilei/docs/gwordsclustering.cpp,kgalileicenter/galilei/docs/gwordsclustering.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=docs
 sub_dirs=
@@ -320,6 +320,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/docs/gdocxml.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/docs/gwordsclustering.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/docs/gwordsclustering.h]
 dist=true
 install=false
 install_location=
@@ -929,7 +941,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/langs/Makefile.am]
-files=kgalileicenter/galilei/langs/gdict.cpp,kgalileicenter/galilei/langs/gdict.h,kgalileicenter/galilei/langs/gdicts.cpp,kgalileicenter/galilei/langs/gdicts.h,kgalileicenter/galilei/langs/glang.cpp,kgalileicenter/galilei/langs/glang.h,kgalileicenter/galilei/langs/glangen.cpp,kgalileicenter/galilei/langs/glangen.h,kgalileicenter/galilei/langs/glangfr.cpp,kgalileicenter/galilei/langs/glangfr.h,kgalileicenter/galilei/langs/glangs.cpp,kgalileicenter/galilei/langs/glangs.h,kgalileicenter/galilei/langs/gword.cpp,kgalileicenter/galilei/langs/gword.h
+files=kgalileicenter/galilei/langs/gdict.cpp,kgalileicenter/galilei/langs/gdict.h,kgalileicenter/galilei/langs/gdicts.cpp,kgalileicenter/galilei/langs/gdicts.h,kgalileicenter/galilei/langs/glang.cpp,kgalileicenter/galilei/langs/glang.h,kgalileicenter/galilei/langs/glangen.cpp,kgalileicenter/galilei/langs/glangen.h,kgalileicenter/galilei/langs/glangfr.cpp,kgalileicenter/galilei/langs/glangfr.h,kgalileicenter/galilei/langs/glangs.cpp,kgalileicenter/galilei/langs/glangs.h,kgalileicenter/galilei/langs/gword.cpp,kgalileicenter/galilei/langs/gword.h,kgalileicenter/galilei/langs/gwordlist.cpp,kgalileicenter/galilei/langs/gwordlist.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=langs
 sub_dirs=
@@ -1014,6 +1026,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/langs/gword.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/langs/gwordlist.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/langs/gwordlist.h]
 dist=true
 install=false
 install_location=

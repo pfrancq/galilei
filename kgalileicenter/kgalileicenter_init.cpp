@@ -140,6 +140,7 @@ void KGALILEICenterApp::initActions(void)
 
 	// Menu "Document"
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
+	wordsClusteringSave=new KToggleAction(i18n("Enables/disables Clusters of Words Saving"),0,0,0,actionCollection(),"wordsClusteringSave");
 	showDocs=new KAction(i18n("&Show Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
 	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");;
 	docsAnalyse=new KAction(i18n("&Analyse Documents"),0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");;
@@ -147,6 +148,7 @@ void KGALILEICenterApp::initActions(void)
 	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
 	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
 	analyseXML=new KAction(i18n("&Analyse XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
+	wordsClustering=new KAction(i18n("&Words Clustering"),0,this,SLOT(slotWordsClustering()),actionCollection(),"wordsClustering");
 
 	// Menu "Texts"
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
@@ -253,6 +255,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Always Calc Groups",groupAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Groups",groupAlwaysSave->isChecked());
 	Config->writeEntry("Always Calc Docs",docAlwaysCalc->isChecked());
+	Config->writeEntry("Always Save Clusters",wordsClusteringSave->isChecked());
 
 	Config->setGroup("Database Options");
 	Config->writeEntry("Host", dbHost());
@@ -267,6 +270,10 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Minimum Stem's Size",DocOptions->MinStemSize);
 	Config->writeEntry("Minimum Occurence",DocOptions->MinOccur);
 	Config->writeEntry("Accept Non-Letter words",DocOptions->NonLetterWords);
+	Config->writeEntry("Minimum Documents",DocOptions->MinDocs);
+	Config->writeEntry("Maximum Documents",DocOptions->MaxDocs);
+	Config->writeEntry("Minimum Occurence Clustering",DocOptions->MinOccurCluster);
+	Config->writeEntry("Iteration Number",DocOptions->NbIteration);
 
 	// Write Config of Session Options
 	Config->setGroup("Session Options");
@@ -411,6 +418,7 @@ void KGALILEICenterApp::readOptions(void)
 	groupAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Groups",false));
 	groupAlwaysSave->setChecked(Config->readBoolEntry("Always save Groups",true));
 	docAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Docs",false));
+	wordsClusteringSave->setChecked(Config->readBoolEntry("Always Save Clusters",false));
 
 	// Size
 	QSize size=Config->readSizeEntry("Geometry");
@@ -431,6 +439,10 @@ void KGALILEICenterApp::readOptions(void)
 	DocOptions->MinStemSize=Config->readUnsignedNumEntry("Minimum Stem's Size",3);
 	DocOptions->MinOccur=Config->readUnsignedNumEntry("Minimum Occurence",1);
 	DocOptions->NonLetterWords=Config->readBoolEntry("Accept Non-Letter words",true);
+	DocOptions->MinDocs=Config->readUnsignedNumEntry("Minimum Documents",5);
+	DocOptions->MaxDocs=Config->readUnsignedNumEntry("Maximum Documents",300);
+	DocOptions->MinOccurCluster=Config->readUnsignedNumEntry("Minimum Occurence Clustering",2);
+	DocOptions->NbIteration=Config->readUnsignedNumEntry("Iteration Number",2);
 
 	// Read Session Options
 	GroupingMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
@@ -620,6 +632,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	createXML->setEnabled(false);
 	saveXML->setEnabled(false);
 	analyseXML->setEnabled(false);
+	wordsClustering->setEnabled(false);
 	groupsCalc->setEnabled(false);
 	mixIdealGroups->setEnabled(false);
 	showDocs->setEnabled(false);

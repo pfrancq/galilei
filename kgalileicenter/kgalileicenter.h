@@ -605,6 +605,11 @@ private slots:
 	void slotAnalyseXML(void);
 
 	/**
+	* Create clusters of words.
+	*/
+	void slotWordsClustering(void);
+
+	/**
 	* Do some computing on the stems in french.
 	*/
 	void slotTextFrench(void);
@@ -771,6 +776,7 @@ public:
 	KAction* mixIdealGroups;
 
 	KToggleAction* docAlwaysCalc;
+	KToggleAction* wordsClusteringSave;
 	KAction* showDocs;
 	KAction* docAnalyse;
 	KAction* docsAnalyse;
@@ -778,6 +784,7 @@ public:
 	KAction* createXML;
 	KAction* saveXML;
 	KAction* analyseXML;
+	KAction* wordsClustering;
 
 	KAction* textFrench;
 	KAction* textEnglish;

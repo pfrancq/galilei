@@ -47,6 +47,7 @@
 	</Menu>
 	<Menu name="Documents"><text>&amp;Documents</text>
 		<Action name="docAlwaysCalc"/>
+		<Action name="wordsClusteringSave"/>
 		<Separator/>
 		<Action name="showDocs"/>
 		<Action name="docsStats"/>
@@ -57,6 +58,8 @@
 		<Action name="createXML"/>
  		<Action name="saveXML"/>
 		<Action name="analyseXML"/>
+		<separator/>
+		<Action name="wordsClustering"/>
 	</Menu>
 	<Menu name="Text"><text>&amp;Text</text>
 		<Separator/>

@@ -199,6 +199,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
 			sessionConnect->setEnabled(false);
+			wordsClustering->setEnabled(true);
  			rRunR->setEnabled(true);
 			textFrench->setEnabled(true);
 			textEnglish->setEnabled(true);
@@ -262,6 +263,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	sessionDisconnect->setEnabled(true);
 	sessionCompute->setEnabled(true);
 	sessionConnect->setEnabled(false);
+	wordsClustering->setEnabled(true);
  	rRunR->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
@@ -533,7 +535,7 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 		cmdline+= " ";
 		cmdline+= catdirectory;
 		cmdline+= "\n";
-		cout << cmdline<<endl;
+//		cout << cmdline<<endl;
 
 		// creation of the database using a shell script.
 		d=new QSessionProgressDlg(this,0,"filling database ...");
@@ -743,7 +745,12 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 	((KViewDoc*)m)->AnalyseDocXML();
 }
 
-
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotWordsClustering()
+{
+	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
+	Doc->GetSession()->AnalyseAssociation(wordsClusteringSave->isChecked());
+}
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotTextFrench(void)
 {
