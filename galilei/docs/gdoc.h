@@ -187,6 +187,11 @@ public:
 	void ClearInfos(void);
 
 	/**
+	* Clear The Fdbks Container
+	*/
+	void ClearFdbks (void);
+
+	/**
 	* Get the URL.
 	* @returns Pointer to a C string.
 	*/

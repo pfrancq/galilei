@@ -125,6 +125,13 @@ void GALILEI::GDoc::ClearInfos(void)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GDoc::ClearFdbks(void)
+{
+	Fdbks.Clear();
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd,GIWordsWeights* w)
 {
 	Lang=l;
