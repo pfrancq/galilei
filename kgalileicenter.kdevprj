@@ -26,7 +26,7 @@ ldadd=/usr/lib/libmysqlclient.so ${GCENTER}/galilei/sessions/libsessions.a ${GCE
 ldflags=\s                             \s
 
 [General]
-AMChanged=true
+AMChanged=false
 author=Pascal Francq
 configure_args=--prefix=/usr --enable-debug\s
 debug_args=-dograb
@@ -886,7 +886,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/infos/Makefile.am]
-files=kgalileicenter/galilei/infos/ginfo.cpp,kgalileicenter/galilei/infos/ginfo.h,kgalileicenter/galilei/infos/giword.cpp,kgalileicenter/galilei/infos/giword.h,kgalileicenter/galilei/infos/giwordlist.cpp,kgalileicenter/galilei/infos/giwordlist.h,kgalileicenter/galilei/infos/giwordsweights.cpp,kgalileicenter/galilei/infos/giwordsweights.h,kgalileicenter/galilei/infos/giwordweight.cpp,kgalileicenter/galilei/infos/giwordweight.h,kgalileicenter/galilei/infos/giwordsweightshistory.h
+files=kgalileicenter/galilei/infos/ginfo.cpp,kgalileicenter/galilei/infos/ginfo.h,kgalileicenter/galilei/infos/giword.cpp,kgalileicenter/galilei/infos/giword.h,kgalileicenter/galilei/infos/giwordlist.cpp,kgalileicenter/galilei/infos/giwordlist.h,kgalileicenter/galilei/infos/giwordsweights.cpp,kgalileicenter/galilei/infos/giwordsweights.h,kgalileicenter/galilei/infos/giwordweight.cpp,kgalileicenter/galilei/infos/giwordweight.h,kgalileicenter/galilei/infos/giwordsweightshistory.cpp,kgalileicenter/galilei/infos/giwordsweightshistory.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=infos
 sub_dirs=
@@ -939,6 +939,12 @@ dist=true
 install=false
 install_location=
 type=HEADER
+
+[kgalileicenter/galilei/infos/giwordsweightshistory.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
 
 [kgalileicenter/galilei/infos/giwordsweightshistory.h]
 dist=true

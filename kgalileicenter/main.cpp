@@ -69,10 +69,12 @@ int main(int argc, char *argv[])
 		VERSION, description, KAboutData::License_GPL,
 		"(c) 1998-2002, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://www.ulb.ac.be/polytech/cfao", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Project Manager"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Julien Lamoral",I18N_NOOP("Researcher"), "jlamoral@ulb.ac.be");
+	aboutData.addAuthor("Nicolas Kumps",I18N_NOOP("Researcher"), "nkumps@ulb.ac.be");
 	aboutData.addAuthor("Marjorie Paternostre",I18N_NOOP("Researcher"), "Marjorie.Paternostre@ulb.ac.be");
+	aboutData.addAuthor("Stéphane Rideau",I18N_NOOP("Researcher"), 0);
+	aboutData.addAuthor("Valery Vandaele",I18N_NOOP("Researcher"), "vvandaele@ulb.ac.be");
 	aboutData.addAuthor("David Wartel",I18N_NOOP("Researcher"), "dwartel@ulb.ac.be");
-	aboutData.addCredit("Marco Saerens",I18N_NOOP("Consultant"), "marco.saerens@smals-mvm.be");
+	aboutData.addCredit("Marco Saerens",I18N_NOOP("Professor"), "saerens@isys.ucl.ac.be");
 
 	KCmdLineArgs::init( argc, argv, &aboutData );
 	KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
