@@ -294,6 +294,50 @@ public:
 	virtual unsigned int GetHistorySize(void) throw(GException)=0;
 
 	/**
+	* Prepare a given number of suggestions for a test.
+	* @param name           Name of the test.
+	*/
+	virtual void CreateSugs(const R::RString& name)=0;
+
+	/**
+	* Add a suggestion for a given profile and a given test.
+	* @param name           Name of the test.
+	* @param profileid      Identificator of the profile.
+	* @param docid          Identificator of the document to suggest.
+	* @param rank           Ranking of the document.
+	*/
+	virtual void AddSugsProfile(const R::RString& name,unsigned int profileid,unsigned int docid,unsigned int rank)=0;
+
+	/**
+	* Add a suggestion for a given community and a given test.
+	* @param name           Name of the test.
+	* @param groupid      Identificator of the community.
+	* @param docid          Identificator of the document to suggest.
+	* @param rank           Ranking of the document.
+	*/
+	virtual void AddSugsGroup(const R::RString& name,unsigned int groupid,unsigned int docid,unsigned int rank)=0;
+
+	/**
+	* Load the list of suggestions for the profiles for a given test.
+	* @param name           Name of the test.
+	* @param res            Container that will hold the suggestions.
+	*/
+	virtual void GetSugsProfiles(const R::RString& name,R::RContainer<GSugs,true,false>& res)=0;
+
+	/**
+	* Load the list of suggestions for the groups for a given test.
+	* @param name           Name of the test.
+	* @param res            Container that will hold the suggestions.
+	*/
+	virtual void GetSugsGroups(const R::RString& name,R::RContainer<GSugs,true,false>& res)=0;
+
+	/**
+	* Get the different tests that were made.
+	* @param res            Container that will hold the names.
+	*/
+	virtual void GetSugsTests(R::RContainer<R::RString,true,true>& res)=0;
+
+	/**
 	* Create a dummy table to store different kid of
 	* data.
 	* @param name           Name of the dummy object.

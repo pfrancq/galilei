@@ -110,6 +110,7 @@ class GLink;
 class GLinkCalc;
 class GLinkCalcManager;
 class GLinks;
+class GSugs;
 
 
 //------------------------------------------------------------------------------

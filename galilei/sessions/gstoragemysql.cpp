@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database - Implementation.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2005 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -50,6 +50,7 @@
 #include <infos/gweightinfos.h>
 #include <docs/gdocproxy.h>
 #include <docs/glink.h>
+#include <docs/gsugs.h>
 #include <profiles/guser.h>
 #include <profiles/gusers.h>
 #include <profiles/gprofile.h>
@@ -1527,6 +1528,166 @@ unsigned int GStorageMySQL::GetHistorySize(void) throw(GException)
 		RQuery size(Db,"SELECT COUNT(DISTINCT historicID) from historicgroups");
 		size.Start();
 		return(atoi(size[0]));
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::CreateSugs(const R::RString& name)
+{
+	RString sSql;
+
+	try
+	{
+		// Create table if it doesn't already exist
+		sSql="CREATE TABLE IF NOT EXISTS sugsbyprofiles (profileid INT(11), htmlid INT(11), rank INT(11), test TEXT)";
+		RQuery create(Db,sSql);
+		sSql="CREATE TABLE IF NOT EXISTS sugsbygroups (groupid INT(11), htmlid INT(11), rank INT(11), test TEXT)";
+		RQuery create2(Db,sSql);
+		sSql="DELETE FROM sugsbyprofiles WHERE test='"+name+"'";
+		RQuery create3(Db,sSql);
+		sSql="DELETE FROM groupsbyprofiles WHERE test='"+name+"'";
+		RQuery create4(Db,sSql);
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::AddSugsProfile(const R::RString& name,unsigned int profileid,unsigned int docid,unsigned int rank)
+{
+	RString sSql;
+
+	try
+	{
+		sSql="INSERT INTO sugsbyprofiles(profileid,htmlid,rank,test) VALUES("+
+			itou(profileid)+","+itou(docid)+","+itou(rank)+","+RQuery::SQLValue(name)+")";
+		RQuery create(Db,sSql);
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::AddSugsGroup(const R::RString& name,unsigned int groupid,unsigned int docid,unsigned int rank)
+{
+	RString sSql;
+
+	try
+	{
+		sSql="INSERT INTO sugsbygroups(groupid,htmlid,rank,test) VALUES("+
+			itou(groupid)+","+itou(docid)+","+itou(rank)+","+RQuery::SQLValue(name)+")";
+		RQuery create(Db,sSql);
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::GetSugsProfiles(const R::RString& name,R::RContainer<GSugs,true,false>& res)
+{
+	RString sSql;
+	unsigned int profileid,idx;
+	GSugs* sugs;
+
+	try
+	{
+		res.Clear();
+		sSql="SELECT profileid,htmlid,rank,test FROM sugsbyprofiles ORDER BY profileid,rank WHERE test="+RQuery::SQLValue(name);
+		RQuery load(Db,sSql);
+		for(load.Start(),profileid=cNoRef;!load.End();load.Next())
+		{
+			idx=atoi(load[0]);
+
+			// If not the same -> new profile
+			if(idx!=profileid)
+			{
+				// If valid profile -> assign the information to it
+				if(profileid!=cNoRef)
+					res.InsertPtr(sugs);
+				profileid=idx;
+				sugs=new GSugs(otProfile,profileid,50);
+			}
+			sugs->AddSugs(atoi(load[1]));
+		}
+		if(profileid!=cNoRef)
+			res.InsertPtr(sugs);
+
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::GetSugsGroups(const R::RString& name,R::RContainer<GSugs,true,false>& res)
+{
+	RString sSql;
+	unsigned int groupid,idx;
+	GSugs* sugs;
+
+	try
+	{
+		res.Clear();
+		sSql="SELECT groupid,htmlid,rank,test FROM sugsbygroups ORDER BY groupid,rank WHERE test="+RQuery::SQLValue(name);
+		RQuery load(Db,sSql);
+		for(load.Start(),groupid=cNoRef;!load.End();load.Next())
+		{
+			idx=atoi(load[0]);
+
+			// If not the same -> new group
+			if(idx!=groupid)
+			{
+				// If valid group -> assign the information to it
+				if(groupid!=cNoRef)
+					res.InsertPtr(sugs);
+				groupid=idx;
+				sugs=new GSugs(otGroup,groupid,50);
+			}
+			sugs->AddSugs(atoi(load[1]));
+		}
+		if(groupid!=cNoRef)
+			res.InsertPtr(sugs);
+
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::GetSugsTests(R::RContainer<R::RString,true,true>& res)
+{
+	RString sSql;
+
+	try
+	{
+		res.Clear();
+		sSql="SELECT DISTINCT(test) FROM sugsbyprofiles";
+		RQuery profilestests(Db,sSql);
+		for(profilestests.Start();!profilestests.End();profilestests.Next())
+			res.GetInsertPtr<RString>(profilestests[0]);
+		sSql="SELECT DISTINCT(test) FROM sugsbygroups";
+		RQuery groupstests(Db,sSql);
+		for(groupstests.Start();!groupstests.End();groupstests.Next())
+			res.GetInsertPtr<RString>(groupstests[0]);
 	}
 	catch(RMySQLError e)
 	{
