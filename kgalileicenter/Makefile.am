@@ -8,7 +8,7 @@ kgalileicenter_LDADD   = ./galilei/docs/libdocs.a ./galilei/libgalilei.a ./galil
 
 SUBDIRS = galilei r qtwidgets 
 
-EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kgalileicenter.desktop lo32-app-kgalileicenter.png lo16-app-kgalileicenter.png kdoc.cpp kdoc.h kview.cpp kview.h kviewdoc.cpp kviewdoc.h kviewdocs.cpp kviewdocs.h kviewgroup.cpp kviewgroup.h kviewgroups.cpp kviewgroups.h kviewprofile.cpp kviewprofile.h kviewstat.cpp kviewstat.h kviewthgroups.cpp kviewthgroups.h kviewusers.cpp kviewusers.h qconnectmysql.ui qdocsoptionsdlg.ui qsessionprogress.cpp qsessionprogress.h kviewstems.cpp kviewstems.h kviewga.cpp kviewga.h kgalileicenter_dlg.cpp kgalileicenter_init.cpp qpluginsdlg.cpp qpluginsdlg.h kviewprg.cpp kviewprg.h kviewr.cpp kviewr.h qlanguages.ui kviewgroupsevaluation.cpp kviewgroupsevaluation.h kviewevaluategroup.cpp kviewevaluategroup.h kviewchromos.cpp kviewchromos.h kviewquery.cpp kviewquery.h qviewchromos.ui qmixidealconfig.ui qcreatedatabase.ui qcreatedatabase.ui.h qfilldatabase.ui kviewstorechromos.cpp kviewstorechromos.h 
+EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kgalileicenter.desktop lo32-app-kgalileicenter.png lo16-app-kgalileicenter.png kdoc.cpp kdoc.h kview.cpp kview.h kviewdoc.cpp kviewdoc.h kviewdocs.cpp kviewdocs.h kviewgroup.cpp kviewgroup.h kviewgroups.cpp kviewgroups.h kviewprofile.cpp kviewprofile.h kviewstat.cpp kviewstat.h kviewthgroups.cpp kviewthgroups.h kviewusers.cpp kviewusers.h qconnectmysql.ui qdocsoptionsdlg.ui qsessionprogress.cpp qsessionprogress.h kviewstems.cpp kviewstems.h kviewga.cpp kviewga.h kgalileicenter_dlg.cpp kgalileicenter_init.cpp qpluginsdlg.cpp qpluginsdlg.h kviewprg.cpp kviewprg.h kviewr.cpp kviewr.h qlanguages.ui kviewgroupsevaluation.cpp kviewgroupsevaluation.h kviewevaluategroup.cpp kviewevaluategroup.h kviewchromos.cpp kviewchromos.h kviewquery.cpp kviewquery.h qviewchromos.ui qmixidealconfig.ui qcreatedatabase.ui qcreatedatabase.ui.h qfilldatabase.ui kviewstorechromos.cpp kviewstorechromos.h hi16-app-kgalileicenter.png hi32-app-kgalileicenter.png 
 
 install-data-local:
 	$(mkinstalldirs) $$(kde_appsdir)/Applications/
@@ -17,11 +17,17 @@ install-data-local:
 	$(INSTALL_DATA) $(srcdir)/lo32-app-kgalileicenter.png $$(kde_icondir)/locolor/32x32/apps/kgalileicenter.png
 	$(mkinstalldirs) $$(kde_icondir)/locolor/16x16/apps/
 	$(INSTALL_DATA) $(srcdir)/lo16-app-kgalileicenter.png $$(kde_icondir)/locolor/16x16/apps/kgalileicenter.png
+	$(mkinstalldirs) $$(kde_icondir)/hicolor/16x16/apps/
+	$(INSTALL_DATA) $(srcdir)/hi16-app-kgalileicenter.png $$(kde_icondir)/hicolor/16x16/apps/kgalileicenter.png
+	$(mkinstalldirs) $$(kde_icondir)/hicolor/32x32/apps/
+	$(INSTALL_DATA) $(srcdir)/hi32-app-kgalileicenter.png $$(kde_icondir)/hicolor/32x32/apps/kgalileicenter.png
 
 uninstall-local:
 	-rm -f $$(kde_appsdir)/Applications/kgalileicenter.desktop
 	-rm -f $$(kde_icondir)/locolor/32x32/apps/kgalileicenter.png
 	-rm -f $$(kde_icondir)/locolor/16x16/apps/kgalileicenter.png
+	-rm -f $$(kde_icondir)/hicolor/16x16/apps/kgalileicenter.png
+	-rm -f $$(kde_icondir)/hicolor/32x32/apps/kgalileicenter.png
 
 ####### kdevelop will overwrite this part!!! (end)############
 # this 10 paths are KDE specific. Use them:
