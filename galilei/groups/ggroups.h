@@ -53,7 +53,7 @@ namespace GALILEI{
 * The GGroups class provides a representation for all the groups of a given
 * language. The GGroups are ordered by languages.
 * @author Pascal Francq
-* @short Languages' Groups.
+* @short Languages Groups.
 */
 class GGroups : public RStd::RContainer<GGroup,unsigned int,true,true>
 {
