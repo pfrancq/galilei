@@ -707,30 +707,26 @@ void KGALILEICenterApp::slotTextEnglish(void)
 void KGALILEICenterApp::slotShowHistory(void)
 {
 	GFactoryLangCursor curlang;
-	GLang* lang;
 	unsigned int size, min, max;
 
 	curlang=Doc->GetSession()->GetLangs()->GetLangsCursor();
 	size=Doc->GetSession()->GetStorage()->GetHistorySize();
 
 	QHistoryDlg dlg(this,0,true);
-	dlg.TLMaxHistory->setText(QString("Max Historic ID (<")+dtou(size).Latin1()+QString(")"));
+	dlg.TLMaxHistory->setText(QString("Max Historic ID (<")+itou(size).Latin1()+QString(")"));
 	dlg.SBMinId->setMinValue(1);
 	dlg.SBMaxId->setMinValue(1);
 	dlg.SBMaxId->setMaxValue(size);
-	for (curlang.Start(); !curlang.End(); curlang.Next())
-	{
-		lang=curlang()->GetPlugin();
-		if(!lang) continue;
-		dlg.CBLang->insertItem(lang->GetCode());
-	}
+	dlg.bDate->setChecked(true);
+	dlg.MinDate->setText("0000-00-00");
+	dlg.MaxDate->setText("0000-00-00");
 
 	KApplication::kApplication()->processEvents();
 	if(dlg.exec())
 	{
 		min=dlg.SBMinId->value() ;
 		max=dlg.SBMaxId->value();
-		createClient(Doc,new KViewHistory(Doc,dlg.CBGlobal->isChecked(),pWorkspace,"Show Chromosomes",0,min,max));
+		createClient(Doc,new KViewHistory(Doc,0/*dlg.CBGlobal->isChecked()*/,pWorkspace,"Show Chromosomes",0,min,max, dlg.MinDate->text(),dlg.MaxDate->text(), dlg.bDate->isChecked()));
 	}
 }
 

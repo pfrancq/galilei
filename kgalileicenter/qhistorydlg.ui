@@ -8,189 +8,334 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>258</width>
-            <height>257</height>
+            <width>271</width>
+            <height>285</height>
         </rect>
     </property>
     <property name="caption">
         <string>Groups History</string>
     </property>
-    <widget class="QGroupBox">
+    <vbox>
         <property name="name">
-            <cstring>GroupBox1</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>10</y>
-                <width>240</width>
-                <height>200</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>Historic Options</string>
-        </property>
-        <widget class="QComboBox">
+        <widget class="QGroupBox">
             <property name="name">
-                <cstring>CBLang</cstring>
+                <cstring>groupBox2</cstring>
             </property>
-            <property name="geometry">
-                <rect>
-                    <x>159</x>
-                    <y>30</y>
-                    <width>60</width>
-                    <height>27</height>
-                </rect>
+            <property name="title">
+                <string>Historic type</string>
             </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout3</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>bId</cstring>
+                            </property>
+                            <property name="text">
+                                <string>historic by ID</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer3</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>bDate</cstring>
+                            </property>
+                            <property name="text">
+                                <string>historic by date</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
         </widget>
-        <widget class="QLabel">
+        <widget class="QGroupBox">
             <property name="name">
-                <cstring>TextLabel1</cstring>
+                <cstring>GroupBox1</cstring>
             </property>
-            <property name="geometry">
-                <rect>
-                    <x>20</x>
-                    <y>30</y>
-                    <width>85</width>
-                    <height>20</height>
-                </rect>
+            <property name="title">
+                <string>Historic Options</string>
             </property>
-            <property name="text">
-                <string>Language :</string>
-            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout1</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TLMinHistory</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Min historic ID :</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer1</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QSpinBox">
+                            <property name="name">
+                                <cstring>SBMinId</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout2</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>TLMaxHistory</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Max Historic ID :</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QSpinBox">
+                            <property name="name">
+                                <cstring>SBMaxId</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
         </widget>
-        <widget class="QLabel">
+        <widget class="QGroupBox">
             <property name="name">
-                <cstring>TLMinHistory</cstring>
+                <cstring>groupBox3</cstring>
             </property>
-            <property name="geometry">
-                <rect>
-                    <x>20</x>
-                    <y>80</y>
-                    <width>106</width>
-                    <height>20</height>
-                </rect>
+            <property name="title">
+                <string>Historic by date</string>
             </property>
-            <property name="text">
-                <string>Min historic ID :</string>
-            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout4</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel1</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Min Date (YYYY-MM-DD):</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer4</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>MinDate</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout4_2</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel1_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Max Date (YYYY-MM-DD):</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer4_2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>MaxDate</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
         </widget>
-        <widget class="QSpinBox">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>SBMaxId</cstring>
+                <cstring>layout7</cstring>
             </property>
-            <property name="geometry">
-                <rect>
-                    <x>160</x>
-                    <y>120</y>
-                    <width>55</width>
-                    <height>27</height>
-                </rect>
-            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>Cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Cancel</string>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer6</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>160</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>OK</cstring>
+                    </property>
+                    <property name="text">
+                        <string>OK</string>
+                    </property>
+                </widget>
+            </hbox>
         </widget>
-        <widget class="QSpinBox">
-            <property name="name">
-                <cstring>SBMinId</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>160</x>
-                    <y>70</y>
-                    <width>55</width>
-                    <height>27</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TLMaxHistory</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>20</x>
-                    <y>130</y>
-                    <width>114</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Max Historic ID :</string>
-            </property>
-        </widget>
-        <widget class="QCheckBox">
-            <property name="name">
-                <cstring>CBGlobal</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>90</x>
-                    <y>170</y>
-                    <width>130</width>
-                    <height>23</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Global Similarities</string>
-            </property>
-        </widget>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButton2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>220</y>
-                <width>90</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>&amp;Cancel</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButton1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>160</x>
-                <y>220</y>
-                <width>90</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>&amp;Ok</string>
-        </property>
-        <property name="default">
-            <bool>true</bool>
-        </property>
-    </widget>
+    </vbox>
 </widget>
 <connections>
     <connection>
-        <sender>PushButton1</sender>
-        <signal>pressed()</signal>
-        <receiver>QHistoryDlg</receiver>
-        <slot>accept()</slot>
+        <sender>bId</sender>
+        <signal>clicked()</signal>
+        <receiver>bDate</receiver>
+        <slot>toggle()</slot>
     </connection>
     <connection>
-        <sender>PushButton2</sender>
+        <sender>Cancel</sender>
         <signal>pressed()</signal>
         <receiver>QHistoryDlg</receiver>
         <slot>reject()</slot>
     </connection>
+    <connection>
+        <sender>bDate</sender>
+        <signal>clicked()</signal>
+        <receiver>bId</receiver>
+        <slot>toggle()</slot>
+    </connection>
+    <connection>
+        <sender>OK</sender>
+        <signal>clicked()</signal>
+        <receiver>QHistoryDlg</receiver>
+        <slot>accept()</slot>
+    </connection>
 </connections>
 <tabstops>
-    <tabstop>CBLang</tabstop>
     <tabstop>SBMinId</tabstop>
     <tabstop>SBMaxId</tabstop>
-    <tabstop>CBGlobal</tabstop>
-    <tabstop>PushButton2</tabstop>
-    <tabstop>PushButton1</tabstop>
+    <tabstop>Cancel</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

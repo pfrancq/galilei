@@ -98,6 +98,16 @@ class KViewHistory : public KView
 	 unsigned int MaxGen;
 
 	/**
+	* the first historic groups
+	*/
+	 R::RString MinDate;
+
+	/**
+	* the last historic groups
+	*/
+	 R::RString MaxDate;
+
+	/**
 	* The tab widget.
 	*/
 	QTabWidget* TabWidget;
@@ -147,6 +157,11 @@ class KViewHistory : public KView
 	*/
 	GProfilesSims* Sims;
 
+	/**
+	* historic is loaded by date if true, else by Id.
+	*/
+	bool bDate;
+
 
 public:
 
@@ -158,13 +173,15 @@ public:
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
-	* @param minid          lowest limit of historical groups.
-	* @param maxid          highest limit of historical groups.
+	* @param minid          lowest limit of historical groups id.
+	* @param maxid          highest limit of historical groups id.
+	* @param mindate          lowest date limit of historical groups.
+	* @param maxdate          highest date limit of historical groups.
 	* @param checkModifiedGroups check for modified groups.
 	* @param checkNewProfiles check for new profiles.
 	* @param ckeckWellGroupedProfiles ckec for well-grouped profiles.
 	*/
-	KViewHistory(KDoc* doc, bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid);
+	KViewHistory(KDoc* doc, bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid,const char* mindate, const char* maxdate, bool bdate);
 
 	/**
 	* Return the type of the window.

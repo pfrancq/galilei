@@ -86,9 +86,10 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid)
+KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid,
+	 const char* mindate, const char* maxdate, bool bdate)
 	: KView(doc,parent,name,wflags),
-	  Global(global), MinGen(minid), MaxGen(maxid),CurId(0),  SubProfiles(0), Groups(0),  Sims(0)
+	  Global(global), MinGen(minid), MaxGen(maxid),MinDate(mindate), MaxDate(maxdate), CurId(0),  SubProfiles(0), Groups(0),  Sims(0), bDate(bdate)
 {
 	static char tmp[100];
 
@@ -141,20 +142,44 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 	RelationShip->addColumn("Group");
 	RelationShip->addColumn("RelationShip");
 	RelationShip->addColumn("Historic Id");
+	RelationShip->addColumn("Historic Date");
 	RelationShip->setResizeMode(QListView::AllColumns);
 	RelationShip->setRootIsDecorated(true);
 	RelationShip->hide();
 
 	// Load the chromosomes from the db
-	Doc->GetSession()->LoadHistoricGroups(MinGen,MaxGen);
+	if (bDate)
+		Doc->GetSession()->LoadHistoricGroupsByDate(MinDate,MaxDate);
+	else
+		Doc->GetSession()->LoadHistoricGroupsById(MinGen,MaxGen);
 	Groups=Doc->GetSession()->GetGroupsHistoryManager();
-	CurId=MinGen;
 
-	if(!Groups) return;
+	//if no chromosomes, return.
+	if((!Groups)||(!Groups->NbPtr))
+		return;
+
+	// if sorted by date, set MinGen and MaxGen.
+	if (bDate)
+	{
+		MinGen=MaxGen=0;
+		Groups->Start();
+		MinGen=MaxGen=(*Groups)()->GetId();
+		for (Groups->Next();!Groups->End(); Groups->Next())
+		{
+			if((*Groups)()->GetId()<MinGen)
+				MinGen=(*Groups)()->GetId();;
+			if((*Groups)()->GetId()>MaxGen)
+				MaxGen=(*Groups)()->GetId();
+		}
+	}
+
+	//set the current id to the minimum id.
+	CurId=MinGen;
 
 	// Solutions Part
 	Solution = new QGGroupsHistory(TabWidget,Groups->GetPtrAt(0));
-	sprintf(tmp,"Solution (%u/%u) ",CurId,MaxGen);
+	sprintf(tmp,"Solution (%u) [%u-%u-%u]",CurId,Groups->GetPtrAt(0)->GetDate().GetYear(),
+		Groups->GetPtrAt(0)->GetDate().GetMonth(),Groups->GetPtrAt(0)->GetDate().GetDay());
 	TabWidget->insertTab(Solution,tmp);
 	Solution->setGroups(Groups->GetPtrAt(0));
 	Solution->setChanged();
@@ -190,25 +215,26 @@ void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 	switch(e->key())
 	{
 		case Key_PageUp:
-			if(CurId<MaxGen) CurId++; else CurId=MinGen;
-			sprintf(tmp,"Solution (%u/%u) ",CurId,MaxGen);
-			TabWidget->changeTab(Solution,tmp);
+			if(CurId<MaxGen) CurId++;
+			else CurId=MinGen;
 			grps=Groups->GetPtr(CurId);
 			Solution->setGroups(grps);
 			Solution->setChanged();
 			SelectedSubProfiles->Clear();
 //			SimsView->clear();
-			break;
-
-			
-		case Key_PageDown:
-			if(CurId>MinGen) CurId--; else CurId=Groups->NbPtr-1;
-			sprintf(tmp,"Solution (%u/%u)",CurId,MaxGen);
+			sprintf(tmp,"Solution (%u) [%u-%u-%u]",CurId, grps->GetDate().GetYear(),
+				grps->GetDate().GetMonth(),grps->GetDate().GetDay());
 			TabWidget->changeTab(Solution,tmp);
+			break;
+		case Key_PageDown:
+			if(CurId>MinGen) CurId--;
+			 else CurId=Groups->NbPtr-1;
 			grps=Groups->GetPtr(CurId);
-
 			Solution->setGroups(grps);
 			Solution->setChanged();
+			sprintf(tmp,"Solution (%u) [%u-%u-%u]",CurId,grps->GetDate().GetYear(),
+				grps->GetDate().GetMonth(),grps->GetDate().GetDay());
+			TabWidget->changeTab(Solution,tmp);
 			break;
 		default:
 			e->ignore();
@@ -341,11 +367,14 @@ void KViewHistory::DisplayRelationShip(GGroupHistory* grp)
 	GGroupHistoryCursor cur;
 	QListViewItemType* grpitem;
 	char num1[50];
+	char num2[50];
 
 	//display this group
 	sprintf(tmp,"Group %u" ,grp->GetId());
 	sprintf(num1,"%u",grp->GetParent()->GetId());
-	grpitem=new QListViewItemType(grp, RelationShip, tmp, 0, num1);
+	sprintf(num2,"%u-%u-%u",grp->GetParent()->GetDate().GetYear(),grp->GetParent()->GetDate().GetMonth(),
+		grp->GetParent()->GetDate().GetDay());
+	grpitem=new QListViewItemType(grp, RelationShip, tmp, 0, num1, num2);
 	grpitem->setOpen(true);
 	grpitem->setSelected(true);
 
@@ -363,11 +392,14 @@ void KViewHistory::DisplayChildrenRelationShip(GGroupHistory* grp, QListViewItem
 	GGroupHistoryCursor cur;
 	QListViewItemType* grpitem;
 	char num1[50];
+	char num2[50];
 
 	//recursive method to display all children
 	sprintf(tmp,"Group %u" ,grp->GetId());
 	sprintf(num1,"%u",grp->GetParent()->GetId());
-	grpitem=new QListViewItemType(grp, attach, tmp, "children", num1);
+	sprintf(num2,"%u-%u-%u",grp->GetParent()->GetDate().GetYear(),grp->GetParent()->GetDate().GetMonth(),
+		grp->GetParent()->GetDate().GetDay());
+	grpitem=new QListViewItemType(grp, attach, tmp, "children", num1, num2);
 	cur= grp->GetChildrenCursor();
 	for (cur.Start(); !cur.End(); cur.Next())
 		DisplayChildrenRelationShip(cur(), grpitem);
@@ -489,8 +521,6 @@ void KViewHistory::CreateGroupsRelationship(void)
 	bool treated;
 	unsigned int** tab;
 
-
-
 	for (Groups->Start(); !Groups->End(); Groups->Next())
 	{
 		//if the groups is the last one, no child
@@ -498,6 +528,8 @@ void KViewHistory::CreateGroupsRelationship(void)
 
 		curgrps=(*Groups)();
 		nextgrps=Groups->GetPtr(curgrps->GetId()+1);
+		if (!nextgrps)
+			return;
 
 		for (curgrps->Start(); !curgrps->End(); curgrps->Next())
 		{
@@ -562,8 +594,9 @@ KViewHistory::~KViewHistory(void)
 		delete Sims;
 	if(TabWidget)
 		delete (TabWidget);
-	if(SimsView)
+/*	if(SimsView)
 		delete (SimsView);
-	if(SelectedSubProfiles)
+*/	if(SelectedSubProfiles)
 		delete SelectedSubProfiles;
 }
+
