@@ -176,6 +176,14 @@ GALILEI::GLangEN::GLangEN(void) throw(bad_alloc)
 	// Rules 5b
 	Rules5b=new RContainer<PorterRule,unsigned int,true,false>(1,5);
 	Rules5b->InsertPtr(new PorterRule("ll","l",1,0,1));
+
+	// Skip Words
+	SkipWords.InsertPtr(new SkipWord("th"));
+	SkipWords.InsertPtr(new SkipWord("st"));
+	SkipWords.InsertPtr(new SkipWord("nd"));
+	SkipWords.InsertPtr(new SkipWord("rd"));
+	SkipWords.InsertPtr(new SkipWord("s"));
+	SkipWords.InsertPtr(new SkipWord("ies"));
 }
 
 
