@@ -230,12 +230,22 @@ void GALILEI::GChromoIR::RandomConstruct(void) throw(RGA::eGA)
 void GALILEI::GChromoIR::EvaluateAvgSim(void)
 {
 	GGroupIRCursor Cur;
+	unsigned int i;
+	GObjIR** ptr;
 
 	// Computed the average similairies of the configurations
 	Cur.Set(Used);
 	for(Cur.Start(),CritSim=0.0;!Cur.End();Cur.Next())
-		CritSim+=Cur()->ComputeAvgSim();
-	CritSim/=static_cast<double>(Used.NbPtr);
+	{
+		if(Cur()->NbSubObjects>1)
+		{
+			for(i=Cur()->NbSubObjects+1,ptr=GetObjs(Cur()->SubObjects);--i;ptr++)
+				CritSim+=Cur()->ComputeAvgSim(*ptr);
+		}
+		else
+			CritSim+=1.0;
+	}
+	CritSim/=static_cast<double>(Objs->GetNb());
 }
 
 
@@ -648,7 +658,7 @@ void GALILEI::GChromoIR::DoKMeans(void) throw(RGA::eGA)
 		Grp()->ComputeRelevant();
 
 	// Max Iterations
-	for(itermax=0,error=1,IterNumber=6;(itermax<IterNumber)&&(error!=0);itermax++)
+	for(itermax=0,error=1,IterNumber=10;(itermax<IterNumber)&&(error!=0);itermax++)
 	{
 		ReAllocate();
 		error=CalcNewProtosNb();
