@@ -35,8 +35,12 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-//include files for R-Project
+// include files for ANSI C/C++
+#include <stdlib.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for R Project
 #include <rstd/rcontainer.h>
 
 
@@ -91,7 +95,7 @@ KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	GSubProfile* sub;
 
 	//init the container of selected subprofiles.
-	SelectedSubProfiles=new RStd::RContainer<GIWordsWeightsHistory, unsigned int, false, true>(5,2);
+	SelectedSubProfiles=new R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>(5,2);
 
 	//init ToolBar components.
 	ToolBar=  new QMenuBar( this, "file operations" );
@@ -147,7 +151,7 @@ KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	// Construct the SubProfiles Container
 	Cur=Doc->GetSession()->GetSubProfilesCursor(lang);
 	GProfileCursor cur=Doc->GetSession()->GetProfilesCursor();
-	SubProfiles=new RStd::RContainer<GSubProfile,unsigned int,false,true>(cur.GetNb());
+	SubProfiles=new R::RContainer<GSubProfile,unsigned int,false,true>(cur.GetNb());
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		sub=Cur();
@@ -322,6 +326,7 @@ void KViewHistory::DisplaySimilarities(void)
 	double similarity;
 	GIWordsWeightsHistory** giwwh1, **giwwh2;
 	QListViewItem* sim;
+	char num1[50], num2[50], num3[50];
 
 	//clear the list view
 	SimsView->clear();
@@ -333,7 +338,10 @@ void KViewHistory::DisplaySimilarities(void)
 		{
 			if (Global) similarity=(*giwwh1)->SimilarityIdf(*giwwh2, otSubProfile,Lang) ;
 			else similarity=(*giwwh1)->Similarity(*giwwh2);
-			sim=new QListViewItem(SimsView, QString(itoa((*giwwh1)->GetId())), QString(itoa((*giwwh2)->GetId())), QString(dtoa(similarity)));
+			sprintf(num1,"%u",(*giwwh1)->GetId());
+			sprintf(num2,"%u",(*giwwh2)->GetId());
+			sprintf(num3,"%f",similarity);
+			sim=new QListViewItem(SimsView, num1, num2, num3);
 		}
 	}
 }
@@ -345,10 +353,12 @@ void KViewHistory::DisplayRelationShip(GGroupHistory* grp)
 	char tmp[100];
 	GGroupHistoryCursor cur;
 	QListViewItemType* grpitem;
+	char num1[50];
 
 	//display this group
 	sprintf(tmp,"Group %u" ,grp->GetId());
-	grpitem=new QListViewItemType(grp, RelationShip, tmp, 0, QString(itoa(grp->GetParent()->GetId())));
+	sprintf(num1,"%u",grp->GetParent()->GetId());
+	grpitem=new QListViewItemType(grp, RelationShip, tmp, 0, num1);
 	grpitem->setOpen(true);
 	grpitem->setSelected(true);
 
@@ -365,10 +375,12 @@ void KViewHistory::DisplayChildrenRelationShip(GGroupHistory* grp, QListViewItem
 	char tmp[100];
 	GGroupHistoryCursor cur;
 	QListViewItemType* grpitem;
+	char num1[50];
 
 	//recursive method to display all children
 	sprintf(tmp,"Group %u" ,grp->GetId());
-	grpitem=new QListViewItemType(grp, attach, tmp, "children", QString(itoa(grp->GetParent()->GetId())));
+	sprintf(num1,"%u",grp->GetParent()->GetId());
+	grpitem=new QListViewItemType(grp, attach, tmp, "children", num1);
 	cur= grp->GetChildrenCursor();
 	for (cur.Start(); !cur.End(); cur.Next())
 		DisplayChildrenRelationShip(cur(), grpitem);
@@ -379,7 +391,7 @@ void KViewHistory::DisplayChildrenRelationShip(GGroupHistory* grp, QListViewItem
 //-----------------------------------------------------------------------------
 void KViewHistory::CheckModifiedGroups(GGroupsHistory* grps)
 {
-	RStd::RContainer<GIWordsWeightsHistory, unsigned int, false, true>* lastsubs;
+	R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>* lastsubs;
 	GGroupsHistory* lastgroups;
 	GGroupHistory* grp, *lastgroup;
 	GIWordsWeightsHistory* sub, *lastsub;
@@ -389,7 +401,7 @@ void KViewHistory::CheckModifiedGroups(GGroupsHistory* grps)
 	if (grps->GetId()==MinGen) return;
 
 	//get the last groups and put its profiles in a container
-	lastsubs=new RStd::RContainer<GIWordsWeightsHistory, unsigned int, false, true>(10,5);
+	lastsubs=new R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>(10,5);
 	lastgroups=Groups->GetPtr(grps->GetId()-1);
 	if (!lastgroups) return;
 	for (lastgroups->Start(); !lastgroups->End(); lastgroups->Next())
@@ -440,7 +452,7 @@ void KViewHistory::SetGroupsSubject(GGroupsHistory* grps)
 	GGroupHistory* grp;
 	GSubject* mainsubject;
 	unsigned int occur, maxoccur,knownsubject;
-	RStd::RContainer<GSubject, unsigned int, false, true>* subjects;
+	R::RContainer<GSubject, unsigned int, false, true>* subjects;
 
 
 	//find the dominant subject
@@ -450,7 +462,7 @@ void KViewHistory::SetGroupsSubject(GGroupsHistory* grps)
 		maxoccur=knownsubject=0;
 
 		// find all the subjects contained in the group.
-		subjects=new RStd::RContainer<GSubject, unsigned int, false, true>(5,2);
+		subjects=new R::RContainer<GSubject, unsigned int, false, true>(5,2);
 		for (grp->Start(); !grp->End(); grp->Next())
 		{
 			subjects->InsertPtr((*grp)()->GetSubProfile()->GetSubject());
@@ -499,12 +511,12 @@ void KViewHistory::CheckWellGroupedSubProfiles(GGroupsHistory* grps)
 //-----------------------------------------------------------------------------
 void KViewHistory::CheckNewProfiles(GGroupsHistory* grps)
 {
-	RStd::RContainer<GIWordsWeightsHistory, unsigned int, false, true>* lastsubs;
+	R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>* lastsubs;
 	GGroupsHistory* lastgroups;
 	GGroupHistory* grp;
 
 	//get the last groups and put its profiles in a container
-	lastsubs=new RStd::RContainer<GIWordsWeightsHistory, unsigned int, false, true>(10,5);
+	lastsubs=new R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>(10,5);
 	lastgroups=Groups->GetPtr(grps->GetId()-1);
 	if (!lastgroups) return;
 	for (lastgroups->Start(); !lastgroups->End(); lastgroups->Next())

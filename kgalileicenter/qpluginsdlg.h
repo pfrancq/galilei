@@ -109,22 +109,22 @@ class QPluginsDlg : public QDialog
 	/**
 	* List of all configuration for the computing of the profiles.
 	*/
-	RStd::RContainer<QComputingPluginConf,unsigned int,true,true>* Computings;
+	R::RContainer<QComputingPluginConf,unsigned int,true,true>* Computings;
 
 	/**
 	* List of all configuration for the grouping of the profiles.
 	*/
-	RStd::RContainer<QGroupingPluginConf,unsigned int,true,true>* Groupings;
+	R::RContainer<QGroupingPluginConf,unsigned int,true,true>* Groupings;
 
 	/**
 	* List of all configuration for the group description method.
 	*/
-	RStd::RContainer<QGroupCalcPluginConf,unsigned int,true,true>* GroupCalcs;
+	R::RContainer<QGroupCalcPluginConf,unsigned int,true,true>* GroupCalcs;
 
 	/**
 	* List of all configuration for the link description method.
 	*/
-	RStd::RContainer<QLinkCalcPluginConf,unsigned int,true,true>* LinkCalcs;
+	R::RContainer<QLinkCalcPluginConf,unsigned int,true,true>* LinkCalcs;
 
 	/**
 	* Application to condfigure.

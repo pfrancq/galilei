@@ -48,7 +48,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainer.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------

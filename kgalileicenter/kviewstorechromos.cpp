@@ -93,8 +93,8 @@ KViewStoreChromos::KViewStoreChromos(KDoc* doc,const char* l,GIRParams* p,bool g
 	// Construct the GA Objects
 	Cur=Doc->GetSession()->GetSubProfilesCursor(lang);
 	GProfileCursor cur=Doc->GetSession()->GetProfilesCursor();
-	SubProfiles=new RStd::RContainer<GSubProfile,unsigned int,false,true>(cur.GetNb());
-	Objs=new RGA::RObjs<GObjIR>(cur.GetNb());
+	SubProfiles=new R::RContainer<GSubProfile,unsigned int,false,true>(cur.GetNb());
+	Objs=new R::RObjs<GObjIR>(cur.GetNb());
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{

@@ -61,7 +61,7 @@
 #include <profiles/gprofilecalcfeedback.h>
 #include <profiles/gprofilecalcreweighting.h>
 #include <profiles/gprofilecalcvector.h>
-#include <urlmanagers/gurlmanagerkde.h>
+#include <galilei/gurlmanagerkde.h>
 using namespace GALILEI;
 
 
@@ -189,47 +189,47 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
     /**
 	* Current Profile Description Method
 	*/
-	RStd::RString CurrentProfileDesc;
+	R::RString CurrentProfileDesc;
 
 	/**
 	* Current Computing Method
 	*/
-	RStd::RString CurrentComputingMethod;
+	R::RString CurrentComputingMethod;
 
 	/**
 	* Current Grouping Method
 	*/
-	RStd::RString CurrentGroupingMethod;
+	R::RString CurrentGroupingMethod;
 
 	/**
 	* Current Group Descrition Method
 	*/
-	RStd::RString CurrentGroupCalcMethod;
+	R::RString CurrentGroupCalcMethod;
 
 	/**
 	* Current Group Descrition Method
 	*/
-	RStd::RString CurrentLinkCalcMethod;
+	R::RString CurrentLinkCalcMethod;
 
 	/**
 	* Database server's host.
 	*/
-	RStd::RString dbHost;
+	R::RString dbHost;
 
 	/**
 	* Database's name.
 	*/
-	RStd::RString dbName;
+	R::RString dbName;
 
 	/**
 	* Name of the user used to access the database.
 	*/
-	RStd::RString dbUser;
+	R::RString dbUser;
 
 	/**
 	* Password used to access the database.
 	*/
-	RStd::RString dbPwd;
+	R::RString dbPwd;
 
 	/**
 	* Label to hold an image representing the status of the database connection.
@@ -272,27 +272,27 @@ public:
 	/**
 	* Container of subprofiles description method.
 	*/
-	RStd::RContainer<RStd::RString,unsigned int,true,true>* ProfileDesc;
+	R::RContainer<R::RString,unsigned int,true,true>* ProfileDesc;
 
 	/**
 	* Container of computing method.
 	*/
-	RStd::RContainer<RStd::RString,unsigned int,true,true>* ComputingMethod;
+	R::RContainer<R::RString,unsigned int,true,true>* ComputingMethod;
 
 	/**
 	* Container of grouping method.
 	*/
-	RStd::RContainer<RStd::RString,unsigned int,true,true>* GroupingMethod;
+	R::RContainer<R::RString,unsigned int,true,true>* GroupingMethod;
 
 	/**
 	* Container of group description method.
 	*/
-	RStd::RContainer<RStd::RString,unsigned int,true,true>* GroupCalcMethod;
+	R::RContainer<R::RString,unsigned int,true,true>* GroupCalcMethod;
 
 	/**
 	* Container of link description method.
 	*/
-	RStd::RContainer<RStd::RString,unsigned int,true,true>* LinkCalcMethod;
+	R::RContainer<R::RString,unsigned int,true,true>* LinkCalcMethod;
 
 
 public:
@@ -312,52 +312,52 @@ public:
 	/**
 	* Return the current subprofile description method used.
 	*/
-	RStd::RString GetCurrentProfileDesc(void) {return(CurrentProfileDesc);}
+	R::RString GetCurrentProfileDesc(void) {return(CurrentProfileDesc);}
 
 	/**
 	* Set the current subprofile description method used.
 	*/
-	void SetCurrentProfileDesc(RStd::RString str) {CurrentProfileDesc=str;}
+	void SetCurrentProfileDesc(R::RString str) {CurrentProfileDesc=str;}
 
 	/**
 	* Return the current method used for computed the profile.
 	*/
-	RStd::RString GetCurrentComputingMethod(void) {return(CurrentComputingMethod);}
+	R::RString GetCurrentComputingMethod(void) {return(CurrentComputingMethod);}
 
 	/**
 	* Set the current method used for computed the profile.
 	*/
-	void SetCurrentComputingMethod(RStd::RString str) {CurrentComputingMethod=str;}
+	void SetCurrentComputingMethod(R::RString str) {CurrentComputingMethod=str;}
 
 	/**
 	* Return the current grouping method used.
 	*/
-	RStd::RString GetCurrentGroupingMethod(void) {return(CurrentGroupingMethod);}
+	R::RString GetCurrentGroupingMethod(void) {return(CurrentGroupingMethod);}
 
 	/**
 	* Set the current grouping method used.
 	*/
-	void SetCurrentGroupingMethod(RStd::RString str) {CurrentGroupingMethod=str;}
+	void SetCurrentGroupingMethod(R::RString str) {CurrentGroupingMethod=str;}
 
 	/**
 	* Return the Current group description method used.
 	*/
-	RStd::RString GetCurrentGroupCalcMethod(void) {return(CurrentGroupCalcMethod);}
+	R::RString GetCurrentGroupCalcMethod(void) {return(CurrentGroupCalcMethod);}
 
 	/**
 	* Set the Current group description method used.
 	*/
-	void SetCurrentGroupCalcMethod(RStd::RString str) {CurrentGroupCalcMethod=str;}
+	void SetCurrentGroupCalcMethod(R::RString str) {CurrentGroupCalcMethod=str;}
 
 	/**
 	* Return the Current link description method used.
 	*/
-	RStd::RString GetCurrentLinkCalcMethod(void) {return (CurrentLinkCalcMethod);}
+	R::RString GetCurrentLinkCalcMethod(void) {return (CurrentLinkCalcMethod);}
 
 	/**
 	* Set the Current link description method used.
 	*/
-	void SetCurrentLinkCalcMethod(RStd::RString str) {CurrentLinkCalcMethod=str;}
+	void SetCurrentLinkCalcMethod(R::RString str) {CurrentLinkCalcMethod=str;}
 
 protected:
 
@@ -404,7 +404,7 @@ protected:
 	* @param n              Name of the criterion.
 	* @param c              Pointer to the criterion.
 	*/
-	void saveOptions(const char* n,RPromethee::RPromCriterionParams& c);
+	void saveOptions(const char* n,R::RPromCriterionParams& c);
 
 	/**
 	* Save general Options like all bar positions and status as well as the
@@ -423,7 +423,7 @@ protected:
 	* @param n              Name of the criterion.
 	* @param c              Pointer to the criterion.
 	*/
-	void readOptions(const char* n,RPromethee::RPromCriterionParams& c);
+	void readOptions(const char* n,R::RPromCriterionParams& c);
 
 	/**
 	* Read general Options again and initialize all variables like the recent

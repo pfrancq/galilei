@@ -54,8 +54,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // Include file for R Project
 #include <rstd/rstring.h>
-#include <rio/rtextfile.h>
-using namespace RIO;
+#include <rstd/rtextfile.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -129,8 +129,8 @@ void KViewQuery::CalcSimGroup()
 				name=(*Grp)()->GetProfile()->GetName();
 				end=false;
 			}
-			new QListViewItem(Result,QString(name),"Idf",QString(dtoa(QueryWord->SimilarityIdf(GrpV->GetVector(),otGroup,lang))));
-			new QListViewItem(Result,QString(name),"Norm",QString(dtoa(QueryWord->Similarity(GrpV->GetVector()))));
+			new QListViewItem(Result,QString(name),"Idf",QString::number(QueryWord->SimilarityIdf(GrpV->GetVector(),otGroup,lang)));
+			new QListViewItem(Result,QString(name),"Norm",QString::number(QueryWord->Similarity(GrpV->GetVector())));
 		}
 	}
 }

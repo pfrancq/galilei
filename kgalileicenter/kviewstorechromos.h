@@ -44,9 +44,8 @@
 #include <rga/rgasignals.h>
 #include <rga/qgamonitor.h>
 #include <rga/qxmlcontainer.h>
-using namespace RGA;
 #include <rpromethee/rpromcriterion.h>
-using namespace RPromethee;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -105,12 +104,12 @@ class KViewStoreChromos : public KView
 	/**
 	* SubProfiles that must be grouped again.
 	*/
-	RStd::RContainer<GSubProfile,unsigned int,false,true>* SubProfiles;
+	R::RContainer<GSubProfile,unsigned int,false,true>* SubProfiles;
 
 	/**
 	* Objects representing SubProfiles that must be grouped again.
 	*/
-	RGA::RObjs<GObjIR>* Objs;
+	R::RObjs<GObjIR>* Objs;
 
 public:
 

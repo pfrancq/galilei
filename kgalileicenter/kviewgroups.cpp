@@ -38,7 +38,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainercursor.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -64,7 +64,6 @@ using namespace GALILEI;
 #include "kviewgroups.h"
 #include "qsessionprogress.h"
 #include "kdoc.h"
-using namespace RTimeDate;
 
 
 

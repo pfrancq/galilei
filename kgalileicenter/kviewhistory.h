@@ -45,9 +45,8 @@
 #include <rga/rgasignals.h>
 #include <rga/qgamonitor.h>
 #include <rga/qxmlcontainer.h>
-using namespace RGA;
 #include <rpromethee/rpromcriterion.h>
-using namespace RPromethee;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -139,17 +138,17 @@ class KViewHistory : public KView
 	/**
 	* The container of subprofiles
 	*/
-	RStd::RContainer<GSubProfile, unsigned int, false,true>* SubProfiles;
+	R::RContainer<GSubProfile, unsigned int, false,true>* SubProfiles;
 
 	/**
 	* The container of groups
 	*/
-	RStd::RContainer<GGroupsHistory, unsigned int, false,true>* Groups;
+	R::RContainer<GGroupsHistory, unsigned int, false,true>* Groups;
 
 	/**
 	* selected items from Solutions.
 	*/
-	RStd::RContainer<GIWordsWeightsHistory, unsigned int, false, true>* SelectedSubProfiles;
+	R::RContainer<GIWordsWeightsHistory, unsigned int, false, true>* SelectedSubProfiles;
 
 	/**
 	* Similarities between the subprofiles to group.

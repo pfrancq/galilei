@@ -36,8 +36,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rio/rtextfile.h>
-using namespace RIO;
+#include <rstd/rtextfile.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------

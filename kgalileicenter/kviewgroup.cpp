@@ -37,7 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rstring.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -63,7 +63,6 @@ using namespace GALILEI;
 #include "kdoc.h"
 #include "kviewgroup.h"
 #include "qsessionprogress.h"
-using namespace RTimeDate;
 
 
 

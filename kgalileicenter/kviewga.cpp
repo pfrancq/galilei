@@ -48,6 +48,7 @@
 #include <profiles/gprofilessim.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -79,7 +80,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,Q
 	GSubProfile* sub;
 	GGroupDataIR g;
 	unsigned int i;
-    IdealGroups = new RStd::RContainer<GGroups,unsigned int,true,true>(2,1);
+    IdealGroups = new R::RContainer<GGroups,unsigned int,true,true>(2,1);
 	// Window
 	lang=Doc->GetSession()->GetLang(l);
 	setCaption(QString("GALILEI Genetic Algorithms - ")+lang->GetName());
@@ -111,8 +112,8 @@ KViewGA::KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,Q
 	// Go through the profiles corresponding to the language and that are
 	// to inserted.
 	GProfileCursor cur=Doc->GetSession()->GetProfilesCursor();
-	SubProfiles=new RStd::RContainer<GSubProfile,unsigned int,false,true>(cur.GetNb());
-	Objs=new RGA::RObjs<GObjIR>(cur.GetNb());
+	SubProfiles=new R::RContainer<GSubProfile,unsigned int,false,true>(cur.GetNb());
+	Objs=new R::RObjs<GObjIR>(cur.GetNb());
 	for(cur.Start(),i=0;!cur.End();cur.Next())
 	{
 		sub=cur()->GetSubProfile(lang);

@@ -41,7 +41,7 @@
 #include <groups/ggroupingsim.h>
 #include <docs/gdocoptions.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -234,7 +234,7 @@ void KGALILEICenterApp::saveOptions(GSimMeasure* s)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::saveOptions(const char* n,RPromethee::RPromCriterionParams& c)
+void KGALILEICenterApp::saveOptions(const char* n,R::RPromCriterionParams& c)
 {
 	Config->writeEntry(QString(n)+" Weight",c.Weight);
 	Config->writeEntry(QString(n)+" P",c.P);
@@ -409,7 +409,7 @@ void KGALILEICenterApp::readOptions(GSimMeasure* s)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::readOptions(const char* n,RPromethee::RPromCriterionParams& c)
+void KGALILEICenterApp::readOptions(const char* n,R::RPromCriterionParams& c)
 {
 	c.Weight=Config->readDoubleNumEntry(QString(n)+" Weight",1.0);
 	c.P=Config->readDoubleNumEntry(QString(n)+" P",0.2);
@@ -473,26 +473,26 @@ void KGALILEICenterApp::readOptions(void)
 	
 
 	// Read Session Options
-	GroupingMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
-	GroupingMethod->InsertPtr(new RStd::RString("CURE"));
-	GroupingMethod->InsertPtr(new RStd::RString("First-Fit Heuristic"));
-	GroupingMethod->InsertPtr(new RStd::RString("GVCA"));
-	GroupingMethod->InsertPtr(new RStd::RString("KMeansCosinus"));
-	GroupingMethod->InsertPtr(new RStd::RString("SUPkMeans"));
-	GroupingMethod->InsertPtr(new RStd::RString("kMeansProtos"));
-	GroupingMethod->InsertPtr(new RStd::RString("Random Heuristic"));
-	ComputingMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
-	ComputingMethod->InsertPtr(new RStd::RString("Statistical"));
-	ComputingMethod->InsertPtr(new RStd::RString("Direct Reweighting"));
-	ComputingMethod->InsertPtr(new RStd::RString("User Feedback"));
-	ProfileDesc = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
-	ProfileDesc->InsertPtr(new RStd::RString("Vector space"));
-	GroupCalcMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
-	GroupCalcMethod->InsertPtr(new RStd::RString("Gravitation"));
-	GroupCalcMethod->InsertPtr(new RStd::RString("Prototype"));
-	LinkCalcMethod=new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
-	LinkCalcMethod->InsertPtr(new RStd::RString("HITS Algorithm"));
-	LinkCalcMethod->InsertPtr(new RStd::RString("Correspondence Algorithm"));
+	GroupingMethod = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
+	GroupingMethod->InsertPtr(new R::RString("CURE"));
+	GroupingMethod->InsertPtr(new R::RString("First-Fit Heuristic"));
+	GroupingMethod->InsertPtr(new R::RString("GVCA"));
+	GroupingMethod->InsertPtr(new R::RString("KMeansCosinus"));
+	GroupingMethod->InsertPtr(new R::RString("SUPkMeans"));
+	GroupingMethod->InsertPtr(new R::RString("kMeansProtos"));
+	GroupingMethod->InsertPtr(new R::RString("Random Heuristic"));
+	ComputingMethod = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
+	ComputingMethod->InsertPtr(new R::RString("Statistical"));
+	ComputingMethod->InsertPtr(new R::RString("Direct Reweighting"));
+	ComputingMethod->InsertPtr(new R::RString("User Feedback"));
+	ProfileDesc = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
+	ProfileDesc->InsertPtr(new R::RString("Vector space"));
+	GroupCalcMethod = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
+	GroupCalcMethod->InsertPtr(new R::RString("Gravitation"));
+	GroupCalcMethod->InsertPtr(new R::RString("Prototype"));
+	LinkCalcMethod=new R::RContainer<R::RString,unsigned int,true,true>(3,3);
+	LinkCalcMethod->InsertPtr(new R::RString("HITS Algorithm"));
+	LinkCalcMethod->InsertPtr(new R::RString("Correspondence Algorithm"));
 	Config->setGroup("Session Options");
 	CurrentProfileDesc=Config->readEntry("Description Method","Vector space");
 	CurrentComputingMethod=Config->readEntry("Computing Method","Statistical");

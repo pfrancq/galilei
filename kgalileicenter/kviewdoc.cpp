@@ -37,16 +37,15 @@
 //-----------------------------------------------------------------------------
 // include files ANSI C/C++
 #include <stdlib.h>
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainercursor.h>
-using namespace RStd;
-#include <rxml/rxmlfile.h>
-using namespace RXML;
+#include <rstd/rxmlfile.h>
 #include <rga/qxmlcontainer.h>
-using namespace RGA;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -75,7 +74,6 @@ using namespace GALILEI;
 #include "kviewdoc.h"
 #include "qsessionprogress.h"
 #include "kdoc.h"
-using namespace RTimeDate;
 
 
 
@@ -315,7 +313,7 @@ void KViewDoc::CreateDocXML(void)
 void KViewDoc::SaveDocXML(const char* name)
 {
 	if(!Struct) return;
-	RXMLFile f(name,Struct,RIO::Create);
+	RXMLFile f(name,Struct,R::Create);
 }
 
 

@@ -170,10 +170,10 @@ void QPluginsDlg::QPluginListView::activate(void)
 QPluginsDlg::QPluginsDlg(KGALILEICenterApp* app,const char* name)
 	: QDialog(app,name,true), Cur(0), Conf(0), Computings(0), Groupings(0), App(app)
 {
-	Computings=new RStd::RContainer<QComputingPluginConf,unsigned int,true,true>(3,3);
-	Groupings=new RStd::RContainer<QGroupingPluginConf,unsigned int,true,true>(3,3);
-	GroupCalcs=new RStd::RContainer<QGroupCalcPluginConf,unsigned int,true,true>(3,3);
-	LinkCalcs=new RStd::RContainer<QLinkCalcPluginConf,unsigned int,true,true>(3,3);
+	Computings=new R::RContainer<QComputingPluginConf,unsigned int,true,true>(3,3);
+	Groupings=new R::RContainer<QGroupingPluginConf,unsigned int,true,true>(3,3);
+	GroupCalcs=new R::RContainer<QGroupCalcPluginConf,unsigned int,true,true>(3,3);
+	LinkCalcs=new R::RContainer<QLinkCalcPluginConf,unsigned int,true,true>(3,3);
 
 
 	// Window initialisation
@@ -330,7 +330,7 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
  		Main->removePage(Conf);
 		Conf->disconnect();
 	}
-	RStd::RString coucou=App->GetCurrentGroupingMethod();
+	R::RString coucou=App->GetCurrentGroupingMethod();
 	sprintf(tmp,"Configure [%s]",(p->Name).StrDup());
 	switch(p->Type)
 	{

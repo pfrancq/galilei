@@ -59,7 +59,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainercursor.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -74,7 +74,6 @@ using namespace RStd;
 #include "kviewevaluategroup.h"
 #include "qsessionprogress.h"
 #include "kdoc.h"
-using namespace RTimeDate;
 
 
 
@@ -168,12 +167,16 @@ void KViewEvaluateGroup::ConstructGeneral(void)
 {
 	GSession* session=Doc->GetSession();
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* groups=session->GetIdealDocs();
-	
+	char num1[50],num2[50],num3[50];
+
 	GEvaluateGroupingCalinski Cal (session, groups);
 	GEvaluateGroupingVariance Var (session, groups);
 	GEvaluateGroupingIntraMinInter Minintra (session, groups);
 	General->clear();
-	new QListViewItem(General,"Document",QString(dtoa(Cal.Run())),QString(dtoa(Minintra.Run())),QString(dtoa(Var.Run())));
+	sprintf(num1,"%f",Cal.Run());
+	sprintf(num2,"%f",Minintra.Run());
+	sprintf(num3,"%f",Var.Run());
+	new QListViewItem(General,"Document",num1,num2,num3);
 
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* Groups=new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 	RContainer<GGroups,unsigned int,true,true>* IdealGroups=session->GetIdealGroups();
@@ -193,7 +196,10 @@ void KViewEvaluateGroup::ConstructGeneral(void)
 	GEvaluateGroupingCalinski CalG (session, Groups);
 	GEvaluateGroupingVariance VarG (session, Groups);
 	GEvaluateGroupingIntraMinInter MinintraG (session,Groups);
-	new QListViewItem(General,"SubProfiles",QString(dtoa(CalG.Run())),QString(dtoa(MinintraG.Run())),QString(dtoa(VarG.Run())));
+	sprintf(num1,"%f",CalG.Run());
+	sprintf(num2,"%f",MinintraG.Run());
+	sprintf(num3,"%f",VarG.Run());
+	new QListViewItem(General,"SubProfiles",num1,num2,num3);
 	cout<<" "<<CalG.Run()<<" "<<MinintraG.Run()<<" "<<VarG.Run();
 }
 
@@ -221,7 +227,7 @@ void KViewEvaluateGroup::ConstructVarianceSubProf(void)
 			bool end=true;
 			for(Cur2()->Start();end;Cur2()->Next())
 			{
-				new QListViewItem(VarianceSubProf,QString((*Cur2())()->GetProfile()->GetName()), QString(dtoa(Var.Run())));
+				new QListViewItem(VarianceSubProf,QString((*Cur2())()->GetProfile()->GetName()), QString::number(Var.Run()));
 				end=false;
 			}
 			delete (GS);
@@ -251,7 +257,7 @@ void KViewEvaluateGroup::ConstructVarianceDoc(void)
 			GS->InsertPtr((*(*GroupsDoc)())());
 			GroupsDocTemp->InsertPtr(GS);
 			GEvaluateGroupingVariance Var (session, GroupsDocTemp);
-			new QListViewItem(VarianceDoc, QString((*(*GroupsDoc)())()->GetName()), QString(dtoa(Var.Run())));
+			new QListViewItem(VarianceDoc, QString((*(*GroupsDoc)())()->GetName()), QString::number(Var.Run()));
 			delete (GS);
 			delete (GroupsDocTemp);
 		}
@@ -337,7 +343,7 @@ void KViewEvaluateGroup::ConstructSimilaritySubProf()
 			MeanIntraM+=MeanIntra;
 			MaxExtraM+=MaxExtra;
 			MeanExtraM+=MeanExtra;
-			new QListViewItem(SimilaritySubProf,QString(name),QString(dtoa(MinIntra)),QString(dtoa(MeanIntra)),QString(dtoa(MaxExtra)),QString(dtoa(MeanExtra)),"similarmin","similarmax","similarmean");
+			new QListViewItem(SimilaritySubProf,QString(name),QString::number(MinIntra),QString::number(MeanIntra),QString::number(MaxExtra),QString::number(MeanExtra),"similarmin","similarmax","similarmean");
 		}
 	}
 

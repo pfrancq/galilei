@@ -177,5 +177,6 @@
     <diffoptions>-u3 -p</diffoptions>
     <logoptions/>
     <rshoptions/>
+    <revertoptions>-C -d -P</revertoptions>
   </kdevcvs>
 </kdevelop>

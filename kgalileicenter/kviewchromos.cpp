@@ -42,9 +42,8 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rstring.h>
-using namespace RStd;
-#include <rio/rtextfile.h>
-using namespace RIO;
+#include <rstd/rtextfile.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -56,7 +55,6 @@ using namespace RIO;
 #include <profiles/gprofilessim.h>
 #include <groups/ggroup.h>
 using namespace GALILEI;
-using namespace RGA;
 
 
 //-----------------------------------------------------------------------------
@@ -78,7 +76,6 @@ using namespace RGA;
 #include "kdoc.h"
 #include "kviewchromos.h"
 #include "qsessionprogress.h"
-using namespace RTimeDate;
 
 
 
@@ -183,7 +180,7 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget
 	 Sim(sim), Stats(50,25), Params(p), Instance(0)
 {
 	// Construct chromosomes
-	IdealGroups= new RStd::RContainer<GALILEI::GGroups, unsigned int, true, true> (2,1);
+	IdealGroups= new R::RContainer<GALILEI::GGroups, unsigned int, true, true> (2,1);
 	General = new QListViewChromos(this);
 	if(Sim)
 	{
@@ -634,9 +631,9 @@ void KViewChromos::slotMenu(int)
 		else
 			dlg=KMessageBox::Yes;
 	}
-	RTextFile Res(url.path().latin1(),RIO::Create);
+	RTextFile Res(url.path().latin1(),R::Create);
 	Res.SetSeparator("\t");
-	
+
 	Res<<"Id"<<"Precision"<<"Recall"<<"E05"<<"E1"<<"E15"<<"Global";
 	if(Sim)
 		Res<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"WOverB"<<"SimWB";

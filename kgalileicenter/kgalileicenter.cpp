@@ -42,11 +42,11 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rxml/rxmlfile.h>
+#include <rstd/rxmlfile.h>
 #include <rstd/rstring.h>
 #include <rstd/rcontainer.h>
-using namespace RIO;
-using namespace RStd;
+using namespace R;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -232,7 +232,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 				Doc=0;
 			}
 		}
-		catch(RMySQL::RMySQLError& e)
+		catch(R::RMySQLError& e)
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
 			if(Doc)
@@ -894,7 +894,7 @@ void KGALILEICenterApp::slotGAAnalyse(void)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
 	}
-	catch(RMySQL::RMySQLError& e)
+	catch(R::RMySQLError& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
 	}
@@ -1079,7 +1079,7 @@ void KGALILEICenterApp::slotRunProgram(void)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
 	}
-	catch(RMySQL::RMySQLError& e)
+	catch(R::RMySQLError& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
 	}
@@ -1140,7 +1140,7 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
 	}
-	catch(RMySQL::RMySQLError& e)
+	catch(R::RMySQLError& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
 	}

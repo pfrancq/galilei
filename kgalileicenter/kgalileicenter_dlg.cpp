@@ -37,7 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainercursor.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -45,7 +45,7 @@ using namespace RStd;
 #include <docs/gdoc.h>
 #include <langs/glang.h>
 #include <docs/gdocoptions.h>
-#include <urlmanagers/gurlmanagerkde.h>
+#include <galilei/gurlmanagerkde.h>
 #include <galilei/qlistviewitemtype.h>
 #include <sessions/gsession.h>
 #include <filters/gfilter.h>

@@ -43,7 +43,7 @@
 // include files for R Project
 #include <rstd/rstd.h>
 #include <rstd/rcontainer.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ using namespace RStd;
 #include <groups/ginstir.h>
 #include <galilei/qggroupsir.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
