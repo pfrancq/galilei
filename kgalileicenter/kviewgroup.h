@@ -40,12 +40,17 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainer.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <docs/gdoc.h>
 namespace GALILEI
 {
 	class GGroup;
 }
-using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
@@ -73,7 +78,7 @@ class KViewGroup : public KView
 	/**
 	* Group represented by the view.
 	*/
-	GGroup* Group;
+	GALILEI::GGroup* Group;
 
 	/**
 	* Widget to handle the different information of the group.
@@ -95,6 +100,16 @@ class KViewGroup : public KView
 	*/
 	QListView* Vector;
 
+	/**
+	*  Widget of documents assessed as relevant by memebers of the group.
+	*/
+	QListView* Docs;
+
+	/**
+	* List of documents assessed as relevant.
+	*/
+	R::RContainer<GALILEI::GDoc,unsigned int,false,true> OkDocs;
+
 public:
 
 	/**
@@ -105,7 +120,7 @@ public:
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KViewGroup(GALILEI::GGroup* grp,KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.
@@ -116,7 +131,7 @@ public:
 	* Get the group of this window.
 	* @return Pointer to a GALILEI::GGroup.
 	*/
-	GGroup* GetGroup(void) {return(Group);}
+	GALILEI::GGroup* GetGroup(void) {return(Group);}
 
 	/**
 	* Construct the groups widget.
@@ -134,10 +149,27 @@ public:
 	void ConstructGeneral(void);
 
 	/**
+	* Construct the documents' widget.
+	*/
+	void ConstructDocs(void);
+
+	/**
 	* Gets called to redraw the document contents if it has been modified.
 	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
 	*/
 	virtual void update(unsigned int cmd);
+
+protected slots:
+
+	/**
+	* Local menu of documents was asked.
+	*/
+	void askDocsMenu(QListViewItem*,const QPoint&,int);
+
+	/**
+	* slot for the menu.
+	*/
+	void slotMenu(int id);
 
 protected:
 

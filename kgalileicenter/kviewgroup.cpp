@@ -37,6 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rstring.h>
+#include <rstd/rtextfile.h>
 using namespace R;
 
 
@@ -44,6 +45,8 @@ using namespace R;
 // include files for GALILEI
 #include <langs/glang.h>
 #include <sessions/gsession.h>
+#include <profiles/gprofdoc.h>
+#include <docs/gdocvector.h>
 #include <groups/ggroupvector.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
@@ -54,8 +57,14 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// includes files for Qt
+// includes files for Qt/KDE
 #include <qpixmap.h>
+#include <qpopmenu.h>
+#include <kiconloader.h>
+#include <kglobal.h>
+#include <kmessagebox.h>
+#include <kfiledialog.h>
+#include <klocale.h>
 
 
 //-----------------------------------------------------------------------------
@@ -74,13 +83,13 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 KViewGroup::KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Group(grp)
+	: KView(doc,parent,name,wflags), Group(grp), OkDocs(100,50)
 {
 	char title[50];
 
 	sprintf(title,"Group (Id=%u)",grp->GetId());
 	setCaption("Group");
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/actions/window_new.png"));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("window_new",KIcon::Small)));
 
 	// initialisation of the tab widget
 	Infos=new QTabWidget(this);
@@ -112,6 +121,17 @@ KViewGroup::KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,in
 	Vector->addColumn(QString("Weights"));
 	Vector->setSorting(2);
 	ConstructDescription();
+
+	// Initialisation of the Documentss Widget
+	Docs = new QListView(this,"QListView of KViewDocs");
+	Infos->insertTab(Docs,"Documents");
+	Docs->addColumn(QString("Title"));
+	Docs->addColumn(QString("URL"));
+	Docs->addColumn(QString("MIME Type"));
+	Docs->setRootIsDecorated(true);
+	connect(Docs,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	connect(Docs,SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)),this,SLOT(askDocsMenu(QListViewItem*,const QPoint&,int)));
+	ConstructDocs();
 }
 
 
@@ -128,7 +148,7 @@ void KViewGroup::ConstructProfiles(void)
 		d=sub->GetAttached();
 		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
 		QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),Profiles,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName(),sDate);
-		subitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
+		subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find",KIcon::Small)));
 	}
 }
 
@@ -168,6 +188,51 @@ void KViewGroup::ConstructGeneral(void)
 	new QListViewItem(General,"Status",sDate);
 }
 
+
+//-----------------------------------------------------------------------------
+void KViewGroup::ConstructDocs(void)
+{
+ 	const RDate* d;
+ 	char sDate[20];
+ 	GProfDocCursor docs;
+	GDocCursor docs2;
+
+	// Clear the Widget
+	Docs->clear();
+	OkDocs.Clear();
+
+	// Goes trough the subprofiles of the group
+	// And put in OkDocs all the relevant documents
+	for(Group->Start();!Group->End();Group->Next())
+	{
+		GSubProfile* sub=(*Group)();
+		docs=sub->GetProfDocCursor();
+		for(docs.Start();!docs.End();docs.Next())
+		{
+			// If not a relevant document -> goes next
+			if((docs()->GetFdbk()!=djOK)&&(docs()->GetFdbk()!=djNav))
+				continue;
+
+			// If doc already in OkDocs -> goes next
+			if(OkDocs.IsIn(docs()->GetDoc()))
+				continue;
+
+			OkDocs.InsertPtr(docs()->GetDoc());
+		}
+	}
+
+	// Insert documents.
+	docs2.Set(OkDocs);
+	for(docs2.Start();!docs2.End();docs2.Next())
+	{
+		d=docs2()->GetUpdated();
+		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
+		QListViewItemType* prof = new QListViewItemType(docs2(),Docs,docs2()->GetName(),docs2()->GetURL(),sDate);
+		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror",KIcon::Small)));
+	}
+}
+
+
 //-----------------------------------------------------------------------------
 void KViewGroup::ConstructDescription(void)
 {
@@ -197,6 +262,85 @@ void KViewGroup::update(unsigned int cmd)
 	ConstructProfiles();
 	ConstructGeneral();
 	ConstructDescription();
+	ConstructDocs();
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewGroup::askDocsMenu(QListViewItem*,const QPoint& pt,int)
+{
+	QPopupMenu* InfoBox=new QPopupMenu(parentWidget());
+	InfoBox->insertItem("Save List as XML for HGA",this,SLOT(slotMenu(int)));
+	InfoBox->popup(pt);
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewGroup::slotMenu(int)
+{
+	int dlg;
+	KURL url;
+	GDocCursor theDocs;
+	GDocVector* doc;
+	unsigned int i,size,maxsize,newsize,j;
+	GIWordWeight** tab;
+	GIWordWeight** tmp;
+
+	dlg=KMessageBox::No;
+	while(dlg!=KMessageBox::Yes)
+	{
+		url=KFileDialog::getSaveURL(QString::null,i18n("*.hd"), this, i18n("Save List..."));
+		if(url.isEmpty()) return;
+		QFile Test(url.path().latin1());
+		if(Test.exists())
+		{
+			dlg=KMessageBox::warningYesNoCancel(this,"A Document with this Name exists.\nDo you want to overwrite it?","Warning");
+			if(dlg==KMessageBox::No) return;
+		}
+		else
+			dlg=KMessageBox::Yes;
+	}
+
+	// Open Document and write header
+	RTextFile Res(url.path().latin1(),R::Create);
+	Res.SetSeparator("");
+	Res<<"<?xml version=\"1.0\" ?>\n<!DOCTYPE Hierarchical-Data>\n<Hierarchical-Data>\n\t<Objects>\n";
+
+	// Write Docs
+	theDocs.Set(OkDocs);
+	for(theDocs.Start(),i=0,maxsize=0,tab=0;!theDocs.End();theDocs.Next(),i++)
+	{
+		doc=dynamic_cast<GDocVector*>(theDocs());
+		Res<<"\t\t<Object Id=\""<<theDocs()->GetName()<<"\">\n";
+		if(doc)
+		{
+			// Write attributes
+			size=doc->NbPtr;
+			if(!size) continue;
+			if(size>maxsize)
+			{
+				newsize=size+static_cast<unsigned int>(0.5*size);
+				tmp=new GIWordWeight*[newsize];
+				if(tab)
+				{
+					memcpy(tmp,tab,maxsize*sizeof(GIWordWeight*));
+					delete[] tab;
+				}
+				maxsize=newsize;
+				tab=tmp;
+			}
+			memcpy(tab,doc->Tab,size*sizeof(GIWordWeight*));
+			qsort(static_cast<void*>(tab),size,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
+			for(j=21,size++,tmp=tab;(--j)&&(--size);tmp++)
+				Res<<"\t\t\t<Include Attribute=\""<<Doc->GetSession()->GetWord((*tmp)->GetId(),theDocs()->GetLang())<<"\"/>\n";
+		}
+		Res<<"\t\t</Object>\n";
+	}
+
+	// Write footer
+	Res<<"\t</Objects>\n</Hierarchical-Data>";
+	if(tab)
+		delete[] tab;
 }
 
 
