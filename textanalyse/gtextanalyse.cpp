@@ -179,7 +179,7 @@ void GTextAnalyse::Connect(GSession* session) throw(GException)
 	for(i=NbOrder+1,pt=Order;--i;pt++)
 		(*pt)=new GWord();
 
-	//init database 
+	//init database
 	if(StoreFullWords)
 		Session->GetStorage()->CreateDummy("wordsstems");
 
@@ -742,7 +742,7 @@ void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 			(*Occur)+=(*wrd)->Weight;
 			if(StoreFullWords)
 				StoreWordStemInDatabase(Occur->GetId(), (*wrd)->Word, docid);
-				
+
 		}
 	}
 
@@ -770,7 +770,8 @@ void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 		name+=itou(Doc->GetId());
 		try
 		{
-			R::RRecFile<GWord,sizeof(unsigned int),false> f(name,Create);
+			R::RRecFile<GWord,sizeof(unsigned int),false> f(name);
+			f.Open(Create);
 			for(i=0;i<Nwords;i++)
 			{
 				if(Order[i]->GetId()==1)
@@ -884,7 +885,7 @@ bool GTextAnalyse::StoreWordStemInDatabase(unsigned int stemid, RString word, un
 	//check if the words/stem couple does not already exist
 	RQuery* q=Session->GetStorage()->SelectDummyEntry("wordsstems",stemid,word,0,3);
 	if(q->GetNb())
-		return(false);	
+		return(false);
 	Session->GetStorage()->AddDummyEntry("wordsstems", stemid, word, docid );
 	return(true);
 }
