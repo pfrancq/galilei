@@ -54,7 +54,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GMsgList class provides a basic manager to maniuplate types of
+* The GMsgList class provides a basic manager to manipulate types of
 * information. Eacht type a message has to be created, this class has to be
 * called.
 * @short Information Type Manager

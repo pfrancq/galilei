@@ -65,7 +65,7 @@ class GMsgMng;
 * exchange protocol.
 *
 * This class can be used whenever an application (client or processes) needs
-* some information from a process.
+* some information from another process.
 * @short Generic GALILEI Client
 * @author Pascal Francq
 */

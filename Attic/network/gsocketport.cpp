@@ -52,7 +52,6 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
 #include <network/gsocketport.h>
 #include <network/gmsg.h>
 #include <network/gserver.h>
@@ -260,7 +259,7 @@ void GSocketPort::FlushRxData(void)
 void GSocketPort::OnConnectionClosed(void)
 {
 	// If User was connected, the process must do some clean-up.
-	if(UserId!=cNoRef)
+	if(UserId!=0xFFFF)
 		Server->CloseSocketPort(this);
 }
 
@@ -307,7 +306,7 @@ void GSocketPort::Send(GMsg* msg)
 //-----------------------------------------------------------------------------
 void GSocketPort::SetUserId(unsigned int id)
 {
-	if(id==cNoRef)
+	if(id==0xFFFF)
 	{
 		CloseSocket();
 		return;
