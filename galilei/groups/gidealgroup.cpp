@@ -113,8 +113,9 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 const char* GALILEI::GIdealGroup::GetSettings(void)
 {
 	static char tmp[100];
-	
-	sprintf(tmp,"%u %u %i",PercOK,PercKO,Rand);
+
+	sprintf(tmp,"%u %u %u",PercOK,PercKO,Rand);
+
 	return(tmp);
 }
 
@@ -123,7 +124,7 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 void GALILEI::GIdealGroup::SetSettings(const char* s)
 {
 	if(!(*s)) return;
-	sscanf(s,"%u %u %i",&PercOK,&PercKO,&Rand);
+	sscanf(s,"%u %u %u",&PercOK,&PercKO,&Rand);
 }
 
 

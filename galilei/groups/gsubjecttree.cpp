@@ -107,8 +107,8 @@ void GSubjectTree::InsertProfiles(void)
 //---------------------------------------------------
 void GSubjectTree::Judgments(GSession* ses,int ran)
 {
-	if(ran!=-1) Random->Reset(ran);
 
+	if(ran!=0) Random->Reset(ran);
 	InitProfiles();
 	InitSubSubjects();
 
@@ -130,9 +130,8 @@ void GSubjectTree::Judgments(GSession* ses,int ran)
 		{
 
 			//Chose a subsubject.
-			int soustheme = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
-//			int soustheme = (rand()%(subject->NbPtr))+subject->SubSubjectMinId();
-			GSubject* sub1=subject->GetPtr(soustheme);
+			int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
+			GSubject* sub1=subject->GetPtr(subthema);
 			sub1->setIsJudged(true);
 
 			//Create the judgement.
@@ -148,14 +147,13 @@ void GSubjectTree::Judgments(GSession* ses,int ran)
 			//Documents KO.
 			if (subject->NbPtr>1) //If the subsuject enables the KO judgement of documents.
 			{
+				int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
+				GSubject* sub2=subject->GetPtr(subthema);
 				int soustheme = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
-//				int soustheme = (rand()%(subject->NbPtr))+subject->SubSubjectMinId();
-				GSubject* sub2=subject->GetPtr(soustheme);
 				while(sub2==sub1)
 				{
-					int soustheme = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
-//					int soustheme = (rand()%(subject->NbPtr))+subject->SubSubjectMinId();
-					sub2=subject->GetPtr(soustheme);
+					int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
+					sub2=subject->GetPtr(subthema);
 				}
 				JudgeDocuments(profid,sub2,0,ses);
 			}

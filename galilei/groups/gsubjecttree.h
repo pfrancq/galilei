@@ -126,7 +126,11 @@ public:
 	/**
 	* Executes the queries to create new profiles.
 	* @param ses       The Gailieli session
+<<<<<<< gsubjecttree.h
+	* @param rand      0 total random >0 restart the sequence of randum number
+=======
 	* @param rand      -1 total random >=0 restart the sequence of randum number
+>>>>>>> 1.5
 	*/
 	void Judgments(GSession* ses,int rand);
 

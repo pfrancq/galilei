@@ -76,6 +76,7 @@ protected:
 
 	/**
 	* Parameter to initialyse the random function for autocreate jugment.
+	* 0 to use randomly, >0 to use whit the same su sequence
 	*/
 	int Rand;
 
