@@ -144,6 +144,31 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 
 
 //-----------------------------------------------------------------------------
+GALILEI::GProfilesSim::GProfilesSim(GSubProfileCursor& s,bool global) throw(bad_alloc)
+	: Sims(s.GetNb(),s.GetNb()/2)
+{
+	GSubProfileCursor Cur1;
+	GSubProfileCursor Cur2;
+	unsigned int i,j;
+	GSims* sim;
+
+	Cur1=s;
+	Cur2=s;
+	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
+	{
+		Sims.InsertPtr(sim=new GSims(Cur1()->GetId(),j));
+		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
+		{
+			if(global)
+				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->GlobalSimilarity(Cur2())));
+			else
+				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->Similarity(Cur2())));
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 double GALILEI::GProfilesSim::GetSim(unsigned int i,unsigned int j)
 {
 	GSims* s;

@@ -78,6 +78,13 @@ public:
 	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global) throw(bad_alloc);
 
 	/**
+	* Constructor.
+	* @param s              Cursor over the Subprofiles.
+	* @param global         Global approach.
+	*/
+	GProfilesSim(GSubProfileCursor& s,bool global) throw(bad_alloc);
+
+	/**
 	* Get the similarities between two profiles, i.e. the subprofiles of a same
 	* language.
 	* @param i              Identificator of the first subprofile.
