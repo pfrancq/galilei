@@ -59,6 +59,11 @@ class GLangAR : public GLang
 	class ArabicRule;
 
 	/**
+	* List of Rules '0' (vowels rules)
+	*/
+	R::RContainer<ArabicRule,true,false>* Rules0;
+
+	/**
 	* List of Rules '1a'.
 	*/
 	R::RContainer<ArabicRule,true,false>* Rules1;
@@ -93,6 +98,11 @@ class GLangAR : public GLang
 	*/
 	R::RContainer<ArabicRule,true,false>* Rules7;
 
+	/*
+	* rules file.
+	*/
+	R::RString RulesFile;
+
 
 public:
 
@@ -113,7 +123,7 @@ public:
 private:
 
 	/**
-	* Load the rules from a unicode textfile ('utf-8' enconded).
+	* Load the rules from a unicode textfile ('utf-8' encoded).
 	* Data in textfile are separated by semi-colon.
 	*/
 	void LoadRules(void) throw(GException);
@@ -124,7 +134,7 @@ private:
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	void ApplyRules(R::RString kwd,R::RContainer<ArabicRule,true,false>* rules);
+	void ApplyRules(R::RString& kwd,R::RContainer<ArabicRule,true,false>* rules);
 
 public:
 
