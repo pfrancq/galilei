@@ -178,9 +178,20 @@ public:
 	virtual double Similarity(const GSubProfile*) const {return(0.0);};
 
 	/**
+	* Compute similarity between SubProfiles using a global approach.
+	*/
+	virtual double GlobalSimilarity(const GSubProfile*) const {return(0.0);};
+
+	/**
 	* Compute similarity between a subProfile and a document.
 	*/
 	virtual double Similarity(const GDoc*) const {return(0.0);};
+
+	/**
+	* Compute similarity between a subProfile and a document using a global
+	*  approach.
+	*/
+	virtual double GlobalSimilarity(const GDoc*) const {return(0.0);};
 
 	/**
 	* See if the subprpfile is defined, i.e. if it is computed. A subprofile

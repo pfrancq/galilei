@@ -108,9 +108,20 @@ public:
 	virtual double Similarity(const GSubProfile* desc) const;
 
 	/**
+	* Compute similarity between SubProfiles using a global approach.
+	*/
+	virtual double GlobalSimilarity(const GSubProfile* desc) const;
+
+	/**
 	* Compute similarity between a subprofile and a document.
 	*/
 	virtual double Similarity(const GDoc* doc) const;
+
+	/**
+	* Compute similarity between a subprofile and a document using a global
+	* approach.
+	*/
+	virtual double GlobalSimilarity(const GDoc* doc) const;
 
 	/**
 	* Get a cursor over the vector.

@@ -195,7 +195,14 @@ GProfDocCursor& GALILEI::GDoc::GetProfDocCursor(void)
 //-----------------------------------------------------------------------------
 double GALILEI::GDoc::Similarity(const GDoc* doc) const
 {
-	return(Words->Similarity(doc->Words,otDoc));
+	return(Words->Similarity(doc->Words));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GDoc::GlobalSimilarity(const GDoc* doc) const
+{
+	return(Words->SimilarityIdf(doc->Words,otDoc));
 }
 
 

@@ -342,6 +342,11 @@ public:
 	double Similarity(const GDoc* doc) const;
 
 	/**
+	* Compute similarity between document using the idf factors.
+	*/
+	double GlobalSimilarity(const GDoc* doc) const;
+
+	/**
 	* Add a judgement for this document.
 	* @param j              Judgement.
 	*/
