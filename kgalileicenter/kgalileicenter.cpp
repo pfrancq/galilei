@@ -288,7 +288,7 @@ void KGALILEICenterApp::slotProfileCalc(void)
 void KGALILEICenterApp::slotProfilesCalc(void)
 {
 	setDocParams(Doc);
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Documents");
+	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Profiles");
 	d->ComputeProfiles(!profileAlwaysCalc->isChecked(),profileAlwaysSave->isChecked());
 	Doc->updateAllViews(1);
 }
