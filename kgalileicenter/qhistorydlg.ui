@@ -8,12 +8,12 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>271</width>
-            <height>300</height>
+            <width>258</width>
+            <height>257</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Form1</string>
+        <string>Groups History</string>
     </property>
     <widget class="QGroupBox">
         <property name="name">
@@ -23,13 +23,26 @@
             <rect>
                 <x>10</x>
                 <y>10</y>
-                <width>250</width>
-                <height>240</height>
+                <width>240</width>
+                <height>200</height>
             </rect>
         </property>
         <property name="title">
             <string>Historic Options</string>
         </property>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>CBLang</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>159</x>
+                    <y>30</y>
+                    <width>60</width>
+                    <height>27</height>
+                </rect>
+            </property>
+        </widget>
         <widget class="QLabel">
             <property name="name">
                 <cstring>TextLabel1</cstring>
@@ -37,42 +50,29 @@
             <property name="geometry">
                 <rect>
                     <x>20</x>
-                    <y>50</y>
+                    <y>30</y>
                     <width>85</width>
                     <height>20</height>
                 </rect>
             </property>
             <property name="text">
-                <string>lang</string>
+                <string>Language :</string>
             </property>
         </widget>
-        <widget class="QCheckBox">
+        <widget class="QLabel">
             <property name="name">
-                <cstring>CBGlobal</cstring>
+                <cstring>TLMinHistory</cstring>
             </property>
             <property name="geometry">
                 <rect>
-                    <x>60</x>
-                    <y>210</y>
-                    <width>150</width>
-                    <height>23</height>
+                    <x>20</x>
+                    <y>80</y>
+                    <width>106</width>
+                    <height>20</height>
                 </rect>
             </property>
             <property name="text">
-                <string>Global Similarities</string>
-            </property>
-        </widget>
-        <widget class="QComboBox">
-            <property name="name">
-                <cstring>CBLang</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>120</x>
-                    <y>50</y>
-                    <width>99</width>
-                    <height>27</height>
-                </rect>
+                <string>Min historic ID :</string>
             </property>
         </widget>
         <widget class="QSpinBox">
@@ -81,8 +81,8 @@
             </property>
             <property name="geometry">
                 <rect>
-                    <x>170</x>
-                    <y>160</y>
+                    <x>160</x>
+                    <y>120</y>
                     <width>55</width>
                     <height>27</height>
                 </rect>
@@ -94,8 +94,8 @@
             </property>
             <property name="geometry">
                 <rect>
-                    <x>170</x>
-                    <y>120</y>
+                    <x>160</x>
+                    <y>70</y>
                     <width>55</width>
                     <height>27</height>
                 </rect>
@@ -107,30 +107,30 @@
             </property>
             <property name="geometry">
                 <rect>
-                    <x>10</x>
-                    <y>160</y>
+                    <x>20</x>
+                    <y>130</y>
                     <width>114</width>
                     <height>20</height>
                 </rect>
             </property>
             <property name="text">
-                <string>Max Historic ID</string>
+                <string>Max Historic ID :</string>
             </property>
         </widget>
-        <widget class="QLabel">
+        <widget class="QCheckBox">
             <property name="name">
-                <cstring>TLMinHistory</cstring>
+                <cstring>CBGlobal</cstring>
             </property>
             <property name="geometry">
                 <rect>
-                    <x>10</x>
-                    <y>130</y>
-                    <width>106</width>
-                    <height>20</height>
+                    <x>90</x>
+                    <y>170</y>
+                    <width>130</width>
+                    <height>23</height>
                 </rect>
             </property>
             <property name="text">
-                <string>Min historic ID</string>
+                <string>Global Similarities</string>
             </property>
         </widget>
     </widget>
@@ -140,8 +140,8 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>170</x>
-                <y>260</y>
+                <x>160</x>
+                <y>220</y>
                 <width>90</width>
                 <height>30</height>
             </rect>
@@ -157,7 +157,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>260</y>
+                <y>220</y>
                 <width>90</width>
                 <height>30</height>
             </rect>

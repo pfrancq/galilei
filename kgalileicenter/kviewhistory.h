@@ -1,3 +1,4 @@
+
 /*
 
 	GALILEI Research Project
@@ -57,10 +58,16 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+// include files for QtWidgets
+#include <galilei/qggroupshistory.h>
+#include <galilei/qlistviewitemtype.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for Qt
 #include <qlistview.h>
 #include <qtabwidget.h>
-#include <galilei/qggroupshistory.h>
+#include <qmenubar.h>
 
 //-----------------------------------------------------------------------------
 // include files for current application
@@ -113,6 +120,16 @@ class KViewHistory : public KView
 	* Listview to display the similarities.
 	*/
 	QListView* SimsView;
+
+	/**
+	* Listview to display the groups relationship.
+	*/
+	QListView* RelationShip;
+
+	/**
+	* Toolbar of theview.
+	*/
+	QMenuBar* ToolBar;
 	
 	/**
 	* Identificator of the current showed solution.
@@ -132,7 +149,7 @@ class KViewHistory : public KView
 	/**
 	* selected items from Solutions.
 	*/
-	RStd::RContainer<GIWordsWeightsHistory, unsigned int, false, true>* SelectedItems;
+	RStd::RContainer<GIWordsWeightsHistory, unsigned int, false, true>* SelectedSubProfiles;
 
 	/**
 	* Similarities between the subprofiles to group.
@@ -153,6 +170,9 @@ public:
 	* @param wflags         Flags.
 	* @param minid          lowest limit of historical groups.
 	* @param maxid          highest limit of historical groups.
+	* @param checkModifiedGroups check for modified groups.
+	* @param checkNewProfiles check for new profiles.
+	* @param ckeckWellGroupedProfiles ckec for well-grouped profiles.
 	*/
 	KViewHistory(KDoc* doc,const char* l, bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid);
 
@@ -184,10 +204,45 @@ protected:
 private slots:
 
 	/**
-	* function to udate simsview when the selected set has changed in tabview.
+	* function to update simsview when the selected set has changed in tabview.
 	*/
 	 void slotSelectedSetChanged(QListViewItem* item);
-	 
+
+	/**
+	* function to update simsview when the selected set has changed in tabview.
+	*/
+	 void slotEssai1(void) ;
+
+	/**
+	* function to update simsview when the selected set has changed in tabview.
+	*/
+	 void slotEssai2(void);
+
+	/**
+	* function to update simsview when the selected set has changed in tabview.
+	*/
+	 void slotEssai3(void);
+
+	/**
+	* function to show similarities
+	*/
+	 void slotViewSimilarities(void);
+
+	/**
+	*  funtion to show relationship.
+	*/
+	void slotViewRelationShip(void);
+
+	/**
+	* function to show similarities
+	*/
+	 void slotClearSimilarities(void) {SimsView->clear(); SelectedSubProfiles->Clear();};
+
+	/**
+	*  funtion to show relationship.
+	*/
+	void slotClearRelationShip(void) {RelationShip->clear();};
+ 
 public:
 
 
@@ -195,6 +250,16 @@ public:
 	* Update the SimsView listview..
 	*/
 	void DisplaySimilarities(void);
+
+	/**
+	* Update the SimsView listview..
+	*/
+	void DisplayRelationShip(GGroupHistory* grpitem);
+
+	/**
+	* Update the SimsView listview..
+	*/
+	void DisplayChildrenRelationShip(GGroupHistory* grpitem,QListViewItemType* attach);
 
 	/**
 	* check if a group has changed since last historic.
@@ -210,6 +275,16 @@ public:
 	* check if the subprofiles are well-grouped
 	*/
 	void CheckWellGroupedSubProfiles(GGroupsHistory* grps);
+
+	/**
+	* check if new profiles were added in this groupment.
+	*/
+	void CheckNewProfiles(GGroupsHistory* grps);
+
+	/**
+	* creates relationship between historic groups..
+	*/
+	void CreateGroupsRelationship(void);
 
 	/**
 	* Destructor for the view.
