@@ -72,7 +72,7 @@ class GHTMLConverter : public R::RXMLFile
 	/**
 	* HTML Tags.
 	*/
-	R::RContainer<Tag,unsigned int,true,true> Tags;
+	R::RContainer<Tag,true,true> Tags;
 
 	/**
 	* Is the </html> found?
@@ -145,7 +145,7 @@ public:
 	* @remarks The namespace are not treated for the moment, so the namespaceURI
 	*          and lname parameters are always empty.
 	*/
-	virtual void BeginTag(const R::RString& namespaceURI, const R::RString& lName, const R::RString& name,R::RContainer<R::RXMLAttr,unsigned,true,true>& attrs) throw(R::RIOException);
+	virtual void BeginTag(const R::RString& namespaceURI, const R::RString& lName, const R::RString& name,R::RContainer<R::RXMLAttr,true,true>& attrs) throw(R::RIOException);
 
 	/**
 	* Function called each time a tag was treated when reading a XML file.
@@ -175,7 +175,7 @@ public:
 	* Insert A link in the docxml structure
 	* @param attrs         Attributes associated to the tag(link).
 	*/
-	void InsertLink(R::RContainer<R::RXMLAttr,unsigned,true,true>& attrs) throw(R::RIOException);
+	void InsertLink(R::RContainer<R::RXMLAttr,true,true>& attrs) throw(R::RIOException);
 
 	/**
 	* Function who reconstruct the partial url of a link
@@ -190,14 +190,14 @@ public:
 	* able to recreate links URL
 	* @param attrs         Attributes associated to the tag(base).
 	*/
-	void StoreBase(R::RContainer<R::RXMLAttr,unsigned,true,true>& attrs);
+	void StoreBase(R::RContainer<R::RXMLAttr,true,true>& attrs);
 
 	/**
 	* Function called when a <meta> tag is met
 	* This function Insert tags into docxml structure to treat metaDatas
 	* @param attrs         Attributes associated to the tag(base).
 	*/
-	void InsertMetaData(R::RContainer<R::RXMLAttr,unsigned,true,true>& attrs);
+	void InsertMetaData(R::RContainer<R::RXMLAttr,true,true>& attrs);
 
 	/**
 	* This function transform a given string that is supposed to represent a

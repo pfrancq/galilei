@@ -59,7 +59,7 @@ public:
 	tTag Type;
 	RString Value;
 	//All allowed attributs for a Tag
-	R::RContainer<Attribut,unsigned int,true,true> SubAttrs;
+	R::RContainer<Attribut,true,true> SubAttrs;
 
 	Attribut(const RString n,tTag t,const RString v)
 		: Name(n), Type(t),Value(v),SubAttrs(5,2) {}
@@ -92,7 +92,7 @@ public:
 	tTag Type;
 
 	//All allowed attributs for a Tag
-	R::RContainer<Attribut,unsigned int,true,true> Attrs;
+	R::RContainer<Attribut,true,true> Attrs;
 
 	Tag(const RString n,const RString p,tTag t)
 		: Name(n,p),Type(t),Attrs(5,2) {}
@@ -117,7 +117,7 @@ public:
 	RString Name;
 
 	//Definition of the Tags associated to the current definition
-	R::RContainer<Tag,unsigned int,true,true> Tags;
+	R::RContainer<Tag,true,true> Tags;
 
 	Def(const RString n)
 		: Name(n)/*,Mimes(5,2)*/,Tags(10,5) {}
@@ -146,6 +146,8 @@ public:
 	int Compare(const MimeDef& d) const {return(Name.Compare(d.Name));}
 	int Compare(const RString& d) const {return(Name.Compare(d));}
 };
+
+
 
 //---------------------------------------------------------------------------
 //
@@ -333,8 +335,8 @@ void GFilterXML::LoadDefinitions(void) throw(GException)
 
 	//Load the new definitions
 	//Init containers
-	Definitions=new R::RContainer<Def,unsigned int,true,true>(10,5) ;
-	MimeDefinitions=new R::RContainer<MimeDef,unsigned int,true,true>(10,5) ;
+	Definitions=new R::RContainer<Def,true,true>(10,5) ;
+	MimeDefinitions=new R::RContainer<MimeDef,true,true>(10,5) ;
 
 	if(xmlDefPath.IsEmpty()) throw GException("Path to xml definition is Empty");
 	dp=opendir(xmlDefPath);

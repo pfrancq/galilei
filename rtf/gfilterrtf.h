@@ -6,7 +6,7 @@
 
 	A RTF filter - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be)
@@ -74,7 +74,7 @@ class GFilterRTF: public GFilter
 	/**
 	* Header Tags.
 	*/
-	R::RContainer<Tag,unsigned int,true,true>* Tags;
+	R::RContainer<Tag,true,true>* Tags;
 
 	/**
 	* Pointer to parameters of the current tag.
@@ -84,7 +84,7 @@ class GFilterRTF: public GFilter
 	/**
 	* The container of XML code
 	*/
-	R::RContainer<CodeToChar,unsigned int,true,true> Chars;
+	R::RContainer<CodeToChar,true,true> Chars;
 
 public:
 

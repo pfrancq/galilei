@@ -701,7 +701,7 @@ void GHTMLConverter::InitValidTags(void) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GHTMLConverter::BeginTag(const RString& namespaceURI, const RString& lName, const RString& name,RContainer<RXMLAttr,unsigned,true,true>& attrs) throw(RIOException)
+void GHTMLConverter::BeginTag(const RString& namespaceURI, const RString& lName, const RString& name,RContainer<RXMLAttr,true,true>& attrs) throw(RIOException)
 {
 	RString htmlName;
 	Tag* tag;
@@ -857,7 +857,7 @@ void GHTMLConverter::SkipTagContent(const RString& tag)throw(RIOException)
 
 
 //------------------------------------------------------------------------------
-void GHTMLConverter::InsertLink(RContainer<RXMLAttr,unsigned,true,true>& attrs) throw(RIOException)
+void GHTMLConverter::InsertLink(RContainer<RXMLAttr,true,true>& attrs) throw(RIOException)
 {
 	RXMLTag* link;
 	RXMLAttrCursor xmlAttrCur;
@@ -966,7 +966,7 @@ void GHTMLConverter::ConstructURL(RString& urlG,RString link)
 
 
 //------------------------------------------------------------------------------
-void GHTMLConverter::StoreBase(RContainer<RXMLAttr,unsigned,true,true>& attrs)
+void GHTMLConverter::StoreBase(RContainer<RXMLAttr,true,true>& attrs)
 {
 	RXMLAttrCursor xmlAttrCur;
 
@@ -982,7 +982,7 @@ void GHTMLConverter::StoreBase(RContainer<RXMLAttr,unsigned,true,true>& attrs)
 
 
 //------------------------------------------------------------------------------
-void GHTMLConverter::InsertMetaData(RContainer<RXMLAttr,unsigned,true,true>& attrs)
+void GHTMLConverter::InsertMetaData(RContainer<RXMLAttr,true,true>& attrs)
 {
 	RXMLAttrCursor xmlAttrCur;
 	RXMLTag *metaTag;

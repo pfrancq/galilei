@@ -6,7 +6,7 @@
 
 	Correspondance between Code and characters in HTML - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -115,7 +115,7 @@ public:
 	~CodeToChar(void);
 };
 
-CLASSCURSOR(CodeToCharCursor,CodeToChar,unsigned int);
+CLASSCURSOR(CodeToCharCursor,CodeToChar);
 
 }  //-------- End of namespace GALILEI ----------------------------------------
 

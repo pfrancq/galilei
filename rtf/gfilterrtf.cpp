@@ -53,7 +53,7 @@ GALILEI::GFilterRTF::GFilterRTF(GFactoryFilter* fac)
 {
 	AddMIME("text/rtf");
 	InitCharContainer();
-	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
+	Tags=new RContainer<Tag,true,true>(10,5);
 
 	//document Headers
 	Tags->InsertPtr(new Tag("\\rtf",Tag::tMAIN));

@@ -6,7 +6,7 @@
 
 	A XML filter - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be)
@@ -94,16 +94,16 @@ class GFilterXML: public GFilter
 	class MimeDef;
 
 	// Define Cursor on Attributs objects
-	CLASSCURSOR(AttributCursor,Attribut,unsigned int);
+	CLASSCURSOR(AttributCursor,Attribut);
 
 	// Define Cursor on Tags objects
-	CLASSCURSOR(TagCursor,Tag,unsigned int);
+	CLASSCURSOR(TagCursor,Tag);
 
 	// Define Cursor on Tags objects
-	CLASSCURSOR(DefCursor,Def,unsigned int);
+	CLASSCURSOR(DefCursor,Def);
 
 	// Define Cursor on Tags objects
-	CLASSCURSOR(MimeDefCursor,MimeDef,unsigned int);
+	CLASSCURSOR(MimeDefCursor,MimeDef);
 
 	/*
 	* Structure to maintain Tags name and eventually the parent associated to the tag
@@ -138,12 +138,12 @@ class GFilterXML: public GFilter
 	/**
 	* Definitions (all set of tags with their corresponding mime type).
 	*/
-	R::RContainer<Def,unsigned int,true,true>* Definitions;
+	R::RContainer<Def,true,true>* Definitions;
 
 	/**
 	* Link between MimeTypes and associated Definitions
 	*/
-	R::RContainer<MimeDef,unsigned int,true,true>* MimeDefinitions;
+	R::RContainer<MimeDef,true,true>* MimeDefinitions;
 
 	/**
 	* The current used definityion for the tags
