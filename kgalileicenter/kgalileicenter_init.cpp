@@ -223,6 +223,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->setGroup(SessionParams.GetName());
 	Config->writeEntry("SameBehaviourMinDocs",SessionParams.GetUInt("SameBehaviourMinDocs"));
 	Config->writeEntry("DiffBehaviourMinDocs",SessionParams.GetUInt("DiffBehaviourMinDocs"));
+	Config->writeEntry("NullSimLevel",SessionParams.GetDouble("NullSimLevel"));
 
 	// Save Config
 	GConfig Conf("/etc/galilei/galilei.galileiconfig");
@@ -236,6 +237,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Conf.Store(LinkCalcManager);
 	Conf.Store(PostDocManager);
 	Conf.Store(PostGroupManager);
+	Conf.Store(SessionParams);
 	Conf.Save();
 }
 
@@ -283,6 +285,7 @@ void KGALILEICenterApp::readOptions(void)
 	Config->setGroup(SessionParams.GetName());
 	SessionParams.Set("SameBehaviourMinDocs",Config->readNumEntry("SameBehaviourMinDocs",0));
 	SessionParams.Set("DiffBehaviourMinDocs",Config->readNumEntry("DiffBehaviourMinDocs",0));
+	SessionParams.Set("NullSimLevel",Config->readDoubleNumEntry("NullSimLevel",0.00001));
 
 	// Read Config
 	try
@@ -299,6 +302,8 @@ void KGALILEICenterApp::readOptions(void)
 		Conf.Read(LinkCalcManager);
 		Conf.Read(PostDocManager);
 		Conf.Read(PostGroupManager);
+		Conf.Read(PostGroupManager);
+		Conf.Read(SessionParams);
 	}
 	catch(...)
 	{

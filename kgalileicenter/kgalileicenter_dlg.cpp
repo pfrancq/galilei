@@ -519,13 +519,17 @@ void KGALILEICenterApp::slotPlugins(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionOptions(void)
 {
+	char tmp[10];
+	sprintf(tmp,"%f",SessionParams.GetDouble("NullSimLevel"));
 	QSessionOptions dlg(this, "Session Options");
 	dlg.SBDiffBehaviour->setValue(SessionParams.GetUInt("DiffBehaviourMinDocs"));
 	dlg.SBSameBehaviour->setValue(SessionParams.GetUInt("SameBehaviourMinDocs"));
+	dlg.NullSim->setText(tmp);
 
 	if(dlg.exec())
 	{
 		SessionParams.Set("DiffBehaviourMinDocs",dlg.SBDiffBehaviour->value());
 		SessionParams.Set("SameBehaviourMinDocs", dlg.SBSameBehaviour->value());
+		SessionParams.Set("NullSimLevel", atof(dlg.NullSim->text()));
 	}
 }
