@@ -41,12 +41,8 @@ using namespace RStd;
 // include files for GALILEI
 #include <langs/glang.h>
 #include <sessions/gsession.h>
-#include <groups/ggroupvector.h>
-#include <profiles/guser.h>
-#include <profiles/gprofile.h>
-#include <profiles/gsubprofile.h>
-#include <galilei/qlistviewitemtype.h>
-#include <infos/giwordweight.h>
+#include <groups/gchromoir.h>
+#include <groups/ggroup.h>
 using namespace GALILEI;
 
 
@@ -72,14 +68,85 @@ using namespace RTimeDate;
 
 //-----------------------------------------------------------------------------
 KViewChromos::KViewChromos(KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags)
+	: KView(doc,parent,name,wflags), Chromos(40,20), IdealGroups(2,1)
 {
-	setCaption("Stored Chromosomes");
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/actions/window_new.png"));
+	// Load Ideal Groups;
+	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
 
-	// initialisation of the tab widget
-	Infos=new QTabWidget(this);
-	Infos->resize(size());
+	// Construct chromosomes
+	General = new QListView(this);
+	General->addColumn("Id");
+	General->addColumn("Precision");
+	General->addColumn("Recall");
+	General->addColumn("Global");
+	General->addColumn("Avg Similarity");
+	General->addColumn("Proto: Sum(intra)/Min(inter)");
+	General->addColumn("Avg min(intra)/max(inter)");
+	General->addColumn("Min min(intra)/max(inter)");
+	General->addColumn("Proto: Min Max(intra)/Min(inter)");
+	General->addColumn("Proto: Avg Max(intra)/Min(inter)");
+	General->addColumn("Avg Var(intra)/Avg Var(inter)");
+	ConstructChromosomes();
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewChromos::ConstructChromosomes(void)
+{
+	GChromoIR** c;
+	unsigned int i;
+	QListViewItem* g;
+	char tmp[20];
+	GInstIR* inst;
+
+	// Loal the chromosomes from the db
+	//LoadChromosomes();
+
+	// Display the chromosomes
+	for(i=inst->PopSize+1,c=inst->Chromosomes;--i;c++)
+	{
+		sprintf(tmp,"%u",(*c)->Id);
+		g=new QListViewItem(General,tmp);
+
+		(*c)->CompareIdeal(Doc->GetSession(),&IdealGroups);
+		sprintf(tmp,"%f",(*c)->GetPrecision());
+		g->setText(2,tmp);
+		sprintf(tmp,"%f",(*c)->GetRecall());
+		g->setText(3,tmp);
+		sprintf(tmp,"%f",(*c)->GetGlobal());
+		g->setText(4,tmp);
+
+		(*c)->EvaluateAvgSim();
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		g->setText(5,tmp);
+
+		(*c)->EvaluateSumRel();
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		g->setText(6,tmp);
+
+		(*c)->EvaluateAvgMinMax();
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		g->setText(7,tmp);
+
+		(*c)->EvaluateMinMinMax();
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		g->setText(8,tmp);
+
+		(*c)->EvaluateMinRel();
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		g->setText(9,tmp);
+
+		(*c)->EvaluateAvgVarMinRel();
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		g->setText(10,tmp);
+
+		(*c)->EvaluateAvgVarMinRel();
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		g->setText(11,tmp);
+
+		g->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
+
+	}
 }
 
 
@@ -92,5 +159,11 @@ void KViewChromos::update(unsigned int)
 //-----------------------------------------------------------------------------
 void KViewChromos::resizeEvent(QResizeEvent *)
 {
-	Infos->resize(size());
+	General->resize(size());
+}
+
+
+//-----------------------------------------------------------------------------
+KViewChromos::~KViewChromos(void)
+{
 }

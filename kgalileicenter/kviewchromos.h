@@ -38,11 +38,14 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-namespace GALILEI
-{
-	class GChromoIR;
-}
+#include <galilei.h>
+#include <groups/gchromoir.h>
+#include <groups/ggroups.h>
+#include <groups/gir.h>
+#include <groups/ginstir.h>
+#include <galilei/qggroupsir.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
@@ -69,14 +72,19 @@ class KViewChromos : public KView
 	Q_OBJECT
 
 	/**
-	* Widget to handle the different information of the group.
+	* Window to show the different chromosomes.
 	*/
-	QTabWidget* Infos;
+	QListView* General;
 
-//	/**
-//	* Window to show general informations.
-//	*/
-//	QListView* General;
+	/**
+	* List of stored chromosomes.
+	*/
+	RContainer<GChromoIR,unsigned int,true,true> Chromos;
+
+	/**
+	* Ideal Groups handled by the system.
+	*/
+	RContainer<GGroups,unsigned int,true,true> IdealGroups;
 
 public:
 
@@ -100,12 +108,24 @@ public:
 	*/
 	virtual void update(unsigned int cmd);
 
+	/**
+	* Construct Chromosomes.
+	*/
+	void ConstructChromosomes(void);
+
 protected:
 
 	/**
 	* Called when the main window is resize by the user.
 	*/
 	void resizeEvent(QResizeEvent *);
+
+public:
+
+	/**
+	* Destructor.
+	*/
+	virtual ~KViewChromos(void);
 };
 
 
