@@ -66,6 +66,7 @@ using namespace RIO;
 using namespace RStd;
 
 
+
 //-----------------------------------------------------------------------------
 //
 // Instructions
@@ -463,6 +464,15 @@ void GStatsGroupsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,u
 			(*Owner->OFile)<<GrpDocStats.GetPrecisionL(i);
 		(*Owner->OFile)<<endl;
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GAddIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	strcpy(tmp,"Create New Ideal Group");
+	r->WriteStr(tmp);
+	IdealMethod.AddJudgement(Owner->Parents/*,Owner->Session->GetIdealGroups()*/,Owner->AutoSave);
 }
 
 

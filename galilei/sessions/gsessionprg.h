@@ -348,6 +348,16 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GAddIdealI : public GSM
+{
+	GIdealGroup IdealMethod;
+public:
+	GAddIdealI(GPrgClassSession* o) : GSM("AddIdeal",o),IdealMethod(Owner->Session) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GSessionPrg provides a class for executing a GALILEI Program.
 * @author Pascal Francq
