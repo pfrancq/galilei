@@ -166,6 +166,7 @@ class GGroupEvaluate;
 class GGroupsEvaluate;
 class GSubject;
 class GStatSimSubProf;
+class GStatSimDoc;
 
 
 //-----------------------------------------------------------------------------
