@@ -20,6 +20,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <ctype.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <filters/gfilter.h>
 
@@ -37,6 +42,21 @@ namespace GALILEI{
 */
 class GFilterEMail : public GFilter
 {
+	/**
+	* Buffer containing all the email.
+	*/
+	char* Buffer;
+
+	/**
+	* Pointer to the current position in the buffer.
+	*/
+	char* Pos;
+
+	/**
+	* Pointer to the beginning of the block actually treated.
+	*/
+	char* Begin;
+
 public:
 
 	/**
@@ -46,6 +66,12 @@ public:
 	GFilterEMail(const RString& url);
 
 protected:
+
+	/**
+	* This function skip spaces (Only used if read mode).
+	*/
+	inline void SkipSpaces(void)
+	{while((*Pos)&&isspace(*Pos)) Pos++;}
 
 	/**
 	* Try to extract the command and the info after.
