@@ -165,6 +165,7 @@ class GGetFeedback;
 class GGroupEvaluate;
 class GGroupsEvaluate;
 class GSubject;
+class GStatSimSubProf;
 
 
 //-----------------------------------------------------------------------------

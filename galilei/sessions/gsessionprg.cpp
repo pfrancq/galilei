@@ -62,6 +62,7 @@ using namespace RStd;
 #include <profiles/gprofilecalc.h>
 #include <profiles/ggetfeedback.h>
 #include <groups/gidealgroup.h>
+#include <tests/gstatsimsubprof.h>
 using namespace GALILEI;
 using namespace RIO;
 
@@ -119,9 +120,9 @@ public:
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_alloc,GException)
-	: FileName(f), Session(s), Rec(r), InstTypes(20), Insts(40), OFile(0),  GOFile(0),
-	  Groups(0), IdealMethod(0), FdbksMethod(0), Parents(0), AutoSave(false)
-	
+	: FileName(f), Session(s), Rec(r), InstTypes(20), Insts(40), OFile(0),
+	  GOFile(0), SOFile(0), Groups(0), IdealMethod(0), FdbksMethod(0),
+	  Parents(0), AutoSave(false), StatSimSubProf(0)
 {
 	RString l;
 	char tmp[500];
@@ -139,6 +140,7 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 	// Instructions
 	InstTypes.InsertPtr(new InstType("SetOutput",Output));
 	InstTypes.InsertPtr(new InstType("SetGraphOutput",GOutput));
+	InstTypes.InsertPtr(new InstType("SetStatsOutput",SOutput));
 	InstTypes.InsertPtr(new InstType("SetAutoSave",SetAutoSave));
 	InstTypes.InsertPtr(new InstType("Test",Test));
 	InstTypes.InsertPtr(new InstType("Log",Log));
@@ -149,6 +151,7 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 	InstTypes.InsertPtr(new InstType("CreateIdeal",CreateIdeal));
 	InstTypes.InsertPtr(new InstType("LoadIdeal",LoadIdeal));
 	InstTypes.InsertPtr(new InstType("FdbksCycle",Fdbks));
+	InstTypes.InsertPtr(new InstType("StatsProfiles",StatProf));
 
 	// Read Program File
 	RTextFile Prg(FileName);
@@ -255,6 +258,7 @@ void GALILEI::GSessionPrg::LoadGroups(const char* filename) throw(GException)
 void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 {
 	char tmp[300];
+	GCompareGrouping* CompMethod;
 
 	if(!i) return;
 	switch(i->Type)
@@ -280,6 +284,18 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				GOFile=0;
 			}
 			GOFile=new RTextFile(i->Param1,RTextFile::Create);
+			break;
+
+		case SOutput:
+			sprintf(tmp,"Create Statistics Output file '%s'",i->Param1());
+			Rec->WriteStr(tmp);
+			if(SOFile)
+			{
+				delete SOFile;
+				SOFile=0;
+			}
+			SOFile=new RTextFile(i->Param1,RTextFile::Create);
+			(*SOFile)<<"Sets\tRecall\tPrecision\tTotal"<<endl;
 			break;
 
 		case SetAutoSave:
@@ -390,17 +406,34 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				throw GException("No Ideal Groups Defined");
 			strcpy(tmp,"Compare with Ideal Groups");
 			Rec->WriteStr(tmp);
-			GCompareGrouping Comp(Session,Groups);
-			Comp.Compare(0);
-			Precision=Comp.GetPrecision();
-			Recall=Comp.GetRecall();
-			Total=Comp.GetTotal();
+			CompMethod=new GCompareGrouping(Session,Groups);
+			CompMethod->Compare(0);
+			Precision=CompMethod->GetPrecision();
+			Recall=CompMethod->GetRecall();
+			Total=CompMethod->GetTotal();
 			sprintf(tmp,"Recall: %lf  -  Precision: %lf  -  Total: %lf",Recall,Precision,Total);
 			Rec->WriteStr(tmp);
 			if(OFile)
 				(*OFile)<<TestName<<"\t"<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
 			if(GOFile)
 				(*GOFile)<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
+			delete CompMethod;
+			break;
+
+		case StatProf:
+			cout<<"To implement";
+//			if(!Groups)
+//				throw GException("No Ideal Groups Defined");
+//			strcpy(tmp,"Statistics on Profiles");
+//			Rec->WriteStr(tmp);
+//			GStatSimSubProf Stats(Session,Groups);
+//			Stats.Run(0);
+//			sprintf(tmp,"Recall: %lf  -  Precision: %lf  -  Total: %lf",Recall,Precision,Total);
+//			Rec->WriteStr(tmp);
+//			if(OFile)
+//				(*OFile)<<TestName<<"\t"<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
+//			if(GOFile)
+//				(*GOFile)<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
 			break;
 	}
 }

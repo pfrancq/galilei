@@ -71,7 +71,7 @@ protected:
 	/**
 	* Represent the different instruction allowed.
 	*/
-	enum tInst{Log,Output, GOutput,Sql,Comp,Group,CreateIdeal,LoadIdeal,Test,CmpIdeal,Fdbks,SetAutoSave};
+	enum tInst{Log,Output,GOutput,Sql,Comp,Group,CreateIdeal,LoadIdeal,Test,CmpIdeal,Fdbks,SetAutoSave,SOutput,StatProf};
 
 	/**
 	* Name of the file to execute.
@@ -112,6 +112,11 @@ protected:
 	* Graph Output file.
 	*/
 	RIO::RTextFile* GOFile;
+
+	/**
+	* Statistics Output file.
+	*/
+	RIO::RTextFile* SOFile;
 
 	/**
 	* Ideal Groups.
@@ -162,6 +167,11 @@ protected:
 	* When Autosave is true, after each computing, the results is saved.
 	*/
 	bool AutoSave;
+
+	/**
+	* Method for computing statistics on profiles.
+	*/
+	GStatSimSubProf* StatSimSubProf;
 
 public:
 
