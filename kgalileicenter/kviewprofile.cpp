@@ -263,6 +263,7 @@ void KViewProfile::ConstructGroups(void)
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();
+		if(!lang) continue;
 		GGroupCursor grs=Doc->GetSession()->GetGroupsCursor(lang);
 		QListViewItemType* grsitem = new QListViewItemType(Groups,lang->GetName());
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
