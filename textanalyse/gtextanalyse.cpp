@@ -451,9 +451,9 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 
 	// Init Part and verification
 	if(!xml)
-		throw GException("No XML Structure for document '"+doc->URL+"'");
+		throw GException("No XML Structure for document '"+RString(doc->GetURL())+"'");
 	Lang=doc->GetLang();
-	FindLang=((!doc->Lang)||(!Options->StaticLang));
+	FindLang=((!Lang)||(!Options->StaticLang));
 	content=xml->GetContent();
 	RAssert(content);
 
@@ -472,9 +472,7 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 		DetermineLang();
 		if(!Lang)
 		{
-			doc->Lang=0;
-			if(doc->Words)
-				doc->Words->Clear();
+			doc->ClearInfos();
 			return;
 		}
 	}
@@ -483,22 +481,24 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 	ConstructInfos();
 
 	// Set the Variable of the document
-	doc->Lang=Lang;
-	doc->N=N;
-	doc->Ndiff=Ndiff;
-	doc->V=V;
-	doc->Vdiff=Vdiff;
-	if(doc->Words)
-		delete doc->Words;
-
-	// Make it 'Updated' and tell all the profiles that have judge this
-	// document that they are 'Modified'.
-	doc->Words=Words;
+	doc->SetInfos(Lang,N,Ndiff,V,Vdiff,Words);
 	Words=0;
-	doc->State=osUpdated;
-	doc->Computed.SetToday();
-	for(doc->Fdbks.Start();!doc->Fdbks.End();doc->Fdbks.Next())
-		doc->Fdbks()->GetProfile()->SetState(osModified);
+//	doc->Lang=Lang;
+//	doc->N=N;
+//	doc->Ndiff=Ndiff;
+//	doc->V=V;
+//	doc->Vdiff=Vdiff;
+//	if(doc->Words)
+//		delete doc->Words;
+//
+//	// Make it 'Updated' and tell all the profiles that have judge this
+//	// document that they are 'Modified'.
+//	doc->Words=Words;
+//	Words=0;
+//	doc->State=osUpdated;
+//	doc->Computed.SetToday();
+//	for(doc->Fdbks.Start();!doc->Fdbks.End();doc->Fdbks.Next())
+//		doc->Fdbks()->GetProfile()->SetState(osModified);
 }
 
 
