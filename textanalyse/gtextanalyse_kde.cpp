@@ -114,7 +114,7 @@ void Configure(GFactoryDocAnalyse* params)
 		params->Set("MinStemSize",dlg.MinStemSize->value());
 		params->Set("MinOccur",dlg.MinOccur->value());
 		params->Set("NonLetterWords",dlg.NonLetterWords->isChecked());
-		params->Set("Distance",dlg.NonLetterWords->isChecked());
+		params->Set("Distance",dlg.Distance->isChecked());
 		params->Set("UseExternalLinks",dlg.UseExternalLinks->isChecked());
 		params->Set("Filtering",dlg.Filtering->isChecked());
 		params->Set("NbSameOccur",dlg.NbSameOccur->value());
