@@ -104,6 +104,11 @@ class KViewChromos : public KView
 	bool Global;
 
 	/**
+	* Compute Similarities.
+	*/
+	bool Sim;
+	
+	/**
 	* Stored Statistics.
 	*/
 	RContainer<Stat,tId,true,false> Stats;
@@ -115,11 +120,12 @@ public:
 	* @param doc            Document instance that the view represents.
 	* @param l              Lang to group.
 	* @param global         Global Similarities.
+	* @param sim            Compute Similarities.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewChromos(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags);
+	KViewChromos(KDoc* doc,const char* l,bool global,bool sim,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.
@@ -133,9 +139,14 @@ public:
 	virtual void update(unsigned int cmd);
 
 	/**
-	* Construct Chromosomes.
+	* Construct chromosomes similarities.
 	*/
-	void ConstructChromosomes(void);
+	void ConstructChromosomesSim(void);
+
+	/**
+	* Construct chromosomes ranking using PROMETHEE method.
+	*/
+	void ConstructChromosomesRanking(void);
 
 protected:
 

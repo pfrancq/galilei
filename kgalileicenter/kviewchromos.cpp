@@ -126,22 +126,6 @@ protected:
 QListViewChromos::QListViewChromos(QWidget* parent,const char* name,WFlags f)
 	: QListView(parent,name,f)
 {
-	addColumn("Id");
-	addColumn("Precision");
-	addColumn("Recall");
-	addColumn("Global");
-	addColumn("AvgSim");
-	addColumn("J");
-	addColumn("AvgRatio");
-	addColumn("MinRatio");
-	addColumn("Ratio");
-	addColumn("W Over B");
-	addColumn("Sim WB");
-	for(int i=0;i<11;i++)
-	{
-		setColumnWidthMode(i,QListView::Maximum);
-		setColumnAlignment(i,Qt::AlignHCenter);
-	}
 }
 
 
@@ -181,9 +165,20 @@ public:
 	double Ratio;
 	double WOverB;
 	double SimWB;
+	double Fitness;
+	double CritSim;
+	double CritInfo;
+	double CritSame;
+	double CritDiff;
+	double CritSocial;
+	double FiPlus;
+	double FiMinus;
+	double Fi;
 
 	Stat(void) : Id(NullId), Precision(0.0), Recall(0.0), Global(0.0), AvgSim(0.0), J(0.0),
-		AvgRatio(0.0), MinRatio(0.0), Ratio(0.0), WOverB(0.0), SimWB(0.0) {}
+		AvgRatio(0.0), MinRatio(0.0), Ratio(0.0), WOverB(0.0), SimWB(0.0), Fitness(0.0),
+		CritSim(0.0), CritInfo(0.0), CritSame(0.0), CritDiff(0.0), CritSocial(0.0),
+		FiPlus(0.0), FiMinus(0.0), Fi(0.0) {}
 	int Compare(const Stat&) {return(-1);}
 	int Compare(const Stat*) {return(-1);}
 };
@@ -197,23 +192,64 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags)
+KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,bool sim,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), IdealGroups(2,1), Lang(Doc->GetSession()->GetLang(l)),
-	  Global(global), Stats(50,25)
+	  Global(global), Sim(sim), Stats(50,25)
 {
 	// Construct chromosomes
 	General = new QListViewChromos(this);
-	ConstructChromosomes();
+	if(Sim)
+	{
+		General->addColumn("Id");
+		General->addColumn("Precision");
+		General->addColumn("Recall");
+		General->addColumn("Global");
+		General->addColumn("AvgSim");
+		General->addColumn("J");
+		General->addColumn("AvgRatio");
+		General->addColumn("MinRatio");
+		General->addColumn("Ratio");
+		General->addColumn("W Over B");
+		General->addColumn("Sim WB");
+		for(int i=0;i<11;i++)
+		{
+			General->setColumnWidthMode(i,QListView::Maximum);
+			General->setColumnAlignment(i,Qt::AlignHCenter);
+		}
+		ConstructChromosomesSim();
+	}
+	else
+	{
+		General->addColumn("Id");
+		General->addColumn("Precision");
+		General->addColumn("Recall");
+		General->addColumn("Global");
+		General->addColumn("Ranking");
+		General->addColumn("CritSim");
+		General->addColumn("CritInfo");
+		General->addColumn("CritSame");
+		General->addColumn("CritDiff");
+		General->addColumn("CritSocial");
+		General->addColumn("Fi+");
+		General->addColumn("Fi-");
+		General->addColumn("Fi");
+		for(int i=0;i<13;i++)
+		{
+			General->setColumnWidthMode(i,QListView::Maximum);
+			General->setColumnAlignment(i,Qt::AlignHCenter);
+		}
+		ConstructChromosomesRanking();
+	}
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewChromos::ConstructChromosomes(void)
+void KViewChromos::ConstructChromosomesSim(void)
 {
 	GChromoIR* c;
 	unsigned int i;
 	QListViewItem* g;
-	char tmp[20];
+	char tmp[50];
 	GInstIR* Instance;
 	GSubProfileCursor Cur=Doc->GetSession()->GetSubProfilesCursor(Lang);
 	RObjs<GObjIR> Objs(Cur.GetNb());
@@ -227,9 +263,11 @@ void KViewChromos::ConstructChromosomes(void)
 	KApplication::kApplication()->processEvents();
 
 	// Load Ideal Groups;
+	d->PutText("Load Ideal Groups");
 	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
 
 	// Construct the GA Objects
+	d->PutText("Construct the GA Objects");
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		sub=Cur();
@@ -240,8 +278,9 @@ void KViewChromos::ConstructChromosomes(void)
 			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
 	GProfilesSim Sims(SubProfiles,Global);
 
-	// Loal the chromosomes from the db
-	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Global);
+	// Load the chromosomes from the db
+	d->PutText("Load chromosomes");
+	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Global,static_cast<SimType>(1));
 	if(!Instance) return;
 	Instance->SetIdealGroups(&IdealGroups);
 
@@ -314,6 +353,142 @@ void KViewChromos::ConstructChromosomes(void)
 
 
 //-----------------------------------------------------------------------------
+void KViewChromos::ConstructChromosomesRanking(void)
+{
+	GChromoIR* c;
+	unsigned int i;
+	QListViewItem* g;
+	char tmp[50];
+	GInstIR* Instance;
+	GSubProfileCursor Cur=Doc->GetSession()->GetSubProfilesCursor(Lang);
+	RObjs<GObjIR> Objs(Cur.GetNb());
+	RContainer<GSubProfile,unsigned int,false,true> SubProfiles(Cur.GetNb(),50);
+	Stat* s;
+	GSubProfile* sub;
+	unsigned int MaxGen;
+	unsigned int StepGen;
+	bool Step;
+	double MinSimLevel;
+	double MinCommonOK;
+	double MinCommonDiff;
+	unsigned int PopSize;
+	RPromethee::RPromCriterionParams ParamsSim;
+	RPromethee::RPromCriterionParams ParamsNb;
+	RPromethee::RPromCriterionParams ParamsOK;
+	RPromethee::RPromCriterionParams ParamsDiff;
+	RPromethee::RPromCriterionParams ParamsSocial;
+	char car,c1;
+	unsigned int t;
+
+	// Values
+	sscanf(Doc->GetSession()->GetGroupingMethodSettings("Grouping Genetic Algorithms"),
+           "%u %c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &t,&c1,&PopSize,&MaxGen,&car,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
+	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
+	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
+	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,
+	       &ParamsDiff.P,&ParamsDiff.Q,&ParamsDiff.Weight,
+	       &ParamsSocial.P,&ParamsSocial.Q,&ParamsSocial.Weight);
+	if(car=='1') Step=true; else Step=false;
+
+	// Initialise the dialog box
+	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
+	d->show();
+	KApplication::kApplication()->processEvents();
+
+	// Load Ideal Groups;
+	d->PutText("Load Ideal Groups");
+	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
+
+	// Construct the GA Objects
+	d->PutText("Construct the GA Objects");
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		sub=Cur();
+		if(sub->IsDefined())
+			SubProfiles.InsertPtr(sub);
+	}
+	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
+			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
+	GProfilesSim Sims(SubProfiles,Global);
+
+	// Load the chromosomes from the db
+	d->PutText("Load Chromosomes");
+	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Global,static_cast<SimType>(t));
+	if(!Instance) return;
+	Instance->SetIdealGroups(&IdealGroups);
+	Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
+	Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
+	Instance->SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
+	Instance->SetCriterionParam("Diff Factor",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
+	Instance->SetCriterionParam("Social Factor",ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
+	d->PutText("Evaluate the solutions");
+	Instance->Evaluate();
+	Instance->BestChromosome->Evaluate();
+	Instance->PostEvaluate();
+
+	// Display the chromosomes
+	for(i=0;i<=Instance->PopSize;i++)
+	{
+		if(i==Instance->PopSize)
+			c=Instance->BestChromosome;
+		else
+			c=Instance->Chromosomes[i];
+
+
+		Stats.InsertPtr(s=new Stat());
+
+		s->Id=c->Id;
+		sprintf(tmp,"%u",c->Id);
+		d->receiveNextChromosome(c->Id);
+		g=new MyListViewItem(General,tmp);
+
+		c->CompareIdeal(Doc->GetSession(),&IdealGroups);
+		s->Precision=c->GetPrecision();
+		sprintf(tmp,"%f",c->GetPrecision());
+		g->setText(1,tmp);
+		s->Recall=c->GetRecall();
+		sprintf(tmp,"%f",c->GetRecall());
+		g->setText(2,tmp);
+		s->Global=c->GetGlobal();
+		sprintf(tmp,"%f",c->GetGlobal());
+		g->setText(3,tmp);
+		s->Fitness=c->Fitness->Value;
+		sprintf(tmp,"%f",c->Fitness->Value);
+		g->setText(4,tmp);
+		s->CritSim=c->GetSimCriterion();
+		sprintf(tmp,"%f",c->GetSimCriterion());
+		g->setText(5,tmp);
+		s->CritInfo=c->GetInfoCriterion();
+		sprintf(tmp,"%f",c->GetInfoCriterion());
+		g->setText(6,tmp);
+		s->CritSame=c->GetSameCriterion();
+		sprintf(tmp,"%f",c->GetSameCriterion());
+		g->setText(7,tmp);
+		s->CritDiff=c->GetDiffCriterion();
+		sprintf(tmp,"%f",c->GetDiffCriterion());
+		g->setText(8,tmp);
+		s->CritSocial=c->GetSocialCriterion();
+		sprintf(tmp,"%f",c->GetSocialCriterion());
+		g->setText(9,tmp);
+		s->FiPlus=c->GetFiPlus();
+		sprintf(tmp,"%f",c->GetFiPlus());
+		g->setText(10,tmp);
+		s->FiMinus=c->GetFiMinus();
+		sprintf(tmp,"%f",c->GetFiMinus());
+		g->setText(11,tmp);
+		s->Fi=c->GetFi();
+		sprintf(tmp,"%f",c->GetFi());
+		g->setText(12,tmp);
+	}
+
+	// Finish.
+	delete Instance;
+	d->Finish();
+}
+
+
+//-----------------------------------------------------------------------------
 void KViewChromos::update(unsigned int)
 {
 }
@@ -349,12 +524,21 @@ void KViewChromos::slotMenu(int)
 	}
 	RTextFile Res(url.path().latin1(),RTextFile::Create);
 	Res.SetSeparator("\t");
-	Res<<"Id"<<"Precision"<<"Recall"<<"Global"<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"W Over B"<<"Sim WB"<<endl;
+	if(Sim)
+		Res<<"Id"<<"Precision"<<"Recall"<<"Global"<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"W Over B"<<"Sim WB"<<endl;
+	else
+		Res<<"Id"<<"Precision"<<"Recall"<<"Global"<<"Ranking"<<"CritSim"<<"CritInfo"<<"CritSame"<<"CritDiff"<<"CritSocial"<<"Fi+"<<"Fi-"<<"Fi"<<endl;
 	Cur.Set(Stats);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Res<<Cur()->Id<<Cur()->Precision<<Cur()->Recall<<Cur()->Global;
-		Res<<Cur()->AvgSim<<Cur()->J<<Cur()->AvgRatio<<Cur()->MinRatio<<Cur()->Ratio<<Cur()->WOverB<<Cur()->SimWB<<endl;
+		if(Sim)
+			Res<<Cur()->AvgSim<<Cur()->J<<Cur()->AvgRatio<<Cur()->MinRatio<<Cur()->Ratio<<Cur()->WOverB<<Cur()->SimWB<<endl;
+		else
+		{
+			Res<<Cur()->Fitness<<Cur()->CritSim<<Cur()->CritInfo<<Cur()->CritSame;
+			Res<<Cur()->CritDiff<<Cur()->CritSocial<<Cur()->FiPlus<<Cur()->FiMinus<<Cur()->Fi<<endl;
+		}
 	}
 }
 

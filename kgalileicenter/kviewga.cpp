@@ -152,6 +152,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* paren
 		Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
 		Instance->SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
 		Instance->SetCriterionParam("Diff Factor",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
+		Instance->SetCriterionParam("Social Factor",ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
 		Instance->AddReceiver(this);
 		Instance->Init(&g);
 		Instance->SetIdealGroups(&IdealGroups);
@@ -178,9 +179,9 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* paren
 	connect(Best,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	Sol = new QGGroupsIR(TabWidget,Objs);
 	#ifdef RGADEBUG
-		sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
+		sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
 	#else
-		sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
+		sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
 	#endif
 	TabWidget->insertTab(Sol,tmp);
 	connect(Sol,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
@@ -208,9 +209,9 @@ void KViewGA::receiveGenSig(GenSig* sig)
 	Sol->setGroups(Instance->Chromosomes[CurId]);
 	Sol->setChanged();
 	#ifdef RGADEBUG
-		sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
+		sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
 	#else
-		sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
+		sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
 	#endif
 	TabWidget->changeTab(Sol,tmp);
 }
@@ -229,9 +230,9 @@ void KViewGA::receiveBestSig(BestSig* sig)
 	static char tmp[100];
 
 	#ifdef RGADEBUG
-		sprintf(tmp,"Best Solution (Id=%u) - Fitness=%lf",sig->Best->Id,sig->Best->GetGlobal());
+		sprintf(tmp,"Best Solution (Id=%u) - Fitness=%f",sig->Best->Id,sig->Best->GetGlobal());
 	#else
-		sprintf(tmp,"Best Solution (Id=%u) - Fitness=%lf",sig->Best->Id,sig->Best->Fitness->Value);
+		sprintf(tmp,"Best Solution (Id=%u) - Fitness=%f",sig->Best->Id,sig->Best->Fitness->Value);
 	#endif
 	TabWidget->changeTab(Best,tmp);
 	Best->setGroups(sig->Best);
@@ -311,9 +312,9 @@ void KViewGA::keyReleaseEvent(QKeyEvent* e)
 		case Key_PageUp:
 			if(CurId<PopSize-1) CurId++; else CurId=0;
 			#ifdef RGADEBUG
-				sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
+				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
 			#else
-				sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
+				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
 			#endif
 			TabWidget->changeTab(Sol,tmp);
 			Sol->setGroups(Instance->Chromosomes[CurId]);
@@ -323,9 +324,9 @@ void KViewGA::keyReleaseEvent(QKeyEvent* e)
 		case Key_PageDown:
 			if(CurId>0) CurId--; else CurId=PopSize-1;
 			#ifdef RGADEBUG
-				sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
+				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
 			#else
-				sprintf(tmp,"Solution (%u/%u) - Fitness=%lf",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
+				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
 			#endif
 			TabWidget->changeTab(Sol,tmp);
 			Sol->setGroups(Instance->Chromosomes[CurId]);
