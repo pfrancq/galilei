@@ -38,7 +38,7 @@
 #include <iostream>
 using namespace std;
 
-#include <galilei.h>
+#include <sessions/galilei.h>
 
 //-----------------------------------------------------------------------------
 // include files for KDE

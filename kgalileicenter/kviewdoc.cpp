@@ -95,7 +95,7 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 {
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
-	setCaption("Description of \" "+QString(Document->GetName())+"\"");
+	setCaption("Description of \" "+QString(Document->GetName().Latin1())+"\"");
 
 	// initialisation of the tab widget
 	Infos=new QTabWidget(this);
@@ -109,26 +109,23 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 	ConstructGeneral();
 
 	// Initialisation of the Feedbacks Widget
-	if(Doc->GetSession()->IsFdbksLoad())
-	{
-		Fdbks = new QListView(Infos);
-		Infos->insertTab(Fdbks,"Profiles");
-		Fdbks->addColumn(QString("Profile"));
-		Fdbks->addColumn(QString("User"));
-		Fdbks->addColumn(QString("Date"));
-		Fdbks->setRootIsDecorated(true);
-		connect(Fdbks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	Fdbks = new QListView(Infos);
+	Infos->insertTab(Fdbks,"Profiles");
+	Fdbks->addColumn(QString("Profile"));
+	Fdbks->addColumn(QString("User"));
+	Fdbks->addColumn(QString("Date"));
+	Fdbks->setRootIsDecorated(true);
+	connect(Fdbks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 
-		FdbksLinks = new QListView(Infos);
-		Infos->insertTab(FdbksLinks,"Links");
-		FdbksLinks->addColumn(QString("Profile"));
-		FdbksLinks->addColumn(QString("User"));
-		FdbksLinks->addColumn(QString("Date"));
-		FdbksLinks->setRootIsDecorated(true);
-		connect(FdbksLinks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	FdbksLinks = new QListView(Infos);
+	Infos->insertTab(FdbksLinks,"Links");
+	FdbksLinks->addColumn(QString("Profile"));
+	FdbksLinks->addColumn(QString("User"));
+	FdbksLinks->addColumn(QString("Date"));
+	FdbksLinks->setRootIsDecorated(true);
+	connect(FdbksLinks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 
-		ConstructFdbks();
-	}
+	ConstructFdbks();
 
 	// Initialisation of the XML Widget
 	XML = new QGDocXML(Infos);
@@ -153,7 +150,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
-	setCaption("Description of \" "+QString(Document->GetName())+"\"");
+	setCaption("Description of \" "+QString(Document->GetName().Latin1())+"\"");
 
 	// initialisation of the tab widget
 	Infos=new QTabWidget(this);
@@ -263,8 +260,8 @@ void KViewDoc::ConstructResults(void)
     	}
 	};
 
+	if(!Document->GetLang()) return;
 	GWeightInfoCursor Words=Document->GetWeightInfoCursor();
-
 	for (Words.Start();!Words.End();Words.Next())
 	{
 		new LocalItem(Results,Doc->GetSession()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode()), Words()->GetWeight());
@@ -280,8 +277,8 @@ void KViewDoc::ConstructGeneral(void)
 	char sDate[20];
 
 	new QListViewItem(General,"ID",itou(Document->GetId()).Latin1());
-	new QListViewItem(General,"URL",Document->GetURL());
-	new QListViewItem(General,"Name",Document->GetName());
+	new QListViewItem(General,"URL",Document->GetURL().Latin1());
+	new QListViewItem(General,"Name",Document->GetName().Latin1());
 	new QListViewItem(General,"MIME",Document->GetMIMEType());
 	l=Document->GetLang();
 	if(l)

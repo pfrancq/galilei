@@ -343,20 +343,20 @@ bool KGALILEICenterApp::queryExit(void)
 void KGALILEICenterApp::UpdateMenusEntries(void)
 {
 	// Menu "Users"
-	showUsers->setEnabled(Doc&&Doc->GetSession()->IsUsersLoad());
-	profilesCalc->setEnabled(Doc&&Doc->GetSession()->IsUsersLoad()&&Doc->GetSession()->IsDocsLoad());
-	profileCalc->setEnabled(Doc&&Doc->GetSession()->IsUsersLoad()&&Doc->GetSession()->IsDocsLoad());
+	showUsers->setEnabled(Doc);
+	profilesCalc->setEnabled(Doc);
+	profileCalc->setEnabled(Doc);
 
 	// Menu "Groups"
-	showGroups->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
-	groupsCalc->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad()&&Doc->GetSession()->IsUsersLoad());
-	groupingCompare->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
+	showGroups->setEnabled(Doc);
+	groupsCalc->setEnabled(Doc);
+	groupingCompare->setEnabled(Doc);
 	mixIdealGroups->setEnabled(true);
 
 	// Menu "Document"
-	showDocs->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
+	showDocs->setEnabled(Doc);
 	docAnalyse->setEnabled(Doc);
-	docsAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
+	docsAnalyse->setEnabled(Doc);
 	//linksCalc->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
 }
 

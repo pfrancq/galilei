@@ -47,7 +47,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/galilei.h>
 #include <infos/glangmanager.h>
 #include <docs/glinkcalcmanager.h>
 #include <docs/gdocanalysemanager.h>

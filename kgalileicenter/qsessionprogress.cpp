@@ -104,7 +104,7 @@ QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char*
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+void QSessionProgressDlg::LoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(GException,bad_alloc)
 {
 	btnOk->setEnabled(false);
@@ -113,60 +113,39 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangManager* langs,GFilt
 	bool wordsgroups=false;
 	bool words=true;
 
-	// Look the type of the terms use.
-	if(cmd==5)
-	{
-		wordsgroups=true;
-		cmd=0;
-	}
-	if(cmd==6)
-	{
-		wordsgroups=true;
-		words=false;
-		cmd=0;
-	}
-
 	txtRem->setText("Connect (Loading Dicionnaries/Stoplists) ...");
 	KApplication::kApplication()->processEvents();
 	Session->Connect(langs,umng,dmng,pmng,gmng,gcmng,smng,pdmng, pgmng);
 
 	Session->LoadSubjectTree();
 
-	// Look if docs must be loaded)
-	if((cmd==0)||(cmd==1)||(cmd==2)||(cmd==4))
-	{
-		txtRem->setText("Loading Documents ...");
-		KApplication::kApplication()->processEvents();
-		Session->InitDocs(wordsgroups,words);
-	}
+	txtRem->setText("Loading Documents ...");
+	KApplication::kApplication()->processEvents();
+	Session->LoadDocs(wordsgroups,words);
 
-	// Look if groups must be loaded
-	if((cmd==0)||(cmd==2)||(cmd==3)||(cmd==4))
-	{
-		txtRem->setText("Load Groups ...");
-		KApplication::kApplication()->processEvents();
-		Session->InitGroups(wordsgroups,words);
-	}
+	txtRem->setText("Load Groups ...");
+	KApplication::kApplication()->processEvents();
+	Session->LoadGroups(wordsgroups,words);
 
-	// Look if users must be loaded
-	if((cmd==0)||(cmd==2)||(cmd==3))
-	{
-		txtRem->setText("Load Users/Profiles/SubProfiles ...");
-		KApplication::kApplication()->processEvents();
-		Session->InitUsers(wordsgroups,words);
-		Session->LoadIdealGroupment();
-	}
+	txtRem->setText("Load Users/Profiles/SubProfiles ...");
+	KApplication::kApplication()->processEvents();
+	Session->LoadUsers(wordsgroups,words);
+	Session->LoadIdealGroupment();
 
-	// Look if users' feedback must be loaded
-	if((cmd==0)||(cmd==2))
-	{
-		txtRem->setText("Load Users Feedbacks ...");
-		KApplication::kApplication()->processEvents();
-		Session->InitFdbks();
-	}
+	txtRem->setText("Load Users Feedbacks ...");
+	KApplication::kApplication()->processEvents();
+	Session->LoadFdbks();
 
-	
+	txtRem->setText("Post Connect ...");
+	KApplication::kApplication()->processEvents();
 	Session->PostConnect(lmng);
+
+	txtRem->setText("Initialisation Similarities, Agreement and disagreement ratios ...");
+	KApplication::kApplication()->processEvents();
+	Session->InitProfilesSims();
+	Session->InitProfilesBehaviours();
+	Session->InitDocProfSims();
+
 	txtRem->setText("Finish");
 	btnOk->setEnabled(true);
 }
@@ -377,7 +356,7 @@ void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::receiveNextDoc(const GDoc* doc)
 {
-	txtRem->setText(QString("Analyse Doc '")+doc->GetName()+"' ...");
+	txtRem->setText(QString("Analyse Doc '")+doc->GetName().Latin1()+"' ...");
 	KApplication::kApplication()->processEvents();
 }
 

@@ -121,26 +121,24 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	ConstructGroups();
 
 	// Initialisation of the Feedbacks Widget
-	if(Doc->GetSession()->IsFdbksLoad())
-	{
-		Fdbks = new QListView(Infos);
-		Infos->insertTab(Fdbks,"Documents");
-		Fdbks->addColumn(QString("Document"));
-		Fdbks->addColumn(QString("URL"));
-		Fdbks->addColumn(QString("Date"));
-		Fdbks->setRootIsDecorated(true);
-		connect(Fdbks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	Fdbks = new QListView(Infos);
+	Infos->insertTab(Fdbks,"Documents");
+	Fdbks->addColumn(QString("Document"));
+	Fdbks->addColumn(QString("URL"));
+	Fdbks->addColumn(QString("Date"));
+	Fdbks->setRootIsDecorated(true);
+	connect(Fdbks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 
-		FdbksLinks = new QListView(Infos);
-		Infos->insertTab(FdbksLinks,"Links");
-		FdbksLinks->addColumn(QString("Document"));
-		FdbksLinks->addColumn(QString("URL"));
-		FdbksLinks->addColumn(QString("Date"));
-		FdbksLinks->setRootIsDecorated(true);
-		connect(FdbksLinks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	FdbksLinks = new QListView(Infos);
+	Infos->insertTab(FdbksLinks,"Links");
+	FdbksLinks->addColumn(QString("Document"));
+	FdbksLinks->addColumn(QString("URL"));
+	FdbksLinks->addColumn(QString("Date"));
+	FdbksLinks->setRootIsDecorated(true);
+	connect(FdbksLinks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 
-		ConstructFdbks();
-	}
+	ConstructFdbks();
+
 	Pov = new QListView(Infos);
 	Infos->insertTab(Pov,"Point Of View");
 	Pov->addColumn(QString("Point of view list of documents"));
@@ -212,7 +210,7 @@ void KViewProfile::ConstructFdbks(void)
 		if(!p) continue;
 		d=Docs()->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
-		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName(),Docs()->GetDoc()->GetURL(),sDate);
+		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName().Latin1(),Docs()->GetDoc()->GetURL().Latin1(),sDate);
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
 	}
 
@@ -247,7 +245,7 @@ void KViewProfile::ConstructFdbks(void)
 			if(!p) continue;
 			d=Docs()->GetUpdated();
 			sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
-			QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName(),Docs()->GetDoc()->GetURL(),sDate);
+			QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName().Latin1(),Docs()->GetDoc()->GetURL().Latin1(),sDate);
 			prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
 		}
 	}

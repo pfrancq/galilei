@@ -185,7 +185,7 @@ void KViewDocs::CreateDocsListView(void)
 			ptr=t;
 		else
 			ptr=det;
-		QListViewItemType* docitem= new QListViewItemType(CurDocs(),LangItems.GetPtr<const GLang*>(CurDocs()->GetLang())->Item,CurDocs()->GetName(),CurDocs()->GetURL(),ptr);
+		QListViewItemType* docitem= new QListViewItemType(CurDocs(),LangItems.GetPtr<const GLang*>(CurDocs()->GetLang())->Item,CurDocs()->GetName().Latin1(),CurDocs()->GetURL().Latin1(),ptr);
 		docitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
 		docitem->setPixmap(1,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
 	}

@@ -106,7 +106,7 @@ public:
 	* @param smng           Statistical Manager.
 	* @param lmng           Linking Manager.
 	*/
-	void LoadSession(unsigned int cmd,GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+	void LoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng,  GPostGroupManager* pgmng) throw(GException,bad_alloc);
 
 	/**

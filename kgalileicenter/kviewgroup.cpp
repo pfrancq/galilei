@@ -227,7 +227,7 @@ void KViewGroup::ConstructDocs(void)
 	{
 		d=docs2()->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
-		QListViewItemType* prof = new QListViewItemType(docs2(),Docs,docs2()->GetName(),docs2()->GetURL(),sDate);
+		QListViewItemType* prof = new QListViewItemType(docs2(),Docs,docs2()->GetName().Latin1(),docs2()->GetURL().Latin1(),sDate);
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror",KIcon::Small)));
 	}
 }
