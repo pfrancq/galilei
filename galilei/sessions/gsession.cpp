@@ -376,7 +376,6 @@ GMIMEFilter* GALILEI::GSession::GetMIMEType(const char* mime) const
 //-----------------------------------------------------------------------------
 GALILEI::GSession::~GSession(void) throw(GException)
 {
-	if(Mng) delete Mng;
 	if(SubProfiles) delete SubProfiles;
 	if(Profiles) delete Profiles;
 }
