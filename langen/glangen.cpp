@@ -313,13 +313,14 @@ bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,uns
 RString& GALILEI::GLangEN::GetStemming(const RString& _kwd)
 {
 	RString *res=RString::GetString();
-	char kwd[50];
+	char kwd[51];
 	char* end;
 	unsigned int len;
 
 	// Transform _kwd in lowercase and store it in kwd.
 	(*res)=_kwd;
 	res->StrLwr();
+	if(res->GetLen()>50) return(*res);
 	strcpy(kwd,(*res)());
 	len=_kwd.GetLen()-1;
 	end=&kwd[len];
@@ -342,7 +343,7 @@ RString& GALILEI::GLangEN::GetStemming(const RString& _kwd)
 	if(*end)
 		(*end)=0;
 	(*res)=kwd;
-	return((*res));
+	return(*res);
 }
 
 
