@@ -67,7 +67,7 @@ public:
 	/**
 	* The different type of information
 	*/
-	enum GInfoType {infoNothing,infoWord,infoWordOccur,infoWordOccurs,infoWordList,infoWordCalc,infoWordCalcs};
+	GInfoType Type;
 
 	/**
 	* The constructor.
@@ -107,6 +107,7 @@ public:
 	*/
 	virtual const GInfoType InfoType(void) const;
 
+	virtual void SetInfoType(GInfoType type) {Type=type;}
 	/**
 	* Compare the class of two information objects.
 	* @return true if the two objects are from the same class, false else.

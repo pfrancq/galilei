@@ -183,13 +183,23 @@ unsigned int GALILEI::GLang::GetRef(unsigned int id,tObjType ObjType)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GLang::GetRef(tObjType ObjType)
+unsigned int GALILEI::GLang::GetRef(tObjType ObjType,GWordType WordType)
 {
 	if(!Dict) return(0);
-	return(Dict->GetRef(ObjType));
+	return(Dict->GetRef(ObjType,WordType));
 }
-
-
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GLang::GetTotal()
+{
+	if(!Dict) return(0);
+	return(Dict->GetNb());
+}
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GLang::GetNbWordList()
+{
+	if(!Dict) return(0);
+	return(Dict->GetNbGroupsList());
+}
 //-----------------------------------------------------------------------------
 GALILEI::GLang::~GLang(void)
 {

@@ -110,6 +110,11 @@ void GALILEI::GDocVector::AddWord(const unsigned int id,const double nb)
 {
 	InsertPtr(new GIWordWeight(id,nb));
 }
+//-----------------------------------------------------------------------------
+void GALILEI::GDocVector::AddWordList(const unsigned int id,const double nb)
+{
+	InsertPtr(new GIWordWeight(id,nb,infoWordList));
+}
 
 
 //-----------------------------------------------------------------------------

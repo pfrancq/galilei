@@ -55,28 +55,28 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GWord::GWord(void) throw(bad_alloc)
-  : Id(cNoRef), Word(), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
+  : Id(cNoRef), Word(), Type(tWord), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GWord::GWord(const RString& word) throw(bad_alloc)
-  : Id(cNoRef), Word(word), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
+  : Id(cNoRef), Word(word), Type(tWord), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GWord::GWord(unsigned id,const RString& word) throw(bad_alloc)
-  : Id(id), Word(word), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
+  : Id(id), Word(word), Type(tWord), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GWord::GWord(const GWord& word) throw(bad_alloc)
-  : Id(word.Id), Word(word.Word), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
+  : Id(word.Id), Word(word.Word), Type(tWord), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
 {
 }
 
@@ -115,6 +115,11 @@ int GALILEI::GWord::Compare(const unsigned int id) const
 	return(Id-id);
 }
 
+//---------------------------------------------------------------------------
+void GALILEI::GWord::SetType(GWordType type)
+{
+	Type=type;
+}
 
 //-----------------------------------------------------------------------------
 void GALILEI::GWord::IncRef(tObjType ObjType)

@@ -94,6 +94,12 @@ void GALILEI::GSubProfileVector::AddWord(unsigned int id,double w) throw(bad_all
 	InsertPtr(new GIWordWeight(id,w));
 }
 
+//-----------------------------------------------------------------------------
+void GALILEI::GSubProfileVector::AddWordList(unsigned int id,double w) throw(bad_alloc)
+{
+	InsertPtr(new GIWordWeight(id,w,infoWordList));
+}
+
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::Similarity(const GDoc* doc) const

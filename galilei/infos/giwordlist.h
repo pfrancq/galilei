@@ -82,6 +82,17 @@ public:
 	GIWordList(void) throw(bad_alloc);
 
 	/**
+	* Compare two wordlist references.
+	* @param id             the wordlist reference used for the
+	*                       comparaison.
+	*/
+	int Compare(const unsigned int& id) {return(Id-id);}
+
+	int Compare(const GIWordList* i) {return(Id-i->Id);}
+
+	int Compare(const GIWordList& i) {return(Id-i.Id);}
+
+	/**
 	* Return the name of the class.
 	*/
 	virtual const RStd::RString ClassName(void) const;

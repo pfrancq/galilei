@@ -85,7 +85,7 @@ void GOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned i
 		delete Owner->OFile;
 		Owner->OFile=0;
 	}
-	Owner->OFile=new RTextFile(args->Tab[0]->GetValue(prg),RIO::Create);
+	Owner->OFile=new RTextFile((args->Tab[0]->GetValue(prg)),RIO::Create);
 	Owner->OFile->SetSeparator("\t");
 	(*Owner->OFile)<<"Sets"<<"Recall"<<"Precision"<<"Total";
 	if(Owner->TrackNewProfiles)
@@ -224,7 +224,6 @@ void GGroupProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,uns
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 }
 
-
 //-----------------------------------------------------------------------------
 void GCreateIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
@@ -328,6 +327,7 @@ void GStatsProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,uns
 		        ProfStats.GetAvgIntraL(),ProfStats.GetAvgInterL(),ProfStats.GetAVGolL(),ProfStats.GetAVGGolL(),ProfStats.GetRieL());
 		r->WriteStr(tmp);
 	}
+	(*Owner->OFile)<<"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"<<endl;
 	if(Owner->OFile&&g)
 		(*Owner->OFile)<<ProfStats.GetAvgIntraG()<<ProfStats.GetAvgInterG()<<ProfStats.GetAVGolG()<<ProfStats.GetAVGGolG()<<ProfStats.GetRieG()<<endl;
 	if(Owner->OFile&&l)
@@ -532,6 +532,14 @@ void GAddProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsig
 		throw GException("Method needs two parameters");
 	sprintf(tmp,"Adding Profile: Settings=\"%s\",\"%s\"",args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
 	r->WriteStr(tmp);
+//<<<<<<< gsessionprg.cpp
+//	if(args->NbPtr==1)
+//		Owner->GetIdealMethod()->SetSettings(args->Tab[0]->GetValue(prg));
+////	cout <<atoi(args->Tab[0]->GetValue(prg)) <<endl;
+////	cout <<atoi(args->Tab[1]->GetValue(prg)) <<endl;
+//
+//=======
+//>>>>>>> 1.43
 	sprintf(tmp, "%u new profiles created",Owner->GetIdealMethod()->AddProfiles(atoi(args->Tab[0]->GetValue(prg)), atoi(args->Tab[1]->GetValue(prg)),Owner->AutoSave));
 	r->WriteStr(tmp);
 }

@@ -128,6 +128,15 @@ public:
 	* @param ObjType        Type of the reference.
 	* @param lang           Language.
 	*/
+	double SimilarityIdfP(const GIWordsWeights* w,tObjType ObjType,GLang* lang) const;
+
+	/**
+	* Compute similarity between two vectors by using the idf factors rather
+	* than the weights.
+	* @param w              Vector to compare with.
+	* @param ObjType        Type of the reference.
+	* @param lang           Language.
+	*/
 	double SimilarityIdf(const GIWordsWeights* w,tObjType ObjType,GLang* lang) const;
 
 	/**

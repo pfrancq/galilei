@@ -58,6 +58,8 @@ namespace GALILEI{
 */
 class GWord
 {
+protected :
+
 	/**
 	* Identificator of the word.
 	*/
@@ -67,6 +69,8 @@ class GWord
 	* The word.
 	*/
 	RStd::RString Word;
+
+	GWordType Type;
 
 	/**
 	* Number of references in documents.
@@ -133,6 +137,11 @@ public:
 	* Compare method used by RStd::RContainer and RStd::RHashContainer.
 	*/
 	int Compare(const unsigned int id) const;
+
+
+	void SetType(GWordType type);
+
+	GWordType GetType() {return(Type);}
 
 	/**
 	* Return a number between 0 and 26 according to the first character of the

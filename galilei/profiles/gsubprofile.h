@@ -257,6 +257,8 @@ public:
 	*/
 	virtual double GlobalSimilarity(const GGroup* grp) const;
 
+	virtual GIWordWeightCursor& GetVectorCursor(void)=0;
+
 #if GALILEITEST
 
 	/**

@@ -266,7 +266,6 @@ public:
 	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
-
 //-----------------------------------------------------------------------------
 class GCreateIdealI : public GSM
 {

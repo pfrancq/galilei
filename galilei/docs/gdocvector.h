@@ -120,6 +120,13 @@ public:
 	virtual void AddWord(const unsigned int id,const double nb);
 
 	/**
+	* Add a wordlist with a certain occurences in the document.
+	* @param id             Identificator of the word.
+	* @param nb             Occurences of the word.
+	*/
+	virtual void AddWordList(const unsigned int id,const double nb);
+
+	/**
 	* Get a Cursor on the weights of the document.
 	* @return GWordWeightCursor.
 	*/

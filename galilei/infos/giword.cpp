@@ -53,6 +53,7 @@ using namespace RStd;
 GALILEI::GIWord::GIWord(unsigned int id)
 	: GALILEI::GInfo(), Id(id)
 {
+	Type=infoWord;
 }
 
 
@@ -94,9 +95,9 @@ const RString GALILEI::GIWord::ClassName(void) const
 
 
 //-----------------------------------------------------------------------------
-const GALILEI::GInfo::GInfoType GALILEI::GIWord::InfoType(void) const
+const GInfoType GALILEI::GIWord::InfoType(void) const
 {
-	return(infoWord);
+	return(Type);
 }
 
 

@@ -55,6 +55,7 @@ using namespace RIO;
 #include <langs/glang.h>
 #include <langs/gdict.h>
 #include <langs/gdicts.h>
+#include <langs/gwordlist.h>
 #include <infos/giwordlist.h>
 #include <infos/giwordweight.h>
 #include <profiles/guser.h>
@@ -433,7 +434,10 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 				sub=GetSubProfile(atoi(sel[0]),Langs());
 				if(sub)
 				{
-					((GSubProfileVector*)sub)->AddWord(atoi(sel[1]),atof(sel[2]));
+					if(GetDic(Langs())->GetElement(atoi(sel[1]))->GetType()==tWordList)
+						((GSubProfileVector*)sub)->AddWordList(atoi(sel[1]),atof(sel[2]));
+					else
+						((GSubProfileVector*)sub)->AddWord(atoi(sel[1]),atof(sel[2]));
 				}
 			}
 		}
@@ -608,7 +612,12 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 		{
 			doc=dynamic_cast<GDocVector*>(GetDoc(atoi(sel[0])));
 			if(doc)
-				doc->AddWord(atoi(sel[1]),atof(sel[2]));
+			{
+				if(GetDic(Langs())->GetElement(atoi(sel[1]))->GetType()==tWordList)
+					doc->AddWordList(atoi(sel[1]),atof(sel[2]));
+				else
+					doc->AddWord(atoi(sel[1]),atof(sel[2]));
+			}
 		}
 	}
 
@@ -746,6 +755,103 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 	RQuery updatedoc(this,sSql);
 }
 
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::SaveWordsGroups(GDict* dict) throw(GException)
+{
+
+	GWordList *tmp;
+	char sSql[600];
+	sprintf(sSql,"DELETE from idealgroup");
+	RQuery del(this,sSql);
+	for(dict->GroupsList.Start();!dict->GroupsList.End();dict->GroupsList.Next())
+	{
+		tmp=(dict->GroupsList)();
+		for(tmp->List->Start();!tmp->List->End();tmp->List->Next())
+		{
+			sprintf(sSql,"INSERT INTO %skwdsbygroups(grid,kwdid) VALUES (%u,%u)",dict->GetLang()->GetCode(),tmp->GetId(),
+			(*(tmp->List))()->GetId()) ;
+      try
+			{
+				RQuery insertword(this,sSql);
+			}
+			catch(RMySQLError e)
+			{
+//				cout << e.GetError()<< endl;
+			}
+		}
+	}
+}
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::LoadWordsGroups(GDict* dict) throw(GException)
+{
+	GWordList *tmp;
+	char sSql[600];
+	unsigned int i=0;
+//	cout<<dict->GroupsList.NbPtr<<endl;
+	sprintf(sSql,"SELECT grid, kwdid  FROM %skwdsbygroups",dict->GetLang()->GetCode());
+	RQuery loadwords (this, sSql);
+	for(loadwords.Start();!loadwords.End();loadwords.Next())
+	{
+		cout<<i++<<" "<<atoi(loadwords[0])<<" "<<atoi(loadwords[1])<<" nb= "<<dict->GroupsList.NbPtr<<" "<<dict->GroupsList.GetPtr(atoi(loadwords[0]))<<endl;
+		if(!dict->GroupsList.IsIn(atoi(loadwords[0])))
+			dict->GroupsList.InsertPtr(new GWordList(atoi(loadwords[0]),dict->GetWord(atoi(loadwords[0]))));
+		tmp=dict->GroupsList.GetPtr(atoi(loadwords[0]));
+		cout<<dict->GroupsList.GetPtr(atoi(loadwords[0]))<<" "<<tmp<<" nb= "<<dict->GroupsList.NbPtr<<endl;
+		tmp->InsertWord(new GWord(atoi(loadwords[1]),dict->GetWord(atoi(loadwords[1]))));
+	}
+
+}
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
+{
+	char sSql[1000];
+	const char* l=0;
+	unsigned int id;
+	GMIMEFilter* f;
+	id=doc->GetId();
+	const char* fn;
+	char slang[5];
+	char smime[50];
+	char surl[200];
+	char sname[200];
+	char supdated[15];
+	char scomputed[15];
+	GIWordWeightCursor Words;
+	if(doc->GetLang())
+	{
+		l=doc->GetLang()->GetCode();
+		Words=dynamic_cast<GDocVector*>(doc)->GetWordWeightCursor();
+		for(Words.Start();!Words.End();Words.Next())
+		{
+      if(Words()->GetId()>=n)
+      {
+			  sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%f)",l,id,Words()->GetId(),Words()->GetWeight());
+			  RQuery insertkwds(this,sSql);
+      }
+		}
+		l=ValidSQLValue(l,slang);
+	}
+	else
+	{
+		l=SQLNULL;
+	}
+
+	// Update document
+	f=doc->GetMIMEType();
+	if(f)
+		fn=ValidSQLValue(f->GetName(),smime);
+	else
+		fn=SQLNULL;
+	sprintf(sSql,"UPDATE htmls SET "
+	             "html=%s,title=%s,mimetype=%s,langid=%s,"
+	             "updated=%s,calculated=%s,"
+	             "n=%u,ndiff=%u,v=%u,vdiff=%u,failed=%u WHERE htmlid=%u",
+	             ValidSQLValue(doc->GetURL(),surl),ValidSQLValue(doc->GetName(),sname),fn,l,
+	             GetDateToMySQL(doc->GetUpdated(),supdated),GetDateToMySQL(doc->GetComputed(),scomputed),
+	             doc->GetN(),doc->GetNdiff(),doc->GetV(),doc->GetVdiff(),doc->GetFailed(),id);
+	RQuery updatedoc(this,sSql);
+
+}
 
 
 //-----------------------------------------------------------------------------
@@ -882,8 +988,10 @@ void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 			RQuery sel(this,sSql);
 			for(sel.Start();!sel.End();sel.Next())
 			{
-				Word= new GIWordWeight(atoi(sel[0]),atof(sel[1]));
-				group->AddWord(Word);
+				if(GetDic(Langs())->GetElement(atoi(sel[0]))->GetType()==tWordList)
+					group->AddWordList(atoi(sel[0]),atof(sel[1]));
+				else
+					group->AddWord(new GIWordWeight(atoi(sel[0]),atof(sel[1])));
 			}
 			groups->InsertPtr(group);
 		}

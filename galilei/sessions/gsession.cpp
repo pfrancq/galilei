@@ -57,6 +57,7 @@ using namespace RIO;
 #include <docs/gdocoptions.h>
 #include <docs/gdocprofsim.h>
 #include <docs/gdocprofsims.h>
+#include <docs/gwordsclustering.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -299,14 +300,42 @@ GGroupCalcCursor& GALILEI::GSession::GetGroupCalcsCursor(void)
 	return(*cur);
 }
 
-
 //-----------------------------------------------------------------------------
 GDocXML* GALILEI::GSession::CreateDocXML(GDoc* doc) throw(GException)
 {
 	return(Mng->CreateDocXML(doc));
 }
 
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::AnalyseAssociation(bool save)
+{
+	GDocCursor Docs=GetDocsCursor();
+	GWordsClustering* test;
+	unsigned int i,n=1;
+	bool end=false;
+	Docs.Start();
+	test= new GWordsClustering(GetDic(Docs()->GetLang()),DocOptions->MinDocs,DocOptions->MaxDocs,DocOptions->MinOccurCluster);
 
+	for(i=Docs.GetNb(),Docs.Start();i--;Docs.Next())
+	{
+		test->AddDoc(dynamic_cast<GDocVector*>(Docs()));
+	}
+	test->CleanWords();
+	Docs.Start();
+  for(i=0;i<DocOptions->NbIteration;i++)
+  {
+	  end=test->OrdreByDocs(i);
+	  test->SaveAssociations(i,save);
+  }
+  test->View();
+  if(save) SaveWordsGroups(GetDic(Docs()->GetLang()));
+	for(i=Docs.GetNb(),Docs.Start();--i;Docs.Next())
+	{
+		test->UpdateDoc(dynamic_cast<GDocVector*>(Docs()));
+		if(save) SaveUpDatedDoc(Docs(),n);/*n=id du premier mot a sauver.*/
+	}
+	delete(test);
+}
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 {

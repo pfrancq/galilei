@@ -147,3 +147,8 @@ void GALILEI::GGroupVector::AddWord(GIWordWeight* word)
 {
 	GIWordsWeights::InsertPtr(word);
 }
+//-----------------------------------------------------------------------------
+void GALILEI::GGroupVector::AddWordList(unsigned id,double w)
+{
+	GIWordsWeights::InsertPtr(new GIWordWeight(id,w,infoWordList));
+}

@@ -73,6 +73,8 @@ class GDict : public RStd::RDblHashContainer<GWord,unsigned,27,27,true>
 	*/
 	GWord** Direct;
 
+	unsigned NbGroupsList;
+
 	/**
 	* Maximal value of the identificator handled by Direct.
 	*/
@@ -112,19 +114,21 @@ class GDict : public RStd::RDblHashContainer<GWord,unsigned,27,27,true>
 	/**
 	* Number of references in documents.
 	*/
-	unsigned int NbRefDocs;
+	unsigned int NbRefDocs[2];
 
 	/**
 	* Number of references in subprofiles.
 	*/
-	unsigned int NbRefSubProfiles;
+	unsigned int NbRefSubProfiles[2];
 
 	/**
 	* Number of references in groups.
 	*/
-	unsigned int NbRefGroups;
+	unsigned int NbRefGroups[2];
 
 public:
+
+	RStd::RContainer<GWordList,unsigned,true,false> GroupsList;
 
 	/**
 	* Constructor of the dictionnary.
@@ -160,6 +164,8 @@ public:
 	* dictionnary.
 	*/
 	void Put(unsigned id,const RStd::RString& word) throw(bad_alloc);
+
+	void InsertNewWordList(GWordList& wordlist,bool save);
 
 	/**
 	* Get the identificator of the word corresponding to a string. If the word
@@ -203,6 +209,8 @@ public:
 	*/
 	GWord* GetElement(const unsigned int id) const;
 
+	unsigned GetNbGroupsList(){return(GroupsList.NbPtr);}
+
 	/**
 	* Test if the dictionnary is a stop list.
 	* @returns true if it is a stop list.
@@ -230,14 +238,14 @@ public:
 	* @param id             Identificator.
 	* @param ObjType        Type of the reference.
 	*/
-	void IncRef(unsigned int id,tObjType ObjType);
+	void IncRef(unsigned int id,tObjType ObjType,GWordType WordType);
 
 	/**
 	* Decrease the number of references on a word.
 	* @param id             Identificator.
 	* @param ObjType        Type of the reference.
 	*/
-	void DecRef(unsigned int id,tObjType ObjType);
+	void DecRef(unsigned int id,tObjType ObjType,GWordType WordType);
 
 	/**
 	* Get the number of references on a word.
@@ -252,7 +260,7 @@ public:
 	* @param ObjType        Type of the reference.
 	* @returns unsigned int.
 	*/
-	unsigned int GetRef(tObjType ObjType);
+	unsigned int GetRef(tObjType ObjType,GWordType WordType);
 
 	/**
 	* Destructor of the dictionnary.

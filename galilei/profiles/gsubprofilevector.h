@@ -107,6 +107,13 @@ public:
 	void AddWord(unsigned int id,double w) throw(bad_alloc);
 
 	/**
+	* Add a concept with the corresponding weight to the description.
+	* @param id             Identificator of the concept.
+	* @param w              Weight of the concept.
+	*/
+	void AddWordList(unsigned int id,double w) throw(bad_alloc);
+
+	/**
 	* Compute the similarity between a subprofile and a document.
 	*/
 	virtual double Similarity(const GDoc* doc) const;

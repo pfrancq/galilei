@@ -387,7 +387,7 @@ void GALILEI::GMixIdealGroups::IShow()
 			cout << "ideal group "<< grp->GetId()<<endl;
 			for(grp->Start(); !grp->End(); grp->Next())
 			{
-				cout << (*grp)()->GetId()<< "   ";
+//				cout << (*grp)()->GetId()<< "   ";
 			}
 			cout << endl;
 		}
@@ -409,7 +409,7 @@ void GALILEI::GMixIdealGroups::Show()
 			cout << "group "<< grp->GetId()<<endl;
 			for(grp->Start(); !grp->End(); grp->Next())
 			{
-				cout << (*grp)()->GetId()<< "   ";
+//				cout << (*grp)()->GetId()<< "   ";
 			}
 			cout << endl;
 		}

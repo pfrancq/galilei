@@ -136,6 +136,8 @@ public:
 	* @param  word          The word who will be aded.
 	*/
 	void AddWord(GIWordWeight* word);
+
+	void AddWordList(unsigned id,double w);
 };
 
 

@@ -88,6 +88,30 @@ public:
 	unsigned int MinOccur;
 
 	/**
+	* Minimum number of documents where a valid word must appear to be compute
+	* in the clustering algorithm.
+	*/
+	unsigned int MinDocs;
+
+	/**
+	* Maximum number of documents where a valid word can appear to be compute
+	* in the clustering algorithm.
+	*/
+	unsigned int MaxDocs;
+
+
+	/**
+	* Minimum number of occurences needed in a document to take a valid word
+	* in the clustering algorithm.
+	*/
+	unsigned int MinOccurCluster;
+
+	/**
+	* Number of iteration of the words clustering algorithm.
+	*/
+	unsigned int NbIteration;
+
+	/**
 	* Determine if the extracted words may contain other things than letters.
 	*/
 	bool NonLetterWords;

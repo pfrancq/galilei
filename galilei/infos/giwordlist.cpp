@@ -64,7 +64,7 @@ const RString GALILEI::GIWordList::ClassName(void) const
 
 
 //-----------------------------------------------------------------------------
-const GInfo::GInfoType GALILEI::GIWordList::InfoType(void) const
+const GInfoType GALILEI::GIWordList::InfoType(void) const
 {
 	return(infoWordList);
 }

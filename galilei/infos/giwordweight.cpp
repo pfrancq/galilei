@@ -59,6 +59,7 @@ using namespace RStd;
 GALILEI::GIWordWeight::GIWordWeight(unsigned id) throw(bad_alloc)
   : GIWord(id), Weight(0.0)
 {
+	Type=infoWordCalc;
 }
 
 
@@ -66,13 +67,21 @@ GALILEI::GIWordWeight::GIWordWeight(unsigned id) throw(bad_alloc)
 GALILEI::GIWordWeight::GIWordWeight(unsigned id,double w) throw(bad_alloc)
   : GIWord(id), Weight(w)
 {
+	Type=infoWordCalc;
 }
 
+//-----------------------------------------------------------------------------
+GALILEI::GIWordWeight::GIWordWeight(unsigned id,double w,GInfoType type) throw(bad_alloc)
+  : GIWord(id), Weight(w)
+{
+	Type=type;
+}
 
 //-----------------------------------------------------------------------------
 GALILEI::GIWordWeight::GIWordWeight(const GIWordWeight* w) throw(bad_alloc)
   : GIWord(w->Id), Weight(w->Weight)
 {
+	Type=w->InfoType();
 }
 
 
@@ -84,9 +93,9 @@ const RString GALILEI::GIWordWeight::ClassName(void) const
 
 
 //-----------------------------------------------------------------------------
-const GInfo::GInfoType GALILEI::GIWordWeight::InfoType(void) const
+const GInfoType GALILEI::GIWordWeight::InfoType(void) const
 {
-	return(infoWordCalc);
+	return(Type);
 }
 
 
@@ -107,7 +116,8 @@ int GALILEI::GIWordWeight::Compare(const GIWordWeight *calc) const
 //-----------------------------------------------------------------------------
 double GALILEI::GIWordWeight::GetQueryWeight(tObjType ObjType,GDict* dict,double max) const
 {
-	return(Weight/max)*log(static_cast<double>(dict->GetRef(ObjType))/static_cast<double>(dict->GetRef(Id,ObjType)));
+	if(Type==4) return(Weight/max)*log(static_cast<double>(dict->GetRef(ObjType,tWordList))/static_cast<double>(dict->GetRef(Id,ObjType)));
+	else return(Weight/max)*log(static_cast<double>(dict->GetRef(ObjType,tWord))/static_cast<double>(dict->GetRef(Id,ObjType)));
 }
 
 

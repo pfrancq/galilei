@@ -90,6 +90,7 @@ class GLang;
 class GLangCursor;
 class GLangs;
 class GWord;
+class GWordList;
 class GDict;
 class GDicts;
 
@@ -108,6 +109,7 @@ class GDocsSim;
 class GDocsLang;
 class GDocProfSim;
 class GDocProfSims;
+class GWordsClustering;
 
 //-----------------------------------------------------------------------------
 // forward class declaration - User Part
@@ -286,6 +288,29 @@ enum tSubProfileDesc
 {
 	sdNothing               /** Unknow Model.*/,
 	sdVector                /** Vector Model.*/
+};
+//-----------------------------------------------------------------------------
+/**
+* Models used to describe informations.
+*/
+enum GInfoType
+{
+	infoNothing,
+	infoWord,
+	infoWordOccur,
+	infoWordOccurs,
+	infoWordList,
+	infoWordCalc,
+	infoWordCalcs
+};
+//-----------------------------------------------------------------------------
+/**
+* Models used to describe informations in the dictionnary
+*/
+enum GWordType
+{
+	tWord					/** Word.*/,
+	tWordList				/** List of words.*/
 };
 
 

@@ -105,6 +105,7 @@ void GALILEI::GStatSimSubProf::Run(void)
 	GLangCursor Langs;
 	GSubProfileCursor Sub1;
 	GSubProfileCursor Sub2;
+	GIWordWeightCursor v1;
 	double SimIntraL;
 	double SimExtraL;
 	double SimIntraG;
@@ -118,6 +119,7 @@ void GALILEI::GStatSimSubProf::Run(void)
 	double MaxExtraL;
 	double MinIntraG;
 	double MaxExtraG;
+	double minG,minL,maxG,maxL;
 	LocalStat* t;
 
 	//Initialization
@@ -125,6 +127,8 @@ void GALILEI::GStatSimSubProf::Run(void)
 	OverlapG=MeanExtraMG=MeanIntraMG=0.0;
 	nbSubProf=0;
 	Sub.Clear();
+	minG=minL=1.1;
+	maxG=maxL=-1.1;
 
 	// Go through the languages
 	Langs=Session->GetLangsCursor();
@@ -166,11 +170,37 @@ void GALILEI::GStatSimSubProf::Run(void)
 					{
 						SimIntraG+=tmp;
 						if(tmp<MinIntraG) MinIntraG=tmp;
+						if(tmp<minG)
+						{
+							minG=tmp;
+							cout<<"similar : "<<Sub1()->GetId()<<" - "<<Sub2()->GetId()<<" = "<<tmp<<endl;
+							v1=Sub1()->GetVectorCursor();
+							for(v1.Start();!v1.End();v1.Next())
+								cout<<v1()->GetId()<<" ";
+							cout<<endl;
+							v1=Sub2()->GetVectorCursor();
+							for(v1.Start();!v1.End();v1.Next())
+								cout<<v1()->GetId()<<" ";
+							cout<<endl;
+						}
 					}
 					else
 					{
 						SimExtraG+=tmp;
 						if(tmp>MaxExtraG) MaxExtraG=tmp;
+						if(tmp>maxG)
+						{
+							maxG=tmp;
+							cout<<"not similar : "<<Sub1()->GetId()<<" - "<<Sub2()->GetId()<<" = "<<tmp<<endl;
+							v1=Sub1()->GetVectorCursor();
+							for(v1.Start();!v1.End();v1.Next())
+								cout<<v1()->GetId()<<" ";
+							cout<<endl;
+							v1=Sub2()->GetVectorCursor();
+							for(v1.Start();!v1.End();v1.Next())
+								cout<<v1()->GetId()<<" ";
+							cout<<endl;
+						}
 					}
 				}
 
@@ -181,11 +211,13 @@ void GALILEI::GStatSimSubProf::Run(void)
 					{
 						SimIntraL+=tmp;
 						if(tmp<MinIntraL) MinIntraL=tmp;
+						if(tmp<minL) minL=tmp;
 					}
 					else
 					{
 						SimExtraL+=tmp;
 						if(tmp>MaxExtraL) MaxExtraL=tmp;
+						if(tmp>maxL) maxL=tmp;
 					}
 				}
 			}
@@ -250,6 +282,7 @@ void GALILEI::GStatSimSubProf::Run(void)
 	}
 	GOverlapG/=Sub.NbPtr;
 	GOverlapL/=Sub.NbPtr;
+	cout<<"MaxSimInterG : "<<maxG<<"  MinSimIntraG : "<<minG<<"  MaxSimInterL : "<<maxL<<"  MinSimIntraL : "<<minL<<endl;
 #endif
 }
 

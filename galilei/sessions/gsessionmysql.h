@@ -196,6 +196,12 @@ public:
 	*/
 	virtual void SaveDoc(GDoc* doc) throw(GException);
 
+	virtual void SaveWordsGroups(GDict* dict)throw(GException);
+
+	virtual void LoadWordsGroups(GDict* dict) throw(GException);
+
+	virtual void SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException);
+
 	/**
 	* Save a the users feedback.
 	*/

@@ -43,6 +43,7 @@
 // include file for GALILEI
 #include <langs/gdict.h>
 #include <langs/gword.h>
+#include <langs/gwordlist.h>
 #include <langs/glang.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
@@ -59,9 +60,15 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 GALILEI::GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(bad_alloc)
 	: RDblHashContainer<GWord,unsigned,27,27,true>(ml+(ml/4),ml/4), Session(s), Direct(0),
-	  MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false), Stop(st),
-	  NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
+	  NbGroupsList(0), MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false), Stop(st),
+	  GroupsList(500)
 {
+	for(unsigned int i=0;i<2;i++)
+	{
+		NbRefDocs[i]=0;
+		NbRefSubProfiles[i]=0;
+		NbRefGroups[i]=0;
+	}
 	Direct=new GWord*[MaxId];
 	memset(Direct,0,MaxId*sizeof(GWord*));
 }
@@ -100,11 +107,63 @@ void GALILEI::GDict::PutDirect(GWord* word) throw(bad_alloc)
 //---------------------------------------------------------------------------
 void GALILEI::GDict::Put(unsigned id,const RStd::RString& word) throw(bad_alloc)
 {
+	GWordList* wordlist;
 	GWord Word(id,word),*ptr;
-	ptr=GetInsertPtr<GWord>(Word,true);
+	char *tmp,*tmp2;
+	bool grplst=true;
+	tmp=word.StrDup();
+	tmp2="grouplist";
+	while((*tmp)&&(*tmp2)&&(grplst))
+	{
+		if((*tmp)==(*tmp2))
+			grplst=true;
+		else grplst=false;
+		tmp++;
+		tmp2++;
+		if((!(*tmp))&&(*tmp2)) grplst=false;
+	}
+	if(grplst)
+	{
+		ptr=GetInsertPtr<GWord>(Word,true);
+		ptr->SetType(tWordList);
+		wordlist=new GWordList(id,word);
+		wordlist->SetType(tWordList);
+		GroupsList.InsertPtr(wordlist);
+		NbGroupsList++;
+	}
+	else
+		ptr=GetInsertPtr<GWord>(Word,true);
 	PutDirect(ptr);
 }
 
+//---------------------------------------------------------------------------
+void GALILEI::GDict::InsertNewWordList(GWordList& wordlist,bool save)
+{
+	GWord *ptr;
+//	wordlist.Start();
+//	ptr=wordlist();
+//	RString temp(ptr->GetWord());
+//	wordlist.Next();
+//	ptr=wordlist();
+//	temp+='&';
+//	temp+='&';
+//	temp+=ptr->GetWord();
+//	GWord word(temp);
+
+	ptr=GetInsertPtr(wordlist);
+	if(ptr->Id == cNoRef)
+	{
+		if(save) ptr->Id=Session->GetDicNextId(wordlist.GetWord(),this);
+		else ptr->Id=UsedId+1;
+		cout<<UsedId<<" / "<<NbGroupsList<<endl;
+		ptr->SetType(tWordList);
+		PutDirect(ptr);
+		wordlist.SetId(ptr->Id);
+		GroupsList.InsertPtr(&wordlist);
+		NbGroupsList++;
+	}
+
+}
 
 //---------------------------------------------------------------------------
 unsigned GALILEI::GDict::GetId(const RString& word) throw(bad_alloc)
@@ -126,7 +185,6 @@ const char* GALILEI::GDict::GetWord(const unsigned int id) const
 {
 	return(Direct[id]->GetWord());
 }
-
 
 //---------------------------------------------------------------------------
 GWord* GALILEI::GDict::GetElement(const unsigned int id) const
@@ -157,18 +215,18 @@ int GALILEI::GDict::Compare(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType)
+void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType,GWordType WordType)
 {
 	switch(ObjType)
 	{
 		case otDoc:
-			NbRefDocs++;
+			NbRefDocs[WordType]++;
 			break;
 		case otSubProfile:
-			NbRefSubProfiles++;
+			NbRefSubProfiles[WordType]++;
 			break;
 		case otGroup:
-			NbRefGroups++;
+			NbRefGroups[WordType]++;
 			break;
 		default:
 			break;
@@ -178,18 +236,18 @@ void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType)
+void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType,GWordType WordType)
 {
 	switch(ObjType)
 	{
 		case otDoc:
-			NbRefDocs--;
+			NbRefDocs[WordType]--;
 			break;
 		case otSubProfile:
-			NbRefSubProfiles--;
+			NbRefSubProfiles[WordType]--;
 			break;
 		case otGroup:
-			NbRefGroups--;
+			NbRefGroups[WordType]--;
 			break;
 		default:
 			break;
@@ -206,21 +264,21 @@ unsigned int GALILEI::GDict::GetRef(unsigned int id,tObjType ObjType)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GDict::GetRef(tObjType ObjType)
+unsigned int GALILEI::GDict::GetRef(tObjType ObjType,GWordType WordType)
 {
 	switch(ObjType)
 	{
 		case otDoc:
-			return(NbRefDocs);
+			return(NbRefDocs[WordType]);
 			break;
 		case otSubProfile:
-			return(NbRefSubProfiles);
+			return(NbRefSubProfiles[WordType]);
 			break;
 		case otGroup:
-			return(NbRefGroups);
+			return(NbRefGroups[WordType]);
 			break;
 		default:
-			return(NbRefDocs+NbRefSubProfiles+NbRefGroups);
+			return(NbRefDocs[WordType]+NbRefSubProfiles[WordType]+NbRefGroups[WordType]);
 			break;
 	}
 	return(0);

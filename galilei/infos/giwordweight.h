@@ -85,6 +85,14 @@ public:
 
 	/**
 	* Constructor.
+	* @param id             Identificator of the word.
+	* @param w              Weight of the word.
+	* @param type           Type of the information.
+	*/
+	GIWordWeight(const unsigned id,double w,GInfoType type) throw(bad_alloc);
+	
+	/**
+	* Constructor.
 	* @param w              Pointer to a word weight.
 	*/
 	GIWordWeight(const GIWordWeight* w) throw(bad_alloc);

@@ -70,6 +70,8 @@ protected:
 	*/
 	bool Activ;
 
+	double mult;
+
 	/**
 	* Dictionnary.
 	*/
@@ -129,6 +131,9 @@ public:
 	*/
 	virtual RString& GetStemming(const RStd::RString& kwd);
 
+	void SetMult(double m) {mult=m;}
+	double GetMult() {return(mult);}
+
 	/**
 	* See if a given word is a valid one, don't content text and numbers that
 	* are to skip.
@@ -154,12 +159,16 @@ public:
 	*/
 	unsigned int GetRef(unsigned int id,tObjType ObjType);
 
+	unsigned int GetTotal();
+
+	unsigned int GetNbWordList();
+
 	/**
 	* Get the total number of references.
 	* @param ObjType        Type of the reference.
 	* @returns unsigned int.
 	*/
-	unsigned int GetRef(tObjType ObjType);
+	unsigned int GetRef(tObjType ObjType,GWordType WordType);
 
 	/**
 	* Destructor.

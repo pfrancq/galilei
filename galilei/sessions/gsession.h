@@ -362,6 +362,12 @@ public:
 	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
 
 	/**
+	* Create concept in the whole set of documents.
+	* @param save        Enable de concept saving.
+	*/
+	void AnalyseAssociation(bool save);
+
+	/**
 	* Analyse all the necessary documents.
 	* @param rec        Receiver for the signals.
 	* @param modified   Recompute only modified elements or all.
@@ -621,6 +627,10 @@ public:
 	* Save The Documents Simylarities into the database.
 	*/
 	virtual void SaveDocSim(void)=0;
+
+	virtual void SaveWordsGroups(GDict* dict)=0;
+
+	virtual void SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)=0;
 
 	/**
 	* Run a "program" for this session.
