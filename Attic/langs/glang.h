@@ -139,6 +139,12 @@ public:
 	void AssignDict(GDict* dict);
 
 	/**
+	* Get the dictionnary attached to the language.
+	* @return Pointer to GDict.
+	*/
+	GDict* GetDict(void) {return(Dict);}
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GLang(void);
