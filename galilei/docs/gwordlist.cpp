@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	gworddoc.cpp
+	gwordlist.cpp
 
 	Basic Information - Implementation.
 

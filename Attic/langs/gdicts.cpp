@@ -33,7 +33,7 @@
 //---------------------------------------------------------------------------
 // include file for Galilei
 #include "gdicts.h"
-#include <glangs/gdict>
+#include <glangs/gdict.h>
 
 using namespace GALILEI;
 

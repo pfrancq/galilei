@@ -39,7 +39,7 @@
 
 #include <rstd/rcontainer.h>
 #include <rstd/rstring.h>
-#include  <HyperPRISME.h>
+//#include  <HyperPRISME.h>
 using namespace RStd;
 
 
@@ -50,6 +50,8 @@ using namespace RStd;
 #include <glangs/glangs.h>
 #include <gprofiles/gprofile.h>
 #include <gdocs/gdoc.h>
+#include <gexceptions.h>
+#include <glib.h>
 
 using namespace GALILEI;
 //---------------------------------------------------------------------------
@@ -57,25 +59,26 @@ using namespace GALILEI;
 //---------------------------------------------------------------------------
 
 
- //---------------------------------------------------------------------------
- namespace GALILEI{
+//---------------------------------------------------------------------------
+namespace GALILEI{
 
 class GSession;
 class GLangs;
 class GProfile;
 //---------------------------------------------------------------------------
 // class GDocs
+
 class GDocs : public RContainer<GDoc,unsigned,true,false>
 {
 public:
-  bool AllDocs;             // All Docs must be Loaded?
+	bool AllDocs;             // All Docs must be Loaded?
 
-  GSession *Session;        // Languages
+	GSession *Session;        // Languages
 
-  GDocs(unsigned int nb,bool alldocs,GSession *session) throw(bad_alloc);
-  virtual void Load(GLangs*) throw(bad_alloc,GException)=0;
-  virtual void Load(GLangs*,GProfile *) throw(bad_alloc,GException)=0;
-  void Analyse(URLFunc *urlfunc,InfoFunc *infofunc) throw(GException);
+	GDocs(unsigned int nb,bool alldocs,GSession *session) throw(bad_alloc);
+	virtual void Load(GLangs*) throw(bad_alloc,GException)=0;
+	virtual void Load(GLangs*,GProfile *) throw(bad_alloc,GException)=0;
+	void Analyse(URLFunc *urlfunc,InfoFunc *infofunc) throw(GException);
 	void Download(void);
 	virtual ~GDocs(void) {}
 };
@@ -83,7 +86,7 @@ public:
 
 
 
-}  //-------- End of namespace Galilei-----------------------------------
+ }  //-------- End of namespace Galilei-----------------------------------
 
 //---------------------------------------------------------------------------
 #endif

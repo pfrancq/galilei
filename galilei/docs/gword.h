@@ -60,7 +60,7 @@ namespace GALILEI{
 class GWord
 {
 public:
-  unsigned Id;       // Id of the word
+  unsigned Id;                // Id of the word
   RString Word;           // The word
 
   // Constructors

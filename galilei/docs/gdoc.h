@@ -30,6 +30,7 @@
 */
 
 //---------------------------------------------------------------------------
+
 #ifndef GDocH
 #define GDocH
 
@@ -65,16 +66,18 @@ class GWordOccurs;
 // class GDoc
 class GDoc
 {
-  char* Buffer;       // Pointer
-  char Word[51];      // Word
+
+  char* Buffer;           // Pointer
+  char Word[51];        // Word
   GDocs *Owner;       // Owner (Container)
 public:
+
 	GWordOccurs* Words;             // Occurencies of Words
-	unsigned NbWords;              // Total number of words
-	unsigned NbDiffWords;          // Number of different words
-	GLang* Lang;                        // Pointer to the language
+	unsigned NbWords;                 // Total number of words
+	unsigned NbDiffWords;           // Number of different words
+	GLang* Lang;                         // Pointer to the language
 	RString URL;                         // URL
-	unsigned Id;                         // Unique identifier
+	unsigned Id;                           // Unique identifier
 	char* Content;                      // Pointer to the content
 	bool Calc;                          // Must the doc be analysed?
 	bool bSave;											// Must the doc be saved?
@@ -93,6 +96,7 @@ public:
 	virtual void Save(void) throw(GException)=0;
 	virtual void Download(void)=0;
 	virtual ~GDoc(void);
+
 };
 
 

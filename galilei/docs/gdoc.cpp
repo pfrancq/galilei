@@ -56,6 +56,7 @@ using namespace GALILEI
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
+
 GDoc::GDoc(GDocs *owner,const RString& url) throw(bad_alloc)
   : Owner(owner),Words(0),NbWords(0),NbDiffWords(),Lang(0),URL(url),Content(0), Calc(true), bSave(true)
 {
@@ -64,6 +65,7 @@ GDoc::GDoc(GDocs *owner,const RString& url) throw(bad_alloc)
 
 
 //---------------------------------------------------------------------------
+
 int GDoc::Compare(const GDoc& doc)
 {
   return(Id-doc.Id);
@@ -98,8 +100,8 @@ unsigned char GDoc::GetChar(void)
  while((*Buffer)&&(*Buffer)!=';'&&(*Buffer)!='<'&&(*Buffer)!='>'&&!IsSpace())
  (*(ptr2++))=(*(Buffer++));
  (*ptr2)=0;
- if(*Buffer) Buffer++; // Skip ';'
- if((*code)=='#')  // a chr
+ if(*Buffer) Buffer++;  // Skip ';'
+ if((*code)=='#')   // a chr
  {
  ptr2=code+1;
  tmp=(char)atoi((char*)ptr2);
@@ -144,26 +146,26 @@ void GDoc::InitWords(void)
 //---------------------------------------------------------------------------
 bool GDoc::NextWord(void)
 {
-  char *ptr,tmp;
-//  char *hold=Buffer;
-  long Open;
-  bool Cont=true;
+	char *ptr,tmp;
+	long Open;
+	bool Cont=true;
 
   // Init
-InitNextWord:
-  memset(Word,0,51);
-  tmp=0;
-  if(!(*Buffer)) return(false);
+  	InitNextWord:
+ 	memset(Word,0,51);
+  	tmp=0;
+  	if(!(*Buffer)) return(false);
 
   // Skip No words
-  while((*Buffer)&&!Lib::IsAlpha(*Buffer)&&Cont)
+
+  while((*Buffer)&&!GLib::IsAlpha(*Buffer)&&Cont)
   {
     switch(*Buffer)
     {
       case '<':
-        Open=1;
-        Buffer++;   // Skip '<'
-        while(Open)
+      Open=1;
+      Buffer++;   // Skip '<'
+       while(Open)
         {
           switch(*Buffer)
           {

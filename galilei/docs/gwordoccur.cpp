@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	gwordoccu.cpp
+	gwordoccur.cpp
 	Basic Information - Implementation.
 
 	(C) 2001 by P. Francq.

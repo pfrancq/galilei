@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	gwordlist.cpp
+	gwordlist.h
 
 	Basic Information - Implementation.
 

@@ -31,12 +31,13 @@
 
 //---------------------------------------------------------------------------
 // include files for Galilei
-#include "GSession.h"
-#include "users.h"
-#include "words.h"
-#include "docs.h"
-using namespace Galilei;
+#include "gsession.h"
 
+
+
+
+using namespace GALILEI;
+namespace GALILEI{
 
 
 //---------------------------------------------------------------------------
@@ -129,11 +130,12 @@ void GSession::AnalyseDocs(URLFunc *urlfunc,InfoFunc *infofunc) throw(bad_alloc,
 void GSession::ClearDocs(void) throw(GException)
 {
   Docs->Clear();
-
 }
 
 //---------------------------------------------------------------------------
+
 GSession::~GSession(void) throw(GException)
+
 {
 	if(Langs) delete Langs;
 	if(Stops) delete Stops;
@@ -142,3 +144,5 @@ GSession::~GSession(void) throw(GException)
 	if(Users) delete Users;
 	if(GroupsLangs) delete GroupsLangs;
 }
+}
+

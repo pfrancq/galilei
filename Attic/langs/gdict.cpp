@@ -105,7 +105,8 @@ unsigned GDict::GetId(const RString& word) throw(bad_alloc)
   GWord Word(word),*ptr;
 
   ptr=GetInsertPtr(Word);
-  if(ptr->Id==cNoRef)
+
+  if(ptr->Id == cNoRef)
   {
       ptr->Id=NextId(word);
       PutDirect(ptr);

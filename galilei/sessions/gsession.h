@@ -21,8 +21,7 @@ using namespace RStd;
 #include <gprofiles/gprofile.h>
 #include <ggroups/ggroupslangs.h>
 #include <glangs/gdict.h>
-#include <HyperPRISME.h>
-#include <gexception.h>
+#include <gexceptions.h>
 
 #include <gdocs/gdocs.h>
 
