@@ -223,13 +223,13 @@ public:
 	/**
 	* Construct the chromosome to be the same as grps.
 	*/
-	void ConstructChromo(GGroups* grps);
+	void ConstructChromo(GGroups* grps) throw(RGA::eGA);
 
 	/**
 	* Construct a valid solution.
 	* @return The function must retrun true if a solution has been constructed.
 	*/
-	virtual bool RandomConstruct(void);
+	virtual void RandomConstruct(void) throw(RGA::eGA);
 
 	/**
 	* Evaluate the similarity of the solution using the "AvgSim" measure.
@@ -294,42 +294,42 @@ public:
 	/**
 	* Evaluation of the chromosome.
 	*/
-	virtual void Evaluate(void);
+	virtual void Evaluate(void) throw(RGA::eGA);
 
 	/**
 	*  Reallocate the objects to the groups based on the different prototypes.
 	*/
-	void ReAllocate(void);
+	void ReAllocate(void) throw(RGA::eGA);
 
 	/**
 	* Calc the number of new prototypes until the last K-Means iteration.
 	*/
-	unsigned int CalcNewProtosNb(void);
+	unsigned int CalcNewProtosNb(void) throw(RGA::eGA);
 
 	/**
 	* Perform a K-Means on the chromosome.
 	*/
-	void DoKMeans(void);
+	void DoKMeans(void) throw(RGA::eGA);
 
 	/**
 	* Divide the group containing the two most dissimilar subprofiles.
 	*/
-	void DivideWorstSubProfiles(void);
+	void DivideWorstSubProfiles(void) throw(RGA::eGA);
 
 	/**
 	* Merge the two groups containing the two most similar subprofiles.
 	*/
-	void MergeBestSubProfiles(void);
+	void MergeBestSubProfiles(void) throw(RGA::eGA);
 
 	/**
 	* Perform an optimisation.
 	*/
-	virtual void Optimisation(void);
+	virtual void Optimisation(void) throw(RGA::eGA);
 
 	/**
 	* Do the standard mutation of the GGA.
 	*/
-	virtual bool Modify(void);
+	virtual void Modify(void) throw(RGA::eGA);
 
 	/**
 	* Look if two subprofiles are in the same group or not.
