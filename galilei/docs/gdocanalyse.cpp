@@ -206,7 +206,6 @@ void GALILEI::GDocAnalyse::AddWord(const char* word,double weight) throw(bad_all
 	unsigned int* tmp1;
 	unsigned int* tmp2;
 
-	cout<<word<<endl;
 	// Find the section of double hash table concerned by the current word.
 	Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
 
