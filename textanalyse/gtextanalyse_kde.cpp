@@ -49,6 +49,7 @@ using namespace GALILEI;
 #include <qdialog.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
+#include <qgroupbox.h>
 
 
 //-----------------------------------------------------------------------------
@@ -106,6 +107,7 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.NormalRatio->setValue(params->GetDouble("NormalRatio"));
 	dlg.NbSameOccur->setEnabled(params->GetBool("Filtering"));
 	dlg.NormalRatio->setEnabled(params->GetBool("Filtering"));
+	dlg.groupFiltering->setEnabled(params->GetBool("NonLetterWords"));
 	if(dlg.exec())
 	{
 		params->Set("StaticLang",dlg.StaticLang->isChecked());

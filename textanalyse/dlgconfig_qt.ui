@@ -316,7 +316,7 @@ Be carefull, because it can explose the size of information on documents.</strin
         </widget>
         <widget class="QGroupBox">
             <property name="name">
-                <cstring>groupBox4</cstring>
+                <cstring>groupFiltering</cstring>
             </property>
             <property name="title">
                 <string>Filtering</string>
@@ -510,6 +510,12 @@ Be carefull, because it can explose the size of information on documents.</strin
         <sender>Filtering</sender>
         <signal>toggled(bool)</signal>
         <receiver>NormalRatio</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>NonLetterWords</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>groupFiltering</receiver>
         <slot>setEnabled(bool)</slot>
     </connection>
 </connections>
