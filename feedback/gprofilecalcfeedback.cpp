@@ -48,7 +48,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include <profiles/gprofilecalcfeedback.h>
+#include <gprofilecalcfeedback.h>
 #include <docs/gdocvector.h>
 #include <langs/gdict.h>
 #include <langs/glang.h>
@@ -66,172 +66,48 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-//  GFeedbackParams
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GALILEI::GFeedbackParams::GFeedbackParams(void)
-	: GCalcParams("Feedback")
-{
-}
-
-
-//-----------------------------------------------------------------------------
-const char* GALILEI::GFeedbackParams::GetSettings(void)
-{
-	static char tmp[200];
-	char c1,c2;
-	if (AddFuzzy) c1='1'; else c1='0';
-	if (IdfFactor) c2='1'; else c2='0';
-
-
-	sprintf(tmp,"%u %f %f %f %c %c", MaxNonZero, RelFactor, FuzzyFactor, NoRelFactor, c1, c2);
-	return(tmp);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GFeedbackParams::SetSettings(const char* s)
-{
-	if(!(*s)) return;
-	char c1,c2;
-	sscanf(s," %u %lf %lf %lf %c %c",&MaxNonZero, &RelFactor, &FuzzyFactor, &NoRelFactor, &c1, &c2) ;
-	if(c1=='1') AddFuzzy=true; else AddFuzzy=false;
- 	if(c2=='1') IdfFactor=true; else IdfFactor=false;	
-}
-
-
-//-----------------------------------------------------------------------------
-//
-// class GProfileCalcVector::GNbDocsLangs
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-class GALILEI::GProfileCalcFeedback::GNbDocsLangs
-{
-public:
-	GLang* Lang;
-	unsigned int NbDocs;
-
-	GNbDocsLangs(GLang* l) : Lang(l), NbDocs(0) {}
-	void Clear(void) {NbDocs=0;}
-	int Compare(const GNbDocsLangs* p) const {return(Lang->Compare(p->Lang));}
-	int Compare(const GLang* l) const {return(Lang->Compare(l));}
-	void Inc(void) {NbDocs++;}
-	unsigned int GetNb(void) const {return(NbDocs);}
-};
-
-
-
-//-----------------------------------------------------------------------------
-//
-// InternVector
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-class GALILEI::GProfileCalcFeedback::InternVector : public GIWordsWeights
-{
-public:
-	GLang* Lang;
-
-	InternVector(GLang* lang,unsigned int n) : GIWordsWeights(n), Lang(lang)  {}
-	int Compare(const InternVector& c) const {return(Lang->Compare(c.Lang));}
-	int Compare(const InternVector* c) const {return(Lang->Compare(c->Lang));}
-	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
-};
-
-
-
-
-//-----------------------------------------------------------------------------
-//
 //  GProfileCalcFeedback
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session, GFeedbackParams* p) throw(bad_alloc)
-	: GProfileCalc("User Feedback",session), Params(p), Vectors(5000),
+GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac) throw(bad_alloc)
+	: GProfileCalc(fac), MaxNonZero(60), RelFactor(1.0), FuzzyFactor(0.25),
+	  IrrelFactor(0.75), Positive(false), isf(true), Vectors(5000),
 	  NbDocsWords(5000), NbDocs(0), MaxOrderSize(5000)
 {
-/*	GLangCursor Langs;
-
-	Langs=Session->GetLangsCursor();
-	for(Langs.Start();!Langs.End();Langs.Next())
-	{
-		Vectors.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
-		NbDocsWords.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
-		NbDocsLangs.InsertPtr(new GNbDocsLangs(Langs()));
-	}*/
 	Order=new GIWordWeight*[MaxOrderSize];
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcFeedback::SetParam(const char* param,const char* value)
+void GProfileCalcFeedback::ApplyConfig(void)
 {
-	if(!strcmp(param,"IDF"))
-	{
-		Params->IdfFactor=atoi(value);
-	}
-	else
-	if(!strcmp(param,"Size"))
-	{
-		Params->MaxNonZero=atoi(value);
-	}
-	else
-	if(!strcmp(param,"FactorR"))
-	{
-		Params->RelFactor=atof(value);
-	}
-	else
-	if(!strcmp(param,"FactorF"))
-	{
-		Params->FuzzyFactor=atof(value);
-	}
-	else
-	if(!strcmp(param,"FactorN"))
-	{
-		Params->NoRelFactor=atof(value);
-	}
-	else
-	if(!strcmp(param,"Optimist"))
-	{
-		Params->AddFuzzy=atoi(value);
-	}
+	MaxNonZero=Factory->GetUInt("MaxSize");
+	RelFactor=Factory->GetDouble("RelFactor");
+	FuzzyFactor=Factory->GetDouble("FuzzyFactor");
+	IrrelFactor=Factory->GetDouble("IrrelFactor");
+	Positive=Factory->GetBool("Positive");
+	isf=Factory->GetBool("isf");
 }
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GProfileCalcFeedback::GetSettings(void)
+void GProfileCalcFeedback::Connect(GSession* session)
 {
-	static char tmp[100];
-	char c,c2;
-
-	if(Params->AddFuzzy) c='1'; else c='0';
-	if(Params->IdfFactor) c2='1'; else c2='0';
-	sprintf(tmp,"%u %f %f %f %c %c",Params->MaxNonZero,Params->RelFactor,Params->FuzzyFactor,Params->NoRelFactor,c,c2);
-	return(tmp);
+	GProfileCalc::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcFeedback::SetSettings(const char* s)
+void GProfileCalcFeedback::Disconnect(GSession* session)
 {
-	char c,c2;
-
-	if(!(*s)) return;
-	sscanf(s,"%u %lf %lf %lf %c %c",&Params->MaxNonZero,&Params->RelFactor,&Params->FuzzyFactor,&Params->NoRelFactor,&c,&c2);
-	if(c=='1') Params->AddFuzzy=true; else Params->AddFuzzy=false;
- 	if(c2=='1')Params-> IdfFactor=true; else Params->IdfFactor=false;
+	GProfileCalc::Disconnect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc)
+void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc)
 {
 	GIWordWeightCursor Words;
 	GProfDocCursor Docs;
@@ -257,7 +133,7 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw
 		// -> don't treat for the profiles computing
 		CurDoc=dynamic_cast<GDocVector*>(Docs()->GetDoc());
 		Fdbk=Docs()->GetFdbk();
-		if((Params->NoRelFactor==0.0)&&(!(Fdbk & djOK))&&(!(Fdbk & djNav))&&(!(Fdbk & djKO))) continue;
+		if((IrrelFactor==0.0)&&(!(Fdbk & djOK))&&(!(Fdbk & djNav))&&(!(Fdbk & djKO))) continue;
 
 		// Add total number of document judged for the current language
 		NbDocs++;
@@ -281,23 +157,23 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw
 
 		// Find list in function of the feedback
 		Fdbk=Docs()->GetFdbk();
-		if((Params->NoRelFactor==0.0)&&(!(Fdbk & djOK))&&( !(Fdbk & djNav))&&(!(Fdbk & djKO))) continue;
+		if((IrrelFactor==0.0)&&(!(Fdbk & djOK))&&( !(Fdbk & djNav))&&(!(Fdbk & djKO))) continue;
 		switch(Fdbk & djMaskJudg )
 		{
 			case djOK:
 			case djNav:
 				Add=true;
-				Factor=Params->RelFactor;
+				Factor=RelFactor;
 				break;
 
 			case djKO:
-				Add=Params->AddFuzzy;
-				Factor=Params->FuzzyFactor;
+				Add=Positive;
+				Factor=FuzzyFactor;
 				break;
 
 			default:
 				Add=false;
-				Factor=Params->NoRelFactor;
+				Factor=IrrelFactor;
 				break;
 		}
 
@@ -308,10 +184,9 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw
 		{
 			w=Vectors.GetInsertPtr<unsigned int>(Words()->GetId());
 			if(Words()->InfoType()==infoWordList) w->SetInfoType(infoWordList);
-			if((Params->IdfFactor)&&(NbDocs>1))
-				Freq=(Words()->GetWeight()/MaxFreq)*log(NbDocs/NbDocsWords.GetPtr<unsigned int>(Words()->GetId())->GetWeight());
-			else
-				Freq=Words()->GetWeight()/MaxFreq;
+			Freq=Words()->GetWeight()/MaxFreq;
+			if((isf)&&(NbDocs>1))
+				Freq*=log(NbDocs/NbDocsWords.GetPtr<unsigned int>(Words()->GetId())->GetWeight());
 			if(Add)
 				w->AddWeight(Factor*Freq);
 			else
@@ -322,7 +197,7 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc)
+void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc)
 {
 	GIWordWeight** ptr;
 	unsigned int i,nb;
@@ -351,8 +226,8 @@ void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) thro
 	Order[Vectors.NbPtr]=0;
 
 	//If MaxNonZero is null -> take all the words.
-	if(Params->MaxNonZero)
-		nb=Params->MaxNonZero;
+	if(MaxNonZero)
+		nb=MaxNonZero;
 	else
 		nb=Vectors.NbPtr;
 	for(i=nb+1,ptr=Order;(--i)&&(*ptr);ptr++)
@@ -367,7 +242,7 @@ void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) thro
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcFeedback::Compute(GSubProfile* subprofile)
+void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
 {
 	// Compute the global vectors.
 	ComputeGlobal(subprofile);
@@ -377,8 +252,24 @@ void GALILEI::GProfileCalcFeedback::Compute(GSubProfile* subprofile)
 }
 
 
+//------------------------------------------------------------------------------
+void GProfileCalcFeedback::CreateParams(GParams* params)
+{
+	params->InsertPtr(new GParamUInt("MaxSize",60));
+	params->InsertPtr(new GParamDouble("RelFactor",1.0));
+	params->InsertPtr(new GParamDouble("FuzzyFactor",0.25));
+	params->InsertPtr(new GParamDouble("IrrelFactor",0.75));
+	params->InsertPtr(new GParamBool("Positive",false));
+	params->InsertPtr(new GParamBool("isf",true));
+}
+
+
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalcFeedback::~GProfileCalcFeedback(void)
+GProfileCalcFeedback::~GProfileCalcFeedback(void)
 {
 	if(Order) delete[] Order;
 }
+
+
+//------------------------------------------------------------------------------
+CREATE_PROFILECALC_FACTORY("Optimist and Pessimist Feedback Method",GProfileCalcFeedback,true,true)

@@ -42,92 +42,18 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainer.h>
-using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <profiles/gprofilecalc.h>
-#include <profiles/gcalcparams.h>
 #include <infos/giwordsweights.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GIWordsWeights;
-class GSubProfileVector;
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GFeedbackParam represents all the parameter used in the CalcFeedback module.
-* @short GFeedback Parameters.
-*/
-class GFeedbackParams : public GCalcParams
-{
-public:
-
-	/**
-	* Maximal number of the non-zero weights in the vector.
-	*/
-	unsigned int MaxNonZero;
-
-	/**
-	* Factor associated with the vectors corresponding to the relevant part
-	* (OK and N).
-	*/
-	double RelFactor;
-
-	/**
-	* Factor associated with the vectors corresponding to the fuzzy relevant
-	* part (KO).
-	*/
-	double FuzzyFactor;
-
-	/**
-	* Factor associated with the vectors corresponding to the non relevant part
-	* (H).
-	*/
-	double NoRelFactor;
-
-	/**
-	* Add the vectors from the fuzzy relevant documents.
-	*/
-	bool AddFuzzy;
-
-	/**
-	* Must the idf factor be computed.
-	*/
-	bool IdfFactor;
-
-	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
-	*/
-	virtual const char* GetSettings(void);
-
-	/**
-	* Set the settings for the method using a string.
-	* @param char*          C string coding the settings.
-	*/
-	virtual void SetSettings(const char*);
-
-	/**
-	* Assignment operator.
-	* @param p              Parameters used as source.
-	*/
-	GFeedbackParams& operator=(const GFeedbackParams& src);
-
-	/**
-	* Constructor.
-	*/
-	GFeedbackParams(void);
-};
 
 
 //-----------------------------------------------------------------------------
@@ -155,15 +81,39 @@ public:
 */
 class GProfileCalcFeedback : public GProfileCalc
 {
-
 protected:
-	class GNbDocsLangs;
-	class InternVector;
+	/**
+	* Maximal number of the non-zero weights in the vector.
+	*/
+	unsigned int MaxNonZero;
 
 	/**
-	* feedback params
+	* Factor associated with the vectors corresponding to the relevant part
+	* (OK and N).
 	*/
-	GFeedbackParams* Params;
+	double RelFactor;
+
+	/**
+	* Factor associated with the vectors corresponding to the fuzzy relevant
+	* part (KO).
+	*/
+	double FuzzyFactor;
+
+	/**
+	* Factor associated with the vectors corresponding to the irrelevant part
+	* (H).
+	*/
+	double IrrelFactor;
+
+	/**
+	* Positive feedback.
+	*/
+	bool Positive;
+
+	/**
+	* Must the inverse subprofile factor be computed.
+	*/
+	bool isf;
 
 	/**
 	* Global vector computed.
@@ -177,7 +127,7 @@ protected:
 	GIWordsWeights NbDocsWords;
 
 	/**
-	* Number of documents per languages.
+	* Number of documents.
 	*/
 	unsigned int NbDocs;
 
@@ -197,26 +147,24 @@ public:
 	* Constructor.
 	* @param session        Session.
 	*/
-	GProfileCalcFeedback(GSession* session, GFeedbackParams* p) throw(bad_alloc);
+	GProfileCalcFeedback(GFactoryProfileCalc* fac) throw(bad_alloc);
 
 	/**
-	* Set a parameter of the grouping method.
-	* @param param          Name of the parameter.
-	* @param value          Value of the parameter.
+	* Configurations were applied from the factory.
 	*/
-	virtual void SetParam(const char* param,const char* value);
+	virtual void ApplyConfig(void);
 
 	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
+	* Connect to a Session.
+	* @param session         The session.
 	*/
-	virtual const char* GetSettings(void);
+	virtual void Connect(GSession* session);
 
 	/**
-	* Set the settings for the method using a string.
-	* @param s              C string coding the settings.
+	* Disconnect from a Session.
+	* @param session         The session.
 	*/
-	virtual void SetSettings(const char* s);
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Compute the global vectors.
@@ -242,6 +190,23 @@ public:
 	* @returns tSubProfileDesc enum type.
 	*/
 	virtual tSubProfileDesc GetType(void) const {return(sdVector);}
+
+	/**
+	* Show 'about' information.
+	*/
+	static void About(void);
+
+	/**
+	* Configure the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void Configure(GFactoryProfileCalc* params);
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void CreateParams(GParams* params);
 
 	/**
 	* Destructor.
