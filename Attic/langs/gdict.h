@@ -15,10 +15,9 @@ using namespace RStd;
 
 //---------------------------------------------------------------------------
 // include files for Galilei
-#include <gaililei.h>
+#include <galilei.h>
 #include <gdocs/gword.h>
 #include <glangs/glang.h>
-#include <glangs/gdict.h>
 
 
 //---------------------------------------------------------------------------
@@ -32,6 +31,7 @@ class GDict : public RHashContainer<GWord,unsigned,27,true>
 {
 public:
   GWord** Direct;
+
   unsigned MaxId,UsedId;
   GLang *Lang;
   RString Name,Desc;

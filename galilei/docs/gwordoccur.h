@@ -15,25 +15,29 @@ using namespace RStd;
 
 //---------------------------------------------------------------------------
 // include files for Galilei
-#include "Galilei.h"
+#include <galilei.h>
 #include <gdocs/gdoc.h>
+#include <gdocs/gwordref.h>
 
-
-
+using namespace GALILEI;
 
 //---------------------------------------------------------------------------
 namespace GALILEI{
 //---------------------------------------------------------------------------
 
+class GDoc;
 
 //---------------------------------------------------------------------------
 // class GWordOccur
+
 class GWordOccur : public GWordRef
+
 {
 public:
+
   GDoc *Doc;
   unsigned Occur;
-public:
+
   GWordOccur(void);
   GWordOccur(unsigned id);
   int Compare(const GWordOccur& ref);

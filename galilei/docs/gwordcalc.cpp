@@ -4,7 +4,7 @@
 
 
 //include files for GALILEI
-#include<gwordcalc.h>
+#include<gdocs/gwordcalc.h>
 
 using namespace GALILEI;
 

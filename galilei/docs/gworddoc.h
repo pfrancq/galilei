@@ -1,9 +1,10 @@
 
-
-
+#ifndef GWordDocH
+#define GWordDocH
+#include <gdocs/gwordref.h>
 
 //---------------------------------------------------------------------------
-namespace Galilei{
+namespace GALILEI{
 //---------------------------------------------------------------------------
 
 
@@ -20,4 +21,4 @@ public:
 
 }  //-------- End of namespace Galilei-----------------------------------
 
-
+ #endif

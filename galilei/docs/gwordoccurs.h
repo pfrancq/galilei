@@ -18,15 +18,15 @@ using namespace RStd;
 // include files for Galilei
 #include <galilei.h>
 #include <gdocs/gdoc.h>
-
+#include <gdocs/gwordoccur.h>
 
 
 //---------------------------------------------------------------------------
 namespace GALILEI{
 //---------------------------------------------------------------------------
 
-
-
+  class GWordOccur;
+ class GDoc;
 //---------------------------------------------------------------------------
 // class GWordOccurs
 class GWordOccurs : public RContainer<GWordOccur,unsigned,true,true>

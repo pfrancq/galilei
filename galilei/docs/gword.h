@@ -7,9 +7,6 @@
 
 //---------------------------------------------------------------------------
 // include files for Rainbow
-
-#include <rstd/rcontainer.h>
-#include <rstd/rhashcontainer.h>
 #include <rstd/rstring.h>
 using namespace RStd;
 
@@ -17,14 +14,17 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 // include files for HyperPRISME
 
-#include <Galilei.h>
-
+#include <galilei.h>
+#include <gdocs/gwordref.h>
 using namespace GALILEI;
 
 
 //---------------------------------------------------------------------------
-namespace Galilei{
+namespace GALILEI{
 //---------------------------------------------------------------------------
+
+//class GWordRef;
+
 
 //---------------------------------------------------------------------------
 // class GWord
@@ -42,10 +42,11 @@ public:
 
   // Functions needed by GDict (-> RHashContainer)
   int Compare(const GWord& word);
-  int Compare(GWord* word);
+  int Compare(const GWord* word);
   int Compare(const RString& word);
-  int Compare(GWordRef* ref);
-  char HashIndex(void) const { return(Word.HashIndex()); }// vois si c pas GWORD
+  int Compare(const GWordRef* ref);
+  char HashIndex(void) const { return(Word.HashIndex());
+}// vois si c pas GWORD
 };
 
 

@@ -20,7 +20,7 @@ using namespace RStd;
 #include <glangs/glang.h>
 #include <gdocs/gdocs.h>
 
-
+using namespace GALILEI;
 
 
 //---------------------------------------------------------------------------
@@ -29,7 +29,8 @@ namespace GALILEI{
 
 //---------------------------------------------------------------------------
 
-
+class GDocs;
+class GWordOccurs;
 
 //---------------------------------------------------------------------------
 // class GDoc

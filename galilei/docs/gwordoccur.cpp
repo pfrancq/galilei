@@ -16,7 +16,7 @@
 
 //---------------------------------------------------------------------------
 // include files for HyperPRISME
-#include "gwodoccur.h"
+#include "gwordoccur.h"
 
 
 using namespace Galilei

@@ -10,6 +10,7 @@
 
 #include <rstd/rcontainer.h>
 #include <rstd/rstring.h>
+#include  <HyperPRISME.h>
 using namespace RStd;
 
 
@@ -19,15 +20,20 @@ using namespace RStd;
 #include <gsessions/gsession.h>
 #include <glangs/glangs.h>
 #include <gprofiles/gprofile.h>
+#include <gdocs/gdoc.h>
 
-
-
-//---------------------------------------------------------------------------
-namespace GALILEI{
+using namespace GALILEI;
 //---------------------------------------------------------------------------
 
+//---------------------------------------------------------------------------
 
 
+ //---------------------------------------------------------------------------
+ namespace GALILEI{
+
+class GSession;
+class GLangs;
+class GProfile;
 //---------------------------------------------------------------------------
 // class GDocs
 class GDocs : public RContainer<GDoc,unsigned,true,false>

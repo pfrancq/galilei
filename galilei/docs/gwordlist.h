@@ -22,7 +22,7 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 // include files for Galilei
 #include <galilei.h>
-
+#include <gdocs/gwordref.h>
 
 
 //---------------------------------------------------------------------------
@@ -35,7 +35,7 @@ namespace GALILEI{
 //---------------------------------------------------------------------------
 // class GWordList
 
-class GWordList : public RContainer<HWordRef,unsigned,true,true>
+class GWordList : public RContainer<GWordRef,unsigned,true,true>
 {
 public:
   unsigned Id;

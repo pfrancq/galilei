@@ -18,19 +18,20 @@ using namespace RStd;
 #include <galilei.h>
 #include <gsessions/gsession.h>
 #include <glangs/glang.h>
-
+#include <glangs/gdict.h>
 
 
 //---------------------------------------------------------------------------
 namespace GALILEI{
 //---------------------------------------------------------------------------
 
-
+class GSession;
 
 //---------------------------------------------------------------------------
 // class GDicts
 class GDicts : public RContainer<GDict,unsigned,true,true>
 {
+
   GSession *Session;
 public:
   GDicts(unsigned nb,GSession *session) throw(bad_alloc);

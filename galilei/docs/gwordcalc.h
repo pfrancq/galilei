@@ -1,14 +1,13 @@
 
-#ifdef GWordCalcH
+#ifndef GWordCalcH
 #define GWordCalcH
 //-------------------------------
 //include files for GALILEI
 #include <gdocs/gwordref.h>
 using namespace GALILEI;
 
-
+ namespace GALILEI{
  //-------------------------------
-// class GWordCalc
 class GWordCalc : public GWordRef
 {
 public:
@@ -19,6 +18,7 @@ public:
   int Compare(const GWordCalc *calc);
   ~GWordCalc(void);
 };
-
+ }
+ #endif
 
 
