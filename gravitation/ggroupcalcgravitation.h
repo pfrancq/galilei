@@ -109,7 +109,7 @@ public:
 	* Compute a group.
 	* @param grp            Group to compute.
 	*/
-	virtual void Compute(GGroupRef grp) throw(GException);
+	virtual void Compute(GGroup* grp) throw(GException);
 
 	/**
 	* Get the name of the model used for the description.

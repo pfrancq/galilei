@@ -44,7 +44,6 @@
 #include <infos/ginfo.h>
 #include <infos/gweightinfo.h>
 #include <infos/gweightinfos.h>
-#include <sessions/gobjref.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -88,7 +87,7 @@ void GGroupCalcGravitation::Disconnect(GSession* session) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Compute(GGroupRef grp) throw(GException)
+void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
 {
 	unsigned int i,j;
 	GWeightInfos* Ref;
@@ -97,7 +96,7 @@ void GGroupCalcGravitation::Compute(GGroupRef grp) throw(GException)
 	GSubProfileCursor Sub;
 
 	// Clear the Vector.
-	Group=Session->GetGroup(grp.GetId());
+	Group=grp;
 	Group->RemoveRefs();
 	Group->Clear();
 	Vector->Clear();
