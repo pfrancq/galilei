@@ -355,8 +355,8 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* The GDocCursor class provides a way to go trough a set of profiles.
-* @short Profiles Cursor
+* The GDocCursor class provides a way to go trough a set of documents.
+* @short Documents Cursor
 */
 CLASSCURSOR(GDocCursor,GDoc,unsigned int)
 
