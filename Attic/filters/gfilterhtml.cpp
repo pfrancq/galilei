@@ -50,11 +50,9 @@ using namespace GALILEI;
 
 //---------------------------------------------------------------------------
 GFilterHTML::GFilterHTML(const RString& url,GURLManager* mng)
-: GFilter(url,mng), Buffer(0), Chars(50,5)
+: GFilter(url,mng), Buffer(0), Chars(50,5),s(url)
 {
-	
-	// Initialisation
-	
+	// telechargement du fichier en local
 	int accessmode,handle;
 	struct stat statbuf;
 	accessmode=O_RDONLY;
@@ -66,82 +64,16 @@ GFilterHTML::GFilterHTML(const RString& url,GURLManager* mng)
 	Begin=Pos=Buffer=new char[statbuf.st_size+1];
 	read(handle,Buffer,statbuf.st_size);
 	Buffer[statbuf.st_size]=0;
+	
 
-	
-	// intialisation of Buffer
-	SkipSpaces();
-	
-	char *tmpchar;
-	
-	
-	//Initialisation of the different variable
-	
-	InitCharContainer();
-	
-	for (int i=0;i<7;i++)
-	{
-		h[i]=0;
-	}
-	for (int i=0;i<8;i++)
-	{
-		ClassementVector[i]=0;
-	}
-	
-	p=0;
-	NextWirteTag=true;
-	
-	
-	// Begin  the parsing of the HTML Strucuture
-	
-	
-	s.AddNode(0,top=new RXMLTag("Doc"));
-	
-	
-	s.AddNode(top,meta=new RXMLTag("MetaData"));
-	
-	
-	s.AddNode(meta,act=new RXMLTag("URL"));
-	act->InsertAttr(new RXMLAttr("value",URL.StrDup()));
-	
-	s.AddNode(meta,act=new RXMLTag("TypeDoc"));
-	act->InsertAttr(new RXMLAttr("code","html"));
-	
-	
-	// traitement of Headrers
-	
-	bool head=true;
-	while (head)
-	{
-		NextTag();
-		if (TagCompare("head"))
-		{
-		   while(!TagCompare("/head"))
-			{
-			    NextTag();
-				if (TagCompare("title")|TagCompare("meta") )
-				{
-					if (TagCompare("title"))
-					{	
-						GetValue();	
-					}
-					else // meta
-					{
-						GetMetaValue();
-					}
-				
-				}
-				 // rajouter pour autre donne du head
-			}
-			head= false;
-		}
-	}
-	
-	// traitement of Content
-		
-	s.AddNode(top,content=new RXMLTag("Content"));
-		
-	bool body=true;
-	while (body)
+}
+//---------------------------------------------------------------------------
+void GFilterHTML::AnalyseBody(GDocXML* doc)
+{
+
+bool body=true;
+char *tmpchar;
+while (body)
 	{
 		//initialisation of body
 		NextWirteTag= true;
@@ -150,41 +82,43 @@ GFilterHTML::GFilterHTML(const RString& url,GURLManager* mng)
 		{
 		while((*Buffer)&&(!TagCompare("/body"))&&(!end))
 			{
+				// on passe au tag suivant
 				NextTag();
+				// on le compare a ... et si c ca on va checher la valeur qu il y a ds ce tag
 				if (TagCompare("h1"))
 				{
 					tmpchar="h1";
-					GetValueCurentTag (tmpchar);
+					GetValueCurentTag (tmpchar, doc);
 				}
 				else if (TagCompare("h2"))
 				{
 					tmpchar="h2";
-					GetValueCurentTag (tmpchar);
+					GetValueCurentTag (tmpchar, doc);
 				}
 				else if (TagCompare("h3"))
 				{
 					tmpchar="h3";
-					GetValueCurentTag (tmpchar);
+					GetValueCurentTag (tmpchar, doc);
 				}
 				else if (TagCompare("h4"))
 				{
 					tmpchar="h4";
-					GetValueCurentTag (tmpchar);
+					GetValueCurentTag (tmpchar, doc);
 				}
 				else if (TagCompare("h5"))
 				{
 					tmpchar="h5";
-					GetValueCurentTag (tmpchar);
+					GetValueCurentTag (tmpchar, doc);
 				}
 				else if (TagCompare("h6"))
 				{
 					tmpchar="h6";
-					GetValueCurentTag (tmpchar);
+					GetValueCurentTag (tmpchar, doc);
 				}
 				else if (TagCompare("p"))
 				{
 					tmpchar="p";
-					GetValueCurentTag (tmpchar);
+					GetValueCurentTag (tmpchar, doc);
 				}
 				else if (TagCompare("meta"))
 				{
@@ -231,8 +165,7 @@ GFilterHTML::GFilterHTML(const RString& url,GURLManager* mng)
 				{
 				
 				}
-				
-				
+
 				// rajouter pour autre donne utile du body
 			}
 			body= false;
@@ -240,17 +173,40 @@ GFilterHTML::GFilterHTML(const RString& url,GURLManager* mng)
 		}
 	}
 	
-	NextWirteTag= true;
-	s.AddNode(top,links=new RXMLTag("links"));
-	RXMLFile("/home/jlamoral/test",&s,RTextFile::Create);
-   if (1==1)
-	{
-		cout << "jkll" << endl;
-	}	
 }
+//---------------------------------------------------------------------------
+void GFilterHTML::AnalyseHeader(GDocXML* doc)
+{
+// analyse du header d un doc html
+	bool head=true;
+	while (head)
+	{
+		NextTag();
+		if (TagCompare("head"))
+		{
+		   while(!TagCompare("/head"))
+			{
+			    NextTag();
+				if (TagCompare("title")||TagCompare("meta") )
+				{
+					if (TagCompare("title"))
+					{	
+						GetValue(doc);	
+					}
+					else // meta
+					{
+						GetMetaValue(doc);
+					}
+				
+				}
+				 // rajouter pour autre donne du head
+			}
+			head= false;
+		}
+	}
+	
 
-
-
+}
 
 //---------------------------------------------------------------------------
 void GFilterHTML::CloseallTag (int level)
@@ -289,11 +245,13 @@ bool GFilterHTML::TagCompare (const char* current)
 
 
 //---------------------------------------------------------------------------
-void GFilterHTML::GetValue ()
+void GFilterHTML::GetValue (GDocXML* doc)
 {
 	
 	bool ok=true;
 	Pos=Buffer;
+	// on part juste apres le <title>
+	// des que l on est a </title> on se casse et on met a bonne valeur ds le tag
 	while((*Buffer)&&ok)
 	{
 	
@@ -311,7 +269,7 @@ void GFilterHTML::GetValue ()
 	// the buffer is "on" a '<'
 	(*Buffer)=0;
 	
-	s.AddNode(meta,act=new RXMLTag("Title"));
+	doc->AddNode(meta,act=new RXMLTag("Title"));
 	AnalyzeBlock(Pos,act);
 	// replace the buffer with'<'
 	(*Buffer)='<';
@@ -320,7 +278,7 @@ void GFilterHTML::GetValue ()
 }
 
 //---------------------------------------------------------------------------
-void GFilterHTML::GetValueCurentTag (char* curent)
+void GFilterHTML::GetValueCurentTag (char* curent,GDocXML* doc)
 {
 	
 	SkipSpaces();
@@ -330,6 +288,7 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 	end = false;
 	
 	// "save" in ptrvalue all the value of the currentTag
+	// whit <a> </a> ,... on s arrete des que l on a trouve <hx> </p> </body>,....
 	while((*Buffer)&&ok4)
 	{
 		if(!(*Buffer)) end=true;
@@ -376,17 +335,16 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 		}
 		else Buffer++;
 	}
-		
-		
+			
+	// on rentre ds Pos la valeur entre les 2 tags interresant et on retire l info inutile	
 	Pos=ptrvalue;	
 	while((*ptrvalue))
 	{
-		
 		bool ok3=true;
-				
+		
+		// si c un & c que l on a affaire a un code html pour representeer un caractere
 		if((*ptrvalue)=='&')
 		{
-				
 				(*ptrvalue)=' ';
 				ptrvalue++;
 				hold=ptrvalue;
@@ -404,7 +362,7 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 				}
 			CodeToChar* ptr;
 			ptr = (Chars.GetPtr<const char*>(hold));
-			
+			// on va rechercher le caractere correpondant et on le remplace ds la chaine
 			while(*hold)
 			{
 				(*hold)=' ';
@@ -419,10 +377,9 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 			{
 			 (*ptrvalue)=' ';
 			}
-			delete ptr;
-		
 		}
 		
+		// si on a un tag c que c pas un tag important donc on le vire
 		else if ((*ptrvalue)=='<')
 		{
 			while ((*ptrvalue)&&(*ptrvalue!='>'))
@@ -432,22 +389,30 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 					
 				}
 				(*ptrvalue)=' ';
-				ptrvalue++;
-				
+				ptrvalue++;	
 		}	
+		
 		else
 		{
 			ptrvalue++;
 			ok2=true;
 		}
+		
 	}
-	
-	
+	// SI ON A MIS QQUCHSE DS pos on analyse ce qqchse
 	if (ok2)
 	{
 	bool contents=true;
 	int curTag;
-	
+
+		// on compare le tag courant .. et suivant la valeu de ce tag on..
+		// si le tag doit etre rattache au content (le nivo du tag est plus grand que celui du tag
+		// precedent qui a ete ferme) on le ratache sinon on le ratache a celui qui a le plus grand nivo
+		// mais plus petit que celui du tag en cours
+		
+		
+		
+		
 		if (curent==("h1"))
 		{
 			contents= true;
@@ -457,7 +422,7 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 			}
 			
 			ClassementVector [1]=1;
-			s.AddNode(content,TagVector [1]=new RXMLTag("h1"));
+			doc->AddNode(content,TagVector [1]=new RXMLTag("h1"));
 			AnalyzeBlock(Pos,TagVector [1]);
 		}
 			
@@ -482,13 +447,13 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 					ClassementVector[i]=0;
 				}
 				ClassementVector [2]=1;
-				s.AddNode(content,TagVector [2]=new RXMLTag("h2"));
+				doc->AddNode(content,TagVector [2]=new RXMLTag("h2"));
 				AnalyzeBlock(Pos,TagVector [2]);
 			}
 			else
 			{
 				ClassementVector [2]=1;
-				s.AddNode(TagVector [curTag],TagVector [2]=new RXMLTag("h2"));
+				doc->AddNode(TagVector [curTag],TagVector [2]=new RXMLTag("h2"));
 				AnalyzeBlock(Pos,TagVector [2]);
 			
 			}
@@ -514,13 +479,13 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 					ClassementVector[i]=0;
 				}
 				ClassementVector [3]=1;
-				s.AddNode(content,TagVector [3]=new RXMLTag("h3"));
+				doc->AddNode(content,TagVector [3]=new RXMLTag("h3"));
 				AnalyzeBlock(Pos,TagVector [3]);
 			}
 			else
 			{
 				ClassementVector [3]=1;
-				s.AddNode(TagVector [curTag],TagVector [3]=new RXMLTag("h3"));
+				doc->AddNode(TagVector [curTag],TagVector [3]=new RXMLTag("h3"));
 				AnalyzeBlock(Pos,TagVector [3]);
 			
 			}
@@ -546,13 +511,13 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 					ClassementVector[i]=0;
 				}
 				ClassementVector [4]=1;
-				s.AddNode(content,TagVector [4]=new RXMLTag("h4"));
+				doc->AddNode(content,TagVector [4]=new RXMLTag("h4"));
 				AnalyzeBlock(Pos,TagVector [4]);
 			}
 			else
 			{
 				ClassementVector [4]=1;
-				s.AddNode(TagVector [curTag],TagVector [4]=new RXMLTag("h4"));
+				doc->AddNode(TagVector [curTag],TagVector [4]=new RXMLTag("h4"));
 				AnalyzeBlock(Pos,TagVector [4]);
 			
 			}
@@ -578,13 +543,13 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 					ClassementVector[i]=0;
 				}
 				ClassementVector [5]=1;
-				s.AddNode(content,TagVector [5]=new RXMLTag("h5"));
+				doc->AddNode(content,TagVector [5]=new RXMLTag("h5"));
 				AnalyzeBlock(Pos,TagVector [5]);
 			}
 			else
 			{
 				ClassementVector [5]=1;
-				s.AddNode(TagVector [curTag],TagVector [5]=new RXMLTag("h5"));
+				doc->AddNode(TagVector [curTag],TagVector [5]=new RXMLTag("h5"));
 				AnalyzeBlock(Pos,TagVector [5]);
 			
 			}
@@ -609,13 +574,13 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 					ClassementVector[i]=0;
 				}
 				ClassementVector [6]=1;
-				s.AddNode(content,TagVector [6]=new RXMLTag("h6"));
+				doc->AddNode(content,TagVector [6]=new RXMLTag("h6"));
 				AnalyzeBlock(Pos,TagVector [6]);
 			}
 			else
 			{
 				ClassementVector [6]=1;
-				s.AddNode(TagVector [curTag],TagVector [6]=new RXMLTag("h6"));
+				doc->AddNode(TagVector [curTag],TagVector [6]=new RXMLTag("h6"));
 				AnalyzeBlock(Pos,TagVector [6]);
 			
 			}
@@ -641,28 +606,31 @@ void GFilterHTML::GetValueCurentTag (char* curent)
 					ClassementVector[i]=0;
 				}
 				ClassementVector [7]=1;
-				s.AddNode(content,TagVector [7]=new RXMLTag("p"));
+				doc->AddNode(content,TagVector [7]=new RXMLTag("p"));
 				AnalyzeBlock(Pos,TagVector [7]);
 			}
 			else
 			{
 				ClassementVector [7]=1;
-				s.AddNode(TagVector [curTag],TagVector [7]=new RXMLTag("p"));
+				doc->AddNode(TagVector [curTag],TagVector [7]=new RXMLTag("p"));
 				AnalyzeBlock(Pos,TagVector [7]);
 			
 			}
 			
 		}
 	}
-	// delete temp;
+	
 	// on remet le buffer a <
 	(*Buffer)='<';
+	
 	
 }
 
 //---------------------------------------------------------------------------
 void GFilterHTML::InitCharContainer (void)
 {
+
+// on intialise le container de char ... attention un & est remplace par un blanc
 
 Chars.InsertPtr(new CodeToChar("Ucirc",'Û'));
 
@@ -864,13 +832,61 @@ Chars.InsertPtr(new CodeToChar("yacute",'ý'));
 //---------------------------------------------------------------------------
 bool GFilterHTML::Analyze(GDocXML* doc)
 {
-//doc=s;
-return(true);
+	// Initialisation
+	
+	
+	// intialisation of Buffer
+	SkipSpaces();
+
+	
+	//Initialisation of the different variable
+	
+	InitCharContainer();
+	
+	for (int i=0;i<7;i++)
+	{
+		h[i]=0;
+	}
+	for (int i=0;i<8;i++)
+	{
+		ClassementVector[i]=0;
+	}
+	
+	p=0;
+	NextWirteTag=true;
+	
+	
+	// Begin  the parsing of the HTML Strucuture
+
+	doc->AddNode(doc->GetTop(),meta=new RXMLTag("MetaData"));
+	
+	doc->AddNode(meta,act=new RXMLTag("URL"));
+	act->InsertAttr(new RXMLAttr("value",URL));
+	
+	doc->AddNode(meta,act=new RXMLTag("TypeDoc"));
+	act->InsertAttr(new RXMLAttr("code","html"));
+
+	
+	// traitement of Headrers
+	AnalyseHeader(doc);
+	
+	// traitement of Content
+
+	doc->AddNode(doc->GetTop(),content=new RXMLTag("Content"));
+	
+	AnalyseBody(doc);
+	
+	
+
+	doc->AddNode(doc->GetTop(),links=new RXMLTag("links"));
+	RXMLFile("/home/jlamoral/test.txt",&s,RTextFile::Create);
+
+	return(true);
 }
 
 
 //---------------------------------------------------------------------------
-void GFilterHTML::GetMetaValue ()
+void GFilterHTML::GetMetaValue (GDocXML* doc)
 {
 	RString temp2 (100);
 	bool ok=true;
@@ -892,6 +908,7 @@ void GFilterHTML::GetMetaValue ()
 		}
 	}
 	ok2=true;
+	// on sait que l information que l on va retire maintentant est le nom du metatag
 	
 	while((*Buffer)&&ok2)
 	{
@@ -912,7 +929,7 @@ void GFilterHTML::GetMetaValue ()
 	cur2="description";
 	temp2.StrLwr();
 	ok=false;
-    if ((temp2==cur1)|temp2==cur2)
+    if ((temp2==cur1)||(temp2==cur2))
     {
 	TAG=temp2;
 	ok2=true;
@@ -934,6 +951,7 @@ void GFilterHTML::GetMetaValue ()
 	}	
 	
 	Pos=Buffer;
+	// on retire l information du metatag et on la "stoke" ds Pos
 	while((*Buffer)&&ok)
 	{
 		if((*Buffer)==13||(*Buffer)==10||(*Buffer)=='\t')
@@ -959,14 +977,14 @@ void GFilterHTML::GetMetaValue ()
 	    if (temp2==cur1)
 		{
 		
-		s.AddNode(meta,act=new RXMLTag("KeyWord"));
+		doc->AddNode(meta,act=new RXMLTag("KeyWord"));
 		AnalyzeKeywords(Pos,' ',act);
 		}
 		else if (temp2==cur2)
 		{
 		
 		}
-		s.AddNode(meta,act=new RXMLTag("Resume"));
+		doc->AddNode(meta,act=new RXMLTag("Resume"));
 		AnalyzeBlock(Pos,act);
 	}
 	(*Buffer)='"';
@@ -1102,7 +1120,8 @@ void GFilterHTML::InitWords(void)
 
 GFilterHTML::~GFilterHTML()
 {
-if (Begin)delete[] Begin;
+
+	if (Begin) delete[] Begin;
 
 
 }
