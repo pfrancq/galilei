@@ -174,6 +174,7 @@ public:
 
 	// friend classes
 	friend class GChromoIR;
+ 	friend class GInstIR;
 };
 
 

@@ -231,11 +231,16 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		NbRows=Groups->GetPtr<GLang*>(Langs())->NbPtr;
+		GroupsIdeal=Groups->GetPtr<GLang*>(Langs());
+		if(GroupsIdeal)
+			NbRows=GroupsIdeal->NbPtr;
+		else
+			NbRows=0;
 		NbCols=Session->GetGroups(Langs())->NbPtr;
 		if(NbRows>MaxRows) MaxRows=NbRows;
 		if(NbCols>MaxCols) MaxCols=NbCols;
 	}
+	if((!MaxRows)||(!MaxCols)) return;
 	VectorRows=new double[MaxRows];
 	VectorCols=new double[MaxCols];
 	VectorColsTemp=new double[MaxCols];
@@ -247,7 +252,10 @@ void GALILEI::GCompareGrouping::ComputeTotal(GSlot* /*rec*/)
 		// Compute number of elements in ideal and computed groups.
 		// and assign the groups to the current language.
 		GroupsIdeal=Groups->GetPtr<GLang*>(Langs());
-		NbRows=GroupsIdeal->NbPtr;
+		if(GroupsIdeal)
+			NbRows=GroupsIdeal->NbPtr;
+		else
+			NbRows=0;
 		GroupsComputed=Session->GetGroups(Langs());
 		NbCols=GroupsComputed->NbPtr;
 		if((!NbRows)||(!NbCols)) continue;

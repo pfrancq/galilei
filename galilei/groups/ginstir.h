@@ -45,12 +45,12 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gir.h>
+#include <rgga/rinstg.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -195,6 +195,12 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	RPromethee::RPromCriterion* CritDiffDocs;
 
 	/**
+	* Criteria representing the factor depending on the subprofiles that are
+	* social.
+	*/
+	RPromethee::RPromCriterion* CritSocial;
+
+	/**
 	* Solutions corresponding to the chromosome.
 	*/
 	RPromSol** Sols;
@@ -209,19 +215,46 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	*/
 	GGroups* CurrentGroups;
 
+	/**
+	* Session.
+	*/
+	GSession* Session;
+
+	/**
+	* Language actually grouped.
+	*/
+	GLang* Lang;
+
+	/**
+	* Social Profiles.
+	*/
+	RStd::RContainer<GObjIR,unsigned int,false,true> NoSocialSubProfiles;
+
+#ifdef RGADEBUG
+
+	/**
+	* Ideal Groups.
+	*/
+	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+
+#endif
+
 public:
 
 	/**
 	* Construct the instance.
+	* @param ses            Session.
+	* @param l              Language.
 	* @param m              Minimal similarity in a group.
 	* @param max            Maximal number of generations.
 	* @param popsize        The size of the population.
 	* @param grps           Pointer to the current solutions.
-	* @param prob           The problem.
+	* @param objs           The objects to group.
+	* @param s              Similarities between the subprofiles.
 	* @param h              The type of heuristic to be used.
 	* @param debug          Debugger.
 	*/
-	GInstIR(double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
+	GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,RGGA::HeuristicType h,RGA::RDebug *debug=0) throw(bad_alloc);
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case
@@ -230,10 +263,26 @@ public:
 	*/
 	virtual bool StopCondition(void);
 
+#ifdef RGADEBUG
+
+	/**
+	* Write the information of a given chromosome.
+	* @param c              Chromosome.
+	*/
+	void WriteChromoInfo(GChromoIR* c);
+
+	/**
+	* Set the ideal groups.
+	* @param ideal          Pointer to the ideal groups.
+	*/
+	void SetIdealGroups(RStd::RContainer<GGroups,unsigned int,true,true>* ideal) {IdealGroups=ideal;}
+
+#endif
+
 	/**
 	* Apply PROMETHEE to classify the chromosomes.
 	*/
-	virtual void PostEvaluate(void) throw(eGA);
+	virtual void PostEvaluate(void) throw(RGA::eGA);
 
 	/**
 	* Set the parameters for a particular criterion of PROMETHEE.

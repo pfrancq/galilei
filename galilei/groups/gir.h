@@ -50,7 +50,6 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-
 //-----------------------------------------------------------------------------
 // Forward class declaration
 class GSubProfile;
@@ -84,7 +83,7 @@ public:
 	*/
 	GFitnessIR& operator=(const GFitnessIR &f)
 	{
-		RFitness<double,true>::operator=(f);
+		RGA::RFitness<double,true>::operator=(f);
 		return(*this);
 	}
 
@@ -93,7 +92,7 @@ public:
 	*/
 	GFitnessIR& operator=(const double val)
 	{
-		RFitness<double,true>::operator=(val);
+		RGA::RFitness<double,true>::operator=(val);
 		return(*this);
 	}
 };

@@ -44,17 +44,12 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ggrouping.h>
-
+#include <groups/gir.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GGroup;
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -113,9 +108,24 @@ protected:
 	RPromethee::RPromCriterionParams ParamsDiff;
 
 	/**
+	* Parameter for the criterion "Social Factor".
+	*/
+	RPromethee::RPromCriterionParams ParamsSocial;
+
+	/**
 	* Global similarities used.
 	*/
 	bool GlobalSim;
+
+	/**
+	* GA Objects.
+	*/
+	RGA::RObjs<GObjIR>* Objs;
+
+	/**
+	* Instance of the GA.
+	*/
+	GInstIR* Instance;
 
 public:
 
@@ -233,6 +243,11 @@ public:
 	* Initialisation of the method.
 	*/
 	virtual void Init(void) throw(bad_alloc);
+
+	/**
+	* Construct the groups of the session based on a chromosome.
+	*/
+	void ConstructGroupsFromChromo(GChromoIR* chromo) throw(bad_alloc);
 
 protected:
 

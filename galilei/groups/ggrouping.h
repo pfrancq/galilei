@@ -101,6 +101,11 @@ protected:
 	*/
 	bool Modified;
 
+	/**
+	* Ideal Groups.
+	*/
+	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+
 public:
 
 	/**
@@ -152,6 +157,12 @@ public:
 	* Clear method.
 	*/
 	virtual void Clear(void) throw(bad_alloc);
+
+	/**
+	* Set the ideal groups.
+	* @param ideal          Pointer to the ideal groups.
+	*/
+	void SetIdealGroups(RStd::RContainer<GGroups,unsigned int,true,true>* ideal) {IdealGroups=ideal;}
 
 protected:
 

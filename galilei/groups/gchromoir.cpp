@@ -76,7 +76,8 @@ using namespace RGA;
 //-----------------------------------------------------------------------------
 GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
 	: RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
-	  Sims(0), MinSimLevel(0), AvgSim(0.0), AvgProf(0.0), OKFactor(0.0), DiffFactor(1.0)
+	  Sims(0), MinSimLevel(0), AvgSim(0.0), AvgProf(0.0), OKFactor(0.0),
+	  DiffFactor(1.0), SocialFactor(1.0)
 {
 	(*Fitness)=0.0;
 }
@@ -181,57 +182,57 @@ bool GALILEI::GChromoIR::MergeGroups(GGroupIR* grp1,GGroupIR* grp2)
 		(*ptr)=(*ptr2);
 
 	// Compute Avg Similarity for the new created group
-//	for(ptr=thObjs1,i=NbObjs1,NbComp=LocalAvgSim=0.0;--i;ptr++)
-//	{
-//		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
-//		{
-//			LocalAvgSim+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
-//			NbComp+=1.0;
-//		}
-//	}
-//	LocalAvgSim/=NbComp;
-//	if(LocalAvgSim>(grp1->ComputeAvgSim()+grp2->ComputeAvgSim())/2)
-//		NbCrit++;
+	for(ptr=thObjs1,i=NbObjs1,NbComp=LocalAvgSim=0.0;--i;ptr++)
+	{
+		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
+		{
+			LocalAvgSim+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
+			NbComp+=1.0;
+		}
+	}
+	LocalAvgSim/=NbComp;
+	if(LocalAvgSim>(grp1->ComputeAvgSim()+grp2->ComputeAvgSim())/2)
+		NbCrit++;
 
 	// Compute (Sum Intra)/(Max intra).
-	LocalAvgSim=AvgSim=0.0;
-	for(Used.Start();!Used.End();Used.Next())
-	{
-		AvgSim+=Used()->ComputeRelevant();
-		if((Used()==grp1)||(Used()==grp2))
-			continue;
-		LocalAvgSim+=Used()->ComputeRelevant();
-	}
-	LocalAvgSim+=ComputeRelevant(thObjs1,NbObjs1,rel1);
-	Cur1.Set(Used);
-	Cur2.Set(Used);
-	for(Cur1.Start(),i=0,j=Cur1.GetNb(),max=0.0,localmax=0.0;--j;Cur1.Next(),i++)
-	{
-		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
-		{
-			tmp=Sims->GetSim(Cur1()->Relevant,Cur2()->Relevant);
-			if(tmp>max)
-				max=tmp;
-			if((Cur2()==grp1)||(Cur2()==grp2))
-				continue;
-			if((Cur1()==grp1)||(Cur1()==grp2))
-				continue;
-			if(tmp>localmax)
-				localmax=tmp;
-		}
-		tmp=Sims->GetSim(Cur1()->Relevant,rel1);
-		if(tmp>localmax)
-			localmax=tmp;
-	}
-	tmp=Sims->GetSim(Cur1()->Relevant,rel1);
-	if(tmp>localmax)
-		localmax=tmp;
-	if(max)
-		AvgSim/=max;
-	if(localmax)
-		LocalAvgSim/=localmax;
-	if(LocalAvgSim>AvgSim)
-		NbCrit++;
+//	LocalAvgSim=AvgSim=0.0;
+//	for(Used.Start();!Used.End();Used.Next())
+//	{
+//		AvgSim+=Used()->ComputeRelevant();
+//		if((Used()==grp1)||(Used()==grp2))
+//			continue;
+//		LocalAvgSim+=Used()->ComputeRelevant();
+//	}
+//	LocalAvgSim+=ComputeRelevant(thObjs1,NbObjs1,rel1);
+//	Cur1.Set(Used);
+//	Cur2.Set(Used);
+//	for(Cur1.Start(),i=0,j=Cur1.GetNb(),max=0.0,localmax=0.0;--j;Cur1.Next(),i++)
+//	{
+//		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
+//		{
+//			tmp=Sims->GetSim(Cur1()->Relevant,Cur2()->Relevant);
+//			if(tmp>max)
+//				max=tmp;
+//			if((Cur2()==grp1)||(Cur2()==grp2))
+//				continue;
+//			if((Cur1()==grp1)||(Cur1()==grp2))
+//				continue;
+//			if(tmp>localmax)
+//				localmax=tmp;
+//		}
+//		tmp=Sims->GetSim(Cur1()->Relevant,rel1);
+//		if(tmp>localmax)
+//			localmax=tmp;
+//	}
+//	tmp=Sims->GetSim(Cur1()->Relevant,rel1);
+//	if(tmp>localmax)
+//		localmax=tmp;
+//	if(max)
+//		AvgSim/=max;
+//	if(localmax)
+//		LocalAvgSim/=localmax;
+//	if(LocalAvgSim>AvgSim)
+//		NbCrit++;
 
 	// Number of subprofiles having common OK documents and being in the same group.
 	if(Instance->SameGroups.NbPtr)
@@ -291,7 +292,7 @@ bool GALILEI::GChromoIR::DivideGroup(GGroupIR* grp)
 	GSubProfile* sub;
 	GSubProfile* obj;
 	int NbCrit=0;
-	double LocalAvgSim,LocalAvgSim2,NbComp,LocalDiffFactor,tmp,max,localmax;
+	double LocalAvgSim,LocalAvgSim1,LocalAvgSim2,NbComp,LocalDiffFactor,tmp,max,localmax;
 	unsigned int a1,a2;
 	GSubProfilesSameGroupIR* same;
 	unsigned NbObjs1,NbObjs2;
@@ -522,6 +523,18 @@ void GALILEI::GChromoIR::Evaluate(void)
 
 	// Some groups must exists
 	if(!Used.NbPtr) return;
+
+	// Compute Social factor.
+	Cur1.Set(Used);
+	for(Cur1.Start(),SocialFactor=0.0;!Cur1.End();Cur1.Next())
+	{
+		if(Cur1()->NbSubObjects>1) continue;
+		if(!Instance->NoSocialSubProfiles.IsIn<const unsigned int>(GetObj(Cur1()->SubObjects)->GetId()))
+			SocialFactor+=1.0;
+	}
+	i=Objs->GetNb()-Instance->NoSocialSubProfiles.NbPtr;
+	if(i)
+		SocialFactor/=i;
 
 	// Compute Average number of profiles.
 	AvgProf=((double)Objs->GetNb())/((double)Used.NbPtr);

@@ -93,6 +93,12 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 	double DiffFactor;
 
 	/**
+	* Factor representing the part of subprofiles that don't want to be alone
+	* but that are really alone.
+	*/
+	double SocialFactor;
+
+	/**
 	* Temporary array of Objects (Thread dependent data).
 	*/
 	GObjIR** thObjs1;

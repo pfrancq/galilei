@@ -45,8 +45,13 @@ using namespace RPromethee;
 #include <groups/gchromoir.h>
 #include <groups/ggroupir.h>
 #include <groups/gobjir.h>
+#include <groups/gcomparegrouping.h>
 #include <profiles/gprofilessim.h>
 #include <profiles/gsubprofile.h>
+#include <profiles/gprofile.h>
+#include <groups/ggroup.h>
+#include <groups/ggroups.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace RGGA;
 using namespace RGA;
@@ -106,22 +111,29 @@ bool GSubProfilesSameGroupIR::IsIn(const GObjIR* obj) const
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,HeuristicType h,RDebug *debug) throw(bad_alloc)
+GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,HeuristicType h,RGA::RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(popsize,objs,h,debug),
 	  RPromKernel("GALILEI",PopSize+1,4), Sims(s), SameGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
 	  DiffGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
-	  MinSimLevel(m), MaxGen(max), CritSim(0), CritNb(0), CritOKDocs(0), Sols(0), GlobalSim(g),  CurrentGroups(grps)
+	  MinSimLevel(m), MaxGen(max), CritSim(0), CritNb(0), CritOKDocs(0), Sols(0), GlobalSim(g),
+	  CurrentGroups(grps), Session(ses), Lang(l), NoSocialSubProfiles(objs->NbPtr)
 {
 	RPromSol** ptr;
 	RCursor<GObjIR,unsigned int> Cur1;
 	RCursor<GObjIR,unsigned int> Cur2;
 	unsigned int i,j,nb;
 
+	#ifdef RGADEBUG
+		IdealGroups=0;
+	#endif
+
 	// Init subprofiles that are in the same group
 	Cur1.Set(objs);
 	Cur2.Set(objs);
 	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
 	{
+		if(!Cur1()->GetSubProfile()->GetProfile()->IsSocial())
+			NoSocialSubProfiles.InsertPtr(Cur1());
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
 			nb=Cur1()->GetSubProfile()->GetCommonOKDocs(Cur2()->GetSubProfile());
@@ -138,6 +150,7 @@ GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,GGroups
 	CritNb=NewCriterion(Maximize,"Profiles",0.2,0.05,1.0);
 	CritOKDocs=NewCriterion(Maximize,"Common OK Documents",0.2,0.05,1.0);
 	CritDiffDocs=NewCriterion(Minimize,"Common Documents with different Judgment",0.2,0.05,1.0);
+	CritSocial=NewCriterion(Minimize,"Social Factor",0.2,0.05,1.0);
 	Sols=new RPromSol*[PopSize+1];
 	if(Sols)
 	{
@@ -154,6 +167,51 @@ bool GALILEI::GInstIR::StopCondition(void)
 }
 
 
+#ifdef RGADEBUG
+//-----------------------------------------------------------------------------
+void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
+{
+	char Tmp[300];
+	double Precision,Recall,Total;
+	GGroupIR* gr;
+	GGroup* g;
+	GObjIR** ptr;
+	unsigned int i;
+	GGroups* Cur;
+
+	if(!Debug) return;
+	Precision=0.0;
+	Recall=0.0;
+	Total=0.0;
+	if(IdealGroups)
+	{
+		// Make the current chromosome the current groupement
+		Session->ClearGroups(Lang);
+		Cur=Session->GetGroups(Lang);
+		for(c->Used.Start();!c->Used.End();c->Used.Next())
+		{
+			gr=c->Used();
+			g=new GGroup(cNoRef,Lang);
+			Session->NewGroup(Lang,g);
+			Cur->InsertPtr(g);
+			for(i=gr->NbSubObjects+1,ptr=c->GetObjs(gr->SubObjects);--i;ptr++)
+				g->InsertSubProfile((*ptr)->GetSubProfile());
+		}
+
+		// Make the comparison with the ideal group
+		GCompareGrouping Comp(Session,IdealGroups);
+		Comp.Compare(0);
+		Precision=Comp.GetPrecision();
+		Recall=Comp.GetRecall();
+		Total=Comp.GetTotal();
+	}
+	sprintf(Tmp,"Chromosome %u: Sim=%1.3f - NbProf=%1.3f - OK=%1.3f - Diff=%1.3f - Social=%1.3f - Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
+	        c->Id,c->AvgSim,c->AvgProf,c->OKFactor,c->DiffFactor,c->SocialFactor,Recall,Precision,Total);
+	Debug->PrintInfo(Tmp);
+}
+#endif
+
+
 //-----------------------------------------------------------------------------
 void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 {
@@ -163,9 +221,6 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	RPromSol** Res;
 	RPromSol** ptr;
 	double r;
-	#ifdef RGADEBUG
-		char Tmp[300];
-	#endif
 
 	#ifdef RGADEBUG
 		if(Debug) Debug->BeginFunc("PostEvaluate","GInstIR");
@@ -175,12 +230,14 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	Assign((*ptr),CritNb,BestChromosome->AvgProf);
 	Assign((*ptr),CritOKDocs,BestChromosome->OKFactor);
 	Assign((*ptr),CritDiffDocs,BestChromosome->DiffFactor);
+	Assign((*ptr),CritSocial,BestChromosome->SocialFactor);
 	for(i=PopSize+1,C=Chromosomes,ptr++;--i;C++,ptr++)
 	{
 		Assign((*ptr),CritSim,(*C)->AvgSim);
 		Assign((*ptr),CritNb,(*C)->AvgProf);
 		Assign((*ptr),CritOKDocs,(*C)->OKFactor);
 		Assign((*ptr),CritDiffDocs,(*C)->DiffFactor);
+		Assign((*ptr),CritSocial,BestChromosome->SocialFactor);
 	}
 	ComputePrometheeII();
 	Res=GetSols();
@@ -192,24 +249,14 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	{
 		s=Chromosomes[(*ptr)->GetId()-1];
 		(*s->Fitness)=Gen+1.1;
-		#ifdef RGADEBUG
-			if(Debug)
-			{
-				sprintf(Tmp,"Chromosome %u: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",s->Id,s->AvgSim,s->AvgProf,s->OKFactor,s->DiffFactor);
-				Debug->PrintInfo(Tmp);
-			}
-		#endif
 	}
 	else
 	{
-		#ifdef RGADEBUG
-			if(Debug)
-			{
-				sprintf(Tmp,"Best Chromosome: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",BestChromosome->AvgSim,BestChromosome->AvgProf,BestChromosome->OKFactor,BestChromosome->DiffFactor);
-				Debug->PrintInfo(Tmp);
-			}
-		#endif
+		s=BestChromosome;
 	}
+	#ifdef RGADEBUG
+		WriteChromoInfo(s);
+	#endif
 	ptr++;
 
 	//  The second best has the fitness of 1
@@ -217,53 +264,28 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	{
 		s=Chromosomes[(*ptr)->GetId()-1];
 		(*s->Fitness)=1.0;
-		#ifdef RGADEBUG
-			if(Debug)
-			{
-				sprintf(Tmp,"Chromosome %u: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",s->Id,s->AvgSim,s->AvgProf,s->OKFactor,s->DiffFactor);
-				Debug->PrintInfo(Tmp);
-			}
-		#endif
 	}
 	else
 	{
-		(*BestChromosome->Fitness)=1.0;
-		#ifdef RGADEBUG
-			if(Debug)
-			{
-				sprintf(Tmp,"Best Chromosome: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",BestChromosome->AvgSim,BestChromosome->AvgProf,BestChromosome->OKFactor,BestChromosome->DiffFactor);
-				Debug->PrintInfo(Tmp);
-			}
-		#endif
+		s=BestChromosome;
+		(*s->Fitness)=1.0;
 	}
+	#ifdef RGADEBUG
+		WriteChromoInfo(s);
+	#endif
 
 	// Look for the rest
 	for(i=PopSize,ptr++;--i;ptr++)
 	{
 		r=((double)i)/((double)(PopSize));
 		if((*ptr)->GetId())
-		{
 			s=Chromosomes[(*ptr)->GetId()-1];
-			(*s->Fitness)=r;
-			#ifdef RGADEBUG
-				if(Debug)
-				{
-					sprintf(Tmp,"Chromosome %u: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",s->Id,s->AvgSim,s->AvgProf,s->OKFactor,s->DiffFactor);
-					Debug->PrintInfo(Tmp);
-				}
-			#endif
-		}
 		else
-		{
-			(*BestChromosome->Fitness)=r;
-			#ifdef RGADEBUG
-				if(Debug)
-				{
-					sprintf(Tmp,"Best Chromosome: Sim=%lf - NbProf=%lf - OK=%lf - Diff=%lf",BestChromosome->AvgSim,BestChromosome->AvgProf,BestChromosome->OKFactor,BestChromosome->DiffFactor);
-					Debug->PrintInfo(Tmp);
-				}
-			#endif
-		}
+			s=BestChromosome;
+		(*s->Fitness)=r;
+		#ifdef RGADEBUG
+			WriteChromoInfo(s);
+		#endif
 	}
 
 	// Delete the resulting array
@@ -301,6 +323,12 @@ void GALILEI::GInstIR::SetCriterionParam(const char* crit,double p,double q,doub
 		CritDiffDocs->SetP(p);
 		CritDiffDocs->SetQ(q);
 		CritDiffDocs->SetWeight(w);
+	}
+	else if(!strcmp(crit,"Social Factor"))
+	{
+		CritSocial->SetP(p);
+		CritSocial->SetQ(q);
+		CritSocial->SetWeight(w);
 	}
 }
 

@@ -68,6 +68,7 @@ GALILEI::GGrouping::GGrouping(const char* n,GSession* s) throw(bad_alloc)
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 		DeletedGroups.InsertPtr(new GGroups(Langs()));
+	IdealGroups=0;
 }
 
 
