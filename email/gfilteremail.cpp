@@ -49,7 +49,7 @@ GFilterEMail::GFilterEMail(const RString& url,GURLManager* mng)
 	int accessmode,handle;
 	struct stat statbuf;
 
-	AddExt("text/email");
+	AddMIME("text/email");
 	accessmode=O_RDONLY;
 	#if !unix
 		accessmode=O_BINARY;
