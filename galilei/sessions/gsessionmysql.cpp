@@ -255,7 +255,10 @@ void GSessionMySQL::FillDict(GDict* dict)
 
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadDocs(void)
-{                      
+{
+	GDoc* doc;
+	int docid;
+
 	char sSql1[100],sSql2[100],sSql3[100],sSql4[100];
 	sprintf(sSql1,"SELECT COUNT(*) FROM htmls" );
 	RQuery count(db,sSql1);
@@ -265,35 +268,17 @@ void GSessionMySQL::LoadDocs(void)
 	RQuery quer (db,sSql2);
 	for(quer.Begin();quer.IsMore();quer++)
 	{
-		GDoc* doc = new GDoc( Docs,&RString(quer[0]) );
-		doc->Calc=(quer[3]=="0");   // demander pal ce qui sort quand NULL
-		if (!doc->Calc)
-		{
-			doc->bSave=false;
-			doc->NbWords=atoi(quer[4]);
-			doc->NbDiffWords=atoi(quer[5]);
-			doc->Id=atoi(quer[0]);
-			doc->Lang = Langs->GetLang(quer[2]);                       
-		}               
-		sprintf(sSql3,"SELECT COUNT(*) FROM %shtmlsbykwds WHERE htmlid=%u",doc->Lang->Code,doc->Id);
+		docid=atoi(quer[0]);
+		Docs->InsertPtr(doc=new GDoc(quer[1],docid,Langs->GetLang(quer[2]),atoi(quer[4]),atoi(quer[5])));
+		sprintf(sSql3,"SELECT COUNT(*) FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
 		RQuery count(db,sSql3);
 		count.Begin();
-		doc->Words=new GWordOccurs(doc,atoi(count[0]));
-		sprintf(sSql4,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",doc->Lang->Code,doc->Id);                              
+		sprintf(sSql4,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
 		RQuery doc2(db,sSql4);                               
-		doc2.Begin();
-		if (doc2.IsMore())
+		for(doc2.Begin();doc2.IsMore();doc2++)
 		{
-			for(int i=0;doc2.IsMore();doc2++)
-			{        
-				GWordOccur* ptr;
-				ptr= new GWordOccur(atoi(doc2[0]));
-				ptr->Doc=doc;
-				ptr->Occur=atoi(doc2[1]);
-				doc->Words->InsertPtr(ptr);        
-			}        
-		}             
-	Docs->InsertPtr (doc);                  
+			doc->AddWord(atoi(doc2[0]),atoi(doc2[1]));
+		}
 	}
 	LoadProfilesDocs();
 }
