@@ -75,6 +75,42 @@ using namespace RTimeDate;
 //
 //-----------------------------------------------------------------------------
 
+
+//-----------------------------------------------------------------------------
+KViewThGroups::KViewThGroups(KDoc* doc,RContainer<GGroups,unsigned int,true,true>* idealgroup,QWidget* parent,const char* name,int wflags)
+	: KView(doc,parent,name,wflags), Groups(0)
+{
+	Groups=idealgroup;
+	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/kmultiple.png"));
+
+	// initialisation of the tab widget
+	Infos=new QTabWidget(this);
+	Infos->resize(size());
+
+	// Theoritic groupement
+	thGroups = new QListView(this);
+	Infos->insertTab(thGroups,"Ideal Groupement");
+	thGroups->resize(size());
+	thGroups->addColumn(QString("Profiles"));
+	thGroups->addColumn(QString("Users"));
+	thGroups->setRootIsDecorated(true);
+	connect(thGroups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	ConstructThGroups();
+
+	// Theoritic groupement
+	prGroups = new QListView(this);
+	Infos->insertTab(prGroups,"Computed Groupement");
+	prGroups->resize(size());
+	prGroups->addColumn(QString("Profiles"));
+	prGroups->addColumn(QString("Precision"));
+	prGroups->addColumn(QString("Recall"));
+	prGroups->setRootIsDecorated(true);
+	connect(prGroups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	ConstructGroups();
+
+}
+
+
 //-----------------------------------------------------------------------------
 KViewThGroups::KViewThGroups(KDoc* doc,const char* filename,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), Groups(0)

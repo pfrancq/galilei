@@ -107,6 +107,16 @@ public:
 	KViewThGroups(KDoc* doc,const char* filename,QWidget* parent,const char* name,int wflags);
 
 	/**
+	* Constructor for the view
+	* @param doc            Document instance that the view represents.
+	* @param idealgroup     The ideal groupement.
+	* @param parent         Parent of the window.
+	* @param name           Name of the window.
+	* @param wflags         Flags.
+	*/
+	KViewThGroups(KDoc* doc,RContainer<GGroups,unsigned int,true,true>* idealgroup,QWidget* parent,const char* name,int wflags);
+
+	/**
 	* Return the type of the window.
 	*/
 	virtual GViewType getType(void) {return(gThGroups);}
