@@ -680,7 +680,7 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 				}
 				else
 				{
-					Doc->InsertLink(tmpDoc,format,type);
+					Doc->InsertLink(tmpDoc);
 				}
 			}
 		}
