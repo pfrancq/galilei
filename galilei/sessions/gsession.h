@@ -362,6 +362,13 @@ public:
 protected:
 
 		/**
+		* Load the Users.
+		*/
+		virtual void LoadUsers(void) throw(bad_alloc,GException)=0;
+
+public:
+
+		/**
 		* Create a new profile.
 		* @param usr        Pointer to the user of the profile.
 		* @param desc       Description of the profile.
@@ -374,13 +381,6 @@ protected:
 		* @param prof       Profile to save.
 		*/
 		virtual void Save(const GProfile* prof) throw(GException)=0;
-
-		/**
-		* Load the Users.
-		*/
-		virtual void LoadUsers(void) throw(bad_alloc,GException)=0;
-
-public:
 
 		/**
 		* Get the number of users treated by the system.

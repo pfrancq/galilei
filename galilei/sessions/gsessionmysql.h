@@ -122,29 +122,6 @@ protected:
 	virtual void LoadDocs(void) throw(bad_alloc,GException);
 
 	/**
-	* Create a new document.
-	* @param url        URL of the document.
-	* @param name       Name of the document.
-	* @param mime       MIME Type of the document
-	* @returns Pointer to a new created document.
-	*/
-	virtual GDoc* NewDoc(const char* url,const char* name,const char* mime) throw(GException);
-
-	/**
-	* Save a document.
-	* @param doc            Document to save.
-	*/
-	virtual void Save(GDoc* doc) throw(GException);
-
-	/**
-	* Create a new profile.
-	* @param usr        Pointer to the user of the profile.
-	* @param desc       Description of the profile.
-	* @returns Pointer to GProfile.
-	*/
-	virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException);
-
-	/**
 	* Save a list of words for a specific subprofile.
 	* @param list           List to save.
 	* @param id             SubProfile id.
@@ -152,12 +129,6 @@ protected:
 	* @param lang           Code of the language.
 	*/
 	void Save(GIWordList* list,unsigned int id,const char* name,const char* lang) throw(GException);
-
-	/**
-	* Save a profile.
-	* @param prof       Profile to save.
-	*/
-	virtual void Save(const GProfile* prof) throw(GException);
 
 	/**
 	* Load a list of words for a specific subprofile.
@@ -189,6 +160,35 @@ protected:
 	virtual void LoadGroupsMember(GGroup* grp) throw(bad_alloc,GException);
 
 public:
+
+	/**
+	* Create a new document.
+	* @param url        URL of the document.
+	* @param name       Name of the document.
+	* @param mime       MIME Type of the document
+	* @returns Pointer to a new created document.
+	*/
+	virtual GDoc* NewDoc(const char* url,const char* name,const char* mime) throw(GException);
+
+	/**
+	* Save a document.
+	* @param doc            Document to save.
+	*/
+	virtual void Save(GDoc* doc) throw(GException);
+
+	/**
+	* Create a new profile.
+	* @param usr        Pointer to the user of the profile.
+	* @param desc       Description of the profile.
+	* @returns Pointer to GProfile.
+	*/
+	virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException);
+
+	/**
+	* Save a profile.
+	* @param prof       Profile to save.
+	*/
+	virtual void Save(const GProfile* prof) throw(GException);
 
 	/**
 	* Destructor.
