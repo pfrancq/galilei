@@ -809,7 +809,7 @@ void GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 
 		// Reinsert all the feedbacks
 		RCursor<GProfile> Profiles=session->GetProfilesCursor();
-		for(Profiles.Start();!Profiles.End();Profiles.End())
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
 		{
 			Fdbks=Profiles()->GetFdbks();
 			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
@@ -828,7 +828,7 @@ void GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 					default:
 						throw GException("No Valid Assessment");
 				}
-				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES("+itou(Fdbks()->GetDoc()->GetId())+"'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetUpdated());
+				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES("+itou(Fdbks()->GetDoc()->GetId())+",'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetUpdated())+")";
 				RQuery fdbks(Db,sSql);
 			}
 		}
