@@ -242,7 +242,7 @@ void QSessionProgressDlg::ComputeProfile(GProfile* prof)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::ComputeProfiles(bool modified)
+void QSessionProgressDlg::ComputeProfiles(bool modified,bool save)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -252,7 +252,7 @@ void QSessionProgressDlg::ComputeProfiles(bool modified)
 	{
 		txtRem->setText("Compute Profiles ...");
 		KApplication::kApplication()->processEvents();
-		Session->CalcProfiles(this,modified);
+		Session->CalcProfiles(this,modified,save);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
@@ -264,7 +264,7 @@ void QSessionProgressDlg::ComputeProfiles(bool modified)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::GroupProfiles(bool modified)
+void QSessionProgressDlg::GroupProfiles(bool modified,bool save)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -274,7 +274,7 @@ void QSessionProgressDlg::GroupProfiles(bool modified)
 	{
 		txtRem->setText("Groups Profiles ...");
 		KApplication::kApplication()->processEvents();
-		Session->GroupingProfiles(this,modified);
+		Session->GroupingProfiles(this,modified,save);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
@@ -286,7 +286,7 @@ void QSessionProgressDlg::GroupProfiles(bool modified)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::ComputeAll(bool modified)
+void QSessionProgressDlg::ComputeAll(bool modified,bool save)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -299,10 +299,10 @@ void QSessionProgressDlg::ComputeAll(bool modified)
 		Session->AnalyseDocs(this,modified);
 		txtRem->setText("Compute Profiles ...");
 		KApplication::kApplication()->processEvents();
-		Session->CalcProfiles(this,modified);
+		Session->CalcProfiles(this,modified,save);
 		txtRem->setText("Groups Profiles ...");
 		KApplication::kApplication()->processEvents();
-		Session->GroupingProfiles(this,modified);
+		Session->GroupingProfiles(this,modified,save);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)

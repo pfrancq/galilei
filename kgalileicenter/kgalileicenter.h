@@ -483,11 +483,13 @@ public:
 	KAction* sessionQuit;
 
 	KToggleAction* profileAlwaysCalc;
+	KToggleAction* profileAlwaysSave;
 	KAction* showUsers;
 	KAction* profilesCalc;
 	KAction* profileCalc;
 
 	KToggleAction* groupAlwaysCalc;
+	KToggleAction* groupAlwaysSave;
 	KAction* showGroups;
 	KAction* groupsCalc;
 	KAction* groupingCompare;

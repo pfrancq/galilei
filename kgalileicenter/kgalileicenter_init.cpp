@@ -102,7 +102,7 @@ KGALILEICenterApp::KGALILEICenterApp(void)
 void KGALILEICenterApp::initActions(void)
 {
 	// Menu "Connect"
-	sessionAlwaysCalc=new KToggleAction(i18n("Enables/disables session' Recomputing"),0,0,0,actionCollection(),"sessionAlwaysCalc");
+	sessionAlwaysCalc=new KToggleAction(i18n("Enables/disables session Recomputing"),0,0,0,actionCollection(),"sessionAlwaysCalc");
 	sessionConnect=new KAction(i18n("&Connect Database"),"connect_established",0,this,SLOT(slotSessionConnect()),actionCollection(),"sessionConnect");
 	sessionCompute=new KAction(i18n("Compute &Session"),"make_kdevelop",0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
 	runProgram=new KAction(i18n("&Run Program"),"rebuild",0,this,SLOT(slotRunProgram()),actionCollection(),"runProgram");
@@ -112,13 +112,15 @@ void KGALILEICenterApp::initActions(void)
 	sessionQuit=new KAction(i18n("E&xit"),"exit",0,this,SLOT(slotSessionQuit()),actionCollection(),"sessionQuit");
 
 	// Menu "Users"
-	profileAlwaysCalc=new KToggleAction(i18n("Enables/disables users' Recomputing"),0,0,0,actionCollection(),"profileAlwaysCalc");
+	profileAlwaysCalc=new KToggleAction(i18n("Enables/disables users Recomputing"),0,0,0,actionCollection(),"profileAlwaysCalc");
+	profileAlwaysSave=new KToggleAction(i18n("Enables/disables users Saving"),0,0,0,actionCollection(),"profileAlwaysSave");
 	showUsers=new KAction(i18n("&Show Users"),"kdmconfig",0,this,SLOT(slotShowUsers()),actionCollection(),"showUsers");
 	profilesCalc=new KAction(i18n("&Calc Profiles"),"run",0,this,SLOT(slotProfilesCalc()),actionCollection(),"profilesCalc");
 	profileCalc=new KAction(i18n("&Calc Profile"),"run",0,this,SLOT(slotProfileCalc()),actionCollection(),"profilecalc");
 
 	// Menu "Groups"
-	groupAlwaysCalc=new KToggleAction(i18n("Enables/disables groups' Recomputing"),0,0,0,actionCollection(),"groupAlwaysCalc");
+	groupAlwaysCalc=new KToggleAction(i18n("Enables/disables groups Recomputing"),0,0,0,actionCollection(),"groupAlwaysCalc");
+	groupAlwaysSave=new KToggleAction(i18n("Enables/disables groups Saving"),0,0,0,actionCollection(),"groupAlwaysSave");
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
 	groupingCompare=new KAction(i18n("&Compare Grouping"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
@@ -126,7 +128,7 @@ void KGALILEICenterApp::initActions(void)
 
 
 	// Menu "Document"
-	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents' Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
+	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
 	showDocs=new KAction(i18n("&Show Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
 	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");;
 	docsAnalyse=new KAction(i18n("&Analyse Documents"),0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");;
@@ -214,6 +216,12 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Show Toolbar", toolBar()->isVisible());
 	Config->writeEntry("Show Statusbar",statusBar()->isVisible());
 	Config->writeEntry("ToolBarPos", (int) toolBar("mainToolBar")->barPos());
+	Config->writeEntry("Always Calc Session",sessionAlwaysCalc->isChecked());
+	Config->writeEntry("Always Calc Profiles",profileAlwaysCalc->isChecked());
+	Config->writeEntry("Always Save Profiles",profileAlwaysSave->isChecked());
+	Config->writeEntry("Always Calc Groups",groupAlwaysCalc->isChecked());
+	Config->writeEntry("Always Save Groups",groupAlwaysSave->isChecked());
+	Config->writeEntry("Always Calc Docs",docAlwaysCalc->isChecked());
 
 	Config->setGroup("Database Options");
 	Config->writeEntry("Host", dbHost());
@@ -249,6 +257,15 @@ void KGALILEICenterApp::readOptions(void)
 	toolBarPos=(KToolBar::BarPosition) Config->readNumEntry("ToolBarPos", KToolBar::Top);
 	toolBar("mainToolBar")->setBarPos(toolBarPos);
 
+	// Always Calc Enable/Disable
+	sessionAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Session",false));
+	profileAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Profiles",false));
+	profileAlwaysSave->setChecked(Config->readBoolEntry("Always Save Profiles",true));
+	groupAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Groups",false));
+	groupAlwaysSave->setChecked(Config->readBoolEntry("Always save Groups",true));
+	docAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Docs",false));
+
+	// Size
 	QSize size=Config->readSizeEntry("Geometry");
 	if(!size.isEmpty())
 	{

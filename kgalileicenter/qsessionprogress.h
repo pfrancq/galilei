@@ -124,20 +124,23 @@ public:
 	/**
 	* Compute the profiles.
 	* @param modified       Recompute only modified elements or all.
+	* @param save           Save modified elements.
 	*/
-	void ComputeProfiles(bool modified=true);
+	void ComputeProfiles(bool modified,bool save);
 
 	/**
 	* Groups the profiles.
 	* @param modified       Recompute only modified elements or all.
+	* @param save           Save modified elements.
 	*/
-	void GroupProfiles(bool modified=true);
+	void GroupProfiles(bool modified,bool save);
 
 	/**
 	* Compute all the elements.
 	* @param modified       Recompute only modified elements or all.
+	* @param save           Save modified elements.
 	*/
-	void ComputeAll(bool modified=true);
+	void ComputeAll(bool modified,bool save);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.

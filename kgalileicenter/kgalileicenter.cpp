@@ -193,7 +193,7 @@ void KGALILEICenterApp::slotSessionCompute(void)
 {
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Complete Session");
-	d->ComputeAll(!sessionAlwaysCalc->isChecked());
+	d->ComputeAll(!sessionAlwaysCalc->isChecked(),profileAlwaysSave->isChecked()||groupAlwaysSave->isChecked());
 	Doc->updateAllViews(0);
 	Doc->updateAllViews(1);
 	Doc->updateAllViews(2);
@@ -289,7 +289,7 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 {
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Documents");
-	d->ComputeProfiles(!profileAlwaysCalc->isChecked());
+	d->ComputeProfiles(!profileAlwaysCalc->isChecked(),profileAlwaysSave->isChecked());
 	Doc->updateAllViews(1);
 }
 
@@ -306,7 +306,7 @@ void KGALILEICenterApp::slotGroupsCalc(void)
 {
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Make Groups");
-	d->GroupProfiles(!groupAlwaysCalc->isChecked());
+	d->GroupProfiles(!groupAlwaysCalc->isChecked(),groupAlwaysSave->isChecked());
 	Doc->updateAllViews(2);
 }
 
