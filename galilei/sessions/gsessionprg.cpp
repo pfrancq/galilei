@@ -63,6 +63,7 @@ using namespace RStd;
 #include <profiles/ggetfeedback.h>
 #include <groups/gidealgroup.h>
 #include <tests/gstatsimsubprof.h>
+#include <tests/gstatsimdoc.h>
 using namespace GALILEI;
 using namespace RIO;
 
@@ -152,6 +153,7 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 	InstTypes.InsertPtr(new InstType("LoadIdeal",LoadIdeal));
 	InstTypes.InsertPtr(new InstType("FdbksCycle",Fdbks));
 	InstTypes.InsertPtr(new InstType("StatsProfiles",StatProf));
+	InstTypes.InsertPtr(new InstType("StatsDocs",StatDoc));
 	InstTypes.InsertPtr(new InstType("ModifyProfiles",ModifyProf));
 
 	// Read Program File
@@ -261,6 +263,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 	char tmp[300];
 	GCompareGrouping* CompMethod;
 	GStatSimSubProf* ProfStats;
+	GStatSimDoc* DocStats;
 
 	if(!i) return;
 	switch(i->Type)
@@ -274,7 +277,8 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				OFile=0;
 			}
 			OFile=new RTextFile(i->Param1,RTextFile::Create);
-			(*OFile)<<"Sets\tRecall\tPrecision\tTotal"<<endl;
+			OFile->SetSeparator("\t");
+			(*OFile)<<"Sets"<<"Recall"<<"Precision"<<"Total"<<endl;
 			break;
 
 		case GOutput:
@@ -286,6 +290,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				GOFile=0;
 			}
 			GOFile=new RTextFile(i->Param1,RTextFile::Create);
+			GOFile->SetSeparator("\t");
 			break;
 
 		case SOutput:
@@ -297,7 +302,8 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				SOFile=0;
 			}
 			SOFile=new RTextFile(i->Param1,RTextFile::Create);
-			(*SOFile)<<"AVGintra\tAVGinter\tAVGol\tRie"<<endl;
+			SOFile->SetSeparator("\t");
+			(*SOFile)<<"AVGintra"<<"AVGinter"<<"AVGol"<<"tRie"<<endl;
 			break;
 
 		case SetAutoSave:
@@ -418,12 +424,12 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			Precision=CompMethod->GetPrecision();
 			Recall=CompMethod->GetRecall();
 			Total=CompMethod->GetTotal();
-			sprintf(tmp,"Recall: %lf  -  Precision: %lf  -  Total: %lf",Recall,Precision,Total);
+			sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f",Recall,Precision,Total);
 			Rec->WriteStr(tmp);
 			if(OFile)
-				(*OFile)<<TestName<<"\t"<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
+				(*OFile)<<TestName<<Recall<<Precision<<Total<<endl;
 			if(GOFile)
-				(*GOFile)<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
+				(*GOFile)<<Recall<<Precision<<Total<<endl;
 			delete CompMethod;
 			break;
 
@@ -439,11 +445,31 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			if(i->Param1.GetLen())
 				ProfStats->SetSettings(i->Param1);
 			ProfStats->Run();
-			sprintf(tmp,"AVGintra: %lf  -  AVGinter: %lf  -  AVGol: %lf  -  Rie: %lf",
+			sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f",
 			        ProfStats->GetAvgIntra(),ProfStats->GetAvgInter(),ProfStats->GetAVGol(),ProfStats->GetRie());
 			Rec->WriteStr(tmp);
 			if(SOFile)
-				(*SOFile)<<ProfStats->GetAvgIntra()<<"\t"<<ProfStats->GetAvgInter()<<"\t"<<ProfStats->GetAVGol()<<"\t"<<ProfStats->GetRie()<<endl;
+				(*SOFile)<<ProfStats->GetAvgIntra()<<ProfStats->GetAvgInter()<<ProfStats->GetAVGol()<<ProfStats->GetRie()<<endl;
+			delete ProfStats;
+			break;
+
+		case StatDoc:
+			if(!Groups)
+				throw GException("No Ideal Groups Defined");
+			if(i->Param1.GetLen())
+					sprintf(tmp,"Statistics on Documents : Settings=\"%s\"",i->Param1());
+				else
+					strcpy(tmp,"Statistics on Documents");
+			Rec->WriteStr(tmp);
+			DocStats=new GStatSimDoc(Session);
+			if(i->Param1.GetLen())
+				DocStats->SetSettings(i->Param1);
+			DocStats->Run();
+			sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f",
+			        DocStats->GetAvgIntra(),DocStats->GetAvgInter(),DocStats->GetAVGol(),DocStats->GetRie());
+			Rec->WriteStr(tmp);
+			if(SOFile)
+				(*SOFile)<<DocStats->GetAvgIntra()<<DocStats->GetAvgInter()<<DocStats->GetAVGol()<<DocStats->GetRie()<<endl;
 			delete ProfStats;
 			break;
 	}
