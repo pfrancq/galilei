@@ -686,7 +686,7 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotWordsClustering()
 {
-	Doc->GetSession()->AnalyseAssociation(wordsClusteringSave->isChecked());
+	Doc->GetSession()->AnalyseAssociation();
 }
 
 

@@ -134,7 +134,6 @@ void KGALILEICenterApp::initActions(void)
 
 	// Menu "Document"
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
-	wordsClusteringSave=new KToggleAction(i18n("Enables/disables Clusters of Words Saving"),0,0,0,actionCollection(),"wordsClusteringSave");
 	showDocs=new KAction(i18n("&Show Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
 	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
 	docsAnalyse=new KAction(i18n("&Analyse Documents"),0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
@@ -213,7 +212,6 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Always Calc Groups",groupAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Groups",groupAlwaysSave->isChecked());
 	Config->writeEntry("Always Calc Docs",docAlwaysCalc->isChecked());
-	Config->writeEntry("Always Save Clusters",wordsClusteringSave->isChecked());
 
 	Config->setGroup("Database Options");
 	Config->writeEntry("Host", dbHost);
@@ -267,7 +265,6 @@ void KGALILEICenterApp::readOptions(void)
 	groupAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Groups",false));
 	groupAlwaysSave->setChecked(Config->readBoolEntry("Always Save Groups",true));
 	docAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Docs",false));
-	wordsClusteringSave->setChecked(Config->readBoolEntry("Always Save Clusters",false));
 
 	// Size
 	QSize size=Config->readSizeEntry("Geometry");

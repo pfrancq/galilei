@@ -602,7 +602,6 @@ public:
 	KAction* showGroupsHistory;
 
 	KToggleAction* docAlwaysCalc;
-	KToggleAction* wordsClusteringSave;
 	KAction* showDocs;
 	KAction* docAnalyse;
 	KAction* docsAnalyse;

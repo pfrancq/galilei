@@ -48,7 +48,6 @@
 	</Menu>
 	<Menu name="Documents"><text>&amp;Documents</text>
 		<Action name="docAlwaysCalc"/>
-		<Action name="wordsClusteringSave"/>
 		<Separator/>
 		<Action name="showDocs"/>
 		<separator/>

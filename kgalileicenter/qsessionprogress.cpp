@@ -144,7 +144,6 @@ void QSessionProgressDlg::LoadSession(GLangManager* langs,GFilterManager* umng, 
 	KApplication::kApplication()->processEvents();
 	Session->InitProfilesSims();
 	Session->InitProfilesBehaviours();
-	Session->InitDocProfSims();
 
 	txtRem->setText("Finish");
 	btnOk->setEnabled(true);
