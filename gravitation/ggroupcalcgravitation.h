@@ -65,11 +65,6 @@ public:
 	unsigned int MaxNonZero;
 
 	/**
-	* Maximal size allocate for a profile.
-	*/
-	unsigned int MaxOrderSize;
-
-	/**
 	* Get the settings of the method coded in a string.
 	* return Pointer to a C string.
 	*/
@@ -105,7 +100,7 @@ public:
 class GGroupCalcGravitation : public GGroupCalc
 {
 
-	/**
+	 /**
 	* description computing parameters
 	*/
 	GCalcGravitationParams* Params;
@@ -119,6 +114,11 @@ class GGroupCalcGravitation : public GGroupCalc
 	* List of words used for computation.
 	*/
 	GIWordsWeights* Vector;
+
+	/**
+	* Maximal size allocate for a profile.
+	*/
+	unsigned int MaxOrderSize;
 
 public:
 
