@@ -102,27 +102,81 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
+template<class Cursor,class Met,class Item>
+	QListViewItem* Init(Cursor Cur,QListView* lst,QCheckBox* enable,QComboBox* sel=0,Met* current=0)
+{
+	QListViewItem* def;
+	QListViewItem* cur;
+	QString str;
+	int idx;
+
+	// Goes through the profiles computing method
+	def=cur=0;
+	if(sel)
+		sel->insertItem("None",0);
+	for(Cur.Start(),idx=1;!Cur.End();Cur.Next(),idx++)
+	{
+		str=ToQString(Cur()->GetName());
+		str+=" [";
+		str+=ToQString(Cur()->GetLib());
+		str+="]";
+		cur=new Item(lst,Cur(),str);
+		if(sel)
+		{
+			sel->insertItem(ToQString(Cur()->GetName()),idx);
+			if((Cur()->GetPlugin())&&(Cur()->GetPlugin()==current))
+				sel->setCurrentItem(idx);
+		}
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		lst->setSelected(def,true);
+		enable->setEnabled(true);
+		if(sel)
+			sel->setEnabled(true);
+	}
+	return(def);
+}
+
+
+//-----------------------------------------------------------------------------
+template<class Item>
+	void Done(QListView* lst,KGALILEICenterApp* app=0)
+{
+	Item* item=dynamic_cast<Item*>(lst->firstChild());
+	while(item)
+	{
+		if(app)
+		{
+			if(item->Enable)
+				item->Fac->Create(app->getSession());
+			else
+				item->Fac->Delete(app->getSession());
+		}
+		else
+		{
+			if(item->Enable)
+				item->Fac->Create();
+			else
+				item->Fac->Delete();
+		}
+		item=dynamic_cast<Item*>(item->itemBelow());
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotPlugins(void)
 {
-	GFactoryLangCursor Lang;
-	GFactoryFilterCursor Filter;
-	GFactoryProfileCalcCursor ProfileCalc;
-	GFactoryLinkCalcCursor LinkCalc;
-	GFactoryGroupCalcCursor GroupCalc;
-	GFactoryGroupingCursor Grouping;
-	GFactoryStatsCalcCursor StatsCalc;
 	GFactoryPostDocCursor PostDoc;
 	GFactoryPostDocOrder* pdorder;
-	GFactoryDocAnalyseCursor DocAnalyse;
 	GFactoryPostGroupCursor PostGroup;
 	GFactoryPostGroupOrder* pgorder;
-	GFactoryEngineCursor Engine;
 	GFactoryMetaEngineCursor MetaEngine;
 	QPlugins dlg(this,"Plugins Dialog");
 	QString str;
-	QListViewItem* def;
-	QListViewItem* cur;
-	unsigned int i;
 	int idx;
 
 
@@ -130,291 +184,35 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.PluginsPath->setMode(KFile::Directory);
 	dlg.PluginsPath->setURL(ToQString(pluginsPath));
 
-	// Goes through filters
-	def=cur=0;
-	Filter=URLManager->GetFiltersCursor();
-	for(Filter.Start();!Filter.End();Filter.Next())
-	{
-		str=ToQString(Filter()->GetName());
-		str+=" [";
-		str+=ToQString(Filter()->GetLib());
-		str+="]";
-		cur=new QFilterItem(dlg.Filters,Filter(),str);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.Filters->setSelected(def,true);
-		dlg.changeFilter(def);
-		dlg.EnableFilter->setEnabled(true);
-	}
-
-	// Goes through the profiles computing method
-	def=cur=0;
-	ProfileCalc=ProfilingManager->GetProfileCalcsCursor();
-	dlg.CurrentProfileCalc->insertItem("None",0);
-	for(ProfileCalc.Start(),idx=1;!ProfileCalc.End();ProfileCalc.Next(),idx++)
-	{
-		str=ToQString(ProfileCalc()->GetName());
-		str+=" [";
-		str+=ToQString(ProfileCalc()->GetLib());
-		str+="]";
-		cur=new QProfileCalcItem(dlg.ProfileCalcs,ProfileCalc(),str);
-		dlg.CurrentProfileCalc->insertItem(ToQString(ProfileCalc()->GetName()),idx);
-		if((ProfileCalc()->GetPlugin())&&(ProfileCalc()->GetPlugin()==ProfilingManager->GetCurrentMethod()))
-			dlg.CurrentProfileCalc->setCurrentItem(idx);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.ProfileCalcs->setSelected(def,true);
-		dlg.changeProfileCalc(def);
-		dlg.EnableProfileCalc->setEnabled(true);
-		dlg.CurrentProfileCalc->setEnabled(true);
-	}
-
-	// Goes through the grouping method
-	def=cur=0;
-	Grouping=GroupingManager->GetGroupingsCursor();
-	dlg.CurrentGrouping->insertItem("None",0);
-	for(Grouping.Start(),idx=1;!Grouping.End();Grouping.Next(),idx++)
-	{
-		str=ToQString(Grouping()->GetName());
-		str+=" [";
-		str+=ToQString(Grouping()->GetLib());
-		str+="]";
-		cur=new QGroupingItem(dlg.Groupings,Grouping(),str);
-		dlg.CurrentGrouping->insertItem(ToQString(Grouping()->GetName()),idx);
-		if((Grouping()->GetPlugin())&&(Grouping()->GetPlugin()==GroupingManager->GetCurrentMethod()))
-			dlg.CurrentGrouping->setCurrentItem(idx);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.Groupings->setSelected(def,true);
-		dlg.changeGrouping(def);
-		dlg.EnableGrouping->setEnabled(true);
-		dlg.CurrentGrouping->setEnabled(true);
-	}
-
-	// Goes through the group computing method
-	def=cur=0;
-	GroupCalc=GroupCalcManager->GetGroupCalcsCursor();
-	dlg.CurrentGroupCalc->insertItem("None",0);
-	for(GroupCalc.Start(),idx=1;!GroupCalc.End();GroupCalc.Next(),idx++)
-	{
-		str=ToQString(GroupCalc()->GetName());
-		str+=" [";
-		str+=ToQString(GroupCalc()->GetLib());
-		str+="]";
-		cur=new QGroupCalcItem(dlg.GroupCalcs,GroupCalc(),str);
-		dlg.CurrentGroupCalc->insertItem(ToQString(GroupCalc()->GetName()),idx);
-		if((GroupCalc()->GetPlugin())&&(GroupCalc()->GetPlugin()==GroupCalcManager->GetCurrentMethod()))
-			dlg.CurrentGroupCalc->setCurrentItem(idx);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.GroupCalcs->setSelected(def,true);
-		dlg.changeGroupCalc(def);
-		dlg.EnableGroupCalc->setEnabled(true);
-		dlg.CurrentGroupCalc->setEnabled(true);
-	}
-
-	// Goes through statistics
-	def=cur=0;
-	StatsCalc=StatsCalcManager->GetStatsCalcsCursor();
-	for(StatsCalc.Start();!StatsCalc.End();StatsCalc.Next())
-	{
-		str=ToQString(StatsCalc()->GetName());
-		str+=" [";
-		str+=ToQString(StatsCalc()->GetLib());
-		str+="]";
-		cur=new QStatsCalcItem(dlg.Stats,StatsCalc(),str);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.Stats->setSelected(def,true);
-		dlg.changeStatCalc(def);
-		dlg.EnableStat->setEnabled(true);
-	}
-
-	// Goes through the linking method
-	def=cur=0;
-	LinkCalc=LinkCalcManager->GetLinkCalcsCursor();
-	dlg.CurrentLinkCalc->insertItem("None",0);
-	for(LinkCalc.Start(),idx=1;!LinkCalc.End();LinkCalc.Next(),idx++)
-	{
-		str=ToQString(LinkCalc()->GetName());
-		str+=" [";
-		str+=ToQString(LinkCalc()->GetLib());
-		str+="]";
-		cur=new QLinkCalcItem(dlg.LinkCalcs,LinkCalc(),str);
-		dlg.CurrentLinkCalc->insertItem(ToQString(LinkCalc()->GetName()),idx);
-		if((LinkCalc()->GetPlugin())&&(LinkCalc()->GetPlugin()==LinkCalcManager->GetCurrentMethod()))
-			dlg.CurrentLinkCalc->setCurrentItem(idx);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.LinkCalcs->setSelected(def,true);
-		dlg.changeLinkCalc(def);
-		dlg.EnableLinkCalc->setEnabled(true);
-		dlg.CurrentLinkCalc->setEnabled(true);
-	}
-
-	// Goes through PostGroups
-	def=cur=0;
+	// Goes through managers
+	dlg.changeFilter(Init<GFactoryFilterCursor,GFilter,QFilterItem>(URLManager->GetFiltersCursor(),dlg.Filters,dlg.EnableFilter));
+	dlg.changeProfileCalc(Init<GFactoryProfileCalcCursor,GProfileCalc,QProfileCalcItem>(ProfilingManager->GetProfileCalcsCursor(),dlg.ProfileCalcs,dlg.EnableProfileCalc,dlg.CurrentProfileCalc,ProfilingManager->GetCurrentMethod()));
+	dlg.changeGrouping(Init<GFactoryGroupingCursor,GGrouping,QGroupingItem>(GroupingManager->GetGroupingsCursor(),dlg.Groupings,dlg.EnableGrouping,dlg.CurrentGrouping,GroupingManager->GetCurrentMethod()));
+	dlg.changeGroupCalc(Init<GFactoryGroupCalcCursor,GGroupCalc,QGroupCalcItem>(GroupCalcManager->GetGroupCalcsCursor(),dlg.GroupCalcs,dlg.EnableGroupCalc,dlg.CurrentGroupCalc,GroupCalcManager->GetCurrentMethod()));
+	dlg.changeStatCalc(Init<GFactoryStatsCalcCursor,GStatsCalc,QStatsCalcItem>(StatsCalcManager->GetStatsCalcsCursor(),dlg.Stats,dlg.EnableStat));
+	dlg.changeLinkCalc(Init<GFactoryLinkCalcCursor,GLinkCalc,QLinkCalcItem>(LinkCalcManager->GetLinkCalcsCursor(),dlg.LinkCalcs,dlg.EnableLinkCalc,dlg.CurrentLinkCalc,LinkCalcManager->GetCurrentMethod()));
+	RContainer<GFactoryPostGroupOrder,true,true> postgroupsordered(PostGroup.GetNb());
 	PostGroup=PostGroupManager->GetPostGroupsCursor();
-	RContainer<GFactoryPostGroupOrder,true,true>* postgroupsordered;
-	postgroupsordered=new RContainer<GFactoryPostGroupOrder,true,true>(PostGroup.GetNb());
 	for(PostGroup.Start(),idx=1;!PostGroup.End();PostGroup.Next(), idx++)
 	{
 		pgorder=new GFactoryPostGroupOrder;
 		pgorder->Fac=PostGroup();
-		postgroupsordered->InsertPtr(pgorder);
+		postgroupsordered.InsertPtr(pgorder);
 	}
-	for (i=postgroupsordered->NbPtr; i;i--)
-	{
-		str=ToQString(postgroupsordered->GetPtrAt(i-1)->Fac->GetName());
-		str+=" [";
-		str+=ToQString(postgroupsordered->GetPtrAt(i-1)->Fac->GetLib());
-		str+="]";
-		cur=new QPostGroupItem(dlg.PostGroups,postgroupsordered->GetPtrAt(i-1)->Fac,str);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.PostGroups->setSelected(def,true);
-		dlg.changePostGroup(def);
-		dlg.EnablePostGroup->setEnabled(true);
-	}
-
-	// Goes through the PostDoc method
-	def=cur=0;
+	dlg.changePostGroup(Init<RCursor<GFactoryPostGroupOrder>,GPostGroup,QPostGroupItem>(RCursor<GFactoryPostGroupOrder>(postgroupsordered),dlg.PostGroups,dlg.EnablePostGroup));
+	RContainer<GFactoryPostDocOrder,true,true> postdocsordered(PostDoc.GetNb());
 	PostDoc=PostDocManager->GetPostDocsCursor();
-	RContainer<GFactoryPostDocOrder,true,true>* postdocsordered;
-	postdocsordered=new RContainer<GFactoryPostDocOrder,true,true>(PostDoc.GetNb());
 	for(PostDoc.Start(),idx=1;!PostDoc.End();PostDoc.Next(),idx++)
 	{
 		pdorder=new GFactoryPostDocOrder;
 		pdorder->Fac=PostDoc();
-		postdocsordered->InsertPtr(pdorder);
+		postdocsordered.InsertPtr(pdorder);
 	}
-	for (i=postdocsordered->NbPtr; i;i--)
-	{
-		str=ToQString(postdocsordered->GetPtrAt(i-1)->Fac->GetName());
-		str+=" [";
-		str+=ToQString(postdocsordered->GetPtrAt(i-1)->Fac->GetLib());
-		str+="]";
-		cur=new QPostDocItem(dlg.PostDocs,postdocsordered->GetPtrAt(i-1)->Fac,str);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.PostDocs->setSelected(def,true);
-		dlg.changePostDoc(def);
-		dlg.EnablePostDoc->setEnabled(true);
-	}
-
-	// Goes through languages
-	def=cur=0;
-	Lang=Langs->GetLangsCursor();
-	for(Lang.Start();!Lang.End();Lang.Next())
-	{
-		str=ToQString(Lang()->GetName());
-		str+=" [";
-		str+=ToQString(Lang()->GetLib());
-		str+="]";
-		cur=new QLangItem(dlg.Langs,Lang(),str);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.Langs->setSelected(def,true);
-		dlg.changeLang(def);
-		dlg.EnableLang->setEnabled(true);
-	}
-
-	// Goes through the document analysis method
-	def=cur=0;
-	DocAnalyse=DocAnalyseManager->GetDocAnalysesCursor();
-	dlg.CurrentDocAnalyse->insertItem("None",0);
-	for(DocAnalyse.Start(),idx=1;!DocAnalyse.End();DocAnalyse.Next(),idx++)
-	{
-		str=ToQString(DocAnalyse()->GetName());
-		str+=" [";
-		str+=ToQString(DocAnalyse()->GetLib());
-		str+="]";
-		cur=new QDocAnalyseItem(dlg.DocAnalyses,DocAnalyse(),str);
-		dlg.CurrentDocAnalyse->insertItem(ToQString(DocAnalyse()->GetName()),idx);
-		if((DocAnalyse()->GetPlugin())&&(DocAnalyse()->GetPlugin()==DocAnalyseManager->GetCurrentMethod()))
-			dlg.CurrentDocAnalyse->setCurrentItem(idx);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.DocAnalyses->setSelected(def,true);
-		dlg.changeDocAnalyse(def);
-		dlg.EnableDocAnalyse->setEnabled(true);
-		dlg.CurrentDocAnalyse->setEnabled(true);
-	}
-
-	// Goes through engines
-	def=cur=0;
-	Engine=EngineManager->GetEnginesCursor();
-	for(Engine.Start();!Engine.End();Engine.Next())
-	{
-		str=ToQString(Engine()->GetName());
-		str+=" [";
-		str+=ToQString(Engine()->GetLib());
-		str+="]";
-		cur=new QEngineItem(dlg.Engines,Engine(),str);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.Engines->setSelected(def,true);
-		dlg.changeEngine(def);
-		dlg.EnableEngine->setEnabled(true);
-	}
-
-	// Goes through the meta engine method
-	def=cur=0;
-	MetaEngine=EngineManager->GetMetaEnginesCursor();
-	dlg.CurrentMetaEngine->insertItem("None",0);
-	for(MetaEngine.Start(),idx=1;!MetaEngine.End();MetaEngine.Next(),idx++)
-	{
-		str=ToQString(MetaEngine()->GetName());
-		str+=" [";
-		str+=ToQString(MetaEngine()->GetLib());
-		str+="]";
-		cur=new QMetaEngineItem(dlg.MetaEngines,MetaEngine(),str);
-		dlg.CurrentMetaEngine->insertItem(ToQString(MetaEngine()->GetName()),idx);
-		if((MetaEngine()->GetPlugin())&&(MetaEngine()->GetPlugin()==EngineManager->GetCurrentMethod()))
-			dlg.CurrentMetaEngine->setCurrentItem(idx);
-		if(!def)
-			def=cur;
-	}
-	if(def)
-	{
-		dlg.MetaEngines->setSelected(def,true);
-		dlg.changeMetaEngine(def);
-		dlg.EnableMetaEngine->setEnabled(true);
-		dlg.CurrentMetaEngine->setEnabled(true);
-	}
+	dlg.changePostDoc(Init<RCursor<GFactoryPostDocOrder>,GPostDoc,QPostDocItem>(RCursor<GFactoryPostDocOrder>(postdocsordered),dlg.PostDocs,dlg.EnablePostDoc));
+	dlg.changeLang(Init<GFactoryLangCursor,GLang,QLangItem>(Langs->GetLangsCursor(),dlg.Langs,dlg.EnableLang));
+	dlg.changeDocAnalyse(Init<GFactoryDocAnalyseCursor,GDocAnalyse,QDocAnalyseItem>(DocAnalyseManager->GetDocAnalysesCursor(),dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse,DocAnalyseManager->GetCurrentMethod()));
+	dlg.changeEngine(Init<GFactoryEngineCursor,GEngine,QEngineItem>(EngineManager->GetEnginesCursor(),dlg.Engines,dlg.EnableEngine));
+	dlg.changeMetaEngine(Init<GFactoryMetaEngineCursor,GMetaEngine,QMetaEngineItem>(EngineManager->GetMetaEnginesCursor(),dlg.MetaEngines,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse,EngineManager->GetCurrentMethod()));
 	
 	if(dlg.exec())
 	{
@@ -424,190 +222,33 @@ void KGALILEICenterApp::slotPlugins(void)
 			pluginsPath=RString(dlg.PluginsPath->url().ascii());
 			QMessageBox::information(this,"Plugins Path has changed","You changed the plugins path, please restart KGALILEICenter.");
 		}
-		// Goes through filters
-		QFilterItem* item=dynamic_cast<QFilterItem*>(dlg.Filters->firstChild());
-		while(item)
-		{
-			if(item->Enable)
-				item->Fac->Create();
-			else
-				item->Fac->Delete();
-			item=dynamic_cast<QFilterItem*>(item->itemBelow());
-		}
 
-		// Goes through profiles computing method
-		QProfileCalcItem* item2=dynamic_cast<QProfileCalcItem*>(dlg.ProfileCalcs->firstChild());
-		while(item2)
-		{
-			if(item2->Enable)
-				item2->Fac->Create(getSession());
-			else
-				item2->Fac->Delete(getSession());
-			item2=dynamic_cast<QProfileCalcItem*>(item2->itemBelow());
-		}
+		// Goes through managers
 		try
 		{
+			Done<QFilterItem>(dlg.Filters);
+			Done<QProfileCalcItem>(dlg.ProfileCalcs,this);
 			ProfilingManager->SetCurrentMethod(dlg.CurrentProfileCalc->currentText());
-		}
-		catch(GException)
-		{
-		}
-
-		// Goes through grouping method
-		QGroupingItem* item3=dynamic_cast<QGroupingItem*>(dlg.Groupings->firstChild());
-		while(item3)
-		{
-			if(item3->Enable)
-				item3->Fac->Create(getSession());
-			else
-				item3->Fac->Delete(getSession());
-			item3=dynamic_cast<QGroupingItem*>(item3->itemBelow());
-		}
-		try
-		{
+			Done<QGroupingItem>(dlg.Groupings,this);
 			GroupingManager->SetCurrentMethod(dlg.CurrentGrouping->currentText());
-		}
-		catch(GException)
-		{
-		}
-
-		// Goes through groups computing method
-		QGroupCalcItem* item4=dynamic_cast<QGroupCalcItem*>(dlg.GroupCalcs->firstChild());
-		while(item4)
-		{
-			if(item4->Enable)
-				item4->Fac->Create(getSession());
-			else
-				item4->Fac->Delete(getSession());
-			item4=dynamic_cast<QGroupCalcItem*>(item4->itemBelow());
-		}
-		try
-		{
+			Done<QGroupCalcItem>(dlg.GroupCalcs,this);
 			GroupCalcManager->SetCurrentMethod(dlg.CurrentGroupCalc->currentText());
-		}
-		catch(GException)
-		{
-		}
-
-		// Goes through statistics
-		QStatsCalcItem* item5=dynamic_cast<QStatsCalcItem*>(dlg.Stats->firstChild());
-		while(item5)
-		{
-			if(item5->Enable)
-				item5->Fac->Create(getSession());
-			else
-				item5->Fac->Delete(getSession());
-			item5=dynamic_cast<QStatsCalcItem*>(item5->itemBelow());
-		}
-
-		// Goes through the linking method
-		QLinkCalcItem* item6=dynamic_cast<QLinkCalcItem*>(dlg.LinkCalcs->firstChild());
-		while(item6)
-		{
-			if(item6->Enable)
-				item6->Fac->Create(getSession());
-			else
-				item6->Fac->Delete(getSession());
-			item6=dynamic_cast<QLinkCalcItem*>(item6->itemBelow());
-		}
-		try
-		{
+			Done<QStatsCalcItem>(dlg.Stats);
+			Done<QLinkCalcItem>(dlg.LinkCalcs,this);
 			LinkCalcManager->SetCurrentMethod(dlg.CurrentLinkCalc->currentText());
-		}
-		catch(GException)
-		{
-		}
-
-		// Goes through the PostDoc method
-		QPostDocItem* item7=dynamic_cast<QPostDocItem*>(dlg.PostDocs->firstChild());
-		while(item7)
-		{
-			if(item7->Enable)
-				item7->Fac->Create(getSession());
-			else
-				item7->Fac->Delete(getSession());
-			item7=dynamic_cast<QPostDocItem*>(item7->itemBelow());
-		}
-
-		// Goes through the languages method
-		QLangItem* item8=dynamic_cast<QLangItem*>(dlg.Langs->firstChild());
-		while(item8)
-		{
-			if(item8->Enable)
-			{
-				try
-				{
-					item8->Fac->Create(getSession());
-				}
-				catch(GException &e)
-				{
-					QMessageBox::information(this,"Error",e.GetMsg());
-				}
-			}
-			else
-				item8->Fac->Delete(getSession());
-			item8=dynamic_cast<QLangItem*>(item8->itemBelow());
-		}
-
-		// Goes through groups computing method
-		QDocAnalyseItem* item9=dynamic_cast<QDocAnalyseItem*>(dlg.DocAnalyses->firstChild());
-		while(item9)
-		{
-			if(item9->Enable)
-				item9->Fac->Create(getSession());
-			else
-				item9->Fac->Delete(getSession());
-			item9=dynamic_cast<QDocAnalyseItem*>(item9->itemBelow());
-		}
-		try
-		{
+			Done<QPostDocItem>(dlg.PostDocs,this);
+			Done<QLangItem>(dlg.Langs,this);
+			Done<QDocAnalyseItem>(dlg.DocAnalyses,this);
 			DocAnalyseManager->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText());
-		}
-		catch(GException)
-		{
-		}
-
-		// Goes through PostGroups
-		QPostGroupItem* item10=dynamic_cast<QPostGroupItem*>(dlg.PostGroups->firstChild());
-		while(item10)
-		{
-			if(item10->Enable)
-				item10->Fac->Create(getSession());
-			else
-				item10->Fac->Delete(getSession());
-			item10=dynamic_cast<QPostGroupItem*>(item10->itemBelow());
-		}
-		
-		// Goes through engines
-		QEngineItem* item11=dynamic_cast<QEngineItem*>(dlg.Engines->firstChild());
-		while(item11)
-		{
-			if(item11->Enable)
-				item11->Fac->Create();
-			else
-				item11->Fac->Delete();
-			item11=dynamic_cast<QEngineItem*>(item11->itemBelow());
-		}
-		
-		// Goes through the meta engine method
-		QMetaEngineItem* item12=dynamic_cast<QMetaEngineItem*>(dlg.MetaEngines->firstChild());
-		while(item12)
-		{
-			if(item12->Enable)
-				item12->Fac->Create(getSession());
-			else
-				item12->Fac->Delete(getSession());
-			item12=dynamic_cast<QMetaEngineItem*>(item12->itemBelow());
-		}
-		try
-		{
+			Done<QPostGroupItem>(dlg.PostGroups,this);
+			Done<QEngineItem>(dlg.Engines);
+			Done<QMetaEngineItem>(dlg.MetaEngines,this);
 			EngineManager->SetCurrentMethod(dlg.CurrentMetaEngine->currentText());
 		}
 		catch(GException)
 		{
 		}
 	}
-
 }
 
 
