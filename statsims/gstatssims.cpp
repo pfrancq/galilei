@@ -83,19 +83,19 @@ public:
 
 	bool SameSubject(GDoc* doc1,GDoc* doc2)
 	{
-		R::RCursor<GSubject> Subjects(doc1->GetSubjectCursor());
+		R::RCursor<GSubject> Subjects(Session->GetSubjects()->GetSubjectCursor(doc1));
 		for(Subjects.Start();!Subjects.End();Subjects.Next())
-			if(doc2->IsFromSubject(Subjects()))
+			if(Session->GetSubjects()->IsFromSubject(doc2,Subjects()))
 				return(true);
 		return(false);
 	}
 
 	bool HasSubject(GDoc* doc)
-	{return(doc->GetNbSubjects());}
+	{return(Session->GetSubjects()->GetNbSubjects(doc));}
 
 	virtual void OverlapTopics(GDoc* doc,bool global)
 	{
-		R::RCursor<GSubject> Subjects=doc->GetSubjectCursor();
+		R::RCursor<GSubject> Subjects=Session->GetSubjects()->GetSubjectCursor(doc);
 		for(Subjects.Start();!Subjects.End();Subjects.Next())
 		{
 			LocalStat* t=Sub.GetInsertPtr<GSubject*>(Subjects());
@@ -157,7 +157,7 @@ public:
 		// contained
 		RCursor<GSubProfile> Subp=grp->GetSubProfilesCursor();
 		Subp.Start();
-		return(doc->IsFromSubject(Session->GetSubjects()->GetSubject(Subp())));
+		return(Session->GetSubjects()->IsFromSubject(doc,Session->GetSubjects()->GetSubject(Subp())));
 	}
 
 	virtual void OverlapTopics(GGroup* grp,bool global)
@@ -192,7 +192,7 @@ public:
 
 	bool SameSubject(GSubProfile* sub,GDoc* doc)
 	{
-		return(doc->IsFromSubject(Session->GetSubjects()->GetSubject(sub)));
+		return(Session->GetSubjects()->IsFromSubject(doc,Session->GetSubjects()->GetSubject(sub)));
 	}
 
 	virtual void OverlapTopics(GSubProfile* sub,bool global)
