@@ -136,6 +136,7 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 	unsigned int nbcomp;
 	nbcomp=0;
 	GSubProfile **sub1, **sub2;
+
 	for (sub1=s->Tab, i=s->NbPtr; i--; sub1++)
 	{
 		if (!(*sub1)->IsDefined()) continue;
@@ -155,6 +156,7 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 		deviation-=MeanSim*MeanSim;
 		Deviation=deviation;
 		OldNbComp=nbcomp;
+		cout <<"Old Nb Comparison initilized to "<<OldNbComp<<endl;
 	}
 	else
 		MeanSim=Deviation=0.0;
@@ -509,13 +511,22 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 	unsigned int nbmodifiedsims=0;
 	double oldsim,newsim;
 	GSubProfile** sub1, **sub2;
+	double newmean, oldmean, newdev, olddev;
 
+	oldmean=MeanSim; olddev=Deviation;
+
+	//manage number of comparisons.
 	nbcomp=(subprofiles->NbPtr)*(subprofiles->NbPtr-1)/2;
 
-//	cout << "ancienne meansim= "<<MeanSim<<endl;
-//	cout << "ancien ecart type"<< Deviation <<endl;
-//	cout <<"Oldcomp ="<<OldNbComp<<endl;
-//	cout <<"nbcomp ="<<nbcomp<<endl;
+	cout << "ancienne meansim= "<<MeanSim<<endl;
+	cout << "ancien ecart type"<< Deviation <<endl;
+	cout <<"Oldcomp ="<<OldNbComp<<endl;
+	cout <<"nbcomp ="<<nbcomp<<endl;
+	
+	cout <<" new similarities "<<endl;
+
+	newmean=OldNbComp*oldsim;
+	newdev=OldNbComp*(olddev+(oldmean*oldmean));
 	
 	for (sub1=subprofiles->Tab, i=subprofiles->NbPtr; i--; sub1++)
 	{
@@ -523,36 +534,42 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 		for (sub2=sub1+1, j=0; j<i; sub2++,j++)
 		{
 			sim=sims->GetPtr((*sub2)->GetId());
-//			cout << "Similarity sub1="<<(*sub1)->GetId() <<"  sub2="<<(*sub2)->GetId() <<endl;
 			// if the similarity isn't in profsim, continue
 			if(!sim) continue;
 			//if ths similarity is in "modified" state :
 			if (sim->State==osModified)
 			{
 				oldsim=sim->Sim;
+				cout << "oldsim="<< oldsim<<endl;
 				newsim=GetSim((*sub1),(*sub2));
-
+				cout <<newsim<<","<<endl;
 				// deviation is calculated as follow : {sum (xi"2/n)} - mean"2
-				//removing the square meansim from deviation
-				Deviation=OldNbComp*(Deviation+(MeanSim*MeanSim));
 				//removing the modified element
-				Deviation-=(oldsim*oldsim);
+				newdev-=(oldsim*oldsim);
 				//add the new value of the modified element
-				Deviation+=(newsim*newsim);
-				//set to the correct number of comparison
-				Deviation/=nbcomp;
+				newdev+=(newsim*newsim);
 				//update the mean of similarities
-				MeanSim=(OldNbComp*MeanSim)-oldsim+newsim;
-				MeanSim/=nbcomp;
-				//add the square of new mean of similarities
-				Deviation-=MeanSim*MeanSim;
-
+				newmean=newmean-oldsim+newsim;
+//				cout <<" temp mean ="<<newmean<<endl;
+//				cout << "temp dev="<<newdev<<endl;
+//				cout <<"Deviation ="<<Deviation<<endl;
 				//tmp dav
 				nbmodifiedsims++;
 			}
 		}
 	}
 
+	newmean/=nbcomp;
+//	cout << "temp dev1="<<newdev<<endl;
+	newdev/=nbcomp;
+//	cout << "temp dev2="<<newdev<<endl;
+	newdev-=(newmean*newmean);
+//	cout << "temp dev3="<<newdev<<endl;
+
+	MeanSim=newmean;
+	Deviation=newdev;
+//	cout << "en of new similarities !!"<<endl;
+//	cout << "MEan ="<<MeanSim<< "    Dev=  "<<Deviation <<endl;
 	OldNbComp=nbcomp;
 //	cout << nbmodifiedsims<< " sims were modified !"<<endl;
 }
@@ -561,4 +578,5 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesSim::~GProfilesSim(void)
 {
+
 }
