@@ -1,33 +1,27 @@
 /*
 
-	R Project Library
+	GALILEI Research Project
 
-	codetochar.cpp
+	CodeToChar.cpp
 
-	Main Window - Implementation.
+	Correspondance between Code and characters in HTML - Implementation.
 
-	(C) 2001 by Lamoral Julien
+	(C) 2001 by Pascal Francq and Lamoral Julien
 
 	Version $Revision$
 
 	Last Modify: $Date$
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
-
 */
+
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <filters/codetochar.h>
+using namespace GALILEI;
+using namespace RStd;
+
 
 
 //-----------------------------------------------------------------------------
@@ -36,50 +30,36 @@
 //
 //-----------------------------------------------------------------------------
 
-
-
 //-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-# include <string.h>
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-
-# include "codetochar.h"
-
-//-----------------------------------------------------------------------------
-using namespace GALILEI;
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-CodeToChar::CodeToChar(char* Coden,char Returnn)
+GALILEI::CodeToChar::CodeToChar(const char* code,char c) throw(bad_alloc)
+	: Char(c), Code(code)
 {
-	Code=Coden;
-	Return=Returnn;
 }
 
+
 //-----------------------------------------------------------------------------
-int CodeToChar::Compare(const char* Coder)
+int GALILEI::CodeToChar::Compare(const char* code) const
 {
-	return (strcmp (Code,Coder));
+	return(Code.Compare(code));
 }
 
 
 //---------------------------------------------------------------------------
-int CodeToChar::Compare(const CodeToChar& word)
+int GALILEI::CodeToChar::Compare(const CodeToChar& code) const
 {
-	return(strcmp(Code,word.Code));
+	return(Code.Compare(code.Code));
 }
 
 
 //---------------------------------------------------------------------------
-int CodeToChar::Compare(const CodeToChar* word)
+int GALILEI::CodeToChar::Compare(const CodeToChar* code) const
 {
-	return(strcmp(Code,word->Code));
+	return(Code.Compare(code->Code));
 
 }
 
 
 //-----------------------------------------------------------------------------
-CodeToChar::~CodeToChar(){
+GALILEI::CodeToChar::~CodeToChar(void)
+{
 }
