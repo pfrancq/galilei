@@ -46,7 +46,7 @@ using namespace RIO;
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
-#include <groups/ggroup.h>
+#include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
 #include <groups/gcomparegrouping.h>
 #include <galilei/qlistviewitemtype.h>
@@ -168,7 +168,7 @@ void KViewThGroups::LoadGroups(const char* filename)
 		lang=Doc->GetSession()->GetLang(f.GetWord());
 		f>>nbprof;
 		groups=Groups->GetPtr<const GLang*>(lang);
-		groups->InsertPtr(group=new GGroup(i,lang));
+		groups->InsertPtr(group=new GGroupVector(i,lang));
 		for(j=nbprof+1;--j;)
 		{
 			f>>id;
