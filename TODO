@@ -7,8 +7,7 @@
 	</Bugs>
 	<NewDevs>
 		<NewDev Priority="High"> New MetaData based on RDF/Dublin. </NewDev>
-		<NewDev Priority="Medium"> Multiple representation for subprofiles. </NewDev>
-		<NewDev Priority="High"> New subprofile representation based on unique vector. </NewDev>
+		<NewDev Priority="High"> Compute subprofile representation based on unique vector. </NewDev>
 		<NewDev Priority="Medium"> New similarity for subprofiles. </NewDev>
 	</NewDevs>
 	<Upgrates>

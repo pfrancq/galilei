@@ -11,7 +11,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>326</width>
+            <width>322</width>
             <height>162</height>
         </rect>
     </property>
@@ -68,28 +68,6 @@
                         <string>Method</string>
                     </property>
                     <widget>
-                        <class>QComboBox</class>
-                        <item>
-                            <property>
-                                <name>text</name>
-                                <string>Statistical Approach</string>
-                            </property>
-                        </item>
-                        <property stdset="1">
-                            <name>name</name>
-                            <cstring>cbComputeMethod</cstring>
-                        </property>
-                        <property stdset="1">
-                            <name>geometry</name>
-                            <rect>
-                                <x>130</x>
-                                <y>20</y>
-                                <width>140</width>
-                                <height>22</height>
-                            </rect>
-                        </property>
-                    </widget>
-                    <widget>
                         <class>QLabel</class>
                         <property stdset="1">
                             <name>name</name>
@@ -107,6 +85,28 @@
                         <property stdset="1">
                             <name>text</name>
                             <string>Compute Method:</string>
+                        </property>
+                    </widget>
+                    <widget>
+                        <class>QComboBox</class>
+                        <item>
+                            <property>
+                                <name>text</name>
+                                <string>Vector Space</string>
+                            </property>
+                        </item>
+                        <property stdset="1">
+                            <name>name</name>
+                            <cstring>cbComputeMethod</cstring>
+                        </property>
+                        <property stdset="1">
+                            <name>geometry</name>
+                            <rect>
+                                <x>130</x>
+                                <y>20</y>
+                                <width>140</width>
+                                <height>22</height>
+                            </rect>
                         </property>
                     </widget>
                 </widget>
@@ -141,6 +141,22 @@
                         <string>Lists' Parameters</string>
                     </property>
                     <widget>
+                        <class>QSpinBox</class>
+                        <property stdset="1">
+                            <name>name</name>
+                            <cstring>spStatisticalOKKOSize</cstring>
+                        </property>
+                        <property stdset="1">
+                            <name>geometry</name>
+                            <rect>
+                                <x>210</x>
+                                <y>20</y>
+                                <width>54</width>
+                                <height>21</height>
+                            </rect>
+                        </property>
+                    </widget>
+                    <widget>
                         <class>QLabel</class>
                         <property stdset="1">
                             <name>name</name>
@@ -157,23 +173,7 @@
                         </property>
                         <property stdset="1">
                             <name>text</name>
-                            <string>Size of the OK/KO Lists:</string>
-                        </property>
-                    </widget>
-                    <widget>
-                        <class>QSpinBox</class>
-                        <property stdset="1">
-                            <name>name</name>
-                            <cstring>spStatisticalOKKOSize</cstring>
-                        </property>
-                        <property stdset="1">
-                            <name>geometry</name>
-                            <rect>
-                                <x>210</x>
-                                <y>20</y>
-                                <width>54</width>
-                                <height>21</height>
-                            </rect>
+                            <string>Minimum Discriminant Size:</string>
                         </property>
                     </widget>
                 </widget>

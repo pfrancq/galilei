@@ -55,6 +55,7 @@ using namespace RStd;
 #include <groups/ggroups.h>
 #include <galilei/qlistviewitemtype.h>
 #include <galilei/qgsubprofiles.h>
+#include <galilei/qgsubprofiledescs.h>
 using namespace GALILEI;
 
 
@@ -99,6 +100,9 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	// Initialisation of the Description Widget
 	Desc=new QGSubProfiles(Infos,Doc->GetSession(),Profile);
 	Infos->insertTab(Desc,"Description");
+
+	// Initialisation of the Descriptions Widget
+	new QGSubProfileDescs(Infos,Doc->GetSession(),Profile,sdVector);
 
 	// Initialisation of the Groups Widget
 	Groups=new QListView(Infos);
@@ -190,7 +194,7 @@ void KViewProfile::ConstructGroups(void)
 		GGroups* grs=Doc->GetSession()->GetGroups(CurLang());
 		QListViewItemType* grsitem = new QListViewItemType(Groups,CurLang()->GetName());
 		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
-		sub=Profile->GetPtr<const GLang*>(CurLang());
+		sub=Profile->GetSubProfile(CurLang());
 		for (grs->Start(); !grs->End(); grs->Next())
 		{
 			GGroup* gr=(*grs)();

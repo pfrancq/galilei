@@ -44,6 +44,7 @@
 #include <docs/gdocxml.h>
 #include <profiles/guser.h>
 #include <sessions/gsession.h>
+#include <profiles/gprofile.h>
 #include <profiles/gprofilecalc.h>
 #include <groups/ggrouping.h>
 using namespace GALILEI;

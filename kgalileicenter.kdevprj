@@ -1014,7 +1014,7 @@ sub_dirs=rga,galilei,rpython
 type=normal
 
 [kgalileicenter/qtwidgets/galilei/Makefile.am]
-files=kgalileicenter/qtwidgets/galilei/qgdocxml.cpp,kgalileicenter/qtwidgets/galilei/qgdocxml.h,kgalileicenter/qtwidgets/galilei/qgprofile.cpp,kgalileicenter/qtwidgets/galilei/qgprofile.h,kgalileicenter/qtwidgets/galilei/qgsubprofile.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofile.h,kgalileicenter/qtwidgets/galilei/qgsubprofiles.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiles.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.h
+files=kgalileicenter/qtwidgets/galilei/qgdocxml.cpp,kgalileicenter/qtwidgets/galilei/qgdocxml.h,kgalileicenter/qtwidgets/galilei/qgprofile.cpp,kgalileicenter/qtwidgets/galilei/qgprofile.h,kgalileicenter/qtwidgets/galilei/qgsubprofile.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofile.h,kgalileicenter/qtwidgets/galilei/qgsubprofiles.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiles.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledescvector.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledescvector.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=galilei
 sub_dirs=
@@ -1051,6 +1051,42 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/qtwidgets/galilei/qgsubprofile.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/qtwidgets/galilei/qgsubprofiledescvector.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/qtwidgets/galilei/qgsubprofiledescvector.h]
 dist=true
 install=false
 install_location=
