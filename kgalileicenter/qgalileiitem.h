@@ -134,8 +134,8 @@ class QPostDocItem : public QListViewItem
 public:
 	GFactoryPostDoc* Fac;
 	bool Enable;
-	QPostDocItem(QListView* lst,GFactoryPostDoc* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QPostDocItem(QListView* lst,GFactoryPostDocOrder* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac->Fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -170,8 +170,8 @@ class QPostGroupItem : public QListViewItem
 public:
 	GFactoryPostGroup* Fac;
 	bool Enable;
-	QPostGroupItem(QListView* lst,GFactoryPostGroup* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QPostGroupItem(QListView* lst,GFactoryPostGroupOrder* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac->Fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
