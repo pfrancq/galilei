@@ -32,6 +32,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <ctype.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <urlmanagers/gurlmanager.h>
 using namespace GALILEI;
@@ -68,14 +73,14 @@ void GALILEI::GURLManager::Delete(RString& tmpFile)
 GDocXML* GALILEI::GURLManager::CreateDocXML(const char* URL,const char* mime)
 {
 	RString tmpFile(50);
-	char* ptr;
-	bool toDown;
+	const char* ptr;
 	int i;
+	GDocXML* xml=0;
 
 	// Verify it is a local file (file:/) or nothing.
 	ptr=URL;
 	i=0;
-	while((*ptr)&&(isalnum(*ptr))
+	while((*ptr)&&(isalnum(*ptr)))
 	{
 		i++;
 		ptr++;
@@ -83,7 +88,7 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(const char* URL,const char* mime)
 	if(i&&((*ptr)==':')&&(strncmp(ptr,"file",i)))
 	{
 		if(!Download(URL,tmpFile))
-			return;
+			return(xml);
 	}
 
 	// Analyse it.
@@ -91,12 +96,21 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(const char* URL,const char* mime)
 	// Delete it
 	if(tmpFile.GetLen())
 		Delete(tmpFile);
+
+	// Return XML structure
+	return(xml);
 }
 
 
 //-----------------------------------------------------------------------------
 GDocXML* GALILEI::GURLManager::CreateDocXML(const char* URL)
 {
+	char mime[10];
+
+	// Find mimetype
+
+	// Return XML structure
+	return(CreateDocXML(URL,mime));
 }
 
 
