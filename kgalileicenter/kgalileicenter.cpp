@@ -190,6 +190,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			plugins->setEnabled(true);
 			gaAnalyse->setEnabled(true);
 			runProgram->setEnabled(true);
+			sessionLoadIdealGroupInGroups->setEnabled(true);
 			runInsts->setEnabled(true);
 			runQuery->setEnabled(true);
 			UpdateMenusEntries();
@@ -334,12 +335,36 @@ void KGALILEICenterApp::slotSessionTest(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotLoadIdealGroupInGroups(void)
+{
+	Doc->GetSession()->LoadIdealGroupmentInGroups();
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionStat(void)
 {
-	//ne pas oublier de relancer le stem ou de copier les trucs de frbykwds.........
-	RContainer<GGroups,unsigned int,true,true>* idealgroup =0 ;
-	RContainer<GGroupIdParentId,unsigned int,true,true>* parent=0;
+//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
+//	cout<<"hplemonde 1 doc 1 occur max"<<endl;
+//	Doc->GetSession()->DocsFilter(1,1);
+//	GIdealGroup judgmentlemonde (Doc->GetSession());
+//	slotProfilesCalc();
+//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
+//	slotSessionDisconnect();
+//
+//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
+//	cout<<"hplemonde 1 doc 2 occur max"<<endl;
+//	Doc->GetSession()->DocsFilter(1,2);
+//	slotProfilesCalc();
+//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
+//	slotSessionDisconnect();
 
+//	slotSessionAutoConnect("127.0.0.1","root","","hp1500");
+//	cout<<"hp1500 1 doc 1 occur max"<<endl;
+//	Doc->GetSession()->DocsFilter(1,1);
+//	GIdealGroup judgment1500 (Doc->GetSession());
+//	judgment1500.SetSettings("10 10 12345 2 0 100");
+//	judgment1500.CreateJudgement(parent,idealgroup,true);
 
 //	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
 //	cout<<"hplemonde 1 doc 1 occur max"<<endl;
@@ -357,65 +382,17 @@ void KGALILEICenterApp::slotSessionStat(void)
 //	slotProfilesCalc();
 //	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
 //	slotSessionDisconnect();
-//
-//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
-//	cout<<"hplemonde 1 doc 3 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(1,3);
-//	slotProfilesCalc();
-//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-//	slotSessionDisconnect();
-//
-//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
-//	cout<<"hplemonde 2 doc 1 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(2,1);
-//	slotProfilesCalc();
-//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-//	slotSessionDisconnect();
-//
-//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
-//	cout<<"hplemonde 2 doc 2 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(2,2);
-//	slotProfilesCalc();
-//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-//	slotSessionDisconnect();
-//
-//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
-//	cout<<"hplemonde 2 doc 3 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(2,3);
-//	slotProfilesCalc();
-//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-//	slotSessionDisconnect();
-//
-//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
-//	cout<<"hplemonde 3 doc 1 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(3,1);
-//	slotProfilesCalc();
-//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-//	slotSessionDisconnect();
-//
-//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
-//	cout<<"hplemonde 3 doc 2 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(3,2);
-//	slotProfilesCalc();
-//	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-//	slotSessionDisconnect();
-//
-//	slotSessionAutoConnect("127.0.0.1","root","","lemonde");
-//	cout<<"hplemonde 3 doc 3 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(3,3);
+////
+//	slotSessionAutoConnect("127.0.0.1","root","","hp20000");
+//	cout<<"hp20000 1 doc 1 occur max"<<endl;
+////	Doc->GetSession()->DocsFilter(1,1);
+//	GIdealGroup judgment20000 (Doc->GetSession());
+//	judgment20000.SetSettings("10 10 12345 2 0 100");
+//	judgment20000.CreateJudgement(parent,idealgroup,true);
 //	slotProfilesCalc();
 //	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
 //	slotSessionDisconnect();
 
-	slotSessionAutoConnect("127.0.0.1","root","","hp20000");
-	cout<<"hp20000 1 doc 1 occur max"<<endl;
-//	Doc->GetSession()->DocsFilter(1,1);
-	GIdealGroup judgment20000 (Doc->GetSession());
-	judgment20000.SetSettings("10 10 12345 2 0 100");
-	judgment20000.CreateJudgement(parent,idealgroup,true);
-	slotProfilesCalc();
-	createClient(Doc,new KViewEvaluateGroup(Doc,pWorkspace,"View Stats About Groups",0));
-	slotSessionDisconnect();
 }
 
 
@@ -860,16 +837,7 @@ void KGALILEICenterApp::slotRunProgram(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotRunQuery(void)
 {
-	RContainer<GGroups,unsigned int,true,true>* idealgroup =0 ;
-	RContainer<GGroupIdParentId,unsigned int,true,true>* parent=0;
-
-	GIdealGroup judgment (Doc->GetSession());
-	judgment.SetSettings("50 50 12345 4 10 100");
-	judgment.CreateJudgement(parent,idealgroup,true);
-	slotProfilesCalc();
-	KApplication::kApplication()->processEvents();
 	createClient(Doc,new KViewQuery(Doc,pWorkspace,"Run Query",0));
-	KApplication::kApplication()->processEvents();
 }
 
 

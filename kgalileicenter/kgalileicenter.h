@@ -295,6 +295,11 @@ private slots:
 	void slotSessionTest(void);
 
 	/**
+	* Load the ideal group in groups session
+	*/
+	void slotLoadIdealGroupInGroups(void);
+
+	/**
 	* Launch the statistique module.
 	*/
 	void slotSessionStat(void);
@@ -512,6 +517,7 @@ public:
 	KAction* sessionCompute;
 	KAction* sessionDisconnect;
 	KAction* sessionTest;
+	KAction* sessionLoadIdealGroupInGroups;
 	KAction* sessionStat;
 	KAction* sessionQuit;
 

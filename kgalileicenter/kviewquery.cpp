@@ -37,30 +37,39 @@
 //-----------------------------------------------------------------------------
 // include file for Galilei Project
 #include <infos/giwordsweights.h>
-#include <langs/glangen.h>
+#include <infos/giwordweight.h>
+#include <langs/glang.h>
+#include <langs/gdict.h>
+#include <docs/gdoc.h>
 #include <sessions/gsession.h>
+#include <groups/ggroups.h>
+#include <groups/ggroup.h>
+#include <profiles/gprofile.h>
+#include <groups/ggroupvector.h>
+#include <groups/ggroupcalcgravitation.h>
+#include <tests/gsimdocquerygroup.h>
 using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include file for R Project
+// Include file for R Project
 #include <rstd/rstring.h>
 #include <rio/rtextfile.h>
 using namespace RIO;
 
 
 //-----------------------------------------------------------------------------
-// application specific includes
+// Application specific includes
 #include "kviewquery.h"
 #include "kdoc.h"
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
+// Include files for Qt
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qmultilineedit.h>
-
+#include <qlistview.h>
 
 
 //-----------------------------------------------------------------------------
@@ -75,21 +84,20 @@ KViewQuery::KViewQuery(KDoc* doc, QWidget* parent,const char* name,int wflags)
 {
 	// Init part
 	QueryWord = new GIWordsWeights(20);
+	ses=doc->GetSession();
 	setCaption("Run Query");
 	QLabel* l=new QLabel(this,"Label");
-	l->setText("Query : (ex : +jazz -opera)");
-	LabelWidth=l->width()+5;
+	l->setText("Query: (ex: +jazz -opera)");
+	LabelWidth=l->width()+26;
 	l->setGeometry(5,0,l->width(),l->height());
 	Cmd=new QLineEdit(this,"Query2");
-	Result=new QMultiLineEdit(this,"Query2");
-	Result->setReadOnly(true);
-	Result->insertLine("dlkjljdlsqjl");
+	Result=new QListView(this);
+	Result->addColumn("Group name");
+	Result->addColumn("Sim Type");
+	Result->addColumn("similarity");
 	// Connections
+	GSimDocQueryGroup julien(ses);
 	connect(Cmd,SIGNAL(returnPressed()),this,SLOT(slotNewQuery()));
-
-	// lancer le calcul de similarité avec les groupes...
-	// afficher le résultat...
-	delete(QueryWord);
 }
 
 
@@ -100,23 +108,55 @@ void KViewQuery::update(unsigned int /*cmd*/)
 
 
 //-----------------------------------------------------------------------------
+void KViewQuery::CalcSimGroup()
+{
+	Result->clear();
+//	QueryWord->ModifyQuery(otGroup,lang);
+
+	GGroupsCursor idealgroup=ses->GetGroupsCursor();
+	for(idealgroup.Start();!idealgroup.End();idealgroup.Next())
+	{
+		GGroupCursor Group;
+		Group=idealgroup()->GetGroupCursor();
+		for(Group.Start();!Group.End();Group.Next())
+		{
+			GGroup* Grp=Group();
+			GGroupVector* GrpV=static_cast<GGroupVector*>(Group());
+			bool end=true;	
+			const char* name;
+			for(Grp->Start();end;Grp->Next())
+			{
+				name=(*Grp)()->GetProfile()->GetName();
+				end=false;
+			}
+			new QListViewItem(Result,QString(name),"Idf",QString(dtoa(QueryWord->SimilarityIdf(GrpV->GetVector(),otGroup,lang))));
+			new QListViewItem(Result,QString(name),"Norm",QString(dtoa(QueryWord->Similarity(GrpV->GetVector()))));
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void KViewQuery::AddWord(char* word,bool weight)
 {
-	GLang* lang=Doc->GetSession()->GetLang("en");
+	RString Stem;
+	RString NoStem(word);
+	lang=Doc->GetSession()->GetDoc(1)->GetLang();
 	GDict* dict=Doc->GetSession()->GetDic(lang);
-	GLangEN Stem (GDict* dict);
-	if(weight) cout<<word<<" est passé par addword"<<endl;
 	//passer ds le stemming ...
-	
+	Stem=lang->GetStemming(NoStem);
 	//prendre le dictionnaire et lrechercher l id du mot ds le dictionnaire
-
+	int id=dict->GetId(Stem);
 	//ajouter dans le container de giwordweights..
+	if(weight)	QueryWord->InsertPtr(new GIWordWeight(id,1));
+	else QueryWord->InsertPtr(new GIWordWeight(id,-1));
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewQuery::slotNewQuery(void)
 {
+	QueryWord->Clear();
 	char* ptr;
 	char temp;
 	char* ptrtemp;
@@ -154,6 +194,7 @@ void KViewQuery::slotNewQuery(void)
 		}
 		else ptr++;
 	}
+	CalcSimGroup();
 }
 
 
@@ -168,4 +209,5 @@ void KViewQuery::resizeEvent(QResizeEvent *)
 //-----------------------------------------------------------------------------
 KViewQuery::~KViewQuery(void)
 {
+if (QueryWord) delete(QueryWord);
 }

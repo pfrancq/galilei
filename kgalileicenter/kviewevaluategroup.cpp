@@ -143,10 +143,12 @@ KViewEvaluateGroup::KViewEvaluateGroup(KDoc* doc,QWidget* parent,const char* nam
 	SimilarityDoc->addColumn("similar min");
 	SimilarityDoc->addColumn("similar max");
 	SimilarityDoc->addColumn("similar mean");
-	cout<<" SimilarityDoc global"<<endl;
-	ConstructSimilarityDoc(true);
-	cout<<" SimilarityDoc sim normale"<<endl;
-	ConstructSimilarityDoc(false);
+
+//	cout<<" SimilarityDoc global"<<endl;
+//	ConstructSimilarityDoc(true);
+
+//	cout<<" SimilarityDoc sim normale"<<endl;
+//	ConstructSimilarityDoc(false);
 
 	// Dicerse statitistique to cout.
 	cout<<" SimilarityDocGroup relevant Global"<<endl;
@@ -157,7 +159,6 @@ KViewEvaluateGroup::KViewEvaluateGroup(KDoc* doc,QWidget* parent,const char* nam
 	ConstructSimilarityDocGroup(true,false);
 	cout<<" SimilarityDocGroup gravitaion sim normale"<<endl;
 	ConstructSimilarityDocGroup(false,false);
-
 
 }
 
@@ -345,6 +346,7 @@ void KViewEvaluateGroup::ConstructSimilaritySubProf()
 			new QListViewItem(SimilaritySubProf,QString(name),QString(dtoa(MinIntra)),QString(dtoa(MeanIntra)),QString(dtoa(MaxExtra)),QString(dtoa(MeanExtra)),"similarmin","similarmax","similarmean");
 		}
 	}
+
 	new QListViewItem(SimilaritySubProf,QString("Mean"),QString(dtoa(MinIntraM/nbtot)),QString(dtoa(MeanIntraM/nbtot)),QString(dtoa(MaxExtraM/nbtot)),QString(dtoa(MeanExtraM/nbtot)),"similarmin","similarmax","similarmean");
 	cout<<" "<<MinIntraM/nbtot<<" "<<MeanIntraM/nbtot<<" "<<MaxExtraM/nbtot<<" "<<MeanExtraM/nbtot<<endl;
 }

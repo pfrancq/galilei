@@ -115,6 +115,7 @@ void KGALILEICenterApp::initActions(void)
 	runInsts=new KAction(i18n("Run &Instructions"),"help",0,this,SLOT(slotRunInsts()),actionCollection(),"runInsts");;
 	sessionDisconnect=new KAction(i18n("&Disconnect Database"),"connect_no",0,this,SLOT(slotSessionDisconnect()),actionCollection(),"sessionDisconnect");
 	sessionTest=new KAction(i18n("&Test"),"gohome",0,this,SLOT(slotSessionTest()),actionCollection(),"sessionTest");
+	sessionLoadIdealGroupInGroups=new KAction(i18n("Switch &Ideal Groups"),"gohome",0,this,SLOT(slotLoadIdealGroupInGroups()),actionCollection(),"sesionLoadIdealGroupInGroups");
 	sessionStat=new KAction(i18n("&Stat"),"gohome",0,this,SLOT(slotSessionStat()),actionCollection(),"sessionStat");
 	sessionQuit=new KAction(i18n("E&xit"),"exit",0,this,SLOT(slotSessionQuit()),actionCollection(),"sessionQuit");
 
@@ -367,6 +368,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	createXML->setEnabled(false);
 	saveXML->setEnabled(false);
 	analyseXML->setEnabled(false);
+	sessionLoadIdealGroupInGroups->setEnabled(false);
 	groupsCalc->setEnabled(false);
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);

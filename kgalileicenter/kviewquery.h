@@ -54,6 +54,7 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for Qt
 #include <qwidget.h>
+class QListView;
 class QLineEdit;
 class QMultiLineEdit;
 
@@ -71,7 +72,6 @@ class QMultiLineEdit;
 * a session to find group most similar whith te query.
 * @author Julien Lamoral
 * @version $Revision$
-* @short Window for Query.
 */
 class KViewQuery : public KView
 {
@@ -90,7 +90,7 @@ class KViewQuery : public KView
 	/**
 	* Results of the command.
 	*/
-	QMultiLineEdit* Result;
+	QListView* Result;
 
 	/**
 	* Buffer containing the information.
@@ -101,6 +101,16 @@ class KViewQuery : public KView
 	* The words of the query in wordweights.
 	*/	
 	GIWordsWeights* QueryWord;
+
+	/**
+	* The current session.
+	*/	
+	GSession* ses;
+
+	/**
+	* The current language.
+	*/	
+	GLang* lang;
 
 
 
@@ -147,6 +157,11 @@ protected:
 	*/
 	void AddWord(char* word,bool weight);
 
+	/**
+	* Gets called to show the similarity whith groups.
+	*/
+	void CalcSimGroup(void);
+	
 public:
 
 	/**

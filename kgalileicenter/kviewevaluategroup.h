@@ -61,7 +61,6 @@ class KViewEvaluateGroup : public KView
 {
 	Q_OBJECT
 
-
 	/**
 	* Widget to handle the different information of the document.
 	*/
