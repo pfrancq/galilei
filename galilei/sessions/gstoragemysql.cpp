@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Universit�Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -346,7 +346,7 @@ void GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 			//insert the subprofile;
 			sSql="INSERT INTO subprofiles SET profileid="+itou(sub->GetProfile()->GetId());
 			sSql+=",langid='"+RString(sub->GetLang()->GetCode())+"',attached=CURDATE(),state="+itou(sub->GetState());
-			sSql+=",update="+RQuery::SQLValue(sub->GetUpdated())+",calculated="+RQuery::SQLValue(sub->GetComputed())+",subprofileid="+itou(sub->GetId());
+			sSql+=",updated="+RQuery::SQLValue(sub->GetUpdated())+",calculated="+RQuery::SQLValue(sub->GetComputed())+",subprofileid="+itou(sub->GetId());
 		}
 		else
 		{
