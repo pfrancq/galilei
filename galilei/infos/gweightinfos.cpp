@@ -175,6 +175,31 @@ double GWeightInfos::GetMaxWeight(void) const throw(GException)
 
 
 //------------------------------------------------------------------------------
+double GWeightInfos::GetMaxAbsWeight(void) const throw(GException)
+{
+	double max;
+	GWeightInfo** ptr;
+	unsigned int i;
+
+	// If no profile, maximal weight is null.
+	if(!NbPtr)
+		throw GException("GWeightInfos is empty for GetMaxHeight");
+
+	// Suppose first weight is the highest
+	ptr=Tab;
+	max=abs((*ptr)->GetWeight());
+
+	// Look if there is a greather one.
+	for(i=NbPtr,ptr++;--i;ptr++)
+	{
+		if(abs((*ptr)->GetWeight())>max)
+			max=abs((*ptr)->GetWeight());
+	}
+	return(max);
+}
+
+
+//------------------------------------------------------------------------------
 double GWeightInfos::Similarity(const GWeightInfos* w) const
 {
 	double Sim=0.0;
@@ -248,8 +273,11 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 		return(0.0);
 
 	// Compute Similarity
-	max1=abs(GetMaxWeight());
-	max2=abs(w->GetMaxWeight());
+	max1=GetMaxAbsWeight();
+	max2=w->GetMaxAbsWeight();
+	if(max1==0.0 || max2==0.0)
+		return (0.0);
+
 	TotalRef=lang->GetRef(ObjType);
 	while(--i)
 	{
@@ -334,12 +362,11 @@ void GWeightInfos::RecomputeIFF(tObjType ObjType,GLang* lang) throw(GException)
 {
 	GWeightInfo** ptr;
 	unsigned int i;
-	double max=abs(GetMaxWeight());
-	double iff;
+	double max,iff;
 
 	if(!lang)
 		throw GException("No Language defined");
-	for(i=NbPtr+1,ptr=Tab,max=GetMaxWeight();--i;ptr++)
+	for(i=NbPtr+1,ptr=Tab,max=GetMaxAbsWeight();--i;ptr++)
 	{
 		iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef((*ptr)->GetId(),ObjType));
 		(*ptr)->SetWeight(((*ptr)->GetWeight()/max)*log(iff));
@@ -352,7 +379,7 @@ void GWeightInfos::RecomputeQuery(tObjType ObjType,GLang* lang) throw(GException
 {
 	GWeightInfo* ptr;
 	unsigned int i;
-	double max=abs(GetMaxWeight());
+	double max=GetMaxAbsWeight();
 	double TotalRef;
 	double idffactor,nbref;
 	double freq;

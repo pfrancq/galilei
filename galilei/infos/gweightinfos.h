@@ -148,6 +148,13 @@ public:
 	double GetMaxWeight(void) const throw(GException);
 
 	/**
+	* Compute the maximal absolute weight of the information entities in the list. 
+	* The list may not be empty.
+	* @return double.
+	*/
+	double GetMaxAbsWeight(void) const throw(GException);
+
+	/**
 	* Compute a similarity between two lists of weighted information entities.
 	* The method uses the cosinus of the corresponding vectors build directly
 	* from the lists. If one of the list is empty, the similarity is null.
