@@ -120,6 +120,7 @@ void GALILEI::GDoc::ClearInfos(void)
 	Lang=0;
 	if(Words)
 	{
+		RemoveRefs();
 		Words->Clear();
 	}
 }
@@ -144,6 +145,7 @@ void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned in
 		delete Words;
 
 	Words=w;
+	UpdateRefs();
 	State=osUpdated;
 	Computed.SetToday();
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
@@ -201,6 +203,30 @@ double GALILEI::GDoc::Similarity(const GDoc* doc) const
 void GALILEI::GDoc::AddJudgement(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.InsertPtr(j);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::UpdateRefs(void) const
+{
+	GDict* d;
+
+	if(!Lang) return;
+	d=Lang->GetDict();
+	if(d&&Words)
+		Words->AddRefs(otDoc,d);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::RemoveRefs(void) const
+{
+	GDict* d;
+
+	if(!Lang) return;
+	d=Lang->GetDict();
+	if(d&&Words)
+		Words->DelRefs(otDoc,d);
 }
 
 

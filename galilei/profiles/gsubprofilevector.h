@@ -130,6 +130,16 @@ public:
 	GIWordsWeights* GetVector(void) {return(Vector);}
 
 	/**
+	* Update the references of the document.
+	*/
+	void UpdateRefs(void) const;
+
+	/**
+	* Remove the references of the document.
+	*/
+	void RemoveRefs(void) const;
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSubProfileVector(void);

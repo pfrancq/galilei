@@ -348,6 +348,16 @@ public:
 	void AddJudgement(GProfDoc* j) throw(bad_alloc);
 
 	/**
+	* Update the references of the document.
+	*/
+	void UpdateRefs(void) const;
+
+	/**
+	* Remove the references of the document.
+	*/
+	void RemoveRefs(void) const;
+
+	/**
 	* Destruct the document.
 	*/
 	virtual ~GDoc(void);

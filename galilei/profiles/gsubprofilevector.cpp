@@ -115,6 +115,24 @@ unsigned int GALILEI::GSubProfileVector::GetNbNoNull(void) const
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSubProfileVector::UpdateRefs(void) const
+{
+	GDict* d=Lang->GetDict();
+	if(d&&Vector)
+		Vector->AddRefs(otSubProfile,d);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSubProfileVector::RemoveRefs(void) const
+{
+	GDict* d=Lang->GetDict();
+	if(d&&Vector)
+		Vector->DelRefs(otSubProfile,d);
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GSubProfileVector::~GSubProfileVector(void)
 {
 	if(Vector) delete Vector;
