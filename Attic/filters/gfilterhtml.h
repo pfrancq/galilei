@@ -98,16 +98,6 @@ private:
 	RString TAG,OldTag;
 
 	/**
-	* Some counter used for the counting of opened and closed tag
-	*/
-	int h [7];                      // some counter
-
-	/**
-	* counter used for the counting of opened and closed tag on p
-	*/
-	int p;
-
-	/**
 	*Some counter used for the counting  closed tag
 	*/
 	int ClassementVector [8];
@@ -206,6 +196,15 @@ private:
 	*Skip spaces into the buffer
 	*/
 	void SkipSpaces(void);
+	
+	
+	/**
+	* Add a tag in the xml struct
+	* @param level          	The level of the tag
+	* @param tag				The name of the tag
+	* @param doc            XML Structure that will represent the document.
+	*/
+	void AddTag(int level,char* tag,GDocXML* doc);
 
 	/**
 	*Initialisation of the html string
