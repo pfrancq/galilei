@@ -67,7 +67,8 @@ using namespace RStd;
 #include <galilei/qgroupingpluginconfcure.h>
 #include <galilei/qgroupcalcpluginconfrelevant.h>
 #include <galilei/qgroupcalcpluginconfgravitation.h>
-#include <galilei/qlinkcalcitalgopluginconf.h>
+#include <galilei/qlinkcalchitspluginconf.h>
+#include <galilei/qlinkcalccorrespondencepluginconf.h>
 
 using namespace GALILEI;
 
@@ -157,8 +158,10 @@ void KGALILEICenterApp::slotDocsOptions(void)
 		DocOptions->UseLink=dlg.cbUseLink->isChecked();
 		DocOptions->UseExternalLink=dlg.cbExternalLink->isChecked();
 		DocOptions->UseRedirection=dlg.cbRedirection->isChecked();
+
+		cout<< "option docs :  "<<DocOptions->UseLink<<" et a la source : "<< dlg.cbUseLink->isChecked() <<endl;;
 	}
-}
+}                                
 
 
 //-----------------------------------------------------------------------------
@@ -176,6 +179,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfCure(&CureParams));
 	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfRelevant(&CalcRelevantParams));
 	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfGravitation(&CalcGravitationParams));
-	dlg.RegisterLinkCalcPluginConf(new QLinkCalcItAlgoPluginConf(&LinkCalcItAlgoParams));
+	dlg.RegisterLinkCalcPluginConf(new QLinkCalcHITSPluginConf(&LinkCalcHITSParams));
+	dlg.RegisterLinkCalcPluginConf(new QLinkCalcCorrespondencePluginConf(&LinkCalcCorrespondenceParams));
 	dlg.exec();
 }

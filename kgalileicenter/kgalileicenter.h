@@ -56,7 +56,8 @@
 #include <groups/ggroupingsim.h>
 #include <groups/ggroupcalcrelevant.h>
 #include <groups/ggroupcalcgravitation.h>
-#include <docs/glinkcalcitalgo.h>
+#include <docs/glinkcalchits.h>
+#include <docs/glinkcalccorrespondence.h>
 #include <profiles/gprofilecalcfeedback.h>
 #include <profiles/gprofilecalcreweighting.h>
 #include <profiles/gprofilecalcvector.h>
@@ -176,9 +177,14 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	GCalcGravitationParams CalcGravitationParams;
 
 	/**
-	* Parameters for 'Iterative Algorithm' link description computing
+	* Parameters for 'HITS Algorithm' link description computing
 	*/
-	GLinkCalcItAlgoParams LinkCalcItAlgoParams;
+	GLinkCalcHITSParams LinkCalcHITSParams;
+
+	/**
+	* Parameters for 'HITS Algorithm' link description computing
+	*/
+	GLinkCalcCorrespondenceParams LinkCalcCorrespondenceParams;
 
     /**
 	* Current Profile Description Method
@@ -611,11 +617,6 @@ private slots:
 	void slotDocsAnalyse(void);
 
 	/**
-	* Compute the links for all documents.
-	*/
-	void slotComputeLinks(void);
-
-	/**
 	* Compute statistics on all the documents.
 	*/
 	void slotDocsStats(void);
@@ -817,7 +818,6 @@ public:
 	KAction* showDocs;
 	KAction* docAnalyse;
 	KAction* docsAnalyse;
-	KAction* linksCalc;
 	KAction* docsStats;
 	KAction* createXML;
 	KAction* saveXML;

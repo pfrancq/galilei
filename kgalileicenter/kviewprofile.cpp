@@ -155,7 +155,7 @@ void KViewProfile::ConstructFdbks(void)
 	Docs=Profile->GetProfDocCursor();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		switch(Docs()->GetFdbk())
+		switch(Docs()->GetFdbk() & djMaskJudg)
 		{
 			case djOK:
 				p=ok;

@@ -167,11 +167,23 @@ sub_dirs=docs,filters,groups,infos,langs,profiles,sessions,urlmanagers,tests,pos
 type=static_library
 
 [kgalileicenter/galilei/docs/Makefile.am]
-files=kgalileicenter/galilei/docs/gdcmetadata.cpp,kgalileicenter/galilei/docs/gdcmetadata.h,kgalileicenter/galilei/docs/gdoc.cpp,kgalileicenter/galilei/docs/gdoc.h,kgalileicenter/galilei/docs/gdocanalyse.cpp,kgalileicenter/galilei/docs/gdocanalyse.h,kgalileicenter/galilei/docs/gdoclist.cpp,kgalileicenter/galilei/docs/gdoclist.h,kgalileicenter/galilei/docs/gdocs.cpp,kgalileicenter/galilei/docs/gdocs.h,kgalileicenter/galilei/docs/gdocxml.cpp,kgalileicenter/galilei/docs/gdocxml.h,kgalileicenter/galilei/docs/gdocoptions.cpp,kgalileicenter/galilei/docs/gdocoptions.h,kgalileicenter/galilei/docs/gdocssim.h,kgalileicenter/galilei/docs/gdocssim.cpp,kgalileicenter/galilei/docs/gdocvector.cpp,kgalileicenter/galilei/docs/gdocvector.h,kgalileicenter/galilei/docs/gdocsim.cpp,kgalileicenter/galilei/docs/gdocsim.h,kgalileicenter/galilei/docs/gdocprofsim.cpp,kgalileicenter/galilei/docs/gdocprofsim.h,kgalileicenter/galilei/docs/gdocprofsims.cpp,kgalileicenter/galilei/docs/gdocprofsims.h,kgalileicenter/galilei/docs/gdocslang.cpp,kgalileicenter/galilei/docs/gdocslang.h,kgalileicenter/galilei/docs/gwordsclustering.cpp,kgalileicenter/galilei/docs/gwordsclustering.h,kgalileicenter/galilei/docs/gdocrefurl.cpp,kgalileicenter/galilei/docs/gdocrefurl.h,kgalileicenter/galilei/docs/glink.cpp,kgalileicenter/galilei/docs/glink.h,kgalileicenter/galilei/docs/glinkcalc.cpp,kgalileicenter/galilei/docs/glinkcalc.h,kgalileicenter/galilei/docs/glinkcalcitalgo.cpp,kgalileicenter/galilei/docs/glinkcalcitalgo.h,kgalileicenter/galilei/docs/glinkcalcparams.cpp,kgalileicenter/galilei/docs/glinkcalcparams.h,kgalileicenter/galilei/docs/glinks.cpp,kgalileicenter/galilei/docs/glinks.h
+files=kgalileicenter/galilei/docs/gdcmetadata.cpp,kgalileicenter/galilei/docs/gdcmetadata.h,kgalileicenter/galilei/docs/gdoc.cpp,kgalileicenter/galilei/docs/gdoc.h,kgalileicenter/galilei/docs/gdocanalyse.cpp,kgalileicenter/galilei/docs/gdocanalyse.h,kgalileicenter/galilei/docs/gdoclist.cpp,kgalileicenter/galilei/docs/gdoclist.h,kgalileicenter/galilei/docs/gdocs.cpp,kgalileicenter/galilei/docs/gdocs.h,kgalileicenter/galilei/docs/gdocxml.cpp,kgalileicenter/galilei/docs/gdocxml.h,kgalileicenter/galilei/docs/gdocoptions.cpp,kgalileicenter/galilei/docs/gdocoptions.h,kgalileicenter/galilei/docs/gdocssim.h,kgalileicenter/galilei/docs/gdocssim.cpp,kgalileicenter/galilei/docs/gdocvector.cpp,kgalileicenter/galilei/docs/gdocvector.h,kgalileicenter/galilei/docs/gdocsim.cpp,kgalileicenter/galilei/docs/gdocsim.h,kgalileicenter/galilei/docs/gdocprofsim.cpp,kgalileicenter/galilei/docs/gdocprofsim.h,kgalileicenter/galilei/docs/gdocprofsims.cpp,kgalileicenter/galilei/docs/gdocprofsims.h,kgalileicenter/galilei/docs/gdocslang.cpp,kgalileicenter/galilei/docs/gdocslang.h,kgalileicenter/galilei/docs/gwordsclustering.cpp,kgalileicenter/galilei/docs/gwordsclustering.h,kgalileicenter/galilei/docs/gdocrefurl.cpp,kgalileicenter/galilei/docs/gdocrefurl.h,kgalileicenter/galilei/docs/glink.cpp,kgalileicenter/galilei/docs/glink.h,kgalileicenter/galilei/docs/glinkcalc.cpp,kgalileicenter/galilei/docs/glinkcalc.h,kgalileicenter/galilei/docs/glinkcalcparams.cpp,kgalileicenter/galilei/docs/glinkcalcparams.h,kgalileicenter/galilei/docs/glinks.cpp,kgalileicenter/galilei/docs/glinks.h,kgalileicenter/galilei/docs/glinkcalccorrespondence.cpp,kgalileicenter/galilei/docs/glinkcalccorrespondence.h,kgalileicenter/galilei/docs/glinkcalchits.cpp,kgalileicenter/galilei/docs/glinkcalchits.h,kgalileicenter/galilei/docs/gbalancedlinks.cpp,kgalileicenter/galilei/docs/gbalancedlinks.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=docs
 sub_dirs=
 type=static_library
+
+[kgalileicenter/galilei/docs/gbalancedlinks.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/docs/gbalancedlinks.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [kgalileicenter/galilei/docs/gdcmetadata.cpp]
 dist=true
@@ -365,13 +377,25 @@ install=false
 install_location=
 type=HEADER
 
-[kgalileicenter/galilei/docs/glinkcalcitalgo.cpp]
+[kgalileicenter/galilei/docs/glinkcalccorrespondence.cpp]
 dist=true
 install=false
 install_location=
 type=SOURCE
 
-[kgalileicenter/galilei/docs/glinkcalcitalgo.h]
+[kgalileicenter/galilei/docs/glinkcalccorrespondence.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/docs/glinkcalchits.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/docs/glinkcalchits.h]
 dist=true
 install=false
 install_location=
@@ -1604,7 +1628,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/tests/Makefile.am]
-files=kgalileicenter/galilei/tests/ggroupevaluate.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.h,kgalileicenter/galilei/tests/ggroupevaluatesubprof.cpp,kgalileicenter/galilei/tests/ggroupevaluatesubprof.h,kgalileicenter/galilei/tests/ggroupsevaluate.cpp,kgalileicenter/galilei/tests/ggroupsevaluate.h,kgalileicenter/galilei/tests/ggroupevaluate.h,kgalileicenter/galilei/tests/gsimdocquerygroup.cpp,kgalileicenter/galilei/tests/gsimdocquerygroup.h,kgalileicenter/galilei/tests/gstatsimsubprof.cpp,kgalileicenter/galilei/tests/gstatsimsubprof.h,kgalileicenter/galilei/tests/gstatsimdoc.cpp,kgalileicenter/galilei/tests/gstatsimdoc.h,kgalileicenter/galilei/tests/gmixidealgroups.cpp,kgalileicenter/galilei/tests/gmixidealgroups.h,kgalileicenter/galilei/tests/gstatsimid.cpp,kgalileicenter/galilei/tests/gstatsimid.h,kgalileicenter/galilei/tests/gquerydocsgroup.cpp,kgalileicenter/galilei/tests/gquerydocsgroup.h,kgalileicenter/galilei/tests/gstatsimdocgrp.cpp,kgalileicenter/galilei/tests/gstatsimdocgrp.h,kgalileicenter/galilei/tests/gstatsimdocprof.cpp,kgalileicenter/galilei/tests/gstatsimdocprof.h,kgalileicenter/galilei/tests/gstatsimprofgrp.cpp,kgalileicenter/galilei/tests/gstatsimprofgrp.h
+files=kgalileicenter/galilei/tests/ggroupevaluate.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.h,kgalileicenter/galilei/tests/ggroupevaluatesubprof.cpp,kgalileicenter/galilei/tests/ggroupevaluatesubprof.h,kgalileicenter/galilei/tests/ggroupsevaluate.cpp,kgalileicenter/galilei/tests/ggroupsevaluate.h,kgalileicenter/galilei/tests/ggroupevaluate.h,kgalileicenter/galilei/tests/gsimdocquerygroup.cpp,kgalileicenter/galilei/tests/gsimdocquerygroup.h,kgalileicenter/galilei/tests/gstatsimsubprof.cpp,kgalileicenter/galilei/tests/gstatsimsubprof.h,kgalileicenter/galilei/tests/gstatsimdoc.cpp,kgalileicenter/galilei/tests/gstatsimdoc.h,kgalileicenter/galilei/tests/gmixidealgroups.cpp,kgalileicenter/galilei/tests/gmixidealgroups.h,kgalileicenter/galilei/tests/gstatsimid.cpp,kgalileicenter/galilei/tests/gstatsimid.h,kgalileicenter/galilei/tests/gquerydocsgroup.cpp,kgalileicenter/galilei/tests/gquerydocsgroup.h,kgalileicenter/galilei/tests/gstatsimdocgrp.cpp,kgalileicenter/galilei/tests/gstatsimdocgrp.h,kgalileicenter/galilei/tests/gstatsimdocprof.cpp,kgalileicenter/galilei/tests/gstatsimdocprof.h,kgalileicenter/galilei/tests/gstatsimprofgrp.cpp,kgalileicenter/galilei/tests/gstatsimprofgrp.h,kgalileicenter/galilei/tests/gstatprofdoc.cpp,kgalileicenter/galilei/tests/gstatprofdoc.h
 sharedlib_LDFLAGS=-version-info 0:0:0
 sharedlib_rootname=tests
 sub_dirs=
@@ -1689,6 +1713,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/tests/gsimdocquerygroup.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/tests/gstatprofdoc.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/tests/gstatprofdoc.h]
 dist=true
 install=false
 install_location=
@@ -2179,7 +2215,7 @@ type=HEADER
 sub_dirs=galilei,rga,rpromethee
 
 [kgalileicenter/qtwidgets/galilei/Makefile.am]
-files=kgalileicenter/qtwidgets/galilei/qgdocxml.cpp,kgalileicenter/qtwidgets/galilei/qgdocxml.h,kgalileicenter/qtwidgets/galilei/qgprofile.cpp,kgalileicenter/qtwidgets/galilei/qgprofile.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.h,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.h,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.h,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconf.h,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfrelevant.cpp,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfrelevant.h,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfgravitation.cpp,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfgravitation.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfcure.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfcure.h,kgalileicenter/qtwidgets/galilei/qsimcriterionchoose.cpp,kgalileicenter/qtwidgets/galilei/qsimcriterionchoose.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsupkmeans.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsupkmeans.h,kgalileicenter/qtwidgets/galilei/qggroupsir.cpp,kgalileicenter/qtwidgets/galilei/qggroupsir.h,kgalileicenter/qtwidgets/galilei/qggroupshistory.cpp,kgalileicenter/qtwidgets/galilei/qggroupshistory.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.cpp,kgalileicenter/qtwidgets/galilei/qlinkcalcitalgopluginconf.cpp,kgalileicenter/qtwidgets/galilei/qlinkcalcitalgopluginconf.h,kgalileicenter/qtwidgets/galilei/qlinkcalcpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qlinkcalcpluginconf.h
+files=kgalileicenter/qtwidgets/galilei/qgdocxml.cpp,kgalileicenter/qtwidgets/galilei/qgdocxml.h,kgalileicenter/qtwidgets/galilei/qgprofile.cpp,kgalileicenter/qtwidgets/galilei/qgprofile.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.h,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.h,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.h,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconf.h,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfrelevant.cpp,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfrelevant.h,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfgravitation.cpp,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfgravitation.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfcure.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfcure.h,kgalileicenter/qtwidgets/galilei/qsimcriterionchoose.cpp,kgalileicenter/qtwidgets/galilei/qsimcriterionchoose.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsupkmeans.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsupkmeans.h,kgalileicenter/qtwidgets/galilei/qggroupsir.cpp,kgalileicenter/qtwidgets/galilei/qggroupsir.h,kgalileicenter/qtwidgets/galilei/qggroupshistory.cpp,kgalileicenter/qtwidgets/galilei/qggroupshistory.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.cpp,kgalileicenter/qtwidgets/galilei/qlinkcalcpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qlinkcalcpluginconf.h,kgalileicenter/qtwidgets/galilei/qlinkcalccorrespondencepluginconf.cpp,kgalileicenter/qtwidgets/galilei/qlinkcalccorrespondencepluginconf.h,kgalileicenter/qtwidgets/galilei/qlinkcalchitspluginconf.cpp,kgalileicenter/qtwidgets/galilei/qlinkcalchitspluginconf.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=galilei
 sub_dirs=
@@ -2437,13 +2473,25 @@ install=false
 install_location=
 type=HEADER
 
-[kgalileicenter/qtwidgets/galilei/qlinkcalcitalgopluginconf.cpp]
+[kgalileicenter/qtwidgets/galilei/qlinkcalccorrespondencepluginconf.cpp]
 dist=true
 install=false
 install_location=
 type=SOURCE
 
-[kgalileicenter/qtwidgets/galilei/qlinkcalcitalgopluginconf.h]
+[kgalileicenter/qtwidgets/galilei/qlinkcalccorrespondencepluginconf.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/qtwidgets/galilei/qlinkcalchitspluginconf.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/qtwidgets/galilei/qlinkcalchitspluginconf.h]
 dist=true
 install=false
 install_location=

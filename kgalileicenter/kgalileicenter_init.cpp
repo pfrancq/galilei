@@ -145,7 +145,6 @@ void KGALILEICenterApp::initActions(void)
 	showDocs=new KAction(i18n("&Show Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
 	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");;
 	docsAnalyse=new KAction(i18n("&Analyse Documents"),0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");;
-	linksCalc=new KAction(i18n("Compute &Links"),0,this,SLOT(slotComputeLinks()),actionCollection(),"linksComputation");;
 	docsStats=new KAction(i18n("S&tatistics about Documents"),0,this,SLOT(slotDocsStats()),actionCollection(),"docsStats");;
 	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
 	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
@@ -380,13 +379,23 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->setGroup(ReWeightingParams.GetComputingName());
 	Config->writeEntry("MaxNonZero",ReWeightingParams.MaxNonZero);
 
-	// Write Config of LinkCalcItAlgo
-	Config->setGroup(LinkCalcItAlgoParams.GetComputingName());
-	Config->writeEntry("NbIteration",LinkCalcItAlgoParams.NbIteration);
-	Config->writeEntry("NbResults",LinkCalcItAlgoParams.NbResults);
-	Config->writeEntry("LimitLink",LinkCalcItAlgoParams.LimitLink);
-	Config->writeEntry("NbLinks",LinkCalcItAlgoParams.NbLinks);
-	Config->writeEntry("UseMultipleLink",LinkCalcItAlgoParams.UseMultipleLink);
+	// Write Config of LinkCalcHITS
+	Config->setGroup(LinkCalcHITSParams.GetComputingName());
+	Config->writeEntry("NbIteration",LinkCalcHITSParams.NbIteration);
+	Config->writeEntry("NbResultsHub",LinkCalcHITSParams.NbResultsHub);
+	Config->writeEntry("NbResultsAuto",LinkCalcHITSParams.NbResultsAuto);
+	Config->writeEntry("LimitLink",LinkCalcHITSParams.LimitLink);
+	Config->writeEntry("NbLinks",LinkCalcHITSParams.NbLinks);
+	Config->writeEntry("UseMultipleLink",LinkCalcHITSParams.UseMultipleLink);
+
+	// Write Config of LinkCalcCorrespondence
+	Config->setGroup(LinkCalcCorrespondenceParams.GetComputingName());
+	Config->writeEntry("NbIteration",LinkCalcCorrespondenceParams.NbIteration);
+	Config->writeEntry("NbResultsHub",LinkCalcCorrespondenceParams.NbResultsHub);
+	Config->writeEntry("NbResultsAuto",LinkCalcCorrespondenceParams.NbResultsAuto);
+	Config->writeEntry("LimitLink",LinkCalcCorrespondenceParams.LimitLink);
+	Config->writeEntry("NbLinks",LinkCalcCorrespondenceParams.NbLinks);
+	Config->writeEntry("UseMultipleLink",LinkCalcCorrespondenceParams.UseMultipleLink);
 	
 }
 
@@ -482,13 +491,14 @@ void KGALILEICenterApp::readOptions(void)
 	GroupCalcMethod->InsertPtr(new RStd::RString("Gravitation"));
 	GroupCalcMethod->InsertPtr(new RStd::RString("Prototype"));
 	LinkCalcMethod=new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
-	LinkCalcMethod->InsertPtr(new RStd::RString("Iterative Algorithm"));
+	LinkCalcMethod->InsertPtr(new RStd::RString("HITS Algorithm"));
+	LinkCalcMethod->InsertPtr(new RStd::RString("Correspondence Algorithm"));
 	Config->setGroup("Session Options");
 	CurrentProfileDesc=Config->readEntry("Description Method","Vector space");
 	CurrentComputingMethod=Config->readEntry("Computing Method","Statistical");
 	CurrentGroupingMethod=Config->readEntry("Grouping Method","First-Fit Heuristic");
 	CurrentGroupCalcMethod=Config->readEntry("Group Description Method","Prototype");
-	CurrentLinkCalcMethod=Config->readEntry("Link Description Method","Iterative Algorithm");
+	CurrentLinkCalcMethod=Config->readEntry("Link Description Method","HITS Algorithm");
 
 	// Read Config of GA
 	Config->setGroup(IRParams.GetGroupingName());
@@ -581,14 +591,23 @@ void KGALILEICenterApp::readOptions(void)
 	Config->setGroup(ReWeightingParams.GetComputingName());
 	ReWeightingParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
 
-	// Read Config of LinkCalcItAlgo
-	Config->setGroup(LinkCalcItAlgoParams.GetComputingName());
-	LinkCalcItAlgoParams.NbIteration=Config->readNumEntry("NbIteration",5);
-	LinkCalcItAlgoParams.NbResults=Config->readNumEntry("NbResults",5);
-	LinkCalcItAlgoParams.LimitLink=Config->readBoolEntry("LimitLink",false);
-	LinkCalcItAlgoParams.NbLinks=Config->readNumEntry("NbLinks",10);
-	LinkCalcItAlgoParams.UseMultipleLink=Config->readBoolEntry("UseMultipleLink",true);
-	
+	// Read Config of LinkCalcHITS
+	Config->setGroup(LinkCalcHITSParams.GetComputingName());
+	LinkCalcHITSParams.NbIteration=Config->readNumEntry("NbIteration",5);
+	LinkCalcHITSParams.NbResultsHub=Config->readNumEntry("NbResultsHub",5);
+	LinkCalcHITSParams.NbResultsAuto=Config->readNumEntry("NbResultsAuto",5);
+	LinkCalcHITSParams.LimitLink=Config->readBoolEntry("LimitLink",false);
+	LinkCalcHITSParams.NbLinks=Config->readNumEntry("NbLinks",10);
+	LinkCalcHITSParams.UseMultipleLink=Config->readBoolEntry("UseMultipleLink",true);
+
+	// Read Config of LinkCalcCorrespondence
+	Config->setGroup(LinkCalcCorrespondenceParams.GetComputingName());
+	LinkCalcCorrespondenceParams.NbIteration=Config->readNumEntry("NbIteration",5);
+	LinkCalcCorrespondenceParams.NbResultsHub=Config->readNumEntry("NbResultsHub",5);
+	LinkCalcCorrespondenceParams.NbResultsAuto=Config->readNumEntry("NbResultsAuto",5);
+	LinkCalcCorrespondenceParams.LimitLink=Config->readBoolEntry("LimitLink",false);
+	LinkCalcCorrespondenceParams.NbLinks=Config->readNumEntry("NbLinks",10);
+	LinkCalcCorrespondenceParams.UseMultipleLink=Config->readBoolEntry("UseMultipleLink",true);
 	
 }
 
@@ -639,7 +658,7 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	showDocs->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
 	docAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDicsLoad());
 	docsAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad()&&Doc->GetSession()->IsDicsLoad());
-	linksCalc->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
+	//linksCalc->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
 	docsStats->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad()&&Doc->GetSession()->IsDicsLoad());
 
 	// Menu "GA"
@@ -672,7 +691,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);
-	linksCalc->setEnabled(false);
 	docsStats->setEnabled(false);
 	gaInit->setEnabled(false);
 	gaPause->setEnabled(false);

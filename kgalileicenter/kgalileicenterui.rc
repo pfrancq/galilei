@@ -57,8 +57,6 @@
 		<Action name="docAnalyse"/>
 		<Action name="docsAnalyse"/>
 		<separator/>
-		<Action name="linksComputation"/>
-		<separator/>
 		<Action name="createXML"/>
  		<Action name="saveXML"/>
 		<Action name="analyseXML"/>

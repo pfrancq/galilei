@@ -53,7 +53,7 @@ using namespace RStd;
 // include files for GALILEI
 #include <docs/gdocxml.h>
 #include <docs/gdocoptions.h>
-#include <docs/glinkcalcitalgo.h>
+#include <docs/glinkcalchits.h>
 #include <sessions/gsessionmysql.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gsubprofiledesc.h>
@@ -197,7 +197,8 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterGroupingMethod(new GGroupingRandom(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess, &CalcGravitationParams));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess,&CalcRelevantParams));
-			Sess->RegisterLinkCalcMethod(new GLinkCalcItAlgo(Sess, &LinkCalcItAlgoParams));
+			Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess, &LinkCalcHITSParams));
+			Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess, &LinkCalcCorrespondenceParams));
 			Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 			Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 			Sess->SetCurrentComputingMethod(CurrentComputingMethod);
@@ -218,6 +219,9 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			runQuery->setEnabled(true);
 			UpdateMenusEntries();
 			dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
+
+			// Init the graph of links.
+			Sess->InitLinks();
 		}
 		catch(GException& e)
 		{
@@ -264,7 +268,8 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterGroupingMethod(new GGroupingCure(Sess, &CureParams));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess,&CalcGravitationParams));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess, &CalcRelevantParams));
-	Sess->RegisterLinkCalcMethod(new GLinkCalcItAlgo(Sess,&LinkCalcItAlgoParams));
+	Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess,&LinkCalcHITSParams));
+	Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess,&LinkCalcCorrespondenceParams));
 	Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 	Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 	Sess->SetCurrentComputingMethod(CurrentComputingMethod);
@@ -546,7 +551,7 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 		cmdline+= " ";
 		cmdline+= catdirectory;
 		cmdline+= "\n";
-//		cout << cmdline<<endl;
+		cout << cmdline<<endl;
 
 		// creation of the database using a shell script.
 		d=new QSessionProgressDlg(this,0,"filling database ...");
@@ -602,6 +607,7 @@ void KGALILEICenterApp::slotShowUsers(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfileCalc(void)
 {
+	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
 	KView* m = (KView*)pWorkspace->activeWindow();
 	if(m->getType()!=gProfile) return;
 	setDocParams(Doc);
@@ -612,6 +618,7 @@ void KGALILEICenterApp::slotProfileCalc(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfilesCalc(void)
 {
+	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Profiles");
 	d->ComputeProfiles(!profileAlwaysCalc->isChecked(),profileAlwaysSave->isChecked());
@@ -697,15 +704,6 @@ void KGALILEICenterApp::slotDocsAnalyse(void)
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Documents");
 	d->AnalyseDocs(!docAlwaysCalc->isChecked());
 	Doc->updateAllViews(0);
-}
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotComputeLinks(void)
-{
-	setDocParams(Doc);
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Document's Links");
-	d->ComputeLinks();
-	Doc->updateAllViews(1);
 }
 
 
@@ -1057,8 +1055,10 @@ void KGALILEICenterApp::slotRunProgram(void)
 	char tmp[100];
 	KViewPrg* o;
 	GIRParams tmpIRParams;
+	GDocOptions tmpDocOptions;
 
 	tmpIRParams=IRParams;
+	tmpDocOptions = (*DocOptions);
 	KApplication::kApplication()->processEvents();
 	KURL url=KFileDialog::getOpenURL(QString(getpwuid(getuid())->pw_dir)+QString("/galilei/prg"),i18n("*.kprg|KGALILEICenter Programs"), this, i18n("Open File..."));
 	if(url.isEmpty())
@@ -1092,6 +1092,7 @@ void KGALILEICenterApp::slotRunProgram(void)
 		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
 	}
 	IRParams=tmpIRParams;
+	(*Doc->GetSession()->GetDocOptions())=tmpDocOptions;
 	KIO::NetAccess::removeTempFile( tmpfile );
 }
 

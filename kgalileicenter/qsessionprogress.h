@@ -119,11 +119,6 @@ public:
 	void AnalyseDocs(bool modified=true);
 
 	/**
-	* Compute the links for all documents.
-	*/
-	void ComputeLinks();
-
-	/**
 	* Compute a profile.
 	* @param prof           Profile to compute.
 	*/
@@ -173,12 +168,6 @@ public:
 	* @param id             Identificator of the chromosome.
 	*/
 	virtual void receiveNextChromosome(unsigned int id);
-
-	/**
-	* The traitement for a specific method will begin.
-	* @param id             The id of the current step in the method.
-	*/
-  virtual void receiveNextMethod(unsigned int num);
 
 	/**
 	* Put some text.

@@ -142,7 +142,7 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd) throw(GException,bad_all
 		KApplication::kApplication()->processEvents();
 		Session->InitFdbks();
 	}
-
+	
 	txtRem->setText("Finish");
 	btnOk->setEnabled(true);
 }
@@ -216,28 +216,6 @@ void QSessionProgressDlg::AnalyseDocs(bool modified)
 		txtRem->setText("Analyse Documents ...");
 		KApplication::kApplication()->processEvents();
 		Session->AnalyseDocs(this,modified);
-		txtRem->setText("Finish");
-	}
-	catch(GException& e)
-	{
-		txtRem->setText(QString("Error: ")+e.GetMsg());
-	}
-	btnOk->setEnabled(true);
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::ComputeLinks()
-{
-	btnOk->setEnabled(false);
-	show();
-	KApplication::kApplication()->processEvents();
-
-	try
-	{
-		txtRem->setText("Compute Links ...");
-		KApplication::kApplication()->processEvents();
-		Session->ComputeLinks(this);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)
@@ -372,16 +350,6 @@ void QSessionProgressDlg::receiveNextChromosome(unsigned int id)
 	char tmp[50];
 
 	sprintf(tmp,"Analyse Chromosome n°%u ...",id);
-	txtRem->setText(tmp);
-	KApplication::kApplication()->processEvents();
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextMethod(unsigned int num)
-{
-	char tmp[50];
-	sprintf(tmp,"Compute Links - Step n°%u ...",num);
 	txtRem->setText(tmp);
 	KApplication::kApplication()->processEvents();
 }
