@@ -127,7 +127,6 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
 			AnalyseSim(sim,Cur1(),Cur2());
-
 		}
 	}
 }
