@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gfilterreu.h>
+#include <filters/gfilter.h>
 using namespace GALILEI;
 
 
@@ -55,13 +55,11 @@ static const char *description =
 
 
 //------------------------------------------------------------------------------
-//
-// class GFilterReu
-//
+extern "C" {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GFilterReu::About(void)
+void About(void)
 {
 	KAboutData aboutData( "reuters", I18N_NOOP("Reuters Filter"),
 		"1.0", description, KAboutData::License_GPL,
@@ -70,3 +68,8 @@ void GFilterReu::About(void)
 	KAboutApplication dlg(&aboutData);
 	dlg.exec();
 }
+
+
+//------------------------------------------------------------------------------
+}     // end of extern
+//------------------------------------------------------------------------------

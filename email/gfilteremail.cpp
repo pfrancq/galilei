@@ -266,4 +266,4 @@ GFilterEMail::~GFilterEMail(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("EMail Filter",GFilterEMail,true,true)
+CREATE_FILTER_FACTORY("EMail Filter",GFilterEMail)

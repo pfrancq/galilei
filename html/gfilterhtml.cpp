@@ -1019,12 +1019,6 @@ testlinks:
 
 
 //------------------------------------------------------------------------------
-void GFilterHTML::Configure(GFactoryFilter*)
-{
-}
-
-
-//------------------------------------------------------------------------------
 void GFilterHTML::CreateParams(GParams*)
 {
 }
@@ -1038,4 +1032,4 @@ GFilterHTML::~GFilterHTML()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("HTML Filter",GFilterHTML,true,false)
+CREATE_FILTER_FACTORY("HTML Filter",GFilterHTML)

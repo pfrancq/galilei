@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gfiltersgml.h>
+#include <filters/gfilter.h>
 using namespace GALILEI;
 
 
@@ -55,13 +55,11 @@ static const char *description =
 
 
 //------------------------------------------------------------------------------
-//
-// class GFilterSGML
-//
+extern "C" {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GFilterSGML::About(void)
+void About(void)
 {
 	KAboutData aboutData( "sgml", I18N_NOOP("SGML Filter"),
 		"1.0", description, KAboutData::License_GPL,
@@ -70,3 +68,8 @@ void GFilterSGML::About(void)
 	KAboutApplication dlg(&aboutData);
 	dlg.exec();
 }
+
+
+//------------------------------------------------------------------------------
+}     // End of extern
+//------------------------------------------------------------------------------

@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gfilteremail.h>
+#include <filters/gfilter.h>
 using namespace GALILEI;
 
 
@@ -70,13 +70,12 @@ static const char *description =
 
 
 //------------------------------------------------------------------------------
-//
-// class GFilterEMail
-//
+extern "C" {
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
-void GFilterEMail::About(void)
+void About(void)
 {
 	KAboutData aboutData( "email", I18N_NOOP("EMail Filter"),
 		"1.0", description, KAboutData::License_GPL,
@@ -88,7 +87,7 @@ void GFilterEMail::About(void)
 
 
 //------------------------------------------------------------------------------
-void GFilterEMail::Configure(GFactoryFilter* params)
+void Configure(GFactoryFilter* params)
 {
 	DlgConfig_Qt dlg;
 
@@ -99,3 +98,7 @@ void GFilterEMail::Configure(GFactoryFilter* params)
 		params->Apply();
 	}
 }
+
+//------------------------------------------------------------------------------
+}     // End of extern
+//------------------------------------------------------------------------------

@@ -123,17 +123,6 @@ public:
 	//void SetBlankLines(bool b);
 
 	/**
-	* Show 'about' information.
-	*/
-	static void About(void);
-
-	/**
-	* Configure the parameters.
-	* @param params          Parameters to configure.
-	*/
-	static void Configure(GFactoryFilter* params);
-
-	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/

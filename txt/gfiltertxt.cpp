@@ -134,12 +134,6 @@ bool GFilterTXT::Analyze(GDocXML* doc)
 
 
 //------------------------------------------------------------------------------
-void GFilterTXT::Configure(GFactoryFilter*)
-{
-}
-
-
-//------------------------------------------------------------------------------
 void GFilterTXT::CreateParams(GParams*)
 {
 }
@@ -150,5 +144,6 @@ GFilterTXT::~GFilterTXT(void)
 {
 }
 
+
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("Text Filter",GFilterTXT,true,false)
+CREATE_FILTER_FACTORY("Text Filter",GFilterTXT)

@@ -671,12 +671,6 @@ void GALILEI::GFilterReu::NextValidTag(void)
 
 
 //------------------------------------------------------------------------------
-void GFilterReu::Configure(GFactoryFilter*)
-{
-}
-
-
-//------------------------------------------------------------------------------
 void GFilterReu::CreateParams(GParams*)
 {
 }
@@ -690,4 +684,4 @@ GALILEI::GFilterReu::~GFilterReu()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("Reuters Filter",GFilterReu,true,false)
+CREATE_FILTER_FACTORY("Reuters Filter",GFilterReu)

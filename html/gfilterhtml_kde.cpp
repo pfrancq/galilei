@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gfilterhtml.h>
+#include <filters/gfilter.h>
 using namespace GALILEI;
 
 
@@ -55,13 +55,11 @@ static const char *description =
 
 
 //------------------------------------------------------------------------------
-//
-// class GFilterHTML
-//
+extern "C" {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GFilterHTML::About(void)
+void About(void)
 {
 	KAboutData aboutData( "html", I18N_NOOP("HTML Filter"),
 		"2.0", description, KAboutData::License_GPL,
@@ -71,3 +69,8 @@ void GFilterHTML::About(void)
 	KAboutApplication dlg(&aboutData);
 	dlg.exec();
 }
+
+
+//------------------------------------------------------------------------------
+}     // end of extern
+//------------------------------------------------------------------------------

@@ -588,12 +588,6 @@ void GALILEI::GFilterSGML::NextValidTag(void)
 
 
 //------------------------------------------------------------------------------
-void GFilterSGML::Configure(GFactoryFilter*)
-{
-}
-
-
-//------------------------------------------------------------------------------
 void GFilterSGML::CreateParams(GParams*)
 {
 }
@@ -607,4 +601,4 @@ GALILEI::GFilterSGML::~GFilterSGML()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("SGML Filter",GFilterSGML,true,false)
+CREATE_FILTER_FACTORY("SGML Filter",GFilterSGML)

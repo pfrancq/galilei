@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gfiltertxt.h>
+#include <filters/gfilter.h>
 using namespace GALILEI;
 
 
@@ -54,14 +54,11 @@ static const char *description =
 
 
 //------------------------------------------------------------------------------
-//
-// class GFilterTXT
-//
+extern "C" {
 //------------------------------------------------------------------------------
 
-
 //------------------------------------------------------------------------------
-void GFilterTXT::About(void)
+void About(void)
 {
 	KAboutData aboutData( "txt", I18N_NOOP("TXT Filter"),
 		"1.0", description, KAboutData::License_GPL,
@@ -71,3 +68,8 @@ void GFilterTXT::About(void)
 	KAboutApplication dlg(&aboutData);
 	dlg.exec();
 }
+
+
+//------------------------------------------------------------------------------
+}     // end of extern
+//------------------------------------------------------------------------------
