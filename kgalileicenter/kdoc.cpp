@@ -70,7 +70,7 @@ KDoc::KDoc(KGALILEICenterApp* owner,GSession* session)
 	  WinUsers(0), WinGroups(0), Owner(owner)
 {
 	pViewList = new QList<KView>;
-	pViewList->setAutoDelete(false);
+	pViewList->setAutoDelete(true);
 }
 
 
@@ -102,7 +102,6 @@ void KDoc::addView(KView* view)
 //-----------------------------------------------------------------------------
 void KDoc::removeView(KView* view)
 {
-	pViewList->remove(view);
 	switch(view->getType())
 	{
 		case gUsers:
@@ -120,6 +119,7 @@ void KDoc::removeView(KView* view)
 		default:
 			break;
 	};
+	pViewList->remove(view);
 	if(!pViewList->isEmpty())
 			changedViewList();
 		else

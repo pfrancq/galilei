@@ -262,8 +262,8 @@ void KGALILEICenterApp::slotSessionQuit(void)
 		Doc=0;
 	}
 	saveOptions();
-	close();
 	slotStatusMsg(i18n("Ready."));
+	close();
 }
 
 

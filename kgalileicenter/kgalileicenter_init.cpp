@@ -384,7 +384,6 @@ bool KGALILEICenterApp::eventFilter(QObject* object, QEvent* event)
 		if(pDoc->canCloseFrame(pView))
 		{
 			pDoc->removeView(pView);
-			delete pView;
 			e->accept();
 		}
 		else
