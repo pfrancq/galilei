@@ -758,6 +758,7 @@ void GComputeTimeI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned 
 		throw GException("Method needs no parameter");
 	cpu_time=difftime(end,Owner->ClockRef);
 	sprintf(tmp,"Ellapsed Time %f",cpu_time);
+	cout<<tmp<<endl;
 	r->WriteStr(tmp);
 }
 
