@@ -152,7 +152,7 @@ public:
 	/**
 	* Construct the list of plugins.
 	*/
-	void ConstructPlugins(GSession* s) throw(bad_alloc);
+	void ConstructPlugins(void) throw(bad_alloc);
 
 signals:
 

@@ -268,6 +268,13 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Minimum Occurence",DocOptions->MinOccur);
 	Config->writeEntry("Accept Non-Letter words",DocOptions->NonLetterWords);
 
+	// Write Config of Session Options
+	Config->setGroup("Session Options");
+	Config->writeEntry("Description Method",GetCurrentProfileDesc());
+	Config->writeEntry("Computing Method",GetCurrentComputingMethod());
+	Config->writeEntry("Grouping Method",GetCurrentGroupingMethod());
+	Config->writeEntry("Group Description Method",GetCurrentGroupCalcMethod());
+
 	// Write Config of GA
 	Config->setGroup(IRParams.GetGroupingName());
 	Config->writeEntry("Population Size",IRParams.PopSize);
@@ -333,7 +340,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->setGroup(StatisticalParams.GetComputingName());
 	Config->writeEntry("MaxNonZero",StatisticalParams.MaxNonZero);
 	Config->writeEntry("MaxOrderSize",StatisticalParams.MaxOrderSize);
- 	Config->writeEntry("IdfFactor",StatisticalParams.MaxOrderSize);
+ 	Config->writeEntry("IdfFactor",StatisticalParams.IdfFactor);
 
 	// Write Config of ProfileCalcReWeighting
 	Config->setGroup(ReWeightingParams.GetComputingName());
@@ -405,6 +412,28 @@ void KGALILEICenterApp::readOptions(void)
 	DocOptions->MinOccur=Config->readUnsignedNumEntry("Minimum Occurence",1);
 	DocOptions->NonLetterWords=Config->readBoolEntry("Accept Non-Letter words",true);
 
+	// Read Session Options
+	GroupingMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
+	GroupingMethod->InsertPtr(new RStd::RString("CURE"));
+	GroupingMethod->InsertPtr(new RStd::RString("First-Fit Heuristic"));
+	GroupingMethod->InsertPtr(new RStd::RString("Grouping Genetic Algorithms"));
+	GroupingMethod->InsertPtr(new RStd::RString("KMeansCosinus"));
+	GroupingMethod->InsertPtr(new RStd::RString("Random Heuristic"));
+	ComputingMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
+	ComputingMethod->InsertPtr(new RStd::RString("Statistical"));
+	ComputingMethod->InsertPtr(new RStd::RString("Direct Reweighting"));
+	ComputingMethod->InsertPtr(new RStd::RString("User Feedback"));
+	ProfileDesc = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
+	ProfileDesc->InsertPtr(new RStd::RString("Vector space"));
+	GroupCalcMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
+	GroupCalcMethod->InsertPtr(new RStd::RString("Gravitational Point"));
+	GroupCalcMethod->InsertPtr(new RStd::RString("Relevant SubProfile"));
+	Config->setGroup("Session Options");
+	CurrentProfileDesc=Config->readEntry("Description Method","Vector space");
+	CurrentComputingMethod=Config->readEntry("Computing Method","Statistical");
+	CurrentGroupingMethod=Config->readEntry("Grouping Method","First-Fit Heuristic");
+	CurrentGroupCalcMethod=Config->readEntry("Group Description Method","Relevant SubProfile");
+
 	// Read Config of GA
 	Config->setGroup(IRParams.GetGroupingName());
 	IRParams.PopSize=Config->readNumEntry("Population Size",16);
@@ -470,7 +499,7 @@ void KGALILEICenterApp::readOptions(void)
 	Config->setGroup(StatisticalParams.GetComputingName());
 	StatisticalParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
 	StatisticalParams.MaxOrderSize=Config->readNumEntry("MaxOrderSize",500);
- 	StatisticalParams.MaxOrderSize=Config->readBoolEntry("IdfFactor",1);
+ 	StatisticalParams.IdfFactor=Config->readBoolEntry("IdfFactor",1);
 
 	// Read Config of ProfileCalcReWeighting
 	Config->setGroup(ReWeightingParams.GetComputingName());
@@ -561,7 +590,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	gaPause->setEnabled(false);
 	gaStart->setEnabled(false);
 	gaStop->setEnabled(false);
-	plugins->setEnabled(false);
 	runProgram->setEnabled(false);
 	runInsts->setEnabled(false);
 	runQuery->setEnabled(false);

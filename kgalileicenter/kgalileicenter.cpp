@@ -181,15 +181,15 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterGroupingMethod(new GGroupingRandom(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess, &CalcGravitationParams));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess,&CalcRelevantParams));
-//			Config->setGroup("Session Options");
+			Config->setGroup("Session Options");
 //			method=Config->readEntry("Description Method","Vector space");
-//			Sess->SetCurrentProfileDesc(method);
+			Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 //			method=Config->readEntry("Grouping Method","First-Fit Heuristic");
-//			Sess->SetCurrentGroupingMethod(method);
+			Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 //			method=Config->readEntry("Computing Method","Statistical");
-//			Sess->SetCurrentComputingMethod(method);
+			Sess->SetCurrentComputingMethod(CurrentComputingMethod);
 //			method=Config->readEntry("Group Description Method","Relevant SubProfile");
-//			Sess->SetCurrentGroupCalcMethod(method);
+			Sess->SetCurrentGroupCalcMethod(CurrentGroupCalcMethod);
 //			Config->setGroup("Computing Options");
 //			GProfileCalcCursor Computings=Sess->GetComputingsCursor();
 //			for(Computings.Start();!Computings.End();Computings.Next())
@@ -238,13 +238,12 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		slotStatusMsg(i18n("Ready"));
 	}
 }
-
+        
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user,const char* passwd,const char* db)
 {
 	QConnectMySQL dlg(this,0,true);
-	QString method;
 	GSessionMySQL* Sess;
 	Sess = new GSessionMySQL(host,user,passwd,db,this);
 	unsigned int cmd=dlg.cbLoad->currentItem();
@@ -263,26 +262,22 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess,&CalcGravitationParams));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess, &CalcRelevantParams));
 	Config->setGroup("Session Options");
-	method=Config->readEntry("Description Method","Vector space");
-	Sess->SetCurrentProfileDesc(method);
-	method=Config->readEntry("Grouping Method","First-Fit Heuristic");
-	Sess->SetCurrentGroupingMethod(method);
-	method=Config->readEntry("Computing Method","Statistical");
-	Sess->SetCurrentComputingMethod(method);
-	method=Config->readEntry("Group Description Method","Relevant SubProfile");
-	Sess->SetCurrentGroupCalcMethod(method);
-	Config->setGroup("Computing Options");
-	GProfileCalcCursor Computings=Sess->GetComputingsCursor();
-	for(Computings.Start();!Computings.End();Computings.Next())
-		Computings()->SetSettings(Config->readEntry(Computings()->GetComputingName(),""));
-	Config->setGroup("Grouping Options");
-	GGroupingCursor Groupings=Sess->GetGroupingsCursor();
-	for(Groupings.Start();!Groupings.End();Groupings.Next())
-		Groupings()->SetSettings(Config->readEntry(Groupings()->GetGroupingName(),""));
-	Config->setGroup("Group Description Options");
-	GGroupCalcCursor GroupCalcs=Sess->GetGroupCalcsCursor();
-	for(GroupCalcs.Start();!GroupCalcs.End();GroupCalcs.Next())
-		GroupCalcs()->SetSettings(Config->readEntry(GroupCalcs()->GetComputingName(),""));
+	Sess->SetCurrentProfileDesc(CurrentProfileDesc);
+	Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
+	Sess->SetCurrentComputingMethod(CurrentComputingMethod);
+	Sess->SetCurrentGroupCalcMethod(CurrentGroupCalcMethod);
+//	Config->setGroup("Computing Options");
+//	GProfileCalcCursor Computings=Sess->GetComputingsCursor();
+//	for(Computings.Start();!Computings.End();Computings.Next())
+//		Computings()->SetSettings(Config->readEntry(Computings()->GetComputingName(),""));
+//	Config->setGroup("Grouping Options");
+//	GGroupingCursor Groupings=Sess->GetGroupingsCursor();
+//	for(Groupings.Start();!Groupings.End();Groupings.Next())
+//		Groupings()->SetSettings(Config->readEntry(Groupings()->GetGroupingName(),""));
+//	Config->setGroup("Group Description Options");
+//	GGroupCalcCursor GroupCalcs=Sess->GetGroupCalcsCursor();
+//	for(GroupCalcs.Start();!GroupCalcs.End();GroupCalcs.Next())
+//		GroupCalcs()->SetSettings(Config->readEntry(GroupCalcs()->GetComputingName(),""));
 	sessionDisconnect->setEnabled(true);
 	sessionCompute->setEnabled(true);
 	sessionConnect->setEnabled(false);
@@ -314,29 +309,30 @@ void KGALILEICenterApp::slotSessionCompute(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionDisconnect(void)
 {
-	if(Doc)
-	{
-		Config->setGroup("Session Options");
-		Config->writeEntry("Description Method",Doc->GetSession()->GetCurrentProfileDesc()->GetProfDescName());
-		Config->writeEntry("Grouping Method",Doc->GetSession()->GetCurrentGroupingMethod()->GetGroupingName());
-		Config->writeEntry("Computing Method",Doc->GetSession()->GetCurrentComputingMethod()->GetComputingName());
-		Config->writeEntry("Group Description Method",Doc->GetSession()->GetCurrentGroupCalcMethod()->GetComputingName());
-		Config->setGroup("Computing Options");
-		GProfileCalcCursor Computings=Doc->GetSession()->GetComputingsCursor();
-		for(Computings.Start();!Computings.End();Computings.Next())
-			Config->writeEntry(Computings()->GetComputingName(),Computings()->GetSettings());
-		Config->setGroup("Grouping Options");
-		GGroupingCursor Groupings=Doc->GetSession()->GetGroupingsCursor();
-		for(Groupings.Start();!Groupings.End();Groupings.Next())
-			Config->writeEntry(Groupings()->GetGroupingName(),Groupings()->GetSettings());
-		Config->setGroup("Group Description Options");
-		GGroupCalcCursor GroupCalcs=Doc->GetSession()->GetGroupCalcsCursor();
-		for(GroupCalcs.Start();!GroupCalcs.End();GroupCalcs.Next())
-			Config->writeEntry(GroupCalcs()->GetComputingName(),GroupCalcs()->GetSettings());
-		Doc->closeDocument();
-		delete Doc;
-		Doc=0;
-	}
+//	if(Doc)
+//	{
+//		Config->setGroup("Session Options");
+//		GSubProfileDesc* ici=Doc->GetSession()->GetCurrentProfileDesc();
+//		Config->writeEntry("Description Method",CurrentProfileDesc);//Doc->GetSession()->GetCurrentProfileDesc()->GetProfDescName());
+//		Config->writeEntry("Grouping Method",CurrentGroupingMethod);//Doc->GetSession()->GetCurrentGroupingMethod()->GetGroupingName());
+//		Config->writeEntry("Computing Method",CurrentComputingMethod);//Doc->GetSession()->GetCurrentComputingMethod()->GetComputingName());
+//		Config->writeEntry("Group Description Method",CurrentComputingMethod);//Doc->GetSession()->GetCurrentGroupCalcMethod()->GetComputingName());
+//		Config->setGroup("Computing Options");
+//		GProfileCalcCursor Computings=Doc->GetSession()->GetComputingsCursor();
+//		for(Computings.Start();!Computings.End();Computings.Next())
+//			Config->writeEntry(Computings()->GetComputingName(),Computings()->GetSettings());
+//		Config->setGroup("Grouping Options");
+//		GGroupingCursor Groupings=Doc->GetSession()->GetGroupingsCursor();
+//		for(Groupings.Start();!Groupings.End();Groupings.Next())
+//			Config->writeEntry(Groupings()->GetGroupingName(),Groupings()->GetSettings());
+//		Config->setGroup("Group Description Options");
+//		GGroupCalcCursor GroupCalcs=Doc->GetSession()->GetGroupCalcsCursor();
+//		for(GroupCalcs.Start();!GroupCalcs.End();GroupCalcs.Next())
+//			Config->writeEntry(GroupCalcs()->GetComputingName(),GroupCalcs()->GetSettings());
+//		Doc->closeDocument();
+//		delete Doc;
+//		Doc=0;
+//	}
 	DisableAllActions();
 	sessionConnect->setEnabled(true);
 	statusBar()->changeItem("Not Connected !",1);
@@ -366,29 +362,6 @@ void KGALILEICenterApp::slotSessionStat(void)
 void KGALILEICenterApp::slotSessionQuit(void)
 {
 	slotStatusMsg(i18n("Exiting..."));
-	if(Doc)
-	{
-//		Config->setGroup("Session Options");
-//		Config->writeEntry("Description Method",Doc->GetSession()->GetCurrentProfileDesc()->GetProfDescName());
-//		Config->writeEntry("Grouping Method",Doc->GetSession()->GetCurrentGroupingMethod()->GetGroupingName());
-//		Config->writeEntry("Computing Method",Doc->GetSession()->GetCurrentComputingMethod()->GetComputingName());
-//		Config->writeEntry("Group Description Method",Doc->GetSession()->GetCurrentGroupCalcMethod()->GetComputingName());
-//		Config->setGroup("Computing Options");
-//		GProfileCalcCursor Computings=Doc->GetSession()->GetComputingsCursor();
-//		for(Computings.Start();!Computings.End();Computings.Next())
-//			Config->writeEntry(Computings()->GetComputingName(),Computings()->GetSettings());
-//		Config->setGroup("Grouping Options");
-//		GGroupingCursor Groupings=Doc->GetSession()->GetGroupingsCursor();
-//		for(Groupings.Start();!Groupings.End();Groupings.Next())
-//			Config->writeEntry(Groupings()->GetGroupingName(),Groupings()->GetSettings());
-//		Config->setGroup("Group Description Options");
-//		GGroupCalcCursor GroupCalcs=Doc->GetSession()->GetGroupCalcsCursor();
-//		for(GroupCalcs.Start();!GroupCalcs.End();GroupCalcs.Next())
-//			Config->writeEntry(GroupCalcs()->GetComputingName(),GroupCalcs()->GetSettings());
-		Doc->closeDocument();
-		delete Doc;
-		Doc=0;
-	}
 	saveOptions();
 	slotStatusMsg(i18n("Ready."));
 	close();

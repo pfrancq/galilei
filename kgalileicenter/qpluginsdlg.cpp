@@ -74,68 +74,44 @@
 class QPluginsDlg::QPluginListView : public QCheckListItem
 {
 public:
-	GSession* Session;
+	KGALILEICenterApp* App;
 	int Type;
-	union
-	{
-		GSubProfileDesc* Desc;
-		GGrouping* Grp;
-		GProfileCalc* Calc;
-		GGroupCalc* GrpDesc;
-	} Ptr;
+	RString Name;
 
-	QPluginListView(GSession* s,QListView* v,int t,const char* str) : QCheckListItem(v,str,QCheckListItem::Controller), Session(s), Type(t) {setOpen(true);}
-	QPluginListView(GSession* s,QCheckListItem* v,GSubProfileDesc* p,const char* str);
-	QPluginListView(GSession* s,QCheckListItem* v,GProfileCalc* p,const char* str);
-	QPluginListView(GSession* s,QCheckListItem* v,GGrouping* p,const char* str);
-	QPluginListView(GSession* s,QCheckListItem* v,GGroupCalc* p,const char* str);
+	QPluginListView(KGALILEICenterApp* a,QListView* v,int t,const char* str) : QCheckListItem(v,str,QCheckListItem::Controller), App(a), Type(t), Name(RString(str)) {setOpen(true);}
+	QPluginListView(KGALILEICenterApp* a,QCheckListItem* v,int t,const char* str);
 	virtual void activate(void);
 };
 
 
-//---------------------------------------------------------------------------
-QPluginsDlg::QPluginListView::QPluginListView(GSession* s,QCheckListItem* v,GSubProfileDesc* p,const char* str)
-	: QCheckListItem(v,str,QCheckListItem::RadioButton), Session(s), Type(1)
-{
-	setOpen(true);
-	Ptr.Desc=p;
-	if(p==Session->GetCurrentProfileDesc())
-		setOn(true);
-}
-
 
 //---------------------------------------------------------------------------
-QPluginsDlg::QPluginListView::QPluginListView(GSession* s,QCheckListItem* v,GProfileCalc* p,const char* str)
-	: QCheckListItem(v,str,QCheckListItem::RadioButton), Session(s), Type(2)
+QPluginsDlg::QPluginListView::QPluginListView(KGALILEICenterApp* a,QCheckListItem* v,int t,const char* str)
+	: QCheckListItem(v,str,QCheckListItem::RadioButton), App(a), Type(t), Name(RString(str))
 {
 	setOpen(true);
-	Ptr.Calc=p;
-	if(p==Session->GetCurrentComputingMethod())
-		setOn(true);
-}
-
-
-//---------------------------------------------------------------------------
-QPluginsDlg::QPluginListView::QPluginListView(GSession* s,QCheckListItem* v,GGrouping* p,const char* str)
-	: QCheckListItem(v,str,QCheckListItem::RadioButton), Session(s), Type(3)
-{
-	setOpen(true);
-	Ptr.Grp=p;
-	if(p==Session->GetCurrentGroupingMethod())
-		setOn(true);
-}
-
-
-//---------------------------------------------------------------------------
-QPluginsDlg::QPluginListView::QPluginListView(GSession* s,QCheckListItem* v,GGroupCalc* p,const char* str)
-	: QCheckListItem(v,str,QCheckListItem::RadioButton), Session(s), Type(4)
-{
-	setOpen(true);
-	Ptr.GrpDesc=p;
-	if(p==Session->GetCurrentGroupCalcMethod())
-		setOn(true);
-}
-
+	switch(Type)
+	{
+		case 1:
+		{
+			RString s=App->GetCurrentProfileDesc();
+			if(RString(str)==(App->GetCurrentProfileDesc()))
+				setOn(true);
+		}
+			break;
+		case 2:
+			if(RString(str)==(App->GetCurrentComputingMethod()))
+				setOn(true);
+			break;
+		case 3:
+			if(RString(str)==(App->GetCurrentGroupingMethod()))
+				setOn(true);
+			break;
+		case 4:
+			if(RString(str)==(App->GetCurrentGroupCalcMethod()))
+				setOn(true);
+			break;
+	}}
 
 //---------------------------------------------------------------------------
 void QPluginsDlg::QPluginListView::activate(void)
@@ -146,16 +122,26 @@ void QPluginsDlg::QPluginListView::activate(void)
 	switch(Type)
 	{
 		case 1:
-			Session->SetCurrentProfileDesc(Ptr.Desc->GetProfDescName());
+			{
+            App->SetCurrentProfileDesc(Name);
+			if(App->getDocument())
+				((App->getDocument())->GetSession())->SetCurrentProfileDesc(App->GetCurrentProfileDesc());
+			}
 			break;
 		case 2:
-			Session->SetCurrentComputingMethod(Ptr.Calc->GetComputingName());
+            App->SetCurrentComputingMethod(Name);
+			if(App->getDocument())
+				((App->getDocument())->GetSession())->SetCurrentComputingMethod(App->GetCurrentComputingMethod());
 			break;
 		case 3:
-			Session->SetCurrentGroupingMethod(Ptr.Grp->GetGroupingName());
+            App->SetCurrentGroupingMethod(Name);
+			if(App->getDocument())
+				((App->getDocument())->GetSession())->SetCurrentGroupingMethod(App->GetCurrentGroupingMethod());
 			break;
 		case 4:
-			Session->SetCurrentGroupCalcMethod(Ptr.GrpDesc->GetComputingName());
+            App->SetCurrentGroupCalcMethod(Name);
+			if(App->getDocument())
+				((App->getDocument())->GetSession())->SetCurrentGroupCalcMethod(App->GetCurrentGroupCalcMethod());
 			break;
 	}
 }
@@ -212,7 +198,7 @@ QPluginsDlg::QPluginsDlg(KGALILEICenterApp* app,const char* name)
 	// signals and slots connections
 	connect(Plugins,SIGNAL(selectionChanged(QListViewItem*)),this,SLOT(slotPlugin(QListViewItem*)));
 
-	ConstructPlugins(App->Doc->GetSession());
+	ConstructPlugins();
 }
 
 
@@ -238,30 +224,26 @@ void QPluginsDlg::RegisterGroupCalcPluginConf(QGroupCalcPluginConf* ins) throw(b
 
 
 //---------------------------------------------------------------------------
-void QPluginsDlg::ConstructPlugins(GSession* s) throw(bad_alloc)
+void QPluginsDlg::ConstructPlugins(void) throw(bad_alloc)
 {
 	QPluginListView* item;
-	GSubProfileDescCursor DescsCur=s->GetProfileDescsCursor();
-	GProfileCalcCursor ComputingsCur=s->GetComputingsCursor();
-	GGroupingCursor& GroupingsCur=s->GetGroupingsCursor();
-	GGroupCalcCursor& GroupCalcsCur=s->GetGroupCalcsCursor();
 
-	item=new QPluginListView(s,Plugins,0,"Description Methods");
+	item=new QPluginListView(App,Plugins,0,"Description Methods");
 	item->setSelectable(false);
-	for(DescsCur.Start();!DescsCur.End();DescsCur.Next())
-		new QPluginListView(s,item,DescsCur(),DescsCur()->GetProfDescName());
-	item=new QPluginListView(s,Plugins,0,"Computing Methods");
+	for(App->ProfileDesc->Start();!App->ProfileDesc->End();App->ProfileDesc->Next())
+		new QPluginListView(App,item,1,(*App->ProfileDesc)()->StrDup());
+	item=new QPluginListView(App,Plugins,0,"Computing Methods");
 	item->setSelectable(false);
-	for(ComputingsCur.Start();!ComputingsCur.End();ComputingsCur.Next())
-		new QPluginListView(s,item,ComputingsCur(),ComputingsCur()->GetComputingName());
-	item=new QPluginListView(s,Plugins,0,"Grouping Methods");
+	for(App->ComputingMethod->Start();!App->ComputingMethod->End();App->ComputingMethod->Next())
+		new QPluginListView(App,item,2,(*App->ComputingMethod)()->StrDup());
+	item=new QPluginListView(App,Plugins,0,"Grouping Methods");
 	item->setSelectable(false);
-	for(GroupingsCur.Start();!GroupingsCur.End();GroupingsCur.Next())
-		new QPluginListView(s,item,GroupingsCur(),GroupingsCur()->GetGroupingName());
-	item=new QPluginListView(s,Plugins,0,"Group Descritpion Methods");
+	for(App->GroupingMethod->Start();!App->GroupingMethod->End();App->GroupingMethod->Next())
+		new QPluginListView(App,item,3,(*App->GroupingMethod)()->StrDup());
+	item=new QPluginListView(App,Plugins,0,"Group Descritpion Methods");
 	item->setSelectable(false);
-	for(GroupCalcsCur.Start();!GroupCalcsCur.End();GroupCalcsCur.Next())
-		new QPluginListView(s,item,GroupCalcsCur(),GroupCalcsCur()->GetComputingName());
+	for(App->GroupCalcMethod->Start();!App->GroupCalcMethod->End();App->GroupCalcMethod->Next())
+		new QPluginListView(App,item,4,(*App->GroupCalcMethod)()->StrDup());
 }
 
 
@@ -318,17 +300,18 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
  		Main->removePage(Conf);
 		Conf->disconnect();
 	}
+	RStd::RString coucou=App->GetCurrentComputingMethod();
 	switch(p->Type)
 	{
 		case 1:
 			Conf=NoConf;
-			sprintf(tmp,"Configure [%s]",p->Ptr.Desc->GetProfDescName());
+			sprintf(tmp,"Configure [%s]",(App->GetCurrentProfileDesc()).StrDup());
 			Cur=p;
 			break;
 
 		case 2:
-			sprintf(tmp,"Configure [%s]",p->Ptr.Calc->GetComputingName());
-			Conf=Computings->GetPtr<const char*>(p->Ptr.Calc->GetComputingName());
+			sprintf(tmp,"Configure [%s]",(App->GetCurrentComputingMethod()).StrDup());
+			Conf=Computings->GetPtr<const char*>(App->GetCurrentComputingMethod());
 			if(!Conf)
 				Conf=NoConf;
 			else
@@ -338,8 +321,8 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 
 		case 3:
 			Conf=NoConf;
-			sprintf(tmp,"Configure [%s]",p->Ptr.Grp->GetGroupingName());
-			Conf=Groupings->GetPtr<const char*>(p->Ptr.Calc->GetComputingName());
+			sprintf(tmp,"Configure [%s]",(App->GetCurrentGroupingMethod()).StrDup());
+			Conf=Groupings->GetPtr<const char*>(App->GetCurrentGroupingMethod());
 			if(!Conf)
 				Conf=NoConf;
 			else
@@ -349,8 +332,8 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 
 		case 4:
 			Conf=NoConf;
-			sprintf(tmp,"Configure [%s]",p->Ptr.GrpDesc->GetComputingName());
-			Conf=GroupCalcs->GetPtr<const char*>(p->Ptr.GrpDesc->GetComputingName());
+			sprintf(tmp,"Configure [%s]",(App->GetCurrentGroupCalcMethod()).StrDup());
+			Conf=GroupCalcs->GetPtr<const char*>(App->GetCurrentGroupCalcMethod());
 			if(!Conf)
 				Conf=NoConf;
 			else

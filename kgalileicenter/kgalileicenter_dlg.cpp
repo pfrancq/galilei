@@ -147,7 +147,6 @@ void KGALILEICenterApp::slotDocsOptions(void)
 void KGALILEICenterApp::slotPlugins(void)
 {
 	QPluginsDlg dlg(this,"Plugins Dialog");
-
 	dlg.RegisterComputingPluginConf(new QComputingPluginConfStat(&StatisticalParams));
 	dlg.RegisterComputingPluginConf(new QComputingPluginConfReWeighting(&ReWeightingParams));
 	dlg.RegisterComputingPluginConf(new QComputingPluginConfFeedback(&FeedbackParams));

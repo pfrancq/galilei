@@ -158,6 +158,12 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	*/
 	GCalcGravitationParams CalcGravitationParams;
 
+    //Ajout a commenter
+	RStd::RString CurrentProfileDesc;
+	RStd::RString CurrentComputingMethod;
+	RStd::RString CurrentGroupingMethod;
+	RStd::RString CurrentGroupCalcMethod;
+
 	/**
 	* Database server's host.
 	*/
@@ -203,6 +209,28 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	* Options of the documents.
 	*/
 	GDocOptions* DocOptions;
+public:
+
+	/**
+	* Container of subprofiles description method.
+	*/
+	RStd::RContainer<RStd::RString,unsigned int,true,true>* ProfileDesc;
+
+	/**
+	* Container of computing method.
+	*/
+	RStd::RContainer<RStd::RString,unsigned int,true,true>* ComputingMethod;
+
+	/**
+	* Container of grouping method.
+	*/
+	RStd::RContainer<RStd::RString,unsigned int,true,true>* GroupingMethod;
+
+	/**
+	* Container of group description method.
+	*/
+	RStd::RContainer<RStd::RString,unsigned int,true,true>* GroupCalcMethod;
+
 
 public:
 
@@ -217,6 +245,46 @@ public:
 	* Returns a pointer to the document connected to the view.
 	*/
 	KDoc* getDocument(void) const;
+
+	/**
+	* Return the current subprofile description method used.
+	*/
+	RStd::RString GetCurrentProfileDesc(void) {return(CurrentProfileDesc);}
+
+	/**
+	* Set the current subprofile description method used.
+	*/
+	void SetCurrentProfileDesc(RStd::RString str) {CurrentProfileDesc=str;}
+
+	/**
+	* Return the current method used for computed the profile.
+	*/
+	RStd::RString GetCurrentComputingMethod(void) {return(CurrentComputingMethod);}
+
+	/**
+	* Set the current method used for computed the profile.
+	*/
+	void SetCurrentComputingMethod(RStd::RString str) {CurrentComputingMethod=str;}
+
+	/**
+	* Return the current grouping method used.
+	*/
+	RStd::RString GetCurrentGroupingMethod(void) {return(CurrentGroupingMethod);}
+
+	/**
+	* Set the current grouping method used.
+	*/
+	void SetCurrentGroupingMethod(RStd::RString str) {CurrentGroupingMethod=str;}
+
+	/**
+	* Return the Current group description method used.
+	*/
+	RStd::RString GetCurrentGroupCalcMethod(void) {return(CurrentGroupCalcMethod);}
+
+	/**
+	* Set the Current group description method used.
+	*/
+	void SetCurrentGroupCalcMethod(RStd::RString str) {CurrentGroupCalcMethod=str;}
 
 protected:
 
