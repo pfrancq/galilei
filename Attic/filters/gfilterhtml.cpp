@@ -362,9 +362,8 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::AnalyseLink(char* params,char* content,bool use)
+void GALILEI::GFilterHTML::AnalyseLink(char* params,char* content)
 {
-	if(!use) return;
 	RXMLTag* metalink;
 
 	metalink = AnalyseLinkParams(params);

@@ -183,7 +183,7 @@ protected:
 	* @param params        Parameters of the LINKS Tag
 	* @param content       the description of the link
 	*/
-	void AnalyseLink(char* params,char* content,bool use=false);
+	void AnalyseLink(char* params,char* content);
 
 //  /**
 //	* Function who analyze the tag "LINKS" of the html document

@@ -117,6 +117,26 @@ public:
 	bool NonLetterWords;
 
 	/**
+	* Determine if Links are used or not.
+	*/
+	bool UseLink;                                       
+
+	/**
+	* Determine if External links must be treated.
+	*/
+	bool UseExternalLink;
+
+	/**
+	* Determine if a maximum number of link to an URL is used or not.
+	*/
+	bool LimitLink;
+
+	/**
+	* Determine the maximum number of link to an URL.
+	*/
+	unsigned int NbLinks;
+
+	/**
 	* Default Constructor.
 	*/
 	GDocOptions(void);

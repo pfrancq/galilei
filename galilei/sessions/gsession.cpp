@@ -326,19 +326,19 @@ void GALILEI::GSession::SetCurrentLinkCalcMethod(const char* name) throw(GExcept
 void GALILEI::GSession::SetCurrentLinkCalcMethodSettings(const char* s) throw(GException)
 {
 	if((!LinkCalc)||(!(*s))) return;
-//	LinkCalc->SetSettings(s);
+	LinkCalc->SetSettings(s);
 }
 
 
 //-----------------------------------------------------------------------------
 const char* GALILEI::GSession::GetLinkCalcMethodSettings(const char* n) throw(GException)
 {
-//	GLinkCalc* tmp;
-//
-//	tmp=LinkCalcs->GetPtr<const char*>(n);
-//	if(!tmp)
-//		return(0);
-//	return(tmp->GetSettings());
+	GLinkCalc* tmp;
+
+	tmp=LinkCalcs->GetPtr<const char*>(n);
+	if(!tmp)
+		return(0);
+	return(tmp->GetSettings());
 }
 
 
@@ -424,7 +424,6 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 				if(xml)
 				{
 					Docs()->InitFailed();
-					//cout<< "analyse doc  :  "<<Docs()->GetURL()<<endl;
 					DocAnalyse->Analyse(xml,Docs(),tmpDocs);
 					delete xml;
 					xml=0;
