@@ -168,4 +168,4 @@ GGroupCalcGravitation::~GGroupCalcGravitation(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_GROUPCALC_FACTORY("Gravitation Method",GGroupCalcGravitation,true,true)
+CREATE_GROUPCALC_FACTORY("Gravitation Method",GGroupCalcGravitation)

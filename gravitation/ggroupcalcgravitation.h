@@ -117,17 +117,6 @@ public:
 	virtual const char* GetModelName(void) const {return("Vector");}
 
 	/**
-	* Show 'about' information.
-	*/
-	static void About(void);
-
-	/**
-	* Configure the parameters.
-	* @param params          Parameters to configure.
-	*/
-	static void Configure(GFactoryGroupCalc* params);
-
-	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/

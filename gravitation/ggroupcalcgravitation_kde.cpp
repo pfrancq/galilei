@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggroupcalcgravitation.h>
+#include <groups/ggroupcalc.h>
 using namespace GALILEI;
 
 
@@ -71,13 +71,11 @@ static const char *description =
 
 
 //------------------------------------------------------------------------------
-//
-// class GGroupCalcGravitation
-//
+extern "C" {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GGroupCalcGravitation::About(void)
+void About(void)
 {
 	KAboutData aboutData( "gravitation", I18N_NOOP("Gravitation Method"),
 		"1.0", description, KAboutData::License_GPL,
@@ -89,7 +87,7 @@ void GGroupCalcGravitation::About(void)
 
 
 //------------------------------------------------------------------------------
-void GGroupCalcGravitation::Configure(GFactoryGroupCalc* params)
+void Configure(GFactoryGroupCalc* params)
 {
  	DlgConfig_Qt dlg;
 
@@ -100,3 +98,8 @@ void GGroupCalcGravitation::Configure(GFactoryGroupCalc* params)
  		params->Apply();
  	}
 }
+
+
+//------------------------------------------------------------------------------
+}     // end of extren
+//------------------------------------------------------------------------------
