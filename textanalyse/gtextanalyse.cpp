@@ -136,12 +136,13 @@ GALILEI::GDocAnalyse::WordWeight::~WordWeight(void)
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocAnalyse::GDocAnalyse(GSession* s,GDocOptions* opt) throw(bad_alloc)
-	: Session(s), CurLangs(Session->GetLangs()), Weights(0), Words(0), Direct(0),
+	: Session(s), Weights(0), Doc(0), Direct(0),
 	  NbDirect(5000), Sl(0), Sldiff(0), Lang(0), Options(opt)
 {
 	WordWeight** ptr;
 	unsigned int i;
 
+	CurLangs.Set(Session->GetLangs());
 	Sl=new unsigned int[Session->GetNbLangs()];
 	Sldiff=new unsigned int[Session->GetNbLangs()];
 	Weights=new RDblHashContainer<WordWeight,unsigned,27,27,false>(500,250);
@@ -401,10 +402,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 
 	// Insert all the occurences of the valid words
 	dic=Session->GetDic(Lang);
-	if(Words)
-		Words->Clear();
-	else
-		Words=new GIWordsWeights(Ndiff);
+
 	for(i=Ndiff+1,wrd=Direct;--i;wrd++)
 	{
 		if((*wrd)->InStop[LangIndex]) continue;
@@ -421,7 +419,7 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 		}
 		if(stem.GetLen()>=Options->MinStemSize)
 		{
-			Occur=Words->GetInsertPtr(dic->GetId(stem));
+			Occur=Doc->GetInsertPtr(dic->GetId(stem));
 			if(!Occur->GetWeight())
 				Vdiff++;
 			V+=(*wrd)->Nb;
@@ -432,12 +430,12 @@ void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 	// Verify that each occurences is not under the minimal.
 	MinOccur=Options->MinOccur;
 	if(MinOccur<2) return;
-	for(i=Words->NbPtr+1,Tab=Words->Tab;--i;Tab++)
+	for(i=Doc->NbPtr+1,Tab=Doc->Tab;--i;Tab++)
 	{
 		Occur=(*Tab);
 		if(Occur->GetWeight()<MinOccur)
 		{
-			Words->DeletePtr(Occur);
+			Doc->DeletePtr(Occur);
 			Tab--;
 		}
 	}
@@ -456,9 +454,11 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 	FindLang=((!Lang)||(!Options->StaticLang));
 	content=xml->GetContent();
 	RAssert(content);
+	Doc=doc;
 
 	// Analyse the doc structure.
 	Clear();
+	Doc->ClearInfos(FindLang);
 	if(!FindLang)
 	{
 		// if Language defined -> Compute LangIndex
@@ -470,19 +470,14 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 	if(FindLang)
 	{
 		DetermineLang();
-		if(!Lang)
-		{
-			doc->ClearInfos();
-			return;
-		}
+		if(!Lang) return;
 	}
 
 	// Construct Information
 	ConstructInfos();
 
 	// Set the Variable of the document
-	doc->SetInfos(Lang,N,Ndiff,V,Vdiff,Words);
-	Words=0;
+	doc->SetInfos(Lang,N,Ndiff,V,Vdiff);
 }
 
 
@@ -525,5 +520,4 @@ GALILEI::GDocAnalyse::~GDocAnalyse(void)
 	}
 	if(Sldiff) delete[] Sldiff;
 	if(Sl) delete[] Sl;
-	if(Words) delete Words;
 }
