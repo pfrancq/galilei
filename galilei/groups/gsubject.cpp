@@ -35,7 +35,8 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gsubject.h>
-#include <profiles/gsubprofile.h>
+//#include <profiles/gsubprofile.h>
+#include <profiles/gprofile.h>
 #include <docs/gdoc.h>
 using namespace R;
 using namespace GALILEI;
@@ -49,9 +50,9 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubject::GSubject(unsigned int id,const char* name,GLang* l,bool u) throw(std::bad_alloc)
-	 : RNode<GSubject,false>(10,2), GGroup(id,l,false), Name(name), Used(u),
-	   Docs(1000,500)
+GSubject::GSubject(unsigned int id,const char* name,bool u) throw(std::bad_alloc)
+	 : RNode<GSubject,false>(10,2), Id(id), Name(name), Used(u),
+	   Docs(1000,500), Profiles(10,5)
 {
 }
 
@@ -85,9 +86,9 @@ int GSubject::Compare(const char* name) const
 
 
 //------------------------------------------------------------------------------
-void GSubject::InsertDoc(GDoc* d) throw(std::bad_alloc)
+void GSubject::Insert(GDoc* doc)
 {
-	Docs.InsertPtr(d);
+	Docs.InsertPtr(doc);
 }
 
 
@@ -103,6 +104,28 @@ R::RCursor<GDoc> GALILEI::GSubject::GetDocsCursor(void)
 unsigned int GALILEI::GSubject::GetNbDocs(void) const
 {
 	return(Docs.NbPtr);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubject::Insert(GProfile* profile)
+{
+	Profiles.InsertPtr(profile);
+}
+
+
+//------------------------------------------------------------------------------
+R::RCursor<GProfile> GALILEI::GSubject::GetProfilesCursor(void)
+{
+	R::RCursor<GProfile> cur(Profiles);
+	return(cur);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GALILEI::GSubject::GetNbProfiles(void) const
+{
+	return(Profiles.NbPtr);
 }
 
 
@@ -132,6 +155,21 @@ RString GSubject::GetFullName(void) const
 void GSubject::SetUsed(bool b)
 {
 	Used=b;
+}
+
+
+//------------------------------------------------------------------------------
+GGroup* GSubject::CreateGroup(GLang* lang) const
+{
+	GGroup* Group=new GGroup(Id,lang,false);
+	RCursor<GProfile> Cur(Profiles);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		GSubProfile* sub=Cur()->GetSubProfile(lang);
+		if(sub)
+			Group->InsertSubProfile(sub);
+	}
+	return(Group);
 }
 
 

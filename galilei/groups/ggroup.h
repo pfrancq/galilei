@@ -57,7 +57,7 @@ class GGroup : protected R::RContainer<GSubProfile,false,true>, public GWeightIn
 protected:
 
 	/**
-	* identificator of the group.
+	* Identificator of the group.
 	*/
 	unsigned int Id;
 

@@ -61,9 +61,14 @@ namespace GALILEI{
 * @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subject
 */
-class GSubject: public R::RNode<GSubject,false>, public GGroup
+class GSubject: public R::RNode<GSubject,false>
 {
 protected:
+
+	/**
+	* Identificator of the subject.
+	*/
+	unsigned int Id;
 
 	/**
 	* Name of the subject.
@@ -80,16 +85,20 @@ protected:
 	*/
 	R::RContainer<GDoc,false,true> Docs;
 
+	/**
+	* Groups of subprofiles attached to this subject.
+	*/
+	R::RContainer<GProfile,false,true> Profiles;
+
 public:
 
 	/**
 	* Constructor of a subject.
 	* @param id              Identificator of the subject.
 	* @param name            Name of the subject.
-	* @param l               Language.
 	* @param u               Used?
 	*/
-	GSubject(unsigned int id,const char* name,GLang* l,bool u) throw(std::bad_alloc);
+	GSubject(unsigned int id,const char* name,bool u) throw(std::bad_alloc);
 
 	/**
 	* Compare two subjects by comparing their identificator.
@@ -125,8 +134,9 @@ public:
 
 	/**
 	* Insert a document to the list of those contained in the subject.
+	* @param doc             Pointer to the document.
 	*/
-	void InsertDoc(GDoc* d) throw(std::bad_alloc);
+	void Insert(GDoc* doc);
 
 	/**
 	* Get a cursor over the documents contained in the subject.
@@ -139,6 +149,24 @@ public:
 	* @returns unsigned int
 	*/
 	unsigned int GetNbDocs(void) const;
+
+	/**
+	* Insert a profile to the list of those contained in the subject.
+	* @param profile          Pointer to the profile.
+	*/
+	void Insert(GProfile* profile);
+
+	/**
+	* Get a cursor over the profiles contained in the subject.
+	* @return GDocCursor.
+	*/
+	R::RCursor<GProfile> GetProfilesCursor(void);
+
+	/**
+	* Get the number of profiles associated to this subject.
+	* @returns unsigned int
+	*/
+	unsigned int GetNbProfiles(void) const;
 
 	/**
 	* Return the name of the Subject.
@@ -156,7 +184,7 @@ public:
 	* Get the identificator of the Subject.
 	* @returns The id of the subject.
 	*/
-	unsigned int GetId(void) const {return(GGroup::GetId());}
+	unsigned int GetId(void) const {return(Id);}
 
 	/**
 	* Verify if the subject is used.
@@ -170,9 +198,18 @@ public:
 	void SetUsed(bool b);
 
 	/**
+	* Create a group for a given language with the subprofiles having a
+	* description. The identificator of the group is the one of the subject.
+	* The group must be destructed by the caller.
+	* @param lang            Pointer to the language.
+	* @return Pointer to the group.
+	*/
+	GGroup* CreateGroup(GLang* lang) const;
+
+	/**
 	* Destructor of a subject.
 	*/
-	~GSubject(void);
+	virtual ~GSubject(void);
 
 	friend class GSubjects;
 };

@@ -521,7 +521,6 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 	R::RCursor<GFactoryLang> langs;
 	GLang* lang;
 	GSubProfile* sub;
-	GSubject* s;
 	unsigned int i,idx,subprofileid;
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
 
@@ -536,10 +535,14 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 		// Load profiles
 		RQuery Profiles(Db,"SELECT profileid,description,social,topicid,userid FROM profiles");
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
+		{
 			session->InsertProfile(prof=new GProfile(session->GetUser(atoi(Profiles[4])),atoi(Profiles[0]),Profiles[1],(atoi(Profiles[2])==1),5));
+			if(session->GetSubjects())
+				session->GetSubjects()->InsertProfileSubject(prof,atoi(Profiles[3]));
+		}
 
 		// Load subprofiles
-		RQuery SubProfiles(Db,"SELECT subprofiles.subprofileid,subprofiles.langid,subprofiles.attached,subprofiles.groupid,subprofiles.updated,subprofiles.calculated,subprofiles.profileid,profiles.topicid FROM subprofiles,profiles WHERE subprofiles.profileid=profiles.profileid");
+		RQuery SubProfiles(Db,"SELECT subprofileid,langid,attached,groupid,updated,calculated,profileid FROM subprofiles");
 		for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 		{
 			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(SubProfiles[1]);
@@ -551,8 +554,6 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 			session->InsertSubProfile(sub=new GSubProfile(prof,atoi(SubProfiles[0]),lang,
 			                                     session->GetGroup(atoi(SubProfiles[3])),SubProfiles[2],
 			                                     GetMySQLToDate(SubProfiles[4]),GetMySQLToDate(SubProfiles[5])));
-			if(session->GetSubjects())
-				session->GetSubjects()->InsertSubProfileSubject(sub,atoi(SubProfiles[7]));
 		}
 
 		// Load subprofiles description
@@ -630,7 +631,7 @@ void GStorageMySQL::LoadIdealGroupment(GSession* session) throw(std::bad_alloc,G
 				RQuery sub(Db,sSql);
 				for(sub.Start();!sub.End();sub.Next())
 				{
-					subp=session->GetProfile(atoi(sub[0]))->GetSubProfile(lang);
+					subp=session->GetSubProfile(atoi(sub[0]));
 					if(subp)
 						group->InsertSubProfile(subp);
 				}
@@ -663,7 +664,7 @@ void GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup) throw(GException)
 			sub=groups()->GetSubProfilesCursor();
 			for(sub.Start();!sub.End();sub.Next())
 			{
-				sSql="INSERT INTO idealgroup(profileid,langid,groupid) VALUES("+itou(sub()->GetProfile()->GetId())+",'"+sub()->GetLang()->GetCode()+"',"+itou(groups()->GetId())+")";
+				sSql="INSERT INTO idealgroup(profileid,langid,groupid) VALUES("+itou(sub()->GetId())+",'"+sub()->GetLang()->GetCode()+"',"+itou(groups()->GetId())+")";
 				RQuery insert(Db,sSql);
 			}
 		}
@@ -686,14 +687,14 @@ void GStorageMySQL::LoadSubjectTree(GSession* session) throw(std::bad_alloc,GExc
 	{
 		if(!session->GetSubjects()) return;
 		session->GetSubjects()->Clear();
-		RQuery sub(Db,"SELECT topicid,name,used,langid FROM topics WHERE parent=0");
+		RQuery sub(Db,"SELECT topicid,name,used FROM topics WHERE parent=0");
 		for(sub.Start();!sub.End();sub.Next())
 		{
-			session->GetSubjects()->AddNode(0,subject=new GSubject(atoi(sub[0]),sub[1],(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(sub[3]),atoi(sub[2])));
-			sSql="SELECT topicid,name,used,langid FROM topics WHERE parent="+sub[0];
+			session->GetSubjects()->AddNode(0,subject=new GSubject(atoi(sub[0]),sub[1],atoi(sub[2])));
+			sSql="SELECT topicid,name,used FROM topics WHERE parent="+sub[0];
 			RQuery subsub(*Db,sSql);
 			for(subsub.Start();!subsub.End();subsub.Next())
-				session->GetSubjects()->AddNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(subsub[3]),atoi(subsub[2])));
+				session->GetSubjects()->AddNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],atoi(subsub[2])));
 		}
 	}
 	catch(RMySQLError e)
@@ -764,7 +765,6 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 	GLang* lang;
 	R::RCursor<GFactoryLang> langs;
 	GDoc* d;
-	GSubject* s;
 	unsigned int i,idx,docid;
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
 

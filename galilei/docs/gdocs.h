@@ -96,14 +96,15 @@ public:
 
 	/**
 	* Fill a given array with all the documents of a given language. The array
-	* must be created and must be large enough to hold all the documents.
+	* must be created and must be large enough to hold all the documents. It
+	* can contained null pointers.
 	* @see This method is used in GSubjects to create assessments for
 	*      profiles during a simulation of a real system.
 	* @param docs            Pointer to the array.
-	* @param lang            Language of the documents.
-	* @returns Number of documents contained in the array.
+	* @returns Size of the data (including the null pointers) copied in the
+	* array.
 	*/
-	unsigned int FillDocs(GDoc** docs,GLang* lang) throw(GException,std::bad_alloc);
+	unsigned int FillDocs(GDoc** docs) throw(GException,std::bad_alloc);
 
 	/**
 	* Get the number of documents handled.

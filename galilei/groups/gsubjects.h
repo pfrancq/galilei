@@ -71,6 +71,7 @@ protected:
 	// Internal Classes
 	class GroupScore;
 	class GGroupId;
+	class GroupLang;
 
 	/**
 	* Session.
@@ -179,9 +180,9 @@ protected:
 	R::RContainer<GroupScore,true,true> GroupsScore;
 
 	/**
-	* Subjects for the subprofiles.
+	* Subjects for the profiles.
 	*/
-	R::RContainer<GSubject,false,false> SubProfiles;
+	R::RContainer<GSubject,false,false> Profiles;
 
 	/**
 	* Subjects for the documents.
@@ -214,14 +215,15 @@ protected:
 	void CreateSet(void) throw(std::bad_alloc);
 
 	/**
-	* Simulatation of judgments for a profile on a given subject.
+	* Simulatation of assessments for a profile on a given subject.
+	* @param groups         Container of groups associated with a given subject.
 	* @param prof           Profile that assesses the documents.
 	* @param sub            Subject.
 	* @param maxDocsOK      Maximal relevant Documents to assess.
 	* @param maxDocsKO      Maximal fuzzy relevant Documents to assess.
 	* @param maxDocsH       Maximal irrelevant Documents to assess.
 	*/
-	void ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH) throw(std::bad_alloc);
+	void ProfileAssess(R::RContainer<GroupLang,true,true>& groups,GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH);
 
 	/**
 	* Get the ideal group of the subprofile.
@@ -338,11 +340,11 @@ public:
 	GGroups* GetIdealGroups(void);
 
 	/**
-	* Add a given subprofile to a subject.
-	* @param sub            Pointer to the subprofile.
+	* Add a given profile to a subject.
+	* @param profile        Pointer to the profile.
 	* @param subjectid      Identificator of the subject.
 	*/
-	void InsertSubProfileSubject(GSubProfile* sub,unsigned int subjectid);
+	void InsertProfileSubject(GProfile* profile,unsigned int subjectid);
 
 	/**
 	* Get the subject of a given subprofile.

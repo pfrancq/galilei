@@ -147,14 +147,10 @@ R::RCursor<GDoc> GDocs::GetDocsCursor(GLang* lang) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GDocs::FillDocs(GDoc** docs,GLang* lang) throw(GException,std::bad_alloc)
+unsigned int GDocs::FillDocs(GDoc** docs) throw(GException,std::bad_alloc)
 {
-	GDocsLang* ptr;
-
-	ptr=DocsLang.GetPtr<GLang*>(lang);
-	if(!ptr) return(0);
-	memcpy(docs,ptr->Tab,sizeof(GDoc*)*ptr->NbPtr);
-	return(ptr->NbPtr);
+	memcpy(docs,Tab,sizeof(GDoc*)*LastPtr);
+	return(LastPtr);
 }
 
 

@@ -117,6 +117,8 @@ int GGroup::Compare(const GGroup& grp) const
 //------------------------------------------------------------------------------
 int GGroup::Compare(const GGroup* grp) const
 {
+	if(!grp)
+		return(1);
 	return(Id-grp->Id);
 }
 

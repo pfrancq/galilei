@@ -68,7 +68,6 @@ class GFdbk
 	*/
 	R::RDate Updated;
 
-
 public:
 
 	/**
@@ -292,6 +291,12 @@ proxy:
 	* @returns unsigned int.
 	*/
 	unsigned int GetNbAssessedDocs(const GLang* lang) const;
+
+	/**
+	* Get the number of assessed documents.
+	* @returns unsigned int.
+	*/
+	unsigned int GetNbAssessedDocs(void) const;
 
 	/**
 	* Get a Cursor on the feedback for the profile.

@@ -232,6 +232,13 @@ unsigned int GProfile::GetNbAssessedDocs(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
+unsigned int GProfile::GetNbAssessedDocs(void) const
+{
+	return(Fdbks.GetNb());
+}
+
+
+//------------------------------------------------------------------------------
 RCursor<GFdbk> GProfile::GetFdbks(void)
 {
 	RCursor<GFdbk> cur(Fdbks);
