@@ -205,8 +205,11 @@ protected:
 
 	/**
 	* Analyze the tag "LINKS" of the html document.
+	* @param params         Parameters contanined in the LINK tag.
+	* @param block          Block contained after the tag.
+	* @param ins            Must the block be inserted.
 	*/
-	void AnalyseLink(void);
+	void AnalyseLink(char* params,char* block,bool ins);
 
 	/**
 	* Function who analyze the tag "LINKS" of the html document
@@ -248,6 +251,13 @@ protected:
 	* are set correctly. Set bEndTag to true if it is a ending tag.
 	*/
 	void ReadNextTag(void);
+
+	/**
+	* Call NexTag to read the next tag. If the tag is not valid, it is replace by
+	* spaces. Everythin in comments or between two <SCRIPT> tags are also
+	* replace by spaces.
+	*/
+	Tag* GetValidTag(void);
 
 	/**
 	* Call NexTag to read the next tag. If the tag is not valid, it is replace by

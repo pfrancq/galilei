@@ -292,11 +292,11 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 
 		// If the current tag is a open link
 		// -> Insert the link and read next tag
-		if((CurTag->Type == Tag::tLINK)&&(!bEndTag))
-		{
-			AnalyseLink();
-			continue;
-		}
+//		if((CurTag->Type == Tag::tLINK)&&(!bEndTag))
+//		{
+//			AnalyseLink();
+//			continue;
+//		}
 
 		// Find the DocXML tag where the current block is to insert
 		if(bEndTag)
@@ -339,24 +339,25 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 		}
 	}
 
+	// Delete all the nodes that contains nothing
 	content->DeleteEmptyTags(Doc);
 }
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::AnalyseLink(void)
+void GALILEI::GFilterHTML::AnalyseLink(char* params,char* block,bool ins)
 {
 	RXMLTag* metalink;
 
-	metalink = AnalyseLinkParams(Params);
+	metalink = AnalyseLinkParams(params);
 	if(metalink)
 	{
 		Doc->AddFormat("text/html",metalink);
-		if(bBlockIns&&Block)
-			AnalyzeBlock(Block,Doc->AddTitle(metalink));
+		if(ins&&block)
+			AnalyzeBlock(block,Doc->AddTitle(metalink));
 	}
-
 }
+
 
 //---------------------------------------------------------------------------
 void GALILEI::GFilterHTML::AnalyseHeader(void)
@@ -910,10 +911,56 @@ beginread:
 
 
 //---------------------------------------------------------------------------
+GALILEI::GFilterHTML::Tag* GALILEI::GFilterHTML::GetValidTag(void)
+{
+	Tag* t;
+	bool RemBlockIns;
+
+	do
+	{
+		if(!(*Pos)) return(0);
+		RemBlockIns=bBlockIns;
+		ReadNextTag();
+		t=Tags->GetPtr<const char*>(BeginTag);
+		if(!t)
+		{
+			memset(SkipTag,' ',TagLen*sizeof(char));
+		}
+		else
+		{
+			if((t->Type==Tag::tSCRIPT)&&(!bEndTag))
+			{
+				char* SkipScript=SkipTag;
+				BlockLen=TagLen;
+				RemBlockIns=bBlockIns;
+				while((!t)||(!((t->Type==Tag::tSCRIPT)&&bEndTag)))
+				{
+					ReadNextTag();
+					t=Tags->GetPtr<const char*>(BeginTag);
+					BlockLen+=TagLen;
+				}
+				memset(SkipScript,' ',BlockLen*sizeof(char));
+				t=0;
+				bBlockIns=RemBlockIns;
+			}
+		}
+	}
+	while(!t);
+	return(t);
+}
+
+
+//---------------------------------------------------------------------------
 void GALILEI::GFilterHTML::NextValidTag(void)
 {
 	char* CurParams;  // Pointer to current Params;
 	bool bEndCurTag;
+	char* OldBlock;
+	char* OldSkipTag;
+	unsigned int OldTagLen;
+	bool bOldEndTag;
+	char* OldParams;
+	bool OldIns;
 
 	// Next Tag becomes the current tag
 	// Store in Block and Params the parameters of the current tag
@@ -925,30 +972,37 @@ void GALILEI::GFilterHTML::NextValidTag(void)
 
 	// Look for a known tag.
 	// All other tags are replaced by spaces.
-	do
+	NextTag=GetValidTag();
+
+testlinks:
+	// Treat Links
+	if((NextTag)&&(NextTag->Type==Tag::tLINK))
 	{
-		if(!(*Pos)) return;
-		ReadNextTag();
-		NextTag=Tags->GetPtr<const char*>(BeginTag);
-		if(!NextTag)
-		{
-			memset(SkipTag,' ',TagLen*sizeof(char));
-		}
-		else if((NextTag->Type==Tag::tSCRIPT)&&(!bEndTag))
-		{
-			char* SkipScript=SkipTag;
-			BlockLen=TagLen;
-			while((!NextTag)||(!((NextTag->Type==Tag::tSCRIPT)&&bEndTag)))
-			{
-				ReadNextTag();
-				NextTag=Tags->GetPtr<const char*>(BeginTag);
-				BlockLen+=TagLen;
-			}
-			memset(SkipScript,' ',BlockLen*sizeof(char));
-			NextTag=0;
-			Block=0;
-		}
-	} while(!NextTag);
+		// Remember Previous Block Position
+		OldBlock=Block;
+		Block=Pos;
+		OldSkipTag=SkipTag;
+		OldTagLen=TagLen;
+		bOldEndTag=bEndTag;
+		OldParams=Params;
+		OldIns=bBlockIns;
+		bBlockIns=false;
+
+		// ReadNext Tag
+		NextTag=GetValidTag();
+
+		// If open link -> Analyse it
+		if(!bOldEndTag)
+			AnalyseLink(OldParams,Block,bBlockIns);
+
+		// Skip the link tag.
+		memset(OldSkipTag,' ',OldTagLen*sizeof(char));
+
+		// Continue old Block
+		Block=OldBlock;
+		bBlockIns=OldIns;
+		goto testlinks;
+	}
 
 	// Remember Params
 	NextParams=Params;
