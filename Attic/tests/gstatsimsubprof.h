@@ -36,8 +36,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GSatSimSubProfH
-#define GSatSimSubProfH
+#ifndef GStatSimSubProfH
+#define GStatSimSubProfH
 
 
 //-----------------------------------------------------------------------------
@@ -56,7 +56,7 @@ namespace GALILEI{
 * @author Lamoral Julien & Pascal Francq.
 * @short Similaritys between profiles.
 */
-class GSatSimSubProf
+class GStatSimSubProf
 {
 protected:
 
@@ -65,20 +65,11 @@ protected:
 	*/
 	GSession* Session;
 
-	/**
-	* The Mean of the Min intra group similarity.
-	*/
-	double MinIntraM;
 
 	/**
 	* The Mean of the Mean intra group similarity.
 	*/
 	double MeanIntraM;
-
-	/**
-	* The Mean of the Max extra group similarity.
-	*/
-	double MaxExtraM;
 
 	/**
 	* The Mean of the Mean extra group similarity.
@@ -100,6 +91,11 @@ protected:
 	*/
 	RContainer<GGroups,unsigned int,true,true>* IdealGroups;
 
+	/**
+	* Global similaity used if true.
+	*/
+	bool Global;
+
 public:
 
 	/**
@@ -107,31 +103,25 @@ public:
 	* @param ses            The  galilei session.
 	* @param groups         Ideal groupement.
 	*/
-	GSatSimSubProf(GSession* ses,RContainer<GGroups,unsigned int,true,true>* ideal);
+	GStatSimSubProf(GSession* ses,RContainer<GGroups,unsigned int,true,true>* ideal);
 
 	/**
-	* Get the Mean of Min intra group similarity.
-	* @returns MinIntraM.
-	*/
-	double GetMinIntra(void) const {return(MinIntraM);}
-
-	/**
-	* Get the Mean of Mean intra group similarity.
+	* Get the average intra-group similarity.
 	* @returns MeanIntraM.
 	*/
-	double GetMeanIntra(void) const {return(MeanIntraM);}
+	double GetAvgIntra(void) const {return(MeanIntraM);}
 
 	/**
-	* Get the Mean of Max extra group similarity.
-	* @returns MaxExtraM.
-	*/
-	double GetMaxInter(void) const {return(MaxExtraM);}
-
-	/**
-	* Get the Mean of Mean extra group similarity.
+	* Get the average inter-group similarity.
 	* @returns MeanExtraM.
 	*/
-	double GetMeanInter(void) const {return(MeanExtraM);}
+	double GetAvgInter(void) const {return(MeanExtraM);}
+
+	/**
+	* Get the evevarge overlap factor.
+	* @returns AVGol.
+	*/
+	double GetAVGol(void) const {return(Overlap);}
 
 	/**
 	* Get the Rie factor.
@@ -143,12 +133,25 @@ public:
 	* Construct the subprofile similarity widget.
 	* @param Global         Use Global similarity ?
 	*/
-	void Run(bool Global);
+	void Run(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* "Global similarity if 1 normal else"
+	* @param s              C string coding the settings.
+	*/
+	void SetSettings(const char* s);
+
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	char* GetSettings(void);
 
 	/**
 	* Destructor for the main view.
 	*/
-	~GSatSimSubProf(void);
+	~GStatSimSubProf(void);
 };
 
 

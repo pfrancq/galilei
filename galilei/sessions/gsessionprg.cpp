@@ -259,6 +259,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 {
 	char tmp[300];
 	GCompareGrouping* CompMethod;
+	GStatSimSubProf* ProfStats;
 
 	if(!i) return;
 	switch(i->Type)
@@ -295,7 +296,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				SOFile=0;
 			}
 			SOFile=new RTextFile(i->Param1,RTextFile::Create);
-			(*SOFile)<<"Sets\tRecall\tPrecision\tTotal"<<endl;
+			(*SOFile)<<"AVGintra\tAVGinter\tAVGol\tRie"<<endl;
 			break;
 
 		case SetAutoSave:
@@ -421,19 +422,23 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			break;
 
 		case StatProf:
-			cout<<"To implement";
-//			if(!Groups)
-//				throw GException("No Ideal Groups Defined");
-//			strcpy(tmp,"Statistics on Profiles");
-//			Rec->WriteStr(tmp);
-//			GStatSimSubProf Stats(Session,Groups);
-//			Stats.Run(0);
-//			sprintf(tmp,"Recall: %lf  -  Precision: %lf  -  Total: %lf",Recall,Precision,Total);
-//			Rec->WriteStr(tmp);
-//			if(OFile)
-//				(*OFile)<<TestName<<"\t"<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
-//			if(GOFile)
-//				(*GOFile)<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
+			if(!Groups)
+				throw GException("No Ideal Groups Defined");
+			if(i->Param1.GetLen())
+					sprintf(tmp,"Statistics on Profiles: Settings=\"%s\"",i->Param1());
+				else
+					strcpy(tmp,"Statistics on Profiles");
+			Rec->WriteStr(tmp);
+			ProfStats=new GStatSimSubProf(Session,Groups);
+			if(i->Param1.GetLen())
+				ProfStats->SetSettings(i->Param1);
+			ProfStats->Run();
+			sprintf(tmp,"AVGintra: %lf  -  AVGinter: %lf  -  AVGol: %lf  -  Rie: %lf",
+			        ProfStats->GetAvgIntra(),ProfStats->GetAvgInter(),ProfStats->GetAVGol(),ProfStats->GetRie());
+			Rec->WriteStr(tmp);
+			if(SOFile)
+				(*SOFile)<<ProfStats->GetAvgIntra()<<"\t"<<ProfStats->GetAvgInter()<<"\t"<<ProfStats->GetAVGol()<<"\t"<<ProfStats->GetRie()<<endl;
+			delete ProfStats;
 			break;
 	}
 }

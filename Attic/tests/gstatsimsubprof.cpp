@@ -54,33 +54,33 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-// class GSatSimSubProf
+// class GStatSimSubProf
 //
 //-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GSatSimSubProf::GSatSimSubProf(GSession* ses,RContainer<GGroups,unsigned int,true,true>* ideal)
-	: Session(ses), IdealGroups(ideal)
+GALILEI::GStatSimSubProf::GStatSimSubProf(GSession* ses,RContainer<GGroups,unsigned int,true,true>* ideal)
+	: Session(ses), IdealGroups(ideal),Global(true)
 {
+	
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSatSimSubProf::Run(bool Global)
+void GALILEI::GStatSimSubProf::Run(void)
 {
-	//temp
-	RString name;
-
-	double MinIntra,MeanIntra;
-	double MaxExtra,MeanExtra;
+	double MinIntra;
+	double MaxExtra;
 
 	//Initialization
-	int nbtot=0;
-	MinIntraM=0.0;
 	MeanIntraM=0.0;
-	MaxExtraM=0.0;
 	MeanExtraM=0.0;
+	Overlap=0.0;
+
+	int ComptIntra=0;
+	int ComptExtra=0;
+	int ComptOverlap=0;
 
 	// For each language
 	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
@@ -91,17 +91,14 @@ void GALILEI::GSatSimSubProf::Run(bool Global)
 		{
 			// Temp initialization
 			MinIntra=1.0;
-			MeanIntra=0.0;
 			MaxExtra=0.0;
-			MeanExtra=0.0;
-			int compt=0;
+
 			GGroup * Group=Cur2();
 			GSubProfileCursor SubCur1= Group->GetSubProfileCursor();
 			GSubProfileCursor SubCur2= Group->GetSubProfileCursor();
 			// for each subprofiles in thos group compare whith all subprofile in this group.
 			for(SubCur1.Start();!SubCur1.End();SubCur1.Next())
 			{
-				name=SubCur1()->GetProfile()->GetName();
 				for(SubCur2.Start();!SubCur2.End();SubCur2.Next())
 				{
 					double temp;
@@ -109,16 +106,13 @@ void GALILEI::GSatSimSubProf::Run(bool Global)
 					else temp=SubCur1()->Similarity(SubCur2());
 					if(SubCur1()->GetId()!=SubCur2()->GetId())
 					{
-						MeanIntra+=temp;
-						compt++;
+						MeanIntraM+=temp;
+						ComptIntra++;
 						if(temp<MinIntra) MinIntra=temp;
 					}
 				}
 			}
-			if(compt!=0) MeanIntra/=compt;
-			else MeanIntra=0;
 			GGroupCursor Cur=(*IdealGroups)()->GetGroupCursor();
-			compt=0;
 			// Compare each subprofile sof the group whith all the subprofiles in the session.
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
@@ -135,31 +129,50 @@ void GALILEI::GSatSimSubProf::Run(bool Global)
 							double temp;
 							if(Global) temp=SubCur1()->GlobalSimilarity(SubCur2());
 							else temp=SubCur1()->Similarity(SubCur2());
-							MeanExtra+=temp;
-							compt++;
+							MeanExtraM+=temp;
+							ComptExtra++;
 							if((temp>MaxExtra)&&(temp<0.99)) MaxExtra=temp;
 						}
 					}
 				}
 			}
-			// Meaning the results.
-			MeanExtra/=compt;
-			nbtot++;
-			MinIntraM+=MinIntra;
-			MeanIntraM+=MeanIntra;
-			MaxExtraM+=MaxExtra;
-			MeanExtraM+=MeanExtra;
+			ComptOverlap++;
+			if(MaxExtra>MinIntra) Overlap+=(MaxExtra-MinIntra);
 		}
 	}
-	MinIntraM/=nbtot;
-	MeanIntraM/=nbtot;
-	MaxExtraM/=nbtot;
-	MeanExtraM/=nbtot;
+	MeanIntraM/=ComptIntra;
+	MeanExtraM/=ComptExtra;
+	if(ComptOverlap>0)
+		Overlap/=ComptOverlap;
 	Rie=(MeanIntraM-MeanExtraM)/MeanIntraM;
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GSatSimSubProf::~GSatSimSubProf(void)
+char* GALILEI::GStatSimSubProf::GetSettings(void)
+{
+	static char tmp[100];
+	char c;
+
+	if(Global) c='1'; else c='0';
+	sprintf(tmp,"%c",c);
+	return(tmp);
+
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GStatSimSubProf::SetSettings(const char* s)
+{
+	char c;
+
+	if(!(*s)) return;
+	sscanf(s,"%c",&c);
+	if(c=='1') Global=true; else Global=false;
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GStatSimSubProf::~GStatSimSubProf(void)
 {
 }
