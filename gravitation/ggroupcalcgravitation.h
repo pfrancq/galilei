@@ -96,19 +96,19 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session);
+	virtual void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session);
+	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Compute a group.
 	* @param grp            Group to compute.
 	*/
-	virtual void Compute(GGroup* grp);
+	virtual void Compute(GGroup* grp) throw(GException);
 
 	/**
 	* Get the name of the model used for the description.

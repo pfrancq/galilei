@@ -76,21 +76,21 @@ void GGroupCalcGravitation::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Connect(GSession* session)
+void GGroupCalcGravitation::Connect(GSession* session) throw(GException)
 {
 	GGroupCalc::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Disconnect(GSession* session)
+void GGroupCalcGravitation::Disconnect(GSession* session) throw(GException)
 {
 	GGroupCalc::Disconnect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Compute(GGroup* grp)
+void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
 {
 	unsigned int i,j;
 	GWeightInfos* Desc=static_cast<GGroupVector*>(grp);
