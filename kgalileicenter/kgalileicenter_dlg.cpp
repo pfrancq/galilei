@@ -228,21 +228,59 @@ void KGALILEICenterApp::slotPlugins(void)
 		{
 			Done<QFilterItem>(dlg.Filters);
 			Done<QProfileCalcItem>(dlg.ProfileCalcs,this);
-			ProfilingManager->SetCurrentMethod(dlg.CurrentProfileCalc->currentText());
 			Done<QGroupingItem>(dlg.Groupings,this);
-			GroupingManager->SetCurrentMethod(dlg.CurrentGrouping->currentText());
 			Done<QGroupCalcItem>(dlg.GroupCalcs,this);
-			GroupCalcManager->SetCurrentMethod(dlg.CurrentGroupCalc->currentText());
 			Done<QStatsCalcItem>(dlg.Stats);
 			Done<QLinkCalcItem>(dlg.LinkCalcs,this);
-			LinkCalcManager->SetCurrentMethod(dlg.CurrentLinkCalc->currentText());
 			Done<QPostDocItem>(dlg.PostDocs,this);
 			Done<QLangItem>(dlg.Langs,this);
 			Done<QDocAnalyseItem>(dlg.DocAnalyses,this);
-			DocAnalyseManager->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText());
 			Done<QPostGroupItem>(dlg.PostGroups,this);
 			Done<QEngineItem>(dlg.Engines);
 			Done<QMetaEngineItem>(dlg.MetaEngines,this);
+		}
+		catch(GException& e)
+		{
+			std::cerr<<e.GetMsg()<<std::endl;
+		}
+		// Set current method
+		try
+		{
+			ProfilingManager->SetCurrentMethod(dlg.CurrentProfileCalc->currentText());
+		}
+		catch(GException)
+		{
+		}
+		try
+		{
+			GroupingManager->SetCurrentMethod(dlg.CurrentGrouping->currentText());
+		}
+		catch(GException)
+		{
+		}
+		try
+		{
+			GroupCalcManager->SetCurrentMethod(dlg.CurrentGroupCalc->currentText());
+		}
+		catch(GException)
+		{
+		}
+		try
+		{
+			LinkCalcManager->SetCurrentMethod(dlg.CurrentLinkCalc->currentText());
+		}
+		catch(GException)
+		{
+		}
+		try
+		{
+			DocAnalyseManager->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText());
+		}
+		catch(GException)
+		{
+		}
+		try
+		{
 			EngineManager->SetCurrentMethod(dlg.CurrentMetaEngine->currentText());
 		}
 		catch(GException)
