@@ -55,13 +55,14 @@ AC_SUBST(CURL_LIBS)
 #	$R_LIB_PATH = the path specified in the --with-r-libs
 #	$R_INC_DIR = the directory where the includes were found
 #	$R_LIB_DIR = the directory where the libraries were found
+#	$UPGALILEI_ADD = the libraries needed by UPGALILEI
 
 #---------------------------------------------------------
 # ---- add configure option : --with-r-includes=DIR ----
 if test "x$R_LIB" != "x" ; then
 	R_INC_PATH=$R_LIB
 else
-	R_INC_PATH="/usr/include/r /usr/include /usr/include/r /usr/local /usr/local/include /usr/local/include/r ${prefix}/include/r"
+	R_INC_PATH="/usr/include /usr/include/r /usr/local /usr/local/include /usr/local/include/r ${prefix}/include/r"
 fi
 AC_ARG_WITH(r-includes,
 	AC_HELP_STRING(
@@ -159,7 +160,8 @@ for l in rdb rga rga2d rgga rmath rprg rpromethee rstd; do
 	if test "x$R_LIB_DIR" != "x$PAST_R_LIB_DIR"; then
 		LDFLAGS="-L$R_LIB_DIR $LDFLAGS"
 	fi
-PAST_R_LIB_DIR="$R_LIB_DIR"
+	PAST_R_LIB_DIR="$R_LIB_DIR"
+	UPGALILEI_ADD="$R_LIB_DIR/lib$l.la $UPGALILEI_ADD "
 
 done
 
@@ -272,14 +274,17 @@ for l in docs groups historic infos profiles sessions; do
 	if test "x$GALILEI_LIB_DIR" != "x$PAST_GALILEI_LIB_DIR"; then
 		LDFLAGS="-L$GALILEI_LIB_DIR $LDFLAGS"
 	fi
-PAST_GALILEI_LIB_DIR="$GALILEI_LIB_DIR"
+	PAST_GALILEI_LIB_DIR="$GALILEI_LIB_DIR"
+	UPGALILEI_ADD="$GALILEI_LIB_DIR/libgalilei_$l.la $UPGALILEI_ADD "
 
 done
 
 #--------------------- END GALILEI LIB -----------------------------
 
+AC_SUBST(UPGALILEI_ADD)
+
 AM_INIT_AUTOMAKE(upgalilei, 1.0)
 AC_C_BIGENDIAN
-AC_CHECK_KDEMAXPATHLEN
+#AC_CHECK_KDEMAXPATHLEN
 
 CXXFLAGS="$CXXFLAGS $USE_EXCEPTIONS"
