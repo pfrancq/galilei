@@ -81,10 +81,9 @@ void GALILEI::GStatSimDoc::Run(void)
 	int ComptOverlap=0;
 
 	//The container of documents.
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = Session->GetIdealDocs();
 
 	// Load the ideal document container.
-	GroupsDoc=Session->GetIdealDocs();
 
 	for(GroupsDoc->Start();!GroupsDoc->End();GroupsDoc->Next())
 	{

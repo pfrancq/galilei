@@ -177,8 +177,7 @@ void GALILEI::GStatSimDocGrp::Run(void)
 	CalcMethod=Session->GetCurrentGroupCalcMethod();
 
 	// the container of Documents
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc;
-	GroupsDoc=Session->GetIdealDocs();
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc=Session->GetIdealDocs();
 
 	// For each language
 	for(IdealGroups->Start(),GroupsDoc->Start();!IdealGroups->End();IdealGroups->Next(),GroupsDoc->Next())
