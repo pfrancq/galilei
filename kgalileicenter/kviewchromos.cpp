@@ -196,9 +196,9 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,bool sim,QWidget* parent,const char* name,int wflags)
+KViewChromos::KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), IdealGroups(2,1), Lang(Doc->GetSession()->GetLang(l)),
-	  Global(global), Sim(sim), Stats(50,25)
+	 Sim(sim), Stats(50,25), Params(p)
 {
 	// Construct chromosomes
 	General = new QListViewChromos(this);
@@ -297,11 +297,11 @@ void KViewChromos::ConstructChromosomesSim(void)
 	}
 	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
 			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
-	GProfilesSim Sims(SubProfiles,Global);
+	GProfilesSim Sims(SubProfiles,Params->GlobalSim);
 
 	// Load the chromosomes from the db
 	d->PutText("Load chromosomes");
-	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Global,static_cast<SimType>(1));
+	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Params);
 	if(!Instance) return;
 	Instance->SetIdealGroups(&IdealGroups);
 
@@ -405,31 +405,6 @@ void KViewChromos::ConstructChromosomesRanking(void)
 	RContainer<GSubProfile,unsigned int,false,true> SubProfiles(Cur.GetNb(),50);
 	Stat* s;
 	GSubProfile* sub;
-	unsigned int MaxGen;
-	unsigned int StepGen;
-	bool Step;
-	double MinSimLevel;
-	double MinCommonOK;
-	double MinCommonDiff;
-	unsigned int PopSize;
-	RPromethee::RPromCriterionParams ParamsSim;
-	RPromethee::RPromCriterionParams ParamsNb;
-	RPromethee::RPromCriterionParams ParamsOK;
-	RPromethee::RPromCriterionParams ParamsDiff;
-	RPromethee::RPromCriterionParams ParamsSocial;
-	char car,c1;
-	unsigned int t;
-
-	// Values
-	sscanf(Doc->GetSession()->GetGroupingMethodSettings("Grouping Genetic Algorithms"),
-           "%u %c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	       &t,&c1,&PopSize,&MaxGen,&car,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
-	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
-	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
-	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,
-	       &ParamsDiff.P,&ParamsDiff.Q,&ParamsDiff.Weight,
-	       &ParamsSocial.P,&ParamsSocial.Q,&ParamsSocial.Weight);
-	if(car=='1') Step=true; else Step=false;
 
 	// Initialise the dialog box
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
@@ -449,18 +424,13 @@ void KViewChromos::ConstructChromosomesRanking(void)
 	}
 	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
 			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
-	GProfilesSim Sims(SubProfiles,Global);
+	GProfilesSim Sims(SubProfiles,Params->GlobalSim);
 
 	// Load the chromosomes from the db
 	d->PutText("Load Chromosomes");
-	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Global,static_cast<SimType>(t));
+	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Params);
 	if(!Instance) return;
 	Instance->SetIdealGroups(&IdealGroups);
-	Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
-	Instance->SetCriterionParam("Information",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
-	Instance->SetCriterionParam("Same Feedbacks",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
-	Instance->SetCriterionParam("Diff Feedbacks",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
-	Instance->SetCriterionParam("Social",ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
 	d->PutText("Evaluate the solutions");
 	Instance->Evaluate();
 	Instance->BestChromosome->Evaluate();

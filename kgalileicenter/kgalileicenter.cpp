@@ -167,7 +167,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterComputingMethod(new GProfileCalcFeedback(Sess));
 			Sess->RegisterComputingMethod(new GProfileCalcReWeighting(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingSim(Sess));
-			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess));
+			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess,&IRParams));
 			Sess->RegisterGroupingMethod(new GGroupingKCos(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingCure(Sess));
@@ -249,7 +249,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterComputingMethod(new GProfileCalcFeedback(Sess));
 	Sess->RegisterComputingMethod(new GProfileCalcReWeighting(Sess));
 	Sess->RegisterGroupingMethod(new GGroupingSim(Sess));
-	Sess->RegisterGroupingMethod(new GGroupingGGA(Sess));
+	Sess->RegisterGroupingMethod(new GGroupingGGA(Sess,&IRParams));
 	Sess->RegisterGroupingMethod(new GGroupingKCos(Sess));
 	Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
 	Sess->RegisterGroupingMethod(new GGroupingCure(Sess));
@@ -649,7 +649,7 @@ void KGALILEICenterApp::slotGAInit(void)
 		else
 			strcpy(tmp,"fr");
 		setDocParams(Doc);
-		createClient(Doc,new KViewGA(Doc,tmp,dlg.cbGlobal->isChecked(),dlg.cbScratch->isChecked(),pWorkspace,"Genetic Algorithm",0));
+		createClient(Doc,new KViewGA(Doc,tmp,&IRParams,dlg.cbGlobal->isChecked(),dlg.cbScratch->isChecked(),pWorkspace,"Genetic Algorithm",0));
 		gaPause->setEnabled(true);
 		gaStart->setEnabled(true);
 		gaStop->setEnabled(true);
@@ -721,7 +721,7 @@ void KGALILEICenterApp::slotGAAnalyse(void)
 		else
 			strcpy(tmp,"fr");
 		setDocParams(Doc);
-		createClient(Doc,new KViewChromos(Doc,tmp,dlg.cbGlobal->isChecked(),dlg.cbSim->isChecked(),pWorkspace,"View Chromosomes",0));
+		createClient(Doc,new KViewChromos(Doc,tmp,&IRParams,dlg.cbSim->isChecked(),pWorkspace,"View Chromosomes",0));
 	}
 	catch(GException& e)
 	{
@@ -839,7 +839,9 @@ void KGALILEICenterApp::slotRunProgram(void)
 	QString tmpfile;
 	char tmp[100];
 	KViewPrg* o;
+	GIRParams tmpIRParams;
 
+	tmpIRParams=IRParams;
 	KApplication::kApplication()->processEvents();
 	KURL url=KFileDialog::getOpenURL(QString(getpwuid(getuid())->pw_dir)+QString("/galilei/prg"),i18n("*.kprg|KGALILEICenter Programs"), this, i18n("Open File..."));
 	if(url.isEmpty())
@@ -872,6 +874,7 @@ void KGALILEICenterApp::slotRunProgram(void)
 	{
 		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
 	}
+	IRParams=tmpIRParams;
 	KIO::NetAccess::removeTempFile( tmpfile );
 }
 

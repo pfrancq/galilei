@@ -1286,7 +1286,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/tests/Makefile.am]
-files=kgalileicenter/galilei/tests/ggroupevaluate.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.h,kgalileicenter/galilei/tests/ggroupevaluatesubprof.cpp,kgalileicenter/galilei/tests/ggroupevaluatesubprof.h,kgalileicenter/galilei/tests/ggroupsevaluate.cpp,kgalileicenter/galilei/tests/ggroupsevaluate.h,kgalileicenter/galilei/tests/ggroupevaluate.h,kgalileicenter/galilei/tests/gsimdocquerygroup.cpp,kgalileicenter/galilei/tests/gsimdocquerygroup.h,kgalileicenter/galilei/tests/gstatsimsubprof.cpp,kgalileicenter/galilei/tests/gstatsimsubprof.h,kgalileicenter/galilei/tests/gstatsimdoc.cpp,kgalileicenter/galilei/tests/gstatsimdoc.h,kgalileicenter/galilei/tests/gmixidealgroups.cpp,kgalileicenter/galilei/tests/gmixidealgroups.h,kgalileicenter/galilei/tests/gstatsimid.cpp,kgalileicenter/galilei/tests/gstatsimid.h
+files=kgalileicenter/galilei/tests/ggroupevaluate.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.cpp,kgalileicenter/galilei/tests/ggroupevaluatedoc.h,kgalileicenter/galilei/tests/ggroupevaluatesubprof.cpp,kgalileicenter/galilei/tests/ggroupevaluatesubprof.h,kgalileicenter/galilei/tests/ggroupsevaluate.cpp,kgalileicenter/galilei/tests/ggroupsevaluate.h,kgalileicenter/galilei/tests/ggroupevaluate.h,kgalileicenter/galilei/tests/gsimdocquerygroup.cpp,kgalileicenter/galilei/tests/gsimdocquerygroup.h,kgalileicenter/galilei/tests/gstatsimsubprof.cpp,kgalileicenter/galilei/tests/gstatsimsubprof.h,kgalileicenter/galilei/tests/gstatsimdoc.cpp,kgalileicenter/galilei/tests/gstatsimdoc.h,kgalileicenter/galilei/tests/gmixidealgroups.cpp,kgalileicenter/galilei/tests/gmixidealgroups.h,kgalileicenter/galilei/tests/gstatsimid.cpp,kgalileicenter/galilei/tests/gstatsimid.h,kgalileicenter/galilei/tests/gquery.cpp,kgalileicenter/galilei/tests/gquerydocsgroup.cpp,kgalileicenter/galilei/tests/gquerydocsgroup.h,kgalileicenter/galilei/tests/gquery.h,kgalileicenter/galilei/tests/gstatsimdocgrp.cpp,kgalileicenter/galilei/tests/gstatsimdocgrp.h,kgalileicenter/galilei/tests/gstatsimdocprof.cpp,kgalileicenter/galilei/tests/gstatsimdocprof.h,kgalileicenter/galilei/tests/gstatsimprofgrp.cpp,kgalileicenter/galilei/tests/gstatsimprofgrp.h
 sharedlib_LDFLAGS=-version-info 0:0:0
 sharedlib_rootname=tests
 sub_dirs=
@@ -1352,6 +1352,30 @@ install=false
 install_location=
 type=HEADER
 
+[kgalileicenter/galilei/tests/gquery.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/tests/gquery.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/tests/gquerydocsgroup.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/tests/gquerydocsgroup.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [kgalileicenter/galilei/tests/gsimdocquerygroup.cpp]
 dist=true
 install=false
@@ -1376,6 +1400,30 @@ install=false
 install_location=
 type=HEADER
 
+[kgalileicenter/galilei/tests/gstatsimdocgrp.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/tests/gstatsimdocgrp.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/tests/gstatsimdocprof.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/tests/gstatsimdocprof.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [kgalileicenter/galilei/tests/gstatsimid.cpp]
 dist=true
 install=false
@@ -1383,6 +1431,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/tests/gstatsimid.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/tests/gstatsimprofgrp.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/tests/gstatsimprofgrp.h]
 dist=true
 install=false
 install_location=

@@ -128,78 +128,6 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	GInstIR* Instance;
 
 	/**
-	* Number of generation already executed.
-	*/
-	unsigned int Gen;
-
-	/**
-	* Maximal number of generation to execute.
-	*/
-	unsigned int MaxGen;
-
-	/**
-	* Number of generation to execute at each step.
-	*/
-	unsigned int StepGen;
-
-	/**
-	* Maximal Number of KMeans.
-	*/
-	unsigned int MaxKMeans;
-
-	/**
-	* Execute GA by steps.
-	*/
-	bool Step;
-
-	/**
-	* Minimum similarity level between the profiles of a group.
-	*/
-	double MinSimLevel;
-
-	/**
-	* Minimum number of common OK documents needed to force two profiles to be
-	* in the same group.
-	*/
-	double MinCommonOK;
-
-	/**
-	* Minimum number of common documents judged differently needed to force two
-	* profiles to be in two different groups.
-	*/
-	double MinCommonDiff;
-
-	/**
-	* Size of the Population.
-	*/
-	unsigned int PopSize;
-
-	/**
-	* Parameter for the criterion "Similariry".
-	*/
-	RPromethee::RPromCriterionParams ParamsSim;
-
-	/**
-	* Parameter for the criterion "NB Profiles".
-	*/
-	RPromethee::RPromCriterionParams ParamsNb;
-
-	/**
-	* Parameter for the criterion "OK Factor".
-	*/
-	RPromethee::RPromCriterionParams ParamsOK;
-
-	/**
-	* Parameter for the criterion "Diff Factor".
-	*/
-	RPromethee::RPromCriterionParams ParamsDiff;
-
-	/**
-	* Parameter for the criterion "Diff Social".
-	*/
-	RPromethee::RPromCriterionParams ParamsSocial;
-
-	/**
 	* SubProfiles that must be grouped again.
 	*/
 	RStd::RContainer<GSubProfile,unsigned int,false,true>* SubProfiles;
@@ -219,19 +147,30 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	*/
 	RStd::RContainer<GGroups,unsigned int,true,true> IdealGroups;
 
+	/**
+	* Number of generations.
+	*/
+	unsigned int Gen;
+
+	/**
+	* Parameters of the GA used.
+	*/
+	GIRParams* Params;
+
 public:
 
 	/**
 	* Constructor for the view.
 	* @param doc            Document instance that the view represents.
 	* @param l              Lang to group.
+	* @param p              Parameters.
 	* @param global         Global Similarities.
 	* @param scratch        Compute the grouping from scratch.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* parent,const char* name,int wflags);
+	KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.

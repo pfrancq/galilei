@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>236</width>
-            <height>171</height>
+            <height>161</height>
         </rect>
     </property>
     <property name="caption">
@@ -18,140 +18,114 @@
     <property name="sizeGripEnabled">
         <bool>true</bool>
     </property>
-    <widget class="QComboBox">
-        <item>
-            <property name="text">
-                <string>English</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>French</string>
-            </property>
-        </item>
+    <vbox>
         <property name="name">
-            <cstring>cbLangs</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>40</y>
-                <width>220</width>
-                <height>22</height>
-            </rect>
+        <property name="margin">
+            <number>11</number>
         </property>
-    </widget>
-    <widget class="QLayoutWidget">
-        <property name="name">
-            <cstring>Layout1</cstring>
+        <property name="spacing">
+            <number>6</number>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>130</y>
-                <width>220</width>
-                <height>34</height>
-            </rect>
-        </property>
-        <hbox>
+        <widget class="QLabel">
             <property name="name">
-                <cstring>unnamed</cstring>
+                <cstring>TextLabel1</cstring>
             </property>
-            <property name="margin">
-                <number>0</number>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>5</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
             </property>
-            <property name="spacing">
-                <number>6</number>
+            <property name="text">
+                <string>Choose Language:</string>
             </property>
-            <spacer>
-                <property name="name">
-                    <cstring>Horizontal Spacing2</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-            </spacer>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>buttonOk</cstring>
-                </property>
+        </widget>
+        <widget class="QComboBox">
+            <item>
                 <property name="text">
-                    <string>&amp;OK</string>
+                    <string>English</string>
                 </property>
-                <property name="autoDefault">
-                    <bool>true</bool>
-                </property>
-                <property name="default">
-                    <bool>true</bool>
-                </property>
-            </widget>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>buttonCancel</cstring>
-                </property>
+            </item>
+            <item>
                 <property name="text">
-                    <string>&amp;Cancel</string>
+                    <string>French</string>
                 </property>
-                <property name="autoDefault">
-                    <bool>true</bool>
+            </item>
+            <property name="name">
+                <cstring>cbLangs</cstring>
+            </property>
+        </widget>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>cbSim</cstring>
+            </property>
+            <property name="text">
+                <string>Compute Similarity Measures</string>
+            </property>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>Layout2</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
                 </property>
-            </widget>
-        </hbox>
-    </widget>
-    <widget class="QCheckBox">
-        <property name="name">
-            <cstring>cbGlobal</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>70</y>
-                <width>180</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Global Similarities</string>
-        </property>
-        <property name="checked">
-            <bool>true</bool>
-        </property>
-    </widget>
-    <widget class="QCheckBox">
-        <property name="name">
-            <cstring>cbSim</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>100</y>
-                <width>200</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Compute Similarity Measures</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>10</y>
-                <width>100</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Choose Language:</string>
-        </property>
-    </widget>
+                <property name="margin">
+                    <number>0</number>
+                </property>
+                <property name="spacing">
+                    <number>6</number>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>buttonOk</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;OK</string>
+                    </property>
+                    <property name="autoDefault">
+                        <bool>true</bool>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>Spacer2</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>30</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>buttonCancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Cancel</string>
+                    </property>
+                    <property name="autoDefault">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
 </widget>
 <connections>
     <connection>

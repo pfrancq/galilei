@@ -99,11 +99,6 @@ class KViewChromos : public KView
 	GLang* Lang;
 
 	/**
-	* Use global similarities or not.
-	*/
-	bool Global;
-
-	/**
 	* Compute Similarities.
 	*/
 	bool Sim;
@@ -113,19 +108,24 @@ class KViewChromos : public KView
 	*/
 	RContainer<Stat,tId,true,false> Stats;
 
+	/**
+	* Parameters of the GA.
+	*/
+	GIRParams* Params;
+
 public:
 
 	/**
 	* Constructor for the view
 	* @param doc            Document instance that the view represents.
 	* @param l              Lang to group.
-	* @param global         Global Similarities.
+	* @param p              Parameters.
 	* @param sim            Compute Similarities.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewChromos(KDoc* doc,const char* l,bool global,bool sim,QWidget* parent,const char* name,int wflags);
+	KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.

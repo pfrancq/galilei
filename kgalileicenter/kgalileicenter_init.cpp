@@ -294,7 +294,7 @@ void KGALILEICenterApp::saveOptions(void)
 void KGALILEICenterApp::readOptions(GSimMeasure* s)
 {
 	s->Weight=Config->readDoubleNumEntry(QString(s->Name)+" Measure Weight",0.0);
-	s->Use=Config->readBoolEntry(QString(s->Name)+" Use",false);
+	s->Use=Config->readBoolEntry(QString(s->Name)+" Measure Use",false);
 }
 
 
