@@ -2313,7 +2313,7 @@ AC_DEFUN(AC_CHECK_COMPILERS,
     ])
   fi
     
-  KDE_CHECK_COMPILER_FLAG(fno-exceptions,[CXXFLAGS="$CXXFLAGS -fno-exceptions"])
+  KDE_CHECK_COMPILER_FLAG(fno-exceptions,[CXXFLAGS="$CXXFLAGS"])
   KDE_CHECK_COMPILER_FLAG(fno-check-new, [CXXFLAGS="$CXXFLAGS -fno-check-new"])
   KDE_CHECK_COMPILER_FLAG(fexceptions, [USE_EXCEPTIONS="-fexceptions"], USE_EXCEPTIONS=	)
   AC_SUBST(USE_EXCEPTIONS)
@@ -3628,7 +3628,6 @@ AC_DEFUN(KDE_CHECK_STL,
     AC_LANG_SAVE
     AC_LANG_CPLUSPLUS
     ac_save_CXXFLAGS="$CXXFLAGS"
-    CXXFLAGS="`echo $CXXFLAGS | sed s/-fno-exceptions//`"
     KDE_CHECK_STL_SGI
 
     if test "$kde_cv_stl_type_sgi" = "no"; then
@@ -3699,7 +3698,7 @@ AC_DEFUN(KDE_CHECK_INSURE,
   AC_MSG_CHECKING(if we will use Insure++ to debug)
   AC_MSG_RESULT($ac_use_insure)
   if test "$ac_use_insure" = "yes"; dnl
-       then CC="insure"; CXX="insure"; dnl CFLAGS="$CLAGS -fno-rtti -fno-exceptions "????
+       then CC="insure"; CXX="insure"; dnl CFLAGS="$CLAGS -fno-rtti "????
    fi
 ])
 
