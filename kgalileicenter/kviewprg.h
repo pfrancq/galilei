@@ -38,6 +38,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <sessions/gslot.h>
 using namespace GALILEI;
 
@@ -89,6 +90,24 @@ public:
 	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
 	*/
 	virtual void update(unsigned int cmd);
+
+	/**
+	* The traitment for a specific document will begin.
+	* @param doc            Document.
+	*/
+	virtual void receiveNextDoc(const GDoc* doc);
+
+	/**
+	* The traitment for a specific document will begin.
+	* @param prof           Profile.
+	*/
+	virtual void receiveNextProfile(const GProfile* prof);
+
+	/**
+	* Method called by GGrouping each time a new language is analysed.
+	* @param lang           Pointer to the current lang.
+	*/
+	virtual void NextGroupLang(const GLang* lang);
 
 	/**
 	* Method called when executing a sequence of instruction to output some

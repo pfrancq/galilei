@@ -73,12 +73,32 @@ void KViewPrg::update(unsigned int /*cmd*/)
 {
 }
 
+//-----------------------------------------------------------------------------
+void KViewPrg::receiveNextDoc(const GDoc*)
+{
+	KApplication::kApplication()->processEvents();
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewPrg::receiveNextProfile(const GProfile*)
+{
+	KApplication::kApplication()->processEvents();
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewPrg::NextGroupLang(const GLang*)
+{
+	KApplication::kApplication()->processEvents();
+}
+
 
 //-----------------------------------------------------------------------------
 void KViewPrg::WriteStr(const char* str)
 {
 	Output->insertLine(str);
-	KApplication::kApplication()->processEvents(1000);
+	KApplication::kApplication()->processEvents();
 }
 
 
