@@ -324,7 +324,7 @@ CREATE TABLE subprofiles (
   attached date default NULL,
   groupid int(11) default '0',
   calculated date default NULL,
-  state int(2) default '0',
+  updated date default NULL,
   PRIMARY KEY  (subprofileid)
 ) TYPE=MyISAM;
 
