@@ -255,14 +255,6 @@ void KViewProfile::ComputeProfile(void)
 
 
 //-----------------------------------------------------------------------------
-bool KViewProfile::close(void)
-{
-	delete this;
-	return(true);
-}
-
-
-//-----------------------------------------------------------------------------
 KViewProfile::~KViewProfile(void)
 {
 }

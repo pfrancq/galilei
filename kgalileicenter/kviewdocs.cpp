@@ -198,14 +198,6 @@ void KViewDocs::resizeEvent(QResizeEvent *)
 
 
 //-----------------------------------------------------------------------------
-bool KViewDocs::close(void)
-{
-	delete this;
-	return(true);
-}
-
-
-//-----------------------------------------------------------------------------
 KViewDocs::~KViewDocs(void)
 {
 }

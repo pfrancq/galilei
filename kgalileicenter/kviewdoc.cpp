@@ -284,14 +284,6 @@ void KViewDoc::AnalyseDocXML(void)
 
 
 //-----------------------------------------------------------------------------
-bool KViewDoc::close(void)
-{
-	delete this;
-	return(true);
-}
-
-
-//-----------------------------------------------------------------------------
 KViewDoc::~KViewDoc(void)
 {
 	if(Struct) delete Struct;

@@ -191,7 +191,7 @@ void KViewGA::receiveBestSig(BestSig* sig)
 }
 
 
-//---------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 void KViewGA::RunGA(void)
 {
 	if(Instance)
@@ -285,14 +285,6 @@ void KViewGA::keyReleaseEvent(QKeyEvent* e)
 void KViewGA::resizeEvent(QResizeEvent*)
 {
 	TabWidget->resize(size());
-}
-
-
-//-----------------------------------------------------------------------------
-bool KViewGA::close(void)
-{
-	delete this;
-	return(true);
 }
 
 

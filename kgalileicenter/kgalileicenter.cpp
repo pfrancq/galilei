@@ -87,8 +87,10 @@ using namespace GALILEI;
 #include "kviewstems.h"
 #include "kviewprofile.h"
 #include "kviewga.h"
+#include "kviewr.h"
 #include "qconnectmysql.h"
 #include "qsessionprogress.h"
+#include "qlanguages.h"
 
 
 
@@ -229,6 +231,8 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionTest(void)
 {
+	KApplication::kApplication()->processEvents();
+	createClient(Doc,new KViewR(Doc,pWorkspace,"Run R",0));
 }
 
 
@@ -402,12 +406,22 @@ void KGALILEICenterApp::slotTextEnglish(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotGAInit(void)
 {
+	QLanguages dlg(this,0,true);
+	char tmp[3];
+
 	KApplication::kApplication()->processEvents();
-	setDocParams(Doc);
-	createClient(Doc,new KViewGA(Doc,"en",16,pWorkspace,"Genetic Algorithm",0));
-	gaPause->setEnabled(true);
-	gaStart->setEnabled(true);
-	gaStop->setEnabled(true);
+	if(dlg.exec())
+	{
+		if(dlg.cbLangs->currentItem()==0)
+			strcpy(tmp,"en");
+		else
+			strcpy(tmp,"fr");
+		setDocParams(Doc);
+		createClient(Doc,new KViewGA(Doc,tmp,16,pWorkspace,"Genetic Algorithm",0));
+		gaPause->setEnabled(true);
+		gaStart->setEnabled(true);
+		gaStop->setEnabled(true);
+	}
 }
 
 

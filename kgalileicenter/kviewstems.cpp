@@ -293,14 +293,6 @@ void KViewStems::slotIndex2(int index)
 
 
 //-----------------------------------------------------------------------------
-bool KViewStems::close(void)
-{
-	delete this;
-	return(true);
-}
-
-
-//-----------------------------------------------------------------------------
 KViewStems::~KViewStems(void)
 {
 	if(Roots) delete Roots;

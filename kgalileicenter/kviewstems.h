@@ -196,13 +196,6 @@ protected slots:
 	*/
 	void slotIndex2(int index);
 
-public slots:
-
-	/**
-	* Slot called when the widget must be close.
-	*/
-	bool close(void);
-
 public:
 
 	/**

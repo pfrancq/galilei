@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	KViewPrg.cpp
+	KViewR.cpp
 
-	Window to run a program - Implementation.
+	Window to excute R - Implementation.
 
 	(C) 2002 by Pascal Francq
 
@@ -29,67 +29,73 @@
 
 */
 
-
+#include <iostream.h>
 
 //-----------------------------------------------------------------------------
 // include files for Qt
-#include<qmultilineedit.h>
-#include<qpixmap.h>
+#include <qmultilineedit.h>
+QMultiLineEdit* Interface;
 
 
 //-----------------------------------------------------------------------------
 // include files for KDE
-#include <kapplication.h>
+#include <kprocess.h>
+KShellProcess* Proc=0;
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
-#include "kviewprg.h"
+#include "kviewr.h"
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class KViewPrg
+// class KViewR
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), GSlot()
+KViewR::KViewR(KDoc* doc, QWidget* parent,const char* name,int wflags)
+	: KView(doc,parent,name,wflags)
 {
-	// Window proprieties
-	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/make.png"));
-	setCaption(name);
-
-	Output=new QMultiLineEdit(this,"Output");
-	Output->setReadOnly(true);
-	Output->resize(size());
+	Proc=new KShellProcess("/bin/sh");
+	(*Proc)<<"R";
+	Interface = new QMultiLineEdit(this);
+	Interface->resize(size());
+	connect(Proc,SIGNAL(receivedStdout(KProcess*,char*,int)),this,SLOT(slotStdout(KProcess*,char*,int)));
+ 	connect(Proc,SIGNAL(receivedStderr(KProcess*,char*,int)),this,SLOT(slotStdout(KProcess*,char*,int)));
+	Proc->start(KProcess::NotifyOnExit,KProcess::All);
+//QString cmd = "write.table(4,'/home/jlamoral/tables')";
+//if(proc.writeStdin(cmd.data(),cmd.length())) cout<<1<<endl;
+//if(proc.isRunning ())cout<<4<<endl;
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::update(unsigned int /*cmd*/)
+void KViewR::update(unsigned int /*cmd*/)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::WriteStr(const char* str)
+void KViewR::slotStdout(KProcess* /*proc*/,char* buffer,int /*buflen*/)
 {
-	Output->insertLine(str);
-	KApplication::kApplication()->processEvents(1000);
+	QString s(buffer);
+	Interface->append(s);
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::resizeEvent(QResizeEvent *)
+void KViewR::resizeEvent(QResizeEvent *)
 {
-	Output->resize(size());
+	Interface->resize(size());
 }
 
 
 //-----------------------------------------------------------------------------
-KViewPrg::~KViewPrg(void)
+KViewR::~KViewR(void)
 {
+	if(Proc)
+		delete Proc;
 }

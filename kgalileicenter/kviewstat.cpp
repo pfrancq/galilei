@@ -66,14 +66,6 @@ void KViewStat::resizeEvent(QResizeEvent *)
 
 
 //-----------------------------------------------------------------------------
-bool KViewStat::close(void)
-{
-	delete this;
-	return(true);
-}
-
-
-//-----------------------------------------------------------------------------
 KViewStat::~KViewStat(void)
 {
 }

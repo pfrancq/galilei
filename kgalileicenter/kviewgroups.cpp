@@ -155,14 +155,6 @@ void KViewGroups::resizeEvent(QResizeEvent *)
 
 
 //-----------------------------------------------------------------------------
-bool KViewGroups::close(void)
-{
-	delete this;
-	return(true);
-}
-
-
-//-----------------------------------------------------------------------------
 KViewGroups::~KViewGroups(void)
 {
 }

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	KViewGroups.h
+	KViewR.h
 
-	Window to manipulate the groups - Header.
+	Window to excute R - Header.
 
-	(C) 2001 by Pascal Francq and David Wartel
+	(C) 2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -32,23 +32,13 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef KViewGroupsH
-#define KViewGroupsH
+#ifndef KViewRH
+#define KViewRH
 
 
 //-----------------------------------------------------------------------------
-// forward declaration for GALILEI
-namespace GALILEI
-{
-	class GGroup;
-}
-using namespace GALILEI;
-
-
-//-----------------------------------------------------------------------------
-// include files for Qt
-#include <qwidget.h>
-class QListView;
+// include files for KDE
+class KProcess;
 
 
 //-----------------------------------------------------------------------------
@@ -58,20 +48,16 @@ class QListView;
 
 //-----------------------------------------------------------------------------
 /**
-* The KViewGroups class represents a window to manipulate the groups of the
-* system.
-* @author Pascal Francq and David Wartel.
+* The KViewR class provides the view widget for running a R session.
+* @author Pascal Francq.
 * @version $Revision$
-* @short Groups' Window.
+* @short Window for R.
 */
-class KViewGroups : public KView
+class KViewR : public KView
 {
 	Q_OBJECT
 
-	/**
-	*  list view of groups containing the the profile
-	*/
-	QListView* Groups;
+protected:
 
 public:
 
@@ -82,29 +68,25 @@ public:
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewGroups(KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KViewR(KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.
 	*/
-	virtual GViewType getType(void) {return(gGroups);}
-
-	/**
-	* Get the current group selected in this window.
-	* @returns Pointer to GGroup or 0 if no group is currently selected.
-	*/
-	GGroup* GetCurrentGroup(void);
-
-	/**
-	* Construct the groups' widget.
-	*/
-	void ConstructGroups(void);
+	virtual GViewType getType(void) {return(gR);};
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.
 	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
 	*/
 	virtual void update(unsigned int cmd);
+
+public slots:
+
+	/**
+	* Slot called each time an output is done by the process.
+	*/
+	void slotStdout(KProcess *proc, char *buffer, int buflen);
 
 protected:
 
@@ -118,7 +100,7 @@ public:
 	/**
 	* Destructor for the main view.
 	*/
-	~KViewGroups(void);
+	virtual ~KViewR(void);
 };
 
 
