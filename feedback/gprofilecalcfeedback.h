@@ -85,17 +85,18 @@ class GProfileCalcFeedback : public GProfileCalc
 {
 protected:
 	class GNbDocsLangs;
+	class InternVector;
 
 	/**
 	* Gloabal vectors computed.
 	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> Vectors;
+	RStd::RContainer<InternVector,unsigned int,true,true> Vectors;
 
 	/**
 	* Number of documents where each index term of the "OK" and "N" documents
 	* for the different languages appears.
 	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> NbDocsWords;
+	RStd::RContainer<InternVector,unsigned int,true,true> NbDocsWords;
 
 	/**
 	* Number of documents per languages.
