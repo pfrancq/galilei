@@ -220,6 +220,10 @@ void GALILEI::GChromoIR::ConstructChromo(GGroups* grps) throw(RGA::eGA)
 			if(grp->CanInsert(*objs))
 				grp->Insert(*objs);
 		}
+
+		// Verify that the groups is not empty
+		if(!grp->GetNbObjs())
+			ReleaseGroup(grp);
 	}
 }
 
