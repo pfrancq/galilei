@@ -157,7 +157,7 @@ QPluginsDlg::QPluginsDlg(GSession* s,QWidget* parent,const char* name)
 	// Window initialisation
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
 	setCaption("Plugins");
-	resize(320,450);
+	resize(320,480);
 
 	QVBoxLayout* QPluginsDlgLayout = new QVBoxLayout(this);
 	QPluginsDlgLayout->setSpacing(6);
