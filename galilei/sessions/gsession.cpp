@@ -622,6 +622,8 @@ double GALILEI::GSession::GetMinimumOfSimilarity(RStd::RContainer<GSubProfile,un
 	meanSim=profSim->GetMeanSim();
 	deviation=profSim->GetDeviation();
 	minSim=meanSim+deviationrate*sqrt(deviation);
+
+//	cout << "Minimum of Similarity from Session = "<<minSim<<endl;
 	return(minSim);
 }
 
@@ -651,18 +653,30 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 		{
 			if((!modified)||(Prof()->GetState()!=osUpdated))
 				ProfileCalc->Compute(Prof());
-			if(save)
-				SaveProfile(Prof());
-			if(Prof()->GetState()==osUpdated)
-				Prof()->SetState(osUpToDate);
 		}
 		catch(GException& e)
 		{
 		}
 	}
 
+	// update the state of all the sims. 
+	ChangeAllProfilesSimState(true);   /// !!!!  check if 'true' is the corect value !?!
 
-	ChangeAllProfilesSimState(true);   /// !!!!
+	//   save profiles if necessary and set their state to UpToDate.
+	for(Prof.Start();!Prof.End();Prof.Next())
+	{
+		if(save&&(Prof()->GetState()==osUpdated))
+		{
+			try
+			{
+				SaveProfile(Prof());
+				Prof()->SetState(osUpToDate);
+			}
+			catch(GException& e)
+			{
+			}
+		}
+	}
 }
 
 
