@@ -181,7 +181,7 @@ void GGroup::DeleteSubProfile(GSubProfile* sp) throw(bad_alloc)
 //------------------------------------------------------------------------------
 void GGroup::InsertSubProfile(GSubProfile* sp) throw(bad_alloc)
 {
-	InsertPtr(sp);
+	R::RContainer<GSubProfile,unsigned int,false,true>::InsertPtr(sp);
 	State=osUpdated;
 	if(Community)
 		sp->SetGroup(this);
