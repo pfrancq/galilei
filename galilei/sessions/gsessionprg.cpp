@@ -42,12 +42,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcursor.h>
-using namespace RStd;
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gsessionprg.h>
 #include <langs/glang.h>
@@ -67,6 +61,7 @@ using namespace RStd;
 #include <tests/gstatsimdoc.h>
 using namespace GALILEI;
 using namespace RIO;
+using namespace RStd;
 
 
 
@@ -122,7 +117,7 @@ public:
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_alloc,GException)
-	: FileName(f), Session(s), Rec(r), InstTypes(20), Insts(40), OFile(0),
+	: GPrgVar("Session",0), FileName(f), Session(s), Rec(r), InstTypes(20), Insts(40), OFile(0),
 	  GOFile(0), SOFile(0), Groups(0), IdealMethod(0), FdbksMethod(0),
 	  Parents(0), AutoSave(false), StatSimSubProf(0)
 {

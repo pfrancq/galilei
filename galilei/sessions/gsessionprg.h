@@ -47,6 +47,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <sessions/gprgvar.h>
 
 
 //-----------------------------------------------------------------------------
@@ -55,13 +56,11 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GSession provides a representation for a GALILEI session. The way the
-* data are stored and loaded is dedicated to a child class of GSession through
-* a set of pure virtual methods defined.
+* The GSessionPrg provides a class for executing a GALILEI Program.
 * @author Pascal Francq
-* @short Generic Session.
+* @short GALILEI Program.
 */
-class GSessionPrg
+class GSessionPrg : public GPrgVar
 {
 	class Inst;
 	class InstType;
@@ -71,7 +70,7 @@ protected:
 	/**
 	* Represent the different instruction allowed.
 	*/
-	enum tInst{Log,Output,GOutput,Sql,Comp,Group,CreateIdeal,LoadIdeal,MixIdeal, Test,CmpIdeal,Fdbks,SetAutoSave,SOutput,StatProf,StatDoc,ModifyProf};
+	enum tInst{Log,Output,GOutput,Sql,Comp,Group,CreateIdeal,LoadIdeal,MixIdeal,Test,CmpIdeal,Fdbks,SetAutoSave,SOutput,StatProf,StatDoc,ModifyProf};
 
 	/**
 	* Name of the file to execute.
@@ -172,7 +171,6 @@ protected:
 	* Method for computing statistics on profiles.
 	*/
 	GStatSimSubProf* StatSimSubProf;
-
 
 public:
 
