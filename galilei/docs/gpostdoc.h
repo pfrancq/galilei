@@ -213,7 +213,11 @@ struct GFactoryPostDocOrder
 	{
 		return((Fac->GetUInt("Level"))-(fpdo->Fac->GetUInt("Level")));
 	}
+	RString GetLib(void) const {return(Fac->GetLib());}
+	RString GetName(void) const {return(Fac->GetName());}
+	GPostDoc* GetPlugin(void) const {return(Fac->GetPlugin());}
 };
+
 
 }  //-------- End of namespace GALILEI -----------------------------------------
 

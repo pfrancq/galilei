@@ -212,7 +212,11 @@ struct GFactoryPostGroupOrder
 	{
 		return((Fac->GetUInt("Level"))-(fpgo->Fac->GetUInt("Level")));
 	}
+	RString GetLib(void) const {return(Fac->GetLib());}
+	RString GetName(void) const {return(Fac->GetName());}
+	GPostGroup* GetPlugin(void) const {return(Fac->GetPlugin());}
 };
+
 
 }  //-------- End of namespace GALILEI -----------------------------------------
 
