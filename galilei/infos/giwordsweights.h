@@ -67,11 +67,6 @@ class GIWordsWeights : public GInfo,public RStd::RContainer<GIWordWeight,unsigne
 	double NbWordsDocs;
 
 	/**
-	* Languages of the documents.
-	*/
-	GLang* Lang;
-
-	/**
 	* Hold the same list but in decreasing order of frequencies.
 	*/
 	GIWordWeight** Order;
@@ -85,10 +80,9 @@ public:
 
 	/**
 	* Constructor.
-	* @param lang           Language.
 	* @param nb             Maximal number of word created at initialisation.
 	*/
-	GIWordsWeights(GLang *lang,unsigned int nb) throw(bad_alloc);
+	GIWordsWeights(unsigned int nb) throw(bad_alloc);
 
 	/**
 	* Return the name of the class.
@@ -99,26 +93,6 @@ public:
 	* Return the type of the information.
 	*/
 	virtual const GInfoType InfoType(void) const;
-
-	/**
-	* Compare method used by RStd::RContainer.
-	*/
-	int Compare(const GIWordsWeights& c) const;
-
-	/**
-	* Compare method used by RStd::RContainer.
-	*/
-	int Compare(const GIWordsWeights* c) const;
-
-	/**
-	* Compare method used by RStd::RContainer.
-	*/
-	int Compare(const GLang* l) const;
-
-	/**
-	* Return the language assigned to this vector.
-	*/
-	GLang* GetLang(void) const {return(Lang);}
 
 private:
 
@@ -177,8 +151,9 @@ public:
 	* than the weights.
 	* @param w              Vector to compare with.
 	* @param ObjType        Type of the reference.
+	* @param lang           Language.
 	*/
-	double SimilarityIdf(const GIWordsWeights* w,tObjType ObjType) const;
+	double SimilarityIdf(const GIWordsWeights* w,tObjType ObjType,GLang* lang) const;
 
 	/**
 	* Add the references for the words contained in the vector for a given

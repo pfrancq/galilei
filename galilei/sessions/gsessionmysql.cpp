@@ -53,6 +53,7 @@ using namespace RIO;
 #include <langs/gdict.h>
 #include <langs/gdicts.h>
 #include <infos/giwordlist.h>
+#include <infos/giwordweight.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofilevector.h>

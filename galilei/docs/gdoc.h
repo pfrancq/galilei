@@ -37,16 +37,9 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcursor.h>
-#include <rstd/rstring.h>
-#include <rxml/rxmltag.h>
-#include <rtimedate/rdate.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <infos/giwordsweights.h>
 
 
 //-----------------------------------------------------------------------------
@@ -59,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Document.
 */
-class GDoc
+class GDoc : public GIWordsWeights
 {
 	/**
 	* URL of the document.
@@ -130,7 +123,7 @@ class GDoc
 	/**
 	* Profiles which have judge the current document.
 	*/
-	RContainer<GProfDoc,unsigned,false,true> Fdbks;
+	RStd::RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
 	/**
 	* Count the number of downloads failed.
@@ -279,7 +272,7 @@ public:
 	/**
 	* @return Pointer to the language of the document.
 	*/
-	GLang* GetLang(void) {return(Lang);}
+//	GLang* GetLang(void) {return(Lang);}
 
 	/**
 	* @return Identificator of the document.

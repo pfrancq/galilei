@@ -54,6 +54,7 @@ using namespace RStd;
 #include <profiles/gprofdoc.h>
 #include <infos/giword.h>
 #include <infos/giwordlist.h>
+#include <infos/giwordweight.h>
 #include <infos/giwordsweights.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
@@ -85,6 +86,26 @@ public:
 
 //-----------------------------------------------------------------------------
 //
+// InternVector
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class GALILEI::GProfileCalcVector::InternVector : public GIWordsWeights
+{
+public:
+	GLang* Lang;
+
+	InternVector(GLang* lang,unsigned int n) : GIWordsWeights(n), Lang(lang)  {}
+	int Compare(const InternVector& c) const {return(Lang->Compare(c.Lang));}
+	int Compare(const InternVector* c) const {return(Lang->Compare(c->Lang));}
+	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
+};
+
+
+
+//-----------------------------------------------------------------------------
+//
 //  GProfileCalcVector
 //
 //-----------------------------------------------------------------------------
@@ -100,8 +121,8 @@ GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session) throw(bad_all
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		Vector.InsertPtr(new GIWordsWeights(Langs(),Session->GetDic(Langs())->GetMaxId()));
-		NbDocsWords.InsertPtr(new GIWordsWeights(Langs(),Session->GetDic(Langs())->GetMaxId()));
+		Vector.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
+		NbDocsWords.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 		NbDocsLangs.InsertPtr(new GNbDocsLangs(Langs()));
 	}
 }
@@ -189,9 +210,9 @@ void GALILEI::GProfileCalcVector::ComputeGlobal(GProfile* profile) throw(bad_all
 	// Compute the weight for the big document
 	for(Vector.Start();!Vector.End();Vector.Next())
 	{
-		NbDocs=NbDocsWords.GetPtr<GLang*>(Vector()->GetLang());
+		NbDocs=NbDocsWords.GetPtr<GLang*>(Vector()->Lang);
 		MaxFreq=Vector()->GetMaxWeight();
-		NbDocsJudged=NbDocsLangs.GetPtr<GLang*>(Vector()->GetLang())->GetNb();
+		NbDocsJudged=NbDocsLangs.GetPtr<GLang*>(Vector()->Lang)->GetNb();
 		for(i=Vector()->NbPtr+1,v=Vector()->Tab,d=NbDocs->Tab;--i;v++,d++)
 		{
 			if(IdfFactor)

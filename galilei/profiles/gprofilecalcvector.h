@@ -77,18 +77,19 @@ class GProfileCalcVector : public GProfileCalc
 {
 protected:
 	class GNbDocsLangs;
+	class InternVector;
 
 	/**
 	* Occurences of the index terms in the "OK" and "N" documents for the
 	* different languages.
 	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> Vector;
+	RStd::RContainer<InternVector,unsigned int,true,true> Vector;
 
 	/**
 	* Number of documents where each index term of the "OK" and "N" documents
 	* for the different languages appears.
 	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> NbDocsWords;
+	RStd::RContainer<InternVector,unsigned int,true,true> NbDocsWords;
 
 	/**
 	* Number of documents per languages.

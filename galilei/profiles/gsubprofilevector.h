@@ -38,19 +38,14 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <profiles/gsubprofile.h>
-#include <infos/giwordweight.h>
+#include <infos/giwordsweights.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GGroup;
-class GIWordsWeights;
 
 
 //-----------------------------------------------------------------------------
@@ -60,7 +55,7 @@ class GIWordsWeights;
 * @author Pascal Francq.
 * @short Sub-Profile Vector Description.
 */
-class GSubProfileVector : public GSubProfile
+class GSubProfileVector : public GSubProfile//, public GIWordsWeights
 {
 	/**
 	* List representing the sub-profile.
@@ -149,6 +144,11 @@ public:
 	* Remove the references of the document.
 	*/
 	void RemoveRefs(void) const;
+
+	/**
+	* @return Pointer to the Language.
+	*/
+//	GLang* GetLang(void) const {return(GSubProfile::Lang);}
 
 	/**
 	* Destructor.

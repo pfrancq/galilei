@@ -56,9 +56,9 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfileVector::GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a) throw(bad_alloc)
-  : GSubProfile(prof,id,lang,grp,a), Vector(0)
+  : GSubProfile(prof,id,lang,grp,a)/*, GIWordsWeights(Lang,60)*/, Vector(0)
 {
-	Vector = new GIWordsWeights(Lang,60);
+	Vector = new GIWordsWeights(60);
 }
 
 
@@ -94,7 +94,7 @@ double GALILEI::GSubProfileVector::Similarity(const GSubProfile* desc) const
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::GlobalSimilarity(const GSubProfile* desc) const
 {
-	return(Vector->SimilarityIdf((static_cast<const GSubProfileVector*>(desc))->Vector,otSubProfile));
+	return(Vector->SimilarityIdf((static_cast<const GSubProfileVector*>(desc))->Vector,otSubProfile,Lang));
 }
 
 
@@ -108,7 +108,7 @@ double GALILEI::GSubProfileVector::Similarity(const GDoc* doc) const
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(Vector->SimilarityIdf(doc->GetWordWeights(),otNoClass));
+	return(Vector->SimilarityIdf(doc->GetWordWeights(),otNoClass,Lang));
 }
 
 

@@ -37,25 +37,15 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-using namespace RStd;
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <profiles/gprofilecalc.h>
+#include <profiles/gsubprofilevector.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GIWordsWeights;
-class GSubProfileVector;
 
 
 //-----------------------------------------------------------------------------
@@ -67,19 +57,20 @@ class GSubProfileVector;
 */
 class GProfileCalcReWeighting : public GProfileCalc
 {
+	class InternVector;
 protected:
 
 	/**
-	* List of words' frequences in the "OK" and "N" documents for the different
+	* List of words frequences in the "OK" and "N" documents for the different
 	* languages.
 	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> OK;
+	RStd::RContainer<InternVector,unsigned int,true,true> OK;
 
 	/**
-	* List of words' frequences in the "KO" documents for the different
+	* List of words frequences in the "KO" documents for the different
 	* languages.
 	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> KO;
+	RStd::RContainer<InternVector,unsigned int,true,true> KO;
 
 	/**
 	* Maximal number of the non-zero weights in the vector.

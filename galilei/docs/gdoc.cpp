@@ -70,7 +70,7 @@ using namespace RTimeDate;
 
 //-----------------------------------------------------------------------------
 GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
-	: URL(url), Name(name), Id(id), Words(0), N(n), V(v), Ndiff(ndiff), Vdiff(vdiff),
+	: GIWordsWeights(vdiff>600?vdiff:600), URL(url), Name(name), Id(id), Words(0), N(n), V(v), Ndiff(ndiff), Vdiff(vdiff),
 	  Lang(lang), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2), Failed(f)
 {
 	if(Updated>Computed)
@@ -82,7 +82,7 @@ GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang
 	}
 	else
 		State=osUpToDate;
-	Words=new GIWordsWeights(Lang,vdiff>600?vdiff:600);
+	Words=new GIWordsWeights(vdiff>600?vdiff:600);
 }
 
 
@@ -202,7 +202,7 @@ double GALILEI::GDoc::Similarity(const GDoc* doc) const
 //-----------------------------------------------------------------------------
 double GALILEI::GDoc::GlobalSimilarity(const GDoc* doc) const
 {
-	return(Words->SimilarityIdf(doc->Words,otDoc));
+	return(Words->SimilarityIdf(doc->Words,otDoc,Lang));
 }
 
 

@@ -54,6 +54,7 @@ using namespace RStd;
 #include <profiles/gprofdoc.h>
 #include <infos/giword.h>
 #include <infos/giwordlist.h>
+#include <infos/giwordweight.h>
 #include <infos/giwordsweights.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
@@ -85,6 +86,27 @@ public:
 
 //-----------------------------------------------------------------------------
 //
+// InternVector
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class GALILEI::GProfileCalcFeedback::InternVector : public GIWordsWeights
+{
+public:
+	GLang* Lang;
+
+	InternVector(GLang* lang,unsigned int n) : GIWordsWeights(n), Lang(lang)  {}
+	int Compare(const InternVector& c) const {return(Lang->Compare(c.Lang));}
+	int Compare(const InternVector* c) const {return(Lang->Compare(c->Lang));}
+	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
+};
+
+
+
+
+//-----------------------------------------------------------------------------
+//
 //  GProfileCalcFeedback
 //
 //-----------------------------------------------------------------------------
@@ -100,8 +122,8 @@ GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session) throw(bad
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		Vectors.InsertPtr(new GIWordsWeights(Langs(),Session->GetDic(Langs())->GetMaxId()));
-		NbDocsWords.InsertPtr(new GIWordsWeights(Langs(),Session->GetDic(Langs())->GetMaxId()));
+		Vectors.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
+		NbDocsWords.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 		NbDocsLangs.InsertPtr(new GNbDocsLangs(Langs()));
 	}
 }
