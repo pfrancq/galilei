@@ -167,13 +167,11 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	*/
 	RStd::RContainer<GObjIR,unsigned int,false,true> NoSocialSubProfiles;
 
-#ifdef RGADEBUG
-
+#if GALILEITEST
 	/**
 	* Ideal Groups.
 	*/
 	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
-
 #endif
 
 #if BESTSOLSVERIFICATION
@@ -181,7 +179,6 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	* Container holding the best chromosomes.
 	*/
 	RStd::RContainer<GChromoIR,unsigned int,true,false> BestSols;
-
 #endif
 
 public:
@@ -230,7 +227,7 @@ public:
 	*/
 	virtual bool StopCondition(void);
 
-#ifdef RGADEBUG
+#ifdef GALILEITEST
 
 	/**
 	* Write the information of a given chromosome.

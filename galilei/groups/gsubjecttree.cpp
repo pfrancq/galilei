@@ -78,15 +78,15 @@ using namespace RStd;
 GALILEI::GSubjectTree::GSubjectTree(double NbOk,double NbKo,unsigned int nbusers)
 	: RTree<GSubject,true,false>(100,50)
 {
+	RTimeDate::RDate date;
 
 	NbDocsOk=NbOk;
 	NbDocsKo=NbKo;
 	NbUsers=nbusers;
 	NbProfiles=NbUsers;
-	profiles=new RContainer<GProfile,unsigned,false,true>(10,5);
+//	profiles=new RContainer<GProfile,unsigned,false,true>(10,5);
 	sprintf(today,"'%u-%u-%u'",date.GetYear(),date.GetMonth(),date.GetDay());
 	IdealDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
-
 }
 
 
@@ -98,28 +98,26 @@ void GALILEI::GSubjectTree::InsertProfiles(void)
 
 	for (i=0; i<NbUsers; i++)
 	{
-		for (this->Start();!this->End(); this->Next())
+		for (Start();!End();Next())
 		{
 			GSubject* subject = (*this)();
 			for (subject->Start();!subject->End();subject->Next())
 			{
 				GSubject* sub= (*subject)();
 				GUser* usr = new GUser(0,"test","test",1);
-				this->profiles->InsertPtr(new GProfile(usr,profid,(RString(subject->GetName())+"/"+sub->GetName()),true,0,0,1,1));
+				profiles->InsertPtr(new GProfile(usr,profid,(RString(subject->GetName())+"/"+sub->GetName()),true,0,0,1,1));
 				subid++;
 				subid++;
 				profid++;
 			}
 		}
 	}
-
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSubjectTree::ChooseSubject(GSession* ses,double percgrp,unsigned int NbDocPerGrp)
 {
-	ses->LoadIdealDocument(IdealDoc);
 	double PercGrp=percgrp;
 	unsigned int nbrsububjects=0;
 	unsigned int compt=0;
@@ -133,6 +131,8 @@ void GALILEI::GSubjectTree::ChooseSubject(GSession* ses,double percgrp,unsigned 
 	tab=new unsigned int [nbrsububjects];
 	tab1=new unsigned int [nbrsububjects];
 	tab2=new unsigned int [nbrsububjects];
+
+	ses->LoadIdealDocument(IdealDoc);
 	for(IdealDoc->Start();!IdealDoc->End();IdealDoc->Next())
 	{
 		GGroupEvaluateCursor Grp=(*IdealDoc)()->GetGroupEvaluateCursor();
@@ -142,7 +142,7 @@ void GALILEI::GSubjectTree::ChooseSubject(GSession* ses,double percgrp,unsigned 
 			compt++;
 		}
 	}
-   	for (unsigned int i=0; i<nbrsububjects;i++)
+	for (unsigned int i=0; i<nbrsububjects;i++)
 	{
 		tab[i]=ses->GetCurrentRandomValue(100);
 		tab1[i]=tab[i];
@@ -185,7 +185,7 @@ int GALILEI::GSubjectTree::sortOrder(const void * a, const void * b)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubjectTree::Judgments(GSession* ses,double percok,double percko,double perchs,unsigned int nbmin,unsigned int nbmax,double percsocial,double percerr)
+void GALILEI::GSubjectTree::Judgments(GSession* ses,double percok,double percko,double perchs,unsigned int nbmin,unsigned int nbmax,double percsocial,double percerr,bool Save)
 {
 	unsigned int NbProfilesWhoJudgesDocuments;
 	double psocial;
@@ -233,7 +233,8 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,double percok,double percko,
 		psocial=ses->GetCurrentRandomValue(100);
 		if(psocial<=percsocial)	ProfCursor()->SetSocial(true);
 		else  ProfCursor()->SetSocial(false);
-		ses->SaveProfile(ProfCursor());
+		if(Save)
+			ses->SaveProfile(ProfCursor());
 	}
 
 	// Create the judgments.
@@ -319,8 +320,7 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,double percok,double percko,
 
 							// If the doc is not in the ok subject or ko subject
 							// and that the profiles doenst have judged and that the subject is judged
-
-							if((GrpDocId>subject->SubSubjectMinId())&&(GrpDocId<subject->SubSubjectMinId()+subject->NbPtr)&&(tabs[GrpDocId-1]==1))
+							if((GrpDocId<subject->SubSubjectMinId())||(GrpDocId>subject->SubSubjectMinId()+subject->NbPtr)&&(tabs[GrpDocId-1]==1))
 							{
 								if(ses->GetProfile(profid)->GetFeedback(doc)==0)
 								{
@@ -422,8 +422,8 @@ void GALILEI::GSubjectTree::JudgeDocuments(unsigned int profileid,GSubject* sub,
 //-----------------------------------------------------------------------------
 void GALILEI::GSubjectTree::IdealGroupmentFile(const char* url)
 {
-    // The file where the ideal groupment is stored.
-	RTextFile* textfile = new RTextFile (url, RIO::Create);
+	// The file where the ideal groupment is stored.
+	RTextFile textfile(url, RIO::Create);
 
 	//calculation of the number of goups (ie the number of judged soubsubjects)
 	unsigned int nbrsubsubjects=0;
@@ -437,8 +437,8 @@ void GALILEI::GSubjectTree::IdealGroupmentFile(const char* url)
 			nbrsubsubjects++;
 		}
 	}
-	textfile->WriteStr(itoa(nbrsubsubjects));
-	textfile->WriteLine();
+	textfile.WriteStr(itoa(nbrsubsubjects));
+	textfile.WriteLine();
 
 	RContainer<GProfile,unsigned,false,false>* prof=new RContainer<GProfile,unsigned,false,false>(10,5);
 	//for each subject.
@@ -451,8 +451,8 @@ void GALILEI::GSubjectTree::IdealGroupmentFile(const char* url)
 			GSubject* sub= (*subject)();
 			if (sub->isJudged())
 			{
-				textfile->WriteStr(sub->GetLang());
-				textfile->WriteStr("\t");
+				textfile.WriteStr(sub->GetLang());
+				textfile.WriteStr("\t");
 				unsigned int* tab;
 				tab= new unsigned int[profiles->NbPtr];
 				unsigned int k;
@@ -479,19 +479,18 @@ void GALILEI::GSubjectTree::IdealGroupmentFile(const char* url)
 						}
 					}
 				}
-				textfile->WriteStr(itoa(c));
+				textfile.WriteStr(itoa(c));
 				unsigned int temp=0 ;
 				while (tab[temp]!=0)
 				{
-					textfile->WriteStr(itoa(tab[temp]));
+					textfile.WriteStr(itoa(tab[temp]));
 					temp++;
 				}
-				textfile->WriteLine();
+				textfile.WriteLine();
 				delete[] tab;
 			}
 		}
 	}
-	delete textfile;
 	delete prof;
 }
 

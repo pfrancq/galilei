@@ -148,7 +148,7 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 	unsigned int i,j;
 	double nb,tmp;
 
-	#ifdef RGADEBUG
+	#if GALILEITEST
 		IdealGroups=0;
 	#endif
 
@@ -210,7 +210,7 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 	unsigned int i,j;
 	double nb,tmp;
 
-	#ifdef RGADEBUG
+	#if GALILEITEST
 		IdealGroups=0;
 	#endif
 
@@ -282,19 +282,15 @@ bool GALILEI::GInstIR::StopCondition(void)
 }
 
 
-#ifdef RGADEBUG
+#if GALILEITEST
 //-----------------------------------------------------------------------------
 void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 {
 	char Tmp[300];
 	char Tmp2[300];
 	double Precision,Recall,Total;
-//	RPromSol* s;
 
 	if(!Debug) return;
-	Precision=0.0;
-	Recall=0.0;
-	Total=0.0;
 	if(IdealGroups)
 	{
 		c->CompareIdeal(Session,IdealGroups);
@@ -302,9 +298,10 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 		Recall=c->Recall;
 		Total=c->Global;
 	}
+	Precision=Recall=Total=0;
 	if(Params->SimMeasures==sctCorl)
 	{
-		sprintf(Tmp,"Id %2u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Info=%1.3f - SameFdbk=%1.3f - DiffFdbk=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
+		sprintf(Tmp,"Id %2u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Info=%1.3f - SameFdbk=%1.3f - DiffFdbk=%1.3f - Social=%1.3f ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
 	        c->Id,c->Fi,c->FiPlus,c->FiMinus,c->CritSim,c->CritInfo,c->CritSameFeedbacks,c->CritDiffFeedbacks,c->CritSocial,Recall,Precision,Total);
 	}
 	else
@@ -344,7 +341,7 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 				strcat(Tmp,Tmp2);
 			}
 		}
-		sprintf(Tmp2,"Info=%1.3f - SameFdbk=%1.3f - DiffFdbk=%1.3f - Social=%1.3f  ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
+		sprintf(Tmp2,"Info=%1.3f - SameFdbk=%1.3f - DiffFdbk=%1.3f - Social=%1.3f ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
 		        c->CritInfo,c->CritSameFeedbacks,c->CritDiffFeedbacks,c->CritSocial,Recall,Precision,Total);
 		strcat(Tmp,Tmp2);
 	}

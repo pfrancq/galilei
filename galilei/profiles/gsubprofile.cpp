@@ -57,6 +57,9 @@ using namespace RStd;
 GALILEI::GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a) throw(bad_alloc)
   :  Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a)
 {
+	#if GALILEITEST
+		Subject=0;
+	#endif
 	Profile->InsertPtr(this);
 	if(grp)
 		grp->InsertPtr(this);
@@ -270,6 +273,21 @@ double GALILEI::GSubProfile::GlobalSimilarity(const GGroup*) const
 {
 	return(0.0);
 }
+
+#if GALILEITEST
+//-----------------------------------------------------------------------------
+void GALILEI::GSubProfile::SetSubject(GSubject* s)
+{
+	Subject=s;
+}
+
+
+//-----------------------------------------------------------------------------
+GSubject* GALILEI::GSubProfile::GetSubject(void) const
+{
+	return(Subject);
+}
+#endif
 
 
 //-----------------------------------------------------------------------------

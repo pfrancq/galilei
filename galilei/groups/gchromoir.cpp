@@ -82,8 +82,8 @@ GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
 	  CritInfo(0.0), CritEntropy(0.0), CritSameFeedbacks(0.0), CritDiffFeedbacks(1.0), CritSocial(1.0), Protos(Used.MaxPtr),
 	  thProm(0), thSols(0), Docs(100,50)
 {
-	#ifdef RGADEBUG
-		Global=0.0;
+	#if GALILEITEST
+		Recall=Precision=Global=0.0;
 	#endif
 	(*Fitness)=0.0;
 }
@@ -112,7 +112,7 @@ int GALILEI::GChromoIR::Compare(const GChromoIR* c) const
 }
 
 
-#ifdef RGADEBUG
+#if GALILEITEST
 //-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::CompareIdeal(GSession* s,RStd::RContainer<GGroups,unsigned int,true,true>* ideal)
 {
@@ -1019,7 +1019,7 @@ GChromoIR& GALILEI::GChromoIR::operator=(const GChromoIR& chromo)
 	Fi=chromo.Fi;
 	FiPlus=chromo.FiPlus;
 	FiMinus=chromo.FiMinus;
-	#ifdef RGADEBUG
+	#if GALILEITEST
 		Global=chromo.Global;
 		Precision=chromo.Precision;
 		Recall=chromo.Recall;

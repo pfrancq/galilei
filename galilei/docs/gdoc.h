@@ -127,6 +127,13 @@ protected:
 	*/
 	unsigned int Failed;
 
+#if GALILEITEST
+	/**
+	* Subjects of the documents.
+	*/
+	RStd::RContainer<GSubject,unsigned int,false,true> Subjects;
+#endif
+
 public:
 
 	/**
@@ -305,7 +312,7 @@ public:
 	void DecFailed(void) {Failed--;}
 
 	/**
-	* Get a Cursor on the feedback for the profile.
+	* Get a Cursor on the feedback on the document.
 	* @return GProfDocCursor.
 	*/
 	GProfDocCursor& GetProfDocCursor(void);
@@ -345,6 +352,29 @@ public:
 	* @param j              Judgement.
 	*/
 	void AddJudgement(GProfDoc* j) throw(bad_alloc);
+
+#if GALILEITEST
+
+	/**
+	* Insert a new subject for this document.
+	* @param s              Subject.
+	*/
+	void InsertSubject(GSubject* s);
+
+	/**
+	* Look if a document is from a given subject.
+	* @param s              Subject.
+	* @return bool
+	*/
+	bool IsFromSubject(const GSubject* s);
+
+	/**
+	* Get a Cursor on the subjects.
+	* @return GSubjectCursor.
+	*/
+	GSubjectCursor& GetSubjectCursor(void);
+
+#endif
 
 	/**
 	* Destruct the document.

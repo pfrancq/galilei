@@ -56,10 +56,11 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-/** This Class implement a representation for a groupid and the parentid of the
-*  group.
-*  @author Julien Lamoral
-*  @short  Subject
+/**
+* This Class implement a representation for a groupid and the parentid of the
+* group.
+* @author Julien Lamoral
+* @short  Subject
 */
 class GGroupIdParentId
 {
@@ -96,15 +97,15 @@ public:
 	* Compare method needed by RStd::RContainer.
 	*/
 	int Compare(const GGroupIdParentId& grp) const {return(GrpId-grp.GrpId);}
-	
 };
 
 
 //-----------------------------------------------------------------------------
-/** This Class implement a representation for a subject used to create judgment
-*  and feedback.
-*  @author Julien Lamoral
-*  @short  Subject
+/**
+* This Class implement a representation for a subject used to create judgment
+* and feedback.
+* @author Julien Lamoral
+* @short  Subject
 */
 class GSubject: public RStd::RNode<GSubject,false>
 {
@@ -130,18 +131,17 @@ protected:
 	*/
 	bool IsUsed;
 
-
 	/**
 	* The language of a subsubject
 	*/
 	RStd::RString Lang;
 
-public:
-
 	/**
 	* The container of document in the subject.
 	*/
 	RStd::RContainer<GDoc,unsigned,false,false>* urls;
+
+public:
 
 	/**
 	* Constructor
@@ -149,6 +149,11 @@ public:
 	* @param id              the subject id.
 	*/
 	GSubject(RStd::RString name, unsigned int id);
+
+	/**
+	* Insert a document in the container.
+	*/
+	void InsertDoc(GDoc* d) throw(bad_alloc);
 
 	/**
 	* Compare a subject with a given name.
@@ -239,7 +244,19 @@ public:
 	* Destructor.
 	*/
 	~GSubject(void);
+
+	// friend classes
+	friend class GSubjectTree;
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GSubjectCursor class provides a way to go trough a set of subjects.
+* @short Subject Cursor
+*/
+CLASSCURSOR(GSubjectCursor,GSubject,unsigned int)
+
 
 
 }; //-------- End of namespace GALIELI ----------------------------------------

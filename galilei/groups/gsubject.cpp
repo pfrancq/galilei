@@ -83,19 +83,22 @@ GSubject::GSubject(RString name,unsigned int id)
 
 
 //-----------------------------------------------------------------------------
+void GSubject::InsertDoc(GDoc* d) throw(bad_alloc)
+{
+	urls->InsertPtr(d);
+}
+
+
+//-----------------------------------------------------------------------------
 unsigned int GSubject::SubSubjectMinId(void)
 {
 	unsigned int min;
-	GSubject **s1;
+	GSubject** s1;
 	unsigned int i;
 
-	for(s1=this->Tab,i=this->NbPtr;--i;s1++)
-	{
-		GSubject* subject=(*s1);
-		min=subject->GetId();
-	}
-	
-	for(s1=this->Tab,i=this->NbPtr;--i;s1++)
+	s1=Tab;
+	min=(*s1)->GetId();
+	for(i=NbPtr;--i;s1++)
 	{
 		GSubject* subject=(*s1);
 		if (subject->GetId()<min) min=subject->GetId();

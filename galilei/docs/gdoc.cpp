@@ -43,6 +43,9 @@
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
 #include <sessions/gsession.h>
+#if GALILEITEST
+	#include <groups/gsubject.h>
+#endif
 using namespace GALILEI;
 using namespace RXML;
 using namespace RTimeDate;
@@ -60,6 +63,9 @@ GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang
 	: URL(url), Name(name), Id(id), N(n), V(v), Ndiff(ndiff), Vdiff(vdiff),
 	  Lang(lang), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
 	  Failed(f)
+#if GALILEITEST
+	  ,Subjects(2,1)
+#endif
 {
 	if(Updated>Computed)
 	{
@@ -191,6 +197,31 @@ void GALILEI::GDoc::AddJudgement(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 }
+
+
+#if GALILEITEST
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::InsertSubject(GSubject* s)
+{
+	Subjects.InsertPtr(s);
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GDoc::IsFromSubject(const GSubject* s)
+{
+	return(Subjects.IsIn(s));
+}
+
+
+//-----------------------------------------------------------------------------
+GSubjectCursor& GALILEI::GDoc::GetSubjectCursor(void)
+{
+	GSubjectCursor *cur=GSubjectCursor::GetTmpCursor();
+	cur->Set(Subjects);
+	return(*cur);
+}
+#endif
 
 
 //-----------------------------------------------------------------------------

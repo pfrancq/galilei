@@ -195,7 +195,7 @@ private:
 	*/
 	RStd::RContainer<GDocSim,unsigned,true,false> Docs;
 
-#ifdef RGADEBUG
+#if GALILEITEST
 
 	/**
 	* Global Factor	
@@ -234,7 +234,7 @@ public:
 	*/
 	int Compare(const GChromoIR* c) const;
 
-#ifdef RGADEBUG
+#if GALILEITEST
 
 	/**
 	* Get the global value for the chromosome.

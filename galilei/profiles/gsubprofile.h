@@ -85,6 +85,13 @@ protected:
 	*/
 	RTimeDate::RDate Attached;
 
+#if GALILEITEST
+	/**
+	* Subject of the subprofile.
+	*/
+	GSubject* Subject;
+#endif
+
 public:
 
 	/**
@@ -250,6 +257,20 @@ public:
 	*/
 	virtual double GlobalSimilarity(const GGroup* grp) const;
 
+#if GALILEITEST
+
+	/**
+	* Set the Subject of the subprofile.
+	* @param s              Subject.
+	*/
+	void SetSubject(GSubject* s);
+
+	/**
+	* Get the subject of the subprofile.
+	*/
+	GSubject* GetSubject(void) const;
+
+#endif
 	/**
 	*Destructor
 	*/

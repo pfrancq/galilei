@@ -117,7 +117,6 @@ public:
 	unsigned int GetNbDocs(void) const
 		{return(NbPtr);}
 
-
 	/**
 	* Verify if the documents are loaded.
 	* @returns true, if loaded.

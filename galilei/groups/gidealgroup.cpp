@@ -98,14 +98,16 @@ GALILEI::GIdealGroup::GIdealGroup(GSession* session)
 //-----------------------------------------------------------------------------
 void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups,bool Save)
 {
+	// Delete Groupments
 	if(!groups)
 		groups=new RContainer<GGroups,unsigned int,true,true>(2,2);
 	else
 	{
-		GGroupsCursor Cur;
-		GGroupCursor Cur2;
 		if(Save)
 		{
+			GGroupsCursor Cur;
+			GGroupCursor Cur2;
+
 			Cur.Set(groups);
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
@@ -117,18 +119,21 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 		groups->Clear();
 	};
 
- 	if(!parent)
+	if(!parent)
 		parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,10);
 	else
 		parent->Clear();
-	// Clear the old feedback.
+
+	// Clear Profiles and SubProfiles Information.
 	Session->ClearFdbks();
-	// Clear subprofiles assignement.
 	Session->ClearSubProfilesGroups();
+
 	// Choose The Subject who will be used.
 	Subjects->ChooseSubject(Session,PercGrp,NbDocPerGrp);
+
 	// Create the different judgments.
-	Subjects->Judgments(Session,PercOK,PercKO,PercHS,NbProfMin,NbProfMax,PercSocial,PercErr);
+	Subjects->Judgments(Session,PercOK,PercKO,PercHS,NbProfMin,NbProfMax,PercSocial,PercErr,Save);
+
 	// Create the ideal groupment corresponding to the precedent judgment.
 	Subjects->IdealGroupment(groups,Session,parent);
 	if(Save)

@@ -58,7 +58,7 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 * The GSubjectTree class provides a representation for a tree of subject
-* handle by the system.
+* handled by the system.
 * @author GALILEI Team
 * @short Tree of the Galilei subject.
 */
@@ -87,7 +87,7 @@ protected:
 	double NbDocsHs;
 
 	/**
-	* Number of users in database;.
+	* Number of users in database.
 	*/
 	unsigned int NbUsers;
 
@@ -95,11 +95,6 @@ protected:
 	* The date of today.
 	*/
 	char today[12];
-
-	/**
-	* the date.
-	*/
-	RTimeDate::RDate date;
 
 	/**
 	* Container of all the profiles.
@@ -121,9 +116,8 @@ protected:
 	*/
 	void InitSubSubjects(void);
 
-
 public:
-	
+
 	/**
 	* Constructor.
 	* @param nbOK           %of ok document.
@@ -141,7 +135,8 @@ public:
 	* Chose subject to juge whith
 	* @param ses            The Gailieli session
 	* @param precgrp        The perc of group who will be in the session.
-	* @param NBDocPerGrp    The minimal number of document per group to keep the group.
+	* @param NBDocPerGrp    The minimal number of document per group to keep
+	*                       the group.
 	*/
 	void ChooseSubject(GSession* ses,double percgrp,unsigned int NbDocPerGrp);
 
@@ -150,13 +145,16 @@ public:
 	* @param ses            The Gailieli session
 	* @param precok         The perc of ok document who will judge the profile.
 	* @param precko         The perc of ko document who will judge the profile.
-	* @param prechs         The perc of hs document who will judge the profile (percentage of ok documents).
+	* @param prechs         The perc of hs document who will judge the profile
+	*                       (percentage of ok documents).
 	* @param nbmin          The minimal number of profiles by groups
 	* @param nbmax          The maximal number of profiles by groups
 	* @param presocial      The % of profiels who are social
-	* @param precerr        The perc of document who will judge the profile non specialy conforming to the ideal groupment.
+	* @param precerr        The perc of document who will judge the profile non
+	*                       specialy conforming to the ideal groupment.
+	* @param Save           Save the profiles.
 	*/
- 	void Judgments(GSession* ses,double percok,double precko,double prechs,unsigned int nbmin,unsigned int nbmax,double percsocial,double precerr);
+	void Judgments(GSession* ses,double percok,double precko,double prechs,unsigned int nbmin,unsigned int nbmax,double percsocial,double precerr,bool Save);
 
 	/**
 	* Judge documents from the susubject sub.
@@ -201,6 +199,4 @@ public:
 
 
 //-----------------------------------------------------------------------------
-
 #endif
-

@@ -48,15 +48,9 @@
 #include <tests/ggroupsevaluate.h>
 
 
-
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// Forward class declaration
-class GSubProfile;
-
 
 //-----------------------------------------------------------------------------
 /**  This Class implement a representation to the user feedback for GALILEI
@@ -88,17 +82,17 @@ protected:
 	unsigned int PercErr;
 
 	/**
-	* IdealGroup              the idealgroupment.
+	* The ideal groupment.
 	*/
 	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroup;
 
 	/**
-	* Parent                  the id of the parent of the different subsubject.
+	* The id of the parent of the different subsubject.
 	*/
 	RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* Parent;
 
 	/**
-	* IdealDoc                the idealgroupment of document.
+	* The ideal groupment of documents.
 	*/
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDoc;
 
@@ -152,7 +146,6 @@ public:
 	* Destructor.
 	*/
 	~GGetFeedback(void);
-
 };
 
 
@@ -161,5 +154,3 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
-
-
