@@ -116,8 +116,9 @@ public:
 	* Create new feedback for the different users of the system.
 	* @param parent         the id of the parent of a subsubject.
 	* @param idealgroup     the idealgroupment.
+	* @param Save           Save the results.
 	*/
-	void Run(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent,RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup);
+	void Run(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent,RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup,bool Save);
 	
 	/**
 	* Get the settings of the method coded in a string.

@@ -78,7 +78,7 @@ GALILEI::GGetFeedback::GGetFeedback(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent,RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup)
+void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent,RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup,bool Save)
 {
 	//Compare each profiles whith all profiles in the same computed group an juge the Nbdocuments most relevant for the user
 	RStd::RContainer<GProfDoc,unsigned,false,false>* docs=new RStd::RContainer<GProfDoc,unsigned,false,false>(100,50);
@@ -119,7 +119,8 @@ void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,t
 		}
 	}
 	delete docs;
-	Session->SaveFdbks();
+	if(Save)
+		Session->SaveFdbks();
 }
 
 

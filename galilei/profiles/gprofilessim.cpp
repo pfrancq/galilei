@@ -52,7 +52,7 @@ public:
 	unsigned int Id;         // identifier of the second profile
 	double Sim;              // Similarity between the profiles.
 
-	GSim(unsigned int id,double s) : Id(id), Sim(s) {};
+	GSim(unsigned int id,double s) : Id(id), Sim(s) {}
 	int Compare(const GSim* s) const {return(Id-s->Id);}
 	int Compare(const GSim& s) const {return(Id-s.Id);}
 	int Compare(const unsigned int id) const {return(Id-id);}
@@ -77,6 +77,7 @@ public:
 	int Compare(const GSims& s) const {return(Id-s.Id);}
 	int Compare(const unsigned int id) const {return(Id-id);}
 };
+
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_alloc)
