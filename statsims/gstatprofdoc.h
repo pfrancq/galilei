@@ -81,7 +81,7 @@ protected :
 	/**
 	* Statistics Output file.
 	*/
-	RIO::RTextFile* File;
+	R::RTextFile* File;
 
 
 public :
@@ -98,7 +98,7 @@ public :
 	* @param ses            The  galilei session.
 	* @param f              File.
 	*/
-	GStatProfDoc(GSession* ses,RIO::RTextFile* f);
+	GStatProfDoc(GSession* ses,R::RTextFile* f);
 
 	/**
 	* Construct the Mean of number of profiles having juged common docs.
