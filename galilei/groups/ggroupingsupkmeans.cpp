@@ -40,20 +40,19 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include<groups/ggroupingsupkmeans.h>
-#include<groups/ggroupingkcos.h>
-#include<groups/ggroupingsim.h>
+#include <groups/ggroupingsupkmeans.h>
+#include <groups/ggroupingkcos.h>
+#include <groups/ggroupingsim.h>
 #include <profiles/gprofilessim.h>
-#include<groups/ggroups.h>
-#include<groups/ggroup.h>
-#include<groups/ggroupvector.h>
-#include <groups/gevaluategroupsnumber.h>
-#include<langs/glang.h>
-#include<sessions/gsession.h>
-#include<sessions/gslot.h>
-#include<profiles/gprofile.h>
+#include <groups/ggroups.h>
+#include <groups/ggroup.h>
+#include <groups/ggroupvector.h>
+#include <langs/glang.h>
+#include <sessions/gsession.h>
+#include <sessions/gslot.h>
+#include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
-#include<profiles/gsubprofilevector.h>
+#include <profiles/gsubprofilevector.h>
 #include <groups/gcomparegrouping.h>
 #include <docs/gdoc.h>
 using namespace GALILEI;
@@ -395,7 +394,7 @@ bool  GALILEI::GGroupingSupKMeans::IsAPcSameValidGroup(GGroup* group, GSubProfil
 {
 	GProfDocCursor profdoc1;
 	GProfDocCursor profdoc2;
-	int nbcomp, percent;
+	unsigned int nbcomp, percent;
 
 //	cout << group->NbPtr<<endl;
 	profdoc1=sub->GetProfile()->GetProfDocCursor();
@@ -436,11 +435,11 @@ bool  GALILEI::GGroupingSupKMeans::IsAPcSameValidGroup(GGroup* group, GSubProfil
 
 
 //-----------------------------------------------------------------------------
-bool  GALILEI::GGroupingSupKMeans::IsAPcDiffValidGroup(GGroup* group, GSubProfile* sub)
+bool GALILEI::GGroupingSupKMeans::IsAPcDiffValidGroup(GGroup* group, GSubProfile* sub)
 {
 	GProfDocCursor profdoc1;
 	GProfDocCursor profdoc2;
-	int nbcomp, percent;
+	unsigned int nbcomp, percent;
 
 //	cout << group->NbPtr<<endl;
 
@@ -477,7 +476,7 @@ bool  GALILEI::GGroupingSupKMeans::IsAPcDiffValidGroup(GGroup* group, GSubProfil
 
 
 //-----------------------------------------------------------------------------
-bool  GALILEI::GGroupingSupKMeans::IsAMinSimValidGroup(GGroup* group, GSubProfile* sub)
+bool GALILEI::GGroupingSupKMeans::IsAMinSimValidGroup(GGroup* group, GSubProfile* sub)
 {
 	double sims;
 
