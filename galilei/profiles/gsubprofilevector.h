@@ -102,25 +102,34 @@ public:
 	void AddWord(unsigned int id,double w) throw(bad_alloc);
 
 	/**
-	* Compute similarity between SubProfiles.
-	*/
-	virtual double Similarity(const GSubProfile* desc) const;
-
-	/**
-	* Compute similarity between SubProfiles using a global approach.
-	*/
-	virtual double GlobalSimilarity(const GSubProfile* desc) const;
-
-	/**
-	* Compute similarity between a subprofile and a document.
+	* Compute the similarity between a subprofile and a document.
 	*/
 	virtual double Similarity(const GDoc* doc) const;
 
 	/**
-	* Compute similarity between a subprofile and a document using a global
-	* approach.
+	* Compute the global similarity between a subprofile and a document.
 	*/
 	virtual double GlobalSimilarity(const GDoc* doc) const;
+
+	/**
+	* Compute the similarity between subprofiles.
+	*/
+	virtual double Similarity(const GSubProfile* sub) const;
+
+	/**
+	* Compute the global similarity between subprofiles.
+	*/
+	virtual double GlobalSimilarity(const GSubProfile* sub) const;
+
+	/**
+	* Compute the similarity between a subprofile and a group.
+	*/
+	virtual double Similarity(const GGroup* grp) const;
+
+	/**
+	* Compute the global similarity between a subprofile and a group.
+	*/
+	virtual double GlobalSimilarity(const GGroup* grp) const;
 
 	/**
 	* Get a cursor over the vector.

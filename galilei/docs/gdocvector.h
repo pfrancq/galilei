@@ -120,14 +120,34 @@ public:
 	GIWordWeightCursor& GetWordWeightCursor(void);
 
 	/**
-	* Compute similarity between document.
+	* Compute the similarity between documents.
 	*/
 	virtual double Similarity(const GDoc* doc) const;
 
 	/**
-	* Compute similarity between document using the idf factors.
+	* Compute the global similarity between documents.
 	*/
 	virtual double GlobalSimilarity(const GDoc* doc) const;
+
+	/**
+	* Compute the similarity between a document and a subprofile.
+	*/
+	virtual double Similarity(const GSubProfile* sub) const;
+
+	/**
+	* Compute the global similarity between a document and a subprofile.
+	*/
+	virtual double GlobalSimilarity(const GSubProfile* sub) const;
+
+	/**
+	* Compute the similarity between a document and a group.
+	*/
+	virtual double Similarity(const GGroup* grp) const;
+
+	/**
+	* Compute the global similarity between a document and a group.
+	*/
+	virtual double GlobalSimilarity(const GGroup* grp) const;
 
 	/**
 	* Update the references of the document.

@@ -206,25 +206,34 @@ public:
 	double ComputeSumSim(const GSubProfile* s,bool g) const;
 
 	/**
-	* Compute similarity between groups.
-	*/
-	virtual double Similarity(const GGroup* desc) const;
-
-	/**
-	* Compute similarity between groups using a global approach.
-	*/
-	virtual double GlobalSimilarity(const GGroup* desc) const;
-
-	/**
-	* Compute similarity between a subprofile and a document.
+	* Compute the similarity between a group and a document.
 	*/
 	virtual double Similarity(const GDoc* doc) const;
 
 	/**
-	* Compute similarity between a subprofile and a document using a global
-	* approach.
+	* Compute the global similarity between a group and a document.
 	*/
 	virtual double GlobalSimilarity(const GDoc* doc) const;
+
+	/**
+	* Compute the similarity between a group and subprofile.
+	*/
+	virtual double Similarity(const GSubProfile* sub) const;
+
+	/**
+	* Compute the global similarity between a group and a subprofile.
+	*/
+	virtual double GlobalSimilarity(const GSubProfile* sub) const;
+
+	/**
+	* Compute the similarity between groups.
+	*/
+	virtual double Similarity(const GGroup* grp) const;
+
+	/**
+	* Compute the global similarity between groups.
+	*/
+	virtual double GlobalSimilarity(const GGroup* grp) const;
 };
 
 

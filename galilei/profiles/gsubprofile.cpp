@@ -225,6 +225,48 @@ unsigned int GALILEI::GSubProfile::GetNbJudgedDocs(void) const
 
 
 //-----------------------------------------------------------------------------
+double GALILEI::GSubProfile::Similarity(const GDoc*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSubProfile::GlobalSimilarity(const GDoc*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSubProfile::Similarity(const GSubProfile*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSubProfile::GlobalSimilarity(const GSubProfile*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSubProfile::Similarity(const GGroup*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSubProfile::GlobalSimilarity(const GGroup*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GSubProfile::~GSubProfile(void)
 {
 }

@@ -42,6 +42,7 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <groups/ggroupvector.h>
+#include <profiles/gsubprofilevector.h>
 #include <docs/gdocvector.h>
 #include <profiles/gsubprofile.h>
 #include <infos/giwordweight.h>
@@ -114,7 +115,21 @@ double GALILEI::GGroupVector::Similarity(const GDoc* doc) const
 //-----------------------------------------------------------------------------
 double GALILEI::GGroupVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otNoClass,Lang));
+	return(SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otDocGroup,Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroupVector::Similarity(const GSubProfile* doc) const
+{
+	return(GIWordsWeights::Similarity(dynamic_cast<const GSubProfileVector*>(doc)));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroupVector::GlobalSimilarity(const GSubProfile* doc) const
+{
+	return(SimilarityIdf(dynamic_cast<const GSubProfileVector*>(doc),otSubProfileGroup,Lang));
 }
 
 
@@ -125,6 +140,7 @@ GIWordWeightCursor& GALILEI::GGroupVector::GetVectorCursor(void)
 	cur->Set(this);
 	return(*cur);
 }
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupVector::AddWord(GIWordWeight* word)

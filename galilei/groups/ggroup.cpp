@@ -309,7 +309,7 @@ GSubProfile* GALILEI::GGroup::RelevantSubProfile(bool g) const
 	refsum=ComputeSumSim(rel,g);
 
 	// Look if in the other objects, there is a better one
-	for(i=NbPtr;--i;sub++)
+	for(i=NbPtr,sub++;--i;sub++)
 	{
 		sum=ComputeSumSim(*sub,g);
 		if (sum>=refsum)
@@ -344,20 +344,6 @@ double GALILEI::GGroup::ComputeSumSim(const GSubProfile* s,bool g) const
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GGroup::Similarity(const GGroup*) const
-{
-	return(0.0);
-}
-
-
-//-----------------------------------------------------------------------------
-double GALILEI::GGroup::GlobalSimilarity(const GGroup*) const
-{
-	return(0.0);
-}
-
-
-//-----------------------------------------------------------------------------
 double GALILEI::GGroup::Similarity(const GDoc*) const
 {
 	return(0.0);
@@ -366,6 +352,34 @@ double GALILEI::GGroup::Similarity(const GDoc*) const
 
 //-----------------------------------------------------------------------------
 double GALILEI::GGroup::GlobalSimilarity(const GDoc*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroup::Similarity(const GSubProfile*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroup::GlobalSimilarity(const GSubProfile*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroup::Similarity(const GGroup*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroup::GlobalSimilarity(const GGroup*) const
 {
 	return(0.0);
 }

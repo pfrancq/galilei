@@ -42,6 +42,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include<profiles/gsubprofilevector.h>
+#include <groups/ggroupvector.h>
+#include <docs/gdocvector.h>
 #include<langs/glang.h>
 #include<infos/giword.h>
 #include<infos/giwordweight.h>
@@ -86,20 +88,6 @@ void GALILEI::GSubProfileVector::AddWord(unsigned int id,double w) throw(bad_all
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSubProfileVector::Similarity(const GSubProfile* desc) const
-{
-	return(GIWordsWeights::Similarity((dynamic_cast<const GSubProfileVector*>(desc))));
-}
-
-
-//-----------------------------------------------------------------------------
-double GALILEI::GSubProfileVector::GlobalSimilarity(const GSubProfile* desc) const
-{
-	return(GIWordsWeights::SimilarityIdf((dynamic_cast<const GSubProfileVector*>(desc)),otSubProfile,Lang));
-}
-
-
-//-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::Similarity(const GDoc* doc) const
 {
 	return(GIWordsWeights::Similarity(dynamic_cast<const GDocVector*>(doc)));
@@ -109,7 +97,35 @@ double GALILEI::GSubProfileVector::Similarity(const GDoc* doc) const
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(GIWordsWeights::SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otNoClass,Lang));
+	return(GIWordsWeights::SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otDocSubProfile,Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSubProfileVector::Similarity(const GSubProfile* sub) const
+{
+	return(GIWordsWeights::Similarity((dynamic_cast<const GSubProfileVector*>(sub))));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSubProfileVector::GlobalSimilarity(const GSubProfile* sub) const
+{
+	return(GIWordsWeights::SimilarityIdf((dynamic_cast<const GSubProfileVector*>(sub)),otSubProfile,Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSubProfileVector::Similarity(const GGroup* grp) const
+{
+	return(GIWordsWeights::Similarity((dynamic_cast<const GGroupVector*>(grp))));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSubProfileVector::GlobalSimilarity(const GGroup* grp) const
+{
+	return(GIWordsWeights::SimilarityIdf((dynamic_cast<const GGroupVector*>(grp)),otSubProfileGroup,Lang));
 }
 
 

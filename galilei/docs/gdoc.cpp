@@ -159,6 +159,34 @@ double GALILEI::GDoc::GlobalSimilarity(const GDoc*) const
 
 
 //-----------------------------------------------------------------------------
+double GALILEI::GDoc::Similarity(const GSubProfile*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GDoc::GlobalSimilarity(const GSubProfile*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GDoc::Similarity(const GGroup*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GDoc::GlobalSimilarity(const GGroup*) const
+{
+	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GDoc::AddJudgement(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.InsertPtr(j);

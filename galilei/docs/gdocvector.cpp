@@ -49,6 +49,8 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdocvector.h>
+#include <profiles/gsubprofilevector.h>
+#include <groups/ggroupvector.h>
 #include <docs/gdocxml.h>
 #include <infos/giwordweight.h>
 #include <infos/giwordsweights.h>
@@ -123,6 +125,34 @@ double GALILEI::GDocVector::Similarity(const GDoc* doc) const
 double GALILEI::GDocVector::GlobalSimilarity(const GDoc* doc) const
 {
 	return(GIWordsWeights::SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otDoc,Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GDocVector::Similarity(const GSubProfile* sub) const
+{
+	return(GIWordsWeights::Similarity(dynamic_cast<const GSubProfileVector*>(sub)));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GDocVector::GlobalSimilarity(const GSubProfile* sub) const
+{
+	return(GIWordsWeights::SimilarityIdf(dynamic_cast<const GSubProfileVector*>(sub),otDocSubProfile,Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GDocVector::Similarity(const GGroup* grp) const
+{
+	return(GIWordsWeights::Similarity(dynamic_cast<const GGroupVector*>(grp)));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GDocVector::GlobalSimilarity(const GGroup* grp) const
+{
+	return(GIWordsWeights::SimilarityIdf(dynamic_cast<const GGroupVector*>(grp),otDocGroup,Lang));
 }
 
 

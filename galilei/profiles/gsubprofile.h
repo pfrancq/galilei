@@ -158,27 +158,6 @@ public:
 	GProfile* GetProfile(void) const {return(Profile);}
 
 	/**
-	* Compute similarity between SubProfiles.
-	*/
-	virtual double Similarity(const GSubProfile*) const {return(0.0);};
-
-	/**
-	* Compute similarity between SubProfiles using a global approach.
-	*/
-	virtual double GlobalSimilarity(const GSubProfile*) const {return(0.0);};
-
-	/**
-	* Compute similarity between a subProfile and a document.
-	*/
-	virtual double Similarity(const GDoc*) const {return(0.0);};
-
-	/**
-	* Compute similarity between a subProfile and a document using a global
-	*  approach.
-	*/
-	virtual double GlobalSimilarity(const GDoc*) const {return(0.0);};
-
-	/**
 	* See if the subprpfile is defined, i.e. if it is computed. A subprofile
 	* that isn't computed, isn't attached.
 	*/
@@ -235,6 +214,36 @@ public:
 	* which are of the language of the profile.
 	*/
 	unsigned int GetNbJudgedDocs(void) const;
+
+	/**
+	* Compute the similarity between a subprofile and a document.
+	*/
+	virtual double Similarity(const GDoc* doc) const;
+
+	/**
+	* Compute the global similarity between a subprofile and a document.
+	*/
+	virtual double GlobalSimilarity(const GDoc* doc) const;
+
+	/**
+	* Compute the similarity between subprofiles.
+	*/
+	virtual double Similarity(const GSubProfile* sub) const;
+
+	/**
+	* Compute the global similarity between subprofiles.
+	*/
+	virtual double GlobalSimilarity(const GSubProfile* sub) const;
+
+	/**
+	* Compute the similarity between a subprofile and a group.
+	*/
+	virtual double Similarity(const GGroup* grp) const;
+
+	/**
+	* Compute the global similarity between a subprofile and a group.
+	*/
+	virtual double GlobalSimilarity(const GGroup* grp) const;
 
 	/**
 	*Destructor
