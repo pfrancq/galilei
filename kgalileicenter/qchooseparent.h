@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Form interface generated from reading ui file '/home/pfrancq/prj/kgalileicenter/kgalileicenter/qchooseparent.ui'
 **
-** Created: Tue Dec 28 17:09:10 2004
+** Created: Fri Apr 1 11:16:06 2005
 **      by: The User Interface Compiler ($Id$)
 **
 ** WARNING! All changes made in this file will be lost!

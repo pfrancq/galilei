@@ -241,8 +241,9 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Always Save Groups",groupAlwaysSave->isChecked());
 	Config->writeEntry("Always Calc Docs",docAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Docs",docAlwaysSave->isChecked());
-	for(pluginsPath->Start(); !pluginsPath->End(); pluginsPath->Next())
-		paths+=(*pluginsPath)()+RString(";");
+	RCursor<RString> cPath(*pluginsPath);
+	for(cPath.Start();!cPath.End();cPath.Next())
+		paths+=cPath()+RString(";");
 	Config->writeEntry("PluginsPath", paths);
 
 	Config->setGroup("Database Options");

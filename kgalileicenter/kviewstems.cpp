@@ -274,14 +274,16 @@ void KViewStems::ConstructTh(char index,char index2)
 
 	thGroups->clear();
 	ptr2=Roots->Hash[index][index2];
-	for(ptr2->Start();!ptr2->End();ptr2->Next())
+	RCursor<GrWord> cGr(*ptr2);
+	for(cGr.Start();!cGr.End();cGr.Next())
 	{
-		gptr=(*ptr2)();
+		gptr=cGr();
 		QListViewItem* grsitem = new QListViewItem(thGroups,ToQString(*gptr));
-		for(gptr->Words.Start();!gptr->Words.End();gptr->Words.Next())
+		RCursor<Word> cWord(cGr()->Words);
+		for(cWord.Start();!cWord.End();cWord.Next())
 		{
-			wptr=gptr->Words();
-			sprintf(word,"Word: '%s'  -  Stem: '%s'",wptr,wptr->Stem);
+			wptr=cWord();
+			sprintf(word,"Word: '%s'  -  Stem: '%s'",wptr->Latin1(),wptr->Stem->Latin1());
 			new QListViewItem(grsitem,word);
 		}
 	}
@@ -299,14 +301,16 @@ void KViewStems::ConstructPr(char index,char index2)
 
 	prGroups->clear();
 	ptr2=Stems->Hash[index][index2];
-	for(ptr2->Start();!ptr2->End();ptr2->Next())
+	RCursor<GrWord> cGr(*ptr2);
+	for(cGr.Start();!cGr.End();cGr.Next())
 	{
-		gptr=(*ptr2)();
+		gptr=cGr();
 		word="Stem: '"+ToQString(*gptr)+"'  -  Precision="+QString::number(gptr->Precision)+"  -  Recall="+QString::number(gptr->Recall);
 		QListViewItem* grsitem = new QListViewItem(prGroups,word);
-		for(gptr->Words.Start();!gptr->Words.End();gptr->Words.Next())
+		RCursor<Word> cWord(cGr()->Words);
+		for(cWord.Start();!cWord.End();cWord.Next())
 		{
-			wptr=gptr->Words();
+			wptr=cWord();
 			word="Word: '"+ToQString(*wptr)+"'  -  Root: '"+ToQString(*wptr->Root)+"'";
 			new QListViewItem(grsitem,word);
 		}
@@ -329,11 +333,10 @@ void KViewStems::resizeEvent(QResizeEvent *)
 unsigned int KViewStems::GetNbWords(GrWord* grp1,GrWord* grp2)
 {
 	unsigned int tot=0;
-	unsigned int i;
-	Word** tab;
 
-	for(i=grp1->Words.NbPtr+1,tab=grp1->Words.Tab;--i;tab++)
-		if(grp2->Words.IsIn<const Word*>(*tab))
+	RCursor<Word> cWord(grp1->Words);
+	for(cWord.Start();!cWord.End();cWord.Next())
+		if(grp2->Words.IsIn<const Word*>(cWord()))
 			tot++;
 	return(tot);
 }
@@ -359,30 +362,32 @@ void KViewStems::ComputeRecallPrecision(void)
 	{
 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
 		{
-			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
+			RCursor<GrWord> cWord(**ptr2);
+			for(cWord.Start();!cWord.End();cWord.Next())
 			{
-				stem=(**ptr2)();
-				NbStem=stem->Words.NbPtr;
+				stem=cWord();
+				NbStem=stem->Words.GetNb();
 				NbWords+=NbStem;
 				stem->Precision=stem->Recall=0.0;
 				if(!NbStem) continue;
 				if(NbStem==1)
 				{
-					root=stem->Words.Tab[0]->Root;
+					root=stem->Words[0]->Root;
 					if(!root) continue;
 					stem->Precision=1.0;
-					if(root->Words.NbPtr==1);
+					if(root->Words.GetNb()==1);
 						stem->Recall=1.0;
 					Precision+=stem->Precision;
 					Recall+=stem->Recall;
 				}
 				else
 				{
-					for(stem->Words.Start();!stem->Words.End();stem->Words.Next())
+					RCursor<Word> cWord2(stem->Words);
+					for(cWord2.Start();!cWord2.End();cWord2.Next())
 					{
-						root=stem->Words()->Root;
+						root=cWord2()->Root;
 						if(!root) continue;
-						if(root->Words.NbPtr==1)
+						if(root->Words.GetNb()==1)
 						{
 							stem->Recall+=1.0;
 						}
@@ -393,7 +398,7 @@ void KViewStems::ComputeRecallPrecision(void)
 								stem->Precision+=((double)(InRoot))/((double)(NbStem-1));
 							InStem=GetNbWords(stem,root)-1;
 							if(InStem)
-								stem->Recall+=((double)(InStem))/((double)(root->Words.NbPtr-1));
+								stem->Recall+=((double)(InStem))/((double)(root->Words.GetNb()-1));
 						}
 					}
 					Precision+=stem->Precision;
@@ -448,15 +453,21 @@ void KViewStems::ComputeTotal(void)
 	RContainer<GrWordId,true,true> RootsId(NbRows,NbRows/2);
 	for(i=27+1,row=0,ptr=Roots->Hash;--i;ptr++)
 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
-			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
-				RootsId.InsertPtr(new GrWordId((**ptr2)(),row++));
+		{
+			RCursor<GrWord> cGr(**ptr2);
+			for(cGr.Start();!cGr.End();cGr.Next())
+				RootsId.InsertPtr(new GrWordId(cGr(),row++));
+		}
 
 	// Construction of the container for relation between stem and column in the matrix.
 	RContainer<GrWordId,true,true> StemsId(NbCols,NbCols/2);
 	for(i=27+1,col=0,ptr=Stems->Hash;--i;ptr++)
 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
-			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
-				StemsId.InsertPtr(new GrWordId((**ptr2)(),col++));
+		{
+			RCursor<GrWord> cGr(**ptr2);
+			for(cGr.Start();!cGr.End();cGr.Next())
+				StemsId.InsertPtr(new GrWordId(cGr(),col++));
+		}
 
 	// Element i,j of the matrix is the number of words who are in the ith root
 	// and jth stem.
@@ -464,16 +475,18 @@ void KViewStems::ComputeTotal(void)
 	{
 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
 		{
-			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
+			RCursor<GrWord> cGr(**ptr2);
+			for(cGr.Start();!cGr.End();cGr.Next())
 			{
 				memset(VectorColsTemp,0,NbCols*sizeof(double));
-				root=(**ptr2)();
+				root=cGr();
 				row=RootsId.GetPtr<const GrWord*>(root)->Pos;
 				// for each word in this root add 1 in the case corresponding to the
 				// id of the computedgroup where the subprofile is.
-				for(root->Words.Start();!root->Words.End();root->Words.Next())
+				RCursor<Word> cWord(root->Words);
+				for(cWord.Start();!cWord.End();cWord.Next())
 				{
-					col=StemsId.GetPtr<const GrWord*>(root->Words()->Stem)->Pos;
+					col=StemsId.GetPtr<const GrWord*>(cWord()->Stem)->Pos;
 					VectorRows[row]++;
 					VectorCols[col]++;
 					VectorColsTemp[col]++;

@@ -338,7 +338,7 @@ void KViewGroup::slotMenu(int)
 				maxsize=newsize;
 				tab=tmp;
 			}
-			memcpy(tab,doc->Tab,size*sizeof(GWeightInfo*));
+			doc->GetTab(tab);
 			qsort(static_cast<void*>(tab),size,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
 			for(j=21,size++,tmp=tab;(--j)&&(--size);tmp++)
 				Res<<"\t\t\t<Include Attribute=\""<<Doc->GetSession()->GetStorage()->LoadWord((*tmp)->GetId(),doc->GetLang()->GetCode())<<"\"/>\n";

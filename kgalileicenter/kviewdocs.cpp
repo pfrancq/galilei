@@ -154,7 +154,7 @@ void KViewDocs::CreateDocsListView(void)
 	R::RCursor<GDoc> CurDocs=Doc->GetSession()->GetDocsCursor();
 	R::RCursor<GFactoryLang> CurLang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	GLang* lang;
-	RContainer<LangItem,true,true> LangItems((dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->NbPtr);
+	RContainer<LangItem,true,true> LangItems((dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetNb());
 	const char* t;
 	const char det[]="Unknown";
 	const char* ptr;

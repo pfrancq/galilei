@@ -33,6 +33,7 @@
 //-----------------------------------------------------------------------------
 // include files for R
 #include <frontend/kde/rqt.h>
+#include <rstd/rcursor.h>
 
 
 //-----------------------------------------------------------------------------
@@ -41,6 +42,7 @@
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -105,9 +107,10 @@ void KViewUsers::CreateUsersListView(void)
 	{
 		useritem = new QListViewItemType(CurUsr(),Users,ToQString(CurUsr()->GetFullName()));
 		useritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
-		for (CurUsr()->Start(); !CurUsr()->End(); CurUsr()->Next())
+		RCursor<GProfile> cProfile(*CurUsr());
+		for(cProfile.Start();!cProfile.End();cProfile.Next())
 		{
-			prof=new QListViewItemType((*CurUsr())(), useritem,ToQString((*CurUsr())()->GetName()));
+			prof=new QListViewItemType(cProfile(), useritem,ToQString(cProfile()->GetName()));
 			prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("kdict.png",KIcon::Small)));
 		}
 	}

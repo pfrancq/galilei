@@ -152,21 +152,22 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 	Groups=Doc->GetSession()->GetGroupsHistoryManager();
 
 	//if no chromosomes, return.
-	if((!Groups)||(!Groups->NbPtr))
+	if((!Groups)||(!Groups->GetNb()))
 		return;
 
 	// if sorted by date, set MinGen and MaxGen.
 	if (bDate)
 	{
 		MinGen=MaxGen=0;
-		Groups->Start();
-		MinGen=MaxGen=(*Groups)()->GetId();
-		for (Groups->Next();!Groups->End(); Groups->Next())
+		RCursor<GGroupsHistory> cGroup(*Groups);
+		cGroup.Start();
+		MinGen=MaxGen=cGroup()->GetId();
+		for(cGroup.Next();!cGroup.End();cGroup.Next())
 		{
-			if((*Groups)()->GetId()<MinGen)
-				MinGen=(*Groups)()->GetId();;
-			if((*Groups)()->GetId()>MaxGen)
-				MaxGen=(*Groups)()->GetId();
+			if(cGroup()->GetId()<MinGen)
+				MinGen=cGroup()->GetId();;
+			if(cGroup()->GetId()>MaxGen)
+				MaxGen=cGroup()->GetId();
 		}
 	}
 
@@ -174,11 +175,11 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 	CurId=MinGen;
 
 	// Solutions Part
-	Solution = new QGGroupsHistory(TabWidget,Groups->GetPtrAt(0));
-	sprintf(tmp,"Solution (%u) [%u-%u-%u]",CurId,Groups->GetPtrAt(0)->GetDate().GetYear(),
-		Groups->GetPtrAt(0)->GetDate().GetMonth(),Groups->GetPtrAt(0)->GetDate().GetDay());
+	Solution = new QGGroupsHistory(TabWidget,(*Groups)[0]);
+	sprintf(tmp,"Solution (%u) [%u-%u-%u]",CurId,((*Groups)[0])->GetDate().GetYear(),
+		((*Groups)[0])->GetDate().GetMonth(),((*Groups)[0])->GetDate().GetDay());
 	TabWidget->insertTab(Solution,tmp);
-	Solution->setGroups(Groups->GetPtrAt(0));
+	Solution->setGroups((*Groups)[0]);
 	Solution->setChanged();
 
 	//tmp display
@@ -258,10 +259,11 @@ void KViewHistory::slotCheckModifiedGroups(void)
 //-----------------------------------------------------------------------------
 void KViewHistory::slotCheckWellGroupedSubProfs(void)
 {
-	for (Groups->Start(); !Groups->End(); Groups->Next())
+	RCursor<GGroupsHistory> cGroup(*Groups);
+	for(cGroup.Start();!cGroup.End();cGroup.Next())
 	{
-		(*Groups)()->SetGroupsSubject();
-		(*Groups)()->CheckWellGroupedSubProfs();
+		cGroup()->SetGroupsSubject();
+		cGroup()->CheckWellGroupedSubProfs();
 	}
 }
 
@@ -269,8 +271,9 @@ void KViewHistory::slotCheckWellGroupedSubProfs(void)
 //-----------------------------------------------------------------------------
 void KViewHistory::slotCheckNewProfiles(void)
 {
-	for (Groups->Start(); !Groups->End(); Groups->Next())
-		(*Groups)()->CheckNewProfiles();
+	RCursor<GGroupsHistory> cGroup(*Groups);
+	for(cGroup.Start();!cGroup.End();cGroup.Next())
+		cGroup()->CheckNewProfiles();
 }
 
 
@@ -325,9 +328,8 @@ void KViewHistory::slotSelectedSetChanged(QListViewItem* item)
 //-----------------------------------------------------------------------------
 void KViewHistory::DisplaySimilarities(void)
 {
-	unsigned int i,j;
+	unsigned int i;
 	double similarity;
-	GWeightInfosHistory** giwwh1, **giwwh2;
 	QListViewItem* sim;
 	char num1[50], num2[50], num3[50], id[10], date[50];
 
@@ -335,19 +337,23 @@ void KViewHistory::DisplaySimilarities(void)
 	SimsView->clear();
 
 	//display selected profiles.
-	for (i=SelectedSubProfiles->NbPtr, giwwh1=SelectedSubProfiles->Tab; i--;giwwh1++)
+	RCursor<GWeightInfosHistory> cInfos1(*SelectedSubProfiles);
+	RCursor<GWeightInfosHistory> cInfos2(*SelectedSubProfiles);
+	for(i=SelectedSubProfiles->GetNb(),cInfos1.Start();i--;cInfos1.Next())
 	{
-		for (j=i, giwwh2=giwwh1+1; j--; giwwh2++)
+		for(cInfos2.GoTo(i+1);!cInfos2.End();cInfos2.Next())
 		{
-			if (Global) similarity=(*giwwh1)->SimilarityIFF(*giwwh2, otSubProfile,(*giwwh1)->GetParent()->GetLang()) ;
-			else similarity=(*giwwh1)->Similarity(*giwwh2);
-			sprintf(num1,"%u",(*giwwh1)->GetId());
-			sprintf(num2,"%u",(*giwwh2)->GetId());
+			if(Global)
+				similarity=cInfos1()->SimilarityIFF(cInfos2(), otSubProfile,cInfos1()->GetParent()->GetLang());
+			else
+				similarity=cInfos1()->Similarity(cInfos2());
+			sprintf(num1,"%u",cInfos1()->GetId());
+			sprintf(num2,"%u",cInfos2()->GetId());
 			sprintf(num3,"%f",similarity);
-			sprintf(id, "%u",(*giwwh1)->GetParent()->GetParent()->GetId());
-			sprintf(date,"%u-%u-%u",(*giwwh1)->GetParent()->GetParent()->GetDate().GetYear(),
- 				(*giwwh1)->GetParent()->GetParent()->GetDate().GetMonth(),
-				(*giwwh1)->GetParent()->GetParent()->GetDate().GetDay());
+			sprintf(id, "%u",cInfos1()->GetParent()->GetParent()->GetId());
+			sprintf(date,"%u-%u-%u",cInfos1()->GetParent()->GetParent()->GetDate().GetYear(),
+ 				cInfos1()->GetParent()->GetParent()->GetDate().GetMonth(),
+				cInfos1()->GetParent()->GetParent()->GetDate().GetDay());
 			sim=new QListViewItem(SimsView, num1, num2, num3,id, date);
 		}
 	}

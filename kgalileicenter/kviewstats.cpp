@@ -150,7 +150,7 @@ void KViewStats::ComputeStats(void)
 		QMessageBox::critical(this,"KGALILEICenter","No manager for the statistics plug-ins");
 		return;
 	}
-	QProgressDialog Dlg( "Compute Statistics", "Abort Compute", Mng->NbPtr +1 ,this, "progress", TRUE );
+	QProgressDialog Dlg( "Compute Statistics", "Abort Compute", Mng->GetNb()+1 ,this, "progress", TRUE );
 
 
 	// Create the root node
@@ -161,7 +161,7 @@ void KViewStats::ComputeStats(void)
 	Dlg.setMinimumDuration(0);
 	Dlg.setProgress(0);
 	KApplication::kApplication()->processEvents();
-	Cur.Set(Mng);
+	Cur.Set(*Mng);
 	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
 	{
 		Dlg.setProgress(i);
