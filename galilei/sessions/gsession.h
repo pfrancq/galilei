@@ -68,6 +68,11 @@ protected:
 	RStd::RContainer<GGroups,unsigned int,true,true> Groups;
 
 	/**
+	* Ideal Groups handled by the system.
+	*/
+	RStd::RContainer<GGroups,unsigned int,true,true> IdealGroups;
+
+	/**
 	* All the judgements.
 	*/
 	RStd::RContainer<GProfDoc,unsigned,true,true> Fdbks;
@@ -390,6 +395,12 @@ public:
 	* @param grp        Group to delete.
 	*/
 	virtual void DeleteGroup(GGroup* grp)=0;
+
+	/**
+	* Clear the groups of a given language.
+	* @param lang       Language of the groups to delete.
+	*/
+	void ClearGroups(GLang* lang);
 
 	/**
 	* Get a cursor over the filters of the system.

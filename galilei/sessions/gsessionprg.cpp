@@ -313,6 +313,11 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				Session->SetCurrentGroupingMethod(i->Param1());
 			if(i->Param2.GetLen())
 				Session->SetCurrentGroupingMethodSettings(i->Param2());
+			if(Groups)
+			{
+				GGrouping* algo=Session->GetCurrentGroupingMethod();
+				algo->SetIdealGroups(Groups);
+			}
 			Session->GroupingProfiles(Rec,FirstGroup,false);
 			if(!FirstGroup) FirstGroup=true;
 			break;

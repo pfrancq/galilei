@@ -73,7 +73,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException)
-	: GLangs(2),GDocs(d),GUsers(u,p),Groups(g+g/2,g/2), Fdbks(f+f/2,f/2),
+	: GLangs(2),GDocs(d),GUsers(u,p), Groups(g+g/2,g/2), IdealGroups(g+g/2,g/2), Fdbks(f+f/2,f/2),
 	  ProfileCalcs(0), ProfileCalc(0), Groupings(0), Grouping(0), Mng(mng), DocAnalyse(0),
 	  bGroups(false),bFdbks(false), DocOptions(0)
 	
@@ -396,6 +396,24 @@ void GALILEI::GSession::Save(GGroup* grp) throw(GException)
 		SaveSubProfile((*grp)());
 	if(grp->GetState()==osUpdated)
 		grp->SetState(osUpToDate);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::ClearGroups(GLang* lang)
+{
+	unsigned int i;
+	GGroups* grps=Groups.GetPtr<const GLang*>(lang);
+	GGroup* grp;
+
+	// Go through the groups and delete all invalid groups.
+	for(i=grps->NbPtr+1;--i;)
+	{
+		grp=(*grps->Tab);
+ 		grp->DeleteSubProfiles();
+		DeleteGroup(grp);
+		grps->DeletePtr(grp);
+	}
 }
 
 

@@ -115,6 +115,12 @@ protected:
 	*/
 	RTimeDate::RDate Computed;
 
+	/**
+	* Determine if the profile is social, i.e. prefer to be grouped with
+	* someone also if the similarity is not evident rather to stay alone.
+	*/
+	bool Social;
+
 public:
 
     /**
@@ -122,12 +128,13 @@ public:
 	* @param usr            User of the profile.
 	* @param id             Identificator of the profile.
 	* @param name           Name of the profile.
+	* @param s              Social?
 	* @param u              String representing the date of updated.
 	* @param a              String representing the date of the last analysis.
 	* @param nb             Number of subprofiles.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,const unsigned int id,const char* name,const char* u,const char* a,unsigned int nb,unsigned int nbf=100) throw(bad_alloc);
+	GProfile(GUser* usr,unsigned int id,const char* name,bool s,const char* u,const char* a,unsigned int nb,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Clear The Fdbks Container
@@ -139,7 +146,6 @@ public:
 	*/
 	int Compare(const unsigned int& id) const;
 
-	
 	/**
 	* Comparaison function
 	*/
@@ -173,6 +179,12 @@ public:
 	* @return Pointer to the user.
 	*/
 	const GUser* GetUser(void) const {return(User);}
+
+	/**
+	* Look if the profile is social.
+	* @return boolean value.
+	*/
+	bool IsSocial(void) const {return(Social);}
 
 	/**
 	* Get the subprofile corresponding to a given language.

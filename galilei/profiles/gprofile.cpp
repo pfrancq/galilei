@@ -51,9 +51,9 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfile::GProfile(GUser *usr,const unsigned int id,const char* name,const char* u,const char* a,unsigned int nb,unsigned int nbf) throw(bad_alloc)
+GALILEI::GProfile::GProfile(GUser *usr,unsigned int id,const char* name,bool s,const char* u,const char* a,unsigned int nb,unsigned int nbf) throw(bad_alloc)
   : RContainer<GSubProfile,unsigned,false,true>(nb,nb/2), User(usr),Id(id),Name(name),
-    Fdbks(nbf+nbf/2,nbf/2), Updated(u), Computed(a)
+    Fdbks(nbf+nbf/2,nbf/2), Updated(u), Computed(a), Social(s)
 {
 	if(Updated>Computed)
 	{

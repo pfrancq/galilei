@@ -256,7 +256,7 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 	RQuery selectprofile(this,sSql);
 	selectprofile.Begin();
 	id=strtoul(selectprofile[0],0,10);
-	InsertProfile(prof=new GProfile(usr,id,desc,selectprofile[1],0,GetNbLangs()));
+	InsertProfile(prof=new GProfile(usr,id,desc,true,selectprofile[1],0,GetNbLangs()));
 
 	// Construct SubProfiles
 	Langs=GetLangsCursor();
@@ -355,7 +355,7 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 			for(profiles.Begin();profiles.IsMore();profiles++)
 			{
 				profileid=atoi(profiles[0]);
-				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],profiles[2],profiles[3],GetNbLangs()));
+				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],true,profiles[2],profiles[3],GetNbLangs()));
 				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid FROM subprofiles WHERE profileid=%u",profileid);
 				RQuery subprofil (this,sSql);
 				for(subprofil.Begin();subprofil.IsMore();subprofil++)
@@ -394,6 +394,9 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 			for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 				((GSubProfileVector*)SubProfiles())->UpdateRefs();
 		}
+
+		// Load the ideal Groups.
+//		LoadIdealGroupment(&IdealGroups);
 	}
 	catch(RMySQLError& e)
 	{
@@ -440,33 +443,25 @@ void GALILEI::GSessionMySQL::LoadIdealGroupment(RContainer<GGroups,unsigned int,
 	GGroups* groups;
 	GGroup* group;
 	GLangCursor Langs;
-	GSubProfile* subprof;
-	GProfile* prof;
 	char sSql[100];
 
 	idealgroup->Clear();
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		groups = new GGroups(Langs());
-		sprintf(sSql,"SELECT distinct groupid FROM idealgroup WHERE langid='%s'",Langs()->GetCode());
+		idealgroup->InsertPtr(groups=new GGroups(Langs()));
+		sprintf(sSql,"SELECT DISTINCT(groupid) FROM idealgroup WHERE langid='%s'",Langs()->GetCode());
 		RQuery sel(this,sSql);
 		for(sel.Begin();sel.IsMore();sel++)
 		{
-			group=new GGroup(atoi(sel[0]),Langs());
+ 			groups->InsertPtr(group=new GGroup(atoi(sel[0]),Langs()));
 			sprintf(sSql,"SELECT profileid FROM idealgroup where groupid=%u",atoi(sel[0]));
 			RQuery sub(this,sSql);
 			for(sub.Begin();sub.IsMore();sub++)
-			{
-				prof=this->GetProfile(atoi(sub[0]));
-				subprof=prof->GetSubProfile(Langs());
-				group->InsertPtr(subprof);
-			}
-			groups->InsertPtr(group);
+				group->InsertPtr(GetProfile(atoi(sub[0]))->GetSubProfile(Langs()));
 		}
-		idealgroup->InsertPtr(groups);
-	}	
 
+	}
 }
 
 
