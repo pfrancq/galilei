@@ -115,7 +115,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(j=Ref->NbPtr+1,w=Ref->Tab;--j;w++)
 		{
 			ins=Vector->GetInsertPtr<unsigned int>((*w)->GetId());
-			ins->AddWeight((*w)->GetWeight());
+			(*ins)+=(*w)->GetWeight();
 		}
 	}
 
