@@ -1,4 +1,4 @@
-                                                          /*
+/*
 
 	GALILEI Research Project
 
@@ -39,12 +39,12 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainercursor.h>
-using namespace RStd;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/ggroupingkmeans.h>
+#include <groups/ggrouping.h>
 #include <profiles/gprofilessim.h>
+#include <groups/ggroupingparams.h>
 
 
 //-----------------------------------------------------------------------------
@@ -56,6 +56,82 @@ namespace GALILEI{
 class GGroup;
 
 
+
+//-----------------------------------------------------------------------------
+/**
+* The GKProtosParam represents all the parameter used in the KMeans module.
+* @short GKProtos Parameters.
+*/
+class GKProtosParams : public GGroupingParams
+{
+public:
+
+	/**
+	* Number of generation for each step.
+	*/
+	unsigned int NbSubSamples;
+
+	/**
+	* Minimum similarity level between the profiles of a group.
+	*/
+	unsigned int SubSamplesRate;
+
+	/**
+	* maximum number of kmeans check in initialization.
+	*/
+	unsigned int VerifyKMeansLimit;
+
+	/**
+	* Number of Groups.
+	*/
+	unsigned int NbGroups;
+
+	/**
+	* Number of Prototypes.
+	*/
+	unsigned int NbProtos;
+
+	/**
+	* Maximal number of iterations.
+	*/
+	unsigned int MaxIters;
+
+	/**
+	* Distance parameter.
+	*/
+	double Lambda;
+
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*);
+
+	/**
+	* Assignment operator.
+	* @param p              Parameters used as source.
+	*/
+	GKProtosParams& operator=(const GKProtosParams& src);
+
+	/**
+	* Constructor.
+	*/
+	GKProtosParams(void);
+
+	/**
+	* Constructor.
+	*/
+	~GKProtosParams(void) {;}
+};
+
+
+
 //-----------------------------------------------------------------------------
 /**
 * The GGroupingKProtos provides a representation for a method to group
@@ -65,147 +141,34 @@ some
 * @short KMeansCos Grouping.
 */
 
-class GGroupingKProtos :   public GGroupingKMeans
+class GGroupingKProtos  : public GGrouping
 
 {
 protected:
 
+	/**
+	* KMeans Parameters
+	*/
+	GKProtosParams* Params;
+	/**
+	* container of prototypes.
+	*/
+	RStd::RContainer<GSubProfile, unsigned int, false, false>* Protos;
 
 	/**
-	* Landa parameter
+	* container of centers.
 	*/
-	double Landa;
+	RStd::RContainer<GSubProfile, unsigned int, false, false>* Centers;
+	
+	/**
+	* container of centers needed to calculate error.
+	*/
+	RStd::RContainer<GSubProfile, unsigned int, false, false>* CentersError;
 
 	/**
-	* number of protos per groups (excepted center)
+	* groupement.
 	*/
-	unsigned int NbPrototypes;
-
-	/**
-	* Container of subprofiles considered as prototypes,
-	* needed to calculate the error between two iterations
-	*/
-	RContainer<GSubProfile,unsigned int,false,false>* protoserror;
-
-	/**
-	* Temporary container of groupment, needed to run tests
-	*/
-	RContainer<GGroup,unsigned int,false,false>* grpstemp;
-
-	/**
-	* Container of the final groupment
-	*/
-	RContainer<GGroup,unsigned int,false,false>* grpsfinal;
-
-	/**
-	* Container of subprofiles considered as prototypes,
-	*/
-	RContainer<GSubProfile,unsigned int,false,false>* prototypes;
-
-
-public:
-
-	/**
-	* Constructor.
-	* @param s              Session.
-	*/
-	GGroupingKProtos(GSession* s) throw(bad_alloc);
-
-	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
-	*/
-	const char* GetSettings(void);
-
-	/**
-	* returns NbPrototypes
-	*/
-	unsigned int  GetNbPrototypes(void) {return(NbPrototypes);};
-
-	/**
-	* sets the value of NbPrototypes
-	*/
-	void  SetNbPrototypes(unsigned int i) {NbPrototypes=i;};
-
-
-	/**
-	* Set the settings for the method using a string.
-	* @param s*             C string coding the settings.
-	*/
-	void SetSettings(const char* s);
-
-	/**
-	* Init the prototypes
-	* @param dataset        set of all subprofiles.
-	* @param nbprototypes   number of prototypes needed.
-	*/
-	void RandomInitProtos(RContainer<GSubProfile,unsigned int,false,true>* dataset, unsigned int nbprototypes);
-
-	/**
-	* Initialisation of the method.
-	*/
-	void Init(void) throw(bad_alloc);
-
-	/**
-	* Calculates the cost function for a kmeanscos clustering
-	*/
-	double CostFunction(RContainer<GGroup,unsigned int,false,false>* grps);
-
-	/**
-	*  reallocate the subprofiles to prototypes
-	*/
-	void ReAllocate(RContainer<GSubProfile, unsigned int, false, true>* dataset);
-
-	/**
-	* returns the distance between a subprofile and a center or a prototype
-	* @param center         distance to center if true, else distance to nearest prototype
-	*/
-	double Distance(GSubProfile* s,RContainer<GSubProfile,unsigned int,false,true> *grps, bool center);
-
-	/**
-	* returns the nearest prototype inside the group
-	*/
-	GSubProfile* NearestPrototype(GSubProfile* s,RContainer<GSubProfile,unsigned int,false,true> *grp);
-
-	/**
-	*  recenters the prototypes
-	*/
-	void ReCenter(void);
-
-	/**
-	*  excute the kmeans algorithm
-	*/
-	void Execute(RContainer<GSubProfile, unsigned int, false, true>* Dataset, unsigned int nbtests);
-
-	/**
-	*  calculates the error between two iterations
-	*/
-	int CalcError(void);
-
-	/**
-	* returns the Calinsky index for the clustering
-	*/
-	double CalcCalinsky(void);
-
-	/**
-	* returns the knearestneighboors measure.
-	*/
-	double TestMeasure(void);
-
-	/**
-	* returns the "recouvrement" rate.
-	*/
-	double StatMeasure(void);
-
-	/**
-	* pal measure
-	*/
-	double PalMeasure(void);
-
-	/**
-	*
-	*/
-	void DisplayInfos(void);
+	RStd::RContainer<GGroup,unsigned int, false, true>* Grps;
 
 
 protected:
@@ -215,10 +178,75 @@ protected:
 	*/
 	void Run(void) throw(GException);
 
+	virtual bool IsValid(GGroup* /*grp*/) {return (true);};
+
 
 public:
 
 	/**
+	* Constructor.
+	* @param s              Session.
+	*/
+	GGroupingKProtos(GSession* s, GKProtosParams* params) throw(bad_alloc);
+
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param s*             C string coding the settings.
+	*/
+	void SetSettings(const char* s);
+
+	/**
+	* Initialization of the algorithm (find centers and prototypes).
+	*/
+	void Initialization (void);
+
+	/**
+	* ReAllocation step.
+	*/
+	void ReAllocate(void);
+
+	/**
+	* ReAllocation step.
+	*/
+	void ReCenter(void); 
+	
+	/**
+	* Calculates the Distance between a subprofile and a group
+	*/
+	double Distance(GSubProfile* s,RContainer<GSubProfile,unsigned int,false,true> *grp, bool center);
+	
+	/**
+	* returns the similarity between two subprofiles.
+	*/
+	double Similarity(GSubProfile* s1, GSubProfile* s2);
+
+	/**
+	* find the group, in the container of group, conatining a given subprofile
+	*/
+	GGroup* FindGroup(RContainer<GGroup,unsigned int,false,true>* grps, GSubProfile* s);
+	
+	/**
+	* returns the nearest prototype to a given subprofile inside a given group 
+	*/
+	GSubProfile* NearestPrototype(GSubProfile* s,RContainer<GSubProfile,unsigned int,false,true> *grp);
+	
+	/**
+	* calculates the centers error between two iterations.
+	*/
+	int CalcError(void);
+
+	/*
+	* displays infos about KMeans Protos config.
+	*/
+	void DisplayInfos(void);
+	
+	/*
 	* Destructor.
 	*/
 	virtual ~GGroupingKProtos(void);
