@@ -6,7 +6,7 @@
 
 	Group Description is Gravitational Point Computing Method - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include <groups/ggroupcalcgravitation.h>
+#include <ggroupcalcgravitation.h>
 #include <groups/ggroupvector.h>
 #include <sessions/gsession.h>
 #include <profiles/gsubprofilevector.h>
@@ -56,54 +56,42 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 //
-//  GCalcGravitationParams
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GALILEI::GCalcGravitationParams::GCalcGravitationParams(void)
-	: GGroupCalcParams("Gravitation")
-{
-}
-
-
-//-----------------------------------------------------------------------------
-const char* GALILEI::GCalcGravitationParams::GetSettings(void)
-{
-	static char tmp[300];
-
-	sprintf(tmp,"%u",MaxNonZero);
-	return(tmp);
-
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GCalcGravitationParams::SetSettings(const char* s)
-{
-	if(!(*s)) return;
-	sscanf(s,"%u",&MaxNonZero);
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
 //  class GGroupCalcGravitation
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupCalcGravitation::GGroupCalcGravitation(GSession* session, GCalcGravitationParams* p) throw(bad_alloc)
-	: GGroupCalc("Gravitation",session), Params(p), Order(0), Vector(0), MaxOrderSize(5000)
+GGroupCalcGravitation::GGroupCalcGravitation(GFactoryGroupCalc* fac) throw(bad_alloc)
+	: GGroupCalc(fac), MaxNonZero(100), Order(0), Vector(0), MaxOrderSize(5000)
 {
 	Order=new GIWordWeight*[MaxOrderSize];
-	Vector=new GIWordsWeights(Params->MaxNonZero);
+	Vector=new GIWordsWeights(MaxNonZero);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupCalcGravitation::Compute(GGroup* grp)
+void GGroupCalcGravitation::ApplyConfig(void)
+{
+	MaxNonZero=Factory->GetBool("Max Size");
+}
+
+
+//-----------------------------------------------------------------------------
+void GGroupCalcGravitation::Connect(GSession* session)
+{
+	GGroupCalc::Connect(session);
+}
+
+
+//-----------------------------------------------------------------------------
+void GGroupCalcGravitation::Disconnect(GSession* session)
+{
+	GGroupCalc::Disconnect(session);
+}
+
+
+//-----------------------------------------------------------------------------
+void GGroupCalcGravitation::Compute(GGroup* grp)
 {
 	unsigned int i,j;
 	GSubProfile** ptr;
@@ -142,9 +130,9 @@ void GALILEI::GGroupCalcGravitation::Compute(GGroup* grp)
 	memcpy(Order,Vector->Tab,Vector->NbPtr*sizeof(GIWordWeight*));
 	qsort(static_cast<void*>(Order),Vector->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
 	Order[Vector->NbPtr]=0;
-	if(Params->MaxNonZero)
+	if(MaxNonZero)
 	{
-		for(i=Params->MaxNonZero+1,w=Order;(--i)&&(*w);w++)
+		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
 				Desc->InsertPtr(new GIWordWeight((*w)->GetId(),(*w)->GetWeight()/grp->NbPtr));
@@ -164,28 +152,20 @@ void GALILEI::GGroupCalcGravitation::Compute(GGroup* grp)
 }
 
 
-//-----------------------------------------------------------------------------
-const char* GALILEI::GGroupCalcGravitation::GetSettings(void)
+//------------------------------------------------------------------------------
+void GGroupCalcGravitation::CreateParams(GParams* params)
 {
-	static char tmp[300];
-
-	sprintf(tmp,"%u",Params->MaxNonZero);
-	return(tmp);
-
+	params->InsertPtr(new GParamUInt("Max Size",60));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupCalcGravitation::SetSettings(const char* s)
-{
-	if(!(*s)) return;
-	sscanf(s,"%u",&Params->MaxNonZero);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GGroupCalcGravitation::~GGroupCalcGravitation(void)
+GGroupCalcGravitation::~GGroupCalcGravitation(void)
 {
 	if(Order) delete[] Order;
 	if(Vector) delete Vector;
 }
+
+
+//------------------------------------------------------------------------------
+CREATE_GROUPCALC_FACTORY("Gravitation Method",GGroupCalcGravitation,true,true)

@@ -43,50 +43,10 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <groups/ggroupcalc.h>
-#include <groups/ggroupcalcparams.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-/**
-* The GCalcGravitationParam represents all the parameter used in the KMeans module.
-* @short GCalcGravitation Parameters.
-*/
-class GCalcGravitationParams : public GGroupCalcParams
-{
-public:
-
-	/**
-	* Maximal number of the non-zero weights in the vector.
-	*/
-	unsigned int MaxNonZero;
-
-	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
-	*/
-	virtual const char* GetSettings(void);
-
-	/**
-	* Set the settings for the method using a string.
-	* @param char*          C string coding the settings.
-	*/
-	virtual void SetSettings(const char*);
-
-	/**
-	* Assignment operator.
-	* @param p              Parameters used as source.
-	*/
-	GCalcGravitationParams& operator=(const GCalcGravitationParams& src);
-
-	/**
-	* Constructor.
-	*/
-	GCalcGravitationParams(void);
-};
 
 
 //-----------------------------------------------------------------------------
@@ -99,11 +59,10 @@ public:
 */
 class GGroupCalcGravitation : public GGroupCalc
 {
-
-	 /**
-	* description computing parameters
+	/**
+	* Maximal number of the non-zero weights in the vector.
 	*/
-	GCalcGravitationParams* Params;
+	unsigned int MaxNonZero;
 
 	/**
 	* Ordered vector for current computed profile.
@@ -124,9 +83,26 @@ public:
 
 	/**
 	* Constructor.
-	* @param session        Session.
+	* @param fac             Factory.
 	*/
-	GGroupCalcGravitation(GSession* session, GCalcGravitationParams* p) throw(bad_alloc);
+	GGroupCalcGravitation(GFactoryGroupCalc* fac) throw(bad_alloc);
+
+	/**
+	* Configurations were applied from the factory.
+	*/
+	virtual void ApplyConfig(void);
+
+	/**
+	* Connect to a Session.
+	* @param session         The session.
+	*/
+	virtual void Connect(GSession* session);
+
+	/**
+	* Disconnect from a Session.
+	* @param session         The session.
+	*/
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Compute a group.
@@ -135,22 +111,27 @@ public:
 	virtual void Compute(GGroup* grp);
 
 	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
-	*/
-	virtual const char* GetSettings(void);
-
-	/**
-	* Set the settings for the method using a string.
-	* @param s              C string coding the settings.
-	*/
-	virtual void SetSettings(const char* s);
-
-	/**
 	* Get the name of the model used for the description.
 	* @return C String.
 	*/
 	virtual const char* GetModelName(void) const {return("Vector");}
+
+	/**
+	* Show 'about' information.
+	*/
+	static void About(void);
+
+	/**
+	* Configure the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void Configure(GFactoryGroupCalc* params);
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void CreateParams(GParams* params);
 
 	/**
 	* Destructor.
