@@ -130,184 +130,190 @@ public:
 	RXML::RXMLTag* GetLinks(void) {return(Links);}
 
 	/**
+	* Add a tag metaData to the links stucture
+	* @returns a pointer to the tag containing the metaData of the link
+	*/
+	RXML::RXMLTag* AddLink(void) throw(bad_alloc);
+	
+	/**
 	* Add a title to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddTitle(const char* val) throw(bad_alloc);
+	void AddTitle(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a title to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddTitle(void) throw(bad_alloc);
+	RXML::RXMLTag* AddTitle(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a creator to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddCreator(const char* val) throw(bad_alloc);
+	void AddCreator(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a creator to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddCreator(void) throw(bad_alloc);
+	RXML::RXMLTag* AddCreator(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a subject to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddSubject(const char* val) throw(bad_alloc);
+	void AddSubject(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a subject to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddSubject(void) throw(bad_alloc);
+	RXML::RXMLTag* AddSubject(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a description to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddDescription(const char* val) throw(bad_alloc);
+	void AddDescription(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a description to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddDescription(void) throw(bad_alloc);
+	RXML::RXMLTag* AddDescription(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a publisher to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddPublisher(const char* val) throw(bad_alloc);
+	void AddPublisher(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a publisher to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddPublisher(void) throw(bad_alloc);
+	RXML::RXMLTag* AddPublisher(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a contributor to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddContributor(const char* val) throw(bad_alloc);
+	void AddContributor(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a contributor to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddContributor(void) throw(bad_alloc);
+	RXML::RXMLTag* AddContributor(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a date to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddDate(const char* val) throw(bad_alloc);
+	void AddDate(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a date to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddDate(void) throw(bad_alloc);
+	RXML::RXMLTag* AddDate(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a type to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddType(const char* val) throw(bad_alloc);
+	void AddType(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a type to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddType(void) throw(bad_alloc);
+	RXML::RXMLTag* AddType(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a format to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddFormat(const char* val) throw(bad_alloc);
+	void AddFormat(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a format to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddFormat(void) throw(bad_alloc);
+	RXML::RXMLTag* AddFormat(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add an identifier to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddIdentifier(const char* val) throw(bad_alloc);
+	void AddIdentifier(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add an identifier to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddIdentifier(void) throw(bad_alloc);
+	RXML::RXMLTag* AddIdentifier(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a source to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddSource(const char* val) throw(bad_alloc);
+	void AddSource(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a source to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddSource(void) throw(bad_alloc);
+	RXML::RXMLTag* AddSource(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a language to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddLanguage(const char* val) throw(bad_alloc);
+	void AddLanguage(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a language to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddLanguage(void) throw(bad_alloc);
+	RXML::RXMLTag* AddLanguage(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a relation to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddRelation(const char* val) throw(bad_alloc);
+	void AddRelation(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a relation to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddRelation(void) throw(bad_alloc);
+	RXML::RXMLTag* AddRelation(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a coverage to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddCoverage(const char* val) throw(bad_alloc);
+	void AddCoverage(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add a coverage to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddCoverage(void) throw(bad_alloc);
+	RXML::RXMLTag* AddCoverage(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add rights to the metadata.
 	* @param val            Value to assign.
 	*/
-	void AddRights(const char* val) throw(bad_alloc);
+	void AddRights(const char* val,RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Add rights to the metadata.
 	* @returns Pointer to a XML Tag.
 	*/
-	RXML::RXMLTag* AddRights(void) throw(bad_alloc);
+	RXML::RXMLTag* AddRights(RXML::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
 	* Destruct the document.

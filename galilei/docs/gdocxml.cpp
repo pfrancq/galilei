@@ -65,301 +65,405 @@ GDocXML::GDocXML(const char* url,const char* filename) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddTitle(const char* val) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddLink(void) throw(bad_alloc)
 {
 	RXMLTag* t;
 
+	AddNode(Links,t=new RXMLTag("docxml:metaData"));
+	return(t);
+
+}
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocXML::AddTitle(const char* val,RXMLTag* metaData) throw(bad_alloc)
+{
+	RXMLTag* t;
+	if (! metaData)
+	{
 	AddNode(MetaData,t=new RXMLTag("dc:title"));
+	}
+	else
+	{
+		AddNode(metaData,t=new RXMLTag("dc:tiltle"));
+  }
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddTitle(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddTitle(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:title"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:title"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:title"));
+		
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddCreator(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddCreator(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:creator"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:creator"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:creator"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddCreator(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddCreator(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:creator"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:creator"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:creator"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddSubject(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddSubject(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:subject"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:subject"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:subject"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddSubject(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddSubject(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:subject"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:subject"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:subject"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddDescription(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddDescription(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:description"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:description"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:description"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddDescription(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddDescription(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:description"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:description"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:description"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddPublisher(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddPublisher(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:publisher"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:publisher"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:publisher"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddPublisher(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddPublisher(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:publisher"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:publisher"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:publisher"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddContributor(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddContributor(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:contributor"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:contributor"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:contributor"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddContributor(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddContributor(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:contributor"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:contributor"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:contributor"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddDate(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddDate(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:date"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:date"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:date"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddDate(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddDate(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:date"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:date"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:date"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddType(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddType(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:type"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:type"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:type"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddType(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddType(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:type"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:type"));
+	else
+		AddNode(MetaData,t=new RXMLTag("dc:type"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddFormat(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddFormat(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:format"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:format"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:format"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddFormat(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddFormat(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:format"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:format"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:format"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddIdentifier(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddIdentifier(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:identifier"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:identifier"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:identifier"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddIdentifier(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddIdentifier(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:identifier"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:identifier"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:identifier"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddSource(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddSource(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:source"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:source"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:source"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddSource(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddSource(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:source"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:source"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:source"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddLanguage(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddLanguage(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:language"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:language"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:language"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddLanguage(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddLanguage(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:language"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:language"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:language"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddRelation(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddRelation(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:relation"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:relation"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:relation"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddRelation(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddRelation(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:relation"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:relation"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:relation"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddCoverage(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddCoverage(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:coverage"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:coverage"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:coverage"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddCoverage(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddCoverage(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:coverage"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:coverage"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:coverage"));
 	return(t);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocXML::AddRights(const char* val) throw(bad_alloc)
+void GALILEI::GDocXML::AddRights(const char* val,RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:rights"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:rights"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:rights"));
 	t->AddContent(val);
 }
 
 
 //-----------------------------------------------------------------------------
-RXMLTag* GALILEI::GDocXML::AddRights(void) throw(bad_alloc)
+RXMLTag* GALILEI::GDocXML::AddRights(RXMLTag* metaData) throw(bad_alloc)
 {
 	RXMLTag* t;
 
-	AddNode(MetaData,t=new RXMLTag("dc:rights"));
+	if (!metaData)
+		AddNode(MetaData,t=new RXMLTag("dc:rights"));
+	else
+		AddNode(metaData,t=new RXMLTag("dc:rights"));
 	return(t);
 }
 
