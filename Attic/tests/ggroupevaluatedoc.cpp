@@ -100,6 +100,14 @@ double GALILEI::GGroupEvaluateDoc::Similarity(unsigned int id1,unsigned int id2)
 
 
 //-----------------------------------------------------------------------------
+double GALILEI::GGroupEvaluateDoc::GlobalSimilarity(unsigned int id1,unsigned int id2)
+{
+	GDoc * s = Doc->GetPtr(id2);
+	return(s->GlobalSimilarity(Ses->GetDoc(id1)));
+}
+
+
+//-----------------------------------------------------------------------------
 bool GALILEI::GGroupEvaluateDoc::IsIn(unsigned int i)
 {
 	if(Doc->GetPtr(i)) return (true);

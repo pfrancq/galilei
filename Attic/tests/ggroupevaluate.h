@@ -99,6 +99,11 @@ public:
 	virtual double Similarity(unsigned int id1,unsigned int id2)=0;
 
 	/**
+	* Return the Globalsimilarity between 2 elements.
+	*/
+	virtual double GlobalSimilarity(unsigned int id1,unsigned int id2)=0;
+
+	/**
 	* Return true if the subdoc whit id i is in this group.
 	*/
 	virtual bool IsIn(unsigned int i)=0;

@@ -99,6 +99,14 @@ double GALILEI::GGroupEvaluateSubprof::Similarity(unsigned int id1,unsigned int 
 
 
 //-----------------------------------------------------------------------------
+double GALILEI::GGroupEvaluateSubprof::GlobalSimilarity(unsigned int id1,unsigned int id2)
+{
+	GSubProfile* s=SubProfile->GetPtr(id2);
+	return(s->GlobalSimilarity(Ses->GetSubProfile(id1)));
+}
+
+
+//-----------------------------------------------------------------------------
 bool GALILEI::GGroupEvaluateSubprof::IsIn(unsigned int i)
 {
 	if(SubProfile->GetPtr(i)) return (true);

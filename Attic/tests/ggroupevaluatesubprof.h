@@ -82,8 +82,6 @@ protected:
 	*/
 	RString Name;
 
-
-
 public:
 
 	/**
@@ -120,6 +118,11 @@ public:
 	* Return the similarity between 2 elements.
 	*/
 	virtual double Similarity(unsigned int id1,unsigned int id2);
+
+	/**
+	* Return the Globalsimilarity between 2 elements.
+	*/
+	virtual double GlobalSimilarity(unsigned int id1,unsigned int id2);
 
 	/**
 	* Return true if the subdoc whit id i is in this group.
