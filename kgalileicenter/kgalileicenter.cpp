@@ -135,6 +135,7 @@ using namespace GALILEI;
 #include "qviewchromos.h"
 #include "qmixidealconfig.h"
 #include "qcreatedatabase.h"
+#include "qfilldatabase.h"
 
 
 
@@ -484,6 +485,51 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 	}
 }
 
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotFillEmptyDb(void)
+{
+	KShellProcess *process = new KShellProcess("/bin/bash");
+	QFillEmptyDatabase dlg(this,0,true);
+	dlg.KUScript->setURL("$HOME/prj/kgalileicenter/kgalileicenter/CreateDbFromDir.py");
+	dlg.KUDirectory->setMode(KFile::Directory);
+	dlg.LEHost->setText("127.0.0.1");
+
+	if(dlg.exec())
+	{
+		QString catdirectory  = dlg.KUDirectory->url();
+		QString scriptpath = dlg.KUScript->url();
+		QString name = dlg.LEName->text();
+		QString host = dlg.LEHost->text();
+		QString user = dlg.LEUser->text();
+		QString password = dlg.LEPassword->text();
+		QString lang = dlg.CBLang->currentText();
+
+		RString cmdline = RString("");
+		cmdline+= "python  ";
+		cmdline+=scriptpath;
+		cmdline+=" ";
+		cmdline+= dbName;
+		cmdline+= " ";
+		cmdline+= user;
+		cmdline+= " ";
+		cmdline+= lang;
+		cmdline+= " ";
+		cmdline+= catdirectory;
+		cmdline+= "\n";
+		cout << cmdline<<endl;
+
+		// creation of the database using a shell script.
+		d=new QSessionProgressDlg(this,0,"filling database ...");
+		d->Begin();
+		connect(process,SIGNAL(receivedStderr(KProcess*,char*,int)),this,SLOT(slotStderr(KProcess*,char*,int)));
+		connect(process,SIGNAL(processExited(KProcess*)),this,SLOT(slotProcessExited(KProcess*)));
+		*process << cmdline;
+	 	process->start(KProcess::NotifyOnExit,KProcess::All);
+	}
+
+}
+
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotStdout(KProcess* /*proc*/,char* buffer,int buflen)
 {
@@ -492,6 +538,7 @@ void KGALILEICenterApp::slotStdout(KProcess* /*proc*/,char* buffer,int buflen)
   tmp[buflen-1] = '\0';
 	d->PutText(tmp);
 }
+
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotStderr(KProcess* /*proc*/,char* buffer,int buflen)

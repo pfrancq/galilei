@@ -6,7 +6,10 @@
 		<Separator/>
 		<Action name="sessionConnect"/>
 		<Action name="sessionDisconnect"/>
-		<Action name="createDatabase"/>
+		<Menu name="ManageDb"><text>&amp;Manage Database</text>
+			<Action name="createDatabase"/>
+			<Action name="fillEmptyDb"/>
+		</Menu>
 		<separator/>
 		<Action name="sessionCompute"/>
 		<Action name="runProgram"/>

@@ -478,6 +478,11 @@ private slots:
 	void slotSessionDisconnect(void);
 
 	/**
+	* slot to fill database from repesitory.
+	*/
+	void slotFillEmptyDb(void);
+
+	/**
 	* Test something.
 	*/
 	void slotSessionTest(void);
@@ -731,11 +736,12 @@ public:
 	KToggleAction* sessionAlwaysCalc;
 	KAction* sessionConnect;
 	KAction* sessionCompute;
+	KAction* createDatabase;
 	KAction* sessionDisconnect;
+	KAction* fillEmptyDb;
 	KAction* sessionTest;
 	KAction* sessionStat;
 	KAction* sessionQuit;
-	KAction* createDatabase;
 	
 
 	KToggleAction* profileAlwaysCalc;
