@@ -132,7 +132,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=NbDocsWords.GetInsertPtr<GWeightInfo*>(Words());
-			w->AddWeight(1.0);
+			(*w)+=1.0;
 		}
 	}
 
@@ -174,9 +174,9 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 			if((isf)&&(NbDocs>1))
 				Freq*=log(NbDocs/NbDocsWords.GetPtr<unsigned int>(Words()->GetId())->GetWeight());
 			if(Add)
-				w->AddWeight(Factor*Freq);
+				(*w)+=Factor*Freq;
 			else
-				w->SubstractWeight(Factor*Freq);
+				(*w)-=Factor*Freq;
 		}
 	}
 }
