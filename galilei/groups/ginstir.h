@@ -128,6 +128,13 @@ public:
 	* Compare method by RStd::RContainer.
 	*/
 	int Compare(const GSubProfilesSameGroupIR*) const {return(-1);}
+
+	/**
+	* Look if a given subprofile is one of the couple.
+	* @param obj            Subprofile to test.
+	* @return bool.
+	*/
+	bool IsIn(const GObjIR* obj) const;
 };
 
 
@@ -215,12 +222,6 @@ public:
 	* @param debug          Debugger.
 	*/
 	GInstIR(double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
-
-	/**
-	* Initialisation of the instance.
-	* @param gdata          The Data to use for the construction of the groups.
-	*/
-//	virtual void Init(GGroupDataIR* gdata) throw(bad_alloc);
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case

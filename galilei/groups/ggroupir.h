@@ -135,12 +135,6 @@ public:
 	virtual void PostDelete(const GObjIR* obj);
 
 	/**
-	* Do a local optimisation by checking whether it is interesting to separate
-	* a group in two.
-	*/
-	void DoOptimisation(void);
-
-	/**
 	* Compute the average similarity of the group.
 	* @returns result.
 	*/

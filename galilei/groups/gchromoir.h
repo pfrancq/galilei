@@ -97,19 +97,9 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 	GObjIR** thObjs1;
 
 	/**
-	* Number of Objects in temporary array of objects 1.
-	*/
-	unsigned int NbObjs1;
-
-	/**
 	* Temporary array of Objects (Thread dependent data).
 	*/
 	GObjIR** thObjs2;
-
-	/**
-	* Number of Objects in temporary array of objects 1.
-	*/
-	unsigned int NbObjs2;
 
 public:
 
@@ -157,11 +147,6 @@ public:
 	* intern similarities.
 	*/
 	virtual void Evaluate(void);
-
-	/**
-	* Does a local optimisation for the chromosome.
-	*/
-	virtual void LocalOptimisation(void);
 
 	/**
 	* Do the standard crossover of the GGA and do a reorganisation after.

@@ -87,6 +87,20 @@ GALILEI::GThreadDataIR::~GThreadDataIR(void)
 
 //-----------------------------------------------------------------------------
 //
+// GSubProfilesSameGroupIR
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+bool GSubProfilesSameGroupIR::IsIn(const GObjIR* obj) const
+{
+	return((obj->GetId()==Id1)||(obj->GetId()==Id2));
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
 // GInstIR
 //
 //-----------------------------------------------------------------------------
@@ -134,30 +148,6 @@ GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,GGroups
 
 
 //-----------------------------------------------------------------------------
-//void GALILEI::GInstIR::Init(GGroupDataIR* gdata,GGroups* grps) throw(bad_alloc)
-//{
-//	GChromoIR** C;
-//	unsigned int i;
-//
-//	// Called Init for the parent
-//	RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(gdata);
-//	if(!grps) return;
-//
-//	// Construct the best chromosome and the first chromosome one as the actual groups
-//	BestChromosome->ConstructChromo(grps);
-//	C=Chromosomes;
-//	(*C)->ConstructChromo(grps);
-//
-//	// For the rest of the population, do a mutation of the best one.
-//	for(i=PopSize;--i;C++)
-//	{
-//		(*C)->ConstructChromo(grps);
-//		(*C)->Mutation();
-//	}
-//}
-
-
-//-----------------------------------------------------------------------------
 bool GALILEI::GInstIR::StopCondition(void)
 {
 	return(Gen==MaxGen);
@@ -198,13 +188,10 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 
 	// Look if the best chromosome ever is still the best -> If not, change
 	// the fitness of the best solution.
-//	cout<<"Id\t\tAvg. Sim\t\tAvg. Prof\t\tOK Factor\t\tDiff Factor"<<endl;
-//	cout<<(*ptr)->GetId()<<"\t\t";
 	if((*ptr)->GetId())
 	{
 		s=Chromosomes[(*ptr)->GetId()-1];
 		(*s->Fitness)=Gen+1.1;
-//		cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
 		#ifdef RGADEBUG
 			if(Debug)
 			{
@@ -222,17 +209,14 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 				Debug->PrintInfo(Tmp);
 			}
 		#endif
-//		cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
 	}
 	ptr++;
 
 	//  The second best has the fitness of 1
-//	cout<<(*ptr)->GetId()<<"\t\t";
 	if((*ptr)->GetId())
 	{
 		s=Chromosomes[(*ptr)->GetId()-1];
 		(*s->Fitness)=1.0;
-//		cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
 		#ifdef RGADEBUG
 			if(Debug)
 			{
@@ -244,7 +228,6 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	else
 	{
 		(*BestChromosome->Fitness)=1.0;
-//		cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
 		#ifdef RGADEBUG
 			if(Debug)
 			{
@@ -258,12 +241,10 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	for(i=PopSize,ptr++;--i;ptr++)
 	{
 		r=((double)i)/((double)(PopSize));
-//		cout<<(*ptr)->GetId()<<"\t\t";
 		if((*ptr)->GetId())
 		{
 			s=Chromosomes[(*ptr)->GetId()-1];
 			(*s->Fitness)=r;
-//			cout<<s->AvgSim<<"\t\t"<<s->AvgProf<<"\t\t"<<s->OKFactor<<"\t\t"<<s->DiffFactor<<endl;
 			#ifdef RGADEBUG
 				if(Debug)
 				{
@@ -275,7 +256,6 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 		else
 		{
 			(*BestChromosome->Fitness)=r;
-//			cout<<BestChromosome->AvgSim<<"\t\t"<<BestChromosome->AvgProf<<"\t\t"<<BestChromosome->OKFactor<<"\t\t"<<BestChromosome->DiffFactor<<endl;
 			#ifdef RGADEBUG
 				if(Debug)
 				{
@@ -287,7 +267,6 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	}
 
 	// Delete the resulting array
-//	cout<<endl<<endl;
 	delete[] Res;
 
 	#ifdef RGADEBUG
