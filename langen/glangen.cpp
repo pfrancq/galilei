@@ -245,7 +245,6 @@ bool GALILEI::GLangEN::ContainsVowel(const char* kwd)
 bool GALILEI::GLangEN::EndsWithCVC(char* kwd,char* &end)
 {
 	int length;
-	bool b;
 
 	if((length=strlen(kwd))<2)
 		return(false);
