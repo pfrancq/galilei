@@ -23,7 +23,7 @@
       <useconfiguration>default</useconfiguration>
     </general>
     <run>
-      <mainprogram>src/r</mainprogram>
+      <mainprogram>../upgalilei/src/upgalilei</mainprogram>
       <programargs/>
       <terminal>false</terminal>
       <envvars/>

@@ -103,7 +103,6 @@ public:
 	*/
 	GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,R::RDate date);
 
-    
 	/**
 	* Compare mathod used by R::RContainer.
 	*/
@@ -124,25 +123,25 @@ public:
 	* Get the feedback for the document.
 	* @returns Profile's feedback.
 	*/
-	tDocJudgement GetFdbk(void) const {return(Fdbk);}
+	tDocJudgement GetFdbk(void) const;
 
 	/**
 	* Get the document judged.
 	* @returns Pointer to the document.
 	*/
-	GDoc* GetDoc(void) const {return(Doc);}
+	GDoc* GetDoc(void) const;
 
 	/**
 	* Get the document judged.
 	* @returns Pointer to the document.
 	*/
-	GProfile* GetProfile(void) const {return(Profile);}
+	GProfile* GetProfile(void) const;
 
 	/**
 	* Get the date of the feedback.
 	* @returns Pointer to a date.
 	*/
-	const R::RDate* GetUpdated(void) const {return(&Updated);}
+	const R::RDate* GetUpdated(void) const;
 
 	/**
 	* Get the similarity between the document and the profile.

@@ -95,6 +95,34 @@ int GALILEI::GProfDoc::Compare(const GDoc* doc) const
 
 
 //---------------------------------------------------------------------------
+tDocJudgement GALILEI::GProfDoc::GetFdbk(void) const
+{
+	return(Fdbk);
+}
+
+
+//---------------------------------------------------------------------------
+GDoc* GALILEI::GProfDoc::GetDoc(void) const
+{
+	return(Doc);
+}
+
+
+//---------------------------------------------------------------------------
+GProfile* GALILEI::GProfDoc::GetProfile(void) const
+{
+	return(Profile);
+}
+
+
+//---------------------------------------------------------------------------
+const RDate* GALILEI::GProfDoc::GetUpdated(void) const
+{
+	return(&Updated);
+}
+
+
+//---------------------------------------------------------------------------
 double GALILEI::GProfDoc::Similarity(void)
 {
 	GSubProfile* sub;

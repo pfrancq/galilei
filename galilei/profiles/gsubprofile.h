@@ -202,7 +202,6 @@ public:
 	* set the state of the subprofile
 	*/
 	void SetState(tObjState state);
-	
 
 	/**
 	* Get the language of the subprofile.

@@ -121,6 +121,14 @@ public:
 	virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException)=0;
 
 	/**
+	* Create a new subprofile.
+	* @param prof            Pointer to the profile.
+	* @param lang            Language of the subprofile.
+	* @returns Pointer to GSubProfile.
+	*/
+	virtual GSubProfile* NewSubProfile(GProfile* prof,GLang* lang) throw(bad_alloc,GException)=0;
+
+	/**
 	* Insert a new profile in the container.
 	* @param p              Pointer to the profile to add.
 	*/

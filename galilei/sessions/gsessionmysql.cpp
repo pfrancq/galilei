@@ -286,7 +286,7 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 	unsigned int id;
 	GLangCursor Langs;
 
-	sprintf(sSql,"INSERT INTO profiles(userid,description) VALUES(%u,%s",
+	sprintf(sSql,"INSERT INTO profiles(userid,description) VALUES(%u,%s)",
 		usr->GetId(),ValidSQLValue(desc,sDes));
 	RQuery insertprof(this,sSql);
 
@@ -311,6 +311,29 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 
 	// Return new created profile
 	return(prof);
+}
+
+
+//-----------------------------------------------------------------------------
+GSubProfile* GALILEI::GSessionMySQL::NewSubProfile(GProfile* prof,GLang* lang) throw(bad_alloc,GException)
+{
+	char sSql[500];
+	GSubProfile* subprof;
+	unsigned int id;
+
+	sprintf(sSql,"INSERT INTO subprofiles(profileid,langid,state) VALUES(%u,'%s',%u)",prof->GetId(),lang->GetCode(),osCreated);
+	RQuery insertsubprof(this,sSql);
+
+	// Get Id and updated
+	sprintf(sSql,"SELECT subprofileid FROM subprofiles WHERE subprofileid=LAST_INSERT_ID()");
+	RQuery selectsubprofile(this,sSql);
+	selectsubprofile.Start();
+	id=strtoul(selectsubprofile[0],0,10);
+	InsertSubProfile(subprof=new GSubProfileVector(prof,id,lang,0,0,osCreated,0));
+	prof->InsertPtr(subprof);
+
+	// Return new created subprofile
+	return(subprof);
 }
 
 

@@ -195,6 +195,8 @@ void GALILEI::GDoc::SetState(tObjState state)
 //-----------------------------------------------------------------------------
 void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd)
 {
+	GSubProfile* sub;
+
 	Lang=l;
 	N=n;
 	Ndiff=nd;
@@ -203,7 +205,11 @@ void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned in
 	State=osUpdated;
 	Computed.SetToday();
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
-		Fdbks()->GetProfile()->GetSubProfile(l)->SetState(osModified);
+	{
+		sub=Fdbks()->GetProfile()->GetSubProfile(l);
+		if(sub)
+			sub->SetState(osModified);
+	}
 }
 
 

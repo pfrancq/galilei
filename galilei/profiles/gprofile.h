@@ -205,6 +205,15 @@ public:
 	GSubProfile* GetSubProfile(const GLang* lang) const;
 
 	/**
+	* Get the subprofile corresponding to a given language. If not found, insert
+	* it.
+	* @param lang           Pointer to the language.
+	* @param s                  Session.
+	* @return Pointer to the subprofile.
+	*/
+	GSubProfile* GetInsertSubProfile(GLang* lang,GSession* s);
+
+	/**
 	* Get the feedback of the profile on a specific document.
 	* @param doc            Pointer to the document.
 	* return Pointer to the feedback or 0 if the document wasn't judged by the
@@ -234,16 +243,18 @@ public:
 	/**
 	* Add a judgement for this profile.
 	* @param j              Judgement.
+	* @param s              Session.
 	*/
-	void AddJudgement(GProfDoc* j) throw(bad_alloc);
+	void AddJudgement(GProfDoc* j,GSession* s) throw(bad_alloc);
 
 	/**
 	* Store the profdoc in the feedbacks of the subprofile
 	* coressponding to the lang of the profdoc.
 	* this function is called when at least one of the two lang is defined
 	* and the two lang are different.
+	* @param s                  Session.
 	*/
-	void DispatchFdbks(GProfDoc* profdoc, GLang* oldlang);
+	void DispatchFdbks(GProfDoc* profdoc, GLang* oldlang,GSession* s);
 
 
 #if GALILEITEST

@@ -579,7 +579,7 @@ void GALILEI::GSession::ChangeAllProfilesSimState(bool global)throw(bad_alloc)
 double GALILEI::GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
 {
 
-	GProfilesSim* profSim = ProfilesSims->GetPtr<GLang*>(sub1->GetLang());
+	GProfilesSim* profSim = ProfilesSims->GetPtr<const GLang*>(sub1->GetLang());
 	return profSim->GetSim(sub1,sub2);
 }
 
@@ -612,7 +612,7 @@ void GALILEI::GSession::InitProfilesBehaviours(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::ChangeProfilesBehaviourState(GLang* lang)throw(bad_alloc)
 {
-	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<GLang*>(lang);
+	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(lang);
 	profBehaviour->UpdateProfBehaviour();
 
 }
@@ -632,7 +632,7 @@ void GALILEI::GSession::ChangeAllProfilesBehaviourState(void) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 double GALILEI::GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold)
 {
-	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<GLang*>(sub1->GetLang());
+	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(sub1->GetLang());
 	return profBehaviour->GetAgreementRatio(sub1,sub2, threshold);
 }
 
@@ -640,7 +640,7 @@ double GALILEI::GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,
 //-----------------------------------------------------------------------------
 double GALILEI::GSession::GetDisAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold)
 {
-	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<GLang*>(sub1->GetLang());
+	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(sub1->GetLang());
 	return profBehaviour->GetDisAgreementRatio(sub1,sub2, threshold);
 }
 
@@ -653,7 +653,7 @@ double GALILEI::GSession::GetMinimumOfSimilarity(RContainer<GSubProfile,unsigned
 	double minSim;
         
 	subprofiles->Start();
-	GProfilesSim* profSim = ProfilesSims->GetPtr<GLang*>((*subprofiles)()->GetLang());
+	GProfilesSim* profSim = ProfilesSims->GetPtr<const GLang*>((*subprofiles)()->GetLang());
 	profSim->UpdateDeviationAndMeanSim(subprofiles);
 	meanSim=profSim->GetMeanSim();
 	deviation=profSim->GetDeviation();
@@ -818,7 +818,7 @@ void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const cha
 	GProfDoc* f;
 
 	Fdbks.InsertPtr(f=new GProfDoc(d,p,j,date));
-	p->AddJudgement(f);
+	p->AddJudgement(f,this);
 	d->AddJudgement(f);
 }
 

@@ -681,7 +681,7 @@ void GALILEI::GDocAnalyse::UpdateFdbks(GLang* oldlang, GLang* /*newlang*/)
 	{
 		profdoccursor=Doc->GetProfDocCursor();
 		for (profdoccursor.Start(); !profdoccursor.End(); profdoccursor.Next())
-			profdoccursor()->GetProfile()->DispatchFdbks(profdoccursor(), oldlang);
+			profdoccursor()->GetProfile()->DispatchFdbks(profdoccursor(), oldlang,Session);
 	}
 
 

@@ -48,6 +48,7 @@
 #include <filters/gfilterhtml.h>
 #include <filters/gfilterreu.h>
 #include <filters/gfilterxml.h>
+#include <filters/gfiltertxt.h>
 #include <filters/gfiltersgml.h>
 #include <docs/gdocxml.h>
 #include <docs/gdoc.h>
@@ -72,6 +73,7 @@ GALILEI::GURLManager::GURLManager(void)
 	new GFilterReu(this);
 	new GFilterXML(this);
 	new GFilterSGML(this);
+	new GFilterTXT(this);
 }
 
 

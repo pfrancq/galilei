@@ -37,6 +37,7 @@
 //-----------------------------------------------------------------------------
 // include filess for GALILEI
 #include <profiles/gprofile.h>
+#include <sessions/gsession.h>
 #include <profiles/guser.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
@@ -87,7 +88,26 @@ int GALILEI::GProfile::Compare(const GProfile *profile) const
 //-----------------------------------------------------------------------------
 GSubProfile* GALILEI::GProfile::GetSubProfile(const GLang* lang) const
 {
+	// If no lang -> return null
+	if(!lang) return(0);
 	return(GetPtr<const GLang*>(lang,false));
+}
+
+
+//-----------------------------------------------------------------------------
+GSubProfile* GALILEI::GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
+{
+	GSubProfile* sub;
+
+	// If no lang
+	if(!lang) return(0);
+
+	sub=GetPtr<const GLang*>(lang,false);
+
+	// If subprofile does not exist -> create it
+	if(!sub)
+		sub=s->NewSubProfile(this,lang);
+	return(sub);
 }
 
 
@@ -145,9 +165,10 @@ void GALILEI::GProfile::ClearFdbks(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfile::AddJudgement(GProfDoc* j) throw(bad_alloc)
+void GALILEI::GProfile::AddJudgement(GProfDoc* j,GSession* s) throw(bad_alloc)
 {
 	GLang* l;
+	GSubProfile* sub;
 
 	l=j->GetDoc()->GetLang();
 	if(!l)
@@ -156,23 +177,28 @@ void GALILEI::GProfile::AddJudgement(GProfDoc* j) throw(bad_alloc)
 //		SetState(osModified);
 	}
 	else
-		GetSubProfile(l)->AddJudgement(j);
+	{
+		GetInsertSubProfile(l,s)->AddJudgement(j);
+	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang)
+void GALILEI::GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang, GSession* s)
 {
 	GLang* lang;
 	GSubProfile* sub;
 
+	// Get new lang
 	lang=profdoc->GetDoc()->GetLang();
 
+	// If no lang -> return
+	if((!lang)&&(!oldlang)) return;
+
 	// if the old lang is not defined and the new lang is defined.
-	if (!oldlang)
+	if((!oldlang)&&lang)
 	{
-		lang=profdoc->GetDoc()->GetLang();
-		sub=GetSubProfile(lang);
+		sub=GetInsertSubProfile(lang,s);
 		sub->AddJudgement(profdoc);
 		sub->SetState(osModified);
 		Fdbks.DeletePtr(profdoc);
@@ -180,17 +206,17 @@ void GALILEI::GProfile::DispatchFdbks(GProfDoc* profdoc, GLang* oldlang)
 	}
 
 	//if the new lang is not defined and the old one is defined.
-	if(!lang)
+	if((!lang)&&oldlang)
 	{
 		Fdbks.InsertPtr(profdoc);
-		sub=GetSubProfile(oldlang);
+		sub=GetInsertSubProfile(oldlang,s);
 		sub->RemoveJudgement(profdoc);
 		sub->SetState(osModified);
 		return;
 	}
 
 	// if the two langs are defined (but different)
-	sub=GetSubProfile(lang);
+	sub=GetInsertSubProfile(lang,s);
 	sub->AddJudgement(profdoc);
 	sub->SetState(osModified);
 	sub=GetSubProfile(oldlang);

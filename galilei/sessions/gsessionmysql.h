@@ -216,6 +216,14 @@ public:
 	virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException);
 
 	/**
+	* Create a new subprofile.
+	* @param prof            Pointer to the profile.
+	* @param lang            Language of the subprofile.
+	* @returns Pointer to GSubProfile.
+	*/
+	virtual GSubProfile* NewSubProfile(GProfile* prof,GLang* lang) throw(bad_alloc,GException);
+
+	/**
 	* Save information about the groupement (Group and attachment date) of
 	* a subprofile. For a complete save, call Save(const GProfile*).
 	* @param sub        Subprofile to save.
