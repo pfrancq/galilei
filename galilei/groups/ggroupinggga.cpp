@@ -40,13 +40,18 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<groups/ggroupinggga.h>
-#include<groups/ggroups.h>
-#include<groups/ggroup.h>
-#include<profiles/guser.h>
-#include<profiles/gsubprofile.h>
-#include<profiles/gsubprofiledesc.h>
-#include<langs/glang.h>
-#include<sessions/gsession.h>
+#include <groups/gchromoir.h>
+#include <groups/ginstir.h>
+#include <groups/ggroupir.h>
+#include <groups/gobjir.h>
+#include <groups/ggroups.h>
+#include <groups/ggroup.h>
+#include <profiles/guser.h>
+#include <profiles/gprofilessim.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gsubprofiledesc.h>
+#include <langs/glang.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 
 
@@ -59,8 +64,8 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupingGGA::GGroupingGGA(GSession* s) throw(bad_alloc)
-	: GGrouping("Grouping Genetic Algorithms",s), GAPopSize(16),
-	  GAMaxGen(20), GAStep(false), GAStepGen(5)
+	: GGrouping("Grouping Genetic Algorithms",s), PopSize(16), MinSimLevel(0.1),
+	  MaxGen(20), Step(false), StepGen(5)
 {
 }
 
@@ -70,8 +75,8 @@ const char* GALILEI::GGroupingGGA::GetSettings(void)
 	static char tmp[100];
 	char c;
 
-	if(GAStep) c='1'; else c='0';
-	sprintf(tmp,"%u %u %c %u",GAPopSize,GAMaxGen,c,GAStepGen);
+	if(Step) c='1'; else c='0';
+	sprintf(tmp,"%u %u %c %u %lf",PopSize,MaxGen,c,StepGen,MinSimLevel);
 	return(tmp);
 }
 
@@ -81,8 +86,8 @@ void GALILEI::GGroupingGGA::SetSettings(const char* s)
 	char c;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %u %c %u",&GAPopSize,&GAMaxGen,&c,&GAStepGen);
-	if(c=='1') GAStep=true; else GAStep=false;
+	sscanf(s,"%u %u %c %u %lf",&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel);
+	if(c=='1') Step=true; else Step=false;
 }
 
 
@@ -114,8 +119,50 @@ bool GALILEI::GGroupingGGA::IsValid(GGroup* /*grp*/)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupingGGA::Run(void)
+void GALILEI::GGroupingGGA::Run(void) throw(GException)
 {
+	unsigned int i;
+	GGroupIR* gr;
+	GGroup* g;
+	unsigned int* tab;
+	unsigned int* ptr;
+
+	if(!SubProfiles.NbPtr) return;
+	try
+	{
+	 	GGroupDataIR data;
+		RGA::RObjs<GObjIR> Objs(SubProfiles.NbPtr);
+		for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
+		{
+			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
+		}
+		GProfilesSim Sims(SubProfiles);
+		GInstIR Instance(MinSimLevel,MaxGen,PopSize,&Objs,&Sims,RGGA::FirstFit,0);
+		Instance.Init(&data);
+		Instance.Run();
+		Clear();
+		for(Instance.BestChromosome->Used.Start();!Instance.BestChromosome->Used.End();Instance.BestChromosome->Used.Next())
+		{
+			gr=Instance.BestChromosome->Used();
+			Groups->InsertPtr(g=Session->NewGroup(Lang));
+			ptr=tab=gr->GetObjectsId();
+			while((*ptr)!=RGGA::NoObject)
+				g->InsertSubProfile(Objs.Tab[*(ptr++)]->GetSubProfile());
+			delete[] tab;
+		}
+	}
+	catch(eGA& e)
+	{
+		throw GException(e.Msg);
+	}
+	catch(bad_alloc)
+	{
+		throw GException("Memory Problems");
+	}
+	catch(...)
+	{
+		throw GException("Unknow Problem");
+	}
 }
 
 

@@ -65,22 +65,27 @@ protected:
 	/**
 	* Size of the population of the GA.
 	*/
-	unsigned int GAPopSize;
+	unsigned int PopSize;
+
+	/**
+	* Minimum similarity level between the profiles of a group.
+	*/
+	double MinSimLevel;
 
 	/**
 	* Maximal number of generation to run.
 	*/
-	unsigned int GAMaxGen;
+	unsigned int MaxGen;
 
 	/**
 	* Is the GA in step mode?
 	*/
-	bool GAStep;
+	bool Step;
 
 	/**
 	* Number of generation for each step.
 	*/
-	unsigned int GAStepGen;
+	unsigned int StepGen;
 
 public:
 
@@ -106,49 +111,61 @@ public:
 	* Set the size of the population.
 	* @param s              Size.
 	*/
-	void SetGAPopSize(unsigned int s) {GAPopSize=s;}
+	void SetPopSize(unsigned int s) {PopSize=s;}
 
 	/**
 	* Get the size of the population.
 	* @returns Size.
 	*/
-	unsigned int GetGAPopSize(void) const {return(GAPopSize);}
+	unsigned int GetPopSize(void) const {return(PopSize);}
+
+	/**
+	* Set the minimum level of similarity for the groups.
+	* @param m              Minimum level.
+	*/
+	void SetMinSimLevel(double m) {MinSimLevel=m;}
+
+	/**
+	* Get the minimum level of similarity for the groups.
+	* @returns double representing the minimum level.
+	*/
+	double GetMinSimLevel(void) const {return(MinSimLevel);}
 
 	/**
 	* Set the Maximal number of generation.
 	* @param max            Maximal number.
 	*/
-	void SetGAMaxGen(unsigned int max) {GAMaxGen=max;}
+	void SetMaxGen(unsigned int max) {MaxGen=max;}
 
 	/**
 	* Get the Maximal number of generation.
 	* @returns Maximal number.
 	*/
-	unsigned int GetGAMaxGen(void) const {return(GAMaxGen);}
+	unsigned int GetMaxGen(void) const {return(MaxGen);}
 
 	/**
 	* Set the status of the step mode.
 	* @param s              Status.
 	*/
-	void SetGAStep(bool s) {GAStep=s;}
+	void SetStep(bool s) {Step=s;}
 
 	/**
 	* Get the status of the step mode.
 	* @returns bool value representing the status.
 	*/
-	bool GetGAStep(void) const {return(GAStep);}
+	bool GetStep(void) const {return(Step);}
 
 	/**
 	* Set the number of generations for each step.
 	* @param n              Number of generations.
 	*/
-	void SetGAStepGen(unsigned int n) {GAStepGen=n;}
+	void SetStepGen(unsigned int n) {StepGen=n;}
 
 	/**
 	* Get the number of generations for each step.
 	* @returns unsigned int representing the number of generations.
 	*/
-	unsigned int GetGAStepGen(void) const {return(GAStepGen);}
+	unsigned int GetStepGen(void) const {return(StepGen);}
 
 	/**
 	* Initialisation of the method.
@@ -184,7 +201,7 @@ protected:
 	/**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void);
+	virtual void Run(void) throw(GException);
 
 public:
 
