@@ -70,13 +70,24 @@ class GSupKMeansParams : public GGroupingParams
 public:
 
 	/**
+	* enum of initial conditions
+	*/
+	enum Initial {Random, Relevant};
+
+	/**
+	* Initial conditions.
+	*/
+	Initial InitMode;
+
+	/*
 	* Minimum number of common OK documents needed to force two profiles to be
 	* in the same group.
 	*/
 	unsigned int NbPcSame;
 
 	/**
-	* .
+	* Maximum number of common  documents with different judgements in a same
+	* group.
 	*/
 	unsigned int NbPcDiff;
 
@@ -85,8 +96,36 @@ public:
 	*/
 	double MinSim;
 
+	/**
+	* Maximum number of iterations
+	*/
 	unsigned int NbIters;
+
+	/**
+	* if true, a 'hard constraint' KMeans is followed by a 'traditionnal' kmeans.
+	*/
 	bool DoubleKMeans;
+
+	/**
+	* if true, the algorithm is used as initilaization step
+	*/
+	 bool UsedAsInitialization;
+
+	/**
+	* number of sample  if used as 'initilization step'
+	*/
+	 unsigned int NbSamples;
+
+	 /**
+	 * if  profile A and profile B are grouped together with a frequency
+	 * superior to 'SameGroupRate', they MUST be grouped together.
+	 */
+	unsigned int SameGroupRate;
+
+	/**
+	* if true: displays information with 'cout'
+	*/
+	bool Debug;
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -144,6 +183,15 @@ class GGroupingSupKMeans  : public GGrouping
 	*/
 	RContainer<GSubProfile,unsigned int,false,false>* ProtosDblKMeans;
 
+	/**
+	* Container of cObj considered as prototypes
+	*/
+	RContainer<GGroups,unsigned int,false,false>* FoundGroups;
+
+	/**
+	* hard constraints container.
+	*/
+	RContainer<GGroup,unsigned int,false,false>* HardConstraints;
 
 public:
 
@@ -182,6 +230,11 @@ protected:
 
 public:
 
+
+	/**
+	* Make the grouping for a specific Language.
+	*/
+	void AdaptMinSimToDatabase(void) ;
 
 	/*
 	*  find a group to put the subprofile into
@@ -243,6 +296,12 @@ public:
 	* Initialization step
 	*/
 	void Init(void) throw(bad_alloc);
+
+	/**
+	* create hard constraints from the samples if the algoritm is used as
+	* initialization step.
+	*/
+	void SetConstraintsFromSamples(unsigned int** corelationtable);
 
 	/**
 	* display the groups
