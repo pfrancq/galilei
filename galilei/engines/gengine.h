@@ -76,7 +76,7 @@ protected:
 
 private:
 
-	/*
+	/**
 	* The name of the engine
 	*/
 	R::RString Name;
@@ -106,19 +106,10 @@ public:
 	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
-	* Construct the query based on the given keywords
-	* @param keyWords        The set of keywords to use to create the query
-	* @return RString        The query
-	*/
-	virtual R::RString ConstructQuery(R::RContainer<R::RString,false,false> &keyWords)=0;
-
-	/**
 	* Process the Engine extraction. All results will be extracted, the url of the next page...
-	* @param mng             The manager
 	* @param keyWords        The set of keywords to be searched
-	* @param nbResutls       The number of results that must be extracted from the page
 	*/
-	virtual void Process(R::RContainer<R::RString,false,false> &keyWords) throw(GException)=0;
+	virtual void Process(R::RContainer<R::RString,false,false>& keyWords) throw(GException)=0;
 
 	/**
 	* Get the weight associated to this engine
