@@ -119,7 +119,7 @@ unsigned int GDict::InsertData(const GData* data) throw(std::bad_alloc, GExcepti
 	bool InDirect=false;
 
 	// Empty data are not inserted
-	
+
 	if(data->IsEmpty())
 	{
 		RString tmp="Empty data cannot be inserted into a dictionary - id="+RString(data->GetId());
