@@ -267,7 +267,6 @@ void KGALILEICenterApp::slotPlugins(void)
 		str+=PostGroup()->GetLib();
 		str+="]";
 		cur=new QPostGroupItem(dlg.PostGroups,PostGroup(),str);
-		cout << "inserting "<<PostGroup()->GetName() <<" in pos "<<idx<<endl;
 		dlg.CurrentPostGroup->insertItem(PostGroup()->GetName(),idx);
 		if((PostGroup()->GetPlugin())&&(PostGroup()->GetPlugin()==PostGroupManager.GetCurrentMethod()))
 			dlg.CurrentPostGroup->setCurrentItem(idx);
