@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include <gprofiles/gsubprofile.h>
+#include <ggroups/gsubprofileref.h>
 
 
 
@@ -40,30 +40,41 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 * This class represent a group of sub-profiles. In fact, it is implemented as a
-* container of GSubProfile.
+* container of GSubProfileRef.
 * @author Pascal Francq
 * @short Group.
 */
-class GGroup : public RStd::RContainer<GSubProfile,unsigned int,false,true>
+class GGroup : public RStd::RContainer<GSubProfileRef,unsigned int,true,true>
 {
-	
 	/**
 	* identifier
 	*/
 	unsigned int Id;
 
+	/**
+	* State of the document.
+	*/
+	tObjState State;
+
+	/**
+	* Language of the group.
+	*/
+	GLang* Lang;
+
 public:
 
 	/**
 	* Construct a group.
+	* @param lang           Language.
 	*/
-	GGroup(void) throw(bad_alloc);
+	GGroup(GLang* lang) throw(bad_alloc);
 
 	/**
 	* Construct a group with a specific identificator.
 	* @param id             Identificator.
+	* @param lang           Language.
 	*/
-	GGroup(const unsigned int id) throw(bad_alloc);
+	GGroup(const unsigned int id,GLang* lang) throw(bad_alloc);
 
 	/**
 	* Compare method needed by RStd::RContainer.
@@ -91,6 +102,30 @@ public:
 	* @param id             Identifier.
 	*/
 	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+
+	/**
+	* Returnt he state of the document.
+	* @returns GALILEI::tObjState value.
+	*/
+	tObjState GetState(void) const {return(State);}
+
+	/**
+	* Get the language of the set of groups.
+	* @return Pointer to the language.
+	*/
+	GLang* GetLang(void) const {return(Lang);}
+
+	/**
+	* Delete a subprofile from the group.
+	* @param sp             SubProfile to delete.
+	*/
+	void DeleteSubProfile(GSubProfileRef* sp);
+
+	/**
+	* Insert a subprofile in the group.
+	* @param sp             SubProfile to insert.
+	*/
+	void InsertSubProfile(GSubProfileRef* sp);
 };
 
 

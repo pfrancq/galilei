@@ -71,7 +71,7 @@ GGroup* GALILEI::GGroups::GetGroup(const GSubProfile* sub) const
 
 	for(cur.Start();!cur.End();cur.Next())
 	{
-		if(cur()->GetPtr(sub))
+		if(cur()->GetPtr<const GSubProfile*>(sub))
 			return(cur());
 	}
 	return(0);

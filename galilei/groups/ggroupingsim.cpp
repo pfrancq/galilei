@@ -52,23 +52,23 @@ void GALILEI::GGroupingSim::Init(void) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 {
-	GSubProfile** s1;
-	GSubProfile** s2;
+	GSubProfileRef** s1;
+	GSubProfileRef** s2;
 	unsigned int i,j;
 
 	if(Full)
 	{
-		for(s1=grp->Tab,i=grp->NbPtr+1;--i;s1++)
+		for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
 			for(s2=s1+1,j=i+1;--j;s2++)
-				if((*s1)->Similarity(*s2)<Level)
+				if((*s1)->GetSubProfile()->Similarity((*s2)->GetSubProfile())<Level)
 					return(false);
 		return(true);
 	}
 	else
 	{
-		for(s1=grp->Tab,i=grp->NbPtr+1;--i;s1++)
+		for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
 			for(s2=s1+1,j=i+1;--j;s2++)
-				if((*s1)->Similarity(*s2)>=Level)
+				if((*s1)->GetSubProfile()->Similarity((*s2)->GetSubProfile())>=Level)
 					return(true);
 		return(false);
 	}
@@ -78,19 +78,19 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 //-----------------------------------------------------------------------------
 bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp,const GSubProfile* sub) const
 {
-	RContainerCursor<GSubProfile,unsigned int,false,true> cur(grp);
+	RContainerCursor<GSubProfileRef,unsigned int,true,true> cur(grp);
 
 	if(Full)
 	{
 		for(cur.Start();!cur.End();cur.Next())
-			if(cur()->Similarity(sub)<Level)
+			if(cur()->GetSubProfile()->Similarity(sub)<Level)
 				return(false);
 		return(true);
 	}
 	else
 	{
 		for(cur.Start();!cur.End();cur.Next())
-			if(cur()->Similarity(sub)>=Level)
+			if(cur()->GetSubProfile()->Similarity(sub)>=Level)
 				return(true);
 		return(false);
 	}
@@ -116,7 +116,7 @@ void GALILEI::GGroupingSim::Run(void)
 				continue;
 			
 			// Sub Profile must be deleted from the group
-			g->DeletePtr(s);
+			g->DeleteSubProfile(g->GetPtr<GSubProfile*>(s));
 		}
 
 		// Find the first group able to receive the subprofile.
@@ -131,10 +131,10 @@ void GALILEI::GGroupingSim::Run(void)
 
 		// If no group found create one and insert it in Groups.
 		if(!g)
-			Groups->InsertPtr(g=Session->NewGroup());
+			Groups->InsertPtr(g=Session->NewGroup(Groups->GetLang()));
 
 		// Attach the subprofile to the group found/created.
-		g->InsertPtr(s);
+		g->InsertSubProfile(new GSubProfileRef(s));
 	}
 }
 

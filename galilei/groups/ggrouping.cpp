@@ -32,6 +32,25 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
+//  class GGroupingSignalsReceiver
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GALILEI::GGroupingSignalsReceiver::GGroupingSignalsReceiver(void)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroupingSignalsReceiver::NextGroupLang(GLang*)
+{
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
 //  GGrouping
 //
 //-----------------------------------------------------------------------------
@@ -50,7 +69,7 @@ void GALILEI::GGrouping::Init(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGrouping::Grouping(void)
+void GALILEI::GGrouping::Grouping(GGroupingSignalsReceiver* rec)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
 
@@ -59,6 +78,8 @@ void GALILEI::GGrouping::Grouping(void)
 	{
 		SubProfiles.Clear();
 		Groups=Session->GetGroups(CurLang());
+		if(rec)
+			rec->NextGroupLang(CurLang());
 
 		// Go through the users to find the subprofiles corresponding to the
 		// language.

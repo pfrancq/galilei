@@ -31,17 +31,20 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroup::GGroup(void) throw(bad_alloc)
-	: RContainer<GSubProfile,unsigned int,false,true>(20,10),Id(cNoRef)
+GALILEI::GGroup::GGroup(GLang* lang) throw(bad_alloc)
+	: RContainer<GSubProfileRef,unsigned int,true,true>(20,10), Id(cNoRef),
+	  State(osCreated), Lang(lang)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroup::GGroup(const unsigned int id) throw(bad_alloc)
-	: RContainer<GSubProfile,unsigned int,false,true>(20,10),Id(id)
+GALILEI::GGroup::GGroup(const unsigned int id,GLang* lang) throw(bad_alloc)
+	: RContainer<GSubProfileRef,unsigned int,true,true>(20,10), Id(id),
+	  State(osUpToDate), Lang(lang)
 {
 }
+
 
 //-----------------------------------------------------------------------------
 int GALILEI::GGroup::Compare(const unsigned int id) const
@@ -61,4 +64,20 @@ int GALILEI::GGroup::Compare(const GGroup& group) const
 int GALILEI::GGroup::Compare(const GGroup* group) const
 {
 	return(Id-group->Id);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroup::DeleteSubProfile(GSubProfileRef* sp)
+{
+	DeletePtr(sp);
+	State=osUpdated;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroup::InsertSubProfile(GSubProfileRef* sp)
+{
+	InsertPtr(sp);
+	State=osUpdated;
 }

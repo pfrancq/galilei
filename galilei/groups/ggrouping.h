@@ -37,6 +37,24 @@ class GSession;
 
 
 //-----------------------------------------------------------------------------
+//
+class GGroupingSignalsReceiver
+{
+public:
+	/**
+	* Constructor.
+	*/
+	GGroupingSignalsReceiver(void);
+
+	/**
+	* Method called by GGrouping each time a new language is analysed.
+	* @param lang           Pointer to the current lang.
+	*/
+	virtual void NextGroupLang(GLang* lang);
+};
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GGrouping provides a representation for a generic method to group some
 * subprofiles.
@@ -89,8 +107,9 @@ public:
 
 	/**
 	* Make the groups.
+	* @param rec            Receiver of the signals.
 	*/
-	void Grouping(void);
+	void Grouping(GGroupingSignalsReceiver* rec=0);
 
 	/**
 	* Destructor.
