@@ -180,7 +180,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 void KViewDoc::ConstructFdbks(void)
 {
 	QListViewItem *p;
-	const RDate* d;
+	RDate d;
 	char sDate[20];
 	GProfDocCursor Profiles;
 
@@ -230,7 +230,7 @@ void KViewDoc::ConstructFdbks(void)
 		}
 		if(!p) continue;
 		d=Profiles()->GetUpdated();
-		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
+		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 		QListViewItemType* prof = new QListViewItemType(Profiles()->GetProfile(),p,Profiles()->GetProfile()->GetName(),Profiles()->GetProfile()->GetUser()->GetFullName(),sDate);
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
 	}
@@ -273,7 +273,7 @@ void KViewDoc::ConstructResults(void)
 void KViewDoc::ConstructGeneral(void)
 {
 	GLang* l;
-	const RDate* d;
+	RDate d;
 	char sDate[20];
 
 	new QListViewItem(General,"ID",itou(Document->GetId()).Latin1());
@@ -286,10 +286,10 @@ void KViewDoc::ConstructGeneral(void)
 	else
 		new QListViewItem(General,"Language","Unknow");
 	d=Document->GetUpdated();
-	sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
+	sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 	new QListViewItem(General,"Last Updated",sDate);
 	d=Document->GetComputed();
-	sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
+	sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 	new QListViewItem(General,"Last Analysed",sDate);
 	switch(Document->GetState())
 	{

@@ -139,14 +139,14 @@ KViewGroup::KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,in
 void KViewGroup::ConstructProfiles(void)
 {
 	char sDate[20];
-	const RDate* d;
+	RDate d;
 
 	Profiles->clear();
 	for(Group->Start();!Group->End();Group->Next())
 	{
 		GSubProfile* sub=(*Group)();
 		d=sub->GetAttached();
-		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
+		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 		QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),Profiles,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName(),sDate);
 		subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find",KIcon::Small)));
 	}
@@ -192,7 +192,7 @@ void KViewGroup::ConstructGeneral(void)
 //-----------------------------------------------------------------------------
 void KViewGroup::ConstructDocs(void)
 {
- 	const RDate* d;
+ 	RDate d;
  	char sDate[20];
  	GProfDocCursor docs;
 	GDocCursor docs2;
@@ -226,7 +226,7 @@ void KViewGroup::ConstructDocs(void)
 	for(docs2.Start();!docs2.End();docs2.Next())
 	{
 		d=docs2()->GetUpdated();
-		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
+		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 		QListViewItemType* prof = new QListViewItemType(docs2(),Docs,docs2()->GetName().Latin1(),docs2()->GetURL().Latin1(),sDate);
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror",KIcon::Small)));
 	}
