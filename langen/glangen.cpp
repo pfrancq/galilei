@@ -43,7 +43,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <langs/glangen.h>
+#include <glangen.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -112,8 +112,8 @@ GLangEN::PorterRule::~PorterRule(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangEN::GLangEN(GDict* dict) throw(bad_alloc)
-	: GLang("English","en",dict), Rules1a(0), Rules1b(0), Rules1bb(0), Rules1c(0),
+GALILEI::GLangEN::GLangEN(GFactoryLang* fac) throw(bad_alloc)
+	: GLang(fac,"English","en"), Rules1a(0), Rules1b(0), Rules1bb(0), Rules1c(0),
 	  Rules2(0), Rules3(0), Rules4(0), Rules5a(0), Rules5b(0)
 {
 	// Rules 1a
@@ -385,6 +385,12 @@ RString& GALILEI::GLangEN::GetStemming(const RString& _kwd)
 }
 
 
+//------------------------------------------------------------------------------
+void GLangEN::CreateParams(GParams*)
+{
+}
+
+
 //-----------------------------------------------------------------------------
 GALILEI::GLangEN::~GLangEN(void)
 {
@@ -398,3 +404,7 @@ GALILEI::GLangEN::~GLangEN(void)
 	if(Rules5a) delete Rules5a;
 	if(Rules5b) delete Rules5b;
 }
+
+
+//------------------------------------------------------------------------------
+CREATE_LANG_FACTORY("English",GLangEN,"en")

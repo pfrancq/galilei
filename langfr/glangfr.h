@@ -83,8 +83,9 @@ public:
 
 	/**
 	* Constructor of the french language.
+	* @param fac             Factory.
 	*/
-	GLangFR(GDict* dict) throw(bad_alloc);
+	GLangFR(GFactoryLang* fac) throw(bad_alloc);
 
 	/**
 	* Function that return stemming of a word. The "French" Porter's algorithm is
@@ -131,6 +132,12 @@ private:
 	bool ApplyRules(char* kwd,char* &end,R::RContainer<FrenchPorterRule,unsigned int,true,false>* rules,int ruleslevel);
 
 public:
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void CreateParams(GParams* params);
 
 	/**
 	* Destructor.

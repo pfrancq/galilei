@@ -43,7 +43,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <langs/glangfr.h>
+#include <glangfr.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -56,7 +56,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GALILEI::GLangFR::FrenchPorterRule
+class GLangFR::FrenchPorterRule
 {
 public:
 	char* OldSuffix;
@@ -107,8 +107,8 @@ GLangFR::FrenchPorterRule::~FrenchPorterRule(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangFR::GLangFR(GDict* dict) throw(bad_alloc)
-	: GLang("French","fr",dict), Rules1(0), Rules2(0), Rules3(0)
+GLangFR::GLangFR(GFactoryLang* fac) throw(bad_alloc)
+	: GLang(fac,"French","fr"), Rules1(0), Rules2(0), Rules3(0)
 {
 
 	Rules1=new RContainer<FrenchPorterRule,unsigned int,true,false>(130,10);
@@ -411,7 +411,7 @@ GALILEI::GLangFR::GLangFR(GDict* dict) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GLangFR::GetWordSize(char* kwd)
+int GLangFR::GetWordSize(char* kwd)
 {
 	int Result=0;             // WordSize of the word.
 	int State=0;             // Current state of the machine.
@@ -440,7 +440,7 @@ int GALILEI::GLangFR::GetWordSize(char* kwd)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangFR::ContainsVowel(const char* kwd)
+bool GLangFR::ContainsVowel(const char* kwd)
 {
 	if(!(*kwd))
 		return(false);
@@ -450,7 +450,7 @@ bool GALILEI::GLangFR::ContainsVowel(const char* kwd)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,unsigned int,true,false>* rules,int /*ruleslevel*/)
+bool GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,unsigned int,true,false>* rules,int /*ruleslevel*/)
 {
 	FrenchPorterRule* ptr;
 	char* ending;
@@ -489,7 +489,7 @@ bool GALILEI::GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRu
 
 
 //-----------------------------------------------------------------------------
-RString& GALILEI::GLangFR::GetStemming(const RString& _kwd)
+RString& GLangFR::GetStemming(const RString& _kwd)
 {
 	RString *res=RString::GetString();
 	char kwd[51];
@@ -519,11 +519,21 @@ RString& GALILEI::GLangFR::GetStemming(const RString& _kwd)
 }
 
 
+//------------------------------------------------------------------------------
+void GLangFR::CreateParams(GParams*)
+{
+}
+
+
 //-----------------------------------------------------------------------------
-GALILEI::GLangFR::~GLangFR(void)
+GLangFR::~GLangFR(void)
 {
 	if(Rules1) delete Rules1;
 	if(Rules2) delete Rules2;
 	if(Rules3) delete Rules3;
-	
+
 }
+
+
+//------------------------------------------------------------------------------
+CREATE_LANG_FACTORY("French",GLangFR,"fr")

@@ -114,8 +114,9 @@ public:
 
 	/**
 	* Constructor of the english language.
+	* @param fac             Factory.
 	*/
-	GLangEN(GDict* dict) throw(bad_alloc);
+	GLangEN(GFactoryLang* fac) throw(bad_alloc);
 
 	/**
 	* Function that return stemming of a word. The Porter's algorithm is
@@ -170,6 +171,12 @@ private:
 	bool ApplyRules(char* kwd,char* &end,R::RContainer<PorterRule,unsigned int,true,false>* rules);
 
 public:
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void CreateParams(GParams* params);
 
 	/**
 	* Destructor.
