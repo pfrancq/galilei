@@ -224,7 +224,7 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 			// If yes -> Verify judgement
 			ptr=docs->GetPtr<const GProfDoc*>(Fdbks());
 			if(ptr) continue;
-			j=ptr->GetFdbk();
+			j=Fdbks()->GetFdbk();
 			if((j==djNav)||(j==djOK))
 				docs->InsertPtr(Fdbks());
 		}
