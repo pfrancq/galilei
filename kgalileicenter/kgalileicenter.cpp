@@ -150,6 +150,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	QConnectMySQL dlg(this,0,true);
 	QString method;
 	GSessionMySQL* Sess;
+	char status[100];
 
 	dlg.txtDb->setText(dbName.Latin1());
 	dlg.txtLogin->setText(dbUser.Latin1());
@@ -192,7 +193,8 @@ void KGALILEICenterApp::slotSessionConnect(void)
 				Doc=0;
 			}
 		}
-		slotStatusMsg(i18n("Ready"));
+		sprintf(status,"User %s connected to database %s on %s",dbUser.Latin1(),dbName.Latin1(), dbHost.Latin1());
+		slotStatusMsg(i18n(status));
 	}
 }
 
