@@ -16,7 +16,7 @@ package-messages:
 	$(MAKE) -C po merge
 
 EXTRA_DIST = admin COPYING configure.in.in PluginsConfig.py \
-	docs filters grouping groups langs linking postdoc postgroups profiling stats
+	docs filters grouping groups langs linking postdoc postgroups postprofile profiling stats
 
 config:
 	python PluginsConfig.py
