@@ -138,7 +138,8 @@ enum tObjState{
 	osCreated               /** Object was created.*/,
 	osUpToDate              /** Object is up to date.*/,
 	osModified              /** Object was modified and computation must be update.*/,
-	osUpdated               /** Object is updated and needs to be save.*/};
+	osUpdated               /** Object is updated and needs to be save.*/,
+	osDelete                /** Object must be deleted.*/};
 
 
 //-----------------------------------------------------------------------------
