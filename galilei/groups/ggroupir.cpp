@@ -296,6 +296,15 @@ void GALILEI::GGroupIR::DoOptimisation(void)
 	// If cut found do it.
 	if(Pos)
 	{
+		#ifdef RGADEBUG
+			if(Owner->Instance->Debug)
+			{
+				Owner->Instance->Debug->BeginFunc("DoOptimisation","GGroupIR");
+				Owner->Instance->Debug->PrintInfo("Divided a group");
+				Owner->Instance->Debug->EndFunc("DoOptimisation","GGroupIR");
+			}
+		#endif
+
 		grp=Owner->ReserveGroup();
 		for(;i<NbSubObjects-1;t++,i++)
 		{

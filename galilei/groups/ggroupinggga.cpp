@@ -81,7 +81,7 @@ const char* GALILEI::GGroupingGGA::GetSettings(void)
 
 	if(Step) c='1'; else c='0';
 	if(GlobalSim) c1='1'; else c1='0';
-	sprintf(tmp,"%c, %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	sprintf(tmp,"%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
 	        c1,PopSize,MaxGen,c,StepGen,MinSimLevel,
 	        ParamsSim.P,ParamsSim.Q,ParamsSim.Weight,
 	        ParamsNb.P,ParamsNb.Q,ParamsNb.Weight,
