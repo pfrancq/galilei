@@ -58,7 +58,7 @@ using namespace ltmm;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLinkCalcManager::GLinkCalcManager(const char* path,bool dlg) throw(GException)
+GLinkCalcManager::GLinkCalcManager(const char* path,bool dlg) throw(bad_alloc,GException)
 	: RContainer<GFactoryLinkCalc,unsigned int,true,true>(10,5), Current(0)
 {
 	DIR* dp;

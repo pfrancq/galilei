@@ -4,7 +4,7 @@
 
 	GGroupingManager.cpp
 
-	Manager to handle grouping method - Implementation.
+	Grouping Methods Manager - Implementation.
 
 	Copyright 2003 by the Université Libre de Bruxelles.
 
@@ -34,14 +34,14 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ggroupingmanager.h>
 #include <groups/ggrouping.h>
@@ -51,14 +51,14 @@ using namespace ltmm;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GGroupingManager
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GGroupingManager::GGroupingManager(const char* path,bool dlg) throw(GException)
+//------------------------------------------------------------------------------
+GGroupingManager::GGroupingManager(const char* path,bool dlg) throw(bad_alloc,GException)
 	: RContainer<GFactoryGrouping,unsigned int,true,true>(10,5), Current(0)
 {
 	DIR* dp;
@@ -126,8 +126,8 @@ GGroupingManager::GGroupingManager(const char* path,bool dlg) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
-void GGroupingManager::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GGroupingManager::Connect(GSession* session) throw(GException)
 {
 	GFactoryGroupingCursor Cur;
 	GGrouping* calc;
@@ -142,8 +142,8 @@ void GGroupingManager::Connect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
-void GGroupingManager::Disconnect(GSession* session)
+//------------------------------------------------------------------------------
+void GGroupingManager::Disconnect(GSession* session) throw(GException)
 {
 	GFactoryGroupingCursor Cur;
 	GGrouping* calc;
@@ -158,7 +158,7 @@ void GGroupingManager::Disconnect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GGroupingManager::SetCurrentMethod(const char* name) throw(GException)
 {
 	GFactoryGrouping* fac;
@@ -175,14 +175,14 @@ void GGroupingManager::SetCurrentMethod(const char* name) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGrouping* GGroupingManager::GetCurrentMethod(void)
 {
 	return(Current);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GFactoryGroupingCursor& GGroupingManager::GetGroupingsCursor(void)
 {
 	GFactoryGroupingCursor *cur=GFactoryGroupingCursor::GetTmpCursor();
@@ -191,7 +191,7 @@ GFactoryGroupingCursor& GGroupingManager::GetGroupingsCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroupingManager::~GGroupingManager(void)
 {
 }

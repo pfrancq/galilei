@@ -6,7 +6,7 @@
 
 	Generic Grouping Method - Implementation
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,8 +34,7 @@
 
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ggrouping.h>
 #include <infos/glang.h>
@@ -48,7 +47,6 @@
 #include <profiles/gsubprofile.h>
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
-
 using namespace R;
 using namespace GALILEI;
 
@@ -59,96 +57,40 @@ using namespace GALILEI;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GGrouping
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGrouping::GGrouping(GFactoryGrouping* fac) throw(bad_alloc)
-	: GPlugin<GFactoryGrouping>(fac), Lang(0), /*Groups(0),*/ SubProfiles(100,50),
-	  /*DeletedGroups(200,100),*/ IdealGroups(0)
+	: GPlugin<GFactoryGrouping>(fac), Lang(0), Groups(0), SubProfiles(100,50),
+	  IdealGroups(0)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-void GGrouping::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GGrouping::Connect(GSession* session) throw(GException)
 {
-/*	GFactoryLangCursor Langs;
-	GLang* lang;
-
-	Session=session;
-	Langs=Session->GetLangs()->GetLangsCursor();
-	for(Langs.Start();!Langs.End();Langs.Next())
-	{
-		lang=Langs()->GetPlugin();
-		if(!lang) continue;
-		DeletedGroups.InsertPtr(new GGroups(lang));
-	}*/
 	Session=session;
 	Groups=session;
 	IdealGroups=0;
 }
 
 
-//-----------------------------------------------------------------------------
-void GGrouping::Disconnect(GSession*)
+//------------------------------------------------------------------------------
+void GGrouping::Disconnect(GSession*) throw(GException)
 {
 	Session=0;
 	Groups=0;
-//	DeletedGroups.Clear();
 	IdealGroups=0;
 }
 
 
 //-----------------------------------------------------------------------------
-void GGrouping::Init(void) throw(bad_alloc)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-void GGrouping::Clear(void) throw(bad_alloc)
-{
-//	unsigned int i;
-
-	// Go through the groups and delete all invalid groups.
-/*	for(i=Groups->NbPtr+1;--i;)
-	{
-		DeleteGroup(*Groups->Tab);
-	}*/
-}
-
-
-//-----------------------------------------------------------------------------
-/*GGroup* GGrouping::NewGroup(GLang* lang)
-{
-	GGroup* grp;
-
-	grp=new GGroupVector(cNoRef,lang);
-	if(SaveGroups)
-		Session->NewGroup(lang,grp);
-	else
-		grp->SetId(Groups->Tab[Groups->NbPtr-1]->GetId()+1);
-	Groups->InsertPtr(grp);
-	return(grp);
-}
-
-
-//-----------------------------------------------------------------------------
-void GGrouping::DeleteGroup(GGroup* grp)
-{
-	grp->DeleteSubProfiles();
-	if(SaveGroups)
-		Session->DeleteGroup(grp);
-	Groups->DeletePtr(grp);
-}*/
-
-
-//-----------------------------------------------------------------------------
-void GGrouping::Grouping(GSlot* rec,bool modified,bool save)
+void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
 {
 	GFactoryLangCursor CurLang;
 	GGroupCalc* CalcDesc;
@@ -158,7 +100,6 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save)
 	unsigned int i;
 	GGroupCursor Groups;
 
-//	SaveGroups=/*save*/true;
 	Modified=modified;
 
 	// Go trough each language.
@@ -169,20 +110,8 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save)
 		if(!Lang) continue;
 
 		SubProfiles.Clear();
-//		Groups=Session->GetGroups(Lang);
 		if(rec)
 			rec->NextGroupLang(Lang);
-
-		// Go through the groups and delete all invalid groups.
-/*		for(i=Groups->NbPtr+1,Tab=Groups->Tab;--i;Tab++)
-		{
-			Grp=(*Tab);
-			if((!modified)||(((Grp->GetState()!=osUpToDate)&&(Grp->GetState()!=osUpdated))&&(!IsValid(Grp))))
-			{
-				DeleteGroup(Grp);
-				Tab--;
-			}
-		}*/
 
 		// Go through the profiles corresponding to the language and that are
 		// to inserted.
@@ -202,6 +131,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save)
 		Run();
 	}
 	Lang=0;
+
 	// Compute the description of the groups and Save the information.
 	CalcDesc=Session->GetGroupCalcMng()->GetCurrentMethod();
 	Groups=Session->GetGroupsCursor();
@@ -213,7 +143,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGrouping::~GGrouping(void)
 {
 }

@@ -175,8 +175,8 @@ unsigned int GGroups::GetNbGroups(GLang* lang) const
 //------------------------------------------------------------------------------
 unsigned int GGroups::GetMaxId(void) const
 {
-	if(NbPtr) return(0);
-	return(Tab[NbPtr]->GetId());
+	if(!NbPtr) return(0);
+	return(Tab[NbPtr-1]->GetId());
 }
 
 
@@ -193,7 +193,7 @@ void GGroups::Clear(GLang* lang)
 	{
 		grp=(*grps->Tab);
  		grp->DeleteSubProfiles();
-		DeleteGroup(grp);
+		DeletePtr(grp);
 		grps->DeletePtr(grp);
 	}
 }

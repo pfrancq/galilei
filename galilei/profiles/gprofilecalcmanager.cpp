@@ -58,7 +58,7 @@ using namespace ltmm;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfileCalcManager::GProfileCalcManager(const char* path,bool dlg) throw(GException)
+GProfileCalcManager::GProfileCalcManager(const char* path,bool dlg) throw(bad_alloc,GException)
 	: RContainer<GFactoryProfileCalc,unsigned int,true,true>(10,5), Current(0)
 {
 	DIR* dp;

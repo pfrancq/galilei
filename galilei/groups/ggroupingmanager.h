@@ -4,7 +4,7 @@
 
 	GGroupingManager.h
 
-	Manager to handle grouping method - Header.
+	Grouping Methods Manager - Header.
 
 	Copyright 2003 by the Université Libre de Bruxelles.
 
@@ -34,27 +34,27 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GGroupingManagerH
 #define GGroupingManagerH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GGroupingManager class provides a representation for a manager
 * responsible to manage all the grouping methods.
 * @author Pascal Francq
-* @short Grouping Method Manager.
+* @short Grouping Methods Manager.
 */
 class GGroupingManager : public R::RContainer<GFactoryGrouping,unsigned int,true,true>
 {
@@ -66,23 +66,23 @@ class GGroupingManager : public R::RContainer<GFactoryGrouping,unsigned int,true
 public:
 
 	/**
-	* Construct a URL manager.
+	* Construct the grouping methods manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
-	GGroupingManager(const char* path,bool dlg=true) throw(GException);
+	GGroupingManager(const char* path,bool dlg=true) throw(bad_alloc,GException);
 
 	/**
 	* Connect to a Session.
-	* @param session         The session.
+	* @param session         Session.
 	*/
-	void Connect(GSession* session);
+	void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
-	* @param session         The session.
+	* @param session         Session.
 	*/
-	void Disconnect(GSession* session);
+	void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Set the current method.
@@ -97,19 +97,19 @@ public:
 	GGrouping* GetCurrentMethod(void);
 
 	/**
-	* Get a cursor over the filters of the system.
+	* Get a cursor over the grouping methods.
 	*/
 	GFactoryGroupingCursor& GetGroupingsCursor(void);
 
 	/**
-	* Destructor of URL manager.
+	* Destructor of a grouping methods manager.
 	*/
 	virtual ~GGroupingManager(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

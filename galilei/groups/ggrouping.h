@@ -6,7 +6,7 @@
 
 	Generic Grouping Method - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,38 +34,38 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GGroupingH
 #define GGroupingH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include file for LibTool--
 #include <ltmm/loader.hh>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <sessions/gplugin.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // API VERSION
 #define API_GROUPING_VERSION "1.0"
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GGrouping provides a representation for a generic method to group some
 * subprofiles.
 * @author Pascal Francq
-* @short Generic Grouping.
+* @short Generic Grouping Method.
 */
 class GGrouping : public GPlugin<GFactoryGrouping>
 {
@@ -77,7 +77,7 @@ protected:
 	GSession* Session;
 
 	/**
-	* Pointer to the language corresponding to the groups to form.
+	* Current language treated.
 	*/
 	GLang* Lang;
 
@@ -87,39 +87,24 @@ protected:
 	GGroups* Groups;
 
 	/**
-	* SubProfiles that must be grouped again.
+	* SubProfiles that must be grouped.
 	*/
 	R::RContainer<GSubProfile,unsigned int,false,true> SubProfiles;
 
 	/**
-	* Type of the description used to group.
-	*/
-//	tSubProfileDesc SubProfileDesc;
-
-	/**
-	* Groups to destruct after the grouping.
-	*/
-//	R::RContainer<GGroup,unsigned int,true,true> DeletedGroups;
-
-	/**
-	* Must the groups be save in the database.
-	*/
-//	bool SaveGroups;
-
-	/**
-	* Must the groups be used without reconstruction.
+	* Should the method starts from the current clustering.
 	*/
 	bool Modified;
 
 	/**
-	* Ideal Groups.
+	* Ideal clustering.
 	*/
 	GGroups* IdealGroups;
 
 public:
 
 	/**
-	* Constructor.
+	* Constructor of the grouping method.
 	* @param fac             Factory of the plugin.
 	*/
 	GGrouping(GFactoryGrouping* fac) throw(bad_alloc);
@@ -128,23 +113,13 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session);
+	virtual void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session);
-
-	/**
-	* Initialisation of the method.
-	*/
-	virtual void Init(void) throw(bad_alloc);
-
-	/**
-	* Clear method.
-	*/
-	virtual void Clear(void) throw(bad_alloc);
+	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Set the ideal groups.
@@ -155,51 +130,29 @@ public:
 protected:
 
 	/**
-	* Make the grouping for a specific Language. Groups is a pointer to the
-	* groups to form and SubProfiles contains all the subprofiles for a given
-	* language. This variables must be set before calling this function. This
-	* is done by the Grouping method.
+	* Make the grouping for a specific Language. SubProfiles contains all the
+	* subprofiles for a given language. This variables must be set before
+	* calling this function. This is done by the Grouping method.
 	*/
 	virtual void Run(void) throw(GException)=0;
 
-	/**
-	* Create a new group. In practice a list of all removed groups are hold
-	* and an existing group not more necessary is used before creating a new
-	* one.
-	* @param lang       Language of the group to create.
-	*/
-//	GGroup* NewGroup(GLang* lang);
-
-	/**
-	* Delete an existing group. In practice a list of all removed groups are
-	* hold and an existing group not more necessary is first put in a container
-	* before being destructed.
-	*/
-//	void DeleteGroup(GGroup* grp);
-
 public:
-
-	/**
-	* Test if a group is valid. If a group isn't not valid, the group is
-	* deleted and all profiles are to be inserted again.
-	*/
-//	virtual bool IsValid(GGroup* grp)=0;
 
 	/**
 	* Make the groups.
 	* @param rec            Receiver of the signals.
 	* @param save           Save modified elements.
 	*/
-	void Grouping(GSlot* rec,bool modified,bool save);
+	void Grouping(GSlot* rec,bool modified,bool save) throw(GException);
 
 	/**
-	* Destructor.
+	* Destructor of tghe grouping method.
 	*/
 	virtual ~GGrouping(void);
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class GFactoryGrouping : public GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>
 {
 public:
@@ -219,82 +172,73 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 typedef GFactoryGrouping*(*GFactoryGroupingInit)(GGroupingManager*,const char*);
 
 
-//------------------------------------------------------------------------------
-#define CREATE_GROUPING_FACTORY(name,C)                                                         \
-class TheFactory : public GFactoryGrouping                                                      \
-{                                                                                               \
-private:                                                                                        \
-	static GFactoryGrouping* Inst;                                                              \
-	TheFactory(GGroupingManager* mng,const char* l) : GFactoryGrouping(mng,name,l)              \
-	{                                                                                           \
-		C::CreateParams(this);                                                                  \
-	}                                                                                           \
-	virtual ~TheFactory(void) {}                                                                \
-public:                                                                                         \
-	static GFactoryGrouping* CreateInst(GGroupingManager* mng,const char* l)                    \
-	{                                                                                           \
-		if(!Inst)                                                                               \
-			Inst = new TheFactory(mng,l);                                                       \
-		return(Inst);                                                                           \
-	}                                                                                           \
+//-------------------------------------------------------------------------------
+#define CREATE_GROUPING_FACTORY(name,C)                                                   \
+class TheFactory : public GFactoryGrouping                                                \
+{                                                                                         \
+private:                                                                                  \
+	static GFactoryGrouping* Inst;                                                        \
+	TheFactory(GGroupingManager* mng,const char* l) : GFactoryGrouping(mng,name,l)        \
+	{                                                                                     \
+		C::CreateParams(this);                                                            \
+	}                                                                                     \
+	virtual ~TheFactory(void) {}                                                          \
+public:                                                                                   \
+	static GFactoryGrouping* CreateInst(GGroupingManager* mng,const char* l)              \
+	{                                                                                     \
+		if(!Inst)                                                                         \
+			Inst = new TheFactory(mng,l);                                                 \
+		return(Inst);                                                                     \
+	}                                                                                     \
 	virtual const char* GetAPIVersion(void) const {return(API_GROUPING_VERSION);}         \
-	virtual void Create(void) throw(GException)                                                 \
-	{                                                                                           \
-		if(Plugin) return;                                                                      \
-		Plugin=new C(this);                                                                     \
-		Plugin->ApplyConfig();                                                                  \
-	}                                                                                           \
-	virtual void Delete(void) throw(GException)                                                 \
-	{                                                                                           \
-		if(!Plugin) return;                                                                     \
-		delete Plugin;                                                                          \
-		Plugin=0;                                                                               \
-	}                                                                                           \
-	virtual void Create(GSession* ses) throw(GException)                                        \
-	{                                                                                           \
-		if(!Plugin)                                                                             \
-		{                                                                                       \
-			Plugin=new C(this);                                                                 \
-			Plugin->ApplyConfig();                                                              \
-		}                                                                                       \
-		if(ses)                                                                                 \
-			Plugin->Connect(ses);                                                               \
-	}                                                                                           \
-	virtual void Delete(GSession* ses) throw(GException)                                        \
-	{                                                                                           \
-		if(!Plugin) return;                                                                     \
-		if(ses)                                                                                 \
-			Plugin->Disconnect(ses);                                                            \
-		delete Plugin;                                                                          \
-		Plugin=0;                                                                               \
-	}                                                                                           \
-};                                                                                              \
-                                                                                                \
-GFactoryGrouping* TheFactory::Inst = 0;                                                         \
-                                                                                                \
-extern "C"                                                                                      \
-{                                                                                               \
-	GFactoryGrouping* FactoryCreate(GGroupingManager* mng,const char* l)                        \
-	{                                                                                           \
-		return(TheFactory::CreateInst(mng,l));                                                  \
-	}                                                                                           \
+	virtual void Create(void) throw(GException)                                           \
+	{                                                                                     \
+		if(Plugin) return;                                                                \
+		Plugin=new C(this);                                                               \
+		Plugin->ApplyConfig();                                                            \
+	}                                                                                     \
+	virtual void Delete(void) throw(GException)                                           \
+	{                                                                                     \
+		if(!Plugin) return;                                                               \
+		delete Plugin;                                                                    \
+		Plugin=0;                                                                         \
+	}                                                                                     \
+	virtual void Create(GSession* ses) throw(GException)                                  \
+	{                                                                                     \
+		if(!Plugin)                                                                       \
+		{                                                                                 \
+			Plugin=new C(this);                                                           \
+			Plugin->ApplyConfig();                                                        \
+		}                                                                                 \
+		if(ses)                                                                           \
+			Plugin->Connect(ses);                                                         \
+	}                                                                                     \
+	virtual void Delete(GSession* ses) throw(GException)                                  \
+	{                                                                                     \
+		if(!Plugin) return;                                                               \
+		if(ses)                                                                           \
+			Plugin->Disconnect(ses);                                                      \
+		delete Plugin;                                                                    \
+		Plugin=0;                                                                         \
+	}                                                                                     \
+};                                                                                        \
+                                                                                          \
+GFactoryGrouping* TheFactory::Inst = 0;                                                   \
+                                                                                          \
+extern "C"                                                                                \
+{                                                                                         \
+	GFactoryGrouping* FactoryCreate(GGroupingManager* mng,const char* l)                  \
+	{                                                                                     \
+		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
 }
 
 
-//-----------------------------------------------------------------------------
-/**
-* The GGroupingCursor class provides a way to go trough a set of grouping
-* method for the profiles.
-* @short Profiles Grouping Methods Cursor
-*/
-CLASSCURSOR(GGroupingCursor,GGrouping,unsigned int)
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GFactoryGroupingCursor class provides a way to go trough a set of
 * factories.
@@ -303,8 +247,8 @@ CLASSCURSOR(GGroupingCursor,GGrouping,unsigned int)
 CLASSCURSOR(GFactoryGroupingCursor,GFactoryGrouping,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

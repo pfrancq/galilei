@@ -332,6 +332,7 @@ void GProfilesSims::GProfilesSim::Update(void) throw(bad_alloc)
 		sims = Sims->GetPtrAt((*ModifiedProfs)()->GetProfile()->GetId());
 		if(!sims)
 			sims=AddNewSims((*ModifiedProfs)());
+		if(!sims) continue;
 		for (sims->Start(); !sims->End(); sims->Next())
 			(*sims)()->State=osModified;
 	}
@@ -367,7 +368,7 @@ GSims*  GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 	GSims* sims, *tmpsims;
 	GSubProfileCursor subcur;
 
-	if (!sub->IsDefined()) return 0;
+	if (!sub->IsDefined()) return(0);
 	sims=new GSims(sub->GetProfile()->GetId(),sub->GetProfile()->GetId()-1);
 	Sims->InsertPtrAt(sims, sub->GetProfile()->GetId());
         subcur=Manager->GetSession()->GetSubProfilesCursor(Lang);

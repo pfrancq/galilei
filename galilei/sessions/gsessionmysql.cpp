@@ -1208,6 +1208,7 @@ void GALILEI::GSessionMySQL::LoadGroups(bool /*wg*/,bool /*w*/) throw(bad_alloc,
 		for(sel.Start();!sel.End();sel.Next())
 		{
 			group=dynamic_cast<GGroupVector*>(GetGroup(atoi(sel[0])));
+			if(!group) continue;
 			group->AddInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
 		}
 	}

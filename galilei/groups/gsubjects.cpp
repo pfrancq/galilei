@@ -376,8 +376,8 @@ void GSubjects::ComputeRecallPrecision(void)
 //-----------------------------------------------------------------------------
 void GSubjects::ComputeTotal(void)
 {
-	GGroupCursor GroupsIdeal;                         // Pointer to the ideal groups for a given language
-	GGroupCursor GroupsComputed;                      // Pointer to the computed groups for a given language
+	GGroupCursor GroupsIdeal;                     // Pointer to the ideal groups for a given language
+	GGroupCursor GroupsComputed;                  // Pointer to the computed groups for a given language
 	GGroup* GroupIdeal;                           // Pointer to a ideal group
 	GGroup* GroupComputed;                        // Pointer to a computed group
 	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
@@ -451,7 +451,7 @@ void GSubjects::ComputeTotal(void)
 			GroupIdeal=(GroupsIdeal)();
 			for(GroupIdeal->Start();!GroupIdeal->End();GroupIdeal->Next())
 			{
-				GroupComputed=(*GroupIdeal)()->GetGroup();//GroupsComputed->GetGroup((*GroupIdeal)());
+				GroupComputed=(*GroupIdeal)()->GetGroup();
 				if(GroupComputed)
 				{
 					position=GroupsId.GetPtr(GroupComputed->GetId())->position;
