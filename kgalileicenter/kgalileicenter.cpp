@@ -197,7 +197,6 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			plugins->setEnabled(true);
 			gaAnalyse->setEnabled(true);
 			runProgram->setEnabled(true);
-			sessionLoadIdealGroupInGroups->setEnabled(true);
 			runInsts->setEnabled(true);
 			runQuery->setEnabled(true);
 			UpdateMenusEntries();
@@ -299,15 +298,6 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionTest(void)
 {
-
-
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotLoadIdealGroupInGroups(void)
-{
-	Doc->GetSession()->LoadIdealGroupmentInGroups();
 }
 
 

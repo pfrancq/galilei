@@ -13,7 +13,6 @@
 		<separator/>
  		<Action name="sessionTest"/>
 		<Action name="sessionStat"/>
-		<Action name="sesionLoadIdealGroupInGroups"/>
 		<separator/>
 		<Action name="sessionQuit"/>
 	</Menu>

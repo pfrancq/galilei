@@ -115,7 +115,6 @@ void KGALILEICenterApp::initActions(void)
 	runInsts=new KAction(i18n("Run &Instructions"),"help",0,this,SLOT(slotRunInsts()),actionCollection(),"runInsts");;
 	sessionDisconnect=new KAction(i18n("&Disconnect Database"),"connect_no",0,this,SLOT(slotSessionDisconnect()),actionCollection(),"sessionDisconnect");
 	sessionTest=new KAction(i18n("&Test"),"gohome",0,this,SLOT(slotSessionTest()),actionCollection(),"sessionTest");
-	sessionLoadIdealGroupInGroups=new KAction(i18n("Switch &Ideal Groups"),"gohome",0,this,SLOT(slotLoadIdealGroupInGroups()),actionCollection(),"sesionLoadIdealGroupInGroups");
 	sessionStat=new KAction(i18n("&Stat"),"gohome",0,this,SLOT(slotSessionStat()),actionCollection(),"sessionStat");
 	sessionQuit=new KAction(i18n("E&xit"),"exit",0,this,SLOT(slotSessionQuit()),actionCollection(),"sessionQuit");
 
@@ -136,8 +135,6 @@ void KGALILEICenterApp::initActions(void)
 	groupingCompareFromFile=new KAction(i18n("From &File"),"fileopen",0,this,SLOT(slotGroupingCompareFromFile()),actionCollection(),"groupingCompareFromFile");
 	groupingCompare=new KAction(i18n("From &Memory"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
 	mixIdealGroups=new KAction(i18n("Load&Mix Ideal Groups"),"exec",0,this,SLOT(slotMixIdealGroups()),actionCollection(),"mixIdealGroups");
-
-
 
 	// Menu "Document"
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
@@ -550,13 +547,12 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	groupsEvaluation->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad());
 	mixIdealGroups->setEnabled(true);
 
-
 	// Menu "Document"
 	showDocs->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
 	docAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDicsLoad());
 	docsAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad()&&Doc->GetSession()->IsDicsLoad());
 	docsStats->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad()&&Doc->GetSession()->IsDicsLoad());
-	
+
 	// Menu "GA"
 	gaInit->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad()&&Doc->GetSession()->IsUsersLoad());
 }
@@ -579,7 +575,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	createXML->setEnabled(false);
 	saveXML->setEnabled(false);
 	analyseXML->setEnabled(false);
-	sessionLoadIdealGroupInGroups->setEnabled(false);
 	groupsCalc->setEnabled(false);
 	mixIdealGroups->setEnabled(false);
 	showDocs->setEnabled(false);
