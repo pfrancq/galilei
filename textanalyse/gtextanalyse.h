@@ -59,7 +59,7 @@ class GTextAnalyse : public GDocAnalyse
 	/**
 	* Current document to analyse (has to be a vector).
 	*/
-	GDocVector* Doc;
+	GDoc* Doc;
 
 	/**
 	* Cursor on the different languages defined in the system.

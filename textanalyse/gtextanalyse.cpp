@@ -46,7 +46,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gtextanalyse.h>
-#include <docs/gdocvector.h>
+#include <docs/gdoc.h>
 #include <docs/gdocxml.h>
 #include <infos/gword.h>
 #include <infos/gweightinfo.h>
@@ -677,7 +677,7 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 				{
 					if (externalLinks)
 					{
-						tmpDoc=new GDocVector(url,url,"text/html");
+						tmpDoc=new GDoc(url,url,"text/html");
 						Session->AssignId(tmpDoc);
 						DocsToAdd->InsertPtr(tmpDoc);
 						tmpDoc->SetState(osNotNeeded);
@@ -847,7 +847,7 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDocRef doc,RContainer<GDocRef,true,true
 	RCursor<RXMLTag> Tags;
 
 	// Init Part and verification
-	Doc=dynamic_cast<GDocVector*>(Session->GetDoc(doc.GetId()));
+	Doc=Session->GetDoc(doc.GetId());
 	if(!xml)
 		throw GException("No XML Structure for document '"+Doc->GetURL()+"'");
 	Lang=Doc->GetLang();
@@ -906,7 +906,7 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDocRef doc,RContainer<GDocRef,true,true
 		ConstructInfos();
 
 	// Set the Variable of the document
-	dynamic_cast<GDocVector*>(Doc)->UpdateRefs();
+	Doc->UpdateRefs();
 }
 
 
