@@ -217,6 +217,20 @@ int GALILEI::GDict::Compare(const GLang* lang) const
 //-----------------------------------------------------------------------------
 void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType,GWordType WordType)
 {
+	Direct[id]->IncRef(ObjType);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType)
+{
+	Direct[id]->DecRef(ObjType);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDict::IncRef(tObjType ObjType)
+{
 	switch(ObjType)
 	{
 		case otDoc:
@@ -231,12 +245,11 @@ void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType,GWordType WordType)
 		default:
 			break;
 	}
-	Direct[id]->IncRef(ObjType);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType,GWordType WordType)
+void GALILEI::GDict::DecRef(tObjType ObjType)
 {
 	switch(ObjType)
 	{
@@ -252,7 +265,6 @@ void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType,GWordType WordType)
 		default:
 			break;
 	}
-	Direct[id]->DecRef(ObjType);
 }
 
 

@@ -256,6 +256,19 @@ public:
 	unsigned int GetRef(unsigned int id,tObjType ObjType);
 
 	/**
+	* Increase the number of objects using the dictionnary.
+	* @param ObjType        Type of the reference.
+	*/
+	void IncRef(tObjType ObjType);
+
+	/**
+	* Decrease the number of objects using the dictionnary.
+	* @param id             Identificator.
+	* @param ObjType        Type of the reference.
+	*/
+	void DecRef(tObjType ObjType);
+
+	/**
 	* Get the total number of references.
 	* @param ObjType        Type of the reference.
 	* @returns unsigned int.
