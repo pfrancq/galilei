@@ -41,8 +41,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcursor.h>
-using namespace R;
+#include <rstd/rrecfile.h>
+
 
 
 //-----------------------------------------------------------------------------
@@ -52,13 +52,10 @@ using namespace R;
 #include <docs/gdocxml.h>
 #include <langs/gword.h>
 #include <infos/giwordweight.h>
-#include <infos/giwordsweights.h>
 #include <langs/gdict.h>
-#include <langs/glang.h>
-#include <profiles/gprofile.h>
-#include <profiles/gprofdoc.h>
-#include <rstd/rrecfile.h>
+#include <langs/glangs.h>
 #include <sessions/gsession.h>
+using namespace R;
 using namespace GALILEI;
 
 
