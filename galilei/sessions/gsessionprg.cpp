@@ -256,7 +256,7 @@ void GMixIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 	GMixIdealGroups mix(Owner->Session,Owner->Parents,Owner->Groups);
 	if(args->NbPtr==1)
 		mix.SetSettings(args->Tab[0]->GetValue(prg));
-	mix.Run();
+	mix.Run(0);
 }
 
 
