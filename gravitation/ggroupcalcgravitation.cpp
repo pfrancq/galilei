@@ -88,10 +88,9 @@ void GGroupCalcGravitation::Disconnect(GSession* session) throw(GException)
 //-----------------------------------------------------------------------------
 void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
 {
-	unsigned int i,j;
-	GWeightInfos* Ref;
-	GWeightInfo** w;
+	unsigned int i;
 	GWeightInfo* ins;
+	GWeightInfo** w;
 	RCursor<GSubProfile> Sub;
 
 	// Clear the Vector.
@@ -112,25 +111,25 @@ void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
 	for(Sub.Start();!Sub.End();Sub.Next())
 	{
 		// Go trough the words of the current subprofile
-		Ref=Sub();
-		for(j=Ref->NbPtr+1,w=Ref->Tab;--j;w++)
+		RCursor<GWeightInfo> Cur=Sub()->GetWeightInfoCursor();
+		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			ins=Vector.GetInsertPtr<unsigned int>((*w)->GetId());
-			(*ins)+=(*w)->GetWeight();
+			ins=Vector.GetInsertPtr<unsigned int>(Cur()->GetId());
+			(*ins)+=Cur()->GetWeight();
 		}
 	}
 
 	// Copy the information of the relevant subprofile to the group.
-	if(Vector.NbPtr+1>MaxOrderSize)
+	if(Vector.GetNb()+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<unsigned int>((Vector.NbPtr+1)*1.1);
+		MaxOrderSize=static_cast<unsigned int>((Vector.GetNb()+1)*1.1);
 		Order=new GWeightInfo*[MaxOrderSize];
 	}
-	memcpy(Order,Vector.Tab,Vector.NbPtr*sizeof(GWeightInfo*));
-	if(Vector.NbPtr)
-		qsort(static_cast<void*>(Order),Vector.NbPtr,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
-	Order[Vector.NbPtr]=0;
+	Vector.GetTab(Order);
+	if(Vector.GetNb())
+		qsort(static_cast<void*>(Order),Vector.GetNb(),sizeof(GWeightInfo*),GWeightInfos::sortOrder);
+	Order[Vector.GetNb()]=0;
 	if(MaxNonZero)
 	{
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
