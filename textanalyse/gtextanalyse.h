@@ -228,7 +228,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GTextAnalyse(GFactoryDocAnalyse* fac) throw(bad_alloc);
+	GTextAnalyse(GFactoryDocAnalyse* fac) throw(std::bad_alloc);
 
 	/**
 	* Configurations were applied from the factory.
@@ -257,7 +257,7 @@ protected:
 	/**
 	* Verify the size of direct and reallocate when necessary.
 	*/
-	void VerifyDirect(void) throw(bad_alloc);
+	void VerifyDirect(void) throw(std::bad_alloc);
 
 	/**
 	* See if a given word is a valid one, don't content text and numbers that
@@ -268,14 +268,14 @@ protected:
 	/**
 	* Verify the size of direct and reallocate when necessary.
 	*/
-	void VerifyOrder(void) throw(bad_alloc);
+	void VerifyOrder(void) throw(std::bad_alloc);
 
 	/**
 	* Add a word to the document.
 	* @param word           Word to add.
 	* @param weight         Weights of the words added during this analyze.
 	*/
-	void AddWord(const R::RString& word,double weight) throw(bad_alloc);
+	void AddWord(const R::RString& word,double weight) throw(std::bad_alloc);
 
 	/**
 	* This function construct a word.

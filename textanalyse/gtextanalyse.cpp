@@ -58,6 +58,7 @@
 #include <sessions/gstorage.h>
 using namespace R;
 using namespace GALILEI;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
