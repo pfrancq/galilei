@@ -35,6 +35,11 @@
 #define GTextAnalyseH
 
 
+//------------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rdblhashcontainer.h>
+
+
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
