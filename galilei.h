@@ -49,6 +49,7 @@
 #include <rtimedate/rdate.h>
 #include <rxml/rxmltag.h>
 #include <rio/rtextfile.h>
+#include <rmath/random.h>
 
 
 //-----------------------------------------------------------------------------
@@ -186,7 +187,6 @@ class GURLManager;
 // forward class declaration - Test Part
 class GSubjectTree;
 class GIdealGroup;
-class GGroupIdParentId;
 class GGetFeedback;
 class GGroupEvaluate;
 class GGroupEvaluateCursor;
@@ -215,6 +215,7 @@ class GStatisticalParams;
 class GGroupCalcParams;
 class GCalcRelevantParams;
 class GCalcGravitationParams;
+
 
 //-----------------------------------------------------------------------------
 /**
