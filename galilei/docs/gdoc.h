@@ -320,6 +320,11 @@ public:
 	GIWordWeightCursor& GetWordWeightCursor(void);
 
 	/**
+	* Get the information about the words.
+	*/
+	void GetWordWeights(GIWordWeight** &w,unsigned int &nb) const;
+
+	/**
 	* Compute the maximal weights of the index terms of the document.
 	* @return double.
 	*/

@@ -174,6 +174,14 @@ double  GALILEI::GDoc::GetMaxWeight(void) const
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GDoc::GetWordWeights(GIWordWeight** &w,unsigned int &nb) const
+{
+	w=Words->Tab;
+	nb=Words->NbPtr;
+}
+
+
+//-----------------------------------------------------------------------------
 GProfDocCursor& GALILEI::GDoc::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
