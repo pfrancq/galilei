@@ -51,8 +51,9 @@
 
 //---------------------------------------------------------------------------
 // include files for GALILEI
-#include "gfilterhtml.h"
+#include <filters/gfilterhtml.h>
 #include <filters/codetochar.h>
+#include <docs/gdocxml.h>
 using namespace GALILEI;
 
 
@@ -67,7 +68,7 @@ using namespace GALILEI;
 class GALILEI::GFilterHTML::Tag
 {
 public:
-	enum tTag{tNULL,tHTML,tSCRIPT,tHEAD,tTITLE,tMETA,tBODY,tH1,tH2,tH3,tH4,tH5,tH6,tP,tTD};
+	enum tTag{tNULL,tHTML,tSCRIPT,tHEAD,tTITLE,tMETA,tBODY,tLINK,tBASE,tH1,tH2,tH3,tH4,tH5,tH6,tP/*,tTD*/};
 	RString Name;
 	RString XMLName;
 	tTag Type;
@@ -110,9 +111,12 @@ GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 	Tags->InsertPtr(new Tag("H5","docxml:h5",Tag::tH5,false,5,true));
 	Tags->InsertPtr(new Tag("H6","docxml:h6",Tag::tH6,false,6,true));
 	Tags->InsertPtr(new Tag("P","docxml:p",Tag::tP,false,7,true));
-	Tags->InsertPtr(new Tag("TD","docxml:p",Tag::tTD,false,7,true));
-	Tags->InsertPtr(new Tag("LI","docxml:p",Tag::tTD,false,7,true));
+//	Tags->InsertPtr(new Tag("TD","docxml:p",Tag::tTD,false,7,true));
+//	Tags->InsertPtr(new Tag("LI","docxml:p",Tag::tTD,false,7,true));
 	Tags->InsertPtr(new Tag("DIV","docxml:p",Tag::tP,false,7,true));
+	Tags->InsertPtr(new Tag("A","",Tag::tLINK,false,8,true));
+	Tags->InsertPtr(new Tag("BASE","",Tag::tBASE,false,8,true));
+	
 }
 
 
@@ -260,19 +264,23 @@ void GALILEI::GFilterHTML::InitCharContainer(void)
 void GALILEI::GFilterHTML::AnalyseBody(void)
 {
 	RXMLTag* content;
+	RXMLTag* links;        //++ val
 	RXMLTag* act;
 	RXMLTag* Open[9];    // Remember all tag open.
 	RXMLTag** ptr;
 	int Level;
 	char* OldBlock;
+	char* oldParams;
 	char* Ins;
 	int i;
 
 	// Init Part
 	memset(Open,0,9*sizeof(RXMLTag*));
 	Open[0]=content=Doc->GetContent();
+	links= Doc->GetLinks();
 	Level=0;
 	OldBlock=0;
+	oldParams=0;
 	MinOpenLevel=0;
 
 	// Parse it
@@ -283,6 +291,7 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 			Ins=Block;
 			OldBlock=0;
 			Block=Pos;
+
 			// Find the lowest tag open and assign the text to it.
 			for(ptr=&Open[7],Level=7;!(*ptr);ptr--,Level--);
 			act=(*ptr);
@@ -310,7 +319,12 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 					act=0;
 			}
 			if((CurTag->Ins)&&(CurTag->Type!=Tag::tBODY))
-				Doc->AddNode(*ptr,Open[CurTag->Level]=new RXMLTag(CurTag->XMLName));
+				if (CurTag->Type == Tag::tLINK)                                         //++ val
+				{    
+					oldParams= Params;
+				}
+				else                                                                   //++ val
+					Doc->AddNode(*ptr,Open[CurTag->Level]=new RXMLTag(CurTag->XMLName));
 			else
 			{
 				OldBlock=0;
@@ -324,7 +338,14 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 		}
 		if(Ins)
 		{
+			if (CurTag->Type == Tag::tLINK)
+			{
+				AnalyseLink(oldParams,Ins);
+			}
+			else
+			{
 			AnalyzeBlock(Ins,act);
+			}
 		}
 		// All the tag lower than 'Level' are closed.
 		for(ptr=&Open[7],i=7;i>=Level;ptr--,i--)
@@ -336,8 +357,25 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 
 	// Delete all the empty tags of the content.
 	content->DeleteEmptyTags(Doc);
+	links->DeleteEmptyTags(Doc);
 }
 
+
+//---------------------------------------------------------------------------
+void GALILEI::GFilterHTML::AnalyseLink(char* params,char* content,bool use)
+{
+	if(!use) return;
+	RXMLTag* metalink;
+
+	metalink = AnalyseLinkParams(params);
+
+	if (metalink)
+	{
+		Doc->AddFormat("text/html",metalink);
+		AnalyzeBlock(content,Doc->AddTitle(metalink));
+	}
+
+}
 
 //---------------------------------------------------------------------------
 void GALILEI::GFilterHTML::AnalyseHeader(void)
@@ -347,10 +385,12 @@ void GALILEI::GFilterHTML::AnalyseHeader(void)
 	char* OldBlock;
 	char* OldParams;
 
+
 	// Init Part.
 	meta=Doc->GetMetaData();
 	Doc->AddIdentifier(Doc->GetURL());
 	Doc->AddFormat("text/html");
+
 
 	// Parse it.
 	NextValidTag();
@@ -363,6 +403,9 @@ void GALILEI::GFilterHTML::AnalyseHeader(void)
 				break;
 			case Tag::tMETA:
 				ReadMetaTag(OldParams,meta);
+				break;
+			case Tag::tBASE:
+//				AnalyseBase(OldParams,meta);
 				break;
 			default:
 				break;
@@ -380,8 +423,286 @@ void GALILEI::GFilterHTML::AnalyseHeader(void)
 	}
 }
 
+////---------------------------------------------------------------------------
+//void GALILEI::GFilterHTML::AnalyseBase(char* params,meta)
+//{
+//	char* ptr;
+//	char delimiter;
+//	char* content;
+//
+//	if (!params) return;
+//	ptr= params;
+//
+//		// Read the name of the tag
+//	while ((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
+//		(*(ptr++))=RString::ToUpper(*ptr);
+//	bSpaces=isspace(*ptr);
+//	(*(ptr++))=0;
+//	if (bSpaces)
+//	{
+//		while((*ptr)&&((*ptr)!='='))
+//			ptr++;
+//		ptr++;    // Skip '=';
+//	}
+//	if((!(*ptr))||(strcmp(params,"HREF"))) return ;      //!!!
+//
+//	// Skip spaces and read the delimiter which must be a ' or a "
+//	while((*ptr)&&(isspace(*ptr)))
+//		ptr++;
+//	delimiter=(*(ptr++));
+//	if((delimiter!='\'')&&(delimiter!='"')) return;
+//
+//   // Read the content of HREF or CLASS
+//	content=ptr;
+//	while((*ptr)&&((*ptr)!=delimiter))
+//		ptr++ ;
+//
+//	(*(ptr++))=0;  // Skip the second delimiter
+//
+//	 if ((!strcmp(params,"HREF"))
+//	 {
+//		 Doc->AddBase
+//	 }
+//}
 
 //---------------------------------------------------------------------------
+RXMLTag* GALILEI::GFilterHTML::AnalyseLinkParams(char* params)
+{
+	RXMLTag* metaLink;
+
+	char* ptr;
+	char delimiter;
+	//char* name // Name of the tag
+	char* content; // content of the tag
+  char* urlG; // url of the link
+	bool bSpaces,ancre;
+	
+
+
+	metaLink=0;
+	if (!params) return metaLink ;
+	ptr= params;
+
+	while (*(ptr))
+	{
+		ancre=false;
+
+		// Read the name of the tag
+		while ((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
+			(*(ptr++))=RString::ToUpper(*ptr);
+		bSpaces=isspace(*ptr);
+		(*(ptr++))=0;
+		if (bSpaces)
+		{
+			while((*ptr)&&((*ptr)!='='))
+				ptr++;
+			ptr++;    // Skip '=';
+		}
+
+		// The name must be 'HREF' or 'CLASS'
+		if((!(*ptr))||((strcmp(params,"HREF"))&&(strcmp(params,"CLASS")))) return metaLink;
+
+		// Skip spaces and read the delimiter which must be a ' or a "
+		while((*ptr)&&(isspace(*ptr)))
+			ptr++;
+		delimiter=(*(ptr++));
+		if((delimiter!='\'')&&(delimiter!='"')) return metaLink;
+
+		// Read the content of HREF or CLASS
+		content=ptr;
+		while((*ptr)&&((*ptr)!=delimiter))
+		{
+			if ((*ptr) == '#')   // verify whether the link point to the actuel page
+				ancre= true;
+			ptr++ ;
+		}
+		(*(ptr++))=0;  // Skip the second delimiter
+
+			//if the link is a local anchor or a link to a mail -> drop this link
+		if (ancre)
+		{
+			return metaLink ;
+		}
+		if  (!strncasecmp(content,"mailto:",7))
+		{
+			return metaLink;
+		}
+		if ((!strcmp(params,"HREF"))&&(!ancre))
+		{
+			if (!metaLink)  metaLink = Doc->AddLink();
+			urlG= ConstructURL(content);
+			Doc->AddIdentifier(urlG,metaLink);
+		}
+		else if (!strcmp(params,"CLASS"))
+		{
+			if (!metaLink)  metaLink = Doc->AddLink();
+			Doc->AddType(content,metaLink);
+		}
+
+		//skip spaces
+		while (*(ptr)&&(isspace(*ptr)))
+			ptr++;
+		params=ptr;
+		ptr=params;
+	}
+	return metaLink;
+}
+
+
+//---------------------------------------------------------------------------
+char* GALILEI::GFilterHTML::ConstructURL(char* u)
+{
+
+	char* urlG=0;      // the URL to  be returned
+	char* ptr=0;
+	char* base=0;
+	char* endBase=0;
+	
+	RString urlTmp;
+
+	// var initialisation
+	urlTmp = Doc->GetURL();
+	base = new char[urlTmp.GetLen()+1];
+	strcpy(base,urlTmp);
+  urlG=new char[200];
+
+	endBase= base;
+	// find end of string
+	while (*endBase)
+	{
+		endBase++;
+	}
+  // find the URL base (base -fileName ex:  /var/www/.../content/file.html -> /var/www/.../content )
+	while ((*endBase) != '/')
+	{
+		endBase--;
+	}
+	//base= endBase;
+	(*endBase)=0;           
+
+	ptr=u;
+
+	// Skip spaces
+	while((*ptr)&&(isspace(*ptr)))
+		ptr++;
+	// if complete url -> no change
+	if (!strncmp(ptr,"http://",7))
+	{
+		urlG=ptr;
+		return urlG;
+	}
+	if (!strncmp(ptr,"ftp://",6))
+	{
+		urlG = ptr;
+		return urlG;
+	}
+
+	// if url begins with a '.'
+	while ((*ptr)== '.' )
+	{
+		ptr++;
+		// this directory
+		if ((*ptr)== '/')
+		{
+			ptr++;
+		}
+		else if (!strncmp(ptr,"./",2))
+		{
+			ptr+=2;
+			while ((*endBase)!='/')
+			{
+				endBase--;
+			}
+			(*endBase)=0;
+		}
+	}
+
+	strcpy(urlG,base);
+	strcat(urlG,"/");
+	strcat(urlG,ptr);
+	delete[] base;
+
+	return urlG;
+}
+
+
+
+//---------------------------------------------------------------------------
+//bool GALILEI::GFilterHTML::AnalyseLinkParams(char* params,RXMLTag* metaLink)
+//{
+//	char* ptr;
+//	char delimiter;
+//	//char* name // Name of the tag
+//	char* content; // content of the tag
+//	bool bSpaces,ancre;
+//
+//	if (!params) return false;
+//	ptr= params;
+//
+//	while (*(ptr))
+//	{
+//		ancre=false;
+//
+//		// Read the name of the tag
+//		while ((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
+//			(*(ptr++))=RString::ToUpper(*ptr);
+//		bSpaces=isspace(*ptr);
+//		(*(ptr++))=0;
+//		if (bSpaces)
+//		{
+//			while((*ptr)&&((*ptr)!='='))
+//				ptr++;
+//			ptr++;    // Skip '=';
+//		}
+//
+//		// The name must be 'HREF' or 'CLASS'
+//		if((!(*ptr))||((strcmp(params,"HREF"))&&(strcmp(params,"CLASS")))) return false;
+//
+//		// Skip spaces and read the delimiter which must be a ' or a "
+//		while((*ptr)&&(isspace(*ptr)))
+//			ptr++;
+//		delimiter=(*(ptr++));
+//		if((delimiter!='\'')&&(delimiter!='"')) return;
+//
+//		// Read the content of HREF or CLASS
+//		content=ptr;
+//		while((*ptr)&&((*ptr)!=delimiter))
+//		{
+//			if ((*ptr) == '#')   // verify whether the link point to the actuel page
+//				ancre= true;
+//			ptr++ ;
+//		}
+//		(*(ptr++))=0;  // Skip the second delimiter
+//
+//			//if the link is a local anchor or a link to a mail -> drop this link
+//		if (ancre)
+//		{
+//			return false;
+//		}
+//		else if  (!strncasecmp(content,"mailto:",7))
+//		{
+//			return false;
+//		}
+//		if ((!strcmp(params,"HREF"))&&(!ancre))
+//		{
+//			Doc->AddIdentifier(content,metaLink);
+//		}
+//		else if (!strcmp(params,"CLASS"))
+//		{
+//			Doc->AddType(content,metaLink);
+//		}
+//
+//		//skip spaces
+//		while (*(ptr)&&(isspace(*ptr)))
+//			ptr++;
+//		params=ptr;
+//		ptr=params;
+//	}
+//	return true;
+//}
+
+//------------------------------------------------------------------------
+// Nouvelle version developpe par val
 void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 {
 	char* ptr;
@@ -404,8 +725,8 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 		ptr++;    // Skip '=';
 	}
 
-	// The name must be 'HTTP-EQUIV'
-	if((!(*ptr))||(strcmp(params,"HTTP-EQUIV"))) return;
+	// The name must be 'HTTP-EQUIV' or 'NAME'
+	if((!(*ptr))||((strcmp(params,"HTTP-EQUIV"))&&(strcmp(params,"NAME")))) return;
 
 	// Skip spaces and read the delimiter which must be a ' or a "
 	while((*ptr)&&(isspace(*ptr)))
@@ -413,7 +734,7 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 	delimiter=(*(ptr++));
 	if((delimiter!='\'')&&(delimiter!='"')) return;
 
-	// Read the type of HTTP-EQUIV
+	// Read the type of HTTP-EQUIV or NAME
 	name=ptr;
 	while((*ptr)&&((*ptr)!=delimiter))
 		(*(ptr++))=RString::ToUpper(*ptr);
@@ -442,15 +763,123 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 		ptr++;
 	(*(ptr++))=0;  // Skip the second delimiter
 
-	if(!strcmp(name,"DESCRIPTION"))
+
+	if (!strcmp(params,"HTTP-EQUIV")) //metaData with parameter "HTTP-EQUIV"
 	{
-		AnalyzeBlock(content,Doc->AddSubject());
+		if (!strcmp(name,"REFRESH"))
+		{
+			//Doc->AddType(content)   // voir comment gerer les refresh!!
+		}
 	}
-	else if(!strcmp(name,"KEYWORDS"))
+	else if (!strcmp(params,"NAME"))  //metaData with parameter "NAME"
 	{
-		AnalyzeKeywords(content,',',Doc->AddSubject());
+		if (!strcmp(name,"DESCRIPTION"))
+		{
+			AnalyzeBlock(content,Doc->AddDescription());
+		}
+		else if (!strcmp(name,"KEYWORDS"))
+		{
+			AnalyzeKeywords(content,',',Doc->AddSubject());
+		}
+		else if (!strcmp(name,"TITLE"))
+		{
+			AnalyzeBlock(content,Doc->AddTitle());
+		}
+		else if (!strcmp(name,"AUTHOR"))
+		{
+			Doc->AddCreator(content);
+		}
+		else if (!strcmp(name,"GENARATOR"))
+		{
+			Doc->AddContributor(content);
+		}
+		else if (!strcmp(name,"COPYRIGHT"))
+		{
+			Doc->AddRights(content);
+		}
 	}
+	
+//	if(!strcmp(name,"DESCRIPTION"))
+//	{
+//		AnalyzeBlock(content,Doc->AddSubject());
+//	}
+//	else if(!strcmp(name,"KEYWORDS"))
+//	{
+//		AnalyzeKeywords(content,',',Doc->AddSubject());
+//	}
 }
+
+
+//---------------------------------------------------------------------------
+//void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
+//{
+//	char* ptr;
+//	char delimiter;
+//	char* name;    // Name of the tag.
+//	char* content; // Content of the tag.
+//	bool bSpaces;
+//
+//	// Read the name of the META Data
+//	if(!params) return;
+//	ptr=params;
+//	while((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
+//		(*(ptr++))=RString::ToUpper(*ptr);
+//	bSpaces=isspace(*ptr);
+//	(*(ptr++))=0;
+//	if(bSpaces)
+//	{
+//		while((*ptr)&&((*ptr)!='='))
+//			ptr++;
+//		ptr++;    // Skip '=';
+//	}
+//
+//	// The name must be 'HTTP-EQUIV'
+//	if((!(*ptr))||(strcmp(params,"HTTP-EQUIV"))) return;
+//
+//	// Skip spaces and read the delimiter which must be a ' or a "
+//	while((*ptr)&&(isspace(*ptr)))
+//		ptr++;
+//	delimiter=(*(ptr++));
+//	if((delimiter!='\'')&&(delimiter!='"')) return;
+//
+//	// Read the type of HTTP-EQUIV
+//	name=ptr;
+//	while((*ptr)&&((*ptr)!=delimiter))
+//		(*(ptr++))=RString::ToUpper(*ptr);
+//	(*(ptr++))=0;  // Skip the second delimiter
+//
+//	// Search for 'CONTENT'
+//	while((*ptr)&&(RString::ToUpper(*ptr)!='C'))
+//		ptr++;
+//	if((!(*ptr))||strncasecmp(ptr,"CONTENT",7)) return;
+//	ptr+=7;
+//
+//	// Search '='
+//	while((*ptr)&&((*ptr)!='='))
+//		ptr++;
+//	ptr++;
+//
+//	// Skip spaces and read the delimiter which must be a ' or a "
+//	while((*ptr)&&(isspace(*ptr)))
+//		ptr++;
+//	delimiter=(*(ptr++));
+//	if((delimiter!='\'')&&(delimiter!='"')) return;
+//
+//	// Read the type of HTTP-EQUIV
+//	content=ptr;
+//	while((*ptr)&&((*ptr)!=delimiter))
+//		ptr++;
+//	(*(ptr++))=0;  // Skip the second delimiter
+//
+//	if(!strcmp(name,"DESCRIPTION"))
+//	{
+//		AnalyzeBlock(content,Doc->AddSubject());
+//	}
+//	else if(!strcmp(name,"KEYWORDS"))
+//	{
+//		AnalyzeKeywords(content,',',Doc->AddSubject());
+//	}
+//}
 
 
 //---------------------------------------------------------------------------
@@ -596,6 +1025,8 @@ beginread:
 		if(bParams)
 		{
 			Params=Pos;
+			//cout << "les parametres: "<< Params<<endl;  //+++ val
+			//cerr << " les parametres "<< Params<<"   "<< *Params <<endl;
 			while((*Pos)&&((*Pos)!='>')&&(!(((*Pos)=='/')&&((*(Pos+1))=='>'))))
 			{
 				if((*Pos)=='&')
