@@ -359,6 +359,12 @@ public:
 		void SetStaticLang(bool s) {StaticLang=s;}
 
 		/**
+		* Get the minimum percentage of stop words.
+		* @returns Double.
+		*/
+		double GetMinStopWords(void) const {return(MinStopWords);}
+
+		/**
 		* Set the minimum percentage of stop words.
 		* @param min        Minimal Percentage.
 		*/
