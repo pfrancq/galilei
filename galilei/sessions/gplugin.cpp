@@ -166,7 +166,8 @@ void GALILEI::FindPlugins(const RString dir,RContainer<RString,true,false>& plug
 		// Must be a library finishing with '.so'
 		if(Name.GetLen()<3)
 			continue;
-		if(Name.FindStr(".so",-1)==-1) continue;
+		if(Name.FindStr(".so",-1)==-1)
+			continue;
 
 		// Is it a dialog plug-in?
 		if(Name.FindStr("_dlg.so",-1)!=-1)
@@ -191,7 +192,7 @@ RString GALILEI::FindPlugin(const RString plugin,const RContainer<R::RString,tru
 	RCursor<RString> Cur(plugins);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if(Cur()->FindStr(plugin,-plugin.GetLen())!=-1)
+		if(Cur()->FindStr(plugin,-1)!=-1)
 			return(*Cur());
 	}
 	return(ret);
