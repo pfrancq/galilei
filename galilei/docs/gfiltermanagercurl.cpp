@@ -85,8 +85,8 @@ int WriteTmpFile(void *buffer, size_t size, size_t nmemb, void *stream)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GURLManagerCURL::GURLManagerCURL(void)
-	: GURLManager()
+GALILEI::GURLManagerCURL::GURLManagerCURL(const char* path)
+	: GURLManager(path)
 {
 	Lib = curl_easy_init();
 }
@@ -112,13 +112,6 @@ void GALILEI::GURLManagerCURL::Download(const char* URL,RString& tmpFile) throw(
 		fclose(tmpfile.stream);
 	if(err)
 		throw GException(RString("Can't download url")+URL);
-}
-
-
-//-----------------------------------------------------------------------------
-GMIMEFilter* GALILEI::GURLManagerCURL::DetermineMIMEType(const char*)
-{
-	return(0);
 }
 
 

@@ -75,6 +75,15 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
+// forward class declaration - Filter and Download Part
+class GFilter;
+class GFilterCursor;
+class GFactoryFilter;
+class GFactoryFilterCursor;
+class GURLManager;
+
+
+//-----------------------------------------------------------------------------
 // forward class declaration - Information Part
 class GInfo;
 class GIWord;
@@ -111,6 +120,12 @@ class GDocsLang;
 class GDocProfSim;
 class GDocProfSims;
 class GWordsClustering;
+
+
+//-----------------------------------------------------------------------------
+// forward class declaration - Link Part
+class GLink;
+class GLinkCursor;
 class GLinkCalc;
 class GLinkCalcCursor;
 
@@ -188,12 +203,6 @@ class GPrgVar;
 class GSlot;
 
 
-//-----------------------------------------------------------------------------
-// forward class declaration - Interface Part
-class GFilter;
-class GFilterCursor;
-class GMIMEFilter;
-class GURLManager;
 
 
 //-----------------------------------------------------------------------------

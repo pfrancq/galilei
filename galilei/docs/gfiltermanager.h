@@ -48,21 +48,12 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-
+//#include <sessions/gpluginmng.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// Forward class declaration
-class GSession;
-class GDoc;
-class GDocXML;
-class GFilter;
-class GMIMEFilter;
 
 
 //-----------------------------------------------------------------------------
@@ -73,8 +64,9 @@ class GMIMEFilter;
 * @author Pascal Francq
 * @short Generic URL Manager.
 */
-class GURLManager
+class GURLManager : public R::RContainer<GFactoryFilter,unsigned int,true,true>
 {
+	class GMIMEFilter;
 protected:
 
 	/**
@@ -82,17 +74,13 @@ protected:
 	*/
 	R::RContainer<GMIMEFilter,unsigned int,true,true> MIMES;
 
-	/**
-	* List of all filters avalaible.
-	*/
-	R::RContainer<GFilter,unsigned int,true,true> Filters;
-
 public:
 
 	/**
 	* Construct a URL manager.
+	* @param path            Path to find the plugins.
 	*/
-	GURLManager(void);
+	GURLManager(const R::RString& path) throw(GException);
 
 protected:
 
@@ -109,7 +97,7 @@ protected:
 	* @param tmpFile        Temporary file created.
 	* @return Pointer to a GMIMEFilter.
 	*/
-	virtual GMIMEFilter* DetermineMIMEType(const char* tmpfile);
+	virtual const char* DetermineMIMEType(const char* tmpfile);
 
 	/**
 	* Delete the file locally.
@@ -135,16 +123,22 @@ public:
 	void AddMIME(const char* mime,GFilter* f);
 
 	/**
+	* Delete all the mime type related to a filter.
+	* @param f              Filter.
+	*/
+	void DelMIMES(GFilter* f);
+
+	/**
 	* Get the filter for a specific mime type.
 	* @param mime           Name of the mimetype.
 	* @return Pointer to a GMIMEFilter.
 	*/
-	GMIMEFilter* GetMIMEType(const char* mime) const;
+	const char* GetMIMEType(const char* mime) const;
 
 	/**
 	* Get a cursor over the filters of the system.
 	*/
-	GFilterCursor& GetFiltersCursor(void);
+	GFactoryFilterCursor& GetFiltersCursor(void);
 
 	/**
 	* Destructor of URL manager.

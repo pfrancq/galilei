@@ -55,33 +55,13 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GFilter::GFilter(GURLManager*,const char* name,const char* mimes,const char* ver)
-	: Doc(0), Name(name), MIMES(mimes), Version(strlen(ver))
+GALILEI::GFilter::GFilter(GFactoryFilter* fac)
+	: GPlugin<GFactoryFilter>(fac), Doc(0)
 {
-	const char* ptr=ver;
-	const char* begin;
-	int len;
-
-	if((*ptr)=='$')
-	{
-		// Version is in CVS format
-		while(!isdigit(*ptr))
-			ptr++;
-		begin=ptr;
-		len=0;
-		while((*ptr)!=' ')
-		{
-			ptr++;
-			len++;
-		}
-		Version.Copy(begin,len);
-	}
-	else
-		Version=ver;
 }
 
 
-//-----------------------------------------------------------------------------
+// //-----------------------------------------------------------------------------
 void GALILEI::GFilter::AddMIME(GURLManager* mng,const char* name)
 {
 	if(!mng) return;

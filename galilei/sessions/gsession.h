@@ -689,14 +689,14 @@ public:
 	/**
 	* Get a cursor over the filters of the system.
 	*/
-	GFilterCursor& GetFiltersCursor(void);
+	GFactoryFilterCursor& GetFiltersCursor(void);
 
 	/**
 	* Get the filter for a specific mime type.
 	* @param mime           Name of the mimetype.
 	* @return Pointer to a GMIMEFilter.
 	*/
-	GMIMEFilter* GetMIMEType(const char* mime) const;
+	const char* GetMIMEType(const char* mime) const;
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this

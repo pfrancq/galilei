@@ -71,7 +71,6 @@ using namespace R;
 #include <tests/ggroupsevaluate.h>
 #include <tests/ggroupevaluatedoc.h>
 #include <groups/gsubjecttree.h>
-#include <filters/gmimefilter.h>
 #include <filters/gurlmanager.h>
 #include <groups/gsubject.h>
 #include <groups/ggroup.h>
@@ -681,7 +680,7 @@ void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException
 	{
 		docid=atoi(quer[0]);
 		lang=GetLang(quer[4]);
-		InsertDoc(doc=new GDocVector(quer[1],quer[2],docid,lang,Mng->GetMIMEType(quer[3]),quer[5],quer[6],atoi(quer[7]),atoi(quer[8]),atoi(quer[9]),atoi(quer[10]),atoi(quer[11])));
+		InsertDoc(doc=new GDocVector(quer[1],quer[2],docid,lang,quer[3],quer[5],quer[6],atoi(quer[7]),atoi(quer[8]),atoi(quer[9]),atoi(quer[10]),atoi(quer[11])));
 	}
 
 	// Load the links of the document loaded.
@@ -753,7 +752,7 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 	sprintf(sSql,"SELECT htmlid,updated FROM htmls WHERE htmlid=LAST_INSERT_ID()");
 	RQuery selectdoc(this,sSql);
 	selectdoc.Start();
-	doc=new GDocVector(url,name,strtoul(selectdoc[0],0,10),0,Mng->GetMIMEType(mime),selectdoc[1],0,0,0,0,0,0);
+	doc=new GDocVector(url,name,strtoul(selectdoc[0],0,10),0,mime,selectdoc[1],0,0,0,0,0,0);
 //	InsertDoc(doc);
 	return(doc);
 }
@@ -815,7 +814,7 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 	char sSql[1000];
 	const char* l=0;
 	unsigned int id;
-	GMIMEFilter* f;
+	const char* f;
 	id=doc->GetId();
 	const char* fn;
 	char slang[5];
@@ -849,7 +848,7 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 	// Update document
 	f=doc->GetMIMEType();
 	if(f)
-		fn=ValidSQLValue(f->GetName(),smime);
+		fn=ValidSQLValue(f,smime);
 	else
 		fn=SQLNULL;
 	sprintf(sSql,"UPDATE htmls SET "
@@ -1008,7 +1007,7 @@ void GALILEI::GSessionMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GExcepti
 	char sSql[1000];
 	const char* l=0;
 	unsigned int id;
-	GMIMEFilter* f;
+	const char* f;
 	id=doc->GetId();
 	const char* fn;
 	char slang[5];
@@ -1040,7 +1039,7 @@ void GALILEI::GSessionMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GExcepti
 	// Update document
 	f=doc->GetMIMEType();
 	if(f)
-		fn=ValidSQLValue(f->GetName(),smime);
+		fn=ValidSQLValue(f,smime);
 	else
 		fn=SQLNULL;
 	sprintf(sSql,"UPDATE htmls SET "

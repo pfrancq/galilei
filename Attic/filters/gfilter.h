@@ -40,14 +40,26 @@
 
 
 //-----------------------------------------------------------------------------
+// include file for LibTool--
+#include <ltmm/loader.hh>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <docs/gdocxml.h>
+#include <sessions/gplugin.h>
+#include <filters/gurlmanager.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+// API VERSION
+#define API_FILTER_VERSION "1.0"
 
 
 //-----------------------------------------------------------------------------
@@ -57,8 +69,8 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Filter.
 */
-class GFilter
-{	
+class GFilter : public GPlugin<GFactoryFilter>
+{
 protected:
 
 	/**
@@ -66,61 +78,13 @@ protected:
 	*/
 	GDocXML* Doc;
 
-	/**
-	* Name of the filter.
-	*/
-	R::RString Name;
-
-	/**
-	* Mimetypes handle by the Filters separated by a semi-colon.
-	*
-	* Example: text/html;text/xml
-	*/
-	R::RString MIMES;
-
-	/**
-	* Version of the filter.
-	*/
-	R::RString Version;
-
 public:
 
 	/**
 	* Construct the filter for a specific document.
-	* @param mng            Manager.
-	* @param name           Name of the filter.
-	* @param mimes          MIME Types of the filter.
-	* @param vers           Version of the filter.
+	* @param fac            Factory.
 	*/
-	GFilter(GURLManager* mng,const char* name,const char* mimes,const char* ver);
-
-	/**
-	* Compare method used by RContainer.
-	*/
-	int Compare(const GFilter* ) const {return(-1);}
-
-	/**
-	* Compare method used by RContainer.
-	*/
-	int Compare(const GFilter& ) const {return(-1);}
-
-	/**
-	* Get the name of the filter.
-	* @returns Pointer to a C String.
-	*/
-	const char* GetName(void) const {return(Name());}
-
-	/**
-	* Get the Mime Types of the filter.
-	* @returns Pointer to a C String.
-	*/
-	const char* GetMIMES(void) const {return(MIMES());}
-
-	/**
-	* Get the version of the filter.
-	* @returns Pointer to a C String.
-	*/
-	const char* GetVersion(void) const {return(Version());}
+	GFilter(GFactoryFilter* fac);
 
 protected:
 
@@ -172,11 +136,96 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GFactoryFilter : public GFactoryPlugin<GFactoryFilter,GFilter,GURLManager>
+{
+public:
+	/**
+	* Constructor.
+	* @param mng             Manager of the plugin.
+	* @param n               Name of the Factory/Plugin.
+	* @param f               Lib of the Factory/Plugin.
+	*/
+	GFactoryFilter(GURLManager* mng,const char* n,const char* f) : GFactoryPlugin<GFactoryFilter,GFilter,GURLManager>(mng,n,f) {}
+
+	/**
+	* Get the API Version of the plugin.
+	* @return C String.
+	*/
+	virtual const char* GetAPIVersion(void) const {return(API_FILTER_VERSION);}
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GFactoryFilter(void) {}
+};
+
+
+//-----------------------------------------------------------------------------
+typedef GFactoryFilter*(*GFactoryFilterInit)(GURLManager*,const char*);
+
+
+//------------------------------------------------------------------------------
+#define CREATE_FILTER_FACTORY(name,C,about,config)                             \
+class TheFactory : public GFactoryFilter                                       \
+{                                                                              \
+private:                                                                       \
+	static GFactoryFilter* Inst;                                               \
+	TheFactory(GURLManager* mng,const char* l) : GFactoryFilter(mng,name,l)    \
+	{                                                                          \
+		C::CreateParams(this);                                                 \
+	}                                                                          \
+	virtual ~TheFactory(void) {}                                               \
+public:                                                                        \
+	static GFactoryFilter* CreateInst(GURLManager* mng,const char* l)          \
+	{                                                                          \
+		if(!Inst)                                                              \
+			Inst = new TheFactory(mng,l);                                      \
+		return(Inst);                                                          \
+	}                                                                          \
+	virtual void About(void) {C::About();}                                     \
+	virtual bool HasAbout(void) const {return(about);}                         \
+	virtual void Configure(void) {C::Configure(this);}                         \
+	virtual bool HasConfigure(void) const {return(config);}                    \
+	virtual void Create(void) throw(GException)                                \
+	{                                                                          \
+		if(Plugin) return;                                                     \
+		Plugin=new C(this);                                                    \
+		Plugin->ApplyConfig();                                                 \
+	}                                                                          \
+	virtual void Delete(void) throw(GException)                                \
+	{                                                                          \
+		if(!Plugin) return;                                                    \
+		Mng->DelMIMES(Plugin);                                                 \
+		delete Plugin;                                                         \
+		Plugin=0;                                                              \
+	}                                                                          \
+};                                                                             \
+                                                                               \
+GFactoryFilter* TheFactory::Inst = 0;                                          \
+                                                                               \
+extern "C"                                                                     \
+{                                                                              \
+	GFactoryFilter* FactoryCreate(GURLManager* mng,const char* l)              \
+	{                                                                          \
+		return(TheFactory::CreateInst(mng,l));                                 \
+	}                                                                          \
+}
+
+
+//------------------------------------------------------------------------------
 /**
 * The GFilterCursor class provides a way to go trough a set of filters.
-* @short SubProfiles Cursor
+* @short Filters Cursor
 */
 CLASSCURSOR(GFilterCursor,GFilter,unsigned int)
+
+
+//------------------------------------------------------------------------------
+/**
+* The GFactoryFilterCursor class provides a way to go trough a set of factories.
+* @short Filters Factories Cursor
+*/
+CLASSCURSOR(GFactoryFilterCursor,GFactoryFilter,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

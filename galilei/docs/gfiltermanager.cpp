@@ -37,24 +37,42 @@
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
+#include <stdexcept>
+#include <dirent.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <filters/gurlmanager.h>
-#include <filters/gmimefilter.h>
 #include <filters/gfilter.h>
-#include <filters/gfilteremail.h>
-#include <filters/gfilterhtml.h>
-#include <filters/gfilterreu.h>
-#include <filters/gfilterxml.h>
-#include <filters/gfiltertxt.h>
-#include <filters/gfiltersgml.h>
 #include <docs/gdocxml.h>
 #include <docs/gdoc.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
+using namespace ltmm;
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class GURLManager::GMIMEFilter
+//
+//-----------------------------------------------------------------------------
+
+
+class GURLManager::GMIMEFilter
+{
+public:
+	RString Name;
+	GFilter* Filter;
+
+	GMIMEFilter(const char* n,GFilter* f) : Name(n), Filter(f) {}
+	int Compare(const GMIMEFilter* f) const {return(Name.Compare(f->Name));}
+	int Compare(const GMIMEFilter& f) const {return(Name.Compare(f.Name));}
+	int Compare(const R::RString& t) const {return(Name.Compare(t));}
+	int Compare(const char* t) const {return(Name.Compare(t));}
+};
 
 
 
@@ -65,15 +83,39 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GURLManager::GURLManager(void)
-	: MIMES(50,25), Filters(50,25)
+GALILEI::GURLManager::GURLManager(const RString& path) throw(GException)
+	: R::RContainer<GFactoryFilter,unsigned int,true,true>(10,5), MIMES(50,25)
 {
-	new GFilterHTML(this);
-	new GFilterEMail(this);
-	new GFilterReu(this);
-	new GFilterXML(this);
-	new GFilterSGML(this);
-	new GFilterTXT(this);
+	DIR* dp;
+	struct dirent* ep;
+	RString Path(path);
+	bool Problem=false;
+	RString Msg;
+
+	try
+	{
+		loader<>& l=loader<>::instance();
+		Path+="/filters";
+		l.addto_search_path(Path());
+		dp=opendir(Path);
+		if(!dp) return;
+		while((ep=readdir(dp)))
+		{
+			if(strcmp(&ep->d_name[strlen(ep->d_name)-3],".la")) continue;
+			handle<>& myhandle = l.load(ep->d_name);
+			symbol* myinit   = myhandle.find_symbol("FactoryCreate");
+			GFactoryFilter* myfactory = ((GFactoryFilterInit)(*(*myinit)))(this,ep->d_name);
+			if(strcmp(API_FILTER_VERSION,myfactory->GetAPIVersion()))
+				throw GException("Plugin not compatible with API Version");
+			InsertPtr(myfactory);
+			myfactory->Create();
+		}
+		closedir(dp);
+	}
+	catch(std::exception& e)
+	{
+		throw(GException(e.what()));
+	}
 }
 
 
@@ -84,7 +126,7 @@ void GALILEI::GURLManager::Download(const char* /*URL*/,RString& /*tmpFile*/) th
 
 
 //-----------------------------------------------------------------------------
-GMIMEFilter* GALILEI::GURLManager::DetermineMIMEType(const char* /*tmpfile*/)
+const char* GALILEI::GURLManager::DetermineMIMEType(const char* /*tmpfile*/)
 {
 	return(0);
 }
@@ -107,6 +149,7 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 	bool Dwn;
 	bool Url;
 	GMIMEFilter* f=0;
+	const char* mime;
 
 	// Look for the protocol
 	ptr=doc->GetURL();
@@ -152,19 +195,23 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 	}
 
 	// Verify if the MIME type is defined -> if not try to guess
-	f=doc->GetMIMEType();
-	if(!f)
+	mime=doc->GetMIMEType();
+	if(!mime)
 	{
-		f=DetermineMIMEType(tmpFile());
-		doc->SetMIMEType(f);
+		mime=DetermineMIMEType(tmpFile());
+		doc->SetMIMEType(mime);
 	}
 
 	// Create a DocXML.
 	xml=new GDocXML(doc->GetURL(),tmpFile());
 
 	// If MIME type defined -> analyze it.
-	if(f)
-		f->GetFilter()->Analyze(xml);
+	if(mime)
+	{
+		f=MIMES.GetPtr<const char*>(mime);
+		if(f)
+			f->Filter->Analyze(xml);
+	}
 
 	// Delete it
 	if(Dwn)
@@ -178,25 +225,45 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GURLManager::AddMIME(const char* mime,GFilter* f)
 {
-	if(!Filters.IsIn(f))
-		Filters.InsertPtr(f);
 	MIMES.InsertPtr(new GMIMEFilter(mime,f));
 }
 
 
 //-----------------------------------------------------------------------------
-GMIMEFilter* GALILEI::GURLManager::GetMIMEType(const char* mime) const
+void GALILEI::GURLManager::DelMIMES(GFilter* f)
 {
-	if(!mime) return(0);
-	return(MIMES.GetPtr<const char*>(mime));
+	RContainer<GMIMEFilter,unsigned int,false,false> Rem(5,5);
+
+	// Find All MIMES types to deleted
+	for(MIMES.Start();!MIMES.End();MIMES.Next())
+	{
+		if(MIMES()->Filter==f)
+			Rem.InsertPtr(MIMES());
+	}
+
+	// Delete all MIMES
+	for(Rem.Start();!Rem.End();Rem.Next())
+		MIMES.DeletePtr(Rem());
 }
 
 
 //-----------------------------------------------------------------------------
-GFilterCursor& GALILEI::GURLManager::GetFiltersCursor(void)
+const char* GALILEI::GURLManager::GetMIMEType(const char* mime) const
 {
-	GFilterCursor *cur=GFilterCursor::GetTmpCursor();
-	cur->Set(Filters);
+	GMIMEFilter* fil;
+
+	if(!mime) return(0);
+	fil=MIMES.GetPtr<const char*>(mime);
+	if(!fil) return(0);
+	return(fil->Name());
+}
+
+
+//-----------------------------------------------------------------------------
+GFactoryFilterCursor& GALILEI::GURLManager::GetFiltersCursor(void)
+{
+	GFactoryFilterCursor *cur=GFactoryFilterCursor::GetTmpCursor();
+	cur->Set(this);
 	return(*cur);
 }
 

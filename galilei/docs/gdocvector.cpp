@@ -57,7 +57,6 @@ using namespace R;
 #include <langs/gword.h>
 #include <langs/gdict.h>
 #include <langs/glang.h>
-#include <filters/gmimefilter.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
 #include <sessions/gsession.h>
@@ -72,8 +71,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
-	: GDoc(url,name,id,lang,t,u,a,f,n,ndiff,v,vdiff,nbf),
+GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
+	: GDoc(url,name,id,lang,mime,u,a,f,n,ndiff,v,vdiff,nbf),
 	  GIWordsWeights(vdiff>600?vdiff:600)
 {
 }

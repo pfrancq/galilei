@@ -75,7 +75,6 @@ using namespace R;
 #include <profiles/gprofilecalc.h>
 #include <filters/gurlmanager.h>
 #include <filters/gfilter.h>
-#include <filters/gmimefilter.h>
 #include <infos/giwordweight.h>
 #include <historic/ggroupshistory.h>
 using namespace GALILEI;
@@ -992,14 +991,14 @@ void GALILEI::GSession::Save(GGroup* grp) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-GFilterCursor& GALILEI::GSession::GetFiltersCursor(void)
+GFactoryFilterCursor& GALILEI::GSession::GetFiltersCursor(void)
 {
 	return(Mng->GetFiltersCursor());
 }
 
 
 //-----------------------------------------------------------------------------
-GMIMEFilter* GALILEI::GSession::GetMIMEType(const char* mime) const
+const char* GALILEI::GSession::GetMIMEType(const char* mime) const
 {
 	return(Mng->GetMIMEType(mime));
 }

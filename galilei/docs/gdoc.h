@@ -48,8 +48,6 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-class GLinkCursor;
-class GLink;
 
 //-----------------------------------------------------------------------------
 /**
@@ -106,9 +104,9 @@ protected:
 	tObjState State;
 
 	/**
-	* Type of the document.
+	* MIME Type of the document.
 	*/
-	GMIMEFilter* Type;
+	R::RString MIMEType;
 
 	/**
 	* Date of last update of document's content.
@@ -150,7 +148,7 @@ public:
 	* @param title          Name of the document.
 	* @param id             Identifier of the document.
 	* @param lang           Language of the document.
-	* @param t              MIME type of the document.
+	* @param mime           MIME type of the document.
 	* @param u              String representing the date of the last update.
 	* @param a              String representing the date of the last analysis.
 	* @param f              Number of fails.
@@ -160,7 +158,7 @@ public:
 	* @param vdiff          Number of different valid words.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf=100) throw(bad_alloc);
+	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.
@@ -237,13 +235,13 @@ public:
 	* Get the MIME type.
 	* @returns Pointer to a MIME type.
 	*/
-	GMIMEFilter* GetMIMEType(void) const;
+	const char* GetMIMEType(void) const;
 
 	/**
 	* Set the MIME type.
-	* @param type           Pointer to a MIME type.
+	* @param mime           Pointer to a MIME type.
 	*/
-	void SetMIMEType(GMIMEFilter* type);
+	void SetMIMEType(const char* mime);
 
 	/**
 	* Return the state of the document.

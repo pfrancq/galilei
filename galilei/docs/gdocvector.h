@@ -67,7 +67,7 @@ public:
 	* @param title          Name of the document.
 	* @param id             Identifier of the document.
 	* @param lang           Language of the document.
-	* @param t              MIME type of the document.
+	* @param mime           MIME type of the document.
 	* @param u              String representing the date of the last update.
 	* @param a              String representing the date of the last analysis.
 	* @param f              Number of fails.
@@ -77,7 +77,7 @@ public:
 	* @param vdiff          Number of different valid words.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf=100) throw(bad_alloc);
+	GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Get the name of the model used for the description.

@@ -56,7 +56,6 @@ using namespace R;
 #include <infos/giwordsweights.h>
 #include <langs/gdict.h>
 #include <langs/glang.h>
-#include <filters/gmimefilter.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
 #include <rstd/rrecfile.h>

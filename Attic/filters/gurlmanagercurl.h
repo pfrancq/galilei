@@ -72,8 +72,9 @@ public:
 
 	/**
 	* Construct a URL manager.
+	* @param path            Path to find the plugins.
 	*/
-	GURLManagerCURL(void);
+	GURLManagerCURL(const char* path);
 
 protected:
 
@@ -83,13 +84,6 @@ protected:
 	* @param tmpFile        Temporary file created.
 	*/
 	virtual void Download(const char* URL,R::RString& tmpFile) throw(GException);
-
-	/**
-	* Look for the mime types of a temporary file.
-	* @param tmpFile        Temporary file created.
-	* @return Pointer to a GMIMEFilter.
-	*/
-	virtual GMIMEFilter* DetermineMIMEType(const char* tmpfile);
 
 	/**
 	* Delete the file locally.

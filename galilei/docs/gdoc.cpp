@@ -40,7 +40,6 @@
 #include <docs/gdocxml.h>
 #include <docs/glink.h>
 #include <langs/glang.h>
-#include <filters/gmimefilter.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
 #include <sessions/gsession.h>
@@ -59,9 +58,9 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
+GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
 	: URL(url), Name(name), Id(id), N(n), V(v), Ndiff(ndiff), Vdiff(vdiff),
-	  Lang(lang), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
+	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
 	  Failed(f)
 #if GALILEITEST
 	  ,Subjects(2,1)
@@ -165,16 +164,17 @@ const R::RDate* GALILEI::GDoc::GetComputed(void) const
 
 
 //-----------------------------------------------------------------------------
-GMIMEFilter* GALILEI::GDoc::GetMIMEType(void) const
+const char* GALILEI::GDoc::GetMIMEType(void) const
 {
-	return(Type);
+	if(MIMEType.IsEmpty()) return(0);
+	return(MIMEType());
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::SetMIMEType(GMIMEFilter* type)
+void GALILEI::GDoc::SetMIMEType(const char* mime)
 {
-	Type=type;
+	MIMEType=mime;
 }
 
 

@@ -60,6 +60,7 @@ namespace GALILEI{
 */
 class GParams : public R::RContainer<GParam,unsigned int,true,true>
 {
+protected:
 	/**
 	* Name of the list of parameters.
 	*/
@@ -72,6 +73,11 @@ public:
 	* @param n               Name of the parameter.
 	*/
 	GParams(const char* n) throw(bad_alloc);
+
+	/**
+	* Get the name of the set of parameters.
+	*/
+	const char* GetName(void) const;
 
 	/**
 	* Read a configuration from a XML Tag.
