@@ -122,6 +122,8 @@ class GRanking;
 class GMetaEngine;
 class GFactoryMetaEngine;
 class GMetaEngineManager;
+class GWordOccurs;
+class GIndexer;
 
 
 //------------------------------------------------------------------------------
@@ -274,7 +276,10 @@ enum GInfoType
 {
 	infoNothing=0                  /** No type defined.*/,
 	infoWord=1                     /** A word (or stem). */,
-	infoWordList=2                 /** List of words.*/
+	infoWordList=2                 /** List of words.*/,
+	infoWordOccurs=3               /** List of occurences of a word in the
+	                                   documents.*/,
+	infoDoc=3                      /** Document.*/
 };
 
 
