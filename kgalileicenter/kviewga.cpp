@@ -67,7 +67,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewGA::KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags)
+KViewGA::KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), RGASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>(),
 	  CurId(0), Instance(0), Gen(0), PopSize(0),ParamsSim(0.2,0.05,1.0),
 	  ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0), ParamsDiff(0.2,0.05,1.0),
@@ -138,7 +138,10 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char*
 	// Create GA
 	try
 	{
-		Instance=new GInstIR(Doc->GetSession(),lang,MinSimLevel,MaxGen,PopSize,Doc->GetSession()->GetGroups(lang),Objs,global,Sims,RGGA::FirstFit,Debug);
+		if(scratch)
+			Instance=new GInstIR(Doc->GetSession(),lang,MinSimLevel,MaxGen,PopSize,0,Objs,global,Sims,RGGA::FirstFit,Debug);
+		else
+			Instance=new GInstIR(Doc->GetSession(),lang,MinSimLevel,MaxGen,PopSize,Doc->GetSession()->GetGroups(lang),Objs,global,Sims,RGGA::FirstFit,Debug);
 		Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
 		Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
 		Instance->SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
@@ -163,7 +166,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char*
 		Instance=0;
 	}
 
-	// Solutions and Best Part
+	// Solutions, ideal and Best Part
 	Best = new QGGroupsIR(TabWidget,Objs);
 	TabWidget->insertTab(Best,"Best Solution");
 	connect(Best,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
@@ -175,6 +178,8 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char*
 	#endif
 	TabWidget->insertTab(Sol,tmp);
 	connect(Sol,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	Ideal = new QGGroupsIR(TabWidget,IdealGroups.GetPtr<const GLang*>(lang),Objs);
+	TabWidget->insertTab(Ideal,"Ideal Solution");
 }
 
 

@@ -108,6 +108,11 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	* The solutions.
 	*/
 	QGGroupsIR* Sol;
+
+	/**
+	* The ideal solution.
+	*/
+	QGGroupsIR* Ideal;
 	
 	/**
 	* Identificator of the current showed solution.
@@ -196,11 +201,12 @@ public:
 	* @param doc            Document instance that the view represents.
 	* @param l              Lang to group.
 	* @param global         Global Similarities.
+	* @param scratch        Compute the grouping from scratch.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags);
+	KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.
