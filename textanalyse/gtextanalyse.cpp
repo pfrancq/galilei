@@ -54,6 +54,7 @@
 #include <infos/glangmanager.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
+#include <sessions/gobjref.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
@@ -680,6 +681,7 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 						Session->AssignId(tmpDoc);
 						DocsToAdd->InsertPtr(tmpDoc);
 						tmpDoc->SetState(osNotNeeded);
+						#warning add link documents
 					}
 				}
 				else
@@ -760,7 +762,7 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 		if(stem.GetLen()>=MinStemSize)
 		{
 			GWord w(stem);
-			Occur=DocVector->GetInsertPtr(dic->InsertData(&w));
+			Occur=Doc->GetInsertPtr(dic->InsertData(&w));
 			if(!Occur->GetWeight())
 				Vdiff++;
 			V+=(*wrd)->Nb;
@@ -821,12 +823,12 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 	if(MinOccur<2) return;
 
 
-	for(i=DocVector->NbPtr+1,Tab=DocVector->Tab;--i;Tab++)
+	for(i=Doc->NbPtr+1,Tab=Doc->Tab;--i;Tab++)
 	{
 		Occur=(*Tab);
 		if(Occur->GetWeight()<MinOccur)
 		{
-			DocVector->DeletePtr(Occur);
+			Doc->DeletePtr(Occur);
 			Tab--;
 		}
 	}
@@ -834,7 +836,7 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* tmpDocs) throw(GException)
+void GTextAnalyse::Analyze(GDocXML* xml,GDocRef doc,RContainer<GDocRef,true,true>* tmpDocs) throw(GException)
 {
 	RXMLTag* content;
 	RXMLTag* metadata;
@@ -845,16 +847,15 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 	RCursor<RXMLTag> Tags;
 
 	// Init Part and verification
+	Doc=dynamic_cast<GDocVector*>(Session->GetDoc(doc.GetId()));
 	if(!xml)
-		throw GException("No XML Structure for document '"+doc->GetURL()+"'");
-	Lang=doc->GetLang();
+		throw GException("No XML Structure for document '"+Doc->GetURL()+"'");
+	Lang=Doc->GetLang();
 	FindLang=((!Lang)||(!StaticLang));
 	content=xml->GetContent();
 	RAssert(content);
 	metadata=xml->GetMetaData();
 	RAssert(metadata);
-	Doc=doc;
-	DocVector=dynamic_cast<GDocVector*>(doc);
 
 	// Analyse the doc structure.
 	Clear();
@@ -879,13 +880,14 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 			Name+=Tags()->GetContent();
 		}
 		if(!Name.IsEmpty())
-			doc->SetName(Name);
+			Doc->SetName(Name);
 	}
 
 	// Analyse the content of link tags
 	link = xml->GetLinks ();
 	RAssert(link);
-	AnalyseLinksTag(link,UseExternalLinks,tmpDocs);
+	AnalyseLinksTag(link,UseExternalLinks,0/*tmpDocs*/);
+	#warning manage container of documents to add
 
 	// Determine the Language if necessary.
 	if(FindLang)
@@ -893,10 +895,10 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 		// Remember old language and determine the new one.
 		oldlang=Lang;
 		DetermineLang();
-		doc->SetLang(Lang);
+		Doc->SetLang(Lang);
 
 		// Dispatch the document through the profiles which have assessed it.
-		UpdateFdbks(oldlang, Lang);
+		UpdateFdbks(oldlang, Lang, Doc);
 	}
 
 	// Construct Information if languages determined.
@@ -904,7 +906,7 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 		ConstructInfos();
 
 	// Set the Variable of the document
-	dynamic_cast<GDocVector*>(doc)->UpdateRefs();
+	dynamic_cast<GDocVector*>(Doc)->UpdateRefs();
 }
 
 
