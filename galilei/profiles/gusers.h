@@ -174,6 +174,11 @@ public:
 	GSubProfileCursor& GetSubProfilesCursor(GLang* lang);
 
 	/**
+	* Clear all the subprofiles assignement.
+	*/
+	void ClearSubProfilesGroups(void);
+
+	/**
 	* Save information about the groupement (Group and attachment date) of
 	* a subprofile. For a complete save, call Save(const GProfile*).
 	* @param sub        Subprofile to save.

@@ -165,6 +165,24 @@ GSubProfileCursor& GALILEI::GUsers::GetSubProfilesCursor(GLang* lang)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GUsers::ClearSubProfilesGroups(void)
+{
+	GSubProfilesCursor Cur;
+	GSubProfileCursor Cur2;
+
+	Cur.Set(SubProfiles);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur2.Set(Cur());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		{
+			Cur2()->SetGroup(0);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GUsers::~GUsers(void)
 {
 	if(SubProfiles) delete SubProfiles;
