@@ -1,3 +1,33 @@
+/*
+
+	GALILEI Research Project
+
+	gdoc.cpp
+
+	Basic Information - Implementation.
+
+	(C) 2001 by P. Francq.
+
+	Version $Revision$
+
+	Last Modify: $Date$
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Library General Public
+	License as published by the Free Software Foundation; either
+	version 2.0 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Library General Public License for more details.
+
+	You should have received a copy of the GNU Library General Public
+	License along with this library, as a file COPYING.LIB; if not, write
+	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+	Boston, MA  02111-1307  USA
+
+*/
 
 
 // include files for ANSI C/C++
@@ -58,25 +88,25 @@ int GDoc::Compare(unsigned id)
 //---------------------------------------------------------------------------
 unsigned char GDoc::GetChar(void)
 {
-  char *ptr2;
-  char tmp=0;
-  static char code[6];
+ char *ptr2;
+ char tmp=0;
+ static char code[6];
 
-  Buffer++;   // Skip '&'
-  if(IsSpace()) return(0);
-  ptr2=code;
-  while((*Buffer)&&(*Buffer)!=';'&&(*Buffer)!='<'&&(*Buffer)!='>'&&!IsSpace())
-    (*(ptr2++))=(*(Buffer++));
-  (*ptr2)=0;
-  if(*Buffer) Buffer++; // Skip ';'
-  if((*code)=='#')  // a chr
-  {
-    ptr2=code+1;
-    tmp=(char)atoi((char*)ptr2);
-    if(!GLib::IsAlpha(tmp)) tmp=0;
-  }
-  else        // Test some strings
-  {
+ Buffer++;   // Skip '&'
+ if(IsSpace()) return(0);
+ ptr2=code;
+ while((*Buffer)&&(*Buffer)!=';'&&(*Buffer)!='<'&&(*Buffer)!='>'&&!IsSpace())
+ (*(ptr2++))=(*(Buffer++));
+ (*ptr2)=0;
+ if(*Buffer) Buffer++; // Skip ';'
+ if((*code)=='#')  // a chr
+ {
+ ptr2=code+1;
+ tmp=(char)atoi((char*)ptr2);
+ if(!GLib::IsAlpha(tmp)) tmp=0;
+ }
+ else        // Test some strings
+ {
     if(!strcmp((char*)code,"eacute")) tmp='é';
     if(!strcmp((char*)code,"egrave")) tmp='è';
     if(!strcmp((char*)code,"agrave")) tmp='à';

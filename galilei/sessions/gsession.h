@@ -1,20 +1,3 @@
-/*
-
-  GSession.h
-
-  HyperPRISME Session - Header.
-
-  (C) 1998-2000 by P. Francq.
-
-  Version $Revision$
-
-  Last Modify: $Date$
-
-  HyperPRISME base library
-
-*/
-
-
 
 //---------------------------------------------------------------------------
 #ifndef GSessionH
@@ -33,17 +16,25 @@ using namespace RStd;
 // include files for HyperPRISME
 #include <galilei.h>
 #include <glangs/glangs.h>
-#include <glang/gdicts.h>
-#include <gprofile/gusers.h>
+#include <glangs/gdicts.h>
+#include <gprofiles/gusers.h>
+#include <gprofiles/gprofile.h>
 #include <ggroups/ggroupslangs.h>
 #include <glangs/gdict.h>
+#include <HyperPRISME.h>
+#include <gexception.h>
 
+#include <gdocs/gdocs.h>
 
 //---------------------------------------------------------------------------
-namespace GALILEI
+namespace GALILEI{
 //---------------------------------------------------------------------------
 
-
+class GDocs;
+class GGroupsLangs;
+class GDicts;
+class GUsers;
+class GProfile;
 
 //---------------------------------------------------------------------------
 // GSession
@@ -53,9 +44,9 @@ protected:
 	bool AllDocs;     // All Documents
 public:
 	GLangs* Langs;
-	GDicts *Stops;
-	GDicts *Dics;
-	GUsers *Users;
+	GDicts* Stops;
+	GDicts* Dics;
+	GUsers* Users;
 	GDocs* Docs;
 	GGroupsLangs *GroupsLangs;
 
@@ -65,7 +56,12 @@ public:
   // Languages
   template<class hlangs,class hdicts> void LoadLanguages(unsigned nb) throw(bad_alloc,GException);
 
+
+
+
+
   // Dictionnaries
+
   void LoadDics(void) throw(bad_alloc,GException);
   void LoadStops(void) throw(bad_alloc,GException);
   GDict* GetDic(GLang *lang) throw(GException);
@@ -93,7 +89,7 @@ public:
 };
 
 
-#include "GSession.hh" // Template implementation
+#include "gsession.hh" // Template implementation
 
 
 }  //-------- End of namespace Galilei-----------------------------------
