@@ -53,9 +53,10 @@ type=DATA
 
 [LFV Groups]
 GNU=AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,NEWS
-Headers=*kdoc*.h,*kview*.h,*kgalileicenter.h,*qsession*.h,*galilei.h
+Headers=*kdoc*.h,*kview*.h,*kgalileicenter.h,*qsession*.h
 Headers - Docs=*docs/*.h
 Headers - Filters=*filters/*.h
+Headers - GALILEI=*/galilei/galilei.h,*/galilei/gplugin.h
 Headers - Groups=*groups/*.h
 Headers - Infos=*infos/*.h
 Headers - Langs=*langs/*.h
@@ -78,6 +79,7 @@ Others=*
 Sources=*main.cpp,*kdoc*.cpp,*kview*.cpp,*kgalileicenter.cpp,*qsession*.cpp,*kgalileicenter_*.cpp
 Sources - Docs=*docs/*.cpp
 Sources - Filters=*filters/*.cpp
+Sources - GALILEI=*/galilei/gplugin.cpp
 Sources - Groups=*groups/*.cpp
 Sources - Infos=*infos/*.cpp
 Sources - Langs=*langs/*.cpp
@@ -98,7 +100,7 @@ Sources R - Time/Date=*rtimedate/*.cpp
 Sources R - XML=*rxml/*.cpp
 Translations=*.po
 User Interface=*.kdevdlg,*.ui,*.rc
-groups=Headers,Headers R - GA,Headers R - GGA,Headers - Qt Widgets,Headers R - Math,Headers R - Python,Headers R - MySQL,Headers R - Time/Date,Headers R - IO,Headers R - Std,Headers - URL Managers,Headers - Sessions,Headers - Python,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - Infos,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources R - Python,Sources - Sessions,Sources - Python,Sources R - Time/Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,Sources R - GGA,User Interface,Translations,GNU,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
+groups=Headers,Headers - GALILEI,Headers R - GA,Headers R - GGA,Headers - Qt Widgets,Headers R - Math,Headers R - Python,Headers R - MySQL,Headers R - Time/Date,Headers R - IO,Headers R - Std,Headers - URL Managers,Headers - Sessions,Headers - Python,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - GALILEI,Sources - Infos,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources R - Python,Sources - Sessions,Sources - Python,Sources R - Time/Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,Sources R - GGA,User Interface,Translations,GNU,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
 
 [Makefile.am]
 files=kgalileicenter.kdevprj,admin,AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,kgalileicenter.lsm
@@ -156,9 +158,9 @@ sub_dirs=galilei,r,qtwidgets
 type=prog_main
 
 [kgalileicenter/galilei/Makefile.am]
-files=kgalileicenter/galilei/galilei.h
+files=kgalileicenter/galilei/galilei.h,kgalileicenter/galilei/gplugin.cpp,kgalileicenter/galilei/gplugin.h
 sub_dirs=docs,filters,groups,infos,langs,profiles,python,sessions,urlmanagers
-type=normal
+type=static_library
 
 [kgalileicenter/galilei/docs/Makefile.am]
 files=kgalileicenter/galilei/docs/gdcmetadata.cpp,kgalileicenter/galilei/docs/gdcmetadata.h,kgalileicenter/galilei/docs/gdoc.cpp,kgalileicenter/galilei/docs/gdoc.h,kgalileicenter/galilei/docs/gdocanalyse.cpp,kgalileicenter/galilei/docs/gdocanalyse.h,kgalileicenter/galilei/docs/gdoclist.cpp,kgalileicenter/galilei/docs/gdoclist.h,kgalileicenter/galilei/docs/gdocs.cpp,kgalileicenter/galilei/docs/gdocs.h,kgalileicenter/galilei/docs/gdocxml.cpp,kgalileicenter/galilei/docs/gdocxml.h,kgalileicenter/galilei/docs/gdocoptions.cpp,kgalileicenter/galilei/docs/gdocoptions.h
@@ -319,6 +321,18 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/galilei.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/gplugin.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/gplugin.h]
 dist=true
 install=false
 install_location=
