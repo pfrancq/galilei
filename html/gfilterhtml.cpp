@@ -6,7 +6,7 @@
 
 	A HTML filter - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -84,11 +84,11 @@ bool GFilterHTML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 
 		//Convert html file to docxml structure
 		GHTMLConverter Src(this,Doc->GetFile(),Doc);
-		Src.Process();
+		Src.Open(Read);
 
 		//Delete Empty Tags
 		Doc->GetContent()->DeleteEmptyTags(Doc);
-		
+
 	}
 	catch(RIOException& e)
 	{

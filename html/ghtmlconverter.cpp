@@ -650,7 +650,7 @@ const RCharCode FromXML[]={
 
 //------------------------------------------------------------------------------
 GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML* xmlstruct,const RString& encoding) throw(std::bad_alloc,RIOException)
- : RXMLFile(name,xmlstruct,R::Read,encoding), Filter(filter),Doc(xmlstruct),Tags(200,10), FoundClosingHTML(false),Base(""),ParTag(0)
+ : RXMLFile(name,xmlstruct,encoding), Filter(filter),Doc(xmlstruct),Tags(200,10), FoundClosingHTML(false),Base(""),ParTag(0)
 {
 	InitValidTags();
 }
@@ -658,7 +658,7 @@ GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML* xmlstruct,c
 
 //------------------------------------------------------------------------------
 GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML& xmlstruct,const RString& encoding) throw(std::bad_alloc,RIOException)
- : RXMLFile(name,xmlstruct,R::Read,encoding), Filter(filter),Doc(&xmlstruct), Tags(200,10), FoundClosingHTML(false),Base(""),ParTag(0)
+ : RXMLFile(name,xmlstruct,encoding), Filter(filter),Doc(&xmlstruct), Tags(200,10), FoundClosingHTML(false),Base(""),ParTag(0)
 {
 	InitValidTags();
 }
