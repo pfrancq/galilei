@@ -255,6 +255,8 @@ void GALILEI::GIWordsWeights::AddRefs(tObjType ObjType,GDict* dic) const
 	GIWordWeight** ptr;
 	unsigned int i;
 
+	dic->IncRef(ObjType,tWord);
+	dic->IncRef(ObjType,tWordList);
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
 		if((*ptr)->InfoType()==4)
 			dic->IncRef((*ptr)->GetId(),ObjType,tWordList);
@@ -268,6 +270,8 @@ void GALILEI::GIWordsWeights::DelRefs(tObjType ObjType,GDict* dic) const
 	GIWordWeight** ptr;
 	unsigned int i;
 
+	dic->DecRef(ObjType,tWord);
+	dic->DecRef(ObjType,tWordList);
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
 		if((*ptr)->InfoType()==4)
 			dic->DecRef((*ptr)->GetId(),ObjType,tWordList);
