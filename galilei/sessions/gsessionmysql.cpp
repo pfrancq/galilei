@@ -462,11 +462,11 @@ void GALILEI::GSessionMySQL::LoadIdealGroupment()
 	GGroup* group;
 	GLangCursor Langs;
 	char sSql[100];
+	GSubProfile* subp;
 
 	IdealGroups->Clear();
 
 	Langs=GetLangsCursor();
-//	LoadSubjectTree();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		IdealGroups->InsertPtr(groups=new GGroups(Langs()));
@@ -478,7 +478,13 @@ void GALILEI::GSessionMySQL::LoadIdealGroupment()
 			sprintf(sSql,"SELECT profileid FROM idealgroup where groupid=%u",atoi(sel[0]));
 			RQuery sub(this,sSql);
 			for(sub.Start();!sub.End();sub.Next())
-				group->InsertPtr(GetProfile(atoi(sub[0]))->GetSubProfile(Langs()));
+			{
+				subp=GetProfile(atoi(sub[0]))->GetSubProfile(Langs());
+				if(subp)
+					group->InsertPtr(subp);
+			}
+			if(!group->NbPtr)
+				groups->DeletePtr(group);
 		}
 	}
 }

@@ -160,7 +160,12 @@ GSubProfile* GALILEI::GUsers::GetSubProfile(const unsigned int id,GLang* lang) c
 //-----------------------------------------------------------------------------
 GSubProfileCursor& GALILEI::GUsers::GetSubProfilesCursor(GLang* lang)
 {
-	return(SubProfiles->GetPtr<const GLang*>(lang)->GetSubProfilesCursor());
+	GSubProfiles* ptr=SubProfiles->GetPtr<const GLang*>(lang);
+	if(ptr)
+		return(ptr->GetSubProfilesCursor());
+	GSubProfileCursor* cur=GSubProfileCursor::GetTmpCursor();
+	cur->Set(static_cast<GSubProfiles*>(0));
+	return(*cur);
 }
 
 

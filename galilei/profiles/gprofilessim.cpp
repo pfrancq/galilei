@@ -120,6 +120,7 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 
 	Cur1.Set(s);
 	Cur2.Set(s);
+	if(!Cur1.GetNb()) return;
 	for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
 	{
 		Sims.InsertPtr(sim=new GSims(Cur1()->GetId(),j));
@@ -336,7 +337,7 @@ void  GALILEI::GProfilesSim::UpdateProfSim(GUsers* users,bool global,GLang* lang
 
 	if(global == GlobalSim) // The type of similarity hasn't changed -> some values of sim can be UpToDate
 	{
-
+		if(!Cur1.GetNb()) return;
 		for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
 		{
 
@@ -371,6 +372,7 @@ void  GALILEI::GProfilesSim::UpdateProfSim(GUsers* users,bool global,GLang* lang
 	else  // the type of similarity has changed => All the sim's values must be updated. //The type of similarity is stocked in the param GlobalSim
 	{
 		GlobalSim = global;
+		if(!Cur1.GetNb()) return;
 		for(Cur1.Start(),i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
 		{
 			sims= Sims.GetPtr<unsigned int>(Cur1()->GetId());
