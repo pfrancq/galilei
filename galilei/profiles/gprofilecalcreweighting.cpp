@@ -200,7 +200,7 @@ void GALILEI::GProfileCalcReWeighting::ComputeGlobal(GProfile* profile) throw(ba
 
 		// Determine the lists corresponding to the language of the document
 		// and insert a word corresponding to the documents id.
-		switch(Fdbk)
+		switch(Fdbk & djMaskJudg)
 		{
 			case djOK:
 			case djNav:

@@ -59,17 +59,12 @@ class GLinkCursor;
 */
 class GLinks : public RStd::RContainer<GLink,unsigned,false,true>
 {
-private :
+protected :
 
 	/**
 	* The document containing a set of link.
 	*/
 	GDoc* Doc;
-
-	/**
-	* The weight
-	*/
-	float Weight;
 
 public :
 
@@ -86,16 +81,10 @@ public :
 	GDoc* GetDoc(void) const {return Doc;}
 
 	/**
-	* Get the weight of the links.
-	* return                  float containing the weight.
+	* Get the id of the doc
+	* @return id            the id of the document.
 	*/
-	float GetWeight(void) {return Weight;}
-
-	/**
-	* Set the weight of a links.
-	* @param w                the weight.
-	*/
-	void SetWeight(float w){Weight=w;}
+	unsigned int GetId(void) const {return Doc->GetId() ; }
 
 	/**
 	* Get a cursor on the Links of the document.

@@ -266,7 +266,7 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		CurLang=CurDoc->GetLang();
 		if(!CurLang) continue;
 		Fdbk=Docs()->GetFdbk();
-		if((Params->NoRelFactor==0.0)&&(Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
+		if((Params->NoRelFactor==0.0)&&(!(Fdbk & djOK))&&(!(Fdbk & djNav))&&(!(Fdbk & djKO))) continue;
 
 		// Determine the lists corresponding to the language of the document
 		NbDocs=NbDocsWords.GetPtr<GLang*>(CurLang);
@@ -297,8 +297,8 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 
 		// Find list in function of the feedback
 		Fdbk=Docs()->GetFdbk();
-		if((Params->NoRelFactor==0.0)&&(Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
-		switch(Fdbk)
+		if((Params->NoRelFactor==0.0)&&(!(Fdbk & djOK))&&( !(Fdbk & djNav))&&(!(Fdbk & djKO))) continue;
+		switch(Fdbk & djMaskJudg )
 		{
 			case djOK:
 			case djNav:

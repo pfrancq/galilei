@@ -83,7 +83,23 @@ public :
 	* Compute a group.
 	* @param grp            Group to compute.
 	*/
-	virtual void Compute(GSlot* rec)=0;
+//	virtual void Compute(GSlot* rec)=0;
+
+	/**
+	* Compute a profile using link method
+	* @params Prof       The profile to compute.
+	*/
+	virtual void Compute(GProfile* Prof)=0;
+
+	/**
+	* Init the algorithm for link computation 
+	*/
+	virtual void InitAlgo()=0;
+
+	/**
+	* Add a new doc (not present in the initAlgo phase).
+	*/
+	virtual void AddDoc(GDoc* doc)=0;
 
 	/**
 	* Get the name of the computing method.

@@ -134,7 +134,7 @@ unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof) cons
 		// If the document is not "good" or not the same language that the
 		// same profile -> Nothing
 		f=Fdbks()->GetFdbk();
-		if((f!=djOK)&&(f!=djNav)) continue;
+		if((!(f & djOK))&&(!(f & djNav))) continue;
 		if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
 
 		// Look for the same document in the other profile. If not found or the
@@ -142,7 +142,7 @@ unsigned int GALILEI::GSubProfile::GetCommonOKDocs(const GSubProfile* prof) cons
 		cor=prof->Profile->GetFeedback(Fdbks()->GetDoc());
 		if(!cor) continue;
 		f=cor->GetFdbk();
-		if((f!=djOK)&&(f!=djNav)) continue;
+		if((!(f & djOK))&&(!(f & djNav))) continue;
 
 		// Increase the number of common documents
 		nb++;
@@ -201,7 +201,7 @@ unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) co
 	{
 		// If the document is not the same language that the profile -> Nothing
 		f=Fdbks()->GetFdbk();
-		bOK=((f==djOK)||(f==djNav));
+		bOK=((f & djOK)||(f & djNav));
 		if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
 
 		// If the document was not judged by the other profile or have not the
@@ -209,7 +209,7 @@ unsigned int GALILEI::GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) co
 		cor=prof->Profile->GetFeedback(Fdbks()->GetDoc());
 		if(!cor) continue;
 		f=cor->GetFdbk();
-		bOK2=((f==djOK)||(f==djNav));
+		bOK2=((f & djOK)||(f & djNav));
 		if(bOK==bOK2) continue;
 
 		// Increase the number of common documents with different judgement

@@ -58,6 +58,13 @@ GALILEI::GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,const ch
 
 
 //---------------------------------------------------------------------------
+GALILEI::GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,RTimeDate::RDate date)
+  : Doc(doc), Profile(prof), Fdbk(fdbk), Updated(date)
+{
+}
+
+
+//---------------------------------------------------------------------------
 int GALILEI::GProfDoc::Compare(const GProfDoc& profdoc) const
 {
 	int diff;
@@ -109,7 +116,7 @@ tDocJudgement GALILEI::GProfDoc::ErrorJudgment(tDocJudgement fdbk,double PercErr
 	if(random<PercErr)
 	{
 		random=rand->Value()*100+1.0;;
-		switch(fdbk)
+		switch(fdbk & djMaskJudg)
 		{
 			case djOK:
 				if(random<25.0)

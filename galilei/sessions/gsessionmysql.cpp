@@ -64,6 +64,7 @@ using namespace RIO;
 #include <profiles/gprofdoc.h>
 #include <docs/gdocvector.h>
 #include <docs/gdocs.h>
+#include <docs/glink.h>
 #include <groups/ggroupvector.h>
 #include <historic/ggrouphistory.h>
 #include <groups/ggroups.h>
@@ -195,6 +196,7 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 	#endif
 
 	char sSql[600];
+	char tmp[100];
 	// Verify that the word didn't already exist.
 	sprintf(sSql,"SELECT kwdid FROM %skwds WHERE kwd='%s'",dict->GetLang()->GetCode(),word);
 	RQuery find(this,sSql);
@@ -207,7 +209,7 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 	// Get the existing word for derivate of 'insert' 'delete' 'update' 'delete'
 
 	// Insert the new word
-	sprintf(sSql,"INSERT INTO %skwds(kwd) VALUES('%s')",dict->GetLang()->GetCode(),word);
+	sprintf(sSql,"INSERT INTO %skwds(kwd) VALUES(%s)",dict->GetLang()->GetCode(),ValidSQLValue(word,tmp));
 	RQuery insert(this,sSql);
 
 	// Get the next id
@@ -216,6 +218,7 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 	getinsert.Start();
 	return(strtoul(getinsert[0],0,10));
 }
+
 
 
 //-----------------------------------------------------------------------------
@@ -572,6 +575,7 @@ void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
 	GProfile* prof;
 	GUser* usr;
 	GDoc* doc;
+	tDocJudgement jug;
 
 	sprintf(sSql,"SELECT htmlid, judgement, profiles.profileid, userid, when2 FROM htmlsbyprofiles,profiles WHERE profiles.profileid=htmlsbyprofiles.profileid");
 	RQuery fdbks(this,sSql);
@@ -583,24 +587,39 @@ void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
 		if(!prof) continue;
 		doc=GetDoc(atoi(fdbks[0]));
 		if(!doc) continue;
+
 		switch(fdbks[1][0])
 		{
 			case 'O':
-				InsertFdbk(prof,doc,djOK,fdbks[4]);
+				jug=djOK;
 				break;
 			case 'N':
-				InsertFdbk(prof,doc,djNav,fdbks[4]);
+				jug=djNav;
 				break;
 			case 'K':
-				InsertFdbk(prof,doc,djKO,fdbks[4]);
+				jug=djKO;
 				break;
 			case 'H':
-				InsertFdbk(prof,doc,djOutScope,fdbks[4]);
+				jug= djOutScope;
 				break;
 			default:
-				InsertFdbk(prof,doc,djUnknow,fdbks[4]);
+				jug=djUnknow;
 				break;
 		}
+		switch(fdbks[1][1])
+		{
+			case 'H':
+				jug = tDocJudgement(jug | djHub);
+				break;
+			case 'A':
+				jug = tDocJudgement(jug | djAutority);
+				break;
+			//case 'U':
+				//break;
+			default:
+				break;
+		}
+		InsertFdbk(prof,doc,jug,fdbks[4]);
 	}
 }
 
@@ -623,6 +642,14 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 		docid=atoi(quer[0]);
 		lang=GetLang(quer[4]);
 		InsertDoc(doc=new GDocVector(quer[1],quer[2],docid,lang,Mng->GetMIMEType(quer[3]),quer[5],quer[6],atoi(quer[7]),atoi(quer[8]),atoi(quer[9]),atoi(quer[10]),atoi(quer[11])));
+	}
+
+	// Load the links of the document loaded.
+	sprintf(sSql,"SELECT htmlid,linkid,occurs FROM htmlsbylinks");
+	RQuery querLinks (this,sSql);
+	for (querLinks.Start(); !querLinks.End() ; querLinks.Next())
+	{
+		GetDoc(atoi(querLinks[0]) )->InsertLink(GetDoc(atoi( querLinks[1]) ), atoi(querLinks[2]));
 	}
 
 	// Load the document's description
@@ -690,7 +717,8 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 void GALILEI::GSessionMySQL::SaveFdbks(void) throw(GException)
 {
 	char sSql[500];
-	char j;
+	//char j;
+	char *j = new char[2];
 
 	// Clear the all feedbacks
 	sprintf(sSql,"DELETE FROM htmlsbyprofiles");
@@ -699,24 +727,36 @@ void GALILEI::GSessionMySQL::SaveFdbks(void) throw(GException)
 	// Reinsert all the feedbacks
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 	{
-		switch(Fdbks()->GetFdbk())
+		switch(Fdbks()->GetFdbk() & djMaskJudg)
 		{
 			case djOK:
-				j='O';
+				j[0]='O';
 				break;
 			case djNav:
-				j='N';
+				j[0]='N';
 				break;
 			case djOutScope:
-				j='H';
+				j[0]='H';
 				break;
 			case djKO:
-				j='K';
+				j[0]='K';
 				break;
 			default:
 				throw GException("No Valid Judgement");
 		}
-		sprintf(sSql,"INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES(%u,'%c',%u,CURDATE())",
+		switch(Fdbks()->GetFdbk() & djMaskHubAuto)
+		{
+			case djHub:
+				j[1]='H';
+				break;
+			case djAutority:
+				j[1]='A';
+				break;
+			default :
+				j[1]='U';
+				break;
+		}
+		sprintf(sSql,"INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES(%u,'%s',%u,CURDATE())",
 		        Fdbks()->GetDoc()->GetId(),j,Fdbks()->GetProfile()->GetId());
 		RQuery fdbks(this,sSql);
 	}
@@ -739,6 +779,7 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 	char supdated[15];
 	char scomputed[15];
 	GIWordWeightCursor Words;
+	GLinkCursor lcur;
 
 	// Delete keywords
 	if(doc->GetLang())
@@ -749,8 +790,6 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 		Words=dynamic_cast<GDocVector*>(doc)->GetWordWeightCursor();
 		for(Words.Start();!Words.End();Words.Next())
 		{
-
-
 			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%f)",l,id,Words()->GetId(),Words()->GetWeight());
 			RQuery insertkwds(this,sSql);
 		}
@@ -775,6 +814,18 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 	             GetDateToMySQL(doc->GetUpdated(),supdated),GetDateToMySQL(doc->GetComputed(),scomputed),
 	             doc->GetN(),doc->GetNdiff(),doc->GetV(),doc->GetVdiff(),doc->GetFailed(),id);
 	RQuery updatedoc(this,sSql);
+
+	// Update links to others documents
+	sprintf(sSql,"DELETE FROM htmlsbylinks WHERE htmlid=%u",id);
+	RQuery deletelinks(this,sSql);
+	lcur= doc->GetLinkCursor();
+	for ( lcur.Start(); ! lcur.End(); lcur.Next())
+	{
+		sprintf(sSql,"INSERT INTO htmlsbylinks(htmlid,linkid,occurs) VALUES (%u,%u,%u)",id,lcur()->GetId(),lcur()->GetOccurs() );
+		RQuery insertkwds(this,sSql);
+	}
+	
+	
 }
 
 //-----------------------------------------------------------------------------

@@ -426,12 +426,6 @@ public:
 	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
 
 	/**
-	* Compute the links for all documents
-	* @param rec        Receiver for the signals.
-	*/
-	void ComputeLinks(GSlot* rec);
-
-	/**
 	* Load the Users.
 	*/
 	void InitUsers(void) throw(bad_alloc,GException);
@@ -527,7 +521,12 @@ public:
 	* @param sub2          The Pointer to the subprofile.
 	*/
 	double GetSimDocProf(const GDoc* doc,const GSubProfile* sub);
-                  
+
+	/**
+	* Initialise the graph of links needed by the linkCalc Algo.
+	*/
+	void InitLinks();
+	        
 	/**
 	* Compute all the necessary profiles.
 	* @param rec            Receiver for the signals.

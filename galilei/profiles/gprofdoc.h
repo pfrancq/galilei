@@ -95,6 +95,16 @@ public:
     GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,const char* date);
 
 	/**
+	* Constructor.
+	* @param doc            Pointer to the document judged.
+	* @param prof           Pointer to the profile.
+	* @param fdbk           Feedback.
+	* @param date           Date.
+	*/
+	GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,RTimeDate::RDate date);
+
+    
+	/**
 	* Compare mathod used by RStd::RContainer.
 	*/
 	int Compare(const GProfDoc &profdoc) const;

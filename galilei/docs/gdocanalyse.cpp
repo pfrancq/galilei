@@ -342,7 +342,16 @@ BeginExtract:
 		goto BeginExtract;
 
 	// Copy result in word, make it lower case and return true.
-	if(len>MaxWordLen) len=MaxWordLen;
+	if(len>MaxWordLen)
+	{
+		ptr-=( len - MaxWordLen +1);
+		len=MaxWordLen;
+			// if the word ends with a " ' " or a " \ " the skip the character.
+		if ( strchr("\'\\",*(ptr)) )
+		{
+			len--;
+		}
+	}
 	word.Copy(begin,len);
 	word.StrLwr();
 	AddWord(word(),weight);
@@ -451,18 +460,18 @@ void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RCon
 			}
 			if ((*tag)()->GetName()=="dc:format")
 			{
-				format=(*tag)()->GetContent();
+				//format=(*tag)()->GetContent();
 			}
 			if ((*tag)()->GetName()=="dc:type")
 			{
-				type=(*tag)()->GetContent();
-				if (!strcmp(type,"REFRESH"))
-				{
-					if (!Options->UseRedirection)
-					{
+//				type=(*tag)()->GetContent();
+//				if (!strcmp(type,"REFRESH"))
+//				{
+//					if (!Options->UseRedirection)
+//					{
 						bUrl=false;
-					}
-				}
+//					}
+//				}
 			}
 		}
 		if (bUrl) 

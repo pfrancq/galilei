@@ -232,24 +232,24 @@ void GALILEI::GGroup::NotJudgedDocsList(RStd::RContainer<GProfDoc,unsigned,false
 			if(ptr)
 			{
 				j=ptr->GetFdbk();
-				switch(j)
+				switch( j & djMaskJudg)
 				{
 					case djNav:
-						if(Fdbks()->GetFdbk()==djOK)
+						if(Fdbks()->GetFdbk() & djOK)
 						{
 							docs->DeletePtr(ptr);
 							docs->InsertPtr(Fdbks());
 						}
 						break;
 					case djKO:
-						if((Fdbks()->GetFdbk()==djOK)&&(Fdbks()->GetFdbk()==djNav))
+						if((Fdbks()->GetFdbk() & djOK)&&(Fdbks()->GetFdbk() & djNav))
 						{
 							docs->DeletePtr(ptr);
 							docs->InsertPtr(Fdbks());
 						}
 						break;
 					case djOutScope:
-						if((Fdbks()->GetFdbk()==djOK)&&(Fdbks()->GetFdbk()==djNav)&&(Fdbks()->GetFdbk()==djKO))
+						if((Fdbks()->GetFdbk() & djOK)&&(Fdbks()->GetFdbk() & djNav)&&(Fdbks()->GetFdbk() & djKO))
 						{
 							docs->DeletePtr(ptr);
 							docs->InsertPtr(Fdbks());
@@ -294,7 +294,7 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 
 			// If not -> insert it in docs if relevant.
 			j=Fdbks()->GetFdbk();
-			if((j==djNav)||(j==djOK))
+			if((j & djNav)||(j & djOK))
 			{
 				if(global)
 					Docs.InsertPtr(new GProfDocRef(Fdbks(),s->GlobalSimilarity(Fdbks()->GetDoc())));

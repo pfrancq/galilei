@@ -392,6 +392,13 @@ public:
 	void InsertLink(const GDoc* doc) throw(bad_alloc);
 
 	/**
+	* Add a new link to the document and set the number of occurences
+	* @params doc            The Document representing the link to be inserted.
+	* @params nbOccurs  The number of occurence of the link inside the document.
+	*/
+	void InsertLink(const GDoc* doc, unsigned int nbOccurs) throw(bad_alloc);
+	
+	/**
 	* Add a new link to the document
 	* @params doc           The Document representing the link to be inserted.
 	* @param format         The mime type of the Link.

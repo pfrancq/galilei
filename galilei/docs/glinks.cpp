@@ -3,7 +3,7 @@
 
 	GLinks.cpp
 
-	[List of Links - Implementation.
+	List of Links - Implementation.
 
 	Copyright 2003 by the Université Libre de Bruxelles.
 
@@ -49,7 +49,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GLinks::GLinks(GDoc* d)
-	: RContainer<GLink,unsigned int,false,true>(3,2), Doc(d) , Weight(1)
+	: RContainer<GLink,unsigned int,false,true>(3,2), Doc(d) 
 {
 }
 

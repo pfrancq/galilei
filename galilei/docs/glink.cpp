@@ -46,23 +46,23 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 GALILEI::GLink::GLink(const GDoc* doc)
-	: DocTO(doc), Occurs(0),Format(""),Type("")
+	: DocTO(doc), Occurs(0)//,Format(""),Type("")
 {}
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLink::SetFormat(char* format)
-{
-	if (!format) return;
-	Format=format;
-}
+//void GALILEI::GLink::SetFormat(char* format)
+//{
+//	if (!format) return;
+//	Format=format;
+//}
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLink::SetType(char* type)
-{
-	if (!type) return;
-	Type=type;
-}
+//void GALILEI::GLink::SetType(char* type)
+//{
+//	if (!type) return;
+//	Type=type;
+//}
 
 
 //-----------------------------------------------------------------------------

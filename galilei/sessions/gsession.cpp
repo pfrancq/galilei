@@ -441,28 +441,7 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 		InsertDoc(Cur());
 	}
 	tmpDocs->Clear();
-
 	
-//	cout <<"------------------------------"<<endl;
-//	Docs=GetDocsCursor();
-//  for(Docs.Start();!Docs.End();Docs.Next())
-//	{
-//		cout<< "id du doc : "<< Docs()->GetId()<<" id docRef "<<GetDoc(Docs()->GetURL())->GetId() <<" url : "<<Docs()->GetURL()<<endl;
-//		GSubjectCursor Scur=Docs()->GetSubjectCursor();
-//		cout << "Subjects : " << endl;
-//		for (Scur.Start();!Scur.End();Scur.Next())
-//		{
-//			cout<< Scur()->GetName() <<endl;
-//		}
-//	}
-//	cout <<"------------------------------"<<endl;
-	
-}
-
-
-void GALILEI::GSession::ComputeLinks(GSlot* rec)
-{
-  LinkCalc->Compute(rec);
 }
 
 
@@ -639,12 +618,24 @@ GUser* GALILEI::GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const 
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSession::InitLinks()
+{
+	if(!LinkCalc)
+		throw GException("No Link computing method chosen.");
+
+	LinkCalc->InitAlgo();
+}
+
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
 {
 	GProfileCursor Prof=GetProfilesCursor();
 
 	if(!ProfileCalc)
 		throw GException("No computing method chosen.");
+	if(!LinkCalc)
+		throw GException("No Link computing method chosen.");
+
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		if(modified&&(Prof()->GetState()==osUpToDate)) continue;
@@ -652,10 +643,18 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 		try
 		{
 			if((!modified)||(Prof()->GetState()!=osUpdated))
+			{
+				cout << "Utilisation des liens : "<< DocOptions->UseLink<<endl;
+				if (DocOptions->UseLink)
+				{
+					LinkCalc->Compute(Prof());
+				}
 				ProfileCalc->Compute(Prof());
+			}
 		}
 		catch(GException& e)
 		{
+			
 		}
 	}
 
@@ -683,6 +682,7 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::CalcProfile(GProfile* prof) throw(GException)
 {
+	LinkCalc->Compute(prof);
 	ProfileCalc->Compute(prof);
 }
 

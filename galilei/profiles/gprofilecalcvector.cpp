@@ -227,7 +227,7 @@ void GALILEI::GProfileCalcVector::ComputeGlobal(GProfile* profile) throw(bad_all
 		CurLang=CurDoc->GetLang();
 		if(!CurLang) continue;
 		Fdbk=Docs()->GetFdbk();
-		if((Fdbk!=djOK)&&(Fdbk!=djNav)) continue;
+		if((!(Fdbk & djOK))&&(!(Fdbk & djNav))) continue;
 
 		// Determine the lists corresponding to the language of the document
 		NbDocs=NbDocsWords.GetPtr<GLang*>(CurLang);

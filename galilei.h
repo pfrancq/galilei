@@ -226,7 +226,7 @@ class GGroupCalcParams;
 class GCalcRelevantParams;
 class GCalcGravitationParams;
 // Link Description parameters
-class GLinkCalcItAlgoParams;
+class GLinkCalcHITSParams;
 
 
 //-----------------------------------------------------------------------------
@@ -280,11 +280,19 @@ enum tObjState
 */
 enum tDocJudgement
 {
-	djUnknow                /** Unknow judgement.*/,
-	djOK                    /** Document is OK.*/,
-	djKO                    /** Document is KO.*/,
-	djNav                   /** Document is an interesting navigation document.*/,
-	djOutScope              /** Document is out of scope.*/
+	 // the 4 first bits are used to express the judgemnet of the Doc (OK,KO,N,HS)
+	 // the 5th and 6th bits are used to express the status of the Doc (Hub, Autority )
+	 // the masks are used to separate the judgement and the status of a doc.
+	djUnknow=0               /** Unknow judgement.*/,
+	djOK=1                      /** Document is OK.*/,
+	djKO=2                      /** Document is KO.*/,
+	djNav=4                    /** Document is an interesting navigation document.*/,
+	djOutScope=8           /** Document is out of scope.*/,
+	djHub=16                  /** Document is a Hub.*/,
+	djAutority=32            /** Document is an Autority.*/,
+	djMaskJudg=15          /** Mask for the judgement of the doc.*/,
+	djMaskHubAuto=48    /** Mask for the Hub or Autority.*/
+	
 };
 
 

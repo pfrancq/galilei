@@ -61,6 +61,9 @@
 #include <tests/gquerydocsgroup.h>
 #include <tests/gstatsimdocprof.h>
 #include <tests/gstatsimdocgrp.h>
+#include <tests/gstatprofdoc.h>
+#include <docs/gdocoptions.h>
+
 using namespace GALILEI;
 using namespace RIO;
 using namespace RStd;
@@ -124,6 +127,49 @@ void GSOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned 
 	Owner->SOFile=new RTextFile(args->Tab[0]->GetValue(prg),RIO::Create);
 	Owner->SOFile->SetSeparator("\t");
 }
+
+
+//-----------------------------------------------------------------------------
+void GDSOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	sprintf(tmp,"Create Documents Statistics Output file '%s'",args->Tab[0]->GetValue(prg));
+	r->WriteStr(tmp);
+	if(Owner->DSOFile)
+	{
+		delete Owner->DSOFile;
+		Owner->DSOFile=0;
+	}
+	Owner->DSOFile=new RTextFile(args->Tab[0]->GetValue(prg),RIO::Create);
+	Owner->DSOFile->SetSeparator("\t");
+
+	(*Owner->DSOFile)<<"-------------------------------------------------------------------------------------------------"<<endl;
+	(*Owner->DSOFile)<<"AVG_PJSD : Average number of rofiles having Juged the Same Document."<<endl;;
+	(*Owner->DSOFile)<<"AVG_PAR : Average of Profiles Agreement Ration."<<endl;
+	(*Owner->DSOFile)<<"AVG_PDR : Average of Profiles Desagreement Ration."<<endl;
+	(*Owner->DSOFile)<<"-------------------------------------------------------------------------------------------------"<<endl<<endl;
+	(*Owner->DSOFile)<<"AVG_PJSD	--	AVG_PAR	--	AVG_PDR"<<endl;
+	(*Owner->DSOFile)<<endl;
+}
+
+
+//-----------------------------------------------------------------------------
+void GSetLinksUseI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	if(args->NbPtr)
+	{
+		if((args->Tab[0]->GetValue(prg))[0]=='0')
+		{
+			r->WriteStr("Set Use of Links : false");
+			Owner->Session->GetDocOptions()->UseLink=false;
+		}
+		else
+		{
+			r->WriteStr("Set Use of Links : true");
+			Owner->Session->GetDocOptions()->UseLink=true;
+		}
+	}
+}
+
 
 
 //-----------------------------------------------------------------------------
@@ -299,6 +345,40 @@ void GCompareIdealI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 			(*Owner->GOFile)<<Owner->PercAss;
 		(*Owner->GOFile)<<endl;
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GCompareLinksI::Run(GSessionPrg*prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>*args) throw(GException)
+{
+	bool g;
+
+	cout <<"nombre d'arg:"<<args->NbPtr<<endl;
+	if(args->NbPtr!=1)
+		throw GException("Method needs one parameter");
+	sprintf(tmp,"Statistics on Profiles and Documents : ");
+	r->WriteStr(tmp);
+	GStatProfDoc ProfDocStats(Owner->Session,Owner->DSOFile);       
+	ProfDocStats.Run();
+	sprintf(tmp,  "--Average Number of profiles having juged the same docs : %f ",ProfDocStats.GetMeanNbProf() );
+	r->WriteStr(tmp);
+//	(*Owner->OFile)<<"--Average Number of profiles having juged the same docs : " <<ProfDocStats.GetMeanNbProf()<<endl;
+
+	sprintf(tmp,  "--Average of Agreement Ratio between profiles: %f ",ProfDocStats.GetMeanSame() );
+	r->WriteStr(tmp);
+//	(*Owner->OFile)<<"--Average of Agreement Ratio between profiles:  "<<ProfDocStats.GetMeanSame()<<endl;
+
+	sprintf(tmp,  "--Average of Desagreement Ratio between profiles: %f ",ProfDocStats.GetMeanDiff() );
+	r->WriteStr(tmp);
+//	(*Owner->OFile)<<"--Average of Desagreement Ratio between profiles:  "<<ProfDocStats.GetMeanDiff()<<endl;
+
+	g=atoi(args->Tab[0]->GetValue(prg));
+	if(g)
+	{
+		ProfDocStats.WriteLine();
+	}
+	
+
 }
 
 
@@ -773,11 +853,13 @@ void GComputeTimeI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned 
 //-----------------------------------------------------------------------------
 GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	: GPrgClass("Session"), IdealMethod(0), Session(s), OFile(0),
-	  GOFile(0), SOFile(0), NbHistory(0), AutoSave(false), TrackNewProfiles(false) 
+	  GOFile(0), SOFile(0),DSOFile(0), NbHistory(0), AutoSave(false), TrackNewProfiles(false) 
 {
 	Methods.InsertPtr(new GOutputI(this));
 	Methods.InsertPtr(new GGOutputI(this));
 	Methods.InsertPtr(new GSOutputI(this));
+	Methods.InsertPtr(new GDSOutputI(this));
+	Methods.InsertPtr(new GSetLinksUseI(this));
 	Methods.InsertPtr(new GSetAutoSaveI(this));
 	Methods.InsertPtr(new GTestI(this));
 	Methods.InsertPtr(new GLogI(this));
@@ -789,6 +871,7 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GMixIdealI(this));
 	Methods.InsertPtr(new GFdbksCycleI(this));
 	Methods.InsertPtr(new GCompareIdealI(this));
+	Methods.InsertPtr(new GCompareLinksI(this));
 	Methods.InsertPtr(new GStatsProfilesI(this));
 	Methods.InsertPtr(new GStatsDocsI(this));
 	Methods.InsertPtr(new GSetComputingParamI(this));
@@ -831,6 +914,11 @@ GALILEI::GPrgClassSession::~GPrgClassSession(void)
 	{
 		delete SOFile;
 		SOFile=0;
+	}
+	if(DSOFile)
+	{
+		delete DSOFile;
+		DSOFile=0;
 	}
 	if(IdealMethod)
 	{

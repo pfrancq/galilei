@@ -108,6 +108,11 @@ public:
 	RIO::RTextFile* SOFile;
 
 	/**
+	* Documents Statistics Output file.
+	*/
+	RIO::RTextFile* DSOFile;
+
+	/**
 	* Number of histories stored.
 	*/
 	unsigned int NbHistory;
@@ -214,6 +219,24 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GDSOutputI : public GSM
+{
+public:                                                                 
+	GDSOutputI(GPrgClassSession* o) : GSM("SetDocStatsOutput",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSetLinksUseI : public GSM
+{
+public:
+	GSetLinksUseI(GPrgClassSession* o) : GSM("SetLinksUse",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
 class GSetAutoSaveI : public GSM
 {
 public:
@@ -308,6 +331,15 @@ class GCompareIdealI : public GSM
 {
 public:
 	GCompareIdealI(GPrgClassSession* o) : GSM("CompareIdeal",o) {}
+	virtual void Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GCompareLinksI : public GSM
+{
+public:
+	GCompareLinksI(GPrgClassSession* o) : GSM("CompareLinks",o) {}
 	virtual void Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
