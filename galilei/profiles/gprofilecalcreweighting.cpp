@@ -89,7 +89,7 @@ public:
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcReWeighting::GProfileCalcReWeighting(GSession* session) throw(bad_alloc)
 	: GProfileCalc("Direct Reweighting",session), OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
-	  MaxNonZero(60)
+	  Order(0), MaxOrderSize(5000), MaxNonZero(60)
 {
 	GLangCursor Langs;
 
@@ -99,6 +99,7 @@ GALILEI::GProfileCalcReWeighting::GProfileCalcReWeighting(GSession* session) thr
 		OK.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 		KO.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 	}
+	Order=new GIWordWeight*[MaxOrderSize];
 }
 
 
@@ -155,7 +156,8 @@ void GALILEI::GProfileCalcReWeighting::ComputeOKKO(GProfile* profile) throw(bad_
 //-----------------------------------------------------------------------------
 void GALILEI::GProfileCalcReWeighting::ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc)
 {
-	GIWordWeight* ptr;
+	GIWordWeight** ptr;
+	unsigned int i;
 	GIWordsWeights* Vector=s->GetVector();
 	GIWordsWeights* MOK=OK.GetPtr<GLang*>(s->GetLang());
 
@@ -163,16 +165,30 @@ void GALILEI::GProfileCalcReWeighting::ComputeSubProfile(GSubProfileVector* s) t
 	s->RemoveRefs();
 	Vector->Clear();
 
-	// Choose the elements to stay.
-	for(unsigned int Nb=MaxNonZero+1;--Nb;)
+	// Put in Order an ordered version of MOK
+	if(MOK->NbPtr>MaxOrderSize)
 	{
-		if(!MOK->IsNextWord()) break;
-		ptr=MOK->NextWord();
-		Vector->InsertPtr(new GIWordWeight(ptr->GetId(),ptr->GetWeight()));
+		if(Order) delete[] Order;
+		MaxOrderSize=(MOK->NbPtr+1)*1.1;
+		Order=new GIWordWeight*[MaxOrderSize];
+	}
+	memcpy(Order,MOK->Tab,MOK->NbPtr*sizeof(GIWordWeight*));
+	qsort(static_cast<void*>(Order),MOK->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
+	Order[MOK->NbPtr]=0;
+
+	//If MaxNonZero is null -> take all the words.
+	if(MaxNonZero)
+	{
+		for(i=MaxNonZero+1,ptr=Order;(--i)&&(*ptr);ptr++)
+			Vector->InsertPtr(new GIWordWeight(*ptr));
+	}
+	else
+	{
+		for(ptr=Order;(*ptr);ptr++)
+			Vector->InsertPtr(new GIWordWeight(*ptr));
 	}
 
-	// Sort the vector.
-	Vector->Sort();
+	// Update the references of the vector.
 	s->UpdateRefs();
 }
 
@@ -195,4 +211,5 @@ void GALILEI::GProfileCalcReWeighting::Compute(GProfile* profile)
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcReWeighting::~GProfileCalcReWeighting(void)
 {
+	if(Order) delete[] Order;
 }

@@ -73,6 +73,16 @@ protected:
 	RStd::RContainer<InternVector,unsigned int,true,true> KO;
 
 	/**
+	* Ordered vector for current computed profile.
+	*/
+	GIWordWeight** Order;
+
+	/**
+	* Maximal size allocate for a profile.
+	*/
+	unsigned int MaxOrderSize;
+
+	/**
 	* Maximal number of the non-zero weights in the vector.
 	*/
 	unsigned int MaxNonZero;
@@ -145,4 +155,3 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
-

@@ -114,7 +114,7 @@ public:
 GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session) throw(bad_alloc)
 	: GProfileCalc("Statistical",session), Vector(Session->GetNbLangs()),
 	  NbDocsWords(Session->GetNbLangs()), NbDocsLangs(Session->GetNbLangs()),
-	  MaxNonZero(60), IdfFactor(true)
+	  Order(0), MaxOrderSize(5000), MaxNonZero(60), IdfFactor(true)
 {
 	GLangCursor Langs;
 
@@ -125,6 +125,7 @@ GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session) throw(bad_all
 		NbDocsWords.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 		NbDocsLangs.InsertPtr(new GNbDocsLangs(Langs()));
 	}
+	Order=new GIWordWeight*[MaxOrderSize];
 }
 
 
@@ -220,7 +221,6 @@ void GALILEI::GProfileCalcVector::ComputeGlobal(GProfile* profile) throw(bad_all
 			else
 				(*v)->SetWeight((*v)->GetWeight()/MaxFreq);
 		}
-		Vector()->Sort();
 	}
 }
 
@@ -228,7 +228,8 @@ void GALILEI::GProfileCalcVector::ComputeGlobal(GProfile* profile) throw(bad_all
 //-----------------------------------------------------------------------------
 void GALILEI::GProfileCalcVector::ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc)
 {
-	GIWordWeight* ptr;
+	GIWordWeight** ptr;
+	unsigned int i;
 	GIWordsWeights* Desc=s->GetVector();
 	GIWordsWeights* LangVector=Vector.GetPtr<GLang*>(s->GetLang());
 
@@ -239,27 +240,30 @@ void GALILEI::GProfileCalcVector::ComputeSubProfile(GSubProfileVector* s) throw(
 	// Verify that there was something computed
 	if(LangVector->IsEmpty()) return;
 
+	// Put in Order an ordered version of LangVector
+	if(LangVector->NbPtr>MaxOrderSize)
+	{
+		if(Order) delete[] Order;
+		MaxOrderSize=(LangVector->NbPtr+1)*1.1;
+		Order=new GIWordWeight*[MaxOrderSize];
+	}
+	memcpy(Order,LangVector->Tab,LangVector->NbPtr*sizeof(GIWordWeight*));
+	qsort(static_cast<void*>(Order),LangVector->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
+	Order[LangVector->NbPtr]=0;
+
 	//If MaxNonZero is null -> take all the words.
 	if(MaxNonZero)
 	{
-		for(unsigned int Nb=MaxNonZero+1;--Nb;)
-		{
-			if(!LangVector->IsNextWord()) break;
-			ptr=LangVector->NextWord();
-			Desc->InsertPtr(new GIWordWeight(ptr->GetId(),ptr->GetWeight()));
-		}
+		for(i=MaxNonZero+1,ptr=Order;(--i)&&(*ptr);ptr++)
+			Desc->InsertPtr(new GIWordWeight(*ptr));
 	}
 	else
 	{
-		while(LangVector->IsNextWord())
-		{
-			ptr=LangVector->NextWord();
-			Desc->InsertPtr(new GIWordWeight(ptr->GetId(),ptr->GetWeight()));
-		}
+		for(ptr=Order;(*ptr);ptr++)
+			Desc->InsertPtr(new GIWordWeight(*ptr));
 	}
 
-	// Sort the vector.
-	Desc->Sort();
+	// Update the references of the vector.
 	s->UpdateRefs();
 }
 
@@ -282,4 +286,5 @@ void GALILEI::GProfileCalcVector::Compute(GProfile* profile)
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcVector::~GProfileCalcVector(void)
 {
+	if(Order) delete[] Order;
 }
