@@ -51,7 +51,7 @@ using namespace R;
 #include <docs/gdocxml.h>
 #include <sessions/gstoragemysql.h>
 #include <profiles/gsubprofile.h>
-#include <profiles/gsubprofilevector.h>
+#include <profiles/gsubprofile.h>
 #include <groups/ggroup.h>
 #include <groups/gsubject.h>
 #include <groups/gsubjects.h>

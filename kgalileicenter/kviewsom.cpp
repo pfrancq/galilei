@@ -48,7 +48,7 @@ using namespace R;
 #include <infos/gweightinfos.h>
 #include <frontend/kde/qlistviewitemtype.h>
 #include <frontend/kde/qgdocxml.h>
-#include <docs/gdocvector.h>
+#include <docs/gdoc.h>
 #include <docs/gdocxml.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>

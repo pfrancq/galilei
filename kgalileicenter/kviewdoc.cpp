@@ -49,7 +49,7 @@ using namespace R;
 #include <infos/gweightinfos.h>
 #include <frontend/kde/qlistviewitemtype.h>
 #include <frontend/kde/qgdocxml.h>
-#include <docs/gdocvector.h>
+#include <docs/gdoc.h>
 #include <docs/gdocxml.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
@@ -86,7 +86,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Document(dynamic_cast<GDocVector*>(document)), Fdbks(0), Struct(0),
+	: KView(doc,parent,name,wflags), Document(document), Fdbks(0), Struct(0),
 	  bDelDoc(false), bDocXML(false)
 {
 	// Window proprieties
@@ -142,7 +142,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	  bDelDoc(true), bDocXML(false)
 {
 	// Construct the document
-	Document=new GDocVector(file,file,cNoRef,0,Doc->GetSession()->GetMIMEType(mime),0,0,0);
+	Document=new GDoc(file,file,cNoRef,0,Doc->GetSession()->GetMIMEType(mime),"","",0);
 
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));

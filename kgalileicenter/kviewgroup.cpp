@@ -42,8 +42,8 @@
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
 #include <profiles/gprofdoc.h>
-#include <docs/gdocvector.h>
-#include <groups/ggroupvector.h>
+#include <docs/gdoc.h>
+#include <groups/ggroup.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -261,7 +261,7 @@ void KViewGroup::ConstructDescription(void)
 
 	// Read 'Ok'
 	Vector->clear();
-	Cur=static_cast<GGroupVector*>(Group)->GetWeightInfoCursor();
+	Cur=Group->GetWeightInfoCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		new LocalItem(Vector,ToQString(Doc->GetSession()->GetStorage()->LoadWord(Cur()->GetId(),Group->GetLang()->GetCode())),Cur()->GetWeight());
@@ -295,7 +295,7 @@ void KViewGroup::slotMenu(int)
 	int dlg;
 	KURL url;
 	GDocCursor theDocs;
-	GDocVector* doc;
+	GDoc* doc;
 	unsigned int i,size,maxsize,newsize,j;
 	GWeightInfo** tab;
 	GWeightInfo** tmp;
@@ -324,7 +324,7 @@ void KViewGroup::slotMenu(int)
 	theDocs.Set(OkDocs);
 	for(theDocs.Start(),i=0,maxsize=0,tab=0;!theDocs.End();theDocs.Next(),i++)
 	{
-		doc=dynamic_cast<GDocVector*>(theDocs());
+		doc=theDocs();
 		Res<<"\t\t<Object Id=\""<<theDocs()->GetName()<<"\">\n";
 		if(doc)
 		{

@@ -45,7 +45,7 @@ using namespace R;
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
-#include <groups/ggroupvector.h>
+#include <groups/ggroup.h>
 #include <groups/ggroups.h>
 #include <groups/gsubjects.h>
 #include <frontend/kde/qlistviewitemtype.h>
@@ -165,7 +165,7 @@ void KViewThGroups::LoadGroups(const char* filename)
 	{
 		lang=Doc->GetSession()->GetLangs()->GetLang(f.GetWord());
 		f>>nbprof;
-		Groups->InsertGroup(group=new GGroupVector(i,lang,false));
+		Groups->InsertGroup(group=new GGroup(i,lang,false));
 		for(j=nbprof+1;--j;)
 		{
 			f>>id;

@@ -40,7 +40,6 @@
 namespace GALILEI
 {
 	class GDoc;
- 	class GDocVector;
 	class GDocXML;
 	class QGDocXML;
 }
@@ -71,7 +70,7 @@ class KViewDoc : public KView
 	/**
 	* Document to describe.
 	*/
-	GDocVector* Document;
+	GDoc* Document;
 
 	/**
 	* Widget to handle the different information of the document.
@@ -185,7 +184,7 @@ public:
 	* Get the doc of this window.
 	* @return Pointer to a GALILEI::GDoc.
 	*/
-	GDocVector* GetDoc(void) const {return(Document);}
+	GDoc* GetDoc(void) const {return(Document);}
 
 	/**
 	* Look if the DocXML is already been computed for

@@ -50,7 +50,7 @@
 #include <groups/ggroups.h>
 #include <sessions/gsession.h>
 #include <frontend/kde/qlistviewitemtype.h>
-#include <frontend/kde/qgsubprofiledescs.h>
+#include <frontend/kde/qgsubprofiles.h>
 #include <frontend/kde/rqt.h>
 using namespace GALILEI;
 using namespace R;
@@ -100,7 +100,7 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	ConstructUser();
 
 	// Initialisation of the Descriptions Widget
-	Desc=new QGSubProfileDescs(Infos,Doc->GetSession(),Profile,sdVector);
+	Desc=new QGSubProfiles(Infos,Doc->GetSession(),Profile);
 
 	// Initialisation of the Groups Widget
 	Groups=new QListView(Infos);

@@ -48,7 +48,6 @@
 #include <groups/ggroup.h>
 #include <groups/gsubject.h>
 #include <profiles/gsubprofile.h>
-#include <profiles/gsubprofilevector.h>
 #include <profiles/gprofilessims.h>
 #include <profiles/gprofile.h>
 #include <sessions/gsession.h>
