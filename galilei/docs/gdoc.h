@@ -244,7 +244,7 @@ public:
 	* @param id             Identificator of the word.
 	* @param nb             Occurences of the word.
 	*/
-	void AddWord(const unsigned int id,const unsigned int nb);
+	void AddWord(const unsigned int id,const double nb);
 
 	/**
 	* @return Total number of words in the documents with stoplist.

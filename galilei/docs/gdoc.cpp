@@ -143,7 +143,7 @@ void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned in
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::AddWord(const unsigned int id,const unsigned int nb)
+void GALILEI::GDoc::AddWord(const unsigned int id,const double nb)
 {
 	Words->InsertPtr(new GIWordWeight(id,nb));
 }
