@@ -51,7 +51,7 @@ using namespace R;
 #include <profiles/gsubprofile.h>
 #include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
-#include <groups/gsubjecttree.h>
+#include <groups/gsubjects.h>
 #include <galilei/qlistviewitemtype.h>
 using namespace GALILEI;
 
@@ -84,10 +84,9 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-KViewThGroups::KViewThGroups(KDoc* doc,RContainer<GGroups,unsigned int,true,true>* idealgroup,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Groups(0)
+KViewThGroups::KViewThGroups(KDoc* doc,GGroups* idealgroup,QWidget* parent,const char* name,int wflags)
+	: KView(doc,parent,name,wflags), Groups(idealgroup), DeleteGroups(false)
 {
-	Groups=idealgroup;
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
 
 	// initialisation of the tab widget
@@ -120,7 +119,7 @@ KViewThGroups::KViewThGroups(KDoc* doc,RContainer<GGroups,unsigned int,true,true
 
 //-----------------------------------------------------------------------------
 KViewThGroups::KViewThGroups(KDoc* doc,const char* filename,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Groups(0)
+	: KView(doc,parent,name,wflags), Groups(0), DeleteGroups(true)
 {
 	LoadGroups(filename);
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
@@ -157,30 +156,20 @@ void KViewThGroups::LoadGroups(const char* filename)
 {
 	unsigned int nb;
 	unsigned int i,j,id;
-	GGroups* groups;
 	GGroup* group;
 	unsigned int nbprof;
 	GLang* lang;
 	GProfile* prof;
 	GSubProfile* sub;
-	GFactoryLangCursor CurLang;
 
 	RTextFile f(filename);
 	f>>nb;
-	Groups=new RContainer<GGroups,unsigned int,true,true>(nb,nb/2);
-	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
-	{
-		lang=CurLang()->GetPlugin();
-		if(!lang) continue;
-		Groups->InsertPtr(new GGroups(lang));
-	}
+	Groups=new GGroups(nb);
 	for(i=0;i<nb;i++)
 	{
 		lang=Doc->GetSession()->GetLangs()->GetLang(f.GetWord());
 		f>>nbprof;
-		groups=Groups->GetPtr<const GLang*>(lang);
-		groups->InsertPtr(group=new GGroupVector(i,lang));
+		Groups->InsertGroup(group=new GGroupVector(i,lang));
 		for(j=nbprof+1;--j;)
 		{
 			f>>id;
@@ -214,20 +203,18 @@ void KViewThGroups::ConstructThGroups(void)
 	GFactoryLangCursor CurLang;
 	GLang* lang;
 
-
 	thGroups->clear();
 	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
-		GGroups* grs=Groups->GetPtr<const GLang*>(lang);
-		if(!grs) continue;
+		GGroupCursor grs=Groups->GetGroupsCursor(lang);
 		QListViewItemType* grsitem = new QListViewItemType(thGroups,lang->GetName());
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-		for(grs->Start(); !grs->End(); grs->Next())
+		for(grs.Start(); !grs.End(); grs.Next())
 		{
-			GGroup* gr=(*grs)();
+			GGroup* gr=grs();
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group");
 			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 			for(gr->Start(); !gr->End(); gr->Next())
@@ -258,12 +245,12 @@ void KViewThGroups::ConstructGroups(void)
 	{
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
-		GGroups* grs=Doc->GetSession()->GetGroups(lang);
+		GGroupCursor grs=Doc->GetSession()->GetGroupsCursor(lang);
 		QListViewItemType* grsitem = new QListViewItemType(prGroups,lang->GetName());
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-		for (grs->Start(); !grs->End(); grs->Next())
+		for (grs.Start(); !grs.End(); grs.Next())
 		{
-			GGroup* gr=(*grs)();
+			GGroup* gr=grs();
 			sprintf(tmp1,"Precision: %1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(gr));
 			sprintf(tmp2,"Recall: %1.3f",Doc->GetSession()->GetSubjects()->GetRecall(gr));
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group",tmp1,tmp2);
@@ -298,5 +285,6 @@ void KViewThGroups::resizeEvent(QResizeEvent *)
 //-----------------------------------------------------------------------------
 KViewThGroups::~KViewThGroups(void)
 {
-	if(Groups);
+	if(Groups&&DeleteGroups)
+		delete Groups;
 }

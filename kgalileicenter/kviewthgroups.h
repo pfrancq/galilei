@@ -80,7 +80,7 @@ class KViewThGroups : public KView
 	/**
 	* Ideal Groups.
 	*/
-	RContainer<GGroups,unsigned int,true,true>* Groups;
+	GGroups* Groups;
 
 	/**
 	* Widget to handle the different information of the document.
@@ -96,6 +96,11 @@ class KViewThGroups : public KView
 	* Pratical Groups.
 	*/
 	QListView* prGroups;
+
+	/**
+	* Delete the groups
+	*/
+	bool DeleteGroups;
 
 public:
 
@@ -117,7 +122,7 @@ public:
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewThGroups(KDoc* doc,RContainer<GGroups,unsigned int,true,true>* idealgroup,QWidget* parent,const char* name,int wflags);
+	KViewThGroups(KDoc* doc,GGroups* idealgroup,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.

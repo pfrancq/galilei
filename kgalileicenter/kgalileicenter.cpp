@@ -56,7 +56,7 @@ using namespace R;
 #include <profiles/gsubprofilevector.h>
 #include <groups/ggroup.h>
 #include <groups/gsubject.h>
-#include <groups/gsubjecttree.h>
+#include <groups/gsubjects.h>
 #include <sessions/gmixidealgroups.h>
 #include <infos/glang.h>
 #include <infos/gdict.h>

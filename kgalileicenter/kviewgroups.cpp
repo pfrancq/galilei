@@ -123,12 +123,12 @@ void KViewGroups::ConstructGroups(void)
 	{
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
-		GGroups* grs=Doc->GetSession()->GetGroups(lang);
+		GGroupCursor grs=Doc->GetSession()->GetGroupsCursor(lang);
 		QListViewItemType* grsitem = new QListViewItemType(Groups,lang->GetName());
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-		for (grs->Start(); !grs->End(); grs->Next())
+		for (grs.Start(); !grs.End(); grs.Next())
 		{
-			GGroup* gr=(*grs)();
+			GGroup* gr=grs();
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group");
 			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 			for(gr->Start(); !gr->End(); gr->Next())
