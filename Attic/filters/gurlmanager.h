@@ -67,7 +67,7 @@ protected:
 	/**
 	* List of all filters avalaible.
 	*/
-	RStd::RContainer<GFilter,unsigned int,true,false> Filters;
+	RStd::RContainer<GFilter,unsigned int,true,true> Filters;
 
 public:
 
@@ -120,7 +120,7 @@ public:
 	* Get the list of filters activ.
 	* Return Pointer to RContainer<GFilter,unsigned int,true,false>.
 	*/
-	RStd::RContainer<GFilter,unsigned int,true,false>* GetFilters(void) {return(&Filters);}
+	RStd::RContainer<GFilter,unsigned int,true,true>* GetFilters(void) {return(&Filters);}
 
 	/**
 	* Destructor of URL manager.
