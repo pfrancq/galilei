@@ -44,7 +44,7 @@ using namespace R;
 // include files for GALILEI
 #include <docs/gdoc.h>
 #include <infos/glang.h>
-#include <galilei/gurlmanagerkde.h>
+#include <galilei/gfiltermanagerkde.h>
 #include <galilei/qlistviewitemtype.h>
 #include <sessions/gsession.h>
 #include <profiles/guser.h>
@@ -54,7 +54,7 @@ using namespace R;
 #include <groups/ggrouping.h>
 #include <profiles/gprofilecalc.h>
 #include <infos/glang.h>
-#include <infos/glangs.h>
+#include <infos/glangmanager.h>
 using namespace GALILEI;
 
 

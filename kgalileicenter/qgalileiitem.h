@@ -41,7 +41,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gfilter.h>
+#include <docs/gfilter.h>
 #include <profiles/gprofilecalc.h>
 #include <groups/ggrouping.h>
 #include <groups/ggroupcalc.h>

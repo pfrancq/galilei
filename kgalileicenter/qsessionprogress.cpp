@@ -104,7 +104,7 @@ QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char*
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(GException,bad_alloc)
 {
 	btnOk->setEnabled(false);

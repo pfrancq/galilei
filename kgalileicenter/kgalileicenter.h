@@ -48,7 +48,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <infos/glangs.h>
+#include <infos/glangmanager.h>
 #include <docs/glinkcalcmanager.h>
 #include <docs/gdocanalysemanager.h>
 #include <docs/gpostdocmanager.h>
@@ -58,7 +58,7 @@
 #include <sessions/gsession.h>
 #include <groups/gpostgroupmanager.h>
 #include <sessions/gstatscalcmanager.h>
-#include <galilei/gurlmanagerkde.h>
+#include <galilei/gfiltermanagerkde.h>
 
 using namespace GALILEI;
 
@@ -116,12 +116,12 @@ class KGALILEICenterApp : public KMainWindow
 	/**
 	* Languages.
 	*/
-	GLangs Langs;
+	GLangManager Langs;
 
 	/**
 	* URL Manager.
 	*/
-	GURLManagerKDE URLManager;
+	GFilterManagerKDE URLManager;
 
 	/**
 	* Doc Analyse Manager.

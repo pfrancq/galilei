@@ -43,7 +43,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/glang.h>
-#include <infos/glangs.h>
+#include <infos/glangmanager.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 
