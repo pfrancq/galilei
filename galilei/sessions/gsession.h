@@ -202,6 +202,12 @@ protected:
 	*/
 	unsigned int MinStemSize;
 
+	/**
+	* Minimum number of occurences needed to insert a valid word in the list of
+	* information for a document.
+	*/
+	unsigned int MinOccur;
+
 public:
 
 	/**
@@ -410,6 +416,18 @@ public:
 		* @returns unsigned int.
 		*/
 		unsigned int GetMinStemSize(void) const {return(MinStemSize);}
+
+		/**
+		* Set the minimum number of occurences for a valid word.
+		* @param min        Minimal size.
+		*/
+		void SetMinOccur(unsigned int min) {MinOccur=min;}
+
+		/**
+		* Get the minimum number of occurences for a valid word.
+		* @returns unsigned int.
+		*/
+		unsigned int GetMinOccur(void) const {return(MinOccur);}
 
 		/**
 		* Set the minimum size of a stem.
