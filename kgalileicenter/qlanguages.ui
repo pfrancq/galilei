@@ -1,13 +1,10 @@
-<!DOCTYPE UI><UI>
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
 <class>QLanguages</class>
-<widget>
-    <class>QDialog</class>
-    <property stdset="1">
-        <name>name</name>
+<widget class="QDialog">
+    <property name="name">
         <cstring>QLanguages</cstring>
     </property>
-    <property stdset="1">
-        <name>geometry</name>
+    <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
@@ -15,22 +12,17 @@
             <height>146</height>
         </rect>
     </property>
-    <property stdset="1">
-        <name>caption</name>
+    <property name="caption">
         <string>Languages</string>
     </property>
-    <property stdset="1">
-        <name>sizeGripEnabled</name>
+    <property name="sizeGripEnabled">
         <bool>true</bool>
     </property>
-    <widget>
-        <class>QLabel</class>
-        <property stdset="1">
-            <name>name</name>
+    <widget class="QLabel">
+        <property name="name">
             <cstring>TextLabel1</cstring>
         </property>
-        <property stdset="1">
-            <name>geometry</name>
+        <property name="geometry">
             <rect>
                 <x>10</x>
                 <y>10</y>
@@ -38,31 +30,25 @@
                 <height>20</height>
             </rect>
         </property>
-        <property stdset="1">
-            <name>text</name>
+        <property name="text">
             <string>Choose Language:</string>
         </property>
     </widget>
-    <widget>
-        <class>QComboBox</class>
+    <widget class="QComboBox">
         <item>
-            <property>
-                <name>text</name>
+            <property name="text">
                 <string>English</string>
             </property>
         </item>
         <item>
-            <property>
-                <name>text</name>
+            <property name="text">
                 <string>French</string>
             </property>
         </item>
-        <property stdset="1">
-            <name>name</name>
+        <property name="name">
             <cstring>cbLangs</cstring>
         </property>
-        <property stdset="1">
-            <name>geometry</name>
+        <property name="geometry">
             <rect>
                 <x>10</x>
                 <y>40</y>
@@ -71,14 +57,11 @@
             </rect>
         </property>
     </widget>
-    <widget>
-        <class>QLayoutWidget</class>
-        <property stdset="1">
-            <name>name</name>
+    <widget class="QLayoutWidget">
+        <property name="name">
             <cstring>Layout1</cstring>
         </property>
-        <property stdset="1">
-            <name>geometry</name>
+        <property name="geometry">
             <rect>
                 <x>10</x>
                 <y>100</y>
@@ -87,79 +70,58 @@
             </rect>
         </property>
         <hbox>
-            <property stdset="1">
-                <name>margin</name>
+            <property name="name">
+                <cstring>unnamed</cstring>
+            </property>
+            <property name="margin">
                 <number>0</number>
             </property>
-            <property stdset="1">
-                <name>spacing</name>
+            <property name="spacing">
                 <number>6</number>
             </property>
             <spacer>
-                <property>
-                    <name>name</name>
+                <property name="name">
                     <cstring>Horizontal Spacing2</cstring>
                 </property>
-                <property stdset="1">
-                    <name>orientation</name>
+                <property name="orientation">
                     <enum>Horizontal</enum>
                 </property>
-                <property stdset="1">
-                    <name>sizeType</name>
+                <property name="sizeType">
                     <enum>Expanding</enum>
                 </property>
-                <property>
-                    <name>sizeHint</name>
-                    <size>
-                        <width>20</width>
-                        <height>20</height>
-                    </size>
-                </property>
             </spacer>
-            <widget>
-                <class>QPushButton</class>
-                <property stdset="1">
-                    <name>name</name>
+            <widget class="QPushButton">
+                <property name="name">
                     <cstring>buttonOk</cstring>
                 </property>
-                <property stdset="1">
-                    <name>text</name>
+                <property name="text">
                     <string>&amp;OK</string>
                 </property>
-                <property stdset="1">
-                    <name>autoDefault</name>
+                <property name="autoDefault">
                     <bool>true</bool>
                 </property>
-                <property stdset="1">
-                    <name>default</name>
+                <property name="default">
                     <bool>true</bool>
                 </property>
             </widget>
-            <widget>
-                <class>QPushButton</class>
-                <property stdset="1">
-                    <name>name</name>
+            <widget class="QPushButton">
+                <property name="name">
                     <cstring>buttonCancel</cstring>
                 </property>
-                <property stdset="1">
-                    <name>text</name>
+                <property name="text">
                     <string>&amp;Cancel</string>
                 </property>
-                <property stdset="1">
-                    <name>autoDefault</name>
+                <property name="autoDefault">
                     <bool>true</bool>
                 </property>
             </widget>
         </hbox>
     </widget>
-    <widget>
-        <class>QCheckBox</class>
-        <property stdset="1">
-            <name>name</name>
+    <widget class="QCheckBox">
+        <property name="name">
             <cstring>cbGlobal</cstring>
         </property>
-        <property stdset="1">
-            <name>geometry</name>
+        <property name="geometry">
             <rect>
                 <x>10</x>
                 <y>70</y>
@@ -167,9 +129,11 @@
                 <height>20</height>
             </rect>
         </property>
-        <property stdset="1">
-            <name>text</name>
+        <property name="text">
             <string>Global Similarities</string>
+        </property>
+        <property name="checked">
+            <bool>true</bool>
         </property>
     </widget>
 </widget>
@@ -187,4 +151,5 @@
         <slot>accept()</slot>
     </connection>
 </connections>
+<layoutdefaults spacing="6" margin="11"/>
 </UI>
