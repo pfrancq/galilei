@@ -315,7 +315,7 @@ void KViewDoc::CreateDocXML(void)
 void KViewDoc::SaveDocXML(const char* name)
 {
 	if(!Struct) return;
-	RXMLFile f(name,Struct,RTextFile::Create);
+	RXMLFile f(name,Struct,RIO::Create);
 }
 
 

@@ -522,7 +522,7 @@ void KViewChromos::slotMenu(int)
 		else
 			dlg=KMessageBox::Yes;
 	}
-	RTextFile Res(url.path().latin1(),RTextFile::Create);
+	RTextFile Res(url.path().latin1(),RIO::Create);
 	Res.SetSeparator("\t");
 	if(Sim)
 		Res<<"Id"<<"Precision"<<"Recall"<<"Global"<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"W Over B"<<"Sim WB"<<endl;
