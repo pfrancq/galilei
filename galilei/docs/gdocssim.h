@@ -78,7 +78,7 @@ public:
 	* @param d              Documents of the system.
 	* @param global         Global approach.
 	*/
-	GDocsSim(const char* filename,GDocs* d,bool global) throw(bad_alloc);
+	GDocsSim(const char* filename,GDocs* d,bool global) throw(bad_alloc,RStd::RString);
 
 	/**
 	* Constructor.
@@ -86,7 +86,7 @@ public:
 	* @param d              documents of the system.
 	* @param global         Global approach.
 	*/
-	GDocsSim(const char* filename,GDocs& d,bool global) throw(bad_alloc);
+	GDocsSim(const char* filename,GDocs& d,bool global) throw(bad_alloc,RStd::RString);
 
 protected:
 
@@ -97,7 +97,7 @@ protected:
 	* @param Cur2           Second cursor.
 	* @param global         Global approach.
 	*/
-	void ComputeSims(const char* filename,GDocCursor& Cur1,GDocCursor& Cur2,bool global) throw(bad_alloc,RString);
+	void ComputeSims(const char* filename,GDocCursor& Cur1,GDocCursor& Cur2,bool global) throw(bad_alloc,RStd::RString);
 
 public:
 

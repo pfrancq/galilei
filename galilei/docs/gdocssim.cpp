@@ -110,7 +110,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs* d,bool global) throw(bad_alloc)
+GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs* d,bool global) throw(bad_alloc,RString)
 	: Sims(0)
 {
 	GDocCursor Cur1;
@@ -132,7 +132,7 @@ GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs* d,bool global) throw(bad
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs& d,bool global) throw(bad_alloc)
+GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs& d,bool global) throw(bad_alloc,RString)
 	: Sims(0)
 {
 	GDocCursor Cur1;
