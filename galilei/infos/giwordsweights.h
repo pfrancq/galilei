@@ -157,6 +157,15 @@ public:
 	/**
 	* Method used to recompute the weights of the terms like the formula
 	* proposed by Salton and Buckley using the current weights as initial
+	* values. Only the index terms refered at least in one group are taken.
+	* @param ObjType        Type of the reference.
+	* @param lang           Language.
+	*/
+	void ModifyQueryGroups(tObjType ObjType,GLang* lang);
+
+	/**
+	* Method used to recompute the weights of the terms like the formula
+	* proposed by Salton and Buckley using the current weights as initial
 	* values.
 	* @param ObjType        Type of the reference.
 	* @param lang           Language.
