@@ -169,6 +169,9 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(cmd);
 			Doc=new KDoc(this,Sess);
+			Sess->LoadSubjectTree();
+			Sess->LoadIdealGroupment();
+			Sess->LoadIdealDocument();
 			Sess->RegisterProfileDesc(new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile));
 			Sess->RegisterComputingMethod(new GProfileCalcVector(Sess, &StatisticalParams));
 			Sess->RegisterComputingMethod(new GProfileCalcFeedback(Sess, &FeedbackParams));
@@ -266,6 +269,8 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 	Sess->SetCurrentComputingMethod(CurrentComputingMethod);
 	Sess->SetCurrentGroupCalcMethod(CurrentGroupCalcMethod);
+	Sess->LoadSubjectTree();
+	Sess->LoadIdealGroupment();
 //	Config->setGroup("Computing Options");
 //	GProfileCalcCursor Computings=Sess->GetComputingsCursor();
 //	for(Computings.Start();!Computings.End();Computings.Next())
@@ -342,6 +347,8 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionTest(void)
 {
+
+
 }
 
 
@@ -430,11 +437,8 @@ void KGALILEICenterApp::slotGroupingCompareFromFile(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotGroupingCompare(void)
 {
-	RContainer<GGroups,unsigned int,true,true>* idealgroups=0;
-	idealgroups=new RContainer<GGroups,unsigned int,true,true>(2,2);
- 	Doc->GetSession()->LoadIdealGroupment(idealgroups);
-	if(idealgroups)
-		createClient(Doc,new KViewThGroups(Doc,idealgroups,pWorkspace,"View Theoritical Groups",0));
+	if(Doc->GetSession()->GetIdealGroups())
+		createClient(Doc,new KViewThGroups(Doc,Doc->GetSession()->GetIdealGroups(),pWorkspace,"View Theoritical Groups",0));
 }
 
 //-----------------------------------------------------------------------------
@@ -823,10 +827,7 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 	GMixIdealGroups* mix;
 	const char *nbgroups, *level;
 	bool random, ideal, merge, split;
-	GSubjectTree* subjecttree=new GSubjectTree(0, 0, 0);
-	RContainer<GGroups,unsigned int,true,true>* idealgroups;
 	RContainer<GGroupIdParentId,unsigned int,true,true>* parent;
-	idealgroups= new RContainer<GGroups,unsigned int,true,true>(5,2);
 
 	try
 	{
@@ -847,13 +848,12 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 		// Init Part
 		d->PutText("Initialisation");
 		parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,5);
-		Doc->GetSession()->LoadIdealGroupment(idealgroups);
-		Doc->GetSession()->LoadSubjectTree(subjecttree);
-		subjecttree->CreateParent(parent);
-
+		Doc->GetSession()->GetSubjects()->CreateParent(parent);
 		// Create new solution
 		d->PutText("Create new solutions");
-		mix = new GMixIdealGroups(Doc->GetSession(), parent, idealgroups, atoi(nbgroups), atoi(level), merge, split, random,ideal);
+//		if (!Doc->GetSession()->GetIdealGroups())
+//			Doc->GetSession()->LoadIdealGroupment();
+		mix = new GMixIdealGroups(Doc->GetSession(), parent,(Doc->GetSession()->GetIdealGroups()), atoi(nbgroups), atoi(level), merge, split, random,ideal);
 		mix->Run(d);
 		d->Finish();
 	}

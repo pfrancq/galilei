@@ -179,10 +179,11 @@ public:
 
 //-----------------------------------------------------------------------------
 KViewChromos::KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), IdealGroups(2,1), Lang(Doc->GetSession()->GetLang(l)),
+	: KView(doc,parent,name,wflags), Lang(Doc->GetSession()->GetLang(l)),
 	 Sim(sim), Stats(50,25), Params(p), Instance(0)
 {
 	// Construct chromosomes
+    IdealGroups= new RStd::RContainer<GALILEI::GGroups, unsigned int, true, true> (2,1);
 	General = new QListViewChromos(this);
 	if(Sim)
 	{
@@ -332,7 +333,7 @@ void KViewChromos::ConstructChromosomesSim(void)
 
 	// Load Ideal Groups;
 	d->PutText("Load Ideal Groups");
-	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
+	IdealGroups=Doc->GetSession()->GetIdealGroups();
 
 	// Construct the GA Objects
 	d->PutText("Construct the GA Objects");
@@ -350,7 +351,7 @@ void KViewChromos::ConstructChromosomesSim(void)
 	d->PutText("Load chromosomes");
 	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Params);
 	if(!Instance) return;
-	Instance->SetIdealGroups(&IdealGroups);
+	Instance->SetIdealGroups(IdealGroups);
 
 	// Display the chromosomes
 	for(i=0;i<=Instance->PopSize;i++)
@@ -367,7 +368,7 @@ void KViewChromos::ConstructChromosomesSim(void)
 		d->receiveNextChromosome(c->Id);
 		g=new MyListViewItem(General,tmp);
 
-		c->CompareIdeal(Doc->GetSession(),&IdealGroups);
+		c->CompareIdeal(Doc->GetSession(),IdealGroups);
 		s->Precision=c->GetPrecision();
 		sprintf(tmp,"%f",c->GetPrecision());
 		g->setText(1,tmp);
@@ -450,7 +451,7 @@ void KViewChromos::ConstructChromosomesRanking(void)
 
 	// Load Ideal Groups;
 	d->PutText("Load Ideal Groups");
-	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
+	IdealGroups=Doc->GetSession()->GetIdealGroups();
 
 	// Construct the GA Objects
 	d->PutText("Construct the GA Objects");
@@ -468,7 +469,7 @@ void KViewChromos::ConstructChromosomesRanking(void)
 	d->PutText("Load Chromosomes");
 	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Params);
 	if(!Instance) return;
-	Instance->SetIdealGroups(&IdealGroups);
+	Instance->SetIdealGroups(IdealGroups);
 	d->PutText("Evaluate the solutions");
 	Instance->Evaluate();
 	Instance->BestChromosome->Evaluate();
@@ -490,7 +491,7 @@ void KViewChromos::ConstructChromosomesRanking(void)
 		d->receiveNextChromosome(c->Id);
 		g=new MyListViewItem(General,tmp);
 
-		c->CompareIdeal(Doc->GetSession(),&IdealGroups);
+		c->CompareIdeal(Doc->GetSession(),IdealGroups);
 		s->Precision=c->GetPrecision();
 		sprintf(tmp,"%f",c->GetPrecision());
 		g->setText(1,tmp);

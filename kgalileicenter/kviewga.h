@@ -145,7 +145,7 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	/**
 	* Ideal Groups handled by the system.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true> IdealGroups;
+	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
 
 	/**
 	* Number of generations.

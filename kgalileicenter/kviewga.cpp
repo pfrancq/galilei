@@ -72,14 +72,14 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 KViewGA::KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), RGASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>(),
-	  CurId(0), Instance(0), SubProfiles(0), Objs(0), Sims(0), IdealGroups(2,1), Gen(0), Params(p)
+	  CurId(0), Instance(0), SubProfiles(0), Objs(0), Sims(0), Gen(0), Params(p)
 {
 	static char tmp[100];
 	GLang* lang;
 	GSubProfile* sub;
 	GGroupDataIR g;
 	unsigned int i;
-
+    IdealGroups = new RStd::RContainer<GGroups,unsigned int,true,true>(2,1);
 	// Window
 	lang=Doc->GetSession()->GetLang(l);
 	setCaption(QString("GALILEI Genetic Algorithms - ")+lang->GetName());
@@ -106,7 +106,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,Q
 	Debug=new QXMLContainer(StatSplitter,"GALILEI Genetic Algorithms","Pascal Francq");
 
 	// Load Ideal Groups;
-	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
+	IdealGroups = Doc->GetSession()->GetIdealGroups();
 
 	// Go through the profiles corresponding to the language and that are
 	// to inserted.
@@ -135,7 +135,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,Q
 			Instance=new GInstIR(Doc->GetSession(),lang,Doc->GetSession()->GetGroups(lang),Objs,Sims,p,Debug);
 		Instance->AddReceiver(this);
 		Instance->Init(&g);
-		Instance->SetIdealGroups(&IdealGroups);
+		Instance->SetIdealGroups(IdealGroups);
 	}
 	catch(eGA& e)
 	{
@@ -165,7 +165,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,Q
 	#endif
 	TabWidget->insertTab(Sol,tmp);
 	connect(Sol,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	Ideal = new QGGroupsIR(TabWidget,IdealGroups.GetPtr<const GLang*>(lang),Objs);
+	Ideal = new QGGroupsIR(TabWidget,IdealGroups->GetPtr<const GLang*>(lang),Objs);
 	TabWidget->insertTab(Ideal,"Ideal Solution");
 }
 

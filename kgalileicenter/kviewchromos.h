@@ -91,7 +91,7 @@ class KViewChromos : public KView
 	/**
 	* Ideal Groups handled by the system.
 	*/
-	RContainer<GGroups,unsigned int,true,true> IdealGroups;
+	RContainer<GGroups,unsigned int,true,true>* IdealGroups;
 
 	/**
 	* Language of the chromosomes to load.

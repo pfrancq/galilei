@@ -158,10 +158,24 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	*/
 	GCalcGravitationParams CalcGravitationParams;
 
-    //Ajout a commenter
+    /**
+	* Current Profile Description Method
+	*/
 	RStd::RString CurrentProfileDesc;
+
+	/**
+	* Current Computing Method
+	*/
 	RStd::RString CurrentComputingMethod;
+
+	/**
+	* Current Grouping Method
+	*/
 	RStd::RString CurrentGroupingMethod;
+
+	/**
+	* Current Group Descrition Method
+	*/
 	RStd::RString CurrentGroupCalcMethod;
 
 	/**
