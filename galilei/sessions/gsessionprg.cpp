@@ -338,6 +338,24 @@ void GStatsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigne
 }
 
 
+//-----------------------------------------------------------------------------
+void GSetComputingParamI::Run(GSessionPrg* prg,GSlot*,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	if(args->NbPtr!=2)
+		throw GException("Method needs two parameters");
+	Owner->Session->GetCurrentComputingMethod()->SetParam(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
+}
+
+
+//-----------------------------------------------------------------------------
+void GSetGroupingParamI::Run(GSessionPrg* prg,GSlot*,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	if(args->NbPtr!=2)
+		throw GException("Method needs two parameters");
+	Owner->Session->GetCurrentGroupingMethod()->SetParam(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
+}
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -367,7 +385,9 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GCompareIdealI(this));
 	Methods.InsertPtr(new GStatsProfilesI(this));
 	Methods.InsertPtr(new GStatsDocsI(this));
-}
+	Methods.InsertPtr(new GSetComputingParamI(this));
+	Methods.InsertPtr(new GSetGroupingParamI(this));
+};
 
 
 //-----------------------------------------------------------------------------

@@ -324,6 +324,24 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GSetComputingParamI : public GSM
+{
+public:
+	GSetComputingParamI(GPrgClassSession* o) : GSM("SetComputingParam",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSetGroupingParamI : public GSM
+{
+public:
+	GSetGroupingParamI(GPrgClassSession* o) : GSM("SetGroupingParam",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GSessionPrg provides a class for executing a GALILEI Program.
 * @author Pascal Francq
