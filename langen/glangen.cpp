@@ -237,7 +237,7 @@ bool GALILEI::GLangEN::ContainsVowel(const char* kwd)
 	if(!(*kwd))
 		return(false);
 	else
-		return((IsVowel(*kwd))||(!strpbrk(kwd+1,"aeiouy")));
+		return((IsVowel(*kwd))||(strpbrk(kwd+1,"aeiouy")));
 }
 
 

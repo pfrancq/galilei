@@ -420,7 +420,7 @@ bool GALILEI::GLangFR::ContainsVowel(const char* kwd)
 	if(!(*kwd))
 		return(false);
 	else
-		return((IsVowel(*kwd))||(!strpbrk(kwd+1,"âaeiouyéàèîöê")));
+		return((IsVowel(*kwd))||(strpbrk(kwd+1,"âaeiouyéàèîöê")));
 }
 
 
