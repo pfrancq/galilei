@@ -154,42 +154,42 @@ public:
 	* Return a number between 0 and 26 according to the first character of the
 	* string. It is used for the RStd::RHashContainer class.
 	*/
-	static char HashIndex(const GWord* w)
+	static int HashIndex(const GWord* w)
 		{return(R::RString::HashIndex(w->Word));}
 
 	/**
 	* Return a number between 0 and 26 according to the first character of the
 	* string. It is used for the RStd::RHashContainer class.
 	*/
-	static char HashIndex(const GWord& w)
+	static int HashIndex(const GWord& w)
 		{return(R::RString::HashIndex(w.Word));}
 
 	/**
 	* Return a number between 0 and 26 according to the first character of the
 	* string. It is used for the RStd::RHashContainer class.
 	*/
-	static char HashIndex(const char* word)
+	static int HashIndex(const R::RChar* word)
 		{return(R::RString::HashIndex(word));}
 
 	/**
 	* Return a number between 0 and 26 according to the first character of the
 	* string. It is used for the RStd::RHashContainer class.
 	*/
-	static char HashIndex2(const GWord* w)
-		{return(R::RString::HashIndex2(w->Word));}
-
-	/**
-	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the RStd::RHashContainer class.
-	*/
-	static char HashIndex2(const GWord& w)
+	static int HashIndex2(const GWord& w)
 		{return(R::RString::HashIndex2(w.Word));}
 
 	/**
 	* Return a number between 0 and 26 according to the first character of the
 	* string. It is used for the RStd::RHashContainer class.
 	*/
-	static char HashIndex2(const char* word)
+	static int HashIndex2(const GWord* w)
+		{return(R::RString::HashIndex2(w->Word));}
+
+	/**
+	* Return a number between 0 and 26 according to the first character of the
+	* string. It is used for the RStd::RHashContainer class.
+	*/
+	static int HashIndex2(const R::RChar* word)
 		{return(R::RString::HashIndex2(word));}
 
 	/**

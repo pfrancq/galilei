@@ -905,7 +905,7 @@ void GALILEI::GSessionMySQL::DeleteWordsGroups(GDict* dict) throw(GException)
 		RQuery updateprof(this,sSql);
 	}
 	cur=dict->GroupsList.Tab;
-	GWord *wrd;
+	GWord* wrd;
 	while((*cur))
 	{
 			tmp=(*cur);

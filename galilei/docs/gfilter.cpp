@@ -150,9 +150,106 @@ void GALILEI::GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 		// Insert sentence
 		if(*block)
 		{
-			attach->AddTag(sent=new RXMLTag("docxml:sentence"));
-			//sent->InsertAttr("Value",block);
-			sent->AddContent(block);
+			// Verify that it is not a single '.'
+			if((!ispunct(*block))||(*(block+1)))
+			{
+				attach->AddTag(sent=new RXMLTag("docxml:sentence"));
+				sent->AddContent(block);
+			}
+			block=ptr;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
+{
+	RChar* ptr;
+	RChar* hold;
+	RXMLTag* sent;
+	int len,i=0;
+	int NbWords;
+	bool EndSentence;
+
+	// Look at block
+	len=RChar::StrLen(block);
+	if(!len) return;
+
+	// Search Sentences
+	ptr=block;
+	while(!ptr->IsNull())
+	{
+		// Skip leading spaces.
+		while((!ptr->IsNull())&&(ptr->IsSpace()))
+		{
+			ptr++;
+			len--;
+		}
+		block=ptr;
+
+		// Seach sentence
+		NbWords=0;
+		EndSentence=false;
+
+		// If Only 1 word or no space between a punctation and the next
+		// word, no sentence created.
+		while((!ptr->IsNull())&&(!EndSentence))
+		{
+			// While not ending of a sentence, go through
+			//while((!ptr->IsNull())&&(!ptr->IsPunct()))
+			while((!ptr->IsNull())&&(!IsEndSentence(*ptr)))
+			{
+				// If the next characters are spaces, replace them all by a
+				// unique space.
+				if(ptr->IsSpace())
+				{
+					(*(ptr++))=RChar(' ');    // Space character always a ' '.
+					i=(--len);
+					hold=ptr;
+					while((!ptr->IsNull())&&(ptr->IsSpace()))
+					{
+						len--;
+						ptr++;
+					}
+					if(i>len)      // Look if there more than one space character.
+					{
+						memcpy(hold,ptr,(len+1)*sizeof(RChar));
+						ptr=hold;
+					}
+					NbWords++;
+				}
+				else
+				{
+					ptr++;
+					len--;
+				}
+			}
+			// Verify if it is a correct end of sentence
+			if((!ptr->IsNull())&&((NbWords<1)||(!(ptr+1)->IsSpace())))
+			{
+				// Skip the punctation
+				ptr++;
+				len--;
+			}
+			else
+				EndSentence=true;      // End of sentence.
+		}
+		if(!ptr->IsNull())       // Skip Punctuation.
+		{
+			len--;
+			(*(ptr++))=0;
+		}
+
+		// Insert sentence
+		if(!block->IsNull())
+		{
+			// Verify that it is not a single '.'
+			if((!block->IsPunct())||((block+1)->IsNull()))
+			{
+				attach->AddTag(sent=new RXMLTag("docxml:sentence"));
+				sent->AddContent(block);
+			}
 			block=ptr;
 		}
 	}

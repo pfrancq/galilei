@@ -99,11 +99,26 @@ protected:
 	}
 
 	/**
+	* @return true if the character represent a end of sentence.
+	*/
+	static inline bool IsEndSentence(R::RChar c)
+	{
+		return((c.Latin1()=='.')||(c.Latin1()=='!')||(c.Latin1()=='?')||(c.Latin1()==';')||(c.Latin1()==':'));
+	}
+
+	/**
 	* Analyse a block of text and create a list of tags 'sentence'.
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
 	void AnalyzeBlock(char* block,R::RXMLTag* attach);
+
+	/**
+	* Analyse a block of text and create a list of tags 'sentence'.
+	* @param block          Block containing the text.
+	* @param attach         XML tag where the sentences must be attach.
+	*/
+	void AnalyzeBlock(R::RChar* block,R::RXMLTag* attach);
 
 	/**
 	* Analyse a list of keywords sepating by a single character.
