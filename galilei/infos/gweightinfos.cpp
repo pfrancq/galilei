@@ -78,6 +78,14 @@ GWeightInfos& GWeightInfos::operator=(const GWeightInfos::GWeightInfos& w) throw
 
 
 //------------------------------------------------------------------------------
+GWeightInfos& GWeightInfos::operator=(const RContainer<GWeightInfo,false,true>& w) throw(std::bad_alloc)
+{
+	RContainer<GWeightInfo,true,true>::operator=(w);
+	return(*this);
+}
+
+
+//------------------------------------------------------------------------------
 int GWeightInfos::sortOrder(const void* a,const void* b)
 {
 	double af=(*((GWeightInfo**)(a)))->GetWeight();

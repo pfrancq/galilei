@@ -82,6 +82,12 @@ public:
 	GWeightInfos& operator=(const GWeightInfos& w) throw(std::bad_alloc);
 
 	/**
+	* Assignement operator for lists of weighted information entities.
+	* @param w              Source list of weighted information entity.
+	*/
+	GWeightInfos& operator=(const R::RContainer<GWeightInfo,false,true>& w) throw(std::bad_alloc);
+
+	/**
 	* Static function used to order the information entities by weights.
 	* @param a              Pointer to the first object.
 	* @param b              Pointer to the second object.
