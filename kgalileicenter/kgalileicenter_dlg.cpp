@@ -54,9 +54,6 @@ using namespace R;
 #include <profiles/gsubprofiledesc.h>
 #include <groups/ggrouping.h>
 #include <profiles/gprofilecalc.h>
-#include <galilei/qcomputingpluginconfstat.h>
-#include <galilei/qcomputingpluginconfreweighting.h>
-#include <galilei/qcomputingpluginconffeedback.h>
 #include <galilei/qgroupingpluginconfsim.h>
 #include <galilei/qgroupingpluginconfgga.h>
 #include <galilei/qgroupingpluginconfkcos.h>
@@ -178,21 +175,24 @@ void KGALILEICenterApp::slotDocsOptions(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotPlugins(void)
 {
-	GFactoryFilterCursor Cur;
+	GFactoryFilterCursor Filter;
+	GFactoryProfileCalcCursor ProfileCalc;
 	QPlugins dlg(this,"Plugins Dialog");
 	QString str;
-	QListViewItem* def=0;
-	QListViewItem* cur=0;
+	QListViewItem* def;
+	QListViewItem* cur;
+	int idx;
 
 	// Goes through filters
-	Cur=GetFiltersCursor();
-	for(Cur.Start();!Cur.End();Cur.Next())
+	def=cur=0;
+	Filter=URLManager.GetFiltersCursor();
+	for(Filter.Start();!Filter.End();Filter.Next())
 	{
-		str=Cur()->GetName();
+		str=Filter()->GetName();
 		str+=" [";
-		str+=Cur()->GetLib();
-		str+=" ]";
-		cur=new QFilterItem(dlg.Filters,Cur(),str);
+		str+=Filter()->GetLib();
+		str+="]";
+		cur=new QFilterItem(dlg.Filters,Filter(),str);
 		if(!def)
 			def=cur;
 	}
@@ -202,6 +202,31 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.changeFilter(def);
 		dlg.EnableFilter->setEnabled(true);
 	}
+
+	// Goes through the profiles computing method
+	def=cur=0;
+	ProfileCalc=ProfileCalcsManager.GetProfileCalcsCursor();
+	for(ProfileCalc.Start(),idx=0;!ProfileCalc.End();ProfileCalc.Next(),idx++)
+	{
+		str=ProfileCalc()->GetName();
+		str+=" [";
+		str+=ProfileCalc()->GetLib();
+		str+="]";
+		cur=new QProfileCalcItem(dlg.ProfileCalcs,ProfileCalc(),str);
+		dlg.CurrentProfileCalc->insertItem(ProfileCalc()->GetName(),idx);
+		if((ProfileCalc()->GetPlugin())&&(ProfileCalc()->GetPlugin()==ProfileCalcsManager.GetCurrentMethod()))
+			dlg.CurrentProfileCalc->setCurrentItem(idx);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.ProfileCalcs->setSelected(def,true);
+		dlg.changeProfileCalc(def);
+		dlg.EnableProfileCalc->setEnabled(true);
+		dlg.CurrentProfileCalc->setEnabled(true);
+	}
+
 	if(dlg.exec())
 	{
 		// Goes through filters
@@ -214,6 +239,24 @@ void KGALILEICenterApp::slotPlugins(void)
 				item->Fac->Delete();
 			item=dynamic_cast<QFilterItem*>(item->itemBelow());
 		}
+
+		// Goes through profiles computing method
+		QProfileCalcItem* item2=dynamic_cast<QProfileCalcItem*>(dlg.ProfileCalcs->firstChild());
+		while(item2)
+		{
+			if(item2->Enable)
+				item2->Fac->Create();
+			else
+				item2->Fac->Delete();
+			item2=dynamic_cast<QProfileCalcItem*>(item2->itemBelow());
+		}
+		try
+		{
+			ProfileCalcsManager.SetCurrentMethod(dlg.CurrentProfileCalc->currentText());
+		}
+		catch(GException)
+		{
+		}
 	}
 
 }
@@ -223,9 +266,6 @@ void KGALILEICenterApp::slotPlugins(void)
 void KGALILEICenterApp::slotOldPlugins(void)
 {
 	QPluginsDlg dlg(this,"Plugins Dialog");
-	dlg.RegisterComputingPluginConf(new QComputingPluginConfStat(&StatisticalParams));
-	dlg.RegisterComputingPluginConf(new QComputingPluginConfReWeighting(&ReWeightingParams));
-	dlg.RegisterComputingPluginConf(new QComputingPluginConfFeedback(&FeedbackParams));
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfSim(&SimParams));
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfGGA(&IRParams));
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKCos(&KMeansParams));

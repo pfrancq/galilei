@@ -36,8 +36,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gprofilecalcvector.h>
 #include <sessions/gsessionmysql.h>
+#include <sessions/gconfig.h>
 #include <groups/ggroupingsim.h>
 #include <docs/gdocoptions.h>
 using namespace GALILEI;
@@ -86,7 +86,8 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void)
-	: KMainWindow(0,"KGALILEICenterApp"), GURLManagerKDE("/home/pfrancq/prj/galilei_plugins"),
+	: KMainWindow(0,"KGALILEICenterApp"), URLManager(getenv("GALILEI_PLUGINS_LIB")),
+	  ProfileCalcsManager(getenv("GALILEI_PLUGINS_LIB")),
 	  dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0), DocOptions(0)
 {
 	Config=kapp->config();
@@ -286,7 +287,6 @@ void KGALILEICenterApp::saveOptions(void)
 	// Write Config of Session Options
 	Config->setGroup("Session Options");
 	Config->writeEntry("Description Method",GetCurrentProfileDesc());
-	Config->writeEntry("Computing Method",GetCurrentComputingMethod());
 	Config->writeEntry("Grouping Method",GetCurrentGroupingMethod());
 	Config->writeEntry("Group Description Method",GetCurrentGroupCalcMethod());
 	Config->writeEntry("Link Description Method",GetCurrentLinkCalcMethod());
@@ -365,24 +365,6 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->setGroup(CalcGravitationParams.GetComputingName());
 	Config->writeEntry("MaxNonZero",CalcGravitationParams.MaxNonZero);
 
-	// Write Config of ProfileCalcFeedback
-	Config->setGroup(FeedbackParams.GetComputingName());
-	Config->writeEntry("MaxNonZero",FeedbackParams.MaxNonZero);
-	Config->writeEntry("RelFactor",FeedbackParams.RelFactor);
-	Config->writeEntry("FuzzyFactor",FeedbackParams.FuzzyFactor);
-	Config->writeEntry("NoRelFactor",FeedbackParams.NoRelFactor);
-	Config->writeEntry("AddFuzzy",FeedbackParams.AddFuzzy);
-	Config->writeEntry("IdfFactor",FeedbackParams.IdfFactor);
-
-	// Write Config of ProfileCalcVector
-	Config->setGroup(StatisticalParams.GetComputingName());
-	Config->writeEntry("MaxNonZero",StatisticalParams.MaxNonZero);
- 	Config->writeEntry("IdfFactor",StatisticalParams.IdfFactor);
-
-	// Write Config of ProfileCalcReWeighting
-	Config->setGroup(ReWeightingParams.GetComputingName());
-	Config->writeEntry("MaxNonZero",ReWeightingParams.MaxNonZero);
-
 	// Write Config of LinkCalcHITS
 	Config->setGroup(LinkCalcHITSParams.GetComputingName());
 	Config->writeEntry("NbIteration",LinkCalcHITSParams.NbIteration);
@@ -421,6 +403,11 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("FKTresh",LinkCalcTreshParams.FKTresh);
 	Config->writeEntry("Kvalue",LinkCalcTreshParams.Kvalue);
 
+	// Save Config
+	GConfig Conf("/etc/galilei/galilei.galileiconfig");
+	Conf.Store(URLManager);
+	Conf.Store(ProfileCalcsManager);
+	Conf.Save();
 }
 
 
@@ -499,7 +486,6 @@ void KGALILEICenterApp::readOptions(void)
 	DocOptions->UseExternalLink=Config->readBoolEntry("Use External Link",false);
 	DocOptions->UseRedirection=Config->readBoolEntry("Use Redirection",false);
 
-
 	// Read Session Options
 	GroupingMethod = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
 	GroupingMethod->InsertPtr(new R::RString("CURE"));
@@ -509,10 +495,6 @@ void KGALILEICenterApp::readOptions(void)
 	GroupingMethod->InsertPtr(new R::RString("SUPkMeans"));
 	GroupingMethod->InsertPtr(new R::RString("kMeansProtos"));
 	GroupingMethod->InsertPtr(new R::RString("Random Heuristic"));
-	ComputingMethod = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
-	ComputingMethod->InsertPtr(new R::RString("Statistical"));
-	ComputingMethod->InsertPtr(new R::RString("Direct Reweighting"));
-	ComputingMethod->InsertPtr(new R::RString("User Feedback"));
 	ProfileDesc = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
 	ProfileDesc->InsertPtr(new R::RString("Vector space"));
 	GroupCalcMethod = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
@@ -525,7 +507,6 @@ void KGALILEICenterApp::readOptions(void)
 	LinkCalcMethod->InsertPtr(new R::RString("Treshold Kleinberg Algorithm"));
 	Config->setGroup("Session Options");
 	CurrentProfileDesc=Config->readEntry("Description Method","Vector space");
-	CurrentComputingMethod=Config->readEntry("Computing Method","Statistical");
 	CurrentGroupingMethod=Config->readEntry("Grouping Method","First-Fit Heuristic");
 	CurrentGroupCalcMethod=Config->readEntry("Group Description Method","Prototype");
 	CurrentLinkCalcMethod=Config->readEntry("Link Description Method","HITS Algorithm");
@@ -603,24 +584,6 @@ void KGALILEICenterApp::readOptions(void)
 	Config->setGroup(CalcGravitationParams.GetComputingName());
 	CalcGravitationParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
 
-	// Read Config of ProfileCalcFeedback
-	Config->setGroup(FeedbackParams.GetComputingName());
-	FeedbackParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
-	FeedbackParams.RelFactor=Config->readDoubleNumEntry("RelFactor",1);
-	FeedbackParams.FuzzyFactor=Config->readDoubleNumEntry("FuzzyFactor",1);
-	FeedbackParams.NoRelFactor=Config->readDoubleNumEntry("NoRelFactor",0);
-	FeedbackParams.AddFuzzy=Config->readBoolEntry("AddFuzzy",1);
-	FeedbackParams.IdfFactor=Config->readBoolEntry("IdfFactor",0);
-
-	// Read Config of ProfileCalcVector
-	Config->setGroup(StatisticalParams.GetComputingName());
-	StatisticalParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
- 	StatisticalParams.IdfFactor=Config->readBoolEntry("IdfFactor",1);
-
-	// Read Config of ProfileCalcReWeighting
-	Config->setGroup(ReWeightingParams.GetComputingName());
-	ReWeightingParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
-
 	// Read Config of LinkCalcHITS
 	Config->setGroup(LinkCalcHITSParams.GetComputingName());
 	LinkCalcHITSParams.NbIteration=Config->readNumEntry("NbIteration",5);
@@ -659,6 +622,11 @@ void KGALILEICenterApp::readOptions(void)
 	LinkCalcTreshParams.FKTresh=Config->readBoolEntry("FKTresh",false);
 	LinkCalcTreshParams.Kvalue=Config->readNumEntry("Kvalue",60);
 
+	// Save Config
+	GConfig Conf("/etc/galilei/galilei.galileiconfig");
+	Conf.Load();
+	Conf.Read(URLManager);
+	Conf.Read(ProfileCalcsManager);
 }
 
 

@@ -59,9 +59,6 @@ using namespace R;
 #include <profiles/gsubprofile.h>
 #include <profiles/gsubprofiledesc.h>
 #include <profiles/gsubprofilevector.h>
-#include <profiles/gprofilecalcvector.h>
-#include <profiles/gprofilecalcfeedback.h>
-#include <profiles/gprofilecalcreweighting.h>
 #include <groups/ggroupingsim.h>
 #include <groups/ggroupingrandom.h>
 #include <groups/ggroupinggga.h>
@@ -180,15 +177,12 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbPwd=dlg.txtPwd->text().latin1();
 		try
 		{
-			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,this,DocOptions);
+			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&URLManager,&ProfileCalcsManager,DocOptions);
 			unsigned int cmd=dlg.cbLoad->currentItem();
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(cmd);
 			Doc=new KDoc(this,Sess);
 			Sess->RegisterProfileDesc(new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile));
-			Sess->RegisterComputingMethod(new GProfileCalcVector(Sess, &StatisticalParams));
-			Sess->RegisterComputingMethod(new GProfileCalcFeedback(Sess, &FeedbackParams));
-			Sess->RegisterComputingMethod(new GProfileCalcReWeighting(Sess, &ReWeightingParams));
 			Sess->RegisterGroupingMethod(new GGroupingSim(Sess, &SimParams));
 			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess,&IRParams));
 			Sess->RegisterGroupingMethod(new GGroupingKCos(Sess, &KMeansParams));
@@ -204,7 +198,6 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
 			Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 			Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
-			Sess->SetCurrentComputingMethod(CurrentComputingMethod);
 			Sess->SetCurrentGroupCalcMethod(CurrentGroupCalcMethod);
 			Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 			sessionDisconnect->setEnabled(true);
@@ -254,15 +247,12 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 {
 	QConnectMySQL dlg(this,0,true);
 	GSessionMySQL* Sess;
-	Sess = new GSessionMySQL(host,user,passwd,db,this,DocOptions);
+	Sess = new GSessionMySQL(host,user,passwd,db,&URLManager,&ProfileCalcsManager,DocOptions);
 	unsigned int cmd=dlg.cbLoad->currentItem();
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 	d->LoadSession(cmd);
 	Doc=new KDoc(this,Sess);
 	Sess->RegisterProfileDesc(new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile));
-	Sess->RegisterComputingMethod(new GProfileCalcVector(Sess, &StatisticalParams));
-	Sess->RegisterComputingMethod(new GProfileCalcFeedback(Sess,&FeedbackParams));
-	Sess->RegisterComputingMethod(new GProfileCalcReWeighting(Sess, &ReWeightingParams));
 	Sess->RegisterGroupingMethod(new GGroupingSim(Sess, &SimParams));
 	Sess->RegisterGroupingMethod(new GGroupingGGA(Sess,&IRParams));
 	Sess->RegisterGroupingMethod(new GGroupingKCos(Sess, &KMeansParams));
@@ -277,7 +267,6 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
 	Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 	Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
-	Sess->SetCurrentComputingMethod(CurrentComputingMethod);
 	Sess->SetCurrentGroupCalcMethod(CurrentGroupCalcMethod);
 	Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 	sessionDisconnect->setEnabled(true);

@@ -60,9 +60,7 @@
 #include <docs/glinkcalccorrespondence.h>
 #include <docs/glinkcalcsalsa.h>
 #include <docs/glinkcalctresh.h>
-#include <profiles/gprofilecalcfeedback.h>
-#include <profiles/gprofilecalcreweighting.h>
-#include <profiles/gprofilecalcvector.h>
+#include <profiles/gprofilecalcmanager.h>
 #include <galilei/gurlmanagerkde.h>
 using namespace GALILEI;
 
@@ -114,9 +112,19 @@ class KView;
 * @version $Revision$
 * @short Main Window.
 */
-class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
+class KGALILEICenterApp : public KMainWindow
 {
 	Q_OBJECT
+
+	/**
+	* URL Manager.
+	*/
+	GURLManagerKDE URLManager;
+
+	/**
+	* Profiles Computing Method Manager.
+	*/
+	GProfileCalcManager ProfileCalcsManager;
 
 	/**
 	* The configuration object of the application.
@@ -154,21 +162,6 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	GSimParams SimParams;
 
 	/**
-	* Parameters of the feedback computing method.
-	*/
-	GFeedbackParams FeedbackParams;
-
-	/**
-	* Parameters for reweighting calc method.
-	*/
-	GReWeightingParams ReWeightingParams;
-
-	/**
-	* Parameters for statistical calc method.
-	*/
-	GStatisticalParams StatisticalParams;
-
-	/**
 	* Parameters for 'relevant' group description computing
 	*/
 	GCalcRelevantParams CalcRelevantParams;
@@ -202,11 +195,6 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	* Current Profile Description Method
 	*/
 	R::RString CurrentProfileDesc;
-
-	/**
-	* Current Computing Method
-	*/
-	R::RString CurrentComputingMethod;
 
 	/**
 	* Current Grouping Method
@@ -330,16 +318,6 @@ public:
 	* Set the current subprofile description method used.
 	*/
 	void SetCurrentProfileDesc(R::RString str) {CurrentProfileDesc=str;}
-
-	/**
-	* Return the current method used for computed the profile.
-	*/
-	R::RString GetCurrentComputingMethod(void) {return(CurrentComputingMethod);}
-
-	/**
-	* Set the current method used for computed the profile.
-	*/
-	void SetCurrentComputingMethod(R::RString str) {CurrentComputingMethod=str;}
 
 	/**
 	* Return the current grouping method used.

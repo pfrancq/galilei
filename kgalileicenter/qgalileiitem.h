@@ -42,6 +42,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <filters/gfilter.h>
+#include <profiles/gprofilecalc.h>
 using namespace GALILEI;
 
 
@@ -55,6 +56,18 @@ public:
 	GFactoryFilter* Fac;
 	bool Enable;
 	QFilterItem(QListView* lst,GFactoryFilter* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+
+class QProfileCalcItem : public QListViewItem
+{
+public:
+	GFactoryProfileCalc* Fac;
+	bool Enable;
+	QProfileCalcItem(QListView* lst,GFactoryProfileCalc* fac,const char* desc)
 		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}

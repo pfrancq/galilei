@@ -42,3 +42,36 @@ void QPlugins::slotFilterEnable( bool state )
 	QFilterItem* f=dynamic_cast<QFilterItem*>(Filters->currentItem());
 	f->Enable=state;
 }
+
+
+void QPlugins::changeProfileCalc( QListViewItem * item )
+{
+	QProfileCalcItem* f=dynamic_cast<QProfileCalcItem*>(item);
+	EnableProfileCalc->setChecked(f->Enable);
+	ConfigProfileCalc->setEnabled(f->Fac->HasConfigure());
+	AboutProfileCalc->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::slotAboutProfileCalc()
+{
+    	if(!ProfileCalcs->currentItem()) return;
+	QProfileCalcItem* f=dynamic_cast<QProfileCalcItem*>(ProfileCalcs->currentItem());
+	f->Fac->About();
+}
+
+
+void QPlugins::slotConfigProfileCalc()
+{
+        	if(!ProfileCalcs->currentItem()) return;
+	QProfileCalcItem* f=dynamic_cast<QProfileCalcItem*>(ProfileCalcs->currentItem());
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotProfileCalcEnable( bool state )
+{
+        	if(!ProfileCalcs->currentItem()) return;
+	QProfileCalcItem* f=dynamic_cast<QProfileCalcItem*>(ProfileCalcs->currentItem());
+	f->Enable=state;
+}
