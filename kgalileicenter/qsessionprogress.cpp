@@ -108,12 +108,15 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd)
 		Session->InitDics();
 	}
 
+	Session->LoadSubjectTree();
+
 	// Look if docs must be loaded)
 	if((cmd==0)||(cmd==1)||(cmd==2)||(cmd==4))
 	{
 		txtRem->setText("Loading Documents ...");
 		KApplication::kApplication()->processEvents();
 		Session->InitDocs();
+		Session->LoadIdealDocument();
 	}
 
 	// Look if groups must be loaded
@@ -130,6 +133,7 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd)
 		txtRem->setText("Load Users/Profiles/SubProfiles ...");
 		KApplication::kApplication()->processEvents();
 		Session->InitUsers();
+		Session->LoadIdealGroupment();
 	}
 
 	// Look if users' feedback must be loaded
