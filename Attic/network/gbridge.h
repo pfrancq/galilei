@@ -1,6 +1,6 @@
 /*
 
-	GMainEntry.h
+	GBridge.h
 
 	Main Entry - Header.
 
@@ -32,8 +32,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GMainEntryH
-#define GMainEntryH
+#ifndef GBridgeH
+#define GBridgeH
 
 
 //------------------------------------------------------------------------------
@@ -55,13 +55,13 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 */
-class GMainEntry : public GServer
+class GBridge : public GServer
 {
 	RXML::RXMLStruct* Config;
 	RIO::RTextFile* Log;
 public:
 
-	GMainEntry(RXML::RXMLStruct* s,ost::InetHostAddress& machine);
+	GBridge(RXML::RXMLStruct* s,ost::InetHostAddress& machine);
 
 	virtual void WriteLog(const char* entry);
 
@@ -79,7 +79,7 @@ public:
 
 	virtual void CloseSocketPort(GSocketPort* port);
 
-	virtual ~GMainEntry(void);
+	virtual ~GBridge(void);
 };
 
 

@@ -1,6 +1,6 @@
 /*
 
-	GMainEntry.cpp
+	GBridge.cpp
 
 	Main Entry - Implementation.
 
@@ -39,7 +39,7 @@ using namespace RXML;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <network/gmainentry.h>
+#include <network/gbridge.h>
 #include <network/gsocketport.h>
 using namespace GALILEI;
 using namespace ost;
@@ -56,10 +56,10 @@ using namespace RIO;
 //---------------------------------------------------------------------------
 class GMsgLoginServer : public GMsgLogin
 {
-	GMainEntry* Main;
+	GBridge* Main;
 	GSocketPort* Port;
 public:
-	GMsgLoginServer(GMainEntry* m,GSocketPort* p) : GMsgLogin(), Main(m), Port(p) {}
+	GMsgLoginServer(GBridge* m,GSocketPort* p) : GMsgLogin(), Main(m), Port(p) {}
 	virtual void Run(void);
 };
 
@@ -86,12 +86,12 @@ void GMsgLoginServer::Run(void)
 
 //------------------------------------------------------------------------------
 //
-// class GMainEntry
+// class GBridge
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GMainEntry::GMainEntry(RXMLStruct* s,InetHostAddress& machine)
+GBridge::GBridge(RXMLStruct* s,InetHostAddress& machine)
 	: GServer(machine,atoi(s->GetTag("Entry")->GetAttrValue("Port"))),
 	  TCPSocket(machine,atoi(s->GetTag("Entry")->GetAttrValue("Port"))), Thread(),
 	  Config(s), Log(0)
@@ -102,14 +102,14 @@ GMainEntry::GMainEntry(RXMLStruct* s,InetHostAddress& machine)
 
 
 //---------------------------------------------------------------------------
-void GMainEntry::WriteLog(const char* entry)
+void GBridge::WriteLog(const char* entry)
 {
 	Log->WriteLog(entry);
 }
 
 
 //---------------------------------------------------------------------------
-GMsg* GMainEntry::MsgCreator(MsgType t,GSocketPort* port)
+GMsg* GBridge::MsgCreator(MsgType t,GSocketPort* port)
 {
 	switch(t)
 	{
@@ -123,14 +123,14 @@ GMsg* GMainEntry::MsgCreator(MsgType t,GSocketPort* port)
 
 
 //---------------------------------------------------------------------------
-void GMainEntry::CloseSocketPort(GSocketPort* /*port*/)
+void GBridge::CloseSocketPort(GSocketPort* /*port*/)
 {
 	Log->WriteLog("pfrancq disconnected");
 }
 
 
 //------------------------------------------------------------------------------
-GMainEntry::~GMainEntry(void)
+GBridge::~GBridge(void)
 {
 	if(Config)
 		delete Config;
