@@ -62,7 +62,7 @@ using namespace R;
 #include <groups/gidealgroup.h>
 #include <groups/gsubject.h>
 #include <groups/gsubjecttree.h>
-#include <tests/gmixidealgroups.h>
+#include <sessions/gmixidealgroups.h>
 #include <langs/glang.h>
 #include <langs/gdict.h>
 using namespace GALILEI;
@@ -111,7 +111,6 @@ using namespace GALILEI;
 #include "kviewthgroups.h"
 #include "kviewgroups.h"
 #include "kviewgroup.h"
-#include "kviewquery.h"
 #include "kviewprg.h"
 #include "kviewstems.h"
 #include "kviewprofile.h"
@@ -159,17 +158,15 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbPwd=dlg.txtPwd->text().latin1();
 		try
 		{
-			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,DocOptions,&SessionParams);
+			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,DocOptions,&SessionParams);
 			unsigned int cmd=dlg.cbLoad->currentItem();
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(cmd);
 			Doc=new KDoc(this,Sess);
-			Sess->RegisterProfileDesc(new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess, &LinkCalcHITSParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess, &LinkCalcCorrespondenceParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
-			Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 			Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
@@ -216,17 +213,15 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 {
 	QConnectMySQL dlg(this,0,true);
 	GSessionMySQL* Sess;
-	Sess = new GSessionMySQL(host,user,passwd,db,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,DocOptions,&SessionParams);
+	Sess = new GSessionMySQL(host,user,passwd,db,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,DocOptions,&SessionParams);
 	unsigned int cmd=dlg.cbLoad->currentItem();
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 	d->LoadSession(cmd);
 	Doc=new KDoc(this,Sess);
-	Sess->RegisterProfileDesc(new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess,&LinkCalcHITSParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess,&LinkCalcCorrespondenceParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
-	Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 	Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 	sessionDisconnect->setEnabled(true);
 	sessionCompute->setEnabled(true);
@@ -912,13 +907,6 @@ void KGALILEICenterApp::slotRunProgram(void)
 	}
 	(*Doc->GetSession()->GetDocOptions())=tmpDocOptions;
 	KIO::NetAccess::removeTempFile( tmpfile );
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotRunQuery(void)
-{
-	createClient(Doc,new KViewQuery(Doc,pWorkspace,"Run Query",0));
 }
 
 

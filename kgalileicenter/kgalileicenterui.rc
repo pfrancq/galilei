@@ -34,7 +34,6 @@
 		<Separator/>
 		<Action name="showGroups"/>
 		<Action name="groupsCalc"/>
-		<Action name="runQuery"/>
 		<Separator/>
 		<Menu name="Compare"><text>&amp;Compare</text>
 			<Action name="groupingCompareFromFile"/>
@@ -71,7 +70,6 @@
 		<Action name="rRunR"/>
 	</Menu>
 	<Menu name="settings"><text>&amp;Settings</text>
-		<Action name="oldplugins"/>
 		<Action name="plugins"/>
 		<Action name="docsOptions"/>
 		<Action name="sessionOptions"/>

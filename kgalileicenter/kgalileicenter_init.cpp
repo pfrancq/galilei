@@ -162,7 +162,6 @@ void KGALILEICenterApp::initActions(void)
 	docsOptions=new KAction(i18n("&Documents Options"),"configure",0,this,SLOT(slotDocsOptions()),actionCollection(),"docsOptions");
 	plugins=new KAction(i18n("&Plugins"),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
 	sessionOptions=new KAction(i18n("&Session Options"),"configure",0,this,SLOT(slotSessionOptions()),actionCollection(),"sessionOptions");
-	oldPlugins=new KAction(i18n("&Old Plugins"),"wizard",0,this,SLOT(slotOldPlugins()),actionCollection(),"oldplugins");
 
 	// Menu "Window"
 	windowTile = new KAction(i18n("&Tile"), 0, this, SLOT(slotWindowTile()), actionCollection(),"window_tile");
@@ -255,49 +254,6 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Use External Link",DocOptions->UseExternalLink);
 	Config->writeEntry("Use Redirection",DocOptions->UseRedirection);
 
-	// Write Config of Session Options
-	Config->setGroup("Session Options");
-	Config->writeEntry("Description Method",GetCurrentProfileDesc());
-	Config->writeEntry("Link Description Method",GetCurrentLinkCalcMethod());
-
-	// Write Config of LinkCalcHITS
-	Config->setGroup(LinkCalcHITSParams.GetComputingName());
-	Config->writeEntry("NbIteration",LinkCalcHITSParams.NbIteration);
-	Config->writeEntry("NbResultsHub",LinkCalcHITSParams.NbResultsHub);
-	Config->writeEntry("NbResultsAuto",LinkCalcHITSParams.NbResultsAuto);
-	Config->writeEntry("LimitLink",LinkCalcHITSParams.LimitLink);
-	Config->writeEntry("NbLinks",LinkCalcHITSParams.NbLinks);
-	Config->writeEntry("UseMultipleLink",LinkCalcHITSParams.UseMultipleLink);
-
-	// Write Config of LinkCalcCorrespondence
-	Config->setGroup(LinkCalcCorrespondenceParams.GetComputingName());
-	Config->writeEntry("NbIteration",LinkCalcCorrespondenceParams.NbIteration);
-	Config->writeEntry("NbResultsHub",LinkCalcCorrespondenceParams.NbResultsHub);
-	Config->writeEntry("NbResultsAuto",LinkCalcCorrespondenceParams.NbResultsAuto);
-	Config->writeEntry("LimitLink",LinkCalcCorrespondenceParams.LimitLink);
-	Config->writeEntry("NbLinks",LinkCalcCorrespondenceParams.NbLinks);
-	Config->writeEntry("UseMultipleLink",LinkCalcCorrespondenceParams.UseMultipleLink);
-
-	// Write Config of LinkCalcSALSA
-	Config->setGroup(LinkCalcSALSAParams.GetComputingName());
-	Config->writeEntry("NbResultsHub",LinkCalcSALSAParams.NbResultsHub);
-	Config->writeEntry("NbResultsAuto",LinkCalcSALSAParams.NbResultsAuto);
-	Config->writeEntry("LimitLink",LinkCalcSALSAParams.LimitLink);
-	Config->writeEntry("NbLinks",LinkCalcSALSAParams.NbLinks);
-	Config->writeEntry("UseMultipleLink",LinkCalcSALSAParams.UseMultipleLink);
-
-	// Write Config of LinkCalcTresh
-	Config->setGroup(LinkCalcTreshParams.GetComputingName());
-	Config->writeEntry("NbIteration",LinkCalcTreshParams.NbIteration);
-	Config->writeEntry("NbResultsHub",LinkCalcTreshParams.NbResultsHub);
-	Config->writeEntry("NbResultsAuto",LinkCalcTreshParams.NbResultsAuto);
-	Config->writeEntry("HTresh",LinkCalcTreshParams.HTresh);
-	Config->writeEntry("ATresh",LinkCalcTreshParams.ATresh);
-	Config->writeEntry("FTresh",LinkCalcTreshParams.FTresh);
-	Config->writeEntry("AKTresh",LinkCalcTreshParams.AKTresh);
-	Config->writeEntry("FKTresh",LinkCalcTreshParams.FKTresh);
-	Config->writeEntry("Kvalue",LinkCalcTreshParams.Kvalue);
-
 	// Write the session parameters
 	Config->setGroup(SessionParams.GetName());
 	Config->writeEntry("SameBehaviourMinDocs",SessionParams.GetUInt("SameBehaviourMinDocs"));
@@ -371,56 +327,6 @@ void KGALILEICenterApp::readOptions(void)
 	DocOptions->UseLink=Config->readBoolEntry("Use Link",true);
 	DocOptions->UseExternalLink=Config->readBoolEntry("Use External Link",false);
 	DocOptions->UseRedirection=Config->readBoolEntry("Use Redirection",false);
-
-	// Read Session Options
-	ProfileDesc = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
-	ProfileDesc->InsertPtr(new R::RString("Vector space"));
-	LinkCalcMethod=new R::RContainer<R::RString,unsigned int,true,true>(3,3);
-	LinkCalcMethod->InsertPtr(new R::RString("HITS Algorithm"));
-	LinkCalcMethod->InsertPtr(new R::RString("Correspondence Algorithm"));
-	LinkCalcMethod->InsertPtr(new R::RString("SALSA Algorithm"));
-	LinkCalcMethod->InsertPtr(new R::RString("Treshold Kleinberg Algorithm"));
-	Config->setGroup("Session Options");
-	CurrentProfileDesc=Config->readEntry("Description Method","Vector space");
-	CurrentLinkCalcMethod=Config->readEntry("Link Description Method","HITS Algorithm");
-
-	// Read Config of LinkCalcHITS
-	Config->setGroup(LinkCalcHITSParams.GetComputingName());
-	LinkCalcHITSParams.NbIteration=Config->readNumEntry("NbIteration",5);
-	LinkCalcHITSParams.NbResultsHub=Config->readNumEntry("NbResultsHub",5);
-	LinkCalcHITSParams.NbResultsAuto=Config->readNumEntry("NbResultsAuto",5);
-	LinkCalcHITSParams.LimitLink=Config->readBoolEntry("LimitLink",false);
-	LinkCalcHITSParams.NbLinks=Config->readNumEntry("NbLinks",10);
-	LinkCalcHITSParams.UseMultipleLink=Config->readBoolEntry("UseMultipleLink",true);
-
-	// Read Config of LinkCalcCorrespondence
-	Config->setGroup(LinkCalcCorrespondenceParams.GetComputingName());
-	LinkCalcCorrespondenceParams.NbIteration=Config->readNumEntry("NbIteration",5);
-	LinkCalcCorrespondenceParams.NbResultsHub=Config->readNumEntry("NbResultsHub",5);
-	LinkCalcCorrespondenceParams.NbResultsAuto=Config->readNumEntry("NbResultsAuto",5);
-	LinkCalcCorrespondenceParams.LimitLink=Config->readBoolEntry("LimitLink",false);
-	LinkCalcCorrespondenceParams.NbLinks=Config->readNumEntry("NbLinks",10);
-	LinkCalcCorrespondenceParams.UseMultipleLink=Config->readBoolEntry("UseMultipleLink",true);
-
-	// Read Config of LinkCalcSALSA
-	Config->setGroup(LinkCalcSALSAParams.GetComputingName());
-	LinkCalcSALSAParams.NbResultsHub=Config->readNumEntry("NbResultsHub",5);
-	LinkCalcSALSAParams.NbResultsAuto=Config->readNumEntry("NbResultsAuto",5);
-	LinkCalcSALSAParams.LimitLink=Config->readBoolEntry("LimitLink",false);
-	LinkCalcSALSAParams.NbLinks=Config->readNumEntry("NbLinks",10);
-	LinkCalcSALSAParams.UseMultipleLink=Config->readBoolEntry("UseMultipleLink",true);
-
-	// Read Config of LinkCalcTresh
-	Config->setGroup(LinkCalcTreshParams.GetComputingName());
-	LinkCalcTreshParams.NbIteration=Config->readNumEntry("NbIteration",5);
-	LinkCalcTreshParams.NbResultsHub=Config->readNumEntry("NbResultsHub",5);
-	LinkCalcTreshParams.NbResultsAuto=Config->readNumEntry("NbResultsAuto",5);
-	LinkCalcTreshParams.HTresh=Config->readBoolEntry("HTresh",true);
-	LinkCalcTreshParams.ATresh=Config->readBoolEntry("ATresh",false);
-	LinkCalcTreshParams.FTresh=Config->readBoolEntry("FTresh",false);
-	LinkCalcTreshParams.AKTresh=Config->readBoolEntry("AKTresh",false);
-	LinkCalcTreshParams.FKTresh=Config->readBoolEntry("FKTresh",false);
-	LinkCalcTreshParams.Kvalue=Config->readNumEntry("Kvalue",60);
 
 	// Read the Session Parameters
 	Config->setGroup(SessionParams.GetName());

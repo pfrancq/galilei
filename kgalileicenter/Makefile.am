@@ -4,16 +4,16 @@ bin_PROGRAMS = kgalileicenter
 ## INCLUDES were found outside kdevelop specific part
 
 kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui \
-	qcreatedatabase.ui qmixidealconfig.ui kviewquery.cpp  \
+	qcreatedatabase.ui qmixidealconfig.ui \
 	kviewr.cpp kviewprg.cpp \
-	qpluginsdlg.cpp kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewstems.cpp \
+	kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewstems.cpp \
 	qsessionprogress.cpp qdocsoptionsdlg.ui qconnectmysql.ui kviewusers.cpp kviewthgroups.cpp \
 	kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp \
 	kview.cpp kdoc.cpp kgalileicenter.cpp main.cpp qplugins.ui qsessionoptions.ui
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
 kgalileicenter_LDADD = $(GALILEI_LIB)/postgroups/libgalilei_postgroups.la /usr/lib/libmysqlclient.la \
 	$(QTWIDGETS_LIB)/galilei/libkde_galilei.la $(QTWIDGETS_LIB)/rpromethee/libkde_rpromethee.la \
-	$(QTWIDGETS_LIB)/rga/libkde_rga.la $(GALILEI_LIB)/tests/libgalilei_tests.la \
+	$(QTWIDGETS_LIB)/rga/libkde_rga.la \
 	$(GALILEI_LIB)/sessions/libgalilei_sessions.la $(GALILEI_LIB)/profiles/libgalilei_profiles.la \
 	$(GALILEI_LIB)/langs/libgalilei_langs.la $(GALILEI_LIB)/infos/libgalilei_infos.la \
 	$(GALILEI_LIB)/groups/libgalilei_groups.la $(GALILEI_LIB)/historic/libgalilei_historic.la \
@@ -31,9 +31,9 @@ EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kg
 	kviewgroups.cpp kviewgroups.h kviewprofile.cpp kviewprofile.h \
 	kviewthgroups.cpp kviewthgroups.h kviewusers.cpp kviewusers.h qconnectmysql.ui \
 	qdocsoptionsdlg.ui qsessionprogress.cpp qsessionprogress.h kviewstems.cpp kviewstems.h \
-	kgalileicenter_dlg.cpp kgalileicenter_init.cpp qpluginsdlg.cpp qpluginsdlg.h \
+	kgalileicenter_dlg.cpp kgalileicenter_init.cpp \
 	kviewprg.cpp kviewprg.h kviewr.cpp kviewr.h  \
-	kviewquery.cpp kviewquery.h qmixidealconfig.ui\
+	qmixidealconfig.ui\
 	qcreatedatabase.ui qcreatedatabase.ui.h qfilldatabase.ui\
 	hi16-app-kgalileicenter.png hi32-app-kgalileicenter.png kviewhistory.cpp kviewhistory.h \
 	qhistorydlg.ui kviewstorechromos.cpp kviewstorechromos.h qgalileiitem.h

@@ -168,11 +168,6 @@ class KGALILEICenterApp : public KMainWindow
 	GSessionParams SessionParams;
 
 	/**
-	* Current Profile Description Method
-	*/
-	R::RString CurrentProfileDesc;
-
-	/**
 	* Current Group Descrition Method
 	*/
 	R::RString CurrentLinkCalcMethod;
@@ -236,11 +231,6 @@ class KGALILEICenterApp : public KMainWindow
 public:
 
 	/**
-	* Container of subprofiles description method.
-	*/
-	R::RContainer<R::RString,unsigned int,true,true>* ProfileDesc;
-
-	/**
 	* Container of link description method.
 	*/
 	R::RContainer<R::RString,unsigned int,true,true>* LinkCalcMethod;
@@ -258,16 +248,6 @@ public:
 	* Returns a pointer to the document connected to the view.
 	*/
 	KDoc* getDocument(void) const;
-
-	/**
-	* Return the current subprofile description method used.
-	*/
-	R::RString GetCurrentProfileDesc(void) {return(CurrentProfileDesc);}
-
-	/**
-	* Set the current subprofile description method used.
-	*/
-	void SetCurrentProfileDesc(R::RString str) {CurrentProfileDesc=str;}
 
 	/**
 	* Return the Current link description method used.
@@ -552,11 +532,6 @@ private slots:
 	/**
 	* Configure all the plugins of the system.
 	*/
-	void slotOldPlugins(void);
-
-	/**
-	* Configure all the plugins of the system.
-	*/
 	void slotPlugins(void);
 
 	/**
@@ -568,11 +543,6 @@ private slots:
 	* Run a program text file.
 	*/
 	void slotRunProgram(void);
-
-	/**
-	* Run a query on the groups.
-	*/
-	void slotRunQuery(void);
 
 	/**
 	* Called when the option about the profile's has to be changed.
@@ -634,8 +604,6 @@ public:
 	*/
 	~KGALILEICenterApp(void);
 
-	friend class QPluginsDlg;
-
 public:
 
 	// KAction pointers to enable/disable actions
@@ -681,7 +649,6 @@ public:
 	KAction* rRunR;
 
 	KAction* plugins;
-	KAction* oldPlugins;
 	KAction* docsOptions;
 	KAction* sessionOptions;
 

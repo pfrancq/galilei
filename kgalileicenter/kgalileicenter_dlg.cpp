@@ -54,10 +54,6 @@ using namespace R;
 #include <profiles/gsubprofiledesc.h>
 #include <groups/ggrouping.h>
 #include <profiles/gprofilecalc.h>
-#include <galilei/qlinkcalchitspluginconf.h>
-#include <galilei/qlinkcalccorrespondencepluginconf.h>
-#include <galilei/qlinkcalcsalsapluginconf.h>
-#include <galilei/qlinkcalctreshpluginconf.h>
 using namespace GALILEI;
 
 
@@ -95,7 +91,6 @@ using namespace GALILEI;
 #include "kviewdoc.h"
 #include "kviewprofile.h"
 #include "qdocsoptionsdlg.h"
-#include "qpluginsdlg.h"
 #include "qsessionoptions.h"
 #include "qplugins.h"
 #include "qgalileiitem.h"
@@ -375,18 +370,6 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	}
 
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotOldPlugins(void)
-{
-	QPluginsDlg dlg(this,"Plugins Dialog");
-	dlg.RegisterLinkCalcPluginConf(new QLinkCalcHITSPluginConf(&LinkCalcHITSParams));
-	dlg.RegisterLinkCalcPluginConf(new QLinkCalcCorrespondencePluginConf(&LinkCalcCorrespondenceParams));
-	dlg.RegisterLinkCalcPluginConf(new QLinkCalcSALSAPluginConf(&LinkCalcSALSAParams));
-	dlg.RegisterLinkCalcPluginConf(new QLinkCalcTreshPluginConf(&LinkCalcTreshParams));
-	dlg.exec();
 }
 
 
