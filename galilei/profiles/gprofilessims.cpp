@@ -52,7 +52,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesSims::GProfilesSims(unsigned int s) throw(bad_alloc)
-	: RContainer<GProfilesSim,unsigned int,false,true>(s,s<50?50:s/2)
+	: RContainer<GProfilesSim,unsigned int,true,true>(s,s<50?50:s/2)
 {
 }
 

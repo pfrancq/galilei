@@ -55,7 +55,7 @@ namespace GALILEI{
 * @author Pascal Francq and Valery Vandaele
 * @short SubProfiles.
 */
-class GProfilesSims : public RStd::RContainer<GProfilesSim,unsigned int,false,true>
+class GProfilesSims : public RStd::RContainer<GProfilesSim,unsigned int,true,true>
 {
 public:
 
@@ -79,6 +79,10 @@ public:
 	GProfilesSimCursor& GetProfilesSimCursor(GLang* l);
 
 public:
+
+	/**
+	* clear the similarities;
+	*/
 
 	/**
 	* Destructor.
