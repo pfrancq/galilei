@@ -491,11 +491,11 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 		sprintf(sSql,"DELETE FROM %shtmlsbykwds WHERE htmlid=%u",l,id);
 		RQuery deletekwds(this,sSql);
 		Words=doc->GetWordWeightCursor();
-		//for(Words.Start();!Words.End();Words.Next())
-		//{
-		//	sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%lf)",l,id,Words()->GetId(),Words()->GetWeight());
-		//	RQuery insertkwds(this,sSql);
-		//}
+		for(Words.Start();!Words.End();Words.Next())
+		{
+			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%lf)",l,id,Words()->GetId(),Words()->GetWeight());
+			RQuery insertkwds(this,sSql);
+		}
 		l=ValidSQLValue(l,slang);
 	}
 	else
