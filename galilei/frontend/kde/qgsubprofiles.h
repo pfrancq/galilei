@@ -6,7 +6,7 @@
 
 	Widget to show a subprofile desciption in vector model - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -91,7 +91,7 @@ class QGSubProfiles : public QWidget
 	*/
 	SubProfile* Current;
 
-	/**                                                                                
+	/**
 	*  Combo Box to choose the language of the profile.
 	*/
 	QComboBox* Lang;
@@ -99,19 +99,12 @@ class QGSubProfiles : public QWidget
 public:
 
 	/**
-	* Constructor 
+	* Constructor
 	* @param parent         parent widget.
 	* @param session        Session.
 	* @param profile        Profile.
 	*/
 	QGSubProfiles(QTabWidget* parent,GSession* session,GProfile* profile);
-
-protected:
-
-	/**
-	* Called when the main window is resize by the user.
-	*/
-	void resizeEvent(QResizeEvent *);
 
 public slots:
 
@@ -127,7 +120,7 @@ public slots:
 	void slotProfileChanged(void);
 
 public:
-	
+
 	/**
 	* Destructor
 	*/

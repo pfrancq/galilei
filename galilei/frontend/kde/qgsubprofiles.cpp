@@ -9,7 +9,7 @@
 	Copyright 2001 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		
+
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -68,12 +68,13 @@ class QGSubProfiles::SubProfile : public QWidget
 	char tmpWord[50];
 
 public:
-	
+
 	SubProfile(QWidget* parent,GSession* session,GSubProfile* desc);
 	void Construct(void);
 	int Compare(const SubProfile*) const {return(-1);}
 	int Compare(const SubProfile&) const {return(-1);}
 };
+
 
 //-----------------------------------------------------------------------------
 GALILEI::QGSubProfiles::SubProfile::SubProfile(QWidget* parent,GSession* session,GSubProfile* desc)
@@ -99,7 +100,6 @@ GALILEI::QGSubProfiles::SubProfile::SubProfile(QWidget* parent,GSession* session
 	d=desc->GetAttached();
 	sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 	new QListViewItem(Info,"Last Attached",sDate);
-	Info->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
 	QtLayout->addWidget(Info);
 
 	// Create the 'Vector' ListView
@@ -168,11 +168,12 @@ GALILEI::QGSubProfiles::QGSubProfiles(QTabWidget* parent,GSession* session,GProf
 	SubProfile* w;
 
 	// Construct the combo box
+	QVBoxLayout* QtLayout = new QVBoxLayout(this,0,0, "QtLayout");
 	Lang=new QComboBox(this);
 	tmp=Lang->size();
 	cbsize=Lang->size();
-	Lang->resize(act.width(),tmp.height());
 	Lang->setEditable(false);
+	QtLayout->addWidget(Lang);
 	connect(Lang,SIGNAL(activated(int)),this,SLOT(slotLangChanged(int)));
 
 	// For each subprofile create a widget
@@ -180,16 +181,14 @@ GALILEI::QGSubProfiles::QGSubProfiles(QTabWidget* parent,GSession* session,GProf
 	for(s.Start();!s.End();s.Next())
 	{
 		// If language is not handled -> do not treat it
-		if(!s()->GetLang()) 
+		if(!s()->GetLang())
 			continue;
 		w=new SubProfile(this,Session,s());
-		break;
 
-		if(!w) return;
+		if(!w) break;
 		Desc.InsertPtr(w);
 		Lang->insertItem(ToQString(s()->GetLang()->GetName()),Desc.GetNb()-1);
-		w->move(0,cbsize.height());
-		w->resize(act.width(),act.height()-cbsize.height());
+		QtLayout->addWidget(w);
 		if(Desc.GetNb()==1)
 		{
 			Current=w;
@@ -219,22 +218,6 @@ void GALILEI::QGSubProfiles::slotProfileChanged(void)
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Construct();
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::QGSubProfiles::resizeEvent(QResizeEvent *)
-{
-	RCursor<SubProfile> Cur(Desc);
-	QSize act=size(),tmp;
-	tmp=Lang->size();
-
-	// Resize Combo box Lang.
-	Lang->resize(act.width(),tmp.height());
-
-	// Resize SubProfiles.
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->resize(act.width(),act.height()-tmp.height());
 }
 
 
