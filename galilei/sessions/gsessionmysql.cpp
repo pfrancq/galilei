@@ -379,10 +379,8 @@ void GALILEI::GSessionMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned i
 	Cur=((GSubProfileVector*)sub)->GetVectorCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		cout <<"courage david"<<endl;
 		sprintf(sSql,"INSERT INTO  %shistoricsubprofiles(historicid,subprofileid,kwdid,weight) VALUES (%u, %u,%u,'%e')",
 		              sub->GetLang()->GetCode() ,historicid,sub->GetId(),Cur()->GetId(),Cur()->GetWeight());
-		cout <<sSql<<endl;
 		RQuery insertkwds(this,sSql);
 	}
 }
@@ -899,11 +897,9 @@ void GALILEI::GSessionMySQL::LoadWordsGroups(GDict* dict) throw(GException)
 	RQuery loadwords (this, sSql);
 	for(loadwords.Start();!loadwords.End();loadwords.Next())
 	{
-		cout<<i++<<" "<<atoi(loadwords[0])<<" "<<atoi(loadwords[1])<<" nb= "<<dict->GroupsList.NbPtr<<" "<<dict->GroupsList.GetPtr(atoi(loadwords[0]))<<endl;
 		if(!dict->GroupsList.IsIn(atoi(loadwords[0])))
 			dict->GroupsList.InsertPtr(new GWordList(atoi(loadwords[0]),dict->GetWord(atoi(loadwords[0]))));
 		tmp=dict->GroupsList.GetPtr(atoi(loadwords[0]));
-		cout<<dict->GroupsList.GetPtr(atoi(loadwords[0]))<<" "<<tmp<<" nb= "<<dict->GroupsList.NbPtr<<endl;
 		tmp->InsertWord(new GWord(atoi(loadwords[1]),dict->GetWord(atoi(loadwords[1]))));
 	}
 

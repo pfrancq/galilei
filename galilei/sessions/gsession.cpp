@@ -460,7 +460,7 @@ void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 	LoadUsers();
 	bUsers=true;
 
-	// Initialise the profiles sims  
+	// Initialise the profiles sims
 	InitProfilesSims();
 
 	// Initilaise the profiles behaviour.
@@ -533,23 +533,26 @@ double GALILEI::GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub)
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::InitProfilesSims(void) 
 {
+	GProfilesSim* profSim;
+	RContainer<GSubProfile,unsigned int,false,true>* subProfs;
 	GLangCursor langs = GetLangsCursor();
 
-	RContainer<GSubProfile,unsigned int,false,true>* subProf;
-	GProfilesSim* profSim;
+	//init a profilsims contianing a profilesim for each langs
+	ProfilesSims = new GProfilesSims(langs.GetNb());
 
-	ProfilesSims = new GProfilesSims(5);
-	
+	//for each languages
 	for(langs.Start();!langs.End(); langs.Next())
 	{
-		subProf = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
+		subProfs = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
 		GSubProfileCursor subProfCur = GetSubProfilesCursor(langs());
 
 		for(subProfCur.Start();!subProfCur.End();subProfCur.Next())
 		{
-			subProf->InsertPtr( subProfCur());      
+			subProfs->InsertPtr( subProfCur());
 		}
-		profSim= new GProfilesSim(subProf, false,langs());
+		//init the profsim with a global=false (can be 'true').
+		profSim= new GProfilesSim(subProfs, false,langs());
+		// insert the profsim in the container of profsims
 		ProfilesSims->InsertPtr(profSim);
 	}
 }
@@ -589,21 +592,21 @@ void GALILEI::GSession::InitProfilesBehaviours(void)
 {
 	GLangCursor langs = GetLangsCursor();
 
-	RContainer<GSubProfile,unsigned int,false,true>* subProf;
+	RContainer<GSubProfile,unsigned int,false,true>* subProfs;
 	GProfilesBehaviour* profBehaviour;
 
 	ProfilesBehaviours = new GProfilesBehaviours(5);
 
 	for(langs.Start();!langs.End(); langs.Next())
 	{
-		subProf = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
+		subProfs = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
 		GSubProfileCursor subProfCur = GetSubProfilesCursor(langs());
 
 		for(subProfCur.Start();!subProfCur.End();subProfCur.Next())
 		{
-			subProf->InsertPtr(subProfCur());
+			subProfs->InsertPtr(subProfCur());
 		}
-		profBehaviour= new GProfilesBehaviour(subProf,langs());
+		profBehaviour= new GProfilesBehaviour(subProfs,langs());
 		ProfilesBehaviours->InsertPtr(profBehaviour);
 	}
 }
@@ -710,9 +713,7 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 				if((!modified)||(Subs()->GetState()!=osUpdated))
 				{
 					if (DocOptions->UseLink)
-					{
 						LinkCalc->Compute(Prof());
-					}
 					ProfileCalc->Compute(Subs());
 					// add the mofified profile to the list of modified profiles  for similarities
 					profSim = ProfilesSims->GetPtr<GLang*>(Subs()->GetLang());
