@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <sessions/gplugin.h>
 
 
 //------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Statistics Methods Manager.
 */
-class GStatsCalcManager : public R::RContainer<GFactoryStatsCalc,true,true>
+class GStatsCalcManager : public R::RContainer<GFactoryStatsCalc,true,true> , public GPluginManager
 {
 public:
 

@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <sessions/gplugin.h>
 
 
 //------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short Link Methods Manager.
 */
-class GLinkCalcManager : public R::RContainer<GFactoryLinkCalc,true,true>
+class GLinkCalcManager : public R::RContainer<GFactoryLinkCalc,true,true>, public GPluginManager
 {
 	/**
 	* Method currently selected.

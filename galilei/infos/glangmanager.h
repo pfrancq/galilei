@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <sessions/gplugin.h>
 
 
 //------------------------------------------------------------------------------
@@ -52,7 +53,8 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Languages.
 */
-class GLangManager : public R::RContainer<GFactoryLang,true,true>
+class GLangManager : public R::RContainer<GFactoryLang,true,true>, public GPluginManager
+
 {
 public:
 

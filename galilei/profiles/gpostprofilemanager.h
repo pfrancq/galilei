@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <sessions/gplugin.h>
 
 
 //------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ namespace GALILEI{
 * @author David Wartel
 * @short Post-Profile Computing Methods Manager.
 */
-class GPostProfileManager : public R::RContainer<GFactoryPostProfile,true,true>
+class GPostProfileManager : public R::RContainer<GFactoryPostProfile,true,true> ,public GPluginManager
 {
 public:
 

@@ -53,7 +53,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GPostDocManager::GPostDocManager(const char* path,bool dlg) throw(GException)
-	: RContainer<GFactoryPostDoc,true,true>(10,5)
+	: RContainer<GFactoryPostDoc,true,true>(10,5) ,GPluginManager("PostDoc",path)
 {
 
 	RString Path(path);

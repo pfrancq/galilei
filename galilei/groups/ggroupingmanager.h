@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <sessions/gplugin.h>
 
 
 //------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Grouping Methods Manager.
 */
-class GGroupingManager : public R::RContainer<GFactoryGrouping,true,true>
+class GGroupingManager : public R::RContainer<GFactoryGrouping,true,true>,public GPluginManager
 {
 	/**
 	* Method currently selected.

@@ -54,7 +54,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryStatsCalc,true,true>(10,5)
+	: RContainer<GFactoryStatsCalc,true,true>(10,5),GPluginManager("StatCalc",path)
 {
 	RString Path(path);
 	Path+="/stats";

@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <sessions/gplugin.h>
 
 
 //------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Profile Computing Methods Manager.
 */
-class GProfileCalcManager : public R::RContainer<GFactoryProfileCalc,true,true>
+class GProfileCalcManager : public R::RContainer<GFactoryProfileCalc,true,true>, public GPluginManager
 {
 	/**
 	* Method currently selected.

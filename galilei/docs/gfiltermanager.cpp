@@ -106,7 +106,7 @@ public:
 
 //------------------------------------------------------------------------------
 GFilterManager::GFilterManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: R::RContainer<GFactoryFilter,true,true>(10,5), MIMES(50,25),
+	: R::RContainer<GFactoryFilter,true,true>(10,5),GPluginManager("Filter",path), MIMES(50,25),
 	  Exts(50,25)
 {
 	RString Path(path);

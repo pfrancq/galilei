@@ -295,7 +295,7 @@ GDocProfSims::GDocProfSims::GDocProfSims(GSession* session,bool iff,bool memory)
 	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 
-	Langs=Session->GetLangs()->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();
@@ -314,7 +314,7 @@ void GDocProfSims::ReInit(void) throw(std::bad_alloc)
 	GLang* Lang;
 
 	Sims.Clear();
-	Langs=Session->GetLangs()->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();
@@ -331,7 +331,7 @@ void GDocProfSims::UseIFF(bool iff) throw(std::bad_alloc)
 	GLang* Lang;
 
 	IFF=iff;
-	Langs=Session->GetLangs()->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();

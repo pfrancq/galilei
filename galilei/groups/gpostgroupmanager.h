@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <sessions/gplugin.h>
 
 
 //------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short Post-Group Computing Methods Manager.
 */
-class GPostGroupManager : public R::RContainer<GFactoryPostGroup,true,true>
+class GPostGroupManager : public R::RContainer<GFactoryPostGroup,true,true>, public GPluginManager
 {
 public:
 

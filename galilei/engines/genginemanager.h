@@ -38,7 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-
+#include <sessions/gplugin.h>
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short search engine Manager.
 */
-class GEngineManager : public R::RContainer<GFactoryMetaEngine,true,true>, public R::RContainer<GFactoryEngine,true,true>
+class GEngineManager : public R::RContainer<GFactoryMetaEngine,true,true>, public R::RContainer<GFactoryEngine,true,true> , public GPluginManager
 {
 	/**
 	* Method currently selected.

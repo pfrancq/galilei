@@ -51,7 +51,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GGroupingManager::GGroupingManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryGrouping,true,true>(10,5), Current(0)
+	: RContainer<GFactoryGrouping,true,true>(10,5), GPluginManager("Grouping",path),Current(0)
 {
 	RString Path(path);
 	Path+="/grouping";

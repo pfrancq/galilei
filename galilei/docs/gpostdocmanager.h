@@ -38,7 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-
+#include <sessions/gplugin.h>
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Documents Post-Analysis Methods Manager.
 */
-class GPostDocManager : public R::RContainer<GFactoryPostDoc,true,true>
+class GPostDocManager : public R::RContainer<GFactoryPostDoc,true,true>, public GPluginManager
 {
 public:
 

@@ -51,7 +51,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryGroupCalc,true,true>(10,5), Current(0)
+	: RContainer<GFactoryGroupCalc,true,true>(10,5),GPluginManager("GroupCalc",path), Current(0)
 {
 	RString Path(path);
 	Path+="/groups";

@@ -51,7 +51,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GLinkCalcManager::GLinkCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryLinkCalc,true,true>(10,5), Current(0)
+	: RContainer<GFactoryLinkCalc,true,true>(10,5),GPluginManager("LinkCalc",path), Current(0)
 {
 	RString Path(path);
 	Path+="/linking";

@@ -571,8 +571,7 @@ GProfilesSims::GProfilesSims(GSession* session,bool iff, bool memory) throw(std:
 	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 
-
-	Langs=Session->GetLangs()->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();
@@ -589,7 +588,7 @@ void GProfilesSims::ReInit(void) throw(std::bad_alloc)
 
 	if (!GetMemory()) return;
 	Sims.Clear();
-	Langs=Session->GetLangs()->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();
@@ -606,7 +605,7 @@ void GProfilesSims::UseIFF(bool iff) throw(std::bad_alloc)
 	GLang* Lang;
 
 	IFF=iff;
-	Langs=Session->GetLangs()->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();

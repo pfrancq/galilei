@@ -69,69 +69,9 @@ protected:
 	GSubjects* Subjects;
 
 	/**
-	* Languages Manager.
-	*/
-	GLangManager* Langs;
-
-	/**
-	* URL Manager.
-	*/
-	GFilterManager* URLMng;
-
-	/**
-	* SubProfile Computing Methods Manager.
-	*/
-	GProfileCalcManager* ProfilingMng;
-
-	/**
-	* Grouping Methods Manager.
-	*/
-	GGroupingManager* GroupingMng;
-
-	/**
-	* Group Computing Methods Manager.
-	*/
-	GGroupCalcManager* GroupCalcMng;
-
-	/**
-	* Statistics Methods Manager.
-	*/
-	GStatsCalcManager* StatsCalcMng;
-
-	/**
-	* Link Methods Manager.
-	*/
-	GLinkCalcManager* LinkCalcMng;
-
-	/**
-	* Post-Group Computing Methods Manager.
-	*/
-	GPostGroupManager* PostGroupMng;
-
-	/**
-	* Documents Post-Analysis Methods Manager.
-	*/
-	GPostDocManager* PostDocMng;
-
-	/**
-	* Documents Post-Analysis Methods Manager.
-	*/
-	GPostProfileManager* PostProfileMng;
-
-	/**
-	* Document Analysis Methods Manager.
-	*/
-	GDocAnalyseManager* DocAnalyseMng;
-
-	/**
 	* Hitoric of grouping Manager
 	*/
 	GGroupsHistoryManager* GroupsHistoryMng;
-
-	/**
-	* Document Analysis Methods Manager.
-	*/
-	GEngineManager* EngineMng;
 
 	/**
 	* Similarities between the subprofiles.
@@ -231,71 +171,13 @@ public:
 	* @param ppmng           Post-Profile Computing Methods Manager
 	* @param pgmng           Post-Group Computing Methods Manager
 	*/
-	void Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GLinkCalcManager* lmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostProfileManager* ppmng,GPostGroupManager* pgmng, GEngineManager* egmng);
-
-	//--------------------------------------------------------------------------
-	// Manager methods
-
-	/**
-	* Get the languages manager.
-	* @return Pointer to GLangManager.
-	*/
-	GLangManager* GetLangs(void) const {return(Langs);}
-
-	/**
-	* Get the document analysis methods manager.
-	* @return Pointer to GDocAnalyse.
-	*/
-	GDocAnalyseManager* GetDocAnalyseMng(void) const {return(DocAnalyseMng);}
-
-	/**
-	* Get the subprofile computing methods manager.
-	* @return Pointer to GProfileCalcManager.
-	*/
-	GProfileCalcManager* GetProfilingMng(void) {return(ProfilingMng);}
-
-	/**
-	* Get the grouping methods manager.
-	* @return Pointer to GGroupingManager.
-	*/
-	GGroupingManager* GetGroupingMng(void) {return(GroupingMng);}
-
-	/**
-	* Get the link methods manager.
-	* @return Pointer to GLinkCalcManager.
-	*/
-	GLinkCalcManager* GetLinkCalcMng(void) {return(LinkCalcMng);}
-
-	/**
-	* Get the post-group computing methods manager.
-	* @return Pointer to GPostGroupManager.
-	*/
-	GPostGroupManager* GetPostGroupMng(void) {return(PostGroupMng);}
-
-	/**
-	* Get the group computing methods manager.
-	* @return Pointer to GGroupCalcManager.
-	*/
-	GGroupCalcManager* GetGroupCalcMng(void) {return(GroupCalcMng);}
-
-	/**
-	* Get the statistics methods manager.
-	* @return Pointer to GStatsCalcManager.
-	*/
-	GStatsCalcManager* GetStatsCalcMng(void) {return(StatsCalcMng);}
+	void Connect(void);
 
 	/**
 	* Get the historic groups manager.
 	* @return Pointer to GGroupsHistoryMng.
 	*/
 	GGroupsHistoryManager* GetGroupsHistoryManager(void) {return(GroupsHistoryMng);}
-
-	/**
-	* Get the (meta) engine methods manager.
-	* @return Pointer to GEngineManager.
-	*/
-	GEngineManager* GetEngineMng(void) {return(EngineMng);}
 
 	/**
 	* Get the storage manager.
@@ -314,34 +196,6 @@ public:
 	* @return Pointer to GSessionParams.
 	*/
 	GSessionParams* GetSessionParams(void) const {return(SessParams);}
-
-
-	//--------------------------------------------------------------------------
-	// Cursor methods
-
-	/**
-	* Get a cursor over the factories of the link methods.
-	* @return GLinkCalcCursor.
-	*/
-	R::RCursor<GFactoryLinkCalc> GetLinkCalcsCursor(void);
-
-	/**
-	* Get a cursor over the factories of the document post-analysis methods.
-	* @return GPostDocCursor.
-	*/
-	R::RCursor<GFactoryPostDoc> GetPostDocsCursor(void);
-
-	/**
-	* Get a cursor over the factories of the search engines.
-	* @return GEngineCursor.
-	*/
-	R::RCursor<GFactoryEngine> GetEnginesCursor(void);
-
-	/**
-	* Get a cursor over the factories of the meta search engines.
-	* @return GMetaEngineCursor.
-	*/
-	R::RCursor<GFactoryMetaEngine> GetMetaEnginesCursor(void);
 
 	//--------------------------------------------------------------------------
 	// Assign identifier methods
@@ -538,13 +392,6 @@ public:
 	* Get a cursor over the filters of the system.
 	*/
 	R::RCursor<GFactoryFilter> GetFiltersCursor(void);
-
-	/**
-	* Get the filter for a specific mime type.
-	* @param mime           Name of the mimetype.
-	* @return Pointer to a GMIMEFilter.
-	*/
-	const char* GetMIMEType(const char* mime) const;
 
 	/**
 	* Run a "program" for this session.

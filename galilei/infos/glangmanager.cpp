@@ -52,7 +52,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GLangManager::GLangManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-  : RContainer<GFactoryLang,true,true>(10,5)
+  : RContainer<GFactoryLang,true,true>(10,5),GPluginManager("Lang",path)
 {
 
 	RString Path(path);

@@ -62,6 +62,90 @@ using namespace R;
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
+/**
+* The GPluginManager class provides a template for a generic plugin.
+* @author Vandaele Valery
+* @short Manager for Plugins manager.
+*/
+class GPluginManager
+{
+	/**
+	* The name of the manager
+	*/
+	R::RString Name;
+	
+	/**
+	* The path of the current manager
+	*/
+	R::RString Path;
+	
+public :
+	/**
+	* A static container containing all the managers
+	*/
+	static R::RContainer<GPluginManager,false,true> Managers;
+	
+public :
+	/**
+	* Constructor for the manager of plugins manager
+	*/
+	GPluginManager(R::RString name,R::RString path);
+	
+	/**
+	* Connect to the session
+	*/
+	virtual void Connect(GSession* sess) {}
+	
+	/**
+	* Disconnect to the session
+	*/
+	virtual void Disconnect(GSession* sess) {}
+	
+	/**
+	* Method used to compare element from a Container
+	*/
+	int Compare(const GPluginManager* pm) const {return(Name.Compare(pm->GetName()));}
+	
+	/**
+	* Method used to compare element from a Container
+	*/
+	int Compare(const GPluginManager& pm) const {return(Name.Compare(pm.GetName()));}
+	
+	/**
+	* Method used to compare element from a Container
+	*/
+	int Compare(const R::RString& name) const {return(Name.Compare(name));}
+	
+	/**
+	* Get the name of the current Manager
+	*/
+	R::RString GetName(void) const{return Name;};
+	
+	/**
+	* Get the path associated to the current manager
+	*/
+	R::RString GetPath(void) const{return Path;};
+	
+	/**
+	* Get the manager associated to the "name"
+	* @param name         The name of the manager to be found
+	* @return GPluginManager The plugins manager 
+	*/
+	static GPluginManager* GetManager(R::RString name);
+	
+	/**
+	* Get a cursor over all the managers
+	* @return GPluginManager A cursor on the managers
+	*/
+	static R::RCursor<GPluginManager> GetCursor(void);
+	
+	/**
+	* The destructor
+	*/
+	virtual ~GPluginManager(void);
+};
+
 
 //-----------------------------------------------------------------------------
 /**

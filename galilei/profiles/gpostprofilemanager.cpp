@@ -52,7 +52,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GPostProfileManager::GPostProfileManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryPostProfile,true,true>(10,5)
+	: RContainer<GFactoryPostProfile,true,true>(10,5),GPluginManager("PostProfile",path)
 {
 	RString Path(path);
 	Path+="/postprofile";

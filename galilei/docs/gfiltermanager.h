@@ -38,7 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-
+#include <sessions/gplugin.h>
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
@@ -56,7 +56,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic URL Manager.
 */
-class GFilterManager : public R::RContainer<GFactoryFilter,true,true>
+class GFilterManager : public R::RContainer<GFactoryFilter,true,true> , public GPluginManager
 {
 protected:
 

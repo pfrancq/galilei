@@ -52,7 +52,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GProfileCalcManager::GProfileCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryProfileCalc,true,true>(10,5), Current(0)
+	: RContainer<GFactoryProfileCalc,true,true>(10,5),GPluginManager("ProfileCalc",path), Current(0)
 {
 	RString Path(path);
 	Path+="/profiling";

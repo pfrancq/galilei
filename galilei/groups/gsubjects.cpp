@@ -186,7 +186,7 @@ void GSubjects::CreateSet(void) throw(std::bad_alloc)
 	// Init Part
 	LastAdded.Clear();
 	IdealGroups->ClearGroups();
-	CurLang=Session->GetLangs()->GetLangsCursor();
+	CurLang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 /*	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();
@@ -397,7 +397,7 @@ void GSubjects::ComputeTotal(void)
 
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
-	Langs=Session->GetLangs()->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		lang=Langs()->GetPlugin();

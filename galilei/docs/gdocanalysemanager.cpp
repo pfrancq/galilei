@@ -52,7 +52,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GDocAnalyseManager::GDocAnalyseManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryDocAnalyse,true,true>(10,5), Current(0)
+	: RContainer<GFactoryDocAnalyse,true,true>(10,5), GPluginManager("DocAnalyse",path),Current(0)
 {
 
 	RString Path(path);

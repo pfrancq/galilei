@@ -38,6 +38,62 @@ using namespace R;
 using namespace std;
 
 
+RContainer<GPluginManager,false,true> GPluginManager::Managers(10,5);
+//------------------------------------------------------------------------------
+//
+// GPlugin Manager class
+//
+//------------------------------------------------------------------------------
+GPluginManager::GPluginManager(RString name,RString path)
+	: Name(name),Path(path)
+{
+	Managers.InsertPtr(this);
+}
+
+
+//-----------------------------------------------------------------------------
+/*int GPluginManager::Compare(const GPluginManager& pm) const
+{
+	return(Name.Compare(pm.GetName()));
+}
+
+
+//-----------------------------------------------------------------------------
+int GPluginManager::Compare(const GPluginManager* pm) const
+{
+	return(Name.Compare(pm->GetName()));
+}
+
+
+//-----------------------------------------------------------------------------
+int GPluginManager::Compare(const RString& name) const
+{
+	return(Name.Compare(name));
+}
+*/
+
+//-----------------------------------------------------------------------------
+GPluginManager* GPluginManager::GetManager(RString name)
+{
+	GPluginManager* res;
+	res=GPluginManager::Managers.GetPtr(name);
+	return res;
+}
+
+
+//-----------------------------------------------------------------------------
+RCursor<GPluginManager> GPluginManager::GetCursor(void)
+{
+	RCursor<GPluginManager> cur(GPluginManager::Managers);
+	return(cur);
+
+}
+
+GPluginManager::~GPluginManager(void)
+{
+	Managers.DeletePtr(this);
+}
+
 
 //------------------------------------------------------------------------------
 //

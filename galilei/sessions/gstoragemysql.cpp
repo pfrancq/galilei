@@ -469,14 +469,15 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 					s=0;
 				Social=false;
 				if(atoi(profiles[2])==1) Social=true;
-				session->InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,session->GetLangs()->NbPtr));
+				session->InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,
+					(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->NbPtr));
 				if(s)
 					prof->SetSubject(s);
 				sSql="SELECT subprofileid,langid,attached,groupid, updated, calculated FROM subprofiles WHERE profileid="+itou(profileid);
 				RQuery subprofil (Db,sSql);
 				for(subprofil.Start();!subprofil.End();subprofil.Next())
 				{
-					lang=session->GetLangs()->GetLang(subprofil[1]);
+					lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(subprofil[1]);
 					if (!lang)
 						throw GException(RString("Error in loading subprofiles: no language defined with code '")+subprofil[1]+RString("'"));
 					subid=atoi(subprofil[0]);
@@ -497,7 +498,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 		{
 			// Get the id
 			idx=atoi(sel[0]);
-			lang=session->GetLangs()->GetLang(sel[2]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(sel[2]);
 
 			// If not the same -> new subprofile
 			if(idx!=subprofileid)
@@ -550,7 +551,7 @@ void GStorageMySQL::LoadIdealGroupment(GSession* session) throw(std::bad_alloc,G
 		groups=session->GetSubjects()->GetIdealGroups();
 		groups->ClearGroups();
 
-		langs=session->GetLangs()->GetLangsCursor();
+		langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 		for(langs.Start();!langs.End();langs.Next())
 		{
 			lang=langs()->GetPlugin();
@@ -623,11 +624,11 @@ void GStorageMySQL::LoadSubjectTree(GSession* session) throw(std::bad_alloc,GExc
 		RQuery sub(Db,"SELECT topicid,name,used,langid FROM topics WHERE parent=0");
 		for(sub.Start();!sub.End();sub.Next())
 		{
-			session->GetSubjects()->AddNode(0,subject=new GSubject(atoi(sub[0]),sub[1],session->GetLangs()->GetLang(sub[3]),atoi(sub[2])));
+			session->GetSubjects()->AddNode(0,subject=new GSubject(atoi(sub[0]),sub[1],(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(sub[3]),atoi(sub[2])));
 			sSql="SELECT topicid,name,used,langid FROM topics WHERE parent="+sub[0];
 			RQuery subsub(*Db,sSql);
 			for(subsub.Start();!subsub.End();subsub.Next())
-				session->GetSubjects()->AddNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],session->GetLangs()->GetLang(subsub[3]),atoi(subsub[2])));
+				session->GetSubjects()->AddNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(subsub[3]),atoi(subsub[2])));
 		}
 	}
 	catch(RMySQLError e)
@@ -702,7 +703,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			docid=atoi(quer[0]);
-			lang=session->GetLangs()->GetLang(quer[4]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(quer[4]);
 			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7])));
 		}
 
@@ -719,7 +720,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		{
 			// Get the id
 			idx=atoi(sel[0]);
-			lang=session->GetLangs()->GetLang(sel[2]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(sel[2]);
 
 			// If not the same -> new doc
 			if(idx!=docid)
@@ -783,7 +784,7 @@ void GStorageMySQL::LoadNewDocs(GSession* session) throw(std::bad_alloc,GExcepti
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			docid=atoi(quer[0]);
-			lang=session->GetLangs()->GetLang(quer[4]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(quer[4]);
 			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7])));
 		}
 	}
@@ -1002,7 +1003,7 @@ void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 	try
 	{
 		RQuery delete1(Db,"DELETE FROM groups");
-		langs=session->GetLangs()->GetLangsCursor();
+		langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 		for(langs.Start();!langs.End();langs.Next())
 		{
 			lang=langs()->GetPlugin();
@@ -1170,7 +1171,7 @@ void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GExceptio
 		RQuery group2(Db,"SELECT groupid,langid FROM groups");
 		for(group2.Start();!group2.End();group2.Next())
 		{
-			lang=session->GetLangs()->GetLang(group2[1]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(group2[1]);
 			group=new GGroup(atoi(group2[0]),lang,true);
 			session->InsertGroup(group);
 		}
@@ -1180,7 +1181,7 @@ void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GExceptio
 		{
 			// Get the id
 			idx=atoi(sel[0]);
-			lang=session->GetLangs()->GetLang(sel[2]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(sel[2]);
 
 			// If not the same -> new group
 			if(idx!=groupid)
@@ -1274,7 +1275,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(GSession* session,unsigned i
 			v=atoi(grquery[0]);
 
 			//get lang
-			lang=session->GetLangs()->GetLang(grquery[2]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(grquery[2]);
 
 			// If group id changed -> new group needed
 			if((v!=groupid))

@@ -38,7 +38,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-
+#include <sessions/gplugin.h>
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Group Comuting Methods Manager.
 */
-class GGroupCalcManager : public R::RContainer<GFactoryGroupCalc,true,true>
+class GGroupCalcManager : public R::RContainer<GFactoryGroupCalc,true,true>, public GPluginManager
 {
 	/**
 	* Method currently selected.

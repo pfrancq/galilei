@@ -52,7 +52,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryPostGroup,true,true>(10,5)
+	: RContainer<GFactoryPostGroup,true,true>(10,5),GPluginManager("PostGroup",path)
 {
 	RString Path(path);
 	Path+="/postgroups";

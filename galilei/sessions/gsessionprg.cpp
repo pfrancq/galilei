@@ -416,7 +416,7 @@ void GSetLinksMethodI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true
 		throw RException("The method needs one parameter to specify the name of the link computing method (or \"None\").");
 	sprintf(tmp,"Link Computing Method: %s",args->Tab[0]->GetValue(prg));
 	o->WriteStr(tmp);
-	Owner->Session->GetLinkCalcMng()->SetCurrentMethod(args->Tab[0]->GetValue(prg));
+	(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->SetCurrentMethod(args->Tab[0]->GetValue(prg));
 }
 
 
@@ -511,12 +511,12 @@ void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tru
 		strcpy(tmp,"Compute Profiles: Current Method");
 	o->WriteStr(tmp);
 	if(args->NbPtr==1)
-		Owner->Session->GetProfilingMng()->SetCurrentMethod(args->Tab[0]->GetValue(prg));
-	if(Owner->Session->GetLinkCalcMng()->GetCurrentMethod())
-		Owner->Session->GetLinkCalcMng()->GetCurrentMethod()->ApplyConfig();
-	if(!Owner->Session->GetProfilingMng()->GetCurrentMethod())
+		(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->SetCurrentMethod(args->Tab[0]->GetValue(prg));
+	if((dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod())
+		(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod()->ApplyConfig();
+	if(!(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod())
 		throw GException (" No Profiling Method chosen.");
-	Owner->Session->GetProfilingMng()->GetCurrentMethod()->ApplyConfig();
+	(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o),Owner->FirstProfile,Owner->AutoSave,Owner->AutoSaveLinks);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 }
@@ -533,18 +533,18 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,
 		strcpy(tmp,"Group Profiles: Current Method");
 	o->WriteStr(tmp);
 	if(args->NbPtr==1)
-		Owner->Session->GetGroupingMng()->SetCurrentMethod(args->Tab[0]->GetValue(prg));
+		(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->SetCurrentMethod(args->Tab[0]->GetValue(prg));
 	if(Owner->Session->GetSubjects()->GetIdealGroups())
 	{
-		GGrouping* algo=Owner->Session->GetGroupingMng()->GetCurrentMethod();
+		GGrouping* algo=(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->GetCurrentMethod();
 		algo->SetIdealGroups(Owner->Session->GetSubjects()->GetIdealGroups());
 	}
-	if(!Owner->Session->GetGroupingMng()->GetCurrentMethod())
+	if(!(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->GetCurrentMethod())
 		throw RException (" No Grouping Method chosen.");
-	Owner->Session->GetGroupingMng()->GetCurrentMethod()->ApplyConfig();
-	if(!Owner->Session->GetGroupCalcMng()->GetCurrentMethod())
+	(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->GetCurrentMethod()->ApplyConfig();
+	if(!(dynamic_cast<GGroupCalcManager*>(GPluginManager::GetManager("GroupCalc")))->GetCurrentMethod())
 		throw RException (" No Group Description Method chosen.");
-	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
+	(dynamic_cast<GGroupCalcManager*>(GPluginManager::GetManager("GroupCalc")))->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o),Owner->FirstGroup,Owner->AutoSave);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 }
@@ -641,7 +641,7 @@ void GSetComputingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,tru
 
 	if(args->NbPtr!=2)
 		throw RException("Method needs two parameters");
-	calc=Owner->Session->GetProfilingMng()->GetCurrentMethod();
+	calc=(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod();
 	if(!calc)
 		throw RException("No profiling method selected.");
 	calc->GetFactory()->Set(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
@@ -655,7 +655,7 @@ void GSetGroupingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true
 
 	if(args->NbPtr!=2)
 		throw RException("Method needs two parameters.");
-	calc=Owner->Session->GetGroupingMng()->GetCurrentMethod();
+	calc=(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->GetCurrentMethod();
 	if(!calc)
 		throw RException("No grouping computing method selected.");
 	calc->GetFactory()->Set(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
@@ -697,9 +697,9 @@ void GRealLifeI::CommonTasks(RPrgOutput* o) throw(RException)
 		rec->WriteStr("Compute Profiles: Current Method");
 	}
 	if(GSession::Break()) return;
-	if(Owner->Session->GetLinkCalcMng()->GetCurrentMethod())
-		Owner->Session->GetLinkCalcMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->GetProfilingMng()->GetCurrentMethod()->ApplyConfig();
+	if((dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod())
+		(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod()->ApplyConfig();
+	(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->CalcProfiles(rec,Owner->FirstProfile,Owner->AutoSave,Owner->AutoSaveLinks);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 
@@ -712,11 +712,11 @@ void GRealLifeI::CommonTasks(RPrgOutput* o) throw(RException)
 	if(GSession::Break()) return;
 	if(Owner->Session->GetSubjects()->GetIdealGroups())
 	{
-		GGrouping* algo=Owner->Session->GetGroupingMng()->GetCurrentMethod();
+		GGrouping* algo=(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->GetCurrentMethod();
 		algo->SetIdealGroups(Owner->Session->GetSubjects()->GetIdealGroups());
 	}
-	Owner->Session->GetGroupingMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
+	(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->GetCurrentMethod()->ApplyConfig();
+	(dynamic_cast<GGroupCalcManager*>(GPluginManager::GetManager("GroupCalc")))->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GroupingProfiles(rec,Owner->FirstGroup,Owner->AutoSave);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 

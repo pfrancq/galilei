@@ -39,6 +39,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+#include <sessions/gplugin.h>
 
 
 //------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Doc Analysis Method Manager.
 */
-class GDocAnalyseManager : public R::RContainer<GFactoryDocAnalyse,true,true>
+class GDocAnalyseManager : public R::RContainer<GFactoryDocAnalyse,true,true>, public GPluginManager
 {
 	/**
 	* Method currently selected.

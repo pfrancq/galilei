@@ -114,10 +114,7 @@ bool GSession::ExternBreak=false;
 //------------------------------------------------------------------------------
 GSession::GSession(GStorage* str)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(0,0),
-	  GGroups(0), Subjects(0),
-	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
-	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0), PostProfileMng(0),
-	  DocAnalyseMng(0),  EngineMng(0),ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
+	  GGroups(0), Subjects(0),ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
 	  SessParams(0), Storage(str)
 {
 	// Init Part
@@ -137,9 +134,7 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 	  GGroups(str->GetNbSaved(otGroup)), Subjects(0),
 //	: GDocs(2000), GUsers(2000,2000),
 //	  GGroups(200), Subjects(0), Fdbks(100,50),
-	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
-	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0), PostProfileMng(0),
-	  DocAnalyseMng(0),  EngineMng(0),ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
+	ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
 	  SessParams(sessparams), Storage(str)
 {
 	// Init Part
@@ -158,45 +153,16 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 
 
 //------------------------------------------------------------------------------
-void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GLinkCalcManager* lmng, GProfileCalcManager* pmng,
-	GGroupingManager* gmng, GGroupCalcManager* gcmng,GStatsCalcManager* smng,
-	GPostDocManager* pdmng,GPostProfileManager* ppmng,GPostGroupManager* pgmng,GEngineManager* emng)
-
+void GSession::Connect(void)
 {
-	Langs=langs;
-	if(Langs)
-		Langs->Connect(this);
-	URLMng=umng;
-	DocAnalyseMng=dmng;
-	if(DocAnalyseMng)
-		DocAnalyseMng->Connect(this);
-	LinkCalcMng=lmng;
-	if(LinkCalcMng)
-		LinkCalcMng->Connect(this);
-	ProfilingMng=pmng;
-	if(ProfilingMng)
-		ProfilingMng->Connect(this);
-	GroupingMng=gmng;
-	if(GroupingMng)
-		GroupingMng->Connect(this);
-	GroupCalcMng=gcmng;
-	if(GroupCalcMng)
-		GroupCalcMng->Connect(this);
-	StatsCalcMng=smng;
-	if(StatsCalcMng)
-		StatsCalcMng->Connect(this);
-	PostGroupMng=pgmng;
-	if(PostGroupMng)
-		PostGroupMng->Connect(this);
-	PostDocMng=pdmng;
-	if(PostDocMng)
-		PostDocMng->Connect(this);
-	PostProfileMng=ppmng;
-	if(PostProfileMng)
-		PostProfileMng->Connect(this);
-
-	EngineMng=emng;
-
+	
+	RCursor<GPluginManager> cur = GPluginManager::GetCursor();
+	
+	for(cur.Start();!cur.End();cur.Next())
+	{
+		cur()->Connect(this);
+	}
+	
 	// Create Similarities Managers (IFF used by default)
 	if(!SessParams->GetBool("DebugSim"))
 		ProfilesSims = new GProfilesSims(this,true, true);
@@ -207,41 +173,9 @@ void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseMana
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryLinkCalc> GSession::GetLinkCalcsCursor(void)
-{
-	R::RCursor<GFactoryLinkCalc> cur(LinkCalcMng);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GFactoryPostDoc> GSession::GetPostDocsCursor(void)
-{
-	R::RCursor<GFactoryPostDoc> cur(PostDocMng);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GFactoryEngine> GSession::GetEnginesCursor(void)
-{
-	R::RCursor<GFactoryEngine> cur(EngineMng);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GFactoryMetaEngine> GSession::GetMetaEnginesCursor(void)
-{
-	R::RCursor<GFactoryMetaEngine> cur(EngineMng);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
 GDocXML* GSession::CreateDocXML(GDoc* doc)
 {
-	return(URLMng->CreateDocXML(doc));
+	return((dynamic_cast<GFilterManager*>(GPluginManager::GetManager("Filter")))->CreateDocXML(doc));
 }
 
 
@@ -285,7 +219,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save)
 	bool Cont;               // Continue the analysuis
 
 	// Verify that the textanalyse method is selected
-	Analyse=DocAnalyseMng->GetCurrentMethod();
+	Analyse=(dynamic_cast<GDocAnalyseManager*>(GPluginManager::GetManager("DocAnalyse")))->GetCurrentMethod();
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
 
@@ -315,7 +249,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save)
 				if(((!modified)||(Docs()->GetState()!=osUpdated))||((Docs()->GetState()!=osNotNeeded)))
 				{
 					if (!Docs()->GetLang()) undefLang=true;
-					xml=URLMng->CreateDocXML(Docs());
+					xml=(dynamic_cast<GFilterManager*>(GPluginManager::GetManager("Filter")))->CreateDocXML(Docs());
 					if(xml)
 					{
 						Docs()->InitFailed();
@@ -379,7 +313,7 @@ void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save)
 	bool Cont;               // Continue the analysuis
 
 	// Verify that the textanalyse method is selected
-	Analyse=DocAnalyseMng->GetCurrentMethod();
+	Analyse=(dynamic_cast<GDocAnalyseManager*>(GPluginManager::GetManager("DocAnalyse")))->GetCurrentMethod();
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
 
@@ -409,7 +343,7 @@ void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save)
 				if(((!modified)||(Docs()->GetState()!=osUpdated))||((Docs()->GetState()!=osNotNeeded)))
 				{
 					if (!Docs()->GetLang()) undefLang=true;
-					xml=URLMng->CreateDocXML(Docs());
+					xml=(dynamic_cast<GFilterManager*>(GPluginManager::GetManager("Filter")))->CreateDocXML(Docs());
 					if(xml)
 					{
 						Docs()->InitFailed();
@@ -464,7 +398,7 @@ void GSession::ComputePostDoc(GSlot* rec)
 	char tmp[100];
 
 	// Run all post-group methods that are enabled
-	R::RCursor<GFactoryPostDoc> PostDocs=PostDocMng->GetPostDocsCursor();
+	R::RCursor<GFactoryPostDoc> PostDocs=(dynamic_cast<GPostDocManager*>(GPluginManager::GetManager("PostDoc")))->GetPostDocsCursor();
 
 	//first sort the plugins by level
 	RContainer<GFactoryPostDocOrder,true,true> ordered(PostDocs.GetNb());
@@ -501,7 +435,7 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 {
 	GMetaEngine* metaEngine;
 	// Verify that a meta engine is selected
-	metaEngine=EngineMng->GetCurrentMethod();
+	metaEngine=(dynamic_cast<GEngineManager*>(GPluginManager::GetManager("Engine")))->GetCurrentMethod();
 	if(!metaEngine)
 		throw GException("No meta engine method chosen.");
 	metaEngine->Query(keyWords,true); //true ->Use all keywords passed to the meta engine
@@ -639,8 +573,8 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 {
 	RCursor<GSubProfile> Subs;
 	R::RCursor<GProfile> Prof=GetProfilesCursor();
-	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
-	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
+	GProfileCalc* Profiling=(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod();
+	GLinkCalc* LinkCalc=(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod();
 	
 	if(!Profiling)
 		throw GException("No computing method chosen.");
@@ -709,7 +643,7 @@ void GSession::ComputePostProfile(GSlot* rec)
 	char tmp[100];
 
 	// Run all post-group methods that are enabled
-	R::RCursor<GFactoryPostProfile> PostProfile=PostProfileMng->GetPostProfileCursor();
+	R::RCursor<GFactoryPostProfile> PostProfile=(dynamic_cast<GPostProfileManager*>(GPluginManager::GetManager("PostProfile")))->GetPostProfileCursor();
 
 	//first sort the plugins by level
 	RContainer<GFactoryPostProfileOrder,true,true> ordered(PostProfile.GetNb());
@@ -743,7 +677,7 @@ void GSession::ComputePostProfile(GSlot* rec)
 //------------------------------------------------------------------------------
 void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException)
 {
-	GGrouping* Grouping=GroupingMng->GetCurrentMethod();
+	GGrouping* Grouping=(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->GetCurrentMethod();
 
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
@@ -759,7 +693,7 @@ void GSession::ComputePostGroup(GSlot* rec)
 	char tmp[100];
 
 	// Run all post-group methods that are enabled
-	R::RCursor<GFactoryPostGroup> PostGroups=PostGroupMng->GetPostGroupsCursor();
+	R::RCursor<GFactoryPostGroup> PostGroups=(dynamic_cast<GPostGroupManager*>(GPluginManager::GetManager("PostGroup")))->GetPostGroupsCursor();
 
 	//first sort the plugins by level
 	RContainer<GFactoryPostGroupOrder,true,true> ordered(PostGroups.GetNb());
@@ -825,7 +759,7 @@ void GSession::CopyIdealGroups(bool save)
 	GGroupCalc* CalcDesc;
 
 	// Get current grouping description method
-	CalcDesc=GroupCalcMng->GetCurrentMethod();
+	CalcDesc=(dynamic_cast<GGroupCalcManager*>(GPluginManager::GetManager("GroupCalc")))->GetCurrentMethod();
 
 	// Clear current group
 	ClearGroups();
@@ -852,20 +786,6 @@ void GSession::CopyIdealGroups(bool save)
 
 	if(save)
 		Storage->SaveGroups(this);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GFactoryFilter> GSession::GetFiltersCursor(void)
-{
-	return(URLMng->GetFiltersCursor());
-}
-
-
-//------------------------------------------------------------------------------
-const char* GSession::GetMIMEType(const char* mime) const
-{
-	return(URLMng->GetMIMEType(mime));
 }
 
 
@@ -1051,18 +971,12 @@ GSession::~GSession(void)
 		GUsers::Clear();
 		GDocs::Clear();
 
-		// Disconnect from the different managers
-		if(ProfilingMng) ProfilingMng->Disconnect(this);
-		if(GroupingMng) GroupingMng->Disconnect(this);
-		if(GroupCalcMng) GroupCalcMng->Disconnect(this);
-		if(StatsCalcMng) StatsCalcMng->Disconnect(this);
-		if(LinkCalcMng) LinkCalcMng->Disconnect(this);
-		if(PostDocMng) PostGroupMng->Disconnect(this);
-		if(PostProfileMng) PostGroupMng->Disconnect(this);
-		if(PostGroupMng) PostGroupMng->Disconnect(this);
-		if(DocAnalyseMng) DocAnalyseMng->Disconnect(this);
-		if(Langs) Langs->Disconnect(this);
-
+		RCursor<GPluginManager> cur = GPluginManager::GetCursor();
+		for(cur.Start();!cur.End();cur.Next())
+		{
+			cur()->Disconnect(this);
+		}
+		
 		// Delete stuctures
 		if(Random) delete Random;
 		if(Subjects) delete Subjects;

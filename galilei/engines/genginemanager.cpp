@@ -54,7 +54,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GEngineManager::GEngineManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryMetaEngine,true,true>(10,5), R::RContainer<GFactoryEngine,true,true>(10,5),Current(0)
+	: RContainer<GFactoryMetaEngine,true,true>(10,5), R::RContainer<GFactoryEngine,true,true>(10,5),GPluginManager("Engine",path),Current(0)
 {
 	RString Path(path);
 	Path+="/metaengines";
