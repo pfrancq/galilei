@@ -771,7 +771,7 @@ void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 		try
 		{
 			R::RRecFile<GWord,sizeof(unsigned int),false> f(name);
-			f.Open(Create);
+			f.Open(R::RIO::Create);
 			for(i=0;i<Nwords;i++)
 			{
 				if(Order[i]->GetId()==1)
@@ -790,7 +790,6 @@ void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 					f<<dic->InsertData(&w);
 				}
 			}
-			close(R::Create);
 		}
 		catch (...)
 		{
