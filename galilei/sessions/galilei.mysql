@@ -26,15 +26,6 @@ CREATE TABLE frsubprofilesbykwds (
 ) TYPE=MyISAM;
 
 
-#--------------------------------------------------------
-# Table structure for table 'encomkwds'
-
-CREATE TABLE encomkwds (
-  subprofileid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0'
-) TYPE=MyISAM;
-
-
 
 #--------------------------------------------------------
 # Table structure for table 'engroupsbykwds'
@@ -58,16 +49,6 @@ CREATE TABLE enhtmlsbykwds (
 
 
 #--------------------------------------------------------
-# Table structure for table 'enkokwds'
-
-CREATE TABLE enkokwds (
-  subprofileid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0'
-) TYPE=MyISAM;
-
-
-
-#--------------------------------------------------------
 # Table structure for table 'enkwds'
 
 CREATE TABLE enkwds (
@@ -79,32 +60,12 @@ CREATE TABLE enkwds (
 
 
 #--------------------------------------------------------
-# Table structure for table 'enokkwds'
-
-CREATE TABLE enokkwds (
-  subprofileid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0'
-) TYPE=MyISAM;
-
-
-
-#--------------------------------------------------------
 # Table structure for table 'enstopkwds'
 
 CREATE TABLE enstopkwds (
   kwdid int(11) NOT NULL auto_increment,
   kwd varchar(50) NOT NULL default '',
   PRIMARY KEY  (kwdid)
-) TYPE=MyISAM;
-
-
-
-#--------------------------------------------------------
-# Table structure for table 'frcomkwds'
-
-CREATE TABLE frcomkwds (
-  subprofileid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0'
 ) TYPE=MyISAM;
 
 
@@ -130,15 +91,6 @@ CREATE TABLE frhtmlsbykwds (
 
 
 
-#--------------------------------------------------------
-# Table structure for table 'frkokwds'
-
-CREATE TABLE frkokwds (
-  subprofileid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0'
-) TYPE=MyISAM;
-
-
 
 #--------------------------------------------------------
 # Table structure for table 'frkwds'
@@ -147,16 +99,6 @@ CREATE TABLE frkwds (
   kwdid int(11) NOT NULL auto_increment,
   kwd varchar(50) default NULL,
   PRIMARY KEY  (kwdid)
-) TYPE=MyISAM;
-
-
-
-#--------------------------------------------------------
-# Table structure for table 'frokkwds'
-
-CREATE TABLE frokkwds (
-  subprofileid int(11) NOT NULL default '0',
-  kwdid int(11) NOT NULL default '0'
 ) TYPE=MyISAM;
 
 
