@@ -48,7 +48,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GEvaluateGrouping::GEvaluateGrouping(RString name, GSession* s,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups, unsigned int i) throw(bad_alloc)
+GALILEI::GEvaluateGrouping::GEvaluateGrouping(RString name, GSession* s,RContainer<GGroupsEvaluate,unsigned int,false,false>* groups, unsigned int i) throw(bad_alloc)
 	: Name(name), Id(i), Session(s), Groups(groups)
 {
 }

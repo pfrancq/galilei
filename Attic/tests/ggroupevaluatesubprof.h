@@ -77,6 +77,12 @@ protected:
 	*/
 	unsigned int Id;
 
+	/**
+	* Name of the group.
+	*/
+	RString Name;
+
+
 
 public:
 
@@ -155,6 +161,11 @@ public:
 	* Return the id of the group
 	*/
 	virtual unsigned int GetId (void) {return(Id);};
+	
+	/**
+	* Return the name of the group;
+	*/
+	RString GetName(void){return(Name);};
 
 	/**
 	* Destructor.

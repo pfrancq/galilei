@@ -124,10 +124,15 @@ public:
 	*/
 	virtual double GroupSumSimilarity(unsigned int subdoc)=0;
 
-   	/**
+	/**
 	* Return the id of the group
 	*/
 	virtual unsigned int GetId (void)=0;
+
+	/**
+	* Return the name of the group
+	*/
+	virtual RString GetName(void)=0;
 
 	/**
 	* Compare method needed by RStd::RContainer.
@@ -144,6 +149,14 @@ public:
 	*/
 	virtual ~GGroupEvaluate(void);
 };
+
+//-----------------------------------------------------------------------------
+/**
+* The GGroupEvaluateCursor class provides a way to go trough a set of groupEvaluate.
+* @short GroupEvaluate Cursor.
+*/
+CLASSCURSOR(GGroupEvaluateCursor,GGroupEvaluate,unsigned int)
+
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

@@ -147,7 +147,6 @@ double GALILEI::GGroupEvaluateSubprof::SumSimilarity(unsigned int id1)
 		if(sub1->GetNbJudgedDocs()!=0)
 		{
 			double temp=Ses->GetSubProfile(id1)->Similarity(sub1);
-			cout<<id1<<" "<<sub1->GetId()<<" "<<temp<<endl;
 			sum=sum+temp;
 		}
 	}

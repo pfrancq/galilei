@@ -50,7 +50,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GEvaluateGroupingCalinski::GEvaluateGroupingCalinski(GSession* s
-			,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups)  throw(bad_alloc)
+			,RContainer<GGroupsEvaluate,unsigned int,false,false>* groups)  throw(bad_alloc)
 	: GEvaluateGrouping("Calinski Index", s, groups, 1)
 {
 
@@ -93,7 +93,6 @@ double GALILEI::GEvaluateGroupingCalinski::CalcCalinski()
 			for(gr->Start(); !gr->End();gr->Next())
 			{
 				sum=gr->SumSimilarity(gr->Current());
-				cout<<sum<<" sum "<<gr->Current()<<endl;
 				if (sum>refsum)
 				{
 					refsum=sum;
@@ -121,7 +120,8 @@ double GALILEI::GEvaluateGroupingCalinski::CalcCalinski()
 	}
 
 	//index calculation
-	cal=(ssb/(k-1))/(ssw/(n-k));
+//	cal=(ssb/(k-1))/(ssw/(n-k));
+	cal=ssb/ssw;
 	return(cal);
 }
 

@@ -65,7 +65,7 @@ public:
 	* @param s              Session.
 	* @param groups         Ideal groupement.
 	*/
-	GEvaluateGroupingIntraMinInter(GSession* s,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups) throw(bad_alloc);
+	GEvaluateGroupingIntraMinInter(GSession* s,RContainer<GGroupsEvaluate,unsigned int,false,false>* groups) throw(bad_alloc);
 
 
 

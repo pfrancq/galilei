@@ -49,9 +49,10 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupEvaluateDoc::GGroupEvaluateDoc(unsigned int id,GLang* lang,RContainer<GDoc,unsigned int,false,true>* doc,GSession* session)
+GALILEI::GGroupEvaluateDoc::GGroupEvaluateDoc(unsigned int id,GLang* lang,RContainer<GDoc,unsigned int,false,true>* doc,GSession* session,RString  name)
 	:GGroupEvaluate(lang),Lang(lang),Id(id),Doc(doc),Ses(session)
 {
+Name=name;
 }
 
 
@@ -146,8 +147,8 @@ double GALILEI::GGroupEvaluateDoc::SumSimilarity(unsigned int id1)
 		sub1=SubCursor();
 		if(sub1->GetN()!=0)
 		{
-		double temp=Ses->GetDoc(id1)->Similarity(sub1);
-		sum=sum+temp;
+			double temp=Ses->GetDoc(id1)->Similarity(sub1);
+			if((temp<2)&&(temp>-2))	sum=sum+temp;
 		}
 	}
 	return(sum);
@@ -158,10 +159,14 @@ double GALILEI::GGroupEvaluateDoc::SumSimilarity(unsigned int id1)
 double GALILEI::GGroupEvaluateDoc::GroupSumSimilarity(unsigned int subdoc)
 {
 	double sum=0.0;
+	GDoc * doc=Ses->GetDoc(subdoc);
 	GDoc** sub1;
 	unsigned i;
 	for(sub1=Doc->Tab,i=Doc->NbPtr;--i;sub1++)
-		sum=sum+Ses->GetDoc(subdoc)->Similarity((*sub1));
+	{
+		double temp=doc->Similarity((*sub1));
+		if((sum<=2)&&(sum>=-2))	sum=sum+temp;
+	}
 	return(sum);
 }
 

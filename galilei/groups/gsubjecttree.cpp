@@ -6,7 +6,7 @@
 
 	GSubjectTree - Implementation.
 
-	(C) 1999-2001 by J. Lamoral & D.Wartel
+	(C) 2002 the GALILEI Team
 
 	Version $Revision$
 
@@ -40,35 +40,37 @@
 
 //-----------------------------------------------------------------------------
 // include files for R-Project
-#include <rtimedate/rdate.h>
-#include <rstd/rcontainercursor.h>
-#include <rstd/rtree.h>
-#include <rmath/random.h>
-using namespace RMath;
+#include <rio/rtextfile.h>
+using namespace RIO;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <groups/gsubjecttree.h>
+#include <sessions/gsession.h>
+#include <docs/gdoc.h>
+#include <langs/glang.h>
+#include <groups/gsubject.h>
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
-#include <groups/gsubject.h>
 #include <profiles/gprofile.h>
 #include <profiles/guser.h>
 #include <profiles/gprofdoc.h>
-#include <groups/gsubjecttree.h>
-#include <groups/gsubject.h>
+using namespace GALILEI;
+using namespace RMath;
+using namespace RStd;
 
 
 
 //-----------------------------------------------------------------------------
 //
-//class GSubjectTree
+// class GSubjectTree
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GSubjectTree::GSubjectTree(unsigned int NbOk,unsigned int NbKo,unsigned int nbusers)
-	:RTree<GSubject,true,false>(100,50)
+GALILEI::GSubjectTree::GSubjectTree(unsigned int NbOk,unsigned int NbKo,unsigned int nbusers)
+	: RTree<GSubject,true,false>(100,50)
 {
 
 	NbDocsOk=NbOk;
@@ -80,8 +82,8 @@ GSubjectTree::GSubjectTree(unsigned int NbOk,unsigned int NbKo,unsigned int nbus
 }
 
 
-//---------------------------------------------------
-void GSubjectTree::InsertProfiles(void)
+//-----------------------------------------------------------------------------
+void GALILEI::GSubjectTree::InsertProfiles(void)
 {
 	int profid=1, subid=1;
 	for (int i=0; i<NbUsers; i++)
@@ -104,10 +106,11 @@ void GSubjectTree::InsertProfiles(void)
 }
 
 
-//---------------------------------------------------
-void GSubjectTree::Judgments(GSession* ses,int ran)
+//-----------------------------------------------------------------------------
+void GALILEI::GSubjectTree::Judgments(GSession* ses,int ran,int percok,int percko)
 {
-
+    NbDocsOk=percok;
+	NbDocsKo=percko;
 	if(ran!=0) Random->Reset(ran);
 	InitProfiles();
 	InitSubSubjects();
@@ -149,7 +152,6 @@ void GSubjectTree::Judgments(GSession* ses,int ran)
 			{
 				int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
 				GSubject* sub2=subject->GetPtr(subthema);
-				int soustheme = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
 				while(sub2==sub1)
 				{
 					int subthema = (Random->Value(subject->NbPtr))+subject->SubSubjectMinId();
@@ -164,7 +166,7 @@ void GSubjectTree::Judgments(GSession* ses,int ran)
   
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,bool i,GSession* ses )
+void GALILEI::GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,bool i,GSession* ses )
 {
 	char today[12];
 	RTimeDate::RDate date;
@@ -207,7 +209,7 @@ void GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,bool i,GSession* s
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::IdealGroupmentFile(char* url)
+void GALILEI::GSubjectTree::IdealGroupmentFile(const char* url)
 {
     // The file where the ideal groupment is stored.
 	RTextFile* textfile = new RTextFile (url, RTextFile::Create);
@@ -284,7 +286,7 @@ void GSubjectTree::IdealGroupmentFile(char* url)
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,true>* Groups,GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent) 	// research by profiles' name to find ideal groups
+void GALILEI::GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,true>* Groups,GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent) 	// research by profiles' name to find ideal groups
 {
 	unsigned int nb;
 	unsigned int id,ii;
@@ -294,7 +296,7 @@ void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,tru
 	GLang* lang;
 	GProfile* profile;
 	GSubProfile* subprofile;
-	RContainerCursor<GLang,unsigned int,true,true> CurLang(ses->GetLangs());
+	GLangCursor CurLang;
 
 	//Calculation of the number of goups (ie the number of judged soubsubjects).
 	int nbrsubsubjects=0;
@@ -310,6 +312,7 @@ void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,tru
 	}
 	ii=0;
 	nb=nbrsubsubjects;
+	CurLang=ses->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 		Groups->InsertPtr(new GGroups(CurLang()));
 
@@ -371,7 +374,7 @@ void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,tru
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::InitProfiles()
+void GALILEI::GSubjectTree::InitProfiles()
 {
 	//Profiles doenst have juged document.
 	for (profiles->Start(); !profiles->End();profiles->Next())
@@ -382,7 +385,7 @@ void GSubjectTree::InitProfiles()
 
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::InitSubSubjects()
+void GALILEI::GSubjectTree::InitSubSubjects()
 {
 	//No subject are judged.
 	for (Start(); !End();Next())
@@ -397,10 +400,9 @@ void GSubjectTree::InitSubSubjects()
 
 
 //-----------------------------------------------------------------------------
-GSubjectTree::~GSubjectTree(void)
+GALILEI::GSubjectTree::~GSubjectTree(void)
 {
 	if(Random)
 		delete Random;
 
 }
-

@@ -39,6 +39,10 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <tests/ggroupevaluate.h>
+#include <rstd/rcursor.h>
+using namespace RStd;
+
 
 
 //-----------------------------------------------------------------------------
@@ -88,7 +92,14 @@ public:
 	*/
 	GLang* GetLang(void) const {return(Lang);}
 
+	/**
+	* Get a cursor over the groups.
+	*/
+	GGroupEvaluateCursor& GetGroupEvaluateCursor(void);
+
 };
+
+
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

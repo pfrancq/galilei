@@ -51,7 +51,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GEvaluateGroupingIntraMinInter::GEvaluateGroupingIntraMinInter(GSession* s
-			,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups)  throw(bad_alloc)
+			,RContainer<GGroupsEvaluate,unsigned int,false,false>* groups)  throw(bad_alloc)
 	: GEvaluateGrouping("Intra / Min(Inter)", s, groups, 3)
 {
 

@@ -77,12 +77,17 @@ protected:
 	*/
 	GSession* Ses;
 
+	/**
+	* Name of the group.
+	*/
+	RString Name;
+
 public:
 
 	/**
 	* Constructor.
 	*/
-	GGroupEvaluateDoc(unsigned int id,GLang* lang,RStd::RContainer<GDoc,unsigned int,false,true>* doc,GSession* ses);
+	GGroupEvaluateDoc(unsigned int id,GLang* lang,RStd::RContainer<GDoc,unsigned int,false,true>* doc,GSession* ses,RString name);
 
 	/**
 	* The number of subdoc int the groupment.
@@ -149,7 +154,12 @@ public:
 	* Compare method needed by RStd::RContainer.
 	*/
 	int Compare(const GGroupEvaluateDoc*);
-	
+
+	/**
+	* Return the name of the group;
+	*/
+	RString GetName(void){return(Name);};
+
 	/**
 	* Return the id of the group
 	*/
@@ -160,6 +170,9 @@ public:
 	*/
 	virtual ~GGroupEvaluateDoc(void);
 };
+
+
+
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

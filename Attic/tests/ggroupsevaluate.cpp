@@ -75,3 +75,11 @@ int GALILEI::GGroupsEvaluate::Compare(const GLang* lang) const
 }
 
 
+//-----------------------------------------------------------------------------
+GGroupEvaluateCursor& GALILEI::GGroupsEvaluate::GetGroupEvaluateCursor(void)
+{
+	GGroupEvaluateCursor *cur=GGroupEvaluateCursor::GetTmpCursor();
+	cur->Set(this);
+	return(*cur);
+}
+

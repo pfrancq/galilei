@@ -49,7 +49,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GEvaluateGroupingVariance::GEvaluateGroupingVariance(GSession* s
-			,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups)  throw(bad_alloc)
+			,RContainer<GGroupsEvaluate,unsigned int,false,false>* groups)  throw(bad_alloc)
 	: GEvaluateGrouping("Variance", s, groups, 2)
 {
 
@@ -80,8 +80,11 @@ double GALILEI::GEvaluateGroupingVariance::CalcVariance()
 			for (grp->Start(); !grp->End(); grp->Next())
 			{
 				double dist=(1.0)-grp->Similarity(s1,grp->Current());
-				var+=dist;
-				nbsubprofiles++;
+				if((dist<=2)&&(dist>-2))
+				{
+					var+=dist;
+					nbsubprofiles++;
+				}
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 
 	GSubjectTree - Implementation.
 
-	(C) 1999-2001 by J.Lamoral & D.Wartel
+	(C) 2002 by the GALILEI Team
 
 	Version $Revision$
 
@@ -32,44 +32,33 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GSUBJECTTREEH
-#define GSUBJECTTREEH
+#ifndef GSubjectTreeH
+#define GSubjectTreeH
 
 
 //-----------------------------------------------------------------------------
-// include files for R-Project
-#include <rstd/rcontainer.h>
-#include <rstd/rstring.h>
+// include files for R Project
 #include <rstd/rtree.h>
-#include <rio/rtextfile.h>
 #include <rmath/random.h>
-using namespace RIO;
-using namespace RStd;
-using namespace RMath;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gsession.h>
-#include <docs/gdoc.h>
-#include <groups/gsubject.h>
-using namespace GALILEI;
-
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-
 //-----------------------------------------------------------------------------
 /**
 * The GSubjectTree class provides a representation for a tree of subject
 * handle by the system.
-* @author Lamoral Julien
+* @author GALILEI Team
 * @short Tree of the Galilei subject.
 */
-class GSubjectTree : public RTree<GSubject,true,false>
+class GSubjectTree : public RStd::RTree<GSubject,true,false>
 {
 protected:
 
@@ -111,7 +100,7 @@ protected:
 	/**
 	* Random number generator
 	*/
-	RRandom* Random;
+	RMath::RRandom* Random;
 
 public:
 	
@@ -126,13 +115,9 @@ public:
 	/**
 	* Executes the queries to create new profiles.
 	* @param ses       The Gailieli session
-<<<<<<< gsubjecttree.h
 	* @param rand      0 total random >0 restart the sequence of randum number
-=======
-	* @param rand      -1 total random >=0 restart the sequence of randum number
->>>>>>> 1.5
 	*/
-	void Judgments(GSession* ses,int rand);
+	void Judgments(GSession* ses,int rand,int percok,int precko);
 
 	/**
 	* Judge documents from the susubject sub.
@@ -146,7 +131,7 @@ public:
 	* Write the ideal groupment into a file
 	* @param url         The url where the file is saved.
 	*/
-	void IdealGroupmentFile(char* url);
+	void IdealGroupmentFile(const char* url);
 
 	/**
 	* Creates insert the profiles into subjects
@@ -164,11 +149,11 @@ public:
 	* Destructor
 	*/
 	~GSubjectTree(void);
-
-
 };
 
-}//-------- End of namespace GALIELI ----------------------------------------
+
+} //-------- End of namespace GALILEI -----------------------------------------
+
 
 //-----------------------------------------------------------------------------
 

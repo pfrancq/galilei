@@ -64,7 +64,7 @@ public:
 	* @param s              Session.
 	* @param groups         Groupement of profile or document.
 	*/
-	GEvaluateGroupingVariance(GSession* s,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups) throw(bad_alloc);
+	GEvaluateGroupingVariance(GSession* s,RContainer<GGroupsEvaluate,unsigned int,false,false>* groups) throw(bad_alloc);
 
 protected:
 

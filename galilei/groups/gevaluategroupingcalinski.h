@@ -64,7 +64,7 @@ public:
 	* @param s              Session.
 	* @param groups         Computed or ideal groupement.
 	*/
-	GEvaluateGroupingCalinski(GSession* s,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups) throw(bad_alloc);
+	GEvaluateGroupingCalinski(GSession* s,RContainer<GGroupsEvaluate,unsigned int,false,false>* groups) throw(bad_alloc);
 
 
 public:

@@ -83,7 +83,7 @@ protected:
 	/**
 	* Ideal Groups.
 	*/
-	RContainer<GGroupsEvaluate,unsigned int,true,true>* Groups;
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* Groups;
 
 
 
@@ -95,7 +95,7 @@ public:
 	* @param s              Session.
 	* @param groups         Ideal groupement.
 	*/
-	GEvaluateGrouping(RString name, GSession* s,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups, unsigned int i) throw(bad_alloc);
+	GEvaluateGrouping(RString name, GSession* s,RContainer<GGroupsEvaluate,unsigned int,false,false>* groups, unsigned int i) throw(bad_alloc);
 
 
 public:
