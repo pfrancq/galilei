@@ -166,8 +166,7 @@ unsigned int GALILEI::GSubProfile::GetCommonDocs(const GSubProfile* prof) const
 	GProfDocCursor Fdbks=Profile->GetProfDocCursor();
 	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 	{
-		// If the document is not "good" or not the same language that the
-		// same profile -> Nothing
+		// If the document is not the same language that the subprofile -> Nothing
 		f=Fdbks()->GetFdbk();
 		if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
 
