@@ -219,6 +219,11 @@ public:
 	*/
 	KDoc* getDocument(void) const;
 
+	/**
+	* Returns a pointer to the current session.
+	*/
+	GSession* getSession(void) const;
+
 protected:
 
 	/**
@@ -355,9 +360,9 @@ private slots:
 	void slotFillEmptyDb(void);
 
 	/**
-	* Test something.
+	* Statistics window.
 	*/
-	void slotSessionTest(void);
+	void slotSessionStats(void);
 
 	/**
 	* Closes all documents and quits the application.
@@ -570,10 +575,10 @@ public:
 	KToggleAction* sessionAlwaysCalc;
 	KAction* sessionConnect;
 	KAction* sessionCompute;
+	KAction* sessionStats;
 	KAction* createDatabase;
 	KAction* sessionDisconnect;
 	KAction* fillEmptyDb;
-	KAction* sessionTest;
 	KAction* sessionQuit;
 
 

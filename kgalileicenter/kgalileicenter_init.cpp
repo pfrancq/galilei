@@ -115,7 +115,7 @@ void KGALILEICenterApp::initActions(void)
 	fillEmptyDb=new KAction(i18n("&Fill Empty Database"),"exec",0,this,SLOT(slotFillEmptyDb()),actionCollection(),"fillEmptyDb");
 	runProgram=new KAction(i18n("&Run Program"),"rebuild",0,this,SLOT(slotRunProgram()),actionCollection(),"runProgram");
 	sessionDisconnect=new KAction(i18n("&Disconnect Database"),"connect_no",0,this,SLOT(slotSessionDisconnect()),actionCollection(),"sessionDisconnect");
-	sessionTest=new KAction(i18n("&Test"),"gohome",0,this,SLOT(slotSessionTest()),actionCollection(),"sessionTest");
+	sessionStats=new KAction(i18n("&Statistics"),"gohome",0,this,SLOT(slotSessionStats()),actionCollection(),"sessionStats");
 	sessionQuit=new KAction(i18n("E&xit"),"exit",0,this,SLOT(slotSessionQuit()),actionCollection(),"sessionQuit");
 
 	// Menu "Users"
@@ -422,6 +422,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	docsAnalyse->setEnabled(false);
 	runProgram->setEnabled(false);
 	rRunR->setEnabled(false);
+	sessionStats->setEnabled(false);
 }
 
 

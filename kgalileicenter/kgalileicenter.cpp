@@ -96,6 +96,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for process running
 #include <kprocess.h>
+#include <kiconloader.h>
 
 
 //-----------------------------------------------------------------------------
@@ -106,6 +107,7 @@ using namespace GALILEI;
 #include "kviewdocs.h"
 #include "kviewdoc.h"
 #include "kviewusers.h"
+#include "kviewstats.h"
 #include "kviewthgroups.h"
 #include "kviewgroups.h"
 #include "kviewgroup.h"
@@ -137,6 +139,15 @@ KDoc* KGALILEICenterApp::getDocument(void) const
 
 
 //-----------------------------------------------------------------------------
+GSession* KGALILEICenterApp::getSession(void) const
+{
+	if(!Doc)
+		return(0);
+	return(Doc->GetSession());
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionConnect(void)
 {
 	QConnectMySQL dlg(this,0,true);
@@ -163,6 +174,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Doc=new KDoc(this,Sess);
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
+			sessionStats->setEnabled(true);
 			sessionConnect->setEnabled(false);
 			wordsClustering->setEnabled(true);
 			removeCluster->setEnabled(true);
@@ -172,10 +184,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			textEnglish->setEnabled(true);
 			runProgram->setEnabled(true);
 			UpdateMenusEntries();
-			dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
-
-			// Init the graph of links.
-			Sess->InitLinks();
+			dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
 		}
 		catch(GException& e)
 		{
@@ -220,10 +229,9 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
 	runProgram->setEnabled(true);
+	sessionStats->setEnabled(true);
 	UpdateMenusEntries();
-	dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
-
-	Sess->InitLinks();
+	dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
 }
 
 
@@ -255,9 +263,9 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSessionTest(void)
+void KGALILEICenterApp::slotSessionStats(void)
 {
-
+	createClient(Doc,new KViewStats(Doc,pWorkspace,"View statistics",0));
 }
 
 
@@ -538,10 +546,6 @@ void KGALILEICenterApp::slotProfileCalc(void)
 {
 	bool tmp = Doc->GetSession()->GetDocOptions()->UseLink;
 	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
-	if ((!tmp) &&(Doc->GetSession()->GetDocOptions()->UseLink))
-	{
-		Doc->GetSession()->InitLinks();
-	}
 	KView* m = (KView*)pWorkspace->activeWindow();
 	if(m->getType()!=gProfile) return;
 	setDocParams(Doc);
@@ -554,10 +558,6 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 {
 	bool tmp = Doc->GetSession()->GetDocOptions()->UseLink;
 	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
-	if ((!tmp) &&(Doc->GetSession()->GetDocOptions()->UseLink))
-	{
-		Doc->GetSession()->InitLinks();
-	}
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Profiles");
 	d->ComputeProfiles(!profileAlwaysCalc->isChecked(),profileAlwaysSave->isChecked());

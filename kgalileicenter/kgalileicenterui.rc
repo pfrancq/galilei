@@ -15,7 +15,7 @@
 		<Action name="runProgram"/>
 		<separator/>
  		<Action name="sessionTest"/>
-		<Action name="sessionStat"/>
+		<Action name="sessionStats"/>
 		<separator/>
 		<Action name="sessionQuit"/>
 	</Menu>

@@ -333,9 +333,9 @@ void KGALILEICenterApp::slotPlugins(void)
 		while(item2)
 		{
 			if(item2->Enable)
-				item2->Fac->Create();
+				item2->Fac->Create(getSession());
 			else
-				item2->Fac->Delete();
+				item2->Fac->Delete(getSession());
 			item2=dynamic_cast<QProfileCalcItem*>(item2->itemBelow());
 		}
 		try
@@ -346,15 +346,14 @@ void KGALILEICenterApp::slotPlugins(void)
 		{
 		}
 
-
 		// Goes through grouping method
 		QGroupingItem* item3=dynamic_cast<QGroupingItem*>(dlg.Groupings->firstChild());
 		while(item3)
 		{
 			if(item3->Enable)
-				item3->Fac->Create();
+				item3->Fac->Create(getSession());
 			else
-				item3->Fac->Delete();
+				item3->Fac->Delete(getSession());
 			item3=dynamic_cast<QGroupingItem*>(item3->itemBelow());
 		}
 		try
@@ -370,9 +369,9 @@ void KGALILEICenterApp::slotPlugins(void)
 		while(item4)
 		{
 			if(item4->Enable)
-				item4->Fac->Create();
+				item4->Fac->Create(getSession());
 			else
-				item4->Fac->Delete();
+				item4->Fac->Delete(getSession());
 			item4=dynamic_cast<QGroupCalcItem*>(item4->itemBelow());
 		}
 		try
@@ -388,9 +387,9 @@ void KGALILEICenterApp::slotPlugins(void)
 		while(item5)
 		{
 			if(item5->Enable)
-				item5->Fac->Create();
+				item5->Fac->Create(getSession());
 			else
-				item5->Fac->Delete();
+				item5->Fac->Delete(getSession());
 			item5=dynamic_cast<QStatsCalcItem*>(item5->itemBelow());
 		}
 
@@ -399,9 +398,9 @@ void KGALILEICenterApp::slotPlugins(void)
 		while(item6)
 		{
 			if(item6->Enable)
-				item6->Fac->Create();
+				item6->Fac->Create(getSession());
 			else
-				item6->Fac->Delete();
+				item6->Fac->Delete(getSession());
 			item6=dynamic_cast<QLinkCalcItem*>(item6->itemBelow());
 		}
 		try
