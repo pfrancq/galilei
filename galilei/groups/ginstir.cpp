@@ -311,10 +311,12 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 
 	//  The second best has the fitness of 1
 	if((*ptr)->GetId())
+	{
 		s=Chromosomes[(*ptr)->GetId()-1];
+		(*s->Fitness)=1.0;
+	}
 	else
 		s=BestChromosome;
-	(*s->Fitness)=1.0;
 	s->FiPlus=(*ptr)->GetFiPlus();
 	s->FiMinus=(*ptr)->GetFiMinus();
 	s->Fi=(*ptr)->GetFi();
@@ -327,13 +329,15 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	{
 		r=((double)i)/((double)(PopSize));
 		if((*ptr)->GetId())
+		{
 			s=Chromosomes[(*ptr)->GetId()-1];
+			(*s->Fitness)=r;
+		}
 		else
 			s=BestChromosome;
 		s->FiPlus=(*ptr)->GetFiPlus();
 		s->FiMinus=(*ptr)->GetFiMinus();
 		s->Fi=(*ptr)->GetFi();
-		(*s->Fitness)=r;
 		#ifdef RGADEBUG
 			WriteChromoInfo(s);
 		#endif
