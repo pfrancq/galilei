@@ -166,7 +166,6 @@ void GALILEI::GGroupingSupKMeans::AdaptMinSimToDatabase(double distcoeff)
 
 	//tmp david
 	int comp2=0;
-	int bibi=SubProfiles.NbPtr;
 	RTextFile* text= new RTextFile("../../../simprofs.txt", RIO::Create);
 	for (s1=SubProfiles.Tab, i=SubProfiles.NbPtr; i--; s1++)
 		(*text) << "\t"<<(*s1)->GetProfile()->GetId();
