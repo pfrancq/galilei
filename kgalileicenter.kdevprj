@@ -2135,7 +2135,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/r/rio/Makefile.am]
-files=kgalileicenter/r/rio/rtextfile.cpp,kgalileicenter/r/rio/rtextfile.h,kgalileicenter/r/rio/rio.cpp,kgalileicenter/r/rio/rio.h
+files=kgalileicenter/r/rio/rtextfile.cpp,kgalileicenter/r/rio/rtextfile.h,kgalileicenter/r/rio/rio.cpp,kgalileicenter/r/rio/rio.h,kgalileicenter/r/rio/rrecfile.h,kgalileicenter/r/rio/rrecfile.hh
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=rio
 sub_dirs=
@@ -2148,6 +2148,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/r/rio/rio.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rio/rrecfile.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rio/rrecfile.hh]
 dist=true
 install=false
 install_location=
