@@ -151,6 +151,8 @@ void GALILEI::GGroupingKProtos::Initialization(void)         // initialization i
 	Centers->Clear();
 	Protos->Clear();
 	//execute a kmeans to find centers
+	cout << " ****************** INITIALIZATION  BY KMEANS ****************"<<endl;
+
 	kmeans->SetNbTests(1);
 	kmeans->SetGroupsNumber(Params->NbGroups);
 	kmeans->SetInitial(RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>::Refined);
@@ -161,9 +163,7 @@ void GALILEI::GGroupingKProtos::Initialization(void)         // initialization i
 	kmeans->SetVerifyKMeansMaxIters(Params->VerifyKMeansLimit);
 	kmeans->Run();
 	RContainer<GGroup,unsigned int,false,false>* grps=kmeans->GetGrouping();
-	for (grps->Start(); !grps->End(); grps->Next())
-		cout << "groupe "<< (*grps)()->GetId()<< " nbelements = "<<(*grps)()->NbPtr<<endl;
-
+	cout << " ****************** END OF INITIALIZATION ****************"<<endl;
 
 	//executing kmeans to find protos
 	for (i=0,grps->Start(); !grps->End(); grps->Next(),i++)
@@ -173,29 +173,43 @@ void GALILEI::GGroupingKProtos::Initialization(void)         // initialization i
 		Centers->InsertPtr(subprof);
 		Grps->InsertPtr(g=new GGroupVector(i,Groups->GetLang()));
 		g->InsertPtr(subprof);
-		// execute a kmeans to find protos
-		subs = new  RContainer <GSubProfile,unsigned int, false,true>(10,5);
-		for (gr->Start(); !gr->End(); gr->Next())
-			if (!Centers->GetPtr((*gr)()))
-				subs->InsertPtr((*gr)());
-		kmeans=new  RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups> (subs) ;
-		kmeans->SetNbTests(1);
-		kmeans->SetGroupsNumber(Params->NbProtos);
-		kmeans->SetInitial(RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>::Refined);
-		kmeans->SetEpsilon(0.0);
-		kmeans->SetIterNumber(Params->MaxIters);
-		kmeans->SetSubSamplesNumber(Params->NbSubSamples);
-		kmeans->SetSubSamplesRate(Params->SubSamplesRate);
-		kmeans->SetVerifyKMeansMaxIters(Params->VerifyKMeansLimit);
-		kmeans->Run();
-		RContainer<GGroup,unsigned int,false,false>* grps2=kmeans->GetGrouping();
-		for (grps2->Start(); !grps2->End(); grps2->Next())
+		if (gr->NbPtr>=Params->NbProtos)
 		{
-			subprof=(*grps2)()->RelevantSubProfile(0);
-			Protos->InsertPtr(subprof);
-			g->InsertPtr(subprof);
+			// execute a kmeans to find protos
+			subs = new  RContainer <GSubProfile,unsigned int, false,true>(10,5);
+			for (gr->Start(); !gr->End(); gr->Next())
+				if (!Centers->GetPtr((*gr)()))
+					subs->InsertPtr((*gr)());
+			kmeans=new  RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups> (subs) ;
+			kmeans->SetNbTests(1);
+			kmeans->SetGroupsNumber(Params->NbProtos);
+			kmeans->SetInitial(RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>::Refined);
+			kmeans->SetEpsilon(0.0);
+			kmeans->SetIterNumber(Params->MaxIters);
+			kmeans->SetSubSamplesNumber(1);
+			kmeans->SetSubSamplesRate(100);
+			kmeans->SetVerifyKMeansMaxIters(Params->VerifyKMeansLimit);
+			kmeans->Run();
+			RContainer<GGroup,unsigned int,false,false>* grps2=kmeans->GetGrouping();
+			for (grps2->Start(); !grps2->End(); grps2->Next())
+			{
+				subprof=(*grps2)()->RelevantSubProfile(0);
+				Protos->InsertPtr(subprof);
+				g->InsertPtr(subprof);
+			}
+			delete(subs);
+			delete(kmeans);
 		}
-		delete(subs);
+		else
+		{
+			for (gr->Start(); !gr->End(); gr->Next())
+			{
+				subprof=(*gr)();
+				Protos->InsertPtr(subprof);
+				g->InsertPtr(subprof);
+			}
+		}
+		
 	}
 }
 
@@ -209,7 +223,7 @@ void GALILEI::GGroupingKProtos::Run(void) throw(GException)
 	
 	if (!SubProfiles.NbPtr) return;
 	
-	DisplayInfos();
+//	DisplayInfos();
 	Initialization();
 	
  	while(iter<Params->MaxIters&&error!=0)
@@ -219,8 +233,8 @@ void GALILEI::GGroupingKProtos::Run(void) throw(GException)
  		error=CalcError();
  		iter++;
  	}
-	cout << "End of KMeans Protos"<<endl;
-	cout << "number of iterations= "<<iter<< "    error= "<<error<<endl;
+//	cout << "End of KMeans Protos"<<endl;
+//	cout << "number of iterations= "<<iter<< "    error= "<<error<<endl;
  	//save grouping into Groups
  	Groups->Clear();
  	for (Grps->Start(); !Grps->End(); Grps->Next())
