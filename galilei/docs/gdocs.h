@@ -83,12 +83,12 @@ protected:
 public:
 
 	/**
-	* A container of GDocsLang in which all the docs from a specific langage are stocked
+	* Container of Documents stored by languages and identifiers.
 	*/
 	R::RContainer<GDocsLang,unsigned int,true,true> DocsLang;
 
 	/**
-	* A container of GDocRefUrl in which all the docs stocked by url.
+	* Container of documents stored by URLs.
 	*/
 	R::RContainer<GDocRefUrl,unsigned int,true,true> DocsRefUrl;
 
