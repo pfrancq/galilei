@@ -183,6 +183,18 @@ void GALILEI::GSession::SetCurrentGroupingMethodSettings(const char* s) throw(GE
 
 
 //-----------------------------------------------------------------------------
+const char* GALILEI::GSession::GetGroupingMethodSettings(const char* n) throw(GException)
+{
+	GGrouping* tmp;
+
+	tmp=Groupings->GetPtr<const char*>(n);
+	if(!tmp)
+		return(0);
+	return(tmp->GetSettings());
+}
+
+
+//-----------------------------------------------------------------------------
 GGroupingCursor& GALILEI::GSession::GetGroupingsCursor(void)
 {
 	GGroupingCursor *cur=GGroupingCursor::GetTmpCursor();

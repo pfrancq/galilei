@@ -235,6 +235,13 @@ public:
 	void SetCurrentGroupingMethodSettings(const char* s) throw(GException);
 
 	/**
+	* Get the settings of a given grouping method.
+	* @param n              Name of the grouping method.
+	* @returns C String representing the settings of the given grouping method.
+	*/
+	const char* GetGroupingMethodSettings(const char* n) throw(GException);
+
+	/**
 	* Get the current grouping method.
 	* @returns Pointer to a GGrouping class.
 	*/
