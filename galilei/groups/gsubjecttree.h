@@ -154,6 +154,11 @@ public:
 	void IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,true>* groups,GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent);
 
 	/**
+	* creates a container of GroupIdParentId from a subjctree.
+	*/
+	void CreateParent(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent);
+
+	/**
 	* Destructor
 	*/
 	~GSubjectTree(void);

@@ -393,6 +393,21 @@ void GALILEI::GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSubjectTree::CreateParent(RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent)
+{
+	for (Start(); !End(); Next())
+	{
+		GSubject * subject= (*this)();
+		//For each subsubject of the precedent subject.
+		for (subject->Start(); !subject->End(); subject->Next())
+		{
+			GSubject* sub= (*subject)();
+			parent->InsertPtr(new GGroupIdParentId(sub->GetId(), subject->GetId()));
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
 void GALILEI::GSubjectTree::InitProfiles()
 {
 	//Profiles doenst have juged document.
