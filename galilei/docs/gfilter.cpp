@@ -167,7 +167,7 @@ void GALILEI::GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 		// Insert sentence
 		if(*block)
 		{
-			attach->AddTag(sent=new RXMLTag("Sentence"));
+			attach->AddTag(sent=new RXMLTag("docxml:sentence"));
 			//sent->InsertAttr("Value",block);
 			sent->AddContent(block);
 			block=ptr;
@@ -195,10 +195,10 @@ void GALILEI::GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 			ptr++;
 		if(list!=ptr)
 		{
-			attach->AddTag(kwd=new RXMLTag("Keyword"));
+			attach->AddTag(kwd=new RXMLTag("docxml:keyword"));
 			if(*ptr)
 				(*(ptr++))=0;          // Skip separator.
-			kwd->InsertAttr("Value",list);
+			kwd->InsertAttr("docxml:value",list);
 		}
 	}
 }

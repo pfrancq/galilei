@@ -101,18 +101,18 @@ GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 	Tags->InsertPtr(new Tag("HEAD","",Tag::tHEAD,true,8,false));
 	Tags->InsertPtr(new Tag("SCRIPT","",Tag::tSCRIPT,true,8,false));
 	Tags->InsertPtr(new Tag("META","",Tag::tMETA,true,8,true));
-	Tags->InsertPtr(new Tag("TITLE","Title",Tag::tTITLE,true,8,true));
+	Tags->InsertPtr(new Tag("TITLE","docxml:title",Tag::tTITLE,true,8,true));
 	Tags->InsertPtr(new Tag("BODY","",Tag::tBODY,false,8,false));
-	Tags->InsertPtr(new Tag("H1","H1",Tag::tH1,false,1,true));
-	Tags->InsertPtr(new Tag("H2","H2",Tag::tH2,false,2,true));
-	Tags->InsertPtr(new Tag("H3","H3",Tag::tH3,false,3,true));
-	Tags->InsertPtr(new Tag("H4","H4",Tag::tH4,false,4,true));
-	Tags->InsertPtr(new Tag("H5","H5",Tag::tH5,false,5,true));
-	Tags->InsertPtr(new Tag("H6","H6",Tag::tH6,false,6,true));
-	Tags->InsertPtr(new Tag("P","P",Tag::tP,false,7,true));
-	Tags->InsertPtr(new Tag("TD","P",Tag::tTD,false,7,true));
-	Tags->InsertPtr(new Tag("LI","P",Tag::tTD,false,7,true));
-	Tags->InsertPtr(new Tag("DIV","P",Tag::tP,false,7,true));
+	Tags->InsertPtr(new Tag("H1","docxml:h1",Tag::tH1,false,1,true));
+	Tags->InsertPtr(new Tag("H2","docxml:h2",Tag::tH2,false,2,true));
+	Tags->InsertPtr(new Tag("H3","docxml:h3",Tag::tH3,false,3,true));
+	Tags->InsertPtr(new Tag("H4","docxml:h4",Tag::tH4,false,4,true));
+	Tags->InsertPtr(new Tag("H5","docxml:h5",Tag::tH5,false,5,true));
+	Tags->InsertPtr(new Tag("H6","docxml:h6",Tag::tH6,false,6,true));
+	Tags->InsertPtr(new Tag("P","docxml:p",Tag::tP,false,7,true));
+	Tags->InsertPtr(new Tag("TD","docxml:p",Tag::tTD,false,7,true));
+	Tags->InsertPtr(new Tag("LI","docxml:p",Tag::tTD,false,7,true));
+	Tags->InsertPtr(new Tag("DIV","docxml:p",Tag::tP,false,7,true));
 }
 
 

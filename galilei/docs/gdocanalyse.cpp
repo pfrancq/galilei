@@ -354,7 +354,7 @@ void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag) throw(GException)
 	const char* ptr;
 	RString word(50);
 
-	if(tag->GetName()=="Sentence")
+	if(tag->GetName()=="sentence")
 	{
 		ptr=tag->GetContent();
 		while(*ptr)

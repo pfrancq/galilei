@@ -98,7 +98,7 @@ bool GFilterEMail::ExtractCmd(char* line,RXMLTag* /*metaData*/)
 	{
 		AnalyzeBlock(ptr,Doc->AddSubject());
 	}
-	else if(!strcasecmp(line,"Date"))
+	else if(!strcasecmp(line,"date"))
 	{
 		Doc->AddDate(ptr);
 	}
@@ -178,7 +178,7 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 	part=Doc->GetContent();
 	while(*Pos)
 	{
-		part->AddTag(tag=new RXMLTag("P"));
+		part->AddTag(tag=new RXMLTag("docxml:p"));
 		SkipSpaces();
 		Begin=Pos;
 		// Paragraph are supposed to be terminated by at least one blank line
