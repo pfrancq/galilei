@@ -72,7 +72,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GStatisticalParams::GStatisticalParams(void)
-	: GCalcParams("Feedback")
+	: GCalcParams("Statistical")
 {
 }
 
