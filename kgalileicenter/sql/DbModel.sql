@@ -32,7 +32,7 @@ CREATE TABLE bookmarks (
   icon VARCHAR(255) DEFAULT NULL,
   pos int(11),
   PRIMARY KEY (bookmarkid,profileid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 
 --
@@ -47,7 +47,7 @@ CREATE TABLE bookmarksbyhtmls (
   icon VARCHAR(255) DEFAULT NULL,
   pos int(11),
   KEY index_bookmarkid(bookmarkid,profileid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 #
 # Table structure for table kwds
@@ -63,7 +63,7 @@ CREATE TABLE kwds (
   INDEX langidndx (langid),
   INDEX langidsndx (langid,kwdid),
   PRIMARY KEY  (kwdautoid)
-) TYPE=MyISAM AUTO_INCREMENT=1 ;
+) TYPE=MyISAM CHARACTER SET utf8 AUTO_INCREMENT=1 ;
 
 
 --
@@ -74,7 +74,7 @@ CREATE TABLE groups (
   groupid int(11) NOT NULL auto_increment,
   langid char(2) NOT NULL default '',
   PRIMARY KEY  (groupid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 #
 # Table structure for table `groupsbykwds`
@@ -86,7 +86,7 @@ CREATE TABLE groupsbykwds (
   occurs double default NULL,
   langid char(2) default NULL,
   INDEX langidndx (langid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 --
 -- Table structure for table 'htmls'
@@ -101,9 +101,10 @@ CREATE TABLE htmls (
   calculated date default NULL,
   mimetype varchar(50) default NULL,
   failed int(11) default '0',
+  owner int(11) default '0',
   PRIMARY KEY  (htmlid),
   KEY index_html (html)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 
 --
@@ -115,7 +116,7 @@ CREATE TABLE htmlsbyprofiles (
   profileid int(11) NOT NULL default '0',
   judgement char(2) NOT NULL default '',
   when2 date default NULL
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 
 #
@@ -128,7 +129,7 @@ CREATE TABLE htmlsbykwds (
   occurs double(20,10) default NULL,
   langid char(2) default NULL,
   INDEX langidndx (langid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 #
 # Table structure for table `kwdsbygroups`
@@ -139,7 +140,7 @@ CREATE TABLE kwdsbygroups (
   kwdid int(11) NOT NULL default '0',
   langid char(2) default NULL,
   INDEX langidndx (langid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 #
 # Table structure for table `stopkwds`
@@ -153,7 +154,7 @@ CREATE TABLE stopkwds (
   langid char(2) default NULL,
   INDEX langidndx (langid),
   PRIMARY KEY  (kwdautoid)
-) TYPE=MyISAM AUTO_INCREMENT=1 ;
+) TYPE=MyISAM CHARACTER SET utf8 AUTO_INCREMENT=1 ;
 
 #
 # Table structure for table `subprofilesbykwds`
@@ -165,7 +166,7 @@ CREATE TABLE subprofilesbykwds (
   weight float NOT NULL default '0',
   langid char(2) default NULL,
   INDEX langidndx (langid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 --
 -- Table structure for table 'idealgroup'
@@ -176,7 +177,7 @@ CREATE TABLE idealgroup (
   langid char(2) NOT NULL default '',
   groupid int(11) NOT NULL default '0',
   PRIMARY KEY  (profileid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 --
 -- Table structure for table 'profiles'
@@ -192,7 +193,7 @@ CREATE TABLE profiles (
   topicid int(11) NOT NULL default '0',
   icon varchar(255) default NULL,
   PRIMARY KEY  (profileid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 
 --
@@ -208,7 +209,7 @@ CREATE TABLE subprofiles (
   calculated date default NULL,
   updated date default NULL,
   PRIMARY KEY  (subprofileid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 
 --
@@ -221,7 +222,7 @@ CREATE TABLE tempchromo (
   lang char(2) default NULL,
   subprofileid int(11) default NULL,
   tempid tinyint(1) default NULL
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 
 --
@@ -235,7 +236,7 @@ CREATE TABLE topics (
   langid char(2) NOT NULL default '',
   used char(1) default '0',
   PRIMARY KEY  (topicid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 --
 -- Table structure for table 'topicsbyhtmls'
@@ -244,7 +245,7 @@ CREATE TABLE topics (
 CREATE TABLE topicsbyhtmls (
   topicid int(11) NOT NULL default '0',
   htmlid int(11) NOT NULL default '0'
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 
 --
@@ -255,7 +256,7 @@ CREATE TABLE htmlsbylinks (
   htmlid int(11) NOT NULL default '0',
   linkid int(11) NOT NULL default '0',
   occurs int(11) default NULL
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 
 --
@@ -268,7 +269,7 @@ CREATE TABLE historicgroups (
   groupid int(11),
   lang char(2),
   subprofileid int(11)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 
 #
@@ -283,7 +284,7 @@ CREATE TABLE historicsubprofiles (
   date date default '0000-00-00',
   langid char(2) default NULL,
   INDEX langidndx (langid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 
 --
@@ -304,7 +305,7 @@ CREATE TABLE users (
   country varchar(50) default NULL,
   default_profile int(11) default '0',
   PRIMARY KEY  (userid)
-) TYPE=MyISAM;
+) TYPE=MyISAM CHARACTER SET utf8;
 
 
 --
@@ -319,7 +320,7 @@ CREATE TABLE expertkwds (
   level integer ,
   freq varchar(128) ,
   parents varchar(128)
-)TYPE=MyISAM;
+)TYPE=MyISAM CHARACTER SET utf8;
 
 
 --
@@ -331,7 +332,7 @@ CREATE TABLE expkwdsdoclist (
   groupid integer not null,
   idw_mot numeric(7) not null,
   nom_doc varchar(255)
-)TYPE=MyISAM;
+)TYPE=MyISAM CHARACTER SET utf8;
 
 
 -- 
