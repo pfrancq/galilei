@@ -91,7 +91,7 @@ protected:
 	/**
 	* Relevant object of the group.
 	*/
-	const GSubProfile* Relevant;
+	GObjIR* Relevant;
 
 public:
 

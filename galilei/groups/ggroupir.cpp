@@ -343,7 +343,7 @@ double GALILEI::GGroupIR::ComputeRelevantSum(void)
 
 	// Suppose the first element is the most relevant.
 	ptr=Owner->GetObjs(SubObjects);
-	Relevant=(*ptr)->GetSubProfile();
+	Relevant=(*ptr);
 	BestSumSim=ComputeSumSim(*ptr);
 
 	// Look if in the other objects, there is a better one
@@ -352,7 +352,7 @@ double GALILEI::GGroupIR::ComputeRelevantSum(void)
 		SumSim=ComputeSumSim(*ptr);
 		if(SumSim>BestSumSim)
 		{
-			Relevant=(*ptr)->GetSubProfile();
+			Relevant=(*ptr);
 			BestSumSim=SumSim;
 		}
 	}
@@ -381,7 +381,7 @@ double GALILEI::GGroupIR::ComputeRelevantSumDist(void)
 
 	// Suppose the first element is the most relevant.
 	ptr=Owner->GetObjs(SubObjects);
-	Relevant=(*ptr)->GetSubProfile();
+	Relevant=(*ptr);
 	BestSumSim=ComputeSumSim(*ptr);
 	BestSumDist=ComputeSumDist(*ptr);
 
@@ -391,7 +391,7 @@ double GALILEI::GGroupIR::ComputeRelevantSumDist(void)
 		SumSim=ComputeSumSim(*ptr);
 		if(SumSim>BestSumSim)
 		{
-			Relevant=(*ptr)->GetSubProfile();
+			Relevant=(*ptr);
 			BestSumSim=SumSim;
 			BestSumDist=ComputeSumDist(*ptr);
 		}
@@ -421,7 +421,7 @@ double GALILEI::GGroupIR::ComputeRelevantMin(void)
 
 	// Suppose the first element is the most relevant.
 	ptr=Owner->GetObjs(SubObjects);
-	Relevant=(*ptr)->GetSubProfile();
+	Relevant=(*ptr);
 	BestSumSim=ComputeSumSim(*ptr);
 	MinSumSim=ComputeMinSim(*ptr);
 
@@ -431,7 +431,7 @@ double GALILEI::GGroupIR::ComputeRelevantMin(void)
 		SumSim=ComputeSumSim(*ptr);
 		if(SumSim>BestSumSim)
 		{
-			Relevant=(*ptr)->GetSubProfile();
+			Relevant=(*ptr);
 			BestSumSim=SumSim;
 			MinSumSim=ComputeMinSim(*ptr);
 		}
@@ -460,7 +460,7 @@ double GALILEI::GGroupIR::ComputeRelevantMax(void)
 
 	// Suppose the first element is the most relevant.
 	ptr=Owner->GetObjs(SubObjects);
-	Relevant=(*ptr)->GetSubProfile();
+	Relevant=(*ptr);
 	BestSumSim=ComputeSumSim(*ptr);
 	MaxSumSim=ComputeMaxSim(*ptr);
 
@@ -470,7 +470,7 @@ double GALILEI::GGroupIR::ComputeRelevantMax(void)
 		SumSim=ComputeSumSim(*ptr);
 		if(SumSim>BestSumSim)
 		{
-			Relevant=(*ptr)->GetSubProfile();
+			Relevant=(*ptr);
 			BestSumSim=SumSim;
 			MaxSumSim=ComputeMaxSim(*ptr);
 		}
@@ -498,7 +498,7 @@ void GALILEI::GGroupIR::ComputeRelevant(void)
 
 	// Suppose the first element is the most relevant.
 	ptr=Owner->GetObjs(SubObjects);
-	Relevant=(*ptr)->GetSubProfile();
+	Relevant=(*ptr);
 	BestSumSim=ComputeSumSim(*ptr);
 
 	// Look if in the other objects, there is a better one
@@ -507,7 +507,7 @@ void GALILEI::GGroupIR::ComputeRelevant(void)
 		SumSim=ComputeSumSim(*ptr);
 		if(SumSim>BestSumSim)
 		{
-			Relevant=(*ptr)->GetSubProfile();
+			Relevant=(*ptr);
 			BestSumSim=SumSim;
 		}
 	}
