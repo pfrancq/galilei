@@ -210,11 +210,24 @@ void GALILEI::GProfileCalcVector::ComputeSubProfile(GSubProfileVector* s) throw(
 
 	// Choose the elements to stay.
 	if(MOK->IsEmpty()) return;
-	for(unsigned int Nb=MaxNonZero+1;--Nb;)
+
+	//If MaxNonZero is null -> take all the words.
+	if(MaxNonZero)
 	{
-		if(!MOK->IsNextWord()) break;
-		ptr=MOK->NextWord();
-		Vector->InsertPtr(new GIWordWeight(ptr->GetId(),ptr->GetWeight()));
+		for(unsigned int Nb=MaxNonZero+1;--Nb;)
+		{
+			if(!MOK->IsNextWord()) break;
+			ptr=MOK->NextWord();
+			Vector->InsertPtr(new GIWordWeight(ptr->GetId(),ptr->GetWeight()));
+		}
+	}
+	else
+	{
+		while(MOK->IsNextWord())
+		{
+			ptr=MOK->NextWord();
+			Vector->InsertPtr(new GIWordWeight(ptr->GetId(),ptr->GetWeight()));
+		}
 	}
 
 	// Sort the vector.
