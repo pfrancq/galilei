@@ -234,6 +234,25 @@ void GALILEI::GIWordsWeights::DelRefs(tObjType ObjType,GDict* dic) const
 
 
 //---------------------------------------------------------------------------
+void GALILEI::GIWordsWeights::ModifyQuery(tObjType ObjType,GLang* lang)
+{
+	GIWordWeight** ptr;
+	unsigned int i;
+	double max=GetMaxWeight();
+	double TotalRef=lang->GetRef(ObjType);
+	double idffactor;
+	double freq;
+
+	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
+	{
+		freq=0.5+((0.5*(*ptr)->GetWeight())/max);
+		idffactor=log(TotalRef/lang->GetRef((*ptr)->GetId(),ObjType));
+		(*ptr)->SetWeight(freq*idffactor);
+	}
+}
+
+
+//---------------------------------------------------------------------------
 GALILEI::GIWordsWeights::~GIWordsWeights(void)
 {
 }

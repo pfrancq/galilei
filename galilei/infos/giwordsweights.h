@@ -138,6 +138,15 @@ public:
 	void DelRefs(tObjType ObjType,GDict* dic) const;
 
 	/**
+	* Method used to recompute the weights of the terms like the formula
+	* proposed by Salton and Buckley using the current weights as initial
+	* values.
+	* @param ObjType        Type of the reference.
+	* @param lang           Language.
+	*/
+	void ModifyQuery(tObjType ObjType,GLang* lang);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GIWordsWeights(void);
