@@ -65,7 +65,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewGA::KViewGA(KDoc* doc,const char* l,QWidget* parent,const char* name,int wflags)
+KViewGA::KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), RGASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>(),
 	  CurId(0), Instance(0), Gen(0), PopSize(0),ParamsSim(0.2,0.05,1.0),
 	  ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0), ParamsDiff(0.2,0.05,1.0),
@@ -124,7 +124,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,QWidget* parent,const char* name,int wf
 	}
 	for(SubProfiles->Start(),i=0;!SubProfiles->End();SubProfiles->Next(),i++)
 			Objs->InsertPtr(new GObjIR(i,(*SubProfiles)()));
-	Sims=new GProfilesSim(SubProfiles,false);
+	Sims=new GProfilesSim(SubProfiles,global);
 	Monitor->setMaxFitness((SubProfiles->NbPtr)*(SubProfiles->NbPtr));
 
 	// Create GA

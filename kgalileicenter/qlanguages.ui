@@ -11,7 +11,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>243</width>
+            <width>235</width>
             <height>146</height>
         </rect>
     </property>
@@ -44,6 +44,34 @@
         </property>
     </widget>
     <widget>
+        <class>QComboBox</class>
+        <item>
+            <property>
+                <name>text</name>
+                <string>English</string>
+            </property>
+        </item>
+        <item>
+            <property>
+                <name>text</name>
+                <string>French</string>
+            </property>
+        </item>
+        <property stdset="1">
+            <name>name</name>
+            <cstring>cbLangs</cstring>
+        </property>
+        <property stdset="1">
+            <name>geometry</name>
+            <rect>
+                <x>10</x>
+                <y>40</y>
+                <width>220</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget>
         <class>QLayoutWidget</class>
         <property stdset="1">
             <name>name</name>
@@ -53,7 +81,7 @@
             <name>geometry</name>
             <rect>
                 <x>10</x>
-                <y>90</y>
+                <y>100</y>
                 <width>220</width>
                 <height>34</height>
             </rect>
@@ -125,31 +153,23 @@
         </hbox>
     </widget>
     <widget>
-        <class>QComboBox</class>
-        <item>
-            <property>
-                <name>text</name>
-                <string>English</string>
-            </property>
-        </item>
-        <item>
-            <property>
-                <name>text</name>
-                <string>French</string>
-            </property>
-        </item>
+        <class>QCheckBox</class>
         <property stdset="1">
             <name>name</name>
-            <cstring>cbLangs</cstring>
+            <cstring>cbGlobal</cstring>
         </property>
         <property stdset="1">
             <name>geometry</name>
             <rect>
                 <x>10</x>
-                <y>40</y>
-                <width>220</width>
-                <height>22</height>
+                <y>70</y>
+                <width>140</width>
+                <height>20</height>
             </rect>
+        </property>
+        <property stdset="1">
+            <name>text</name>
+            <string>Global Similarities</string>
         </property>
     </widget>
 </widget>

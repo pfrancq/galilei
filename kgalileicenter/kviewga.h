@@ -189,11 +189,12 @@ public:
 	* Constructor for the view.
 	* @param doc            Document instance that the view represents.
 	* @param l              Lang to group.
+	* @param global         Global Similarities.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewGA(KDoc* doc,const char* l,QWidget* parent,const char* name,int wflags);
+	KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.
