@@ -114,7 +114,7 @@ public:
 	RContainer<GSubProfile,false,true>* ModifiedProfs;
 
 	// Constructor and Compare methods.
-	GProfilesBehaviour(GProfilesBehaviours* manager,GSubProfileCursor s,GLang* lang, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc);
+	GProfilesBehaviour(GProfilesBehaviours* manager,RCursor<GSubProfile> s,GLang* lang, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GProfilesBehaviour* p) const {return(Lang->Compare(p->Lang));}
 
@@ -145,10 +145,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GProfilesBehaviours* manager, GSubProfileCursor s,GLang* l, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc)
+GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GProfilesBehaviours* manager, RCursor<GSubProfile> s,GLang* l, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc)
 	: Lang(l), MinSameDocs(minsamedocs), MinDiffDocs(mindiffdocs), Manager(manager)
 {
-	GSubProfileCursor Cur1, Cur2;
+	RCursor<GSubProfile> Cur1, Cur2;
 	unsigned int i,pos;
 	GBehaviours* behaviours;
 
@@ -289,8 +289,8 @@ void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(std::bad_alloc
 {
 	GBehaviours* behaviours;
 	GBehaviour* behaviour;
-	GSubProfileCursor subscur;
-	GSubProfileCursor subscur2;
+	RCursor<GSubProfile> subscur;
+	RCursor<GSubProfile> subscur2;
 	subscur.Set(ModifiedProfs);
 	subscur2=Manager->GetSession()->GetSubProfilesCursor(Lang);
 
@@ -337,7 +337,7 @@ void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(std::bad_alloc
 GBehaviours*  GProfilesBehaviours::GProfilesBehaviour::AddNewBehaviours(GSubProfile* sub)
 {
 	GBehaviours* behaviours, *tmpbehaviours;
-	GSubProfileCursor subcur;
+	RCursor<GSubProfile> subcur;
 
 	if (!sub->IsDefined()) return 0;
 	behaviours=new GBehaviours(sub->GetProfile()->GetId(),sub->GetProfile()->GetId());

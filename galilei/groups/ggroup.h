@@ -220,14 +220,14 @@ public:
 	/**
 	* Get a cursor over the subprofiles.
 	*/
-	GSubProfileCursor GetSubProfilesCursor(void);
+	R::RCursor<GSubProfile> GetSubProfilesCursor(void);
 
 	/**
 	* Get a cursor over the subprofiles. This signature is needed by a generic
 	* k-Means.
 	* @see R::RGroupingKMeans.
 	*/
-	GSubProfileCursor GetCursor(void);
+	R::RCursor<GSubProfile> GetCursor(void);
 
 	/**
 	* Compute the number of subprofiles of a given group that are also in the

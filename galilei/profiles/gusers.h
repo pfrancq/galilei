@@ -153,7 +153,7 @@ public:
 	* Get a cursor over the subprofiles of the system for a given language.
 	* @param lang           Language.
 	*/
-	GSubProfileCursor GetSubProfilesCursor(GLang* lang) throw(GException);
+	R::RCursor<GSubProfile> GetSubProfilesCursor(GLang* lang) throw(GException);
 
 	/**
 	* Clear all the subprofiles.

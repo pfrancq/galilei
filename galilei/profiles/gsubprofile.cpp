@@ -202,6 +202,13 @@ bool GSubProfile::IsUpdated(void) const
 
 
 //------------------------------------------------------------------------------
+bool GSubProfile::CanCompute(void)
+{
+	return(Fdbks.NbPtr);
+}
+
+
+//------------------------------------------------------------------------------
 bool GSubProfile::SameDescription(const GFdbk* fdbk) const
 {
 	return((fdbk->GetUpdated()<Computed)&&(fdbk->GetDoc()->GetComputed()<Computed));
@@ -410,8 +417,6 @@ void GSubProfile::Update(R::RContainer<GWeightInfo,false,true>* infos,bool compu
 		State=osUpdated;
 		Computed.SetToday();
 	}
-	if(!infos->NbPtr)
-		cout<<"Debug"<<endl;
 	GWeightInfos::operator=(*infos);
 
 	// Clear infos
@@ -424,18 +429,6 @@ void GSubProfile::Update(R::RContainer<GWeightInfo,false,true>* infos,bool compu
 	// Signal to the its group that it was modified
 /*	if(Group)
 		Group->HasUpdate(Id,computed);*/
-}
-
-
-//------------------------------------------------------------------------------
-void GSubProfile::Clear(void)
-{
-	// If the profile has a language ->  remove its references
-	if(Lang)
-		DelRefs(otSubProfile,Lang);
-
-	GWeightInfos::Clear();
-	Group=0;
 }
 
 

@@ -59,6 +59,7 @@ public:
 	virtual GLang* GetLang(void) const=0;
 	virtual GProfile* GetProfile(void) const=0;
 	virtual bool IsDefined(void) const=0;
+	virtual bool CanCompute(void)=0;
 	virtual GGroup* GetGroup(void) const=0;
 	virtual void SetGroup(GGroup* grp)=0;
 	virtual R::RDate GetAttached(void) const=0;
@@ -84,7 +85,6 @@ public:
 	virtual void SetSubject(GSubject* s)=0;
 	virtual GSubject* GetSubject(void) const=0;
 	virtual void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)=0;
-	virtual void Clear(void)=0;
 	virtual void ClearFdbks(void)=0;
 	virtual ~GSubProfileProxy(void) {}
 };

@@ -6,7 +6,7 @@
 
 	Generic Grouping Method - Implementation
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -91,7 +91,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save,bool savehistory) th
 {
 	GFactoryLangCursor CurLang;
 	GGroupCalc* CalcDesc;
-	GSubProfileCursor cur;
+	RCursor<GSubProfile> cur;
 	GGroupCursor Groups;
 
 	Modified=modified;

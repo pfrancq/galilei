@@ -404,7 +404,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
 {
 	unsigned int profid;
 	unsigned int social;
-	GSubProfileCursor CurSub=prof->GetSubProfilesCursor();
+	RCursor<GSubProfile> CurSub=prof->GetSubProfilesCursor();
 
 	try
 	{
@@ -584,7 +584,7 @@ void GStorageMySQL::LoadIdealGroupment(GSession* session) throw(std::bad_alloc,G
 void GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup) throw(GException)
 {
 	GGroupCursor groups;
-	GSubProfileCursor sub;
+	RCursor<GSubProfile> sub;
 	RString sSql;
 
 	try
@@ -998,7 +998,7 @@ void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 	RString sSql;
 	GFactoryLangCursor langs;
 	GLang* lang;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 
 	try
 	{
@@ -1046,7 +1046,7 @@ void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 void GStorageMySQL::SaveGroupsHistory(GSession* session) throw(GException)
 {
 	GGroupCursor GroupsCursor;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 	unsigned int historicID;
 	RString sSql;
 
@@ -1091,7 +1091,7 @@ void GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool h
 	RString database;
 	RString field;
 	GGroupCursor grp;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 
 	try
 	{
@@ -1144,7 +1144,7 @@ void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historic
 		// Save the Subprofile
 		for(curProf.Start();!curProf.End();curProf.Next())
 		{
-			GSubProfileCursor curSub=curProf()->GetSubProfilesCursor();
+			RCursor<GSubProfile> curSub=curProf()->GetSubProfilesCursor();
 			for(curSub.Start();!curSub.End();curSub.Next())
 				SaveSubProfileInHistory(curSub(), historicID);
 		}

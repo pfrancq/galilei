@@ -195,7 +195,7 @@ void GGroup::InsertPtr(GSubProfile* sp) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GGroup::DeleteSubProfiles(void) throw(std::bad_alloc)
 {
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 
 	State=osUpdated;
 	if(Community)
@@ -209,15 +209,15 @@ void GGroup::DeleteSubProfiles(void) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GSubProfileCursor GGroup::GetSubProfilesCursor(void)
+RCursor<GSubProfile> GGroup::GetSubProfilesCursor(void)
 {
-	GSubProfileCursor cur(this);
+	RCursor<GSubProfile> cur(this);
 	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-GSubProfileCursor GGroup::GetCursor(void)
+RCursor<GSubProfile> GGroup::GetCursor(void)
 {
 	return(GetSubProfilesCursor());
 }
@@ -227,7 +227,7 @@ GSubProfileCursor GGroup::GetCursor(void)
 unsigned int GGroup::GetNbSubProfiles(const GGroup* grp) const
 {
 	unsigned int tot;
-	GSubProfileCursor sub(this);
+	RCursor<GSubProfile> sub(this);
 
 	for(sub.Start(),tot=0;!sub.End();sub.Next())
 		if(grp->IsIn(sub()))
@@ -246,7 +246,7 @@ unsigned int GGroup::GetNbSubProfiles(void) const
 //------------------------------------------------------------------------------
 void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc)
 {
-	GSubProfileCursor sub(this);
+	RCursor<GSubProfile> sub(this);
 	RCursor<GFdbk> Fdbks;
 	GFdbk* ptr;
 	tDocAssessment j;
@@ -300,7 +300,7 @@ void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* 
 //------------------------------------------------------------------------------
 void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc)
 {
-	GSubProfileCursor sub(this);
+	RCursor<GSubProfile> sub(this);
 	RCursor<GFdbk> Fdbks;
 	tDocAssessment j;
 	RContainer<GFdbkRef,true,false> Docs(50,25);
@@ -361,7 +361,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 GSubProfile* GGroup::RelevantSubProfile(bool iff) const
 {
 	GSubProfile* rel;
-	GSubProfileCursor sub(this);
+	RCursor<GSubProfile> sub(this);
 	double refsum,sum;
 
 	// If no objects -> No relevant one.
@@ -392,7 +392,7 @@ GSubProfile* GGroup::RelevantSubProfile(bool iff) const
 double GGroup::ComputeSumSim(const GSubProfile* s,bool iff) const
 {
 	double sum;
-	GSubProfileCursor sub(this);
+	RCursor<GSubProfile> sub(this);
 
 	for(sub.Start(),sum=0.0;!sub.End();sub.Next())
 	{
@@ -486,7 +486,7 @@ GGroup::~GGroup(void)
 	{
 		if(Community)
 		{
-			GSubProfileCursor Sub;
+			RCursor<GSubProfile> Sub;
 			Sub.Set(this);
 			for(Sub.Start();!Sub.End();Sub.Next())
 				Sub()->SetGroup(0);

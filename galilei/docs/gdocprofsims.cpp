@@ -108,7 +108,7 @@ public:
 	GDocProfSims* Manager;                             // Owner.
 
 	// Constructor and Compare functions.
-	GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor s,bool iff,GLang* l) throw(std::bad_alloc);
+	GDocProfSim(GDocProfSims* manager, GDocs* d, RCursor<GSubProfile> s,bool iff,GLang* l) throw(std::bad_alloc);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GDocProfSim* docProfSim) const {return(Lang->Compare(docProfSim->Lang));}
 
@@ -136,11 +136,11 @@ public:
 
 
 //------------------------------------------------------------------------------
-GDocProfSims::GDocProfSim::GDocProfSim(GDocProfSims* manager, GDocs* d, GSubProfileCursor s,bool iff,GLang* l) throw(std::bad_alloc)
+GDocProfSims::GDocProfSim::GDocProfSim(GDocProfSims* manager, GDocs* d, RCursor<GSubProfile> s,bool iff,GLang* l) throw(std::bad_alloc)
 	: Sims(d->GetNbDocs(l)+2,d->GetNbDocs(l)/2 +1), IFF(iff),Lang(l), Manager(manager)
 {
 	GDocCursor Cur_d;
-	GSubProfileCursor Cur_p;
+	RCursor<GSubProfile> Cur_p;
 	unsigned int nbrSubProf;
 	GSims* sim;
 
@@ -215,7 +215,7 @@ double GDocProfSims::GDocProfSim::GetSim(const GDoc* doc,const GSubProfile* sub)
 void  GDocProfSims::GDocProfSim::Update(GDocs* docs,GUsers* users) throw(std::bad_alloc)
 {
 	GDocCursor Cur_d;
-	GSubProfileCursor Cur_p;
+	RCursor<GSubProfile> Cur_p;
 	unsigned int nbrSubProf;
 	GSims* sims;
 	GSim* sim;

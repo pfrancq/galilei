@@ -592,7 +592,7 @@ double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate) throw
 {
 	double tmpsim, simssum, deviation, MeanSim;
 	unsigned int nbcomp, i, j;
-	GSubProfileCursor s, s2;
+	RCursor<GSubProfile> s, s2;
 
 	//if min sim is not automatic, returnthe fixed value
 	if (!SessParams->GetBool("AutomaticMinSim"))
@@ -642,7 +642,7 @@ double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate) throw
 //------------------------------------------------------------------------------
 void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) throw(GException)
 {
-	GSubProfileCursor Subs;
+	RCursor<GSubProfile> Subs;
 	GProfileCursor Prof=GetProfilesCursor();
 	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
 	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
@@ -657,7 +657,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) t
 			rec->receiveNextProfile(Prof());
 		Prof()->Update();
 		Subs=Prof()->GetSubProfilesCursor();
-		for(Subs.Start(); !Subs.End(); Subs.Next())
+		for(Subs.Start();!Subs.End();Subs.Next())
 		{
 			if(rec)
 				rec->Interact();
@@ -785,7 +785,7 @@ void GSession::CopyIdealGroups(bool save) throw(std::bad_alloc,GException)
 {
 	GGroupCursor Grps;
 //	GGroupCursor Ideal;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 //	GGroups* grps;
 	GGroup* grp;
 	GGroupCalc* CalcDesc;

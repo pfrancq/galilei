@@ -175,7 +175,7 @@ void GSubjects::ChooseSubjects(void) throw(std::bad_alloc)
 void GSubjects::CreateSet(void) throw(std::bad_alloc)
 {
 	GSubjectCursor Subs;
-	GSubProfileCursor Prof;
+	RCursor<GSubProfile> Prof;
 	unsigned int nbprof,nbsocial;
 //	GGroups* CurGrps;
 	GGroup* Grp;
@@ -308,7 +308,7 @@ GGroup* GSubjects::GetIdealGroup(GSubProfile* sub) const throw(GException)
 void GSubjects::ComputeRecallPrecision(void)
 {
 	GroupScoreCursor Grp;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 	GGroup* thGrp;
 	unsigned int NbGrp;
 	unsigned int InGrp;
@@ -389,7 +389,7 @@ void GSubjects::ComputeTotal(void)
 	double* VectorCols;                           // Sum of the columns of the matrix
 	double* VectorColsTemp;                       // temp sum of the columns of the matrix
 	double* ptr;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 
 	// Init part
 	Total=0.0;
@@ -521,7 +521,7 @@ void GSubjects::CreateIdeal(bool Save) throw(std::bad_alloc)
 void GSubjects::FdbksCycle(bool Save) throw(std::bad_alloc)
 {
 	GGroupCursor Grps;
-	GSubProfileCursor SubProfile;
+	RCursor<GSubProfile> SubProfile;
 	unsigned int i;
 
 	// Apply Config
@@ -570,7 +570,7 @@ void GSubjects::FdbksCycle(bool Save) throw(std::bad_alloc)
 void GSubjects::AddAssessments(bool Save) throw(std::bad_alloc)
 {
 	GSubjectCursor Subs;
-	GSubProfileCursor Prof;
+	RCursor<GSubProfile> Prof;
 	unsigned int i;
 	GDoc** ptr;
 
@@ -636,7 +636,7 @@ bool GSubjects::AddTopic(bool Save) throw(std::bad_alloc)
 	GSubject** ptr;
 	unsigned int i;
 	GSubject* newSubject;
-	GSubProfileCursor Prof;
+	RCursor<GSubProfile> Prof;
 	unsigned int nbprof,nbsocial;
 //	GGroups* CurGrps;
 	GGroup* Grp;
@@ -724,11 +724,11 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(std::bad_alloc)
 	unsigned int i;
 	unsigned int nbprof, nbsocial, nbprofilescreated;
 	GSubject* usedSubject;
-	GSubProfileCursor Prof;
+	RCursor<GSubProfile> Prof;
 	GGroupCursor CurGrps;
 	GGroup* Grp;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
-	GSubProfileCursor Sub;
+	RCursor<GSubProfile> Sub;
 
 	// Apply Config
 	Apply();
@@ -829,7 +829,7 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 double GSubjects::ComputePercAss(void)
 {
-	GSubProfileCursor Cur1;
+	RCursor<GSubProfile> Cur1;
 	GProfileCursor Cur2;
 	GSubProfile* Sub;
 	unsigned int nb;

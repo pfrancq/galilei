@@ -112,7 +112,7 @@ public:
 	RContainer<GSubProfile,false,true>* ModifiedProfs;
 
 	// Constructor and Compare methods.
-	GProfilesSim(GProfilesSims* manager,GSubProfileCursor s,bool iff,GLang* lang) throw(std::bad_alloc, GException);
+	GProfilesSim(GProfilesSims* manager,RCursor<GSubProfile> s,bool iff,GLang* lang) throw(std::bad_alloc, GException);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GProfilesSim* profilesSim) const {return(Lang->Compare(profilesSim->Lang));}
 
@@ -137,9 +137,9 @@ public:
 
 
 	// Update the deviation od similarities.
-	void UpdateDeviationAndMeanSim(GSubProfileCursor subprofiles) throw (GException); // general function
-	void UpdateDevMeanSim(GSubProfileCursor subprofiles) throw (GException); // memory on
-	void RecomputeDevMeanSim(GSubProfileCursor subprofiles) throw (GException); //memory off
+	void UpdateDeviationAndMeanSim(RCursor<GSubProfile> subprofiles) throw (GException); // general function
+	void UpdateDevMeanSim(RCursor<GSubProfile> subprofiles) throw (GException); // memory on
+	void RecomputeDevMeanSim(RCursor<GSubProfile> subprofiles) throw (GException); //memory off
 
 	// Add a subprofile to the listof the modified one.
 	void AddModifiedProfile(GSubProfile* s);
@@ -150,15 +150,15 @@ public:
 
 
 //------------------------------------------------------------------------------
-GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCursor s,bool iff,GLang* l) throw(std::bad_alloc, GException)
+GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, RCursor<GSubProfile> s,bool iff,GLang* l) throw(std::bad_alloc, GException)
 	:  IFF(iff),Lang(l), MeanSim(0.0), Deviation(0.0), OldNbComp(0), Manager(manager)
 {
 
-	GSubProfileCursor Cur1, Cur2;
+	RCursor<GSubProfile> Cur1, Cur2;
 	unsigned int i,j, pos, nbcomp;
 	double simssum, deviation, tmpsim;
 	GSims* sim;
-	GSubProfileCursor s2;
+	RCursor<GSubProfile> s2;
 
 	// if memory is false, we don't stock a container of similarities.
 	// sims will be re-calculated eacht time.
@@ -315,8 +315,8 @@ void GProfilesSims::GProfilesSim::Update(void) throw(std::bad_alloc)
 {
 	GSims* sims;
 	GSim* sim;
-	GSubProfileCursor subscur;
-	GSubProfileCursor subscur2;
+	RCursor<GSubProfile> subscur;
+	RCursor<GSubProfile> subscur2;
 	subscur.Set(ModifiedProfs);
 	subscur2=Manager->GetSession()->GetSubProfilesCursor(Lang);
 
@@ -397,7 +397,7 @@ void GProfilesSims::GProfilesSim::Update(bool iff) throw(std::bad_alloc)
 GSims*  GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 {
 	GSims* sims, *tmpsims;
-	GSubProfileCursor subcur;
+	RCursor<GSubProfile> subcur;
 
 	if (!sub->IsDefined()) return 0;
 	sims=new GSims(sub->GetProfile()->GetId(),sub->GetProfile()->GetId());
@@ -426,7 +426,7 @@ GSims*  GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 
 
 //------------------------------------------------------------------------------
-void GProfilesSims::GProfilesSim::UpdateDeviationAndMeanSim(GSubProfileCursor subprofiles) throw (GException)
+void GProfilesSims::GProfilesSim::UpdateDeviationAndMeanSim(RCursor<GSubProfile> subprofiles) throw (GException)
 {
 	if (Manager->GetMemory())
 		UpdateDevMeanSim(subprofiles);
@@ -436,7 +436,7 @@ void GProfilesSims::GProfilesSim::UpdateDeviationAndMeanSim(GSubProfileCursor su
 
 
 //------------------------------------------------------------------------------
-void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor subprofiles) throw (GException)
+void GProfilesSims::GProfilesSim::UpdateDevMeanSim(RCursor<GSubProfile> subprofiles) throw (GException)
 {
 	GSim* sim;
 	GSims* sims;
@@ -444,7 +444,7 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor subprofiles
 	unsigned i,j;
 	double oldsim,newsim;
 	double newmean, oldmean, newdev, olddev;
-	GSubProfileCursor subprofiles2;
+	RCursor<GSubProfile> subprofiles2;
 
 	nbcomp=0;
 	oldmean=MeanSim; olddev=Deviation;
@@ -502,11 +502,11 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor subprofiles
 
 
 //------------------------------------------------------------------------------
-void GProfilesSims::GProfilesSim::RecomputeDevMeanSim(GSubProfileCursor subprofiles) throw (GException)
+void GProfilesSims::GProfilesSim::RecomputeDevMeanSim(RCursor<GSubProfile> subprofiles) throw (GException)
 {
 	unsigned int i,j, nbcomp;
 	double simssum, deviation, tmpsim;
-	GSubProfileCursor s2;
+	RCursor<GSubProfile> s2;
 
 	simssum=deviation=0.0;
 	nbcomp=0;

@@ -205,12 +205,16 @@ proxy:
 	GProfile* GetProfile(void) const {return(Profile);}
 
 	/**
-	* Verify if the subprofile is defined, i.e. if it is computed. A subprofile
-	* that isn't computed, isn't attached. By default, it is supposed to be
-	* undefined.
-	* @return bool
+	* Verify if the subprofile is defined, i.e. it has a list of information
+	* entities.
 	*/
 	bool IsDefined(void) const;
+
+	/**
+	* Verify if the subprofile can be computed, i.e. when some documents are
+	* associated to it.
+	*/
+	bool CanCompute(void);
 
 	/**
 	* Get the group holding the subprofile.
@@ -378,12 +382,6 @@ proxy:
 	void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed);
 
 	/**
-	* Clear the subprofile. Its information entities list is cleared and its
-	* detached from its group.
-	*/
-	void Clear(void);
-
-	/**
 	* Clear all the assessments of the subprofile.
 	*/
 	void ClearFdbks(void);
@@ -395,14 +393,6 @@ public:
 	*/
 	virtual ~GSubProfile(void);
 };
-
-
-//------------------------------------------------------------------------------
-/**
-* The GSubProfileCursor class provides a way to go trough a set of subprofiles.
-* @short SubProfiles Cursor
-*/
-CLASSCURSOR(GSubProfileCursor,GSubProfile);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -63,7 +63,7 @@ public:
 	virtual GSubProfile* GetInsertSubProfile(GLang* lang,GSession* s)=0;
 	virtual unsigned int GetNbAssessedDocs(const GLang* lang) const=0;
 	virtual R::RCursor<GFdbk> GetFdbks(void)=0;
-	virtual GSubProfileCursor GetSubProfilesCursor(void)=0;
+	virtual R::RCursor<GSubProfile> GetSubProfilesCursor(void)=0;
 	virtual void InsertFdbk(unsigned int id,tDocAssessment assess,R::RDate date) throw(std::bad_alloc)=0;
 	virtual void DeleteFdbk(unsigned int id) throw(std::bad_alloc)=0;
 	virtual void ClearFdbks(void)=0;

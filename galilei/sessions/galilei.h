@@ -145,7 +145,6 @@ class GProfile;
 class GProfileProxy;
 class GSubProfile;
 class GSubProfileProxy;
-class GSubProfileCursor;
 class GFdbk;
 class GProfileCalc;
 class GFactoryProfileCalc;

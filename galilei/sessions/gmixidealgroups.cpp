@@ -6,7 +6,7 @@
 
 	Representation of groups of subprofiles and groups of documents.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -105,7 +105,7 @@ GGroup* GALILEI::GMixIdealGroups::GetIdealGroup(GSubProfile* s)
 bool GALILEI::GMixIdealGroups::MergeGroups(void)
 {
 	GGroup* g;
-	GSubProfileCursor Cur;
+	RCursor<GSubProfile> Cur;
 
 	// At least two groups must be presented
 	if(MixedGroups->GetNbGroups(CurrentLang)<2) return(false);
@@ -133,7 +133,7 @@ bool GALILEI::GMixIdealGroups::SplitGroups(void)
 	GGroup** ptr;
 	GSubProfile** s;
 	GGroupCursor grpscur;
-	GSubProfileCursor subcur;
+	RCursor<GSubProfile> subcur;
 
 	// find  a group to split with at least two subprofiles
 	RandOrderTab();
@@ -171,7 +171,7 @@ void GALILEI::GMixIdealGroups::RandomGroups(void)
 	unsigned int r;
 	GGroup *igrp, *grp;
 	GGroupCursor igrpscur, grpscur;
-	GSubProfileCursor subs;
+	RCursor<GSubProfile> subs;
 
 	MixedGroups->Clear();
 
@@ -300,7 +300,7 @@ void GALILEI::GMixIdealGroups::InitMixedGroups(unsigned int mingroups)
 {
 	GGroup *igrp, *grp;
 	GGroupCursor grpscur;
-	GSubProfileCursor subs;
+	RCursor<GSubProfile> subs;
 
 	MixedGroups=new GGroups(10);
 	// Copy the ideal solution into MixedGroups

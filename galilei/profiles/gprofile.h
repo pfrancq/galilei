@@ -317,9 +317,9 @@ proxy:
 
 	/**
 	* Get a Cursor on the subprofiles.
-	* @return GSubProfileCursor.
+	* @return RCursor<GSubProfile>.
 	*/
-	GSubProfileCursor GetSubProfilesCursor(void);
+	R::RCursor<GSubProfile> GetSubProfilesCursor(void);
 
 	/**
 	* Insert an assessment to the list of the profile.

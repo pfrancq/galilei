@@ -6,7 +6,7 @@
 
 	Widget to show a subprofile desciption in vector model - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		
@@ -164,7 +164,7 @@ GALILEI::QGSubProfiles::QGSubProfiles(QTabWidget* parent,GSession* session,GProf
 	: QWidget(parent,"QGSubProfiles"), Session(session), Profile(profile), Desc(profile->NbPtr,5)
 {
 	QSize act=size(),tmp, cbsize;
-	GSubProfileCursor s;
+	RCursor<GSubProfile> s;
 	SubProfile* w;
 
 	// Construct the combo box

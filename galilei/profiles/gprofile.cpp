@@ -252,9 +252,9 @@ RCursor<GFdbk> GProfile::GetFdbks(void)
 
 
 //------------------------------------------------------------------------------
-GSubProfileCursor GProfile::GetSubProfilesCursor(void)
+RCursor<GSubProfile> GProfile::GetSubProfilesCursor(void)
 {
-	GSubProfileCursor cur(this);
+	RCursor<GSubProfile> cur(this);
 	return(cur);
 }
 

@@ -61,6 +61,7 @@ public:
 	virtual GLang* GetLang(void) const {return(Obj->GetLang());}
 	virtual GProfile* GetProfile(void) const {return(Obj->GetProfile());}
 	virtual bool IsDefined(void) const {return(Obj->IsDefined());}
+	virtual bool CanCompute(void) {return(Obj->CanCompute());}
 	virtual GGroup* GetGroup(void) const {return(Obj->GetGroup());}
 	virtual void SetGroup(GGroup* grp) {Obj->SetGroup(grp);}
 	virtual R::RDate GetAttached(void) const {return(Obj->GetAttached());}
@@ -86,7 +87,6 @@ public:
 	virtual void SetSubject(GSubject* s) {Obj->SetSubject(s);}
 	virtual GSubject* GetSubject(void) const {return(Obj->GetSubject());}
 	virtual void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed) {Obj->Update(infos,computed);}
-	virtual void Clear(void) {Obj->Clear();}
 	virtual void ClearFdbks(void) {Obj->ClearFdbks();}
 	virtual ~GSubProfileProxyMem(void) {}
 };
