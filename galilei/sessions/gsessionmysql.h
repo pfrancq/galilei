@@ -304,6 +304,16 @@ public:
 	virtual void SaveDocSim(void);
 
 	/**
+	* prepear the generation of pov
+	*/
+	void PrepearPoV(GGroup * grp);
+
+	/**
+	* check if pov exist or not
+	*/
+  int Alreadyexist(void);
+	
+	/**
 	* load the historic groups.
 	*/
 	GGroupsHistory* LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID);

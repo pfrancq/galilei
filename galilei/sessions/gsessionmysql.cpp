@@ -80,6 +80,7 @@ using namespace RIO;
 #include <groups/ggroupir.h>
 #include <groups/gobjir.h>
 #include <groups/ggroupcalcgravitation.h>
+#include <postgroups/gpointofview.h>
 using namespace GALILEI;
 using namespace RMySQL;
 using namespace RTimeDate;
@@ -901,7 +902,8 @@ void GALILEI::GSessionMySQL::SaveGroups(void)
 		for(groups->Start();!groups->End();groups->Next())
 		{
 			g=(*groups)();
-
+ 			// build point of views
+			//      PrepearPoV(g);
 			// Save SubProfiles infos
 			for(g->Start();!g->End();g->Next())
 			{
@@ -1037,7 +1039,7 @@ void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 	char sSql[100];
 	GGroupVector* group;
 	GLangCursor Langs;
-	GIWordWeight* Word;
+//	GIWordWeight* Word;
 	GGroups* groups;
 	GGroupsCursor GroupsCursor;
 
@@ -1339,8 +1341,41 @@ unsigned int GALILEI::GSessionMySQL::GetHistorySize(void)
 	return(atoi(size[0]));
 }
 
+//-----------------------------------------------------------------------------
+int GALILEI::GSessionMySQL::Alreadyexist(void)
+{
+	char sSql[100];
+
+	sprintf(sSql,"SELECT * FROM expertkwds");
+	RQuery all(this,sSql);
+
+	if(!all.GetNbRows())
+		return(0);
+
+	return(1);
+
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::PrepearPoV(GGroup* grp)
+{
+	GDispatchpov *disp;
+
+	//cout << "bijor je suis le nouveau dispatch"<<endl;
+	if(/*!Alreadyexist()*/0)    // WARNING : enlever ! inversion pour debug
+	{
+		disp->UpdatePovForAGrp();    // exemple / all groups / one group
+	}
+	else
+	{
+		disp->GeneratePoVfromScratch(grp);
+	}
+}
+
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionMySQL::~GSessionMySQL() throw(GException)
 {
+
 }
