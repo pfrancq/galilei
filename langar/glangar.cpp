@@ -320,14 +320,14 @@ void GALILEI::GLangAR::LoadRules(void) throw(GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GLangAR::ApplyRules(RString& kwd,RContainer<ArabicRule,true,false>* rules)
 {
-	char tmp1[10], tmp2[10];
 	RString tmp=kwd.Mid(0,strlen(kwd));
 
-	for(rules->Start();!rules->End();rules->Next())
+	RCursor<ArabicRule> Cur(*rules);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if((*rules)()->Apply(kwd))
+		if(Cur()->Apply(kwd))
 		{
-			if((*rules)()->NextLevel)
+			if(Cur()->NextLevel)
 				return;
 		}
 	}

@@ -6,7 +6,7 @@
 
 	English Language - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -286,9 +286,10 @@ bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,tru
 	int len;
 
 	len=strlen(kwd);
-	for(rules->Start();!rules->End();rules->Next())
+	RCursor<PorterRule> Cur(*rules);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		ptr=(*rules)();
+		ptr=Cur();
 
 		// If the word is leng enough, find the potentiel end suffix and put it
 		// in ending. If the ending isn't corresponding to the rule's suffix,

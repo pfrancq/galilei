@@ -6,7 +6,7 @@
 
 	French Language - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -61,7 +61,7 @@ public:
 	int OldOffset;
 	int NewOffset;
 	int MinRootSize;
-	
+
 	FrenchPorterRule(const char* os,const char* ns,int oo,int no,int mr=-1);
 	int Compare(const FrenchPorterRule*) {return(-1);}
 	~FrenchPorterRule(void);
@@ -246,7 +246,7 @@ GLangFR::GLangFR(GFactoryLang* fac) throw(bad_alloc)
 	Rules1->InsertPtr(new FrenchPorterRule("gue","g",2 ,0 ,0));
 
 	Rules1->InsertPtr(new FrenchPorterRule("ette","",3 ,0 ,0));
-	Rules1->InsertPtr(new FrenchPorterRule("nne","n",2 ,0 ,0));	
+	Rules1->InsertPtr(new FrenchPorterRule("nne","n",2 ,0 ,0));
 
 	Rules1->InsertPtr(new FrenchPorterRule("itée","",3 ,-1 ,0));
 	Rules1->InsertPtr(new FrenchPorterRule("ité","",2 ,-1 ,0));
@@ -442,7 +442,7 @@ bool GLangFR::ContainsVowel(const char* kwd)
 	if(!(*kwd))
 		return(false);
 	else
-		return((IsVowel(*kwd))||(strpbrk(kwd+1,"âaeiouyéàèîöê")));
+		return((IsVowel(*kwd))||(strpbrk(kwd+1,"ï¿½eiouyï¿½ï¿½ï¿½")));
 }
 
 
@@ -456,9 +456,10 @@ bool GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,true,f
 	int len;
 
 	len=strlen(kwd);
-	for(rules->Start();!rules->End();rules->Next())
+	RCursor<FrenchPorterRule> Cur(*rules);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		ptr=(*rules)();
+		ptr=Cur();
 
 		// If the word is leng enough, find the potentiel end suffix and put it
 		// in ending. If the ending isn't corresponding to the rule's suffix,
@@ -504,7 +505,7 @@ RString GLangFR::GetStemming(const RString& _kwd) throw(GException)
 	ApplyRules(kwd,end,Rules1,1);
 	ApplyRules(kwd,end,Rules2,2);
 	ApplyRules(kwd,end,Rules3,3);
-	
+
 	// Put the result in res and return it.
 	while((*end)&&(!isspace(*end)))
 		end++;

@@ -6,7 +6,7 @@
 
 	Dutch Language - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Nicolas Kumps (nkumps@ulb.ac.be).
@@ -180,7 +180,7 @@ GALILEI::GLangNL::GLangNL(GFactoryLang* fac) throw(bad_alloc)
 	Rules5->InsertPtr(new DutchPorterRule("v","f",0,0,-1));
 
 
-	// Skip Words //savoir comment on abrévie 1er, 2eme, 3e ...
+	// Skip Words //savoir comment on abrï¿½ie 1er, 2eme, 3e ...
 	SkipSequence("th");
 	SkipSequence("st");
 	SkipSequence("nd");
@@ -225,7 +225,7 @@ bool GALILEI::GLangNL::EndsWithCons(const char* newend)
 	if(!(*newend))
 		return(false);
 	else
-		return(!strchr("aáäeéëèiíoóöuóöy",*newend));
+		return(!strchr("aï¿½eï¿½ï¿½ï¿½ï¿½uï¿½y",*newend));
 }
 
 
@@ -245,7 +245,7 @@ bool GALILEI::GLangNL::EndsWithe(const char* newend)
 	if(!(*newend))
 		return(false);
 	else
-		return(strchr("eéë",*newend));
+		return(strchr("eï¿½",*newend));
 }
 
 
@@ -257,10 +257,10 @@ bool GALILEI::GLangNL::EndsWithCVD(char* tmp,char* newend)
 	if((length=strlen(tmp))<3)
 		return(false);
 	end=tmp+length-1;
-	return(  (!strchr("aáäeéëèiíoóöuóöyl",*end--))  &&     // Consonant
-	         (strchr("aáäeéëoóöuúü",*end--))     &&     // Vowel
-	         (strchr("aáäeéëoóöuúü",*end))     &&     // Vowel
-	         (!strchr("aáäeéëèiíoóöuóöy",*newend))              // Consonant
+	return(  (!strchr("aï¿½eï¿½ï¿½ï¿½ï¿½uï¿½yl",*end--))  &&     // Consonant
+	         (strchr("aï¿½eï¿½oï¿½u",*end--))     &&     // Vowel
+	         (strchr("aï¿½eï¿½oï¿½u",*end))     &&     // Vowel
+	         (!strchr("aï¿½eï¿½ï¿½ï¿½ï¿½uï¿½y",*newend))              // Consonant
 	      );
 }
 
@@ -275,9 +275,10 @@ bool GALILEI::GLangNL::ApplyRules(char* kwd,char* &end,RContainer<DutchPorterRul
 	int len;
 
 	len=strlen(kwd);
-	for(rules->Start();!rules->End();rules->Next())
+	RCursor<DutchPorterRule> Cur(*rules);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		ptr=(*rules)();
+		ptr=Cur();
 
 		// If the word is leng enough, find the potentiel end suffix and put it
 		// in ending. If the ending isn't corresponding to the rule's suffix,
