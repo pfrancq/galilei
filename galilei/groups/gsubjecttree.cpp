@@ -707,7 +707,7 @@ bool GSubjectTree::AddTopic(bool Save)
 	nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
 
 	// Number of profiles that are social
-	nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100)+1;
+	nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
 
 	// Number of documents to judged by each subprofile
 	maxDocsOK=static_cast<unsigned int>(newSubject->GetNbDocs()*PercOK/100);
@@ -796,7 +796,7 @@ unsigned int GSubjectTree::AddProfiles(bool Save)
 	NbDocs=Session->FillDocs(Docs,usedSubject->GetLang());
 
 	// Number of profiles that are social
-	nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100)+1;
+	nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
 
 	// Number of documents to judged by each subprofile
 	maxDocsOK=static_cast<unsigned int>(usedSubject->GetNbDocs()*PercOK/100);
