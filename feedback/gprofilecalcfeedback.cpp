@@ -211,22 +211,22 @@ void GProfileCalcFeedback::ComputeSubProfile(void) throw(bad_alloc,GException)
 		return;
 
 	// Put in Order an ordered version of Global
-	if(Vectors.NbPtr+1>MaxOrderSize)
+	if(Vectors.GetNb()+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<unsigned int>((Vectors.NbPtr+1)*1.1);
+		MaxOrderSize=static_cast<unsigned int>((Vectors.GetNb()+1)*1.1);
 		Order=new GWeightInfo*[MaxOrderSize];
 	}
-	memcpy(Order,Vectors.Tab,Vectors.NbPtr*sizeof(GWeightInfo*));
-	if(Vectors.NbPtr)
-		qsort(static_cast<void*>(Order),Vectors.NbPtr,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
-	Order[Vectors.NbPtr]=0;
+	Vectors.GetTab(Order);
+	if(Vectors.GetNb())
+		qsort(static_cast<void*>(Order),Vectors.GetNb(),sizeof(GWeightInfo*),GWeightInfos::sortOrder);
+	Order[Vectors.GetNb()]=0;
 
 	//If MaxNonZero is null -> take all the words.
 	if(MaxNonZero)
 		nb=MaxNonZero;
 	else
-		nb=Vectors.NbPtr;
+		nb=Vectors.GetNb();
 	for(i=nb+1,ptr=Order;(--i)&&(*ptr);ptr++)
 		Infos.InsertPtr(new GWeightInfo(*ptr));
 }
