@@ -79,6 +79,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* paren
 	GGroupDataIR g;
 	unsigned int i;
 	char c,c1;
+	unsigned int t;
 
 	// Window
 	lang=Doc->GetSession()->GetLang(l);
@@ -86,8 +87,8 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* paren
 
 	// Values
 	sscanf(Doc->GetSession()->GetGroupingMethodSettings("Grouping Genetic Algorithms"),
-           "%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	       &c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
+           "%u %c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &t,&c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
 	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
 	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
 	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,
@@ -141,9 +142,9 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* paren
 	try
 	{
 		if(scratch)
-			Instance=new GInstIR(Doc->GetSession(),lang,MinSimLevel,MaxGen,PopSize,0,Objs,global,Sims,RGGA::FirstFit,Debug);
+			Instance=new GInstIR(Doc->GetSession(),lang,MinSimLevel,MaxGen,PopSize,0,Objs,global,Sims,static_cast<SimType>(t),Debug);
 		else
-			Instance=new GInstIR(Doc->GetSession(),lang,MinSimLevel,MaxGen,PopSize,Doc->GetSession()->GetGroups(lang),Objs,global,Sims,RGGA::FirstFit,Debug);
+			Instance=new GInstIR(Doc->GetSession(),lang,MinSimLevel,MaxGen,PopSize,Doc->GetSession()->GetGroups(lang),Objs,global,Sims,static_cast<SimType>(t),Debug);
 		Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
 		Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
 		Instance->SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
