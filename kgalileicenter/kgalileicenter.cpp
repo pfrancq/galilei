@@ -706,16 +706,18 @@ void KGALILEICenterApp::slotTextEnglish(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotShowHistory(void)
 {
-/*	GFactoryLangCursor curlang;
+	GFactoryLangCursor curlang;
 	GLang* lang;
 	unsigned int size, min, max;
 
 	curlang=Doc->GetSession()->GetLangs()->GetLangsCursor();
-	size=Doc->GetSession()->GetHistorySize();
+	size=Doc->GetSession()->GetStorage()->GetHistorySize();
 
 	QHistoryDlg dlg(this,0,true);
 	dlg.TLMaxHistory->setText(QString("Max Historic ID (<")+dtou(size).Latin1()+QString(")"));
-	dlg.SBMaxId->setMaxValue(size-1);
+	dlg.SBMinId->setMinValue(1);
+	dlg.SBMaxId->setMinValue(1);
+	dlg.SBMaxId->setMaxValue(size);
 	for (curlang.Start(); !curlang.End(); curlang.Next())
 	{
 		lang=curlang()->GetPlugin();
@@ -728,8 +730,8 @@ void KGALILEICenterApp::slotShowHistory(void)
 	{
 		min=dlg.SBMinId->value() ;
 		max=dlg.SBMaxId->value();
-		createClient(Doc,new KViewHistory(Doc,dlg.CBLang->currentText(),dlg.CBGlobal->isChecked(),pWorkspace,"Show Chromosomes",0,min,max));
-	}*/
+		createClient(Doc,new KViewHistory(Doc,dlg.CBGlobal->isChecked(),pWorkspace,"Show Chromosomes",0,min,max));
+	}
 }
 
 //-----------------------------------------------------------------------------

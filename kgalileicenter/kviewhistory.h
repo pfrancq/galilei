@@ -91,11 +91,6 @@ class KViewHistory : public KView
 	bool Global;
 
 	/**
-	*  lang .
-	*/
-	GLang* Lang;
-
-	/**
 	* the first historic groups
 	*/
 	 unsigned int MinGen;
@@ -143,7 +138,7 @@ class KViewHistory : public KView
 	/**
 	* The container of groups
 	*/
-	R::RContainer<GGroupsHistory, unsigned int, false,true>* Groups;
+	R::RContainer<GGroupsHistory, unsigned int, true,true>* Groups;
 
 	/**
 	* selected items from Solutions.
@@ -161,7 +156,6 @@ public:
 	/**
 	* Constructor for the view.
 	* @param doc            Document instance that the view represents.
-	* @param l              Lang to group.
 	* @param p              Parameters.
 	* @param global         Global Similarities.
 	* @param parent         Parent of the window.
@@ -173,7 +167,7 @@ public:
 	* @param checkNewProfiles check for new profiles.
 	* @param ckeckWellGroupedProfiles ckec for well-grouped profiles.
 	*/
-	KViewHistory(KDoc* doc,const char* l, bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid);
+	KViewHistory(KDoc* doc, bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid);
 
 	/**
 	* Return the type of the window.

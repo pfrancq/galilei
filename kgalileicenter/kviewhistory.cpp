@@ -86,14 +86,11 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid)
+KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid)
 	: KView(doc,parent,name,wflags),
-	  Global(global), Lang(doc->GetSession()->GetLangs()->GetLang(l)), MinGen(minid), MaxGen(maxid),CurId(0),  SubProfiles(0), Groups(0),  Sims(0)
+	  Global(global), MinGen(minid), MaxGen(maxid),CurId(0),  SubProfiles(0), Groups(0),  Sims(0)
 {
 	static char tmp[100];
-	GLang* lang;
-	GSubProfileCursor Cur;
-	GSubProfile* sub;
 
 	//init the container of selected subprofiles.
 	SelectedSubProfiles=new R::RContainer<GWeightInfosHistory, unsigned int, false, true>(5,2);
@@ -112,16 +109,15 @@ KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	ToolBar->insertItem("SubProfiles",subprofmenu);
 	QPopupMenu* viewmenu;
 	viewmenu= new QPopupMenu();
-	viewmenu->insertItem(QString("Show/Hide Similarities"),this, SLOT(slotViewSimilarities()),0,1,-1) ;
+//	viewmenu->insertItem(QString("Show/Hide Similarities"),this, SLOT(slotViewSimilarities()),0,1,-1) ;
 	viewmenu->insertItem(QString("Show/Hide RelationShip"),this, SLOT(slotViewRelationShip()),0,2,-1);
 	viewmenu->insertSeparator();
-	viewmenu->insertItem(QString("Clear Similarities"),this, SLOT(slotClearSimilarities()),0,3,-1) ;
+//	viewmenu->insertItem(QString("Clear Similarities"),this, SLOT(slotClearSimilarities()),0,3,-1) ;
 	viewmenu->insertItem(QString("Clear RelationShip"),this, SLOT(slotClearRelationShip()),0,4,-1) ;
 	ToolBar->insertItem("Views",viewmenu);
 
 	// Window
-	lang=Doc->GetSession()->GetLangs()->GetLang(l);
-	setCaption(QString("Show Store Chromosomes - ")+lang->GetName());
+	setCaption(QString("Show Historical Groups"));
 
 	// Tab
 	setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)1, (QSizePolicy::SizeType)1, sizePolicy().hasHeightForWidth() ) );
@@ -131,13 +127,13 @@ KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	TabWidget->setBackgroundOrigin( QTabWidget::ParentOrigin );
 
 	// Sims view
-	SimsView=new QListView(this);
-	SimsView->setGeometry(QRect((this->width())/2, 30,(this->width())/2,this->height()));
-	SimsView->addColumn("FirstSubProfile");
-	SimsView->addColumn("Second SubProfile");
-	SimsView->addColumn("Similarity");
-	SimsView->setResizeMode(QListView::AllColumns);
-	SimsView->hide();
+//	SimsView=new QListView(this);
+//	SimsView->setGeometry(QRect((this->width())/2, 30,(this->width())/2,this->height()));
+//	SimsView->addColumn("FirstSubProfile");
+//	SimsView->addColumn("Second SubProfile");
+//	SimsView->addColumn("Similarity");
+//	SimsView->setResizeMode(QListView::AllColumns);
+//	SimsView->hide();
 
 	// RelationShip ListView
 	RelationShip=new QListView(this);
@@ -149,19 +145,9 @@ KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	RelationShip->setRootIsDecorated(true);
 	RelationShip->hide();
 
-	// Construct the SubProfiles Container
-	Cur=Doc->GetSession()->GetSubProfilesCursor(lang);
-	GProfileCursor cur=Doc->GetSession()->GetProfilesCursor();
-	SubProfiles=new R::RContainer<GSubProfile,unsigned int,false,true>(cur.GetNb());
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		sub=Cur();
-		if(sub->IsDefined())
-			SubProfiles->InsertPtr(sub);
-	}
-
 	// Load the chromosomes from the db
-	Groups=Doc->GetSession()->LoadHistoricGroups(SubProfiles, lang, MinGen,MaxGen);
+	Doc->GetSession()->LoadHistoricGroups(MinGen,MaxGen);
+	Groups=Doc->GetSession()->GetGroupsHistoryManager();
 	CurId=MinGen;
 
 	if(!Groups) return;
@@ -170,7 +156,6 @@ KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	Solution = new QGGroupsHistory(TabWidget,Groups->GetPtrAt(0));
 	sprintf(tmp,"Solution (%u/%u) ",CurId,MaxGen);
 	TabWidget->insertTab(Solution,tmp);
-	connect(Solution,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	Solution->setGroups(Groups->GetPtrAt(0));
 	Solution->setChanged();
 
@@ -178,6 +163,7 @@ KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	CreateGroupsRelationship();
 
 	//connections.
+	connect(Solution,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	connect(Solution,SIGNAL(doubleClicked(QListViewItem*)),this,SLOT(slotSelectedSetChanged(QListViewItem*)));
 }
 
@@ -211,7 +197,7 @@ void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 			Solution->setGroups(grps);
 			Solution->setChanged();
 			SelectedSubProfiles->Clear();
-			SimsView->clear();
+//			SimsView->clear();
 			break;
 
 			
@@ -235,7 +221,7 @@ void KViewHistory::resizeEvent(QResizeEvent*)
 {
 	TabWidget->setGeometry(QRect(0,30,(this->width())/2,this->height()-30));
 	// Sims view
-	SimsView->setGeometry(QRect((this->width())/2, 30,(this->width())/2,this->height()-30));
+//	SimsView->setGeometry(QRect((this->width())/2, 30,(this->width())/2,this->height()-30));
 	RelationShip->setGeometry(QRect((this->width())/2, 30,(this->width())/2,this->height()-30));
 
 	ToolBar->setGeometry(QRect(0, 0,(this->width()),50));
@@ -245,8 +231,7 @@ void KViewHistory::resizeEvent(QResizeEvent*)
 //-----------------------------------------------------------------------------
 void KViewHistory::slotCheckModifiedGroups(void)
 {
-	for (Groups->Start(); !Groups->End(); Groups->Next())
-		CheckModifiedGroups((*Groups)());
+	Doc->GetSession()->GetGroupsHistoryManager()->CheckModifiedGroups(MinGen);
 	ToolBar->setItemEnabled(1,false);
 }
 
@@ -256,8 +241,8 @@ void KViewHistory::slotCheckWellGroupedSubProfs(void)
 {
 	for (Groups->Start(); !Groups->End(); Groups->Next())
 	{
-			SetGroupsSubject((*Groups)());
-		CheckWellGroupedSubProfiles((*Groups)());
+		SetGroupsSubject((*Groups)());
+		(*Groups)()->CheckWellGroupedSubProfs();
 	}
 	ToolBar->setItemEnabled(2,false);
 }
@@ -267,7 +252,7 @@ void KViewHistory::slotCheckWellGroupedSubProfs(void)
 void KViewHistory::slotCheckNewProfiles(void)
 {
 	for (Groups->Start(); !Groups->End(); Groups->Next())
-		CheckNewProfiles((*Groups)());
+		(*Groups)()->CheckNewProfiles();
 	ToolBar->setItemEnabled(3,false);
 }
 
@@ -284,7 +269,7 @@ void KViewHistory::slotViewSimilarities(void)
 //-----------------------------------------------------------------------------
 void KViewHistory::slotViewRelationShip(void)
 {
-	SimsView->hide();
+//	SimsView->hide();
 	if (RelationShip->isHidden())  RelationShip->show();
 	else RelationShip->hide();
 }
@@ -323,7 +308,7 @@ void KViewHistory::slotSelectedSetChanged(QListViewItem* item)
 //-----------------------------------------------------------------------------
 void KViewHistory::DisplaySimilarities(void)
 {
-	unsigned int i,j;
+/*	unsigned int i,j;
 	double similarity;
 	GWeightInfosHistory** giwwh1, **giwwh2;
 	QListViewItem* sim;
@@ -345,6 +330,7 @@ void KViewHistory::DisplaySimilarities(void)
 			sim=new QListViewItem(SimsView, num1, num2, num3);
 		}
 	}
+*/
 }
 
 
@@ -397,7 +383,7 @@ void KViewHistory::CheckModifiedGroups(GGroupsHistory* grps)
 	GGroupHistory* grp, *lastgroup;
 	GWeightInfosHistory* sub, *lastsub;
 	unsigned int  lastcurid;
-	
+
 	// if the grps is the frst historic one, return
 	if (grps->GetId()==MinGen) return;
 
@@ -435,7 +421,7 @@ void KViewHistory::CheckModifiedGroups(GGroupsHistory* grps)
 			lastsub=lastsubs->GetPtr((*grp)()->GetId());
 			// if the subprofiles is a new one, group is modified
 			if (!lastsub) grp->SetModified(true);
-			
+
 			//if the lastcurid has changed , group is modified
 			if(lastcurid!=lastsub->GetParent()->GetId())
 				grp->SetModified(true);
@@ -489,52 +475,7 @@ void KViewHistory::SetGroupsSubject(GGroupsHistory* grps)
 		}
 		grp->SetSubject(mainsubject);
 		delete subjects;
-	}	
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewHistory::CheckWellGroupedSubProfiles(GGroupsHistory* grps)
-{
-	GGroupHistory* grp;
-	for (grps->Start(); !grps->End(); grps->Next())
-	{
-		grp=(*grps)();
-		for (grp->Start(); !grp->End(); grp->Next())
-			if((*grp)()->GetSubProfile()->GetSubject()->GetId()==grp->GetSubject()->GetId())
-				(*grp)()->SetWellGrouped(true);
-			else
-				(*grp)()->SetWellGrouped(false);
 	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewHistory::CheckNewProfiles(GGroupsHistory* grps)
-{
-	R::RContainer<GWeightInfosHistory, unsigned int, false, true>* lastsubs;
-	GGroupsHistory* lastgroups;
-	GGroupHistory* grp;
-
-	//get the last groups and put its profiles in a container
-	lastsubs=new R::RContainer<GWeightInfosHistory, unsigned int, false, true>(10,5);
-	lastgroups=Groups->GetPtr(grps->GetId()-1);
-	if (!lastgroups) return;
-	for (lastgroups->Start(); !lastgroups->End(); lastgroups->Next())
-		for ((*lastgroups)()->Start(); !(*lastgroups)()->End();(*lastgroups)()->Next())
-			lastsubs->InsertPtr((*(*lastgroups)())());
-
-	//check wether each subprofile was in the last groups
-	//if not, the profiles is considered as new.
-	for  (grps->Start(); !grps->End(); grps->Next())
-	{
-		grp=(*grps)();
-		for (grp->Start(); !grp->End(); grp->Next())
-			if (!lastsubs->GetPtr((*grp)()))
-				(*grp)()->SetNewSubProfile(true);
-	}
-
-	delete lastsubs;
 }
 
 
@@ -614,7 +555,7 @@ void KViewHistory::CreateGroupsRelationship(void)
 KViewHistory::~KViewHistory(void)
 {
 	if(Groups)
-		delete Groups;
+		Groups->Clear();
 	if(SubProfiles)
 		delete SubProfiles;
 	if(Sims)
