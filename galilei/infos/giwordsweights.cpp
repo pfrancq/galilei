@@ -58,8 +58,7 @@ using namespace RStd;
 
 //---------------------------------------------------------------------------
 GALILEI::GIWordsWeights::GIWordsWeights(unsigned int nb) throw(bad_alloc)
-	: RContainer<GIWordWeight,unsigned,true,true>(nb,50), NbWordsDocs(0.0),
-	  Order(0)
+	: RContainer<GIWordWeight,unsigned,true,true>(nb,50), NbWordsDocs(0.0)
 {
 }
 
@@ -97,39 +96,6 @@ int GALILEI::GIWordsWeights::sortOrder(const void *a,const void *b)
     return(-1);
   else
     return(1);
-}
-
-
-//---------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::Sort(void)
-{
-	// ReOrder by Frequence
-	if(Order) delete[] Order;
-	Order=new GIWordWeight*[NbPtr+1];
-	if(NbPtr)
-	{
-		memcpy(Order,Tab,NbPtr*sizeof(GIWordWeight*));
-		qsort(static_cast<void*>(Order),NbPtr,sizeof(GIWordWeight*),sortOrder);
-	}
-	Order[NbPtr]=0;
-	CurOrder=Order;
-}
-
-
-//---------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::InitWord(void)
-{
-	CurOrder=Order;
-}
-
-
-//---------------------------------------------------------------------------
-GIWordWeight* GALILEI::GIWordsWeights::NextWord(void)
-{
-	if(*CurOrder)
-		return(*(CurOrder++));
-	else
-		return(0);
 }
 
 
@@ -263,5 +229,4 @@ void GALILEI::GIWordsWeights::DelRefs(tObjType ObjType,GDict* dic) const
 //---------------------------------------------------------------------------
 GALILEI::GIWordsWeights::~GIWordsWeights(void)
 {
-	if(Order) delete[] Order;
 }

@@ -55,9 +55,10 @@ namespace GALILEI{
 /**
 * The GIWordsWeights provides a representation for the words weights of a given
 * collection of words, for example a document or a set of documents.
-* It implements the vector representing a document in the Vector Model.
+* It implements the vector representing a document/profile/group in the Vector
+* Model.
 * @author Pascal Francq
-* @short Words Weights.
+* @short Vector in Words Space.
 */
 class GIWordsWeights : public GInfo,public RStd::RContainer<GIWordWeight,unsigned,true,true>
 {
@@ -65,16 +66,6 @@ class GIWordsWeights : public GInfo,public RStd::RContainer<GIWordWeight,unsigne
 	* Total number of words in the set of documents analysed.
 	*/
 	double NbWordsDocs;
-
-	/**
-	* Hold the same list but in decreasing order of frequencies.
-	*/
-	GIWordWeight** Order;
-
-	/**
-	* Pointer to go trough the ordered list.
-	*/
-	GIWordWeight** CurOrder;
 
 public:
 
@@ -94,40 +85,15 @@ public:
 	*/
 	virtual const GInfoType InfoType(void) const;
 
-private:
-
 	/**
 	* Static function used to ordered by frenquecy.
 	*/
 	static int sortOrder(const void *a,const void *b);
 
-public:
-
 	/**
 	* Clear the statistics.
 	*/
 	void Clear(void);
-
-	/**
-	* Construct an ordered view of the vector.
-	*/
-	void Sort(void);
-
-	/**
-	* Move the pointer in the ordered list to the beginning.
-	*/
-	void InitWord(void);
-
-	/**
-	* Get the identificator of the next word in the ordered list by frequencies.
-	* @returns Pointer to GIWordWeight.
-	*/
-	GIWordWeight* NextWord(void);
-
-	/**
-	* Look if there a word to treat.
-	*/
-	bool IsNextWord(void) const {return(*CurOrder);}
 
 	/**
 	* Look if the list is empty.
@@ -169,7 +135,7 @@ public:
 	* @param ObjType        Type of the reference.
 	* @param dic            Dictionnary.
 	*/
- 	void DelRefs(tObjType ObjType,GDict* dic) const;
+	void DelRefs(tObjType ObjType,GDict* dic) const;
 
 	/**
 	* Destructor.
