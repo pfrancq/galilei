@@ -70,11 +70,12 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 
-GALILEI::GIdealGroup::GIdealGroup(const char* txturl,GUsers* user,int percok,int percko)
+GALILEI::GIdealGroup::GIdealGroup(const char* txturl,GUsers* user,GSession* ses)
 	:users(user)
 {
-	
-	subjects=new GSubjectTree(percok,percko,users->NbPtr);
+	PercOK=10;
+	PercKO=10;
+	subjects=new GSubjectTree(PercOK,PercKO,users->NbPtr);
 	//The file where is stoked the differents information about docs,subject,...
 	RTextFile* textfile = new RTextFile (txturl, RTextFile::Read);
 	char *ptr= textfile->GetLine(),*sub,*url;
@@ -97,9 +98,8 @@ GALILEI::GIdealGroup::GIdealGroup(const char* txturl,GUsers* user,int percok,int
 				(*temp)=0;
 				char* temp2=strchr(++temp,' ');
 				(*temp2)=0;
-				char* name= (++url);
-				GDoc* newurl= new GDoc(name,name,atoi(temp),0,0,0,0,0,0,1,1,1,1);
-				subsubject->urls->InsertPtr(newurl);
+				(++url);
+				subsubject->urls->InsertPtr(ses->GetDoc(atoi(temp)));
 				url=textfile->GetLine();
 			}
 			sub=url;
@@ -116,9 +116,8 @@ GALILEI::GIdealGroup::GIdealGroup(const char* txturl,GUsers* user,int percok,int
 
 
 //-----------------------------------------------------------------------------
-RStd::RContainer<GGroups,unsigned int,true,true>*  GALILEI::GIdealGroup::CreateJudgement(GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent)
+void GALILEI::GIdealGroup::CreateJudgement(GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups)
 {
-	RContainer<GGroups,unsigned int,true,true>* groups;
 	groups=new RContainer<GGroups,unsigned int,true,true>(2,2);
 	parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,10);
 
@@ -128,8 +127,26 @@ RStd::RContainer<GGroups,unsigned int,true,true>*  GALILEI::GIdealGroup::CreateJ
 	subjects->Judgments(ses);
 	//Create the ideal groupment corresponding to the precedent judgment.
 	subjects->IdealGroupment(groups,ses,parent);
-	return groups;
 }
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GIdealGroup::GetSettings(void)
+{
+	static char tmp[100];
+	
+	sprintf(tmp,"%u %u ",PercOK,PercKO);
+	return(tmp);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GIdealGroup::SetSettings(const char* s)
+{
+	if(!(*s)) return;
+	sscanf(s,"%u %u ",&PercOK,&PercKO);
+}
+
 
 
 //-----------------------------------------------------------------------------

@@ -65,7 +65,7 @@ GSubject::GSubject(RString name, int id)
 	 : RNode<GSubject,false>(10,2)
 {
 	IsJudged=0;
-	urls=new RContainer<GDoc,unsigned,false,true> (10,5);
+	urls=new RContainer<GDoc,unsigned,false,false> (10,5);
 	Name=name;
 	Id=id;
 }

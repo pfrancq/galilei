@@ -125,7 +125,7 @@ public:
 	/**
 	* The container of document in the subject.
 	*/
-	RContainer<GDoc,unsigned,false,true>* urls;
+	RContainer<GDoc,unsigned,false,false>* urls;
 
 	/**
 	* Constructor

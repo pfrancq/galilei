@@ -63,19 +63,15 @@
 //
 //-----------------------------------------------------------------------------
 
-GSubjectTree::GSubjectTree(int NbOk, int NbKo,int nbusers)
+//-----------------------------------------------------------------------------
+GSubjectTree::GSubjectTree(unsigned int NbOk,unsigned int NbKo,unsigned int nbusers)
 	:RTree<GSubject,true,false>(100,50)
 {
 
-	NbProfiles=10;
-	NbDocsOk=NbOk; 
+	NbDocsOk=NbOk;
 	NbDocsKo=NbKo;
 	NbUsers=nbusers;
-
-	if (NbProfiles>NbUsers)
-	{
-		NbProfiles=NbUsers;
-	}
+	NbProfiles=NbUsers;
 	profiles=new RContainer<GProfile,unsigned,false,true>(10,5);
 }
 
@@ -140,10 +136,10 @@ void GSubjectTree::Judgments(GSession* ses)
 			tab[sub1->GetId()-1]=tab[sub1->GetId()-1]+1;
 		
 			//Documents OK.
-			JudgeDocuments(profid,sub1,1, ses);
+			JudgeDocuments(profid,sub1,1,ses);
 
 			//Documents KO.
-			if (subject->NbPtr>1) //If the subsuject enables the  KO judgement of documents.
+			if (subject->NbPtr>1) //If the subsuject enables the KO judgement of documents.
 			{
 				int soustheme = (rand()%(subject->NbPtr))+subject->SubSubjectMinId();
 				GSubject* sub2=subject->GetPtr(soustheme);
@@ -161,14 +157,14 @@ void GSubjectTree::Judgments(GSession* ses)
   
 
 //-----------------------------------------------------------------------------
-void GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSession* ses )
+void GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,bool i,GSession* ses )
 {
 	char today[12];
 	RTimeDate::RDate date;
 	int NbDocs;
 	char judgement;
 
-	//If i=1 juge ok.
+	//If i juge ok.
 	if (i)
 	{
 		NbDocs=int(((double(NbDocsOk*sub->urls->NbPtr)/100))+0.5);
@@ -182,7 +178,7 @@ void GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSession* se
 		judgement='K';
 	}
 
-	RContainer<GDoc,unsigned,false,true>* judgedDocs=new RContainer<GDoc,unsigned,false,true>(10,5);
+	RContainer<GDoc,unsigned,false,false>* judgedDocs=new RContainer<GDoc,unsigned,false,false>(10,5);
 	int j=0;
 	sprintf(today,"'%u-%u-%u'",date.GetYear(),date.GetMonth(),date.GetDay());
 	while (j<NbDocs)
@@ -197,7 +193,8 @@ void GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSession* se
 			judgedDocs->InsertPtr(doc);
 			j++;
 		}
-	}
+	}	
+	delete judgedDocs;
 }     
 
 
@@ -222,7 +219,7 @@ void GSubjectTree::IdealGroupmentFile(char* url)
 	textfile->WriteStr(itoa(nbrsubsubjects));
 	textfile->WriteLine();
 
-	RContainer<GProfile,unsigned,false,true>* prof=new RContainer<GProfile,unsigned,false,true>(10,5);
+	RContainer<GProfile,unsigned,false,false>* prof=new RContainer<GProfile,unsigned,false,false>(10,5);
 	//for each subject.
 	for (Start(); !End(); Next())
 	{
@@ -281,7 +278,6 @@ void GSubjectTree::IdealGroupmentFile(char* url)
 //-----------------------------------------------------------------------------
 void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,true>* Groups,GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent) 	// research by profiles' name to find ideal groups
 {
-
 	unsigned int nb;
 	unsigned int id,ii;
 	GGroups* groups;
@@ -310,7 +306,7 @@ void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,tru
 		Groups->InsertPtr(new GGroups(CurLang()));
 
 
-	RContainer<GProfile,unsigned,false,true>* prof=new RContainer<GProfile,unsigned,false,true>(10,5);
+	RContainer<GProfile,unsigned,false,false>* prof=new RContainer<GProfile,unsigned,false,false>(10,5);
 	//For each subject.
 	for (Start(); !End(); Next())
 	{
@@ -362,7 +358,7 @@ void GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int,true,tru
 			}
 		}
 	}
-
+	delete prof;
 }
 
 

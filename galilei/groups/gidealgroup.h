@@ -73,6 +73,12 @@ protected:
 	* The Users of the galilei system.
 	*/
 	GUsers* users;
+	
+	/**
+	* PercOK           The % of ok documents.
+	* PercKO           The % of ko documents.
+	*/
+	unsigned int PercOK,PercKO;
 
 public:
 
@@ -82,27 +88,37 @@ public:
 	* where is stoked the grouping of document.
 	* @param txturl           The url of the file.
 	* @param user             The usercontainer.
-	* @param percok           The % of ok documents.
-	* @param percko           The % of ko documents.
+
 	*/
-	GIdealGroup(const char* txturl,GUsers* user,int percok,int percko);
+	GIdealGroup(const char* txturl,GUsers* user,GSession* ses);
 
 	/**
 	* Create randomly the judgment for all the users.
-	* Return the ideal groupment into a GGroups container.
 	* @param ses		The Galilei Session.
 	* @param parent     The container to assign groupid and parent id.
+	* @param groups 	The ideal groupment into a GGroups container.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true>* CreateJudgement(GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent);
+	void CreateJudgement(GSession* ses,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* &parent,RStd::RContainer<GGroups,unsigned int,true,true>* &groups);
 
 	/**
 	* Write the ideal groupment into a file
 	* @param url            The url where the file is saved.
 	*/
 	void CreateIdealGroupmentFile(char * url);
+	
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param s*             C string coding the settings.
+	*/
+	void SetSettings(const char* s);
 
 };
-
 
 }  //------- End of namespace GALILEI -----------------------------------------
 

@@ -69,7 +69,6 @@ namespace GALILEI{
 */
 class GSubjectTree : public RTree<GSubject,true,false>
 {
-
 protected:
 
 	/**
@@ -107,20 +106,19 @@ protected:
 	*/
 	void InitSubSubjects(void);
 
-
 public:
-
+	
 	/**
 	* Constructor.
-	* @param nbok        %of ok document.
-	* @param nbko        %of ok document.
+	* @param nbOK        %of ok document.
+	* @param nbKO        %of ok document.
 	* @param nbusers     nb of users in the database.
 	*/
-	GSubjectTree(int nbOk, int nbKo, int nbusers);
+	GSubjectTree(unsigned int nbOk,unsigned int nbKo,unsigned int nbusers);
 
 	/**
 	* Executes the queries to create new profiles.
-	* @param ses      	 The Gailieli session
+	* @param ses       The Gailieli session
 	*/
 	void Judgments(GSession* ses);
 
@@ -130,7 +128,7 @@ public:
 	* @param sub         subsubject containing the docs to judge.
 	* @param i           i=1 for OK judgement, i=0 for KO judgment.
 	*/
-	void JudgeDocuments(int profid,GSubject* sub,int i, GSession* ses);
+	void JudgeDocuments(int profid,GSubject* sub,bool i, GSession* ses);
 
 	/**
 	* Write the ideal groupment into a file
@@ -156,8 +154,11 @@ public:
 	~GSubjectTree(void){};
 
 
-};//----------------------------------------------------------------------------
-}
-#endif
+};
 
+}//-------- End of namespace GALIELI ----------------------------------------
+
+//-----------------------------------------------------------------------------
+
+#endif
 

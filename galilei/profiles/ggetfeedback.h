@@ -48,7 +48,6 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-
 //-----------------------------------------------------------------------------
 // Forward class declaration
 class GSubProfile;
@@ -59,25 +58,29 @@ class GSubProfile;
 *  @author Julien Lamoral
 *  @short  auto create a user feedback.
 */
-
 class GGetFeedback
 {
 protected:
 
 	/**
-	* The % of ok documents judget by user feeddback.
+	* The number of documents judget by user feeddback.
 	*/
-	int NbOK;
+	unsigned int NbDoc;
 
 	/**
-	* The % of ko documents judget by user feeddback.
+	* The number of documents judget by user feeddback.
 	*/
-	int NbKO;
+	bool Global;
 
 	/**
-	* The % of hs documents judget by user feeddback.
+	* IdealGroup              the idealgroupment.
 	*/
-	int NbHS;
+	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroup;
+
+	/**
+	* Parent                  the id of the parent of the different subsubject.
+	*/
+	RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* Parent;
 
 	/**
 	* Return 1 if the profiles are in the same group.
@@ -85,36 +88,49 @@ protected:
 	* Return 3 if the profiles are in different group.
 	* @param prof1            the id of the first profile.
 	* @param prof2            the id of the second profile.
-	* @param idealgroup       the idealgroupment.
 	*/
-	int AreInSameGroup(int prof1,int prof2,RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent);
+	int AreInSameGroup(int prof1,int prof2);
 
 	/**
-	* Create a feedback for the user whith profil id prof1 whith the documents of prof22.
+	* Create a feedback for the user whith profil id prof1 whith the documents doc.
 	* @param fdbk             1 if the feedback is ok,2 for ko and 3 for hs.
-	* @param prof1            the id of the first profile.
-	* @param prof2            the id of the second profile.
+	* @param sub              the subprofile.
 	* @param ses              the galilei session.
+	* @param doc              the doc who will be judged
 	*/
-	void CreateNewFeedback(int fdbk,int prof11,int prof22,GSession* ses);
+	void CreateNewFeedback(int fdbk,GSubProfile* sub,GSession* ses,GDoc* doc);
 
 public:
 
 	/**
-	* Create new feedback for the different users of the system.
+	* the constructor
 	* @param ses              the galilei session.
 	* @param idealgroup       the idealgroupment.
-	* @param nbok      	      the % of ok documents.
-	* @param nbko             the % of ko documents.
-	* @param nbhs             the % of hs documents.
+	* @param parent           the id of the parent of a subsubject.
 	*/
-	GGetFeedback(GSession* ses,RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent,int nbok,int nbko,int nbhs);
+	GGetFeedback(RStd::RContainer<GGroups,unsigned int,true,true>* idealgroup,RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* parent);
+
+	/**
+	* Create new feedback for the different users of the system.
+	*/
+	void Run(GSession* ses);
+	
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param s*             C string coding the settings.
+	*/
+	void SetSettings(const char* s);
 
 };
 
 
-}
-//------- End of namespace GALILEI -----------------------------------------
+}  //------- End of namespace GALILEI -----------------------------------------
 
 
 //-----------------------------------------------------------------------------
