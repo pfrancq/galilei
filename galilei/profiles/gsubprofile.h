@@ -215,6 +215,13 @@ public:
 	unsigned int GetCommonOKDocs(const GSubProfile* prof) const;
 
 	/**
+	* Get the number of common document with different judgement between two
+	* subprofiles. In practice, it computes the number of the common documents
+	* of the corresponding profiles which are of the language of the profile.
+	*/
+	unsigned int GetCommonDiffDocs(const GSubProfile* prof) const;
+
+	/**
 	*Destructor
 	*/
 	virtual ~GSubProfile(void);
