@@ -147,6 +147,12 @@ public:
 	R::RString GetName(void) const;
 
 	/**
+	* Return the full name of the subject including the name of its parents.
+	* @return RString.
+	*/
+	R::RString GetFullName(void) const;
+
+	/**
 	* Get the identificator of the Subject.
 	* @returns The id of the subject.
 	*/

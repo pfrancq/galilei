@@ -114,6 +114,20 @@ RString GSubject::GetName(void) const
 
 
 //------------------------------------------------------------------------------
+RString GSubject::GetFullName(void) const
+{
+	RString ret=Name;
+	GSubject* parent=GetParent();
+
+	while(parent)
+	{
+		ret=parent->GetName()+"/"+ret;
+		parent=parent->GetParent();
+	}
+	return(ret);
+}
+
+//------------------------------------------------------------------------------
 void GSubject::SetUsed(bool b)
 {
 	Used=b;
