@@ -212,27 +212,39 @@ void KGALILEICenterApp::slotSessionConnect(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user,const char* passwd,const char* db)
 {
-	QConnectMySQL dlg(this,0,true);
-	GSessionMySQL* Sess;
-	Sess = new GSessionMySQL(host,user,passwd,db,&SessionParams,true);
-	unsigned int cmd=dlg.cbLoad->currentItem();
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
-	d->LoadSession(cmd,&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
-	&GroupCalcManager,&StatsCalcManager,&LinkCalcManager, &PostDocManager, &PostGroupManager);
-	Doc=new KDoc(this,Sess);
-	sessionDisconnect->setEnabled(true);
-	sessionCompute->setEnabled(true);
-	sessionConnect->setEnabled(false);
-	wordsClustering->setEnabled(true);
-	removeCluster->setEnabled(true);
-	showGroupsHistory->setEnabled(true);
- 	rRunR->setEnabled(true);
-	textFrench->setEnabled(true);
-	textEnglish->setEnabled(true);
-	runProgram->setEnabled(true);
-	sessionStats->setEnabled(true);
-	UpdateMenusEntries();
-	dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
+	try
+	{
+		QConnectMySQL dlg(this,0,true);
+		GSessionMySQL* Sess;
+		Sess = new GSessionMySQL(host,user,passwd,db,&SessionParams,true);
+		unsigned int cmd=dlg.cbLoad->currentItem();
+		QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
+		d->LoadSession(cmd,&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
+		&GroupCalcManager,&StatsCalcManager,&LinkCalcManager, &PostDocManager, &PostGroupManager);
+		Doc=new KDoc(this,Sess);
+		sessionDisconnect->setEnabled(true);
+		sessionCompute->setEnabled(true);
+		sessionConnect->setEnabled(false);
+		wordsClustering->setEnabled(true);
+		removeCluster->setEnabled(true);
+		showGroupsHistory->setEnabled(true);
+ 		rRunR->setEnabled(true);
+		textFrench->setEnabled(true);
+		textEnglish->setEnabled(true);
+		runProgram->setEnabled(true);
+		sessionStats->setEnabled(true);
+		UpdateMenusEntries();
+		dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+		if(Doc)
+		{
+			delete Doc;
+			Doc=0;
+		}
+	}
 }
 
 
@@ -250,15 +262,22 @@ void KGALILEICenterApp::slotSessionCompute(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionDisconnect(void)
 {
-	if(Doc)
+	try
 	{
-		Doc->closeDocument();
-		delete Doc;
-		Doc=0;
+		if(Doc)
+		{
+			Doc->closeDocument();
+			delete Doc;
+			Doc=0;
+		}
+		DisableAllActions();
+		sessionConnect->setEnabled(true);
+		statusBar()->changeItem("Not Connected !",1);
 	}
-	DisableAllActions();
-	sessionConnect->setEnabled(true);
-	statusBar()->changeItem("Not Connected !",1);
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+	}
 }
 
 
@@ -1052,6 +1071,13 @@ void KGALILEICenterApp::slotRRunR(void)
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::~KGALILEICenterApp(void)
 {
-	if(Doc)
-		delete Doc;
+	try
+	{
+		if(Doc)
+			delete Doc;
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+	}
 }
