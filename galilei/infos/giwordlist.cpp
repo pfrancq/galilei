@@ -68,3 +68,20 @@ const GInfo::GInfoType GALILEI::GIWordList::InfoType(void) const
 {
 	return(infoWordList);
 }
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GIWordList::IsSame(const GIWordList& l) const
+{
+	const GIWord** ptr=const_cast<const GIWord**>(Tab);
+	const GIWord** ptr2=const_cast<const GIWord**>(l.Tab);
+	unsigned int i=NbPtr+1;
+	unsigned int j=l.NbPtr+1;
+
+	while((--i)&&(--j))
+	{
+		if((*(ptr++))!=(*(ptr2++))) return(false);
+	}
+	return(true);
+}
+

@@ -102,6 +102,11 @@ public:
 	* @param id             Identifier to assign.
 	*/
 	void SetId(const unsigned int id) {Id=id;}
+
+	/**
+	* Verify if two lists contain the same information entities.
+	*/
+	bool IsSame(const GIWordList& l) const;
 };
 
 
