@@ -1,5 +1,271 @@
 #MIN_CONFIG(3.0.0)
 
+#------------------------------------------------------------------------------#
+#                                                                              #
+#          This script was written by Valery VANDAELE vavdaele@ulb.ac.be       #
+#                                                                              #
+#------------------------------------------------------------------------------#
+
+#--------------------- CURL -----------------------------
+# ---- INCLUDES and LIBS for CURL ----
+
+AC_PATH_PROG(CURL_CONFIG,curl-config)
+if [ test -n "$CURL_CONFIG" ]; then
+	CURL_INCLUDES=`$CURL_CONFIG --cflags`
+	CURL_PREFIX=`$CURL_CONFIG --prefix`
+	if test "${CURL_PREFIX}/lib" != "/usr/lib" ; then
+		CURL_LIBS="-L${CURL_PREFIX}/lib"
+	fi
+else
+	CURL_INCLUDES=""
+	CURL_LIBS=""
+fi
+
+# ---- add configure option : --with-curlincludedir=DIR ----
+AC_ARG_WITH(curlincludedir,
+	[  --with-curlincludedir=DIR use CURL includes from DIR],
+	[CURL_INCLUDES="-I$withval"])
+CPPFLAGS="$CPPFLAGS $CURL_INCLUDES"
+
+# ---- add configure option : --with-curllibdir=DIR -----
+AC_ARG_WITH(curllibdir,
+	[  --with-curllibdir=DIR   use CURL libraries from DIR],
+	[CURL_LIBS="-L$withval"])
+LDFLAGS="$LDFLAGS $CURL_LIBS"
+
+# ---- check if the include file and if the library are present ----
+AC_CHECK_HEADER(curl/curl.h,
+	[AC_CHECK_LIB(curl,main,
+		[CURL_LIBS="$CURL_LIBS -lcurl"
+		AC_DEFINE_UNQUOTED(HAVE_LIBCURL,1,
+			[Define if you have the CURL library])],
+		[AC_MSG_ERROR(curl library is not available)
+		CURL_INCLUDES="" CURL_LIBS=""])],
+	[AC_MSG_ERROR(curl library is not available - no curl.h)])
+
+
+AC_SUBST(CURL_INCLUDES)
+AC_SUBST(CURL_LIBS)
+#--------------------- END CURL -----------------------------
+
+#--------------------- R LIB -----------------------------
+#VARIABLES USE :
+#	$R_LIB environnement variable used for developpment
+#	$R_INC_PATH = the path specified in the --with-r-includes
+#	$R_LIB_PATH = the path specified in the --with-r-libs
+#	$R_INC_DIR = the directory where the includes were found
+#	$R_LIB_DIR = the directory where the libraries were found
+
+#---------------------------------------------------------
+# ---- add configure option : --with-r-includes=DIR ----
+R_INC_PATH="/usr/include/r"
+AC_ARG_WITH(r-includes,
+	AC_HELP_STRING(
+		[--with-r-includes=DIR],
+		[where the R includes are, like [/usr/include/r]. ]),
+	R_INC_PATH="$withval")
+
+
+# ---- add configure option : --with-r-libs=DIR ----
+R_LIB_PATH="/usr/lib"
+AC_ARG_WITH(r-libs,
+	AC_HELP_STRING(
+		[--with-r-libs=DIR],
+		[where the R libraries are installed, like [/usr/lib]. ]),
+	R_LIB_PATH="$withval")
+
+
+# ---- end arg for configure ----
+
+# ---- end arg for configure ----
+
+# ---- def function to check for a specific R library on the system
+AC_DEFUN(R_LIB_CHK,[
+	str="$1/lib$2.*"
+	R_LIB_DIR=""
+	for j in `echo $str`; do
+		if test -r $j; then
+		R_LIB_DIR=$1
+		break 2
+	fi
+	done
+])
+# --- end def function -----
+
+
+# ---- def function to check for a specific R includes on the system
+AC_DEFUN(R_INC_CHK,[
+	R_INC_DIR=""
+	str="$1/$2"
+	for i in $R_LIB $R_INC_PATH  /usr/include /usr/include/r /usr/local /usr/local/r; do
+		test -f $i/$str                    && R_INC_DIR=$i/$1 && break
+		test -f $i/r/$str              && R_INC_DIR=$i/r/$1 && break
+	done
+	AC_MSG_CHECKING(checking for $1/$2)
+	if test -z "$R_INC_DIR"; then
+		if test "x$R_INC_PATH" != "x"; then
+			AC_MSG_RESULT(no)
+			AC_MSG_ERROR(Cannot find $1 header files under $R_INC_PATH)
+		else
+			AC_MSG_RESULT(no)
+			AC_MSG_ERROR(Cannot find $2 headers.  Use --with-r-includes= to specify non-default path.)
+		fi
+	fi
+AC_MSG_RESULT(yes)
+
+CPPFLAGS="-I$R_INC_DIR $CPPFLAGS"
+])
+# --- end def function -----
+
+# ---- check the presence of the includes for all the R libraries
+R_INC_CHK(rdb,rmysql.h)
+R_INC_CHK(rga,rga.h)
+R_INC_CHK(rga2d,rga2d.h)
+R_INC_CHK(rgga,rgga.h)
+R_INC_CHK(rhga,rhga.h)
+R_INC_CHK(rmath,rgraph.h)
+R_INC_CHK(rprg,rprg.h)
+R_INC_CHK(rpromethee,rpromethee.h)
+R_INC_CHK(rstd,rcontainer.h)
+
+
+# ---- check the presence of all R libraries
+for l in rdb rga rga2d rgga rhga rmath rprg rpromethee rstd; do
+
+	#AC_MSG_CHECKING(checking for lib$l)
+	for i in $R_LIB $R_INC_PATH /usr /usr/local /usr/local/r/; do
+		R_LIB_CHK($i/$l,$l)
+		R_LIB_CHK($i/lib/,$l)
+		R_LIB_CHK($i/lib/r,$l)
+	done
+	AC_MSG_CHECKING(checking for lib$l)
+	if test -z "$R_LIB_DIR"; then
+		AC_MSG_RESULT(no)
+		AC_MSG_ERROR(Cannot find lib$l)
+	else
+		AC_MSG_RESULT(yes)
+	fi
+	if test "x$R_LIB_DIR" != "x$PAST_R_LIB_DIR"; then
+		LDFLAGS="-L$R_LIB_DIR $LDFLAGS"
+	fi
+PAST_R_LIB_DIR="$R_LIB_DIR"
+
+done
+
+echo "CPPFLAGS : " $CPPFLAGS
+echo "LDFLAGS : " $LDFLAGS
+
+#--------------------- END R LIB -----------------------------
+
+
+#--------------------- GALILEI LIB -----------------------------
+
+#VARIABLES USE :
+#	$GALILEI_LIB environnement variable used for developpment
+#	$GALILEI_INC_PATH = the path specified in the --with-galilei-includes
+#	$GALILEI_LIB_PATH = the path specified in the --with-galilei-libs
+#	$GALILEI_INC_DIR = the directory where the includes were found
+#	$GALILEI_LIB_DIR = the directory where the libraries were found
+
+#---------------------------------------------------------
+# ---- add configure option : --with-galilei-includes=DIR ----
+GALILEI_INC_PATH="/usr/include/galilei"
+AC_ARG_WITH(galilei-includes,
+	AC_HELP_STRING(
+		[--with-galilei-includes=DIR],
+		[where the GALILEI includes are, default: [/usr/include/galilei]. ]),
+	GALILEI_INC_PATH="$withval")
+
+# ---- end arg for configure ----
+
+# ---- add configure option : --with-galilei-libs=DIR ----
+
+GALILEI_LIB_PATH="/usr/lib"
+AC_ARG_WITH(galilei-libs,
+	AC_HELP_STRING(
+		[--with-galilei-libs=DIR],
+		[where the GALILEI libraries are installed, default: [/usr/lib]. ]),
+	GALILEI_LIB_PATH="$withval")
+
+# ---- end arg for configure ----
+
+# ---- def function to check for a specific GALILEI library on the system
+AC_DEFUN(GALILEI_LIB_CHK,[
+	str="$1/libgalilei_$2.*"
+	GALILEI_LIB_DIR=""
+	for j in `echo $str`; do
+		if test -r $j; then
+		GALILEI_LIB_DIR=$1
+		break 2
+	fi
+	done
+])
+# --- end def function -----
+
+
+# ---- def function to check for a specific GALILEI includes on the system
+AC_DEFUN(GALILEI_INC_CHK,[
+	GALILEI_INC_DIR=""
+	str="$1/$2"
+	for i in $GALILEI_LIB $GALILEI_INC_PATH  /usr/include /usr/include/galilei /usr/local /usr/local/galilei; do
+		test -f $i/$str                    && GALILEI_INC_DIR=$i/$1 && break
+		test -f $i/galilei/$str              && GALILEI_INC_DIR=$i/galilei/$1 && break
+	done
+	AC_MSG_CHECKING(checking for $1/$2)
+	if test -z "$GALILEI_INC_DIR"; then
+		if test "x$GALILEI_INC_PATH" != "x"; then
+			AC_MSG_RESULT(no)
+			AC_MSG_ERROR(Cannot find $1 header files under $GALILEI_INC_PATH)
+		else
+			AC_MSG_RESULT(no)
+			AC_MSG_ERROR(Cannot find $2 headers.  Use --with-galilei-includes=DIR to specify non-default path.)
+		fi
+	fi
+AC_MSG_RESULT(yes)
+
+CPPFLAGS="-I$GALILEI_INC_DIR $CPPFLAGS"
+])
+# --- end def function -----
+
+# ---- check the presence of the includes for all the GALILEI libraries
+GALILEI_INC_CHK(docs,gdocs.h)
+GALILEI_INC_CHK(groups,ggroups.h)
+GALILEI_INC_CHK(historic,ggrouphistory.h)
+GALILEI_INC_CHK(infos,gdict.h)
+GALILEI_INC_CHK(profiles, gprofile.h)
+GALILEI_INC_CHK(sessions,gsession.h)
+
+
+# ---- check the presence of all GALILEI libraries
+for l in docs groups historic infos profiles sessions; do
+
+	#AC_MSG_CHECKING(checking for lib$l)
+	for i in $GALILEI_LIB $GALILEI_INC_PATH /usr /usr/local /usr/local/galilei/; do
+		GALILEI_LIB_CHK($i/$l,$l)
+		GALILEI_LIB_CHK($i/lib/,$l)
+		GALILEI_LIB_CHK($i/lib/galilei,$l)
+	done
+	AC_MSG_CHECKING(checking for lib$l)
+	if test -z "$GALILEI_LIB_DIR"; then
+		AC_MSG_RESULT(no)
+		AC_MSG_ERROR(Cannot find lib$l)
+	else
+		AC_MSG_RESULT(yes)
+	fi
+	if test "x$GALILEI_LIB_DIR" != "x$PAST_GALILEI_LIB_DIR"; then
+		LDFLAGS="-L$GALILEI_LIB_DIR $LDFLAGS"
+	fi
+PAST_GALILEI_LIB_DIR="$GALILEI_LIB_DIR"
+
+done
+
+echo "CPPFLAGS : " $CPPFLAGS
+echo "LDFLAGS : " $LDFLAGS
+
+#--------------------- END GALILEI LIB -----------------------------
+
+
+
 AM_INIT_AUTOMAKE(upgalilei, 0.1)
 AC_C_BIGENDIAN
 AC_CHECK_KDEMAXPATHLEN
