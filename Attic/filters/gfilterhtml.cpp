@@ -566,7 +566,7 @@ char* GALILEI::GFilterHTML::ConstructURL(char* u)
 	char* endBase=0;
 	
 	RString urlTmp;
-	urlG=new char[200];
+	urlG=new char[250];
 
 	if (!Base)
 	{
@@ -634,8 +634,12 @@ char* GALILEI::GFilterHTML::ConstructURL(char* u)
 		}
 	}
 
-	strcpy(urlG,base);
-	strcat(urlG,ptr);
+	if ( (strlen(base)+strlen(ptr)) <250 )
+	{
+		strcpy(urlG,base);
+		strcat(urlG,ptr);
+	}
+
 	delete[] base;
 
 	return urlG;
