@@ -7,7 +7,7 @@
 #------------------------------------------------------------------------------#
 
 
-AM_INIT_AUTOMAKE(galilei, 0.1)
+AM_INIT_AUTOMAKE(galilei, 1.0)
 AC_C_BIGENDIAN
 AC_CHECK_KDEMAXPATHLEN
 
@@ -100,6 +100,9 @@ KDE_SET_PREFIX
 
 KDE_USE_QT
 AC_PATH_KDE
+KDE_PROG_LIBTOOL
+else
+AC_PROG_LIBTOOL
 fi
 
 AC_SUBST(FRONTEND)
@@ -221,8 +224,6 @@ PAST_R_LIB_DIR="$R_LIB_DIR"
 
 done
 
-echo "CPPFLAGS : " $CPPFLAGS
-echo "LDFLAGS : " $LDFLAGS
 
 #--------------------- END R LIB -----------------------------
 
