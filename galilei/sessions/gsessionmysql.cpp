@@ -574,6 +574,13 @@ void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 void GALILEI::GSessionMySQL::ExecuteData(const char* filename) throw(GException)
 {
 	RTextFile Sql(filename);
+	RString l;
+
+	while(!Sql.Eof())
+	{
+		l=Sql.GetLine();
+		RQuery exec(this,l);
+	}
 }
 
 
