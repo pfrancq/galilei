@@ -163,9 +163,6 @@ PAST_R_LIB_DIR="$R_LIB_DIR"
 
 done
 
-echo "CPPFLAGS : " $CPPFLAGS
-echo "LDFLAGS : " $LDFLAGS
-
 #--------------------- END R LIB -----------------------------
 
 
@@ -278,9 +275,6 @@ for l in docs groups historic infos profiles sessions; do
 PAST_GALILEI_LIB_DIR="$GALILEI_LIB_DIR"
 
 done
-
-echo "CPPFLAGS : " $CPPFLAGS
-echo "LDFLAGS : " $LDFLAGS
 
 #--------------------- END GALILEI LIB -----------------------------
 
