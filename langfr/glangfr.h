@@ -53,6 +53,10 @@ class GLangFR : public GLang
 	* List of Rules '2'.
 	*/
 	RContainer<FrenchPorterRule,unsigned int,true,false>* Rules2;
+	/**
+	* List of Rules '3'.
+	*/
+	RContainer<FrenchPorterRule,unsigned int,true,false>* Rules3;
 
 public:
 
@@ -103,7 +107,7 @@ private:
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	bool ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,unsigned int,true,false>* rules);
+	bool ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,unsigned int,true,false>* rules,int ruleslevel);
 
 public:
 
