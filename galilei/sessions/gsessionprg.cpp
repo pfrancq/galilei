@@ -49,6 +49,8 @@
 #include <profiles/gprofilecalcmanager.h>
 #include <docs/glinkcalc.h>
 #include <docs/glinkcalcmanager.h>
+#include <sessions/gstatscalcmanager.h>
+#include <sessions/gstatscalc.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
 #include <sessions/gslot.h>
@@ -323,6 +325,24 @@ class GComputeTimeI : public GSM
 {
 public:
 	GComputeTimeI(GPrgClassSession* o) : GSM("ComputeTime",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
+};
+
+
+//------------------------------------------------------------------------------
+class GSetStatParamI: public GSM
+{
+public:
+	GSetStatParamI(GPrgClassSession* o) : GSM("SetStatParam",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
+};
+
+
+//------------------------------------------------------------------------------
+class GRunStatI: public GSM
+{
+public:
+	GRunStatI(GPrgClassSession* o) : GSM("RunStat",o) {}
 	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
@@ -941,6 +961,58 @@ void GComputeTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 }
 
 
+//------------------------------------------------------------------------------
+void GSetStatParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args) throw(RException)
+{
+	GStatsCalc* calc;
+	GStatsCalcManager* mng;
+
+	if(args->NbPtr!=3)
+		throw RException("Method needs three parameters");
+	mng=dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatCalc"));
+	if(!mng)
+		throw RException("No statistics method selected.");
+	calc=mng->Get(args->Tab[0]->GetValue(prg));
+	if(!calc)
+		throw RException("No statistics method selected.");
+	calc->GetFactory()->Set(args->Tab[1]->GetValue(prg),args->Tab[2]->GetValue(prg));
+	calc->ApplyConfig();
+}
+
+
+//------------------------------------------------------------------------------
+void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args) throw(RException)
+{
+	R::RCursor<GFactoryStatsCalc> Cur;
+	GStatsCalc* Calc;
+	RXMLStruct xml;
+	RXMLTag* Root;
+	int i;
+
+	if(args->NbPtr)
+		throw RException("Method needs no parameter");
+
+	GStatsCalcManager* Mng=(dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatCalc")));
+	if(!Mng)
+		throw RException("No manager for the statistics plug-ins");
+
+	// Create the root node
+	Root=new RXMLTag("Statistics");
+	xml.AddTag(0,Root);
+
+	// Compute the statistics
+	Cur.Set(Mng);
+	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
+	{
+		Calc=Cur()->GetPlugin();
+		if(Calc)
+		{
+			Calc->Compute(&xml,*Root);
+		}
+	}
+}
+
+
 
 //------------------------------------------------------------------------------
 //
@@ -981,6 +1053,8 @@ GPrgClassSession::GPrgClassSession(GSession* s) throw(std::bad_alloc)
 	Methods.InsertPtr(new GResetTimeI(this));
 	Methods.InsertPtr(new GComputeTimeI(this));
 	Methods.InsertPtr(new GSetRandI(this));
+	Methods.InsertPtr(new GSetStatParamI(this));
+	Methods.InsertPtr(new GRunStatI(this));
 };
 
 
