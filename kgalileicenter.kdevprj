@@ -28,7 +28,7 @@ ldflags=\s                       \s
 [General]
 AMChanged=false
 author=Pascal Francq
-configure_args=\s--build=i386-linux --host=i386-linux --target=i386-linux --prefix=/usr/lib/kde3 --enable-debug\s
+configure_args=--prefix=/usr/lib/kde3 --enable-debug\s
 debug_args=-dograb
 email=pfrancq@ulb.ac.be
 kdevprj_version=1.3
