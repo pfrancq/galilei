@@ -76,15 +76,15 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char*
 	GSubProfile* sub;
 	GGroupDataIR g;
 	unsigned int i;
-	char c;
+	char c,c1;
 
 	// Window
 	lang=Doc->GetSession()->GetLang(l);
 	setCaption(QString("GALILEI Genetic Algorithms - ")+lang->GetName());
 
 	// Values
-	sscanf(Doc->GetSession()->GetGroupingMethodSettings("Grouping Genetic Algorithms"),"%u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	       &PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,
+	sscanf(Doc->GetSession()->GetGroupingMethodSettings("Grouping Genetic Algorithms"),"%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,
 	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
 	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
 	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,
@@ -136,7 +136,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char*
 		Instance->SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
 		Instance->SetCriterionParam("Diff Factor",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
 		Instance->AddReceiver(this);
-		Instance->Init(&g);
+		Instance->Init(&g,0);
 	}
 	catch(eGA& e)
 	{
