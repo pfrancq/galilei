@@ -51,7 +51,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GGroupVector provides a representation for a group in the vector model
+* The GGroupVector provides a representation for a group in the vector model.
 * @author Pascal Francq.
 * @short Vector Group.
 */
@@ -138,12 +138,14 @@ public:
 	virtual double SimilarityIFF(const GGroup* grp) const throw(GException);
 
 	/**
-	* Update the references of the group.
+	* Update the references of the group. This method does the update only for
+	* groups which are community.
 	*/
 	void UpdateRefs(void) const throw(GException);
 
 	/**
-	* Remove the references of the group.
+	* Remove the references of the group. This method does the update only for
+	* groups which are community.
 	*/
 	void RemoveRefs(void) const throw(GException);
 

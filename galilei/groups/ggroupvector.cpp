@@ -130,17 +130,20 @@ double GGroupVector::SimilarityIFF(const GSubProfile* doc) const throw(GExceptio
 	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GSubProfileVector*>(doc),otSubProfileGroup,Lang));
 }
 
+
 //------------------------------------------------------------------------------
 void GGroupVector::UpdateRefs(void) const throw(GException)
 {
-	AddRefs(otGroup,Lang);
+	if(Community)
+		AddRefs(otGroup,Lang);
 }
 
 
 //------------------------------------------------------------------------------
 void GGroupVector::RemoveRefs(void) const throw(GException)
 {
-	DelRefs(otGroup,Lang);
+	if(Community)
+		DelRefs(otGroup,Lang);
 }
 
 
