@@ -524,6 +524,13 @@ public:
 	void RunPrg(GSlot* rec,const char* filename) throw(GException);
 
 	/**
+	* Run the filter on the docments
+	* @param nbdocs         The number of docs where the word must be present
+	* @param nboccurs       The minimal occurs for the word in a document
+	*/
+	void DocsFilter(int nbdocs,int nboccurs) throw(GException);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSession(void) throw(GException);

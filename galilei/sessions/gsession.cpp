@@ -42,6 +42,7 @@ using namespace RIO;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <langs/glang.h>
+#include <langs/gdict.h>
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
 #include <sessions/gsessionprg.h>
@@ -62,6 +63,7 @@ using namespace RIO;
 #include <urlmanagers/gurlmanager.h>
 #include <filters/gfilter.h>
 #include <filters/gmimefilter.h>
+#include <infos/giwordweight.h>
 using namespace GALILEI;
 
 
@@ -486,6 +488,72 @@ void GALILEI::GSession::RunPrg(GSlot* rec,const char* filename) throw(GException
 {
 	GSessionPrg Prg(filename,this,rec);
 	Prg.Exec();
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
+{
+	//The number of word in current lang.
+	GDocCursor DocCursorTemp =GetDocsCursor();
+	DocCursorTemp.Start();
+	
+	int NbKwd;
+	GDict* CurDic=GetDic(DocCursorTemp()->GetLang());
+	NbKwd=CurDic->GetMaxId();
+
+	int* j;
+	int* k;
+	bool* test;
+	j=new int [NbKwd];
+	k=new int [NbKwd];
+	test=new bool[NbKwd];
+	for(int i=0;i<NbKwd;i++)
+	{
+		j[i]=0;
+		k[i]=0;
+	}
+	GDocCursor DocCursor =GetDocsCursor();
+	for(DocCursor.Start();!DocCursor.End();DocCursor.Next())
+	{
+		GDoc* Doc=DocCursor();
+		for(Doc->Start();!Doc->End();Doc->Next())
+		{
+			GIWordWeight* WW=(*Doc)();
+			if(WW->GetWeight()>j[WW->GetId()])
+			{
+				j[WW->GetId()]=int(WW->GetWeight());
+			}
+			k[WW->GetId()]+=1;
+		}
+	}
+	int compt=0;
+	for(int i=0;i<NbKwd;i++)
+	{
+		if((j[i]>=nboccurs)&&k[i]>=nbdocs)
+			{
+				test[i]=true;
+				compt++;
+			}
+		else
+			{
+				test[i]=false;
+			}
+	}
+	// cout<<compt<<" nbre de mots restants"<<endl;
+
+	for(DocCursor.Start();!DocCursor.End();DocCursor.Next())
+	{
+		GDoc* Doc=DocCursor();
+		for(int i=0;i<NbKwd;i++)
+		{
+			if(!test[i])
+			{
+				GIWordWeight* WW=Doc->GetPtr<const unsigned int>(i);
+				if(WW) Doc->DeletePtr(WW);
+			}
+		}
+	}
 }
 
 
