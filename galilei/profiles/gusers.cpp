@@ -107,7 +107,7 @@ R::RCursor<GUser> GUsers::GetUsersCursor(void)
 //------------------------------------------------------------------------------
 void GUsers::InsertUser(GUser* usr) throw(std::bad_alloc)
 {
-	InsertPtrAt(usr,usr->GetId());
+	InsertPtrAt(usr,usr->GetId(),true);
 }
 
 
