@@ -183,6 +183,14 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GSetRandI : public GSM
+{
+public:
+	GSetRandI(GPrgClassSession* o) : GSM("SetRand",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+//-----------------------------------------------------------------------------
 class GOutputI : public GSM
 {
 public:

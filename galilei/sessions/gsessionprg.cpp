@@ -53,6 +53,8 @@
 #include <groups/ggroupvector.h>
 #include <groups/ggrouping.h>
 #include <groups/ggroupingmanager.h>
+#include <groups/ggroupcalcmanager.h>
+#include <groups/ggroupcalc.h>
 #include <groups/gsubjecttree.h>
 #include <profiles/gprofilecalc.h>
 #include <sessions/gprginstfor.h>
@@ -69,6 +71,25 @@ using namespace R;
 // Instructions
 //
 //-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+void GSetRandI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	int Rand;
+
+	if(args->NbPtr!=1)
+		throw GException("The rand value must be specified.");
+	sprintf(tmp,"Set Rand value '%s'",args->Tab[0]->GetValue(prg));
+	r->WriteStr(tmp);
+	Rand=atoi(args->Tab[0]->GetValue(prg));
+	if(Rand!=0)
+	{
+		Owner->Session->SetCurrentRandom(Rand);
+		cout<<"Set Rand "<<Rand<<endl;
+	}
+
+}
+
 
 //-----------------------------------------------------------------------------
 void GOutputI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
@@ -213,6 +234,9 @@ void GComputeProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsi
 	r->WriteStr(tmp);
 	if(args->NbPtr==1)
 		Owner->Session->GetProfilingMng()->SetCurrentMethod(args->Tab[0]->GetValue(prg));
+	if(Owner->Session->GetLinkCalcMng()->GetCurrentMethod())
+		Owner->Session->GetLinkCalcMng()->GetCurrentMethod()->ApplyConfig();
+	Owner->Session->GetProfilingMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->CalcProfiles(r,Owner->FirstProfile,Owner->AutoSave);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 }
@@ -235,6 +259,8 @@ void GGroupProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsign
 		GGrouping* algo=Owner->Session->GetGroupingMng()->GetCurrentMethod();
 		algo->SetIdealGroups(Owner->Session->GetSubjects()->GetIdealGroups());
 	}
+	Owner->Session->GetGroupingMng()->GetCurrentMethod()->ApplyConfig();
+	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GroupingProfiles(r,Owner->FirstGroup,Owner->AutoSave);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 }
@@ -246,6 +272,7 @@ void GCreateIdealI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
 	r->WriteStr("Create Ideal Groups");
+	Owner->Session->GetSubjects()->Apply();
 	Owner->Session->GetSubjects()->CreateIdeal(Owner->AutoSave);
 	Owner->FirstGroup=Owner->FirstProfile=false;
 }
@@ -274,6 +301,7 @@ void GFdbksCycleI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
 	r->WriteStr("Create Feedbacks Cycle");
+	Owner->Session->GetSubjects()->Apply();
 	Owner->Session->GetSubjects()->FdbksCycle(Owner->AutoSave);
 }
 
@@ -356,6 +384,7 @@ void GAddIdealI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,tr
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
 	r->WriteStr("Create New Ideal Group");
+	Owner->Session->GetSubjects()->Apply();
 	Owner->Session->GetSubjects()->AddTopic(Owner->AutoSave);
 }
 
@@ -366,6 +395,7 @@ void GAddProfilesI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
 	r->WriteStr("Adding Profiles");
+	Owner->Session->GetSubjects()->Apply();
 	sprintf(tmp, "%u new profiles created",Owner->Session->GetSubjects()->AddProfiles(Owner->AutoSave));
 	r->WriteStr(tmp);
 }
@@ -376,7 +406,9 @@ void GRealLifeI::CommonTasks(GSlot* r) throw(GException)
 {
 	// Compute Profiles
 	r->WriteStr("Compute Profiles: Current Method");
-
+	if(Owner->Session->GetLinkCalcMng()->GetCurrentMethod())
+		Owner->Session->GetLinkCalcMng()->GetCurrentMethod()->ApplyConfig();
+	Owner->Session->GetProfilingMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->CalcProfiles(r,Owner->FirstProfile,Owner->AutoSave);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 
@@ -387,8 +419,9 @@ void GRealLifeI::CommonTasks(GSlot* r) throw(GException)
 		GGrouping* algo=Owner->Session->GetGroupingMng()->GetCurrentMethod();
 		algo->SetIdealGroups(Owner->Session->GetSubjects()->GetIdealGroups());
 	}
+	Owner->Session->GetGroupingMng()->GetCurrentMethod()->ApplyConfig();
+	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GroupingProfiles(r,Owner->FirstGroup,Owner->AutoSave);
-
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 
 	// Store History
@@ -452,6 +485,7 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 			// Create Feedbacks
 			r->WriteStr("Create Feedbacks Cycle");
 			What[0]='F';
+			Owner->Session->GetSubjects()->Apply();
 			Owner->Session->GetSubjects()->FdbksCycle(Owner->AutoSave);
 			CommonTasks(r);
 
@@ -475,6 +509,7 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 			nbmaxprof=Owner->Session->GetSubjects()->GetUInt("NbProfMax");
 			Owner->Session->GetSubjects()->Set("NbProfMin",1);
 			Owner->Session->GetSubjects()->Set("NbProfMax",1);
+			Owner->Session->GetSubjects()->Apply();
 			NewProf=Owner->Session->GetSubjects()->AddProfiles(Owner->AutoSave);
 			Owner->Session->GetSubjects()->Set("NbProfMin",nbminprof);
 			Owner->Session->GetSubjects()->Set("NbProfMax",nbmaxprof);
@@ -483,12 +518,14 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 			else
 			{
 				What[0]='F';
+				Owner->Session->GetSubjects()->Apply();
 				Owner->Session->GetSubjects()->FdbksCycle(Owner->AutoSave);
 			}
 		}
 		else
 		{
 			// Create one profile of a new topic
+			Owner->Session->GetSubjects()->Apply();
 			if(Owner->Session->GetSubjects()->AddTopic(Owner->AutoSave))
 			{
 				What[0]='N';
@@ -500,6 +537,7 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 				nbmaxprof=Owner->Session->GetSubjects()->GetUInt("NbProfMax");
 				Owner->Session->GetSubjects()->Set("NbProfMin",1);
 				Owner->Session->GetSubjects()->Set("NbProfMax",1);
+				Owner->Session->GetSubjects()->Apply();
 				NewProf=Owner->Session->GetSubjects()->AddProfiles(Owner->AutoSave);
 				Owner->Session->GetSubjects()->Set("NbProfMin",nbminprof);
 				Owner->Session->GetSubjects()->Set("NbProfMax",nbmaxprof);
@@ -508,10 +546,12 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned in
 				else
 				{
 					What[0]='F';
+					Owner->Session->GetSubjects()->Apply();
 					Owner->Session->GetSubjects()->FdbksCycle(Owner->AutoSave);
 				}
 			}
 		}
+		Owner->Session->GetSubjects()->Apply();
 		CommonTasks(r);
 
 		// Verify Nb Steps
@@ -526,6 +566,7 @@ void GAddAssessmentsI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned 
 	if(args->NbPtr)
 		throw GException("Method needs no parameters.");
 	r->WriteStr("Adding Assessments");
+	Owner->Session->GetSubjects()->Apply();
 	Owner->Session->GetSubjects()->AddAssessments(Owner->AutoSave);
 }
 
@@ -649,6 +690,7 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GResetTimeI(this));
 	Methods.InsertPtr(new GComputeTimeI(this));
 	Methods.InsertPtr(new GWordsClusteringI(this));
+	Methods.InsertPtr(new GSetRandI(this));
 };
 
 
