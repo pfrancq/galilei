@@ -48,7 +48,7 @@ using namespace GALILEI;
 
 //---------------------------------------------------------------------------
 GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
-: GFilter(mng), Buffer(0), Chars(50,5)
+	: GFilter(mng,"HTML Filter","text/html","$Revision$"), Buffer(0), Chars(50,5)
 {
 	AddMIME("text/html");
 }

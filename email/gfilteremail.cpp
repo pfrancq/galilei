@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GDocXML.h
+	GFilterEMail.cpp
 
-	A XML representation of a document - Header.
+	Filter for Mails - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -44,7 +44,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GFilterEMail::GFilterEMail(GURLManager* mng)
-	: GFilter(mng), Buffer(0)
+	: GFilter(mng,"EMail Filter","text/email","$Revision$"), Buffer(0)
 {
 	AddMIME("text/email");
 }
