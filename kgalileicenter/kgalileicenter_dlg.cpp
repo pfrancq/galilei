@@ -171,7 +171,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	R::RCursor<GFactoryPostProfile> PostProfile;
 	R::RCursor<GFactoryPostGroup> PostGroup;
 	R::RCursor<GFactoryMetaEngine> MetaEngine;
-	QPlugins dlg(this,"Plugins Dialog");
+	QPlugins dlg(this,"Plug-Ins Dialog");
 	QString str;
 
 	//set the plugins path
@@ -204,7 +204,7 @@ void KGALILEICenterApp::slotPlugins(void)
 		if (strcmp(pluginsPath, dlg.PluginsPath->url()))
 		{
 			pluginsPath=RString(dlg.PluginsPath->url().ascii());
-			QMessageBox::information(this,"Plugins Path has changed","You changed the plugins path, please restart KGALILEICenter.");
+			QMessageBox::information(this,"Plug-Ins Path has changed","You changed the plugins path, please restart KGALILEICenter.");
 		}
 
 		PostDocManager->ReOrder(GFactoryPostDoc::sortOrder);

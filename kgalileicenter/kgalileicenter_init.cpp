@@ -174,7 +174,7 @@ void KGALILEICenterApp::initActions(void)
 	viewStatusBar = KStdAction::showStatusbar(this, SLOT(slotViewStatusBar()), actionCollection());
 	viewToolBar->setStatusText(i18n("Enables/disables the toolbar"));
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
-	plugins=new KAction(i18n("&Plugins"),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
+	plugins=new KAction(i18n("&Plug-Ins"),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
 	sessionOptions=new KAction(i18n("&Session Options"),"configure",0,this,SLOT(slotSessionOptions()),actionCollection(),"sessionOptions");
 
 	// Menu "Window"
