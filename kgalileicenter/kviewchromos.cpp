@@ -56,6 +56,7 @@ using namespace RIO;
 #include <profiles/gprofilessim.h>
 #include <groups/ggroup.h>
 using namespace GALILEI;
+using namespace RGA;
 
 
 //-----------------------------------------------------------------------------
@@ -214,9 +215,11 @@ void KViewChromos::ConstructChromosomes(void)
 	QListViewItem* g;
 	char tmp[20];
 	GInstIR* Instance;
-	GSubProfileCursor SubProfiles;
-	RGA::RObjs<GObjIR> Objs(SubProfiles.GetNb());
+	GSubProfileCursor Cur=Doc->GetSession()->GetSubProfilesCursor(Lang);
+	RObjs<GObjIR> Objs(Cur.GetNb());
+	RContainer<GSubProfile,unsigned int,false,true> SubProfiles(Cur.GetNb(),50);
 	Stat* s;
+	GSubProfile* sub;
 
 	// Initialise the dialog box
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
@@ -227,11 +230,24 @@ void KViewChromos::ConstructChromosomes(void)
 	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
 
 	// Construct the GA Objects
-	SubProfiles=Doc->GetSession()->GetSubProfilesCursor(Lang);
-	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
+//	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next())
+//	{
+//		sub=SubProfiles();
+//		if(sub->IsDefined())
+//		{
+//			Objs.InsertPtr(new GObjIR(i,sub));
+// 			i++;
+//		}
+//	}
+//	GProfileCursor cur=Doc->GetSession()->GetProfilesCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Objs.InsertPtr(new GObjIR(i,SubProfiles()));
+		sub=Cur();
+		if(sub->IsDefined())
+			SubProfiles.InsertPtr(sub);
 	}
+	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
+			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
 	GProfilesSim Sims(SubProfiles,Global);
 
 	// Loal the chromosomes from the db
@@ -251,48 +267,48 @@ void KViewChromos::ConstructChromosomes(void)
 
 		(*c)->CompareIdeal(Doc->GetSession(),&IdealGroups);
 		s->Precision=(*c)->GetPrecision();
-		sprintf(tmp,"%lf",(*c)->GetPrecision());
+		sprintf(tmp,"%f",(*c)->GetPrecision());
 		g->setText(1,tmp);
 		s->Recall=(*c)->GetRecall();
-		sprintf(tmp,"%lf",(*c)->GetRecall());
+		sprintf(tmp,"%f",(*c)->GetRecall());
 		g->setText(2,tmp);
 		s->Global=(*c)->GetGlobal();
-		sprintf(tmp,"%lf",(*c)->GetGlobal());
+		sprintf(tmp,"%f",(*c)->GetGlobal());
 		g->setText(3,tmp);
 
 		(*c)->EvaluateAvgSim();
 		s->AvgSim=(*c)->GetSimCriterion();
-		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
 		g->setText(4,tmp);
 
 		(*c)->EvaluateJ();
 		s->J=(*c)->GetSimCriterion();
-		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
 		g->setText(5,tmp);
 
 		(*c)->EvaluateAvgRatio();
 		s->AvgRatio=(*c)->GetSimCriterion();
-		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
 		g->setText(6,tmp);
 
 		(*c)->EvaluateMinRatio();
 		s->MinRatio=(*c)->GetSimCriterion();
-		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
 		g->setText(7,tmp);
 
 		(*c)->EvaluateRatio();
 		s->Ratio=(*c)->GetSimCriterion();
-		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
 		g->setText(8,tmp);
 
 		(*c)->EvaluateWOverB();
 		s->WOverB=(*c)->GetSimCriterion();
-		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
 		g->setText(9,tmp);
 
 		(*c)->EvaluateSimWB();
 		s->SimWB=(*c)->GetSimCriterion();
-		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		sprintf(tmp,"%f",(*c)->GetSimCriterion());
 		g->setText(10,tmp);
 	}
 
