@@ -41,24 +41,24 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Library
-#include <rstd/rtextfile.h>
-using namespace R;
+//#include <rstd/rtextfile.h>
+
 
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gstatssims.h>
-#include <groups/ggroups.h>
-#include <groups/ggroup.h>
-#include <groups/gsubjecttree.h>
-#include <profiles/gsubprofile.h>
-#include <sessions/gsession.h>
+
 #include <gstatsimdoc.h>
 #include <gstatsimdocprof.h>
 #include <gstatsimdocgrp.h>
 #include <gstatprofdoc.h>
 #include <gstatsimsubprof.h>
 #include <gstatsimprofgrp.h>
+#include <groups/gsubjecttree.h>
+#include <sessions/gsession.h>
+
+using namespace R;
 using namespace GALILEI;
 
 

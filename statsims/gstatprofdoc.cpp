@@ -36,10 +36,13 @@
 //-----------------------------------------------------------------------------
 //include file for GALLILEI
 #include <gstatprofdoc.h>
+
+#include <langs/glangs.h>
 #include <langs/glang.h>
-#include <sessions/gsession.h>
-#include <profiles/gprofile.h>
 #include <docs/gdoc.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gprofile.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 
 
