@@ -171,6 +171,12 @@ public:
 	unsigned int GetMaxId(void) const {return(MaxId);}
 
 	/**
+	* Get the list of the words currently defined in the dictionnary.
+	* @returns const Pointer to array of GWord*.
+	*/
+	GWord** GetWords(void) const {return(Direct);}
+
+	/**
 	* Get thye name of the dictionnary.
 	* @returns Pointer a C string.
 	*/
