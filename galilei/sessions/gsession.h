@@ -455,20 +455,18 @@ public:
 	void ChangeAllProfilesBehaviourState(void) throw(bad_alloc);
 
 	/**
-	* Return the similarity between two subProfiles .
+	* Return the disagreement ratio between two subProfiles .
 	* @param sub1           The Pointer to the first subprofile
 	* @param sub2           The Pointer to the second subprofile
-	* @param threshold       minimum of common documents
 	*/
-	double GetDisAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold=0);
+	double GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2);
 
 	/**
-	* Return the similarity between two subProfiles .
+	* Return the agreement ratio between two subProfiles .
 	* @param sub1           The Pointer to the first subprofile
 	* @param sub2           The Pointer to the second subprofile
-	* @param threshold       minimum of common documents
 	*/
-	double GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold=0);
+	double GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2);
 
 	/**
 	* return the minim of similarityof the subprofiles, needed by clusteirng algorithms.

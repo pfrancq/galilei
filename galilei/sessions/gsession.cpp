@@ -648,19 +648,20 @@ void GALILEI::GSession::ChangeAllProfilesBehaviourState(void) throw(bad_alloc)
 	}
 }
 
+
 //-----------------------------------------------------------------------------
-double GALILEI::GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold)
+double GALILEI::GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 {
 	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(sub1->GetLang());
-	return profBehaviour->GetAgreementRatio(sub1,sub2);
+	return(profBehaviour->GetAgreementRatio(sub1,sub2));
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSession::GetDisAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold)
+double GALILEI::GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 {
 	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(sub1->GetLang());
-	return profBehaviour->GetDisAgreementRatio(sub1,sub2);
+	return(profBehaviour->GetDisAgreementRatio(sub1,sub2));
 }
 
 

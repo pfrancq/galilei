@@ -200,7 +200,6 @@ double GALILEI::GProfilesBehaviour::GetDisAgreementRatio(GSubProfile* sub1,GSubP
 
 	if(b2->GetState() == osModified)
 	{
-		cout << "disagreement - prof modified"<<endl;
 		okratio=diffratio=0.0;
 		b2->SetState(osUpToDate);
 		nbcommon=sub1->GetCommonDocs(sub2);
