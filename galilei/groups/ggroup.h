@@ -91,7 +91,7 @@ public:
 	GGroup(const unsigned int id,GLang* lang) throw(bad_alloc);
 
 	/**
-	* Copy constrcutor for group.
+	* Copy constructor for group.
 	* @param grp            Group.
 	*/
 	GGroup(GGroup* grp) throw(bad_alloc);
@@ -260,6 +260,7 @@ public:
 * @short Group Cursor.
 */
 CLASSCURSOR(GGroupCursor,GGroup,unsigned int)
+
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

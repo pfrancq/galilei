@@ -166,12 +166,12 @@ void GALILEI::GGroupingKCos::Run(void) throw(GException)
 //			Groups->InsertPtr(g);
 //	}
 
-	unsigned int i;
+//	unsigned int i;
 	if (!SubProfiles.NbPtr)  return;
 	GGroup* g,*gr;
 	RContainer<GGroup,unsigned int,false,false>* grps;
-	for (i=13; i<14; i++)
-	{
+//	for (i=13; i<14; i++)
+//	{
 		RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups>* kmeans;
 		kmeans=new  RGroupingKMeans<GGroup,GSubProfile,GGroupDataIR,GGroups> (&SubProfiles) ;
 		// init parameters of kmeans
@@ -183,7 +183,7 @@ void GALILEI::GGroupingKCos::Run(void) throw(GException)
 		kmeans->SetSubSamplesNumber(Params->NbSubSamples);
 		kmeans->SetSubSamplesRate(Params->SubSamplesRate);
 		kmeans->SetVerifyKMeansMaxIters(1000);
-		kmeans->SetGroupsNumber(i);
+		kmeans->SetGroupsNumber(Params->NbGroups);
 
 		// run the kmeans
 	 	kmeans->Run();
@@ -209,7 +209,7 @@ void GALILEI::GGroupingKCos::Run(void) throw(GException)
 		delete kmeans;
 		delete grps2;
 //		delete eval;
-	}
+//	}
 
 
 }
