@@ -159,6 +159,11 @@ public:
 	void InsertDoc(GDoc* d) throw(bad_alloc);
 
 	/**
+	* Move a doc to the container of appropriate language.
+	*/
+	void MoveDoc(GDoc* d) throw(bad_alloc);
+	
+	/**
 	* Get a document from the container.
 	* @param id         Identificator of the document.
 	*/

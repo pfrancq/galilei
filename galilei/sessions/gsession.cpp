@@ -341,6 +341,7 @@ void GALILEI::GSession::AnalyseAssociation(bool save)
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 {
+	bool undefLang;
 	GDocXML* xml=0;
 	GDocCursor Docs=GetDocsCursor();
 
@@ -348,10 +349,12 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	{
 		if(modified&&(Docs()->GetState()==osUpToDate)) continue;
 		rec->receiveNextDoc(Docs());
+		undefLang=false;
 		try
 		{
 			if((!modified)||(Docs()->GetState()!=osUpdated))
 			{
+				if (!Docs()->GetLang()) undefLang=true;
 				xml=Mng->CreateDocXML(Docs());
 				if(xml)
 				{
@@ -359,6 +362,10 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 					DocAnalyse->Analyse(xml,Docs());
 					delete xml;
 					xml=0;
+					if ((undefLang)&&(Docs()->GetLang()))
+					{
+						MoveDoc(Docs());
+					}
 				}
 				else
 					Docs()->IncFailed();
