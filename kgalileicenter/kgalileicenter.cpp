@@ -509,7 +509,7 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 		cmdline+= "python  ";
 		cmdline+=scriptpath;
 		cmdline+=" ";
-		cmdline+= dbName;
+		cmdline+= name;
 		cmdline+= " ";
 		cmdline+= user;
 		cmdline+= " ";
