@@ -67,12 +67,12 @@ class GGroupCalcGravitation : public GGroupCalc
 	/**
 	* Ordered vector for current computed profile.
 	*/
-	GIWordWeight** Order;
+	GWeightInfo** Order;
 
 	/*
 	* List of words used for computation.
 	*/
-	GIWordsWeights* Vector;
+	GWeightInfos* Vector;
 
 	/**
 	* Maximal size allocate for a profile.

@@ -45,10 +45,9 @@
 #include <groups/ggroupvector.h>
 #include <sessions/gsession.h>
 #include <profiles/gsubprofilevector.h>
-#include <infos/giword.h>
-#include <infos/giwordlist.h>
-#include <infos/giwordweight.h>
-#include <infos/giwordsweights.h>
+#include <infos/ginfo.h>
+#include <infos/gweightinfo.h>
+#include <infos/gweightinfos.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -64,8 +63,8 @@ using namespace R;
 GGroupCalcGravitation::GGroupCalcGravitation(GFactoryGroupCalc* fac) throw(bad_alloc)
 	: GGroupCalc(fac), MaxNonZero(100), Order(0), Vector(0), MaxOrderSize(5000)
 {
-	Order=new GIWordWeight*[MaxOrderSize];
-	Vector=new GIWordsWeights(MaxNonZero);
+	Order=new GWeightInfo*[MaxOrderSize];
+	Vector=new GWeightInfos(MaxNonZero);
 }
 
 
@@ -95,10 +94,10 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 {
 	unsigned int i,j;
 	GSubProfile** ptr;
-	GIWordsWeights* Desc=static_cast<GGroupVector*>(grp)->GetVector();
-	GIWordsWeights* Ref;
-	GIWordWeight** w;
-	GIWordWeight* ins;
+	GWeightInfos* Desc=static_cast<GGroupVector*>(grp)->GetVector();
+	GWeightInfos* Ref;
+	GWeightInfo** w;
+	GWeightInfo* ins;
 
 	// Clear the Vector.
 	(static_cast<GGroupVector*>(grp))->RemoveRefs();
@@ -125,17 +124,17 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 	{
 		if(Order) delete[] Order;
 		MaxOrderSize=static_cast<unsigned int>((Vector->NbPtr+1)*1.1);
-		Order=new GIWordWeight*[MaxOrderSize];
+		Order=new GWeightInfo*[MaxOrderSize];
 	}
-	memcpy(Order,Vector->Tab,Vector->NbPtr*sizeof(GIWordWeight*));
-	qsort(static_cast<void*>(Order),Vector->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
+	memcpy(Order,Vector->Tab,Vector->NbPtr*sizeof(GWeightInfo*));
+	qsort(static_cast<void*>(Order),Vector->NbPtr,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
 	Order[Vector->NbPtr]=0;
 	if(MaxNonZero)
 	{
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Desc->InsertPtr(new GIWordWeight((*w)->GetId(),(*w)->GetWeight()/grp->NbPtr));
+				Desc->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->NbPtr));
 		}
 	}
 	else
@@ -143,7 +142,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(w=Order;(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Desc->InsertPtr(new GIWordWeight((*w)->GetId(),(*w)->GetWeight()/grp->NbPtr));
+				Desc->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->NbPtr));
 		}
 	}
 
