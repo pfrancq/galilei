@@ -60,10 +60,18 @@ class GSubProfileVector;
 
 //-----------------------------------------------------------------------------
 /**
-* The GProfileCalcVector class provides a representation for a method to compute
-* a specific profile, i.e. its sub-profiles by using the vector method.
+* The GProfileCalcVector class provides an implementation of the computing
+* method "Statistical", which is based on the idea that the profile vector
+* is the one obtain from the documents judged as relevant.
+*
+* The different parameters of the method:
+* @param MaxNonZero         Maximal number of weights of the profile vector not
+*                           to be zero. If this paramater is null, all the
+*                           weights are left.
+* @param IdfFactor          Specify if for the weights of documents the idf
+*                           factor of the vector model theory must be computed.
 * @author Pascal Francq
-* @short Vector Profile Computing Method.
+* @short Statistical Profile Computing Method.
 */
 class GProfileCalcVector : public GProfileCalc
 {
@@ -91,6 +99,11 @@ protected:
 	* Maximal number of the non-zero weights in the vector.
 	*/
 	unsigned int MaxNonZero;
+
+	/**
+	* Must the idf factor be computed.
+	*/
+	bool IdfFactor;
 
 public:
 
@@ -122,6 +135,18 @@ public:
 	* @param n              Number of non-zero weights.
 	*/
 	void SetMaxNonZero(unsigned int n) {MaxNonZero=n;}
+
+	/**
+	* Get the "IdfFactor" parameter
+	* @returns boolean.
+	*/
+	bool GetIdfFactor(void) const {return(IdfFactor);}
+
+	/**
+	* Set the "IdfFactor" pamater.
+	* @param b              true if the idf factor must be computed.
+	*/
+	void SetIdfFactor(bool b) {IdfFactor=b;}
 
 	/**
 	* Computes the OK lists for a profile.

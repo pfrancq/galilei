@@ -93,7 +93,7 @@ public:
 GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session) throw(bad_alloc)
 	: GProfileCalc("Statistical",session), Vector(Session->GetNbLangs()),
 	  NbDocsWords(Session->GetNbLangs()), NbDocsLangs(Session->GetNbLangs()),
-	  MaxNonZero(60)
+	  MaxNonZero(60), IdfFactor(true)
 {
 	GLangCursor Langs;
 
@@ -110,15 +110,24 @@ GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session) throw(bad_all
 //-----------------------------------------------------------------------------
 const char* GALILEI::GProfileCalcVector::GetSettings(void)
 {
-	return(itoa(MaxNonZero));
+	static char tmp[100];
+	char c;
+
+	if(IdfFactor) c='1'; else c='0';
+	sprintf(tmp,"%u %c",MaxNonZero,c);
+	return(tmp);
+
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GProfileCalcVector::SetSettings(const char* s)
 {
+	char c;
+
 	if(!(*s)) return;
-	MaxNonZero=strtoul(s,0,10);
+	sscanf(s,"%u %c",&MaxNonZero,&c);
+	if(c=='1') IdfFactor=true; else IdfFactor=false;
 }
 
 
@@ -185,7 +194,10 @@ void GALILEI::GProfileCalcVector::ComputeGlobal(GProfile* profile) throw(bad_all
 		NbDocsJudged=NbDocsLangs.GetPtr<GLang*>(Vector()->GetLang())->GetNb();
 		for(i=Vector()->NbPtr+1,v=Vector()->Tab,d=NbDocs->Tab;--i;v++,d++)
 		{
-			(*v)->SetWeight(((*v)->GetWeight()/MaxFreq)*log(NbDocsJudged/(*d)->GetWeight()));
+			if(IdfFactor)
+				(*v)->SetWeight(((*v)->GetWeight()/MaxFreq)*log(NbDocsJudged/(*d)->GetWeight()));
+			else
+				(*v)->SetWeight((*v)->GetWeight()/MaxFreq);
 		}
 		Vector()->Sort();
 	}
