@@ -65,13 +65,13 @@ public:
 	tCondition Condition;
 	bool Next;
 
-	PorterRule(char* os,char* ns,int oo,int no,int mr=-1,tCondition c=CondNothing,bool n=false);
+	PorterRule(const char* os,const char* ns,int oo,int no,int mr=-1,tCondition c=CondNothing,bool n=false);
 	int Compare(const PorterRule*) {return(-1);}
 };
 
 
 //-----------------------------------------------------------------------------
-GLangEN::PorterRule::PorterRule(char* os,char* ns,int oo,int no,int mr,tCondition c,bool n)
+GLangEN::PorterRule::PorterRule(const char* os,const char* ns,int oo,int no,int mr,tCondition c,bool n)
 	: OldSuffix(0), NewSuffix(0), OldOffset(oo), NewOffset(no), MinRootSize(mr),
 	  Condition(c), Next(n)
 {
