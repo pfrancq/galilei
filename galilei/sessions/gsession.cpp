@@ -251,6 +251,8 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	GDocAnalyse* Analyse;
 	RString err;
 	bool Cont;               // Continue the analysuis
+	GPostDoc* PostDoc;
+	char tmp[100];
 
 	// Verify that the textanalyse method is selected
 	Analyse=DocAnalyseMng->GetCurrentMethod();
@@ -320,10 +322,18 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	}
 	while(Cont);
 
-	// If a post-doc method is currently selected -> Run it.
-	GPostDoc* PostDoc=PostDocMng->GetCurrentMethod();
-	if(PostDoc)
-		PostDoc->Run();
+	// Run all post-doc methods that are enabled
+	GFactoryPostDocCursor PostDocs=PostDocMng->GetPostDocsCursor();
+	for(PostDocs.Start();!PostDocs.End();PostDocs.End())
+	{
+		PostDoc=PostDocs()->GetPlugin();
+		if(PostDoc)
+		{
+			sprintf(tmp,"Post-Doc : %s",PostDocs()->GetName());
+			rec->WriteStr(tmp);
+			PostDoc->Run();
+		}
+	}
 }
 
 
@@ -429,13 +439,25 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory)  throw(GException)
 {
 	GGrouping* Grouping=GroupingMng->GetCurrentMethod();
+	GPostGroup* PostGrouping;
+	char tmp[100];
 
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
 	Grouping->Grouping(rec,modified,save, savehistory);
-	GPostGroup* PostGrouping=PostGroupMng->GetCurrentMethod();
-	if(PostGrouping)
-		PostGrouping->Run();
+
+	// Run all post-group methods that are enabled
+	GFactoryPostGroupCursor PostGroups=PostGroupMng->GetPostGroupsCursor();
+	for(PostGroups.Start();!PostGroups.End();PostGroups.Next())
+	{
+		PostGrouping=PostGroups()->GetPlugin();
+		if(PostGrouping)
+		{
+			sprintf(tmp,"Post-Group : %s",PostGroups()->GetName());
+			rec->WriteStr(tmp);
+			PostGrouping->Run();
+		}
+	}
 }
 
 

@@ -310,8 +310,8 @@ public:
 	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
 
 	/**
-	* Analyse the documents. If a post-document analysis method is currently
-	* selected, it is run at the end of the document analysis.
+	* Analyse the documents. At the end, all the enabled post-docsmethods are
+	* run.
 	* @param rec             Receiver for the signals.
 	* @param modified        Recompute only modified elements or all.
 	*/
@@ -326,12 +326,13 @@ public:
 	void CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException);
 
 	/**
-	* Groups the subprofile into virtual communities. If a post-group method is
-	* currently selected, it is run at the end of the clustering.
+	* Groups the subprofile into virtual communities. At the end, all the
+	* enabled post-grouping methods are called.
 	* @param rec            Receiver of the signals.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
-	* @param savehsitory    Save groups in history.*/
+	* @param savehsitory    Save groups in history.
+	*/
 	void GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory)  throw(GException);
 
 	/**

@@ -1333,6 +1333,24 @@ void GStorageMySQL::CreateDummy(const char* name) throw(GException)
 
 
 //------------------------------------------------------------------------------
+void GStorageMySQL::ClearDummy(const char* name) throw(GException)
+{
+	char sSql[200];
+
+	try
+	{
+		// Delete the table
+		sprintf(sSql,"DELETE FROM %s",name);
+		RQuery del(this,sSql);
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GStorageMySQL::AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid) throw(GException)
 {
 	char sSql[500];

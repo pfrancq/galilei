@@ -58,11 +58,6 @@ namespace GALILEI{
 */
 class GPostDocManager : public R::RContainer<GFactoryPostDoc,unsigned int,true,true>
 {
-	/**
-	* Method currently selected.
-	*/
-	GPostDoc* Current;
-
 public:
 
 	/**
@@ -83,18 +78,6 @@ public:
 	* @param session         The session.
 	*/
 	void Disconnect(GSession* session) throw(GException);
-
-	/**
-	* Set the current method.
-	* @param name            Name of the method.
-	*/
-	void SetCurrentMethod(const char* name) throw(GException);
-
-	/**
-	* Get the current method.
-	* @return Pointer to GPostDoc.
-	*/
-	GPostDoc* GetCurrentMethod(void);
 
 	/**
 	* Get a cursor on the factories handled by the manager.

@@ -540,7 +540,7 @@ void GSubjects::FdbksCycle(bool Save) throw(std::bad_alloc)
 		SubProfile=Grps()->GetSubProfilesCursor();
 		for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
 		{
-			Grps()->NotJudgedDocsRelList(&NewDocs,SubProfile(),IFF);
+			Grps()->NotJudgedDocsRelList(&NewDocs,SubProfile(),Session);
 			for(NewDocs.Start(),i=NbDocsAssess+1;(!NewDocs.End())&&(--i);NewDocs.Next())
 			{
 				// Look if 'OK'

@@ -45,6 +45,7 @@
 #include <docs/gdoc.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -304,7 +305,7 @@ void GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>* docs, G
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global) const throw(std::bad_alloc)
+void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc)
 {
 	GSubProfile** tab;
 	unsigned int i;
@@ -324,19 +325,16 @@ void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,false>* doc
 		Fdbks=(*tab)->GetProfDocCursor();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
+			// Verify if the document is relevant.
+			j=Fdbks()->GetFdbk();
+			if(!(j & djOK)) continue;
+
 			// Verify if already inserted in Docs or if it was not judged by the
-			// subprofile s
+			// subprofile s.
 			if((Docs.GetPtr<const GProfDoc*>(Fdbks()))||(s->GetFeedback(Fdbks()->GetDoc()))) continue;
 
-			// If not -> insert it in docs if relevant.
-			j=Fdbks()->GetFdbk();
-			if(j & djOK)
-			{
-				if(global)
-					Docs.InsertPtr(new GProfDocRef(Fdbks(),s->SimilarityIFF(Fdbks()->GetDoc())));
-				else
-					Docs.InsertPtr(new GProfDocRef(Fdbks(),s->Similarity(Fdbks()->GetDoc())));
-			}
+			// Insert it.
+			Docs.InsertPtr(new GProfDocRef(Fdbks(),session->GetSimDocProf(Fdbks()->GetDoc(),s)));
 		}
 	}
 

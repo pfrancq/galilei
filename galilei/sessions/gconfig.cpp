@@ -361,17 +361,10 @@ void GConfig::Read(GPostGroupManager& mng)
 	GFactoryPostGroupCursor Cur;
 
 	if(!PostGroups) return;
-	Cur=mng.GetPostGroupCursor();
+	Cur=mng.GetPostGroupsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(PostGroups);
-	}
-	try
-	{
-		mng.SetCurrentMethod(PostGroups->GetAttrValue("Current"));
-	}
-	catch(GException)
-	{
 	}
 }
 
@@ -380,18 +373,12 @@ void GConfig::Read(GPostGroupManager& mng)
 void GConfig::Store(GPostGroupManager& mng)
 {
 	GFactoryPostGroupCursor Cur;
-	GPostGroup* calc;
 
-	Cur=mng.GetPostGroupCursor();
+	Cur=mng.GetPostGroupsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(PostGroups);
 	}
-	calc=mng.GetCurrentMethod();
-	if(calc)
-		PostGroups->InsertAttr("Current",calc->GetFactory()->GetName());
-	else
-		PostGroups->InsertAttr("Current","None");
 }
 
 
@@ -406,13 +393,6 @@ void GConfig::Read(GPostDocManager& mng)
 	{
 		Cur()->ReadConfig(PostDocs);
 	}
-	try
-	{
-		mng.SetCurrentMethod(PostDocs->GetAttrValue("Current"));
-	}
-	catch(GException)
-	{
-	}
 }
 
 
@@ -420,18 +400,12 @@ void GConfig::Read(GPostDocManager& mng)
 void GConfig::Store(GPostDocManager& mng)
 {
 	GFactoryPostDocCursor Cur;
-	GPostDoc* pdoc;
 
 	Cur=mng.GetPostDocsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(PostDocs);
 	}
-	pdoc=mng.GetCurrentMethod();
-	if(pdoc)
-		PostDocs->InsertAttr("Current",pdoc->GetFactory()->GetName());
-	else
-		PostDocs->InsertAttr("Current","None");
 }
 
 

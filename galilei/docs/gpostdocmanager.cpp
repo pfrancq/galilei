@@ -60,7 +60,7 @@ using namespace ltmm;
 
 //------------------------------------------------------------------------------
 GPostDocManager::GPostDocManager(const char* path,bool dlg) throw(GException)
-	: RContainer<GFactoryPostDoc,unsigned int,true,true>(10,5), Current(0)
+	: RContainer<GFactoryPostDoc,unsigned int,true,true>(10,5)
 {
 	DIR* dp;
 	struct dirent* ep;
@@ -157,30 +157,6 @@ void GPostDocManager::Disconnect(GSession* session) throw(GException)
 		if(calc)
 			calc->Disconnect(session);
 	}
-}
-
-
-//------------------------------------------------------------------------------
-void GPostDocManager::SetCurrentMethod(const char* name) throw(GException)
-{
-	GFactoryPostDoc* fac;
-	GPostDoc* tmp;
-
-	fac=GetPtr<const char*>(name);
-	if(fac)
-		tmp=fac->GetPlugin();
-	else
-		tmp=0;
-	Current=tmp;
-	if(!tmp)
-		throw GException(RString("Computing method '")+name+"' doesn't exists.");
-}
-
-
-//------------------------------------------------------------------------------
-GPostDoc* GPostDocManager::GetCurrentMethod(void)
-{
-	return(Current);
 }
 
 

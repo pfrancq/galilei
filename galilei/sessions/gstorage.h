@@ -246,6 +246,12 @@ public:
 	virtual void CreateDummy(const char* name) throw(GException)=0;
 
 	/**
+	* Delete all the data of a given dummy table.
+	* @ param name              name of the dummy object.
+	*/
+	virtual void ClearDummy(const char* name) throw(GException)=0;
+
+	/**
 	* Add a dummy entry into a dummy table;
 	* @param name               name of the dummy table.
 	* @param id                id of the dymmy entry.

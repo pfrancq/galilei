@@ -59,7 +59,7 @@ using namespace ltmm;
 
 //------------------------------------------------------------------------------
 GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryPostGroup,unsigned int,true,true>(10,5), Current(0)
+	: RContainer<GFactoryPostGroup,unsigned int,true,true>(10,5)
 {
 	DIR* dp;
 	struct dirent* ep;
@@ -160,32 +160,8 @@ void GPostGroupManager::Disconnect(GSession* session) throw(GException)
 }
 
 
-//------------------------------------------------------------------------------
-void GPostGroupManager::SetCurrentMethod(const char* name) throw(GException)
-{
-	GFactoryPostGroup* fac;
-	GPostGroup* tmp;
-
-	fac=GetPtr<const char*>(name);
-	if(fac)
-		tmp=fac->GetPlugin();
-	else
-		tmp=0;
-	Current=tmp;
-	if(!tmp)
-		throw GException(RString("PostGroup method '")+name+"' doesn't exists.");
-}
-
-
-//------------------------------------------------------------------------------
-GPostGroup* GPostGroupManager::GetCurrentMethod(void)
-{
-	return(Current);
-}
-
-
 //-----------------------------------------------------------------------------
-GFactoryPostGroupCursor& GPostGroupManager::GetPostGroupCursor(void)
+GFactoryPostGroupCursor& GPostGroupManager::GetPostGroupsCursor(void)
 {
 	GFactoryPostGroupCursor *cur=GFactoryPostGroupCursor::GetTmpCursor();
 	cur->Set(this);

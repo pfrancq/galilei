@@ -259,10 +259,10 @@ public:
 	* order of their similarity with the chosen subprofile.
 	* @param docs           Documents not assessed.
 	* @param s              Subprofile.
-	* @param global         Global Similarities.
+	* @param session        Session.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(R::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global) const throw(std::bad_alloc);
+	void NotJudgedDocsRelList(R::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc);
 
 	/**
 	* Compute the relevant subprofile, i.e. the subprofiles whith the highest
