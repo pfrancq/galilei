@@ -160,10 +160,28 @@ protected:
 public:
 
 	/**
+	* Load the Subjectree.
+	* @param subjects     The tree of subjects.
+	*/
+	virtual void LoadSubjectTree(GSubjectTree* subjects);
+
+	/**
+	* Load the ideal groupment.
+	* @param idealgroup   The ideal container of group	
+	*/
+	virtual void LoadIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup);
+
+	/**
+	* Save the ideal groupment
+	* @param idealgroup   The ideal container of group	
+	*/
+	virtual void SaveIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup);
+
+	/**
 	* Create a new document.
-	* @param url        URL of the document.
-	* @param name       Name of the document.
-	* @param mime       MIME Type of the document
+	* @param url          URL of the document.
+	* @param name         Name of the document.
+	* @param mime         MIME Type of the document
 	* @returns Pointer to a new created document.
 	*/
 	virtual GDoc* NewDoc(const char* url,const char* name,const char* mime) throw(GException);

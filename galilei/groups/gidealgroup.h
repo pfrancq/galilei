@@ -90,7 +90,7 @@ public:
 	* @param user             The usercontainer.
 
 	*/
-	GIdealGroup(const char* txturl,GUsers* user,GSession* ses);
+	GIdealGroup(GUsers* user,GSession* ses);
 
 	/**
 	* Create randomly the judgment for all the users.

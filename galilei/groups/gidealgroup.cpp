@@ -70,48 +70,14 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 
-GALILEI::GIdealGroup::GIdealGroup(const char* txturl,GUsers* user,GSession* ses)
+GALILEI::GIdealGroup::GIdealGroup(GUsers* user,GSession* ses)
 	:users(user)
 {
 	PercOK=10;
 	PercKO=10;
 	subjects=new GSubjectTree(PercOK,PercKO,users->NbPtr);
-	//The file where is stoked the differents information about docs,subject,...
-	RTextFile* textfile = new RTextFile (txturl, RTextFile::Read);
-	char *ptr= textfile->GetLine(),*sub,*url;
-	int c1=1,c2=1;
-	int samesub=0;
-	//Parse the file to find Subject, subSubject, and the url of the different documents
-	while ((*ptr)=='T')
-	{
-		samesub++;
-		GSubject* subject=new GSubject(RString(++ptr),c1);
-		sub=textfile->GetWord();
-		while ((*sub)=='S')
-		{
-			GSubject* subsubject=new GSubject(RString(++sub),c2);
-			subsubject->SetLang(textfile->GetLine());
-			url=textfile->GetLine();
-			while ((*url)=='U')
-			{
-				char* temp=strchr(url,' ');
-				(*temp)=0;
-				char* temp2=strchr(++temp,' ');
-				(*temp2)=0;
-				(++url);
-				subsubject->urls->InsertPtr(ses->GetDoc(atoi(temp)));
-				url=textfile->GetLine();
-			}
-			sub=url;
-			subject->InsertNode(subsubject);
-			c2++ ;
-		}
-		subjects->InsertPtr(subject);
-		ptr=sub;
-		c1++;
-	}
+	ses->LoadSubjectTree(subjects);
 	subjects->InsertProfiles();
-	delete textfile;
 }
 
 
@@ -127,6 +93,7 @@ void GALILEI::GIdealGroup::CreateJudgement(GSession* ses,RStd::RContainer<GGroup
 	subjects->Judgments(ses);
 	//Create the ideal groupment corresponding to the precedent judgment.
 	subjects->IdealGroupment(groups,ses,parent);
+	ses->SaveIdealGroupment(groups);
 }
 
 

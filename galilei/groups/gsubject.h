@@ -49,6 +49,7 @@ using namespace RStd;
 // include files for GALILEI
 #include <sessions/gsession.h>
 #include <docs/gdoc.h>
+#include <langs/glang.h>
 using namespace GALILEI;
 
 
@@ -195,12 +196,19 @@ public:
 	*/
 	RString GetLang(void) {return(Lang);};
 
-    /**
+	/**
 	* Return the Lang of the Subject.
 	* @returns a string containing the lang.
 	*/
-	void SetLang(char* lg) {Lang=lg;};
+	void SetLang(const char* lg) {Lang=lg;};
 
+	/**
+	* Return the Lang of the Subject.
+	* @returns a string containing the lang.
+	*/
+	void SetLang(const GLang* lang) {Lang=lang->GetCode();};
+
+	
 	/**
 	* Destructor.
 	*/

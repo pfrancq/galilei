@@ -310,6 +310,11 @@ protected:
 public:
 
 	/**
+	* Load the SubjectTree.
+	*/
+	virtual void LoadSubjectTree(GSubjectTree* subjects)=0;
+
+	/**
 	* Verify if the feedback are loaded.
 	* @returns true, if loaded.
 	*/
@@ -404,6 +409,18 @@ public:
 	* @param filename       Name of the file.
 	*/
 	virtual void ExecuteData(const char* filename) throw(GException)=0;
+
+	/**
+	* Load the ideal groupment.
+	* @param idealgroup   The ideal container of group	
+	*/
+	virtual void LoadIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup)=0;
+
+	/**
+	* Save the ideal groupment
+	* @param idealgroup   The ideal container of group	
+	*/
+	virtual void SaveIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup)=0;
 
 	/**
 	* Run a "program" for this session.

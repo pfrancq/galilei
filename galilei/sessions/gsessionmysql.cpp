@@ -62,6 +62,7 @@ using namespace RIO;
 #include <docs/gdocs.h>
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
+#include <groups/gsubjecttree.h>
 #include <filters/gmimefilter.h>
 #include <urlmanagers/gurlmanager.h>
 using namespace GALILEI;
@@ -395,6 +396,101 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 	catch(RMySQLError& e)
 	{
 		throw GException(e.GetError());
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::LoadIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup)
+{
+	GGroups* groups;
+	GGroup* group;
+	GLangCursor Langs;
+	GSubProfile* subprof;
+	GProfile* prof;
+	char sSql[100];
+
+	idealgroup->Clear();
+	Langs=GetLangsCursor();
+	for(Langs.Start();!Langs.End();Langs.Next())
+	{
+		groups = new GGroups(Langs());
+		sprintf(sSql,"SELECT groupid FROM idealgroup WHERE langid='%s'",Langs()->GetCode());
+		RQuery sel(this,sSql);
+		for(sel.Begin();sel.IsMore();sel++)
+		{
+			group=new GGroup(atoi(sel[0]),Langs());
+			sprintf(sSql,"SELECT profileid FROM idealgroup where groupid=%u",atoi(sel[0]));
+			RQuery sub(this,sSql);
+			for(sub.Begin();sub.IsMore();sub++)
+			{
+				prof=this->GetProfile(atoi(sub[0]));
+				subprof=prof->GetSubProfile(Langs());
+				group->InsertPtr(subprof);
+			}
+			groups->InsertPtr(group);
+		}
+		idealgroup->InsertPtr(groups);
+	}	
+
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::SaveIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup)
+{
+	GGroups* groups;
+	GGroup* group;
+	GLangCursor Langs;
+	char sSql[100];
+	
+	sprintf(sSql,"DELETE from idealgroup");
+	RQuery del(this,sSql);
+
+	Langs=GetLangsCursor();
+	for(idealgroup->Start();!idealgroup->End();idealgroup->Next())
+	{
+		groups=(*idealgroup)();
+		for(groups->Start();!groups->End();groups->Next())
+		{
+			group=(*groups)();
+			for(group->Start();!group->End();group->Next())
+			{
+				sprintf(sSql,"INSERT INTO idealgroup(profileid,langid,groupid) VALUES(%u,'%s',%u)",(*group)()->GetProfile()->GetId(),groups->GetLang()->GetCode(),group->GetId());
+				RQuery insert(this,sSql);
+			}
+		}
+	}
+
+	
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::LoadSubjectTree(GSubjectTree* subjects)
+{
+	char sSql[200];
+	
+	sprintf(sSql,"SELECT subjectid,subjectname from subject");
+	RQuery sub(this,sSql);
+	for(sub.Begin();sub.IsMore();sub++)
+	{
+		GSubject* subject=new GSubject(sub[1],atoi(sub[0]));
+		sprintf(sSql,"SELECT subsubjectid,subsubjectname from subsubject where subjectid=%u",atoi(sub[0]));
+		RQuery subsub(this,sSql);
+		for(subsub.Begin();subsub.IsMore();subsub++)
+		{
+			GSubject* subsubject=new GSubject(subsub[1],atoi(subsub[0]));
+			sprintf(sSql,"SELECT htmlid from htmls where subsubjectid=%u",atoi(subsub[0]));
+			RQuery doc(this,sSql);
+			for(doc.Begin();doc.IsMore();doc++)
+			{
+				subsubject->urls->InsertPtr(this->GetDoc(atoi(doc[0])));
+				subsubject->SetLang(this->GetDoc(atoi(doc[0]))->GetLang());
+			}
+			subject->InsertNode(subsubject);
+		}
+		subjects->InsertPtr(subject);
 	}
 }
 

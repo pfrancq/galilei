@@ -107,7 +107,7 @@ class GFilter;
 class GFilterCursor;
 class GMIMEFilter;
 class GURLManager;
-
+class GSubjectTree;
 
 //-----------------------------------------------------------------------------
 /**

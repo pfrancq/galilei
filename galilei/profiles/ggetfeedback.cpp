@@ -192,6 +192,7 @@ void GALILEI::GGetFeedback::CreateNewFeedback(int fdbk,GSubProfile* sub,GSession
 	char today[12];
 	RTimeDate::RDate date;
 
+	cout<<fdbk<<sub->GetId()<<doc->GetName()<<endl;
 	sprintf(today,"'%u-%u-%u'",date.GetYear(),date.GetMonth(),date.GetDay());
 	if (fdbk==1)
 	{
