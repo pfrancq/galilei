@@ -176,7 +176,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterGroupingMethod(new GGroupingSim(Sess, &SimParams));
 			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess,&IRParams));
 			Sess->RegisterGroupingMethod(new GGroupingKCos(Sess, &KMeansParams));
-//			Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
+			Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess, &KProtosParams));
 			Sess->RegisterGroupingMethod(new GGroupingCure(Sess, &CureParams));
 			Sess->RegisterGroupingMethod(new GGroupingRandom(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess, &CalcGravitationParams));
@@ -239,7 +239,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterGroupingMethod(new GGroupingSim(Sess, &SimParams));
 	Sess->RegisterGroupingMethod(new GGroupingGGA(Sess,&IRParams));
 	Sess->RegisterGroupingMethod(new GGroupingKCos(Sess, &KMeansParams));
-//	Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
+	Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess, &KProtosParams));
 	Sess->RegisterGroupingMethod(new GGroupingCure(Sess, &CureParams));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess,&CalcGravitationParams));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess, &CalcRelevantParams));

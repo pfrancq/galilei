@@ -307,6 +307,17 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Rate of element by subsample",KMeansParams.SubSamplesRate);
 	Config->writeEntry("Epsilon",KMeansParams.Epsilon);
 
+	// Write Config of KMeans
+	Config->setGroup(KProtosParams.GetGroupingName());
+	Config->writeEntry("Number of Groups",KProtosParams.NbGroups);
+	cout <<KProtosParams.NbGroups<<endl;
+	Config->writeEntry("Number of Protos",KProtosParams.NbProtos);
+	Config->writeEntry("Maximum number of iterations",KProtosParams.MaxIters);
+	Config->writeEntry("Number of subsamples",KProtosParams.NbSubSamples);
+	Config->writeEntry("Rate of element by subsample",KProtosParams.SubSamplesRate);
+	Config->writeEntry("Distance Parameter",KProtosParams.Lambda);
+	Config->writeEntry("VerifyKMeans Limit",KProtosParams.VerifyKMeansLimit);
+
 	// Write Config of Cure
 	Config->setGroup(CureParams.GetGroupingName());
 	Config->writeEntry("Number of Groups",CureParams.NbGroups);
@@ -410,6 +421,7 @@ void KGALILEICenterApp::readOptions(void)
 	GroupingMethod->InsertPtr(new RStd::RString("First-Fit Heuristic"));
 	GroupingMethod->InsertPtr(new RStd::RString("Grouping Genetic Algorithms"));
 	GroupingMethod->InsertPtr(new RStd::RString("KMeansCosinus"));
+	GroupingMethod->InsertPtr(new RStd::RString("KMeans Prototypes"));
 	GroupingMethod->InsertPtr(new RStd::RString("Random Heuristic"));
 	ComputingMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
 	ComputingMethod->InsertPtr(new RStd::RString("Statistical"));
@@ -460,6 +472,17 @@ void KGALILEICenterApp::readOptions(void)
 	KMeansParams.NbSubSamples=Config->readNumEntry("Number of subsamples",10);
 	KMeansParams.SubSamplesRate=Config->readNumEntry("Rate of element by subsample",80);
 	KMeansParams.Epsilon=Config->readDoubleNumEntry("Epsilon",0.005);
+
+	// Read Config of KProtos
+	Config->setGroup(KProtosParams.GetGroupingName());
+	KProtosParams.NbGroups=Config->readNumEntry("Number of Groups",13);
+	KProtosParams.NbProtos=Config->readNumEntry("Number of Protos",13);
+	KProtosParams.MaxIters=Config->readNumEntry("Maximum number of iterations",20);
+	KProtosParams.NbSubSamples=Config->readNumEntry("Number of subsamples",10);
+	KProtosParams.SubSamplesRate=Config->readNumEntry("Rate of element by subsample",80);
+	KProtosParams.Lambda=Config->readDoubleNumEntry("Distance Parameter",0.5);
+	KProtosParams.VerifyKMeansLimit=Config->readNumEntry("VerifyKMeans Limit",KProtosParams.VerifyKMeansLimit);
+
 
 	// Read Config of Cure
 	Config->setGroup(CureParams.GetGroupingName());

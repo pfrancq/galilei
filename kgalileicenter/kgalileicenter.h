@@ -50,6 +50,7 @@
 #include <galilei.h>
 #include <groups/gir.h>
 #include <groups/ggroupingkcos.h>
+#include <groups/ggroupingkprotos.h>
 #include <groups/ggroupingcure.h>
 #include <groups/ggroupingsim.h>
 #include <groups/ggroupcalcrelevant.h>
@@ -122,6 +123,11 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	* Parameters of the KMeans.
 	*/
 	GKMeansParams KMeansParams;
+
+	/**
+	* Parameters of the KProtos.
+	*/
+	GKProtosParams KProtosParams;
 
 	/**
 	* Parameters of Cure.
