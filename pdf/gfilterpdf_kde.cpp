@@ -63,11 +63,10 @@ void About(void)
 {
 	KAboutData aboutData( "pdf", I18N_NOOP("PDF Filter"),
 		"1.0", description, KAboutData::License_GPL,
-		"(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department\n"
-		" It is based and benefits a lot from Derek Noonburg's xpdf package.", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+		"(c) 2003, Université Libre de Bruxelles\nCAD/CAM Department\n"
+		" It is highly based on the Xpdf project.", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Mikhail Kruk",I18N_NOOP("Xpdf maintainer"), "meshko@cs.brandeis.edu");
-	aboutData.addAuthor("Derek B. Noonburg",I18N_NOOP("Main Xpdf developer"), 0);
+	aboutData.addAuthor("Derek B. Noonburg",I18N_NOOP("Xpdf Project"), "derekn@foolabs.com");
 	KAboutApplication dlg(&aboutData);
 	dlg.exec();
 }
