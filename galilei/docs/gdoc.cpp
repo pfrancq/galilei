@@ -204,7 +204,7 @@ void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw
 		{
 			if(ExtractWord(ptr,word))
 			{
-				if(!stop->IsIn<const char*>(word()))
+				if((!stop->IsIn<const char*>(word()))&&(Lang->ValidWord(word)))
 				{
 					stem=Lang->GetStemming(word);
 					if(stem.GetLen()>=2)
@@ -238,8 +238,6 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	// Verify that xml structure exists.
 	if(!xml)
 		throw GException("No XML Structure for document '"+URL+"'");
-
-	if((State==osUpToDate)||(State==osUpdated)) return;
 
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(session->GetLangs());
 
