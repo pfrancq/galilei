@@ -156,7 +156,7 @@ public:
 
 	/**
 	* Get the name of the model used for the description.
-	* @return C String.
+	* @return C String.                                                 
 	*/
 	virtual const char* GetModelName(void) const=0;
 
@@ -221,7 +221,7 @@ public:
 
 	/**
 	* Get the MIME type.
-	* @returns Pointer to a MIME type.
+	* @returns Pointer to a MIME type.                                     
 	*/
 	GMIMEFilter* GetMIMEType(void) const {return(Type);}
 
@@ -258,7 +258,7 @@ public:
 	* @return Total number of words in the documents with stoplist.
 	*/
 	unsigned int GetN(void) {return(N);}
-
+                                                                           
 	/**
 	* @return Total number of words in the documents.
 	*/

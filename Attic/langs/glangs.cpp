@@ -100,7 +100,7 @@ void GALILEI::GLangs::InitDics(void) throw(bad_alloc,GException)
 	// For each Lang, create a dictionnary and a stop list
 	GLangCursor CurLang=GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
-	{
+	{ 
 		LoadDic(CurLang()->GetCode(),true);
 		LoadDic(CurLang()->GetCode(),false);
 	}

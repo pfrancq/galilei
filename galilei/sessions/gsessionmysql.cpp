@@ -729,7 +729,10 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 		Words=dynamic_cast<GDocVector*>(doc)->GetWordWeightCursor();
 		for(Words.Start();!Words.End();Words.Next())
 		{
+
+
 			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%f)",l,id,Words()->GetId(),Words()->GetWeight());
+//			cout << sSql<<endl;
 			RQuery insertkwds(this,sSql);
 		}
 		l=ValidSQLValue(l,slang);
