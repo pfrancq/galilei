@@ -33,8 +33,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <glangs/glang.h>
-#include <gdocs/gwordcalcs.h>
-#include <gdocs/gwordlist.h>
+#include <ginfos/giwordcalcs.h>
+#include <ginfos/giwordlist.h>
 #include <gprofiles/gprofdoc.h>
 using namespace GALILEI;
 
