@@ -2271,7 +2271,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/r/rxml/Makefile.am]
-files=kgalileicenter/r/rxml/rxmlattr.cpp,kgalileicenter/r/rxml/rxmlattr.h,kgalileicenter/r/rxml/rxmlfile.cpp,kgalileicenter/r/rxml/rxmlfile.h,kgalileicenter/r/rxml/rxmlstruct.cpp,kgalileicenter/r/rxml/rxmlstruct.h,kgalileicenter/r/rxml/rxmltag.cpp,kgalileicenter/r/rxml/rxmltag.h,kgalileicenter/r/rxml/rxmltagcursor.h
+files=kgalileicenter/r/rxml/rxmlattr.cpp,kgalileicenter/r/rxml/rxmlattr.h,kgalileicenter/r/rxml/rxmlfile.cpp,kgalileicenter/r/rxml/rxmlfile.h,kgalileicenter/r/rxml/rxmlstruct.cpp,kgalileicenter/r/rxml/rxmlstruct.h,kgalileicenter/r/rxml/rxmltag.cpp,kgalileicenter/r/rxml/rxmltag.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=rxml
 sub_dirs=
@@ -2320,12 +2320,6 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/r/rxml/rxmltag.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/r/rxml/rxmltagcursor.h]
 dist=true
 install=false
 install_location=
