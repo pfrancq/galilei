@@ -72,7 +72,7 @@ bool GFilterTXT::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 		// Init Part
 		Doc=doc;
 		RTextFile Src(Doc->GetFile());
-		Src.Open(R::Read);
+		Src.Open(R::RIO::Read);
 
 		// Create the metaData tag and the first information
 		part=Doc->GetContent();

@@ -353,7 +353,7 @@ void GFilterXML::LoadDefinitions(void) throw(GException)
 			// Init Part
 
 			RXMLFile Src(Name,&fileStruct);
-			Src.Open(Read);
+			Src.Open(RIO::Read);
 			tag=fileStruct.GetTop();
 			FillFilterDefinitions(tag);
 		}
@@ -841,7 +841,7 @@ bool GFilterXML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 		// Init Part
 		Doc=doc;
 		RXMLFile Src(Doc->GetFile(),&fileStruct);
-		Src.Open(Read);
+		Src.Open(RIO::Read);
 
 		//Choose the correct tags definition (according to the mime type)
 		if(!Doc->GetMetaData()->GetTag("dc:format")) return false;

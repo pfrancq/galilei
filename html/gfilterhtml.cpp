@@ -84,7 +84,7 @@ bool GFilterHTML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 
 		//Convert html file to docxml structure
 		GHTMLConverter Src(this,Doc->GetFile(),Doc);
-		Src.Open(Read);
+		Src.Open(RIO::Read);
 
 		//Delete Empty Tags
 		Doc->GetContent()->DeleteEmptyTags(Doc);
