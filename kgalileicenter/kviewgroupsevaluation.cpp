@@ -95,9 +95,9 @@ void KViewGroupsEvaluation::RegisterEvaluationMethods(void)
 	}
 
 	//register the methods
-	methods->RegisterEvaluationMethod(new GEvaluateGroupingCalinski(session, groups));
-	methods->RegisterEvaluationMethod(new GEvaluateGroupingVariance(session, groups));
-	methods->RegisterEvaluationMethod(new GEvaluateGroupingIntraMinInter(session, groups));
+//	methods->RegisterEvaluationMethod(new GEvaluateGroupingCalinski(session, groups));
+//	methods->RegisterEvaluationMethod(new GEvaluateGroupingVariance(session, groups));
+//	methods->RegisterEvaluationMethod(new GEvaluateGroupingIntraMinInter(session, groups));
 	
 }
 
