@@ -122,7 +122,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 		// -> don't treat for the profiles computing
 		CurDoc=dynamic_cast<GDocVector*>(Docs()->GetDoc());
 		Fdbk=Docs()->GetFdbk();
-		if((IrrelFactor==0.0)&&(!(Fdbk & djOK))&&(!(Fdbk & djKO))) continue;
+		if((IrrelFactor==0.0)&&(Fdbk & djOutScope)) continue;
 
 		// Add total number of document judged for the current language
 		NbDocs++;
@@ -145,7 +145,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 
 		// Find list in function of the feedback
 		Fdbk=Docs()->GetFdbk();
-		if((IrrelFactor==0.0)&&(!(Fdbk & djOK))&&(!(Fdbk & djKO))) continue;
+		if((IrrelFactor==0.0)&&(Fdbk & djOutScope)) continue;
 		switch(Fdbk & djMaskJudg )
 		{
 			case djOK:
