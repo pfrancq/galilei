@@ -287,3 +287,55 @@ void GALILEI::GGroup::NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,fa
 	for(Docs.Start();!Docs.End();Docs.Next())
 		docs->InsertPtr(Docs()->Doc);
 }
+
+
+//-----------------------------------------------------------------------------
+GSubProfile* GALILEI::GGroup::RelevantSubProfile(bool g) const
+{
+	GSubProfile* rel;
+	GSubProfile** sub;
+	unsigned int i;
+	double refsum,sum;
+
+	// If no objects -> No relevant one.
+	if(!NbPtr) return(0);
+
+	// Suppose the first element is the most relevant.
+	sub=Tab;
+	rel=(*Tab);
+	refsum=ComputeSumSim(rel,g);
+
+	// Look if in the other objects, there is a better one
+	for(i=NbPtr;--i;sub++)
+	{
+		sum=ComputeSumSim(*sub,g);
+		if (sum>=refsum)
+		{
+			rel=(*sub);
+			refsum=sum;
+		}
+	}
+
+	// return most relevant
+	return(rel);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroup::ComputeSumSim(const GSubProfile* s,bool g) const
+{
+	double sum=0.0;
+	GSubProfile** sub1;
+	unsigned int i;
+
+	for(sub1=Tab,i=NbPtr+1;--i;sub1++)
+	{
+		if((*sub1)==s) continue;
+		if(g)
+			sum=sum+s->GlobalSimilarity((*sub1));
+		else
+			sum=sum+s->Similarity((*sub1));
+	}
+	return(sum);
+}
+

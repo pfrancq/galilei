@@ -179,6 +179,22 @@ public:
 	* \warning This method uses an internal container which is not optimal.
 	*/
 	void NotJudgedDocsRelList(RStd::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,bool global);
+
+	/**
+	* Compute the relevant subprofile, i.e. the subprofiles whith the highest
+	* average similarity with all the other subprofiles.
+	* @param g              Global similarities to use.
+	* @returns Pointer to GSubProfile representing the relevant one.
+	*/
+	/*const*/ GSubProfile* RelevantSubProfile(bool g) const;
+
+	/**
+	* Compute the sum of the similarities of a given profile to all the others.
+	* @param s              Profile used as reference.
+	* @param g              Global similarities to use.
+	* @returns result.
+	*/
+	double ComputeSumSim(const GSubProfile* s,bool g) const;
 };
 
 
