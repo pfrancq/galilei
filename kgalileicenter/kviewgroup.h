@@ -64,7 +64,6 @@ namespace GALILEI
 /**
 * The KViewGroup class represents a window to manipulate a specific groups.
 * @author Pascal Francq.
-* @version $Revision$
 * @short Group' Window.
 */
 class KViewGroup : public KView

@@ -101,7 +101,6 @@ class KView;
 * @see KAccel
 *
 * @author Pascal Francq.
-* @version $Revision$
 * @short Main Window.
 */
 class KGALILEICenterApp : public KMainWindow

@@ -58,7 +58,6 @@
 /**
 * The KViewSom class represents the window to describe a specific document.
 * @author David Wartel
-* @version $Revision$
 * @short Document Window.
 */
 class KViewSom : public KView

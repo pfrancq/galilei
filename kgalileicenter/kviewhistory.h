@@ -71,7 +71,6 @@ using namespace GALILEI;
 * The KViewHistory class provides the view widget to display the evolution
 * of groups.
 * @author Pascal Francq.
-* @version $Revision$
 * @short Window for GA.
 */
 class KViewHistory : public KView

@@ -75,7 +75,6 @@ enum GViewType{gNothing,gUsers,gDocs,gDoc,gProfile,gGroups,gGroup,gThGroups, gGr
 * easily set up the main area of your view by setting another view as main
 * widget (QMainWindow::setMainWidget() ).
 * @author Pascal Francq.
-* @version $Revision$
 * @short Generic Window.
 */
 class KView : public QWidget

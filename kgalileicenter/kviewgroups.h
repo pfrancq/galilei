@@ -61,7 +61,6 @@ class QListView;
 * The KViewGroups class represents a window to manipulate the groups of the
 * system.
 * @author Pascal Francq and David Wartel.
-* @version $Revision$
 * @short Groups' Window.
 */
 class KViewGroups : public KView

@@ -77,7 +77,6 @@ class KGALILEICenterApp;
 * objects. Also, KDoc contains the methods for serialization of
 * the document data from and to files.
 * @author Pascal Francq
-* @version $Revision$
 */
 class KDoc : public QObject//, public GStorageMySQL
 {

@@ -59,7 +59,6 @@ using namespace R;
 * The KViewStats class provides the view widget for running some instructions on
 * a session.
 * @author Pascal Francq.
-* @version $Revision$
 * @short Statistics Window for Instructions.
 */
 class KViewStats : public KView

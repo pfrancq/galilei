@@ -67,7 +67,6 @@ class QLabel;
 * The KViewStat class provides the view widget for statistics about a set of
 * documents.
 * @author Pascal Francq.
-* @version $Revision$
 * @short Window for Statistics.
 */
 class KViewStems : public KView

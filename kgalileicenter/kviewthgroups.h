@@ -66,7 +66,6 @@ class QTabWidget;
 * system.
 *
 * @author Pascal Francq and David Wartel.
-* @version $Revision$
 * @short Theoritical Groups' Window.
 */
 class KViewThGroups : public KView

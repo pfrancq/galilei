@@ -57,7 +57,6 @@ class QMultiLineEdit;
 /**
 * The KViewPrg class provides the view widget for running an application.
 * @author Pascal Francq.
-* @version $Revision$
 * @short Window for Programs.
 */
 class KViewPrg : public KView, public GSlot

@@ -55,7 +55,6 @@ using namespace GALILEI;
 /**
 * The KViewUsers class provides a window to manipulate the users of the system.
 * @author Pascal Francq.
-* @version $Revision$
 * @short Users' Window.
 */
 class KViewUsers : public KView

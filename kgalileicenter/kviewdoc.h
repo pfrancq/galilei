@@ -62,7 +62,6 @@ using namespace GALILEI;
 /**
 * The KViewDoc class represents the window to describe a specific document.
 * @author Pascal Francq
-* @version $Revision$
 * @short Document Window.
 */
 class KViewDoc : public KView
