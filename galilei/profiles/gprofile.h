@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	gprofile.h
 
 	Basic Information - Implementation.
 
@@ -84,8 +84,8 @@ public:
 	unsigned Id;
 
 	/**
-	*
-	*/ name
+	* name
+	*/
 	RString Name;
 
 	/**

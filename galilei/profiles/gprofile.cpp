@@ -54,7 +54,7 @@ GProfile::GProfile(GUser *owner) throw(bad_alloc)
 
 //-----------------------------------------------------------------------------
 GProfile::GProfile(GUser *owner,unsigned int id,RString &name) throw(bad_alloc)
-  : RContainer<HSubProfile,unsigned,true,true>(10,5),Owner(owner),Id(id),Name(name),
+  : RContainer<GSubProfile,unsigned,true,true>(10,5),Owner(owner),Id(id),Name(name),
     Modified(false),FdbkDocs(100,50)
 {
 }
