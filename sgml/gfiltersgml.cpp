@@ -48,17 +48,21 @@
 #endif
 #include <fcntl.h>
 
+//---------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainer.h>
+#include <rstd/rxmltag.h>
+#include <rstd/rtextfile.h>
+using namespace R;
+
 
 //---------------------------------------------------------------------------
 // include files for GALILEI
-#include "gfiltersgml.h"
+#include <filters/gfiltersgml.h>
 #include <filters/codetochar.h>
 using namespace GALILEI;
 
-#include <rstd/rcontainer.h>
-#include <rxml/rxmltag.h>
 
-#include <rio/rtextfile.h>
 
 //---------------------------------------------------------------------------
 //
