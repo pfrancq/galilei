@@ -259,14 +259,14 @@ public:
 	* Increase the number of objects using the dictionnary.
 	* @param ObjType        Type of the reference.
 	*/
-	void IncRef(tObjType ObjType);
+	void IncRef(tObjType ObjType,GWordType WordType);
 
 	/**
 	* Decrease the number of objects using the dictionnary.
 	* @param id             Identificator.
 	* @param ObjType        Type of the reference.
 	*/
-	void DecRef(tObjType ObjType);
+	void DecRef(tObjType ObjType,GWordType WordType);
 
 	/**
 	* Get the total number of references.

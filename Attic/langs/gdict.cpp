@@ -222,14 +222,14 @@ void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType,GWordType WordType)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType)
+void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType,GWordType WordType)
 {
 	Direct[id]->DecRef(ObjType);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::IncRef(tObjType ObjType)
+void GALILEI::GDict::IncRef(tObjType ObjType,GWordType WordType)
 {
 	switch(ObjType)
 	{
@@ -249,7 +249,7 @@ void GALILEI::GDict::IncRef(tObjType ObjType)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::DecRef(tObjType ObjType)
+void GALILEI::GDict::DecRef(tObjType ObjType,GWordType WordType)
 {
 	switch(ObjType)
 	{
