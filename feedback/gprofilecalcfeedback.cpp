@@ -103,7 +103,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 	GDocVector* CurDoc;
 	GWeightInfo* w;
 	bool Add;
-	tDocJudgement Fdbk;
+	tDocAssessment Fdbk;
 	double MaxFreq;
 	double Factor;
 	double Freq;
