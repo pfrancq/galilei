@@ -61,48 +61,40 @@ GSessionMySQL::~GSessionMySQL()
 
 
 //-----------------------------------------------------------------------------
-void GSessionMySQL::LoadAllFromDB()
-{
-	LoadLangsFromDB();
-	LoadUsersFromDB();
-	LoadGroupsFromDB();
-	LoadDocs();
-}
-//-----------------------------------------------------------------------------
 void GSessionMySQL::LoadUsersFromDB()
 {        
-	if (Langs)
-	{
-		Users = new GUsers(10);
-		GUser* usr;
-		RQuery users (db, "SELECT userid,user FROM users");
-		for(users.Begin();users.IsMore();users++)
-		{
-			usr=new GUser(atoi(users[0]),users[1]);
-			LoadProfilesFromDB(usr);
-			Users->InsertPtr(usr);
-		}
-	}
-	else
-		cout << "please loas Langs (dics) first" <<endl;
+    if (Langs)
+    {
+        Users = new GUsers(10);
+        GUser* usr;
+        RQuery users (db, "SELECT userid,user FROM users");
+        for(users.Begin();users.IsMore();users++)
+        {
+            usr=new GUser(atoi(users[0]),users[1]);
+            LoadProfilesFromDB(usr);
+            Users->InsertPtr(usr);
+        }
+    }
+    else
+        cout << "please loas Langs (dics) first" <<endl;
 }
 
 
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadProfilesFromDB (GUser* usr)
 {
-	// load profiles of this user
-	GProfile* prof;
-	char sSql[100];
-	sprintf(sSql,"SELECT profileid, description, updated FROM profiles WHERE userid=%u",usr->GetId());
+    // load profiles of this user
+    GProfile* prof;
+    char sSql[100];
+    sprintf(sSql,"SELECT profileid, description, updated FROM profiles WHERE userid=%u",usr->GetId());
         
-	RQuery profiles(db,sSql);
-	for(profiles.Begin();profiles.IsMore();profiles++)
-	{
-		prof=new GProfile(usr,atoi(profiles[0]),profiles[1]);
-		LoadSubProfilesFromDB(prof);
-		usr->InsertPtr(prof);
-	}
+    RQuery profiles(db,sSql);
+    for(profiles.Begin();profiles.IsMore();profiles++)
+    {
+        prof=new GProfile(usr,atoi(profiles[0]),profiles[1]);
+        LoadSubProfilesFromDB(prof);
+        usr->InsertPtr(prof);
+    }
         
 }
         
@@ -111,37 +103,37 @@ void GSessionMySQL::LoadProfilesFromDB (GUser* usr)
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadSubProfilesFromDB (GProfile* prof)
 {
-	GSubProfile* sub ;
-	char ssql[100], sSql[100];
-	GLang* lang;
-	sprintf(ssql,"SELECT subprofileid, langid FROM subprofiles WHERE profileid=%u",prof->GetId());
-	RQuery subprofil (db,ssql);
-	for(subprofil.Begin();subprofil.IsMore();subprofil++)
-	{
+    GSubProfile* sub ;
+    char ssql[100], sSql[100];
+    GLang* lang;
+    sprintf(ssql,"SELECT subprofileid, langid FROM subprofiles WHERE profileid=%u",prof->GetId());
+    RQuery subprofil (db,ssql);
+    for(subprofil.Begin();subprofil.IsMore();subprofil++)
+    {
         
-		lang=Langs->GetLang(subprofil[1]);
-		sub=new GSubProfile(prof,atoi(subprofil[0]),lang);
+        lang=Langs->GetLang(subprofil[1]);
+        sub=new GSubProfile(prof,atoi(subprofil[0]),lang);
                                 
 
-		// Load GWordList 'OK'
-		sprintf(sSql,"SELECT kwdid FROM %sokkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
-		RQuery ok(db,sSql);
-		for(ok.Begin();ok.IsMore();ok++)                
-			sub->GetOK()->InsertPtr(new GIWord(atoi(ok[0])));
+        // Load GWordList 'OK'
+        sprintf(sSql,"SELECT kwdid FROM %sokkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
+        RQuery ok(db,sSql);
+        for(ok.Begin();ok.IsMore();ok++)                
+            sub->GetOK()->InsertPtr(new GIWord(atoi(ok[0])));
 
-		// Load GWordList 'KO'
-		sprintf(sSql,"SELECT kwdid FROM %skokwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
-		RQuery ko(db,sSql);
-		for(ko.Begin();ko.IsMore();ko++)                
-			sub->GetKO()->InsertPtr(new GIWord(atoi(ko[0])));
+        // Load GWordList 'KO'
+        sprintf(sSql,"SELECT kwdid FROM %skokwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
+        RQuery ko(db,sSql);
+        for(ko.Begin();ko.IsMore();ko++)                
+            sub->GetKO()->InsertPtr(new GIWord(atoi(ko[0])));
 
-		// Load GWordList 'Common'
-		sprintf(sSql,"SELECT kwdid FROM %scomkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
-		RQuery com(db,sSql);
-		for(com.Begin();com.IsMore();com++)                
-			sub->GetCommon()->InsertPtr(new GIWord(atoi(com[0])));
+        // Load GWordList 'Common'
+        sprintf(sSql,"SELECT kwdid FROM %scomkwds WHERE subprofileid=%u",lang->GetCode(),sub->GetId());
+        RQuery com(db,sSql);
+        for(com.Begin();com.IsMore();com++)                
+            sub->GetCommon()->InsertPtr(new GIWord(atoi(com[0])));
 
-		prof->InsertPtr(sub);
+        prof->InsertPtr(sub);
 
         }
 }
@@ -150,40 +142,40 @@ void GSessionMySQL::LoadSubProfilesFromDB (GProfile* prof)
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadDics(void) throw(bad_alloc,GException)
 {
-	GLang* lang;
-	char str[30];
+    GLang* lang;
+    char str[30];
 
-	if(!Dics) Dics=new GDicts(Langs->NbPtr);
-	if(!Stops) Stops=new GDicts(Langs->NbPtr);
-	for(Langs->Start();!Langs->End();Langs->Next())
-	{
-		lang=(*Langs)();
-		sprintf(str,"%skwds",lang->GetCode());
-//		LoadDicFromDB(str,lang,Dics);
-		sprintf(str,"%sstopkwds",lang->GetCode());
-//		LoadDicFromDb(str,lang,Stops);
-	}
+    if(!Dics) Dics=new GDicts(Langs->NbPtr);
+    if(!Stops) Stops=new GDicts(Langs->NbPtr);
+    for(Langs->Start();!Langs->End();Langs->Next())
+    {
+        lang=(*Langs)();
+        sprintf(str,"%skwds",lang->GetCode());
+//        LoadDicFromDB(str,lang,Dics);
+        sprintf(str,"%sstopkwds",lang->GetCode());
+//        LoadDicFromDb(str,lang,Stops);
+    }
 }
 
 
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadLangsFromDB()
 {
-	GLang* lang;
+    GLang* lang;
 
-	RQuery compt(db,"SELECT COUNT(*) FROM languages");
-	compt.Begin();
-	Dics=new GDicts(atoi(compt[0]));
-	Stops=new GDicts(atoi(compt[0]));
-	Langs = new GLangs(atoi(compt[0]));
-	lang=new GLangEN();
-	Langs->InsertPtr(lang);
-	LoadDicFromDB("enkwds",lang) ;
-	LoadStopsFromDB("enstopkwds",lang) ;
-	lang=new GLangFR();
-	Langs->InsertPtr(lang);
-	LoadDicFromDB("frkwds",lang) ;
-	LoadStopsFromDB("frstopkwds",lang) ;
+    RQuery compt(db,"SELECT COUNT(*) FROM languages");
+    compt.Begin();
+    Dics=new GDicts(atoi(compt[0]));
+    Stops=new GDicts(atoi(compt[0]));
+    Langs = new GLangs(atoi(compt[0]));
+    lang=new GLangEN();
+    Langs->InsertPtr(lang);
+    LoadDicFromDB("enkwds",lang) ;
+    LoadStopsFromDB("enstopkwds",lang) ;
+    lang=new GLangFR();
+    Langs->InsertPtr(lang);
+    LoadDicFromDB("frkwds",lang) ;
+    LoadStopsFromDB("frstopkwds",lang) ;
 }
 
 
@@ -249,49 +241,49 @@ void GSessionMySQL::LoadStopsFromDB(const RString &name,GLang *lang)
 //-----------------------------------------------------------------------------
 void GSessionMySQL::FillDict(GDict* dict)
 {
-	char ssql[100];
-	sprintf(ssql,"SELECT kwdid, kwd  FROM %s", dict->GetName());
-	RQuery dicts (db, ssql);
-	for(dicts.Begin();dicts.IsMore();dicts++)
-	{
-	 	/*GWord* word = new GWord (atoi(dicts[0]), RString(dicts[1]));
-		dict->PutDirect(word);
-		dict->InsertPtr (word);*/
-		dict->Put(atoi(dicts[0]), RString(dicts[1]));
-	}
+    char ssql[100];
+    sprintf(ssql,"SELECT kwdid, kwd  FROM %s", dict->GetName());
+    RQuery dicts (db, ssql);
+    for(dicts.Begin();dicts.IsMore();dicts++)
+    {
+         /*GWord* word = new GWord (atoi(dicts[0]), RString(dicts[1]));
+        dict->PutDirect(word);
+        dict->InsertPtr (word);*/
+        dict->Put(atoi(dicts[0]), RString(dicts[1]));
+    }
         
 }
 
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadDocs(void)
 {
-	GDoc* doc;
-	int docid;
+    GDoc* doc;
+    int docid;
 
-	char sSql1[100],sSql2[100],sSql3[100],sSql4[100];
-	sprintf(sSql1,"SELECT COUNT(*) FROM htmls" );
-	RQuery count(db,sSql1);
-	count.Begin();
-	Docs = new  GDocs (atoi(count[0]),this);
-	sprintf(sSql2,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title  FROM htmls");
-	RQuery quer (db,sSql2);
-	for(quer.Begin();quer.IsMore();quer++)
-	{
-		docid=atoi(quer[0]);
+    char sSql1[100],sSql2[100],sSql3[100],sSql4[100];
+    sprintf(sSql1,"SELECT COUNT(*) FROM htmls" );
+    RQuery count(db,sSql1);
+    count.Begin();
+    Docs = new  GDocs (atoi(count[0]),this);
+    sprintf(sSql2,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title  FROM htmls");
+    RQuery quer (db,sSql2);
+    for(quer.Begin();quer.IsMore();quer++)
+    {
+        docid=atoi(quer[0]);
 
 
-		Docs->InsertPtr(doc=new GDoc(quer[1],quer[6],docid,Langs->GetLang(quer[2]),atoi(quer[4]),atoi(quer[5])));
-		sprintf(sSql3,"SELECT COUNT(*) FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
-		RQuery count(db,sSql3);
-		count.Begin();
-		sprintf(sSql4,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
-		RQuery doc2(db,sSql4);
-		for(doc2.Begin();doc2.IsMore();doc2++)
-		{
-			doc->AddWord(atoi(doc2[0]),atoi(doc2[1]));
-		}
-	}
-	LoadProfilesDocs();
+        Docs->InsertPtr(doc=new GDoc(quer[1],quer[6],docid,Langs->GetLang(quer[2]),atoi(quer[4]),atoi(quer[5])));
+        sprintf(sSql3,"SELECT COUNT(*) FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
+        RQuery count(db,sSql3);
+        count.Begin();
+        sprintf(sSql4,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
+        RQuery doc2(db,sSql4);
+        for(doc2.Begin();doc2.IsMore();doc2++)
+        {
+            doc->AddWord(atoi(doc2[0]),atoi(doc2[1]));
+        }
+    }
+    LoadProfilesDocs();
 }
 
 
@@ -301,7 +293,7 @@ void GSessionMySQL::LoadDocs(void)
 //-----------------------------------------------------------------------------
 unsigned GSessionMySQL::DicNextId(const RString& word)   // function to get 'next id' for dic. (to devellop!)
 {
-	return(0);
+    return(0);
 }
 
 
@@ -315,17 +307,16 @@ void GSessionMySQL::LoadGroupsFromDB()
         for(group1.Begin();group1.IsMore();group1++)
         {
                 GLang* lang = Langs->GetLang(group1[0]);
-                GGroups* groups=new GGroups(GroupsLangs, lang);
+                GGroups* groups=new GGroups(lang);
                 GroupsLangs->InsertPtr(groups);
                 sprintf(ssql2,"SELECT groupid, langid  FROM groups WHERE langid=\"%s\"",group1[0] );
 
                 RQuery group2 (db, ssql2);
                 for(group2.Begin();group2.IsMore();group2++)
                 {
-                        GGroup* group=new GGroup(groups);
-                        group->Id=atoi(group2[0]);
+                        GGroup* group=new GGroup(atoi(group2[0]));
                         groups->InsertPtr(group);
-                        sprintf(ssql3, "SELECT groupid, subprofileid, attach FROM groupsbysubprofiles WHERE groupid=%u", group->Id);
+                        sprintf(ssql3, "SELECT groupid, subprofileid, attach FROM groupsbysubprofiles WHERE groupid=%u", group->GetId());
                         RQuery group3 (db, ssql3);
                         for(group3.Begin(); group3.IsMore(); group3++)
                         {
@@ -349,32 +340,26 @@ void GSessionMySQL::LoadGroupsFromDB()
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadProfilesDocs()
 {
-	for (Users->Start();!Users->End();Users->Next())
-	{
-		GUser* user=(*Users)();
-		for (user->Start();!user->End();user->Next())
-		{
-			LoadProfileDocs((*user)());
-		}
-	}
-	
+    for (Users->Start();!Users->End();Users->Next())
+    {
+        GUser* user=(*Users)();
+        for (user->Start();!user->End();user->Next())
+        {
+            LoadProfileDocs((*user)());
+        }
+    }
+    
 }
 
 
 //-----------------------------------------------------------------------------
 void GSessionMySQL::LoadProfileDocs(GProfile* profile)
 {
-	
-	char ssql[100];
-	sprintf(ssql,"SELECT htmlid, judgement  FROM htmlsbyprofiles WHERE profileid=%u", profile->GetId());
-	RQuery docs (db, ssql);
+    
+    char ssql[100];
+    sprintf(ssql,"SELECT htmlid, judgement  FROM htmlsbyprofiles WHERE profileid=%u", profile->GetId());
+    RQuery docs (db, ssql);
 
-	for(docs.Begin();docs.IsMore();docs++)
-		profile->AddDocJudged(Docs->GetPtr<const unsigned>(atoi(docs[0])),atoi(docs[1]));
-}
-
-
-//-----------------------------------------------------------------------------
-void GSessionMySQL::AddDocJudgement(GDoc* doc, GProfile* profile, char fdbk)
-{
+    for(docs.Begin();docs.IsMore();docs++)
+        profile->AddDocJudged(Docs->GetPtr<const unsigned>(atoi(docs[0])),atoi(docs[1]));
 }

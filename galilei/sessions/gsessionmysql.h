@@ -125,11 +125,10 @@ public:
 	*/
 	void LoadGroupsFromDB(void);
 
-		
 	/**
 	* Add a judgement by a profile for a document.
 	*/
-	void AddDocJudgement(GDoc* doc, GProfile* profile, char fdbk);
+	void AddDocJudgement(GDoc* doc, GProfile* profile, char fdbk) {}
 
 	/**
 	*
