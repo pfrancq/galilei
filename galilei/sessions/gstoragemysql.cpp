@@ -1124,9 +1124,6 @@ void GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool h
 //------------------------------------------------------------------------------
 void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historicid) throw(GException)
 {
-	GFactoryLangCursor curLang;
-	GLang* lang;
-
 	try
 	{
 		GProfileCursor curProf=session->GetProfilesCursor() ;
