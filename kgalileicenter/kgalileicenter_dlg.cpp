@@ -156,7 +156,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKCos(&KMeansParams));
 //	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKProtos());
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfCure(&CureParams));
-	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfRelevant());
-	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfGravitation());
+	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfRelevant(&CalcRelevantParams));
+	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfGravitation(&CalcGravitationParams));
 	dlg.exec();
 }

@@ -364,6 +364,7 @@ void KViewEvaluateGroup::ConstructSimilarityDocGroup(bool relevant,bool global)
 	double MeanIntraMJug;
 	double MeanIntraNotJug;
 	double MeanIntraMNotJug;
+	GGroupCalc* CalcMethod;
 
 	MeanIntraMAll=0.0;
 	MeanExtraMAll=0.0;
@@ -373,13 +374,14 @@ void KViewEvaluateGroup::ConstructSimilarityDocGroup(bool relevant,bool global)
 	int nbtot=0;
 
 	GSession* session=Doc->GetSession();
-	GGroupCalcRelevant Relevant(session);
-	GGroupCalcGravitation Gravitation(session);
-	
+	if (relevant)
+		session->SetCurrentGroupCalcMethod("Relevant SubProfile");
+	else
+		session->SetCurrentGroupCalcMethod("Gravitational Point");
+	CalcMethod=session->GetCurrentGroupCalcMethod();
+
 	SimilarityDoc->clear();
 
-	if(relevant) Relevant.SetMaxNonZero(50);
-	else Gravitation.SetMaxNonZero(50);
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 	session->LoadIdealDocument(GroupsDoc);
 
@@ -404,8 +406,7 @@ void KViewEvaluateGroup::ConstructSimilarityDocGroup(bool relevant,bool global)
 
 			//le groupe de sous profile
 			GGroup* Group=Cur2();
-			if(relevant) Relevant.Compute(Group);
-			else Gravitation.Compute(Group);
+			CalcMethod->Compute(Group);
 
 			//le groupe avec tt les documents
 			GGroupEvaluate* Grp=Cur();

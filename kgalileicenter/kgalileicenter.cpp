@@ -172,8 +172,8 @@ void KGALILEICenterApp::slotSessionConnect(void)
 //			Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingCure(Sess, &CureParams));
 			Sess->RegisterGroupingMethod(new GGroupingRandom(Sess));
-			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess));
-			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess));
+			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess, &CalcGravitationParams));
+			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess,&CalcRelevantParams));
 			Config->setGroup("Session Options");
 			method=Config->readEntry("Description Method","Vector space");
 			Sess->SetCurrentProfileDesc(method);
@@ -253,8 +253,8 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterGroupingMethod(new GGroupingKCos(Sess, &KMeansParams));
 //	Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
 	Sess->RegisterGroupingMethod(new GGroupingCure(Sess, &CureParams));
-	Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess));
-	Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess));
+	Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess,&CalcGravitationParams));
+	Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess, &CalcRelevantParams));
 	Config->setGroup("Session Options");
 	method=Config->readEntry("Description Method","Vector space");
 	Sess->SetCurrentProfileDesc(method);

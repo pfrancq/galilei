@@ -52,6 +52,8 @@
 #include <groups/ggroupingkcos.h>
 #include <groups/ggroupingcure.h>
 #include <groups/ggroupingsim.h>
+#include <groups/ggroupcalcrelevant.h>
+#include <groups/ggroupcalcgravitation.h>
 #include <profiles/gprofilecalcfeedback.h>
 #include <profiles/gprofilecalcreweighting.h>
 #include <profiles/gprofilecalcvector.h>
@@ -145,6 +147,16 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	* Parameters for statistical calc method.
 	*/
 	GStatisticalParams StatisticalParams;
+
+	/**
+	* Parameters for 'relevant' group description computing
+	*/
+	GCalcRelevantParams CalcRelevantParams;
+
+	/**
+	* Parameters for 'gravitation' group description computing
+	*/
+	GCalcGravitationParams CalcGravitationParams;
 
 	/**
 	* Database server's host.
