@@ -169,9 +169,9 @@ void GProfileCalcManager::SetCurrentMethod(const char* name) throw(GException)
 		tmp=fac->GetPlugin();
 	else
 		tmp=0;
+	Current=tmp;
 	if(!tmp)
 		throw GException(RString("Computing method '")+name+"' doesn't exists.");
-	Current=tmp;
 }
 
 
