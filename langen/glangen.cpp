@@ -12,21 +12,6 @@
 
 	Last Modify: $Date$
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
-
 */
 
 
@@ -40,6 +25,7 @@
 // include files for GALILEI
 #include <glangs/glangen.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
 
@@ -86,7 +72,7 @@ GLangEN::PorterRule::PorterRule(char* os,char* ns,int oo,int no,int mr,tConditio
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangEN::GLangEN(void) throw(bad_alloc)
+GALILEI::GLangEN::GLangEN(void) throw(bad_alloc)
 	: GLang("English","en"), Rules1a(0), Rules1b(0), Rules1bb(0), Rules1c(0),
 	  Rules2(0), Rules3(0), Rules4(0), Rules5a(0), Rules5b(0)
 {
@@ -193,7 +179,7 @@ GLangEN::GLangEN(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-int GLangEN::GetWordSize(char* kwd)
+int GALILEI::GLangEN::GetWordSize(char* kwd)
 {
 	int Result=0;             // WordSize of the word.
 	int State=0;              // Current state of the machine.
@@ -222,7 +208,7 @@ int GLangEN::GetWordSize(char* kwd)
 }
 
 //-----------------------------------------------------------------------------
-bool GLangEN::ContainsVowel(const char* kwd)
+bool GALILEI::GLangEN::ContainsVowel(const char* kwd)
 {
 	if(!(*kwd))
 		return(false);
@@ -232,7 +218,7 @@ bool GLangEN::ContainsVowel(const char* kwd)
 
 
 //-----------------------------------------------------------------------------
-bool GLangEN::EndsWithCVC(char* kwd,char* &end)
+bool GALILEI::GLangEN::EndsWithCVC(char* kwd,char* &end)
 {
 	int length;
 
@@ -248,7 +234,7 @@ bool GLangEN::EndsWithCVC(char* kwd,char* &end)
 }
 
 //-----------------------------------------------------------------------------
-bool GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,unsigned int,true,false>* rules)
+bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,unsigned int,true,false>* rules)
 {
 	PorterRule* ptr;
 	char* ending;
@@ -300,7 +286,7 @@ bool GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,unsigned int
 
 
 //-----------------------------------------------------------------------------
-RString& GLangEN::GetStemming(const RString& _kwd)
+RString& GALILEI::GLangEN::GetStemming(const RString& _kwd)
 {
 	RString *res=RString::GetString();
 	char kwd[50];
@@ -332,7 +318,7 @@ RString& GLangEN::GetStemming(const RString& _kwd)
 
 
 //-----------------------------------------------------------------------------
-GLangEN::~GLangEN(void)
+GALILEI::GLangEN::~GLangEN(void)
 {
 	if(Rules1a) delete Rules1a;
 	if(Rules1b) delete Rules1b;
