@@ -112,7 +112,7 @@ public:
 	* Constructor of the english language.
 	* @param fac             Factory.
 	*/
-	GLangNL(GFactoryLang* fac) throw(bad_alloc);
+	GLangNL(GFactoryLang* fac) throw(std::bad_alloc);
 
 	/**
 	* Function that return stemming of a word. The Porter's algorithm is
