@@ -69,21 +69,21 @@ using namespace GALILEI;
 QSessionProgressDlg::QSessionProgressDlg( QWidget* parent,GSession* s,const char* c)
     : QSemiModal(parent,"QSessionProgressDlg",true),GSlot(), Session(s)
 {
-	resize( 311, 78 );
+	resize(600, 78 );
 	setCaption(i18n(c));
 
 	btnOk = new QPushButton( this, "buttonOk_2" );
-	btnOk->setGeometry( QRect( 110, 50, 80, 22 ) );
+	btnOk->setGeometry( QRect( 260, 50, 80, 22 ) );
 	btnOk->setText( i18n( "&OK" ) );
 	btnOk->setAutoDefault( TRUE );
 	btnOk->setDefault( TRUE );
 
 	Line = new QFrame( this, "Line1" );
-	Line->setGeometry( QRect( 0, 30, 311, 20 ) );
+	Line->setGeometry( QRect( 0, 30, 600, 20 ) );
 	Line->setFrameStyle( QFrame::HLine | QFrame::Sunken );
 
 	txtRem = new QLabel( this, "txtRem" );
-	txtRem->setGeometry( QRect( 10, 10, 281, 20 ) );
+	txtRem->setGeometry( QRect( 10, 10, 580, 20 ) );
 
 	connect(btnOk,SIGNAL(clicked()),this,SLOT(close()));
 }
