@@ -109,6 +109,7 @@ GSession* GSession::Session=0;
 bool GSession::ExternBreak=false;
 
 
+//------------------------------------------------------------------------------
 GSession::GSession(GStorage* str) throw(std::bad_alloc,GException)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(0,0),
 	  GGroups(0), Subjects(0),
@@ -186,7 +187,7 @@ void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseMana
 	PostDocMng=pdmng;
 	if(PostDocMng)
 		PostDocMng->Connect(this);
-		
+
 	EngineMng=emng;
 }
 
@@ -290,7 +291,6 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
 
-	ExternBreak=false;
 	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
 	{
@@ -385,7 +385,6 @@ void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save) throw(GExcepti
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
 
-	ExternBreak=false;
 	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
 	{
@@ -445,7 +444,7 @@ void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save) throw(GExcepti
 					throw GException(e.GetMsg());
 			}
 		}
-		
+
 		// Add the new documents.
 		// Continue the analysis if documents were added.
 		RCursor<GDoc> Cur(tmpDocs);
@@ -468,7 +467,7 @@ void GSession::ComputePostDoc(GSlot* rec)  throw(GException)
 
 	// Run all post-group methods that are enabled
 	GFactoryPostDocCursor PostDocs=PostDocMng->GetPostDocsCursor();
-	ExternBreak=false;
+
 	//first sort the plugins by level
 	RContainer<GFactoryPostDocOrder,true,true> ordered(PostDocs.GetNb());
 
@@ -507,7 +506,6 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords) throw(G
 	metaEngine=EngineMng->GetCurrentMethod();
 	if(!metaEngine)
 		throw GException("No meta engine method chosen.");
-	ExternBreak=false;
 	metaEngine->Query(keyWords,true); //true ->Use all keywords passed to the meta engine
 	metaEngine->Process();
 }
@@ -650,7 +648,6 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) t
 	if(!Profiling)
 		throw GException("No computing method chosen.");
 
-	ExternBreak=false;
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		if(rec)
@@ -711,7 +708,6 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehis
 
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
-	ExternBreak=false;
 	Grouping->Grouping(rec,modified,save, savehistory);
 	// Run all post-group methods that are enabled
 	ComputePostGroup(rec);
@@ -725,7 +721,6 @@ void GSession::ComputePostGroup(GSlot* rec)  throw(GException)
 
 	// Run all post-group methods that are enabled
 	GFactoryPostGroupCursor PostGroups=PostGroupMng->GetPostGroupsCursor();
-	ExternBreak=false;
 
 	//first sort the plugins by level
 	RContainer<GFactoryPostGroupOrder,true,true> ordered(PostGroups.GetNb());
@@ -838,7 +833,6 @@ const char* GSession::GetMIMEType(const char* mime) const
 //------------------------------------------------------------------------------
 void GSession::RunPrg(GSlot* rec,const char* filename) throw(GException)
 {
-	ExternBreak=false;
 	GSessionPrg Prg(filename,this,rec);
 	Prg.Exec();
 }
@@ -1011,12 +1005,12 @@ GSession::~GSession(void)
 		if(DocProfSims) delete DocProfSims;
 		if(ProfilesBehaviours) delete ProfilesBehaviours;
 		if(ProfilesSims) delete ProfilesSims;
-	
+
 		// Clear all entities
 		GGroups::Clear();
 		GUsers::Clear();
 		GDocs::Clear();
-	
+
 		// Disconnect from the different managers
 		if(ProfilingMng) ProfilingMng->Disconnect(this);
 		if(GroupingMng) GroupingMng->Disconnect(this);
@@ -1026,7 +1020,7 @@ GSession::~GSession(void)
 		if(PostGroupMng) PostGroupMng->Disconnect(this);
 		if(DocAnalyseMng) DocAnalyseMng->Disconnect(this);
 		if(Langs) Langs->Disconnect(this);
-	
+
 		// Delete stuctures
 		if(Random) delete Random;
 		if(Subjects) delete Subjects;

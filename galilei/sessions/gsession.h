@@ -127,7 +127,7 @@ protected:
 	* Document Analysis Methods Manager.
 	*/
 	GEngineManager* EngineMng;
-	
+
 	/**
 	* Similarities between the subprofiles.
 	*/
@@ -181,7 +181,7 @@ public:
 	* @param str             Storage manager.
 	*/
 	GSession(GStorage* str) throw(std::bad_alloc,GException);
-	
+
 	/**
 	* Constructor.
 	* @param str             Storage manager.
@@ -202,9 +202,16 @@ public:
 	static bool Break(void) {return(ExternBreak);}
 
 	/**
-	* Ask to session to break as soon as possible.
+	* Ask to session to break as soon as possible. The method ResetBreak should
+	* be called to allow the session to do something again.
 	*/
 	static void SetBreak(void) {ExternBreak=true;}
+
+	/**
+	* Reset the break on a session. This method must be called after a SetBreak
+	* to allow the session to do something again.
+	*/
+	static void ResetBreak(void) {ExternBreak=false;}
 
 	/**
 	* Connect the session to managers.
@@ -290,7 +297,7 @@ public:
 	* @return Pointer to GEngineManager.
 	*/
 	GEngineManager* GetEngineMng(void) {return(EngineMng);}
-	
+
 	/**
 	* Get the storage manager.
 	* @return Pointer to GStorage.
@@ -309,7 +316,7 @@ public:
 	*/
 	GSessionParams* GetSessionParams(void) const {return(SessParams);}
 
-	
+
 	//--------------------------------------------------------------------------
 	// Cursor methods
 
@@ -324,13 +331,13 @@ public:
 	* @return GPostDocCursor.
 	*/
 	GFactoryPostDocCursor GetPostDocsCursor(void);
-	
+
 	/**
 	* Get a cursor over the factories of the search engines.
 	* @return GEngineCursor.
 	*/
 	GFactoryEngineCursor GetEnginesCursor(void);
-	
+
 	/**
 	* Get a cursor over the factories of the meta search engines.
 	* @return GMetaEngineCursor.
@@ -414,7 +421,7 @@ public:
 	* @param &results       The set of results returned by the meta engine
 	*/
 	void QueryMetaEngine(R::RContainer<R::RString,true,false> &keyWords) throw(GException);
-	
+
 	/**
 	* Compute the (sub)profiles.
 	* @param rec            Receiver for the signals.
@@ -502,7 +509,7 @@ public:
 	* @param sub           Identificator of the subprofile.
 	*/
 	double GetSimDocProf(unsigned int doc,unsigned int sub) throw(GException);
-       
+
 	/**
 	* Insert a new Feedback.
 	* @param p                Identificator of the profile.
