@@ -43,10 +43,10 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <langs/glang.h>
-#include <langs/glangs.h>
-#include <langs/gdict.h>
-#include <langs/gwordlist.h>
+#include <infos/glang.h>
+#include <infos/glangs.h>
+#include <infos/gdict.h>
+#include <infos/gwordlist.h>
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
 #include <sessions/gsessionprg.h>
@@ -86,10 +86,10 @@ using namespace R;
 #include <groups/gsubjecttree.h>
 #include <filters/gurlmanager.h>
 #include <filters/gfilter.h>
-#include <infos/giwordweight.h>
+#include <infos/gweightinfo.h>
 #include <historic/ggroupshistory.h>
-#include <postgroups/gpostgroup.h>
-#include <postgroups/gpostgroupmanager.h>
+#include <groups/gpostgroup.h>
+#include <groups/gpostgroupmanager.h>
 
 using namespace GALILEI;
 
@@ -840,7 +840,7 @@ void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 		GDocVector* Doc=dynamic_cast<GDocVector*>(DocCursor());
 		for(Doc->Start();!Doc->End();Doc->Next())
 		{
-			GIWordWeight* WW=(*Doc)();
+			GWeightInfo* WW=(*Doc)();
 			if(WW->GetWeight()>j[WW->GetId()])
 			{
 				j[WW->GetId()]=int(WW->GetWeight());
@@ -870,7 +870,7 @@ void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 		{
 			if(!test[i])
 			{
-				GIWordWeight* WW=Doc->GetPtr<const unsigned int>(i);
+				GWeightInfo* WW=Doc->GetPtr<const unsigned int>(i);
 				if(WW) Doc->DeletePtr(WW);
 			}
 		}

@@ -43,7 +43,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <profiles/gsubprofile.h>
-#include <infos/giwordsweights.h>
+#include <infos/gweightinfos.h>
 
 
 //-----------------------------------------------------------------------------
@@ -58,7 +58,7 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Vector model subprofile.
 */
-class GSubProfileVector : public GSubProfile, public GIWordsWeights
+class GSubProfileVector : public GSubProfile, public GWeightInfos
 {
 public:
 
@@ -145,9 +145,9 @@ public:
 
 	/**
 	* Get a cursor over the vector.
-	* @return GIWordWeightCursor element.
+	* @return GWeightInfoCursor element.
 	*/
-	GIWordWeightCursor& GetVectorCursor(void);
+	GWeightInfoCursor& GetWeightInfoCursor(void);
 
 	/**
 	* Get the number of elements of the vector that are not null.
@@ -156,9 +156,9 @@ public:
 
 	/**
 	* Get the vector representing the sub-profile.
-	* @returns Pointer to GIWordsWeights.
+	* @returns Pointer to GWeightInfos.
 	*/
-	GIWordsWeights* GetVector(void) {return(this);}
+	GWeightInfos* GetVector(void) {return(this);}
 
 	/**
 	* Update the references of the document.

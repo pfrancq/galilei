@@ -37,7 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gsubprofiles.h>
-#include <langs/glang.h>
+#include <infos/glang.h>
 #include <profiles/gsubprofile.h>
 using namespace GALILEI;
 using namespace R;

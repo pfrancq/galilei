@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GIWordList.h
+	GLangs.h
 
-	Represents a list of words' references - Header.
+	List of the languages - Header.
 
 	Copyright 2001 by the Université Libre de Bruxelles.
 
@@ -35,15 +35,12 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GIWordListH
-#define GIWordListH
-
+#ifndef GLangsH
+#define GLangsH
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <infos/ginfo.h>
-
 
 
 //-----------------------------------------------------------------------------
@@ -51,75 +48,51 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// forward class declaration
-class GIWord;
-
-
-//-----------------------------------------------------------------------------
 /**
-* The GIWordList class provides a representation for a list of words'
-*references. In particular, the list has an identifier, which can be used for
-* storing it.
+* The GLangs class provides a representation for a list of languages that are
+* handle by the system.
 * @author Pascal Francq
-* @short List of words' references.
+* @short Languages.
 */
-class GIWordList : public GInfo,public R::RContainer<GIWord,unsigned,true,true>
+class GLangs : public R::RContainer<GFactoryLang,unsigned,true,true>
 {
-	/**
-	* Identifier of the list.
-	*/
-	unsigned Id;
-
 public:
 
 	/**
-	* Constructor of the list.
+	* Constructor.
+	* @param path            Path to find the plugins.
+	* @param dlg             Load the existing dialog.
 	*/
-	GIWordList(void) throw(bad_alloc);
+	GLangs(const char* path,bool dlg=true) throw(GException);
 
 	/**
-	* Compare two wordlist references.
-	* @param id             the wordlist reference used for the
-	*                       comparaison.
+	* Connect to a Session.
+	* @param session         The session.
 	*/
-	int Compare(const unsigned int& id) {return(Id-id);}
-
-	int Compare(const GIWordList* i) {return(Id-i->Id);}
-
-	int Compare(const GIWordList& i) {return(Id-i.Id);}
+	void Connect(GSession* session);
 
 	/**
-	* Return the name of the class.
+	* Disconnect from a Session.
+	* @param session         The session.
 	*/
-	virtual const R::RString ClassName(void) const;
+	void Disconnect(GSession* session);
 
 	/**
-	* Return the type of the information.
+	* Get a pointer to a language while having its code.
+	* @param code             Code of the language.
+	* @returns Pointer to the language.
 	*/
-	virtual const GInfoType InfoType(void) const;
+	GLang* GetLang(const char* code) const;
 
 	/**
-	* Get the identifier of the list.
-	*  @returns Identifier.
+	* Get a cursor over the profiles used in the system.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	GFactoryLangCursor& GetLangsCursor(void);
 
 	/**
-	* Set the identifier of the list.
-	* @param id             Identifier to assign.
+	* Destructor.
 	*/
-	void SetId(const unsigned int id) {Id=id;}
-
-	/**
-	* Verify if two lists contain the same information entities.
-	*/
-	bool IsSame(const GIWordList& l) const;
-
-
-	/**
-	*Destructor
-	*/
-	~GIWordList(void);
+	virtual ~GLangs(void);
 };
 
 

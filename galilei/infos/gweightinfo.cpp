@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSlotLogLog.cpp
+	GWeightInfo.cpp
 
-	Slot for GALILEI using a log file - Implementation.
+	Information entity representing a word associated with a weight - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -35,72 +35,68 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <sessions/gslotlog.h>
-#include <docs/gdoc.h>
-#include <profiles/gprofile.h>
-#include <infos/glang.h>
+// include files for ANSI C/C++
+#include<math.h>
 
+
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include<infos/gweightinfo.h>
+#include<infos/gdict.h>
 using namespace GALILEI;
 using namespace R;
 
 
+
 //------------------------------------------------------------------------------
 //
-//  class GSlotLog
+//  GWeightInfo
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GALILEI::GSlotLog::GSlotLog(const char* name) throw(bad_alloc,RString)
-	: GSlot(), RTextFile(name,Append)
+GWeightInfo::GWeightInfo(unsigned id,GInfoType type) throw(bad_alloc)
+  : GInfo(id,type), Weight(0.0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextDoc(const GDoc* doc) throw(bad_alloc,RString)
-{
-	sprintf(Buffer,"Analyse Doc %u",doc->GetId());
-	WriteLog(Buffer);
-}
-
-
-//------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextProfile(const GProfile* prof) throw(bad_alloc,RString)
-{
-	sprintf(Buffer,"Compute Profile %u",prof->GetId());
-	WriteLog(Buffer);
-}
-
-
-//------------------------------------------------------------------------------
-void GALILEI::GSlotLog::NextGroupLang(const GLang* lang) throw(bad_alloc,RString)
-{
-	sprintf(Buffer,"Group %s Profiles",lang->GetName());
-	WriteLog(Buffer);
-}
-
-
-//------------------------------------------------------------------------------
-void GALILEI::GSlotLog::WriteStr(const char*) throw(bad_alloc,RString)
+GWeightInfo::GWeightInfo(unsigned id,double w,GInfoType type) throw(bad_alloc)
+  : GInfo(id,type), Weight(w)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextChromosome(unsigned int) throw(bad_alloc,RString)
+GWeightInfo::GWeightInfo(const GWeightInfo* w) throw(bad_alloc)
+  : GInfo(w->Id,w->Type), Weight(w->Weight)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextMethod(unsigned int) throw(bad_alloc,RString)
+int GWeightInfo::Compare(const GWeightInfo& calc) const
 {
+  return(Id-calc.Id);
 }
 
 
 //------------------------------------------------------------------------------
-GALILEI::GSlotLog::~GSlotLog(void)
+int GWeightInfo::Compare(const GWeightInfo* calc) const
+{
+  return(Id-calc->Id);
+}
+
+
+//------------------------------------------------------------------------------
+double GWeightInfo::GetQueryWeight(tObjType ObjType,GDict* dict,double max) const
+{
+	return((Weight/max)*log(static_cast<double>(dict->GetRef(ObjType,Type))/static_cast<double>(dict->GetRef(Id,ObjType))));
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfo::~GWeightInfo(void)
 {
 }

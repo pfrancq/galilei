@@ -4,9 +4,9 @@
 
 	GInfo.h
 
-	Basic Information - Header.
+	Information entity - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,95 +34,135 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GInfoH
 #define GInfoH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GInfo class provides a representation for a basic information entity.
+* The GInfo class provides a representation for a generic information entity.
+* Each information entity is represented by :
+* - an unique identificator in a space ;
+* - a type representing the kind of information represented.
 * @author Pascal Francq.
-* @short Basic Information.
+* @short Information Entity.
 */
 class GInfo
 {
-public:
+protected:
+	/**
+	* Identificator of the information entity.
+	*/
+	unsigned int Id;
 
 	/**
-	* The different type of information
+	* Type of the information entity.
 	*/
 	GInfoType Type;
 
-	/**
-	* The constructor.
-	*/
-	GInfo(void);
+public:
 
 	/**
-	* Compare two information. This function is needed by the container.
-	* @return 0 if i refers the same object, +1 else.
-	* @see RContainer
+	* Constructor of an information entity.
+	* @param id              Identificator of the information entity.
+	* @param type            Type of the information entity.
+	*/
+	GInfo(unsigned int id,GInfoType type=infoWord) throw(bad_alloc);
+
+	/**
+	* Compare two information entities by comparing their identificator.
+	* @see R::RContainer
+	* @param i               Information entity.
+	* @return int
+	*/
+	virtual int Compare(const GInfo& i) const;
+
+	/**
+	* Compare two information entities by comparing their identificator.
+	* @see R::RContainer
+	* @param i               Pointer an information entity.
+	* @return int
 	*/
 	virtual int Compare(const GInfo* i) const;
 
 	/**
-	* Compute a similarity between two information objects. If the two objects
-	* are the same, the similarity must be 1 and if there is nothing in common,
-	* the similarity must be 0.
+	* Compute a similarity between two information entities. In the default
+	* implementation, the method compares the identificators.
+	* @param i               Information entity.
+	* @return a value between 0 and 1.
+	*/
+	virtual float Similarity(const GInfo& i) const;
+
+	/**
+	* Compute a similarity between two information entities. In the default
+	* implementation, the method compares the identificators.
+	* @param i               Pointer an information entity.
 	* @return a value between 0 and 1.
 	*/
 	virtual float Similarity(const GInfo* i) const;
 
 	/**
-	* Compute a dissimilarity between two information objects. If the two
-	* objects are the same, the dissimilarity must be 0 and if there is nothing
-	* in common, the similarity must be 1.
+	* Compute a dissimilarity between two information entities. In the default
+	* implementation, the method compares the identificators.
+	* @param i               Information entity.
+	* @return a value between 0 and 1.
+	*/
+	virtual float DisSimilarity(const GInfo& i) const;
+
+	/**
+	* Compute a dissimilarity between two information entities. In the default
+	* implementation, the method compares the identificators.
+	* @param i               Pointer an information entity.
 	* @return a value between 0 and 1.
 	*/
 	virtual float DisSimilarity(const GInfo* i) const;
 
 	/**
-	* Return the name of the class.
+	* Get the identificator of the information entity.
+	* @return unsigned int.
 	*/
-	virtual const R::RString ClassName(void) const;
+	unsigned int GetId(void) const;
 
 	/**
-	* Return the type of the information.
+	* Get the type of the information.
+	* @return GInfoType.
 	*/
-	virtual const GInfoType InfoType(void) const;
+	GInfoType InfoType(void) const;
 
 	/**
-	* Set the information type.
-	* @param type               Type of the information.
+	* Verifies if two information entities have the same type.
+	* @param i               Information entity.
+	* @return true if the two entities are from the same type, false else.
 	*/
-	virtual void SetInfoType(GInfoType type);
+	virtual bool SameType(const GInfo& i) const;
 
 	/**
-	* Compare the class of two information objects.
-	* @return true if the two objects are from the same class, false else.
+	* Verifies if two information entities have the same type.
+	* @param i               Pointer an information entity.
+	* @return true if the two entities are from the same type, false else.
 	*/
-	virtual bool SameClass(const GInfo* i) const;
+	virtual bool SameType(const GInfo* i) const;
 
 	/**
-	* The destructor.
+	* Destructor of a generic information entity.
 	*/
 	virtual ~GInfo(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

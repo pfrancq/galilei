@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GIWordsWeights.h
+	GWeightInfos.h
 
 	Weights of a list of words - Header.
 
@@ -35,13 +35,12 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GIWordsWeightsH
-#define GIWordsWeightsH
+#ifndef GWeightInfosH
+#define GWeightInfosH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
 #include <infos/ginfo.h>
 
 
@@ -51,14 +50,14 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GIWordsWeights provides a representation for the words weights of a given
+* The GWeightInfos provides a representation for the words weights of a given
 * collection of words, for example a document or a set of documents.
 * It implements the vector representing a document/profile/group in the Vector
 * Model.
 * @author Pascal Francq
 * @short Vector in Words Space.
 */
-class GIWordsWeights : public GInfo,public R::RContainer<GIWordWeight,unsigned,true,true>
+class GWeightInfos : public R::RContainer<GWeightInfo,unsigned,true,true>
 {
 	/**
 	* Total number of words in the set of documents analysed.
@@ -71,23 +70,13 @@ public:
 	* Constructor.
 	* @param nb             Maximal number of word created at initialisation.
 	*/
-	GIWordsWeights(unsigned int nb) throw(bad_alloc);
-
-	/**
-	* Return the name of the class.
-	*/
-	virtual const R::RString ClassName(void) const;
-
-	/**
-	* Return the type of the information.
-	*/
-	virtual const GInfoType InfoType(void) const;
+	GWeightInfos(unsigned int nb) throw(bad_alloc);
 
 	/**
 	* The assignement operator.
 	* @param src            Vector used as source.
 	*/
-	GIWordsWeights& operator=(const GIWordsWeights& src) throw(bad_alloc);
+	GWeightInfos& operator=(const GWeightInfos& src) throw(bad_alloc);
 
 	/**
 	* Static function used to ordered by frenquecy.
@@ -114,7 +103,7 @@ public:
 	* Compute similarity between two vectors.
 	* @param w              Vector to compare with.
 	*/
-	double Similarity(const GIWordsWeights* w) const;
+	double Similarity(const GWeightInfos* w) const;
 
 	/**
 	* Compute similarity between two vectors by using the idf factors rather
@@ -123,7 +112,7 @@ public:
 	* @param ObjType        Type of the reference.
 	* @param lang           Language.
 	*/
-	double SimilarityIdfP(const GIWordsWeights* w,tObjType ObjType,GLang* lang) const;
+	double SimilarityIdfP(const GWeightInfos* w,tObjType ObjType,GLang* lang) const;
 
 	/**
 	* Compute similarity between two vectors by using the idf factors rather
@@ -132,7 +121,7 @@ public:
 	* @param ObjType        Type of the reference.
 	* @param lang           Language.
 	*/
-	double SimilarityIdf(const GIWordsWeights* w,tObjType ObjType,GLang* lang) const;
+	double SimilarityIdf(const GWeightInfos* w,tObjType ObjType,GLang* lang) const;
 
 	/**
 	* Add the references for the words contained in the vector for a given
@@ -179,7 +168,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GIWordsWeights(void);
+	virtual ~GWeightInfos(void);
 };
 
 

@@ -43,7 +43,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <docs/gdoc.h>
-#include <infos/giwordsweights.h>
+#include <infos/gweightinfos.h>
 
 
 
@@ -58,7 +58,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Vector Model Document.
 */
-class GDocVector : public GDoc, public GIWordsWeights
+class GDocVector : public GDoc, public GWeightInfos
 {
 public:
 
@@ -131,7 +131,7 @@ public:
 	* Get a Cursor on the weights of the document.
 	* @return GWordWeightCursor.
 	*/
-	GIWordWeightCursor& GetWordWeightCursor(void);
+	GWeightInfoCursor& GetWeightInfoCursor(void);
 
 	/**
 	* Compute the similarity between documents.
@@ -175,9 +175,9 @@ public:
 
 	/**
 	* Get the vector representing the document.
-	* @returns Pointer to GIWordsWeights.
+	* @returns Pointer to GWeightInfos.
 	*/
-	GIWordsWeights* GetVector(void) {return(this);}
+	GWeightInfos* GetVector(void) {return(this);}
 
 	/**
 	* Destruct the document.

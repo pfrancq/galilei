@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GIWordsWeights.cpp
+	GWeightInfos.cpp
 
 	Weights of a list of words - Implementation.
 
@@ -35,11 +35,11 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/giwordsweights.h>
-#include <infos/giwordweight.h>
-#include <langs/glang.h>
-#include <langs/gdict.h>
-#include <langs/gwordlist.h>
+#include <infos/gweightinfos.h>
+#include <infos/gweightinfo.h>
+#include <infos/glang.h>
+#include <infos/gdict.h>
+#include <infos/gword.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -47,46 +47,31 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 //
-//  GIWordsWeights
+//  GWeightInfos
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GIWordsWeights::GIWordsWeights(unsigned int nb) throw(bad_alloc)
-	: RContainer<GIWordWeight,unsigned,true,true>(nb,50), NbWordsDocs(0.0)
+GWeightInfos::GWeightInfos(unsigned int nb) throw(bad_alloc)
+	: RContainer<GWeightInfo,unsigned,true,true>(nb,50), NbWordsDocs(0.0)
 {
-	Type=infoWordCalcs;
 }
 
 
 //-----------------------------------------------------------------------------
-const RString GALILEI::GIWordsWeights::ClassName(void) const
+GWeightInfos& GWeightInfos::operator=(const GWeightInfos::GWeightInfos& src) throw(bad_alloc)
 {
-	return("GIWordsWeights");
-}
-
-
-//-----------------------------------------------------------------------------
-const GInfoType GALILEI::GIWordsWeights::InfoType(void) const
-{
-	return(Type);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GIWordsWeights& GALILEI::GIWordsWeights::operator=(const GALILEI::GIWordsWeights::GIWordsWeights& src) throw(bad_alloc)
-{
-	RContainer<GIWordWeight,unsigned,true,true>::operator=(src);
+	RContainer<GWeightInfo,unsigned,true,true>::operator=(src);
 	NbWordsDocs=src.NbWordsDocs;
 	return(*this);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GIWordsWeights::sortOrder(const void *a,const void *b)
+int GWeightInfos::sortOrder(const void *a,const void *b)
 {
-	double af=(*((GIWordWeight**)(a)))->Weight;
-	double bf=(*((GIWordWeight**)(b)))->Weight;
+	double af=(*((GWeightInfo**)(a)))->Weight;
+	double bf=(*((GWeightInfo**)(b)))->Weight;
 
 	if(af==bf) return(0);
 	if(af>bf)
@@ -97,18 +82,18 @@ int GALILEI::GIWordsWeights::sortOrder(const void *a,const void *b)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::Clear(void)
+void GWeightInfos::Clear(void)
 {
-	RContainer<GIWordWeight,unsigned,true,true>::Clear();
+	RContainer<GWeightInfo,unsigned,true,true>::Clear();
 	NbWordsDocs=0.0;
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GIWordsWeights::GetMaxWeight(void) const
+double GWeightInfos::GetMaxWeight(void) const
 {
 	double max;
-	GIWordWeight** ptr;
+	GWeightInfo** ptr;
 	unsigned int i;
 
 	// If no profile, maximal weight is null.
@@ -129,11 +114,11 @@ double GALILEI::GIWordsWeights::GetMaxWeight(void) const
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w) const
+double GWeightInfos::Similarity(const GWeightInfos* w) const
 {
 	double Sim=0.0;
-	GIWordWeight** ptr=Tab;
-	GIWordWeight** ptr2=w->Tab;
+	GWeightInfo** ptr=Tab;
+	GWeightInfo** ptr2=w->Tab;
 	unsigned int i=NbPtr+1;
 	unsigned int j=w->NbPtr;
 	double norm1=0.0;
@@ -177,19 +162,19 @@ double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w) const
 }
 
 //-----------------------------------------------------------------------------
-double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType ObjType,GLang* lang) const
+double GWeightInfos::SimilarityIdf(const GWeightInfos* w,tObjType ObjType,GLang* lang) const
 {
 	double Sim=0.0;
-	GIWordWeight** ptr=Tab;
-	GIWordWeight** ptr2=w->Tab;
+	GWeightInfo** ptr=Tab;
+	GWeightInfo** ptr2=w->Tab;
 	unsigned int i=NbPtr+1;
 	unsigned int j=w->NbPtr;
 	double norm1=0.0;
 	double norm2=0.0;
 	double max1=GetMaxWeight();
 	double max2=w->GetMaxWeight();
-	double TotalRefW=lang->GetRef(ObjType,tWord);
-	double TotalRefWL=lang->GetRef(ObjType,tWordList);
+	double TotalRefW=lang->GetRef(ObjType,infoWord);
+	double TotalRefWL=lang->GetRef(ObjType,infoWordList);
 	double w1,w2;
 
 	// if one SubProfile is not defined -> the similarity must be null
@@ -248,44 +233,44 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::AddRefs(tObjType ObjType,GDict* dic) const
+void GWeightInfos::AddRefs(tObjType ObjType,GDict* dic) const
 {
-	GIWordWeight** ptr;
+	GWeightInfo** ptr;
 	unsigned int i;
 
-	dic->IncRef(ObjType,tWord);
-	dic->IncRef(ObjType,tWordList);
+	dic->IncRef(ObjType,infoWord);
+	dic->IncRef(ObjType,infoWordList);
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
 	{
 		if((*ptr)->InfoType()==infoWordList)
-			dic->IncRef((*ptr)->GetId(),ObjType,tWordList);
-		else dic->IncRef((*ptr)->GetId(),ObjType,tWord);
+			dic->IncRef((*ptr)->GetId(),ObjType,infoWordList);
+		else dic->IncRef((*ptr)->GetId(),ObjType,infoWord);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::DelRefs(tObjType ObjType,GDict* dic) const
+void GWeightInfos::DelRefs(tObjType ObjType,GDict* dic) const
 {
-	GIWordWeight** ptr;
+	GWeightInfo** ptr;
 	unsigned int i;
 
-	dic->DecRef(ObjType,tWord);
-	dic->DecRef(ObjType,tWordList);
+	dic->DecRef(ObjType,infoWord);
+	dic->DecRef(ObjType,infoWordList);
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
 	{
 		if((*ptr)->InfoType()==infoWordList)
-			dic->DecRef((*ptr)->GetId(),ObjType,tWordList);
+			dic->DecRef((*ptr)->GetId(),ObjType,infoWordList);
 		else
-			dic->DecRef((*ptr)->GetId(),ObjType,tWord);
+			dic->DecRef((*ptr)->GetId(),ObjType,infoWord);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::Transform(tObjType ObjType,GLang* lang)
+void GWeightInfos::Transform(tObjType ObjType,GLang* lang)
 {
-	GIWordWeight** ptr;
+	GWeightInfo** ptr;
 	unsigned int i;
 	double max;
 	double TotalRef;
@@ -293,18 +278,18 @@ void GALILEI::GIWordsWeights::Transform(tObjType ObjType,GLang* lang)
 	for(i=NbPtr+1,ptr=Tab,max=GetMaxWeight();--i;ptr++)
 	{
 		if((*ptr)->InfoType()==infoWordList)
-			TotalRef=lang->GetRef(ObjType,tWordList);
+			TotalRef=lang->GetRef(ObjType,infoWordList);
 		else
-			TotalRef=lang->GetRef(ObjType,tWord);
+			TotalRef=lang->GetRef(ObjType,infoWord);
 		(*ptr)->Weight=((*ptr)->Weight/max)*log(TotalRef/lang->GetRef((*ptr)->GetId(),ObjType));
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::ModifyQueryGroups(tObjType ObjType,GLang* lang)
+void GWeightInfos::ModifyQueryGroups(tObjType ObjType,GLang* lang)
 {
-	GIWordWeight* ptr;
+	GWeightInfo* ptr;
 	unsigned int i;
 	double max=GetMaxWeight();
 	double TotalRef;
@@ -320,22 +305,22 @@ void GALILEI::GIWordsWeights::ModifyQueryGroups(tObjType ObjType,GLang* lang)
 		if(!nbref) continue;
 		ptr=GetPtr<const unsigned int>((*words)->GetId());
 		if(!ptr)
-			InsertPtr(ptr=new GIWordWeight((*words)->GetId()));
+			InsertPtr(ptr=new GWeightInfo((*words)->GetId()));
 		freq=0.5+((0.5*ptr->Weight)/max);
 		idffactor=log(TotalRef/nbref);
 		if(ptr->InfoType()==infoWordList)
-			TotalRef=lang->GetRef(ObjType,tWordList);
+			TotalRef=lang->GetRef(ObjType,infoWordList);
 		else
-			TotalRef=lang->GetRef(ObjType,tWord);
+			TotalRef=lang->GetRef(ObjType,infoWord);
 		ptr->SetWeight(freq*idffactor);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::ModifyQuery(tObjType ObjType,GLang* lang)
+void GWeightInfos::ModifyQuery(tObjType ObjType,GLang* lang)
 {
-	GIWordWeight* ptr;
+	GWeightInfo* ptr;
 	unsigned int i;
 	double max=GetMaxWeight();
 	double TotalRef;
@@ -351,12 +336,12 @@ void GALILEI::GIWordsWeights::ModifyQuery(tObjType ObjType,GLang* lang)
 		if(!nbref) continue;
 		ptr=GetPtr<const unsigned int>((*words)->GetId());
 		if(!ptr)
-			InsertPtr(ptr=new GIWordWeight((*words)->GetId()));
+			InsertPtr(ptr=new GWeightInfo((*words)->GetId()));
 		freq=0.5+((0.5*ptr->Weight)/max);
 		if(ptr->InfoType()==infoWordList)
-			TotalRef=lang->GetRef(ObjType,tWordList);
+			TotalRef=lang->GetRef(ObjType,infoWordList);
 		else
-			TotalRef=lang->GetRef(ObjType,tWord);
+			TotalRef=lang->GetRef(ObjType,infoWord);
 		idffactor=log(TotalRef/nbref);
 		ptr->SetWeight(freq*idffactor);
 	}
@@ -364,6 +349,6 @@ void GALILEI::GIWordsWeights::ModifyQuery(tObjType ObjType,GLang* lang)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GIWordsWeights::~GIWordsWeights(void)
+GWeightInfos::~GWeightInfos(void)
 {
 }

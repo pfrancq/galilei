@@ -44,8 +44,8 @@
 #include <groups/ggroupvector.h>
 #include <profiles/gsubprofilevector.h>
 #include <docs/gdocvector.h>
-#include <infos/giwordweight.h>
-#include <langs/glang.h>
+#include <infos/gweightinfo.h>
+#include <infos/glang.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -58,14 +58,14 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupVector::GGroupVector(const unsigned int id,GLang* lang) throw(bad_alloc)
-	: GGroup(id,lang), GIWordsWeights(60)
+GGroupVector::GGroupVector(const unsigned int id,GLang* lang) throw(bad_alloc)
+	: GGroup(id,lang), GWeightInfos(60)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupVector::UpdateRefs(void) const
+void GGroupVector::UpdateRefs(void) const
 {
 	GDict* d=Lang->GetDict();
 	if(d)
@@ -75,7 +75,7 @@ void GALILEI::GGroupVector::UpdateRefs(void) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupVector::RemoveRefs(void) const
+void GGroupVector::RemoveRefs(void) const
 {
 	GDict* d=Lang->GetDict();
 	if(d)
@@ -84,77 +84,77 @@ void GALILEI::GGroupVector::RemoveRefs(void) const
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GGroupVector::GetNbNoNull(void) const
+unsigned int GGroupVector::GetNbNoNull(void) const
 {
-	return(GIWordsWeights::NbPtr);
+	return(GWeightInfos::NbPtr);
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GGroupVector::Similarity(const GGroup* desc) const
+double GGroupVector::Similarity(const GGroup* desc) const
 {
-	return(GIWordsWeights::Similarity((dynamic_cast<const GGroupVector*>(desc))));
+	return(GWeightInfos::Similarity((dynamic_cast<const GGroupVector*>(desc))));
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GGroupVector::GlobalSimilarity(const GGroup* desc) const
+double GGroupVector::GlobalSimilarity(const GGroup* desc) const
 {
 	return(SimilarityIdf((dynamic_cast<const GGroupVector*>(desc)),otGroup,Lang));
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GGroupVector::Similarity(const GDoc* doc) const
+double GGroupVector::Similarity(const GDoc* doc) const
 {
-	return(GIWordsWeights::Similarity(dynamic_cast<const GDocVector*>(doc)));
+	return(GWeightInfos::Similarity(dynamic_cast<const GDocVector*>(doc)));
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GGroupVector::GlobalSimilarity(const GDoc* doc) const
+double GGroupVector::GlobalSimilarity(const GDoc* doc) const
 {
 	return(SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otDocGroup,Lang));
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GGroupVector::Similarity(const GSubProfile* doc) const
+double GGroupVector::Similarity(const GSubProfile* doc) const
 {
-	return(GIWordsWeights::Similarity(dynamic_cast<const GSubProfileVector*>(doc)));
+	return(GWeightInfos::Similarity(dynamic_cast<const GSubProfileVector*>(doc)));
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GGroupVector::GlobalSimilarity(const GSubProfile* doc) const
+double GGroupVector::GlobalSimilarity(const GSubProfile* doc) const
 {
 	return(SimilarityIdf(dynamic_cast<const GSubProfileVector*>(doc),otSubProfileGroup,Lang));
 }
 
 
 //-----------------------------------------------------------------------------
-GIWordWeightCursor& GALILEI::GGroupVector::GetVectorCursor(void)
+GWeightInfoCursor& GGroupVector::GetWeightInfoCursor(void)
 {
-	GIWordWeightCursor *cur=GIWordWeightCursor::GetTmpCursor();
+	GWeightInfoCursor *cur=GWeightInfoCursor::GetTmpCursor();
 	cur->Set(this);
 	return(*cur);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupVector::AddWord(GIWordWeight* word)
+void GGroupVector::AddWord(GWeightInfo* word)
 {
-	GIWordsWeights::InsertPtr(word);
+	GWeightInfos::InsertPtr(word);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupVector::AddWordList(unsigned id,double w)
+void GGroupVector::AddWordList(unsigned id,double w)
 {
-	GIWordsWeights::InsertPtr(new GIWordWeight(id,w,infoWordList));
+	GWeightInfos::InsertPtr(new GWeightInfo(id,w,infoWordList));
 }
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupVector::~GGroupVector(void)
+GGroupVector::~GGroupVector(void)
 {
 }

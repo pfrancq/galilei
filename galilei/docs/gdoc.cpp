@@ -39,7 +39,7 @@
 #include <docs/gdoc.h>
 //#include <docs/gdocxml.h>
 #include <docs/glink.h>
-#include <langs/glang.h>
+#include <infos/glang.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>

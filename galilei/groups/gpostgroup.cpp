@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GIWordList.cpp
+	GPostGroup.cpp
 
-	Represents a list of words' references - Implementation.
+	Generic PostGroup Computing Method - Implementation.
 
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Vandaele Valery(vavdaele@ulb.ac.be).
 
 	Version $Revision$
 
@@ -35,9 +35,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <infos/giwordlist.h>
-#include <infos/giword.h>
+//include files for GALILEI
+#include <groups/gpostgroup.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -45,47 +44,32 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 //
-// class GIWordList
+//  GPostGroup
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GIWordList::GIWordList(void) throw(bad_alloc)
-	: RContainer<GIWord,unsigned,true,true>(30,10), Id(cNoRef)
+GPostGroup::GPostGroup(GFactoryPostGroup* fac) throw(bad_alloc)
+	: GPlugin<GFactoryPostGroup>(fac), Session(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-const RString GALILEI::GIWordList::ClassName(void) const
+void GPostGroup::Connect(GSession* session)
 {
-	return("GWordList");
+	Session=session;
 }
 
 
 //-----------------------------------------------------------------------------
-const GInfoType GALILEI::GIWordList::InfoType(void) const
+void GPostGroup::Disconnect(GSession*)
 {
-	return(infoWordList);
+	Session=0;
 }
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GIWordList::IsSame(const GIWordList& l) const
-{
-	const GIWord** ptr=const_cast<const GIWord**>(Tab);
-	const GIWord** ptr2=const_cast<const GIWord**>(l.Tab);
-	unsigned int i=NbPtr+1;
-	unsigned int j=l.NbPtr+1;
-
-	while((--i)&&(--j))
-	{
-		if((*(ptr++))!=(*(ptr2++))) return(false);
-	}
-	return(true);
-}
-
-
-GALILEI::GIWordList::~GIWordList(void)
+GPostGroup::~GPostGroup(void)
 {
 }

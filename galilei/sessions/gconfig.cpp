@@ -59,12 +59,12 @@
 #include <docs/glinkcalc.h>
 #include <docs/gpostdocmanager.h>
 #include <docs/gpostdoc.h>
-#include <langs/glang.h>
-#include <langs/glangs.h>
+#include <infos/glang.h>
+#include <infos/glangs.h>
 #include <docs/gdocanalyse.h>
 #include <docs/gdocanalysemanager.h>
-#include <postgroups/gpostgroup.h>
-#include <postgroups/gpostgroupmanager.h>
+#include <groups/gpostgroup.h>
+#include <groups/gpostgroupmanager.h>
 
 using namespace R;
 using namespace GALILEI;

@@ -44,7 +44,7 @@
 #include <docs/gdocprofsim.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gusers.h>
-#include <langs/glang.h>
+#include <infos/glang.h>
 #include <docs/gdocs.h>
 #include <docs/gdoc.h>
 

@@ -45,7 +45,7 @@
 // include files for GALILEI
 #include <sessions/gsessionprg.h>
 
-//#include <langs/glang.h>
+//#include <infos/glang.h>
 //#include <profiles/gprofile.h>
 /*#include <profiles/gsubprofiledesc.h>
 #include <groups/ggroups.h>

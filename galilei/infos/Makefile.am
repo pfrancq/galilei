@@ -4,8 +4,8 @@ AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =
 SUBDIRS =
-libgalilei_infos_la_SOURCES = ginfo.cpp giword.cpp giwordlist.cpp giwordsweights.cpp \
-					giwordsweightshistory.cpp giwordweight.cpp
+libgalilei_infos_la_SOURCES = ginfo.cpp gweightinfos.cpp gweightinfo.cpp \
+		gdict.cpp glang.cpp glangs.cpp gword.cpp gwordlist.cpp ginfolist.cpp
 infosincludedir = $(includedir)/galilei/infos
-infosinclude_HEADERS = ginfo.h  giword.h  giwordlist.h  giwordsweights.h \
-					giwordsweightshistory.h giwordweight.h
+infosinclude_HEADERS = ginfo.h gweightinfos.h gweightinfo.h \
+		gdict.h glang.h glangs.h gword.h gwordlist.h ginfolist.h

@@ -45,7 +45,7 @@
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
 #include <profiles/gusers.h>
-#include <langs/glang.h>
+#include <infos/glang.h>
 using namespace GALILEI;
 using namespace R;
 

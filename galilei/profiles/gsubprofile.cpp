@@ -38,7 +38,7 @@
 #include<profiles/gsubprofile.h>
 #include<profiles/gprofile.h>
 #include<profiles/gprofdoc.h>
-#include<langs/glang.h>
+#include<infos/glang.h>
 #include<groups/ggroup.h>
 
 using namespace GALILEI;

@@ -50,7 +50,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GALILEI::GIWordsWeightsHistory::GIWordsWeightsHistory(GSubProfile* sub, unsigned int nb)
-	: GIWordsWeights(nb)
+	: GWeightInfos(nb)
 {
 	SubProfile=sub;
 	WellGrouped=NewSubProfile=false;

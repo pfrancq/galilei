@@ -48,7 +48,7 @@
 #include <sessions/gmixidealgroups.h>
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
-#include <langs/glang.h>
+#include <infos/glang.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <groups/ggroupvector.h>

@@ -41,8 +41,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
-#include <infos/giwordsweights.h>
+#include <infos/gweightinfos.h>
+#include <historic/giwordsweightshistory.h>
 
 
 //-----------------------------------------------------------------------------
@@ -52,14 +52,13 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupsHistory class provides a representation for all the historic subprofile 
+* The GGroupsHistory class provides a representation for all the historic subprofile
 * @author David Wartel
 * @short historic subprofile.
 */
-class GIWordsWeightsHistory : public GIWordsWeights
+class GIWordsWeightsHistory : public GWeightInfos
 {
-
-private :
+protected:
 
 	/**
 	* SubProfile.

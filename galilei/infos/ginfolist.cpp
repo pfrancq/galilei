@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSlotLogLog.cpp
+	GInfoList.cpp
 
-	Slot for GALILEI using a log file - Implementation.
+	Information entity representing a list of words - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -36,71 +36,92 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gslotlog.h>
-#include <docs/gdoc.h>
-#include <profiles/gprofile.h>
-#include <infos/glang.h>
-
+#include <infos/ginfolist.h>
 using namespace GALILEI;
 using namespace R;
 
 
+
 //------------------------------------------------------------------------------
 //
-//  class GSlotLog
+// class GInfoList
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GALILEI::GSlotLog::GSlotLog(const char* name) throw(bad_alloc,RString)
-	: GSlot(), RTextFile(name,Append)
+GInfoList::GInfoList(void) throw(bad_alloc)
+	: GInfo(infoWordList), RContainer<GInfo,unsigned,true,true>(30,10)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextDoc(const GDoc* doc) throw(bad_alloc,RString)
+int GInfoList::Compare(const unsigned int& id) const
 {
-	sprintf(Buffer,"Analyse Doc %u",doc->GetId());
-	WriteLog(Buffer);
+	return(Id-id);
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextProfile(const GProfile* prof) throw(bad_alloc,RString)
+int GInfoList::Compare(const GInfoList* i) const
 {
-	sprintf(Buffer,"Compute Profile %u",prof->GetId());
-	WriteLog(Buffer);
+	return(Id-i->Id);
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::NextGroupLang(const GLang* lang) throw(bad_alloc,RString)
+int GInfoList::Compare(const GInfoList& i) const
 {
-	sprintf(Buffer,"Group %s Profiles",lang->GetName());
-	WriteLog(Buffer);
+	return(Id-i.Id);
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::WriteStr(const char*) throw(bad_alloc,RString)
+const RString GInfoList::ClassName(void) const
 {
+	return("GWordList");
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextChromosome(unsigned int) throw(bad_alloc,RString)
+const GInfoType GInfoList::InfoType(void) const
 {
+	return(infoWordList);
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GSlotLog::receiveNextMethod(unsigned int) throw(bad_alloc,RString)
+unsigned int GInfoList::GetId(void) const
 {
+	return(Id);
 }
 
 
 //------------------------------------------------------------------------------
-GALILEI::GSlotLog::~GSlotLog(void)
+void GInfoList::SetId(unsigned int id)
+{
+	Id=id;
+}
+
+
+//------------------------------------------------------------------------------
+bool GInfoList::IsSame(const GInfoList& l) const
+{
+	const GInfo** ptr=const_cast<const GInfo**>(Tab);
+	const GInfo** ptr2=const_cast<const GInfo**>(l.Tab);
+	unsigned int i=NbPtr+1;
+	unsigned int j=l.NbPtr+1;
+
+	while((--i)&&(--j))
+	{
+		if((*(ptr++))!=(*(ptr2++)))
+			return(false);
+	}
+	return(true);
+}
+
+
+//------------------------------------------------------------------------------
+GInfoList::~GInfoList(void)
 {
 }

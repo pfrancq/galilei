@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GIWordWeight.h
+	GWeightInfo.h
 
-	Weight of a word - Header.
+	Information entity representing a word associated with a weight - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,49 +34,43 @@
 
 
 
-//-----------------------------------------------------------------------------
-#ifndef GIWordWeightH
-#define GIWordWeightH
+//------------------------------------------------------------------------------
+#ifndef GWeightInfoH
+#define GWeightInfoH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
-#include <infos/giword.h>
+#include <infos/ginfo.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 /**
-* The GIWordWeight class provides a representation for a weight of a word in a
-* given collection of words, for example a document.
+* The GWeightInfo class provides a representation for an informaation entity
+* representing a word associated with a weight.
 * @author Pascal Francq
-* @short Word Weight.
+* @short Weighted Word Information.
 */
-class GIWordWeight : public GIWord
+class GWeightInfo : public GInfo
 {
 	/**
-	* Frequence of the word.
+	* Weight associated wih the word.
 	*/
 	double Weight;
 
 public:
 
 	/**
-	* Constructor.
+	* Constructor of an information entity representing a weighted word. The
+	* weight is suppose to be null.
 	* @param id             Identificator of the word.
 	*/
-	GIWordWeight(const unsigned int id) throw(bad_alloc);
-
-	/**
-	* Constructor.
-	* @param id             Identificator of the word.
-	* @param w              Weight of the word.
-	*/
-	GIWordWeight(const unsigned int id,double w) throw(bad_alloc);
+	GWeightInfo(const unsigned int id,GInfoType type=infoWord) throw(bad_alloc);
 
 	/**
 	* Constructor.
@@ -84,33 +78,23 @@ public:
 	* @param w              Weight of the word.
 	* @param type           Type of the information.
 	*/
-	GIWordWeight(const unsigned id,double w,GInfoType type) throw(bad_alloc);
-	
+	GWeightInfo(const unsigned id,double w,GInfoType type=infoWord) throw(bad_alloc);
+
 	/**
 	* Constructor.
 	* @param w              Pointer to a word weight.
 	*/
-	GIWordWeight(const GIWordWeight* w) throw(bad_alloc);
-
-	/**
-	* Return the name of the class.
-	*/
-	virtual const R::RString ClassName(void) const;
-
-	/**
-	* Return the type of the information.
-	*/
-	virtual const GInfoType InfoType(void) const;
+	GWeightInfo(const GWeightInfo* w) throw(bad_alloc);
 
 	/**
 	* Compare method used by R::RContainer.
 	*/
-	int Compare(const GIWordWeight &calc) const;
+	int Compare(const GWeightInfo& calc) const;
 
 	/**
 	* Compare method used by R::RContainer.
 	*/
-	int Compare(const GIWordWeight *calc) const;
+	int Compare(const GWeightInfo* calc) const;
 
 	/**
 	* Get the weight of the word.
@@ -147,26 +131,26 @@ public:
 	void SubstractWeight(double w) {Weight-=w;}
 
 	/**
-	* Destructor.
+	* Destructor of an information entity representing a weighted word.
 	*/
-	virtual ~GIWordWeight(void);
+	virtual ~GWeightInfo(void);
 
 	// friend classes
-	friend class GIWordsWeights;
+	friend class GWeightInfos;
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GWordWeightCursor class provides a way to go trough a vector of pairs
 * (keyword/weight).
 * @short Word Weight Cursor
 */
-CLASSCURSOR(GIWordWeightCursor,GIWordWeight,unsigned int)
+CLASSCURSOR(GWeightInfoCursor,GWeightInfo,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

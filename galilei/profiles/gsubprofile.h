@@ -323,8 +323,6 @@ public:
 	*/
 	virtual double GlobalSimilarity(const GGroup* grp) const;
 
-	virtual GIWordWeightCursor& GetVectorCursor(void)=0;
-
 	/**
 	* Tell the subprofile that its updated is finished.
 	*/

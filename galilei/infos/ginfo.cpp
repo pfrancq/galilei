@@ -4,9 +4,9 @@
 
 	GInfo.cpp
 
-	Basic Information - Implementation.
+	Information entity - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,7 +34,7 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/ginfo.h>
 using namespace GALILEI;
@@ -42,70 +42,91 @@ using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // GInfo
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GInfo::GInfo(void)
-	: Type(infoNothing)
+//------------------------------------------------------------------------------
+GInfo::GInfo(unsigned int id,GInfoType type) throw(bad_alloc)
+	: Id(id), Type(type)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GInfo::Compare(const GInfo* i) const
+//------------------------------------------------------------------------------
+int GInfo::Compare(const GInfo& i) const
 {
-	return(this!=i);
+	return(Id-i.Id);
 }
 
 
-//-----------------------------------------------------------------------------
-float GALILEI::GInfo::Similarity(const GInfo* i) const
+//------------------------------------------------------------------------------
+int GInfo::Compare(const GInfo* i) const
 {
-	return(this==i);
+	return(Id-i->Id);
 }
 
 
-//-----------------------------------------------------------------------------
-float GALILEI::GInfo::DisSimilarity(const GInfo* i) const
+//------------------------------------------------------------------------------
+float GInfo::Similarity(const GInfo& i) const
 {
-	return(this!=i);
+	return(Id-i.Id==0);
 }
 
 
-//-----------------------------------------------------------------------------
-const RString GALILEI::GInfo::ClassName(void) const
+//------------------------------------------------------------------------------
+float GInfo::Similarity(const GInfo* i) const
 {
-	return("GInfo");
+	return(Id-i->Id==0);
 }
 
 
-//-----------------------------------------------------------------------------
-const GInfoType GALILEI::GInfo::InfoType(void) const
+//------------------------------------------------------------------------------
+float GInfo::DisSimilarity(const GInfo& i) const
+{
+	return(Id-i.Id!=0);
+}
+
+
+//------------------------------------------------------------------------------
+float GInfo::DisSimilarity(const GInfo* i) const
+{
+	return(Id-i->Id!=0);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GInfo::GetId(void) const
+{
+	return(Id);
+}
+
+
+//------------------------------------------------------------------------------
+GInfoType GInfo::InfoType(void) const
 {
 	return(Type);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GInfo::SetInfoType(GInfoType type)
+//------------------------------------------------------------------------------
+bool GInfo::SameType(const GInfo& i) const
 {
-	Type=type;
+	return(InfoType()==i.InfoType());
 }
 
 
-//-----------------------------------------------------------------------------
-bool GALILEI::GInfo::SameClass(const GInfo* i) const
+//------------------------------------------------------------------------------
+bool GInfo::SameType(const GInfo* i) const
 {
 	return(InfoType()==i->InfoType());
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GInfo::~GInfo(void)
+//------------------------------------------------------------------------------
+GInfo::~GInfo(void)
 {
 }

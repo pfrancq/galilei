@@ -41,9 +41,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
 #include <groups/ggroup.h>
-#include <infos/giwordsweights.h>
+#include <infos/gweightinfos.h>
 
 
 //-----------------------------------------------------------------------------
@@ -57,7 +56,7 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Vector model group.
 */
-class GGroupVector : public GGroup, public GIWordsWeights
+class GGroupVector : public GGroup, public GWeightInfos
 {
 public:
 
@@ -91,9 +90,9 @@ public:
 
 	/**
 	* Get the vector representing the group.
-	* @returns Pointer to GIWordsWeights.
+	* @returns Pointer to GWeightInfos.
 	*/
-	GIWordsWeights* GetVector(void) {return(this);}
+	GWeightInfos* GetVector(void) {return(this);}
 
 	/**
 	* Compute the similarity between a group and a document.
@@ -127,15 +126,15 @@ public:
 
 	/**
 	* Get a cursor over the vector.
-	* @return GIWordWeightCursor element.
+	* @return GWeightInfoCursor element.
 	*/
-	GIWordWeightCursor& GetVectorCursor(void);
+	GWeightInfoCursor& GetWeightInfoCursor(void);
 
 	/**
 	* Add a new word in the container of words.
 	* @param  word          The word who will be aded.
 	*/
-	void AddWord(GIWordWeight* word);
+	void AddWord(GWeightInfo* word);
 
 	/**
 	* Add a word list in the container of words

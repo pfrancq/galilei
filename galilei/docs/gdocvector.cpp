@@ -45,8 +45,8 @@
 #include <docs/gdocvector.h>
 #include <profiles/gsubprofilevector.h>
 #include <groups/ggroupvector.h>
-#include <infos/giwordweight.h>
-#include <langs/glang.h>
+#include <infos/gweightinfo.h>
+#include <infos/glang.h>
 
 using namespace R;
 using namespace GALILEI;
@@ -62,7 +62,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
 	: GDoc(url,name,id,lang,mime,u,a,f,n,ndiff,v,vdiff,nbf),
-	  GIWordsWeights(vdiff>600?vdiff:600)
+	  GWeightInfos(vdiff>600?vdiff:600)
 {
 }
 
@@ -70,7 +70,7 @@ GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id
 //-----------------------------------------------------------------------------
 bool GALILEI::GDocVector::HasRepresentation(void) const
 {
-	return(!GIWordsWeights::IsEmpty());
+	return(!GWeightInfos::IsEmpty());
 }
 
 
@@ -94,19 +94,19 @@ void GALILEI::GDocVector::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsig
 //-----------------------------------------------------------------------------
 void GALILEI::GDocVector::AddWord(const unsigned int id,const double nb)
 {
-	InsertPtr(new GIWordWeight(id,nb));
+	InsertPtr(new GWeightInfo(id,nb));
 }
 //-----------------------------------------------------------------------------
 void GALILEI::GDocVector::AddWordList(const unsigned int id,const double nb)
 {
-	InsertPtr(new GIWordWeight(id,nb,infoWordList));
+	InsertPtr(new GWeightInfo(id,nb,infoWordList));
 }
 
 
 //-----------------------------------------------------------------------------
-GIWordWeightCursor& GALILEI::GDocVector::GetWordWeightCursor(void)
+GWeightInfoCursor& GALILEI::GDocVector::GetWeightInfoCursor(void)
 {
-	GIWordWeightCursor *cur=GIWordWeightCursor::GetTmpCursor();
+	GWeightInfoCursor *cur=GWeightInfoCursor::GetTmpCursor();
 	cur->Set(this);
 	return(*cur);
 }
@@ -115,42 +115,42 @@ GIWordWeightCursor& GALILEI::GDocVector::GetWordWeightCursor(void)
 //-----------------------------------------------------------------------------
 double GALILEI::GDocVector::Similarity(const GDoc* doc) const
 {
-	return(GIWordsWeights::Similarity(dynamic_cast<const GDocVector*>(doc)));
+	return(GWeightInfos::Similarity(dynamic_cast<const GDocVector*>(doc)));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GDocVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(GIWordsWeights::SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otDoc,Lang));
+	return(GWeightInfos::SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otDoc,Lang));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GDocVector::Similarity(const GSubProfile* sub) const
 {
-	return(GIWordsWeights::Similarity(dynamic_cast<const GSubProfileVector*>(sub)));
+	return(GWeightInfos::Similarity(dynamic_cast<const GSubProfileVector*>(sub)));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GDocVector::GlobalSimilarity(const GSubProfile* sub) const
 {
-	return(GIWordsWeights::SimilarityIdf(dynamic_cast<const GSubProfileVector*>(sub),otDocSubProfile,Lang));
+	return(GWeightInfos::SimilarityIdf(dynamic_cast<const GSubProfileVector*>(sub),otDocSubProfile,Lang));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GDocVector::Similarity(const GGroup* grp) const
 {
-	return(GIWordsWeights::Similarity(dynamic_cast<const GGroupVector*>(grp)));
+	return(GWeightInfos::Similarity(dynamic_cast<const GGroupVector*>(grp)));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GDocVector::GlobalSimilarity(const GGroup* grp) const
 {
-	return(GIWordsWeights::SimilarityIdf(dynamic_cast<const GGroupVector*>(grp),otDocGroup,Lang));
+	return(GWeightInfos::SimilarityIdf(dynamic_cast<const GGroupVector*>(grp),otDocGroup,Lang));
 }
 
 

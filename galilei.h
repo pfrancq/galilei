@@ -85,12 +85,10 @@ class CodeToChar;
 //-----------------------------------------------------------------------------
 // forward class declaration - Information Part
 class GInfo;
-class GIWord;
-class GIWordList;
-class GIWordWeight;
-class GIWordWeightCursor;
-class GIWordsWeights;
-class GIWordsWeightsHistory;
+class GWeightInfo;
+class GWeightInfoCursor;
+class GWeightInfos;
+class GInfosWeightsHistory;
 
 
 //-----------------------------------------------------------------------------
@@ -128,12 +126,6 @@ class GFactoryDocAnalyse;
 class GFactoryDocAnalyseCursor;
 class GFactoryPostDoc;
 class GFactoryPostDocCursor;
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration - Link Part
-class GIWordWeight;
-class GIWordWeights;
 
 
 //-----------------------------------------------------------------------------
@@ -321,24 +313,9 @@ enum tSubProfileDesc
 */
 enum GInfoType
 {
-	infoNothing,
-	infoWord,
-	infoWordOccur,
-	infoWordOccurs,
-	infoWordList,
-	infoWordCalc,
-	infoWordCalcs
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Models used to describe informations in the dictionnary
-*/
-enum GWordType
-{
-	tWord                   /** Word.*/,
-	tWordList               /** List of words.*/
+	infoNothing                    /** No type defined.*/,
+	infoWord                       /** A word (or stem). */,
+	infoWordList                   /** List of words.*/
 };
 
 
