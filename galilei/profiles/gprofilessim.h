@@ -70,6 +70,12 @@ public:
 	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s) throw(bad_alloc);
 
 	/**
+	* Constructor.
+	* @param s              Subprofiles of the system.
+	*/
+	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s) throw(bad_alloc);
+
+	/**
 	* Get the similarities between two profiles, i.e. the subprofiles of a same
 	* language.
 	* @param i              Identificator of the first subprofile.
@@ -77,6 +83,15 @@ public:
 	* @return double.
 	*/
 	double GetSim(unsigned int i,unsigned int j);
+
+	/**
+	* Get the similarities between two profiles, i.e. the subprofiles of a same
+	* language.
+	* @param s1             Pointer to the first subprofile.
+	* @param s2             Pointer to second subprofile.
+	* @return double.
+	*/
+	double GetSim(const GSubProfile* s1,const GSubProfile* s2);
 
 	/**
 	* Destructor.
