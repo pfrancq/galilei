@@ -133,6 +133,8 @@ public:
 
 	/**
 	* Set the settings for the method using a string.
+	* "Global PopSize MaxGen StepGen Step MinSimLevel ParamsSim.P ParamsSim.Q ParamsSim.Weight"
+	* " ParamsNb.P ParamsNb.Q ParamsNb.Weight ParamsOK.P ParamsOK.Q ParamsOK.Weight ParamsDiff.P ParamsDiff.Q ParamsDiff.Weight"
 	* @param s*             C string coding the settings.
 	*/
 	virtual void SetSettings(const char* s);

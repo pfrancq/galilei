@@ -61,8 +61,26 @@ using namespace RGA;
 
 //-----------------------------------------------------------------------------
 GALILEI::GThreadDataIR::GThreadDataIR(GInstIR* owner)
-	: RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(owner)
+	: RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(owner),
+	  tmpObjs1(0),tmpObjs2(0)
 {
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GThreadDataIR::Init(void) throw(bad_alloc)
+{
+	RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init();
+	tmpObjs1=new GObjIR*[Owner->Objs->GetNb()];
+	tmpObjs2=new GObjIR*[Owner->Objs->GetNb()];
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GThreadDataIR::~GThreadDataIR(void)
+{
+	if(tmpObjs1) delete[] tmpObjs1;
+	if(tmpObjs2) delete[] tmpObjs2;
 }
 
 
@@ -74,11 +92,11 @@ GALILEI::GThreadDataIR::GThreadDataIR(GInstIR* owner)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,HeuristicType h,RDebug *debug) throw(bad_alloc)
+GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,HeuristicType h,RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(popsize,objs,h,debug),
 	  RPromKernel("GALILEI",PopSize+1,2), Sims(s), SameGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
 	  DiffGroups(objs->NbPtr/8+1,objs->NbPtr/16+1),
-	  MinSimLevel(m), MaxGen(max), CritSim(0), CritNb(0), CritOKDocs(0), Sols(0), GlobalSim(g)
+	  MinSimLevel(m), MaxGen(max), CritSim(0), CritNb(0), CritOKDocs(0), Sols(0), GlobalSim(g),  CurrentGroups(grps)
 {
 	RPromSol** ptr;
 	RCursor<GObjIR,unsigned int> Cur1;
@@ -116,27 +134,27 @@ GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RO
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GInstIR::Init(GGroupDataIR* gdata,GGroups* grps) throw(bad_alloc)
-{
-	GChromoIR** C;
-	unsigned int i;
-
-	// Called Init for the parent
-	RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(gdata);
-	if(!grps) return;
-
-	// Construct the best chromosome and the first chromosome one as the actual groups
-	BestChromosome->ConstructChromo(grps);
-	C=Chromosomes;
-	(*C)->ConstructChromo(grps);
-
-	// For the rest of the population, do a mutation of the best one.
-	for(i=PopSize;--i;C++)
-	{
-		(*C)->ConstructChromo(grps);
-		(*C)->Mutation();
-	}
-}
+//void GALILEI::GInstIR::Init(GGroupDataIR* gdata,GGroups* grps) throw(bad_alloc)
+//{
+//	GChromoIR** C;
+//	unsigned int i;
+//
+//	// Called Init for the parent
+//	RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(gdata);
+//	if(!grps) return;
+//
+//	// Construct the best chromosome and the first chromosome one as the actual groups
+//	BestChromosome->ConstructChromo(grps);
+//	C=Chromosomes;
+//	(*C)->ConstructChromo(grps);
+//
+//	// For the rest of the population, do a mutation of the best one.
+//	for(i=PopSize;--i;C++)
+//	{
+//		(*C)->ConstructChromo(grps);
+//		(*C)->Mutation();
+//	}
+//}
 
 
 //-----------------------------------------------------------------------------

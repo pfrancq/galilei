@@ -182,6 +182,14 @@ public:
 };
 
 
+//-----------------------------------------------------------------------------
+/**
+* The GGroupIRCursor class provides a way to go trough a set of group in a GGA.
+* @short GGA Group Cursor.
+*/
+CLASSCURSOR(GGroupIRCursor,GGroupIR,unsigned int)
+
+
 }  //------- End of namespace GALILEI -----------------------------------------
 
 

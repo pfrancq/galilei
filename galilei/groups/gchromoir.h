@@ -47,10 +47,8 @@
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI
-{
+namespace GALILEI {
 //-----------------------------------------------------------------------------
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -93,6 +91,26 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 	*/
 	double DiffFactor;
 
+	/**
+	* Temporary array of Objects (Thread dependent data).
+	*/
+	GObjIR** thObjs1;
+
+	/**
+	* Number of Objects in temporary array of objects 1.
+	*/
+	unsigned int NbObjs1;
+
+	/**
+	* Temporary array of Objects (Thread dependent data).
+	*/
+	GObjIR** thObjs2;
+
+	/**
+	* Number of Objects in temporary array of objects 1.
+	*/
+	unsigned int NbObjs2;
+
 public:
 
 	/**
@@ -109,9 +127,30 @@ public:
 	virtual void Init(GThreadDataIR* thData) throw(bad_alloc);
 
 	/**
+	* Look if two groups were merged together.
+	* @param grp1           First group.
+	* @param grp2           Second group.
+	* @return bool.
+	*/
+	bool MergeGroups(GGroupIR* grp1,GGroupIR* grp2);
+
+	/**
+	* Look if a group was be divided.
+	* @param grp            Group to analyse.
+	* @return bool.
+	*/
+	bool DivideGroup(GGroupIR* grp);
+
+	/**
 	* Construct the chromosome to be the same as grps.
 	*/
 	void ConstructChromo(GGroups* grps);
+
+	/**
+	* Construct a valid solution.
+	* @return The function must retrun true if a solution has been constructed.
+	*/
+	virtual bool RandomConstruct(void);
 
 	/**
 	* Evaluation of the chromosomes. Actually, it is just the average of the
@@ -123,6 +162,21 @@ public:
 	* Does a local optimisation for the chromosome.
 	*/
 	virtual void LocalOptimisation(void);
+
+	/**
+	* Do the standard crossover of the GGA and do a reorganisation after.
+	*/
+	virtual bool Crossover(GChromoIR* parent1,GChromoIR* parent2);
+
+	/**
+	* Do the standard mutation of the GGA and do a reorganisation after.
+	*/
+	virtual bool Mutation(void);
+
+	/**
+	* Does a reorganisation of the chromosome.
+	*/
+	void ReOrganisation(void);
 
 	/**
 	* Look if two subprofiles are in the same group or not.

@@ -203,6 +203,7 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 	GGroup* g;
 	unsigned int* tab;
 	unsigned int* ptr;
+	GInstIR* Instance;
 
 	if(!SubProfiles.NbPtr) return;
 	try
@@ -214,17 +215,20 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
 		}
 		GProfilesSim Sims(SubProfiles,GlobalSim);
-		GInstIR Instance(MinSimLevel,MaxGen,PopSize,&Objs,GlobalSim,&Sims,RGGA::FirstFit,0);
-		Instance.Init(&data,Groups);
-		Instance.SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
-		Instance.SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
-		Instance.SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
-		Instance.SetCriterionParam("Diff Factor",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
-		Instance.Run();
+		if(Modified)
+			Instance=new GInstIR(MinSimLevel,MaxGen,PopSize,Groups,&Objs,GlobalSim,&Sims,RGGA::FirstFit,0);
+		else
+			Instance=new GInstIR(MinSimLevel,MaxGen,PopSize,0,&Objs,GlobalSim,&Sims,RGGA::FirstFit,0);
+		Instance->Init(&data);
+		Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
+		Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
+		Instance->SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
+		Instance->SetCriterionParam("Diff Factor",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
+		Instance->Run();
 		Clear();
-		for(Instance.BestChromosome->Used.Start();!Instance.BestChromosome->Used.End();Instance.BestChromosome->Used.Next())
+		for(Instance->BestChromosome->Used.Start();!Instance->BestChromosome->Used.End();Instance->BestChromosome->Used.Next())
 		{
-			gr=Instance.BestChromosome->Used();
+			gr=Instance->BestChromosome->Used();
 			g=NewGroup(Lang);
 			ptr=tab=gr->GetObjectsId();
 			while((*ptr)!=RGGA::NoObject)

@@ -146,6 +146,7 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 	unsigned int i;
 
 	SaveGroups=true;
+	Modified=modified;
 
 	// Go trough each language.
 	for(CurLang.Start();!CurLang.End();CurLang.Next())

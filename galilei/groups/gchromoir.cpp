@@ -69,6 +69,114 @@ void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
 	RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(thData);
 	Sims=Instance->Sims;
 	MinSimLevel=Instance->MinSimLevel;
+	thObjs1=thData->tmpObjs1;
+	thObjs2=thData->tmpObjs2;
+	NbObjs2=NbObjs1=0;
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GChromoIR::MergeGroups(GGroupIR* grp1,GGroupIR* grp2)
+{
+	GObjIR** ptr;
+	GObjIR** ptr2;
+	unsigned int i,j;
+	double LocalAvgSim,NbComp,LocalOKFactor,LocalDiffFactor;
+	int NbCrit=0;
+	GSubProfilesSameGroupIR* sub;
+	unsigned int id1=grp1->Id;
+	unsigned int id2=grp2->Id;
+	unsigned int a1,a2;
+
+	// Put in thObjs1 the merge of the two groups
+	for(ptr2=grp1->GetObjects(),ptr=thObjs1,i=grp1->GetNbObjs()+1,NbObjs1=0;--i;ptr2++,ptr++,NbObjs1++)
+		(*ptr)=(*ptr2);
+	for(ptr2=grp2->GetObjects(),i=grp2->GetNbObjs()+1;--i;ptr2++,ptr++,NbObjs1++)
+		(*ptr)=(*ptr2);
+
+	// Compute Avg Similarity for the new created group
+	NbComp=LocalAvgSim=0.0;
+	for(ptr=thObjs1,i=NbObjs1;--i;ptr++)
+	{
+		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
+		{
+			LocalAvgSim+=Sims->GetSim((*ptr)->GetSubProfile(),(*ptr2)->GetSubProfile());
+			NbComp+=1.0;
+		}
+	}
+	LocalAvgSim/=NbComp;
+	if(LocalAvgSim>(grp1->ComputeAvgSim()+grp2->ComputeAvgSim())/2)
+	{
+		NbCrit++;
+	}
+
+	// Number of subprofiles having common OK documents and being in the same group.
+	if(Instance->SameGroups.NbPtr)
+	{
+		LocalOKFactor=0.0;
+		OKFactor=0.0;
+		for(Instance->SameGroups.Start();!Instance->SameGroups.End();Instance->SameGroups.Next())
+		{
+			sub=Instance->SameGroups();
+			a1=ObjectsAss[sub->Id1];
+			a2=ObjectsAss[sub->Id2];
+			if((a1==a2)||((a1==id1||a1==id2)&&(a2==id1||a2==id2)))
+				LocalOKFactor+=1.0;
+			if(a1==a2)
+				OKFactor+=1.0;
+		}
+		LocalOKFactor/=Instance->SameGroups.NbPtr;
+	}
+	else
+	{
+		OKFactor=LocalOKFactor=1.0;
+	}
+	if(LocalOKFactor>OKFactor)
+	{
+		cout<<LocalOKFactor<<">"<<OKFactor<<endl;
+		NbCrit++;
+	}
+
+	// Number of subprofiles having common documents with different judgment and being in the same group.
+//	LocalDiffFactor=0.0;
+//	for(Instance->DiffGroups.Start();!Instance->DiffGroups.End();Instance->DiffGroups.Next())
+//	{
+//		sub=Instance->DiffGroups();
+//		a1=ObjectsAss[sub->Id1];
+//		a2=ObjectsAss[sub->Id2];
+//		if((a1==a2)||((a1==id1||a1==id2)&&(a2==id1||a2==id2)))
+//			LocalDiffFactor+=1.0;
+//	}
+//	if(Instance->DiffGroups.NbPtr)
+//	{
+//		LocalDiffFactor/=Instance->DiffGroups.NbPtr;
+//	}
+//	if(LocalDiffFactor<DiffFactor)
+//		NbCrit--;
+
+	// Look number of criteria ameliorate
+	i=Instance->RRand(2);
+	if(NbCrit>i)
+	{
+		// Release grp1 and grp2
+		ReleaseGroup(grp1);
+		ReleaseGroup(grp2);
+
+		// Reserve a new group and insert the elements of thObjs1
+		grp1=ReserveGroup();
+		for(ptr=thObjs1,i=NbObjs1+1;--i;ptr++)
+			grp1->Insert(*ptr);
+		return(true);
+	}
+
+	return(false);
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GChromoIR::DivideGroup(GGroupIR* grp)
+{
+	return(false);
 }
 
 
@@ -93,8 +201,29 @@ void GALILEI::GChromoIR::ConstructChromo(GGroups* grps)
 					grp->Insert((*Objs)());
 					break;
 				}
+			Verify();
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GChromoIR::RandomConstruct(void)
+{
+	bool b;
+
+	// Look if already a solution in the session
+	if(Instance->CurrentGroups)
+		 ConstructChromo(Instance->CurrentGroups);
+
+	// Call classic heuristic for non-assigned objects
+	b=RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::RandomConstruct();
+
+	// If not first element, do a mutation
+	if(Instance->CurrentGroups&&Id)
+		b=RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Mutation();
+
+	return(b);
 }
 
 
@@ -188,6 +317,67 @@ void GALILEI::GChromoIR::LocalOptimisation(void)
 {
 	for(Used.Start();!Used.End();Used.Next())
 		Used()->DoOptimisation();
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GChromoIR::Crossover(GChromoIR* parent1,GChromoIR* parent2)
+{
+	bool b;
+
+	b=RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Crossover(parent1,parent2);
+	ReOrganisation();
+	return(b);
+}
+
+
+//-----------------------------------------------------------------------------
+bool GALILEI::GChromoIR::Mutation(void)
+{
+	bool b;
+
+	b=RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Mutation();
+	ReOrganisation();
+	return(b);
+}
+
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GChromoIR::ReOrganisation(void)
+{
+	bool Cont;
+	GGroupIRCursor Cur1,Cur2;
+	unsigned int i,j;
+
+	// Try to divided groups until it is not possible anymore
+	for(Cont=true;Cont;)
+	{
+		Cont=false;
+		Cur1.Set(Used);
+		for(Cur1.Start();!Cur1.End();Cur1.Next())
+		{
+			if(DivideGroup(Cur1())) Cont=true;
+		}
+	}
+
+	// Try to regroup groups until it is not possible anymore
+	for(Cont=true;Cont;)
+	{
+		Cont=false;
+		Cur1.Set(Used);
+		Cur2.Set(Used);
+		for(Cur1.Start(),i=0,j=Cur1.GetNb();(--j)&&(!Cont);Cur1.Next(),i++)
+		{
+			for(Cur2.GoTo(i+1);(!Cur2.End())&&(!Cont);Cur2.Next())
+			{
+				if(MergeGroups(Cur1(),Cur2()))
+					Cont=true;
+			}
+		}
+	}
+
+	ComputeOrd();
 }
 
 

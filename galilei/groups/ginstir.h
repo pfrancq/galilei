@@ -64,10 +64,30 @@ class GThreadDataIR : public RGGA::RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GTh
 public:
 
 	/**
+	* Temporary array of Objects.
+	*/
+	GObjIR** tmpObjs1;
+
+	/**
+	* Temporary array of Objects.
+	*/
+	GObjIR** tmpObjs2;
+
+	/**
 	* Construct the data.
 	* @param owner          The instance of the problem.
 	*/
 	GThreadDataIR(GInstIR* owner);
+
+	/**
+	* Initialise thje data.
+	*/
+	virtual void Init(void) throw(bad_alloc);
+
+	/**
+	* Destruct the data.
+	*/
+	virtual ~GThreadDataIR(void);
 };
 
 
@@ -177,6 +197,11 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	*/
 	bool GlobalSim;
 
+	/**
+	* Pointer to the current clustering in the session.
+	*/
+	GGroups* CurrentGroups;
+
 public:
 
 	/**
@@ -184,18 +209,18 @@ public:
 	* @param m              Minimal similarity in a group.
 	* @param max            Maximal number of generations.
 	* @param popsize        The size of the population.
+	* @param grps           Pointer to the current solutions.
 	* @param prob           The problem.
 	* @param h              The type of heuristic to be used.
 	* @param debug          Debugger.
 	*/
-	GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
+	GInstIR(double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
 
 	/**
 	* Initialisation of the instance.
 	* @param gdata          The Data to use for the construction of the groups.
-	* @param grps           Pointer to the current solutions.
 	*/
-	virtual void Init(GGroupDataIR* gdata,GGroups* grps=0) throw(bad_alloc);
+//	virtual void Init(GGroupDataIR* gdata) throw(bad_alloc);
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case
@@ -231,6 +256,7 @@ public:
 
 	// friend classes
 	friend class GChromoIR;
+	friend class GThreadDataIR;
 };
 
 

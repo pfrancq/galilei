@@ -237,82 +237,82 @@ double GALILEI::GGroupIR::ComputeRelevant(void)
 //---------------------------------------------------------------------------
 void GALILEI::GGroupIR::DoOptimisation(void)
 {
-	unsigned int i,Pos;
-	SubProfileLocal* tab;
-	SubProfileLocal* t;
-	GObjIR** ptr;
-	GObjIR*/*GSubProfile*/ sub;
-	GObjIR*/*GSubProfile*/ obj;
-	double Avg,tmp;
-	GGroupIR* grp;
-
-	if(NbSubObjects<2) return;
-
-	// Init: Construct an arry and select randomly a subprofile
-	tab=new SubProfileLocal[NbSubObjects-1];
-	sub=Owner->GetObj(SubObjects+Owner->Instance->RRand(NbSubObjects))/*->GetSubProfile()*/;
-//	cout<<sub->GetProfile()->GetName()<<"\t";
-
-	// Go the other profiles, compute the average similarity to the selected
-	// one. Classify them in descending order.
-	Avg=0.0;
-	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),t=tab;--i;ptr++)
-	{
-		obj=(*ptr)/*->GetSubProfile()*/;
-		if(obj==sub) continue;
-		t->Prof=obj;
-		t->AvgSim=Owner->Sims->GetSim(sub->GetSubProfile(),obj->GetSubProfile());
-		Avg+=t->AvgSim;
-		t++;
-	}
-	qsort(static_cast<void*>(tab),NbSubObjects-1,sizeof(SubProfileLocal),sort_function);
-	Avg/=NbSubObjects-1;
-
-	// Go through the ordered subprofiles to find where eventually to cut
-	Pos=i=0;
-	t=tab;
-	Avg=t->AvgSim;
-//	cout<<t->Prof->GetProfile()->GetName()<<"="<<t->AvgSim<<"\t";
-	for(t++,i++;i<NbSubObjects-1;t++,i++)
-	{
-		if(!Pos)
-		{
-			tmp=(Avg-t->AvgSim)/Avg;
-			if(tmp>0.2)
-			{
-//				cout<<"\t|\t";
-				Pos=i;
-				break;
-			}
-			Avg=t->AvgSim;
-		}
-//		cout<<t->Prof->GetProfile()->GetName()<<"="<<t->AvgSim<<"\t";
-	}
-//	cout<<endl;
-
-
-	// If cut found do it.
-	if(Pos)
-	{
-		#ifdef RGADEBUG
-			if(Owner->Instance->Debug)
-			{
-				Owner->Instance->Debug->BeginFunc("DoOptimisation","GGroupIR");
-				Owner->Instance->Debug->PrintInfo("Divided a group");
-				Owner->Instance->Debug->EndFunc("DoOptimisation","GGroupIR");
-			}
-		#endif
-
-		grp=Owner->ReserveGroup();
-		for(;i<NbSubObjects-1;t++,i++)
-		{
-			Delete(t->Prof);
-			grp->Insert(t->Prof);
-		}
-	}
-
-	// Delete the created array.
-	delete[] tab;
+//	unsigned int i,Pos;
+//	SubProfileLocal* tab;
+//	SubProfileLocal* t;
+//	GObjIR** ptr;
+//	GObjIR*/*GSubProfile*/ sub;
+//	GObjIR*/*GSubProfile*/ obj;
+//	double Avg,tmp;
+//	GGroupIR* grp;
+//
+//	if(NbSubObjects<2) return;
+//
+//	// Init: Construct an arry and select randomly a subprofile
+//	tab=new SubProfileLocal[NbSubObjects-1];
+//	sub=Owner->GetObj(SubObjects+Owner->Instance->RRand(NbSubObjects))/*->GetSubProfile()*/;
+////	cout<<sub->GetProfile()->GetName()<<"\t";
+//
+//	// Go the other profiles, compute the average similarity to the selected
+//	// one. Classify them in descending order.
+//	Avg=0.0;
+//	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),t=tab;--i;ptr++)
+//	{
+//		obj=(*ptr)/*->GetSubProfile()*/;
+//		if(obj==sub) continue;
+//		t->Prof=obj;
+//		t->AvgSim=Owner->Sims->GetSim(sub->GetSubProfile(),obj->GetSubProfile());
+//		Avg+=t->AvgSim;
+//		t++;
+//	}
+//	qsort(static_cast<void*>(tab),NbSubObjects-1,sizeof(SubProfileLocal),sort_function);
+//	Avg/=NbSubObjects-1;
+//
+//	// Go through the ordered subprofiles to find where eventually to cut
+//	Pos=i=0;
+//	t=tab;
+//	Avg=t->AvgSim;
+////	cout<<t->Prof->GetProfile()->GetName()<<"="<<t->AvgSim<<"\t";
+//	for(t++,i++;i<NbSubObjects-1;t++,i++)
+//	{
+//		if(!Pos)
+//		{
+//			tmp=(Avg-t->AvgSim)/Avg;
+//			if(tmp>0.2)
+//			{
+////				cout<<"\t|\t";
+//				Pos=i;
+//				break;
+//			}
+//			Avg=t->AvgSim;
+//		}
+////		cout<<t->Prof->GetProfile()->GetName()<<"="<<t->AvgSim<<"\t";
+//	}
+////	cout<<endl;
+//
+//
+//	// If cut found do it.
+//	if(Pos)
+//	{
+//		#ifdef RGADEBUG
+//			if(Owner->Instance->Debug)
+//			{
+//				Owner->Instance->Debug->BeginFunc("DoOptimisation","GGroupIR");
+//				Owner->Instance->Debug->PrintInfo("Divided a group");
+//				Owner->Instance->Debug->EndFunc("DoOptimisation","GGroupIR");
+//			}
+//		#endif
+//
+//		grp=Owner->ReserveGroup();
+//		for(;i<NbSubObjects-1;t++,i++)
+//		{
+//			Delete(t->Prof);
+//			grp->Insert(t->Prof);
+//		}
+//	}
+//
+//	// Delete the created array.
+//	delete[] tab;
 }
 
 

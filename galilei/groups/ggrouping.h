@@ -96,6 +96,11 @@ protected:
 	*/
 	bool SaveGroups;
 
+	/**
+	* Must the groups be used without reconstruction.
+	*/
+	bool Modified;
+
 public:
 
 	/**
