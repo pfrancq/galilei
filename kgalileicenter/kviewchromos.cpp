@@ -157,9 +157,12 @@ public:
 	tId Id;
 	double Precision;
 	double Recall;
+	double E1;
+	double E05;
+	double E15;
 	double Global;
-	double AvgSim;
 	double J;
+	double AvgSim;
 	double AvgRatio;
 	double MinRatio;
 	double Ratio;
@@ -176,7 +179,7 @@ public:
 	double Fi;
 	unsigned int NbGroups;
 
-	Stat(void) : Id(NullId), Precision(0.0), Recall(0.0), Global(0.0), AvgSim(0.0), J(0.0),
+	Stat(void) : Id(NullId), Precision(0.0), Recall(0.0), E1(0.0), E05(0.0), E15(0.0), Global(0.0), J(0.0), AvgSim(0.0),
 		AvgRatio(0.0), MinRatio(0.0), Ratio(0.0), WOverB(0.0), SimWB(0.0), Fitness(0.0),
 		CritSim(0.0), CritInfo(0.0), CritSame(0.0), CritDiff(0.0), CritSocial(0.0),
 		FiPlus(0.0), FiMinus(0.0), Fi(0.0) {}
@@ -204,6 +207,9 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,bool sim,QWidget*
 		General->addColumn("Id");
 		General->addColumn("Precision");
 		General->addColumn("Recall");
+		General->addColumn("E05");
+		General->addColumn("E1");
+		General->addColumn("E15");
 		General->addColumn("Global");
 		General->addColumn("AvgSim");
 		General->addColumn("J");
@@ -213,7 +219,7 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,bool sim,QWidget*
 		General->addColumn("W Over B");
 		General->addColumn("Sim WB");
 		General->addColumn("Nb Groups");
-		for(int i=0;i<12;i++)
+		for(int i=0;i<15;i++)
 		{
 			General->setColumnWidthMode(i,QListView::Maximum);
 			General->setColumnAlignment(i,Qt::AlignHCenter);
@@ -225,6 +231,9 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,bool sim,QWidget*
 		General->addColumn("Id");
 		General->addColumn("Precision");
 		General->addColumn("Recall");
+		General->addColumn("E05");
+		General->addColumn("E1");
+		General->addColumn("E15");
 		General->addColumn("Global");
 		General->addColumn("Ranking");
 		General->addColumn("CritSim");
@@ -236,13 +245,23 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,bool sim,QWidget*
 		General->addColumn("Fi-");
 		General->addColumn("Fi");
 		General->addColumn("Nb Groups");
-		for(int i=0;i<14;i++)
+		for(int i=0;i<17;i++)
 		{
 			General->setColumnWidthMode(i,QListView::Maximum);
 			General->setColumnAlignment(i,Qt::AlignHCenter);
 		}
 		ConstructChromosomesRanking();
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewChromos::PutDouble(QListViewItem* g,unsigned int col,double val)
+{
+	char tmp[50];
+
+	sprintf(tmp,"%f",val);
+	g->setText(col,tmp);
 }
 
 
@@ -308,48 +327,63 @@ void KViewChromos::ConstructChromosomesSim(void)
 		s->Recall=c->GetRecall();
 		sprintf(tmp,"%f",c->GetRecall());
 		g->setText(2,tmp);
+		if((s->Precision>0.0)&&(s->Recall>0.0))
+		{
+			s->E05=1-(1+(0.5*0.5))/((1/s->Precision)+((0.5*0.5)/s->Recall));
+			s->E1=1-2/((1/s->Precision)+(1/s->Recall));
+			s->E15=1-(1+(1.5*1.5))/((1/s->Precision)+((1.5*1.5)/s->Recall));
+		}
+		else
+		{
+			s->E05=0;
+			s->E1=0;
+			s->E15=0;
+		}
+		PutDouble(g,3,s->E05);
+		PutDouble(g,4,s->E1);
+		PutDouble(g,5,s->E15);
 		s->Global=c->GetGlobal();
 		sprintf(tmp,"%f",c->GetGlobal());
-		g->setText(3,tmp);
+		g->setText(6,tmp);
 
 		c->EvaluateAvgSim();
 		s->AvgSim=c->GetSimCriterion();
 		sprintf(tmp,"%f",c->GetSimCriterion());
-		g->setText(4,tmp);
+		g->setText(7,tmp);
 
 		c->EvaluateJ();
 		s->J=c->GetSimCriterion();
 		sprintf(tmp,"%f",c->GetSimCriterion());
-		g->setText(5,tmp);
+		g->setText(8,tmp);
 
 		c->EvaluateAvgRatio();
 		s->AvgRatio=c->GetSimCriterion();
 		sprintf(tmp,"%f",c->GetSimCriterion());
-		g->setText(6,tmp);
+		g->setText(9,tmp);
 
 		c->EvaluateMinRatio();
 		s->MinRatio=c->GetSimCriterion();
 		sprintf(tmp,"%f",c->GetSimCriterion());
-		g->setText(7,tmp);
+		g->setText(10,tmp);
 
 		c->EvaluateRatio();
 		s->Ratio=c->GetSimCriterion();
 		sprintf(tmp,"%f",c->GetSimCriterion());
-		g->setText(8,tmp);
+		g->setText(11,tmp);
 
 		c->EvaluateWOverB();
 		s->WOverB=c->GetSimCriterion();
 		sprintf(tmp,"%f",c->GetSimCriterion());
-		g->setText(9,tmp);
+		g->setText(12,tmp);
 
 		c->EvaluateSimWB();
 		s->SimWB=c->GetSimCriterion();
 		sprintf(tmp,"%f",c->GetSimCriterion());
-		g->setText(10,tmp);
+		g->setText(13,tmp);
 
 		s->NbGroups=c->Used.NbPtr;
 		sprintf(tmp,"%u",c->Used.NbPtr);
-		g->setText(11,tmp);
+		g->setText(14,tmp);
 	}
 
 	// Finish.
@@ -455,39 +489,55 @@ void KViewChromos::ConstructChromosomesRanking(void)
 		s->Recall=c->GetRecall();
 		sprintf(tmp,"%f",c->GetRecall());
 		g->setText(2,tmp);
+		if((s->Precision>0.0)&&(s->Recall>0.0))
+		{
+			s->E05=1-(1+(0.5*0.5))/((1/s->Precision)+((0.5*0.5)/s->Recall));
+			s->E1=1-2/((1/s->Precision)+(1/s->Recall));
+			s->E15=1-(1+(1.5*1.5))/((1/s->Precision)+((1.5*1.5)/s->Recall));
+		}
+		else
+		{
+			s->E05=0;
+			s->E1=0;
+			s->E15=0;
+		}
+		PutDouble(g,3,s->E05);
+		PutDouble(g,4,s->E1);
+		PutDouble(g,5,s->E15);
 		s->Global=c->GetGlobal();
 		sprintf(tmp,"%f",c->GetGlobal());
-		g->setText(3,tmp);
+		g->setText(6,tmp);
+
 		s->Fitness=c->Fitness->Value;
 		sprintf(tmp,"%f",c->Fitness->Value);
-		g->setText(4,tmp);
+		g->setText(7,tmp);
 		s->CritSim=c->GetSimCriterion();
 		sprintf(tmp,"%f",c->GetSimCriterion());
-		g->setText(5,tmp);
+		g->setText(8,tmp);
 		s->CritInfo=c->GetInfoCriterion();
 		sprintf(tmp,"%f",c->GetInfoCriterion());
-		g->setText(6,tmp);
+		g->setText(9,tmp);
 		s->CritSame=c->GetSameFeedbacksCriterion();
 		sprintf(tmp,"%f",c->GetSameFeedbacksCriterion());
-		g->setText(7,tmp);
+		g->setText(10,tmp);
 		s->CritDiff=c->GetDiffFeedbacksCriterion();
 		sprintf(tmp,"%f",c->GetDiffFeedbacksCriterion());
-		g->setText(8,tmp);
+		g->setText(11,tmp);
 		s->CritSocial=c->GetSocialCriterion();
 		sprintf(tmp,"%f",c->GetSocialCriterion());
-		g->setText(9,tmp);
+		g->setText(12,tmp);
 		s->FiPlus=c->GetFiPlus();
 		sprintf(tmp,"%f",c->GetFiPlus());
-		g->setText(10,tmp);
+		g->setText(13,tmp);
 		s->FiMinus=c->GetFiMinus();
 		sprintf(tmp,"%f",c->GetFiMinus());
-		g->setText(11,tmp);
+		g->setText(14,tmp);
 		s->Fi=c->GetFi();
 		sprintf(tmp,"%f",c->GetFi());
-		g->setText(12,tmp);
+		g->setText(15,tmp);
 		s->NbGroups=c->Used.NbPtr;
 		sprintf(tmp,"%u",c->Used.NbPtr);
-		g->setText(13,tmp);
+		g->setText(16,tmp);
 	}
 
 	// Finish.
@@ -532,24 +582,27 @@ void KViewChromos::slotMenu(int)
 	}
 	RTextFile Res(url.path().latin1(),RIO::Create);
 	Res.SetSeparator("\t");
+	Res<<"Id"<<"Precision"<<"Recall"<<"E05"<<"E1"<<"E15"<<"Global";
 	if(Sim)
-		Res<<"Id"<<"Precision"<<"Recall"<<"Global"<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"WOverB"<<"SimWB"<<"NbGroups"<<endl;
+		Res<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"WOverB"<<"SimWB";
 	else
-		Res<<"Id"<<"Precision"<<"Recall"<<"Global"<<"Ranking"<<"CritSim"<<"CritInfo"<<"CritSame"<<"CritDiff"<<"CritSocial"<<"Fi+"<<"Fi-"<<"Fi"<<"NbGroups"<<endl;
+		Res<<"Ranking"<<"CritSim"<<"CritInfo"<<"CritSame"<<"CritDiff"<<"CritSocial"<<"Fi+"<<"Fi-"<<"Fi";
+	Res<<"NbGroups"<<endl;
 	Cur.Set(Stats);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Res<<Cur()->Id<<Cur()->Precision<<Cur()->Recall<<Cur()->Global;
+		Res<<Cur()->Id<<Cur()->Precision<<Cur()->Recall<<Cur()->E05<<Cur()->E1<<Cur()->E15<<Cur()->Global;
 		if(Sim)
 		{
 			Res<<Cur()->AvgSim<<Cur()->J<<Cur()->AvgRatio<<Cur()->MinRatio;
-			Res<<Cur()->Ratio<<Cur()->WOverB<<Cur()->SimWB<<Cur()->NbGroups<<endl;
+			Res<<Cur()->Ratio<<Cur()->WOverB<<Cur()->SimWB;
 		}
 		else
 		{
 			Res<<Cur()->Fitness<<Cur()->CritSim<<Cur()->CritInfo<<Cur()->CritSame<<Cur()->CritDiff;
-			Res<<Cur()->CritSocial<<Cur()->FiPlus<<Cur()->FiMinus<<Cur()->Fi<<Cur()->NbGroups<<endl;
+			Res<<Cur()->CritSocial<<Cur()->FiPlus<<Cur()->FiMinus<<Cur()->Fi;
 		}
+		Res<<Cur()->NbGroups<<endl;
 	}
 }
 

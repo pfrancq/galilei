@@ -151,6 +151,14 @@ public:
 protected:
 
 	/**
+	* Put a double number in a column.
+	* @param g              Pointer to the View Item.
+	* @param col            Column.
+	* @param val            Value to insert.
+	*/
+	void PutDouble(QListViewItem* g,unsigned int col,double val);
+
+	/**
 	* Called when the main window is resize by the user.
 	*/
 	void resizeEvent(QResizeEvent *);
