@@ -182,22 +182,25 @@ protected:
 	/**
 	* Add a word to the document.
 	* @param word           Word to add.
+	* @param weight         Weights of the words added during this analyze.
 	*/
-	void AddWord(const char* word) throw(bad_alloc);
+	void AddWord(const char* word,double weight) throw(bad_alloc);
 
 	/**
 	* This function construct a word.
 	* @param ptr            Pointer that will be moved to the next word.
 	* @param word           Where to store the word.
+	* @param weight         Weights of the words added during this analyze.
 	* @returns true if a word was extract.
 	*/
-	bool ExtractWord(const char* &ptr,RStd::RString& word);
+	bool ExtractWord(const char* &ptr,RStd::RString& word,double weight);
 
 	/**
 	* Analyse a tag.
 	* @param tag            Tag to analyse.
+	* @param weight         Weights of the words added during this analyze.
 	*/
-	void AnalyseTag(RXML::RXMLTag* tag) throw(GException);
+	void AnalyseTag(RXML::RXMLTag* tag,double weight) throw(GException);
 
 	/**
 	* This methods determine the language of the current structure studied,
