@@ -303,7 +303,7 @@ void KGALILEICenterApp::readOptions(void)
 		Conf.Read(PostDocManager);
 		Conf.Read(PostGroupManager);
 		Conf.Read(PostGroupManager);
-		Conf.Read(SessionParams);
+//		Conf.Read(SessionParams);
 	}
 	catch(...)
 	{
