@@ -31,8 +31,8 @@
 #include <stdlib.h>
 
 //include files for GALILEI
-#include<gwordcalcs.h>
-
+#include <gdocs/gwordcalcs.h>
+#include <gsessions/gsession.h>
 using namespace GALILEI;
 
 

@@ -66,7 +66,7 @@ namespace GALILEI{
 
 class GUser;
 //class GWordCalcs;
-class GSubProfile;
+
 //-----------------------------------------------------------------------------
 // class GProfile
 class GProfile : public RStd::RContainer<GSubProfile,unsigned,true,true>

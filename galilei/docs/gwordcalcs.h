@@ -45,7 +45,6 @@
 
 #include<gdocs/gdoc.h>
 #include<glangs/glang.h>
-#include<gsessions/gsession.h>
 #include <gdocs/gwordcalc.h>
 
 using namespace GALILEI;
@@ -53,6 +52,7 @@ using namespace GALILEI;
 namespace GALILEI{
 
 class GDoc;
+class GSession;
 
 //---------------------------------------------------------------------------
 

@@ -1,62 +1,63 @@
+/*
 
+	GALILEI Research Project
+
+	gwordref.h
+
+	Basic Information - Implementation.
+
+	(C) 2001 by P. Francq.
+
+	Version $Revision$
+
+	Last Modify: $Date$
+
+*/
+
+
+
+//-----------------------------------------------------------------------------
+// include files for ANSI C/C++
 #include <stdlib.h>
 
-//include files for GALILEI
-#include<ggroups.h>
 
+//-----------------------------------------------------------------------------
+//include files for GALILEI
+#include<ggroups/ggroups.h>
+#include<ggroups/ggroupslangs.h>
+#include<gprofiles/gusers.h>
+#include<gsessions/gsession.h>
 using namespace GALILEI;
+
+
 
 //-----------------------------------------------------------------------------
 //  GGroups
 //
 //-----------------------------------------------------------------------------
 
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
+//-----------------------------------------------------------------------------
 GGroups::GGroups(GGroupsLangs *owner,GLang *lang) throw(bad_alloc)
 	: RContainer<GGroup,unsigned int,true,false>(20,10), Owner(owner), Lang(lang)
 {
 }
 
 
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
+//-----------------------------------------------------------------------------
 int GGroups::Compare(const GGroups &groups)
 {
 	return(Lang->Compare(groups.Lang));
 }
 
 
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
+//-----------------------------------------------------------------------------
 int GGroups::Compare(const GGroups *groups)
 {
 	return(Lang->Compare(groups->Lang));
 }
 
 
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
+//-----------------------------------------------------------------------------
 void GGroups::Calc(void)
 {
 	GGroup *grp;
@@ -103,7 +104,3 @@ void GGroups::Calc(void)
 	for(ToDel.Start();!ToDel.End();ToDel.Next())
 		DeletePtr(ToDel());
 }
-
-
-
-

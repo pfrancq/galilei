@@ -31,8 +31,8 @@
 
 #include <stdlib.h>
 //include files for GALILEI
-#include<ggroup.h>
-
+#include<ggroups/ggroup.h>
+#include <ggroups/ggroups.h>
 using namespace GALILEI;
 
 //-----------------------------------------------------------------------------

@@ -29,15 +29,12 @@
 
 */
 
+
+
 //---------------------------------------------------------------------------
-// include files for Galilei
+// include files for GALILEI
 #include "gsession.h"
-
-
-
-
 using namespace GALILEI;
-namespace GALILEI{
 
 
 //---------------------------------------------------------------------------
@@ -48,8 +45,9 @@ namespace GALILEI{
 
 //---------------------------------------------------------------------------
 GSession::GSession(void) throw(bad_alloc,GException)
-  : AllDocs(true),Langs(0),Stops(0),Dics(0),Users(0),Docs(0),GroupsLangs(0)
+  : AllDocs(true),Langs(0),Stops(0),Dics(0),Users(0),Docs(0),GroupsLangs(0), MIMETypes(0)
 {
+	MIMETypes=new RContainer<GMIMEType,unsigned int,true,true>(20,10);
 }
 
 
@@ -132,8 +130,8 @@ void GSession::ClearDocs(void) throw(GException)
   Docs->Clear();
 }
 
-//---------------------------------------------------------------------------
 
+//---------------------------------------------------------------------------
 GSession::~GSession(void) throw(GException)
 
 {
@@ -143,6 +141,6 @@ GSession::~GSession(void) throw(GException)
 	if(Docs) delete Docs;
 	if(Users) delete Users;
 	if(GroupsLangs) delete GroupsLangs;
-}
+	if(MIMETypes) delete MIMETypes;
 }
 

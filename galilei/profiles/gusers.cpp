@@ -33,7 +33,7 @@
 
 //include files for GALILEI
 #include<gusers.h>
-
+#include <gsessions/gsession.h>
 using namespace GALILEI;
 
 //-----------------------------------------------------------------------------

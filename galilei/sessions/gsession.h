@@ -22,18 +22,14 @@ using namespace RStd;
 #include <ggroups/ggroupslangs.h>
 #include <glangs/gdict.h>
 #include <gexceptions.h>
-
+#include <gdocs/gmimetype.h>
 #include <gdocs/gdocs.h>
+
 
 //---------------------------------------------------------------------------
 namespace GALILEI{
 //---------------------------------------------------------------------------
 
-class GDocs;
-class GGroupsLangs;
-class GDicts;
-class GUsers;
-class GProfile;
 
 //---------------------------------------------------------------------------
 // GSession
@@ -47,7 +43,8 @@ public:
 	GDicts* Dics;
 	GUsers* Users;
 	GDocs* Docs;
-	GGroupsLangs *GroupsLangs;
+	GGroupsLangs* GroupsLangs;
+	RContainer<GMIMEType,unsigned int,true,true>* MIMETypes;
 
   // Constructor & Init part
   GSession(void) throw(bad_alloc,GException);
@@ -69,13 +66,25 @@ public:
   void AnalyseDocs(URLFunc *urlfunc,InfoFunc *infofunc) throw(bad_alloc,GException);
   void ClearDocs(void) throw(GException);
 
+	/**
+	* @return Pointer to the mime type.
+	*/
+	GMIMEType* GetMIMEType(const char* name)
+		{return(MIMETypes->GetPtr<const char*>(name));}
+
+	/**
+	* @return Pointer to the mime type.
+	*/
+	GMIMEType* GetMIMEType(const RString& name)
+		{return(MIMETypes->GetPtr<const RString>(name));}
+
   // Destructor
   virtual ~GSession(void) throw(GException);
 };
 
 
-}  //-------- End of namespace Galilei-----------------------------------
+}  //-------- End of namespace GALILEI ----------------------------------------
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 #endif

@@ -28,14 +28,19 @@
 	Boston, MA  02111-1307  USA
 
 */
-#include <stdlib.h>
 
-//include files for GALILEI
-#include<ggroupslangs.h>
 
-using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <stdlib.h>
+
+//-----------------------------------------------------------------------------
+//include files for GALILEI
+#include<ggroups/ggroupslangs.h>
+#include<gsessions/gsession.h>
+using namespace GALILEI;
+
 
 
 //-----------------------------------------------------------------------------
@@ -44,13 +49,7 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
+//-----------------------------------------------------------------------------
 GGroupsLangs::GGroupsLangs(GSession *session) throw(bad_alloc)
 	: RContainer<GGroups,unsigned int,true,true>(session->Langs->NbPtr,2),
 	  Session(session)
@@ -58,55 +57,9 @@ GGroupsLangs::GGroupsLangs(GSession *session) throw(bad_alloc)
 }
 
 
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
-/*
-void GGroupsLangs::Load(void)
-{
-	for(Start();!End();Next())
-		(*this)()->Load();
-}
-
-*/
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
+//-----------------------------------------------------------------------------
 void GGroupsLangs::Calc(void)
 {
-	for(Start();!End();Next())
-		(*this)()->Calc();
+//	for(Start();!End();Next())
+//		(*this)()->Calc();
 }
-
-
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
-/*
-void GGroupsLangs::Save(void)
-{
-	for(Start();!End();Next())
-		(*this)()->Save();
-}
-
-*/
-
-
-
-
-
-
-
-
