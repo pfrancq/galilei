@@ -419,6 +419,11 @@ private slots:
 	void slotProfilesCalc(void);
 
 	/**
+	* slot to calculate all the profiles
+	*/
+	void slotPostGroupCalc(void);
+
+	/**
 	* Show the groups window.
 	*/
 	void slotShowGroups(void);
@@ -596,6 +601,7 @@ public:
 	KAction* showUsers;
 	KAction* profilesCalc;
 	KAction* profileCalc;
+	KAction* postgroupCalc;
 
 	KToggleAction* groupAlwaysCalc;
 	KToggleAction* groupAlwaysSave;

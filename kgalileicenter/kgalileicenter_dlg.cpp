@@ -265,13 +265,18 @@ void KGALILEICenterApp::slotPlugins(void)
 	// Goes through PostGroups
 	def=cur=0;
 	PostGroup=PostGroupManager.GetPostGroupCursor();
-	for(PostGroup.Start();!PostGroup.End();PostGroup.Next())
+	dlg.CurrentPostGroup->insertItem("None",0);
+	for(PostGroup.Start(),idx=1;!PostGroup.End();PostGroup.Next(), idx++)
 	{
 		str=PostGroup()->GetName();
 		str+=" [";
 		str+=PostGroup()->GetLib();
 		str+="]";
 		cur=new QPostGroupItem(dlg.PostGroups,PostGroup(),str);
+		cout << "inserting "<<PostGroup()->GetName() <<" in pos "<<idx<<endl;
+		dlg.CurrentPostGroup->insertItem(PostGroup()->GetName(),idx);
+		if((PostGroup()->GetPlugin())&&(PostGroup()->GetPlugin()==PostGroupManager.GetCurrentMethod()))
+			dlg.CurrentPostGroup->setCurrentItem(idx);
 		if(!def)
 			def=cur;
 	}
@@ -280,6 +285,7 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.PostGroups->setSelected(def,true);
 		dlg.changePostGroup(def);
 		dlg.EnablePostGroup->setEnabled(true);
+		dlg.CurrentPostGroup->setEnabled(true);
 	}
 
 	// Goes through the PostDoc method

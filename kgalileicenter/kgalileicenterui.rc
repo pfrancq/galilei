@@ -27,6 +27,8 @@
 		<Action name="profilesCalc"/>
 		<Separator/>
 		<Action name="profileCalc"/>
+		<Separator/>
+		<Action name="postgroupCalc"/>
 	</Menu>
 	<Menu name="Groups"><text>&amp;Groups</text>
 		<Action name="groupAlwaysCalc"/>
