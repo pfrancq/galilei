@@ -189,6 +189,287 @@ void QLoadSession::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
+void QCreateDB::DoIt(void)
+{
+	RString line("");
+	RString sql("");
+	RString msg("");
+	RString path("");
+	bool endFound=false;
+
+	//Qsession progres to view progression
+	Parent->PutText("Database structure created");
+			
+	RDb::CreateDatabase(Host,User,Pass,DbName);
+	RDb Db(Host,User,Pass,DbName,"latin1");
+	if(GSession::Break())
+		return;
+
+	//Dump database model
+	Parent->PutText("Dump Database model");
+	path=SQLPath+"DbModel.sql";
+	RTextFile fileM(path,Read,"Latin1");
+	
+	while((!fileM.Eof())&&(!GSession::Break()))
+	{
+		line=fileM.GetLine();
+		if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+			continue;
+
+		endFound=false;
+		while(!fileM.Eof() && !endFound)
+		{
+			if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+			{
+				sql="";
+				endFound=true;
+				continue;
+			}
+			sql+=line;
+			if(line.Find(';')>=0)
+				endFound=true;
+			else
+				line=fileM.GetLine();
+		}
+		if(!sql.IsEmpty())
+			RQuery Sendquery(Db,sql);
+
+		sql="";
+	}
+	if(GSession::Break())
+		return;
+
+	//Dump stoplists files
+	if(UseStopList)
+	{
+		msg="Dump Database Stoplists";
+		Parent->PutText(msg);
+		msg+=" for language ";
+		DIR* dp;
+		struct dirent* ep;
+		path="";
+
+		dp=opendir(SQLPath);
+		if(dp)
+		{
+			while((ep=readdir(dp))&&(!GSession::Break()))
+			{
+				if(strncmp(&ep->d_name[0],"DbStopList",10)) continue;
+				msg+=ep->d_name[11];
+				msg+=ep->d_name[12];
+
+				path=SQLPath+ep->d_name;
+				RTextFile fileS(path,Read,"Latin1");
+
+				Parent->PutText(msg);
+				while(!fileS.Eof())
+				{
+					line=fileS.GetLine();
+					if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+						continue;
+					RQuery stopquery(Db,line);
+				}
+				msg=msg.Mid(0,msg.GetLen()-2);
+			}
+		}
+		if(GSession::Break())
+			return;
+	}
+
+	if(UseUsers)
+	{
+		//Dump users file
+		path=SQLPath +"DbUsers.sql";
+		Parent->PutText("Dump Database users");
+
+		RTextFile fileU(path,Read,"Latin1");
+
+		while((!fileU.Eof())&&(!GSession::Break()))
+		{
+			line=fileU.GetLine();
+			if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+				continue;
+
+			endFound=false;
+			while(!fileU.Eof() && !endFound)
+			{
+				if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+				{
+					sql="";
+					endFound=true;
+					continue;
+				}
+				sql+=line;
+				if(line.Find(';')>=0)
+					endFound=true;
+				else
+					line=fileU.GetLine();
+			}
+			if(!sql.IsEmpty())
+				RQuery Sendquery(Db,sql);
+
+			sql="";
+		}
+	}
+	if(GSession::Break())
+		return;
+}
+
+
+//-----------------------------------------------------------------------------
+void QFillDB::DoIt(void)
+{
+	Parent->PutText("Try to connect database");
+			
+	//Init
+	DIR* dp;
+	struct dirent* ep;
+	RContainer<RString,true,false> usersId(10,5);
+	RString path("");
+	RString sSql("");
+	bool found=false;
+	int catId;
+		
+	//Connect to DB
+	Db = new RDb(Host,User,Pass,DbName,"latin1");
+	
+	Parent->PutText("Find documents and fill categories");
+
+	//Parse directory containing files
+	dp=opendir(CatDirectory);
+	if(dp)
+	{
+		//Parse all sub directories and insert docs in categories
+		while((ep=readdir(dp))&&(!GSession::Break()))
+		{
+			if((ep->d_type==DT_DIR)&&(ep->d_name[0] != '.'))
+			{
+				found=true;
+				catId= CreateCategory(ep->d_name,0);
+				path= CatDirectory+ep->d_name;
+				ParseDocDir(path,catId,1);
+			}
+		}
+		if(GSession::Break())
+			return;
+		//If no categories are found -> stop
+		if(!found)
+		{
+			throw new GException("Fill Database : no category detected");
+		}
+	}
+			
+	//Create profiles
+	Parent->PutText("create Profiles");
+	
+	//Get Nb users
+	sSql="SELECT userid FROM users";
+	RQuery userId(Db,sSql);
+	for(userId.Start();!userId.End();userId.Next())
+	{
+		usersId.InsertPtr(new RString(userId[0]));
+	}
+		
+	sSql="SELECT * FROM topics WHERE parent !=0";
+	RQuery topics(Db,sSql);
+	for(topics.Start();!topics.End();topics.Next())
+	{
+		sSql="SELECT name FROM topics WHERE topicid="+topics[2];
+		RQuery topics2(Db,sSql);
+		
+		topics2.Start();
+		if((!topics.End())&&topics[0])
+		{
+			RCursor<RString> userCur(usersId);
+			for(userCur.Start();!userCur.End();userCur.Next())
+			{
+				sSql="INSERT INTO profiles SET description='"+topics2[0]+"/"+topics[1]+"',updated='2004-01-01',userid="+userCur()+",topicid="+topics[0];
+				RQuery prof(Db,sSql);
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+int QFillDB::CreateCategory(RString name,int parentId)
+{
+	RString sSql("");
+	int catId;
+	sSql="SELECT topicid FROM topics WHERE name='" + name +"' AND parent=" + itou(parentId);
+	RQuery cat(Db,sSql);
+	cat.Start();
+	if((!cat.End())&&(cat[0]))
+		catId=atoi(cat[0]);
+	else
+	{
+		sSql="INSERT INTO topics SET name='"+name+"',langid='en',parent="+itou(parentId);
+		RQuery insert(Db,sSql);
+		
+		sSql="SELECT topicid FROM topics WHERE name='" + name +"' AND parent=" + itou(parentId);
+		RQuery get(Db,sSql);
+		get.Start();
+		if(get[0])
+			catId=atoi(get[0]);
+		else
+			throw new GException("Cannot insert new category in database");
+	}
+	sSql= "Parse documents for category : "+ name;
+	Parent->PutText(sSql);
+	return catId;
+}
+
+
+//-----------------------------------------------------------------------------
+void QFillDB::ParseDocDir(RString path,int parentId, int level)
+{
+	DIR* dp;
+	struct dirent* ep;
+	int catId=0;
+	RString newPath("");
+	RString sSql("");
+	dp=opendir(path);
+	if(dp)
+	{
+		while((ep=readdir(dp))&&(!GSession::Break()))
+		{
+			if((ep->d_type==DT_DIR)&&(ep->d_name[0] != '.'))
+			{
+				if(level<2)
+					catId= CreateCategory(ep->d_name,parentId);
+				else
+					catId=parentId;
+				newPath=path+"/"+ep->d_name;
+				ParseDocDir(newPath,catId,level+1);
+			}
+			else if(ep->d_type==DT_REG)
+			{
+				// Choose right mime type
+				newPath=path+"/"+ep->d_name;
+				
+				//Determine mime type of the file
+				RString mime("");
+				mime=FilterManager->GFilterManager::DetermineMIMEType(newPath.Latin1());
+				if(!mime.IsEmpty())
+				{
+					//Insert doc in htmls
+					sSql="INSERT INTO htmls SET html='"+newPath+"',updated='2004-01-01',mimetype='"+mime+"',title='"+newPath+"'";
+					RQuery insert(Db,sSql);
+					CurrentDocId++;
+					
+					//Insert docid and topicid in htmlsbytopics
+					sSql="INSERT INTO topicsbyhtmls SET topicid="+itou(parentId)+",htmlid="+itou(CurrentDocId);
+					RQuery insert2(Db,sSql);
+				}
+			}
+		}
+	}
+	if(GSession::Break())
+		return;
+}
+
+
+//-----------------------------------------------------------------------------
 void QCreateDocXML::DoIt(void)
 {
 	Parent->PutText("Creating XML Structure ...");

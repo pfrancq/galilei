@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>415</height>
+            <width>366</width>
+            <height>300</height>
         </rect>
     </property>
     <property name="caption">
@@ -190,136 +190,6 @@
                         </widget>
                     </hbox>
                 </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout59</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>TextLabel1_6_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Language :</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer65</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>171</width>
-                                    <height>21</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QComboBox">
-                            <item>
-                                <property name="text">
-                                    <string>en</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>fr</string>
-                                </property>
-                            </item>
-                            <property name="name">
-                                <cstring>CBLang</cstring>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout61</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>TextLabel1_6_2_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Mime Type:</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer66</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>171</width>
-                                    <height>21</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QComboBox">
-                            <item>
-                                <property name="text">
-                                    <string>text/html</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>text/email</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>text/sgml</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>text/pdf</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>text/ps</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>text/reuters</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>text/xml</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>text/msdoc</string>
-                                </property>
-                            </item>
-                            <property name="name">
-                                <cstring>CBMimeType</cstring>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
             </vbox>
         </widget>
         <widget class="QGroupBox" row="1" column="0">
@@ -358,35 +228,6 @@
                         <widget class="KURLRequester">
                             <property name="name">
                                 <cstring>KUDirectory</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>200</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout63</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>TextLabel1_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Path to script (.py) :</string>
-                            </property>
-                        </widget>
-                        <widget class="KURLRequester">
-                            <property name="name">
-                                <cstring>KUScript</cstring>
                             </property>
                             <property name="minimumSize">
                                 <size>
@@ -483,18 +324,12 @@
     <tabstop>LEHost</tabstop>
     <tabstop>LEUser</tabstop>
     <tabstop>LEPassword</tabstop>
-    <tabstop>CBLang</tabstop>
-    <tabstop>CBMimeType</tabstop>
     <tabstop>KUDirectory</tabstop>
-    <tabstop>KUScript</tabstop>
     <tabstop>PushButton2_2</tabstop>
     <tabstop>PushButton2</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>kurlrequester.h</includehint>
-    <includehint>klineedit.h</includehint>
-    <includehint>kpushbutton.h</includehint>
     <includehint>kurlrequester.h</includehint>
     <includehint>klineedit.h</includehint>
     <includehint>kpushbutton.h</includehint>

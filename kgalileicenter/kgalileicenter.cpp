@@ -172,10 +172,6 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName,dbEncoding);
 			Sess = new GSession(Doc->GetStorage(),&SessionParams,true);
 			Doc->SetSession(Sess);
-// 			d=new QSessionProgressDlg(this,Sess,"Loading from Database");
-// 			d->LoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,
-// 			GroupingManager,GroupCalcManager,StatsCalcManager,LinkCalcManager,PostDocManager,
-// 			PostGroupManager,EngineManager);
 			QSessionProgressDlg dlg(this,Sess,"Loading from Database");
 			if(dlg.Run(new QLoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,
 			GroupingManager,GroupCalcManager,StatsCalcManager,LinkCalcManager,PostDocManager,
@@ -271,12 +267,8 @@ void KGALILEICenterApp::slotSessionQuit(void)
 void KGALILEICenterApp::slotCreateDatabase(void)
 {
 
-RString strTmp;
-	RString line("");
-	RString sql("");
-	RString msg("");
-	bool endFound=false;
-	QSessionProgressDlg* d=0;
+	RString strTmp;
+	
 
 	//Init dlg box
 	QCreateDatabase dlg(this,0,true);
@@ -335,143 +327,14 @@ RString strTmp;
 
 		try
 		{
-			//Qsession progres to view progression
-			RString path("");
-			d=new QSessionProgressDlg(this,0,"Create Database");
-			d->Begin();
-			d->PutText("Database structure created");
-
-			RDb::CreateDatabase(host,user,pass,dbName);
-			RDb Db(host,user,pass,dbName,"latin1");
-
-			d->PutText("Dump Database model");
-
-			//Dump database model
-			path=CreateDbSQLpath;
-			path+="DbModel.sql";
-
-			RTextFile fileM(path,Read,"Latin1");
-
-			while(!fileM.Eof())
-			{
-				line=fileM.GetLine();
-				if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-					continue;
-
-				endFound=false;
-				while(!fileM.Eof() && !endFound)
-				{
-					if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-					{
-						sql="";
-						endFound=true;
-						continue;
-					}
-					sql+=line;
-					if(line.Find(';')>=0)
-						endFound=true;
-					else
-						line=fileM.GetLine();
-				}
-				if(!sql.IsEmpty())
-					RQuery Sendquery(Db,sql);
-
-				sql="";
-			}
-
-			//Dump stoplists files
-			if(CreateDbUseStopList)
-			{
-				msg="Dump Database Stoplists";
-				d->PutText(msg);
-				msg+=" for language ";
-				DIR* dp;
-				struct dirent* ep;
-				path="";
-
-				dp=opendir(CreateDbSQLpath);
-				if(dp)
-				{
-					while((ep=readdir(dp)))
-					{
-						if(strncmp(&ep->d_name[0],"DbStopList",10)) continue;
-						msg+=ep->d_name[11];
-						msg+=ep->d_name[12];
-
-						path=CreateDbSQLpath+ep->d_name;
-						RTextFile fileS(path,Read,"Latin1");
-
-						d->PutText(msg);
-						while(!fileS.Eof())
-						{
-							line=fileS.GetLine();
-							if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-								continue;
-							RQuery stopquery(Db,line);
-						}
-						msg=msg.Mid(0,msg.GetLen()-2);
-					}
-				}
-			}
-
-			if(CreateDbUseUsers)
-			{
-				//Dump users file
-				path=CreateDbSQLpath;
-				//path+='/';
-				path+="DbUsers.sql";
-				d->PutText("Dump Database users");
-
-				RTextFile fileU(path,Read,"Latin1");
-
-				while(!fileU.Eof())
-				{
-					line=fileU.GetLine();
-					if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-						continue;
-
-					endFound=false;
-					while(!fileU.Eof() && !endFound)
-					{
-						if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-						{
-							sql="";
-							endFound=true;
-							continue;
-						}
-						sql+=line;
-						if(line.Find(';')>=0)
-							endFound=true;
-						else
-							line=fileU.GetLine();
-					}
-					if(!sql.IsEmpty())
-						RQuery Sendquery(Db,sql);
-
-					sql="";
-				}
-			}
-			d->Finish(true);
+			//Create de DB
+			QSessionProgressDlg d(this,0,"Create Database");
+			if(!d.Run(new QCreateDB(dbName,host,user,pass,CreateDbSQLpath,CreateDbUseStopList,CreateDbUseUsers)))
+				return;
 		}
-		catch (RMySQLError& e)
+		catch(GException& e)
 		{
-			QMessageBox::critical(this,"KGALILEICenter", QString("Error in Mysql creation : ") + ToQString(e.GetMsg()));
-			if(d)
-				d->close();
-			return;
-		}
-		catch (RIOException& e)
-		{
-			QMessageBox::critical(this,"KGALILEICenter", QString("Error in reading SQL files: ") + ToQString(e.GetMsg()));
-			if(d)
-				d->close();
-			return;
-		}
-		catch( ... )
-		{
-			QMessageBox::critical(this,"KGALILEICenter", QString("Unhandled Error "));
-			if(d)
-				d->close();
+			QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
 			return;
 		}
 	}
@@ -533,88 +396,44 @@ void KGALILEICenterApp::slotExportMatrix(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotFillEmptyDb(void)
 {
-	KShellProcess *process = new KShellProcess("/bin/bash");
 	QFillEmptyDatabase dlg(this,0,true);
-	dlg.KUScript->setURL("$HOME/prj/kgalileicenter/kgalileicenter/CreateDbFromDir.py");
 	dlg.KUDirectory->setMode(KFile::Directory);
 	dlg.LEHost->setText("127.0.0.1");
 	dlg.LEUser->setText("root");
 
 	if(dlg.exec())
 	{
-		QString catdirectory  = dlg.KUDirectory->url();
-		QString scriptpath = dlg.KUScript->url();
-		QString name = dlg.LEName->text();
-		QString host = dlg.LEHost->text();
-		QString user = dlg.LEUser->text();
-		QString password = dlg.LEPassword->text();
-		QString lang = dlg.CBLang->currentText();
-		QString mime = dlg.CBMimeType->currentText();
+		RString catDirectory  = FromQString(dlg.KUDirectory->url());
+		RString dbname = FromQString(dlg.LEName->text());
+		RString host = FromQString(dlg.LEHost->text());
+		RString user = FromQString(dlg.LEUser->text());
+		RString password = FromQString(dlg.LEPassword->text());
 
-		if (password=="")
-			password="no";
+		// if the database name field is empty -> ERROR
+		if( dbname.GetLen() == 0)
+		{
+			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a name for the database to fill! "));
+			return;
+		}
 
-		RString cmdline = RString("");
-		cmdline+= "python  ";
-		cmdline+=scriptpath;
-		cmdline+=" ";
-		cmdline+= name;
-		cmdline+= " ";
-		cmdline+= host;
-		cmdline+= " ";
-		cmdline+= user;
-		cmdline+= " ";
-		cmdline+= password;
-		cmdline+= " ";
-		cmdline+= lang;
-		cmdline+= " ";
-		cmdline+= mime;
-		cmdline+= " ";
-		cmdline+= catdirectory;
-		cmdline+= "\n";
-		cout << cmdline<<endl;
+		// if the user or host is not specified -> ERROR
+		if( (host.GetLen()== 0) || (user.GetLen() == 0))
+		{
+			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a user and a host for the database! "));
+			return;
+		}
 
-		// creation of the database using a shell script.
-		d=new QSessionProgressDlg(this,0,"filling database ...");
-		d->Begin();
-		connect(process,SIGNAL(receivedStderr(KProcess*,char*,int)),this,SLOT(slotStderr(KProcess*,char*,int)));
-		connect(process,SIGNAL(processExited(KProcess*)),this,SLOT(slotProcessExited(KProcess*)));
-		*process << cmdline;
-		process->start(KProcess::NotifyOnExit,KProcess::All);
+		// if the database name field is empty -> ERROR
+		if( catDirectory.GetLen() == 0)
+		{
+			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a directory containing all the categories! "));
+			return;
+		}
+
+		QSessionProgressDlg Dlg(this,0,"Fill Database");
+		if(!Dlg.Run(new QFillDB(dbname,host,user,password,catDirectory,URLManager)))
+			return;
 	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotStdout(KProcess* /*proc*/,char* buffer,int buflen)
-{
-	char tmp[500];
-  strncpy(tmp,buffer,buflen);
-  tmp[buflen-1] = '\0';
-	d->PutText(tmp);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotStderr(KProcess* /*proc*/,char* buffer,int buflen)
-{
-	char tmp[250];
-	strncpy(tmp,buffer,buflen);
-	tmp[buflen] = '\0';
-	ErrMsgList+=tmp;
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotProcessExited(KProcess*)
-{
-	if ( !ErrMsgList.isEmpty())
-	{
-		d->close();
-		QMessageBox::critical(this,"KGALILEICenter",ErrMsgList);
-	}
-  else
-	d->Finish(true);
 }
 
 

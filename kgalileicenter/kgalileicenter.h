@@ -6,7 +6,7 @@
 
 	Main Window - Header.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -33,7 +33,7 @@
 //-----------------------------------------------------------------------------
 #ifndef KGALILEICenterH
 #define KGALILEICenterH
-
+ 
 
 //-----------------------------------------------------------------------------
 #ifdef HAVE_CONFIG_H
@@ -157,7 +157,7 @@ class KGALILEICenterApp : public KMainWindow
 	* PostGroup Manager.
 	*/
 	GPostGroupManager* PostGroupManager;
-
+	
 	/**
 	* Engine & meta engine Manager.
 	*/
@@ -202,17 +202,17 @@ class KGALILEICenterApp : public KMainWindow
 	* path to plugins.
 	*/
 	R::RString pluginsPath;
-
+	
 	/**
 	* the path where the sql file for the database creation are stored
 	*/
 	R::RString CreateDbSQLpath;
-
+	
 	/**
 	* specifies if the stoplists table must be filled when a new Db is created
 	*/
 	bool CreateDbUseStopList;
-
+	
 	/**
 	* specifies if the users table must be filled when a new Db is created
 	*/
@@ -410,21 +410,6 @@ private slots:
 	void slotExportMatrix(void);
 
 	/**
-	*  retrieve shell StdOut -------------------------------------------!!
-	*/
-	void slotStdout(KProcess* proc,char* buffer,int buflen);
-
-	/**
-	*  retrieve shell Stderr  -------------------------------------------!!
-	*/
-	void slotStderr(KProcess* proc,char* buffer,int buflen);
-
-	/**
-	*  retrieve the end signal emmited by a shell process.
-	*/
-	void slotProcessExited(KProcess*);
-
-	/**
 	* Show the users' window.
 	*/
 	void slotShowUsers(void);
@@ -503,7 +488,7 @@ private slots:
 	* Analyse the XML structure of the current document.
 	*/
 	void slotAnalyseXML(void);
-
+	
 	/**
 	* Query the meta engine
 	*/

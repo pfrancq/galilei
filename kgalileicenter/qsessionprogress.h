@@ -38,6 +38,7 @@
 //-----------------------------------------------------------------------------
 // forward class declaration for GALIEI
 #include <sessions/gslot.h>
+#include <rdb/rmysql.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -102,6 +103,62 @@ public:
 	QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostGroupManager* pgmng, GEngineManager* emng);
 	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Create a new Database.
+* @param dbname         The name of the Db.
+* @param host           The host of the database.
+* @param user           The user of the database.
+* @param pass           The password of the database.
+* @param UseStopList    Specifies if the StopList must be dumped.
+* @param UseUsers       Specifies if the Users list must be dumped.
+*/
+class QCreateDB : public QSessionThread
+{
+	RString DbName;
+	RString Host;
+	RString User;
+	RString Pass;
+	RString SQLPath;
+	bool UseStopList;
+	bool UseUsers;
+	
+public:
+	QCreateDB(RString dbName,RString host,RString user,RString pass,RString path,bool useSL, bool useUsr) : DbName(dbName), Host(host), User(user),Pass(pass),SQLPath(path),UseStopList(useSL),UseUsers(useUsr) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Create a new Database.
+* @param dbname         The name of the Db.
+* @param host           The host of the database.
+* @param user           The user of the database.
+* @param pass           The password of the database.
+* @param UseStopList    Specifies if the StopList must be dumped.
+* @param UseUsers       Specifies if the Users list must be dumped.
+*/
+class QFillDB : public QSessionThread
+{
+	RString DbName;
+	RString Host;
+	RString User;
+	RString Pass;
+	RString CatDirectory;
+	GFilterManagerKDE* FilterManager;
+	
+	RDb* Db;
+	int CurrentDocId;
+public:
+	QFillDB(RString dbName,RString host,RString user,RString pass,RString catDir, GFilterManagerKDE* mng) : DbName(dbName), Host(host), User(user),Pass(pass),CatDirectory(catDir), FilterManager(mng),Db(0),CurrentDocId(0) {}
+	virtual void DoIt(void);
+private:
+	int CreateCategory(RString name,int parentId);
+	void ParseDocDir(RString path,int parentId, int level);
 };
 
 
