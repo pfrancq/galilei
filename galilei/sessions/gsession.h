@@ -140,6 +140,11 @@ protected:
 	GDocAnalyse* DocAnalyse;
 
 	/**
+	* Similarity between the  profiles.    
+	*/
+	GProfilesSims* ProfilesSims ;
+
+	/**
 	* State of the groups.
 	*/
 	bool bGroups;
@@ -163,7 +168,6 @@ protected:
 	* Random number generator
 	*/
 	RRandom* Random;
-
 
 public:
 
@@ -195,15 +199,10 @@ public:
 	*/
 	RStd::RContainer<GGroups,unsigned int,true,true>* GetIdealGroups();
 
-//	/**
-//	* Return the ideal groups
-//	*/
-//	RStd::RContainer<GGroups,unsigned int,true,true> GetIdealGroups();
-//
 	/**
 	* Get a pointer to the ideal docs
 	*/
-	RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* GetIdealDoc();
+	RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* GetIdealDoc(void);
 
 	/**
 	* Return a pointer to a tree of subjects
@@ -353,6 +352,14 @@ public:
 	*/
 	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
 
+	
+//	/**
+//	* Get the profiles similarity for a given Lang
+//	* @param l          The lang describing the subprofiles.
+//	*/
+//	GProfilesSim* GetProfileSims(GLang* l);
+
+
 	/**
 	* Load the Users.
 	*/
@@ -374,6 +381,34 @@ public:
 	GUser* NewUser(const char* usr,const char* pwd,const char* name,const char* email,
 	                  const char* title,const char* org,const char* addr1,
 	                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
+
+	                  
+
+	/**
+	* Update the state of similarity between two subProfiles for a given language.
+	* @param global         use the Global/Locale similarity
+	* @param lang           The lang of the subprofiles
+	*/
+	void ChangeProfilesState(bool global,GLang* lang)throw(bad_alloc);
+
+                                
+	/**
+	* Return the similarity between two subProfiles for a given language.
+	* @param l              The language used
+	* @param id1            the first subprofile id
+	* @param id2            The second subprofile id
+	*/                  
+	double GetSimProf(GLang* l,unsigned int id1, unsigned int id2);
+
+	
+	/**
+	* Return the similarity between two subProfiles .
+	* @param sub1           The Pointer to the first subprofile 
+	* @param sub2           The Pointer to the second subprofile
+	*/
+	double GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2);
+
+                  
 	/**
 	* Compute all the necessary profiles.
 	* @param rec            Receiver for the signals.
@@ -382,6 +417,7 @@ public:
 	*/
 	void CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException);
 
+	
 	/**
 	* Compute a profile.
 	* @param prof       Pointer to the profile to compute.
@@ -395,6 +431,12 @@ public:
 	* @param save           Save modified elements.
 	*/
 	void GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException);
+
+public :
+	/**
+	* Initialise the table of similarity between the profiles
+	*/
+	void InitProfilesSims(void);
 
 protected:
 
@@ -489,7 +531,7 @@ public:
 	virtual void LoadIdealGroupment()=0;
 
 	/**
-	* Load the ideal groupment in the groups container.
+	* Load the ideal groupment in the groups container.                                                F
 	*/
 	void LoadIdealGroupmentInGroups(void);
 

@@ -2,10 +2,9 @@
 
 	GALILEI Research Project
 
-	GMIMEFilter
-  .h
+	GSubProfiles.h
 
-	Represents a couple file extention / filter - Header.
+	List of SubProfiles for a given Language - Implementation.
 
 	Copyright 2001 by the Université Libre de Bruxelles.
 
@@ -36,13 +35,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GMIMEFilterH
-#define GMIMEFilterH
-
-
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rstring.h>
+#ifndef GProfilesSimsH
+#define GProfilesSimsH
 
 
 //-----------------------------------------------------------------------------
@@ -55,76 +49,64 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// forward class declaration
-class GFilter;
-
-
-//-----------------------------------------------------------------------------
 /**
-* The GMIMEFilter class provides a representation of a link between a MIME-Type
-* and a filter.
-* @author Pascal Francq
+* The GProfilesSims class provides a representation for a set of Similarity between Profiles of
+* a given language.
+* @author Pascal Francq , Valery Vandaele
+* @short SubProfiles.
 */
-class GMIMEFilter
-{	
+class GProfilesSims : public RStd::RContainer<GProfilesSim,unsigned int,false,true>
+{
 protected:
-	
-	/**
-	* File extension.
-	*/
-	RStd::RString Type;
 
 	/**
-	* Filter corresponding.
+	* Language of the GProfilesSim .
 	*/
-	GFilter* Filter;
+	
 
 public:
 
 	/**
-	* Construct the mime.
-	* @param t              MIME-Type.
-	* @param f              Filter corresponding.
+	* Constructor of Users
+	* @param lang           Language of the subprofile.
+	* @param s              Initial number of profilesSim.
 	*/
-	GMIMEFilter(const char* t,GFilter* f);
+	GProfilesSims(unsigned int s) throw(bad_alloc);
+
+	
+	/**
+	* Insert a ProfilesSims in the container.
+	* @param s              Pointer to the subprofile to add.
+	*/
+	void InsertProfilesSim(GProfilesSim* p) throw(bad_alloc);
 
 	/**
-	* Compare function used by RContainer.
+	* Get a profilesSim with a specific identifier.
+	* @param id         Identifier.
 	*/
-	int Compare(const GMIMEFilter* f) const;
+	//GProfilesSim* GetProfilesSim(const unsigned int id) const;
 
 	/**
-	* Compare function used by RContainer.
+	* Get a cursor over the profilesSims of the system.
 	*/
-	int Compare(const GMIMEFilter& f) const;
+	GProfilesSimCursor& GetProfilesSimCursor(GLang* l);
+
+public:
 
 	/**
-	* Compare function used by RContainer.
+	* Destructor.
 	*/
-	int Compare(const RStd::RString& t) const;
-
-	/**
-	* Compare function used by RContainer.
-	*/
-	int Compare(const char* t) const;
-
-	/**
-	* Get the MIME type.
-	* @returns Pointer to a MIME type.
-	*/
-	const char* GetName(void) const {return(Type());}
-
-	/**
-	* Get a filter able to manipulate this type of files.
-	* @returns Pointer to a Filter.
-	*/
-	GFilter* GetFilter(void) const {return(Filter);}
-
-	/**
-	* Destructor of the filter.
-	*/
-	virtual ~GMIMEFilter(void);
+	virtual ~GProfilesSims(void);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GProfilesSimCursor class provides a way to go trough a set of profilesSim
+* of a given language.
+* @short ProfilesSims Cursor.
+*/
+//CLASSCURSOR(GProfilesSimsCursor,GProfilesSims,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------
@@ -132,3 +114,6 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
+
+
+

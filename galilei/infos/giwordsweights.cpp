@@ -138,6 +138,8 @@ double GALILEI::GIWordsWeights::GetMaxWeight(void) const
 //-----------------------------------------------------------------------------
 double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w) const
 {
+
+
 	double Sim=0.0;
 	GIWordWeight** ptr=Tab;
 	GIWordWeight** ptr2=w->Tab;
@@ -146,6 +148,9 @@ double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w) const
 	double norm1=0.0;
 	double norm2=0.0;
 
+	if((!NbPtr)||(!w->NbPtr))     // if subProfile is not defined -> the similarity must be null
+	return(0.0);
+	
 	while(--i)
 	{
 		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
@@ -193,6 +198,8 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 	double TotalRef=lang->GetRef(ObjType);
 	double w1,w2;
 
+	if((!NbPtr)||(!w->NbPtr))
+		return(0.0);
 	while(--i)
 	{
 		w1=((*ptr)->Weight/max1)*log(TotalRef/lang->GetRef((*ptr)->GetId(),ObjType));

@@ -123,6 +123,7 @@ class GProfDocCursor;
 class GProfileCalc;
 class GProfileCalcCursor;
 class GProfilesSim;
+class GProfilesSims;
 class GSubProfilesSameDocs;
 
 

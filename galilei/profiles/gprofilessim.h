@@ -69,22 +69,30 @@ class GProfilesSim
 	*/
 	bool GlobalSim;
 
+	/**
+	*  lang of the profiles sim.
+	*/
+	GLang* Lang;
+
 public:
 
 	/**
 	* Constructor.
 	* @param s              Subprofiles of the system.
 	* @param global         Global approach.
+	* @param lang           Lang of the profilesSim
 	*/
-	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global) throw(bad_alloc);
+	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* lang=0) throw(bad_alloc);
 
 	/**
 	* Constructor.
 	* @param s              Subprofiles of the system.
 	* @param global         Global approach.
+	* @param lang           Lang of the profilesSim
 	*/
-	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global) throw(bad_alloc);
+	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global,GLang* lang=0) throw(bad_alloc);
 
+	
 	/**
 	* Constructor.
 	* @param s              Cursor over the Subprofiles.
@@ -102,9 +110,10 @@ public:
 	* language.
 	* @param i              Identificator of the first subprofile.
 	* @param j              Identificator of the second subprofile.
+	* @param users          Pointer to a list of users.
 	* @return double.
 	*/
-	double GetSim(unsigned int i,unsigned int j);
+	double GetSim(GUsers* users, unsigned int i,unsigned int j);
 
 	/**
 	* Get the similarities between two profiles, i.e. the subprofiles of a same
@@ -116,10 +125,82 @@ public:
 	double GetSim(const GSubProfile* s1,const GSubProfile* s2);
 
 	/**
+	* return the state of the similarity between two profiles
+	* @param id1            Identificator of the first subprofile
+	* @param id2            Identificator of the second profile
+	*/
+	tObjState GetState(unsigned int id1, unsigned int id2);
+
+  // nouvelles methodes rajoutées par Val:
+	
+  /**
+	* Compare methods used by RStd::RContainer.
+	*/
+	int Compare(const GLang* l) const;
+
+
+	/**
+	* Compare methods used by RStd::RContainer.
+	*/
+	int Compare(const GProfilesSim& profilesSim) const;
+
+	
+	/**
+	* Compare methods used by RStd::RContainer.
+	*/
+	int Compare(const GProfilesSim* profilesSim) const;
+
+	
+  /**
+  * Determine whether the comparaison is global or local
+  */
+	bool IsGlobalSim(void){return(GlobalSim);}
+
+	
+	/**
+	* Update the state of the profiles sims : If the subprofile has changed
+	* the corresponding sim will be set to state="osModified".
+	* If the similarity for a given subprofile doesn't exist, the element
+	* is created but not computed ( -> state to osModified ).
+	* @param users              The pointer to the list of users.
+	* @param global             use the Global/Local similarity
+	* @param lang               the language used by the subProfiles
+	*/
+	void UpdateProfSim(GUsers* users,bool global,GLang* lang)throw(bad_alloc);
+
+	
+	/**
+	* Update the state of the profiles sims : If the subprofile has changed
+	* the corresponding sim will be set to state="osModified".
+	* If the similarity for a given subprofile doesn't exist, the element
+	* is created but not computed ( -> state to osModified )
+	* @param users              The reference to the list of users.
+	* @param global             use the Global/Local similarity
+	* @param lang               the language used by the subProfiles
+	*/
+	void UpdateProfSim(GUsers& users ,bool global,GLang* lang)throw(bad_alloc);
+
+
+	/**
+	* update the Analyse de similarity  of the two subprofiles and insert when necessary
+	*/
+	void AnalyseSim2(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2);
+
+
+	/**
 	* Destructor.
 	*/
 	~GProfilesSim(void);
 };
+
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GSubProfileCursor class provides a way to go trough a set of subprofiles.
+* @short SubProfiles Cursor
+*/
+CLASSCURSOR(GProfilesSimCursor,GProfilesSim,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

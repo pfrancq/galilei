@@ -37,6 +37,11 @@
 #include <math.h>
 
 //-----------------------------------------------------------------------------
+//include files for test
+
+#include <rio/rtextfile.h>          // 		!a supprimer
+using namespace RIO;
+//-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<groups/ggroupingcure.h>
 #include <groups/ggroupingsim.h>
@@ -165,8 +170,16 @@ void  GALILEI::GGroupingCure::Run(void) throw(GException)
 	InitGroups();
 	InitProtos();
 
-	// Calculates the similarities between subprofiles
-	ProfSim= new GProfilesSim(SubProfiles, 0);
+//	// Calculates the similarities between subprofiles                       // 			   a supprimer
+//	RTextFile file=RTextFile("profsimsgrouping.txt",RIO::Create);
+//	cout << "  Resutats CURE -------------------------------------"<<endl<<endl<<endl;
+//	GSubProfile** s1;
+//	GSubProfile** s2;
+//	for(s1=SubProfiles.Tab,i=SubProfiles.NbPtr;--i;s1++)
+//		for(s2=s1+1,j=i+1;--j;s2++)
+// 			file << "sim entre " <<(*s1)->GetId()<< "et "<<(*s2)->GetId()<<" = "<< ProfSim->GetSim((*s1)->GetId(), (*s2)->GetId())<<endl;
+	return;
+	
 
 	while (Grps->NbPtr>Params->NbGroups)
 	{
@@ -302,7 +315,7 @@ double GALILEI::GGroupingCure::GroupsDistance(GGroup* g1, GGroup* g2)
 //-----------------------------------------------------------------------------
 double GALILEI::GGroupingCure::SubProfDistance(GSubProfile* s1, GSubProfile* s2)
 {
-	return(1.0-Similarity(s1,s2));
+	return(1.0-Session->GetSimProf(s1, s2));
 }
 
 
