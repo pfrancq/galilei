@@ -83,13 +83,13 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
-	: KMainWindow(0,"KGALILEICenterApp"), Langs(getenv("GALILEI_PLUGINS_LIB")),URLManager(getenv("GALILEI_PLUGINS_LIB")),
-	  DocAnalyseManager(getenv("GALILEI_PLUGINS_LIB")),
-	  ProfilingManager(getenv("GALILEI_PLUGINS_LIB")), GroupingManager(getenv("GALILEI_PLUGINS_LIB")),
-	  GroupCalcManager(getenv("GALILEI_PLUGINS_LIB")), StatsCalcManager(getenv("GALILEI_PLUGINS_LIB")),
-	  LinkCalcManager(getenv("GALILEI_PLUGINS_LIB")),PostDocManager(getenv("GALILEI_PLUGINS_LIB")),
-	  PostGroupManager(getenv("GALILEI_PLUGINS_LIB")),dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0)
+KGALILEICenterApp::KGALILEICenterApp(const char* path) throw(GException)
+	: KMainWindow(0,"KGALILEICenterApp"), Langs(path),URLManager(path),
+	  DocAnalyseManager(path),
+	  ProfilingManager(path), GroupingManager(path),
+	  GroupCalcManager(path), StatsCalcManager(path),
+	  LinkCalcManager(path),PostDocManager(path),
+	  PostGroupManager(path),dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0)
 {
 	Config=kapp->config();
 	initStatusBar();

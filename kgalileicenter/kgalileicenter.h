@@ -226,7 +226,7 @@ public:
 	* application.
 	* @see initMenuBar initToolBar
 	*/
-	KGALILEICenterApp(void) throw(GException);
+	KGALILEICenterApp(const char* path) throw(GException);
 
 	/**
 	* Returns a pointer to the document connected to the view.

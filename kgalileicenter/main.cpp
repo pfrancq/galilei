@@ -95,14 +95,19 @@ int main(int argc, char *argv[])
 	try
 	{
 		KApplication app;
+		char* lib=getenv("GALILEI_PLUGINS_LIB");
+		if(!lib)
+			lib=getenv("GALILEI_LIB");
+		if(!lib)
+			throw GException("GALILEI_LIB or GALILEI_PLUGINS_LIB must be defined");
 
 		if(app.isRestored())
 		{
-			RESTORE(KGALILEICenterApp);
+			RESTORE(KGALILEICenterApp(lib));
 		}
 		else
 		{
-			KGALILEICenterApp *testmdi = new KGALILEICenterApp();
+			KGALILEICenterApp *testmdi = new KGALILEICenterApp(lib);
 			testmdi->show();
 		}
 		return app.exec();
