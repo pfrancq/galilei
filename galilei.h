@@ -80,6 +80,7 @@ class GUserCursor;
 class GUsers;
 class GProfile;
 class GProfileCursor;
+class GProfilesSim;
 class GProfDoc;
 class GProfDocCursor;
 class GProfileCalc;
