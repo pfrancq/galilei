@@ -41,8 +41,7 @@
 #include <infos/glang.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
-#include <profiles/gprofdoc.h>
-#include <docs/gdoc.h>
+#include <docs/gdocproxy.h>
 #include <groups/ggroup.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
@@ -189,11 +188,11 @@ void KViewGroup::ConstructGeneral(void)
 //-----------------------------------------------------------------------------
 void KViewGroup::ConstructDocs(void)
 {
- 	RDate d;
- 	char sDate[20];
- 	GProfDocCursor docs;
-	GDocCursor docs2;
+	RDate d;
+	char sDate[20];
+	RCursor<GFdbk> docs;
 	GSubProfileCursor Sub;
+	GDoc* doc;
 
 	// Clear the Widget
 	Docs->clear();
@@ -205,7 +204,7 @@ void KViewGroup::ConstructDocs(void)
 	for(Sub.Start(); !Sub.End(); Sub.Next())
 	{
 		GSubProfile* sub=Sub();
-		docs=sub->GetProfDocCursor();
+		docs=sub->GetFdbks();
 		for(docs.Start();!docs.End();docs.Next())
 		{
 			// If not a relevant document -> goes next
@@ -221,12 +220,13 @@ void KViewGroup::ConstructDocs(void)
 	}
 
 	// Insert documents.
-	docs2.Set(OkDocs);
+	RCursor<GDocProxy> docs2(OkDocs);
 	for(docs2.Start();!docs2.End();docs2.Next())
 	{
-		d=docs2()->GetUpdated();
+		doc=GSession::Get()->GetDoc(docs2()->GetId());
+		d=doc->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof = new QListViewItemType(docs2(),Docs,ToQString(docs2()->GetName()),ToQString(docs2()->GetURL()),sDate);
+		QListViewItemType* prof = new QListViewItemType(doc,Docs,ToQString(doc->GetName()),ToQString(doc->GetURL()),sDate);
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror",KIcon::Small)));
 	}
 }
@@ -294,7 +294,6 @@ void KViewGroup::slotMenu(int)
 {
 	int dlg;
 	KURL url;
-	GDocCursor theDocs;
 	GDoc* doc;
 	unsigned int i,size,maxsize,newsize,j;
 	GWeightInfo** tab;
@@ -321,15 +320,15 @@ void KViewGroup::slotMenu(int)
 	Res<<"<?xml version=\"1.0\" ?>\n<!DOCTYPE Hierarchical-Data>\n<Hierarchical-Data>\n\t<Objects>\n";
 
 	// Write Docs
-	theDocs.Set(OkDocs);
+	RCursor<GDocProxy> theDocs(OkDocs);
 	for(theDocs.Start(),i=0,maxsize=0,tab=0;!theDocs.End();theDocs.Next(),i++)
 	{
-		doc=theDocs();
-		Res<<"\t\t<Object Id=\""<<theDocs()->GetName()<<"\">\n";
+		doc=GSession::Get()->GetDoc(theDocs()->GetId());
+		Res<<"\t\t<Object Id=\""<<doc->GetName()<<"\">\n";
 		if(doc)
 		{
 			// Write attributes
-			size=doc->NbPtr;
+			size=doc->GetNb();
 			if(!size) continue;
 			if(size>maxsize)
 			{
@@ -346,7 +345,7 @@ void KViewGroup::slotMenu(int)
 			memcpy(tab,doc->Tab,size*sizeof(GWeightInfo*));
 			qsort(static_cast<void*>(tab),size,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
 			for(j=21,size++,tmp=tab;(--j)&&(--size);tmp++)
-				Res<<"\t\t\t<Include Attribute=\""<<Doc->GetSession()->GetStorage()->LoadWord((*tmp)->GetId(),theDocs()->GetLang()->GetCode())<<"\"/>\n";
+				Res<<"\t\t\t<Include Attribute=\""<<Doc->GetSession()->GetStorage()->LoadWord((*tmp)->GetId(),doc->GetLang()->GetCode())<<"\"/>\n";
 		}
 		Res<<"\t\t</Object>\n";
 	}

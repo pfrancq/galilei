@@ -52,7 +52,6 @@ using namespace R;
 #include <docs/gdocxml.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
-#include <profiles/gprofdoc.h>
 #include <infos/glang.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>

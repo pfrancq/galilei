@@ -44,8 +44,7 @@
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
-#include <docs/gdoc.h>
-#include <profiles/gprofdoc.h>
+#include <docs/gdocproxy.h>
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
 #include <sessions/gsession.h>
@@ -145,8 +144,9 @@ void KViewProfile::ConstructFdbks(void)
 	QListViewItem *p;
 	RDate d;
 	char sDate[20];
-	GProfDocCursor Docs;
+	RCursor<GFdbk> Docs;
 	GSubProfileCursor SubCur;
+	GDoc* doc;
 
 	if(!Fdbks) return;
 
@@ -160,7 +160,7 @@ void KViewProfile::ConstructFdbks(void)
 	hs->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("stop.png",KIcon::Small)));
 
 	// Add Judgements from profiles.
-	Docs=Profile->GetProfDocCursor();
+	Docs=Profile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		switch(Docs()->GetFdbk())
@@ -179,40 +179,11 @@ void KViewProfile::ConstructFdbks(void)
 				break;
 		}
 		if(!p) continue;
-		d=Docs()->GetUpdated();
+		doc=GSession::Get()->GetDoc(Docs()->GetDoc()->GetId());
+		d=doc->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,ToQString(Docs()->GetDoc()->GetName()),ToQString(Docs()->GetDoc()->GetURL()),sDate);
+		QListViewItemType* prof = new QListViewItemType(doc,p,ToQString(doc->GetName()),ToQString(doc->GetURL()),sDate);
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
-	}
-
-	// Add Judgements from subprofiles.
-	SubCur=Profile->GetSubProfilesCursor();
-	for (SubCur.Start(); !SubCur.End(); SubCur.Next())
-	{
-		Docs=SubCur()->GetProfDocCursor();
-		for(Docs.Start();!Docs.End();Docs.Next())
-		{
-			switch(Docs()->GetFdbk())
-			{
-				case djOK:
-					p=ok;
-					break;
-				case djKO:
-					p=ko;
-					break;
-				case djOutScope:
- 					p=hs;
-					break;
-				default:
-					p=0;
-					break;
-			}
-			if(!p) continue;
-			d=Docs()->GetUpdated();
-			sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-			QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,ToQString(Docs()->GetDoc()->GetName()),ToQString(Docs()->GetDoc()->GetURL()),sDate);
-			prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
-		}
 	}
 }
 
@@ -224,8 +195,9 @@ void KViewProfile::ConstructLinks(void)
 	RDate d;
 	RString iconName="";
 	char sDate[20];
-	GProfDocCursor Docs;
+	RCursor<GFdbk> Docs;
 	GSubProfileCursor SubCur;
+	GDoc* doc;
 
 	if(!FdbksLinks) return;
 
@@ -237,7 +209,7 @@ void KViewProfile::ConstructLinks(void)
 	la->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("ok.png",KIcon::Small)));
 
 	// Add Judgements from profiles.
-	Docs=Profile->GetProfDocCursor();
+	Docs=Profile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		switch(Docs()->GetFdbk())
@@ -254,39 +226,11 @@ void KViewProfile::ConstructLinks(void)
 				break;
 		}
 		if(!p) continue;
-		d=Docs()->GetUpdated();
+		doc=GSession::Get()->GetDoc(Docs()->GetDoc()->GetId());
+		d=doc->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,ToQString(Docs()->GetDoc()->GetName()),ToQString(Docs()->GetDoc()->GetURL()),sDate);
+		QListViewItemType* prof = new QListViewItemType(doc,p,ToQString(doc->GetName()),ToQString(doc->GetURL()),sDate);
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon(ToQString(iconName),KIcon::Small)));
-	}
-
-	// Add Judgements from subprofiles.
-	SubCur=Profile->GetSubProfilesCursor();
-	for (SubCur.Start(); !SubCur.End(); SubCur.Next())
-	{
-		Docs=SubCur()->GetProfDocCursor();
-		for(Docs.Start();!Docs.End();Docs.Next())
-		{
-			switch(Docs()->GetFdbk())
-			{
-				case (djOK | djAutority):
-					p=la;
-					iconName="konquerorAutho.png";
-					break;
-				case (djOK | djHub):
-					p=lh;
-					iconName="konquerorHub.png";
-					break;
-				default:
-					p=0;
-					break;
-			}
-			if(!p) continue;
-			d=Docs()->GetUpdated();
-			sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-			QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,ToQString(Docs()->GetDoc()->GetName()),ToQString(Docs()->GetDoc()->GetURL()),sDate);
-			prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon(ToQString(iconName),KIcon::Small)));
-		}
 	}
 }
 

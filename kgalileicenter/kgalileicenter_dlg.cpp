@@ -43,7 +43,6 @@
 #include <frontend/kde/qlistviewitemtype.h>
 #include <sessions/gsession.h>
 #include <profiles/guser.h>
-#include <profiles/gprofdoc.h>
 #include <profiles/gprofile.h>
 #include <groups/ggrouping.h>
 #include <profiles/gprofilecalc.h>

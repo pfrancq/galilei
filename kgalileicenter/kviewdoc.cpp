@@ -52,8 +52,7 @@ using namespace R;
 #include <docs/gdoc.h>
 #include <docs/gdocxml.h>
 #include <profiles/guser.h>
-#include <profiles/gprofile.h>
-#include <profiles/gprofdoc.h>
+#include <profiles/gprofileproxy.h>
 #include <infos/glang.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
@@ -176,9 +175,9 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 void KViewDoc::ConstructFdbks(void)
 {
 	QListViewItem *p;
-	RDate d;
+	GProfile* prof;
 	char sDate[20];
-	RContainer<GProfDoc,true,false> Assess(100,50);
+	RDate d;
 
 	if(!Fdbks) return;
 	if(!FdbksLinks) return;
@@ -200,11 +199,10 @@ void KViewDoc::ConstructFdbks(void)
 
 
 	// Add Judgements for profile.
-	Doc->GetSession()->GetDocAssessments(Document,Assess);
-	RCursor<GProfDoc> Profiles(Assess);
+	RCursor<GProfileProxy> Profiles=Document->GetFdbks();
 	for(Profiles.Start();!Profiles.End();Profiles.Next())
 	{
-		switch(Profiles()->GetFdbk()/* & djMaskJudg*/)
+		switch(Profiles()->GetFdbk(Document->GetId())->GetFdbk())
 		{
 			case djOK:
 				p=ok;
@@ -226,10 +224,11 @@ void KViewDoc::ConstructFdbks(void)
 				break;
 		}
 		if(!p) continue;
-		d=Profiles()->GetUpdated();
+		prof=GSession::Get()->GetProfile(Profiles()->GetId());
+		d=Profiles()->GetFdbk(Document->GetId())->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof = new QListViewItemType(Profiles()->GetProfile(),p,ToQString(Profiles()->GetProfile()->GetName()),ToQString(Profiles()->GetProfile()->GetUser()->GetFullName()),sDate);
-		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
+		QListViewItemType* prof2 = new QListViewItemType(prof,p,ToQString(prof->GetName()),ToQString(prof->GetUser()->GetFullName()),sDate);
+		prof2->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
 	}
 }
 
@@ -258,7 +257,7 @@ void KViewDoc::ConstructResults(void)
 	};
 
 	if(!Document->GetLang()) return;
-	GWeightInfoCursor Words=Document->GetWeightInfoCursor();
+	RCursor<GWeightInfo> Words=Document->GetWeightInfoCursor();
 	for (Words.Start();!Words.End();Words.Next())
 	{
 		new LocalItem(Results,ToQString(Doc->GetSession()->GetStorage()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode())), Words()->GetWeight());

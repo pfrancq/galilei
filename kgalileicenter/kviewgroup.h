@@ -103,7 +103,7 @@ class KViewGroup : public KView
 	/**
 	* List of documents assessed as relevant.
 	*/
-	R::RContainer<GALILEI::GDoc,false,true> OkDocs;
+	R::RContainer<GALILEI::GDocProxy,false,true> OkDocs;
 
 public:
 
