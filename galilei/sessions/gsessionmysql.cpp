@@ -26,6 +26,7 @@
 #include <gsessionsmysql/gsessionmysql.h>
 using namespace GALILEI;
 using namespace RMySQL;
+using namespace RTimeDate;
 
 
 
@@ -63,6 +64,14 @@ unsigned int GALILEI::GSessionMySQL::GetMax(const char* tbl,const char* fld)
 	RQuery count(this,sSql);
 	count.Begin();
 	return(strtoul(count[0],0,10));
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GSessionMySQL::GetDateToMySQL(RDate* d)
+{
+	sprintf(sTmpDate,"%u-%u-%u",d->GetYear(),d->GetMonth(),d->GetDay());
+	return(sTmpDate);
 }
 
 

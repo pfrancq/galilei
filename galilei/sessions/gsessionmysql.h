@@ -46,6 +46,11 @@ namespace GALILEI{
 */
 class GSessionMySQL : public RMySQL::RDb, public GSession
 {
+	/**
+	* Temporary C String to hold a date.
+	*/
+	char sTmpDate[10];
+
 public:
 	/**
 	* Constructor.
@@ -73,6 +78,13 @@ public:
 	unsigned int GetMax(const char* tbl,const char* fld);
 
 protected:
+
+	/**
+	* Transform a RTimeDate::RDate to a C string with the MySQL format.
+	* @param d              Date to transform.
+	* @returns C String containing the date.
+	*/
+	const char* GetDateToMySQL(RTimeDate::RDate* d);
 
 	/**
 	* Return the identifier of a new word of a dictionnary.
