@@ -450,6 +450,13 @@ public:
 	virtual void SaveGroups(void)=0;
 
 	/**
+	* Save the groups of the session
+	*@param mixedgroups     groups to save
+	*@param nbmixedgroups   mixedgroups number
+	*/
+	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true> * mixedgroups, int nbmixedgroups)=0;
+
+	/**
 	* Delete a group.
 	* @param grp        Group to delete.
 	*/

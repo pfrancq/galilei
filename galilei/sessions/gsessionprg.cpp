@@ -62,6 +62,7 @@ using namespace RStd;
 #include <profiles/gprofilecalc.h>
 #include <profiles/ggetfeedback.h>
 #include <groups/gidealgroup.h>
+#include <tests/gmixidealgroups.h>
 #include <tests/gstatsimsubprof.h>
 #include <tests/gstatsimdoc.h>
 using namespace GALILEI;
@@ -151,6 +152,7 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 	InstTypes.InsertPtr(new InstType("CompareIdeal",CmpIdeal));
 	InstTypes.InsertPtr(new InstType("CreateIdeal",CreateIdeal));
 	InstTypes.InsertPtr(new InstType("LoadIdeal",LoadIdeal));
+	InstTypes.InsertPtr(new InstType("MixIdeal",MixIdeal));
 	InstTypes.InsertPtr(new InstType("FdbksCycle",Fdbks));
 	InstTypes.InsertPtr(new InstType("StatsProfiles",StatProf));
 	InstTypes.InsertPtr(new InstType("StatsDocs",StatDoc));
@@ -390,7 +392,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			Rec->WriteStr(tmp);
 			LoadGroups(i->Param1());
 			break;
-
+ 
 		case CreateIdeal:
 			if(i->Param1.GetLen())
 					sprintf(tmp,"Create Ideal Groups: Settings=\"%s\"",i->Param1());
@@ -403,15 +405,31 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			FirstGroup=FirstProfile=false;
 			break;
 
-		case Fdbks:
-				if(i->Param1.GetLen())
-					sprintf(tmp,"Create Feedbacks Cycle: Settings=\"%s\"",i->Param1());
-				else
-					strcpy(tmp,"Create Feedbacks Cycle");
-				Rec->WriteStr(tmp);
-				if(i->Param1.GetLen())
-					FdbksMethod->SetSettings(i->Param1);
-				FdbksMethod->Run(Parents,Groups,AutoSave);
+		case MixIdeal:
+			if(!Groups)
+				throw GException("No Ideal Groups Defined");
+			if(i->Param1.GetLen())
+				sprintf(tmp,"Creating Mixed Groups: Settings=\"%s\"",i->Param1());
+			else
+				sprintf(tmp,"Creating Mixed Groups");
+			Rec->WriteStr(tmp);
+			GMixIdealGroups* mix;
+			mix = new GMixIdealGroups(Session,Parents,Groups);
+			if(i->Param1.GetLen())
+				mix->SetSettings(i->Param1());
+			mix->Run();
+			delete mix;
+			break;
+		
+        case Fdbks:
+			if(i->Param1.GetLen())
+				sprintf(tmp,"Create Feedbacks Cycle: Settings=\"%s\"",i->Param1());
+			else
+				strcpy(tmp,"Create Feedbacks Cycle");
+			Rec->WriteStr(tmp);
+			if(i->Param1.GetLen())
+				FdbksMethod->SetSettings(i->Param1);
+			FdbksMethod->Run(Parents,Groups,AutoSave);
 			break;
 
 		case CmpIdeal:

@@ -705,7 +705,7 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 		Words=dynamic_cast<GDocVector*>(doc)->GetWordWeightCursor();
 		for(Words.Start();!Words.End();Words.Next())
 		{
-			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%lf)",l,id,Words()->GetId(),Words()->GetWeight());
+			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%f)",l,id,Words()->GetId(),Words()->GetWeight());
 			RQuery insertkwds(this,sSql);
 		}
 		l=ValidSQLValue(l,slang);
@@ -772,10 +772,40 @@ void GALILEI::GSessionMySQL::SaveGroups(void)
 			WordCur=static_cast<GGroupVector*>((*groups)())->GetVectorCursor();
 			for(WordCur.Start();!WordCur.End();WordCur.Next())
 			{
-				sprintf(sSql,"INSERT INTO %sgroupsbykwds(groupid,kwdid,occurs) VALUES(%u,%u,%lf)",g->GetLang()->GetCode(),g->GetId(),WordCur()->GetId(),WordCur()->GetWeight());
+				sprintf(sSql,"INSERT INTO %sgroupsbykwds(groupid,kwdid,occurs) VALUES(%u,%u,%f)",g->GetLang()->GetCode(),g->GetId(),WordCur()->GetId(),WordCur()->GetWeight());
 				RQuery InsertWord(this,sSql);
 			}
+		}
+	}
+}
 
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::SaveMixedGroups(RContainer<GGroups,unsigned int,true,true>* mixedgroups,int nbmixedgroups)
+{
+	char sSql[100];
+	GGroups* grps;
+	GGroup* grp;
+
+	// Delete all the old chromo where the id is id.
+	if(!nbmixedgroups)
+	{
+		sprintf(sSql,"DELETE FROM tempchromo");
+		RQuery delete1(this,sSql);
+	}
+
+	for(mixedgroups->Start(); !mixedgroups->End(); mixedgroups->Next())
+	{
+		grps=(*mixedgroups)();
+		for(grps->Start(); !grps->End(); grps->Next())
+		{
+			grp=(*grps)();
+			for(grp->Start(); !grp->End(); grp->Next())
+			{
+				GSubProfile* sub = (*grp)();
+				sprintf(sSql,"INSERT INTO tempchromo(chromoid,groupid,lang,subprofileid) VALUES(%u,%u,'%s',%u)",nbmixedgroups,grp->GetId(),grp->GetLang()->GetCode(),sub->GetId());
+				RQuery InsertChromo(this,sSql);
+			}
 		}
 	}
 }

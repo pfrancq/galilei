@@ -243,6 +243,13 @@ public:
 	virtual void SaveGroups(void);
 
 	/**
+	* Save the mixed groups of the session.
+	* @param mixedgroups    groups to save
+	* @param nbmixedgroups number of the chromo
+	*/
+	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true>* mixedgroups,int nbmixedgroups);
+
+	/**
 	* Delete a group.
 	* @param grp        Group to delete.
 	*/
