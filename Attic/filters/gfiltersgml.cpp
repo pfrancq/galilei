@@ -38,7 +38,7 @@
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <string.h>
-#include <iostream.h> // for cout only.
+#include <iostream> // for cout only.
 #include <stdio.h>
 #include <sys/stat.h>
 #ifdef _BSD_SOURCE
