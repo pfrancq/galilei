@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 							Config.GetTag("World")->GetAttrValue("User"),
 							Config.GetTag("World")->GetAttrValue("Pwd"),
 							Config.GetTag("World")->GetAttrValue("Name"));
-		GSession Session(&Str,2000,2000,2000,2000,2000,&SessionParams,false);
+		GSession Session(&Str,&SessionParams,false);
 		Log->WriteLog("Session created");
 
 
@@ -152,32 +152,17 @@ int main(int argc, char *argv[])
 		Session.PostConnect(&LinkCalcManager);
 		Log->WriteLog("Data loaded");
 
-// 		try
-		{
-			cout<<"Analyse Documents."<<endl;
-			Session.AnalyseDocs(0,true);
-		}
-//		catch(GException& e)
-//		{
-//			Log->WriteLog(RString("Error: ")+e.GetMsg());
-//		}
+		cout<<"Analyse Documents."<<endl;
+		Session.AnalyseDocs(Log,true);
 		cout<<"Compute Profiles."<<endl;
-		Session.CalcProfiles(0,true,true);
+		Session.CalcProfiles(Log,true,true);
 		cout<<"Groups Profiles."<<endl;
-		Session.GroupingProfiles(0,true,true);
+		Session.GroupingProfiles(Log,true,true);
 		Log->WriteLog("Session updated");
 
 		// End Session
 		Log->WriteLog("GALILEI Update stopped");
 		delete Log;
-
-		// Destroy Managers
-// 		delete URLManager;
-// 		delete ProfilingManager;
-// 		delete GroupingManager;
-// 		delete GroupCalcManager;
-// 		delete StatsCalcManager;
-// 		delete LinkCalcManager;
 	}
 	catch(GException& e)
 	{
@@ -192,6 +177,7 @@ int main(int argc, char *argv[])
 	catch(...)
 	{
 		cout<<"Error while processing"<<endl;
+		Log->WriteLog("Error while processing");
 	}
 
 	return(EXIT_SUCCESS);
