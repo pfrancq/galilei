@@ -208,7 +208,8 @@ void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_all
 		Order=new GWeightInfo*[MaxOrderSize];
 	}
 	memcpy(Order,Vectors.Tab,Vectors.NbPtr*sizeof(GWeightInfo*));
-	qsort(static_cast<void*>(Order),Vectors.NbPtr,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
+	if(Vectors.NbPtr)
+		qsort(static_cast<void*>(Order),Vectors.NbPtr,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
 	Order[Vectors.NbPtr]=0;
 
 	//If MaxNonZero is null -> take all the words.
