@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Basic Information.
 */
-class GIWord : public GALILEI::GInfo
+class GIWord : public GInfo
 {
 protected:
 
@@ -117,7 +117,7 @@ public:
 	/**
 	* @returns Identificator of the word.
 	*/
-	unsigned int GetId(void) {return(Id);}
+	unsigned int GetId(void) const {return(Id);}
 
 	/**
 	* The destructor.
