@@ -130,39 +130,14 @@ GALILEI::GProfilesSim::GProfilesSim(RContainer<GSubProfile,unsigned int,false,tr
 		Sims->InsertPtrAt(sim,pos);
 		for(Cur2.Start(), j=0;j<i;Cur2.Next(),j++)
 		{
-			 AnalyseSim(sim,Cur1(),Cur2());
+			// insert a null similarity with state osModified
+			// it will be thus recomputed the next time it is called.
+			sim->InsertPtrAt(new GSim(Cur2()->GetProfile()->GetId(),0.0,osModified), Cur2()->GetProfile()->GetId());
 		}
 	}
 
-	//mean calculation & deviation calculation
-	double simssum, deviation, tmpsim;;
-	simssum=deviation=0.0;
-	unsigned int nbcomp;
-	nbcomp=0;
-	GSubProfile **sub1, **sub2;
-
-	for (sub1=s->Tab, i=s->NbPtr; i--; sub1++)
-	{
-		if (!(*sub1)->IsDefined()) continue;
-		for (sub2=sub1+1, j=0; j<i; sub2++,j++)
-		{
-			 if (!(*sub2)->IsDefined()) continue;
-			 tmpsim=GetSim((*sub1),(*sub2));
-			simssum+=tmpsim;
-			deviation+=tmpsim*tmpsim;
-			nbcomp++;
-		}
-	}
-	if (nbcomp)
-	{
-		MeanSim=simssum/double(nbcomp);
-		deviation/=double(nbcomp);
-		deviation-=MeanSim*MeanSim;
-		Deviation=deviation;
-		OldNbComp=nbcomp;
-	}
-	else
-		MeanSim=Deviation=0.0;
+	//init the MeansSim
+	MeanSim=Deviation=0.0;
 }
 
 

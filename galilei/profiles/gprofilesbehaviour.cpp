@@ -99,7 +99,7 @@ GALILEI::GProfilesBehaviour::GProfilesBehaviour(RContainer<GSubProfile,unsigned 
 		behaviours=new GBehaviours(Cur1()->GetProfile()->GetId(),pos-1);
 		Behaviours->InsertPtrAt(behaviours,pos);
 		for(Cur2.Start(), j=0;j<i;Cur2.Next(),j++)
-			 AnalyseBehaviour(behaviours,Cur1(),Cur2());
+ 			behaviours->InsertPtrAt(new GBehaviour(Cur2()->GetProfile()->GetId(),0.0,0.0,osModified),Cur2()->GetProfile()->GetId());
 	}
 }
 
