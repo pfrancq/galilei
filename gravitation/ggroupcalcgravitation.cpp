@@ -44,6 +44,7 @@
 #include <infos/ginfo.h>
 #include <infos/gweightinfo.h>
 #include <infos/gweightinfos.h>
+#include <sessions/gobjref.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -87,25 +88,25 @@ void GGroupCalcGravitation::Disconnect(GSession* session) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
+void GGroupCalcGravitation::Compute(GGroupRef grp) throw(GException)
 {
 	unsigned int i,j;
-	GWeightInfos* Desc=static_cast<GGroupVector*>(grp);
 	GWeightInfos* Ref;
 	GWeightInfo** w;
 	GWeightInfo* ins;
 	GSubProfileCursor Sub;
 
 	// Clear the Vector.
-	(static_cast<GGroupVector*>(grp))->RemoveRefs();
-	Desc->Clear();
+	Group=dynamic_cast<GGroupVector*>(Session->GetGroup(grp.GetId()));
+	Group->RemoveRefs();
+	Group->Clear();
 	Vector->Clear();
 
 	// If no subprofiles -> No relevant one.
-	if(!grp->GetNbSubProfiles()) return;
+	if(!Group->GetNbSubProfiles()) return;
 
 	// Go through the subprofiles and sum the weigths.
-	Sub=grp->GetSubProfilesCursor();
+	Sub=Group->GetSubProfilesCursor();
 	for(Sub.Start();!Sub.End();Sub.Next())
 	{
 		// Go trough the words of the current subprofile
@@ -133,7 +134,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Desc->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
+				Group->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/Group->GetNbSubProfiles()));
 		}
 	}
 	else
@@ -141,12 +142,12 @@ void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
 		for(w=Order;(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Desc->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
+				Group->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/Group->GetNbSubProfiles()));
 		}
 	}
 
 	// Update the references of the vector.
-	(static_cast<GGroupVector*>(grp))->UpdateRefs();
+	Group->UpdateRefs();
 }
 
 

@@ -65,10 +65,15 @@ class GGroupCalcGravitation : public GGroupCalc
 	*/
 	GWeightInfo** Order;
 
-	/*
-	* List of words used for computation.
+	/**
+	* Internal vector.
 	*/
 	GWeightInfos* Vector;
+	
+	/*
+	* Vector representing the document.
+	*/
+	GGroupVector* Group;
 
 	/**
 	* Maximal size allocate for a profile.
@@ -104,7 +109,7 @@ public:
 	* Compute a group.
 	* @param grp            Group to compute.
 	*/
-	virtual void Compute(GGroup* grp) throw(GException);
+	virtual void Compute(GGroupRef grp) throw(GException);
 
 	/**
 	* Get the name of the model used for the description.
