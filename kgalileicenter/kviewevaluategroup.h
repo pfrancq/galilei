@@ -72,9 +72,15 @@ class KViewEvaluateGroup : public KView
 
 	/**
 	* Widget to handle info about the varinace for the ideal group
-	* of profiles and documents.
+	* of profiles .
 	*/
-	QListView* Variance;
+	QListView* VarianceSubProf;
+
+	/**
+	* Widget to handle info about the varinace for the ideal group
+	* of  documents.
+	*/
+	QListView* VarianceDoc;
 
 	/**
 	* Widget to handle info about the similarity for the ideal group
@@ -120,9 +126,14 @@ public:
 	void ConstructSimilaritySubProf(void);
 
 	/**
-	* Construct the variance widget.
+	* Construct the variance for subprofiles widget.
 	*/
-	void ConstructVariance(void);
+	void ConstructVarianceSubProf(void);
+
+	/**
+	* Construct the variance for document widget.
+	*/
+	void ConstructVarianceDoc(void);
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.

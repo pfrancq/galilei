@@ -57,6 +57,7 @@ using namespace RIO;
 #include <groups/ggroupinggga.h>
 #include <groups/ggroupingkcos.h>
 #include <groups/ggroupingkprotos.h>
+#include <groups/gidealgroup.h>
 using namespace GALILEI;
 
 
@@ -95,6 +96,7 @@ using namespace GALILEI;
 #include "kviewgroups.h"
 #include "kviewgroup.h"
 #include "kviewgroupsevaluation.h"
+#include "kviewevaluategroup.h"
 #include "kviewstat.h"
 #include "kviewprg.h"
 #include "kviewstems.h"
