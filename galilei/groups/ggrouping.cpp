@@ -79,7 +79,8 @@ void GALILEI::GGroupingSignalsReceiver::NextGroupLang(GLang*)
 
 //-----------------------------------------------------------------------------
 GALILEI::GGrouping::GGrouping(GSession* s) throw(bad_alloc)
-	: Session(s), Groups(0), SubProfiles(s->GetNbUsers(),s->GetNbUsers()/2)
+	: Session(s), Groups(0), SubProfiles(s->GetNbUsers(),s->GetNbUsers()/2),
+	  Options(s->GetGroupingOptions())
 {
 }
 

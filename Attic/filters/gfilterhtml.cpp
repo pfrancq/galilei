@@ -38,7 +38,7 @@
 #include <iostream.h> // for cout only.
 #include <stdio.h>
 #include <sys/stat.h>
-#if unix
+#ifdef _BSD_SOURCE
 	#include <unistd.h>
 #else
 	#include <io.h>
@@ -122,7 +122,7 @@ bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
 	// Initialisation
 	Doc=doc;
 	accessmode=O_RDONLY;
-	#if !unix
+	#ifndef _BSD_SOURCE
 		accessmode=O_BINARY;
 	#endif
 	handle=open(Doc->GetFile(),accessmode);
@@ -373,7 +373,7 @@ void GALILEI::GFilterHTML::AnalyseHeader(void)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* metaData)
+void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 {
 	char* ptr;
 	char delimiter;

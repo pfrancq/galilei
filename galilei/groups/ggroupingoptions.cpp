@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalc.cpp
+	GGroupingOptions.cpp
 
-	Generic Profile' Computing Method - Implementation.
+	Options for the grouping methods - Implementation.
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -32,48 +32,53 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
-#include <profiles/gprofilecalc.h>
-#include <sessions/gsession.h>
+// include files for GALILEI
+#include <groups/ggroupingoptions.h>
 using namespace GALILEI;
 
 
 
 //-----------------------------------------------------------------------------
 //
-//  GProfileCalc
+// class GGroupingOptions
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::GProfileCalc(GSession* session) throw(bad_alloc)
-	: Session(session)
+GALILEI::GGroupingOptions::GGroupingOptions(void)
+	: Method(pgNothing), FullSim(true), LevelSim(0.4), GAPopSize(16),
+	  GAMaxGen(20), GAStep(false), GAStepGen(10)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc& desc) const
+GALILEI::GGroupingOptions::GGroupingOptions(const GGroupingOptions& opt)
+	: Method(opt.Method), FullSim(opt.FullSim), LevelSim(opt.LevelSim),
+	  GAPopSize(opt.GAPopSize),GAMaxGen(opt.GAMaxGen), GAStep(opt.GAStep),
+	  GAStepGen(opt.GAStepGen)
 {
-	return(GetType()-desc.GetType());
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc* desc) const
+GALILEI::GGroupingOptions::GGroupingOptions(const GGroupingOptions* opt)
+	: Method(opt->Method), FullSim(opt->FullSim), LevelSim(opt->LevelSim),
+	  GAPopSize(opt->GAPopSize),GAMaxGen(opt->GAMaxGen), GAStep(opt->GAStep),
+	  GAStepGen(opt->GAStepGen)
 {
-	return(GetType()-desc->GetType());
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const tSubProfileDesc t) const
+GGroupingOptions& GALILEI::GGroupingOptions::operator=(const GGroupingOptions& opt)
 {
-	return(GetType()-t);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::~GProfileCalc(void)
-{
+	Method=opt.Method;
+	FullSim=opt.FullSim;
+	LevelSim=opt.LevelSim;
+	GAPopSize=opt.GAPopSize;
+	GAMaxGen=opt.GAMaxGen;
+	GAStep=opt.GAStep;
+	GAStepGen=opt.GAStepGen;
+	return(*this);
 }

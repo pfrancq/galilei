@@ -42,6 +42,7 @@ using namespace RStd;
 #include <profiles/gprofilecalcvector.h>
 #include <docs/gdoc.h>
 #include <profiles/gprofile.h>
+#include <profiles/gprofoptions.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gsubprofiledescvector.h>
 #include <profiles/gprofdoc.h>
@@ -60,9 +61,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session,unsigned int size) throw(bad_alloc)
-	: GProfileCalc(session), OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
-	  Size(size)
+GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session) throw(bad_alloc)
+	: GProfileCalc(session), OK(Session->GetNbLangs()), KO(Session->GetNbLangs())
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
 
@@ -129,7 +129,7 @@ void GALILEI::GProfileCalcVector::Compute(GProfile* profile)
 
 		// Construct the vector
 		Vector->Clear();
-		for(unsigned int Nb=Size+1;--Nb;)
+		for(unsigned int Nb=Session->GetProfOptions()->ListSize+1;--Nb;)
 		{
 			if(!MOK->IsNextWord()) break;
 			ptr=MOK->NextWord();

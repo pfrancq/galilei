@@ -119,7 +119,7 @@ GGroup* GALILEI::GCompareGrouping::GetIdealGroup(GSubProfile* sub) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GCompareGrouping::ComputeRecallPrecision(GCompareGroupingSignalsReceiver* rec)
+void GALILEI::GCompareGrouping::ComputeRecallPrecision(GCompareGroupingSignalsReceiver* /*rec*/)
 {
 	GroupScoreCursor Grp;
 	GSubProfileCursor Sub;
@@ -179,7 +179,7 @@ void GALILEI::GCompareGrouping::ComputeRecallPrecision(GCompareGroupingSignalsRe
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GCompareGrouping::ComputeTotal(GCompareGroupingSignalsReceiver* rec)
+void GALILEI::GCompareGrouping::ComputeTotal(GCompareGroupingSignalsReceiver* /*rec*/)
 {
 	GGroup* thGrp;
 	GGroup* thGrp2;

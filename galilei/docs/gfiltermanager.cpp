@@ -67,13 +67,13 @@ GALILEI::GURLManager::GURLManager(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GURLManager::Download(const char* URL,RString& tmpFile) throw(GException)
+void GALILEI::GURLManager::Download(const char* /*URL*/,RString& /*tmpFile*/) throw(GException)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GURLManager::Delete(RString& tmpFile) throw(GException)
+void GALILEI::GURLManager::Delete(RString& /*tmpFile*/) throw(GException)
 {
 }
 

@@ -65,25 +65,32 @@ const unsigned cNoRef=0xFFFFFFFF;        // A undefined identificator reference
 /**
 * Represent different state of a GALILEI object.
 */
-enum tObjState{osUnknow /** Unknow state.*/,
-	           osCreated /** Object was created.*/,
+enum tObjState{osUnknow   /** Unknow state.*/,
+	           osCreated  /** Object was created.*/,
 	           osUpToDate /** Object is up to date.*/,
 	           osModified /** Object was modified and computation must be update.*/,
-	           osUpdated /** Object is updated and needs to be save.*/};
+	           osUpdated  /** Object is updated and needs to be save.*/};
 
 
 //-----------------------------------------------------------------------------
 /**
 * Represent different methods to describe subprofiles.
 */
-enum tSubProfileDesc{sdNothing,sdVector};
+enum tSubProfileDesc{sdNothing=0,sdVector=1};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Represent different methods to compute the subpeofiles for the vector space.
+*/
+enum tVectorMethod{vmNothing=0,vmQueryExpansion=1,vmDirectReweighting=2};
 
 
 //-----------------------------------------------------------------------------
 /**
 * Represent different methods to group the profiles.
 */
-enum tProfilesGroup{pgNothing,pgHeuristicSim};
+enum tProfilesGroup{pgNothing=0,pgHeuristicSim=1,pgGA=2};
 
 
 //-----------------------------------------------------------------------------

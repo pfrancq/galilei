@@ -89,6 +89,12 @@ protected:
 public:
 
 	/**
+	* Copy  constructor of the subprofile description.
+	* @param sub            Description used for the constructor.
+	*/
+	GSubProfileDesc(GSubProfileDesc* desc) throw(bad_alloc);
+
+	/**
 	* Constructor of the subprofile.
 	* @param sub            Owner.
 	* @param grp            Group.
@@ -115,7 +121,7 @@ public:
 	* Get the type of the description.
 	* @returns tSubProfileDesc enum type.
 	*/
-	virtual tSubProfileDesc GetType(void) const=0;
+	virtual tSubProfileDesc GetType(void) const {return(sdNothing);}
 
 	/**
 	* Get the identifier of the subprofile.
@@ -168,7 +174,7 @@ public:
 	/**
 	* Compute similarity between SubProfiles.
 	*/
-	virtual double Similarity(const GSubProfileDesc* desc) const=0;
+	virtual double Similarity(const GSubProfileDesc* /*desc*/) const {return(0.0);}
 
 	/**
 	*Destructor

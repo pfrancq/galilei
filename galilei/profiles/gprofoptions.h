@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalcVector.h
+	GProfOptions.h
 
-	Vector Computing Method - Header.
+	Options for the profiles description - Header.
 
-	(C) 2001-2002 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -32,19 +32,13 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GProfileCalcVectorH
-#define GProfileCalcVectorH
+#ifndef GProfOptionsH
+#define GProfOptionsH
 
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainer.h>
-using namespace RStd;
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <profiles/gprofilecalc.h>
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------
@@ -53,56 +47,50 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-// forward class declaration
-class GIWordsWeights;
-
-
-//-----------------------------------------------------------------------------
 /**
-* The GProfileCalcVector class provides a representation for a method to compute
-* a specific profile, i.e. its sub-profiles by using the vector method.
+* The GProfOptions provides a representation for the options concerning the
+* profiles computing and the subprofile description.
 * @author Pascal Francq
-* @short Vector Profile Computing Method.
+* @short Profile Options.
 */
-class GProfileCalcVector : public GProfileCalc
+class GProfOptions
 {
-	/**
-	* List of words' frequences in the "OK" and "N" documents for the different
-	* languages.
-	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> OK;
-
-	/**
-	* List of words' frequences in the "KO" documents for the different
-	* languages.
-	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> KO;
-
 public:
 
 	/**
-	* Constructor.
-	* @param session        Session.
+	* Type of the description to use.
 	*/
-	GProfileCalcVector(GSession* session) throw(bad_alloc);
+	tSubProfileDesc Model;
 
 	/**
-	* Compute a profile.
-	* @param profile        Profile to compute.
+	* Sizes of the List in the Vector Space.
 	*/
-	virtual void Compute(GProfile* profile);
+	unsigned int ListSize;
 
 	/**
-	* Get the type of the method implemented. This method is used for the
-	* vector model.
-	* @returns tSubProfileDesc enum type.
+	* Type of the method to use to compute the vector space dfescription.
 	*/
-	virtual tSubProfileDesc GetType(void) const {return(sdVector);}
+	tVectorMethod VectorMethod;
 
 	/**
-	* Destructor.
+	* Default Constructor.
 	*/
-	virtual ~GProfileCalcVector(void);
+	GProfOptions(void);
+
+	/**
+	* Copy Constructor.
+	*/
+	GProfOptions(const GProfOptions& opt);
+
+	/**
+	* Copy Constructor.
+	*/
+	GProfOptions(const GProfOptions* opt);
+
+	/**
+	* Assignment operator using another options.
+	*/
+	GProfOptions& operator=(const GProfOptions& opt);
 };
 
 
@@ -111,4 +99,3 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
-

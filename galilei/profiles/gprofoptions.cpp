@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalc.cpp
+	GProfOptions.h
 
-	Generic Profile' Computing Method - Implementation.
+	Options for the profiles description - Implementation.
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -32,48 +32,44 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
-#include <profiles/gprofilecalc.h>
-#include <sessions/gsession.h>
+// include files for GALILEI
+#include <profiles/gprofoptions.h>
 using namespace GALILEI;
 
 
 
 //-----------------------------------------------------------------------------
 //
-//  GProfileCalc
+// class GProfOptions
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::GProfileCalc(GSession* session) throw(bad_alloc)
-	: Session(session)
+GALILEI::GProfOptions::GProfOptions(void)
+	: Model(sdNothing),ListSize(50),VectorMethod(vmQueryExpansion)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc& desc) const
+GALILEI::GProfOptions::GProfOptions(const GProfOptions& opt)
+	: Model(opt.Model),ListSize(opt.ListSize),VectorMethod(opt.VectorMethod)
 {
-	return(GetType()-desc.GetType());
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc* desc) const
+GALILEI::GProfOptions::GProfOptions(const GProfOptions* opt)
+	: Model(opt->Model),ListSize(opt->ListSize),VectorMethod(opt->VectorMethod)
 {
-	return(GetType()-desc->GetType());
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const tSubProfileDesc t) const
+GProfOptions& GALILEI::GProfOptions::operator=(const GProfOptions& opt)
 {
-	return(GetType()-t);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::~GProfileCalc(void)
-{
+	Model=opt.Model;
+	ListSize=opt.ListSize;
+	VectorMethod=opt.VectorMethod;
+	return(*this);
 }

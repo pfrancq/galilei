@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalc.cpp
+	GDocOptions.cpp
 
-	Generic Profile' Computing Method - Implementation.
+	Options for the document Analysis - Implementation.
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -32,48 +32,51 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
-#include <profiles/gprofilecalc.h>
-#include <sessions/gsession.h>
+// include files for GALILEI
+#include <docs/gdocoptions.h>
 using namespace GALILEI;
 
 
 
 //-----------------------------------------------------------------------------
 //
-//  GProfileCalc
+// class GDocOptions
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::GProfileCalc(GSession* session) throw(bad_alloc)
-	: Session(session)
+GALILEI::GDocOptions::GDocOptions(void)
+	: StaticLang(false), MinStopWords(0.1), MinWordSize(4), MinStemSize(3),
+	  MinOccur(1), NonLetterWords(false)
+{
+}
+
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GDocOptions::GDocOptions(const GDocOptions& opt)
+	: StaticLang(opt.StaticLang), MinStopWords(opt.MinStopWords), MinWordSize(opt.MinWordSize),
+	  MinStemSize(opt.MinStemSize), MinOccur(opt.MinOccur), NonLetterWords(opt.NonLetterWords)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc& desc) const
+GALILEI::GDocOptions::GDocOptions(const GDocOptions* opt)
+	: StaticLang(opt->StaticLang), MinStopWords(opt->MinStopWords), MinWordSize(opt->MinWordSize),
+	  MinStemSize(opt->MinStemSize), MinOccur(opt->MinOccur), NonLetterWords(opt->NonLetterWords)
 {
-	return(GetType()-desc.GetType());
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc* desc) const
+GDocOptions& GALILEI::GDocOptions::operator=(const GDocOptions& opt)
 {
-	return(GetType()-desc->GetType());
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const tSubProfileDesc t) const
-{
-	return(GetType()-t);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::~GProfileCalc(void)
-{
+	StaticLang=opt.StaticLang;
+	MinStopWords=opt.MinStopWords;
+	MinWordSize=opt.MinWordSize;
+	MinStemSize=opt.MinStemSize;
+	MinOccur=opt.MinOccur;
+	NonLetterWords=opt.NonLetterWords;
+	return(*this);
 }

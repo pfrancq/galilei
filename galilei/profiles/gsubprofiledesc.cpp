@@ -47,6 +47,12 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
+GALILEI::GSubProfileDesc::GSubProfileDesc(GSubProfileDesc* desc) throw(bad_alloc)
+	: Owner(desc->Owner), Group(desc->Group), Attached(desc->Attached)
+{
+}
+
 
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfileDesc::GSubProfileDesc(GSubProfile* sub,GGroup* grp,const char* a) throw(bad_alloc)

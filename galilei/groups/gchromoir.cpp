@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalc.cpp
+	GChromoIR.cpp
 
-	Generic Profile' Computing Method - Implementation.
+	Chromosome for an IR Problem - Implementation
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -32,48 +32,25 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
-#include <profiles/gprofilecalc.h>
-#include <sessions/gsession.h>
+// include files for R Project
+#include <groups/gchromoir.h>
+#include <groups/ginstir.h>
+#include <groups/ggroupir.h>
+#include <profiles/gsubprofiledesc.h>
 using namespace GALILEI;
+using namespace RGGA;
+using namespace RGA;
 
 
 
 //-----------------------------------------------------------------------------
 //
-//  GProfileCalc
+// class GChromoIR
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::GProfileCalc(GSession* session) throw(bad_alloc)
-	: Session(session)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc& desc) const
-{
-	return(GetType()-desc.GetType());
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc* desc) const
-{
-	return(GetType()-desc->GetType());
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const tSubProfileDesc t) const
-{
-	return(GetType()-t);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::~GProfileCalc(void)
+GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
+  : RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfileDesc,GGroupDataIR>(inst,id)
 {
 }

@@ -53,6 +53,7 @@ class GGroup;
 class GGroups;
 class GSubProfile;
 class GLang;
+class GGroupingOptions;
 
 
 //-----------------------------------------------------------------------------
@@ -106,6 +107,11 @@ protected:
 	* Type of the description used to group.
 	*/
 	tSubProfileDesc SubProfileDesc;
+
+	/**
+	* Options of the grouping.
+	*/
+	GGroupingOptions* Options;
 
 public:
 

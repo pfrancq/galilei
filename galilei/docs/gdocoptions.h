@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalcVector.h
+	GDocOptions.h
 
-	Vector Computing Method - Header.
+	Options for the document Analysis - Header.
 
-	(C) 2001-2002 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -32,19 +32,13 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GProfileCalcVectorH
-#define GProfileCalcVectorH
+#ifndef GDocOptionsH
+#define GDocOptionsH
 
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainer.h>
-using namespace RStd;
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <profiles/gprofilecalc.h>
+#include <rstd/rstd.h>
 
 
 //-----------------------------------------------------------------------------
@@ -53,56 +47,67 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-// forward class declaration
-class GIWordsWeights;
-
-
-//-----------------------------------------------------------------------------
 /**
-* The GProfileCalcVector class provides a representation for a method to compute
-* a specific profile, i.e. its sub-profiles by using the vector method.
+* The GDocOptions provides a representation for the options concerning the
+* documents analysis.
 * @author Pascal Francq
-* @short Vector Profile Computing Method.
+* @short Document Options.
 */
-class GProfileCalcVector : public GProfileCalc
+class GDocOptions
 {
-	/**
-	* List of words' frequences in the "OK" and "N" documents for the different
-	* languages.
-	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> OK;
-
-	/**
-	* List of words' frequences in the "KO" documents for the different
-	* languages.
-	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> KO;
-
 public:
 
 	/**
-	* Constructor.
-	* @param session        Session.
+	* Define if the language are static.
 	*/
-	GProfileCalcVector(GSession* session) throw(bad_alloc);
+	bool StaticLang;
 
 	/**
-	* Compute a profile.
-	* @param profile        Profile to compute.
+	* Minimum percentage of words of a document which must be in the stop list
+	* of a language to make the language the current one.
 	*/
-	virtual void Compute(GProfile* profile);
+	double MinStopWords;
 
 	/**
-	* Get the type of the method implemented. This method is used for the
-	* vector model.
-	* @returns tSubProfileDesc enum type.
+	* Minimum number of characters to have a valid word.
 	*/
-	virtual tSubProfileDesc GetType(void) const {return(sdVector);}
+	unsigned int MinWordSize;
 
 	/**
-	* Destructor.
+	* Minimum number of characters to have a valid stem.
 	*/
-	virtual ~GProfileCalcVector(void);
+	unsigned int MinStemSize;
+
+	/**
+	* Minimum number of occurences needed to insert a valid word in the list of
+	* information for a document.
+	*/
+	unsigned int MinOccur;
+
+	/**
+	* Determine if the extracted words may contain other things than letters.
+	*/
+	bool NonLetterWords;
+
+	/**
+	* Default Constructor.
+	*/
+	GDocOptions(void);
+
+	/**
+	* Copy Constructor.
+	*/
+	GDocOptions(const GDocOptions& opt);
+
+	/**
+	* Copy Constructor.
+	*/
+	GDocOptions(const GDocOptions* opt);
+
+	/**
+	* Assignment operator using another options.
+	*/
+	GDocOptions& operator=(const GDocOptions& opt);
 };
 
 
@@ -111,4 +116,3 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
-

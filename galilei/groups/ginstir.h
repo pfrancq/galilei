@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalcVector.h
+	GInstIR.h
 
-	Vector Computing Method - Header.
+	Instance for an IR Problem - Header
 
-	(C) 2001-2002 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -32,19 +32,18 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GProfileCalcVectorH
-#define GProfileCalcVectorH
+#ifndef GInstIRH
+#define GInstIRH
 
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainer.h>
-using namespace RStd;
+#include <rgga/rinstg.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gprofilecalc.h>
+#include <groups/gir.h>
 
 
 //-----------------------------------------------------------------------------
@@ -53,56 +52,55 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-// forward class declaration
-class GIWordsWeights;
+/**
+* The GThreadDataIR class provides a representation for "thread-dependent" data
+* for the IR GA.
+* @author Pascal Francq
+* @short IR "thread-dependent" Data.
+*/
+class GThreadDataIR : public RGGA::RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfileDesc,GGroupDataIR>
+{
+public:
+
+	/**
+	* Construct the data.
+	* @param owner          The instance of the problem.
+	*/
+	GThreadDataIR(GInstIR* owner);
+};
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GProfileCalcVector class provides a representation for a method to compute
-* a specific profile, i.e. its sub-profiles by using the vector method.
+* The instance of the IR problem.
 * @author Pascal Francq
-* @short Vector Profile Computing Method.
+* @short IR Instance.
 */
-class GProfileCalcVector : public GProfileCalc
+class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfileDesc,GGroupDataIR>
 {
-	/**
-	* List of words' frequences in the "OK" and "N" documents for the different
-	* languages.
-	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> OK;
-
-	/**
-	* List of words' frequences in the "KO" documents for the different
-	* languages.
-	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> KO;
-
 public:
 
 	/**
-	* Constructor.
-	* @param session        Session.
+	* The maximum number of generations.
 	*/
-	GProfileCalcVector(GSession* session) throw(bad_alloc);
+	unsigned long MaxGen;
 
 	/**
-	* Compute a profile.
-	* @param profile        Profile to compute.
+	* Construct the instance.
+	* @param max            Maximal number of generations.
+	* @param popsize        The size of the population.	
+	* @param prob           The problem.
+	* @param h              The type of heuristic to be used.
+	* @param debug          Debugger.
 	*/
-	virtual void Compute(GProfile* profile);
+	GInstIR(unsigned int max,unsigned int popsize,RGA::RObjs<GSubProfileDesc>* objs,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
 
 	/**
-	* Get the type of the method implemented. This method is used for the
-	* vector model.
-	* @returns tSubProfileDesc enum type.
+	* This function determines if the GA must be stopped. Actually, it is the case
+	* when the maximal number of generation is calculated.
+	* @return	The function returns true if the GA must stop.
 	*/
-	virtual tSubProfileDesc GetType(void) const {return(sdVector);}
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GProfileCalcVector(void);
+	virtual bool StopCondition(void);
 };
 
 
@@ -111,4 +109,3 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
-

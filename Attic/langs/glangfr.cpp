@@ -60,13 +60,13 @@ public:
 	int NewOffset;
 	int MinRootSize;
 	
-	FrenchPorterRule(char* os,char* ns,int oo,int no,int mr=-1);
+	FrenchPorterRule(const char* os,const char* ns,int oo,int no,int mr=-1);
 	int Compare(const FrenchPorterRule*) {return(-1);}
 };
 
 
 //-----------------------------------------------------------------------------
-GLangFR::FrenchPorterRule::FrenchPorterRule(char* os,char* ns,int oo,int no,int mr)
+GLangFR::FrenchPorterRule::FrenchPorterRule(const char* os,const char* ns,int oo,int no,int mr)
 	: OldSuffix(0), NewSuffix(0), OldOffset(oo), NewOffset(no), MinRootSize(mr)
 {
 	OldSuffix=strdup(os);
@@ -348,7 +348,7 @@ bool GALILEI::GLangFR::ContainsVowel(const char* kwd)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,unsigned int,true,false>* rules,int ruleslevel)
+bool GALILEI::GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,unsigned int,true,false>* rules,int /*ruleslevel*/)
 {
 	FrenchPorterRule* ptr;
 	char* ending;

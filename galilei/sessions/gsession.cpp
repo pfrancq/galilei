@@ -46,6 +46,9 @@ using namespace RStd;
 #include <docs/gdoc.h>
 #include <docs/gdocanalyse.h>
 #include <docs/gdocxml.h>
+#include <docs/gdocoptions.h>
+#include <profiles/gprofoptions.h>
+#include <groups/ggroupingoptions.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -53,6 +56,7 @@ using namespace RStd;
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <profiles/gprofilecalc.h>
+#include <profiles/gprofilecalcvector.h>
 #include <urlmanagers/gurlmanager.h>
 #include <filters/gfilter.h>
 #include <filters/gmimefilter.h>
@@ -73,13 +77,13 @@ GALILEI::GSessionSignalsReceiver::GSessionSignalsReceiver(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionSignalsReceiver::receiveNextDoc(const GDoc* doc)
+void GALILEI::GSessionSignalsReceiver::receiveNextDoc(const GDoc* /*doc*/)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionSignalsReceiver::receiveNextProfile(const GProfile* prof)
+void GALILEI::GSessionSignalsReceiver::receiveNextProfile(const GProfile* /*prof*/)
 {
 }
 
@@ -93,9 +97,10 @@ void GALILEI::GSessionSignalsReceiver::receiveNextProfile(const GProfile* prof)
 
 //-----------------------------------------------------------------------------
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException)
-	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(g+g/2,g/2), Fdbks(f+f/2,f/2), Profiles(0), SubProfiles(0), Mng(mng),
-	  DocAnalyse(0), bDics(false), bDocs(false), bUsers(false), bGroups(false),
-	  bFdbks(false), StaticLang(true)
+	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(g+g/2,g/2), Fdbks(f+f/2,f/2),
+	  Profiles(0), SubProfiles(0), ProfileCalcs(0), Mng(mng), DocAnalyse(0), bDics(false),
+	  bDocs(false), bUsers(false), bGroups(false),bFdbks(false), DocOptions(0),
+	  ProfOptions(0)
 	
 {
 	GLang* l;
@@ -106,7 +111,12 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	Groups.InsertPtr(new GGroups(l));
 	Profiles=new RContainer<GProfile,unsigned int,true,true>(p+p/2,p/2);
 	SubProfiles=new RContainer<GSubProfile,unsigned int,true,true>(p*2+p,p);
-	DocAnalyse=new GDocAnalyse(this);
+	ProfileCalcs=new RContainer<GProfileCalc,unsigned int,true,true>(3,3);
+//	ProfileCalcs->InsertPtr(new GProfileCalcVector(this));
+	DocAnalyse=new GDocAnalyse(this,DocOptions);
+	DocOptions=new GDocOptions();
+	ProfOptions=new GProfOptions();
+	GroupingOptions=new GGroupingOptions();
 }
 
 
@@ -265,9 +275,9 @@ void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-GUser* GALILEI::GSession::NewUser(const char* usr,const char* pwd,const char* name,const char* email,
-	                  const char* title,const char* org,const char* addr1,
-	                  const char* addr2,const char* city,const char* country) throw(bad_alloc)
+GUser* GALILEI::GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const char* /*name*/,const char* /*email*/,
+	                  const char* /*title*/,const char* /*org*/,const char* /*addr1*/,
+	                  const char* /*addr2*/,const char* /*city*/,const char* /*country*/) throw(bad_alloc)
 {
 	return(0);
 }
@@ -407,4 +417,8 @@ GALILEI::GSession::~GSession(void) throw(GException)
 	if(SubProfiles) delete SubProfiles;
 	if(Profiles) delete Profiles;
 	if(DocAnalyse) delete DocAnalyse;
+	if(DocOptions) delete DocOptions;
+	if(ProfOptions) delete ProfOptions;
+	if(GroupingOptions) delete GroupingOptions;
+	if(ProfileCalcs) delete ProfileCalcs;
 }

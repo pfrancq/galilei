@@ -108,12 +108,12 @@ public:
 	/**
 	* Compare method used by RContainer.
 	*/
-	int Compare(const GFilter* f) const {return(-1);}
+	int Compare(const GFilter* ) const {return(-1);}
 
 	/**
 	* Compare method used by RContainer.
 	*/
-	int Compare(const GFilter& f) const {return(-1);}
+	int Compare(const GFilter& ) const {return(-1);}
 
 	/**
 	* Get the name of the filter.

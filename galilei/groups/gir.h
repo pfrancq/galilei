@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalc.h
+	GIR.h
 
-	Generic Profile' Computing Method - Header.
+	GA for the Information Retrieval Problem - Header.
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -30,15 +30,15 @@
 */
 
 
+//-----------------------------------------------------------------------------
+#ifndef RIRH
+#define RIRH
+
 
 //-----------------------------------------------------------------------------
-#ifndef GProfileCalcH
-#define GProfileCalcH
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <galilei.h>
+// includes files for R Project
+#include <rga/rfitness.h>
+#include <rgga/rgga.h>
 
 
 //-----------------------------------------------------------------------------
@@ -47,74 +47,53 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-// forward class declaration
-class GSession;
-class GProfile;
+// Forward class declaration
+class GSubProfileDesc;
+class GGroupIR;
+class GGroupDataIR;
+class GThreadDataIR;
+class GChromoIR;
+class GInstIR;
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GProfileCalc class provides a representation for a method to compute a
-* specific profile, i.e. its sub-profiles.
+* The RFitnessIR provides a representation for a fitness function for the
+* information retrieval problem.
 * @author Pascal Francq
-* @short Generic Profile' Computing Method.
+* @short IR Fitness.
 */
-class GProfileCalc
+class GFitnessIR : public RGA::RFitness<double,true>
 {
-protected:
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
 public:
 
 	/**
-	* Constructor.
-	* @param session        Session.
+	* Constructor of the fitness function used for the Bin Packing.
 	*/
-	GProfileCalc(GSession* session) throw(bad_alloc);
+	GFitnessIR(void) : RGA::RFitness<double,true>() {}
 
 	/**
-	* Compute a profile.
-	* @param profile        Profile to compute.
+	* Assignment operator with a fitness f.
 	*/
-	virtual void Compute(GProfile* profile)=0;
+	GFitnessIR& operator=(const GFitnessIR &f)
+	{
+		RFitness<double,true>::operator=(f);
+		return(*this);
+	}
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Assignment operator with a double value.
 	*/
-	int Compare(const GProfileCalc& desc) const;
-
-	/**
-	* Compare methods used by RStd::RContainer.
-	*/
-	int Compare(const GProfileCalc* desc) const;
-
-	/**
-	* Compare methods used by RStd::RContainer.
-	*/
-	int Compare(const tSubProfileDesc t) const;
-
-	/**
-	* Get the type of the method implemented. This is used to find the
-	* correspondance between a profiles description and the compute method
-	* associated.
-	* @returns tSubProfileDesc enum type.
-	*/
-	virtual tSubProfileDesc GetType(void) const=0;
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GProfileCalc(void);
+	GFitnessIR& operator=(const double val)
+	{
+		RFitness<double,true>::operator=(val);
+		return(*this);
+	}
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //------- End of namespace GALILEI -----------------------------------------
 
 
 //-----------------------------------------------------------------------------
 #endif
-

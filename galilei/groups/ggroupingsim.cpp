@@ -40,6 +40,7 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<groups/ggroupingsim.h>
+#include<groups/ggroupingoptions.h>
 #include<groups/ggroups.h>
 #include<groups/ggroup.h>
 #include<profiles/guser.h>
@@ -58,8 +59,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupingSim::GGroupingSim(GSession* s,const bool f,const double l) throw(bad_alloc)
-	: GGrouping(s), Level(l), Full(f)
+GALILEI::GGroupingSim::GGroupingSim(GSession* s) throw(bad_alloc)
+	: GGrouping(s)
 {
 }
 
@@ -77,11 +78,11 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 	GSubProfile** s2;
 	unsigned int i,j;
 
-	if(Full)
+	if(Options->FullSim)
 	{
 		for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
 			for(s2=s1+1,j=i+1;--j;s2++)
-				if((*s1)->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity((*s2)->GetPtr<const tSubProfileDesc>(SubProfileDesc))<Level)
+				if((*s1)->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity((*s2)->GetPtr<const tSubProfileDesc>(SubProfileDesc))<Options->LevelSim)
 					return(false);
 		return(true);
 	}
@@ -89,7 +90,7 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 	{
 		for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
 			for(s2=s1+1,j=i+1;--j;s2++)
-				if((*s1)->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity((*s2)->GetPtr<const tSubProfileDesc>(SubProfileDesc))>=Level)
+				if((*s1)->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity((*s2)->GetPtr<const tSubProfileDesc>(SubProfileDesc))>=Options->LevelSim)
 					return(true);
 		return(false);
 	}
@@ -101,17 +102,17 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp,const GSubProfile* sub)
 {
 	RContainerCursor<GSubProfile,unsigned int,false,true> cur(grp);
 
-	if(Full)
+	if(Options->FullSim)
 	{
 		for(cur.Start();!cur.End();cur.Next())
-			if(cur()->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity(sub->GetPtr<const tSubProfileDesc>(SubProfileDesc))<Level)
+			if(cur()->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity(sub->GetPtr<const tSubProfileDesc>(SubProfileDesc))<Options->LevelSim)
 				return(false);
 		return(true);
 	}
 	else
 	{
 		for(cur.Start();!cur.End();cur.Next())
-			if(cur()->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity(sub->GetPtr<const tSubProfileDesc>(SubProfileDesc))>=Level)
+			if(cur()->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity(sub->GetPtr<const tSubProfileDesc>(SubProfileDesc))>=Options->LevelSim)
 				return(true);
 		return(false);
 	}

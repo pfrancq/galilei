@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalcVector.h
+	GChromoIR.h
 
-	Vector Computing Method - Header.
+	Chromosome for an IR Problem - Header
 
-	(C) 2001-2002 by P. Francq.
+	(C) 2001 by P. Francq.
 
 	Version $Revision$
 
@@ -32,77 +32,43 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GProfileCalcVectorH
-#define GProfileCalcVectorH
+#ifndef GChromoIRH
+#define GChromoIRH
 
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainer.h>
-using namespace RStd;
+#include <rgga/rchromog.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gprofilecalc.h>
+#include <groups/gir.h>
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
+namespace GALILEI
+{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GIWordsWeights;
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GProfileCalcVector class provides a representation for a method to compute
-* a specific profile, i.e. its sub-profiles by using the vector method.
+* The GChromoIR class provides a representation for a chromosome for the IR
+* Problem.
 * @author Pascal Francq
-* @short Vector Profile Computing Method.
+* @short IR Chromosome.
 */
-class GProfileCalcVector : public GProfileCalc
+class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfileDesc,GGroupDataIR>
 {
-	/**
-	* List of words' frequences in the "OK" and "N" documents for the different
-	* languages.
-	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> OK;
-
-	/**
-	* List of words' frequences in the "KO" documents for the different
-	* languages.
-	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> KO;
-
 public:
 
 	/**
-	* Constructor.
-	* @param session        Session.
+	* Construct the chromosome.
+	* @param inst           The instance of the problem.
+	* @param id             The identificator of the chromosome.
 	*/
-	GProfileCalcVector(GSession* session) throw(bad_alloc);
-
-	/**
-	* Compute a profile.
-	* @param profile        Profile to compute.
-	*/
-	virtual void Compute(GProfile* profile);
-
-	/**
-	* Get the type of the method implemented. This method is used for the
-	* vector model.
-	* @returns tSubProfileDesc enum type.
-	*/
-	virtual tSubProfileDesc GetType(void) const {return(sdVector);}
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GProfileCalcVector(void);
+	GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc);
 };
 
 
@@ -111,4 +77,3 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
-

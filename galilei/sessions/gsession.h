@@ -76,6 +76,9 @@ class GFilter;
 class GMIMEFilter;
 class GURLManager;
 class GDocAnalyse;
+class GDocOptions;
+class GProfOptions;
+class GGroupingOptions;
 
 
 //-----------------------------------------------------------------------------
@@ -163,6 +166,11 @@ protected:
 	RStd::RContainer<GSubProfile,unsigned int,true,true>* SubProfiles;
 
 	/**
+	* Container of computing method for the profiles.
+	*/
+	RStd::RContainer<GProfileCalc,unsigned int,true,true>* ProfileCalcs;
+
+	/**
 	* URL Manager used by this session.
 	*/
 	GURLManager* Mng;
@@ -198,36 +206,19 @@ protected:
 	bool bFdbks;
 
 	/**
-	* Define if the language of the language must be static.
+	* Options about the documents.
 	*/
-	bool StaticLang;
+	GDocOptions* DocOptions;
 
 	/**
-	* Minimum percentage of words of a document which must be in the stop list
-	* of a language to make the language the current one.
+	* Options about the profiles.
 	*/
-	double MinStopWords;
+	GProfOptions* ProfOptions;
 
 	/**
-	* Minimum number of characters to have a valid word.
+	* Options about the grouping methods.
 	*/
-	unsigned int MinWordSize;
-
-	/**
-	* Minimum number of characters to have a valid stem.
-	*/
-	unsigned int MinStemSize;
-
-	/**
-	* Minimum number of occurences needed to insert a valid word in the list of
-	* information for a document.
-	*/
-	unsigned int MinOccur;
-
-	/**
-	* Determine if the extracted words may contain other things than letters.
-	*/
-	bool NonLetterWords;
+	GGroupingOptions* GroupingOptions;
 
 public:
 
@@ -391,82 +382,16 @@ public:
 			{return(&Docs);}
 
 		/**
+		* Get a pointer to the document options.
+		* @returns Pointer to GDocOptions.
+		*/
+		GDocOptions* GetDocOptions(void) {return(DocOptions);}
+
+		/**
 		* Verify if the documents are loaded.
 		* @returns true, if loaded.
 		*/
 		bool IsDocsLoad(void) const {return(bDocs);}
-
-		/**
-		* See if the languages are static for the documents.
-		* @returns Boolean.
-		*/
-		bool IsStaticLang(void) const {return(StaticLang);}
-
-		/**
-		* Set if the languages are static for the document.
-		* @param s          Static?
-		*/
-		void SetStaticLang(bool s) {StaticLang=s;}
-
-		/**
-		* Get the minimum percentage of stop words.
-		* @returns Double.
-		*/
-		double GetMinStopWords(void) const {return(MinStopWords);}
-
-		/**
-		* Set the minimum percentage of stop words.
-		* @param min        Minimal Percentage.
-		*/
-		void SetMinStopWords(double min) {MinStopWords=min;}
-
-		/**
-		* Get the minimum size of a word.
-		* @returns unsigned int.
-		*/
-		unsigned int GetMinWordSize(void) const {return(MinWordSize);}
-
-		/**
-		* Set the minimum size of a word.
-		* @param min        Minimal size.
-		*/
-		void SetMinWordSize(unsigned int min) {MinWordSize=min;}
-
-		/**
-		* Get the minimum size of a stem.
-		* @returns unsigned int.
-		*/
-		unsigned int GetMinStemSize(void) const {return(MinStemSize);}
-
-		/**
-		* Set the minimum number of occurences for a valid word.
-		* @param min        Minimal size.
-		*/
-		void SetMinOccur(unsigned int min) {MinOccur=min;}
-
-		/**
-		* Get the minimum number of occurences for a valid word.
-		* @returns unsigned int.
-		*/
-		unsigned int GetMinOccur(void) const {return(MinOccur);}
-
-		/**
-		* Set the minimum size of a stem.
-		* @param min        Minimal size.
-		*/
-		void SetMinStemSize(unsigned int min) {MinStemSize=min;}
-
-		/**
-		* Look if words with non-letter characters may be extracted.
-		* @returns bool.
-		*/
-		bool IsNonLetterWords(void) const {return(NonLetterWords);}
-
-		/**
-		* Set if the words may contain non-letter characters.
-		* @param accept     Accepting such words.
-		*/
-		void SetNonLetterWords(bool accept) {NonLetterWords=accept;}
 
 		/**
 		* Load the documents.
@@ -594,6 +519,13 @@ public:
 		*/
 		void CalcProfiles(GSessionSignalsReceiver* rec,GProfileCalc* method,bool modified=true) throw(GException);
 
+		/**
+		* Get a pointer to the profiles options.
+		* @returns Pointer to GProfOptions.
+		*/
+		GProfOptions* GetProfOptions(void) {return(ProfOptions);}
+
+
 	//@}
 
 	/**
@@ -687,6 +619,12 @@ public:
 		* @param grp        Group to delete.
 		*/
 		virtual void DeleteGroup(GGroup* grp)=0;
+
+		/**
+		* Get a pointer to the document options.
+		* @returns Pointer to GDocOptions.
+		*/
+		GGroupingOptions* GetGroupingOptions(void) {return(GroupingOptions);}
 
 	//@}
 

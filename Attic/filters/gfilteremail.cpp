@@ -36,7 +36,7 @@
 #include <iostream.h> // for cout only.
 #include <stdio.h>
 #include <sys/stat.h>
-#if unix
+#ifdef _BSD_SOURCE
 	#include <unistd.h>
 #else
 	#include <io.h>
@@ -66,7 +66,7 @@ GFilterEMail::GFilterEMail(GURLManager* mng)
 
 
 //-----------------------------------------------------------------------------
-bool GFilterEMail::ExtractCmd(char* line,RXMLTag* metaData)
+bool GFilterEMail::ExtractCmd(char* line,RXMLTag* /*metaData*/)
 {
 	char* ptr=line;
 
@@ -122,7 +122,7 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 	// Init Part
 	Doc=doc;
 	accessmode=O_RDONLY;
-	#if !unix
+	#ifndef _BSD_SOURCE
 		accessmode=O_BINARY;
 	#endif
 	handle=open(Doc->GetFile(),accessmode);

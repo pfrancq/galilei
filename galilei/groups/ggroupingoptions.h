@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GGroupingSim.h
+	GGroupingOptions.h
 
-	Heuristic using Similarity - Header.
+	Options for the grouping methods - Header.
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -32,84 +32,85 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGroupingSimH
-#define GGroupingSimH
+#ifndef GGroupingOptionsH
+#define GGroupingOptionsH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/ggrouping.h>
-
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GGroup;
-
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupingSim provides a representation for a method to group some
-* subprofiles using the notion of similarity.
+* The GGroupingOptions provides a representation for the options concerning the
+* grouping methods.
 * @author Pascal Francq
-* @short Similarity Grouping.
+* @short Grouping Options.
 */
-class GGroupingSim : public GGrouping
+class GGroupingOptions
 {
 public:
 
 	/**
-	* Constructor.
-	* @param s              Session.
+	* Method used for the grouping.
 	*/
-	GGroupingSim(GSession* s) throw(bad_alloc);
+	tProfilesGroup Method;
 
 	/**
-	* Initialisation of the method.
+	* Full Similarity for the groups.
 	*/
-	virtual void Init(void) throw(bad_alloc);
-
-protected:
+	bool FullSim;
 
 	/**
-	* Test if a group is coherent. Actually, this means verify that all the
-	* subprofiles of the group are similar together.
-	* @param grp            Group to verify.
-	* @returns True if it is coherent.
+	* Level of similarity for the groupement.
 	*/
-	bool IsCoherent(const GGroup* grp) const;
+	double LevelSim;
 
 	/**
-	* Test if a group is still coherent if a subprofile is added to it.
-	* Actually, this means verify that all the subprofiles of the group are
-	* similar to the one tested.
-	* @param grp            Group to verify.
-	* @param sub            SubProfile eventually to add.
-	* @returns True if it is coherent.
+	* Size of the population of the GA.
 	*/
-	bool IsCoherent(const GGroup* grp,const GSubProfile* sub) const;
+	unsigned int GAPopSize;
 
 	/**
-	* Test if a group is valid. If a group isn't not valid, the group is
-	* deleted and all profiles are to be inserted again.
+	* Maximal number of generation to run.
 	*/
-	virtual bool IsValid(GGroup* grp);
+	unsigned int GAMaxGen;
 
 	/**
-	* Make the grouping for a specific Language.
+	* Is the GA in step mode?
 	*/
-	virtual void Run(void);
-
-public:
+	bool GAStep;
 
 	/**
-	* Destructor.
+	* Number of generation for each step.
 	*/
-	virtual ~GGroupingSim(void);
+	unsigned int GAStepGen;
+
+	/**
+	* Default Constructor.
+	*/
+	GGroupingOptions(void);
+
+	/**
+	* Copy Constructor.
+	*/
+	GGroupingOptions(const GGroupingOptions& opt);
+
+	/**
+	* Copy Constructor.
+	*/
+	GGroupingOptions(const GGroupingOptions* opt);
+
+	/**
+	* Assignment operator using another options.
+	*/
+	GGroupingOptions& operator=(const GGroupingOptions& opt);
 };
 
 
