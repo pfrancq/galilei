@@ -326,6 +326,10 @@ BeginExtract:
 		goto BeginExtract;
 	}
 
+	// if not only letters and non-letter words not enabled -> extract next word.
+	if((!OnlyLetters)&&(!Session->IsNonLetterWords()))
+		goto BeginExtract;
+
 	// If just numbers or special characters or it doesn't begin with a letter, extract next word.
 	if((!Letter)||(isdigit(*begin))||(strchr("-.@\\/",*begin)))
 		goto BeginExtract;
