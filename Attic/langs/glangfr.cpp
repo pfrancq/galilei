@@ -85,209 +85,287 @@ GLangFR::FrenchPorterRule::FrenchPorterRule(const char* os,const char* ns,int oo
 GALILEI::GLangFR::GLangFR(void) throw(bad_alloc)
 	: GLang("French","fr"), Rules1(0)
 {
-	
-	Rules1=new RContainer<FrenchPorterRule,unsigned int,true,false>(130,10);
-	Rules1->InsertPtr(new FrenchPorterRule("issaient","", 7,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ellement","el", 7,1,1));
-	Rules1->InsertPtr(new FrenchPorterRule("issement","", 7,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("alement","",6 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eraient","",6 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("amment","ant",5 ,2 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("emment","ent",5 ,2 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eaient","",5 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("issait","",5 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("Ërent","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("erait","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("iront","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ement","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("aient","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("Órent","",4 , -1,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eont","", 3,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eant","", 3,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eait","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ient","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ent","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ont","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ant","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ait","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("at","",1,-1,1));
-	Rules1->InsertPtr(new FrenchPorterRule("it","",1 , -1,1));
-	Rules1->InsertPtr(new FrenchPorterRule("t","", 0, 0,1));
 
-	Rules1->InsertPtr(new FrenchPorterRule("uction","",2 ,-1 ,1));
+	Rules1=new RContainer<FrenchPorterRule,unsigned int,true,false>(130,10);
+	Rules1->InsertPtr(new FrenchPorterRule("issaient","", 7,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ellement","el", 7,1,0));
+	Rules1->InsertPtr(new FrenchPorterRule("issement","", 7,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("alement","al",6 ,1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eraient","",6 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("iraient","",6 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eassent","",6 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ussent","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("amment","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("emment","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("issant","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("issent","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("assent","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eaient","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("issait","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Ërent","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("erent","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("irent","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("erait","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("irait","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("iront","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eront","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ement","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("aient","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Órent","",4 , -1,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eont","", 3,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eant","", 3,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eait","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ient","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ent","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ont","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ant","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("e‚t","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ait","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("at","",1,-1,0));
+	Rules1->InsertPtr(new FrenchPorterRule("‚t","",1,-1,0));
+	Rules1->InsertPtr(new FrenchPorterRule("it","",1 , -1,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Ót","",1 , -1,0));
+	Rules1->InsertPtr(new FrenchPorterRule("t","", 0, 0,0));
+
+	Rules1->InsertPtr(new FrenchPorterRule("uction","",2 ,-1 ,0));
 	Rules1->InsertPtr(new FrenchPorterRule("ication","",6 ,-1 ,1));
 	Rules1->InsertPtr(new FrenchPorterRule("iation","",5 ,-1 ,1));
 	Rules1->InsertPtr(new FrenchPorterRule("ation","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("tion","t",3 ,0 ,2));
+	Rules1->InsertPtr(new FrenchPorterRule("ition","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("tion","",3 ,0 ,0));
 
 	Rules1->InsertPtr(new FrenchPorterRule("ateur","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eur","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ier","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("er","",1 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ir","",1 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("r","",0 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("teur","",3 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("eur","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ier","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("er","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ir","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("r","",0 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("issiez","",5 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("issez","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("iriez","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("erez","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("irez","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("iez","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ez","",1 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("eassiez","",6 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("issiez","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("assiez","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ussiez","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("issez","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("assez","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eriez","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("iriez","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("erez","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("irez","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("iez","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ez","",1 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("erai","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ai","",1 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("erai","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("irai","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eai","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ai","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("i","",0 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("ira","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("era","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("a","",0 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("ira","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("era","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ea","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("a","",0 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("f","v",0 ,0 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("f","v",0 ,0 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("yeux","oeil",3 ,3 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eux","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("aux","al",2 ,1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("x","",0 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("yeux","oeil",3 ,3 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eux","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("aux","al",2 ,1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("x","",0 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("eresse","",5 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("esse","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("euse","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("oise","o",3 ,0 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ouse","ou",3 ,1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("issante","",6 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eresse","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eante","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("easse","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eure","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("esse","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("asse","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ance","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ence","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("aise","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("euse","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("oise","o",3 ,0 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("isse","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ante","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ouse","ou",3 ,1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("iËre","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("aire","",3 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("iËre","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ete","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Ëte","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("iere","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("aire","",3 ,-1 ,0));
 	Rules1->InsertPtr(new FrenchPorterRule("ure","",2 ,-1 ,1));
 
-	Rules1->InsertPtr(new FrenchPorterRule("erie","",3 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("erie","",3 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("Ètude","et",4 ,1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("itude","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ade","",2 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("Ètude","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("etude","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("itude","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ade","",2 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("isme","",3 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("isme","",3 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("age","",2 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("age","",2 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("trice","",4 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("trice","",4 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("cque","c",3 ,0 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("que","c",2 ,0 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("cque","c",3 ,0 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("que","c",2 ,0 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("eille","eil",4 ,2 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("elle","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("able","",3 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("eille","eil",4 ,2 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("elle","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("able","",3 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("iste","", 3,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("Ëte","et",2 ,1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("iste","", 3,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("ulle","ul",3 ,1 ,1));
 
-	Rules1->InsertPtr(new FrenchPorterRule("gue","g",2 ,0 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("ulle","ul",3 ,1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("nne","n",2 ,0 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("tte","",2 ,0 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("gue","g",2 ,0 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("itÈ","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("tÈ","",1 ,-1 ,1));
-    Rules1->InsertPtr(new FrenchPorterRule("Èe","",1 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("È","",0 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("ette","",3 ,0 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("nne","n",2 ,0 ,0));	
 
-	Rules1->InsertPtr(new FrenchPorterRule("aise","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ite","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ee","",1 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("e","",0 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("itÈe","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("itÈ","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("tÈ","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Èe","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("È","",0 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("issements","",8 ,-1 ,2));
+	Rules1->InsertPtr(new FrenchPorterRule("usse","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("aise","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ate","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ite","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ee","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("e","",0 ,-1 ,0));
+
+	Rules1->InsertPtr(new FrenchPorterRule("issements","",8 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("issantes","",7 ,-1 ,0));
 	Rules1->InsertPtr(new FrenchPorterRule("ications","",7 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eresses","",6 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("issions","",6 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("eassions","",7 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eresses","",6 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("issions","",6 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("assions","",6 ,-1 ,0));
 	Rules1->InsertPtr(new FrenchPorterRule("iations","",6 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ements","",5 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("issons","",5 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("Ètudes","et",5 ,1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("itudes","",5 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("issais","",5 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("trices","",5 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eilles","eil",5 ,2 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("irions","",5 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("erions","",5 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("issants","",6 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ussions","",6 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ements","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eantes","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("issons","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("assons","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("easses","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Ètudes","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("etudes","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("itudes","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("issais","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("trices","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eilles","eil",5 ,2 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("irions","",5 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("erions","",5 ,-1 ,0));
 	Rules1->InsertPtr(new FrenchPorterRule("ateurs","",5 ,-1 ,1));
 	Rules1->InsertPtr(new FrenchPorterRule("ations","",5 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("tions","",4 ,-1 ,3));
-	Rules1->InsertPtr(new FrenchPorterRule("ables","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("irons","",4 ,-1 ,1));
-    Rules1->InsertPtr(new FrenchPorterRule("erons","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("esses","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("euses","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ulles","ul",4 ,1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("cques","c",4 ,0 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("elles","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ables","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("istes","", 4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("aises","", 4 ,-1 ,2));
-	Rules1->InsertPtr(new FrenchPorterRule("oises","o",4 ,0 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("tions","t",4 ,0 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ouses","ou",4 ,1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("iËres","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eries","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("antes","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ismes","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("erais","",4 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eurs","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ents","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("Ëtes","et",3 ,1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ions","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("itÈs","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ites","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eurs","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("iers","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("iras","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("eras","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ures","",3 ,-1 ,2));
-	Rules1->InsertPtr(new FrenchPorterRule("ants","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("Ómes","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ades","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ages","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ques","c",3 ,0 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("gues","g",3 ,0 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("nnes","n",3 ,0 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ttes","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("Ótes","",3 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("tÈs","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ons","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ais","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("Èes","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("ees","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("as","",1 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("es","",1 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("fs","v",1 ,0 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("Ès","",1 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("is","",1 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("s","",0 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("usses","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("tions","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ances","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("entes","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("teurs","",4 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("eants","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ables","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("irons","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("irais","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ences","",4,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ients","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ieres","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eures","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("aires","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("erons","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("esses","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("euses","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ulles","ul",4 ,1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("cques","c",4 ,0 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("elles","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ables","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("istes","", 4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("aises","", 4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("asses","", 4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("isses","", 4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("oises","o",4 ,0 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("tions","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ouses","ou",4 ,1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("iËres","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eries","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("antes","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ismes","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("erais","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("e‚tes","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("e‚mes","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("itÈes","",4 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ettes","",4 ,0 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ages","", 3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eurs","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ents","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Ëtes","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("etes","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ions","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("itÈs","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ites","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ates","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("‚tes","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Ótes","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eurs","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("iers","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("iras","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eras","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ures","",3 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("ants","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Ómes","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("˚mes","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("‚mes","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ades","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eais","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eons","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ques","c",3 ,0 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("gues","g",3 ,0 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("nnes","n",3 ,0 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ttes","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Ótes","",3 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("tÈs","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ons","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ais","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Èes","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ees","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ats","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("eas","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("ts","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("rs","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("as","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("es","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("fs","v",1 ,0 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("Ès","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("is","",1 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("s","",0 ,-1 ,0));
 
-	Rules1->InsertPtr(new FrenchPorterRule("eau","",2 ,-1 ,1));
-	Rules1->InsertPtr(new FrenchPorterRule("au","",2 ,-1 ,1));
+	Rules1->InsertPtr(new FrenchPorterRule("eau","",2 ,-1 ,0));
+	Rules1->InsertPtr(new FrenchPorterRule("au","",2 ,-1 ,0));
 
 
 	Rules2=new RContainer<FrenchPorterRule,unsigned int,true,false>(5,10);
-	
-	Rules2->InsertPtr(new FrenchPorterRule("ent","", 2,-1,2));
-	Rules2->InsertPtr(new FrenchPorterRule("ation","",4 ,-1,1));
-	Rules2->InsertPtr(new FrenchPorterRule("ition","t",4 ,0 ,1));
-	Rules2->InsertPtr(new FrenchPorterRule("tion","",3 ,-1,1));
-	Rules2->InsertPtr(new FrenchPorterRule("el","", 1,-1,2));
-	
-	Rules3=new RContainer<FrenchPorterRule,unsigned int,true,false>(5,10);
-	
-	Rules3->InsertPtr(new FrenchPorterRule("nn","n",1 ,0,1));
-	Rules3->InsertPtr(new FrenchPorterRule("ll","l",1 ,0,1));
-	Rules3->InsertPtr(new FrenchPorterRule("tt","t",1 ,0,1));
-	Rules3->InsertPtr(new FrenchPorterRule("y","",0 ,-1,1));
-	Rules3->InsertPtr(new FrenchPorterRule("i","",0 ,-1,1));
-	Rules3->InsertPtr(new FrenchPorterRule("qu","c",1 ,0,1));
 
-	
+	Rules2->InsertPtr(new FrenchPorterRule("ent","", 2,-1,1));
+	Rules2->InsertPtr(new FrenchPorterRule("ation","",4 ,-1,1));
+	Rules2->InsertPtr(new FrenchPorterRule("ition","",4 ,0 ,1));
+	Rules2->InsertPtr(new FrenchPorterRule("tion","",3 ,-1,1));
+	Rules2->InsertPtr(new FrenchPorterRule("el","", 1,-1,1));
+	Rules2->InsertPtr(new FrenchPorterRule("i","", 0,-1,0));
+
+	Rules3=new RContainer<FrenchPorterRule,unsigned int,true,false>(5,10);
+
+	Rules3->InsertPtr(new FrenchPorterRule("nn","n",1 ,0,0));
+	Rules3->InsertPtr(new FrenchPorterRule("ll","l",1 ,0,0));
+	Rules3->InsertPtr(new FrenchPorterRule("tt","t",1 ,0,0));
+	Rules3->InsertPtr(new FrenchPorterRule("y","",0 ,-1,0));
+	Rules3->InsertPtr(new FrenchPorterRule("t","",0 ,-1,0));
+	Rules3->InsertPtr(new FrenchPorterRule("qu","c",1 ,0,0));
 
 
 	SkipWords.InsertPtr(new SkipWord("ier"));
@@ -311,8 +389,7 @@ GALILEI::GLangFR::GLangFR(void) throw(bad_alloc)
 int GALILEI::GLangFR::GetWordSize(char* kwd)
 {
 	int Result=0;             // WordSize of the word.
-	int State=0;              // Current state of the machine.
-
+	int State=0;             // Current state of the machine.
 	while(*kwd)
 	{
 		switch(State)
@@ -337,13 +414,13 @@ int GALILEI::GLangFR::GetWordSize(char* kwd)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------			-----------------------------------------------------
 bool GALILEI::GLangFR::ContainsVowel(const char* kwd)
 {
 	if(!(*kwd))
 		return(false);
 	else
-		return((IsVowel(*kwd))||(!strpbrk(kwd+1,"aeiouyÈ‡ËÓˆ")));
+		return((IsVowel(*kwd))||(!strpbrk(kwd+1,"‚aeiouyÈ‡ËÓˆÍ")));
 }
 
 
@@ -356,7 +433,6 @@ bool GALILEI::GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRu
 	char tmp;
 	int len;
 
-	WordSize=GetWordSize(kwd);
 	len=strlen(kwd);
 	for(rules->Start();!rules->End();rules->Next())
 	{
@@ -370,7 +446,7 @@ bool GALILEI::GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRu
 		if(strcmp(ending,ptr->OldSuffix)) continue;
 		tmp=*ending;
 		(*ending)=0;
-
+        WordSize=GetWordSize(kwd);
 		// Verify if the minimum root size is Ok.
 		if(ptr->MinRootSize>=WordSize)
 		{
