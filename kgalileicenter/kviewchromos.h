@@ -77,25 +77,32 @@ class KViewChromos : public KView
 	QListView* General;
 
 	/**
-	* List of stored chromosomes.
-	*/
-	RContainer<GChromoIR,unsigned int,true,true> Chromos;
-
-	/**
 	* Ideal Groups handled by the system.
 	*/
 	RContainer<GGroups,unsigned int,true,true> IdealGroups;
+
+	/**
+	* Language of the chromosomes to load.
+	*/
+	GLang* Lang;
+
+	/**
+	* Use global similarities or not.
+	*/
+	bool Global;
 
 public:
 
 	/**
 	* Constructor for the view
 	* @param doc            Document instance that the view represents.
+	* @param l              Lang to group.
+	* @param global         Global Similarities.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewChromos(KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KViewChromos(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.

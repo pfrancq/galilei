@@ -266,6 +266,11 @@ public:
 	*/
 	void StopGA(void);
 
+	/**
+	* Save the chromosomes of the GA.
+	*/
+	void SaveGA(void);
+
 protected:
 
 	/**

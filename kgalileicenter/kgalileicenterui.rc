@@ -62,6 +62,7 @@
 		<Action name="gaPause"/>
 		<Action name="gaStop"/>
 		<Separator/>
+		<Action name="gaSave"/>
 		<Action name="gaAnalyse"/>
 	</Menu>
 	<Menu name="settings"><text>&amp;Settings</text>

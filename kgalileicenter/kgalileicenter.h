@@ -393,6 +393,11 @@ private slots:
 	void slotGAAnalyse(void);
 
 	/**
+	* Save the chromosomes of the actual generation.
+	*/
+	void slotGASave(void);
+
+	/**
 	* Toggles the toolbar.
 	*/
 	void slotViewToolBar(void);
@@ -516,6 +521,7 @@ public:
 	KAction* gaStart;
 	KAction* gaPause;
 	KAction* gaStop;
+	KAction* gaSave;
 	KAction* gaAnalyse;
 
 	KAction* rRunR;

@@ -534,9 +534,34 @@ void KGALILEICenterApp::slotGAStop(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotGASave(void)
+{
+	KApplication::kApplication()->processEvents(1000);
+	KView* m = (KView*)pWorkspace->activeWindow();
+	if(m&&(m->getType()==gGA))
+	{
+		((KViewGA*)m)->SaveGA();
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotGAAnalyse(void)
 {
-	createClient(Doc,new KViewChromos(Doc,pWorkspace,"View Chromosomes",0));
+	QLanguages dlg(this,0,true);
+	char tmp[3];
+
+	KApplication::kApplication()->processEvents();
+	dlg.cbScratch->hide();
+	if(dlg.exec())
+	{
+		if(dlg.cbLangs->currentItem()==0)
+			strcpy(tmp,"en");
+		else
+			strcpy(tmp,"fr");
+		setDocParams(Doc);
+		createClient(Doc,new KViewChromos(Doc,tmp,dlg.cbGlobal->isChecked(),pWorkspace,"View Chromosomes",0));
+	}
 }
 
 
@@ -695,6 +720,7 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
+				gaSave->setEnabled(false);
 				break;
 
 			case gDocs:
@@ -705,6 +731,7 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
+				gaSave->setEnabled(false);
 				break;
 
 			case gDoc:
@@ -715,6 +742,7 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
+				gaSave->setEnabled(false);
 				break;
 
 			case gProfile:
@@ -725,6 +753,7 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
+				gaSave->setEnabled(false);
 				break;
 
 			case gGroups:
@@ -735,6 +764,7 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
+				gaSave->setEnabled(false);
 				break;
 
 			case gGA:
@@ -745,6 +775,8 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 				gaStart->setEnabled(true);
 				gaPause->setEnabled(true);
 				gaStop->setEnabled(true);
+				gaSave->setEnabled(true);
+				break;
 
 			case gNothing:
 			default:
@@ -755,6 +787,7 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 				gaStart->setEnabled(false);
 				gaPause->setEnabled(false);
 				gaStop->setEnabled(false);
+				gaSave->setEnabled(false);
 				break;
 		}
 	}

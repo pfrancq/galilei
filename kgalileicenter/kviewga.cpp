@@ -279,6 +279,20 @@ void KViewGA::StopGA(void)
 
 
 //---------------------------------------------------------------------------
+void KViewGA::SaveGA(void)
+{
+	GChromoIR** c;
+	unsigned int i;
+
+	if(!Instance) return;
+
+	for(i=0,c=Instance->Chromosomes;i<Instance->PopSize;i++,c++)
+		Doc->GetSession()->SaveChromo((*c),i,Objs);
+	Doc->GetSession()->SaveChromo(Instance->BestChromosome,Instance->PopSize,Objs);
+}
+
+
+//---------------------------------------------------------------------------
 void KViewGA::keyReleaseEvent(QKeyEvent* e)
 {
 	static char tmp[100];

@@ -42,6 +42,8 @@ using namespace RStd;
 #include <langs/glang.h>
 #include <sessions/gsession.h>
 #include <groups/gchromoir.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gprofilessim.h>
 #include <groups/ggroup.h>
 using namespace GALILEI;
 
@@ -67,8 +69,9 @@ using namespace RTimeDate;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewChromos::KViewChromos(KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Chromos(40,20), IdealGroups(2,1)
+KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags)
+	: KView(doc,parent,name,wflags), IdealGroups(2,1), Lang(Doc->GetSession()->GetLang(l)),
+	  Global(global)
 {
 	// Load Ideal Groups;
 	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
@@ -86,6 +89,11 @@ KViewChromos::KViewChromos(KDoc* doc,QWidget* parent,const char* name,int wflags
 	General->addColumn("Proto: Min Max(intra)/Min(inter)");
 	General->addColumn("Proto: Avg Max(intra)/Min(inter)");
 	General->addColumn("Avg Var(intra)/Avg Var(inter)");
+	for(int i=0;i<11;i++)
+	{
+		General->setColumnWidthMode(i,QListView::Maximum);
+		General->setColumnAlignment(i,Qt::AlignHCenter);
+	}
 	ConstructChromosomes();
 }
 
@@ -97,56 +105,69 @@ void KViewChromos::ConstructChromosomes(void)
 	unsigned int i;
 	QListViewItem* g;
 	char tmp[20];
-	GInstIR* inst;
+	GInstIR* Instance;
+	GSubProfileCursor SubProfiles;
+	RGA::RObjs<GObjIR> Objs(SubProfiles.GetNb());
+
+	// Construct the GA Objects
+	SubProfiles=Doc->GetSession()->GetSubProfilesCursor(Lang);
+	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
+	{
+		Objs.InsertPtr(new GObjIR(i,SubProfiles()));
+	}
+	GProfilesSim Sims(SubProfiles,Global);
 
 	// Loal the chromosomes from the db
-	//LoadChromosomes();
+	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,&Sims,Global);
+	if(!Instance) return;
+	Instance->SetIdealGroups(&IdealGroups);
 
 	// Display the chromosomes
-	for(i=inst->PopSize+1,c=inst->Chromosomes;--i;c++)
+	for(i=Instance->PopSize+1,c=Instance->Chromosomes;--i;c++)
 	{
 		sprintf(tmp,"%u",(*c)->Id);
 		g=new QListViewItem(General,tmp);
 
 		(*c)->CompareIdeal(Doc->GetSession(),&IdealGroups);
-		sprintf(tmp,"%f",(*c)->GetPrecision());
+		sprintf(tmp,"%lf",(*c)->GetPrecision());
+		g->setText(1,tmp);
+		sprintf(tmp,"%lf",(*c)->GetRecall());
 		g->setText(2,tmp);
-		sprintf(tmp,"%f",(*c)->GetRecall());
+		sprintf(tmp,"%lf",(*c)->GetGlobal());
 		g->setText(3,tmp);
-		sprintf(tmp,"%f",(*c)->GetGlobal());
-		g->setText(4,tmp);
 
 		(*c)->EvaluateAvgSim();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
-		g->setText(5,tmp);
+		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		g->setText(4,tmp);
 
 		(*c)->EvaluateSumRel();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
-		g->setText(6,tmp);
+		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		g->setText(5,tmp);
 
 		(*c)->EvaluateAvgMinMax();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
-		g->setText(7,tmp);
+		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		g->setText(6,tmp);
 
 		(*c)->EvaluateMinMinMax();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
-		g->setText(8,tmp);
+		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		g->setText(7,tmp);
 
 		(*c)->EvaluateMinRel();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
+		g->setText(8,tmp);
+
+		(*c)->EvaluateAvgVarMinRel();
+		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(9,tmp);
 
 		(*c)->EvaluateAvgVarMinRel();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
+		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(10,tmp);
-
-		(*c)->EvaluateAvgVarMinRel();
-		sprintf(tmp,"%f",(*c)->GetSimCriterion());
-		g->setText(11,tmp);
-
-		g->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
-
 	}
+
+	// Delete local created objects.
+	if(Instance)
+		delete Instance;
 }
 
 
