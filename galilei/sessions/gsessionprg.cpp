@@ -98,7 +98,7 @@ public:
 	RString Param2;
 	tInst Type;
 
-	Inst(const char* p1,const char* p2,tInst t) : Param1(p1), Type(t)
+	Inst(const char* p1,const char* p2,tInst t) : Type(t)
 	{
 		if(p1) Param1=p1;
 		if(p2) Param2=p2;
@@ -287,7 +287,8 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			Rec->WriteStr(tmp);
 			Session->SetCurrentComputingMethod(i->Param1());
 			Session->SetCurrentComputingMethodSettings(i->Param2());
- 			Session->CalcProfiles(Rec,false,false);
+			Session->CalcProfiles(Rec,FirstProfile,false);
+			if(!FirstProfile) FirstProfile=true;
 			break;
 
 		case Group:
@@ -295,7 +296,8 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			Rec->WriteStr(tmp);
 			Session->SetCurrentGroupingMethod(i->Param1());
 			Session->SetCurrentGroupingMethodSettings(i->Param2());
- 			Session->GroupingProfiles(Rec,false,false);
+			Session->GroupingProfiles(Rec,FirstGroup,false);
+			if(!FirstGroup) FirstGroup=true;
 			break;
 
 		case Ideal:
@@ -310,6 +312,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				Rec->WriteStr("Create Ideal Groups");
 				IdealMethod->CreateJudgement(Parents,Groups);
 			}
+			FirstGroup=FirstProfile=false;
 			break;
 
 		case Fdbks:

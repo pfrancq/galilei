@@ -140,6 +140,16 @@ protected:
 	*/
 	RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* Parents;
 
+	/**
+	* First profile computing has be done.
+	*/
+	bool FirstProfile;
+
+	/**
+	* First groupment has be done.
+	*/
+	bool FirstGroup;
+
 public:
 
 	/**
