@@ -118,7 +118,7 @@ public:
 	QListViewChromos(QWidget* parent=0,const char* name=0,WFlags f=0);
 
 protected:
-	virtual void mousePressEvent(QMouseEvent* e);
+	virtual void contentsMousePressEvent(QMouseEvent* e);
 };
 
 
@@ -130,7 +130,7 @@ QListViewChromos::QListViewChromos(QWidget* parent,const char* name,WFlags f)
 
 
 //-----------------------------------------------------------------------------
-void QListViewChromos::mousePressEvent(QMouseEvent* e)
+void QListViewChromos::contentsMousePressEvent(QMouseEvent* e)
 {
 	if(e->button()==RightButton)
 	{
@@ -139,7 +139,7 @@ void QListViewChromos::mousePressEvent(QMouseEvent* e)
 		InfoBox->popup(e->globalPos());
 	}
 	else
-		QWidget::mousePressEvent(e);
+		QListView::contentsMousePressEvent(e);
 }
 
 
@@ -183,7 +183,7 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget
 	 Sim(sim), Stats(50,25), Params(p), Instance(0)
 {
 	// Construct chromosomes
-    IdealGroups= new RStd::RContainer<GALILEI::GGroups, unsigned int, true, true> (2,1);
+	IdealGroups= new RStd::RContainer<GALILEI::GGroups, unsigned int, true, true> (2,1);
 	General = new QListViewChromos(this);
 	if(Sim)
 	{
