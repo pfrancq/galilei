@@ -117,7 +117,7 @@ public:
 //-----------------------------------------------------------------------------
 GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_alloc,GException)
 	: FileName(f), Session(s), Rec(r), InstTypes(20), Insts(40), OFile(0),
-	  Groups(0), IdealMethod(0), FdbksMethod(0), Parents(0)
+	  Groups(0), IdealMethod(0), FdbksMethod(0), Parents(0), AutoSave(false)
 	
 {
 	RString l;
@@ -135,6 +135,7 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 
 	// Instructions
 	InstTypes.InsertPtr(new InstType("SetOutput",Output));
+	InstTypes.InsertPtr(new InstType("SetAutoSave",SetAutoSave));
 	InstTypes.InsertPtr(new InstType("Test",Test));
 	InstTypes.InsertPtr(new InstType("Log",Log));
 	InstTypes.InsertPtr(new InstType("ExecSql",Sql));
@@ -266,6 +267,22 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			(*OFile)<<"Sets\tRecall\tPrecision\tTotal"<<endl;
 			break;
 
+		case SetAutoSave:
+			if(i->Param1.GetLen()==1)
+			{
+				if((i->Param1())[0]=='0')
+				{
+					Rec->WriteStr("Set AutoSave: false");
+					AutoSave=false;
+				}
+				else
+				{
+					Rec->WriteStr("Set AutoSave: true");
+					AutoSave=true;
+				}
+			}
+			break;
+
 		case Test:
 			sprintf(tmp,"Current Test Name '%s'",i->Param1());
 			Rec->WriteStr(tmp);
@@ -296,7 +313,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				Session->SetCurrentComputingMethod(i->Param1());
 			if(i->Param2.GetLen())
 				Session->SetCurrentComputingMethodSettings(i->Param2());
-			Session->CalcProfiles(Rec,FirstProfile,false);
+			Session->CalcProfiles(Rec,FirstProfile,AutoSave);
 			if(!FirstProfile) FirstProfile=true;
 			break;
 
@@ -318,7 +335,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				GGrouping* algo=Session->GetCurrentGroupingMethod();
 				algo->SetIdealGroups(Groups);
 			}
-			Session->GroupingProfiles(Rec,FirstGroup,false);
+			Session->GroupingProfiles(Rec,FirstGroup,AutoSave);
 			if(!FirstGroup) FirstGroup=true;
 			break;
 
@@ -338,7 +355,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			Rec->WriteStr(tmp);
 			if(i->Param1.GetLen())
 				IdealMethod->SetSettings(i->Param1);
-			IdealMethod->CreateJudgement(Parents,Groups);
+			IdealMethod->CreateJudgement(Parents,Groups,AutoSave);
 			FirstGroup=FirstProfile=false;
 			break;
 
@@ -350,7 +367,7 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 				Rec->WriteStr(tmp);
 				if(i->Param1.GetLen())
 					FdbksMethod->SetSettings(i->Param1);
-				FdbksMethod->Run(Parents,Groups);
+				FdbksMethod->Run(Parents,Groups,AutoSave);
 			break;
 
 		case CmpIdeal:

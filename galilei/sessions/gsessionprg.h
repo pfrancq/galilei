@@ -68,7 +68,7 @@ protected:
 	/**
 	* Represent the different instruction allowed.
 	*/
-	enum tInst{Log,Output,Sql,Comp,Group,CreateIdeal,LoadIdeal,Test,CmpIdeal,Fdbks};
+	enum tInst{Log,Output,Sql,Comp,Group,CreateIdeal,LoadIdeal,Test,CmpIdeal,Fdbks,SetAutoSave};
 
 	/**
 	* Name of the file to execute.
@@ -149,6 +149,11 @@ protected:
 	* First groupment has be done.
 	*/
 	bool FirstGroup;
+
+	/**
+	* When Autosave is true, after each computing, the results is saved.
+	*/
+	bool AutoSave;
 
 public:
 
