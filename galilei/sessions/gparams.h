@@ -117,9 +117,16 @@ public:
 	/**
 	* Get the content of the parameter.
 	* @param p               Name of the parameter.
-	* @return double.
+	* @return Pointer to RPromCriterionParams.
 	*/
 	const R::RPromCriterionParams* GetProm(const char* p);
+
+	/**
+	* Get the content of the parameter.
+	* @param p               Name of the parameter.
+	* @return bool.
+	*/
+	bool GetBool(const char* p);
 
 	/**
 	* Set the content of the parameter.
@@ -155,6 +162,13 @@ public:
 	* @param v               Value of the parameter.
 	*/
 	void Set(const char* p,const R::RPromCriterionParams* v);
+
+	/**
+	* Set the content of the parameter.
+	* @param p               Name of the parameter.
+	* @param v               Value of the parameter.
+	*/
+	void Set(const char* p,bool v);
 
 	/**
 	* Destruct the list of parameters.

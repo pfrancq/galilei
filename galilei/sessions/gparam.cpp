@@ -151,6 +151,13 @@ const RPromCriterionParams* GParam::GetProm(void)
 
 
 //------------------------------------------------------------------------------
+bool GParam::GetBool(void)
+{
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
 void GParam::Set(int)
 {
 }
@@ -176,6 +183,12 @@ void GParam::Set(const char*)
 
 //------------------------------------------------------------------------------
 void GParam::Set(const RPromCriterionParams*)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GParam::Set(bool)
 {
 }
 
@@ -459,5 +472,60 @@ void GParamProm::Set(const RPromCriterionParams* v)
 
 //------------------------------------------------------------------------------
 GParamProm::~GParamProm(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GParamBool
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GParamBool::GParamBool(const char* n,bool d) throw(bad_alloc)
+	: GParam(n), Value(d)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GParamBool::ReadAttributes(RXMLTag* tag)
+{
+	const char* val;
+
+	val=tag->GetAttrValue("Value");
+	if(!val) return;
+	if(strcmp(val,"True")) Value=false; else Value=true;
+}
+
+
+//------------------------------------------------------------------------------
+void GParamBool::WriteAttributes(RXMLTag* tag)
+{
+	if(Value)
+		tag->InsertAttr("Value","True");
+	else
+		tag->InsertAttr("Value","False");
+}
+
+
+//------------------------------------------------------------------------------
+bool GParamBool::GetBool(void)
+{
+	return(Value);
+}
+
+
+//------------------------------------------------------------------------------
+void GParamBool::Set(bool v)
+{
+	Value=v;
+}
+
+
+//------------------------------------------------------------------------------
+GParamBool::~GParamBool(void)
 {
 }

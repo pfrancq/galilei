@@ -137,6 +137,17 @@ const RPromCriterionParams* GParams::GetProm(const char* p)
 
 
 //------------------------------------------------------------------------------
+bool GParams::GetBool(const char* p)
+{
+	GParam* param;
+
+	param=GetPtr<const char*>(p);
+	if(!param) return(0);
+	return(param->GetBool());
+}
+
+
+//------------------------------------------------------------------------------
 void GParams::Set(const char* p,int v)
 {
 	GParam* param;
@@ -182,6 +193,17 @@ void GParams::Set(const char* p,const char* v)
 
 //------------------------------------------------------------------------------
 void GParams::Set(const char* p,const RPromCriterionParams* v)
+{
+	GParam* param;
+
+	param=GetPtr<const char*>(p);
+	if(!param) return;
+	param->Set(v);
+}
+
+
+//------------------------------------------------------------------------------
+void GParams::Set(const char* p,bool v)
 {
 	GParam* param;
 

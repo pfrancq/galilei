@@ -146,9 +146,15 @@ public:
 
 	/**
 	* Get the content of the parameter.
-	* @return double.
+	* @return Pointer to RPromCriterionParams.
 	*/
 	virtual const R::RPromCriterionParams* GetProm(void);
+
+	/**
+	* Get the content of the parameter.
+	* @return bool.
+	*/
+	virtual bool GetBool(void);
 
 	/**
 	* Set the content of the parameter.
@@ -179,6 +185,12 @@ public:
 	* @param v               Value of the parameter.
 	*/
 	virtual void Set(const R::RPromCriterionParams* v);
+
+	/**
+	* Set the content of the parameter.
+	* @param v               Value of the parameter.
+	*/
+	virtual void Set(bool v);
 
 	/**
 	* Destructor.
@@ -436,7 +448,7 @@ public:
 
 	/**
 	* Get the content of the parameter.
-	* @return double.
+	* @return Pointer to RPromCriterionParams.
 	*/
 	virtual const R::RPromCriterionParams* GetProm(void);
 
@@ -450,6 +462,59 @@ public:
 	* Destructor.
 	*/
 	virtual ~GParamProm(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GParamBool class provides a representation for a "bool" parameter.
+* @author Pascal Francq
+* @short Bool Parameter.
+*/
+class GParamBool : public GParam
+{
+	/**
+	* Value fo the parameter.
+	*/
+	bool Value;
+
+public:
+
+	/**
+	* Constructor of the parameter
+	* @param n               Name of the parameter.
+	* @param d               Default value.
+	*/
+	GParamBool(const char* n,bool d=false) throw(bad_alloc);
+
+	/**
+	* Read attributes from a tag.
+	* @param tag             Tag from which to read.
+	*/
+	virtual void ReadAttributes(R::RXMLTag* tag);
+
+	/**
+	* Write attributes to a tag.
+	* @param tag             Tag to which to write.
+	*/
+	virtual void WriteAttributes(R::RXMLTag* tag);
+
+	/**
+	* Get the content of the parameter.
+	* @return bool.
+	*/
+	virtual bool GetBool(void);
+
+	/**
+	* Set the content of the parameter.
+	* @param v               Value of the parameter.
+	*/
+	virtual void Set(bool v);
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GParamBool(void);
 };
 
 
