@@ -256,6 +256,24 @@ public:                                                                         
 		delete Plugin;                                                                          \
 		Plugin=0;                                                                               \
 	}                                                                                           \
+	virtual void Create(GSession* ses) throw(GException)                                        \
+	{                                                                                           \
+		if(!Plugin)                                                                             \
+		{                                                                                       \
+			Plugin=new C(this);                                                                 \
+			Plugin->ApplyConfig();                                                              \
+		}                                                                                       \
+		if(ses)                                                                                 \
+			Plugin->Connect(ses);                                                               \
+	}                                                                                           \
+	virtual void Delete(GSession* ses) throw(GException)                                        \
+	{                                                                                           \
+		if(!Plugin) return;                                                                     \
+		if(ses)                                                                                 \
+			Plugin->Disconnect(ses);                                                            \
+		delete Plugin;                                                                          \
+		Plugin=0;                                                                               \
+	}                                                                                           \
 };                                                                                              \
                                                                                                 \
 GFactoryGrouping* TheFactory::Inst = 0;                                                         \

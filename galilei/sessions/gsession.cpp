@@ -593,15 +593,6 @@ GUser* GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const char* /*n
 
 
 //-----------------------------------------------------------------------------
-void GSession::InitLinks()
-{
-	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
-	if(LinkCalc)
-		LinkCalc->InitGraph();
-}
-
-
-//-----------------------------------------------------------------------------
 void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
 {
 	GSubProfileCursor Subs;

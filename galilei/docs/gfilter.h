@@ -190,6 +190,8 @@ public:                                                                        \
 		delete Plugin;                                                         \
 		Plugin=0;                                                              \
 	}                                                                          \
+	virtual void Create(GSession*) throw(GException)  {}                       \
+	virtual void Delete(GSession*) throw(GException)  {}                       \
 };                                                                             \
                                                                                \
 GFactoryFilter* TheFactory::Inst = 0;                                          \

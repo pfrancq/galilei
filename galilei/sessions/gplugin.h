@@ -46,6 +46,7 @@
 
 //------------------------------------------------------------------------------
 // include file for GALILEI
+#include <galilei.h>
 #include <sessions/gparams.h>
 
 
@@ -173,6 +174,16 @@ public:
 	* Create a plugin.
 	*/
 	virtual void Delete(void) throw(GException)= 0;
+
+	/**
+	* Create a plugin.
+	*/
+	virtual void Create(GSession*) throw(GException)= 0;
+
+	/**
+	* Create a plugin.
+	*/
+	virtual void Delete(GSession*) throw(GException)= 0;
 
 	/**
 	* Show 'about' information.

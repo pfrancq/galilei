@@ -52,13 +52,11 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(bad_alloc)
-	: GPlugin<GFactoryLinkCalc>(fac), Session(0)
+	: GPlugin<GFactoryLinkCalc>(fac), Session(0), Links_Out(0)
 {
 	Links_Out = new RContainer<GLinks,unsigned int,true,true> (100,50);
 	Inited=false;
 }
-
-
 
 
 //-----------------------------------------------------------------------------
@@ -130,6 +128,7 @@ void GLinkCalc::AddDoc(GDoc* doc)
 void GLinkCalc::Connect(GSession* session)
 {
 	Session=session;
+	InitGraph();
 }
 
 
@@ -137,13 +136,19 @@ void GLinkCalc::Connect(GSession* session)
 void GLinkCalc::Disconnect(GSession*)
 {
 	Session=0;
+	if(Links_Out)
+	{
+		delete Links_Out;
+		Links_Out=0;
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GLinkCalc::~GLinkCalc(void)
 {
-	delete Links_Out;
+	if(Links_Out)
+		delete Links_Out;
 }
 
 

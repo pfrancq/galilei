@@ -101,7 +101,7 @@ public:
 	* @param tbl            Table to analyse.
 	* @returns Number of rows.
 	*/
-	unsigned int GetCount(const char* tbl);
+	virtual unsigned int GetCount(const char* tbl);
 
 	/**
 	* Count the maximal value for a field of a table.
