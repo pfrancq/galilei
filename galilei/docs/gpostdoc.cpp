@@ -32,6 +32,7 @@
 //------------------------------------------------------------------------------
 // include file for GALILEI
 #include <docs/gpostdoc.h>
+#include <docs/gpostdocmanager.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -67,4 +68,61 @@ void GPostDoc::Disconnect(GSession*) throw(GException)
 //------------------------------------------------------------------------------
 GPostDoc::~GPostDoc(void)
 {
+}
+
+
+//------------------------------------------------------------------------------
+//
+//  GFactoryPostDoc
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GFactoryPostDoc::GFactoryPostDoc(GPostDocManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryPostDoc,GPostDoc,GPostDocManager>(mng,n,f)
+{
+	//insert a "Level" parameter
+	InsertPtr(new GParamUInt("Level",mng->NbPtr));
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostDoc::Compare(const GFactoryPostDoc& f) const 
+{
+	int a=GetUInt("Level")-f.GetUInt("Level");
+	if(!a) 
+		a=Name.Compare(f.Name);
+	return(a);
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostDoc::Compare(const GFactoryPostDoc* f) const 
+{
+	int a=GetUInt("Level")-f->GetUInt("Level");
+	if(!a) 
+		a=Name.Compare(f->Name);
+	return(a);
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostDoc::Compare(unsigned int level) const 
+{
+	return(GetUInt("Level")-level);
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostDoc::sortOrder(const void* a,const void* b)
+{
+	unsigned int alevel=(*((GFactoryPostDoc**)(a)))->GetUInt("Level");
+	unsigned int blevel=(*((GFactoryPostDoc**)(b)))->GetUInt("Level");
+
+	if(alevel==blevel)
+		return((*((GFactoryPostDoc**)(a)))->Name.Compare((*((GFactoryPostDoc**)(b)))->Name));
+	if(alevel>blevel)
+		return(1);
+	else
+		return(-1);
 }

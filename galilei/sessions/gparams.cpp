@@ -73,7 +73,7 @@ void GParams::SaveConfig(RXMLStruct* xml,RXMLTag* tag)
 
 
 //------------------------------------------------------------------------------
-int GParams::GetInt(const char* p)
+int GParams::GetInt(const char* p) const
 {
 	GParam* param;
 
@@ -84,7 +84,7 @@ int GParams::GetInt(const char* p)
 
 
 //------------------------------------------------------------------------------
-unsigned int GParams::GetUInt(const char* p)
+unsigned int GParams::GetUInt(const char* p) const
 {
 	GParam* param;
 
@@ -95,7 +95,7 @@ unsigned int GParams::GetUInt(const char* p)
 
 
 //------------------------------------------------------------------------------
-double GParams::GetDouble(const char* p)
+double GParams::GetDouble(const char* p) const
 {
 	GParam* param;
 
@@ -106,7 +106,7 @@ double GParams::GetDouble(const char* p)
 
 
 //------------------------------------------------------------------------------
-const char* GParams::GetString(const char* p)
+const char* GParams::GetString(const char* p) const
 {
 	GParam* param;
 
@@ -117,7 +117,7 @@ const char* GParams::GetString(const char* p)
 
 
 //------------------------------------------------------------------------------
-const RPromCriterionParams* GParams::GetProm(const char* p)
+const RPromCriterionParams* GParams::GetProm(const char* p) const
 {
 	GParam* param;
 
@@ -128,7 +128,7 @@ const RPromCriterionParams* GParams::GetProm(const char* p)
 
 
 //------------------------------------------------------------------------------
-bool GParams::GetBool(const char* p)
+bool GParams::GetBool(const char* p) const
 {
 	GParam* param;
 

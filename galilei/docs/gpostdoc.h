@@ -114,8 +114,29 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryPostDoc(GPostDocManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryPostDoc,GPostDoc,GPostDocManager>(mng,n,f) {}
+	GFactoryPostDoc(GPostDocManager* mng,const char* n,const char* f);
+
+	/**
+	* Method needed by R::RContainer.
+	*/
+	int Compare(const GFactoryPostDoc& f) const;
+
+	/**
+	* Method needed by R::RContainer.
+	*/
+	int Compare(const GFactoryPostDoc* f) const;
+
+	/**
+	* Method needed by R::RContainer.
+	*/
+	int Compare(unsigned int level) const;
+
+	/**
+	* Static function used to order the factory by level.
+	* @param a              Pointer to the first object.
+	* @param b              Pointer to the second object.
+	*/
+	static int sortOrder(const void* a,const void* b);
 
 	/**
 	* Destructor.
@@ -192,22 +213,6 @@ extern "C"                                                                      
 	}                                                                                     \
 }
 
-
-//------------------------------------------------------------------------------
-/**
-* struture to order factory by their level
-*/
-struct GFactoryPostDocOrder
-{
-	GFactoryPostDoc* Fac;
-	int Compare(const GFactoryPostDocOrder* fpdo)
-	{
-		return((Fac->GetUInt("Level"))-(fpdo->Fac->GetUInt("Level")));
-	}
-	RString GetLib(void) const {return(Fac->GetLib());}
-	RString GetName(void) const {return(Fac->GetName());}
-	GPostDoc* GetPlugin(void) const {return(Fac->GetPlugin());}
-};
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

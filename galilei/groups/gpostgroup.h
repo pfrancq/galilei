@@ -122,23 +122,29 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryPostGroup(GPostGroupManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f) {InsertPtr(new GParamUInt("Level",0));}
+	GFactoryPostGroup(GPostGroupManager* mng,const char* n,const char* f);
 
 	/**
 	* Method needed by R::RContainer.
 	*/
-	int Compare(const GFactoryPostGroup f) const {return(Level-f.Level);}
+	int Compare(const GFactoryPostGroup& f) const;
 
 	/**
 	* Method needed by R::RContainer.
 	*/
-	int Compare(const GFactoryPostGroup* f) const {return(Level-f->Level);}
+	int Compare(const GFactoryPostGroup* f) const;
 
 	/**
 	* Method needed by R::RContainer.
 	*/
-	int Compare(unsigned int level) const {return(Level-level);}
+	int Compare(unsigned int level) const;
+
+	/**
+	* Static function used to order the factory by level.
+	* @param a              Pointer to the first object.
+	* @param b              Pointer to the second object.
+	*/
+	static int sortOrder(const void* a,const void* b);
 
 	/**
 	* Destructor.
@@ -214,22 +220,6 @@ extern "C"                                                                      
 	}                                                                                     \
 }
 
-
-//------------------------------------------------------------------------------
-/**
-* struture to order factory by their level
-*/
-struct GFactoryPostGroupOrder
-{
-	GFactoryPostGroup* Fac;
-	int Compare(const GFactoryPostGroupOrder* fpgo)
-	{
-		return((Fac->GetUInt("Level"))-(fpgo->Fac->GetUInt("Level")));
-	}
-	RString GetLib(void) const {return(Fac->GetLib());}
-	RString GetName(void) const {return(Fac->GetName());}
-	GPostGroup* GetPlugin(void) const {return(Fac->GetPlugin());}
-};
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -58,7 +58,6 @@ GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(std::bad_a
 	Path+="/postgroups";
 
 	LoadPlugins<GFactoryPostGroup,GFactoryPostGroupInit,GPostGroupManager>(this,Path.Latin1(),API_POSTGROUP_VERSION, dlg);
-
 }
 
 //------------------------------------------------------------------------------

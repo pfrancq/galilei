@@ -58,7 +58,7 @@ protected:
 	/**
 	* Name of the list of parameters.
 	*/
-	R::RString Name;
+R::RString Name;
 
 public:
 
@@ -92,42 +92,42 @@ public:
 	* @param p               Name of the parameter.
 	* @return int.
 	*/
-	int GetInt(const char* p);
+	int GetInt(const char* p) const;
 
 	/**
 	* Get the content of the parameter.
 	* @param p               Name of the parameter.
 	* @return unsigned int.
 	*/
-	unsigned int GetUInt(const char* p);
+	unsigned int GetUInt(const char* p) const;
 
 	/**
 	* Get the content of the parameter.
 	* @param p               Name of the parameter.
 	* @return double.
 	*/
-	double GetDouble(const char* p);
+	double GetDouble(const char* p) const;
 
 	/**
 	* Get the content of the parameter.
 	* @param p               Name of the parameter.
 	* @return C string.
 	*/
-	const char* GetString(const char* p);
+	const char* GetString(const char* p) const;
 
 	/**
 	* Get the content of the parameter.
 	* @param p               Name of the parameter.
 	* @return Pointer to RPromCriterionParams.
 	*/
-	const R::RPromCriterionParams* GetProm(const char* p);
+	const R::RPromCriterionParams* GetProm(const char* p) const;
 
 	/**
 	* Get the content of the parameter.
 	* @param p               Name of the parameter.
 	* @return bool.
 	*/
-	bool GetBool(const char* p);
+	bool GetBool(const char* p) const;
 
 	/**
 	* Set the content of the parameter.

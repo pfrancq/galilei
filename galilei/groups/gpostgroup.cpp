@@ -33,6 +33,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gpostgroup.h>
+#include <groups/gpostgroupmanager.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -68,4 +69,60 @@ void GPostGroup::Disconnect(GSession*) throw(GException)
 //------------------------------------------------------------------------------
 GPostGroup::~GPostGroup(void)
 {
+}
+
+//------------------------------------------------------------------------------
+//
+//  GFactoryPostGroup
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GFactoryPostGroup::GFactoryPostGroup(GPostGroupManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f)
+{
+	//insert a "Level" parameter
+	InsertPtr(new GParamUInt("Level",mng->NbPtr));
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostGroup::Compare(const GFactoryPostGroup& f) const 
+{
+	int a=GetUInt("Level")-f.GetUInt("Level");
+	if(!a) 
+		a=Name.Compare(f.Name);
+	return(a);
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostGroup::Compare(const GFactoryPostGroup* f) const 
+{
+	int a=GetUInt("Level")-f->GetUInt("Level");
+	if(!a) 
+		a=Name.Compare(f->Name);
+	return(a);
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostGroup::Compare(unsigned int level) const 
+{
+	return(GetUInt("Level")-level);
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostGroup::sortOrder(const void* a,const void* b)
+{
+	unsigned int alevel=(*((GFactoryPostGroup**)(a)))->GetUInt("Level");
+	unsigned int blevel=(*((GFactoryPostGroup**)(b)))->GetUInt("Level");
+
+	if(alevel==blevel)
+		return((*((GFactoryPostGroup**)(a)))->Name.Compare((*((GFactoryPostGroup**)(b)))->Name));
+	if(alevel>blevel)
+		return(1);
+	else
+		return(-1);
 }

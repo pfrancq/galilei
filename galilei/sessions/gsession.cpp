@@ -400,31 +400,20 @@ void GSession::ComputePostDoc(GSlot* rec)
 	// Run all post-group methods that are enabled
 	R::RCursor<GFactoryPostDoc> PostDocs=(dynamic_cast<GPostDocManager*>(GPluginManager::GetManager("PostDoc")))->GetPostDocsCursor();
 
-	//first sort the plugins by level
-	RContainer<GFactoryPostDocOrder,true,true> ordered(PostDocs.GetNb());
-
-	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
-	{
-		GFactoryPostDocOrder* order=new GFactoryPostDocOrder;
-		order->Fac=PostDocs();
-		ordered.InsertPtr(order);
-	}
 	if(rec)
 		rec->Interact();
 	if(ExternBreak) return;
 
-	//then run
-	RCursor<GFactoryPostDocOrder> Cur(ordered);
-	for(Cur.Start();!Cur.End();Cur.Next())
+	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
 	{
 		if(rec)
 			rec->Interact();
 		if(ExternBreak) return;
-		if(Cur()->Fac->GetPlugin())
+		if(PostDocs()->GetPlugin())
 		{
-			sprintf(tmp, "PostDoc : Running %s",Cur()->Fac->GetName().Latin1());
+			sprintf(tmp, "PostDoc : Running %s",PostDocs()->GetName().Latin1());
 			rec->WriteStr(tmp);
-			Cur()->Fac->GetPlugin()->Run();
+			PostDocs()->GetPlugin()->Run();
 		}
 	}
 }
@@ -645,30 +634,20 @@ void GSession::ComputePostProfile(GSlot* rec)
 	// Run all post-group methods that are enabled
 	R::RCursor<GFactoryPostProfile> PostProfile=(dynamic_cast<GPostProfileManager*>(GPluginManager::GetManager("PostProfile")))->GetPostProfileCursor();
 
-	//first sort the plugins by level
-	RContainer<GFactoryPostProfileOrder,true,true> ordered(PostProfile.GetNb());
-	for(PostProfile.Start();!PostProfile.End();PostProfile.Next())
-	{
-		GFactoryPostProfileOrder* order=new GFactoryPostProfileOrder;
-		order->Fac=PostProfile();
-		ordered.InsertPtr(order);
-	}
 	if(rec)
 		rec->Interact();
 	if(ExternBreak) return;
 
-	//then run
-	RCursor<GFactoryPostProfileOrder> Cur(ordered);
-	for(Cur.Start();!Cur.End();Cur.Next())
+	for(PostProfile.Start();!PostProfile.End();PostProfile.Next())
 	{
 		if(rec)
 			rec->Interact();
 		if(ExternBreak) return;
-		if(Cur()->Fac->GetPlugin())
+		if(PostProfile()->GetPlugin())
 		{
-			sprintf(tmp, "PostGroup : Running %s",Cur()->Fac->GetName().Latin1());
+			sprintf(tmp, "PostGroup : Running %s",PostProfile()->GetName().Latin1());
 			rec->WriteStr(tmp);
-			Cur()->Fac->GetPlugin()->Run();
+			PostProfile()->GetPlugin()->Run();
 		}
 	}
 }
@@ -695,30 +674,20 @@ void GSession::ComputePostGroup(GSlot* rec)
 	// Run all post-group methods that are enabled
 	R::RCursor<GFactoryPostGroup> PostGroups=(dynamic_cast<GPostGroupManager*>(GPluginManager::GetManager("PostGroup")))->GetPostGroupsCursor();
 
-	//first sort the plugins by level
-	RContainer<GFactoryPostGroupOrder,true,true> ordered(PostGroups.GetNb());
-	for(PostGroups.Start();!PostGroups.End();PostGroups.Next())
-	{
-		GFactoryPostGroupOrder* order=new GFactoryPostGroupOrder;
-		order->Fac=PostGroups();
-		ordered.InsertPtr(order);
-	}
 	if(rec)
 		rec->Interact();
 	if(ExternBreak) return;
 
-	//then run
-	RCursor<GFactoryPostGroupOrder> Cur(ordered);
-	for(Cur.Start();!Cur.End();Cur.Next())
+	for(PostGroups.Start();!PostGroups.End();PostGroups.Next())
 	{
 		if(rec)
 			rec->Interact();
 		if(ExternBreak) return;
-		if(Cur()->Fac->GetPlugin())
+		if(PostGroups()->GetPlugin())
 		{
-			sprintf(tmp, "PostGroup : Running %s",Cur()->Fac->GetName().Latin1());
+			sprintf(tmp, "PostGroup : Running %s",PostGroups()->GetName().Latin1());
 			rec->WriteStr(tmp);
-			Cur()->Fac->GetPlugin()->Run();
+			PostGroups()->GetPlugin()->Run();
 		}
 	}
 }

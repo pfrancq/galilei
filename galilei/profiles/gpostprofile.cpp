@@ -33,6 +33,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gpostprofile.h>
+#include <profiles/gpostprofilemanager.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -68,4 +69,61 @@ void GPostProfile::Disconnect(GSession*) throw(GException)
 //------------------------------------------------------------------------------
 GPostProfile::~GPostProfile(void)
 {
+}
+
+
+//------------------------------------------------------------------------------
+//
+//  GFactoryPostProfile
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GFactoryPostProfile::GFactoryPostProfile(GPostProfileManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryPostProfile,GPostProfile,GPostProfileManager>(mng,n,f)
+{
+	//insert a "Level" parameter
+	InsertPtr(new GParamUInt("Level",mng->NbPtr));
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostProfile::Compare(const GFactoryPostProfile& f) const 
+{
+	int a=GetUInt("Level")-f.GetUInt("Level");
+	if(!a) 
+		a=Name.Compare(f.Name);
+	return(a);
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostProfile::Compare(const GFactoryPostProfile* f) const 
+{
+	int a=GetUInt("Level")-f->GetUInt("Level");
+	if(!a) 
+		a=Name.Compare(f->Name);
+	return(a);
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostProfile::Compare(unsigned int level) const 
+{
+	return(GetUInt("Level")-level);
+}
+
+
+//------------------------------------------------------------------------------
+int GFactoryPostProfile::sortOrder(const void* a,const void* b)
+{
+	unsigned int alevel=(*((GFactoryPostProfile**)(a)))->GetUInt("Level");
+	unsigned int blevel=(*((GFactoryPostProfile**)(b)))->GetUInt("Level");
+
+	if(alevel==blevel)
+		return((*((GFactoryPostProfile**)(a)))->Name.Compare((*((GFactoryPostProfile**)(b)))->Name));
+	if(alevel>blevel)
+		return(1);
+	else
+		return(-1);
 }
