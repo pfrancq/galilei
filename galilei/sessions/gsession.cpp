@@ -274,7 +274,7 @@ GUser* GALILEI::GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const 
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified) throw(GException)
+void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
 {
 	GProfileCursor Prof=GetProfilesCursor();
 
@@ -288,7 +288,8 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified) throw(GException)
 		{
 			if((!modified)||(Prof()->GetState()!=osUpdated))
 				ProfileCalc->Compute(Prof());
-			SaveProfile(Prof());
+			if(save)
+				SaveProfile(Prof());
 			if(Prof()->GetState()==osUpdated)
 				Prof()->SetState(osUpToDate);
 		}
@@ -307,9 +308,9 @@ void GALILEI::GSession::CalcProfile(GProfile* prof) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::GroupingProfiles(GSlot* rec,bool modified)  throw(GException)
+void GALILEI::GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException)
 {
-	Grouping->Grouping(rec,modified);
+	Grouping->Grouping(rec,modified,save);
 }
 
 

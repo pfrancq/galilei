@@ -268,14 +268,14 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			Rec->WriteStr(tmp);
 			Session->SetCurrentComputingMethod(i->Param1());
 			Session->SetCurrentComputingMethodSettings(i->Param2());
- 			Session->CalcProfiles(Rec,false);
+ 			Session->CalcProfiles(Rec,false,false);
 			break;
 		case Group:
 			sprintf(tmp,"Group Profiles: Method=\"%s\"  Settings=\"%s\"",i->Param1(),i->Param2());
 			Rec->WriteStr(tmp);
 			Session->SetCurrentGroupingMethod(i->Param1());
 			Session->SetCurrentGroupingMethodSettings(i->Param2());
- 			Session->GroupingProfiles(Rec,false);
+ 			Session->GroupingProfiles(Rec,false,false);
 			break;
 		case Ideal:
 			sprintf(tmp,"Compare with ideal groupement from file '%s'",i->Param1());

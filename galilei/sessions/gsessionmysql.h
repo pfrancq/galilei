@@ -203,8 +203,9 @@ public:
 	/**
 	* Create a new group.
 	* @param lang       Language of the group to create.
+	* @param grp        Group created.
 	*/
-	virtual GGroup* NewGroup(GLang* lang);
+	virtual void NewGroup(GLang* lang,GGroup* grp);
 
 	/**
 	* Delete a group.

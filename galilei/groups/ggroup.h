@@ -37,15 +37,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-#include <rstd/rcursor.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-
 
 
 //-----------------------------------------------------------------------------
@@ -192,7 +185,7 @@ public:
 //-----------------------------------------------------------------------------
 /**
 * The GGroupCursor class provides a way to go trough a set of group.
-* @short Group' Cursor
+* @short Group Cursor.
 */
 CLASSCURSOR(GGroupCursor,GGroup,unsigned int)
 

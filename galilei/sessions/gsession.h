@@ -280,10 +280,11 @@ public:
 	                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
 	/**
 	* Compute all the necessary profiles.
-	* @param rec        Receiver for the signals.
-	* @param modified   Recompute only modified elements or all.
+	* @param rec            Receiver for the signals.
+	* @param modified       Recompute only modified elements or all.
+	* @param save           Save modified elements.
 	*/
-	void CalcProfiles(GSlot* rec,bool modified=true) throw(GException);
+	void CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException);
 
 	/**
 	* Compute a profile.
@@ -295,8 +296,9 @@ public:
 	* Make the groups.
 	* @param rec            Receiver of the signals.
 	* @param modified       Recompute only modified elements or all.
+	* @param save           Save modified elements.
 	*/
-	void GroupingProfiles(GSlot* rec=0,bool modified=true)  throw(GException);
+	void GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException);
 
 protected:
 
@@ -374,8 +376,9 @@ public:
 	/**
 	* Create a new group.
 	* @param lang       Language of the group to create.
+	* @param grp        Group created.
 	*/
-	virtual GGroup* NewGroup(GLang* lang)=0;
+	virtual void NewGroup(GLang* lang,GGroup* grp)=0;
 
 	/**
 	* Delete a group.

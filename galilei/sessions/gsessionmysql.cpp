@@ -589,7 +589,7 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-GGroup* GALILEI::GSessionMySQL::NewGroup(GLang* lang)
+void GALILEI::GSessionMySQL::NewGroup(GLang* lang,GGroup* grp)
 {
 	char sSql[100];
 
@@ -602,7 +602,7 @@ GGroup* GALILEI::GSessionMySQL::NewGroup(GLang* lang)
 	sprintf(sSql,"SELECT groupid FROM groups WHERE groupid=LAST_INSERT_ID()");
 	RQuery select(this,sSql);
 	select.Begin();
-	return(new GGroup(strtoul(select[0],0,10),lang));
+	grp->SetId(strtoul(select[0],0,10));
 }
 
 

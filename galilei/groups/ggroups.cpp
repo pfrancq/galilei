@@ -32,13 +32,7 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainercursor.h>
-using namespace RStd;
-
-
-//-----------------------------------------------------------------------------
-//include files for GALILEI
+// include files for GALILEI
 #include<groups/ggroups.h>
 #include<langs/glang.h>
 #include<groups/ggroup.h>
@@ -46,6 +40,7 @@ using namespace RStd;
 #include<profiles/gusers.h>
 #include<sessions/gsession.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
 
@@ -57,7 +52,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroups::GGroups(GLang* lang) throw(bad_alloc)
-	: RContainer<GGroup,unsigned int,true,false>(20,10), Lang(lang)
+	: RContainer<GGroup,unsigned int,true,true>(20,10), Lang(lang)
 {
 }
 
@@ -84,6 +79,33 @@ int GALILEI::GGroups::Compare(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
+GGroup* GALILEI::GGroups::GetGroup(const GSubProfile* sub)
+{
+	GGroupCursor Groups;
+
+	Groups.Set(this);
+	for(Groups.Start();!Groups.End();Groups.Next())
+	{
+		if(Groups()->IsIn<const unsigned int>(sub->GetId()))
+			return(Groups());
+	}
+	return(0);
+}
+
+
+//-----------------------------------------------------------------------------
+GGroup* GALILEI::GGroups::GetGroup(unsigned int id)
+{
+	GGroup* grp;
+
+	grp=GetPtr<unsigned int>(id);
+	if(!grp)
+		InsertPtr(grp=new GGroup(id,Lang));
+	return(grp);
+}
+
+
+//-----------------------------------------------------------------------------
 GGroupCursor& GALILEI::GGroups::GetGroupCursor(void)
 {
 	GGroupCursor *cur=GGroupCursor::GetTmpCursor();
@@ -93,14 +115,26 @@ GGroupCursor& GALILEI::GGroups::GetGroupCursor(void)
 
 
 //-----------------------------------------------------------------------------
-GGroup* GALILEI::GGroups::GetGroup(const GSubProfile* sub) const
+GGroup* GALILEI::GGroups::NewGroup(void) throw(bad_alloc)
 {
-	RContainerCursor<GGroup,unsigned int,true,false> cur(this);
+	unsigned int id;
+	GGroupCursor Groups;
+	GGroup* grp;
 
-	for(cur.Start();!cur.End();cur.Next())
-	{
-		if(cur()->IsIn<const unsigned int>(sub->GetId()))
-			return(cur());
-	}
-	return(0);
+	// Go through the groups to find the first not used index.
+	Groups.Set(this);
+	for(Groups.Start(),id=0;!Groups.End();Groups.Next(),id++)
+		if(id!=Groups()->GetId())
+			break;
+
+	// Create the group with the founded index
+	InsertPtr(grp=new GGroup(id,Lang));
+	return(grp);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroups::DeleteGroup(GGroup* grp)
+{
+	DeletePtr(grp);
 }

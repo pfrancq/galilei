@@ -37,29 +37,13 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-#include <rstd/rcursor.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GGroup;
-class GGroupCursor;
-class GLang;
-class GSubProfile;
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -68,7 +52,7 @@ class GSubProfile;
 * @author Pascal Francq
 * @short Languages' Groups.
 */
-class GGroups : public RStd::RContainer<GGroup,unsigned int,true,false>
+class GGroups : public RStd::RContainer<GGroup,unsigned int,true,true>
 {
 	/**
 	* Language corresponding to the set of groups.
@@ -109,19 +93,39 @@ public:
 	* @param sub            Subprofile used.
 	* @returns Pointer to the group.
 	*/
-	GGroup* GetGroup(const GSubProfile* sub) const;
+	GGroup* GetGroup(const GSubProfile* sub);
+
+	/**
+	* Get the group with a given identificator. If the group doesn't exist
+	* -> create it.
+	* @param id             Identificator.
+	* @returns Pointer to the group.
+	*/
+	GGroup* GetGroup(unsigned int id);
 
 	/**
 	* Get a cursor over the groups.
 	*/
 	GGroupCursor& GetGroupCursor(void);
+
+	/**
+	* Create a new group.
+	* @returns Pointer to the group.
+	*/
+	GGroup* NewGroup(void) throw(bad_alloc);
+
+	/**
+	* Delete a group.
+	* @param grp            Group to delete.
+	*/
+	void DeleteGroup(GGroup* grp);
 };
 
 
 //-----------------------------------------------------------------------------
 /**
 * The GGroupsCursor class provides a way to go trough a set of groups.
-* @short Groups' Cursor
+* @short Groups Cursor
 */
 CLASSCURSOR(GGroupsCursor,GGroups,unsigned int)
 
