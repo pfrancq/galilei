@@ -889,7 +889,7 @@ void GALILEI::GSessionMySQL::SaveChromo(GChromoIR* chromo,unsigned int id,RGA::R
 
 
 //-----------------------------------------------------------------------------
-GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs)
+GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global)
 {
 	GInstIR* InstIR;
 	char sSql[200];
@@ -897,39 +897,47 @@ GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs
 	SimType s;
 	GChromoIR* chromo;
 	GGroupDataIR data;
-	
+	GGroupIR* grp;
+	unsigned int id;
+	unsigned int chromoid;
+
 	// count the number of chromosome in tempchromo to assign popsize;
 	sprintf(sSql,"SELECT max(chromoid) FROM tempchromo");
 	RQuery count(this,sSql);
 	count.Begin();
-	popsize=atoi(count[0])+1;
+	if(count.End()) return(0);
+	popsize=atoi(count[0]);
+	if(!popsize) return(0);
 
-	InstIR=new GInstIR(this,lang,0.0,0,popsize,0,objs,true,0,s,0);	
+	InstIR=new GInstIR(this,lang,0.0,0,popsize,0,objs,global,sim,s,0);
 	InstIR->Init(&data);
 	sprintf(sSql,"SELECT DISTINCT chromoid FROM tempchromo WHERE lang='%s'",lang->GetCode());
 	RQuery qchromo (this, sSql);
-	for(qchromo.Begin();qchromo.IsMore();qchromo++)
+	for(qchromo.Begin();!qchromo.End();qchromo.Next())
 	{
-		GGroups* grps = new GGroups (lang);
+		chromoid=atoi(qchromo[0]);
+		if(chromoid==popsize)
+			chromo=InstIR->BestChromosome;
+		else
+			chromo=InstIR->Chromosomes[chromoid];
 		sprintf(sSql,"SELECT DISTINCT groupid FROM tempchromo WHERE chromoid=%u",atoi(qchromo[0]));
-		RQuery qgroup (this, sSql);
-		for(qgroup.Begin();qgroup.IsMore();qgroup++)
+		RQuery qgroup(this, sSql);
+		for(qgroup.Begin();!qgroup.End();qgroup.Next())
 		{
-			GGroupVector* grp = new GGroupVector(atoi(qgroup[0]),lang);
+			grp=chromo->ReserveGroup();
 			sprintf(sSql,"SELECT DISTINCT subprofileid FROM tempchromo WHERE (chromoid=%u and groupid=%u) ",atoi(qchromo[0]),atoi(qgroup[0]));
 			RQuery qsubprof (this, sSql);
-			for(qsubprof.Begin();qsubprof.IsMore();qsubprof++)
+			for(qsubprof.Begin();!qsubprof.End();qsubprof.Next())
 			{
-				sprintf(sSql,"SELECT profileid,attached FROM subprofiles WHERE subprofileid=%u ",atoi(qsubprof[0]));
-				RQuery profile (this, sSql);
-				profile.Begin();
-				GSubProfileVector* subprof=new GSubProfileVector (GetProfile(atoi(profile[0])),atoi(qsubprof[0]),lang,grp,profile[1]);
-				grp->InsertSubProfile(subprof);
+				id=atoi(qsubprof[0]);
+				for(objs->Start();!objs->End();objs->Next())
+					if((*objs)()->GetSubProfile()->GetId()==id)
+					{
+						grp->Insert((*objs)());
+						break;
+					}
 			}
-			grps->InsertPtr(grp);
 		}
-		InstIR->Chromosomes[atoi(qchromo[0])]->ConstructChromo(grps);
-		delete grps;
 	}
 	return(InstIR);
 }

@@ -511,9 +511,11 @@ public:
 	* Load a instance of chromosome for statisical use only.
 	* @param lang           The lang of the subprofiles in the chromosome.
 	* @param objs           Objects.
+	* @param sim            Similarities.
+	* @param global         Global Similarities.
 	* @return pointer to a Ginstir
 	*/
-	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs)=0;
+	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs,GProfilesSim* sim,bool global)=0;
 
 	/**
 	* Run a "program" for this session.
