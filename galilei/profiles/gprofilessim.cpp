@@ -111,7 +111,7 @@ GALILEI::GProfilesSim::GSims::GSims(unsigned int id,unsigned int max) throw(bad_
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* s,bool global,GLang* l) throw(bad_alloc)
-	: Sims(s->NbPtr,s->NbPtr/2), GlobalSim(global), Lang(l)
+	: Sims(s->NbPtr,s->NbPtr<50?50:s->NbPtr/2), GlobalSim(global), Lang(l)
 {
 	GSubProfileCursor Cur1;
 	GSubProfileCursor Cur2;
@@ -135,7 +135,7 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global,GLang* l) throw(bad_alloc)
-	: Sims(s.NbPtr,s.NbPtr/2), GlobalSim(global), Lang(l)
+	: Sims(s.NbPtr,s.NbPtr<50?50:s.NbPtr/2), GlobalSim(global), Lang(l)
 {
 	GSubProfileCursor Cur1;
 	GSubProfileCursor Cur2;
@@ -157,7 +157,7 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 
 //-----------------------------------------------------------------------------
 GALILEI::GProfilesSim::GProfilesSim(GSubProfileCursor& s,bool global) throw(bad_alloc)
-	: Sims(s.GetNb(),s.GetNb()/2), GlobalSim(global)
+	: Sims(s.GetNb(),s.GetNb()<50?50:s.GetNb()/2), GlobalSim(global)
 {
 	GSubProfileCursor Cur1;
 	GSubProfileCursor Cur2;

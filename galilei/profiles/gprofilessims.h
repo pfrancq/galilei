@@ -52,18 +52,11 @@ namespace GALILEI{
 /**
 * The GProfilesSims class provides a representation for a set of Similarity between Profiles of
 * a given language.
-* @author Pascal Francq , Valery Vandaele
+* @author Pascal Francq and Valery Vandaele
 * @short SubProfiles.
 */
 class GProfilesSims : public RStd::RContainer<GProfilesSim,unsigned int,false,true>
 {
-protected:
-
-	/**
-	* Language of the GProfilesSim .
-	*/
-	
-
 public:
 
 	/**
@@ -81,12 +74,6 @@ public:
 	void InsertProfilesSim(GProfilesSim* p) throw(bad_alloc);
 
 	/**
-	* Get a profilesSim with a specific identifier.
-	* @param id         Identifier.
-	*/
-	//GProfilesSim* GetProfilesSim(const unsigned int id) const;
-
-	/**
 	* Get a cursor over the profilesSims of the system.
 	*/
 	GProfilesSimCursor& GetProfilesSimCursor(GLang* l);
@@ -98,15 +85,6 @@ public:
 	*/
 	virtual ~GProfilesSims(void);
 };
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GProfilesSimCursor class provides a way to go trough a set of profilesSim
-* of a given language.
-* @short ProfilesSims Cursor.
-*/
-//CLASSCURSOR(GProfilesSimsCursor,GProfilesSims,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------
