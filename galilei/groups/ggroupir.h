@@ -64,9 +64,8 @@ class GGroupDataIR
 public:
 	/**
 	* Constructor of the group data.
-	* @param m              Maximum size of the groups.
 	*/
-	GGroupDataIR(const unsigned int m) {}
+	GGroupDataIR(void) {}
 };
 
 
@@ -76,7 +75,7 @@ public:
 * @author Pascal Francq
 * @short IR Group.
 */
-class GGroupIR : public RGGA::RGroup<GGroupIR,GSubProfile,GGroupDataIR>
+class GGroupIR : public RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR>
 {
 protected:
 
@@ -99,7 +98,7 @@ public:
 	* @param id             Identificator of the group.
 	* @param data           Data needed for the group.
 	*/
-	GGroupIR(RGGA::RGroups<GGroupIR,GSubProfile,GGroupDataIR>* owner,const unsigned int id,const GGroupDataIR* data);
+	GGroupIR(RGGA::RGroups<GGroupIR,GObjIR,GGroupDataIR>* owner,const unsigned int id,const GGroupDataIR* data);
 
 	/**
 	* Verify if the group is not violating the integrity of the system.
@@ -116,19 +115,19 @@ public:
 	* Look if an object can be insert in the group.
 	* @param obj            Pointer to the object to insert.
 	*/
-	virtual bool CanInsert(const GSubProfile* obj);
+	virtual bool CanInsert(const GObjIR* obj);
 
 	/**
 	* Method call after an object was inserted in the group.
 	* @param obj            Pointer to the object to insert.
 	*/
-	virtual void PostInsert(const GSubProfile* obj);
+	virtual void PostInsert(const GObjIR* obj);
 
 	/**
 	* Method call after an object was deleted from the group.
 	* @param obj            Pointer to the object to delete.
 	*/
-	virtual void PostDelete(const GSubProfile* obj);
+	virtual void PostDelete(const GObjIR* obj);
 
 	/**
 	* Do a local optimisation by checking whether it is possible to replace up
@@ -136,7 +135,7 @@ public:
 	* way that the total size of the group increases. If so, perform the
 	* changes in the group and in objs.
 	*/
-	bool DoOptimisation(GSubProfile** objs,unsigned int& nbobjs);
+	bool DoOptimisation(GObjIR** objs,unsigned int& nbobjs);
 
 	/**
 	* Assignment operator.

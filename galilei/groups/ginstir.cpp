@@ -32,11 +32,12 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
+// include files for GALILEI
 #include <groups/ginstir.h>
 #include <groups/gchromoir.h>
 #include <groups/ggroupir.h>
-#include <profiles/gsubprofile.h>
+#include <groups/gobjir.h>
+#include <profiles/gprofilessim.h>
 using namespace GALILEI;
 using namespace RGGA;
 using namespace RGA;
@@ -51,7 +52,7 @@ using namespace RGA;
 
 //-----------------------------------------------------------------------------
 GALILEI::GThreadDataIR::GThreadDataIR(GInstIR* owner)
-	: RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfile,GGroupDataIR>(owner)
+	: RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(owner)
 {
 }
 
@@ -64,9 +65,9 @@ GALILEI::GThreadDataIR::GThreadDataIR(GInstIR* owner)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GInstIR::GInstIR(unsigned int max,unsigned int popsize,RObjs<GSubProfile>* objs,HeuristicType h,RDebug *debug) throw(bad_alloc)
-	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfile,GGroupDataIR>(popsize,objs,h,debug),
-		MaxGen(max)
+GALILEI::GInstIR::GInstIR(unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,HeuristicType h,RDebug *debug) throw(bad_alloc)
+	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(popsize,objs,h,debug),
+	  Sims(s), MaxGen(max)
 {
 }
 
@@ -75,4 +76,10 @@ GALILEI::GInstIR::GInstIR(unsigned int max,unsigned int popsize,RObjs<GSubProfil
 bool GALILEI::GInstIR::StopCondition(void)
 {
 	return(Gen==MaxGen);
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GInstIR::~GInstIR(void)
+{
 }

@@ -36,7 +36,7 @@
 #include <groups/gchromoir.h>
 #include <groups/ginstir.h>
 #include <groups/ggroupir.h>
-#include <profiles/gsubprofile.h>
+#include <groups/gobjir.h>
 using namespace GALILEI;
 using namespace RGGA;
 using namespace RGA;
@@ -51,6 +51,6 @@ using namespace RGA;
 
 //-----------------------------------------------------------------------------
 GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
-  : RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfile,GGroupDataIR>(inst,id)
+  : RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id)
 {
 }

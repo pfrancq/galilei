@@ -58,7 +58,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short IR "thread-dependent" Data.
 */
-class GThreadDataIR : public RGGA::RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfile,GGroupDataIR>
+class GThreadDataIR : public RGGA::RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
 {
 public:
 
@@ -76,14 +76,19 @@ public:
 * @author Pascal Francq
 * @short IR Instance.
 */
-class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfile,GGroupDataIR>
+class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
 {
-public:
+	/**
+	* Similarities between the subprofiles to group.
+	*/
+	GProfilesSim* Sims;
 
 	/**
 	* The maximum number of generations.
 	*/
 	unsigned long MaxGen;
+
+public:
 
 	/**
 	* Construct the instance.
@@ -93,7 +98,7 @@ public:
 	* @param h              The type of heuristic to be used.
 	* @param debug          Debugger.
 	*/
-	GInstIR(unsigned int max,unsigned int popsize,RGA::RObjs<GSubProfile>* objs,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
+	GInstIR(unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case
@@ -101,6 +106,11 @@ public:
 	* @return	The function returns true if the GA must stop.
 	*/
 	virtual bool StopCondition(void);
+
+	/**
+	* Destruct the instance.
+	*/
+	virtual ~GInstIR(void);
 };
 
 
