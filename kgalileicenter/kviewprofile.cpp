@@ -127,11 +127,20 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 		Fdbks->addColumn(QString("Date"));
 		Fdbks->setRootIsDecorated(true);
 		connect(Fdbks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+
+		FdbksLinks = new QListView(Infos);
+		Infos->insertTab(FdbksLinks,"Links");
+		FdbksLinks->addColumn(QString("Document"));
+		FdbksLinks->addColumn(QString("URL"));
+		FdbksLinks->addColumn(QString("Date"));
+		FdbksLinks->setRootIsDecorated(true);
+		connect(FdbksLinks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+
 		ConstructFdbks();
 	}
 	Pov = new QListView(Infos);
 	Infos->insertTab(Pov,"Point Of View");
-	Pov->addColumn(QString("Point de view list of documents"));
+	Pov->addColumn(QString("Point of view list of documents"));
 	//Pov->addColumn(QString("attached words"));
 	Pov->setRootIsDecorated(true);
 
@@ -152,6 +161,8 @@ void KViewProfile::ConstructFdbks(void)
 	GSubProfileCursor SubCur;
 
 	if(!Fdbks) return;
+	if(!FdbksLinks) return;
+
 
 	// Init different judgements
 	Fdbks->clear();
@@ -164,6 +175,14 @@ void KViewProfile::ConstructFdbks(void)
 	QListViewItemType* hs= new QListViewItemType(Fdbks, "HS Judgements");
 	hs->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
 
+	// Init different judgements for document from link analysis.
+	FdbksLinks->clear();
+	QListViewItemType* lh= new QListViewItemType(FdbksLinks, "Hub Judgements");
+	//lh->setPixmap(0,QPixmap("/usr/share/icons/hicolor/..."));
+	QListViewItemType* la= new QListViewItemType(FdbksLinks, "Authority Judgements");
+	//la->setPixmap(0,QPixmap("/usr/share/icons/hicolor/..."));
+
+
 	// Add Judgements from profiles.
 	Docs=Profile->GetProfDocCursor();
 	for(Docs.Start();!Docs.End();Docs.Next())
@@ -173,11 +192,17 @@ void KViewProfile::ConstructFdbks(void)
 			case djOK:
 				p=ok;
 				break;
+			case (djOK|djAutority):
+				p=la;
+				break;
 			case djKO:
 				p=ko;
 				break;
 			case djNav:
 				p=n;
+				break;
+			case (djNav| djHub):
+				p=lh;
 				break;
 			case djOutScope:
 				p=hs;
@@ -205,11 +230,17 @@ void KViewProfile::ConstructFdbks(void)
 				case djOK:
 					p=ok;
 					break;
+				case (djOK| djAutority):
+					p=la;
+					break;
 				case djKO:
 					p=ko;
 					break;
 				case djNav:
 					p=n;
+					break;
+				case (djNav| djHub):
+					p=lh;
 					break;
 				case djOutScope:
 					p=hs;

@@ -101,6 +101,11 @@ class KViewProfile : public KView
 	QListView* Fdbks;
 
 	/**
+	* Feedback over the documents obtained by link analyse.
+	*/
+	QListView* FdbksLinks;
+
+	/**
 	* Widget to handle the groups of the profile.
 	*/
 	QListView* Groups;

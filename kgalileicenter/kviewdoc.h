@@ -89,6 +89,11 @@ class KViewDoc : public KView
 	QListView* Fdbks;
 
 	/**
+	* Feedback of the profiles on the document if from link analysis.
+	*/
+	QListView* FdbksLinks;
+
+	/**
 	* Results of the analyse.
 	*/
 	QListView* Results;

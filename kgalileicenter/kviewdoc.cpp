@@ -113,6 +113,15 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 		Fdbks->addColumn(QString("Date"));
 		Fdbks->setRootIsDecorated(true);
 		connect(Fdbks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+
+		FdbksLinks = new QListView(Infos);
+		Infos->insertTab(FdbksLinks,"Links");
+		FdbksLinks->addColumn(QString("Profile"));
+		FdbksLinks->addColumn(QString("User"));
+		FdbksLinks->addColumn(QString("Date"));
+		FdbksLinks->setRootIsDecorated(true);
+		connect(FdbksLinks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+
 		ConstructFdbks();
 	}
 
@@ -174,6 +183,8 @@ void KViewDoc::ConstructFdbks(void)
 	GProfDocCursor Profiles;
 
 	if(!Fdbks) return;
+	if(!FdbksLinks) return;
+
 
 	// Init different judgements
 	QListViewItemType* ok= new QListViewItemType(Fdbks, "OK Judgements");
@@ -185,20 +196,33 @@ void KViewDoc::ConstructFdbks(void)
 	QListViewItemType* hs= new QListViewItemType(Fdbks, "HS Judgements");
 	hs->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
 
-	// Add Judgements
+	//init different judgements for documents from link analysis.
+	QListViewItemType* lh= new QListViewItemType(FdbksLinks , "Hub Judgements");
+	//lh->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
+	QListViewItemType* la= new QListViewItemType(FdbksLinks, "Authority Judgements");
+	//la->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
+
+
+	// Add Judgements for profile.
 	Profiles=Document->GetProfDocCursor();
 	for(Profiles.Start();!Profiles.End();Profiles.Next())
 	{
-		switch(Profiles()->GetFdbk() & djMaskJudg)
+		switch(Profiles()->GetFdbk()/* & djMaskJudg*/)
 		{
 			case djOK:
 				p=ok;
+				break;
+			case (djOK | djAutority):
+				p=la;
 				break;
 			case djKO:
 				p=ko;
 				break;
 			case djNav:
 				p=n;
+				break;
+			case (djNav | djHub):
+				p=lh;
 				break;
 			case djOutScope:
 				p=hs;
