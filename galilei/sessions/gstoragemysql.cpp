@@ -547,7 +547,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 		}
 
 		// Load subprofiles
-		RQuery SubProfiles(Db,"SELECT subprofileid,langid,attached,groupid, updated, calculated, profileid FROM subprofiles");
+		RQuery SubProfiles(Db,"SELECT subprofileid,langid,attached,groupid, updated, calculated,subprofiles.profileid,topicid FROM subprofiles,profiles WHERE subprofiles.profileid=profiles.profileid");
 		for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 		{
 			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(SubProfiles[1]);
@@ -559,7 +559,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 			session->InsertSubProfile(sub=new GSubProfile(prof,atoi(SubProfiles[0]),lang,
 			                                     session->GetGroup(atoi(SubProfiles[3])),SubProfiles[2],
 			                                     GetMySQLToDate(SubProfiles[4]),GetMySQLToDate(SubProfiles[5])));
-			s=session->GetSubjects()->GetSubject(atoi(SubProfiles[6]));
+			s=session->GetSubjects()->GetSubject(atoi(SubProfiles[7]));
 			if((s)&&(sub->GetLang()==s->GetLang()))
 			{
 				sub->SetSubject(s);
