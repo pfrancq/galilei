@@ -324,23 +324,6 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		MaxFreq=CurDoc->GetMaxWeight();
 
 		// Add total number of words and the occurences of each word of the current document.
-//	double idffactor,nbref;
-//	double TotalRef=lang->GetRef(ObjType);
-//	double freq;
-//	GWord** words;
-//
-//	if(!lang->GetDict()) return;
-//	for(i=lang->GetDict()->GetMaxId()+1,words=lang->GetDict()->GetWords();--i;words++)
-//	{
-//		if((!(*words))||(!lang->GetRef((*words)->GetId(),otGroup))) continue;
-//		nbref=lang->GetRef((*words)->GetId(),ObjType);
-//		if(!nbref) continue;
-//		ptr=GetPtr<const unsigned int>((*words)->GetId());
-//		if(!ptr)
-//			InsertPtr(ptr=new GIWordWeight((*words)->GetId()));
-//		freq=0.5+((0.5*ptr->Weight)/max);
-//		idffactor=log(TotalRef/nbref);
-
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=Vector->GetInsertPtr<unsigned int>(Words()->GetId());
