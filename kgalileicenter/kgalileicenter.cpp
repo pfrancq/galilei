@@ -178,7 +178,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbPwd=dlg.txtPwd->text().latin1();
 		try
 		{
-			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,this);
+			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,this,DocOptions);
 			unsigned int cmd=dlg.cbLoad->currentItem();
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(cmd);
@@ -245,14 +245,14 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		slotStatusMsg(i18n("Ready"));
 	}
 }
-        
+
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user,const char* passwd,const char* db)
 {
 	QConnectMySQL dlg(this,0,true);
 	GSessionMySQL* Sess;
-	Sess = new GSessionMySQL(host,user,passwd,db,this);
+	Sess = new GSessionMySQL(host,user,passwd,db,this,DocOptions);
 	unsigned int cmd=dlg.cbLoad->currentItem();
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 	d->LoadSession(cmd);
@@ -355,10 +355,10 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 	QString strTmp;
 	QString modeleDb , stopList , users;
 	ErrMsgList = QString();
-	
+
 	KApplication::kApplication()->processEvents();
 	QCreateDatabase dlg(this,0,true);
-	
+
 	dlg.DBdatabasesql->setURL("$HOME/prj/kgalileicenter/kgalileicenter/DbModel.sql");
 	dlg.DBstoplistsql->setURL("$HOME/prj/kgalileicenter/kgalileicenter/DbStopList.sql");
 	dlg.DBUserssql->setURL("$HOME/prj/kgalileicenter/kgalileicenter/DbUsers.sql");
@@ -390,7 +390,7 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 			return;
 		}
 
-     
+
 		//************************* ------------- Find a Database Modele -----------------------*************************
 		strTmp = dlg.DBdatabasesql->url();
 		// if no url is specified then return error

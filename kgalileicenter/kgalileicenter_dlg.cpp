@@ -171,6 +171,7 @@ void KGALILEICenterApp::slotDocsOptions(void)
 		DocOptions->UseExternalLink=dlg.cbExternalLink->isChecked();
 		DocOptions->UseRedirection=dlg.cbRedirection->isChecked();
 
+		cout<< "use sturct : "<<DocOptions->Distance<<" et a la source : "<<dlg.cbDistance->isChecked()<<endl;
 		cout<< "option docs :  "<<DocOptions->UseLink<<" et a la source : "<< dlg.cbUseLink->isChecked() <<endl;;
 	}
 }                                
