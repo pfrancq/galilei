@@ -428,7 +428,7 @@ GALILEI::GSession::~GSession(void) throw(GException)
 {
 	if(DocAnalyse) delete DocAnalyse;
 	if(DocOptions) delete DocOptions;
-	if(ProfileCalcs) delete ProfileCalcs;
 	if(Groupings) delete Groupings;
 	if(SubProfileDescs) delete SubProfileDescs;
+	if(ProfileCalcs) delete ProfileCalcs;
 }
