@@ -253,6 +253,11 @@ public:
 	GSubjectTree* GetSubjects(void) {return(Subjects);}
 
 	/**
+	* Get the parameters of the session.
+	*/
+	GSessionParams* GetSessionParams(void) const {return(SessParams);}
+
+	/**
 	* Get the current description method.
 	* @returns Pointer to a GSubProfileDesc class.
 	*/
@@ -352,71 +357,48 @@ public:
 	GUser* NewUser(const char* usr,const char* pwd,const char* name,const char* email,
 	                  const char* title,const char* org,const char* addr1,
 	                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
-                  
-	/**
-	* Initialise the table of similarity between the profiles
-	*/
-	void InitProfilesSims(void);
-	                  
-	/**
-	* Update the state of similarity between the subProfiles for a given language.
-	* @param global         use the Global/Locale similarity
-	* @param lang           The lang of the subprofiles
-	*/
-	void ChangeProfilesSimState(bool global,GLang* lang)throw(bad_alloc);
 
 	/**
-	* Update the state of similarity between the subProfiles for all language in the system.
-	* @param global         use the Global/Locale similarity
-	* @param lang           The lang of the subprofiles
+	* Set if the Inverse Frequency Factor should be used for the similarities
+	* between (sub)profiles.
+	* @param iff             Use Inverse Frequency Factor.
 	*/
-	void ChangeAllProfilesSimState(bool global)throw(bad_alloc);
+	void UseIFFProfs(bool iff);
 
 	/**
 	* Return the similarity between two subProfiles .
 	* @param sub1           The Pointer to the first subprofile
 	* @param sub2           The Pointer to the second subprofile
 	*/
-	double GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2);
+	double GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2) throw(GException);
 
 	/**
-	* Initialise the table of similarity between the profiles
+	* Update the state of agreement and disagreement ratios between the
+	* subprofiles.
 	*/
-	void InitProfilesBehaviours(void);
+	void UpdateBehaviours(void) throw(bad_alloc);
 
 	/**
-	* Update the state of similarity between the subProfiles for a given language.
-	* @param global         use the Global/Locale similarity
-	* @param lang           The lang of the subprofiles
-	*/
-	void ChangeProfilesBehaviourState(GLang* lang)throw(bad_alloc);
-
-	/**
-	* Update the state of similarity between the subProfiles for all language in the system.
-	*/
-	void ChangeAllProfilesBehaviourState(void) throw(bad_alloc);
-
-	/**
-	* Return the disagreement ratio between two subProfiles .
+	* Return the disagreement ratio between two subprofiles .
 	* @param sub1           The Pointer to the first subprofile
 	* @param sub2           The Pointer to the second subprofile
 	*/
-	double GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2);
+	double GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException);
 
 	/**
-	* Return the agreement ratio between two subProfiles .
+	* Return the agreement ratio between two subprofiles .
 	* @param sub1           The Pointer to the first subprofile
 	* @param sub2           The Pointer to the second subprofile
 	*/
-	double GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2);
+	double GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException);
 
 	/**
-	* return the minim of similarityof the subprofiles, needed by clusteirng algorithms.
-	* @param subprofiles    set of subprofiles on which mean minsim must be
-	*  caculated
-	* @param deviationrate  factor of the standart deviation.
+	* Get the minimum of similarityof the subprofiles, needed by clusteirng
+	* algorithms.
+	* @param lang            Language.
+	* @param deviationrate   factor of the standart deviation.
 	*/
-	double GetMinimumOfSimilarity(R::RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate=1.5);
+	double GetMinimumOfSimilarity(GLang* lang, double deviationrate=1.5) throw(GException);
 
 	/**
 	* Set if the Inverse Frequency Factor should be used for the similarities
@@ -430,7 +412,7 @@ public:
 	* @param doc           The Pointer to the document.
 	* @param sub2          The Pointer to the subprofile.
 	*/
-	double GetSimDocProf(const GDoc* doc,const GSubProfile* sub);
+	double GetSimDocProf(const GDoc* doc,const GSubProfile* sub) throw(GException);
        
 	/**
 	* Compute all the necessary profiles.

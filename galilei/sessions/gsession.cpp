@@ -67,9 +67,7 @@ using namespace R;
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
-#include <profiles/gprofilessim.h>
 #include <profiles/gprofilessims.h>
-#include <profiles/gprofilesbehaviour.h>
 #include <profiles/gprofilesbehaviours.h>
 #include <profiles/gsubprofiledesc.h>
 #include <profiles/gsubprofilevector.h>
@@ -108,7 +106,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	  Subjects(0), Fdbks(f+f/2,f/2),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
 	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0),
-	  DocProfSims(0), Random(0),  SessParams(sessparams)
+	  ProfilesBehaviours(0), DocProfSims(0), Random(0),  SessParams(sessparams)
 {
 	// Init Part
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
@@ -122,9 +120,6 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	// Create SubjectTree
 	if(tests)
 		Subjects=new GSubjectTree(this);
-
-	// Create Similarities Managers
-	DocProfSims = new GDocProfSims(this,p,true);
 }
 
 
@@ -181,6 +176,11 @@ void GSession::PostConnect(GLinkCalcManager* lmng) throw(bad_alloc,GException)
 	LinkCalcMng=lmng;
 	if(LinkCalcMng)
 		LinkCalcMng->Connect(this);
+
+	// Create Similarities Managers (IFF used by default)
+	ProfilesSims = new GProfilesSims(this,true);
+	ProfilesBehaviours = new GProfilesBehaviours(this);
+	DocProfSims = new GDocProfSims(this,true);
 }
 
 //-----------------------------------------------------------------------------
@@ -330,164 +330,53 @@ void GSession::UseIFFDocProf(bool iff)
 
 
 //-----------------------------------------------------------------------------
-double GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub)
+double GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub) throw(GException)
 {
 	return(DocProfSims->GetSim(doc,sub));
 }
 
 
 //-----------------------------------------------------------------------------
-void GSession::InitProfilesSims(void)
+void GSession::UseIFFProfs(bool iff)
 {
-	GProfilesSim* profSim;
-	RContainer<GSubProfile,unsigned int,false,true>* subProfs;
-	GFactoryLangCursor langs = Langs->GetLangsCursor();
-	GLang* lang;
+	ProfilesSims->UseIFF(iff);
+}
 
-	//init a profilsims contianing a profilesim for each langs
-	ProfilesSims = new GProfilesSims(langs.GetNb());
 
-	//for each languages
-	for(langs.Start();!langs.End(); langs.Next())
-	{
-		lang=langs()->GetPlugin();
-		if(!lang) continue;
-		subProfs = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
-		GSubProfileCursor subProfCur = GetSubProfilesCursor(lang);
 
-		for(subProfCur.Start();!subProfCur.End();subProfCur.Next())
-		{
-			subProfs->InsertPtr( subProfCur());
-		}
-		//init the profsim with a global=false (can be 'true').
-		profSim= new GProfilesSim(subProfs, true,lang);
-		// insert the profsim in the container of profsims
-		ProfilesSims->InsertPtr(profSim);
-	}
+//-----------------------------------------------------------------------------
+double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2) throw(GException)
+{
+	return(ProfilesSims->GetSim(sub1,sub2));
 }
 
 
 //-----------------------------------------------------------------------------
-void GSession::ChangeProfilesSimState(bool global,GLang* lang)throw(bad_alloc)
+void GSession::UpdateBehaviours(void) throw(bad_alloc)
 {
-	GProfilesSim* profSim;
+	ProfilesBehaviours->Update();
+}
 
- 	profSim= ProfilesSims->GetPtr<GLang*>(lang);
-	profSim->UpdateProfSim(global);
 
+
+//-----------------------------------------------------------------------------
+double GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException)
+{
+	return(ProfilesBehaviours->GetAgreementRatio(sub1,sub2));
 }
 
 
 //-----------------------------------------------------------------------------
-void GSession::ChangeAllProfilesSimState(bool global)throw(bad_alloc)
+double GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException)
 {
-	GFactoryLangCursor langs = Langs->GetLangsCursor();
-	GLang* lang;
-
-	for( langs.Start(); !langs.End(); langs.Next())
-	{
-		lang=langs()->GetPlugin();
-		if(!lang) continue;
-		ChangeProfilesSimState(global,lang);
-	}
+	return(ProfilesBehaviours->GetDisagreementRatio(sub1,sub2));
 }
 
 
 //-----------------------------------------------------------------------------
-double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
+double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate) throw(GException)
 {
-	GProfilesSim* profSim;
-
-	profSim= ProfilesSims->GetPtr<const GLang*>(sub1->GetLang());
-	if((!profSim)||(sub1->GetLang()!=sub2->GetLang()))
-		return(0.0);
-	return(profSim->GetSim(sub1,sub2));
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::InitProfilesBehaviours(void)
-{
-	GFactoryLangCursor langs = Langs->GetLangsCursor();
-	GLang* lang;
-
-	RContainer<GSubProfile,unsigned int,false,true>* subProfs;
-	GProfilesBehaviour* profBehaviour;
-
-	ProfilesBehaviours = new GProfilesBehaviours(5);
-
-	for(langs.Start();!langs.End(); langs.Next())
-	{
-		lang=langs()->GetPlugin();
-		if(!lang) continue;
-		subProfs = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
-		GSubProfileCursor subProfCur = GetSubProfilesCursor(lang);
-
-		for(subProfCur.Start();!subProfCur.End();subProfCur.Next())
-		{
-			subProfs->InsertPtr(subProfCur());
-		}
-		profBehaviour= new GProfilesBehaviour(subProfs,lang,SessParams->GetUInt("SameBehaviourMinDocs"), SessParams->GetUInt("DiffBehaviourMinDocs"));
-		ProfilesBehaviours->InsertPtr(profBehaviour);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::ChangeProfilesBehaviourState(GLang* lang)throw(bad_alloc)
-{
-	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(lang);
-	profBehaviour->UpdateProfBehaviour();
-
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::ChangeAllProfilesBehaviourState(void) throw(bad_alloc)
-{
-	GFactoryLangCursor langs = Langs->GetLangsCursor();
-	GLang* lang;
-
-	for( langs.Start(); !langs.End(); langs.Next())
-	{
-		lang=langs()->GetPlugin();
-		if(!lang) continue;
-		ChangeProfilesBehaviourState(lang);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-double GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2)
-{
-	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(sub1->GetLang());
-	return(profBehaviour->GetAgreementRatio(sub1,sub2));
-}
-
-
-//-----------------------------------------------------------------------------
-double GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2)
-{
-	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(sub1->GetLang());
-	return(profBehaviour->GetDisAgreementRatio(sub1,sub2));
-}
-
-
-//-----------------------------------------------------------------------------
-double GSession::GetMinimumOfSimilarity(R::RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate)
-{
-	double meanSim;
-	double deviation;
-	double minSim;
-
-	subprofiles->Start();
-	GProfilesSim* profSim = ProfilesSims->GetPtr<const GLang*>((*subprofiles)()->GetLang());
-	profSim->UpdateDeviationAndMeanSim(subprofiles);
-	meanSim=profSim->GetMeanSim();
-	deviation=profSim->GetDeviation();
-	minSim=meanSim+deviationrate*sqrt(deviation);
-
-	return(minSim);
+	return(ProfilesSims->GetMinimumOfSimilarity(lang,deviationrate));
 }
 
 
@@ -507,8 +396,6 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 	GSubProfileCursor Subs;
 	GSubProfile* sub;
 	GProfileCursor Prof=GetProfilesCursor();
-	GProfilesSim* profSim;
-	GProfilesBehaviour* profBehaviour;
 	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
 	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
 
@@ -531,12 +418,10 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 					if(LinkCalc)
 						LinkCalc->Compute(Subs());
 					Profiling->Compute(Subs());
-					// add the mofified profile to the list of modified profiles  for similarities
-					profSim = ProfilesSims->GetPtr<GLang*>(Subs()->GetLang());
-					profSim->AddModifiedProfile(Subs()->GetProfile()->GetId());
-					// add the mofified profile to the list of modified profiles  for behaviours
-					profBehaviour = ProfilesBehaviours->GetPtr<GLang*>(Subs()->GetLang());
-					profBehaviour->AddModifiedProfile(Subs()->GetProfile()->GetId());
+
+					// add the mofified profile to the list of modified profiles
+					ProfilesSims->AddModifiedProfile(Subs());
+					ProfilesBehaviours->AddModifiedProfile(Subs());
 				}
 			}
 			catch(GException& e)
@@ -546,10 +431,10 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 	}
 
 	// update the state of all the sims.
-	ChangeAllProfilesSimState(true);   /// !!!!  check if 'true' is the correct value !?!
+	UseIFFProfs(true);   /// !!!!  check if 'true' is the correct value !?!
 
 	//updtae the state of the behaviours
-	ChangeAllProfilesBehaviourState();
+	UpdateBehaviours();
 
 	//   save profiles if necessary and set their state to UpToDate.
 	for(Prof.Start();!Prof.End();Prof.Next())
@@ -851,13 +736,10 @@ void GSession::ReInit(bool)
 	// set group to 0 for subprofiles.
 	ClearSubProfilesGroups();
 
-	//re-init similarities between profiles;
-	InitProfilesSims();
 
-	//re-init the behaviours inter-profiles.
-	InitProfilesBehaviours();
-
-	// re-Init the sims between documents and subprofiles
+	// Re-Init the sims and behaviorsbetween documents and subprofiles
+	ProfilesSims->ReInit();
+	ProfilesBehaviours->ReInit();
 	DocProfSims->ReInit();
 }
 
@@ -866,7 +748,9 @@ void GSession::ReInit(bool)
 GSession::~GSession(void) throw(GException)
 {
 	// Delete Similarities Managers
-	delete DocProfSims;
+	if(DocProfSims) delete DocProfSims;
+	if(ProfilesBehaviours) delete ProfilesBehaviours;
+	if(ProfilesSims) delete ProfilesSims;
 
 	// Clear all entities
 	GGroupsMng::Clear();

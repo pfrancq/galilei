@@ -146,10 +146,7 @@ class GProfileCalc;
 class GFactoryProfileCalc;
 class GFactoryProfileCalcCursor;
 class GProfileCalcManager;
-class GProfilesSim;
 class GProfilesSims;
-class GProfilesBehaviour;
-class GProfilesBehaviourCursor;
 class GProfilesBehaviours;
 
 

@@ -6,10 +6,11 @@
 
 	List of SubProfiles for a given Language - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
+		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	Version $Revision$
 
@@ -34,51 +35,88 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GProfilesSimsH
 #define GProfilesSimsH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GProfilesSims class provides a representation for a set of Similarity between Profiles of
 * a given language.
 * @author Pascal Francq and Valery Vandaele
 * @short SubProfiles.
 */
-class GProfilesSims : public R::RContainer<GProfilesSim,unsigned int,true,true>
+class GProfilesSims
 {
+	// Internal class
+	class GProfilesSim;
+
+	/**
+	* Similarities.
+	*/
+	R::RContainer<GProfilesSim,unsigned int,true,true> Sims;
+
+	/**
+	* Session managing the (sub)profiles and the documents.
+	*/
+	GSession* Session;
+
+	/**
+	* Inverse Frequency Factor must be used to compute the similarities.
+	*/
+	bool IFF;
+
 public:
 
 	/**
-	* Constructor of Users
-	* @param lang           Language of the subprofile.
-	* @param s              Initial number of profilesSim.
+	* Constructor of the similarities between subprofiles.
+	* @param session         Session.
+	* @param iff             Use Inverse Frequency Factor.
 	*/
-	GProfilesSims(unsigned int s) throw(bad_alloc);
-
-	
-	/**
-	* Insert a ProfilesSims in the container.
-	* @param s              Pointer to the subprofile to add.
-	*/
-	void InsertProfilesSim(GProfilesSim* p) throw(bad_alloc);
+	GProfilesSims(GSession* session,bool iff) throw(bad_alloc);
 
 	/**
-	* Get a cursor over the profilesSims of the system.
+	* Re-initialize the similarities. This method can be used for testing
+	* purpose when it is necessary to start from different initial conditions.
 	*/
-	GProfilesSimCursor& GetProfilesSimCursor(GLang* l);
+	void ReInit(void) throw(bad_alloc);
 
-public:
+	/**
+	* Set if the Inverse Frequency Factor should be used.
+	* @param iff             Use Inverse Frequency Factor.
+	*/
+	void UseIFF(bool iff) throw(bad_alloc);
+
+	/**
+	* Get the similarity between two subprofiles.
+	* @param sub1            Pointer to the first subprofile.
+	* @param sub2            Pointer to the second subprofile.
+	*/
+	double GetSim(const GSubProfile* sub1,const GSubProfile* sub2) throw(GException);
+
+	/**
+	* Get the minimum of similarityof the subprofiles, needed by clusteirng
+	* algorithms.
+	* @param lang            Language.
+	* @param deviationrate   factor of the standart deviation.
+	*/
+	double GetMinimumOfSimilarity(GLang* lang, double deviationrate=1.5) throw(GException);
+
+	/**
+	* Add a subprofile to the listof the modified one.
+	* @param sub             Pointer to the subprofile.
+	*/
+	void AddModifiedProfile(GSubProfile* sub) throw(bad_alloc,GException);
 
 	/**
 	* Destructor.
@@ -87,11 +125,8 @@ public:
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif
-
-
-

@@ -6,9 +6,10 @@
 
 	Agreement and DisAgreement Ratios for subprofiles - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
 
 	Version $Revision$
@@ -34,69 +35,89 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GProfilesBehavioursH
 #define GProfilesBehavioursH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GProfilesBehaviours class manage the agreement and disagreeemnt ratio
 *for subprofiles
-* @author David Wartel
+* @author Pascal Francq and David Wartel
 * @short SubProfiles agreement and disagreement ratio.
 */
-
-//-----------------------------------------------------------------------------
-//
-//   class GProfilesBehaviours
-//
-//-----------------------------------------------------------------------------
-class GProfilesBehaviours : public R::RContainer<GProfilesBehaviour,unsigned int,true,true>
+class GProfilesBehaviours
 {
+	// Internal Class
+	class GProfilesBehaviour;
+
+	/**
+	*/
+	R::RContainer<GProfilesBehaviour,unsigned int,true,true> Ratios;
+
+	/**
+	* Session managing the (sub)profiles and the documents.
+	*/
+	GSession* Session;
+
 public:
 
 	/**
 	* Constructor of Users
 	* @param lang           Language of the subprofile.
-	* @param s              Initial number of profilesSim.
 	*/
-	GProfilesBehaviours(unsigned int s) throw(bad_alloc);
-
+	GProfilesBehaviours(GSession* session) throw(bad_alloc);
 
 	/**
-	* Insert a ProfilesSims in the container.
-	* @param s              Pointer to the subprofile to add.
+	* Re-initialize the similarities. This method can be used for testing
+	* purpose when it is necessary to start from different initial conditions.
 	*/
-	void InsertProfilesBehaviour(GProfilesBehaviour* p) throw(bad_alloc);
+	void ReInit(void) throw(bad_alloc);
 
 	/**
-	* Get a cursor over the profilesSims of the system.
+	* Updates the different ratios.
 	*/
-	GProfilesBehaviourCursor& GetProfilesBehaviourCursor(GLang* l);
+	void Update(void) throw(bad_alloc);
 
-public:
+	/**
+	* Return the disagreement ratio between two subprofiles .
+	* @param sub1           The Pointer to the first subprofile
+	* @param sub2           The Pointer to the second subprofile
+	*/
+	double GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException);
+
+	/**
+	* Return the agreement ratio between two subprofiles .
+	* @param sub1           The Pointer to the first subprofile
+	* @param sub2           The Pointer to the second subprofile
+	*/
+	double GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException);
+
+	/**
+	* Add a subprofile to the listof the modified one.
+	* @param sub             Pointer to the subprofile.
+	*/
+	void AddModifiedProfile(GSubProfile* sub) throw(bad_alloc,GException);
 
 	/**
 	* Destructor.
 	*/
 	virtual ~GProfilesBehaviours(void);
-
 };
 
 
+}  //-------- End of namespace GALILEI -----------------------------------------
 
-}  //-------- End of namespace GALILEI ----------------------------------------
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif
