@@ -211,7 +211,7 @@ public:
 	* @param nb             Number of subprofiles.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf=100) throw(std::bad_alloc);
+	GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf=100);
 
 	/**
 	* Compare two profiles by comparing their identificator.

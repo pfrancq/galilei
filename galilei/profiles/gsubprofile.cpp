@@ -51,9 +51,11 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,const char* u, const char* c) throw(std::bad_alloc)
+GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,const char* u, const char* c)
 	: GWeightInfos(60), Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
 {
+	if(!Profile)
+		throw GException("Subprofile "+itou(id)+" has no parent profile");
 	Subject=0;
 	if(Updated>=Computed)
 	{
@@ -71,9 +73,11 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,
 
 
 //------------------------------------------------------------------------------
-GSubProfile::GSubProfile(GSession* session,GProfile *prof,GLang *lang) throw(std::bad_alloc)
+GSubProfile::GSubProfile(GSession* session,GProfile *prof,GLang *lang)
 	: GWeightInfos(60), Id(cNoRef), Profile(prof), Lang(lang), Group(0), State(osCreated), Attached(""), Updated(""), Computed(""), Fdbks(20,10)
 {
+	if(!Profile)
+		throw GException("Subprofile has no parent profile");
 	Subject=0;
 	session->AssignId(this);
 	Profile->InsertPtr(this);

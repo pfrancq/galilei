@@ -140,10 +140,12 @@ GFdbk::~GFdbk(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser *usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf) throw(std::bad_alloc)
-  : RContainer<GSubProfile,false,true>(nb,nb/2), User(usr),Id(id),Name(name),
+GProfile::GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf)
+  : RContainer<GSubProfile,false,true>(nb,nb/2), User(usr),Id(id), Name(name),
     Fdbks(nbf+nbf/2,nbf/2), Social(s)
 {
+	if(!User)
+		throw GException("Profile "+itou(id)+" has no parent user");
 	User->InsertPtr(this);
 }
 

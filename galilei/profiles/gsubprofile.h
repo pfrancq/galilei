@@ -118,7 +118,7 @@ public:
 	* @param u               String representing the date of the last updated.
 	* @param c               String representing the date of the last computation.
 	*/
-	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,const char* u,const char* c) throw(std::bad_alloc);
+	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,const char* u,const char* c);
 
 	/**
 	* Constructor of the subprofile.
@@ -126,7 +126,7 @@ public:
 	* @param prof            Profile.
 	* @param lang            Language of the subprofile.
 	*/
-	GSubProfile(GSession* session,GProfile* prof,GLang* lang) throw(std::bad_alloc);
+	GSubProfile(GSession* session,GProfile* prof,GLang* lang);
 
 	/**
 	* Compare two subprofiles by comparing their identificator.
@@ -386,7 +386,7 @@ proxy:
 	void ClearFdbks(void);
 
 public:
-	
+
 	/**
 	* Destructor of a subprofile.
 	*/
