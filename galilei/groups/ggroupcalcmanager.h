@@ -4,9 +4,9 @@
 
 	GGroupCalcManager.h
 
-	Manager to handle group computing method - Header.
+	Group Comuting Methods Manager - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -54,7 +54,7 @@ namespace GALILEI{
 * The GGroupCalcManager class provides a representation for a manager
 * responsible to manage all the group computing methods.
 * @author Pascal Francq
-* @short Groups Computing Method Manager.
+* @short Group Comuting Methods Manager.
 */
 class GGroupCalcManager : public R::RContainer<GFactoryGroupCalc,unsigned int,true,true>
 {
@@ -66,23 +66,23 @@ class GGroupCalcManager : public R::RContainer<GFactoryGroupCalc,unsigned int,tr
 public:
 
 	/**
-	* Construct a URL manager.
+	* Construct the group computing method manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
-	GGroupCalcManager(const char* path,bool dlg=true) throw(GException);
+	GGroupCalcManager(const char* path,bool dlg=true) throw(bad_alloc,GException);
 
 	/**
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	void Connect(GSession* session);
+	void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	void Disconnect(GSession* session);
+	void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Set the current method.
@@ -97,19 +97,19 @@ public:
 	GGroupCalc* GetCurrentMethod(void);
 
 	/**
-	* Get a cursor over the filters of the system.
+	* Get a cursor over the grouping computing methods.
 	*/
 	GFactoryGroupCalcCursor& GetGroupCalcsCursor(void);
 
 	/**
-	* Destructor of URL manager.
+	* Destructor of the group computing methods manager.
 	*/
 	virtual ~GGroupCalcManager(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

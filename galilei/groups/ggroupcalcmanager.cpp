@@ -1,12 +1,12 @@
 /*
 
-	R Project Library
+	GALILEI Research Project
 
 	GGroupCalcManager.cpp
 
 	Manager to handle group computing method - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,14 +34,14 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ggroupcalcmanager.h>
 #include <groups/ggroupcalc.h>
@@ -51,14 +51,14 @@ using namespace ltmm;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GGroupCalcManager
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(GException)
+//------------------------------------------------------------------------------
+GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(bad_alloc,GException)
 	: RContainer<GFactoryGroupCalc,unsigned int,true,true>(10,5), Current(0)
 {
 	DIR* dp;
@@ -126,8 +126,8 @@ GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(GException
 }
 
 
-//-----------------------------------------------------------------------------
-void GGroupCalcManager::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GGroupCalcManager::Connect(GSession* session) throw(GException)
 {
 	GFactoryGroupCalcCursor Cur;
 	GGroupCalc* calc;
@@ -142,8 +142,8 @@ void GGroupCalcManager::Connect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
-void GGroupCalcManager::Disconnect(GSession* session)
+//------------------------------------------------------------------------------
+void GGroupCalcManager::Disconnect(GSession* session) throw(GException)
 {
 	GFactoryGroupCalcCursor Cur;
 	GGroupCalc* calc;
@@ -158,7 +158,7 @@ void GGroupCalcManager::Disconnect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GGroupCalcManager::SetCurrentMethod(const char* name) throw(GException)
 {
 	GFactoryGroupCalc* fac;
@@ -175,14 +175,14 @@ void GGroupCalcManager::SetCurrentMethod(const char* name) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroupCalc* GGroupCalcManager::GetCurrentMethod(void)
 {
 	return(Current);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GFactoryGroupCalcCursor& GGroupCalcManager::GetGroupCalcsCursor(void)
 {
 	GFactoryGroupCalcCursor *cur=GFactoryGroupCalcCursor::GetTmpCursor();
@@ -191,7 +191,7 @@ GFactoryGroupCalcCursor& GGroupCalcManager::GetGroupCalcsCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroupCalcManager::~GGroupCalcManager(void)
 {
 }

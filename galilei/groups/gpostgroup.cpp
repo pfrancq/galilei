@@ -4,9 +4,9 @@
 
 	GPostGroup.cpp
 
-	Generic PostGroup Computing Method - Implementation.
+	Generic Post-Group Computing Method - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be).
@@ -34,42 +34,42 @@
 
 
 
-//-----------------------------------------------------------------------------
-//include files for GALILEI
+//------------------------------------------------------------------------------
+// include files for GALILEI
 #include <groups/gpostgroup.h>
 using namespace GALILEI;
 using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GPostGroup
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GPostGroup::GPostGroup(GFactoryPostGroup* fac) throw(bad_alloc)
 	: GPlugin<GFactoryPostGroup>(fac), Session(0)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-void GPostGroup::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GPostGroup::Connect(GSession* session) throw(GException)
 {
 	Session=session;
 }
 
 
-//-----------------------------------------------------------------------------
-void GPostGroup::Disconnect(GSession*)
+//------------------------------------------------------------------------------
+void GPostGroup::Disconnect(GSession*) throw(GException)
 {
 	Session=0;
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GPostGroup::~GPostGroup(void)
 {
 }

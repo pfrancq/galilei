@@ -1,12 +1,12 @@
 /*
 
-	R Project Library
+	GALILEI Research Project
 
 	GPostGroupManager.cpp
 
-	Manager to handle postgroup computing method - Implementation.
+	Post-Group Computing Methods Manager- Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be).
@@ -34,14 +34,14 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gpostgroupmanager.h>
 #include <groups/gpostgroup.h>
@@ -51,14 +51,14 @@ using namespace ltmm;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GPostGroupManager
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(GException)
+//------------------------------------------------------------------------------
+GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(bad_alloc,GException)
 	: RContainer<GFactoryPostGroup,unsigned int,true,true>(10,5), Current(0)
 {
 	DIR* dp;
@@ -128,8 +128,8 @@ GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(GException
 	}
 }
 
-//-----------------------------------------------------------------------------
-void GPostGroupManager::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GPostGroupManager::Connect(GSession* session) throw(GException)
 {
 	GFactoryPostGroupCursor Cur;
 	GPostGroup* calc;
@@ -144,8 +144,8 @@ void GPostGroupManager::Connect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
-void GPostGroupManager::Disconnect(GSession* session)
+//------------------------------------------------------------------------------
+void GPostGroupManager::Disconnect(GSession* session) throw(GException)
 {
 	GFactoryPostGroupCursor Cur;
 	GPostGroup* calc;
@@ -160,7 +160,7 @@ void GPostGroupManager::Disconnect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GPostGroupManager::SetCurrentMethod(const char* name) throw(GException)
 {
 	GFactoryPostGroup* fac;
@@ -177,7 +177,7 @@ void GPostGroupManager::SetCurrentMethod(const char* name) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GPostGroup* GPostGroupManager::GetCurrentMethod(void)
 {
 	return(Current);
@@ -193,7 +193,7 @@ GFactoryPostGroupCursor& GPostGroupManager::GetPostGroupCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GPostGroupManager::~GPostGroupManager(void)
 {
 }

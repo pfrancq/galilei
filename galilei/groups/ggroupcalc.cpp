@@ -6,7 +6,7 @@
 
 	Generic Group Description Computing Method - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,42 +34,42 @@
 
 
 
-//-----------------------------------------------------------------------------
-//include files for GALILEI
+//------------------------------------------------------------------------------
+// include files for GALILEI
 #include <groups/ggroupcalc.h>
 using namespace GALILEI;
 using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GGroupCalc
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroupCalc::GGroupCalc(GFactoryGroupCalc* fac) throw(bad_alloc)
 	: GPlugin<GFactoryGroupCalc>(fac), Session(0)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-void GGroupCalc::Connect(GSession* session)
+//------------------------------------------------------------------------------
+void GGroupCalc::Connect(GSession* session) throw(GException)
 {
 	Session=session;
 }
 
 
-//-----------------------------------------------------------------------------
-void GGroupCalc::Disconnect(GSession*)
+//------------------------------------------------------------------------------
+void GGroupCalc::Disconnect(GSession*) throw(GException)
 {
 	Session=0;
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GGroupCalc::~GGroupCalc(void)
 {
 }

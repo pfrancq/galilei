@@ -4,9 +4,9 @@
 
 	GPostGroupManager.h
 
-	Manager to handle postgroup computing method - Header.
+	Post-Group Computing Methods Manager - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be).
@@ -34,27 +34,27 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GPostGroupManagerH
 #define GPostGroupManagerH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GPostGroupManager class provides a representation for a manager
 * responsible to manage all the postgroup computing methods.
 * @author Vandaele Valery
-* @short PostGroup Computing Method Manager.
+* @short Post-Group Computing Methods Manager.
 */
 class GPostGroupManager : public R::RContainer<GFactoryPostGroup,unsigned int,true,true>
 {
@@ -67,23 +67,23 @@ class GPostGroupManager : public R::RContainer<GFactoryPostGroup,unsigned int,tr
 public:
 
 	/**
-	* Construct a PostGroups manager.
+	* Construct the post-group computing methods manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
-	GPostGroupManager(const char* path,bool dlg=true) throw(GException);
+	GPostGroupManager(const char* path,bool dlg=true) throw(bad_alloc,GException);
 
 	/**
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	void Connect(GSession* session);
+	void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	void Disconnect(GSession* session);
+	void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Set the current method.
@@ -98,19 +98,19 @@ public:
 	GPostGroup* GetCurrentMethod(void);
 
 	/**
-	* Get a cursor over the filters of the system.
+	* Get a cursor over the post-group computing methods.
 	*/
 	GFactoryPostGroupCursor& GetPostGroupCursor(void);
 
 	/**
-	* Destructor of URL manager.
+	* Destruct the post-group computing methods manager.
 	*/
 	virtual ~GPostGroupManager(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

@@ -468,12 +468,12 @@ void GSession::CalcProfile(GProfile* prof) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GSession::CalcPostGroup() throw(GException)
+void GSession::CalcPostGroup(void) throw(GException)
 {
 	GPostGroup* PostGrouping=PostGroupMng->GetCurrentMethod();
 	if(!PostGrouping)
 		throw GException("No postgroup method chosen.");
-	PostGrouping->Compute();
+	PostGrouping->Run();
 }
 
 

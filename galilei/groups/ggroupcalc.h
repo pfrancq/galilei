@@ -4,9 +4,9 @@
 
 	GGroupCalc.h
 
-	Generic Group Description Computing Method - Header.
+	Generic Group Computing Method - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,38 +34,37 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GGroupCalcH
 #define GGroupCalcH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include file for LibTool--
 #include <ltmm/loader.hh>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
 #include <sessions/gplugin.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // API VERSION
 #define API_GROUPCALC_VERSION "1.0"
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GGroupCalc class provides a representation for a method to compute the
-* description of a specific group.
+* The GGroupCalc class provides a representation for a generic method to compute
+* the description of a specific group.
 * @author Pascal Francq
-* @short Generic Group Description Computing Method.
+* @short Generic Group Computing Method.
 */
 class GGroupCalc : public GPlugin<GFactoryGroupCalc>
 {
@@ -88,19 +87,19 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session);
+	virtual void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session);
+	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Compute a group.
 	* @param grp            Group to compute.
 	*/
-	virtual void Compute(GGroup* grp)=0;
+	virtual void Compute(GGroup* grp) throw(GException)=0;
 
 	/**
 	* Get the name of the model used for the description.
@@ -115,7 +114,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class GFactoryGroupCalc : public GFactoryPlugin<GFactoryGroupCalc,GGroupCalc,GGroupCalcManager>
 {
 public:
@@ -135,82 +134,73 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 typedef GFactoryGroupCalc*(*GFactoryGroupCalcInit)(GGroupCalcManager*,const char*);
 
 
 //------------------------------------------------------------------------------
-#define CREATE_GROUPCALC_FACTORY(name,C)                                                        \
-class TheFactory : public GFactoryGroupCalc                                                     \
-{                                                                                               \
-private:                                                                                        \
-	static GFactoryGroupCalc* Inst;                                                             \
-	TheFactory(GGroupCalcManager* mng,const char* l) : GFactoryGroupCalc(mng,name,l)            \
-	{                                                                                           \
-		C::CreateParams(this);                                                                  \
-	}                                                                                           \
-	virtual ~TheFactory(void) {}                                                                \
-public:                                                                                         \
-	static GFactoryGroupCalc* CreateInst(GGroupCalcManager* mng,const char* l)                  \
-	{                                                                                           \
-		if(!Inst)                                                                               \
-			Inst = new TheFactory(mng,l);                                                       \
-		return(Inst);                                                                           \
-	}                                                                                           \
-	virtual const char* GetAPIVersion(void) const {return(API_GROUPCALC_VERSION);}              \
-	virtual void Create(void) throw(GException)                                                 \
-	{                                                                                           \
-		if(Plugin) return;                                                                      \
-		Plugin=new C(this);                                                                     \
-		Plugin->ApplyConfig();                                                                  \
-	}                                                                                           \
-	virtual void Delete(void) throw(GException)                                                 \
-	{                                                                                           \
-		if(!Plugin) return;                                                                     \
-		delete Plugin;                                                                          \
-		Plugin=0;                                                                               \
-	}                                                                                           \
-	virtual void Create(GSession* ses) throw(GException)                                        \
-	{                                                                                           \
-		if(!Plugin)                                                                             \
-		{                                                                                       \
-			Plugin=new C(this);                                                                 \
-			Plugin->ApplyConfig();                                                              \
-		}                                                                                       \
-		if(ses)                                                                                 \
-			Plugin->Connect(ses);                                                               \
-	}                                                                                           \
-	virtual void Delete(GSession* ses) throw(GException)                                        \
-	{                                                                                           \
-		if(!Plugin) return;                                                                     \
-		if(ses)                                                                                 \
-			Plugin->Disconnect(ses);                                                            \
-		delete Plugin;                                                                          \
-		Plugin=0;                                                                               \
-	}                                                                                           \
-};                                                                                              \
-                                                                                                \
-GFactoryGroupCalc* TheFactory::Inst = 0;                                                        \
-                                                                                                \
-extern "C"                                                                                      \
-{                                                                                               \
-	GFactoryGroupCalc* FactoryCreate(GGroupCalcManager* mng,const char* l)                      \
-	{                                                                                           \
-		return(TheFactory::CreateInst(mng,l));                                                  \
-	}                                                                                           \
+#define CREATE_GROUPCALC_FACTORY(name,C)                                                  \
+class TheFactory : public GFactoryGroupCalc                                               \
+{                                                                                         \
+private:                                                                                  \
+	static GFactoryGroupCalc* Inst;                                                       \
+	TheFactory(GGroupCalcManager* mng,const char* l) : GFactoryGroupCalc(mng,name,l)      \
+	{                                                                                     \
+		C::CreateParams(this);                                                            \
+	}                                                                                     \
+	virtual ~TheFactory(void) {}                                                          \
+public:                                                                                   \
+	static GFactoryGroupCalc* CreateInst(GGroupCalcManager* mng,const char* l)            \
+	{                                                                                     \
+		if(!Inst)                                                                         \
+			Inst = new TheFactory(mng,l);                                                 \
+		return(Inst);                                                                     \
+	}                                                                                     \
+	virtual const char* GetAPIVersion(void) const {return(API_GROUPCALC_VERSION);}        \
+	virtual void Create(void) throw(GException)                                           \
+	{                                                                                     \
+		if(Plugin) return;                                                                \
+		Plugin=new C(this);                                                               \
+		Plugin->ApplyConfig();                                                            \
+	}                                                                                     \
+	virtual void Delete(void) throw(GException)                                           \
+	{                                                                                     \
+		if(!Plugin) return;                                                               \
+		delete Plugin;                                                                    \
+		Plugin=0;                                                                         \
+	}                                                                                     \
+	virtual void Create(GSession* ses) throw(GException)                                  \
+	{                                                                                     \
+		if(!Plugin)                                                                       \
+		{                                                                                 \
+			Plugin=new C(this);                                                           \
+			Plugin->ApplyConfig();                                                        \
+		}                                                                                 \
+		if(ses)                                                                           \
+			Plugin->Connect(ses);                                                         \
+	}                                                                                     \
+	virtual void Delete(GSession* ses) throw(GException)                                  \
+	{                                                                                     \
+		if(!Plugin) return;                                                               \
+		if(ses)                                                                           \
+			Plugin->Disconnect(ses);                                                      \
+		delete Plugin;                                                                    \
+		Plugin=0;                                                                         \
+	}                                                                                     \
+};                                                                                        \
+                                                                                          \
+GFactoryGroupCalc* TheFactory::Inst = 0;                                                  \
+                                                                                          \
+extern "C"                                                                                \
+{                                                                                         \
+	GFactoryGroupCalc* FactoryCreate(GGroupCalcManager* mng,const char* l)                \
+	{                                                                                     \
+		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
 }
 
 
-//-----------------------------------------------------------------------------
-/**
-* The GGroupCalcCursor class provides a way to go trough a set of group
-* description method.
-* @short Group Description Methods Cursor
-*/
-CLASSCURSOR(GGroupCalcCursor,GGroupCalc,unsigned int)
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GFactoryGroupCalcCursor class provides a way to go trough a set of
 * factories.
@@ -219,9 +209,8 @@ CLASSCURSOR(GGroupCalcCursor,GGroupCalc,unsigned int)
 CLASSCURSOR(GFactoryGroupCalcCursor,GFactoryGroupCalc,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif
-
