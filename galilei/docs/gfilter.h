@@ -39,6 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rstring.h>
+#include <rstd/rcursor.h>
 
 
 //-----------------------------------------------------------------------------
@@ -179,6 +180,14 @@ public:
 	*/
 	virtual ~GFilter(void);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GFilterCursor class provides a way to go trough a set of filters.
+* @short SubProfiles Cursor
+*/
+CLASSCURSOR(GFilterCursor,GFilter,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------
