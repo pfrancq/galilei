@@ -151,7 +151,7 @@ const char* GALILEI::GSessionMySQL::ValidSQLValue(const char* val,char* tmp)
 //-----------------------------------------------------------------------------
 unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* dict)
 {
-	char sSql[100];
+	char sSql[600];
 
 	// Verify that the word didn't already exist.
 	sprintf(sSql,"SELECT kwdid FROM %skwds WHERE kwd='%s'",dict->GetLang()->GetCode(),word);
