@@ -239,7 +239,7 @@ void GGroups::Clear(GLang* lang)
 
 
 //------------------------------------------------------------------------------
-void GGroups::Clear(void) throw(GException)
+void GGroups::ClearGroups(void) throw(GException)
 {
 	for(GroupsLang.Start();!GroupsLang.End();GroupsLang.Next())
 	{

@@ -146,7 +146,7 @@ public:
 	/**
 	* Clear all the groups.
 	*/
-	void Clear(void) throw(GException);
+	void ClearGroups(void) throw(GException);
 
 	/**
 	* Destructor of the groups.

@@ -173,7 +173,7 @@ void GALILEI::GMixIdealGroups::RandomGroups(void)
 	GGroupCursor igrpscur, grpscur;
 	RCursor<GSubProfile> subs;
 
-	MixedGroups->Clear();
+	MixedGroups->ClearGroups();
 
 	// create the same structure than idealgroupment but without subprofiles
 	igrpscur=IdealGroups->GetGroupsCursor();

@@ -185,7 +185,7 @@ void GSubjects::CreateSet(void) throw(std::bad_alloc)
 
 	// Init Part
 	LastAdded.Clear();
-	IdealGroups->Clear();
+	IdealGroups->ClearGroups();
 	CurLang=Session->GetLangs()->GetLangsCursor();
 /*	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{

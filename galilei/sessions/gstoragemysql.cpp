@@ -547,7 +547,7 @@ void GStorageMySQL::LoadIdealGroupment(GSession* session) throw(std::bad_alloc,G
 	{
 		if(!session->GetSubjects()) return;
 		groups=session->GetSubjects()->GetIdealGroups();
-		groups->Clear();
+		groups->ClearGroups();
 
 		langs=session->GetLangs()->GetLangsCursor();
 		for(langs.Start();!langs.End();langs.Next())
