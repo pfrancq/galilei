@@ -45,10 +45,10 @@
 
 //---------------------------------------------------------------------------
 // include files for Galilei
-#include "gdocs.h"
+#include <gdocs/gdocs.h>
 #include <gsessions/gsession.h>
 
-using namespace GALILEI
+using namespace GALILEI;
 
 
 
@@ -58,9 +58,15 @@ using namespace GALILEI
 //
 //---------------------------------------------------------------------------
 
+
+
+
+
 //---------------------------------------------------------------------------
+
 GDocs::GDocs(unsigned int nb,bool alldocs,GSession *session) throw(bad_alloc)
   : RContainer<GDoc,unsigned,true,false>(nb+(nb/2),nb/2),AllDocs(alldocs),Session(session)
+
 {
 }
 

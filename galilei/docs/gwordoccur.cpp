@@ -47,7 +47,7 @@
 #include "gwordoccur.h"
 
 
-using namespace Galilei
+using namespace GALILEI;
 
 
 //---------------------------------------------------------------------------
@@ -78,14 +78,14 @@ int GWordOccur::Compare(const GWordOccur& ref)
 
 
 //---------------------------------------------------------------------------
-int GWordOccur::Compare(GWordOccur *ref)
+int GWordOccur::Compare(const GWordOccur *ref)
 {
   return(Id-ref->Id);
 }
 
 
 //---------------------------------------------------------------------------
-int GWordOccur::Compare(unsigned id)
+int GWordOccur::Compare(const unsigned id)
 {
   return(Id-id);
 }

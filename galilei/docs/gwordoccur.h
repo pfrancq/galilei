@@ -70,8 +70,8 @@ public:
   GWordOccur(void);
   GWordOccur(unsigned id);
   int Compare(const GWordOccur& ref);
-  int Compare(GWordOccur *ref);
-  int Compare(unsigned id);
+  int Compare(const GWordOccur *ref);
+  int Compare(const unsigned id);
 };
 
 

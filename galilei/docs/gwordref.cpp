@@ -67,7 +67,7 @@ int GWordRef::Compare(const GWordRef& ref)
 
 
 //---------------------------------------------------------------------------
-int GWordRef::Compare(GWordRef *ref)
+int GWordRef::Compare(const GWordRef *ref)
 {
   return(Id-ref->Id);
 }

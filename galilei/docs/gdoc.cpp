@@ -44,8 +44,9 @@
 // include files for Galilei
 #include <gdocs/gdoc.h>
 #include <gsessions/gsession.h>
+#include <glib.h>
 
-using namespace GALILEI
+using namespace GALILEI;
 
 
 
@@ -57,7 +58,7 @@ using namespace GALILEI
 
 //---------------------------------------------------------------------------
 
-GDoc::GDoc(GDocs *owner,const RString& url) throw(bad_alloc)
+GDoc::GDoc (GDocs *owner,const RString& url) throw(bad_alloc)
   : Owner(owner),Words(0),NbWords(0),NbDiffWords(),Lang(0),URL(url),Content(0), Calc(true), bSave(true)
 {
   Words=new GWordOccurs(this,500);
@@ -80,7 +81,7 @@ int GDoc::Compare(const GDoc* doc)
 
 
 //---------------------------------------------------------------------------
-int GDoc::Compare(unsigned id)
+int GDoc::Compare(const unsigned id)
 {
   return(Id-id);
 }
@@ -105,7 +106,11 @@ unsigned char GDoc::GetChar(void)
  {
  ptr2=code+1;
  tmp=(char)atoi((char*)ptr2);
- if(!GLib::IsAlpha(tmp)) tmp=0;
+
+
+
+ if (! GLib::IsAlpha(tmp)) tmp=0;
+
  }
  else        // Test some strings
  {

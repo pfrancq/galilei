@@ -64,6 +64,7 @@ class GWordOccurs;
 
 //---------------------------------------------------------------------------
 // class GDoc
+
 class GDoc
 {
 
@@ -85,7 +86,7 @@ public:
 	GDoc(GDocs *owner,const RString& URL) throw(bad_alloc);
 	int Compare(const GDoc& doc);
 	int Compare(const GDoc* doc);
-	int Compare(unsigned id);
+	int Compare(const unsigned id);
 	unsigned char GetChar(void);
 	bool IsSpace(void);
 	void SkipSpaces(void);

@@ -36,7 +36,7 @@
 using namespace GALILEI;
 
 
-/---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 //
 //  GWordCalcs
 //
@@ -67,8 +67,8 @@ void GWordCalcs::Analyse(GDoc *doc)
 //--------------------------------------------------------------------------
 int GWordCalcs::sortOrder(const void *a,const void *b)
 {
-  double af=(*((HWordCalc**)(a)))->Av;
-  double bf=(*((HWordCalc**)(b)))->Av;
+  double af=(*((GWordCalc**)(a)))->Av;
+  double bf=(*((GWordCalc**)(b)))->Av;
 
   if(af==bf) return(0);
   if(af>bf)

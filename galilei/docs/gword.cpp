@@ -85,7 +85,7 @@ int GWord::Compare(const GWord& word)
 
 
 //---------------------------------------------------------------------------
-int GWord::Compare(GWord* word)
+int GWord::Compare(const GWord* word)
 {
   return(Word.Compare(word->Word));
 }
@@ -99,7 +99,7 @@ int GWord::Compare(const RString& word)
 
 
 //---------------------------------------------------------------------------
-int GWord::Compare(GWordRef* ref)
+int GWord::Compare(const GWordRef* ref)
 {
   return(Id-ref->Id);
 }

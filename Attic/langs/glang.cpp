@@ -36,7 +36,7 @@
 // include file for HyperPRISME
 #include "glang.h"
 
-using namespace GALILEIi;
+using namespace GALILEI;
 
 
 

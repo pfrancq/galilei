@@ -81,6 +81,7 @@ public:
 	void Analyse(URLFunc *urlfunc,InfoFunc *infofunc) throw(GException);
 	void Download(void);
 	virtual ~GDocs(void) {}
+
 };
 
 

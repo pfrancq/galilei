@@ -63,8 +63,8 @@ public:
 	GWordCalc **Order;
 	GWordCalc **CurOrder;
 	GWordCalcs(GLang *lang,GSession *session) throw(bad_alloc);
-	int Compare(GWordCalcs &calcs);
-	int Compare(GWordCalcs *calcs);
+	int Compare(const GWordCalcs &calcs);
+	int Compare(const GWordCalcs *calcs);
 	void Analyse(GDoc *doc);
 	void EndCalc(void);
 	unsigned int NextWord(void);

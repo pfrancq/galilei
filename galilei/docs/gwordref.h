@@ -64,7 +64,7 @@ public:
   GWordRef(void);
   GWordRef(unsigned int id);
   int Compare(const GWordRef& ref);
-  int Compare(GWordRef *ref);
+  int Compare(const GWordRef *ref);
 };
 
 

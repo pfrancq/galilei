@@ -56,6 +56,7 @@ namespace GALILEI{
 
   class GWordOccur;
  class GDoc;
+
 //---------------------------------------------------------------------------
 // class GWordOccurs
 class GWordOccurs : public RContainer<GWordOccur,unsigned,true,true>

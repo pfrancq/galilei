@@ -44,11 +44,11 @@
 
 
 //---------------------------------------------------------------------------
-// include files for HyperPRISME
-#include "gwordoccurs.h"
+// include files for Galilei
+#include <gdocs/gwordoccurs.h>
+#include <gdocs/gwordoccur.h>
 
-
-using namespace GALILEI
+using namespace GALILEI;
 
 
 
@@ -61,18 +61,21 @@ using namespace GALILEI
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GWordOccurs::GWordOccurs(GDoc *owner,unsigned nb) throw(bad_alloc)
+
+GWordOccurs::GWordOccurs (GDoc *owner,unsigned nb) throw(bad_alloc)
 	: RContainer<GWordOccur,unsigned,true,true>(nb+nb/2,nb/2), Owner(owner)
+
 {
 }
 
 
 //---------------------------------------------------------------------------
+
 void GWordOccurs::Insert(unsigned id,GDoc *doc) throw(bad_alloc)
 {
-  GWordOccur *ptr;
 
-  ptr=new GWordOccur(id);
+  GWordOccur* ptr;
+  ptr= new GWordOccur(id);
   ptr->Doc=doc;
   InsertPtr(ptr);
 }
