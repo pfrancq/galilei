@@ -248,8 +248,8 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 		return(0.0);
 
 	// Compute Similarity
-	max1=GetMaxWeight();
-	max2=w->GetMaxWeight();
+	max1=abs(GetMaxWeight());
+	max2=abs(w->GetMaxWeight());
 	TotalRef=lang->GetRef(ObjType);
 	while(--i)
 	{
@@ -334,7 +334,8 @@ void GWeightInfos::RecomputeIFF(tObjType ObjType,GLang* lang) throw(GException)
 {
 	GWeightInfo** ptr;
 	unsigned int i;
-	double max,iff;
+	double max=abs(GetMaxWeight());
+	double iff;
 
 	if(!lang)
 		throw GException("No Language defined");
@@ -351,7 +352,7 @@ void GWeightInfos::RecomputeQuery(tObjType ObjType,GLang* lang) throw(GException
 {
 	GWeightInfo* ptr;
 	unsigned int i;
-	double max=GetMaxWeight();
+	double max=abs(GetMaxWeight());
 	double TotalRef;
 	double idffactor,nbref;
 	double freq;
