@@ -126,6 +126,10 @@ class GGroup;
 class GGroupCursor;
 class GGroupVector;
 class GGrouping;
+class GGroupingKCos;
+class GGroupingGGA;
+class GGroupingSim;
+class GGroupingRandom;
 class GGroupingCursor;
 class GGroupCalc;
 class GGroupCalcCursor;
@@ -146,6 +150,9 @@ class GHeuristicIR;
 class GTest;
 class GTests;
 class GSession;
+class GSessionPrg;
+class GPrgInst;
+class GPrgVar;
 class GSlot;
 
 
