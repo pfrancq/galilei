@@ -78,6 +78,18 @@ public:
 	GProfileCalcManager(const char* path) throw(GException);
 
 	/**
+	* Connect to a Session.
+	* @param session         The session.
+	*/
+	void Connect(GSession* session);
+
+	/**
+	* Disconnect from a Session.
+	* @param session         The session.
+	*/
+	void Disconnect(GSession* session);
+
+	/**
 	* Set the current method.
 	* @param name            Name of the method.
 	*/

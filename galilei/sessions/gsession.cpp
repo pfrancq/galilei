@@ -112,6 +112,8 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
 	CurrentRandom=0;
 	Random = new RRandomGood(CurrentRandom);
+	ProfilingMng->Connect(this);
+	GroupingMng->Connect(this);
 }
 
 
@@ -1074,6 +1076,8 @@ void GALILEI::GSession::ReInit(bool)
 //-----------------------------------------------------------------------------
 GALILEI::GSession::~GSession(void) throw(GException)
 {
+	ProfilingMng->Disconnect(this);
+	GroupingMng->Disconnect(this);
 	if(DocAnalyse) delete DocAnalyse;
 	if(DocOptions) delete DocOptions;
 	if(GroupCalcs) delete GroupCalcs;

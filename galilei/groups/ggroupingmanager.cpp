@@ -103,6 +103,39 @@ GGroupingManager::GGroupingManager(const char* path) throw(GException)
 		throw(GException(Msg));
 }
 
+
+//-----------------------------------------------------------------------------
+void GGroupingManager::Connect(GSession* session)
+{
+	GFactoryGroupingCursor Cur;
+	GGrouping* calc;
+
+	Cur.Set(this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		calc=Cur()->GetPlugin();
+		if(calc)
+			calc->Connect(session);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GGroupingManager::Disconnect(GSession* session)
+{
+	GFactoryGroupingCursor Cur;
+	GGrouping* calc;
+
+	Cur.Set(this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		calc=Cur()->GetPlugin();
+		if(calc)
+			calc->Connect(session);
+	}
+}
+
+
 //-----------------------------------------------------------------------------
 void GGroupingManager::SetCurrentMethod(const char* name) throw(GException)
 {

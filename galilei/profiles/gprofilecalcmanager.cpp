@@ -103,6 +103,39 @@ GProfileCalcManager::GProfileCalcManager(const char* path) throw(GException)
 		throw(GException(Msg));
 }
 
+
+//-----------------------------------------------------------------------------
+void GProfileCalcManager::Connect(GSession* session)
+{
+	GFactoryProfileCalcCursor Cur;
+	GProfileCalc* calc;
+
+	Cur.Set(this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		calc=Cur()->GetPlugin();
+		if(calc)
+			calc->Connect(session);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GProfileCalcManager::Disconnect(GSession* session)
+{
+	GFactoryProfileCalcCursor Cur;
+	GProfileCalc* calc;
+
+	Cur.Set(this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		calc=Cur()->GetPlugin();
+		if(calc)
+			calc->Connect(session);
+	}
+}
+
+
 //-----------------------------------------------------------------------------
 void GProfileCalcManager::SetCurrentMethod(const char* name) throw(GException)
 {
