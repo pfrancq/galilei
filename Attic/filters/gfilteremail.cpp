@@ -62,8 +62,9 @@ using namespace RXML;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterEMail::GFilterEMail(GURLManager* mng)
-	: GFilter(mng,"EMail Filter","text/email","$Revision$"), Buffer(0)
+GFilterEMail::GFilterEMail(GURLManager* mng,bool b)
+	: GFilter(mng,"EMail Filter","text/email","$Revision$"), Buffer(0), 
+	  BlankLines(b)
 {
 	AddMIME(mng,"text/email");
 }
@@ -78,32 +79,44 @@ bool GFilterEMail::ExtractCmd(char* line,RXMLTag* /*metaData*/)
 	while((*ptr)&&((isalnum(*ptr))||((*ptr)=='-')))
 		ptr++;
 
-	// If the next character is not a ':', this is not a cmd.
+	// Skip Spaces.
 	while((*ptr)&&(((*ptr)==' ')||((*ptr)=='\t')))
 		ptr++;
+
+	// If the next character is not a ':', this is not a cmd.
 	if((!(*ptr))||((*(ptr))!=':'))
 		return(false);
 
-	// After skipped the spaces, and separate the command pointed by cmd and
+	// Mark end of command Skip :
+	(*(ptr++))=0;
+
+	// After skipped the spaces, and separate the command pointed by line and
 	// the information pointed by ptr.
 	while((*ptr)&&(((*ptr)==' ')||((*ptr)=='\t')))
 		ptr++;
-	(*(ptr++))=0;
 
 	// Analyse the different metaData possible.
-	if(!strcasecmp(line,"subject"))
+	if((!strcasecmp(line,"subject"))&&(*ptr))
 	{
 		AnalyzeBlock(ptr,Doc->AddTitle());
 	}
-	else if(!strcasecmp(line,"summary"))
+	else if((!strcasecmp(line,"summary"))&&(*ptr))
 	{
 		AnalyzeBlock(ptr,Doc->AddSubject());
 	}
-	else if(!strcasecmp(line,"date"))
+	else if((!strcasecmp(line,"from"))&&(*ptr))
+	{
+		AnalyzeBlock(ptr,Doc->AddCreator());
+	}
+	else if((!strcasecmp(line,"organization"))&&(*ptr))
+	{
+		AnalyzeBlock(ptr,Doc->AddPublisher());
+	}
+	else if((!strcasecmp(line,"date"))&&(*ptr))
 	{
 		Doc->AddDate(ptr);
 	}
-	else if(!strcasecmp(line,"keywords"))
+	else if((!strcasecmp(line,"keywords"))&&(*ptr))
 	{
 		AnalyzeKeywords(ptr,',',Doc->AddSubject());
 	}
@@ -137,7 +150,7 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 	Buffer[statbuf.st_size]=0;
 	close(handle);
 	SkipSpaces();
-	Begin=Pos;
+
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
 	Doc->AddIdentifier(Doc->GetURL());
@@ -148,18 +161,18 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 	while((*Pos)&&Header)
 	{
 		// Read a line and Analyse it for a command.
+		Begin=Pos;
 		while((*Pos)&&((*Pos)!='\n')&&((*Pos)!='\r'))
 			Pos++;
 		tmp=(*Pos);
 		(*(Pos++))=0;      // Skip the end of line.
 		Header=ExtractCmd(Begin,part);
 
-		// If Multiple blank lines and last line is a command, skip them
-		if(Header)
+		// If Multiple blank lines are allowed and last line is a command, skip them
+		if(Header&&BlankLines)
 		{
 			while((*Pos)&&(((*Pos)=='\n')||((*Pos)=='\r')))
 				Pos++;
-			Begin=Pos;
 		}
 	}
 	(*(Pos-1))=tmp;
@@ -215,6 +228,20 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 
 	// Return OK
 	return(true);
+}
+
+
+//-----------------------------------------------------------------------------
+bool GFilterEMail::IsBlankLines(void)
+{
+	return(BlankLines);
+}
+
+
+//-----------------------------------------------------------------------------
+void GFilterEMail::SetBlankLines(bool b)
+{
+	BlankLines=b;
 }
 
 

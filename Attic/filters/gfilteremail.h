@@ -77,13 +77,19 @@ class GFilterEMail : public GFilter
 	*/
 	char* Begin;
 
+	/**
+	* Determine if blank lines are allowed between commands in
+	* the mails.
+	*/
+	bool BlankLines;
+
 public:
 
 	/**
 	* Construct the email filter for a specific email.
 	* @param mng            Manager.
 	*/
-	GFilterEMail(GURLManager* mng);
+	GFilterEMail(GURLManager* mng,bool b=false);
 
 protected:
 
@@ -110,6 +116,18 @@ public:
 	* @param doc            XML Structure that will represent the email.
 	*/
 	virtual bool Analyze(GDocXML* doc);
+
+	/**
+	* Determine if blank lines are allowed between two commands.
+	* @return true if it is allowed.
+	*/
+	bool IsBlankLines(void);
+
+	/**
+	* Select if blank lines are allowed between two commands.
+	* @param                    Allowed or not?
+	*/
+	void SetBlankLines(bool b);
 
 	/**
 	* Destructor of the email filter.
