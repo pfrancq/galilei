@@ -142,7 +142,7 @@ public:
 	* Constructor.
 	* @param session        Session.
 	*/
-	GProfileCalcFeedback(GFactoryProfileCalc* fac) throw(bad_alloc);
+	GProfileCalcFeedback(GFactoryProfileCalc* fac) throw(std::bad_alloc);
 
 	/**
 	* Configurations were applied from the factory.
@@ -165,13 +165,13 @@ public:
 	* Compute the global vectors.
 	* @param profile        Profile to compute.
 	*/
-	void ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc,GException);
+	void ComputeGlobal(GSubProfile* subprofile) throw(std::bad_alloc,GException);
 
 	/**
 	* Computes the subprofile of a profile.
 	* @param s              SubProfile to compute.
 	*/
-	void ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc,GException);
+	void ComputeSubProfile(GSubProfileVector* s) throw(std::bad_alloc,GException);
 
 	/**
 	* Compute a profile.
