@@ -55,6 +55,7 @@ namespace GALILEI
 	class QGSubProfileDescs;
 	class GProfile;
 	class QGProfile;
+	class GInOutputBase;
 }
 using namespace GALILEI;
 
@@ -80,6 +81,11 @@ class KViewProfile : public KView
 	QTabWidget* Infos;
 
 	/**
+	* Widget to handle the different information of the document.
+	*/
+	QTabWidget* InfosSub;
+
+	/**
 	* Widget to handle info about the user of the profile.
 	*/
 	QListView* User;
@@ -98,6 +104,16 @@ class KViewProfile : public KView
 	* Widget to handle the groups of the profile.
 	*/
 	QListView* Groups;
+
+	/**
+	* Widget to handle the Point of view of the profile.
+	*/
+	QListView* Pov;
+
+	/**
+	* Widget to handle the sub menu Point of view of the profile.
+	*/
+	QListView* PovSub;
 
 	/**
 	* Widget to handle profile information.
@@ -141,6 +157,26 @@ public:
 	* Construct the user' widget.
 	*/
 	void ConstructUser(void);
+
+	/**
+	* Construct the Pov widget.
+	*/
+	void ConstructPov(GProfile *profile);
+
+	/**
+	* Construct the second Pov widget.
+	*/
+	void ConstructPov2(GProfile *profile);
+
+	/**
+	* get the short name of the document.
+	*/
+	char * GetNameDoc(char *name);
+
+	/**
+	* Construct le list of POV for a given POV (level 0).
+	*/
+	void GetListSubPov(GInOutputBase *datainput);
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.
