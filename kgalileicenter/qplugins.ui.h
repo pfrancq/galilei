@@ -213,3 +213,37 @@ void QPlugins::slotStatCalcEnable( bool state )
 	QStatsCalcItem* f=dynamic_cast<QStatsCalcItem*>(Stats->currentItem());
 	f->Enable=state;
 }
+
+
+void QPlugins::changeLang(QListViewItem* item)
+{
+        	if(!item) return;
+	QLangItem* f=dynamic_cast<QLangItem*>(item);
+	EnableLang->setChecked(f->Enable);
+	ConfigLang->setEnabled(f->Fac->HasConfigure());
+	AboutLang->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::slotAboutLang()
+{
+    	if(!Langs->currentItem()) return;
+	QLangItem* f=dynamic_cast<QLangItem*>(Langs->currentItem());
+	f->Fac->About();
+}
+
+
+void QPlugins::slotConfigLang()
+{
+        	if(!Langs->currentItem()) return;
+	QLangItem* f=dynamic_cast<QLangItem*>(Langs->currentItem());
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotLangEnable( bool state )
+{
+        	if(!Langs->currentItem()) return;
+	QLangItem* f=dynamic_cast<QLangItem*>(Langs->currentItem());
+	f->Enable=state;
+}

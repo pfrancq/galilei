@@ -54,6 +54,11 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+// include files for current application
+#include "kgalileicenter.h"
+
+
+//-----------------------------------------------------------------------------
 /**
 * The QSessionProgressDlg provides a dialog box to show the progress of
 * something done on a session.
@@ -95,8 +100,16 @@ public:
 	/**
 	* Load a session.
 	* @param cmd            What to load.
+	* @param langs          Languages.
+	* @param umng           URL Manager.
+	* @param pmng           Profiling Manager.
+	* @param gmng           Grouping Manager.
+	* @param gcmng          Group Computing Manager.
+	* @param smng           Statistical Manager.
+	* @param lmng           Linking Manager.
 	*/
-	void LoadSession(unsigned int cmd) throw(GException,bad_alloc);
+	void LoadSession(unsigned int cmd,GLangs* langs,GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+		GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(GException,bad_alloc);
 
 	/**
 	* Create a XML structure.

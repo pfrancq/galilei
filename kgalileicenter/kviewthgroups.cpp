@@ -45,6 +45,7 @@ using namespace R;
 // include files for GALILEI
 #include <sessions/gsession.h>
 #include <langs/glang.h>
+#include <langs/glangs.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -157,16 +158,21 @@ void KViewThGroups::LoadGroups(const char* filename)
 	GLang* lang;
 	GProfile* prof;
 	GSubProfile* sub;
-	RContainerCursor<GLang,unsigned int,true,true> CurLang(Doc->GetSession()->GetLangs());
+	GFactoryLangCursor CurLang;
 
 	RTextFile f(filename);
 	f>>nb;
 	Groups=new RContainer<GGroups,unsigned int,true,true>(nb,nb/2);
+	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
-		Groups->InsertPtr(new GGroups(CurLang()));
+	{
+		lang=CurLang()->GetPlugin();
+		if(!lang) continue;
+		Groups->InsertPtr(new GGroups(lang));
+	}
 	for(i=0;i<nb;i++)
 	{
-		lang=Doc->GetSession()->GetLang(f.GetWord());
+		lang=Doc->GetSession()->GetLangs()->GetLang(f.GetWord());
 		f>>nbprof;
 		groups=Groups->GetPtr<const GLang*>(lang);
 		groups->InsertPtr(group=new GGroupVector(i,lang));
@@ -200,14 +206,19 @@ GGroup* KViewThGroups::GetCurrentGroup(void)
 //-----------------------------------------------------------------------------
 void KViewThGroups::ConstructThGroups(void)
 {
-	RContainerCursor<GLang,unsigned int,true,true> CurLang(Doc->GetSession()->GetLangs());
+	GFactoryLangCursor CurLang;
+	GLang* lang;
+
 
 	thGroups->clear();
+	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
-		GGroups* grs=Groups->GetPtr<const GLang*>(CurLang());
+		lang=CurLang()->GetPlugin();
+		if(!lang) continue;
+		GGroups* grs=Groups->GetPtr<const GLang*>(lang);
 		if(!grs) continue;
-		QListViewItemType* grsitem = new QListViewItemType(thGroups,CurLang()->GetName());
+		QListViewItemType* grsitem = new QListViewItemType(thGroups,lang->GetName());
 		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
 		for(grs->Start(); !grs->End(); grs->Next())
 		{
@@ -228,7 +239,8 @@ void KViewThGroups::ConstructThGroups(void)
 //-----------------------------------------------------------------------------
 void KViewThGroups::ConstructGroups(void)
 {
-	RContainerCursor<GLang,unsigned int,true,true> CurLang(Doc->GetSession()->GetLangs());
+	GFactoryLangCursor CurLang;
+	GLang* lang;
 	char tmp1[70];
 	char tmp2[30];
 
@@ -236,10 +248,13 @@ void KViewThGroups::ConstructGroups(void)
 	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());
 	setCaption(tmp1);
 	prGroups->clear();
+	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
-		GGroups* grs=Doc->GetSession()->GetGroups(CurLang());
-		QListViewItemType* grsitem = new QListViewItemType(prGroups,CurLang()->GetName());
+		lang=CurLang()->GetPlugin();
+		if(!lang) continue;
+		GGroups* grs=Doc->GetSession()->GetGroups(lang);
+		QListViewItemType* grsitem = new QListViewItemType(prGroups,lang->GetName());
 		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
 		for (grs->Start(); !grs->End(); grs->Next())
 		{

@@ -54,6 +54,7 @@
 #include <groups/ggroupcalcmanager.h>
 #include <sessions/gstatscalcmanager.h>
 #include <galilei/gurlmanagerkde.h>
+#include <langs/glangs.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 
@@ -108,6 +109,11 @@ class KView;
 class KGALILEICenterApp : public KMainWindow
 {
 	Q_OBJECT
+
+	/**
+	* Languages.
+	*/
+	GLangs Langs;
 
 	/**
 	* URL Manager.
@@ -624,6 +630,8 @@ public:
 	KToggleAction* viewToolBar;
 	KToggleAction* viewStatusBar;
 	KActionMenu* windowMenu;
+
+	friend class QSessionProgressDlg;
 };
 
 

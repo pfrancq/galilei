@@ -47,6 +47,7 @@
 #include <groups/ggroupcalc.h>
 #include <sessions/gstatscalc.h>
 #include <docs/glinkcalc.h>
+#include <langs/glang.h>
 using namespace GALILEI;
 
 
@@ -120,6 +121,18 @@ public:
 	GFactoryLinkCalc* Fac;
 	bool Enable;
 	QLinkCalcItem(QListView* lst,GFactoryLinkCalc* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+
+class QLangItem : public QListViewItem
+{
+public:
+	GFactoryLang* Fac;
+	bool Enable;
+	QLangItem(QListView* lst,GFactoryLang* fac,const char* desc)
 		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}

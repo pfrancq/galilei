@@ -154,16 +154,21 @@ GDoc* KViewDocs::GetCurrentDoc(void)
 void KViewDocs::CreateDocsListView(void)
 {
 	GDocCursor CurDocs=Doc->GetSession()->GetDocsCursor();
-	GLangCursor CurLang=Doc->GetSession()->GetLangsCursor();
-
-	RContainer<LangItem,unsigned int,true,true> LangItems(Doc->GetSession()->GetNbLangs());
+	GFactoryLangCursor CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
+	GLang* lang;
+	RContainer<LangItem,unsigned int,true,true> LangItems(Doc->GetSession()->GetLangs()->NbPtr);
 	const char* t;
 	const char det[]="Unknown";
 	const char* ptr;
 
 	// Go trough each language and create a Item.
+	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
 	for(CurLang.Start(); !CurLang.End(); CurLang.Next())
-		LangItems.InsertPtr(new LangItem(CurLang(),new QListViewItemType(Docs, CurLang()->GetName())));
+	{
+		lang=CurLang()->GetPlugin();
+		if(!lang) continue;
+		LangItems.InsertPtr(new LangItem(lang,new QListViewItemType(Docs,lang->GetName())));
+	}
 	LangItems.InsertPtr(new LangItem(0,new QListViewItemType(Docs, "????")));
 
 	// Go through the documents and attach to the item of the corresponding language.

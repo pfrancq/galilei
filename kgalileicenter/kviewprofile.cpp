@@ -262,17 +262,20 @@ void KViewProfile::ConstructFdbks(void)
 void KViewProfile::ConstructGroups(void)
 {
 	GSubProfile* sub;
-	RContainerCursor<GLang,unsigned int,true,true> CurLang(Doc->GetSession()->GetLangs());
+	GFactoryLangCursor CurLang;
+	GLang* lang;
 	char sDate[20];
 	const RDate* d;
 
 	Groups->clear();
+	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
-		GGroups* grs=Doc->GetSession()->GetGroups(CurLang());
-		QListViewItemType* grsitem = new QListViewItemType(Groups,CurLang()->GetName());
+		lang=CurLang()->GetPlugin();
+		GGroups* grs=Doc->GetSession()->GetGroups(lang);
+		QListViewItemType* grsitem = new QListViewItemType(Groups,lang->GetName());
 		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
-		sub=Profile->GetSubProfile(CurLang());
+		sub=Profile->GetSubProfile(lang);
 		if(!sub) continue;
 		for (grs->Start(); !grs->End(); grs->Next())
 		{
@@ -281,7 +284,7 @@ void KViewProfile::ConstructGroups(void)
 			for(gr->Start(); !gr->End(); gr->Next())
 			{
 				GSubProfile* sub=(*gr)();
-				
+
 				d=sub->GetAttached();
 				sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
 				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName(),sDate);
@@ -352,7 +355,7 @@ void KViewProfile::ConstructPov(GProfile *profile)
 	int i,j,k,z,l,pos;
 	int result = 0;
 	QTable *table;
-	lang=Doc->GetSession()->GetLang("en");   // A CORRIGER ERREUR POUR DEVELOPPEMENT
+	lang=Doc->GetSession()->GetLangs()->GetLang("en");   // A CORRIGER ERREUR POUR DEVELOPPEMENT
 
 	datainput = Doc->GetSession()->LoadPointOfView(profile->GetSubProfile(lang));
 	i = Doc->GetSession()->LevelExist(1, profile->GetSubProfile(lang)->GetId());
@@ -485,7 +488,7 @@ void KViewProfile::ConstructPov2(GProfile *profile)
 	char lword[128];
 	QListViewItem *p = 0;
 
-	lang=Doc->GetSession()->GetLang("en");   // A CORRIGER ERREUR POUR DEVELOPPEMENT
+	lang=Doc->GetSession()->GetLangs()->GetLang("en");   // A CORRIGER ERREUR POUR DEVELOPPEMENT
 	datainput = Doc->GetSession()->LoadPointOfView(profile->GetSubProfile(lang));
 
 	for(j = 0; j < x; j++)

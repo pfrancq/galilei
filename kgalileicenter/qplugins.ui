@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>465</width>
+            <width>515</width>
             <height>455</height>
         </rect>
     </property>
@@ -115,6 +115,101 @@
                             <widget class="QCheckBox">
                                 <property name="name">
                                     <cstring>EnableFilter</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>Enable filter</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Languages</string>
+                </attribute>
+                <vbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QListView">
+                        <column>
+                            <property name="text">
+                                <string>Languages</string>
+                            </property>
+                            <property name="clickable">
+                                <bool>true</bool>
+                            </property>
+                            <property name="resizable">
+                                <bool>true</bool>
+                            </property>
+                        </column>
+                        <property name="name">
+                            <cstring>Langs</cstring>
+                        </property>
+                        <property name="resizePolicy">
+                            <enum>Manual</enum>
+                        </property>
+                        <property name="resizeMode">
+                            <enum>AllColumns</enum>
+                        </property>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout2_3</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>ConfigLang</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>Configure</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>AboutLang</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>About</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer2_3</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Horizontal</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>40</width>
+                                        <height>20</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>EnableLang</cstring>
                                 </property>
                                 <property name="enabled">
                                     <bool>false</bool>
@@ -1052,6 +1147,30 @@
         <receiver>QPlugins</receiver>
         <slot>slotLinkCalcEnable(bool)</slot>
     </connection>
+    <connection>
+        <sender>Langs</sender>
+        <signal>clicked(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeLang(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>ConfigLang</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigLang()</slot>
+    </connection>
+    <connection>
+        <sender>AboutLang</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutLang()</slot>
+    </connection>
+    <connection>
+        <sender>EnableLang</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotLangEnable(bool)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">qplugins.ui.h</include>
@@ -1081,6 +1200,10 @@
     <slot>slotAboutStatCalc()</slot>
     <slot>slotConfigStatCalc()</slot>
     <slot>slotStatCalcEnable( bool state )</slot>
+    <slot>changeLang( QListViewItem * item )</slot>
+    <slot>slotAboutLang()</slot>
+    <slot>slotConfigLang()</slot>
+    <slot>slotLangEnable( bool state )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

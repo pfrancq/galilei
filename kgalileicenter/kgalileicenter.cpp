@@ -169,8 +169,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,DocOptions,&SessionParams,true);
 			unsigned int cmd=dlg.cbLoad->currentItem();
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
-			d->LoadSession(cmd);
-			Sess->Connect(&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
+			d->LoadSession(cmd,&Langs,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
 			Doc=new KDoc(this,Sess);
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
@@ -217,8 +216,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess = new GSessionMySQL(host,user,passwd,db,DocOptions,&SessionParams,true);
 	unsigned int cmd=dlg.cbLoad->currentItem();
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
-	d->LoadSession(cmd);
-	Sess->Connect(&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
+	d->LoadSession(cmd,&Langs,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
 	Doc=new KDoc(this,Sess);
 	sessionDisconnect->setEnabled(true);
 	sessionCompute->setEnabled(true);
@@ -736,17 +734,22 @@ void KGALILEICenterApp::slotTextEnglish(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotShowHistory(void)
 {
-	GLangCursor curlang;
+	GFactoryLangCursor curlang;
+	GLang* lang;
 	unsigned int size, min, max;
 
-	curlang=Doc->GetSession()->GetLangsCursor();
+	curlang=Doc->GetSession()->GetLangs()->GetLangsCursor();
 	size=Doc->GetSession()->GetHistorySize();
 
 	QHistoryDlg dlg(this,0,true);
 	dlg.TLMaxHistory->setText(QString("Max Historic ID (<")+QString(itoa(size))+QString(")"));
 	dlg.SBMaxId->setMaxValue(size-1);
 	for (curlang.Start(); !curlang.End(); curlang.Next())
-		dlg.CBLang->insertItem(curlang()->GetCode());
+	{
+		lang=curlang()->GetPlugin();
+		if(!lang) continue;
+		dlg.CBLang->insertItem(lang->GetCode());
+	}
 
 	KApplication::kApplication()->processEvents();
 	if(dlg.exec())

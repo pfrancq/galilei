@@ -136,7 +136,7 @@ KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget*
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/kmultiple.png"));
 	char tmp[10];
 
-	Lang=doc->GetSession()->GetLang(code);
+	Lang=doc->GetSession()->GetLangs()->GetLang(code);
 
 	// initialisation of the tab widget
 	Indexes=new QLabel(this,"Indexes");

@@ -247,7 +247,7 @@ void KViewDoc::ConstructResults(void)
 
 	for (Words.Start();!Words.End();Words.Next())
 	{
-		new QListViewItem(Results,Doc->GetSession()->GetWord(Words()->GetId(),Document->GetLang()), QString(dtoa(Words()->GetWeight())));
+		new QListViewItem(Results,Doc->GetSession()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode()), QString(dtoa(Words()->GetWeight())));
 	}
 }
 

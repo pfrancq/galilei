@@ -107,15 +107,19 @@ GGroup* KViewGroups::GetCurrentGroup(void)
 //-----------------------------------------------------------------------------
 void KViewGroups::ConstructGroups(void)
 {
-	RContainerCursor<GLang,unsigned int,true,true> CurLang(Doc->GetSession()->GetLangs());
+	GFactoryLangCursor CurLang;
+	GLang* lang;
 	char sDate[20];
 	const RDate* d;
 
 	Groups->clear();
+	CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
-		GGroups* grs=Doc->GetSession()->GetGroups(CurLang());
-		QListViewItemType* grsitem = new QListViewItemType(Groups,CurLang()->GetName());
+		lang=CurLang()->GetPlugin();
+		if(!lang) continue;
+		GGroups* grs=Doc->GetSession()->GetGroups(lang);
+		QListViewItemType* grsitem = new QListViewItemType(Groups,lang->GetName());
 		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
 		for (grs->Start(); !grs->End(); grs->Next())
 		{

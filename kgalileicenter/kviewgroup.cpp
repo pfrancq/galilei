@@ -250,7 +250,7 @@ void KViewGroup::ConstructDescription(void)
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		W.setNum(Cur()->GetWeight());
-		new QListViewItem(Vector,Doc->GetSession()->GetWord(Cur()->GetId(),Group->GetLang()),W);
+		new QListViewItem(Vector,Doc->GetSession()->LoadWord(Cur()->GetId(),Group->GetLang()->GetCode()),W);
 	}
 }
 
@@ -332,7 +332,7 @@ void KViewGroup::slotMenu(int)
 			memcpy(tab,doc->Tab,size*sizeof(GIWordWeight*));
 			qsort(static_cast<void*>(tab),size,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
 			for(j=21,size++,tmp=tab;(--j)&&(--size);tmp++)
-				Res<<"\t\t\t<Include Attribute=\""<<Doc->GetSession()->GetWord((*tmp)->GetId(),theDocs()->GetLang())<<"\"/>\n";
+				Res<<"\t\t\t<Include Attribute=\""<<Doc->GetSession()->LoadWord((*tmp)->GetId(),theDocs()->GetLang()->GetCode())<<"\"/>\n";
 		}
 		Res<<"\t\t</Object>\n";
 	}

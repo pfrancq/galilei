@@ -87,7 +87,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid)
 	: KView(doc,parent,name,wflags),
-	  Global(global), Lang(doc->GetSession()->GetLang(l)), MinGen(minid), MaxGen(maxid),CurId(0),  SubProfiles(0), Groups(0),  Sims(0)
+	  Global(global), Lang(doc->GetSession()->GetLangs()->GetLang(l)), MinGen(minid), MaxGen(maxid),CurId(0),  SubProfiles(0), Groups(0),  Sims(0)
 {
 	static char tmp[100];
 	GLang* lang;
@@ -119,7 +119,7 @@ KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	ToolBar->insertItem("Views",viewmenu);
 
 	// Window
-	lang=Doc->GetSession()->GetLang(l);
+	lang=Doc->GetSession()->GetLangs()->GetLang(l);
 	setCaption(QString("Show Store Chromosomes - ")+lang->GetName());
 
 	// Tab

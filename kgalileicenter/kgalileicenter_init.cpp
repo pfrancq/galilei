@@ -85,7 +85,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void)
-	: KMainWindow(0,"KGALILEICenterApp"), URLManager(getenv("GALILEI_PLUGINS_LIB")),
+	: KMainWindow(0,"KGALILEICenterApp"), Langs(getenv("GALILEI_PLUGINS_LIB")),URLManager(getenv("GALILEI_PLUGINS_LIB")),
 	  ProfilingManager(getenv("GALILEI_PLUGINS_LIB")), GroupingManager(getenv("GALILEI_PLUGINS_LIB")),
 	  GroupCalcManager(getenv("GALILEI_PLUGINS_LIB")), StatsCalcManager(getenv("GALILEI_PLUGINS_LIB")),
 	  LinkCalcManager(getenv("GALILEI_PLUGINS_LIB")),
@@ -261,6 +261,7 @@ void KGALILEICenterApp::saveOptions(void)
 
 	// Save Config
 	GConfig Conf("/etc/galilei/galilei.galileiconfig");
+	Conf.Store(Langs);
 	Conf.Store(URLManager);
 	Conf.Store(ProfilingManager);
 	Conf.Store(GroupingManager);
@@ -337,6 +338,7 @@ void KGALILEICenterApp::readOptions(void)
 	// Read Config
 	GConfig Conf("/etc/galilei/galilei.galileiconfig");
 	Conf.Load();
+	Conf.Read(Langs);
 	Conf.Read(URLManager);
 	Conf.Read(ProfilingManager);
 	Conf.Read(GroupingManager);
@@ -390,8 +392,8 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 
 	// Menu "Document"
 	showDocs->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
-	docAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDicsLoad());
-	docsAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad()&&Doc->GetSession()->IsDicsLoad());
+	docAnalyse->setEnabled(Doc);
+	docsAnalyse->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
 	//linksCalc->setEnabled(Doc&&Doc->GetSession()->IsDocsLoad());
 }
 

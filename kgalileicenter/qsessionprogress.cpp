@@ -69,7 +69,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-QSessionProgressDlg::QSessionProgressDlg( QWidget* parent,GSession* s,const char* c)
+QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char* c)
     : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), Session(s)
 {
 	resize(600, 78 );
@@ -94,7 +94,8 @@ QSessionProgressDlg::QSessionProgressDlg( QWidget* parent,GSession* s,const char
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::LoadSession(unsigned int cmd) throw(GException,bad_alloc)
+void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangs* langs,GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+		GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(GException,bad_alloc)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -114,15 +115,10 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd) throw(GException,bad_all
 		words=false;
 		cmd=0;
 	}
-	
 
-	// Look if dics must be loaded)
-	if((cmd==0)||(cmd==1))
-	{
-		txtRem->setText("Loading Dicionnaries/Stoplists ...");
-		KApplication::kApplication()->processEvents();
-		Session->InitDics();
-	}
+	txtRem->setText("Connect (Loading Dicionnaries/Stoplists) ...");
+	KApplication::kApplication()->processEvents();
+	Session->Connect(langs,umng,pmng,gmng,gcmng,smng,lmng);
 
 	Session->LoadSubjectTree();
 
@@ -158,7 +154,7 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd) throw(GException,bad_all
 		KApplication::kApplication()->processEvents();
 		Session->InitFdbks();
 	}
-	
+
 	txtRem->setText("Finish");
 	btnOk->setEnabled(true);
 }

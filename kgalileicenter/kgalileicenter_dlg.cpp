@@ -54,6 +54,8 @@ using namespace R;
 #include <profiles/gsubprofiledesc.h>
 #include <groups/ggrouping.h>
 #include <profiles/gprofilecalc.h>
+#include <langs/glang.h>
+#include <langs/glangs.h>
 using namespace GALILEI;
 
 
@@ -163,6 +165,7 @@ void KGALILEICenterApp::slotDocsOptions(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotPlugins(void)
 {
+	GFactoryLangCursor Lang;
 	GFactoryFilterCursor Filter;
 	GFactoryProfileCalcCursor ProfileCalc;
 	GFactoryLinkCalcCursor LinkCalc;
@@ -315,6 +318,27 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.CurrentLinkCalc->setEnabled(true);
 	}
 
+	// Goes through languages
+	def=cur=0;
+	Lang=Langs.GetLangsCursor();
+	for(Lang.Start();!Lang.End();Lang.Next())
+	{
+		str=Lang()->GetName();
+		str+=" [";
+		str+=Lang()->GetLib();
+		str+="]";
+		cur=new QLangItem(dlg.Langs,Lang(),str);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.Langs->setSelected(def,true);
+		dlg.changeLang(def);
+		dlg.EnableLang->setEnabled(true);
+	}
+
+
 	if(dlg.exec())
 	{
 		// Goes through filters
@@ -409,6 +433,17 @@ void KGALILEICenterApp::slotPlugins(void)
 		}
 		catch(GException)
 		{
+		}
+
+		// Goes through the languages method
+		QLangItem* item7=dynamic_cast<QLangItem*>(dlg.Langs->firstChild());
+		while(item7)
+		{
+			if(item7->Enable)
+				item7->Fac->Create(getSession());
+			else
+				item7->Fac->Delete(getSession());
+			item7=dynamic_cast<QLangItem*>(item7->itemBelow());
 		}
 	}
 
