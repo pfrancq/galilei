@@ -253,6 +253,7 @@ void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) thro
 	GIWordsWeights* Global=Vectors.GetPtr<GLang*>(s->GetLang());
 
 	// Clear the Vector.
+	s->RemoveRefs();
 	Vector->Clear();
 
 	// Choose the elements to stay.
@@ -279,6 +280,7 @@ void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) thro
 
 	// Sort the vector.
 	Vector->Sort();
+	s->UpdateRefs();
 }
 
 
