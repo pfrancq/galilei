@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GURLManagerCURL.cpp
+	GFilterManagerCURL.cpp
 
 	Manager to handle URL file using the CURL library - Implementation.
 
@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gurlmanagercurl.h>
+#include <docs/gfiltermanagercurl.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -80,20 +80,20 @@ int WriteTmpFile(void *buffer, size_t size, size_t nmemb, void *stream)
 
 //-----------------------------------------------------------------------------
 //
-// class GURLManagerCURL
+// class GFilterManagerCURL
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GURLManagerCURL::GURLManagerCURL(const char* path,bool dlg) throw(GException)
-	: GURLManager(path,dlg)
+GALILEI::GFilterManagerCURL::GFilterManagerCURL(const char* path,bool dlg) throw(GException)
+	: GFilterManager(path,dlg)
 {
 	Lib = curl_easy_init();
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GURLManagerCURL::Download(const char* URL,RString& tmpFile) throw(GException)
+void GALILEI::GFilterManagerCURL::Download(const char* URL,RString& tmpFile) throw(GException)
 {
 	struct DwnFile tmpfile;
 	int err;
@@ -116,14 +116,14 @@ void GALILEI::GURLManagerCURL::Download(const char* URL,RString& tmpFile) throw(
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GURLManagerCURL::Delete(RString& tmpFile) throw(GException)
+void GALILEI::GFilterManagerCURL::Delete(RString& tmpFile) throw(GException)
 {
 	remove(tmpFile);
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GURLManagerCURL::~GURLManagerCURL(void)
+GALILEI::GFilterManagerCURL::~GFilterManagerCURL(void)
 {
 	curl_easy_cleanup(Lib);
 }

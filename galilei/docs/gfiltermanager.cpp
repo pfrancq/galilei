@@ -2,7 +2,7 @@
 
 	R Project Library
 
-	GURLManager.cpp
+	GFilterManager.cpp
 
 	Generic Manager to handle URL file - Implementation.
 
@@ -43,8 +43,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gurlmanager.h>
-#include <filters/gfilter.h>
+#include <docs/gfiltermanager.h>
+#include <docs/gfilter.h>
 #include <docs/gdoc.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
@@ -55,12 +55,12 @@ using namespace ltmm;
 
 //-----------------------------------------------------------------------------
 //
-// class GURLManager::GMIMEFilter
+// class GFilterManager::GMIMEFilter
 //
 //-----------------------------------------------------------------------------
 
 
-class GURLManager::GMIMEFilter
+class GFilterManager::GMIMEFilter
 {
 public:
 	RString Name;
@@ -77,12 +77,12 @@ public:
 
 //-----------------------------------------------------------------------------
 //
-// class GURLManager
+// class GFilterManager
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GURLManager::GURLManager(const char* path,bool dlg) throw(GException)
+GALILEI::GFilterManager::GFilterManager(const char* path,bool dlg) throw(GException)
 	: R::RContainer<GFactoryFilter,unsigned int,true,true>(10,5), MIMES(50,25)
 {
 	DIR* dp;
@@ -151,26 +151,26 @@ GALILEI::GURLManager::GURLManager(const char* path,bool dlg) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GURLManager::Download(const char* /*URL*/,RString& /*tmpFile*/) throw(GException)
+void GALILEI::GFilterManager::Download(const char* /*URL*/,RString& /*tmpFile*/) throw(GException)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GURLManager::DetermineMIMEType(const char* /*tmpfile*/)
+const char* GALILEI::GFilterManager::DetermineMIMEType(const char* /*tmpfile*/)
 {
 	return(0);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GURLManager::Delete(RString& /*tmpFile*/) throw(GException)
+void GALILEI::GFilterManager::Delete(RString& /*tmpFile*/) throw(GException)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
+GDocXML* GALILEI::GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
 {
 	RString tmpFile(250);
 	char tmp[250];
@@ -254,14 +254,14 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GURLManager::AddMIME(const char* mime,GFilter* f)
+void GALILEI::GFilterManager::AddMIME(const char* mime,GFilter* f)
 {
 	MIMES.InsertPtr(new GMIMEFilter(mime,f));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GURLManager::DelMIMES(GFilter* f)
+void GALILEI::GFilterManager::DelMIMES(GFilter* f)
 {
 	RContainer<GMIMEFilter,unsigned int,false,false> Rem(5,5);
 
@@ -279,7 +279,7 @@ void GALILEI::GURLManager::DelMIMES(GFilter* f)
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GURLManager::GetMIMEType(const char* mime) const
+const char* GALILEI::GFilterManager::GetMIMEType(const char* mime) const
 {
 	GMIMEFilter* fil;
 
@@ -291,7 +291,7 @@ const char* GALILEI::GURLManager::GetMIMEType(const char* mime) const
 
 
 //-----------------------------------------------------------------------------
-GFactoryFilterCursor& GALILEI::GURLManager::GetFiltersCursor(void)
+GFactoryFilterCursor& GALILEI::GFilterManager::GetFiltersCursor(void)
 {
 	GFactoryFilterCursor *cur=GFactoryFilterCursor::GetTmpCursor();
 	cur->Set(this);
@@ -300,6 +300,6 @@ GFactoryFilterCursor& GALILEI::GURLManager::GetFiltersCursor(void)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GURLManager::~GURLManager(void)
+GALILEI::GFilterManager::~GFilterManager(void)
 {
 }

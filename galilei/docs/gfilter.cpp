@@ -34,39 +34,37 @@
 
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gfilter.h>
-#include <filters/gurlmanager.h>
+#include <docs/gfilter.h>
+#include <docs/gfiltermanager.h>
 using namespace GALILEI;
 using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GFilter
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GALILEI::GFilter::GFilter(GFactoryFilter* fac)
+//------------------------------------------------------------------------------
+GALILEI::GFilter::GFilter(GFactoryFilter* fac) throw(bad_alloc)
 	: GPlugin<GFactoryFilter>(fac), Doc(0)
 {
 }
 
 
-// //-----------------------------------------------------------------------------
-void GALILEI::GFilter::AddMIME(GURLManager* mng,const char* name)
+// //---------------------------------------------------------------------------
+void GALILEI::GFilter::AddMIME(const char* name) throw(bad_alloc)
 {
-	if(!mng) return;
-	mng->AddMIME(name,this);
+	GetFactory()->GetMng()->AddMIME(name,this);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
+//------------------------------------------------------------------------------
+void GALILEI::GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(bad_alloc,GException)
 {
 	char* ptr;
 	char* hold;
@@ -158,8 +156,8 @@ void GALILEI::GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
+//------------------------------------------------------------------------------
+void GALILEI::GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach) throw(bad_alloc,GException)
 {
 	RChar* ptr;
 	RChar* hold;
@@ -252,8 +250,8 @@ void GALILEI::GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
+//------------------------------------------------------------------------------
+void GALILEI::GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach) throw(bad_alloc,GException)
 {
 	char* ptr;
 	RXMLTag* kwd;
@@ -290,7 +288,45 @@ void GALILEI::GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void GALILEI::GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach) throw(bad_alloc,GException)
+{
+	RChar* ptr;
+	RXMLTag* kwd;
+	unsigned int len;
+
+	ptr=list;
+	while(!ptr->IsNull())
+	{
+		// Skip Spaces.
+		while((!ptr->IsNull())&&(ptr->IsSpace()))
+			ptr++;
+		list=ptr;
+
+		// Search the next keywords.
+		len=0;
+		while((!ptr->IsNull())&&(ptr->IsSpace())&&((*ptr)!=sep))
+		{
+			ptr++;
+			len++;
+		}
+		if(len)
+		{
+			attach->AddTag(kwd=new RXMLTag("docxml:keyword"));
+			if(!ptr->IsNull())
+				(*(ptr++))=0;          // Skip separator.
+			kwd->InsertAttr("docxml:value",list);
+		}
+		else
+		{
+			ptr++;
+			list=ptr;
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
 GALILEI::GFilter::~GFilter(void)
 {
 }

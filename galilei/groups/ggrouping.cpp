@@ -39,7 +39,7 @@
 // include files for GALILEI
 #include <groups/ggrouping.h>
 #include <infos/glang.h>
-#include <infos/glangs.h>
+#include <infos/glangmanager.h>
 #include <groups/ggroupcalc.h>
 #include <groups/ggroupcalcmanager.h>
 #include <groups/ggroupvector.h>

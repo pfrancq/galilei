@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GURLManagerCURL.h
+	GFilterManagerCURL.h
 
 	Manager to handle URL file using the CURL library - Header.
 
@@ -35,8 +35,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GURLManagerCURLH
-#define GURLManagerCURLH
+#ifndef GFilterManagerCURLH
+#define GFilterManagerCURLH
 
 
 //-----------------------------------------------------------------------------
@@ -46,8 +46,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
-#include <filters/gurlmanager.h>
+#include <docs/gfiltermanager.h>
 
 
 //-----------------------------------------------------------------------------
@@ -57,12 +56,12 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GURLManagerCURL class provides a representation for a manager using the
+* The GFilterManagerCURL class provides a representation for a manager using the
 * CURL library.
 * @author Pascal Francq
 * @short CURL URL Manager.
 */
-class GURLManagerCURL : public GURLManager
+class GFilterManagerCURL : public GFilterManager
 {
 	/**
 	* Pointer to an instance of the library.
@@ -76,7 +75,7 @@ public:
 	* @param path            Path to find the plugins.
 	* @param dlg             Should the dialog box be loaded.
 	*/
-	GURLManagerCURL(const char* path,bool dlg=true) throw(GException);
+	GFilterManagerCURL(const char* path,bool dlg=true) throw(GException);
 
 protected:
 
@@ -98,7 +97,7 @@ public:
 	/**
 	* Destructor of URL manager.
 	*/
-	virtual ~GURLManagerCURL(void);
+	virtual ~GFilterManagerCURL(void);
 };
 
 

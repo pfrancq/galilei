@@ -44,7 +44,7 @@
 // include files for GALILEI
 #include <sessions/gsessionmysql.h>
 #include <infos/glang.h>
-#include <infos/glangs.h>
+#include <infos/glangmanager.h>
 #include <infos/gdict.h>
 #include <infos/gwordlist.h>
 #include <infos/gword.h>

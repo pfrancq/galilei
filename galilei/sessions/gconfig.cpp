@@ -45,8 +45,8 @@
 // include files for GALILEI
 #include <sessions/gconfig.h>
 #include <sessions/gplugin.h>
-#include <filters/gurlmanager.h>
-#include <filters/gfilter.h>
+#include <docs/gfiltermanager.h>
+#include <docs/gfilter.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <profiles/gprofilecalc.h>
 #include <groups/ggroupingmanager.h>
@@ -60,7 +60,7 @@
 #include <docs/gpostdocmanager.h>
 #include <docs/gpostdoc.h>
 #include <infos/glang.h>
-#include <infos/glangs.h>
+#include <infos/glangmanager.h>
 #include <docs/gdocanalyse.h>
 #include <docs/gdocanalysemanager.h>
 #include <groups/gpostgroup.h>
@@ -139,7 +139,7 @@ void GConfig::Save(void) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GURLManager& mng)
+void GConfig::Read(GFilterManager& mng)
 {
 	GFactoryFilterCursor Cur;
 
@@ -153,7 +153,7 @@ void GConfig::Read(GURLManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GURLManager& mng)
+void GConfig::Store(GFilterManager& mng)
 {
 	GFactoryFilterCursor Cur;
 
@@ -433,7 +433,7 @@ void GConfig::Store(GPostDocManager& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Read(GLangs& mng)
+void GConfig::Read(GLangManager& mng)
 {
 	GFactoryLangCursor Cur;
 
@@ -447,7 +447,7 @@ void GConfig::Read(GLangs& mng)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Store(GLangs& mng)
+void GConfig::Store(GLangManager& mng)
 {
 	GFactoryLangCursor Cur;
 

@@ -44,7 +44,7 @@
 #include <docs/gdoc.h>
 #include <sessions/gsession.h>
 #include <infos/glang.h>
-#include <infos/glangs.h>
+#include <infos/glangmanager.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>

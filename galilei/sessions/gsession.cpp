@@ -44,7 +44,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/glang.h>
-#include <infos/glangs.h>
+#include <infos/glangmanager.h>
 #include <infos/gdict.h>
 #include <infos/gwordlist.h>
 #include <sessions/gsession.h>
@@ -84,8 +84,8 @@ using namespace R;
 #include <groups/ggroupcalc.h>
 #include <groups/ggroupcalcmanager.h>
 #include <groups/gsubjecttree.h>
-#include <filters/gurlmanager.h>
-#include <filters/gfilter.h>
+#include <docs/gfiltermanager.h>
+#include <docs/gfilter.h>
 #include <infos/gweightinfo.h>
 #include <historic/ggroupshistory.h>
 #include <groups/gpostgroup.h>
@@ -127,7 +127,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 
 
 //-----------------------------------------------------------------------------
-void GSession::Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng,
+void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng,
 	GGroupingManager* gmng, GGroupCalcManager* gcmng,GStatsCalcManager* smng,
 	GPostDocManager* pdmng,GPostGroupManager* pgmng) throw(bad_alloc,GException)
 

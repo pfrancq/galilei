@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GLangs.h
+	GLangManager.h
 
 	Manager for language plugins - Header.
 
@@ -35,8 +35,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GLangsH
-#define GLangsH
+#ifndef GLangManagerH
+#define GLangManagerH
 
 
 //------------------------------------------------------------------------------
@@ -51,12 +51,12 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GLangs class provides a representation for a manager for the languages
+* The GLangManager class provides a representation for a manager for the languages
 * handled by the system. In fact, each language is a plugin.
 * @author Pascal Francq
 * @short Languages.
 */
-class GLangs : public R::RContainer<GFactoryLang,unsigned,true,true>
+class GLangManager : public R::RContainer<GFactoryLang,unsigned,true,true>
 {
 public:
 
@@ -65,7 +65,7 @@ public:
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
-	GLangs(const char* path,bool dlg=true) throw(bad_alloc,GException);
+	GLangManager(const char* path,bool dlg=true) throw(bad_alloc,GException);
 
 	/**
 	* Connect to a Session.
@@ -95,7 +95,7 @@ public:
 	/**
 	* Destructor of the manager.
 	*/
-	virtual ~GLangs(void);
+	virtual ~GLangManager(void);
 };
 
 

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GLangs.h
+	GLangManager.h
 
 	Manager for language plugins - Implementation.
 
@@ -44,7 +44,7 @@
 
 //------------------------------------------------------------------------------
 // include file for Galilei
-#include <infos/glangs.h>
+#include <infos/glangmanager.h>
 #include <infos/glang.h>
 using namespace GALILEI;
 using namespace R;
@@ -54,12 +54,12 @@ using namespace ltmm;
 
 //------------------------------------------------------------------------------
 //
-// class GLangs
+// class GLangManager
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLangs::GLangs(const char* path,bool dlg) throw(bad_alloc,GException)
+GLangManager::GLangManager(const char* path,bool dlg) throw(bad_alloc,GException)
   : RContainer<GFactoryLang,unsigned,true,true>(10,5)
 {
 	DIR* dp;
@@ -128,7 +128,7 @@ GLangs::GLangs(const char* path,bool dlg) throw(bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-void GLangs::Connect(GSession* session) throw(GException)
+void GLangManager::Connect(GSession* session) throw(GException)
 {
 	GFactoryLangCursor Cur;
 	GLang* lang;
@@ -144,7 +144,7 @@ void GLangs::Connect(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GLangs::Disconnect(GSession* session) throw(GException)
+void GLangManager::Disconnect(GSession* session) throw(GException)
 {
 	GFactoryLangCursor Cur;
 	GLang* lang;
@@ -160,7 +160,7 @@ void GLangs::Disconnect(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
-GLang* GLangs::GetLang(const char* code) const
+GLang* GLangManager::GetLang(const char* code) const
 {
 	GFactoryLang* fac;
 
@@ -174,7 +174,7 @@ GLang* GLangs::GetLang(const char* code) const
 
 
 //------------------------------------------------------------------------------
-GFactoryLangCursor& GLangs::GetLangsCursor(void)
+GFactoryLangCursor& GLangManager::GetLangsCursor(void)
 {
 	GFactoryLangCursor *cur=GFactoryLangCursor::GetTmpCursor();
 	cur->Set(this);
@@ -183,6 +183,6 @@ GFactoryLangCursor& GLangs::GetLangsCursor(void)
 
 
 //------------------------------------------------------------------------------
-GLangs::~GLangs(void)
+GLangManager::~GLangManager(void)
 {
 }

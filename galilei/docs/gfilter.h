@@ -34,31 +34,32 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GFilterH
 #define GFilterH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
 #include <sessions/gplugin.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // API VERSION
 #define API_FILTER_VERSION "1.0"
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GFilter class provides a representation of a document to filter in a XML
-* structure.
+* The GFilter class provides a representation of a generic filter that transform
+* a document of a given type into a DocXML document. Each filter is associated
+* with a given set of MIME types. This association is used to determine which
+* filter should analyse a document.
 * @author Pascal Francq
 * @short Generic Filter.
 */
@@ -67,29 +68,30 @@ class GFilter : public GPlugin<GFactoryFilter>
 protected:
 
 	/**
-	* Structure corresponding to the document currently analyzed.
+	* DocXML document that will contain the result of the document analysis.
 	*/
 	GDocXML* Doc;
 
 public:
 
 	/**
-	* Construct the filter for a specific document.
+	* Construct the filter.
 	* @param fac            Factory.
 	*/
-	GFilter(GFactoryFilter* fac);
+	GFilter(GFactoryFilter* fac) throw(bad_alloc);
 
 protected:
 
 	/**
-	* Add a specific MIME-Type for this filter.
-	* @param mng            Manager.
+	* Add a specific MIME-Type for the filter.
 	* @param mime           Name of the MIME-Type.
 	*/
-	void AddMIME(GURLManager* mng,const char* mime);
+	void AddMIME(const char* mime) throw(bad_alloc);
 
 	/**
-	* @return true if the character represent a end of sentence.
+	* Test if a given character represent the end of a sentence.
+	* @param c               8-bit character to test.
+	* @return true if it is a end sentence character.
 	*/
 	static inline bool IsEndSentence(char c)
 	{
@@ -97,7 +99,9 @@ protected:
 	}
 
 	/**
-	* @return true if the character represent a end of sentence.
+	* Test if a given character represent the end of a sentence.
+	* @param c               Unicode character to test.
+	* @return true if it is a end sentence character.
 	*/
 	static inline bool IsEndSentence(R::RChar c)
 	{
@@ -105,18 +109,18 @@ protected:
 	}
 
 	/**
-	* Analyse a block of text and create a list of tags 'sentence'.
+	* Analyse a block of text and create a list of tags 'docxml:sentence'.
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeBlock(char* block,R::RXMLTag* attach);
+	void AnalyzeBlock(char* block,R::RXMLTag* attach) throw(bad_alloc,GException);
 
 	/**
-	* Analyse a block of text and create a list of tags 'sentence'.
+	* Analyse a block of text and create a list of tags 'docxml:sentence'.
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeBlock(R::RChar* block,R::RXMLTag* attach);
+	void AnalyzeBlock(R::RChar* block,R::RXMLTag* attach) throw(bad_alloc,GException);
 
 	/**
 	* Analyse a list of keywords sepating by a single character.
@@ -124,17 +128,25 @@ protected:
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeKeywords(char* list,char sep,R::RXMLTag* attach);
+	void AnalyzeKeywords(char* list,char sep,R::RXMLTag* attach) throw(bad_alloc,GException);
+
+	/**
+	* Analyse a list of keywords sepating by a single character.
+	* @param list           List of keywords.
+	* @param sep            Separator to use.
+	* @param attach         XML tag where the sentences must be attach.
+	*/
+	void AnalyzeKeywords(R::RChar* list,R::RChar sep,R::RXMLTag* attach) throw(bad_alloc,GException);
 
 public:
 
 	/**
-	* Analyze the document and fill the XML structure with the information
-	* about its content. This method must be reimplemented in the child
-	* classes.
-	* @param doc            XML Structure that will represent the document.
+	* Analyze the document and construct the DocXML document with the
+	* information about its content. This method must be reimplemented in the
+	* child classes.
+	* @param doc            XML Document that will represent the document.
 	*/
-	virtual bool Analyze(GDocXML* doc)=0;
+	virtual bool Analyze(GDocXML* doc) throw(bad_alloc,GException)=0;
 
 	/**
 	* Destructor of the filter.
@@ -143,8 +155,8 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
-class GFactoryFilter : public GFactoryPlugin<GFactoryFilter,GFilter,GURLManager>
+//------------------------------------------------------------------------------
+class GFactoryFilter : public GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>
 {
 public:
 	/**
@@ -153,7 +165,7 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryFilter(GURLManager* mng,const char* n,const char* f) : GFactoryPlugin<GFactoryFilter,GFilter,GURLManager>(mng,n,f) {}
+	GFactoryFilter(GFilterManager* mng,const char* n,const char* f) : GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>(mng,n,f) {}
 
 	/**
 	* Destructor.
@@ -162,67 +174,68 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
-typedef GFactoryFilter*(*GFactoryFilterInit)(GURLManager*,const char*);
-
-
 //------------------------------------------------------------------------------
-#define CREATE_FILTER_FACTORY(name,C)                                          \
-class TheFactory : public GFactoryFilter                                       \
-{                                                                              \
-private:                                                                       \
-	static GFactoryFilter* Inst;                                               \
-	TheFactory(GURLManager* mng,const char* l) : GFactoryFilter(mng,name,l)    \
-	{                                                                          \
-		C::CreateParams(this);                                                 \
-	}                                                                          \
-	virtual ~TheFactory(void) {}                                               \
-public:                                                                        \
-	static GFactoryFilter* CreateInst(GURLManager* mng,const char* l)          \
-	{                                                                          \
-		if(!Inst)                                                              \
-			Inst = new TheFactory(mng,l);                                      \
-		return(Inst);                                                          \
-	}                                                                          \
-	virtual const char* GetAPIVersion(void) const {return(API_FILTER_VERSION);}\
-	virtual void Create(void) throw(GException)                                \
-	{                                                                          \
-		if(Plugin) return;                                                     \
-		Plugin=new C(this);                                                    \
-		Plugin->ApplyConfig();                                                 \
-	}                                                                          \
-	virtual void Delete(void) throw(GException)                                \
-	{                                                                          \
-		if(!Plugin) return;                                                    \
-		Mng->DelMIMES(Plugin);                                                 \
-		delete Plugin;                                                         \
-		Plugin=0;                                                              \
-	}                                                                          \
-	virtual void Create(GSession*) throw(GException)  {}                       \
-	virtual void Delete(GSession*) throw(GException)  {}                       \
-};                                                                             \
-                                                                               \
-GFactoryFilter* TheFactory::Inst = 0;                                          \
-                                                                               \
-extern "C"                                                                     \
-{                                                                              \
-	GFactoryFilter* FactoryCreate(GURLManager* mng,const char* l)              \
-	{                                                                          \
-		return(TheFactory::CreateInst(mng,l));                                 \
-	}                                                                          \
+typedef GFactoryFilter*(*GFactoryFilterInit)(GFilterManager*,const char*);
+
+
+//-------------------------------------------------------------------------------
+#define CREATE_FILTER_FACTORY(name,C)                                                     \
+class TheFactory : public GFactoryFilter                                                  \
+{                                                                                         \
+private:                                                                                  \
+	static GFactoryFilter* Inst;                                                          \
+	TheFactory(GFilterManager* mng,const char* l) : GFactoryFilter(mng,name,l)               \
+	{                                                                                     \
+		C::CreateParams(this);                                                            \
+	}                                                                                     \
+	virtual ~TheFactory(void) {}                                                          \
+public:                                                                                   \
+	static GFactoryFilter* CreateInst(GFilterManager* mng,const char* l)                     \
+	{                                                                                     \
+		if(!Inst)                                                                         \
+			Inst = new TheFactory(mng,l);                                                 \
+		return(Inst);                                                                     \
+	}                                                                                     \
+	virtual const char* GetAPIVersion(void) const {return(API_FILTER_VERSION);}           \
+	virtual void Create(void) throw(GException)                                           \
+	{                                                                                     \
+		if(Plugin) return;                                                                \
+		Plugin=new C(this);                                                               \
+		Plugin->ApplyConfig();                                                            \
+	}                                                                                     \
+	virtual void Delete(void) throw(GException)                                           \
+	{                                                                                     \
+		if(!Plugin) return;                                                               \
+		Mng->DelMIMES(Plugin);                                                            \
+		delete Plugin;                                                                    \
+		Plugin=0;                                                                         \
+	}                                                                                     \
+	virtual void Create(GSession*) throw(GException)  {}                                  \
+	virtual void Delete(GSession*) throw(GException)  {}                                  \
+};                                                                                        \
+                                                                                          \
+GFactoryFilter* TheFactory::Inst = 0;                                                     \
+                                                                                          \
+extern "C"                                                                                \
+{                                                                                         \
+	GFactoryFilter* FactoryCreate(GFilterManager* mng,const char* l)                         \
+	{                                                                                     \
+		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
 }
 
 
 //------------------------------------------------------------------------------
 /**
-* The GFactoryFilterCursor class provides a way to go trough a set of factories.
+* The GFactoryFilterCursor class provides a way to go trough a set of factories
+* of filters.
 * @short Filters Factories Cursor
 */
 CLASSCURSOR(GFactoryFilterCursor,GFactoryFilter,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

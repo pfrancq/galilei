@@ -95,12 +95,12 @@ protected:
 	/**
 	* Pointer to the languages.
 	*/
-	GLangs* Langs;
+	GLangManager* Langs;
 
 	/**
 	* URL Manager used by this session.
 	*/
-	GURLManager* URLMng;
+	GFilterManager* URLMng;
 
 	/**
 	* Profile Calc Manager used by this session.
@@ -206,7 +206,7 @@ public:
 	* @param gcmng          Group Computing Manager.
 	* @param smng           Statistical Manager.
 	*/
-	void Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+	void Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(bad_alloc,GException);
 
 	/**
@@ -223,9 +223,9 @@ public:
 
 	/**
 	* Get the languages.
-	* @returns Pointer to a GLangs class.
+	* @returns Pointer to a GLangManager class.
 	*/
-	GLangs* GetLangs(void) const {return(Langs);}
+	GLangManager* GetLangs(void) const {return(Langs);}
 
 	/**
 	* Get the profiling manager used by this session.

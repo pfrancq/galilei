@@ -79,7 +79,7 @@ namespace GALILEI{
 class GFilter;
 class GFactoryFilter;
 class GFactoryFilterCursor;
-class GURLManager;
+class GFilterManager;
 
 
 //-----------------------------------------------------------------------------
@@ -92,7 +92,7 @@ class GInfosWeightsHistory;
 class GLang;
 class GFactoryLang;
 class GFactoryLangCursor;
-class GLangs;
+class GLangManager;
 class GData;
 class GDataCursor;
 class GWord;

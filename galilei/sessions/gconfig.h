@@ -141,13 +141,13 @@ public:
 	* Read the filters from the structure.
 	* @param mng             Manager.
 	*/
-	void Read(GURLManager& mng);
+	void Read(GFilterManager& mng);
 
 	/**
 	* Store the filters in the structure.
 	* @param mng             Manager.
 	*/
-	void Store(GURLManager& mng);
+	void Store(GFilterManager& mng);
 
 	/**
 	* Read the profiles computing methods from the structure.
@@ -239,13 +239,13 @@ public:
 	* Read the langauges.
 	* @param mng             Manager.
 	*/
-	void Read(GLangs& mng);
+	void Read(GLangManager& mng);
 
 	/**
 	* Store the languages.
 	* @param mng             Manager.
 	*/
-	void Store(GLangs& mng);
+	void Store(GLangManager& mng);
 
 	/**
 	* Read the DocAnalyse computing methods from the structure.

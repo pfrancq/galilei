@@ -262,7 +262,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-class GFactoryLang : public GFactoryPlugin<GFactoryLang,GLang,GLangs>
+class GFactoryLang : public GFactoryPlugin<GFactoryLang,GLang,GLangManager>
 {
 	/**
 	* Code of the language.
@@ -277,8 +277,8 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	* @param c               Code of the language.
 	*/
-	GFactoryLang(GLangs* mng,const char* n,const char* f,const char* c)
-		: GFactoryPlugin<GFactoryLang,GLang,GLangs>(mng,n,f) {strcpy(Code,c);}
+	GFactoryLang(GLangManager* mng,const char* n,const char* f,const char* c)
+		: GFactoryPlugin<GFactoryLang,GLang,GLangManager>(mng,n,f) {strcpy(Code,c);}
 
 	/**
 	* Compare function like strcmp used in particular for RContainer class.
@@ -306,7 +306,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-typedef GFactoryLang*(*GFactoryLangInit)(GLangs*,const char*);
+typedef GFactoryLang*(*GFactoryLangInit)(GLangManager*,const char*);
 
 
 //------------------------------------------------------------------------------
@@ -315,13 +315,13 @@ class TheFactory : public GFactoryLang                                         \
 {                                                                              \
 private:                                                                       \
 	static GFactoryLang* Inst;                                                 \
-	TheFactory(GLangs* mng,const char* l) : GFactoryLang(mng,name,l,code)      \
+	TheFactory(GLangManager* mng,const char* l) : GFactoryLang(mng,name,l,code)      \
 	{                                                                          \
 		C::CreateParams(this);                                                 \
 	}                                                                          \
 	virtual ~TheFactory(void) {}                                               \
 public:                                                                        \
-	static GFactoryLang* CreateInst(GLangs* mng,const char* l)                 \
+	static GFactoryLang* CreateInst(GLangManager* mng,const char* l)                 \
 	{                                                                          \
 		if(!Inst)                                                              \
 			Inst = new TheFactory(mng,l);                                      \
@@ -364,7 +364,7 @@ GFactoryLang* TheFactory::Inst = 0;                                            \
                                                                                \
 extern "C"                                                                     \
 {                                                                              \
-	GFactoryLang* FactoryCreate(GLangs* mng,const char* l)                     \
+	GFactoryLang* FactoryCreate(GLangManager* mng,const char* l)                     \
 	{                                                                          \
 		return(TheFactory::CreateInst(mng,l));                                 \
 	}                                                                          \

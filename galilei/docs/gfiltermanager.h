@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GURLManager.h
+	GFilterManager.h
 
 	Generic Manager to handle URL file - Header.
 
@@ -35,8 +35,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GURLManagerH
-#define GURLManagerH
+#ifndef GFilterManagerH
+#define GFilterManagerH
 
 
 //-----------------------------------------------------------------------------
@@ -51,13 +51,13 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GURLManager class provides a representation for a manager responsible to
+* The GFilterManager class provides a representation for a manager responsible to
 * transform generic URL into a local file. If needed, the file has to be
 * download and store locally.
 * @author Pascal Francq
 * @short Generic URL Manager.
 */
-class GURLManager : public R::RContainer<GFactoryFilter,unsigned int,true,true>
+class GFilterManager : public R::RContainer<GFactoryFilter,unsigned int,true,true>
 {
 	class GMIMEFilter;
 protected:
@@ -74,7 +74,7 @@ public:
 	* @param path            Path to find the plugins.
 	* @param dlg             Should the dialog box be loaded.
 	*/
-	GURLManager(const char* path,bool dlg=true) throw(GException);
+	GFilterManager(const char* path,bool dlg=true) throw(GException);
 
 protected:
 
@@ -137,7 +137,7 @@ public:
 	/**
 	* Destructor of URL manager.
 	*/
-	virtual ~GURLManager(void);
+	virtual ~GFilterManager(void);
 };
 
 
