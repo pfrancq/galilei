@@ -165,19 +165,19 @@ public:
 	* Compute the global vectors.
 	* @param profile        Profile to compute.
 	*/
-	void ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc);
+	void ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc,GException);
 
 	/**
 	* Computes the subprofile of a profile.
 	* @param s              SubProfile to compute.
 	*/
-	void ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc);
+	void ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc,GException);
 
 	/**
 	* Compute a profile.
 	* @param profile        Profile to compute.
 	*/
-	virtual void Compute(GSubProfile* subprofile);
+	virtual void Compute(GSubProfile* subprofile) throw(bad_alloc,GException);
 
 	/**
 	* Get the type of the method implemented. This method is used for the

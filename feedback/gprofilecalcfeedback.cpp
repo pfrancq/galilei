@@ -96,7 +96,7 @@ void GProfileCalcFeedback::Disconnect(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc)
+void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc,GException)
 {
 	GWeightInfoCursor Words;
 	GProfDocCursor Docs;
@@ -183,7 +183,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc)
+void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc,GException)
 {
 	GWeightInfo** ptr;
 	unsigned int i,nb;
@@ -228,7 +228,7 @@ void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_all
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
+void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(bad_alloc,GException)
 {
 	// Compute the global vectors.
 	ComputeGlobal(subprofile);
