@@ -11,10 +11,6 @@
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
 
-	Version $Revision$
-
-	Last Modify: $Date$
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -44,7 +40,6 @@
 //------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <iostream>
-#include <ltmm/loader.hh>
 #include <cstdlib>
 #include <stdexcept>
 using namespace std;
@@ -89,16 +84,21 @@ GSlotLog* Log=0;
 int main(int argc, char *argv[])
 {
 	// Init Part
-	map<string,ltmm::symbol_list>& preloaded =ltmm::loader<>::preloaded();
 	cout<<"GALILEI Update Version "<<VERSION<<endl;
-	cout<<"Copyright 1999-2003 by the Université Libre de Bruxelles"<<endl;
+	cout<<"Copyright 1999-2004 by the Université Libre de Bruxelles"<<endl;
 	try
 	{
-		char* lib=getenv("GALILEI_PLUGINS_LIB");
-		if(!lib)
-			lib=getenv("GALILEI_LIB");
-		if(!lib)
-			throw GException("GALILEI_LIB or GALILEI_PLUGINS_LIB must be defined");
+		RString lib;
+		RXMLTag* Tag;
+        
+		// Read Config
+		cout<<"Read Config ..."<<endl;
+		RXMLFile ConfigFile("/etc/galilei/galilei.conf",&Config,R::Read);
+		ConfigFile.Process();
+		Tag=Config.GetTag("Plugins");
+		if(!Tag)
+			throw GException("Problems with the configure file '/etc/galilei/galilei.conf'");
+		lib=Tag->GetAttrValue("Dir");
 
 		//------------------------------------------------------------------------------
 		// Managers
@@ -113,21 +113,21 @@ int main(int argc, char *argv[])
 		GPostDocManager PostDocManager(lib,false);
 		GPostGroupManager PostGroupManager(lib,false);
 
-		// Read Config
-		cout<<"Read Config"<<endl;
-		RXMLFile ConfigFile("/etc/galilei/galilei.conf",&Config,R::Read);
-		GConfig Conf(Config.GetTag("Config")->GetAttrValue("File"));
+		Tag=Config.GetTag("Config");
+		if(!Tag)
+			throw GException("Problems with the configure file '/etc/galilei/galilei.conf'");
+		GConfig Conf(Tag->GetAttrValue("File"));
 		Conf.Load();
-		Conf.Read(Langs);
-		Conf.Read(DocAnalyseManager);
-		Conf.Read(URLManager);
-		Conf.Read(ProfilingManager);
-		Conf.Read(GroupingManager);
-		Conf.Read(GroupCalcManager);
-		Conf.Read(StatsCalcManager);
-		Conf.Read(LinkCalcManager);
-		Conf.Read(PostDocManager);
-		Conf.Read(PostGroupManager);
+		Conf.Read(&Langs);
+		Conf.Read(&DocAnalyseManager);
+		Conf.Read(&URLManager);
+		Conf.Read(&ProfilingManager);
+		Conf.Read(&GroupingManager);
+		Conf.Read(&GroupCalcManager);
+		Conf.Read(&StatsCalcManager);
+		Conf.Read(&LinkCalcManager);
+		Conf.Read(&PostDocManager);
+		Conf.Read(&PostGroupManager);
 
 		// Options
 		GSessionParams SessionParams;
@@ -137,20 +137,20 @@ int main(int argc, char *argv[])
 		// Create Log files
 		Log=new GSlotLog(Config.GetTag("Log")->GetAttrValue("File"));
 		Log->WriteLog("GALILEI Update started");
-		cout<<"Connect to Session"<<endl;
+		cout<<"Connect to Session ..."<<endl;
 
 		// Init Session
 		GStorageMySQL Str(Config.GetTag("World")->GetAttrValue("Host"),
 							Config.GetTag("World")->GetAttrValue("User"),
 							Config.GetTag("World")->GetAttrValue("Pwd"),
-							Config.GetTag("World")->GetAttrValue("Name"));
+							Config.GetTag("World")->GetAttrValue("Name"),
+							Config.GetTag("World")->GetAttrValue("Encoding"));
 		GSession Session(&Str,&SessionParams,false);
-		Log->WriteLog("Session created");
-
-
-		// Load Data from MySQL database
 		Session.Connect(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
 			&GroupCalcManager,&StatsCalcManager,&PostDocManager,&PostGroupManager);
+		Log->WriteLog("Session created");
+
+		// Load Data from MySQL database
 		Str.LoadDocs(&Session);
 		Str.LoadGroups(&Session);
 		Str.LoadUsers(&Session);
@@ -158,11 +158,11 @@ int main(int argc, char *argv[])
 		Session.PostConnect(&LinkCalcManager);
 		Log->WriteLog("Data loaded");
 
-		cout<<"Analyse Documents."<<endl;
+		cout<<"Analyse Documents ..."<<endl;
 		Session.AnalyseDocs(Log,true);
-		cout<<"Compute Profiles."<<endl;
-		Session.CalcProfiles(Log,true,true);
-		cout<<"Groups Profiles."<<endl;
+		cout<<"Compute Profiles ..."<<endl;
+		Session.CalcProfiles(Log,true,true,true);
+		cout<<"Groups Profiles ..."<<endl;
 		Session.GroupingProfiles(Log,true,true,false);
 		Log->WriteLog("Session updated");
 
@@ -173,17 +173,26 @@ int main(int argc, char *argv[])
 	catch(GException& e)
 	{
 		cout<<"Error: "<<e.GetMsg()<<endl;
-		Log->WriteLog(RString("Error: ")+e.GetMsg());
+		if(Log)
+			Log->WriteLog(RString("Error: ")+e.GetMsg());
+	}
+	catch(RException& e)
+	{
+		cout<<"Error: "<<e.GetMsg()<<endl;
+		if(Log)
+			Log->WriteLog(RString("Error: ")+e.GetMsg());
 	}
 	catch(std::exception& e)
 	{
 		cout<<"Error: "<<e.what()<<endl;
-		Log->WriteLog(RString("Error: ")+e.what());
+		if(Log)
+			Log->WriteLog(RString("Error: ")+e.what());
 	}
 	catch(...)
 	{
 		cout<<"Error while processing"<<endl;
-		Log->WriteLog("Error while processing");
+		if(Log)
+			Log->WriteLog("Error while processing");
 	}
 
 	return(EXIT_SUCCESS);

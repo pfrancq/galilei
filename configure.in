@@ -1,3 +1,12 @@
+AC_INIT(configure.in)
+
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(upgalilei, 1.86)
+
+AC_LANG_CPLUSPLUS
+AC_PROG_CXX
+AM_PROG_LIBTOOL
+
 #MIN_CONFIG(3.0.0)
 #------------------------------------------------------------------------------#
 #                                                                              #
@@ -146,8 +155,8 @@ for l in rdb rga rga2d rgga rmath rprg rpromethee rstd; do
 	#AC_MSG_CHECKING(for lib$l)
 	for i in $R_LIB_PATH ; do
 		R_LIB_CHK($i/$l,$l)
-		R_LIB_CHK($i/lib/,$l)
-		R_LIB_CHK($i/lib/r,$l)
+		R_LIB_CHK($i/,$l)
+		R_LIB_CHK($i/r,$l)
 	done
 	AC_MSG_CHECKING(for lib$l)
 	if test -z "$R_LIB_DIR"; then
@@ -283,10 +292,17 @@ done
 
 #--------------------- END GALILEI LIB -----------------------------
 
+#--------------------- CHECK FOR RDEBUG ----------------------
+#---------------------Test if enable-debug is used -----------
+if test "$enable_debug" != "no"; then
+	CXXFLAGS="$CXXFLAGS -D_RDEBUG"
+fi
+
+#----------------- END CHECK FOR RDEBUG ----------------------
+
+
 AC_SUBST(UPGALILEI_ADD)
 
-AM_INIT_AUTOMAKE(upgalilei, 1.0)
-AC_C_BIGENDIAN
-AC_CHECK_KDEMAXPATHLEN
 
 CXXFLAGS="$CXXFLAGS $USE_EXCEPTIONS"
+AC_OUTPUT(Makefile src/Makefile)
