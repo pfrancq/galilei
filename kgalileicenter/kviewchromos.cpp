@@ -32,6 +32,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <stdlib.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rstring.h>
 using namespace RStd;
@@ -54,11 +59,39 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+// includes files for KDE
+#include <kapplication.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for current application
 #include "kdoc.h"
 #include "kviewchromos.h"
 #include "qsessionprogress.h"
 using namespace RTimeDate;
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class MyListViewItem
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class MyListViewItem : public QListViewItem
+{
+public:
+	MyListViewItem(QListView *parent,QString label1) : QListViewItem(parent,label1) {}
+	virtual int compare(QListViewItem *i,int col,bool) const
+	{
+		double diff=atof(text(col).latin1())-atof(i->text(col).latin1());
+		if(!diff) return(0);
+		if(diff>0)
+		    return(-1);
+		return(1);
+	}
+};
 
 
 
@@ -73,9 +106,6 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	: KView(doc,parent,name,wflags), IdealGroups(2,1), Lang(Doc->GetSession()->GetLang(l)),
 	  Global(global)
 {
-	// Load Ideal Groups;
-	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
-
 	// Construct chromosomes
 	General = new QListView(this);
 	General->addColumn("Id");
@@ -109,6 +139,14 @@ void KViewChromos::ConstructChromosomes(void)
 	GSubProfileCursor SubProfiles;
 	RGA::RObjs<GObjIR> Objs(SubProfiles.GetNb());
 
+	// Initialise the dialog box
+	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
+	d->show();
+	KApplication::kApplication()->processEvents();
+
+	// Load Ideal Groups;
+	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
+
 	// Construct the GA Objects
 	SubProfiles=Doc->GetSession()->GetSubProfilesCursor(Lang);
 	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
@@ -126,7 +164,8 @@ void KViewChromos::ConstructChromosomes(void)
 	for(i=Instance->PopSize+1,c=Instance->Chromosomes;--i;c++)
 	{
 		sprintf(tmp,"%u",(*c)->Id);
-		g=new QListViewItem(General,tmp);
+		d->receiveNextChromosome((*c)->Id);
+		g=new MyListViewItem(General,tmp);
 
 		(*c)->CompareIdeal(Doc->GetSession(),&IdealGroups);
 		sprintf(tmp,"%lf",(*c)->GetPrecision());
@@ -165,9 +204,9 @@ void KViewChromos::ConstructChromosomes(void)
 		g->setText(10,tmp);
 	}
 
-	// Delete local created objects.
-	if(Instance)
-		delete Instance;
+	// Finish.
+	delete Instance;
+	d->Finish();
 }
 
 
