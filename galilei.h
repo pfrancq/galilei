@@ -199,11 +199,12 @@ class GMixedIdealGroups;
 
 
 //-----------------------------------------------------------------------------
-// forward class declaration - Params Part
+// forward class declaration - Parameters Part
 // Grouping parameters
 class GGroupingParams;
 class GIRParams;
 class GKMeansParams;
+class GKProtosParams;
 class GCureParams;
 class GSimParams;
 // Computing parameters
