@@ -99,14 +99,14 @@ double GALILEI::GSubProfileVector::GlobalSimilarity(const GSubProfile* desc) con
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::Similarity(const GDoc* doc) const
 {
-	return(GIWordsWeights::Similarity(doc->GetWordWeights()));
+	return(GIWordsWeights::Similarity(doc));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(SimilarityIdf(doc->GetWordWeights(),otNoClass,Lang));
+	return(SimilarityIdf(doc,otNoClass,Lang));
 }
 
 

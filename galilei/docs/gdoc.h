@@ -70,12 +70,6 @@ class GDoc : public GIWordsWeights
 	unsigned int Id;
 
 	/**
-	* Information about the words containted in the document. Actually, only
-	* the weights associated with the words are used.
-	*/
-	GIWordsWeights* Words;
-
-	/**
 	* Total number of words.
 	*/
 	unsigned int N;
@@ -176,8 +170,9 @@ public:
 
 	/**
 	* This function clears the information related to the document.
+	* @param l              Must the language be removed.
 	*/
-	void ClearInfos(void);
+	void ClearInfos(bool l);
 
 	/**
 	* Clear The Fdbks Container
@@ -233,9 +228,8 @@ public:
 	* @param nd             Total number of different words.
 	* @param v              Total number of valid words.
 	* @param vd             Total number of different valid words.
-	* @param words          List of all valid words and their occurences.
 	*/
-	void SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd,GIWordsWeights* w);
+	void SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd);
 
 	/**
 	* Add a word with a certain occurences in the document.
@@ -268,11 +262,6 @@ public:
 	* @return Pointer to the Language.
 	*/
 	GLang* GetLang(void) const {return(Lang);}
-
-	/**
-	* @return Pointer to the language of the document.
-	*/
-//	GLang* GetLang(void) {return(Lang);}
 
 	/**
 	* @return Identificator of the document.
@@ -311,11 +300,6 @@ public:
 	* @return GProfDocCursor.
 	*/
 	GIWordWeightCursor& GetWordWeightCursor(void);
-
-	/**
-	* Get the information about the words.
-	*/
-	GIWordsWeights* GetWordWeights(void) const;
 
 	/**
 	* Compute the maximal weights of the index terms of the document.

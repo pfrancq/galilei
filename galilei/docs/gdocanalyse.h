@@ -37,16 +37,9 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rstring.h>
-#include <rstd/rdblhashcontainer.h>
-#include <rstd/rcontainercursor.h>
-#include <rxml/rxmltag.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <langs/glang.h>
 
 
 //-----------------------------------------------------------------------------
@@ -71,7 +64,7 @@ class GDocAnalyse
 	/**
 	* Cursor on the different languages defined in the system.
 	*/
-	RContainerCursor<GLang,unsigned,true,true> CurLangs;
+	GLangCursor CurLangs;
 
 	/**
 	* All the word appaering in the current document.
@@ -79,10 +72,9 @@ class GDocAnalyse
 	RStd::RDblHashContainer<WordWeight,unsigned,27,27,false>* Weights;
 
 	/**
-	* Information about the words containted in the document. Actually, only
-	* the number of occurences of the words are used.
+	* Current document to analyse.
 	*/
-	GIWordsWeights* Words;
+	GDoc* Doc;
 
 	/**
 	* Direct access to the words.

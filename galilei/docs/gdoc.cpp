@@ -70,8 +70,9 @@ using namespace RTimeDate;
 
 //-----------------------------------------------------------------------------
 GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int n,unsigned int ndiff,unsigned int v,unsigned int vdiff,unsigned int nbf) throw(bad_alloc)
-	: GIWordsWeights(vdiff>600?vdiff:600), URL(url), Name(name), Id(id), Words(0), N(n), V(v), Ndiff(ndiff), Vdiff(vdiff),
-	  Lang(lang), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2), Failed(f)
+	: GIWordsWeights(vdiff>600?vdiff:600), URL(url), Name(name), Id(id), N(n),
+	  V(v), Ndiff(ndiff), Vdiff(vdiff), Lang(lang), Type(t), Updated(u),
+	  Computed(a), Fdbks(nbf+nbf/2,nbf/2), Failed(f)
 {
 	if(Updated>Computed)
 	{
@@ -82,7 +83,6 @@ GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang
 	}
 	else
 		State=osUpToDate;
-	Words=new GIWordsWeights(vdiff>600?vdiff:600);
 }
 
 
@@ -115,14 +115,16 @@ int GALILEI::GDoc::Compare(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::ClearInfos(void)
+void GALILEI::GDoc::ClearInfos(bool l)
 {
-	Lang=0;
-	if(Words)
-	{
-		RemoveRefs();
-		Words->Clear();
-	}
+	if(l)
+		Lang=0;
+	N=0;
+	Ndiff=0;
+	V=0;
+	Vdiff=0;
+	RemoveRefs();
+	Clear();
 }
 
 
@@ -134,17 +136,13 @@ void GALILEI::GDoc::ClearFdbks(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd,GIWordsWeights* w)
+void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd)
 {
 	Lang=l;
 	N=n;
 	Ndiff=nd;
 	V=v;
 	Vdiff=vd;
-	if(Words)
-		delete Words;
-
-	Words=w;
 	UpdateRefs();
 	State=osUpdated;
 	Computed.SetToday();
@@ -156,7 +154,7 @@ void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned in
 //-----------------------------------------------------------------------------
 void GALILEI::GDoc::AddWord(const unsigned int id,const double nb)
 {
-	Words->InsertPtr(new GIWordWeight(id,nb));
+	InsertPtr(new GIWordWeight(id,nb));
 }
 
 
@@ -164,7 +162,7 @@ void GALILEI::GDoc::AddWord(const unsigned int id,const double nb)
 GIWordWeightCursor& GALILEI::GDoc::GetWordWeightCursor(void)
 {
 	GIWordWeightCursor *cur=GIWordWeightCursor::GetTmpCursor();
-	cur->Set(Words);
+	cur->Set(this);
 	return(*cur);
 }
 
@@ -172,14 +170,7 @@ GIWordWeightCursor& GALILEI::GDoc::GetWordWeightCursor(void)
 //-----------------------------------------------------------------------------
 double  GALILEI::GDoc::GetMaxWeight(void) const
 {
-	return(Words->GetMaxWeight());
-}
-
-
-//-----------------------------------------------------------------------------
-GIWordsWeights* GALILEI::GDoc::GetWordWeights(void) const
-{
-	return(Words);
+	return(GetMaxWeight());
 }
 
 
@@ -195,14 +186,14 @@ GProfDocCursor& GALILEI::GDoc::GetProfDocCursor(void)
 //-----------------------------------------------------------------------------
 double GALILEI::GDoc::Similarity(const GDoc* doc) const
 {
-	return(Words->Similarity(doc->Words));
+	return(GIWordsWeights::Similarity(doc));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GDoc::GlobalSimilarity(const GDoc* doc) const
 {
-	return(Words->SimilarityIdf(doc->Words,otDoc,Lang));
+	return(GIWordsWeights::SimilarityIdf(doc,otDoc,Lang));
 }
 
 
@@ -220,8 +211,8 @@ void GALILEI::GDoc::UpdateRefs(void) const
 
 	if(!Lang) return;
 	d=Lang->GetDict();
-	if(d&&Words)
-		Words->AddRefs(otDoc,d);
+	if(d)
+		AddRefs(otDoc,d);
 }
 
 
@@ -232,13 +223,12 @@ void GALILEI::GDoc::RemoveRefs(void) const
 
 	if(!Lang) return;
 	d=Lang->GetDict();
-	if(d&&Words)
-		Words->DelRefs(otDoc,d);
+	if(d)
+		DelRefs(otDoc,d);
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GDoc::~GDoc(void)
 {
-	if(Words) delete Words;
 }
