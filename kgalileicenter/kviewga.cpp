@@ -38,6 +38,8 @@
 #include <groups/ginstir.h>
 #include <groups/ggroupir.h>
 #include <groups/gobjir.h>
+#include <groups/ggroups.h>
+#include <groups/ggroup.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofilessim.h>
@@ -69,7 +71,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char*
 	: KView(doc,parent,name,wflags), RGASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>(),
 	  CurId(0), Instance(0), Gen(0), PopSize(0),ParamsSim(0.2,0.05,1.0),
 	  ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0), ParamsDiff(0.2,0.05,1.0),
-	  SubProfiles(0), Objs(0), Sims(0)
+	  SubProfiles(0), Objs(0), Sims(0), IdealGroups(2,1)
 {
 	static char tmp[100];
 	GLang* lang;
@@ -108,6 +110,9 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char*
 	connect(this,SIGNAL(signalSetGen(const unsigned int,const unsigned int,const double)),Monitor,SLOT(slotSetGen(const unsigned int,const unsigned int,const double)));
 	Debug=new QXMLContainer(StatSplitter,"GALILEI Genetic Algorithms","Pascal Francq");
 
+	// Load Ideal Groups;
+	Doc->GetSession()->LoadIdealGroupment(&IdealGroups);
+
 	// Go through the profiles corresponding to the language and that are
 	// to inserted.
 	GProfileCursor cur=Doc->GetSession()->GetProfilesCursor();
@@ -130,13 +135,14 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char*
 	// Create GA
 	try
 	{
-		Instance=new GInstIR(MinSimLevel,MaxGen,PopSize,0,Objs,global,Sims,RGGA::FirstFit,Debug);
+		Instance=new GInstIR(Doc->GetSession(),lang,MinSimLevel,MaxGen,PopSize,0,Objs,global,Sims,RGGA::FirstFit,Debug);
 		Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
 		Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
 		Instance->SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
 		Instance->SetCriterionParam("Diff Factor",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
 		Instance->AddReceiver(this);
 		Instance->Init(&g);
+		Instance->SetIdealGroups(&IdealGroups);
 	}
 	catch(eGA& e)
 	{

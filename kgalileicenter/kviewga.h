@@ -51,6 +51,7 @@ using namespace RPromethee;
 #include <groups/gir.h>
 #include <groups/gchromoir.h>
 #include <groups/ginstir.h>
+#include <groups/ggroupinggga.h>
 #include <galilei/qggroupsir.h>
 using namespace GALILEI;
 
@@ -182,6 +183,11 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	* Similarities between the subprofiles to group.
 	*/
 	GProfilesSim* Sims;
+
+	/**
+	* Ideal Groups handled by the system.
+	*/
+	RStd::RContainer<GGroups,unsigned int,true,true> IdealGroups;
 
 public:
 
