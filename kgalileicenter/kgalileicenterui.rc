@@ -9,6 +9,7 @@
 		<separator/>
 		<Action name="sessionCompute"/>
 		<Action name="runProgram"/>
+		<Action name="runInsts"/>
 		<separator/>
  		<Action name="sessionTest"/>
 		<separator/>

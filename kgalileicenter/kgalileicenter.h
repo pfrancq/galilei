@@ -407,6 +407,11 @@ private slots:
 	void slotRunProgram(void);
 
 	/**
+	* Run some instructions.
+	*/
+	void slotRunInsts(void);
+
+	/**
 	* Called when the option about the profile's has to be changed.
 	*/
 	void slotDocsOptions(void);
@@ -533,6 +538,7 @@ public:
 	KAction* docsOptions;
 
 	KAction* runProgram;
+	KAction* runInsts;
 
 	KAction* windowTile;
 	KAction* windowCascade;

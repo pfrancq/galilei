@@ -4,9 +4,9 @@
 
 	KViewStat.h
 
-	Basic Window for the application - Header.
+	Window for the running some instruction to the session - Header.
 
-	(C) 2001 by Pascal Francq
+	(C) 2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -37,8 +37,16 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainer.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
 // include files for Qt
 #include <qwidget.h>
+class QLineEdit;
+class QMultiLineEdit;
 
 
 //-----------------------------------------------------------------------------
@@ -47,16 +55,41 @@
 
 
 //-----------------------------------------------------------------------------
+// forward class declaration
+class KStatInst;
+
+
+//-----------------------------------------------------------------------------
 /**
-* The KViewStat class provides the view widget for statistics about a set of
-* documents.
+* The KViewStat class provides the view widget for running some instructions on
+* a session.
 * @author Pascal Francq.
 * @version $Revision$
-* @short Window for Statistics.
+* @short Window for Instructions.
 */
-class KViewStat : public KView
+class KViewStat : public KView, RContainer<KStatInst,unsigned int,true,true>
 {
 	Q_OBJECT
+
+	/**
+	* Width of the label.
+	*/
+	int LabelWidth;
+
+	/**
+	* Command to execute.
+	*/
+	QLineEdit* Cmd;
+
+	/**
+	* Results of the command.
+	*/
+	QMultiLineEdit* Result;
+
+	/**
+	* Buffer containing the information.
+	*/
+	char Buffer[10000];
 
 public:
 
@@ -72,13 +105,20 @@ public:
 	/**
 	* Return the type of the window.
 	*/
-	virtual GViewType getType(void) {return(gDocsStat);}
+	virtual GViewType getType(void) {return(gInsts);}
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.
 	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
 	*/
 	virtual void update(unsigned int cmd);
+
+public slots:
+
+	/**
+	* Slot called when a new command is to execute.
+	*/
+	void slotNewCmd(void);
 
 protected:
 

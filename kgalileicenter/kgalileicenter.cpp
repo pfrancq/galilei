@@ -159,6 +159,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			textEnglish->setEnabled(true);
 			plugins->setEnabled(true);
 			runProgram->setEnabled(true);
+			runInsts->setEnabled(true);
 			UpdateMenusEntries();
 			dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
 		}
@@ -582,7 +583,7 @@ void KGALILEICenterApp::slotStatusMsg(const QString& text)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotRunProgram()
+void KGALILEICenterApp::slotRunProgram(void)
 {
  	QString tmpfile;
 	char tmp[100];
@@ -613,6 +614,15 @@ void KGALILEICenterApp::slotRunProgram()
 		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
 	}
 	KIO::NetAccess::removeTempFile( tmpfile );
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotRunInsts(void)
+{
+	KApplication::kApplication()->processEvents();
+	createClient(Doc,new KViewStat(Doc,pWorkspace,"Run Instructions",0));
+	KApplication::kApplication()->processEvents();
 }
 
 
