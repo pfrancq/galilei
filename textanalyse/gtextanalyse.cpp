@@ -172,7 +172,7 @@ void GTextAnalyse::Connect(GSession* session) throw(GException)
 	CurLangs=Session->GetLangs()->GetLangsCursor();
 	Sl=new unsigned int[CurLangs.GetNb()];
 	Sldiff=new unsigned int[CurLangs.GetNb()];
-	Weights=new RDblHashContainer<WordWeight,unsigned,27,27,false>(500,250);
+	Weights=new RDblHashContainer<WordWeight,27,27,false>(500,250);
 	Direct=new WordWeight*[NbDirect];
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)=new WordWeight(CurLangs.GetNb());
@@ -233,8 +233,8 @@ void GTextAnalyse::Clear(void)
 	WordWeight** ptr;
 	GWord** pt;
 	unsigned int i,j;
-	RContainer<WordWeight,unsigned int,false,true>*** ptr1;
-	RContainer<WordWeight,unsigned int,false,true>** ptr2;
+	RContainer<WordWeight,false,true>*** ptr1;
+	RContainer<WordWeight,false,true>** ptr2;
 
 	memset(Sl,0,sizeof(unsigned int)*CurLangs.GetNb());
 	memset(Sldiff,0,sizeof(unsigned int)*CurLangs.GetNb());
@@ -377,7 +377,7 @@ void GTextAnalyse::AddWord(const RString word,double weight) throw(bad_alloc)
 	bool Find;
 	unsigned int Index;
 	WordWeight* w;
-	RContainer<WordWeight,unsigned int,false,true>* Section;
+	RContainer<WordWeight,false,true>* Section;
 	unsigned int i;
 	bool *is;
 	unsigned int* tmp1;
@@ -616,7 +616,7 @@ void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
+void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,false,true>* DocsToAdd) throw(GException)
 {
 //	const char* ptr;
 //	const char* endPtr;
@@ -834,7 +834,7 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,false,true>* tmpDocs) throw(GException)
+void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* tmpDocs) throw(GException)
 {
 	RXMLTag* content;
 	RXMLTag* metadata;
@@ -842,7 +842,7 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,f
 	RXMLTag* Title;
 	RString Name;
 	GLang* oldlang;
-	RCursor<RXMLTag,unsigned int> Tags;
+	RCursor<RXMLTag> Tags;
 
 	// Init Part and verification
 	if(!xml)

@@ -6,7 +6,7 @@
 
 	Analyse a document - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -69,7 +69,7 @@ class GTextAnalyse : public GDocAnalyse
 	/**
 	* All the word appearing in the current document.
 	*/
-	R::RDblHashContainer<WordWeight,unsigned,27,27,false>* Weights;
+	R::RDblHashContainer<WordWeight,27,27,false>* Weights;
 
 	/**
 	* Direct access to the words.
@@ -293,7 +293,7 @@ protected:
 	* @param tag            Tag to analyse.
 	* @param tmpDocs        A pointer to a container of docs to maintain the documents to be added.
 	*/
-	void AnalyseLinksTag(R::RXMLTag* tag,bool externalLinks ,R::RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException);
+	void AnalyseLinksTag(R::RXMLTag* tag,bool externalLinks ,R::RContainer<GDoc,false,true>* DocsToAdd) throw(GException);
 
 	/**
 	* This methods determine the language of the current structure studied,
@@ -321,7 +321,7 @@ public:
 	* @param doc            Corresponding document.
 	* @param tmpDocs        Container that will hold the added docs.
 	*/
-	virtual void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException);
+	virtual void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,false,true>* tmpDocs=0) throw(GException);
 
 	/**
 	* Create the parameters.
