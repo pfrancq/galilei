@@ -141,7 +141,6 @@ protected:
 	*/
 	GLinkCalc* LinkCalc;
 
-	
 	/**
 	* URL Manager used by this session.
 	*/
@@ -373,7 +372,7 @@ public:
 	*/
 	void RegisterLinkCalcMethod(GLinkCalc* lnk) throw(bad_alloc);
 
-  /**
+	/**
 	* Set the current link description method.
 	* @param name           Name of the link description method.
 	*/
@@ -426,7 +425,7 @@ public:
 	*/
 	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
 
-  /**
+	/**
 	* Compute the links for all documents
 	* @param rec        Receiver for the signals.
 	*/
@@ -660,7 +659,6 @@ public:
 	*/
 	virtual void LoadIdealGroupment()=0;
 
-
 	/**
 	* Save the ideal groupment
 	* @param idealgroup   The ideal container of group	
@@ -757,7 +755,7 @@ public:
 	*returns the number of historic groups stored in database.
 	*/
 	virtual unsigned int GetHistorySize(void) =0;
-	
+
 	/**
 	* Destructor.
 	*/
