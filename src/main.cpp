@@ -151,7 +151,6 @@ int main(int argc, char *argv[])
 		Session.PostConnect(&LinkCalcManager);
 		Session.InitProfilesSims();
 		Session.InitProfilesBehaviours();
-		Session.InitDocProfSims();
 		Log->WriteLog("Data loaded");
 
 // 		try
