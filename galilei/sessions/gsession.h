@@ -32,7 +32,7 @@
 #include <glangs/glangs.h>
 #include <glangs/gdicts.h>
 #include <gprofiles/gusers.h>
-#include <ggroups/ggroupslangs.h>
+#include <ggroups/ggroups.h>
 #include <gdocs/gdocs.h>
 
 
