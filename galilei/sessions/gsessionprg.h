@@ -149,7 +149,7 @@ public:
 class GSM : public GPrgFunc
 {
 public:
-	char tmp[300];
+	char tmp[3000];
 	GPrgClassSession* Owner;
 	GSM(const char* name,GPrgClassSession* o)
 		: GPrgFunc(name), Owner(o) {}
@@ -296,9 +296,8 @@ public:
 //-----------------------------------------------------------------------------
 class GStatsDocsI : public GSM
 {
-	GStatSimDoc DocStats;
 public:
-	GStatsDocsI(GPrgClassSession* o) : GSM("StatsDocs",o), DocStats(Owner->Session) {}
+	GStatsDocsI(GPrgClassSession* o) : GSM("StatsDocs",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
@@ -326,6 +325,24 @@ class GRunQueriesI : public GSM
 {
 public:
 	GRunQueriesI(GPrgClassSession* o) : GSM("RunQueries",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GStatsProfilesDocsI : public GSM
+{
+public:
+	GStatsProfilesDocsI(GPrgClassSession* o) : GSM("StatsProfilesDocs",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GStatsGroupsDocsI : public GSM
+{
+public:
+	GStatsGroupsDocsI(GPrgClassSession* o) : GSM("StatsGroupsDocs",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
