@@ -108,7 +108,7 @@ public:
 	virtual double Similarity(const GSubProfile* desc) const;
 
 	/**
-	* Compute similarity between a subprofile and a subprofile.
+	* Compute similarity between a subprofile and a document.
 	*/
 	virtual double Similarity(const GDoc* doc) const;
 

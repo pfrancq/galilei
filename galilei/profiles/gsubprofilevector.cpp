@@ -87,81 +87,14 @@ void GALILEI::GSubProfileVector::AddWord(unsigned int id,double w) throw(bad_all
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::Similarity(const GSubProfile* desc) const
 {
-	double Sim=0.0;
-	GIWordWeight** ptr=Vector->Tab;
-	GIWordWeight** ptr2=((GSubProfileVector*)desc)->Vector->Tab;
-	unsigned int i=Vector->NbPtr+1;
-	unsigned int j=((GSubProfileVector*)desc)->Vector->NbPtr;
-	double norm1=0.0;
-	double norm2=0.0;
-
-	while(--i)
-	{
-		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
-		{
-			j--;
-			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
-			ptr2++;
-		}
-		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
-		{
-			j--;
-			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
-			Sim+=(*ptr)->GetWeight()*(*ptr2)->GetWeight();
-			ptr2++;
-		}
-		norm1+=(*ptr)->GetWeight()*(*ptr)->GetWeight();
-		ptr++;
-	}
-	while(j)
-	{
-		j--;
-		norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
-		ptr2++;
-	}
-	Sim/=(sqrt(norm1)*sqrt(norm2));
-	return(Sim);
+	return(Vector->Similarity((static_cast<const GSubProfileVector*>(desc))->Vector));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::Similarity(const GDoc* doc) const
 {
-	double Sim=0.0;
-	GIWordWeight** ptr=Vector->Tab;
-	GIWordWeight** ptr2;
-	unsigned int i=Vector->NbPtr+1;
-	unsigned int j;
-	double norm1=0.0;
-	double norm2=0.0;
-
-	doc->GetWordWeights(ptr2,j);
-	while(--i)
-	{
-		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
-		{
-			j--;
-			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
-			ptr2++;
-		}
-		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
-		{
-			j--;
-			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
-			Sim+=(*ptr)->GetWeight()*(*ptr2)->GetWeight();
-			ptr2++;
-		}
-		norm1+=(*ptr)->GetWeight()*(*ptr)->GetWeight();
-		ptr++;
-	}
-	while(j)
-	{
-		j--;
-		norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
-		ptr2++;
-	}
-	Sim/=(sqrt(norm1)*sqrt(norm2));
-	return(Sim);
+	return(Vector->Similarity(doc->GetWordWeights()));
 }
 
 

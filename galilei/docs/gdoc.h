@@ -322,7 +322,7 @@ public:
 	/**
 	* Get the information about the words.
 	*/
-	void GetWordWeights(GIWordWeight** &w,unsigned int &nb) const;
+	GIWordsWeights* GetWordWeights(void) const;
 
 	/**
 	* Compute the maximal weights of the index terms of the document.
