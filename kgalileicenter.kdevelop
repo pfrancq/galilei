@@ -9,8 +9,8 @@
       <keyword>KDE</keyword>
       <keyword>Qt</keyword>
     </keywords>
-    <projectdirectory>.</projectdirectory>
-    <absoluteprojectpath>false</absoluteprojectpath>
+    <projectdirectory>/home/pfrancq/prj/kgalileicenter</projectdirectory>
+    <absoluteprojectpath>true</absoluteprojectpath>
     <version></version>
     <description></description>
     <ignoreparts/>
@@ -28,34 +28,20 @@
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
       <makebin></makebin>
+      <envvars>
+        <envvar value="1" name="WANT_AUTOCONF_2_5" />
+        <envvar value="1" name="WANT_AUTOMAKE_1_6" />
+      </envvars>
     </make>
     <compiler>
       <cflags/>
       <cxxflags>\s-O0 -g3 -Wall</cxxflags>
     </compiler>
-    <makeenvvars>
-      <envvar value="1" name="WANT_AUTOCONF_2_5" />
-      <envvar value="1" name="WANT_AUTOMAKE_1_6" />
-    </makeenvvars>
-    <configurations>
-      <default>
-        <configargs></configargs>
-        <builddir></builddir>
-        <topsourcedir></topsourcedir>
-        <ccompiler>GccOptions</ccompiler>
-        <cxxcompiler>GppOptions</cxxcompiler>
-        <f77compiler>G77Options</f77compiler>
-        <ccompilerbinary></ccompilerbinary>
-        <cxxcompilerbinary></cxxcompilerbinary>
-        <f77compilerbinary></f77compilerbinary>
-        <cflags></cflags>
-        <cxxflags>-fexceptions -I$GCENTER/r -I$GCENTER/galilei  -I$GCENTER/qtwidgets</cxxflags>
-        <f77flags></f77flags>
-      </default>
-    </configurations>
     <run>
       <mainprogram>./kgalileicenter/kgalileicenter</mainprogram>
       <programargs></programargs>
+      <terminal>false</terminal>
+      <envvars/>
     </run>
   </kdevautoproject>
   <kdevfileview>
@@ -87,6 +73,8 @@
       <group pattern="*qtwidgets/*.cpp,*qtwidgets/*.hh" name="Sources - Qt Widgets" />
       <group pattern="*rmath/*.cpp" name="Sources R - Math" />
       <group pattern="*docs/*.cpp" name="Sources - Docs" />
+      <group pattern="*/historic/*.cpp" name="Sources - Historic" />
+      <group pattern="*postgroups/*.cpp" name="Sources - PostGroups" />
       <group pattern="*urlmanagers/*.cpp" name="Sources - URL Managers" />
       <group pattern="*rmysql/*.cpp" name="Sources R - MySQL" />
       <group pattern="*rinter/*.cpp" name="Sources R - Inter" />
@@ -103,6 +91,8 @@
       <group pattern="*.kdevdlg,*.ui,*.rc" name="User Interface" />
       <group pattern="*.po" name="Translations" />
       <group pattern="AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,NEWS" name="GNU" />
+      <group pattern="*/historic/*.h" name="Headers - Historic" />
+      <group pattern="*postgroups/*.h" name="Headers - PostGroups" />
       <group pattern="*rinter/*.h" name="Headers R - Inter" />
       <group pattern="*docs/*.h" name="Headers - Docs" />
       <group pattern="*rxml/*.h" name="Headers R - XML" />
@@ -123,8 +113,8 @@
       <toc>perl</toc>
     </ignoretocs>
     <projectdoc>
-      <userdocDir>/home/dwartel/prj/kgalileicenter/html/</userdocDir>
-      <apidocDir>/home/dwartel/prj/kgalileicenter/html/</apidocDir>
+      <userdocDir>/home/pfrancq/prj/kgalileicenter/html/</userdocDir>
+      <apidocDir>/home/pfrancq/prj/kgalileicenter/html/</apidocDir>
     </projectdoc>
   </kdevdoctreeview>
   <kdevdebugger>
@@ -133,11 +123,11 @@
       <programargs></programargs>
       <gdbpath></gdbpath>
       <breakonloadinglibs>true</breakonloadinglibs>
-      <separatetty>true</separatetty>
-      <floatingtoolbar>true</floatingtoolbar>
+      <separatetty>false</separatetty>
+      <floatingtoolbar>false</floatingtoolbar>
     </general>
     <display>
-      <staticmembers>true</staticmembers>
+      <staticmembers>false</staticmembers>
       <demanglenames>true</demanglenames>
     </display>
   </kdevdebugger>
