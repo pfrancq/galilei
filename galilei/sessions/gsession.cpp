@@ -670,7 +670,18 @@ void GSession::ClearFdbks(void)
 
 
 //-----------------------------------------------------------------------------
-void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,R::RDate date) throw(bad_alloc)
+void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,R::RDate& date) throw(bad_alloc)
+{
+	GProfDoc* f;
+
+	Fdbks.InsertPtr(f=new GProfDoc(d,p,j,date));
+	p->AddJudgement(f,this);
+	d->AddJudgement(f);
+}
+
+
+//-----------------------------------------------------------------------------
+void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const char* date) throw(bad_alloc)
 {
 	GProfDoc* f;
 

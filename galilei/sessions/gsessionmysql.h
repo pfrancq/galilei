@@ -111,7 +111,7 @@ protected:
 	* @param tmp            C String containing the date.
 	* @returns Pointer to the tmp C string.
 	*/
-	const char* GetDateToMySQL(const R::RDate* d,char* tmp);
+	const char* GetDateToMySQL(const R::RDate& d,char* tmp);
 
 	/**
 	* Parse a field and when for quotes and double them.

@@ -152,16 +152,22 @@ RString& GDoc::GetName(void) const
 
 
 //-----------------------------------------------------------------------------
-const R::RDate* GDoc::GetUpdated(void) const
+RDate& GDoc::GetUpdated(void) const
 {
-	return(&Updated);
+	RDate* d=RDate::GetDate();
+
+	(*d)=Updated;
+	return(*d);
 }
 
 
 //-----------------------------------------------------------------------------
-const R::RDate* GDoc::GetComputed(void) const
+RDate& GDoc::GetComputed(void) const
 {
-	return(&Computed);
+	RDate* d=RDate::GetDate();
+
+	(*d)=Computed;
+	return(*d);
 }
 
 

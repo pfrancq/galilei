@@ -96,7 +96,7 @@ public:
 	* @param fdbk           Assessment.
 	* @param date           Date.
 	*/
-	GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,R::RDate date);
+	GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,R::RDate& date);
 
 	/**
 	* Compare mathod used by R::RContainer.
@@ -126,7 +126,7 @@ public:
 	* @param fdbk           Assessment.
 	* @param date           Date.
 	*/
-	void UpdateFdbk(tDocJudgement fdbk,R::RDate date);
+	void UpdateFdbk(tDocJudgement fdbk,R::RDate& date);
 
 	/**
 	* Get the assessment for the document.
@@ -150,7 +150,7 @@ public:
 	* Get the date of the last assessment of the profile on the document.
 	* @returns Pointer to a date.
 	*/
-	const R::RDate* GetUpdated(void) const;
+	R::RDate& GetUpdated(void) const;
 
 	/**
 	* Look if the assessment is considered to be treated. If the assessment was

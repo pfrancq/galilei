@@ -209,13 +209,13 @@ public:
 	* Get the date of the last update of the document content.
 	* @returns Pointer to date.
 	*/
-	const R::RDate* GetUpdated(void) const;
+	R::RDate& GetUpdated(void) const;
 
 	/**
 	* Get the date of the last analysis of the document.
 	* @returns Pointer to date.
 	*/
-	const R::RDate* GetComputed(void) const;
+	R::RDate& GetComputed(void) const;
 
 	/**
 	* Get the MIME type of the document.

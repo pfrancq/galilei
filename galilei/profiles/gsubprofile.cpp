@@ -142,6 +142,37 @@ void GALILEI::GSubProfile::SetGroup(GGroup* grp)
 }
 
 
+
+//-----------------------------------------------------------------------------
+RDate& GSubProfile::GetAttached(void) const
+{
+	RDate* d=RDate::GetDate();
+
+	(*d)=Attached;
+	return(*d);
+}
+
+
+//-----------------------------------------------------------------------------
+RDate& GSubProfile::GetUpdated(void) const
+{
+	RDate* d=RDate::GetDate();
+
+	(*d)=Updated;
+	return(*d);
+}
+
+
+//-----------------------------------------------------------------------------
+R::RDate& GSubProfile::GetComputed(void) const
+{
+	RDate* d=RDate::GetDate();
+
+	(*d)=Computed;
+	return(*d);
+}
+
+
 //-----------------------------------------------------------------------------
 bool GALILEI::GSubProfile::IsUpdated(void) const
 {

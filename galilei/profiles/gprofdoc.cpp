@@ -59,7 +59,7 @@ GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,const char* date)
 
 
 //---------------------------------------------------------------------------
-GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,RDate date)
+GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,tDocJudgement fdbk,RDate& date)
   : Doc(doc), Profile(prof), Fdbk(fdbk), Updated(date)
 {
 }
@@ -103,7 +103,7 @@ void GProfDoc::UpdateFdbk(tDocJudgement fdbk,const char* date)
 
 
 //---------------------------------------------------------------------------
-void GProfDoc::UpdateFdbk(tDocJudgement fdbk,R::RDate date)
+void GProfDoc::UpdateFdbk(tDocJudgement fdbk,RDate& date)
 {
 	Fdbk=fdbk;
 	Updated=date;
@@ -132,9 +132,12 @@ GProfile* GProfDoc::GetProfile(void) const
 
 
 //---------------------------------------------------------------------------
-const RDate* GProfDoc::GetUpdated(void) const
+RDate& GProfDoc::GetUpdated(void) const
 {
-	return(&Updated);
+	RDate* d=RDate::GetDate();
+
+	(*d)=Updated;
+	return(*d);
 }
 
 
@@ -148,7 +151,7 @@ bool GProfDoc::FdbkTreated(void) const
 	if(!lang) return(false);
 	sub=Profile->GetPtr<const GLang*>(lang);
 	if(!sub) return(false);
-	if(Updated>(*sub->GetComputed())) return(false);
+	if(Updated>sub->GetComputed()) return(false);
 	return(true);
 }
 

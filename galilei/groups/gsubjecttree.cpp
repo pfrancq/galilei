@@ -122,8 +122,6 @@ GSubjectTree::GSubjectTree(GSession* session)
 	  Docs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25), IdealGroups(100,50),
 	  GroupsScore(100,50)
 {
-	RDate date;
-
 	GParams::InsertPtr(new GParamDouble("PercOK",10.0));
 	GParams::InsertPtr(new GParamDouble("PercKO",10.0));
 	GParams::InsertPtr(new GParamDouble("PercH",50.0));
@@ -136,7 +134,6 @@ GSubjectTree::GSubjectTree(GSession* session)
 	GParams::InsertPtr(new GParamUInt("NbDocsAssess",30));
 	GParams::InsertPtr(new GParamBool("idf",true));
 	Apply();
-	sprintf(today,"%u-%u-%u",date.GetYear(),date.GetMonth(),date.GetDay());
 }
 
 
@@ -289,7 +286,7 @@ void GSubjectTree::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDo
 			if(nbDocsOK)
 			{
 				nbDocsOK--;
-				Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),today);
+				Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
 			}
 		}
 		else
@@ -300,7 +297,7 @@ void GSubjectTree::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDo
 				if(nbDocsKO)
 				{
 					nbDocsKO--;
-					Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),today);
+					Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 			}
 			else
@@ -309,7 +306,7 @@ void GSubjectTree::ProfileJudges(GProfile* prof,GSubject* sub,unsigned int maxDo
 				if(nbDocsH)
 				{
 					nbDocsH--;
-					Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),today);
+					Session->InsertFdbk(prof,*ptr,GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 			}
 		}
@@ -569,19 +566,19 @@ void GSubjectTree::FdbksCycle(bool Save)
 					// Look if 'OK'
 					if(NewDocs()->GetDoc()->IsFromSubject(SubProfile()->GetSubject()))
 					{
-						Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),today);
+						Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 					else
 					{
 						// Look If 'KO'
 						if(NewDocs()->GetDoc()->IsFromParentSubject(SubProfile()->GetSubject()))
 						{
-							Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),today);
+							Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
 						}
 						else
 						{
 							// Must be H
-							Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),today);
+							Session->InsertFdbk(SubProfile()->GetProfile(),NewDocs()->GetDoc(),GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
 						}
 					}
 				}
@@ -634,18 +631,18 @@ void GSubjectTree::AddAssessments(bool Save)
 				// Look if 'OK'
 				if((*ptr)->IsFromSubject(Subs()))
 				{
-					Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),today);
+					Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 				else
 				{
 					// Look If 'KO'
 					if((*ptr)->IsFromParentSubject(Subs()))
 					{
-						Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),today);
+						Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 					else
 					{
-						Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),today);
+						Session->InsertFdbk(Prof()->GetProfile(),*ptr,GProfDoc::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 				}
 			}

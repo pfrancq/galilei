@@ -487,7 +487,16 @@ public:
 	* @param j          Feedback.
 	* @param date       Date on the last feedback.
 	*/
-	void InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,R::RDate date) throw(bad_alloc);
+	void InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,R::RDate& date) throw(bad_alloc);
+
+	/**
+	* Insert a new Feedback.
+	* @param p          Pointer to the profile.
+	* @param d          Pointer to the document.
+	* @param j          Feedback.
+	* @param date       String representing the date on the last feedback.
+	*/
+	void InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const char* date) throw(bad_alloc);
 
 	/**
 	* Copy the ideal groupment in the current one.

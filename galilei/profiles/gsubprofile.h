@@ -232,19 +232,19 @@ public:
 	* Get the date of the last attachment.
 	* @returns Pointer to date.
 	*/
-	const R::RDate* GetAttached(void) const {return(&Attached);}
+	R::RDate& GetAttached(void) const;
 
 	/**
 	* Get the date of the last update of the subprofile.
 	* @returns Pointer to date.
 	*/
-	const R::RDate* GetUpdated(void) const {return(&Updated);}
+	R::RDate& GetUpdated(void) const;
 
 	/**
 	* Get the date of the last analysis of the subprofile.
 	* @returns Pointer to date.
 	*/
-	const R::RDate* GetComputed(void) const {return(&Computed);}
+	R::RDate& GetComputed(void) const;
 
 	/**
 	* See if the subprofiles was updated until the last attachment to a group.

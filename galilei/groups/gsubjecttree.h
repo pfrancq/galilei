@@ -137,11 +137,6 @@ protected:
 	R::RContainer<GProfDoc,unsigned,false,false> NewDocs;
 
 	/**
-	* The date of today.
-	*/
-	char today[12];
-
-	/**
 	* Container of last added subprofiles.
 	*/
 	R::RContainer<GSubProfile,unsigned int,false,true> LastAdded;

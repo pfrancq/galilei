@@ -124,12 +124,9 @@ unsigned int GALILEI::GSessionMySQL::GetMax(const char* tbl,const char* fld)
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GSessionMySQL::GetDateToMySQL(const RDate* d,char* tmp)
+const char* GALILEI::GSessionMySQL::GetDateToMySQL(const RDate& d,char* tmp)
 {
-	if(d)
-		sprintf(tmp,"'%u-%u-%u'",d->GetYear(),d->GetMonth(),d->GetDay());
-	else
-		strcpy(tmp,"null");
+	sprintf(tmp,"'%u-%u-%u'",d.GetYear(),d.GetMonth(),d.GetDay());
 	return(tmp);
 }
 
