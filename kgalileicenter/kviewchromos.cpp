@@ -43,6 +43,8 @@
 // include files for R Project
 #include <rstd/rstring.h>
 using namespace RStd;
+#include <rio/rtextfile.h>
+using namespace RIO;
 
 
 //-----------------------------------------------------------------------------
@@ -59,11 +61,15 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // includes files for Qt
 #include <qpixmap.h>
+#include <qpopupmenu.h>
 
 
 //-----------------------------------------------------------------------------
 // includes files for KDE
 #include <kapplication.h>
+#include <kfiledialog.h>
+#include <klocale.h>
+#include <kmessagebox.h>
 
 
 //-----------------------------------------------------------------------------
@@ -100,6 +106,91 @@ public:
 
 //-----------------------------------------------------------------------------
 //
+// class QListViewChromos
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class QListViewChromos : public QListView
+{
+public:
+	QListViewChromos(QWidget* parent=0,const char* name=0,WFlags f=0);
+
+protected:
+	virtual void mousePressEvent(QMouseEvent* e);
+};
+
+
+//-----------------------------------------------------------------------------
+QListViewChromos::QListViewChromos(QWidget* parent,const char* name,WFlags f)
+	: QListView(parent,name,f)
+{
+	addColumn("Id");
+	addColumn("Precision");
+	addColumn("Recall");
+	addColumn("Global");
+	addColumn("AvgSim");
+	addColumn("J");
+	addColumn("AvgRatio");
+	addColumn("MinRatio");
+	addColumn("Ratio");
+	addColumn("W Over B");
+	addColumn("Sim WB");
+	for(int i=0;i<11;i++)
+	{
+		setColumnWidthMode(i,QListView::Maximum);
+		setColumnAlignment(i,Qt::AlignHCenter);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QListViewChromos::mousePressEvent(QMouseEvent* e)
+{
+	if(e->button()==RightButton)
+	{
+		QPopupMenu* InfoBox=new QPopupMenu(parentWidget());
+		InfoBox->insertItem("Save Statistics",parentWidget(),SLOT(slotMenu(int)));
+		InfoBox->popup(e->globalPos());
+	}
+	else
+		QWidget::mousePressEvent(e);
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class KViewChromos::Stats
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class KViewChromos::Stat
+{
+public:
+	tId Id;
+	double Precision;
+	double Recall;
+	double Global;
+	double AvgSim;
+	double J;
+	double AvgRatio;
+	double MinRatio;
+	double Ratio;
+	double WOverB;
+	double SimWB;
+
+	Stat(void) : Id(NullId), Precision(0.0), Recall(0.0), Global(0.0), AvgSim(0.0), J(0.0),
+		AvgRatio(0.0), MinRatio(0.0), Ratio(0.0), WOverB(0.0), SimWB(0.0) {}
+	int Compare(const Stat&) {return(-1);}
+	int Compare(const Stat*) {return(-1);}
+};
+
+
+
+//-----------------------------------------------------------------------------
+//
 // class KViewChromos
 //
 //-----------------------------------------------------------------------------
@@ -107,26 +198,10 @@ public:
 //-----------------------------------------------------------------------------
 KViewChromos::KViewChromos(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), IdealGroups(2,1), Lang(Doc->GetSession()->GetLang(l)),
-	  Global(global)
+	  Global(global), Stats(50,25)
 {
 	// Construct chromosomes
-	General = new QListView(this);
-	General->addColumn("Id");
-	General->addColumn("Precision");
-	General->addColumn("Recall");
-	General->addColumn("Global");
-	General->addColumn("AvgSim");
-	General->addColumn("J");
-	General->addColumn("AvgRatio");
-	General->addColumn("MinRatio");
-	General->addColumn("Ratio");
-	General->addColumn("W Over B");
-	General->addColumn("Sim WB");
-	for(int i=0;i<11;i++)
-	{
-		General->setColumnWidthMode(i,QListView::Maximum);
-		General->setColumnAlignment(i,Qt::AlignHCenter);
-	}
+	General = new QListViewChromos(this);
 	ConstructChromosomes();
 }
 
@@ -141,6 +216,7 @@ void KViewChromos::ConstructChromosomes(void)
 	GInstIR* Instance;
 	GSubProfileCursor SubProfiles;
 	RGA::RObjs<GObjIR> Objs(SubProfiles.GetNb());
+	Stat* s;
 
 	// Initialise the dialog box
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
@@ -166,43 +242,56 @@ void KViewChromos::ConstructChromosomes(void)
 	// Display the chromosomes
 	for(i=Instance->PopSize+1,c=Instance->Chromosomes;--i;c++)
 	{
+		Stats.InsertPtr(s=new Stat());
+
+		s->Id=(*c)->Id;
 		sprintf(tmp,"%u",(*c)->Id);
 		d->receiveNextChromosome((*c)->Id);
 		g=new MyListViewItem(General,tmp);
 
 		(*c)->CompareIdeal(Doc->GetSession(),&IdealGroups);
+		s->Precision=(*c)->GetPrecision();
 		sprintf(tmp,"%lf",(*c)->GetPrecision());
 		g->setText(1,tmp);
+		s->Recall=(*c)->GetRecall();
 		sprintf(tmp,"%lf",(*c)->GetRecall());
 		g->setText(2,tmp);
+		s->Global=(*c)->GetGlobal();
 		sprintf(tmp,"%lf",(*c)->GetGlobal());
 		g->setText(3,tmp);
 
 		(*c)->EvaluateAvgSim();
+		s->AvgSim=(*c)->GetSimCriterion();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(4,tmp);
 
 		(*c)->EvaluateJ();
+		s->J=(*c)->GetSimCriterion();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(5,tmp);
 
 		(*c)->EvaluateAvgRatio();
+		s->AvgRatio=(*c)->GetSimCriterion();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(6,tmp);
 
 		(*c)->EvaluateMinRatio();
+		s->MinRatio=(*c)->GetSimCriterion();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(7,tmp);
 
 		(*c)->EvaluateRatio();
+		s->Ratio=(*c)->GetSimCriterion();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(8,tmp);
 
 		(*c)->EvaluateWOverB();
+		s->WOverB=(*c)->GetSimCriterion();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(9,tmp);
 
 		(*c)->EvaluateSimWB();
+		s->SimWB=(*c)->GetSimCriterion();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(10,tmp);
 	}
@@ -223,6 +312,39 @@ void KViewChromos::update(unsigned int)
 void KViewChromos::resizeEvent(QResizeEvent *)
 {
 	General->resize(size());
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewChromos::slotMenu(int)
+{
+	RCursor<Stat,tId> Cur;
+	int dlg;
+	KURL url;
+
+	dlg=KMessageBox::No;
+	while(dlg!=KMessageBox::Yes)
+	{
+		url=KFileDialog::getSaveURL(QString::null,i18n("*.txt"), this, i18n("Save Statistics..."));
+		if(url.isEmpty()) return;
+		QFile Test(url.path().latin1());
+		if(Test.exists())
+		{
+			dlg=KMessageBox::warningYesNoCancel(this,"A Document with this Name exists.\nDo you want to overwrite it?","Warning");
+			if(dlg==KMessageBox::No) return;
+		}
+		else
+			dlg=KMessageBox::Yes;
+	}
+	RTextFile Res(url.path().latin1(),RTextFile::Create);
+	Res.SetSeparator("\t");
+	Res<<"Id"<<"Precision"<<"Recall"<<"Global"<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"W Over B"<<"Sim WB"<<endl;
+	Cur.Set(Stats);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Res<<Cur()->Id<<Cur()->Precision<<Cur()->Recall<<Cur()->Global;
+		Res<<Cur()->AvgSim<<Cur()->J<<Cur()->AvgRatio<<Cur()->MinRatio<<Cur()->Ratio<<Cur()->WOverB<<Cur()->SimWB<<endl;
+	}
 }
 
 

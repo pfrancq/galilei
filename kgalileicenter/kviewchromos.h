@@ -40,6 +40,13 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rstd.h>
+#include <rstd/rcontainer.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <groups/gchromoir.h>
@@ -72,6 +79,8 @@ using namespace RStd;
 */
 class KViewChromos : public KView
 {
+	class Stat;
+
 	Q_OBJECT
 
 	/**
@@ -93,6 +102,11 @@ class KViewChromos : public KView
 	* Use global similarities or not.
 	*/
 	bool Global;
+
+	/**
+	* Stored Statistics.
+	*/
+	RContainer<Stat,tId,true,false> Stats;
 
 public:
 
@@ -129,6 +143,13 @@ protected:
 	* Called when the main window is resize by the user.
 	*/
 	void resizeEvent(QResizeEvent *);
+
+public slots:
+
+	/**
+	* slot for the menu.
+	*/
+	void slotMenu(int id);
 
 public:
 
