@@ -56,9 +56,7 @@
 #include <sessions/gprgclass.h>
 #include <profiles/ggetfeedback.h>
 #include <groups/gidealgroup.h>
-#include <tests/gmixidealgroups.h>
-#include <tests/gstatsimsubprof.h>
-#include <tests/gstatsimdoc.h>
+#include <sessions/gmixidealgroups.h>
 #include <sessions/gprginst.h>
 
 
@@ -219,15 +217,6 @@ public:
 
 
 //-----------------------------------------------------------------------------
-class GDSOutputI : public GSM
-{
-public:                                                                 
-	GDSOutputI(GPrgClassSession* o) : GSM("SetDocStatsOutput",o) {}
-	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
-};
-
-
-//-----------------------------------------------------------------------------
 class GSetLinksUseI : public GSM
 {
 public:
@@ -246,7 +235,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-class GTestI : public GSM      
+class GTestI : public GSM
 {
 public:
 	GTestI(GPrgClassSession* o) : GSM("Test",o) {}
@@ -336,33 +325,6 @@ public:
 
 
 //-----------------------------------------------------------------------------
-class GCompareLinksI : public GSM
-{
-public:
-	GCompareLinksI(GPrgClassSession* o) : GSM("CompareLinks",o) {}
-	virtual void Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
-};
-
-
-//-----------------------------------------------------------------------------
-class GStatsProfilesI : public GSM
-{
-public:
-	GStatsProfilesI(GPrgClassSession* o) : GSM("StatsProfiles",o) {}
-	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
-};
-
-
-//-----------------------------------------------------------------------------
-class GStatsDocsI : public GSM
-{
-public:
-	GStatsDocsI(GPrgClassSession* o) : GSM("StatsDocs",o) {}
-	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
-};
-
-
-//-----------------------------------------------------------------------------
 class GSetComputingParamI : public GSM
 {
 public:
@@ -376,33 +338,6 @@ class GSetGroupingParamI : public GSM
 {
 public:
 	GSetGroupingParamI(GPrgClassSession* o) : GSM("SetGroupingParam",o) {}
-	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
-};
-
-
-//-----------------------------------------------------------------------------
-class GRunQueriesI : public GSM
-{
-public:
-	GRunQueriesI(GPrgClassSession* o) : GSM("RunQueries",o) {}
-	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
-};
-
-
-//-----------------------------------------------------------------------------
-class GStatsProfilesDocsI : public GSM
-{
-public:
-	GStatsProfilesDocsI(GPrgClassSession* o) : GSM("StatsProfilesDocs",o) {}
-	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
-};
-
-
-//-----------------------------------------------------------------------------
-class GStatsGroupsDocsI : public GSM
-{
-public:
-	GStatsGroupsDocsI(GPrgClassSession* o) : GSM("StatsGroupsDocs",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
@@ -501,6 +436,7 @@ public:
 };
 
 
+
 //-----------------------------------------------------------------------------
 /**
 * The GSessionPrg provides a class for executing a GALILEI Program.
@@ -559,7 +495,7 @@ public:
 	* @param s              Session.
 	* @param r              Receiver.
 	*/
-	GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_alloc,GException);
+	GSessionPrg(R::RString f,GSession* s,GSlot* r) throw(bad_alloc,GException);
 
 	/**
 	* Count the number of tabs at the begin of a line of source code.

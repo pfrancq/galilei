@@ -37,7 +37,6 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <profiles/gprofilecalc.h>
-#include <profiles/gprofilecalc.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 

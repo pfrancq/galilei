@@ -80,7 +80,7 @@ protected:
 	/**
 	* Pointer to the ideal Docs
 	*/
-	R::RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDocs;
+	R::RContainer<GDocsLang,unsigned int,false,false>* IdealDocs;
 
 	/**
 	* Pointer to a tree of subject
@@ -136,6 +136,11 @@ protected:
 	* Group Computing Manager used by this session.
 	*/
 	GGroupCalcManager* GroupCalcMng;
+
+	/**
+	* Statistics Manager used by this session.
+	*/
+	GStatsCalcManager* StatsCalcMng;
 
 	/**
 	* Analyser used for the document.
@@ -200,9 +205,11 @@ public:
 	* @param pmng           Profiling Manager.
 	* @param gmng           Grouping Manager.
 	* @param gcmng          Group Computing Manager.
+	* @param smng           Statistical Manager.
 	*/
 	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
 		GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+		GStatsCalcManager* smng,
 		GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException);
 
 	/**
@@ -227,6 +234,11 @@ public:
 	GGroupCalcManager* GetGroupCalcMng(void) {return(GroupCalcMng);}
 
 	/**
+	* Get the statistics manager used by this session.
+	*/
+	GStatsCalcManager* GetStatsCalcMng(void) {return(StatsCalcMng);}
+
+	/**
 	* Get a pointer to the document options.
 	* @returns Pointer to GDocOptions.
 	*/
@@ -246,12 +258,12 @@ public:
 	/**
 	* Get a pointer to the ideal docs
 	*/
-	R::RContainer<GGroupsEvaluate,unsigned int,false,false>* GetIdealDocs(void);
+	R::RContainer<GDocsLang,unsigned int,false,false>* GetIdealDocs(void);
 
 	/**
 	* Get a cursor over the ideal documents of the system.
 	*/
-	GGroupsEvaluateCursor& GetIdealDocsCursor(void);
+	GDocsLangCursor& GetIdealDocsCursor(void);
 
 	/**
 	* Return a pointer to a tree of subjects
@@ -259,28 +271,10 @@ public:
 	GSubjectTree* GetSubjects() {return(&Subjects);}
 
 	/**
-	* Register a description method for the profiles.
-	* @param com            Description method to register.
-	*/
-	void RegisterProfileDesc(GSubProfileDesc* grp) throw(bad_alloc);
-
-	/**
-	* Set the current description method.
-	* @param name           Name of the description method.
-	*/
-	void SetCurrentProfileDesc(const char* name) throw(GException);
-
-	/**
 	* Get the current description method.
 	* @returns Pointer to a GSubProfileDesc class.
 	*/
 	GSubProfileDesc* GetCurrentProfileDesc(void) {return(SubProfileDesc);}
-
-	/**
-	* Get a cursor to the description methods registered.
-	* @return Return a GProfileDescCursor.
-	*/
-	GSubProfileDescCursor& GetProfileDescsCursor(void);
 
 	/**
 	* Register a link description method.
@@ -623,11 +617,6 @@ public:
 	* Save the feedbaks
 	*/
 	virtual void SaveFdbks(void)=0;
-
-	/**
-	* Save The Documents Simylarities into the database.
-	*/
-	virtual void SaveDocSim(void)=0;
 
 	/**
 	* Delete clusters of words.

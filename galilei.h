@@ -117,6 +117,7 @@ class GDocOptions;
 class GDocSim;
 class GDocsSim;
 class GDocsLang;
+class GDocsLangCursor;
 class GDocProfSim;
 class GDocProfSims;
 class GWordsClustering;
@@ -193,8 +194,10 @@ class GSessionPrg;
 class GPrgInst;
 class GPrgVar;
 class GSlot;
-
-
+class GStatsCalc;
+class GFactoryStatsCalc;
+class GFactoryStatsCalcCursor;
+class GStatsCalcManager;
 
 
 //-----------------------------------------------------------------------------
@@ -202,13 +205,7 @@ class GSlot;
 class GSubjectTree;
 class GIdealGroup;
 class GGetFeedback;
-class GGroupEvaluate;
-class GGroupEvaluateCursor;
-class GGroupsEvaluate;
-class GGroupsEvaluateCursor;
 class GSubject;
-class GStatSimSubProf;
-class GStatSimDoc;
 class GMixedIdealGroups;
 
 
@@ -228,26 +225,12 @@ class GStandardInOutPutCursor;
 // Grouping parameters
 class GParams;
 class GParam;
-class GGroupingParams;
-class GIRParams;
-class GKMeansParams;
-class GKProtosParams;
-class GCureParams;
-class GSupKMeansParams;
-class GSimParams;
-// Computing parameters
-class GCalcParams;
-class GFeedbackParams;             
-class GReWeightingParams;
-class GStatisticalParams;
-// Group Description parameters
-class GGroupCalcParams;
-class GCalcRelevantParams;
-class GCalcGravitationParams;
+class GConfig;
 // Link Description parameters
 class GLinkCalcHITSParams;
 // Session parameters
 class GSessionParams;
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -312,7 +295,7 @@ enum tDocJudgement
 	djAutority=32            /** Document is an Autority.*/,
 	djMaskJudg=15          /** Mask for the judgement of the doc.*/,
 	djMaskHubAuto=48    /** Mask for the Hub or Autority.*/
-	
+
 };
 
 

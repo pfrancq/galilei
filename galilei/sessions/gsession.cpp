@@ -52,6 +52,7 @@ using namespace R;
 #include <docs/gdocvector.h>
 #include <docs/gdocanalyse.h>
 #include <docs/gdocxml.h>
+#include <docs/gdocslang.h>
 #include <docs/gdocoptions.h>
 #include <docs/gdocprofsim.h>
 #include <docs/gdocprofsims.h>
@@ -66,6 +67,7 @@ using namespace R;
 #include <profiles/gprofilesbehaviour.h>
 #include <profiles/gprofilesbehaviours.h>
 #include <profiles/gsubprofiledesc.h>
+#include <profiles/gsubprofilevector.h>
 #include <profiles/gprofdoc.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
@@ -73,6 +75,7 @@ using namespace R;
 #include <groups/ggrouping.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalc.h>
+#include <sessions/gstatscalc.h>
 #include <profiles/gprofilecalc.h>
 #include <filters/gurlmanager.h>
 #include <filters/gfilter.h>
@@ -89,19 +92,21 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
+GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
 	GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+	GStatsCalcManager* smng,
 	GDocOptions* opt, GSessionParams* sessparams) throw(bad_alloc,GException)
 	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(), Fdbks(f+f/2,f/2),
-	  URLMng(umng), ProfilingMng(pmng), GroupingMng(gmng), GroupCalcMng(gcmng),
+	  URLMng(umng), ProfilingMng(pmng), GroupingMng(gmng), GroupCalcMng(gcmng), StatsCalcMng(smng),
 	  DocAnalyse(0), bGroups(false),bFdbks(false),
 	  DocOptions(opt),SessParams(sessparams)
 
 {
+	// Init Part
 	GLangCursor Langs;
-	IdealGroups= new RContainer<GALILEI::GGroups, unsigned int, true, true> (g+g/2,g/2);
-	IdealDocs=new RContainer<GALILEI::GGroupsEvaluate, unsigned int, false, false> (2,1);
+	IdealGroups= new RContainer<GGroups, unsigned int, true, true> (g+g/2,g/2);
+	IdealDocs=new RContainer<GDocsLang, unsigned int, false, false> (2,1);
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Groups.InsertPtr(new GGroups(Langs()));
@@ -111,47 +116,28 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
 	CurrentRandom=0;
 	Random = new RRandomGood(CurrentRandom);
+
+	// Connect to the different managers
 	ProfilingMng->Connect(this);
 	GroupingMng->Connect(this);
+	GroupCalcMng->Connect(this);
+	StatsCalcMng->Connect(this);
+
+	// Only Vector Space
+	SubProfileDesc=new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile);
+	SubProfileDescs->InsertPtr(SubProfileDesc);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::RegisterProfileDesc(GSubProfileDesc* grp) throw(bad_alloc)
-{
-	SubProfileDescs->InsertPtr(grp);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::SetCurrentProfileDesc(const char* name) throw(GException)
-{
-	GSubProfileDesc* tmp;
-
-	tmp=SubProfileDescs->GetPtr<const char*>(name);
-	if(!tmp)
-		throw GException(RString("Description method '")+name+"' doesn't exists.");
-	SubProfileDesc=tmp;
-}
-
-
-//-----------------------------------------------------------------------------
-GSubProfileDescCursor& GALILEI::GSession::GetProfileDescsCursor(void)
-{
-	GSubProfileDescCursor *cur=GSubProfileDescCursor::GetTmpCursor();
-	cur->Set(SubProfileDescs);
-	return(*cur);
-}
-
-//-----------------------------------------------------------------------------
-R::RContainer<GGroups,unsigned int,true,true>* GALILEI::GSession::GetIdealGroups(void)
+R::RContainer<GGroups,unsigned int,true,true>* GSession::GetIdealGroups(void)
 {
 	return(IdealGroups);
 }
 
 
 //-----------------------------------------------------------------------------
-GGroupsCursor& GALILEI::GSession::GetIdealGroupsCursor(void)
+GGroupsCursor& GSession::GetIdealGroupsCursor(void)
 {
 	GGroupsCursor *cur=GGroupsCursor::GetTmpCursor();
 	cur->Set(IdealGroups);
@@ -160,30 +146,30 @@ GGroupsCursor& GALILEI::GSession::GetIdealGroupsCursor(void)
 
 
 //-----------------------------------------------------------------------------
-R::RContainer<GGroupsEvaluate,unsigned int,false,false>* GALILEI::GSession::GetIdealDocs(void)
+RContainer<GDocsLang,unsigned int,false,false>* GSession::GetIdealDocs(void)
 {
 	return(IdealDocs);
 }
 
 
 //-----------------------------------------------------------------------------
-GGroupsEvaluateCursor& GALILEI::GSession::GetIdealDocsCursor(void)
+GDocsLangCursor& GSession::GetIdealDocsCursor(void)
 {
-	GGroupsEvaluateCursor *cur=GGroupsEvaluateCursor::GetTmpCursor();
+	GDocsLangCursor *cur=GDocsLangCursor::GetTmpCursor();
 	cur->Set(IdealDocs);
 	return(*cur);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::RegisterLinkCalcMethod(GLinkCalc* lnk) throw(bad_alloc)
+void GSession::RegisterLinkCalcMethod(GLinkCalc* lnk) throw(bad_alloc)
 {
 	LinkCalcs->InsertPtr(lnk);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::SetCurrentLinkCalcMethod(const char* name) throw(GException)
+void GSession::SetCurrentLinkCalcMethod(const char* name) throw(GException)
 {
 	GLinkCalc* tmp;
 
@@ -195,7 +181,7 @@ void GALILEI::GSession::SetCurrentLinkCalcMethod(const char* name) throw(GExcept
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::SetCurrentLinkCalcMethodSettings(const char* s) throw(GException)
+void GSession::SetCurrentLinkCalcMethodSettings(const char* s) throw(GException)
 {
 	if((!LinkCalc)||(!(*s))) return;
 	LinkCalc->SetSettings(s);
@@ -203,7 +189,7 @@ void GALILEI::GSession::SetCurrentLinkCalcMethodSettings(const char* s) throw(GE
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GSession::GetLinkCalcMethodSettings(const char* n) throw(GException)
+const char* GSession::GetLinkCalcMethodSettings(const char* n) throw(GException)
 {
 	GLinkCalc* tmp;
 
@@ -215,7 +201,7 @@ const char* GALILEI::GSession::GetLinkCalcMethodSettings(const char* n) throw(GE
 
 
 //-----------------------------------------------------------------------------
-GLinkCalcCursor& GALILEI::GSession::GetLinkCalcsCursor(void)
+GLinkCalcCursor& GSession::GetLinkCalcsCursor(void)
 {
 	GLinkCalcCursor *cur=GLinkCalcCursor::GetTmpCursor();
 	cur->Set(LinkCalcs);
@@ -224,14 +210,14 @@ GLinkCalcCursor& GALILEI::GSession::GetLinkCalcsCursor(void)
 
 
 //-----------------------------------------------------------------------------
-GDocXML* GALILEI::GSession::CreateDocXML(GDoc* doc) throw(GException)
+GDocXML* GSession::CreateDocXML(GDoc* doc) throw(GException)
 {
 	return(URLMng->CreateDocXML(doc));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::SetCurrentWordsClusteringMethodSettings(unsigned minocc,unsigned s,double c,unsigned ndm)
+void GSession::SetCurrentWordsClusteringMethodSettings(unsigned minocc,unsigned s,double c,unsigned ndm)
 {
 	DocOptions->MinOccurCluster=minocc;
 	DocOptions->WindowSize=s;
@@ -241,7 +227,7 @@ void GALILEI::GSession::SetCurrentWordsClusteringMethodSettings(unsigned minocc,
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::AnalyseAssociation(bool save)
+void GSession::AnalyseAssociation(bool save)
 {
 	GDocCursor Docs=GetDocsCursor();
 	GWordsClustering* test;
@@ -312,7 +298,7 @@ void GALILEI::GSession::AnalyseAssociation(bool save)
 		for(i=Docs.GetNb(),Docs.Start();--i;Docs.Next())
 		{
 			test->UpdateDoc(dynamic_cast<GDocVector*>(Docs()));
-			if(save) SaveUpDatedDoc(Docs(),n);/*n=id du premier mot a sauver.*//*
+			if(save) SaveUpDatedDoc(Docs(),n); // n=id du premier mot a sauver.
 		}
 	}
 	test->View();*/
@@ -321,7 +307,7 @@ void GALILEI::GSession::AnalyseAssociation(bool save)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::RemoveAssociation()
+void GSession::RemoveAssociation()
 {
 	GDocCursor Docs=GetDocsCursor();
 	GWordsClustering* test;
@@ -349,13 +335,13 @@ void GALILEI::GSession::RemoveAssociation()
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::Test()
+void GSession::Test()
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
+void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 {
 	bool undefLang;
 	GDocXML* xml=0;
@@ -410,7 +396,7 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitUsers(bool wg,bool w) throw(bad_alloc,GException)
+void GSession::InitUsers(bool wg,bool w) throw(bad_alloc,GException)
 {
 	// If users already loaded, do nothing.
 	if(IsUsersLoad()) return;
@@ -435,7 +421,7 @@ void GALILEI::GSession::InitUsers(bool wg,bool w) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitDocProfSims(void)
+void GSession::InitDocProfSims(void)
 {
 	GLangCursor langs = GetLangsCursor();
 	RContainer<GSubProfile,unsigned int,false,true>* subProf;
@@ -459,7 +445,7 @@ void GALILEI::GSession::InitDocProfSims(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::ChangeDocProfState(bool global,GLang* lang)throw(bad_alloc)
+void GSession::ChangeDocProfState(bool global,GLang* lang)throw(bad_alloc)
 {
 	GDocProfSim* docProfSim = DocProfSims->GetPtr<GLang*>(lang);
 	docProfSim->UpdateDocProfSim(this,this, global);
@@ -467,7 +453,7 @@ void GALILEI::GSession::ChangeDocProfState(bool global,GLang* lang)throw(bad_all
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::ChangeAllDocProfState(bool global)throw(bad_alloc)
+void GSession::ChangeAllDocProfState(bool global)throw(bad_alloc)
 {
 	GLangCursor langs = GetLangsCursor();
 	for (langs.Start();!langs.End();langs.Next())
@@ -478,7 +464,7 @@ void GALILEI::GSession::ChangeAllDocProfState(bool global)throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSession::GetSimDocProf(GLang* l,unsigned int id_doc, unsigned int id_sub)
+double GSession::GetSimDocProf(GLang* l,unsigned int id_doc, unsigned int id_sub)
 {
 	GDocProfSim* docProfSim = DocProfSims->GetPtr<GLang*>(l);
 	return docProfSim->GetSim(this,this,id_doc,id_sub);
@@ -486,7 +472,7 @@ double GALILEI::GSession::GetSimDocProf(GLang* l,unsigned int id_doc, unsigned i
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub)
+double GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub)
 {
 	GDocProfSim* docProfSim = DocProfSims->GetPtr<GLang*>(doc->GetLang());
 	return docProfSim->GetSim(doc,sub);
@@ -494,7 +480,7 @@ double GALILEI::GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitProfilesSims(void) 
+void GSession::InitProfilesSims(void) 
 {
 	GProfilesSim* profSim;
 	RContainer<GSubProfile,unsigned int,false,true>* subProfs;
@@ -522,7 +508,7 @@ void GALILEI::GSession::InitProfilesSims(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::ChangeProfilesSimState(bool global,GLang* lang)throw(bad_alloc)
+void GSession::ChangeProfilesSimState(bool global,GLang* lang)throw(bad_alloc)
 {
 	GProfilesSim* profSim;
 
@@ -533,7 +519,7 @@ void GALILEI::GSession::ChangeProfilesSimState(bool global,GLang* lang)throw(bad
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::ChangeAllProfilesSimState(bool global)throw(bad_alloc)
+void GSession::ChangeAllProfilesSimState(bool global)throw(bad_alloc)
 {
 	GLangCursor langs = GetLangsCursor();
 	for( langs.Start(); !langs.End(); langs.Next())
@@ -544,7 +530,7 @@ void GALILEI::GSession::ChangeAllProfilesSimState(bool global)throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
+double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
 {
 	GProfilesSim* profSim;
 
@@ -556,7 +542,7 @@ double GALILEI::GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* 
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitProfilesBehaviours(void)
+void GSession::InitProfilesBehaviours(void)
 {
 	GLangCursor langs = GetLangsCursor();
 
@@ -581,7 +567,7 @@ void GALILEI::GSession::InitProfilesBehaviours(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::ChangeProfilesBehaviourState(GLang* lang)throw(bad_alloc)
+void GSession::ChangeProfilesBehaviourState(GLang* lang)throw(bad_alloc)
 {
 	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(lang);
 	profBehaviour->UpdateProfBehaviour();
@@ -590,7 +576,7 @@ void GALILEI::GSession::ChangeProfilesBehaviourState(GLang* lang)throw(bad_alloc
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::ChangeAllProfilesBehaviourState(void) throw(bad_alloc)
+void GSession::ChangeAllProfilesBehaviourState(void) throw(bad_alloc)
 {
 	GLangCursor langs = GetLangsCursor();
 	for( langs.Start(); !langs.End(); langs.Next())
@@ -601,7 +587,7 @@ void GALILEI::GSession::ChangeAllProfilesBehaviourState(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2)
+double GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 {
 	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(sub1->GetLang());
 	return(profBehaviour->GetAgreementRatio(sub1,sub2));
@@ -609,7 +595,7 @@ double GALILEI::GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2)
+double GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 {
 	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(sub1->GetLang());
 	return(profBehaviour->GetDisAgreementRatio(sub1,sub2));
@@ -617,7 +603,7 @@ double GALILEI::GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* su
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSession::GetMinimumOfSimilarity(R::RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate)
+double GSession::GetMinimumOfSimilarity(R::RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate)
 {
 	double meanSim;
 	double deviation;
@@ -636,7 +622,7 @@ double GALILEI::GSession::GetMinimumOfSimilarity(R::RContainer<GSubProfile,unsig
 
 
 //-----------------------------------------------------------------------------
-GUser* GALILEI::GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const char* /*name*/,const char* /*email*/,
+GUser* GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const char* /*name*/,const char* /*email*/,
 	                  const char* /*title*/,const char* /*org*/,const char* /*addr1*/,
 	                  const char* /*addr2*/,const char* /*city*/,const char* /*country*/) throw(bad_alloc)
 {
@@ -645,7 +631,7 @@ GUser* GALILEI::GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const 
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitLinks()
+void GSession::InitLinks()
 {
 	if(!LinkCalc)
 		throw GException("No Link computing method chosen.");
@@ -654,7 +640,7 @@ void GALILEI::GSession::InitLinks()
 }
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
+void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
 {
 	GSubProfileCursor Subs;
 	GSubProfile* sub;
@@ -721,7 +707,7 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::CalcProfile(GProfile* prof) throw(GException)
+void GSession::CalcProfile(GProfile* prof) throw(GException)
 {
 	GSubProfileCursor Subs;
 	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
@@ -742,7 +728,7 @@ void GALILEI::GSession::CalcProfile(GProfile* prof) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException)
+void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException)
 {
 	GGrouping* Grouping=GroupingMng->GetCurrentMethod();
 
@@ -753,7 +739,7 @@ void GALILEI::GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  th
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitFdbks(void) throw(bad_alloc,GException)
+void GSession::InitFdbks(void) throw(bad_alloc,GException)
 {
 	// If users' feedback already loaded, do nothing.
 	if(bFdbks) return;
@@ -770,7 +756,7 @@ void GALILEI::GSession::InitFdbks(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-GProfDocCursor& GALILEI::GSession::GetProfDocCursor(void)
+GProfDocCursor& GSession::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
 	cur->Set(Fdbks);
@@ -779,7 +765,7 @@ GProfDocCursor& GALILEI::GSession::GetProfDocCursor(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::ClearFdbks(void)
+void GSession::ClearFdbks(void)
 {
 	GDocCursor cur=GetDocsCursor();
 	for(cur.Start();!cur.End();cur.Next())
@@ -796,7 +782,7 @@ void GALILEI::GSession::ClearFdbks(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,R::RDate date) throw(bad_alloc)
+void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,R::RDate date) throw(bad_alloc)
 {
 	GProfDoc* f;
 
@@ -807,7 +793,7 @@ void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,R::RDate 
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitGroups(bool wg,bool w) throw(bad_alloc,GException)
+void GSession::InitGroups(bool wg,bool w) throw(bad_alloc,GException)
 {
 	// If groups already loaded, do nothing.
 	if(bGroups) return;
@@ -819,7 +805,7 @@ void GALILEI::GSession::InitGroups(bool wg,bool w) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
+void GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
 {
 	GGroupsCursor Grps;
 	GGroupCursor Ideal;
@@ -863,7 +849,7 @@ void GALILEI::GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::Save(GGroup* grp) throw(GException)
+void GSession::Save(GGroup* grp) throw(GException)
 {
 	if(grp->GetState()==osUpToDate) return;
 	for(grp->Start();!grp->End();grp->Next())
@@ -874,21 +860,21 @@ void GALILEI::GSession::Save(GGroup* grp) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-GFactoryFilterCursor& GALILEI::GSession::GetFiltersCursor(void)
+GFactoryFilterCursor& GSession::GetFiltersCursor(void)
 {
 	return(URLMng->GetFiltersCursor());
 }
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GSession::GetMIMEType(const char* mime) const
+const char* GSession::GetMIMEType(const char* mime) const
 {
 	return(URLMng->GetMIMEType(mime));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::RunPrg(GSlot* rec,const char* filename) throw(GException)
+void GSession::RunPrg(GSlot* rec,const char* filename) throw(GException)
 {
 	GSessionPrg Prg(filename,this,rec);
 	Prg.Exec();
@@ -896,7 +882,7 @@ void GALILEI::GSession::RunPrg(GSlot* rec,const char* filename) throw(GException
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
+void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 {
 	//The number of word in current lang.
 	GDocCursor DocCursorTemp =GetDocsCursor();
@@ -965,7 +951,7 @@ void GALILEI::GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::SetCurrentRandom(int rand)
+void GSession::SetCurrentRandom(int rand)
 {
 	CurrentRandom=rand;
 	Random->Reset(CurrentRandom);
@@ -973,7 +959,7 @@ void GALILEI::GSession::SetCurrentRandom(int rand)
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GSession::GetCurrentRandomValue(unsigned int max)
+int GSession::GetCurrentRandomValue(unsigned int max)
 {
 	return(int(Random->Value(max)));
 
@@ -981,7 +967,7 @@ int GALILEI::GSession::GetCurrentRandomValue(unsigned int max)
 
 
 //-----------------------------------------------------------------------------
-RContainer<GGroupsHistory, unsigned int, false,true>* GALILEI::GSession::LoadHistoricGroups (RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen)
+RContainer<GGroupsHistory, unsigned int, false,true>* GSession::LoadHistoricGroups (RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen)
 {
 	unsigned int i;
 	GGroupsHistory* hgrps;
@@ -1000,7 +986,7 @@ RContainer<GGroupsHistory, unsigned int, false,true>* GALILEI::GSession::LoadHis
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::ReInit(bool)
+void GSession::ReInit(bool)
 {
 	//clean subprofiles = clear the feedbacles & the content of the profiles.
 	ClearFdbks();
@@ -1026,10 +1012,15 @@ void GALILEI::GSession::ReInit(bool)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GSession::~GSession(void) throw(GException)
+GSession::~GSession(void) throw(GException)
 {
+	// Disconnect from the different managers
 	ProfilingMng->Disconnect(this);
 	GroupingMng->Disconnect(this);
+	GroupCalcMng->Disconnect(this);
+	StatsCalcMng->Disconnect(this);
+
+	// Delete stuctures
 	if(DocAnalyse) delete DocAnalyse;
 	if(DocOptions) delete DocOptions;
 	if(SubProfileDescs) delete SubProfileDescs;
@@ -1041,7 +1032,7 @@ GALILEI::GSession::~GSession(void) throw(GException)
 //-----------------------------------------------------------------------------
 // class GSessionParams
 //-----------------------------------------------------------------------------
-GALILEI::GSessionParams::GSessionParams(void)
+GSessionParams::GSessionParams(void)
 	: GParams("Session Parameters")
 {
 	GParam* p;

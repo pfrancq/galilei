@@ -45,7 +45,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <tests/gmixidealgroups.h>
+#include <sessions/gmixidealgroups.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <groups/ggroupvector.h>

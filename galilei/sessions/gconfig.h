@@ -89,6 +89,11 @@ class GConfig : R::RXMLStruct
 	*/
 	R::RXMLTag* GroupCalcs;
 
+	/**
+	* Tag holding the statistics.
+	*/
+	R::RXMLTag* StatsCalcs;
+
 public:
 
 	/**
@@ -154,6 +159,18 @@ public:
 	* @param mng             Manager.
 	*/
 	void Store(GGroupCalcManager& mng);
+
+	/**
+	* Read the statistics from the structure.
+	* @param mng             Manager.
+	*/
+	void Read(GStatsCalcManager& mng);
+
+	/**
+	* Store the statistics in the structure.
+	* @param mng             Manager.
+	*/
+	void Store(GStatsCalcManager& mng);
 
 	/**
 	* Destructor.

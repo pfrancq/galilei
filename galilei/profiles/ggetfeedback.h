@@ -45,7 +45,6 @@
 #include <galilei.h>
 #include <profiles/gusers.h>
 #include <groups/gsubject.h>
-#include <tests/ggroupsevaluate.h>
 
 
 //-----------------------------------------------------------------------------

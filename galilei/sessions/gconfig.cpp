@@ -53,8 +53,9 @@ using namespace R;
 #include <groups/ggrouping.h>
 #include <groups/ggroupcalcmanager.h>
 #include <groups/ggroupcalc.h>
+#include <sessions/gstatscalcmanager.h>
+#include <sessions/gstatscalc.h>
 using namespace GALILEI;
-
 
 
 
@@ -75,6 +76,7 @@ GConfig::GConfig(const char* f) throw(bad_alloc)
 	AddNode(t,ProfileCalcs=new RXMLTag("galileiconfig:profileCalcs"));
 	AddNode(t,Groupings=new RXMLTag("galileiconfig:groupings"));
 	AddNode(t,GroupCalcs=new RXMLTag("galileiconfig:groupCalcs"));
+	AddNode(t,StatsCalcs=new RXMLTag("galileiconfig:statsCalcs"));
 }
 
 
@@ -89,6 +91,7 @@ void GConfig::Load(void)
 		ProfileCalcs=GetTop()->GetTag("galileiconfig:profileCalcs");
 		Groupings=GetTop()->GetTag("galileiconfig:groupings");
 		GroupCalcs=GetTop()->GetTag("galileiconfig:groupCalcs");
+		StatsCalcs=GetTop()->GetTag("galileiconfig:statsCalcs");
 	}
 	catch(...)
 	{
@@ -249,6 +252,33 @@ void GConfig::Store(GGroupCalcManager& mng)
 		GroupCalcs->InsertAttr("Current",calc->GetFactory()->GetName());
 	else
 		GroupCalcs->InsertAttr("Current","None");
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GStatsCalcManager& mng)
+{
+	GFactoryStatsCalcCursor Cur;
+
+	if(!StatsCalcs) return;
+	Cur=mng.GetStatsCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(StatsCalcs);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GStatsCalcManager& mng)
+{
+	GFactoryStatsCalcCursor Cur;
+
+	Cur=mng.GetStatsCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(StatsCalcs);
+	}
 }
 
 

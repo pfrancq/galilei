@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GEvaluateGroupingMethods.cpp
+	GStatsCalc.cpp
 
-	Compare a ideal groupement with a computed one - Implementation
+	Generic Statistics - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2002 by the Université Libre de Bruxelles.
 
 	Authors:
-		David Wartel (dwartel@ulb.ac.be).
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 
@@ -35,50 +35,41 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcursor.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <groups/gevaluategroupingmethods.h>
+//include files for GALILEI
+#include <sessions/gstatscalc.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 
 
 
 //-----------------------------------------------------------------------------
 //
-//  GEvaluateGrouping
+//  GStatsCalc
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GEvaluateGroupingMethods::GEvaluateGroupingMethods() throw(bad_alloc)
+GStatsCalc::GStatsCalc(GFactoryStatsCalc* fac) throw(bad_alloc)
+	: GPlugin<GFactoryStatsCalc>(fac), Session(0)
 {
-	Methods= new RContainer<GEvaluateGrouping,unsigned int,true,true>(10,5);
-}
-
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GEvaluateGroupingMethods::RegisterEvaluationMethod(GEvaluateGrouping* method)
-{
- 	Methods->InsertPtr(method); 
 }
 
 
 //-----------------------------------------------------------------------------
-GEvaluateGroupingCursor& GALILEI::GEvaluateGroupingMethods::GetEvaluateGroupingCursor(void)
+void GStatsCalc::Connect(GSession* session)
 {
-	GEvaluateGroupingCursor *cur=GEvaluateGroupingCursor::GetTmpCursor();
-	cur->Set(Methods);
-	return(*cur);
+	Session=session;
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GEvaluateGroupingMethods::~GEvaluateGroupingMethods(void)
+void GStatsCalc::Disconnect(GSession*)
 {
+	Session=0;
+}
 
+
+//-----------------------------------------------------------------------------
+GStatsCalc::~GStatsCalc(void)
+{
 }

@@ -88,9 +88,11 @@ public:
 	* @param pmng           Profiling Manager.
 	* @param gmng           Grouping Manager.
 	* @param gcmng          Group Computing Manager.
+	* @param smng           Statistical Manager.
 	*/
 	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
 		GURLManager* umng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+		GStatsCalcManager* smng,
 		GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException,R::RMySQLError);
 
 	/**
@@ -311,11 +313,6 @@ public:
 	* @param filename       Name of the file.
 	*/
 	virtual void ExecuteData(const char* filename) throw(GException);
-
-	/**
-	* Save The Documents Simylarities into the database.
-	*/
-	virtual void SaveDocSim(void);
 
 	/**
 	* prepear the generation of pov

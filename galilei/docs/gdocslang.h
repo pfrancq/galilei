@@ -122,7 +122,7 @@ public:
 * of a given language.
 * @short ProfilesSims Cursor.
 */
-//CLASSCURSOR(GDocsLangCursor,GDocsLang,unsigned int)
+CLASSCURSOR(GDocsLangCursor,GDocsLang,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

@@ -59,10 +59,6 @@
 #include <sessions/gprginstmethod.h>
 #include <sessions/gprgvarconst.h>
 #include <sessions/gprgvarref.h>
-#include <tests/gquerydocsgroup.h>
-#include <tests/gstatsimdocprof.h>
-#include <tests/gstatsimdocgrp.h>
-#include <tests/gstatprofdoc.h>
 #include <docs/gdocoptions.h>
 using namespace GALILEI;
 using namespace R;
@@ -125,29 +121,6 @@ void GSOutputI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int
 	}
 	Owner->SOFile=new RTextFile(args->Tab[0]->GetValue(prg),Create);
 	Owner->SOFile->SetSeparator("\t");
-}
-
-
-//-----------------------------------------------------------------------------
-void GDSOutputI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
-{
-	sprintf(tmp,"Create Documents Statistics Output file '%s'",args->Tab[0]->GetValue(prg));
-	r->WriteStr(tmp);
-	if(Owner->DSOFile)
-	{
-		delete Owner->DSOFile;
-		Owner->DSOFile=0;
-	}
-	Owner->DSOFile=new RTextFile(args->Tab[0]->GetValue(prg),Create);
-	Owner->DSOFile->SetSeparator("\t");
-
-	(*Owner->DSOFile)<<"-------------------------------------------------------------------------------------------------"<<endl;
-	(*Owner->DSOFile)<<"AVG_PJSD : Average number of rofiles having Juged the Same Document."<<endl;;
-	(*Owner->DSOFile)<<"AVG_PAR : Average of Profiles Agreement Ration."<<endl;
-	(*Owner->DSOFile)<<"AVG_PDR : Average of Profiles Desagreement Ration."<<endl;
-	(*Owner->DSOFile)<<"-------------------------------------------------------------------------------------------------"<<endl<<endl;
-	(*Owner->DSOFile)<<"AVG_PJSD	--	AVG_PAR	--	AVG_PDR"<<endl;
-	(*Owner->DSOFile)<<endl;
 }
 
 
@@ -338,105 +311,6 @@ void GCompareIdealI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned in
 
 
 //-----------------------------------------------------------------------------
-void GCompareLinksI::Run(GSessionPrg*prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>*args) throw(GException)
-{
-	bool g;
-
-	cout <<"nombre d'arg:"<<args->NbPtr<<endl;
-	if(args->NbPtr!=1)
-		throw GException("Method needs one parameter");
-	sprintf(tmp,"Statistics on Profiles and Documents : ");
-	r->WriteStr(tmp);
-	GStatProfDoc ProfDocStats(Owner->Session,Owner->DSOFile);       
-	ProfDocStats.Run();
-	sprintf(tmp,  "--Average Number of profiles having juged the same docs : %f ",ProfDocStats.GetMeanNbProf() );
-	r->WriteStr(tmp);
-//	(*Owner->OFile)<<"--Average Number of profiles having juged the same docs : " <<ProfDocStats.GetMeanNbProf()<<endl;
-
-	sprintf(tmp,  "--Average of Agreement Ratio between profiles: %f ",ProfDocStats.GetMeanSame() );
-	r->WriteStr(tmp);
-//	(*Owner->OFile)<<"--Average of Agreement Ratio between profiles:  "<<ProfDocStats.GetMeanSame()<<endl;
-
-	sprintf(tmp,  "--Average of Desagreement Ratio between profiles: %f ",ProfDocStats.GetMeanDiff() );
-	r->WriteStr(tmp);
-//	(*Owner->OFile)<<"--Average of Desagreement Ratio between profiles:  "<<ProfDocStats.GetMeanDiff()<<endl;
-
-	g=atoi(args->Tab[0]->GetValue(prg));
-	if(g)
-	{
-		ProfDocStats.WriteLine();
-	}
-	
-
-}
-
-
-//-----------------------------------------------------------------------------
-void GStatsProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
-{
-	bool g,l;
-
-	if(args->NbPtr!=2)
-		throw GException("Method needs two parameters");
-	g=atoi(args->Tab[0]->GetValue(prg));
-	l=atoi(args->Tab[1]->GetValue(prg));
-	sprintf(tmp,"Statistics on Profiles : Global=%u,Local=%u",g,l);
-	r->WriteStr(tmp);
-	GStatSimSubProf ProfStats(Owner->Session,Owner->SOFile,g,l);
-	ProfStats.Run();
-	if(g)
-	{
-		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f",
-		        ProfStats.GetAvgIntraG(),ProfStats.GetAvgInterG(),ProfStats.GetAVGolG(),ProfStats.GetAVGGolG(),ProfStats.GetRieG());
-		r->WriteStr(tmp);
-	}
-	if(l)
-	{
-		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f",
-		        ProfStats.GetAvgIntraL(),ProfStats.GetAvgInterL(),ProfStats.GetAVGolL(),ProfStats.GetAVGGolL(),ProfStats.GetRieL());
-		r->WriteStr(tmp);
-	}
-	(*Owner->OFile)<<"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"<<endl;
-	if(Owner->OFile&&g)
-		(*Owner->OFile)<<ProfStats.GetAvgIntraG()<<ProfStats.GetAvgInterG()<<ProfStats.GetAVGolG()<<ProfStats.GetAVGGolG()<<ProfStats.GetRieG()<<endl;
-	if(Owner->OFile&&l)
-		(*Owner->OFile)<<ProfStats.GetAvgIntraL()<<ProfStats.GetAvgInterL()<<ProfStats.GetAVGolL()<<ProfStats.GetAVGGolL()<<ProfStats.GetRieL()<<endl;
-}
-
-
-//-----------------------------------------------------------------------------
-void GStatsDocsI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
-{
-	bool g,l;
-
-	if(args->NbPtr!=2)
-		throw GException("Method needs two parameters");
-	g=atoi(args->Tab[0]->GetValue(prg));
-	l=atoi(args->Tab[1]->GetValue(prg));
-	sprintf(tmp,"Statistics on Documents : Global=%u,Local=%u",g,l);
-	r->WriteStr(tmp);
-	GStatSimDoc DocStats(Owner->Session,Owner->SOFile,g,l);
-	DocStats.Run();
-	if(g)
-	{
-		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f ",
-		        DocStats.GetAvgIntraG(),DocStats.GetAvgInterG(),DocStats.GetAVGolG(),DocStats.GetRieG());
-		r->WriteStr(tmp);
-	}
-	if(l)
-	{
-		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f ",
-		        DocStats.GetAvgIntraL(),DocStats.GetAvgInterL(),DocStats.GetAVGolL(),DocStats.GetRieL());
-		r->WriteStr(tmp);
-	}
-	if(Owner->OFile&&g)
-		(*Owner->OFile)<<DocStats.GetAvgIntraG()<<DocStats.GetAvgInterG()<<DocStats.GetAVGolG()<<DocStats.GetRieG()<<endl;
-	if(Owner->OFile&&l)
-		(*Owner->OFile)<<DocStats.GetAvgIntraL()<<DocStats.GetAvgInterL()<<DocStats.GetAVGolL()<<DocStats.GetRieL()<<endl;
-}
-
-
-//-----------------------------------------------------------------------------
 void GSetComputingParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	GProfileCalc* calc;
@@ -465,132 +339,6 @@ void GSetGroupingParamI::Run(GSessionPrg* prg,GSlot*,R::RContainer<GPrgVar,unsig
 
 
 //-----------------------------------------------------------------------------
-void GRunQueriesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
-{
-	if(args->NbPtr!=4)
-		throw GException("Method needs four parameters");
-	r->WriteStr("Construct Grouping from Ideal");
-	Owner->Session->CopyIdealGroups();
-	r->WriteStr("Run Queries");
-	GQueryDocsGroup Queries(Owner->Session,Owner->SOFile);
-	Queries.Run(atoi(args->Tab[0]->GetValue(prg)),atoi(args->Tab[1]->GetValue(prg)),atoi(args->Tab[2]->GetValue(prg)),atoi(args->Tab[3]->GetValue(prg)));
-	sprintf(tmp,"First: %f  -  Second: %f  -  Recall: %f  -  SimIntra: %f  -  SimInter: %f ",
-	        Queries.GetFirst(),Queries.GetSecond(),Queries.GetRecall(),Queries.GetSimQueryIntra(),Queries.GetSimQueryInter());
-	r->WriteStr(tmp);
-}
-
-
-//-----------------------------------------------------------------------------
-void GStatsProfilesDocsI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
-{
-	bool g,l;
-
-	if(args->NbPtr!=2)
-		throw GException("Method needs two parameters");
-	g=atoi(args->Tab[0]->GetValue(prg));
-	l=atoi(args->Tab[1]->GetValue(prg));
-	sprintf(tmp,"Statistics on Profiles/Documents : Global=%u,Local=%u",g,l);
-	r->WriteStr(tmp);
-	GStatSimDocProf ProfDocStats(Owner->Session,Owner->SOFile,g,l);
-	ProfDocStats.Run();
-	if(g)
-	{
-		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
-		            "  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
-		            "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
-		            ProfDocStats.GetAvgIntraG(),ProfDocStats.GetAvgInterG(),ProfDocStats.GetAVGolG(),ProfDocStats.GetAVGGolG(),ProfDocStats.GetRieG(),
-		            ProfDocStats.GetPrecisionG(0),ProfDocStats.GetPrecisionG(1),ProfDocStats.GetPrecisionG(2),ProfDocStats.GetPrecisionG(3),
-		            ProfDocStats.GetPrecisionG(4),ProfDocStats.GetPrecisionG(5),ProfDocStats.GetPrecisionG(6),ProfDocStats.GetPrecisionG(7),
-		            ProfDocStats.GetPrecisionG(8),ProfDocStats.GetPrecisionG(9),ProfDocStats.GetPrecisionG(10));
-		r->WriteStr(tmp);
-	}
-	if(l)
-	{
-		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
-		            "-  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
-		            "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
-		            ProfDocStats.GetAvgIntraL(),ProfDocStats.GetAvgInterL(),ProfDocStats.GetAVGolL(),ProfDocStats.GetAVGGolL(),ProfDocStats.GetRieL(),
-		            ProfDocStats.GetPrecisionL(0),ProfDocStats.GetPrecisionL(1),ProfDocStats.GetPrecisionL(2),ProfDocStats.GetPrecisionL(3),
-		            ProfDocStats.GetPrecisionL(4),ProfDocStats.GetPrecisionL(5),ProfDocStats.GetPrecisionL(6),ProfDocStats.GetPrecisionL(7),
-		            ProfDocStats.GetPrecisionL(8),ProfDocStats.GetPrecisionL(9),ProfDocStats.GetPrecisionL(10));
-		r->WriteStr(tmp);
-	}
-	if(Owner->OFile&&g)
-	{
-		(*Owner->OFile)<<ProfDocStats.GetAvgIntraG()<<ProfDocStats.GetAvgInterG();
-		(*Owner->OFile)<<ProfDocStats.GetAVGolG()<<ProfDocStats.GetAVGGolG()<<ProfDocStats.GetRieG();
-		for(int i=0;i<11;i++)
-			(*Owner->OFile)<<ProfDocStats.GetPrecisionG(i);
-		(*Owner->OFile)<<endl;
-	}
-	if(Owner->OFile&&l)
-	{
-		(*Owner->OFile)<<ProfDocStats.GetAvgIntraL()<<ProfDocStats.GetAvgInterL();
-		(*Owner->OFile)<<ProfDocStats.GetAVGolL()<<ProfDocStats.GetAVGGolL()<<ProfDocStats.GetRieL();
-		for(int i=0;i<11;i++)
-			(*Owner->OFile)<<ProfDocStats.GetPrecisionL(i);
-		(*Owner->OFile)<<endl;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GStatsGroupsDocsI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
-{
-	bool g,l;
-
-	if(args->NbPtr!=2)
-		throw GException("Method needs two parameters");
-	g=atoi(args->Tab[0]->GetValue(prg));
-	l=atoi(args->Tab[1]->GetValue(prg));
-	r->WriteStr("Construct Grouping from Ideal");
-	Owner->Session->CopyIdealGroups();
-	sprintf(tmp,"Statistics on Groups/Documents : Global=%u,Local=%u",g,l);
-	r->WriteStr(tmp);
-	GStatSimDocGrp GrpDocStats(Owner->Session,Owner->SOFile,g,l);
-	GrpDocStats.Run();
-	if(g)
-	{
-		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
-		            "  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
-	                "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
-		        GrpDocStats.GetAvgIntraG(),GrpDocStats.GetAvgInterG(),GrpDocStats.GetAVGolG(),GrpDocStats.GetAVGGolG(),GrpDocStats.GetRieG(),
-		        GrpDocStats.GetPrecisionG(0),GrpDocStats.GetPrecisionG(1),GrpDocStats.GetPrecisionG(2),GrpDocStats.GetPrecisionG(3),
-		        GrpDocStats.GetPrecisionG(4),GrpDocStats.GetPrecisionG(5),GrpDocStats.GetPrecisionG(6),GrpDocStats.GetPrecisionG(7),
-		        GrpDocStats.GetPrecisionG(8),GrpDocStats.GetPrecisionG(9),GrpDocStats.GetPrecisionG(10));
-		r->WriteStr(tmp);
-	}
-	if(l)
-	{
-		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
-		            "-  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
-	                "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
-		        GrpDocStats.GetAvgIntraL(),GrpDocStats.GetAvgInterL(),GrpDocStats.GetAVGolL(),GrpDocStats.GetAVGGolL(),GrpDocStats.GetRieL(),
-		        GrpDocStats.GetPrecisionL(0),GrpDocStats.GetPrecisionL(1),GrpDocStats.GetPrecisionL(2),GrpDocStats.GetPrecisionL(3),
-		        GrpDocStats.GetPrecisionL(4),GrpDocStats.GetPrecisionL(5),GrpDocStats.GetPrecisionL(6),GrpDocStats.GetPrecisionL(7),
-		        GrpDocStats.GetPrecisionL(8),GrpDocStats.GetPrecisionL(9),GrpDocStats.GetPrecisionL(10));
-		r->WriteStr(tmp);
-	}
-	if(Owner->OFile&&g)
-	{
-		(*Owner->OFile)<<GrpDocStats.GetAvgIntraG()<<GrpDocStats.GetAvgInterG();
-		(*Owner->OFile)<<GrpDocStats.GetAVGolG()<<GrpDocStats.GetAVGGolG()<<GrpDocStats.GetRieG();
-		for(int i=0;i<11;i++)
-			(*Owner->OFile)<<GrpDocStats.GetPrecisionG(i);
-		(*Owner->OFile)<<endl;
-	}
-	if(Owner->OFile&&l)
-	{
-		(*Owner->OFile)<<GrpDocStats.GetAvgIntraL()<<GrpDocStats.GetAvgInterL();
-		(*Owner->OFile)<<GrpDocStats.GetAVGolL()<<GrpDocStats.GetAVGGolL()<<GrpDocStats.GetRieL();
-		for(int i=0;i<11;i++)
-			(*Owner->OFile)<<GrpDocStats.GetPrecisionL(i);
-		(*Owner->OFile)<<endl;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void GAddIdealI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr==1)
@@ -611,14 +359,6 @@ void GAddProfilesI::Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned
 		throw GException("Method needs two parameters");
 	sprintf(tmp,"Adding Profile: Settings=\"%s\",\"%s\"",args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
 	r->WriteStr(tmp);
-//<<<<<<< gsessionprg.cpp
-//	if(args->NbPtr==1)
-//		Owner->GetIdealMethod()->SetSettings(args->Tab[0]->GetValue(prg));
-////	cout <<atoi(args->Tab[0]->GetValue(prg)) <<endl;
-////	cout <<atoi(args->Tab[1]->GetValue(prg)) <<endl;
-//
-//=======
-//>>>>>>> 1.43
 	sprintf(tmp, "%u new profiles created",Owner->GetIdealMethod()->AddProfiles(atoi(args->Tab[0]->GetValue(prg)), atoi(args->Tab[1]->GetValue(prg)),Owner->AutoSave));
 	r->WriteStr(tmp);
 }
@@ -874,7 +614,6 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GOutputI(this));
 	Methods.InsertPtr(new GGOutputI(this));
 	Methods.InsertPtr(new GSOutputI(this));
-	Methods.InsertPtr(new GDSOutputI(this));
 	Methods.InsertPtr(new GSetLinksUseI(this));
 	Methods.InsertPtr(new GSetAutoSaveI(this));
 	Methods.InsertPtr(new GTestI(this));
@@ -887,14 +626,8 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GMixIdealI(this));
 	Methods.InsertPtr(new GFdbksCycleI(this));
 	Methods.InsertPtr(new GCompareIdealI(this));
-	Methods.InsertPtr(new GCompareLinksI(this));
-	Methods.InsertPtr(new GStatsProfilesI(this));
-	Methods.InsertPtr(new GStatsDocsI(this));
 	Methods.InsertPtr(new GSetComputingParamI(this));
 	Methods.InsertPtr(new GSetGroupingParamI(this));
-	Methods.InsertPtr(new GRunQueriesI(this));
-	Methods.InsertPtr(new GStatsProfilesDocsI(this));
-	Methods.InsertPtr(new GStatsGroupsDocsI(this));
 	Methods.InsertPtr(new GAddIdealI(this));
 	Methods.InsertPtr(new GAddProfilesI(this));
 	Methods.InsertPtr(new GRealLifeI(this));

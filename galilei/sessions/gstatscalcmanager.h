@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GEvaluateGroupingMethods.h
+	GStatsCalcManager.h
 
-	Compare a ideal groupement with a computed one - Header.
+	Manager to handle statistics - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
-		David Wartel (dwartel@ulb.ac.be).
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 
@@ -35,71 +35,72 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GEvaluateGroupingMethodsH
-#define GEvaluateGroupingMethodsH
+#ifndef GStatsCalcManagerH
+#define GStatsCalcManagerH
 
 
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainer.h>
-#include <rstd/rcursor.h>
-using namespace R;
+#include <rstd/rstring.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include<groups/gevaluategrouping.h>
+
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
+
 //-----------------------------------------------------------------------------
 /**
-* The GEvaluateGrouping provides a way to evaluate a clustering by
-* providing a list of criterion.
-* @author David Wartel
-* @short Clustering Evaluation .
+* The GStatsCalcManager class provides a representation for a manager
+* responsible to manage all the statistics.
+* @author Pascal Francq
+* @short Statistics Manager.
 */
-class GEvaluateGroupingMethods
+class GStatsCalcManager : public R::RContainer<GFactoryStatsCalc,unsigned int,true,true>
 {
-
-
-protected:
-
-	 RContainer<GEvaluateGrouping,unsigned int,true,true>*  Methods;      
-
-
-
 public:
 
 	/**
-	* Constructor.
-	* @param s              Session.
-	* @param groups         Ideal groupement.
+	* Construct a URL manager.
+	* @param path            Path to find the plugins.
 	*/
-	GEvaluateGroupingMethods(void) throw(bad_alloc);
+	GStatsCalcManager(const char* path) throw(GException);
 
 	/**
-	* registers a new method.
+	* Connect to a Session.
+	* @param session         The session.
 	*/
-	void RegisterEvaluationMethod(GEvaluateGrouping* method);
+	void Connect(GSession* session);
 
 	/**
-	* Get a cursor to the evaluation method registered.
-	* @return Return a GGoupingCursor.
+	* Disconnect from a Session.
+	* @param session         The session.
 	*/
-	GEvaluateGroupingCursor& GetEvaluateGroupingCursor(void);
-
+	void Disconnect(GSession* session);
 
 	/**
-	* Destructor.
+	* Get the staitiscs.
+	* @param name            Name of the method.
+	* @return Pointer to GStatsCalc.
 	*/
-	virtual ~GEvaluateGroupingMethods(void);
+	GStatsCalc* Get(const char* name);
+
+	/**
+	* Get a cursor over the filters of the system.
+	*/
+	GFactoryStatsCalcCursor& GetStatsCalcsCursor(void);
+
+	/**
+	* Destructor of URL manager.
+	*/
+	virtual ~GStatsCalcManager(void);
 };
-
-
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------
