@@ -43,6 +43,7 @@
 #include <groups/ggroups.h>
 #include <docs/gdoc.h>
 #include <sessions/gsession.h>
+#include <sessions/gstorage.h>
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
 #include <profiles/gprofile.h>
@@ -515,8 +516,8 @@ void GSubjects::CreateIdeal(bool Save) throw(bad_alloc)
 	CreateSet();
 	if(Save)
 	{
-		Session->SaveFdbks();
-		Session->SaveIdealGroupment(IdealGroups);
+		Session->GetStorage()->SaveFdbks(Session);
+		Session->GetStorage()->SaveIdealGroupment(IdealGroups);
 	}
 }
 
@@ -566,7 +567,7 @@ void GSubjects::FdbksCycle(bool Save) throw(bad_alloc)
 	}
 
 	if(Save)
-		Session->SaveFdbks();
+		Session->GetStorage()->SaveFdbks(Session);
 }
 
 
@@ -628,7 +629,7 @@ void GSubjects::AddAssessments(bool Save) throw(bad_alloc)
 	}
 	if(Save)
 	{
-		Session->SaveFdbks();
+		Session->GetStorage()->SaveFdbks(Session);
 	}
 }
 
@@ -713,8 +714,8 @@ bool GSubjects::AddTopic(bool Save) throw(bad_alloc)
 	}
 	if(Save)
 	{
-		Session->SaveFdbks();
-		Session->SaveIdealGroupment(IdealGroups);
+		Session->GetStorage()->SaveFdbks(Session);
+		Session->GetStorage()->SaveIdealGroupment(IdealGroups);
 	}
 	return(true);
 }
@@ -821,8 +822,8 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(bad_alloc)
 	// optional saving
 	if(Save)
 	{
-		Session->SaveFdbks();
-		Session->SaveIdealGroupment(IdealGroups);
+		Session->GetStorage()->SaveFdbks(Session);
+		Session->GetStorage()->SaveIdealGroupment(IdealGroups);
 	}
 
 	//returns the number of created profiles
@@ -942,22 +943,6 @@ GGroups* GSubjects::GetIdealGroups(void)
 {
 	return(IdealGroups);
 }
-
-
-//-----------------------------------------------------------------------------
-/*GGroupsCursor& GSubjects::GetIdealGroupsCursor(void)
-{
-	GGroupsCursor *cur=GGroupsCursor::GetTmpCursor();
-	cur->Set(IdealGroups);
-	return(*cur);
-}*/
-
-
-//------------------------------------------------------------------------------
-/*GGroupCursor& GSubjects::GetGroupsCursor(void) throw(GException)
-{
-	return(IdealGroups->GetGroupsCursor());
-}*/
 
 
 //------------------------------------------------------------------------------

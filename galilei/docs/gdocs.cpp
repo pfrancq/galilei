@@ -172,6 +172,14 @@ unsigned int GDocs::GetNbDocs(GLang* lang) const
 }
 
 
+//------------------------------------------------------------------------------
+unsigned int GDocs::GetNewId(void) const
+{
+	if(!NbPtr) return(1);
+	return(Tab[NbPtr-1]->GetId()+1);
+}
+
+
 //-----------------------------------------------------------------------------
 void GDocs::InsertDoc(GDoc* d) throw(bad_alloc)
 {

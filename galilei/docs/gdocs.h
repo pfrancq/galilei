@@ -110,31 +110,6 @@ public:
 	unsigned int FillDocs(GDoc** docs,GLang* lang) throw(GException,bad_alloc);
 
 	/**
-	* Method that load the documents from where they are stored. This method
-	* must be overloaded.
-	*/
-	virtual void LoadDocs(bool wg,bool w) throw(bad_alloc,GException)=0;
-
-	/**
-	* Create a new document. The document is not inserted in the list of
-	* documents handled. Since this method must also store the new document,
-	* this method must be overloaded.
-	* @param url        URL of the document.
-	* @param name       Name of the document.
-	* @param mime       MIME Type of the document
-	* @returns Pointer to a new created document.
-	*/
-	virtual GDoc* NewDoc(const char* url,const char* name,const char* mime) throw(GException)=0;
-
-	/**
-	* Save a document where it is stored. This method is called after an
-	* analsyis of a document if the result has to be saved. This method must be
-	* overloaded.
-	* @param doc        Document to save.
-	*/
-	virtual void SaveDoc(GDoc* doc) throw(GException)=0;
-
-	/**
 	* Get the number of documents handled.
 	* @returns Number of documents.
 	*/
@@ -146,6 +121,12 @@ public:
 	* @returns Number of documents of this language.
 	*/
 	unsigned int GetNbDocs(GLang* lang) const;
+
+	/**
+	* Get an identificator that can be assigned to a new document.
+	* @return unsigned int
+	*/
+	unsigned int GetNewId(void) const;
 
 	/**
 	* Insert a document. The document is stored in the different containers.

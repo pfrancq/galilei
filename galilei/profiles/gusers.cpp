@@ -125,6 +125,48 @@ GUser* GUsers::GetUser(unsigned int id) const
 
 
 //------------------------------------------------------------------------------
+unsigned int GUsers::GetNewId(tObjType obj) throw(GException)
+{
+	unsigned int id,i;
+	RCursor<GSubProfiles,unsigned int> Cur;
+
+	switch(obj)
+	{
+		case otProfile:
+			if(Profiles->NbPtr)
+				id=Profiles->Tab[NbPtr-1]->GetId()+1;
+			else
+				id=1;
+			break;
+
+		case otSubProfile:
+			Cur.Set(SubProfiles);
+			for(Cur.Start(),id=0;!Cur.End();Cur.Next())
+			{
+				if(!Cur()->NbPtr) continue;
+				i=Cur()->Tab[Cur()->NbPtr-1]->GetId();
+				if(id<i)
+					id=i;
+			}
+			id++;
+			break;
+
+		case otUser:
+			if(NbPtr)
+				id=Tab[NbPtr-1]->GetId()+1;
+			else
+				id=1;
+			break;
+
+		default:
+			throw GException("No a valid type");
+			break;
+	}
+	return(id);
+}
+
+
+//------------------------------------------------------------------------------
 void GUsers::InsertProfile(GProfile* p) throw(bad_alloc)
 {
 	Profiles->InsertPtr(p);

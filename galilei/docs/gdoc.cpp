@@ -80,6 +80,29 @@ GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,const ch
 
 
 //------------------------------------------------------------------------------
+GDoc::GDoc(const char* url,const char* name,const char* mime) throw(bad_alloc)
+	: URL(url), Name(name), Id(cNoRef),
+	  Lang(0), MIMEType(mime), Updated(), Computed(), Fdbks(50,25),
+	  Failed(0)
+#if GALILEITEST
+	  ,Subjects(2,1)
+#endif
+{
+	LinkSet=new RContainer<GLink,unsigned int,false,true>(5,2);
+
+	if(Updated>Computed)
+	{
+		if(Computed==RDate::null)
+			State=osCreated;
+		else
+			State=osModified;
+	}
+	else
+		State=osUpToDate;
+}
+
+
+//------------------------------------------------------------------------------
 bool GDoc::IsDefined(void) const
 {
 	return(false);

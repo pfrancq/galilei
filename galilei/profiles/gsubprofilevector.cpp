@@ -58,6 +58,12 @@ GSubProfileVector::GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,
 }
 
 
+//------------------------------------------------------------------------------
+GSubProfileVector::GSubProfileVector(GSession* session,GProfile* prof,GLang* lang) throw(bad_alloc)
+  : GSubProfile(session,prof,lang), GWeightInfos(60)
+{
+}
+
 
 //------------------------------------------------------------------------------
 void GSubProfileVector::ClearFdbks(void) throw(bad_alloc)

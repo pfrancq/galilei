@@ -4,7 +4,7 @@
 
 	GLinkCalcManager.h
 
-	Generic Link Methods Manager - Header.
+	Link Methods Manager - Header.
 
 	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
@@ -54,7 +54,7 @@ namespace GALILEI{
 * The GLinkCalcManager class provides a representation for a manager
 * responsible to manage all the links computing methods.
 * @author Vandaele Valery
-* @short Generic Link Methods Manager.
+* @short Link Methods Manager.
 */
 class GLinkCalcManager : public R::RContainer<GFactoryLinkCalc,unsigned int,true,true>
 {

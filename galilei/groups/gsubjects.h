@@ -331,21 +331,10 @@ public:
 	double GetRecall(GGroup* grp);
 
 	/**
-	* Get a cursor on the ideal groups.
-	* @return GGroupCursor.
-	*/
-//	GGroupCursor& GetGroupsCursor(void) throw(GException);
-
-	/**
 	* Get the ideal groups of the session
 	* @return Pointer to R::RContainer<GGroups,unsigned int,true,true>.
 	*/
 	GGroups* GetIdealGroups(void);
-
-	/**
-	* Get a cursor over the ideal groups of the system.
-	*/
-	//GGroupsCursor& GetIdealGroupsCursor(void);
 
 	/**
 	* Destructor of a subject.

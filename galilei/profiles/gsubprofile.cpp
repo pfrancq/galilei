@@ -36,11 +36,12 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include<profiles/gsubprofile.h>
-#include<profiles/gprofile.h>
-#include<profiles/gprofdoc.h>
-#include<infos/glang.h>
-#include<groups/ggroup.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gprofile.h>
+#include <profiles/gprofdoc.h>
+#include <infos/glang.h>
+#include <groups/ggroup.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -63,6 +64,18 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,
 	Profile->InsertPtr(this);
 	if(grp)
 		grp->InsertSubProfile(this);
+}
+
+
+//------------------------------------------------------------------------------
+GSubProfile::GSubProfile(GSession* session,GProfile *prof,GLang *lang) throw(bad_alloc)
+  :  Id(cNoRef), Profile(prof), Lang(lang), Group(0), State(osCreated), Attached(""),  Computed(""), Fdbks(20,10)
+{
+	#if GALILEITEST
+		Subject=0;
+	#endif
+	session->AssignId(this);
+	Profile->InsertPtr(this);
 }
 
 

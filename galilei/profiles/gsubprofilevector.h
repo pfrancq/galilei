@@ -72,6 +72,13 @@ public:
 	GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,tObjState state,const char* c) throw(bad_alloc);
 
 	/**
+	* Constructor of the subprofile.
+	* @param prof            Profile.
+	* @param lang            Language of the subprofile.
+	*/
+	GSubProfileVector(GSession* session,GProfile* prof,GLang* lang) throw(bad_alloc);
+
+	/**
 	* Get the name of the model used for the description.
 	* @return C String.
 	*/

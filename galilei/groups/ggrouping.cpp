@@ -46,6 +46,7 @@
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <sessions/gsession.h>
+#include <sessions/gstorage.h>
 #include <sessions/gslot.h>
 using namespace R;
 using namespace GALILEI;
@@ -136,7 +137,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
 		CalcDesc->Compute(Groups());
 
 	if(save)
-		Session->SaveGroups();
+		Session->GetStorage()->SaveGroups(Session);
 }
 
 

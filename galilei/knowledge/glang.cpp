@@ -33,31 +33,44 @@
 */
 
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/glang.h>
 #include <infos/gdict.h>
 #include <sessions/gsession.h>
+#include <sessions/gstorage.h>
 using namespace GALILEI;
 using namespace R;
 
-class GLang::SkipWord
-	{
-	public:
-		R::RString Word;
-		SkipWord(const char* w) : Word(w) {}
-		int Compare(const SkipWord* w) {return(Word.Compare(w->Word));}
-		int Compare(const SkipWord& w) {return(Word.Compare(w.Word));}
-		int Compare(const R::RChar* w) {return(Word.Compare(w));}
-	};
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//
+// class GLang::SkipWord
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GLang::SkipWord
+{
+public:
+	R::RString Word;
+	SkipWord(const char* w) : Word(w) {}
+	int Compare(const SkipWord* w) {return(Word.Compare(w->Word));}
+	int Compare(const SkipWord& w) {return(Word.Compare(w.Word));}
+	int Compare(const R::RChar* w) {return(Word.Compare(w));}
+};
+
+
+
+//------------------------------------------------------------------------------
 //
 // class GLang
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code) throw(bad_alloc)
 	: RLang(lang,code), GPlugin<GFactoryLang>(fac), Session(0), Dict(0), Stop(0),
 	  SkipWords(50,20)
@@ -94,19 +107,19 @@ GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code) throw(bad_a
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLang::Connect(GSession* session) throw(GException)
 {
 	Session=session;
 	if(Dict&&Stop) return;
 	if(!Dict)
-		session->LoadDic(Dict,this,false);
+		session->GetStorage()->LoadDic(Dict,this,false);
 	if(!Stop)
-		session->LoadDic(Stop,this,true);
+		session->GetStorage()->LoadDic(Stop,this,true);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLang::Disconnect(GSession* /*session*/) throw(GException)
 {
 	Session=0;
@@ -124,14 +137,14 @@ void GLang::Disconnect(GSession* /*session*/) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int GLang::Compare(const GLang& lang) const
 {
 	return(strcmp(Code,lang.Code));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int GLang::Compare(const GLang* lang) const
 {
 	if(!lang)
@@ -140,21 +153,21 @@ int GLang::Compare(const GLang* lang) const
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int GLang::Compare(const char* code) const
 {
 	return(strcmp(Code,code));
 }
 
 
-//-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLang::SkipSequence(const RString& word) throw(bad_alloc)
 {
 	SkipWords.InsertPtr(new SkipWord(word));
 }
 
 
-//-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RString& GLang::GetStemming(const RString& _kwd) throw(GException)
 {
 	RString *res=RString::GetString();
@@ -165,21 +178,21 @@ RString& GLang::GetStemming(const RString& _kwd) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GDict* GLang::GetDict(void) const
 {
 	return(Dict);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GDict* GLang::GetStop(void) const
 {
 	return(Stop);
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool GLang::InStop(const RString& name) const throw(GException)
 {
 	if(!Stop)
@@ -188,7 +201,7 @@ bool GLang::InStop(const RString& name) const throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLang::IncRef(unsigned int id,tObjType ObjType) throw(GException)
 {
 	if(!Dict)
@@ -197,7 +210,7 @@ void GLang::IncRef(unsigned int id,tObjType ObjType) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLang::DecRef(unsigned int id,tObjType ObjType) throw(GException)
 {
 	if(!Dict)
@@ -206,7 +219,7 @@ void GLang::DecRef(unsigned int id,tObjType ObjType) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 unsigned int GLang::GetRef(unsigned int id,tObjType ObjType) throw(GException)
 {
 	if(!Dict)
@@ -215,7 +228,7 @@ unsigned int GLang::GetRef(unsigned int id,tObjType ObjType) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLang::IncRef(tObjType ObjType) throw(GException)
 {
 	if(!Dict)
@@ -224,7 +237,7 @@ void GLang::IncRef(tObjType ObjType) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLang::DecRef(tObjType ObjType) throw(GException)
 {
 	if(!Dict)
@@ -233,7 +246,7 @@ void GLang::DecRef(tObjType ObjType) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 unsigned int GLang::GetRef(tObjType ObjType) throw(GException)
 {
 	if(!Dict)
@@ -242,7 +255,7 @@ unsigned int GLang::GetRef(tObjType ObjType) throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 unsigned int GLang::GetTotal(void) const throw(GException)
 {
 	if(!Dict)
@@ -251,7 +264,7 @@ unsigned int GLang::GetTotal(void) const throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const GData** GLang::GetDatas(void) const throw(GException)
 {
 	if(!Dict)
@@ -260,14 +273,14 @@ const GData** GLang::GetDatas(void) const throw(GException)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool GLang::MustSkipSequence(const RChar* seq) throw(GException)
 {
 	return(SkipWords.IsIn<const RChar*>(seq));
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLang::~GLang(void)
 {
 	if(Dict)

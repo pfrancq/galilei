@@ -47,7 +47,30 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-// class GGroups::GroupsLang
+// class GGroups::GFreeId
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GGroups::GFreeId
+{
+public:
+	unsigned int Id;          // Identificator.
+
+	// Constructor and Compare methods.
+	GFreeId(unsigned int id) : Id(id) {}
+	int Compare(const GFreeId* f) {return(Id-f->Id);}
+	int Compare(unsigned int id) {return(Id-id);}
+
+	// Destructor
+	~GFreeId(void) {}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GGroups::GGroupsLang
 //
 //------------------------------------------------------------------------------
 
@@ -96,7 +119,8 @@ GGroup* GGroups::GGroupsLang::GetGroup(const GSubProfile* sub)
 
 //------------------------------------------------------------------------------
 GGroups::GGroups(unsigned int g)
-	: RContainer<GGroup,unsigned int,true,true>(g+(g/2),g/2), GroupsLang(2,1)
+	: RContainer<GGroup,unsigned int,true,true>(g+(g/2),g/2), GroupsLang(2,1),
+	  FreeIds(50,25)
 {
 }
 
@@ -139,6 +163,18 @@ void GGroups::InsertGroup(GGroup* grp) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
+void GGroups::DeleteGroup(GGroup* grp) throw(bad_alloc)
+{
+	GGroupsLang* groupsLang;
+
+	groupsLang = GroupsLang.GetInsertPtr<GLang*>(grp->GetLang());
+	groupsLang->DeletePtr(grp);
+	FreeIds.InsertPtr(new GFreeId(grp->GetId()));
+	DeletePtr(grp);
+}
+
+
+//------------------------------------------------------------------------------
 GGroup* GGroups::GetGroup(const GSubProfile* sub) throw(GException)
 {
 	GGroupsLang* groupsLang;
@@ -173,10 +209,18 @@ unsigned int GGroups::GetNbGroups(GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GGroups::GetMaxId(void) const
+unsigned int GGroups::GetNewId(void) const
 {
-	if(!NbPtr) return(0);
-	return(Tab[NbPtr-1]->GetId());
+	// Is there a free identificator
+	// -> Take the first one.
+	if(FreeIds.NbPtr)
+	{
+		unsigned int id=FreeIds.Tab[0]->Id;
+		delete FreeIds.Tab[0];
+		return(id);
+	}
+	if(!NbPtr) return(1);
+	return(Tab[NbPtr-1]->GetId()+1);
 }
 
 
@@ -202,7 +246,10 @@ void GGroups::Clear(GLang* lang)
 //------------------------------------------------------------------------------
 void GGroups::Clear(void) throw(GException)
 {
-	GroupsLang.Clear();
+	for(GroupsLang.Start();!GroupsLang.End();GroupsLang.Next())
+	{
+		Clear(GroupsLang()->Lang);
+	}
 }
 
 

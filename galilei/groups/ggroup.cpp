@@ -204,7 +204,7 @@ void GGroup::DeleteSubProfiles(void) throw(bad_alloc)
 	if(Community)
 	{
 		Sub.Set(this);
-		for(Sub();!Sub();Sub())
+		for(Sub.Start();!Sub.End();Sub.Next())
 			Sub()->SetGroup(0);
 	}
 	Clear();
@@ -457,7 +457,7 @@ GGroup::~GGroup(void) throw(GException)
 	if(Community)
 	{
 		Sub.Set(this);
-		for(Sub();!Sub();Sub())
+		for(Sub.Start();!Sub.End();Sub.Next())
 			Sub()->SetGroup(0);
 	}
 }

@@ -76,6 +76,14 @@ public:
 	GDocVector(const char* url,const char* name,unsigned int id,GLang* lang,const char* mime,const char* u,const char* a,unsigned int f,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
+	* Construct the document.
+	* @param url            URL of the document.
+	* @param title          Name of the document.
+	* @param mime           MIME type of the document.
+	*/
+	GDocVector(const char* url,const char* name,const char* mime) throw(bad_alloc);
+
+	/**
 	* Get the name of the model used for the description.
 	* @return C String.
 	*/

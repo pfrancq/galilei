@@ -61,11 +61,17 @@ protected:
 
 	// Internal Class
 	class GGroupsLang;
+	class GFreeId;
 
 	/**
 	* Groups ordered by language and identificator.
 	*/
 	R::RContainer<GGroupsLang,unsigned int,true,true> GroupsLang;
+
+	/**
+	* List of all "free" identificators that could be used for a group.
+	*/
+	R::RContainer<GFreeId,unsigned int,true,true> FreeIds;
 
 public:
 
@@ -89,30 +95,6 @@ public:
 	GGroupCursor& GetGroupsCursor(GLang* lang) throw(GException);
 
 	/**
-	* Load the groups.
-	*/
-	virtual void LoadGroups(bool wg,bool w) throw(bad_alloc,GException) {};
-
-	/**
-	* Save a group, i.e. save all the information of the subprofiles
-	* concerning the groupement.
-	* @param grp        Group to save.
-	*/
-	virtual void Save(GGroup* grp) throw(GException) {};
-
-	/**
-	* Create a new group.
-	* @param lang       Language of the group to create.
-	* @param grp        Group created.
-	*/
-	virtual void NewGroup(GLang* lang,GGroup* grp) {};
-
-	/**
-	* Save the groups of the session.
-	*/
-	virtual void SaveGroups(void) {};
-
-	/**
 	* Insert a group. The group is also stored in the container correspondong to
 	* its language.
 	* @param grp             Pointer to the group.
@@ -121,9 +103,9 @@ public:
 
 	/**
 	* Delete a group.
-	* @param grp        Group to delete.
+	* @param grp             Pointer to the group.
 	*/
-	virtual void DeleteGroup(GGroup* grp) {};
+	void DeleteGroup(GGroup* grp) throw(bad_alloc);
 
 	/**
 	* Get the group where the given subprofile is attached.
@@ -152,9 +134,11 @@ public:
 	unsigned int GetNbGroups(GLang* lang) const;
 
 	/**
-	* Get the highest identificator of the groups managed.
+	* Get an identificator that can be assigned to a new group. The returned
+	* identificator is considered as reserved.
+	* @return unsigned int
 	*/
-	unsigned int GetMaxId(void) const;
+	unsigned int GetNewId(void) const;
 
 	/**
 	* Clear the groups of a given language.

@@ -90,6 +90,13 @@ public:
 	unsigned int GetNbUsers(void) const {return(NbPtr);}
 
 	/**
+	* Get an identificator that can be assigned to a new object.
+	* @param obj             Object type (otProfile,otSubProfile,otUser).
+	* @return unsigned int
+	*/
+	unsigned int GetNewId(tObjType obj) throw(GException);
+
+	/**
 	* Insert an user in the container.
 	* @param usr             Pointer to the user to insert.
 	*/
@@ -101,22 +108,6 @@ public:
 	* @returns Pointer to the corresponding GUser object.
 	*/
 	GUser* GetUser(unsigned int id) const;
-
-	/**
-	* Create a new profile.
-	* @param usr             Pointer to the user of the profile.
-	* @param desc            Description of the profile.
-	* @returns Pointer to GProfile.
-	*/
-	virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException)=0;
-
-	/**
-	* Create a new subprofile.
-	* @param prof             Pointer to the profile.
-	* @param lang             Language of the subprofile.
-	* @returns Pointer to GSubProfile.
-	*/
-	virtual GSubProfile* NewSubProfile(GProfile* prof,GLang* lang) throw(bad_alloc,GException)=0;
 
 	/**
 	* Insert a new profile in the container.
@@ -139,12 +130,6 @@ public:
 	* Get the number of profiles defined in the system.
 	*/
 	unsigned int GetProfilesNb(void) const;
-
-	/**
-	* Save a profile.
-	* @param prof           Profile to save.
-	*/
-	virtual void SaveProfile(GProfile* prof) throw(GException)=0;
 
 	/**
 	* Insert a subprofiles in the container.
@@ -175,18 +160,6 @@ public:
 	* Clear all the subprofiles assignement.
 	*/
 	void ClearSubProfilesGroups(void) throw(GException);
-
-	/**
-	* Save information about the groupement (Group and attachment date) of
-	* a subprofile. For a complete save, call Save(const GProfile*).
-	* @param sub        Subprofile to save.
-	*/
-	virtual void SaveSubProfile(GSubProfile* sub) throw(GException)=0;
-
-	/**
-	* Load the Users.
-	*/
-	virtual void LoadUsers(bool wg,bool w) throw(bad_alloc,GException)=0;
 
 	/**
 	* Clear all the users, profiles and subprofiles.
