@@ -12,8 +12,9 @@
     </keywords>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <ignoreparts/>
+    <secondaryLanguages/>
   </general>
   <kdevfileview>
     <groups>
@@ -23,6 +24,7 @@
       <group pattern="*.po;*.ts" name="Translations" />
       <group pattern="*" name="Others" />
       <hidenonprojectfiles>false</hidenonprojectfiles>
+      <hidenonlocation>false</hidenonlocation>
     </groups>
     <tree>
       <hidenonprojectfiles>false</hidenonprojectfiles>
@@ -46,12 +48,15 @@
   <kdevdebugger>
     <general>
       <dbgshell>libtool</dbgshell>
-      <programargs/>
-      <gdbpath/>
+      <programargs></programargs>
+      <gdbpath></gdbpath>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
       <runappinappdirectory>true</runappinappdirectory>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
     </general>
     <display>
       <staticmembers>false</staticmembers>
@@ -81,23 +86,24 @@
       <useconfiguration>default</useconfiguration>
     </general>
     <run>
-      <mainprogram>../kgalileicenter/kgalileicenter/kgalileicenter</mainprogram>
-      <programargs/>
+      <mainprogram>/home/pfrancq/prj/kgalileicenter/kgalileicenter/kgalileicenter</mainprogram>
+      <programargs></programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars/>
-      <directoryradio>executable</directoryradio>
+      <directoryradio>custom</directoryradio>
+      <customdirectory>/</customdirectory>
     </run>
     <configurations>
       <default>
-        <configargs>--prefix=/usr --enable-debug=full</configargs>
+        <configargs>--prefix=/usr --enable-debug=full --enable-kde=yes</configargs>
         <builddir/>
         <topsourcedir/>
         <cppflags/>
         <ldflags/>
-        <ccompiler>GccOptions</ccompiler>
-        <cxxcompiler>GppOptions</cxxcompiler>
-        <f77compiler>G77Options</f77compiler>
+        <ccompiler>kdevgccoptions</ccompiler>
+        <cxxcompiler>kdevgppoptions</cxxcompiler>
+        <f77compiler>kdevpgf77options</f77compiler>
         <ccompilerbinary/>
         <cxxcompilerbinary/>
         <f77compilerbinary/>
