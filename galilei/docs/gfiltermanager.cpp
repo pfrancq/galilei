@@ -109,7 +109,7 @@ GFilterManager::GFilterManager(RContainer<RString, true, false>* paths,bool dlg)
 	: R::RContainer<GFactoryFilter,true,true>(10,5),GPluginManager("Filter",paths), MIMES(50,25),
 	  Exts(50,25)
 {
-		RString MIME;
+	RString MIME;
 	for(paths->Start(); !paths->End(); paths->Next())
 	{
 		RString Path((*paths)());
@@ -124,7 +124,7 @@ GFilterManager::GFilterManager(RContainer<RString, true, false>* paths,bool dlg)
 		RXMLFile File("/etc/galilei/galilei.mimes",&xml);
 		R::RCursor<RXMLTag> Cur,Cur2;
 
-		File.Open(R::Read);
+		File.Open(R::RIO::Read);
 
 		// Go trough all MIME types
 		Cur=xml.GetTag("mimeTypes")->GetXMLTagsCursor();

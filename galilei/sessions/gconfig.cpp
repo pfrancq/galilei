@@ -111,7 +111,7 @@ void GConfig::Load(void) throw(GException)
 	try
 	{
 		RXMLFile File(FileName,this);
-		File.Open(R::Read);
+		File.Open(R::RIO::Read);
 		SessionParams=GetTop()->GetTag("galileiconfig:session");
 
 		RCursor<GPluginManager> cur(GPluginManager::GetCursor());
@@ -155,7 +155,7 @@ void GConfig::Save(void) throw(GException)
 	try
 	{
 		RXMLFile File(FileName,this);
-		File.Open(R::Create);
+		File.Open(R::RIO::Create);
 	}
 	catch(...)
 	{

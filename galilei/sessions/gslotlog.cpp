@@ -52,7 +52,7 @@ using namespace std;
 GALILEI::GSlotLog::GSlotLog(const char* name) throw(std::bad_alloc,RException)
 	: GSlot(), RTextFile(name)
 {
-	RTextFile::Open(Append);
+	RTextFile::Open(RIO::Append);
 }
 
 
