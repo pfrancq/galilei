@@ -1,1 +1,18 @@
-
+<!DOCTYPE ToDos>
+<ToDos Name="kgalileicenter" Version="0.1">
+	<Bugs>
+		<Bug Modules="GCompareGrouping" Priority="High"> Recall and Precision must be lower than 1. </Bug>
+		<Bug Modules="GSessionMySQL" Priority="High"> "OUT of Sync" when insert a word containing 'insert'. </Bug>
+		<Bug Modules="GFilterHTML" Priority="Low"> Empty tags in GDocXML. </Bug>
+	</Bugs>
+	<NewDevs>
+		<NewDev Priority="High"> New MetaData based on RDF/Dublin. </NewDev>
+		<NewDev Priority="Medium"> Multiple representation for subprofiles. </NewDev>
+		<NewDev Priority="High"> New subprofile representation based on unique vector. </NewDev>
+		<NewDev Priority="Medium"> New similarity for subprofiles. </NewDev>
+	</NewDevs>
+	<Upgrates>
+		<Upgrate Modules="GFilterHTML" Priority="Low"> Add FRAME handling. </Upgrate>
+		<Upgrate Modules="GFilter" Priority="Medium"> Change extracting rules for words. </Upgrate>
+	</Upgrates>
+</ToDos>

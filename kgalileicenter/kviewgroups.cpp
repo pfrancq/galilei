@@ -1,0 +1,143 @@
+/*
+
+	GALILEI Research Project
+
+	KViewGroups.cpp
+
+	Window to manipulate the groups - Implementation.
+
+	(C) 2001 by Pascal Francq and David Wartel
+
+	Version $Revision$
+
+	Last Modify: $Date$
+
+*/
+
+
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainercursor.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <profiles/guser.h>
+#include <profiles/gprofile.h>
+#include <profiles/gsubprofile.h>
+#include <groups/ggroup.h>
+#include <groups/ggroups.h>
+#include <galilei/qlistviewitemtype.h>
+using namespace GALILEI;
+
+
+//-----------------------------------------------------------------------------
+// includes files for Qt
+#include <qpixmap.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for current application
+#include "kviewgroups.h"
+#include "qsessionprogress.h"
+#include "kdoc.h"
+using namespace RTimeDate;
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class KViewGroups
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+KViewGroups::KViewGroups(KDoc* doc,QWidget* parent,const char* name,int wflags)
+	: KView(doc,parent,name,wflags)
+{
+	setCaption("List of Groups");
+	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/mimetypes/kmultiple.png"));
+	Groups = new QListView(this);
+	Groups->resize(size());
+	Groups->addColumn(QString("Profiles"));
+	Groups->addColumn(QString("Users"));
+	Groups->addColumn(QString("Attached"));
+	Groups->setRootIsDecorated(true);
+	connect(Groups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	ConstructGroups();
+}
+
+
+//-----------------------------------------------------------------------------
+GGroup* KViewGroups::GetCurrentGroup(void)
+{
+	QListViewItemType* t;
+
+	t=(QListViewItemType*)Groups->selectedItem();
+	if(!t)
+		return(0);
+	if(t->Type!=QListViewItemType::tGroup)
+		return(0);
+	return(t->Obj.Group);
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewGroups::ConstructGroups(void)
+{
+	RContainerCursor<GLang,unsigned int,true,true> CurLang(Doc->GetSession()->GetLangs());
+	char sDate[20];
+	const RDate* d;
+
+	Groups->clear();
+	for(CurLang.Start();!CurLang.End();CurLang.Next())
+	{
+		GGroups* grs=Doc->GetSession()->GetGroups(CurLang());
+		QListViewItemType* grsitem = new QListViewItemType(Groups,CurLang()->GetName());
+		grsitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/locale.png"));
+		for (grs->Start(); !grs->End(); grs->Next())
+		{
+			GGroup* gr=(*grs)();
+			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group");
+			gritem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/window_new.png"));
+			for(gr->Start(); !gr->End(); gr->Next())
+			{
+				GSubProfile* sub=(*gr)();
+				d=sub->GetAttached();
+				sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName(),sDate);
+				subitem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewGroups::update(unsigned int cmd)
+{
+	if(cmd!=2) return;
+	ConstructGroups();
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewGroups::resizeEvent(QResizeEvent *)
+{
+	if(Groups->height())
+	{
+		int l=width()/3;
+		Groups->setGeometry(0,0,this->width(),this->height());
+		Groups->setColumnWidth(0,l-2);
+		Groups->setColumnWidth(1,this->width()-2*l-1);
+		Groups->setColumnWidth(2,l-2);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+KViewGroups::~KViewGroups(void)
+{
+}

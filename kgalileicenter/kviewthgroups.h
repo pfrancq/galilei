@@ -1,0 +1,150 @@
+/*
+
+	GALILEI Research Project
+
+	KViewThGroups.h
+
+	Window to manipulate theoritical groups - Header.
+
+	(C) 2001 by Pascal Francq
+
+	Version $Revision$
+
+	Last Modify: $Date$
+
+*/
+
+
+
+//-----------------------------------------------------------------------------
+#ifndef KViewThGroupsH
+#define KViewThGroupsH
+
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainer.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+namespace GALILEI
+{
+	class GGroup;
+	class GGroups;
+};
+
+using namespace GALILEI;
+
+
+
+//-----------------------------------------------------------------------------
+// include files for Qt
+#include <qwidget.h>
+class QListView;
+class QTabWidget;
+
+
+//-----------------------------------------------------------------------------
+// include files for current application
+#include "kview.h"
+
+
+
+//-----------------------------------------------------------------------------
+/**
+* The KViewThGroups class represents a window to manipulate the groups of the
+* system.
+*
+* @author Pascal Francq and David Wartel.
+* @version $Revision$
+* @short Theoritical Groups' Window.
+*/
+class KViewThGroups : public KView
+{
+	Q_OBJECT
+
+	/**
+	* Ideal Groups.
+	*/
+	RContainer<GGroups,unsigned int,true,true>* Groups;
+
+	/**
+	* Widget to handle the different information of the document.
+	*/
+	QTabWidget* Infos;
+
+	/**
+	* Theoritical Groups.
+	*/
+	QListView* thGroups;
+
+	/**
+	* Pratical Groups.
+	*/
+	QListView* prGroups;
+
+public:
+
+	/**
+	* Constructor for the view
+	* @param doc            Document instance that the view represents.
+	* @param filename       Name of the file containing the ideal groupement.
+	* @param parent         Parent of the window.
+	* @param name           Name of the window.
+	* @param wflags         Flags.
+	*/
+	KViewThGroups(KDoc* doc,const char* filename,QWidget* parent,const char* name,int wflags);
+
+	/**
+	* Return the type of the window.
+	*/
+	virtual GViewType getType(void) {return(gThGroups);}
+
+	/**
+	* Get the current group selected in this window.
+	* @returns Pointer to GGroup or 0 if no group is currently selected.
+	*/
+	GGroup* GetCurrentGroup(void);
+
+	/**
+	* Construct the groups' widget.
+	*/
+	void ConstructThGroups(void);
+
+	/**
+	* Construct the groups' widget.
+	*/
+	void ConstructGroups(void);
+
+	/**
+	* Gets called to redraw the document contents if it has been modified.
+	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	*/
+	virtual void update(unsigned int cmd);
+
+protected:
+
+	/**
+	* Load the groups from the file.
+	* @param filename       Name of the file containing the ideal groupement.
+	*/
+	void LoadGroups(const char* filename);
+
+	/**
+	* Called when the main window is resize by the user.
+	*/
+	void resizeEvent(QResizeEvent *);
+
+public:
+
+	/**
+	* Destructor for the main view.
+	*/
+	~KViewThGroups(void);
+};
+
+
+//-----------------------------------------------------------------------------
+#endif

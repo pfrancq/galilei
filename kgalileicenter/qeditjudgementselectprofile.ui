@@ -1,0 +1,415 @@
+<!DOCTYPE UI><UI>
+<class>QEditJudgementSelectProfile</class>
+<widget>
+    <class>QDialog</class>
+    <property stdset="1">
+        <name>name</name>
+        <cstring>QEditJudgementSelectProfile</cstring>
+    </property>
+    <property stdset="1">
+        <name>geometry</name>
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>612</width>
+            <height>843</height>
+        </rect>
+    </property>
+    <property stdset="1">
+        <name>caption</name>
+        <string>Edit judgement for this profile</string>
+    </property>
+    <widget>
+        <class>QGroupBox</class>
+        <property stdset="1">
+            <name>name</name>
+            <cstring>GroupBox3</cstring>
+        </property>
+        <property stdset="1">
+            <name>geometry</name>
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>590</width>
+                <height>150</height>
+            </rect>
+        </property>
+        <property stdset="1">
+            <name>title</name>
+            <string>Document</string>
+        </property>
+        <widget>
+            <class>QLabel</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>TextLabel1</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>20</x>
+                    <y>30</y>
+                    <width>90</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>text</name>
+                <string>name:</string>
+            </property>
+        </widget>
+        <widget>
+            <class>QLabel</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>TextLabel3_2</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>20</x>
+                    <y>60</y>
+                    <width>70</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>text</name>
+                <string>URL:</string>
+            </property>
+        </widget>
+        <widget>
+            <class>QLabel</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>TextLabel1_3</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>20</x>
+                    <y>90</y>
+                    <width>70</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>text</name>
+                <string>language</string>
+            </property>
+        </widget>
+        <widget>
+            <class>QLabel</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>TLURL</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>100</x>
+                    <y>60</y>
+                    <width>480</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>text</name>
+                <string>URL du document</string>
+            </property>
+        </widget>
+        <widget>
+            <class>QLabel</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>TLTitle</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>100</x>
+                    <y>30</y>
+                    <width>480</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>text</name>
+                <string>Name of document</string>
+            </property>
+        </widget>
+        <widget>
+            <class>QLabel</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>TextLabel3</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>20</x>
+                    <y>120</y>
+                    <width>70</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>text</name>
+                <string>mimetype:</string>
+            </property>
+        </widget>
+        <widget>
+            <class>QLabel</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>TLLang</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>100</x>
+                    <y>90</y>
+                    <width>480</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>text</name>
+                <string>Language of the document</string>
+            </property>
+        </widget>
+        <widget>
+            <class>QLabel</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>MimeFilter</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>100</x>
+                    <y>120</y>
+                    <width>481</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>text</name>
+                <string>TextLabel1</string>
+            </property>
+        </widget>
+    </widget>
+    <widget>
+        <class>QGroupBox</class>
+        <property stdset="1">
+            <name>name</name>
+            <cstring>GroupBox1</cstring>
+        </property>
+        <property stdset="1">
+            <name>geometry</name>
+            <rect>
+                <x>10</x>
+                <y>170</y>
+                <width>590</width>
+                <height>600</height>
+            </rect>
+        </property>
+        <property stdset="1">
+            <name>title</name>
+            <string>Judge</string>
+        </property>
+        <widget>
+            <class>QComboBox</class>
+            <item>
+                <property>
+                    <name>text</name>
+                    <string>Ok</string>
+                </property>
+                <property>
+                    <name>pixmap</name>
+                    <pixmap>image0</pixmap>
+                </property>
+            </item>
+            <item>
+                <property>
+                    <name>text</name>
+                    <string>Ko</string>
+                </property>
+                <property>
+                    <name>pixmap</name>
+                    <pixmap>image1</pixmap>
+                </property>
+            </item>
+            <item>
+                <property>
+                    <name>text</name>
+                    <string>Navigation</string>
+                </property>
+                <property>
+                    <name>pixmap</name>
+                    <pixmap>image2</pixmap>
+                </property>
+            </item>
+            <item>
+                <property>
+                    <name>text</name>
+                    <string>Out of Scope</string>
+                </property>
+                <property>
+                    <name>pixmap</name>
+                    <pixmap>image3</pixmap>
+                </property>
+            </item>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>CBJudgement</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>370</x>
+                    <y>530</y>
+                    <width>170</width>
+                    <height>30</height>
+                </rect>
+            </property>
+        </widget>
+        <widget>
+            <class>QLabel</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>TextLabel1_2</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>270</x>
+                    <y>530</y>
+                    <width>80</width>
+                    <height>31</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>text</name>
+                <string>Judgement :</string>
+            </property>
+        </widget>
+        <widget>
+            <class>QListView</class>
+            <column>
+                <property>
+                    <name>text</name>
+                    <string>Choose a user profile</string>
+                </property>
+                <property>
+                    <name>clickable</name>
+                    <bool>true</bool>
+                </property>
+                <property>
+                    <name>resizeable</name>
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property>
+                    <name>text</name>
+                    <string>judgement</string>
+                </property>
+                <property>
+                    <name>clickable</name>
+                    <bool>true</bool>
+                </property>
+                <property>
+                    <name>resizeable</name>
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>LVUsers</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>20</x>
+                    <y>40</y>
+                    <width>540</width>
+                    <height>470</height>
+                </rect>
+            </property>
+        </widget>
+    </widget>
+    <widget>
+        <class>QPushButton</class>
+        <property stdset="1">
+            <name>name</name>
+            <cstring>PBCancel</cstring>
+        </property>
+        <property stdset="1">
+            <name>geometry</name>
+            <rect>
+                <x>10</x>
+                <y>780</y>
+                <width>110</width>
+                <height>40</height>
+            </rect>
+        </property>
+        <property stdset="1">
+            <name>text</name>
+            <string>Cancel</string>
+        </property>
+    </widget>
+    <widget>
+        <class>QPushButton</class>
+        <property stdset="1">
+            <name>name</name>
+            <cstring>PBAdd</cstring>
+        </property>
+        <property stdset="1">
+            <name>geometry</name>
+            <rect>
+                <x>460</x>
+                <y>780</y>
+                <width>130</width>
+                <height>40</height>
+            </rect>
+        </property>
+        <property stdset="1">
+            <name>text</name>
+            <string>Add Jugdement</string>
+        </property>
+    </widget>
+</widget>
+<images>
+    <image>
+        <name>image0</name>
+        <data format="XPM.GZ" length="429">789c6dd0bd0ac23010c0f13d4f71345b91ab915605f1111447411c924b8a0e55d03a88f8ee36b9c48fd64cf7ff7121902287ed66057921aead6e8f0474d017c8edad69eebbfdf22132350555c20c5436121902c1fa7c727eb6dd2cc7e1f824ce32a6e19c2b4ecd49134ee7b354e9aef449555d53155ef93d7268520f4c6ad3b78ea8679e2c9b345f84c1a4d62691c360964c40de6243c6b8150d9dc744d1c2265ffc98c7446f43eb12e19f3fc0ecb9102f1ec65d0e</data>
+    </image>
+    <image>
+        <name>image1</name>
+        <data format="XPM.GZ" length="728">789c5dd0c94ec3301006e07b9ec24a6e157269daba07c423207144421cbc3571d2ec4e258478773c332e2e8c17e91bfd9e83b71bf6f6fac236db6cf1d23bcd742d67b6316bd77dbe7f3c7f65f94eb0b0cb03dbe50f59ee9866c52316500385144648a0019ef6c29cf640453ced8816a80e4aa80350224da001f248495c232df10ad44765f511e889ba24ce9182b8204d20be9d222571009aa3b606c323d194c43e52103ba40db4c04ba424b69196d800adb0a515c02a52106ba40dc4f03952120be0190b7fe36f15f8614adf2fec7153a4e20a7b56c54150fc3757d5aeaeeaca5575cc495534ceb9a60d579b721770a84b9be6757d07adbeeb536e1807e88dc398e64d13bd9da6949b83e7255c4b9ae757b7fad53bbfa61cbff2359edb3ccb25bf9d5b4edd2fec15ff2aff7eca7e00a44abb4a</data>
+    </image>
+    <image>
+        <name>image2</name>
+        <data format="XPM.GZ" length="439">789cd3d7528808f055d0d2e72a2e492cc94c5648ce482c52d04a29cdcdad8c8eb5ade6523234530022530543251d2e2565856405bffcbc54105b0fc856360003103711c4353634363006ab4c0671d3d25252139341dc24081704c07a9551013eb1c4c4443d0cb1a42454313d3da05832500cc8007260eaf4401244d8416bb72863710b9a15c48bd55a730100b4274dac</data>
+    </image>
+    <image>
+        <name>image3</name>
+        <data format="XPM.GZ" length="1947">789c55d4594fe3301007f0773e45c5bca1d59fe66ca2d53e40b9ef72c36a1f123ba185de4db956fbddd7f14c5c28b5aa5fe7f0c446dddc68dd5f9cb63636d71655560d544bf5b3796b432f47a38fdf7f7efd5d5bf7a29679279d96bffe636dbd57b554eb6c322e6ae0de80bcc40bbd766d5ad6f6db8d71ee9c58ef5aa78d695e3bf05c7c64bd8a5b87abb8ae1d659e12abdab1efb77dde2f1787e233ebcccd93b183b69f5a5f8893c0b32e9c6d9c66b53b81ab2776a0380edf3a77f13b679edfee97acea13679e7fc77a55ff5a3b0ddd7956cedc6f68ad5cfd6dedcce563c88e74642f8b5eac958b779db9be533b5fed57b23b5e9c59dbe7cdb5abf79c799e8538114fd9e6fcf9fcec79aac8e58fd9e63f82f7bf11cb7dd1449cc8fd9d8a95c49fd981f447bbb1dcdf921d26a19d1f11dbbcf83c143bf6228e57e228e6f8c05a476daea7277124fde2c6d24f8b53715f2ce78f80ddf4c7496dede6c1233b4e25be2dd6320fd8cd7d60218ec4978d3b81f55cac3bb9f5917561fa71fe1bdbe51f8b5371e8ccf5efe2a6df949d78e2adc609d7bfb0b3280bedfcb93863e3a07611bbfd3fc4cdfe1371b3df3edbf5ff1447e29938153fb3f32ce7fd52ebc279c0567eaead1f6a97b1ca14bbcfd6b18eac4b761117fc7bd7b32e75a6d94fe242bcc72e0ac9bf62977e195b1f8a63f1b573693d1697ec5ec57f206466e550d0d0cdb7ab0c1428f1843e0678c60b86187dcf30b5634c30c50c732c50618957cee10c533fc61bdef1814f93f78e2d6ca38b1dec7286a9dfc3be891ce010473836eb10273835396738e75f52f4706932ae706dd6917cdee01677b8971e0fe6fba9adbd96f588363cf8d22337f307a647e8ea034488d141223d145253137eed4120429732e9a12927659ec0d69396cfe2cb1c9a4ac4a4e9c9d4f66940cfa68f472f346c9ea557d1c89c4f97c634a1a999af63d62d0d6946f32f67ca39440b13ef9afa0a7e1dff762f23d3f3ce3c5f62d61dce38fe35c3e49cd372b5dcddfefbb9f61fa66eb507</data>
+    </image>
+</images>
+<connections>
+    <connection>
+        <sender>PBCancel</sender>
+        <signal>clicked()</signal>
+        <receiver>QEditJudgementSelectProfile</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>PBAdd</sender>
+        <signal>clicked()</signal>
+        <receiver>QEditJudgementSelectProfile</receiver>
+        <slot>accept()</slot>
+    </connection>
+</connections>
+</UI>

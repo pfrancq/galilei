@@ -1,0 +1,111 @@
+/*
+
+	GALILEI Research Project
+
+	KViewDocs.h
+
+	Window to show all the documents - Header.
+
+	(C) 2001 by P. Francq & D. Wartel.
+
+	Version $Revision$
+
+	Last Modify: $Date$
+
+*/
+
+
+
+//-----------------------------------------------------------------------------
+#ifndef KViewDocsH
+#define KViewDocsH
+
+
+//-----------------------------------------------------------------------------
+// foward declaration for GALILEI
+namespace GALILEI
+{
+	class GDoc;
+}
+using namespace GALILEI;
+
+
+//-----------------------------------------------------------------------------
+// include files for current application
+#include "kview.h"
+
+
+//-----------------------------------------------------------------------------
+// foward class declaration
+class QListView;
+
+
+//-----------------------------------------------------------------------------
+/**
+* The KViewDocs class provides a window to list all the documents
+* treated by the system and classify by their language.
+* @auhtor Pascal Francq and David Wartel
+* @short Documents' Window.
+*/
+class KViewDocs : public KView
+{
+	Q_OBJECT
+
+private:
+
+	/**
+	* Listview (tree view) of documents.
+	*/
+	QListView* Docs;
+
+public:
+
+	/**
+	* Constructor for the view
+	* @param doc            Document instance that the view represents.
+	* @param parent         Parent of the window.
+	* @param name           Name of the window.
+	* @param wflags         Flags.
+	*/
+	KViewDocs(KDoc* doc,QWidget* parent,const char* name,int wflags);
+
+	/**
+	* Return the type of the window.
+	*/
+	virtual GViewType getType(void) {return(gDocs);}
+
+	/**
+	* Get the current document selected in this window.
+	* @returns Pointer to GDoc or 0 if no document is currently selected.
+	*/
+	GDoc* GetCurrentDoc(void);
+
+	/**
+	* Creates the listview of documents
+	*/
+	void CreateDocsListView(void);
+
+	/**
+	* Gets called to redraw the document contents if it has been modified.
+	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	*/
+	virtual void update(unsigned int cmd);
+
+protected:
+
+	/**
+	* Called when the main window is resize by the user.
+	*/
+	void resizeEvent(QResizeEvent *);
+
+public:
+
+	/**
+	* Destructor for the main view.
+	*/
+	~KViewDocs(void);
+};
+
+
+//-----------------------------------------------------------------------------
+#endif
