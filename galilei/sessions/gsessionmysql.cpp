@@ -207,7 +207,10 @@ void GALILEI::GSessionMySQL::LoadDic(const char* code,bool s) throw(bad_alloc,GE
 	if(s)
 		Stops->InsertPtr(dict=new GDict(this,tbl,"Stop List",GetLang(code),MaxId,MaxCount,true));
 	else
+	{
 		Dics->InsertPtr(dict=new GDict(this,tbl,"Dictionnary",GetLang(code),MaxId,MaxCount,false));
+		GetLang(code)->AssignDict(dict);
+	}
 
 	// Load the dictionnary from the database
 	sprintf(sSql,"SELECT kwdid, kwd  FROM %s",tbl);
