@@ -170,6 +170,12 @@ public:
 	virtual void receiveNextChromosome(unsigned int id);
 
 	/**
+	* Put some text.
+	* @param text           Text to show.
+	*/
+	void PutText(const char* text);
+
+	/**
 	* Finish.
 	*/
 	void Finish(void);
