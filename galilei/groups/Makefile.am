@@ -4,12 +4,12 @@ AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =
 SUBDIRS =
-libgalilei_groups_la_SOURCES = gsubjecttree.cpp gcomparegrouping.cpp ggroup.cpp \
+libgalilei_groups_la_SOURCES = gsubjecttree.cpp ggroup.cpp \
 					ggroupsmng.cpp ggroupcalc.cpp ggroupvector.cpp  ggrouping.cpp \
-					gidealgroup.cpp  ggroups.cpp gsubject.cpp g\
+					  ggroups.cpp gsubject.cpp g\
 					ggroupingmanager.cpp ggroupcalcmanager.cpp
 groupsincludedir = $(includedir)/galilei/groups
-groupsinclude_HEADERS = ggroupcalc.h ggroups.h gidealgroup.h gcomparegrouping.h \
+groupsinclude_HEADERS = ggroupcalc.h ggroups.h  \
 						ggroupsmng.h gsubject.h ggroup.h ggrouping.h \
 						ggroupvector.h gsubjecttree.h ggroupingmanager.h ggroupcalcmanager.h
 

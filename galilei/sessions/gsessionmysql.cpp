@@ -95,12 +95,10 @@ const char GALILEI::GSessionMySQL::SQLNULL[5]="NULL";
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
-	GURLManager* umng,GProfileCalcManager* pmng,GGroupingManager* gmng, GGroupCalcManager* gcmng,
-	GStatsCalcManager* smng, GLinkCalcManager* lmng,
-	GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException,RMySQLError)
+	GDocOptions* opt,GSessionParams* sessparams,bool tests) throw(bad_alloc,GException,RMySQLError)
 	: RDb(host,user,pwd,db),
 	  GSession(GetCount("htmls"),GetCount("users"),GetCount("profiles"),GetCount("htmlsbyprofiles"),GetCount("groups"),
-	  	umng,pmng,gmng,gcmng,smng,lmng,opt,sessparams)
+	  	opt,sessparams,tests)
 {
 	DbName=db;
 }
@@ -426,9 +424,7 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 	GGroup* grp;
 	GLangCursor Langs;
 	bool Social;
-	#if GALILEITEST
-		GSubject* s;
-	#endif
+	GSubject* s;
 
 	// Go through the users
 	try
@@ -437,26 +433,21 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 		for(users.Start();!users.End();users.Next())
 		{
 			userid=atoi(users[0]);
-			#if GALILEITEST
-				sprintf(sSql,"SELECT profileid,description,social,topicid FROM profiles WHERE userid=%u",userid);
-			#else
-				sprintf(sSql,"SELECT profileid,description,social FROM profiles WHERE userid=%u",userid);
-			#endif
+			sprintf(sSql,"SELECT profileid,description,social,topicid FROM profiles WHERE userid=%u",userid);
 			RQuery profiles(this,sSql);
 			InsertUser(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
 			for(profiles.Start();!profiles.End();profiles.Next())
 			{
 				profileid=atoi(profiles[0]);
-				#if GALILEITEST
-					s=Subjects.GetPtr<unsigned int>(atoi(profiles[3]));
-				#endif
+				if(Subjects)
+					s=Subjects->GetSubject(atoi(profiles[3]));
+				else
+					s=0;
 				Social=false;
 				if(atoi(profiles[2])==1) Social=true;
 				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,GetNbLangs()));
-				#if GALILEITEST
-					if(s)
-						prof->SetSubject(s);
-				#endif
+				if(s)
+					prof->SetSubject(s);
 				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid, state, calculated FROM subprofiles WHERE profileid=%u",profileid);
 				RQuery subprofil (this,sSql);
 				for(subprofil.Start();!subprofil.End();subprofil.Next())
@@ -530,12 +521,13 @@ void GALILEI::GSessionMySQL::LoadIdealGroupment()
 	char sSql[100];
 	GSubProfile* subp;
 
-	IdealGroups->Clear();
+	if(!Subjects) return;
+	GetSubjects()->GetIdealGroups()->Clear();
 
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		IdealGroups->InsertPtr(groups=new GGroups(Langs()));
+		GetSubjects()->GetIdealGroups()->InsertPtr(groups=new GGroups(Langs()));
 		sprintf(sSql,"SELECT DISTINCT(groupid) FROM idealgroup WHERE langid='%s'",Langs()->GetCode());
 		RQuery sel(this,sSql);
 		for(sel.Start();!sel.End();sel.Next())
@@ -563,7 +555,7 @@ void GALILEI::GSessionMySQL::SaveIdealGroupment(RContainer<GGroups,unsigned int,
 	GGroup* group;
 	GLangCursor Langs;
 	char sSql[100];
-	
+
 	sprintf(sSql,"DELETE from idealgroup");
 	RQuery del(this,sSql);
 
@@ -591,15 +583,16 @@ void GALILEI::GSessionMySQL::LoadSubjectTree()
 	GSubject* subject;
 	GSubject* subsubject;
 
-	Subjects.Clear();
+	if(!Subjects) return;
+	Subjects->ClearSubjects();
 	RQuery sub(this,"SELECT topicid,name,used,langid FROM topics WHERE parent=0");
 	for(sub.Start();!sub.End();sub.Next())
 	{
-		Subjects.AddNode(0,subject=new GSubject(atoi(sub[0]),sub[1],GetLang(sub[3]),atoi(sub[2])));
+		Subjects->AddNode(0,subject=new GSubject(atoi(sub[0]),sub[1],GetLang(sub[3]),atoi(sub[2])));
 		sprintf(sSql,"SELECT topicid,name,used,langid FROM topics WHERE parent=%u",atoi(sub[0]));
 		RQuery subsub(this,sSql);
 		for(subsub.Start();!subsub.End();subsub.Next())
-			Subjects.AddNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],GetLang(subsub[3]),atoi(subsub[2])));
+			Subjects->AddNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],GetLang(subsub[3]),atoi(subsub[2])));
 	}
 }
 
@@ -719,7 +712,10 @@ void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException
 	{
 		d=GetDoc(atoi(subdocs[0]));
 		if(!d) continue;
-		s=Subjects.GetPtr<const unsigned int>(atoi(subdocs[1]));
+		if(Subjects)
+			s=Subjects->GetSubject(atoi(subdocs[1]));
+		else
+			s=0;
 		if(!s) continue;
 		s->InsertDoc(d);
 		d->InsertSubject(s);
@@ -1291,7 +1287,7 @@ GGroupsHistory* GALILEI::GSessionMySQL::LoadAnHistoricGroups(RContainer<GSubProf
 	//read the groupment.
 	sprintf(sSql,"SELECT groupid,subprofileid FROM historicgroups WHERE lang='%s' AND historicid=%u ORDER by historicid,groupid",lang->GetCode(),historicid);
 	RQuery grquery(this,sSql);
-	for(grquery.Start();!grquery.End();grquery.Next())
+	for(grquery.Start(),grp=0;!grquery.End();grquery.Next())
 	{
 
 		// Read Group
@@ -1476,7 +1472,7 @@ int GALILEI::GSessionMySQL::Alreadyexist(int idgrp)
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::PrepearPoV(GGroup* grp, GSession *s)
 {
-	GDispatchpov *disp;
+	GDispatchpov *disp=0;
 	GSubProfileCursor subprofile;
 	GInOutputBase *datainput;
 

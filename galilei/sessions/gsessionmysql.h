@@ -84,17 +84,10 @@ public:
 	* @param user           User to connect with.
 	* @param pwd            Password of the uzer.
 	* @param db             Name of the database.
-	* @param umng           URL Manager.
-	* @param pmng           Profiling Manager.
-	* @param gmng           Grouping Manager.
-	* @param gcmng          Group Computing Manager.
-	* @param smng           Statistical Manager.
-	* @param lmng           Linking Manager.
+	* @param test           Test mode.
 	*/
 	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
-		GURLManager* umng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng,
-		GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException,R::RMySQLError);
+		GDocOptions* opt,GSessionParams* sessparams,bool tests) throw(bad_alloc,GException,R::RMySQLError);
 
 	/**
 	* Count the number of rows of a table.

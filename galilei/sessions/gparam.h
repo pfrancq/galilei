@@ -253,6 +253,12 @@ public:
 	virtual void Set(unsigned int v);
 
 	/**
+	* Set the content of the parameter.
+	* @param v               Value of the parameter.
+	*/
+	virtual void Set(const char* v);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GParamInt(void);
@@ -312,6 +318,12 @@ public:
 	virtual void Set(int v);
 
 	/**
+	* Set the content of the parameter.
+	* @param v               Value of the parameter.
+	*/
+	virtual void Set(const char* v);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GParamUInt(void);
@@ -364,6 +376,12 @@ public:
 	* @param v               Value of the parameter.
 	*/
 	virtual void Set(double v);
+
+	/**
+	* Set the content of the parameter.
+	* @param v               Value of the parameter.
+	*/
+	virtual void Set(const char* v);
 
 	/**
 	* Destructor.
@@ -472,6 +490,12 @@ public:
 	virtual void Set(const R::RPromCriterionParams* v);
 
 	/**
+	* Set the content of the parameter.
+	* @param v               Value of the parameter.
+	*/
+	virtual void Set(const char* v);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GParamProm(void);
@@ -523,6 +547,12 @@ public:
 	* @param v               Value of the parameter.
 	*/
 	virtual void Set(bool v);
+	
+	/**
+	* Set the content of the parameter.
+	* @param v               Value of the parameter.
+	*/
+	virtual void Set(const char* v);
 
 	/**
 	* Destructor.

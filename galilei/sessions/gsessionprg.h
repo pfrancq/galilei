@@ -54,8 +54,6 @@
 #include <galilei.h>
 #include <sessions/gprgvar.h>
 #include <sessions/gprgclass.h>
-#include <profiles/ggetfeedback.h>
-#include <groups/gidealgroup.h>
 #include <sessions/gmixidealgroups.h>
 #include <sessions/gprginst.h>
 
@@ -76,7 +74,7 @@ class GPrgClassSession : public GPrgClass
 	/**
 	* Class used to simulate creation of profiles.
 	*/
-	GIdealGroup* IdealMethod;
+	//GIdealGroup* IdealMethod;
 
 public:
 
@@ -165,11 +163,6 @@ public:
 	* @param s              Session.
 	*/
 	GPrgClassSession(GSession* s) throw(bad_alloc);
-
-	/**
-	* Get a pointer to the ideal method
-	*/
-	GIdealGroup* GetIdealMethod(void);
 
 	/**
 	* Destructor.
@@ -308,9 +301,8 @@ public:
 //-----------------------------------------------------------------------------
 class GFdbksCycleI : public GSM
 {
-	GGetFeedback FdbksMethod;
 public:
-	GFdbksCycleI(GPrgClassSession* o) : GSM("FdbksCycle",o),FdbksMethod(Owner->Session) {}
+	GFdbksCycleI(GPrgClassSession* o) : GSM("FdbksCycle",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
@@ -321,6 +313,15 @@ class GCompareIdealI : public GSM
 public:
 	GCompareIdealI(GPrgClassSession* o) : GSM("CompareIdeal",o) {}
 	virtual void Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSetSubjectsParamI : public GSM
+{
+public:
+	GSetSubjectsParamI(GPrgClassSession* o) : GSM("SetSubjectsParam",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
 
@@ -363,12 +364,11 @@ public:
 //-----------------------------------------------------------------------------
 class GRealLifeI : public GSM
 {
-	GGetFeedback FdbksMethod;
 	char What[2];
 	bool History;
 	void CommonTasks(GSlot* r) throw(GException);
 public:
-	GRealLifeI(GPrgClassSession* o) : GSM("RealLife",o),FdbksMethod(Owner->Session) {}
+	GRealLifeI(GPrgClassSession* o) : GSM("RealLife",o) {}
 	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 

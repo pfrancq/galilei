@@ -81,6 +81,7 @@ using namespace R;
 #include <filters/gfilter.h>
 #include <infos/giwordweight.h>
 #include <historic/ggroupshistory.h>
+#include <groups/gsubjecttree.h>
 using namespace GALILEI;
 
 
@@ -93,20 +94,17 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
-	GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-	GStatsCalcManager* smng, GLinkCalcManager* lmng,
-	GDocOptions* opt, GSessionParams* sessparams) throw(bad_alloc,GException)
+	GDocOptions* opt, GSessionParams* sessparams,bool tests) throw(bad_alloc,GException)
 	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g),
-	  Subjects(), Fdbks(f+f/2,f/2),
-	  URLMng(umng), ProfilingMng(pmng), GroupingMng(gmng), GroupCalcMng(gcmng),
-	  StatsCalcMng(smng), LinkCalcMng(lmng),
+	  Subjects(0), Fdbks(f+f/2,f/2),
+	  URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
+	  StatsCalcMng(0), LinkCalcMng(0),
 	  DocAnalyse(0), bGroups(false),bFdbks(false),
 	  DocOptions(opt),SessParams(sessparams)
 
 {
 	// Init Part
 	GLangCursor Langs;
-	IdealGroups= new RContainer<GGroups, unsigned int, true, true> (g+g/2,g/2);
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Groups.InsertPtr(new GGroups(Langs()));
@@ -116,32 +114,36 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	CurrentRandom=0;
 	Random = new RRandomGood(CurrentRandom);
 
-	// Connect to the different managers
-	ProfilingMng->Connect(this);
-	GroupingMng->Connect(this);
-	GroupCalcMng->Connect(this);
-	StatsCalcMng->Connect(this);
-	LinkCalcMng->Connect(this);
-
 	// Only Vector Space
 	SubProfileDesc=new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile);
 	SubProfileDescs->InsertPtr(SubProfileDesc);
+
+	// Create SubjectTree
+	if(tests)
+		Subjects=new GSubjectTree(this);
 }
 
 
 //-----------------------------------------------------------------------------
-R::RContainer<GGroups,unsigned int,true,true>* GSession::GetIdealGroups(void)
+void GSession::Connect(GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+	GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(bad_alloc,GException)
 {
-	return(IdealGroups);
-}
-
-
-//-----------------------------------------------------------------------------
-GGroupsCursor& GSession::GetIdealGroupsCursor(void)
-{
-	GGroupsCursor *cur=GGroupsCursor::GetTmpCursor();
-	cur->Set(IdealGroups);
-	return(*cur);
+	URLMng=umng;
+	ProfilingMng=pmng;
+	if(ProfilingMng)
+		ProfilingMng->Connect(this);
+	GroupingMng=gmng;
+	if(GroupingMng)
+		GroupingMng->Connect(this);
+	GroupCalcMng=gcmng;
+	if(GroupCalcMng)
+		GroupCalcMng->Connect(this);
+	StatsCalcMng=smng;
+	if(StatsCalcMng)
+		StatsCalcMng->Connect(this);
+	LinkCalcMng=lmng;
+	if(LinkCalcMng)
+		LinkCalcMng->Connect(this);
 }
 
 
@@ -753,7 +755,7 @@ void GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
 	CalcDesc=GroupCalcMng->GetCurrentMethod();
 
 	// Go through each languages
-	Grps=GetIdealGroupsCursor();
+	Grps=Subjects->GetIdealGroupsCursor();
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Find corresponding groups and clear it
@@ -950,17 +952,17 @@ void GSession::ReInit(bool)
 GSession::~GSession(void) throw(GException)
 {
 	// Disconnect from the different managers
-	ProfilingMng->Disconnect(this);
-	GroupingMng->Disconnect(this);
-	GroupCalcMng->Disconnect(this);
-	StatsCalcMng->Disconnect(this);
-	LinkCalcMng->Disconnect(this);
+	if(ProfilingMng) ProfilingMng->Disconnect(this);
+	if(GroupingMng) GroupingMng->Disconnect(this);
+	if(GroupCalcMng) GroupCalcMng->Disconnect(this);
+	if(StatsCalcMng) StatsCalcMng->Disconnect(this);
+	if(LinkCalcMng) LinkCalcMng->Disconnect(this);
 
 	// Delete stuctures
 	if(DocAnalyse) delete DocAnalyse;
 	if(DocOptions) delete DocOptions;
 	if(SubProfileDescs) delete SubProfileDescs;
-	if(IdealGroups) delete IdealGroups;
+	if(Subjects) delete Subjects;
 }
 
 

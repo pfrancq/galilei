@@ -50,7 +50,6 @@
 #include <profiles/gsubprofile.h>
 #include <docs/gdocs.h>
 #include <groups/ggroupsmng.h>
-#include <groups/gsubjecttree.h>
 #include <docs/glinkcalc.h>
 #include <sessions/gparams.h>
 
@@ -71,16 +70,10 @@ namespace GALILEI{
 class GSession : public GLangs, public GDocs, public GUsers, public GGroupsMng
 {
 protected:
-
-	/**
-	* Ideal Groups handled by the system.
-	*/
-	R::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
-
 	/**
 	* Pointer to a tree of subject
 	*/
-	GSubjectTree Subjects;
+	GSubjectTree* Subjects;
 
 	/**
 	* Name of the current database.
@@ -148,9 +141,9 @@ protected:
 	GProfilesBehaviours* ProfilesBehaviours;
 
 	/**
-	*  Similarity between documents and  profiles for each langage.
+	*  Similarity between documents and profiles for each langage.
 	*/
-	GDocProfSims* DocProfSims ;
+	GDocProfSims* DocProfSims;
 
 	/**
 	* State of the groups.
@@ -191,6 +184,13 @@ public:
 	* @param p              Number of profiles.
 	* @param f              Number of feedbacks.
 	* @param g              Number of groups.
+	* @param test           Test mode.
+	*/
+	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
+		GDocOptions* opt,GSessionParams* sessparams,bool tests) throw(bad_alloc,GException);
+
+	/**
+	* Connect the session to the different managers.
 	* @param umng           URL Manager.
 	* @param pmng           Profiling Manager.
 	* @param gmng           Grouping Manager.
@@ -198,10 +198,8 @@ public:
 	* @param smng           Statistical Manager.
 	* @param lmng           Linking Manager.
 	*/
-	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
-		GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng,
-		GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException);
+	void Connect(GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+		GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(bad_alloc,GException);
 
 	/**
 	* Get the documents' analyser.
@@ -236,20 +234,9 @@ public:
 	GDocOptions* GetDocOptions(void) {return(DocOptions);}
 
 	/**
-	* Get the ideal groups of the session
-	* @return Pointer to R::RContainer<GGroups,unsigned int,true,true>.
-	*/
-	R::RContainer<GGroups,unsigned int,true,true>* GetIdealGroups(void);
-
-	/**
-	* Get a cursor over the ideal groups of the system.
-	*/
-	GGroupsCursor& GetIdealGroupsCursor(void);
-
-	/**
 	* Return a pointer to a tree of subjects
 	*/
-	GSubjectTree* GetSubjects() {return(&Subjects);}
+	GSubjectTree* GetSubjects() {return(Subjects);}
 
 	/**
 	* Get the current description method.

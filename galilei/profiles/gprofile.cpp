@@ -168,7 +168,6 @@ void GALILEI::GProfile::ClearFdbks(void)
 void GALILEI::GProfile::AddJudgement(GProfDoc* j,GSession* s) throw(bad_alloc)
 {
 	GLang* l;
-	GSubProfile* sub;
 
 	l=j->GetDoc()->GetLang();
 	if(!l)

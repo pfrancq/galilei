@@ -274,6 +274,13 @@ void GParamInt::Set(unsigned int v)
 
 
 //------------------------------------------------------------------------------
+void GParamInt::Set(const char* str)
+{
+	sscanf(str,"%i",&Value);
+}
+
+
+//------------------------------------------------------------------------------
 GParamInt::~GParamInt(void)
 {
 }
@@ -337,6 +344,13 @@ void GParamUInt::Set(unsigned int v)
 
 
 //------------------------------------------------------------------------------
+void GParamUInt::Set(const char* str)
+{
+	sscanf(str,"%u",&Value);
+}
+
+
+//------------------------------------------------------------------------------
 GParamUInt::~GParamUInt(void)
 {
 }
@@ -388,6 +402,13 @@ double GParamDouble::GetDouble(void)
 void GParamDouble::Set(double v)
 {
 	Value=v;
+}
+
+
+//------------------------------------------------------------------------------
+void GParamDouble::Set(const char* str)
+{
+	sscanf(str,"%lf",&Value);
 }
 
 
@@ -503,6 +524,14 @@ void GParamProm::Set(const RPromCriterionParams* v)
 	Value=(*v);
 }
 
+
+//------------------------------------------------------------------------------
+void GParamProm::Set(const char* str)
+{
+	sscanf(str,"%lf %lf %lf",&Value.P,&Value.Q,&Value.Weight);
+}
+
+
 //------------------------------------------------------------------------------
 GParamProm::~GParamProm(void)
 {
@@ -555,6 +584,16 @@ bool GParamBool::GetBool(void)
 void GParamBool::Set(bool v)
 {
 	Value=v;
+}
+
+
+//------------------------------------------------------------------------------
+void GParamBool::Set(const char* str)
+{
+	if(strcmp(str,"True"))
+		Value=false;
+	else
+		Value=true;
 }
 
 
