@@ -238,9 +238,7 @@ void GTextAnalyse::Clear(void)
 {
 	WordWeight** ptr;
 	GWord** pt;
-	unsigned int i,j;
-	RContainer<WordWeight,false,true>*** ptr1;
-	RContainer<WordWeight,false,true>** ptr2;
+	unsigned int i;
 
 	memset(Sl,0,sizeof(unsigned int)*CurLangs.GetNb());
 	memset(Sldiff,0,sizeof(unsigned int)*CurLangs.GetNb());
@@ -249,11 +247,7 @@ void GTextAnalyse::Clear(void)
 		(*ptr)->Clear();
 	for(i=NbOrder+1,pt=Order;--i;pt++)
 		if(*pt) (*pt)->Clear();
-	for(i=27+1,ptr1=Weights->Hash;--i;ptr1++)
-		for(j=27+1,ptr2=*ptr1;--j;ptr2++)
-		{
-			(*ptr2)->LastPtr=(*ptr2)->NbPtr=0;
-		}
+	Weights->Clear();
 
 	// Clear Infos
 	// Rem: Since Infos is not responsible for allocation/desallocation
@@ -278,7 +272,7 @@ void GTextAnalyse::VerifyDirect(void) throw(bad_alloc)
 		delete[] Direct;
 		Direct=ptr;
 		for(i=2500+1,ptr=&Direct[NbDirect];--i;ptr++)
-			(*ptr)=new WordWeight((dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->NbPtr);
+			(*ptr)=new WordWeight((dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetNb());
 		NbDirect+=2500;
 	}
 }
@@ -409,10 +403,10 @@ void GTextAnalyse::AddWord(const RString word,double weight) throw(bad_alloc)
 	}
 	else
 	{
-		w=Section->Tab[Index];
+		w=(*Section)[Index];
 		if(FindLang)
 		{
-			for(i=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->NbPtr+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
+			for(i=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetNb()+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
 			{
 				if(*is)
 					(*tmp2)++;
@@ -533,8 +527,9 @@ void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
 	}
 	else
 	{
-		for(tag->Start();!tag->End();tag->Next())
-			AnalyseTag((*tag)(),weight);
+		RCursor<RXMLTag> Cur(*tag);
+		for(Cur.Start();!Cur.End();Cur.Next())
+			AnalyseTag(Cur(),weight);
 	}
 }
 
@@ -607,18 +602,19 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 
 //		type=0;
 //		format=0;
-		for (tag->Start();!tag->End();tag->Next())
+		RCursor<RXMLTag> Cur(*tag);
+		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			if ((*tag)()->GetName()=="dc:identifier")
+			if (Cur()->GetName()=="dc:identifier")
 			{
 				bUrl=true;
-				url=(*tag)()->GetContent();
+				url=Cur()->GetContent();
 			}
-			if((*tag)()->GetName()=="dc:format")
+			if(Cur()->GetName()=="dc:format")
 			{
 				//format=(*tag)()->GetContent();
 			}
-			if((*tag)()->GetName()=="dc:type")
+			if(Cur()->GetName()=="dc:type")
 			{
 //				type=(*tag)()->GetContent();
 //				if (!strcmp(type,"REFRESH"))
@@ -664,8 +660,9 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 	}
 	else
 	{
-		for (tag->Start();!tag->End();tag->Next())
-			AnalyseLinksTag((*tag)(),externalLinks,DocsToAdd);
+		RCursor<RXMLTag> Cur(*tag);
+		for(Cur.Start();!Cur.End();Cur.Next())
+			AnalyseLinksTag(Cur(),externalLinks,DocsToAdd);
 	}
 	#warning Add properties of links
 }
@@ -705,7 +702,6 @@ void GTextAnalyse::DetermineLang(void) throw(GException)
 void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 {
 	WordWeight** wrd;
-	GWeightInfo** Tab;
 	GWeightInfo* Occur;
 	unsigned int i;
 	RString stem(MaxWordLen);
@@ -802,15 +798,16 @@ void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 	// Verify that each occurences is not under the minimal.
 	if(MinOccur<2) return;
 
-
-	for(i=Infos.NbPtr+1,Tab=Infos.Tab;--i;Tab++)
+#warning Delete pointer from container with a cursor.
+	RCursor<GWeightInfo> Cur(Infos);
+	for(Cur.Start();!Cur.End();)
 	{
-		Occur=(*Tab);
-		if(Occur->GetWeight()<MinOccur)
+		if(Cur()->GetWeight()<MinOccur)
 		{
-			Infos.DeletePtr(Occur);
-			Tab--;
+			Infos.DeletePtr(Cur());
 		}
+		else
+			Cur.Next();
 	}
 }
 
@@ -852,7 +849,7 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 	if(Title)
 	{
 		Name="";
-		Tags.Set(Title);
+		Tags.Set(*Title);
 		for(Tags.Start();!Tags.End();Tags.Next())
 		{
 			if(Tags()->GetName()!="docxml:sentence") continue;
