@@ -103,6 +103,21 @@ private:
 	double SocialFactor;
 
 	/**
+	* Fi minus value.
+	*/
+	double FiMinus;
+
+	/**
+	* Fi minus value.
+	*/
+	double FiPlus;
+
+	/**
+	* Fi minus value.
+	*/
+	double Fi;
+
+	/**
 	* Local average similarity of the groups.
 	*/
 	double LocalAvgSim;
@@ -523,6 +538,45 @@ public:
 	* @returns double.
 	*/
 	double GetSimCriterion(void) const {return(AvgSim);}
+
+	/**
+	* Get the value of the information criterion for the chromosome.
+	* @returns double.
+	*/
+	double GetInfoCriterion(void) const {return(AvgProf);}
+
+	/**
+	* Get the value of the same criterion for the chromosome.
+	* @returns double.
+	*/
+	double GetSameCriterion(void) const {return(OKFactor);}
+
+	/**
+	* Get the value of the diff criterion for the chromosome.
+	* @returns double.
+	*/
+	double GetDiffCriterion(void) const {return(DiffFactor);}
+
+	/**
+	* Get the value of the social criterion for the chromosome.
+	* @returns double.
+	*/
+	double GetSocialCriterion(void) const {return(SocialFactor);}
+
+	/**
+	* @return Fi of the solution.
+	*/
+	double GetFi(void) const {return(Fi);}
+
+	/**
+	* @return Fi+ of the solution.
+	*/
+	double GetFiPlus(void) const {return(FiPlus);}
+
+	/**
+	* @return Fi- of the solution.
+	*/
+	double GetFiMinus(void) const {return(FiMinus);}
 
 	/**
 	* Destructor.

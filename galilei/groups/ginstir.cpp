@@ -268,6 +268,9 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	{
 		s=BestChromosome;
 	}
+	s->FiPlus=(*ptr)->GetFiPlus();
+	s->FiMinus=(*ptr)->GetFiMinus();
+	s->Fi=(*ptr)->GetFi();
 	#ifdef RGADEBUG
 		WriteChromoInfo(s);
 	#endif
@@ -279,6 +282,9 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	else
 		s=BestChromosome;
 	(*s->Fitness)=1.0;
+	s->FiPlus=(*ptr)->GetFiPlus();
+	s->FiMinus=(*ptr)->GetFiMinus();
+	s->Fi=(*ptr)->GetFi();
 	#ifdef RGADEBUG
 		WriteChromoInfo(s);
 	#endif
@@ -291,6 +297,9 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 			s=Chromosomes[(*ptr)->GetId()-1];
 		else
 			s=BestChromosome;
+		s->FiPlus=(*ptr)->GetFiPlus();
+		s->FiMinus=(*ptr)->GetFiMinus();
+		s->Fi=(*ptr)->GetFi();
 		(*s->Fitness)=r;
 		#ifdef RGADEBUG
 			WriteChromoInfo(s);
