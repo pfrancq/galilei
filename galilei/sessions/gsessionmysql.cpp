@@ -665,8 +665,8 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char* mime) throw(GException)
 {
 	char sSql[1000];
-	char surl[200];
-	char sname[200];
+	char surl[1000];
+	char sname[1000];
 	GDoc *doc;
 
 	// Insert it
