@@ -80,11 +80,10 @@ public:
 
 	/**
 	* Constructor of the similarities between documents and subprofiles.
-	* @param lang            Language of the document and subprofile.
-	* @param s               Initial number of profilesSim.
+	* @param session         Session.
 	* @param iff             Use Inverse Frequency Factor.
 	*/
-	GDocProfSims(GSession* session,unsigned int s,bool iff) throw(bad_alloc);
+	GDocProfSims(GSession* session,bool iff) throw(bad_alloc);
 
 	/**
 	* Re-initialize the similarities. This method can be used for testing

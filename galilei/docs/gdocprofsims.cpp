@@ -161,6 +161,7 @@ void GDocProfSims::GDocProfSim::AnalyseSim(GSims* sim,const GDoc* doc ,const GSu
 	double tmp;
 
 	if(doc->GetLang()!=sub->GetLang()) return;
+	if((!doc->HasRepresentation())||(!sub->IsDefined())) return;
 	if(IFF)
 		tmp=doc->SimilarityIFF(sub);
 	else
@@ -283,8 +284,8 @@ void  GDocProfSims::GDocProfSim::Update(GDocs* docs,GUsers* users,bool iff) thro
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocProfSims::GDocProfSims::GDocProfSims(GSession* session,unsigned int s,bool iff) throw(bad_alloc)
-	: Sims(s,s/2), Session(session), IFF(iff)
+GDocProfSims::GDocProfSims::GDocProfSims(GSession* session,bool iff) throw(bad_alloc)
+	: Sims(10,5), Session(session), IFF(iff)
 {
 	GFactoryLangCursor Langs;
 	GLang* Lang;
@@ -322,6 +323,7 @@ void GDocProfSims::UseIFF(bool iff) throw(bad_alloc)
 	GFactoryLangCursor Langs;
 	GLang* Lang;
 
+	IFF=iff;
 	Langs=Session->GetLangs()->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
