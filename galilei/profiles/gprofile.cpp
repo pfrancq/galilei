@@ -20,6 +20,7 @@
 // include filess for GALILEI
 #include <gprofiles/gprofile.h>
 using namespace GALILEI;
+using namespace RTimeDate;
 
 
 
@@ -30,10 +31,19 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfile::GProfile(GUser *owner,const unsigned int id,const char* name,const unsigned int nb,const unsigned int nbf) throw(bad_alloc)
+GALILEI::GProfile::GProfile(GUser *owner,const unsigned int id,const char* name,const char* u,const char* a,unsigned int nb,unsigned int nbf) throw(bad_alloc)
   : RContainer<GSubProfile,unsigned,true,true>(nb,nb/2),Owner(owner),Id(id),Name(name),
-    Modified(false), Fdbks(nbf+nbf/2,nbf/2)
+    Fdbks(nbf+nbf/2,nbf/2), Updated(u), Computed(a)
 {
+	if(Updated>Computed)
+	{
+		if(Computed==RDate::null)
+			State=osCreated;
+		else
+			State=osModified;
+	}
+	else
+		State=osUpToDate;
 }
 
 
@@ -62,4 +72,12 @@ int GALILEI::GProfile::Compare(const GProfile *profile) const
 const GSubProfile* GALILEI::GProfile::GetSubProfile(const GLang* lang) const
 {
 	return(GetPtr<const GLang*>(lang,false));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GProfile::UpdateFinished(void)
+{
+	State=osUpdated;
+	Computed.SetToday();
 }

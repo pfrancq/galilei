@@ -47,9 +47,17 @@ using namespace RTimeDate;
 //-----------------------------------------------------------------------------
 GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int nb,unsigned int nbdiff,unsigned int nbf) throw(bad_alloc)
 	: URL(url), Name(name), Id(id), Words(nbdiff>300?nbdiff:300),NbWords(nb), NbDiffWords(nbdiff),
-	  Lang(lang), Save(false), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2)
+	  Lang(lang), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2)
 {
-	Calc=Updated>Computed;
+	if(Updated>Computed)
+	{
+		if(Computed==RDate::null)
+			State=osCreated;
+		else
+			State=osModified;
+	}
+	else
+		State=osUpToDate;
 }
 
 
@@ -218,7 +226,7 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	if(!xml)
 		throw GException("No XML Structure for document '"+URL+"'");
 
-	if(!Calc) return;
+	if(State==osUpToDate) return;
 
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(session->GetLangs());
 
@@ -244,8 +252,7 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	Words.Clear();
 	NbWords=NbDiffWords=0;
 	AnalyseContentTag(content,stop,session->GetDic(Lang));
-	Calc=false;
-	Save=true;
+	State=osUpdated;
 	Computed.SetToday();
 }
 

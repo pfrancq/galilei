@@ -30,6 +30,7 @@
 //include files for R Project
 #include <rstd/rcontainer.h>
 #include <rstd/rstring.h>
+#include <rtimedate/rdate.h>
 
 
 //-----------------------------------------------------------------------------
@@ -73,9 +74,9 @@ class GProfile : public RStd::RContainer<GSubProfile,unsigned,true,true>
 	RStd::RString Name;
 
 	/**
-	* Profile modified since last analyse ? (T/F)
+	* State of the profile.
 	*/
-	bool Modified;
+	tObjState State;
 
 	/**
 	* Documents juged by profile.
@@ -85,7 +86,12 @@ class GProfile : public RStd::RContainer<GSubProfile,unsigned,true,true>
 	/**
 	* Date of Update.
 	*/
-	time_t	Updated;
+	RTimeDate::RDate Updated;
+
+	/**
+	* Date of last document's analysis.
+	*/
+	RTimeDate::RDate Computed;
 
 public:
 
@@ -94,10 +100,12 @@ public:
 	* @param owner          User of the profile.
 	* @param id             Identificator of the profile.
 	* @param name           Name of the profile.
+	* @param u              String representing the date of updated.
+	* @param a              String representing the date of the last analysis.
 	* @param nb             Number of subprofiles.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GProfile(GUser *owner,const unsigned int id,const char* name,const unsigned int nb,const unsigned int nbf=100) throw(bad_alloc);
+	GProfile(GUser *owner,const unsigned int id,const char* name,const char* u,const char* a,unsigned int nb,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Comparaison function
@@ -121,6 +129,12 @@ public:
 	unsigned int GetId(void) const {return(Id);}
 
 	/**
+	* Set the identifier.
+	* @param id             Identifier.
+	*/
+	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+
+	/**
 	* Get the name of the profile.
 	* @return Pointer to a C String.
 	*/
@@ -140,10 +154,27 @@ public:
 	const GSubProfile* GetSubProfile(const GLang* lang) const;
 
 	/**
-	* Test if the profile was modified.
-	* @returns Boolean.
+	* Get the date of the last update of the document's content.
+	* @returns Pointer to date.
 	*/
-	bool IsModified(void) const {return(Modified);}
+	const RTimeDate::RDate* GetUpdated(void) const {return(&Updated);}
+
+	/**
+	* Get the date of the last analysis of the document.
+	* @returns Pointer to date.
+	*/
+	const RTimeDate::RDate* GetComputed(void) const {return(&Computed);}
+
+	/**
+	* Return the state of the document.
+	* @returns GALILEI::tObjState value.
+	*/
+	tObjState GetState(void) const {return(State);}
+
+	/**
+	* Tell the profile that its updated is finished.
+	*/
+	void UpdateFinished(void);
 
 	/**
 	* Start the iterator to go trough the documents judged.

@@ -95,14 +95,9 @@ class GDoc
 	GLang* Lang;
 
 	/**
-	* Must the doc be analysed?
+	* State of the document.
 	*/
-	bool Calc;
-
-	/**
-	* Must the doc be saved?
-	*/
-	bool Save;
+	tObjState State;
 
 	/**
 	* Type of the document.
@@ -197,16 +192,10 @@ public:
 	GMIMEFilter* GetMIMEType(void) const {return(Type);}
 
 	/**
-	* Test if the document must be saved.
-	* @returns Boolean value.
+	* Returnt he state of the document.
+	* @returns GALILEI::tObjState value.
 	*/
-	bool MustSave(void) const {return(Save);}
-
-	/**
-	* Test if the document must be analysed.
-	* @returns Boolean value.
-	*/
-	bool MustAnalyse(void) const {return(Calc);}
+	tObjState GetState(void) const {return(State);}
 
 protected:
 
@@ -266,11 +255,6 @@ public:
 	GLang* GetLang(void) const {return(Lang);}
 
 	/**
-	* @return True if the document has to be calc.
-	*/
-	bool MustAnalyse(void) {return(Calc);}
-
-	/**
 	* @return Pointer to the language of the document.
 	*/
 	GLang* GetLang(void) {return(Lang);}
@@ -279,6 +263,12 @@ public:
 	* @return Identificator of the document.
 	*/
 	unsigned int GetId(void) {return(Id);}
+
+	/**
+	* Set the identifier.
+	* @param id             Identifier.
+	*/
+	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
 
 	/**
 	* Start the iterator to go trough the word.
