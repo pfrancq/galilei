@@ -43,7 +43,7 @@ namespace GALILEI{
 */
 class GLangFR : public GLang
 {
-class FrenchPorterRule;
+	class FrenchPorterRule;
 
 	/**
 	* List of Rules '1'.
@@ -53,8 +53,6 @@ class FrenchPorterRule;
 	* List of Rules '2'.
 	*/
 	RContainer<FrenchPorterRule,unsigned int,true,false>* Rules2;
-
-	
 
 public:
 
@@ -69,8 +67,7 @@ public:
 	* @param _kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/
-	//virtual RStd::RString& GetStemming(const RStd::RString& _kwd);
-	RStd::RString& GetStemming(const RStd::RString& _kwd);
+	virtual RStd::RString& GetStemming(const RStd::RString& _kwd);
 
 private:
 
@@ -91,7 +88,6 @@ private:
 	*/
 	bool ContainsVowel(const char* kwd);
 
-	
 	/**
 	* Count the syllables in a way describes in Porter. To compute this, a
 	* finite state machine is used.
@@ -100,7 +96,6 @@ private:
 	*/
 	int GetWordSize(char* kwd);
 
-	
 	/**
 	* Apply the different rules of the porter's algorithm to a gieven word.
 	* @param kwd            Pointer to the begin of the word.
