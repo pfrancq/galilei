@@ -112,11 +112,11 @@ void KViewStats::ConstructTag(RXMLTag* t,QListViewItem* parent)
  	{
  		if(!prec)
  		{
- 			prec=ptr=new QListViewItem(parent,Cur()->GetName()());
+ 			prec=ptr=new QListViewItem(parent,Cur()->GetName().Latin1());
  		}
  		else
  		{
- 			prec=ptr=new QListViewItem(parent,prec,Cur()->GetName()());
+ 			prec=ptr=new QListViewItem(parent,prec,Cur()->GetName().Latin1());
  		}
  		if(strlen(Cur()->GetContent()))
  		{

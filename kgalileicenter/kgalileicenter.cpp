@@ -152,10 +152,10 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	QString method;
 	GSessionMySQL* Sess;
 
-	dlg.txtDb->setText(dbName());
-	dlg.txtLogin->setText(dbUser());
-	dlg.txtPwd->setText(dbPwd());
-	dlg.txtHost->setText(dbHost());
+	dlg.txtDb->setText(dbName.Latin1());
+	dlg.txtLogin->setText(dbUser.Latin1());
+	dlg.txtPwd->setText(dbPwd.Latin1());
+	dlg.txtHost->setText(dbHost.Latin1());
 	if(dlg.exec())
 	{
 		slotStatusMsg(i18n("Connecting..."));
@@ -186,7 +186,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		}
 		catch(GException& e)
 		{
-			QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
+			QMessageBox::critical(this,"KGALILEICenter",e.GetMsg().Latin1());
 			if(Doc)
 			{
 				delete Doc;
@@ -727,7 +727,7 @@ void KGALILEICenterApp::slotShowHistory(void)
 	size=Doc->GetSession()->GetHistorySize();
 
 	QHistoryDlg dlg(this,0,true);
-	dlg.TLMaxHistory->setText(QString("Max Historic ID (<")+QString(itoa(size))+QString(")"));
+	dlg.TLMaxHistory->setText(QString("Max Historic ID (<")+dtou(size).Latin1()+QString(")"));
 	dlg.SBMaxId->setMaxValue(size-1);
 	for (curlang.Start(); !curlang.End(); curlang.Next())
 	{
@@ -861,11 +861,11 @@ void KGALILEICenterApp::slotRunProgram(void)
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
+		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg().Latin1());
 	}
 	catch(R::RMySQLError& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
+		QMessageBox::critical(this,"KGALILEICenter",e.GetError());
 	}
 	catch(bad_alloc)
 	{
@@ -913,7 +913,7 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
+		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg().Latin1());
 	}
 	catch(R::RMySQLError& e)
 	{

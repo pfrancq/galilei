@@ -53,7 +53,7 @@
 #include <profiles/gprofilecalc.h>
 #include <groups/ggrouping.h>
 using namespace GALILEI;
-
+using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for current project
@@ -181,7 +181,7 @@ void QSessionProgressDlg::CreateDocXML(GDocXML* &xml,GDoc* doc)
 	}
 	catch(GException& e)
 	{
-		txtRem->setText(QString("Error: ")+e.GetMsg());
+		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
 	}
 	btnOk->setEnabled(true);
 }
@@ -210,7 +210,7 @@ void QSessionProgressDlg::AnalyseXML(GDocXML* &xml,GDoc* doc)
 	}
 	catch(GException& e)
 	{
-		txtRem->setText(QString("Error: ")+e.GetMsg());
+		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
 	}
 	btnOk->setEnabled(true);
 }
@@ -232,7 +232,7 @@ void QSessionProgressDlg::AnalyseDocs(bool modified)
 	}
 	catch(GException& e)
 	{
-		txtRem->setText(QString("Error: ")+e.GetMsg());
+		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
 	}
 	btnOk->setEnabled(true);
 }
@@ -254,7 +254,7 @@ void QSessionProgressDlg::ComputeProfile(GProfile* prof)
 	}
 	catch(GException& e)
 	{
-		txtRem->setText(QString("Error: ")+e.GetMsg());
+		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
 	}
 	btnOk->setEnabled(true);
 }
@@ -276,7 +276,7 @@ void QSessionProgressDlg::ComputeProfiles(bool modified,bool save)
 	}
 	catch(GException& e)
 	{
-		txtRem->setText(QString("Error: ")+e.GetMsg());
+		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
 	}
 	btnOk->setEnabled(true);
 }
@@ -298,7 +298,7 @@ void QSessionProgressDlg::GroupProfiles(bool modified,bool save)
 	}
 	catch(GException& e)
 	{
-		txtRem->setText(QString("Error: ")+e.GetMsg());
+		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
 	}
 	btnOk->setEnabled(true);
 }
@@ -326,7 +326,7 @@ void QSessionProgressDlg::ComputeAll(bool modified,bool save)
 	}
 	catch(GException& e)
 	{
-		txtRem->setText(QString("Error: ")+e.GetMsg());
+		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
 	}
 	btnOk->setEnabled(true);
 }

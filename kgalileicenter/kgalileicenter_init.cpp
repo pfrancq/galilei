@@ -220,10 +220,10 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Always Save Clusters",wordsClusteringSave->isChecked());
 
 	Config->setGroup("Database Options");
-	Config->writeEntry("Host", dbHost());
-	Config->writeEntry("Name", dbName());
-	Config->writeEntry("User", dbUser());
-	Config->writeEntry("Password", dbPwd());
+	Config->writeEntry("Host", dbHost);
+	Config->writeEntry("Name", dbName);
+	Config->writeEntry("User", dbUser);
+	Config->writeEntry("Password", dbPwd);
 
 	// Write the session parameters
 	Config->setGroup(SessionParams.GetName());
@@ -279,10 +279,10 @@ void KGALILEICenterApp::readOptions(void)
 	}
 
 	Config->setGroup("Database Options");
-	dbHost=Config->readEntry("Host","cfao20.ulb.ac.be");
-	dbName=Config->readEntry("Name","hp");
-	dbUser=Config->readEntry("User","admin");
-	dbPwd=Config->readEntry("Password","gillian");
+	dbHost=Config->readEntry("Host","cfao20.ulb.ac.be").ascii();
+	dbName=Config->readEntry("Name","hp").ascii();
+	dbUser=Config->readEntry("User","admin").ascii();
+	dbPwd=Config->readEntry("Password","gillian").ascii();
 
 	// Read the Session Parameters
 	Config->setGroup(SessionParams.GetName());
@@ -290,16 +290,22 @@ void KGALILEICenterApp::readOptions(void)
 	SessionParams.Set("DiffBehaviourMinDocs",Config->readNumEntry("DiffBehaviourMinDocs",0));
 
 	// Read Config
-	GConfig Conf("/etc/galilei/galilei.galileiconfig");
-	Conf.Load();
-	Conf.Read(Langs);
-	Conf.Read(URLManager);
-	Conf.Read(DocAnalyseManager);
-	Conf.Read(ProfilingManager);
-	Conf.Read(GroupingManager);
-	Conf.Read(GroupCalcManager);
-	Conf.Read(StatsCalcManager);
-	Conf.Read(LinkCalcManager);
+	try
+	{
+		GConfig Conf("/etc/galilei/galilei.galileiconfig");
+		Conf.Load();
+		Conf.Read(Langs);
+		Conf.Read(URLManager);
+		Conf.Read(DocAnalyseManager);
+		Conf.Read(ProfilingManager);
+		Conf.Read(GroupingManager);
+		Conf.Read(GroupCalcManager);
+		Conf.Read(StatsCalcManager);
+		Conf.Read(LinkCalcManager);
+	}
+	catch(...)
+	{
+	}
 }
 
 

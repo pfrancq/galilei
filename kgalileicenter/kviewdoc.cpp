@@ -247,7 +247,7 @@ void KViewDoc::ConstructResults(void)
 
 	for (Words.Start();!Words.End();Words.Next())
 	{
-		new QListViewItem(Results,Doc->GetSession()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode()), QString(dtoa(Words()->GetWeight())));
+		new QListViewItem(Results,Doc->GetSession()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode()), dtou(Words()->GetWeight()).Latin1());
 	}
 }
 
@@ -259,7 +259,7 @@ void KViewDoc::ConstructGeneral(void)
 	const RDate* d;
 	char sDate[20];
 
-	new QListViewItem(General,"ID",QString(itoa(Document->GetId())));
+	new QListViewItem(General,"ID",itou(Document->GetId()).Latin1());
 	new QListViewItem(General,"URL",Document->GetURL());
 	new QListViewItem(General,"Name",Document->GetName());
 	l=Document->GetLang();
@@ -267,10 +267,10 @@ void KViewDoc::ConstructGeneral(void)
 		new QListViewItem(General,"Language",l->GetName());
 	else
 		new QListViewItem(General,"Language","Unknow");
-	new QListViewItem(General,"Total number of words",QString(itoa(Document->GetN())));
-	new QListViewItem(General,"Number of different words",QString(itoa(Document->GetNdiff())));
-	new QListViewItem(General,"Total number of valid words",QString(itoa(Document->GetV())));
-	new QListViewItem(General,"Number of different valid words",QString(itoa(Document->GetVdiff())));
+	new QListViewItem(General,"Total number of words",itou(Document->GetN()).Latin1());
+	new QListViewItem(General,"Number of different words",itou(Document->GetNdiff()).Latin1());
+	new QListViewItem(General,"Total number of valid words",itou(Document->GetV()).Latin1());
+	new QListViewItem(General,"Number of different valid words",itou(Document->GetVdiff()).Latin1());
 	d=Document->GetUpdated();
 	sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
 	new QListViewItem(General,"Last Updated",sDate);
@@ -298,7 +298,7 @@ void KViewDoc::ConstructGeneral(void)
 	}
 	new QListViewItem(General,"Status",sDate);
 	if(Document->GetFailed())
-		new QListViewItem(General,"Number of failed",QString(itoa(Document->GetFailed())));
+		new QListViewItem(General,"Number of failed",itou(Document->GetFailed()).Latin1());
 }
 
 

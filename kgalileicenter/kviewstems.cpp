@@ -272,11 +272,11 @@ void KViewStems::ConstructTh(char index,char index2)
 	for(ptr2->Start();!ptr2->End();ptr2->Next())
 	{
 		gptr=(*ptr2)();
-		QListViewItem* grsitem = new QListViewItem(thGroups,(*gptr)());
+		QListViewItem* grsitem = new QListViewItem(thGroups,gptr->Latin1());
 		for(gptr->Words.Start();!gptr->Words.End();gptr->Words.Next())
 		{
 			wptr=gptr->Words();
-			sprintf(word,"Word: '%s'  -  Stem: '%s'",(*wptr)(),(*wptr->Stem)());
+			sprintf(word,"Word: '%s'  -  Stem: '%s'",wptr->Latin1(),wptr->Stem->Latin1());
 			new QListViewItem(grsitem,word);
 		}
 	}
@@ -296,12 +296,12 @@ void KViewStems::ConstructPr(char index,char index2)
 	for(ptr2->Start();!ptr2->End();ptr2->Next())
 	{
 		gptr=(*ptr2)();
-		sprintf(word,"Stem: '%s'  -  Precision=%1.3f - Recall=%1.3f",(*gptr)(),gptr->Precision,gptr->Recall);
+		sprintf(word,"Stem: '%s'  -  Precision=%1.3f - Recall=%1.3f",gptr->Latin1(),gptr->Precision,gptr->Recall);
 		QListViewItem* grsitem = new QListViewItem(prGroups,word);
 		for(gptr->Words.Start();!gptr->Words.End();gptr->Words.Next())
 		{
 			wptr=gptr->Words();
-			sprintf(word,"Word: '%s'  -  Root: '%s'",(*wptr)(),(*wptr->Root)());
+			sprintf(word,"Word: '%s'  -  Root: '%s'",wptr->Latin1(),wptr->Root->Latin1());
 			new QListViewItem(grsitem,word);
 		}
 	}

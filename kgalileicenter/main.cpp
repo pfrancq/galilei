@@ -31,11 +31,14 @@
 */
 
 
+//-----------------------------------------------------------------------------
 #include <ltmm/loader.hh>
 #include <cstdlib>
 #include <stdexcept>
 #include <iostream>
 using namespace std;
+
+#include <galilei.h>
 
 //-----------------------------------------------------------------------------
 // include files for KDE
@@ -71,6 +74,7 @@ static KCmdLineOptions options[] =
 int main(int argc, char *argv[])
 {
 	map<string,ltmm::symbol_list>& preloaded =ltmm::loader<>::preloaded();
+	setlocale(LC_CTYPE,"");
 
 	KAboutData aboutData( "kgalileicenter", I18N_NOOP("KGALILEICenter"),
 		VERSION, description, KAboutData::License_GPL,
@@ -100,6 +104,10 @@ int main(int argc, char *argv[])
 			testmdi->show();
 		}
 		return app.exec();
+	}
+	catch(GALILEI::GException& e)
+	{
+		cout<<e.GetMsg()<<endl;
 	}
 	catch(...)
 	{

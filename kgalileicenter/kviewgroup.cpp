@@ -160,7 +160,7 @@ void KViewGroup::ConstructGeneral(void)
 	char sDate[20];
 
 	General->clear();
-	new QListViewItem(General,"ID",QString(itoa(Group->GetId())));
+	new QListViewItem(General,"ID",itou(Group->GetId()).Latin1());
 	l=Group->GetLang();
 	if(l)
 		new QListViewItem(General,"Language",l->GetName());

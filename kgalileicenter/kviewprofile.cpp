@@ -301,7 +301,7 @@ void KViewProfile::ConstructUser(void)
 	const GUser* usr=Profile->GetUser();
 
 	User->clear();
-	new QListViewItem(User,"ID",QString(itoa(usr->GetId())));
+	new QListViewItem(User,"ID",itou(usr->GetId()).Latin1());
 	new QListViewItem(User,"Full Name",usr->GetFullName());
 	new QListViewItem(User,"Name",usr->GetName());
 }
