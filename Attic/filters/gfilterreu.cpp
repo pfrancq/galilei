@@ -610,6 +610,7 @@ beginread:
 				Pos++;
 				TagLen++;
 			}
+			(*Pos)=0;
 		}
 		else
 			Params=0;
