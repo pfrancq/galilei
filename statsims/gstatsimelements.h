@@ -186,6 +186,7 @@ public:
 //
 //------------------------------------------------------------------------------
 
+#include <sessions/gstatscalc.h>
 //------------------------------------------------------------------------------
 template<class E,class C>
 	GStatSimElements<E,C>::GStatSimElements(GSession* ses,RTextFile* f,bool g,bool l)
