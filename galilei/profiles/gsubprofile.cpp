@@ -51,12 +51,6 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSubProfile::GSubProfile(GSubProfile*) throw(bad_alloc)
-{
-}
-
-
-//-----------------------------------------------------------------------------
 GALILEI::GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a) throw(bad_alloc)
   :  Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a)
 {

@@ -85,12 +85,6 @@ protected:
 public:
 
 	/**
-	* Copy constructor.
-	* @param sub            SubProfile used for the copy.
-	*/
-	GSubProfile(GSubProfile* sub) throw(bad_alloc);
-
-	/**
 	* Constructor of the subprofile.
 	* @param prof           Profile.
 	* @param id             Identifier.
