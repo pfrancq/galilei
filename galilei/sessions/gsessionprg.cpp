@@ -141,7 +141,8 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 	InstTypes.InsertPtr(new InstType("ComputeProfiles",Comp));
 	InstTypes.InsertPtr(new InstType("GroupProfiles",Group));
 	InstTypes.InsertPtr(new InstType("CompareIdeal",CmpIdeal));
-	InstTypes.InsertPtr(new InstType("CreateIdeal",Ideal));
+	InstTypes.InsertPtr(new InstType("CreateIdeal",CreateIdeal));
+	InstTypes.InsertPtr(new InstType("LoadIdeal",LoadIdeal));
 	InstTypes.InsertPtr(new InstType("FdbksCycle",Fdbks));
 
 	// Read Program File
@@ -283,40 +284,67 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			break;
 
 		case Comp:
-			sprintf(tmp,"Compute Profiles: Method=\"%s\"  Settings=\"%s\"",i->Param1(),i->Param2());
+			if(i->Param1.GetLen()&&i->Param2.GetLen())
+				sprintf(tmp,"Compute Profiles: Method=\"%s\"  Settings=\"%s\"",i->Param1(),i->Param2());
+			else
+			if(i->Param1.GetLen())
+				sprintf(tmp,"Compute Profiles: Method=\"%s\"  Current Settings",i->Param1());
+			else
+				strcpy(tmp,"Compute Profiles: Current Method and  Settings");
 			Rec->WriteStr(tmp);
-			Session->SetCurrentComputingMethod(i->Param1());
-			Session->SetCurrentComputingMethodSettings(i->Param2());
+			if(i->Param1.GetLen())
+				Session->SetCurrentComputingMethod(i->Param1());
+			if(i->Param2.GetLen())
+				Session->SetCurrentComputingMethodSettings(i->Param2());
 			Session->CalcProfiles(Rec,FirstProfile,false);
 			if(!FirstProfile) FirstProfile=true;
 			break;
 
 		case Group:
-			sprintf(tmp,"Group Profiles: Method=\"%s\"  Settings=\"%s\"",i->Param1(),i->Param2());
+			if(i->Param1.GetLen()&&i->Param2.GetLen())
+				sprintf(tmp,"Group Profiles: Method=\"%s\"  Settings=\"%s\"",i->Param1(),i->Param2());
+			else
+			if(i->Param1.GetLen())
+				sprintf(tmp,"Group Profiles: Method=\"%s\"  Current Settings",i->Param1());
+			else
+				strcpy(tmp,"Group Profiles: Current Method and Settings");
 			Rec->WriteStr(tmp);
-			Session->SetCurrentGroupingMethod(i->Param1());
-			Session->SetCurrentGroupingMethodSettings(i->Param2());
+			if(i->Param1.GetLen())
+				Session->SetCurrentGroupingMethod(i->Param1());
+			if(i->Param2.GetLen())
+				Session->SetCurrentGroupingMethodSettings(i->Param2());
 			Session->GroupingProfiles(Rec,FirstGroup,false);
 			if(!FirstGroup) FirstGroup=true;
 			break;
 
-		case Ideal:
+		case LoadIdeal:
+			if(!i->Param1.GetLen())
+				throw GException("No file Defined");
+			sprintf(tmp,"Load Ideal Groups from file '%s'",i->Param1());
+			Rec->WriteStr(tmp);
+			LoadGroups(i->Param1());
+			break;
+
+		case CreateIdeal:
 			if(i->Param1.GetLen())
-			{
-				sprintf(tmp,"Load Ideal Groups from file '%s'",i->Param1());
-				Rec->WriteStr(tmp);
-				LoadGroups(i->Param1());
-			}
-			else
-			{
-				Rec->WriteStr("Create Ideal Groups");
-				IdealMethod->CreateJudgement(Parents,Groups);
-			}
+					sprintf(tmp,"Create Ideal Groups: Settings=\"%s\"",i->Param1());
+				else
+					strcpy(tmp,"Create Ideal Groups");
+			Rec->WriteStr(tmp);
+			if(i->Param1.GetLen())
+				IdealMethod->SetSettings(i->Param1);
+			IdealMethod->CreateJudgement(Parents,Groups);
 			FirstGroup=FirstProfile=false;
 			break;
 
 		case Fdbks:
-				Rec->WriteStr("Create Feedbacks Cycle");
+				if(i->Param1.GetLen())
+					sprintf(tmp,"Create Feedbacks Cycle: Settings=\"%s\"",i->Param1());
+				else
+					strcpy(tmp,"Create Feedbacks Cycle");
+				Rec->WriteStr(tmp);
+				if(i->Param1.GetLen())
+					FdbksMethod->SetSettings(i->Param1);
 				FdbksMethod->Run(Parents,Groups);
 			break;
 

@@ -68,7 +68,7 @@ protected:
 	/**
 	* Represent the different instruction allowed.
 	*/
-	enum tInst{Log,Output,Sql,Comp,Group,Ideal,Test,CmpIdeal,Fdbks};
+	enum tInst{Log,Output,Sql,Comp,Group,CreateIdeal,LoadIdeal,Test,CmpIdeal,Fdbks};
 
 	/**
 	* Name of the file to execute.
