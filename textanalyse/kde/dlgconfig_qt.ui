@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>DlgConfig_Qt</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>471</width>
-            <height>577</height>
+            <width>476</width>
+            <height>574</height>
         </rect>
     </property>
     <property name="caption">
@@ -293,11 +293,11 @@ When the languages are not static, the language of a document is always determin
             <property name="title">
                 <string>Various</string>
             </property>
-            <grid>
+            <vbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QCheckBox" row="0" column="0">
+                <widget class="QCheckBox">
                     <property name="name">
                         <cstring>Distance</cstring>
                     </property>
@@ -311,7 +311,7 @@ When the languages are not static, the language of a document is always determin
                         <string>When a document is analysed, it is possible to create &lt;b&gt;distance files&lt;/b&gt;. These files contain information on the distances between words in the document. This information is used by the post-doc traitment.</string>
                     </property>
                 </widget>
-                <widget class="QCheckBox" row="1" column="0">
+                <widget class="QCheckBox">
                     <property name="name">
                         <cstring>UseExternalLinks</cstring>
                     </property>
@@ -326,7 +326,7 @@ When the languages are not static, the language of a document is always determin
 Be carefull, because it can explose the size of information on documents.</string>
                     </property>
                 </widget>
-            </grid>
+            </vbox>
         </widget>
         <widget class="QGroupBox">
             <property name="name">
@@ -530,6 +530,8 @@ Be carefull, because it can explose the size of information on documents.</strin
         </widget>
     </vbox>
 </widget>
+<customwidgets>
+</customwidgets>
 <connections>
     <connection>
         <sender>buttonOk</sender>
@@ -562,6 +564,9 @@ Be carefull, because it can explose the size of information on documents.</strin
         <slot>setEnabled(bool)</slot>
     </connection>
 </connections>
+<includes>
+    <include location="local" impldecl="in implementation">dlgconfig_qt.ui.h</include>
+</includes>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>knuminput.h</includehint>
