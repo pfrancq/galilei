@@ -334,7 +334,6 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 void GALILEI::GFilterHTML::AnalyseHeader(void)
 {
 	RXMLTag* meta;
-	RXMLTag* act;
 	Tag::tTag LastType=Tag::tNULL;;
 	char* OldBlock;
 	char* OldParams;
@@ -381,7 +380,6 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* metaData)
 	char* name;    // Name of the tag.
 	char* content; // Content of the tag.
 	bool bSpaces;
-	RXMLTag* tag;
 
 	// Read the name of the META Data
 	if(!params) return;
