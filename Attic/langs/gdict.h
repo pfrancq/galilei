@@ -52,14 +52,6 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GSession;
-class GWord;
-class GLang;
-
-
 //-----------------------------------------------------------------------------
 /**
 * The GDict class provides a representation for a dictionnary.
