@@ -129,6 +129,11 @@ public:
 	void ClearGroups(GLang* lang);
 
 	/**
+	* Clear all the groups.
+	*/
+	void Clear(void) throw(GException);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GGroupsMng(void);

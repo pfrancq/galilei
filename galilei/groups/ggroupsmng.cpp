@@ -51,14 +51,14 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupsMng::GGroupsMng(unsigned int g)
+GGroupsMng::GGroupsMng(unsigned int g)
 	: Groups(g+g/2,g/2)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GGroupsCursor& GALILEI::GGroupsMng::GetGroupsCursor(void)
+GGroupsCursor& GGroupsMng::GetGroupsCursor(void)
 {
 	GGroupsCursor *cur=GGroupsCursor::GetTmpCursor();
 	cur->Set(Groups);
@@ -67,21 +67,21 @@ GGroupsCursor& GALILEI::GGroupsMng::GetGroupsCursor(void)
 
 
 //-----------------------------------------------------------------------------
-RContainer<GGroups,unsigned int,true,true>* GALILEI::GGroupsMng::GetGroups(void)
+RContainer<GGroups,unsigned int,true,true>* GGroupsMng::GetGroups(void)
 {
 	return(&Groups);
 }
 
 
 //-----------------------------------------------------------------------------
-GGroups* GALILEI::GGroupsMng::GetGroups(const GLang* lang) const
+GGroups* GGroupsMng::GetGroups(const GLang* lang) const
 {
 	return(Groups.GetPtr<const GLang*>(lang));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupsMng::ClearGroups(GLang* lang)
+void GGroupsMng::ClearGroups(GLang* lang)
 {
 	unsigned int i;
 	GGroups* grps=Groups.GetPtr<const GLang*>(lang);
@@ -100,6 +100,14 @@ void GALILEI::GGroupsMng::ClearGroups(GLang* lang)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupsMng::~GGroupsMng(void)
+void GGroupsMng::Clear(void) throw(GException)
+{
+	Groups.Clear();
+}
+
+
+
+//-----------------------------------------------------------------------------
+GGroupsMng::~GGroupsMng(void)
 {
 }

@@ -54,7 +54,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GUsers::GUsers(unsigned int u,unsigned int p) throw(bad_alloc)
+GUsers::GUsers(unsigned int u,unsigned int p) throw(bad_alloc)
 	: RContainer<GUser,unsigned,true,true>(u,u/2), bUsers(false)
 {
 	Profiles=new RContainer<GProfile,unsigned int,true,true>(p,p/2);
@@ -63,7 +63,7 @@ GALILEI::GUsers::GUsers(unsigned int u,unsigned int p) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GUserCursor& GALILEI::GUsers::GetUsersCursor(void)
+GUserCursor& GUsers::GetUsersCursor(void)
 {
 	GUserCursor *cur=GUserCursor::GetTmpCursor();
 	cur->Set(this);
@@ -72,35 +72,35 @@ GUserCursor& GALILEI::GUsers::GetUsersCursor(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GUsers::InsertUser(GUser* usr) throw(bad_alloc)
+void GUsers::InsertUser(GUser* usr) throw(bad_alloc)
 {
 	InsertPtr(usr);
 }
 
 
 //-----------------------------------------------------------------------------
-GUser* GALILEI::GUsers::GetUser(unsigned int id)
+GUser* GUsers::GetUser(unsigned int id)
 {
 	return(GetPtr<unsigned int>(id));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GUsers::InsertProfile(GProfile* p) throw(bad_alloc)
+void GUsers::InsertProfile(GProfile* p) throw(bad_alloc)
 {
 	Profiles->InsertPtr(p);
 }
 
 
 //-----------------------------------------------------------------------------
-GProfile* GALILEI::GUsers::GetProfile(const unsigned int id) const
+GProfile* GUsers::GetProfile(const unsigned int id) const
 {
 	return(Profiles->GetPtr<unsigned int>(id));
 }
 
 
 //-----------------------------------------------------------------------------
-GProfileCursor& GALILEI::GUsers::GetProfilesCursor(void)
+GProfileCursor& GUsers::GetProfilesCursor(void)
 {
 	GProfileCursor *cur=GProfileCursor::GetTmpCursor();
 	cur->Set(Profiles);
@@ -109,14 +109,14 @@ GProfileCursor& GALILEI::GUsers::GetProfilesCursor(void)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GUsers::GetProfilesNb(void) const
+unsigned int GUsers::GetProfilesNb(void) const
 {
 	return(Profiles->NbPtr);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GUsers::InsertSubProfile(GSubProfile* s) throw(bad_alloc)
+void GUsers::InsertSubProfile(GSubProfile* s) throw(bad_alloc)
 {
 	GLang* l;
 	GSubProfiles* list;
@@ -130,7 +130,7 @@ void GALILEI::GUsers::InsertSubProfile(GSubProfile* s) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GUsers::GetSubProfile(const unsigned int id) const
+GSubProfile* GUsers::GetSubProfile(const unsigned int id) const
 {
 	GSubProfilesCursor Cur;
 	GSubProfile* ptr;
@@ -146,14 +146,14 @@ GSubProfile* GALILEI::GUsers::GetSubProfile(const unsigned int id) const
 
 
 //-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GUsers::GetSubProfile(const unsigned int id,GLang* lang) const
+GSubProfile* GUsers::GetSubProfile(const unsigned int id,GLang* lang) const
 {
 	return(SubProfiles->GetPtr<const GLang*>(lang)->GetSubProfile(id));
 }
 
 
 //-----------------------------------------------------------------------------
-GSubProfileCursor& GALILEI::GUsers::GetSubProfilesCursor(GLang* lang)
+GSubProfileCursor& GUsers::GetSubProfilesCursor(GLang* lang)
 {
 	GSubProfiles* ptr=SubProfiles->GetPtr<const GLang*>(lang);
 	if(ptr)
@@ -165,7 +165,7 @@ GSubProfileCursor& GALILEI::GUsers::GetSubProfilesCursor(GLang* lang)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GUsers::ClearSubProfilesGroups(void)
+void GUsers::ClearSubProfilesGroups(void)
 {
 	GSubProfilesCursor Cur;
 	GSubProfileCursor Cur2;
@@ -183,8 +183,24 @@ void GALILEI::GUsers::ClearSubProfilesGroups(void)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GUsers::~GUsers(void)
+void GUsers::Clear(void) throw(GException)
+ {
+	if(SubProfiles)
+	{
+		delete SubProfiles;
+		SubProfiles=0;
+	}
+	if(Profiles)
+	{
+		delete Profiles;
+		Profiles=0;
+	}
+	RContainer<GUser,unsigned,true,true>::Clear();
+ }
+
+
+//-----------------------------------------------------------------------------
+GUsers::~GUsers(void)
 {
-	if(SubProfiles) delete SubProfiles;
-	if(Profiles) delete Profiles;
+	Clear();
 }

@@ -581,12 +581,13 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException
 		Subs=Prof()->GetSubProfilesCursor();
 		for (Subs.Start(); !Subs.End(); Subs.Next())
 		{
-			sub=(Subs)();
+			sub=Subs();
 			if(modified&&(Subs()->GetState()==osUpToDate)) continue;
 			try
 			{
 				if((!modified)||(Subs()->GetState()!=osUpdated))
 				{
+					cout<<"    Compute subprofile "<<sub->GetId()<<endl;
 					if(LinkCalc)
 						LinkCalc->Compute(Subs());
 					Profiling->Compute(Subs());
@@ -945,6 +946,11 @@ void GSession::ReInit(bool)
 //-----------------------------------------------------------------------------
 GSession::~GSession(void) throw(GException)
 {
+	// Clear all entities
+	GGroupsMng::Clear();
+	GUsers::Clear();
+	GDocs::Clear();
+
 	// Disconnect from the different managers
 	if(ProfilingMng) ProfilingMng->Disconnect(this);
 	if(GroupingMng) GroupingMng->Disconnect(this);
@@ -952,8 +958,8 @@ GSession::~GSession(void) throw(GException)
 	if(StatsCalcMng) StatsCalcMng->Disconnect(this);
 	if(LinkCalcMng) LinkCalcMng->Disconnect(this);
 	if(PostGroupMng) PostGroupMng->Disconnect(this);
-	if(Langs) Langs->Disconnect(this);
 	if(DocAnalyseMng) DocAnalyseMng->Disconnect(this);
+	if(Langs) Langs->Disconnect(this);
 
 	// Delete stuctures
 	if(SubProfileDescs) delete SubProfileDescs;

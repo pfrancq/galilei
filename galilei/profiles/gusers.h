@@ -203,6 +203,11 @@ protected:
 public:
 
 	/**
+	* Clear all the users, profiles and subprofiles.
+	*/
+	void Clear(void) throw(GException);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GUsers(void);
