@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <string.h>
+#include <ctype.h>
 
 
 //-----------------------------------------------------------------------------
@@ -312,6 +313,11 @@ RString& GALILEI::GLangEN::GetStemming(const RString& _kwd)
 	ApplyRules(kwd,end,Rules5b);
 
 	// Put the result in res and return it.
+	end=kwd;
+	while((*end)&&(!isspace(*end)))
+		end++;
+	if(*end)
+		(*end)=0;
 	(*res)=kwd;
 	return((*res));
 }
