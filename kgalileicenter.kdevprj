@@ -34,7 +34,7 @@ email=pfrancq@ulb.ac.be
 kdevprj_version=1.3
 lfv_open_groups=
 make_options=\s-j1
-makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am,kgalileicenter/r/rgga/Makefile.am
+makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am,kgalileicenter/r/rgga/Makefile.am,kgalileicenter/r/rpromethee/Makefile.am
 modifyMakefiles=true
 project_name=KGalileiCenter
 project_type=mdi_kde2
@@ -70,6 +70,7 @@ Headers R - IO=*rio/*.h
 Headers R - Inter=*rinter/*.h
 Headers R - Math=*rmath/*.h
 Headers R - MySQL=*rmysql/*.h
+Headers R - Prométhée=*rpromethee*.h
 Headers R - Std=*rstd/*.h
 Headers R - Time/Date=*rtimedate/*.h
 Headers R - XML=*rxml/*.h
@@ -91,12 +92,13 @@ Sources R - IO=*rio/*.cpp
 Sources R - Inter=*rinter/*.cpp
 Sources R - Math=*rmath/*.cpp
 Sources R - MySQL=*rmysql/*.cpp
+Sources R - Prométhée=*rpromethee*.cpp
 Sources R - Std=*rstd/*.cpp,*rstd/*.hh
 Sources R - Time/Date=*rtimedate/*.cpp
 Sources R - XML=*rxml/*.cpp
 Translations=*.po
 User Interface=*.kdevdlg,*.ui,*.rc
-groups=Headers,Headers - GALILEI,Headers R - GA,Headers R - GGA,Headers - Qt Widgets,Headers R - Math,Headers R - MySQL,Headers R - Time/Date,Headers R - IO,Headers R - Std,Headers - URL Managers,Headers - Sessions,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - GALILEI,Sources - Infos,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources - Sessions,Sources R - Time/Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,Sources R - GGA,User Interface,Translations,GNU,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
+groups=Headers,Headers - GALILEI,Headers R - GA,Headers R - GGA,Headers - Qt Widgets,Headers R - Math,Headers R - MySQL,Headers R - Prométhée,Headers R - Time/Date,Headers R - IO,Headers R - Std,Sources R - Prométhée,Headers - URL Managers,Headers - Sessions,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - GALILEI,Sources - Infos,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources - Sessions,Sources R - Time/Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,Sources R - GGA,User Interface,Translations,GNU,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
 
 [Makefile.am]
 files=kgalileicenter.kdevprj,admin,AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,kgalileicenter.lsm
@@ -1411,7 +1413,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/r/Makefile.am]
-sub_dirs=rstd,rio,rxml,rtimedate,rinter,rmysql,rga,rmath,rgga
+sub_dirs=rstd,rio,rxml,rtimedate,rinter,rmysql,rga,rmath,rgga,rpromethee
 type=normal
 
 [kgalileicenter/r/rga/Makefile.am]
@@ -1669,6 +1671,73 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/r/rmysql/rmysql.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rpromethee/Makefile.am]
+files=kgalileicenter/r/rpromethee/rpromcriterion.cpp,kgalileicenter/r/rpromethee/rpromcriterion.h,kgalileicenter/r/rpromethee/rpromcritvalue.cpp,kgalileicenter/r/rpromethee/rpromcritvalue.h,kgalileicenter/r/rpromethee/rpromethee.cpp,kgalileicenter/r/rpromethee/rpromethee.h,kgalileicenter/r/rpromethee/rpromkernel.cpp,kgalileicenter/r/rpromethee/rpromkernel.h,kgalileicenter/r/rpromethee/rpromsol.cpp,kgalileicenter/r/rpromethee/rpromsol.h
+sharedlib_LDFLAGS=-version-info 0:0:0
+sharedlib_rootname=rpromethee
+sub_dirs=
+type=static_library
+
+[kgalileicenter/r/rpromethee/rpromcriterion.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/r/rpromethee/rpromcriterion.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rpromethee/rpromcritvalue.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/r/rpromethee/rpromcritvalue.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rpromethee/rpromethee.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/r/rpromethee/rpromethee.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rpromethee/rpromkernel.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/r/rpromethee/rpromkernel.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rpromethee/rpromsol.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/r/rpromethee/rpromsol.h]
 dist=true
 install=false
 install_location=
