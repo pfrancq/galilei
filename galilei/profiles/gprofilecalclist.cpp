@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gdoc.cpp
+	GProfileCalcList.h
 
-	Document - Implementation.
+	"Lists" Profile Computing Method  - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -17,27 +17,31 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <gdocs/gdoclist.h>
+//include files for GALILEI
+#include <gprofiles/gprofilecalclist.h>
 using namespace GALILEI;
-using namespace RStd;
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GDocList
+//  GProfileCalcList
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocList::GDocList(const unsigned int nb) throw(bad_alloc)
-	: RContainer<GDoc,unsigned int,false,true>(nb,nb/2)
+GALILEI::GProfileCalcList::GProfileCalcList(GSession* session) throw(bad_alloc)
+	: GProfileCalc(session), OK(0), KO(0)
+{
+}
+
+//-----------------------------------------------------------------------------
+void GALILEI::GProfileCalcList::Compute(GProfile* profile)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocList::~GDocList(void)
+GALILEI::GProfileCalcList::~GProfileCalcList(void)
 {
 }

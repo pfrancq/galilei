@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	gdoc.cpp
+	GOoc.cpp
 
 	Document - Implementation.
 

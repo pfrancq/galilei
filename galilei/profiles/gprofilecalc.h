@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GDocList.h
+	GProfileCalc.h
 
-	List of Documents - Header.
+	Generic Profile' Computing Method - Header.
 
 	(C) 2001 by P. Francq.
 
@@ -17,18 +17,14 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GDocListH
-#define GDocListH
-
-
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
+#ifndef GProfileCalcH
+#define GProfileCalcH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocs/gdoc.h>
+#include <gprofiles/gprofile.h>
+#include <gsessions/gsession.h>
 
 
 //-----------------------------------------------------------------------------
@@ -38,26 +34,32 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GDocList class provides a representation for a list of documents. This
-* list is not responsible for the desallocation of the document, it can only be
-* used to hold a sub set of documents.
+* The GProfileCalc class provides a representation for a method to compute a
+* specific profile, i.e. its sub-profiles.
 * @author Pascal Francq
-* @short Documents' List.
+* @short Generic Profile' Computing Method.
 */
-class GDocList : public RStd::RContainer<GDoc,unsigned int,false,true>
+class GProfileCalc
 {
 public:
+	GSession *Session;
 
 	/**
-	* Construct the list of documents.
-	* @param nb             Maximal number of documents.
+	* Constructor.
+	* @param session        Session.
 	*/
-	GDocList(const unsigned int nb) throw(bad_alloc);
+	GProfileCalc(GSession* session) throw(bad_alloc);
 
 	/**
-	* Destruct the documents' list.
+	* Compute a profile.
+	* @param profile        Profile to compute.
 	*/
-	virtual ~GDocList(void);
+	virtual void Compute(GProfile* profile)=0;
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GProfileCalc(void);
 };
 
 
@@ -66,3 +68,4 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
+

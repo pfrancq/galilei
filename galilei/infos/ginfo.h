@@ -22,9 +22,13 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for Rainbow
+// include files for R Project
 #include <rstd/rstring.h>
-using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------
@@ -45,7 +49,7 @@ public:
 	/**
 	* The different type of information
 	*/
-	enum GInfoType {infoNothing,infoWord,infoWordOccur};
+	enum GInfoType {infoNothing,infoWord,infoWordOccur,infoWordOccurs,infoWordList,infoWordCalc,infoWordCalcs};
 
 	/**
 	* The constructor.
@@ -78,7 +82,7 @@ public:
 	/**
 	* Return the name of the class.
 	*/
-	virtual const RString ClassName(void) const;
+	virtual const RStd::RString ClassName(void) const;
 
 	/**
 	* Return the type of the information.

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	gdoc.h
+	GDoc.h
 
 	Document - Header.
 
@@ -204,11 +204,33 @@ public:
 	unsigned int GetId(void) {return(Id);}
 
 	/**
+	* Start the iterator to go trough the word.
+	*/
+	inline void WordsStart(void)
+		{Words.Start();}
+
+	/**
+	* Test if the end of the container of words is reached.
+	*/
+	inline bool WordsEnd(void) const
+		{return(Words.End());}
+
+	/**
+	* Goto the next element, if the end is reached, go to the beginning.
+	*/
+	inline void WordsNext(void)
+		{Words.Next();}
+
+	/**
+	* Get the current word.
+	* @returns Pointer to the current word.
+	*/
+	GIWordOccur* GetCurWords(void) {return(Words());}
+
+	/**
 	* Destruct the document.
 	*/
 	virtual ~GDoc(void);
-
-	friend class GWordCalcs;
 };
 
 

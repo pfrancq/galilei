@@ -39,6 +39,20 @@ GALILEI::GIWordOccurs::GIWordOccurs (unsigned nb) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
+const RString GALILEI::GIWordOccurs::ClassName(void) const
+{
+	return("GIWordOccurs");
+}
+
+
+//-----------------------------------------------------------------------------
+const GInfo::GInfoType GALILEI::GIWordOccurs::InfoType(void) const
+{
+	return(infoWordOccurs);
+}
+
+
+//-----------------------------------------------------------------------------
 GIWordOccur* GALILEI::GIWordOccurs::GetPtr(unsigned id) throw(bad_alloc)
 {
 	return(GetInsertPtr<unsigned>(id));

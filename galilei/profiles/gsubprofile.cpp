@@ -33,37 +33,37 @@ using namespace GALILEI;
 
 //---------------------------------------------------------------------------
 GSubProfile::GSubProfile(void) throw(bad_alloc)
-  : Id(cNoRef),Lang(0),MOK(0),MKO(0),OK(0),KO(0),Common(0),bToAttach(true)
+  : Id(cNoRef),Lang(0),/*MOK(0),MKO(0),*/OK(0),KO(0),Common(0),bToAttach(true)
 {
-	OK=new GWordList();
-	KO=new GWordList();
-	Common=new GWordList();
+	OK=new GIWordList();
+	KO=new GIWordList();
+	Common=new GIWordList();
 }
 
+//---------------------------------------------------------------------------
+GSubProfile::GSubProfile(GProfile *owner,unsigned int id,GLang *lang) throw(bad_alloc)
+  : Owner(owner),Id(id),Lang(lang),/*MOK(0),MKO(0),*/OK(0),KO(0),Common(0),bToAttach(true)
+{
+	OK=new GIWordList();
+	KO=new GIWordList();
+	Common=new GIWordList();
+//	MOK=new GWordCalcs(Lang,Owner->Owner->Owner->Session);
+//	MKO=new GWordCalcs(Lang,Owner->Owner->Owner->Session);
+}
 
 //---------------------------------------------------------------------------
 bool GSubProfile::NeedOK(void)
 {
-	return((NbOK<30)&&(NbOK<MOK->NbPtr));
+	return((NbOK<30)/*&&(NbOK<MOK->NbPtr)*/);
 }
 
 
 //---------------------------------------------------------------------------
 bool GSubProfile::NeedKO(void)
 {
-	return((NbKO<30)&&(NbOK<MKO->NbPtr));
+	return((NbKO<30)/*&&(NbOK<MKO->NbPtr)*/);
 }
 
-//---------------------------------------------------------------------------
-GSubProfile::GSubProfile(GProfile *owner,unsigned int id,GLang *lang) throw(bad_alloc)
-  : Owner(owner),Id(id),Lang(lang),MOK(0),MKO(0),OK(0),KO(0),Common(0),bToAttach(true)
-{
-	OK=new GWordList();
-	KO=new GWordList();
-	Common=new GWordList();
-	MOK=new GWordCalcs(Lang,Owner->Owner->Owner->Session);
-	MKO=new GWordCalcs(Lang,Owner->Owner->Owner->Session);
-}
 
 
 //---------------------------------------------------------------------------
@@ -101,11 +101,11 @@ void GSubProfile::Analyse(GProfDoc *profdoc)
 	{
 		case 'O':
 		case 'N':
-			MOK->Analyse(profdoc->Doc);
+//			MOK->Analyse(profdoc->Doc);
 			break;
 
 		case 'K':
-			MKO->Analyse(profdoc->Doc);
+//			MKO->Analyse(profdoc->Doc);
 			break;
 	}
 }
@@ -117,8 +117,8 @@ void GSubProfile::Analyse(void)
 	unsigned int kwdid;
 	GIWord *ref;
 
-	MOK->EndCalc();
-	MKO->EndCalc();
+/*	MOK->EndCalc();
+	MKO->EndCalc();*/
 
 	NbOK=0;
 	NbKO=0;
@@ -126,7 +126,7 @@ void GSubProfile::Analyse(void)
 	{
 		if(NeedOK())
 		{
-			kwdid=MOK->NextWord();
+//			kwdid=MOK->NextWord();
 			ref=KO->GetPtr<unsigned int>(kwdid);
 			if(ref)
 			{
@@ -142,7 +142,7 @@ void GSubProfile::Analyse(void)
 		}
 		if(NeedKO())
 		{
-			kwdid=MKO->NextWord();
+//			kwdid=MKO->NextWord();
 			ref=OK->GetPtr<unsigned int>(kwdid);
 			if(ref)
 			{
@@ -189,8 +189,8 @@ bool GSubProfile::Similar(GSubProfile *sub)
 //---------------------------------------------------------------------------
 GSubProfile::~GSubProfile(void)
 {
-	if(MOK) delete MOK;
-	if(MKO) delete MKO;
+//	if(MOK) delete MOK;
+//	if(MKO) delete MKO;
 	if(OK) delete OK;
 	if(KO) delete KO;
 	if(Common) delete Common;

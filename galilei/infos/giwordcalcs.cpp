@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gwordcalcs.cpp
+	GIWordcalcs.cpp
 
-	Basic Information - Implementation.
+	Frequences of words appearing in a set a documents - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -12,63 +12,69 @@
 
 	Last Modify: $Date$
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
-
 */
+
+
+
+//-----------------------------------------------------------------------------
+// include files for ANSI C/C++
 #include <stdlib.h>
 
-//include files for GALILEI
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
 #include <ginfos/giwordcalcs.h>
-#include <gsessions/gsession.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
-//---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 //
-//  GWordCalcs
+//  GIWordCalcs
 //
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GWordCalcs::GWordCalcs(GLang *lang,GSession *session) throw(bad_alloc)
-	: RContainer<GWordCalc,unsigned,true,true>(session->GetDic(lang)->GetMaxId(),50),
-	  NbWordsDocs(0.0), Order(0)
+GALILEI::GIWordCalcs::GIWordCalcs(GLang *lang,unsigned int nb) throw(bad_alloc)
+	: RContainer<GIWordCalc,unsigned,true,true>(nb,50), NbWordsDocs(0.0), Order(0)
 {
 }
 
 
-//---------------------------------------------------------------------------
-void GWordCalcs::Analyse(GDoc *doc)
+//-----------------------------------------------------------------------------
+const RString GALILEI::GIWordCalcs::ClassName(void) const
 {
-	GWordCalc *w;
+	return("GIWordCalcs");
+}
+
+
+//-----------------------------------------------------------------------------
+const GInfo::GInfoType GALILEI::GIWordCalcs::InfoType(void) const
+{
+	return(infoWordCalcs);
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GIWordCalcs::Analyse(GDoc *doc)
+{
+	GIWordCalc* w;
 
 	NbWordsDocs+=doc->GetNbWords();
-	for(doc->Words.Start();!doc->Words.End();doc->Words.Next())
+	for(doc->WordsStart();!doc->WordsEnd();doc->WordsNext())
 	{
-		w=GetInsertPtr<unsigned int>(doc->Words()->GetId());
-		w->Av+=doc->Words()->GetNbOccurs();
+		w=GetInsertPtr<unsigned int>(doc->GetCurWords()->GetId());
+		w->Freq+=doc->GetCurWords()->GetNbOccurs();
 	}
 }
 
 
 //--------------------------------------------------------------------------
-int GWordCalcs::sortOrder(const void *a,const void *b)
+int GALILEI::GIWordCalcs::sortOrder(const void *a,const void *b)
 {
-  double af=(*((GWordCalc**)(a)))->Av;
-  double bf=(*((GWordCalc**)(b)))->Av;
+  double af=(*((GIWordCalc**)(a)))->Freq;
+  double bf=(*((GIWordCalc**)(b)))->Freq;
 
   if(af==bf) return(0);
   if(af>bf)
@@ -79,33 +85,34 @@ int GWordCalcs::sortOrder(const void *a,const void *b)
 
 
 //---------------------------------------------------------------------------
-void GWordCalcs::EndCalc(void)
+void GALILEI::GIWordCalcs::EndCalc(void)
 {
-	GWordCalc **c;
-   unsigned int i;
+	GIWordCalc **c;
+	unsigned int i;
 
 	// Calculate Frequences
 	for(i=NbPtr+1,c=Tab;--i;c++)
-		(*c)->Av/=NbWordsDocs;
+		(*c)->Freq/=NbWordsDocs;
 
 	// ReOrder by Frequence
 	if(Order) delete[] Order;
-	Order=new GWordCalc*[NbPtr];
-	memcpy(Order,Tab,NbPtr*sizeof(GWordCalc*));
-	qsort(static_cast<void*>(Order),NbPtr,sizeof(GWordCalc*),sortOrder);
+	Order=new GIWordCalc*[NbPtr+1];
+	memcpy(Order,Tab,NbPtr*sizeof(GIWordCalc*));
+	Order[NbPtr]=0;
+	qsort(static_cast<void*>(Order),NbPtr,sizeof(GIWordCalc*),sortOrder);
 	CurOrder=Order;
 }
 
 
 //---------------------------------------------------------------------------
-unsigned int GWordCalcs::NextWord(void)
+unsigned int GALILEI::GIWordCalcs::NextWord(void)
 {
 	return((*(CurOrder++))->GetId());
 }
 
 
 //---------------------------------------------------------------------------
-GWordCalcs::~GWordCalcs(void)
+GALILEI::GIWordCalcs::~GIWordCalcs(void)
 {
 	if(Order) delete[] Order;
 }

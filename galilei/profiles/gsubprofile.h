@@ -74,23 +74,23 @@ public:
 	*/
 	GLang *Lang;
 
-	GWordCalcs *MOK;
-	GWordCalcs *MKO;
+//	GIWordCalcs *MOK;
+//	GIWordCalcs *MKO;
 	
 	/**
 	* List OK.
 	*/
-	GWordList *OK;
+	GIWordList *OK;
 
 	/**
 	* List KO.
 	*/
-	GWordList *KO;
+	GIWordList *KO;
 
 	/**
 	* List Common.
 	*/
-	GWordList *Common;
+	GIWordList *Common;
 	
 	unsigned int NbOK;
 	unsigned int NbKO;

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gwordcalc.h
+	GIWordCalc.h
 
-	Basic Information - Implementation.
+	Frequence of a word in a set of documents - Header.
 
 	(C) 2001 by P. Francq.
 
@@ -12,45 +12,80 @@
 
 	Last Modify: $Date$
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
-
 */
+
+
+
+//-----------------------------------------------------------------------------
 #ifndef GIWordCalcH
 #define GIWordCalcH
-//------------------------------- ---------------------------------------------
+
+
+//-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <ginfos/giword.h>
-using namespace GALILEI;
 
- namespace GALILEI{
-//------------------------------- ---------------------------------------------
-class GWordCalc : public GIWord
+
+
+//-----------------------------------------------------------------------------
+namespace GALILEI{
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GIWordCalc class provides a representation for a frequence of a word in a
+* set of documents.
+* @author Pascal Francq
+* @short Word's Frequence in documents' set.
+*/
+class GIWordCalc : public GIWord
 {
+	/**
+	* Frequence of the word.
+	*/
+	double Freq;
+
 public:
+
 	/**
 	* Constructor.
-	* @param id
+	* @param id             Identificator of the word.
 	*/
-	double Av;
-	GWordCalc(unsigned id) throw(bad_alloc);
-	int Compare(const GWordCalc &calc);
-	int Compare(const GWordCalc *calc);
-	~GWordCalc(void);
+	GIWordCalc(const unsigned int id) throw(bad_alloc);
+
+	/**
+	* Return the name of the class.
+	*/
+	virtual const RStd::RString ClassName(void) const;
+
+	/**
+	* Return the type of the information.
+	*/
+	virtual const GInfoType InfoType(void) const;
+
+	/**
+	* Compare method used by RStd::RContainer.
+	*/
+	int Compare(const GIWordCalc &calc) const;
+
+	/**
+	* Compare method used by RStd::RContainer.
+	*/
+	int Compare(const GIWordCalc *calc) const;
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GIWordCalc(void);
+
+	// friend classes
+	friend class GIWordCalcs;
 };
-}
- #endif
 
 
+}  //-------- End of namespace GALILEI ----------------------------------------
+
+
+//-----------------------------------------------------------------------------
+#endif

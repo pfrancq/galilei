@@ -2,75 +2,133 @@
 
 	GALILEI Research Project
 
-	gwordcalcs.h
+	GIWordcalcs.h
 
-	Basic Information - Implementation.
+	Frequences of words appearing in a set a documents - Implementation.
 
 	(C) 2001 by P. Francq.
 
 	Version $Revision$
 
 	Last Modify: $Date$
-
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
-
+	
 */
 
 
+
+//-----------------------------------------------------------------------------
 #ifndef GIWordCalcsH
 #define GIWordCalcsH
-//---------------------------------------------------------------------------
 
-//include files for Rainbow
 
+//-----------------------------------------------------------------------------
+// include files for R Project
 #include <rstd/rcontainer.h>
 
 
-//---------------------------------------------------------------------------
-
-//include files for GALILEI
-
-#include<gdocs/gdoc.h>
-#include<glangs/glang.h>
+//-----------------------------------------------------------------------------
+// include files for GALILEI
 #include <ginfos/giwordcalc.h>
-
+#include <gdocs/gdoc.h>
+#include <glangs/glang.h>
 using namespace GALILEI;
 
+
+//-----------------------------------------------------------------------------
 namespace GALILEI{
+//-----------------------------------------------------------------------------
 
-class GDoc;
-class GSession;
 
-//---------------------------------------------------------------------------
-
-class GWordCalcs : public RStd::RContainer<GWordCalc,unsigned,true,true>
+//-----------------------------------------------------------------------------
+/**
+* The GIWordCalcs provides a representation for the frequences of words that
+* are appearing in a set of documents. This documents must all be of the same
+* language.
+* @author Pascal Francq
+* @short Frequences of words appearing in a set a documents.
+*/
+class GIWordCalcs : public GInfo,public RStd::RContainer<GIWordCalc,unsigned,true,true>
 {
-public:
+	/**
+	* Total number of words in the set of documents analysed.
+	*/
 	double NbWordsDocs;
-	GWordCalc **Order;
-	GWordCalc **CurOrder;
-	GWordCalcs(GLang *lang,GSession *session) throw(bad_alloc);
-	int Compare(const GWordCalcs &calcs);
-	int Compare(const GWordCalcs *calcs);
+
+	/**
+	* Languages of the documents.
+	*/
+	GLang* Lang;
+
+	/**
+	* Hold the same list but in decreasing order of frequencies.
+	*/
+	GIWordCalc** Order;
+
+	/**
+	* Pointer to go trough the ordered list.
+	*/
+	GIWordCalc** CurOrder;
+
+public:
+
+	/**
+	* Constructor.
+	* @param lang           Language.
+	* @param nb             Maximal number of word created at initialisation.
+	*/
+	GIWordCalcs(GLang *lang,unsigned int nb) throw(bad_alloc);
+
+	/**
+	* Return the name of the class.
+	*/
+	virtual const RStd::RString ClassName(void) const;
+
+	/**
+	* Return the type of the information.
+	*/
+	virtual const GInfoType InfoType(void) const;
+
+	/**
+	* Compare method used by RStd::RContainer.
+	*/
+	int Compare(const GIWordCalcs& c) const
+		{return(Lang->Compare(c.Lang));}
+
+	/**
+	* Compare method used by RStd::RContainer.
+	*/
+	int Compare(const GIWordCalcs* c) const
+		{return(Lang->Compare(c->Lang));}
+
+private:
+
+	/**
+	* Static function used to ordered by frenquecy.
+	*/
+	static int sortOrder(const void *a,const void *b);
+
+public:
+
+	/**
+	*/
 	void Analyse(GDoc *doc);
 	void EndCalc(void);
-	unsigned int NextWord(void);
-	virtual ~GWordCalcs(void);
 
-	static int sortOrder(const void *a,const void *b);
+	/**
+	* Get the identificator of the next word in the ordered list by frequencies.
+	* @returns Identificator of the word.
+	*/
+	unsigned int NextWord(void);
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GIWordCalcs(void);
 };
-}
+
+
+}  //-------- End of namespace GALILEI ----------------------------------------
+
+
+//-----------------------------------------------------------------------------
 #endif

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gdoc.cpp
+	GProfileCalc.cpp
 
-	Document - Implementation.
+	Generic Profile' Computing Method - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -17,27 +17,26 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <gdocs/gdoclist.h>
+//include files for GALILEI
+#include <gprofiles/gprofilecalc.h>
 using namespace GALILEI;
-using namespace RStd;
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GDocList
+//  GProfileCalc
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocList::GDocList(const unsigned int nb) throw(bad_alloc)
-	: RContainer<GDoc,unsigned int,false,true>(nb,nb/2)
+GALILEI::GProfileCalc::GProfileCalc(GSession* session) throw(bad_alloc)
+	: Session(session)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocList::~GDocList(void)
+GALILEI::GProfileCalc::~GProfileCalc(void)
 {
 }
