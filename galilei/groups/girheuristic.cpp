@@ -55,8 +55,8 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GIRHeuristic::GIRHeuristic(RRandom* r,RCursor<GObjIR,unsigned int>* objs)
-	: RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>("IR Heuristic",r,objs)
+GALILEI::GIRHeuristic::GIRHeuristic(RRandom* r,RCursor<GObjIR,unsigned int>* objs,RDebug* debug)
+	: RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>("IR Heuristic",r,objs,debug)
 {
 }
 

@@ -252,7 +252,7 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RObjs<GObjIR>* ob
 //-----------------------------------------------------------------------------
 RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* GALILEI::GInstIR::CreateHeuristic(void) throw(bad_alloc)
 {
-	return(new GIRHeuristic(Random,Objs));
+	return(new GIRHeuristic(Random,Objs,Debug));
 }
 
 

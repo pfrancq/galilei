@@ -68,8 +68,9 @@ public:
 	* Construct the IR heuristic.
 	* @param r              The random genrator to use.
 	* @param objs           Pointer to the objects.
+	* @param debug          Debugger.
 	*/
-	 GIRHeuristic(R::RRandom* r,R::RCursor<GObjIR,unsigned int>* objs);
+	 GIRHeuristic(R::RRandom* r,R::RCursor<GObjIR,unsigned int>* objs,R::RDebug* debug=0);
 
 	/**
 	* Initialize the heuristic.
