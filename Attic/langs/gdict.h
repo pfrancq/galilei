@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	GDic.h
 
-	Basic Information - Implementation.
+	Dictionnary - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -28,35 +28,43 @@
 	Boston, MA  02111-1307  USA
 
 */
+
+
+
+//-----------------------------------------------------------------------------
 #ifndef GDictH
 #define GDictH
 
 
-//---------------------------------------------------------------------------
-// include files for Rainbow
-
+//-----------------------------------------------------------------------------
+// include files for R Project
 #include <rstd/rcontainer.h>
 #include <rstd/rhashcontainer.h>
 #include <rstd/rstring.h>
-
 using namespace RStd;
 
 
-//---------------------------------------------------------------------------
-// include files for Galilei
+//-----------------------------------------------------------------------------
+// include files for GALILEI
 #include <galilei.h>
 #include <glangs/gword.h>
 #include <glangs/glang.h>
 
 
-
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 namespace GALILEI{
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+// forward class declaration
 class GSession;
 
+
 //---------------------------------------------------------------------------
-// class GDict
+/**
+* The GDict class provides a representation for a dictionnary.
+*/
 class GDict : public RHashContainer<GWord,unsigned,27,true>
 {
 public:
@@ -82,6 +90,13 @@ public:
   }
 //  virtual unsigned NextId(const RString& word) throw(GException)=0;          // Return id for a new word
   unsigned GetId(const RString& word) throw(bad_alloc);    // Return the id for a given word
+
+	/**
+	* @return Word given by an identificator.
+	*/
+	const char* GetWord(const unsigned int id) const
+		{return(Direct[id]->Word());}
+
 //  virtual void Load(void) throw(bad_alloc,GException)=0;
   int Compare(const GDict* dict) { return(Name.Compare(dict->Name)); }
   int Compare(const GDict& dict) { return(Name.Compare(dict.Name)); }

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	GDic.cpp
 
-	Basic Information - Implementation.
+	Dictionnary - Implementation.
 
 	(C) 2001 by P. Francq.
 
