@@ -199,7 +199,7 @@ void KViewChromos::ConstructChromosomes(void)
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(9,tmp);
 
-		(*c)->EvaluateAvgVarMinRel();
+		(*c)->EvaluateAvgVar();
 		sprintf(tmp,"%lf",(*c)->GetSimCriterion());
 		g->setText(10,tmp);
 	}

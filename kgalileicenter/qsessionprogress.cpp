@@ -352,6 +352,7 @@ void QSessionProgressDlg::receiveNextChromosome(unsigned int id)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::Finish(void)
 {
+	txtRem->setText("Finish");
 	btnOk->setEnabled(true);
 	KApplication::kApplication()->processEvents();
 }

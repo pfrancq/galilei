@@ -12,6 +12,7 @@
 		<Action name="runInsts"/>
 		<separator/>
  		<Action name="sessionTest"/>
+		<Action name="sessionStat"/>
 		<separator/>
 		<Action name="sessionQuit"/>
 	</Menu>
@@ -32,6 +33,7 @@
 		<Action name="groupsCalc"/>
 		<Action name="groupingCompare"/>
 		<Action name="groupsEvaluation"/>
+		<Action name="runQuery"/>
 	</Menu>
 	<Menu name="Documents"><text>&amp;Documents</text>
 		<Action name="docAlwaysCalc"/>

@@ -268,6 +268,15 @@ private slots:
 	void slotSessionConnect(void);
 
 	/**
+	* AutoConnect to the default MySQL database.
+	* @param host           The host name.
+	* @param user           The user name.
+	* @param passwd         The passwd.
+	* @param db             The database.
+	*/
+	void slotSessionAutoConnect(char* host,char* user,char* passwd,char* db);
+
+	/**
 	* Compute an entire session.
 	*/
 	void slotSessionCompute(void);
@@ -281,6 +290,11 @@ private slots:
 	* Test something.
 	*/
 	void slotSessionTest(void);
+
+	/**
+	* Launch the statistique module.
+	*/
+	void slotSessionStat(void);
 
 	/**
 	* Closes all documents and quits the application.
@@ -423,6 +437,11 @@ private slots:
 	void slotRunInsts(void);
 
 	/**
+	* Run some instructions.
+	*/
+	void slotRunQuery(void);
+
+	/**
 	* Called when the option about the profile's has to be changed.
 	*/
 	void slotDocsOptions(void);
@@ -490,6 +509,7 @@ public:
 	KAction* sessionCompute;
 	KAction* sessionDisconnect;
 	KAction* sessionTest;
+	KAction* sessionStat;
 	KAction* sessionQuit;
 
 	KToggleAction* profileAlwaysCalc;
@@ -531,6 +551,7 @@ public:
 
 	KAction* runProgram;
 	KAction* runInsts;
+	KAction* runQuery;
 
 	KAction* windowTile;
 	KAction* windowCascade;

@@ -117,8 +117,16 @@ public:
 
 	/**
 	* Construct the Doc Smilarity widget.
+	* @param relevant       True if relevant methods,false if gravitation methods.
+	* @param global         True if GlobalSimilarity methods,false if similarity methods.
 	*/
-	void ConstructSimilarityDoc(void);
+	void ConstructSimilarityDocGroup(bool relevant,bool global);
+
+	/**
+	* Construct the Doc Smilarity widget.
+	* @param global         True if GlobalSimilarity methods,false if similarity methods.
+	*/
+	void ConstructSimilarityDoc(bool global);
 	
 	/**
 	* Construct the subprofile similarity widget.

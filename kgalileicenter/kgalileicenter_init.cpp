@@ -112,6 +112,7 @@ void KGALILEICenterApp::initActions(void)
 	runInsts=new KAction(i18n("Run &Instructions"),"help",0,this,SLOT(slotRunInsts()),actionCollection(),"runInsts");;
 	sessionDisconnect=new KAction(i18n("&Disconnect Database"),"connect_no",0,this,SLOT(slotSessionDisconnect()),actionCollection(),"sessionDisconnect");
 	sessionTest=new KAction(i18n("&Test"),"gohome",0,this,SLOT(slotSessionTest()),actionCollection(),"sessionTest");
+	sessionStat=new KAction(i18n("&Stat"),"gohome",0,this,SLOT(slotSessionStat()),actionCollection(),"sessionStat");
 	sessionQuit=new KAction(i18n("E&xit"),"exit",0,this,SLOT(slotSessionQuit()),actionCollection(),"sessionQuit");
 
 	// Menu "Users"
@@ -128,6 +129,7 @@ void KGALILEICenterApp::initActions(void)
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
 	groupingCompare=new KAction(i18n("&Compare Grouping"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
 	groupsEvaluation=new KAction(i18n("&Evaluate Grouping"),"fileopen",0,this,SLOT(slotGroupsEvaluation()),actionCollection(),"groupsEvaluation");
+	runQuery=new KAction(i18n("Run &Query"),"help",0,this,SLOT(slotRunQuery()),actionCollection(),"runQuery");;
 
 
 	// Menu "Document"
@@ -374,6 +376,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	plugins->setEnabled(false);
 	runProgram->setEnabled(false);
 	runInsts->setEnabled(false);
+	runQuery->setEnabled(false);
 	rRunR->setEnabled(false);
 	gaAnalyse->setEnabled(false);
 	gaSave->setEnabled(false);

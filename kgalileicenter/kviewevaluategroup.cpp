@@ -32,12 +32,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainercursor.h>
-using namespace RStd;
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <tests/ggroupevaluate.h>
 #include <tests/ggroupevaluatesubprof.h>
@@ -45,12 +39,24 @@ using namespace RStd;
 #include <tests/ggroupsevaluate.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
+#include <groups/ggroupvector.h>
 #include <groups/gevaluategroupingcalinski.h>
 #include <groups/gevaluategroupingvariance.h>
 #include <groups/gevaluategroupingintramininter.h>
 #include <sessions/gsession.h>
 #include <profiles/gprofile.h>
+#include <groups/ggroupcalcgravitation.h>
+#include <groups/ggroupcalcrelevant.h>
+#include <infos/giwordsweights.h>
+#include <infos/giwordweight.h>
+#include <docs/gdoc.h>
 using namespace GALILEI;
+
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainercursor.h>
+using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
@@ -94,7 +100,7 @@ KViewEvaluateGroup::KViewEvaluateGroup(KDoc* doc,QWidget* parent,const char* nam
 	General->addColumn("Between/Within");
 	General->addColumn("IntraMinInter");
 	General->addColumn("Variance");
-	ConstructGeneral();
+//	ConstructGeneral();
 	
 	// Initialisation of the Variance Doc Widget
 	VarianceDoc = new QListView(Infos);
@@ -110,6 +116,7 @@ KViewEvaluateGroup::KViewEvaluateGroup(KDoc* doc,QWidget* parent,const char* nam
 	VarianceSubProf->addColumn("Variance Subprofile");
 //	ConstructVarianceSubProf();
 
+	// Initialisation of the similarity Subprof Widget
 	SimilaritySubProf= new QListView(Infos);
 	Infos->insertTab(SimilaritySubProf,"Similarity SubProfile");
 	SimilaritySubProf->addColumn("Group name");
@@ -120,8 +127,9 @@ KViewEvaluateGroup::KViewEvaluateGroup(KDoc* doc,QWidget* parent,const char* nam
 	SimilaritySubProf->addColumn("similar min");
 	SimilaritySubProf->addColumn("similar max");
 	SimilaritySubProf->addColumn("similar mean");
-	ConstructSimilaritySubProf();
-	
+//	ConstructSimilaritySubProf();
+
+	// Initialisation of the doc similarity Widget
 	SimilarityDoc= new QListView(Infos);
 	Infos->insertTab(SimilarityDoc,"Similarity Doc");
 	SimilarityDoc->addColumn("Group name");
@@ -132,7 +140,22 @@ KViewEvaluateGroup::KViewEvaluateGroup(KDoc* doc,QWidget* parent,const char* nam
 	SimilarityDoc->addColumn("similar min");
 	SimilarityDoc->addColumn("similar max");
 	SimilarityDoc->addColumn("similar mean");
-//	ConstructSimilarityDoc();
+	cout<<" SimilarityDoc global"<<endl;
+	ConstructSimilarityDoc(true);
+	cout<<" SimilarityDoc sim normale"<<endl;
+	ConstructSimilarityDoc(false);
+
+	// Dicerse statitistique to cout.
+	cout<<" SimilarityDocGroup relevant Global"<<endl;
+	ConstructSimilarityDocGroup(true,true);
+	cout<<" SimilarityDocGroup gravitaion Global"<<endl;
+	ConstructSimilarityDocGroup(false,true);
+	cout<<" SimilarityDocGroup relevant sim normale"<<endl;
+	ConstructSimilarityDocGroup(true,false);
+	cout<<" SimilarityDocGroup gravitaion sim normale"<<endl;
+	ConstructSimilarityDocGroup(false,false);
+
+
 }
 
 
@@ -141,13 +164,13 @@ void KViewEvaluateGroup::ConstructGeneral(void)
 {
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* groups = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 	GSession* session=Doc->GetSession();
-//	session->LoadIdealDocument(groups);
+	session->LoadIdealDocument(groups);
 	
-//	GEvaluateGroupingCalinski Cal (session, groups);
-//	GEvaluateGroupingVariance Var (session, groups);
-//	GEvaluateGroupingIntraMinInter Minintra (session, groups);
-//	General->clear();
-//	new QListViewItem(General,"Document",QString(dtoa(Cal.Run())),QString(dtoa(Minintra.Run())),QString(dtoa(Var.Run())));
+	GEvaluateGroupingCalinski Cal (session, groups);
+	GEvaluateGroupingVariance Var (session, groups);
+	GEvaluateGroupingIntraMinInter Minintra (session, groups);
+	General->clear();
+	new QListViewItem(General,"Document",QString(dtoa(Cal.Run())),QString(dtoa(Minintra.Run())),QString(dtoa(Var.Run())));
 
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* Groups=new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 	RContainer<GGroups,unsigned int,true,true>* IdealGroups=new RContainer<GGroups,unsigned int,true,true> (2,2);
@@ -169,7 +192,7 @@ void KViewEvaluateGroup::ConstructGeneral(void)
 	GEvaluateGroupingCalinski CalG (session, Groups);
 	GEvaluateGroupingVariance VarG (session, Groups);
 	GEvaluateGroupingIntraMinInter MinintraG (session,Groups);
-	//new QListViewItem(General,"SubProfiles",QString(dtoa(CalG.Run())),QString(dtoa(MinintraG.Run())),QString(dtoa(VarG.Run())));
+	new QListViewItem(General,"SubProfiles",QString(dtoa(CalG.Run())),QString(dtoa(MinintraG.Run())),QString(dtoa(VarG.Run())));
 	cout<<" "<<CalG.Run()<<" "<<MinintraG.Run()<<" "<<VarG.Run();
 }
 
@@ -316,32 +339,172 @@ void KViewEvaluateGroup::ConstructSimilaritySubProf()
 			MeanIntraM+=MeanIntra;
 			MaxExtraM+=MaxExtra;
 			MeanExtraM+=MeanExtra;
-//			new QListViewItem(SimilaritySubProf,QString(name),QString(dtoa(MinIntra)),QString(dtoa(MeanIntra)),QString(dtoa(MaxExtra)),QString(dtoa(MeanExtra)),"similarmin","similarmax","similarmean");
+			new QListViewItem(SimilaritySubProf,QString(name),QString(dtoa(MinIntra)),QString(dtoa(MeanIntra)),QString(dtoa(MaxExtra)),QString(dtoa(MeanExtra)),"similarmin","similarmax","similarmean");
 		}
 	}
-//	new QListViewItem(SimilaritySubProf,QString("Mean"),QString(dtoa(MinIntraM/nbtot)),QString(dtoa(MeanIntraM/nbtot)),QString(dtoa(MaxExtraM/nbtot)),QString(dtoa(MeanExtraM/nbtot)),"similarmin","similarmax","similarmean");
+	new QListViewItem(SimilaritySubProf,QString("Mean"),QString(dtoa(MinIntraM/nbtot)),QString(dtoa(MeanIntraM/nbtot)),QString(dtoa(MaxExtraM/nbtot)),QString(dtoa(MeanExtraM/nbtot)),"similarmin","similarmax","similarmean");
 	cout<<" "<<MinIntraM/nbtot<<" "<<MeanIntraM/nbtot<<" "<<MaxExtraM/nbtot<<" "<<MeanExtraM/nbtot<<endl;
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewEvaluateGroup::ConstructSimilarityDoc()
+void KViewEvaluateGroup::ConstructSimilarityDocGroup(bool relevant,bool global)
 {
 	RString name;
-	double MinIntra,MeanIntra;
-	double MaxExtra,MeanExtra;
+	double MeanIntraAll;
+	double MeanExtraAll;
+	double MeanIntraMAll;
+	double MeanExtraMAll;
+	double MeanIntraJug;
+	double MeanIntraMJug;
+	double MeanIntraNotJug;
+	double MeanIntraMNotJug;
+
+	MeanIntraMAll=0.0;
+	MeanExtraMAll=0.0;
+	MeanIntraMJug=0.0;
+	MeanIntraMNotJug=0.0;
+
+	int nbtot=0;
+
 	GSession* session=Doc->GetSession();
+	GGroupCalcRelevant Relevant(session);
+	GGroupCalcGravitation Gravitation(session);
+	
 	SimilarityDoc->clear();
 
+	if(relevant) Relevant.SetMaxNonZero(50);
+	else Gravitation.SetMaxNonZero(50);
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
+	session->LoadIdealDocument(GroupsDoc);
+
+	RContainer<GGroups,unsigned int,true,true>* IdealGroups=new RContainer<GGroups,unsigned int,true,true> (2,2);
+	session->LoadIdealGroupment(IdealGroups);
+
+	for(IdealGroups->Start(),GroupsDoc->Start();!IdealGroups->End();IdealGroups->Next(),GroupsDoc->Next())
+	{
+		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
+		GGroupEvaluateCursor& Cur=(*GroupsDoc)()->GetGroupEvaluateCursor();
+		for(Cur2.Start(),Cur.Start();!Cur2.End();Cur2.Next(),Cur.Next())
+		{
+			int comptiall=0;
+			int compteall=0;
+			int comptijug=0;
+			int comptinotjug=0;
+
+			MeanIntraAll=0.0;
+			MeanExtraAll=0.0;
+			MeanIntraJug=0.0;
+			MeanIntraNotJug=0.0;
+
+			//le groupe de sous profile
+			GGroup* Group=Cur2();
+			if(relevant) Relevant.Compute(Group);
+			else Gravitation.Compute(Group);
+
+			//le groupe avec tt les documents
+			GGroupEvaluate* Grp=Cur();
+			for(Grp->Start();!Grp->End();Grp->Next())
+			{
+				bool isjudged=false;
+				int idd=Grp->Current();
+				GDoc* document=Doc->GetSession()->GetDoc(idd);
+				GSubProfileCursor profcur =Group->GetSubProfileCursor();
+				for(profcur.Start();!profcur.End();profcur.Next())
+				{
+					if(profcur()->GetProfile()->GetFeedback(document)!=0)
+					{
+						isjudged=true;
+					}
+				}
+				double similarity;
+				if(global)	similarity=static_cast<GGroupVector*>(Group)->GlobalSimilarity(document);
+				else similarity=static_cast<GGroupVector*>(Group)->Similarity(document);
+				if((similarity<10)&&(similarity>-10))
+				{
+					if(isjudged)
+					{
+						//le doc a ete juge
+						comptiall++;
+						comptijug++;
+						MeanIntraAll+=similarity;
+						MeanIntraJug+=similarity;
+					}
+					else
+					{
+						//le doc n a pas ete juge..
+						comptinotjug++;
+						MeanIntraNotJug+=similarity;
+						comptiall++;
+						MeanIntraAll+=similarity;
+					}
+				}
+			}
+			GDocCursor docur= Doc->GetSession()->GetDocsCursor();
+			for(docur.Start();!docur.End();docur.Next())
+			{
+				GDoc* Document=docur();
+				double similarity;
+				if(global)	similarity=static_cast<GGroupVector*>(Group)->GlobalSimilarity(Document);
+				else similarity=static_cast<GGroupVector*>(Group)->Similarity(Document);
+				if((similarity<10)&&(similarity>-10))
+				{
+					compteall++;
+					MeanExtraAll+=similarity;
+				}
+			}
+			if(comptiall>0)
+			{
+				MeanIntraAll/=comptiall;
+				MeanIntraJug/=comptijug;
+				MeanIntraNotJug/=comptinotjug;
+				MeanExtraAll/=compteall;
+				MeanIntraMAll+=MeanIntraAll;
+				MeanExtraMAll+=MeanExtraAll;
+				MeanIntraMJug+=MeanIntraJug;
+				MeanIntraMNotJug+=MeanIntraNotJug;
+				nbtot++;
+			}
+		}
+	}
+		cout<<"MeanIntraMAll/nbtot"<<" "<<"MeanExtraMAll/nbtot"<<" "<<"MeanIntraMJug/nbtot"<<" "<<"MeanIntraMNotJug/nbtot"<<" "<<"((MeanIntraMAll/nbtot)-(MeanExtraMAll/nbtot))/(MeanIntraMAll/nbtot)"<<endl;
+		cout<<MeanIntraMAll/nbtot<<" "<<MeanExtraMAll/nbtot<<" "<<MeanIntraMJug/nbtot<<" "<<MeanIntraMNotJug/nbtot<<" "<<((MeanIntraMAll/nbtot)-(MeanExtraMAll/nbtot))/(MeanIntraMAll/nbtot)<<endl;
+
+}
+
+//-----------------------------------------------------------------------------
+void KViewEvaluateGroup::ConstructSimilarityDoc(bool global)
+{
+	// temp Intra,extra similarity
+	double MinIntra,MeanIntra;
+	double MaxExtra,MeanExtra;
+
+	int nbtot=0;
+	// Mean similarity.
+	double MinIntraM,MeanIntraM;
+	double MaxExtraM,MeanExtraM;
+	MinIntraM=0.0;
+	MeanIntraM=0.0;
+	MaxExtraM=0.0;
+	MeanExtraM=0.0;
+	RString name;
+	GSession* session=Doc->GetSession();
+
+	// Clear the window.
+	SimilarityDoc->clear();
+
+	//the container of documents.
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 
+	// load the ideal document container.
 	session->LoadIdealDocument(GroupsDoc);
-	
+
 	for(GroupsDoc->Start();!GroupsDoc->End();GroupsDoc->Next())
 	{
-		GGroupEvaluateCursor& Cur2=(*GroupsDoc)()->GetGroupEvaluateCursor();
+		GGroupEvaluateCursor Cur2=(*GroupsDoc)()->GetGroupEvaluateCursor();
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
+			// for each group... Initialization.
 			MinIntra=1.0;
 			MeanIntra=0.0;
 			MaxExtra=0.0;
@@ -349,21 +512,25 @@ void KViewEvaluateGroup::ConstructSimilarityDoc()
 			int compt=0;
 			GGroupEvaluate* Group=Cur2();
 			name=Group->GetName();
-			int vector[Group->NbPtr()];
-			int i=0;
+			// a vector used to memorise the id of the documents
+			int* vector;
+			vector=new int[Group->NbPtr()];
+			unsigned int i=0;
 			for(Group->Start();!Group->End();Group->Next())
 			{
 				vector[i]=Group->Current();
 				i++;
 			}
+			// for all the document in this group
 			for(i=0;i<Group->NbPtr();i++)
 			{
-				for(int j=0;j<Group->NbPtr();j++)
+				for(unsigned int j=0;j<Group->NbPtr();j++)
 				{
-					double temp=Group->Similarity(vector[i],vector[j]);
- 					if((i!=j)&&(temp>0))
+					double temp;
+					if(global)temp=Group->GlobalSimilarity(vector[i],vector[j]);
+					else temp=Group->Similarity(vector[i],vector[j]);
+ 					if((i!=j)&&(temp>-10)&&(temp<10))
 					{
-				
 						MeanIntra+=temp;
 						compt++;
 						if((temp<MinIntra)) MinIntra=temp;
@@ -371,12 +538,14 @@ void KViewEvaluateGroup::ConstructSimilarityDoc()
 				}
 			}
 			MeanIntra/=compt;
-			GGroupEvaluateCursor& Cur=(*GroupsDoc)()->GetGroupEvaluateCursor();
+			// calc the similarity for all the document which are not in the current group.
+			GGroupEvaluateCursor Cur=(*GroupsDoc)()->GetGroupEvaluateCursor();
 			compt=0;
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
 				GGroupEvaluate* GroupExtra=Cur();
-				int vectorextra[GroupExtra->NbPtr()];
+				int* vectorextra;
+				vectorextra=new int[GroupExtra->NbPtr()];
 				int ii=0;
 				for(GroupExtra->Start();!GroupExtra->End();GroupExtra->Next())
 				{
@@ -385,15 +554,19 @@ void KViewEvaluateGroup::ConstructSimilarityDoc()
 				}
 				if(GroupExtra->GetId()!=Group->GetId())
 				{
-
 					for(i=0;i<Group->NbPtr();i++)
 					{
-						for(int j=0;j<GroupExtra->NbPtr();j++)
+						for(unsigned int j=0;j<GroupExtra->NbPtr();j++)
 						{
-							double temp=Group->Similarity(vectorextra[j],vector[i]);
-							MeanExtra+=temp;
-							compt++;
-							if((temp>MaxExtra)&&(temp<0.99))
+							double temp;
+							if(global) temp=Group->GlobalSimilarity(vectorextra[j],vector[i]);
+							else temp=Group->Similarity(vectorextra[j],vector[i]);
+							if ((temp<0.98)&&(temp>-0.98))	
+							{
+								MeanExtra+=temp;
+								compt++;
+							}
+							if((temp>MaxExtra)&&(temp<0.98))
 							{
 								MaxExtra=temp;
 							}
@@ -402,9 +575,16 @@ void KViewEvaluateGroup::ConstructSimilarityDoc()
 				}
 			}
 			MeanExtra/=compt;
-			new QListViewItem(SimilarityDoc,QString(name),QString(dtoa(MinIntra)),QString(dtoa(MeanIntra)),QString(dtoa(MaxExtra)),QString(dtoa(MeanExtra)),"similarmin","similarmax","similarmean");
+			nbtot++;
+			MinIntraM+=MinIntra;
+			MeanIntraM+=MeanIntra;
+			MaxExtraM+=MaxExtra;
+			MeanExtraM+=MeanExtra;
+			//new QListViewItem(SimilarityDoc,QString(name),QString(dtoa(MinIntra)),QString(dtoa(MeanIntra)),QString(dtoa(MaxExtra)),QString(dtoa(MeanExtra)),"similarmin","similarmax","similarmean");
 		}
 	}
+	cout<<"MinIntraM/nbtot"<<" "<<"MeanIntraM/nbtot"<<" "<<"MaxExtraM/nbtot"<<" "<<"MeanExtraM/nbtot"<<" "<<"((MeanIntraM/nbtot)-(MeanExtraM/nbtot))/(MeanIntraM/nbtot)"<<endl;
+	cout<<MinIntraM/nbtot<<" "<<MeanIntraM/nbtot<<" "<<MaxExtraM/nbtot<<" "<<MeanExtraM/nbtot<<" "<<((MeanIntraM/nbtot)-(MeanExtraM/nbtot))/(MeanIntraM/nbtot)<<endl;
 }
 
 
