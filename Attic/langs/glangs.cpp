@@ -69,7 +69,7 @@ GLang* GLangs::GetLang(const char *code)
 
 
 //---------------------------------------------------------------------------
-void GLangs::CreateDicsStops(GDicts *dicts,GDicts *stops) throw(bad_alloc,GException)
+/*void GLangs::CreateDicsStops(GDicts *dicts,GDicts *stops) throw(bad_alloc,GException)
 {
   GLang **ptr;
   long i;
@@ -80,5 +80,5 @@ void GLangs::CreateDicsStops(GDicts *dicts,GDicts *stops) throw(bad_alloc,GExcep
     stops->CreateDic((*ptr)->GetStop(),*ptr);
   }
 }
-
+*/
 

@@ -53,7 +53,7 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 namespace GALILEI{
 //---------------------------------------------------------------------------
-
+class GDict;
 class GSession;
 
 //---------------------------------------------------------------------------
@@ -65,7 +65,7 @@ class GDicts : public RContainer<GDict,unsigned,true,true>
 public:
   GDicts(unsigned nb,GSession *session) throw(bad_alloc);
   void Load(bool dep,bool del) throw(bad_alloc,GException);
-  virtual void CreateDic(const RString &name,GLang *lang) throw(bad_alloc,GException)=0;
+  //virtual void CreateDic(const RString &name,GLang *lang) throw(bad_alloc,GException)=0;
   void Clear(void);
 	virtual ~GDicts(void) {}
 };

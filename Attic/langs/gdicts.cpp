@@ -60,7 +60,7 @@ void GDicts::Load(bool dep,bool del) throw(bad_alloc,GException)
   for(i=NbPtr+1,ptr=Tab;--i;ptr++)
   {
     if((dep&&(*ptr)->Lang->Activ)||(!dep))
-      (*ptr)->Load();
+      (*ptr)->owner->LoadDics();
     else
       if(del) (*ptr)->Clear();
   }

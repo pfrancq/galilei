@@ -68,7 +68,7 @@ public:
   GLangs(unsigned nb) throw(bad_alloc);
   GLang* GetLang(const char* code);   // Return a pointer to the language
   virtual void Load(void) throw(bad_alloc,GException)=0;  //  Load the Languages
-  void CreateDicsStops(GDicts *dicts,GDicts *stops) throw(bad_alloc,GException);
+ // void CreateDicsStops(GDicts *dicts,GDicts *stops) throw(bad_alloc,GException);
 	virtual ~GLangs(void) {}
 };
 

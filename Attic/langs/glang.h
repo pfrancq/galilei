@@ -68,8 +68,8 @@ public:
   int Compare(const GLang* lang);
 
   // Dictionnay and Stop List names
-  virtual RString& GetDic(void)=0;
-  virtual RString& GetStop(void)=0;
+ // virtual RString& GetDic(void)=0;
+  //virtual RString& GetStop(void)=0;
 
 	// Destructor
 	virtual ~GLang(void) {}

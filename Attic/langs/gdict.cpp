@@ -50,9 +50,9 @@ using namespace GALILEI;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GDict::GDict(const RString& name,GLang *lang,unsigned max,unsigned maxletter) throw(bad_alloc)
+GDict::GDict(GSession* _owner,const RString& name,GLang *lang,unsigned max,unsigned maxletter) throw(bad_alloc)
   : RHashContainer<GWord,unsigned,27,true>(maxletter+(maxletter/4),maxletter/4), Direct(0),
-    MaxId(max+max/4), UsedId(0),Lang(lang), Name(name), Desc(""), Loaded(false)
+    MaxId(max+max/4), UsedId(0),Lang(lang), Name(name), Desc(""), Loaded(false), owner(_owner)
 {
   Direct=new GWord*[MaxId];
   memset(Direct,0,MaxId*sizeof(GWord*));
@@ -60,9 +60,9 @@ GDict::GDict(const RString& name,GLang *lang,unsigned max,unsigned maxletter) th
 
 
 //---------------------------------------------------------------------------
-GDict::GDict(const RString& name,const RString& desc,GLang* lang) throw(bad_alloc)
+GDict::GDict(GSession* _owner,const RString& name,const RString& desc,GLang* lang) throw(bad_alloc)
   : RHashContainer<GWord,unsigned,27,true>(1000,1000), Direct(0), MaxId(10000),
-    UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false)
+    UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false),owner(_owner)
 {
   Direct=new GWord*[MaxId];
   memset(Direct,0,MaxId*sizeof(GWord*));
@@ -100,7 +100,7 @@ void GDict::PutDirect(GWord* word) throw(bad_alloc)
 
 
 //---------------------------------------------------------------------------
-unsigned GDict::GetId(const RString& word) throw(bad_alloc)
+ unsigned GDict::GetId(const RString& word) throw(bad_alloc)
 {
   GWord Word(word),*ptr;
 
@@ -108,7 +108,7 @@ unsigned GDict::GetId(const RString& word) throw(bad_alloc)
 
   if(ptr->Id == cNoRef)
   {
-      ptr->Id=NextId(word);
+      ptr->Id=owner->DicNextId(word);
       PutDirect(ptr);
   }
   return(ptr->Id);
