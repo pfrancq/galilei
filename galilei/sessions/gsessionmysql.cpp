@@ -250,6 +250,7 @@ void GALILEI::GSessionMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_a
 			case infoWordList :
 				{
 					GWordList w(atoi(dicts[0]),dicts[1]);
+					LoadWordList(&w,lang);
 					dic->InsertData(&w);
 				}
 				break;
@@ -270,6 +271,112 @@ const char* GALILEI::GSessionMySQL::LoadWord(unsigned int id,const char* code)
 		return(0);
 	w.Start();
 	return(w[0]);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::LoadWordList(GWordList* w,GLang* lang) throw(bad_alloc,GException)
+{
+	char sSql[100];
+
+	sprintf(sSql,"SELECT kwdid FROM %skwdsbygroups WHERE grid=%i",lang->GetCode(),dynamic_cast<GData*>(w)->GetId());
+	RQuery wl(this,sSql);
+	for(wl.Start();!wl.End();wl.Next())
+		w->InsertWord(new GWord(atoi(wl[0]),lang->GetDict()->GetData(atoi(wl[0]))->GetName()));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::SaveWordList(GDict* dic,GWordList* w) throw(bad_alloc,GException)
+{
+	GWordCursor Cur;
+	char sSql[600];
+
+	Cur=w->GetWordCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		sprintf(sSql,"INSERT INTO %skwdsbygroups(grid,kwdid) VALUES (%u,%u)",dic->GetLang()->GetCode(),dynamic_cast<GData*>(w)->GetId(),Cur()->GetId());
+		try
+		{
+			RQuery insertword(this,sSql);
+		}
+		catch(RMySQLError e)
+		{
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::DeleteWordList(GDict* dic) throw(bad_alloc,GException)
+{
+	GDataCursor datas;
+	char sSql[600];
+	unsigned nbwords;
+	sprintf(sSql,"DELETE FROM %skwdsbygroups ",dic->GetLang()->GetCode());
+	RQuery deletecluster(this,sSql);
+	datas=dic->GetDataCursor(infoWordList);
+	for(datas.Start();!datas.End();datas.Next())
+	{
+		sprintf(sSql,"DELETE FROM %skwds WHERE kwdid=%u",dic->GetLang()->GetCode(),datas()->GetId());
+		RQuery updatedic(this,sSql);
+	}
+	for(datas.Start();!datas.End();datas.Next())
+	{
+		sprintf(sSql,"DELETE FROM %shtmlsbykwds WHERE kwdid=%u",dic->GetLang()->GetCode(),datas()->GetId());
+		RQuery updatedoc(this,sSql);
+	}
+	for(datas.Start();!datas.End();datas.Next())
+	{
+		sprintf(sSql,"DELETE FROM %sgroupsbykwds WHERE kwdid=%u",dic->GetLang()->GetCode(),datas()->GetId());
+		RQuery updategroups(this,sSql);
+	}
+	for(datas.Start();!datas.End();datas.Next())
+	{
+		sprintf(sSql,"DELETE FROM %ssubprofilesbykwds WHERE kwdid=%u",dic->GetLang()->GetCode(),datas()->GetId());
+		RQuery updateprof(this,sSql);
+	}
+	datas.Start();
+	while(!datas.End())
+	{
+		dic->DeleteData(datas());
+		datas.Next();
+	}
+	sprintf(sSql,"SELECT COUNT(*) from %skwdsbygroups",dic->GetLang()->GetCode());
+	RQuery autoinckbg(this,sSql);
+	autoinckbg.Start();
+	nbwords=strtoul(autoinckbg[0],0,10);
+	nbwords++;
+	sprintf(sSql,"ALTER TABLE %skwdsbygroups AUTO_INCREMENT = %u ",dic->GetLang()->GetCode(),nbwords);
+	RQuery updateautoincrementkbg(this,sSql);
+	sprintf(sSql,"SELECT COUNT(*) from %shtmlsbykwds",dic->GetLang()->GetCode());
+	RQuery autoinchbk(this,sSql);
+	autoinchbk.Start();
+	nbwords=strtoul(autoinchbk[0],0,10);
+	nbwords++;
+	sprintf(sSql,"ALTER TABLE %shtmlsbykwds AUTO_INCREMENT = %u ",dic->GetLang()->GetCode(),nbwords);
+	RQuery updateautoincrementhbk(this,sSql);
+	sprintf(sSql,"SELECT COUNT(*) from %skwds",dic->GetLang()->GetCode());
+	RQuery autoinck(this,sSql);
+	autoinck.Start();
+	nbwords=strtoul(autoinck[0],0,10);
+	nbwords++;
+	sprintf(sSql,"ALTER TABLE %skwds AUTO_INCREMENT = %u ",dic->GetLang()->GetCode(),nbwords);
+	RQuery updateautoincrementk(this,sSql);
+	sprintf(sSql,"SELECT COUNT(*) from %sgroupsbykwds",dic->GetLang()->GetCode());
+	RQuery autoincgbk(this,sSql);
+	autoincgbk.Start();
+	nbwords=strtoul(autoincgbk[0],0,10);
+	nbwords++;
+	sprintf(sSql,"ALTER TABLE %sgroupsbykwds AUTO_INCREMENT = %u ",dic->GetLang()->GetCode(),nbwords);
+	RQuery updateautoincrementgbk(this,sSql);
+	sprintf(sSql,"SELECT COUNT(*) from %ssubprofilesbykwds",dic->GetLang()->GetCode());
+	RQuery autoincsbk(this,sSql);
+	autoincsbk.Start();
+	nbwords=strtoul(autoincsbk[0],0,10);
+	nbwords++;
+	sprintf(sSql,"ALTER TABLE %ssubprofilesbykwds AUTO_INCREMENT = %u ",dic->GetLang()->GetCode(),nbwords);
+	RQuery updateautoincrementsbk(this,sSql);
 }
 
 
@@ -872,130 +979,6 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::DeleteWordsGroups(GDict* dict) throw(GException)
-{
-/*	GWordList *tmp,**cur;
-	char sSql[600];
-	unsigned nbwords;
-	sprintf(sSql,"DELETE FROM %skwdsbygroups ",dict->GetLang()->GetCode());
-	RQuery deletecluster(this,sSql);
-	for(dict->GroupsList.Start();!dict->GroupsList.End();dict->GroupsList.Next())
-	{
-		tmp=(dict->GroupsList)();
-		sprintf(sSql,"DELETE FROM %skwds WHERE kwdid=%u",dict->GetLang()->GetCode(),tmp->GetId());
-		RQuery updatedic(this,sSql);
-	}
-	for(dict->GroupsList.Start();!dict->GroupsList.End();dict->GroupsList.Next())
-	{
-		tmp=(dict->GroupsList)();
-		sprintf(sSql,"DELETE FROM %shtmlsbykwds WHERE kwdid=%u",dict->GetLang()->GetCode(),tmp->GetId());
-		RQuery updatedoc(this,sSql);
-	}
-	for(dict->GroupsList.Start();!dict->GroupsList.End();dict->GroupsList.Next())
-	{
-		tmp=(dict->GroupsList)();
-		sprintf(sSql,"DELETE FROM %sgroupsbykwds WHERE kwdid=%u",dict->GetLang()->GetCode(),tmp->GetId());
-		RQuery updategroups(this,sSql);
-	}
-	for(dict->GroupsList.Start();!dict->GroupsList.End();dict->GroupsList.Next())
-	{
-		tmp=(dict->GroupsList)();
-		sprintf(sSql,"DELETE FROM %ssubprofilesbykwds WHERE kwdid=%u",dict->GetLang()->GetCode(),tmp->GetId());
-		RQuery updateprof(this,sSql);
-	}
-	cur=dict->GroupsList.Tab;
-	GWord* wrd;
-	while(*cur)
-		dict->DeleteData(*cur);
-  sprintf(sSql,"SELECT COUNT(*) from %skwdsbygroups",dict->GetLang()->GetCode());
-  RQuery autoinckbg(this,sSql);
-  autoinckbg.Start();
-  nbwords=strtoul(autoinckbg[0],0,10);
-  nbwords++;
-	sprintf(sSql,"ALTER TABLE %skwdsbygroups AUTO_INCREMENT = %u ",dict->GetLang()->GetCode(),nbwords);
-	RQuery updateautoincrementkbg(this,sSql);
-  sprintf(sSql,"SELECT COUNT(*) from %shtmlsbykwds",dict->GetLang()->GetCode());
-  RQuery autoinchbk(this,sSql);
-  autoinchbk.Start();
-  nbwords=strtoul(autoinchbk[0],0,10);
-  nbwords++;
-	sprintf(sSql,"ALTER TABLE %shtmlsbykwds AUTO_INCREMENT = %u ",dict->GetLang()->GetCode(),nbwords);
-	RQuery updateautoincrementhbk(this,sSql);
-
-  sprintf(sSql,"SELECT COUNT(*) from %skwds",dict->GetLang()->GetCode());
-  RQuery autoinck(this,sSql);
-  autoinck.Start();
-  nbwords=strtoul(autoinck[0],0,10);
-  nbwords++;
-	sprintf(sSql,"ALTER TABLE %skwds AUTO_INCREMENT = %u ",dict->GetLang()->GetCode(),nbwords);
-	RQuery updateautoincrementk(this,sSql);
-  sprintf(sSql,"SELECT COUNT(*) from %sgroupsbykwds",dict->GetLang()->GetCode());
-  RQuery autoincgbk(this,sSql);
-  autoincgbk.Start();
-  nbwords=strtoul(autoincgbk[0],0,10);
-  nbwords++;
-	sprintf(sSql,"ALTER TABLE %sgroupsbykwds AUTO_INCREMENT = %u ",dict->GetLang()->GetCode(),nbwords);
-	RQuery updateautoincrementgbk(this,sSql);
-  sprintf(sSql,"SELECT COUNT(*) from %ssubprofilesbykwds",dict->GetLang()->GetCode());
-  RQuery autoincsbk(this,sSql);
-  autoincsbk.Start();
-  nbwords=strtoul(autoincsbk[0],0,10);
-  nbwords++;
-	sprintf(sSql,"ALTER TABLE %ssubprofilesbykwds AUTO_INCREMENT = %u ",dict->GetLang()->GetCode(),nbwords);
-	RQuery updateautoincrementsbk(this,sSql);*/
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveWordsGroups(GDict* dict) throw(GException)
-{
-/*
-	GWordList* tmp;
-	GWordCursor Cur;
-
-	char sSql[600];
-	cout<<"on efface les groupements prcdants de la DB."<<endl;
-	sprintf(sSql,"DELETE from %skwdsbygroups",dict->GetLang()->GetCode());
-	RQuery del(this,sSql);
-	cout<<"On insert les nouveaux groupements dans la DB."<<endl;
-	for(dict->GroupsList.Start();!dict->GroupsList.End();dict->GroupsList.Next())
-	{
-		tmp=(dict->GroupsList)();
-		Cur=tmp->GetWordCursor();
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			sprintf(sSql,"INSERT INTO %skwdsbygroups(grid,kwdid) VALUES (%u,%u)",dict->GetLang()->GetCode(),tmp->GetId(),Cur()->GetId());
- 			try
-			{
-				RQuery insertword(this,sSql);
-			}
-			catch(RMySQLError e)
-			{
-//				cout << e.GetError()<< endl;
-			}
-		}
-	}*/
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadWordsGroups(GDict* dict) throw(GException)
-{
-/*	GWordList *tmp;
-	char sSql[600];
-	sprintf(sSql,"SELECT grid, kwdid  FROM %skwdsbygroups",dict->GetLang()->GetCode());
-	RQuery loadwords (this, sSql);
-	for(loadwords.Start();!loadwords.End();loadwords.Next())
-	{
-		if(!dict->GroupsList.IsIn(atoi(loadwords[0])))
-			dict->GroupsList.InsertPtr(new GWordList(atoi(loadwords[0]),dict->GetData(atoi(loadwords[0]))->GetName()));
-		tmp=dict->GroupsList.GetPtr(atoi(loadwords[0]));
-		tmp->InsertWord(new GWord(atoi(loadwords[1]),dict->GetData(atoi(loadwords[1]))->GetName()));
-	}*/
-}
-
-
-//-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
 {
 	char sSql[1000];
@@ -1119,7 +1102,7 @@ void GALILEI::GSessionMySQL::SaveMixedGroups(RContainer<GGroups,unsigned int,tru
 		sprintf(database,"tempchromo");
 		sprintf(field,"chromoid");
 	}
-	
+
 	// Delete all the old chromo where the id is id.
 	if(!mixedgroups) return;
 	if(!id)

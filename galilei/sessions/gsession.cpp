@@ -219,26 +219,27 @@ void GSession::AnalyseAssociation(bool save)
 //-----------------------------------------------------------------------------
 void GSession::RemoveAssociation()
 {
-/*	GDocCursor docs=GetDocsCursor();
+	unsigned i;
+	GDocCursor docs=GetDocsCursor();
 	GDocVector* doc;
-	unsigned int i,n;
+	GDataCursor Datas;
 	docs.Start();
 	GDict* dic=docs()->GetLang()->GetDict();
-	dic->GroupsList.Start();
-	n=(dic->GroupsList)()->GetId();
+
+	Datas=dic->GetDataCursor(infoWordList);
 
 	for(i=docs.GetNb(),docs.Start();--i;docs.Next())
 	{
 		doc=dynamic_cast<GDocVector*>(docs());
-		for(dic->GroupsList.Start();!dic->GroupsList.End();dic->GroupsList.Next())
+		for(Datas.Start();!Datas.End();Datas.Next())
 		{
-			if(doc->IsIn((dic->GroupsList)()->GetId()))
-				doc->DeletePtr((dic->GroupsList)()->GetId());
+			if(doc->IsIn(Datas()->GetId()))
+				doc->DeletePtr(Datas()->GetId());
 		}
 		doc->UpdateRefs();
-		SaveUpDatedDoc(doc,n);  //n=First id to save.
 	}
-	DeleteWordsGroups(dic);*/
+
+	DeleteWordList(dic);
 }
 
 

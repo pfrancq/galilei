@@ -145,12 +145,36 @@ public :
 	virtual const char* LoadWord(unsigned int id,const char* code);
 
 	/**
+	* Load a specific wordlist from a dictionary.
+	* @param w              WordList to load.
+	* @param code           Code of the languague.
+	*/
+	virtual void LoadWordList(GWordList* w,GLang* lang) throw(bad_alloc,GException);
+
+	/**
+	* Save a specific wordlist in the database.
+	* @param dic            Pointer to the dictionary.
+	* @param w              WordList to save.
+	*/
+	virtual void SaveWordList(GDict* dic,GWordList* w) throw(bad_alloc,GException);
+
+	/**
+	* Delete all the wordlists from the database.
+	* @param dic            Pointer to the dictionary.
+	*/
+	virtual void DeleteWordList(GDict* dic) throw(bad_alloc,GException);
+
+	/**
 	* Load the documents.
+	* @param wg             Enable the use of wordlists.
+	* @param w              Enable the use of words.
 	*/
 	virtual void LoadDocs(bool wg,bool w) throw(bad_alloc,GException);
 
 	/**
 	*  Load the users.
+	* @param wg             Enable the use of wordlists.
+	* @param w              Enable the use of words.
 	*/
 	virtual void LoadUsers(bool wg,bool w) throw(bad_alloc,GException);
 
@@ -161,6 +185,8 @@ public :
 
 	/**
 	* Load the groups.
+	* @param wg             Enable the use of wordlists.
+	* @param w              Enable the use of words.
 	*/
 	virtual void LoadGroups(bool wg,bool w) throw(bad_alloc,GException);
 
@@ -197,24 +223,6 @@ public :
 	* @param doc            Document to save.
 	*/
 	virtual void SaveDoc(GDoc* doc) throw(GException);
-
-	/**
-	* Delete clusters of words.
-	* @param dict           Dictionary.
-	*/
-	virtual void DeleteWordsGroups(GDict* dict) throw(GException);
-
-	/**
-	* Save clusters of words.
-	* @param dict           Dictionary.
-	*/
-	virtual void SaveWordsGroups(GDict* dict)throw(GException);
-
-	/**
-	* Load clusters of words.
-	* @param dict           Dictionary.
-	*/
-	virtual void LoadWordsGroups(GDict* dict) throw(GException);
 
 	/**
 	* Save clusters of words in a document.

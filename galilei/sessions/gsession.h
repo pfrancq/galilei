@@ -318,6 +318,26 @@ public:
 	virtual const char* LoadWord(unsigned int id,const char* code)=0;
 
 	/**
+	* Load a specific wordlist from a dictionary.
+	* @param w              WordList to load.
+	* @param code           Code of the languague.
+	*/
+	virtual void LoadWordList(GWordList* w,GLang* lang) throw(bad_alloc,GException)=0;
+
+	/**
+	* Save a specific wordlist in the database.
+	* @param dic            Pointer to the dictionary.
+	* @param w              WordList to save.
+	*/
+	virtual void SaveWordList(GDict* dic,GWordList* w) throw(bad_alloc,GException)=0;
+
+	/**
+	* Delete all the wordlists from the database.
+	* @param dic            Pointer to the dictionary.
+	*/
+	virtual void DeleteWordList(GDict* dic) throw(bad_alloc,GException)=0;
+
+	/**
 	* Create a new user in the system.
 	* @param usr            User.
 	* @param pwd            Password.
@@ -564,18 +584,6 @@ public:
 	* Save the feedbaks
 	*/
 	virtual void SaveFdbks(void)=0;
-
-	/**
-	* Delete clusters of words.
-	* @param dict           Dictionary.
-	*/
-	virtual void DeleteWordsGroups(GDict* dict)=0;
-
-	/**
-	* Save clusters of words.
-	* @param dict           Dictionary.
-	*/
-	virtual void SaveWordsGroups(GDict* dict)=0;
 
 	/**
 	* Save clusters of words in a document.
