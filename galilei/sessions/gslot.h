@@ -4,9 +4,9 @@
 
 	GSlot.h
 
-	Generic Slot for GALILEI - Header.
+	Generic Slot for a GALILEI Session - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,30 +34,29 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GSlotH
 #define GSlotH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for R Project
 #include <rprg/rprgoutput.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GSlot class provides a representation for a reciever of signals of a
+* The GSlot class provides a representation for a receiver of signals emit by a
 * GALILEI session.
 * @author Pascal Francq
 * @short Generic Slot.
@@ -65,6 +64,7 @@ namespace GALILEI{
 class GSlot : public R::RPrgOutput
 {
 public:
+
 	/**
 	* Constructor.
 	*/
@@ -107,8 +107,8 @@ public:
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

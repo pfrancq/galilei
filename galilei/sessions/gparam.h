@@ -34,26 +34,26 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GParam_H
-#define GParam_H
+#ifndef GParamH
+#define GParamH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rxmltag.h>
 #include <rpromethee/rpromcriterion.h>
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GParam class provides a representation for a parameter.
 * @author Pascal Francq
@@ -62,6 +62,7 @@ namespace GALILEI{
 class GParam
 {
 protected:
+
 	/**
 	* Name of the parameter.
 	*/
@@ -70,28 +71,44 @@ protected:
 public:
 
 	/**
-	* Constructor of the parameter
+	* Constructor of the parameter.
 	* @param n               Name of the parameter.
 	*/
 	GParam(const char* n) throw(bad_alloc);
 
 	/**
-	* Method needed by R::RContainer.
+	* Compare the names of two parameters (work like the 'strcmp' function of
+	* ANSI C/C++).
+	* @see R::RContainer.
+	* @param p               Paramater.
+	* @return int
 	*/
 	int Compare(const GParam& p) const;
 
 	/**
-	* Method needed by R::RContainer.
+	* Compare the names of two parameters (work like the 'strcmp' function of
+	* ANSI C/C++).
+	* @see R::RContainer.
+	* @param p               Pointer to a paramater.
+	* @return int
 	*/
 	int Compare(const GParam* p) const;
 
 	/**
-	* Method needed by R::RContainer.
+	* Compare the name of a parameter with another one (work like the 'strcmp'
+	* function of ANSI C/C++).
+	* @see R::RContainer.
+	* @param n               Name.
+	* @return int
 	*/
 	int Compare(const char* n) const;
 
 	/**
-	* Method needed by R::RContainer.
+	* Compare the name of a parameter with another one (work like the 'strcmp'
+	* function of ANSI C/C++).
+	* @see R::RContainer.
+	* @param n               Name.
+	* @return int
 	*/
 	int Compare(const R::RString& n) const;
 
@@ -203,7 +220,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GParamInt class provides a representation for a "int" parameter.
 * @author Pascal Francq
@@ -268,7 +285,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GParamInt class provides a representation for a "unsigned int" parameter.
 * @author Pascal Francq
@@ -333,8 +350,7 @@ public:
 };
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GParamDouble class provides a representation for a "double" parameter.
 * @author Pascal Francq
@@ -393,7 +409,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GParamString class provides a representation for a "string" parameter.
 * @author Pascal Francq
@@ -446,7 +462,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GParamProm class provides a representation for a "PROMETHEE" parameter.
 * @author Pascal Francq
@@ -505,7 +521,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GParamBool class provides a representation for a "bool" parameter.
 * @author Pascal Francq
@@ -564,7 +580,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GParamCursor class provides a way to go trough a set of parameters.
 * @short Parameters Cursor
@@ -572,9 +588,8 @@ public:
 CLASSCURSOR(GParamCursor,GParam,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
 //------------------------------------------------------------------------------
 #endif
-

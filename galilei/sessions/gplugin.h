@@ -6,7 +6,7 @@
 
 	Generic Plugin - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -42,8 +42,8 @@
 //------------------------------------------------------------------------------
 // include file for LibTool--
 #include <ltmm/loader.hh>
-
 #include <rstd/rxmltag.h>
+
 
 //------------------------------------------------------------------------------
 // include file for GALILEI
@@ -58,9 +58,9 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GPLugin class provides a generic plugin.
+* The GPLugin class provides a template for a generic plugin.
 * @author Pascal Francq
-* @short Generic plugin.
+* @short Generic Plugin.
 */
 template<class factory>
 	class GPlugin
@@ -75,7 +75,7 @@ protected:
 public:
 
 	/**
-	* Construct the plugin.
+	* Constructor of the plugin.
 	* @param fac            Factory.
 	*/
 	GPlugin(factory* fac) : Factory(fac) {}
@@ -98,6 +98,11 @@ public:
 
 
 //------------------------------------------------------------------------------
+/**
+* The GPLuginPlugin class provides a template for a generic plugin.
+* @author Pascal Francq
+* @short Generic Plugin Factory.
+*/
 template<class factory,class plugin,class mng>
 	class GFactoryPlugin : public GParams
 {
