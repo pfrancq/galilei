@@ -56,7 +56,8 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupingSim::GGroupingSim(GSession* s) throw(bad_alloc)
-	: GGrouping("First-Fit Heuristic",s), FullSim(true), LevelSim(0.3)
+	: GGrouping("First-Fit Heuristic",s), FullSim(true), LevelSim(0.3),
+	  GlobalSim(false)
 {
 }
 
@@ -64,21 +65,23 @@ GALILEI::GGroupingSim::GGroupingSim(GSession* s) throw(bad_alloc)
 const char* GALILEI::GGroupingSim::GetSettings(void)
 {
 	static char tmp[100];
-	char c;
+	char c,c1;
 
 	if(FullSim) c='1'; else c='0';
-	sprintf(tmp,"%c %lf",c,LevelSim);
+	if(GlobalSim) c1='1'; else c1='0';
+	sprintf(tmp,"%c %lf %c",c,LevelSim,c1);
 	return(tmp);
 }
 
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingSim::SetSettings(const char* s)
 {
-	char c;
+	char c,c1;
 
 	if(!(*s)) return;
-	sscanf(s,"%c %lf",&c,&LevelSim);
+	sscanf(s,"%c %lf %c",&c,&LevelSim,&c1);
 	if(c=='1') FullSim=true; else FullSim=false;
+	if(c1=='1') GlobalSim=true; else GlobalSim=false;
 }
 
 
@@ -95,21 +98,43 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 	GSubProfile** s2;
 	unsigned int i,j;
 
-	if(FullSim)
+	if(GlobalSim)
 	{
-		for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
-			for(s2=s1+1,j=i+1;--j;s2++)
-				if((*s1)->Similarity(*s2)<LevelSim)
-					return(false);
-		return(true);
+		if(FullSim)
+		{
+			for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
+				for(s2=s1+1,j=i+1;--j;s2++)
+					if((*s1)->GlobalSimilarity(*s2)<LevelSim)
+						return(false);
+			return(true);
+		}
+		else
+		{
+			for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
+				for(s2=s1+1,j=i+1;--j;s2++)
+					if((*s1)->GlobalSimilarity(*s2)>=LevelSim)
+						return(true);
+			return(false);
+		}
 	}
 	else
 	{
-		for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
-			for(s2=s1+1,j=i+1;--j;s2++)
-				if((*s1)->Similarity(*s2)>=LevelSim)
-					return(true);
-		return(false);
+		if(FullSim)
+		{
+			for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
+				for(s2=s1+1,j=i+1;--j;s2++)
+					if((*s1)->Similarity(*s2)<LevelSim)
+						return(false);
+			return(true);
+		}
+		else
+		{
+			for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
+				for(s2=s1+1,j=i+1;--j;s2++)
+					if((*s1)->Similarity(*s2)>=LevelSim)
+						return(true);
+			return(false);
+		}
 	}
 }
 
@@ -119,19 +144,39 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp,const GSubProfile* sub)
 {
 	RContainerCursor<GSubProfile,unsigned int,false,true> cur(grp);
 
-	if(FullSim)
+	if(GlobalSim)
 	{
-		for(cur.Start();!cur.End();cur.Next())
-			if(cur()->Similarity(sub)<LevelSim)
-				return(false);
-		return(true);
+		if(FullSim)
+		{
+			for(cur.Start();!cur.End();cur.Next())
+				if(cur()->GlobalSimilarity(sub)<LevelSim)
+					return(false);
+			return(true);
+		}
+		else
+		{
+			for(cur.Start();!cur.End();cur.Next())
+				if(cur()->GlobalSimilarity(sub)>=LevelSim)
+					return(true);
+			return(false);
+		}
 	}
 	else
 	{
-		for(cur.Start();!cur.End();cur.Next())
-			if(cur()->Similarity(sub)>=LevelSim)
-				return(true);
-		return(false);
+		if(FullSim)
+		{
+			for(cur.Start();!cur.End();cur.Next())
+				if(cur()->Similarity(sub)<LevelSim)
+					return(false);
+			return(true);
+		}
+		else
+		{
+			for(cur.Start();!cur.End();cur.Next())
+				if(cur()->Similarity(sub)>=LevelSim)
+					return(true);
+			return(false);
+		}
 	}
 }
 

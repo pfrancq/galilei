@@ -72,6 +72,11 @@ protected:
 	*/
 	double LevelSim;
 
+	/**
+	* Global similarities used.
+	*/
+	bool GlobalSim;
+
 public:
 
 	/**
@@ -108,6 +113,18 @@ public:
 	* @param s              Full similarity?
 	*/
 	void SetFullSim(bool s) {FullSim=s;}
+
+	/**
+	* Get the status of the global similarity.
+	* @return bool value.
+	*/
+	bool GetGlobalSim(void) const {return(GlobalSim);}
+
+	/**
+	* Set the status of the global similarity.
+	* @param s              Global similarity?
+	*/
+	void SetGlobalSim(bool s) {GlobalSim=s;}
 
 	/**
 	* Get the level of similarity to used.

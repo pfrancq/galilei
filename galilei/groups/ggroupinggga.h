@@ -112,6 +112,11 @@ protected:
 	*/
 	RPromethee::RPromCriterionParams ParamsDiff;
 
+	/**
+	* Global similarities used.
+	*/
+	bool GlobalSim;
+
 public:
 
 	/**
@@ -209,6 +214,18 @@ public:
 	* @param w              Weight of the criterion.
 	*/
 	void GetCriterionParam(const char* crit,double& p,double& q,double& w);
+
+	/**
+	* Get the status of the global similarity.
+	* @return bool value.
+	*/
+	bool GetGlobalSim(void) const {return(GlobalSim);}
+
+	/**
+	* Set the status of the global similarity.
+	* @param s              Global similarity?
+	*/
+	void SetGlobalSim(bool s) {GlobalSim=s;}
 
 	/**
 	* Initialisation of the method.

@@ -67,7 +67,8 @@ using namespace RPromethee;
 GALILEI::GGroupingGGA::GGroupingGGA(GSession* s) throw(bad_alloc)
 	: GGrouping("Grouping Genetic Algorithms",s), PopSize(16), MinSimLevel(0.1),
 	  MaxGen(20), Step(false), StepGen(5), ParamsSim(0.2,0.05,1.0),
-	  ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0), ParamsDiff(0.2,0.05,1.0)
+	  ParamsNb(0.2,0.05,1.0), ParamsOK(0.2,0.05,1.0), ParamsDiff(0.2,0.05,1.0),
+	  GlobalSim(false)
 {
 }
 
@@ -76,11 +77,12 @@ GALILEI::GGroupingGGA::GGroupingGGA(GSession* s) throw(bad_alloc)
 const char* GALILEI::GGroupingGGA::GetSettings(void)
 {
 	static char tmp[200];
-	char c;
+	char c,c1;
 
 	if(Step) c='1'; else c='0';
-	sprintf(tmp,"%u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	        PopSize,MaxGen,c,StepGen,MinSimLevel,
+	if(GlobalSim) c1='1'; else c1='0';
+	sprintf(tmp,"%c, %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	        c1,PopSize,MaxGen,c,StepGen,MinSimLevel,
 	        ParamsSim.P,ParamsSim.Q,ParamsSim.Weight,
 	        ParamsNb.P,ParamsNb.Q,ParamsNb.Weight,
 	        ParamsOK.P,ParamsOK.Q,ParamsOK.Weight,
@@ -92,16 +94,17 @@ const char* GALILEI::GGroupingGGA::GetSettings(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingGGA::SetSettings(const char* s)
 {
-	char c;
+	char c,c1;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	       &PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,
+	sscanf(s,"%c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,
 	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
 	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
 	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,
 	       &ParamsDiff.P,&ParamsDiff.Q,&ParamsDiff.Weight);
 	if(c=='1') Step=true; else Step=false;
+	if(c1=='1') GlobalSim=true; else GlobalSim=false;
 }
 
 
@@ -210,7 +213,7 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 		{
 			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
 		}
-		GProfilesSim Sims(SubProfiles,false);
+		GProfilesSim Sims(SubProfiles,GlobalSim);
 		GInstIR Instance(MinSimLevel,MaxGen,PopSize,&Objs,&Sims,RGGA::FirstFit,0);
 		Instance.Init(&data,Groups);
 		Instance.SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
