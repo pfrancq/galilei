@@ -283,6 +283,9 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 			// Find the lowest tag open and assign the text to it.
 			for(ptr=&Open[7],Level=7;!(*ptr);ptr--,Level--);
 			act=(*ptr);
+//			if(!act->NbPtr)
+//			{
+//			}
 			// All the lowest tag and himself (not if Content) are closed.
 			Level=CurTag->Level;
 			if(!Level)
@@ -327,6 +330,9 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 		for(MinOpenLevel=i-1,ptr--;(*ptr);ptr--,MinOpenLevel--);
 		NextValidTag();
 	}
+
+	// Delete all the empty tags of the content.
+	content->DeleteEmptyTags();
 }
 
 
@@ -635,7 +641,7 @@ void GALILEI::GFilterHTML::NextValidTag(void)
 			{
 				NextTag();
 				CurTag=Tags->GetPtr<const char*>(BeginTag);
-				BlockLen=+TagLen;
+				BlockLen+=TagLen;
 			}
 			memset(SkipScript,' ',BlockLen*sizeof(char));
 			CurTag=0;
