@@ -62,7 +62,7 @@ void GALILEI::GURLManager::Delete(RString& tmpFile) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-GDocXML* GALILEI::GURLManager::CreateDocXML(const GDoc* doc) throw(GException)
+GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 {
 	RString tmpFile(50);
 	const char* ptr;
@@ -80,8 +80,12 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(const GDoc* doc) throw(GException)
 	}
 	if(i&&((*ptr)==':')&&(strncmp(ptr,"file",i)))
 	{
+		// Suppose the download failed
+		doc->IncFailed();
 		Download(doc->GetURL(),tmpFile);
 		Dwn=true;
+		// Download OK
+		doc->DecFailed();
 	}
 	else
 	{

@@ -96,7 +96,7 @@ public:
 	* @param doc            Document to analyze
 	* Return Pointer to a GDocXML.
 	*/
-	GDocXML* CreateDocXML(const GDoc* doc) throw(GException);
+	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
 
 	/**
 	* Add a mime type and a filter.
