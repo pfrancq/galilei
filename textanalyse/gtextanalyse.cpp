@@ -46,6 +46,11 @@ using namespace RXML;
 using namespace RTimeDate;
 
 
+//-----------------------------------------------------------------------------
+// Constance
+const unsigned int MaxWordLen=500;
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -57,7 +62,7 @@ using namespace RTimeDate;
 class GALILEI::GDocAnalyse::WordOccur
 {
 public:
-	char Word[250];
+	char Word[MaxWordLen+1];
 	bool* InStop;
 	unsigned int Nb;
 	bool OnlyLetters;
@@ -311,6 +316,7 @@ BeginExtract:
 		goto BeginExtract;
 
 	// Copy result in word, make it lower case and return true.
+	if(len>MaxWordLen) len=MaxWordLen;
 	word.Copy(begin,len);
 	word.StrLwr();
 	AddWord(word());
