@@ -68,11 +68,23 @@ class GSubProfileVector;
 class GProfileCalcFeedback : public GProfileCalc
 {
 protected:
+	class GNbDocsLangs;
 
 	/**
 	* Gloabal vectors computed.
 	*/
 	RStd::RContainer<GIWordsWeights,unsigned int,true,true> Vectors;
+
+	/**
+	* Number of documents where each index term of the "OK" and "N" documents
+	* for the different languages appears.
+	*/
+	RStd::RContainer<GIWordsWeights,unsigned int,true,true> NbDocsWords;
+
+	/**
+	* Number of documents per languages.
+	*/
+	RStd::RContainer<GNbDocsLangs,unsigned int,true,true> NbDocsLangs;
 
 	/**
 	* Maximal number of the non-zero weights in the vector.
