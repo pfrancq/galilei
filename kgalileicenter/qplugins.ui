@@ -583,6 +583,12 @@
         <receiver>QPlugins</receiver>
         <slot>slotGroupingEnable(bool)</slot>
     </connection>
+    <connection>
+        <sender>Groupings</sender>
+        <signal>clicked(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeGrouping(QListViewItem*)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">qplugins.ui.h</include>
