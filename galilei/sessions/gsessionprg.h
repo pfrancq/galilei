@@ -62,7 +62,6 @@ class GSessionPrg
 {
 	class Inst;
 	class InstType;
-	class Proc;
 
 protected:
 
@@ -92,9 +91,14 @@ protected:
 	RStd::RContainer<InstType,unsigned int,true,true> InstTypes;
 
 	/**
-	* List of all "procedures" to execute.
+	* List of all "Instructions" to execute.
 	*/
-	RStd::RContainer<Proc,unsigned int,true,false> Procs;
+	RStd::RContainer<Inst,unsigned int,true,false> Insts;
+
+	/**
+	* Name of the current test.
+	*/
+	RStd::RString TestName;
 
 	/**
 	* Output file.
@@ -142,12 +146,12 @@ protected:
 	* Load the groups from the file.
 	* @param filename       Name of the file containing the ideal groupement.
 	*/
-	void LoadGroups(const char* filename);
+	void LoadGroups(const char* filename) throw(GException);
 
 	/**
 	* Run an instruction.
 	*/
-	void Run(tInst t,Proc* p) throw(GException);
+	void Run(const Inst* i) throw(GException);
 
 public:
 

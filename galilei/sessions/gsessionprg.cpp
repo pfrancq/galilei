@@ -97,36 +97,10 @@ public:
 	tInst Type;
 
 	Inst(const char* p1,const char* p2,tInst t) : Param1(p1), Type(t) {if(p2) Param2=p2;}
-	int Compare(const Inst* t) const {return(Type-t->Type);}
-	int Compare(const tInst t) const {return(Type-t);}
+	int Compare(const Inst* t) const {return(-1);}
 };
 
 
-
-//-----------------------------------------------------------------------------
-//
-// Proc
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-class GALILEI::GSessionPrg::Proc : public RContainer<GALILEI::GSessionPrg::Inst,unsigned int,true,false>
-{
-public:
-	RString Name;
-
-	Proc(const char* n) : RContainer<Inst,unsigned int,true,false>(10,5), Name(n) {}
-	int Compare(const Proc*) const {return(-1);}
-	int Compare(const Proc&) const {return(-1);}
-};
-
-
-
-//-----------------------------------------------------------------------------
-//
-// GSessionPrg
-//
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 //
@@ -136,8 +110,7 @@ public:
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_alloc,GException)
-	: FileName(f), Session(s), Rec(r), InstTypes(20), Procs(20),
-	  OutputName("Coucou"), OFile(0), Groups(0)
+	: FileName(f), Session(s), Rec(r), InstTypes(20), Insts(40), OFile(0), Groups(0)
 	
 {
 	RString l;
@@ -148,22 +121,21 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 	char* param1;
 	char* param2;
 	InstType* t;
-	Proc* p;
 
-	p=0;
-	InstTypes.InsertPtr(new InstType("Output",Output));
+	InstTypes.InsertPtr(new InstType("SetOutput",Output));
 	InstTypes.InsertPtr(new InstType("Test",Test));
 	InstTypes.InsertPtr(new InstType("Log",Log));
-	InstTypes.InsertPtr(new InstType("Sql",Sql));
+	InstTypes.InsertPtr(new InstType("ExecSql",Sql));
 	InstTypes.InsertPtr(new InstType("ComputeProfiles",Comp));
 	InstTypes.InsertPtr(new InstType("GroupProfiles",Group));
 	InstTypes.InsertPtr(new InstType("CompareIdeal",Ideal));
 	RTextFile Prg(FileName);
+	Prg.SetRem("#");
 	while(!Prg.Eof())
 	{
 		// Read the line
 		strcpy(tmp,Prg.GetLine());
-		ptr=tmp;
+		ptr=Prg.GetLine();
 
 		// Skip Spaces
 		while((*ptr)&&(isspace(*ptr)))
@@ -174,6 +146,8 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 		while((*ptr)&&((*ptr)!='.')&&((*ptr)!='='))
 			ptr++;
 		(*(ptr++))=0;
+		if(strcmp(obj,"Session"))
+			throw GException(RString("Object \"")+obj+"\" unknown");
 
 		// Read the instruction
 		name=ptr;
@@ -208,29 +182,15 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 		}
 
 		// Create the instructions
-		if(!strcmp(obj,"Output"))
-		{
-			OutputName=param1;
-			OFile=new RTextFile(OutputName,RTextFile::Create);
-				(*OFile)<<"Sets\tRecall\tPrecision\tTotal"<<endl;
-		}
-		else
-			if(!strcmp(name,"Test"))
-			{
-				Procs.InsertPtr(p=new Proc(obj));
-			}
-			else
-			{
-				t=InstTypes.GetPtr<const char*>(name);
-				if((!t)||(!p)) continue;
-				p->InsertPtr(new Inst(param1,param2,t->Type));
-			}
+		t=InstTypes.GetPtr<const char*>(name);
+		if(!t) continue;
+		Insts.InsertPtr(new Inst(param1,param2,t->Type));
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionPrg::LoadGroups(const char* filename)
+void GALILEI::GSessionPrg::LoadGroups(const char* filename) throw(GException)
 {
 	unsigned int nb;
 	unsigned int i,j,id;
@@ -270,15 +230,29 @@ void GALILEI::GSessionPrg::LoadGroups(const char* filename)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionPrg::Run(tInst t,Proc* p) throw(GException)
+void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 {
-	Inst* i=p->GetPtr<const tInst>(t);
 	char tmp[300];
 
 	if(!i) return;
-	switch(t)
+	switch(i->Type)
 	{
+		case Output:
+			sprintf(tmp,"Create Output file '%s'",OutputName());
+			Rec->WriteStr(tmp);
+			if(OFile)
+			{
+				delete OFile;
+				OFile=0;
+			}
+			OutputName=i->Param1;
+			OFile=new RTextFile(OutputName,RTextFile::Create);
+			(*OFile)<<"Sets\tRecall\tPrecision\tTotal"<<endl;
+			break;
 		case Test:
+			sprintf(tmp,"Current Test Name '%s'",i->Param1());
+			Rec->WriteStr(tmp);
+			TestName=i->Param1();
 			break;
 		case Log:
 			sprintf(tmp,"Create Log file '%s'",i->Param1());
@@ -287,6 +261,7 @@ void GALILEI::GSessionPrg::Run(tInst t,Proc* p) throw(GException)
 		case Sql:
 			sprintf(tmp,"Execute Sql file '%s'",i->Param1());
 			Rec->WriteStr(tmp);
+			Session->ExecuteData(i->Param1());
 			break;
 		case Comp:
 			sprintf(tmp,"Compute Profiles: Method=\"%s\"  Settings=\"%s\"",i->Param1(),i->Param2());
@@ -313,6 +288,8 @@ void GALILEI::GSessionPrg::Run(tInst t,Proc* p) throw(GException)
 			Total=Comp.GetTotal();
 			sprintf(tmp,"Recall: %lf  -  Precision: %lf  -  Total: %lf",Recall,Precision,Total);
 			Rec->WriteStr(tmp);
+			if(OFile)
+				(*OFile)<<TestName<<"\t"<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
 			break;
 	}
 }
@@ -321,27 +298,9 @@ void GALILEI::GSessionPrg::Run(tInst t,Proc* p) throw(GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionPrg::Exec(void) throw(GException)
 {
-	char tmp[300];
-
 	if(!Rec) return;
-	sprintf(tmp,"Create Output file '%s'",OutputName());
-	Rec->WriteStr(tmp);
-	Rec->WriteStr("");
-	for(Procs.Start();!Procs.End();Procs.Next())
-	{
-		sprintf(tmp,"Create Test: %s",Procs()->Name());
-		Rec->WriteStr(tmp);
-		Run(Log,Procs());
-		Run(Sql,Procs());
-		Run(Comp,Procs());
-		Run(Group,Procs());
-		Run(Ideal,Procs());
-		sprintf(tmp,"Write results of Test '%s'",Procs()->Name());
-		Rec->WriteStr(tmp);
-		if(OFile)
-			(*OFile)<<Procs()->Name<<"\t"<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
-		Rec->WriteStr("");
-	}
+	for(Insts.Start();!Insts.End();Insts.Next())
+		Run(Insts());
 	if(OFile)
 	{
 		delete OFile;
