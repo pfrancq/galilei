@@ -429,51 +429,6 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadIdealDocument()
-{
-	char sSql[100];
-	GGroupsEvaluate* groups;
-	GGroupEvaluateDoc* group;
-	GLangCursor Langs;
-
-	IdealDocs->Clear();
-	Langs=GetLangsCursor();
-	for(Langs.Start();!Langs.End();Langs.Next())
-	{
-		groups = new GGroupsEvaluate(Langs());
-		sprintf(sSql,"SELECT distinct subsubjectid FROM subsubject WHERE langid='%s'",Langs()->GetCode());
-		RQuery sel(this,sSql);
-		for(sel.Start();!sel.End();sel.Next())
-		{
-			RContainer<GDoc,unsigned int,false,true>* doc=new RContainer<GDoc,unsigned int,false,true>(100,50);
-			sprintf(sSql,"SELECT htmlid FROM subjectbyhtmls where subsubjectid=%u",atoi(sel[0]));
-			RQuery sub(this,sSql);
-			for(sub.Start();!sub.End();sub.Next())
-			{
-				doc->InsertPtr(GetDoc(atoi(sub[0])));
-			}
-			sprintf(sSql,"SELECT subsubjectname,subjectid FROM subsubject where subsubjectid=%u",atoi(sel[0]));
-			RQuery subname(this,sSql);
-			for(subname.Start();!subname.End();subname.Next())
-			{
-				sprintf(sSql,"SELECT subjectname FROM subject where subjectid=%u",atoi(subname[1]));
-				RQuery name(this,sSql);
-				for(name.Start();!name.End();name.Next())
-				{
-					RString temp(name[0]);
-					temp+="/";
-					temp+=subname[0];
-					group=new GGroupEvaluateDoc(atoi(sel[0]),Langs(),doc,this,temp);
-				}
-			}
-			groups->InsertPtr(group);
-		}
-		IdealDocs->InsertPtr(groups);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::LoadIdealGroupment()
 {
 	GGroups* groups;

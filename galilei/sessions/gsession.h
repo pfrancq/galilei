@@ -581,11 +581,6 @@ public:
 	*/
 	virtual void LoadIdealGroupment()=0;
 
-	/**
-	* Load the ideal groupment of document.
-	* @param idealgroup   The ideal container of group	
-	*/
-	virtual void LoadIdealDocument()=0;
 
 	/**
 	* Save the ideal groupment

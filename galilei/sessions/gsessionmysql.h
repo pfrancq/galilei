@@ -169,12 +169,6 @@ public:
 	virtual void LoadSubjectTree(void);
 
 	/**
-	* Load the ideal groupment of document.
-	* @param idealgroup   The ideal container of GroupsEvaluate	
-	*/
-	virtual void LoadIdealDocument();
-
-	/**
 	* Load the ideal groupment.
 	* @param idealgroup   The ideal container of group	
 	*/
