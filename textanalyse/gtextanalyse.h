@@ -326,7 +326,7 @@ public:
 	* @param doc            Corresponding document.
 	* @param tmpDocs        Container that will hold the added docs.
 	*/
-	virtual void Analyze(GDocXML* xml,GDocRef doc,R::RContainer<GDocRef,true,true>* tmpDocs=0) throw(GException);
+	virtual void Analyze(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,false,true>* tmpDocs=0) throw(GException);
 
 	/**
 	* Create the parameters.

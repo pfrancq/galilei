@@ -54,7 +54,6 @@
 #include <infos/glangmanager.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
-#include <sessions/gobjref.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
@@ -836,7 +835,7 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Analyze(GDocXML* xml,GDocRef doc,RContainer<GDocRef,true,true>* tmpDocs) throw(GException)
+void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* tmpDocs) throw(GException)
 {
 	RXMLTag* content;
 	RXMLTag* metadata;
@@ -847,7 +846,7 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDocRef doc,RContainer<GDocRef,true,true
 	RCursor<RXMLTag> Tags;
 
 	// Init Part and verification
-	Doc=Session->GetDoc(doc.GetId());
+	Doc=doc;
 	if(!xml)
 		throw GException("No XML Structure for document '"+Doc->GetURL()+"'");
 	Lang=Doc->GetLang();
@@ -886,7 +885,7 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDocRef doc,RContainer<GDocRef,true,true
 	// Analyse the content of link tags
 	link = xml->GetLinks ();
 	RAssert(link);
-	AnalyseLinksTag(link,UseExternalLinks,0/*tmpDocs*/);
+	AnalyseLinksTag(link,UseExternalLinks,tmpDocs);
 	#warning manage container of documents to add
 
 	// Determine the Language if necessary.
