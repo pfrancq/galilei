@@ -64,6 +64,11 @@ class GProfilesSim
 	*/
 	RStd::RContainer<GSims,unsigned int,true,true> Sims;
 
+	/**
+	* Global similarities used?
+	*/
+	bool GlobalSim;
+
 public:
 
 	/**
@@ -86,6 +91,11 @@ public:
 	* @param global         Global approach.
 	*/
 	GProfilesSim(GSubProfileCursor& s,bool global) throw(bad_alloc);
+
+	/**
+	* Analyse the similarity of the two subprofiles and insert when necessary.
+	*/
+	void AnalyseSim(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2);
 
 	/**
 	* Get the similarities between two profiles, i.e. the subprofiles of a same
