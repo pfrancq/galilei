@@ -110,7 +110,7 @@ bool GSession::ExternBreak=false;
 
 
 //------------------------------------------------------------------------------
-GSession::GSession(GStorage* str) throw(std::bad_alloc,GException)
+GSession::GSession(GStorage* str)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(0,0),
 	  GGroups(0), Subjects(0),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
@@ -130,7 +130,7 @@ GSession::GSession(GStorage* str) throw(std::bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(std::bad_alloc,GException)
+GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(str->GetNbSaved(otUser),str->GetNbSaved(otProfile)),
 	  GGroups(str->GetNbSaved(otGroup)), Subjects(0),
 //	: GDocs(2000), GUsers(2000,2000),
@@ -156,9 +156,9 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(st
 
 
 //------------------------------------------------------------------------------
-void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng,
+void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GLinkCalcManager* lmng, GProfileCalcManager* pmng,
 	GGroupingManager* gmng, GGroupCalcManager* gcmng,GStatsCalcManager* smng,
-	GPostDocManager* pdmng,GPostGroupManager* pgmng,GEngineManager* emng) throw(std::bad_alloc,GException)
+	GPostDocManager* pdmng,GPostGroupManager* pgmng,GEngineManager* emng)
 
 {
 	Langs=langs;
@@ -168,6 +168,9 @@ void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseMana
 	DocAnalyseMng=dmng;
 	if(DocAnalyseMng)
 		DocAnalyseMng->Connect(this);
+	LinkCalcMng=lmng;
+	if(LinkCalcMng)
+		LinkCalcMng->Connect(this);
 	ProfilingMng=pmng;
 	if(ProfilingMng)
 		ProfilingMng->Connect(this);
@@ -189,20 +192,11 @@ void GSession::Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseMana
 		PostDocMng->Connect(this);
 
 	EngineMng=emng;
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::PostConnect(GLinkCalcManager* lmng) throw(std::bad_alloc,GException)
-{
-	LinkCalcMng=lmng;
-	if(LinkCalcMng)
-		LinkCalcMng->Connect(this);
 
 	// Create Similarities Managers (IFF used by default)
-	if (!SessParams->GetBool("DebugSim"))
+	if(!SessParams->GetBool("DebugSim"))
 		ProfilesSims = new GProfilesSims(this,true, true);
-	if (!SessParams->GetBool("DebugBehaviour"))
+	if(!SessParams->GetBool("DebugBehaviour"))
 		ProfilesBehaviours = new GProfilesBehaviours(this,true);
 	DocProfSims = new GDocProfSims(this,true,false);
 }
@@ -241,7 +235,7 @@ R::RCursor<GFactoryMetaEngine> GSession::GetMetaEnginesCursor(void)
 
 
 //------------------------------------------------------------------------------
-GDocXML* GSession::CreateDocXML(GDoc* doc) throw(GException)
+GDocXML* GSession::CreateDocXML(GDoc* doc)
 {
 	return(URLMng->CreateDocXML(doc));
 }
@@ -276,7 +270,7 @@ void GSession::AssignId(GSubProfile* sub)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
+void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save)
 {
 	bool undefLang;
 	GDocXML* xml=0;
@@ -370,7 +364,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save) throw(GException)
+void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save)
 {
 	bool undefLang;
 	GDocXML* xml=0;
@@ -461,7 +455,7 @@ void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save) throw(GExcepti
 
 
 //------------------------------------------------------------------------------
-void GSession::ComputePostDoc(GSlot* rec)  throw(GException)
+void GSession::ComputePostDoc(GSlot* rec)
 {
 	char tmp[100];
 
@@ -499,7 +493,7 @@ void GSession::ComputePostDoc(GSlot* rec)  throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords) throw(GException)
+void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 {
 	GMetaEngine* metaEngine;
 	// Verify that a meta engine is selected
@@ -519,14 +513,14 @@ void GSession::UseIFFDocProf(bool iff)
 
 
 //------------------------------------------------------------------------------
-double GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub) throw(GException)
+double GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub)
 {
 	return(DocProfSims->GetSim(doc,sub));
 }
 
 
 //------------------------------------------------------------------------------
-double GSession::GetSimDocProf(unsigned int doc,unsigned int sub) throw(GException)
+double GSession::GetSimDocProf(unsigned int doc,unsigned int sub)
 {
 	return(DocProfSims->GetSim(GetDoc(doc),GetSubProfile(sub)));
 }
@@ -540,7 +534,7 @@ void GSession::UseIFFProfs(bool iff)
 
 
 //------------------------------------------------------------------------------
-double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2) throw(GException)
+double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
 {
 	if (SessParams->GetBool("DebugSim"))
 		return(sub1->SimilarityIFF(sub2));
@@ -550,7 +544,7 @@ double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2) thr
 
 
 //------------------------------------------------------------------------------
-double GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException)
+double GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 {
 	double nbcommon, okratio;
 
@@ -568,7 +562,7 @@ double GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GE
 
 
 //------------------------------------------------------------------------------
-double GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException)
+double GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 {
 	double nbcommon, diffratio;
 
@@ -586,7 +580,7 @@ double GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw
 
 
 //------------------------------------------------------------------------------
-double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate) throw(GException)
+double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate)
 {
 	double tmpsim, simssum, deviation, MeanSim;
 	unsigned int nbcomp, i, j;
@@ -637,7 +631,7 @@ double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate) throw
 
 
 //------------------------------------------------------------------------------
-void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) throw(GException)
+void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 {
 	RCursor<GSubProfile> Subs;
 	R::RCursor<GProfile> Prof=GetProfilesCursor();
@@ -701,7 +695,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) t
 
 
 //------------------------------------------------------------------------------
-void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory)  throw(GException)
+void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory)
 {
 	GGrouping* Grouping=GroupingMng->GetCurrentMethod();
 
@@ -714,7 +708,7 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehis
 
 
 //------------------------------------------------------------------------------
-void GSession::ComputePostGroup(GSlot* rec)  throw(GException)
+void GSession::ComputePostGroup(GSlot* rec)
 {
 	char tmp[100];
 
@@ -751,7 +745,7 @@ void GSession::ComputePostGroup(GSlot* rec)  throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date) throw(std::bad_alloc)
+void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date)
 {
 	GetProfile(p)->InsertFdbk(d,assess,date);
 	GetDoc(d)->InsertFdbk(p);
@@ -775,7 +769,7 @@ void GSession::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::CopyIdealGroups(bool save) throw(std::bad_alloc,GException)
+void GSession::CopyIdealGroups(bool save)
 {
 	R::RCursor<GGroup> Grps;
 //	GGroupCursor Ideal;
@@ -830,7 +824,7 @@ const char* GSession::GetMIMEType(const char* mime) const
 
 
 //------------------------------------------------------------------------------
-void GSession::RunPrg(GSlot* rec,const char* filename) throw(GException)
+void GSession::RunPrg(GSlot* rec,const char* filename)
 {
 	GSessionPrg Prg(filename,this,rec);
 	Prg.Exec();
@@ -838,7 +832,7 @@ void GSession::RunPrg(GSlot* rec,const char* filename) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
+void GSession::DocsFilter(int nbdocs,int nboccurs)
 {
 	//The number of word in current lang.
 	R::RCursor<GDoc> DocCursorTemp =GetDocsCursor();

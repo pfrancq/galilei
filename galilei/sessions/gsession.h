@@ -180,7 +180,7 @@ public:
 	* Constructor.
 	* @param str             Storage manager.
 	*/
-	GSession(GStorage* str) throw(std::bad_alloc,GException);
+	GSession(GStorage* str);
 
 	/**
 	* Constructor.
@@ -188,7 +188,7 @@ public:
 	* @param sessparams      Parameters of the session.
 	* @param tests           Test mode.
 	*/
-	GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(std::bad_alloc,GException);
+	GSession(GStorage* str,GSessionParams* sessparams,bool tests);
 
 	/**
 	* Get a pointer to the unique session of the process.
@@ -225,15 +225,8 @@ public:
 	* @param pdmng           Documents Post-Analysis Methods Manager.
 	* @param pgmng           Post-Group Computing Methods Manager
 	*/
-	void Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostGroupManager* pgmng, GEngineManager* egmng) throw(std::bad_alloc,GException);
-
-	/**
-	* Post-connect the session to other manager.
-	* @param lmng            Link Methods Manager.
-	*/
-	void PostConnect(GLinkCalcManager* lmng) throw(std::bad_alloc,GException);
-
+	void Connect(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GLinkCalcManager* lmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+		GStatsCalcManager* smng, GPostDocManager* pdmng, GPostGroupManager* pgmng, GEngineManager* egmng);
 
 	//--------------------------------------------------------------------------
 	// Manager methods
@@ -389,7 +382,7 @@ public:
 	* @param doc             Document to analyse.
 	* @return Pointer to a GDocXML structure.
 	*/
-	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
+	GDocXML* CreateDocXML(GDoc* doc);
 
 	/**
 	* Analyse the documents. At the end, all the enabled post-docs methods are
@@ -398,7 +391,7 @@ public:
 	* @param modified        Recompute only modified elements or all.
 	* @param save            Document must be saved.
 	*/
-	void AnalyseDocs(GSlot* rec=0,bool modified=true,bool save=true) throw(GException);
+	void AnalyseDocs(GSlot* rec=0,bool modified=true,bool save=true);
 
 	/**
 	* Analyse the documents. At the end, all the enabled post-docs methods are
@@ -407,20 +400,20 @@ public:
 	* @param modified        Recompute only modified elements or all.
 	* @param save            Document must be saved.
 	*/
-	void AnalyseNewDocs(GSlot* rec=0,bool modified=true,bool save=true) throw(GException);
+	void AnalyseNewDocs(GSlot* rec=0,bool modified=true,bool save=true);
 
 	/**
 	* run post-grouping methods are called.
 	* @param rec            Receiver of the signals.
 	*/
-	void ComputePostDoc(GSlot* rec)  throw(GException);
+	void ComputePostDoc(GSlot* rec);
 
 	/**
 	* Send a Query to the Meta engine selected. The pages are researched, ranked and return
 	* @param &keyWords      The set of keywords to form the query
 	* @param &results       The set of results returned by the meta engine
 	*/
-	void QueryMetaEngine(R::RContainer<R::RString,true,false> &keyWords) throw(GException);
+	void QueryMetaEngine(R::RContainer<R::RString,true,false> &keyWords);
 
 	/**
 	* Compute the (sub)profiles.
@@ -429,7 +422,7 @@ public:
 	* @param save           Save modified elements.
 	* @param saveLinks      Save links informations.
 	*/
-	void CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) throw(GException);
+	void CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks);
 
 	/**
 	* Groups the subprofile into virtual communities. At the end, all the
@@ -439,13 +432,13 @@ public:
 	* @param save           Save modified elements.
 	* @param savehistory    Save groups in history.
 	*/
-	void GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory)  throw(GException);
+	void GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehistory);
 
 	/**
 	* run post-grouping methods are called.
 	* @param rec            Receiver of the signals.
 	*/
-	void ComputePostGroup(GSlot* rec)  throw(GException);
+	void ComputePostGroup(GSlot* rec);
 
 	/**
 	* Set if the Inverse Frequency Factor should be used for the similarities
@@ -459,27 +452,27 @@ public:
 	* @param sub1           The Pointer to the first subprofile
 	* @param sub2           The Pointer to the second subprofile
 	*/
-	double GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2) throw(GException);
+	double GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2);
 
 	/**
 	* Update the state of agreement and disagreement ratios between the
 	* subprofiles.
 	*/
-	void UpdateBehaviours(void) throw(std::bad_alloc);
+	void UpdateBehaviours(void);
 
 	/**
 	* Return the disagreement ratio between two subprofiles .
 	* @param sub1           The Pointer to the first subprofile
 	* @param sub2           The Pointer to the second subprofile
 	*/
-	double GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException);
+	double GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2);
 
 	/**
 	* Return the agreement ratio between two subprofiles .
 	* @param sub1           The Pointer to the first subprofile
 	* @param sub2           The Pointer to the second subprofile
 	*/
-	double GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2) throw(GException);
+	double GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2);
 
 	/**
 	* Get the minimum of similarityof the subprofiles, needed by clusteirng
@@ -487,7 +480,7 @@ public:
 	* @param lang            Language.
 	* @param deviationrate   factor of the standart deviation.
 	*/
-	double GetMinimumOfSimilarity(GLang* lang, double deviationrate=1.5) throw(GException);
+	double GetMinimumOfSimilarity(GLang* lang, double deviationrate=1.5);
 
 	/**
 	* Set if the Inverse Frequency Factor should be used for the similarities
@@ -501,14 +494,14 @@ public:
 	* @param doc           The Pointer to the document.
 	* @param sub           The Pointer to the subprofile.
 	*/
-	double GetSimDocProf(const GDoc* doc,const GSubProfile* sub) throw(GException);
+	double GetSimDocProf(const GDoc* doc,const GSubProfile* sub);
 
 	/**
 	* Return the similarity between a document and a subProfiles.
 	* @param doc           Identificator of the document.
 	* @param sub           Identificator of the subprofile.
 	*/
-	double GetSimDocProf(unsigned int doc,unsigned int sub) throw(GException);
+	double GetSimDocProf(unsigned int doc,unsigned int sub);
 
 	/**
 	* Insert a new Feedback.
@@ -517,7 +510,7 @@ public:
 	* @param assess           Feedback.
 	* @param date             Date on the last feedback.
 	*/
-	void InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date) throw(std::bad_alloc);
+	void InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date);
 
 	/**
 	* Clear all the feedbacks.
@@ -528,7 +521,7 @@ public:
 	* Copy the ideal groupment in the current one.
 	* @param save           Save modified elements.
 	*/
-	void CopyIdealGroups(bool save) throw(std::bad_alloc,GException);
+	void CopyIdealGroups(bool save);
 
 	/**
 	* Get a cursor over the filters of the system.
@@ -547,14 +540,14 @@ public:
 	* @param rec            Slot that receive information.
 	* @param filename       Name of the file.
 	*/
-	void RunPrg(GSlot* rec,const char* filename) throw(GException);
+	void RunPrg(GSlot* rec,const char* filename);
 
 	/**
 	* Run the filter on the docments
 	* @param nbdocs         The number of docs where the word must be present
 	* @param nboccurs       The minimal occurs for the word in a document
 	*/
-	void DocsFilter(int nbdocs,int nboccurs) throw(GException);
+	void DocsFilter(int nbdocs,int nboccurs);
 
 	/**
 	* Get The Current RandomSeed.
