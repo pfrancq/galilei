@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>QSessionOptions</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>359</width>
+            <width>415</width>
             <height>707</height>
         </rect>
     </property>
@@ -511,6 +511,8 @@
         </widget>
     </vbox>
 </widget>
+<customwidgets>
+</customwidgets>
 <connections>
     <connection>
         <sender>buttonOk</sender>
@@ -550,6 +552,9 @@
     <tabstop>buttonOk</tabstop>
     <tabstop>buttonCancel</tabstop>
 </tabstops>
+<includes>
+    <include location="local" impldecl="in implementation">qsessionoptions.ui.h</include>
+</includes>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>kurlrequester.h</includehint>

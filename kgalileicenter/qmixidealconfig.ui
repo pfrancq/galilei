@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>QMixIdealConfig</class>
 <author>David Wartel &lt;dwartel@ulb.ac.be&gt;</author>
 <widget class="QDialog">
@@ -9,8 +9,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>260</width>
-            <height>270</height>
+            <width>238</width>
+            <height>302</height>
         </rect>
     </property>
     <property name="caption">

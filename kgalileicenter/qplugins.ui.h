@@ -8,7 +8,7 @@
 *****************************************************************************/
 
 #include <qcheckbox.h>
-
+#include <kurlrequester.h>
 #include "qgalileiitem.h"
 
 void QPlugins::init()
