@@ -61,7 +61,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GCalcGravitationParams::GCalcGravitationParams(void)
-	: GGroupCalcParams("Relevant SubProfile")
+	: GGroupCalcParams("Gravitation")
 {
 }
 
@@ -94,7 +94,7 @@ void GALILEI::GCalcGravitationParams::SetSettings(const char* s)
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupCalcGravitation::GGroupCalcGravitation(GSession* session, GCalcGravitationParams* p) throw(bad_alloc)
-	: GGroupCalc("Gravitational Point",session), Params(p), Order(0), Vector(0)
+	: GGroupCalc("Gravitation",session), Params(p), Order(0), Vector(0)
 {
 	//init parameters
 	Params->MaxNonZero=60;

@@ -59,7 +59,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GCalcRelevantParams::GCalcRelevantParams(void)
-	: GGroupCalcParams("Relevant SubProfile")
+	: GGroupCalcParams("Prototype")
 {
 }
 
@@ -87,6 +87,7 @@ void GALILEI::GCalcRelevantParams::SetSettings(const char* s)
 }
 
 
+
 //-----------------------------------------------------------------------------
 //
 //  class GGroupCalcRelevant
@@ -95,7 +96,7 @@ void GALILEI::GCalcRelevantParams::SetSettings(const char* s)
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupCalcRelevant::GGroupCalcRelevant(GSession* session, GCalcRelevantParams* p) throw(bad_alloc)
-	: GGroupCalc("Relevant SubProfile",session), Params(p), Order(0)
+	: GGroupCalc("Prototype",session), Params(p), Order(0)
 {
 	//init parameters
 	Params->GlobalSim=true;
