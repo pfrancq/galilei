@@ -38,9 +38,9 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <ggroupcalcgravitation.h>
-#include <groups/ggroupvector.h>
+#include <groups/ggroup.h>
 #include <sessions/gsession.h>
-#include <profiles/gsubprofilevector.h>
+#include <profiles/gsubprofile.h>
 #include <infos/ginfo.h>
 #include <infos/gweightinfo.h>
 #include <infos/gweightinfos.h>
@@ -97,7 +97,7 @@ void GGroupCalcGravitation::Compute(GGroupRef grp) throw(GException)
 	GSubProfileCursor Sub;
 
 	// Clear the Vector.
-	Group=dynamic_cast<GGroupVector*>(Session->GetGroup(grp.GetId()));
+	Group=Session->GetGroup(grp.GetId());
 	Group->RemoveRefs();
 	Group->Clear();
 	Vector->Clear();
@@ -110,7 +110,7 @@ void GGroupCalcGravitation::Compute(GGroupRef grp) throw(GException)
 	for(Sub.Start();!Sub.End();Sub.Next())
 	{
 		// Go trough the words of the current subprofile
-		Ref=static_cast<GSubProfileVector*>(Sub());
+		Ref=Sub();
 		for(j=Ref->NbPtr+1,w=Ref->Tab;--j;w++)
 		{
 			ins=Vector->GetInsertPtr<unsigned int>((*w)->GetId());
@@ -134,7 +134,7 @@ void GGroupCalcGravitation::Compute(GGroupRef grp) throw(GException)
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Group->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/Group->GetNbSubProfiles()));
+				Group->InsertInfo(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/Group->GetNbSubProfiles()));
 		}
 	}
 	else
@@ -142,7 +142,7 @@ void GGroupCalcGravitation::Compute(GGroupRef grp) throw(GException)
 		for(w=Order;(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Group->InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/Group->GetNbSubProfiles()));
+				Group->InsertInfo(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/Group->GetNbSubProfiles()));
 		}
 	}
 

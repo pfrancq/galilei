@@ -73,7 +73,7 @@ class GGroupCalcGravitation : public GGroupCalc
 	/*
 	* Vector representing the document.
 	*/
-	GGroupVector* Group;
+	GGroup* Group;
 
 	/**
 	* Maximal size allocate for a profile.
