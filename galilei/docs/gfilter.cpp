@@ -183,6 +183,7 @@ void GALILEI::GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 {
 	char* ptr;
 	RXMLTag* kwd;
+	unsigned int len;
 
 	ptr=list;
 	while(*ptr)
@@ -193,9 +194,13 @@ void GALILEI::GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 		list=ptr;
 
 		// Search the next keywords.
-		while((*ptr)&&((*ptr)!=sep))
+		len=0;
+		while((*ptr)&&(!isspace(*ptr)&&((*ptr)!=sep))
+		{
 			ptr++;
-		if(list!=ptr)
+			len++;
+		}
+		if(len)
 		{
 			attach->AddTag(kwd=new RXMLTag("docxml:keyword"));
 			if(*ptr)
