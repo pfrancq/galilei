@@ -42,7 +42,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <langs/glang.h>
+#include <infos/glang.h>
 
 
 
