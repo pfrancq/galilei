@@ -247,6 +247,7 @@ void GALILEI::GIWordsWeights::ModifyQuery(tObjType ObjType,GLang* lang)
 	if(!lang->GetDict()) return;
 	for(i=lang->GetDict()->GetMaxId()+1,words=lang->GetDict()->GetWords();--i;words++)
 	{
+		if(!(*words)) continue;
 		ptr=GetPtr<const unsigned int>((*words)->GetId());
 		if(!ptr)
 			InsertPtr(ptr=new GIWordWeight((*words)->GetId()));
