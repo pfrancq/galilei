@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Project Manager"), "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Nicolas Kumps",I18N_NOOP("Researcher"), "nkumps@ulb.ac.be");
 	aboutData.addAuthor("Marjorie Paternostre",I18N_NOOP("Researcher"), "Marjorie.Paternostre@ulb.ac.be");
-	aboutData.addAuthor("Stéphane Rideau",I18N_NOOP("Researcher"), 0);
+	aboutData.addAuthor("StÃ©phane Rideau",I18N_NOOP("Researcher"), 0);
 	aboutData.addAuthor("Valery Vandaele",I18N_NOOP("Researcher"), "vvandaele@ulb.ac.be");
 	aboutData.addAuthor("David Wartel",I18N_NOOP("Researcher"), "dwartel@ulb.ac.be");
 	aboutData.addCredit("Marco Saerens",I18N_NOOP("Professor"), "saerens@isys.ucl.ac.be");
