@@ -82,6 +82,12 @@ GALILEI::GGrouping::GGrouping(const char* n,GSession* s) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GGrouping::SetParam(const char*,const char*)
+{
+}
+
+
+//-----------------------------------------------------------------------------
 int GALILEI::GGrouping::Compare(const GGrouping* grp) const
 {
 	return(GroupingName.Compare(grp->GroupingName));

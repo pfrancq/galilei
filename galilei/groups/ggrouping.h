@@ -137,6 +137,13 @@ public:
 	virtual void SetSettings(const char*) {}
 
 	/**
+	* Set a parameter of the grouping method.
+	* @param param          Name of the parameter.
+	* @param value          Value of the parameter.
+	*/
+	virtual void SetParam(const char* param,const char* value);
+
+	/**
 	* Compare method used for RStd::RContainer.
 	*/
 	int Compare(const GGrouping* grp) const;
