@@ -65,6 +65,34 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
+//  GReWeightingParams
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GALILEI::GReWeightingParams::GReWeightingParams(void)
+	: GCalcParams("ReWeighting")
+{
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GReWeightingParams::GetSettings(void)
+{
+	return(itoa(MaxNonZero));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GReWeightingParams::SetSettings(const char* s)
+{
+	if(!(*s)) return;
+	MaxNonZero=strtoul(s,0,10);
+}
+
+
+//-----------------------------------------------------------------------------
+//
 // InternVector
 //
 //-----------------------------------------------------------------------------
@@ -90,11 +118,14 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalcReWeighting::GProfileCalcReWeighting(GSession* session) throw(bad_alloc)
-	: GProfileCalc("Direct Reweighting",session), OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
-	  Order(0), MaxOrderSize(5000), MaxNonZero(60)
+GALILEI::GProfileCalcReWeighting::GProfileCalcReWeighting(GSession* session, GReWeightingParams* p) throw(bad_alloc)
+	: GProfileCalc("Direct Reweighting",session), Params(p),  OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
+	  Order(0)
 {
 	GLangCursor Langs;
+
+	Params->MaxOrderSize=5000;
+	Params->MaxNonZero=60;
 
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
@@ -102,14 +133,14 @@ GALILEI::GProfileCalcReWeighting::GProfileCalcReWeighting(GSession* session) thr
 		OK.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 		KO.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 	}
-	Order=new GIWordWeight*[MaxOrderSize];
+	Order=new GIWordWeight*[Params->MaxOrderSize];
 }
 
 
 //-----------------------------------------------------------------------------
 const char* GALILEI::GProfileCalcReWeighting::GetSettings(void)
 {
-	return(itoa(MaxNonZero));
+	return(itoa(Params->MaxNonZero));
 }
 
 
@@ -117,7 +148,7 @@ const char* GALILEI::GProfileCalcReWeighting::GetSettings(void)
 void GALILEI::GProfileCalcReWeighting::SetSettings(const char* s)
 {
 	if(!(*s)) return;
-	MaxNonZero=strtoul(s,0,10);
+	Params->MaxNonZero=strtoul(s,0,10);
 }
 
 
@@ -169,20 +200,20 @@ void GALILEI::GProfileCalcReWeighting::ComputeSubProfile(GSubProfileVector* s) t
 	Vector->Clear();
 
 	// Put in Order an ordered version of MOK
-	if(MOK->NbPtr>MaxOrderSize)
+	if(MOK->NbPtr>Params->MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<unsigned int>((MOK->NbPtr+1)*1.1);
-		Order=new GIWordWeight*[MaxOrderSize];
+		Params->MaxOrderSize=static_cast<unsigned int>((MOK->NbPtr+1)*1.1);
+		Order=new GIWordWeight*[Params->MaxOrderSize];
 	}
 	memcpy(Order,MOK->Tab,MOK->NbPtr*sizeof(GIWordWeight*));
 	qsort(static_cast<void*>(Order),MOK->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
 	Order[MOK->NbPtr]=0;
 
 	//If MaxNonZero is null -> take all the words.
-	if(MaxNonZero)
+	if(Params->MaxNonZero)
 	{
-		for(i=MaxNonZero+1,ptr=Order;(--i)&&(*ptr);ptr++)
+		for(i=Params->MaxNonZero+1,ptr=Order;(--i)&&(*ptr);ptr++)
 		{
 			if((*ptr)->GetWeight()>0)
 				Vector->InsertPtr(new GIWordWeight(*ptr));

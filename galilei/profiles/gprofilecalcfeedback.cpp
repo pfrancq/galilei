@@ -66,6 +66,44 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
+//  GFeedbackParams
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GALILEI::GFeedbackParams::GFeedbackParams(void)
+	: GCalcParams("Feedback")
+{
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GFeedbackParams::GetSettings(void)
+{
+	static char tmp[200];
+	char c1,c2;
+	if (AddFuzzy) c1='1'; else c1='0';
+	if (IdfFactor) c2='1'; else c2='0';
+
+
+	sprintf(tmp,"%u %u %f %f %f %c %c", MaxOrderSize, MaxNonZero, RelFactor, FuzzyFactor, NoRelFactor, c1, c2);
+	return(tmp);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GFeedbackParams::SetSettings(const char* s)
+{
+	if(!(*s)) return;
+	char c1,c2;
+	sscanf(s,"%u %u %lf %lf %lf %c %c", &MaxOrderSize, &MaxNonZero, &RelFactor, &FuzzyFactor, &NoRelFactor, &c1, &c2) ;
+	if(c1=='1') AddFuzzy=true; else AddFuzzy=false;
+ 	if(c2=='1') IdfFactor=true; else IdfFactor=false;	
+}
+
+
+//-----------------------------------------------------------------------------
+//
 // class GProfileCalcVector::GNbDocsLangs
 //
 //-----------------------------------------------------------------------------
@@ -115,13 +153,12 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session) throw(bad_alloc)
-	: GProfileCalc("User Feedback",session), Vectors(Session->GetNbLangs()),
-	  NbDocsWords(Session->GetNbLangs()), NbDocsLangs(Session->GetNbLangs()),
-	  Order(0), MaxOrderSize(5000), MaxNonZero(60), RelFactor(1.0),
-	  FuzzyFactor(1.0), AddFuzzy(false), IdfFactor(true)
+GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session, GFeedbackParams* p) throw(bad_alloc)
+	: GProfileCalc("User Feedback",session), Params(p), Vectors(Session->GetNbLangs()),
+	  NbDocsWords(Session->GetNbLangs()), NbDocsLangs(Session->GetNbLangs())
 {
 	GLangCursor Langs;
+	Params->MaxOrderSize=5000;
 
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
@@ -130,7 +167,7 @@ GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session) throw(bad
 		NbDocsWords.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 		NbDocsLangs.InsertPtr(new GNbDocsLangs(Langs()));
 	}
-	Order=new GIWordWeight*[MaxOrderSize];
+	Order=new GIWordWeight*[Params->MaxOrderSize];
 }
 
 
@@ -140,9 +177,9 @@ const char* GALILEI::GProfileCalcFeedback::GetSettings(void)
 	static char tmp[100];
 	char c,c2;
 
-	if(AddFuzzy) c='1'; else c='0';
-	if(IdfFactor) c2='1'; else c2='0';
-	sprintf(tmp,"%u %f %f %f %c %c",MaxNonZero,RelFactor,FuzzyFactor,NoRelFactor,c,c2);
+	if(Params->AddFuzzy) c='1'; else c='0';
+	if(Params->IdfFactor) c2='1'; else c2='0';
+	sprintf(tmp,"%u %f %f %f %c %c",Params->MaxNonZero,Params->RelFactor,Params->FuzzyFactor,Params->NoRelFactor,c,c2);
 	return(tmp);
 }
 
@@ -153,9 +190,9 @@ void GALILEI::GProfileCalcFeedback::SetSettings(const char* s)
 	char c,c2;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %lf %lf %lf %c %c",&MaxNonZero,&RelFactor,&FuzzyFactor,&NoRelFactor,&c,&c2);
-	if(c=='1') AddFuzzy=true; else AddFuzzy=false;
- 	if(c2=='1') IdfFactor=true; else IdfFactor=false;
+	sscanf(s,"%u %lf %lf %lf %c %c",&Params->MaxNonZero,&Params->RelFactor,&Params->FuzzyFactor,&Params->NoRelFactor,&c,&c2);
+	if(c=='1') Params->AddFuzzy=true; else Params->AddFuzzy=false;
+ 	if(c2=='1')Params-> IdfFactor=true; else Params->IdfFactor=false;
 }
 
 
@@ -195,7 +232,7 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		CurLang=CurDoc->GetLang();
 		if(!CurLang) continue;
 		Fdbk=Docs()->GetFdbk();
-		if((NoRelFactor==0.0)&&(Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
+		if((Params->NoRelFactor==0.0)&&(Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
 
 		// Determine the lists corresponding to the language of the document
 		NbDocs=NbDocsWords.GetPtr<GLang*>(CurLang);
@@ -225,23 +262,23 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 
 		// Find list in function of the feedback
 		Fdbk=Docs()->GetFdbk();
-		if((NoRelFactor==0.0)&&(Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
+		if((Params->NoRelFactor==0.0)&&(Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
 		switch(Fdbk)
 		{
 			case djOK:
 			case djNav:
 				Add=true;
-				Factor=RelFactor;
+				Factor=Params->RelFactor;
 				break;
 			
 			case djKO:
-				Add=false||AddFuzzy;
-				Factor=FuzzyFactor;
+				Add=false||Params->AddFuzzy;
+				Factor=Params->FuzzyFactor;
 				break;
 
 			default:
 				Add=false;
-				Factor=NoRelFactor;
+				Factor=Params->NoRelFactor;
 				break;
 		}
 
@@ -256,7 +293,7 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=Vector->GetInsertPtr<unsigned int>(Words()->GetId());
-			if(IdfFactor)
+			if(Params->IdfFactor)
 				Freq=(Words()->GetWeight()/MaxFreq)*log(NbDocsJudged/NbDocs->GetPtr<unsigned int>(Words()->GetId())->GetWeight());
 			else
 				Freq=Words()->GetWeight()/MaxFreq;
@@ -285,20 +322,20 @@ void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) thro
 	if(Global->IsEmpty()) return;
 
 	// Put in Order an ordered version of Global
-	if(Global->NbPtr+1>MaxOrderSize)
+	if(Global->NbPtr+1>Params->MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<unsigned int>((Global->NbPtr+1)*1.1);
-		Order=new GIWordWeight*[MaxOrderSize];
+		Params->MaxOrderSize=static_cast<unsigned int>((Global->NbPtr+1)*1.1);
+		Order=new GIWordWeight*[Params->MaxOrderSize];
 	}
 	memcpy(Order,Global->Tab,Global->NbPtr*sizeof(GIWordWeight*));
 	qsort(static_cast<void*>(Order),Global->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
 	Order[Global->NbPtr]=0;
 
 	//If MaxNonZero is null -> take all the words.
-	if(MaxNonZero)
+	if(Params->MaxNonZero)
 	{
-		for(i=MaxNonZero+1,ptr=Order;(--i)&&(*ptr);ptr++)
+		for(i=Params->MaxNonZero+1,ptr=Order;(--i)&&(*ptr);ptr++)
 		{
 			if((*ptr)->GetWeight()>0)
 				Vector->InsertPtr(new GIWordWeight(*ptr));

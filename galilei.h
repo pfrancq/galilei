@@ -135,7 +135,6 @@ class GGroupingRandom;
 class GGroupingCursor;
 class GGroupCalc;
 class GGroupCalcCursor;
-class GIRParams;
 
 
 //-----------------------------------------------------------------------------
@@ -180,6 +179,18 @@ class GStatSimSubProf;
 class GStatSimDoc;
 class GMixedIdealGroups;
 
+//-----------------------------------------------------------------------------
+// forward class declaration - Params Part
+// Grouping parameters
+class GGroupingParams;
+class GIRParams;
+class GKMeansParams;
+class GCureParams;
+class GSimParams;
+// Computing parameters
+class GFeedbackParams;             
+class GReWeightingParams;
+class GStatisticalParams;
 
 //-----------------------------------------------------------------------------
 /**

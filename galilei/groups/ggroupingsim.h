@@ -42,6 +42,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ggrouping.h>
+#include <groups/ggroupingparams.h>
 
 
 
@@ -56,14 +57,12 @@ class GGroup;
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupingSim provides a representation for a method to group some
-* subprofiles using the notion of similarity.
-* @author Pascal Francq
-* @short Similarity Grouping.
+* The GSimParam represents all the parameter used in the Sim module.
+* @short GSim Parameters.
 */
-class GGroupingSim : public GGrouping
+class GSimParams : public GGroupingParams
 {
-protected:
+public:
 
 	/**
 	* Full Similarity for the groups.
@@ -80,20 +79,61 @@ protected:
 	*/
 	bool GlobalSim;
 
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*);
+
+	/**
+	* Assignment operator.
+	* @param p              Parameters used as source.
+	*/
+	GSimParams& operator=(const GSimParams& src);
+
+	/**
+	* Constructor.
+	*/
+	GSimParams(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GGroupingSim provides a representation for a method to group some
+* subprofiles using the notion of similarity.
+* @author Pascal Francq
+* @short Similarity Grouping.
+*/
+class GGroupingSim : public GGrouping
+{
+protected:
+
+	/**
+	* Sim parameters.
+	*/
+	GSimParams* Params;
+
 public:
 
 	/**
 	* Constructor.
 	* @param s              Session.
 	*/
-	GGroupingSim(GSession* s) throw(bad_alloc);
+	GGroupingSim(GSession* s, GSimParams* p) throw(bad_alloc);
 
 	/**
 	* Constructor.
 	* @param n              Name of the grouping.
 	* @param s              Session.
 	*/
-	GGroupingSim(const char* n,GSession* s) throw(bad_alloc);
+	GGroupingSim(const char* n,GSession* s, GSimParams* p) throw(bad_alloc);
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -113,41 +153,6 @@ public:
 	*/
 	virtual void Init(void) throw(bad_alloc);
 
-	/**
-	* Get the status of the full similarity.
-	* @return bool value.
-	*/
-	bool GetFullSim(void) const {return(FullSim);}
-
-	/**
-	* Set the status of the full similarity.
-	* @param s              Full similarity?
-	*/
-	void SetFullSim(bool s) {FullSim=s;}
-
-	/**
-	* Get the status of the global similarity.
-	* @return bool value.
-	*/
-	bool GetGlobalSim(void) const {return(GlobalSim);}
-
-	/**
-	* Set the status of the global similarity.
-	* @param s              Global similarity?
-	*/
-	void SetGlobalSim(bool s) {GlobalSim=s;}
-
-	/**
-	* Get the level of similarity to used.
-	* @return double value.
-	*/
-	double GetLevelSim(void) const {return(LevelSim);}
-
-	/**
-	* Set the level of similarity for the grouping.
-	* @param l              Level to used.
-	*/
-	void SetLevelSim(double l) {LevelSim=l;}
 
 protected:
 

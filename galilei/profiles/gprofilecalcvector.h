@@ -48,11 +48,63 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gprofilecalc.h>
+#include <profiles/gcalcparams.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GStatisticalParam represents all the parameter used in the CalcVector module.
+* @short GStatistical Parameters.
+*/
+class GStatisticalParams : public GCalcParams
+{
+public:
+
+	/**
+	* Maximal size allocate for a profile.
+	*/
+	unsigned int MaxOrderSize;
+
+	/**
+	* Maximal number of the non-zero weights in the vector.
+	*/
+	unsigned int MaxNonZero;
+
+	/**
+	* Must the idf factor be computed.
+	*/
+	bool IdfFactor;
+
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*);
+
+	/**
+	* Assignment operator.
+	* @param p              Parameters used as source.
+	*/
+	GStatisticalParams& operator=(const GStatisticalParams& src);
+
+	/**
+	* Constructor.
+	*/
+	GStatisticalParams(void);
+};
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -76,6 +128,11 @@ protected:
 	class InternVector;
 
 	/**
+	* Statistical parameters.
+	*/
+	GStatisticalParams* Params;
+
+	/**
 	* Occurences of the index terms in the "OK" and "N" documents for the
 	* different languages.
 	*/
@@ -97,28 +154,13 @@ protected:
 	*/
 	GIWordWeight** Order;
 
-	/**
-	* Maximal size allocate for a profile.
-	*/
-	unsigned int MaxOrderSize;
-
-	/**
-	* Maximal number of the non-zero weights in the vector.
-	*/
-	unsigned int MaxNonZero;
-
-	/**
-	* Must the idf factor be computed.
-	*/
-	bool IdfFactor;
-
 public:
 
 	/**
 	* Constructor.
 	* @param session        Session.
 	*/
-	GProfileCalcVector(GSession* session) throw(bad_alloc);
+	GProfileCalcVector(GSession* session, GStatisticalParams* p) throw(bad_alloc);
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -132,29 +174,6 @@ public:
 	* @param s              C string coding the settings.
 	*/
 	virtual void SetSettings(const char* s);
-
-	/**
-	* Get the number of non-zero weights in the vector.
-	*/
-	unsigned int GetMaxNonZero(void) const {return(MaxNonZero);}
-
-	/**
-	* Set the number of non-zero weights in the vector.
-	* @param n              Number of non-zero weights.
-	*/
-	void SetMaxNonZero(unsigned int n) {MaxNonZero=n;}
-
-	/**
-	* Get the "IdfFactor" parameter
-	* @returns boolean.
-	*/
-	bool GetIdfFactor(void) const {return(IdfFactor);}
-
-	/**
-	* Set the "IdfFactor" pamater.
-	* @param b              true if the idf factor must be computed.
-	*/
-	void SetIdfFactor(bool b) {IdfFactor=b;}
 
 	/**
 	* Computes the OK lists for a profile.

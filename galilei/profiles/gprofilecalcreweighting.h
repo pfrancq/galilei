@@ -43,6 +43,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <profiles/gprofilecalc.h>
+#include <profiles/gcalcparams.h>
 #include <profiles/gsubprofilevector.h>
 
 
@@ -50,6 +51,48 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
+
+//-----------------------------------------------------------------------------
+/**
+* The GReWeightingParam represents all the parameter used in the CalcReWeighting module.
+* @short GReWeighting Parameters.
+*/
+class GReWeightingParams : public GCalcParams
+{
+public:
+
+	/**
+	* Maximal size allocate for a profile.
+	*/
+	unsigned int MaxOrderSize;
+
+	/**
+	* Maximal number of the non-zero weights in the vector.
+	*/
+	unsigned int MaxNonZero;
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*);
+
+	/**
+	* Assignment operator.
+	* @param p              Parameters used as source.
+	*/
+	GReWeightingParams& operator=(const GReWeightingParams& src);
+
+	/**
+	* Constructor.
+	*/
+	GReWeightingParams(void);
+};
 
 //-----------------------------------------------------------------------------
 /**
@@ -62,6 +105,11 @@ class GProfileCalcReWeighting : public GProfileCalc
 {
 	class InternVector;
 protected:
+
+	/**
+	*  ReWeighting parameters.
+	*/
+	GReWeightingParams* Params;
 
 	/**
 	* List of words frequences in the "OK" and "N" documents for the different
@@ -80,15 +128,6 @@ protected:
 	*/
 	GIWordWeight** Order;
 
-	/**
-	* Maximal size allocate for a profile.
-	*/
-	unsigned int MaxOrderSize;
-
-	/**
-	* Maximal number of the non-zero weights in the vector.
-	*/
-	unsigned int MaxNonZero;
 
 public:
 
@@ -96,7 +135,7 @@ public:
 	* Constructor.
 	* @param session        Session.
 	*/
-	GProfileCalcReWeighting(GSession* session) throw(bad_alloc);
+	GProfileCalcReWeighting(GSession* session, GReWeightingParams* p) throw(bad_alloc);
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -109,17 +148,6 @@ public:
 	* @param s              C string coding the settings.
 	*/
 	virtual void SetSettings(const char* s);
-
-	/**
-	* Get the number of non-zero weights in the vector.
-	*/
-	unsigned int GetMaxNonZero(void) const {return(MaxNonZero);}
-
-	/**
-	* Set the number of non-zero weights in the vector.
-	* @param n              Number of non-zero weights.
-	*/
-	void SetMaxNonZero(unsigned int n) {MaxNonZero=n;}
 
 	/**
 	* Computes the OK and KO lists for a profile.

@@ -55,14 +55,46 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
+//  GCureParameters
+//
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GCureParams::GCureParams(void)
+	: GGroupingParams("Cure")
+{
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GCureParams::GetSettings(void)
+{
+	static char tmp[200];
+
+	sprintf(tmp,"%u %u", NbGroups, NbProtos);
+	return(tmp);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GCureParams::SetSettings(const char* s)
+{
+	if(!(*s)) return;
+	sscanf(s,"%u %u", &NbGroups, &NbProtos) ;
+}
+
+
+//-----------------------------------------------------------------------------
+//
 //  GGroupingCure
 //
 //-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupingCure::GGroupingCure(GSession* s) throw(bad_alloc)
-		:  GGrouping("CURE",s),NbGroups(13), NbProtos(2)
+GALILEI::GGroupingCure::GGroupingCure(GSession* s, GCureParams* p) throw(bad_alloc)
+		:  GGrouping("CURE",s), Params(p)
 {
 	Prototypes = new RContainer<GSubProfile,unsigned int,false,false> (10, 5);
 	Grps = new  RContainer<GGroup,unsigned int,true,true> (10, 5);
@@ -73,7 +105,7 @@ GALILEI::GGroupingCure::GGroupingCure(GSession* s) throw(bad_alloc)
 const char* GALILEI::GGroupingCure::GetSettings(void)
 {
 	static char tmp[250];
-	sprintf(tmp,"%u %f",NbGroups, Alpha);
+	sprintf(tmp,"%u %u",Params->NbGroups, Params->NbProtos);
 	return(tmp);
 }
 
@@ -83,7 +115,7 @@ void GALILEI::GGroupingCure::SetSettings(const char* s)
 {
 
 	if(!(*s)) return;
-	sscanf(s,"%u %lf",&NbGroups, &Alpha);
+	sscanf(s,"%u %u",&Params->NbGroups, &Params->NbProtos);
 }
 
 
@@ -116,8 +148,8 @@ void GALILEI::GGroupingCure::DisplayInfos(void)
 {
 	cout << " *** CURE *** "<< endl;
 	cout << "NbSubProfiles "<<SubProfiles.NbPtr<<endl;
-	cout << "NbGroups wanted:  "<<NbGroups<<endl;
-	cout << "Number of Prototypes per groups: "<<NbProtos<<endl;
+	cout << "NbGroups wanted:  "<<Params->NbGroups<<endl;
+	cout << "Number of Prototypes per groups: "<<Params->NbProtos<<endl;
 }
 
 
@@ -136,7 +168,7 @@ void  GALILEI::GGroupingCure::Run(void) throw(GException)
 	// Calculates the similarities between subprofiles
 	ProfSim= new GProfilesSim(SubProfiles, 0);
 
-	while (Grps->NbPtr>NbGroups)
+	while (Grps->NbPtr>Params->NbGroups)
 	{
 		// find the two closest groups.
 //		cout << "calculating closest groups ....."<<endl;
@@ -202,12 +234,12 @@ void  GALILEI::GGroupingCure::CreateGroupsPrototypes(GGroup* g)
 	protos=new RContainer<GSubProfile,unsigned int,true,true> (10,5);
 	GSubProfile* mean=g->RelevantSubProfile(false);
 
-	if (g->NbPtr<=NbProtos+1)
+	if (g->NbPtr<=Params->NbProtos+1)
 		for (g->Start(); !g->End(); g->Next())
 			protos->InsertPtr((*g)());
 	else
 	{
-		while(protos->NbPtr<NbProtos)
+		while(protos->NbPtr<Params->NbProtos)
 		{
 			mindist=-1.0;
 			for (g->Start(); !g->End(); g->Next())

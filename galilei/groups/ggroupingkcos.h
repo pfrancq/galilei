@@ -1,4 +1,4 @@
-/*
+                                                                  /*
 
 	GALILEI Research Project
 
@@ -39,11 +39,15 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainercursor.h>
+//tmp
+#include <rga/robjs.h>
+
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include<galilei.h>
-#include <groups/ggroupingkmeans.h>
+#include<groups/ggrouping.h>
+#include<groups/ggroupingparams.h>
 
 
 //-----------------------------------------------------------------------------
@@ -58,6 +62,75 @@ class GGroup;
 
 //-----------------------------------------------------------------------------
 /**
+* The GKMeansParam represents all the parameter used in the KMeans module.
+* @short GKMeans Parameters.
+*/
+class GKMeansParams : public GGroupingParams
+{
+public:
+
+	/**
+	* enum of initial conditions
+	*/
+	enum Initial {Refined,Random};
+
+	/**
+	* initial method.
+	*/
+	Initial Init;
+
+	/**
+	* Number of Groups.
+	*/
+	unsigned int NbGroups;
+
+	/**
+	* Maximal number of iterations.
+	*/
+	unsigned int NbIters;
+
+	/**
+	* Number of generation for each step.
+	*/
+	unsigned int NbSubSamples;
+
+	/**
+	* Minimum similarity level between the profiles of a group.
+	*/
+	unsigned int SubSamplesRate;
+
+	/**
+	* Minimum number of common OK documents needed to force two profiles to be
+	* in the same group.
+	*/
+	double Epsilon;
+
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*);
+
+	/**
+	* Assignment operator.
+	* @param p              Parameters used as source.
+	*/
+	GKMeansParams& operator=(const GKMeansParams& src);
+
+	/**
+	* Constructor.
+	*/
+	GKMeansParams(void);
+};
+
+//-----------------------------------------------------------------------------
+/**
 * The GGroupingKCos provides a representation for a method to group
 some
 * subprofiles using the KMeans algorithm adapted to cosinus distance.
@@ -65,28 +138,13 @@ some
 * @short KMeansCos Grouping.
 */
 
-class GGroupingKCos :   public GGroupingKMeans
+class GGroupingKCos  : public GGrouping
 {
 
-
-protected:
-
 	/**
-	* Container of subprofiles considered as prototypes,
-	* needed to calculate the error between two iterations
+	* KMeans Parameters
 	*/
-	RStd::RContainer<GSubProfile,unsigned int,false,false>* protoserror;
-
-	/**
-	* Temporary container of groupment, needed to run tests
-	*/
-	RStd::RContainer<GGroup,unsigned int,false,false>* grpstemp;
-
-	/**
-	* Container of the final groupment
-	*/
-	RStd::RContainer<GGroup,unsigned int,false,false>* grpsfinal;
-
+	GKMeansParams* Params;
 
 public:
 
@@ -95,7 +153,7 @@ public:
 	* @param s              Session.
 	* @param grps          Ideal groupment.
 	*/
-	GGroupingKCos(GSession* s) throw(bad_alloc);
+	GGroupingKCos(GSession* s, GKMeansParams* p) throw(bad_alloc);
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -110,56 +168,9 @@ public:
 	void SetSettings(const char* s);
 
 	/**
-	* Initialisation of the method.
+	* is the group valid ?
 	*/
-	void Init(void) throw(bad_alloc);
-
-	/**
-	* Calculates the cost function for a kmeanscos clustering
-	*/
-	double CostFunction(RStd::RContainer<GGroup,unsigned int,false,false>* grps);
-
-	/**
-	*  reallocate the subprofiles to prototypes
-	*/
-	void ReAllocate(RStd::RContainer<GSubProfile, unsigned int, false, true>* dataset);
-
-	/**
-	*  recenters the prototypes
-	*/
-	void ReCenter(void);
-
-	/**
-	*  excute the kmeans algorithm
-	* @param init           initialisation step?
-	*/
-	void Execute(RStd::RContainer<GSubProfile, unsigned int, false, true>* Dataset, unsigned int nbtests);
-
-	/**
-	* Calculate the distance between two subprofiles
-	* @param init           initialization step?
-	*/
-	double Distance(GSubProfile *s1, GSubProfile *s2);
-
-	/**
-	*  calculates the error between two iterations
-	*/
-	int CalcError(void);
-
-	/**
-	* returns the Calinsky index for the clustering
-	*/
-	double CalcCalinsky(void);
-
-	/**
-	* returns the knearestneighboors measure.
-	*/
-	double TestMeasure(void);
-
-	/**
-	* displays infos about kmeanscos parameters
-	*/
-	void DisplayInfos(void);
+	bool IsValid(GGroup* ) {return(true);} ;
 
 
 protected:

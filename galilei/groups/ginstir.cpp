@@ -194,6 +194,8 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 	}
 	if(Params->ParamsInfo.Weight)
 		CritInfo=NewCriterion(Minimize,"Information",Params->ParamsInfo.P,Params->ParamsInfo.Q,Params->ParamsInfo.Weight);
+	if(Params->ParamsEntropy.Weight)
+		CritEntropy=NewCriterion(Minimize,"Entropy",Params->ParamsEntropy.P,Params->ParamsEntropy.Q,Params->ParamsEntropy.Weight);
 	if(Params->ParamsSameFeedbacks.Weight)
 		CritSameFeedbacks=NewCriterion(Maximize,"Same Feedbacks",Params->ParamsSameFeedbacks.P,Params->ParamsSameFeedbacks.Q,Params->ParamsSameFeedbacks.Weight);
 	if(Params->ParamsDiffFeedbacks.Weight)
@@ -323,37 +325,31 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 		if(Debug) Debug->BeginFunc("PostEvaluate","GInstIR");
 	#endif
 	ptr=Sols;
-	if(Params->SimMeasures==sctCorl)
-		Assign((*ptr),CritSim,BestChromosome->CritSim);
-	else
-	{
-		Assign((*ptr),CritSimAvgSim,BestChromosome->CritSimAvgSim);
-		Assign((*ptr),CritSimJ,BestChromosome->CritSimJ);
-		Assign((*ptr),CritSimAvgRatio,BestChromosome->CritSimAvgRatio);
-		Assign((*ptr),CritSimMinRatio,BestChromosome->CritSimMinRatio);
-		Assign((*ptr),CritSimRatio,BestChromosome->CritSimRatio);
-		Assign((*ptr),CritSimWOverB,BestChromosome->CritSimWOverB);
-		Assign((*ptr),CritSimSimWB,BestChromosome->CritSimSimWB);
-	}
+	Assign((*ptr),CritSim,BestChromosome->CritSim);
+	Assign((*ptr),CritSimAvgSim,BestChromosome->CritSimAvgSim);
+	Assign((*ptr),CritSimJ,BestChromosome->CritSimJ);
+	Assign((*ptr),CritSimAvgRatio,BestChromosome->CritSimAvgRatio);
+	Assign((*ptr),CritSimMinRatio,BestChromosome->CritSimMinRatio);
+	Assign((*ptr),CritSimRatio,BestChromosome->CritSimRatio);
+	Assign((*ptr),CritSimWOverB,BestChromosome->CritSimWOverB);
+	Assign((*ptr),CritSimSimWB,BestChromosome->CritSimSimWB);
 	Assign((*ptr),CritInfo,BestChromosome->CritInfo);
+	Assign((*ptr),CritEntropy,BestChromosome->CritEntropy);
 	Assign((*ptr),CritSameFeedbacks,BestChromosome->CritSameFeedbacks);
 	Assign((*ptr),CritDiffFeedbacks,BestChromosome->CritDiffFeedbacks);
 	Assign((*ptr),CritSocial,BestChromosome->CritSocial);
 	for(i=PopSize+1,C=Chromosomes,ptr++;--i;C++,ptr++)
 	{
-		if(Params->SimMeasures==sctCorl)
-			Assign((*ptr),CritSim,(*C)->CritSim);
-		else
-		{
-			Assign((*ptr),CritSimAvgSim,(*C)->CritSimAvgSim);
-			Assign((*ptr),CritSimJ,(*C)->CritSimJ);
-			Assign((*ptr),CritSimAvgRatio,(*C)->CritSimAvgRatio);
-			Assign((*ptr),CritSimMinRatio,(*C)->CritSimMinRatio);
-			Assign((*ptr),CritSimRatio,(*C)->CritSimRatio);
-			Assign((*ptr),CritSimWOverB,(*C)->CritSimWOverB);
-			Assign((*ptr),CritSimSimWB,(*C)->CritSimSimWB);
-		}
+		Assign((*ptr),CritSim,(*C)->CritSim);
+		Assign((*ptr),CritSimAvgSim,(*C)->CritSimAvgSim);
+		Assign((*ptr),CritSimJ,(*C)->CritSimJ);
+		Assign((*ptr),CritSimAvgRatio,(*C)->CritSimAvgRatio);
+		Assign((*ptr),CritSimMinRatio,(*C)->CritSimMinRatio);
+		Assign((*ptr),CritSimRatio,(*C)->CritSimRatio);
+		Assign((*ptr),CritSimWOverB,(*C)->CritSimWOverB);
+		Assign((*ptr),CritSimSimWB,(*C)->CritSimSimWB);
 		Assign((*ptr),CritInfo,(*C)->CritInfo);
+		Assign((*ptr),CritEntropy,(*C)->CritEntropy);
 		Assign((*ptr),CritSameFeedbacks,(*C)->CritSameFeedbacks);
 		Assign((*ptr),CritDiffFeedbacks,(*C)->CritDiffFeedbacks);
 		Assign((*ptr),CritSocial,(*C)->CritSocial);

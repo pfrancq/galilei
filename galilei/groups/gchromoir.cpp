@@ -593,7 +593,7 @@ void GALILEI::GChromoIR::EvaluateEntropy(void)
 			CritEntropy-=Pjk*log(Pjk);
 		}
 	}
-	CritEntropy*=1.0;
+	//CritEntropy*=1.0;
 }
 
 
@@ -670,11 +670,16 @@ void GALILEI::GChromoIR::EvaluateSocial(void)
 void GALILEI::GChromoIR::Evaluate(void) throw(RGA::eGA)
 {
 	EvaluateSim();
-	EvaluateInfo();
-	EvaluateEntropy();
-	EvaluateSameFeedbacks();
-	EvaluateDiffFeedbacks();
-	EvaluateSocial();
+	if(Instance->Params->ParamsInfo.Weight)
+		EvaluateInfo();
+	if(Instance->Params->ParamsEntropy.Weight)
+		EvaluateEntropy();
+	if(Instance->Params->ParamsSameFeedbacks.Weight)
+		EvaluateSameFeedbacks();
+	if(Instance->Params->ParamsDiffFeedbacks.Weight)
+		EvaluateDiffFeedbacks();
+	if(Instance->Params->ParamsSocial.Weight)
+		EvaluateSocial();
 }
 
 
@@ -915,25 +920,26 @@ void GALILEI::GChromoIR::MergeBestSubProfiles(void) throw(RGA::eGA)
 void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
 {
 	RPromKernel* Kernel;
-	RPromCriterion* PromCritSim;
-	RPromCriterion* PromCritSameFeedbacks;
-	RPromCriterion* PromCritDiffFeedbacks;
-	RPromCriterion* PromCritSocial;
-	RPromCriterion* PromCritInfo;
-	RPromethee::RPromCriterion* PromCritSimAvgSim=0;
-	RPromethee::RPromCriterion* PromCritSimJ=0;
-	RPromethee::RPromCriterion* PromCritSimAvgRatio=0;
-	RPromethee::RPromCriterion* PromCritSimMinRatio=0;
-	RPromethee::RPromCriterion* PromCritSimRatio=0;
-	RPromethee::RPromCriterion* PromCritSimWOverB=0;
-	RPromethee::RPromCriterion* PromCritSimSimWB=0;
+	RPromCriterion* PromCritSim=0;
+	RPromCriterion* PromCritSameFeedbacks=0;
+	RPromCriterion* PromCritDiffFeedbacks=0;
+	RPromCriterion* PromCritSocial=0;
+	RPromCriterion* PromCritInfo=0;
+	RPromCriterion* PromCritEntropy=0;
+	RPromCriterion* PromCritSimAvgSim=0;
+	RPromCriterion* PromCritSimJ=0;
+	RPromCriterion* PromCritSimAvgRatio=0;
+	RPromCriterion* PromCritSimMinRatio=0;
+	RPromCriterion* PromCritSimRatio=0;
+	RPromCriterion* PromCritSimWOverB=0;
+	RPromCriterion* PromCritSimSimWB=0;
 	RPromSol* s;
 	GObjIR* obj;
 	GGroupIRCursor Cur1,Cur2;
 	GGroupIR* grp=0;
 	double tmp,max;
 	unsigned int i;
-
+	GIRParams* Params=Instance->Params;
 
 	// Copy the current chromosome in thTests
 	Evaluate();
@@ -956,69 +962,62 @@ void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
 
 	// Use PROMETHEE to determine the best solution.
 	Kernel=new RPromKernel("GChromoIR",6,5);
-	if(Instance->Params->SimMeasures==sctCorl)
-		PromCritSim=Kernel->NewCriterion(Maximize,"Similarity",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
+	if(Params->SimMeasures==sctCorl)
+		PromCritSim=Kernel->NewCriterion(Maximize,"Similarity",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
 	else
 	{
-		if(Instance->Params->Measures.GetPtr<const char*>("AvgSim")->Use)
-			PromCritSimAvgSim=Kernel->NewCriterion(Maximize,"Similarity AvgSim",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
-		if(Instance->Params->Measures.GetPtr<const char*>("J")->Use)
-			PromCritSimJ=Kernel->NewCriterion(Maximize,"Similarity J",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
-		if(Instance->Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
-			PromCritSimAvgRatio=Kernel->NewCriterion(Maximize,"Similarity AvgRatio",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
-		if(Instance->Params->Measures.GetPtr<const char*>("MinRatio")->Use)
-			PromCritSimMinRatio=Kernel->NewCriterion(Maximize,"Similarity MinRatio",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
-		if(Instance->Params->Measures.GetPtr<const char*>("Ratio")->Use)
-			PromCritSimRatio=Kernel->NewCriterion(Maximize,"Similarity Ratio",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
-		if(Instance->Params->Measures.GetPtr<const char*>("WOverB")->Use)
-			PromCritSimWOverB=Kernel->NewCriterion(Maximize,"Similarity WoverB",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
-		if(Instance->Params->Measures.GetPtr<const char*>("SimWB")->Use)
-			PromCritSimSimWB=Kernel->NewCriterion(Maximize,"Similarity SimWB",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
+		if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
+			PromCritSimAvgSim=Kernel->NewCriterion(Maximize,"Similarity AvgSim",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+		if(Params->Measures.GetPtr<const char*>("J")->Use)
+			PromCritSimJ=Kernel->NewCriterion(Maximize,"Similarity J",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+		if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
+			PromCritSimAvgRatio=Kernel->NewCriterion(Maximize,"Similarity AvgRatio",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+		if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
+			PromCritSimMinRatio=Kernel->NewCriterion(Maximize,"Similarity MinRatio",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+		if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
+			PromCritSimRatio=Kernel->NewCriterion(Maximize,"Similarity Ratio",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+		if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
+			PromCritSimWOverB=Kernel->NewCriterion(Maximize,"Similarity WoverB",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+		if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
+			PromCritSimSimWB=Kernel->NewCriterion(Maximize,"Similarity SimWB",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
 	}
-	PromCritInfo=Kernel->NewCriterion(Minimize,"Information",Instance->Params->ParamsInfo.P,Instance->Params->ParamsInfo.Q,Instance->Params->ParamsInfo.Weight);
-	PromCritSameFeedbacks=Kernel->NewCriterion(Maximize,"Same Feedbacks",Instance->Params->ParamsSameFeedbacks.P,Instance->Params->ParamsSameFeedbacks.Q,Instance->Params->ParamsSameFeedbacks.Weight);
-	PromCritDiffFeedbacks=Kernel->NewCriterion(Minimize,"Diff Feedbacks",Instance->Params->ParamsDiffFeedbacks.P,Instance->Params->ParamsDiffFeedbacks.Q,Instance->Params->ParamsDiffFeedbacks.Weight);
-	PromCritSocial=Kernel->NewCriterion(Minimize,"Social",Instance->Params->ParamsSocial.P,Instance->Params->ParamsSocial.Q,Instance->Params->ParamsSocial.Weight);
+	if(Params->ParamsInfo.Weight)
+		PromCritInfo=Kernel->NewCriterion(Minimize,"Information",Params->ParamsInfo.P,Params->ParamsInfo.Q,Params->ParamsInfo.Weight);
+	if(Params->ParamsEntropy.Weight)
+		PromCritEntropy=Kernel->NewCriterion(Minimize,"Entropy",Instance->Params->ParamsEntropy.P,Instance->Params->ParamsEntropy.Q,Instance->Params->ParamsEntropy.Weight);
+	if(Params->ParamsSameFeedbacks.Weight)
+		PromCritSameFeedbacks=Kernel->NewCriterion(Maximize,"Same Feedbacks",Instance->Params->ParamsSameFeedbacks.P,Instance->Params->ParamsSameFeedbacks.Q,Instance->Params->ParamsSameFeedbacks.Weight);
+	if(Params->ParamsDiffFeedbacks.Weight)
+		PromCritDiffFeedbacks=Kernel->NewCriterion(Minimize,"Diff Feedbacks",Instance->Params->ParamsDiffFeedbacks.P,Instance->Params->ParamsDiffFeedbacks.Q,Instance->Params->ParamsDiffFeedbacks.Weight);
+	if(Params->ParamsSocial.Weight)
+		PromCritSocial=Kernel->NewCriterion(Minimize,"Social",Instance->Params->ParamsSocial.P,Instance->Params->ParamsSocial.Q,Instance->Params->ParamsSocial.Weight);
 	s=Kernel->NewSol();
-	if(Instance->Params->SimMeasures==sctCorl)
-		Kernel->Assign(s,PromCritSim,CritSim);
-	else
-	{
-		if(PromCritSimAvgSim)
-			Kernel->Assign(s,PromCritSimAvgSim,CritSimAvgSim);
-		if(PromCritSimJ)
-			Kernel->Assign(s,PromCritSimJ,CritSimJ);
-		if(PromCritSimAvgRatio)
-			Kernel->Assign(s,PromCritSimAvgRatio,CritSimAvgRatio);
-		if(PromCritSimMinRatio)
-			Kernel->Assign(s,PromCritSimMinRatio,CritSimMinRatio);
-		if(PromCritSimRatio)
-			Kernel->Assign(s,PromCritSimRatio,CritSimRatio);
-		if(PromCritSimWOverB)
-			Kernel->Assign(s,PromCritSimWOverB,CritSimWOverB);
-		if(PromCritSimSimWB)
-			Kernel->Assign(s,PromCritSimSimWB,CritSimSimWB);
-	}
+	Kernel->Assign(s,PromCritSim,CritSim);
+	Kernel->Assign(s,PromCritSimAvgSim,CritSimAvgSim);
+	Kernel->Assign(s,PromCritSimJ,CritSimJ);
+	Kernel->Assign(s,PromCritSimAvgRatio,CritSimAvgRatio);
+	Kernel->Assign(s,PromCritSimMinRatio,CritSimMinRatio);
+	Kernel->Assign(s,PromCritSimRatio,CritSimRatio);
+	Kernel->Assign(s,PromCritSimWOverB,CritSimWOverB);
+	Kernel->Assign(s,PromCritSimSimWB,CritSimSimWB);
 	Kernel->Assign(s,PromCritInfo,CritInfo);
+	Kernel->Assign(s,PromCritEntropy,CritEntropy);
 	Kernel->Assign(s,PromCritSameFeedbacks,CritSameFeedbacks);
 	Kernel->Assign(s,PromCritDiffFeedbacks,CritDiffFeedbacks);
 	Kernel->Assign(s,PromCritSocial,CritSocial);
 	for(int i=0;i<5;i++)
 	{
 		s=Kernel->NewSol();
-		if(Instance->Params->SimMeasures==sctCorl)
-			Kernel->Assign(s,PromCritSim,thTests[i]->CritSim);
-		else
-		{
-			Kernel->Assign(s,PromCritSimAvgSim,thTests[i]->CritSimAvgSim);
-			Kernel->Assign(s,PromCritSimJ,thTests[i]->CritSimJ);
-			Kernel->Assign(s,PromCritSimAvgRatio,thTests[i]->CritSimAvgRatio);
-			Kernel->Assign(s,PromCritSimMinRatio,thTests[i]->CritSimMinRatio);
-			Kernel->Assign(s,PromCritSimRatio,thTests[i]->CritSimRatio);
-			Kernel->Assign(s,PromCritSimWOverB,thTests[i]->CritSimWOverB);
-			Kernel->Assign(s,PromCritSimSimWB,thTests[i]->CritSimSimWB);
-		}
+		Kernel->Assign(s,PromCritSim,thTests[i]->CritSim);
+		Kernel->Assign(s,PromCritSimAvgSim,thTests[i]->CritSimAvgSim);
+		Kernel->Assign(s,PromCritSimJ,thTests[i]->CritSimJ);
+		Kernel->Assign(s,PromCritSimAvgRatio,thTests[i]->CritSimAvgRatio);
+		Kernel->Assign(s,PromCritSimMinRatio,thTests[i]->CritSimMinRatio);
+		Kernel->Assign(s,PromCritSimRatio,thTests[i]->CritSimRatio);
+		Kernel->Assign(s,PromCritSimWOverB,thTests[i]->CritSimWOverB);
+		Kernel->Assign(s,PromCritSimSimWB,thTests[i]->CritSimSimWB);
 		Kernel->Assign(s,PromCritInfo,thTests[i]->CritInfo);
+		Kernel->Assign(s,PromCritEntropy,thTests[i]->CritEntropy);
 		Kernel->Assign(s,PromCritSameFeedbacks,thTests[i]->CritSameFeedbacks);
 		Kernel->Assign(s,PromCritDiffFeedbacks,thTests[i]->CritDiffFeedbacks);
 		Kernel->Assign(s,PromCritSocial,thTests[i]->CritSocial);

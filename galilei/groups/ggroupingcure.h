@@ -48,6 +48,7 @@ using namespace RStd;
 // include files for GALILEI
 #include <galilei.h>
 #include<groups/ggrouping.h>
+#include <groups/ggroupingparams.h>
 #include <groups/gcomparegrouping.h>
 
 
@@ -59,6 +60,50 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 // forward class declaration
 class GGroup;
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GKCureParam represents all the parameter used in the Cure module.
+* @short GKCureParameters.
+*/
+class GCureParams : public GGroupingParams
+{
+public:
+
+	/**
+	* Number of Groups.
+	*/
+	unsigned int NbGroups;
+
+	/**
+	* Number of Protos per group.
+	*/
+	unsigned int NbProtos;
+
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*);
+
+	/**
+	* Assignment operator.
+	* @param p              Parameters used as source.
+	*/
+	GCureParams& operator=(const GCureParams& src);
+
+	/**
+	* Constructor.
+	*/
+	GCureParams(void);
+};
 
 
 //-----------------------------------------------------------------------------
@@ -77,19 +122,9 @@ class GGroupingCure : public GGrouping
 protected:
 
 	/**
-	* number of groups.
+	* Cure parameters
 	*/
-	unsigned int NbGroups;
-
-	/**
-	*  number of prototypes per group.
-	*/
-	unsigned int NbProtos;
-
-	/**
-	* alpha parameters to shrink prototypes.
-	*/
-	double Alpha;
+	GCureParams* Params;
 
 	/*
 	* Similarities between all profiles.
@@ -113,7 +148,7 @@ public :
 	/**
 	* constructor
 	*/
-	GGroupingCure(GSession* s) throw(bad_alloc);
+	GGroupingCure(GSession* s, GCureParams* p) throw(bad_alloc);
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -126,26 +161,6 @@ public :
 	* @param s*             C string coding the settings.
 	*/
 	void SetSettings(const char* s);
-
-	/**
-	* returns NbGroups
-	*/
-	unsigned int GetNbGroups(void) {return(NbGroups);};
-
-	/**
-	* returns NbProtos
-	*/
-	unsigned int GetNbProtos(void) {return(NbProtos);};
-
-	/**
-	* sets NbGroups value
-	*/
-	void SetNbGroups(unsigned int i) {NbGroups=i;};
-
-	/**
-	* sets NbProtos value
-	*/
-	void SetNbProtos(unsigned int i) {NbProtos=i;};
 
 	/**
 	* init Groups with one subprofile per group.

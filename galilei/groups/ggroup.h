@@ -94,7 +94,7 @@ public:
 	* Get the name of the model used for the description.
 	* @return C String.
 	*/
-	virtual const char* GetModelName(void) const=0;
+	virtual const char* GetModelName(void) const {return (0);};
 
 	/**
 	* Compare method needed by RStd::RContainer.
@@ -196,6 +196,12 @@ public:
 	* @returns Pointer to GSubProfile representing the relevant one.
 	*/
 	GSubProfile* RelevantSubProfile(bool g) const;
+
+	/**
+	* returns the relevant subprofiles (needed for kmeans).
+	*/
+	GSubProfile* RelevantObj() const {return(RelevantSubProfile(0));}
+
 
 	/**
 	* Compute the sum of the similarities of a given profile to all the others.
