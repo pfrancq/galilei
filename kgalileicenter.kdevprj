@@ -351,7 +351,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/groups/Makefile.am]
-files=kgalileicenter/galilei/groups/gcomparegrouping.cpp,kgalileicenter/galilei/groups/gcomparegrouping.h,kgalileicenter/galilei/groups/ggroup.cpp,kgalileicenter/galilei/groups/ggroup.h,kgalileicenter/galilei/groups/ggrouping.cpp,kgalileicenter/galilei/groups/ggrouping.h,kgalileicenter/galilei/groups/ggroupingsim.cpp,kgalileicenter/galilei/groups/ggroupingsim.h,kgalileicenter/galilei/groups/ggroups.cpp,kgalileicenter/galilei/groups/ggroups.h,kgalileicenter/galilei/groups/gchromoir.cpp,kgalileicenter/galilei/groups/gchromoir.h,kgalileicenter/galilei/groups/ggroupir.cpp,kgalileicenter/galilei/groups/ggroupir.h,kgalileicenter/galilei/groups/ginstir.cpp,kgalileicenter/galilei/groups/ginstir.h,kgalileicenter/galilei/groups/gir.cpp,kgalileicenter/galilei/groups/gir.h,kgalileicenter/galilei/groups/ggroupinggga.cpp,kgalileicenter/galilei/groups/ggroupinggga.h,kgalileicenter/galilei/groups/gobjir.cpp,kgalileicenter/galilei/groups/gobjir.h,kgalileicenter/galilei/groups/ggroupingkcos.cpp,kgalileicenter/galilei/groups/ggroupingkcos.h,kgalileicenter/galilei/groups/gidealgroup.cpp,kgalileicenter/galilei/groups/gidealgroup.h,kgalileicenter/galilei/groups/gsubject.cpp,kgalileicenter/galilei/groups/gsubject.h,kgalileicenter/galilei/groups/gsubjecttree.cpp,kgalileicenter/galilei/groups/gsubjecttree.h,kgalileicenter/galilei/groups/gevaluategroupingcalinski.cpp,kgalileicenter/galilei/groups/gevaluategroupingcalinski.h,kgalileicenter/galilei/groups/gevaluategrouping.cpp,kgalileicenter/galilei/groups/gevaluategrouping.h,kgalileicenter/galilei/groups/gevaluategroupingintramininter.cpp,kgalileicenter/galilei/groups/gevaluategroupingintramininter.h,kgalileicenter/galilei/groups/gevaluategroupingmethods.cpp,kgalileicenter/galilei/groups/gevaluategroupingmethods.h,kgalileicenter/galilei/groups/gevaluategroupingvariance.cpp,kgalileicenter/galilei/groups/gevaluategroupingvariance.h,kgalileicenter/galilei/groups/ggroupingkprotos.cpp,kgalileicenter/galilei/groups/ggroupingkprotos.h
+files=kgalileicenter/galilei/groups/gcomparegrouping.cpp,kgalileicenter/galilei/groups/gcomparegrouping.h,kgalileicenter/galilei/groups/ggroup.cpp,kgalileicenter/galilei/groups/ggroup.h,kgalileicenter/galilei/groups/ggrouping.cpp,kgalileicenter/galilei/groups/ggrouping.h,kgalileicenter/galilei/groups/ggroupingsim.cpp,kgalileicenter/galilei/groups/ggroupingsim.h,kgalileicenter/galilei/groups/ggroups.cpp,kgalileicenter/galilei/groups/ggroups.h,kgalileicenter/galilei/groups/gchromoir.cpp,kgalileicenter/galilei/groups/gchromoir.h,kgalileicenter/galilei/groups/ggroupir.cpp,kgalileicenter/galilei/groups/ggroupir.h,kgalileicenter/galilei/groups/ginstir.cpp,kgalileicenter/galilei/groups/ginstir.h,kgalileicenter/galilei/groups/gir.cpp,kgalileicenter/galilei/groups/gir.h,kgalileicenter/galilei/groups/ggroupinggga.cpp,kgalileicenter/galilei/groups/ggroupinggga.h,kgalileicenter/galilei/groups/gobjir.cpp,kgalileicenter/galilei/groups/gobjir.h,kgalileicenter/galilei/groups/ggroupingkcos.cpp,kgalileicenter/galilei/groups/ggroupingkcos.h,kgalileicenter/galilei/groups/gidealgroup.cpp,kgalileicenter/galilei/groups/gidealgroup.h,kgalileicenter/galilei/groups/gsubject.cpp,kgalileicenter/galilei/groups/gsubject.h,kgalileicenter/galilei/groups/gsubjecttree.cpp,kgalileicenter/galilei/groups/gsubjecttree.h,kgalileicenter/galilei/groups/gevaluategroupingcalinski.cpp,kgalileicenter/galilei/groups/gevaluategroupingcalinski.h,kgalileicenter/galilei/groups/gevaluategrouping.cpp,kgalileicenter/galilei/groups/gevaluategrouping.h,kgalileicenter/galilei/groups/gevaluategroupingintramininter.cpp,kgalileicenter/galilei/groups/gevaluategroupingintramininter.h,kgalileicenter/galilei/groups/gevaluategroupingmethods.cpp,kgalileicenter/galilei/groups/gevaluategroupingmethods.h,kgalileicenter/galilei/groups/gevaluategroupingvariance.cpp,kgalileicenter/galilei/groups/gevaluategroupingvariance.h,kgalileicenter/galilei/groups/ggroupingkprotos.cpp,kgalileicenter/galilei/groups/ggroupingkprotos.h,kgalileicenter/galilei/groups/girheuristic.cpp,kgalileicenter/galilei/groups/girheuristic.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=groups
 sub_dirs=
@@ -568,6 +568,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/groups/gir.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/groups/girheuristic.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/girheuristic.h]
 dist=true
 install=false
 install_location=
