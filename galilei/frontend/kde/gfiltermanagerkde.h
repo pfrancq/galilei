@@ -6,7 +6,7 @@
 
 	Manager to handle URL file in a KDE environment - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2004 by the UniversitÃ© libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -73,12 +73,16 @@ protected:
 	*/
 	virtual void Download(const char* URL,R::RString& tmpFile) throw(GException);
 
+public:
+
 	/**
 	* Look for the mime types of a temporary file.
 	* @param tmpfile        Temporary file created.
 	* @return Pointer to a GMIMEFilter.
 	*/
 	virtual const char* DetermineMIMEType(const char* tmpfile) throw(GException);
+
+protected:
 
 	/**
 	* Delete the file locally.

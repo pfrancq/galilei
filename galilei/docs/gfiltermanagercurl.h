@@ -6,7 +6,7 @@
 
 	Filter manager handling URL using the CURL library - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -80,6 +80,8 @@ protected:
 	*/
 	static int WriteTmpFile(void* buffer, size_t size, size_t nmemb, void* stream);
 
+public:
+
 	/**
 	* Try to guess the MIME types of a temporary file. This method looks for the
 	* information using the libCurl library.
@@ -87,6 +89,8 @@ protected:
 	* @return Name fo of the MIME type.
 	*/
 	virtual const char* DetermineMIMEType(const char* tmpfile) throw(GException);
+
+protected:
 
 	/**
 	* Download and store locally a document given by an URL.
