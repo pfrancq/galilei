@@ -87,8 +87,8 @@ GALILEI::GLangEN::GLangEN(void) throw(bad_alloc)
 	// Rules 1b
 	Rules1b=new RContainer<PorterRule,unsigned int,true,false>(3,2);
 	Rules1b->InsertPtr(new PorterRule("eed","ee",2,1,0,PorterRule::CondNothing,true));
-	Rules1b->InsertPtr(new PorterRule("ed"," ",1,-1,-1,PorterRule::CondContainsVowel,true));
-	Rules1b->InsertPtr(new PorterRule("ing"," ",2,-1,-1,PorterRule::CondContainsVowel,true));
+	Rules1b->InsertPtr(new PorterRule("ed","",1,-1,-1,PorterRule::CondContainsVowel,true));
+	Rules1b->InsertPtr(new PorterRule("ing","",2,-1,-1,PorterRule::CondContainsVowel,true));
 
 	// Rules 1bb
 	Rules1bb=new RContainer<PorterRule,unsigned int,true,false>(15,5);
@@ -106,7 +106,7 @@ GALILEI::GLangEN::GLangEN(void) throw(bad_alloc)
 	Rules1bb->InsertPtr(new PorterRule("tt","t",1,0));
 	Rules1bb->InsertPtr(new PorterRule("ww","w",1,0));
 	Rules1bb->InsertPtr(new PorterRule("xx","x",1,0));
-	Rules1bb->InsertPtr(new PorterRule(" ","e",0,0));
+	Rules1bb->InsertPtr(new PorterRule("","e",0,0));
 
 	// Rules 1c
 	Rules1c=new RContainer<PorterRule,unsigned int,true,false>(1,2);
@@ -138,40 +138,40 @@ GALILEI::GLangEN::GLangEN(void) throw(bad_alloc)
 	// Rules 3
 	Rules3=new RContainer<PorterRule,unsigned int,true,false>(7,5);
 	Rules3->InsertPtr(new PorterRule("icate","ic",4,1,0));
-	Rules3->InsertPtr(new PorterRule("ative"," ",4,-1,0));
+	Rules3->InsertPtr(new PorterRule("ative","",4,-1,0));
 	Rules3->InsertPtr(new PorterRule("alize","al",4,1,0));
 	Rules3->InsertPtr(new PorterRule("iciti","ic",4,1,0));
 	Rules3->InsertPtr(new PorterRule("ical","ic",3,1,0));
-	Rules3->InsertPtr(new PorterRule("ful"," ",2,-1,0));
-	Rules3->InsertPtr(new PorterRule("ness"," ",3,-1,0));
+	Rules3->InsertPtr(new PorterRule("ful","",2,-1,0));
+	Rules3->InsertPtr(new PorterRule("ness","",3,-1,0));
 
 	// Rules 4
 	Rules4=new RContainer<PorterRule,unsigned int,true,false>(20,5);
-	Rules4->InsertPtr(new PorterRule("al"," ",1,-1,1));
-	Rules4->InsertPtr(new PorterRule("ance"," ",3,-1,1));
-	Rules4->InsertPtr(new PorterRule("ence"," ",3,-1,1));
-	Rules4->InsertPtr(new PorterRule("er"," ",1,-1,1));
-	Rules4->InsertPtr(new PorterRule("ic"," ",1,-1,1));
-	Rules4->InsertPtr(new PorterRule("able"," ",3,-1,1));
-	Rules4->InsertPtr(new PorterRule("ible"," ",3,-1,1));
-	Rules4->InsertPtr(new PorterRule("ant"," ",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("ement"," ",4,-1,1));
-	Rules4->InsertPtr(new PorterRule("ment"," ",3,-1,1));
-	Rules4->InsertPtr(new PorterRule("ent"," ",2,-1,1));
+	Rules4->InsertPtr(new PorterRule("al","",1,-1,1));
+	Rules4->InsertPtr(new PorterRule("ance","",3,-1,1));
+	Rules4->InsertPtr(new PorterRule("ence","",3,-1,1));
+	Rules4->InsertPtr(new PorterRule("er","",1,-1,1));
+	Rules4->InsertPtr(new PorterRule("ic","",1,-1,1));
+	Rules4->InsertPtr(new PorterRule("able","",3,-1,1));
+	Rules4->InsertPtr(new PorterRule("ible","",3,-1,1));
+	Rules4->InsertPtr(new PorterRule("ant","",2,-1,1));
+	Rules4->InsertPtr(new PorterRule("ement","",4,-1,1));
+	Rules4->InsertPtr(new PorterRule("ment","",3,-1,1));
+	Rules4->InsertPtr(new PorterRule("ent","",2,-1,1));
 	Rules4->InsertPtr(new PorterRule("sion","s",3,0,1));
 	Rules4->InsertPtr(new PorterRule("tion","t",3,0,1));
-	Rules4->InsertPtr(new PorterRule("ou"," ",1,-1,1));
-	Rules4->InsertPtr(new PorterRule("ism"," ",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("ate"," ",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("iti"," ",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("ous"," ",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("ive"," ",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("ize"," ",2,-1,1));
+	Rules4->InsertPtr(new PorterRule("ou","",1,-1,1));
+	Rules4->InsertPtr(new PorterRule("ism","",2,-1,1));
+	Rules4->InsertPtr(new PorterRule("ate","",2,-1,1));
+	Rules4->InsertPtr(new PorterRule("iti","",2,-1,1));
+	Rules4->InsertPtr(new PorterRule("ous","",2,-1,1));
+	Rules4->InsertPtr(new PorterRule("ive","",2,-1,1));
+	Rules4->InsertPtr(new PorterRule("ize","",2,-1,1));
 
 	// Rules 5a
 	Rules5a=new RContainer<PorterRule,unsigned int,true,false>(2,5);
-	Rules5a->InsertPtr(new PorterRule("e"," ",0,-1,1));
-	Rules5a->InsertPtr(new PorterRule("e"," ",0,-1,-1));
+	Rules5a->InsertPtr(new PorterRule("e","",0,-1,1));
+	Rules5a->InsertPtr(new PorterRule("e","",0,-1,-1));
 
 	// Rules 5b
 	Rules5b=new RContainer<PorterRule,unsigned int,true,false>(1,5);
