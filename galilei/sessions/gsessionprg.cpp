@@ -118,7 +118,6 @@ void GSOutputI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned 
 	}
 	Owner->SOFile=new RTextFile(args->Tab[0]->GetValue(prg),RIO::Create);
 	Owner->SOFile->SetSeparator("\t");
-//	(*Owner->SOFile)<<"AVGintra"<<"AVGinter"<<"AVGol"<<"tRie"<<"J"<<"AVGGrpol"<<endl;
 }
 
 
@@ -231,7 +230,7 @@ void GCreateIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsig
 	r->WriteStr(tmp);
 	if(args->NbPtr==1)
 		IdealMethod.SetSettings(args->Tab[0]->GetValue(prg));
-	IdealMethod.CreateJudgement(Owner->Parents/*,Owner->Session->GetIdealGroups()*/,Owner->AutoSave);
+	IdealMethod.Run(Owner->AutoSave);
 	Owner->FirstGroup=Owner->FirstProfile=false;
 }
 
@@ -244,7 +243,7 @@ void GMixIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 	else
 		sprintf(tmp,"Creating Mixed Groups");
 	r->WriteStr(tmp);
-	GMixIdealGroups mix(Owner->Session,Owner->Parents,Owner->Session->GetIdealGroups());
+	GMixIdealGroups mix(Owner->Session,Owner->Session->GetIdealGroups());
 	if(args->NbPtr==1)
 		mix.SetSettings(args->Tab[0]->GetValue(prg));
 	mix.Run(0);
@@ -262,7 +261,7 @@ void GFdbksCycleI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsign
 	r->WriteStr(tmp);
 	if(args->NbPtr==1)
 		FdbksMethod.SetSettings(args->Tab[0]->GetValue(prg));
-	FdbksMethod.Run(Owner->Parents,Owner->Session->GetIdealGroups(),Owner->AutoSave);
+	FdbksMethod.Run(Owner->AutoSave);
 }
 
 
@@ -359,9 +358,11 @@ void GSetGroupingParamI::Run(GSessionPrg* prg,GSlot*,RStd::RContainer<GPrgVar,un
 void GRunQueriesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
 {
 	if(args->NbPtr!=4)
-		throw GException("Method needs three parameters");
-
-	GQueryDocsGroup Queries(Owner->Session);
+		throw GException("Method needs four parameters");
+	r->WriteStr("Construct Grouping from Ideal");
+	Owner->Session->CopyIdealGroups();
+	r->WriteStr("Run Queries");
+	GQueryDocsGroup Queries(Owner->Session,Owner->SOFile);
 	Queries.Run(atoi(args->Tab[0]->GetValue(prg)),atoi(args->Tab[1]->GetValue(prg)),atoi(args->Tab[2]->GetValue(prg)),atoi(args->Tab[3]->GetValue(prg)));
 	sprintf(tmp,"First: %f  -  Second: %f  -  Recall: %f  -  SimIntra: %f  -  SimInter: %f ",
 	        Queries.GetFirst(),Queries.GetSecond(),Queries.GetRecall(),Queries.GetSimQueryIntra(),Queries.GetSimQueryInter());
@@ -468,11 +469,11 @@ void GStatsGroupsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,u
 
 
 //-----------------------------------------------------------------------------
-void GAddIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+void GAddIdealI::Run(GSessionPrg* /*prg*/,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* /*args*/) throw(GException)
 {
 	strcpy(tmp,"Create New Ideal Group");
 	r->WriteStr(tmp);
-	IdealMethod.AddJudgement(Owner->Parents/*,Owner->Session->GetIdealGroups()*/,Owner->AutoSave);
+	IdealMethod.AddJudgement(Owner->AutoSave);
 }
 
 
@@ -486,7 +487,7 @@ void GAddIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 //-----------------------------------------------------------------------------
 GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	: GPrgClass("Session"), Session(s), OFile(0),
-	  GOFile(0), SOFile(0), /*Groups(0),*/ Parents(0), AutoSave(false)
+	  GOFile(0), SOFile(0), AutoSave(false)
 {
 	Methods.InsertPtr(new GOutputI(this));
 	Methods.InsertPtr(new GGOutputI(this));
@@ -509,6 +510,7 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GRunQueriesI(this));
 	Methods.InsertPtr(new GStatsProfilesDocsI(this));
 	Methods.InsertPtr(new GStatsGroupsDocsI(this));
+	Methods.InsertPtr(new GAddIdealI(this));
 };
 
 
@@ -527,8 +529,6 @@ GALILEI::GPrgClassSession::~GPrgClassSession(void)
 		delete SOFile;
 		SOFile=0;
 	}
-	if(Parents)
-		delete Parents;
 }
 
 

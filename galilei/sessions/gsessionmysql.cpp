@@ -345,6 +345,9 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 	GGroup* grp;
 	GLangCursor Langs;
 	bool Social;
+	#if GALILEITEST
+		GSubject* s;
+	#endif
 
 	// Go through the users
 	try
@@ -353,15 +356,23 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 		for(users.Start();!users.End();users.Next())
 		{
 			userid=atoi(users[0]);
-			sprintf(sSql,"SELECT profileid,description,updated,calculated,social FROM profiles WHERE userid=%u",userid);
+			#if GALILEITEST
+				sprintf(sSql,"SELECT profileid,description,updated,calculated,social,topicid FROM profiles WHERE userid=%u",userid);
+			#else
+				sprintf(sSql,"SELECT profileid,description,updated,calculated,social FROM profiles WHERE userid=%u",userid);
+			#endif
 			RQuery profiles(this,sSql);
 			InsertUser(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
 			for(profiles.Start();!profiles.End();profiles.Next())
 			{
 				profileid=atoi(profiles[0]);
+				#if GALILEITEST
+					s=Subjects.GetPtr<unsigned int>(atoi(profiles[5]));
+				#endif
 				Social=false;
 				if(atoi(profiles[4])==1) Social=true;
 				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,profiles[2],profiles[3],GetNbLangs()));
+				prof->SetSubject(s);
 				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid FROM subprofiles WHERE profileid=%u",profileid);
 				RQuery subprofil (this,sSql);
 				for(subprofil.Start();!subprofil.End();subprofil.Next())
@@ -373,6 +384,13 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 					else
 						grp=0;
 					InsertSubProfile(sub=new GSubProfileVector(prof,subid,lang,grp,subprofil[2]));
+					#if GALILEITEST
+						if(sub->GetLang()==s->GetLang())
+						{
+							sub->SetSubject(s);
+							s->InsertSubProfile(sub);
+						}
+					#endif
 				}   
 			}
 		}
@@ -516,46 +534,18 @@ void GALILEI::GSessionMySQL::SaveIdealGroupment(RContainer<GGroups,unsigned int,
 void GALILEI::GSessionMySQL::LoadSubjectTree()
 {
 	char sSql[200];
-	unsigned int nbuser,nbsubsubj;
-	sprintf(sSql,"SELECT count(*) from users");
-	RQuery user(this,sSql);
-	user.Start();
-	nbuser=atoi(user[0]);
-	sprintf(sSql,"SELECT count(*) from subsubject");
-	RQuery subsubj(this,sSql);
-	subsubj.Start();
-	nbsubsubj=atoi(subsubj[0]);
-	sprintf(sSql,"SELECT subjectid,subjectname from subject");
-	Subjects = new GSubjectTree(0,0,nbuser,nbsubsubj);
-	RQuery sub(this,sSql);
-	unsigned int j=1;
+	GSubject* subject;
+	GSubject* subsubject;
+
+	Subjects.Clear();
+	RQuery sub(this,"SELECT topicid,name,used,langid FROM topics WHERE parent=0");
 	for(sub.Start();!sub.End();sub.Next())
 	{
-		int temp=0;
-		GSubject* subject=new GSubject(sub[1],atoi(sub[0]));
-		sprintf(sSql,"SELECT subsubjectid,subsubjectname from subsubject where subjectid=%u",atoi(sub[0]));
+		Subjects.AddNode(0,subject=new GSubject(atoi(sub[0]),sub[1],GetLang(sub[3]),atoi(sub[2])));
+		sprintf(sSql,"SELECT topicid,name,used,langid FROM topics WHERE parent=%u",atoi(sub[0]));
 		RQuery subsub(this,sSql);
 		for(subsub.Start();!subsub.End();subsub.Next())
-		{
-			GSubject* subsubject=new GSubject(subsub[1],atoi(subsub[0]));
-			sprintf(sSql,"SELECT htmlid from subjectbyhtmls where subsubjectid=%u",atoi(subsub[0]));
-			RQuery doc(this,sSql);
-			for(doc.Start();!doc.End();doc.Next())
-			{
-				GDoc* d = this->GetDoc(atoi(doc[0]));
-				subsubject->InsertDoc(d);
-				subsubject->SetLang(d->GetLang());
-				temp++;
-				d->InsertSubject(subsubject);
-			}
-			if(temp==0) subsubject->SetLang(this->GetDoc(1)->GetLang());
-			subject->InsertNode(subsubject);
-			for(unsigned int k=0; k<nbuser;k++)
-				for (unsigned int i=1;i<=GetNbLangs();i++)
-					GetSubProfile((k*nbsubsubj*(GetNbLangs()))+((j-1)*2)+i)->SetSubject(subsubject);
-			j++;
-		}
-			Subjects->InsertPtr(subject);
+			Subjects.AddNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],GetLang(subsub[3]),atoi(subsub[2])));
 	}
 }
 
@@ -608,6 +598,8 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 	int docid;
 	char sSql[100];
 	GLangCursor Langs;
+	GDoc* d;
+	GSubject* s;
 
 	sprintf(sSql,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed,n,ndiff,v,vdiff FROM htmls");
 	RQuery quer (this,sSql);
@@ -630,6 +622,18 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 			if(doc)
 				doc->AddWord(atoi(sel[1]),atof(sel[2]));
 		}
+	}
+
+	//  Make Link between documents and topics
+	RQuery subdocs(this,"SELECT htmlid,topicid FROM topicsbyhtmls");
+	for(subdocs.Start();!subdocs.End();subdocs.Next())
+	{
+		d=GetDoc(atoi(subdocs[0]));
+		if(!d) {cout<<"Problem"<<endl;continue;}
+		s=Subjects.GetPtr<const unsigned int>(atoi(subdocs[1]));
+		if(!s) {cout<<"Problem"<<endl;continue;}
+		s->InsertDoc(d);
+		d->InsertSubject(s);
 	}
 
 	// Update References of the loaded documents.

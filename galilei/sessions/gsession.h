@@ -50,7 +50,7 @@
 #include <docs/gdocs.h>
 #include <groups/ggroupir.h>
 #include <groups/ggroupsmng.h>
-
+#include <groups/gsubjecttree.h>
 
 
 //-----------------------------------------------------------------------------
@@ -82,7 +82,7 @@ protected:
 	/**
 	* Pointer to a tree of subject
 	*/
-	GSubjectTree* Subjects;
+	GSubjectTree Subjects;
 
 	/**
 	* All the judgements.
@@ -172,7 +172,7 @@ protected:
 	/**
 	* Random number generator
 	*/
-	RRandom* Random;
+	RMath::RRandom* Random;
 
 public:
 
@@ -223,7 +223,7 @@ public:
 	/**
 	* Return a pointer to a tree of subjects
 	*/
-	GSubjectTree* GetSubjects() {return(Subjects);}
+	GSubjectTree* GetSubjects() {return(&Subjects);}
 
 	/**
 	* Register a description method for the profiles.
@@ -505,6 +505,12 @@ public:
 	void InitFdbks(void) throw(bad_alloc,GException);
 
 	/**
+	* Get a Cursor on the feedbacks.
+	* @return GProfDocCursor.
+	*/
+	GProfDocCursor& GetProfDocCursor(void);
+
+	/**
 	* Clear all the feedbacks.
 	*/
 	void ClearFdbks(void);
@@ -652,6 +658,12 @@ public:
 	* @return The current Random value * max.
 	*/
 	int GetCurrentRandomValue(unsigned int max);
+
+	/**
+	* Get the random number generator.
+	* @returns Pointer to RMath::RRandom;
+	*/
+	RMath::RRandom* GetRandom(void) const {return(Random);}
 
 	/**
 	* Destructor.

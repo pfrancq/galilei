@@ -99,11 +99,6 @@ public:
 	RIO::RTextFile* SOFile;
 
 	/**
-	* Container used to create subjects catagories.
-	*/
-	RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* Parents;
-
-	/**
 	* Precision of the current groupement.
 	*/
 	double Precision;
@@ -400,7 +395,7 @@ protected:
 	/**
 	* Temporary string.
 	*/
-	char tmp[500];
+	char tmp[5000];
 
 	/**
 	* Must a line be readed;

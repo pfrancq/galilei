@@ -86,7 +86,8 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException)
-	: GLangs(2),GDocs(d),GUsers(u,p), GGroupsMng(g), Fdbks(f+f/2,f/2),
+	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g), 
+	  Subjects(), Fdbks(f+f/2,f/2),
 	  ProfileCalcs(0), ProfileCalc(0), Groupings(0), Grouping(0), Mng(mng), DocAnalyse(0),
 	  bGroups(false),bFdbks(false), DocOptions(0)
 	
@@ -531,9 +532,6 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 void GALILEI::GSession::CalcProfile(GProfile* prof) throw(GException)
 {
 	ProfileCalc->Compute(prof);
-	
-
-	
 }
 
 
@@ -562,6 +560,15 @@ void GALILEI::GSession::InitFdbks(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
+GProfDocCursor& GALILEI::GSession::GetProfDocCursor(void)
+{
+	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
+	cur->Set(Fdbks);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::ClearFdbks(void)
 {
 	GDocCursor cur=GetDocsCursor();
@@ -579,13 +586,49 @@ void GALILEI::GSession::ClearFdbks(void)
 
 
 //-----------------------------------------------------------------------------
+void TestFdbk(GProfDocCursor& Fdbks)
+{
+	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+	{
+		if(!Fdbks()->GetDoc())
+			cout<<"Problem"<<endl;
+		if(!Fdbks()->GetProfile())
+			cout<<"Problem"<<endl;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void TestFdbks(GSession* s)
+{
+	GDocCursor cur=s->GetDocsCursor();
+	for(cur.Start();!cur.End();cur.Next())
+	{
+		TestFdbk(cur()->GetProfDocCursor());
+	}
+	GProfileCursor cur2=s->GetProfilesCursor();
+	for(cur2.Start();!cur2.End(); cur2.Next())
+	{
+		TestFdbk(cur2()->GetProfDocCursor());
+	}
+	TestFdbk(s->GetProfDocCursor());
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const char* date) throw(bad_alloc)
 {
 	GProfDoc* f;
 
+//	TestFdbks(this);
+	if((p->GetId()==5)&&(d->GetId()==243))
+		cout<<"Problem"<<endl;
 	Fdbks.InsertPtr(f=new GProfDoc(d,p,j,date));
+//	TestFdbks(this);
 	p->AddJudgement(f);
+//	TestFdbks(this);
 	d->AddJudgement(f);
+//	TestFdbks(this);
 	p->SetState(osUpdated);
 }
 
@@ -742,6 +785,9 @@ void GALILEI::GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 			}
 		}
 	}
+	delete[] j;
+	delete[] k;
+	delete[] test;
 }
 
 
