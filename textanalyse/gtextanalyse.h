@@ -64,7 +64,7 @@ class GTextAnalyse : public GDocAnalyse
 	/**
 	* Cursor on the different languages defined in the system.
 	*/
-	GFactoryLangCursor CurLangs;
+	R::RCursor<GFactoryLang> CurLangs;
 
 	/**
 	* All the word appearing in the current document.
@@ -196,7 +196,7 @@ class GTextAnalyse : public GDocAnalyse
 	* Determine if the extracted words may contain other things than letters.
 	*/
 	bool NonLetterWords;
-	
+
 	/**
 	* Determine if the distance between words in a document is use.
 	*/
