@@ -51,7 +51,7 @@
 
 //---------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gfilterreu.h>
+#include <gfilterreu.h>
 #include <filters/codetochar.h>
 using namespace GALILEI;
 using namespace R;
@@ -92,11 +92,11 @@ public:
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GALILEI::GFilterReu::GFilterReu(GURLManager* mng)
-	: GFilter(mng,"Reu Filter","text/reu","$Revision$"), Tags(0),
+GALILEI::GFilterReu::GFilterReu(GFactoryFilter* fac)
+	: GFilter(fac), Tags(0),
 	 Buffer(0), Chars(50,5)
 {
-	AddMIME(mng,"text/reu");
+	AddMIME(fac->GetMng(),"text/reu");
 	InitCharContainer();
 	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
 	Tags->InsertPtr(new Tag("HEAD","",Tag::tHEAD,true,8,false));
@@ -670,8 +670,24 @@ void GALILEI::GFilterReu::NextValidTag(void)
 }
 
 
+//------------------------------------------------------------------------------
+void GFilterReu::Configure(GFactoryFilter*)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterReu::CreateParams(GParams*)
+{
+}
+
+
 //---------------------------------------------------------------------------
 GALILEI::GFilterReu::~GFilterReu()
 {
 	if(Tags) delete Tags;
 }
+
+
+//------------------------------------------------------------------------------
+CREATE_FILTER_FACTORY("Reuters",GFilterReu,true,false)

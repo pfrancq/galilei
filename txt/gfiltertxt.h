@@ -87,9 +87,10 @@ public:
 
 	/**
 	* Construct the TXT filter for a specific TXT File.
-	* @param mng            Manager.
+	* @param fac            Factory.
+	* @param name           Name of the filter.
 	*/
-	GFilterTXT(GURLManager* mng,bool b=false);
+	GFilterTXT(GFactoryFilter* fac);
 
 protected:
 
@@ -122,6 +123,23 @@ public:
 	//void SetBlankLines(bool b);
 
 	/**
+	* Show 'about' information.
+	*/
+	static void About(void);
+
+	/**
+	* Configure the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void Configure(GFactoryFilter* params);
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void CreateParams(GParams* params);
+
+	/**
 	* Destructor of the TXT filter.
 	*/
 	virtual ~GFilterTXT(void);
@@ -134,4 +152,4 @@ public:
 //-----------------------------------------------------------------------------
 #endif
 
- 
+

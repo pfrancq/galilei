@@ -49,7 +49,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gfilteremail.h>
+#include <gfilteremail.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -62,11 +62,18 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterEMail::GFilterEMail(GURLManager* mng,bool b)
-	: GFilter(mng,"EMail Filter","text/email","$Revision$"), Buffer(0), 
-	  BlankLines(b)
+GFilterEMail::GFilterEMail(GFactoryFilter* fac)
+	: GFilter(fac), Buffer(0),
+	  BlankLines(false)
 {
-	AddMIME(mng,"text/email");
+	AddMIME(fac->GetMng(),"text/email");
+}
+
+
+//-----------------------------------------------------------------------------
+void GFilterEMail::ApplyConfig(void)
+{
+	BlankLines=Factory->GetBool("Blank Lines");
 }
 
 
@@ -245,7 +252,18 @@ void GFilterEMail::SetBlankLines(bool b)
 }
 
 
+//------------------------------------------------------------------------------
+void GFilterEMail::CreateParams(GParams* params)
+{
+	params->InsertPtr(new GParamBool("Blank Lines",false));
+}
+
+
 //-----------------------------------------------------------------------------
 GFilterEMail::~GFilterEMail(void)
 {
 }
+
+
+//------------------------------------------------------------------------------
+CREATE_FILTER_FACTORY("EMail",GFilterEMail,true,true)

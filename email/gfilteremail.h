@@ -87,9 +87,15 @@ public:
 
 	/**
 	* Construct the email filter for a specific email.
-	* @param mng            Manager.
+	* @param fac            Factory.
+	* @param name           Name of the filter.
 	*/
-	GFilterEMail(GURLManager* mng,bool b=false);
+	GFilterEMail(GFactoryFilter* fac);
+
+	/**
+	* Configurations were applied from the factory.
+	*/
+	virtual void ApplyConfig(void);
 
 protected:
 
@@ -128,6 +134,23 @@ public:
 	* @param                    Allowed or not?
 	*/
 	void SetBlankLines(bool b);
+
+	/**
+	* Show 'about' information.
+	*/
+	static void About(void);
+
+	/**
+	* Configure the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void Configure(GFactoryFilter* params);
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void CreateParams(GParams* params);
 
 	/**
 	* Destructor of the email filter.

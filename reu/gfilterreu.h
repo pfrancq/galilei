@@ -144,9 +144,9 @@ public:
 
 	/**
 	* Construct the REU filter for a specific Reu document.
-	* @param mng            Manager.
+	* @param fac            Factory.
 	*/
-	GFilterReu(GURLManager* mng);
+	GFilterReu(GFactoryFilter* fac);
 
 	/**
 	* Analyze the document and fill the XML structure with the information
@@ -204,6 +204,23 @@ protected:
 	void NextValidTag(void);
 
 public:
+
+	/**
+	* Show 'about' information.
+	*/
+	static void About(void);
+
+	/**
+	* Configure the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void Configure(GFactoryFilter* params);
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void CreateParams(GParams* params);
 
 	/**
 	*The destructor

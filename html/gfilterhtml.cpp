@@ -34,7 +34,7 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <string.h>
@@ -49,9 +49,9 @@
 #include <fcntl.h>
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gfilterhtml.h>
+#include <gfilterhtml.h>
 #include <filters/codetochar.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
@@ -59,14 +59,14 @@ using namespace R;
 
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class Tag
 //
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
-class GALILEI::GFilterHTML::Tag
+//------------------------------------------------------------------------------
+class GFilterHTML::Tag
 {
 public:
 	enum tTag{tNULL,tHTML,tSCRIPT,tHEAD,tTITLE,tMETA,tBODY,tLINK,tBASE,tH1,tH2,tH3,tH4,tH5,tH6,tP,tTD};
@@ -86,18 +86,18 @@ public:
 
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GFilterHTML
 //
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
-GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
-	: GFilter(mng,"HTML Filter","text/html","$Revision$"), Tags(0),
+//------------------------------------------------------------------------------
+GFilterHTML::GFilterHTML(GFactoryFilter* fac)
+	: GFilter(fac), Tags(0),
 	 Buffer(0), Chars(50,5),Base(0)
 {
-	AddMIME(mng,"text/html");
+	AddMIME(fac->GetMng(),"text/html");
 	InitCharContainer();
 	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
 	Tags->InsertPtr(new Tag("HEAD","",Tag::tHEAD,true,8,false));
@@ -122,8 +122,8 @@ GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 }
 
 
-//---------------------------------------------------------------------------
-bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
+//------------------------------------------------------------------------------
+bool GFilterHTML::Analyze(GDocXML* doc)
 {
 	int accessmode,handle;
 	struct stat statbuf;
@@ -161,8 +161,8 @@ bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
 }
 
 
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::InitCharContainer(void)
+//------------------------------------------------------------------------------
+void GFilterHTML::InitCharContainer(void)
 {
 	Chars.InsertPtr(new CodeToChar("Ucirc",'Û'));
 	Chars.InsertPtr(new CodeToChar("nbsp",' '));
@@ -266,8 +266,8 @@ void GALILEI::GFilterHTML::InitCharContainer(void)
 }
 
 
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::AnalyseBody(void)
+//------------------------------------------------------------------------------
+void GFilterHTML::AnalyseBody(void)
 {
 	RXMLTag* content;    // Pointer to the content part of DocXML.
 	RXMLTag* links;      // Pointer to the links part of DocXML.
@@ -345,8 +345,8 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 }
 
 
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::AnalyseLink(char* params,char* block,bool ins)
+//------------------------------------------------------------------------------
+void GFilterHTML::AnalyseLink(char* params,char* block,bool ins)
 {
 	RXMLTag* metalink;
 
@@ -361,8 +361,8 @@ void GALILEI::GFilterHTML::AnalyseLink(char* params,char* block,bool ins)
 }
 
 
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::AnalyseHeader(void)
+//------------------------------------------------------------------------------
+void GFilterHTML::AnalyseHeader(void)
 {
 	RXMLTag* meta;
 
@@ -399,8 +399,8 @@ void GALILEI::GFilterHTML::AnalyseHeader(void)
 }
 
 
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::AnalyseBase(char* params)
+//------------------------------------------------------------------------------
+void GFilterHTML::AnalyseBase(char* params)
 {
 	char* ptr;
 	char delimiter;
@@ -448,8 +448,8 @@ void GALILEI::GFilterHTML::AnalyseBase(char* params)
 }
 
 
-//---------------------------------------------------------------------------
-RXMLTag* GALILEI::GFilterHTML::AnalyseLinkParams(char* params)
+//------------------------------------------------------------------------------
+RXMLTag* GFilterHTML::AnalyseLinkParams(char* params)
 {
 	RXMLTag* metaLink;
 
@@ -530,8 +530,8 @@ RXMLTag* GALILEI::GFilterHTML::AnalyseLinkParams(char* params)
 }
 
 
-//---------------------------------------------------------------------------
-char* GALILEI::GFilterHTML::ConstructURL(char* u)
+//------------------------------------------------------------------------------
+char* GFilterHTML::ConstructURL(char* u)
 {
 
 	char* urlG=0;      // the URL to  be returned
@@ -620,8 +620,8 @@ char* GALILEI::GFilterHTML::ConstructURL(char* u)
 }
 
 
-//------------------------------------------------------------------------
-void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
+//------------------------------------------------------------------------------
+void GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 {
 	RXMLTag* link=0;
 	char* ptr;
@@ -734,8 +734,8 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 }
 
 
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::ReplaceCode(void)
+//------------------------------------------------------------------------------
+void GFilterHTML::ReplaceCode(void)
 {
 	char* ptr=Pos+1;
 	char tmp[11];
@@ -779,8 +779,8 @@ void GALILEI::GFilterHTML::ReplaceCode(void)
 }
 
 
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::ReadNextTag(void)
+//------------------------------------------------------------------------------
+void GFilterHTML::ReadNextTag(void)
 {
 	bool bParams;            // Look if there are parameters.
 
@@ -912,8 +912,8 @@ beginread:
 }
 
 
-//---------------------------------------------------------------------------
-GALILEI::GFilterHTML::Tag* GALILEI::GFilterHTML::GetValidTag(void)
+//------------------------------------------------------------------------------
+GFilterHTML::Tag* GFilterHTML::GetValidTag(void)
 {
 	Tag* t;
 	bool RemBlockIns;
@@ -952,8 +952,8 @@ GALILEI::GFilterHTML::Tag* GALILEI::GFilterHTML::GetValidTag(void)
 }
 
 
-//---------------------------------------------------------------------------
-void GALILEI::GFilterHTML::NextValidTag(void)
+//------------------------------------------------------------------------------
+void GFilterHTML::NextValidTag(void)
 {
 	char* CurParams;  // Pointer to current Params;
 	bool bEndCurTag;
@@ -1018,8 +1018,24 @@ testlinks:
 }
 
 
-//---------------------------------------------------------------------------
-GALILEI::GFilterHTML::~GFilterHTML()
+//------------------------------------------------------------------------------
+void GFilterHTML::Configure(GFactoryFilter*)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterHTML::CreateParams(GParams*)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GFilterHTML::~GFilterHTML()
 {
 	if(Tags) delete Tags;
 }
+
+
+//------------------------------------------------------------------------------
+CREATE_FILTER_FACTORY("HTML",GFilterHTML,true,false)

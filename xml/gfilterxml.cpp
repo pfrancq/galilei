@@ -60,7 +60,7 @@ using namespace R;
 
 //---------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gfilterxml.h>
+#include <gfilterxml.h>
 #include <filters/codetochar.h>
 using namespace GALILEI;
 
@@ -100,11 +100,11 @@ public:
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GALILEI::GFilterXML::GFilterXML(GURLManager* mng)
-	: GFilter(mng,"XML Filter","text/xml","$Revision$"), Tags(0),
+GALILEI::GFilterXML::GFilterXML(GFactoryFilter* fac)
+	: GFilter(fac), Tags(0),
 	 Buffer(0), Chars(50,5)
 {
-	AddMIME(mng,"text/xml");
+	AddMIME(fac->GetMng(),"text/xml");
 	InitCharContainer();
 	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
 	
@@ -230,6 +230,7 @@ void GALILEI::GFilterXML::AnalyseDoc(void)
 		}
 	}
 }
+
 
 //---------------------------------------------------------------------------
 bool GALILEI::GFilterXML::Analyze(GDocXML* doc)
@@ -734,10 +735,24 @@ void GALILEI::GFilterXML::NextValidTag(void)
 	}
 }
 
+//------------------------------------------------------------------------------
+void GFilterXML::Configure(GFactoryFilter*)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterXML::CreateParams(GParams*)
+{
+}
+
 
 //---------------------------------------------------------------------------
 GALILEI::GFilterXML::~GFilterXML()
 {
 	if(Tags) delete Tags;
 }
- 
+
+
+//------------------------------------------------------------------------------
+CREATE_FILTER_FACTORY("XML",GFilterXML,true,false)

@@ -49,7 +49,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gfiltertxt.h>
+#include <gfiltertxt.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -62,11 +62,10 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterTXT::GFilterTXT(GURLManager* mng,bool /*b*/)
-	: GFilter(mng,"TXT Filter","text/plain","$Revision$"), Buffer(0)//,
-		//BlankLines(b)
+GFilterTXT::GFilterTXT(GFactoryFilter* fac)
+	: GFilter(fac), Buffer(0)
 {
-	AddMIME(mng,"text/plain");
+	AddMIME(fac->GetMng(),"text/plain");
 }
 
 
@@ -134,22 +133,22 @@ bool GFilterTXT::Analyze(GDocXML* doc)
 }
 
 
-////-----------------------------------------------------------------------------
-//bool GFilterTXT::IsBlankLines(void)
-//{
-//	return(BlankLines);
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void GFilterTXT::SetBlankLines(bool b)
-//{
-//	BlankLines=b;
-//}
+//------------------------------------------------------------------------------
+void GFilterTXT::Configure(GFactoryFilter*)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterTXT::CreateParams(GParams*)
+{
+}
 
 
 //-----------------------------------------------------------------------------
 GFilterTXT::~GFilterTXT(void)
 {
 }
- 
+
+//------------------------------------------------------------------------------
+CREATE_FILTER_FACTORY("Text",GFilterTXT,true,false)

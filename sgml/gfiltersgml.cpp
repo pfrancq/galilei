@@ -58,7 +58,7 @@ using namespace R;
 
 //---------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gfiltersgml.h>
+#include <gfiltersgml.h>
 #include <filters/codetochar.h>
 using namespace GALILEI;
 
@@ -98,11 +98,11 @@ public:
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GALILEI::GFilterSGML::GFilterSGML(GURLManager* mng)
-	: GFilter(mng,"SGML Filter","text/sgml","$Revision$"), Tags(0),
+GALILEI::GFilterSGML::GFilterSGML(GFactoryFilter* fac)
+	: GFilter(fac/*"SGML Filter",*/), Tags(0),
 	 Buffer(0), Chars(50,5)
 {
-	AddMIME(mng,"text/sgml");
+	AddMIME(fac->GetMng(),"text/sgml");
 	InitCharContainer();
 	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
 	Tags->InsertPtr(new Tag("DOC","",Tag::tDOC,false,8,false));
@@ -241,6 +241,7 @@ void GALILEI::GFilterSGML::AnalyseDoc(void)
 		}
 	}
 }
+
 
 //---------------------------------------------------------------------------
 bool GALILEI::GFilterSGML::Analyze(GDocXML* doc)
@@ -586,9 +587,24 @@ void GALILEI::GFilterSGML::NextValidTag(void)
 }
 
 
+//------------------------------------------------------------------------------
+void GFilterSGML::Configure(GFactoryFilter*)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterSGML::CreateParams(GParams*)
+{
+}
+
+
 //---------------------------------------------------------------------------
 GALILEI::GFilterSGML::~GFilterSGML()
 {
 	if(Tags) delete Tags;
 }
- 
+
+
+//------------------------------------------------------------------------------
+CREATE_FILTER_FACTORY("SGML",GFilterSGML,true,false)

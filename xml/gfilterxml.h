@@ -151,9 +151,10 @@ public:
 
 	/**
 	* Construct the XML filter for a specific XML document.
-	* @param mng            Manager.
+	* @param fac            Factory.
+	* @param name           Name of the filter.
 	*/
-	GFilterXML(GURLManager* mng);
+	GFilterXML(GFactoryFilter* fac);
 
 	/**
 	* Analyze the document and fill the XML structure with the information
@@ -217,6 +218,23 @@ protected:
 	void NextValidTag(void);
 
 public:
+
+	/**
+	* Show 'about' information.
+	*/
+	static void About(void);
+
+	/**
+	* Configure the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void Configure(GFactoryFilter* params);
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void CreateParams(GParams* params);
 
 	/**
 	*The destructor

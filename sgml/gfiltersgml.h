@@ -41,10 +41,8 @@
 // include files for R Project
 #include <rstd/rstring.h>
 #include <rstd/rcontainer.h>
-using namespace R;
 #include <rstd/rxmlfile.h>
 #include <rstd/rxmlstruct.h>
-using namespace R;
 #include <rstd/rtextfile.h>
 using namespace R;
 
@@ -146,9 +144,10 @@ public:
 
 	/**
 	* Construct the SGML filter for a specific SGML document.
-	* @param mng            Manager.
+	* @param fac            Factory.
+	* @param name           Name of the filter.
 	*/
-	GFilterSGML(GURLManager* mng);
+	GFilterSGML(GFactoryFilter* fac);
 
 	/**
 	* Analyze the document and fill the XML structure with the information
@@ -201,6 +200,23 @@ protected:
 	void NextValidTag(void);
 
 public:
+
+	/**
+	* Show 'about' information.
+	*/
+	static void About(void);
+
+	/**
+	* Configure the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void Configure(GFactoryFilter* params);
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void CreateParams(GParams* params);
 
 	/**
 	*The destructor

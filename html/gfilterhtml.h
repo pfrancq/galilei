@@ -41,16 +41,9 @@
 // include files for R Project
 #include <rstd/rstring.h>
 #include <rstd/rcontainer.h>
-using namespace R;
 #include <rstd/rxmlfile.h>
 #include <rstd/rxmlstruct.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-//#include <rstd/rtextfile.h>
-using namespace R;
+#include <rstd/rxmltag.h>
 
 
 //-----------------------------------------------------------------------------
@@ -143,7 +136,7 @@ class GFilterHTML: public GFilter
 	/**
 	* The container of HTML code
 	*/
-	RContainer<CodeToChar,unsigned int,true,true> Chars;
+	R::RContainer<CodeToChar,unsigned int,true,true> Chars;
 
 	/**
 	* Determine if the current tag is a closing tag or an open one.
@@ -169,9 +162,9 @@ public:
 
 	/**
 	* Construct the HTML filter for a specific HTML document.
-	* @param mng            Manager.
+	* @param fac            Factory.
 	*/
-	GFilterHTML(GURLManager* mng);
+	GFilterHTML(GFactoryFilter* fac);
 
 	/**
 	* Analyze the document and fill the XML structure with the information
@@ -230,7 +223,7 @@ protected:
 	* @param params         the parameters to be analysed
 	* @returns RXMLTag      pointer to the parent Tag
 	*/
-	RXMLTag* AnalyseLinkParams(char* params);
+	R::RXMLTag* AnalyseLinkParams(char* params);
 
 	
 	/**
@@ -238,7 +231,7 @@ protected:
 	* @param params         Parameters of the META tag.
 	* @param metaData       XML Tag representing the meta data of the document.
 	*/
-	void ReadMetaTag(char* params,RXMLTag* metaData);
+	void ReadMetaTag(char* params,R::RXMLTag* metaData);
 
 	/**
 	* This function replace codes by the corresponding characters.
@@ -272,6 +265,23 @@ protected:
 	void NextValidTag(void);
 
 public:
+
+	/**
+	* Show 'about' information.
+	*/
+	static void About(void);
+
+	/**
+	* Configure the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void Configure(GFactoryFilter* params);
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void CreateParams(GParams* params);
 
 	/**
 	*The destructor
