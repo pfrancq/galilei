@@ -129,6 +129,34 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 			AnalyseSim(sim,Cur1(),Cur2());
 		}
 	}
+	
+	//mean calculation & deviation calculation
+	double simssum, deviation, tmpsim;;
+	simssum=deviation=0.0;
+	unsigned int nbcomp;
+	nbcomp=0;
+	GSubProfile **sub1, **sub2;
+	for (sub1=s->Tab, i=s->NbPtr; i--; sub1++)
+	{
+		if (!(*sub1)->IsDefined()) continue;
+		for (sub2=sub1+1, j=0; j<i; sub2++,j++)
+		{
+			 if (!(*sub2)->IsDefined()) continue;
+			 tmpsim=GetSim((*sub1),(*sub2));
+			simssum+=tmpsim;
+			deviation+=tmpsim*tmpsim;
+			nbcomp++;
+		}
+	}
+	if (nbcomp)
+	{
+		MeanSim=simssum/double(nbcomp);
+		deviation/=double(nbcomp);
+		deviation-=MeanSim*MeanSim;
+		Deviation=deviation;
+	}
+	else
+		MeanSim=Deviation=0.0;
 }
 
 
@@ -469,6 +497,49 @@ void  GALILEI::GProfilesSim::UpdateProfSim(GUsers& users,bool global,GLang* lang
 	}
 	#warning osDelete to add
 	#warning when all the sim between the subprofiles are computed -> set Profile State to osUpdated
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* subprofiles)
+{
+	GSim* sim;
+	GSims* sims
+	unsigned int nbcomp,i,j;
+	double oldsim,newsim;
+	GSubProfile** sub1, **sub2;
+;
+	
+	nbcomp=(subprofiles->NbPtr)*(subprofiles->NbPtr-1)/2;
+	for (sub1=subprofiles->Tab, i=subprofiles->NbPtr; i--; sub1++)
+	{
+		sims=Sims.GetPtr((*sub1)->GetId());
+		for (sub2=sub1+1, j=0; j<i; sub2++,j++)
+		{
+			sim=sims->GetPtr((*sub2)->GetId());
+//			cout << "Similarity sub1="<<(*sub1)->GetId() <<"  sub2="<<(*sub2)->GetId() <<endl;
+			// if the similarity isn't in profsim, continue
+			if(!sim) continue;
+			//if ths similarity is in "modified" state :
+			if (sim->State==osModified)
+			{
+				oldsim=sim->Sim;
+				newsim=GetSim((*sub1),(*sub2));
+				// deviation is calculated as follow : {sum (xi"2/n)} - mean"2
+				//removing the square meansim from deviation
+				Deviation+=MeanSim*MeanSim;
+				//removing the modified element
+				Deviation-=(oldsim*oldsim)/nbcomp;
+				//add the new value of the modified element
+				Deviation+=(newsim*newsim)/nbcomp;
+				//update the mean of similarities
+				MeanSim=(nbcomp*MeanSim)-oldsim+newsim;
+				MeanSim/=nbcomp;
+				//add the square of new mean of similarities
+				Deviation-=MeanSim*MeanSim;
+			}
+		}
+	}
 }
 
 

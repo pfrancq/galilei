@@ -73,6 +73,16 @@ class GProfilesSim
 	*  lang of the profiles sim.
 	*/
 	GLang* Lang;
+	
+	/**
+	* mean of similarites
+	*/
+	double MeanSim;
+	
+	/**
+	* standart deviation of similarities
+	*/
+	double Deviation;
 
 public:
 
@@ -167,7 +177,6 @@ public:
 	* @param lang               the language used by the subProfiles
 	*/
 	void UpdateProfSim(GUsers* users,bool global,GLang* lang)throw(bad_alloc);
-
 	
 	/**
 	* Update the state of the profiles sims : If the subprofile has changed
@@ -180,12 +189,26 @@ public:
 	*/
 	void UpdateProfSim(GUsers& users ,bool global,GLang* lang)throw(bad_alloc);
 
-
 	/**
 	* update the Analyse de similarity  of the two subprofiles and insert when necessary
 	*/
 	void AnalyseSim2(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2);
 
+	/**
+	* update and get the deviation od similarities
+	*/
+	void UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* suprofile);
+
+	/**
+	* returns mean of similaritries
+	* dont forget to 'UpdateDeviatonAdMeanSIm" if you want the updated mean.
+	*/ 
+	double GetMeanSim(void){return(MeanSim);}
+	
+	/**
+	* returns mean of similaritries
+	*/ 
+	double GetDeviation(void){return(Deviation);}
 
 	/**
 	* Destructor.

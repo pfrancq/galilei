@@ -487,6 +487,14 @@ public:
 	* @param sub2           The Pointer to the second subprofile
 	*/
 	double GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2);
+	
+	/**
+	* return the minim of similarityof the subprofiles, needed by clusteirng algorithms.
+	* @param subprofiles    set of subprofiles on which mean minsim must be
+	*  caculated
+	* @param deviationrate  factor of the standart deviation.
+	*/
+	double GetMinimumOfSimilarity(RStd::RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate=1.5);
 
 	/**
 	* Initialise the table of similarity between documents and profiles

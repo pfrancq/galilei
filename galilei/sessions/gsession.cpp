@@ -566,7 +566,7 @@ void GALILEI::GSession::InitProfilesSims(void)
 		{
 			subProf->InsertPtr( subProfCur());      
 		}
-    profSim= new GProfilesSim(subProf, false,langs());
+		profSim= new GProfilesSim(subProf, false,langs());
 		ProfilesSims->InsertPtr(profSim);
 	}
 }
@@ -607,6 +607,24 @@ double GALILEI::GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* 
 	GProfilesSim* profSim = ProfilesSims->GetPtr<GLang*>(sub1->GetLang());
 	return profSim->GetSim(sub1,sub2);
 }
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GSession::GetMinimumOfSimilarity(RStd::RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate)
+{
+	double meanSim;
+	double deviation;
+	double minSim;
+        
+	subprofiles->Start();
+	GProfilesSim* profSim = ProfilesSims->GetPtr<GLang*>((*subprofiles)()->GetLang());
+	profSim->UpdateDeviationAndMeanSim(subprofiles);
+	meanSim=profSim->GetMeanSim();
+	deviation=profSim->GetDeviation();
+	minSim=meanSim+deviationrate*sqrt(deviation);
+	return(minSim);
+}
+
 
 
 //-----------------------------------------------------------------------------
