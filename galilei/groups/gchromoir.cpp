@@ -783,6 +783,7 @@ void GALILEI::GChromoIR::MergeBestSubProfiles(void) throw(RGA::eGA)
 			}
 		}
 	}
+	if((!bestgrp1)&&(!bestgrp2)) return;
 
 	// Put the objects of bestgrp1 and bestgrp2 in thObjs1
 	for(ptr2=bestgrp1->GetObjects(),i=bestgrp1->GetNbObjs()+1,ptr=thObjs1,NbObjs1=0;--i;ptr2++,ptr++,NbObjs1++)
