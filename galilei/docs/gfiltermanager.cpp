@@ -30,6 +30,7 @@
 #include <filters/gfilterhtml.h>
 #include <gsessions/gsession.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
 

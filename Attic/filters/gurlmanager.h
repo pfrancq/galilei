@@ -24,7 +24,6 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rstring.h>
-using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
@@ -60,12 +59,12 @@ class GURLManager
 	/**
 	* List of all mime types avalaible.
 	*/
-	RContainer<GMIMEFilter,unsigned int,true,true> MIMES;
+	RStd::RContainer<GMIMEFilter,unsigned int,true,true> MIMES;
 
 	/**
 	* List of all filters avalaible.
 	*/
-	RContainer<GFilter,unsigned int,true,false> Filters;
+	RStd::RContainer<GFilter,unsigned int,true,false> Filters;
 
 public:
 
@@ -81,13 +80,13 @@ protected:
 	* @param URL            URL of the document.
 	* @param tmpFile        Temporary file created.
 	*/
-	virtual void Download(const char* URL,RString& tmpFile) throw(GException);
+	virtual void Download(const char* URL,RStd::RString& tmpFile) throw(GException);
 
 	/**
 	* Delete the file locally.
 	* @param tmpFile        Temporary file to delete.
 	*/
-	virtual void Delete(RString& tmpFile) throw(GException);
+	virtual void Delete(RStd::RString& tmpFile) throw(GException);
 
 public:
 
@@ -110,6 +109,12 @@ public:
 	* @param mime           Name of the mimetype.
 	*/
 	GMIMEFilter* GetMIMEType(const char* mime) const;
+
+	/**
+	* Get the list of filters activ.
+	* Return Pointer to RContainer<GFilter,unsigned int,true,false>.
+	*/
+	RStd::RContainer<GFilter,unsigned int,true,false>* GetFilters(void) {return(&Filters);}
 
 	/**
 	* Destructor of URL manager.
