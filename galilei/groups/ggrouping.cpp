@@ -142,7 +142,7 @@ void GALILEI::GGrouping::DeleteGroup(GGroup* grp)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool save)
+void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
 	GGroupCalc* CalcDesc;
@@ -179,8 +179,13 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool save)
 		cur=Session->GetSubProfilesCursor(CurLang());
 		for(cur.Start();!cur.End();cur.Next())
 		{
+			#ifdef GROUP_SUBPROFILES_NOT_DEFINED
+			if(cur()->IsDefined()||cur()->GetProfile()->GetNbJudgedDocs(CurLang()))
+				SubProfiles.InsertPtr(cur());
+			#else
 			if(cur()->IsDefined())
 				SubProfiles.InsertPtr(cur());
+			#endif
 		}
 
 		// Make the grouping
