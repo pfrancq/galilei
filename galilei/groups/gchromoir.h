@@ -66,11 +66,6 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 {
 private:
 	/**
-	* Similarities between the subprofiles to group.
-	*/
-	GProfilesSim* Sims;
-
-	/**
 	* Value of the "Similarity" criterion.
 	*/
 	double CritSim;
@@ -397,6 +392,15 @@ public:
 	* Merge the two groups containing the two most similar subprofiles.
 	*/
 	void MergeBestSubProfiles(void) throw(RGA::eGA);
+
+	/**
+	* Treat the social subprofiles, i.e. if these subprofiles are alone in a group,
+	* put them in another group.
+	* @param rel                If true, the group is chosen as the one having the
+	*                           closest relevant subprofile. If false, the average
+	*                           similarity is used.
+	*/
+	void TreatSocialSubProfiles(bool rel);
 
 	/**
 	* Perform an optimisation.

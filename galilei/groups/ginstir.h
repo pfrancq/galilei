@@ -123,11 +123,6 @@ public:
 class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>, public GIRProm
 {
 	/**
-	* Similarities between the subprofiles to group.
-	*/
-	GProfilesSim* Sims;
-
-	/**
 	* Couples of subprofiles having same feedbacks on common documents.
 	*/
 	RStd::RContainer<GSubProfilesSameDocs,unsigned int,true,true> SameFeedbacks;
@@ -189,11 +184,10 @@ public:
 	* @param l              Language.
 	* @param grps           Pointer to the current solutions.
 	* @param objs           The objects to group.
-	* @param s              Similarities between the subprofiles.
 	* @param p              Parameters.
 	* @param debug          Debugger.
 	*/
-	GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,GIRParams* p,RGA::RDebug *debug) throw(bad_alloc);
+	GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GIRParams* p,RGA::RDebug *debug) throw(bad_alloc);
 
 	/**
 	* Construct the instance.
@@ -201,12 +195,11 @@ public:
 	* @param l              Language.
 	* @param grps           Pointer to the current solutions.
 	* @param objs           The objects to group.
-	* @param s              Similarities between the subprofiles.
 	* @param p              Parameters.
 	* @param pop            Population size.
 	* @param debug          Debugger.
 	*/
-	GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,GIRParams* p,unsigned int pop,RGA::RDebug *debug) throw(bad_alloc);
+	GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GIRParams* p,unsigned int pop,RGA::RDebug *debug) throw(bad_alloc);
 
 	/**
 	* Create a specific heuristic for the IR problem.
@@ -269,6 +262,22 @@ public:
 	* @param sub2           Second SubProfile.
 	*/
 	double GetRatioSame(GSubProfile* sub1,GSubProfile* sub2) const;
+
+	/**
+	* Compute the similarity between two subprofiles.
+	* @param sub1               Subprofile n°1.
+	* @param sub2               Subprofile n°2.
+	* @return double
+	*/
+	double GetSim(GSubProfile* sub1,GSubProfile* sub2);
+
+	/**
+	* Compute the similarity between two objects.
+	* @param obj1               Object n°1.
+	* @param obj2               Object n°2.
+	* @return double
+	*/
+	double GetSim(GObjIR* obj1,GObjIR* obj2);
 
 	/**
 	* This function can be used to do a traitement after the GA stops.

@@ -132,9 +132,9 @@ GALILEI::GThreadDataIR::~GThreadDataIR(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,GIRParams* p,RGA::RDebug *debug) throw(bad_alloc)
+GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GIRParams* p,RGA::RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(p->PopSize,objs,FirstFit,debug),
-	  GIRProm(p), Sims(s), SameFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1),
+	  GIRProm(p), SameFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1),
 	  DiffFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1), Params(p), 
 	  Sols(0),CurrentGroups(grps), Session(ses), Lang(l), NoSocialSubProfiles(objs->NbPtr)
 #if BESTSOLSVERIFICATION
@@ -194,9 +194,9 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,GIRParams* p,unsigned int pop,RGA::RDebug *debug) throw(bad_alloc)
+GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GIRParams* p,unsigned int pop,RGA::RDebug *debug) throw(bad_alloc)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(pop,objs,FirstFit,debug),
-	  GIRProm(p), Sims(s), SameFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1),
+	  GIRProm(p), SameFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1),
 	  DiffFeedbacks(objs->NbPtr/8+1,objs->NbPtr/16+1), Params(p),
 	  Sols(0),CurrentGroups(grps), Session(ses), Lang(l), NoSocialSubProfiles(objs->NbPtr)
 #if BESTSOLSVERIFICATION
@@ -291,6 +291,7 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 	double Precision,Recall,Total;
 
 	if(!Debug) return;
+	Precision=Recall=Total=0;
 	if(IdealGroups)
 	{
 		c->CompareIdeal(Session,IdealGroups);
@@ -298,7 +299,6 @@ void GALILEI::GInstIR::WriteChromoInfo(GChromoIR* c)
 		Recall=c->Recall;
 		Total=c->Global;
 	}
-	Precision=Recall=Total=0;
 	if(Params->SimMeasures==sctCorl)
 	{
 		sprintf(Tmp,"Id %2u (Fi=%f,Fi+=%f,Fi-=%f): Sim=%1.3f - Info=%1.3f - SameFdbk=%1.3f - DiffFdbk=%1.3f - Social=%1.3f ***  Recall=%1.3f - Precision=%1.3f - Global=%1.3f",
@@ -369,7 +369,8 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	double r;
 
 	#ifdef RGADEBUG
-		if(Debug) Debug->BeginFunc("PostEvaluate","GInstIR");
+		if(Debug)
+			Debug->BeginFunc("PostEvaluate","GInstIR");
 	#endif
 	ptr=Sols;
 	Assign(*ptr,BestChromosome);
@@ -404,7 +405,8 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	s->FiMinus=(*ptr)->GetFiMinus();
 	s->Fi=(*ptr)->GetFi();
 	#ifdef RGADEBUG
-		WriteChromoInfo(s);
+		if(Debug)
+			WriteChromoInfo(s);
 	#endif
 	ptr++;
 
@@ -420,7 +422,8 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	s->FiMinus=(*ptr)->GetFiMinus();
 	s->Fi=(*ptr)->GetFi();
 	#ifdef RGADEBUG
-		WriteChromoInfo(s);
+		if(Debug)
+			WriteChromoInfo(s);
 	#endif
 
 	// Look for the rest
@@ -438,7 +441,8 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 		s->FiMinus=(*ptr)->GetFiMinus();
 		s->Fi=(*ptr)->GetFi();
 		#ifdef RGADEBUG
-			WriteChromoInfo(s);
+			if(Debug)
+				WriteChromoInfo(s);
 		#endif
 	}
 
@@ -446,7 +450,8 @@ void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
 	delete[] Res;
 
 	#ifdef RGADEBUG
-		if(Debug) Debug->EndFunc("PostEvaluate","GInstIR");
+		if(Debug)
+			Debug->EndFunc("PostEvaluate","GInstIR");
 	#endif
 }
 
@@ -474,6 +479,20 @@ double GALILEI::GInstIR::GetRatioSame(GSubProfile* sub1,GSubProfile* sub2) const
 	if(ptr)
 		return(ptr->GetRatio());
 	return(0.0);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GInstIR::GetSim(GSubProfile* sub1,GSubProfile* sub2)
+{
+	return(Session->GetSimProf(sub1,sub2));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GInstIR::GetSim(GObjIR* obj1,GObjIR* obj2)
+{
+	return(Session->GetSimProf(obj1->GetSubProfile(),obj2->GetSubProfile()));
 }
 
 

@@ -77,7 +77,7 @@ using namespace RGA;
 //-----------------------------------------------------------------------------
 GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
 	: RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
-	  Sims(0), CritSim(0.0), CritSimAvgSim(0.0), CritSimJ(0.0), CritSimAvgRatio(0.0),
+	  CritSim(0.0), CritSimAvgSim(0.0), CritSimJ(0.0), CritSimAvgRatio(0.0),
 	  CritSimMinRatio(0.0), CritSimRatio(0.0), CritSimWOverB(0.0), CritSimSimWB(0.0),
 	  CritInfo(0.0), CritEntropy(0.0), CritLikelihood(0.0), CritSameFeedbacks(0.0),
 	  CritDiffFeedbacks(1.0), CritSocial(1.0), Protos(Used.MaxPtr),
@@ -97,7 +97,6 @@ void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
 	RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(thData);
 
 	// Current
-	Sims=Instance->Sims;
 	thObjs1=thData->tmpObjs1;
 	thObjs2=thData->tmpObjs2;
 	thTests=thData->Tests;
@@ -115,7 +114,8 @@ int GALILEI::GChromoIR::Compare(const GChromoIR* c) const
 
 #if GALILEITEST
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::CompareIdeal(GSession* s,RStd::RContainer<GGroups,unsigned int,true,true>* ideal)
+void GALILEI::GChromoIR::CompareIdeal(GSession* s,RStd::RContainer<GGroups,unsigned int,true,true>* ideal
+)
 {
 	GGroupIR* gr;
 	GGroup* g;
@@ -156,7 +156,7 @@ double GALILEI::GChromoIR::ComputeSumSim(GObjIR* obj)
 	for(Cur.Start(),SumSim=0.0;!Cur.End();Cur.Next())
 	{
 		if(Cur()==obj) continue;
-		SumSim+=Sims->GetSim(obj->GetSubProfile(),Cur()->GetSubProfile());
+		SumSim+=Instance->GetSim(obj->GetSubProfile(),Cur()->GetSubProfile());
 	}
 	return(SumSim);
 }
@@ -290,7 +290,7 @@ double GALILEI::GChromoIR::EvaluateJ(void)
 	{
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
-			tmp=1-Sims->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
+			tmp=1-Instance->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
 			tmp=tmp*tmp;
 			if(tmp<min)
 				min=tmp;
@@ -324,7 +324,7 @@ double GALILEI::GChromoIR::EvaluateAvgRatio(void)
 		for(Cur2.Start(),MaxInter=0.0;!Cur2.End();Cur2.Next())
 		{
 			if(Cur()==Cur2()) continue;
-			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
+			tmp=Instance->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
@@ -356,7 +356,7 @@ double GALILEI::GChromoIR::EvaluateMinRatio(void)
 		for(Cur2.Start(),MaxInter=0.0;!Cur2.End();Cur2.Next())
 		{
 			if(Cur()==Cur2()) continue;
-			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
+			tmp=Instance->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
@@ -397,7 +397,7 @@ double GALILEI::GChromoIR::EvaluateRatio(void)
 		for(Cur2.Start(),tmpMax=0.0;!Cur2.End();Cur2.Next())
 		{
 			if(Cur()==Cur2()) continue;
-			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
+			tmp=Instance->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
 			if(tmp>tmpMax)
 				tmpMax=tmp;
 		}
@@ -429,7 +429,7 @@ double GALILEI::GChromoIR::EvaluateWOverB(void)
 	for(Cur.Start(),sb=localsb=0.0;!Cur.End();Cur.Next())
 	{
 		if(rel==Cur()->Relevant) continue;
-		tmp=1-Sims->GetSim(rel->GetSubProfile(),Cur()->Relevant->GetSubProfile());
+		tmp=1-Instance->GetSim(rel->GetSubProfile(),Cur()->Relevant->GetSubProfile());
 		sb+=tmp*tmp;
 	}
 
@@ -458,7 +458,7 @@ double GALILEI::GChromoIR::EvaluateSimWB(void)
 	for(Cur.Start(),sb=0.0;!Cur.End();Cur.Next())
 	{
 		if(rel==Cur()->Relevant) continue;
-		sb+=Sims->GetSim(rel->GetSubProfile(),Cur()->Relevant->GetSubProfile());
+		sb+=Instance->GetSim(rel->GetSubProfile(),Cur()->Relevant->GetSubProfile());
 	}
 
 	// Compute SimW/SimB for the configurations.
@@ -626,7 +626,7 @@ void GALILEI::GChromoIR::EvaluateSameFeedbacks(void)
 		a1=ObjectsAss[same->GetId1()];
 		a2=ObjectsAss[same->GetId2()];
 		if(a1!=a2) continue;
-		CritSameFeedbacks+=1.0;
+		CritSameFeedbacks+=same->GetRatio();
 	}
 	if(Instance->SameFeedbacks.NbPtr)
 	{
@@ -648,7 +648,7 @@ void GALILEI::GChromoIR::EvaluateDiffFeedbacks(void)
 		a1=ObjectsAss[diff->GetId1()];
 		a2=ObjectsAss[diff->GetId2()];
 		if(a1!=a2) continue;
-		CritDiffFeedbacks+=1.0;
+		CritDiffFeedbacks+=diff->GetRatio();
 	}
 	if(Instance->DiffFeedbacks.NbPtr)
 	{
@@ -704,15 +704,15 @@ void GALILEI::GChromoIR::Evaluate(void) throw(RGA::eGA)
 //-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::ReAllocate(void) throw(RGA::eGA)
 {
-	GObjIRCursor Cur;
 	GGroupIRCursor Grp;
 	GObjIR** ptr;
-	unsigned int i;
-	double sim,maxsim;
-	GObjIR* best;
+	unsigned int i,nb;
+	double sim,maxsim,ratio;
 	GSubProfile* sub;
+	GGroupIR* grp;
+	GObjIR** Cur;
 
-	// Put the protyopes in Protos
+	// Put the prototypes in Protos
 	Protos.Clear();
 	Grp.Set(Used);
 	for(Grp.Start();!Grp.End();Grp.Next())
@@ -723,37 +723,73 @@ void GALILEI::GChromoIR::ReAllocate(void) throw(RGA::eGA)
 
 	// Insert the Prototypes in a group
 	for(Protos.Start();!Protos.End();Protos.Next())
-		ReserveGroup()->Insert(Protos());
+	{
+		grp=ReserveGroup();
+		grp->Insert(Protos());
+		grp->Relevant=Protos();
+	}
 
-	// Go through the subprofiles and put them in the group of the most similar
-	// prototype.
-	Cur=(*Objs);
-	for(Cur.Start();!Cur.End();Cur.Next())
+	// Mix randomly thObjs1
+	Instance->RandOrder<GObjIR*>(thObjs1,Objs->GetNb());
+
+	// Go through the ranbomly ordered subprofiles and put them in the group of the
+	// most similar prototype.
+	for(Cur=thObjs1,nb=Objs->GetNb()+1;--nb;Cur++)
 	{
 		// If the subprofile is a prototype -> already in a group
-		if(Protos.IsIn<const GObjIR*>(Cur())) continue;
+		if(GetGroup(*Cur)) continue;
 
 		// Find the subprofile
-		sub=Cur()->GetSubProfile();
+		sub=(*Cur)->GetSubProfile();
 
-		// Suppose the first prototype is the most similar
-		ptr=Protos.Tab;
-		best=(*ptr);
-		maxsim=Sims->GetSim(best->GetSubProfile(),sub);
-
-		// Go throught the rest of prototypes to see if a best exists
-		for(i=Protos.NbPtr,ptr++;--i;ptr++)
+		// Parse all the group to find all the group corresponding to the hard constraint
+		Grp.Set(Used);
+		for(Grp.Start(),maxsim=-1.0,grp=0;!Grp.End();Grp.Next())
 		{
-			sim=Sims->GetSim((*ptr)->GetSubProfile(),sub);
+			if(!Grp()->CanInsert(*Cur)) continue;
+			sim=Instance->GetSim(sub,Grp()->Relevant->GetSubProfile());
+			ratio=Grp()->GetMaxRatioSame(*Cur);
+			if(ratio>=Instance->Params->MinCommonOK)
+			{
+				// Take the group with the highest similarity
+				if(sim>maxsim)
+ 				{
+ 					maxsim=sim;
+ 					grp=Grp();
+	 			}
+			}
+	 	}
+
+		// If a group was found -> Insert the subprofile in it.
+		if(grp)
+		{
+			 grp->Insert(*Cur);
+			 continue;
+		}
+
+		// Go throught the prototypes to find the most similar in a valid group.
+		for(i=Protos.NbPtr+1,ptr=Protos.Tab,maxsim=-1.0;--i;ptr++)
+		{
+			if(!GetGroup(*ptr)->CanInsert(*Cur)) continue;
+			sim=Instance->GetSim((*ptr)->GetSubProfile(),sub);
 			if(sim>maxsim)
 			{
 				maxsim=sim;
-				best=(*ptr);
+				grp=GetGroup(*ptr);
 			}
 		}
 
-		// Insert it
-		GetGroup(best)->Insert(Cur());
+		// If a group was found -> Insert the subprofile in it.
+		if(grp)
+		{
+			 grp->Insert(*Cur);
+			 continue;
+		}
+
+		// Create a new group and make the current subprofile the prototype of it.
+		grp=ReserveGroup();
+		grp->Insert(*Cur);
+		grp->Relevant=(*Cur);
 	}
 }
 
@@ -783,6 +819,17 @@ void GALILEI::GChromoIR::DoKMeans(void) throw(RGA::eGA)
 	int error;
 	unsigned int IterNumber;
 	GGroupIRCursor Grp;
+	GObjIR** obj;
+
+	#ifdef RGADEBUG
+		if(Instance->Debug)
+			Instance->Debug->BeginFunc("DoKMeans","GChomoIR");
+	#endif
+
+
+	// Copy the subprofiles into thObjs1
+	for(Objs->Start(),obj=thObjs1;!Objs->End();Objs->Next(),obj++)
+		(*obj)=(*Objs)();
 
 	// Computed the prototypes for each groups
 	Grp.Set(Used);
@@ -795,6 +842,16 @@ void GALILEI::GChromoIR::DoKMeans(void) throw(RGA::eGA)
 		ReAllocate();
 		error=CalcNewProtosNb();
 	}
+
+	#ifdef RGADEBUG
+		if(Instance->Debug)
+		{
+			char tmp[60];
+			sprintf(tmp,"Number of k-Means runs: %u",itermax);
+			Instance->Debug->PrintInfo(tmp);
+			Instance->Debug->EndFunc("DoKMeans","GChomoIR");
+		}
+	#endif
 }
 
 
@@ -824,7 +881,7 @@ void GALILEI::GChromoIR::DivideWorstSubProfiles(void) throw(RGA::eGA)
 			sub=(*ptr)->GetSubProfile();
 			for(j=i+1,ptr2=ptr+1;--j;ptr2++)
 			{
-				sim=Sims->GetSim(sub,(*ptr2)->GetSubProfile());
+				sim=Instance->GetSim(sub,(*ptr2)->GetSubProfile());
 				if(sim<minsim)
 				{
 					minsim=sim;
@@ -852,8 +909,8 @@ void GALILEI::GChromoIR::DivideWorstSubProfiles(void) throw(RGA::eGA)
 	{
 		if(((*ptr)==worst1)||((*ptr)==worst2)) continue;
 		sub=(*ptr)->GetSubProfile();
-		sim=Sims->GetSim(sub1,sub);
-		minsim=Sims->GetSim(sub2,sub);
+		sim=Instance->GetSim(sub1,sub);
+		minsim=Instance->GetSim(sub2,sub);
 		if(sim>minsim)
 		{
 			NbObjs1++;
@@ -906,7 +963,7 @@ void GALILEI::GChromoIR::MergeBestSubProfiles(void) throw(RGA::eGA)
 		{
 			grp2=GetGroup(Cur2());
 			if(grp1==grp2) continue;
-			sim=Sims->GetSim(sub,Cur2()->GetSubProfile());
+			sim=Instance->GetSim(sub,Cur2()->GetSubProfile());
 			if(sim>maxsim)
 			{
 				maxsim=sim;
@@ -915,7 +972,7 @@ void GALILEI::GChromoIR::MergeBestSubProfiles(void) throw(RGA::eGA)
 			}
 		}
 	}
-	if((!bestgrp1)&&(!bestgrp2)) return;
+	if((!bestgrp1)||(!bestgrp2)) return;
 
 	// Put the objects of bestgrp1 and bestgrp2 in thObjs1
 	for(ptr2=bestgrp1->GetObjects(),i=bestgrp1->GetNbObjs()+1,ptr=thObjs1,NbObjs1=0;--i;ptr2++,ptr++,NbObjs1++)
@@ -935,14 +992,60 @@ void GALILEI::GChromoIR::MergeBestSubProfiles(void) throw(RGA::eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
+void GALILEI::GChromoIR::TreatSocialSubProfiles(bool rel)
 {
 	GObjIR* obj;
 	GGroupIRCursor Cur1,Cur2;
+	unsigned int i;
 	GGroupIR* grp=0;
 	double tmp,max;
+
+	// Look if social subprofiles are alone
+	for(i=0;i<Used.NbPtr;i++)
+	{
+		Cur1.Set(Used);
+		Cur2.Set(Used);
+		for(Cur1.GoTo(i);!Cur1.End();Cur1.Next(),i++)
+		{
+			if(Cur1()->GetNbObjs()!=1) continue;
+			obj=Cur1()->GetObjPos(0);
+			if(!obj->GetSubProfile()->GetProfile()->IsSocial()) continue;
+			for(Cur2.Start(),max=-1.0,grp=0;!Cur2.End();Cur2.Next())
+			{
+				if(Cur1()==Cur2()) continue;
+//				if(!Cur2()->CanInsert(obj)) continue;
+				if(rel)
+					tmp=Instance->GetSim(obj->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
+				else
+					tmp=Cur2()->ComputeAvgSim(obj);
+				if(tmp>max)
+				{
+					max=tmp;
+					grp=Cur2();
+				}
+			}
+			if(grp)
+			{
+				ReleaseGroup(Cur1());
+				grp->Insert(obj);
+				i--;
+				break;
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
+{
 	unsigned int i;
 	RPromSol** s;
+
+	#ifdef RGADEBUG
+		if(Instance->Debug)
+			Instance->Debug->BeginFunc("Optimisation","GChomoIR");
+	#endif
 
 	// Copy the current chromosome in thTests
 	Evaluate();
@@ -960,6 +1063,7 @@ void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
 	for(i=0;i<5;i++)
 	{
 		thTests[i]->DoKMeans();
+		thTests[i]->TreatSocialSubProfiles(true);
 		thTests[i]->Evaluate();
 	}
 
@@ -974,37 +1078,21 @@ void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
 	if(thProm->GetBestSol()->GetId())
 		(*this)=(*thTests[thProm->GetBestSol()->GetId()-1]);
 
-	// Look if social subprofiles are alone
-	for(i=0;i<Used.NbPtr;i++)
-	{
-		Cur1.Set(Used);
-		Cur2.Set(Used);
-		for(Cur1.GoTo(i);!Cur1.End();Cur1.Next(),i++)
-		{
-			if(Cur1()->GetNbObjs()!=1) continue;
-			obj=Cur1()->GetObjPos(0);
-			if(!obj->GetSubProfile()->GetProfile()->IsSocial()) continue;
-			for(Cur2.Start(),max=-1.0,grp=0;!Cur2.End();Cur2.Next())
+	#ifdef RGADEBUG
+		if(Instance->Debug)
+			for(s=thProm->GetSols(),i=7;--i;s++)
 			{
-				if(Cur1()==Cur2()) continue;
-//				if(!Cur2()->CanInsert(obj)) continue;
-				tmp=Cur2()->ComputeAvgSim(obj);
-				if(tmp>max)
-				{
-					max=tmp;
-					grp=Cur2();
-				}
+				if((*s)->GetId())
+					Instance->WriteChromoInfo(thTests[(*s)->GetId()-1]);
+				else
+					Instance->WriteChromoInfo(this);
 			}
-			if(grp)
-			{
-				ReleaseGroup(Cur1());
-				grp->Insert(obj);
-				i--;
-				break;
-			}
-		}
-	}
+	#endif
 
+	#ifdef RGADEBUG
+		if(Instance->Debug)
+			Instance->Debug->EndFunc("Optimisation","GChomoIR");
+	#endif
 }
 
 

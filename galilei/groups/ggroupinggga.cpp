@@ -284,8 +284,7 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 	if(!SubProfiles.NbPtr) return;
 	
 	// set the level of the MinSim
-	Params->MinSimLevel=Session->GetMinimumOfSimilarity(&SubProfiles);
-
+	Params->MinSimLevel=Session->GetMinimumOfSimilarity(&SubProfiles);///0.26;
 	try
 	{
 	 	GGroupDataIR data;
@@ -293,14 +292,15 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 		for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
 		{
 			Objs->InsertPtr(obj=new GObjIR(i,SubProfiles()));
-			obj->ComputeSumEntropy(Lang,Session);
+			// If the entropy must be computed -> computed local entropy
+			if(Params->ParamsEntropy.Weight)
+				obj->ComputeSumEntropy(Lang,Session);
 		}
-		GProfilesSim Sims(SubProfiles,Params->GlobalSim);
 		Session->ChangeDocProfState(Params->GlobalSim,Lang);
 		if(Modified)
-			Instance=new GInstIR(Session,Lang,Groups,Objs,&Sims,Params,0/*&file*/);
+			Instance=new GInstIR(Session,Lang,Groups,Objs,Params,0/*&file*/);
 		else
-			Instance=new GInstIR(Session,Lang,0,Objs,&Sims,Params,0/*&file*/);
+			Instance=new GInstIR(Session,Lang,0,Objs,Params,0/*&file*/);
 		Instance->Init(&data);
 		#ifdef RGADEBUG
 			if(IdealGroups) Instance->SetIdealGroups(IdealGroups);

@@ -133,7 +133,7 @@ bool GALILEI::GGroupIR::CanInsert(const GObjIR* obj)
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
 	{
 		sub2=(*ptr)->GetSubProfile();
-		if((Owner->Sims->GetSim(sub1,sub2)<=Owner->Instance->Params->MinSimLevel)||(Owner->Instance->GetRatioDiff(sub1,sub2)>=Owner->Instance->Params->MinCommonDiff))
+		if((Owner->Instance->GetSim(sub1,sub2)<=Owner->Instance->Params->MinSimLevel)||(Owner->Instance->GetRatioDiff(sub1,sub2)>=Owner->Instance->Params->MinCommonDiff))
 			return(false);
 	}
 	return(true);
@@ -180,7 +180,7 @@ double GALILEI::GGroupIR::ComputeAvgSim(void)
 		sub=(*ptr)->GetSubProfile();
 		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
 		{
-			AvgSim+=Owner->Sims->GetSim(sub,(*ptr2)->GetSubProfile());
+			AvgSim+=Owner->Instance->GetSim(sub,(*ptr2)->GetSubProfile());
 			NbComp+=1.0;
 		}
 	}
@@ -201,7 +201,7 @@ double GALILEI::GGroupIR::ComputeSumSim(GObjIR* obj)
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),AvgSim=0.0;--i;ptr++)
 	{
 		if((*ptr)==obj) continue;
-		AvgSim+=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+		AvgSim+=Owner->Instance->GetSim(sub,(*ptr)->GetSubProfile());
 	}
 	return(AvgSim);
 }
@@ -220,7 +220,7 @@ double GALILEI::GGroupIR::ComputeSumDist(GObjIR* obj)
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),Sum=0.0;--i;ptr++)
 	{
 		if((*ptr)==obj) continue;
-		tmp=1-Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+		tmp=1-Owner->Instance->GetSim(sub,(*ptr)->GetSubProfile());
 		Sum+=tmp*tmp;
 	}
 	return(Sum);
@@ -239,7 +239,7 @@ double GALILEI::GGroupIR::ComputeMaxSim(GObjIR* obj)
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),MaxSim=-1.0;--i;ptr++)
 	{
 		if((*ptr)==obj) continue;
-		tmp=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+		tmp=Owner->Instance->GetSim(sub,(*ptr)->GetSubProfile());
 		if(tmp>MaxSim)
 			MaxSim=tmp;
 	}
@@ -260,7 +260,7 @@ double GALILEI::GGroupIR::ComputeMinSim(GObjIR* obj)
 	{
 		if((*ptr)==obj) continue;
 
-		tmp=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+		tmp=Owner->Instance->GetSim(sub,(*ptr)->GetSubProfile());
 		if(tmp<MinSim)
 			MinSim=tmp;
 	}
@@ -280,7 +280,7 @@ double GALILEI::GGroupIR::ComputeAvgSim(GObjIR* obj)
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),NbComp=AvgSim=0.0;--i;ptr++)
 	{
 		if((*ptr)==obj) continue;
-		AvgSim+=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+		AvgSim+=Owner->Instance->GetSim(sub,(*ptr)->GetSubProfile());
 		NbComp+=1.0;
 	}
 	return(AvgSim/NbComp);
@@ -566,6 +566,7 @@ GGroupIR& GALILEI::GGroupIR::operator=(const GGroupIR& grp)
 	AvgSim=grp.AvgSim;
 	Relevant=grp.Relevant;
 	Entropy=grp.Entropy;
+	Likelihood=grp.Likelihood;
 	Changed=grp.Changed;
 	return(*this);
 }

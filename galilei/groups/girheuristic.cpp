@@ -110,6 +110,7 @@ GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGA::eGA)
 
 
 //-----------------------------------------------------------------------------
+
 void GALILEI::GIRHeuristic::PostRun(void) throw(RGA::eGA)
 {
 	GObjIR* obj;
