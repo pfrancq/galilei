@@ -363,9 +363,9 @@ void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 	InitProfilesSims();
 
 	// Initialise the sims between documents and subprofiles
-	InitDocProfSims();
-  
+	InitDocProfSims();  
 }
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::InitDocProfSims(void)
@@ -396,7 +396,6 @@ void GALILEI::GSession::ChangeDocProfState(bool global,GLang* lang)throw(bad_all
 {
 	GDocProfSim* docProfSim = DocProfSims->GetPtr<GLang*>(lang);
 	docProfSim->UpdateDocProfSim(this,this, global);
-
 }
 
 

@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-						//#include <profiles/gprofilessim.h>
+//#include <profiles/gprofilessim.h>
 #include <docs/gdocprofsim.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
@@ -205,8 +205,8 @@ GALILEI::GDocProfSim::GDocProfSim(GDocs* d, GSubProfileCursor& s,bool global,GLa
 void GALILEI::GDocProfSim::AnalyseSim(GSims* sim,const GDoc* doc ,const GSubProfile* sub)
 {
 	double tmp;
-  if (doc->GetLang() == sub->GetLang())
-  {
+	if (doc->GetLang() == sub->GetLang())
+	{
 		if(GlobalSim)
 			tmp=doc->GlobalSimilarity(sub);
 		else
@@ -225,7 +225,6 @@ double GALILEI::GDocProfSim::GetSim(GDocs* docs,GUsers* users, unsigned int i,un
 	
 
 	if(docs->GetPtr<unsigned int>(i)->GetLang()->Compare(Lang) ) return (0.0);   // if the langages are differents
-	
 	s=Sims.GetPtr<unsigned int>(i);
 	if(!s) return(0.0);
 	s2=s->GetPtr<unsigned int>(j);
