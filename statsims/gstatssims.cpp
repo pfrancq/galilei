@@ -40,6 +40,12 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Library
+#include <rstd/rtextfile.h>
+using namespace R;
+
+
+//-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gstatssims.h>
 #include <groups/ggroups.h>
@@ -53,7 +59,6 @@
 #include <gstatsimsubprof.h>
 #include <gstatsimprofgrp.h>
 using namespace GALILEI;
-using namespace R;
 
 
 
@@ -79,6 +84,10 @@ void GStatsSims::ApplyConfig(void)
 	Profiles=Factory->GetBool("Profiles");
 	SameDocProf=Factory->GetBool("SameDocProf");
 	GroupProf=Factory->GetBool("GroupProf");
+	File=Factory->GetBool("File");
+	Name=Factory->GetString("Name");
+	WithFactors=Factory->GetBool("WithFactors");
+	WithoutFactors=Factory->GetBool("WithoutFactors");
 }
 
 
@@ -103,14 +112,31 @@ void GStatsSims::Compute(R::RXMLTag& res)
 	RXMLTag* tag2;
 	RXMLTag* tag3;
 	RString str;
+	RTextFile* Details=0;
 
+	// Init Main XML Tag
 	tag=new RXMLTag(Factory->GetName());
 	res.AddTag(tag);
+
+	// Create Details File if necessary
+	if(File)
+	{
+		try
+		{
+			Details=new RTextFile(Name,R::Create);
+		}
+		catch(...)
+		{
+			Details=0;
+		}
+	}
+
+	// Compute Statistics
 	if(Docs)
 	{
 		tag2=new RXMLTag("Documents");
 		tag->AddTag(tag2);
-		GStatSimDoc Stat(Session,0,true,true);
+		GStatSimDoc Stat(Session,Details,WithFactors,WithoutFactors);
 		Stat.Run();
 		tag3=new RXMLTag("Without idf");
 		tag2->AddTag(tag3);
@@ -141,7 +167,7 @@ void GStatsSims::Compute(R::RXMLTag& res)
 	{
 		tag2=new RXMLTag("Documents/Profiles");
 		tag->AddTag(tag2);
-		GStatSimDocProf Stat(Session,0,true,true);
+		GStatSimDocProf Stat(Session,Details,WithFactors,WithoutFactors);
 		Stat.Run();
 		tag3=new RXMLTag("Without idf");
 		tag2->AddTag(tag3);
@@ -172,7 +198,7 @@ void GStatsSims::Compute(R::RXMLTag& res)
 	{
 		tag2=new RXMLTag("Documents/Groups");
 		tag->AddTag(tag2);
-		GStatSimDocGrp Stat(Session,0,true,true);
+		GStatSimDocGrp Stat(Session,Details,WithFactors,WithoutFactors);
 		Stat.Run();
 		tag3=new RXMLTag("Without idf");
 		tag2->AddTag(tag3);
@@ -203,7 +229,7 @@ void GStatsSims::Compute(R::RXMLTag& res)
 	{
 		tag2=new RXMLTag("Profiles");
 		tag->AddTag(tag2);
-		GStatSimSubProf Stat(Session,0,true,true);
+		GStatSimSubProf Stat(Session,Details,WithFactors,WithoutFactors);
 		Stat.Run();
 		tag3=new RXMLTag("Without idf");
 		tag2->AddTag(tag3);
@@ -234,7 +260,7 @@ void GStatsSims::Compute(R::RXMLTag& res)
 	{
 		tag2=new RXMLTag("Profiles/Common Documents");
 		tag->AddTag(tag2);
-		GStatProfDoc Stat(Session,0);
+		GStatProfDoc Stat(Session,Details);
 		Stat.Run();
 		str=dtoa(Stat.GetMeanNbProf());
 		tag2->AddTag(new RXMLTag("Avg Number of profiles assessing same documents="+str));
@@ -262,6 +288,10 @@ void GStatsSims::Compute(R::RXMLTag& res)
 		str=dtoa(Stat.GetJ());
 		tag2->AddTag(new RXMLTag("J="+str));
 	}
+
+	// Desallocate Details File if necessary
+	if(Details)
+		delete Details;
 }
 
 
@@ -274,6 +304,10 @@ void GStatsSims::CreateParams(GParams* params)
 	params->InsertPtr(new GParamBool("Profiles",false));
 	params->InsertPtr(new GParamBool("SameDocProf",false));
 	params->InsertPtr(new GParamBool("GroupProf",false));
+	params->InsertPtr(new GParamBool("File",false));
+	params->InsertPtr(new GParamString("Name",""));
+	params->InsertPtr(new GParamBool("WithFactors",true));
+	params->InsertPtr(new GParamBool("WithoutFactors",true));
 }
 
 
