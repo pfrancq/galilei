@@ -225,19 +225,24 @@ void GALILEI::GSessionMySQL::LoadUsersFdbk() throw(bad_alloc,GException)
 void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 {
 	GDoc* doc;
+	GLang* lang;
 	int docid;
 	char sSql[100];
 
-	sprintf(sSql,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title  FROM htmls");
+	sprintf(sSql,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title FROM htmls");
 	RQuery quer (this,sSql);
 	for(quer.Begin();quer.IsMore();quer++)
 	{
 		docid=atoi(quer[0]);
-		Docs.InsertPtr(doc=new GDoc(quer[1],quer[6],docid,GetLang(quer[2]),atoi(quer[4]),atoi(quer[5])));
-		sprintf(sSql,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
-		RQuery doc2(this,sSql);
-		for(doc2.Begin();doc2.IsMore();doc2++)
-			doc->AddWord(atoi(doc2[0]),atoi(doc2[1]));
+		lang=GetLang(quer[2]);
+		Docs.InsertPtr(doc=new GDoc(quer[1],quer[6],docid,lang,atoi(quer[4]),atoi(quer[5])));
+		if(lang)
+		{
+			sprintf(sSql,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",lang->GetCode(),docid);
+			RQuery doc2(this,sSql);
+			for(doc2.Begin();doc2.IsMore();doc2++)
+				doc->AddWord(atoi(doc2[0]),atoi(doc2[1]));
+		}
 	}
 }
 

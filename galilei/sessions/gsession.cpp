@@ -56,7 +56,7 @@ GALILEI::GSession::GSession(const unsigned int d,const unsigned int u) throw(bad
 //-----------------------------------------------------------------------------
 GLang* GALILEI::GSession::GetLang(const char* code) const
 {
-	RReturnValIfFail(code,0);
+	if(!code) return(0);
 	return(Langs.GetPtr<const char*>(code));
 }
 
