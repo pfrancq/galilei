@@ -76,8 +76,8 @@ public:
 	GSession *Session;        // Languages
 
 	GDocs(unsigned int nb,bool alldocs,GSession *session) throw(bad_alloc);
-	virtual void Load(GLangs*) throw(bad_alloc,GException)=0;
-	virtual void Load(GLangs*,GProfile *) throw(bad_alloc,GException)=0;
+//	virtual void Load(GLangs*) throw(bad_alloc,GException)=0;
+//	virtual void Load(GLangs*,GProfile *) throw(bad_alloc,GException)=0;
 	void Analyse(URLFunc *urlfunc,InfoFunc *infofunc) throw(GException);
 	void Download(void);
 	virtual ~GDocs(void) {}

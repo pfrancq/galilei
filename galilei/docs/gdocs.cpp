@@ -88,7 +88,7 @@ void GDocs::Analyse(URLFunc *urlfunc,InfoFunc *infofunc) throw(GException)
       if(ptr)
       {
         (*doc)->Analyse(ptr);
-        (*doc)->Save();
+    //    (*doc)->Save();
       }
       if(infofunc) infofunc(cInfoNext);
     }
@@ -102,7 +102,7 @@ void GDocs::Download(void)
   unsigned i;
   GDoc **doc;
 
-  for(i=NbPtr+1,doc=Tab;--i;doc++)
-    if((*doc)->Calc)
-			(*doc)->Download();
+//  for(i=NbPtr+1,doc=Tab;--i;doc++)
+//   if((*doc)->Calc)
+//			(*doc)->Download();
 }

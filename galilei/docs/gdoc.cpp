@@ -262,6 +262,7 @@ void GDoc::Analyse(char* body) throw(GException)
     {
       Next.Word.StrLwr((char*)Word);
       if(dic->IsIn(Next)) ActNbWords++;
+
     }
     if(ActNbWords>LastNbWords)
     {
