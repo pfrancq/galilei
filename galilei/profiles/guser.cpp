@@ -6,7 +6,7 @@
 
 	User - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,8 +34,8 @@
 
 
 
-//-----------------------------------------------------------------------------
-//include files for GALILEI
+//------------------------------------------------------------------------------
+// include files for GALILEI
 #include<profiles/guser.h>
 #include<profiles/gprofile.h>
 #include<profiles/gsubprofile.h>
@@ -45,45 +45,71 @@ using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GUser
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-GUser::GUser(const unsigned int id,const char* name,const char* fullname,const unsigned int nb) throw(bad_alloc)
+//------------------------------------------------------------------------------
+GUser::GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb) throw(bad_alloc)
 	: RContainer<GProfile,unsigned,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
 	  FullName(fullname)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GUser::Compare(const GUser &user) const
+//------------------------------------------------------------------------------
+int GUser::Compare(const GUser &user) const
 {
 	return(Id-user.Id);
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GUser::Compare(const GUser *user) const
+//------------------------------------------------------------------------------
+int GUser::Compare(const GUser *user) const
 {
 	return(Id-user->Id);
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GUser::Compare(const unsigned int id) const
+//------------------------------------------------------------------------------
+int GUser::Compare(const unsigned int id) const
 {
 	return(Id-id);
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GUser::~GUser(void)
+//------------------------------------------------------------------------------
+void GUser::SetId(unsigned int id) throw(GException)
 {
+	if(Id==cNoRef)
+		throw GException("Cannot assign cNoRef to a user");
+	Id=id;
 }
 
 
+//------------------------------------------------------------------------------
+RString& GUser::GetName(void) const
+{
+	RString* tmp=RString::GetString();
+
+	(*tmp)=Name;
+	return(*tmp);
+}
+
+
+//------------------------------------------------------------------------------
+RString& GUser::GetFullName(void) const
+{
+	RString* tmp=RString::GetString();
+
+	(*tmp)=FullName;
+	return(*tmp);
+}
+
+
+//------------------------------------------------------------------------------
+GUser::~GUser(void)
+{
+}

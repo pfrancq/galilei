@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GSubProfiles.h
+	GProfilesSims.h
 
 	List of SubProfiles for a given Language - Implementation.
 

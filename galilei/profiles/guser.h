@@ -6,7 +6,7 @@
 
 	User - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,28 +34,21 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GUserH
 #define GUserH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GProfile;
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GUser class provides a representation for a user.
 * @author Pascal Francq
@@ -81,32 +74,41 @@ class GUser : public R::RContainer<GProfile,unsigned,false,true>
 public:
 
 	/**
-	* Construct a GUser.
+	* Construct a user.
 	* @param id             Identificator.
 	* @param name           Name of the user.
 	* @param fullname       FullName of the user.
 	* @param nb             Number of profiles.
 	*/
-	GUser(const unsigned int id,const char* name,const char* fullname,const unsigned int nb) throw(bad_alloc);
+	GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb) throw(bad_alloc);
 
 	/**
-	* Compare method used by R::RContainer.
+	* Compare two users by comparing their identificator.
+	* @see R::RContainer
+	* @param user            User.
+	* @return int
 	*/
 	int Compare(const GUser &user) const;
 
 	/**
-	* Compare method used by R::RContainer.
+	* Compare two users by comparing their identificator.
+	* @see R::RContainer
+	* @param user            Pointer to a user.
+	* @return int
 	*/
 	int Compare(const GUser *user) const;
 
 	/**
-	* Compare method used by R::RContainer.
+	* Compare the idenfiticator of a user with another one.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
 	*/
 	int Compare(const unsigned int id) const;
 
 	/**
 	* Get the identificator of the user.
-	* @return Identificator.
+	* @return unsigned int.
 	*/
 	unsigned int GetId(void) const {return(Id);}
 
@@ -114,29 +116,28 @@ public:
 	* Set the identifier.
 	* @param id             Identifier.
 	*/
-	void SetId(unsigned int id) {if(Id==cNoRef) Id=id;}
+	void SetId(unsigned int id) throw(GException);
 
 	/**
 	* Get the name of the user.
-	* @return Pointer to a C String.
+	* @return RString.
 	*/
-	const char* GetName(void) const {return(Name);}
+	R::RString& GetName(void) const;
 
 	/**
 	* Get the full name of the user.
 	* @return Pointer to a C String.
 	*/
-	const char* GetFullName(void) const {return(FullName);}
+	R::RString& GetFullName(void) const;
 
 	/**
-	* Destructor
+	* Destructor of a user.
 	*/
-	~GUser(void);
-
+	virtual ~GUser(void);
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GUserCursor class provides a way to go trough a set of users.
 * @short users Cursor
@@ -144,9 +145,8 @@ public:
 CLASSCURSOR(GUserCursor,GUser,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
-
+//------------------------------------------------------------------------------
 #endif

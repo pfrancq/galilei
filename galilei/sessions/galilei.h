@@ -136,7 +136,6 @@ class GSubProfileDesc;
 class GSubProfileDescCursor;
 class GProfile;
 class GProfileCursor;
-class GSubProfiles;
 class GSubProfile;
 class GSubProfileCursor;
 class GSubProfileVector;

@@ -6,7 +6,7 @@
 
 	Users - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,21 +34,21 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GUsersH
 #define GUsersH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GUsers class provides a representation for the users of the system.
 * @author Pascal Francq
@@ -56,6 +56,9 @@ namespace GALILEI{
 */
 class GUsers : public R::RContainer<GUser,unsigned,true,true>
 {
+	// Internal class
+	class GSubProfiles;
+
 	/**
 	* Profiles handled by the system.
 	*/
@@ -70,8 +73,8 @@ public:
 
 	/**
 	* Constructor of Users
-	* @param u              Initial number of users.
-	* @param p              Initial number of profiles.
+	* @param u               Initial number of users.
+	* @param p               Initial number of profiles.
 	*/
 	GUsers(unsigned int u,unsigned int p) throw(bad_alloc);
 
@@ -88,42 +91,42 @@ public:
 
 	/**
 	* Insert an user in the container.
-	* @param usr            Pointer to the user to insert.
+	* @param usr             Pointer to the user to insert.
 	*/
 	void InsertUser(GUser* usr) throw(bad_alloc);
 
 	/**
 	* Get a user from the container.
-	* @param id             Identificator.
+	* @param id              Identificator.
 	* @returns Pointer to the corresponding GUser object.
 	*/
-	GUser* GetUser(unsigned int id);
+	GUser* GetUser(unsigned int id) const;
 
 	/**
 	* Create a new profile.
-	* @param usr            Pointer to the user of the profile.
-	* @param desc           Description of the profile.
+	* @param usr             Pointer to the user of the profile.
+	* @param desc            Description of the profile.
 	* @returns Pointer to GProfile.
 	*/
 	virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException)=0;
 
 	/**
 	* Create a new subprofile.
-	* @param prof            Pointer to the profile.
-	* @param lang            Language of the subprofile.
+	* @param prof             Pointer to the profile.
+	* @param lang             Language of the subprofile.
 	* @returns Pointer to GSubProfile.
 	*/
 	virtual GSubProfile* NewSubProfile(GProfile* prof,GLang* lang) throw(bad_alloc,GException)=0;
 
 	/**
 	* Insert a new profile in the container.
-	* @param p              Pointer to the profile to add.
+	* @param p               Pointer to the profile to add.
 	*/
 	void InsertProfile(GProfile* p) throw(bad_alloc);
 
 	/**
 	* Get a profile with a specific identifier.
-	* @param id             Identifier.
+	* @param id              Identifier.
 	*/
 	GProfile* GetProfile(const unsigned int id) const;
 
@@ -147,31 +150,31 @@ public:
 	* Insert a subprofiles in the container.
 	* @param s              Pointer to the subprofile to add.
 	*/
-	void InsertSubProfile(GSubProfile* s) throw(bad_alloc);
+	void InsertSubProfile(GSubProfile* s) throw(bad_alloc,GException);
 
 	/**
 	* Get a subprofile with a specific identifier.
 	* @param id             Identifier.
 	*/
-	GSubProfile* GetSubProfile(const unsigned int id) const;
+	GSubProfile* GetSubProfile(const unsigned int id) const throw(GException);
 
 	/**
 	* Get a subprofile with a specific identifier.
 	* @param id             Identifier.
 	* @param lang           Language.
 	*/
-	GSubProfile* GetSubProfile(const unsigned int id,GLang* lang) const;
+	GSubProfile* GetSubProfile(const unsigned int id,GLang* lang) const throw(GException);
 
 	/**
 	* Get a cursor over the subprofiles of the system for a given language.
 	* @param lang           Language.
 	*/
-	GSubProfileCursor& GetSubProfilesCursor(GLang* lang);
+	GSubProfileCursor& GetSubProfilesCursor(GLang* lang) throw(GException);
 
 	/**
 	* Clear all the subprofiles assignement.
 	*/
-	void ClearSubProfilesGroups(void);
+	void ClearSubProfilesGroups(void) throw(GException);
 
 	/**
 	* Save information about the groupement (Group and attachment date) of
@@ -191,14 +194,14 @@ public:
 	void Clear(void) throw(GException);
 
 	/**
-	* Destructor.
+	* Destructor of the users.
 	*/
 	virtual ~GUsers(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

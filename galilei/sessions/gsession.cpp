@@ -730,12 +730,8 @@ void GSession::ReInit(bool)
 	//clean subprofiles = clear the feedbacles & the content of the profiles.
 	ClearFdbks();
 
-	// clean similarities between profiles
-	delete(ProfilesSims);
-
 	// set group to 0 for subprofiles.
 	ClearSubProfilesGroups();
-
 
 	// Re-Init the sims and behaviorsbetween documents and subprofiles
 	ProfilesSims->ReInit();

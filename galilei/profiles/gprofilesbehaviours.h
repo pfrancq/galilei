@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GSubProfiles.h
+	GProfilesBehaviours.h
 
 	Agreement and DisAgreement Ratios for subprofiles - Header.
 
