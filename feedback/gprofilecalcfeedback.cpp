@@ -170,7 +170,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 		MaxFreq=CurDoc->GetMaxWeight();
 		for(Words.Start();!Words.End();Words.Next())
 		{
-			w=Vectors.GetInsertPtr<GWeightInfo*>(Words());
+			w=Vectors.GetInsertPtr<GInfo*>(Words());
 			Freq=Words()->GetWeight()/MaxFreq;
 			if((isf)&&(NbDocs>1))
 				Freq*=log(NbDocs/NbDocsWords.GetPtr<unsigned int>(Words()->GetId())->GetWeight());
