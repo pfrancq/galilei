@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	GGroups.h
 
-	Basic Information - Implementation.
+	Groups for a given language - Header.
 
 	(C) 2001 by P. Francq.
 
@@ -28,7 +28,8 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include<ggroups/ggroup.h>
+#include <ggroups/ggroup.h>
+
 
 
 //-----------------------------------------------------------------------------
@@ -37,25 +38,51 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-// forward class declaration
-class GGroupsLangs;
-
-
-//-----------------------------------------------------------------------------
 /**
+* The GGroups class provides a representation for all the groups of a given
+* language.
+* @author Pascal Francq
+* @short Languages' Groups.
 */
 class GGroups : public RStd::RContainer<GGroup,unsigned int,true,false>
 {
-public:
-	GGroupsLangs *Owner;
-	GLang *Lang;
+	/**
+	* Language corresponding to the set of groups.
+	*/
+	GLang* Lang;
 
-	GGroups(GGroupsLangs *owner,GLang *lang) throw(bad_alloc);
-	int Compare(const GGroups &groups);
-	int Compare(const GGroups *groups);	
-	//virtual void Load(void)=0;
-	//virtual void Save(void)=0;
-	//virtual GGroup* NewGroup(void)=0;
+public:
+
+	/**
+	* Constructor.
+	* @param lang           Pointer to the corresponding language.
+	*/
+	GGroups(GLang* lang) throw(bad_alloc);
+
+	/**
+	* Compare method needed by RStd::RContainer.
+	*/
+	int Compare(const GGroups& groups) const;
+
+	/**
+	* Compare method needed by RStd::RContainer.
+	*/
+	int Compare(const GGroups* groups) const;
+
+	/**
+	* Compare method needed by RStd::RContainer.
+	*/
+	int Compare(const GLang* lang) const;
+
+	/**
+	* Get the language of the set of groups.
+	* @return Pointer to the language.
+	*/
+	GLang* GetLang(void) const {return(Lang);}
+
+	/**
+	* Compute -> Must be in separate class.
+	*/
 	void Calc(void);
 };
 

@@ -2,30 +2,15 @@
 
 	GALILEI Research Project
 
-	ggroup.h
+	GGroup.h
 
-	Basic Information - Implementation.
+	Group - Header.
 
 	(C) 2001 by P. Francq.
 
 	Version $Revision$
 
 	Last Modify: $Date$
-
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
 
 */
 
@@ -46,14 +31,10 @@
 #include <gprofiles/gsubprofile.h>
 
 
+
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// forward classes declaration
-class GGroups;
 
 
 //-----------------------------------------------------------------------------
@@ -61,57 +42,52 @@ class GGroups;
 * This class represent a group of sub-profiles. In fact, it is implemented as a
 * container of GSubProfile.
 * @author Pascal Francq
-* @short Group class.
+* @short Group.
 */
 class GGroup : public RStd::RContainer<GSubProfile,unsigned int,false,true>
 {
-public:
 	
 	/**
 	* identifier
 	*/
 	unsigned int Id;
-	
-	GGroups *Owner;	
+
+public:
 
 	/**
 	* Construct a group.
 	*/
-	GGroup(GGroups *owner) throw(bad_alloc);
+	GGroup(void) throw(bad_alloc);
 
 	/**
 	* Construct a group with a specific identificator.
-	* @param id		The identificator.
+	* @param id             Identificator.
 	*/
-	GGroup(GGroups *owner,unsigned int id) throw(bad_alloc);
+	GGroup(const unsigned int id) throw(bad_alloc);
 
 	/**
-	* comparaison function.
+	* Compare method needed by RStd::RContainer.
 	*/
-	int Compare(const unsigned int &id);
+	int Compare(const unsigned int id) const;
 
 	/**
-	* comparaison function.
+	* Compare method needed by RStd::RContainer.
 	*/
-	int Compare(const GGroup &group);
-	
-	/**
-	* comparaison function.
-	*/
-	int Compare(const GGroup *group);
+	int Compare(const GGroup& group) const;
 
 	/**
-	* virtual load function.
+	* Compare method needed by RStd::RContainer.
 	*/
-	//virtual void Load(void)=0;
-	
-    /**
-	* virtual save function.
-	*/
-	//virtual void Save(void)=0;
-	
+	int Compare(const GGroup* group) const;
+
 	/**
-	* can the group attache the subprofile ?
+	* Get the identificator of the group.
+	* @return Identificator.
+	*/
+	unsigned int GetId(void) const {return(Id);}
+
+	/**
+	* can the group attache the subprofile?  -> Must be in separate class.
 	* @param sub            subprofile to attach.
 	*/
 	bool CanAttach(GSubProfile *sub);
@@ -124,4 +100,3 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
-

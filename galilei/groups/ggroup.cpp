@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gwordref.h
+	GGroup.cpp
 
-	Basic Information - Implementation.
+	Group - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -12,28 +12,17 @@
 
 	Last Modify: $Date$
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Library General Public
-	License as published by the Free Software Foundation; either
-	version 2.0 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Library General Public License for more details.
-
-	You should have received a copy of the GNU Library General Public
-	License along with this library, as a file COPYING.LIB; if not, write
-	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	Boston, MA  02111-1307  USA
-
 */
 
-#include <stdlib.h>
+
+
+//-----------------------------------------------------------------------------
 //include files for GALILEI
-#include<ggroups/ggroup.h>
-#include <ggroups/ggroups.h>
+#include <ggroups/ggroup.h>
 using namespace GALILEI;
+using namespace RStd;
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -41,80 +30,45 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
-GGroup::GGroup(GGroups *owner) throw(bad_alloc)
-	: RContainer<GSubProfile,unsigned int,false,true>(20,10),Id(0),Owner(owner)
+//-----------------------------------------------------------------------------
+GALILEI::GGroup::GGroup(void) throw(bad_alloc)
+	: RContainer<GSubProfile,unsigned int,false,true>(20,10),Id(cNoRef)
 {
 }
 
 
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
-GGroup::GGroup(GGroups *owner,unsigned int id) throw(bad_alloc)
-	: RContainer<GSubProfile,unsigned int,false,true>(20,10),Id(id),Owner(owner)
+//-----------------------------------------------------------------------------
+GALILEI::GGroup::GGroup(const unsigned int id) throw(bad_alloc)
+	: RContainer<GSubProfile,unsigned int,false,true>(20,10),Id(id)
 {
 }
 
-
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
-
-int GGroup::Compare(const unsigned int &id)
+//-----------------------------------------------------------------------------
+int GALILEI::GGroup::Compare(const unsigned int id) const
 {
 	return(Id-id);
 }
 
-//-----------------------------------------------------------------------------
 
-int GGroup::Compare(const GGroup &group)
+//-----------------------------------------------------------------------------
+int GALILEI::GGroup::Compare(const GGroup& group) const
 {
 	return(Id-group.Id);
 }
 
 
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
-int GGroup::Compare(const GGroup *group)
+//-----------------------------------------------------------------------------
+int GALILEI::GGroup::Compare(const GGroup* group) const
 {
 	return(Id-group->Id);
 }
 
 
-/*-----------------------------------------------------------------------------
- *
- * Parameters:
- *
- * Returns:
- *
- *---------------------------------------------------------------------------*/
-bool GGroup::CanAttach(GSubProfile *sub)
+//-----------------------------------------------------------------------------
+bool GALILEI::GGroup::CanAttach(GSubProfile *sub)
 {
 	for(Start();!End();Next())
 		if((*this)()->Similar(sub))
 			return(true);
 	return(false);
 }
-
-
-
