@@ -215,6 +215,12 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 				}
 			}
 		}
+		else
+		{
+			w->InStop[LangIndex]=Session->GetStop(Lang)->IsIn<const char*>(word);
+			Sl[LangIndex]++;
+			Sldiff[LangIndex]++;
+		}
 	}
 	else
 	{
@@ -227,6 +233,8 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 					(*tmp2)++;
 			}
 		}
+		else
+			Sl[LangIndex]++;
 	}
 	N++;
 	w->Nb++;
@@ -323,14 +331,14 @@ void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
+void GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
 {
-	unsigned int LangIndex=cNoRef;
 	double Frac,MinFrac;
 	unsigned int i;
 	unsigned int* tmp1;
 	unsigned int* tmp2;
 
+	LangIndex=cNoRef;
 	MinFrac=Session->GetMinStopWords();
 	Lang=0;
 	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
@@ -344,12 +352,11 @@ unsigned int GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
 			LangIndex=i;
 		}
 	}
-	return(LangIndex);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocAnalyse::ConstructInfos(unsigned int LangIndex) throw(GException)
+void GALILEI::GDocAnalyse::ConstructInfos(void) throw(GException)
 {
 	WordOccur** wrd;
 	GIWordOccur** Tab;
@@ -407,7 +414,6 @@ void GALILEI::GDocAnalyse::ConstructInfos(unsigned int LangIndex) throw(GExcepti
 void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 {
 	RXMLTag* content;
-	unsigned int LangIndex;
 
 	// Init Part and verification
 	if(!xml)
@@ -419,25 +425,28 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 
 	// Analyse the doc structure.
 	Clear();
+	if(!FindLang)
+	{
+		// if Language defined -> Compute LangIndex
+		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
+	}
 	AnalyseTag(content);
 
 	// Determine the Language if necessary.
 	if(FindLang)
-		LangIndex=DetermineLang();
-	else
 	{
-		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
-	}
-	if(!Lang)
-	{
-		doc->Lang=0;
-		if(doc->Words)
-			doc->Words->Clear();
-		return;
+		DetermineLang();
+		if(!Lang)
+		{
+			doc->Lang=0;
+			if(doc->Words)
+				doc->Words->Clear();
+			return;
+		}
 	}
 
 	// Construct Information
-	ConstructInfos(LangIndex);
+	ConstructInfos();
 
 	// Set the Variable of the document
 	doc->Lang=Lang;
@@ -463,7 +472,6 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
 {
 	RXMLTag* content;
-	unsigned int LangIndex;
 
 	// Init Part and verification
 	if(!xml)
@@ -478,9 +486,9 @@ void GALILEI::GDocAnalyse::ComputeStats(GDocXML* xml) throw(GException)
 	AnalyseTag(content);
 
 	// Compute everything for current structure.
-	LangIndex=DetermineLang();
+	DetermineLang();
 	if(!Lang) return;
-	ConstructInfos(LangIndex);
+	ConstructInfos();
 }
 
 

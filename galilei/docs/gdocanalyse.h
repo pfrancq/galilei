@@ -154,6 +154,11 @@ class GDocAnalyse
 	*/
 	bool OnlyLetters;
 
+	/**
+	* Index of the language when defined.
+	*/
+	unsigned int LangIndex;
+
 public:
 
 	/**
@@ -199,16 +204,14 @@ protected:
 	* i.e. the language with the maximal number of words of the stop-list
 	* contained in the document and with a minimal value for the ratio of
 	* stopwords that are in the document.
-	* @returns The index of the selected lang in the arrays Rl and Rdiffl.
 	*/
-	unsigned int DetermineLang(void) throw(GException);
+	void DetermineLang(void) throw(GException);
 
 	/**
 	* Construct the information about the current document and store it in
 	* Words.
-	* @param LangIndex      Index of the lang in the arrays Rl and Rdiffl.
 	*/
-	void ConstructInfos(unsigned int LangIndex) throw(GException);
+	void ConstructInfos(void) throw(GException);
 
 public:
 
