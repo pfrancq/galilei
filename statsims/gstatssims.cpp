@@ -50,6 +50,7 @@ using namespace R;
 #include <gstatssims.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
+#include <groups/gsubjecttree.h>
 #include <profiles/gsubprofile.h>
 #include <sessions/gsession.h>
 #include <gstatsimdoc.h>
@@ -273,7 +274,7 @@ void GStatsSims::Compute(R::RXMLTag& res)
 	{
 		tag2=new RXMLTag("Profiles/Groups");
 		tag->AddTag(tag2);
-		GStatSimProfGrp Stat(Session,Session->GetIdealGroups());
+		GStatSimProfGrp Stat(Session,Session->GetSubjects()->GetIdealGroups());
 		Stat.Run();
 		str=dtoa(Stat.GetAvgIntra());
 		tag2->AddTag(new RXMLTag("Avg Intra="+str));
