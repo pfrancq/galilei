@@ -504,7 +504,7 @@ void  GALILEI::GProfilesSim::UpdateProfSim(GUsers& users,bool global,GLang* lang
 void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfile,unsigned int,false,true>* subprofiles)
 {
 	GSim* sim;
-	GSims* sims
+	GSims* sims;
 	unsigned int nbcomp,i,j;
 	double oldsim,newsim;
 	GSubProfile** sub1, **sub2;
