@@ -82,7 +82,12 @@ class GDoc
 	GIWordOccurs* Words;
 
 	/**
-	* Total number of words.
+	* Total number of words with stoplist.
+	*/
+	unsigned int TotalWords;
+
+	/**
+	* Total number of words without stoplist.
 	*/
 	unsigned int NbWords;
 
@@ -138,12 +143,13 @@ public:
 	* @param u              String representing the date of the last update.
 	* @param a              String representing the date of the last analysis.
 	* @param f              Number of fails.
-	* @param nb             Total number of words in the document.
+	* @param tot            Total number of words in the document with stoplist.
+	* @param nb             Total number of words in the document without stoplist.
 	* @param nbdiff         Number of different words appearing in the
 	*                       document.
 	* @param nbf            Number of Feedbacks.
 	*/
-	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int nb,unsigned int nbdiff,unsigned int nbf=100) throw(bad_alloc);
+	GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int tot,unsigned int nb,unsigned int nbdiff,unsigned int nbf=100) throw(bad_alloc);
 
 	/**
 	* Compare function needed by RStd::RContainer.
@@ -252,6 +258,11 @@ public:
 	* @param nb             Occurences of the word.
 	*/
 	void AddWord(const unsigned int id,const unsigned int nb);
+
+	/**
+	* @return Total number of words in the documents with stoplist.
+	*/
+	unsigned int GetTotalWords(void) {return(TotalWords);}
 
 	/**
 	* @return Total number of words in the documents.

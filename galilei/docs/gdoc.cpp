@@ -52,8 +52,8 @@ using namespace RTimeDate;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int nb,unsigned int nbdiff,unsigned int nbf) throw(bad_alloc)
-	: URL(url), Name(name), Id(id), Words(0),NbWords(nb), NbDiffWords(nbdiff),
+GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang,GMIMEFilter* t,const char* u,const char* a,unsigned int f,unsigned int tot,unsigned int nb,unsigned int nbdiff,unsigned int nbf) throw(bad_alloc)
+	: URL(url), Name(name), Id(id), Words(0), TotalWords(tot), NbWords(nb), NbDiffWords(nbdiff),
 	  Lang(lang), Type(t), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2), Failed(f)
 {
 	if(Updated>Computed)
@@ -173,8 +173,12 @@ int GALILEI::GDoc::AnalyseTagForStopKwd(RXMLTag* tag,GDict* stop) throw(GExcepti
 		ptr=tag->GetContent();
 		while(*ptr)
 		{
-			if((ExtractWord(ptr,word))&&(stop->IsIn<const char*>(word())))
-				nb++;
+			if(ExtractWord(ptr,word))
+			{
+				TotalWords++;
+				if(stop->IsIn<const char*>(word()))
+					nb++;
+			}
 		}
 	}
 	else
@@ -200,12 +204,12 @@ void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw
 		{
 			if(ExtractWord(ptr,word))
 			{
-				NbWords++;
 				if(!stop->IsIn<const char*>(word()))
 				{
 					stem=Lang->GetStemming(word);
 					if(stem.GetLen()>=2)
 					{
+						NbWords++;
 						Occur=Words->GetPtr(dic->GetId(stem));
 						if(!Occur->GetNbOccurs()) NbDiffWords++;
 						Occur->IncOccurs();
@@ -229,6 +233,7 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	int max,act;
 	GDict* stop;
 	GDict* dic;
+	unsigned tot=0;
 
 	// Verify that xml structure exists.
 	if(!xml)
@@ -252,12 +257,14 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 		max=0;
 		for(CurLang.Start();!CurLang.End();CurLang.Next())
 		{
+			TotalWords=0;
 			act=AnalyseTagForStopKwd(content,dic=session->GetStop(CurLang()));
 			if(act>max)
 			{
 				Lang=CurLang();
 				max=act;
 				stop=dic;
+				tot=TotalWords;
 			}
 		}
 		if(!Lang) return;
@@ -265,6 +272,7 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 
 	// Analyse it
 	Words->Clear();
+	TotalWords=tot;
 	NbWords=NbDiffWords=0;
 	AnalyseContentTag(content,stop,session->GetDic(Lang));
 
