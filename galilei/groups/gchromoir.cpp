@@ -470,9 +470,9 @@ double GALILEI::GChromoIR::EvaluateSimWB(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateSim(GSimMeasure* s)
+void GALILEI::GChromoIR::EvaluateSim(SimType s)
 {
-	switch(s->Type)
+	switch(s)
 	{
 		case stNone:
 			CritSim=1.0;
@@ -524,7 +524,7 @@ void GALILEI::GChromoIR::EvaluateSim(void)
 	{
 		s=Instance->Params->Measures();
 		if(((t==sctCorl)&&(s->Weight!=0.0))||((t==sctCrits)&&(s->Use)))
-			EvaluateSim(s);
+			EvaluateSim(s->Type);
 	}
 
 	// If Correlation, computes the correlation

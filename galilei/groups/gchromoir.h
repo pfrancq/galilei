@@ -91,7 +91,7 @@ private:
 	double CritSimAvgRatio;
 
 	/**
-	* Value of the Similarity criterion "AvgMinRatio".
+	* Value of the Similarity criterion "MinRatio".
 	*/
 	double CritSimMinRatio;
 
@@ -324,9 +324,9 @@ public:
 
 	/**
 	* Compute a similarity criterion.
-	* @param s              Similarity Measure.
+	* @param s              Similarity type.
 	*/
-	void EvaluateSim(GSimMeasure* s);
+	void EvaluateSim(SimType s);
 
 	/**
 	* Evaluate the 'Similarity' criterion of the chromosome.
@@ -419,10 +419,58 @@ public:
 	double GetSimCriterion(void) const {return(CritSim);}
 
 	/**
+	* Get the value of the 'AvgSim' measure.
+	* @returns double.
+	*/
+	double GetSimAvgSim(void) {return(CritSimAvgSim);}
+
+	/**
+	* Get the value of the 'J' measure.
+	* @returns double.
+	*/
+	double GetSimJ(void) {return(CritSimJ);}
+
+	/**
+	* Get the value of the 'AvgRatio' measure.
+	* @returns double.
+	*/
+	double GetSimAvgRatio(void) {return(CritSimAvgRatio);}
+
+	/**
+	* Get the value of the 'MinRatio' measure.
+	* @returns double.
+	*/
+	double GetSimMinRatio(void) {return(CritSimMinRatio);}
+
+	/**
+	* Get the value of the 'Ratio' measure.
+	* @returns double.
+	*/
+	double GetSimRatio(void) {return(CritSimRatio);}
+
+	/**
+	* Get the value of the 'WOverB' measure.
+	* @returns double.
+	*/
+	double GetSimWOverB(void) {return(CritSimWOverB);}
+
+	/**
+	* Get the value of the 'SimWB' measure.
+	* @returns double.
+	*/
+	double GetSimSimWB(void) {return(CritSimSimWB);}
+
+	/**
 	* Get the value of the information criterion for the chromosome.
 	* @returns double.
 	*/
 	double GetInfoCriterion(void) const {return(CritInfo);}
+
+	/**
+	* Get the value of the entropy criterion for the chromosome.
+	* @returns double.
+	*/
+	double GetEntropyCriterion(void) const {return(CritEntropy);}
 
 	/**
 	* Get the value of the same criterion for the chromosome.
