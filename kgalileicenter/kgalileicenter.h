@@ -261,6 +261,13 @@ class KGALILEICenterApp : public KMainWindow
 	*/
 	QSessionProgressDlg *d;
 
+	// Current tabs selected in the plug-ins dialog box
+	int DlgMainTabIdx;
+	int DlgDocsTabIdx;
+	int DlgProfilesTabIdx;
+	int DlgCommunitiesTabIdx;
+	int DlgSearchTabIdx;
+
 public:
 
 	/**

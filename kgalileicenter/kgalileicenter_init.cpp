@@ -251,10 +251,17 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Password", dbPwd);
 	Config->writeEntry("Encoding", dbEncoding);
 
-	//save options for database creation
+	// Save options for database creation
 	Config->writeEntry("CreateDbSQLpath",CreateDbSQLpath);
 	Config->writeEntry("CreateDbUseStopList",CreateDbUseStopList);
 	Config->writeEntry("CreateDbUseUsers",CreateDbUseUsers);
+
+	// Save options for the plug-ins dialog box
+	Config->writeEntry("DlgMainTabIdx",DlgMainTabIdx);
+	Config->writeEntry("DlgDocsTabIdx",DlgDocsTabIdx);
+	Config->writeEntry("DlgProfilesTabIdx",DlgProfilesTabIdx);
+	Config->writeEntry("DlgCommunitiesTabIdx",DlgCommunitiesTabIdx);
+	Config->writeEntry("DlgSearchTabIdx",DlgSearchTabIdx);
 
 	// Save Config
 	try
@@ -324,10 +331,18 @@ void KGALILEICenterApp::readOptions(void)
 	dbPwd=Config->readEntry("Password","").ascii();
 	dbEncoding=Config->readEntry("Encoding","latin1").ascii();
 
-	//read create database options
+	// Read create database options
 	CreateDbSQLpath=Config->readEntry("CreateDbPath","/usr/share/galilei/sql/").ascii();
 	CreateDbUseStopList=Config->readBoolEntry("CreateDbUseStopList",true);
 	CreateDbUseUsers=Config->readBoolEntry("CreateDbUseUsers",true);
+
+	// Save options for the plug-ins dialog box
+	DlgMainTabIdx=Config->readNumEntry("DlgMainTabIdx",0);
+	DlgDocsTabIdx=Config->readNumEntry("DlgDocsTabIdx",0);
+	DlgProfilesTabIdx=Config->readNumEntry("DlgProfilesTabIdx",0);
+	DlgCommunitiesTabIdx=Config->readNumEntry("DlgCommunitiesTabIdx",0);
+	DlgSearchTabIdx=Config->readNumEntry("DlgSearchTabIdx",0);
+
 }
 
 

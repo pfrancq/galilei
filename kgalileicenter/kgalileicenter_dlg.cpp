@@ -206,6 +206,11 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.changeEngine(Init<GFactoryEngine,GEngine,QEngineItem>(EngineManager->GetEnginesCursor(),dlg.Engines,dlg.EnableEngine));
 	dlg.changeMetaEngine(Init<GFactoryMetaEngine,GMetaEngine,QMetaEngineItem>(MetaEngineManager->GetMetaEnginesCursor(),dlg.MetaEngines,dlg.EnableMetaEngine,dlg.CurrentMetaEngine,MetaEngineManager->GetCurrentMethod()));
 
+	dlg.MainTab->setCurrentPage(DlgMainTabIdx);
+	dlg.DocsTab->setCurrentPage(DlgDocsTabIdx);
+	dlg.ProfilesTab->setCurrentPage(DlgProfilesTabIdx);
+	dlg.CommunitiesTab->setCurrentPage(DlgCommunitiesTabIdx);
+	dlg.SearchTab->setCurrentPage(DlgSearchTabIdx);
 	if(dlg.exec())
 	{
 		// read the plugins path
@@ -300,6 +305,12 @@ void KGALILEICenterApp::slotPlugins(void)
 		{
 		}
 	}
+	DlgMainTabIdx=dlg.MainTab->currentPageIndex();
+	DlgDocsTabIdx=dlg.DocsTab->currentPageIndex();
+	DlgProfilesTabIdx=dlg.ProfilesTab->currentPageIndex();
+	DlgCommunitiesTabIdx=dlg.CommunitiesTab->currentPageIndex();
+	DlgSearchTabIdx=dlg.SearchTab->currentPageIndex();
+
 }
 
 
