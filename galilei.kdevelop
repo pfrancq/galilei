@@ -16,6 +16,7 @@
     <absoluteprojectpath>false</absoluteprojectpath>
     <description/>
     <ignoreparts/>
+    <secondaryLanguages/>
   </general>
   <kdevautoproject>
     <general>
@@ -23,12 +24,13 @@
       <useconfiguration>default</useconfiguration>
     </general>
     <run>
-      <mainprogram>../kgalileicenter/kgalileicenter/kgalileicenter</mainprogram>
+      <mainprogram>/home/pfrancq/prj/upgalilei/src/upgalilei</mainprogram>
       <programargs/>
       <terminal>false</terminal>
       <envvars/>
       <autocompile>true</autocompile>
-      <directoryradio>executable</directoryradio>
+      <directoryradio>custom</directoryradio>
+      <customdirectory>/</customdirectory>
     </run>
     <make>
       <envvars>
@@ -86,6 +88,10 @@
       <userdocDir>/home/pfrancq/prj/galilei/html/</userdocDir>
       <apidocDir>/home/pfrancq/prj/galilei/html/</apidocDir>
     </projectdoc>
+    <ignoreqt_xml/>
+    <ignoredoxygen/>
+    <ignorekdocs/>
+    <ignoredevhelp/>
   </kdevdoctreeview>
   <kdevdebugger>
     <general>
@@ -96,6 +102,9 @@
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
       <runappinappdirectory>true</runappinappdirectory>
+      <configGdbScript/>
+      <runShellScript/>
+      <runGdbScript/>
     </general>
     <display>
       <staticmembers>false</staticmembers>

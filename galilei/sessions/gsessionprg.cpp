@@ -133,12 +133,23 @@ public:
 
 
 //------------------------------------------------------------------------------
-class GSetSaveHistoryl : public GSM
+class GSetSaveGroupsHistoryl : public GSM
 {
 public:
-	GSetSaveHistoryl(GPrgClassSession* o) : GSM("SetSaveHistory",o) {}
+	GSetSaveGroupsHistoryl(GPrgClassSession* o) : GSM("SetSaveGroupsHistory",o) {}
 	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
 };
+
+
+//------------------------------------------------------------------------------
+class GSetSaveProfilesHistoryl : public GSM
+{
+public:
+	GSetSaveProfilesHistoryl(GPrgClassSession* o) : GSM("SetSaveProfilesHistory",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+};
+
+
 //------------------------------------------------------------------------------
 class GTestI : public GSM
 {
@@ -452,22 +463,39 @@ void GSetAutoSaveI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigne
 
 
 //------------------------------------------------------------------------------
-void GSetSaveHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSetSaveGroupsHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the results must be stored.");
 	if((args->Tab[0]->GetValue(prg))[0]=='0')
 	{
-		o->WriteStr("Set SaveHistory: false");
-		Owner->SaveHistory=false;
+		o->WriteStr("Set SaveGroupsHistory: false");
+		Owner->Session->GetSessionParams()->Set("SaveGroupsHistory",false);
+	}
+	else
+	{
+		o->WriteStr("Set SaveGroupsHistory: true");
+		Owner->Session->GetSessionParams()->Set("SaveGroupsHistory",true);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSetSaveProfilesHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+{
+	if(args->NbPtr!=1)
+		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the results must be stored.");
+	if((args->Tab[0]->GetValue(prg))[0]=='0')
+	{
+		o->WriteStr("Set SaveProfilesHistory: false");
+		Owner->Session->GetSessionParams()->Set("SaveProfilesHistory",false);
 	}
 	else
 	{
 		o->WriteStr("Set SaveHistory: true");
-		Owner->SaveHistory=true;
+		Owner->Session->GetSessionParams()->Set("SaveProfilesHistory",true);
 	}
 }
-
 
 //------------------------------------------------------------------------------
 void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
@@ -949,7 +977,8 @@ GPrgClassSession::GPrgClassSession(GSession* s) throw(std::bad_alloc)
 	Methods.InsertPtr(new GSOutputI(this));
 	Methods.InsertPtr(new GSetLinksMethodI(this));
 	Methods.InsertPtr(new GSetAutoSaveI(this));
-	Methods.InsertPtr(new GSetSaveHistoryl(this));
+	Methods.InsertPtr(new GSetSaveGroupsHistoryl(this));
+	Methods.InsertPtr(new GSetSaveProfilesHistoryl(this));
 	Methods.InsertPtr(new GTestI(this));
 	Methods.InsertPtr(new GLogI(this));
 	Methods.InsertPtr(new GSqlI(this));

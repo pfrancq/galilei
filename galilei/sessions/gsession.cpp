@@ -447,7 +447,7 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehis
 
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
-	Grouping->Grouping(rec,modified,true, 0);
+	Grouping->Grouping(rec,modified,save, savehistory);
 
 	// Run all post-group methods that are enabled
 	GFactoryPostGroupCursor PostGroups=PostGroupMng->GetPostGroupsCursor();
@@ -749,4 +749,6 @@ GSessionParams::GSessionParams(void)
 	InsertPtr(p=new GParamUInt("SameBehaviourMinDocs",7));
 	InsertPtr(p=new GParamUInt("DiffBehaviourMinDocs",4));
 	InsertPtr(p=new GParamDouble("NullSimLevel",0.00001));
+	InsertPtr(p=new GParamBool("SaveGroupsHistory",false));
+	InsertPtr(p=new GParamBool("SaveProfilesHistory",false));
 }

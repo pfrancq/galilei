@@ -395,14 +395,13 @@ void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int histor
 	char sSql[200];
 	GWeightInfoCursor Cur;
 
-
 	try
 	{
 		// Save subprofiles
 		Cur=((GSubProfileVector*)sub)->GetWeightInfoCursor();
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			sprintf(sSql,"INSERT INTO  %shistoricsubprofiles(historicid,subprofileid,kwdid,weight) VALUES (%u, %u,%u,'%e')",
+			sprintf(sSql,"INSERT INTO  %shistoricsubprofiles(historicid,subprofileid,kwdid,weight, date) VALUES (%u, %u,%u,'%e', CurDate())",
 						sub->GetLang()->GetCode() ,historicid,sub->GetId(),Cur()->GetId(),Cur()->GetWeight());
 			RQuery insertkwds(this,sSql);
 		}
@@ -1060,6 +1059,10 @@ void GStorageMySQL::SaveGroupsHistory(GSession* session) throw(GException)
 				RQuery history(this,sSql);
 			}
 		}
+
+		//save the profiles history if needed.
+		if(session->GetSessionParams()->GetBool("SaveProfilesHistory"))
+			SaveHistoricProfiles(session, historicid);
 	}
 	catch(RMySQLError e)
 	{
@@ -1126,27 +1129,12 @@ void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historic
 
 	try
 	{
-		// Delete historic subprofiles if historicid=0.
-		char sSql[200];
-		if (historicid==0)
-		{
-			for (curLang.Start();!curLang.End();curLang.Next())
-			{
-				lang=curLang()->GetPlugin();
-				if(!lang) continue;
-				sprintf(sSql,"DELETE FROM %shistoricsubprofiles",lang->GetCode());
-				RQuery deletekwds(this,sSql);
-			}
-		}
-
 		GProfileCursor curProf=session->GetProfilesCursor() ;
-
 
 		// Save the Subprofile
 		for(curProf.Start();!curProf.End();curProf.Next())
 		{
 			GSubProfileCursor curSub=curProf()->GetSubProfilesCursor();
-
 			for(curSub.Start();!curSub.End();curSub.Next())
 				SaveSubProfileInHistory(curSub(), historicid);
 		}

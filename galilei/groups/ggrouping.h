@@ -125,7 +125,7 @@ public:
 	* Set the ideal groups.
 	* @param ideal          Pointer to the ideal groups.
 	*/
-	void SetIdealGroups(GGroups* ideal) {IdealGroups=ideal;}
+	void SetIdealGroups(GGroups* ideal){IdealGroups=ideal;}
 
 protected:
 

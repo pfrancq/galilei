@@ -138,7 +138,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save, bool savehistory) t
 
 	if(save)
 		Session->GetStorage()->SaveGroups(Session);
-	if(savehistory)
+	if(Session->GetSessionParams()->GetBool("SaveGroupsHistory"))
 		Session->GetStorage()->SaveGroupsHistory(Session);
 
 }

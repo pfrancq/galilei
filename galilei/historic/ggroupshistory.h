@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroups.h
+	GGroupsHistory.h
 
 	History of Groups for a given language - Header.
 
@@ -34,37 +34,34 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GGroupsHistoryH
 #define GGroupsHistoryH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <historic/ggrouphistory.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GGroupsHistoryManager class manage the history of groument for the sessin
+* The GGroupsHistoryManager class manage the history of groument for the session
 * @author David Wartel
 * @short Languages GroupsHistory.
 */
 class GGroupsHistoryManager : public R::RContainer<GGroupsHistory,unsigned int,true,true>
 {
-
-
 public :
 
 	/**
-	* constructor
+	* Constructor
 	*/
 	GGroupsHistoryManager(unsigned int i);
 
@@ -99,8 +96,6 @@ public :
 	*/
 	~GGroupsHistoryManager(void){};
 };
-
-
 
 
 //-----------------------------------------------------------------------------

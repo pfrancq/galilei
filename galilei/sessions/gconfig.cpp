@@ -116,7 +116,7 @@ void GConfig::Load(void) throw(GException)
 		Langs=GetTop()->GetTag("galileiconfig:langs");
 		DocAnalyses=GetTop()->GetTag("galileiconfig:docanalyses");
 		PostGroups=GetTop()->GetTag("galileiconfig:postgroups");
-		SessionParams=GetTop()->GetTag("galileiconfig:sessionparams");
+		SessionParams=GetTop()->GetTag("galileiconfig:session");
 	}
 	catch(...)
 	{
