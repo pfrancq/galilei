@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>397</width>
-            <height>571</height>
+            <width>372</width>
+            <height>436</height>
         </rect>
     </property>
     <property name="caption">
@@ -128,7 +128,7 @@
                                         <cstring>hostName</cstring>
                                     </property>
                                     <property name="text">
-                                        <string>localhost</string>
+                                        <string>127.0.0.1</string>
                                     </property>
                                 </widget>
                             </hbox>
@@ -369,41 +369,40 @@
                 </widget>
                 <widget class="KURLRequester" row="4" column="0">
                     <property name="name">
-                        <cstring>DBstoplistsql</cstring>
+                        <cstring>sqlPath</cstring>
+                    </property>
+                    <property name="url" stdset="0">
+                        <string></string>
                     </property>
                 </widget>
-                <widget class="KURLRequester" row="6" column="0">
+                <widget class="QCheckBox" row="1" column="0">
                     <property name="name">
-                        <cstring>DBUserssql</cstring>
-                    </property>
-                </widget>
-                <widget class="KURLRequester" row="2" column="0">
-                    <property name="name">
-                        <cstring>DBdatabasesql</cstring>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="1" column="0">
-                    <property name="name">
-                        <cstring>TextLabel4_2</cstring>
+                        <cstring>UseStopList</cstring>
                     </property>
                     <property name="text">
-                        <string>Empty Database SQL File :</string>
+                        <string>Fill StopList tables</string>
+                    </property>
+                    <property name="checked">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QCheckBox" row="2" column="0">
+                    <property name="name">
+                        <cstring>UseUsers</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Fill users table</string>
+                    </property>
+                    <property name="checked">
+                        <bool>true</bool>
                     </property>
                 </widget>
                 <widget class="QLabel" row="3" column="0">
                     <property name="name">
-                        <cstring>TextLabel1_3</cstring>
+                        <cstring>TextLabel4_2</cstring>
                     </property>
                     <property name="text">
-                        <string>Stop List SQL File :</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="5" column="0">
-                    <property name="name">
-                        <cstring>TextLabel1_3_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Users SQL File :</string>
+                        <string>Path to SQL files :</string>
                     </property>
                 </widget>
             </grid>
@@ -438,9 +437,7 @@
     <tabstop>Cancel</tabstop>
     <tabstop>Ok</tabstop>
     <tabstop>execFile</tabstop>
-    <tabstop>DBdatabasesql</tabstop>
-    <tabstop>DBstoplistsql</tabstop>
-    <tabstop>DBUserssql</tabstop>
+    <tabstop>sqlPath</tabstop>
 </tabstops>
 <includes>
     <include location="local" impldecl="in implementation">qcreatedatabase.ui.h</include>
@@ -450,12 +447,6 @@
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>kurlrequester.h</includehint>
-    <includehint>klineedit.h</includehint>
-    <includehint>kpushbutton.h</includehint>
-    <includehint>kurlrequester.h</includehint>
-    <includehint>klineedit.h</includehint>
-    <includehint>kpushbutton.h</includehint>
     <includehint>kurlrequester.h</includehint>
     <includehint>klineedit.h</includehint>
     <includehint>kpushbutton.h</includehint>

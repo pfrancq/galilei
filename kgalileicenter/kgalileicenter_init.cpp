@@ -244,6 +244,11 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Password", dbPwd);
 	Config->writeEntry("Encoding", dbEncoding);
 
+	//save options for database creation
+	Config->writeEntry("CreateDbSQLpath",CreateDbSQLpath);
+	Config->writeEntry("CreateDbUseStopList",CreateDbUseStopList);
+	Config->writeEntry("CreateDbUseUsers",CreateDbUseUsers);
+	
 	// Save Config
 	try
 	{
@@ -313,6 +318,11 @@ void KGALILEICenterApp::readOptions(void)
 	dbUser=Config->readEntry("User","root").ascii();
 	dbPwd=Config->readEntry("Password","").ascii();
 	dbEncoding=Config->readEntry("Encoding","latin1").ascii();
+	
+	//read create database options
+	CreateDbSQLpath=Config->readEntry("CreateDbPath","/usr/share/galilei/sql/").ascii();
+	CreateDbUseStopList=Config->readBoolEntry("CreateDbUseStopList",true);
+	CreateDbUseUsers=Config->readBoolEntry("CreateDbUseUsers",true);
 }
 
 

@@ -292,18 +292,21 @@ void KGALILEICenterApp::slotSessionQuit(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotCreateDatabase(void)
 {
-//	RString arg = RString(" ");
-	QString strTmp;
-	QString modeleDb , stopList , users;
-	ErrMsgList = QString();
 
-	KApplication::kApplication()->processEvents();
+RString strTmp;
+	RString line("");
+	RString sql("");
+	RString msg("");
+	bool endFound=false;
+	QSessionProgressDlg* d=0;
+
+	//Init dlg box
 	QCreateDatabase dlg(this,0,true);
-
-	dlg.DBdatabasesql->setURL("$HOME/prj/kgalileicenter/kgalileicenter/DbModel.sql");
-	dlg.DBstoplistsql->setURL("$HOME/prj/kgalileicenter/kgalileicenter/DbStopList.sql");
-	dlg.DBUserssql->setURL("$HOME/prj/kgalileicenter/kgalileicenter/DbUsers.sql");
-
+	dlg.UseStopList->setChecked(CreateDbUseStopList);
+	dlg.UseUsers->setChecked(CreateDbUseUsers);
+	dlg.sqlPath->setURL(ToQString(CreateDbSQLpath));
+	//Only a directory can be choosed
+	dlg.sqlPath->setMode(2);
 	// set the moreGroup unvisible
 	dlg.moreGroup->hide();
 	dlg.adjustSize();
@@ -311,147 +314,188 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 	// after ok button clicked
 	if(dlg.exec())
 	{
-		QString dbName = dlg.DbName->text().latin1();
-		QString host = dlg.hostName->text().latin1();
-		QString user = dlg.userName->text().latin1();
-		QString pass = dlg.password->text().latin1();
-		if (pass.length() == 0){pass="\\  ";} // put a space caracter if no password is entered
+		//Get new values
+		RString dbName = FromQString(dlg.DbName->text());
+		RString host = FromQString(dlg.hostName->text());
+		RString user = FromQString(dlg.userName->text());
+		RString pass = FromQString(dlg.password->text());
+
+		CreateDbUseStopList = dlg.UseStopList->isChecked();
+		CreateDbUseUsers= dlg.UseUsers->isChecked();
 
 		// if the database name field is empty -> ERROR
-		if( dbName.length() == 0)
-	    {
+		if( dbName.GetLen() == 0)
+		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a name for the database! "));
 			return;
 		}
 
 		// if the user or host is not specified -> ERROR
-		if( (host.length()== 0) || (user.length() == 0))
+		if( (host.GetLen()== 0) || (user.GetLen() == 0))
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a user and a host for the database! "));
 			return;
 		}
 
-
 		//************************* ------------- Find a Database Modele -----------------------*************************
-		strTmp = dlg.DBdatabasesql->url();
+		strTmp = FromQString(dlg.sqlPath->url());
 		// if no url is specified then return error
-		if (strTmp.length() == 0)
+		if (strTmp.GetLen() == 0)
 		{
-			QMessageBox::critical(this,"KGALILEICenter",QString("You must select a database shema file ! "));
+			QMessageBox::critical(this,"KGALILEICenter",QString("You must select the path to the SQL files! "));
 			return;
 		}
-
-		if (strTmp.find("://",0) < 0 )   // if the file is a locale one -> ok
-		{
-			modeleDb = strTmp;
-		}
-		else
-		{
-			QString tmp= QString("");
-			if (!KIO::NetAccess::download(KURL(*strTmp),tmp) )     // if the file can't be downloaded ->error
-			{
-				QMessageBox::critical(this,"KGALILEICenter",QString("Can't download url : ") + *strTmp );
-				return;
-			}
-			modeleDb = tmp.latin1();
-		}
-
-		//************************* ------------- Find a kwds Stop List  -----------------------*************************
-		strTmp = dlg.DBstoplistsql->url();
-		// if no url is specified then return error
-		if (strTmp.length() == 0)
-		{
-			QMessageBox::critical(this,"KGALILEICenter",QString("You must select a Database Stop List File ! "));
-			return;
-		}
-
-		if (strTmp.find("://",0) < 0 )   // if the file is a locale one -> ok
-		{
-			stopList = strTmp;
-		}
-		else
-		{
-			QString tmp= QString("");
-			
-
-			if (!KIO::NetAccess::download(KURL(*strTmp),tmp) )     // if the file can't be downloaded ->error
-			{
-				QMessageBox::critical(this,"KGALILEICenter",QString("Can't download url : ") + *strTmp );
-				return;
-			}
-			stopList = tmp.latin1();
-		}
-
-
-		//************************* ------------- Find a  List of Users -----------------------*************************
-		strTmp = dlg.DBUserssql->url();
-		// if no url is specified then return error
-		if (strTmp.length() == 0)
-		{
-			QMessageBox::critical(this,"KGALILEICenter",QString("You must select a Database Users File ! "));
-			return;
-		}
-
-		if (strTmp.find("://",0) < 0 )   // if the file is a locale one -> ok
-		{
-			users = strTmp;
-		}
-		else
-		{
-			QString tmp= QString("");
-			
-
-			if (!KIO::NetAccess::download(KURL(*strTmp),tmp) )     // if the file can't be downloaded ->error
-			{
-				QMessageBox::critical(this,"KGALILEICenter",QString("Can't download url : ") + *strTmp );
-				return;
-			}
-			users = tmp.latin1();
-		}
+		CreateDbSQLpath=strTmp;
 
 		//************************* ---------find the OS used----------*************************
-		cout <<"text="<<dlg.execFile->currentText().latin1()<<endl; //scriptName
-		strTmp = dlg.execFile->currentText(); //scriptName
-		if (strTmp.find("Linux",0) <0)
+		strTmp = FromQString(dlg.execFile->currentText()); //scriptName
+		if (strTmp.FindStr("Linux") <0)
 		{
 			QMessageBox::critical(this,"KGALILEICenter", *strTmp + QString("version : Not yet implemented !")  );
 			return;
 		}
 
-		// enter all the arg in this sequence:
-		// scriptName "DbName" "host" "user" "pass" "DbModele" "DbStopList  "DbUsers"  ...
-		RString cmdline = RString("");
-		cmdline+= "./DbCreation-mysql ";
-		cmdline+=" ";
-		cmdline+= dbName;
-		cmdline+= " ";
-		cmdline+= host;
-		cmdline+= " ";
-		cmdline+= user;
-		cmdline+= " ";
-		cmdline+= pass;
-		cmdline+=" ";
-		cmdline+= modeleDb;
-		cmdline+= " ";
-		cmdline+= stopList;
-		cmdline+= " ";
-		cmdline+= users;
+		try
+		{
+			//Qsession progres to view progression
+			RString path("");
+			d=new QSessionProgressDlg(this,0,"Create Database");
+			d->Begin();
+			d->PutText("Database structure created");
 
-		cmdline+= "\n";
+			RDb::CreateDatabase(host,user,pass,dbName);
+			RDb Db(host,user,pass,dbName,"latin1");
 
-		cout <<"commande line "<<cmdline<<endl;
-		// creation of the database using a shell script.
-		KShellProcess *process = new KShellProcess("/bin/bash");
+			d->PutText("Dump Database model");
 
-		connect(process,SIGNAL(receivedStdout(KProcess*,char*,int)),this,SLOT(slotStdout(KProcess*,char*,int)));
-		connect(process,SIGNAL(receivedStderr(KProcess*,char*,int)),this,SLOT(slotStderr(KProcess*,char*,int)));
-		connect(process,SIGNAL(processExited(KProcess*)),this,SLOT(slotProcessExited(KProcess*)));
+			//Dump database model
+			path=CreateDbSQLpath;
+			path+="DbModel.sql";
 
-		d=new QSessionProgressDlg(this,0,"create database ...");
-		d->Begin();
+			RTextFile fileM(path,Read,"Latin1");
 
-		*process << cmdline;
-		 process->start(KProcess::NotifyOnExit,KProcess::All);
+			while(!fileM.Eof())
+			{
+				line=fileM.GetLine();
+				if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+					continue;
+
+				endFound=false;
+				while(!fileM.Eof() && !endFound)
+				{
+					if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+					{
+						sql="";
+						endFound=true;
+						continue;
+					}
+					sql+=line;
+					if(line.Find(';')>=0)
+						endFound=true;
+					else
+						line=fileM.GetLine();
+				}
+				if(!sql.IsEmpty())
+					RQuery Sendquery(Db,sql);
+
+				sql="";
+			}
+
+			//Dump stoplists files
+			if(CreateDbUseStopList)
+			{
+				msg="Dump Database Stoplists";
+				d->PutText(msg);
+				msg+=" for language ";
+				DIR* dp;
+				struct dirent* ep;
+				path="";
+
+				dp=opendir(CreateDbSQLpath);
+				if(dp)
+				{
+					while((ep=readdir(dp)))
+					{
+						if(strncmp(&ep->d_name[0],"DbStopList",10)) continue;
+						msg+=ep->d_name[11];
+						msg+=ep->d_name[12];
+
+						path=CreateDbSQLpath+ep->d_name;
+						RTextFile fileS(path,Read,"Latin1");
+
+						d->PutText(msg);
+						while(!fileS.Eof())
+						{
+							line=fileS.GetLine();
+							if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+								continue;
+							RQuery stopquery(Db,line);
+						}
+						msg=msg.Mid(0,msg.GetLen()-2);
+					}
+				}
+			}
+
+			if(CreateDbUseUsers)
+			{
+				//Dump users file
+				path=CreateDbSQLpath;
+				//path+='/';
+				path+="DbUsers.sql";
+				d->PutText("Dump Database users");
+
+				RTextFile fileU(path,Read,"Latin1");
+
+				while(!fileU.Eof())
+				{
+					line=fileU.GetLine();
+					if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+						continue;
+
+					endFound=false;
+					while(!fileU.Eof() && !endFound)
+					{
+						if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+						{
+							sql="";
+							endFound=true;
+							continue;
+						}
+						sql+=line;
+						if(line.Find(';')>=0)
+							endFound=true;
+						else
+							line=fileU.GetLine();
+					}
+					if(!sql.IsEmpty())
+						RQuery Sendquery(Db,sql);
+
+					sql="";
+				}
+			}
+			d->Finish();
+		}
+		catch (RMySQLError& e)
+		{
+			QMessageBox::critical(this,"KGALILEICenter", QString("Error in Mysql creation : ") + ToQString(e.GetMsg()));
+			if(d)
+				d->close();
+			return;
+		}
+		catch (RIOException& e)
+		{
+			QMessageBox::critical(this,"KGALILEICenter", QString("Error in reading SQL files: ") + ToQString(e.GetMsg()));
+			if(d)
+				d->close();
+			return;
+		}
+		catch( ... )
+		{
+			QMessageBox::critical(this,"KGALILEICenter", QString("Unhandled Error "));
+			if(d)
+				d->close();
+			return;
+		}
 	}
 }
 

@@ -202,6 +202,21 @@ class KGALILEICenterApp : public KMainWindow
 	* path to plugins.
 	*/
 	R::RString pluginsPath;
+	
+	/**
+	* the path where the sql file for the database creation are stored
+	*/
+	R::RString CreateDbSQLpath;
+	
+	/**
+	* specifies if the stoplists table must be filled when a new Db is created
+	*/
+	bool CreateDbUseStopList;
+	
+	/**
+	* specifies if the users table must be filled when a new Db is created
+	*/
+	bool CreateDbUseUsers;
 
 	/**
 	* Label to hold an image representing the status of the database connection.
