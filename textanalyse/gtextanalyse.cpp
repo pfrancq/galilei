@@ -167,7 +167,7 @@ void GTextAnalyse::Connect(GSession* session) throw(GException)
 	GDocAnalyse::Connect(session);
 
 	// Create local structures
-	CurLangs=Session->GetLangs()->GetLangsCursor();
+	CurLangs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
 	Sl=new unsigned int[CurLangs.GetNb()];
 	Sldiff=new unsigned int[CurLangs.GetNb()];
 	Weights=new RDblHashContainer<WordWeight,27,27,false>(500,250);
@@ -270,7 +270,7 @@ void GTextAnalyse::VerifyDirect(void) throw(bad_alloc)
 		delete[] Direct;
 		Direct=ptr;
 		for(i=2500+1,ptr=&Direct[NbDirect];--i;ptr++)
-			(*ptr)=new WordWeight(Session->GetLangs()->NbPtr);
+			(*ptr)=new WordWeight((dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->NbPtr);
 		NbDirect+=2500;
 	}
 }
@@ -445,7 +445,7 @@ void GTextAnalyse::AddWord(const RString word,double weight) throw(bad_alloc)
 		w=Section->Tab[Index];
 		if(FindLang)
 		{
-			for(i=Session->GetLangs()->NbPtr+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
+			for(i=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->NbPtr+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
 			{
 				if(*is)
 					(*tmp2)++;
