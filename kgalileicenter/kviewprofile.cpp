@@ -121,6 +121,7 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	connect(Fdbks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	ConstructFdbks();
 
+	// Initialisation of the Links Widget
 	FdbksLinks = new QListView(Infos);
 	Infos->insertTab(FdbksLinks,"Links");
 	FdbksLinks->addColumn(QString("Document"));
