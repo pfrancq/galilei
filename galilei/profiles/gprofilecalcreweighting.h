@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GProfileCalcVector.h
+	GProfileCalcReWeighting.h
 
 	Vector Computing Method - Header.
 
@@ -32,8 +32,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GProfileCalcVectorH
-#define GProfileCalcVectorH
+#ifndef GProfileCalcReWeightingH
+#define GProfileCalcReWeightingH
 
 
 //-----------------------------------------------------------------------------
@@ -60,12 +60,12 @@ class GSubProfileVector;
 
 //-----------------------------------------------------------------------------
 /**
-* The GProfileCalcVector class provides a representation for a method to compute
+* The GProfileCalcReWeighting class provides a representation for a method to compute
 * a specific profile, i.e. its sub-profiles by using the vector method.
 * @author Pascal Francq
 * @short Vector Profile Computing Method.
 */
-class GProfileCalcVector : public GProfileCalc
+class GProfileCalcReWeighting : public GProfileCalc
 {
 protected:
 
@@ -92,7 +92,7 @@ public:
 	* Constructor.
 	* @param session        Session.
 	*/
-	GProfileCalcVector(GSession* session) throw(bad_alloc);
+	GProfileCalcReWeighting(GSession* session) throw(bad_alloc);
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -145,7 +145,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GProfileCalcVector(void);
+	virtual ~GProfileCalcReWeighting(void);
 };
 
 

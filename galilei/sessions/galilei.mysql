@@ -230,3 +230,14 @@ CREATE TABLE htmlsbydcmi (
   element varchar(30) NOT NULL,
   content text NOT NULL,
 ) TYPE=MyISAM;
+
+
+#--------------------------------------------------------
+# Table structure for table 'tests'
+
+CREATE TABLE tests (
+  testid int(11) NOT NULL auto_increment,
+  name varchar(50) NOT NULL,
+  computed date default NULL,
+  PRIMARY KEY  (testid)
+) TYPE=MyISAM;

@@ -40,8 +40,11 @@
 // include files for R Project
 #include <rstd/rstd.h>
 #include <rstd/rstring.h>
+#include <rstd/rcontainer.h>
+#include <rstd/rcursor.h>
 
 
+//-----------------------------------------------------------------------------
 /**
 * \namespace GALILEI
 * \brief GALILEI Classes.
@@ -57,6 +60,46 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
+// forward class declaration
+class GLang;
+class GLangCursor;
+class GLangs;
+class GDict;
+class GDicts;
+class GDoc;
+class GDocCursor;
+class GDocXML;
+class GDocs;
+class GDocAnalyse;
+class GDocOptions;
+class GUser;
+class GUserCursor;
+class GUsers;
+class GProfile;
+class GProfileCalc;
+class GProfileCalcCursor;
+class GSubProfile;
+class GProfileCursor;
+class GSubProfileCursor;
+class GSubProfileDesc;
+class GSubProfileDescCursor;
+class GGroup;
+class GGroupCursor;
+class GGroupsLang;
+class GGroupsLangCursor;
+class GGroups;
+class GGroupsCursor;
+class GGrouping;
+class GGroupingCursor;
+class GTest;
+class GTests;
+class GSession;
+class GFilter;
+class GMIMEFilter;
+class GURLManager;
+
+
+//-----------------------------------------------------------------------------
 // General constant
 const unsigned cNoRef=0xFFFFFFFF;        // A undefined identificator reference
 
@@ -66,10 +109,10 @@ const unsigned cNoRef=0xFFFFFFFF;        // A undefined identificator reference
 * Represent different state of a GALILEI object.
 */
 enum tObjState{osUnknow   /** Unknow state.*/,
-	           osCreated  /** Object was created.*/,
-	           osUpToDate /** Object is up to date.*/,
-	           osModified /** Object was modified and computation must be update.*/,
-	           osUpdated  /** Object is updated and needs to be save.*/};
+               osCreated  /** Object was created.*/,
+               osUpToDate /** Object is up to date.*/,
+               osModified /** Object was modified and computation must be update.*/,
+               osUpdated  /** Object is updated and needs to be save.*/};
 
 
 //-----------------------------------------------------------------------------

@@ -54,34 +54,35 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-//  class GGroupingSignalsReceiver
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GALILEI::GGroupingSignalsReceiver::GGroupingSignalsReceiver(void)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupingSignalsReceiver::NextGroupLang(GLang*)
-{
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
 //  GGrouping
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGrouping::GGrouping(GSession* s) throw(bad_alloc)
-	: Session(s), Groups(0), SubProfiles(s->GetNbUsers(),s->GetNbUsers()/2),
-	  Options(s->GetGroupingOptions())
+GALILEI::GGrouping::GGrouping(const char* n,GSession* s) throw(bad_alloc)
+	: GroupingName(n), Session(s), Groups(0), SubProfiles(s->GetNbUsers(),s->GetNbUsers()/2)
 {
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GGrouping::Compare(const GGrouping* grp)
+{
+	return(GroupingName.Compare(grp->GroupingName));
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GGrouping::Compare(const GGrouping& grp)
+{
+	return(GroupingName.Compare(grp.GroupingName));
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GGrouping::Compare(const char* name)
+{
+	return(GroupingName.Compare(name));
 }
 
 
@@ -92,7 +93,7 @@ void GALILEI::GGrouping::Init(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGrouping::Grouping(tSubProfileDesc t,GGroupingSignalsReceiver* rec,bool modified)
+void GALILEI::GGrouping::Grouping(GSessionSignalsReceiver* rec,bool modified)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
 	GProfileCursor cur;
@@ -100,9 +101,6 @@ void GALILEI::GGrouping::Grouping(tSubProfileDesc t,GGroupingSignalsReceiver* re
 	GGroup* Grp;
 	GGroup** Tab;
 	unsigned int i;
-
-	// Description
-	SubProfileDesc=t;
 
 	// Go trough each language.
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
@@ -131,7 +129,7 @@ void GALILEI::GGrouping::Grouping(tSubProfileDesc t,GGroupingSignalsReceiver* re
 		for(cur.Start();!cur.End();cur.Next())
 		{
 			sub=cur()->GetSubProfile(CurLang());
-			if((!sub->GetGroup())&&(sub->GetPtr<const tSubProfileDesc>(SubProfileDesc)->IsDefined()))
+			if((!sub->GetGroup())&&(sub->IsDefined()))
 				SubProfiles.InsertPtr(sub);
 		}
 

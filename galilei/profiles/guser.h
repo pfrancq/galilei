@@ -39,6 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainer.h>
+#include <rstd/rcursor.h>
 #include <rstd/rstring.h>
 
 
@@ -132,6 +133,14 @@ public:
 	const char* GetFullName(void) const {return(FullName());}
 
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GUserCursor class provides a way to go trough a set of users.
+* @short users Cursor
+*/
+CLASSCURSOR(GUserCursor,GUser,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

@@ -40,6 +40,7 @@
 #include <groups/ggroup.h>
 using namespace GALILEI;
 using namespace RTimeDate;
+using namespace RStd;
 
 
 
@@ -129,6 +130,15 @@ GProfDocCursor& GALILEI::GProfile::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
 	cur->Set(Fdbks);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
+GSubProfileCursor& GALILEI::GProfile::GetSubProfilesCursor(void)
+{
+	GSubProfileCursor *cur=GSubProfileCursor::GetTmpCursor();
+	cur->Set(this);
 	return(*cur);
 }
 

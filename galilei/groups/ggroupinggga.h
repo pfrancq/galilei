@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GGroupingSim.h
+	GGroupingGGA.h
 
-	Heuristic using Similarity - Header.
+	Heuristic using a GGA - Header.
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -32,8 +32,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGroupingSimH
-#define GGroupingSimH
+#ifndef GGroupingGGAH
+#define GGroupingGGAH
 
 
 //-----------------------------------------------------------------------------
@@ -53,24 +53,34 @@ class GGroup;
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupingSim provides a representation for a method to group some
-* subprofiles using the notion of similarity.
+* The GGroupingGGA provides a representation for a method to group some
+* subprofiles using a grouping genetic algorithm.
 * @author Pascal Francq
-* @short Similarity Grouping.
+* @short GGA Method.
 */
-class GGroupingSim : public GGrouping
+class GGroupingGGA : public GGrouping
 {
 protected:
 
 	/**
-	* Full Similarity for the groups.
+	* Size of the population of the GA.
 	*/
-	bool FullSim;
+	unsigned int GAPopSize;
 
 	/**
-	* Level of similarity for the groupement.
+	* Maximal number of generation to run.
 	*/
-	double LevelSim;
+	unsigned int GAMaxGen;
+
+	/**
+	* Is the GA in step mode?
+	*/
+	bool GAStep;
+
+	/**
+	* Number of generation for each step.
+	*/
+	unsigned int GAStepGen;
 
 public:
 
@@ -78,7 +88,7 @@ public:
 	* Constructor.
 	* @param s              Session.
 	*/
-	GGroupingSim(GSession* s) throw(bad_alloc);
+	GGroupingGGA(GSession* s) throw(bad_alloc);
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -93,33 +103,57 @@ public:
 	virtual void SetSettings(const char* s);
 
 	/**
+	* Set the size of the population.
+	* @param s              Size.
+	*/
+	void SetGAPopSize(unsigned int s) {GAPopSize=s;}
+
+	/**
+	* Get the size of the population.
+	* @returns Size.
+	*/
+	unsigned int GetGAPopSize(void) const {return(GAPopSize);}
+
+	/**
+	* Set the Maximal number of generation.
+	* @param max            Maximal number.
+	*/
+	void SetGAMaxGen(unsigned int max) {GAMaxGen=max;}
+
+	/**
+	* Get the Maximal number of generation.
+	* @returns Maximal number.
+	*/
+	unsigned int GetGAMaxGen(void) const {return(GAMaxGen);}
+
+	/**
+	* Set the status of the step mode.
+	* @param s              Status.
+	*/
+	void SetGAStep(bool s) {GAStep=s;}
+
+	/**
+	* Get the status of the step mode.
+	* @returns bool value representing the status.
+	*/
+	bool GetGAStep(void) const {return(GAStep);}
+
+	/**
+	* Set the number of generations for each step.
+	* @param n              Number of generations.
+	*/
+	void SetGAStepGen(unsigned int n) {GAStepGen=n;}
+
+	/**
+	* Get the number of generations for each step.
+	* @returns unsigned int representing the number of generations.
+	*/
+	unsigned int GetGAStepGen(void) const {return(GAStepGen);}
+
+	/**
 	* Initialisation of the method.
 	*/
 	virtual void Init(void) throw(bad_alloc);
-
-	/**
-	* Get the status of the full similarity.
-	* @return bool value.
-	*/
-	bool GetFullSim(void) const {return(FullSim);}
-
-	/**
-	* Set the status of the full similarity.
-	* @param s              Full similarity?
-	*/
-	void SetFullSim(bool s) {FullSim=s;}
-
-	/**
-	* Get the level of similarity to used.
-	* @return double value.
-	*/
-	double GetLevelSim(void) const {return(LevelSim);}
-
-	/**
-	* Set the level of similarity for the grouping.
-	* @param l              Level to used.
-	*/
-	void SetLevelSim(double l) {LevelSim=l;}
 
 protected:
 
@@ -157,7 +191,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GGroupingSim(void);
+	virtual ~GGroupingGGA(void);
 };
 
 

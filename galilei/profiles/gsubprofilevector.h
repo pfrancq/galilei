@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GSubProfileDescVector.h
+	GSubProfileVector.h
 
 	Sub-Profile Description using a vector - Header.
 
@@ -32,13 +32,13 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GSubProfileDescVectorH
-#define GSubProfileDescVectorH
+#ifndef GSubProfileVectorH
+#define GSubProfileVectorH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gsubprofiledesc.h>
+#include <profiles/gsubprofile.h>
 #include <infos/giwordweight.h>
 
 
@@ -49,19 +49,18 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 // forward class declaration
-class GSubProfile;
 class GGroup;
 class GIWordsWeights;
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GSubProfileDescVector provides a representation for a sub-profile
+* The GSubProfileVector provides a representation for a sub-profile
 * described as a vector corresponding to a list of pairs {keyword,weight}.
 * @author Pascal Francq.
 * @short Sub-Profile Vector Description.
 */
-class GSubProfileDescVector : public GSubProfileDesc
+class GSubProfileVector : public GSubProfile
 {
 	/**
 	* List representing the sub-profile.
@@ -72,17 +71,23 @@ public:
 
 	/**
 	* Constructor of the subprofile.
-	* @param sub            Sub-Profile.
+	* @param prof           Profile.
+	* @param id             Identifier.
+	* @param lang           Language of the subprofile.
 	* @param grp            Group.
 	* @param a              String representing the date where it was attached.
 	*/
-	GSubProfileDescVector(GSubProfile* sub,GGroup* grp,const char* a) throw(bad_alloc);
+	GSubProfileVector(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a) throw(bad_alloc);
 
 	/**
-	* Get the type of the description.
-	* @returns tSubProfileDesc enum type.
+	* Create a new profile.
+	* @param prof           Profile.
+	* @param id             Identifier.
+	* @param lang           Language of the subprofile.
+	* @param grp            Group.
+	* @param a              String representing the date where it was attached.
 	*/
-	virtual tSubProfileDesc GetType(void) const {return(sdVector);}
+	static GSubProfile* NewSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a);
 
 	/**
 	* See if the subprpfile is defined, i.e. if it is computed. A subprofile
@@ -100,7 +105,7 @@ public:
 	/**
 	* Compute similarity between SubProfiles.
 	*/
-	virtual double Similarity(const GSubProfileDesc* desc) const;
+	virtual double Similarity(const GSubProfile* desc) const;
 	
 	/**
 	* Get a cursor over the vector.
@@ -122,7 +127,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	~GSubProfileDescVector(void);
+	virtual ~GSubProfileVector(void);
 };
 
 
@@ -131,4 +136,3 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
-

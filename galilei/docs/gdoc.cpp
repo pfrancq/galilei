@@ -114,6 +114,35 @@ int GALILEI::GDoc::Compare(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GDoc::ClearInfos(void)
+{
+	Lang=0;
+	if(Words)
+		Words->Clear();
+
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd,GIWordOccurs* w)
+{
+	Lang=l;
+	N=n;
+	Ndiff=nd;
+	V=v;
+	Vdiff=vd;
+	if(Words)
+		delete Words;
+
+	Words=w;
+	State=osUpdated;
+	Computed.SetToday();
+	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+		Fdbks()->GetProfile()->SetState(osModified);
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GDoc::AddWord(const unsigned int id,const unsigned int nb)
 {
 	Words->InsertPtr(new GIWordOccur(id,nb));

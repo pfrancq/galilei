@@ -4,9 +4,9 @@
 
 	GSubProfileDesc.cpp
 
-	Generic Sub-Profile Description - Implementation.
+	Generic Subprofile Description Method - Implementation.
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -34,9 +34,7 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<profiles/gsubprofiledesc.h>
-#include<profiles/gprofile.h>
 #include<profiles/gsubprofile.h>
-#include<groups/ggroup.h>
 using namespace GALILEI;
 
 
@@ -48,77 +46,30 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSubProfileDesc::GSubProfileDesc(GSubProfileDesc* desc) throw(bad_alloc)
-	: Owner(desc->Owner), Group(desc->Group), Attached(desc->Attached)
+GALILEI::GSubProfileDesc::GSubProfileDesc(const char* name,GSubProfile* (*func)(GProfile* prof,unsigned int id,GLang*,GGroup*,const char*)) throw(bad_alloc)
+	: ProfDescName(name), Create(func)
 {
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GSubProfileDesc::GSubProfileDesc(GSubProfile* sub,GGroup* grp,const char* a) throw(bad_alloc)
-  : Owner(sub), Group(grp), Attached(a)
-{
-//	Profile->InsertPtr(this);
-//	if(grp)
-//		grp->InsertPtr(this);
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GSubProfileDesc::Compare(const GSubProfileDesc& desc) const
 {
-	return(GetType()-desc.GetType());
+	return(ProfDescName.Compare(desc.ProfDescName));
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GSubProfileDesc::Compare(const GSubProfileDesc* desc) const
 {
-	return(GetType()-desc->GetType());
+	return(ProfDescName.Compare(desc->ProfDescName));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GSubProfileDesc::Compare(const tSubProfileDesc t) const
+int GALILEI::GSubProfileDesc::Compare(const char* name) const
 {
-	return(GetType()-t);
-}
-
-
-//-----------------------------------------------------------------------------
-unsigned int  GALILEI::GSubProfileDesc::GetId(void) const
-{
-	return(Owner->GetId());
-}
-
-
-//-----------------------------------------------------------------------------
-GLang*  GALILEI::GSubProfileDesc::GetLang(void) const
-{
-	return(Owner->GetLang());
-}
-
-
-//-----------------------------------------------------------------------------
-bool GALILEI::GSubProfileDesc::IsDefined(void) const
-{
-	return(true);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSubProfileDesc::SetGroup(GGroup* grp)
-{
-	Group=grp;
-	if(grp)
-		Attached.SetToday();
-}
-
-
-//-----------------------------------------------------------------------------
-bool GALILEI::GSubProfileDesc::IsUpdated(void) const
-{
-	return(Attached<(*Owner->GetProfile()->GetUpdated()));
+	return(ProfDescName.Compare(name));
 }
 
 

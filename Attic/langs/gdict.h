@@ -97,12 +97,12 @@ class GDict : public RStd::RDblHashContainer<GWord,unsigned,27,27,true>
 	* Name of the dictionnary. This can be the name of a file or a table in a
 	* database.
 	*/
-	RString Name;
+	RStd::RString Name;
 
 	/**
 	* Description of the dictionnary.
 	*/
-	RString Desc;
+	RStd::RString Desc;
 
 	/**
 	* State of the dictionnary.

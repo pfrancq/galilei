@@ -48,7 +48,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 // Forward class declaration
-class GSubProfileDesc;
+class GSubProfile;
 class GGroupIR;
 class GGroupDataIR;
 class GThreadDataIR;

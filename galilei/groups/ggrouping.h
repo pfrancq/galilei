@@ -54,27 +54,7 @@ class GGroups;
 class GSubProfile;
 class GLang;
 class GGroupingOptions;
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GGroupingSignalsReceiver provides a representation for a reciever of
-* signals of a grouping method.
-*/
-class GGroupingSignalsReceiver
-{
-public:
-	/**
-	* Constructor.
-	*/
-	GGroupingSignalsReceiver(void);
-
-	/**
-	* Method called by GGrouping each time a new language is analysed.
-	* @param lang           Pointer to the current lang.
-	*/
-	virtual void NextGroupLang(GLang* lang);
-};
+class GSessionSignalsReceiver;
 
 
 //-----------------------------------------------------------------------------
@@ -86,6 +66,11 @@ public:
 */
 class GGrouping
 {
+	/**
+	* Name of the grouping.
+	*/
+	RStd::RString GroupingName;
+
 protected:
 
 	/**
@@ -108,18 +93,47 @@ protected:
 	*/
 	tSubProfileDesc SubProfileDesc;
 
-	/**
-	* Options of the grouping.
-	*/
-	GGroupingOptions* Options;
-
 public:
 
 	/**
 	* Constructor.
+	* @param n              Name of the grouping.
 	* @param s              Session.
 	*/
-	GGrouping(GSession* s) throw(bad_alloc);
+	GGrouping(const char* n,GSession* s) throw(bad_alloc);
+
+	/**
+	* Get the name of the grouping method.
+	* @returns Pointer to a C string.
+	*/
+	const char* GetGroupingName(void) const {return(GroupingName());}
+
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void) {return("");}
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*) {}
+
+	/**
+	* Compare method used for RStd::RContainer.
+	*/
+	int Compare(const GGrouping* grp);
+
+	/**
+	* Compare method used for RStd::RContainer.
+	*/
+	int Compare(const GGrouping& grp);
+
+	/**
+	* Compare method used for RStd::RContainer.
+	*/
+	int Compare(const char* name);
 
 	/**
 	* Initialisation of the method.
@@ -146,17 +160,25 @@ public:
 
 	/**
 	* Make the groups.
-	* @param t              Type of the description to use.
 	* @param rec            Receiver of the signals.
 	* @param modified       Recompute only modified elements or all.
 	*/
-	void Grouping(tSubProfileDesc t,GGroupingSignalsReceiver* rec=0,bool modified=true);
+	void Grouping(GSessionSignalsReceiver* rec=0,bool modified=true);
 
 	/**
 	* Destructor.
 	*/
 	virtual ~GGrouping(void);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GGroupingCursor class provides a way to go trough a set of grouping
+* method for the profiles.
+* @short Profiles Grouping Methods Cursor
+*/
+CLASSCURSOR(GGroupingCursor,GGrouping,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

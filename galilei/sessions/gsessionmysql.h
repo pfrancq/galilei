@@ -172,7 +172,7 @@ public:
 	* Save a document.
 	* @param doc            Document to save.
 	*/
-	virtual void Save(GDoc* doc) throw(GException);
+	virtual void SaveDoc(GDoc* doc) throw(GException);
 
 	/**
 	* Create a new profile.
@@ -187,13 +187,13 @@ public:
 	* a subprofile. For a complete save, call Save(const GProfile*).
 	* @param sub        Subprofile to save.
 	*/
-	virtual void Save(const GSubProfile* sub) throw(GException);
+	virtual void SaveSubProfile(GSubProfile* sub) throw(GException);
 
 	/**
 	* Save a profile.
 	* @param prof       Profile to save.
 	*/
-	virtual void Save(const GProfile* prof) throw(GException);
+	virtual void SaveProfile(GProfile* prof) throw(GException);
 
 	/**
 	* Create a new group.

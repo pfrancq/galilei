@@ -58,7 +58,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short IR "thread-dependent" Data.
 */
-class GThreadDataIR : public RGGA::RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfileDesc,GGroupDataIR>
+class GThreadDataIR : public RGGA::RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfile,GGroupDataIR>
 {
 public:
 
@@ -76,7 +76,7 @@ public:
 * @author Pascal Francq
 * @short IR Instance.
 */
-class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfileDesc,GGroupDataIR>
+class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfile,GGroupDataIR>
 {
 public:
 
@@ -93,7 +93,7 @@ public:
 	* @param h              The type of heuristic to be used.
 	* @param debug          Debugger.
 	*/
-	GInstIR(unsigned int max,unsigned int popsize,RGA::RObjs<GSubProfileDesc>* objs,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
+	GInstIR(unsigned int max,unsigned int popsize,RGA::RObjs<GSubProfile>* objs,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case

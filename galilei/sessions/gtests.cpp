@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfOptions.h
+	GTests.cpp
 
-	Options for the profiles description - Implementation.
+	Tests of SubProfiles Description and Grouping - Implementation.
 
-	(C) 2002 by P. Francq.
+	(C) 2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -33,43 +33,27 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gprofoptions.h>
+#include <sessions/gtests.h>
+#include <sessions/gtest.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GProfOptions
+// class GTests
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfOptions::GProfOptions(void)
-	: Model(sdNothing),ListSize(50),VectorMethod(vmQueryExpansion)
+GALILEI::GTests::GTests(void) throw(bad_alloc)
+	: RContainer<GTest,tId,true,true>(25,10)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfOptions::GProfOptions(const GProfOptions& opt)
-	: Model(opt.Model),ListSize(opt.ListSize),VectorMethod(opt.VectorMethod)
+GALILEI::GTests::~GTests(void)
 {
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GProfOptions::GProfOptions(const GProfOptions* opt)
-	: Model(opt->Model),ListSize(opt->ListSize),VectorMethod(opt->VectorMethod)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GProfOptions& GALILEI::GProfOptions::operator=(const GProfOptions& opt)
-{
-	Model=opt.Model;
-	ListSize=opt.ListSize;
-	VectorMethod=opt.VectorMethod;
-	return(*this);
 }

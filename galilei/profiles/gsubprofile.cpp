@@ -34,7 +34,6 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<profiles/gsubprofile.h>
-#include<profiles/gsubprofiledescvector.h>
 #include<profiles/gprofile.h>
 #include<langs/glang.h>
 #include<profiles/gprofdoc.h>
@@ -50,12 +49,16 @@ using namespace RStd;
 //
 //-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
+GALILEI::GSubProfile::GSubProfile(GSubProfile*) throw(bad_alloc)
+{
+}
+
 
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a) throw(bad_alloc)
-  :  RContainer<GSubProfileDesc,unsigned,true,true>(2,1),Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a)
+  :  Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a)
 {
-	InsertPtr(new GSubProfileDescVector(this,grp,a));
 	Profile->InsertPtr(this);
 	if(grp)
 		grp->InsertPtr(this);

@@ -36,7 +36,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainer.h>
+#include <rstd/rcursor.h>
 #include <rstd/rstring.h>
 #include <rinter/rlang.h>
 
@@ -133,6 +133,14 @@ public:
 	*/
 	virtual ~GLang(void);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GLangCursor class provides a way to go trough a set of languages.
+* @short Language Cursor
+*/
+CLASSCURSOR(GLangCursor,GLang,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

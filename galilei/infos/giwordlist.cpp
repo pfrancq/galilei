@@ -36,6 +36,7 @@
 #include <infos/giwordlist.h>
 #include <infos/giword.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
 

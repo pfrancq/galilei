@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	(C) 2001 by Pascal Francq
+	(C) 2001-2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -37,15 +37,9 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <langs/glangs.h>
-#include <langs/gdicts.h>
 #include <profiles/gusers.h>
 #include <profiles/gsubprofile.h>
 #include <docs/gdocs.h>
@@ -55,30 +49,6 @@
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GLang;
-class GDict;
-class GDoc;
-class GDocXML;
-class GUser;
-class GProfile;
-class GProfileCursor;
-class GProfDoc;
-class GSubProfile;
-class GGroup;
-class GGroups;
-class GGroupsCursor;
-class GProfileCalc;
-class GFilter;
-class GMIMEFilter;
-class GURLManager;
-class GDocAnalyse;
-class GDocOptions;
-class GProfOptions;
-class GGroupingOptions;
 
 
 //-----------------------------------------------------------------------------
@@ -105,6 +75,12 @@ public:
 	* @param prof           Profile.
 	*/
 	virtual void receiveNextProfile(const GProfile* prof);
+
+	/**
+	* Method called by GGrouping each time a new language is analysed.
+	* @param lang           Pointer to the current lang.
+	*/
+	virtual void NextGroupLang(const GLang* lang);
 };
 
 
@@ -116,34 +92,9 @@ public:
 * @author Pascal Francq
 * @short Generic Session.
 */
-class GSession
+class GSession : public GLangs, public GDocs, public GUsers
 {
 protected:
-
-	/**
-	* Languages handled by the system.
-	*/
-	GLangs Langs;
-
-	/**
-	* Stoplists of the different languages.
-	*/
-	GDicts Stops;
-
-	/**
-	* Dictionnaries of the different languages.
-	*/
-	GDicts Dics;
-
-	/**
-	* Users handled by the system.
-	*/
-	GUsers Users;
-
-	/**
-	* Documents handled by the system.
-	*/
-	GDocs Docs;
 
 	/**
 	* Groups handled by the system.
@@ -155,20 +106,45 @@ protected:
 	*/
 	RStd::RContainer<GProfDoc,unsigned,true,true> Fdbks;
 
-	/**
-	* SubProfiles handled by the system.
-	*/
-	RStd::RContainer<GProfile,unsigned int,true,true>* Profiles;
+//	/**
+//	* SubProfiles handled by the system.
+//	*/
+//	RStd::RContainer<GProfile,unsigned int,true,true>* Profiles;
+//
+//	/**
+//	* SubProfiles handled by the system.
+//	*/
+//	RStd::RContainer<GSubProfile,unsigned int,true,true>* SubProfiles;
 
 	/**
-	* SubProfiles handled by the system.
+	* Container of computing method for the profiles.
 	*/
-	RStd::RContainer<GSubProfile,unsigned int,true,true>* SubProfiles;
+	RStd::RContainer<GSubProfileDesc,unsigned int,true,true>* SubProfileDescs;
+
+	/**
+	* Current method used to computed the profiles.
+	*/
+	GSubProfileDesc* SubProfileDesc;
 
 	/**
 	* Container of computing method for the profiles.
 	*/
 	RStd::RContainer<GProfileCalc,unsigned int,true,true>* ProfileCalcs;
+
+	/**
+	* Current method used to computed the profiles.
+	*/
+	GProfileCalc* ProfileCalc;
+
+	/**
+	* Container of grouping method for the profiles.
+	*/
+	RStd::RContainer<GGrouping,RStd::tId,true,true>* Groupings;
+
+	/**
+	* Current grouping method used.
+	*/
+	GGrouping* Grouping;
 
 	/**
 	* URL Manager used by this session.
@@ -179,21 +155,6 @@ protected:
 	* Analyser used for the document.
 	*/
 	GDocAnalyse* DocAnalyse;
-
-	/**
-	* State of the dictionnaries and stoplists.
-	*/
-	bool bDics;
-
-	/**
-	* State of the documents.
-	*/
-	bool bDocs;
-
-	/**
-	* State of the users.
-	*/
-	bool bUsers;
 
 	/**
 	* State of the groups.
@@ -210,16 +171,6 @@ protected:
 	*/
 	GDocOptions* DocOptions;
 
-	/**
-	* Options about the profiles.
-	*/
-	GProfOptions* ProfOptions;
-
-	/**
-	* Options about the grouping methods.
-	*/
-	GGroupingOptions* GroupingOptions;
-
 public:
 
 	/**
@@ -234,260 +185,107 @@ public:
 	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException);
 
 	/**
-	* @name Method for Languages.
+	* Get the documents' analyser.
+	* @returns Pointer to a GDocAnalyse class.
 	*/
-	//@{
-
-protected:
-
-		/**
-		* Loading a dictionnary/stoplist.
-		* @param code           Code of the languague.
-		* @param stop           Is it a stop list.
-		*/
-		virtual void LoadDic(const char* code,bool s) throw(bad_alloc,GException)=0;
-
-		/**
-		* Load a specific word from a dictionnary.
-		* @param id             Idenfificator of the word.
-		* @param code           Code of the languague.
-		*/
-		virtual const char* LoadWord(const unsigned int id,const char* code)=0;
-
-public:
-		/**
-		* Get the number of languages treated by the system.
-		* @returns Number of languages.
-		*/
-		unsigned int GetNbLangs(void) const
-			{return(Langs.NbPtr);}
-
-		/**
-		* Get a pointer to the languages.
-		* @returns Pointer to the languages.
-		*/
-		const GLangs* GetLangs(void) const
-			{return(&Langs);}
-
-		/**
-		* Get a pointer to a language while having its code.
-		* @param code             Code of the language.
-		* @returns Pointer to the language.
-		*/
-		GLang* GetLang(const char* code) const;
-
-		/**
-		* Verify if the dictionnaries/stoplists are loaded.
-		* @returns true, if loaded.
-		*/
-		bool IsDicsLoad(void) const {return(bDics);}
-
-		/**
-		* Load the dictionnaries and stoplists.
-		*/
-		void InitDics(void) throw(bad_alloc,GException);
-
-		/**
-		* Get a pointer to a dictionnary corresponding to a given language.
-		* @param lang       Pointer to the language.
-		* @returns Pointer to a dictionnary.
-		*/
-		GDict* GetDic(const GLang* lang) const throw(GException);
-
-		/**
-		* Get a pointer to a stoplist corresponding to a given language.
-		* @param lang       Pointer to the language.
-		* @returns Pointer to a stoplist.
-		*/
-		GDict* GetStop(const GLang* lang) const throw(GException);
-
-		/**
-		* Get the word corresponding to a given identificator for a language.
-		* @param id         Identificator.
-		* @param lang       Pointer to the corresponding language.
-		* @returns Pointer to a C string.
-		*/
-		const char* GetWord(const unsigned int id,const GLang* lang);
-
-		/**
-		* Get the word corresponding to a given identificator of a dictionnary.
-		* @param dic        Pointer to the corresponding dictionnary.
-		* @returns Pointer to a C string.
-		*/
-		const char* GetWord(const unsigned int id,const GDict* dict) const;
-
-		/**
-		* Return the identifier of a new word of a dictionnary.
-		* @param word           Word to find.
-		* @param dict           Dictionnary.
-		*/
-		virtual unsigned int GetDicNextId(const char* word,const GDict* dict)=0;
-
-	//@}
+	GDocAnalyse* GetDocAnalyse(void) const {return(DocAnalyse);}
 
 	/**
-	* @name Method for Information.
+	* Get a pointer to the document options.
+	* @returns Pointer to GDocOptions.
 	*/
-	//@{
-
-	//@}
+	GDocOptions* GetDocOptions(void) {return(DocOptions);}
 
 	/**
-	* @name Method for Documents.
+	* Register a description method for the profiles.
+	* @param com            Description method to register.
 	*/
-	//@{
+	void RegisterProfileDesc(GSubProfileDesc* grp) throw(bad_alloc);
 
-protected:
+	/**
+	* Set the current description method.
+	* @param name           Name of the description method.
+	*/
+	void SetCurrentProfileDesc(const char* name) throw(GException);
 
-		/**
-		* Load the documents.
-		*/
-		virtual void LoadDocs(void) throw(bad_alloc,GException)=0;
+	/**
+	* Get the current description method.
+	* @returns Pointer to a GSubProfileDesc class.
+	*/
+	GSubProfileDesc* GetCurrentProfileDesc(void) {return(SubProfileDesc);}
 
-public:
+	/**
+	* Get a cursor to the description methods registered.
+	* @return Return a GProfileDescCursor.
+	*/
+	GSubProfileDescCursor& GetProfileDescsCursor(void);
 
-		/**
-		* Create a new document.
-		* @param url        URL of the document.
-		* @param name       Name of the document.
-		* @param mime       MIME Type of the document
-		* @returns Pointer to a new created document.
-		*/
-		virtual GDoc* NewDoc(const char* url,const char* name,const char* mime) throw(GException)=0;
+	/**
+	* Register a computing method for the profiles.
+	* @param com            Grouping method to register.
+	*/
+	void RegisterComputingMethod(GProfileCalc* grp) throw(bad_alloc);
 
-		/**
-		* Save a document.
-		* @param doc        Document to save.
-		*/
-		virtual void Save(GDoc* doc) throw(GException)=0;
+	/**
+	* Set the current computing method.
+	* @param name           Name of the computing method.
+	*/
+	void SetCurrentComputingMethod(const char* name) throw(GException);
 
-		/**
-		* Get the documents' analyser.
-		* @returns Pointer to a GDocAnalyse class.
-		*/
-		GDocAnalyse* GetDocAnalyse(void) const {return(DocAnalyse);}
+	/**
+	* Get the current computing method.
+	* @returns Pointer to a GProfileCalc class.
+	*/
+	GProfileCalc* GetCurrentComputingMethod(void) {return(ProfileCalc);}
 
-		/**
-		* Get the number of documents treated by the system.
-		* @returns Number of documents.
-		*/
-		unsigned int GetNbDocs(void) const
-			{return(Docs.NbPtr);}
+	/**
+	* Get a cursor to the computing methods registered.
+	* @return Return a GComputingCursor.
+	*/
+	GProfileCalcCursor& GetComputingsCursor(void);
 
-		/**
-		* Get a pointer to the documents.
-		* @returns Pointer to the documents.
-		*/
-		const GDocs* GetDocs(void) const
-			{return(&Docs);}
+	/**
+	* Register a grouping method for the profiles.
+	* @param grp            Grouping method to register.
+	*/
+	void RegisterGroupingMethod(GGrouping* grp) throw(bad_alloc);
 
-		/**
-		* Get a pointer to the document options.
-		* @returns Pointer to GDocOptions.
-		*/
-		GDocOptions* GetDocOptions(void) {return(DocOptions);}
+	/**
+	* Set the current grouping method.
+	* @param name           Name of the grouping method.
+	*/
+	void SetCurrentGroupingMethod(const char* name) throw(GException);
 
-		/**
-		* Verify if the documents are loaded.
-		* @returns true, if loaded.
-		*/
-		bool IsDocsLoad(void) const {return(bDocs);}
+	/**
+	* Get the current grouping method.
+	* @returns Pointer to a GGrouping class.
+	*/
+	GGrouping* GetCurrentGroupingMethod(void) {return(Grouping);}
 
-		/**
-		* Load the documents.
-		*/
-		void InitDocs(void) throw(bad_alloc,GException);
+	/**
+	* Get a cursor to the grouping methods registered.
+	* @return Return a GGoupingCursor.
+	*/
+	GGroupingCursor& GetGroupingsCursor(void);
 
-		/**
-		* Create a XML structure of the content of a document. The structure
-		* created has to be desallocate by the caller.
-		* @param doc        Document to analyse.
-		*/
-		GDocXML* CreateDocXML(GDoc* doc) throw(GException);
+	/**
+	* Create a XML structure of the content of a document. The structure
+	* created has to be desallocate by the caller.
+	* @param doc        Document to analyse.
+	*/
+	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
 
-		/**
-		* Analyse all the necessary documents.
-		* @param rec        Receiver for the signals.
-		* @param modified   Recompute only modified elements or all.
-		*/
-		void AnalyseDocs(GSessionSignalsReceiver* rec,bool modified=true) throw(GException);
-
-	//@}
+	/**
+	* Analyse all the necessary documents.
+	* @param rec        Receiver for the signals.
+	* @param modified   Recompute only modified elements or all.
+	*/
+	void AnalyseDocs(GSessionSignalsReceiver* rec=0,bool modified=true) throw(GException);
 
 	/**
 	* @name Method for Users/Profiles.
 	*/
 	//@{
-
-protected:
-
-		/**
-		* Load the Users.
-		*/
-		virtual void LoadUsers(void) throw(bad_alloc,GException)=0;
-
-public:
-
-		/**
-		* Create a new profile.
-		* @param usr        Pointer to the user of the profile.
-		* @param desc       Description of the profile.
-		* @returns Pointer to GProfile.
-		*/
-		virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException)=0;
-
-		/**
-		* Save information about the groupement (Group and attachment date) of
-		* a subprofile. For a complete save, call Save(const GProfile*).
-		* @param sub        Subprofile to save.
-		*/
-		virtual void Save(const GSubProfile* sub) throw(GException)=0;
-
-		/**
-		* Save a profile.
-		* @param prof       Profile to save.
-		*/
-		virtual void Save(const GProfile* prof) throw(GException)=0;
-
-		/**
-		* Get a profile with a specific identifier.
-		* @param id         Identifier.
-		*/
-		GProfile* GetProfile(const unsigned int id) const;
-
-		/**
-		* Get a cursor over the profiles used in the system.
-		*/
-		GProfileCursor& GetProfilesCursor(void);
-
-		/**
-		* Get a cursor over the profiles used in the system.
-		*/
-		GSubProfileCursor& GetSubProfilesCursor(void);
-
-		/**
-		* Get a pointer to subprofiles int the system.
-		*/
-		RStd::RContainer<GSubProfile,unsigned int,true,true>* GetSubProfiles(void) {return(SubProfiles);};
-
-		/**
-		* Get the number of users treated by the system.
-		* @returns Number of Users.
-		*/
-		unsigned int GetNbUsers(void) const {return(Users.NbPtr);}
-
-		/**
-		* Get a pointer to the Users.
-		* @returns Pointer to the users.
-		*/
-		const GUsers* GetUsers(void) const
-			{return(&Users);}
-
-		/**
-		* Verify if the users are loaded.
-		* @returns true, if loaded.
-		*/
-		bool IsUsersLoad(void) const {return(bUsers);}
 
 		/**
 		* Load the Users.
@@ -514,17 +312,22 @@ public:
 		/**
 		* Compute all the necessary profiles.
 		* @param rec        Receiver for the signals.
-		* @param method     Method used to compute.
 		* @param modified   Recompute only modified elements or all.
 		*/
-		void CalcProfiles(GSessionSignalsReceiver* rec,GProfileCalc* method,bool modified=true) throw(GException);
+		void CalcProfiles(GSessionSignalsReceiver* rec,bool modified=true) throw(GException);
 
 		/**
-		* Get a pointer to the profiles options.
-		* @returns Pointer to GProfOptions.
+		* Compute a profile.
+		* @param prof       Pointer to the profile to compute.
 		*/
-		GProfOptions* GetProfOptions(void) {return(ProfOptions);}
+		void CalcProfile(GProfile* prof) throw(GException);
 
+	/**
+	* Make the groups.
+	* @param rec            Receiver of the signals.
+	* @param modified       Recompute only modified elements or all.
+	*/
+	void GroupingProfiles(GSessionSignalsReceiver* rec=0,bool modified=true)  throw(GException);
 
 	//@}
 
@@ -619,12 +422,6 @@ public:
 		* @param grp        Group to delete.
 		*/
 		virtual void DeleteGroup(GGroup* grp)=0;
-
-		/**
-		* Get a pointer to the document options.
-		* @returns Pointer to GDocOptions.
-		*/
-		GGroupingOptions* GetGroupingOptions(void) {return(GroupingOptions);}
 
 	//@}
 

@@ -46,13 +46,14 @@ using namespace RStd;
 //include files for GALILEI
 #include <sessions/gsessionmysql.h>
 #include <langs/glang.h>
+#include <langs/gdict.h>
+#include <langs/gdicts.h>
 #include <infos/giwordlist.h>
 #include <infos/giwordoccur.h>
 #include <infos/giwordoccurs.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
-#include <profiles/gsubprofile.h>
-#include <profiles/gsubprofiledescvector.h>
+#include <profiles/gsubprofilevector.h>
 #include <profiles/gprofdoc.h>
 #include <docs/gdoc.h>
 #include <docs/gdocs.h>
@@ -201,9 +202,9 @@ void GALILEI::GSessionMySQL::LoadDic(const char* code,bool s) throw(bad_alloc,GE
 
 	// Create and insert the dictionnary
 	if(s)
-		Stops.InsertPtr(dict=new GDict(this,tbl,"Stop List",GetLang(code),MaxId,MaxCount,true));
+		Stops->InsertPtr(dict=new GDict(this,tbl,"Stop List",GetLang(code),MaxId,MaxCount,true));
 	else
-		Dics.InsertPtr(dict=new GDict(this,tbl,"Dictionnary",GetLang(code),MaxId,MaxCount,false));
+		Dics->InsertPtr(dict=new GDict(this,tbl,"Dictionnary",GetLang(code),MaxId,MaxCount,false));
 
 	// Load the dictionnary from the database
 	sprintf(sSql,"SELECT kwdid, kwd  FROM %s",tbl);
@@ -234,6 +235,7 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 	char sDes[100];
 	GProfile* prof;
 	unsigned int id;
+	GLangCursor Langs;
 
 	sprintf(sSql,"INSERT INTO profiles(userid,description,updated) VALUES(%u,%s,CURDATE())",
 		usr->GetId(),ValidSQLValue(desc,sDes));
@@ -244,9 +246,10 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 	RQuery selectprofile(this,sSql);
 	selectprofile.Begin();
 	id=strtoul(selectprofile[0],0,10);
-	Profiles->InsertPtr(prof=new GProfile(usr,id,desc,selectprofile[1],0,GetNbLangs()));
+	InsertProfile(prof=new GProfile(usr,id,desc,selectprofile[1],0,GetNbLangs()));
 
 	// Construct SubProfiles
+	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		sprintf(sSql,"INSERT INTO subprofiles(profileid,langid) VALUES(%u,'%s')",id,Langs()->GetCode());
@@ -254,7 +257,7 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 		sprintf(sSql,"SELECT subprofileid from subprofiles WHERE subprofileid=LAST_INSERT_ID())");
 		RQuery selectsub(this,sSql);
 		selectsub.Begin();
-		SubProfiles->InsertPtr(new GSubProfile(prof,strtoul(selectsub[0],0,10),Langs(),0,0));
+		InsertSubProfile(new GSubProfileVector(prof,strtoul(selectsub[0],0,10),Langs(),0,0));
 	}
 
 	// Return new created profile
@@ -263,7 +266,7 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::Save(const GSubProfile* sub) throw(GException)
+void GALILEI::GSessionMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 {
 	char sSql[200];
 	char sattached[15];
@@ -275,7 +278,7 @@ void GALILEI::GSessionMySQL::Save(const GSubProfile* sub) throw(GException)
 	l=sub->GetLang()->GetCode();
 	sprintf(sSql,"DELETE FROM %ssubprofilesbykwds WHERE subprofileid=%u",l,sub->GetId());
 	RQuery deletekwds(this,sSql);
-	Cur=((GSubProfileDescVector*)sub->GetPtr<const tSubProfileDesc>(sdVector))->GetVectorCursor();
+	Cur=((GSubProfileVector*)sub)->GetVectorCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		sprintf(sSql,"INSERT INTO  %ssubprofilesbykwds(subprofileid,kwdid,weight) VALUES (%u,%u,'%e')",
@@ -293,26 +296,21 @@ void GALILEI::GSessionMySQL::Save(const GSubProfile* sub) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::Save(const GProfile* prof) throw(GException)
+void GALILEI::GSessionMySQL::SaveProfile(GProfile* prof) throw(GException)
 {
 	char sSql[500];
 	char sname[200];
 	char supdated[15];
 	char scomputed[15];
-	const char* lang;
-	unsigned int profid,subid;
-	RContainerCursor<GSubProfile,unsigned,false,true> CurSub(prof);
+	unsigned int profid;
+	GSubProfileCursor CurSub=prof->GetSubProfilesCursor();
 
 	// Init
 	profid=prof->GetId();
 
 	// Save the Subprofile
 	for(CurSub.Start();!CurSub.End();CurSub.Next())
-	{
-		Save(CurSub());
-		lang=CurSub()->GetLang()->GetCode();
-		subid=CurSub()->GetId();
-	}
+		SaveSubProfile(CurSub());
 
 	// Update profiles
 	sprintf(sSql,"UPDATE profiles SET description=%s,updated=%s,calculated=%s WHERE profileid=%u",
@@ -332,6 +330,7 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 	GSubProfile* sub;
 	unsigned int userid,profileid,subid;
 	GGroup* grp;
+	GLangCursor Langs;
 
 	// Go through the users
 	try
@@ -342,11 +341,11 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 			userid=atoi(users[0]);
 			sprintf(sSql,"SELECT profileid,description,updated,calculated FROM profiles WHERE userid=%u",userid);
 			RQuery profiles(this,sSql);
-			Users.InsertPtr(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
+			InsertUser(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
 			for(profiles.Begin();profiles.IsMore();profiles++)
 			{
 				profileid=atoi(profiles[0]);
-				Profiles->InsertPtr(prof=new GProfile(usr,profileid,profiles[1],profiles[2],profiles[3],GetNbLangs()));
+				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],profiles[2],profiles[3],GetNbLangs()));
 				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid FROM subprofiles WHERE profileid=%u",profileid);
 				RQuery subprofil (this,sSql);
 				for(subprofil.Begin();subprofil.IsMore();subprofil++)
@@ -357,22 +356,23 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 						grp=Groups.GetPtr<const GLang*>(lang)->GetPtr<const unsigned int>(atoi(subprofil[3]));
 					else
 						grp=0;
-					SubProfiles->InsertPtr(sub=new GSubProfile(prof,subid,lang,grp,subprofil[2]));
+					InsertSubProfile(sub=new GSubProfileVector(prof,subid,lang,grp,subprofil[2]));
 				}
 			}
 		}
 
 		// Load the subprofile's description
+		Langs=GetLangsCursor();
 		for(Langs.Start();!Langs.End();Langs.Next())
 		{
 			sprintf(sSql,"SELECT subprofileid,kwdid,Weight FROM %ssubprofilesbykwds",Langs()->GetCode());
 			RQuery sel(this,sSql);
 			for(sel.Begin();sel.IsMore();sel++)
 			{
-				sub=SubProfiles->GetPtr<const unsigned int>(atoi(sel[0]));
+				sub=GetSubProfile(atoi(sel[0]));
 				if(sub)
 				{
-					((GSubProfileDescVector*)sub->GetPtr<const tSubProfileDesc>(sdVector))->AddWord(atoi(sel[1]),atof(sel[2]));
+					((GSubProfileVector*)sub)->AddWord(atoi(sel[1]),atof(sel[2]));
 				}
 			}
 		}
@@ -396,11 +396,11 @@ void GALILEI::GSessionMySQL::LoadFdbks() throw(bad_alloc,GException)
 	RQuery fdbks(this,sSql);
 	for(fdbks.Begin();fdbks.IsMore();fdbks++)
 	{
-		usr=Users.GetPtr<unsigned int>(atoi(fdbks[3]));
+		usr=GetUser(atoi(fdbks[3]));
 		if(!usr) continue;
 		prof=usr->GetPtr<unsigned int>(atoi(fdbks[2]));
 		if(!prof) continue;
-		doc=Docs.GetPtr<unsigned int>(atoi(fdbks[0]));
+		doc=GetDoc(atoi(fdbks[0]));
 		if(!doc) continue;
 		InsertFdbk(prof,doc,fdbks[1][0],fdbks[4]);
 	}
@@ -414,6 +414,7 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 	GLang* lang;
 	int docid;
 	char sSql[100];
+	GLangCursor Langs;
 
 	sprintf(sSql,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed,n,ndiff,v,vdiff FROM htmls");
 	RQuery quer (this,sSql);
@@ -421,17 +422,18 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 	{
 		docid=atoi(quer[0]);
 		lang=GetLang(quer[4]);
-		Docs.InsertPtr(doc=new GDoc(quer[1],quer[2],docid,lang,Mng->GetMIMEType(quer[3]),quer[5],quer[6],atoi(quer[7]),atoi(quer[8]),atoi(quer[9]),atoi(quer[10]),atoi(quer[11])));
+		InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,Mng->GetMIMEType(quer[3]),quer[5],quer[6],atoi(quer[7]),atoi(quer[8]),atoi(quer[9]),atoi(quer[10]),atoi(quer[11])));
 	}
 
 	// Load the document's description
+	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		sprintf(sSql,"SELECT htmlid,kwdid,occurs FROM %shtmlsbykwds",Langs()->GetCode());
 		RQuery sel(this,sSql);
 		for(sel.Begin();sel.IsMore();sel++)
 		{
-			doc=Docs.GetPtr<const unsigned int>(atoi(sel[0]));
+			doc=GetDoc(atoi(sel[0]));
 			if(doc)
 				doc->AddWord(atoi(sel[1]),atoi(sel[2]));
 		}
@@ -457,13 +459,13 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 	RQuery selectdoc(this,sSql);
 	selectdoc.Begin();
 	doc=new GDoc(url,name,strtoul(selectdoc[0],0,10),0,Mng->GetMIMEType(mime),selectdoc[1],0,0,0,0,0,0);
-	Docs.InsertPtr(doc);
+	InsertDoc(doc);
 	return(doc);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::Save(GDoc* doc) throw(GException)
+void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 {
 	char sSql[1000];
 	const char* l=0;
@@ -550,7 +552,9 @@ void GALILEI::GSessionMySQL::LoadGroups() throw(bad_alloc,GException)
 {
 	char sSql[100];
 	GGroup* group;
+	GLangCursor Langs;
 
+	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		GGroups* groups=GetGroups(Langs());

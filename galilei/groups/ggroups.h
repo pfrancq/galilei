@@ -115,11 +115,6 @@ public:
 	* Get a cursor over the groups.
 	*/
 	GGroupCursor& GetGroupCursor(void);
-
-	/**
-	* Compute -> Must be in separate class.
-	*/
-	void Calc(void);
 };
 
 

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GProfileCalcVector.h
+	GProfileCalcFeedback.h
 
 	Vector Computing Method  - Implementation.
 
@@ -44,7 +44,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include <profiles/gprofilecalcvector.h>
+#include <profiles/gprofilecalcfeedback.h>
 #include <docs/gdoc.h>
 #include <langs/gdict.h>
 #include <langs/glang.h>
@@ -61,13 +61,13 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-//  GProfileCalcVector
+//  GProfileCalcFeedback
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session) throw(bad_alloc)
-	: GProfileCalc("Statistical",session), OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
+GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session) throw(bad_alloc)
+	: GProfileCalc("User Feedback",session), OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
 	  MaxNonZero(60)
 {
 	GLangCursor Langs;
@@ -82,14 +82,14 @@ GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session) throw(bad_all
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GProfileCalcVector::GetSettings(void)
+const char* GALILEI::GProfileCalcFeedback::GetSettings(void)
 {
 	return(itoa(MaxNonZero));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcVector::SetSettings(const char* s)
+void GALILEI::GProfileCalcFeedback::SetSettings(const char* s)
 {
 	if(!(*s)) return;
 	MaxNonZero=strtoul(s,0,10);
@@ -97,7 +97,7 @@ void GALILEI::GProfileCalcVector::SetSettings(const char* s)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcVector::ComputeOKKO(GProfile* profile) throw(bad_alloc)
+void GALILEI::GProfileCalcFeedback::ComputeOKKO(GProfile* profile) throw(bad_alloc)
 {
 	GProfDocCursor Docs;
 
@@ -138,7 +138,7 @@ void GALILEI::GProfileCalcVector::ComputeOKKO(GProfile* profile) throw(bad_alloc
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcVector::ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc)
+void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_alloc)
 {
 	GIWordWeight* ptr;
 	GIWordsWeights* Vector=s->GetVector();
@@ -161,7 +161,7 @@ void GALILEI::GProfileCalcVector::ComputeSubProfile(GSubProfileVector* s) throw(
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfileCalcVector::Compute(GProfile* profile)
+void GALILEI::GProfileCalcFeedback::Compute(GProfile* profile)
 {
 	// Compute the OK and KO lists.
 	ComputeOKKO(profile);
@@ -176,6 +176,6 @@ void GALILEI::GProfileCalcVector::Compute(GProfile* profile)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalcVector::~GProfileCalcVector(void)
+GALILEI::GProfileCalcFeedback::~GProfileCalcFeedback(void)
 {
 }

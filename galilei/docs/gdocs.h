@@ -48,7 +48,6 @@
 #include <galilei.h>
 
 
-
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
@@ -58,6 +57,7 @@ namespace GALILEI{
 // forward class declaration
 class GSession;
 class GDoc;
+class GDocCursor;
 
 
 //-----------------------------------------------------------------------------
@@ -68,19 +68,74 @@ class GDoc;
 */
 class GDocs : public RStd::RContainer<GDoc,unsigned,true,true>
 {
+
 	/**
-	* Sesssion.
+	* State of the documents.
 	*/
-	GSession* Session;
+	bool bDocs;
 
 public:
 
 	/**
 	* Constructor.
 	* @param nb             Maximal number of documents.
-	* @param session        Session.
 	*/
-	GDocs(unsigned int nb,GSession *session) throw(bad_alloc);
+	GDocs(unsigned int nb) throw(bad_alloc);
+
+	/**
+	* Get a cursor over the profiles used in the system.
+	*/
+	GDocCursor& GetDocsCursor(void);
+
+	/**
+	* Load the documents.
+	*/
+	virtual void LoadDocs(void) throw(bad_alloc,GException)=0;
+
+	/**
+	* Create a new document.
+	* @param url        URL of the document.
+	* @param name       Name of the document.
+	* @param mime       MIME Type of the document
+	* @returns Pointer to a new created document.
+	*/
+	virtual GDoc* NewDoc(const char* url,const char* name,const char* mime) throw(GException)=0;
+
+	/**
+	* Save a document.
+	* @param doc        Document to save.
+	*/
+	virtual void SaveDoc(GDoc* doc) throw(GException)=0;
+
+	/**
+	* Get the number of documents treated by the system.
+	* @returns Number of documents.
+	*/
+	unsigned int GetNbDocs(void) const
+		{return(NbPtr);}
+
+
+	/**
+	* Verify if the documents are loaded.
+	* @returns true, if loaded.
+	*/
+	bool IsDocsLoad(void) const {return(bDocs);}
+
+	/**
+	* Load the documents.
+	*/
+	void InitDocs(void) throw(bad_alloc,GException);
+
+	/**
+	* Insert a document in the container.
+	*/
+	void InsertDoc(GDoc* d) throw(bad_alloc);
+
+	/**
+	* Get a document from the container.
+	* @param id         Identificator of the document.
+	*/
+	GDoc* GetDoc(unsigned int id) throw(bad_alloc);
 
 	/**
 	* Destructor.

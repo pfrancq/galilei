@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GLangs.h
+	GGroupingGGA.cpp
 
-	List of the languages - Implementation.
+	Heuristic using a GGA - Implementation
 
-	(C) 2001 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -32,114 +32,94 @@
 
 
 //-----------------------------------------------------------------------------
-// include file for ANSI C/C++
-#include <string.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rstd.h>
-
-
-//-----------------------------------------------------------------------------
-// include file for Galilei
-#include <langs/glangs.h>
-#include <langs/glang.h>
-#include <langs/glangen.h>
-#include <langs/glangfr.h>
-#include <langs/gdicts.h>
-using namespace GALILEI;
+#include <rstd/rcontainercursor.h>
 using namespace RStd;
 
 
+//-----------------------------------------------------------------------------
+//include files for GALILEI
+#include<groups/ggroupinggga.h>
+#include<groups/ggroups.h>
+#include<groups/ggroup.h>
+#include<profiles/guser.h>
+#include<profiles/gsubprofile.h>
+#include<profiles/gsubprofiledesc.h>
+#include<langs/glang.h>
+#include<sessions/gsession.h>
+using namespace GALILEI;
+
+
 
 //-----------------------------------------------------------------------------
 //
-// class GLangs
+//  GGroupingGGA
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangs::GLangs(unsigned nb) throw(bad_alloc)
-  : RContainer<GLang,unsigned,true,true>(nb,nb/2), bDics(false), Stops(0), Dics(0)
+GALILEI::GGroupingGGA::GGroupingGGA(GSession* s) throw(bad_alloc)
+	: GGrouping("Grouping Genetic Algorithms",s), GAPopSize(16),
+	  GAMaxGen(20), GAStep(false), GAStepGen(5)
 {
-	InsertPtr(new GLangEN());
-	InsertPtr(new GLangFR());
-	Dics=new GDicts(nb);
-	Stops=new GDicts(nb);
+}
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GGroupingGGA::GetSettings(void)
+{
+	static char tmp[100];
+	char c;
+
+	if(GAStep) c='1'; else c='0';
+	sprintf(tmp,"%u %u %c %u",GAPopSize,GAMaxGen,c,GAStepGen);
+	return(tmp);
+}
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroupingGGA::SetSettings(const char* s)
+{
+	char c;
+
+	if(!(*s)) return;
+	sscanf(s,"%u %u %c %u",&GAPopSize,&GAMaxGen,&c,&GAStepGen);
+	if(c=='1') GAStep=true; else GAStep=false;
 }
 
 
 //-----------------------------------------------------------------------------
-GLang* GALILEI::GLangs::GetLang(const char* code)
+void GALILEI::GGroupingGGA::Init(void) throw(bad_alloc)
 {
-	if(!code)
-		return(0);
-	return(GetPtr<const char*>(code));
 }
 
 
 //-----------------------------------------------------------------------------
-GLangCursor& GALILEI::GLangs::GetLangsCursor(void)
+bool GALILEI::GGroupingGGA::IsCoherent(const GGroup* /*grp*/) const
 {
-	GLangCursor *cur=GLangCursor::GetTmpCursor();
-	cur->Set(this);
-	return(*cur);
+	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLangs::InitDics(void) throw(bad_alloc,GException)
+bool GALILEI::GGroupingGGA::IsCoherent(const GGroup* /*grp*/,const GSubProfile* /*sub*/) const
 {
-	// If dictionnary already loaded, do nothing.
-	if(bDics) return;
-
-	// For each Lang, create a dictionnary and a stop list
-	GLangCursor CurLang=GetLangsCursor();
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
-	{
-		LoadDic(CurLang()->GetCode(),true);
-		LoadDic(CurLang()->GetCode(),false);
-	}
-	bDics=true;
+	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-GDict* GALILEI::GLangs::GetDic(const GLang *lang) const throw(GException)
+bool GALILEI::GGroupingGGA::IsValid(GGroup* /*grp*/)
 {
-	return(Dics->GetPtr<const GLang*>(lang,false));
+	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-GDict* GALILEI::GLangs::GetStop(const GLang *lang) const throw(GException)
+void GALILEI::GGroupingGGA::Run(void)
 {
-	return(Stops->GetPtr<const GLang*>(lang,false));
 }
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GLangs::GetWord(const unsigned int id,const GLang* lang)
+GALILEI::GGroupingGGA::~GGroupingGGA(void)
 {
-	if(bDics)
-		return(Dics->GetPtr<const GLang*>(lang,false)->GetWord(id));
-	return(LoadWord(id,lang->GetCode()));
-}
-
-
-//-----------------------------------------------------------------------------
-const char* GALILEI::GLangs::GetWord(const unsigned int id,const GDict* dict) const
-{
-	if(bDics&&dict)
-		return(dict->GetWord(id));
-	return(0);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GLangs::~GLangs(void)
-{
-	if(Dics) delete Dics;
-	if(Stops) delete Stops;
 }

@@ -59,7 +59,7 @@ namespace GALILEI
 * @author Pascal Francq
 * @short IR Chromosome.
 */
-class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfileDesc,GGroupDataIR>
+class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfile,GGroupDataIR>
 {
 public:
 

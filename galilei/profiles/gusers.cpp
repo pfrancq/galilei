@@ -55,27 +55,85 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GUsers::GUsers(unsigned int nb) throw(bad_alloc)
-	: RContainer<GUser,unsigned,true,true>(nb+nb/2,nb/2)
+GALILEI::GUsers::GUsers(unsigned int u,unsigned int p,unsigned int s) throw(bad_alloc)
+	: RContainer<GUser,unsigned,true,true>(u,u/2), bUsers(false)
 {
+	Profiles=new RContainer<GProfile,unsigned int,true,true>(p,p/2);
+	SubProfiles=new RContainer<GSubProfile,unsigned int,true,true>(p*s,(p/2)*s);
 }
 
 
 //-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GUsers::GetSubProfile(unsigned int profileid) const
+GUserCursor& GALILEI::GUsers::GetUsersCursor(void)
 {
-	GSubProfile* sub;
-	GUser* usr;
-	RContainerCursor<GUser,unsigned,true,true> cur(this);
+	GUserCursor *cur=GUserCursor::GetTmpCursor();
+	cur->Set(this);
+	return(*cur);
+}
 
-	for(cur.Start();!cur.End();cur.Next())
-	{
-		usr=cur();
-		for(usr->Start();!usr->End();usr->Next())
-		{
-			sub=(*usr)()->GetPtr<unsigned int>(profileid,false);
-			if(sub) return(sub);
-		}
-	}
-	return(0);
+
+//-----------------------------------------------------------------------------
+void GALILEI::GUsers::InsertUser(GUser* usr) throw(bad_alloc)
+{
+	InsertPtr(usr);
+}
+
+
+//-----------------------------------------------------------------------------
+GUser* GALILEI::GUsers::GetUser(unsigned int id)
+{
+	return(GetPtr<unsigned int>(id));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GUsers::InsertProfile(GProfile* p) throw(bad_alloc)
+{
+	Profiles->InsertPtr(p);
+}
+
+
+//-----------------------------------------------------------------------------
+GProfile* GALILEI::GUsers::GetProfile(const unsigned int id) const
+{
+	return(Profiles->GetPtr<unsigned int>(id));
+}
+
+
+//-----------------------------------------------------------------------------
+GProfileCursor& GALILEI::GUsers::GetProfilesCursor(void)
+{
+	GProfileCursor *cur=GProfileCursor::GetTmpCursor();
+	cur->Set(Profiles);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GUsers::InsertSubProfile(GSubProfile* s) throw(bad_alloc)
+{
+	SubProfiles->InsertPtr(s);
+}
+
+
+//-----------------------------------------------------------------------------
+GSubProfile* GALILEI::GUsers::GetSubProfile(const unsigned int id) const
+{
+	return(SubProfiles->GetPtr<unsigned int>(id));
+}
+
+
+//-----------------------------------------------------------------------------
+GSubProfileCursor& GALILEI::GUsers::GetSubProfilesCursor(void)
+{
+	GSubProfileCursor *cur=GSubProfileCursor::GetTmpCursor();
+	cur->Set(SubProfiles);
+	return(*cur);
+}
+
+//-----------------------------------------------------------------------------
+GALILEI::GUsers::~GUsers(void)
+{
+	if(SubProfiles) delete SubProfiles;
+	if(Profiles) delete Profiles;
 }

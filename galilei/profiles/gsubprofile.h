@@ -60,7 +60,6 @@ class GLang;
 class GProfDoc;
 class GProfile;
 class GSubProfileRef;
-class GSubProfileDesc;
 class GGroup;
 
 
@@ -72,8 +71,10 @@ class GGroup;
 * @author Pascal Francq.
 * @short Sub-Profile.
 */
-class GSubProfile : public RStd::RContainer<GSubProfileDesc,unsigned,true,true>
+class GSubProfile
 {
+protected:
+
 	/**
 	* Identifier of the subprofile.
 	*/
@@ -102,14 +103,30 @@ class GSubProfile : public RStd::RContainer<GSubProfileDesc,unsigned,true,true>
 public:
 
 	/**
+	* Copy constructor.
+	* @param sub            SubProfile used for the copy.
+	*/
+	GSubProfile(GSubProfile* sub) throw(bad_alloc);
+
+	/**
 	* Constructor of the subprofile.
-	* @param prod           Profile.
+	* @param prof           Profile.
 	* @param id             Identifier.
 	* @param lang           Language of the subprofile.
 	* @param grp            Group.
 	* @param a              String representing the date where it was attached.
 	*/
 	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a) throw(bad_alloc);
+
+	/**
+	* Create a new profile.
+	* @param GProfile*      Pointer to the profile.
+	* @param unsigned int   Identifier.
+	* @param GLang*         Language of the subprofile.
+	* @param GGroup*        Pointer to the group.
+	* @param const char*    C String representing the date where it was attached.
+	*/
+	static GSubProfile* NewSubProfile(GProfile*,unsigned int,GLang*,GGroup*,const char*) {return(0);}
 
 	/**
 	* Compare methods used by RStd::RContainer.
@@ -156,6 +173,17 @@ public:
 	GProfile* GetProfile(void) const {return(Profile);}
 
 	/**
+	* Compute similarity between SubProfiles.
+	*/
+	virtual double Similarity(const GSubProfile*) const {return(0.0);};
+
+	/**
+	* See if the subprpfile is defined, i.e. if it is computed. A subprofile
+	* that isn't computed, isn't attached.
+	*/
+	virtual bool IsDefined(void) const {return(false);};
+
+	/**
 	* Get the corresponding group.
 	* @returns Pointer to GGroup.
 	*/
@@ -182,14 +210,14 @@ public:
 	/**
 	*Destructor
 	*/
-	~GSubProfile(void);
+	virtual ~GSubProfile(void);
 };
 
 
 //-----------------------------------------------------------------------------
 /**
 * The GSubProfileCursor class provides a way to go trough a set of subprofiles.
-* @short SubProfiles' Cursor
+* @short SubProfiles Cursor
 */
 CLASSCURSOR(GSubProfileCursor,GSubProfile,unsigned int)
 

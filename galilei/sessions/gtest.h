@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfOptions.h
+	GTest.h
 
-	Options for the profiles description - Header.
+	Test of SubProfiles Description and Grouping - Header.
 
-	(C) 2002 by P. Francq.
+	(C) 2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -32,12 +32,12 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GProfOptionsH
-#define GProfOptionsH
+#ifndef GTestH
+#define GTestH
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
+// include files for GALILEI
 #include <galilei.h>
 
 
@@ -48,50 +48,75 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GProfOptions provides a representation for the options concerning the
-* profiles computing and the subprofile description.
+* The GTest class provides a representation of a test concerning the profiles
+* description and their grouping.
 * @author Pascal Francq
-* @short Profile Options.
+* @short Test.
 */
-class GProfOptions
+class GTest
 {
+	/**
+	* Identificator of the test.
+	*/
+	RStd::tId Id;
+
+	/**
+	* Name of the Test.
+	*/
+	RStd::RString Name;
+
 public:
 
 	/**
-	* Type of the description to use.
+	* Constructor.
+	* @param id             Identificator.
+	* @param name           Name of the test.
 	*/
-	tSubProfileDesc Model;
+	GTest(const RStd::tId id,const char* name) throw(bad_alloc);
 
 	/**
-	* Sizes of the List in the Vector Space.
+	* Compare function needed by RStd::RContainer.
 	*/
-	unsigned int ListSize;
+	int Compare(const GTest* test);
 
 	/**
-	* Type of the method to use to compute the vector space dfescription.
+	* Compare function needed by RStd::RContainer.
 	*/
-	tVectorMethod VectorMethod;
+	int Compare(const GTest& test);
 
 	/**
-	* Default Constructor.
+	* Compare function needed by RStd::RContainer.
 	*/
-	GProfOptions(void);
+	int Compare(const RStd::tId id);
 
 	/**
-	* Copy Constructor.
+	* Compare function needed by RStd::RContainer.
 	*/
-	GProfOptions(const GProfOptions& opt);
+	int Compare(const RStd::RString& name);
+	
+	/**
+	* Get the identificator of the test.
+	*/
+	RStd::tId GetId(void) {return(Id);}
 
 	/**
-	* Copy Constructor.
+	* Get the name of the test.
 	*/
-	GProfOptions(const GProfOptions* opt);
+	const char* GetName(void) {return(Name());}
 
 	/**
-	* Assignment operator using another options.
+	* Destructor.
 	*/
-	GProfOptions& operator=(const GProfOptions& opt);
+	~GTest(void);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GTestCursor class provides a way to go trough a set of tests.
+* @short Tests Cursor
+*/
+CLASSCURSOR(GTestCursor,GTest,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

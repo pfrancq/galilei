@@ -124,7 +124,8 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 		if(Url)
 		{
 			strcpy(tmp,doc->GetURL());
-			memcpy(tmp,&tmp[5],strlen(tmp)-5);
+			// Move the all string (include the ending 0) from 5 characters.
+			memcpy(tmp,&tmp[5],strlen(tmp)-4);
 			tmpFile=tmp;
 		}
 		else

@@ -49,9 +49,44 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GDocs::GDocs(unsigned int nb,GSession* session) throw(bad_alloc)
-	: RContainer<GDoc,unsigned,true,true>(nb+(nb/2),nb/2),Session(session)
+GALILEI::GDocs::GDocs(unsigned int nb) throw(bad_alloc)
+	: RContainer<GDoc,unsigned,true,true>(nb+(nb/2),nb/2), bDocs(false)
 {
+}
+
+
+//-----------------------------------------------------------------------------
+GDocCursor& GALILEI::GDocs::GetDocsCursor(void)
+{
+	GDocCursor *cur=GDocCursor::GetTmpCursor();
+	cur->Set(this);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocs::InitDocs(void) throw(bad_alloc,GException)
+{
+	// If documents already loaded, do nothing.
+	if(bDocs) return;
+
+	// Load the documents
+	LoadDocs();
+	bDocs=true;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocs::InsertDoc(GDoc* d) throw(bad_alloc)
+{
+	InsertPtr(d);
+}
+
+
+//-----------------------------------------------------------------------------
+GDoc* GALILEI::GDocs::GetDoc(unsigned int id) throw(bad_alloc)
+{
+	return(GetPtr<unsigned int>(id));
 }
 
 

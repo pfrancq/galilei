@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GInstIR.h
+	GGroupsLang.cpp
 
-	Instance for an IR Problem - Implementation
+	Groups for a given language - Implementation.
 
-	(C) 2002 by P. Francq.
+	(C) 2001 by P. Francq.
 
 	Version $Revision$
 
@@ -33,46 +33,74 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <groups/ginstir.h>
-#include <groups/gchromoir.h>
-#include <groups/ggroupir.h>
-#include <profiles/gsubprofile.h>
+#include <rstd/rcontainercursor.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
+//include files for GALILEI
+#include<groups/ggroupslang.h>
+#include<langs/glang.h>
+#include<groups/ggroup.h>
+#include<profiles/gsubprofile.h>
+#include<profiles/gusers.h>
+#include<sessions/gsession.h>
 using namespace GALILEI;
-using namespace RGGA;
-using namespace RGA;
 
 
 
 //-----------------------------------------------------------------------------
 //
-// GThreadDataIR
+// class GGroupsLang
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GThreadDataIR::GThreadDataIR(GInstIR* owner)
-	: RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfile,GGroupDataIR>(owner)
-{
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// GInstIR
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GALILEI::GInstIR::GInstIR(unsigned int max,unsigned int popsize,RObjs<GSubProfile>* objs,HeuristicType h,RDebug *debug) throw(bad_alloc)
-	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GSubProfile,GGroupDataIR>(popsize,objs,h,debug),
-		MaxGen(max)
+GALILEI::GGroupsLang::GGroupsLang(GLang* lang) throw(bad_alloc)
+	: RContainer<GGroup,unsigned int,true,false>(20,10), Lang(lang)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GInstIR::StopCondition(void)
+int GALILEI::GGroupsLang::Compare(const GGroupsLang& groups) const
 {
-	return(Gen==MaxGen);
+	return(Lang->Compare(groups.Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GGroupsLang::Compare(const GGroupsLang* groups) const
+{
+	return(Lang->Compare(groups->Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GGroupsLang::Compare(const GLang* lang) const
+{
+	return(Lang->Compare(lang));
+}
+
+
+//-----------------------------------------------------------------------------
+GGroupCursor& GALILEI::GGroupsLang::GetGroupCursor(void)
+{
+	GGroupCursor *cur=GGroupCursor::GetTmpCursor();
+	cur->Set(this);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
+GGroup* GALILEI::GGroupsLang::GetGroup(const GSubProfile* sub) const
+{
+	RContainerCursor<GGroup,unsigned int,true,false> cur(this);
+
+	for(cur.Start();!cur.End();cur.Next())
+	{
+		if(cur()->IsIn<const unsigned int>(sub->GetId()))
+			return(cur());
+	}
+	return(0);
 }

@@ -35,7 +35,7 @@
 // include files for GALILEI
 #include <groups/ggroupir.h>
 #include <groups/gchromoir.h>
-#include <profiles/gsubprofiledesc.h>
+#include <profiles/gsubprofile.h>
 using namespace GALILEI;
 using namespace RGGA;
 using namespace RGA;
@@ -50,14 +50,14 @@ using namespace RGA;
 
 //-----------------------------------------------------------------------------
 GGroupIR::GGroupIR(GGroupIR* grp)
-	: RGGA::RGroup<GGroupIR,GSubProfileDesc,GGroupDataIR>(grp)
+	: RGGA::RGroup<GGroupIR,GSubProfile,GGroupDataIR>(grp)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupIR::GGroupIR(RGroups<GGroupIR,GSubProfileDesc,GGroupDataIR>* owner,const unsigned int id,const GGroupDataIR* data)
-	: RGGA::RGroup<GGroupIR,GSubProfileDesc,GGroupDataIR>(owner,id,data)
+GALILEI::GGroupIR::GGroupIR(RGroups<GGroupIR,GSubProfile,GGroupDataIR>* owner,const unsigned int id,const GGroupDataIR* data)
+	: RGGA::RGroup<GGroupIR,GSubProfile,GGroupDataIR>(owner,id,data)
 {
 }
 
@@ -65,7 +65,7 @@ GALILEI::GGroupIR::GGroupIR(RGroups<GGroupIR,GSubProfileDesc,GGroupDataIR>* owne
 //---------------------------------------------------------------------------
 bool GALILEI::GGroupIR::Verify(void)
 {
-	if(!RGGA::RGroup<GGroupIR,GSubProfileDesc,GGroupDataIR>::Verify())
+	if(!RGGA::RGroup<GGroupIR,GSubProfile,GGroupDataIR>::Verify())
 		return(false);
 	return(true);
 }
@@ -74,31 +74,31 @@ bool GALILEI::GGroupIR::Verify(void)
 //---------------------------------------------------------------------------
 void GALILEI::GGroupIR::Clear(void)
 {
-	RGGA::RGroup<GGroupIR,GSubProfileDesc,GGroupDataIR>::Clear();
+	RGGA::RGroup<GGroupIR,GSubProfile,GGroupDataIR>::Clear();
 }
 
 
 //---------------------------------------------------------------------------
-bool GALILEI::GGroupIR::CanInsert(const GSubProfileDesc* /*obj*/)
+bool GALILEI::GGroupIR::CanInsert(const GSubProfile* /*obj*/)
 {
 	return(true);
 }
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GGroupIR::PostInsert(const GSubProfileDesc* /*obj*/)
+void GALILEI::GGroupIR::PostInsert(const GSubProfile* /*obj*/)
 {
 }
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GGroupIR::PostDelete(const GSubProfileDesc* /*obj*/)
+void GALILEI::GGroupIR::PostDelete(const GSubProfile* /*obj*/)
 {
 }
 
 
 //---------------------------------------------------------------------------
-bool GALILEI::GGroupIR::DoOptimisation(GSubProfileDesc** /*objs*/,unsigned int& /*nbobjs*/)
+bool GALILEI::GGroupIR::DoOptimisation(GSubProfile** /*objs*/,unsigned int& /*nbobjs*/)
 {
 	return(true);
 }
@@ -108,7 +108,7 @@ bool GALILEI::GGroupIR::DoOptimisation(GSubProfileDesc** /*objs*/,unsigned int& 
 GGroupIR& GALILEI::GGroupIR::operator=(const GGroupIR& grp)
 
 {
-	RGGA::RGroup<GGroupIR,GSubProfileDesc,GGroupDataIR>::operator=(grp);
+	RGGA::RGroup<GGroupIR,GSubProfile,GGroupDataIR>::operator=(grp);
 	return(*this);
 }
 

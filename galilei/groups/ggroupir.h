@@ -76,7 +76,7 @@ public:
 * @author Pascal Francq
 * @short IR Group.
 */
-class GGroupIR : public RGGA::RGroup<GGroupIR,GSubProfileDesc,GGroupDataIR>
+class GGroupIR : public RGGA::RGroup<GGroupIR,GSubProfile,GGroupDataIR>
 {
 protected:
 
@@ -94,7 +94,7 @@ public:
 	* @param id             Identificator of the group.
 	* @param data           Data needed for the group.
 	*/
-	GGroupIR(RGGA::RGroups<GGroupIR,GSubProfileDesc,GGroupDataIR>* owner,const unsigned int id,const GGroupDataIR* data);
+	GGroupIR(RGGA::RGroups<GGroupIR,GSubProfile,GGroupDataIR>* owner,const unsigned int id,const GGroupDataIR* data);
 
 	/**
 	* Verify if the group is not violating the integrity of the system.
@@ -111,19 +111,19 @@ public:
 	* Look if an object can be insert in the group.
 	* @param obj            Pointer to the object to insert.
 	*/
-	virtual bool CanInsert(const GSubProfileDesc* obj);
+	virtual bool CanInsert(const GSubProfile* obj);
 
 	/**
 	* Method call after an object was inserted in the group.
 	* @param obj            Pointer to the object to insert.
 	*/
-	virtual void PostInsert(const GSubProfileDesc* obj);
+	virtual void PostInsert(const GSubProfile* obj);
 
 	/**
 	* Method call after an object was deleted from the group.
 	* @param obj            Pointer to the object to delete.
 	*/
-	virtual void PostDelete(const GSubProfileDesc* obj);
+	virtual void PostDelete(const GSubProfile* obj);
 
 	/**
 	* Do a local optimisation by checking whether it is possible to replace up
@@ -131,7 +131,7 @@ public:
 	* way that the total size of the group increases. If so, perform the
 	* changes in the group and in objs.
 	*/
-	bool DoOptimisation(GSubProfileDesc** objs,unsigned int& nbobjs);
+	bool DoOptimisation(GSubProfile** objs,unsigned int& nbobjs);
 
 	/**
 	* Assignment operator.

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GGroupingOptions.h
+	GTests.h
 
-	Options for the grouping methods - Header.
+	Tests of SubProfiles Description and Grouping - Header.
 
-	(C) 2002 by P. Francq.
+	(C) 2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -32,8 +32,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGroupingOptionsH
-#define GGroupingOptionsH
+#ifndef GTestsH
+#define GTestsH
 
 
 //-----------------------------------------------------------------------------
@@ -48,69 +48,22 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupingOptions provides a representation for the options concerning the
-* grouping methods.
+* The GTests class provides a representation for a series of tests.
 * @author Pascal Francq
-* @short Grouping Options.
+* @short Tests.
 */
-class GGroupingOptions
+class GTests : public RStd::RContainer<GTest,RStd::tId,true,true>
 {
 public:
+	/**
+	* Constructor.
+	*/
+	GTests(void) throw(bad_alloc);
 
 	/**
-	* Method used for the grouping.
+	* Destructor.
 	*/
-	tProfilesGroup Method;
-
-	/**
-	* Full Similarity for the groups.
-	*/
-	bool FullSim;
-
-	/**
-	* Level of similarity for the groupement.
-	*/
-	double LevelSim;
-
-	/**
-	* Size of the population of the GA.
-	*/
-	unsigned int GAPopSize;
-
-	/**
-	* Maximal number of generation to run.
-	*/
-	unsigned int GAMaxGen;
-
-	/**
-	* Is the GA in step mode?
-	*/
-	bool GAStep;
-
-	/**
-	* Number of generation for each step.
-	*/
-	unsigned int GAStepGen;
-
-	/**
-	* Default Constructor.
-	*/
-	GGroupingOptions(void);
-
-	/**
-	* Copy Constructor.
-	*/
-	GGroupingOptions(const GGroupingOptions& opt);
-
-	/**
-	* Copy Constructor.
-	*/
-	GGroupingOptions(const GGroupingOptions* opt);
-
-	/**
-	* Assignment operator using another options.
-	*/
-	GGroupingOptions& operator=(const GGroupingOptions& opt);
+	~GTests(void);
 };
 
 

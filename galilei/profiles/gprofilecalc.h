@@ -50,6 +50,7 @@ namespace GALILEI{
 // forward class declaration
 class GSession;
 class GProfile;
+class GSubProfile;
 
 
 //-----------------------------------------------------------------------------
@@ -61,8 +62,12 @@ class GProfile;
 */
 class GProfileCalc
 {
-protected:
+	/**
+	* Name of the computing method.
+	*/
+	RStd::RString ComputingName;
 
+protected:
 	/**
 	* Session.
 	*/
@@ -72,15 +77,34 @@ public:
 
 	/**
 	* Constructor.
+	* @param name           Name.
 	* @param session        Session.
 	*/
-	GProfileCalc(GSession* session) throw(bad_alloc);
+	GProfileCalc(const char* name,GSession* session) throw(bad_alloc);
 
 	/**
 	* Compute a profile.
 	* @param profile        Profile to compute.
 	*/
 	virtual void Compute(GProfile* profile)=0;
+
+	/**
+	* Get the name of the computing method.
+	* @returns Pointer to a C string.
+	*/
+	const char* GetComputingName(void) const {return(ComputingName());}
+
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void) {return("");}
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*) {}
 
 	/**
 	* Compare methods used by RStd::RContainer.
@@ -91,6 +115,11 @@ public:
 	* Compare methods used by RStd::RContainer.
 	*/
 	int Compare(const GProfileCalc* desc) const;
+
+	/**
+	* Compare methods used by RStd::RContainer.
+	*/
+	int Compare(const char* name) const;
 
 	/**
 	* Compare methods used by RStd::RContainer.
@@ -110,6 +139,15 @@ public:
 	*/
 	virtual ~GProfileCalc(void);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GProfileCalcCursor class provides a way to go trough a set of computing
+* method for the profiles.
+* @short Profiles Computing Methods Cursor
+*/
+CLASSCURSOR(GProfileCalcCursor,GProfileCalc,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

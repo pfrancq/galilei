@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSubProfileDesc.h
+	GGroupsLang.h
 
-	Generic Subprofile Description Method - Header.
+	Groups for a given language - Header.
 
-	(C) 2002 by P. Francq.
+	(C) 2001 by P. Francq.
 
 	Version $Revision$
 
@@ -32,13 +32,20 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GSubProfileDescH
-#define GSubProfileDescH
+#ifndef GGroupsLangH
+#define GGroupsLangH
+
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcontainer.h>
+#include <rstd/rcursor.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+
 
 
 //-----------------------------------------------------------------------------
@@ -48,75 +55,75 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 // forward class declaration
+class GGroup;
+class GGroupCursor;
+class GLang;
 class GSubProfile;
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GSubProfileDesc class provides a representation for a description method
-* for the subprofiles.
-* @author Pascal Francq.
-* @short Generic Subprofile Description Method.
+* The GGroupsLang class provides a representation for all the groups of a given
+* language. The GGroupsLang are ordered by languages.
+* @author Pascal Francq
+* @short Languages' Groups.
 */
-class GSubProfileDesc
+class GGroupsLang : public RStd::RContainer<GGroup,unsigned int,true,false>
 {
-protected:
-
 	/**
-	* Name of the Profile Description Method.
+	* Language corresponding to the set of groups.
 	*/
-	RStd::RString ProfDescName;
-
-	/**
-	* Pointer a function used for creating a subprofile description.
-	*/
-	GSubProfile* (*Create)(GProfile* prof,unsigned int id,GLang*,GGroup*,const char*);
+	GLang* Lang;
 
 public:
 
 	/**
-	* Constructor of the subprofile description method.
-	* @param name           Name of the method.
-	* @param func           Function used to create such a subprofile
-	*                       description.
+	* Constructor.
+	* @param lang           Pointer to the corresponding language.
 	*/
-	GSubProfileDesc(const char* name,GSubProfile* (*func)(GProfile* prof,unsigned int id,GLang*,GGroup*,const char*)) throw(bad_alloc);
+	GGroupsLang(GLang* lang) throw(bad_alloc);
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare method needed by RStd::RContainer.
 	*/
-	int Compare(const GSubProfileDesc& desc) const;
+	int Compare(const GGroupsLang& groups) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare method needed by RStd::RContainer.
 	*/
-	int Compare(const GSubProfileDesc* desc) const;
+	int Compare(const GGroupsLang* groups) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Compare method needed by RStd::RContainer.
 	*/
-	int Compare(const char* name) const;
+	int Compare(const GLang* lang) const;
 
 	/**
-	* Get the name of the profile description method.
-	* @returns Pointer to a C string.
+	* Get the language of the set of groups.
+	* @return Pointer to the language.
 	*/
-	const char* GetProfDescName(void) {return(ProfDescName());}
+	GLang* GetLang(void) const {return(Lang);}
 
 	/**
-	*Destructor
+	* Get the group where the given subprofile is attached.
+	* @param sub            Subprofile used.
+	* @returns Pointer to the group.
 	*/
-	virtual ~GSubProfileDesc(void);
+	GGroup* GetGroup(const GSubProfile* sub) const;
+
+	/**
+	* Get a cursor over the groups.
+	*/
+	GGroupCursor& GetGroupCursor(void);
 };
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GSubProfileDescCursor class provides a way to go trough a set of
-* sub-profile descriptions.
-* @short SubProfile Descriptions Cursor
+* The GGroupsLangCursor class provides a way to go trough a set of groups.
+* @short Groups' Cursor
 */
-CLASSCURSOR(GSubProfileDescCursor,GSubProfileDesc,unsigned int)
+CLASSCURSOR(GGroupsLangCursor,GGroupsLang,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------
@@ -124,4 +131,3 @@ CLASSCURSOR(GSubProfileDescCursor,GSubProfileDesc,unsigned int)
 
 //-----------------------------------------------------------------------------
 #endif
-

@@ -52,7 +52,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <profiles/gprofdoc.h>
 
 
 //-----------------------------------------------------------------------------
@@ -64,6 +63,9 @@ namespace GALILEI{
 // forward class declaration
 class GUser;
 class GSubProfile;
+class GSubProfileCursor;
+class GProfDoc;
+class GProfDocCursor;
 class GLang;
 
 
@@ -99,7 +101,7 @@ class GProfile : public RStd::RContainer<GSubProfile,unsigned,false,true>
 	/**
 	* Documents juged by profile.
 	*/
-	RContainer<GProfDoc,unsigned,false,true> Fdbks;
+	RStd::RContainer<GProfDoc,unsigned,false,true> Fdbks;
 
 	/**
 	* Date of Update.
@@ -128,17 +130,17 @@ public:
 	/**
 	* Comparaison function
 	*/
-	int Compare(const unsigned int &id) const;
+	int Compare(const unsigned int& id) const;
 	
 	/**
 	* Comparaison function
 	*/
-	int Compare(const GProfile &profile) const;
+	int Compare(const GProfile& profile) const;
 	
 	/**
 	* Comparaison function
 	*/
-	int Compare(const GProfile *profile) const;
+	int Compare(const GProfile* profile) const;
 
 	/**
 	* Get the identificator of the profile.
@@ -205,6 +207,12 @@ public:
 	* @return GProfDocCursor.
 	*/
 	GProfDocCursor& GetProfDocCursor(void);
+
+	/**
+	* Get a Cursor on the subprofiles.
+	* @return GSubProfileCursor.
+	*/
+	GSubProfileCursor& GetSubProfilesCursor(void);
 
 	/**
 	* Add a judgement for this profile.

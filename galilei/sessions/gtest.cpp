@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GGroupingOptions.cpp
+	GTest.cpp
 
-	Options for the grouping methods - Implementation.
+	Test of SubProfiles Description and Grouping - Implementation.
 
-	(C) 2002 by P. Francq.
+	(C) 2002 by Pascal Francq
 
 	Version $Revision$
 
@@ -33,52 +33,54 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/ggroupingoptions.h>
+#include <sessions/gtest.h>
 using namespace GALILEI;
+using namespace RStd;
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GGroupingOptions
+// class GTest
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupingOptions::GGroupingOptions(void)
-	: Method(pgNothing), FullSim(true), LevelSim(0.4), GAPopSize(16),
-	  GAMaxGen(20), GAStep(false), GAStepGen(10)
+GALILEI::GTest::GTest(const tId id,const char* name) throw(bad_alloc)
+	: Id(id), Name(name)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupingOptions::GGroupingOptions(const GGroupingOptions& opt)
-	: Method(opt.Method), FullSim(opt.FullSim), LevelSim(opt.LevelSim),
-	  GAPopSize(opt.GAPopSize),GAMaxGen(opt.GAMaxGen), GAStep(opt.GAStep),
-	  GAStepGen(opt.GAStepGen)
+int GALILEI::GTest::Compare(const GTest* test)
 {
+	return(Name.Compare(test->Name));
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupingOptions::GGroupingOptions(const GGroupingOptions* opt)
-	: Method(opt->Method), FullSim(opt->FullSim), LevelSim(opt->LevelSim),
-	  GAPopSize(opt->GAPopSize),GAMaxGen(opt->GAMaxGen), GAStep(opt->GAStep),
-	  GAStepGen(opt->GAStepGen)
+int GALILEI::GTest::Compare(const GTest& test)
 {
+	return(Name.Compare(test.Name));
 }
 
 
 //-----------------------------------------------------------------------------
-GGroupingOptions& GALILEI::GGroupingOptions::operator=(const GGroupingOptions& opt)
+int GALILEI::GTest::Compare(const tId id)
 {
-	Method=opt.Method;
-	FullSim=opt.FullSim;
-	LevelSim=opt.LevelSim;
-	GAPopSize=opt.GAPopSize;
-	GAMaxGen=opt.GAMaxGen;
-	GAStep=opt.GAStep;
-	GAStepGen=opt.GAStepGen;
-	return(*this);
+	return(Id-id);
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GTest::Compare(const RStd::RString& name)
+{
+	return(Name.Compare(name));
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GTest::~GTest(void)
+{
 }

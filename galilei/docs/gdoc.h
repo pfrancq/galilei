@@ -38,6 +38,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
+#include <rstd/rcursor.h>
 #include <rstd/rstring.h>
 #include <rxml/rxmltag.h>
 #include <rtimedate/rdate.h>
@@ -196,6 +197,11 @@ public:
 	int Compare(const GLang*) const;
 
 	/**
+	* This function clears the information related to the document.
+	*/
+	void ClearInfos(void);
+
+	/**
 	* Get the URL.
 	* @returns Pointer to a C string.
 	*/
@@ -236,6 +242,17 @@ public:
 	* @param state          New state.
 	*/
 	void SetState(tObjState state) {State=state;}
+
+	/**
+	* Set the information for the document.
+	* @param l              Language of the document.
+	* @param n              Total number of words.
+	* @param nd             Total number of different words.
+	* @param v              Total number of valid words.
+	* @param vd             Total number of different valid words.
+	* @param words          List of all valid words and their occurences.
+	*/
+	void SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd,GIWordOccurs* w);
 
 	/**
 	* Add a word with a certain occurences in the document.
@@ -328,10 +345,15 @@ public:
 	* Destruct the document.
 	*/
 	virtual ~GDoc(void);
-	
-	// friend class
-	friend class GDocAnalyse;
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GDocCursor class provides a way to go trough a set of profiles.
+* @short Profiles Cursor
+*/
+CLASSCURSOR(GDocCursor,GDoc,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

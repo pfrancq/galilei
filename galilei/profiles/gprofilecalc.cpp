@@ -46,8 +46,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::GProfileCalc(GSession* session) throw(bad_alloc)
-	: Session(session)
+GALILEI::GProfileCalc::GProfileCalc(const char* name,GSession* session) throw(bad_alloc)
+	: ComputingName(name),Session(session)
 {
 }
 
@@ -55,14 +55,21 @@ GALILEI::GProfileCalc::GProfileCalc(GSession* session) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 int GALILEI::GProfileCalc::Compare(const GProfileCalc& desc) const
 {
-	return(GetType()-desc.GetType());
+	return(ComputingName.Compare(desc.ComputingName));
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GProfileCalc::Compare(const GProfileCalc* desc) const
 {
-	return(GetType()-desc->GetType());
+	return(ComputingName.Compare(desc->ComputingName));
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GProfileCalc::Compare(const char* name) const
+{
+	return(ComputingName.Compare(name));
 }
 
 
