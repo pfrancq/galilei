@@ -53,9 +53,10 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-/**  This Class implement a representation to the user feedback for GALILEI
-*  @author Pascal Francq
-*  @short  auto create a user feedback.
+/**
+* This Class implement a representation to the user feedback for GALILEI
+* @author Pascal Francq
+* @short  auto create a user feedback.
 */
 class GGetFeedback
 {
