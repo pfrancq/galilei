@@ -52,7 +52,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocProfSims::GDocProfSims(unsigned int s) throw(bad_alloc)
-	: RContainer<GDocProfSim,unsigned int,false,true>(s,s/2)
+	: RContainer<GDocProfSim,unsigned int,true,true>(s,s/2)
 {
 }
 

@@ -55,7 +55,7 @@ namespace GALILEI{
 * @author Pascal Francq , Valery Vandaele
 * @short SubProfiles.
 */
-class GDocProfSims : public RStd::RContainer<GDocProfSim,unsigned int,false,true>
+class GDocProfSims : public RStd::RContainer<GDocProfSim,unsigned int,true,true>
 {
 
 public:
@@ -73,12 +73,6 @@ public:
 	* @param s              Pointer to the subprofile to add.
 	*/
 	void InsertDocProfSim(GDocProfSim* p) throw(bad_alloc);
-         
-	/**
-	* Get a DocProfSims with a specific identifier.
-	* @param id         Identifier.
-	*/
-	//GDocProfSim* GetProfilesSim(const unsigned int id) const;
 
 	/**
 	* Get a cursor over the profilesSims of the system.
@@ -100,7 +94,7 @@ public:
 * of a given language.
 * @short ProfilesSims Cursor.
 */
-//CLASSCURSOR(GDocProfSimsCursor,GDocProfSims,unsigned int)
+CLASSCURSOR(GDocProfSimsCursor,GDocProfSims,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------
