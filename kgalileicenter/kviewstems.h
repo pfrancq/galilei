@@ -115,17 +115,17 @@ class KViewStems : public KView
 	/**
 	* Roots used in the dictionnary.
 	*/
-	RDblHashContainer<GrWord,unsigned,27,27,true>* Roots;
+	RDblHashContainer<GrWord,27,27,true>* Roots;
 
 	/**
 	* Computed Stems for the dictionnary.
 	*/
-	RDblHashContainer<GrWord,unsigned,27,27,true>* Stems;
+	RDblHashContainer<GrWord,27,27,true>* Stems;
 
 	/**
 	* Words defined in the dictionnary.
 	*/
-	RDblHashContainer<Word,unsigned,27,27,true>* Words;
+	RDblHashContainer<Word,27,27,true>* Words;
 
 	/**
 	* Precision of the stemming.

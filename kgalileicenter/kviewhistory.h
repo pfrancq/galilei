@@ -135,7 +135,7 @@ class KViewHistory : public KView
 	/**
 	* The container of subprofiles
 	*/
-	R::RContainer<GSubProfile, unsigned int, false,true>* SubProfiles;
+	R::RContainer<GSubProfile,false,true>* SubProfiles;
 
 	/**
 	* The container of groups
@@ -145,7 +145,7 @@ class KViewHistory : public KView
 	/**
 	* selected items from Solutions.
 	*/
-	R::RContainer<GWeightInfosHistory, unsigned int, false, true>* SelectedSubProfiles;
+	R::RContainer<GWeightInfosHistory,false,true>* SelectedSubProfiles;
 
 	/**
 	* Similarities between the subprofiles to group.

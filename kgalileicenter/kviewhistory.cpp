@@ -90,7 +90,7 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 	static char tmp[100];
 
 	//init the container of selected subprofiles.
-	SelectedSubProfiles=new R::RContainer<GWeightInfosHistory, unsigned int, false, true>(5,2);
+	SelectedSubProfiles=new R::RContainer<GWeightInfosHistory,false,true>(5,2);
 
 	//init ToolBar components.
 	ToolBar=  new QMenuBar( this, "file operations" );

@@ -6,7 +6,7 @@
 
 	Window to manipulate a specific group - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -103,7 +103,7 @@ class KViewGroup : public KView
 	/**
 	* List of documents assessed as relevant.
 	*/
-	R::RContainer<GALILEI::GDoc,unsigned int,false,true> OkDocs;
+	R::RContainer<GALILEI::GDoc,false,true> OkDocs;
 
 public:
 

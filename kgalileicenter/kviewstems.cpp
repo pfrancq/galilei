@@ -95,7 +95,7 @@ public:
 class KViewStems::GrWord : public RString
 {
 public:
-	RContainer<Word,unsigned int,false,false> Words;
+	RContainer<Word,false,false> Words;
 	double Precision;
 	double Recall;
 
@@ -183,9 +183,9 @@ KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget*
 	connect(Index2,SIGNAL(activated(int)),this,SLOT(slotIndex2(int)));
 
 	// Loads and Computes
-	Roots=new RDblHashContainer<GrWord,unsigned,27,27,true>(200,100);
-	Stems=new RDblHashContainer<GrWord,unsigned,27,27,true>(200,100);
-	Words=new RDblHashContainer<Word,unsigned,27,27,true>(300,150);
+	Roots=new RDblHashContainer<GrWord,27,27,true>(200,100);
+	Stems=new RDblHashContainer<GrWord,27,27,true>(200,100);
+	Words=new RDblHashContainer<Word,27,27,true>(300,150);
 	LoadFile(filename);
 }
 
@@ -265,7 +265,7 @@ void KViewStems::LoadFile(const char* filename)
 //-----------------------------------------------------------------------------
 void KViewStems::ConstructTh(char index,char index2)
 {
-	RContainer<GrWord,unsigned,true,true>* ptr2;
+	RContainer<GrWord,true,true>* ptr2;
 	char word[200];
 	Word* wptr;
 	GrWord* gptr;
@@ -289,7 +289,7 @@ void KViewStems::ConstructTh(char index,char index2)
 //-----------------------------------------------------------------------------
 void KViewStems::ConstructPr(char index,char index2)
 {
-	RContainer<GrWord,unsigned,true,true>* ptr2;
+	RContainer<GrWord,true,true>* ptr2;
 //	char word[200];
 	QString word;
 	Word* wptr;
@@ -347,8 +347,8 @@ void KViewStems::ComputeRecallPrecision(void)
 	unsigned int InRoot;
 	double NbWords;
 	char tmp[100];
-	RContainer<GrWord,unsigned int,true,true>*** ptr;
-	RContainer<GrWord,unsigned int,true,true>** ptr2;
+	RContainer<GrWord,true,true>*** ptr;
+	RContainer<GrWord,true,true>** ptr2;
 	unsigned int i,j;
 
 	Precision=Recall=0.0;
@@ -424,8 +424,8 @@ void KViewStems::ComputeTotal(void)
 	double* vec;
 	unsigned int row,col;
 	double a,b,c,d,num,den;
-	RContainer<GrWord,unsigned int,true,true>*** ptr;
-	RContainer<GrWord,unsigned int,true,true>** ptr2;
+	RContainer<GrWord,true,true>*** ptr;
+	RContainer<GrWord,true,true>** ptr2;
 	unsigned int i,j;
 	char tmp[100];
 	
@@ -443,14 +443,14 @@ void KViewStems::ComputeTotal(void)
 	a=b=c=d=0.0;
 
 	// Construction of the container for relation between root and rows in the matrix.
-	RContainer<GrWordId,unsigned int,true,true> RootsId(NbRows,NbRows/2);
+	RContainer<GrWordId,true,true> RootsId(NbRows,NbRows/2);
 	for(i=27+1,row=0,ptr=Roots->Hash;--i;ptr++)
 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
 			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
 				RootsId.InsertPtr(new GrWordId((**ptr2)(),row++));
 
 	// Construction of the container for relation between stem and column in the matrix.
-	RContainer<GrWordId,unsigned int,true,true> StemsId(NbCols,NbCols/2);
+	RContainer<GrWordId,true,true> StemsId(NbCols,NbCols/2);
 	for(i=27+1,col=0,ptr=Stems->Hash;--i;ptr++)
 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
 			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())

@@ -154,7 +154,7 @@ void KViewDocs::CreateDocsListView(void)
 	GDocCursor CurDocs=Doc->GetSession()->GetDocsCursor();
 	GFactoryLangCursor CurLang=Doc->GetSession()->GetLangs()->GetLangsCursor();
 	GLang* lang;
-	RContainer<LangItem,unsigned int,true,true> LangItems(Doc->GetSession()->GetLangs()->NbPtr);
+	RContainer<LangItem,true,true> LangItems(Doc->GetSession()->GetLangs()->NbPtr);
 	const char* t;
 	const char det[]="Unknown";
 	const char* ptr;

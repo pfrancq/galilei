@@ -270,8 +270,8 @@ void KGALILEICenterApp::slotPlugins(void)
 	// Goes through PostGroups
 	def=cur=0;
 	PostGroup=PostGroupManager->GetPostGroupsCursor();
-	RContainer<GFactoryPostGroupOrder, unsigned int, true, true>* postgroupsordered;
-	postgroupsordered=new RContainer<GFactoryPostGroupOrder, unsigned int, true, true>(PostGroup.GetNb());
+	RContainer<GFactoryPostGroupOrder,true,true>* postgroupsordered;
+	postgroupsordered=new RContainer<GFactoryPostGroupOrder,true,true>(PostGroup.GetNb());
 	for(PostGroup.Start(),idx=1;!PostGroup.End();PostGroup.Next(), idx++)
 	{
 		pgorder=new GFactoryPostGroupOrder;
@@ -298,8 +298,8 @@ void KGALILEICenterApp::slotPlugins(void)
 	// Goes through the PostDoc method
 	def=cur=0;
 	PostDoc=PostDocManager->GetPostDocsCursor();
-	RContainer<GFactoryPostDocOrder, unsigned int, true, true>* postdocsordered;
-	postdocsordered=new RContainer<GFactoryPostDocOrder, unsigned int, true, true>(PostDoc.GetNb());
+	RContainer<GFactoryPostDocOrder,true,true>* postdocsordered;
+	postdocsordered=new RContainer<GFactoryPostDocOrder,true,true>(PostDoc.GetNb());
 	for(PostDoc.Start(),idx=1;!PostDoc.End();PostDoc.Next(),idx++)
 	{
 		pdorder=new GFactoryPostDocOrder;
