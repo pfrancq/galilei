@@ -82,6 +82,24 @@ public:
 	virtual void Compute(GProfile* profile);
 
 	/**
+	* Get the type of the method implemented.
+	* @returns tProfileCompute type.
+	*/
+	virtual tProfileCompute GetType(void) const {return(pcStatistical);}
+
+	/**
+	* Get the size of the lists OK/KO.
+	* @return Integer.
+	*/
+	unsigned int GetSize(void) const {return(Size);}
+
+	/**
+	* Set the size of the lists OK/KO.
+	* @param size           Size to use for futher computation.
+	*/
+	void SetSize(unsigned int size) {Size=size;}
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GProfileCalcList(void);

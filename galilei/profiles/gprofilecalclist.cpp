@@ -57,11 +57,12 @@ void GALILEI::GProfileCalcList::Compute(GProfile* profile)
 	GSubProfile* s;
 	unsigned int kwdid;
 	GIWord *ref;
-	unsigned int NbKO;
-	unsigned int NbOK;
-	GIWordCalcs* MOK;
-	GIWordCalcs* MKO;
-	
+	GIWordCalcs* MOK;               // OK Docs' Stats for a given language.
+	GIWordCalcs* MKO;               // KO Docs' Stats for a given language.
+	GIWordList* SubOK;              // OK List of a given subprofile.
+	GIWordList* SubKO;              // KO List of a given subprofile.
+	GIWordList* SubCommon;          // Common List of a given subprofile.
+
 	// Clear
 	for(OK.Start();!OK.End();OK.Next())
 			OK()->Clear();
@@ -94,44 +95,55 @@ void GALILEI::GProfileCalcList::Compute(GProfile* profile)
 	// Compute list 'OK', 'KO', 'Common' for each subprofile
 	for(profile->Start();!profile->End();profile->Next())
 	{
+		// Init Local variables
 		s=(*profile)();
+		SubOK=s->GetOK();
+		SubKO=s->GetKO();
+		SubCommon=s->GetCommon();
 		MOK=OK.GetPtr<GLang*>(s->GetLang());
 		MKO=KO.GetPtr<GLang*>(s->GetLang());
-		NbOK=0;
-		NbKO=0;
-		while(((NbOK<Size)&&(NbOK<OK.NbPtr))||((NbKO<Size)&&(NbOK<KO.NbPtr)))
+
+		// Clear the lists 'OK','KO' and 'Common' of the current subprofile.
+		SubOK->Clear();
+		SubKO->Clear();
+		SubCommon->Clear();
+
+		// Construct the lists while:
+		//  1°) The MOK and MKO lists are not both empty (IsNextWord() methods).
+		//  2°) The length of both lists OK and KO are not equal to the maximal
+		//      size (SubOK->NbPtr and SubKO->NbPtr values).
+		while(((MOK->IsNextWord())||(MKO->IsNextWord()))&&((SubOK->NbPtr<Size)||(SubKO->NbPtr<Size)))
 		{
-			if((NbOK<Size)&&(NbOK<OK.NbPtr))
+			// Look if the OK list needs some words. If yes, look if the next
+			// word to add is already in the KO list. If so, delete it from KO
+			// and insert it in Common, else insert it in the OK list.
+			if((MOK->IsNextWord())&&(SubOK->NbPtr<Size))
 			{
 				kwdid=MOK->NextWord();
 				ref=s->GetKO()->GetPtr<unsigned int>(kwdid);
 				if(ref)
 				{
 					s->GetKO()->DeletePtr(ref);
-					NbKO--;
 					s->GetCommon()->InsertPtr(new GIWord(kwdid));
 				}
 				else
-				{
 					s->GetOK()->InsertPtr(new GIWord(kwdid));
-					NbOK++;
-				}
 			}
-			if((NbKO<Size)&&(NbOK<KO.NbPtr))
+
+			// Look if the KO list needs some words. If yes, look if the next
+			// word to add is already in the OK list. If so, delete it from OK
+			// and insert it in Common, else insert it in the KO list.
+			if((MKO->IsNextWord())&&(SubKO->NbPtr<Size))
 			{
 				kwdid=MKO->NextWord();
 				ref=s->GetOK()->GetPtr<unsigned int>(kwdid);
 				if(ref)
 				{
 					s->GetOK()->DeletePtr(ref);
-					NbOK--;
 					s->GetCommon()->InsertPtr(new GIWord(kwdid));
 				}
 				else
-				{
 					s->GetKO()->InsertPtr(new GIWord(kwdid));
-					NbKO++;
-				}
 			}
 		}
 	}
