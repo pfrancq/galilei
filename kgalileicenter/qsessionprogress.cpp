@@ -140,7 +140,7 @@ void QSessionThread::run(void)
 
 //-----------------------------------------------------------------------------
 QLoadSession::QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostProfileManager* ppmng, GPostGroupManager* pgmng, GEngineManager* emng,GMetaEngineManager* memng)
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPreProfileManager* prpmng, GPostProfileManager* ppmng, GPostGroupManager* pgmng, GEngineManager* emng,GMetaEngineManager* memng)
 {
 	Langs=langs;
 	Umng=umng;
@@ -151,6 +151,7 @@ QLoadSession::QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyse
 	Smng=smng;
 	Lmng=lmng;
 	PDmng=pdmng;
+	PrPmng=prpmng;
 	PPmng=ppmng;
 	PGmng=pgmng;
 	Emng=emng;
@@ -202,81 +203,81 @@ void QCreateDB::DoIt(void)
 	//Qsession progres to view progression
 	Parent->PutText("Database structure created");
 
-	RDb::CreateDatabase(Host,User,Pass,DbName);
+//	RDb::CreateDatabase(Host,User,Pass,DbName);
 	RDb Db(Host,User,Pass,DbName,"latin1");
-	if(GSession::Break())
-		return;
+// 	if(GSession::Break())
+// 		return;
+// 
+// 	//Dump database model
+// 	Parent->PutText("Dump Database model");
+// 	path=SQLPath+"DbModel.sql";
+// 	RTextFile fileM(path,Read,"Latin1");
+// 
+// 	while((!fileM.Eof())&&(!GSession::Break()))
+// 	{
+// 		line=fileM.GetLine();
+// 		if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+// 			continue;
+// 
+// 		endFound=false;
+// 		while(!fileM.Eof() && !endFound)
+// 		{
+// 			if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+// 			{
+// 				sql="";
+// 				endFound=true;
+// 				continue;
+// 			}
+// 			sql+=line;
+// 			if(line.Find(';')>=0)
+// 				endFound=true;
+// 			else
+// 				line=fileM.GetLine();
+// 		}
+// 		if(!sql.IsEmpty())
+// 			RQuery Sendquery(Db,sql);
+// 
+// 		sql="";
+// 	}
+// 	if(GSession::Break())
+// 		return;
 
-	//Dump database model
-	Parent->PutText("Dump Database model");
-	path=SQLPath+"DbModel.sql";
-	RTextFile fileM(path,Read,"Latin1");
-
-	while((!fileM.Eof())&&(!GSession::Break()))
-	{
-		line=fileM.GetLine();
-		if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-			continue;
-
-		endFound=false;
-		while(!fileM.Eof() && !endFound)
-		{
-			if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-			{
-				sql="";
-				endFound=true;
-				continue;
-			}
-			sql+=line;
-			if(line.Find(';')>=0)
-				endFound=true;
-			else
-				line=fileM.GetLine();
-		}
-		if(!sql.IsEmpty())
-			RQuery Sendquery(Db,sql);
-
-		sql="";
-	}
-	if(GSession::Break())
-		return;
-
-	//Dump stoplists files
-	if(UseStopList)
-	{
-		msg="Dump Database Stoplists";
-		Parent->PutText(msg);
-		msg+=" for language ";
-		DIR* dp;
-		struct dirent* ep;
-		path="";
-
-		dp=opendir(SQLPath);
-		if(dp)
-		{
-			while((ep=readdir(dp))&&(!GSession::Break()))
-			{
-				if(strncmp(&ep->d_name[0],"DbStopList",10)) continue;
-				msg+=ep->d_name[11];
-				msg+=ep->d_name[12];
-
-				path=SQLPath+ep->d_name;
-				RTextFile fileS(path,Read,"Latin1");
-
-				Parent->PutText(msg);
-				while(!fileS.Eof())
-				{
-					line=fileS.GetLine();
-					if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-						continue;
-					RQuery stopquery(Db,line);
-				}
-				msg=msg.Mid(0,msg.GetLen()-2);
-			}
-		}
-		if(GSession::Break())
-			return;
-	}
+// 	//Dump stoplists files
+// 	if(UseStopList)
+// 	{
+// 		msg="Dump Database Stoplists";
+// 		Parent->PutText(msg);
+// 		msg+=" for language ";
+// 		DIR* dp;
+// 		struct dirent* ep;
+// 		path="";
+// 
+// 		dp=opendir(SQLPath);
+// 		if(dp)
+// 		{
+// 			while((ep=readdir(dp))&&(!GSession::Break()))
+// 			{
+// 				if(strncmp(&ep->d_name[0],"DbStopList",10)) continue;
+// 				msg+=ep->d_name[11];
+// 				msg+=ep->d_name[12];
+// 
+// 				path=SQLPath+ep->d_name;
+// 				RTextFile fileS(path,Read,"utf-8");
+// 
+// 				Parent->PutText(msg);
+// 				while(!fileS.Eof())
+// 				{
+// 					line=fileS.GetLine();
+// 					if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+// 						continue;
+// 					RQuery stopquery(Db,line);
+// 				}
+// 				msg=msg.Mid(0,msg.GetLen()-2);
+// 			}
+// 		}
+// 		if(GSession::Break())
+// 			return;
+// 	}
 
 	if(UseUsers)
 	{
@@ -334,6 +335,7 @@ void QFillDB::DoIt(void)
 	int catId;
 	int parentId=0;
 	int nbTopicsAtBegin=0;
+	unsigned int profileid;
 
 	//Connect to DB
 	Db = new RDb(Host,User,Pass,DbName,"latin1");
@@ -400,6 +402,7 @@ void QFillDB::DoIt(void)
 
 	//Create profiles
 	Parent->PutText("create Profiles");
+	profileid=0;
 	
 	//Get Nb users
 	sSql="SELECT userid FROM users";
@@ -409,21 +412,25 @@ void QFillDB::DoIt(void)
 		usersId.InsertPtr(new RString(userId[0]));
 	}
 
-	sSql="SELECT * FROM topics WHERE parent !=0 and topicid>"+itou(nbTopicsAtBegin);
+	sSql="SELECT * FROM topics WHERE  topicid>"+itou(nbTopicsAtBegin);
+//	sSql="SELECT * FROM topics WHERE parent !=0 and topicid>"+itou(nbTopicsAtBegin);
 	RQuery topics(Db,sSql);
 	for(topics.Start();!topics.End();topics.Next())
 	{
-		sSql="SELECT name FROM topics WHERE topicid="+topics[2];
-		RQuery topics2(Db,sSql);
+//		sSql="SELECT name FROM topics WHERE topicid="+topics[2];
+//		RQuery topics2(Db,sSql);
 
-		topics2.Start();
+//		topics2.Start();
 		if((!topics.End())&&topics[0])
 		{
 			RCursor<RString> userCur(usersId);
 			for(userCur.Start();!userCur.End();userCur.Next())
 			{
-				sSql="INSERT INTO profiles SET description='"+topics2[0]+"/"+topics[1]+"',updated='2004-01-01',userid="+userCur()+",topicid="+topics[0];
+				sSql="INSERT INTO profiles SET description='"+topics[1]+"',updated='2004-01-01',userid="+userCur()+",topicid="+topics[0];
+//				sSql="INSERT INTO profiles SET description='"+topics2[0]+"/"+topics[1]+"',updated='2004-01-01',userid="+userCur()+",topicid="+topics[0];
 				RQuery prof(Db,sSql);
+				sSql="INSERT INTO subprofiles SET langid='en', attached='2001-01-01', profileid="+itou(++profileid);
+				RQuery subprof(Db,sSql);
 			}
 		}
 	}

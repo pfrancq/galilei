@@ -33,7 +33,7 @@
 //-----------------------------------------------------------------------------
 #ifndef KGALILEICenterH
 #define KGALILEICenterH
- 
+
 
 //-----------------------------------------------------------------------------
 #ifdef HAVE_CONFIG_H
@@ -158,13 +158,18 @@ class KGALILEICenterApp : public KMainWindow
 	/**
 	* PostProfileManager Manager.
 	*/
+	GPreProfileManager* PreProfileManager;
+
+	/**
+	* PostProfileManager Manager.
+	*/
 	GPostProfileManager* PostProfileManager;
-	
+
 	/**
 	* PostGroup Manager.
 	*/
 	GPostGroupManager* PostGroupManager;
-	
+
 	/**
 	* Engine engine Manager.
 	*/
@@ -213,18 +218,18 @@ class KGALILEICenterApp : public KMainWindow
 	/**
 	* path to plugins.
 	*/
-	R::RString pluginsPath;
-	
+	R::RContainer<RString, true,false>* pluginsPath;
+
 	/**
 	* the path where the sql file for the database creation are stored
 	*/
 	R::RString CreateDbSQLpath;
-	
+
 	/**
 	* specifies if the stoplists table must be filled when a new Db is created
 	*/
 	bool CreateDbUseStopList;
-	
+
 	/**
 	* specifies if the users table must be filled when a new Db is created
 	*/
@@ -500,7 +505,7 @@ private slots:
 	* Analyse the XML structure of the current document.
 	*/
 	void slotAnalyseXML(void);
-	
+
 	/**
 	* Query the meta engine
 	*/

@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>536</width>
-            <height>511</height>
+            <width>546</width>
+            <height>517</height>
         </rect>
     </property>
     <property name="caption">
@@ -38,7 +38,7 @@
                         <cstring>textLabel2</cstring>
                     </property>
                     <property name="text">
-                        <string>Path to plug-ins directory:</string>
+                        <string>Path(s) to plug-ins directory (';'-separated):</string>
                     </property>
                 </widget>
                 <spacer>
@@ -739,6 +739,149 @@
                                 <property name="name">
                                     <cstring>tabWidget12</cstring>
                                 </property>
+                                <widget class="QWidget">
+                                    <property name="name">
+                                        <cstring>PreProfiling</cstring>
+                                    </property>
+                                    <attribute name="title">
+                                        <string>PreProfiling</string>
+                                    </attribute>
+                                    <vbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QListView">
+                                            <column>
+                                                <property name="text">
+                                                    <string>Methods</string>
+                                                </property>
+                                                <property name="clickable">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="resizable">
+                                                    <bool>true</bool>
+                                                </property>
+                                            </column>
+                                            <property name="name">
+                                                <cstring>PreProfile</cstring>
+                                            </property>
+                                            <property name="acceptDrops">
+                                                <bool>false</bool>
+                                            </property>
+                                            <property name="resizePolicy">
+                                                <enum>Manual</enum>
+                                            </property>
+                                            <property name="resizeMode">
+                                                <enum>AllColumns</enum>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLayoutWidget">
+                                            <property name="name">
+                                                <cstring>layout24_2_2</cstring>
+                                            </property>
+                                            <hbox>
+                                                <property name="name">
+                                                    <cstring>unnamed</cstring>
+                                                </property>
+                                                <widget class="QPushButton">
+                                                    <property name="name">
+                                                        <cstring>ConfigPreProfile</cstring>
+                                                    </property>
+                                                    <property name="enabled">
+                                                        <bool>false</bool>
+                                                    </property>
+                                                    <property name="text">
+                                                        <string>Configure</string>
+                                                    </property>
+                                                </widget>
+                                                <widget class="QPushButton">
+                                                    <property name="name">
+                                                        <cstring>AboutPreProfile</cstring>
+                                                    </property>
+                                                    <property name="enabled">
+                                                        <bool>false</bool>
+                                                    </property>
+                                                    <property name="text">
+                                                        <string>About</string>
+                                                    </property>
+                                                </widget>
+                                                <spacer>
+                                                    <property name="name">
+                                                        <cstring>spacer23_2_2_2</cstring>
+                                                    </property>
+                                                    <property name="orientation">
+                                                        <enum>Horizontal</enum>
+                                                    </property>
+                                                    <property name="sizeType">
+                                                        <enum>Expanding</enum>
+                                                    </property>
+                                                    <property name="sizeHint">
+                                                        <size>
+                                                            <width>91</width>
+                                                            <height>20</height>
+                                                        </size>
+                                                    </property>
+                                                </spacer>
+                                                <widget class="QPushButton">
+                                                    <property name="name">
+                                                        <cstring>PreProfileDown</cstring>
+                                                    </property>
+                                                    <property name="enabled">
+                                                        <bool>true</bool>
+                                                    </property>
+                                                    <property name="text">
+                                                        <string>-</string>
+                                                    </property>
+                                                    <property name="toolTip" stdset="0">
+                                                        <string>this button enables you to move down the selected plugin so that it will be executed after others</string>
+                                                    </property>
+                                                </widget>
+                                                <widget class="QPushButton">
+                                                    <property name="name">
+                                                        <cstring>PreProfileUp</cstring>
+                                                    </property>
+                                                    <property name="enabled">
+                                                        <bool>true</bool>
+                                                    </property>
+                                                    <property name="text">
+                                                        <string>+</string>
+                                                    </property>
+                                                    <property name="toolTip" stdset="0">
+                                                        <string>this button enables you to move up the selected plugin so that it will be executed first</string>
+                                                    </property>
+                                                </widget>
+                                                <spacer>
+                                                    <property name="name">
+                                                        <cstring>spacer24_2_2_2</cstring>
+                                                    </property>
+                                                    <property name="orientation">
+                                                        <enum>Horizontal</enum>
+                                                    </property>
+                                                    <property name="sizeType">
+                                                        <enum>Expanding</enum>
+                                                    </property>
+                                                    <property name="sizeHint">
+                                                        <size>
+                                                            <width>116</width>
+                                                            <height>20</height>
+                                                        </size>
+                                                    </property>
+                                                </spacer>
+                                                <widget class="QCheckBox">
+                                                    <property name="name">
+                                                        <cstring>EnablePreProfile</cstring>
+                                                    </property>
+                                                    <property name="enabled">
+                                                        <bool>false</bool>
+                                                    </property>
+                                                    <property name="text">
+                                                        <string>Enable method</string>
+                                                    </property>
+                                                </widget>
+                                            </hbox>
+                                        </widget>
+                                    </vbox>
+                                </widget>
                                 <widget class="QWidget">
                                     <property name="name">
                                         <cstring>tab</cstring>
@@ -1949,206 +2092,12 @@
         </widget>
     </vbox>
 </widget>
-<customwidgets>
-</customwidgets>
 <connections>
-    <connection>
-        <sender>AboutDocAnalyse</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutDocAnalyse()</slot>
-    </connection>
-    <connection>
-        <sender>AboutFilter</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutFilter()</slot>
-    </connection>
-    <connection>
-        <sender>AboutGroupCalc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutGroupCalc()</slot>
-    </connection>
-    <connection>
-        <sender>AboutGrouping</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutGrouping()</slot>
-    </connection>
-    <connection>
-        <sender>AboutLang</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutLang()</slot>
-    </connection>
-    <connection>
-        <sender>AboutLinkCalc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutLinkCalc()</slot>
-    </connection>
-    <connection>
-        <sender>AboutPostDoc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutPostDoc()</slot>
-    </connection>
-    <connection>
-        <sender>AboutPostGroup</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutPostGroup()</slot>
-    </connection>
-    <connection>
-        <sender>AboutProfileCalc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutProfileCalc()</slot>
-    </connection>
-    <connection>
-        <sender>AboutStat</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutStatCalc()</slot>
-    </connection>
-    <connection>
-        <sender>buttonCancel</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>reject()</slot>
-    </connection>
-    <connection>
-        <sender>buttonOk</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>accept()</slot>
-    </connection>
     <connection>
         <sender>buttonOk</sender>
         <signal>clicked()</signal>
         <receiver>QPlugins</receiver>
         <slot>updateLevels()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigDocAnalyse</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigDocAnalyse()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigFilter</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigFilter()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigGroupCalc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigGroupCalc()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigGrouping</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigGrouping()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigLang</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigLang()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigLinkCalc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigLinkCalc()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigPostDoc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigPostDoc()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigPostGroup</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigPostGroup()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigProfileCalc</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigProfileCalc()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigStat</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigStatCalc()</slot>
-    </connection>
-    <connection>
-        <sender>DocAnalyses</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeDocAnalyse(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>EnableDocAnalyse</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotDocAnalyseEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>EnableFilter</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotFilterEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>EnableGroupCalc</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotGroupCalcEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>EnableGrouping</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotGroupingEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>EnableLang</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotLangEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>EnableLinkCalc</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotLinkCalcEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>EnablePostDoc</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotPostDocEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>EnablePostGroup</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotPostGroupEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>EnableProfileCalc</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotProfileCalcEnable(bool)</slot>
     </connection>
     <connection>
         <sender>EnableStat</sender>
@@ -2157,112 +2106,34 @@
         <slot>slotStatCalcEnable(bool)</slot>
     </connection>
     <connection>
-        <sender>Filters</sender>
-        <signal>currentChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeFilter(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>GroupCalcs</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeGroupCalc(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>Groupings</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeGrouping(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>Langs</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeLang(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>LinkCalcs</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeLinkCalc(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>PostDocs</sender>
-        <signal>clicked(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changePostDoc(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>PostDocsDown</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>postDocMoveDown()</slot>
-    </connection>
-    <connection>
-        <sender>PostDocsUp</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>postDocMoveUp()</slot>
-    </connection>
-    <connection>
-        <sender>PostGroups</sender>
-        <signal>clicked(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changePostGroup(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>PostGroupsDown</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>postGroupsMoveDown()</slot>
-    </connection>
-    <connection>
-        <sender>PostGroupsUp</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>postGroupsMoveUp()</slot>
-    </connection>
-    <connection>
-        <sender>ProfileCalcs</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeProfileCalc(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>Stats</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeStatCalc(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>AboutEngine</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutEngine()</slot>
-    </connection>
-    <connection>
-        <sender>AboutMetaEngine</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutMetaEngine()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigEngine</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigEngine()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigMetaEngine</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigMetaEngine()</slot>
-    </connection>
-    <connection>
-        <sender>EnableEngine</sender>
+        <sender>EnableProfileCalc</sender>
         <signal>toggled(bool)</signal>
         <receiver>QPlugins</receiver>
-        <slot>slotEngineEnable(bool)</slot>
+        <slot>slotProfileCalcEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnablePreProfile</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotPreProfileEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnablePostProfile</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotPostProfileEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnablePostGroup</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotPostGroupEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnablePostDoc</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotPostDocEnable(bool)</slot>
     </connection>
     <connection>
         <sender>EnableMetaEngine</sender>
@@ -2271,16 +2142,136 @@
         <slot>slotMetaEngineEnable(bool)</slot>
     </connection>
     <connection>
-        <sender>Engines</sender>
-        <signal>currentChanged(QListViewItem*)</signal>
+        <sender>EnableLinkCalc</sender>
+        <signal>toggled(bool)</signal>
         <receiver>QPlugins</receiver>
-        <slot>changeEngine(QListViewItem*)</slot>
+        <slot>slotLinkCalcEnable(bool)</slot>
     </connection>
     <connection>
-        <sender>MetaEngines</sender>
-        <signal>currentChanged(QListViewItem*)</signal>
+        <sender>EnableLang</sender>
+        <signal>toggled(bool)</signal>
         <receiver>QPlugins</receiver>
-        <slot>changeMetaEngine(QListViewItem*)</slot>
+        <slot>slotLangEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableGrouping</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotGroupingEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableGroupCalc</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotGroupCalcEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableFilter</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotFilterEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableEngine</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotEngineEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>EnableDocAnalyse</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotDocAnalyseEnable(bool)</slot>
+    </connection>
+    <connection>
+        <sender>ConfigStat</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigStatCalc()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigProfileCalc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigProfileCalc()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigPostGroup</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigPostGroup()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigPostDoc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigPostDoc()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigMetaEngine</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigMetaEngine()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigLinkCalc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigLinkCalc()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigLang</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigLang()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigGrouping</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigGrouping()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigGroupCalc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigGroupCalc()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigFilter</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigFilter()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigEngine</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigEngine()</slot>
+    </connection>
+    <connection>
+        <sender>ConfigDocAnalyse</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigDocAnalyse()</slot>
+    </connection>
+    <connection>
+        <sender>AboutStat</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutStatCalc()</slot>
+    </connection>
+    <connection>
+        <sender>AboutProfileCalc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutProfileCalc()</slot>
+    </connection>
+    <connection>
+        <sender>AboutPreProfile</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutPreProfile()</slot>
     </connection>
     <connection>
         <sender>AboutPostProfile</sender>
@@ -2289,10 +2280,82 @@
         <slot>slotAboutPostProfile()</slot>
     </connection>
     <connection>
-        <sender>PostProfileDown</sender>
+        <sender>AboutPostGroup</sender>
         <signal>clicked()</signal>
         <receiver>QPlugins</receiver>
-        <slot>postDocMoveDown()</slot>
+        <slot>slotAboutPostGroup()</slot>
+    </connection>
+    <connection>
+        <sender>AboutPostDoc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutPostDoc()</slot>
+    </connection>
+    <connection>
+        <sender>AboutMetaEngine</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutMetaEngine()</slot>
+    </connection>
+    <connection>
+        <sender>AboutLinkCalc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutLinkCalc()</slot>
+    </connection>
+    <connection>
+        <sender>AboutLang</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutLang()</slot>
+    </connection>
+    <connection>
+        <sender>AboutGrouping</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutGrouping()</slot>
+    </connection>
+    <connection>
+        <sender>AboutGroupCalc</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutGroupCalc()</slot>
+    </connection>
+    <connection>
+        <sender>AboutFilter</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutFilter()</slot>
+    </connection>
+    <connection>
+        <sender>AboutEngine</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutEngine()</slot>
+    </connection>
+    <connection>
+        <sender>AboutDocAnalyse</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutDocAnalyse()</slot>
+    </connection>
+    <connection>
+        <sender>buttonCancel</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>PreProfileUp</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>preProfileMoveUp()</slot>
+    </connection>
+    <connection>
+        <sender>PreProfileDown</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>preProfileMoveDown()</slot>
     </connection>
     <connection>
         <sender>PostProfileUp</sender>
@@ -2301,16 +2364,124 @@
         <slot>postProfileMoveUp()</slot>
     </connection>
     <connection>
+        <sender>PostProfileDown</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>postProfileMoveDown()</slot>
+    </connection>
+    <connection>
+        <sender>PostGroupsUp</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>postGroupsMoveUp()</slot>
+    </connection>
+    <connection>
+        <sender>PostGroupsDown</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>postGroupsMoveDown()</slot>
+    </connection>
+    <connection>
+        <sender>PostDocsUp</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>postDocMoveUp()</slot>
+    </connection>
+    <connection>
+        <sender>PostDocsDown</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>postDocMoveDown()</slot>
+    </connection>
+    <connection>
+        <sender>Stats</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeStatCalc(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>ProfileCalcs</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeProfileCalc(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>PreProfile</sender>
+        <signal>currentChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changePreProfile(QListViewItem*)</slot>
+    </connection>
+    <connection>
         <sender>PostProfile</sender>
         <signal>currentChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
         <slot>changePostProfile(QListViewItem*)</slot>
     </connection>
     <connection>
-        <sender>EnablePostProfile</sender>
-        <signal>toggled(bool)</signal>
+        <sender>PostGroups</sender>
+        <signal>clicked(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
-        <slot>slotPostProfileEnable(bool)</slot>
+        <slot>changePostGroup(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>PostDocs</sender>
+        <signal>clicked(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changePostDoc(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>MetaEngines</sender>
+        <signal>currentChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeMetaEngine(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>LinkCalcs</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeLinkCalc(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>Langs</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeLang(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>Groupings</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeGrouping(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>GroupCalcs</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeGroupCalc(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>Filters</sender>
+        <signal>currentChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeFilter(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>Engines</sender>
+        <signal>currentChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeEngine(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>DocAnalyses</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changeDocAnalyse(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>buttonOk</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>accept()</slot>
     </connection>
 </connections>
 <tabstops>
@@ -2401,9 +2572,13 @@
     <slot>slotConfigPostDoc()</slot>
     <slot>changePostDoc( QListViewItem * item )</slot>
     <slot>slotAboutPostDoc()</slot>
+    <slot>changePreProfile( QListViewItem * item )</slot>
     <slot>changePostProfile( QListViewItem * item )</slot>
+    <slot>slotAboutPreProfile()</slot>
     <slot>slotAboutPostProfile()</slot>
+    <slot>slotConfigPreProfile()</slot>
     <slot>slotConfigPostProfile()</slot>
+    <slot>slotPreProfileEnable( bool state )</slot>
     <slot>slotPostProfileEnable( bool state )</slot>
     <slot>changeLang( QListViewItem * item )</slot>
     <slot>slotAboutLang()</slot>
@@ -2419,6 +2594,8 @@
     <slot>changePostGroup( QListViewItem * item )</slot>
     <slot>postDocMoveDown( void )</slot>
     <slot>postDocMoveUp( void )</slot>
+    <slot>preProfileMoveDown( void )</slot>
+    <slot>preProfileMoveUp( void )</slot>
     <slot>postProfileMoveDown( void )</slot>
     <slot>postProfileMoveUp( void )</slot>
     <slot>postGroupsMoveDown( void )</slot>

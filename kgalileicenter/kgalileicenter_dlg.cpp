@@ -45,7 +45,9 @@
 #include <sessions/gsession.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
+#include <profiles/gpreprofile.h>
 #include <profiles/gpostprofile.h>
+#include <profiles/gpreprofilemanager.h>
 #include <profiles/gpostprofilemanager.h>
 #include <groups/ggrouping.h>
 #include <groups/gpostgroup.h>
@@ -168,6 +170,7 @@ template<class Item>
 void KGALILEICenterApp::slotPlugins(void)
 {
 	R::RCursor<GFactoryPostDoc> PostDoc;
+	R::RCursor<GFactoryPreProfile> PreProfile;
 	R::RCursor<GFactoryPostProfile> PostProfile;
 	R::RCursor<GFactoryPostGroup> PostGroup;
 	R::RCursor<GFactoryMetaEngine> MetaEngine;
@@ -175,11 +178,15 @@ void KGALILEICenterApp::slotPlugins(void)
 	QString str;
 
 	//set the plugins path
+	RString paths("");
+	for(pluginsPath->Start(); !pluginsPath->End(); pluginsPath->Next())
+		paths+=(*pluginsPath)()+RString(";");
 	dlg.PluginsPath->setMode(KFile::Directory);
-	dlg.PluginsPath->setURL(ToQString(pluginsPath));
+	dlg.PluginsPath->setURL(ToQString(paths));
 
 	//sort POST_X Managers;
 	PostDocManager->ReOrder(GFactoryPostDoc::sortOrder);
+	PreProfileManager->ReOrder(GFactoryPreProfile::sortOrder);
 	PostProfileManager->ReOrder(GFactoryPostProfile::sortOrder);
 	PostGroupManager->ReOrder(GFactoryPostGroup::sortOrder);
 
@@ -191,6 +198,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.changeStatCalc(Init<GFactoryStatsCalc,GStatsCalc,QStatsCalcItem>(StatsCalcManager->GetStatsCalcsCursor(),dlg.Stats,dlg.EnableStat));
 	dlg.changeLinkCalc(Init<GFactoryLinkCalc,GLinkCalc,QLinkCalcItem>(LinkCalcManager->GetLinkCalcsCursor(),dlg.LinkCalcs,dlg.EnableLinkCalc,dlg.CurrentLinkCalc,LinkCalcManager->GetCurrentMethod()));
 	dlg.changePostDoc(Init<GFactoryPostDoc,GPostDoc,QPostDocItem>(PostDocManager->GetPostDocsCursor(),dlg.PostDocs,dlg.EnablePostDoc));
+	dlg.changePreProfile(Init<GFactoryPreProfile,GPreProfile,QPreProfileItem>(PreProfileManager->GetPreProfileCursor(),dlg.PreProfile,dlg.EnablePreProfile));
 	dlg.changePostProfile(Init<GFactoryPostProfile,GPostProfile,QPostProfileItem>(PostProfileManager->GetPostProfileCursor(),dlg.PostProfile,dlg.EnablePostProfile));
 	dlg.changePostGroup(Init<GFactoryPostGroup,GPostGroup,QPostGroupItem>(PostGroupManager->GetPostGroupsCursor(),dlg.PostGroups,dlg.EnablePostGroup));
 	dlg.changeLang(Init<GFactoryLang,GLang,QLangItem>(Langs->GetLangsCursor(),dlg.Langs,dlg.EnableLang));
@@ -201,13 +209,28 @@ void KGALILEICenterApp::slotPlugins(void)
 	if(dlg.exec())
 	{
 		// read the plugins path
-		if (strcmp(pluginsPath, dlg.PluginsPath->url()))
+		if (strcmp(paths, dlg.PluginsPath->url()))
 		{
-			pluginsPath=RString(dlg.PluginsPath->url().ascii());
+			pluginsPath->Clear();
+			RString pluginsPaths=dlg.PluginsPath->url().ascii();
+			int findindex=pluginsPaths.FindStr(";",0);
+			while(findindex!=-1)
+			{
+				if (!pluginsPaths.Mid(0,findindex).IsEmpty())
+					pluginsPath->InsertPtr(new RString(pluginsPaths.Mid(0,findindex)));
+			cout <<" path2="<<pluginsPaths.Mid(0,findindex)<<endl;
+				pluginsPaths=pluginsPaths.Mid(findindex+1);
+				pluginsPaths.FindStr(";",0);
+				findindex=pluginsPaths.FindStr(";",0);
+			}
+			cout <<" path3="<<pluginsPaths.Mid(0,findindex)<<endl;
+			if (!pluginsPaths.IsEmpty())
+			pluginsPath->InsertPtr(new RString(pluginsPaths));
 			QMessageBox::information(this,"Plug-Ins Path has changed","You changed the plugins path, please restart KGALILEICenter.");
 		}
 
 		PostDocManager->ReOrder(GFactoryPostDoc::sortOrder);
+		PreProfileManager->ReOrder(GFactoryPostProfile::sortOrder);
 		PostProfileManager->ReOrder(GFactoryPostProfile::sortOrder);
 		PostGroupManager->ReOrder(GFactoryPostGroup::sortOrder);
 
@@ -221,6 +244,7 @@ void KGALILEICenterApp::slotPlugins(void)
 			Done<QStatsCalcItem>(dlg.Stats);
 			Done<QLinkCalcItem>(dlg.LinkCalcs,this);
 			Done<QPostDocItem>(dlg.PostDocs,this);
+			Done<QPreProfileItem>(dlg.PreProfile,this);
 			Done<QPostProfileItem>(dlg.PostProfile,this);
 			Done<QLangItem>(dlg.Langs,this);
 			Done<QDocAnalyseItem>(dlg.DocAnalyses,this);

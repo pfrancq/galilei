@@ -175,7 +175,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			QSessionProgressDlg dlg(this,Sess,"Loading from Database");
 			if(dlg.Run(new QLoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,
 			GroupingManager,GroupCalcManager,StatsCalcManager,LinkCalcManager,PostDocManager,
-			PostProfileManager,PostGroupManager,EngineManager,MetaEngineManager)))
+			PreProfileManager, PostProfileManager,PostGroupManager,EngineManager,MetaEngineManager)))
 			{
 				sessionConnect->setEnabled(false);
 				UpdateMenusEntries();
@@ -1075,4 +1075,5 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 	if(PostGroupManager) delete PostGroupManager;
 	if(EngineManager) delete EngineManager;
 	if(MetaEngineManager) delete MetaEngineManager;
+	if(pluginsPath) delete pluginsPath;
 }

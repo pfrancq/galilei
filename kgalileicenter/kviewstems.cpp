@@ -490,7 +490,6 @@ void KViewStems::ComputeTotal(void)
 	for(row=NbRows+1,vec=VectorRows;--row;vec++)
 		c+=(((*vec)*((*vec)-1))/2);
 	d=(NbWords*(NbWords-1))/2;
-	cout<<"NbWords="<<NbWords<<endl<<"a="<<a<<endl<<"b="<<b<<endl<<"c="<<c<<endl<<"d="<<d<<endl;
 	num=a-((b*c)/d);
 	den=(0.5*(b+c))-(b*c/d);
 	if(den)

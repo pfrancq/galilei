@@ -141,7 +141,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	  bDelDoc(true), bDocXML(false)
 {
 	// Construct the document
-	Document=new GDoc(file,file,cNoRef,0,(static_cast<GFilterManager*>(GPluginManager::GetManager("Filter")))->GetMIMEType(mime),"","",0);
+	Document=new GDoc(file,file,cNoRef,0,(static_cast<GFilterManager*>(GPluginManager::GetManager("Filter")))->GetMIMEType(mime),"","",0,0);
 
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));

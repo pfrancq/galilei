@@ -34,6 +34,7 @@
 // include files for GALILEI
 #include <sessions/gstoragemysql.h>
 #include <sessions/gconfig.h>
+#include <profiles/gpreprofilemanager.h>
 #include <profiles/gpostprofilemanager.h>
 using namespace GALILEI;
 using namespace R;
@@ -81,7 +82,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
-	: KMainWindow(0,"KGALILEICenterApp"), dbHost(),dbName(),dbUser(),dbPwd(),pluginsPath(),Doc(0)
+	: KMainWindow(0,"KGALILEICenterApp"), dbHost(),dbName(),dbUser(),dbPwd(),Doc(0)
 {
 	Config=kapp->config();
 	initStatusBar();
@@ -89,23 +90,25 @@ KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
 	initActions();
 
 	//read the kgalileicenter options
+	pluginsPath=new RContainer<RString, true, false>(2,1);
 	readOptions();
 	try
 	{
 		//init the plugins managers;
-		Langs=new GLangManager(pluginsPath.Latin1(),true);
-		URLManager=new GFilterManagerKDE(pluginsPath.Latin1());
-		DocAnalyseManager=new GDocAnalyseManager(pluginsPath.Latin1()),
+		Langs=new GLangManager(pluginsPath,true);
+		URLManager=new GFilterManagerKDE(pluginsPath);
+		DocAnalyseManager=new GDocAnalyseManager(pluginsPath),
 		ProfilingManager=new GProfileCalcManager(pluginsPath);
-		GroupingManager=new GGroupingManager(pluginsPath.Latin1());
-		GroupCalcManager=new GGroupCalcManager(pluginsPath.Latin1());
-		StatsCalcManager=new GStatsCalcManager(pluginsPath.Latin1());
-		LinkCalcManager=new GLinkCalcManager(pluginsPath.Latin1());
-		PostDocManager=new GPostDocManager(pluginsPath.Latin1());
-		PostProfileManager=new GPostProfileManager(pluginsPath.Latin1());
-		PostGroupManager=new GPostGroupManager(pluginsPath.Latin1());
-		EngineManager=new GEngineManager(pluginsPath.Latin1());
-		MetaEngineManager=new GMetaEngineManager(pluginsPath.Latin1());
+		GroupingManager=new GGroupingManager(pluginsPath);
+		GroupCalcManager=new GGroupCalcManager(pluginsPath);
+		StatsCalcManager=new GStatsCalcManager(pluginsPath);
+		LinkCalcManager=new GLinkCalcManager(pluginsPath);
+		PostDocManager=new GPostDocManager(pluginsPath);
+		PreProfileManager=new GPreProfileManager(pluginsPath);
+		PostProfileManager=new GPostProfileManager(pluginsPath);
+		PostGroupManager=new GPostGroupManager(pluginsPath);
+		EngineManager=new GEngineManager(pluginsPath);
+		MetaEngineManager=new GMetaEngineManager(pluginsPath);
 
 	}
 	catch(GException e)
@@ -223,6 +226,7 @@ void KGALILEICenterApp::createClient(KDoc* doc,KView* view)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::saveOptions(void)
 {
+	RString paths("");
 	Config->setGroup("General Options");
 	Config->writeEntry("Geometry", size());
 	Config->writeEntry("Show Toolbar", toolBar()->isVisible());
@@ -236,7 +240,9 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Always Save Groups",groupAlwaysSave->isChecked());
 	Config->writeEntry("Always Calc Docs",docAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Docs",docAlwaysSave->isChecked());
-	Config->writeEntry("PluginsPath", pluginsPath);
+	for(pluginsPath->Start(); !pluginsPath->End(); pluginsPath->Next())
+		paths+=(*pluginsPath)()+RString(";");
+	Config->writeEntry("PluginsPath", paths);
 
 	Config->setGroup("Database Options");
 	Config->writeEntry("Host", dbHost);
@@ -292,7 +298,17 @@ void KGALILEICenterApp::readOptions(void)
 	docAlwaysSave->setChecked(Config->readBoolEntry("Always Save Docs",false));
 
 	//plugins path
-	pluginsPath=Config->readPathEntry("PluginsPath","/home").ascii();
+	RString pluginsPaths=Config->readPathEntry("PluginsPath","/home").ascii();
+	int findindex=pluginsPaths.FindStr(";",0);
+	while(findindex!=-1)
+	{
+		if (!pluginsPaths.Mid(0,findindex).IsEmpty())
+			pluginsPath->InsertPtr(new RString(pluginsPaths.Mid(0,findindex)));
+		pluginsPaths=pluginsPaths.Mid(findindex+1);
+		findindex=pluginsPaths.FindStr(";",0);
+	}
+	if (!pluginsPaths.IsEmpty())
+		pluginsPath->InsertPtr(new RString(pluginsPaths));
 
 	// Size
 	QSize size=Config->readSizeEntry("Geometry");

@@ -17,7 +17,7 @@
 #include <rstd/rstring.h>
 #include <rdb/rmysql.h>
 #include <frontend/kde/rqt.h>
-using namespace R;
+
 void QFillEmptyDatabase::ChangeParent( int s )
 {
     if(s==QButton::On)
@@ -34,13 +34,13 @@ void QFillEmptyDatabase::ChangeParent( int s )
  //   if(s==Qbutton:NoChange)
 }
 
-void QFillEmptyDatabase::InsertSubItem(RDb& db,int parentId,QListViewItem* item)
+void QFillEmptyDatabase::InsertSubItem(R::RDb& db,int parentId,QListViewItem* item)
 {
 	QListViewItem* t;
-	RString sSQL("");
+	R::RString sSQL("");
 	
-	sSQL="SELECT * FROM topics where parent="+itou(parentId);
-	RQuery insert(db,sSQL);
+	sSQL="SELECT * FROM topics where parent="+R::itou(parentId);
+	R::RQuery insert(db,sSQL);
 	
 	for(insert.Start();!insert.End();insert.Next())
 	{
@@ -52,7 +52,7 @@ void QFillEmptyDatabase::InsertSubItem(RDb& db,int parentId,QListViewItem* item)
 
 void QFillEmptyDatabase::ChooseParentName()
 { 
-	RString sSQL("");
+	R::RString sSQL("");
 	QListViewItem* t;
 	//Verify that Db infos are available
 	if( (LEName->text().isEmpty())||(LEHost->text().isEmpty())||(LEUser->text().isEmpty()))
@@ -63,13 +63,13 @@ void QFillEmptyDatabase::ChooseParentName()
 	try
 	{
 		//Connect to Db
-		RDb Db (FromQString(LEHost->text()),FromQString(LEUser->text()),FromQString(LEPassword->text()),FromQString(LEName->text()),"latin1");
+		R::RDb Db (R::FromQString(LEHost->text()),R::FromQString(LEUser->text()),R::FromQString(LEPassword->text()),R::FromQString(LEName->text()),"latin1");
    
 		//Init dlg
 		QChooseParent dlg(this,0,true);
 		dlg.TopicsView->setColumnWidth(0,300);
 		sSQL="SELECT * FROM topics where parent=0";   
-		RQuery mainTopics(Db,sSQL);
+		R::RQuery mainTopics(Db,sSQL);
 		
 		for(mainTopics.Start();!mainTopics.End();mainTopics.Next())
 		{
@@ -79,15 +79,15 @@ void QFillEmptyDatabase::ChooseParentName()
 		
 		if(dlg.exec())
 		{
-			RString tmp("");
+			R::RString tmp("");
 			t=dlg.TopicsView->selectedItem();
 			if(t)
 			{
-				tmp=FromQString(t->text(0));
+				tmp=R::FromQString(t->text(0));
 				t=t->parent();
 				while(t)
 				{
-					tmp=FromQString(t->text(0))+"/"+tmp;
+					tmp=R::FromQString(t->text(0))+"/"+tmp;
 					t=t->parent();
 				}
 				ParentName->setText(ToQString(tmp));
@@ -98,7 +98,7 @@ void QFillEmptyDatabase::ChooseParentName()
 	//{
 	//	QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
 	//}
-	catch(RException& e)
+	catch(R::RException& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetMsg()));
 	}

@@ -141,6 +141,7 @@ void KViewStats::ComputeStats(void)
 	GStatsCalc* Calc;
 	RXMLStruct xml;
 	RXMLTag* Root;
+
 	int i;
 	GStatsCalcManager* Mng=(dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatCalc")));
 
