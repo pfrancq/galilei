@@ -166,19 +166,19 @@ public:
 	* Load the Subjectree.
 	* @param subjects     The tree of subjects.
 	*/
-	virtual void LoadSubjectTree(GSubjectTree* subjects);
+	virtual void LoadSubjectTree(void);
 
 	/**
 	* Load the ideal groupment of document.
 	* @param idealgroup   The ideal container of GroupsEvaluate	
 	*/
-	virtual void LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup);
+	virtual void LoadIdealDocument();
 
 	/**
 	* Load the ideal groupment.
 	* @param idealgroup   The ideal container of group	
 	*/
-	virtual void LoadIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup);
+	virtual void LoadIdealGroupment();
 
 
 	/**

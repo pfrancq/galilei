@@ -81,13 +81,14 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException)
-	: GLangs(2),GDocs(d),GUsers(u,p), GGroupsMng(g), IdealGroups(g+g/2,g/2), Fdbks(f+f/2,f/2),
+	: GLangs(2),GDocs(d),GUsers(u,p), GGroupsMng(g), Fdbks(f+f/2,f/2),
 	  ProfileCalcs(0), ProfileCalc(0), Groupings(0), Grouping(0), Mng(mng), DocAnalyse(0),
 	  bGroups(false),bFdbks(false), DocOptions(0)
 	
 {
 	GLangCursor Langs;
-
+    IdealGroups= new RStd::RContainer<GALILEI::GGroups, unsigned int, true, true> (g+g/2,g/2);
+	IdealDoc=new RStd::RContainer<GALILEI::GGroupsEvaluate, unsigned int, false, false> (2,1);
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Groups.InsertPtr(new GGroups(Langs()));
@@ -129,6 +130,23 @@ GSubProfileDescCursor& GALILEI::GSession::GetProfileDescsCursor(void)
 	return(*cur);
 }
 
+//-----------------------------------------------------------------------------
+RStd::RContainer<GGroups,unsigned int,true,true>* GALILEI::GSession::GetIdealGroups()
+{
+	return(IdealGroups);
+}
+
+//-----------------------------------------------------------------------------
+//RStd::RContainer<GGroups,unsigned int,true,true> GALILEI::GSession::GetIdealGroups()
+//{
+//	return(IdealGroups);
+//}
+
+//-----------------------------------------------------------------------------
+RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* GALILEI::GSession::GetIdealDoc()
+{
+	return(IdealDoc);
+}
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::RegisterComputingMethod(GProfileCalc* grp) throw(bad_alloc)
@@ -293,7 +311,7 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 				}
 				else
 					Docs()->IncFailed();
-			}
+			} 
 			SaveDoc(Docs());
 			if(Docs()->GetState()==osUpdated)
 				Docs()->SetState(osUpToDate);
@@ -450,11 +468,9 @@ void GALILEI::GSession::LoadIdealGroupmentInGroups(void)
 	GGroups* groups;
 	GGroup* group;
 
-	RContainer<GGroups,unsigned int,true,true>* idealgroup=new RContainer<GGroups,unsigned int,true,true>(20,20);
-	LoadIdealGroupment(idealgroup);
-	for(idealgroup->Start();!idealgroup->End();idealgroup->Next())
+	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
 	{
-		groups=(*idealgroup)();
+		groups=(*IdealGroups)();
 		ClearGroups(groups->GetLang());
 		Groups.InsertPtr(groups);
 		for(groups->Start();!groups->End();groups->Next())

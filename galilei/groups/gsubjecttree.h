@@ -64,6 +64,7 @@ namespace GALILEI{
 */
 class GSubjectTree : public RStd::RTree<GSubject,true,false>
 {
+
 protected:
 
 	/**

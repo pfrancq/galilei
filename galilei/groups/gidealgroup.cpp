@@ -90,7 +90,7 @@ GALILEI::GIdealGroup::GIdealGroup(GSession* session)
 	PercGrp=100;
 	NbDocPerGrp=0;
 	Subjects=new GSubjectTree(PercOK,PercKO,Session->GetNbUsers());
-	Session->LoadSubjectTree(Subjects);
+	Subjects=Session->GetSubjects();
 	Subjects->InsertProfiles();
 }
 

@@ -82,7 +82,6 @@ protected:
 	*/
 	double PercHS;
 
-
 	/**
 	* The Percentage of documents judged whith error.
 	*/
@@ -110,7 +109,7 @@ protected:
 	unsigned int NbProfMax;
 
 	/**
-	* The minimal number of profiles in a group.	
+	* The minimal number of profiles in a group.
 	*/
 	unsigned int NbProfMin;
 

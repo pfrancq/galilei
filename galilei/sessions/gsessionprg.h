@@ -204,7 +204,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-class GTestI : public GSM
+class GTestI : public GSM      
 {
 public:
 	GTestI(GPrgClassSession* o) : GSM("Test",o) {}

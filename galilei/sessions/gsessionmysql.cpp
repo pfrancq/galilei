@@ -400,9 +400,8 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 			for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 				((GSubProfileVector*)SubProfiles())->UpdateRefs();
 		}
-
 		// Load the ideal Groups.
-//		LoadIdealGroupment(&IdealGroups);
+		LoadIdealGroupment();
 	}
 	catch(RMySQLError& e)
 	{
@@ -412,14 +411,14 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup)
+void GALILEI::GSessionMySQL::LoadIdealDocument()
 {
 	char sSql[100];
 	GGroupsEvaluate* groups;
 	GGroupEvaluateDoc* group;
 	GLangCursor Langs;
 
-	idealgroup->Clear();
+	IdealDoc->Clear();
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
@@ -451,25 +450,26 @@ void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsign
 			}
 			groups->InsertPtr(group);
 		}
-		idealgroup->InsertPtr(groups);
+		IdealDoc->InsertPtr(groups);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup)
+void GALILEI::GSessionMySQL::LoadIdealGroupment()
 {
 	GGroups* groups;
 	GGroup* group;
 	GLangCursor Langs;
 	char sSql[100];
 
-	idealgroup->Clear();
+	IdealGroups->Clear();
 
 	Langs=GetLangsCursor();
+//	LoadSubjectTree();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		idealgroup->InsertPtr(groups=new GGroups(Langs()));
+		IdealGroups->InsertPtr(groups=new GGroups(Langs()));
 		sprintf(sSql,"SELECT DISTINCT(groupid) FROM idealgroup WHERE langid='%s'",Langs()->GetCode());
 		RQuery sel(this,sSql);
 		for(sel.Start();!sel.End();sel.Next())
@@ -513,11 +513,22 @@ void GALILEI::GSessionMySQL::SaveIdealGroupment(RContainer<GGroups,unsigned int,
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadSubjectTree(GSubjectTree* subjects)
+void GALILEI::GSessionMySQL::LoadSubjectTree()
 {
 	char sSql[200];
+	unsigned int nbuser,nbsubsubj;
+	sprintf(sSql,"SELECT count(*) from users");
+	RQuery user(this,sSql);
+	user.Start();
+	nbuser=atoi(user[0]);
+	sprintf(sSql,"SELECT count(*) from subsubject");
+	RQuery subsubj(this,sSql);
+	subsubj.Start();
+	nbsubsubj=atoi(subsubj[0]);
 	sprintf(sSql,"SELECT subjectid,subjectname from subject");
+	Subjects = new GSubjectTree(0,0,nbuser);
 	RQuery sub(this,sSql);
+	unsigned int j=1;
 	for(sub.Start();!sub.End();sub.Next())
 	{
 		int temp=0;
@@ -531,14 +542,20 @@ void GALILEI::GSessionMySQL::LoadSubjectTree(GSubjectTree* subjects)
 			RQuery doc(this,sSql);
 			for(doc.Start();!doc.End();doc.Next())
 			{
-				subsubject->InsertDoc(this->GetDoc(atoi(doc[0])));
-				subsubject->SetLang(this->GetDoc(atoi(doc[0]))->GetLang());
+				GDoc* d = this->GetDoc(atoi(doc[0]));
+				subsubject->InsertDoc(d);
+				subsubject->SetLang(d->GetLang());
 				temp++;
+				d->InsertSubject(subject);
 			}
 			if(temp==0) subsubject->SetLang(this->GetDoc(1)->GetLang());
 			subject->InsertNode(subsubject);
+			for(unsigned int k=0; k<nbuser;k++)
+				for (unsigned int i=1;i<=GetNbLangs();i++)
+					GetSubProfile((k*nbsubsubj*(GetNbLangs()))+((j-1)*2)+i)->SetSubject(subject);
+			j++;
 		}
-			subjects->InsertPtr(subject);
+			Subjects->InsertPtr(subject);
 	}
 }
 
@@ -1018,10 +1035,7 @@ void GALILEI::GSessionMySQL::SaveDocSim(void)
 
 
 	//The container of documents.
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
-
-	// Load the ideal document container.
-	LoadIdealDocument(GroupsDoc);
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = IdealDoc;
 
 	double tempGlobal;
 	double tempnormal;

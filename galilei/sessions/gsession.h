@@ -72,7 +72,17 @@ protected:
 	/**
 	* Ideal Groups handled by the system.
 	*/
-	RStd::RContainer<GGroups,unsigned int,true,true> IdealGroups;
+	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+
+	/**
+	* Pointer to the ideal Docs
+	*/
+	RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* IdealDoc;
+
+	/**
+	* Pointer to a tree of subject
+	*/
+	GSubjectTree* Subjects;
 
 	/**
 	* All the judgements.
@@ -179,6 +189,26 @@ public:
 	* @returns Pointer to GDocOptions.
 	*/
 	GDocOptions* GetDocOptions(void) {return(DocOptions);}
+
+	/**
+	* Get a pointer to the ideal groups
+	*/
+	RStd::RContainer<GGroups,unsigned int,true,true>* GetIdealGroups();
+
+//	/**
+//	* Return the ideal groups
+//	*/
+//	RStd::RContainer<GGroups,unsigned int,true,true> GetIdealGroups();
+//
+	/**
+	* Get a pointer to the ideal docs
+	*/
+	RStd::RContainer<GGroupsEvaluate,unsigned int,false,false>* GetIdealDoc();
+
+	/**
+	* Return a pointer to a tree of subjects
+	*/
+	GSubjectTree* GetSubjects() {return(Subjects);}
 
 	/**
 	* Register a description method for the profiles.
@@ -378,7 +408,7 @@ public:
 	/**
 	* Load the SubjectTree.
 	*/
-	virtual void LoadSubjectTree(GSubjectTree* subjects)=0;
+	virtual void LoadSubjectTree()=0;
 
 	/**
 	* Verify if the feedback are loaded.
@@ -449,13 +479,14 @@ public:
 	* can be a SQL file.
 	* @param filename       Name of the file.
 	*/
+
 	virtual void ExecuteData(const char* filename) throw(GException)=0;
 
 	/**
 	* Load the ideal groupment.
 	* @param idealgroup   The ideal container of group	
 	*/
-	virtual void LoadIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup)=0;
+	virtual void LoadIdealGroupment()=0;
 
 	/**
 	* Load the ideal groupment in the groups container.
@@ -466,7 +497,7 @@ public:
 	* Load the ideal groupment of document.
 	* @param idealgroup   The ideal container of group	
 	*/
-	virtual void LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup)=0;
+	virtual void LoadIdealDocument()=0;
 
 	/**
 	* Save the ideal groupment

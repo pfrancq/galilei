@@ -79,7 +79,7 @@ GALILEI::GQueryDocsGroup::GQueryDocsGroup(GSession* ses) throw(bad_alloc)
 	GGroupEvaluateDoc* group;
 	GDoc* Doc;
 	GDocVector* DocV;
-	ses->LoadIdealDocument(idealgroup);
+	idealgroup=ses->GetIdealDoc();
 	GIWordWeight** Order=new GIWordWeight*[5000];
 	GIWordsWeights* QueryWord = new GIWordsWeights(5000);
 	GIWordsWeights* QueryWord1 = new GIWordsWeights(1);

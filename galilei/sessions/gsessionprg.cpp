@@ -210,7 +210,8 @@ void GGroupProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,uns
 	if(Owner->Groups)
 	{
 		GGrouping* algo=Owner->Session->GetCurrentGroupingMethod();
-		algo->SetIdealGroups(Owner->Groups);
+		algo->SetIdealGroups(Owner->Groups);    
+
 	}
 	Owner->Session->GroupingProfiles(r,Owner->FirstGroup,Owner->AutoSave);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
@@ -257,6 +258,7 @@ void GMixIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 	if(args->NbPtr==1)
 		mix.SetSettings(args->Tab[0]->GetValue(prg));
 	mix.Run(0);
+
 }
 
 

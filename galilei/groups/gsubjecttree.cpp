@@ -84,7 +84,7 @@ GALILEI::GSubjectTree::GSubjectTree(double NbOk,double NbKo,unsigned int nbusers
 	NbDocsKo=NbKo;
 	NbUsers=nbusers;
 	NbProfiles=NbUsers;
-//	profiles=new RContainer<GProfile,unsigned,false,true>(10,5);
+	profiles=new RContainer<GProfile,unsigned,false,true>(10,5);
 	sprintf(today,"'%u-%u-%u'",date.GetYear(),date.GetMonth(),date.GetDay());
 	IdealDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 }
@@ -118,6 +118,7 @@ void GALILEI::GSubjectTree::InsertProfiles(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GSubjectTree::ChooseSubject(GSession* ses,double percgrp,unsigned int NbDocPerGrp)
 {
+	IdealDoc=(ses->GetIdealDoc());
 	double PercGrp=percgrp;
 	unsigned int nbrsububjects=0;
 	unsigned int compt=0;
@@ -132,7 +133,6 @@ void GALILEI::GSubjectTree::ChooseSubject(GSession* ses,double percgrp,unsigned 
 	tab1=new unsigned int [nbrsububjects];
 	tab2=new unsigned int [nbrsububjects];
 
-	ses->LoadIdealDocument(IdealDoc);
 	for(IdealDoc->Start();!IdealDoc->End();IdealDoc->Next())
 	{
 		GGroupEvaluateCursor Grp=(*IdealDoc)()->GetGroupEvaluateCursor();

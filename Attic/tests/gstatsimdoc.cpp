@@ -84,7 +84,7 @@ void GALILEI::GStatSimDoc::Run(void)
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 
 	// Load the ideal document container.
-	Session->LoadIdealDocument(GroupsDoc);
+	GroupsDoc=Session->GetIdealDoc();
 
 	for(GroupsDoc->Start();!GroupsDoc->End();GroupsDoc->Next())
 	{

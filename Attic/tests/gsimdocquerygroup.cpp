@@ -77,7 +77,7 @@ GALILEI::GSimDocQueryGroup::GSimDocQueryGroup(GSession* ses) throw(bad_alloc)
 	GGroupEvaluateDoc* group;
 	GDoc* Doc;
 	GDocVector* DocV;
-	ses->LoadIdealDocument(idealgroup);
+	idealgroup=ses->GetIdealDoc();
 
 	GIWordsWeights* QueryWord = new GIWordsWeights(5000);
 	GIWordsWeights* FilteredQueryWord = new GIWordsWeights(100);

@@ -78,7 +78,7 @@ GALILEI::GGetFeedback::GGetFeedback(GSession* session)
 	: Session(session), NbDoc(30), Global(true), PercErr(0),IdealGroup(0), Parent(0)
 {
 	IdealDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
-	Session->LoadIdealDocument(IdealDoc);
+	IdealDoc=(Session->GetIdealDoc());
 }
 
 
