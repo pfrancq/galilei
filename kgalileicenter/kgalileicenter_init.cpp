@@ -426,13 +426,13 @@ void KGALILEICenterApp::readOptions(void)
 	ProfileDesc = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
 	ProfileDesc->InsertPtr(new RStd::RString("Vector space"));
 	GroupCalcMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
-	GroupCalcMethod->InsertPtr(new RStd::RString("Gravitational Point"));
-	GroupCalcMethod->InsertPtr(new RStd::RString("Relevant SubProfile"));
+	GroupCalcMethod->InsertPtr(new RStd::RString("Gravitation"));
+	GroupCalcMethod->InsertPtr(new RStd::RString("Prototype"));
 	Config->setGroup("Session Options");
 	CurrentProfileDesc=Config->readEntry("Description Method","Vector space");
 	CurrentComputingMethod=Config->readEntry("Computing Method","Statistical");
 	CurrentGroupingMethod=Config->readEntry("Grouping Method","First-Fit Heuristic");
-	CurrentGroupCalcMethod=Config->readEntry("Group Description Method","Relevant SubProfile");
+	CurrentGroupCalcMethod=Config->readEntry("Group Description Method","Prototype");
 
 	// Read Config of GA
 	Config->setGroup(IRParams.GetGroupingName());

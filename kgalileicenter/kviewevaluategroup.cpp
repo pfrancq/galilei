@@ -375,9 +375,9 @@ void KViewEvaluateGroup::ConstructSimilarityDocGroup(bool relevant,bool global)
 
 	GSession* session=Doc->GetSession();
 	if (relevant)
-		session->SetCurrentGroupCalcMethod("Relevant SubProfile");
+		session->SetCurrentGroupCalcMethod("Prototype");
 	else
-		session->SetCurrentGroupCalcMethod("Gravitational Point");
+		session->SetCurrentGroupCalcMethod("Gravitation");
 	CalcMethod=session->GetCurrentGroupCalcMethod();
 
 	SimilarityDoc->clear();
