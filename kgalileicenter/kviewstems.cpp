@@ -103,6 +103,7 @@ KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget*
 	thGroups->resize(size());
 	thGroups->addColumn(QString("Words/Stems"));
 	thGroups->setRootIsDecorated(true);
+	thGroups->setSorting(-1);
 
 	// Theoritic groupement
 	prGroups = new QListView(this);
@@ -111,6 +112,7 @@ KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget*
 	prGroups->addColumn(QString("Words/Roots"));
 	prGroups->addColumn(QString("Stats"));
 	prGroups->setRootIsDecorated(true);
+	prGroups->setSorting(-1);
 
 	// Loads and Computes
 	LoadFile(filename);
@@ -134,12 +136,13 @@ void KViewStems::LoadFile(const char* filename)
 	char root[200];
 	Word* wptr;
 	GrWord* gptr;
-	RDblHashContainer<GrWord,unsigned,27,27,true> Roots(30000,15000);
-	RDblHashContainer<GrWord,unsigned,27,27,true> Stems(30000,15000);
-	RDblHashContainer<Word,unsigned,27,27,true> Words(90000,15000);
+	RDblHashContainer<GrWord,unsigned,27,27,true> Roots(2000,1500);
+	RDblHashContainer<GrWord,unsigned,27,27,true> Stems(2000,1500);
+	RDblHashContainer<Word,unsigned,27,27,true> Words(2000,1500);
 	RContainer<GrWord,unsigned,true,true>*** ptr1;
 	RContainer<GrWord,unsigned,true,true>** ptr2;
 	unsigned i,j;
+	RContainer<RString,unsigned,true,true> Genres(20,10);
 
 	// Read the File
 	while(!f.Eof())
@@ -168,6 +171,16 @@ void KViewStems::LoadFile(const char* filename)
 		gptr=Roots.GetInsertPtr<const char*>(root);
 		wptr->Root=gptr;
 		gptr->Words.InsertPtr(wptr);
+		
+		// Skip '" '
+		line+=2;
+
+		// Read Genres
+		ptr=root;
+		while((*line)&&((*line)!='['))
+			(*(ptr++))=(*(line++));
+		(*ptr)=0;
+//		Genres.GetInsertPtr<const char*>(root);
 	}
 
 	// Set the caption
