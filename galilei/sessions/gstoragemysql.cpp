@@ -1414,8 +1414,9 @@ void GStorageMySQL::ExecuteData(const char* filename) throw(GException)
 {
 	try
 	{
-		RTextFile Sql(filename);
 		RString l;
+		RTextFile Sql(filename);
+		Sql.Open(Read);
 		while(!Sql.Eof())
 		{
 			l=Sql.GetLine();
@@ -1680,7 +1681,8 @@ void GALILEI::GStorageMySQL::ExportMatrix(GSession* sess,GSlot* rec,RString type
 	int maxid;
 
 	// create the file
-	RTextFile text(filename,R::Create);
+	RTextFile text(filename);
+	text.Open(R::Create);
 	text.SetSeparator("");
 
 	//get all the words

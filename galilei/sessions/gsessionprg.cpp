@@ -384,7 +384,8 @@ void GOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>*
 		delete Owner->OFile;
 		Owner->OFile=0;
 	}
-	Owner->OFile=new RTextFile((args->Tab[0]->GetValue(prg)),Create);
+	Owner->OFile=new RTextFile((args->Tab[0]->GetValue(prg)));
+	Owner->OFile->Open(Create);
 	Owner->OFile->SetSeparator("\t");
 	(*Owner->OFile)<<"Sets"<<"Recall"<<"Precision"<<"Total";
 	if(Owner->TrackNewProfiles)
@@ -407,7 +408,8 @@ void GGOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 		delete Owner->GOFile;
 		Owner->GOFile=0;
 	}
-	Owner->GOFile=new RTextFile(args->Tab[0]->GetValue(prg),Create);
+	Owner->GOFile=new RTextFile(args->Tab[0]->GetValue(prg));
+	Owner->GOFile->Open(Create);
 	Owner->GOFile->SetSeparator("\t");
 }
 
@@ -424,7 +426,8 @@ void GSOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 		delete Owner->SOFile;
 		Owner->SOFile=0;
 	}
-	Owner->SOFile=new RTextFile(args->Tab[0]->GetValue(prg),Create);
+	Owner->SOFile=new RTextFile(args->Tab[0]->GetValue(prg));
+	Owner->SOFile->Open(Create);
 	Owner->SOFile->SetSeparator("\t");
 }
 

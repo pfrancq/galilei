@@ -6,7 +6,7 @@
 
 	Log File Slot - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -50,8 +50,9 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GALILEI::GSlotLog::GSlotLog(const char* name) throw(std::bad_alloc,RException)
-	: GSlot(), RTextFile(name,Append)
+	: GSlot(), RTextFile(name)
 {
+	RTextFile::Open(Append);
 }
 
 
