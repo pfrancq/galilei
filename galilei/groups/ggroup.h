@@ -118,6 +118,12 @@ public:
 	int Compare(const GGroup* group) const;
 
 	/**
+	* Verify if the group is empty, i.e. it does not have any subprofiles.
+	* @returns bool
+	*/
+	bool IsEmpty(void) const;
+
+	/**
 	* Get the identificator of the group.
 	* @return Identificator.
 	*/
@@ -207,7 +213,6 @@ public:
 	* returns the relevant subprofiles (needed for kmeans).
 	*/
 	GSubProfile* RelevantObj() const {return(RelevantSubProfile(0));}
-
 
 	/**
 	* Compute the sum of the similarities of a given profile to all the others.

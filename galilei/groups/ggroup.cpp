@@ -135,6 +135,13 @@ int GALILEI::GGroup::Compare(const GGroup* group) const
 
 
 //-----------------------------------------------------------------------------
+bool GALILEI::GGroup::IsEmpty(void) const
+{
+	return(NbPtr);
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GGroup::DeleteSubProfile(GSubProfile* sp)
 {
 	DeletePtr(sp);
