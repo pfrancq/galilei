@@ -83,7 +83,7 @@ GLangFR::FrenchPorterRule::FrenchPorterRule(const char* os,const char* ns,int oo
 
 //-----------------------------------------------------------------------------
 GALILEI::GLangFR::GLangFR(void) throw(bad_alloc)
-	: GLang("French","fr"), Rules1(0)
+	: GLang("French","fr"), Rules1(0), Rules2(0), Rules3(0)
 {
 
 	Rules1=new RContainer<FrenchPorterRule,unsigned int,true,false>(130,10);
@@ -414,7 +414,7 @@ int GALILEI::GLangFR::GetWordSize(char* kwd)
 }
 
 
-//------------------------			-----------------------------------------------------
+//-----------------------------------------------------------------------------
 bool GALILEI::GLangFR::ContainsVowel(const char* kwd)
 {
 	if(!(*kwd))
