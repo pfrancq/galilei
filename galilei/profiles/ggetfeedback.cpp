@@ -100,7 +100,7 @@ void GALILEI::GGetFeedback::Run(bool Save)
 		for(Grp.Start();!Grp.End();Grp.Next())
 		{
 			// Go through the subprofile contained in the group.
-			SubProfile=Grp()->GetSubProfileCursor();
+			SubProfile=Grp()->GetSubProfilesCursor();
 			for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
 			{
 				Grp()->NotJudgedDocsRelList(&Docs,SubProfile(),Global);

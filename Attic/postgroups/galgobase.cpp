@@ -144,7 +144,7 @@ void GALILEI::GAlgobase::BuildPoVGroup(GGroup * grp, GSession *s)
         	return;
 	*/
 
-	Sp=grp->GetSubProfileCursor();
+	Sp=grp->GetSubProfilesCursor();
      
 	EvaluateMaxExpertKwds( );
 	for(Sp.Start();!Sp.End();Sp.Next(),nbp++)

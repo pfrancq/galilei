@@ -175,7 +175,7 @@ void GALILEI::GCompareGrouping::ComputeRecallPrecision(GSlot* /*rec*/)
 		}
 		else
 		{
-			Sub=Grp()->Group->GetSubProfileCursor();
+			Sub=Grp()->Group->GetSubProfilesCursor();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				thGrp=GetIdealGroup(Sub());

@@ -82,7 +82,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroup::GGroup( ) throw(bad_alloc)
+GALILEI::GGroup::GGroup(void) throw(bad_alloc)
 	: RContainer<GSubProfile,unsigned int,false,true>(20,10)
 {
 }
@@ -176,7 +176,7 @@ void GALILEI::GGroup::DeleteSubProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-GSubProfileCursor& GALILEI::GGroup::GetSubProfileCursor(void)
+GSubProfileCursor& GALILEI::GGroup::GetSubProfilesCursor(void)
 {
 	GSubProfileCursor* cur=GSubProfileCursor::GetTmpCursor();
 	cur->Set(this);
@@ -195,6 +195,13 @@ unsigned int GALILEI::GGroup::GetNbSubProfiles(GGroup* grp)
 		if(grp->IsIn<const GSubProfile*>(Sub()))
 			tot++;
 	return(tot);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GGroup::GetNbSubProfiles(void) const
+{
+	return(NbPtr);
 }
 
 

@@ -1482,7 +1482,7 @@ void GALILEI::GSessionMySQL::PrepearPoV(GGroup* grp, GSession *s)
 
 	if(Alreadyexist(grp->GetId()))   // ATTENTION SENS DU TEST INVERSE POUR DEBUG
 	{
-		subprofile = grp->GetSubProfileCursor();
+		subprofile = grp->GetSubProfilesCursor();
 		for(subprofile.Start(); !subprofile.End(); subprofile.Next())
 		{
 			datainput = new GInOutputBase();

@@ -50,6 +50,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <docs/gdoc.h>
+#include <groups/ggroupvector.h>
 
 
 //-----------------------------------------------------------------------------
@@ -63,15 +64,9 @@ namespace GALILEI{
 * @author Pascal Francq & Julien Lamoral
 * @short  Subject
 */
-class GSubject: public R::RNode<GSubject,false>
+class GSubject: public R::RNode<GSubject,false>, public GGroupVector
 {
 protected:
-
-	/**
-	* The id of the subject.
-	*/
-	unsigned int Id;
-
 	/**
 	* The name of the subject.
 	*/
@@ -83,19 +78,9 @@ protected:
 	bool Used;
 
 	/**
-	* The language of a subsubject
-	*/
-	GLang* Lang;
-
-	/**
 	* Documents in the subject.
 	*/
 	R::RContainer<GDoc,unsigned,false,true> Docs;
-
-	/**
-	* Sub-profiles in the subject.
-	*/
-	R::RContainer<GSubProfile,unsigned,false,true> SubProfiles;
 
 public:
 
@@ -123,22 +108,6 @@ public:
 	* @returns unsigned int
 	*/
 	unsigned int GetNbDocs(void) const;
-
-	/**
-	* Insert a subprofile.
-	*/
-	void InsertSubProfile(GSubProfile* s) throw(bad_alloc);
-
-	/**
-	* Get a cursor over the subprofiles of the system.
-	*/
-	GSubProfileCursor& GetSubProfilesCursor(void);
-
-	/**
-	* Get the number of subprofiles associated to this subject.
-	* @returns unsigned int
-	*/
-	unsigned int GetNbSubProfiles(void) const;
 
 	/**
 	* Compare a subject with a given name.
@@ -178,7 +147,7 @@ public:
 	* Return the id of the Subject.
 	* @returns The id of the subject.
 	*/
-	unsigned int GetId(void) {return(Id);};
+	unsigned int GetId(void) {return(GGroup::GetId());};
 
 	/**
 	* Return true if the subject is Used
@@ -190,18 +159,6 @@ public:
 	* Set the status of the subject.
 	*/
 	void SetUsed(bool b) {Used=b;}
-
-	/**
-	* Return the Lang of the Subject.
-	* @returns a string containing the lang.
-	*/
-	GLang* GetLang(void) const;
-
-	/**
-	* Return the Lang of the Subject.
-	* @param lang              The lang of the subject.
-	*/
-	void SetLang(GLang* lang);
 
 	/**
 	* Destructor.

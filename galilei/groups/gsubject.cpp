@@ -53,7 +53,6 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gsubject.h>
-#include <groups/ggroup.h>
 #include <groups/ggroups.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -72,8 +71,8 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GSubject::GSubject(unsigned int id,const char* name,GLang* l,bool u)
-	 : RNode<GSubject,false>(10,2), Id(id), Name(name), Used(u), Lang(l),
-	   Docs(1000,500), SubProfiles(20,10)
+	 : RNode<GSubject,false>(10,2), GGroupVector(id,l), Name(name), Used(u),
+	   Docs(1000,500)
 {
 }
 
@@ -98,43 +97,6 @@ GDocCursor& GALILEI::GSubject::GetDocsCursor()
 unsigned int GALILEI::GSubject::GetNbDocs(void) const
 {
 	return(Docs.NbPtr);
-}
-
-
-//-----------------------------------------------------------------------------
-void GSubject::InsertSubProfile(GSubProfile* s) throw(bad_alloc)
-{
-	SubProfiles.InsertPtr(s);
-}
-
-
-//-----------------------------------------------------------------------------
-GSubProfileCursor& GALILEI::GSubject::GetSubProfilesCursor(void)
-{
-	GSubProfileCursor *cur=GSubProfileCursor::GetTmpCursor();
-	cur->Set(SubProfiles);
-	return(*cur);
-}
-
-
-//-----------------------------------------------------------------------------
-unsigned int GSubject::GetNbSubProfiles(void) const
-{
-	return(SubProfiles.NbPtr);
-}
-
-
-//-----------------------------------------------------------------------------
-GLang* GALILEI::GSubject::GetLang(void) const
-{
-	return(Lang);
-}
-
-
-//-----------------------------------------------------------------------------
-void GSubject::SetLang(GLang* lang)
-{
-	Lang=lang;
 }
 
 

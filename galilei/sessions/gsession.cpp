@@ -770,7 +770,7 @@ void GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
 			grps->InsertPtr(grp);
 
 			// Go through each subprofile
-			Sub=Ideal()->GetSubProfileCursor();
+			Sub=Ideal()->GetSubProfilesCursor();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				grp->InsertSubProfile(Sub());

@@ -83,11 +83,11 @@ private:
 
 public:
 
-  /**
-	*constrcutor for pov.
-	* @
+	/**
+	* Default Constructor.
 	*/
 	GGroup(void)throw(bad_alloc);
+
 	/**
 	* Construct a group with a specific identificator.
 	* @param id             Identificator.
@@ -178,13 +178,19 @@ public:
 	/**
 	* Get a cursor over the subprofiles.
 	*/
-	GSubProfileCursor& GetSubProfileCursor(void);
+	GSubProfileCursor& GetSubProfilesCursor(void);
 
 	/**
 	* Compute the number of subprofiles of grp that are in the current group.
 	* @param grp            Group to compare with.
 	*/
 	unsigned int GetNbSubProfiles(GGroup* grp);
+
+	/**
+	* Get the number of subprofiles in the group.
+	* @param grp            Group to compare with.
+	*/
+	unsigned int GetNbSubProfiles(void) const;
 
 	/**
 	* Construct the list of all feedbacks of the subprofiles of a group not
