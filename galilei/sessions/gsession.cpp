@@ -401,7 +401,8 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		if(modified&&(Docs()->GetState()==osUpToDate)) continue;
-		rec->receiveNextDoc(Docs());
+		if(rec)
+			rec->receiveNextDoc(Docs());
 		undefLang=false;
 		try
 		{
@@ -627,6 +628,7 @@ void GALILEI::GSession::ChangeAllProfilesBehaviourState(void) throw(bad_alloc)
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 double GALILEI::GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold)
 {
@@ -661,7 +663,6 @@ double GALILEI::GSession::GetMinimumOfSimilarity(RContainer<GSubProfile,unsigned
 }
 
 
-
 //-----------------------------------------------------------------------------
 GUser* GALILEI::GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const char* /*name*/,const char* /*email*/,
 	                  const char* /*title*/,const char* /*org*/,const char* /*addr1*/,
@@ -672,13 +673,14 @@ GUser* GALILEI::GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const 
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitLinks()
+void GALILEI::GSession::InitLinks(void)
 {
 	if(!LinkCalc)
 		throw GException("No Link computing method chosen.");
 
 	LinkCalc->InitAlgo();
 }
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
@@ -696,7 +698,8 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		rec->receiveNextProfile(Prof());
+		if(rec)
+			rec->receiveNextProfile(Prof());
 		Subs=Prof()->GetSubProfilesCursor();
 		for (Subs.Start(); !Subs.End(); Subs.Next())
 		{
@@ -707,7 +710,7 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 				if((!modified)||(Subs()->GetState()!=osUpdated))
 				{
 					if (DocOptions->UseLink)
-					{ 
+					{
 						LinkCalc->Compute(Prof());
 					}
 					ProfileCalc->Compute(Subs());
@@ -716,7 +719,7 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 					profSim->AddModifiedProfile(Subs()->GetProfile()->GetId());
 					// add the mofified profile to the list of modified profiles  for behaviours
 					profBehaviour = ProfilesBehaviours->GetPtr<GLang*>(Subs()->GetLang());
-					profBehaviour->AddModifiedProfile(Subs()->GetProfile()->GetId());	
+					profBehaviour->AddModifiedProfile(Subs()->GetProfile()->GetId());
 				}
 			}
 			catch(GException& e)
@@ -725,16 +728,16 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 		}
 	}
 
-	// update the state of all the sims. 
+	// update the state of all the sims.
 	ChangeAllProfilesSimState(true);   /// !!!!  check if 'true' is the correct value !?!
 
 	//updtae the state of the behaviours
 	ChangeAllProfilesBehaviourState();
 
 	//   save profiles if necessary and set their state to UpToDate.
-	for(Prof.Start();!Prof.End();Prof.Next())
+	if(save)
 	{
-		if(save)
+		for(Prof.Start();!Prof.End();Prof.Next())
 		{
 			try
 			{
