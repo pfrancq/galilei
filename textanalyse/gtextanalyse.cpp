@@ -851,8 +851,12 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,f
 	// Determine the Language if necessary.
 	if(FindLang)
 	{
+		// Remember old language and determine the new one
 		oldlang=Lang;
 		DetermineLang();
+		doc->SetLang(Lang);
+
+		// Dispatch the document through all profiles which have assessed it.
 		UpdateFdbks(oldlang, Lang);
 	}
 
@@ -861,7 +865,6 @@ void GTextAnalyse::Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,f
 		ConstructInfos();
 
 	// Set the Variable of the document
-	doc->SetLang(Lang);
 	dynamic_cast<GDocVector*>(doc)->UpdateRefs();
 }
 
