@@ -467,10 +467,10 @@ void KGALILEICenterApp::readOptions(void)
 	GroupingMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
 	GroupingMethod->InsertPtr(new RStd::RString("CURE"));
 	GroupingMethod->InsertPtr(new RStd::RString("First-Fit Heuristic"));
-	GroupingMethod->InsertPtr(new RStd::RString("Grouping Genetic Algorithms"));
+	GroupingMethod->InsertPtr(new RStd::RString("GVCA"));
 	GroupingMethod->InsertPtr(new RStd::RString("KMeansCosinus"));
-	GroupingMethod->InsertPtr(new RStd::RString("SUPKMeans"));
-	GroupingMethod->InsertPtr(new RStd::RString("KMeans Prototypes"));
+	GroupingMethod->InsertPtr(new RStd::RString("SUPkMeans"));
+	GroupingMethod->InsertPtr(new RStd::RString("kMeansProtos"));
 	GroupingMethod->InsertPtr(new RStd::RString("Random Heuristic"));
 	ComputingMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
 	ComputingMethod->InsertPtr(new RStd::RString("Statistical"));
