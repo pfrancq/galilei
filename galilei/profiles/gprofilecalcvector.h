@@ -68,23 +68,24 @@ class GSubProfileVector;
 class GProfileCalcVector : public GProfileCalc
 {
 protected:
-	class GNbWordsDocs;
+	class GNbDocsLangs;
 
 	/**
-	* List of words' frequences in the "OK" and "N" documents for the different
-	* languages.
+	* Occurences of the index terms in the "OK" and "N" documents for the
+	* different languages.
 	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> OK;
+	RStd::RContainer<GIWordsWeights,unsigned int,true,true> Vector;
 
 	/**
-	* List of words' frequences in the "KO" documents for the different
-	* languages.
+	* Number of documents where each index term of the "OK" and "N" documents
+	* for the different languages appears.
 	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> KO;
+	RStd::RContainer<GIWordsWeights,unsigned int,true,true> NbDocsWords;
 
 	/**
+	* Number of documents per languages.
 	*/
-	RStd::RContainer<GNbWordsDocs,unsigned int,true,true>* NbWords;
+	RStd::RContainer<GNbDocsLangs,unsigned int,true,true> NbDocsLangs;
 
 	/**
 	* Maximal number of the non-zero weights in the vector.
@@ -123,10 +124,10 @@ public:
 	void SetMaxNonZero(unsigned int n) {MaxNonZero=n;}
 
 	/**
-	* Computes the OK and KO lists for a profile.
+	* Computes the OK lists for a profile.
 	* @param profile        Profile to compute.
 	*/
-	void ComputeOKKO(GProfile* profile) throw(bad_alloc);
+	void ComputeGlobal(GProfile* profile) throw(bad_alloc);
 
 	/**
 	* Computes the subprofile of a profile.

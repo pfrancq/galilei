@@ -34,6 +34,7 @@
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <stdlib.h>
+#include <math.h>
 
 
 //-----------------------------------------------------------------------------
@@ -61,6 +62,29 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
+// class GProfileCalcVector::GNbDocsLangs
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class GALILEI::GProfileCalcFeedback::GNbDocsLangs
+{
+public:
+	GLang* Lang;
+	unsigned int NbDocs;
+
+	GNbDocsLangs(GLang* l) : Lang(l), NbDocs(0) {}
+	void Clear(void) {NbDocs=0;}
+	int Compare(const GNbDocsLangs* p) const {return(Lang->Compare(p->Lang));}
+	int Compare(const GLang* l) const {return(Lang->Compare(l));}
+	void Inc(void) {NbDocs++;}
+	unsigned int GetNb(void) const {return(NbDocs);}
+};
+
+
+
+//-----------------------------------------------------------------------------
+//
 //  GProfileCalcFeedback
 //
 //-----------------------------------------------------------------------------
@@ -68,6 +92,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session) throw(bad_alloc)
 	: GProfileCalc("User Feedback",session), Vectors(Session->GetNbLangs()),
+	  NbDocsWords(Session->GetNbLangs()), NbDocsLangs(Session->GetNbLangs()),
 	  MaxNonZero(60), Beta(1.0), Gamma(1.0), AddKO(false)
 {
 	GLangCursor Langs;
@@ -76,6 +101,8 @@ GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session) throw(bad
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Vectors.InsertPtr(new GIWordsWeights(Langs(),Session->GetDic(Langs())->GetMaxId()));
+		NbDocsWords.InsertPtr(new GIWordsWeights(Langs(),Session->GetDic(Langs())->GetMaxId()));
+		NbDocsLangs.InsertPtr(new GNbDocsLangs(Langs()));
 	}
 }
 
@@ -114,12 +141,47 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 	GIWordWeight* w;
 	bool Add;
 	bool Cont;
-	double BNbWords;
-	double GNbWords;
+	GIWordsWeights* NbDocs;
+	tDocJudgement Fdbk;
+	unsigned int NbDocsJudged;
+	double MaxFreq;
+	double Freq;
 
-	// Init Part
+	// Clear all containers before computing
 	for(Vectors.Start();!Vectors.End();Vectors.Next())
 			Vectors()->Clear();
+	for(NbDocsWords.Start();!NbDocsWords.End();NbDocsWords.Next())
+			NbDocsWords()->Clear();
+	for(NbDocsLangs.Start();!NbDocsLangs.End();NbDocsLangs.Next())
+			NbDocsLangs()->Clear();
+
+	// Go through all documents, to compute the number of documents "OK", "KO"
+	// and "N" for each language and the number of documents for each index term.
+	Docs=profile->GetProfDocCursor();
+	for(Docs.Start();!Docs.End();Docs.Next())
+	{
+		// If the document hasn't a language or its judgement is not relevant
+		// -> don't treat for the profiles computing
+		CurDoc=Docs()->GetDoc();
+		CurLang=CurDoc->GetLang();
+		if(!CurLang) continue;
+		Fdbk=Docs()->GetFdbk();
+		if((Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
+
+		// Determine the lists corresponding to the language of the document
+		NbDocs=NbDocsWords.GetPtr<GLang*>(CurLang);
+
+		// Add total number of document judged for the current language
+		NbDocsLangs.GetPtr<GLang*>(CurLang)->Inc();
+
+		// Update number of documents where appear each index term.
+		Words=CurDoc->GetWordWeightCursor();
+		for(Words.Start();!Words.End();Words.Next())
+		{
+			w=NbDocs->GetInsertPtr<unsigned int>(Words()->GetId());
+			w->AddWeight(1.0);
+		}
+	}
 
 	// Go through all documents, add the frequences of the words of "OK"
 	// documents and substract the frequences of the words of "KO" documents.
@@ -129,12 +191,11 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		// If the document hasn't a language, don't treat for the profiles' computing.
 		CurDoc=Docs()->GetDoc();
 		CurLang=CurDoc->GetLang();
-		if(!CurLang)
-			continue;
-		Cont=true;
+		if(!CurLang) continue;
 		Vector=Vectors.GetPtr<const GLang*>(CurLang);
 
 		// Find list in function of the feedback
+		if((Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
 		switch(Docs()->GetFdbk())
 		{
 			case djOK:
@@ -147,21 +208,25 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 				break;
 
 			default:
-				Cont=false;
+				break;
 		}
-		if(!Cont) continue;
 
- 		// Add total number of words and the occurences of each word of the current document.
+		// Determine the lists and the general parameter corresponding to the
+		// document
+		NbDocs=NbDocsWords.GetPtr<GLang*>(CurLang);
+		NbDocsJudged=NbDocsLangs.GetPtr<GLang*>(CurLang)->GetNb();
 		Words=CurDoc->GetWordWeightCursor();
-		BNbWords=Beta/CurDoc->GetV();
-		GNbWords=Gamma/CurDoc->GetV();
+		MaxFreq=CurDoc->GetMaxWeight();
+
+		// Add total number of words and the occurences of each word of the current document.	
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=Vector->GetInsertPtr<unsigned int>(Words()->GetId());
+			Freq=(Words()->GetWeight()/MaxFreq)*log(NbDocsJudged/NbDocs->GetPtr<unsigned int>(Words()->GetId())->GetWeight());
 			if(Add||AddKO)
-				w->AddWeight(BNbWords*Words()->GetWeight());
+				w->AddWeight(Beta*Freq);
 			else
-				w->SubstractWeight(GNbWords*Words()->GetWeight());
+				w->SubstractWeight(Gamma*Freq);
 		}
 	}
 
