@@ -138,11 +138,6 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	RGA::RObjs<GObjIR>* Objs;
 
 	/**
-	* Similarities between the subprofiles to group.
-	*/
-	GProfilesSim* Sims;
-
-	/**
 	* Ideal Groups handled by the system.
 	*/
 	RStd::RContainer<GGroups,unsigned int,true,true>* IdealGroups;

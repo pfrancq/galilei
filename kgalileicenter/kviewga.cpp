@@ -72,7 +72,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 KViewGA::KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), RGASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>(),
-	  CurId(0), Instance(0), SubProfiles(0), Objs(0), Sims(0), Gen(0), Params(p)
+	  CurId(0), Instance(0), SubProfiles(0), Objs(0), Gen(0), Params(p)
 {
 	static char tmp[100];
 	GLang* lang;
@@ -124,15 +124,15 @@ KViewGA::KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,Q
 	}
 	for(SubProfiles->Start(),i=0;!SubProfiles->End();SubProfiles->Next(),i++)
 			Objs->InsertPtr(new GObjIR(i,(*SubProfiles)()));
-	Sims=new GProfilesSim(SubProfiles,global);
 
 	// Create GA
 	try
 	{
+		Params->MinSimLevel=Doc->GetSession()->GetMinimumOfSimilarity(SubProfiles);///0.26;
 		if(scratch)
-			Instance=new GInstIR(Doc->GetSession(),lang,0,Objs,Sims,p,Debug);
+			Instance=new GInstIR(Doc->GetSession(),lang,0,Objs,p,Debug);
 		else
-			Instance=new GInstIR(Doc->GetSession(),lang,Doc->GetSession()->GetGroups(lang),Objs,Sims,p,Debug);
+			Instance=new GInstIR(Doc->GetSession(),lang,Doc->GetSession()->GetGroups(lang),Objs,p,Debug);
 		Instance->AddReceiver(this);
 		Instance->Init(&g);
 		Instance->SetIdealGroups(IdealGroups);
@@ -347,8 +347,6 @@ KViewGA::~KViewGA(void)
 		delete Instance;
 	if(SubProfiles)
 		delete SubProfiles;
-	if(Sims)
-		delete Sims;
 	if(Objs)
 		delete Objs;
 }
