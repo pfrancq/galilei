@@ -78,16 +78,16 @@ void GALILEI::GStatProfDoc::WriteLine(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GStatProfDoc::Run(void)
 {
-#if GALILEITEST
-	GLangCursor Langs;
+	GFactoryLangCursor Langs;
+	GLang* lang;
 	GProfileCursor Profs1,Profs2;
 	GDocCursor Docs;
 
 	unsigned int nbProfJugDoc,nbDocs ;
 	unsigned int i,j;
 	double sum, tmp,nbSame,nbDiff;
-	
-	
+
+
 	//Initialization
 	nbProfJugDoc=nbDocs=0;
 	i=j=0;
@@ -97,10 +97,10 @@ void GALILEI::GStatProfDoc::Run(void)
 	Docs = Session->GetDocsCursor();
 	Profs1= Session->GetProfilesCursor();
 	Profs2= Session->GetProfilesCursor();
-	Langs = Session->GetLangsCursor();
+	Langs=Session->GetLangs()->GetLangsCursor();
 
 	// Compute the average of number of profiles having juged the same doc.
-	
+
 	for (Docs.Start();!Docs.End(); Docs.Next())
 	{
 		nbProfJugDoc=0;
@@ -108,7 +108,7 @@ void GALILEI::GStatProfDoc::Run(void)
 		{
 			// If the profile is defined -> compter +1
 			if (Profs1()->GetFeedback( Docs() ))
-			{                  
+			{
 				nbProfJugDoc++;
 			}
 		}
@@ -125,15 +125,17 @@ void GALILEI::GStatProfDoc::Run(void)
 	sum=0;
 	for (Langs.Start(); !Langs.End(); Langs.Next() )
 	{
+		lang=Langs()->GetPlugin();
+		if(!lang) continue;
 		for(Profs1.Start(),i=0,j=Profs1.GetNb();--j;Profs1.Next(),i++)
 		{
 //			if(!Profs()->GetSubProfile()->GetProfile()->IsSocial())
 //				NoSocialSubProfiles.InsertPtr(Profs1());
 			for(Profs2.GoTo(i+1);!Profs2.End();Profs2.Next())
 			{
-				tmp=Profs1()->GetSubProfile(Langs() )->GetCommonDocs(Profs2()->GetSubProfile(Langs() ));
-				nbSame=Profs1()->GetSubProfile(Langs())->GetCommonOKDocs(Profs2()->GetSubProfile(Langs()));
-				nbDiff=Profs1()->GetSubProfile(Langs() )->GetCommonDiffDocs(Profs2()->GetSubProfile(Langs() ));
+				tmp=Profs1()->GetSubProfile(lang)->GetCommonDocs(Profs2()->GetSubProfile(lang));
+				nbSame=Profs1()->GetSubProfile(lang)->GetCommonOKDocs(Profs2()->GetSubProfile(lang));
+				nbDiff=Profs1()->GetSubProfile(lang)->GetCommonDiffDocs(Profs2()->GetSubProfile(lang));
 
 				if(tmp)
 				{
@@ -152,9 +154,6 @@ void GALILEI::GStatProfDoc::Run(void)
 
 	if(File)
 		(*File)<< MeanNbProf<<"		"<<MeanSame<<"		"<<MeanDiff<<endl;
-
-#endif
-
 }
 
 
