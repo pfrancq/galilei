@@ -349,7 +349,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/groups/Makefile.am]
-files=kgalileicenter/galilei/groups/gcomparegrouping.cpp,kgalileicenter/galilei/groups/gcomparegrouping.h,kgalileicenter/galilei/groups/ggroup.cpp,kgalileicenter/galilei/groups/ggroup.h,kgalileicenter/galilei/groups/ggrouping.cpp,kgalileicenter/galilei/groups/ggrouping.h,kgalileicenter/galilei/groups/ggroupingsim.cpp,kgalileicenter/galilei/groups/ggroupingsim.h,kgalileicenter/galilei/groups/ggroups.cpp,kgalileicenter/galilei/groups/ggroups.h,kgalileicenter/galilei/groups/gchromoir.cpp,kgalileicenter/galilei/groups/gchromoir.h,kgalileicenter/galilei/groups/ggroupir.cpp,kgalileicenter/galilei/groups/ggroupir.h,kgalileicenter/galilei/groups/ginstir.cpp,kgalileicenter/galilei/groups/ginstir.h,kgalileicenter/galilei/groups/gir.cpp,kgalileicenter/galilei/groups/gir.h,kgalileicenter/galilei/groups/ggroupslang.cpp,kgalileicenter/galilei/groups/ggroupslang.h,kgalileicenter/galilei/groups/ggroupinggga.cpp,kgalileicenter/galilei/groups/ggroupinggga.h,kgalileicenter/galilei/groups/gobjir.cpp,kgalileicenter/galilei/groups/gobjir.h,kgalileicenter/galilei/groups/ggroupingkcos.cpp,kgalileicenter/galilei/groups/ggroupingkcos.h
+files=kgalileicenter/galilei/groups/gcomparegrouping.cpp,kgalileicenter/galilei/groups/gcomparegrouping.h,kgalileicenter/galilei/groups/ggroup.cpp,kgalileicenter/galilei/groups/ggroup.h,kgalileicenter/galilei/groups/ggrouping.cpp,kgalileicenter/galilei/groups/ggrouping.h,kgalileicenter/galilei/groups/ggroupingsim.cpp,kgalileicenter/galilei/groups/ggroupingsim.h,kgalileicenter/galilei/groups/ggroups.cpp,kgalileicenter/galilei/groups/ggroups.h,kgalileicenter/galilei/groups/gchromoir.cpp,kgalileicenter/galilei/groups/gchromoir.h,kgalileicenter/galilei/groups/ggroupir.cpp,kgalileicenter/galilei/groups/ggroupir.h,kgalileicenter/galilei/groups/ginstir.cpp,kgalileicenter/galilei/groups/ginstir.h,kgalileicenter/galilei/groups/gir.cpp,kgalileicenter/galilei/groups/gir.h,kgalileicenter/galilei/groups/ggroupslang.cpp,kgalileicenter/galilei/groups/ggroupslang.h,kgalileicenter/galilei/groups/ggroupinggga.cpp,kgalileicenter/galilei/groups/ggroupinggga.h,kgalileicenter/galilei/groups/gobjir.cpp,kgalileicenter/galilei/groups/gobjir.h,kgalileicenter/galilei/groups/ggroupingkcos.cpp,kgalileicenter/galilei/groups/ggroupingkcos.h,kgalileicenter/galilei/groups/gidealgroup.cpp,kgalileicenter/galilei/groups/gidealgroup.h,kgalileicenter/galilei/groups/gsubject.cpp,kgalileicenter/galilei/groups/gsubject.h,kgalileicenter/galilei/groups/gsubjecttree.cpp,kgalileicenter/galilei/groups/gsubjecttree.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=groups
 sub_dirs=
@@ -475,6 +475,18 @@ install=false
 install_location=
 type=HEADER
 
+[kgalileicenter/galilei/groups/gidealgroup.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/gidealgroup.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [kgalileicenter/galilei/groups/ginstir.cpp]
 dist=true
 install=false
@@ -506,6 +518,30 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/groups/gobjir.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/groups/gsubject.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/gsubject.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/groups/gsubjecttree.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/gsubjecttree.h]
 dist=true
 install=false
 install_location=
@@ -670,11 +706,23 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/profiles/Makefile.am]
-files=kgalileicenter/galilei/profiles/gprofdoc.cpp,kgalileicenter/galilei/profiles/gprofdoc.h,kgalileicenter/galilei/profiles/gprofile.cpp,kgalileicenter/galilei/profiles/gprofile.h,kgalileicenter/galilei/profiles/gprofilecalc.cpp,kgalileicenter/galilei/profiles/gprofilecalc.h,kgalileicenter/galilei/profiles/gprofilecalcvector.cpp,kgalileicenter/galilei/profiles/gprofilecalcvector.h,kgalileicenter/galilei/profiles/gsubprofile.cpp,kgalileicenter/galilei/profiles/gsubprofile.h,kgalileicenter/galilei/profiles/gsubprofiledesc.cpp,kgalileicenter/galilei/profiles/gsubprofiledesc.h,kgalileicenter/galilei/profiles/guser.cpp,kgalileicenter/galilei/profiles/guser.h,kgalileicenter/galilei/profiles/gusers.cpp,kgalileicenter/galilei/profiles/gusers.h,kgalileicenter/galilei/profiles/gsubprofilevector.cpp,kgalileicenter/galilei/profiles/gsubprofilevector.h,kgalileicenter/galilei/profiles/gprofilecalcfeedback.cpp,kgalileicenter/galilei/profiles/gprofilecalcfeedback.h,kgalileicenter/galilei/profiles/gprofilecalcreweighting.cpp,kgalileicenter/galilei/profiles/gprofilecalcreweighting.h,kgalileicenter/galilei/profiles/gprofilessim.h,kgalileicenter/galilei/profiles/gprofilessim.cpp
+files=kgalileicenter/galilei/profiles/gprofdoc.cpp,kgalileicenter/galilei/profiles/gprofdoc.h,kgalileicenter/galilei/profiles/gprofile.cpp,kgalileicenter/galilei/profiles/gprofile.h,kgalileicenter/galilei/profiles/gprofilecalc.cpp,kgalileicenter/galilei/profiles/gprofilecalc.h,kgalileicenter/galilei/profiles/gprofilecalcvector.cpp,kgalileicenter/galilei/profiles/gprofilecalcvector.h,kgalileicenter/galilei/profiles/gsubprofile.cpp,kgalileicenter/galilei/profiles/gsubprofile.h,kgalileicenter/galilei/profiles/gsubprofiledesc.cpp,kgalileicenter/galilei/profiles/gsubprofiledesc.h,kgalileicenter/galilei/profiles/guser.cpp,kgalileicenter/galilei/profiles/guser.h,kgalileicenter/galilei/profiles/gusers.cpp,kgalileicenter/galilei/profiles/gusers.h,kgalileicenter/galilei/profiles/gsubprofilevector.cpp,kgalileicenter/galilei/profiles/gsubprofilevector.h,kgalileicenter/galilei/profiles/gprofilecalcfeedback.cpp,kgalileicenter/galilei/profiles/gprofilecalcfeedback.h,kgalileicenter/galilei/profiles/gprofilecalcreweighting.cpp,kgalileicenter/galilei/profiles/gprofilecalcreweighting.h,kgalileicenter/galilei/profiles/gprofilessim.h,kgalileicenter/galilei/profiles/gprofilessim.cpp,kgalileicenter/galilei/profiles/ggetfeedback.cpp,kgalileicenter/galilei/profiles/ggetfeedback.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=profiles
 sub_dirs=
 type=static_library
+
+[kgalileicenter/galilei/profiles/ggetfeedback.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/profiles/ggetfeedback.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [kgalileicenter/galilei/profiles/gprofdoc.cpp]
 dist=true
