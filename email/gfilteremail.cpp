@@ -6,7 +6,7 @@
 
 	Filter for Mails - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -80,7 +80,7 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 		ptr++;
 		len++;
 	}
-	
+
 	// Skip Spaces.
 	while((!ptr->IsNull())&&(((*ptr)==' ')||((*ptr)==RChar('\t'))))
 		ptr++;
@@ -128,7 +128,7 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 	else if((Cmd=="keywords")&&(!metaData.IsEmpty()))
 	{
 		AnalyzeKeywords(metaData,',',Doc->AddSubject());
-	}     
+	}
 
 	return(true);
 }
@@ -155,12 +155,13 @@ bool GFilterEMail::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 		// Init Part
 		Doc=doc;
 		RTextFile Src(Doc->GetFile());
+		Src.Open(R::Read);
 		Stop=Src.Eof();
 
 		// Create the metaData tag and the first information
 		part=Doc->GetMetaData();
 		Doc->AddIdentifier(Doc->GetURL());
-	
+
 		// Email have at the beginning information on each line.
 		Header=true;        // There headers to read.
 		Read=true;
@@ -183,20 +184,20 @@ bool GFilterEMail::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 
 			// Analyse the line for a command.
 			Header=ExtractCmd(Line);
-	
+
 			// If Multiple blank lines are allowed and last line is a command, skip them
 			if(Header&&BlankLines)
 			{
 				while((NextLine.IsEmpty())&&(!Src.Eof()))
 					NextLine=Src.GetLine(false);
 			}
-			
+
 			// Next line becomes the current one
 			Line=NextLine;
 			Read=false;
 			Stop=NextStop;
 		}
-	
+
 		// Look if the email is signed.
 /*		findstr=strstr(Begin,("-----BEGIN PGP SIGNED MESSAGE-----"));
 		if(findstr)
@@ -206,10 +207,10 @@ bool GFilterEMail::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 			findstr=strstr(Begin,"-----BEGIN PGP SIGNATURE-----");
 			if(findstr)
 				(*findstr)=0;
-		}   
+		}
 		else
 			Begin[strlen(Begin)-1]='\n';*/
-	
+
 		// Look for the content
 		part=Doc->GetContent();
 
@@ -237,7 +238,7 @@ bool GFilterEMail::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 				ptr=NextLine();
 				while((!ptr->IsNull())&&(ptr->IsSpace()))
 					ptr++;
-				
+
 				// If blank line -> it is the end of a paragraph
 				if(ptr->IsNull())
 				{
@@ -248,7 +249,7 @@ bool GFilterEMail::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 			}
 			AnalyzeBlock(Line,tag);
 		}
-	
+
 	}
 	catch(bad_alloc)
 	{
@@ -265,7 +266,7 @@ bool GFilterEMail::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	catch(...)
 	{
 		throw GException("Unexcepted exception");
-	}  
+	}
 
 	// Return OK
 	return(true);

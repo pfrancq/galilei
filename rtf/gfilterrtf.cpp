@@ -355,6 +355,7 @@ bool GFilterRTF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 		// Init Part
 		Doc=doc;
 		RTextFile Src(Doc->GetFile());
+		Src.Open(R::Read);
 		Stop=Src.Eof();
 
 		// Create the metaData tag and the first information

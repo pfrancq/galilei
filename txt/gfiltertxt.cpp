@@ -6,7 +6,7 @@
 
 	Filter for TXT Files - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be).
@@ -72,6 +72,7 @@ bool GFilterTXT::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 		// Init Part
 		Doc=doc;
 		RTextFile Src(Doc->GetFile());
+		Src.Open(R::Read);
 
 		// Create the metaData tag and the first information
 		part=Doc->GetContent();
