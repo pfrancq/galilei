@@ -4,9 +4,9 @@ AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =
 SUBDIRS =
-libgalilei_filters_la_SOURCES = codetochar.cpp gfilter.cpp gurlmanager.cpp gurlmanagercurl.cpp
+libgalilei_filters_la_SOURCES = gfilter.cpp gurlmanager.cpp gurlmanagercurl.cpp
 filtersincludedir = $(includedir)/galilei/filters
-filtersinclude_HEADERS = codetochar.h gfilter.h gurlmanager.h gurlmanagercurl.h
+filtersinclude_HEADERS = gfilter.h gurlmanager.h gurlmanagercurl.h
 
 self:
 	touch $@

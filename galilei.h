@@ -80,7 +80,6 @@ class GFilter;
 class GFactoryFilter;
 class GFactoryFilterCursor;
 class GURLManager;
-class CodeToChar;
 
 
 //-----------------------------------------------------------------------------
