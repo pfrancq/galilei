@@ -342,7 +342,7 @@ void GALILEI::GFilterReu::AnalyseBody(void)
 	}
 
 	// Delete all the empty tags of the content.
-	content->DeleteEmptyTags();
+	content->DeleteEmptyTags(Doc);
 }
 
 
