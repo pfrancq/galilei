@@ -522,7 +522,7 @@ GPrgInst* GALILEI::GSessionPrg::AnalyseLine(RIO::RTextFile& prg) throw(bad_alloc
 			}
 			return(f);
 		}
-		throw GException(RString("Instruction \"")+RString(name)+"\" does not exist.");
+		throw GException(RString("Instruction \"")+RString(obj)+"\" does not exist.");
 	}
 
 	// Look if call to an object
