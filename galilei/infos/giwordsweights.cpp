@@ -244,7 +244,7 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 			Sim+=w1*w2;
 			ptr2++;
 		}
-		norm1+=w1;
+		norm1+=w1*w1;
 		ptr++;
 	}
 	while(j)
