@@ -875,7 +875,6 @@ beginread:
 		(*SkipTag)=' ';
 		(*(Pos-1))=' ';
 		Pos=SkipTag;
-		BlockLen-=TagLen;
 		goto beginread;
 	}
 
