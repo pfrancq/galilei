@@ -145,31 +145,25 @@ public:
 	*/
 	tObjState GetState(unsigned int doc_id, unsigned int prof_id);
 
-  // nouvelles methodes rajoutées par Val:
-
-  /**
+	/**
 	* Compare methods used by RStd::RContainer.
 	*/
 	int Compare(const GLang* l) const;
-
 
 	/**
 	* Compare methods used by RStd::RContainer.
 	*/
 	int Compare(const GDocProfSim& docProfSim) const;
 
-
 	/**
 	* Compare methods used by RStd::RContainer.
 	*/
 	int Compare(const GDocProfSim* docProfSim) const;
 
-
-  /**
-  * Determine whether the comparaison is global or local
-  */
+	/**
+	* Determine whether the comparaison is global or local
+	*/
 	bool IsGlobalSim(void){return(GlobalSim);}
-
 
 	/**
 	* Update the state of the sims between documents and subprofiles. If a document or a If the subprofile has changed
@@ -182,7 +176,6 @@ public:
 	*/
 	void UpdateDocProfSim(GDocs* docs, GUsers* users,bool global)throw(bad_alloc);
 
-
 	/**
 	* Update the state of the sims between documents and subprofiles. If a document or a subprofile has changed
 	* the corresponding sim will be set to state="osModified".
@@ -194,12 +187,10 @@ public:
 	*/
 	void UpdateDocProfSim(GDocs* docs, GUsers& users,bool global)throw(bad_alloc);
 
-
 	/**
 	* update the Analyse de similarity  of the two subprofiles and insert when necessary
 	*/
 	void AnalyseSim2(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2);
-
 
 	/**
 	* Destructor.

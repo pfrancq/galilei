@@ -81,10 +81,6 @@ public:
 public:
 
 	/**
-	* clear the similarities;
-	*/
-
-	/**
 	* Destructor.
 	*/
 	virtual ~GProfilesSims(void);
