@@ -130,13 +130,13 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,QWidget* parent,const char*
 	// Create GA
 	try
 	{
-		Instance=new GInstIR(MinSimLevel,MaxGen,PopSize,Objs,global,Sims,RGGA::FirstFit,Debug);
+		Instance=new GInstIR(MinSimLevel,MaxGen,PopSize,0,Objs,global,Sims,RGGA::FirstFit,Debug);
 		Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
 		Instance->SetCriterionParam("Nb Profiles",ParamsNb.P,ParamsNb.Q,ParamsNb.Weight);
 		Instance->SetCriterionParam("OK Factor",ParamsOK.P,ParamsOK.Q,ParamsOK.Weight);
 		Instance->SetCriterionParam("Diff Factor",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
 		Instance->AddReceiver(this);
-		Instance->Init(&g,0);
+		Instance->Init(&g);
 	}
 	catch(eGA& e)
 	{
