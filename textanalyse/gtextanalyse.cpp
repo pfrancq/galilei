@@ -362,7 +362,7 @@ void GTextAnalyse::AddWord(const RString word,double weight) throw(bad_alloc)
 	Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
 
 	// Find the index where the word is or must be.
-	Index=Section->GetId<const RString&>(word,Find);
+	Index=Section->GetId<const RString>(word,Find);
 
 	// If the word wasn't found, insert it and look for each language if it's
 	// in the corresponding stoplist.
