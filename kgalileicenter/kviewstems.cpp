@@ -410,12 +410,14 @@ void KViewStems::ComputeTotal(void)
 {
 	GrWord* root;
 	GrWord* stem;
-	unsigned int** matrix;                        // Matrix representing all assignation ideal/computed
 	unsigned int NbRows,NbCols;                   // Rows and Cols for matrix
 	unsigned int NbWords;                         // Number of Words.
-	unsigned int** mat;
-	unsigned int* mat2;
+	double* VectorRows;                           // Sum of the rows of the matrix
+	double* VectorCols;                           // Sum of the columns of the matrix
+	double* VectorColsTemp;                       // temp sum of the columns of the matrix
+	double* vec;
 	unsigned int row,col;
+	double a,b,c,d,num,den;
 	RContainer<GrWord,unsigned int,true,true>*** ptr;
 	RContainer<GrWord,unsigned int,true,true>** ptr2;
 	unsigned int i,j;
@@ -427,12 +429,12 @@ void KViewStems::ComputeTotal(void)
 	NbRows=Roots->GetNb();
 	NbCols=Stems->GetNb();
 	if((!NbRows)||(!NbCols)) return;
-	matrix=new unsigned int*[NbRows];
-	for(row=NbRows+1,mat=matrix;--row;mat++)
-	{
-		(*mat)=new unsigned int[NbCols];
-		memset((*mat),0,NbCols*sizeof(int));
-	}
+	VectorRows=new double[NbRows];
+	VectorCols=new double[NbCols];
+	VectorColsTemp=new double[NbCols];
+	memset(VectorRows,0,NbRows*sizeof(double));
+	memset(VectorCols,0,NbCols*sizeof(double));
+	a=b=c=d=0.0;
 
 	// Construction of the container for relation between root and rows in the matrix.
 	RContainer<GrWordId,unsigned int,true,true> RootsId(NbRows,NbRows/2);
@@ -472,6 +474,7 @@ void KViewStems::ComputeTotal(void)
 		{
 			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
 			{
+				memset(VectorColsTemp,0,NbCols*sizeof(double));
 				root=(**ptr2)();
 				row=RootsId.GetPtr<const GrWord*>(root)->Pos;
 				// for each word in this root add 1 in the case corresponding to the
@@ -479,49 +482,29 @@ void KViewStems::ComputeTotal(void)
 				for(root->Words.Start();!root->Words.End();root->Words.Next())
 				{
 					col=StemsId.GetPtr<const GrWord*>(root->Words()->Stem)->Pos;
-					matrix[row][col]++;
+					VectorRows[row]++;
+					VectorCols[col]++;
+					VectorColsTemp[col]++;
 					NbWords++;
 				}
+				for(col=NbCols+1,vec=VectorColsTemp;--col;vec++) a+=(((*vec)*((*vec)-1))/2);
 			}
 		}
 	}
 
 	//Calculation of the different terms of the total = a-(b*c)/d)/((1/2*(b+c))-(b*c)/d)
-	double a,b,c,d,num,den;
-	a=b=c=0.0;
-
-	for(row=NbRows+1,mat=matrix;--row;mat++)
-	{
-		int sum=0;
-		for(col=NbCols+1,mat2=(*mat);--col;mat2++)
-		{
-			a+=(((*mat2)*((*mat2)-1))/2);
-			sum+=(*mat2);
-		}
-		b+=((sum*(sum-1))/2);
-	}
-
-	for(col=NbCols+1;--col;)
-	{
-		int sum=0;
-		for(row=NbRows+1,mat=matrix;--row;mat++)
-		{
-			sum+=(*mat)[col-1];
-		}
-		c+=((sum*(sum-1))/2);
-	}
-
+	for(col=NbCols+1,vec=VectorCols;--col;vec++) b+=(((*vec)*((*vec)-1))/2);
+	for(row=NbRows+1,vec=VectorRows;--row;vec++) c+=(((*vec)*((*vec)-1))/2);
 	d=(NbWords*(NbWords-1))/2;
 	num=a-((b*c)/d);
 	den=(0.5*(b+c))-(b*c/d);
 	Total=num/(den*NbWords);
 
-	// Delete the matrix
- 	for(row=NbRows+1,mat=matrix;--row;mat++)
-	{
-		delete[] (*mat);
-	}
-	delete[] matrix;
+	//delete the vectors
+	if (VectorRows) delete[] VectorRows;
+	if (VectorCols) delete[] VectorCols;
+	if (VectorColsTemp) delete[] VectorColsTemp;
+
 	sprintf(tmp," - Total=%1.3f",Total);
 	setCaption(caption()+tmp);
 }
