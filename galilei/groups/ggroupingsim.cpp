@@ -36,8 +36,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainercursor.h>
-using namespace RStd;
+//#include <rstd/rcontainercursor.h>
+//using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
@@ -152,9 +152,9 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp,const GSubProfile* sub) const
+bool GALILEI::GGroupingSim::IsCoherent(GGroup* grp,const GSubProfile* sub) const
 {
-	RContainerCursor<GSubProfile,unsigned int,false,true> cur(grp);
+	GSubProfileCursor cur=grp->GetSubProfileCursor();
 
 	if(GlobalSim)
 	{
@@ -196,7 +196,7 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp,const GSubProfile* sub)
 //-----------------------------------------------------------------------------
 bool GALILEI::GGroupingSim::IsValid(GGroup* grp)
 {
-	RContainerCursor<GSubProfile,unsigned int,false,true> cur(grp);
+	GSubProfileCursor cur=grp->GetSubProfileCursor();
 	bool ndef=true;
 
 	// At least one subprofile must be defined

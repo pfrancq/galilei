@@ -167,7 +167,7 @@ protected:
 	* @param sub            SubProfile eventually to add.
 	* @returns True if it is coherent.
 	*/
-	bool IsCoherent(const GGroup* grp,const GSubProfile* sub) const;
+	bool IsCoherent(GGroup* grp,const GSubProfile* sub) const;
 
 	/**
 	* Test if a group is valid. If a group isn't not valid, the group is
