@@ -102,7 +102,7 @@ void GALILEI::GKProtosParams::SetSettings(const char* s)
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupingKProtos::GGroupingKProtos(GSession* s, GKProtosParams* params) throw(bad_alloc)
-	: GGrouping("KMeansProtos",s), Params(params)
+	: GGrouping("kMeansProtos",s), Params(params)
 {
 //	NbProtos=2;
 //	NbGroups=13;
