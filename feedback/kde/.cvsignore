@@ -1,0 +1,12 @@
+Makefile
+Makefile.in
+*.moc.cpp
+*.moc
+*.lo
+*.a
+*.la
+.libs
+.deps
+dlgconfig_qt.cpp
+dlgconfig_qt.h
+*_la_meta_unload.cpp
