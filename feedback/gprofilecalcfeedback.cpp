@@ -221,8 +221,9 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		Vector=Vectors.GetPtr<const GLang*>(CurLang);
 
 		// Find list in function of the feedback
+		Fdbk=Docs()->GetFdbk();
 		if((NoRelFactor==0.0)&&(Fdbk!=djOK)&&(Fdbk!=djNav)&&(Fdbk!=djKO)) continue;
-		switch(Docs()->GetFdbk())
+		switch(Fdbk)
 		{
 			case djOK:
 			case djNav:
@@ -281,7 +282,7 @@ void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) thro
 	if(Global->IsEmpty()) return;
 
 	// Put in Order an ordered version of Global
-	if(Global->NbPtr>MaxOrderSize)
+	if(Global->NbPtr+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
 		MaxOrderSize=static_cast<unsigned int>((Global->NbPtr+1)*1.1);
