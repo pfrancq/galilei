@@ -52,7 +52,7 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 * The GEvaluateGroupingSubprof provides a way to use container of subprofile
-* as the same class.
+* and docs as the same class.
 * @author Lamoral Julien
 * @short common representation of subprofiles and document.
 */
@@ -71,7 +71,7 @@ protected:
 	unsigned int Id;
 
 	/**
-	* Container of subprofile in this group.
+	* Container of doc in this group.
 	*/
 	RStd::RContainer<GDoc,unsigned int,false,true>* Doc;
 
