@@ -35,7 +35,7 @@
 
 //-----------------------------------------------------------------------------
 //include file for GALLILEI
-#include <tests/gstatprofdoc.h>
+#include <gstatprofdoc.h>
 #include <langs/glang.h>
 #include <sessions/gsession.h>
 #include <profiles/gprofile.h>
@@ -70,7 +70,8 @@ GALILEI::GStatProfDoc::GStatProfDoc(GSession* ses,R::RTextFile* f)
 //-----------------------------------------------------------------------------
 void GALILEI::GStatProfDoc::WriteLine(void)
 {
-	(*File)<<"-------------------------------------------------------------------------------------------------"<<endl<<endl;
+	if(File)
+		(*File)<<"-------------------------------------------------------------------------------------------------"<<endl<<endl;
 }
 
 
@@ -149,8 +150,9 @@ void GALILEI::GStatProfDoc::Run(void)
 	MeanSame /= sum;
 	MeanDiff /=sum;
 
-	(*File)<< MeanNbProf<<"		"<<MeanSame<<"		"<<MeanDiff<<endl;
-	
+	if(File)
+		(*File)<< MeanNbProf<<"		"<<MeanSame<<"		"<<MeanDiff<<endl;
+
 #endif
 
 }
