@@ -134,6 +134,7 @@ class GGroupingRandom;
 class GGroupingCursor;
 class GGroupCalc;
 class GGroupCalcCursor;
+class GIRParams;
 
 
 //-----------------------------------------------------------------------------
