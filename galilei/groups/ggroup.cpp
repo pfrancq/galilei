@@ -34,7 +34,10 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <groups/ggroup.h>
+#include <docs/gdoc.h>
+#include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
+#include <profiles/gprofdoc.h>
 using namespace GALILEI;
 using namespace RStd;
 
@@ -122,4 +125,69 @@ unsigned int GALILEI::GGroup::GetNbSubProfiles(GGroup* grp)
 		if(grp->IsIn<const GSubProfile*>(Sub()))
 			tot++;
 	return(tot);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GGroup::NotJudgedDocsList(RStd::RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s)
+{
+	GSubProfile** tab;
+	unsigned int i;
+	GProfDocCursor Fdbks;
+	GProfDoc* ptr;
+	tDocJudgement j;
+
+	// Clear container.
+	docs->Clear();
+
+	for(i=NbPtr+1,tab=Tab;--i;tab++)
+	{
+		if((*tab)==s) continue;
+
+		// Go through the judgments
+		Fdbks=(*tab)->GetProfile()->GetProfDocCursor();
+		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+		{
+			// Must be the same language than the group.
+			if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
+
+			// Verify that it was not judged by s
+			if(s->GetProfile()->GetFeedback(Fdbks()->GetDoc())) continue;
+
+			// Verify if already inserted:
+			// If not -> insert it in docs.
+			// If yes -> Verify judgement
+			ptr=docs->GetPtr<const GProfDoc*>(Fdbks());
+			if(ptr)
+			{
+				j=ptr->GetFdbk();
+				switch(j)
+				{
+					case djNav:
+						if(Fdbks()->GetFdbk()==djOK)
+						{
+							docs->DeletePtr(ptr);
+							docs->InsertPtr(Fdbks());
+						}
+						break;
+					case djKO:
+						if((Fdbks()->GetFdbk()==djOK)&&(Fdbks()->GetFdbk()==djNav))
+						{
+							docs->DeletePtr(ptr);
+							docs->InsertPtr(Fdbks());
+						}
+						break;
+					case djOutScope:
+						if((Fdbks()->GetFdbk()==djOK)&&(Fdbks()->GetFdbk()==djNav)&&(Fdbks()->GetFdbk()==djKO))
+						{
+							docs->DeletePtr(ptr);
+							docs->InsertPtr(Fdbks());
+						}
+						break;
+				}
+			}
+			else
+				docs->InsertPtr(Fdbks());
+		}
+	}
 }

@@ -165,6 +165,15 @@ public:
 	* @param grp            Group to compare with.
 	*/
 	unsigned int GetNbSubProfiles(GGroup* grp);
+
+	/**
+	* Construct the list of all feedbacks of the subprofiles of a group not
+	* already judged by a given subprofile. If a document is judged multiple
+	* times differently, most important OK>N>KO>H.
+	* @param docs           Documents not judged.
+	* @param s              Subprofile.
+	*/
+	void NotJudgedDocsList(RStd::RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s);
 };
 
 
