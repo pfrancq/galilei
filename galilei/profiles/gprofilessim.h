@@ -62,7 +62,7 @@ class GProfilesSim
 	/**
 	* The similarities.
 	*/
-	R::RContainer<GSims,unsigned int,true,false> Sims;
+	R::RContainer<GSims,unsigned int,true,false>* Sims;
 
 	/**
 	* Global similarities used?
