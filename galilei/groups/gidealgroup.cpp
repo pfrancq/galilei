@@ -365,7 +365,7 @@ unsigned int GALILEI::GIdealGroup::AddProfiles(unsigned int minprofiles, unsigne
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
 
 	//Randomly choose the number of profiles.
-	nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
+	nbprof=Session->GetCurrentRandomValue(maxprofiles-minprofiles+1)+maxprofiles;
 
 	// Randomly mix the subjects in tab
 	Subjects=Session->GetSubjects();
@@ -386,7 +386,7 @@ unsigned int GALILEI::GIdealGroup::AddProfiles(unsigned int minprofiles, unsigne
 	delete[] tab;
 
 	// If no subject found -> do nothing
-	if(!usedSubject) return;
+	if(!usedSubject) return 0;
 
 	// catch the ideal group for this subject
 	CurGrps=Session->GetIdealGroups()->GetPtr<const GLang*>(usedSubject->GetLang());
