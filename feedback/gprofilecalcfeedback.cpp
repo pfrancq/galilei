@@ -43,6 +43,7 @@
 #include <docs/gdocproxy.h>
 #include <profiles/gsubprofile.h>
 #include <infos/gweightinfo.h>
+#include <infos/glang.h>
 #include <sessions/gsession.h>
 using namespace R;
 using namespace GALILEI;
@@ -98,10 +99,8 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 {
 	RCursor<GWeightInfo> Words;
 	RCursor<GFdbk> Docs;
-	GDocProxy* CurDoc;
 	GWeightInfo* w;
 	bool Add;
-	tDocAssessment Fdbk;
 	double MaxFreq;
 	double Factor;
 	double Freq;
@@ -116,17 +115,18 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 	Docs=SubProfile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		// If the assessment of the document  is not relevant
+		// If the assessment of the document is not relevant
 		// -> don't treat for the profiles computing
-		CurDoc=Docs()->GetDoc();
-		Fdbk=Docs()->GetFdbk();
-		if((IrrelFactor==0.0)&&(Fdbk & djOutScope)) continue;
+		if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
+
+		// If incremental mode and document has no change -> continue
+		if(IncrementalMode&&SubProfile->SameDescription(Docs())) continue;
 
 		// Add total number of document judged for the current language
 		NbDocs++;
 
 		// Update number of documents where appear each index term.
-		Words=CurDoc->GetWeightInfoCursor();
+		Words=Docs()->GetDoc()->GetWeightInfoCursor();
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=NbDocsWords.GetInsertPtr<GInfo*>(Words());
@@ -139,12 +139,15 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 	Docs=SubProfile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		CurDoc=Docs()->GetDoc();
+		// If the assessment of the document is not relevant
+		// -> don't treat for the profiles computing
+		if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
+
+		// If incremental mode and document has no change -> continue
+		if(IncrementalMode&&SubProfile->SameDescription(Docs())) continue;
 
 		// Find list in function of the feedback
-		Fdbk=Docs()->GetFdbk();
-		if((IrrelFactor==0.0)&&(Fdbk & djOutScope)) continue;
-		switch(Fdbk & djMaskJudg )
+		switch(Docs()->GetFdbk() & djMaskJudg )
 		{
 			case djOK:
 				Add=true;
@@ -163,8 +166,8 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 		}
 
 		// Add total number of words and the occurences of each word of the current document.
-		Words=CurDoc->GetWeightInfoCursor();
-		MaxFreq=CurDoc->GetMaxWeight();
+		Words=Docs()->GetDoc()->GetWeightInfoCursor();
+		MaxFreq=Docs()->GetDoc()->GetMaxWeight();
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=Vectors.GetInsertPtr<GInfo*>(Words());
@@ -216,6 +219,7 @@ void GProfileCalcFeedback::ComputeSubProfile(void) throw(bad_alloc,GException)
 void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(GException)
 {
 	SubProfile=subprofile;
+	GWeightInfo* ptr;
 
 	// Clear Infos
 	// Rem: Since Infos is not responsible for allocation/desallocation
@@ -224,6 +228,23 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(GException)
 	for(Cur.Start();!Cur.End();Cur.Next())
 		delete Cur();
 	Infos.Clear();
+
+	// If incremental mode -> copy information of the profile in 'Vectors'.
+	if(IncrementalMode&&subprofile->IsDefined())
+	{
+		unsigned int i,TotalRef;
+
+		Cur=subprofile->GetWeightInfoCursor();
+		TotalRef=subprofile->GetLang()->GetRef(otDoc);
+		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
+		{
+			Infos.InsertPtrAt(ptr=new GWeightInfo(Cur()),i);
+			if(ptr&&isf)
+			{
+				(*ptr)/=log(TotalRef/static_cast<double>(subprofile->GetLang()->GetRef(Cur()->GetId(),otDoc)));
+			}
+		}
+	}
 
 	// Compute the global vectors.
 	ComputeGlobal();
