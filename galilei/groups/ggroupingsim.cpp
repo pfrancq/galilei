@@ -152,7 +152,7 @@ bool GALILEI::GGroupingSim::IsValid(GGroup* grp)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupingSim::Run(void)
+void GALILEI::GGroupingSim::Run(void) throw(GException)
 {
 	GSubProfile* s;
 	GGroup* g;

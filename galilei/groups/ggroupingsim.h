@@ -150,7 +150,7 @@ protected:
 	/**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void);
+	virtual void Run(void) throw(GException);
 
 public:
 

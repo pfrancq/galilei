@@ -67,6 +67,11 @@ protected:
 	GSession* Session;
 
 	/**
+	* Pointer to the language corresponding to the groups to form.
+	*/
+	GLang* Lang;
+
+	/**
 	* Pointer to groups to form.
 	*/
 	GGroups* Groups;
@@ -74,7 +79,7 @@ protected:
 	/**
 	* SubProfiles that must be grouped again.
 	*/
-	RStd::RContainer<GSubProfile,unsigned int,false,false> SubProfiles;
+	RStd::RContainer<GSubProfile,unsigned int,false,true> SubProfiles;
 
 	/**
 	* Type of the description used to group.
@@ -128,6 +133,11 @@ public:
 	*/
 	virtual void Init(void) throw(bad_alloc);
 
+	/**
+	* Clear method.
+	*/
+	virtual void Clear(void) throw(bad_alloc);
+
 protected:
 
 	/**
@@ -136,7 +146,7 @@ protected:
 	* language. This variables must be set before calling this function. This
 	* is done by the Grouping method.
 	*/
-	virtual void Run(void)=0;
+	virtual void Run(void) throw(GException)=0;
 
 public:
 

@@ -58,7 +58,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGrouping::GGrouping(const char* n,GSession* s) throw(bad_alloc)
-	: GroupingName(n), Session(s), Groups(0), SubProfiles(s->GetNbUsers(),s->GetNbUsers()/2)
+	: GroupingName(n), Session(s), Lang(0), Groups(0), SubProfiles(s->GetNbUsers(),s->GetNbUsers()/2)
 {
 }
 
@@ -91,6 +91,25 @@ void GALILEI::GGrouping::Init(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GGrouping::Clear(void) throw(bad_alloc)
+{
+	GGroup* Grp;
+	GGroup** Tab;
+	unsigned int i;
+
+	// Go through the groups and delete all invalid groups.
+	for(i=Groups->NbPtr+1,Tab=Groups->Tab;--i;Tab++)
+	{
+		Grp=(*Tab);
+		Grp->DeleteSubProfiles();
+		Session->DeleteGroup(Grp);
+		Groups->DeletePtr(Grp);
+		Tab--;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
@@ -103,6 +122,7 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified)
 	// Go trough each language.
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
+		Lang=CurLang();
 		SubProfiles.Clear();
 		Groups=Session->GetGroups(CurLang());
 		if(rec)
@@ -138,6 +158,7 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified)
 		for(Groups->Start();!Groups->End();Groups->Next())
 			Session->Save((*Groups)());
 	}
+	Lang=0;
 }
 
 
