@@ -721,6 +721,7 @@ void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException
 
 	try
 	{
+		// Load feedbacks
 		RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2 FROM htmlsbyprofiles");
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
 		{
@@ -754,6 +755,11 @@ void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException
 			}
 			session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),jug,RDate(fdbks[3]));
 		}
+
+		// Update all the profiles to dispatch the feedbacks
+		R::RCursor<GProfile> Profiles=session->GetProfilesCursor();
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
+			Profiles()->Update();
 	}
 	catch(RMySQLError e)
 	{
