@@ -1,4 +1,4 @@
-/*
+                                                                                 /*
 
 	GALILEI Research Project
 
@@ -234,7 +234,7 @@ public:
 	/**
 	* Make the grouping for a specific Language.
 	*/
-	void AdaptMinSimToDatabase(void) ;
+	void AdaptMinSimToDatabase(double distcoeff) ;
 
 	/*
 	*  find a group to put the subprofile into

@@ -1,4 +1,4 @@
-                                                                                                                                                                                                                                                                                             /*
+ /*
 
 	GALILEI Research Project
 
@@ -52,6 +52,7 @@
 #include <sessions/gslot.h>
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
+#include <profiles/guser.h>
 #include <profiles/gsubprofilevector.h>
 #include <groups/gcomparegrouping.h>
 #include <docs/gdoc.h>
@@ -125,7 +126,6 @@ GALILEI::GGroupingSupKMeans::GGroupingSupKMeans( GSession* s, GSupKMeansParams* 
 	HardConstraints= new RContainer<GGroup,unsigned int,false,false>(10,5);
 
 	Session->GetRandom()->Reset(0);
-
 }
 
 
@@ -154,7 +154,7 @@ void GALILEI::GGroupingSupKMeans::SetSettings(const char* s)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupingSupKMeans::AdaptMinSimToDatabase(void) 
+void GALILEI::GGroupingSupKMeans::AdaptMinSimToDatabase(double distcoeff)
 {
 	unsigned int i,j,comp;
 	double minsim, etype, tmpsim;
@@ -163,6 +163,26 @@ void GALILEI::GGroupingSupKMeans::AdaptMinSimToDatabase(void)
 	comp=0;
 	minsim=0.0;
 	etype=0.0 ;
+
+	//tmp david
+	int comp2=0;
+	int bibi=SubProfiles.NbPtr;
+	RTextFile* text= new RTextFile("../../../simprofs.txt", RIO::Create);
+	for (s1=SubProfiles.Tab, i=SubProfiles.NbPtr; i--; s1++)
+		(*text) << "\t"<<(*s1)->GetProfile()->GetId();
+	(*text) <<endl;
+	for (s1=SubProfiles.Tab, i=SubProfiles.NbPtr; i--; s1++)
+	{
+		comp2++;
+		(*text)  << (*s1)->GetProfile()->GetId();
+		for (s2=SubProfiles.Tab, j=SubProfiles.NbPtr; j--; s2++)
+		{
+				(*text)  << "\t"<<Session->GetSimProf(*s1,*s2) ;
+		}
+		(*text) <<endl;
+	}
+	cout << "file written"<<endl;
+	// end tmp dav
 
 	for (s1=SubProfiles.Tab, i=SubProfiles.NbPtr; i--; s1++)
 		for (s2=s1+1, j=0; j<i; s2++,j++)
@@ -176,7 +196,8 @@ void GALILEI::GGroupingSupKMeans::AdaptMinSimToDatabase(void)
 	minsim/=comp;
 	etype=(etype/double(comp))-(minsim*minsim);
 	etype=sqrt(etype);
-	Params->MinSim=minsim+1.5*etype;  
+	cout <<" MinSim = "<<minsim<<" \t Ecart type = "<<etype<<endl;
+	Params->MinSim=minsim+distcoeff*etype;
 }
 
 
@@ -188,10 +209,14 @@ void GALILEI::GGroupingSupKMeans::Run(void) throw(GException)
 
 	if (!SubProfiles.NbPtr) return;
 
-	AdaptMinSimToDatabase();
+	//tmp dav
+	double dav;
 
-	if (Params->Debug)
-	{
+	cout << "dav = " <<dav<<endl;
+	AdaptMinSimToDatabase(1.5);
+
+//	if (Params->Debug)
+//	{
 		cout <<"**********************************"<<endl;
 		cout << "SubProfiles NbPtr= "<<SubProfiles.NbPtr<<endl;
 		cout << "Params->InitMode  = "<<Params->InitMode<<endl;
@@ -206,7 +231,7 @@ void GALILEI::GGroupingSupKMeans::Run(void) throw(GException)
 		cout << "Params->SameGroupRate = "<<Params->SameGroupRate<<endl;
 		cout << "Params->Debug = "<<Params->Debug<<endl;
 		cout <<"**********************************"<<endl;
-	}
+//	}
 
 	if (Params->UsedAsInitialization)  nbsamples=Params->NbSamples;
 	else nbsamples=1;
@@ -254,7 +279,6 @@ void GALILEI::GGroupingSupKMeans::Run(void) throw(GException)
 			delete[] cor[comp];
 	        delete[] cor;
 	}
-
 }
 
 
@@ -270,7 +294,7 @@ unsigned int GALILEI::GGroupingSupKMeans::Execute(bool doublekmeans)
 	error=1;
 	while (iter<Params->NbIters&&error!=0)
 	{
-		if (Params->Debug)
+//		if (Params->Debug)
 			cout <<"---------------------------------- Iter "<< iter<<"-----------------------------"<<endl;
 
 		Groups->Clear();
@@ -295,14 +319,14 @@ unsigned int GALILEI::GGroupingSupKMeans::Execute(bool doublekmeans)
 		}
 		iter++;
 	}
-	if (Params->Debug)
-	{
-		DisplayGroups();
+//	if (Params->Debug)
+//	{
+//		DisplayGroups();
 		cout <<endl<<"**********************************"<<endl;
-		cout <<"Clustering done in :"<<iter<< " loops"<<endl;
+//		cout <<"Clustering done in :"<<iter<< " loops"<<endl;
 		cout <<"Number of groups found = "<<Groups->NbPtr<<endl;
 		cout <<"**********************************"<<endl;
-	 }
+//	 }
 
 	if (Params->UsedAsInitialization)
 	{
@@ -315,7 +339,7 @@ unsigned int GALILEI::GGroupingSupKMeans::Execute(bool doublekmeans)
 			groups->InsertPtr(group);
 		}
 		FoundGroups->InsertPtr(groups);
-	}	
+	}
 
 	return(iter);
 
@@ -476,7 +500,6 @@ bool  GALILEI::GGroupingSupKMeans::IsAPcSameValidGroup(GGroup* group, GSubProfil
 
 	profdoc1=sub->GetProfile()->GetProfDocCursor();
 
-
 	for (group->Start(); ! group->End(); group->Next())
 	{
 		nbcomp=percent=0;
@@ -620,7 +643,7 @@ double GALILEI::GGroupingSupKMeans::Distance(GGroup* g, GSubProfile* sub, bool h
 	if (hardconstraint)
 	{
 		//hard constraints
-		if (IsAPcSameValidGroup(g,sub)) 
+		if (IsAPcSameValidGroup(g,sub))
 		{
 			if (Params->Debug) cout << "                is a pcsame valid group"<<endl;
 			return(0.0);
@@ -746,7 +769,6 @@ void GALILEI::GGroupingSupKMeans::SetConstraintsFromSamples(unsigned int** cor)
 			}
 		}
 	}
-
 	for (i=0; i<SubProfiles.NbPtr;i++)
 		delete[] matrix[i];
 	delete[] matrix;
