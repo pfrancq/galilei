@@ -48,6 +48,9 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
+class GLinkCursor;
+class GLink;
+
 //-----------------------------------------------------------------------------
 /**
 * The GDoc class provides a representation of a document.
@@ -126,6 +129,11 @@ protected:
 	* Count the number of downloads failed.
 	*/
 	unsigned int Failed;
+
+	/**
+	* Container of Link.
+	*/
+	RStd::RContainer<GLink,unsigned int,false,true>* LinkSet;
 
 #if GALILEITEST
 	/**
@@ -371,6 +379,23 @@ public:
 	* @param j              Judgement.
 	*/
 	void AddJudgement(GProfDoc* j) throw(bad_alloc);
+
+	/**
+	* Get the Number  of Outgoing links
+	*/
+	unsigned int GetNbLinks(void);
+
+	/**
+	* Add a new link to the document
+	* @params doc           The Document representing the link to be inserted.
+	*/
+	void InsertLink(const GDoc* doc) throw(bad_alloc);
+
+	/**
+	* Get a cursor on the Links of the document.
+	* @return GLinkCursor.
+	*/
+	GLinkCursor& GetLinkCursor(void);
 
 #if GALILEITEST
 

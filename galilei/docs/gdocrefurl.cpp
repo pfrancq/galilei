@@ -1,15 +1,14 @@
 /*
-
 	GALILEI Research Project
 
-	GSlot.cpp
+	GDocRefUrl.cpp
 
-	Generic Slot for GALILEI - Implementation.
+	Document descibe by URL - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Authors
+		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	Version $Revision$
 
@@ -35,61 +34,66 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <sessions/gslot.h>
+//include file for galilei
+#include <gdocrefurl.h>
+#include <docs/gdoc.h>
 using namespace GALILEI;
 
 
-
 //-----------------------------------------------------------------------------
 //
-//  class GSlot
+// GDocRefUrl
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSlot::GSlot(void)
+GALILEI::GDocRefUrl::GDocRefUrl(GDoc* d) : Doc(d)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextDoc(const GDoc*)
+int GALILEI::GDocRefUrl::Compare(const GDocRefUrl* doc) const
 {
+	RStd::RString tmp =Doc->GetURL();
+	return (tmp.Compare(doc->GetURL()));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextProfile(const GProfile*)
+int GALILEI::GDocRefUrl::Compare(const GDocRefUrl& doc) const
 {
+	RStd::RString tmp =Doc->GetURL();
+	return (tmp.Compare(doc.GetURL()));
+}
+
+
+//-------------------------------------------------------------- --------------
+int GALILEI::GDocRefUrl::Compare(const GDoc* doc) const
+{
+	RStd::RString tmp =Doc->GetURL();
+	return (tmp.Compare(doc->GetURL()));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::NextGroupLang(const GLang*)
+int GALILEI::GDocRefUrl::Compare(const GDoc& doc) const
 {
+	RStd::RString tmp =Doc->GetURL();
+	return (tmp.Compare(doc.GetURL()));
+}
+
+//-----------------------------------------------------------------------------
+int GALILEI::GDocRefUrl::Compare(const char* url) const
+{
+	RStd::RString tmp =Doc->GetURL();
+	return (tmp.Compare(url));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::WriteStr(const char*)
+GALILEI::GDocRefUrl::~GDocRefUrl(void)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextChromosome(unsigned int)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextMethod(unsigned int num)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GSlot::~GSlot(void)
-{
-}

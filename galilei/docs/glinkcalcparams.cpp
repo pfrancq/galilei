@@ -1,15 +1,14 @@
 /*
-
 	GALILEI Research Project
 
-	GSlot.cpp
+	GLinkCalcParams.cpp
 
-	Generic Slot for GALILEI - Implementation.
+	Generic Parameters for a Link Method - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Authors
+		 Vandaele Valery(vavdaele@ulb.ac.be)
 
 	Version $Revision$
 
@@ -35,61 +34,62 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <sessions/gslot.h>
+//include file for GALILEI
+#include <docs/glinkcalcparams.h>
+#include <docs/glinkcalc.h>
 using namespace GALILEI;
 
 
-
 //-----------------------------------------------------------------------------
 //
-//  class GSlot
+// GLinkCalcParams
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSlot::GSlot(void)
+GALILEI::GLinkCalcParams::GLinkCalcParams(const char* n) throw(bad_alloc)
+	: ComputingName(n)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextDoc(const GDoc*)
+int GALILEI::GLinkCalcParams::Compare(const GLinkCalcParams* p) const
 {
+	return(ComputingName.Compare(p->ComputingName));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextProfile(const GProfile*)
+int GALILEI::GLinkCalcParams::Compare(const GLinkCalcParams& p) const
 {
+	return(ComputingName.Compare(p.ComputingName));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::NextGroupLang(const GLang*)
+int GALILEI::GLinkCalcParams::Compare(const GLinkCalc* calc) const
 {
+	return(ComputingName.Compare(calc->GetComputingName()));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::WriteStr(const char*)
+int GALILEI::GLinkCalcParams::Compare(const char* name) const
 {
+	return(ComputingName.Compare(name));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextChromosome(unsigned int)
+GALILEI::GLinkCalcParams& GALILEI::GLinkCalcParams::operator=(const GALILEI::GLinkCalcParams& src)
 {
+	ComputingName=src.ComputingName;
+	return(*this);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextMethod(unsigned int num)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GSlot::~GSlot(void)
+GALILEI::GLinkCalcParams::~GLinkCalcParams(void)
 {
 }

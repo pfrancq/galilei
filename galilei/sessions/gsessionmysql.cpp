@@ -678,7 +678,7 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 	RQuery selectdoc(this,sSql);
 	selectdoc.Start();
 	doc=new GDocVector(url,name,strtoul(selectdoc[0],0,10),0,Mng->GetMIMEType(mime),selectdoc[1],0,0,0,0,0,0);
-	InsertDoc(doc);
+//	InsertDoc(doc);
 	return(doc);
 }
 

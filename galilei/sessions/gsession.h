@@ -12,6 +12,7 @@
 		Pascal Francq (pfrancq@ulb.ac.be).
 		David Wartel (dwartel@ulb.ac.be).
 		Julien Lamoral (jlamoral@ulb.ac.be).
+		Valery Vandaele (vavdaele@ulb.ac.be).
 
 	Version $Revision$
 
@@ -51,6 +52,7 @@
 #include <groups/ggroupir.h>
 #include <groups/ggroupsmng.h>
 #include <groups/gsubjecttree.h>
+#include <docs/glinkcalc.h>
 
 
 //-----------------------------------------------------------------------------
@@ -129,6 +131,17 @@ protected:
 	*/
 	GGroupCalc* GroupCalc;
 
+	/**
+	* Container of link description method.
+	*/
+	RStd::RContainer<GLinkCalc,unsigned int,true,true>* LinkCalcs;
+
+	/**
+	* Current link description method used.
+	*/
+	GLinkCalc* LinkCalc;
+
+	
 	/**
 	* URL Manager used by this session.
 	*/
@@ -355,6 +368,45 @@ public:
 	GGroupCalcCursor& GetGroupCalcsCursor(void);
 
 	/**
+	* Register a link description method.
+	* @param lnk            Description method to register.
+	*/
+	void RegisterLinkCalcMethod(GLinkCalc* lnk) throw(bad_alloc);
+
+  /**
+	* Set the current link description method.
+	* @param name           Name of the link description method.
+	*/
+	void SetCurrentLinkCalcMethod(const char* name) throw(GException);
+
+	/**
+	* Set the settings for the current link description method.
+	* @param s              Settings of the current link description method.
+	*/
+	void SetCurrentLinkCalcMethodSettings(const char* s) throw(GException);
+
+	/**
+	* Get the settings of a given link description method.
+	* @param n              Name of the link description method.
+	* @returns C String representing the settings of the given link
+	* description method.
+	*/
+	const char* GetLinkCalcMethodSettings(const char* n) throw(GException);
+
+	/**
+	* Get the current link description method.
+	* @returns Pointer to a GLinkCalc class.
+	*/
+	GLinkCalc* GetCurrentLinkCalcMethod(void) {return(LinkCalc);}
+
+	/**
+	* Get a cursor to the link description methods registered.
+	* @return Return a GLinkCalcCursor.
+	*/
+	GLinkCalcCursor& GetLinkCalcsCursor(void);
+
+
+	/**
 	* Create a XML structure of the content of a document. The structure
 	* created has to be desallocate by the caller.
 	* @param doc        Document to analyse.
@@ -373,6 +425,12 @@ public:
 	* @param modified   Recompute only modified elements or all.
 	*/
 	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
+
+  /**
+	* Compute the links for all documents
+	* @param rec        Receiver for the signals.
+	*/
+	void ComputeLinks(GSlot* rec);
 
 	/**
 	* Load the Users.

@@ -96,6 +96,12 @@ public:
 	virtual void receiveNextChromosome(unsigned int id);
 
 	/**
+	* The traitment for a specific method will begin.
+	* @param id             The id describing the step in the method.
+	*/
+	virtual void receiveNextMethod(unsigned int num);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSlot(void);

@@ -319,11 +319,11 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 					act=0;
 			}
 			if((CurTag->Ins)&&(CurTag->Type!=Tag::tBODY))
-				if (CurTag->Type == Tag::tLINK)                                         //++ val
+				if (CurTag->Type == Tag::tLINK)                                         
 				{    
 					oldParams= Params;
 				}
-				else                                                                   //++ val
+				else                                                                  
 					Doc->AddNode(*ptr,Open[CurTag->Level]=new RXMLTag(CurTag->XMLName));
 			else
 			{
@@ -344,7 +344,7 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 			}
 			else
 			{
-			AnalyzeBlock(Ins,act);
+				AnalyzeBlock(Ins,act);
 			}
 		}
 		// All the tag lower than 'Level' are closed.
@@ -355,7 +355,7 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 		NextValidTag();
 	}
 
-	// Delete all the empty tags of the content.
+	// Delete all the empty tags of the content and of the links.
 	content->DeleteEmptyTags(Doc);
 	links->DeleteEmptyTags(Doc);
 }
@@ -472,11 +472,9 @@ RXMLTag* GALILEI::GFilterHTML::AnalyseLinkParams(char* params)
 
 	char* ptr;
 	char delimiter;
-	//char* name // Name of the tag
 	char* content; // content of the tag
-  char* urlG; // url of the link
+	char* urlG; // url of the link
 	bool bSpaces,ancre;
-	
 
 
 	metaLink=0;
@@ -511,8 +509,8 @@ RXMLTag* GALILEI::GFilterHTML::AnalyseLinkParams(char* params)
 		// Read the content of HREF or CLASS
 		content=ptr;
 		while((*ptr)&&((*ptr)!=delimiter))
-		{
-			if ((*ptr) == '#')   // verify whether the link point to the actuel page
+		{                                   
+			if ((*ptr) == '#')   // verify if the link point to the actuel page
 				ancre= true;
 			ptr++ ;
 		}
@@ -626,83 +624,7 @@ char* GALILEI::GFilterHTML::ConstructURL(char* u)
 }
 
 
-
-//---------------------------------------------------------------------------
-//bool GALILEI::GFilterHTML::AnalyseLinkParams(char* params,RXMLTag* metaLink)
-//{
-//	char* ptr;
-//	char delimiter;
-//	//char* name // Name of the tag
-//	char* content; // content of the tag
-//	bool bSpaces,ancre;
-//
-//	if (!params) return false;
-//	ptr= params;
-//
-//	while (*(ptr))
-//	{
-//		ancre=false;
-//
-//		// Read the name of the tag
-//		while ((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
-//			(*(ptr++))=RString::ToUpper(*ptr);
-//		bSpaces=isspace(*ptr);
-//		(*(ptr++))=0;
-//		if (bSpaces)
-//		{
-//			while((*ptr)&&((*ptr)!='='))
-//				ptr++;
-//			ptr++;    // Skip '=';
-//		}
-//
-//		// The name must be 'HREF' or 'CLASS'
-//		if((!(*ptr))||((strcmp(params,"HREF"))&&(strcmp(params,"CLASS")))) return false;
-//
-//		// Skip spaces and read the delimiter which must be a ' or a "
-//		while((*ptr)&&(isspace(*ptr)))
-//			ptr++;
-//		delimiter=(*(ptr++));
-//		if((delimiter!='\'')&&(delimiter!='"')) return;
-//
-//		// Read the content of HREF or CLASS
-//		content=ptr;
-//		while((*ptr)&&((*ptr)!=delimiter))
-//		{
-//			if ((*ptr) == '#')   // verify whether the link point to the actuel page
-//				ancre= true;
-//			ptr++ ;
-//		}
-//		(*(ptr++))=0;  // Skip the second delimiter
-//
-//			//if the link is a local anchor or a link to a mail -> drop this link
-//		if (ancre)
-//		{
-//			return false;
-//		}
-//		else if  (!strncasecmp(content,"mailto:",7))
-//		{
-//			return false;
-//		}
-//		if ((!strcmp(params,"HREF"))&&(!ancre))
-//		{
-//			Doc->AddIdentifier(content,metaLink);
-//		}
-//		else if (!strcmp(params,"CLASS"))
-//		{
-//			Doc->AddType(content,metaLink);
-//		}
-//
-//		//skip spaces
-//		while (*(ptr)&&(isspace(*ptr)))
-//			ptr++;
-//		params=ptr;
-//		ptr=params;
-//	}
-//	return true;
-//}
-
 //------------------------------------------------------------------------
-// Nouvelle version developpe par val
 void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 {
 	char* ptr;

@@ -57,6 +57,7 @@ using namespace RIO;
 #include <docs/gdocprofsim.h>
 #include <docs/gdocprofsims.h>
 #include <docs/gwordsclustering.h>
+#include <docs/glinkcalc.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -103,6 +104,7 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
 	Groupings=new RContainer<GGrouping,RStd::tId,true,true>(3,3);
 	GroupCalcs=new RContainer<GGroupCalc,RStd::tId,true,true>(2,3);
+	LinkCalcs=new RContainer<GLinkCalc,unsigned int,true,true>(3,2);
 	DocOptions=new GDocOptions();
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
 	CurrentRandom=0;
@@ -300,6 +302,55 @@ GGroupCalcCursor& GALILEI::GSession::GetGroupCalcsCursor(void)
 	return(*cur);
 }
 
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::RegisterLinkCalcMethod(GLinkCalc* lnk) throw(bad_alloc)
+{
+	LinkCalcs->InsertPtr(lnk);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::SetCurrentLinkCalcMethod(const char* name) throw(GException)
+{
+	GLinkCalc* tmp;
+
+	tmp=LinkCalcs->GetPtr<const char*>(name);
+	if(!tmp)
+		throw GException(RString("Link Description method '")+name+"' doesn't exists.");
+	LinkCalc=tmp;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::SetCurrentLinkCalcMethodSettings(const char* s) throw(GException)
+{
+	if((!LinkCalc)||(!(*s))) return;
+//	LinkCalc->SetSettings(s);
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GSession::GetLinkCalcMethodSettings(const char* n) throw(GException)
+{
+//	GLinkCalc* tmp;
+//
+//	tmp=LinkCalcs->GetPtr<const char*>(n);
+//	if(!tmp)
+//		return(0);
+//	return(tmp->GetSettings());
+}
+
+
+//-----------------------------------------------------------------------------
+GLinkCalcCursor& GALILEI::GSession::GetLinkCalcsCursor(void)
+{
+	GLinkCalcCursor *cur=GLinkCalcCursor::GetTmpCursor();
+	cur->Set(LinkCalcs);
+	return(*cur);
+}
+
+
 //-----------------------------------------------------------------------------
 GDocXML* GALILEI::GSession::CreateDocXML(GDoc* doc) throw(GException)
 {
@@ -344,7 +395,21 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	bool undefLang;
 	GDocXML* xml=0;
 	GDocCursor Docs=GetDocsCursor();
+	RContainer<GDoc,unsigned int,false,true>* tmpDocs = new RContainer<GDoc,unsigned int,false,true>(5,2);
 
+//	cout <<"------------------------------"<<endl;
+//  for(Docs.Start();!Docs.End();Docs.Next())
+//	{
+//		cout<< "id du doc : "<< Docs()->GetId()<<" id docRef "<<GetDoc(Docs()->GetURL())->GetId() <<" url : "<<Docs()->GetURL()<<endl;
+//		GSubjectCursor Scur=Docs()->GetSubjectCursor();
+//		cout << "Subjects : " << endl;
+//		for (Scur.Start();!Scur.End();Scur.Next())
+//		{
+//			cout<< Scur()->GetName() <<endl;
+//		}
+//	}
+//	cout <<"------------------------------"<<endl;
+//	
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		if(modified&&(Docs()->GetState()==osUpToDate)) continue;
@@ -352,14 +417,15 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 		undefLang=false;
 		try
 		{
-			if((!modified)||(Docs()->GetState()!=osUpdated))
+			if(((!modified)||(Docs()->GetState()!=osUpdated))||((Docs()->GetState()!=osNotNeeded)))
 			{
 				if (!Docs()->GetLang()) undefLang=true;
 				xml=Mng->CreateDocXML(Docs());
 				if(xml)
 				{
 					Docs()->InitFailed();
-					DocAnalyse->Analyse(xml,Docs());
+					//cout<< "analyse doc  :  "<<Docs()->GetURL()<<endl;
+					DocAnalyse->Analyse(xml,Docs(),tmpDocs);
 					delete xml;
 					xml=0;
 					if ((undefLang)&&(Docs()->GetLang()))
@@ -380,6 +446,36 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 				delete xml;
 		}
 	}
+
+	// add new doc in the container of documents.
+	RCursor<GDoc,unsigned int> Cur(tmpDocs);
+	for (Cur.Start();!Cur.End();Cur.Next())
+	{
+		InsertDoc(Cur());
+	}
+	tmpDocs->Clear();
+
+	
+//	cout <<"------------------------------"<<endl;
+//	Docs=GetDocsCursor();
+//  for(Docs.Start();!Docs.End();Docs.Next())
+//	{
+//		cout<< "id du doc : "<< Docs()->GetId()<<" id docRef "<<GetDoc(Docs()->GetURL())->GetId() <<" url : "<<Docs()->GetURL()<<endl;
+//		GSubjectCursor Scur=Docs()->GetSubjectCursor();
+//		cout << "Subjects : " << endl;
+//		for (Scur.Start();!Scur.End();Scur.Next())
+//		{
+//			cout<< Scur()->GetName() <<endl;
+//		}
+//	}
+//	cout <<"------------------------------"<<endl;
+	
+}
+
+
+void GALILEI::GSession::ComputeLinks(GSlot* rec)
+{
+  LinkCalc->Compute(rec);
 }
 
 

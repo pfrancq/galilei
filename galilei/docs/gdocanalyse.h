@@ -203,6 +203,13 @@ protected:
 	void AnalyseTag(RXML::RXMLTag* tag,double weight) throw(GException);
 
 	/**
+	* Analyse a link tag.
+	* @param tag            Tag to analyse.
+	* @param tmpDocs        A pointer to a container of docs to maintain the documents to be added.
+	*/
+	void AnalyseLinksTag(RXML::RXMLTag* tag, RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException);
+
+	/**
 	* This methods determine the language of the current structure studied,
 	* i.e. the language with the maximal number of words of the stop-list
 	* contained in the document and with a minimal value for the ratio of
@@ -223,8 +230,9 @@ public:
 	* results in this document.
 	* @param xml            XML Representation used.
 	* @param doc            Corresponding document.
+	* @param tmpDocs        A container of docs to maintain the documents ro be added.
 	*/
-	void Analyse(GDocXML* xml,GDoc* doc) throw(GException);
+	void Analyse(GDocXML* xml,GDoc* doc,RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException);
 
 	/**
 	* Analyse a XML representation of a document for a session and computes

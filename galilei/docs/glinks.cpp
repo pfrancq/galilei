@@ -1,15 +1,14 @@
 /*
-
 	GALILEI Research Project
 
-	GSlot.cpp
+	GLinks.cpp
 
-	Generic Slot for GALILEI - Implementation.
+	[List of Links - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Authors
+		 Vandaele Valery (vavdaele@ulb.ac.be))
 
 	Version $Revision$
 
@@ -35,61 +34,38 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <sessions/gslot.h>
+//include file for GALILEI
+#include <docs/glinks.h>
+#include <docs/glink.h>
+
 using namespace GALILEI;
-
-
+using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //
-//  class GSlot
+// GLinks
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSlot::GSlot(void)
+GALILEI::GLinks::GLinks(GDoc* d)
+	: RContainer<GLink,unsigned int,false,true>(3,2), Doc(d) , Weight(1)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextDoc(const GDoc*)
+GLinkCursor& GALILEI::GLinks::GetLinkCursor(void)
 {
+	GLinkCursor *cur = GLinkCursor::GetTmpCursor();
+	cur->Set(this);
+	return(*cur);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextProfile(const GProfile*)
+GALILEI::GLinks::~GLinks(void)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GSlot::NextGroupLang(const GLang*)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSlot::WriteStr(const char*)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextChromosome(unsigned int)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSlot::receiveNextMethod(unsigned int num)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GSlot::~GSlot(void)
-{
-}

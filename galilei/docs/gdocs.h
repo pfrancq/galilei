@@ -62,6 +62,7 @@ class GSession;
 class GDoc;
 class GDocCursor;
 class GDocsLang;
+class GDocRefUrl;
 
 
 //-----------------------------------------------------------------------------
@@ -85,6 +86,11 @@ public:
 	* A container of GDocsLang in which all the docs from a specific langage are stocked
 	*/
 	RStd::RContainer<GDocsLang,unsigned int,true,true> DocsLang;
+
+	/**
+	* A container of GDocRefUrl in which all the docs stocked by url.
+	*/
+	RStd::RContainer<GDocRefUrl,unsigned int,true,true> DocsRefUrl;
 
 	/**
 	* Constructor.
@@ -168,6 +174,12 @@ public:
 	* @param id         Identificator of the document.
 	*/
 	GDoc* GetDoc(unsigned int id) throw(bad_alloc);
+
+	/**
+	* Get a document from the container.
+	* @param url        URL of the document.
+	*/
+	GDoc* GetDoc(const char* url) throw(bad_alloc);
 
 	/**
 	* Get a document from the container

@@ -38,6 +38,7 @@
 // include files for GALILEI
 #include <docs/gdoc.h>
 #include <docs/gdocxml.h>
+#include <docs/glink.h>
 #include <langs/glang.h>
 #include <filters/gmimefilter.h>
 #include <profiles/gprofile.h>
@@ -67,6 +68,8 @@ GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang
 	  ,Subjects(2,1)
 #endif
 {
+	LinkSet=new RContainer<GLink,unsigned int,false,true>(5,2);
+	
 	if(Updated>Computed)
 	{
 		if(Computed==RDate::null)
@@ -212,6 +215,33 @@ void GALILEI::GDoc::AddJudgement(GProfDoc* j) throw(bad_alloc)
 {
 	Fdbks.InsertPtr(j);
 }
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GDoc::GetNbLinks(void)
+{
+	unsigned int res = LinkSet->NbPtr;
+	return res;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDoc::InsertLink(const GDoc* doc) throw(bad_alloc)
+{
+	GLink* link ;
+	link = LinkSet->GetInsertPtr(doc);
+	link->AddOccurence();
+}
+
+
+//-----------------------------------------------------------------------------
+GLinkCursor& GALILEI::GDoc::GetLinkCursor(void)
+{
+	GLinkCursor *cur = GLinkCursor::GetTmpCursor();
+	cur->Set(LinkSet);
+	return(*cur);
+}
+
 
 
 #if GALILEITEST

@@ -224,6 +224,8 @@ class GStatisticalParams;
 class GGroupCalcParams;
 class GCalcRelevantParams;
 class GCalcGravitationParams;
+// Link Description parameters
+class GLinkCalcItAlgoParams;
 
 
 //-----------------------------------------------------------------------------
@@ -266,7 +268,8 @@ enum tObjState
 	osUpToDate              /** Object is up to date.*/,
 	osModified              /** Object was modified and computation must be update.*/,
 	osUpdated               /** Object is updated and needs to be save.*/,
-	osDelete                /** Object must be deleted.*/
+	osDelete                /** Object must be deleted.*/,
+	osNotNeeded             /** Object is not needed.*/
 };
 
 

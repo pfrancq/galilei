@@ -41,6 +41,7 @@
 #include <docs/gdocs.h>
 #include <docs/gdoc.h>
 #include <docs/gdocslang.h>
+#include <docs/gdocrefurl.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace RStd;
@@ -55,7 +56,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GDocs::GDocs(unsigned int nb) throw(bad_alloc)
-	: RContainer<GDoc,unsigned,true,true>(nb+(nb/2),nb/2), bDocs(false), DocsLang(2,1)
+	: RContainer<GDoc,unsigned,true,true>(nb+(nb/2),nb/2), bDocs(false), DocsLang(2,1),DocsRefUrl(2,1)
 {
 }
 
@@ -118,6 +119,9 @@ void GALILEI::GDocs::InsertDoc(GDoc* d) throw(bad_alloc)
 	docsLang = DocsLang.GetInsertPtr<GLang*>(d->GetLang());
 	if(docsLang)
 		docsLang->InsertDoc(d);
+
+	//insert the doc in the DocsRefUrl container.
+	DocsRefUrl.InsertPtr( new GDocRefUrl(d));
 }
 
 
@@ -148,6 +152,18 @@ GDoc* GALILEI::GDocs::GetDoc(unsigned int id) throw(bad_alloc)
 GDoc* GALILEI::GDocs::GetDoc(unsigned int id, GLang* lang) throw(bad_alloc)
 {
 	return(DocsLang.GetPtr(lang)->GetPtr<unsigned int>(id));
+}
+
+
+//-------------------------------------------------------------------------------
+GDoc* GALILEI::GDocs::GetDoc(const char* url) throw(bad_alloc)
+{
+	GDocRefUrl* tmp = DocsRefUrl.GetPtr(url);
+	if (! tmp)
+		return NULL;
+	else
+	return (tmp->GetDoc());
+	//return (DocsRefUrl.GetPtr(url)->GetDoc());
 }
 
 
