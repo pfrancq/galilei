@@ -97,7 +97,11 @@ void QPlugins::changeLinkCalc( QListViewItem * item)
 
 void QPlugins::changeGroupCalc( QListViewItem * item )
 {
-
+       	if(!item) return;
+	QGroupCalcItem* f=dynamic_cast<QGroupCalcItem*>(item);
+	EnableGroupCalc->setChecked(f->Enable);
+	ConfigGroupCalc->setEnabled(f->Fac->HasConfigure());
+	AboutGroupCalc->setEnabled(f->Fac->HasAbout());
 }
 
 
@@ -117,14 +121,16 @@ void QPlugins::slotAboutLinkCalc()
 
 void QPlugins::slotAboutGroupCalc()
 {
-
+        	if(!GroupCalcs->currentItem()) return;
+	QGroupCalcItem* f=dynamic_cast<QGroupCalcItem*>(GroupCalcs->currentItem());
+	f->Fac->About();
 }
 
 
 void QPlugins::slotConfigGrouping()
 {
         	if(!Groupings->currentItem()) return;
-QGroupingItem* f=dynamic_cast<QGroupingItem*>(Groupings->currentItem());
+	QGroupingItem* f=dynamic_cast<QGroupingItem*>(Groupings->currentItem());
 	f->Fac->Configure();
 }
 
@@ -137,7 +143,9 @@ void QPlugins::slotConfigLinkCalc()
 
 void QPlugins::slotConfigGroupCalc()
 {
-
+        	if(!GroupCalcs->currentItem()) return;
+	QGroupCalcItem* f=dynamic_cast<QGroupCalcItem*>(GroupCalcs->currentItem());
+	f->Fac->Configure();
 }
 
 
@@ -151,7 +159,9 @@ void QPlugins::slotGroupingEnable( bool state )
 
 void QPlugins::slotGroupCalcEnable( bool state )
 {
-
+        	if(!GroupCalcs->currentItem()) return;
+	QGroupCalcItem* f=dynamic_cast<QGroupCalcItem*>(GroupCalcs->currentItem());
+	f->Enable=state;
 }
 
 

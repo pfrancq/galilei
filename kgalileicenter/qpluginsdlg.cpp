@@ -35,7 +35,6 @@
 #include <groups/ggrouping.h>
 #include <groups/ggroupcalc.h>
 #include <profiles/gprofilecalc.h>
-#include <galilei/qgroupcalcpluginconf.h>
 #include <galilei/qlinkcalcpluginconf.h>
 using namespace R;
 
@@ -104,8 +103,6 @@ QPluginsDlg::QPluginListView::QPluginListView(KGALILEICenterApp* a,QCheckListIte
 		case 3:
 			break;
 		case 4:
-			if(RString(str)==(App->GetCurrentGroupCalcMethod()))
-				setOn(true);
 			break;
 		case 5:
 			if(RString(str)==(App->GetCurrentLinkCalcMethod()))
@@ -135,9 +132,6 @@ void QPluginsDlg::QPluginListView::activate(void)
 		case 3:
 			break;
 		case 4:
-            App->SetCurrentGroupCalcMethod(Name);
-			if(App->getDocument())
-				((App->getDocument())->GetSession())->SetCurrentGroupCalcMethod(App->GetCurrentGroupCalcMethod());
 			break;
 		case 5:
             App->SetCurrentLinkCalcMethod(Name);
@@ -159,7 +153,6 @@ void QPluginsDlg::QPluginListView::activate(void)
 QPluginsDlg::QPluginsDlg(KGALILEICenterApp* app,const char* name)
 	: QDialog(app,name,true,Qt::WStyle_ContextHelp), Cur(0), Conf(0), App(app)
 {
-	GroupCalcs=new R::RContainer<QGroupCalcPluginConf,unsigned int,true,true>(3,3);
 	LinkCalcs=new R::RContainer<QLinkCalcPluginConf,unsigned int,true,true>(3,3);
 
 	// Window initialisation
@@ -203,13 +196,6 @@ QPluginsDlg::QPluginsDlg(KGALILEICenterApp* app,const char* name)
 
 
 //---------------------------------------------------------------------------
-void QPluginsDlg::RegisterGroupCalcPluginConf(QGroupCalcPluginConf* ins) throw(bad_alloc)
-{
-	GroupCalcs->InsertPtr(ins);
-}
-
-
-//---------------------------------------------------------------------------
 void QPluginsDlg::RegisterLinkCalcPluginConf(QLinkCalcPluginConf* ins) throw(bad_alloc)
 {
 	LinkCalcs->InsertPtr(ins);
@@ -225,11 +211,6 @@ void QPluginsDlg::ConstructPlugins(void) throw(bad_alloc)
 	item->setSelectable(false);
 	for(App->ProfileDesc->Start();!App->ProfileDesc->End();App->ProfileDesc->Next())
 		new QPluginListView(App,item,1,(*App->ProfileDesc)()->StrDup());
-	item=new QPluginListView(App,Plugins,0,"Group Descritpion Methods");
-	item->setSelectable(false);
-	for(App->GroupCalcMethod->Start();!App->GroupCalcMethod->End();App->GroupCalcMethod->Next())
-		new QPluginListView(App,item,4,(*App->GroupCalcMethod)()->StrDup());
-
 	item=new QPluginListView(App,Plugins,0,"Link Description Methods");
 	item->setSelectable(false);
 	for(App->LinkCalcMethod->Start();!App->LinkCalcMethod->End();App->LinkCalcMethod->Next())
@@ -259,7 +240,6 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 				case 3:
 					break;
 				case 4:
-					b=((QGroupCalcPluginConf*)Conf)->ConfigChanged();
 					break;
 				case 5:
 					b=((QLinkCalcPluginConf*)Conf)->ConfigChanged();
@@ -307,13 +287,6 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 			break;
 
 		case 4:
-			Conf=NoConf;
-			Conf=GroupCalcs->GetPtr<const char*>(p->Name);
-			if(!Conf)
-				Conf=NoConf;
-			else
-				((QGroupCalcPluginConf*)Conf)->Set();
-			Cur=p;
 			break;
 
 		case 5:
@@ -348,5 +321,4 @@ QPluginsDlg::~QPluginsDlg(void)
 {
 	Main->removePage(Conf);
 	if(NoConf) delete NoConf;
-	if(GroupCalcs) delete GroupCalcs;
 }

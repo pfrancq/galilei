@@ -87,6 +87,7 @@ using namespace R;
 KGALILEICenterApp::KGALILEICenterApp(void)
 	: KMainWindow(0,"KGALILEICenterApp"), URLManager(getenv("GALILEI_PLUGINS_LIB")),
 	  ProfilingManager(getenv("GALILEI_PLUGINS_LIB")), GroupingManager(getenv("GALILEI_PLUGINS_LIB")),
+	  GroupCalcManager(getenv("GALILEI_PLUGINS_LIB")),
 	  dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0), DocOptions(0)
 {
 	Config=kapp->config();
@@ -270,17 +271,7 @@ void KGALILEICenterApp::saveOptions(void)
 	// Write Config of Session Options
 	Config->setGroup("Session Options");
 	Config->writeEntry("Description Method",GetCurrentProfileDesc());
-	Config->writeEntry("Group Description Method",GetCurrentGroupCalcMethod());
 	Config->writeEntry("Link Description Method",GetCurrentLinkCalcMethod());
-
-	// Write Config of GroupCalcRelevant
-	Config->setGroup(CalcRelevantParams.GetComputingName());
-	Config->writeEntry("Global Similarity",CalcRelevantParams.GlobalSim);
-	Config->writeEntry("MaxNonZero",CalcRelevantParams.MaxNonZero);
-
-	// Write Config of GroupCalcGravitation
-	Config->setGroup(CalcGravitationParams.GetComputingName());
-	Config->writeEntry("MaxNonZero",CalcGravitationParams.MaxNonZero);
 
 	// Write Config of LinkCalcHITS
 	Config->setGroup(LinkCalcHITSParams.GetComputingName());
@@ -330,6 +321,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Conf.Store(URLManager);
 	Conf.Store(ProfilingManager);
 	Conf.Store(GroupingManager);
+	Conf.Store(GroupCalcManager);
 	Conf.Save();
 }
 
@@ -395,9 +387,6 @@ void KGALILEICenterApp::readOptions(void)
 	// Read Session Options
 	ProfileDesc = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
 	ProfileDesc->InsertPtr(new R::RString("Vector space"));
-	GroupCalcMethod = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
-	GroupCalcMethod->InsertPtr(new R::RString("Gravitation"));
-	GroupCalcMethod->InsertPtr(new R::RString("Prototype"));
 	LinkCalcMethod=new R::RContainer<R::RString,unsigned int,true,true>(3,3);
 	LinkCalcMethod->InsertPtr(new R::RString("HITS Algorithm"));
 	LinkCalcMethod->InsertPtr(new R::RString("Correspondence Algorithm"));
@@ -405,17 +394,7 @@ void KGALILEICenterApp::readOptions(void)
 	LinkCalcMethod->InsertPtr(new R::RString("Treshold Kleinberg Algorithm"));
 	Config->setGroup("Session Options");
 	CurrentProfileDesc=Config->readEntry("Description Method","Vector space");
-	CurrentGroupCalcMethod=Config->readEntry("Group Description Method","Prototype");
 	CurrentLinkCalcMethod=Config->readEntry("Link Description Method","HITS Algorithm");
-
-	// Read Config of GroupCalcRelevant
-	Config->setGroup(CalcRelevantParams.GetComputingName());
-	CalcRelevantParams.GlobalSim=Config->readBoolEntry("Global Similarity",1);
-	CalcRelevantParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
-
-	// Read Config of GroupCalcGravitation
-	Config->setGroup(CalcGravitationParams.GetComputingName());
-	CalcGravitationParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
 
 	// Read Config of LinkCalcHITS
 	Config->setGroup(LinkCalcHITSParams.GetComputingName());
@@ -466,6 +445,7 @@ void KGALILEICenterApp::readOptions(void)
 	Conf.Read(URLManager);
 	Conf.Read(ProfilingManager);
 	Conf.Read(GroupingManager);
+	Conf.Read(GroupCalcManager);
 }
 
 

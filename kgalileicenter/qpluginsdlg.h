@@ -39,7 +39,6 @@
 namespace GALILEI
 {
 	class QProfileDescPluginConf;
-	class QGroupCalcPluginConf;
 	class QLinkCalcPluginConf;
 }
 using namespace GALILEI;
@@ -104,10 +103,6 @@ class QPluginsDlg : public QDialog
 	*/
 	QPushButton* buttonApply;
 
-	/**
-	* List of all configuration for the group description method.
-	*/
-	R::RContainer<QGroupCalcPluginConf,unsigned int,true,true>* GroupCalcs;
 
 	/**
 	* List of all configuration for the link description method.
@@ -127,11 +122,6 @@ public:
 	* @param name           Name of the dialog box.
 	*/
 	QPluginsDlg(KGALILEICenterApp* app,const char* name=0);
-
-	/**
-	* Register a plugin to configure a group description method.
-	*/
-	void RegisterGroupCalcPluginConf(QGroupCalcPluginConf* ins) throw(bad_alloc);
 
 	/**
 	* Register a plugin to configure a link description method.

@@ -48,14 +48,13 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <groups/ggroupcalcrelevant.h>
-#include <groups/ggroupcalcgravitation.h>
 #include <docs/glinkcalchits.h>
 #include <docs/glinkcalccorrespondence.h>
 #include <docs/glinkcalcsalsa.h>
 #include <docs/glinkcalctresh.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <groups/ggroupingmanager.h>
+#include <groups/ggroupcalcmanager.h>
 #include <galilei/gurlmanagerkde.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
@@ -128,19 +127,14 @@ class KGALILEICenterApp : public KMainWindow
 	GGroupingManager GroupingManager;
 
 	/**
+	* Computing Method Manager.
+	*/
+	GGroupCalcManager GroupCalcManager;
+
+	/**
 	* The configuration object of the application.
 	*/
 	KConfig* Config;
-
-	/**
-	* Parameters for 'relevant' group description computing
-	*/
-	GCalcRelevantParams CalcRelevantParams;
-
-	/**
-	* Parameters for 'gravitation' group description computing
-	*/
-	GCalcGravitationParams CalcGravitationParams;
 
 	/**
 	* Parameters for 'HITS Algorithm' link description computing
@@ -171,11 +165,6 @@ class KGALILEICenterApp : public KMainWindow
 	* Current Profile Description Method
 	*/
 	R::RString CurrentProfileDesc;
-
-	/**
-	* Current Group Descrition Method
-	*/
-	R::RString CurrentGroupCalcMethod;
 
 	/**
 	* Current Group Descrition Method
@@ -246,11 +235,6 @@ public:
 	R::RContainer<R::RString,unsigned int,true,true>* ProfileDesc;
 
 	/**
-	* Container of group description method.
-	*/
-	R::RContainer<R::RString,unsigned int,true,true>* GroupCalcMethod;
-
-	/**
 	* Container of link description method.
 	*/
 	R::RContainer<R::RString,unsigned int,true,true>* LinkCalcMethod;
@@ -278,16 +262,6 @@ public:
 	* Set the current subprofile description method used.
 	*/
 	void SetCurrentProfileDesc(R::RString str) {CurrentProfileDesc=str;}
-
-	/**
-	* Return the Current group description method used.
-	*/
-	R::RString GetCurrentGroupCalcMethod(void) {return(CurrentGroupCalcMethod);}
-
-	/**
-	* Set the Current group description method used.
-	*/
-	void SetCurrentGroupCalcMethod(R::RString str) {CurrentGroupCalcMethod=str;}
 
 	/**
 	* Return the Current link description method used.

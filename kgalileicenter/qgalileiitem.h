@@ -44,6 +44,7 @@
 #include <filters/gfilter.h>
 #include <profiles/gprofilecalc.h>
 #include <groups/ggrouping.h>
+#include <groups/ggroupcalc.h>
 using namespace GALILEI;
 
 
@@ -81,6 +82,18 @@ public:
 	GFactoryGrouping* Fac;
 	bool Enable;
 	QGroupingItem(QListView* lst,GFactoryGrouping* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+
+class QGroupCalcItem : public QListViewItem
+{
+public:
+	GFactoryGroupCalc* Fac;
+	bool Enable;
+	QGroupCalcItem(QListView* lst,GFactoryGroupCalc* fac,const char* desc)
 		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}

@@ -46,7 +46,6 @@
 #include <groups/ggroup.h>
 #include <profiles/gprofile.h>
 #include <groups/ggroupvector.h>
-#include <groups/ggroupcalcgravitation.h>
 #include <tests/gsimdocquerygroup.h>
 using namespace GALILEI;
 

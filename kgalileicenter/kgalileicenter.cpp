@@ -60,8 +60,6 @@ using namespace R;
 #include <profiles/gsubprofilevector.h>
 #include <groups/ggroup.h>
 #include <groups/gidealgroup.h>
-#include <groups/ggroupcalcgravitation.h>
-#include <groups/ggroupcalcrelevant.h>
 #include <groups/gsubject.h>
 #include <groups/gsubjecttree.h>
 #include <tests/gmixidealgroups.h>
@@ -169,20 +167,17 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbPwd=dlg.txtPwd->text().latin1();
 		try
 		{
-			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&URLManager,&ProfilingManager,&GroupingManager,DocOptions,&SessionParams);
+			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,DocOptions,&SessionParams);
 			unsigned int cmd=dlg.cbLoad->currentItem();
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(cmd);
 			Doc=new KDoc(this,Sess);
 			Sess->RegisterProfileDesc(new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile));
-			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess, &CalcGravitationParams));
-			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess,&CalcRelevantParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess, &LinkCalcHITSParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess, &LinkCalcCorrespondenceParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
 			Sess->SetCurrentProfileDesc(CurrentProfileDesc);
-			Sess->SetCurrentGroupCalcMethod(CurrentGroupCalcMethod);
 			Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
@@ -231,20 +226,17 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 {
 	QConnectMySQL dlg(this,0,true);
 	GSessionMySQL* Sess;
-	Sess = new GSessionMySQL(host,user,passwd,db,&URLManager,&ProfilingManager,&GroupingManager,DocOptions,&SessionParams);
+	Sess = new GSessionMySQL(host,user,passwd,db,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,DocOptions,&SessionParams);
 	unsigned int cmd=dlg.cbLoad->currentItem();
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 	d->LoadSession(cmd);
 	Doc=new KDoc(this,Sess);
 	Sess->RegisterProfileDesc(new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile));
-	Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess,&CalcGravitationParams));
-	Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess, &CalcRelevantParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess,&LinkCalcHITSParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess,&LinkCalcCorrespondenceParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
 	Sess->SetCurrentProfileDesc(CurrentProfileDesc);
-	Sess->SetCurrentGroupCalcMethod(CurrentGroupCalcMethod);
 	Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 	sessionDisconnect->setEnabled(true);
 	sessionCompute->setEnabled(true);

@@ -42,14 +42,13 @@
 #include <tests/ggroupsevaluate.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
+#include <groups/ggroupcalc.h>
 #include <groups/ggroupvector.h>
 #include <groups/gevaluategroupingcalinski.h>
 #include <groups/gevaluategroupingvariance.h>
 #include <groups/gevaluategroupingintramininter.h>
 #include <sessions/gsession.h>
 #include <profiles/gprofile.h>
-#include <groups/ggroupcalcgravitation.h>
-#include <groups/ggroupcalcrelevant.h>
 #include <infos/giwordsweights.h>
 #include <infos/giwordweight.h>
 #include <docs/gdoc.h>
@@ -375,10 +374,10 @@ void KViewEvaluateGroup::ConstructSimilarityDocGroup(bool relevant,bool global)
 
 	GSession* session=Doc->GetSession();
 	if (relevant)
-		session->SetCurrentGroupCalcMethod("Prototype");
+		session->GetGroupCalcMng()->SetCurrentMethod("Prototype");
 	else
-		session->SetCurrentGroupCalcMethod("Gravitation");
-	CalcMethod=session->GetCurrentGroupCalcMethod();
+		session->GetGroupCalcMng()->SetCurrentMethod("Gravitation");
+	CalcMethod=session->GetGroupCalcMng()->GetCurrentMethod();
 
 	SimilarityDoc->clear();
 

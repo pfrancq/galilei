@@ -54,8 +54,6 @@ using namespace R;
 #include <profiles/gsubprofiledesc.h>
 #include <groups/ggrouping.h>
 #include <profiles/gprofilecalc.h>
-#include <galilei/qgroupcalcpluginconfrelevant.h>
-#include <galilei/qgroupcalcpluginconfgravitation.h>
 #include <galilei/qlinkcalchitspluginconf.h>
 #include <galilei/qlinkcalccorrespondencepluginconf.h>
 #include <galilei/qlinkcalcsalsapluginconf.h>
@@ -172,6 +170,7 @@ void KGALILEICenterApp::slotPlugins(void)
 {
 	GFactoryFilterCursor Filter;
 	GFactoryProfileCalcCursor ProfileCalc;
+	GFactoryGroupCalcCursor GroupCalc;
 	GFactoryGroupingCursor Grouping;
 	QPlugins dlg(this,"Plugins Dialog");
 	QString str;
@@ -249,6 +248,31 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.CurrentGrouping->setEnabled(true);
 	}
 
+	// Goes through the group computing method
+	def=cur=0;
+	GroupCalc=GroupCalcManager.GetGroupCalcsCursor();
+	dlg.CurrentGroupCalc->insertItem("None",0);
+	for(GroupCalc.Start(),idx=1;!GroupCalc.End();GroupCalc.Next(),idx++)
+	{
+		str=GroupCalc()->GetName();
+		str+=" [";
+		str+=GroupCalc()->GetLib();
+		str+="]";
+		cur=new QGroupCalcItem(dlg.GroupCalcs,GroupCalc(),str);
+		dlg.CurrentGroupCalc->insertItem(GroupCalc()->GetName(),idx);
+		if((GroupCalc()->GetPlugin())&&(GroupCalc()->GetPlugin()==GroupCalcManager.GetCurrentMethod()))
+			dlg.CurrentGroupCalc->setCurrentItem(idx);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.GroupCalcs->setSelected(def,true);
+		dlg.changeGroupCalc(def);
+		dlg.EnableGroupCalc->setEnabled(true);
+		dlg.CurrentGroupCalc->setEnabled(true);
+	}
+
 	if(dlg.exec())
 	{
 		// Goes through filters
@@ -298,6 +322,24 @@ void KGALILEICenterApp::slotPlugins(void)
 		catch(GException)
 		{
 		}
+
+		// Goes through groups computing method
+		QGroupCalcItem* item4=dynamic_cast<QGroupCalcItem*>(dlg.GroupCalcs->firstChild());
+		while(item4)
+		{
+			if(item4->Enable)
+				item4->Fac->Create();
+			else
+				item4->Fac->Delete();
+			item4=dynamic_cast<QGroupCalcItem*>(item4->itemBelow());
+		}
+		try
+		{
+			GroupCalcManager.SetCurrentMethod(dlg.CurrentGroupCalc->currentText());
+		}
+		catch(GException)
+		{
+		}
 	}
 
 }
@@ -307,8 +349,6 @@ void KGALILEICenterApp::slotPlugins(void)
 void KGALILEICenterApp::slotOldPlugins(void)
 {
 	QPluginsDlg dlg(this,"Plugins Dialog");
-	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfRelevant(&CalcRelevantParams));
-	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfGravitation(&CalcGravitationParams));
 	dlg.RegisterLinkCalcPluginConf(new QLinkCalcHITSPluginConf(&LinkCalcHITSParams));
 	dlg.RegisterLinkCalcPluginConf(new QLinkCalcCorrespondencePluginConf(&LinkCalcCorrespondenceParams));
 	dlg.RegisterLinkCalcPluginConf(new QLinkCalcSALSAPluginConf(&LinkCalcSALSAParams));
