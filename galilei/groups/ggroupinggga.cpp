@@ -282,6 +282,10 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 //	RDebugXML file(RString("/home/pfrancq/text")+Lang->GetCode()+".xml","GIR","Pascal Francq");
 
 	if(!SubProfiles.NbPtr) return;
+	
+	// set the level of the MinSim
+	Params->MinSimLevel=Session->GetMinimumOfSimilarity(&SubProfiles);
+
 	try
 	{
 	 	GGroupDataIR data;
