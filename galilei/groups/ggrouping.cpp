@@ -42,6 +42,7 @@ using namespace RStd;
 //include files for GALILEI
 #include <langs/glang.h>
 #include <groups/ggrouping.h>
+#include <groups/ggroupcalc.h>
 #include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
 #include <profiles/gprofile.h>
@@ -181,10 +182,13 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 		// Make the grouping
 		Run();
 
-		// Save the information about the groupement
-		if(SaveGroups)
-			for(Groups->Start();!Groups->End();Groups->Next())
+		// Compute the description of the groups and Save the information.
+		for(Groups->Start();!Groups->End();Groups->Next())
+		{
+			Session->GetCurrentGroupCalcMethod()->Compute((*Groups)());
+			if(SaveGroups)
 				Session->Save((*Groups)());
+		}
 	}
 	Lang=0;
 }
