@@ -243,16 +243,19 @@ void GALILEI::GIWordsWeights::ModifyQuery(tObjType ObjType,GLang* lang)
 	double idffactor;
 	double freq;
 	GWord** words;
+	unsigned int nbref;
 
 	if(!lang->GetDict()) return;
 	for(i=lang->GetDict()->GetMaxId()+1,words=lang->GetDict()->GetWords();--i;words++)
 	{
 		if(!(*words)) continue;
+		nbref=lang->GetRef(ptr->GetId(),ObjType);
+		if(!nbref) continue;
 		ptr=GetPtr<const unsigned int>((*words)->GetId());
 		if(!ptr)
 			InsertPtr(ptr=new GIWordWeight((*words)->GetId()));
 		freq=0.5+((0.5*ptr->GetWeight())/max);
-		idffactor=log(TotalRef/lang->GetRef(ptr->GetId(),ObjType));
+		idffactor=log(TotalRef/nbref);
 		ptr->SetWeight(freq*idffactor);
 	}
 }
