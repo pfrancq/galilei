@@ -86,8 +86,8 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	ProfileCalcs=new RContainer<GProfileCalc,unsigned int,true,true>(3,3);
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
 	Groupings=new RContainer<GGrouping,RStd::tId,true,true>(3,3);
-	DocAnalyse=new GDocAnalyse(this,DocOptions);
 	DocOptions=new GDocOptions();
+	DocAnalyse=new GDocAnalyse(this,DocOptions);
 }
 
 
