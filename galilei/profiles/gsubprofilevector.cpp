@@ -87,14 +87,14 @@ void GALILEI::GSubProfileVector::AddWord(unsigned int id,double w) throw(bad_all
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::Similarity(const GSubProfile* desc) const
 {
-	return(Vector->Similarity((static_cast<const GSubProfileVector*>(desc))->Vector));
+	return(Vector->Similarity((static_cast<const GSubProfileVector*>(desc))->Vector,otSubProfile));
 }
 
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileVector::Similarity(const GDoc* doc) const
 {
-	return(Vector->Similarity(doc->GetWordWeights()));
+	return(Vector->Similarity(doc->GetWordWeights(),otNoClass));
 }
 
 

@@ -32,8 +32,15 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include<math.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include<infos/giwordweight.h>
+#include<infos/giwordsweights.h>
+#include<langs/gdict.h>
 using namespace GALILEI;
 using namespace RStd;
 
@@ -84,6 +91,16 @@ int GALILEI::GIWordWeight::Compare(const GIWordWeight &calc) const
 int GALILEI::GIWordWeight::Compare(const GIWordWeight *calc) const
 {
   return(Id-calc->Id);
+}
+
+//-----------------------------------------------------------------------------
+double GALILEI::GIWordWeight::GetQueryWeight(tObjType ObjType,GDict* dict,GIWordsWeights* vector) const
+{
+	double ret;
+
+	ret=dict->GetRef(ObjType)/dict->GetRef(Id,ObjType);
+	ret=(0.5+(0.5*Weight/vector->GetMaxWeight()))*log(ret);
+	return(ret);
 }
 
 

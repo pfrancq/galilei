@@ -107,6 +107,16 @@ public:
 	double GetWeight(void) const {return(Weight);}
 
 	/**
+	* Get the weight of the word with the query expression for a specific
+	* dictionnary.
+	* @param ObjType        Type of the reference.
+	* @param dict           Dictionnary.
+	* @param vector         Vector containing the specific word.
+	* @return double.
+	*/
+	double GetQueryWeight(tObjType ObjType,GDict* dict,GIWordsWeights* vector) const;
+
+	/**
 	* Set the weight of the word.
 	* @param w              Weight.
 	*/

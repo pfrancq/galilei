@@ -119,8 +119,9 @@ void GALILEI::GDoc::ClearInfos(void)
 {
 	Lang=0;
 	if(Words)
+	{
 		Words->Clear();
-
+	}
 }
 
 
@@ -192,7 +193,7 @@ GProfDocCursor& GALILEI::GDoc::GetProfDocCursor(void)
 //-----------------------------------------------------------------------------
 double GALILEI::GDoc::Similarity(const GDoc* doc) const
 {
-	return(Words->Similarity(doc->Words));
+	return(Words->Similarity(doc->Words,otDoc));
 }
 
 

@@ -43,6 +43,8 @@
 #include <infos/giwordweight.h>
 #include <docs/gdoc.h>
 #include <langs/glang.h>
+#include <langs/gdict.h>
+#include <langs/gword.h>
 using namespace GALILEI;
 using namespace RStd;
 
@@ -170,7 +172,7 @@ double GALILEI::GIWordsWeights::GetMaxWeight(void) const
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w) const
+double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w,tObjType /*ObjType*/) const
 {
 	double Sim=0.0;
 	GIWordWeight** ptr=Tab;
@@ -210,10 +212,29 @@ double GALILEI::GIWordsWeights::Similarity(const GIWordsWeights* w) const
 
 
 //---------------------------------------------------------------------------
+void GALILEI::GIWordsWeights::AddRefs(tObjType ObjType,GDict* dic)
+{
+	GIWordWeight** ptr;
+	unsigned int i;
+
+	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
+		dic->IncRef((*ptr)->GetId(),ObjType);
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GIWordsWeights::DelRefs(tObjType ObjType,GDict* dic)
+{
+	GIWordWeight** ptr;
+	unsigned int i;
+
+	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
+		dic->DecRef((*ptr)->GetId(),ObjType);
+}
+
+
+//---------------------------------------------------------------------------
 GALILEI::GIWordsWeights::~GIWordsWeights(void)
 {
 	if(Order) delete[] Order;
 }
-
-
-

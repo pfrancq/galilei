@@ -174,8 +174,26 @@ public:
 
 	/**
 	* Compute similarity between two vectors.
+	* @param w              Vector to compare with.
+	* @param ObjType        Type of the reference.
 	*/
-	double Similarity(const GIWordsWeights* w) const;
+	double Similarity(const GIWordsWeights* w,tObjType ObjType) const;
+
+	/**
+	* Add the references for the words contained in the vector for a given
+	* object type.
+	* @param ObjType        Type of the reference.
+	* @param dic            Dictionnary.
+	*/
+	void AddRefs(tObjType ObjType,GDict* dic);
+
+	/**
+	* Delete the references for the words contained in the vector for a given
+	* object type.
+	* @param ObjType        Type of the reference.
+	* @param dic            Dictionnary.
+	*/
+ 	void DelRefs(tObjType ObjType,GDict* dic);
 
 	/**
 	* Destructor.
