@@ -19,6 +19,8 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gprofiles/gprofdoc.h>
+#include <gdocs/gdoc.h>
+#include <gprofiles/gprofile.h>
 using namespace GALILEI;
 
 
@@ -30,24 +32,29 @@ using namespace GALILEI;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GALILEI::GProfDoc::GProfDoc(GDoc* doc,char fdbk)
-  : Doc(doc), Fdbk(fdbk)
+GALILEI::GProfDoc::GProfDoc(GDoc* doc,GProfile* prof,char fdbk,const char* date)
+  : Doc(doc), Profile(prof), Fdbk(fdbk), Updated(date)
 {
 }
 
 
 //---------------------------------------------------------------------------
-int GALILEI::GProfDoc::Compare(const GProfDoc& profdoc)
+int GALILEI::GProfDoc::Compare(const GProfDoc& profdoc) const
 {
-  return(Doc->GetId()-profdoc.Doc->GetId());
+	int diff;
+
+	diff=Doc->GetId()-profdoc.Doc->GetId();
+	if(diff) return(diff);
+	return(Profile->GetId()-profdoc.Profile->GetId());
 }
 
 
 //---------------------------------------------------------------------------
-int GALILEI::GProfDoc::Compare(const GProfDoc* profdoc)
+int GALILEI::GProfDoc::Compare(const GProfDoc* profdoc) const
 {
-  return(Doc->GetId()-profdoc->Doc->GetId());
+	int diff;
+
+	diff=Doc->GetId()-profdoc->Doc->GetId();
+	if(diff) return(diff);
+	return(Profile->GetId()-profdoc->Profile->GetId());
 }
-
-
-

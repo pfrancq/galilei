@@ -22,14 +22,20 @@
 
 
 //-----------------------------------------------------------------------------
-//include file for GALILEI
-#include <gdocs/gdoc.h>
+// include files for R Project
+#include <rtimedate/rdate.h>
 
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI {
 //-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+// forward class declaration
+class GDoc;
+class GProfile;
 
 
 //-----------------------------------------------------------------------------
@@ -47,28 +53,40 @@ class GProfDoc
 	GDoc* Doc;
 
 	/**
+	* Profile.
+	*/
+	GProfile* Profile;
+
+	/**
 	* Feedback of the profile.
 	*/
 	char Fdbk;
+
+	/**
+	* Last Updated of this feedback.
+	*/
+	RTimeDate::RDate Updated;
 
 public:
 
 	/**
 	* Constructor.
 	* @param doc            Pointer to the document judged.
+	* @param prof           Pointer to the profile.
 	* @param fdbk           Feedback.
+	* @param date           Date.
 	*/
-    GProfDoc(GDoc *doc,char fdbk);
+    GProfDoc(GDoc* doc,GProfile* prof,char fdbk,const char* date);
 
 	/**
 	* Compare mathod used by RStd::RContainer.
 	*/
-	int Compare(const GProfDoc &profdoc);
+	int Compare(const GProfDoc &profdoc) const;
 
 	/**
 	* Compare mathod used by RStd::RContainer.
 	*/
-	int Compare(const GProfDoc *profdoc);
+	int Compare(const GProfDoc *profdoc) const;
 
 	/**
 	* Get the feedback for the document.
@@ -81,6 +99,18 @@ public:
 	* @returns Pointer to the document.
 	*/
 	GDoc* GetDoc(void) const {return(Doc);}
+
+	/**
+	* Get the document judged.
+	* @returns Pointer to the document.
+	*/
+	GProfile* GetProfile(void) const {return(Profile);}
+
+	/**
+	* Get the date of the feedback.
+	* @returns Pointer to a date.
+	*/
+	const RTimeDate::RDate* GetUpdated(void) const {return(&Updated);}
 };
 
 
