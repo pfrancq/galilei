@@ -66,14 +66,16 @@ void GALILEI::GURLManager::Delete(RString& tmpFile) throw(GException)
 //-----------------------------------------------------------------------------
 GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 {
-	RString tmpFile(50);
+	RString tmpFile(250);
+	char tmp[250];
 	const char* ptr;
 	int i;
 	GDocXML* xml=0;
 	bool Dwn;
+	bool Url;
 	GMIMEFilter* f;
 
-	// Verify it is a local file (file:/) or nothing.
+	// Look for the protocol
 	ptr=doc->GetURL();
 	i=0;
 	while((*ptr)&&(isalnum(*ptr)))
@@ -81,7 +83,15 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 		i++;
 		ptr++;
 	}
-	if(i&&((*ptr)==':')&&(strncmp(ptr,"file",i)))
+
+	// If ':' find -> it is an URL
+	if(i)
+		Url=((*ptr)==':');
+	else
+		Url=false;
+
+	// if URL and protocol different than 'file' -> Download it
+	if(Url&&strncasecmp(doc->GetURL(),"file",i))
 	{
 		try
 		{
@@ -95,7 +105,15 @@ GDocXML* GALILEI::GURLManager::CreateDocXML(GDoc* doc) throw(GException)
 	}
 	else
 	{
-		tmpFile=doc->GetURL();
+		// If URL skip 'file:'
+		if(Url)
+		{
+			strcpy(tmp,doc->GetURL());
+			memcpy(tmp,&tmp[5],strlen(tmp)-5);
+			tmpFile=tmp;
+		}
+		else
+			tmpFile=doc->GetURL();
 		Dwn=false;
 	}
 
