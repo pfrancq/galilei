@@ -57,6 +57,7 @@
 		<Action name="showDocs"/>
 		<separator/>
 		<Action name="docsAnalyse"/>
+		<Action name="docsIndexer"/>
 		<separator/>
 		<Action name="docAnalyse"/>
 		<Action name="createXML"/>

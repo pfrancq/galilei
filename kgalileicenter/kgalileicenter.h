@@ -499,6 +499,12 @@ private slots:
 	void slotDocsAnalyse(void);
 
 	/**
+	* Create for each document a corresponding file containing the keywords in
+	* order to index them with ht://Dig.
+	*/
+	void slotDocsIndexer(void);
+
+	/**
 	* Create a DocXML structure for the current document.
 	*/
 	void slotCreateXML(void);
@@ -649,6 +655,7 @@ public:
 	KAction* showDocs;
 	KAction* docAnalyse;
 	KAction* docsAnalyse;
+	KAction* docsIndexer;
 	KAction* createXML;
 	KAction* saveXML;
 	KAction* analyseXML;

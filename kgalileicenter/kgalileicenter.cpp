@@ -34,6 +34,7 @@
 // include files for ANSI C/C++
 #include <pwd.h>
 #include <unistd.h>
+#include <math.h>
 
 
 //-----------------------------------------------------------------------------
@@ -58,6 +59,7 @@ using namespace R;
 #include <sessions/gmixidealgroups.h>
 #include <infos/glang.h>
 #include <infos/gdict.h>
+#include <infos/gweightinfo.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -87,10 +89,7 @@ using namespace std;
 #include <kpopupmenu.h>
 #include <kstatusbar.h>
 #include <kurlrequester.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for process running
+#include <kprogress.h>
 #include <kprocess.h>
 #include <kiconloader.h>
 
@@ -655,6 +654,47 @@ void KGALILEICenterApp::slotDocsAnalyse(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotDocsIndexer(void)
+{
+	QString dir=KFileDialog::getExistingDirectory(QString::null,this,"Choose directory where to export the files");
+	if(!dir.isEmpty())
+	{
+	 	KProgressDialog dlg(this,"Progress","Export documents");
+		dlg.show();
+		KApplication::kApplication()->processEvents();
+		RString pre(dir.latin1());
+		pre+="/doc";
+		RCursor<GDoc> Docs=Doc->GetSession()->GetDocsCursor();
+		unsigned int nb;
+		for(Docs.Start(),nb=0;!Docs.End();Docs.Next(),nb++)
+		{
+			if(dlg.wasCancelled())
+				break;
+			dlg.progressBar()->setProgress((nb*100)/Docs.GetNb());
+			KApplication::kApplication()->processEvents();
+			if(!Docs()->GetLang())
+				continue;
+			RString name=pre+itou(Docs()->GetId())+".txt";
+			dlg.setLabel(name.Latin1());
+			KApplication::kApplication()->processEvents();
+			RTextFile file(name.Latin1());
+			file.Open(RIO::Create);
+			RCursor<GWeightInfo> Words=Docs()->GetWeightInfoCursor();
+			for(Words.Start();!Words.End();Words.Next())
+			{
+				for(unsigned int i=lround(Words()->GetWeight())+1;--i;)
+				{
+					file<<Doc->GetSession()->GetStorage()->LoadWord(Words()->GetId(),Docs()->GetLang()->GetCode());
+				}
+				file<<endl;
+			}
+			file.Close();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotCreateXML(void)
 {
 	KView* m = (KView*)pWorkspace->activeWindow();
@@ -697,6 +737,7 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 	if(m->getType()!=gDoc) return;
 	((KViewDoc*)m)->AnalyseDocXML();
 }
+
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotQueryMetaEngine(void)

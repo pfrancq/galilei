@@ -10,7 +10,7 @@ kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui qchoos
 	qsessionprogress.cpp qconnectmysql.ui kviewusers.cpp kviewthgroups.cpp \
 	kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kviewstats.cpp \
 	kview.cpp kdoc.cpp kviewsom.cpp ksommap.cpp kviewmetaengine.cpp kgalileicenter.cpp main.cpp qplugins.ui qsessionoptions.ui \
-	qchoosemap.ui qsommapconfig.ui
+	qchoosemap.ui qsommapconfig.ui 
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
 kgalileicenter_LDADD = /usr/lib/libmysqlclient.la $(LIB_R) $(LIB_GALILEI) \
 	$(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
@@ -24,7 +24,7 @@ EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kg
 	kviewthgroups.cpp kviewthgroups.h kviewusers.cpp kviewusers.h qconnectmysql.ui \
 	qsessionprogress.cpp qsessionprogress.h kviewstems.cpp kviewstems.h kviewmetaengine.h\
 	kgalileicenter_dlg.cpp kgalileicenter_init.cpp \
-	kviewprg.cpp kviewprg.h   \
+	kviewprg.cpp kviewprg.h \
 	qmixidealconfig.ui\
 	qcreatedatabase.ui qcreatedatabase.ui.h qfilldatabase.ui\
 	hi16-app-kgalileicenter.png hi32-app-kgalileicenter.png kviewhistory.cpp kviewhistory.h \
