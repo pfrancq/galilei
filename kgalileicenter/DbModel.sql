@@ -382,6 +382,7 @@ CREATE TABLE htmlsbylinks (
 
 CREATE TABLE historicgroups (
   historicid int(11),
+  date Date DEFAULT '0000-00-00',
   groupid int(11),
   lang char(2),
   subprofileid int(11)
