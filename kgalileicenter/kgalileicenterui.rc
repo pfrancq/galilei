@@ -47,6 +47,13 @@
 		<Action name="textFrench"/>
 		<Action name="textEnglish"/>
 	</Menu>
+	<Menu name="GA"><text>&amp;GA</text>
+		<Action name="gaInit"/>
+		<Separator/>
+		<Action name="gaStart"/>
+		<Action name="gaPause"/>
+		<Action name="gaStop"/>
+	</Menu>
 	<Menu name="settings"><text>&amp;Settings</text>
 		<Action name="docsOptions"/>
 		<Action name="profilesOptions"/>

@@ -57,7 +57,7 @@ class KDoc;
 /**
 * Defines all the possible type of view for a document.
 */
-enum GViewType{gNothing,gUsers,gDocs,gDoc,gProfile,gGroups,gGroup,gThGroups,gDocsStat,gStems};
+enum GViewType{gNothing,gUsers,gDocs,gDoc,gProfile,gGroups,gGroup,gThGroups,gDocsStat,gStems,gGA};
 
 
 //-----------------------------------------------------------------------------
@@ -138,7 +138,7 @@ public:
 	/**
 	* Destructor for the main view.
 	*/
-	~KView(void);
+	virtual ~KView(void);
 };
 
 

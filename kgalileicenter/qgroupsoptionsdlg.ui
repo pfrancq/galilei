@@ -11,8 +11,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>354</width>
-            <height>202</height>
+            <width>283</width>
+            <height>288</height>
         </rect>
     </property>
     <property stdset="1">
@@ -59,7 +59,7 @@
                         <rect>
                             <x>7</x>
                             <y>6</y>
-                            <width>310</width>
+                            <width>240</width>
                             <height>70</height>
                         </rect>
                     </property>
@@ -75,38 +75,24 @@
                                 <string>Heuristic/Similarity</string>
                             </property>
                         </item>
+                        <item>
+                            <property>
+                                <name>text</name>
+                                <string>GA</string>
+                            </property>
+                        </item>
                         <property stdset="1">
                             <name>name</name>
-                            <cstring>cbGroupingMethod</cstring>
-                        </property>
-                        <property stdset="1">
-                            <name>geometry</name>
-                            <rect>
-                                <x>140</x>
-                                <y>20</y>
-                                <width>160</width>
-                                <height>22</height>
-                            </rect>
-                        </property>
-                    </widget>
-                    <widget>
-                        <class>QLabel</class>
-                        <property stdset="1">
-                            <name>name</name>
-                            <cstring>TextLabel1</cstring>
+                            <cstring>Method</cstring>
                         </property>
                         <property stdset="1">
                             <name>geometry</name>
                             <rect>
                                 <x>10</x>
                                 <y>20</y>
-                                <width>120</width>
-                                <height>20</height>
+                                <width>220</width>
+                                <height>22</height>
                             </rect>
-                        </property>
-                        <property stdset="1">
-                            <name>text</name>
-                            <string>Grouping Method:</string>
                         </property>
                     </widget>
                 </widget>
@@ -132,7 +118,7 @@
                         <rect>
                             <x>7</x>
                             <y>6</y>
-                            <width>310</width>
+                            <width>240</width>
                             <height>90</height>
                         </rect>
                     </property>
@@ -164,7 +150,7 @@
                         <class>QCheckBox</class>
                         <property stdset="1">
                             <name>name</name>
-                            <cstring>cbFullSim</cstring>
+                            <cstring>FullSim</cstring>
                         </property>
                         <property stdset="1">
                             <name>geometry</name>
@@ -192,7 +178,7 @@
                         <class>QLineEdit</class>
                         <property stdset="1">
                             <name>name</name>
-                            <cstring>txtLevelSim</cstring>
+                            <cstring>LevelSim</cstring>
                         </property>
                         <property stdset="1">
                             <name>geometry</name>
@@ -202,6 +188,207 @@
                                 <width>60</width>
                                 <height>22</height>
                             </rect>
+                        </property>
+                    </widget>
+                </widget>
+            </widget>
+            <widget>
+                <class>QWidget</class>
+                <property stdset="1">
+                    <name>name</name>
+                    <cstring>tab</cstring>
+                </property>
+                <attribute>
+                    <name>title</name>
+                    <string>GA</string>
+                </attribute>
+                <widget>
+                    <class>QGroupBox</class>
+                    <property stdset="1">
+                        <name>name</name>
+                        <cstring>GroupBox10</cstring>
+                    </property>
+                    <property stdset="1">
+                        <name>geometry</name>
+                        <rect>
+                            <x>10</x>
+                            <y>10</y>
+                            <width>240</width>
+                            <height>80</height>
+                        </rect>
+                    </property>
+                    <property stdset="1">
+                        <name>title</name>
+                        <string>General</string>
+                    </property>
+                    <widget>
+                        <class>QLabel</class>
+                        <property stdset="1">
+                            <name>name</name>
+                            <cstring>TextLabel1_4</cstring>
+                        </property>
+                        <property stdset="1">
+                            <name>geometry</name>
+                            <rect>
+                                <x>10</x>
+                                <y>20</y>
+                                <width>85</width>
+                                <height>16</height>
+                            </rect>
+                        </property>
+                        <property stdset="1">
+                            <name>text</name>
+                            <string>Population size</string>
+                        </property>
+                    </widget>
+                    <widget>
+                        <class>QSpinBox</class>
+                        <property stdset="1">
+                            <name>name</name>
+                            <cstring>GAPopSize</cstring>
+                        </property>
+                        <property stdset="1">
+                            <name>geometry</name>
+                            <rect>
+                                <x>180</x>
+                                <y>20</y>
+                                <width>54</width>
+                                <height>21</height>
+                            </rect>
+                        </property>
+                    </widget>
+                    <widget>
+                        <class>QComboBox</class>
+                        <item>
+                            <property>
+                                <name>text</name>
+                                <string>First Fit</string>
+                            </property>
+                        </item>
+                        <property stdset="1">
+                            <name>name</name>
+                            <cstring>GAHeuristic</cstring>
+                        </property>
+                        <property stdset="1">
+                            <name>geometry</name>
+                            <rect>
+                                <x>80</x>
+                                <y>50</y>
+                                <width>150</width>
+                                <height>22</height>
+                            </rect>
+                        </property>
+                    </widget>
+                    <widget>
+                        <class>QLabel</class>
+                        <property stdset="1">
+                            <name>name</name>
+                            <cstring>TextLaba</cstring>
+                        </property>
+                        <property stdset="1">
+                            <name>geometry</name>
+                            <rect>
+                                <x>10</x>
+                                <y>50</y>
+                                <width>60</width>
+                                <height>20</height>
+                            </rect>
+                        </property>
+                        <property stdset="1">
+                            <name>text</name>
+                            <string>Heuristic</string>
+                        </property>
+                    </widget>
+                </widget>
+                <widget>
+                    <class>QGroupBox</class>
+                    <property stdset="1">
+                        <name>name</name>
+                        <cstring>GroupBox11</cstring>
+                    </property>
+                    <property stdset="1">
+                        <name>geometry</name>
+                        <rect>
+                            <x>10</x>
+                            <y>100</y>
+                            <width>240</width>
+                            <height>90</height>
+                        </rect>
+                    </property>
+                    <property stdset="1">
+                        <name>title</name>
+                        <string>GA</string>
+                    </property>
+                    <widget>
+                        <class>QSpinBox</class>
+                        <property stdset="1">
+                            <name>name</name>
+                            <cstring>GAMaxGen</cstring>
+                        </property>
+                        <property stdset="1">
+                            <name>geometry</name>
+                            <rect>
+                                <x>180</x>
+                                <y>20</y>
+                                <width>54</width>
+                                <height>21</height>
+                            </rect>
+                        </property>
+                    </widget>
+                    <widget>
+                        <class>QSpinBox</class>
+                        <property stdset="1">
+                            <name>name</name>
+                            <cstring>GAStepGen</cstring>
+                        </property>
+                        <property stdset="1">
+                            <name>geometry</name>
+                            <rect>
+                                <x>180</x>
+                                <y>50</y>
+                                <width>54</width>
+                                <height>21</height>
+                            </rect>
+                        </property>
+                    </widget>
+                    <widget>
+                        <class>QLabel</class>
+                        <property stdset="1">
+                            <name>name</name>
+                            <cstring>TextLabel2_4</cstring>
+                        </property>
+                        <property stdset="1">
+                            <name>geometry</name>
+                            <rect>
+                                <x>10</x>
+                                <y>20</y>
+                                <width>140</width>
+                                <height>20</height>
+                            </rect>
+                        </property>
+                        <property stdset="1">
+                            <name>text</name>
+                            <string>Maximum generation</string>
+                        </property>
+                    </widget>
+                    <widget>
+                        <class>QCheckBox</class>
+                        <property stdset="1">
+                            <name>name</name>
+                            <cstring>GAStep</cstring>
+                        </property>
+                        <property stdset="1">
+                            <name>geometry</name>
+                            <rect>
+                                <x>10</x>
+                                <y>50</y>
+                                <width>130</width>
+                                <height>20</height>
+                            </rect>
+                        </property>
+                        <property stdset="1">
+                            <name>text</name>
+                            <string>Step Mode</string>
                         </property>
                     </widget>
                 </widget>
@@ -308,6 +495,12 @@
         <signal>clicked()</signal>
         <receiver>QGroupsOptionsDlg</receiver>
         <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>GAStep</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>GAStepGen</receiver>
+        <slot>setEnabled(bool)</slot>
     </connection>
 </connections>
 </UI>

@@ -256,6 +256,16 @@ public:
 	*/
 	void closeDocument(void);
 
+	/**
+	* Return the maximal number of generation.
+	*/
+	unsigned int GetMaxGen(void);
+
+	/**
+	* Return the number of generation for each step.
+	*/
+	unsigned int GetStepGen(void);
+
 public slots:
 
 	/**

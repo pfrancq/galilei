@@ -19,19 +19,22 @@ type=DATA
 [Config for BinMakefileAm]
 addcxxflags=-fexceptions -I$GCENTER/r -I$GCENTER/galilei  -I$GCENTER/qtwidgets
 bin_program=kgalileicenter
+cflags=
+cppflags=
 cxxflags=\s-O0 -g3 -Wall
 ldadd=/usr/lib/libmysqlclient.so  ${GCENTER}/galilei/sessions/libsessions.a  ${GCENTER}/galilei/profiles/libprofiles.a ${GCENTER}/galilei/langs/liblangs.a ${GCENTER}/galilei/docs/libdocs.a ${GCENTER}/galilei/groups/libgroups.a ${GCENTER}/r/rinter/librinter.a ${GCENTER}/r/rxml/librxml.a ${GCENTER}/r/rio/librio.a ${GCENTER}/galilei/infos/libinfos.a ${GCENTER}/qtwidgets/rga/librga.a ${GCENTER}/r/rga/librga.a ${GCENTER}/galilei/filters/libfilters.a ${GCENTER}/r/rmysql/librmysql.a ${GCENTER}/r/rstd/librstd.a ${GCENTER}/r/rtimedate/librtimedate.a ${GCENTER}/r/rpython/librpython.a ${GCENTER}/qtwidgets/rpython/librpython.a ${GCENTER}/galilei/python/libpython.a $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT)
-ldflags=
+ldflags=\s   \s
 
 [General]
 AMChanged=false
 author=Pascal Francq
-configure_args=--with-qt-dir=/usr/lib/qt2 --prefix=/usr
+configure_args=\s--build=i386-linux --host=i386-linux --target=i386-linux --prefix=/usr --with-qt-dir=/usr/lib/qt2 --enable-debug\s
+debug_args=-dograb
 email=pfrancq@ulb.ac.be
 kdevprj_version=1.3
 lfv_open_groups=
 make_options=\s-j1
-makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/python/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/r/rpython/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/qtwidgets/rpython/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am
+makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/python/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/r/rpython/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/qtwidgets/rpython/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am,kgalileicenter/r/rgga/Makefile.am
 modifyMakefiles=true
 project_name=KGalileiCenter
 project_type=mdi_kde2
@@ -61,7 +64,8 @@ Headers - Python=*/python/*.h
 Headers - Qt Widgets=*qtwidgets/*.h
 Headers - Sessions=*sessions/*.h
 Headers - URL Managers=*urlmanagers/*.h
-Headers R - GA=*rga/*.h
+Headers R - GA=*r/rga/*.h
+Headers R - GGA=*r/rgga/*.h
 Headers R - IO=*rio/*.h
 Headers R - Inter=*rinter/*.h
 Headers R - Math=*rmath/*.h
@@ -71,7 +75,7 @@ Headers R - Std=*rstd/*.h
 Headers R - Time/Date=*rtimedate/*.h
 Headers R - XML=*rxml/*.h
 Others=*
-Sources=*main.cpp,*kdoc*.cpp,*kview*.cpp,*kgalileicenter.cpp,*qsession*.cpp
+Sources=*main.cpp,*kdoc*.cpp,*kview*.cpp,*kgalileicenter.cpp,*qsession*.cpp,*kgalileicenter_*.cpp
 Sources - Docs=*docs/*.cpp
 Sources - Filters=*filters/*.cpp
 Sources - Groups=*groups/*.cpp
@@ -79,10 +83,11 @@ Sources - Infos=*infos/*.cpp
 Sources - Langs=*langs/*.cpp
 Sources - Profiles=*profiles/*.cpp
 Sources - Python=*/python/*.cpp
-Sources - Qt Widgets=*qtwidgets/*.cpp
+Sources - Qt Widgets=*qtwidgets/*.cpp,*qtwidgets/*.hh
 Sources - Sessions=*sessions/*.cpp
 Sources - URL Managers=*urlmanagers/*.cpp
-Sources R - GA=*rga/*.hh,*rga/*.cpp
+Sources R - GA=*r/rga/*.hh,*r/rga/*.cpp
+Sources R - GGA=*r/rgga/*.hh,*r/rgga/*.cpp
 Sources R - IO=*rio/*.cpp
 Sources R - Inter=*rinter/*.cpp
 Sources R - Math=*rmath/*.cpp
@@ -93,7 +98,7 @@ Sources R - Time/Date=*rtimedate/*.cpp
 Sources R - XML=*rxml/*.cpp
 Translations=*.po
 User Interface=*.kdevdlg,*.ui,*.rc
-groups=Headers,Headers R - GA,Headers - Qt Widgets,Headers R - Math,Headers R - Python,Headers R - MySQL,Headers R - Time/Date,Headers R - IO,Headers R - Std,Headers - URL Managers,Headers - Sessions,Headers - Python,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - Infos,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources R - Python,Sources - Sessions,Sources - Python,Sources R - Time/Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,User Interface,Translations,GNU,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
+groups=Headers,Headers R - GA,Headers R - GGA,Headers - Qt Widgets,Headers R - Math,Headers R - Python,Headers R - MySQL,Headers R - Time/Date,Headers R - IO,Headers R - Std,Headers - URL Managers,Headers - Sessions,Headers - Python,Headers - Profiles,Headers - Infos,Headers - Groups,Headers - Filters,Sources,Sources - Infos,Sources - Filters,Sources - Qt Widgets,Sources R - Math,Sources - Docs,Sources - URL Managers,Sources R - MySQL,Sources R - Inter,Sources R - Python,Sources - Sessions,Sources - Python,Sources R - Time/Date,Sources R - XML,Sources - Profiles,Sources - Langs,Sources - Groups,Sources R - Std,Sources R - IO,Sources R - GA,Sources R - GGA,User Interface,Translations,GNU,Headers R - Inter,Headers - Docs,Headers R - XML,Headers - Langs,Others
 
 [Makefile.am]
 files=kgalileicenter.kdevprj,admin,AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,kgalileicenter.lsm
@@ -146,7 +151,7 @@ install_location=
 type=DATA
 
 [kgalileicenter/Makefile.am]
-files=kgalileicenter/main.cpp,kgalileicenter/kgalileicenter.cpp,kgalileicenter/kgalileicenter.h,kgalileicenter/kgalileicenterui.rc,kgalileicenter/kgalileicenter.desktop,kgalileicenter/lo32-app-kgalileicenter.png,kgalileicenter/lo16-app-kgalileicenter.png,kgalileicenter/kdoc.cpp,kgalileicenter/kdoc.h,kgalileicenter/kview.cpp,kgalileicenter/kview.h,kgalileicenter/kviewdoc.cpp,kgalileicenter/kviewdoc.h,kgalileicenter/kviewdocs.cpp,kgalileicenter/kviewdocs.h,kgalileicenter/kviewgroup.cpp,kgalileicenter/kviewgroup.h,kgalileicenter/kviewgroups.cpp,kgalileicenter/kviewgroups.h,kgalileicenter/kviewprofile.cpp,kgalileicenter/kviewprofile.h,kgalileicenter/kviewstat.cpp,kgalileicenter/kviewstat.h,kgalileicenter/kviewthgroups.cpp,kgalileicenter/kviewthgroups.h,kgalileicenter/kviewusers.cpp,kgalileicenter/kviewusers.h,kgalileicenter/qaddjudgementselectdoc.ui,kgalileicenter/qaddjudgementselectprofile.ui,kgalileicenter/qaddnewdocument.ui,kgalileicenter/qaddnewuser.ui,kgalileicenter/qaddprofile.ui,kgalileicenter/qconnectmysql.ui,kgalileicenter/qdocsoptionsdlg.ui,kgalileicenter/qeditjudgementselectdoc.ui,kgalileicenter/qeditjudgementselectprofile.ui,kgalileicenter/qgroupsoptionsdlg.ui,kgalileicenter/qloadonedoc.ui,kgalileicenter/qprofilesoptionsdlg.ui,kgalileicenter/qsessionprogress.cpp,kgalileicenter/qsessionprogress.h,kgalileicenter/kviewstems.cpp,kgalileicenter/kviewstems.h
+files=kgalileicenter/main.cpp,kgalileicenter/kgalileicenter.cpp,kgalileicenter/kgalileicenter.h,kgalileicenter/kgalileicenterui.rc,kgalileicenter/kgalileicenter.desktop,kgalileicenter/lo32-app-kgalileicenter.png,kgalileicenter/lo16-app-kgalileicenter.png,kgalileicenter/kdoc.cpp,kgalileicenter/kdoc.h,kgalileicenter/kview.cpp,kgalileicenter/kview.h,kgalileicenter/kviewdoc.cpp,kgalileicenter/kviewdoc.h,kgalileicenter/kviewdocs.cpp,kgalileicenter/kviewdocs.h,kgalileicenter/kviewgroup.cpp,kgalileicenter/kviewgroup.h,kgalileicenter/kviewgroups.cpp,kgalileicenter/kviewgroups.h,kgalileicenter/kviewprofile.cpp,kgalileicenter/kviewprofile.h,kgalileicenter/kviewstat.cpp,kgalileicenter/kviewstat.h,kgalileicenter/kviewthgroups.cpp,kgalileicenter/kviewthgroups.h,kgalileicenter/kviewusers.cpp,kgalileicenter/kviewusers.h,kgalileicenter/qaddjudgementselectdoc.ui,kgalileicenter/qaddjudgementselectprofile.ui,kgalileicenter/qaddnewdocument.ui,kgalileicenter/qaddnewuser.ui,kgalileicenter/qaddprofile.ui,kgalileicenter/qconnectmysql.ui,kgalileicenter/qdocsoptionsdlg.ui,kgalileicenter/qeditjudgementselectdoc.ui,kgalileicenter/qeditjudgementselectprofile.ui,kgalileicenter/qgroupsoptionsdlg.ui,kgalileicenter/qloadonedoc.ui,kgalileicenter/qprofilesoptionsdlg.ui,kgalileicenter/qsessionprogress.cpp,kgalileicenter/qsessionprogress.h,kgalileicenter/kviewstems.cpp,kgalileicenter/kviewstems.h,kgalileicenter/kviewga.cpp,kgalileicenter/kviewga.h,kgalileicenter/kgalileicenter_init.cpp,kgalileicenter/kgalileicenter_dlg.cpp
 sub_dirs=galilei,r,qtwidgets
 type=prog_main
 
@@ -156,7 +161,7 @@ sub_dirs=docs,filters,groups,infos,langs,profiles,python,sessions,urlmanagers
 type=normal
 
 [kgalileicenter/galilei/docs/Makefile.am]
-files=kgalileicenter/galilei/docs/gdcmetadata.cpp,kgalileicenter/galilei/docs/gdcmetadata.h,kgalileicenter/galilei/docs/gdoc.cpp,kgalileicenter/galilei/docs/gdoc.h,kgalileicenter/galilei/docs/gdocanalyse.cpp,kgalileicenter/galilei/docs/gdocanalyse.h,kgalileicenter/galilei/docs/gdoclist.cpp,kgalileicenter/galilei/docs/gdoclist.h,kgalileicenter/galilei/docs/gdocs.cpp,kgalileicenter/galilei/docs/gdocs.h,kgalileicenter/galilei/docs/gdocxml.cpp,kgalileicenter/galilei/docs/gdocxml.h
+files=kgalileicenter/galilei/docs/gdcmetadata.cpp,kgalileicenter/galilei/docs/gdcmetadata.h,kgalileicenter/galilei/docs/gdoc.cpp,kgalileicenter/galilei/docs/gdoc.h,kgalileicenter/galilei/docs/gdocanalyse.cpp,kgalileicenter/galilei/docs/gdocanalyse.h,kgalileicenter/galilei/docs/gdoclist.cpp,kgalileicenter/galilei/docs/gdoclist.h,kgalileicenter/galilei/docs/gdocs.cpp,kgalileicenter/galilei/docs/gdocs.h,kgalileicenter/galilei/docs/gdocxml.cpp,kgalileicenter/galilei/docs/gdocxml.h,kgalileicenter/galilei/docs/gdocoptions.cpp,kgalileicenter/galilei/docs/gdocoptions.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=docs
 sub_dirs=
@@ -205,6 +210,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/docs/gdoclist.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/docs/gdocoptions.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/docs/gdocoptions.h]
 dist=true
 install=false
 install_location=
@@ -308,11 +325,23 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/groups/Makefile.am]
-files=kgalileicenter/galilei/groups/gcomparegrouping.cpp,kgalileicenter/galilei/groups/gcomparegrouping.h,kgalileicenter/galilei/groups/ggroup.cpp,kgalileicenter/galilei/groups/ggroup.h,kgalileicenter/galilei/groups/ggrouping.cpp,kgalileicenter/galilei/groups/ggrouping.h,kgalileicenter/galilei/groups/ggroupingsim.cpp,kgalileicenter/galilei/groups/ggroupingsim.h,kgalileicenter/galilei/groups/ggroups.cpp,kgalileicenter/galilei/groups/ggroups.h
+files=kgalileicenter/galilei/groups/gcomparegrouping.cpp,kgalileicenter/galilei/groups/gcomparegrouping.h,kgalileicenter/galilei/groups/ggroup.cpp,kgalileicenter/galilei/groups/ggroup.h,kgalileicenter/galilei/groups/ggrouping.cpp,kgalileicenter/galilei/groups/ggrouping.h,kgalileicenter/galilei/groups/ggroupingsim.cpp,kgalileicenter/galilei/groups/ggroupingsim.h,kgalileicenter/galilei/groups/ggroups.cpp,kgalileicenter/galilei/groups/ggroups.h,kgalileicenter/galilei/groups/gchromoir.cpp,kgalileicenter/galilei/groups/gchromoir.h,kgalileicenter/galilei/groups/ggroupir.cpp,kgalileicenter/galilei/groups/ggroupir.h,kgalileicenter/galilei/groups/ginstir.cpp,kgalileicenter/galilei/groups/ginstir.h,kgalileicenter/galilei/groups/gir.cpp,kgalileicenter/galilei/groups/gir.h,kgalileicenter/galilei/groups/ggroupingoptions.cpp,kgalileicenter/galilei/groups/ggroupingoptions.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=groups
 sub_dirs=
 type=static_library
+
+[kgalileicenter/galilei/groups/gchromoir.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/gchromoir.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [kgalileicenter/galilei/groups/gcomparegrouping.cpp]
 dist=true
@@ -350,6 +379,18 @@ install=false
 install_location=
 type=HEADER
 
+[kgalileicenter/galilei/groups/ggroupingoptions.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/ggroupingoptions.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [kgalileicenter/galilei/groups/ggroupingsim.cpp]
 dist=true
 install=false
@@ -362,6 +403,18 @@ install=false
 install_location=
 type=HEADER
 
+[kgalileicenter/galilei/groups/ggroupir.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/ggroupir.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [kgalileicenter/galilei/groups/ggroups.cpp]
 dist=true
 install=false
@@ -369,6 +422,30 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/groups/ggroups.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/groups/ginstir.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/ginstir.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/groups/gir.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/groups/gir.h]
 dist=true
 install=false
 install_location=
@@ -557,7 +634,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/profiles/Makefile.am]
-files=kgalileicenter/galilei/profiles/gprofdoc.cpp,kgalileicenter/galilei/profiles/gprofdoc.h,kgalileicenter/galilei/profiles/gprofile.cpp,kgalileicenter/galilei/profiles/gprofile.h,kgalileicenter/galilei/profiles/gprofilecalc.cpp,kgalileicenter/galilei/profiles/gprofilecalc.h,kgalileicenter/galilei/profiles/gprofilecalcvector.cpp,kgalileicenter/galilei/profiles/gprofilecalcvector.h,kgalileicenter/galilei/profiles/gsubprofile.cpp,kgalileicenter/galilei/profiles/gsubprofile.h,kgalileicenter/galilei/profiles/gsubprofiledesc.cpp,kgalileicenter/galilei/profiles/gsubprofiledesc.h,kgalileicenter/galilei/profiles/gsubprofiledescvector.cpp,kgalileicenter/galilei/profiles/gsubprofiledescvector.h,kgalileicenter/galilei/profiles/guser.cpp,kgalileicenter/galilei/profiles/guser.h,kgalileicenter/galilei/profiles/gusers.cpp,kgalileicenter/galilei/profiles/gusers.h
+files=kgalileicenter/galilei/profiles/gprofdoc.cpp,kgalileicenter/galilei/profiles/gprofdoc.h,kgalileicenter/galilei/profiles/gprofile.cpp,kgalileicenter/galilei/profiles/gprofile.h,kgalileicenter/galilei/profiles/gprofilecalc.cpp,kgalileicenter/galilei/profiles/gprofilecalc.h,kgalileicenter/galilei/profiles/gprofilecalcvector.cpp,kgalileicenter/galilei/profiles/gprofilecalcvector.h,kgalileicenter/galilei/profiles/gsubprofile.cpp,kgalileicenter/galilei/profiles/gsubprofile.h,kgalileicenter/galilei/profiles/gsubprofiledesc.cpp,kgalileicenter/galilei/profiles/gsubprofiledesc.h,kgalileicenter/galilei/profiles/gsubprofiledescvector.cpp,kgalileicenter/galilei/profiles/gsubprofiledescvector.h,kgalileicenter/galilei/profiles/guser.cpp,kgalileicenter/galilei/profiles/guser.h,kgalileicenter/galilei/profiles/gusers.cpp,kgalileicenter/galilei/profiles/gusers.h,kgalileicenter/galilei/profiles/gprofoptions.cpp,kgalileicenter/galilei/profiles/gprofoptions.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=profiles
 sub_dirs=
@@ -606,6 +683,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/profiles/gprofilecalcvector.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/profiles/gprofoptions.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/profiles/gprofoptions.h]
 dist=true
 install=false
 install_location=
@@ -794,6 +883,18 @@ install=false
 install_location=
 type=HEADER
 
+[kgalileicenter/kgalileicenter_dlg.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/kgalileicenter_init.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
 [kgalileicenter/kgalileicenterui.rc]
 dist=true
 install=false
@@ -831,6 +932,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/kviewdocs.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/kviewga.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/kviewga.h]
 dist=true
 install=false
 install_location=
@@ -1150,7 +1263,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/r/Makefile.am]
-sub_dirs=rstd,rio,rxml,rtimedate,rinter,rmysql,rpython,rga,rmath
+sub_dirs=rstd,rio,rxml,rtimedate,rinter,rmysql,rpython,rga,rmath,rgga
 type=normal
 
 [kgalileicenter/r/rga/Makefile.am]
@@ -1231,6 +1344,107 @@ install_location=
 type=HEADER
 
 [kgalileicenter/r/rga/robjs.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/Makefile.am]
+files=kgalileicenter/r/rgga/rchromog.h,kgalileicenter/r/rgga/rchromog.hh,kgalileicenter/r/rgga/rfirstfitheuristic.h,kgalileicenter/r/rgga/rfirstfitheuristic.hh,kgalileicenter/r/rgga/rgga.cpp,kgalileicenter/r/rgga/rgga.h,kgalileicenter/r/rgga/rgroup.h,kgalileicenter/r/rgga/rgroup.hh,kgalileicenter/r/rgga/rgroupingheuristic.h,kgalileicenter/r/rgga/rgroupingheuristic.hh,kgalileicenter/r/rgga/rgroups.h,kgalileicenter/r/rgga/rgroups.hh,kgalileicenter/r/rgga/rinstg.h,kgalileicenter/r/rgga/rinstg.hh,kgalileicenter/r/rgga/robjg.cpp,kgalileicenter/r/rgga/robjg.h
+sub_dirs=
+type=static_library
+
+[kgalileicenter/r/rgga/rchromog.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rchromog.hh]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rfirstfitheuristic.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rfirstfitheuristic.hh]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rgga.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/r/rgga/rgga.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rgroup.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rgroup.hh]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rgroupingheuristic.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rgroupingheuristic.hh]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rgroups.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rgroups.hh]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rinstg.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/rinstg.hh]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/r/rgga/robjg.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/r/rgga/robjg.h]
 dist=true
 install=false
 install_location=

@@ -81,7 +81,7 @@ void KView::print(QPrinter* pPrinter)
 
 
 //-----------------------------------------------------------------------------
-void KView::closeEvent(QCloseEvent* e)
+void KView::closeEvent(QCloseEvent* /*e*/)
 {
 	// DO NOT CALL QWidget::closeEvent(e) here !!
 	// This will accept the closing by QCloseEvent::accept() by default.

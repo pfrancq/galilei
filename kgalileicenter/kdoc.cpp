@@ -73,7 +73,7 @@ KDoc::KDoc(KGALILEICenterApp* owner,GSession* session)
 {
 	pViewList = new QList<KView>;
 	pViewList->setAutoDelete(false);
-	Stat=new GProfileCalcVector(session,25);
+	Stat=new GProfileCalcVector(session);
 	Sim=new GGroupingSim(session);
 }
 
@@ -153,6 +153,20 @@ void KDoc::changedViewList(void)
 
 
 //-----------------------------------------------------------------------------
+unsigned int KDoc::GetMaxGen(void)
+{
+	return(50);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int KDoc::GetStepGen(void)
+{
+	return(0);
+}
+
+
+//-----------------------------------------------------------------------------
 bool KDoc::isLastView(void)
 {
 	return((int)pViewList->count()==1);
@@ -209,7 +223,7 @@ void KDoc::deleteContents(void)
 
 
 //-----------------------------------------------------------------------------
-bool KDoc::canCloseFrame(KView* pFrame)
+bool KDoc::canCloseFrame(KView* /*pFrame*/)
 {
 	if(!isLastView())
 		return(true);

@@ -45,6 +45,12 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <urlmanagers/gurlmanagerkde.h>
+namespace GALILEI
+{
+	class GDocOptions;
+	class GProfOptions;
+	class GGroupingOptions;
+}
 using namespace GALILEI;
 
 
@@ -142,50 +148,19 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	KDoc* Doc;
 
 	/**
-	* Sizes of the OK and KO lists.
+	* Options of the documents.
 	*/
-	unsigned int ParamOKKOSize;
+	GDocOptions* DocOptions;
 
 	/**
-	* Is the Similarity for the documents full?
+	* Options of the documents.
 	*/
-	bool ParamFullSim;
+	GProfOptions* ProfOptions;
 
 	/**
-	* Level of similarity for the groupement.
+	* Options of the grouping methods.
 	*/
-	double ParamLevelSim;
-
-	/**
-	* Must the documents' language be considered as static.
-	*/
-	bool ParamStaticLang;
-
-	/**
-	* Minimum percentage of words of a document that must be in the stoplist.
-	*/
-	double ParamMinStop;
-
-	/**
-	* Minimum number of characters to have a valid word.
-	*/
-	unsigned int ParamMinWordSize;
-
-	/**
-	* Minimum number of characters to have a valid word.
-	*/
-	unsigned int ParamMinStemSize;
-
-	/**
-	* Minimum number of occurences needed to insert a valid word in the list of
-	* information for a document.
-	*/
-	unsigned int ParamMinOccur;
-
-	/**
-	* Determine if the extracted words may contain other things than letters.
-	*/
-	bool ParamNonLetterWords;
+	GGroupingOptions* GroupingOptions;
 
 public:
 
@@ -418,6 +393,26 @@ private slots:
 	void slotTextEnglish(void);
 
 	/**
+	* Initialize the GA.
+	*/
+	void slotGAInit(void);
+
+	/**
+	* Start the GA.
+	*/
+	void slotGAStart(void);
+
+	/**
+	* Pause the GA.
+	*/
+	void slotGAPause(void);
+
+	/**
+	* Stop the GA.
+	*/
+	void slotGAStop(void);
+
+	/**
 	* Toggles the toolbar.
 	*/
 	void slotViewToolBar(void);
@@ -444,7 +439,6 @@ private slots:
 
 	/**
 	* Called when the option about the profile's has to be changed.
-	* Show the dialog box for the documents.
 	*/
 	void slotDocsOptions(void);
 
@@ -529,6 +523,11 @@ public:
 
 	KAction* textFrench;
 	KAction* textEnglish;
+
+	KAction* gaInit;
+	KAction* gaStart;
+	KAction* gaPause;
+	KAction* gaStop;
 
 	KAction* docsOptions;
 	KAction* profilesOptions;
