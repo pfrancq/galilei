@@ -223,6 +223,8 @@ class GStandardInOutPutCursor;
 //-----------------------------------------------------------------------------
 // forward class declaration - Parameters Part
 // Grouping parameters
+class GParams;
+class GParam;
 class GGroupingParams;
 class GIRParams;
 class GKMeansParams;
@@ -241,7 +243,8 @@ class GCalcRelevantParams;
 class GCalcGravitationParams;
 // Link Description parameters
 class GLinkCalcHITSParams;
-
+// Session parameters
+class GSessionParams;
 
 //-----------------------------------------------------------------------------
 /**
