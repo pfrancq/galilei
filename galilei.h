@@ -182,7 +182,8 @@ const unsigned cNoRef=0xFFFFFFFF;
 /**
 * Types of GALILEI objects.
 */
-enum tObjType{
+enum tObjType
+{
 	otNoClass               /** No specific class. */,
 	otSession               /** GALILEI Session. */,
 	otDoc                   /** Document. */,
@@ -192,41 +193,51 @@ enum tObjType{
 	otProfile               /** Profile.*/,
 	otSubProfile            /** SubProfile.*/,
 	otGroups                /** Groups.*/,
-	otGroup                 /** Group.*/};
+	otGroup                 /** Group.*/,
+	otDocSubProfile         /** Document or SubProfile.*/,
+	otDocGroup              /** Document or Group.*/,
+	otSubProfileGroup       /** SubProfile or Group.*/
+};
 
 
 //-----------------------------------------------------------------------------
 /**
 * States of a given GALILEI object.
 */
-enum tObjState{
+enum tObjState
+{
 	osUnknow                /** Unknow state.*/,
 	osCreated               /** Object was created.*/,
 	osUpToDate              /** Object is up to date.*/,
 	osModified              /** Object was modified and computation must be update.*/,
 	osUpdated               /** Object is updated and needs to be save.*/,
-	osDelete                /** Object must be deleted.*/};
+	osDelete                /** Object must be deleted.*/
+};
 
 
 //-----------------------------------------------------------------------------
 /**
 * Judgments over a document.
 */
-enum tDocJudgement{
+enum tDocJudgement
+{
 	djUnknow                /** Unknow judgement.*/,
 	djOK                    /** Document is OK.*/,
 	djKO                    /** Document is KO.*/,
 	djNav                   /** Document is an interesting navigation document.*/,
-	djOutScope              /** Document is out of scope.*/};
+	djOutScope              /** Document is out of scope.*/
+};
 
 
 //-----------------------------------------------------------------------------
 /**
 * Models used to describe subprofiles.
 */
-enum tSubProfileDesc{
+enum tSubProfileDesc
+{
 	sdNothing               /** Unknow Model.*/,
-	sdVector                /** Vector Model.*/};
+	sdVector                /** Vector Model.*/
+};
 
 
 //-----------------------------------------------------------------------------

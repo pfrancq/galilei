@@ -170,6 +170,15 @@ unsigned int GALILEI::GWord::GetRef(tObjType ObjType)
 		case otGroup:
 			return(NbRefGroups);
 			break;
+		case otDocSubProfile:
+			return(NbRefDocs+NbRefSubProfiles);
+			break;
+		case otDocGroup:
+			return(NbRefDocs+NbRefGroups);
+			break;
+		case otSubProfileGroup:
+			return(NbRefSubProfiles+NbRefGroups);
+			break;
 		default:
 			return(NbRefDocs+NbRefSubProfiles+NbRefGroups);
 			break;
