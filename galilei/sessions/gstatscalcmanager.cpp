@@ -56,9 +56,10 @@ using namespace R;
 GStatsCalcManager::GStatsCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryStatsCalc,true,true>(10,5),GPluginManager("StatsCalc",paths)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/stats";
 		LoadPlugins<GFactoryStatsCalc,GFactoryStatsCalcInit,GStatsCalcManager>(this,Path.Latin1(),API_STATSCALC_VERSION, dlg);
 	}
@@ -71,7 +72,7 @@ void GStatsCalcManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryStatsCalc> Cur;
 	GStatsCalc* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -87,7 +88,7 @@ void GStatsCalcManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryStatsCalc> Cur;
 	GStatsCalc* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -112,7 +113,7 @@ GStatsCalc* GStatsCalcManager::Get(const char* name)
 //------------------------------------------------------------------------------
 R::RCursor<GFactoryStatsCalc> GStatsCalcManager::GetStatsCalcsCursor(void)
 {
-	R::RCursor<GFactoryStatsCalc> cur(this);
+	R::RCursor<GFactoryStatsCalc> cur(*this);
 	return(cur);
 }
 

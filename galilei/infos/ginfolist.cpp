@@ -59,13 +59,6 @@ GInfoList::GInfoList(const GInfoList& i) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GInfoList::GInfoList(const GInfoList* i) throw(std::bad_alloc)
-	: GInfo(i), RContainer<GInfo,true,true>(i)
-{
-}
-
-
-//------------------------------------------------------------------------------
 int GInfoList::Compare(const unsigned int& id) const
 {
 	return(Id-id);
@@ -98,15 +91,17 @@ GInfoList& GInfoList::operator=(const GInfoList& i) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 bool GInfoList::IsSame(const GInfoList& l) const
 {
-	const GInfo** ptr=const_cast<const GInfo**>(Tab);
-	const GInfo** ptr2=const_cast<const GInfo**>(l.Tab);
-	unsigned int i=NbPtr+1;
-	unsigned int j=l.NbPtr+1;
+	RCursor<GInfo> ptr(*this);
+	RCursor<GInfo> ptr2(l);
 
-	while((--i)&&(--j))
+	ptr.Start();
+	ptr2.Start();
+	while((!ptr.End())&&(!ptr2.End()))
 	{
-		if((*(ptr++))!=(*(ptr2++)))
+		if(ptr()!=ptr2())
 			return(false);
+		ptr.Next();
+		ptr2.Next();
 	}
 	return(true);
 }

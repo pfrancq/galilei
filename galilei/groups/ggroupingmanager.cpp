@@ -53,9 +53,10 @@ using namespace R;
 GGroupingManager::GGroupingManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryGrouping,true,true>(10,5), GPluginManager("Grouping",paths),Current(0)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/grouping";
 		LoadPlugins<GFactoryGrouping,GFactoryGroupingInit,GGroupingManager>(this,Path.Latin1(),API_GROUPING_VERSION, dlg);
 	}
@@ -69,7 +70,7 @@ void GGroupingManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryGrouping> Cur;
 	GGrouping* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -85,7 +86,7 @@ void GGroupingManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryGrouping> Cur;
 	GGrouping* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -122,7 +123,7 @@ GGrouping* GGroupingManager::GetCurrentMethod(void)
 //------------------------------------------------------------------------------
 R::RCursor<GFactoryGrouping> GGroupingManager::GetGroupingsCursor(void)
 {
-	R::RCursor<GFactoryGrouping> cur(this);
+	R::RCursor<GFactoryGrouping> cur(*this);
 	return(cur);
 }
 

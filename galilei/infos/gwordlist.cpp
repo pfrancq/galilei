@@ -63,11 +63,6 @@ GWordList::GWordList(const GWordList& list) throw(std::bad_alloc)
 {
 }
 
-//------------------------------------------------------------------------------
-GWordList::GWordList(const GWordList* list) throw(std::bad_alloc)
-	: GData(list), RContainer<GWord,false,true>(list)
-{
-}
 
 //------------------------------------------------------------------------------
 void GWordList::InsertWord(const GWord* word) throw(std::bad_alloc)
@@ -79,7 +74,7 @@ void GWordList::InsertWord(const GWord* word) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 R::RCursor<GWord> GWordList::GetWordCursor(void) throw(std::bad_alloc)
 {
-	R::RCursor<GWord> cur(this);
+	R::RCursor<GWord> cur(*this);
 	return(cur);
 }
 
@@ -87,7 +82,7 @@ R::RCursor<GWord> GWordList::GetWordCursor(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 GData* GWordList::CreateCopy(void) const throw(std::bad_alloc)
 {
-	GWordList* ptr=new GWordList(this);
+	GWordList* ptr=new GWordList(*this);
 	return(ptr);
 }
 

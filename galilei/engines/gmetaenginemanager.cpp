@@ -55,9 +55,10 @@ using namespace R;
 GMetaEngineManager::GMetaEngineManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryMetaEngine,true,true>(10,5),GPluginManager("MetaEngine",paths),Current(0)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/metaengines";
 		LoadPlugins<GFactoryMetaEngine,GFactoryMetaEngineInit,GMetaEngineManager>(this,Path.Latin1(),API_METAENGINE_VERSION, dlg);
 	}
@@ -70,7 +71,7 @@ void GMetaEngineManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryMetaEngine> CurM;
 	GMetaEngine* meta;
 
-	CurM.Set(this);
+	CurM.Set(*this);
 	for(CurM.Start();!CurM.End();CurM.Next())
 	{
 		meta=CurM()->GetPlugin();
@@ -86,7 +87,7 @@ void GMetaEngineManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryMetaEngine> CurM;
 	GMetaEngine* meta;
 
-	CurM.Set(this);
+	CurM.Set(*this);
 	for(CurM.Start();!CurM.End();CurM.Next())
 	{
 		meta=CurM()->GetPlugin();
@@ -123,7 +124,7 @@ GMetaEngine* GMetaEngineManager::GetCurrentMethod(void)
 //------------------------------------------------------------------------------
 R::RCursor<GFactoryMetaEngine> GMetaEngineManager::GetMetaEnginesCursor(void)
 {
-	R::RCursor<GFactoryMetaEngine> cur(this);
+	R::RCursor<GFactoryMetaEngine> cur(*this);
 	return(cur);
 }
 

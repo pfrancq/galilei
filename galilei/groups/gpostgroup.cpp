@@ -6,7 +6,7 @@
 
 	Generic Post-Group Computing Method - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be).
@@ -82,7 +82,7 @@ GFactoryPostGroup::GFactoryPostGroup(GPostGroupManager* mng,const char* n,const 
 		 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f)
 {
 	//insert a "Level" parameter
-	InsertPtr(new GParamUInt("Level",mng->NbPtr));
+	InsertPtr(new GParamUInt("Level",mng->GetNb()));
 }
 
 

@@ -110,7 +110,7 @@ public:
 	* Get the number of documents handled.
 	* @returns Number of documents.
 	*/
-	unsigned int GetNbDocs(void) const {return(NbPtr);}
+	unsigned int GetNbDocs(void) const {return(GetNb());}
 
 	/**
 	* Get the number of documents handled for a given langage.

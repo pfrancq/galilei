@@ -5,7 +5,7 @@
 
 	Generic Documents Post-Analysis Method - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors
 		 Kumps Nicolas (nkumps@ulb.ac.be)
@@ -82,7 +82,7 @@ GFactoryPostDoc::GFactoryPostDoc(GPostDocManager* mng,const char* n,const char* 
 		 : GFactoryPlugin<GFactoryPostDoc,GPostDoc,GPostDocManager>(mng,n,f)
 {
 	//insert a "Level" parameter
-	InsertPtr(new GParamUInt("Level",mng->NbPtr));
+	InsertPtr(new GParamUInt("Level",mng->GetNb()));
 }
 
 

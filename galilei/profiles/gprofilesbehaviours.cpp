@@ -225,10 +225,16 @@ GBehaviour* GProfilesBehaviours::GProfilesBehaviour::GetRatio(GSubProfile* sub1,
 		i=j;
 		j=tmp;
 	}
-	b=Behaviours->GetPtrAt(i);
-	if(!b) return(0);
-	b2=b->GetPtrAt(j);
-	if(!b2) return(0);
+	if(Behaviours->GetMaxPos()<i+1)
+		return(0);
+	b=(*Behaviours)[i];
+	if(!b)
+		return(0);
+	if(b->GetMaxPos()<j+1)
+		return(0);
+	b2=(*b)[j];
+	if(!b2)
+		return(0);
 
 	if((b2->State == osUpdated)||(b2->State == osUpToDate))
 		return(b2);
@@ -295,7 +301,7 @@ void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(std::bad_alloc
 	GBehaviour* behaviour;
 	RCursor<GSubProfile> subscur;
 	RCursor<GSubProfile> subscur2;
-	subscur.Set(ModifiedProfs);
+	subscur.Set(*ModifiedProfs);
 	subscur2=Manager->GetSession()->GetSubProfilesCursor(Lang);
 
 	// if memory is false, no update is needed
@@ -308,23 +314,32 @@ void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(std::bad_alloc
 	for (subscur.Start(); !subscur.End(); subscur.Next())
 	{
 		if (!subscur()->IsDefined()) continue;
-		behaviours = Behaviours->GetPtrAt(subscur()->GetProfile()->GetId());
-		if(!behaviours)
+		if(Behaviours->GetMaxPos()<subscur()->GetProfile()->GetId()+1)
 			behaviours=AddNewBehaviours(subscur());
-		//else if they exist, they have to be update
 		else
 		{
-			for (subscur2.Start(); !subscur2.End(); subscur2.Next())
+			behaviours =(*Behaviours)[subscur()->GetProfile()->GetId()];
+			if(!behaviours)
+				behaviours=AddNewBehaviours(subscur());
+			else
 			{
-				if (!subscur2()->IsDefined()) continue;
-				//take only less ID
-				if (!(subscur()->GetProfile()->GetId()>subscur2()->GetProfile()->GetId())) continue;
-				behaviour=behaviours->GetPtrAt(subscur2()->GetProfile()->GetId());
-				if (!behaviour)
-					AnalyseBehaviour(behaviours, subscur(), subscur2());
+				for (subscur2.Start(); !subscur2.End(); subscur2.Next())
+				{
+					if (!subscur2()->IsDefined()) continue;
+					//take only less ID
+					if (!(subscur()->GetProfile()->GetId()>subscur2()->GetProfile()->GetId())) continue;
+					if(behaviours->GetMaxPos()<subscur2()->GetProfile()->GetId()+1)
+						AnalyseBehaviour(behaviours, subscur(), subscur2());
+					else
+					{
+						behaviour=(*behaviours)[subscur2()->GetProfile()->GetId()];
+						if(!behaviour)
+							AnalyseBehaviour(behaviours, subscur(), subscur2());
+					}
+				}
 			}
 		}
-		RCursor<GBehaviour> Cur(behaviours);
+		RCursor<GBehaviour> Cur(*behaviours);
 		for(Cur.Start();!Cur.End();Cur.Next())
 				Cur()->State=osModified;
 	}
@@ -343,20 +358,22 @@ GBehaviours*  GProfilesBehaviours::GProfilesBehaviour::AddNewBehaviours(GSubProf
 	GBehaviours* behaviours, *tmpbehaviours;
 	RCursor<GSubProfile> subcur;
 
-	if (!sub->IsDefined()) return 0;
+	if(!sub->IsDefined()) return 0;
 	behaviours=new GBehaviours(sub->GetProfile()->GetId(),sub->GetProfile()->GetId());
 	Behaviours->InsertPtrAt(behaviours, sub->GetProfile()->GetId());
         subcur=Manager->GetSession()->GetSubProfilesCursor(Lang);
 
-	for (subcur.Start(); !subcur.End(); subcur.Next())
+	for(subcur.Start(); !subcur.End(); subcur.Next())
 	{
-		if (subcur()->GetProfile()->GetId()<sub->GetProfile()->GetId())
+		if(subcur()->GetProfile()->GetId()<sub->GetProfile()->GetId())
 		{
 			AnalyseBehaviour(behaviours, sub,subcur());
 		}
-		if (subcur()->GetProfile()->GetId()>sub->GetProfile()->GetId())
+		if(subcur()->GetProfile()->GetId()>sub->GetProfile()->GetId())
 		{
-			tmpbehaviours=Behaviours->GetPtrAt(subcur()->GetProfile()->GetId());
+			if(Behaviours->GetMaxPos()<subcur()->GetProfile()->GetId()+1)
+				continue;
+			tmpbehaviours=(*Behaviours)[subcur()->GetProfile()->GetId()];
 			if(tmpbehaviours)
 				AnalyseBehaviour(tmpbehaviours, subcur(), sub);
 		}

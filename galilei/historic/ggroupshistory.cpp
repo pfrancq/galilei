@@ -66,7 +66,7 @@ GGroupsHistoryManager::GGroupsHistoryManager(GSession* session,unsigned int max)
 //-------------------------------------------------------------------------------
 R::RCursor<GGroupsHistory> GGroupsHistoryManager::GetGroupsHistoryCursor(void)
 {
-	R::RCursor<GGroupsHistory> cur(this);
+	R::RCursor<GGroupsHistory> cur(*this);
 	return(cur);
 }
 
@@ -74,7 +74,7 @@ R::RCursor<GGroupsHistory> GGroupsHistoryManager::GetGroupsHistoryCursor(void)
 //------------------------------------------------------------------------------
 void GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen) throw(std::bad_alloc)
 {
-	R::RCursor<GGroupsHistory> Cur(this);
+	R::RCursor<GGroupsHistory> Cur(*this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->CheckModifiedGroups(minGen);
@@ -84,7 +84,7 @@ void GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen) throw(std::
 //------------------------------------------------------------------------------
 void GGroupsHistoryManager::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 {
-	R::RCursor<GGroupsHistory> Cur(this);
+	R::RCursor<GGroupsHistory> Cur(*this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
@@ -97,7 +97,7 @@ void GGroupsHistoryManager::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GGroupsHistoryManager::CheckNewProfiles(void) throw(std::bad_alloc)
 {
-	R::RCursor<GGroupsHistory> Cur(this);
+	R::RCursor<GGroupsHistory> Cur(*this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->CheckNewProfiles();
@@ -108,38 +108,38 @@ void GGroupsHistoryManager::CheckNewProfiles(void) throw(std::bad_alloc)
 void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxgen) throw(std::bad_alloc)
 {
 	unsigned int  i, maxoccurs, nbchildren;
-	GGroupsHistory* curgrps, *nextgrps;
-	GGroupHistory* grp;
+	GGroupsHistory *nextgrps;
 	GWeightInfosHistory* subprof;
 	bool treated;
 	unsigned int** tab;
-	R::RCursor<GGroupsHistory> Cur(this);
+	R::RCursor<GGroupsHistory> Cur(*this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		// If the groups is the last one, no child
 		if(Cur()->GetId()==maxgen) continue;
 
-		curgrps=Cur();
-		nextgrps=GetPtr(curgrps->GetId()+1);
-		if (!nextgrps)
+		nextgrps=GetPtr(Cur()->GetId()+1);
+		if(!nextgrps)
 			return;
 
-		for (curgrps->Start(); !curgrps->End(); curgrps->Next())
+		RCursor<GGroupHistory> Cur2(*Cur());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
-			grp=(*curgrps)();
 			nbchildren=0;
-			//initialize the table od groupid / nboccurs
-			tab= new unsigned int* [grp->NbPtr];
-			for (i=0; i<grp->NbPtr; i++)
+
+			// Initialize the table od groupid / nboccurs
+			tab= new unsigned int*[Cur2()->GetNb()];
+			for (i=0; i<Cur2()->GetNb(); i++)
 				tab[i]=new unsigned int [2];
-			for (i=0; i<grp->NbPtr; i++)
+			for (i=0; i<Cur2()->GetNb(); i++)
 				tab[i][0]=tab[i][1]=0;
 
-			//fill the table
-			for (grp->Start(); !grp->End(); grp->Next())
+			// Fill the table
+			RCursor<GWeightInfosHistory> Cur3(*Cur2());
+			for(Cur3.Start();!Cur3.End();Cur3.Next())
 			{
-				subprof=nextgrps->GetSubProfile((*grp)()->GetId());
+				subprof=nextgrps->GetSubProfile(Cur3()->GetId());
 				treated=false;
 				i=0;
 				while(!treated&&i<nbchildren)
@@ -159,17 +159,19 @@ void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxge
 				}
 			}
 
-			//analyse table;
+			// Analyse table;
 			maxoccurs=0;
-			for (i=0; i<grp->NbPtr;i++)
+			for(i=0;i<Cur2()->GetNb();i++)
 				if (tab[i][1]>maxoccurs)
 					maxoccurs=tab[i][1];
-			//and find the childrens
-			for (i=0; i<grp->NbPtr;i++)
+
+			// Find the childrens
+			for(i=0;i<Cur2()->GetNb();i++)
 				if (tab[i][1]==maxoccurs)
-					grp->InsertChildren(nextgrps->GetPtr(tab[i][0]));
-			//delete the table
-			for (i=0; i<grp->NbPtr; i++)
+					Cur2()->InsertChildren(nextgrps->GetPtr(tab[i][0]));
+
+			// Delete the table
+			for(i=0;i<Cur2()->GetNb();i++)
 				delete [] tab[i];
 			delete [] tab;
 		}
@@ -224,14 +226,13 @@ R::RDate GGroupsHistory::GetDate(void) const
 //------------------------------------------------------------------------------
 GWeightInfosHistory* GGroupsHistory::GetSubProfile(unsigned int id) throw(GException)
 {
-	GGroupHistory* grp;
-
-	for (Start(); !End(); Next())
+	RCursor<GGroupHistory> Cur(*this);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		grp=(*this)();
-		for (grp->Start(); !grp->End(); grp->Next())
-		 	if ((*grp)()->GetId()==id)
-		  		return((*grp)());
+		RCursor<GWeightInfosHistory> Cur2(*Cur());
+		for(Cur2.Start();!Cur2.End();Cur.Next())
+			if(Cur2()->GetId()==id)
+				return(Cur2());
 	}
 	return(0);
 }
@@ -270,7 +271,7 @@ void GGroupsHistory::CheckModifiedGroups(unsigned int minGen) throw(std::bad_all
 {
 	RContainer<GWeightInfosHistory,false,true>* lastsubs;
 	GGroupsHistory* lastgroups;
-	GGroupHistory* grp, *lastgroup;
+	GGroupHistory* lastgroup;
 	GWeightInfosHistory* sub, *lastsub;
 	unsigned int  lastcurid;
 
@@ -281,47 +282,53 @@ void GGroupsHistory::CheckModifiedGroups(unsigned int minGen) throw(std::bad_all
 	lastsubs=new R::RContainer<GWeightInfosHistory,false,true>(10,5);
 	lastgroups=Manager->GetPtr(this->GetId()-1);
 	if (!lastgroups) return;
-	for (lastgroups->Start(); !lastgroups->End(); lastgroups->Next())
-		for ((*lastgroups)()->Start(); !(*lastgroups)()->End();(*lastgroups)()->Next())
-			lastsubs->InsertPtr((*(*lastgroups)())());
-
-	// check the actual groups
-	for (Start(); !End(); Next())
+	RCursor<GGroupHistory> Cur(*lastgroups);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		grp=(*this)();
-		grp->Start();
-		sub=(*grp)();
+		RCursor<GWeightInfosHistory> Cur2(*Cur());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+			lastsubs->InsertPtr(Cur2());
+	}
+
+	// Check the actual groups
+	RCursor<GGroupHistory> Cur2(*this);
+	for(Cur2.Start();!Cur2.End();Cur2.Next())
+	{
+		RCursor<GWeightInfosHistory> Cur3(*Cur2());
+		Cur3.Start();
+		sub=Cur3();
 
 		//get the equivalent last subprofile
 		lastsub=lastsubs->GetPtr(sub->GetId());
 		//if none has been found -> the subprofile is new
 		if (!lastsub)
 		{
-			grp->SetModified(true);
+			Cur2()->SetModified(true);
 			continue;
 		}
 		//get the equivalent last group.
 		lastgroup=lastgroups->GetPtr(lastsub->GetParent());
 		//if the number of pointers is different, the group is modified
-		if (lastgroup->NbPtr!=grp->NbPtr)
+		if (lastgroup->GetNb()!=Cur2()->GetNb())
 		{
-			grp->SetModified(true);
+			Cur2()->SetModified(true);
 			continue;
 		}
 
 		//if a couple of subprofiles doesn't belong to a same group in the current and historic groups
 		// then the group is modified.
 		lastcurid=lastsub->GetParent()->GetId();
-		while(grp->IsModified()==false&&!grp->End())
+		while((Cur2()->IsModified()==false)&&(!Cur2.End()))
 		{
-			lastsub=lastsubs->GetPtr((*grp)()->GetId());
+			lastsub=lastsubs->GetPtr(Cur2()->GetId());
 			// if the subprofiles is a new one, group is modified
-			if (!lastsub) grp->SetModified(true);
+			if (!lastsub)
+				Cur2()->SetModified(true);
 
 			//if the lastcurid has changed , group is modified
 			if(lastcurid!=lastsub->GetParent()->GetId())
-				grp->SetModified(true);
-			grp->Next();
+				Cur2()->SetModified(true);
+			Cur2.Next();
 		}
 	}
 
@@ -340,35 +347,39 @@ void GGroupsHistory::SetGroupsSubject(void) throw(std::bad_alloc)
 
 
 	//find the dominant subject
-	for (Start(); !End(); Next())
+	RCursor<GGroupHistory> Cur(*this);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		grp=(*this)();
+		grp=Cur();
 		maxoccur=knownsubject=0;
 
 		// find all the subjects contained in the group.
 		subjects=new R::RContainer<GSubject,false,true>(5,2);
-		for (grp->Start(); !grp->End(); grp->Next())
+		RCursor<GWeightInfosHistory> Cur2(*Cur());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
-			subjects->InsertPtr(Manager->GetSession()->GetSubjects()->GetSubject((*grp)()->GetSubProfile()));
+			subjects->InsertPtr(Manager->GetSession()->GetSubjects()->GetSubject(Cur2()->GetSubProfile()));
 		}
 
 		// find the most dominant one
-		subjects->Start();
-		while((maxoccur<(grp->NbPtr-knownsubject))&&!subjects->End())
+		RCursor<GSubject> Cur3(*subjects);
+		Cur3.Start();
+		while((maxoccur<(grp->GetNb()-knownsubject))&&!Cur2.End())
 		{
 			occur=0;
-			for (grp->Start(); !grp->End(); grp->Next())
+			Cur2.Set(*grp);
+			for(Cur2.Start();!Cur2.End();Cur2.Next())
 			{
-				if(Manager->GetSession()->GetSubjects()->GetSubject((*grp)()->GetSubProfile())->GetId()==(*subjects)()->GetId())
+				if(Manager->GetSession()->GetSubjects()->GetSubject(Cur2()->GetSubProfile())->GetId()==Cur3()->GetId())
 					occur++;
 			}
 			knownsubject+=occur;
 			if(occur>maxoccur)
 			{
 				maxoccur=occur;
-				mainsubject=(*subjects)();
+				mainsubject=Cur3();
 			}
-			subjects->Next();
+			Cur3.Next();
 		}
 		grp->SetSubject(mainsubject);
 		delete subjects;
@@ -379,15 +390,15 @@ void GGroupsHistory::SetGroupsSubject(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GGroupsHistory::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 {
-	GGroupHistory* grp;
-	for (Start(); !End(); Next())
+	RCursor<GGroupHistory> Cur(*this);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		grp=(*this)();
-		for (grp->Start(); !grp->End(); grp->Next())
-			if(Manager->GetSession()->GetSubjects()->GetSubject((*grp)()->GetSubProfile())->GetId()==grp->GetSubject()->GetId())
-				(*grp)()->SetWellGrouped(true);
+		RCursor<GWeightInfosHistory> Cur2(*Cur());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+			if(Manager->GetSession()->GetSubjects()->GetSubject(Cur2()->GetSubProfile())->GetId()==Cur()->GetSubject()->GetId())
+				Cur2()->SetWellGrouped(true);
 			else
-				(*grp)()->SetWellGrouped(false);
+				Cur2()->SetWellGrouped(false);
 	}
 }
 
@@ -397,24 +408,28 @@ void GGroupsHistory::CheckNewProfiles(void) throw(std::bad_alloc)
 {
 	R::RContainer<GWeightInfosHistory,false,true>* lastsubs;
 	GGroupsHistory* lastgroups;
-	GGroupHistory* grp;
 
 	//get the last groups and put its profiles in a container
 	lastsubs=new R::RContainer<GWeightInfosHistory,false,true>(10,5);
 	lastgroups=Manager->GetPtr(this->GetId()-1);
 	if (!lastgroups) return;
-	for (lastgroups->Start(); !lastgroups->End(); lastgroups->Next())
-		for ((*lastgroups)()->Start(); !(*lastgroups)()->End();(*lastgroups)()->Next())
-			lastsubs->InsertPtr((*(*lastgroups)())());
+	RCursor<GGroupHistory> Groups(*lastgroups);
+	for(Groups.Start();!Groups.End();Groups.Next())
+	{
+		RCursor<GWeightInfosHistory> Cur2(*Groups());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+			lastsubs->InsertPtr(Cur2());
+	}
 
 	//check wether each subprofile was in the last groups
 	//if not, the profiles is considered as new.
-	for  (Start(); !End(); Next())
+	RCursor<GGroupHistory> Cur(*this);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		grp=(*this)();
-		for (grp->Start(); !grp->End(); grp->Next())
-			if (!lastsubs->GetPtr((*grp)()))
-				(*grp)()->SetNewSubProfile(true);
+		RCursor<GWeightInfosHistory> Cur2(*Cur());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+			if(!lastsubs->GetPtr(Cur2()))
+				Cur2()->SetNewSubProfile(true);
 	}
 
 	delete lastsubs;

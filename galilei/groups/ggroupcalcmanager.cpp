@@ -53,9 +53,10 @@ using namespace R;
 GGroupCalcManager::GGroupCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryGroupCalc,true,true>(10,5),GPluginManager("GroupCalc",paths), Current(0)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/groups";
 		LoadPlugins<GFactoryGroupCalc,GFactoryGroupCalcInit,GGroupCalcManager>(this,Path.Latin1(),API_GROUPCALC_VERSION, dlg);
 	}
@@ -69,7 +70,7 @@ void GGroupCalcManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryGroupCalc> Cur;
 	GGroupCalc* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -85,7 +86,7 @@ void GGroupCalcManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryGroupCalc> Cur;
 	GGroupCalc* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -122,7 +123,7 @@ GGroupCalc* GGroupCalcManager::GetCurrentMethod(void)
 //------------------------------------------------------------------------------
 R::RCursor<GFactoryGroupCalc> GGroupCalcManager::GetGroupCalcsCursor(void)
 {
-	R::RCursor<GFactoryGroupCalc> cur(this);
+	R::RCursor<GFactoryGroupCalc> cur(*this);
 	return(cur);
 }
 

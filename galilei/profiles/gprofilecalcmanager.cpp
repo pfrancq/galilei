@@ -54,9 +54,10 @@ using namespace R;
 GProfileCalcManager::GProfileCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryProfileCalc,true,true>(10,5),GPluginManager("ProfileCalc",paths), Current(0)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/profiling";
 		LoadPlugins<GFactoryProfileCalc,GFactoryProfileCalcInit,GProfileCalcManager>(this,Path.Latin1(),API_PROFILECALC_VERSION, dlg);
 	}
@@ -69,7 +70,7 @@ void GProfileCalcManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryProfileCalc> Cur;
 	GProfileCalc* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -85,7 +86,7 @@ void GProfileCalcManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryProfileCalc> Cur;
 	GProfileCalc* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -122,7 +123,7 @@ GProfileCalc* GProfileCalcManager::GetCurrentMethod(void)
 //------------------------------------------------------------------------------
 R::RCursor<GFactoryProfileCalc> GProfileCalcManager::GetProfileCalcsCursor(void)
 {
-	R::RCursor<GFactoryProfileCalc> cur(this);
+	R::RCursor<GFactoryProfileCalc> cur(*this);
 	return(cur);
 }
 

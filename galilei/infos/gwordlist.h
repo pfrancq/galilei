@@ -73,12 +73,6 @@ public:
 	GWordList(const GWordList& list) throw(std::bad_alloc);
 
 	/**
-	* Copy constructor fot a list of words.
-	* @param list            Pointer to a list.
-	*/
-	GWordList(const GWordList* list) throw(std::bad_alloc);
-
-	/**
 	* Insert a new word in the list.
 	* @param word             Pointer to the word to insert.
 	*/
@@ -100,7 +94,7 @@ public:
 	* Test if the list is empty.
 	* @return bool
 	*/
-	virtual bool IsEmpty(void) const {return(NbPtr==0);}
+	virtual bool IsEmpty(void) const {return(GetNb()==0);}
 
 	/**
 	* Destructor of a list of word.

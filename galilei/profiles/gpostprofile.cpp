@@ -83,7 +83,7 @@ GFactoryPostProfile::GFactoryPostProfile(GPostProfileManager* mng,const char* n,
 		 : GFactoryPlugin<GFactoryPostProfile,GPostProfile,GPostProfileManager>(mng,n,f)
 {
 	//insert a "Level" parameter
-	InsertPtr(new GParamUInt("Level",mng->NbPtr));
+	InsertPtr(new GParamUInt("Level",mng->GetNb()));
 }
 
 

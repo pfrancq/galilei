@@ -54,9 +54,10 @@ using namespace R;
 GPostProfileManager::GPostProfileManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryPostProfile,true,true>(10,5),GPluginManager("PostProfile",paths)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/postprofile";
 		LoadPlugins<GFactoryPostProfile,GFactoryPostProfileInit,GPostProfileManager>(this,Path.Latin1(),API_POSTGROUP_VERSION, dlg);
 	}
@@ -68,7 +69,7 @@ void GPostProfileManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryPostProfile> Cur;
 	GPostProfile* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -84,7 +85,7 @@ void GPostProfileManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryPostProfile> Cur;
 	GPostProfile* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -97,7 +98,7 @@ void GPostProfileManager::Disconnect(GSession* session) throw(GException)
 //-----------------------------------------------------------------------------
 R::RCursor<GFactoryPostProfile> GPostProfileManager::GetPostProfileCursor(void)
 {
-	R::RCursor<GFactoryPostProfile> cur(this);
+	R::RCursor<GFactoryPostProfile> cur(*this);
 	return(cur);
 }
 

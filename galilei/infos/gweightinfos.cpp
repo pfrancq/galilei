@@ -68,13 +68,6 @@ GWeightInfos::GWeightInfos(const GWeightInfos& w) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GWeightInfos::GWeightInfos(const GWeightInfos* w) throw(std::bad_alloc)
-	: RContainer<GWeightInfo,true,true>(w)
-{
-}
-
-
-//------------------------------------------------------------------------------
 GWeightInfos& GWeightInfos::operator=(const GWeightInfos::GWeightInfos& w) throw(std::bad_alloc)
 {
 	RContainer<GWeightInfo,true,true>::operator=(w);
@@ -128,7 +121,7 @@ void GWeightInfos::Clear(void)
 //------------------------------------------------------------------------------
 RCursor<GWeightInfo> GWeightInfos::GetWeightInfoCursor(void)
 {
-	RCursor<GWeightInfo> cur(this);
+	RCursor<GWeightInfo> cur(*this);
 	return(cur);
 }
 
@@ -158,22 +151,21 @@ GWeightInfo* GWeightInfos::GetInfo(unsigned int id) const throw(std::bad_alloc)
 double GWeightInfos::GetMaxWeight(void) const throw(GException)
 {
 	double max;
-	GWeightInfo** ptr;
-	unsigned int i;
 
 	// If no profile, maximal weight is null.
-	if(!NbPtr)
+	if(!GetNb())
 		throw GException("GWeightInfos is empty for GetMaxHeight");
 
 	// Suppose first weight is the highest
-	ptr=Tab;
-	max=(*ptr)->GetWeight();
+	RCursor<GWeightInfo> ptr(*this);
+	ptr.Start();
+	max=ptr()->GetWeight();
 
 	// Look if there is a greather one.
-	for(i=NbPtr,ptr++;--i;ptr++)
+	for(ptr.Next();!ptr.End();ptr.Next())
 	{
-		if((*ptr)->GetWeight()>max)
-			max=(*ptr)->GetWeight();
+		if(ptr()->GetWeight()>max)
+			max=ptr()->GetWeight();
 	}
 	return(max);
 }
@@ -183,22 +175,21 @@ double GWeightInfos::GetMaxWeight(void) const throw(GException)
 double GWeightInfos::GetMaxAbsWeight(void) const throw(GException)
 {
 	double max;
-	GWeightInfo** ptr;
-	unsigned int i;
 
 	// If no profile, maximal weight is null.
-	if(!NbPtr)
+	if(!GetNb())
 		throw GException("GWeightInfos is empty for GetMaxHeight");
 
 	// Suppose first weight is the highest
-	ptr=Tab;
-	max=fabs((*ptr)->GetWeight());
+	RCursor<GWeightInfo> ptr(*this);
+	ptr.Start();
+	max=fabs(ptr()->GetWeight());
 
 	// Look if there is a greather one.
-	for(i=NbPtr,ptr++;--i;ptr++)
+	for(ptr.Next();!ptr.End();ptr.Next())
 	{
-		if(fabs((*ptr)->GetWeight())>max)
-			max=fabs((*ptr)->GetWeight());
+		if(fabs(ptr()->GetWeight())>max)
+			max=fabs(ptr()->GetWeight());
 	}
 	return(max);
 }
@@ -208,45 +199,42 @@ double GWeightInfos::GetMaxAbsWeight(void) const throw(GException)
 double GWeightInfos::Similarity(const GWeightInfos* w) const
 {
 	double Sim=0.0;
-	GWeightInfo** ptr=Tab;
-	GWeightInfo** ptr2=w->Tab;
-	unsigned int i=NbPtr+1;
-	unsigned int j=w->NbPtr;
 	double norm1=0.0;
 	double norm2=0.0;
+	RCursor<GWeightInfo> ptr=(*this);
+	RCursor<GWeightInfo> ptr2=(*w);
 
 	// if one list is empty -> the similarity is null
-	if((!NbPtr)||(!w->NbPtr))
+	if((!GetNb())||(!w->GetNb()))
 		return(0.0);
 
-	while(--i)
+	ptr.Start();
+	ptr2.Start();
+	while(!ptr.End())
 	{
-		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
+		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
 		{
-			j--;
-			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
-			ptr2++;
+			norm2+=ptr2()->GetWeight()*ptr2()->GetWeight();
+			ptr2.Next();
 		}
-		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
+		if((!ptr2.End())&&(ptr2()->GetId()==ptr()->GetId()))
 		{
-			j--;
-			if(((*ptr)->GetWeight()>0)||((*ptr2)->GetWeight()>0))
+			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
 			{
-				norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
-				norm1+=(*ptr)->GetWeight()*(*ptr)->GetWeight();
-				Sim+=(*ptr)->GetWeight()*(*ptr2)->GetWeight();
+				norm2+=ptr2()->GetWeight()*ptr2()->GetWeight();
+				norm1+=ptr()->GetWeight()*ptr()->GetWeight();
+				Sim+=ptr()->GetWeight()*ptr2()->GetWeight();
 			}
-			ptr2++;
+			ptr2.Next();
 		}
 		else
-			norm1+=(*ptr)->GetWeight()*(*ptr)->GetWeight();
-		ptr++;
+			norm1+=ptr()->GetWeight()*ptr()->GetWeight();
+		ptr.Next();
 	}
-	while(j)
+	while(!ptr2.End())
 	{
-		j--;
-		norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
-		ptr2++;
+		norm2+=ptr2()->GetWeight()*ptr2()->GetWeight();
+		ptr2.Next();
 	}
 	if(norm1==0.0 || norm2==0.0)
 		return (0.0);
@@ -259,22 +247,20 @@ double GWeightInfos::Similarity(const GWeightInfos* w) const
 double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang* lang) const throw(GException)
 {
 	double Sim=0.0;
-	GWeightInfo** ptr=Tab;
-	GWeightInfo** ptr2=w->Tab;
-	unsigned int i=NbPtr+1;
-	unsigned int j=w->NbPtr;
 	double norm1=0.0;
 	double norm2=0.0;
 	double max1;
 	double max2;
 	double w1,w2,iff;
 	double TotalRef;
+	RCursor<GWeightInfo> ptr=(*this);
+	RCursor<GWeightInfo> ptr2=(*w);
 
 	if(!lang)
 		throw GException("No Language defined");
 
 	// if one SubProfile is not defined -> the similarity must be null
-	if((!NbPtr)||(!w->NbPtr))
+	if((!GetNb())||(!w->GetNb()))
 		return(0.0);
 
 	// Compute Similarity
@@ -284,42 +270,41 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 		return (0.0);
 
 	TotalRef=lang->GetRef(ObjType);
-	while(--i)
+	ptr.Start();
+	ptr2.Start();
+	while(!ptr.End())
 	{
-		iff=TotalRef/static_cast<double>(lang->GetRef((*ptr)->GetId(),ObjType));
-		w1=((*ptr)->GetWeight()/max1)*log(iff);
-		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
+		iff=TotalRef/static_cast<double>(lang->GetRef(ptr()->GetId(),ObjType));
+		w1=(ptr()->GetWeight()/max1)*log(iff);
+		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
 		{
-			j--;
-			iff=TotalRef/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
-			w2=((*ptr2)->GetWeight()/max2)*log(iff);
+			iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType));
+			w2=(ptr2()->GetWeight()/max2)*log(iff);
 			norm2+=w2*w2;
-			ptr2++;
+			ptr2.Next();
 		}
-		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
+		if((!ptr2.End())&&(ptr2()->GetId()==ptr()->GetId()))
 		{
-			j--;
-			if(((*ptr)->GetWeight()>0)||((*ptr2)->GetWeight()>0))
+			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
 			{
-				iff=TotalRef/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
-				w2=((*ptr2)->GetWeight()/max2)*log(iff);
+				iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType));
+				w2=(ptr2()->GetWeight()/max2)*log(iff);
 				norm2+=w2*w2;
 				norm1+=w1*w1;
 				Sim+=w1*w2;
 			}
-			ptr2++;
+			ptr2.Next();
 		}
 		else
 			norm1+=w1*w1;
-		ptr++;
+		ptr.Next();
 	}
-	while(j)
+	while(!ptr2.End())
 	{
-		j--;
-		iff=TotalRef/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
-		w2=((*ptr2)->GetWeight()/max2)*log(iff);
+		iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType));
+		w2=(ptr2()->GetWeight()/max2)*log(iff);
 		norm2+=w2*w2;
-		ptr2++;
+		ptr2.Next();
 	}
 	if(norm1==0.0 || norm2==0.0)
 		return (0.0);
@@ -332,35 +317,31 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 bool GWeightInfos::SimilarityBool(const GWeightInfos* w,unsigned int nb) const
 {
 	unsigned int same=0;
-	GWeightInfo** ptr=Tab;
-	GWeightInfo** ptr2=w->Tab;
-	unsigned int i=NbPtr+1;
-	unsigned int j=w->NbPtr;
+	RCursor<GWeightInfo> ptr=(*this);
+	RCursor<GWeightInfo> ptr2=(*w);
 
 	// if one list is empty -> the boolean similarity is false
-	if((!NbPtr)||(!w->NbPtr))
+	if((!GetNb())||(!w->GetNb()))
 		return(false);
 
 	// If 0, verify all the entities
 	if(nb==0)
-		nb=w->NbPtr;
+		nb=w->GetNb();
 
-	while(--i)
+	ptr.Start();
+	ptr2.Start();
+	while(!ptr.End())
 	{
-		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
+		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
+			ptr2.Next();
+		if((!ptr2.End())&&(ptr2()->GetId()==ptr()->GetId()))
 		{
-			j--;
-			ptr2++;
-		}
-		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
-		{
-			j--;
 			same++;
 			if(same>=nb)
 				return(true);
-			ptr2++;
+			ptr2.Next();
 		}
-		ptr++;
+		ptr.Next();
 	}
 	return(false);
 }
@@ -369,16 +350,14 @@ bool GWeightInfos::SimilarityBool(const GWeightInfos* w,unsigned int nb) const
 //------------------------------------------------------------------------------
 void GWeightInfos::AddRefs(tObjType ObjType,GLang* lang) const throw(GException)
 {
-	GWeightInfo** ptr;
-	unsigned int i;
-
 	if(!lang)
 		throw GException("No Language defined");
-	if(!NbPtr) return;
+	if(!GetNb()) return;
 	lang->IncRef(ObjType);
-	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
+	RCursor<GWeightInfo> ptr(*this);
+	for(ptr.Start();!ptr.End();ptr.Next())
 	{
-		lang->IncRef((*ptr)->GetId(),ObjType);
+		lang->IncRef(ptr()->GetId(),ObjType);
 	}
 }
 
@@ -386,16 +365,14 @@ void GWeightInfos::AddRefs(tObjType ObjType,GLang* lang) const throw(GException)
 //------------------------------------------------------------------------------
 void GWeightInfos::DelRefs(tObjType ObjType,GLang* lang) const throw(GException)
 {
-	GWeightInfo** ptr;
-	unsigned int i;
-
 	if(!lang)
 		throw GException("No Language defined");
-	if(!NbPtr) return;
+	if(!GetNb()) return;
 	lang->DecRef(ObjType);
-	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
+	RCursor<GWeightInfo> ptr(*this);
+	for(ptr.Start();!ptr.End();ptr.Next())
 	{
-		lang->DecRef((*ptr)->GetId(),ObjType);
+		lang->DecRef(ptr()->GetId(),ObjType);
 	}
 }
 
@@ -403,16 +380,15 @@ void GWeightInfos::DelRefs(tObjType ObjType,GLang* lang) const throw(GException)
 //------------------------------------------------------------------------------
 void GWeightInfos::RecomputeIFF(tObjType ObjType,GLang* lang) throw(GException)
 {
-	GWeightInfo** ptr;
-	unsigned int i;
 	double max,iff;
 
 	if(!lang)
 		throw GException("No Language defined");
-	for(i=NbPtr+1,ptr=Tab,max=GetMaxAbsWeight();--i;ptr++)
+	RCursor<GWeightInfo> ptr(*this);
+	for(ptr.Start(),max=GetMaxAbsWeight();!ptr.End();ptr.Next())
 	{
-		iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef((*ptr)->GetId(),ObjType));
-		(*ptr)->SetWeight(((*ptr)->GetWeight()/max)*log(iff));
+		iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef(ptr()->GetId(),ObjType));
+		ptr()->SetWeight((ptr()->GetWeight()/max)*log(iff));
 	}
 }
 

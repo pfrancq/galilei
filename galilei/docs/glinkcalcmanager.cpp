@@ -53,9 +53,10 @@ using namespace R;
 GLinkCalcManager::GLinkCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryLinkCalc,true,true>(10,5),GPluginManager("LinkCalc",paths), Current(0)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/linking";
 		LoadPlugins<GFactoryLinkCalc,GFactoryLinkCalcInit,GLinkCalcManager>(this,Path.Latin1(),API_LINKCALC_VERSION, dlg);
 	}
@@ -68,7 +69,7 @@ void GLinkCalcManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryLinkCalc> Cur;
 	GLinkCalc* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -84,7 +85,7 @@ void GLinkCalcManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryLinkCalc> Cur;
 	GLinkCalc* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -121,8 +122,7 @@ GLinkCalc* GLinkCalcManager::GetCurrentMethod(void)
 //------------------------------------------------------------------------------
 R::RCursor<GFactoryLinkCalc> GLinkCalcManager::GetLinkCalcsCursor(void)
 {
-	R::RCursor<GFactoryLinkCalc> cur(this);
-	return(cur);
+	return(R::RCursor<GFactoryLinkCalc>(*this));
 }
 
 

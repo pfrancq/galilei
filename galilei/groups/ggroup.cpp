@@ -202,7 +202,7 @@ void GGroup::DeleteSubProfiles(void) throw(std::bad_alloc)
 	State=osUpdated;
 	if(Community)
 	{
-		Sub.Set(this);
+		Sub.Set(*this);
 		for(Sub.Start();!Sub.End();Sub.Next())
 			Sub()->SetGroup(0);
 	}
@@ -213,7 +213,7 @@ void GGroup::DeleteSubProfiles(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 RCursor<GSubProfile> GGroup::GetSubProfilesCursor(void)
 {
-	RCursor<GSubProfile> cur(this);
+	RCursor<GSubProfile> cur(*this);
 	return(cur);
 }
 
@@ -229,7 +229,7 @@ RCursor<GSubProfile> GGroup::GetCursor(void)
 unsigned int GGroup::GetNbSubProfiles(const GGroup* grp) const
 {
 	unsigned int tot;
-	RCursor<GSubProfile> sub(this);
+	RCursor<GSubProfile> sub(*this);
 
 	for(sub.Start(),tot=0;!sub.End();sub.Next())
 		if(grp->IsIn(sub()))
@@ -248,7 +248,7 @@ unsigned int GGroup::GetNbSubProfiles(void) const
 //------------------------------------------------------------------------------
 void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc)
 {
-	RCursor<GSubProfile> sub(this);
+	RCursor<GSubProfile> sub(*this);
 	RCursor<GFdbk> Fdbks;
 	GFdbk* ptr;
 	tDocAssessment j;
@@ -302,7 +302,7 @@ void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* 
 //------------------------------------------------------------------------------
 void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc)
 {
-	RCursor<GSubProfile> sub(this);
+	RCursor<GSubProfile> sub(*this);
 	RCursor<GFdbk> Fdbks;
 	tDocAssessment j;
 	RContainer<GFdbkRef,true,false> Docs(50,25);
@@ -350,12 +350,13 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 	}
 
 	// Sort the container by similarity
-	if(Docs.NbPtr)
-		qsort(static_cast<void*>(Docs.Tab),Docs.NbPtr,sizeof(GFdbkRef*),sortOrder);
+	if(Docs.GetNb())
+		Docs.ReOrder(sortOrder);
 
 	// Copy the result in docs
-	for(Docs.Start();!Docs.End();Docs.Next())
-		docs->InsertPtr(Docs()->Doc);
+	RCursor<GFdbkRef> Cur(Docs);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		docs->InsertPtr(Cur()->Doc);
 }
 
 
@@ -363,7 +364,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 GSubProfile* GGroup::RelevantSubProfile(bool iff) const
 {
 	GSubProfile* rel;
-	RCursor<GSubProfile> sub(this);
+	RCursor<GSubProfile> sub(*this);
 	double refsum,sum;
 
 	// If no objects -> No relevant one.
@@ -371,7 +372,7 @@ GSubProfile* GGroup::RelevantSubProfile(bool iff) const
 		return(0);
 
 	// Suppose the first element is the most relevant.
-	rel=RContainer<GSubProfile,false,true>::GetPtrAt(0);
+	rel=const_cast<GSubProfile*>(R::RContainer<GSubProfile,false,true>::operator[](0));
 	refsum=ComputeSumSim(rel,iff);
 
 	// Look if in the other objects, there is a better one
@@ -394,7 +395,7 @@ GSubProfile* GGroup::RelevantSubProfile(bool iff) const
 double GGroup::ComputeSumSim(const GSubProfile* s,bool iff) const
 {
 	double sum;
-	RCursor<GSubProfile> sub(this);
+	RCursor<GSubProfile> sub(*this);
 
 	for(sub.Start(),sum=0.0;!sub.End();sub.Next())
 	{
@@ -411,7 +412,7 @@ double GGroup::ComputeSumSim(const GSubProfile* s,bool iff) const
 //------------------------------------------------------------------------------
 RCursor<GWeightInfo> GGroup::GetWeightInfoCursor(void)
 {
-	RCursor<GWeightInfo> cur(this);
+	RCursor<GWeightInfo> cur(*this);
 	return(cur);
 }
 
@@ -505,7 +506,7 @@ GGroup::~GGroup(void)
 		if(Community)
 		{
 			RCursor<GSubProfile> Sub;
-			Sub.Set(this);
+			Sub.Set(*this);
 			for(Sub.Start();!Sub.End();Sub.Next())
 				Sub()->SetGroup(0);
 		}

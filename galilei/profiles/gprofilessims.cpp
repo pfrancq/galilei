@@ -287,9 +287,13 @@ double GProfilesSims::GProfilesSim::GetSim(const GSubProfile* sub1,const GSubPro
 		j=tmp;
 	}
 
-	s=Sims->GetPtrAt(i);
+	if(Sims->GetMaxPos()<i+1)
+		return(0.0);
+	s=(*Sims)[i];
 	if(!s) return(0.0);
-	s2=s->GetPtrAt(j);
+	if(s->GetMaxPos()<j+1)
+		return(0.0);
+	s2=(*s)[j];
 	if(!s2) return(0.0);
 
 	if( (s2->State == osUpdated) || (s2->State == osUpToDate))
@@ -322,7 +326,7 @@ void GProfilesSims::GProfilesSim::Update(void) throw(std::bad_alloc)
 	GSim* sim;
 	RCursor<GSubProfile> subscur;
 	RCursor<GSubProfile> subscur2;
-	subscur.Set(ModifiedProfs);
+	subscur.Set(*ModifiedProfs);
 	subscur2=Manager->GetSession()->GetSubProfilesCursor(Lang);
 
 	// if memory is false, no update is needed
@@ -330,40 +334,50 @@ void GProfilesSims::GProfilesSim::Update(void) throw(std::bad_alloc)
 	if(!Manager->GetMemory())
 		return;
 
-	if (!subscur.GetNb()) return;
+	if(!subscur.GetNb()) return;
 
 	// change status of modified subprofiles and add sims of created subprofiles
-	for (subscur.Start(); !subscur.End(); subscur.Next())
+	for(subscur.Start(); !subscur.End(); subscur.Next())
 	{
-		if(!subscur()->IsDefined()) continue;
-		sims = Sims->GetPtrAt(subscur()->GetProfile()->GetId());
-		//if the sims don't exist, they must be created.
-		if(!sims)
+		if(!subscur()->IsDefined())
+			continue;
+		if(Sims->GetMaxPos()<subscur()->GetProfile()->GetId()+1)
 			sims=AddNewSims(subscur());
-		//else if they exist, they have to be update
 		else
 		{
-			for (subscur2.Start(); !subscur2.End(); subscur2.Next())
+			sims = (*Sims)[subscur()->GetProfile()->GetId()];
+			if(!sims)
+				sims=AddNewSims(subscur());
+			else
 			{
-				if(!subscur2()->IsDefined()) continue;
-				//take only less ID
-				if (!(subscur()->GetProfile()->GetId()>subscur2()->GetProfile()->GetId())) continue;
-				sim=sims->GetPtrAt(subscur2()->GetProfile()->GetId());
-				if (!sim)
-					AnalyseSim(sims, subscur(), subscur2(),true);
+				for(subscur2.Start(); !subscur2.End(); subscur2.Next())
+				{
+					if(!subscur2()->IsDefined()) continue;
+					//take only less ID
+					if(!(subscur()->GetProfile()->GetId()>subscur2()->GetProfile()->GetId())) continue;
+					if(sims->GetMaxPos()<subscur2()->GetProfile()->GetId()+1)
+						AnalyseSim(sims, subscur(), subscur2(),true);
+					else
+					{
+						sim=(*sims)[subscur2()->GetProfile()->GetId()];
+						if(!sim)
+							AnalyseSim(sims, subscur(), subscur2(),true);
+					}
+				}
 			}
 		}
 		if (IFF) continue; //if IFF all the sims will be set to osModified later.
-		for (sims->Start(); !sims->End(); sims->Next())
-			(*sims)()->State=osModified;
+		RCursor<GSim> Cur2(*sims);
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+			Cur2()->State=osModified;
 	}
 
-	if (IFF) //if IFF all sims must be set to osModified since at least one sub is modified.
+	if(IFF) //if IFF all sims must be set to osModified since at least one sub is modified.
 	{
-		RCursor<GSims> Cur(Sims);
+		RCursor<GSims> Cur(*Sims);
 		for (Cur.Start();!Cur.End();Cur.Next())
 		{
-			RCursor<GSim> Cur2(Cur());
+			RCursor<GSim> Cur2(*Cur());
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
 				Cur2()->State=osModified;
 		}
@@ -387,10 +401,10 @@ void GProfilesSims::GProfilesSim::Update(bool iff) throw(std::bad_alloc)
 		// since sims are calculated each time
 		if(!Manager->GetMemory())
 			return;
-		RCursor<GSims> Cur(Sims);
+		RCursor<GSims> Cur(*Sims);
 		for (Cur.Start();!Cur.End();Cur.Next())
 		{
-			RCursor<GSim> Cur2(Cur());
+			RCursor<GSim> Cur2(*Cur());
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
 				Cur2()->State=osModified;
 		}
@@ -418,7 +432,9 @@ GSims*  GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 		}
 		if (subcur()->GetProfile()->GetId()>sub->GetProfile()->GetId())
 		{
-			tmpsims=Sims->GetPtrAt(subcur()->GetProfile()->GetId());
+			if(Sims->GetMaxPos()<subcur()->GetProfile()->GetId()+1)
+				continue;
+			tmpsims=(*Sims)[subcur()->GetProfile()->GetId()];
 			if(tmpsims)
 			{
 				// if the sim exists, it hs to be set to 0.0 not to influene devaition!
@@ -462,13 +478,15 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(RCursor<GSubProfile> subprofi
 		if(!(subprofiles)()->IsDefined()) continue;
 		nbcomp++;
 		if(subprofiles()->GetProfile()->GetId()==1) continue;
-		sims=Sims->GetPtrAt(subprofiles()->GetProfile()->GetId());
+		sims=(*Sims)[subprofiles()->GetProfile()->GetId()];
 		if (!sims)
 			throw(GException("Sims not present in Update Mean similarities"));
 		for(subprofiles2.Start(),j=0;(j<i)&&(!subprofiles2.End());subprofiles2.Next(),j++)
 		{
 			if(!(subprofiles2)()->IsDefined()) continue;
-			sim=sims->GetPtrAt(subprofiles2()->GetProfile()->GetId());
+			if(sims->GetMaxPos()<subprofiles2()->GetProfile()->GetId()+1)
+				continue;
+			sim=(*sims)[subprofiles2()->GetProfile()->GetId()];
 			// if the similarity isn't in profsim, continue
 			if(!sim) continue;
 			// if the similarity is in "modified" state :
@@ -627,8 +645,9 @@ void GProfilesSims::UseIFF(bool iff) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GProfilesSims::Update(void)
 {
-	for(Sims.Start(); !Sims.End(); Sims.Next())
-		Sims()->Update();
+	RCursor<GProfilesSim> Cur(Sims);
+	for (Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Update();
 }
 
 //------------------------------------------------------------------------------

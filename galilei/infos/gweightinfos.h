@@ -70,12 +70,6 @@ public:
 	GWeightInfos(const GWeightInfos& w) throw(std::bad_alloc);
 
 	/**
-	* Copy constructor of a list of weighted information entities.
-	* @param w              Pointer to a list of weighted information entities.
-	*/
-	GWeightInfos(const GWeightInfos* w) throw(std::bad_alloc);
-
-	/**
 	* Assignement operator for lists of weighted information entities.
 	* @param w              Source list of weighted information entities.
 	*/
@@ -138,7 +132,7 @@ public:
 	* Verify if a list is empty.
 	* @return bool
 	*/
-	bool IsEmpty(void) const {return(!NbPtr);}
+	bool IsEmpty(void) const {return(!GetNb());}
 
 	/**
 	* Compute the maximal weight of the information entities in the list. The

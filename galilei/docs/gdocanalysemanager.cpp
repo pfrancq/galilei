@@ -54,9 +54,10 @@ using namespace R;
 GDocAnalyseManager::GDocAnalyseManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryDocAnalyse,true,true>(10,5), GPluginManager("DocAnalyse",paths),Current(0)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/docs";
 		LoadPlugins<GFactoryDocAnalyse,GFactoryDocAnalyseInit,GDocAnalyseManager>(this,Path.Latin1(),API_DOCANALYSE_VERSION, dlg);
 	}
@@ -70,7 +71,7 @@ void GDocAnalyseManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryDocAnalyse> Cur;
 	GDocAnalyse* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -86,7 +87,7 @@ void GDocAnalyseManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryDocAnalyse> Cur;
 	GDocAnalyse* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -123,7 +124,7 @@ GDocAnalyse* GDocAnalyseManager::GetCurrentMethod(void)
 //------------------------------------------------------------------------------
 R::RCursor<GFactoryDocAnalyse> GDocAnalyseManager::GetDocAnalysesCursor(void)
 {
-	R::RCursor<GFactoryDocAnalyse> cur(this);
+	R::RCursor<GFactoryDocAnalyse> cur(*this);
 	return(cur);
 }
 

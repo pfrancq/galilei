@@ -763,7 +763,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 {
 	GDoc* doc;
 	GLang* lang;
-	R::RCursor<GFactoryLang> langs;
+//	R::RCursor<GFactoryLang> langs;
 	GDoc* d;
 	unsigned int i,idx,docid;
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
@@ -791,7 +791,6 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		{
 			// Get the id
 			idx=atoi(sel[0]);
-			if(idx==3982 || idx==4057) continue;
 			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(sel[2]);
 
 			// If not the same -> new doc
@@ -1211,7 +1210,7 @@ void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 			}
 
 			// Save the description part
-			WordCur.Set(GroupsCursor());
+			WordCur.Set(*GroupsCursor());
 			for(WordCur.Start();!WordCur.End();WordCur.Next())
 			{
 				sSql="INSERT INTO groupsbykwds(groupid,kwdid,occurs,langid) VALUES("+itou(GroupsCursor()->GetId())+","+itou(WordCur()->GetId())+",'"+dtou(WordCur()->GetWeight())+"','"+RString(GroupsCursor()->GetLang()->GetCode())+"')";

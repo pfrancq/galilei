@@ -54,9 +54,10 @@ using namespace R;
 GPreProfileManager::GPreProfileManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryPreProfile,true,true>(10,5),GPluginManager("PreProfile",paths)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/preprofile";
 		LoadPlugins<GFactoryPreProfile,GFactoryPreProfileInit,GPreProfileManager>(this,Path.Latin1(),API_PREPROFILE_VERSION, dlg);
 	}
@@ -69,7 +70,7 @@ void GPreProfileManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryPreProfile> Cur;
 	GPreProfile* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -85,7 +86,7 @@ void GPreProfileManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryPreProfile> Cur;
 	GPreProfile* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -98,7 +99,7 @@ void GPreProfileManager::Disconnect(GSession* session) throw(GException)
 //-----------------------------------------------------------------------------
 R::RCursor<GFactoryPreProfile> GPreProfileManager::GetPreProfileCursor(void)
 {
-	R::RCursor<GFactoryPreProfile> cur(this);
+	R::RCursor<GFactoryPreProfile> cur(*this);
 	return(cur);
 }
 

@@ -162,7 +162,7 @@ void GSubProfile::SetState(tObjState state)
 //------------------------------------------------------------------------------
 bool GSubProfile::IsDefined(void) const
 {
-	return(NbPtr);
+	return(GetNb());
 }
 
 
@@ -206,7 +206,7 @@ bool GSubProfile::IsUpdated(void) const
 //------------------------------------------------------------------------------
 bool GSubProfile::CanCompute(void)
 {
-	return(Fdbks.NbPtr);
+	return(Fdbks.GetNb());
 }
 
 
@@ -323,7 +323,7 @@ RCursor<GFdbk> GSubProfile::GetFdbks(void)
 //------------------------------------------------------------------------------
 RCursor<GWeightInfo> GSubProfile::GetWeightInfoCursor(void)
 {
-	RCursor<GWeightInfo> cur(this);
+	RCursor<GWeightInfo> cur(*this);
 	return(cur);
 }
 
@@ -387,7 +387,7 @@ double GSubProfile::SimilarityIFF(const GGroup* grp) const throw(GException)
 //------------------------------------------------------------------------------
 unsigned int GSubProfile::GetNbNoNull(void) const
 {
-	return(NbPtr);
+	return(GetNb());
 }
 
 

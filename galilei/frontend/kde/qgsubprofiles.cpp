@@ -152,7 +152,7 @@ void GALILEI::QGSubProfiles::SubProfile::Construct(void)
 
 //-----------------------------------------------------------------------------
 GALILEI::QGSubProfiles::QGSubProfiles(QTabWidget* parent,GSession* session,GProfile* profile)
-	: QWidget(parent,"QGSubProfiles"), Session(session), Profile(profile), Desc(profile->NbPtr,5)
+	: QWidget(parent,"QGSubProfiles"), Session(session), Profile(profile), Desc(profile->GetNb(),5)
 {
 	QSize act=size(),tmp, cbsize;
 	RCursor<GSubProfile> s;
@@ -197,7 +197,7 @@ GALILEI::QGSubProfiles::QGSubProfiles(QTabWidget* parent,GSession* session,GProf
 void GALILEI::QGSubProfiles::slotLangChanged(int index)
 {
 	Current->hide();
-	Current=Desc.Tab[index];
+	Current=Desc[index];
 	Current->show();
 }
 

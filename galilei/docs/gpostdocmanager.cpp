@@ -55,9 +55,10 @@ using namespace R;
 GPostDocManager::GPostDocManager(RContainer<RString, true, false>* paths,bool dlg) throw(GException)
 	: RContainer<GFactoryPostDoc,true,true>(10,5) ,GPluginManager("PostDoc",paths)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/postdoc";
 		LoadPlugins<GFactoryPostDoc,GFactoryPostDocInit,GPostDocManager>(this,Path.Latin1(),API_POSTDOC_VERSION, dlg);
 	}
@@ -70,7 +71,7 @@ void GPostDocManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryPostDoc> Cur;
 	GPostDoc* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -86,7 +87,7 @@ void GPostDocManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryPostDoc> Cur;
 	GPostDoc* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -99,7 +100,7 @@ void GPostDocManager::Disconnect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 R::RCursor<GFactoryPostDoc> GPostDocManager::GetPostDocsCursor(void)
 {
-	R::RCursor<GFactoryPostDoc> cur(this);
+	R::RCursor<GFactoryPostDoc> cur(*this);
 	return(cur);
 }
 

@@ -122,7 +122,7 @@ public:
 	* Get the number of groups handled.
 	* @returns Number of groups.
 	*/
-	unsigned int GetNbGroups(void) const {return(NbPtr);}
+	unsigned int GetNbGroups(void) const {return(GetNb());}
 
 	/**
 	* Get the number of groups of a given langauge handled.

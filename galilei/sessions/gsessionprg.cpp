@@ -359,11 +359,11 @@ void GSetRandI::Run(RPrg* prg,RPrgOutput* o,RContainer<RPrgVar,true,false>* args
 {
 	int Rand;
 
-	if(args->NbPtr!=1)
+	if(args->GetNb()!=1)
 		throw RException("The rand value must be specified.");
-	sprintf(tmp,"Set Rand value '%s'",args->Tab[0]->GetValue(prg));
+	sprintf(tmp,"Set Rand value '%s'",(*args)[0]->GetValue(prg));
 	o->WriteStr(tmp);
-	Rand=atoi(args->Tab[0]->GetValue(prg));
+	Rand=atoi((*args)[0]->GetValue(prg));
 	if(Rand!=0)
 	{
 		Owner->Session->SetCurrentRandom(Rand);
@@ -375,16 +375,16 @@ void GSetRandI::Run(RPrg* prg,RPrgOutput* o,RContainer<RPrgVar,true,false>* args
 //------------------------------------------------------------------------------
 void GOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr!=1)
+	if(args->GetNb()!=1)
 		throw RException("A filename must be specified.");
-	sprintf(tmp,"Create Output file '%s'",args->Tab[0]->GetValue(prg));
+	sprintf(tmp,"Create Output file '%s'",(*args)[0]->GetValue(prg));
 	o->WriteStr(tmp);
 	if(Owner->OFile)
 	{
 		delete Owner->OFile;
 		Owner->OFile=0;
 	}
-	Owner->OFile=new RTextFile((args->Tab[0]->GetValue(prg)));
+	Owner->OFile=new RTextFile(((*args)[0]->GetValue(prg)));
 	Owner->OFile->Open(RIO::Create);
 	Owner->OFile->SetSeparator("\t");
 	(*Owner->OFile)<<"Sets"<<"Recall"<<"Precision"<<"Total";
@@ -399,16 +399,16 @@ void GOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>*
 //------------------------------------------------------------------------------
 void GGOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr!=1)
+	if(args->GetNb()!=1)
 		throw RException("A filename must be specified.");
-	sprintf(tmp,"Create Graph Output file '%s'",args->Tab[0]->GetValue(prg));
+	sprintf(tmp,"Create Graph Output file '%s'",(*args)[0]->GetValue(prg));
 	o->WriteStr(tmp);
 	if(Owner->GOFile)
 	{
 		delete Owner->GOFile;
 		Owner->GOFile=0;
 	}
-	Owner->GOFile=new RTextFile(args->Tab[0]->GetValue(prg));
+	Owner->GOFile=new RTextFile((*args)[0]->GetValue(prg));
 	Owner->GOFile->Open(RIO::Create);
 	Owner->GOFile->SetSeparator("\t");
 }
@@ -417,16 +417,16 @@ void GGOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 //------------------------------------------------------------------------------
 void GSOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr!=1)
+	if(args->GetNb()!=1)
 		throw RException("A filename must be specified.");
-	sprintf(tmp,"Create Statistics Output file '%s'",args->Tab[0]->GetValue(prg));
+	sprintf(tmp,"Create Statistics Output file '%s'",(*args)[0]->GetValue(prg));
 	o->WriteStr(tmp);
 	if(Owner->SOFile)
 	{
 		delete Owner->SOFile;
 		Owner->SOFile=0;
 	}
-	Owner->SOFile=new RTextFile(args->Tab[0]->GetValue(prg));
+	Owner->SOFile=new RTextFile((*args)[0]->GetValue(prg));
 	Owner->SOFile->Open(RIO::Create);
 	Owner->SOFile->SetSeparator("\t");
 }
@@ -435,11 +435,11 @@ void GSOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 //------------------------------------------------------------------------------
 void GSetLinksMethodI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr!=1)
+	if(args->GetNb()!=1)
 		throw RException("The method needs one parameter to specify the name of the link computing method (or \"None\").");
-	sprintf(tmp,"Link Computing Method: %s",args->Tab[0]->GetValue(prg));
+	sprintf(tmp,"Link Computing Method: %s",(*args)[0]->GetValue(prg));
 	o->WriteStr(tmp);
-	(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->SetCurrentMethod(args->Tab[0]->GetValue(prg));
+	(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->SetCurrentMethod((*args)[0]->GetValue(prg));
 }
 
 
@@ -447,9 +447,9 @@ void GSetLinksMethodI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true
 //------------------------------------------------------------------------------
 void GSetAutoSaveI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr!=1)
+	if(args->GetNb()!=1)
 		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the results must be stored.");
-	if((args->Tab[0]->GetValue(prg))[0]=='0')
+	if(((*args)[0]->GetValue(prg))[0]=='0')
 	{
 		o->WriteStr("Set AutoSave: false");
 		Owner->AutoSave=false;
@@ -464,9 +464,9 @@ void GSetAutoSaveI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,fa
 //------------------------------------------------------------------------------
 void GSetAutoSaveLinksI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr!=1)
+	if(args->GetNb()!=1)
 		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the links results must be stored.");
-	if((args->Tab[0]->GetValue(prg))[0]=='0')
+	if(((*args)[0]->GetValue(prg))[0]=='0')
 	{
 		o->WriteStr("Set AutoSaveLinks: false");
 		Owner->AutoSaveLinks=false;
@@ -482,12 +482,12 @@ void GSetAutoSaveLinksI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tr
 //------------------------------------------------------------------------------
 void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr!=1)
+	if(args->GetNb()!=1)
 		throw RException("The method needs the name of the test.");
-	if(args->NbPtr)
-	sprintf(tmp,"Current Test Name '%s'",args->Tab[0]->GetValue(prg));
+	if(args->GetNb())
+	sprintf(tmp,"Current Test Name '%s'",(*args)[0]->GetValue(prg));
 	o->WriteStr(tmp);
-	Owner->TestName=args->Tab[0]->GetValue(prg);
+	Owner->TestName=(*args)[0]->GetValue(prg);
 }
 
 
@@ -495,9 +495,9 @@ void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* a
 //------------------------------------------------------------------------------
 void GLogI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr!=1)
+	if(args->GetNb()!=1)
 		throw RException("The method needs the name of the log file.");
-	sprintf(tmp,"Create Log file '%s'",args->Tab[0]->GetValue(prg));
+	sprintf(tmp,"Create Log file '%s'",(*args)[0]->GetValue(prg));
 	o->WriteStr(tmp);
 }
 
@@ -505,18 +505,18 @@ void GLogI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* ar
 //------------------------------------------------------------------------------
 void GSqlI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr!=1)
+	if(args->GetNb()!=1)
 		throw RException("The method needs the name of the SQL file.");
-	sprintf(tmp,"Execute Sql file '%s'",args->Tab[0]->GetValue(prg));
+	sprintf(tmp,"Execute Sql file '%s'",(*args)[0]->GetValue(prg));
 	o->WriteStr(tmp);
-	Owner->Session->GetStorage()->ExecuteData(args->Tab[0]->GetValue(prg));
+	Owner->Session->GetStorage()->ExecuteData((*args)[0]->GetValue(prg));
 }
 
 
 //------------------------------------------------------------------------------
 void GModifyProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr)
+	if(args->GetNb())
 		throw RException("The method needs no parameters.");
 	Owner->FirstProfile=false;
 	o->WriteStr("Profiles are considered as modified");
@@ -526,15 +526,15 @@ void GModifyProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,fal
 //------------------------------------------------------------------------------
 void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr>1)
+	if(args->GetNb()>1)
 		throw RException("The method needs maximum one parameter.");
-	if(args->NbPtr==1)
-		sprintf(tmp,"Compute Profiles: Method=\"%s\"",args->Tab[0]->GetValue(prg));
+	if(args->GetNb()==1)
+		sprintf(tmp,"Compute Profiles: Method=\"%s\"",(*args)[0]->GetValue(prg));
 	else
 		strcpy(tmp,"Compute Profiles: Current Method");
 	o->WriteStr(tmp);
-	if(args->NbPtr==1)
-		(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->SetCurrentMethod(args->Tab[0]->GetValue(prg));
+	if(args->GetNb()==1)
+		(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->SetCurrentMethod((*args)[0]->GetValue(prg));
 	if((dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod())
 		(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod()->ApplyConfig();
 	if(!(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod())
@@ -548,15 +548,15 @@ void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tru
 //------------------------------------------------------------------------------
 void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr>1)
+	if(args->GetNb()>1)
 		throw RException("The method needs maximum one parameter.");
-	if(args->NbPtr==1)
-		sprintf(tmp,"Group Profiles: Method=\"%s\" ",args->Tab[0]->GetValue(prg));
+	if(args->GetNb()==1)
+		sprintf(tmp,"Group Profiles: Method=\"%s\" ",(*args)[0]->GetValue(prg));
 	else
 		strcpy(tmp,"Group Profiles: Current Method");
 	o->WriteStr(tmp);
-	if(args->NbPtr==1)
-		(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->SetCurrentMethod(args->Tab[0]->GetValue(prg));
+	if(args->GetNb()==1)
+		(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->SetCurrentMethod((*args)[0]->GetValue(prg));
 	if(Owner->Session->GetSubjects()->GetIdealGroups())
 	{
 		GGrouping* algo=(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->GetCurrentMethod();
@@ -576,7 +576,7 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,
 //------------------------------------------------------------------------------
 void GCreateIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr)
+	if(args->GetNb())
 		throw RException("Method needs no parameters.");
 	o->WriteStr("Create Ideal Groups");
 	Owner->Session->GetSubjects()->Apply();
@@ -588,16 +588,16 @@ void GCreateIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 //------------------------------------------------------------------------------
 void GMixIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr>1)
+	if(args->GetNb()>1)
 		throw RException("The method needs maximum one parameter.");
-	if(args->NbPtr==1)
-		sprintf(tmp,"Creating Mixed Groups: Settings=\"%s\"",args->Tab[0]->GetValue(prg));
+	if(args->GetNb()==1)
+		sprintf(tmp,"Creating Mixed Groups: Settings=\"%s\"",(*args)[0]->GetValue(prg));
 	else
 		sprintf(tmp,"Creating Mixed Groups");
 	o->WriteStr(tmp);
 	GMixIdealGroups mix(Owner->Session,Owner->Session->GetSubjects()->GetIdealGroups());
-	if(args->NbPtr==1)
-		mix.SetSettings(args->Tab[0]->GetValue(prg));
+	if(args->GetNb()==1)
+		mix.SetSettings((*args)[0]->GetValue(prg));
 	mix.Run(0);
 }
 
@@ -605,7 +605,7 @@ void GMixIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 //------------------------------------------------------------------------------
 void GFdbksCycleI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr)
+	if(args->GetNb())
 		throw RException("Method needs no parameters.");
 	o->WriteStr("Create Feedbacks Cycle");
 	Owner->Session->GetSubjects()->Apply();
@@ -616,7 +616,7 @@ void GFdbksCycleI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>*
 //------------------------------------------------------------------------------
 void GCompareIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr)
+	if(args->GetNb())
 		throw RException("Method needs no parameters.");
 	o->WriteStr("Compare with Ideal Groups");
 	Owner->Session->GetSubjects()->Compare();
@@ -651,9 +651,9 @@ void GCompareIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 //------------------------------------------------------------------------------
 void GSetSubjectsParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr!=2)
+	if(args->GetNb()!=2)
 		throw RException("Method needs two parameters.");
-	Owner->Session->GetSubjects()->Set(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
+	Owner->Session->GetSubjects()->Set((*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg));
 }
 
 
@@ -662,12 +662,12 @@ void GSetComputingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,tru
 {
 	GProfileCalc* calc;
 
-	if(args->NbPtr!=2)
+	if(args->GetNb()!=2)
 		throw RException("Method needs two parameters");
 	calc=(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod();
 	if(!calc)
 		throw RException("No profiling method selected.");
-	calc->GetFactory()->Set(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
+	calc->GetFactory()->Set((*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg));
 }
 
 
@@ -676,19 +676,19 @@ void GSetGroupingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true
 {
 	GGrouping* calc;
 
-	if(args->NbPtr!=2)
+	if(args->GetNb()!=2)
 		throw RException("Method needs two parameters.");
 	calc=(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->GetCurrentMethod();
 	if(!calc)
 		throw RException("No grouping computing method selected.");
-	calc->GetFactory()->Set(args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg));
+	calc->GetFactory()->Set((*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg));
 }
 
 
 //------------------------------------------------------------------------------
 void GAddIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr)
+	if(args->GetNb())
 		throw RException("Method needs no parameters.");
 	o->WriteStr("Create New Ideal Group");
 	Owner->Session->GetSubjects()->Apply();
@@ -699,7 +699,7 @@ void GAddIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* a
 //------------------------------------------------------------------------------
 void GAddProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr)
+	if(args->GetNb())
 		throw RException("Method needs no parameters.");
 	o->WriteStr("Adding Profiles");
 	Owner->Session->GetSubjects()->Apply();
@@ -781,11 +781,11 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 	unsigned int nbminprof,nbmaxprof;
 	GSlot* rec=dynamic_cast<GSlot*>(o);
 
-	if(args->NbPtr!=5)
+	if(args->GetNb()!=5)
 		throw RException("Method needs five parameters.");
 	sprintf(tmp,"Real Life: Settings=\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
-	        args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg),args->Tab[2]->GetValue(prg),
-	        args->Tab[3]->GetValue(prg),args->Tab[4]->GetValue(prg));
+	        (*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg),(*args)[2]->GetValue(prg),
+	        (*args)[3]->GetValue(prg),(*args)[4]->GetValue(prg));
 	if(rec)
 	{
 		rec->Interact();
@@ -793,10 +793,10 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 	}
 	if(GSession::Break()) return;
 	Random=Owner->Session->GetRandom();
-	MaxStep=atoi(args->Tab[0]->GetValue(prg));
-	MinFBStep=atoi(args->Tab[1]->GetValue(prg));
-	MaxFBStep=atoi(args->Tab[2]->GetValue(prg))-MinFBStep+1;
-	Proba=atof(args->Tab[3]->GetValue(prg));
+	MaxStep=atoi((*args)[0]->GetValue(prg));
+	MinFBStep=atoi((*args)[1]->GetValue(prg));
+	MaxFBStep=atoi((*args)[2]->GetValue(prg))-MinFBStep+1;
+	Proba=atof((*args)[3]->GetValue(prg));
 	What[1]=0;
 	for(NbStep=0;;)
 	{
@@ -900,7 +900,7 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 //------------------------------------------------------------------------------
 void GAddAssessmentsI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr)
+	if(args->GetNb())
 		throw RException("Method needs no parameters.");
 	o->WriteStr("Adding Assessments");
 	Owner->Session->GetSubjects()->Apply();
@@ -911,11 +911,11 @@ void GAddAssessmentsI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,fal
 //------------------------------------------------------------------------------
 void GTrackNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr!=1)
+	if(args->GetNb()!=1)
 		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the profiles must be tracked.");
-	if(args->NbPtr)
+	if(args->GetNb())
 	{
-		if(((args->Tab[0]->GetValue(prg))[0]=='0')||(args->Tab[0]->GetValue(prg)=="true"))
+		if((((*args)[0]->GetValue(prg))[0]=='0')||((*args)[0]->GetValue(prg)=="true"))
 		{
 			o->WriteStr("Track New Profiles: false");
 			Owner->TrackNewProfiles=false;
@@ -932,7 +932,7 @@ void GTrackNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tr
 //------------------------------------------------------------------------------
 void GClearNewProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr)
+	if(args->GetNb())
 		throw RException("Method needs no parameter.");
 	o->WriteStr("Clear New Profiles");
 	Owner->Session->GetSubjects()->ClearLastAdded();
@@ -942,7 +942,7 @@ void GClearNewProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,f
 //------------------------------------------------------------------------------
 void GResetTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	if(args->NbPtr)
+	if(args->GetNb())
 		throw RException("Method needs no parameter.");
 	o->WriteStr("Reset Time");
 	Owner->ClockRef=time(0);
@@ -956,7 +956,7 @@ void GComputeTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 	double cpu_time;
 
 	end=time(0);
-	if(args->NbPtr)
+	if(args->GetNb())
 		throw RException("Method needs no parameter.");
 	cpu_time=difftime(end,Owner->ClockRef);
 	sprintf(tmp,"Ellapsed Time %f",cpu_time);
@@ -970,15 +970,15 @@ void GSetStatParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,fal
 	GStatsCalc* calc;
 	GStatsCalcManager* mng;
 
-	if(args->NbPtr!=3)
+	if(args->GetNb()!=3)
 		throw RException("Method needs three parameters");
 	mng=dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc"));
 	if(!mng)
 		throw RException("No statistics method selected.");
-	calc=mng->Get(args->Tab[0]->GetValue(prg));
+	calc=mng->Get((*args)[0]->GetValue(prg));
 	if(!calc)
 		throw RException("No statistics method selected.");
-	calc->GetFactory()->Set(args->Tab[1]->GetValue(prg),args->Tab[2]->GetValue(prg));
+	calc->GetFactory()->Set((*args)[1]->GetValue(prg),(*args)[2]->GetValue(prg));
 	calc->ApplyConfig();
 }
 
@@ -992,7 +992,7 @@ void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args
 	RXMLTag* Root;
 	int i;
 
-	if(args->NbPtr)
+	if(args->GetNb())
 		throw RException("Method needs no parameter");
 
 	GStatsCalcManager* Mng=(dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc")));
@@ -1004,7 +1004,7 @@ void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args
 	xml.AddTag(0,Root);
 
 	// Compute the statistics
-	Cur.Set(Mng);
+	Cur.Set(*Mng);
 	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
 	{
 		Calc=Cur()->GetPlugin();

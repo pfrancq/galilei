@@ -55,9 +55,10 @@ using namespace R;
 GEngineManager::GEngineManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: R::RContainer<GFactoryEngine,true,true>(10,5),GPluginManager("Engine",paths)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/engines";
 		LoadPlugins<GFactoryEngine,GFactoryEngineInit,GEngineManager>(this,Path.Latin1(),API_ENGINE_VERSION, dlg);
 	}
@@ -70,7 +71,7 @@ void GEngineManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryEngine> Cur;
 	GEngine* eng;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		eng=Cur()->GetPlugin();
@@ -86,7 +87,7 @@ void GEngineManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryEngine> Cur;
 	GEngine* eng;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		eng=Cur()->GetPlugin();
@@ -105,7 +106,7 @@ GEngine* GEngineManager::GetEngine(R::RString name)
 //------------------------------------------------------------------------------
 R::RCursor<GFactoryEngine> GEngineManager::GetEnginesCursor(void)
 {
-	R::RCursor<GFactoryEngine> cur(this);
+	R::RCursor<GFactoryEngine> cur(*this);
 	return(cur);
 }
 

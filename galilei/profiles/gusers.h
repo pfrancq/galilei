@@ -86,7 +86,7 @@ public:
 	* Get the number of users treated by the system.
 	* @returns Number of Users.
 	*/
-	unsigned int GetNbUsers(void) const {return(NbPtr);}
+	unsigned int GetNbUsers(void) const {return(GetNb());}
 
 	/**
 	* Get an identificator that can be assigned to a new object.

@@ -285,7 +285,7 @@ proxy:
 	* Get the number of assessed documents.
 	* @returns unsigned int.
 	*/
-	unsigned int GetNbAssessedDocs(void) const {return(Fdbks.NbPtr);}
+	unsigned int GetNbAssessedDocs(void) const {return(Fdbks.GetNb());}
 
 	/**
 	* Get a cursor on the feedback for the profile.

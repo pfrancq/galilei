@@ -70,13 +70,6 @@ public:
 	GInfoList(const GInfoList& i) throw(std::bad_alloc);
 
 	/**
-	* Copy constructor for a list of information entities.
-	* @param i               Pointer to an information entity representing a
-	*                        list.
-	*/
-	GInfoList(const GInfoList* i) throw(std::bad_alloc);
-
-	/**
 	* Compare an identificator with the corresponding one of the list.
 	* @param id              Identificator.
 	* @see R::RContainer

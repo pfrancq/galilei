@@ -6,7 +6,7 @@
 
 	Widget to show a groupement of the GA - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		
@@ -28,6 +28,12 @@
 
 */
 
+
+
+//-----------------------------------------------------------------------------
+// include files for R
+#include <rstd/rcursor.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -88,21 +94,28 @@ void GALILEI::QGGroupsHistory::setGroups(GGroupsHistory* grps)
 	GProfile* p;
 
 	clear();
-	for(grps->Start();!grps->End();grps->Next())
+	RCursor<GGroupHistory> Cur(*grps);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		GGroupHistory* gr=(*grps)();
-		sprintf(tmp,"Group %u  (%u)",gr->GetId(), gr->NbPtr);
-		QListViewItemType* gritem= new QListViewItemType(gr,this,tmp) ;//, gr->GetSubject()->GetName());
+		sprintf(tmp,"Group %u  (%u)",Cur()->GetId(),Cur()->GetNb());
+		QListViewItemType* gritem= new QListViewItemType(Cur(),this,tmp) ;//, gr->GetSubject()->GetName());
 		// manage the color of the item
-		if (gr->IsModified()==true) gritem->Level=1; else gritem->Level=0;
+		if(Cur()->IsModified()==true)
+			gritem->Level=1;
+		else
+			gritem->Level=0;
 		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
-		for(gr->Start();!gr->End();gr->Next())
+		RCursor<GWeightInfosHistory> Cur2(*Cur());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
-			sprintf(tmp,"%i",(*gr)()->GetId());
-			p=(*gr)()->GetSubProfile()->GetProfile();
+			sprintf(tmp,"%i",Cur2()->GetId());
+			p=Cur2()->GetSubProfile()->GetProfile();
 			sprintf(tmp2,"%i",p->GetId());
-			QListViewItemType* subitem=new QListViewItemType((*gr)(),gritem,tmp,tmp2,ToQString(p->GetName()),ToQString(p->GetUser()->GetFullName()));
-			if ((*gr)()->IsWellGrouped()==true) subitem->Level=0; else subitem->Level=2;
+			QListViewItemType* subitem=new QListViewItemType(Cur2(),gritem,tmp,tmp2,ToQString(p->GetName()),ToQString(p->GetUser()->GetFullName()));
+			if(Cur2()->IsWellGrouped()==true)
+				subitem->Level=0;
+			else
+				subitem->Level=2;
 			subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 		}
 	}

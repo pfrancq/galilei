@@ -182,7 +182,7 @@ R::RCursor<GData> GDict::GetDataCursor(GInfoType type) throw(std::bad_alloc,GExc
 	tp=DataTypes.GetPtr<GInfoType>(type);
 	if(!tp)
 		throw GException("Unknown information type");
-	cur.Set(tp);
+	cur.Set(*tp);
 	return(cur);
 }
 
@@ -202,7 +202,7 @@ unsigned int GDict::GetNbDatas(GInfoType type) const throw(GException)
 	tp=DataTypes.GetPtr<GInfoType>(type);
 	if(!tp)
 		throw GException("Unknown information type");
-	return(tp->NbPtr);
+	return(tp->GetNb());
 }
 
 

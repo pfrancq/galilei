@@ -292,7 +292,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save)
 		// Add the new documents.
 		// Continue the analysis if documents were added.
 		RCursor<GDoc> Cur(tmpDocs);
-		Cont=tmpDocs.NbPtr;
+		Cont=tmpDocs.GetNb();
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			InsertDoc(Cur());
@@ -386,7 +386,7 @@ void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save)
 		// Add the new documents.
 		// Continue the analysis if documents were added.
 		RCursor<GDoc> Cur(tmpDocs);
-		Cont=tmpDocs.NbPtr;
+		Cont=tmpDocs.GetNb();
 		for(Cur.Start();!Cur.End();Cur.Next())
 			InsertDoc(Cur());
 		tmpDocs.Clear();
@@ -782,7 +782,7 @@ void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R:
 //------------------------------------------------------------------------------
 void GSession::ClearFdbks(void)
 {
-	RCursor<GDoc> Docs(this);
+	RCursor<GDoc> Docs(*this);
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		Docs()->ClearFdbks();
@@ -870,9 +870,10 @@ void GSession::DocsFilter(int nbdocs,int nboccurs)
 	for(DocCursor.Start();!DocCursor.End();DocCursor.Next())
 	{
 		GDoc* Doc=DocCursor();
-		for(Doc->Start();!Doc->End();Doc->Next())
+		RCursor<GWeightInfo> Cur(*Doc);
+		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			GWeightInfo* WW=(*Doc)();
+			GWeightInfo* WW=Cur();
 			if(WW->GetWeight()>j[WW->GetId()])
 			{
 				j[WW->GetId()]=int(WW->GetWeight());
@@ -924,7 +925,6 @@ void GSession::SetCurrentRandom(int rand)
 int GSession::GetCurrentRandomValue(unsigned int max)
 {
 	return(int(Random->Value(max)));
-
 }
 
 

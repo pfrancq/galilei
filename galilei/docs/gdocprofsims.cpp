@@ -269,7 +269,7 @@ void  GDocProfSims::GDocProfSim::Update(GDocs* docs,GUsers* users) throw(std::ba
 
 
 //------------------------------------------------------------------------------
-void  GDocProfSims::GDocProfSim::Update(bool iff) throw (std::bad_alloc)
+void GDocProfSims::GDocProfSim::Update(bool iff) throw (std::bad_alloc)
 {
 	if(iff!=IFF)
 	{
@@ -278,9 +278,13 @@ void  GDocProfSims::GDocProfSim::Update(bool iff) throw (std::bad_alloc)
 		// since sims are calculated each time
 		if(!Manager->GetMemory())
 			return;
-		 for (Sims.Start(); !Sims.End(); Sims.Next())
-		 	for (Sims()->Start(); !Sims()->End(); Sims()->Next())
-				(*Sims())()->State=osModified;
+		RCursor<GSims> Cur(Sims);
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			RCursor<GSim> Cur2(*Cur());
+			for(Cur2.Start();!Cur2.End();Cur2.Next())
+				Cur2()->State=osModified;
+		}
 	}
 
 }

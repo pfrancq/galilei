@@ -167,13 +167,13 @@ void GSubjects::ChooseSubjects(void) throw(std::bad_alloc)
 	unsigned int i;
 
 	// Suppose all subjects are not chosen
-	Subs.Set(this);
+	Subs.Set(*this);
 	for(Subs.Start();!Subs.End();Subs.Next())
 		Subs()->SetUsed(false);
 
 	// Randomly mix the subjects in tab
-	tab=new GSubject*[GetNbNodes()];
-	memcpy(tab,RTree<GSubject,true,false>::Tab,sizeof(GSubject*)*(GetNbNodes()));
+	tab=new GSubject*[RTree<GSubject,true,false>::GetMaxPos()];
+	RTree<GSubject,true,false>::GetTab(tab);
 	Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 	// Choose the first percgrp subjects having at least NbMinDocsSubject documents.
@@ -206,9 +206,9 @@ void GSubjects::CreateSet(void) throw(std::bad_alloc)
 		tmpDocs=new GDoc*[Session->GetNbDocs()];
 	Session->ReInit(false);
 	IdealGroups->ClearGroups();
-	
+
 	// Go through all the subjects which are used
-	Subs.Set(this);
+	Subs.Set(*this);
 	for(Subs.Start();!Subs.End();Subs.Next())
 	{
 		if(!Subs()->IsUsed())
@@ -283,7 +283,7 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 			if(!Grp)
 			{
 				GGroup* NewGrp;
-				
+
 				// A ideal group must be created
 				IdealGroups->InsertGroup(NewGrp=new GGroup(IdealGroups->GetNbGroups(),Lang,false));
 				groups.InsertPtr(Grp=new GroupLang(Lang,NewGrp));
@@ -568,24 +568,25 @@ void GSubjects::FdbksCycle(bool Save) throw(std::bad_alloc)
 		for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
 		{
 			Grps()->NotJudgedDocsRelList(&NewDocs,SubProfile(),Session);
-			for(NewDocs.Start(),i=NbDocsAssess+1;(!NewDocs.End())&&(--i);NewDocs.Next())
+			RCursor<GFdbk> Cur(NewDocs);
+			for(Cur.Start(),i=NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())
 			{
 				// Look if 'OK'
-				if(IsFromSubject(NewDocs()->GetDoc()->GetId(),GetSubject(SubProfile())))
+				if(IsFromSubject(Cur()->GetDoc()->GetId(),GetSubject(SubProfile())))
 				{
-					Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),NewDocs()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
+					Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 				else
 				{
 					// Look If 'KO'
-					if(IsFromParentSubject(NewDocs()->GetDoc()->GetId(),GetSubject(SubProfile())))
+					if(IsFromParentSubject(Cur()->GetDoc()->GetId(),GetSubject(SubProfile())))
 					{
-						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),NewDocs()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 					else
 					{
 						// Must be H
-						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),NewDocs()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 				}
 			}
@@ -610,7 +611,7 @@ void GSubjects::AddAssessments(bool Save) throw(std::bad_alloc)
 	Apply();
 
 	// Go through all the subjects which are used
-	Subs.Set(this);
+	Subs.Set(*this);
 	for(Subs.Start();!Subs.End();Subs.Next())
 	{
 		if(!Subs()->IsUsed()) continue;
@@ -679,7 +680,7 @@ bool GSubjects::AddTopic(bool Save) throw(std::bad_alloc)
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
-	memcpy(tab,RTree<GSubject,true,false>::Tab,sizeof(GSubject*)*(GetNbNodes()));
+	RTree<GSubject,true,false>::GetTab(tab);
 	Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 	// Find the first not used subject having at least NbMinDocsSubject documents.
@@ -764,7 +765,7 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(std::bad_alloc)
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
-	memcpy(tab,RTree<GSubject,true,false>::Tab,sizeof(GSubject*)*(GetNbNodes()));
+	RTree<GSubject,true,false>::GetTab(tab);
 	Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 	// Find the first used subject having at least NbMinDocsSubject documents.
@@ -996,11 +997,20 @@ void GSubjects::InsertDocSubject(GDoc* doc,unsigned int subjectid)
 	GSubject* subject=RTree<GSubject,true,false>::GetPtr<unsigned int>(subjectid);
 	if(!subject)
 		return;
-	R::RContainer<GSubject,false,false>* line=Docs[doc->GetId()];
-	if(!line)
+	R::RContainer<GSubject,false,false>* line;
+	if(Docs.GetMaxPos()<doc->GetId()+1)
 	{
 		line=new R::RContainer<GSubject,false,false>(10,5);
 		Docs.InsertPtrAt(line,doc->GetId(),true);
+	}
+	else
+	{
+		line=Docs[doc->GetId()];
+		if(!line)
+		{
+			line=new R::RContainer<GSubject,false,false>(10,5);
+			Docs.InsertPtrAt(line,doc->GetId(),true);
+		}
 	}
 	line->InsertPtr(subject);
 	subject->Insert(doc);
@@ -1017,6 +1027,8 @@ bool GSubjects::IsFromSubject(GDoc* doc,const GSubject* s)
 //------------------------------------------------------------------------------
 bool GSubjects::IsFromSubject(unsigned int docid,const GSubject* s)
 {
+	if(Docs.GetMaxPos()<docid+1)
+		return(false);
 	R::RContainer<GSubject,false,false>* line=Docs[docid];
 	if(!line)
 		return(false);
@@ -1036,12 +1048,14 @@ bool GSubjects::IsFromParentSubject(unsigned int docid,const GSubject* s)
 {
 	if(!s->Parent)
 		return(false);
+	if(Docs.GetMaxPos()<docid+1)
+		return(false);
 	R::RContainer<GSubject,false,false>* line=Docs[docid];
 	if(!line)
 		return(false);
 	R::RCursor<GSubject> Sub;
 
-	Sub.Set(s->Parent);
+	Sub.Set(*s->Parent);
 	for(Sub.Start();!Sub.End();Sub.Next())
 	{
 		if(Sub()==s)
@@ -1066,7 +1080,7 @@ R::RCursor<GSubject> GSubjects::GetSubjectCursor(unsigned int docid)
 	R::RCursor<GSubject> cur;
 	R::RContainer<GSubject,false,false>* line=Docs[docid];
 	if(line)
-		cur.Set(line);
+		cur.Set(*line);
 	return(cur);
 }
 

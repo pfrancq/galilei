@@ -195,16 +195,14 @@ void GDoc::SetId(unsigned int id) throw(GException)
 //------------------------------------------------------------------------------
 RCursor<GProfileProxy> GDoc::GetFdbks(void)
 {
-	RCursor<GProfileProxy> cur(Fdbks);
-	return(cur);
+	return(RCursor<GProfileProxy>(Fdbks));
 }
 
 
 //------------------------------------------------------------------------------
 RCursor<GWeightInfo> GDoc::GetWeightInfoCursor(void)
 {
-	RCursor<GWeightInfo> cur(this);
-	return(cur);
+	return(RCursor<GWeightInfo>(*this));
 }
 
 
@@ -312,7 +310,7 @@ unsigned int GDoc::GetNbFdbks(void) const
 //------------------------------------------------------------------------------
 unsigned int GDoc::GetNbLinks(void)
 {
-	unsigned int res = LinkSet.NbPtr;
+	unsigned int res = LinkSet.GetNb();
 	return(res);
 }
 
@@ -338,8 +336,7 @@ void GDoc::InsertLink(const GDoc* doc,unsigned int nbOccurs) throw(std::bad_allo
 //------------------------------------------------------------------------------
 R::RCursor<GLink> GDoc::GetLinkCursor(void)
 {
-	R::RCursor<GLink> cur(LinkSet);
-	return(cur);
+	return(R::RCursor<GLink>(LinkSet));
 }
 
 

@@ -55,7 +55,7 @@ void GParams::ReadConfig(RXMLTag* tag)
 {
 	R::RCursor<GParam> Cur;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->ReadConfig(tag);
 }
@@ -66,7 +66,7 @@ void GParams::SaveConfig(RXMLStruct* xml,RXMLTag* tag)
 {
 	R::RCursor<GParam> Cur;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->SaveConfig(xml,tag);
 }

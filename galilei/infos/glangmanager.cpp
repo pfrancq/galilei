@@ -54,9 +54,10 @@ using namespace R;
 GLangManager::GLangManager(RContainer<RString, true, false>* paths,bool load,bool dlg) throw(std::bad_alloc,GException)
   : RContainer<GFactoryLang,true,true>(10,5),GPluginManager("Lang",paths), Load(load)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/langs";
 		LoadPlugins<GFactoryLang,GFactoryLangInit,GLangManager>(this,Path.Latin1(),API_LANG_VERSION, dlg);
 	}
@@ -69,7 +70,7 @@ void GLangManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryLang> Cur;
 	GLang* lang;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		lang=Cur()->GetPlugin();
@@ -85,7 +86,7 @@ void GLangManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryLang> Cur;
 	GLang* lang;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		lang=Cur()->GetPlugin();
@@ -112,7 +113,7 @@ GLang* GLangManager::GetLang(const char* code) const
 //------------------------------------------------------------------------------
 R::RCursor<GFactoryLang> GLangManager::GetLangsCursor(void)
 {
-	R::RCursor<GFactoryLang> cur(this);
+	R::RCursor<GFactoryLang> cur(*this);
 	return(cur);
 }
 

@@ -54,9 +54,10 @@ using namespace R;
 GPostGroupManager::GPostGroupManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryPostGroup,true,true>(10,5),GPluginManager("PostGroup",paths)
 {
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/postgroups";
 		LoadPlugins<GFactoryPostGroup,GFactoryPostGroupInit,GPostGroupManager>(this,Path.Latin1(),API_POSTGROUP_VERSION, dlg);
 	}
@@ -68,7 +69,7 @@ void GPostGroupManager::Connect(GSession* session) throw(GException)
 	R::RCursor<GFactoryPostGroup> Cur;
 	GPostGroup* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -84,7 +85,7 @@ void GPostGroupManager::Disconnect(GSession* session) throw(GException)
 	R::RCursor<GFactoryPostGroup> Cur;
 	GPostGroup* calc;
 
-	Cur.Set(this);
+	Cur.Set(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		calc=Cur()->GetPlugin();
@@ -97,7 +98,7 @@ void GPostGroupManager::Disconnect(GSession* session) throw(GException)
 //-----------------------------------------------------------------------------
 R::RCursor<GFactoryPostGroup> GPostGroupManager::GetPostGroupsCursor(void)
 {
-	R::RCursor<GFactoryPostGroup> cur(this);
+	R::RCursor<GFactoryPostGroup> cur(*this);
 	return(cur);
 }
 

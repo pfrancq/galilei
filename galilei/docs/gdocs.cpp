@@ -124,8 +124,7 @@ GDocs::GDocs(unsigned int nb) throw(std::bad_alloc)
 //-----------------------------------------------------------------------------
 R::RCursor<GDoc> GDocs::GetDocsCursor(void)
 {
-	R::RCursor<GDoc> cur(this);
-	return(cur);
+	return(R::RCursor<GDoc>(*this));
 }
 
 
@@ -141,7 +140,7 @@ R::RCursor<GDoc> GDocs::GetDocsCursor(GLang* lang) throw(GException)
 		cur.Clear();
 		return(cur);
 	}
-	cur.Set(ptr);
+	cur.Set(*ptr);
 	return(cur);
 }
 
@@ -149,8 +148,7 @@ R::RCursor<GDoc> GDocs::GetDocsCursor(GLang* lang) throw(GException)
 //-----------------------------------------------------------------------------
 unsigned int GDocs::FillDocs(GDoc** docs) throw(GException,std::bad_alloc)
 {
-	memcpy(docs,Tab,sizeof(GDoc*)*LastPtr);
-	return(LastPtr);
+	return(GetTab(docs));
 }
 
 
@@ -159,15 +157,15 @@ unsigned int GDocs::GetNbDocs(GLang* lang) const
 {
 	GDocsLang* docL = DocsLang.GetPtr<GLang*>(lang);
 	if (!docL) return 1;
-	return(docL->NbPtr);
+	return(docL->GetNb());
 }
 
 
 //------------------------------------------------------------------------------
 unsigned int GDocs::GetNewId(void) const
 {
-	if(!NbPtr) return(1);
-	return(Tab[NbPtr-1]->GetId()+1);
+	if(!GetNb()) return(1);
+	return((*this)[GetNb()-1]->GetId()+1);
 }
 
 
@@ -210,7 +208,7 @@ GDoc* GDocs::GetDoc(unsigned int id) throw(std::bad_alloc, GException)
 {
 	GDoc* d;
 
-	d=Tab[id];
+	d=(*this)[id];
 	if(!d)
 		throw GException("Unknown document");
 	return(d);

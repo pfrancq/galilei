@@ -249,7 +249,7 @@ RCursor<GFdbk> GProfile::GetFdbks(void)
 //------------------------------------------------------------------------------
 RCursor<GSubProfile> GProfile::GetSubProfilesCursor(void)
 {
-	RCursor<GSubProfile> cur(this);
+	RCursor<GSubProfile> cur(*this);
 	return(cur);
 }
 
@@ -296,7 +296,7 @@ void GProfile::Update(void)
 	GLang* lang;
 
 	// Go through each subprofiles and clear the feedbacks
-	RCursor<GSubProfile> SubProfiles(this);
+	RCursor<GSubProfile> SubProfiles(*this);
 	for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 		SubProfiles()->ClearFdbks();
 

@@ -96,7 +96,7 @@ GGroup* GGroups::GGroupsLang::GetGroup(const GSubProfile* sub)
 {
 	R::RCursor<GGroup> Groups;
 
-	Groups.Set(this);
+	Groups.Set(*this);
 	for(Groups.Start();!Groups.End();Groups.Next())
 	{
 		if(Groups()->IsIn(sub))
@@ -124,7 +124,7 @@ GGroups::GGroups(unsigned int g)
 //------------------------------------------------------------------------------
 R::RCursor<GGroup> GGroups::GetGroupsCursor(void)
 {
-	R::RCursor<GGroup> cur(this);
+	R::RCursor<GGroup> cur(*this);
 	return(cur);
 }
 
@@ -141,7 +141,7 @@ R::RCursor<GGroup> GGroups::GetGroupsCursor(GLang* lang) throw(GException)
 		cur.Clear();
 		return(cur);
 	}
-	cur.Set(ptr);
+	cur.Set(*ptr);
 	return(cur);
 }
 
@@ -199,7 +199,7 @@ unsigned int GGroups::GetNbGroups(GLang* lang) const
 	grps=GroupsLang.GetPtr<const GLang*>(lang);
 	if(!grps)
 		return(0);
-	return(grps->NbPtr);
+	return(grps->GetNb());
 }
 
 
@@ -208,14 +208,14 @@ unsigned int GGroups::GetNewId(void) const
 {
 	// Is there a free identificator
 	// -> Take the first one.
-	if(FreeIds.NbPtr)
+	if(FreeIds.GetNb())
 	{
-		unsigned int id=FreeIds.Tab[0]->Id;
-		delete FreeIds.Tab[0];
+		unsigned int id=FreeIds[0]->Id;
+		delete FreeIds[0];
 		return(id);
 	}
-	if(!NbPtr) return(1);
-	return(Tab[NbPtr-1]->GetId()+1);
+	if(!GetNb()) return(1);
+	return((*this)[GetNb()-1]->GetId()+1);
 }
 
 
@@ -228,9 +228,9 @@ void GGroups::Clear(GLang* lang)
 
 	// Go through the groups and delete all invalid groups.
 	if(!grps) return;
-	for(i=grps->NbPtr+1;--i;)
+	for(i=grps->GetNb()+1;--i;)
 	{
-		grp=(*grps->Tab);
+		grp=(*grps)[0];
  		grp->DeleteSubProfiles();
 		DeletePtr(grp);
 		grps->DeletePtr(grp);
@@ -241,9 +241,10 @@ void GGroups::Clear(GLang* lang)
 //------------------------------------------------------------------------------
 void GGroups::ClearGroups(void)
 {
-	for(GroupsLang.Start();!GroupsLang.End();GroupsLang.Next())
+	RCursor<GGroupsLang> Groups(GroupsLang);
+	for(Groups.Start();!Groups.End();Groups.Next())
 	{
-		Clear(GroupsLang()->Lang);
+		Clear(Groups()->Lang);
 	}
 }
 

@@ -56,7 +56,7 @@ GLinks::GLinks(GDoc* d) throw(std::bad_alloc, GException)
 //------------------------------------------------------------------------------
 R::RCursor<GLink> GLinks::GetLinkCursor(void)
 {
-	R::RCursor<GLink> cur(this);
+	R::RCursor<GLink> cur(*this);
 	return(cur);
 }
 

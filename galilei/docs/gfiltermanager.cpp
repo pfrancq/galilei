@@ -110,9 +110,10 @@ GFilterManager::GFilterManager(RContainer<RString, true, false>* paths,bool dlg)
 	  Exts(50,25)
 {
 	RString MIME;
-	for(paths->Start(); !paths->End(); paths->Next())
+	RCursor<RString> Cur(*paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path((*paths)());
+		RString Path(Cur());
 		Path+="/filters";
 		LoadPlugins<GFactoryFilter,GFactoryFilterInit,GFilterManager>(this,Path.Latin1(),API_FILTER_VERSION, dlg);
 	}
@@ -264,15 +265,17 @@ void GFilterManager::DelMIMES(GFilter* f)
 	RContainer<GMIMEFilter,false,false> Rem(5,5);
 
 	// Find All MIMES types to deleted
-	for(MIMES.Start();!MIMES.End();MIMES.Next())
+	RCursor<GMIMEFilter> Cur(MIMES);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if(MIMES()->Filter==f)
-			Rem.InsertPtr(MIMES());
+		if(Cur()->Filter==f)
+			Rem.InsertPtr(Cur());
 	}
 
 	// Delete all MIMES
-	for(Rem.Start();!Rem.End();Rem.Next())
-		MIMES.DeletePtr(Rem());
+	Cur.Set(Rem);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		MIMES.DeletePtr(Cur());
 }
 
 
@@ -291,7 +294,7 @@ const char* GFilterManager::GetMIMEType(const char* mime) const
 //------------------------------------------------------------------------------
 R::RCursor<GFactoryFilter> GFilterManager::GetFiltersCursor(void)
 {
-	R::RCursor<GFactoryFilter> cur(this);
+	R::RCursor<GFactoryFilter> cur(*this);
 	return(cur);
 }
 

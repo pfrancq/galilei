@@ -103,7 +103,7 @@ R::RCursor<GDoc> GALILEI::GSubject::GetDocsCursor(void)
 //------------------------------------------------------------------------------
 unsigned int GALILEI::GSubject::GetNbDocs(void) const
 {
-	return(Docs.NbPtr);
+	return(Docs.GetNb());
 }
 
 
@@ -125,7 +125,7 @@ R::RCursor<GProfile> GALILEI::GSubject::GetProfilesCursor(void)
 //------------------------------------------------------------------------------
 unsigned int GALILEI::GSubject::GetNbProfiles(void) const
 {
-	return(Profiles.NbPtr);
+	return(Profiles.GetNb());
 }
 
 
