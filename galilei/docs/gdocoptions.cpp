@@ -52,7 +52,7 @@ GALILEI::GDocOptions::GDocOptions(void)
 	: StaticLang(false), MinStopWords(0.1), MinWordSize(4), MinStemSize(3),
 	  MinOccur(1), MinDocs(5), MaxDocs(300), MinOccurCluster(2), WindowSize(10),
 	  NbIteration(2), MinConfidence(0.15), NbDocsMin(5), NonLetterWords(false),
-	  Distance(true), UseLink(false), UseExternalLink(false), UseRedirection(false)
+	  Distance(false), UseLink(false), UseExternalLink(false), UseRedirection(false)
 {
 }
 
