@@ -409,7 +409,6 @@ void KViewStems::ComputeRecallPrecision(void)
 void KViewStems::ComputeTotal(void)
 {
 	GrWord* root;
-	GrWord* stem;
 	unsigned int NbRows,NbCols;                   // Rows and Cols for matrix
 	unsigned int NbWords;                         // Number of Words.
 	double* VectorRows;                           // Sum of the rows of the matrix
@@ -439,36 +438,20 @@ void KViewStems::ComputeTotal(void)
 	// Construction of the container for relation between root and rows in the matrix.
 	RContainer<GrWordId,unsigned int,true,true> RootsId(NbRows,NbRows/2);
 	for(i=27+1,row=0,ptr=Roots->Hash;--i;ptr++)
-	{
 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
-		{
 			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
-			{
-				root=(**ptr2)();
-				RootsId.InsertPtr(new GrWordId(root,row));
-				row++;
-			}
-		}
-	}
+				RootsId.InsertPtr(new GrWordId((**ptr2)(),row++));
 
 	// Construction of the container for relation between stem and column in the matrix.
 	RContainer<GrWordId,unsigned int,true,true> StemsId(NbCols,NbCols/2);
 	for(i=27+1,col=0,ptr=Stems->Hash;--i;ptr++)
-	{
 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
-		{
 			for((*ptr2)->Start();!(*ptr2)->End();(*ptr2)->Next())
-			{
-				stem=(**ptr2)();
-				StemsId.InsertPtr(new GrWordId(stem,col));
-				col++;
-			}
-		}
-	}
+				StemsId.InsertPtr(new GrWordId((**ptr2)(),col++));
 
 	// Element i,j of the matrix is the number of words who are in the ith root
 	// and jth stem.
-	for(i=27+1,col=0,ptr=Roots->Hash;--i;ptr++)
+	for(i=27+1,ptr=Roots->Hash;--i;ptr++)
 	{
 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
 		{
@@ -487,18 +470,25 @@ void KViewStems::ComputeTotal(void)
 					VectorColsTemp[col]++;
 					NbWords++;
 				}
-				for(col=NbCols+1,vec=VectorColsTemp;--col;vec++) a+=(((*vec)*((*vec)-1))/2);
+				for(col=NbCols+1,vec=VectorColsTemp;--col;vec++)
+					a+=(((*vec)*((*vec)-1))/2);
 			}
 		}
 	}
 
-	//Calculation of the different terms of the total = a-(b*c)/d)/((1/2*(b+c))-(b*c)/d)
-	for(col=NbCols+1,vec=VectorCols;--col;vec++) b+=(((*vec)*((*vec)-1))/2);
-	for(row=NbRows+1,vec=VectorRows;--row;vec++) c+=(((*vec)*((*vec)-1))/2);
+	// Calculation of the different terms of the total = a-(b*c)/d)/((1/2*(b+c))-(b*c)/d)
+	for(col=NbCols+1,vec=VectorCols;--col;vec++)
+		b+=(((*vec)*((*vec)-1))/2);
+	for(row=NbRows+1,vec=VectorRows;--row;vec++)
+		c+=(((*vec)*((*vec)-1))/2);
 	d=(NbWords*(NbWords-1))/2;
+	cout<<"NbWords="<<NbWords<<endl<<"a="<<a<<endl<<"b="<<b<<endl<<"c="<<c<<endl<<"d="<<d<<endl;
 	num=a-((b*c)/d);
 	den=(0.5*(b+c))-(b*c/d);
-	Total=num/(den*NbWords);
+	if(den)
+		Total=num/den;
+	else
+		Total=1.0;
 
 	//delete the vectors
 	if (VectorRows) delete[] VectorRows;
