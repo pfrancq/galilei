@@ -1,0 +1,220 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2002-01-16 11:17+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: kgalileicenter.cpp:102
+msgid "New &Window"
+msgstr ""
+
+#: kgalileicenter.cpp:103
+msgid "&Tile"
+msgstr ""
+
+#: kgalileicenter.cpp:104
+msgid "&Cascade"
+msgstr ""
+
+#: kgalileicenter.cpp:106
+msgid "Creates a new document"
+msgstr ""
+
+#: kgalileicenter.cpp:107
+msgid "Opens an existing document"
+msgstr ""
+
+#: kgalileicenter.cpp:108
+msgid "Opens a recently used file"
+msgstr ""
+
+#: kgalileicenter.cpp:109
+msgid "Saves the actual document"
+msgstr ""
+
+#: kgalileicenter.cpp:110
+msgid "Saves the actual document as..."
+msgstr ""
+
+#: kgalileicenter.cpp:111
+msgid "Closes the actual document"
+msgstr ""
+
+#: kgalileicenter.cpp:112
+msgid "Prints out the actual document"
+msgstr ""
+
+#: kgalileicenter.cpp:113
+msgid "Quits the application"
+msgstr ""
+
+#: kgalileicenter.cpp:115
+msgid "Cuts the selected section and puts it to the clipboard"
+msgstr ""
+
+#: kgalileicenter.cpp:116
+msgid "Copies the selected section to the clipboard"
+msgstr ""
+
+#: kgalileicenter.cpp:117
+msgid "Pastes the clipboard contents to actual position"
+msgstr ""
+
+#: kgalileicenter.cpp:119
+msgid "Enables/disables the toolbar"
+msgstr ""
+
+#: kgalileicenter.cpp:120
+msgid "Enables/disables the statusbar"
+msgstr ""
+
+#: kgalileicenter.cpp:122
+msgid "&Window"
+msgstr ""
+
+#: kgalileicenter.cpp:135 kgalileicenter.cpp:203 kgalileicenter.cpp:335
+#: kgalileicenter.cpp:350 kgalileicenter.cpp:359 kgalileicenter.cpp:377
+#: kgalileicenter.cpp:403 kgalileicenter.cpp:416 kgalileicenter.cpp:427
+#: kgalileicenter.cpp:447 kgalileicenter.cpp:458 kgalileicenter.cpp:469
+#: kgalileicenter.cpp:480 kgalileicenter.cpp:491 kgalileicenter.cpp:508
+#: kgalileicenter.cpp:525 kgalileicenter.cpp:539
+msgid "Ready."
+msgstr ""
+
+#: kgalileicenter.cpp:165 kgalileicenter.cpp:340 kgalileicenter.cpp:355
+msgid "Opening file..."
+msgstr ""
+
+#: kgalileicenter.cpp:184
+#, c-format
+msgid "Untitled%1"
+msgstr ""
+
+#: kgalileicenter.cpp:194
+msgid "Could not open document !"
+msgstr ""
+
+#: kgalileicenter.cpp:194
+msgid "Error !"
+msgstr ""
+
+#: kgalileicenter.cpp:274
+msgid ""
+"One or more documents have been modified.\n"
+"Save changes before exiting?"
+msgstr ""
+
+#: kgalileicenter.cpp:285 kgalileicenter.cpp:374 kgalileicenter.cpp:394
+msgid "Could not save the current document !"
+msgstr ""
+
+#: kgalileicenter.cpp:285 kgalileicenter.cpp:374 kgalileicenter.cpp:394
+#: kgalileicenterdoc.cpp:215
+msgid "I/O Error !"
+msgstr ""
+
+#: kgalileicenter.cpp:331
+msgid "Creating new document..."
+msgstr ""
+
+#: kgalileicenter.cpp:343 kgalileicenter.cpp:385 kgalileicenterdoc.cpp:205
+msgid "*|All files"
+msgstr ""
+
+#: kgalileicenter.cpp:343
+msgid "Open File..."
+msgstr ""
+
+#: kgalileicenter.cpp:364
+msgid "Saving file..."
+msgstr ""
+
+#: kgalileicenter.cpp:382
+msgid "Saving file with a new filename..."
+msgstr ""
+
+#: kgalileicenter.cpp:408
+msgid "Closing file..."
+msgstr ""
+
+#: kgalileicenter.cpp:421
+msgid "Printing..."
+msgstr ""
+
+#: kgalileicenter.cpp:432
+msgid "Exiting..."
+msgstr ""
+
+#: kgalileicenter.cpp:452
+msgid "Reverting last action..."
+msgstr ""
+
+#: kgalileicenter.cpp:463
+msgid "Cutting selection..."
+msgstr ""
+
+#: kgalileicenter.cpp:474
+msgid "Copying selection to clipboard..."
+msgstr ""
+
+#: kgalileicenter.cpp:485
+msgid "Inserting clipboard contents..."
+msgstr ""
+
+#: kgalileicenter.cpp:496
+msgid "Toggle the toolbar..."
+msgstr ""
+
+#: kgalileicenter.cpp:513
+msgid "Toggle the statusbar..."
+msgstr ""
+
+#: kgalileicenter.cpp:530
+msgid "Opening a new application window..."
+msgstr ""
+
+#: kgalileicenterdoc.cpp:198
+msgid ""
+"The current file has been modified.\n"
+"Do you want to save it?"
+msgstr ""
+
+#: kgalileicenterdoc.cpp:214
+msgid ""
+"Could not save the current document !\n"
+"Close anyway ?"
+msgstr ""
+
+#: main.cpp:38 main.cpp:52
+msgid "KGalileiCenter"
+msgstr ""
+
+#: main.cpp:44
+msgid "file to open"
+msgstr ""
+
+#: main.cpp:55
+msgid "Maintainer"
+msgstr ""
+
+#: _translatorinfo.cpp:1 _translatorinfo.cpp:1
+msgid ""
+"_: NAME OF TRANSLATORS\n"
+"Your names"
+msgstr ""
+
+#: _translatorinfo.cpp:3 _translatorinfo.cpp:3
+msgid ""
+"_: EMAIL OF TRANSLATORS\n"
+"Your emails"
+msgstr ""
