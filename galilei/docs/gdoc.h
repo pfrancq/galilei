@@ -116,6 +116,12 @@ protected:
 	* Subjects of the document.
 	*/
 	R::RContainer<GSubject,false,true> Subjects;
+	
+	/**
+	* Id of the owner
+	*/
+	unsigned int OwnerId;
+	
 
 public:
 
@@ -130,8 +136,9 @@ public:
 	* @param a              String representing the date of the last analysis.
 	* @param f              Number of fails.
 	* @param nbf            Number of assessments.
+	* @param ownerid             Owner Identifier of the document.
 	*/
-	GDoc(const R::RString& url,const R::RString& name,unsigned int id,GLang* lang,const R::RString&  mime,const R::RString& u,const R::RString& a,unsigned int f,unsigned int nbf=100) throw(std::bad_alloc);
+	GDoc(const R::RString& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RString& u,const R::RString& a,unsigned int f,unsigned int ownerid,unsigned int nbf=100) throw(std::bad_alloc);
 
 	/**
 	* Construct a document.
@@ -252,6 +259,12 @@ proxy:
 	* @param id             Identifier.
 	*/
 	void SetId(unsigned int id) throw(GException);
+
+	/**
+	* Get the owner identificator of the document.
+	* @return unsigned int.
+	*/
+	unsigned int GetOwnerId(void) const {return(OwnerId);}
 
 	/**
 	* Get the number of failed for the document.

@@ -272,7 +272,7 @@ proxy:
 	* Get the user of the profile.
 	* @return Pointer to the user.
 	*/
-	const GUser* GetUser(void) const {return(User);}
+	GUser* GetUser(void) const {return(User);}
 
 	/**
 	* Look if the profile is social.

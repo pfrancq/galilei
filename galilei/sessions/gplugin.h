@@ -80,7 +80,7 @@ class GPluginManager
 	/**
 	* The path of the current manager
 	*/
-	R::RString Path;
+	R::RContainer<RString, true, false>* Paths;
 
 public :
 	/**
@@ -92,7 +92,7 @@ public :
 	/**
 	* Constructor for the manager of plug-ins manager
 	*/
-	GPluginManager(R::RString name,R::RString path);
+	GPluginManager(R::RString name,R::RContainer<RString, true, false>* paths);
 
 	/**
 	* Connect to the session.
@@ -137,7 +137,7 @@ public :
 	/**
 	* Get the path associated to the current manager.
 	*/
-	R::RString GetPath(void) const{return Path;};
+	R::RContainer<RString, true, false>* GetPaths(void) const{return Paths;};
 
 	/**
 	* Get the manager associated to the "name".
@@ -540,6 +540,7 @@ template<class factory,class factoryInit,class manager>
 
 		// Register main plugin
 		mng->InsertPtr(myfactory);
+
 
 		// Look if dialogs shoudl be loaded and if a corresponding dialog
 		// plug-in exist.

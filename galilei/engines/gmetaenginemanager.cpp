@@ -52,12 +52,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GMetaEngineManager::GMetaEngineManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryMetaEngine,true,true>(10,5),GPluginManager("MetaEngine",path),Current(0)
+GMetaEngineManager::GMetaEngineManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: RContainer<GFactoryMetaEngine,true,true>(10,5),GPluginManager("MetaEngine",paths),Current(0)
 {
-	RString Path(path);
-	Path+="/metaengines";
-	LoadPlugins<GFactoryMetaEngine,GFactoryMetaEngineInit,GMetaEngineManager>(this,Path.Latin1(),API_METAENGINE_VERSION, dlg);
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/metaengines";
+		LoadPlugins<GFactoryMetaEngine,GFactoryMetaEngineInit,GMetaEngineManager>(this,Path.Latin1(),API_METAENGINE_VERSION, dlg);
+	}
 }
 
 

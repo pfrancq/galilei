@@ -61,7 +61,7 @@ public:
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
-	GPostDocManager(const char* path,bool dlg=true) throw(GException);
+	GPostDocManager(R::RContainer<RString, true, false>* paths,bool dlg=true) throw(GException);
 
 	/**
 	* Connect to a Session.

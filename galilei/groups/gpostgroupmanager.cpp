@@ -51,13 +51,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryPostGroup,true,true>(10,5),GPluginManager("PostGroup",path)
+GPostGroupManager::GPostGroupManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: RContainer<GFactoryPostGroup,true,true>(10,5),GPluginManager("PostGroup",paths)
 {
-	RString Path(path);
-	Path+="/postgroups";
-
-	LoadPlugins<GFactoryPostGroup,GFactoryPostGroupInit,GPostGroupManager>(this,Path.Latin1(),API_POSTGROUP_VERSION, dlg);
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/postgroups";
+		LoadPlugins<GFactoryPostGroup,GFactoryPostGroupInit,GPostGroupManager>(this,Path.Latin1(),API_POSTGROUP_VERSION, dlg);
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -115,6 +115,11 @@ public:
 	*/
 	void SetId(unsigned int id) throw(GException);
 
+	/**+
+	* Get a cursor over the profiles of user.
+	*/
+	R::RCursor<GProfile> GetProfilesCursor(void);
+
 	/**
 	* Get the name of the user.
 	* @return RString.

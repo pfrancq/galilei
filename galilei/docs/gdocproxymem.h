@@ -66,6 +66,7 @@ public:
 	virtual GLang* GetLang(void) const {return(Obj->GetLang());}
 	virtual unsigned int GetId(void) const {return(Obj->GetId());}
 	virtual void SetId(unsigned int id) throw(GException) {Obj->SetId(id);}
+	virtual unsigned int GetOwnerId(void) const {return(Obj->GetOwnerId());};
 	virtual unsigned int GetFailed(void) const {return(Obj->GetFailed());}
 	virtual void InitFailed(void) {Obj->InitFailed();}
 	virtual void IncFailed(void) {Obj->IncFailed();}

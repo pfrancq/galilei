@@ -62,7 +62,7 @@ public:
 	* @param path            Path to the plugins.
 	* @param dlg             Should the dialog box be loaded.
 	*/
-	GFilterManagerKDE(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
+	GFilterManagerKDE(R::RContainer<RString, true, false>* paths,bool dlg=true) throw(std::bad_alloc,GException);
 
 protected:
 

@@ -81,8 +81,8 @@ int GFilterManagerCURL::WriteTmpFile(void* buffer, size_t size, size_t nmemb, vo
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterManagerCURL::GFilterManagerCURL(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: GFilterManager(path,dlg)
+GFilterManagerCURL::GFilterManagerCURL(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: GFilterManager(paths,dlg)
 {
 	Lib = curl_easy_init();
 }

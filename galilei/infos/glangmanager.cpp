@@ -51,14 +51,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLangManager::GLangManager(const char* path,bool load,bool dlg) throw(std::bad_alloc,GException)
-  : RContainer<GFactoryLang,true,true>(10,5),GPluginManager("Lang",path), Load(load)
+GLangManager::GLangManager(RContainer<RString, true, false>* paths,bool load,bool dlg) throw(std::bad_alloc,GException)
+  : RContainer<GFactoryLang,true,true>(10,5),GPluginManager("Lang",paths), Load(load)
 {
-
-	RString Path(path);
-	Path+="/langs";
-
-	LoadPlugins<GFactoryLang,GFactoryLangInit,GLangManager>(this,Path.Latin1(),API_LANG_VERSION, dlg);
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/langs";
+		LoadPlugins<GFactoryLang,GFactoryLangInit,GLangManager>(this,Path.Latin1(),API_LANG_VERSION, dlg);
+	}
 }
 
 

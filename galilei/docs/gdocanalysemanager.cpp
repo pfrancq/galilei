@@ -51,14 +51,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocAnalyseManager::GDocAnalyseManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryDocAnalyse,true,true>(10,5), GPluginManager("DocAnalyse",path),Current(0)
+GDocAnalyseManager::GDocAnalyseManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: RContainer<GFactoryDocAnalyse,true,true>(10,5), GPluginManager("DocAnalyse",paths),Current(0)
 {
-
-	RString Path(path);
-	Path+="/docs";
-
-	LoadPlugins<GFactoryDocAnalyse,GFactoryDocAnalyseInit,GDocAnalyseManager>(this,Path.Latin1(),API_DOCANALYSE_VERSION, dlg);
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/docs";
+		LoadPlugins<GFactoryDocAnalyse,GFactoryDocAnalyseInit,GDocAnalyseManager>(this,Path.Latin1(),API_DOCANALYSE_VERSION, dlg);
+	}
 
 }
 

@@ -68,7 +68,7 @@ public:
 	* @param load            Must the dictionnaries be loaded?
 	* @param dlg             Load the existing dialog.
 	*/
-	GLangManager(const char* path,bool load,bool dlg=true) throw(std::bad_alloc,GException);
+	GLangManager(R::RContainer<RString, true, false>* paths,bool load,bool dlg=true) throw(std::bad_alloc,GException);
 
 	/**
 	* Connect to a Session.

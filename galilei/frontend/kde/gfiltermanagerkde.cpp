@@ -57,8 +57,8 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GFilterManagerKDE::GFilterManagerKDE(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: GFilterManager(path,dlg)
+GALILEI::GFilterManagerKDE::GFilterManagerKDE(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: GFilterManager(paths,dlg)
 {
 }
 

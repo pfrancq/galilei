@@ -50,13 +50,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLinkCalcManager::GLinkCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryLinkCalc,true,true>(10,5),GPluginManager("LinkCalc",path), Current(0)
+GLinkCalcManager::GLinkCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: RContainer<GFactoryLinkCalc,true,true>(10,5),GPluginManager("LinkCalc",paths), Current(0)
 {
-	RString Path(path);
-	Path+="/linking";
-
-	LoadPlugins<GFactoryLinkCalc,GFactoryLinkCalcInit,GLinkCalcManager>(this,Path.Latin1(),API_LINKCALC_VERSION, dlg);
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/linking";
+		LoadPlugins<GFactoryLinkCalc,GFactoryLinkCalcInit,GLinkCalcManager>(this,Path.Latin1(),API_LINKCALC_VERSION, dlg);
+	}
 }
 
 

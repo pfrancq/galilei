@@ -52,12 +52,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GEngineManager::GEngineManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: R::RContainer<GFactoryEngine,true,true>(10,5),GPluginManager("Engine",path)
+GEngineManager::GEngineManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: R::RContainer<GFactoryEngine,true,true>(10,5),GPluginManager("Engine",paths)
 {
-	RString Path(path);
-	Path+="/engines";
-	LoadPlugins<GFactoryEngine,GFactoryEngineInit,GEngineManager>(this,Path.Latin1(),API_ENGINE_VERSION, dlg);
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/engines";
+		LoadPlugins<GFactoryEngine,GFactoryEngineInit,GEngineManager>(this,Path.Latin1(),API_ENGINE_VERSION, dlg);
+	}
 }
 
 

@@ -51,14 +51,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostProfileManager::GPostProfileManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryPostProfile,true,true>(10,5),GPluginManager("PostProfile",path)
+GPostProfileManager::GPostProfileManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: RContainer<GFactoryPostProfile,true,true>(10,5),GPluginManager("PostProfile",paths)
 {
-	RString Path(path);
-	Path+="/postprofile";
-
-	LoadPlugins<GFactoryPostProfile,GFactoryPostProfileInit,GPostProfileManager>(this,Path.Latin1(),API_POSTGROUP_VERSION, dlg);
-
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/postprofile";
+		LoadPlugins<GFactoryPostProfile,GFactoryPostProfileInit,GPostProfileManager>(this,Path.Latin1(),API_POSTGROUP_VERSION, dlg);
+	}
 }
 
 //------------------------------------------------------------------------------

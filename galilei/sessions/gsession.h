@@ -285,6 +285,12 @@ public:
 	void CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks);
 
 	/**
+	* run pre-profiling methods are called.
+	* @param rec            Receiver of the signals.
+	*/
+	void ComputePreProfile(GSlot* rec);
+
+	/**
 	* run post-profiling methods are called.
 	* @param rec            Receiver of the signals.
 	*/
@@ -510,7 +516,7 @@ template<class C> C* New(unsigned int id)
 /**
 * The GSessionParams represents  the parameter used to create the session.
 * @short GSession Parameters.
-*/
+*/ 
 class GSessionParams : public GParams
 {
 

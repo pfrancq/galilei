@@ -140,8 +140,11 @@ class GFactoryProfileCalc;
 class GProfileCalcManager;
 class GProfilesSims;
 class GProfilesBehaviours;
+class GPreProfile;
 class GPostProfile;
+class GFactoryPreProfile;
 class GFactoryPostProfile;
+class GPreProfileManager;
 class GPostProfileManager;
 
 

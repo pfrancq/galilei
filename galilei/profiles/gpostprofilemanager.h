@@ -62,7 +62,7 @@ public:
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
-	GPostProfileManager(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
+	GPostProfileManager(R::RContainer<RString, true, false>* paths,bool dlg=true) throw(std::bad_alloc,GException);
 
 	/**
 	* Connect to a Session.

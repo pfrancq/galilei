@@ -105,14 +105,17 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterManager::GFilterManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: R::RContainer<GFactoryFilter,true,true>(10,5),GPluginManager("Filter",path), MIMES(50,25),
+GFilterManager::GFilterManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: R::RContainer<GFactoryFilter,true,true>(10,5),GPluginManager("Filter",paths), MIMES(50,25),
 	  Exts(50,25)
 {
-	RString Path(path);
-	RString MIME;
-	Path+="/filters";
-	LoadPlugins<GFactoryFilter,GFactoryFilterInit,GFilterManager>(this,Path.Latin1(),API_FILTER_VERSION, dlg);
+		RString MIME;
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/filters";
+		LoadPlugins<GFactoryFilter,GFactoryFilterInit,GFilterManager>(this,Path.Latin1(),API_FILTER_VERSION, dlg);
+	}
 
 	// Try to open list of MIME types
 	try

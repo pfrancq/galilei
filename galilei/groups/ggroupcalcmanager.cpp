@@ -50,13 +50,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryGroupCalc,true,true>(10,5),GPluginManager("GroupCalc",path), Current(0)
+GGroupCalcManager::GGroupCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: RContainer<GFactoryGroupCalc,true,true>(10,5),GPluginManager("GroupCalc",paths), Current(0)
 {
-	RString Path(path);
-	Path+="/groups";
-
-	LoadPlugins<GFactoryGroupCalc,GFactoryGroupCalcInit,GGroupCalcManager>(this,Path.Latin1(),API_GROUPCALC_VERSION, dlg);
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/groups";
+		LoadPlugins<GFactoryGroupCalc,GFactoryGroupCalcInit,GGroupCalcManager>(this,Path.Latin1(),API_GROUPCALC_VERSION, dlg);
+	}
 
 }
 

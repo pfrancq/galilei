@@ -77,7 +77,9 @@ using namespace R;
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofilecalc.h>
 #include <profiles/gprofilecalcmanager.h>
+#include <profiles/gpreprofile.h>
 #include <profiles/gpostprofile.h>
+#include <profiles/gpreprofilemanager.h>
 #include <profiles/gpostprofilemanager.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
@@ -568,6 +570,10 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 	GProfileCalc* Profiling=(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod();
 	GLinkCalc* LinkCalc=(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod();
 
+	//runs the pre profiling methods;
+	ComputePreProfile(rec);
+
+
 	if(!Profiling)
 		throw GException("No computing method chosen.");
 
@@ -594,7 +600,9 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 					Profiling->Compute(Subs());
 
 					if(save)
+					{
 						Storage->SaveSubProfile(Subs());
+					}
 
 					// add the mofified profile to the list of modified profiles (if it is defined!)
 					if (Subs()->IsDefined())
@@ -630,6 +638,33 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 
 
 //------------------------------------------------------------------------------
+void GSession::ComputePreProfile(GSlot* rec)
+{
+	char tmp[100];
+
+	// Run all post-group methods that are enabled
+	R::RCursor<GFactoryPreProfile> PreProfile=(dynamic_cast<GPreProfileManager*>(GPluginManager::GetManager("PreProfile")))->GetPreProfileCursor();
+
+	if(rec)
+		rec->Interact();
+	if(ExternBreak) return;
+
+	for(PreProfile.Start();!PreProfile.End();PreProfile.Next())
+	{
+		if(rec)
+			rec->Interact();
+		if(ExternBreak) return;
+		if(PreProfile()->GetPlugin())
+		{
+			sprintf(tmp, "PostProfile : Running %s",PreProfile()->GetName().Latin1());
+			rec->WriteStr(tmp);
+			PreProfile()->GetPlugin()->Run();
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GSession::ComputePostProfile(GSlot* rec)
 {
 	char tmp[100];
@@ -648,7 +683,7 @@ void GSession::ComputePostProfile(GSlot* rec)
 		if(ExternBreak) return;
 		if(PostProfile()->GetPlugin())
 		{
-			sprintf(tmp, "PostGroup : Running %s",PostProfile()->GetName().Latin1());
+			sprintf(tmp, "PostProfile : Running %s",PostProfile()->GetName().Latin1());
 			rec->WriteStr(tmp);
 			PostProfile()->GetPlugin()->Run();
 		}
@@ -664,6 +699,23 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GExce
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
 	Grouping->Grouping(rec,modified,save);
+
+	//tmp david
+	GStatsCalc* Calc;
+	RXMLStruct xml;
+	RXMLTag* Root;
+	Root=new RXMLTag("Statistics");
+	xml.AddTag(0,Root);
+	R::RCursor<GFactoryStatsCalc> Cur;
+	Cur.Set((dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc"))));
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Calc=Cur()->GetPlugin();
+		if(Calc)
+			Calc->Compute(&xml,*Root);
+	}
+	//end tmp david
+
 	// Run all post-group methods that are enabled
 	ComputePostGroup(rec);
 }

@@ -52,14 +52,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostDocManager::GPostDocManager(const char* path,bool dlg) throw(GException)
-	: RContainer<GFactoryPostDoc,true,true>(10,5) ,GPluginManager("PostDoc",path)
+GPostDocManager::GPostDocManager(RContainer<RString, true, false>* paths,bool dlg) throw(GException)
+	: RContainer<GFactoryPostDoc,true,true>(10,5) ,GPluginManager("PostDoc",paths)
 {
-
-	RString Path(path);
-	Path+="/postdoc";
-
-	LoadPlugins<GFactoryPostDoc,GFactoryPostDocInit,GPostDocManager>(this,Path.Latin1(),API_POSTDOC_VERSION, dlg);
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/postdoc";
+		LoadPlugins<GFactoryPostDoc,GFactoryPostDocInit,GPostDocManager>(this,Path.Latin1(),API_POSTDOC_VERSION, dlg);
+	}
 }
 
 

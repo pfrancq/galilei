@@ -51,14 +51,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfileCalcManager::GProfileCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryProfileCalc,true,true>(10,5),GPluginManager("ProfileCalc",path), Current(0)
+GProfileCalcManager::GProfileCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: RContainer<GFactoryProfileCalc,true,true>(10,5),GPluginManager("ProfileCalc",paths), Current(0)
 {
-	RString Path(path);
-	Path+="/profiling";
-
-	LoadPlugins<GFactoryProfileCalc,GFactoryProfileCalcInit,GProfileCalcManager>(this,Path.Latin1(),API_PROFILECALC_VERSION, dlg);
-
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/profiling";
+		LoadPlugins<GFactoryProfileCalc,GFactoryProfileCalcInit,GProfileCalcManager>(this,Path.Latin1(),API_PROFILECALC_VERSION, dlg);
+	}
 }
 
 

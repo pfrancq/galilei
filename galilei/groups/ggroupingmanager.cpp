@@ -50,13 +50,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupingManager::GGroupingManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryGrouping,true,true>(10,5), GPluginManager("Grouping",path),Current(0)
+GGroupingManager::GGroupingManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: RContainer<GFactoryGrouping,true,true>(10,5), GPluginManager("Grouping",paths),Current(0)
 {
-	RString Path(path);
-	Path+="/grouping";
-
-	LoadPlugins<GFactoryGrouping,GFactoryGroupingInit,GGroupingManager>(this,Path.Latin1(),API_GROUPING_VERSION, dlg);
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/grouping";
+		LoadPlugins<GFactoryGrouping,GFactoryGroupingInit,GGroupingManager>(this,Path.Latin1(),API_GROUPING_VERSION, dlg);
+	}
 
 }
 

@@ -50,10 +50,10 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const RString& u,const RString& a,unsigned int f,unsigned int nbf) throw(std::bad_alloc)
+GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const RString& u,const RString& a,unsigned int f,unsigned int ownerid,unsigned int nbf) throw(std::bad_alloc)
 	:  GWeightInfos(60), URL(url), Name(name), Id(id),
 	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
-	  Failed(f), LinkSet(5,2),Subjects(2,1)
+	  Failed(f), LinkSet(5,2),Subjects(2,1), OwnerId(ownerid)
 {
 	if(Updated>Computed)
 	{

@@ -236,6 +236,7 @@ void GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc
 		// Load the dictionary from the database
 		sSql="SELECT kwdid,kwd,type FROM "+tbl+" WHERE langid='"+lang->GetCode()+"'";
 		RQuery dicts (Db, sSql);
+		RString tmp;
 		for(dicts.Start();!dicts.End();dicts.Next())
 		{
 			switch(atoi(dicts[2]))
@@ -416,7 +417,7 @@ void GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 	try
 	{
 		//test if the subprofile already exists.
-		sSql="SELECT COUNT(*) FROM subprofiles WHERE subprofileid="+itou(sub->GetId());
+		sSql="SELECT COUNT(1) FROM subprofiles WHERE subprofileid="+itou(sub->GetId());
 		RQuery existsubprof(Db,sSql);
 		existsubprof.Start();
 		if(!atoi(existsubprof[0]))
@@ -776,12 +777,12 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 
 	try
 	{
-		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed FROM htmls");
+		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed, owner FROM htmls");
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			docid=atoi(quer[0]);
 			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(quer[4]);
-			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7])));
+			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8])));
 		}
 
 		// Load the links of the document loaded.
@@ -797,6 +798,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		{
 			// Get the id
 			idx=atoi(sel[0]);
+			if(idx==3982 || idx==4057) continue;
 			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(sel[2]);
 
 			// If not the same -> new doc
@@ -848,6 +850,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 	{
 		throw GException(e.GetMsg());
 	}
+
 }
 
 
@@ -888,12 +891,12 @@ void GStorageMySQL::LoadDocs(GSession* session,GInfoList& list,GLang* lang) thro
 		}
 
 		//
-		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed FROM htmls"+sSql);
+		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed, ownerid FROM htmls"+sSql);
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			docid=atoi(quer[0]);
 			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(quer[4]);
-			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7])));
+			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8])));
 		}
 
 		// Load the links of the document loaded.
@@ -970,12 +973,12 @@ void GStorageMySQL::LoadNewDocs(GSession* session) throw(std::bad_alloc,GExcepti
 	try
 	{
 		dynamic_cast<GDocs*>(session)->Clear();
-		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed FROM htmls WHERE calculated < updated");
+		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed, ownerid FROM htmls WHERE calculated < updated");
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			docid=atoi(quer[0]);
 			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(quer[4]);
-			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7])));
+			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8])));
 		}
 	}
 	catch(RMySQLError e)

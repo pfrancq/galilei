@@ -64,6 +64,7 @@ public:
 	virtual GLang* GetLang(void) const=0;
 	virtual unsigned int GetId(void) const=0;
 	virtual void SetId(unsigned int id) throw(GException)=0;
+	virtual unsigned int GetOwnerId(void) const=0;
 	virtual unsigned int GetFailed(void) const=0;
 	virtual void InitFailed(void)=0;
 	virtual void IncFailed(void)=0;

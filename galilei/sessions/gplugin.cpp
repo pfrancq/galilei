@@ -51,8 +51,8 @@ RContainer<GPluginManager,false,true> GPluginManager::Managers(10,5);
 
 
 //------------------------------------------------------------------------------
-GPluginManager::GPluginManager(RString name,RString path)
-	: Name(name),Path(path)
+GPluginManager::GPluginManager(RString name,RContainer<RString, true, false>* paths)
+	: Name(name),Paths(paths)
 {
 	Managers.InsertPtr(this);
 }

@@ -53,13 +53,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryStatsCalc,true,true>(10,5),GPluginManager("StatCalc",path)
+GStatsCalcManager::GStatsCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
+	: RContainer<GFactoryStatsCalc,true,true>(10,5),GPluginManager("StatsCalc",paths)
 {
-	RString Path(path);
-	Path+="/stats";
-
-	LoadPlugins<GFactoryStatsCalc,GFactoryStatsCalcInit,GStatsCalcManager>(this,Path.Latin1(),API_STATSCALC_VERSION, dlg);
+	for(paths->Start(); !paths->End(); paths->Next())
+	{
+		RString Path((*paths)());
+		Path+="/stats";
+		LoadPlugins<GFactoryStatsCalc,GFactoryStatsCalcInit,GStatsCalcManager>(this,Path.Latin1(),API_STATSCALC_VERSION, dlg);
+	}
 }
 
 
