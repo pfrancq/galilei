@@ -44,6 +44,7 @@
 #include <sessions/galilei.h>
 #include <sessions/gslot.h>
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -81,7 +82,7 @@ public:
 	* @param name           Name of the program.
 	* @param wflags         Flags.
 	*/
-	KViewPrg(KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KViewPrg(KDoc* doc,QWidget* parent,const char* name,int wflags) throw(bad_alloc,RException);
 
 	/**
 	* Return the type of the window.
@@ -98,26 +99,26 @@ public:
 	* The traitment for a specific document will begin.
 	* @param doc            Document.
 	*/
-	virtual void receiveNextDoc(const GDoc* doc);
+	virtual void receiveNextDoc(const GDoc* doc) throw(bad_alloc,RException);
 
 	/**
 	* The traitment for a specific document will begin.
 	* @param prof           Profile.
 	*/
-	virtual void receiveNextProfile(const GProfile* prof);
+	virtual void receiveNextProfile(const GProfile* prof) throw(bad_alloc,RException);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
-	virtual void NextGroupLang(const GLang* lang);
+	virtual void NextGroupLang(const GLang* lang) throw(bad_alloc,RException);
 
 	/**
 	* Method called when executing a sequence of instruction to output some
 	* information.
 	* @param str            String to output.
 	*/
-	virtual void WriteStr(const char* str);
+	virtual void WriteStr(const char* str) throw(bad_alloc,RException);
 
 protected:
 

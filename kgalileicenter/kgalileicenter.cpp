@@ -885,6 +885,10 @@ void KGALILEICenterApp::slotRunProgram(void)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
 	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+	}
 	catch(R::RMySQLError& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",e.GetError());

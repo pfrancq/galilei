@@ -59,7 +59,7 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,const char* name,int wflags)
+KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,const char* name,int wflags) throw(bad_alloc,RException)
 	: KView(doc,parent,name,wflags), GSlot()
 {
 	// Window proprieties
@@ -78,28 +78,28 @@ void KViewPrg::update(unsigned int /*cmd*/)
 }
 
 //-----------------------------------------------------------------------------
-void KViewPrg::receiveNextDoc(const GDoc*)
+void KViewPrg::receiveNextDoc(const GDoc*) throw(bad_alloc,RException)
 {
 	KApplication::kApplication()->processEvents();
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::receiveNextProfile(const GProfile*)
+void KViewPrg::receiveNextProfile(const GProfile*) throw(bad_alloc,RException)
 {
 	KApplication::kApplication()->processEvents();
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::NextGroupLang(const GLang*)
+void KViewPrg::NextGroupLang(const GLang*) throw(bad_alloc,RException)
 {
 	KApplication::kApplication()->processEvents();
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::WriteStr(const char* str)
+void KViewPrg::WriteStr(const char* str) throw(bad_alloc,RException)
 {
 	Output->insertLine(str);
 	KApplication::kApplication()->processEvents();

@@ -79,7 +79,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char* c)
+QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char* c) throw(bad_alloc,RException)
     : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), Session(s)
 {
 	resize(600, 78 );
@@ -345,7 +345,7 @@ void QSessionProgressDlg::ComputeAll(bool modified,bool save)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextGroupLang(const GLang* lang)
+void QSessionProgressDlg::NextGroupLang(const GLang* lang) throw(bad_alloc,RException)
 {
 	txtRem->setText(QString("Groups Profiles for '")+lang->GetName()+"' ...");
 	KApplication::kApplication()->processEvents();
@@ -353,7 +353,7 @@ void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextDoc(const GDoc* doc)
+void QSessionProgressDlg::receiveNextDoc(const GDoc* doc) throw(bad_alloc,RException)
 {
 	txtRem->setText(QString("Analyse Doc '")+doc->GetName().Latin1()+"' ...");
 	KApplication::kApplication()->processEvents();
@@ -361,7 +361,7 @@ void QSessionProgressDlg::receiveNextDoc(const GDoc* doc)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextProfile(const GProfile* prof)
+void QSessionProgressDlg::receiveNextProfile(const GProfile* prof) throw(bad_alloc,RException)
 {
 	txtRem->setText(QString("Analyse Profile '")+prof->GetName().Latin1()+"' of User '"+prof->GetUser()->GetName().Latin1()+"' ...");
 	KApplication::kApplication()->processEvents();
@@ -369,7 +369,7 @@ void QSessionProgressDlg::receiveNextProfile(const GProfile* prof)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextChromosome(unsigned int id)
+void QSessionProgressDlg::receiveNextChromosome(unsigned int id) throw(bad_alloc,RException)
 {
 	char tmp[50];
 

@@ -43,6 +43,7 @@
 // forward class declaration for GALIEI
 #include <sessions/gslot.h>
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -92,7 +93,7 @@ public:
 	* @param s              Session from which to load.
 	* @param c              Caption of the dialog box.
 	*/
-	QSessionProgressDlg(QWidget* parent,GSession* s,const char* c);
+	QSessionProgressDlg(QWidget* parent,GSession* s,const char* c) throw(bad_alloc,RException);
 
 	/**
 	* Load a session.
@@ -165,25 +166,25 @@ public:
 	* Method called by GGrouping each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
-	virtual void NextGroupLang(const GLang* lang);
+	virtual void NextGroupLang(const GLang* lang) throw(bad_alloc,RException);
 
 	/**
 	* The traitment for a specific document will begin.
 	* @param doc            Document.
 	*/
-	virtual void receiveNextDoc(const GDoc* doc);
+	virtual void receiveNextDoc(const GDoc* doc) throw(bad_alloc,RException);
 
 	/**
 	* The traitment for a specific profile will begin.
 	* @param prof           Profile.
 	*/
-	virtual void receiveNextProfile(const GProfile* prof);
+	virtual void receiveNextProfile(const GProfile* prof) throw(bad_alloc,RException);
 
 	/**
 	* The traitment for a specific chromosome will begin.
 	* @param id             Identificator of the chromosome.
 	*/
-	virtual void receiveNextChromosome(unsigned int id);
+	virtual void receiveNextChromosome(unsigned int id) throw(bad_alloc,RException);
 
 	/**
 	* Put some text.
