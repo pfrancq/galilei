@@ -650,8 +650,9 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 	// Skip spaces and read the delimiter which must be a ' or a "
 	while((*ptr)&&(isspace(*ptr)))
 		ptr++;
-	delimiter=(*(ptr++));
+	delimiter=(*ptr);
 	if((delimiter!='\'')&&(delimiter!='"')) return;
+	ptr++;
 
 	// Read the type of HTTP-EQUIV or NAME
 	name=ptr;
@@ -673,8 +674,9 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 	// Skip spaces and read the delimiter which must be a ' or a "
 	while((*ptr)&&(isspace(*ptr)))
 		ptr++;
-	delimiter=(*(ptr++));
+	delimiter=(*ptr);
 	if((delimiter!='\'')&&(delimiter!='"')) return;
+	ptr++;
 
 	// Read the type of HTTP-EQUIV
 	content=ptr;
@@ -686,13 +688,12 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 	{
 		if (!strcmp(name,"REFRESH"))
 		{
-			//Doc->AddType(content)   // voir comment gerer les refresh!!
-			while (strncmp(content,"URL",3))
-			{
-				content++;
-			}
+			// Search for 'URL'
+			while((*ptr)&&(RString::ToUpper(*ptr)!='U'))
+				ptr++;
+			if((!(*ptr))||strncasecmp(ptr,"URL",3)) return;
 			content+=3;
-			while (((*content)== '=')||(isspace(*content)))
+			while(((*content)== '=')||(isspace(*content)))
 			{
 				content++;
 			}
