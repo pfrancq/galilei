@@ -61,6 +61,7 @@ using namespace RStd;
 #include <profiles/gprofilecalcfeedback.h>
 #include <profiles/gprofilecalcreweighting.h>
 #include <groups/ggroupingsim.h>
+#include <groups/ggroupingrandom.h>
 #include <groups/ggroupinggga.h>
 #include <groups/ggroupingkcos.h>
 #include <groups/ggroupingkprotos.h>
@@ -167,7 +168,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterGroupingMethod(new GGroupingSim(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingKCos(Sess));
-//			Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
+			Sess->RegisterGroupingMethod(new GGroupingRandom(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess));
 			Config->setGroup("Session Options");
