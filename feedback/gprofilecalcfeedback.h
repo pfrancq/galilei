@@ -48,6 +48,7 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gprofilecalc.h>
+#include <profiles/gcalcparams.h>
 
 
 //-----------------------------------------------------------------------------
@@ -63,53 +64,12 @@ class GSubProfileVector;
 
 //-----------------------------------------------------------------------------
 /**
-* The GProfileCalcFeedback class provides an implementation of the computing
-* method "Feedback" inspired from the user relevance methods of the search
-* engines. The vector of the profile is computed with a linear combinaison of
-* the vectors of documents judged by the profile.
-*
-* The different parameters of the method:
-* @param MaxNonZero         Maximal number of weights of the profile vector not
-*                           to be zero. If this paramater is null, all the
-*                           weights are left.
-* @param IdfFactor          Specify if for the weights of documents the idf
-*                           factor of the vector model theory must be computed.
-* @param Relfactor          Factor corresponding to the relevant documents
-*                           (OK+N).
-* @param Fuzzyfactor        Factor corresponding to the fuzzy documents (KO).
-* @param NoRelfactor        Factor corresponding to the no relevant documents
-*                           (H).
-* @param AddFuzzy           Specify if the fuzzy part must be added or
-*                           substract.
-* @author Pascal Francq
-* @short "Feedbacks" Profile Computing Method.
+* The GFeedbackParam represents all the parameter used in the CalcFeedback module.
+* @short GFeedback Parameters.
 */
-class GProfileCalcFeedback : public GProfileCalc
+class GFeedbackParams : public GCalcParams
 {
-protected:
-	class GNbDocsLangs;
-	class InternVector;
-
-	/**
-	* Global vectors computed.
-	*/
-	RStd::RContainer<InternVector,unsigned int,true,true> Vectors;
-
-	/**
-	* Number of documents where each index term of the "OK" and "N" documents
-	* for the different languages appears.
-	*/
-	RStd::RContainer<InternVector,unsigned int,true,true> NbDocsWords;
-
-	/**
-	* Number of documents per languages.
-	*/
-	RStd::RContainer<GNbDocsLangs,unsigned int,true,true> NbDocsLangs;
-
-	/**
-	* Ordered vector for current computed profile.
-	*/
-	GIWordWeight** Order;
+public:
 
 	/**
 	* Maximal size allocate for a profile.
@@ -149,13 +109,94 @@ protected:
 	*/
 	bool IdfFactor;
 
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*);
+
+	/**
+	* Assignment operator.
+	* @param p              Parameters used as source.
+	*/
+	GFeedbackParams& operator=(const GFeedbackParams& src);
+
+	/**
+	* Constructor.
+	*/
+	GFeedbackParams(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GProfileCalcFeedback class provides an implementation of the computing
+* method "Feedback" inspired from the user relevance methods of the search
+* engines. The vector of the profile is computed with a linear combinaison of
+* the vectors of documents judged by the profile.
+*
+* The different parameters of the method:
+* @param MaxNonZero         Maximal number of weights of the profile vector not
+*                           to be zero. If this paramater is null, all the
+*                           weights are left.
+* @param IdfFactor          Specify if for the weights of documents the idf
+*                           factor of the vector model theory must be computed.
+* @param Relfactor          Factor corresponding to the relevant documents
+*                           (OK+N).
+* @param Fuzzyfactor        Factor corresponding to the fuzzy documents (KO).
+* @param NoRelfactor        Factor corresponding to the no relevant documents
+*                           (H).
+* @param AddFuzzy           Specify if the fuzzy part must be added or
+*                           substract.
+* @author Pascal Francq
+* @short "Feedbacks" Profile Computing Method.
+*/
+class GProfileCalcFeedback : public GProfileCalc
+{
+
+protected:
+	class GNbDocsLangs;
+	class InternVector;
+
+	/**
+	* feedback params
+	*/
+	GFeedbackParams* Params;
+
+	/**
+	* Global vectors computed.
+	*/
+	RStd::RContainer<InternVector,unsigned int,true,true> Vectors;
+
+	/**
+	* Number of documents where each index term of the "OK" and "N" documents
+	* for the different languages appears.
+	*/
+	RStd::RContainer<InternVector,unsigned int,true,true> NbDocsWords;
+
+	/**
+	* Number of documents per languages.
+	*/
+	RStd::RContainer<GNbDocsLangs,unsigned int,true,true> NbDocsLangs;
+
+	/**
+	* Ordered vector for current computed profile.
+	*/
+	GIWordWeight** Order;
+
 public:
 
 	/**
 	* Constructor.
 	* @param session        Session.
 	*/
-	GProfileCalcFeedback(GSession* session) throw(bad_alloc);
+	GProfileCalcFeedback(GSession* session, GFeedbackParams* p) throw(bad_alloc);
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -168,77 +209,6 @@ public:
 	* @param s              C string coding the settings.
 	*/
 	virtual void SetSettings(const char* s);
-
-	/**
-	* Get the number of non-zero weights in the vector.
-	*/
-	unsigned int GetMaxNonZero(void) const {return(MaxNonZero);}
-
-	/**
-	* Set the number of non-zero weights in the vector.
-	* @param n              Number of non-zero weights.
-	*/
-	void SetMaxNonZero(unsigned int n) {MaxNonZero=n;}
-
-	/**
-	* Get the "IdfFactor" parameter
-	* @returns boolean.
-	*/
-	bool GetIdfFactor(void) const {return(IdfFactor);}
-
-	/**
-	* Set the "IdfFactor" pamater.
-	* @param b              true if the idf factor must be computed.
-	*/
-	void SetIdfFactor(bool b) {IdfFactor=b;}
-
-	/**
-	* Get the "RelFactor" Parameter.
-	* @returns double.
-	*/
-	double GetRelFactor(void) const {return(RelFactor);}
-
-	/**
-	* Set the "RelFactor" Parameter.
-	* @param b              Value of the "RelFactor" parameter.
-	*/
-	void SetRelFactor(double b) {RelFactor=b;}
-
-	/**
-	* Get the "FuzzyFactor" Parameter.
-	* @returns double.
-	*/
-	double GetFuzzyFactor(void) const {return(FuzzyFactor);}
-
-	/**
-	* Set the "FuzzyFactor" Parameter.
-	* @param g              Value of the "FuzzyFactor" parameter.
-	*/
-	void SetFuzzyFactor(double g) {FuzzyFactor=g;}
-
-	/**
-	* Get the "NoRelFactor" Parameter.
-	* @returns double.
-	*/
-	double GetNoRelFactor(void) const {return(NoRelFactor);}
-
-	/**
-	* Set the "NoRelFactor" Parameter.
-	* @param b              Value of the "NoRelFactor" parameter.
-	*/
-	void SetNoRelFactor(double b) {NoRelFactor=b;}
-
-	/**
-	* Get the "AddFuzzy" parameter
-	* @returns boolean.
-	*/
-	bool GetAddFuzzy(void) const {return(AddFuzzy);}
-
-	/**
-	* Set the "AddFuzzy" pamater.
-	* @param b              true if the fuzzy part must be added.
-	*/
-	void SetAddFuzzy(bool b) {AddFuzzy=b;}
 
 	/**
 	* Compute the global vectors.
