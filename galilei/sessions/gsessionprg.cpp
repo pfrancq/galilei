@@ -1,4 +1,4 @@
-/*
+               /*
 
 	GALILEI Research Project
 
@@ -732,7 +732,8 @@ void GStoreInHistoryI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsign
 		throw GException("Method needs no parameter");
 	sprintf(tmp,"Store History n°%u",Owner->NbHistory);
 	r->WriteStr(tmp);
-	Owner->Session->SaveMixedGroups(Owner->Session->GetGroups(),Owner->NbHistory++);
+	Owner->Session->SaveMixedGroups(Owner->Session->GetGroups(),Owner->NbHistory, true);
+	Owner->Session->SaveHistoricProfiles(Owner->NbHistory++);
 }
 
 

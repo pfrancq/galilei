@@ -559,9 +559,16 @@ public:
 	* Save the groups of the session
 	* @param mixedgroups    groups to save
 	* @param id             Identificator.
+	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
 	*/
-	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true> * mixedgroups,unsigned int id)=0;
+	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true> * mixedgroups,unsigned int id, bool historic=false)=0;
 
+	/**
+	* Save profiles in history
+	* @param historicid     id of the historic.
+	*/
+	virtual void SaveHistoricProfiles(unsigned int historicid)=0;
+	
 	/**
 	* Get a cursor over the filters of the system.
 	*/
@@ -670,6 +677,21 @@ public:
 	*/
 	RMath::RRandom* GetRandom(void) const {return(Random);}
 
+	/**
+	* load the historic groups.
+	*/
+	RStd::RContainer<GGroupsHistory, unsigned int, false,true>* LoadHistoricGroups (RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen);
+
+	/*
+	* load an historic groups.
+	*/
+	virtual GGroupsHistory* LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID)=0;
+
+	/**
+	*returns the number of historic groups stored in database.
+	*/
+	virtual unsigned int GetHistorySize(void) =0;
+	
 	/**
 	* Destructor.
 	*/

@@ -65,7 +65,9 @@ using namespace RIO;
 #include <docs/gdocvector.h>
 #include <docs/gdocs.h>
 #include <groups/ggroupvector.h>
+#include <groups/ggrouphistory.h>
 #include <groups/ggroups.h>
+#include <groups/ggroupshistory.h>
 #include <tests/ggroupsevaluate.h>
 #include <tests/ggroupevaluatedoc.h>
 #include <groups/gsubjecttree.h>
@@ -81,7 +83,6 @@ using namespace RIO;
 using namespace GALILEI;
 using namespace RMySQL;
 using namespace RTimeDate;
-
 
 
 
@@ -320,8 +321,10 @@ void GALILEI::GSessionMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 
 	// Delete keywords
 	l=sub->GetLang()->GetCode();
+
 	sprintf(sSql,"DELETE FROM %ssubprofilesbykwds WHERE subprofileid=%u",l,sub->GetId());
 	RQuery deletekwds(this,sSql);
+
 	Cur=((GSubProfileVector*)sub)->GetVectorCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
@@ -331,6 +334,24 @@ void GALILEI::GSessionMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 	}
 }
 
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int historicid) throw(GException)
+{
+	char sSql[200];
+	GIWordWeightCursor Cur;
+
+	//save subprofiles
+	Cur=((GSubProfileVector*)sub)->GetVectorCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		cout <<"courage david"<<endl;
+		sprintf(sSql,"INSERT INTO  %shistoricsubprofiles(historicid,subprofileid,kwdid,weight) VALUES (%u, %u,%u,'%e')",
+		              sub->GetLang()->GetCode() ,historicid,sub->GetId(),Cur()->GetId(),Cur()->GetWeight());
+		cout <<sSql<<endl;
+		RQuery insertkwds(this,sSql);
+	}
+}
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::SaveProfile(GProfile* prof) throw(GException)
@@ -781,6 +802,8 @@ void GALILEI::GSessionMySQL::SaveWordsGroups(GDict* dict) throw(GException)
 		}
 	}
 }
+
+
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::LoadWordsGroups(GDict* dict) throw(GException)
 {
@@ -902,18 +925,33 @@ void GALILEI::GSessionMySQL::SaveGroups(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::SaveMixedGroups(RContainer<GGroups,unsigned int,true,true>* mixedgroups,unsigned int id)
+void GALILEI::GSessionMySQL::SaveMixedGroups(RContainer<GGroups,unsigned int,true,true>* mixedgroups,unsigned int id, bool historic)
 {
 	char sSql[100];
+	char database[20];
+	char field[20];
 	GGroups* grps;
 	GGroup* grp;
 
+	// set the name of the database and the field 'id' of this database.
+	if(historic)
+	{
+		sprintf(database,"historicgroups");
+		sprintf(field,"historicid") ;
+	}
+	else
+	{
+		sprintf(database,"tempchromo");
+		sprintf(field,"chromoid");
+	}
+	
 	// Delete all the old chromo where the id is id.
 	if(!mixedgroups) return;
 	if(!id)
 	{
 		// First chromosome to store, delete all chromosomes
-		RQuery delete1(this,"DELETE FROM tempchromo");
+		sprintf(sSql, "DELETE FROM %s",database);
+		RQuery delete1(this,sSql);
 	}
 
 	for(mixedgroups->Start(); !mixedgroups->End(); mixedgroups->Next())
@@ -925,10 +963,40 @@ void GALILEI::GSessionMySQL::SaveMixedGroups(RContainer<GGroups,unsigned int,tru
 			for(grp->Start(); !grp->End(); grp->Next())
 			{
 				GSubProfile* sub = (*grp)();
-				sprintf(sSql,"INSERT INTO tempchromo(chromoid,groupid,lang,subprofileid) VALUES(%u,%u,'%s',%u)",id,grp->GetId(),grp->GetLang()->GetCode(),sub->GetId());
+				sprintf(sSql,"INSERT INTO %s(%s,groupid,lang,subprofileid) VALUES(%u,%u,'%s',%u)",database,field, id,grp->GetId(),grp->GetLang()->GetCode(),sub->GetId());
 				RQuery InsertChromo(this,sSql);
 			}
 		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::SaveHistoricProfiles(unsigned int historicid)
+{
+
+	// Delete historic subprofiles if historicid=0 .
+	char sSql[200];
+	if (historicid==0)
+	{
+		GLangCursor curLang=this->GetLangsCursor();
+		for (curLang.Start();!curLang.End();curLang.Next())
+		{
+			sprintf(sSql,"DELETE FROM %shistoricsubprofiles",curLang()->GetCode());
+			RQuery deletekwds(this,sSql);
+		}
+	}
+
+	GProfileCursor curProf=this->GetProfilesCursor() ;
+
+
+	// Save the Subprofile
+	for(curProf.Start();!curProf.End();curProf.Next())
+	{
+		GSubProfileCursor curSub=curProf()->GetSubProfilesCursor();
+
+		for(curSub.Start();!curSub.End();curSub.Next())
+			SaveSubProfileInHistory(curSub(), historicid);
 	}
 }
 
@@ -1211,7 +1279,66 @@ void GALILEI::GSessionMySQL::SaveDocSim(void)
 			}
 		}
 	}
+}
 
+
+//-----------------------------------------------------------------------------
+GGroupsHistory* GALILEI::GSessionMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicid)
+{
+	char sSql[200];
+	GGroupHistory* grp;
+	GGroupsHistory* grps;
+	GIWordsWeightsHistory* historicsubprof;
+	unsigned int subprofid;
+	unsigned int groupid;
+	unsigned int v;
+
+	// Init part
+	groupid=cNoRef;
+	grps=new GGroupsHistory(lang, historicid);
+
+	//read the groupment.
+	sprintf(sSql,"SELECT groupid,subprofileid FROM historicgroups WHERE lang='%s' AND historicid=%u ORDER by historicid,groupid",lang->GetCode(),historicid);
+	RQuery grquery(this,sSql);
+	for(grquery.Start();!grquery.End();grquery.Next())
+	{
+
+		// Read Group
+		v=atoi(grquery[0]);
+		// If group id changed -> new group needed
+		if((v!=groupid))
+		{
+			groupid=v;
+			grp=new GGroupHistory(groupid, lang);
+			//insert group in the container of groups.
+			grps->InsertPtr(grp);
+		}
+
+		// Create the historic subprofile     and add it to the group
+		subprofid=atoi(grquery[1]);
+		historicsubprof=new GIWordsWeightsHistory(subprofiles->GetPtr(subprofid),100);
+		grp->AddSubProfile(historicsubprof);
+
+		//fill the vector of the subprofile
+		sprintf(sSql,"SELECT kwdid,weight FROM %shistoricsubprofiles WHERE historicid=%u AND subprofileid=%u",lang->GetCode(), historicid,subprofid);
+		RQuery subprofdesc(this,sSql);
+		for(subprofdesc.Start();!subprofdesc.End();subprofdesc.Next())
+		{
+			historicsubprof->InsertPtr(new GIWordWeight(atoi(subprofdesc[0]),double(atof(subprofdesc[1]))));
+		}
+	}
+	return(grps);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GSessionMySQL::GetHistorySize(void)
+{
+	char sSql[200];
+	sprintf(sSql,"SELECT COUNT(DISTINCT historicid) from historicgroups");
+	RQuery size(this, sSql);
+	size.Start();
+	return(atoi(size[0]));
 }
 
 

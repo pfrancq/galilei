@@ -82,6 +82,7 @@ class GIWordList;
 class GIWordWeight;
 class GIWordWeightCursor;
 class GIWordsWeights;
+class GIWordsWeightsHistory;
 
 
 //-----------------------------------------------------------------------------
@@ -137,8 +138,10 @@ class GSubProfilesSameDocs;
 //-----------------------------------------------------------------------------
 // forward class declaration - Grouping Part
 class GGroups;
+class GGroupsHistory;
 class GGroupsCursor;
 class GGroup;
+class GGroupHistory;
 class GGroupCursor;
 class GGroupVector;
 class GGrouping;

@@ -223,6 +223,12 @@ public:
 	virtual void SaveSubProfile(GSubProfile* sub) throw(GException);
 
 	/**
+	* Save Subprofiles in histoty
+	* @param sub        Subprofile to save.
+	*/
+	virtual void SaveSubProfileInHistory(GSubProfile* sub, unsigned int historicid) throw(GException);
+
+	/**
 	* Save a profile.
 	* @param prof       Profile to save.
 	*/
@@ -246,8 +252,14 @@ public:
 	* Save the mixed groups of the session.
 	* @param mixedgroups    groups to save.
 	* @param id             Identificator.
+	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
 	*/
-	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true>* mixedgroups,unsigned int id);
+	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true>* mixedgroups,unsigned int id, bool historic=false);
+
+	/**
+	* Save the Profiles in history.
+	*/
+	virtual void SaveHistoricProfiles(unsigned int historicid);
 
 	/**
 	* Delete a group.
@@ -290,6 +302,16 @@ public:
 	* Save The Documents Simylarities into the database.
 	*/
 	virtual void SaveDocSim(void);
+
+	/**
+	* load the historic groups.
+	*/
+	GGroupsHistory* LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID);
+
+	/**
+	*returns the number of historic groups stored in database.
+	*/
+	virtual unsigned int GetHistorySize(void) ;
 
 	/**
 	* Destructor.

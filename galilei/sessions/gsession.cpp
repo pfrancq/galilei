@@ -9,7 +9,6 @@
 	Copyright 2001-2002 by the Université Libre de Bruxelles.
 
 	Authors:
-		
 
 	Version $Revision$
 
@@ -66,6 +65,7 @@ using namespace RIO;
 #include <profiles/gsubprofiledesc.h>
 #include <profiles/gprofdoc.h>
 #include <groups/ggroups.h>
+#include <groups/ggroupshistory.h>
 #include <groups/ggroup.h>
 #include <groups/ggroupvector.h>
 #include <groups/ggrouping.h>
@@ -336,6 +336,8 @@ void GALILEI::GSession::AnalyseAssociation(bool save)
 	}
 	delete(test);
 }
+
+
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 {
@@ -797,6 +799,26 @@ int GALILEI::GSession::GetCurrentRandomValue(unsigned int max)
 	return(int(Random->Value(max)));
 
 }
+
+
+//-----------------------------------------------------------------------------
+RStd::RContainer<GGroupsHistory, unsigned int, false,true>* GALILEI::GSession::LoadHistoricGroups (RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen)
+{
+	unsigned int i;
+	GGroupsHistory* hgrps;
+	RContainer<GGroupsHistory, unsigned int, false,true>* historicalgroups;
+
+	// fill the container
+	historicalgroups=new RContainer<GGroupsHistory, unsigned int, false,true>(maxgen-mingen+1);
+	for (i=mingen; i<maxgen+1; i++)
+	{
+		hgrps=LoadAnHistoricGroups(subprofiles, lang,i);
+		historicalgroups->InsertPtr(hgrps);
+	}
+
+	return(historicalgroups);
+}
+
 
 //-----------------------------------------------------------------------------
 GALILEI::GSession::~GSession(void) throw(GException)
