@@ -280,7 +280,7 @@ void KViewProfile::ConstructGroups(void)
 
 				d=sub->GetAttached();
 				sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName(),sDate);
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,sub->GetProfile()->GetName(),sub->GetProfile()->GetUser()->GetFullName().Latin1(),sDate);
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}
@@ -295,8 +295,8 @@ void KViewProfile::ConstructUser(void)
 
 	User->clear();
 	new QListViewItem(User,"ID",itou(usr->GetId()).Latin1());
-	new QListViewItem(User,"Full Name",usr->GetFullName());
-	new QListViewItem(User,"Name",usr->GetName());
+	new QListViewItem(User,"Full Name",usr->GetFullName().Latin1());
+	new QListViewItem(User,"Name",usr->GetName().Latin1());
 }
 
 

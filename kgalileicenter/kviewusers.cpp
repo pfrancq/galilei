@@ -108,7 +108,7 @@ void KViewUsers::CreateUsersListView(void)
 
 	for(CurUsr.Start();!CurUsr.End();CurUsr.Next())
 	{
-		useritem = new QListViewItemType(CurUsr(),Users,CurUsr()->GetFullName());
+		useritem = new QListViewItemType(CurUsr(),Users,CurUsr()->GetFullName().Latin1());
 		useritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
 		for (CurUsr()->Start(); !CurUsr()->End(); CurUsr()->Next())
 		{

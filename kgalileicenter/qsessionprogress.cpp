@@ -363,7 +363,7 @@ void QSessionProgressDlg::receiveNextDoc(const GDoc* doc)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::receiveNextProfile(const GProfile* prof)
 {
-	txtRem->setText(QString("Analyse Profile '")+prof->GetName()+"' of User '"+prof->GetUser()->GetName()+"' ...");
+	txtRem->setText(QString("Analyse Profile '")+prof->GetName()+"' of User '"+prof->GetUser()->GetName().Latin1()+"' ...");
 	KApplication::kApplication()->processEvents();
 }
 
