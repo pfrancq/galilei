@@ -59,7 +59,7 @@ using namespace RStd;
 //
 //-----------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 GALILEI::GIWordsWeights::GIWordsWeights(unsigned int nb) throw(bad_alloc)
 	: RContainer<GIWordWeight,unsigned,true,true>(nb,50), NbWordsDocs(0.0)
 {
@@ -89,20 +89,21 @@ GALILEI::GIWordsWeights& GALILEI::GIWordsWeights::operator=(const GALILEI::GIWor
 }
 
 
-//--------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 int GALILEI::GIWordsWeights::sortOrder(const void *a,const void *b)
 {
-  double af=(*((GIWordWeight**)(a)))->Weight;
-  double bf=(*((GIWordWeight**)(b)))->Weight;
+	double af=(*((GIWordWeight**)(a)))->Weight;
+	double bf=(*((GIWordWeight**)(b)))->Weight;
 
-  if(af==bf) return(0);
-  if(af>bf)
-    return(-1);
-  else
-    return(1);
+	if(af==bf) return(0);
+	if(af>bf)
+		return(-1);
+	else
+		return(1);
 }
 
-//---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 void GALILEI::GIWordsWeights::Clear(void)
 {
 	RContainer<GIWordWeight,unsigned,true,true>::Clear();
@@ -110,7 +111,7 @@ void GALILEI::GIWordsWeights::Clear(void)
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 double GALILEI::GIWordsWeights::GetMaxWeight(void) const
 {
 	double max;
@@ -228,7 +229,7 @@ double GALILEI::GIWordsWeights::SimilarityIdf(const GIWordsWeights* w,tObjType O
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void GALILEI::GIWordsWeights::AddRefs(tObjType ObjType,GDict* dic) const
 {
 	GIWordWeight** ptr;
@@ -239,7 +240,7 @@ void GALILEI::GIWordsWeights::AddRefs(tObjType ObjType,GDict* dic) const
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void GALILEI::GIWordsWeights::DelRefs(tObjType ObjType,GDict* dic) const
 {
 	GIWordWeight** ptr;
@@ -265,7 +266,7 @@ void GALILEI::GIWordsWeights::Transform(tObjType ObjType,GLang* lang)
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void GALILEI::GIWordsWeights::ModifyQueryGroups(tObjType ObjType,GLang* lang)
 {
 	GIWordWeight* ptr;
@@ -292,7 +293,7 @@ void GALILEI::GIWordsWeights::ModifyQueryGroups(tObjType ObjType,GLang* lang)
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void GALILEI::GIWordsWeights::ModifyQuery(tObjType ObjType,GLang* lang)
 {
 	GIWordWeight* ptr;
@@ -319,7 +320,7 @@ void GALILEI::GIWordsWeights::ModifyQuery(tObjType ObjType,GLang* lang)
 }
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 GALILEI::GIWordsWeights::~GIWordsWeights(void)
 {
 }
