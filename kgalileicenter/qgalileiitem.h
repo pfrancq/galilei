@@ -63,8 +63,8 @@ class QFilterItem : public QListViewItem
 public:
 	GFactoryFilter* Fac;
 	bool Enable;
-	QFilterItem(QListView* lst,GFactoryFilter* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QFilterItem(QListView* lst,GFactoryFilter* fac,const char* desc, QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -75,8 +75,8 @@ class QProfileCalcItem : public QListViewItem
 public:
 	GFactoryProfileCalc* Fac;
 	bool Enable;
-	QProfileCalcItem(QListView* lst,GFactoryProfileCalc* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QProfileCalcItem(QListView* lst,GFactoryProfileCalc* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -87,8 +87,8 @@ class QGroupingItem : public QListViewItem
 public:
 	GFactoryGrouping* Fac;
 	bool Enable;
-	QGroupingItem(QListView* lst,GFactoryGrouping* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QGroupingItem(QListView* lst,GFactoryGrouping* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -99,8 +99,8 @@ class QGroupCalcItem : public QListViewItem
 public:
 	GFactoryGroupCalc* Fac;
 	bool Enable;
-	QGroupCalcItem(QListView* lst,GFactoryGroupCalc* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QGroupCalcItem(QListView* lst,GFactoryGroupCalc* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -111,8 +111,8 @@ class QStatsCalcItem : public QListViewItem
 public:
 	GFactoryStatsCalc* Fac;
 	bool Enable;
-	QStatsCalcItem(QListView* lst,GFactoryStatsCalc* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QStatsCalcItem(QListView* lst,GFactoryStatsCalc* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -123,8 +123,8 @@ class QLinkCalcItem : public QListViewItem
 public:
 	GFactoryLinkCalc* Fac;
 	bool Enable;
-	QLinkCalcItem(QListView* lst,GFactoryLinkCalc* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QLinkCalcItem(QListView* lst,GFactoryLinkCalc* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -135,8 +135,8 @@ class QPostDocItem : public QListViewItem
 public:
 	GFactoryPostDoc* Fac;
 	bool Enable;
-	QPostDocItem(QListView* lst,GFactoryPostDocOrder* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac->Fac), Enable(Fac->GetPlugin())
+	QPostDocItem(QListView* lst,GFactoryPostDoc* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -147,8 +147,8 @@ class QPostProfileItem : public QListViewItem
 public:
 	GFactoryPostProfile* Fac;
 	bool Enable;
-	QPostProfileItem(QListView* lst,GFactoryPostProfileOrder* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac->Fac), Enable(Fac->GetPlugin())
+	QPostProfileItem(QListView* lst,GFactoryPostProfile* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -158,8 +158,8 @@ class QLangItem : public QListViewItem
 public:
 	GFactoryLang* Fac;
 	bool Enable;
-	QLangItem(QListView* lst,GFactoryLang* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QLangItem(QListView* lst,GFactoryLang* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -170,8 +170,8 @@ class QDocAnalyseItem : public QListViewItem
 public:
 	GFactoryDocAnalyse* Fac;
 	bool Enable;
-	QDocAnalyseItem(QListView* lst,GFactoryDocAnalyse* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QDocAnalyseItem(QListView* lst,GFactoryDocAnalyse* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -182,8 +182,8 @@ class QPostGroupItem : public QListViewItem
 public:
 	GFactoryPostGroup* Fac;
 	bool Enable;
-	QPostGroupItem(QListView* lst,GFactoryPostGroupOrder* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac->Fac), Enable(Fac->GetPlugin())
+	QPostGroupItem(QListView* lst,GFactoryPostGroup* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -193,8 +193,8 @@ class QEngineItem : public QListViewItem
 public:
 	GFactoryEngine* Fac;
 	bool Enable;
-	QEngineItem(QListView* lst,GFactoryEngine* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QEngineItem(QListView* lst,GFactoryEngine* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };
@@ -204,8 +204,8 @@ class QMetaEngineItem : public QListViewItem
 public:
 	GFactoryMetaEngine* Fac;
 	bool Enable;
-	QMetaEngineItem(QListView* lst,GFactoryMetaEngine* fac,const char* desc)
-		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	QMetaEngineItem(QListView* lst,GFactoryMetaEngine* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
 };

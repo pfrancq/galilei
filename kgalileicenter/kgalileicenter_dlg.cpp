@@ -38,6 +38,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdoc.h>
+#include <docs/gpostdoc.h>
 #include <infos/glang.h>
 #include <frontend/kde/gfiltermanagerkde.h>
 #include <frontend/kde/qlistviewitemtype.h>
@@ -47,6 +48,7 @@
 #include <profiles/gpostprofile.h>
 #include <profiles/gpostprofilemanager.h>
 #include <groups/ggrouping.h>
+#include <groups/gpostgroup.h>
 #include <profiles/gprofilecalc.h>
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
@@ -108,13 +110,14 @@ template<class Cursor,class Met,class Item>
 	def=cur=0;
 	if(sel)
 		sel->insertItem("None",0);
+	cur=0;
 	for(Cur.Start(),idx=1;!Cur.End();Cur.Next(),idx++)
 	{
 		str=ToQString(Cur()->GetName());
 		str+=" [";
 		str+=ToQString(Cur()->GetLib());
 		str+="]";
-		cur=new Item(lst,Cur(),str);
+		cur=new Item(lst,Cur(),str,cur);
 		if(sel)
 		{
 			sel->insertItem(ToQString(Cur()->GetName()),idx);
@@ -165,20 +168,20 @@ template<class Item>
 void KGALILEICenterApp::slotPlugins(void)
 {
 	R::RCursor<GFactoryPostDoc> PostDoc;
-	GFactoryPostDocOrder* pdorder;
 	R::RCursor<GFactoryPostProfile> PostProfile;
-	GFactoryPostProfileOrder* pporder;
 	R::RCursor<GFactoryPostGroup> PostGroup;
-	GFactoryPostGroupOrder* pgorder;
 	R::RCursor<GFactoryMetaEngine> MetaEngine;
 	QPlugins dlg(this,"Plugins Dialog");
 	QString str;
-	int idx;
-
 
 	//set the plugins path
 	dlg.PluginsPath->setMode(KFile::Directory);
 	dlg.PluginsPath->setURL(ToQString(pluginsPath));
+
+	//sort POST_X Managers;
+	PostDocManager->ReOrder(GFactoryPostDoc::sortOrder);
+	PostProfileManager->ReOrder(GFactoryPostProfile::sortOrder);
+	PostGroupManager->ReOrder(GFactoryPostGroup::sortOrder);
 
 	// Goes through managers
 	dlg.changeFilter(Init<GFactoryFilter,GFilter,QFilterItem>(URLManager->GetFiltersCursor(),dlg.Filters,dlg.EnableFilter));
@@ -187,33 +190,9 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.changeGroupCalc(Init<GFactoryGroupCalc,GGroupCalc,QGroupCalcItem>(GroupCalcManager->GetGroupCalcsCursor(),dlg.GroupCalcs,dlg.EnableGroupCalc,dlg.CurrentGroupCalc,GroupCalcManager->GetCurrentMethod()));
 	dlg.changeStatCalc(Init<GFactoryStatsCalc,GStatsCalc,QStatsCalcItem>(StatsCalcManager->GetStatsCalcsCursor(),dlg.Stats,dlg.EnableStat));
 	dlg.changeLinkCalc(Init<GFactoryLinkCalc,GLinkCalc,QLinkCalcItem>(LinkCalcManager->GetLinkCalcsCursor(),dlg.LinkCalcs,dlg.EnableLinkCalc,dlg.CurrentLinkCalc,LinkCalcManager->GetCurrentMethod()));
-	RContainer<GFactoryPostGroupOrder,true,true> postgroupsordered(PostGroup.GetNb());
-	PostGroup=PostGroupManager->GetPostGroupsCursor();
-	for(PostGroup.Start(),idx=1;!PostGroup.End();PostGroup.Next(), idx++)
-	{
-		pgorder=new GFactoryPostGroupOrder;
-		pgorder->Fac=PostGroup();
-		postgroupsordered.InsertPtr(pgorder);
-	}
-	dlg.changePostGroup(Init<GFactoryPostGroupOrder,GPostGroup,QPostGroupItem>(RCursor<GFactoryPostGroupOrder>(postgroupsordered),dlg.PostGroups,dlg.EnablePostGroup));
-	RContainer<GFactoryPostDocOrder,true,true> postdocsordered(PostDoc.GetNb());
-	PostDoc=PostDocManager->GetPostDocsCursor();
-	for(PostDoc.Start(),idx=1;!PostDoc.End();PostDoc.Next(),idx++)
-	{
-		pdorder=new GFactoryPostDocOrder; 
-		pdorder->Fac=PostDoc();
-		postdocsordered.InsertPtr(pdorder);
-	}
-	dlg.changePostDoc(Init<GFactoryPostDocOrder,GPostDoc,QPostDocItem>(RCursor<GFactoryPostDocOrder>(postdocsordered),dlg.PostDocs,dlg.EnablePostDoc));
-	RContainer<GFactoryPostProfileOrder,true,true> postprofileordered(PostProfile.GetNb());
-	PostProfile=PostProfileManager->GetPostProfileCursor();
-	for(PostProfile.Start(),idx=1;!PostProfile.End();PostProfile.Next(), idx++)
-	{
-		pporder=new GFactoryPostProfileOrder;
-		pporder->Fac=PostProfile();
-		postprofileordered.InsertPtr(pporder);
-	}
-	dlg.changePostProfile(Init<GFactoryPostProfileOrder,GPostProfile,QPostProfileItem>(RCursor<GFactoryPostProfileOrder>(postprofileordered),dlg.PostProfile,dlg.EnablePostProfile));
+	dlg.changePostDoc(Init<GFactoryPostDoc,GPostDoc,QPostDocItem>(PostDocManager->GetPostDocsCursor(),dlg.PostDocs,dlg.EnablePostDoc));
+	dlg.changePostProfile(Init<GFactoryPostProfile,GPostProfile,QPostProfileItem>(PostProfileManager->GetPostProfileCursor(),dlg.PostProfile,dlg.EnablePostProfile));
+	dlg.changePostGroup(Init<GFactoryPostGroup,GPostGroup,QPostGroupItem>(PostGroupManager->GetPostGroupsCursor(),dlg.PostGroups,dlg.EnablePostGroup));
 	dlg.changeLang(Init<GFactoryLang,GLang,QLangItem>(Langs->GetLangsCursor(),dlg.Langs,dlg.EnableLang));
 	dlg.changeDocAnalyse(Init<GFactoryDocAnalyse,GDocAnalyse,QDocAnalyseItem>(DocAnalyseManager->GetDocAnalysesCursor(),dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse,DocAnalyseManager->GetCurrentMethod()));
 	dlg.changeEngine(Init<GFactoryEngine,GEngine,QEngineItem>(EngineManager->GetEnginesCursor(),dlg.Engines,dlg.EnableEngine));
@@ -227,6 +206,10 @@ void KGALILEICenterApp::slotPlugins(void)
 			pluginsPath=RString(dlg.PluginsPath->url().ascii());
 			QMessageBox::information(this,"Plugins Path has changed","You changed the plugins path, please restart KGALILEICenter.");
 		}
+
+		PostDocManager->ReOrder(GFactoryPostDoc::sortOrder);
+		PostProfileManager->ReOrder(GFactoryPostProfile::sortOrder);
+		PostGroupManager->ReOrder(GFactoryPostGroup::sortOrder);
 
 		// Goes through managers
 		try
