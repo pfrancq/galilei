@@ -402,7 +402,7 @@ void GALILEI::GFilterReu::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 	if(!params) return;
 	ptr=params;
 	while((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
-		(*(ptr++))=RString::ToUpper(*ptr);
+		(*(ptr++))=toupper(*ptr);
 	bSpaces=isspace(*ptr);
 	(*(ptr++))=0;
 	if(bSpaces)
@@ -424,11 +424,11 @@ void GALILEI::GFilterReu::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 	// Read the type of HTTP-EQUIV
 	name=ptr;
 	while((*ptr)&&((*ptr)!=delimiter))
-		(*(ptr++))=RString::ToUpper(*ptr);
+		(*(ptr++))=toupper(*ptr);
 	(*(ptr++))=0;  // Skip the second delimiter
 
 	// Search for 'CONTENT'
-	while((*ptr)&&(RString::ToUpper(*ptr)!='C'))
+	while((*ptr)&&(toupper(*ptr)!='C'))
 		ptr++;
 	if((!(*ptr))||strncasecmp(ptr,"CONTENT",7)) return;
 	ptr+=7;
@@ -580,7 +580,7 @@ beginread:
 	{
 		if((*Pos)=='&')
 			ReplaceCode();
-		(*(Pos++))=RString::ToUpper(*Pos);
+		(*(Pos++))=toupper(*Pos);
 		TagLen++;
 	}
 	bParams=isspace(*Pos); // If name ending with a space -> Possible parameters.

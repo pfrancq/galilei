@@ -410,10 +410,11 @@ void GFilterHTML::AnalyseBase(char* params)
 	if (!params) return;
 	ptr= params;
 
-	while (*ptr){
+	while(*ptr)
+	{
 		// Read the name of the tag
 		while ((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
-			(*(ptr++))=RString::ToUpper(*ptr);
+			(*(ptr++))=toupper(*ptr);
 		bSpaces=isspace(*ptr);
 		(*(ptr++))=0;
 		if (bSpaces)
@@ -470,7 +471,7 @@ RXMLTag* GFilterHTML::AnalyseLinkParams(char* params)
 
 		// Read the name of the tag
 		while ((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
-			(*(ptr++))=RString::ToUpper(*ptr);
+			(*(ptr++))=toupper(*ptr);
 		bSpaces=isspace(*ptr);
 		(*(ptr++))=0;
 		if (bSpaces)
@@ -634,7 +635,7 @@ void GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 	if(!params) return;
 	ptr=params;
 	while((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
-		(*(ptr++))=RString::ToUpper(*ptr);
+		(*(ptr++))=toupper(*ptr);
 	bSpaces=isspace(*ptr);
 	(*(ptr++))=0;
 	if(bSpaces)
@@ -657,11 +658,11 @@ void GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 	// Read the type of HTTP-EQUIV or NAME
 	name=ptr;
 	while((*ptr)&&((*ptr)!=delimiter))
-		(*(ptr++))=RString::ToUpper(*ptr);
+		(*(ptr++))=toupper(*ptr);
 	(*(ptr++))=0;  // Skip the second delimiter
 
 	// Search for 'CONTENT'
-	while((*ptr)&&(RString::ToUpper(*ptr)!='C'))
+	while((*ptr)&&(toupper(*ptr)!='C'))
 		ptr++;
 	if((!(*ptr))||strncasecmp(ptr,"CONTENT",7)) return;
 	ptr+=7;
@@ -689,7 +690,7 @@ void GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 		if (!strcmp(name,"REFRESH"))
 		{
 			// Search for 'URL'
-			while((*ptr)&&(RString::ToUpper(*ptr)!='U'))
+			while((*ptr)&&(toupper(*ptr)!='U'))
 				ptr++;
 			if((!(*ptr))||strncasecmp(ptr,"URL",3)) return;
 			content+=3;
@@ -858,7 +859,7 @@ beginread:
 	{
 		if((*Pos)=='&')
 			ReplaceCode();
-		(*(Pos++))=RString::ToUpper(*Pos);
+		(*(Pos++))=toupper(*Pos);
 		TagLen++;
 	}
 	bParams=isspace(*Pos); // If name ending with a space -> Possible parameters.

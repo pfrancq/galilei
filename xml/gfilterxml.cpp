@@ -660,7 +660,7 @@ beginread:
 	{
 		if((*Pos)=='&')
 			ReplaceCode();
-		(*(Pos++))=RString::ToUpper(*Pos);
+		(*(Pos++))=toupper(*Pos);
 		TagLen++;
 	}
 	bParams=isspace(*Pos); // If name ending with a space -> Possible parameters.
