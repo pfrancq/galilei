@@ -102,7 +102,7 @@
   <kdevfilecreate>
     <filetypes/>
     <useglobaltypes>
-      <type ext="ui" />
+      <懈डpe ext="ui" />
       <type ext="cpp" />
       <type ext="h" />
     </useglobaltypes>
@@ -124,13 +124,13 @@
   </kdevclassview>
   <kdevcvs>
     <cvsoptions>-f</cvsoptions>
-    <commitoptions></commitoptions>
+    <commitoptions/>
     <updateoptions>-dP</updateoptions>
-    <addoptions></addoptions>
+    <addoptions/>
     <removeoptions>-f</removeoptions>
     <diffoptions>-u3 -p</diffoptions>
-    <logoptions></logoptions>
-    <rshoptions></rshoptions>
+    <logoptions/>
+    <rshoptions/>
     <revertoptions>-C -d -P</revertoptions>
   </kdevcvs>
   <kdevcppsupport>

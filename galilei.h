@@ -125,7 +125,10 @@ class GDocsLang;
 class GDocsLangCursor;
 class GDocProfSim;
 class GDocProfSims;
-class GWordsClustering;
+class GPostDoc;
+class GPostDocManager;
+class GFactoryPostDoc;
+class GFactoryPostDocCursor;
 
 
 //-----------------------------------------------------------------------------

@@ -56,6 +56,8 @@ using namespace R;
 #include <sessions/gstatscalc.h>
 #include <docs/glinkcalcmanager.h>
 #include <docs/glinkcalc.h>
+#include <docs/gpostdocmanager.h>
+#include <docs/gpostdoc.h>
 #include <langs/glang.h>
 #include <langs/glangs.h>
 #include <docs/gdocanalyse.h>
@@ -83,6 +85,7 @@ GConfig::GConfig(const char* f) throw(bad_alloc)
 	AddNode(t,GroupCalcs=new RXMLTag("galileiconfig:groupCalcs"));
 	AddNode(t,StatsCalcs=new RXMLTag("galileiconfig:statsCalcs"));
 	AddNode(t,LinkCalcs=new RXMLTag("galileiconfig:linkCalcs"));
+	AddNode(t,PostDocs=new RXMLTag("galileiconfig:postDocs"));
 	AddNode(t,Langs=new RXMLTag("galileiconfig:langs"));
 	AddNode(t,DocAnalyses=new RXMLTag("galileiconfig:docanalyses"));
 }
@@ -101,6 +104,7 @@ void GConfig::Load(void) throw(GException)
 		GroupCalcs=GetTop()->GetTag("galileiconfig:groupCalcs");
 		StatsCalcs=GetTop()->GetTag("galileiconfig:statsCalcs");
 		LinkCalcs=GetTop()->GetTag("galileiconfig:linkCalcs");
+		PostDocs=GetTop()->GetTag("galileiconfig:postDocs");
 		Langs=GetTop()->GetTag("galileiconfig:langs");
 		DocAnalyses=GetTop()->GetTag("galileiconfig:docanalyses");
 	}
@@ -338,6 +342,46 @@ void GConfig::Store(GLinkCalcManager& mng)
 		LinkCalcs->InsertAttr("Current",lcalc->GetFactory()->GetName());
 	else
 		LinkCalcs->InsertAttr("Current","None");
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GPostDocManager& mng)
+{
+	GFactoryPostDocCursor Cur;
+
+	if(!PostDocs) return;
+	Cur=mng.GetPostDocsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(PostDocs);
+	}
+	try
+	{
+		mng.SetCurrentMethod(PostDocs->GetAttrValue("Current"));
+	}
+	catch(GException)
+	{
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GPostDocManager& mng)
+{
+	GFactoryPostDocCursor Cur;
+	GPostDoc* pdoc;
+
+	Cur=mng.GetPostDocsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(PostDocs);
+	}
+	pdoc=mng.GetCurrentMethod();
+	if(pdoc)
+		PostDocs->InsertAttr("Current",pdoc->GetFactory()->GetName());
+	else
+		PostDocs->InsertAttr("Current","None");
 }
 
 

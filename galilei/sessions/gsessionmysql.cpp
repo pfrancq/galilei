@@ -877,7 +877,7 @@ void GALILEI::GSessionMySQL::DeleteWordsGroups(GDict* dict) throw(GException)
 {
 	GWordList *tmp,**cur;
 	char sSql[600];
-  unsigned nbwords;
+	unsigned nbwords;
 	sprintf(sSql,"DELETE FROM %skwdsbygroups ",dict->GetLang()->GetCode());
 	RQuery deletecluster(this,sSql);
 	for(dict->GroupsList.Start();!dict->GroupsList.End();dict->GroupsList.Next())

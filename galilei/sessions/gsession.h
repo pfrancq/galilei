@@ -50,6 +50,7 @@
 #include <docs/gdocs.h>
 #include <groups/ggroupsmng.h>
 #include <docs/glinkcalc.h>
+#include <docs/gpostdoc.h>
 #include <sessions/gparams.h>
 
 
@@ -130,6 +131,11 @@ protected:
 	GLinkCalcManager* LinkCalcMng;
 
 	/**
+	* Words clustering Manager used by this session.
+	*/
+	GPostDocManager* PostDocMng;
+
+	/**
 	* Analyser used for the document.
 	*/
 	GDocAnalyseManager* DocAnalyseMng;
@@ -200,7 +206,7 @@ public:
 	* @param lmng           Linking Manager.
 	*/
 	void Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(bad_alloc,GException);
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng) throw(bad_alloc,GException);
 
 	/**
 	* Get the documents' analyser.
@@ -255,6 +261,12 @@ public:
 	* @return Return a GLinkCalcCursor.
 	*/
 	GFactoryLinkCalcCursor& GetLinkCalcsCursor(void);
+
+	/**
+	* Get a cursor to the words clustering description methods registered.
+	* @return Return a GPostDocCursor.
+	*/
+	GFactoryPostDocCursor& GetPostDocsCursor(void);
 
 	/**
 	* Create a XML structure of the content of a document. The structure

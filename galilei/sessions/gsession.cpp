@@ -56,7 +56,6 @@ using namespace R;
 #include <docs/gdocslang.h>
 #include <docs/gdocprofsim.h>
 #include <docs/gdocprofsims.h>
-#include <docs/gwordsclustering.h>
 #include <docs/glinkcalc.h>
 #include <docs/glink.h>
 #include <profiles/guser.h>
@@ -98,7 +97,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	: GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(0), Fdbks(f+f/2,f/2),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
-	  StatsCalcMng(0), LinkCalcMng(0),
+	  StatsCalcMng(0), LinkCalcMng(0), PostDocMng(0),
 	  bGroups(false),bFdbks(false),
 	  SessParams(sessparams)
 
@@ -120,7 +119,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 
 //-----------------------------------------------------------------------------
 void GSession::Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-	GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(bad_alloc,GException)
+	GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng) throw(bad_alloc,GException)
 {
 	GLang* lang;
 
@@ -156,6 +155,9 @@ void GSession::Connect(GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng
 	LinkCalcMng=lmng;
 	if(LinkCalcMng)
 		LinkCalcMng->Connect(this);
+	PostDocMng=pdmng;
+	if(PostDocMng)
+		PostDocMng->Connect(this);
 }
 
 
@@ -168,7 +170,16 @@ GFactoryLinkCalcCursor& GSession::GetLinkCalcsCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+GFactoryPostDocCursor& GSession::GetPostDocsCursor(void)
+{
+	GFactoryPostDocCursor *cur=GFactoryPostDocCursor::GetTmpCursor();
+	cur->Set(PostDocMng);
+	return(*cur);
+}
+
+
+//------------------------------------------------------------------------------
 GDocXML* GSession::CreateDocXML(GDoc* doc) throw(GException)
 {
 	return(URLMng->CreateDocXML(doc));
@@ -178,108 +189,37 @@ GDocXML* GSession::CreateDocXML(GDoc* doc) throw(GException)
 //-----------------------------------------------------------------------------
 void GSession::AnalyseAssociation(bool save)
 {
-	GDocCursor Docs=GetDocsCursor();
-	GWordsClustering* test;
-	unsigned int i,n=1;
-	bool end=false;
-	Docs.Start();
-	test= new GWordsClustering(Docs()->GetLang()->GetDict(),5,10,2,2,2,2,GetDbName());
-	for(i=Docs.GetNb(),Docs.Start();i--;Docs.Next())
-	{
-		test->AddDoc(dynamic_cast<GDocVector*>(Docs()));
-	}
-	test->CleanWords();
-
-	// Teste de la nouvelle mthode
-// 	if(DocOptions->Distance)
-	{
-		cout<<"warning : Use of distance in words clustering"<<endl;
-		test->InsertNeighbor();
-		test->ConceptSpace();
-		test->SaveConceptSpace(save);
-	}
-/*	else
-	{
-		for(i=0;i<DocOptions->NbIteration;i++)
-		{
-		  end=test->OrdreByDocs(i);
-		}
-		test->SaveAssociations(save);
-	}*/
-	test->View();
-	Docs.Start();
-	if(save)
-	{
-		SaveWordsGroups(Docs()->GetLang()->GetDict());
-	}
-	Docs()->GetLang()->GetDict()->GroupsList.Start();
-	if (Docs()->GetLang()->GetDict()->GroupsList.NbPtr!=0)
-	{
-		n=(Docs()->GetLang()->GetDict()->GroupsList)()->GetId();
-		for(i=Docs.GetNb(),Docs.Start();--i;Docs.Next())
-		{
-			test->UpdateDocbis(dynamic_cast<GDocVector*>(Docs()));
-			if(save) SaveUpDatedDoc(Docs(),n);/*n=id du premier mot a sauver.*/
-		}
-	}
-
-
-/*	if(DocOptions->Distance)
-	{
-		cout<<"warning : Use of distance in words clustering"<<endl;
-		test->InsertNeighbor();
-		test->OrderByNeighbor();
-	}
+	GPostDoc* PostDoc=PostDocMng->GetCurrentMethod();
+	if(!PostDoc)
+		throw GException("No computing method chosen.");
 	else
-	{
-		for(i=0;i<DocOptions->NbIteration;i++)
-		{
-		  end=test->OrdreByDocs(i);
-		}
-	}
-	Docs.Start();
-	test->SaveAssociations(save);
-	if(save) SaveWordsGroups(GetDic(Docs()->GetLang()));
-	GetDic(Docs()->GetLang())->GroupsList.Start();
-	if (GetDic(Docs()->GetLang())->GroupsList.NbPtr!=0)
-	{
-		n=(GetDic(Docs()->GetLang())->GroupsList)()->GetId();
-		for(i=Docs.GetNb(),Docs.Start();--i;Docs.Next())
-		{
-			test->UpdateDoc(dynamic_cast<GDocVector*>(Docs()));
-			if(save) SaveUpDatedDoc(Docs(),n); // n=id du premier mot a sauver.
-		}
-	}
-	test->View();*/
-	delete(test);
+		PostDoc->Compute(save);
 }
 
 
 //-----------------------------------------------------------------------------
 void GSession::RemoveAssociation()
 {
-	GDocCursor Docs=GetDocsCursor();
-	GWordsClustering* test;
-	unsigned int i,n=1;
-	Docs.Start();
-	test= new GWordsClustering(Docs()->GetLang()->GetDict(),5,10,2,2,2,2,GetDbName());
-	for(i=Docs.GetNb(),Docs.Start();i--;Docs.Next())
+	GDocCursor docs=GetDocsCursor();
+	GDocVector* doc;
+	unsigned int i,n;
+	docs.Start();
+	GDict* dic=docs()->GetLang()->GetDict();
+	dic->GroupsList.Start();
+	n=(dic->GroupsList)()->GetId();
+
+	for(i=docs.GetNb(),docs.Start();--i;docs.Next())
 	{
-		test->AddDoc(dynamic_cast<GDocVector*>(Docs()));
+		doc=dynamic_cast<GDocVector*>(docs());
+		for(dic->GroupsList.Start();!dic->GroupsList.End();dic->GroupsList.Next())
+		{
+			if(doc->IsIn((dic->GroupsList)()->GetId()))
+				doc->DeletePtr((dic->GroupsList)()->GetId());
+		}
+		doc->UpdateRefs();
+		SaveUpDatedDoc(doc,n);/*n=First id to save.*/
 	}
-	Docs.Start();
-	Docs()->GetLang()->GetDict()->GroupsList.Start();
-	if (Docs()->GetLang()->GetDict()->GroupsList.NbPtr!=0)
-  {
-  	n=(Docs()->GetLang()->GetDict()->GroupsList)()->GetId();
-  	for(i=Docs.GetNb(),Docs.Start();--i;Docs.Next())
-  	{
-  		test->ReverseUpdateDoc(dynamic_cast<GDocVector*>(Docs()));
-  		SaveUpDatedDoc(Docs(),n);/*n=id du premier mot a sauver.*/
-  	}
-  }
-	DeleteWordsGroups(Docs()->GetLang()->GetDict());
-	delete(test);
+	DeleteWordsGroups(dic);
 }
 
 
