@@ -61,6 +61,21 @@ namespace GALILEI
 */
 class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
 {
+	/**
+	* Similarities between the subprofiles to group.
+	*/
+	GProfilesSim* Sims;
+
+	/**
+	* Minimum similarity level between the profiles of a group.
+	*/
+	double MinSimLevel;
+
+	/**
+	* Average similarity of the groups.
+	*/
+	double AvgSim;
+
 public:
 
 	/**
@@ -69,6 +84,26 @@ public:
 	* @param id             The identificator of the chromosome.
 	*/
 	GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc);
+
+	/**
+	* Initialisation of the chromosome.
+	* @param thData         Pointer to the "thread-dependent" data.
+	*/
+	virtual void Init(GThreadDataIR* thData) throw(bad_alloc);
+
+	/**
+	* Evaluation of the chromosomes. Actually, it is just the average of the
+	* intern similarities.
+	*/
+	virtual void Evaluate(void);
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GChromoIR(void);
+
+	// friend classes
+	friend class GGroupIR;
 };
 
 

@@ -51,6 +51,34 @@ using namespace RGA;
 
 //-----------------------------------------------------------------------------
 GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
-  : RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id)
+  : RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
+    Sims(0), MinSimLevel(0)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
+{
+	// Parent Initialisation
+	RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(thData);
+	Sims=Instance->Sims;
+	MinSimLevel=Instance->MinSimLevel;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GChromoIR::Evaluate(void)
+{
+	AvgSim=0.0;
+	for(Used.Start();!Used.End();Used.Next())
+		AvgSim+=Used()->GetAvgSim();
+	AvgSim/=((double)Used.NbPtr);
+	(*Fitness)=AvgSim;
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GChromoIR::~GChromoIR(void)
 {
 }

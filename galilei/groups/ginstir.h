@@ -84,6 +84,11 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	GProfilesSim* Sims;
 
 	/**
+	* Minimum similarity level between the profiles of a group.
+	*/
+	double MinSimLevel;
+
+	/**
 	* The maximum number of generations.
 	*/
 	unsigned long MaxGen;
@@ -92,13 +97,14 @@ public:
 
 	/**
 	* Construct the instance.
+	* @param m              Minimal similarity in a group.
 	* @param max            Maximal number of generations.
-	* @param popsize        The size of the population.	
+	* @param popsize        The size of the population.
 	* @param prob           The problem.
 	* @param h              The type of heuristic to be used.
 	* @param debug          Debugger.
 	*/
-	GInstIR(unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
+	GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,RGGA::HeuristicType h,RDebug *debug=0) throw(bad_alloc);
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case
@@ -111,6 +117,9 @@ public:
 	* Destruct the instance.
 	*/
 	virtual ~GInstIR(void);
+
+	// friend classes
+	friend class GChromoIR;
 };
 
 

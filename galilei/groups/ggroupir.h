@@ -75,7 +75,7 @@ public:
 * @author Pascal Francq
 * @short IR Group.
 */
-class GGroupIR : public RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR>
+class GGroupIR : public RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
 {
 protected:
 
@@ -98,7 +98,7 @@ public:
 	* @param id             Identificator of the group.
 	* @param data           Data needed for the group.
 	*/
-	GGroupIR(RGGA::RGroups<GGroupIR,GObjIR,GGroupDataIR>* owner,const unsigned int id,const GGroupDataIR* data);
+	GGroupIR(GChromoIR* owner,const unsigned int id,const GGroupDataIR* data);
 
 	/**
 	* Verify if the group is not violating the integrity of the system.
@@ -142,6 +142,12 @@ public:
 	* @param grp            The group used as source.
 	*/
 	GGroupIR& operator=(const GGroupIR& grp);
+
+	/**
+	* Get the average similarity of the group.
+	* @returns double representing the average similarity.
+	*/
+	double GetAvgSim(void) const {return(AvgSim);}
 
 	/**
 	* Destruct the group.

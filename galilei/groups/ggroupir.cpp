@@ -33,6 +33,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <profiles/gprofilessim.h>
 #include <groups/ggroupir.h>
 #include <groups/gchromoir.h>
 #include <groups/gobjir.h>
@@ -50,14 +51,14 @@ using namespace RGA;
 
 //-----------------------------------------------------------------------------
 GGroupIR::GGroupIR(GGroupIR* grp)
-	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR>(grp), AvgSim(0.0)
+	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(grp), AvgSim(0.0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupIR::GGroupIR(RGroups<GGroupIR,GObjIR,GGroupDataIR>* owner,const unsigned int id,const GGroupDataIR* data)
-	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR>(owner,id,data)
+GALILEI::GGroupIR::GGroupIR(GChromoIR* owner,const unsigned int id,const GGroupDataIR* data)
+	: RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(owner,id,data), AvgSim(0.0)
 {
 }
 
@@ -65,7 +66,7 @@ GALILEI::GGroupIR::GGroupIR(RGroups<GGroupIR,GObjIR,GGroupDataIR>* owner,const u
 //---------------------------------------------------------------------------
 bool GALILEI::GGroupIR::Verify(void)
 {
-	if(!RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR>::Verify())
+	if(!RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Verify())
 		return(false);
 	return(true);
 }
@@ -74,26 +75,72 @@ bool GALILEI::GGroupIR::Verify(void)
 //---------------------------------------------------------------------------
 void GALILEI::GGroupIR::Clear(void)
 {
-	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR>::Clear();
+	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Clear();
+	AvgSim=0.0;
 }
 
 
 //---------------------------------------------------------------------------
-bool GALILEI::GGroupIR::CanInsert(const GObjIR* /*obj*/)
+bool GALILEI::GGroupIR::CanInsert(const GObjIR* obj)
 {
+	unsigned int i;
+	GObjIR** ptr;
+	GSubProfile* sub;
+
+	sub=obj->GetSubProfile();
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+		if(Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile())<Owner->MinSimLevel)
+			return(false);
 	return(true);
 }
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GGroupIR::PostInsert(const GObjIR* /*obj*/)
+void GALILEI::GGroupIR::PostInsert(const GObjIR* obj)
 {
+	unsigned int i;
+	GObjIR** ptr;
+	double sum=0.0;
+	GSubProfile* sub;
+
+	if(NbSubObjects==1)
+	{
+		AvgSim=1.0;
+		return;
+	}
+	sub=obj->GetSubProfile();
+	// The obj inserted is always the last one.
+	for(i=NbSubObjects,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+		sum+=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+	sum/=NbSubObjects-1;
+	AvgSim=((NbSubObjects-1)*AvgSim+sum)/NbSubObjects;
 }
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GGroupIR::PostDelete(const GObjIR* /*obj*/)
+void GALILEI::GGroupIR::PostDelete(const GObjIR* obj)
 {
+	unsigned int i;
+	GObjIR** ptr;
+	double sum;
+	GSubProfile* sub;
+
+	if(!NbSubObjects)
+	{
+		AvgSim=0.0;
+		return;
+	}
+	if(NbSubObjects==1)
+	{
+		AvgSim=1.0;
+		return;
+	}
+	sum=0.0;
+	sub=obj->GetSubProfile();
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+			sum+=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
+	sum/=NbSubObjects;
+	AvgSim=((NbSubObjects+1)*AvgSim-sum)/NbSubObjects;
 }
 
 
@@ -108,7 +155,7 @@ bool GALILEI::GGroupIR::DoOptimisation(GObjIR** /*objs*/,unsigned int& /*nbobjs*
 GGroupIR& GALILEI::GGroupIR::operator=(const GGroupIR& grp)
 
 {
-	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR>::operator=(grp);
+	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::operator=(grp);
 	AvgSim=grp.AvgSim;
 	return(*this);
 }
