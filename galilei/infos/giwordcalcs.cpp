@@ -37,7 +37,8 @@ using namespace RStd;
 
 //---------------------------------------------------------------------------
 GALILEI::GIWordCalcs::GIWordCalcs(GLang *lang,unsigned int nb) throw(bad_alloc)
-	: RContainer<GIWordCalc,unsigned,true,true>(nb,50), NbWordsDocs(0.0), Order(0)
+	: RContainer<GIWordCalc,unsigned,true,true>(nb,50), NbWordsDocs(0.0),
+	  Lang(lang), Order(0)
 {
 }
 
@@ -65,7 +66,7 @@ void GALILEI::GIWordCalcs::Clear(void)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GIWordCalcs::Analyse(GDoc *doc)
+void GALILEI::GIWordCalcs::Analyse(GDoc* doc)
 {
 	GIWordCalc* w;
 

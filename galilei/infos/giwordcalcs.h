@@ -116,9 +116,19 @@ private:
 public:
 
 	/**
+	* Clear the statistics.
 	*/
 	void Clear(void);
-	void Analyse(GDoc *doc);
+
+	/**
+	* Analyse a document and udpated the statistics.
+	* @param doc            Document to analyse.
+	*/
+	void Analyse(GDoc* doc);
+
+	/**
+	* When all the documents are analysed, call this method to compute the frequencies.
+	*/
 	void EndCalc(void);
 
 	/**
@@ -126,6 +136,11 @@ public:
 	* @returns Identificator of the word.
 	*/
 	unsigned int NextWord(void);
+
+	/**
+	* Look if there a word to treat.
+	*/
+	bool IsNextWord(void) const {return(*CurOrder);}
 
 	/**
 	* Destructor.
