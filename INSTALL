@@ -100,7 +100,7 @@ libraries Needed by galilei_plugins
       installed the library with a 'special' prefix use the
       --with-r-include and
       --with-r-libs
-      options to specy your instalation path.
+      options to specify your instalation path.
 
   -o- GALILEI libraries and includes must be present on the system. By default configure
       looks for these files in /usr/include/galilei /usr/local/include/galilei.

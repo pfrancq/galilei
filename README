@@ -77,7 +77,7 @@ Plugins Overview
 
   -o- GROUPING
   ============
-
+  	these plugins are used to cluster users into virtual communities
 
   	DEFAULT PLUGIN = gvca supkmeans
   	OTHERS = cure firstfit kmeanscos kprotos random
@@ -85,6 +85,7 @@ Plugins Overview
 
   -o- GROUPS
   ==========
+	these plugins are used to make descriptions of the groups
 
   	DEFAULT PLUGIN = relevant
   	OTHERS = gravitation
@@ -111,24 +112,29 @@ Plugins Overview
 
   -o- POSTDOC
   ===========
+  	These plugins are used to globally treat documents. (Use the notion of "concepts" )
 
   	DEFAULT PLUGIN =
   	OTHERS = CSCNC ICSC
 
   -o- POSTGROUPS
   ==============
+  	These plugins are used to apply treatment on groups after clustering
 
   	DEFAULT PLUGIN = sugs
   	OTHERS = pointofview
 
   -o- PROFILING
   =============
+  	These plugins are used to describe profiles according to the documents they assed
 
   	DEFAULT PLUGIN = feedback
   	OTHERS = statistical
 
   -o- STATS
   =========
-
+  	These plugins are used to make some statistics on different part of the system
+	like on groups, on documents, ...
+	
   	DEFAULT PLUGIN =
   	OTHERS = evalgroups querysimulation statssims
