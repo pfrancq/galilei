@@ -220,7 +220,7 @@ bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 			(debug ? "" : "-q"),
 			rotate_path,
 			ocr_path,
-			Doc->GetFile()
+			Doc->GetFile().Latin1()
 			);
 	if (debug)
 		cerr<<gs_cmdline<<endl;
