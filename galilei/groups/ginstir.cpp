@@ -1,4 +1,6 @@
-/*
+/*                                                            	CritSim=Prom.NewCriterion(Maximize,"Similarities",0.05,0.2,1.0);
+	CritNb=Prom.NewCriterion(Maximize,"Profiles",0.05,0.2,1.0);
+
 
 	GALILEI Research Project
 
@@ -29,6 +31,14 @@
 
 */
 
+
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rpromethee/rpromkernel.h>
+#include <rpromethee/rpromsol.h>
+#include <rpromethee/rpromcriterion.h>
+using namespace RPromethee;
 
 
 //-----------------------------------------------------------------------------
@@ -76,6 +86,41 @@ GALILEI::GInstIR::GInstIR(double m,unsigned int max,unsigned int popsize,RGA::RO
 bool GALILEI::GInstIR::StopCondition(void)
 {
 	return(Gen==MaxGen);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GInstIR::PostEvaluate(void) throw(eGA)
+{
+	unsigned int i;
+	GChromoIR **C;
+	RPromCriterion* CritSim;
+	RPromCriterion* CritNb;
+	RPromKernel Prom("GALILEI",PopSize,2);
+	RPromSol* s;
+	RPromSol** Res;
+	RPromSol** ptr;
+
+	#ifdef RGADEBUG
+		if(Debug) Debug->BeginFunc("PostEvaluate","GInstIR");
+	#endif
+	CritSim=Prom.NewCriterion(Maximize,"Similarities",0.2,0.05,1.0);
+	CritNb=Prom.NewCriterion(Maximize,"Profiles",0.2,0.05,1.0);
+	for(i=PopSize+1,C=Chromosomes;--i;C++)
+	{
+		s=Prom.NewSol();
+		Prom.Assign(s,CritSim,(*C)->AvgSim);
+		Prom.Assign(s,CritNb,(*C)->AvgProf);
+	}
+	Prom.ComputePrometheeII();
+	Res=Prom.GetSols();
+	for(i=PopSize+1,ptr=Res;--i;ptr++)
+	{
+		(*Chromosomes[(*ptr)->GetId()]->Fitness)=(*ptr)->GetFi();
+	}
+	#ifdef RGADEBUG
+		if(Debug) Debug->EndFunc("PostEvaluate","GInstIR");
+	#endif
 }
 
 

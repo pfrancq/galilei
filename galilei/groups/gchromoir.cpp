@@ -54,6 +54,7 @@ GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
   : RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
     Sims(0), MinSimLevel(0)
 {
+	(*Fitness)=0.0;
 }
 
 
@@ -70,11 +71,28 @@ void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::Evaluate(void)
 {
-	AvgSim=0.0;
+	AvgSim=AvgProf=0.0;
+	if(!Used.NbPtr)
+		return;
 	for(Used.Start();!Used.End();Used.Next())
-		AvgSim+=Used()->GetAvgSim();
+	{
+		AvgSim+=Used()->ComputeAvgSim();
+		AvgProf+=Used()->NbSubObjects;
+	}
 	AvgSim/=((double)Used.NbPtr);
-	(*Fitness)=AvgSim;
+	AvgProf/=((double)Used.NbPtr);
+}
+
+
+//---------------------------------------------------------------------------
+GChromoIR& GALILEI::GChromoIR::operator=(const GChromoIR& chromo)
+{
+	RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::operator=(chromo);
+	for(Used.Start();!Used.End();Used.Next())
+		Used()->ComputeAvgSim();
+	AvgSim=chromo.AvgSim;
+	AvgProf=chromo.AvgProf;
+	return(*this);
 }
 
 

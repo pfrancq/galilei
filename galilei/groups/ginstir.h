@@ -114,6 +114,11 @@ public:
 	virtual bool StopCondition(void);
 
 	/**
+	* Apply PROMETHEE to classify the chromosomes.
+	*/
+	virtual void PostEvaluate(void) throw(eGA);
+
+	/**
 	* Destruct the instance.
 	*/
 	virtual ~GInstIR(void);

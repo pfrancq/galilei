@@ -76,6 +76,11 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 	*/
 	double AvgSim;
 
+	/**
+	* Average number of profiles in the groups.
+	*/
+	double AvgProf;
+
 public:
 
 	/**
@@ -98,12 +103,19 @@ public:
 	virtual void Evaluate(void);
 
 	/**
+	* The assigment operator.
+	* @param chromo         The chromosome used as source.
+	*/
+	GChromoIR& operator=(const GChromoIR& chromo);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GChromoIR(void);
 
 	// friend classes
 	friend class GGroupIR;
+	friend class GInstIR;
 };
 
 

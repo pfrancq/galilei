@@ -98,49 +98,47 @@ bool GALILEI::GGroupIR::CanInsert(const GObjIR* obj)
 //---------------------------------------------------------------------------
 void GALILEI::GGroupIR::PostInsert(const GObjIR* obj)
 {
-	unsigned int i;
-	GObjIR** ptr;
-	double sum=0.0;
-	GSubProfile* sub;
-
-	if(NbSubObjects==1)
-	{
-		AvgSim=1.0;
-		return;
-	}
-	sub=obj->GetSubProfile();
-	// The obj inserted is always the last one.
-	for(i=NbSubObjects,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
-		sum+=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
-	sum/=NbSubObjects-1;
-	AvgSim=((NbSubObjects-1)*AvgSim+sum)/NbSubObjects;
 }
 
 
 //---------------------------------------------------------------------------
 void GALILEI::GGroupIR::PostDelete(const GObjIR* obj)
 {
-	unsigned int i;
+}
+
+
+//---------------------------------------------------------------------------
+double  GALILEI::GGroupIR::ComputeAvgSim(void)
+{
+	unsigned int i,j;
 	GObjIR** ptr;
-	double sum;
+	GObjIR** ptr2;
+	double NbComp;
 	GSubProfile* sub;
 
 	if(!NbSubObjects)
 	{
 		AvgSim=0.0;
-		return;
+		return(AvgSim);
 	}
 	if(NbSubObjects==1)
 	{
 		AvgSim=1.0;
-		return;
+		return(AvgSim);
 	}
-	sum=0.0;
-	sub=obj->GetSubProfile();
-	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
-			sum+=Owner->Sims->GetSim(sub,(*ptr)->GetSubProfile());
-	sum/=NbSubObjects;
-	AvgSim=((NbSubObjects+1)*AvgSim-sum)/NbSubObjects;
+	AvgSim=0.0;
+	NbComp=0.0;
+	for(i=NbSubObjects,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
+	{
+		sub=(*ptr)->GetSubProfile();
+		for(j=i+1,ptr2=ptr+1;--j;ptr2++)
+		{
+			AvgSim+=Owner->Sims->GetSim(sub,(*ptr2)->GetSubProfile());
+			NbComp+=1.0;
+		}
+	}
+	AvgSim/=NbComp;
+	return(AvgSim);
 }
 
 

@@ -138,6 +138,12 @@ public:
 	bool DoOptimisation(GObjIR** objs,unsigned int& nbobjs);
 
 	/**
+	* Compute the average similarity of the group.
+	* @returns result.
+	*/
+	double ComputeAvgSim(void);
+
+	/**
 	* Assignment operator.
 	* @param grp            The group used as source.
 	*/
@@ -153,6 +159,9 @@ public:
 	* Destruct the group.
 	*/
 	virtual ~GGroupIR(void);
+
+	// friend classes
+	friend class GChromoIR;
 };
 
 
