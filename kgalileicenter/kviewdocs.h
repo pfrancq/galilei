@@ -60,7 +60,7 @@ class QListView;
 * The KViewDocs class provides a window to list all the documents
 * treated by the system and classify by their language.
 * @auhtor Pascal Francq and David Wartel
-* @short Documents' Window.
+* @short Documents Window.
 */
 class KViewDocs : public KView
 {

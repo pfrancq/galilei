@@ -113,7 +113,7 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	* The ideal solution.
 	*/
 	QGGroupsIR* Ideal;
-	
+
 	/**
 	* Identificator of the current showed solution.
 	*/
