@@ -70,14 +70,44 @@ private:
 	GProfilesSim* Sims;
 
 	/**
-	* Minimum similarity level between the profiles of a group.
-	*/
-	double MinSimLevel;
-
-	/**
 	* Value of the "Similarity" criterion.
 	*/
 	double CritSim;
+
+	/**
+	* Value of the Similarity criterion "AvgSim".
+	*/
+	double CritSimAvgSim;
+
+	/**
+	* Value of the Similarity criterion "J".
+	*/
+	double CritSimJ;
+
+	/**
+	* Value of the Similarity criterion "AvgRatio".
+	*/
+	double CritSimAvgRatio;
+
+	/**
+	* Value of the Similarity criterion "AvgMinRatio".
+	*/
+	double CritSimMinRatio;
+
+	/**
+	* Value of the Similarity criterion "AvgRatio".
+	*/
+	double CritSimRatio;
+
+	/**
+	* Value of the Similarity criterion "AvgWOverB".
+	*/
+	double CritSimWOverB;
+
+	/**
+	* Value of the Similarity criterion "SimWB".
+	*/
+	double CritSimSimWB;
 
 	/**
 	* Value of the "Information" criterion.
@@ -234,37 +264,43 @@ public:
 	/**
 	* Evaluate the similarity of the solution using the "AvgSim" measure.
 	*/
-	void EvaluateAvgSim(void);
+	double EvaluateAvgSim(void);
 
 	/**
 	* Evaluate the similarity using the "J" measure.
 	*/
-	void EvaluateJ(void);
+	double EvaluateJ(void);
 
 	/**
 	* Evaluate the similarity of the solution using the "AvgRatio" measure.
 	*/
-	void EvaluateAvgRatio(void);
+	double EvaluateAvgRatio(void);
 
 	/**
 	* Evaluate the similarity of the solution using the "MinRatio" measure.
 	*/
-	void EvaluateMinRatio(void);
+	double EvaluateMinRatio(void);
 
 	/**
 	* Evaluate the similarity of the solution using the "Ratio" measure.
 	*/
-	void EvaluateRatio(void);
+	double EvaluateRatio(void);
 
 	/**
 	* Evaluate the similarity of the solution using the "WOverB" measure.
 	*/
-	void EvaluateWOverB(void);
+	double EvaluateWOverB(void);
 
 	/**
 	* Evaluate the similarity of the solution using the "SimWB" measure.
 	*/
-	void EvaluateSimWB(void);
+	double EvaluateSimWB(void);
+
+	/**
+	* Compute a similarity criterion.
+	* @param s              Similarity Measure.
+	*/
+	void EvaluateSim(GSimMeasure* s);
 
 	/**
 	* Evaluate the 'Similarity' criterion of the chromosome.

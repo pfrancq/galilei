@@ -86,7 +86,7 @@ GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGA::eGA)
 		if(!Cur()->CanInsert(CurObj)) continue;
 		sim=Cur()->ComputeAvgSim(CurObj);
 		ratio=Cur()->GetMaxRatioSame(CurObj);
-		if(ratio>=Groups->Instance->GetMinCommonSame())
+		if(ratio>=Groups->Instance->Params->MinCommonOK)
 		{
 			// Take the group with the highest ratio
 			if(ratio>maxratio)

@@ -121,7 +121,7 @@ bool GALILEI::GGroupIR::CanInsert(const GObjIR* obj)
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects);--i;ptr++)
 	{
 		sub2=(*ptr)->GetSubProfile();
-		if((Owner->Sims->GetSim(sub1,sub2)<=Owner->MinSimLevel)||(Owner->Instance->GetRatioDiff(sub1,sub2)>=Owner->Instance->MinCommonDiff))
+		if((Owner->Sims->GetSim(sub1,sub2)<=Owner->Instance->Params->MinSimLevel)||(Owner->Instance->GetRatioDiff(sub1,sub2)>=Owner->Instance->Params->MinCommonDiff))
 			return(false);
 	}
 	return(true);

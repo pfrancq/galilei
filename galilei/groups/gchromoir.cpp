@@ -71,8 +71,9 @@ using namespace RGA;
 //-----------------------------------------------------------------------------
 GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
 	: RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
-	  Sims(0), MinSimLevel(0), CritSim(0.0), CritInfo(0.0), CritSameFeedbacks(0.0),
-	  CritDiffFeedbacks(1.0), CritSocial(1.0), Protos(Used.MaxPtr)
+	  Sims(0), CritSim(0.0), CritSimAvgSim(0.0), CritSimJ(0.0), CritSimAvgRatio(0.0),
+	  CritSimMinRatio(0.0), CritSimRatio(0.0), CritSimWOverB(0.0), CritSimSimWB(0.0),
+	  CritInfo(0.0), CritSameFeedbacks(0.0), CritDiffFeedbacks(1.0), CritSocial(1.0), Protos(Used.MaxPtr)
 {
 	#ifdef RGADEBUG
 		Global=0.0;
@@ -89,7 +90,7 @@ void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
 
 	// Current
 	Sims=Instance->Sims;
-	MinSimLevel=Instance->MinSimLevel;
+//	MinSimLevel=Instance->MinSimLevel;
 	thObjs1=thData->tmpObjs1;
 	thObjs2=thData->tmpObjs2;
 	thTests=thData->Tests;
@@ -227,41 +228,44 @@ void GALILEI::GChromoIR::RandomConstruct(void) throw(RGA::eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateAvgSim(void)
+double GALILEI::GChromoIR::EvaluateAvgSim(void)
 {
 	GGroupIRCursor Cur;
 	unsigned int i;
 	GObjIR** ptr;
+	double Sim;
 
 	// Computed the average similairies of the configurations
 	Cur.Set(Used);
-	for(Cur.Start(),CritSim=0.0;!Cur.End();Cur.Next())
+	for(Cur.Start(),Sim=0.0;!Cur.End();Cur.Next())
 	{
 		if(Cur()->NbSubObjects>1)
 		{
 			for(i=Cur()->NbSubObjects+1,ptr=GetObjs(Cur()->SubObjects);--i;ptr++)
-				CritSim+=Cur()->ComputeAvgSim(*ptr);
+				Sim+=Cur()->ComputeAvgSim(*ptr);
 		}
 		else
-			CritSim+=1.0;
+			Sim+=1.0;
 	}
-	CritSim/=static_cast<double>(Objs->GetNb());
+	Sim/=static_cast<double>(Objs->GetNb());
+	return(Sim);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateJ(void)
+double GALILEI::GChromoIR::EvaluateJ(void)
 {
 	unsigned int i,j;
 	GGroupIRCursor Cur;
 	double min;
 	GGroupIRCursor Cur2;
 	double tmp;
+	double Sim;
 
 	// Compute (Sum Intra) for the configurations.
 	Cur.Set(Used);
-	for(Cur.Start(),CritSim=0.0;!Cur.End();Cur.Next())
-		CritSim+=Cur()->ComputeRelevantSumDist();
+	for(Cur.Start(),Sim=0.0;!Cur.End();Cur.Next())
+		Sim+=Cur()->ComputeRelevantSumDist();
 
 	// Compute Min inter for the configurations.
 	Cur.Set(Used);
@@ -278,16 +282,17 @@ void GALILEI::GChromoIR::EvaluateJ(void)
 	}
 
 	// Compute (Min inter*NbGroups)/(Sum Intra) for the configurations.
-	if(CritSim)
-		CritSim=min/CritSim*Used.NbPtr;
+	if(Sim)
+		Sim=min/Sim*Used.NbPtr;
+	return(Sim);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateAvgRatio(void)
+double GALILEI::GChromoIR::EvaluateAvgRatio(void)
 {
 	GGroupIRCursor Cur,Cur2;
-	double MinIntra,MaxInter,tmp;
+	double MinIntra,MaxInter,tmp,Sim;
 
 	// Compute Relevant Profiles.
 	Cur.Set(Used);
@@ -297,7 +302,7 @@ void GALILEI::GChromoIR::EvaluateAvgRatio(void)
 	// Average min(intra)/max(inter)
 	Cur.Set(Used);
 	Cur2.Set(Used);
-	for(Cur.Start(),CritSim=0.0;!Cur.End();Cur.Next())
+	for(Cur.Start(),Sim=0.0;!Cur.End();Cur.Next())
 	{
 		MinIntra=Cur()->ComputeMinSim(Cur()->Relevant);
 		for(Cur2.Start(),MaxInter=0.0;!Cur2.End();Cur2.Next())
@@ -307,17 +312,18 @@ void GALILEI::GChromoIR::EvaluateAvgRatio(void)
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
-		CritSim+=MinIntra/MaxInter;
+		Sim+=MinIntra/MaxInter;
 	}
-	CritSim/=static_cast<double>(Used.NbPtr);
+	Sim/=static_cast<double>(Used.NbPtr);
+	return(Sim);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateMinRatio(void)
+double GALILEI::GChromoIR::EvaluateMinRatio(void)
 {
 	GGroupIRCursor Cur,Cur2;
-	double MinIntra,MaxInter,tmp;
+	double MinIntra,MaxInter,tmp,Sim;
 	bool first;
 
 	// Compute Relevant Profiles.
@@ -328,7 +334,7 @@ void GALILEI::GChromoIR::EvaluateMinRatio(void)
 	// Min min(intra)/max(inter)
 	Cur.Set(Used);
 	Cur2.Set(Used);
-	for(Cur.Start(),CritSim=0.0,first=true;!Cur.End();Cur.Next())
+	for(Cur.Start(),Sim=0.0,first=true;!Cur.End();Cur.Next())
 	{
 		MinIntra=Cur()->ComputeMinSim(Cur()->Relevant);
 		for(Cur2.Start(),MaxInter=0.0;!Cur2.End();Cur2.Next())
@@ -341,22 +347,23 @@ void GALILEI::GChromoIR::EvaluateMinRatio(void)
 		tmp=MinIntra/MaxInter;
 		if(first)
 		{
-			CritSim=tmp;
+			Sim=tmp;
 			first=false;
 		}
 		else
-			if(tmp<CritSim)
-				CritSim=tmp;
+			if(tmp<Sim)
+				Sim=tmp;
 	}
+	return(Sim);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateRatio(void)
+double GALILEI::GChromoIR::EvaluateRatio(void)
 {
 	GGroupIRCursor Cur,Cur2;
 	double MinIntra,MaxInter;
-	double tmpMin,tmpMax,tmp;
+	double tmpMin,tmpMax,tmp,Sim;
 
 	// Compute Relevant Profiles.
 	Cur.Set(Used);
@@ -366,7 +373,7 @@ void GALILEI::GChromoIR::EvaluateRatio(void)
 	// Determine overall min(intra) and overall max(inter)
 	Cur.Set(Used);
 	Cur2.Set(Used);
-	for(Cur.Start(),MaxInter=-1.0,CritSim=0.0,MinIntra=1.0;!Cur.End();Cur.Next())
+	for(Cur.Start(),MaxInter=-1.0,Sim=0.0,MinIntra=1.0;!Cur.End();Cur.Next())
 	{
 		tmpMin=Cur()->ComputeMinSim(Cur()->Relevant);
 		if(tmpMin<MinIntra)
@@ -382,22 +389,23 @@ void GALILEI::GChromoIR::EvaluateRatio(void)
 			MaxInter=tmpMax;
 	}
 	if(MaxInter)
-		CritSim=MinIntra/MaxInter;
+		Sim=MinIntra/MaxInter;
+	return(Sim);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateWOverB(void)
+double GALILEI::GChromoIR::EvaluateWOverB(void)
 {
 	GGroupIRCursor Cur;
 	double sb,localsb;
 	GObjIR* rel;
-	double tmp;
+	double tmp,Sim;
 
 	// Compute Sw
 	Cur.Set(Used);
-	for(Cur.Start(),CritSim=0.0;!Cur.End();Cur.Next())
-		CritSim+=Cur()->ComputeRelevantSumDist();
+	for(Cur.Start(),Sim=0.0;!Cur.End();Cur.Next())
+		Sim+=Cur()->ComputeRelevantSumDist();
 
 	// Compute Sb
 	rel=ComputeGlobalRelevant();
@@ -410,22 +418,23 @@ void GALILEI::GChromoIR::EvaluateWOverB(void)
 	}
 
 	// Compute Sb/Sw for the configurations.
-	if(CritSim)
-		CritSim=Used.NbPtr*sb/CritSim;
+	if(Sim)
+		Sim=Used.NbPtr*sb/Sim;
+	return(Sim);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateSimWB(void)
+double GALILEI::GChromoIR::EvaluateSimWB(void)
 {
 	GGroupIRCursor Cur;
-	double sb;
+	double sb,Sim;
 	GObjIR* rel;
 
 	// Compute SimW
 	Cur.Set(Used);
-	for(Cur.Start(),CritSim=0.0;!Cur.End();Cur.Next())
-		CritSim+=Cur()->ComputeRelevantSum();
+	for(Cur.Start(),Sim=0.0;!Cur.End();Cur.Next())
+		Sim+=Cur()->ComputeRelevantSum();
 
 	// Compute SimB
 	rel=ComputeGlobalRelevant();
@@ -438,45 +447,110 @@ void GALILEI::GChromoIR::EvaluateSimWB(void)
 
 	// Compute SimW/SimB for the configurations.
 	if(sb)
-		CritSim/=Used.NbPtr*sb;
+		Sim/=Used.NbPtr*sb;
+	else
+		Sim=0.0;
+	return(Sim);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GChromoIR::EvaluateSim(GSimMeasure* s)
+{
+	switch(s->Type)
+	{
+		case stNone:
+			CritSim=1.0;
+			break;
+
+		case stAvgSim:
+			CritSimAvgSim=EvaluateAvgSim();
+			break;
+
+		case stJ:
+			CritSimJ=EvaluateJ();
+			break;
+
+		case stAvgRatio:
+			CritSimAvgRatio=EvaluateAvgRatio();
+			break;
+
+		case stMinRatio:
+			CritSimMinRatio=EvaluateMinRatio();
+			break;
+
+		case stRatio:
+			CritSimRatio=EvaluateRatio();
+			break;
+
+		case stWOverB:
+			CritSimWOverB=EvaluateWOverB();
+			break;
+
+		case stSimWB:
+			CritSimSimWB=EvaluateSimWB();
+			break;
+
+		default:
+			CritSim=0.0;
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::EvaluateSim(void)
 {
-	switch(Instance->SimMeasure)
+	GSimMeasure* s;
+	SimCritType t=Instance->Params->SimMeasures;
+	double Sum;
+
+	// Compute the necessary Measures
+	for(Instance->Params->Measures.Start();!Instance->Params->Measures.End();Instance->Params->Measures.Next())
 	{
-		case stAvgSim:
-			EvaluateAvgSim();
-			break;
+		s=Instance->Params->Measures();
+		if(((t==sctCorl)&&(s->Weight!=0.0))||((t==sctCrits)&&(s->Use)))
+			EvaluateSim(s);
+	}
 
-		case stJ:
-			EvaluateJ();
-			break;
+	// If Correlation, computes the correlation
+	if(t!=sctCorl) return;
+	for(Instance->Params->Measures.Start(),Sum=0.0;!Instance->Params->Measures.End();Instance->Params->Measures.Next())
+	{
+		s=Instance->Params->Measures();
+		switch(s->Type)
+		{
+			case stNone:
+				Sum+=1.0*s->Weight;
+				break;
 
-		case stAvgRatio:
-			EvaluateAvgRatio();
-			break;
+			case stAvgSim:
+				Sum+=CritSimAvgSim*s->Weight;
+				break;
 
-		case stMinRatio:
-			EvaluateMinRatio();
-			break;
+			case stJ:
+				Sum+=CritSimJ*s->Weight;
+				break;
 
-		case stRatio:
-			EvaluateRatio();
-			break;
+			case stAvgRatio:
+				Sum+=CritSimAvgRatio*s->Weight;
+				break;
 
-		case stWOverB:
-			EvaluateWOverB();
-			break;
+			case stMinRatio:
+				Sum+=CritSimMinRatio*s->Weight;
+				break;
 
-		case stSimWB:
-			EvaluateSimWB();
-			break;
+			case stRatio:
+				Sum+=CritSimRatio*s->Weight;
+				break;
 
-		default:
-			CritSim=0.0;
+			case stWOverB:
+				Sum+=CritSimWOverB*s->Weight;
+				break;
+
+			case stSimWB:
+				Sum+=CritSimSimWB*s->Weight;
+				break;
+		}
 	}
 }
 
@@ -658,7 +732,7 @@ void GALILEI::GChromoIR::DoKMeans(void) throw(RGA::eGA)
 		Grp()->ComputeRelevant();
 
 	// Max Iterations
-	for(itermax=0,error=1,IterNumber=Instance->MaxKMeans;(itermax<IterNumber)&&(error!=0);itermax++)
+	for(itermax=0,error=1,IterNumber=Instance->Params->MaxKMeans;(itermax<IterNumber)&&(error!=0);itermax++)
 	{
 		ReAllocate();
 		error=CalcNewProtosNb();
@@ -811,6 +885,13 @@ void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
 	RPromCriterion* PromCritDiffFeedbacks;
 	RPromCriterion* PromCritSocial;
 	RPromCriterion* PromCritInfo;
+	RPromethee::RPromCriterion* PromCritSimAvgSim=0;
+	RPromethee::RPromCriterion* PromCritSimJ=0;
+	RPromethee::RPromCriterion* PromCritSimAvgRatio=0;
+	RPromethee::RPromCriterion* PromCritSimMinRatio=0;
+	RPromethee::RPromCriterion* PromCritSimRatio=0;
+	RPromethee::RPromCriterion* PromCritSimWOverB=0;
+	RPromethee::RPromCriterion* PromCritSimSimWB=0;
 	RPromSol* s;
 	GObjIR* obj;
 	GGroupIRCursor Cur1,Cur2;
@@ -840,22 +921,76 @@ void GALILEI::GChromoIR::Optimisation(void) throw(RGA::eGA)
 
 	// Use PROMETHEE to determine the best solution.
 	Kernel=new RPromKernel("GChromoIR",6,5);
-	PromCritSim=Kernel->NewCriterion(Maximize,"Similarity",Instance->CritSim->GetParams());
-	PromCritSameFeedbacks=Kernel->NewCriterion(Maximize,"Same Feedbacks",Instance->CritSameFeedbacks->GetParams());
-	PromCritDiffFeedbacks=Kernel->NewCriterion(Minimize,"Diff Feedbacks",Instance->CritDiffFeedbacks->GetParams());
-	PromCritSocial=Kernel->NewCriterion(Minimize,"Social",Instance->CritSocial->GetParams());
-	PromCritInfo=Kernel->NewCriterion(Maximize,"Information",Instance->CritInfo->GetParams());
+	if(Instance->Params->SimMeasures==sctCorl)
+		PromCritSim=Kernel->NewCriterion(Maximize,"Similarity",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
+	else
+	{
+		if(Instance->Params->Measures.GetPtr<const char*>("AvgSim")->Use)
+			PromCritSimAvgSim=Kernel->NewCriterion(Maximize,"Similarity AvgSim",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
+		if(Instance->Params->Measures.GetPtr<const char*>("J")->Use)
+			PromCritSimJ=Kernel->NewCriterion(Maximize,"Similarity J",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
+		if(Instance->Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
+			PromCritSimAvgRatio=Kernel->NewCriterion(Maximize,"Similarity AvgRatio",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
+		if(Instance->Params->Measures.GetPtr<const char*>("MinRatio")->Use)
+			PromCritSimMinRatio=Kernel->NewCriterion(Maximize,"Similarity MinRatio",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
+		if(Instance->Params->Measures.GetPtr<const char*>("Ratio")->Use)
+			PromCritSimRatio=Kernel->NewCriterion(Maximize,"Similarity Ratio",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
+		if(Instance->Params->Measures.GetPtr<const char*>("WOverB")->Use)
+			PromCritSimWOverB=Kernel->NewCriterion(Maximize,"Similarity WoverB",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
+		if(Instance->Params->Measures.GetPtr<const char*>("SimWB")->Use)
+			PromCritSimSimWB=Kernel->NewCriterion(Maximize,"Similarity SimWB",Instance->Params->ParamsSim.P,Instance->Params->ParamsSim.Q,Instance->Params->ParamsSim.Weight);
+	}
+	PromCritInfo=Kernel->NewCriterion(Maximize,"Information",Instance->Params->ParamsInfo.P,Instance->Params->ParamsInfo.Q,Instance->Params->ParamsInfo.Weight);
+	PromCritSameFeedbacks=Kernel->NewCriterion(Maximize,"Same Feedbacks",Instance->Params->ParamsSameFeedbacks.P,Instance->Params->ParamsSameFeedbacks.Q,Instance->Params->ParamsSameFeedbacks.Weight);
+	PromCritDiffFeedbacks=Kernel->NewCriterion(Minimize,"Diff Feedbacks",Instance->Params->ParamsDiffFeedbacks.P,Instance->Params->ParamsDiffFeedbacks.Q,Instance->Params->ParamsDiffFeedbacks.Weight);
+	PromCritSocial=Kernel->NewCriterion(Minimize,"Social",Instance->Params->ParamsSocial.P,Instance->Params->ParamsSocial.Q,Instance->Params->ParamsSocial.Weight);
 	s=Kernel->NewSol();
+	if(Instance->Params->SimMeasures==sctCorl)
+		Kernel->Assign(s,PromCritSim,CritSim);
+	else
+	{
+		if(PromCritSimAvgSim)
+			Kernel->Assign(s,PromCritSimAvgSim,CritSimAvgSim);
+		if(PromCritSimJ)
+			Kernel->Assign(s,PromCritSimJ,CritSimJ);
+		if(PromCritSimAvgRatio)
+			Kernel->Assign(s,PromCritSimAvgRatio,CritSimAvgRatio);
+		if(PromCritSimMinRatio)
+			Kernel->Assign(s,PromCritSimMinRatio,CritSimMinRatio);
+		if(PromCritSimRatio)
+			Kernel->Assign(s,PromCritSimRatio,CritSimRatio);
+		if(PromCritSimWOverB)
+			Kernel->Assign(s,PromCritSimWOverB,CritSimWOverB);
+		if(PromCritSimSimWB)
+			Kernel->Assign(s,PromCritSimSimWB,CritSimSimWB);
+	}
 	Kernel->Assign(s,PromCritInfo,CritInfo);
-	Kernel->Assign(s,PromCritSim,CritSim);
 	Kernel->Assign(s,PromCritSameFeedbacks,CritSameFeedbacks);
 	Kernel->Assign(s,PromCritDiffFeedbacks,CritDiffFeedbacks);
 	Kernel->Assign(s,PromCritSocial,CritSocial);
 	for(int i=0;i<5;i++)
 	{
 		s=Kernel->NewSol();
+		if(Instance->Params->SimMeasures==sctCorl)
+			Kernel->Assign(s,PromCritSim,thTests[i]->CritSim);
+		else
+		{
+			if(PromCritSimAvgSim)
+				Kernel->Assign(s,PromCritSimAvgSim,thTests[i]->CritSimAvgSim);
+			if(PromCritSimJ)
+				Kernel->Assign(s,PromCritSimJ,thTests[i]->CritSimJ);
+			if(PromCritSimAvgRatio)
+				Kernel->Assign(s,PromCritSimAvgRatio,thTests[i]->CritSimAvgRatio);
+			if(PromCritSimMinRatio)
+				Kernel->Assign(s,PromCritSimMinRatio,thTests[i]->CritSimMinRatio);
+			if(PromCritSimRatio)
+				Kernel->Assign(s,PromCritSimRatio,thTests[i]->CritSimRatio);
+			if(PromCritSimWOverB)
+				Kernel->Assign(s,PromCritSimWOverB,thTests[i]->CritSimWOverB);
+			if(PromCritSimSimWB)
+				Kernel->Assign(s,PromCritSimSimWB,thTests[i]->CritSimSimWB);
+		}
 		Kernel->Assign(s,PromCritInfo,thTests[i]->CritInfo);
-		Kernel->Assign(s,PromCritSim,thTests[i]->CritSim);
 		Kernel->Assign(s,PromCritSameFeedbacks,thTests[i]->CritSameFeedbacks);
 		Kernel->Assign(s,PromCritDiffFeedbacks,thTests[i]->CritDiffFeedbacks);
 		Kernel->Assign(s,PromCritSocial,thTests[i]->CritSocial);
@@ -919,6 +1054,13 @@ GChromoIR& GALILEI::GChromoIR::operator=(const GChromoIR& chromo)
 {
 	RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::operator=(chromo);
 	CritSim=chromo.CritSim;
+	CritSimAvgSim=chromo.CritSimAvgSim;
+	CritSimJ=chromo.CritSimJ;
+	CritSimAvgRatio=chromo.CritSimAvgRatio;
+	CritSimMinRatio=chromo.CritSimMinRatio;
+	CritSimRatio=chromo.CritSimRatio;
+	CritSimWOverB=chromo.CritSimWOverB;
+	CritSimSimWB=chromo.CritSimSimWB;
 	CritInfo=chromo.CritInfo;
 	CritSameFeedbacks=chromo.CritSameFeedbacks;
 	CritDiffFeedbacks=chromo.CritDiffFeedbacks;

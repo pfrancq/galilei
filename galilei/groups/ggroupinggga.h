@@ -61,83 +61,6 @@ class GGroupingGGA : public GGrouping
 protected:
 
 	/**
-	* Size of the population of the GA.
-	*/
-	unsigned int PopSize;
-
-	/**
-	* Minimum similarity level between the profiles of a group.
-	*/
-	double MinSimLevel;
-
-	/**
-	* Minimum number of common OK documents needed to force two profiles to be
-	* in the same group.
-	*/
-	double MinCommonOK;
-
-	/**
-	* Minimum number of common documents judged differently needed to force two
-	* profiles to be in two different groups.
-	*/
-	double MinCommonDiff;
-
-	/**
-	* Maximal number of generation to run.
-	*/
-	unsigned int MaxGen;
-
-	/**
-	* Is the GA in step mode?
-	*/
-	bool Step;
-
-	/**
-	* Number of generation for each step.
-	*/
-	unsigned int StepGen;
-
-	/**
-	* Maximal Number of KMeans.
-	*/
-	unsigned int MaxKMeans;
-
-	/**
-	* Type of measure used for the similarity criterion.
-	*/
-	SimType SimMeasure;
-
-	/**
-	* Parameter for the criterion "Similariry".
-	*/
-	RPromethee::RPromCriterionParams ParamsSim;
-
-	/**
-	* Parameter for the criterion "Information".
-	*/
-	RPromethee::RPromCriterionParams ParamsInfo;
-
-	/**
-	* Parameter for the criterion "Same Feedbacks".
-	*/
-	RPromethee::RPromCriterionParams ParamsSameFeedbacks;
-
-	/**
-	* Parameter for the criterion "Diff Feedbacks".
-	*/
-	RPromethee::RPromCriterionParams ParamsDiffFeedbacks;
-
-	/**
-	* Parameter for the criterion "Social".
-	*/
-	RPromethee::RPromCriterionParams ParamsSocial;
-
-	/**
-	* Global similarities used.
-	*/
-	bool GlobalSim;
-
-	/**
 	* GA Objects.
 	*/
 	RGA::RObjs<GObjIR>* Objs;
@@ -147,13 +70,19 @@ protected:
 	*/
 	GInstIR* Instance;
 
+	/**
+	* Parameters of the GA used.
+	*/
+	GIRParams* Params;
+
 public:
 
 	/**
 	* Constructor.
 	* @param s              Session.
+	* @param p              Parameters.
 	*/
-	GGroupingGGA(GSession* s) throw(bad_alloc);
+	GGroupingGGA(GSession* s,GIRParams* p) throw(bad_alloc);
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -169,148 +98,6 @@ public:
 	* @param s*             C string coding the settings.
 	*/
 	virtual void SetSettings(const char* s);
-
-	/**
-	* Set the size of the population.
-	* @param s              Size.
-	*/
-	void SetPopSize(unsigned int s) {PopSize=s;}
-
-	/**
-	* Get the size of the population.
-	* @returns Size.
-	*/
-	unsigned int GetPopSize(void) const {return(PopSize);}
-
-	/**
-	* Set the type of similarity used.
-	* @param t              Type to used.
-	*/
-	void SetSimMeasure(unsigned int t) {SimMeasure=static_cast<SimType>(t);}
-
-	/**
-	* Get the type of similarity used.
-	* @returns SimType.
-	*/
-	SimType GetSimMeasure(void) const {return(SimMeasure);}
-
-	/**
-	* Set the minimum level of similarity for the groups.
-	* @param m              Minimum level.
-	*/
-	void SetMinSimLevel(double m) {MinSimLevel=m;}
-
-	/**
-	* Get the minimum level of similarity for the groups.
-	* @returns double representing the minimum level.
-	*/
-	double GetMinSimLevel(void) const {return(MinSimLevel);}
-
-	/**
-	* Set the minimum number of common OK documents needed to force two
-	* profiles to be in the same group.
-	* @param m              Minimum level.
-	*/
-	void SetMinCommonOK(double m) {MinCommonOK=m;}
-
-	/**
-	* Get the minimum number of common OK documents needed to force two
-	* profiles to be in the same group.
-	* @returns double representing the minimum level.
-	*/
-	double GetMinCommonOK(void) const {return(MinCommonOK);}
-
-	/**
-	* Set the minimum number of common documents judged differently needed to
-	* force two profiles to be in two different groups.
-	* @param m              Minimum level.
-	*/
-	void SetMinCommonDiff(double m) {MinCommonDiff=m;}
-
-	/**
-	* Get the minimum number of common documents judged differently needed to
-	* force two profiles to be in two different groups.
-	* @returns double representing the minimum level.
-	*/
-	double GetMinCommonDiff(void) const {return(MinCommonDiff);}
-
-	/**
-	* Set the Maximal number of generation.
-	* @param max            Maximal number.
-	*/
-	void SetMaxGen(unsigned int max) {MaxGen=max;}
-
-	/**
-	* Get the Maximal number of generation.
-	* @returns Maximal number.
-	*/
-	unsigned int GetMaxGen(void) const {return(MaxGen);}
-
-	/**
-	* Set the status of the step mode.
-	* @param s              Status.
-	*/
-	void SetStep(bool s) {Step=s;}
-
-	/**
-	* Get the status of the step mode.
-	* @returns bool value representing the status.
-	*/
-	bool GetStep(void) const {return(Step);}
-
-	/**
-	* Set the number of generations for each step.
-	* @param n              Number of generations.
-	*/
-	void SetStepGen(unsigned int n) {StepGen=n;}
-
-	/**
-	* Get the number of generations for each step.
-	* @returns unsigned int representing the number of generations.
-	*/
-	unsigned int GetStepGen(void) const {return(StepGen);}
-
-	/**
-	* Set the maximal number of K-Means iterations.
-	* @param i              Maximal number of iterations.
-	*/
-	void SetMaxKMeans(unsigned int i) {MaxKMeans=i;}
-
-	/**
-	* Get the maximal number of K-Means iterations.
-	* @returns unsigned int representing the maxiaml number of iterations.
-	*/
-	unsigned int GetMaxKMeans(void) const {return(MaxKMeans);}
-
-	/**
-	* Set the parameters for a particular criterion of PROMETHEE.
-	* @param crit           Name of the criterion.
-	* @param p              Preference's threshold.
-	* @param q              Indifference's threshold.
-	* @param w              Weight of the criterion.
-	*/
-	void SetCriterionParam(const char* crit,double p,double q,double w);
-
-	/**
-	* Set the parameters for a particular criterion of PROMETHEE.
-	* @param crit           Name of the criterion.
-	* @param p              Preference's threshold.
-	* @param q              Indifference's threshold.
-	* @param w              Weight of the criterion.
-	*/
-	void GetCriterionParam(const char* crit,double& p,double& q,double& w);
-
-	/**
-	* Get the status of the global similarity.
-	* @return bool value.
-	*/
-	bool GetGlobalSim(void) const {return(GlobalSim);}
-
-	/**
-	* Set the status of the global similarity.
-	* @param s              Global similarity?
-	*/
-	void SetGlobalSim(bool s) {GlobalSim=s;}
 
 	/**
 	* Initialisation of the method.

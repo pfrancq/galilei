@@ -69,12 +69,8 @@ using namespace RGA;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupingGGA::GGroupingGGA(GSession* s) throw(bad_alloc)
-	: GGrouping("Grouping Genetic Algorithms",s), PopSize(16), MinSimLevel(0.1),
-	  MinCommonOK(1.0), MinCommonDiff(1.0), MaxGen(20), Step(false), StepGen(5),
-	  MaxKMeans(10), SimMeasure(stAvgSim), ParamsSim(0.2,0.05,1.0), ParamsInfo(0.2,0.05,1.0),
-	  ParamsSameFeedbacks(0.2,0.05,1.0), ParamsDiffFeedbacks(0.2,0.05,1.0),
-	  ParamsSocial(0.2,0.05,1.0), GlobalSim(false), Objs(0)
+GALILEI::GGroupingGGA::GGroupingGGA(GSession* s,GIRParams* p) throw(bad_alloc)
+	: GGrouping("Grouping Genetic Algorithms",s), Objs(0), Params(p)
 {
 }
 
@@ -85,15 +81,15 @@ const char* GALILEI::GGroupingGGA::GetSettings(void)
 	static char tmp[200];
 	char c,c1;
 
-	if(Step) c='1'; else c='0';
-	if(GlobalSim) c1='1'; else c1='0';
+	if(Params->Step) c='1'; else c='0';
+	if(Params->GlobalSim) c1='1'; else c1='0';
 	sprintf(tmp,"%u %c %u %u %c %u %f %f %f %u %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
-	        SimMeasure,c1,PopSize,MaxGen,c,StepGen,MinSimLevel,MinCommonOK,MinCommonDiff,MaxKMeans,
-	        ParamsSim.P,ParamsSim.Q,ParamsSim.Weight,
-	        ParamsInfo.P,ParamsInfo.Q,ParamsInfo.Weight,
-	        ParamsSameFeedbacks.P,ParamsSameFeedbacks.Q,ParamsSameFeedbacks.Weight,
-	        ParamsDiffFeedbacks.P,ParamsDiffFeedbacks.Q,ParamsDiffFeedbacks.Weight,
-	        ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
+	        Params->SimMeasures,c1,Params->PopSize,Params->MaxGen,c,Params->StepGen,Params->MinSimLevel,Params->MinCommonOK,Params->MinCommonDiff,Params->MaxKMeans,
+	        Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight,
+	        Params->ParamsInfo.P,Params->ParamsInfo.Q,Params->ParamsInfo.Weight,
+	        Params->ParamsSameFeedbacks.P,Params->ParamsSameFeedbacks.Q,Params->ParamsSameFeedbacks.Weight,
+	        Params->ParamsDiffFeedbacks.P,Params->ParamsDiffFeedbacks.Q,Params->ParamsDiffFeedbacks.Weight,
+	        Params->ParamsSocial.P,Params->ParamsSocial.Q,Params->ParamsSocial.Weight);
 	return(tmp);
 }
 
@@ -106,93 +102,21 @@ void GALILEI::GGroupingGGA::SetSettings(const char* s)
 
 	if(!(*s)) return;
 	sscanf(s,"%u %c %u %u %c %u %lf %lf %lf %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	       &t,&c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,&MaxKMeans,
-	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
-	       &ParamsInfo.P,&ParamsInfo.Q,&ParamsInfo.Weight,
-	       &ParamsSameFeedbacks.P,&ParamsSameFeedbacks.Q,&ParamsSameFeedbacks.Weight,
-	       &ParamsDiffFeedbacks.P,&ParamsDiffFeedbacks.Q,&ParamsDiffFeedbacks.Weight,
-	       &ParamsSocial.P,&ParamsSocial.Q,&ParamsSocial.Weight);
-	SimMeasure=static_cast<SimType>(t);
-	if(c=='1') Step=true; else Step=false;
-	if(c1=='1') GlobalSim=true; else GlobalSim=false;
+	       &t,&c1,&Params->PopSize,&Params->MaxGen,&c,&Params->StepGen,&Params->MinSimLevel,&Params->MinCommonOK,&Params->MinCommonDiff,&Params->MaxKMeans,
+	       &Params->ParamsSim.P,&Params->ParamsSim.Q,&Params->ParamsSim.Weight,
+	       &Params->ParamsInfo.P,&Params->ParamsInfo.Q,&Params->ParamsInfo.Weight,
+	       &Params->ParamsSameFeedbacks.P,&Params->ParamsSameFeedbacks.Q,&Params->ParamsSameFeedbacks.Weight,
+	       &Params->ParamsDiffFeedbacks.P,&Params->ParamsDiffFeedbacks.Q,&Params->ParamsDiffFeedbacks.Weight,
+	       &Params->ParamsSocial.P,&Params->ParamsSocial.Q,&Params->ParamsSocial.Weight);
+	Params->SimMeasures=static_cast<SimCritType>(t);
+	if(c=='1') Params->Step=true; else Params->Step=false;
+	if(c1=='1') Params->GlobalSim=true; else Params->GlobalSim=false;
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupingGGA::Init(void) throw(bad_alloc)
 {
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupingGGA::SetCriterionParam(const char* crit,double p,double q,double w)
-{
-	if(!strcmp(crit,"Similarity"))
-	{
-		ParamsSim.P=p;
-		ParamsSim.Q=q;
-		ParamsSim.Weight=w;
-	}
-	else if(!strcmp(crit,"Information"))
-	{
-		ParamsInfo.P=p;
-		ParamsInfo.Q=q;
-		ParamsInfo.Weight=w;
-	}
-	else if(!strcmp(crit,"Same Feedbacks"))
-	{
-		ParamsSameFeedbacks.P=p;
-		ParamsSameFeedbacks.Q=q;
-		ParamsSameFeedbacks.Weight=w;
-	}
-	else if(!strcmp(crit,"Diff Feedbacks"))
-	{
-		ParamsDiffFeedbacks.P=p;
-		ParamsDiffFeedbacks.Q=q;
-		ParamsDiffFeedbacks.Weight=w;
-	}
-	else if(!strcmp(crit,"Social"))
-	{
-		ParamsSocial.P=p;
-		ParamsSocial.Q=q;
-		ParamsSocial.Weight=w;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupingGGA::GetCriterionParam(const char* crit,double& p,double& q,double& w)
-{
-	if(!strcmp(crit,"Similarity"))
-	{
-		p=ParamsSim.P;
-		q=ParamsSim.Q;
-		w=ParamsSim.Weight;
-	}
-	else if(!strcmp(crit,"Information"))
-	{
-		p=ParamsInfo.P;
-		q=ParamsInfo.Q;
-		w=ParamsInfo.Weight;
-	}
-	else if(!strcmp(crit,"Same Feedbacks"))
-	{
-		p=ParamsSameFeedbacks.P;
-		q=ParamsSameFeedbacks.Q;
-		w=ParamsSameFeedbacks.Weight;
-	}
-	else if(!strcmp(crit,"Diff Feedbacks"))
-	{
-		p=ParamsDiffFeedbacks.P;
-		q=ParamsDiffFeedbacks.Q;
-		w=ParamsDiffFeedbacks.Weight;
-	}
-	else if(!strcmp(crit,"Social"))
-	{
-		p=ParamsSocial.P;
-		q=ParamsSocial.Q;
-		w=ParamsSocial.Weight;
-	}
 }
 
 
@@ -275,19 +199,12 @@ void GALILEI::GGroupingGGA::Run(void) throw(GException)
 		{
 			Objs->InsertPtr(new GObjIR(i,SubProfiles()));
 		}
-		GProfilesSim Sims(SubProfiles,GlobalSim);
+		GProfilesSim Sims(SubProfiles,Params->GlobalSim);
 		if(Modified)
-			Instance=new GInstIR(Session,Lang,MinSimLevel,MaxGen,PopSize,Groups,Objs,GlobalSim,&Sims,SimMeasure,0/*&file*/);
+			Instance=new GInstIR(Session,Lang,Groups,Objs,&Sims,Params,0/*&file*/);
 		else
-			Instance=new GInstIR(Session,Lang,MinSimLevel,MaxGen,PopSize,0,Objs,GlobalSim,&Sims,SimMeasure,0/*&file*/);
+			Instance=new GInstIR(Session,Lang,0,Objs,&Sims,Params,0/*&file*/);
 		Instance->Init(&data);
-		Instance->SetCriterionParam("Similarity",ParamsSim.P,ParamsSim.Q,ParamsSim.Weight);
-		Instance->SetCriterionParam("Information",ParamsInfo.P,ParamsInfo.Q,ParamsInfo.Weight);
-		Instance->SetCriterionParam("Same Feedbacks",ParamsSameFeedbacks.P,ParamsSameFeedbacks.Q,ParamsSameFeedbacks.Weight);
-		Instance->SetCriterionParam("Diff Feedbacks",ParamsDiffFeedbacks.P,ParamsDiffFeedbacks.Q,ParamsDiffFeedbacks.Weight);
-		Instance->SetCriterionParam("Social",ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
-		Instance->SetMinRatios(MinCommonOK,MinCommonDiff);
-		Instance->SetMaxKMeans(MaxKMeans);
 		#ifdef RGADEBUG
 			if(IdealGroups) Instance->SetIdealGroups(IdealGroups);
 		#endif

@@ -128,30 +128,45 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	GIRParams* Params;
 
 	/**
-	* Minimum similarity level between the profiles of a group.
-	*/
-	double MinSimLevel;
-
-	/**
-	* The maximum number of generations.
-	*/
-	unsigned long MaxGen;
-
-	/**
-	* Maximal Number of KMeans.
-	*/
-	unsigned int MaxKMeans;
-
-	/**
-	* Type of measure used for the similarity criterion.
-	*/
-	SimType SimMeasure;
-
-	/**
 	* Criteria representing the average similarity of the profiles with the
 	* ones of the same group.
 	*/
 	RPromethee::RPromCriterion* CritSim;
+
+	/**
+	* Criteria representing the Similarity criterion "AvgSim".
+	*/
+	RPromethee::RPromCriterion* CritSimAvgSim;
+
+	/**
+	* Criteria representing the Similarity criterion "J".
+	*/
+	RPromethee::RPromCriterion* CritSimJ;
+
+	/**
+	* Criteria representing the Similarity criterion "AvgRatio".
+	*/
+	RPromethee::RPromCriterion* CritSimAvgRatio;
+
+	/**
+	* Criteria representing the Similarity criterion "AvgMinRatio".
+	*/
+	RPromethee::RPromCriterion* CritSimMinRatio;
+
+	/**
+	* Value of the Similarity criterion "AvgRatio".
+	*/
+	RPromethee::RPromCriterion* CritSimRatio;
+
+	/**
+	* Value of the Similarity criterion "AvgWOverB".
+	*/
+	RPromethee::RPromCriterion* CritSimWOverB;
+
+	/**
+	* Value of the Similarity criterion "SimWB".
+	*/
+	RPromethee::RPromCriterion* CritSimSimWB;
 
 	/**
 	* Criteria representing the average number of profiles per groups.
@@ -182,11 +197,6 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	RPromethee::RPromSol** Sols;
 
 	/**
-	* Global Similarities.
-	*/
-	bool GlobalSim;
-
-	/**
 	* Pointer to the current clustering in the session.
 	*/
 	GGroups* CurrentGroups;
@@ -201,18 +211,6 @@ class GInstIR : public RGGA::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,G
 	*/
 	GLang* Lang;
 
-	/**
-	* Minimum number of common OK documents needed to force two profiles to be
-	* in the same group.
-	*/
-	double MinCommonSame;
-
-	/**
-	* Minimum number of common documents judged differently needed to force two
-	* profiles to be in two different groups.
-	*/
-	double MinCommonDiff;
-	
 	/**
 	* Social Profiles.
 	*/
@@ -233,16 +231,13 @@ public:
 	* Construct the instance.
 	* @param ses            Session.
 	* @param l              Language.
-	* @param m              Minimal similarity in a group.
-	* @param max            Maximal number of generations.
-	* @param popsize        The size of the population.
 	* @param grps           Pointer to the current solutions.
 	* @param objs           The objects to group.
 	* @param s              Similarities between the subprofiles.
-	* @param h              The type of heuristic to be used.
+	* @param p              Parameters.
 	* @param debug          Debugger.
 	*/
-	GInstIR(GSession* ses,GLang* l,double m,unsigned int max,unsigned int popsize,GGroups* grps,RGA::RObjs<GObjIR>* objs,bool g,GProfilesSim* s,SimType st,RGA::RDebug *debug=0) throw(bad_alloc);
+	GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR>* objs,GProfilesSim* s,GIRParams* p,RGA::RDebug *debug=0) throw(bad_alloc);
 
 	/**
 	* Create a specific heuristic for the IR problem.
@@ -283,33 +278,12 @@ public:
 	* Apply PROMETHEE to classify the chromosomes.
 	*/
 	virtual void PostEvaluate(void) throw(RGA::eGA);
-
-	/**
-	* Set the parameters for a particular criterion of PROMETHEE.
-	* @param crit           Name of the criterion.
-	* @param p              Preference's threshold.
-	* @param q              Indifference's threshold.
-	* @param w              Weight of the criterion.
-	*/
-	void SetCriterionParam(const char* crit,double p,double q,double w);
-
-	/**
-	* Look if the global similarities are supposed to be global.
-	* @return bool.
-	*/
-	bool IsGlobalSim(void) const {return(GlobalSim);}
 	
 	/**
 	* return the Language actually grouped.
 	* @return lang.
 	*/
 	GLang* GetLang(void) const {return(Lang);}
-
-	/**
-	* Set the maximal number of generations to run.
-	* @param max            Maximal number of generations.
-	*/
-	void SetMaxGen(unsigned int max);
 
 	/**
 	* Get the ratio of the number of documents judged differently by two
@@ -328,37 +302,6 @@ public:
 	double GetRatioSame(GSubProfile* sub1,GSubProfile* sub2) const;
 
 	/**
-	* Set the minimal ratios used by the GA.
-	*/
-	void SetMinRatios(double same,double diff);
-
-	/**
-	* Get the minimum ratio of common OK documents needed to force two
-	* subprofiles to be in the same group.
-	* @return double.
-	*/
-	double GetMinCommonSame(void) const {return(MinCommonSame);}
-
-	/**
-	* Get the minimum ratio of common documents judged differently needed to
-	* force two subprofiles to be in two different groups.
-	* @return double.
-	*/
-	double GetMinCommonDiff(void) const {return(MinCommonDiff);}
-
-	/**
-	* Set the maximal number of K-Means iterations.
-	* @param i              Maximal number of iterations.
-	*/
-	void SetMaxKMeans(unsigned int i) {MaxKMeans=i;}
-
-	/**
-	* Get the maximal number of K-Means iterations.
-	* @returns unsigned int representing the maxiaml number of iterations.
-	*/
-	unsigned int GetMaxKMeans(void) const {return(MaxKMeans);}
-
-	/**
 	* Destruct the instance.
 	*/
 	virtual ~GInstIR(void);
@@ -367,6 +310,7 @@ public:
 	friend class GChromoIR;
 	friend class GGroupIR;
 	friend class GThreadDataIR;
+	friend class GIRHeuristic;
 };
 
 

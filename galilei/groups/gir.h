@@ -83,6 +83,7 @@ enum SimCritType
 * Define the type of measure used for the corresponding similarity criterion.
 */
 enum SimType {
+	stNone                  /** No Similarity Measure.*/,
 	stAvgSim                /** Average Similarity.*/,
 	stJ                     /** sum_proto(intra)/min_proto(inter).*/,
 	stAvgRatio              /** Average min(intra)/max(inter).*/,
