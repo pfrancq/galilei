@@ -119,6 +119,7 @@ const unsigned cNoRef=0xFFFFFFFF;
 * Types of GALILEI objects.
 */
 enum tObjType{
+	otNoClass               /** No specific class. */,
 	otSession               /** GALILEI Session. */,
 	otDoc                   /** Document. */,
 	otDocs                  /** Documents. */,
