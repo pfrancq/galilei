@@ -34,6 +34,31 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //
+//  class GSessionSignalsReceiver
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GALILEI::GSessionSignalsReceiver::GSessionSignalsReceiver(void)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionSignalsReceiver::receiveNextDoc(const GDoc* doc)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionSignalsReceiver::receiveNextProfile(const GProfile* prof)
+{
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
 // GSession
 //
 //-----------------------------------------------------------------------------
@@ -131,6 +156,33 @@ GDocXML* GALILEI::GSession::CreateDocXML(const GDoc* doc) throw(GException)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSession::AnalyseDocs(GSessionSignalsReceiver* rec) throw(GException)
+{
+	tObjState s;
+	GDocXML* xml;
+
+	for(Docs.Start();!Docs.End();Docs.Next())
+	{
+		s=Docs()->GetState();
+		if((s==osUpToDate)||(s==osUpdated)) continue;
+		rec->receiveNextDoc(Docs());
+		try
+		{
+			xml=0;
+			xml=Mng->CreateDocXML(Docs());
+			Docs()->Analyse(xml,this);
+			delete xml;
+		}
+		catch(GException& e)
+		{
+			if(xml)
+				delete xml;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 {
 	// If users already loaded, do nothing.
@@ -148,6 +200,32 @@ GUser* GALILEI::GSession::CreateUser(const char* usr,const char* pwd,const char*
 	                  const char* addr2,const char* city,const char* country) throw(bad_alloc)
 {
 	return(0);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::CalcProfiles(GSessionSignalsReceiver* rec,GProfileCalc* method) throw(GException)
+{
+	tObjState s;
+	GProfile* prof;
+
+	for(Users.Start();!Users.End();Users.Next())
+	{
+		for(Users()->Start();!Users()->End();Users()->Next())
+		{
+			prof=(*Users())();
+			s=prof->GetState();
+			if((s==osUpToDate)||(s==osUpdated)) continue;
+			rec->receiveNextProfile(prof);
+			try
+			{
+				method->Compute(prof);
+			}
+			catch(GException& e)
+			{
+			}
+		}
+	}
 }
 
 

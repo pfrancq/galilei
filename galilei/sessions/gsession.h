@@ -32,6 +32,7 @@
 #include <glangs/glangs.h>
 #include <glangs/gdicts.h>
 #include <gprofiles/gusers.h>
+#include <gprofiles/gprofilecalc.h>
 #include <ggroups/ggroups.h>
 #include <gdocs/gdocs.h>
 #include <urlmanagers/gurlmanager.h>
@@ -41,6 +42,34 @@
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GSessionSignalsReceiver provides a representation for a reciever of
+* signals of a session.
+*/
+class GSessionSignalsReceiver
+{
+public:
+	/**
+	* Constructor.
+	*/
+	GSessionSignalsReceiver(void);
+
+	/**
+	* The traitment for a specific document will begin.
+	* @param doc            Document.
+	*/
+	virtual void receiveNextDoc(const GDoc* doc);
+
+	/**
+	* The traitment for a specific document will begin.
+	* @param prof           Profile.
+	*/
+	virtual void receiveNextProfile(const GProfile* prof);
+};
 
 
 //-----------------------------------------------------------------------------
@@ -281,6 +310,12 @@ public:
 		*/
 		GDocXML* CreateDocXML(const GDoc* doc) throw(GException);
 
+		/**
+		* Analyse all the necessary documents.
+		* @param rec        Receiver for the signals.
+		*/
+		void AnalyseDocs(GSessionSignalsReceiver* rec) throw(GException);
+
 	//@}
 
 	/**
@@ -333,11 +368,17 @@ public:
 		* @param addr2          Address (Part 2).
 		* @param city           City.
 		* @param country        Country.
-		*
 		*/
 		GUser* CreateUser(const char* usr,const char* pwd,const char* name,const char* email,
 		                  const char* title,const char* org,const char* addr1,
 		                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
+
+		/**
+		* Compute all the necessary profiles.
+		* @param rec        Receiver for the signals.
+		* @param method         Method used to compute.
+		*/
+		void CalcProfiles(GSessionSignalsReceiver* rec,GProfileCalc* method) throw(GException);
 
 	//@}
 
