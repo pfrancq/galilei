@@ -1055,7 +1055,7 @@ GPrgClassSession::GPrgClassSession(GSession* s) throw(std::bad_alloc)
 	Methods.InsertPtr(new GSetRandI(this));
 	Methods.InsertPtr(new GSetStatParamI(this));
 	Methods.InsertPtr(new GRunStatI(this));
-};
+}
 
 
 //------------------------------------------------------------------------------

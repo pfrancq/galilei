@@ -107,12 +107,12 @@ public:
 	/**
 	* Compare method (not used)
 	*/
-	int Compare(const GRanking& r) const {return -1;};
+	int Compare(const GRanking& /*r*/) const {return -1;};
 
 	/**
 	* Compare method (not used)
 	*/
-	int Compare(const GRanking* r) const {return -1;};
+	int Compare(const GRanking* /*r*/) const {return -1;};
 
 	/**
 	* Destructor of the ranking.

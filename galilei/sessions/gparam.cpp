@@ -84,7 +84,6 @@ int GParam::Compare(const RString& n) const
 }
 
 
-#include <iostream.h>
 //------------------------------------------------------------------------------
 void GParam::ReadConfig(RXMLTag* parent)
 {

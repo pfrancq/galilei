@@ -30,6 +30,11 @@
 
 
 
+//------------------------------------------------------------------------------
+// include standard api files
+#include <math.h>
+
+
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/gweightinfos.h>
@@ -187,13 +192,13 @@ double GWeightInfos::GetMaxAbsWeight(void) const throw(GException)
 
 	// Suppose first weight is the highest
 	ptr=Tab;
-	max=abs((*ptr)->GetWeight());
+	max=fabs((*ptr)->GetWeight());
 
 	// Look if there is a greather one.
 	for(i=NbPtr,ptr++;--i;ptr++)
 	{
-		if(abs((*ptr)->GetWeight())>max)
-			max=abs((*ptr)->GetWeight());
+		if(fabs((*ptr)->GetWeight())>max)
+			max=fabs((*ptr)->GetWeight());
 	}
 	return(max);
 }

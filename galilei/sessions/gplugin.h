@@ -399,7 +399,7 @@ public:
 	/**
 	* Return the version of the plugin.
 	*/
-	const char* GetVersion(void) const {return(Version);}
+	const char* GetVersion(void) const {return(this->Version);}
 
 	/**
 	* Read a configuration from a XML Tag.

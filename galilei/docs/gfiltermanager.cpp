@@ -124,7 +124,7 @@ GFilterManager::GFilterManager(RContainer<RString, true, false>* paths,bool dlg)
 		RXMLFile File("/etc/galilei/galilei.mimes",&xml);
 		R::RCursor<RXMLTag> Cur,Cur2;
 
-		File.Process();
+		File.Open(R::Read);
 
 		// Go trough all MIME types
 		Cur=xml.GetTag("mimeTypes")->GetXMLTagsCursor();
@@ -300,7 +300,7 @@ R::RCursor<GFactoryFilter> GFilterManager::GetFiltersCursor(void)
 void GFilterManager::ReadConfig(RXMLTag* t)
 {
 	R::RCursor<GFactoryFilter> Cur;
-	
+
 	if(!t) return;
 	Cur=GetFiltersCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())

@@ -32,6 +32,11 @@
 
 
 //------------------------------------------------------------------------------
+// include standard api files
+#include <math.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gprofilessims.h>
 #include <profiles/gsubprofile.h>
