@@ -426,7 +426,6 @@ void GFilterHTML::AnalyseBase(char* params)
 				ptr++;
 			ptr++;    // Skip '=';
 		}
-		if((!(*ptr))||(strcmp(params,"HREF"))) {cout <<"another tag"<<endl;}
 
 		// Skip spaces and read the delimiter which must be a ' or a "
 		while((*ptr)&&(isspace(*ptr)))
@@ -440,8 +439,8 @@ void GFilterHTML::AnalyseBase(char* params)
 			ptr++ ;
 
 		(*(ptr++))=0;  // Skip the second delimiter
-	
-		 if (!strcmp(params,"HREF"))
+
+		if (!strcmp(params,"HREF"))
 		{
 			 Base=content;
 		}
