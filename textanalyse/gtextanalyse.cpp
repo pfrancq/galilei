@@ -48,7 +48,7 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdocanalyse.h>
-#include <docs/gdoc.h>
+#include <docs/gdocvector.h>
 #include <docs/gdocoptions.h>
 #include <docs/gdocxml.h>
 #include <langs/gword.h>
@@ -457,7 +457,7 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 	FindLang=((!Lang)||(!Options->StaticLang));
 	content=xml->GetContent();
 	RAssert(content);
-	Doc=doc;
+	Doc=dynamic_cast<GDocVector*>(doc);
 
 	// Analyse the doc structure.
 	Clear();
