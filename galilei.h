@@ -63,50 +63,84 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-// forward class declaration
+// forward class declaration - Information Part
+class GInfo;
+class GIWord;
+class GIWordList;
 class GIWordWeight;
 class GIWordWeightCursor;
 class GIWordsWeights;
+
+
+//-----------------------------------------------------------------------------
+// forward class declaration - Language Part
 class GLang;
 class GLangCursor;
 class GLangs;
 class GDict;
 class GDicts;
+
+
+//-----------------------------------------------------------------------------
+// forward class declaration - Document Part
 class GDoc;
 class GDocCursor;
 class GDocXML;
 class GDocs;
 class GDocAnalyse;
 class GDocOptions;
+class GDocsSim;
+
+
+//-----------------------------------------------------------------------------
+// forward class declaration - User Part
+class GUsers;
 class GUser;
 class GUserCursor;
-class GUsers;
+class GSubProfileDesc;
+class GSubProfileDescCursor;
 class GProfile;
 class GProfileCursor;
-class GProfilesSim;
+class GSubProfiles;
+class GSubProfile;
+class GSubProfileCursor;
+class GSubProfileVector;
 class GProfDoc;
 class GProfDocCursor;
 class GProfileCalc;
 class GProfileCalcCursor;
-class GSubProfiles;
-class GSubProfile;
-class GSubProfileCursor;
-class GSubProfileDesc;
-class GSubProfileDescCursor;
-class GGroup;
-class GGroupCursor;
+class GProfilesSim;
+
+
+//-----------------------------------------------------------------------------
+// forward class declaration - Grouping Part
 class GGroups;
 class GGroupsCursor;
+class GGroup;
+class GGroupCursor;
+class GGroupVector;
 class GGrouping;
 class GGroupingCursor;
+
+
+//-----------------------------------------------------------------------------
+// forward class declaration - Session Part
 class GTest;
 class GTests;
 class GSession;
 class GSlot;
+
+
+//-----------------------------------------------------------------------------
+// forward class declaration - Interface Part
 class GFilter;
 class GFilterCursor;
 class GMIMEFilter;
 class GURLManager;
+
+
+//-----------------------------------------------------------------------------
+// forward class declaration - Test Part
 class GSubjectTree;
 class GIdealGroup;
 class GGroupIdParentId;
