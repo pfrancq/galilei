@@ -110,12 +110,6 @@ public:
 	GGroupIR(GChromoIR* owner,const unsigned int id,const GGroupDataIR* data);
 
 	/**
-	* Verify if the group is not violating the integrity of the system.
-	* @return true if the group is correct, false else.
-	*/
-	virtual bool Verify(void);
-
-	/**
 	* Clear the information container in a group.
 	*/
 	virtual void Clear(void);

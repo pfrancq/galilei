@@ -101,15 +101,6 @@ GALILEI::GGroupIR::GGroupIR(GChromoIR* owner,const unsigned int id,const GGroupD
 
 
 //---------------------------------------------------------------------------
-bool GALILEI::GGroupIR::Verify(void)
-{
-	if(!RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Verify())
-		return(false);
-	return(true);
-}
-
-
-//---------------------------------------------------------------------------
 void GALILEI::GGroupIR::Clear(void)
 {
 	RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Clear();
