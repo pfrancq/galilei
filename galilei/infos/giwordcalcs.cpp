@@ -25,6 +25,9 @@
 // include files for GALILEI
 #include <ginfos/giwordcalcs.h>
 #include <ginfos/giwordoccur.h>
+#include <ginfos/giwordcalc.h>
+#include <gdocs/gdoc.h>
+#include <glangs/glang.h>
 using namespace GALILEI;
 using namespace RStd;
 
@@ -41,6 +44,27 @@ GALILEI::GIWordCalcs::GIWordCalcs(GLang *lang,unsigned int nb) throw(bad_alloc)
 	: RContainer<GIWordCalc,unsigned,true,true>(nb,50), NbWordsDocs(0.0),
 	  Lang(lang), Order(0)
 {
+}
+
+
+//---------------------------------------------------------------------------
+int GALILEI::GIWordCalcs::Compare(const GIWordCalcs& c) const
+{
+	return(Lang->Compare(c.Lang));
+}
+
+
+//---------------------------------------------------------------------------
+int GALILEI::GIWordCalcs::Compare(const GIWordCalcs* c) const
+{
+	return(Lang->Compare(c->Lang));
+}
+
+
+//---------------------------------------------------------------------------
+int GALILEI::GIWordCalcs::Compare(const GLang* l) const
+{
+	return(Lang->Compare(l));
 }
 
 

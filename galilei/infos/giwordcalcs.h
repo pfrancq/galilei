@@ -28,15 +28,18 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ginfos/giwordcalc.h>
-#include <gdocs/gdoc.h>
-#include <glangs/glang.h>
-using namespace GALILEI;
+#include <ginfos/ginfo.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// forward class declaration
+class GIWordCalc;
+class GDoc;
+class GLang;
 
 
 //-----------------------------------------------------------------------------
@@ -91,20 +94,17 @@ public:
 	/**
 	* Compare method used by RStd::RContainer.
 	*/
-	int Compare(const GIWordCalcs& c) const
-		{return(Lang->Compare(c.Lang));}
+	int Compare(const GIWordCalcs& c) const;
 
 	/**
 	* Compare method used by RStd::RContainer.
 	*/
-	int Compare(const GIWordCalcs* c) const
-		{return(Lang->Compare(c->Lang));}
+	int Compare(const GIWordCalcs* c) const;
 
 	/**
 	* Compare method used by RStd::RContainer.
 	*/
-	int Compare(const GLang* l) const
-		{return(Lang->Compare(l));}
+	int Compare(const GLang* l) const;
 
 private:
 

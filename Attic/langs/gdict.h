@@ -23,14 +23,13 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rhashcontainer.h>
+#include <rstd/rdblhashcontainer.h>
 #include <rstd/rstring.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <glangs/gword.h>
-#include <glangs/glang.h>
+#include <galilei.h>
 
 
 
@@ -42,6 +41,8 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 // forward class declaration
 class GSession;
+class GWord;
+class GLang;
 
 
 //-----------------------------------------------------------------------------
@@ -50,7 +51,7 @@ class GSession;
 * @author Pascal Francq
 * @short Dictionnary.
 */
-class GDict : public RStd::RHashContainer<GWord,unsigned,27,true>
+class GDict : public RStd::RDblHashContainer<GWord,unsigned,27,27,true>
 {
 	/**
 	* Session responsible for the dictionnary.
@@ -133,12 +134,7 @@ public:
 	* Put a string corresponding to a word and an identificator in the
 	* dictionnary.
 	*/
-	inline void Put(unsigned id,const RStd::RString& word) throw(bad_alloc)
-	{
-		GWord Word(id,word),*ptr;
-		ptr=GetInsertPtr<GWord>(Word,true);
-		PutDirect(ptr);
-	}
+	void Put(unsigned id,const RStd::RString& word) throw(bad_alloc);
 
 	/**
 	* Get the identificator of the word corresponding to a string. If the word
@@ -167,8 +163,7 @@ public:
 	/**
 	* @return Word given by an identificator.
 	*/
-	const char* GetWord(const unsigned int id) const
-		{return(Direct[id]->GetWord());}
+	const char* GetWord(const unsigned int id) const;
 
 	/**
 	* Test if the dictionnary is a stop list.

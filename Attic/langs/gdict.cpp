@@ -24,6 +24,8 @@
 //---------------------------------------------------------------------------
 // include file for GALILEI
 #include <glangs/gdict.h>
+#include <glangs/gword.h>
+#include <glangs/glang.h>
 #include <gsessions/gsession.h>
 using namespace GALILEI;
 using namespace RStd;
@@ -38,7 +40,7 @@ using namespace RStd;
 
 //---------------------------------------------------------------------------
 GALILEI::GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(bad_alloc)
-  : RHashContainer<GWord,unsigned,27,true>(ml+(ml/4),ml/4), Session(s), Direct(0),
+  : RDblHashContainer<GWord,unsigned,27,27,true>(ml+(ml/4),ml/4), Session(s), Direct(0),
     MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false), Stop(st)
 {
 	Direct=new GWord*[MaxId];
@@ -49,7 +51,7 @@ GALILEI::GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang 
 //---------------------------------------------------------------------------
 void GALILEI::GDict::Clear(void)
 {
-	RHashContainer<GWord,unsigned,27,true>::Clear();
+	RDblHashContainer<GWord,unsigned,27,27,true>::Clear();
 	memset(Direct,0,MaxId*sizeof(GWord*));
 	UsedId=0;
 	Loaded=false;
@@ -77,6 +79,15 @@ void GALILEI::GDict::PutDirect(GWord* word) throw(bad_alloc)
 
 
 //---------------------------------------------------------------------------
+void GALILEI::GDict::Put(unsigned id,const RStd::RString& word) throw(bad_alloc)
+{
+	GWord Word(id,word),*ptr;
+	ptr=GetInsertPtr<GWord>(Word,true);
+	PutDirect(ptr);
+}
+
+
+//---------------------------------------------------------------------------
 unsigned GALILEI::GDict::GetId(const RString& word) throw(bad_alloc)
 {
 	GWord Word(word),*ptr;
@@ -88,6 +99,13 @@ unsigned GALILEI::GDict::GetId(const RString& word) throw(bad_alloc)
 		PutDirect(ptr);
 	}
 	return(ptr->Id);
+}
+
+
+//---------------------------------------------------------------------------
+const char* GALILEI::GDict::GetWord(const unsigned int id) const
+{
+	return(Direct[id]->GetWord());
 }
 
 

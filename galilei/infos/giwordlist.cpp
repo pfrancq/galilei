@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <ginfos/giwordlist.h>
+#include <ginfos/giword.h>
 using namespace GALILEI;
 
 

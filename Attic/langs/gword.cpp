@@ -85,6 +85,13 @@ int GALILEI::GWord::Compare(const RString& word) const
 
 
 //-----------------------------------------------------------------------------
+int GALILEI::GWord::Compare(const char* word) const
+{
+	return(Word.Compare(word));
+}
+
+
+//-----------------------------------------------------------------------------
 int GALILEI::GWord::Compare(const unsigned int id) const
 {
 	return(Id-id);

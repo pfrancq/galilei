@@ -94,6 +94,11 @@ public:
 	/**
 	* Compare method used by RStd::RContainer and RStd::RHashContainer.
 	*/
+	int Compare(const char* word) const;
+
+	/**
+	* Compare method used by RStd::RContainer and RStd::RHashContainer.
+	*/
 	int Compare(const unsigned int id) const;
 
 	/**
@@ -116,6 +121,27 @@ public:
 	*/
 	static char HashIndex(const char* word)
 		{return(RStd::RString::HashIndex(word));}
+
+	/**
+	* Return a number between 0 and 26 according to the first character of the
+	* string. It is used for the RStd::RHashContainer class.
+	*/
+	static char HashIndex2(const GWord* w)
+		{return(RStd::RString::HashIndex2(w->Word));}
+
+	/**
+	* Return a number between 0 and 26 according to the first character of the
+	* string. It is used for the RStd::RHashContainer class.
+	*/
+	static char HashIndex2(const GWord& w)
+		{return(RStd::RString::HashIndex2(w.Word));}
+
+	/**
+	* Return a number between 0 and 26 according to the first character of the
+	* string. It is used for the RStd::RHashContainer class.
+	*/
+	static char HashIndex2(const char* word)
+		{return(RStd::RString::HashIndex2(word));}
 
 	/**
 	* @return Identificator of the word.

@@ -122,7 +122,13 @@ public:
 	/**
 	* @returns the number of occurences of the word.
 	*/
-	unsigned int GetNbOccurs(void) {return(Occurs);}
+	unsigned int GetNbOccurs(void) const {return(Occurs);}
+
+	/**
+	* Set the number of occurences of a word.
+	* @param occurs         Number of occurences.
+	*/
+	void AddNbOccurs(unsigned int occurs) {Occurs+=occurs;}
 
 	/**
 	* Increase the number of occurences of the word.
