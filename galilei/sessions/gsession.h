@@ -224,6 +224,11 @@ protected:
 	*/
 	unsigned int MinOccur;
 
+	/**
+	* Determine if the extracted words may contain other things than letters.
+	*/
+	bool NonLetterWords;
+
 public:
 
 	/**
@@ -450,6 +455,18 @@ public:
 		* @param min        Minimal size.
 		*/
 		void SetMinStemSize(unsigned int min) {MinStemSize=min;}
+
+		/**
+		* Look if words with non-letter characters may be extracted.
+		* @returns bool.
+		*/
+		bool IsNonLetterWords(void) const {return(NonLetterWords);}
+
+		/**
+		* Set if the words may contain non-letter characters.
+		* @param accept     Accepting such words.
+		*/
+		void SetNonLetterWords(bool accept) {NonLetterWords=accept;}
 
 		/**
 		* Load the documents.
