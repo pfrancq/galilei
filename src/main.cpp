@@ -67,7 +67,8 @@ using namespace R;
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalcmanager.h>
 #include <sessions/gstatscalcmanager.h>
-#include <sessions/gsessionmysql.h>
+#include <sessions/gstoragemysql.h>
+#include <sessions/gsession.h>
 #include <sessions/gconfig.h>
 #include <sessions/gslotlog.h>
 #include <groups/gpostgroupmanager.h>
@@ -133,21 +134,21 @@ int main(int argc, char *argv[])
 		cout<<"Connect to Session"<<endl;
 
 		// Init Session
-		GSessionMySQL Session(Config.GetTag("World")->GetAttrValue("Host"),
+		GStorageMySQL Str(Config.GetTag("World")->GetAttrValue("Host"),
 							Config.GetTag("World")->GetAttrValue("User"),
 							Config.GetTag("World")->GetAttrValue("Pwd"),
-							Config.GetTag("World")->GetAttrValue("Name"),
-							&SessionParams,false);
+							Config.GetTag("World")->GetAttrValue("Name"));
+		GSession Session(&Str,2000,2000,2000,2000,2000,&SessionParams,false);
 		Log->WriteLog("Session created");
 
 
 		// Load Data from MySQL database
 		Session.Connect(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
 			&GroupCalcManager,&StatsCalcManager,&PostDocManager,&PostGroupManager);
-		Session.LoadDocs(false,true);
-		Session.LoadGroups(false,true);
-		Session.LoadUsers(false,true);
-		Session.LoadFdbks();
+		Str.LoadDocs(&Session);
+		Str.LoadGroups(&Session);
+		Str.LoadUsers(&Session);
+		Str.LoadFdbks(&Session);
 		Session.PostConnect(&LinkCalcManager);
 		Log->WriteLog("Data loaded");
 
