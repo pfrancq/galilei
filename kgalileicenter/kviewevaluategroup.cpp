@@ -166,9 +166,8 @@ KViewEvaluateGroup::KViewEvaluateGroup(KDoc* doc,QWidget* parent,const char* nam
 //-----------------------------------------------------------------------------
 void KViewEvaluateGroup::ConstructGeneral(void)
 {
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* groups = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
 	GSession* session=Doc->GetSession();
-	groups=session->GetIdealDocs();
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* groups=session->GetIdealDocs();
 	
 	GEvaluateGroupingCalinski Cal (session, groups);
 	GEvaluateGroupingVariance Var (session, groups);
@@ -177,9 +176,7 @@ void KViewEvaluateGroup::ConstructGeneral(void)
 	new QListViewItem(General,"Document",QString(dtoa(Cal.Run())),QString(dtoa(Minintra.Run())),QString(dtoa(Var.Run())));
 
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* Groups=new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
-	RContainer<GGroups,unsigned int,true,true>* IdealGroups=new RContainer<GGroups,unsigned int,true,true> (2,2);
-
-	IdealGroups = session->GetIdealGroups();
+	RContainer<GGroups,unsigned int,true,true>* IdealGroups=session->GetIdealGroups();
 
 	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
 	{
@@ -208,8 +205,7 @@ void KViewEvaluateGroup::ConstructVarianceSubProf(void)
 
 	GSession* session=Doc->GetSession();
 
-	RContainer<GGroups,unsigned int,true,true>* IdealGroups=new RContainer<GGroups,unsigned int,true,true> (2,2);
-	IdealGroups = session->GetIdealGroups();
+	RContainer<GGroups,unsigned int,true,true>* IdealGroups=session->GetIdealGroups();
 
 	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
 	{
@@ -243,9 +239,8 @@ void KViewEvaluateGroup::ConstructVarianceDoc(void)
 	
 	GSession* session=Doc->GetSession();
 
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = session->GetIdealDocs();
 
-	GroupsDoc = session->GetIdealDocs();
 	
 	for(GroupsDoc->Start();!GroupsDoc->End();GroupsDoc->Next())
 	{
@@ -283,8 +278,7 @@ void KViewEvaluateGroup::ConstructSimilaritySubProf()
 
 	GSession* session=Doc->GetSession();
 
-	RContainer<GGroups,unsigned int,true,true>* IdealGroups=new RContainer<GGroups,unsigned int,true,true> (2,2);
-	IdealGroups = session->GetIdealGroups();
+	RContainer<GGroups,unsigned int,true,true>* IdealGroups= session->GetIdealGroups();
 
 	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
 	{
@@ -501,10 +495,9 @@ void KViewEvaluateGroup::ConstructSimilarityDoc(bool global)
 	SimilarityDoc->clear();
 
 	//the container of documents.
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
+	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = session->GetIdealDocs();
 
 	// load the ideal document container.
-	GroupsDoc = session->GetIdealDocs();
 
 	for(GroupsDoc->Start();!GroupsDoc->End();GroupsDoc->Next())
 	{
