@@ -123,7 +123,7 @@ void GALILEI::GProfileCalcVector::SetSettings(const char* s)
 //-----------------------------------------------------------------------------
 void GALILEI::GProfileCalcVector::ComputeOKKO(GProfile* profile) throw(bad_alloc)
 {
-	GIWordOccurCursor Words;
+	GIWordWeightCursor Words;
 	GProfDocCursor Docs;
 	GIWordsWeights* Weights;
 	GNbWordsDocs* NbW;
@@ -171,12 +171,12 @@ void GALILEI::GProfileCalcVector::ComputeOKKO(GProfile* profile) throw(bad_alloc
 		if(!Weights) continue;
 
  		// Add total number of words and the occurences of each word of the current document.
-		Words=CurDoc->GetWordOccurCursor();
+		Words=CurDoc->GetWordWeightCursor();
 		NbW->AddNb(CurDoc->GetV());
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=Weights->GetInsertPtr<unsigned int>(Words()->GetId());
-			w->AddWeight(Words()->GetNbOccurs());
+			w->AddWeight(Words()->GetWeight());
 		}
 	}
 

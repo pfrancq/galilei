@@ -50,7 +50,7 @@ using namespace RGA;
 
 //-----------------------------------------------------------------------------
 GGroupIR::GGroupIR(GGroupIR* grp)
-	: RGGA::RGroup<GGroupIR,GSubProfile,GGroupDataIR>(grp)
+	: RGGA::RGroup<GGroupIR,GSubProfile,GGroupDataIR>(grp), AvgSim(0.0)
 {
 }
 

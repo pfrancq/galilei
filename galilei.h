@@ -61,6 +61,9 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 // forward class declaration
+class GIWordWeight;
+class GIWordWeightCursor;
+class GIWordsWeights;
 class GLang;
 class GLangCursor;
 class GLangs;
@@ -76,10 +79,12 @@ class GUser;
 class GUserCursor;
 class GUsers;
 class GProfile;
+class GProfileCursor;
+class GProfDoc;
+class GProfDocCursor;
 class GProfileCalc;
 class GProfileCalcCursor;
 class GSubProfile;
-class GProfileCursor;
 class GSubProfileCursor;
 class GSubProfileDesc;
 class GSubProfileDescCursor;

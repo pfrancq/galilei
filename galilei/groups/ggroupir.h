@@ -80,6 +80,11 @@ class GGroupIR : public RGGA::RGroup<GGroupIR,GSubProfile,GGroupDataIR>
 {
 protected:
 
+	/**
+	* Average similarity between the profiles of the group.
+	*/
+	double AvgSim;
+
 public:
 
 	/**

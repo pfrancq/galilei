@@ -106,7 +106,7 @@ void GALILEI::GProfileCalcFeedback::SetSettings(const char* s)
 //-----------------------------------------------------------------------------
 void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_alloc)
 {
-	GIWordOccurCursor Words;
+	GIWordWeightCursor Words;
 	GProfDocCursor Docs;
 	GIWordsWeights* Vector;
 	GLang* CurLang;
@@ -152,16 +152,16 @@ void GALILEI::GProfileCalcFeedback::ComputeGlobal(GProfile* profile) throw(bad_a
 		if(!Cont) continue;
 
  		// Add total number of words and the occurences of each word of the current document.
-		Words=CurDoc->GetWordOccurCursor();
+		Words=CurDoc->GetWordWeightCursor();
 		BNbWords=Beta/CurDoc->GetV();
 		GNbWords=Gamma/CurDoc->GetV();
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=Vector->GetInsertPtr<unsigned int>(Words()->GetId());
 			if(Add||AddKO)
-				w->AddWeight(BNbWords*Words()->GetNbOccurs());
+				w->AddWeight(BNbWords*Words()->GetWeight());
 			else
-				w->SubstractWeight(GNbWords*Words()->GetNbOccurs());
+				w->SubstractWeight(GNbWords*Words()->GetWeight());
 		}
 	}
 

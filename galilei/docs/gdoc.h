@@ -47,26 +47,11 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <profiles/gprofdoc.h>
-#include <infos/giwordoccur.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// Forward declaration
-class GDocXML;
-class GSession;
-class GDocs;
-class GIWordOccurs;
-class GIWordOccur;
-class GMIMEFilter;
-class GLang;
-class GDict;
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -93,9 +78,9 @@ class GDoc
 
 	/**
 	* Information about the words containted in the document. Actually, only
-	* the number of occurences of the words are used.
+	* the weights associated with the words are used.
 	*/
-	GIWordOccurs* Words;
+	GIWordsWeights* Words;
 
 	/**
 	* Total number of words.
@@ -252,7 +237,7 @@ public:
 	* @param vd             Total number of different valid words.
 	* @param words          List of all valid words and their occurences.
 	*/
-	void SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd,GIWordOccurs* w);
+	void SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd,GIWordsWeights* w);
 
 	/**
 	* Add a word with a certain occurences in the document.
@@ -324,10 +309,10 @@ public:
 	void DecFailed(void) {Failed--;}
 
 	/**
-	* Get a Cursor on the occurences of the document.
+	* Get a Cursor on the weights of the document.
 	* @return GProfDocCursor.
 	*/
-	GIWordOccurCursor& GetWordOccurCursor(void);
+	GIWordWeightCursor& GetWordWeightCursor(void);
 
 	/**
 	* Get a Cursor on the feedback for the profile.

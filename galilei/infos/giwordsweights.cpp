@@ -39,7 +39,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/giwordsweights.h>
-#include <infos/giwordoccur.h>
 #include <infos/giwordweight.h>
 #include <docs/gdoc.h>
 #include <langs/glang.h>

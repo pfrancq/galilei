@@ -46,8 +46,8 @@ using namespace RStd;
 // include files for GALILEI
 #include <docs/gdoc.h>
 #include <docs/gdocxml.h>
-#include <infos/giwordoccur.h>
-#include <infos/giwordoccurs.h>
+#include <infos/giwordweight.h>
+#include <infos/giwordsweights.h>
 #include <langs/gword.h>
 #include <langs/gdict.h>
 #include <langs/glang.h>
@@ -81,7 +81,7 @@ GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang
 	}
 	else
 		State=osUpToDate;
-	Words=new GIWordOccurs(vdiff>600?vdiff:600);
+	Words=new GIWordsWeights(Lang,vdiff>600?vdiff:600);
 }
 
 
@@ -124,7 +124,7 @@ void GALILEI::GDoc::ClearInfos(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd,GIWordOccurs* w)
+void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned int v,unsigned int vd,GIWordsWeights* w)
 {
 	Lang=l;
 	N=n;
@@ -145,14 +145,14 @@ void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned in
 //-----------------------------------------------------------------------------
 void GALILEI::GDoc::AddWord(const unsigned int id,const unsigned int nb)
 {
-	Words->InsertPtr(new GIWordOccur(id,nb));
+	Words->InsertPtr(new GIWordWeight(id,nb));
 }
 
 
 //-----------------------------------------------------------------------------
-GIWordOccurCursor& GALILEI::GDoc::GetWordOccurCursor(void)
+GIWordWeightCursor& GALILEI::GDoc::GetWordWeightCursor(void)
 {
-	GIWordOccurCursor *cur=GIWordOccurCursor::GetTmpCursor();
+	GIWordWeightCursor *cur=GIWordWeightCursor::GetTmpCursor();
 	cur->Set(Words);
 	return(*cur);
 }

@@ -51,8 +51,6 @@ using namespace RIO;
 #include <langs/gdict.h>
 #include <langs/gdicts.h>
 #include <infos/giwordlist.h>
-#include <infos/giwordoccur.h>
-#include <infos/giwordoccurs.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofilevector.h>
@@ -481,7 +479,7 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 	char sname[200];
 	char supdated[15];
 	char scomputed[15];
-	GIWordOccurCursor Words;
+	GIWordWeightCursor Words;
 
 	// Delete keywords
 	if(doc->GetLang())
@@ -489,10 +487,10 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 		l=doc->GetLang()->GetCode();
 		sprintf(sSql,"DELETE FROM %shtmlsbykwds WHERE htmlid=%u",l,id);
 		RQuery deletekwds(this,sSql);
-		Words=doc->GetWordOccurCursor();
+		Words=doc->GetWordWeightCursor();
 		for(Words.Start();!Words.End();Words.Next())
 		{
-			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%u)",l,id,Words()->GetId(),Words()->GetNbOccurs());
+			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%lf)",l,id,Words()->GetId(),Words()->GetWeight());
 			RQuery insertkwds(this,sSql);
 		}
 		l=ValidSQLValue(l,slang);
