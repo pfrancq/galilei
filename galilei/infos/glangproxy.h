@@ -49,6 +49,8 @@ class GLangProxy
 {
 public:
 	GLangProxy(void) {}
+	virtual int Compare(const GLangProxy* ptr) const=0;
+	virtual int Compare(const unsigned int id) const=0;
 	virtual void SkipSequence(const R::RString& word)=0;
 	virtual R::RString GetStemming(const R::RString& kwd)=0;
 	virtual GSession* GetSession(void)=0;

@@ -49,9 +49,10 @@ class GSubProfileProxy
 {
 public:
 	GSubProfileProxy(void) {}
-	virtual =0;
-	virtual void AddAssessment(GProfDoc* j)=0;
-	virtual void RemoveAssessment(GProfDoc* j)=0;
+	virtual int Compare(const GSubProfileProxy* ptr) const=0;
+	virtual int Compare(const unsigned int id) const=0;
+	virtual void InsertFdbk(GProfDoc* j)=0;
+	virtual void DeleteFdbk(GProfDoc* j)=0;
 	virtual void ClearFdbks(void)=0;
 	virtual unsigned int GetId(void)=0;
 	virtual void SetId(unsigned int id)=0;
@@ -59,7 +60,6 @@ public:
 	virtual void SetState(tObjState state)=0;
 	virtual GLang* GetLang(void)=0;
 	virtual GProfile* GetProfile(void)=0;
-	virtual =0;
 	virtual bool IsDefined(void)=0;
 	virtual GGroup* GetGroup(void)=0;
 	virtual void SetGroup(GGroup* grp)=0;

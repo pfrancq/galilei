@@ -51,6 +51,8 @@ protected:
 	GLang* Obj;
 public:
 	GLangProxyMem(GLang* obj) : GLangProxy(), Obj(obj) {}
+	virtual int Compare(const GLangProxy* ptr) const { return(Obj->Compare(dynamic_cast<const GLangProxyMem*>(ptr)->Obj)); }
+	virtual int Compare(const unsigned int id) const { return(Obj->Compare(id)); }
 	virtual void SkipSequence(const R::RString& word){ Obj->SkipSequence(word); }
 	virtual R::RString GetStemming(const R::RString& kwd){ return(Obj->GetStemming(kwd)); }
 	virtual GSession* GetSession(void){ return(Obj->GetSession()); }

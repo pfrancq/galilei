@@ -51,9 +51,10 @@ protected:
 	GSubProfile* Obj;
 public:
 	GSubProfileProxyMem(GSubProfile* obj) : GSubProfileProxy(), Obj(obj) {}
-	virtual { return(Obj->()); }
-	virtual void AddAssessment(GProfDoc* j){ Obj->AddAssessment(j); }
-	virtual void RemoveAssessment(GProfDoc* j){ Obj->RemoveAssessment(j); }
+	virtual int Compare(const GSubProfileProxy* ptr) const { return(Obj->Compare(dynamic_cast<const GSubProfileProxyMem*>(ptr)->Obj)); }
+	virtual int Compare(const unsigned int id) const { return(Obj->Compare(id)); }
+	virtual void InsertFdbk(GProfDoc* j){ Obj->InsertFdbk(j); }
+	virtual void DeleteFdbk(GProfDoc* j){ Obj->DeleteFdbk(j); }
 	virtual void ClearFdbks(void){ Obj->ClearFdbks(); }
 	virtual unsigned int GetId(void){ return(Obj->GetId()); }
 	virtual void SetId(unsigned int id){ Obj->SetId(id); }
@@ -61,7 +62,6 @@ public:
 	virtual void SetState(tObjState state){ Obj->SetState(state); }
 	virtual GLang* GetLang(void){ return(Obj->GetLang()); }
 	virtual GProfile* GetProfile(void){ return(Obj->GetProfile()); }
-	virtual { return(Obj->()); }
 	virtual bool IsDefined(void){ return(Obj->IsDefined()); }
 	virtual GGroup* GetGroup(void){ return(Obj->GetGroup()); }
 	virtual void SetGroup(GGroup* grp){ Obj->SetGroup(grp); }
