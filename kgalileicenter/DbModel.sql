@@ -151,6 +151,85 @@ CREATE TABLE frsubprofilesbykwds (
 
 
 --
+-- Table structure for table 'nlgroupsbykwds'
+--
+
+CREATE TABLE nlgroupsbykwds (
+  groupid int(11) NOT NULL default '0',
+  kwdid int(11) NOT NULL default '0',
+  occurs double default NULL
+) TYPE=MyISAM;
+
+
+--
+-- Table structure for table 'nlhtmlsbykwds'
+--
+
+CREATE TABLE nlhtmlsbykwds (
+  htmlid int(11) NOT NULL default '0',
+  kwdid int(11) NOT NULL default '0',
+  occurs double(20,10) default NULL
+) TYPE=MyISAM;
+
+
+--
+-- Table structure for table 'nlkwds'
+--
+
+CREATE TABLE nlkwds (
+  kwdid int(11) NOT NULL auto_increment,
+  kwd varchar(50) default NULL,
+  type int(11) default '1',
+  PRIMARY KEY  (kwdid)
+) TYPE=MyISAM;
+
+
+--
+-- Table structure for table 'nlkwdsbygroups'
+--
+
+CREATE TABLE nlkwdsbygroups (
+  grid int(11) NOT NULL default '0',
+  kwdid int(11) NOT NULL default '0'
+) TYPE=MyISAM;
+
+
+--
+-- Table structure for table 'nlstopkwds'
+--
+
+CREATE TABLE nlstopkwds (
+  kwdid int(11) NOT NULL auto_increment,
+  kwd varchar(50) NOT NULL default '',
+  type int(11) default '1',
+  PRIMARY KEY  (kwdid)
+) TYPE=MyISAM;
+
+
+--
+-- Table structure for table 'nlsubprofilesbykwds'
+--
+
+CREATE TABLE nlsubprofilesbykwds (
+  subprofileid int(11) NOT NULL default '0',
+  kwdid int(11) NOT NULL default '0',
+  weight float NOT NULL default '0'
+) TYPE=MyISAM;
+
+
+--
+-- Table structure for table 'nlhistoricsubprofiles'
+--
+
+CREATE TABLE nlhistoricsubprofiles (
+  historicid int(11),
+  subprofileid int(11),
+  kwdid int(11),
+  weight float
+) TYPE=MyISAM;
+
+
+--
 -- Table structure for table 'groups'
 --
 
@@ -215,6 +294,7 @@ CREATE TABLE languages (
 
 INSERT INTO languages VALUES ('en','English');
 INSERT INTO languages VALUES ('fr','Français');
+INSERT INTO languages VALUES ('nl','Dutch');
 
 --
 -- Table structure for table 'profiles'
