@@ -40,26 +40,17 @@
 #include <math.h>
 
 
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcursor.h>
-using namespace R;
-
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gprofilecalcfeedback.h>
+
 #include <docs/gdocvector.h>
-#include <langs/gdict.h>
-#include <langs/glang.h>
-#include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
 #include <profiles/gsubprofilevector.h>
-#include <infos/giword.h>
-#include <infos/giwordlist.h>
 #include <infos/giwordweight.h>
-#include <infos/giwordsweights.h>
-#include <sessions/gsession.h>
+
+using namespace R;
 using namespace GALILEI;
 
 
