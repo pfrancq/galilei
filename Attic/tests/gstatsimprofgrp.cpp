@@ -89,11 +89,13 @@ void GALILEI::GStatSimProfGrp::Run(void)
 	overlap=0.0;
 	nbprofiles=0.0;
 
-	GGroupCalcRelevant Relevant(Session);
-	GGroupCalcGravitation Gravitation(Session);
-
-	if(relevant) Relevant.SetMaxNonZero(5000);
-	else Gravitation.SetMaxNonZero(5000);
+	// David
+	GGroupCalc* CalcMethod;
+	if (relevant)
+		Session->SetCurrentGroupCalcMethod("Relevant SubProfile");
+	else
+		Session->SetCurrentGroupCalcMethod("Gravitational Point");
+	CalcMethod=Session->GetCurrentGroupCalcMethod();
 
 
 	int nbtot=0;
@@ -125,8 +127,7 @@ void GALILEI::GStatSimProfGrp::Run(void)
 				for(Cur2.Start();!Cur2.End();Cur2.Next())
 				{
 					GGroup* Group2=Cur2();
-					if(relevant) Relevant.Compute(Group2);
-					else Gravitation.Compute(Group2);
+					CalcMethod->Compute(Group2);
 					// Same Group
 					if(Group2->GetId()==Group->GetId())
 					{

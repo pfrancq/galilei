@@ -43,21 +43,23 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <groups/ggroupcalc.h>
+#include <groups/ggroupcalcparams.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
+
 //-----------------------------------------------------------------------------
 /**
-* The GGroupCalcRelevant class provides a method to compute the description
-* of a specific group as the most relevant subprofile.
-* @author Pascal Francq
-* @short Relevant SubProfile Group Description Computing Method.
+* The GCalcRelevantParam represents all the parameter used in the KMeans module.
+* @short GCalcRelevant Parameters.
 */
-class GGroupCalcRelevant : public GGroupCalc
+class GCalcRelevantParams : public GGroupCalcParams
 {
+public:
+
 	/**
 	* Global similarities used.
 	*/
@@ -69,14 +71,55 @@ class GGroupCalcRelevant : public GGroupCalc
 	unsigned int MaxNonZero;
 
 	/**
+	* Maximal size allocate for a profile.
+	*/
+	unsigned int MaxOrderSize;
+
+	/**
+	* Get the settings of the method coded in a string.
+	* return Pointer to a C string.
+	*/
+	virtual const char* GetSettings(void);
+
+	/**
+	* Set the settings for the method using a string.
+	* @param char*          C string coding the settings.
+	*/
+	virtual void SetSettings(const char*);
+
+	/**
+	* Assignment operator.
+	* @param p              Parameters used as source.
+	*/
+	GCalcRelevantParams& operator=(const GCalcRelevantParams& src);
+
+	/**
+	* Constructor.
+	*/
+	GCalcRelevantParams(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GGroupCalcRelevant class provides a method to compute the description
+* of a specific group as the most relevant subprofile.
+* @author Pascal Francq
+* @short Relevant SubProfile Group Description Computing Method.
+*/
+class GGroupCalcRelevant : public GGroupCalc
+{
+
+	/**
+	* description computing parameters
+	*/
+	GCalcRelevantParams* Params;
+
+	/**
 	* Ordered vector for current computed profile.
 	*/
 	GIWordWeight** Order;
 
-	/**
-	* Maximal size allocate for a profile.
-	*/
-	unsigned int MaxOrderSize;
 
 public:
 
@@ -84,7 +127,7 @@ public:
 	* Constructor.
 	* @param session        Session.
 	*/
-	GGroupCalcRelevant(GSession* session) throw(bad_alloc);
+	GGroupCalcRelevant(GSession* session, GCalcRelevantParams* p) throw(bad_alloc);
 
 	/**
 	* Compute the sum of the similarities of a given profile to all the others.
@@ -99,29 +142,6 @@ public:
 	* @param grp            Group to compute.
 	*/
 	virtual void Compute(GGroup* grp);
-
-	/**
-	* Get the number of non-zero weights in the vector.
-	*/
-	unsigned int GetMaxNonZero(void) const {return(MaxNonZero);}
-
-	/**
-	* Set the number of non-zero weights in the vector.
-	* @param n              Number of non-zero weights.
-	*/
-	void SetMaxNonZero(unsigned int n) {MaxNonZero=n;}
-
-	/**
-	* Get the status of the global similarity.
-	* @return bool value.
-	*/
-	bool GetGlobalSim(void) const {return(GlobalSim);}
-
-	/**
-	* Set the status of the global similarity.
-	* @param s              Global similarity?
-	*/
-	void SetGlobalSim(bool s) {GlobalSim=s;}
 
 	/**
 	* Get the settings of the method coded in a string.

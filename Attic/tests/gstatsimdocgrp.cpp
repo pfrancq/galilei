@@ -131,6 +131,7 @@ int GALILEI::GStatSimDocGrp::sortOrder(const void *a,const void *b)
 void GALILEI::GStatSimDocGrp::Run(void)
 {
 
+	GGroupCalc* CalcMethod;
 	//temp variable 
 	const int nbrecall=10;
 	
@@ -169,11 +170,11 @@ void GALILEI::GStatSimDocGrp::Run(void)
 	int nbtot=0;
 
 	// calculation of the group whith relevant or gravitation methods.
-	GGroupCalcRelevant Relevant(Session);
-	GGroupCalcGravitation Gravitation(Session);
-
-	if(relevant) Relevant.SetMaxNonZero(5000);
-	else Gravitation.SetMaxNonZero(5000);
+	if (relevant)
+		Session->SetCurrentGroupCalcMethod("Relevant SubProfile");
+	else
+		Session->SetCurrentGroupCalcMethod("Gravitational Point");
+	CalcMethod=Session->GetCurrentGroupCalcMethod();
 
 	// the container of Documents
 	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc=new RContainer<GGroupsEvaluate,unsigned int,false,false> (2,2);
@@ -207,8 +208,7 @@ void GALILEI::GStatSimDocGrp::Run(void)
 			GGroupEvaluate* Grp=Cur();
 			GDocCursor docur=Session->GetDocsCursor();
 
-			if(relevant) Relevant.Compute(Group);
-			else Gravitation.Compute(Group);
+			CalcMethod->Compute(Group);
 
 			N=Grp->NbPtr();
 

@@ -53,16 +53,56 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
+//  GCalcRelevantParams
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GALILEI::GCalcRelevantParams::GCalcRelevantParams(void)
+	: GGroupCalcParams("Relevant SubProfile")
+{
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GCalcRelevantParams::GetSettings(void)
+{
+	static char tmp[300];
+	char c;
+
+	if(GlobalSim) c='1'; else c='0';
+	sprintf(tmp,"%u %c",MaxNonZero,c);
+	return(tmp);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GCalcRelevantParams::SetSettings(const char* s)
+{
+	char c;
+
+	if(!(*s)) return;
+	sscanf(s,"%u %c",&MaxNonZero,&c);
+	if(c=='1') GlobalSim=true; else GlobalSim=false;
+}
+
+
+//-----------------------------------------------------------------------------
+//
 //  class GGroupCalcRelevant
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupCalcRelevant::GGroupCalcRelevant(GSession* session) throw(bad_alloc)
-	: GGroupCalc("Relevant SubProfile",session), GlobalSim(true), MaxNonZero(60),
-	  Order(0), MaxOrderSize(5000)
+GALILEI::GGroupCalcRelevant::GGroupCalcRelevant(GSession* session, GCalcRelevantParams* p) throw(bad_alloc)
+	: GGroupCalc("Relevant SubProfile",session), Params(p), Order(0)
 {
-	Order=new GIWordWeight*[MaxOrderSize];
+	//init parameters
+	Params->GlobalSim=true;
+	Params->MaxNonZero=60;
+	Params->MaxOrderSize=5000;
+
+	Order=new GIWordWeight*[Params->MaxOrderSize];
 }
 
 
@@ -76,7 +116,7 @@ double GALILEI::GGroupCalcRelevant::ComputeSumSim(GGroup* grp,GSubProfile* sub)
 	for(i=grp->NbPtr+1,ptr=grp->Tab,AvgSim=0.0;--i;ptr++)
 	{
 		if((*ptr)==sub) continue;
-		if(GlobalSim)
+		if(Params->GlobalSim)
 			AvgSim+=sub->GlobalSimilarity(*ptr);
 		else
 			AvgSim+=sub->Similarity(*ptr);
@@ -123,18 +163,18 @@ void GALILEI::GGroupCalcRelevant::Compute(GGroup* grp)
 	// Copy the information of the relevant subprofile to the group.
 	Ref=static_cast<GSubProfileVector*>(Relevant)->GetVector();
 	if(Ref->IsEmpty()) return;
-	if(Ref->NbPtr+1>MaxOrderSize)
+	if(Ref->NbPtr+1>Params->MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<unsigned int>((Ref->NbPtr+1)*1.1);
-		Order=new GIWordWeight*[MaxOrderSize];
+		Params->MaxOrderSize=static_cast<unsigned int>((Ref->NbPtr+1)*1.1);
+		Order=new GIWordWeight*[Params->MaxOrderSize];
 	}
 	memcpy(Order,Ref->Tab,Ref->NbPtr*sizeof(GIWordWeight*));
 	qsort(static_cast<void*>(Order),Ref->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);
 	Order[Ref->NbPtr]=0;
-	if(MaxNonZero)
+	if(Params->MaxNonZero)
 	{
-		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
+		for(i=Params->MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
 				Desc->InsertPtr(new GIWordWeight(*w));
@@ -160,8 +200,8 @@ const char* GALILEI::GGroupCalcRelevant::GetSettings(void)
 	static char tmp[300];
 	char c;
 
-	if(GlobalSim) c='1'; else c='0';
-	sprintf(tmp,"%u %c",MaxNonZero,c);
+	if(Params->GlobalSim) c='1'; else c='0';
+	sprintf(tmp,"%u %c",Params->MaxNonZero,c);
 	return(tmp);
 }
 
@@ -172,8 +212,8 @@ void GALILEI::GGroupCalcRelevant::SetSettings(const char* s)
 	char c;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %c",&MaxNonZero,&c);
-	if(c=='1') GlobalSim=true; else GlobalSim=false;
+	sscanf(s,"%u %c",&Params->MaxNonZero,&c);
+	if(c=='1') Params->GlobalSim=true; else Params->GlobalSim=false;
 }
 
 

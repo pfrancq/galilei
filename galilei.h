@@ -188,9 +188,14 @@ class GKMeansParams;
 class GCureParams;
 class GSimParams;
 // Computing parameters
+class GCalcParams;
 class GFeedbackParams;             
 class GReWeightingParams;
 class GStatisticalParams;
+// Group Description parameters
+class GGroupCalcParams;
+class GCalcRelevantParams;
+class GCalcGravitationParams;
 
 //-----------------------------------------------------------------------------
 /**

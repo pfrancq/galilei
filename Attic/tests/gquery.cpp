@@ -78,8 +78,8 @@ GALILEI::GQuery::GQuery(GIWordsWeights* query,GSession* session,GLang* lang,doub
 void GALILEI::GQuery::CalcSimGroup()
 {
 
-	GGroupCalcGravitation Gravitation(ses);
-	Gravitation.SetMaxNonZero(500);
+	ses->SetCurrentGroupCalcMethod("Gravitation Point");
+	GGroupCalc* Gravitation=ses->GetCurrentGroupCalcMethod();;
 	if(Modify) QueryWord->ModifyQueryGroups(otDoc,Lang);
 	GGroupsCursor idealgroup=ses->GetGroupsCursor();
 
@@ -95,7 +95,7 @@ void GALILEI::GQuery::CalcSimGroup()
 			for(Group.Start();!Group.End();Group.Next())
 			{
 				GGroup* Grp=Group();
-				Gravitation.Compute(Grp);
+				Gravitation->Compute(Grp);
 				GGroupVector* GrpV=static_cast<GGroupVector*>(Group());
 				bool end=true;
 				const char* name;
@@ -157,10 +157,10 @@ GGroup* GALILEI::GQuery::GetCurrentGroup(void)
 //-----------------------------------------------------------------------------
 double GALILEI::GQuery::GetCurrentSim(void)
 {
-	GGroupCalcGravitation Gravitation(ses);
-	Gravitation.SetMaxNonZero(500);
+	ses->SetCurrentGroupCalcMethod("Gravitation Point");
+	GGroupCalc* Gravitation=ses->GetCurrentGroupCalcMethod();;
 	GGroup* Grp=(*Groups)();
-	Gravitation.Compute(Grp);
+	Gravitation->Compute(Grp);
 	GGroupVector* GrpV=static_cast<GGroupVector*>(Grp);
 	return(QueryWord->Similarity(GrpV->GetVector()));
 }
