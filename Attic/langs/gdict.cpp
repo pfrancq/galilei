@@ -117,7 +117,7 @@ void GDict::Put(unsigned id,const R::RString& word) throw(bad_alloc)
 	if(word.IsEmpty()) return;
 	tmp=word();
 	tmp2=grp();
-	for(i=grp.GetLen()+1;(--i)&&(!tmp->IsNull());)
+	for(i=grp.GetLen()+1;(--i)&&(!tmp->IsNull());tmp++,tmp2++)
 	{
 		if((*tmp)!=(*tmp2)) break;
 	}
