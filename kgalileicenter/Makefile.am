@@ -27,7 +27,7 @@ EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kg
 	qmixidealconfig.ui\
 	qcreatedatabase.ui qcreatedatabase.ui.h qfilldatabase.ui\
 	hi16-app-kgalileicenter.png hi32-app-kgalileicenter.png kviewhistory.cpp kviewhistory.h \
-	qhistorydlg.ui kviewstorechromos.cpp kviewstorechromos.h qgalileiitem.h kviewstats.h
+	qhistorydlg.ui kviewstats.h
 
 install-data-local:
 	$(mkinstalldirs) $$(kde_appsdir)/Applications/

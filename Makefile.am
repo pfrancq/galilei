@@ -2,7 +2,7 @@
 
 SUBDIRS = kgalileicenter po doc
 
-EXTRA_DIST = kgalileicenter.kdevprj admin AUTHORS COPYING ChangeLog INSTALL README TODO kgalileicenter.lsm 
+EXTRA_DIST = kgalileicenter.kdevelop admin AUTHORS COPYING ChangeLog INSTALL README TODO kgalileicenter.lsm 
 
 ####### kdevelop will overwrite this part!!! (end)############
 # not a GNU package. You can remove this line, if 
