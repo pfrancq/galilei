@@ -108,7 +108,7 @@ protected:
 	/**
 	*  Load the Users' Feedback.
 	*/
-	virtual void LoadUsersFdbk(void) throw(bad_alloc,GException);
+	virtual void LoadFdbks(void) throw(bad_alloc,GException);
 
 	/**
 	* Load the groups.
