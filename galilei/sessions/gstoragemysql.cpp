@@ -79,18 +79,18 @@ using namespace R;
 //------------------------------------------------------------------------------
 // Static variable
 #define Ins_spec 1
-const char GALILEI::GStorageMySQL::SQLNULL[5]="NULL";
+const char GStorageMySQL::SQLNULL[5]="NULL";
 
 
 //------------------------------------------------------------------------------
-GALILEI::GStorageMySQL::GStorageMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,RMySQLError)
+GStorageMySQL::GStorageMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,RMySQLError)
 	: RDb(host,user,pwd,db), GStorage(db)
 {
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GALILEI::GStorageMySQL::GetCount(const char* tbl) throw(R::RMySQLError)
+unsigned int GStorageMySQL::GetCount(const char* tbl) throw(RMySQLError)
 {
 	char sSql[100];
 	const char* c;
@@ -105,7 +105,7 @@ unsigned int GALILEI::GStorageMySQL::GetCount(const char* tbl) throw(R::RMySQLEr
 
 
 //------------------------------------------------------------------------------
-unsigned int GALILEI::GStorageMySQL::GetMax(const char* tbl,const char* fld) throw(R::RMySQLError)
+unsigned int GStorageMySQL::GetMax(const char* tbl,const char* fld) throw(RMySQLError)
 {
 	char sSql[100];
 	const char* c;
@@ -120,7 +120,7 @@ unsigned int GALILEI::GStorageMySQL::GetMax(const char* tbl,const char* fld) thr
 
 
 //------------------------------------------------------------------------------
-const char* GALILEI::GStorageMySQL::GetDateToMySQL(const RDate& d,char* tmp) throw(R::RMySQLError)
+const char* GStorageMySQL::GetDateToMySQL(const RDate& d,char* tmp) throw(RMySQLError)
 {
 	sprintf(tmp,"'%u-%u-%u'",d.GetYear(),d.GetMonth(),d.GetDay());
 	return(tmp);
@@ -128,7 +128,7 @@ const char* GALILEI::GStorageMySQL::GetDateToMySQL(const RDate& d,char* tmp) thr
 
 
 //------------------------------------------------------------------------------
-const char* GALILEI::GStorageMySQL::ValidSQLValue(const char* val,char* tmp) throw(R::RMySQLError)
+const char* GStorageMySQL::ValidSQLValue(const char* val,char* tmp) throw(RMySQLError)
 {
 	const char* ptr1=val;
 	char* ptr2=tmp;
@@ -149,7 +149,7 @@ const char* GALILEI::GStorageMySQL::ValidSQLValue(const char* val,char* tmp) thr
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::AssignId(GData* data,const GDict* dict) throw(GException)
+void GStorageMySQL::AssignId(GData* data,const GDict* dict) throw(GException)
 {
 
 	// preliminary traitement of special words and composite like insert -> reinsert ...
@@ -201,7 +201,7 @@ void GALILEI::GStorageMySQL::AssignId(GData* data,const GDict* dict) throw(GExce
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException)
+void GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException)
 {
 	unsigned int MaxCount=100;
 	unsigned int MaxId=0;
@@ -267,7 +267,7 @@ void GALILEI::GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_a
 
 
 //--------------------.---------------------------------------------------------
-const char* GALILEI::GStorageMySQL::LoadWord(unsigned int id,const char* code) throw(bad_alloc,GException)
+const char* GStorageMySQL::LoadWord(unsigned int id,const char* code) throw(bad_alloc,GException)
 {
 	char sSql[100];
 
@@ -281,7 +281,7 @@ const char* GALILEI::GStorageMySQL::LoadWord(unsigned int id,const char* code) t
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::LoadWordList(GWordList* w,GLang* lang) throw(bad_alloc,GException)
+void GStorageMySQL::LoadWordList(GWordList* w,GLang* lang) throw(bad_alloc,GException)
 {
 	char sSql[100];
 
@@ -293,7 +293,7 @@ void GALILEI::GStorageMySQL::LoadWordList(GWordList* w,GLang* lang) throw(bad_al
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveWordList(GDict* dic,GWordList* w) throw(GException)
+void GStorageMySQL::SaveWordList(GDict* dic,GWordList* w) throw(GException)
 {
 	GWordCursor Cur;
 	char sSql[600];
@@ -314,7 +314,7 @@ void GALILEI::GStorageMySQL::SaveWordList(GDict* dic,GWordList* w) throw(GExcept
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
+void GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 {
 	char sSql[200];
 	char scomputed[15];
@@ -346,7 +346,7 @@ void GALILEI::GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int historicid) throw(GException)
+void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int historicid) throw(GException)
 {
 	char sSql[200];
 	GWeightInfoCursor Cur;
@@ -363,7 +363,7 @@ void GALILEI::GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned i
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
+void GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
 {
 	char sSql[500];
 	char sname[200];
@@ -392,7 +392,7 @@ void GALILEI::GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::LoadUsers(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadUsers(GSession* session) throw(bad_alloc,GException)
 {
 	char sSql[100];
 	GUser* usr;
@@ -486,7 +486,7 @@ void GALILEI::GStorageMySQL::LoadUsers(GSession* session) throw(bad_alloc,GExcep
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::LoadIdealGroupment(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadIdealGroupment(GSession* session) throw(bad_alloc,GException)
 {
 	GGroups* groups;
 	GGroup* group;
@@ -525,7 +525,7 @@ void GALILEI::GStorageMySQL::LoadIdealGroupment(GSession* session) throw(bad_all
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup) throw(GException)
+void GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup) throw(GException)
 {
 	GGroupCursor groups;
 	GSubProfileCursor sub;
@@ -548,7 +548,7 @@ void GALILEI::GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup) throw(GExce
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::LoadSubjectTree(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadSubjectTree(GSession* session) throw(bad_alloc,GException)
 {
 	char sSql[200];
 	GSubject* subject;
@@ -569,7 +569,7 @@ void GALILEI::GStorageMySQL::LoadSubjectTree(GSession* session) throw(bad_alloc,
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::LoadFdbks(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadFdbks(GSession* session) throw(bad_alloc,GException)
 {
 	char sSql[200];
 	GProfile* prof;
@@ -622,7 +622,7 @@ void GALILEI::GStorageMySQL::LoadFdbks(GSession* session) throw(bad_alloc,GExcep
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::LoadDocs(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadDocs(GSession* session) throw(bad_alloc,GException)
 {
 	GDocVector* doc;
 	GLang* lang;
@@ -688,7 +688,7 @@ void GALILEI::GStorageMySQL::LoadDocs(GSession* session) throw(bad_alloc,GExcept
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
+void GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 {
 	char sSql[500];
 	//char j;
@@ -737,7 +737,7 @@ void GALILEI::GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveDoc(GDoc* doc) throw(GException)
+void GStorageMySQL::SaveDoc(GDoc* doc) throw(GException)
 {
 	char sSql[1000];
 	const char* l=0;
@@ -803,7 +803,7 @@ void GALILEI::GStorageMySQL::SaveDoc(GDoc* doc) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
+void GStorageMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
 {
 	char sSql[1000];
 	const char* l=0;
@@ -856,7 +856,7 @@ void GALILEI::GStorageMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GExcepti
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveGroups(GSession* session) throw(GException)
+void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 {
 	GWeightInfoCursor WordCur;
 	GGroupCursor GroupsCursor;
@@ -904,7 +904,7 @@ void GALILEI::GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic) throw(GException)
+void GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic) throw(GException)
 {
 	char sSql[100];
 	char database[20];
@@ -947,7 +947,7 @@ void GALILEI::GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int i
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historicid) throw(GException)
+void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historicid) throw(GException)
 {
 	GFactoryLangCursor curLang;
 	GLang* lang;
@@ -980,7 +980,7 @@ void GALILEI::GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::LoadGroups(GSession* session) throw(bad_alloc,GException)
+void GStorageMySQL::LoadGroups(GSession* session) throw(bad_alloc,GException)
 {
 	char sSql[100];
 	GGroupVector* group;
@@ -1020,7 +1020,7 @@ void GALILEI::GStorageMySQL::LoadGroups(GSession* session) throw(bad_alloc,GExce
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::ExecuteData(const char* filename) throw(GException)
+void GStorageMySQL::ExecuteData(const char* filename) throw(GException)
 {
 	RTextFile Sql(filename);
 	RString l;
@@ -1034,7 +1034,7 @@ void GALILEI::GStorageMySQL::ExecuteData(const char* filename) throw(GException)
 
 
 //------------------------------------------------------------------------------
-GGroupsHistory* GALILEI::GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicid) throw(bad_alloc,GException)
+GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicid) throw(bad_alloc,GException)
 {
 	char sSql[200];
 	GGroupHistory* grp;
@@ -1083,7 +1083,7 @@ GGroupsHistory* GALILEI::GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProf
 
 
 //------------------------------------------------------------------------------
-unsigned int GALILEI::GStorageMySQL::GetHistorySize(void) throw(GException)
+unsigned int GStorageMySQL::GetHistorySize(void) throw(GException)
 {
 	char sSql[200];
 	sprintf(sSql,"SELECT COUNT(DISTINCT historicid) from historicgroups");
@@ -1094,7 +1094,7 @@ unsigned int GALILEI::GStorageMySQL::GetHistorySize(void) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::CreateDummy(const char* name) throw(GException)
+void GStorageMySQL::CreateDummy(const char* name) throw(GException)
 {
 	char sSql[200];
 	sprintf(sSql,"CREATE TABLE %s (id INT(11), parentid INT(11), description TEXT) ",name);
@@ -1103,7 +1103,7 @@ void GALILEI::GStorageMySQL::CreateDummy(const char* name) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid) throw(GException)
+void GStorageMySQL::AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid) throw(GException)
 {
 	char sSql[500];
 	sprintf(sSql, "INSERT INTO %s (id, parentid, description) values (%u, %u, '%s')", name, id, parentid, desc);
@@ -1112,6 +1112,6 @@ void GALILEI::GStorageMySQL::AddDummyEntry(const char* name, unsigned int id, co
 
 
 //------------------------------------------------------------------------------
-GALILEI::GStorageMySQL::~GStorageMySQL(void) throw(GException)
+GStorageMySQL::~GStorageMySQL(void) throw(GException)
 {
 }
