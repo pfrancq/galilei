@@ -106,8 +106,15 @@ double GALILEI::GIWordsWeights::GetMaxWeight(void) const
 	GIWordWeight** ptr;
 	unsigned int i;
 
-	max=0.0;
-	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
+	// If no profile, maximal weight is null.
+	if(!NbPtr) return(0.0);
+
+	// Suppose first weight is the highest
+	ptr=Tab;
+	max=(*ptr)->GetWeight();
+
+	// Look if there is a greather one.
+	for(i=NbPtr,ptr++;--i;ptr++)
 	{
 		if((*ptr)->GetWeight()>max)
 			max=(*ptr)->GetWeight();
