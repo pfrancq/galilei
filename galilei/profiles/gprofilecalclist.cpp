@@ -63,6 +63,8 @@ void GALILEI::GProfileCalcList::Compute(GProfile* profile)
 	GIWordList* SubKO;              // KO List of a given subprofile.
 	GIWordList* SubCommon;          // Common List of a given subprofile.
 
+	if(profile->GetState()==osUpToDate) return;
+
 	// Clear
 	for(OK.Start();!OK.End();OK.Next())
 			OK()->Clear();
@@ -112,7 +114,7 @@ void GALILEI::GProfileCalcList::Compute(GProfile* profile)
 		//  1°) The MOK and MKO lists are not both empty (IsNextWord() methods).
 		//  2°) The length of both lists OK and KO are not equal to the maximal
 		//      size (SubOK->NbPtr and SubKO->NbPtr values).
-		while(((MOK->IsNextWord())||(MKO->IsNextWord()))&&((SubOK->NbPtr<Size)||(SubKO->NbPtr<Size)))
+		while(((MOK->IsNextWord())&&(SubOK->NbPtr<Size))||((MKO->IsNextWord())&&(SubKO->NbPtr<Size)))
 		{
 			// Look if the OK list needs some words. If yes, look if the next
 			// word to add is already in the KO list. If so, delete it from KO
@@ -147,6 +149,9 @@ void GALILEI::GProfileCalcList::Compute(GProfile* profile)
 			}
 		}
 	}
+
+	// Tell the profile that the udpate is finished.
+	profile->UpdateFinished();
 }
 
 

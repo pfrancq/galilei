@@ -66,7 +66,7 @@ public:
 	* Get the type of the method implemented.
 	* @returns tProfileCompute type.
 	*/
-	virtual tProfileCompute GetType(void) const {return(pcNothing);}
+	virtual tProfilesCompute GetType(void) const {return(pcNothing);}
 
 	/**
 	* Destructor.

@@ -85,7 +85,7 @@ public:
 	* Get the type of the method implemented.
 	* @returns tProfileCompute type.
 	*/
-	virtual tProfileCompute GetType(void) const {return(pcStatistical);}
+	virtual tProfilesCompute GetType(void) const {return(pcStatistical);}
 
 	/**
 	* Get the size of the lists OK/KO.
