@@ -396,7 +396,16 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("LimitLink",LinkCalcCorrespondenceParams.LimitLink);
 	Config->writeEntry("NbLinks",LinkCalcCorrespondenceParams.NbLinks);
 	Config->writeEntry("UseMultipleLink",LinkCalcCorrespondenceParams.UseMultipleLink);
-	
+
+	// Write Config of LinkCalcSALSA
+	Config->setGroup(LinkCalcSALSAParams.GetComputingName());
+	Config->writeEntry("NbIteration",LinkCalcSALSAParams.NbIteration);
+	Config->writeEntry("NbResultsHub",LinkCalcSALSAParams.NbResultsHub);
+	Config->writeEntry("NbResultsAuto",LinkCalcSALSAParams.NbResultsAuto);
+	Config->writeEntry("LimitLink",LinkCalcSALSAParams.LimitLink);
+	Config->writeEntry("NbLinks",LinkCalcSALSAParams.NbLinks);
+	Config->writeEntry("UseMultipleLink",LinkCalcSALSAParams.UseMultipleLink);
+
 }
 
 
@@ -493,6 +502,7 @@ void KGALILEICenterApp::readOptions(void)
 	LinkCalcMethod=new R::RContainer<R::RString,unsigned int,true,true>(3,3);
 	LinkCalcMethod->InsertPtr(new R::RString("HITS Algorithm"));
 	LinkCalcMethod->InsertPtr(new R::RString("Correspondence Algorithm"));
+	LinkCalcMethod->InsertPtr(new R::RString("SALSA Algorithm"));
 	Config->setGroup("Session Options");
 	CurrentProfileDesc=Config->readEntry("Description Method","Vector space");
 	CurrentComputingMethod=Config->readEntry("Computing Method","Statistical");
@@ -608,7 +618,15 @@ void KGALILEICenterApp::readOptions(void)
 	LinkCalcCorrespondenceParams.LimitLink=Config->readBoolEntry("LimitLink",false);
 	LinkCalcCorrespondenceParams.NbLinks=Config->readNumEntry("NbLinks",10);
 	LinkCalcCorrespondenceParams.UseMultipleLink=Config->readBoolEntry("UseMultipleLink",true);
-	
+
+	// Read Config of LinkCalcSALSA
+	Config->setGroup(LinkCalcSALSAParams.GetComputingName());
+	LinkCalcSALSAParams.NbIteration=Config->readNumEntry("NbIteration",5);
+	LinkCalcSALSAParams.NbResultsHub=Config->readNumEntry("NbResultsHub",5);
+	LinkCalcSALSAParams.NbResultsAuto=Config->readNumEntry("NbResultsAuto",5);
+	LinkCalcSALSAParams.LimitLink=Config->readBoolEntry("LimitLink",false);
+	LinkCalcSALSAParams.NbLinks=Config->readNumEntry("NbLinks",10);
+	LinkCalcSALSAParams.UseMultipleLink=Config->readBoolEntry("UseMultipleLink",true);
 }
 
 

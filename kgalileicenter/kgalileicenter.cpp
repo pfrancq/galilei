@@ -198,6 +198,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess,&CalcRelevantParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess, &LinkCalcHITSParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess, &LinkCalcCorrespondenceParams));
+			Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
 			Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 			Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 			Sess->SetCurrentComputingMethod(CurrentComputingMethod);
@@ -269,6 +270,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess, &CalcRelevantParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess,&LinkCalcHITSParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess,&LinkCalcCorrespondenceParams));
+	Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
 	Sess->SetCurrentProfileDesc(CurrentProfileDesc);
 	Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 	Sess->SetCurrentComputingMethod(CurrentComputingMethod);
@@ -289,6 +291,8 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	runQuery->setEnabled(true);
 	UpdateMenusEntries();
 	dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
+
+	Sess->InitLinks();
 }
 
 
@@ -606,7 +610,12 @@ void KGALILEICenterApp::slotShowUsers(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfileCalc(void)
 {
+	bool tmp = Doc->GetSession()->GetDocOptions()->UseLink;
 	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
+	if ((!tmp) &&(Doc->GetSession()->GetDocOptions()->UseLink))
+	{
+		Doc->GetSession()->InitLinks();
+	}
 	KView* m = (KView*)pWorkspace->activeWindow();
 	if(m->getType()!=gProfile) return;
 	setDocParams(Doc);
@@ -617,11 +626,17 @@ void KGALILEICenterApp::slotProfileCalc(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfilesCalc(void)
 {
+	bool tmp = Doc->GetSession()->GetDocOptions()->UseLink;
 	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
+	if ((!tmp) &&(Doc->GetSession()->GetDocOptions()->UseLink))
+	{
+		Doc->GetSession()->InitLinks();
+	}
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Profiles");
 	d->ComputeProfiles(!profileAlwaysCalc->isChecked(),profileAlwaysSave->isChecked());
 	Doc->updateAllViews(1);
+
 }
 
 

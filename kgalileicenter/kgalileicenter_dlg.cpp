@@ -69,6 +69,7 @@ using namespace R;
 #include <galilei/qgroupcalcpluginconfgravitation.h>
 #include <galilei/qlinkcalchitspluginconf.h>
 #include <galilei/qlinkcalccorrespondencepluginconf.h>
+#include <galilei/qlinkcalcsalsapluginconf.h>
 
 using namespace GALILEI;
 
@@ -181,5 +182,6 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfGravitation(&CalcGravitationParams));
 	dlg.RegisterLinkCalcPluginConf(new QLinkCalcHITSPluginConf(&LinkCalcHITSParams));
 	dlg.RegisterLinkCalcPluginConf(new QLinkCalcCorrespondencePluginConf(&LinkCalcCorrespondenceParams));
+	dlg.RegisterLinkCalcPluginConf(new QLinkCalcSALSAPluginConf(&LinkCalcSALSAParams));
 	dlg.exec();
 }

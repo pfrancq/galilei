@@ -58,6 +58,7 @@
 #include <groups/ggroupcalcgravitation.h>
 #include <docs/glinkcalchits.h>
 #include <docs/glinkcalccorrespondence.h>
+#include <docs/glinkcalcsalsa.h>
 #include <profiles/gprofilecalcfeedback.h>
 #include <profiles/gprofilecalcreweighting.h>
 #include <profiles/gprofilecalcvector.h>
@@ -185,6 +186,11 @@ class KGALILEICenterApp : public KMainWindow, public GURLManagerKDE
 	* Parameters for 'HITS Algorithm' link description computing
 	*/
 	GLinkCalcCorrespondenceParams LinkCalcCorrespondenceParams;
+
+	/**
+	* Parameters for 'SALSA Algorithm' link description computing
+	*/
+	GLinkCalcSALSAParams LinkCalcSALSAParams;
 
     /**
 	* Current Profile Description Method
