@@ -80,12 +80,12 @@ protected:
 	/**
 	* List of all mime types avalaible.
 	*/
-	RStd::RContainer<GMIMEFilter,unsigned int,true,true> MIMES;
+	R::RContainer<GMIMEFilter,unsigned int,true,true> MIMES;
 
 	/**
 	* List of all filters avalaible.
 	*/
-	RStd::RContainer<GFilter,unsigned int,true,true> Filters;
+	R::RContainer<GFilter,unsigned int,true,true> Filters;
 
 public:
 
@@ -102,13 +102,13 @@ protected:
 	* @param tmpFile        Temporary file created.
 	* @returns true if the document was download;
 	*/
-	virtual void Download(const char* URL,RStd::RString& tmpFile) throw(GException);
+	virtual void Download(const char* URL,R::RString& tmpFile) throw(GException);
 
 	/**
 	* Delete the file locally.
 	* @param tmpFile        Temporary file to delete.
 	*/
-	virtual void Delete(RStd::RString& tmpFile) throw(GException);
+	virtual void Delete(R::RString& tmpFile) throw(GException);
 
 public:
 

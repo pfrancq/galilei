@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <urlmanagers/gurlmanager.h>
+#include <filters/gurlmanager.h>
 #include <filters/gmimefilter.h>
 #include <filters/gfilter.h>
 #include <filters/gfilteremail.h>
@@ -53,7 +53,7 @@
 #include <docs/gdoc.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
-using namespace RStd;
+using namespace R;
 
 
 
