@@ -93,8 +93,11 @@ void GALILEI::GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 	int len,i=0;
 	int NbWords;
 	bool EndSentence;
+
+	// Look at block
 	ptr=block;
 	len=strlen(block);
+	if(!len) return;
 
 	// Search Sentences
 	while(*ptr)
