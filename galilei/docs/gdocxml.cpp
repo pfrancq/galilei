@@ -41,7 +41,3 @@ GDocXML::GDocXML(const RString& url) throw(bad_alloc)
 GDocXML::~GDocXML(void)
 {
 }
-
-
-
-

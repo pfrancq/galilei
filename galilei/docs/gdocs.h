@@ -46,13 +46,8 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 // include files for Galilei
 #include <galilei.h>
-#include <gsessions/gsession.h>
-#include <glangs/glangs.h>
-#include <gprofiles/gprofile.h>
 #include <gdocs/gdoc.h>
 #include <gexceptions.h>
-#include <glib.h>
-
 using namespace GALILEI;
 //---------------------------------------------------------------------------
 
@@ -63,8 +58,7 @@ using namespace GALILEI;
 namespace GALILEI{
 
 class GSession;
-class GLangs;
-class GProfile;
+
 //---------------------------------------------------------------------------
 // class GDocs
 
@@ -79,7 +73,6 @@ public:
 //	virtual void Load(GLangs*) throw(bad_alloc,GException)=0;
 //	virtual void Load(GLangs*,GProfile *) throw(bad_alloc,GException)=0;
 	void Analyse(URLFunc *urlfunc,InfoFunc *infofunc) throw(GException);
-	void Download(void);
 	virtual ~GDocs(void) {}
 
 };

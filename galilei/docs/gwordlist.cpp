@@ -38,10 +38,6 @@
 //---------------------------------------------------------------------------
 // include file for HyperPRISME
 #include "gwordlist.h"
-
-
-
-
 using namespace GALILEI;
 
 
@@ -56,6 +52,6 @@ using namespace GALILEI;
 
 GWordList::GWordList(void) throw(bad_alloc)
 
- : RContainer<GWordRef,unsigned,true,true>(30,10), Id(cNoRef)
+ : RContainer<GIWord,unsigned,true,true>(30,10), Id(cNoRef)
 {
 }

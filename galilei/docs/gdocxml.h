@@ -41,6 +41,7 @@ namespace GALILEI{
 /**
 * The GDocXML class provides a XML representation for the content of a given
 * document.
+* @author Pascal Francq
 */
 class GDocXML : public RXML::RXMLStruct
 {
@@ -56,6 +57,12 @@ public:
 	* @param url            URL of the document.
 	*/
 	GDocXML(const RString& url) throw(bad_alloc);
+
+	/**
+	* @returns A pointer to the tag containing the content of the corresponding
+	*          document.
+	*/
+	RXMLTag* GetContent(void) {return(GetTag("Content"));}
 
 	/**
 	* Destruct the document.

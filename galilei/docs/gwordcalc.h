@@ -32,12 +32,12 @@
 #define GWordCalcH
 //------------------------------- ---------------------------------------------
 //include files for GALILEI
-#include <gdocs/gwordref.h>
+#include <ginfos/giword.h>
 using namespace GALILEI;
 
  namespace GALILEI{
 //------------------------------- ---------------------------------------------
-class GWordCalc : public GWordRef
+class GWordCalc : public GIWord
 {
 public:
 	/**

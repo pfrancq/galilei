@@ -47,7 +47,6 @@
 // include files for Galilei
 #include <gdocs/gdocs.h>
 #include <gsessions/gsession.h>
-
 using namespace GALILEI;
 
 
@@ -87,22 +86,10 @@ void GDocs::Analyse(URLFunc *urlfunc,InfoFunc *infofunc) throw(GException)
       ptr=urlfunc((*doc)->URL());
       if(ptr)
       {
-        (*doc)->Analyse(ptr);
+//        (*doc)->Analyse(ptr);
     //    (*doc)->Save();
       }
       if(infofunc) infofunc(cInfoNext);
     }
   }
-}
-
-
-//---------------------------------------------------------------------------
-void GDocs::Download(void)
-{
-  unsigned i;
-  GDoc **doc;
-
-//  for(i=NbPtr+1,doc=Tab;--i;doc++)
-//   if((*doc)->Calc)
-//			(*doc)->Download();
 }

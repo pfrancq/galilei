@@ -55,11 +55,11 @@ void GWordCalcs::Analyse(GDoc *doc)
 {
 	GWordCalc *w;
 
-	NbWordsDocs+=doc->NbWords;			
-	for(doc->Words->Start();!doc->Words->End();doc->Words->Next())
+	NbWordsDocs+=doc->GetNbWords();
+	for(doc->Words.Start();!doc->Words.End();doc->Words.Next())
 	{
-		w=GetInsertPtr<unsigned int>((*doc->Words)()->Id);
-		w->Av+=(*doc->Words)()->Occur;
+		w=GetInsertPtr<unsigned int>(doc->Words()->GetId());
+		w->Av+=doc->Words()->GetNbOccurs();
 	}
 }
 
@@ -100,7 +100,7 @@ void GWordCalcs::EndCalc(void)
 //---------------------------------------------------------------------------
 unsigned int GWordCalcs::NextWord(void)
 {
-	return((*(CurOrder++))->Id);
+	return((*(CurOrder++))->GetId());
 }
 
 

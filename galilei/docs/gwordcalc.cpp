@@ -47,7 +47,7 @@ using namespace GALILEI;
 
 //---------------------------------------------------------------------------
 GWordCalc::GWordCalc(unsigned id) throw(bad_alloc)
-  : GWordRef(id),Av(0.0)
+  : GIWord(id),Av(0.0)
 {
 }
 

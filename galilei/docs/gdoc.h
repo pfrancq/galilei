@@ -1,104 +1,204 @@
 /*
 
-        GALILEI Research Project
+	GALILEI Research Project
 
-        gdoc.h
+	gdoc.h
 
-        Basic Information - Implementation.
+	Document - Header.
 
-        (C) 2001 by P. Francq.
+	(C) 2001 by P. Francq.
 
-        Version $Revision$
+	Version $Revision$
 
-        Last Modify: $Date$
-
-        This library is free software; you can redistribute it and/or
-        modify it under the terms of the GNU Library General Public
-        License as published by the Free Software Foundation; either
-        version 2.0 of the License, or (at your option) any later version.
-
-        This library is distributed in the hope that it will be useful,
-        but WITHOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-        Library General Public License for more details.
-
-        You should have received a copy of the GNU Library General Public
-        License along with this library, as a file COPYING.LIB; if not, write
-        to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-        Boston, MA  02111-1307  USA
+	Last Modify: $Date$
 
 */
 
-//---------------------------------------------------------------------------
 
+
+//-----------------------------------------------------------------------------
 #ifndef GDocH
 #define GDocH
 
 
-//---------------------------------------------------------------------------
-// include files for Rainbow
+//-----------------------------------------------------------------------------
+// include files for R Project
 #include <rstd/rcontainer.h>
 #include <rstd/rstring.h>
-
 using namespace RStd;
+#include <rxml/rxmltag.h>
+using namespace RXML;
 
-//---------------------------------------------------------------------------
-// include files for Galilei
 
+//-----------------------------------------------------------------------------
+// include files for GALILEI
 #include <galilei.h>
-#include <gdocs/gwordoccurs.h>
+#include <glangs/gdict.h>
+#include <ginfos/giwordoccurs.h>
 #include <glangs/glang.h>
-#include <gdocs/gdocs.h>
-
-using namespace GALILEI;
+//#include <gdocs/gdocxml.h>
 
 
-//---------------------------------------------------------------------------
-
+//-----------------------------------------------------------------------------
 namespace GALILEI{
+//-----------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
+// Forward declaration
+class GDocXML;
+class GSession;
 class GDocs;
-class GWordOccurs;
 
-//---------------------------------------------------------------------------
-// class GDoc
 
+//-----------------------------------------------------------------------------
+/**
+* The GDoc class provides a representation of the analysis of a document.
+* @author Pascal Francq
+*/
 class GDoc
 {
+	/**
+	* URL of the document.
+	*/
+	RString URL;
 
-        char* Buffer;                                        // Pointer
-        char Word[51];                                 // Word
-        GDocs *Owner;         // Owner (Container)
+	/**
+	* Identifier of the document.
+	*/
+	unsigned Id;
+
+	/**
+	* Information about the words containted in the document. Actually, only
+	* the number of occurences of the words are used.
+	*/
+	GIWordOccurs Words;
+
+	/**
+	* Total number of words.
+	*/
+	unsigned NbWords;
+
+	/**
+	* Number of different words.
+	*/
+	unsigned NbDiffWords;
+
+	/**
+	* Pointer to the language.
+	*/
+	GLang* Lang;
+
+	/**
+	* Must the doc be analysed?
+	*/
+	bool Calc;
+
+	/**
+	* Must the doc be saved?
+	*/
+	bool bSave;
 
 public:
 
-        GWordOccurs* Words;              // Occurencies of Words
-        unsigned NbWords;                // Total number of words
-        unsigned NbDiffWords;            // Number of different words
-        GLang* Lang;                        // Pointer to the language
-        RString URL;                           // URL
-        unsigned Id;                     // Unique identifier
-        char* Content;                   // Pointer to the content
-        bool Calc;                       // Must the doc be analysed?
-        bool bSave;                                                                                         // Must the doc be saved?
+	/**
+	* Construct the document.
+	* @param url            URL of the document.
+	* @param id             Identifier of the document.
+	* @param nbdiff         Number of different words appearing in the
+	*                       document.
+	*/
+	GDoc(const RString& url,const unsigned int id,const unsigned int nbdiff=500) throw(bad_alloc);
 
-        GDoc(GDocs *owner,const RString& URL) throw(bad_alloc);
-        int Compare(const GDoc& doc);
-        int Compare(const GDoc* doc);
-        int Compare(const unsigned id);
-        unsigned char GetChar(void);
-        bool IsSpace(void);
-        void SkipSpaces(void);
-        void InitWords(void);
-        bool NextWord(void);
-        void Analyse(char* body) throw(GException);
-      //  virtual void Load(void) throw(GException,bad_alloc)=0;
-       // virtual void Save(void) throw(GException)=0;
-       // virtual void Download(void)=0;
-        virtual ~GDoc(void);
+	/**
+	* Construct the document.
+	* @param url            URL of the document.
+	* @param id             Identifier of the document.
+	* @param lang           Language of the document.
+	* @param nb             Total number of words in the document.
+	* @param nbdiff         Number of different words appearing in the
+	*                       document.
+	*/
+	GDoc(const RString& url,const unsigned int id,GLang* lang,const unsigned int nb,const unsigned int nbdiff) throw(bad_alloc);
 
+	/**
+	* Compare function needed by RStd::RContainer.
+	* @param doc            Document used for the comparaison.
+	*/
+	int Compare(const GDoc& doc);
+
+	/**
+	* Compare function needed by RStd::RContainer.
+	* @param doc            Pointer to the document used for the comparaison.
+	*/
+	int Compare(const GDoc* doc);
+
+	/**
+	* Compare function needed by RStd::RContainer.
+	* @param id            Identificator used for the comparaison.
+	*/
+	int Compare(const unsigned id);
+
+protected:
+
+	/**
+	* This function construct a word.
+	* @param ptr            Pointer that will be moved to the next word.
+	* @param word           Where to store the word.
+	* @returns true if a word was extract.
+	*/
+	bool ExtractWord(const char* &ptr,RString& word);
+
+public:
+
+	/**
+	* Analyse a tag to find how much words are in a stoplist.
+	* @param tag            Tag to analyse.
+	* @param stop           Stoplist to use.
+	*/
+	int AnalyseTagForStopKwd(RXMLTag* tag,GDict* stop);
+
+	/**
+	* Analyse a content tag.
+	* @param tag            Tag to analyse.
+	* @param stop           Stoplist to use.
+	* @param dic            Dictionnary to use.
+	*/
+	void AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw(GException);
+
+	/**
+	* Analyse a XML representation of a document for a session and store the
+	* results in this document.
+	* @param xml            XML Representation used.
+	* @param session        Corresponding session.
+	*/
+	void Analyse(GDocXML* xml,GSession* session) throw(GException);
+
+	/**
+	* Add a word with a certain occurences in the document.
+	* @param id             Identificator of the word.
+	* @param nb             Occurences of the word.
+	*/
+	void AddWord(const unsigned int id,const unsigned int nb);
+
+	/**
+	* @return Total number of words in the documents.
+	*/
+	unsigned int GetNbWords(void) {return(NbWords);}
+
+	/**
+	* @return Number of different words in the documents.
+	*/
+	unsigned int GetNbDiffWords(void) {return(NbDiffWords);}
+
+	/**
+	* Destruct the document.
+	*/
+	virtual ~GDoc(void);
+
+	// friend classes
+	friend class GWordCalcs;
+	friend class GDocs;
 };
 
 
