@@ -65,6 +65,7 @@ using namespace RStd;
 #include <groups/ggroupinggga.h>
 #include <groups/ggroupingkcos.h>
 #include <groups/ggroupingkprotos.h>
+#include <groups/ggroupingcure.h>
 #include <groups/ggroup.h>
 #include <groups/gidealgroup.h>
 #include <groups/ggroupcalcgravitation.h>
@@ -168,6 +169,8 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterGroupingMethod(new GGroupingSim(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingKCos(Sess));
+			Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
+			Sess->RegisterGroupingMethod(new GGroupingCure(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingRandom(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess));
@@ -248,7 +251,8 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterGroupingMethod(new GGroupingSim(Sess));
 	Sess->RegisterGroupingMethod(new GGroupingGGA(Sess));
 	Sess->RegisterGroupingMethod(new GGroupingKCos(Sess));
-//	Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
+	Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess));
+	Sess->RegisterGroupingMethod(new GGroupingCure(Sess));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess));
 	Config->setGroup("Session Options");
