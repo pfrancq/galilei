@@ -130,7 +130,10 @@ public:
 	/**
 	* the xml structure corresponding to the html document
 	*/
-	RXMLStruct s;
+	GDocXML s;
+	//RXMLStruct s1;
+	
+
 	
 	
 	/**
@@ -141,7 +144,7 @@ public:
 	/**
 	*Some XMl tag used in get current value
 	*/
-	RXMLTag* TagVector [];
+	RXMLTag* TagVector[8] ;
 
 
 public:
@@ -152,6 +155,17 @@ public:
 	* @param mng            Manager.
 	*/
 	GFilterHTML(const RString& url,GURLManager* mng);
+	
+	
+	/**
+	* Functiun who analyse the header of the html document
+	*/
+	void AnalyseHeader(GDocXML* doc);
+	
+	/**
+	* Functiun who analyse the body of the html document
+	*/
+	void AnalyseBody(GDocXML* doc);
 	
 	
 	/**
@@ -168,19 +182,19 @@ public:
 	/**
 	*Get the value into 2 tag used in metadata for the title
 	*/
-	void GetValue ();
+	void GetValue (GDocXML* doc);
 	
 	/**
 	*Get the value into 2 tag used in body
 	*@param  current      The name of the current tag
 	*/
-	void GetValueCurentTag (char* current);
+	void GetValueCurentTag (char* current,GDocXML* doc);
 	
 
 	/**
 	*Get the value into 2 tag used in metadata for the keywords and the resume
 	*/
-	void GetMetaValue ();
+	void GetMetaValue (GDocXML* doc);
 	
 	/**
 	*Write a tag and his attibute to stdout
@@ -217,7 +231,7 @@ public:
 	* about its content.
 	* @param doc            XML Structure that will represent the document.
 	*/
-	void Analyse();
+	virtual bool Analyze(GDocXML* doc);
 
 	/**
 	*Return true if the caractere is a space a tab or a carriage return
@@ -229,13 +243,7 @@ public:
 	*/
 	void SkipSpaces(void);
 	
-	/**
-	* Analyze an HTML document and fill the XML structure with the information content.
-	*
-	* Actually, only local files can be treated.
-	* @param doc            XML Structure that will represent the email.
-	*/
-	virtual bool Analyze(GDocXML* doc);
+	
 	
 	/**
 	*Initialisation of the html string
@@ -251,7 +259,7 @@ public:
 	/**
 	*The destructor
 	*/
-	~GFilterHTML();
+	virtual ~GFilterHTML(void);
 	
 };//-------- End of namespace GALILEI ----------------------------------------
 }
