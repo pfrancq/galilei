@@ -236,6 +236,14 @@ signals:
 	*/
 	void signalSetGen(const unsigned int gen,const unsigned int best,const double value);
 
+public slots:
+
+	/**
+	* Slot called when the widget must be close.
+	*/
+	bool close(void);
+
+
 public:
 
 	/**

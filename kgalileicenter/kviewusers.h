@@ -107,6 +107,13 @@ protected:
 	*/
 	virtual void update(unsigned int cmd);
 
+public slots:
+
+	/**
+	* Slot called when the widget must be close.
+	*/
+	bool close(void);
+
 public:
 
 	/**

@@ -37,6 +37,12 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rdblhashcontainer.h>
+using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 namespace GALILEI
 {
@@ -46,8 +52,10 @@ namespace GALILEI
 
 //-----------------------------------------------------------------------------
 // include files for Qt
-#include <qtabwidget.h>
-#include <qlistview.h>
+class QListView;
+class QTabWidget;
+class QComboBox;
+class QLabel;
 
 
 //-----------------------------------------------------------------------------
@@ -71,6 +79,21 @@ class KViewStems : public KView
 	Q_OBJECT
 
 	/**
+	* Label of the indexes.
+	*/
+	QLabel* Indexes;
+
+	/**
+	* Combobox representing the index on the first hash table.
+	*/
+	QComboBox* Index;
+
+	/**
+	* Combobox representing the index on the second hash table.
+	*/
+	QComboBox* Index2;
+
+	/**
 	* Widget to handle the different information of the document.
 	*/
 	QTabWidget* Infos;
@@ -89,6 +112,21 @@ class KViewStems : public KView
 	* Language to use.
 	*/
 	GALILEI::GLang* Lang;
+
+	/**
+	* Roots used in the dictionnary.
+	*/
+	RDblHashContainer<GrWord,unsigned,27,27,true>* Roots;
+
+	/**
+	* Computed Stems for the dictionnary.
+	*/
+	RDblHashContainer<GrWord,unsigned,27,27,true>* Stems;
+
+	/**
+	* Words defined in the dictionnary.
+	*/
+	RDblHashContainer<Word,unsigned,27,27,true>* Words;
 
 public:
 
@@ -128,9 +166,42 @@ protected:
 	void Compute(void);
 
 	/**
+	* Construct the theoritical part of the stems.
+	* @param index          Index of the first hash table to show.
+	* @param index2         Index of the second hash table to show.
+	*/
+	void ConstructTh(char index,char index2);
+
+	/**
+	* Construct the pratical part of the stems.
+	* @param index          Index of the first hash table to show.
+	* @param index2         Index of the second hash table to show.
+	*/
+	void ConstructPr(char index,char index2);
+
+	/**
 	* Called when the main window is resize by the user.
 	*/
 	void resizeEvent(QResizeEvent *);
+
+protected slots:
+
+	/**
+	* Slot called when the index of the first hash table is changed.
+	*/
+	void slotIndex(int index);
+
+	/**
+	* Slot called when the index of the second hash table is changed.
+	*/
+	void slotIndex2(int index);
+
+public slots:
+
+	/**
+	* Slot called when the widget must be close.
+	*/
+	bool close(void);
 
 public:
 

@@ -240,6 +240,14 @@ void KViewThGroups::resizeEvent(QResizeEvent *)
 
 
 //-----------------------------------------------------------------------------
+bool KViewThGroups::close(void)
+{
+	delete this;
+	return(true);
+}
+
+
+//-----------------------------------------------------------------------------
 KViewThGroups::~KViewThGroups(void)
 {
 	if(Groups);

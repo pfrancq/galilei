@@ -168,3 +168,11 @@ void KViewGroup::resizeEvent(QResizeEvent *)
 {
 	Infos->resize(size());
 }
+
+
+//-----------------------------------------------------------------------------
+bool KViewGroup::close(void)
+{
+	delete this;
+	return(true);
+}

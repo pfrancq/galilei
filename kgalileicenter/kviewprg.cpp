@@ -89,6 +89,13 @@ void KViewPrg::resizeEvent(QResizeEvent *)
 }
 
 
+//-----------------------------------------------------------------------------
+bool KViewPrg::close(void)
+{
+	delete this;
+	return(true);
+}
+
 
 //-----------------------------------------------------------------------------
 KViewPrg::~KViewPrg(void)

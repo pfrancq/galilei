@@ -130,6 +130,14 @@ void KViewUsers::resizeEvent(QResizeEvent *)
 
 
 //-----------------------------------------------------------------------------
+bool KViewUsers::close(void)
+{
+	delete this;
+	return(true);
+}
+
+
+//-----------------------------------------------------------------------------
 KViewUsers::~KViewUsers(void)
 {
 }

@@ -289,6 +289,14 @@ void KViewGA::resizeEvent(QResizeEvent*)
 
 
 //-----------------------------------------------------------------------------
+bool KViewGA::close(void)
+{
+	delete this;
+	return(true);
+}
+
+
+//-----------------------------------------------------------------------------
 KViewGA::~KViewGA(void)
 {
 	if(Instance)

@@ -113,6 +113,14 @@ protected:
 	*/
 	void resizeEvent(QResizeEvent *);
 
+public slots:
+
+	/**
+	* Slot called when the widget must be close.
+	*/
+	bool close(void);
+
+
 public:
 
 	/**
