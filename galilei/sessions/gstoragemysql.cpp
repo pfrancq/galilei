@@ -516,14 +516,10 @@ void GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
 void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException)
 {
 	RString sSql;
-	GUser* usr;
 	GProfile* prof;
 	R::RCursor<GFactoryLang> langs;
 	GLang* lang;
 	GSubProfile* sub;
-	unsigned int userid,profileid,subid;
-	GGroup* grp;
-	bool Social;
 	GSubject* s;
 	unsigned int i,idx,subprofileid;
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
@@ -531,46 +527,46 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 	// Go through the users
 	try
 	{
-		RQuery select(Db, "SELECT userid,user,fullname FROM users");
-		for(select.Start();!select.End();select.Next())
+		// Load users
+		RQuery Users(Db, "SELECT userid,user,fullname FROM users");
+		for(Users.Start();!Users.End();Users.Next())
+            session->InsertUser(new GUser(atoi(Users[0]),Users[1],Users[2],10));
+
+		// Load profiles
+		RQuery Profiles(Db,"SELECT profileid,description,social,topicid,userid FROM profiles");
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
 		{
-			userid=atoi(select[0]);
-			sSql="SELECT profileid,description,social,topicid FROM profiles WHERE userid="+itou(userid);
-			RQuery profiles(Db,sSql);
-			session->InsertUser(usr=new GUser(userid,select[1],select[2],profiles.GetNbRows()));
-			for(profiles.Start();!profiles.End();profiles.Next())
+			session->InsertProfile(prof=new GProfile(session->GetUser(atoi(Profiles[4])),atoi(Profiles[0]),Profiles[1],(atoi(Profiles[2])==1),5));
+			if(session->GetSubjects())
 			{
-				profileid=atoi(profiles[0]);
-				if(session->GetSubjects())
-					s=session->GetSubjects()->GetSubject(atoi(profiles[3]));
-				else
-					s=0;
-				Social=false;
-				if(atoi(profiles[2])==1) Social=true;
-				session->InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,
-					(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->NbPtr));
+				s=session->GetSubjects()->GetSubject(atoi(Profiles[3]));
 				if(s)
 					prof->SetSubject(s);
-				sSql="SELECT subprofileid,langid,attached,groupid, updated, calculated FROM subprofiles WHERE profileid="+itou(profileid);
-				RQuery subprofil (Db,sSql);
-				for(subprofil.Start();!subprofil.End();subprofil.Next())
-				{
-					lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(subprofil[1]);
-					if (!lang)
-						throw GException(RString("Error in loading subprofiles: no language defined with code '")+subprofil[1]+RString("'"));
-					subid=atoi(subprofil[0]);
-					grp=session->GetGroup(atoi(subprofil[3]));
-					session->InsertSubProfile(sub=new GSubProfile(prof,subid,lang,grp,subprofil[2], GetMySQLToDate(subprofil[4]), GetMySQLToDate(subprofil[5])));
-					if((s)&&(sub->GetLang()==s->GetLang()))
-					{
-						sub->SetSubject(s);
-						s->InsertSubProfile(sub);
-					}
-				}
 			}
 		}
 
-		// Load the subprofile's description
+		// Load subprofiles
+		RQuery SubProfiles(Db,"SELECT subprofileid,langid,attached,groupid, updated, calculated, profileid FROM subprofiles");
+		for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
+		{
+			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(SubProfiles[1]);
+			if(!lang)
+				throw GException(RString("Error in loading subprofiles: no language defined with code '")+SubProfiles[1]+RString("'"));
+			prof=session->GetProfile(atoi(SubProfiles[6]));
+			if(!prof)
+				throw GException("Subprofile "+SubProfiles[0]+" has no parent profile");
+			session->InsertSubProfile(sub=new GSubProfile(prof,atoi(SubProfiles[0]),lang,
+			                                     session->GetGroup(atoi(SubProfiles[3])),SubProfiles[2],
+			                                     GetMySQLToDate(SubProfiles[4]),GetMySQLToDate(SubProfiles[5])));
+			s=session->GetSubjects()->GetSubject(atoi(SubProfiles[6]));
+			if((s)&&(sub->GetLang()==s->GetLang()))
+			{
+				sub->SetSubject(s);
+				s->InsertSubProfile(sub);
+			}
+		}
+
+		// Load subprofiles description
 		RQuery sel(Db,"SELECT subprofileid,kwdid,langid,weight FROM subprofilesbykwds ORDER BY subprofileid,kwdid");
 		for(sel.Start(),subprofileid=cNoRef;!sel.End();sel.Next(),i++)
 		{
@@ -604,9 +600,6 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 			if(sub)
 				sub->Update(&Infos,false);
 		}
-
-		session->UpdateBehaviours();
-		session->UpdateProfilesSims();
 
 		// Load the ideal Groups.
 		LoadIdealGroupment(session);

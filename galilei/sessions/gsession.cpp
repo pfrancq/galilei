@@ -723,25 +723,16 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GExce
 {
 	GGrouping* Grouping=(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->GetCurrentMethod();
 
+	// Verify that there is a method to cluster the subprofile
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
-	Grouping->Grouping(rec,modified,save);
 
-	//tmp david
-	GStatsCalc* Calc;
-	RXMLStruct xml;
-	RXMLTag* Root;
-	Root=new RXMLTag("Statistics");
-	xml.AddTag(0,Root);
-	R::RCursor<GFactoryStatsCalc> Cur;
-	Cur.Set((dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc"))));
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		Calc=Cur()->GetPlugin();
-		if(Calc)
-			Calc->Compute(&xml,*Root);
-	}
-	//end tmp david
+	// Update the similarities and the behaviors of the subprofiles
+	UpdateBehaviours();
+	UpdateProfilesSims();
+
+    // Group the subprofiles
+	Grouping->Grouping(rec,modified,save);
 
 	// Run all post-group methods that are enabled
 	ComputePostGroup(rec);
