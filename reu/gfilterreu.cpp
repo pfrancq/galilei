@@ -53,7 +53,6 @@
 // include files for GALILEI
 #include <gfilterreu.h>
 #include <filters/gurlmanager.h>
-#include <filters/codetochar.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;

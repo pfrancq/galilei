@@ -47,7 +47,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-//#include <filters/codetochar.h>
+#include <codetochar.h>
 #include <filters/gfilter.h>
 
 
