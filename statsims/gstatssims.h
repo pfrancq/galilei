@@ -126,19 +126,19 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session);
+	virtual void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session);
+	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Compute the statistics.
 	* @param res             XML tag that will be hold the results.
 	*/
-	virtual void Compute(R::RXMLTag& res);
+	virtual void Compute(R::RXMLTag& res) throw(GException);
 
 	/**
 	* Create the parameters.

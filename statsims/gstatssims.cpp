@@ -92,21 +92,21 @@ void GStatsSims::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GStatsSims::Connect(GSession* session)
+void GStatsSims::Connect(GSession* session) throw(GException)
 {
 	GStatsCalc::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GStatsSims::Disconnect(GSession* session)
+void GStatsSims::Disconnect(GSession* session) throw(GException)
 {
 	GStatsCalc::Disconnect(session);
 }
 
 
 //---------------------------------------------------------------------------
-void GStatsSims::Compute(R::RXMLTag& res)
+void GStatsSims::Compute(R::RXMLTag& res) throw(GException)
 {
 	RXMLTag* tag;
 	RXMLTag* tag2;
