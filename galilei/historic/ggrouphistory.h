@@ -111,6 +111,11 @@ public:
 	unsigned int GetId(void);
 
 	/**
+	* returns the lang of the historical group
+	*/
+	GLang* GetLang(void){return Lang;}
+
+	/**
 	* Add a historic profile to the group.
 	*/
 	void AddSubProfile(GWeightInfosHistory* giwwh);

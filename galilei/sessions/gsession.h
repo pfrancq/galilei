@@ -127,6 +127,11 @@ protected:
 	GDocAnalyseManager* DocAnalyseMng;
 
 	/**
+	* Hitoric of grouping Manager
+	*/
+	GGroupsHistoryManager* GroupsHistoryMng;
+
+	/**
 	* Similarities between the subprofiles.
 	*/
 	GProfilesSims* ProfilesSims;
@@ -239,6 +244,12 @@ public:
 	* @return Pointer to GStatsCalcManager.
 	*/
 	GStatsCalcManager* GetStatsCalcMng(void) {return(StatsCalcMng);}
+
+	/**
+	* Get the historic groups manager.
+	* @return Pointer to GGroupsHistoryMng.
+	*/
+	GGroupsHistoryManager* GetGroupsHistoryManager(void) {return(GroupsHistoryMng);}
 
 	/**
 	* Get the storage manager.
@@ -479,7 +490,7 @@ public:
 	/**
 	* load the historic groups.
 	*/
-	R::RContainer<GGroupsHistory, unsigned int, false,true>* LoadHistoricGroups (R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen);
+	void LoadHistoricGroups (unsigned int mingen, unsigned int maxgen);
 
 	/**
 	* Re-init the session (clear all containers).

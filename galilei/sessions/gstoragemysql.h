@@ -273,7 +273,7 @@ public:
 	/**
 	* load the historic groups.
 	*/
-	GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID) throw(std::bad_alloc,GException);
+	GGroupsHistory* LoadAnHistoricGroups(GSession* session, unsigned int historicaID) throw(std::bad_alloc,GException);
 
 	/**
 	*returns the number of historic groups stored in database.

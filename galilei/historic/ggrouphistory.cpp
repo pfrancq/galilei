@@ -67,12 +67,14 @@ unsigned int GALILEI::GGroupHistory::GetId(void)
 	return Id;
 }
 
+
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupHistory::AddSubProfile(GWeightInfosHistory* giwwh)
 {
 	InsertPtr(giwwh);
 	giwwh->SetParent(this);
 }
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GGroupHistory::SetModified(bool b)

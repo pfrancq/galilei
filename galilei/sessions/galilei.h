@@ -151,6 +151,8 @@ class GProfilesBehaviours;
 // forward class declaration - Groups Part
 class GGroups;
 class GGroupsHistory;
+class GGroupsHistoryCursor;
+class GGroupsHistoryManager;
 class GGroup;
 class GGroupCursor;
 class GGroupHistory;

@@ -50,6 +50,59 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 
 
+
+//-----------------------------------------------------------------------------
+/**
+* The GGroupsHistoryManager class manage the history of groument for the sessin
+* @author David Wartel
+* @short Languages GroupsHistory.
+*/
+class GGroupsHistoryManager : public R::RContainer<GGroupsHistory,unsigned int,true,true>
+{
+
+
+public :
+
+	/**
+	* constructor
+	*/
+	GGroupsHistoryManager(unsigned int i);
+
+	/*
+	* insert a groupshistory
+	*/
+	void InsertGroupsHistory(GGroupsHistory* gh);
+
+	/**
+	* Get a cursor on all the hsitoric groups.
+	* @return GGroupCursor.
+	*/
+	GGroupsHistoryCursor& GetGroupsHistoryCursor(void);
+
+	/**
+	* check the modified groups
+	*/
+	void CheckModifiedGroups(unsigned int minGen);
+
+	/**
+	*  check the well grouped subprofiles.
+	*/
+	void CheckWellGroupedSubProfs(void);
+
+	/**
+	*  check for new profiles.
+	*/
+	void CheckNewProfiles(void);
+
+	/**
+	*   Destructor
+	*/
+	~GGroupsHistoryManager(void){};
+};
+
+
+
+
 //-----------------------------------------------------------------------------
 /**
 * The GGroupsHistory class provides a representation for all the historic groups of a given
@@ -67,17 +120,19 @@ private :
 	*/
 	unsigned int Id;
 
-	/**
-	* lang
+
+
+	/*
+	* manager
 	*/
-	GLang* Lang;
+	GGroupsHistoryManager* Manager;
 
 public :
 
 	/**
 	* constructor
 	*/
-	GGroupsHistory(GLang* lang, unsigned int id);
+	GGroupsHistory(unsigned int id);
 
 	/**
 	* get the id
@@ -106,11 +161,44 @@ public :
 	int Compare(unsigned int id) const ;
 
 	/**
+	* set the manager
+	*/
+	void SetManager(GGroupsHistoryManager* m) {Manager=m;}
+
+
+	/**
+	* check the modified groups
+	*/
+	void CheckModifiedGroups(unsigned int minGen);
+
+	/**
+	*  set the main subject to each historic group
+	*/
+	void SetGroupsSubject(void);
+
+	/**
+	*  check the well grouped subprofiles.
+	*/
+	void CheckWellGroupedSubProfs(void);
+
+	/**
+	*  check for new profiles.
+	*/
+	void CheckNewProfiles(void);
+
+	/**
 	*   Destructor
 	*/
 	~GGroupsHistory(void);
-	};
+};
 
+
+//------------------------------------------------------------------------------
+/**
+* The GGroupCursor class provides a way to go trough a set of group.
+* @short Group Cursor.
+*/
+CLASSCURSOR(GGroupsHistoryCursor,GGroupsHistory,unsigned int)
 
 }  //-------- End of namespace GALILEI ----------------------------------------
 

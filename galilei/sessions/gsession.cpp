@@ -107,7 +107,8 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(st
 //	  GGroups(200), Subjects(0), Fdbks(100,50),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
 	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0), DocAnalyseMng(0),
-	  ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),  SessParams(sessparams), Storage(str)
+	ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
+	  SessParams(sessparams), Storage(str)
 {
 	// Init Part
 	CurrentRandom=0;
@@ -116,6 +117,8 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(st
 	// Create SubjectTree
 	if(tests)
 		Subjects=new GSubjects(this);
+
+	GroupsHistoryMng=new GGroupsHistoryManager(2);
 }
 
 
@@ -671,21 +674,15 @@ int GSession::GetCurrentRandomValue(unsigned int max)
 
 
 //------------------------------------------------------------------------------
-RContainer<GGroupsHistory, unsigned int, false,true>* GSession::LoadHistoricGroups (RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang,unsigned int mingen, unsigned int maxgen)
+void GSession::LoadHistoricGroups (unsigned int mingen, unsigned int maxgen)
 {
 	unsigned int i;
 	GGroupsHistory* hgrps;
 	RContainer<GGroupsHistory, unsigned int, false,true>* historicalgroups;
 
 	// fill the container
-	historicalgroups=new RContainer<GGroupsHistory, unsigned int, false,true>(maxgen-mingen+1);
 	for (i=mingen; i<maxgen+1; i++)
-	{
-		hgrps=Storage->LoadAnHistoricGroups(subprofiles, lang,i);
-		historicalgroups->InsertPtr(hgrps);
-	}
-
-	return(historicalgroups);
+		GroupsHistoryMng->InsertGroupsHistory(Storage->LoadAnHistoricGroups(this, i));
 }
 
 

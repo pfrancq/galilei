@@ -1234,7 +1234,7 @@ void GStorageMySQL::ExecuteData(const char* filename) throw(GException)
 
 
 //------------------------------------------------------------------------------
-GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicid) throw(std::bad_alloc,GException)
+GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(GSession* session,unsigned int historicid) throw(std::bad_alloc,GException)
 {
 	char sSql[200];
 	GGroupHistory* grp;
@@ -1243,33 +1243,38 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsi
 	unsigned int subprofid;
 	unsigned int groupid;
 	unsigned int v;
+	GLang* lang;
 
 	try
 	{
 		// Init part
 		groupid=cNoRef;
-		grps=new GGroupsHistory(lang, historicid);
+		grps=new GGroupsHistory(historicid);
 
 		//read the groupment.
-		sprintf(sSql,"SELECT groupid,subprofileid FROM historicgroups WHERE lang='%s' AND historicid=%u ORDER by historicid,groupid",lang->GetCode(),historicid);
+		sprintf(sSql,"SELECT groupid,subprofileid,lang FROM historicgroups WHERE  historicid=%u ORDER by historicid,groupid",historicid);
 		RQuery grquery(this,sSql);
 		for(grquery.Start(),grp=0;!grquery.End();grquery.Next())
 		{
 
 			// Read Group
 			v=atoi(grquery[0]);
+
+			//get lang
+			lang=session->GetLangs()->GetLang(grquery[2]);
+
 			// If group id changed -> new group needed
 			if((v!=groupid))
 			{
 				groupid=v;
-				grp=new GGroupHistory(groupid, lang, grps);
+				grp=new GGroupHistory(groupid,lang, grps);
 				//insert group in the container of groups.
 				grps->InsertPtr(grp);
 			}
 
 			// Create the historic subprofile and add it to the group
 			subprofid=atoi(grquery[1]);
-			historicsubprof=new GWeightInfosHistory(subprofiles->GetPtr(subprofid),100);
+			historicsubprof=new GWeightInfosHistory(session->GetSubProfile(subprofid),100);
 			grp->AddSubProfile(historicsubprof);
 
 			// fill the vector of the subprofile
