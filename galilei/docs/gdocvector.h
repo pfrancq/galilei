@@ -6,7 +6,7 @@
 
 	Document in the Vector model - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,29 +34,28 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GDocVectorH
 #define GDocVectorH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
 #include <docs/gdoc.h>
 #include <infos/gweightinfos.h>
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 /**
 * The GDocVector class provides a representation of a document in the vector
 * model.
 * @author Pascal Francq
-* @short Vector Model Document.
+* @short Vector Document.
 */
 class GDocVector : public GDoc, public GWeightInfos
 {
@@ -83,15 +82,16 @@ public:
 	virtual const char* GetModelName(void) const {return("Vector");}
 
 	/**
-	* @return Identificator of the document.
-	*/
-	unsigned int GetId(void) const {return(Id);}
-
-	/**
 	* Look if the document has a representation?
 	* @return bool.
 	*/
 	virtual bool HasRepresentation(void) const;
+
+	/**
+	* Get the identificator of the document.
+	* @return unsigned int.
+	*/
+	unsigned int GetId(void) const {return(Id);}
 
 	/**
 	* This function clears the information related to the document.
@@ -158,12 +158,6 @@ public:
 	* Remove the references of the document.
 	*/
 	void RemoveRefs(void) const;
-
-	/**
-	* Get the vector representing the document.
-	* @returns Pointer to GWeightInfos.
-	*/
-	GWeightInfos* GetVector(void) {return(this);}
 
 	/**
 	* Destruct the document.

@@ -254,17 +254,18 @@ public:
 
 	/**
 	* Set the language of the document.
-	* @param l              POinter to the lLanguage.
+	* @param l              Pointer to the lLanguage.
 	*/
 	void SetLang(GLang* l);
 
 	/**
-	* @return Identificator of the document.
+	* Get the identificator of the document.
+	* @return unsigned int.
 	*/
 	unsigned int GetId(void) const {return(Id);}
 
 	/**
-	* Set the identifier.
+	* Set the identifier of the document.
 	* @param id             Identifier.
 	*/
 	void SetId(unsigned int id) throw(GException);
@@ -297,7 +298,7 @@ public:
 	GProfDocCursor& GetProfDocCursor(void);
 
 	/**
-	* Get the number of judgments on the document.
+	* Get the number of feedbacks on the document.
 	* @return unsigned int
 	*/
 	unsigned int GetNbFdbks(void) const;
@@ -367,14 +368,6 @@ public:
 	*                        document.
 	*/
 	void InsertLink(const GDoc* doc, unsigned int nbOccurs) throw(bad_alloc);
-
-	/**
-	* Add a new link to the document
-	* @params doc           The Document representing the link to be inserted.
-	* @param format         The mime type of the Link.
-	* @param type           The type of the link.
-	*/
-	void InsertLink(const GDoc* doc,char* format,char* type) throw(bad_alloc);
 
 	/**
 	* Get a cursor on the Links of the document.
