@@ -95,6 +95,7 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.MinWordSize->setValue(params->GetUInt("MinWordSize"));
 	dlg.MinStemSize->setValue(params->GetUInt("MinStemSize"));
 	dlg.MinOccur->setValue(params->GetUInt("MinOccur"));
+	dlg.StoreFullWords->setChecked(params->GetBool("StoreFullWords"));
 	dlg.NonLetterWords->setChecked(params->GetBool("NonLetterWords"));
 	dlg.Distance->setChecked(params->GetBool("Distance"));
 	dlg.UseExternalLinks->setChecked(params->GetBool("UseExternalLinks"));
@@ -111,6 +112,7 @@ void Configure(GFactoryDocAnalyse* params)
 		params->Set("MinWordSize",dlg.MinWordSize->value());
 		params->Set("MinStemSize",dlg.MinStemSize->value());
 		params->Set("MinOccur",dlg.MinOccur->value());
+		params->Set("StoreFullWords",dlg.StoreFullWords->isChecked());
 		params->Set("NonLetterWords",dlg.NonLetterWords->isChecked());
 		params->Set("Distance",dlg.Distance->isChecked());
 		params->Set("UseExternalLinks",dlg.UseExternalLinks->isChecked());

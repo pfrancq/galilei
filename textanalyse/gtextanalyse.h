@@ -187,6 +187,11 @@ class GTextAnalyse : public GDocAnalyse
 	unsigned int MinStemSize;
 
 	/**
+	* store the full  words/stem words couples
+	*/
+	bool StoreFullWords;
+
+	/**
 	* Minimum number of occurences needed to insert a valid word in the list of
 	* information for a document.
 	*/
@@ -311,8 +316,17 @@ protected:
 	/**
 	* Construct the information about the current document and store it in
 	* Words.
+	* @param documentid            Corresponding document id.
 	*/
-	void ConstructInfos(void) throw(GException);
+	void ConstructInfos(unsigned int documentid) throw(GException);
+	
+	/**
+	* Insert into database a couple word/stem
+	* @param stemid            Corresponding stemmed word id.
+	* @param word            Original word.
+	* @param docid            Corresponding document id.
+	*/
+	bool StoreWordStemInDatabase(unsigned int stemid, RString word, unsigned int docid);
 
 public:
 

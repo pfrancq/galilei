@@ -145,6 +145,7 @@ void GTextAnalyse::ApplyConfig(void)
 	MinStopWords=Factory->GetDouble("MinStopWords");
 	MinWordSize=Factory->GetUInt("MinWordSize");
 	MinStemSize=Factory->GetUInt("MinStemSize");
+	StoreFullWords=Factory->GetBool("StoreFullWords");
 	MinOccur=Factory->GetUInt("MinOccur");
 	NonLetterWords=Factory->GetBool("NonLetterWords");
 	Distance=Factory->GetBool("Distance");
@@ -177,6 +178,11 @@ void GTextAnalyse::Connect(GSession* session) throw(GException)
 	Order=new GWord*[NbOrder];
 	for(i=NbOrder+1,pt=Order;--i;pt++)
 		(*pt)=new GWord();
+
+	//init database 
+	if(StoreFullWords)
+		Session->GetStorage()->CreateDummy("wordsstems");
+
 }
 
 
@@ -299,55 +305,14 @@ void GTextAnalyse::VerifyOrder(void) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 bool GTextAnalyse::ValidWord(const RString kwd)
 {
-/*	RChar look[10];
-	const RChar* ptr=kwd();
-	RChar* ptr2;
-	char len;
-	bool v;
-
-	// The first character must be a number.
-	if(!ptr->IsDigit()) return(true);
-
-	// Analyse word
-	v=true;
-	while(!ptr->IsNull())
-	{
-		// Look for a number
-		while((!ptr->IsNull())&&(ptr->IsDigit()))
-			ptr++;
-		if(ptr->IsNull()) return(true);     // If not number found -> Valid word
-
-		// put letters in look with maximal 10
-		ptr2=look;
-		len=0;
-		while((!ptr->IsNull())&&(!ptr->IsDigit())&&(!ptr->IsPunct()))
-		{
-			if(len<9)
-				(*(ptr2++))=(*ptr);
-			ptr++;
-		}
-		if(len<9)
-		{
-			// Look if it is a skipword
-			(*ptr2)=0;
-			v=!(Lang->ToSkip(look));
-			if(v) return(true);
-		}
-	}
-	return(v);*/
-
 	unsigned int nb;
 	const RChar* ptr;
 	UChar old,act,lw;
 	double fracnorm;
 	int nbnorm;
-	UChar a,z;
 
 	if(!kwd.GetLen()) return(false);
 
-	// Init part
-	a=RChar('a').Unicode();
-	z=RChar('z').Unicode();
 
 	ptr=kwd();
 	old=ptr->Unicode();
@@ -355,7 +320,7 @@ bool GTextAnalyse::ValidWord(const RString kwd)
 	nbnorm=0;
 
 	lw=RChar::ToLower(*ptr).Unicode();
-	if(((lw>=a)&&(lw<=z))||(ptr->IsDigit()))
+	if(ptr->IsAlNum())
 		nbnorm++;
 
 	for(ptr++;(!ptr->IsNull())&&(nb<NbSameOccur);ptr++)
@@ -366,7 +331,7 @@ bool GTextAnalyse::ValidWord(const RString kwd)
 			old=act;
 			nb=1;
 			lw=RChar::ToLower(*ptr).Unicode();
-			if(((lw>=a)&&(lw<=z))||(ptr->IsDigit()))
+			if(ptr->IsAlNum())
 				nbnorm++;
 		}
 		else
@@ -715,6 +680,10 @@ void GTextAnalyse::DetermineLang(void) throw(GException)
 	LangIndex=cNoRef;
 	MinFrac=MinStopWords;
 	Lang=0;
+
+	if (!Ndiff)
+		return;
+
 	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 	{
 		if(!CurLangs()->GetPlugin()) continue;
@@ -731,7 +700,7 @@ void GTextAnalyse::DetermineLang(void) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::ConstructInfos(void) throw(GException)
+void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 {
 	WordWeight** wrd;
 	GWeightInfo** Tab;
@@ -771,6 +740,9 @@ void GTextAnalyse::ConstructInfos(void) throw(GException)
 				Vdiff++;
 			V+=(*wrd)->Nb;
 			(*Occur)+=(*wrd)->Weight;
+			if(StoreFullWords)
+				StoreWordStemInDatabase(Occur->GetId(), (*wrd)->Word, docid);
+				
 		}
 	}
 
@@ -855,6 +827,7 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 	Doc=doc;
 	if(!xml)
 		throw GException("No XML Structure for document '"+Doc->GetURL()+"'");
+
 	Lang=Doc->GetLang();
 	FindLang=((!Lang)||(!StaticLang));
 	content=xml->GetContent();
@@ -898,10 +871,22 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 
 	// Construct Information if languages determined.
 	if(Lang)
-		ConstructInfos();
+		ConstructInfos(doc->GetId());
 
 	// Set the Variable of the document
 	Doc->Update(Lang,&Infos,true);
+}
+
+
+//------------------------------------------------------------------------------
+bool GTextAnalyse::StoreWordStemInDatabase(unsigned int stemid, RString word, unsigned int docid)
+{
+	//check if the words/stem couple does not already exist
+	RQuery* q=Session->GetStorage()->SelectDummyEntry("wordsstems",stemid,word,0,3);
+	if(q->GetNb())
+		return(false);	
+	Session->GetStorage()->AddDummyEntry("wordsstems", stemid, word, docid );
+	return(true);
 }
 
 
@@ -912,6 +897,7 @@ void GTextAnalyse::CreateParams(GParams* params)
 	params->InsertPtr(new GParamDouble("MinStopWords",0.09));
 	params->InsertPtr(new GParamUInt("MinWordSize",3));
 	params->InsertPtr(new GParamUInt("MinStemSize",3));
+	params->InsertPtr(new GParamBool("StoreFullWords",false));
 	params->InsertPtr(new GParamUInt("MinOccur",1));
 	params->InsertPtr(new GParamBool("NonLetterWords",true));
 	params->InsertPtr(new GParamBool("Distance",false));

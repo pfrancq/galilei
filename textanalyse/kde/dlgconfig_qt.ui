@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>418</width>
-            <height>554</height>
+            <width>471</width>
+            <height>577</height>
         </rect>
     </property>
     <property name="caption">
@@ -19,16 +19,16 @@
         <bool>true</bool>
     </property>
     <property name="toolTip" stdset="0">
-        <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
+        <string></string>
     </property>
     <property name="whatsThis" stdset="0">
-        <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
+        <string></string>
     </property>
-    <grid>
+    <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QGroupBox" row="0" column="0">
+        <widget class="QGroupBox">
             <property name="name">
                 <cstring>groupBox1</cstring>
             </property>
@@ -107,7 +107,7 @@ When the languages are not static, the language of a document is always determin
                 </widget>
             </vbox>
         </widget>
-        <widget class="QGroupBox" row="1" column="0">
+        <widget class="QGroupBox">
             <property name="name">
                 <cstring>groupBox2</cstring>
             </property>
@@ -270,9 +270,23 @@ When the languages are not static, the language of a document is always determin
                         </widget>
                     </hbox>
                 </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>StoreFullWords</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Store the words/stems couples in database</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Should non letter words be used.</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>When analysing a document, it is possible to use for the description only words containing letters.</string>
+                    </property>
+                </widget>
             </vbox>
         </widget>
-        <widget class="QGroupBox" row="2" column="0">
+        <widget class="QGroupBox">
             <property name="name">
                 <cstring>kURLRequester2</cstring>
             </property>
@@ -314,7 +328,7 @@ Be carefull, because it can explose the size of information on documents.</strin
                 </widget>
             </grid>
         </widget>
-        <widget class="QGroupBox" row="3" column="0">
+        <widget class="QGroupBox">
             <property name="name">
                 <cstring>groupFiltering</cstring>
             </property>
@@ -347,6 +361,12 @@ Be carefull, because it can explose the size of information on documents.</strin
                             </property>
                             <property name="text">
                                 <string>Maximal occurences</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Maximum number of following occurences of same letter .</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Maximum number of following occurences of same letter.</string>
                             </property>
                         </widget>
                         <spacer>
@@ -394,6 +414,12 @@ Be carefull, because it can explose the size of information on documents.</strin
                             <property name="text">
                                 <string>Normal Ratio</string>
                             </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
+                            </property>
                         </widget>
                         <spacer>
                             <property name="name">
@@ -421,7 +447,7 @@ Be carefull, because it can explose the size of information on documents.</strin
                 </widget>
             </vbox>
         </widget>
-        <spacer row="4" column="0">
+        <spacer>
             <property name="name">
                 <cstring>spacer16</cstring>
             </property>
@@ -438,7 +464,7 @@ Be carefull, because it can explose the size of information on documents.</strin
                 </size>
             </property>
         </spacer>
-        <widget class="QLayoutWidget" row="5" column="0">
+        <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>Layout1</cstring>
             </property>
@@ -502,7 +528,7 @@ Be carefull, because it can explose the size of information on documents.</strin
                 </widget>
             </hbox>
         </widget>
-    </grid>
+    </vbox>
 </widget>
 <connections>
     <connection>
