@@ -113,6 +113,7 @@ class GGroupIdParentId;
 class GGetFeedback;
 class GGroupEvaluate;
 class GGroupsEvaluate;
+class GSubject;
 
 
 //-----------------------------------------------------------------------------
