@@ -368,14 +368,6 @@ public:
 	*/
 	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
 
-	
-//	/**
-//	* Get the profiles similarity for a given Lang
-//	* @param l          The lang describing the subprofiles.
-//	*/
-//	GProfilesSim* GetProfileSims(GLang* l);
-
-
 	/**
 	* Load the Users.
 	*/
@@ -397,10 +389,8 @@ public:
 	GUser* NewUser(const char* usr,const char* pwd,const char* name,const char* email,
 	                  const char* title,const char* org,const char* addr1,
 	                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
-
-	                  
-
-		/**
+                  
+	/**
 	* Initialise the table of similarity between the profiles
 	*/
 	void InitProfilesSims(void);
@@ -412,14 +402,13 @@ public:
 	*/
 	void ChangeProfilesSimState(bool global,GLang* lang)throw(bad_alloc);
 
-/**
+	/**
 	* Update the state of similarity between the subProfiles for all language in the system.
 	* @param global         use the Global/Locale similarity
 	* @param lang           The lang of the subprofiles
 	*/
 	void ChangeAllProfilesSimState(bool global)throw(bad_alloc);
 
-                                                                
 	/**
 	* Return the similarity between two subProfiles for a given language.
 	* @param l              The language used
@@ -428,7 +417,6 @@ public:
 	*/                  
 	double GetSimProf(GLang* l,unsigned int id1, unsigned int id2);
 
-	
 	/**
 	* Return the similarity between two subProfiles .
 	* @param sub1           The Pointer to the first subprofile 
@@ -436,7 +424,7 @@ public:
 	*/
 	double GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2);
 
-			/**
+	/**
 	* Initialise the table of similarity between documents and profiles
 	*/
 	void InitDocProfSims(void);
@@ -462,15 +450,12 @@ public:
 	*/
 	double GetSimDocProf(GLang* l,unsigned int id_doc, unsigned int id_sub);
 
-
 	/**
 	* Return the similarity between a document and a subProfiles.
 	* @param doc           The Pointer to the document.
 	* @param sub2          The Pointer to the subprofile.
 	*/
 	double GetSimDocProf(const GDoc* doc,const GSubProfile* sub);
-
-	
                   
 	/**
 	* Compute all the necessary profiles.
@@ -480,7 +465,6 @@ public:
 	*/
 	void CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException);
 
-	
 	/**
 	* Compute a profile.
 	* @param prof       Pointer to the profile to compute.
@@ -494,7 +478,6 @@ public:
 	* @param save           Save modified elements.
 	*/
 	void GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException);
-
 
 protected:
 
@@ -549,6 +532,11 @@ public:
 	void InitGroups(void) throw(bad_alloc,GException);
 
 	/**
+	* Copy the ideal groupment in the current one.
+	*/
+	void CopyIdealGroups(void) throw(bad_alloc,GException);
+
+	/**
 	* Save a group, i.e. save all the information of the subprofiles
 	* concerning the groupement.
 	* @param grp        Group to save.
@@ -557,8 +545,8 @@ public:
 
 	/**
 	* Save the groups of the session
-	*@param mixedgroups     groups to save
-	*@param nbmixedgroups   mixedgroups number
+	* @param mixedgroups     groups to save
+	* @param nbmixedgroups   mixedgroups number
 	*/
 	virtual void SaveMixedGroups(RContainer<GGroups,unsigned int,true,true> * mixedgroups, int nbmixedgroups)=0;
 
@@ -579,7 +567,6 @@ public:
 	* can be a SQL file.
 	* @param filename       Name of the file.
 	*/
-
 	virtual void ExecuteData(const char* filename) throw(GException)=0;
 
 	/**

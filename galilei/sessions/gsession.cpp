@@ -66,6 +66,7 @@ using namespace RIO;
 #include <profiles/gprofdoc.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
+#include <groups/ggroupvector.h>
 #include <groups/ggrouping.h>
 #include <groups/ggroupcalc.h>
 #include <profiles/gprofilecalc.h>
@@ -383,10 +384,11 @@ void GALILEI::GSession::InitDocProfSims(void)
 		{
 			subProf->InsertPtr( subProfCur());
 		}
-    docProfSim= new GDocProfSim(this,subProf, false,langs());
+		docProfSim= new GDocProfSim(this,subProf, false,langs());
 		DocProfSims->InsertPtr(docProfSim);
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::ChangeDocProfState(bool global,GLang* lang)throw(bad_alloc)
@@ -395,6 +397,7 @@ void GALILEI::GSession::ChangeDocProfState(bool global,GLang* lang)throw(bad_all
 	docProfSim->UpdateDocProfSim(this,this, global);
 
 }
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::ChangeAllDocProfState(bool global)throw(bad_alloc)
@@ -406,12 +409,14 @@ void GALILEI::GSession::ChangeAllDocProfState(bool global)throw(bad_alloc)
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 double GALILEI::GSession::GetSimDocProf(GLang* l,unsigned int id_doc, unsigned int id_sub)
 {
 	GDocProfSim* docProfSim = DocProfSims->GetPtr<GLang*>(l);
 	return docProfSim->GetSim(this,this,id_doc,id_sub);
 }
+
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub)
@@ -445,6 +450,7 @@ void GALILEI::GSession::InitProfilesSims(void)
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::ChangeProfilesSimState(bool global,GLang* lang)throw(bad_alloc)
 {
@@ -452,6 +458,7 @@ void GALILEI::GSession::ChangeProfilesSimState(bool global,GLang* lang)throw(bad
 	profSim->UpdateProfSim(this, global,lang);
 
 }
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::ChangeAllProfilesSimState(bool global)throw(bad_alloc)
@@ -463,12 +470,14 @@ void GALILEI::GSession::ChangeAllProfilesSimState(bool global)throw(bad_alloc)
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 double GALILEI::GSession::GetSimProf(GLang* l,unsigned int id1, unsigned int id2)
 {
 	GProfilesSim* profSim = ProfilesSims->GetPtr<GLang*>(l);
 	return profSim->GetSim(this,id1,id2);
 }
+
 
 //-----------------------------------------------------------------------------
 double GALILEI::GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
@@ -590,6 +599,50 @@ void GALILEI::GSession::InitGroups(void) throw(bad_alloc,GException)
 	// Load the users
 	LoadGroups();
 	bGroups=true;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
+{
+	GGroupsCursor Grps;
+	GGroupCursor Ideal;
+	GSubProfileCursor Sub;
+	GGroups* grps;
+	GGroup* grp;
+	GGroupCalc* CalcDesc;
+
+	// Get current grouping description method
+	CalcDesc=GetCurrentGroupCalcMethod();
+
+	// Go through each languages
+	Grps=GetIdealGroupsCursor();
+	for(Grps.Start();!Grps.End();Grps.Next())
+	{
+		// Find corresponding groups and clear it
+		grps=Groups.GetPtr<const GLang*>(Grps()->GetLang());
+		grps->Clear();
+
+		// Go trough each group
+		Ideal=Grps()->GetGroupCursor();
+		for(Ideal.Start();!Ideal.End();Ideal.Next())
+		{
+			// Create a new group in groups
+			grp=new GGroupVector(cNoRef,Grps()->GetLang());
+			NewGroup(Grps()->GetLang(),grp);
+			grps->InsertPtr(grp);
+
+			// Go through each subprofile
+			Sub=Ideal()->GetSubProfileCursor();
+			for(Sub.Start();!Sub.End();Sub.Next())
+			{
+				grp->InsertSubProfile(Sub());
+			}
+
+			// Compute Description
+			CalcDesc->Compute(grp);
+		}
+	}
 }
 
 
