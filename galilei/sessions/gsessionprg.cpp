@@ -247,7 +247,6 @@ void GMixIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 	if(args->NbPtr==1)
 		mix.SetSettings(args->Tab[0]->GetValue(prg));
 	mix.Run(0);
-
 }
 
 
@@ -506,6 +505,25 @@ void GAddIdealI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 }
 
 
+//-----------------------------------------------------------------------------
+void GAddProfiles::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	if(args->NbPtr==1)
+		sprintf(tmp,"Adding Profile: Settings=\"%s\"",args->Tab[0]->GetValue(prg));
+	else
+		strcpy(tmp,"Adding Profile");
+	r->WriteStr(tmp);
+	if(args->NbPtr==1)
+		Owner->GetIdealMethod()->SetSettings(args->Tab[0]->GetValue(prg));
+	cout <<atoi(args->Tab[0]->GetValue(prg)) <<endl;
+	cout <<atoi(args->Tab[1]->GetValue(prg)) <<endl;
+	
+	sprintf(tmp, "%u new profiles created",Owner->GetIdealMethod()->AddProfiles(atoi(args->Tab[0]->GetValue(prg)), atoi(args->Tab[1]->GetValue(prg)),Owner->AutoSave));
+	r->WriteStr(tmp);
+}
+
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -540,6 +558,7 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GStatsProfilesDocsI(this));
 	Methods.InsertPtr(new GStatsGroupsDocsI(this));
 	Methods.InsertPtr(new GAddIdealI(this));
+	Methods.InsertPtr(new GAddProfiles(this));
 };
 
 

@@ -362,6 +362,15 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GAddProfiles : public GSM
+{
+public:
+	GAddProfiles(GPrgClassSession* o) : GSM("AddProfiles",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GSessionPrg provides a class for executing a GALILEI Program.
 * @author Pascal Francq
