@@ -901,9 +901,7 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 		ConstructInfos();
 
 	// Set the Variable of the document
-//	Doc->UpdateRefs();
-	// Update the document
-	Doc->Update(Lang,&Infos);
+	Doc->Update(Lang,&Infos,true);
 }
 
 
