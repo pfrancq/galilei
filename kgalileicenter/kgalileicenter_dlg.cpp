@@ -497,7 +497,7 @@ void KGALILEICenterApp::slotPlugins(void)
 
 		// Goes through PostGroups
 		QPostGroupItem* item10=dynamic_cast<QPostGroupItem*>(dlg.PostGroups->firstChild());
-		while(item)
+		while(item10)
 		{
 			if(item10->Enable)
 				item10->Fac->Create(getSession());
