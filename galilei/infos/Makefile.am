@@ -1,5 +1,5 @@
-INCLUDES = -I$(top_srcdir) -I$(R_LIB)
-lib_LTLIBRARIES =  libgalilei_infos.la
+INCLUDES = -I$(top_srcdir)
+pkglib_LTLIBRARIES =  libgalilei_infos.la
 AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =

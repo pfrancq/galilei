@@ -46,7 +46,7 @@ AC_CHECK_HEADER(curl/curl.h,
 			[Define if you have the CURL library])],
 		[AC_MSG_ERROR(curl library is not available)
 		CURL_INCLUDES="" CURL_LIBS=""])],
-	[AC_MSG_ERROR(curl library is not available - no curl.h)])
+	[AC_MSG_ERROR(curl library headers are not available - no curl.h)])
 
 
 AC_SUBST(CURL_INCLUDES)
@@ -63,7 +63,7 @@ AC_ARG_WITH(ltmm,
 	[LTMM_DIR="$withval"],
 	[LTMM_DIR="/usr/include/ltmm"])
 
-AC_MSG_CHECKING(checking for ltmm/loader.hh)
+AC_MSG_CHECKING(for ltmm/loader.hh)
 
 # ---- Determine LTMM installation paths   -----
 for i in $LTMM_DIR /usr/include /usr/local /usr/local/ltmm; do
@@ -88,6 +88,24 @@ CPPFLAGS=" -I$LTMM_DIR $CPPFLAGS"
 
 #--------------------- END LTMM -----------------------------
 
+#--------------------- CHECK THE USE OF KDE FRONTEND ---------
+
+AC_ARG_ENABLE(kde, [  --enable-kde            enable kde frontend for plugins [[default=no]]],,enable_kde=no)
+
+if test "$enable_kde" != no; then
+FRONTEND="kde"
+
+dnl check for qt libs
+KDE_SET_PREFIX
+
+KDE_USE_QT
+AC_PATH_KDE
+fi
+
+AC_SUBST(FRONTEND)
+
+#--------------------- END CHECK THE USE OF KDE FRONTEND ---------
+
 #--------------------- R LIB -----------------------------
 #VARIABLES USE :
 #	$R_LIB environnement variable used for developpment
@@ -98,7 +116,11 @@ CPPFLAGS=" -I$LTMM_DIR $CPPFLAGS"
 
 #---------------------------------------------------------
 # ---- add configure option : --with-r-includes=DIR ----
-R_INC_PATH="/usr/include/r"
+if test "x$R_LIB" != "x" ; then
+	R_INC_PATH=$R_LIB
+else
+	R_INC_PATH="/usr/include/r /usr/include /usr/include/r /usr/local /usr/local/include /usr/local/include/r ${prefix}/include/r"
+fi
 AC_ARG_WITH(r-includes,
 	AC_HELP_STRING(
 		[--with-r-includes=DIR],
@@ -107,7 +129,11 @@ AC_ARG_WITH(r-includes,
 
 
 # ---- add configure option : --with-r-libs=DIR ----
-R_LIB_PATH="/usr/lib"
+if test "x$R_LIB" != "x" ; then
+	R_LIB_PATH=$R_LIB
+else
+	R_LIB_PATH="/usr/lib /usr/lib/r /usr/local/lib /usr/local/lib/r ${prefix}/lib/r"
+fi
 AC_ARG_WITH(r-libs,
 	AC_HELP_STRING(
 		[--with-r-libs=DIR],
@@ -137,11 +163,11 @@ AC_DEFUN(R_LIB_CHK,[
 AC_DEFUN(R_INC_CHK,[
 	R_INC_DIR=""
 	str="$1/$2"
-	for i in $R_LIB $R_INC_PATH  /usr/include /usr/include/r /usr/local /usr/local/r; do
+	for i in $R_INC_PATH ; do
 		test -f $i/$str                    && R_INC_DIR=$i/$1 && break
-		test -f $i/r/$str              && R_INC_DIR=$i/r/$1 && break
+		#test -f $i/r/$str              && R_INC_DIR=$i/r/$1 && break
 	done
-	AC_MSG_CHECKING(checking for $1/$2)
+	AC_MSG_CHECKING(for $1/$2)
 	if test -z "$R_INC_DIR"; then
 		if test "x$R_INC_PATH" != "x"; then
 			AC_MSG_RESULT(no)
@@ -151,9 +177,13 @@ AC_DEFUN(R_INC_CHK,[
 			AC_MSG_ERROR(Cannot find $2 headers.  Use --with-r-includes= to specify non-default path.)
 		fi
 	fi
-AC_MSG_RESULT(yes)
+	AC_MSG_RESULT(yes in $R_INC_DIR)
 
-CPPFLAGS="-I$R_INC_DIR $CPPFLAGS"
+	if test "x$i" != "x$PAST_R_INC_DIR"; then
+		CPPFLAGS="-I$i $CPPFLAGS"
+	fi
+	PAST_R_INC_DIR="$i"
+
 ])
 # --- end def function -----
 
@@ -171,18 +201,18 @@ R_INC_CHK(rstd,rcontainer.h)
 # ---- check the presence of all R libraries
 for l in rdb rga rga2d rgga rmath rprg rpromethee rstd; do
 
-	#AC_MSG_CHECKING(checking for lib$l)
-	for i in $R_LIB $R_INC_PATH /usr /usr/local /usr/local/r/; do
-		R_LIB_CHK($i/$l,$l)
-		R_LIB_CHK($i/lib/,$l)
-		R_LIB_CHK($i/lib/r,$l)
+	#AC_MSG_CHECKING(for lib$l)
+	for i in $R_LIB_PATH ; do
+		R_LIB_CHK($i/$l,$l)  #check for local presence
+		R_LIB_CHK($i,$l)
+		R_LIB_CHK($i/r,$l)
 	done
-	AC_MSG_CHECKING(checking for lib$l)
+	AC_MSG_CHECKING(for lib$l)
 	if test -z "$R_LIB_DIR"; then
 		AC_MSG_RESULT(no)
 		AC_MSG_ERROR(Cannot find lib$l)
 	else
-		AC_MSG_RESULT(yes)
+		AC_MSG_RESULT(yes in $R_LIB_DIR)
 	fi
 	if test "x$R_LIB_DIR" != "x$PAST_R_LIB_DIR"; then
 		LDFLAGS="-L$R_LIB_DIR $LDFLAGS"

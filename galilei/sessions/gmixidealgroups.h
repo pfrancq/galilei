@@ -43,12 +43,12 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
+class GGroupsLang;
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -59,6 +59,7 @@ namespace GALILEI{
 */
 class GMixIdealGroups
 {
+
 protected:
 
 	/**
@@ -79,17 +80,12 @@ protected:
 	/**
 	* Current Language.
 	*/
-//	GGroups* Current;
+	GLang* CurrentLang;
 
 	/**
 	* Tamporary array of pointer to groups.
 	*/
 	GGroup** Tab;
-
-	/**
-	* Temporary array of pointer to languages.
-	*/
-//	GGroups** Tabs;
 
 	/**
 	* Temporary array of pointer to subprofiles.
@@ -198,16 +194,10 @@ public:
 	*/
 	void RandOrderTab(void);
 
-	void IShow(void);
-
-	void Show(void);
-
 	/**
 	*  Destructor.
 	*/
 	~GMixIdealGroups(void);
-
-
 };
 
 
