@@ -104,6 +104,7 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 	GSubProfileCursor Cur2;
 	unsigned int i,j;
 	GSims* sim;
+	double tmp;
 
 	Cur1.Set(s);
 	Cur2.Set(s);
@@ -113,9 +114,11 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
 			if(global)
-				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->GlobalSimilarity(Cur2())));
+				tmp=Cur1()->GlobalSimilarity(Cur2());
 			else
-				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->Similarity(Cur2())));
+				tmp=Cur1()->Similarity(Cur2());
+			if(tmp)
+				sim->InsertPtr(new GSim(Cur2()->GetId(),tmp));
 		}
 	}
 }
@@ -129,6 +132,7 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 	GSubProfileCursor Cur2;
 	unsigned int i,j;
 	GSims* sim;
+	double tmp;
 
 	Cur1.Set(s);
 	Cur2.Set(s);
@@ -138,9 +142,11 @@ GALILEI::GProfilesSim::GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,fa
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
 			if(global)
-				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->GlobalSimilarity(Cur2())));
+				tmp=Cur1()->GlobalSimilarity(Cur2());
 			else
-				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->Similarity(Cur2())));
+				tmp=Cur1()->Similarity(Cur2());
+			if(tmp)
+				sim->InsertPtr(new GSim(Cur2()->GetId(),tmp));
 		}
 	}
 }
@@ -154,6 +160,7 @@ GALILEI::GProfilesSim::GProfilesSim(GSubProfileCursor& s,bool global) throw(bad_
 	GSubProfileCursor Cur2;
 	unsigned int i,j;
 	GSims* sim;
+	double tmp;
 
 	Cur1=s;
 	Cur2=s;
@@ -163,9 +170,11 @@ GALILEI::GProfilesSim::GProfilesSim(GSubProfileCursor& s,bool global) throw(bad_
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
 			if(global)
-				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->GlobalSimilarity(Cur2())));
+				tmp=Cur1()->GlobalSimilarity(Cur2());
 			else
-				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->Similarity(Cur2())));
+				tmp=Cur1()->Similarity(Cur2());
+			if(tmp)
+				sim->InsertPtr(new GSim(Cur2()->GetId(),tmp));
 		}
 	}
 }

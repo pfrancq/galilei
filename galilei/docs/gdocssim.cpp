@@ -104,6 +104,7 @@ GALILEI::GDocsSim::GDocsSim(GDocs* d,bool global) throw(bad_alloc)
 	GDocCursor Cur2;
 	unsigned int i,j;
 	GSims* sim;
+	double tmp;
 
 	Cur1.Set(d);
 	Cur2.Set(d);
@@ -114,9 +115,11 @@ GALILEI::GDocsSim::GDocsSim(GDocs* d,bool global) throw(bad_alloc)
 		{
 			if(Cur1()->GetLang()!=Cur2()->GetLang()) continue;
 			if(global)
-				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->GlobalSimilarity(Cur2())));
+				tmp=Cur1()->GlobalSimilarity(Cur2());
 			else
-				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->Similarity(Cur2())));
+				tmp=Cur1()->Similarity(Cur2());
+			if(tmp)
+				sim->InsertPtr(new GSim(Cur2()->GetId(),tmp));
 		}
 	}
 }
@@ -130,6 +133,7 @@ GALILEI::GDocsSim::GDocsSim(GDocs& d,bool global) throw(bad_alloc)
 	GDocCursor Cur2;
 	unsigned int i,j;
 	GSims* sim;
+	double tmp;
 
 	Cur1.Set(d);
 	Cur2.Set(d);
@@ -140,9 +144,11 @@ GALILEI::GDocsSim::GDocsSim(GDocs& d,bool global) throw(bad_alloc)
 		{
 			if(Cur1()->GetLang()!=Cur2()->GetLang()) continue;
 			if(global)
-				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->GlobalSimilarity(Cur2())));
+				tmp=Cur1()->GlobalSimilarity(Cur2());
 			else
-				sim->InsertPtr(new GSim(Cur2()->GetId(),Cur1()->Similarity(Cur2())));
+				tmp=Cur1()->Similarity(Cur2());
+			if(tmp)
+				sim->InsertPtr(new GSim(Cur2()->GetId(),tmp));
 		}
 	}
 }
