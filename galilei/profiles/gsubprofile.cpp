@@ -32,7 +32,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfile::GSubProfile(void) throw(bad_alloc)
-  : Id(cNoRef),Lang(0),OK(0),KO(0),Common(0),bToAttach(true)
+  : Id(cNoRef),Lang(0),OK(0),KO(0),Common(0)
 {
 	OK=new GIWordList();
 	KO=new GIWordList();
@@ -42,7 +42,7 @@ GALILEI::GSubProfile::GSubProfile(void) throw(bad_alloc)
 
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfile::GSubProfile(GProfile *owner,unsigned int id,GLang *lang) throw(bad_alloc)
-  : Owner(owner),Id(id),Lang(lang),OK(0),KO(0),Common(0),bToAttach(true)
+  : Owner(owner),Id(id),Lang(lang),OK(0),KO(0),Common(0)
 {
 	OK=new GIWordList();
 	KO=new GIWordList();
@@ -65,16 +65,16 @@ int GALILEI::GSubProfile::Compare(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GSubProfile::Compare(const GSubProfile &subprofile) const
+int GALILEI::GSubProfile::Compare(const GSubProfile& subprofile) const
 {
-  return(Id-subprofile.Id);
+	return(Lang->Compare(subprofile.Lang));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GSubProfile::Compare(const GSubProfile *subprofile) const
+int GALILEI::GSubProfile::Compare(const GSubProfile* subprofile) const
 {
-  return(Id-subprofile->Id);
+	return(Lang->Compare(subprofile->Lang));
 }
 
 

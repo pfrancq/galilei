@@ -21,10 +21,6 @@
 #define GSubProfileH
 
 
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <time.h>
-
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
@@ -47,7 +43,7 @@ class GProfile;
 //-----------------------------------------------------------------------------
 /**
 * This class represents a sub-profile for a specific language. The sub-profiles
-* are ordered by identificators.
+* are ordered by language.
 * @author Pascal Francq.
 * @short Sub-Profile.
 */
@@ -86,22 +82,9 @@ class GSubProfile
 public:
 
 	/**
-	* Must Attach to group ? (T/F).
-	*/
-	bool bToAttach;
-
-	/**
-	* Time when attached.
-	*/
-	time_t Attached;
-
-public:
-
-	/**
 	* Default Constructor.
 	*/
 	GSubProfile(void) throw(bad_alloc);
-
 
 	/**
 	* Constructor of the subprofile.
@@ -124,12 +107,12 @@ public:
 	/**
 	* Compare methods used by RStd::RContainer.
 	*/
-	int Compare(const GSubProfile &subprofile) const;
+	int Compare(const GSubProfile& subprofile) const;
 
 	/**
 	* Compare methods used by RStd::RContainer.
 	*/
-	int Compare(const GSubProfile *subprofile) const;
+	int Compare(const GSubProfile* subprofile) const;
 	
 	/**
 	* Get the identifier of the subprofile.

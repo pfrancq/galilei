@@ -54,12 +54,9 @@ GSubProfile* GALILEI::GUsers::GetSubProfile(unsigned int profileid) const
 		usr=cur();
 		for(usr->Start();!usr->End();usr->Next())
 		{
-			sub=(*usr)()->GetPtr<unsigned int>(profileid);
+			sub=(*usr)()->GetPtr<unsigned int>(profileid,false);
 			if(sub) return(sub);
 		}
 	}
 	return(0);
 }
-
-
-
