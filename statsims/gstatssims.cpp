@@ -48,14 +48,13 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gstatssims.h>
-
 #include <gstatsimdoc.h>
 #include <gstatsimdocprof.h>
 #include <gstatsimdocgrp.h>
 #include <gstatprofdoc.h>
 #include <gstatsimsubprof.h>
 #include <gstatsimprofgrp.h>
-#include <groups/gsubjecttree.h>
+#include <groups/gsubjects.h>
 #include <sessions/gsession.h>
 
 using namespace R;
