@@ -115,6 +115,12 @@ public:
 	virtual void receiveNextMethod(unsigned int num) throw(std::bad_alloc,R::RException);
 
 	/**
+	* This is used by the caller to interact. Typically, it is used to give the
+	* control of the process to the GUI.
+	*/
+	virtual void Interact(void);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSlot(void);

@@ -100,6 +100,12 @@ void GSlot::receiveNextMethod(unsigned int) throw(std::bad_alloc,RException)
 
 
 //------------------------------------------------------------------------------
+void GSlot::Interact(void)
+{
+}
+
+
+//------------------------------------------------------------------------------
 GSlot::~GSlot(void)
 {
 }

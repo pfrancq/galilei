@@ -168,6 +168,12 @@ protected:
 	*/
 	static GSession* Session;
 
+	/**
+	* If this variable is set to true, the session should stop as soon as
+	* possible what it currently does.
+	*/
+	static bool ExternBreak;
+
 public:
 
 	/**
@@ -183,6 +189,16 @@ public:
 	* @return Pointer to a GSession.
 	*/
 	static GSession* Get(void) {return(Session);}
+
+	/**
+	* See if the session must break.
+	*/
+	static bool Break(void) {return(ExternBreak);}
+
+	/**
+	* Ask to session to break as soon as possible.
+	*/
+	static void SetBreak(void) {ExternBreak=true;}
 
 	/**
 	* Connect the session to managers.

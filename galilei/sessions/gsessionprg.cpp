@@ -751,16 +751,28 @@ void GAddProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 //------------------------------------------------------------------------------
 void GRealLifeI::CommonTasks(RPrgOutput* o) throw(RException)
 {
+	GSlot* rec=dynamic_cast<GSlot*>(o);
+
 	// Compute Profiles
-	o->WriteStr("Compute Profiles: Current Method");
+	if(rec)
+	{
+		rec->Interact();
+		rec->WriteStr("Compute Profiles: Current Method");
+	}
+	if(GSession::Break()) return;
 	if(Owner->Session->GetLinkCalcMng()->GetCurrentMethod())
 		Owner->Session->GetLinkCalcMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GetProfilingMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o),Owner->FirstProfile,Owner->AutoSave,Owner->AutoSaveLinks);
+	Owner->Session->CalcProfiles(rec,Owner->FirstProfile,Owner->AutoSave,Owner->AutoSaveLinks);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 
 	// Group Profiles
-	o->WriteStr("Group Profiles: Current Method");
+	if(rec)
+	{
+		rec->Interact();
+		rec->WriteStr("Group Profiles: Current Method");
+	}
+	if(GSession::Break()) return;
 	if(Owner->Session->GetSubjects()->GetIdealGroups())
 	{
 		GGrouping* algo=Owner->Session->GetGroupingMng()->GetCurrentMethod();
@@ -768,25 +780,39 @@ void GRealLifeI::CommonTasks(RPrgOutput* o) throw(RException)
 	}
 	Owner->Session->GetGroupingMng()->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GetGroupCalcMng()->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o),Owner->FirstGroup,Owner->AutoSave, Owner->SaveHistory);
+	Owner->Session->GroupingProfiles(rec,Owner->FirstGroup,Owner->AutoSave, Owner->SaveHistory);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 
 	// Store History
 	if(History)
 	{
 		sprintf(tmp,"Store History n%u",Owner->NbHistory);
-		o->WriteStr(tmp);
+		if(rec)
+		{
+			rec->Interact();
+			rec->WriteStr(tmp);
+		}
+		if(GSession::Break()) return;
 		Owner->Session->GetStorage()->SaveMixedGroups(Owner->Session,Owner->NbHistory++);
 	}
 
 	// Compare Ideal
-	o->WriteStr("Compare with Ideal Groups");
+	if(rec)
+	{
+		rec->Interact();
+		rec->WriteStr("Compare with Ideal Groups");
+	}
 	Owner->Session->GetSubjects()->Compare();
 	Owner->Precision=Owner->Session->GetSubjects()->GetPrecision();
 	Owner->Recall=Owner->Session->GetSubjects()->GetRecall();
 	Owner->Total=Owner->Session->GetSubjects()->GetTotal();
-	sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f",Owner->Recall,Owner->Precision,Owner->Total);
-	o->WriteStr(tmp);
+	if(rec)
+	{
+		rec->Interact();
+		sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f",Owner->Recall,Owner->Precision,Owner->Total);
+		rec->WriteStr(tmp);
+	}
+	if(GSession::Break()) return;
 	if(Owner->OFile)
 		(*Owner->OFile)<<Owner->TestName<<Owner->Recall<<Owner->Precision<<Owner->Total<<What<<endl;
 	if(Owner->GOFile)
@@ -806,13 +832,19 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 	unsigned int nb;
 	unsigned int NewProf;
 	unsigned int nbminprof,nbmaxprof;
+	GSlot* rec=dynamic_cast<GSlot*>(o);
 
 	if(args->NbPtr!=5)
 		throw RException("Method needs five parameters.");
 	sprintf(tmp,"Real Life: Settings=\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
 	        args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg),args->Tab[2]->GetValue(prg),
 	        args->Tab[3]->GetValue(prg),args->Tab[4]->GetValue(prg));
-	o->WriteStr(tmp);
+	if(rec)
+	{
+		rec->Interact();
+		rec->WriteStr(tmp);
+	}
+	if(GSession::Break()) return;
 	Random=Owner->Session->GetRandom();
 	MaxStep=atoi(args->Tab[0]->GetValue(prg));
 	MinFBStep=atoi(args->Tab[1]->GetValue(prg));
@@ -830,7 +862,12 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 			Owner->TestName=itou(NbStep);
 
 			// Create Feedbacks
-			o->WriteStr("Create Feedbacks Cycle");
+			if(rec)
+			{
+				rec->Interact();
+				rec->WriteStr("Create Feedbacks Cycle");
+			}
+			if(GSession::Break()) return;
 			What[0]='F';
 			Owner->Session->GetSubjects()->Apply();
 			Owner->Session->GetSubjects()->FdbksCycle(Owner->AutoSave);
@@ -848,7 +885,12 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 		Owner->TestName=itou(NbStep);
 
 		// Create 1 new profile
-		o->WriteStr("Create 1 new profile");
+		if(rec)
+		{
+			rec->Interact();
+			rec->WriteStr("Create 1 new profile");
+		}
+		if(GSession::Break()) return;
 		if(Random->Value()<Proba)
 		{
 			// Create One profile of an existing topic

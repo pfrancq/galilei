@@ -103,6 +103,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 // Global variables
 GSession* GSession::Session=0;
+bool GSession::ExternBreak=false;
 
 
 //------------------------------------------------------------------------------
@@ -267,6 +268,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
 
+	ExternBreak=false;
 	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
 	{
@@ -282,7 +284,11 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 		{
 			if(modified&&(Docs()->GetState()==osUpToDate)) continue;
 			if(rec)
+			{
+				rec->Interact();
 				rec->receiveNextDoc(Docs());
+			}
+			if(ExternBreak) return;
 			undefLang=false;
 			try
 			{
@@ -348,24 +354,32 @@ void GSession::ComputePostDoc(GSlot* rec)  throw(GException)
 
 	// Run all post-group methods that are enabled
 	GFactoryPostDocCursor PostDocs=PostDocMng->GetPostDocsCursor();
+	ExternBreak=false;
 	//first sort the plugins by level
-	RContainer<GFactoryPostDocOrder,true,true>* ordered;
-	ordered=new RContainer<GFactoryPostDocOrder,true,true>(PostDocs.GetNb());
+	RContainer<GFactoryPostDocOrder,true,true> ordered(PostDocs.GetNb());
+
 	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
 	{
 		GFactoryPostDocOrder* order=new GFactoryPostDocOrder;
 		order->Fac=PostDocs();
-		ordered->InsertPtr(order);
+		ordered.InsertPtr(order);
 	}
+	if(rec)
+		rec->Interact();
+	if(ExternBreak) return;
 
 	//then run
-	for (ordered->Start(); !ordered->End(); ordered->Next())
+	RCursor<GFactoryPostDocOrder> Cur(ordered);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if ((*ordered)()->Fac->GetPlugin())
+		if(rec)
+			rec->Interact();
+		if(ExternBreak) return;
+		if(Cur()->Fac->GetPlugin())
 		{
-			sprintf(tmp, "PostDoc : Running %s",(*ordered)()->Fac->GetName().Latin1());
+			sprintf(tmp, "PostDoc : Running %s",Cur()->Fac->GetName().Latin1());
 			rec->WriteStr(tmp);
-			(*ordered)()->Fac->GetPlugin()->Run();
+			Cur()->Fac->GetPlugin()->Run();
 		}
 	}
 }
@@ -379,6 +393,7 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords) throw(G
 	metaEngine=EngineMng->GetCurrentMethod();
 	if(!metaEngine)
 		throw GException("No meta engine method chosen.");
+	ExternBreak=false;
 	metaEngine->Query(keyWords,true); //true ->Use all keywords passed to the meta engine
 	metaEngine->Process();
 }
@@ -521,14 +536,18 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) t
 	if(!Profiling)
 		throw GException("No computing method chosen.");
 
+	ExternBreak=false;
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		if(rec)
 			rec->receiveNextProfile(Prof());
 		Prof()->Update();
 		Subs=Prof()->GetSubProfilesCursor();
-		for (Subs.Start(); !Subs.End(); Subs.Next())
+		for(Subs.Start(); !Subs.End(); Subs.Next())
 		{
+			if(rec)
+				rec->Interact();
+			if(ExternBreak) return;
 			if(modified&&(Subs()->GetState()==osUpToDate)) continue;
 			try
 			{
@@ -578,6 +597,7 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehis
 
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
+	ExternBreak=false;
 	Grouping->Grouping(rec,modified,save, savehistory);
 	// Run all post-group methods that are enabled
 	ComputePostGroup(rec);
@@ -591,24 +611,32 @@ void GSession::ComputePostGroup(GSlot* rec)  throw(GException)
 
 	// Run all post-group methods that are enabled
 	GFactoryPostGroupCursor PostGroups=PostGroupMng->GetPostGroupsCursor();
+	ExternBreak=false;
+
 	//first sort the plugins by level
-	RContainer<GFactoryPostGroupOrder,true,true>* ordered;
-	ordered=new RContainer<GFactoryPostGroupOrder,true,true>(PostGroups.GetNb());
+	RContainer<GFactoryPostGroupOrder,true,true> ordered(PostGroups.GetNb());
 	for(PostGroups.Start();!PostGroups.End();PostGroups.Next())
 	{
 		GFactoryPostGroupOrder* order=new GFactoryPostGroupOrder;
 		order->Fac=PostGroups();
-		ordered->InsertPtr(order);
+		ordered.InsertPtr(order);
 	}
+	if(rec)
+		rec->Interact();
+	if(ExternBreak) return;
 
 	//then run
-	for (ordered->Start(); !ordered->End(); ordered->Next())
+	RCursor<GFactoryPostGroupOrder> Cur(ordered);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if ((*ordered)()->Fac->GetPlugin())
+		if(rec)
+			rec->Interact();
+		if(ExternBreak) return;
+		if(Cur()->Fac->GetPlugin())
 		{
-			sprintf(tmp, "PostGroup : Running %s",(*ordered)()->Fac->GetName().Latin1());
+			sprintf(tmp, "PostGroup : Running %s",Cur()->Fac->GetName().Latin1());
 			rec->WriteStr(tmp);
-			(*ordered)()->Fac->GetPlugin()->Run();
+			Cur()->Fac->GetPlugin()->Run();
 		}
 	}
 }
@@ -696,6 +724,7 @@ const char* GSession::GetMIMEType(const char* mime) const
 //------------------------------------------------------------------------------
 void GSession::RunPrg(GSlot* rec,const char* filename) throw(GException)
 {
+	ExternBreak=false;
 	GSessionPrg Prg(filename,this,rec);
 	Prg.Exec();
 }
@@ -895,6 +924,7 @@ GSession::~GSession(void)
 	{
 	}
 	Session=0;
+	ExternBreak=false;
 }
 
 
