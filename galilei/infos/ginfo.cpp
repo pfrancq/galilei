@@ -92,6 +92,13 @@ const GInfoType GALILEI::GInfo::InfoType(void) const
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GInfo::SetInfoType(GInfoType type)
+{
+	Type=type;
+}
+
+
+//-----------------------------------------------------------------------------
 bool GALILEI::GInfo::SameClass(const GInfo* i) const
 {
 	return(InfoType()==i->InfoType());

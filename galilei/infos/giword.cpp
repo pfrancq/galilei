@@ -68,6 +68,20 @@ int GALILEI::GIWord::Compare(const GInfo* i) const
 
 
 //-----------------------------------------------------------------------------
+int GALILEI::GIWord::Compare(const GIWord* i) const
+{
+	return(Id-i->Id);
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GIWord::Compare(const GIWord& i) const
+{
+	return(Id-i.Id);
+}
+
+
+//-----------------------------------------------------------------------------
 float GALILEI::GIWord::Similarity(const GInfo* i) const
 {
 	if(SameClass(i))
@@ -98,6 +112,13 @@ const RString GALILEI::GIWord::ClassName(void) const
 const GInfoType GALILEI::GIWord::InfoType(void) const
 {
 	return(Type);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GIWord::GetId(void) const
+{
+	return(Id);
 }
 
 

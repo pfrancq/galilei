@@ -64,7 +64,6 @@ protected:
 	*/
 	unsigned int Id;
 
-
 public:
 
 	/**
@@ -85,13 +84,13 @@ public:
 	* @param i              Pointer to the word's reference ued for the
 	*                       comparaison.
 	*/
-	int Compare(const GIWord* i) {return(Id-i->Id);}
+	int Compare(const GIWord* i) const;
 
 	/**
 	* Compare two word's references.
 	* @param i              Word's reference ued for the comparaison.
 	*/
-	int Compare(const GIWord& i) {return(Id-i.Id);}
+	int Compare(const GIWord& i) const;
 
 	/**
 	* Compute a similarity between two information objects. If the two objects
@@ -122,7 +121,7 @@ public:
 	/**
 	* @returns Identificator of the word.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	unsigned int GetId(void) const;
 
 	/**
 	* The destructor.

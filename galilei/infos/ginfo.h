@@ -107,7 +107,12 @@ public:
 	*/
 	virtual const GInfoType InfoType(void) const;
 
-	virtual void SetInfoType(GInfoType type) {Type=type;}
+	/**
+	* Set the information type.
+	* @param type               Type of the information.
+	*/
+	virtual void SetInfoType(GInfoType type);
+
 	/**
 	* Compare the class of two information objects.
 	* @return true if the two objects are from the same class, false else.
