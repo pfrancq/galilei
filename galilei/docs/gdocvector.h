@@ -91,6 +91,12 @@ public:
 	unsigned int GetId(void) const {return(Id);}
 
 	/**
+	* Look if the document has a representation?
+	* @return bool.
+	*/
+	virtual bool HasRepresentation(void) const;
+
+	/**
 	* This function clears the information related to the document.
 	* @param l              Must the language be removed.
 	*/

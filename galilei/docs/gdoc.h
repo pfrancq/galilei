@@ -161,6 +161,12 @@ public:
 	virtual const char* GetModelName(void) const=0;
 
 	/**
+	* Look if the document has a representation?
+	* @return bool.
+	*/
+	virtual bool HasRepresentation(void) const;
+
+	/**
 	* Compare function needed by RStd::RContainer.
 	* @param doc            Document used for the comparaison.
 	*/

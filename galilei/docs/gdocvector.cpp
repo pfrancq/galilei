@@ -82,6 +82,13 @@ GALILEI::GDocVector::GDocVector(const char* url,const char* name,unsigned int id
 
 
 //-----------------------------------------------------------------------------
+bool GALILEI::GDocVector::HasRepresentation(void) const
+{
+	return(!GIWordsWeights::IsEmpty());
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GDocVector::ClearInfos(bool l)
 {
 	GDoc::ClearInfos(l);

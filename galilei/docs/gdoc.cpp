@@ -80,6 +80,14 @@ GALILEI::GDoc::GDoc(const char* url,const char* name,unsigned int id,GLang* lang
 
 
 //-----------------------------------------------------------------------------
+bool GALILEI::GDoc::HasRepresentation(void) const
+{
+	return(false);
+}
+
+
+
+//-----------------------------------------------------------------------------
 int GALILEI::GDoc::Compare(const GDoc& doc) const
 {
 	return(Id-doc.Id);
