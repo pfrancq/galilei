@@ -6,7 +6,7 @@
 
 	Main program that updates GALILEI - Implementation.
 
-	Copyright 1999-2003 by the Université Libre de Bruxelles.
+	Copyright 1999-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -59,6 +59,7 @@ using namespace R;
 #include <docs/glinkcalcmanager.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <profiles/gprofilecalc.h>
+#include <profiles/gpostprofilemanager.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalcmanager.h>
 #include <sessions/gstatscalcmanager.h>
@@ -85,7 +86,7 @@ int main(int argc, char *argv[])
 {
 	// Init Part
 	cout<<"GALILEI Update Version "<<VERSION<<endl;
-	cout<<"Copyright 1999-2004 by the Université Libre de Bruxelles"<<endl;
+	cout<<"Copyright 1999-2004 by the Universitï¿½Libre de Bruxelles"<<endl;
 	try
 	{
 		RString lib;
@@ -112,6 +113,7 @@ int main(int argc, char *argv[])
 		GDocAnalyseManager DocAnalyseManager(lib,false);
 		GPostDocManager PostDocManager(lib,false);
 		GPostGroupManager PostGroupManager(lib,false);
+		GPostProfileManager PostProfileManager(lib,false);
 
 		Tag=Config.GetTag("Config");
 		if(!Tag)
@@ -146,8 +148,8 @@ int main(int argc, char *argv[])
 							Config.GetTag("World")->GetAttrValue("Name"),
 							Config.GetTag("World")->GetAttrValue("Encoding"));
 		GSession Session(&Str,&SessionParams,false);
-		Session.Connect(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
-			&GroupCalcManager,&StatsCalcManager,&PostDocManager,&PostGroupManager,0);
+		Session.Connect(&Langs,&URLManager,&DocAnalyseManager,&LinkCalcManager,&ProfilingManager,&GroupingManager,
+			&GroupCalcManager,&StatsCalcManager,&PostDocManager,&PostProfileManager,&PostGroupManager,0);
 		Log->WriteLog("Session created");
 
 		// Load Data from MySQL database
@@ -155,7 +157,6 @@ int main(int argc, char *argv[])
 		Str.LoadGroups(&Session);
 		Str.LoadUsers(&Session);
 		Str.LoadFdbks(&Session);
-		Session.PostConnect(&LinkCalcManager);
 		Log->WriteLog("Data loaded");
 
 		cout<<"Analyse Documents ..."<<endl;
@@ -163,7 +164,7 @@ int main(int argc, char *argv[])
 		cout<<"Compute Profiles ..."<<endl;
 		Session.CalcProfiles(Log,true,true,true);
 		cout<<"Groups Profiles ..."<<endl;
-		Session.GroupingProfiles(Log,true,true,false);
+		Session.GroupingProfiles(Log,true,true);
 		Log->WriteLog("Session updated");
 
 		// End Session
