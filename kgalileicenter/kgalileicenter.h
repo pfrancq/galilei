@@ -274,7 +274,7 @@ private slots:
 	* @param passwd         The passwd.
 	* @param db             The database.
 	*/
-	void slotSessionAutoConnect(char* host,char* user,char* passwd,char* db);
+	void slotSessionAutoConnect(const char* host,const char* user,const char* passwd,const char* db);
 
 	/**
 	* Compute an entire session.
