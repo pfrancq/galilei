@@ -111,7 +111,9 @@ QPluginsDlg::QPluginListView::QPluginListView(KGALILEICenterApp* a,QCheckListIte
 			if(RString(str)==(App->GetCurrentGroupCalcMethod()))
 				setOn(true);
 			break;
-	}}
+	}
+}
+
 
 //---------------------------------------------------------------------------
 void QPluginsDlg::QPluginListView::activate(void)

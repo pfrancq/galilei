@@ -316,17 +316,14 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->setGroup(CalcRelevantParams.GetComputingName());
 	Config->writeEntry("Global Similarity",CalcRelevantParams.GlobalSim);
 	Config->writeEntry("MaxNonZero",CalcRelevantParams.MaxNonZero);
-	Config->writeEntry("MaxOrderSize",CalcRelevantParams.MaxOrderSize);
 
 	// Write Config of GroupCalcGravitation
 	Config->setGroup(CalcGravitationParams.GetComputingName());
 	Config->writeEntry("MaxNonZero",CalcGravitationParams.MaxNonZero);
-	Config->writeEntry("MaxOrderSize",CalcGravitationParams.MaxOrderSize);
 
 	// Write Config of ProfileCalcFeedback
 	Config->setGroup(FeedbackParams.GetComputingName());
 	Config->writeEntry("MaxNonZero",FeedbackParams.MaxNonZero);
-	Config->writeEntry("MaxOrderSize",FeedbackParams.MaxOrderSize);
 	Config->writeEntry("RelFactor",FeedbackParams.RelFactor);
 	Config->writeEntry("FuzzyFactor",FeedbackParams.FuzzyFactor);
 	Config->writeEntry("NoRelFactor",FeedbackParams.NoRelFactor);
@@ -336,13 +333,11 @@ void KGALILEICenterApp::saveOptions(void)
 	// Write Config of ProfileCalcVector
 	Config->setGroup(StatisticalParams.GetComputingName());
 	Config->writeEntry("MaxNonZero",StatisticalParams.MaxNonZero);
-	Config->writeEntry("MaxOrderSize",StatisticalParams.MaxOrderSize);
  	Config->writeEntry("IdfFactor",StatisticalParams.IdfFactor);
 
 	// Write Config of ProfileCalcReWeighting
 	Config->setGroup(ReWeightingParams.GetComputingName());
 	Config->writeEntry("MaxNonZero",ReWeightingParams.MaxNonZero);
-	Config->writeEntry("MaxOrderSize",ReWeightingParams.MaxOrderSize);
 }
 
 
@@ -475,17 +470,14 @@ void KGALILEICenterApp::readOptions(void)
 	Config->setGroup(CalcRelevantParams.GetComputingName());
 	CalcRelevantParams.GlobalSim=Config->readBoolEntry("Global Similarity",1);
 	CalcRelevantParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
-	CalcRelevantParams.MaxOrderSize=Config->readNumEntry("MaxOrderSize",500);
 
 	// Read Config of GroupCalcGravitation
 	Config->setGroup(CalcGravitationParams.GetComputingName());
 	CalcGravitationParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
-	CalcGravitationParams.MaxOrderSize=Config->readNumEntry("MaxOrderSize",500);
 
 	// Read Config of ProfileCalcFeedback
 	Config->setGroup(FeedbackParams.GetComputingName());
 	FeedbackParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
-	FeedbackParams.MaxOrderSize=Config->readNumEntry("MaxOrderSize",500);
 	FeedbackParams.RelFactor=Config->readDoubleNumEntry("RelFactor",1);
 	FeedbackParams.FuzzyFactor=Config->readDoubleNumEntry("FuzzyFactor",1);
 	FeedbackParams.NoRelFactor=Config->readDoubleNumEntry("NoRelFactor",0);
@@ -495,13 +487,11 @@ void KGALILEICenterApp::readOptions(void)
 	// Read Config of ProfileCalcVector
 	Config->setGroup(StatisticalParams.GetComputingName());
 	StatisticalParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
-	StatisticalParams.MaxOrderSize=Config->readNumEntry("MaxOrderSize",500);
  	StatisticalParams.IdfFactor=Config->readBoolEntry("IdfFactor",1);
 
 	// Read Config of ProfileCalcReWeighting
 	Config->setGroup(ReWeightingParams.GetComputingName());
 	ReWeightingParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
-	ReWeightingParams.MaxOrderSize=Config->readNumEntry("MaxOrderSize",500);
 }
 
 
