@@ -127,6 +127,16 @@ class GGroupCalcCursor;
 
 
 //-----------------------------------------------------------------------------
+// forward class declaration - GA Part
+class GIR;
+class GInstIR;
+class GObjIR;
+class GChromoIR;
+class GGroupIR;
+class GHeuristicIR;
+
+
+//-----------------------------------------------------------------------------
 // forward class declaration - Session Part
 class GTest;
 class GTests;
