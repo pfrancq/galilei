@@ -98,7 +98,22 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 	if(!groups)
 		groups=new RContainer<GGroups,unsigned int,true,true>(2,2);
 	else
+	{
+		GGroupsCursor Cur;
+		GGroupCursor Cur2;
+
+		if(Save)
+		{
+			Cur.Set(groups);
+			for(Cur.Start();!Cur.End();Cur.Next())
+			{
+				Cur2.Set(Cur());
+				for(Cur2.Start();!Cur2.End();Cur2.Next())
+					Session->DeleteGroup(Cur2());
+			}
+		}
 		groups->Clear();
+	};
 
  	if(!parent)
 		parent=new RContainer<GGroupIdParentId,unsigned int,true,true>(10,10);
@@ -108,16 +123,17 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 	// Clear the old feedback.
 	Session->ClearFdbks();
 
- 	// Create the different judgments.
+	// Clear subprofiles assignement
+	Session->ClearSubProfilesGroups();
+
+	// Create the different judgments.
 	Subjects->Judgments(Session,PercOK,PercKO,PercHS,NbProfMin,NbProfMax,PercSocial,PercErr);
 
 	// Create the ideal groupment corresponding to the precedent judgment.
 	Subjects->IdealGroupment(groups,Session,parent);
 	if(Save)
 	{ 
-		// Save the  feedbacks into the database.
 		Session->SaveFdbks();  
-		// Save the ideal groupment into the database.
 		Session->SaveIdealGroupment(groups);
 	}
 
