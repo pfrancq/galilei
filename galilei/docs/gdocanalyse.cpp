@@ -181,7 +181,6 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 	bool *is;
 	unsigned int* tmp1;
 	unsigned int* tmp2;
-	bool* InStop;
 
 	// Find the section of double hash table concerned by the current word.
 	Section=Occurs->Hash[WordOccur::HashIndex(word)][WordOccur::HashIndex2(word)];
@@ -205,7 +204,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 		// Look for each language if the word is in the stop list.
 		if(FindLang)
 		{
-			for(CurLangs.Start(),is=w->InStop,tmp1=Sldiff,tmp2=Sl,InStop=w->InStop;!CurLangs.End();CurLangs.Next(),is++,tmp1++,tmp2++,InStop++)
+			for(CurLangs.Start(),is=w->InStop,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),is++,tmp1++,tmp2++)
 			{
 				(*is)=Session->GetStop(CurLangs())->IsIn<const char*>(word);
 				if(*is)
@@ -213,10 +212,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 					// In the stoplist -> Inc different words of the stop lists.
 					(*tmp1)++;
 					(*tmp2)++;
-					(*InStop)=true;
 				}
-				else
-					(*InStop)=false;
 			}
 		}
 	}
