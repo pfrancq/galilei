@@ -798,6 +798,12 @@ void GALILEI::GChromoIR::Optimisation(void)
 	RPromCriterion* PromCritSocial;
 	RPromCriterion* PromCritInfo;
 	RPromSol* s;
+	GObjIR* obj;
+	GGroupIRCursor Cur1,Cur2;
+	GGroupIR* grp=0;
+	double tmp,max;
+	unsigned int i;
+
 
 	// Copy the current chromosome in thTests
 	Evaluate();
@@ -818,7 +824,7 @@ void GALILEI::GChromoIR::Optimisation(void)
 		thTests[i]->Evaluate();
 	}
 
-	// Use PROMETHEE.
+	// Use PROMETHEE to determine the best solution.
 	Kernel=new RPromKernel("GChromoIR",6,5);
 	PromCritSim=Kernel->NewCriterion(Maximize,"Similarity",Instance->CritSim->GetParams());
 	PromCritSameFeedbacks=Kernel->NewCriterion(Maximize,"Same Feedbacks",Instance->CritSameFeedbacks->GetParams());
@@ -843,8 +849,39 @@ void GALILEI::GChromoIR::Optimisation(void)
 	Kernel->ComputePrometheeII();
 	if(Kernel->GetBestSol()->GetId())
 		(*this)=(*thTests[Kernel->GetBestSol()->GetId()-1]);
-
 	delete Kernel;
+
+	// Look if social subprofiles are alone
+	for(i=0;i<Used.NbPtr;i++)
+	{
+		Cur1.Set(Used);
+		Cur2.Set(Used);
+		for(Cur1.GoTo(i);!Cur1.End();Cur1.Next(),i++)
+		{
+			if(Cur1()->GetNbObjs()!=1) continue;
+			obj=Cur1()->GetObjPos(0);
+			if(!obj->GetSubProfile()->GetProfile()->IsSocial()) continue;
+			for(Cur2.Start(),max=-1.0,grp=0;!Cur2.End();Cur2.Next())
+			{
+				if(Cur1()==Cur2()) continue;
+//				if(!Cur2()->CanInsert(obj)) continue;
+				tmp=Cur2()->ComputeAvgSim(obj);
+				if(tmp>max)
+				{
+					max=tmp;
+					grp=Cur2();
+				}
+			}
+			if(grp)
+			{
+				ReleaseGroup(Cur1());
+				grp->Insert(obj);
+				i--;
+				break;
+			}
+		}
+	}
+
 }
 
 
