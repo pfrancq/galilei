@@ -107,7 +107,6 @@ public:
 	*/
 	GProfilesSim(RStd::RContainer<GSubProfile,unsigned int,false,true>& s,bool global,GLang* lang=0) throw(bad_alloc);
 
-	
 	/**
 	* Constructor.
 	* @param s              Cursor over the Subprofiles.
@@ -146,32 +145,26 @@ public:
 	*/
 	tObjState GetState(unsigned int id1, unsigned int id2);
 
-  // nouvelles methodes rajoutées par Val:
-	
-  /**
+	/**
 	* Compare methods used by RStd::RContainer.
 	*/
 	int Compare(const GLang* l) const;
-
 
 	/**
 	* Compare methods used by RStd::RContainer.
 	*/
 	int Compare(const GProfilesSim& profilesSim) const;
 
-	
 	/**
 	* Compare methods used by RStd::RContainer.
 	*/
 	int Compare(const GProfilesSim* profilesSim) const;
 
-	
-  /**
-  * Determine whether the comparaison is global or local
-  */
+	/**
+	* Determine whether the comparaison is global or local
+	*/
 	bool IsGlobalSim(void){return(GlobalSim);}
 
-	
 	/**
 	* Update the state of the profiles sims : If the subprofile has changed
 	* the corresponding sim will be set to state="osModified".
@@ -182,7 +175,7 @@ public:
 	* @param lang               the language used by the subProfiles
 	*/
 	void UpdateProfSim(GUsers* users,bool global,GLang* lang)throw(bad_alloc);
-	
+
 	/**
 	* Update the state of the profiles sims : If the subprofile has changed
 	* the corresponding sim will be set to state="osModified".
@@ -209,7 +202,7 @@ public:
 	* dont forget to 'UpdateDeviatonAdMeanSIm" if you want the updated mean.
 	*/ 
 	double GetMeanSim(void){return(MeanSim);}
-	
+
 	/**
 	* returns mean of similaritries
 	*/ 

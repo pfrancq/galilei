@@ -518,14 +518,14 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 	//manage number of comparisons.
 	nbcomp=(subprofiles->NbPtr)*(subprofiles->NbPtr-1)/2;
 
-	cout << "ancienne meansim= "<<MeanSim<<endl;
-	cout << "ancien ecart type"<< Deviation <<endl;
-	cout <<"Oldcomp ="<<OldNbComp<<endl;
-	cout <<"nbcomp ="<<nbcomp<<endl;
+//	cout << "ancienne meansim= "<<MeanSim<<endl;
+//	cout << "ancien ecart type"<< Deviation <<endl;
+//	cout <<"Oldcomp ="<<OldNbComp<<endl;
+//	cout <<"nbcomp ="<<nbcomp<<endl;
 	
-	cout <<" new similarities "<<endl;
+//	cout <<" new similarities "<<endl;
 
-	newmean=OldNbComp*oldsim;
+	newmean=OldNbComp*oldmean;
 	newdev=OldNbComp*(olddev+(oldmean*oldmean));
 	
 	for (sub1=subprofiles->Tab, i=subprofiles->NbPtr; i--; sub1++)
@@ -540,9 +540,9 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 			if (sim->State==osModified)
 			{
 				oldsim=sim->Sim;
-				cout << "oldsim="<< oldsim<<endl;
+//				cout << "oldsim="<< oldsim<<endl;
 				newsim=GetSim((*sub1),(*sub2));
-				cout <<newsim<<","<<endl;
+//				cout <<newsim<<","<<endl;
 				// deviation is calculated as follow : {sum (xi"2/n)} - mean"2
 				//removing the modified element
 				newdev-=(oldsim*oldsim);
@@ -551,8 +551,6 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 				//update the mean of similarities
 				newmean=newmean-oldsim+newsim;
 //				cout <<" temp mean ="<<newmean<<endl;
-//				cout << "temp dev="<<newdev<<endl;
-//				cout <<"Deviation ="<<Deviation<<endl;
 				//tmp dav
 				nbmodifiedsims++;
 			}
@@ -560,18 +558,17 @@ void GALILEI::GProfilesSim::UpdateDeviationAndMeanSim(RStd::RContainer<GSubProfi
 	}
 
 	newmean/=nbcomp;
-//	cout << "temp dev1="<<newdev<<endl;
 	newdev/=nbcomp;
-//	cout << "temp dev2="<<newdev<<endl;
 	newdev-=(newmean*newmean);
-//	cout << "temp dev3="<<newdev<<endl;
 
+	//re-affect thhe global parameters
 	MeanSim=newmean;
 	Deviation=newdev;
 //	cout << "en of new similarities !!"<<endl;
 //	cout << "MEan ="<<MeanSim<< "    Dev=  "<<Deviation <<endl;
+	if (Deviation <0)
+		cout << " ************ WARNING ! BUG in Deviation !!!!!!!!!!!! ************"<<endl;
 	OldNbComp=nbcomp;
-//	cout << nbmodifiedsims<< " sims were modified !"<<endl;
 }
 
 
