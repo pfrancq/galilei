@@ -165,13 +165,19 @@ class GQueryDocsGroup
 	*/
 	unsigned int Nb;
 
+	/**
+	* Statistics Output file.
+	*/
+	RIO::RTextFile* File;
+
 public:
 
 	/**
 	* Constructor.
 	* @param ses            The Galilei session.
+	* @param f              File.
 	*/
-	GQueryDocsGroup(GSession* ses) throw(bad_alloc);
+	GQueryDocsGroup(GSession* ses,RIO::RTextFile* f) throw(bad_alloc);
 
 	/**
 	* Run the query.

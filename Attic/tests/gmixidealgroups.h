@@ -74,11 +74,6 @@ protected:
 	RRandom* Rand;
 
 	/**
-	* Container used to create subjects catagories.
-	*/
-	RContainer<GGroupIdParentId,unsigned int,true,true>* Parents;
-
-	/**
 	* Ideal groupment.
 	*/
 	RContainer<GGroups,unsigned int,true,true>* IdealGroups;
@@ -156,7 +151,7 @@ public:
 	* @param s              split category?
 	* @param r              random grouping?
 	*/
-	GMixIdealGroups(GSession* sess, RContainer<GGroupIdParentId,unsigned int,true,true>* parents, RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups=10, int level=3, bool m=true, bool s=true, bool r=true, bool i=true);
+	GMixIdealGroups(GSession* sess, /*RContainer<GGroupIdParentId,unsigned int,true,true>* parents, */RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups=10, int level=3, bool m=true, bool s=true, bool r=true, bool i=true);
 
 	/**
 	* set the settings.

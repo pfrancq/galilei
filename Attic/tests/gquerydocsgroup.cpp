@@ -98,8 +98,8 @@ int GALILEI::GQueryDocsGroup::GroupSim::sortOrder(const void *a,const void *b)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GQueryDocsGroup::GQueryDocsGroup(GSession* ses) throw(bad_alloc)
-	: Session(ses), Order(0), SizeOrder(6000), Groups(50)
+GALILEI::GQueryDocsGroup::GQueryDocsGroup(GSession* ses,RIO::RTextFile* f) throw(bad_alloc)
+	: Session(ses), Order(0), SizeOrder(6000), Groups(50), File(f)
 {
 	Order=new GIWordWeight*[SizeOrder];
 }
@@ -118,6 +118,13 @@ void GALILEI::GQueryDocsGroup::Run(unsigned int first,unsigned int nb,bool trans
 	GGroupsCursor IdealGroups=Session->GetIdealGroupsCursor();
 
 	// Init Part
+	if(File)
+	{
+		if(global)
+			(*File)<<"RecallGlobal"<<endl;
+		else
+			(*File)<<"RecallLocal"<<endl;
+	}
 	First=Second=SimQueryIntra=SimQueryInter=Recall=0.0;
 	queries=comptintra=comptinter=0;
 	Transform=trans;
@@ -141,8 +148,9 @@ void GALILEI::GQueryDocsGroup::Run(unsigned int first,unsigned int nb,bool trans
 			group=static_cast<GGroupEvaluateDoc*>((*IdealDocs())());
 			QueryWord.Clear();
 
-			// Sum the weight of each information entity in a new vector,
-			// compute idf factor and ordered it in descending order
+			// Sum the weight of each information entity of the documents which
+			// were not judged in a new vector, compute idf factor and ordered
+			// it in descending order
 			for(group->Start();!group->End();group->Next())
 			{
 				Doc=Session->GetDoc(group->Current());
@@ -228,6 +236,7 @@ void GALILEI::GQueryDocsGroup::DoQuery(GIWordsWeights& query)
 	GGroupCursor Group;
 	GGroupsCursor IdealGroups=Session->GetIdealGroupsCursor();
 	double sim;
+	double recall;
 
 	if(Transform)
 		query.ModifyQueryGroups(otGroups,Lang);
@@ -259,10 +268,15 @@ void GALILEI::GQueryDocsGroup::DoQuery(GIWordsWeights& query)
 		sim=(*ptr)->Sim;
 		if(temp->GetId()==GroupId)
 		{
-			Recall+=(1/comptfind);
+			recall=(1/comptfind);
+			Recall+=recall;
 			SimQueryIntra+=sim;
 			comptintra++;
 			pos=Groups.NbPtr-g;
+			if(File)
+			{
+				(*File)<<recall<<endl;
+			}
 		}
 		else
 		{

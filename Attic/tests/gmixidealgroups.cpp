@@ -68,8 +68,8 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GMixIdealGroups::GMixIdealGroups(GSession* sess, RContainer<GGroupIdParentId,unsigned int,true,true>* parents, RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups, int level, bool m, bool s, bool r, bool i)
-	:  Parents(parents), IdealGroups(idealgroups), MixedGroups(IdealGroups->NbPtr,2), Tab(0), Tabs(0), TabS(0)
+GALILEI::GMixIdealGroups::GMixIdealGroups(GSession* sess,RContainer<GGroups,unsigned int,true,true>* idealgroups, int nbgroups, int level, bool m, bool s, bool r, bool i)
+	:  IdealGroups(idealgroups), MixedGroups(IdealGroups->NbPtr,2), Tab(0), Tabs(0), TabS(0)
 {
 	//init parameters
 	Random=r;

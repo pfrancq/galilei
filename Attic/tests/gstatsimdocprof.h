@@ -150,12 +150,12 @@ protected:
 	/**
 	* Container of statistics on Precisions (Local).
 	*/
-	RStd::RContainer<SimGroup,unsigned int,true,true> DocsL;
+	RStd::RContainer<SimGroup,unsigned int,true,false> DocsL;
 
 	/**
 	* Container of statistics on Precisions (Global).
 	*/
-	RStd::RContainer<SimGroup,unsigned int,true,true> DocsG;
+	RStd::RContainer<SimGroup,unsigned int,true,false> DocsG;
 
 public:
 
