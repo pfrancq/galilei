@@ -58,7 +58,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gsession.h>
-#include <sessions/gobjref.h>
 #include <sessions/gstorage.h>
 #include <docs/gdoc.h>
 #include <infos/glang.h>
@@ -213,7 +212,7 @@ void QSessionProgressDlg::AnalyseXML(GDocXML* &xml,GDoc* doc)
 			 txtRem->setText(QString("Error: No Text Analyse method chosen."));
 		else
 		{
-			Session->GetDocAnalyseMng()->GetCurrentMethod()->Analyze(xml,doc->GetId());
+			Session->GetDocAnalyseMng()->GetCurrentMethod()->Analyze(xml,doc);
 			txtRem->setText("Finish");
 		}
 	}

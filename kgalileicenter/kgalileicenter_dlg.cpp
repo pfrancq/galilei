@@ -378,7 +378,6 @@ void KGALILEICenterApp::slotPlugins(void)
 	for(Engine.Start();!Engine.End();Engine.Next())
 	{
 		str=ToQString(Engine()->GetName());
-		cout<<Engine()->GetName()<<endl;
 		str+=" [";
 		str+=ToQString(Engine()->GetLib());
 		str+="]";
@@ -584,7 +583,6 @@ void KGALILEICenterApp::slotPlugins(void)
 		QEngineItem* item11=dynamic_cast<QEngineItem*>(dlg.Engines->firstChild());
 		while(item11)
 		{
-			cout<<"passe dans engines dlg"<<endl;
 			if(item11->Enable)
 				item11->Fac->Create();
 			else
@@ -596,7 +594,6 @@ void KGALILEICenterApp::slotPlugins(void)
 		QMetaEngineItem* item12=dynamic_cast<QMetaEngineItem*>(dlg.MetaEngines->firstChild());
 		while(item12)
 		{
-			cout<<"passe dans meta engines dlg"<<endl;
 			if(item12->Enable)
 				item12->Fac->Create(getSession());
 			else

@@ -200,7 +200,7 @@ void KViewDoc::ConstructFdbks(void)
 
 
 	// Add Judgements for profile.
-	Doc->GetSession()->GetDocAssessments(Document->GetId(),Assess);
+	Doc->GetSession()->GetDocAssessments(Document,Assess);
 	RCursor<GProfDoc> Profiles(Assess);
 	for(Profiles.Start();!Profiles.End();Profiles.Next())
 	{
