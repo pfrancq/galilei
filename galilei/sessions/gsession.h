@@ -179,6 +179,12 @@ protected:
 	*/
 	bool StaticLang;
 
+	/**
+	* Minimum percentage of words of a document which must be in the stop list
+	* of a language to make the language the current one.
+	*/
+	double MinStopWords;
+
 public:
 
 	/**
@@ -351,6 +357,12 @@ public:
 		* @param s          Static?
 		*/
 		void SetStaticLang(bool s) {StaticLang=s;}
+
+		/**
+		* Set the minimum percentage of stop words.
+		* @param min        Minimal Percentage.
+		*/
+		void SetMinStopWords(double min) {MinStopWords=min;}
 
 		/**
 		* Load the documents.
