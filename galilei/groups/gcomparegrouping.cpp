@@ -178,7 +178,6 @@ void GALILEI::GCompareGrouping::ComputeRecallPrecision(GSlot* /*rec*/)
 				if(thGrp->NbPtr==1)
 				{
 					Grp()->Recall+=1.0;
-					Recall+=1.0;
 				}
 				else
 				{
