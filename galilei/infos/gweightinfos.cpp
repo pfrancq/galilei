@@ -186,8 +186,8 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 	unsigned int j=w->NbPtr;
 	double norm1=0.0;
 	double norm2=0.0;
-	double max1=GetMaxWeight();
-	double max2=w->GetMaxWeight();
+	double max1;
+	double max2;
 	double w1,w2,iff;
 	double TotalRef;
 
@@ -199,6 +199,8 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 		return(0.0);
 
 	// Compute Similarity
+	max1=GetMaxWeight();
+	max2=w->GetMaxWeight();
 	TotalRef=lang->GetRef(ObjType);
 	while(--i)
 	{
