@@ -105,8 +105,8 @@ GSession::GSession(GStorage* str,unsigned int d,unsigned int u,unsigned int p,un
 	: GDocs(d), GUsers(u,p), GGroups(g),
 	  Subjects(0), Fdbks(f+f/2,f/2),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
-	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0),
-	  ProfilesBehaviours(0), DocProfSims(0), Random(0),  SessParams(sessparams), Storage(str)
+	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0), DocAnalyseMng(0),
+	  ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),  SessParams(sessparams), Storage(str)
 {
 	// Init Part
 	CurrentRandom=0;
@@ -725,9 +725,11 @@ GSession::~GSession(void) throw(GException)
 }
 
 
-#include <sessions/gstoragemysql.h>
+
 //------------------------------------------------------------------------------
 // class GSessionParams
+//------------------------------------------------------------------------------
+
 //------------------------------------------------------------------------------
 GSessionParams::GSessionParams(void)
 	: GParams("Session Parameters")
@@ -737,4 +739,3 @@ GSessionParams::GSessionParams(void)
 	InsertPtr(p=new GParamUInt("DiffBehaviourMinDocs",4));
 	InsertPtr(p=new GParamDouble("NullSimLevel",0.00001));
 }
-

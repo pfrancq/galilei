@@ -79,12 +79,14 @@ public:
 	*/
 	GStorageMySQL(const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,R::RMySQLError);
 
+protected:
+
 	/**
 	* Count the number of rows of a table.
 	* @param tbl            Table to analyse.
 	* @returns Number of rows.
 	*/
-	virtual unsigned int GetCount(const char* tbl);
+	virtual unsigned int GetCount(const char* tbl) throw(R::RMySQLError);
 
 	/**
 	* Count the maximal value for a field of a table.
@@ -92,9 +94,7 @@ public:
 	* @param fld            Field to analyse.
 	* @returns Maximal value.
 	*/
-	unsigned int GetMax(const char* tbl,const char* fld);
-
-protected:
+	unsigned int GetMax(const char* tbl,const char* fld) throw(R::RMySQLError);
 
 	/**
 	* Transform a RTimeDate::RDate to a C string with the MySQL format.
@@ -102,14 +102,14 @@ protected:
 	* @param tmp            C String containing the date.
 	* @returns Pointer to the tmp C string.
 	*/
-	const char* GetDateToMySQL(const R::RDate& d,char* tmp);
+	const char* GetDateToMySQL(const R::RDate& d,char* tmp) throw(R::RMySQLError);
 
 	/**
 	* Parse a field and when for quotes and double them.
 	* @param tmp            C String containing the date.
 	* @returns Pointer to the tmp C string.
 	*/
-	const char* ValidSQLValue(const char* val,char* tmp);
+	const char* ValidSQLValue(const char* val,char* tmp) throw(R::RMySQLError);
 
 public :
 
@@ -118,7 +118,7 @@ public :
 	* @param data           Data.
 	* @param dict           Dictionary.
 	*/
-	virtual void AssignId(GData* data,const GDict* dict);
+	virtual void AssignId(GData* data,const GDict* dict) throw(GException);
 
 	/**
 	* Loading a dictionary/stoplist.
@@ -133,7 +133,7 @@ public :
 	* @param id             Idenfificator of the word.
 	* @param code           Code of the languague.
 	*/
-	virtual const char* LoadWord(unsigned int id,const char* code);
+	virtual const char* LoadWord(unsigned int id,const char* code) throw(bad_alloc,GException);
 
 	/**
 	* Load a specific wordlist from a dictionary.
@@ -147,7 +147,7 @@ public :
 	* @param dic            Pointer to the dictionary.
 	* @param w              WordList to save.
 	*/
-	virtual void SaveWordList(GDict* dic,GWordList* w) throw(bad_alloc,GException);
+	virtual void SaveWordList(GDict* dic,GWordList* w) throw(GException);
 
 	/**
 	* Load the documents.
@@ -178,19 +178,19 @@ public :
 	* Load the Subjectree.
 	* @param subjects     The tree of subjects.
 	*/
-	virtual void LoadSubjectTree(GSession* session);
+	virtual void LoadSubjectTree(GSession* session) throw(bad_alloc,GException);
 
 	/**
 	* Load the ideal groupment.
 	* @param idealgroup   The ideal container of group
 	*/
-	virtual void LoadIdealGroupment(GSession* session);
+	virtual void LoadIdealGroupment(GSession* session) throw(bad_alloc,GException);
 
 	/**
 	* Save the ideal groupment
 	* @param idealgroup   The ideal container of group
 	*/
-	virtual void SaveIdealGroupment(GGroups* idealgroup);
+	virtual void SaveIdealGroupment(GGroups* idealgroup) throw(GException);
 
 	/**
 	* Save a document.
@@ -235,7 +235,7 @@ public :
 	* @param lang       Language of the group to create.
 	* @param grp        Group created.
 	*/
-	virtual void SaveGroups(GSession* session);
+	virtual void SaveGroups(GSession* session) throw(GException);
 
 	/**
 	* Save the mixed groups of the session.
@@ -243,12 +243,12 @@ public :
 	* @param id             Identificator.
 	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
 	*/
-	virtual void SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic=false);
+	virtual void SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic=false) throw(GException);
 
 	/**
 	* Save the Profiles in history.
 	*/
-	virtual void SaveHistoricProfiles(GSession* session,unsigned int historicid);
+	virtual void SaveHistoricProfiles(GSession* session,unsigned int historicid) throw(GException);
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
@@ -260,12 +260,12 @@ public :
 	/**
 	* load the historic groups.
 	*/
-	GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID);
+	GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID) throw(bad_alloc,GException);
 
 	/**
 	*returns the number of historic groups stored in database.
 	*/
-	virtual unsigned int GetHistorySize(void) ;
+	virtual unsigned int GetHistorySize(void) throw(GException);
 
 	/**
 	* Create a dummy table to store different kid of
@@ -277,10 +277,10 @@ public :
 	/**
 	* Add a dummy entry into a dummy table;
 	* @param name               name of the dummy table.
-	 * @param id                id of the dymmy entry.
-	 * @param desc              description of the dymmy entry.
+	* @param id                id of the dymmy entry.
+	* @param desc              description of the dymmy entry.
 	*/
-	virtual void AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid);
+	virtual void AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid) throw(GException);
 
 	/**
 	* Destructor.

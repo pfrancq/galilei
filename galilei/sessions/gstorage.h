@@ -80,7 +80,7 @@ public:
 	* @param data           Data.
 	* @param dict           Dictionary.
 	*/
-	virtual void AssignId(GData* data,const GDict* dict)=0;
+	virtual void AssignId(GData* data,const GDict* dict) throw(GException)=0;
 
 	/**
 	* Loading a dictionary/stoplist.
@@ -95,7 +95,7 @@ public:
 	* @param id             Idenfificator of the word.
 	* @param code           Code of the languague.
 	*/
-	virtual const char* LoadWord(unsigned int id,const char* code)=0;
+	virtual const char* LoadWord(unsigned int id,const char* code) throw(bad_alloc,GException)=0;
 
 	/**
 	* Load a specific wordlist from a dictionary.
@@ -109,7 +109,7 @@ public:
 	* @param dic            Pointer to the dictionary.
 	* @param w              WordList to save.
 	*/
-	virtual void SaveWordList(GDict* dic,GWordList* w) throw(bad_alloc,GException)=0;
+	virtual void SaveWordList(GDict* dic,GWordList* w) throw(GException)=0;
 
 	/**
 	* Method that load the documents from where they are stored. This method
@@ -151,7 +151,7 @@ public:
 	/**
 	* Load the SubjectTree.
 	*/
-	virtual void LoadSubjectTree(GSession* session)=0;
+	virtual void LoadSubjectTree(GSession* session) throw(bad_alloc,GException)=0;
 
 	/**
 	* Save the groups of the session
@@ -159,13 +159,13 @@ public:
 	* @param id             Identificator.
 	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
 	*/
-	virtual void SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic=false)=0;
+	virtual void SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic=false) throw(GException)=0;
 
 	/**
 	* Save profiles in history
 	* @param historicid     id of the historic.
 	*/
-	virtual void SaveHistoricProfiles(GSession* session,unsigned int historicid)=0;
+	virtual void SaveHistoricProfiles(GSession* session,unsigned int historicid) throw(GException)=0;
 
 	/**
 	* Return the name of the current database.
@@ -187,24 +187,24 @@ public:
 	/**
 	* Save the groups of the session.
 	*/
-	virtual void SaveGroups(GSession* session)=0;
+	virtual void SaveGroups(GSession* session) throw(GException)=0;
 
 	/**
 	* Load the ideal groupment.
 	* @param idealgroup   The ideal container of group
 	*/
-	virtual void LoadIdealGroupment(GSession* session)=0;
+	virtual void LoadIdealGroupment(GSession* session) throw(bad_alloc,GException)=0;
 
 	/**
 	* Save the ideal groupment
 	* @param idealgroup   The ideal container of group
 	*/
-	virtual void SaveIdealGroupment(GGroups* idealgroup)=0;
+	virtual void SaveIdealGroupment(GGroups* idealgroup) throw(GException)=0;
 
 	/**
 	* Save the feedbaks
 	*/
-	virtual void SaveFdbks(GSession* session)=0;
+	virtual void SaveFdbks(GSession* session) throw(GException)=0;
 
 	/**
 	* Save clusters of words in a document.
@@ -216,26 +216,19 @@ public:
 	/*
 	* Load an historic groups.
 	*/
-	virtual GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID)=0;
+	virtual GGroupsHistory* LoadAnHistoricGroups(R::RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicaID) throw(bad_alloc,GException)=0;
 
 	/**
 	* Returns the number of historic groups stored in the database.
 	*/
-	virtual unsigned int GetHistorySize(void)=0;
-
-	/**
-	* Count the number of rows of a table.
-	* @param tbl            Table to analyse.
-	* @returns Number of rows.
-	*/
-	virtual unsigned int GetCount(const char* tbl)=0;
+	virtual unsigned int GetHistorySize(void) throw(GException)=0;
 
 	/**
 	* Create a dummy table to store different kid of
 	* data.
 	* @ param name              name of the dummy object.
 	*/
-	virtual void CreateDummy(const char* name)=0;
+	virtual void CreateDummy(const char* name) throw(GException)=0;
 
 	/**
 	* Add a dummy entry into a dummy table;
@@ -243,7 +236,7 @@ public:
 	* @param id                id of the dymmy entry.
 	* @param desc              description of the dymmy entry.
 	*/
-	virtual void AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid)=0;
+	virtual void AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid) throw(GException)=0;
 
 	/**
 	* Destructor.

@@ -90,7 +90,7 @@ GALILEI::GStorageMySQL::GStorageMySQL(const char* host,const char* user,const ch
 
 
 //------------------------------------------------------------------------------
-unsigned int GALILEI::GStorageMySQL::GetCount(const char* tbl)
+unsigned int GALILEI::GStorageMySQL::GetCount(const char* tbl) throw(R::RMySQLError)
 {
 	char sSql[100];
 	const char* c;
@@ -105,7 +105,7 @@ unsigned int GALILEI::GStorageMySQL::GetCount(const char* tbl)
 
 
 //------------------------------------------------------------------------------
-unsigned int GALILEI::GStorageMySQL::GetMax(const char* tbl,const char* fld)
+unsigned int GALILEI::GStorageMySQL::GetMax(const char* tbl,const char* fld) throw(R::RMySQLError)
 {
 	char sSql[100];
 	const char* c;
@@ -120,7 +120,7 @@ unsigned int GALILEI::GStorageMySQL::GetMax(const char* tbl,const char* fld)
 
 
 //------------------------------------------------------------------------------
-const char* GALILEI::GStorageMySQL::GetDateToMySQL(const RDate& d,char* tmp)
+const char* GALILEI::GStorageMySQL::GetDateToMySQL(const RDate& d,char* tmp) throw(R::RMySQLError)
 {
 	sprintf(tmp,"'%u-%u-%u'",d.GetYear(),d.GetMonth(),d.GetDay());
 	return(tmp);
@@ -128,7 +128,7 @@ const char* GALILEI::GStorageMySQL::GetDateToMySQL(const RDate& d,char* tmp)
 
 
 //------------------------------------------------------------------------------
-const char* GALILEI::GStorageMySQL::ValidSQLValue(const char* val,char* tmp)
+const char* GALILEI::GStorageMySQL::ValidSQLValue(const char* val,char* tmp) throw(R::RMySQLError)
 {
 	const char* ptr1=val;
 	char* ptr2=tmp;
@@ -149,7 +149,7 @@ const char* GALILEI::GStorageMySQL::ValidSQLValue(const char* val,char* tmp)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::AssignId(GData* data,const GDict* dict)
+void GALILEI::GStorageMySQL::AssignId(GData* data,const GDict* dict) throw(GException)
 {
 
 	// preliminary traitement of special words and composite like insert -> reinsert ...
@@ -208,59 +208,66 @@ void GALILEI::GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_a
 	char sSql[100];
 	char tbl[20];
 
-	// Construct the table name
-	if(s)
-		sprintf(tbl,"%sstopkwds",lang->GetCode());
-	else
-		sprintf(tbl,"%skwds",lang->GetCode());
-
-	// Search the values to initialise the dictionary
-	for(char i='a';i<='z';i++)
+	try
 	{
-		sprintf(sSql,"SELECT COUNT(*) FROM %s WHERE kwd LIKE '%c%%'",tbl,i);
-		RQuery count(this,sSql);
-		count.Start();
-		if(strtoul(count[0],0,10)>MaxCount) MaxCount=strtoul(count[0],0,10);
-	}
-	if(MaxCount==0) MaxCount=2000;
-	MaxId=GetMax(tbl,"kwdid");
-	if(!MaxId)
-		MaxId=2000;
+		// Construct the table name
+		if(s)
+			sprintf(tbl,"%sstopkwds",lang->GetCode());
+		else
+			sprintf(tbl,"%skwds",lang->GetCode());
 
-	// Create and insert the dictionary
-	if(s)
-		dic=new GDict(tbl,"Stop List",lang,MaxId,MaxCount,true);
-	else
-		dic=new GDict(tbl,"Dictionary",lang,MaxId,MaxCount,false);
-
-	// Load the dictionary from the database
-	sprintf(sSql,"SELECT kwdid, kwd, type  FROM %s",tbl);
-	RQuery dicts (this, sSql);
-	for(dicts.Start();!dicts.End();dicts.Next())
-	{
-		switch(atoi(dicts[2]))
+		// Search the values to initialise the dictionary
+		for(char i='a';i<='z';i++)
 		{
-			case infoWord :
-				{
-					GWord w(atoi(dicts[0]),dicts[1]);
-					dic->InsertData(&w);
-				}
-				break;
-
-			case infoWordList :
-				{
-					GWordList w(atoi(dicts[0]),dicts[1]);
-					LoadWordList(&w,lang);
-					dic->InsertData(&w);
-				}
-				break;
+			sprintf(sSql,"SELECT COUNT(*) FROM %s WHERE kwd LIKE '%c%%'",tbl,i);
+			RQuery count(this,sSql);
+			count.Start();
+			if(strtoul(count[0],0,10)>MaxCount) MaxCount=strtoul(count[0],0,10);
 		}
+		if(MaxCount==0) MaxCount=2000;
+		MaxId=GetMax(tbl,"kwdid");
+		if(!MaxId)
+			MaxId=2000;
+
+		// Create and insert the dictionary
+		if(s)
+			dic=new GDict(tbl,"Stop List",lang,MaxId,MaxCount,true);
+		else
+			dic=new GDict(tbl,"Dictionary",lang,MaxId,MaxCount,false);
+
+		// Load the dictionary from the database
+		sprintf(sSql,"SELECT kwdid, kwd, type  FROM %s",tbl);
+		RQuery dicts (this, sSql);
+		for(dicts.Start();!dicts.End();dicts.Next())
+		{
+			switch(atoi(dicts[2]))
+			{
+				case infoWord :
+					{
+						GWord w(atoi(dicts[0]),dicts[1]);
+						dic->InsertData(&w);
+					}
+					break;
+
+				case infoWordList :
+					{
+						GWordList w(atoi(dicts[0]),dicts[1]);
+						LoadWordList(&w,lang);
+						dic->InsertData(&w);
+					}
+					break;
+			}
+		}
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
 	}
 }
 
 
 //--------------------.---------------------------------------------------------
-const char* GALILEI::GStorageMySQL::LoadWord(unsigned int id,const char* code)
+const char* GALILEI::GStorageMySQL::LoadWord(unsigned int id,const char* code) throw(bad_alloc,GException)
 {
 	char sSql[100];
 
@@ -286,7 +293,7 @@ void GALILEI::GStorageMySQL::LoadWordList(GWordList* w,GLang* lang) throw(bad_al
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveWordList(GDict* dic,GWordList* w) throw(bad_alloc,GException)
+void GALILEI::GStorageMySQL::SaveWordList(GDict* dic,GWordList* w) throw(GException)
 {
 	GWordCursor Cur;
 	char sSql[600];
@@ -473,13 +480,13 @@ void GALILEI::GStorageMySQL::LoadUsers(GSession* session) throw(bad_alloc,GExcep
 	}
 	catch(RMySQLError& e)
 	{
-		throw GException(e.GetError());
+		throw GException(e.GetMsg());
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::LoadIdealGroupment(GSession* session)
+void GALILEI::GStorageMySQL::LoadIdealGroupment(GSession* session) throw(bad_alloc,GException)
 {
 	GGroups* groups;
 	GGroup* group;
@@ -518,7 +525,7 @@ void GALILEI::GStorageMySQL::LoadIdealGroupment(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup)
+void GALILEI::GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup) throw(GException)
 {
 	GGroupCursor groups;
 	GSubProfileCursor sub;
@@ -541,7 +548,7 @@ void GALILEI::GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::LoadSubjectTree(GSession* session)
+void GALILEI::GStorageMySQL::LoadSubjectTree(GSession* session) throw(bad_alloc,GException)
 {
 	char sSql[200];
 	GSubject* subject;
@@ -849,7 +856,7 @@ void GALILEI::GStorageMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GExcepti
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveGroups(GSession* session)
+void GALILEI::GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 {
 	GWeightInfoCursor WordCur;
 	GGroupCursor GroupsCursor;
@@ -897,7 +904,7 @@ void GALILEI::GStorageMySQL::SaveGroups(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic)
+void GALILEI::GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic) throw(GException)
 {
 	char sSql[100];
 	char database[20];
@@ -940,7 +947,7 @@ void GALILEI::GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int i
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historicid)
+void GALILEI::GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historicid) throw(GException)
 {
 	GFactoryLangCursor curLang;
 	GLang* lang;
@@ -1027,7 +1034,7 @@ void GALILEI::GStorageMySQL::ExecuteData(const char* filename) throw(GException)
 
 
 //------------------------------------------------------------------------------
-GGroupsHistory* GALILEI::GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicid)
+GGroupsHistory* GALILEI::GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsigned int, false,true>* subprofiles,GLang* lang, unsigned int historicid) throw(bad_alloc,GException)
 {
 	char sSql[200];
 	GGroupHistory* grp;
@@ -1076,7 +1083,7 @@ GGroupsHistory* GALILEI::GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProf
 
 
 //------------------------------------------------------------------------------
-unsigned int GALILEI::GStorageMySQL::GetHistorySize(void)
+unsigned int GALILEI::GStorageMySQL::GetHistorySize(void) throw(GException)
 {
 	char sSql[200];
 	sprintf(sSql,"SELECT COUNT(DISTINCT historicid) from historicgroups");
@@ -1096,7 +1103,7 @@ void GALILEI::GStorageMySQL::CreateDummy(const char* name) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GStorageMySQL::AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid)
+void GALILEI::GStorageMySQL::AddDummyEntry(const char* name, unsigned int id, const char* desc, unsigned int parentid) throw(GException)
 {
 	char sSql[500];
 	sprintf(sSql, "INSERT INTO %s (id, parentid, description) values (%u, %u, '%s')", name, id, parentid, desc);
