@@ -33,10 +33,15 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <langs/glang.h>
 #include <groups/gchromoir.h>
 #include <groups/ginstir.h>
 #include <groups/ggroupir.h>
+#include <groups/gobjir.h>
 #include <profiles/gsubprofile.h>
+#include <profiles/gprofile.h>
+#include <profiles/gprofilessim.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 
 
@@ -60,12 +65,21 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewGA::KViewGA(KDoc* doc,unsigned int pop,QWidget* parent,const char* name,int wflags)
+KViewGA::KViewGA(KDoc* doc,const char* l,unsigned int pop,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), RGASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>(),
-	  CurId(0), Instance(0), Gen(0), PopSize(pop)
+	  CurId(0), Instance(0), Gen(0), PopSize(pop),SubProfiles(0), Objs(0), Sims(0)
 {
 	static char tmp[100];
+	GLang* lang;
+	GSubProfile* sub;
+	GGroupDataIR g;
+	unsigned int i;
 
+	// Window
+	lang=Doc->GetSession()->GetLang(l);
+	setCaption(QString("GALILEI Genetic Algorithms - ")+lang->GetName());
+
+	// Tab
 	setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)1, (QSizePolicy::SizeType)1, sizePolicy().hasHeightForWidth() ) );
 	TabWidget = new QTabWidget( this, "TabWidget" );
 	TabWidget->setGeometry(rect());
@@ -78,24 +92,41 @@ KViewGA::KViewGA(KDoc* doc,unsigned int pop,QWidget* parent,const char* name,int
 	StatSplitter->setGeometry(rect());
 	Monitor=new	QGAMonitor(StatSplitter);
 	Monitor->setMaxGen(pop);
-	connect(this,SIGNAL(signalSetGen(unsigned int,unsigned int,double)),Monitor,SLOT(slotSetGen(unsigned int,unsigned int,double)));
-	Debug=new QXMLContainer(StatSplitter);
+	connect(this,SIGNAL(signalSetGen(const unsigned int,const unsigned int,const double)),Monitor,SLOT(slotSetGen(const unsigned int,const unsigned int,const double)));
+	Debug=new QXMLContainer(StatSplitter,"GALILEI Genetic Algorithms","Pascal Francq");
 
-	// Solution part
-	Best = new QListView(/*pDoc,*/TabWidget);
+	// Go through the profiles corresponding to the language and that are
+	// to inserted.
+	GProfileCursor cur=Doc->GetSession()->GetProfilesCursor();
+	SubProfiles=new RStd::RContainer<GSubProfile,unsigned int,false,true>(cur.GetNb());
+	Objs=new RGA::RObjs<GObjIR>(cur.GetNb());
+	for(cur.Start(),i=0;!cur.End();cur.Next())
+	{
+		sub=cur()->GetSubProfile(lang);
+		if(sub->IsDefined())
+		{
+			SubProfiles->InsertPtr(sub);
+			Objs->InsertPtr(new GObjIR(i,sub));
+			i++;
+		}
+	}
+	Sims=new GProfilesSim(SubProfiles);
+
+	// Solutions and Best Part
+	Best = new QGGroupsIR(TabWidget,Objs);
 	TabWidget->insertTab(Best,"Best Solution");
-
-	// Solution part
-	Sol = new QListView(/*pDoc,*/TabWidget);
+	connect(Best,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	Sol = new QGGroupsIR(TabWidget,Objs);
 	sprintf(tmp,"Solution (0/%u)",PopSize-1);
 	TabWidget->insertTab(Sol,tmp);
+	connect(Sol,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 
 	// Create GA
 	try
 	{
-//		Instance=new GInstIR(Doc->GetMaxGen(),PopSize,pDoc,theApp->GAHeur,Debug);
-//		Instance->AddReceiver(this);
-//		Instance->Init();
+		Instance=new GInstIR(60,PopSize,Objs,Sims,RGGA::FirstFit,Debug);
+		Instance->AddReceiver(this);
+		Instance->Init(&g);
 	}
 	catch(eGA& e)
 	{
@@ -125,6 +156,8 @@ void KViewGA::update(unsigned int /*cmd*/)
 void KViewGA::receiveGenSig(GenSig* sig)
 {
 	emit signalSetGen(sig->Gen,sig->BestGen,sig->Best->Fitness->Value);
+	Sol->setGroups(Instance->Chromosomes[CurId]);
+	Sol->setChanged();
 }
 
 
@@ -142,16 +175,18 @@ void KViewGA::receiveBestSig(BestSig* sig)
 
 	sprintf(tmp,"Best Solution (Id=%u)",sig->Best->Id);
 	TabWidget->changeTab(Best,tmp);
+	Best->setGroups(sig->Best);
+	Best->setChanged();
 }
 
 
 //---------------------------------------------------------------------------
 void KViewGA::RunGA(void)
 {
-//	if(Instance)
-//	{
-//		try
-//		{
+	if(Instance)
+	{
+		try
+		{
 //			if(Doc->GetMaxGen()>Gen)
 //			{
 //				if(Doc->GetStepGen()==0)
@@ -162,15 +197,15 @@ void KViewGA::RunGA(void)
 //					if(Gen>Doc->GetMaxGen()) Gen=Doc->GetMaxGen();
 //				}
 //			}
-//			Instance->MaxGen=Gen;
-//			Instance->Run();
-//			KMessageBox::information(this,"Done");
-//		}
-//		catch(eGA& e)
-//		{
-//			KMessageBox::error(this,QString(e.Msg));
-//		}
-//	}
+//			Instance->MaxGen=60;
+			Instance->Run();
+			KMessageBox::information(this,"Done");
+		}
+		catch(eGA& e)
+		{
+			KMessageBox::error(this,QString(e.Msg));
+		}
+	}
 }
 
 
@@ -204,12 +239,16 @@ void KViewGA::keyReleaseEvent(QKeyEvent* e)
 			if(CurId<PopSize-1) CurId++; else CurId=0;
 			sprintf(tmp,"Solution (%u/%u)",CurId,PopSize-1);
 			TabWidget->changeTab(Sol,tmp);
+			Sol->setGroups(Instance->Chromosomes[CurId]);
+			Sol->setChanged();
 			break;
 
 		case Key_PageDown:
 			if(CurId>0) CurId--; else CurId=PopSize-1;
 			sprintf(tmp,"Solution (%u/%u)",CurId,PopSize-1);
 			TabWidget->changeTab(Sol,tmp);
+			Sol->setGroups(Instance->Chromosomes[CurId]);
+			Sol->setChanged();
 			break;
 
 //		case Key_G:
@@ -243,4 +282,10 @@ KViewGA::~KViewGA(void)
 {
 	if(Instance)
 		delete Instance;
+	if(SubProfiles)
+		delete SubProfiles;
+	if(Sims)
+		delete Sims;
+	if(Objs)
+		delete Objs;
 }

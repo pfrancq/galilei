@@ -49,6 +49,7 @@ using namespace RGA;
 #include <groups/gir.h>
 #include <groups/gchromoir.h>
 #include <groups/ginstir.h>
+#include <galilei/qggroupsir.h>
 using namespace GALILEI;
 
 
@@ -98,12 +99,12 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	/**
 	* The best solution.
 	*/
-	QListView* Best;
+	QGGroupsIR* Best;
 	
 	/**
 	* The solutions.
 	*/
-	QListView* Sol;
+	QGGroupsIR* Sol;
 	
 	/**
 	* Identificator of the current showed solution.
@@ -125,17 +126,33 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	*/
 	unsigned int PopSize;
 
+	/**
+	* SubProfiles that must be grouped again.
+	*/
+	RStd::RContainer<GSubProfile,unsigned int,false,true>* SubProfiles;
+
+	/**
+	* Objects representing SubProfiles that must be grouped again.
+	*/
+	RGA::RObjs<GObjIR>* Objs;
+
+	/**
+	* Similarities between the subprofiles to group.
+	*/
+	GProfilesSim* Sims;
+
 public:
 
 	/**
 	* Constructor for the view.
 	* @param doc            Document instance that the view represents.
+	* @param l              Lang to group.
 	* @param pop            Size of the population.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewGA(KDoc* doc,unsigned int pop,QWidget* parent,const char* name,int wflags);
+	KViewGA(KDoc* doc,const char* l,unsigned int pop,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.
@@ -197,7 +214,7 @@ signals:
 	/**
 	* Signal to emit after a generation is done.
 	*/
-	void signalSetGen(unsigned int gen,unsigned int best,double value);
+	void signalSetGen(const unsigned int gen,const unsigned int best,const double value);
 
 public:
 
