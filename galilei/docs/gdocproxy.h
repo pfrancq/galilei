@@ -90,7 +90,7 @@ public:
 	virtual bool IsFromParentSubject(const GSubject* s)=0;
 	virtual GSubjectCursor GetSubjectCursor(void)=0;
 	virtual unsigned int GetNbSubjects(void)=0;
-	virtual void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos)=0;
+	virtual void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed)=0;
 	virtual ~GDocProxy(void) {}
 };
 

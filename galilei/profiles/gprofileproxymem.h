@@ -70,7 +70,7 @@ public:
 	virtual void DeleteFdbk(unsigned int id) throw(std::bad_alloc) {Obj->DeleteFdbk(id);}
 	virtual void ClearFdbks(void) {Obj->ClearFdbks();}
 	virtual GFdbk* GetFdbk(unsigned int id) const {return(Obj->GetFdbk(id));}
-	virtual void HasUpdate(unsigned int id) {Obj->HasUpdate(id);}
+	virtual void HasUpdate(unsigned int id,bool computed) {Obj->HasUpdate(id,computed);}
 	virtual void Update(void) {Obj->Update();}
 	virtual ~GProfileProxyMem(void) {}
 };

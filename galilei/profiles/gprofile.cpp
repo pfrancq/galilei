@@ -288,7 +288,7 @@ GFdbk* GProfile::GetFdbk(unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::HasUpdate(unsigned int id)
+void GProfile::HasUpdate(unsigned int id,bool computed)
 {
 	GDoc* doc=GSession::Get()->GetDoc(id);
 	if(doc)
@@ -313,7 +313,7 @@ void GProfile::Update(void)
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		lang=Docs()->GetDoc()->GetLang();
-		if(!lang) continue;
+		if((!lang)||(!Docs()->GetDoc()->IsDefined())) continue;
 
 		// Get the subprofile (if subprofile does not exist -> create it).
 		sub=GetPtr<const GLang*>(lang,false);

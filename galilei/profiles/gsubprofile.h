@@ -169,11 +169,6 @@ proxy:
 	void InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc);
 
 	/**
-	* Clear all the assessments of the subprofile.
-	*/
-	void ClearFdbks(void) throw(std::bad_alloc,GException);
-
-	/**
 	* Get the identificator of the subprofile.
 	* @return unsigned int.
 	*/
@@ -215,7 +210,7 @@ proxy:
 	* undefined.
 	* @return bool
 	*/
-	virtual bool IsDefined(void) const;
+	bool IsDefined(void) const;
 
 	/**
 	* Get the group holding the subprofile.
@@ -314,58 +309,53 @@ proxy:
 	* Compute the similarity between a subprofile and a document.
 	* @param doc             Pointer to a document.
 	*/
-	virtual double Similarity(const GDoc* doc) const;
+	double Similarity(const GDoc* doc) const;
 
 	/**
 	* Compute the similarity between a subprofile and a document using a Inverse
 	* Frequence Factor (IFF).
 	* @param doc             Pointer to a document.
 	*/
-	virtual double SimilarityIFF(const GDoc* doc) const throw(GException);
+	double SimilarityIFF(const GDoc* doc) const throw(GException);
 
 	/**
 	* Compute the similarity between a subprofile and a document.
 	* @param doc             Pointer to a proxy on a document.
 	*/
-	virtual double Similarity(const GDocProxy* doc) const;
+	double Similarity(const GDocProxy* doc) const;
 
 	/**
 	* Compute the similarity between a subprofile and a document using a Inverse
 	* Frequence Factor (IFF).
 	* @param doc             Pointer to a proxy on a document.
 	*/
-	virtual double SimilarityIFF(const GDocProxy* doc) const throw(GException);
+	double SimilarityIFF(const GDocProxy* doc) const throw(GException);
 
 	/**
 	* Compute the similarity between subprofiles.
 	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double Similarity(const GSubProfile* sub) const;
+	double Similarity(const GSubProfile* sub) const;
 
 	/**
 	* Compute the similarity between subprofiles using a Inverse Frequence
 	* Factor (IFF).
 	* @param sub             Pointer to a subprofile.
 	*/
-	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException);
+	double SimilarityIFF(const GSubProfile* sub) const throw(GException);
 
 	/**
 	* Compute the similarity between a subprofile and a group.
 	* @param grp             Pointer to a group.
 	*/
-	virtual double Similarity(const GGroup* grp) const;
+	double Similarity(const GGroup* grp) const;
 
 	/**
 	* Compute the similarity between a subprofile and a group using a Inverse
 	* Frequence Factor (IFF).
 	* @param grp             Pointer to a group.
 	*/
-	virtual double SimilarityIFF(const GGroup* grp) const throw(GException);
-
-	/**
-	* Finish the update process of the subprofile.
-	*/
-	void UpdateFinished(void);
+	double SimilarityIFF(const GGroup* grp) const throw(GException);
 
 	/**
 	* Set the Subject of the subprofile.
@@ -379,14 +369,24 @@ proxy:
 	GSubject* GetSubject(void) const;
 
 	/**
-	* Update the references of the document.
+	* Update the document by assigning it a set of information and a language.
+	* @param infos            Pointer to the information.
+	* @param computed         The update is called after a computation (and not
+	*                         after a loading from a database).
+	* \warning The container infos is cleared by this method.
 	*/
-	void UpdateRefs(void) const throw(GException);
+	void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed);
 
 	/**
-	* Remove the references of the document.
+	* Clear the subprofile. Its information entities list is cleared and its
+	* detached from its group.
 	*/
-	void RemoveRefs(void) const throw(GException);
+	void Clear(void);
+
+	/**
+	* Clear all the assessments of the subprofile.
+	*/
+	void ClearFdbks(void);
 
 public:
 	

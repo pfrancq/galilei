@@ -131,19 +131,6 @@ void GSubProfile::InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::ClearFdbks(void) throw(std::bad_alloc,GException)
-{
-	RemoveRefs();
-	GWeightInfos::Clear();
-
-	// When all assessments are removed -> the profile is always modified
-	Fdbks.Clear();
-	State=osModified;
-	Updated.SetToday();
-}
-
-
-//------------------------------------------------------------------------------
 void GSubProfile::SetId(unsigned int id) throw(GException)
 {
 	if(id==cNoRef)
@@ -396,20 +383,6 @@ unsigned int GSubProfile::GetNbNoNull(void) const
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::UpdateRefs(void) const throw(GException)
-{
-	AddRefs(otSubProfile,Lang);
-}
-
-
-//------------------------------------------------------------------------------
-void GSubProfile::RemoveRefs(void) const throw(GException)
-{
-	DelRefs(otSubProfile,Lang);
-}
-
-
-//------------------------------------------------------------------------------
 void GSubProfile::SetSubject(GSubject* s)
 {
 	Subject=s;
@@ -424,10 +397,53 @@ GSubject* GSubProfile::GetSubject(void) const
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::UpdateFinished(void)
+void GSubProfile::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
-	State=osUpdated;
-	Computed.SetToday();
+	// If the subprofile had a language -> remove its references
+	if(Lang)
+		DelRefs(otSubProfile,Lang);
+
+	// Assign information
+	GWeightInfos::Clear();
+	if(computed)
+	{
+		State=osUpdated;
+		Computed.SetToday();
+	}
+	if(!infos->NbPtr)
+		cout<<"Debug"<<endl;
+	GWeightInfos::operator=(*infos);
+
+	// Clear infos
+	infos->Clear();
+
+	// if document has a language -> update its references
+	if(Lang)
+		AddRefs(otSubProfile,Lang);
+
+	// Signal to the its group that it was modified
+/*	if(Group)
+		Group->HasUpdate(Id,computed);*/
+}
+
+
+//------------------------------------------------------------------------------
+void GSubProfile::Clear(void)
+{
+	// If the profile has a language ->  remove its references
+	if(Lang)
+		DelRefs(otSubProfile,Lang);
+
+	GWeightInfos::Clear();
+	Group=0;
+}
+
+
+//------------------------------------------------------------------------------
+void GSubProfile::ClearFdbks(void)
+{
+	// Remove all assessments
+	Fdbks.Clear();
 }
 
 
@@ -436,7 +452,9 @@ GSubProfile::~GSubProfile(void)
 {
 	try
 	{
-		RemoveRefs();
+		// If the profile has a language ->  remove its references
+		if(Lang)
+			DelRefs(otSubProfile,Lang);
 	}
 	catch(...)
 	{

@@ -6,7 +6,7 @@
 
 	Generic Document Analysis - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -66,7 +66,7 @@ protected:
 	GSession* Session;
 
 	/**
-	* Current document to analyse (has to be a vector).
+	* Current document to analyse.
 	*/
 	GDoc* Doc;
 

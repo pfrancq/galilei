@@ -6,7 +6,7 @@
 
 	AGeneric Document Analysis - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2004 by the UniversitÃ© libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).

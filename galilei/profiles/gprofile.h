@@ -349,9 +349,11 @@ proxy:
 	/**
 	* This method is call by a document when it was modified (either because it
 	* as analyzed for the first time or because the content has changed).
-	* @param id             Identificator of the document.
+	* @param id               Identificator of the document.
+	* @param computed         The update is called after a computation (and not
+	*                         after a loading from a database).
 	*/
-	void HasUpdate(unsigned int id);
+	void HasUpdate(unsigned int id,bool computed);
 
 	/**
 	* Update the profile. In practice, it constructs for each subprofile the

@@ -949,11 +949,9 @@ void GSession::LoadHistoricGroupsByDate(RString mindate,RString maxdate)
 //------------------------------------------------------------------------------
 void GSession::ReInit(bool)
 {
-	//clean subprofiles = clear the feedbacles & the content of the profiles.
+	// Clean subprofiles and feedbacks
 	ClearFdbks();
-
-	// set group to 0 for subprofiles.
-	ClearSubProfilesGroups();
+	ClearSubProfiles();
 
 	// Re-Init the sims and behaviorsbetween documents and subprofiles
 	if (!SessParams->GetBool("DebugSim"))

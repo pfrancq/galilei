@@ -54,7 +54,6 @@ public:
 	virtual int Compare(const GSubProfileProxy* ptr) const { return(Obj->Compare(dynamic_cast<const GSubProfileProxyMem*>(ptr)->Obj)); }
 	virtual int Compare(const unsigned int id) const { return(Obj->Compare(id)); }
 	virtual void InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc) {Obj->InsertFdbk(fdbk);}
-	virtual void ClearFdbks(void) throw(std::bad_alloc,GException) {Obj->ClearFdbks();}
 	virtual unsigned int GetId(void) const {return(Obj->GetId());}
 	virtual void SetId(unsigned int id) throw(GException) {Obj->SetId(id);}
 	virtual tObjState GetState(void) const {return(Obj->GetState());}
@@ -68,6 +67,7 @@ public:
 	virtual R::RDate GetUpdated(void) const {return(Obj->GetUpdated());}
 	virtual R::RDate GetComputed(void) const {return(Obj->GetComputed());}
 	virtual bool IsUpdated(void) const {return(Obj->IsUpdated());}
+	virtual bool SameDescription(const GFdbk* fdbk) const {return(Obj->SameDescription(fdbk));}
 	virtual unsigned int GetCommonOKDocs(const GSubProfile* prof) {return(Obj->GetCommonOKDocs(prof));}
 	virtual unsigned int GetCommonDocs(const GSubProfile* prof)  {return(Obj->GetCommonDocs(prof));}
 	virtual unsigned int GetCommonDiffDocs(const GSubProfile* prof) {return(Obj->GetCommonDiffDocs(prof));}
@@ -83,11 +83,11 @@ public:
 	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException) {return(Obj->SimilarityIFF(sub));}
 	virtual double Similarity(const GGroup* grp) const {return(Obj->Similarity(grp));}
 	virtual double SimilarityIFF(const GGroup* grp) const throw(GException) {return(Obj->SimilarityIFF(grp));}
-	virtual void UpdateFinished(void) {Obj->UpdateFinished();}
 	virtual void SetSubject(GSubject* s) {Obj->SetSubject(s);}
 	virtual GSubject* GetSubject(void) const {return(Obj->GetSubject());}
-	virtual void UpdateRefs(void) const throw(GException) {Obj->UpdateRefs();}
-	virtual void RemoveRefs(void) const throw(GException) {Obj->RemoveRefs();}
+	virtual void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed) {Obj->Update(infos,computed);}
+	virtual void Clear(void) {Obj->Clear();}
+	virtual void ClearFdbks(void) {Obj->ClearFdbks();}
 	virtual ~GSubProfileProxyMem(void) {}
 };
 

@@ -446,6 +446,9 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 	GGroup* grp;
 	bool Social;
 	GSubject* s;
+	unsigned int subprofileid;
+	unsigned int i,idx;
+	RContainer<GWeightInfo,false,true> Infos(1000,500);
 
 	// Go through the users
 	try
@@ -489,29 +492,36 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 		}
 
 		// Load the subprofile's description
-		langs=session->GetLangs()->GetLangsCursor();
-		for(langs.Start();!langs.End();langs.Next())
+		RQuery sel(Db,"SELECT subprofileid,kwdid,langid,weight FROM subprofilesbykwds ORDER BY subprofileid,kwdid");
+		for(sel.Start(),subprofileid=cNoRef;!sel.End();sel.Next(),i++)
 		{
-			lang=langs()->GetPlugin();
-			if(!lang) continue;
-			sSql="SELECT subprofileid,kwdid,Weight FROM subprofilesbykwds WHERE langid='"+RString(lang->GetCode())+"'";
-			RQuery sel(Db,sSql);
-			for(sel.Start();!sel.End();sel.Next())
-			{
-				sub=session->GetSubProfile(atoi(sel[0]),lang);
-				if(sub)
-					sub->InsertInfo(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()));
-			}
-		}
+			// Get the id
+			idx=atoi(sel[0]);
+			lang=session->GetLangs()->GetLang(sel[2]);
 
-		// Update References of the loaded subprofiles.
-		for(langs.Start();!langs.End();langs.Next())
+			// If not the same -> new subprofile
+			if(idx!=subprofileid)
+			{
+				// If valid subprofile -> assign the information to it
+				if(subprofileid!=cNoRef)
+				{
+					sub=session->GetSubProfile(subprofileid);
+					if(sub)
+						sub->Update(&Infos,false);
+				}
+
+				// New doc
+				subprofileid=idx;
+				i=0;
+			}
+
+			Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
+		}
+		if(subprofileid!=cNoRef)
 		{
-			lang=langs()->GetPlugin();
-			if(!lang) continue;
-			GSubProfileCursor SubProfiles=session->GetSubProfilesCursor(lang);
-			for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
-				SubProfiles()->UpdateRefs();
+			sub=session->GetSubProfile(subprofileid);
+			if(sub)
+				sub->Update(&Infos,false);
 		}
 
 		// Load the ideal Groups.
@@ -720,7 +730,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 				{
 					doc=session->GetDoc(docid);
 					if(doc)
-						doc->Update(doc->GetLang(),&Infos);
+						doc->Update(doc->GetLang(),&Infos,false);
 				}
 
 				// New doc
@@ -734,7 +744,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		{
 			doc=session->GetDoc(docid);
 			if(doc)
-				doc->Update(doc->GetLang(),&Infos);
+				doc->Update(doc->GetLang(),&Infos,false);
 		}
 
 		//  Make Link between documents and topics

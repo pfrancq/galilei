@@ -172,6 +172,8 @@ public:
 	double SimilarityIFF(const GWeightInfos& w,tObjType ObjType,GLang* lang) const throw(GException)
 	{ return(SimilarityIFF(&w,ObjType,lang));}
 
+protected:
+
 	/**
 	* Add the references for the information entities of the object type in a
 	* information entity space (language). This information is used for the
@@ -189,6 +191,8 @@ public:
 	* @param lang           Information entity space (Language).
 	*/
 	void DelRefs(tObjType ObjType,GLang* lang) const throw(GException);
+
+public:
 
 	/**
 	* Modify the list by applying for each information entity the Inverse

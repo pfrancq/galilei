@@ -6,7 +6,7 @@
 
 	Document - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2004 by the UniversitÃ© libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -416,9 +416,11 @@ proxy:
 	* Update the document by assigning it a set of information and a language.
 	* @param lang             Pointer to the language.
 	* @param infos            Pointer to the information.
+	* @param computed         The update is called after a computation (and not
+	*                         after a loading from a database).
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos);
+	void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed);
 
 public:
 

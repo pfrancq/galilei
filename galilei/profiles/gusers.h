@@ -156,9 +156,9 @@ public:
 	GSubProfileCursor GetSubProfilesCursor(GLang* lang) throw(GException);
 
 	/**
-	* Clear all the subprofiles assignement.
+	* Clear all the subprofiles.
 	*/
-	void ClearSubProfilesGroups(void) throw(GException);
+	void ClearSubProfiles(void);
 
 	/**
 	* Destructor of the users.

@@ -68,7 +68,7 @@ public:
 	virtual void DeleteFdbk(unsigned int id) throw(std::bad_alloc)=0;
 	virtual void ClearFdbks(void)=0;
 	virtual GFdbk* GetFdbk(unsigned int id) const=0;
-	virtual void HasUpdate(unsigned int id)=0;
+	virtual void HasUpdate(unsigned int id,bool computed)=0;
 	virtual void Update(void)=0;
 	virtual ~GProfileProxy(void) {}
 };

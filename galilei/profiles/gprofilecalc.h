@@ -6,7 +6,7 @@
 
 	Generic Profile Computing Method - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -70,6 +70,11 @@ protected:
 	* Session.
 	*/
 	GSession* Session;
+
+	/**
+	* Current subprofile to compute.
+	*/
+	GSubProfile* SubProfile;
 
 public:
 

@@ -241,19 +241,14 @@ GSubProfileCursor GUsers::GetSubProfilesCursor(GLang* lang) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GUsers::ClearSubProfilesGroups(void) throw(GException)
+void GUsers::ClearSubProfiles(void)
 {
 	RCursor<GSubProfiles> Cur;
-	GSubProfileCursor Cur2;
 
 	Cur.Set(SubProfiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur2.Set(Cur());
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-		{
-			Cur2()->SetGroup(0);
-		}
+		Cur()->Clear();
 	}
 }
 

@@ -52,7 +52,6 @@ public:
 	virtual int Compare(const GSubProfileProxy* ptr) const=0;
 	virtual int Compare(const unsigned int id) const=0;
 	virtual void InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc)=0;
-	virtual void ClearFdbks(void) throw(std::bad_alloc,GException)=0;
 	virtual unsigned int GetId(void) const=0;
 	virtual void SetId(unsigned int id) throw(GException)=0;
 	virtual tObjState GetState(void) const=0;
@@ -66,6 +65,7 @@ public:
 	virtual R::RDate GetUpdated(void) const=0;
 	virtual R::RDate GetComputed(void) const=0;
 	virtual bool IsUpdated(void) const=0;
+	virtual bool SameDescription(const GFdbk* fdbk) const=0;
 	virtual unsigned int GetCommonOKDocs(const GSubProfile* prof)=0;
 	virtual unsigned int GetCommonDocs(const GSubProfile* prof) =0;
 	virtual unsigned int GetCommonDiffDocs(const GSubProfile* prof)=0;
@@ -81,11 +81,11 @@ public:
 	virtual double SimilarityIFF(const GSubProfile* sub) const throw(GException)=0;
 	virtual double Similarity(const GGroup* grp) const=0;
 	virtual double SimilarityIFF(const GGroup* grp) const throw(GException)=0;
-	virtual void UpdateFinished(void)=0;
 	virtual void SetSubject(GSubject* s)=0;
 	virtual GSubject* GetSubject(void) const=0;
-	virtual void UpdateRefs(void) const throw(GException)=0;
-	virtual void RemoveRefs(void) const throw(GException)=0;
+	virtual void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)=0;
+	virtual void Clear(void)=0;
+	virtual void ClearFdbks(void)=0;
 	virtual ~GSubProfileProxy(void) {}
 };
 

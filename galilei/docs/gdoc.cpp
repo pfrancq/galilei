@@ -6,7 +6,7 @@
 
 	Document - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2004 by the UniversitÃ© libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -251,7 +251,7 @@ double GDoc::SimilarityIFF(const GGroup* grp) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos)
+void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
 	// If document had a language -> remove its references
 	if(Lang)
@@ -260,8 +260,11 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos)
 	// Assign language and information
 	GWeightInfos::Clear();
 	Lang=lang;
-	State=osUpdated;
-	Computed.SetToday();
+	if(computed)
+	{
+		State=osUpdated;
+		Computed.SetToday();
+	}
 	GWeightInfos::operator=(*infos);
 
 	// Clear infos
@@ -274,7 +277,7 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos)
 	// Signal to the profiles that the document has changed
 	RCursor<GProfileProxy> Cur(Fdbks);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->HasUpdate(Id);
+		Cur()->HasUpdate(Id,computed);
 }
 
 
