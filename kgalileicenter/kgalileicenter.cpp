@@ -52,6 +52,7 @@ using namespace RIO;
 #include <docs/gdocxml.h>
 #include <docs/gdocoptions.h>
 #include <sessions/gsessionmysql.h>
+#include <profiles/gsubprofile.h>
 #include <profiles/gsubprofiledesc.h>
 #include <profiles/gsubprofilevector.h>
 #include <profiles/gprofilecalcvector.h>
@@ -61,6 +62,7 @@ using namespace RIO;
 #include <groups/ggroupinggga.h>
 #include <groups/ggroupingkcos.h>
 #include <groups/ggroupingkprotos.h>
+#include <groups/ggroup.h>
 #include <groups/gidealgroup.h>
 #include <groups/ggroupcalcgravitation.h>
 #include <groups/ggroupcalcrelevant.h>
