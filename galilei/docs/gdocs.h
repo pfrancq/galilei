@@ -4,9 +4,9 @@
 
 	GDocs.h
 
-	List of documents - Implementation.
+	Documents managed by a session - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,78 +34,91 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GDocsH
 #define GDocsH
 
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GDocs class provides a representation for a list of documents.
+* The GDocs class provides a representation for all the documents managed by a
+* GALILEI session.
+*
+* Several containers store the documents :
+* - A container of all documents ordered by identificator.
+* - A container of all documents ordered by URL.
+* - Language-specific containers where the documents are ordered by
+*   identificator.
 * @author Pascal Francq
-* @short List of documents.
+* @short Session Documents.
 */
-class GDocs : public R::RContainer<GDoc,unsigned,true,true>
+class GDocs : protected R::RContainer<GDoc,unsigned int,true,true>
 {
-protected:
+	class GDocsLang;
+	class GDocRefURL;
 
 	/**
-	* State of the documents.
-	*/
-	bool bDocs;
-
-public:
-
-	/**
-	* Container of Documents stored by languages and identifiers.
+	* Documents ordered by language and identificator.
 	*/
 	R::RContainer<GDocsLang,unsigned int,true,true> DocsLang;
 
 	/**
-	* Container of documents stored by URLs.
+	* Documents ordered by URL.
 	*/
-	R::RContainer<GDocRefUrl,unsigned int,true,true> DocsRefUrl;
+	R::RContainer<GDocRefURL,unsigned int,true,true> DocsRefUrl;
+
+public:
 
 	/**
 	* Constructor.
-	* @param nb             Maximal number of documents.
+	* @param nb             Maximal number of documents to allocate initially.
 	*/
 	GDocs(unsigned int nb) throw(bad_alloc);
 
 	/**
-	* Get a cursor over the documents used in the system.
+	* Get a cursor on all the documents.
+	* @return GDocCursor.
 	*/
-	GDocCursor& GetDocsCursor();
+	GDocCursor& GetDocsCursor(void);
 
 	/**
-	* Get a cursor over the documents of a specific langage used in the system
+	* Get a cursor on the documents of a given langage.
+	* @param lang            Language of the documents.
+	* @return GDocCursor.
 	*/
 	GDocCursor& GetDocsCursor(GLang* lang) throw(GException);
 
 	/**
-	* Fill an array with al the documents of a given language.
-	* @returns Number of documents contained.
+	* Fill a given array with all the documents of a given language. The array
+	* must be created and must be large enough to hold all the documents.
+	* @see This method is used in GSubjectTree to create assessments for
+	*      profiles during a simulation of a real system.
+	* @param docs            Pointer to the array.
+	* @param lang            Language of the documents.
+	* @returns Number of documents contained in the array.
 	*/
 	unsigned int FillDocs(GDoc** docs,GLang* lang) throw(GException,bad_alloc);
-	
+
 	/**
-	* Load the documents.
+	* Method that load the documents from where they are stored. This method
+	* must be overloaded.
 	*/
 	virtual void LoadDocs(bool wg,bool w) throw(bad_alloc,GException)=0;
 
 	/**
-	* Create a new document.
+	* Create a new document. The document is not inserted in the list of
+	* documents handled. Since this method must also store the new document,
+	* this method must be overloaded.
 	* @param url        URL of the document.
 	* @param name       Name of the document.
 	* @param mime       MIME Type of the document
@@ -114,81 +127,69 @@ public:
 	virtual GDoc* NewDoc(const char* url,const char* name,const char* mime) throw(GException)=0;
 
 	/**
-	* Save a document.
+	* Save a document where it is stored. This method is called after an
+	* analsyis of a document if the result has to be saved. This method must be
+	* overloaded.
 	* @param doc        Document to save.
 	*/
 	virtual void SaveDoc(GDoc* doc) throw(GException)=0;
 
 	/**
-	* Get the number of documents treated by the system.
+	* Get the number of documents handled.
 	* @returns Number of documents.
 	*/
-	unsigned int GetNbDocs(void) const
-		{return(NbPtr);}
+	unsigned int GetNbDocs(void) const {return(NbPtr);}
 
 	/**
-	* Get the number of documents treated by the system for a specific langage.
-	* @param lang          The langage of the documents
-	* @returns Number of documents.
+	* Get the number of documents handled for a given langage.
+	* @param lang          Langage of the documents
+	* @returns Number of documents of this language.
 	*/
-	unsigned int GetNbDocs(GLang* lang) const ;
+	unsigned int GetNbDocs(GLang* lang) const;
 
 	/**
-	* Verify if the documents are loaded.
-	* @returns true, if loaded.
-	*/
-	bool IsDocsLoad(void) const {return(bDocs);}
-
-	/**
-	* Load the documents.
-	*/
-	void InitDocs(bool wg,bool w) throw(bad_alloc,GException);
-
-	/**
-	* Insert a document in the container.
+	* Insert a document. The document is stored in the different language.
+	* @param d               Pointer to the document.
 	*/
 	void InsertDoc(GDoc* d) throw(bad_alloc);
 
 	/**
-	* Move a doc to the container of appropriate language.
+	* Move a document from the container holding all the documents with an
+	* unknow language to the container corresponding to the language. This
+	* method supposes that the documents was previously in the unkown container.
+	* @param d               Pointer to the document.
 	*/
 	void MoveDoc(GDoc* d) throw(bad_alloc);
-	
-	/**
-	* Get a document from the container.
-	* @param id         Identificator of the document.
-	*/
-	GDoc* GetDoc(unsigned int id) throw(bad_alloc);
 
 	/**
-	* Get a document from the container.
+	* Get a document corresponding to a given identificator.
+	* @param id         Identificator of the document.
+	* @apram Pointer to GDoc.
+	*/
+	GDoc* GetDoc(unsigned int id) throw(bad_alloc, GException);
+
+	/**
+	* Get a document corresponding to a given URL.
 	* @param url        URL of the document.
+	* @apram Pointer to GDoc or null if the document does no exist.
 	*/
 	GDoc* GetDoc(const char* url) throw(bad_alloc);
 
 	/**
-	* Get a document from the container
-	* @param id         Identificator of the document
-	* @param lang       The langage of the requested document.
+	* Clear all the documents.
 	*/
-	GDoc* GetDoc(unsigned int id, GLang* lang) throw(bad_alloc);
+	void Clear(void);
 
 	/**
-	* Get the list of document from the container including all the doc for each langage.
-	* @param lang       The langage of the documents to be returned.
-	*/
-	GDocsLang* GetDocsLang(GLang* lang)throw(bad_alloc);
-
-	/**
-	* Destructor.
+	* Destructor of the documents.
 	*/
 	virtual ~GDocs(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif
 

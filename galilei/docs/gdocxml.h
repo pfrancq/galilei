@@ -4,9 +4,9 @@
 
 	GDocXML.h
 
-	A XML representation of a document - Header.
+	DocXML representing the document content - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,39 +34,38 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GDocXMLH
 #define GDocXMLH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rxmlstruct.h>
-#include <rstd/rxmltag.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
 * The GDocXML class provides a XML representation for the content of a given
 * document. For the metadata, the Dublin Core Metadata Element Set is used with
 * the RDF format.
 * @author Pascal Francq
-* Short Xml representation for documents
+* Short DocXML document.
 */
 class GDocXML : public R::RXMLStruct
 {
 	/**
-	* url of the document.
+	* URL of the document.
 	*/
 	R::RString URL;
 
@@ -93,7 +92,7 @@ class GDocXML : public R::RXMLStruct
 public:
 
 	/**
-	* Construct a XML document.
+	* Construct a DocXML document.
 	* @param url            URL of the document.
 	* @param filename       File of the document.
 	*/
@@ -112,218 +111,281 @@ public:
 	const char* GetFile(void) const;
 
 	/**
+	* Get an access to the metadata of the document.
 	* @returns A pointer to the tag containing the metadata of the
 	*          corresponding document.
 	*/
 	R::RXMLTag* GetMetaData(void);
 
 	/**
+	* Get an access to the content of the document.
 	* @returns A pointer to the tag containing the content of the corresponding
 	*          document.
 	*/
 	R::RXMLTag* GetContent(void);
 
 	/**
+	* Get an access to the links of the documents.
 	* @returns A pointer to the tag containing the links of the corresponding
 	*          document.
 	*/
 	R::RXMLTag* GetLinks(void);
 
 	/**
-	* Add a tag metaData to the links stucture
-	* @returns a pointer to the tag containing the metaData of the link
+	* Add a tag metaData to the links stucture.
+	* @returns a pointer to the tag containing the metaData of the link.
 	*/
 	R::RXMLTag* AddLink(void) throw(bad_alloc);
-	
+
 	/**
-	* Add a title to the metadata.
-	* @param val            Value to assign.
+	* Add a title tag to a metadata.
+	* @param val            Title.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddTitle(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a title to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a title tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddTitle(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a creator to the metadata.
-	* @param val            Value to assign.
+	* Add a creator tag to a metadata.
+	* @param val            Creator.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddCreator(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a creator to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a creator tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddCreator(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a subject to the metadata.
-	* @param val            Value to assign.
+	* Add a subject tag to a metadata.
+	* @param val            Subject.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddSubject(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a subject to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a subject tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddSubject(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a description to the metadata.
-	* @param val            Value to assign.
+	* Add a description tag to a metadata.
+	* @param val            Description.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddDescription(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a description to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a description tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddDescription(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a publisher to the metadata.
-	* @param val            Value to assign.
+	* Add a publisher tag to a metadata.
+	* @param val            Publisher.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddPublisher(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a publisher to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a publisher tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddPublisher(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a contributor to the metadata.
-	* @param val            Value to assign.
+	* Add a contributor tag to a metadata.
+	* @param val            Contributor.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddContributor(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a contributor to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a contributor tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddContributor(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a date to the metadata.
-	* @param val            Value to assign.
+	* Add a date tag to a metadata.
+	* @param val            Date.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddDate(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a date to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a date tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddDate(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a type to the metadata.
-	* @param val            Value to assign.
+	* Add a type tag to a metadata.
+	* @param val            Type.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddType(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a type to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a type tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddType(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a format to the metadata.
-	* @param val            Value to assign.
+	* Add a format tag to a metadata.
+	* @param val            Format.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddFormat(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a format to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a format tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddFormat(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add an identifier to the metadata.
-	* @param val            Value to assign.
+	* Add an identifier tag to a metadata.
+	* @param val            Identifier.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddIdentifier(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add an identifier to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add an identifier tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddIdentifier(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a source to the metadata.
-	* @param val            Value to assign.
+	* Add a source tag to a metadata.
+	* @param val            Source.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddSource(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a source to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a source tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddSource(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a language to the metadata.
-	* @param val            Value to assign.
+	* Add a language tag to a metadata.
+	* @param val            Language.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddLanguage(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a language to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a language tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddLanguage(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a relation to the metadata.
-	* @param val            Value to assign.
+	* Add a relation tag to a metadata.
+	* @param val            Relation.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddRelation(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a relation to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a relation tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddRelation(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a coverage to the metadata.
-	* @param val            Value to assign.
+	* Add a coverage tag to a metadata.
+	* @param val            Coverage.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddCoverage(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add a coverage to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a coverage tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddCoverage(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add rights to the metadata.
-	* @param val            Value to assign.
+	* Add a rights tag to a metadata.
+	* @param val            Rights.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
 	*/
 	void AddRights(const char* val,R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Add rights to the metadata.
-	* @returns Pointer to a XML Tag.
+	* Add a rights tag to a metadata.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	* @returns Pointer to a R::RXMLTag.
 	*/
 	R::RXMLTag* AddRights(R::RXMLTag* metaData=0) throw(bad_alloc);
 
 	/**
-	* Destruct the document.
+	* Destruct the DocXML document.
 	*/
 	virtual ~GDocXML(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

@@ -136,16 +136,22 @@ void GDoc::ClearFdbks(void)
 
 
 //-----------------------------------------------------------------------------
-const char* GDoc::GetURL(void) const
+RString& GDoc::GetURL(void) const
 {
-	return(URL);
+	RString* tmp=RString::GetString();
+
+	(*tmp)=URL;
+	return(*tmp);
 }
 
 
 //-----------------------------------------------------------------------------
-const char* GDoc::GetName(void) const
+RString& GDoc::GetName(void) const
 {
-	return(Name);
+	RString* tmp=RString::GetString();
+
+	(*tmp)=Name;
+	return(*tmp);
 }
 
 

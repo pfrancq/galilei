@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/galilei.h>
 
 
 //-----------------------------------------------------------------------------
@@ -211,13 +211,13 @@ public:
 	* Get the URL.
 	* @returns Pointer to a C string.
 	*/
-	const char* GetURL(void) const;
+	R::RString& GetURL(void) const;
 
 	/**
 	* Get the Name.
 	* @returns Pointer to a C string.
 	*/
-	const char* GetName(void) const;
+	R::RString& GetName(void) const;
 
 	/**
 	* Get the date of the last update of the document's content.

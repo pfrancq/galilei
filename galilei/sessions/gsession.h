@@ -44,7 +44,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/galilei.h>
 #include <profiles/gusers.h>
 #include <docs/gdocs.h>
 #include <groups/ggroupsmng.h>
@@ -156,16 +156,6 @@ protected:
 	*  Similarity between documents and profiles for each langage.
 	*/
 	GDocProfSims* DocProfSims;
-
-	/**
-	* State of the groups.
-	*/
-	bool bGroups;
-
-	/**
-	* State of the User's feedbacks.
-	*/
-	bool bFdbks;
 
 	/**
 	* The current seek for this session.
@@ -328,11 +318,6 @@ public:
 	virtual const char* LoadWord(unsigned int id,const char* code)=0;
 
 	/**
-	* Load the Users.
-	*/
-	void InitUsers(bool wg,bool w) throw(bad_alloc,GException);
-
-	/**
 	* Create a new user in the system.
 	* @param usr            User.
 	* @param pwd            Password.
@@ -474,30 +459,15 @@ public:
 	*/
 	void GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException);
 
-protected:
-
 	/**
 	* Load the Feedbacks.
 	*/
 	virtual void LoadFdbks(void) throw(bad_alloc,GException)=0;
 
-public:
-
 	/**
 	* Load the SubjectTree.
 	*/
 	virtual void LoadSubjectTree()=0;
-
-	/**
-	* Verify if the feedback are loaded.
-	* @returns true, if loaded.
-	*/
-	bool IsFdbksLoad(void) const {return(bFdbks);}
-
-	/**
-	* Load the Users feedback.
-	*/
-	void InitFdbks(void) throw(bad_alloc,GException);
 
 	/**
 	* Get a Cursor on the feedbacks.
@@ -518,19 +488,6 @@ public:
 	* @param date       Date on the last feedback.
 	*/
 	void InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,R::RDate date) throw(bad_alloc);
-
-public:
-
-	/**
-	* Verify if the groups are loaded.
-	* @returns true, if loaded.
-	*/
-	bool IsGroupsLoad(void) const {return(bGroups);}
-
-	/**
-	* Load the Groups.
-	*/
-	void InitGroups(bool wg,bool w) throw(bad_alloc,GException);
 
 	/**
 	* Copy the ideal groupment in the current one.

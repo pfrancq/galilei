@@ -47,7 +47,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gsession.h>
-#include <galilei.h>
+#include <sessions/galilei.h>
 
 
 
@@ -127,6 +127,8 @@ protected:
 	*/
 	virtual unsigned int GetDicNextId(const GData* data,const GDict* dict);
 
+public :
+
 	/**
 	* Loading a dictionary/stoplist.
 	* @param dic            Pointer to the dictionary.
@@ -161,8 +163,6 @@ protected:
 	* Load the groups.
 	*/
 	virtual void LoadGroups(bool wg,bool w) throw(bad_alloc,GException);
-
-public:
 
 	/**
 	* Load the Subjectree.

@@ -148,8 +148,8 @@ GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs* d,bool global) throw(bad
 	catch(...)
 	{
 		// File doesn't exist -> Create it
-		Cur1.Set(d);
-		Cur2.Set(d);
+		Cur1 = d->GetDocsCursor();
+		Cur2 = d->GetDocsCursor();
 		ComputeSims(filename,Cur1,Cur2,global);
 		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,R::Read);
 	}
@@ -170,8 +170,8 @@ GALILEI::GDocsSim::GDocsSim(const char* filename,GDocs& d,bool global) throw(bad
 	catch(...)
 	{
 		// File doesn't exist -> Create it
-		Cur1.Set(d);
-		Cur2.Set(d);
+		Cur1 = d.GetDocsCursor();
+		Cur2 = d.GetDocsCursor();
 		ComputeSims(filename,Cur1,Cur2,global);
 		Sims=new RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>(filename,R::Read);
 	}

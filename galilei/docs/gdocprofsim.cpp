@@ -221,7 +221,7 @@ double GALILEI::GDocProfSim::GetSim(GDocs* docs,GUsers* users, unsigned int i,un
 	GSim* s2;
 	
 
-	if(docs->GetPtr<unsigned int>(i)->GetLang()->Compare(Lang) ) return (0.0);   // if the langages are differents
+	if(docs->GetDoc(i)->GetLang()->Compare(Lang) ) return (0.0);   // if the langages are differents
 	s=Sims.GetPtr<unsigned int>(i);
 	if(!s) return(0.0);
 	s2=s->GetPtr<unsigned int>(j);
@@ -234,12 +234,12 @@ double GALILEI::GDocProfSim::GetSim(GDocs* docs,GUsers* users, unsigned int i,un
 		s2->State = osUpToDate ;
 		if (GlobalSim)
 		{
-			s2->Sim=docs->GetDoc(i,Lang)->GlobalSimilarity(users->GetSubProfile(j,Lang));
+			s2->Sim=docs->GetDoc(i)->GlobalSimilarity(users->GetSubProfile(j,Lang));
 			return (s2->Sim);
 		}
 		else
 		{
-			s2->Sim=docs->GetDoc(i,Lang)->Similarity(users->GetSubProfile(j,Lang));
+			s2->Sim=docs->GetDoc(i)->Similarity(users->GetSubProfile(j,Lang));
 			return (s2->Sim);
 		}
 	}

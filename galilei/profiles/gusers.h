@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/galilei.h>
 
 
 //-----------------------------------------------------------------------------
@@ -65,13 +65,6 @@ class GUsers : public R::RContainer<GUser,unsigned,true,true>
 	* SubProfiles handled by the system.
 	*/
 	R::RContainer<GSubProfiles,unsigned int,true,true>* SubProfiles;
-
-protected:
-
-	/**
-	* State of the users.
-	*/
-	bool bUsers;
 
 public:
 
@@ -105,12 +98,6 @@ public:
 	* @returns Pointer to the corresponding GUser object.
 	*/
 	GUser* GetUser(unsigned int id);
-
-	/**
-	* Verify if the users are loaded.
-	* @returns true, if loaded.
-	*/
-	bool IsUsersLoad(void) const {return(bUsers);}
 
 	/**
 	* Create a new profile.
@@ -193,14 +180,10 @@ public:
 	*/
 	virtual void SaveSubProfile(GSubProfile* sub) throw(GException)=0;
 
-protected:
-
 	/**
 	* Load the Users.
 	*/
 	virtual void LoadUsers(bool wg,bool w) throw(bad_alloc,GException)=0;
-
-public:
 
 	/**
 	* Clear all the users, profiles and subprofiles.

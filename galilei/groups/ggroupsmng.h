@@ -40,7 +40,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <sessions/galilei.h>
 
 
 //-----------------------------------------------------------------------------
@@ -70,14 +70,10 @@ public:
 	*/
 	GGroupsMng(unsigned int g);
 
-protected:
-
 	/**
 	* Load the groups.
 	*/
 	virtual void LoadGroups(bool wg,bool w) throw(bad_alloc,GException)=0;
-
-public:
 
 	/**
 	* Get a cursor over the groups of the system.

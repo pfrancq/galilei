@@ -55,7 +55,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GUsers::GUsers(unsigned int u,unsigned int p) throw(bad_alloc)
-	: RContainer<GUser,unsigned,true,true>(u,u/2), bUsers(false)
+	: RContainer<GUser,unsigned,true,true>(u,u/2)
 {
 	Profiles=new RContainer<GProfile,unsigned int,true,true>(p,p/2);
 	SubProfiles=new RContainer<GSubProfiles,unsigned int,true,true>(10,5);

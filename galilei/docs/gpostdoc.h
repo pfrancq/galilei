@@ -43,7 +43,7 @@
 
 //-----------------------------------------------------------------------------
 //include file for GALILEI
-#include <galilei.h>
+#include <sessions/galilei.h>
 #include <sessions/gplugin.h>
 
 

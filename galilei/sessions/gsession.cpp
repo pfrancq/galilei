@@ -56,7 +56,6 @@ using namespace R;
 #include <docs/gdocanalyse.h>
 #include <docs/gdocanalysemanager.h>
 #include <docs/gdocxml.h>
-#include <docs/gdocslang.h>
 #include <docs/gdocprofsim.h>
 #include <docs/gdocprofsims.h>
 #include <docs/glinkcalc.h>
@@ -108,7 +107,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	  Subjects(0), Fdbks(f+f/2,f/2),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
 	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0),
-	  bGroups(false),bFdbks(false), Random(0),
+	 Random(0),
 	  SessParams(sessparams)
 {
 	// Init Part
@@ -298,32 +297,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 		InsertDoc(Cur());
 	}
 	tmpDocs->Clear();
-	
-}
 
-
-//-----------------------------------------------------------------------------
-void GSession::InitUsers(bool wg,bool w) throw(bad_alloc,GException)
-{
-	// If users already loaded, do nothing.
-	if(IsUsersLoad()) return;
-
-	// Initialise groups.
-	if(!bGroups)
-		InitGroups(false,true);
-
-	// Load the users
-	LoadUsers(wg,w);
-	bUsers=true;
-
-	// Initialise the profiles sims
-	InitProfilesSims();
-
-	// Initilaise the profiles behaviour.
-	InitProfilesBehaviours();
-
-	// Initialise the sims between documents and subprofiles
-	InitDocProfSims();  
 }
 
 
@@ -670,23 +644,6 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GExce
 
 
 //-----------------------------------------------------------------------------
-void GSession::InitFdbks(void) throw(bad_alloc,GException)
-{
-	// If users' feedback already loaded, do nothing.
-	if(bFdbks) return;
-
-	// Verify that users and docs are loaded
-	if(!IsUsersLoad())
-		InitUsers(false,true);
-	InitDocs(false,true);
-
-	// Load the users
-	LoadFdbks();
-	bFdbks=true;
-}
-
-
-//-----------------------------------------------------------------------------
 GProfDocCursor& GSession::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
@@ -720,18 +677,6 @@ void GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,R::RDate date) thr
 	Fdbks.InsertPtr(f=new GProfDoc(d,p,j,date));
 	p->AddJudgement(f,this);
 	d->AddJudgement(f);
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::InitGroups(bool wg,bool w) throw(bad_alloc,GException)
-{
-	// If groups already loaded, do nothing.
-	if(bGroups) return;
-
-	// Load the users
-	LoadGroups(wg,w);
-	bGroups=true;
 }
 
 
