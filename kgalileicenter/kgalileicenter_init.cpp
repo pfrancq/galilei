@@ -138,10 +138,6 @@ void KGALILEICenterApp::initActions(void)
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
 
 	// Menu "R Stat
-	RImportDC=new KAction(i18n("RImport&DC"),0,this,SLOT(slotRImportDC()),actionCollection(),"RImportDC");
-	RImportG=new KAction(i18n("RImport&G"),0,this,SLOT(slotRImportG()),actionCollection(),"RImportG");
-	RExportDM=new KAction(i18n("RExportD&M"),0,this,SLOT(slotRExportDM()),actionCollection(),"RExportDM");
-	RExportP=new KAction(i18n("RExport&P"),0,this,SLOT(slotRExportP()),actionCollection(),"RExportP");
 	rRunR=new KAction(i18n("Run &R"),0,this,SLOT(slotRRunR()),actionCollection(),"rRunR");
 
 	// Menu "GA"
@@ -351,10 +347,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	plugins->setEnabled(false);
 	runProgram->setEnabled(false);
 	runInsts->setEnabled(false);
-	RImportDC->setEnabled(false);
-	RImportG->setEnabled(false);
-	RExportDM->setEnabled(false);
-	RExportP->setEnabled(false);
 	rRunR->setEnabled(false);
 }
 

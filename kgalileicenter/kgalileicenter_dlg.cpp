@@ -58,6 +58,7 @@ using namespace RStd;
 #include <galilei/qcomputingpluginconffeedback.h>
 #include <galilei/qgroupingpluginconfsim.h>
 #include <galilei/qgroupingpluginconfgga.h>
+#include <galilei/qgroupingpluginconfkcos.h>
 using namespace GALILEI;
 
 
@@ -145,5 +146,6 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.RegisterComputingPluginConf(new QComputingPluginConfFeedback());
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfSim());
 	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfGGA());
+	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKCos());
 	dlg.exec();
 }

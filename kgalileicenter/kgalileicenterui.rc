@@ -50,10 +50,6 @@
 	</Menu>
 	<Menu name="R"><text>&amp;R</text>
 		<Separator/>
-		<Action name="RImportDC"/>
-		<Action name="RImportG"/>
-		<Action name="RExportDM"/>
-		<Action name="RExportP"/>
 		<Action name="rRunR"/>
 	</Menu>
 	<Menu name="GA"><text>&amp;GA</text>

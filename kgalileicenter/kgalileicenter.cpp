@@ -49,6 +49,7 @@ using namespace RIO;
 #include <profiles/gprofilecalcreweighting.h>
 #include <groups/ggroupingsim.h>
 #include <groups/ggroupinggga.h>
+#include <groups/ggroupingkcos.h>
 using namespace GALILEI;
 
 
@@ -132,6 +133,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterComputingMethod(new GProfileCalcReWeighting(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingSim(Sess));
 			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess));
+			Sess->RegisterGroupingMethod(new GGroupingKCos(Sess));
 			Config->setGroup("Session Options");
 			method=Config->readEntry("Description Method","Vector space");
 			Sess->SetCurrentProfileDesc(method);
@@ -150,10 +152,6 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
 			sessionConnect->setEnabled(false);
-			RImportDC->setEnabled(true);
-			RImportG->setEnabled(true);
-			RExportDM->setEnabled(true);
-			RExportP->setEnabled(true);
  			rRunR->setEnabled(true);
 			textFrench->setEnabled(true);
 			textEnglish->setEnabled(true);
@@ -743,64 +741,6 @@ void KGALILEICenterApp::slotHandleItem(QListViewItem* item)
 		default:
 			break;
 	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotRImportDC(void)
-{
-	slotStatusMsg(i18n("Opening file..."));
-	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.dc|Document Concept"), this, i18n("Open File..."));
-	if(!url.isEmpty())
-	{
-		Doc->GetSession()->ImportDC(url.path().latin1());	
-	}
-	slotStatusMsg(i18n("Ready."));
-	slotSessionDisconnect();
-	slotSessionConnect();
-
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotRImportG(void)
-{
-	slotStatusMsg(i18n("Opening file..."));
-	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.g|Groupment"), this, i18n("Open File..."));
-	if(!url.isEmpty())
-	{
-		Doc->GetSession()->ImportG(url.path().latin1());	
-	}
-	slotStatusMsg(i18n("Ready."));
-	slotSessionDisconnect();
-	slotSessionConnect();
-}
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotRExportDM(void)
-{
-	slotStatusMsg(i18n("Saving file..."));
-	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getSaveURL(QString::null,i18n("*.dm|Document Mot"), this, i18n("Save File..."));
-	if(!url.isEmpty())
-	{
-		Doc->GetSession()->ExportDM(url.path().latin1());
-	}
-}
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotRExportP(void)
-{
-	slotStatusMsg(i18n("Saving file..."));
-	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getSaveURL(QString::null,i18n("*.p|Profile"), this, i18n("Save File..."));
-	if(!url.isEmpty())
-	{
-		Doc->GetSession()->ExportP(url.path().latin1());
-	}
-	
 }
 
 

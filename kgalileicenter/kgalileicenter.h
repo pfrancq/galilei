@@ -44,13 +44,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <urlmanagers/gurlmanagerkde.h>
-namespace GALILEI
-{
-	class GDocOptions;
-	class GProfOptions;
-	class GGroupingOptions;
-}
 using namespace GALILEI;
 
 
@@ -446,26 +441,6 @@ private slots:
 	void slotStatusMsg(const QString& text);
 
 	/**
-	* Called to import a R Document/Concept Matrix.
-	*/
-	void slotRImportDC(void);
-
-	/**
-	* Called to import a R Groupment Matrix.
-	*/
-	void slotRImportG(void);
-
-	/**
-	* Called to export a Document/Word Matrix.
-	*/
-	void slotRExportDM(void);
-
-	/**
-	* Called to export a Profile Matrix.
-	*/
-	void slotRExportP(void);
-
-	/**
 	* Slot called when a R session must be launched.
 	*/
 	void slotRRunR(void);
@@ -528,10 +503,6 @@ public:
 	KAction* gaPause;
 	KAction* gaStop;
 
-	KAction* RImportDC;
-	KAction* RImportG;
-	KAction* RExportDM;
-	KAction* RExportP;
 	KAction* rRunR;
 
 	KAction* plugins;
