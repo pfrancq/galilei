@@ -104,8 +104,8 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	Groups.InsertPtr(new GGroups(l));
 	Langs.InsertPtr(l=new GLangFR());
 	Groups.InsertPtr(new GGroups(l));
-	Profiles=new RContainer<GProfile,unsigned int,true,true>(p*2,p);
-	SubProfiles=new RContainer<GSubProfile,unsigned int,true,false>(p,p/2);
+	Profiles=new RContainer<GProfile,unsigned int,true,true>(p+p/2,p/2);
+	SubProfiles=new RContainer<GSubProfile,unsigned int,true,true>(p*2+p,p);
 	DocAnalyse=new GDocAnalyse(this);
 }
 

@@ -159,7 +159,7 @@ protected:
 	/**
 	* SubProfiles handled by the system.
 	*/
-	RStd::RContainer<GSubProfile,unsigned int,true,false>* SubProfiles;
+	RStd::RContainer<GSubProfile,unsigned int,true,true>* SubProfiles;
 
 	/**
 	* URL Manager used by this session.
