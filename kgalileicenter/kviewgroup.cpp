@@ -116,8 +116,6 @@ KViewGroup::KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,in
 	// Create the 'Vector' ListView
 	Vector = new QListView(this, "Vector" );
 	Infos->insertTab(Vector,"Description");
-	sprintf(title,"Words (%u)",static_cast<GGroupVector*>(Group)->GetNbNoNull());
-	Vector->addColumn(title);
 	Vector->addColumn(QString("Weights"));
 	Vector->setSorting(2);
 	ConstructDescription();
@@ -237,7 +235,6 @@ void KViewGroup::ConstructDocs(void)
 void KViewGroup::ConstructDescription(void)
 {
 	GWeightInfoCursor Cur;
-	char tmp[20];
 	class LocalItem : QListViewItem
 	{
 	public:
@@ -259,8 +256,7 @@ void KViewGroup::ConstructDescription(void)
 	};
 
 	// Change the label of the first column
-	sprintf(tmp,"Words (%u)",static_cast<GGroupVector*>(Group)->GetNbNoNull());
-	Vector->setColumnText(0,tmp);
+	Vector->setColumnText(0,"Words");
 
 	// Read 'Ok'
 	Vector->clear();

@@ -236,7 +236,7 @@ void KViewThGroups::ConstructGroups(void)
 	char tmp1[70];
 	char tmp2[30];
 
-	Doc->GetSession()->GetSubjects()->Compare(0);
+	Doc->GetSession()->GetSubjects()->Compare();
 	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());
 	setCaption(tmp1);
 	prGroups->clear();
