@@ -72,11 +72,6 @@ class GFeedbackParams : public GCalcParams
 public:
 
 	/**
-	* Maximal size allocate for a profile.
-	*/
-	unsigned int MaxOrderSize;
-
-	/**
 	* Maximal number of the non-zero weights in the vector.
 	*/
 	unsigned int MaxNonZero;
@@ -189,6 +184,11 @@ protected:
 	* Ordered vector for current computed profile.
 	*/
 	GIWordWeight** Order;
+
+	/**
+	* Maximal size allocate for a profile.
+	*/
+	unsigned int MaxOrderSize;
 
 public:
 
