@@ -21,6 +21,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
+#include <rstd/rcontainer.h>
 #include <rstd/rstring.h>
 #include <rinter/rlang.h>
 
@@ -45,10 +46,32 @@ namespace GALILEI{
 */
 class GLang : public RInter::RLang
 {
+protected:
+
 	/**
 	* Defines if the language is activ.
 	*/
 	bool Activ;
+
+	/**
+	* This class represents words that must be skipped when numbers are
+	* presented. For example: 16nd, or 12h20.
+	*/
+	class SkipWord
+	{
+	public:
+		RString Word;
+	
+		SkipWord(const char* w) : Word(w) {}
+		int Compare(const SkipWord* w)
+			{return(Word.Compare(w->Word));}
+		int Compare(const SkipWord& w)
+			{return(Word.Compare(w.Word));}
+		int Compare(const char* w)
+			{return(Word.Compare(w));}
+	};
+
+	RStd::RContainer<SkipWord,unsigned int,true,true> SkipWords;
 
 public:
 
@@ -83,6 +106,12 @@ public:
 	* @return The stemming of the word.
 	*/
 	virtual RString& GetStemming(const RStd::RString& kwd);
+
+	/**
+	* See if a given word is a valid one, don't content text and numbers that
+	* are to skip.
+	*/
+	bool ValidWord(const RStd::RString& kwd);
 
 	/**
 	* Destructor.
