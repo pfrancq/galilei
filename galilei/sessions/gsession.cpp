@@ -752,8 +752,13 @@ void GSession::ComputePostGroup(GSlot* rec)
 //------------------------------------------------------------------------------
 void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date)
 {
-	GetProfile(p)->InsertFdbk(d,assess,date);
-	GetDoc(d)->InsertFdbk(p);
+	GProfile* prof=GetProfile(p);
+	GDoc* doc=GetDoc(d);
+
+	if((!doc)||(!prof))
+		return;
+	prof->InsertFdbk(d,assess,date);
+	doc->InsertFdbk(p);
 }
 
 
