@@ -105,16 +105,16 @@ void GALILEI::GDict::PutDirect(GWord* word) throw(bad_alloc)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GDict::Put(unsigned id,const RString& word) throw(bad_alloc)
+void GALILEI::GDict::Put(unsigned id,const R::RString& word) throw(bad_alloc)
 {
 	GWordList* wordlist;
 	GWord Word(id,word),*ptr;
 	char *tmp,*tmp2;
-	char grouplist[10]="grouplist";
-	bool grplst=true;
-
+	bool toins,grplst=true;
 	tmp=word.StrDup();
-	tmp2=grouplist;
+	tmp2="grouplist";
+	if((*tmp)) toins=true;
+	else toins=false;
 	while((*tmp)&&(*tmp2)&&(grplst))
 	{
 		if((*tmp)==(*tmp2))
@@ -124,18 +124,21 @@ void GALILEI::GDict::Put(unsigned id,const RString& word) throw(bad_alloc)
 		tmp2++;
 		if((!(*tmp))&&(*tmp2)) grplst=false;
 	}
-	if(grplst)
+	if (toins)
 	{
-		ptr=GetInsertPtr<GWord>(Word,true);
-		ptr->SetType(tWordList);
-		wordlist=new GWordList(id,word);
-		wordlist->SetType(tWordList);
-		GroupsList.InsertPtr(wordlist);
-		NbGroupsList++;
+		if(grplst)
+		{
+			ptr=GetInsertPtr<GWord>(Word,true);
+			ptr->SetType(tWordList);
+			wordlist=new GWordList(id,word);
+			wordlist->SetType(tWordList);
+			GroupsList.InsertPtr(wordlist);
+			NbGroupsList++;
+		}
+		else
+			ptr=GetInsertPtr<GWord>(Word,true);
+		PutDirect(ptr);
 	}
-	else
-		ptr=GetInsertPtr<GWord>(Word,true);
-	PutDirect(ptr);
 }
 
 //---------------------------------------------------------------------------
@@ -157,7 +160,6 @@ void GALILEI::GDict::InsertNewWordList(GWordList& wordlist,bool save)
 	{
 		if(save) ptr->Id=Session->GetDicNextId(wordlist.GetWord(),this);
 		else ptr->Id=UsedId+1;
-		cout<<UsedId<<" / "<<NbGroupsList<<endl;
 		ptr->SetType(tWordList);
 		PutDirect(ptr);
 		wordlist.SetId(ptr->Id);
@@ -217,14 +219,14 @@ int GALILEI::GDict::Compare(const GLang* lang) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType,GWordType /*WordType*/)
+void GALILEI::GDict::IncRef(unsigned int id,tObjType ObjType,GWordType WordType)
 {
 	Direct[id]->IncRef(ObjType);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType,GWordType /*WordType*/)
+void GALILEI::GDict::DecRef(unsigned int id,tObjType ObjType,GWordType WordType)
 {
 	Direct[id]->DecRef(ObjType);
 }

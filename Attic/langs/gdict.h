@@ -165,6 +165,9 @@ public:
 	*/
 	void Put(unsigned id,const R::RString& word) throw(bad_alloc);
 
+	/**
+	* Insert a list of words in the dictionnary.
+	*/
 	void InsertNewWordList(GWordList& wordlist,bool save);
 
 	/**
@@ -224,12 +227,12 @@ public:
 	int Compare(const GDict* dict) const;
 
 	/**
-	* Compare function used in the R::RContainer.
+	* Compare function used in the RStd::RContainer.
 	*/
 	int Compare(const GDict& dict) const;
 
 	/**
-	* Compare function used in the R::RContainer.
+	* Compare function used in the RStd::RContainer.
 	*/
 	int Compare(const GLang* lang) const;
 

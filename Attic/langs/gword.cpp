@@ -190,3 +190,22 @@ unsigned int GALILEI::GWord::GetRef(tObjType ObjType)
 	}
 	return(0);
 }
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GWord::Clear()
+{
+	Id=cNoRef;
+	Word();
+	NbRefDocs=0;
+	NbRefSubProfiles=0;
+	NbRefGroups=0;
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GWord::~GWord(void)
+{
+}
+
+

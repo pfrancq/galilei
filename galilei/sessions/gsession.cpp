@@ -45,6 +45,7 @@ using namespace R;
 // include files for GALILEI
 #include <langs/glang.h>
 #include <langs/gdict.h>
+#include <langs/gwordlist.h>
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
 #include <sessions/gsessionprg.h>
@@ -103,8 +104,8 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 		Groups.InsertPtr(new GGroups(Langs()));
 	ProfileCalcs=new RContainer<GProfileCalc,unsigned int,true,true>(3,3);
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
-	Groupings=new RContainer<GGrouping,tId,true,true>(3,3);
-	GroupCalcs=new RContainer<GGroupCalc,tId,true,true>(2,3);
+	Groupings=new RContainer<GGrouping,R::tId,true,true>(3,3);
+	GroupCalcs=new RContainer<GGroupCalc,R::tId,true,true>(2,3);
 	LinkCalcs=new RContainer<GLinkCalc,unsigned int,true,true>(3,2);
 	DocOptions=new GDocOptions();
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
@@ -141,7 +142,7 @@ GSubProfileDescCursor& GALILEI::GSession::GetProfileDescsCursor(void)
 }
 
 //-----------------------------------------------------------------------------
-RContainer<GGroups,unsigned int,true,true>* GALILEI::GSession::GetIdealGroups(void)
+R::RContainer<GGroups,unsigned int,true,true>* GALILEI::GSession::GetIdealGroups(void)
 {
 	return(IdealGroups);
 }
@@ -157,7 +158,7 @@ GGroupsCursor& GALILEI::GSession::GetIdealGroupsCursor(void)
 
 
 //-----------------------------------------------------------------------------
-RContainer<GGroupsEvaluate,unsigned int,false,false>* GALILEI::GSession::GetIdealDocs(void)
+R::RContainer<GGroupsEvaluate,unsigned int,false,false>* GALILEI::GSession::GetIdealDocs(void)
 {
 	return(IdealDocs);
 }
@@ -358,6 +359,17 @@ GDocXML* GALILEI::GSession::CreateDocXML(GDoc* doc) throw(GException)
 	return(Mng->CreateDocXML(doc));
 }
 
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::SetCurrentWordsClusteringMethodSettings(unsigned minocc,unsigned s,double c,unsigned ndm)
+{
+	DocOptions->MinOccurCluster=minocc;
+	DocOptions->WindowSize=s;
+	DocOptions->MinConfidence=c;
+	DocOptions->NbDocsMin=ndm;
+}
+
+
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::AnalyseAssociation(bool save)
 {
@@ -366,27 +378,109 @@ void GALILEI::GSession::AnalyseAssociation(bool save)
 	unsigned int i,n=1;
 	bool end=false;
 	Docs.Start();
-	test= new GWordsClustering(GetDic(Docs()->GetLang()),DocOptions->MinDocs,DocOptions->MaxDocs,DocOptions->MinOccurCluster);
-
+	test= new GWordsClustering(GetDic(Docs()->GetLang()),DocOptions->MinDocs,DocOptions->MaxDocs,DocOptions->MinOccurCluster,DocOptions->WindowSize,DocOptions->MinConfidence,DocOptions->NbDocsMin,GetDbName());
 	for(i=Docs.GetNb(),Docs.Start();i--;Docs.Next())
 	{
 		test->AddDoc(dynamic_cast<GDocVector*>(Docs()));
 	}
 	test->CleanWords();
-	Docs.Start();
-  for(i=0;i<DocOptions->NbIteration;i++)
-  {
-	  end=test->OrdreByDocs(i);
-	  test->SaveAssociations(i,save);
-  }
-  test->View();
-  if(save) SaveWordsGroups(GetDic(Docs()->GetLang()));
-	for(i=Docs.GetNb(),Docs.Start();--i;Docs.Next())
+
+	// Teste de la nouvelle mthode
+	if(DocOptions->Distance)
 	{
-		test->UpdateDoc(dynamic_cast<GDocVector*>(Docs()));
-		if(save) SaveUpDatedDoc(Docs(),n);/*n=id du premier mot a sauver.*/
+		cout<<"warning : Use of distance in words clustering"<<endl;
+		test->InsertNeighbor();
+		test->ConceptSpace();
+		test->SaveConceptSpace(save);
 	}
+	else
+	{
+		for(i=0;i<DocOptions->NbIteration;i++)
+		{
+		  end=test->OrdreByDocs(i);
+		}
+		test->SaveAssociations(save);
+	}
+	test->View();
+	Docs.Start();
+	if(save)
+	{
+		SaveWordsGroups(GetDic(Docs()->GetLang()));
+	}
+	GetDic(Docs()->GetLang())->GroupsList.Start();
+	if (GetDic(Docs()->GetLang())->GroupsList.NbPtr!=0)
+	{
+		n=(GetDic(Docs()->GetLang())->GroupsList)()->GetId();
+		for(i=Docs.GetNb(),Docs.Start();--i;Docs.Next())
+		{
+			test->UpdateDocbis(dynamic_cast<GDocVector*>(Docs()));
+			if(save) SaveUpDatedDoc(Docs(),n);/*n=id du premier mot a sauver.*/
+		}
+	}
+
+
+/*	if(DocOptions->Distance)
+	{
+		cout<<"warning : Use of distance in words clustering"<<endl;
+		test->InsertNeighbor();
+		test->OrderByNeighbor();
+	}
+	else
+	{
+		for(i=0;i<DocOptions->NbIteration;i++)
+		{
+		  end=test->OrdreByDocs(i);
+		}
+	}
+	Docs.Start();
+	test->SaveAssociations(save);
+	if(save) SaveWordsGroups(GetDic(Docs()->GetLang()));
+	GetDic(Docs()->GetLang())->GroupsList.Start();
+	if (GetDic(Docs()->GetLang())->GroupsList.NbPtr!=0)
+	{
+		n=(GetDic(Docs()->GetLang())->GroupsList)()->GetId();
+		for(i=Docs.GetNb(),Docs.Start();--i;Docs.Next())
+		{
+			test->UpdateDoc(dynamic_cast<GDocVector*>(Docs()));
+			if(save) SaveUpDatedDoc(Docs(),n);/*n=id du premier mot a sauver.*//*
+		}
+	}
+	test->View();*/
 	delete(test);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::RemoveAssociation()
+{
+	GDocCursor Docs=GetDocsCursor();
+	GWordsClustering* test;
+	unsigned int i,n=1;
+	Docs.Start();
+	test= new GWordsClustering(GetDic(Docs()->GetLang()),DocOptions->MinDocs,DocOptions->MaxDocs,DocOptions->MinOccurCluster,DocOptions->WindowSize,DocOptions->MinConfidence,DocOptions->NbDocsMin,GetDbName());
+	for(i=Docs.GetNb(),Docs.Start();i--;Docs.Next())
+	{
+		test->AddDoc(dynamic_cast<GDocVector*>(Docs()));
+	}
+	Docs.Start();
+	GetDic(Docs()->GetLang())->GroupsList.Start();
+	if (GetDic(Docs()->GetLang())->GroupsList.NbPtr!=0)
+  {
+  	n=(GetDic(Docs()->GetLang())->GroupsList)()->GetId();
+  	for(i=Docs.GetNb(),Docs.Start();--i;Docs.Next())
+  	{
+  		test->ReverseUpdateDoc(dynamic_cast<GDocVector*>(Docs()));
+  		SaveUpDatedDoc(Docs(),n);/*n=id du premier mot a sauver.*/
+  	}
+  }
+	DeleteWordsGroups(GetDic(Docs()->GetLang()));
+	delete(test);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::Test()
+{
 }
 
 
@@ -401,8 +495,7 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		if(modified&&(Docs()->GetState()==osUpToDate)) continue;
-		if(rec)
-			rec->receiveNextDoc(Docs());
+		rec->receiveNextDoc(Docs());
 		undefLang=false;
 		try
 		{
@@ -447,17 +540,17 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
+void GALILEI::GSession::InitUsers(bool wg,bool w) throw(bad_alloc,GException)
 {
 	// If users already loaded, do nothing.
 	if(IsUsersLoad()) return;
 
 	// Initialise groups.
 	if(!bGroups)
-		InitGroups();
+		InitGroups(false,true);
 
 	// Load the users
-	LoadUsers();
+	LoadUsers(wg,w);
 	bUsers=true;
 
 	// Initialise the profiles sims
@@ -636,7 +729,6 @@ void GALILEI::GSession::ChangeAllProfilesBehaviourState(void) throw(bad_alloc)
 	}
 }
 
-
 //-----------------------------------------------------------------------------
 double GALILEI::GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold)
 {
@@ -654,7 +746,7 @@ double GALILEI::GSession::GetDisAgreementRatio(GSubProfile* sub1,GSubProfile* su
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GSession::GetMinimumOfSimilarity(RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate)
+double GALILEI::GSession::GetMinimumOfSimilarity(R::RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate)
 {
 	double meanSim;
 	double deviation;
@@ -671,6 +763,7 @@ double GALILEI::GSession::GetMinimumOfSimilarity(RContainer<GSubProfile,unsigned
 }
 
 
+
 //-----------------------------------------------------------------------------
 GUser* GALILEI::GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const char* /*name*/,const char* /*email*/,
 	                  const char* /*title*/,const char* /*org*/,const char* /*addr1*/,
@@ -681,14 +774,13 @@ GUser* GALILEI::GSession::NewUser(const char* /*usr*/,const char* /*pwd*/,const 
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitLinks(void)
+void GALILEI::GSession::InitLinks()
 {
 	if(!LinkCalc)
 		throw GException("No Link computing method chosen.");
 
 	LinkCalc->InitGraph();
 }
-
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(GException)
@@ -706,8 +798,7 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		if(rec)
-			rec->receiveNextProfile(Prof());
+		rec->receiveNextProfile(Prof());
 		Subs=Prof()->GetSubProfilesCursor();
 		for (Subs.Start(); !Subs.End(); Subs.Next())
 		{
@@ -725,7 +816,7 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 					profSim->AddModifiedProfile(Subs()->GetProfile()->GetId());
 					// add the mofified profile to the list of modified profiles  for behaviours
 					profBehaviour = ProfilesBehaviours->GetPtr<GLang*>(Subs()->GetLang());
-					profBehaviour->AddModifiedProfile(Subs()->GetProfile()->GetId());
+					profBehaviour->AddModifiedProfile(Subs()->GetProfile()->GetId());	
 				}
 			}
 			catch(GException& e)
@@ -734,16 +825,16 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 		}
 	}
 
-	// update the state of all the sims.
+	// update the state of all the sims. 
 	ChangeAllProfilesSimState(true);   /// !!!!  check if 'true' is the correct value !?!
 
 	//updtae the state of the behaviours
 	ChangeAllProfilesBehaviourState();
 
 	//   save profiles if necessary and set their state to UpToDate.
-	if(save)
+	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		for(Prof.Start();!Prof.End();Prof.Next())
+		if(save)
 		{
 			try
 			{
@@ -787,8 +878,8 @@ void GALILEI::GSession::InitFdbks(void) throw(bad_alloc,GException)
 
 	// Verify that users and docs are loaded
 	if(!IsUsersLoad())
-		InitUsers();
-	InitDocs();
+		InitUsers(false,true);
+	InitDocs(false,true);
 
 	// Load the users
 	LoadFdbks();
@@ -834,13 +925,13 @@ void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const cha
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSession::InitGroups(void) throw(bad_alloc,GException)
+void GALILEI::GSession::InitGroups(bool wg,bool w) throw(bad_alloc,GException)
 {
 	// If groups already loaded, do nothing.
 	if(bGroups) return;
 
 	// Load the users
-	LoadGroups();
+	LoadGroups(wg,w);
 	bGroups=true;
 }
 

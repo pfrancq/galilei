@@ -117,7 +117,7 @@ public:
 	/**
 	* Load the documents.
 	*/
-	virtual void LoadDocs(void) throw(bad_alloc,GException)=0;
+	virtual void LoadDocs(bool wg,bool w) throw(bad_alloc,GException)=0;
 
 	/**
 	* Create a new document.
@@ -157,7 +157,7 @@ public:
 	/**
 	* Load the documents.
 	*/
-	void InitDocs(void) throw(bad_alloc,GException);
+	void InitDocs(bool wg,bool w) throw(bad_alloc,GException);
 
 	/**
 	* Insert a document in the container.

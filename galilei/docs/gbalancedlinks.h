@@ -114,19 +114,19 @@ public :
 	//GLinkCursor& GetLinkCursor(void);
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param lnk            Pointer to the links used for the comparaison.
 	*/
 	int Compare(const GBalancedLinks* lnk) const {return(Doc->GetId()- lnk->GetDoc()->GetId());}
 
   /**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param lnk            Links used for the comparaison.
 	*/
 	int Compare(GBalancedLinks& lnk) const {return(Doc->GetId()- lnk.GetDoc()->GetId());}
 
 	/**
-	* Compare function needed by RStd::RContainer.
+	* Compare function needed by R::RContainer.
 	* @param ID             ID used for the comparaison.
 	*/
 	int Compare(const unsigned int id) const {return(Doc->GetId()-id);}

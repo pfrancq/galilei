@@ -40,34 +40,36 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
+#include <rstd/rcursor.h>
 #include <rstd/rrecfile.h>
 #include <rstd/rcontainer.h>
+using namespace R;
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/giwordsweights.h>
 #include <galilei.h>
+#include <infos/giwordsweights.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
+//-----------------------------------------------------------------------------
+
 //-----------------------------------------------------------------------------
 /**
 * This class provides methods to cluster words.
 * @author Nicolas Kumps
 * @short Create concept.
 */
-
 class GWordsClustering
 {
-
-	class GWordDocs
+	class GWordDocs : public GIWordsWeights
 	{
 			unsigned Id;
 			double Idf;
 		public :
-			R::RContainer<GDoc,unsigned,false,true>* Docs;
+			RContainer<GDoc,unsigned,false,true>* Docs;
 			GWordDocs();
 			GWordDocs(unsigned id);
 			int Compare(const GWordDocs* n) const;
@@ -81,14 +83,29 @@ class GWordsClustering
 			virtual ~GWordDocs();
 	};
 
+//-----------------------------------------------------------------------------
+/**
+* The GWordWeightCursor class provides a way to go trough a vector of pairs
+* (keyword/weight).
+* @short Word Weight Cursor
+*/
+CLASSCURSOR(GWordDocsCursor,GWordDocs,unsigned int)
+
+
 	/**
 	* Container of all the words contain in the documents.
 	*/
-	R::RContainer<GWordDocs,unsigned,true,true>* Words;
+	RContainer<GWordDocs,unsigned,true,true>* Words;
+
+	/**
+	* Container of the documents to analyse.
+	*/
+	RContainer<GDoc,unsigned,false,false>* Docs;
+
 	/**
 	* Container of all the groups of words.
 	*/
-	R::RContainer<GIWordList,unsigned,true,true>* Groups;
+	RContainer<GIWordList,unsigned,true,true>* Groups;
 
 	/**
 	* Number of documents to compute.
@@ -105,7 +122,7 @@ class GWordsClustering
 	* Maximum number of documents where a word can appear
 	* to be compute.
 	*/
-  unsigned NbMaxDocs;
+	unsigned NbMaxDocs;
 
 	/**
 	* Minimum of occurrence of a word in the documents
@@ -114,9 +131,19 @@ class GWordsClustering
 	unsigned NbMinOcc;
 
 	/**
-	* Container of all the documents to compute.
+	* Size of the window use to analyse the document structure.
 	*/
-	R::RContainer<GDoc,unsigned int,false,false>* Doc;
+	unsigned WindowSize;
+
+	/**
+	* Minimum of confidence.
+	*/
+	double MinConf;
+
+	/**
+	* Minimum of documents where the clusters must appear.
+	*/
+	unsigned NbDocsMin;
 
 	/**
 	* Dictionnary.
@@ -124,7 +151,12 @@ class GWordsClustering
 	GDict* Dic;
 
 	/**
-	* Vector of words ordered by Idf factor. 
+	* Name of the database.
+	*/
+	RString DbName;
+
+	/**
+	* Vector of words ordered by Idf factor.
 	*/
 	GWordDocs** Order;
 
@@ -134,18 +166,37 @@ public:
 
 	/**
 	* Constructor.
-	* @param dic              global dictionnary.
-	* @param mindocs          minimum number of documents.
-	* @param maxdocs          maximum number of documents.
-	* @param minocc           minimum occurence of the words to treat.
+	* @param dic                    global dictionnary.
+	* @param mindocs                minimum number of documents.
+	* @param maxdocs                maximum number of documents.
+	* @param minocc                 minimum occurence of the words to treat.
+	* @param s                      size of the window.
+	* @param c                      minimum confidence.
+	* @param ndm                    minimum appears of a clusters.
+	* @param name                   name of the database.
 	*/
-	GWordsClustering(GDict* dic,unsigned mindocs,unsigned maxdocs,unsigned minocc);
+	GWordsClustering(GDict* dic,unsigned mindocs,unsigned maxdocs,unsigned minocc,unsigned s,double c,unsigned ndm,RString name);
 
 	/**
 	* Insert a document to the list.
-	* @param doc              document to add.
+	* @param doc                    document to add.
 	*/
 	void AddDoc(GDocVector* doc) ;
+
+	/**
+	* Return the name of file where is the document structure.
+	*/
+	RString GetFileName(GDoc *doc);
+
+	/**
+	* Create the association matrix.
+	*/
+	void InsertNeighbor();
+
+	/**
+	* Create the associations of words with the neighbor.
+	*/
+	void OrderByNeighbor();
 
 	/**
 	* Sort the dictionnary.
@@ -158,8 +209,13 @@ public:
 	void CleanWords();
 
 	/**
+	* Create the conceptspace.
+	*/
+	void ConceptSpace();
+
+	/**
 	* Create the associations of words.
-	* @param n                number of the iteration.
+	* @param n                      number of the iteration.
 	*/
 	bool OrdreByDocs(unsigned n);
 
@@ -170,14 +226,36 @@ public:
 
 	/**
 	* Update the dictionnary of the document.
-	* @param doc              document to update.
+	* @param doc                    document to update.
 	*/
 	void UpdateDoc(GDocVector* doc);
 
 	/**
+	* Update the dictionnary of the document with the second method.
+	* @param doc                    document to update.
+	*/
+	void UpdateDocbis(GDocVector* doc);
+	/**
+	* Remove the concepts from the dictionnary of the document.
+	* @param doc                    document to update.
+	*/
+	void ReverseUpdateDoc(GDocVector* doc);
+
+	/**
+	* Update the dictionnary of the document (delete the words of the concepts).
+	* @param doc                    document to update.
+	*/
+	void UpdateDocter(GDocVector* doc);
+
+	/**
 	* Save all the association in the global dictionnary and in the documents of the list.
 	*/
-	void SaveAssociations(unsigned n,bool save);
+	void SaveAssociations(bool save);
+
+	/**
+	* Save the conceptspace.
+	*/
+	void SaveConceptSpace(bool save);
 
 	/**
 	* Clear the local dictionnary and the list of documents.
@@ -191,6 +269,9 @@ public:
 
 };
 
-}
+
+}  //-------- End of namespace GALILEI ----------------------------------------
+
+
 //---------------------------------------------------------------------------
 #endif

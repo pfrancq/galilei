@@ -44,7 +44,6 @@
 #include <galilei.h>
 
 
-
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
@@ -70,6 +69,9 @@ protected :
 	*/
 	R::RString Word;
 
+	/**
+	* The type
+	*/
 	GWordType Type;
 
 	/**
@@ -114,76 +116,87 @@ public:
 	GWord(const GWord& word) throw(bad_alloc);
 
 	/**
-	* Compare method used by R::RContainer and R::RHashContainer.
+	* Compare method used by RStd::RContainer and RStd::RHashContainer.
 	*/
 	int Compare(const GWord& word) const;
 
 	/**
-	* Compare method used by R::RContainer and R::RHashContainer.
+	* Compare method used by RStd::RContainer and RStd::RHashContainer.
 	*/
 	int Compare(const GWord* word) const;
 
 	/**
-	* Compare method used by R::RContainer and R::RHashContainer.
+	* Compare method used by RStd::RContainer and RStd::RHashContainer.
 	*/
 	int Compare(const R::RString& word) const;
 
 	/**
-	* Compare method used by R::RContainer and R::RHashContainer.
+	* Compare method used by RStd::RContainer and RStd::RHashContainer.
 	*/
 	int Compare(const char* word) const;
 
 	/**
-	* Compare method used by R::RContainer and R::RHashContainer.
+	* Compare method used by RStd::RContainer and RStd::RHashContainer.
 	*/
 	int Compare(const unsigned int id) const;
 
-
+	/**
+	* Set the type.
+	*/
 	void SetType(GWordType type);
 
+	/**
+	* Return the type.
+	*/
 	GWordType GetType() {return(Type);}
 
 	/**
 	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the R::RHashContainer class.
+	* string. It is used for the RStd::RHashContainer class.
 	*/
 	static char HashIndex(const GWord* w)
 		{return(R::RString::HashIndex(w->Word));}
 
 	/**
 	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the R::RHashContainer class.
+	* string. It is used for the RStd::RHashContainer class.
 	*/
 	static char HashIndex(const GWord& w)
 		{return(R::RString::HashIndex(w.Word));}
 
 	/**
 	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the R::RHashContainer class.
+	* string. It is used for the RStd::RHashContainer class.
 	*/
 	static char HashIndex(const char* word)
 		{return(R::RString::HashIndex(word));}
 
 	/**
 	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the R::RHashContainer class.
+	* string. It is used for the RStd::RHashContainer class.
 	*/
 	static char HashIndex2(const GWord* w)
 		{return(R::RString::HashIndex2(w->Word));}
 
 	/**
 	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the R::RHashContainer class.
+	* string. It is used for the RStd::RHashContainer class.
 	*/
 	static char HashIndex2(const GWord& w)
 		{return(R::RString::HashIndex2(w.Word));}
 
 	/**
 	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the R::RHashContainer class.
+	* string. It is used for the RStd::RHashContainer class.
 	*/
 	static char HashIndex2(const char* word)
 		{return(R::RString::HashIndex2(word));}
+
+	/**
+	* Set the Identificator of the word.
+	* @param id              Identificator of the word.
+	*/
+	void SetId(unsigned int id) {Id=id;}
 
 	/**
 	* @return Identificator of the word.
@@ -213,6 +226,16 @@ public:
 	* @returns unsigned int.
 	*/
 	unsigned int GetRef(tObjType ObjType);
+
+	/**
+	* Clear the word.
+	*/
+	void Clear();
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GWord(void);
 
 	// friend classes
 	friend class GDict;

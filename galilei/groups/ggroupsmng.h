@@ -75,7 +75,7 @@ protected:
 	/**
 	* Load the groups.
 	*/
-	virtual void LoadGroups(void) throw(bad_alloc,GException)=0;
+	virtual void LoadGroups(bool wg,bool w) throw(bad_alloc,GException)=0;
 
 public:
 

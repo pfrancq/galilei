@@ -88,6 +88,11 @@ protected:
 	GSubjectTree Subjects;
 
 	/**
+	* Name of the current database.
+	*/
+	R::RString DbName;
+
+	/**
 	* All the judgements.
 	*/
 	R::RContainer<GProfDoc,unsigned,true,true> Fdbks;
@@ -419,10 +424,22 @@ public:
 	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
 
 	/**
+	* Set the setting of the clustering method.
+	*/
+	void SetCurrentWordsClusteringMethodSettings(unsigned minocc,unsigned s,double c,unsigned ndm);
+
+	/**
 	* Create concept in the whole set of documents.
 	* @param save        Enable de concept saving.
 	*/
 	void AnalyseAssociation(bool save);
+
+	/**
+	* Remove concepts from the whole set of documents.
+	*/
+	void RemoveAssociation();
+
+	void Test();
 
 	/**
 	* Analyse all the necessary documents.
@@ -434,7 +451,7 @@ public:
 	/**
 	* Load the Users.
 	*/
-	void InitUsers(void) throw(bad_alloc,GException);
+	void InitUsers(bool wg,bool w) throw(bad_alloc,GException);
 
 	/**
 	* Create a new user in the system.
@@ -636,7 +653,7 @@ public:
 	/**
 	* Load the Groups.
 	*/
-	void InitGroups(void) throw(bad_alloc,GException);
+	void InitGroups(bool wg,bool w) throw(bad_alloc,GException);
 
 	/**
 	* Copy the ideal groupment in the current one.
@@ -663,6 +680,11 @@ public:
 	* @param historicid     id of the historic.
 	*/
 	virtual void SaveHistoricProfiles(unsigned int historicid)=0;
+
+	/**
+	* Return the name of the current database.
+	*/
+	virtual R::RString GetDbName()=0;
 	
 	/**
 	* Get a cursor over the filters of the system.
@@ -728,8 +750,23 @@ public:
 	*/
 	virtual void SaveDocSim(void)=0;
 
+	/**
+	* Delete clusters of words.
+	* @param dict           Dictionnary.
+	*/
+	virtual void DeleteWordsGroups(GDict* dict)=0;
+
+	/**
+	* Save clusters of words.
+	* @param dict           Dictionnary.
+	*/
 	virtual void SaveWordsGroups(GDict* dict)=0;
 
+	/**
+	* Save clusters of words in a document.
+	* @param doc            Document to save.
+	* @param n              Id of the first cluster of words.
+	*/
 	virtual void SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)=0;
 
 	/**
@@ -766,7 +803,7 @@ public:
 
 	/**
 	* Get the random number generator.
-	* @returns Pointer to R::RRandom;
+	* @returns Pointer to RMath::RRandom;
 	*/
 	R::RRandom* GetRandom(void) const {return(Random);}
 

@@ -99,13 +99,13 @@ unsigned int GALILEI::GDocs::FillDocs(GDoc** docs,GLang* lang) throw(GException,
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDocs::InitDocs(void) throw(bad_alloc,GException)
+void GALILEI::GDocs::InitDocs(bool wg,bool w) throw(bad_alloc,GException)
 {
 	// If documents already loaded, do nothing.
 	if(bDocs) return;
 
 	// Load the documents
-	LoadDocs();
+	LoadDocs(wg,w);
 	bDocs=true;
 }
 

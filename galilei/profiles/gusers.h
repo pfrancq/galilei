@@ -198,7 +198,7 @@ protected:
 	/**
 	* Load the Users.
 	*/
-	virtual void LoadUsers(void) throw(bad_alloc,GException)=0;
+	virtual void LoadUsers(bool wg,bool w) throw(bad_alloc,GException)=0;
 
 public:
 

@@ -493,6 +493,15 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GWordsClusteringI : public GSM
+{
+public:
+	GWordsClusteringI(GPrgClassSession* o) : GSM("WordsClustering",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,R::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GSessionPrg provides a class for executing a GALILEI Program.
 * @author Pascal Francq

@@ -106,7 +106,7 @@ public:
 protected:
 
 	/**
-	* Transform a R::RDate to a C string with the MySQL format.
+	* Transform a RTimeDate::RDate to a C string with the MySQL format.
 	* @param d              Date to transform.
 	* @param tmp            C String containing the date.
 	* @returns Pointer to the tmp C string.
@@ -144,12 +144,12 @@ protected:
 	/**
 	* Load the documents.
 	*/
-	virtual void LoadDocs(void) throw(bad_alloc,GException);
+	virtual void LoadDocs(bool wg,bool w) throw(bad_alloc,GException);
 
 	/**
 	*  Load the users.
 	*/
-	virtual void LoadUsers(void) throw(bad_alloc,GException);
+	virtual void LoadUsers(bool wg,bool w) throw(bad_alloc,GException);
 
 	/**
 	*  Load the users Feedback.
@@ -159,7 +159,7 @@ protected:
 	/**
 	* Load the groups.
 	*/
-	virtual void LoadGroups(void) throw(bad_alloc,GException);
+	virtual void LoadGroups(bool wg,bool w) throw(bad_alloc,GException);
 
 public:
 
@@ -171,14 +171,14 @@ public:
 
 	/**
 	* Load the ideal groupment.
-	* @param idealgroup   The ideal container of group	
+	* @param idealgroup   The ideal container of group
 	*/
 	virtual void LoadIdealGroupment();
 
 
 	/**
 	* Save the ideal groupment
-	* @param idealgroup   The ideal container of group	
+	* @param idealgroup   The ideal container of group
 	*/
 	virtual void SaveIdealGroupment(R::RContainer<GGroups,unsigned int,true,true>* idealgroup);
 
@@ -197,10 +197,29 @@ public:
 	*/
 	virtual void SaveDoc(GDoc* doc) throw(GException);
 
+	/**
+	* Delete clusters of words.
+	* @param dict           Dictionnary.
+	*/
+	virtual void DeleteWordsGroups(GDict* dict) throw(GException);
+
+	/**
+	* Save clusters of words.
+	* @param dict           Dictionnary.
+	*/
 	virtual void SaveWordsGroups(GDict* dict)throw(GException);
 
+	/**
+	* Load clusters of words.
+	* @param dict           Dictionnary.
+	*/
 	virtual void LoadWordsGroups(GDict* dict) throw(GException);
 
+	/**
+	* Save clusters of words in a document.
+	* @param doc            Document to save.
+	* @param n              Id of the first cluster of words.
+	*/
 	virtual void SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException);
 
 	/**
@@ -269,6 +288,11 @@ public:
 	* Save the Profiles in history.
 	*/
 	virtual void SaveHistoricProfiles(unsigned int historicid);
+
+	/**
+	* Return the name of the current database.
+	*/
+	virtual R::RString GetDbName(){return(DbName);};
 
 	/**
 	* Delete a group.

@@ -50,8 +50,9 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GALILEI::GDocOptions::GDocOptions(void)
 	: StaticLang(false), MinStopWords(0.1), MinWordSize(4), MinStemSize(3),
-	  MinOccur(1), MinDocs(5), MaxDocs(300), MinOccurCluster(2), NbIteration(2),
-	  NonLetterWords(false), UseLink(false), UseExternalLink(false), UseRedirection(false)
+	  MinOccur(1), MinDocs(5), MaxDocs(300), MinOccurCluster(2), WindowSize(10),
+	  NbIteration(2), MinConfidence(0.15), NbDocsMin(5), NonLetterWords(false),
+	  Distance(true), UseLink(false), UseExternalLink(false), UseRedirection(false)
 {
 }
 
@@ -61,9 +62,10 @@ GALILEI::GDocOptions::GDocOptions(void)
 GALILEI::GDocOptions::GDocOptions(const GDocOptions& opt)
 	: StaticLang(opt.StaticLang), MinStopWords(opt.MinStopWords), MinWordSize(opt.MinWordSize),
 	  MinStemSize(opt.MinStemSize), MinOccur(opt.MinOccur), MinDocs(opt.MinDocs),
-	  MaxDocs(opt.MaxDocs),MinOccurCluster(opt.MinOccurCluster), NbIteration(opt.NbIteration),
-	  NonLetterWords(opt.NonLetterWords), UseLink(opt.UseLink), UseExternalLink(opt.UseExternalLink),
-	  UseRedirection(opt.UseRedirection)
+	  MaxDocs(opt.MaxDocs),MinOccurCluster(opt.MinOccurCluster), WindowSize(opt.WindowSize),
+	  NbIteration(opt.NbIteration), MinConfidence(opt.MinConfidence), NbDocsMin(opt.NbDocsMin),
+	  NonLetterWords(opt.NonLetterWords), Distance(opt.Distance), UseLink(opt.UseLink),
+               UseExternalLink(opt.UseExternalLink), UseRedirection(opt.UseRedirection)
 {
 }
 
@@ -72,9 +74,10 @@ GALILEI::GDocOptions::GDocOptions(const GDocOptions& opt)
 GALILEI::GDocOptions::GDocOptions(const GDocOptions* opt)
 	: StaticLang(opt->StaticLang), MinStopWords(opt->MinStopWords), MinWordSize(opt->MinWordSize),
 	  MinStemSize(opt->MinStemSize), MinOccur(opt->MinOccur), MinDocs(opt->MinDocs),
-	  MaxDocs(opt->MaxDocs),MinOccurCluster(opt->MinOccurCluster), NbIteration(opt->NbIteration),
-	  NonLetterWords(opt->NonLetterWords), UseLink(opt->UseLink), UseExternalLink(opt->UseExternalLink),
-	  UseRedirection(opt->UseRedirection)
+	  MaxDocs(opt->MaxDocs),MinOccurCluster(opt->MinOccurCluster), WindowSize(opt->WindowSize),
+	  NbIteration(opt->NbIteration), MinConfidence(opt->MinConfidence), NbDocsMin(opt->NbDocsMin),
+	  NonLetterWords(opt->NonLetterWords), Distance(opt->Distance), UseLink(opt->UseLink),
+               UseExternalLink(opt->UseExternalLink), UseRedirection(opt->UseRedirection)
 {
 }
 
@@ -90,7 +93,10 @@ GDocOptions& GALILEI::GDocOptions::operator=(const GDocOptions& opt)
 	MinDocs=opt.MinDocs;
 	MaxDocs=opt.MaxDocs;
 	MinOccurCluster=opt.MinOccurCluster;
+	WindowSize=opt.WindowSize;
 	NbIteration=opt.NbIteration;
+	MinConfidence=opt.MinConfidence;
+	NbDocsMin=opt.NbDocsMin;
 	NonLetterWords=opt.NonLetterWords;
 	UseLink=opt.UseLink;
 	UseExternalLink=opt.UseExternalLink;

@@ -107,14 +107,34 @@ public:
 	unsigned int MinOccurCluster;
 
 	/**
+	* Size of the window use when the distance between words is use.
+	*/
+	unsigned int WindowSize;
+
+	/**
 	* Number of iteration of the words clustering algorithm.
 	*/
 	unsigned int NbIteration;
 
 	/**
+	* Minimum confidence of the clusters of words.
+	*/
+	double MinConfidence;
+
+	/**
+	* Minimum number of documents where a cluster of words must appear.
+	*/
+	unsigned int NbDocsMin;
+
+	/**
 	* Determine if the extracted words may contain other things than letters.
 	*/
 	bool NonLetterWords;
+
+	/**
+	* Determine if the distance between words in a document is use.
+	*/
+	bool Distance;
 
 	/**
 	* Determine if Links are used or not.

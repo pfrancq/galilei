@@ -40,7 +40,7 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for RStd
+// include files for R
 #include <rstd/rcontainer.h>
 using namespace R;
 
