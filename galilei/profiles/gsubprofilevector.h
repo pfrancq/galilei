@@ -89,6 +89,11 @@ public:
 	static GSubProfile* NewSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a);
 
 	/**
+	* Method called when the profiles feedbacks were cleared.
+	*/
+	virtual void ClearFdbks(void);
+
+	/**
 	* See if the subprpfile is defined, i.e. if it is computed. A subprofile
 	* that isn't computed, isn't attached.
 	*/

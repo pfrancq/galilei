@@ -240,6 +240,13 @@ public:
 	GProfDoc* GetFeedback(const GDoc* doc) const;
 
 	/**
+	* Get the number of judged documents of a given language.
+	* @param lang           Pointer to the language.
+	* @returns unsigned int.
+	*/
+	unsigned int GetNbJudgedDocs(const GLang* lang) const;
+
+	/**
 	* Get a Cursor on the feedback for the profile.
 	* @return GProfDocCursor.
 	*/

@@ -92,6 +92,12 @@ int GALILEI::GSubProfile::Compare(const GSubProfile* subprofile) const
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSubProfile::ClearFdbks(void)
+{
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GSubProfile::SetGroup(GGroup* grp)
 {
 	Group=grp;

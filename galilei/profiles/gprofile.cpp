@@ -41,6 +41,7 @@
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
 #include <groups/ggroup.h>
+#include <docs/gdoc.h>
 using namespace GALILEI;
 using namespace RTimeDate;
 using namespace RStd;
@@ -136,6 +137,19 @@ GProfDoc* GALILEI::GProfile::GetFeedback(const GDoc* doc) const
 
 
 //-----------------------------------------------------------------------------
+unsigned int GALILEI::GProfile::GetNbJudgedDocs(const GLang* lang) const
+{
+	unsigned int sum,i;
+	GProfDoc** ptr;
+
+	for(i=Fdbks.NbPtr+1,sum=0,ptr=Fdbks.Tab;--i;ptr++)
+		if((*ptr)->GetDoc()->GetLang()==lang)
+			sum++;
+	return(sum);
+}
+
+
+//-----------------------------------------------------------------------------
 GProfDocCursor& GALILEI::GProfile::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
@@ -156,7 +170,12 @@ GSubProfileCursor& GALILEI::GProfile::GetSubProfilesCursor(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GProfile::ClearFdbks(void)
 {
+	GSubProfileCursor Cur;
+
 	Fdbks.Clear();
+	Cur.Set(this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->ClearFdbks();
 }
 
 

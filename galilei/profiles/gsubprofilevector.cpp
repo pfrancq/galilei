@@ -74,6 +74,14 @@ GSubProfile* GALILEI::GSubProfileVector::NewSubProfile(GProfile* prof,unsigned i
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSubProfileVector::ClearFdbks(void)
+{
+	GSubProfile::ClearFdbks();
+	GIWordsWeights::Clear();
+}
+
+
+//-----------------------------------------------------------------------------
 bool GALILEI::GSubProfileVector::IsDefined(void) const
 {
 	return(NbPtr);

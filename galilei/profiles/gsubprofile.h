@@ -132,7 +132,12 @@ public:
 	* Compare methods used by RStd::RContainer.
 	*/
 	int Compare(const GSubProfile* subprofile) const;
-	
+
+	/**
+	* Method called when the profiles feedbacks were cleared.
+	*/
+	virtual void ClearFdbks(void);
+
 	/**
 	* Get the identifier of the subprofile.
 	* @return Identificator.
