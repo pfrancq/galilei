@@ -44,7 +44,10 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gprginstmethod.h>
+#include <sessions/gprgvar.h>
 using namespace GALILEI;
+using namespace RStd;
+
 
 
 //-----------------------------------------------------------------------------
@@ -54,15 +57,23 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GPrgInstMethod::GPrgInstMethod(const char* name) throw(bad_alloc)
-	: GPrgInst(name)
+GALILEI::GPrgInstMethod::GPrgInstMethod(GPrgFunc* inst) throw(bad_alloc)
+	: GPrgInst(), Method(inst), Params(10,5)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GPrgInstMethod::Run(GSessionPrg*) throw(GException)
+void GALILEI::GPrgInstMethod::Run(GSessionPrg* prg,GSlot* r) throw(GException)
 {
+	Method->Run(prg,r,&Params);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GPrgInstMethod::AddParam(GPrgVar* var) throw(bad_alloc)
+{
+	Params.InsertPtr(var);
 }
 
 

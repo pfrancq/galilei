@@ -78,6 +78,13 @@ int GALILEI::GPrgClass::Compare(const char* c) const
 
 
 //-----------------------------------------------------------------------------
+GPrgFunc* GALILEI::GPrgClass::GetMethod(const char* method) const
+{
+	return(Methods.GetPtr<const char*>(method));
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::GPrgClass::~GPrgClass(void)
 {
 }

@@ -56,25 +56,12 @@ namespace GALILEI{
 */
 class GPrgInst
 {
-protected:
-
-	/**
-	* Name of the instruction.
-	*/
-	RStd::RString Name;
-
-	/**
-	* Parameters for the method.
-	*/
-	RStd::RContainer<GPrgVar,unsigned int,true,false> Params;
-
 public:
 
 	/**
 	* Create a Instruction.
-	* @param name           Name.
 	*/
-	GPrgInst(const char* name) throw(bad_alloc);
+	GPrgInst(void) throw(bad_alloc);
 
 	/**
 	* Method needed by RStd::Rcontainer.

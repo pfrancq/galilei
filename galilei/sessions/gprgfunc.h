@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgInstMethod.h
+	GPrgFunc.h
 
-	Method of a class - Header.
+	Function of a Program - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -35,15 +35,13 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GPrgInstMethodH
-#define GPrgInstMethodH
+#ifndef GPrgFuncH
+#define GPrgFuncH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <sessions/gprginst.h>
-#include <sessions/gprgfunc.h>
 
 
 //-----------------------------------------------------------------------------
@@ -52,48 +50,49 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GPrgInstMethod provides a class for a class method.
+* The GPrgFunc provides a class for a generic function.
 * @author Pascal Francq
-* @short Class Method.
+* @short Program Function.
 */
-class GPrgInstMethod : public GPrgInst
+class GPrgFunc
 {
 protected:
 
 	/**
-	* Pointer to the method.
+	* Name of the function.
 	*/
-	GPrgFunc* Method;
-
-	/**
-	* Parameters for the method.
-	*/
-	RStd::RContainer<GPrgVar,unsigned int,true,false> Params;
+	RStd::RString Name;
 
 public:
 
 	/**
-	* Create a Instruction.
-	* @param inst           Instruction.
+	* Create a function.
+	* @param name           Name.
 	*/
-	GPrgInstMethod(GPrgFunc* inst) throw(bad_alloc);
+	GPrgFunc(const char* name) throw(bad_alloc);
 
 	/**
-	* Add a parameter to the instruction.
+	* Method needed by RStd::Rcontainer.
 	*/
-	void AddParam(GPrgVar* var) throw(bad_alloc);
+	int Compare(const GPrgFunc* t) const;
 
 	/**
-	* Program holding the instruction.
+	* Method needed by RStd::Rcontainer.
+	*/
+	int Compare(const char* t) const;
+
+	/**
+	* Execute the function.
 	* @param prg            Program.
 	* @param r              Receiver.
+	* @param args           Parameters.
 	*/
-	virtual void Run(GSessionPrg* prg,GSlot* r) throw(GException);
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 	
 	/**
 	* Destructor.
 	*/
-	virtual ~GPrgInstMethod(void);
+	virtual ~GPrgFunc(void);
 };
 
 

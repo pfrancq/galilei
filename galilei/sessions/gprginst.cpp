@@ -55,8 +55,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GPrgInst::GPrgInst(const char* name) throw(bad_alloc)
-	: Name(name), Params(10,5)
+GALILEI::GPrgInst::GPrgInst(void) throw(bad_alloc)
 {
 }
 
@@ -64,14 +63,14 @@ GALILEI::GPrgInst::GPrgInst(const char* name) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 int GALILEI::GPrgInst::Compare(const GPrgInst* t) const
 {
-	return(Name.Compare(t->Name));
+	return(-1);
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GPrgInst::Compare(const char* t) const
 {
-	return(Name.Compare(t));
+	return(-1);
 }
 
 

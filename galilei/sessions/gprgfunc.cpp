@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPrgInstMethod.h
+	GPrgFunc.cpp
 
-	Method of a class - Header.
+	Function of a Program - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
@@ -33,72 +33,55 @@
 */
 
 
-
+   
 //-----------------------------------------------------------------------------
-#ifndef GPrgInstMethodH
-#define GPrgInstMethodH
+// include files for ANSI C/C++
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
-#include <sessions/gprginst.h>
 #include <sessions/gprgfunc.h>
+#include <sessions/gprgvar.h>
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
+//
+// GPrgFunc
+//
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-/**
-* The GPrgInstMethod provides a class for a class method.
-* @author Pascal Francq
-* @short Class Method.
-*/
-class GPrgInstMethod : public GPrgInst
+GALILEI::GPrgFunc::GPrgFunc(const char* name) throw(bad_alloc)
+	: Name(name)
 {
-protected:
-
-	/**
-	* Pointer to the method.
-	*/
-	GPrgFunc* Method;
-
-	/**
-	* Parameters for the method.
-	*/
-	RStd::RContainer<GPrgVar,unsigned int,true,false> Params;
-
-public:
-
-	/**
-	* Create a Instruction.
-	* @param inst           Instruction.
-	*/
-	GPrgInstMethod(GPrgFunc* inst) throw(bad_alloc);
-
-	/**
-	* Add a parameter to the instruction.
-	*/
-	void AddParam(GPrgVar* var) throw(bad_alloc);
-
-	/**
-	* Program holding the instruction.
-	* @param prg            Program.
-	* @param r              Receiver.
-	*/
-	virtual void Run(GSessionPrg* prg,GSlot* r) throw(GException);
-	
-	/**
-	* Destructor.
-	*/
-	virtual ~GPrgInstMethod(void);
-};
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
+}
 
 
 //-----------------------------------------------------------------------------
-#endif 
+int GALILEI::GPrgFunc::Compare(const GPrgFunc* t) const
+{
+	return(Name.Compare(t->Name));
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GPrgFunc::Compare(const char* t) const
+{
+	return(Name.Compare(t));
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GPrgFunc::Run(GSessionPrg*,GSlot*,RStd::RContainer<GPrgVar,unsigned int,true,false>*) throw(GException)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GPrgFunc::~GPrgFunc(void)
+{
+}

@@ -42,6 +42,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <sessions/gprgfunc.h>
 
 
 //-----------------------------------------------------------------------------
@@ -66,12 +67,12 @@ protected:
 	/**
 	* Variables.
 	*/
-	RStd::RContainer<GPrgVar,unsigned int,true,false> Vars;
+	RStd::RContainer<GPrgVar,unsigned int,true,true> Vars;
 
 	/**
 	* Methods.
 	*/
-	RStd::RContainer<GPrgInst,unsigned int,true,false> Methods;
+	RStd::RContainer<GPrgFunc,unsigned int,true,true> Methods;
 
 public:
 
@@ -90,6 +91,13 @@ public:
 	* Method needed by RStd::Rcontainer.
 	*/
 	int Compare(const char* c) const;
+
+	/**
+	* Find a method.
+	* @param method         Name of the method.
+	* @returns Pointer to GPrgInst.
+	*/
+	GPrgFunc* GetMethod(const char* method) const;
 
 	/**
 	* Destructor.

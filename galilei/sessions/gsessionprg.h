@@ -49,11 +49,19 @@
 #include <galilei.h>
 #include <sessions/gprgvar.h>
 #include <sessions/gprgclass.h>
+#include <profiles/ggetfeedback.h>
+#include <groups/gidealgroup.h>
+#include <tests/gmixidealgroups.h>
+#include <tests/gstatsimsubprof.h>
+#include <tests/gstatsimdoc.h>
+#include <sessions/gprginst.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -141,6 +149,177 @@ public:
 	* @param filename       Name of the file containing the ideal groupement.
 	*/
 	void LoadGroups(const char* filename) throw(GException);
+
+	/**
+	*/
+	virtual ~GPrgClassSession(void);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSM : public GPrgFunc
+{
+public:
+	char tmp[300];
+	GPrgClassSession* Owner;
+	GSM(const char* name,GPrgClassSession* o)
+		: GPrgFunc(name), Owner(o) {}
+};
+
+
+//-----------------------------------------------------------------------------
+class GOutputI : public GSM
+{
+public:
+	GOutputI(GPrgClassSession* o) : GSM("SetOutput",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GGOutputI : public GSM
+{
+public:
+	GGOutputI(GPrgClassSession* o) : GSM("SetGraphOutput",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSOutputI : public GSM
+{
+public:
+	GSOutputI(GPrgClassSession* o) : GSM("SetStatsOutput",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSetAutoSaveI : public GSM
+{
+public:
+	GSetAutoSaveI(GPrgClassSession* o) : GSM("SetAutoSave",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GTestI : public GSM
+{
+public:
+	GTestI(GPrgClassSession* o) : GSM("Test",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GLogI : public GSM
+{
+public:
+	GLogI(GPrgClassSession* o) : GSM("Log",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GSqlI : public GSM
+{
+public:
+	GSqlI(GPrgClassSession* o) : GSM("ExecSql",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GModifyProfilesI : public GSM
+{
+public:
+	GModifyProfilesI(GPrgClassSession* o) : GSM("ModifyProfiles",o) {}
+	virtual void Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GComputeProfilesI : public GSM
+{
+public:
+	GComputeProfilesI(GPrgClassSession* o) : GSM("ComputeProfiles",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GGroupProfilesI : public GSM
+{
+public:
+	GGroupProfilesI(GPrgClassSession* o) : GSM("GroupProfiles",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GLoadIdealI : public GSM
+{
+public:
+	GLoadIdealI(GPrgClassSession* o) : GSM("LoadIdeal",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GCreateIdealI : public GSM
+{
+	GIdealGroup IdealMethod;
+public:
+	GCreateIdealI(GPrgClassSession* o) : GSM("CreateIdeal",o),IdealMethod(Owner->Session) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GMixIdealI : public GSM
+{
+public:
+	GMixIdealI(GPrgClassSession* o) : GSM("MixIdeal",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GFdbksCycleI : public GSM
+{
+	GGetFeedback FdbksMethod;
+public:
+	GFdbksCycleI(GPrgClassSession* o) : GSM("FdbksCycle",o),FdbksMethod(Owner->Session) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GCompareIdealI : public GSM
+{
+public:
+	GCompareIdealI(GPrgClassSession* o) : GSM("CompareIdeal",o) {}
+	virtual void Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GStatsProfilesI : public GSM
+{
+public:
+	GStatsProfilesI(GPrgClassSession* o) : GSM("StatsProfiles",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+class GStatsDocsI : public GSM
+{
+	GStatSimDoc DocStats;
+public:
+	GStatsDocsI(GPrgClassSession* o) : GSM("StatsDocs",o), DocStats(Owner->Session) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
 
@@ -170,99 +349,14 @@ protected:
 	RStd::RString FileName;
 
 	/**
-	* Session on which execute the file.
-	*/
-	GSession* Session;
-
-	/**
 	* Receiver of the signal.
 	*/
 	GSlot* Rec;
 
 	/**
-	* List of all possible "instructions" to execute.
-	*/
-	static RStd::RContainer<InstType,unsigned int,true,true> InstTypes;
-
-	/**
 	* List of all "Instructions" to execute.
 	*/
-	RStd::RContainer<Inst,unsigned int,true,false> Insts;
-
-	/**
-	* Name of the current test.
-	*/
-	RStd::RString TestName;
-
-	/**
-	* Output file.
-	*/
-	RIO::RTextFile* OFile;
-
-	/**
-	* Graph Output file.
-	*/
-	RIO::RTextFile* GOFile;
-
-	/**
-	* Statistics Output file.
-	*/
-	RIO::RTextFile* SOFile;
-
-	/**
-	* Ideal Groups.
-	*/
-	RContainer<GGroups,unsigned int,true,true>* Groups;
-
-	/**
-	* Precision of the current groupement.
-	*/
-	double Precision;
-
-	/**
-	* Recall of the current groupement.
-	*/
-	double Recall;
-
-	/**
-	* Total comparaison between for the current groupment.
-	*/
-	double Total;
-
-	/**
-	* Method to create an ideal clustering.
-	*/
-	GIdealGroup* IdealMethod;
-
-	/**
-	* Method to create a feedback cycle.
-	*/
-	GGetFeedback* FdbksMethod;
-
-	/**
-	* Container used to create subjects catagories.
-	*/
-	RStd::RContainer<GGroupIdParentId,unsigned int,true,true>* Parents;
-
-	/**
-	* First profile computing has be done.
-	*/
-	bool FirstProfile;
-
-	/**
-	* First groupment has be done.
-	*/
-	bool FirstGroup;
-
-	/**
-	* When Autosave is true, after each computing, the results is saved.
-	*/
-	bool AutoSave;
-
-	/**
-	* Method for computing statistics on profiles.
-	*/
-	GStatSimSubProf* StatSimSubProf;
+	RStd::RContainer<GPrgInst,unsigned int,true,false> Insts;
 
 	/**
 	* Variables.
@@ -273,6 +367,16 @@ protected:
 	* Classes.
 	*/
 	RStd::RContainer<GPrgClass,unsigned int,true,false> Classes;
+
+	/**
+	* Program file.
+	*/
+	RIO::RTextFile Prg;
+
+	/**
+	* Temporary string.
+	*/
+	char tmp[500];
 
 public:
 
@@ -285,11 +389,18 @@ public:
 	GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_alloc,GException);
 
 	/**
+	* Count the number of tabs at the begin of a line of source code.
+	* @param line           Line to analyze.
+	* @returns Instruction to insert.
+	*/
+	int CountTabs(char* line);
+
+	/**
 	* Analyse a line of source code.
 	* @param line           Line to analyze.
 	* @returns Instruction to insert.
 	*/
-	static Inst* AnalyseLine(char* line) throw(bad_alloc,GException);
+	Inst* AnalyseLine(char* line) throw(bad_alloc,GException);
 
 	/**
 	* Analyse a parameter.
@@ -298,21 +409,6 @@ public:
 	* @returns Variable created.
 	*/
 	static GPrgVar* AnalyseParam(GPrgVar* owner,char* &param) throw(bad_alloc,GException);
-
-protected:
-
-	/**
-	* Load the groups from the file.
-	* @param filename       Name of the file containing the ideal groupement.
-	*/
-	void LoadGroups(const char* filename) throw(GException);
-
-	/**
-	* Run an instruction.
-	*/
-	void Run(const Inst* i) throw(GException);
-
-public:
 
 	/**
 	* Execute a "program" for the current session.
