@@ -46,9 +46,17 @@
 #include <docs/glinkcalc.h>
 #include <docs/glinkcalcparams.h>
 
+#include <rmath/rgenericsparsematrix.h>
+#include <rmath/rgenericsparsevector.h>
+#include <rmath/rgenericcell.h>
+#include <rmath/rgenericcellcursor.h>
+#include <rmath/rgenericvectorcursor.h>
+
+
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -124,6 +132,8 @@ public:
 */
 class GLinkCalcCorrespondence : public GLinkCalc
 {
+
+
 private :
 
 	/**
@@ -132,19 +142,14 @@ private :
 	GLinkCalcCorrespondenceParams* Params;
 
 	/**
-	* Container of outgoing links.
-	*/
-	R::RContainer<GLinks,unsigned int,true,true>* Links_Out;
-
-	/**
 	* The Norme for the weight of the links contained in Links_Out
 	*/
-	float Norme_Out;
+	double Norme_H;
 
   /**
   * The Norme for the weight of the links contained in Links_In
   */
-	float Norme_In;
+	double Norme_A;
 
 
 protected :
@@ -156,39 +161,39 @@ protected :
 	struct BestValue
 	{
 		unsigned int Id;
-		float Value;
+		double Value;
 	};
 
 private :
 
 	/**
 	* Compute the weight of Incomming Links (wi = AVG weigth of page pointing to i).
-	* @params out_links          The container of outgoing links for the computed profile
-	* @params in_links             The container of incomming links for the computed profile
+	* @params Qh                    The transient matrix for the computed profile
+	* @params Xh                     The sub-dominant eigen vector for Hubs of the system
 	*/
-	void Operation_I(R::RContainer<GBalancedLinks,unsigned int,true,true>* out_Links,R::RContainer<GBalancedLinks,unsigned int,true,true>* in_Links);
+	void Operation_H(R::RGenericSparseMatrix<R::RGenericCell<double>,true>* Qh,R::RGenericSparseVector<R::RGenericCell<double>,true>* Xhubs);
 
 	/**
 	* Compute the weight of Outgoing Links (wi = AVG weigth of page that i point).
-	* @params out_links          The container of outgoing links for the computed profile
-	* @params in_links             The container of incomming links for the computed profile
+	* @params Qa                    The transient Matrix for the computed profile
+	* @params Xa                     The sub-dominant eigen vector for Autorities of the system
 	*/
-	void Operation_O(R::RContainer<GBalancedLinks,unsigned int,true,true>* out_Links,R::RContainer<GBalancedLinks,unsigned int,true,true>* in_Links);
+	void Operation_A(R::RGenericSparseMatrix<R::RGenericCell<double>,true>* Qa, R::RGenericSparseVector<R::RGenericCell<double>,true>* Xauto);
 
 	/**
 	* Normalization of weight for Links.
-	* @params Links           The container from where the values must be normalised.
+	* @params X                  The vector which must be normalised.
 	* @params Norme          The norme used to normalise
 	*/
-	void Normalization(R::RContainer<GBalancedLinks,unsigned int,true,true>* Links, float Norme);
+	void Normalization(R::RGenericSparseVector<R::RGenericCell<double>,true>* X, double Norme);
 
 	/**
 	* Find the best values for Outgoing links;
 	* @param nb             The number of best values to return
-	* @param lcur           The GLinksCursor on the container to be treated
-	* @param Bv             The container of Links for the best Values.
+	* @param X               The vector to be treated
+	* @param Bv             The vector of id of Links for the best Values.
 	*/
-	void FindBestValues(unsigned int nb,GBalancedLinksCursor lcur,R::RContainer<GBalancedLinks,unsigned int,true,false>* Bv);
+	void FindBestValues(unsigned int nb,R::RGenericSparseVector<R::RGenericCell<double>,true>* X,R::RGenericSparseVector<R::RGenericCell<int>,true>* Best_Links);
 
 	/*
 	* Find min value in a struct BestValue
@@ -210,18 +215,14 @@ public :
 	/**
 	* Initialize the values needed by th algorithm
 	*/
-	virtual void InitAlgo(void);
+//	virtual void InitAlgo(void);
 
-	/**
-	* Add a new doc (not present in the initAlgo phase) to the graph.
-	*/
-	virtual void AddDoc(GDoc* doc);
 
 	/**
 	* Compute links for all the documents.
 	* @param prof               The profile to compute.
 	*/
-	virtual void Compute(GProfile* prof);
+	virtual void Compute(GSubProfile* Subprof);
 
 	/**
 	* Get the settings of the method coded in a string.
@@ -240,6 +241,40 @@ public :
 	*/
 	virtual ~GLinkCalcCorrespondence(void);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The RGenericCellCursorDouble class provides a way to go trough a set of Generic cell of type <double>.
+* @short Generic cell cursor for double
+*/
+CLASSGENERICCELLCURSOR(RGenericCellCursorDouble2,double)
+
+
+//-----------------------------------------------------------------------------
+/**
+* The RGenericVectorCursorDouble class provides a way to go trough a set of Generic Vector
+* containing generic cells of type <double>.
+* @short Generic vector cursor for double
+*/
+CLASSGENERICVECTORCURSOR(RGenericVectorCursorDouble2,double)
+
+//-----------------------------------------------------------------------------
+/**
+* The RGenericCellCursorInt class provides a way to go trough a set of Generic cell of type <int>.
+* @short Generic cell cursor for int
+*/
+CLASSGENERICCELLCURSOR(RGenericCellCursorInt2,int)
+
+
+//-----------------------------------------------------------------------------
+/**
+* The RGenericVectorCursorInt class provides a way to go trough a set of Generic Vector
+* containing generic cells of type <int>.
+* @short Generic vector cursor for int
+*/
+CLASSGENERICVECTORCURSOR(RGenericVectorCursorInt2,int)
+
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

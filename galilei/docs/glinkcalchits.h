@@ -132,18 +132,13 @@ private :
 	GLinkCalcHITSParams* Params;
 
 	/**
-	* Container of outgoing links.
-	*/
-	R::RContainer<GLinks,unsigned int,true,true>* Links_Out;
-
-	/**
 	* The Norme for the weight of the links contained in Links_Out
 	*/
 	float Norme_Out;
 
-  /**
-  * The Norme for the weight of the links contained in Links_In
-  */
+	/**
+	* The Norme for the weight of the links contained in Links_In
+	*/
 	float Norme_In;
 
 	// Variable de test:
@@ -221,20 +216,10 @@ public :
 	GLinkCalcHITS(GSession* ses,GLinkCalcHITSParams* p) throw(bad_alloc);
 
 	/**
-	* Initialize the values needed by th algorithm
-	*/
-	virtual void InitAlgo(void);
-
-	/**
-	* Add a new doc (not present in the initAlgo phase) to the graph.
-	*/
-	virtual void AddDoc(GDoc* doc);
-
-	/**
 	* Compute links for all the documents.
-	* @param prof               The profile to compute.
+	* @param subprof               The subprofile to be computed.
 	*/
-	virtual void Compute(GProfile* prof);
+	virtual void Compute(GSubProfile* subprof);
 
 	/**
 	* Get the settings of the method coded in a string.

@@ -41,6 +41,7 @@
 //-----------------------------------------------------------------------------
 //include file for GALILEI
 #include <galilei.h>
+#include <docs/glinks.h>
 
 
 //-----------------------------------------------------------------------------
@@ -70,6 +71,16 @@ protected :
 	*/
 	GSession* Session;
 
+	/**
+	* Container of outgoing links.
+	*/
+	R::RContainer<GLinks,unsigned int,true,true>* Links_Out;
+
+	/**
+	* remain status of the graph
+	*/
+	bool Inited;
+
 public :
 
 	/**
@@ -80,26 +91,20 @@ public :
 	GLinkCalc(const char* name,GSession* session) throw(bad_alloc);
 
 	/**
-	* Compute a group.
-	* @param grp            Group to compute.
-	*/
-//	virtual void Compute(GSlot* rec)=0;
-
-	/**
 	* Compute a profile using link method
 	* @params Prof       The profile to compute.
 	*/
-	virtual void Compute(GProfile* Prof)=0;
+	virtual void Compute(GSubProfile* subprof)=0;
 
 	/**
-	* Init the algorithm for link computation 
+	* Init the algorithm for link computation
 	*/
-	virtual void InitAlgo()=0;
+	void InitGraph(void);
 
 	/**
 	* Add a new doc (not present in the initAlgo phase).
 	*/
-	virtual void AddDoc(GDoc* doc)=0;
+	void AddDoc(GDoc* doc);
 
 	/**
 	* Get the name of the computing method.
@@ -148,7 +153,7 @@ public :
 */
 CLASSCURSOR(GLinkCalcCursor,GLinkCalc,unsigned int)
 
-}  //-------- End of namespace [namespace Name] ----------------------------------
+}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

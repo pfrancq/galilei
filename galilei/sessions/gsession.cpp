@@ -686,7 +686,7 @@ void GALILEI::GSession::InitLinks(void)
 	if(!LinkCalc)
 		throw GException("No Link computing method chosen.");
 
-	LinkCalc->InitAlgo();
+	LinkCalc->InitGraph();
 }
 
 
@@ -718,7 +718,7 @@ void GALILEI::GSession::CalcProfiles(GSlot* rec,bool modified,bool save) throw(G
 				if((!modified)||(Subs()->GetState()!=osUpdated))
 				{
 					if (DocOptions->UseLink)
-						LinkCalc->Compute(Prof());
+						LinkCalc->Compute(Subs());
 					ProfileCalc->Compute(Subs());
 					// add the mofified profile to the list of modified profiles  for similarities
 					profSim = ProfilesSims->GetPtr<GLang*>(Subs()->GetLang());
@@ -764,6 +764,10 @@ void GALILEI::GSession::CalcProfile(GProfile* prof) throw(GException)
 
 	Subs=prof->GetSubProfilesCursor();
 	for (Subs.Start(); !Subs.End(); Subs.Next())
+		if (DocOptions->UseLink)
+		{
+			LinkCalc->Compute(Subs());
+		}
 		ProfileCalc->Compute(Subs());
 }
 

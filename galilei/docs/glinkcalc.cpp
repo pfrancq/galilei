@@ -36,8 +36,12 @@
 //-----------------------------------------------------------------------------
 //include file for GALILEI
 #include <docs/glinkcalc.h>
+#include <docs/glink.h>
+#include <docs/glinks.h>
+#include <docs/gdoc.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
-
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -50,6 +54,73 @@ using namespace GALILEI;
 GALILEI::GLinkCalc::GLinkCalc(const char* name, GSession* ses) throw(bad_alloc)
 	: ComputingName(name), Session(ses)
 {
+	Links_Out = new RContainer<GLinks,unsigned int,true,true> (100,50);
+	Inited=false;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GLinkCalc::InitGraph(void)
+{
+	GDocCursor cur = Session->GetDocsCursor();
+	GLinkCursor lcur;
+	GLinks* links_out=0;
+	int size=0;
+
+	if(( !Inited) && (Session->GetCount("htmlsbylinks") ))
+	{
+		// Create a container of  outgoing links for all document present in the system
+		size = cur.GetNb() * sizeof(GLinks);
+		for (cur.Start();!cur.End();cur.Next())
+		{
+			Links_Out->InsertPtr( new GLinks( cur() ));
+		}
+
+			// For each page p set all the pages qi pointed by p
+		for (cur.Start();!cur.End();cur.Next())
+		{
+			if (!cur()->GetNbLinks()) continue;
+			links_out=Links_Out->GetPtr(cur()->GetId());
+			lcur = cur()->GetLinkCursor();
+			size += lcur.GetNb() * sizeof(GLink);
+
+			for (lcur.Start();!lcur.End();lcur.Next())
+			{
+				//  out_going links
+				links_out->InsertPtr(lcur());
+			}
+		}
+
+		Inited =true;
+
+		cout << "la taille d'un entier" << sizeof(int)<<endl;
+		cout << "la taille du graph: "<<size<<endl;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GLinkCalc::AddDoc(GDoc* doc)
+{
+	GLinkCursor lcur;
+	GLinks* links_out=0;
+
+	if (!doc->GetNbLinks()) return;
+
+	links_out=Links_Out->GetPtr(doc->GetId());
+	if (! links_out)
+	{
+		Links_Out->InsertPtr(new GLinks(doc) );
+		links_out =Links_Out->GetPtr(doc->GetId());
+		lcur= doc->GetLinkCursor();
+
+		for (lcur.Start();!lcur.End();lcur.Next())
+		{
+			//  out_going links
+			links_out->InsertPtr(lcur());
+		}
+	}
+	else return;
 }
 
 

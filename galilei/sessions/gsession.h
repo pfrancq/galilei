@@ -791,6 +791,13 @@ public:
 	void ReInit(bool Save);
 
 	/**
+	* Count the number of rows of a table.
+	* @param tbl            Table to analyse.
+	* @returns Number of rows.
+	*/
+	virtual unsigned int GetCount(const char* tbl)=0;
+	
+	/**
 	* Destructor.
 	*/
 	virtual ~GSession(void) throw(GException);
