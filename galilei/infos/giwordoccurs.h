@@ -69,7 +69,6 @@ public:
 	* @returns Pointer to the word.
 	*/
 	GIWordOccur* GetPtr(unsigned id) throw(bad_alloc);
-
 };
 
 

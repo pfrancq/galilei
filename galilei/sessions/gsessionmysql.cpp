@@ -174,7 +174,7 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 		for(users.Begin();users.IsMore();users++)
 		{
 			userid=atoi(users[0]);
-			sprintf(sSql,"SELECT profileid, description,updated,calculated FROM profiles WHERE userid=%u",userid);
+			sprintf(sSql,"SELECT profileid,description,updated,calculated FROM profiles WHERE userid=%u",userid);
 			RQuery profiles(this,sSql);
 			Users.InsertPtr(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
 			for(profiles.Begin();profiles.IsMore();profiles++)

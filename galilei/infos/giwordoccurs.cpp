@@ -32,7 +32,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GIWordOccurs::GIWordOccurs (unsigned nb) throw(bad_alloc)
-	: RContainer<GIWordOccur,unsigned,true,true>(nb+nb/2,nb/2)
+	: GInfo(),RContainer<GIWordOccur,unsigned,true,true>(nb+nb/2,nb/2)
 
 {
 }
