@@ -34,7 +34,7 @@ email=pfrancq@ulb.ac.be
 kdevprj_version=1.3
 lfv_open_groups=
 make_options=\s-j1
-makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am,kgalileicenter/r/rgga/Makefile.am,kgalileicenter/r/rpromethee/Makefile.am
+makefiles=Makefile.am,kgalileicenter/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kgalileicenter/galilei/docs/Makefile.am,kgalileicenter/galilei/Makefile.am,kgalileicenter/galilei/filters/Makefile.am,kgalileicenter/galilei/groups/Makefile.am,kgalileicenter/galilei/infos/Makefile.am,kgalileicenter/galilei/langs/Makefile.am,kgalileicenter/galilei/profiles/Makefile.am,kgalileicenter/galilei/sessions/Makefile.am,kgalileicenter/galilei/urlmanagers/Makefile.am,kgalileicenter/r/rstd/Makefile.am,kgalileicenter/r/Makefile.am,kgalileicenter/r/rio/Makefile.am,kgalileicenter/r/rxml/Makefile.am,kgalileicenter/r/rtimedate/Makefile.am,kgalileicenter/r/rinter/Makefile.am,kgalileicenter/r/rmysql/Makefile.am,kgalileicenter/qtwidgets/rga/Makefile.am,kgalileicenter/qtwidgets/Makefile.am,kgalileicenter/qtwidgets/galilei/Makefile.am,kgalileicenter/r/rga/Makefile.am,kgalileicenter/r/rmath/Makefile.am,kgalileicenter/r/rgga/Makefile.am,kgalileicenter/r/rpromethee/Makefile.am,kgalileicenter/qtwidgets/rpromethee/Makefile.am
 modifyMakefiles=true
 project_name=KGalileiCenter
 project_type=mdi_kde2
@@ -1195,7 +1195,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/qtwidgets/Makefile.am]
-sub_dirs=galilei,rga
+sub_dirs=galilei,rga,rpromethee
 
 [kgalileicenter/qtwidgets/galilei/Makefile.am]
 files=kgalileicenter/qtwidgets/galilei/qgdocxml.cpp,kgalileicenter/qtwidgets/galilei/qgdocxml.h,kgalileicenter/qtwidgets/galilei/qgprofile.cpp,kgalileicenter/qtwidgets/galilei/qgprofile.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.h,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.h,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.h,kgalileicenter/qtwidgets/galilei/qggroupsir.h,kgalileicenter/qtwidgets/galilei/qggroupsir.cpp
@@ -1404,6 +1404,35 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/qtwidgets/rga/qxmlcontainer.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/qtwidgets/rpromethee/Makefile.am]
+files=kgalileicenter/qtwidgets/rpromethee/qpromcriterion.h,kgalileicenter/qtwidgets/rpromethee/qpromcriterion.cpp,kgalileicenter/qtwidgets/rpromethee/qpromcriteria.cpp,kgalileicenter/qtwidgets/rpromethee/qpromcriteria.h
+sub_dirs=
+type=static_library
+
+[kgalileicenter/qtwidgets/rpromethee/qpromcriteria.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/qtwidgets/rpromethee/qpromcriteria.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/qtwidgets/rpromethee/qpromcriterion.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/qtwidgets/rpromethee/qpromcriterion.h]
 dist=true
 install=false
 install_location=
