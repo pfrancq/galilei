@@ -105,7 +105,6 @@
   <kdevfilecreate>
     <filetypes/>
     <useglobaltypes>
-      <懈डpe ext="ui" />
       <type ext="cpp" />
       <type ext="h" />
     </useglobaltypes>
