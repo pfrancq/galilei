@@ -283,6 +283,37 @@ void QPlugins::slotAboutPostDoc()
 }
 
 
+void QPlugins::changePostProfile( QListViewItem * item )
+{
+              if(!item) return;
+	QPostProfileItem* f=dynamic_cast<QPostProfileItem*>(item);
+	EnablePostProfile->setChecked(f->Enable);
+	ConfigPostProfile->setEnabled(f->Fac->HasConfigure());
+	AboutPostProfile->setEnabled(f->Fac->HasAbout());
+}
+
+void QPlugins::slotAboutPostProfile()
+{
+    if(!PostProfile->currentItem()) return;
+    QPostProfileItem* f=dynamic_cast<QPostProfileItem*>(PostProfile->currentItem());
+    f->Fac->About();
+}
+
+
+void QPlugins::slotConfigPostProfile()
+{
+    if(!PostProfile->currentItem()) return;
+    QPostProfileItem* f=dynamic_cast<QPostProfileItem*>(PostProfile->currentItem());
+    f->Fac->Configure();
+}
+
+void QPlugins::slotPostProfileEnable( bool state )
+{
+    if(!PostProfile->currentItem()) return;
+    QPostProfileItem* f=dynamic_cast<QPostProfileItem*>(PostProfile->currentItem());
+    f->Enable=state;
+}
+
 void QPlugins::changeLang(QListViewItem* item)
 {
         	if(!item) return;
@@ -408,7 +439,31 @@ void QPlugins::postDocMoveUp( void )
     }
 }
 
-void QPlugins::postGroupMoveDown( void )
+void QPlugins::postProfileMoveDown( void )
+{
+  QListViewItem* f=PostProfile->currentItem();
+  if (!f) return;
+  if (f->itemBelow())
+     f->moveItem(f->itemBelow());
+ }
+
+void QPlugins::postProfileMoveUp( void )
+{
+       QListViewItem* f=PostProfile->currentItem();
+    if (!f) return;
+    if (f->itemAbove() && f->itemAbove()->itemAbove())
+    {
+	f->moveItem(f->itemAbove()->itemAbove());
+    }
+    else
+    {
+	PostProfile->takeItem(f);
+	PostProfile->insertItem(f);
+	PostProfile->setSelected(f,true);
+    }
+}
+
+void QPlugins::postGroupsMoveDown( void )
 {
   QListViewItem* f=PostGroups->currentItem();
   if (!f) return;
@@ -416,7 +471,7 @@ void QPlugins::postGroupMoveDown( void )
      f->moveItem(f->itemBelow());
  }
 
-void QPlugins::postGroupMoveUp( void )
+void QPlugins::postGroupsMoveUp( void )
 {
     QListViewItem* f=PostGroups->currentItem();
     if (!f) return;
@@ -445,6 +500,12 @@ void QPlugins::updateLevels(void)
      for (level=0; it2.current();++it2, level++)
     {
 	QPostDocItem* f=dynamic_cast<QPostDocItem*>(it2.current());
+	f->Fac->Set("Level",level);
+    } 
+     QListViewItemIterator it3(PostProfile);
+     for (level=0; it3.current();++it3, level++)
+    {
+	QPostProfileItem* f=dynamic_cast<QPostProfileItem*>(it3.current());
 	f->Fac->Set("Level",level);
     } 
   }

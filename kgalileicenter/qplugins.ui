@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>738</width>
-            <height>444</height>
+            <height>456</height>
         </rect>
     </property>
     <property name="caption">
@@ -865,6 +865,159 @@
                             <cstring>tab</cstring>
                         </property>
                         <attribute name="title">
+                            <string>PostProfiling</string>
+                        </attribute>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout25</cstring>
+                                </property>
+                                <vbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QListView">
+                                        <column>
+                                            <property name="text">
+                                                <string>Methods</string>
+                                            </property>
+                                            <property name="clickable">
+                                                <bool>true</bool>
+                                            </property>
+                                            <property name="resizable">
+                                                <bool>true</bool>
+                                            </property>
+                                        </column>
+                                        <property name="name">
+                                            <cstring>PostProfile</cstring>
+                                        </property>
+                                        <property name="acceptDrops">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="resizePolicy">
+                                            <enum>Manual</enum>
+                                        </property>
+                                        <property name="resizeMode">
+                                            <enum>AllColumns</enum>
+                                        </property>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout24</cstring>
+                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>ConfigPostProfile</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Configure</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>AboutPostProfile</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>About</string>
+                                                </property>
+                                            </widget>
+                                            <spacer>
+                                                <property name="name">
+                                                    <cstring>spacer23_2</cstring>
+                                                </property>
+                                                <property name="orientation">
+                                                    <enum>Horizontal</enum>
+                                                </property>
+                                                <property name="sizeType">
+                                                    <enum>Expanding</enum>
+                                                </property>
+                                                <property name="sizeHint">
+                                                    <size>
+                                                        <width>91</width>
+                                                        <height>20</height>
+                                                    </size>
+                                                </property>
+                                            </spacer>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>PostProfileDown</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>-</string>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>this button enables you to move down the selected plugin so that it will be executed after others</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>PostProfileUp</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>+</string>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>this button enables you to move up the selected plugin so that it will be executed first</string>
+                                                </property>
+                                            </widget>
+                                            <spacer>
+                                                <property name="name">
+                                                    <cstring>spacer24_2</cstring>
+                                                </property>
+                                                <property name="orientation">
+                                                    <enum>Horizontal</enum>
+                                                </property>
+                                                <property name="sizeType">
+                                                    <enum>Expanding</enum>
+                                                </property>
+                                                <property name="sizeHint">
+                                                    <size>
+                                                        <width>116</width>
+                                                        <height>20</height>
+                                                    </size>
+                                                </property>
+                                            </spacer>
+                                            <widget class="QCheckBox">
+                                                <property name="name">
+                                                    <cstring>EnablePostProfile</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Enable method</string>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                </vbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QWidget">
+                        <property name="name">
+                            <cstring>tab</cstring>
+                        </property>
+                        <attribute name="title">
                             <string>Grouping</string>
                         </attribute>
                         <vbox>
@@ -1178,7 +1331,7 @@
                     </widget>
                     <widget class="QWidget">
                         <property name="name">
-                            <cstring>tab</cstring>
+                            <cstring>tav</cstring>
                         </property>
                         <attribute name="title">
                             <string>PostGroups</string>
@@ -1999,13 +2152,13 @@
         <sender>PostGroupsDown</sender>
         <signal>clicked()</signal>
         <receiver>QPlugins</receiver>
-        <slot>postGroupMoveDown()</slot>
+        <slot>postGroupsMoveDown()</slot>
     </connection>
     <connection>
         <sender>PostGroupsUp</sender>
         <signal>clicked()</signal>
         <receiver>QPlugins</receiver>
-        <slot>postGroupMoveUp()</slot>
+        <slot>postGroupsMoveUp()</slot>
     </connection>
     <connection>
         <sender>ProfileCalcs</sender>
@@ -2066,6 +2219,36 @@
         <signal>currentChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
         <slot>changeMetaEngine(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>AboutPostProfile</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutPostProfile()</slot>
+    </connection>
+    <connection>
+        <sender>PostProfileDown</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>postDocMoveDown()</slot>
+    </connection>
+    <connection>
+        <sender>PostProfileUp</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>postProfileMoveUp()</slot>
+    </connection>
+    <connection>
+        <sender>PostProfile</sender>
+        <signal>currentChanged(QListViewItem*)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>changePostProfile(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>EnablePostProfile</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotPostProfileEnable(bool)</slot>
     </connection>
 </connections>
 <tabstops>
@@ -2156,6 +2339,10 @@
     <slot>slotConfigPostDoc()</slot>
     <slot>changePostDoc( QListViewItem * item )</slot>
     <slot>slotAboutPostDoc()</slot>
+    <slot>changePostProfile( QListViewItem * item )</slot>
+    <slot>slotAboutPostProfile()</slot>
+    <slot>slotConfigPostProfile()</slot>
+    <slot>slotPostProfileEnable( bool state )</slot>
     <slot>changeLang( QListViewItem * item )</slot>
     <slot>slotAboutLang()</slot>
     <slot>slotConfigLang()</slot>
@@ -2170,8 +2357,10 @@
     <slot>changePostGroup( QListViewItem * item )</slot>
     <slot>postDocMoveDown( void )</slot>
     <slot>postDocMoveUp( void )</slot>
-    <slot>postGroupMoveDown( void )</slot>
-    <slot>postGroupMoveUp( void )</slot>
+    <slot>postProfileMoveDown( void )</slot>
+    <slot>postProfileMoveUp( void )</slot>
+    <slot>postGroupsMoveDown( void )</slot>
+    <slot>postGroupsMoveUp( void )</slot>
     <slot>updateLevels( void )</slot>
     <slot>changeEngine( QListViewItem * item )</slot>
     <slot>slotAboutEngine()</slot>

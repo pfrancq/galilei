@@ -154,6 +154,11 @@ class KGALILEICenterApp : public KMainWindow
 	GPostDocManager* PostDocManager;
 
 	/**
+	* PostProfileManager Manager.
+	*/
+	GPostProfileManager* PostProfileManager;
+	
+	/**
 	* PostGroup Manager.
 	*/
 	GPostGroupManager* PostGroupManager;
@@ -611,7 +616,6 @@ public:
 
 	KToggleAction* groupAlwaysCalc;
 	KToggleAction* groupAlwaysSave;
-	KToggleAction* groupHistorySave;
 	KAction* showGroups;
 	KAction* groupsCalc;
 	KAction* postgroupCalc;

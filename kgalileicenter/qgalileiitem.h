@@ -39,6 +39,7 @@
 // include files for GALILEI
 #include <docs/gfilter.h>
 #include <profiles/gprofilecalc.h>
+#include <profiles/gpostprofile.h>
 #include <groups/ggrouping.h>
 #include <groups/ggroupcalc.h>
 #include <sessions/gstatscalc.h>
@@ -140,6 +141,17 @@ public:
 	}
 };
 
+
+class QPostProfileItem : public QListViewItem
+{
+public:
+	GFactoryPostProfile* Fac;
+	bool Enable;
+	QPostProfileItem(QListView* lst,GFactoryPostProfileOrder* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac->Fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
 
 class QLangItem : public QListViewItem
 {

@@ -175,7 +175,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			QSessionProgressDlg dlg(this,Sess,"Loading from Database");
 			if(dlg.Run(new QLoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,
 			GroupingManager,GroupCalcManager,StatsCalcManager,LinkCalcManager,PostDocManager,
-			PostGroupManager,EngineManager)))
+			PostProfileManager,PostGroupManager,EngineManager)))
 			{
 				sessionConnect->setEnabled(false);
 				UpdateMenusEntries();
@@ -211,7 +211,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 void KGALILEICenterApp::slotSessionCompute(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Complete Session");
-	if(!Dlg.Run(new QComputeAll(!sessionAlwaysCalc->isChecked(),profileAlwaysSave->isChecked()||groupAlwaysSave->isChecked(),linkAlwaysSave->isChecked(),groupHistorySave->isChecked())))
+	if(!Dlg.Run(new QComputeAll(!sessionAlwaysCalc->isChecked(),profileAlwaysSave->isChecked()||groupAlwaysSave->isChecked(),linkAlwaysSave->isChecked())))
 		return;
 	Doc->updateAllViews(0);
 	Doc->updateAllViews(1);
@@ -472,7 +472,7 @@ void KGALILEICenterApp::slotShowGroups(void)
 void KGALILEICenterApp::slotGroupsCalc(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Make Groups");
-	if(!Dlg.Run(new QGroupProfiles(!groupAlwaysCalc->isChecked(),groupAlwaysSave->isChecked(),groupHistorySave->isChecked())))
+	if(!Dlg.Run(new QGroupProfiles(!groupAlwaysCalc->isChecked(),groupAlwaysSave->isChecked())))
 		return;
 	Doc->updateAllViews(2);
 }
@@ -1059,6 +1059,7 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 	if(StatsCalcManager) delete StatsCalcManager;
 	if(LinkCalcManager) delete LinkCalcManager;
 	if(PostDocManager) delete PostDocManager;
+	if(PostProfileManager) delete PostProfileManager;
 	if(PostGroupManager) delete PostGroupManager;
 	if(EngineManager) delete EngineManager;
 }

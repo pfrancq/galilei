@@ -97,11 +97,12 @@ class QLoadSession : public QSessionThread
 	GStatsCalcManager* Smng;
 	GLinkCalcManager* Lmng;
 	GPostDocManager* PDmng;
+	GPostProfileManager* PPmng;
 	GPostGroupManager* PGmng;
 	GEngineManager* Emng;
 public:
 	QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostGroupManager* pgmng, GEngineManager* emng);
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostProfileManager* ppmng, GPostGroupManager* pgmng, GEngineManager* emng);
 	virtual void DoIt(void);
 };
 
@@ -238,9 +239,8 @@ class QGroupProfiles : public QSessionThread
 {
 	bool Modified;
 	bool Save;
-	bool SaveHistory;
 public:
-	QGroupProfiles(bool modified,bool save, bool savehistory) : Modified(modified), Save(save), SaveHistory(savehistory) {}
+	QGroupProfiles(bool modified,bool save) : Modified(modified), Save(save){}
 	virtual void DoIt(void);
 };
 
@@ -289,10 +289,9 @@ class QComputeAll : public QSessionThread
 	bool Modified;
 	bool Save;
 	bool SaveLinks;
-	bool SaveHistory;
 public:
-	QComputeAll(bool modified,bool save,bool saveLinks, bool savehistory)
-		: Modified(modified), Save(save), SaveLinks(saveLinks), SaveHistory(savehistory) {}
+	QComputeAll(bool modified,bool save,bool saveLinks)
+		: Modified(modified), Save(save), SaveLinks(saveLinks) {}
 	virtual void DoIt(void);
 };
 

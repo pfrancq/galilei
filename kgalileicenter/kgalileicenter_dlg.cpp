@@ -44,6 +44,8 @@
 #include <sessions/gsession.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
+#include <profiles/gpostprofile.h>
+#include <profiles/gpostprofilemanager.h>
 #include <groups/ggrouping.h>
 #include <profiles/gprofilecalc.h>
 #include <infos/glang.h>
@@ -61,15 +63,7 @@ using namespace std;
 #include <qspinbox.h>
 #include <qvalidator.h>
 #include <qfiledialog.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for Qt
-#include <qlineedit.h>
-#include <qcheckbox.h>
 #include <qmessagebox.h>
-#include <qspinbox.h>
-#include <qvalidator.h>
 #include <qworkspace.h>
 
 
@@ -172,6 +166,8 @@ void KGALILEICenterApp::slotPlugins(void)
 {
 	R::RCursor<GFactoryPostDoc> PostDoc;
 	GFactoryPostDocOrder* pdorder;
+	R::RCursor<GFactoryPostProfile> PostProfile;
+	GFactoryPostProfileOrder* pporder;
 	R::RCursor<GFactoryPostGroup> PostGroup;
 	GFactoryPostGroupOrder* pgorder;
 	R::RCursor<GFactoryMetaEngine> MetaEngine;
@@ -209,6 +205,15 @@ void KGALILEICenterApp::slotPlugins(void)
 		postdocsordered.InsertPtr(pdorder);
 	}
 	dlg.changePostDoc(Init<GFactoryPostDocOrder,GPostDoc,QPostDocItem>(RCursor<GFactoryPostDocOrder>(postdocsordered),dlg.PostDocs,dlg.EnablePostDoc));
+	RContainer<GFactoryPostProfileOrder,true,true> postprofileordered(PostProfile.GetNb());
+	PostProfile=PostProfileManager->GetPostProfileCursor();
+	for(PostProfile.Start(),idx=1;!PostProfile.End();PostProfile.Next(), idx++)
+	{
+		pporder=new GFactoryPostProfileOrder;
+		pporder->Fac=PostProfile();
+		postprofileordered.InsertPtr(pporder);
+	}
+	dlg.changePostProfile(Init<GFactoryPostProfileOrder,GPostProfile,QPostProfileItem>(RCursor<GFactoryPostProfileOrder>(postprofileordered),dlg.PostProfile,dlg.EnablePostProfile));
 	dlg.changeLang(Init<GFactoryLang,GLang,QLangItem>(Langs->GetLangsCursor(),dlg.Langs,dlg.EnableLang));
 	dlg.changeDocAnalyse(Init<GFactoryDocAnalyse,GDocAnalyse,QDocAnalyseItem>(DocAnalyseManager->GetDocAnalysesCursor(),dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse,DocAnalyseManager->GetCurrentMethod()));
 	dlg.changeEngine(Init<GFactoryEngine,GEngine,QEngineItem>(EngineManager->GetEnginesCursor(),dlg.Engines,dlg.EnableEngine));
@@ -233,6 +238,7 @@ void KGALILEICenterApp::slotPlugins(void)
 			Done<QStatsCalcItem>(dlg.Stats);
 			Done<QLinkCalcItem>(dlg.LinkCalcs,this);
 			Done<QPostDocItem>(dlg.PostDocs,this);
+			Done<QPostProfileItem>(dlg.PostProfile,this);
 			Done<QLangItem>(dlg.Langs,this);
 			Done<QDocAnalyseItem>(dlg.DocAnalyses,this);
 			Done<QPostGroupItem>(dlg.PostGroups,this);
@@ -300,8 +306,6 @@ void KGALILEICenterApp::slotSessionOptions(void)
 	dlg.NullSim->setText(tmp);
 	dlg.SBDiffBehaviour->setValue(SessionParams.GetUInt("DiffBehaviourMinDocs"));
 	dlg.SBSameBehaviour->setValue(SessionParams.GetUInt("SameBehaviourMinDocs"));
-	dlg.CBGroupsHistory->setChecked(SessionParams.GetBool("SaveGroupsHistory"));
-	dlg.CBProfilesHistory->setChecked(SessionParams.GetBool("SaveProfilesHistory"));
 	dlg.PathtoBinary->setMode(KFile::Directory);
 	dlg.PathtoBinary->setURL(ToQString(SessionParams.GetString("PathtoBinary")));
 	dlg.CBDebugSim->setChecked(SessionParams.GetBool("DebugSim"));
@@ -317,19 +321,12 @@ void KGALILEICenterApp::slotSessionOptions(void)
 		SessionParams.Set("DiffBehaviourMinDocs",dlg.SBDiffBehaviour->value());
 		SessionParams.Set("SameBehaviourMinDocs", dlg.SBSameBehaviour->value());
 		SessionParams.Set("NullSimLevel", atof(dlg.NullSim->text()));
-		SessionParams.Set("SaveGroupsHistory", dlg.CBGroupsHistory->isChecked());
-		SessionParams.Set("SaveProfilesHistory", dlg.CBProfilesHistory->isChecked());
 		SessionParams.Set("PathtoBinary",RString(dlg.PathtoBinary->url().ascii()));
 		SessionParams.Set("DebugSim", dlg.CBDebugSim->isChecked());
 		SessionParams.Set("DebugBehaviour", dlg.CBDebugBehaviour->isChecked());
 		SessionParams.Set("DebugMinSim", dlg.CBDebugMinSim->isChecked());
 		SessionParams.Set("AutomaticMinSim", dlg.CBAutomaticMinSim->isChecked());
 		SessionParams.Set("MinSim",atof(dlg.MinSim->text()));
-		if(dlg.CBProfilesHistory->isChecked()&&!dlg.CBGroupsHistory->isChecked())
-		{
-			QMessageBox::information(this,"Historic Options","historical groups will be saved (needed to save histoical profiles)");
-			SessionParams.Set("SaveGroupsHistory", true);
-		}
 		QMessageBox::information(this," Warning "," Remember: the session has to be restarted to take your modifications into account !");
 		if (dlg.CBDebugSim->isChecked()||dlg.CBDebugMinSim->isChecked())
 			QMessageBox::information(this," Warning "," Debug similarities mode if available for IFF configuration only!");

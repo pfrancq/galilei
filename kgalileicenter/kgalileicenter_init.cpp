@@ -34,6 +34,7 @@
 // include files for GALILEI
 #include <sessions/gstoragemysql.h>
 #include <sessions/gconfig.h>
+#include <profiles/gpostprofilemanager.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -101,6 +102,7 @@ KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
 		StatsCalcManager=new GStatsCalcManager(pluginsPath.Latin1());
 		LinkCalcManager=new GLinkCalcManager(pluginsPath.Latin1());
 		PostDocManager=new GPostDocManager(pluginsPath.Latin1());
+		PostProfileManager=new GPostProfileManager(pluginsPath.Latin1());
 		PostGroupManager=new GPostGroupManager(pluginsPath.Latin1());
 		EngineManager=new GEngineManager(pluginsPath.Latin1());
 
@@ -141,7 +143,6 @@ void KGALILEICenterApp::initActions(void)
 	// Menu "Groups"
 	groupAlwaysCalc=new KToggleAction(i18n("Enables/disables groups Recomputing"),0,0,0,actionCollection(),"groupAlwaysCalc");
 	groupAlwaysSave=new KToggleAction(i18n("Enables/disables groups Saving"),0,0,0,actionCollection(),"groupAlwaysSave");
-	groupHistorySave=new KToggleAction(i18n("Enables/disables historic Saving"),0,0,0,actionCollection(),"groupHistorySave");
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
 	postgroupCalc=new KAction(i18n("Compute &PostGroup"),"exec",0,this,SLOT(slotPostGroupCalc()),actionCollection(),"postgroupCalc");
@@ -149,7 +150,7 @@ void KGALILEICenterApp::initActions(void)
 	groupingCompareFromFile=new KAction(i18n("From &File"),"fileopen",0,this,SLOT(slotGroupingCompareFromFile()),actionCollection(),"groupingCompareFromFile");
 	groupingCompare=new KAction(i18n("From &Memory"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
 	mixIdealGroups=new KAction(i18n("Load&Mix Ideal Groups"),"exec",0,this,SLOT(slotMixIdealGroups()),actionCollection(),"mixIdealGroups");
-	showGroupsHistory=new KAction(i18n("Show Groups History"),"exec",0,this,SLOT(slotShowHistory()),actionCollection(),"showGroupsHistory");
+	showGroupsHistory=new KAction(i18n("Show Groups &History"),"exec",0,this,SLOT(slotShowHistory	()),actionCollection(),"showGroupsHistorys");
 
 	// Menu "Document"
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
@@ -232,7 +233,6 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Always Save Links",linkAlwaysSave->isChecked());
 	Config->writeEntry("Always Calc Groups",groupAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Groups",groupAlwaysSave->isChecked());
-	Config->writeEntry("History Save Groups",groupHistorySave->isChecked());
 	Config->writeEntry("Always Calc Docs",docAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Docs",docAlwaysSave->isChecked());
 	Config->writeEntry("PluginsPath", pluginsPath);
@@ -262,6 +262,7 @@ void KGALILEICenterApp::saveOptions(void)
 		Conf.Store(StatsCalcManager);
 		Conf.Store(LinkCalcManager);
 		Conf.Store(PostDocManager);
+		Conf.Store(PostProfileManager);
 		Conf.Store(PostGroupManager);
 		Conf.Store(EngineManager);
 		Conf.Store(SessionParams);
@@ -298,7 +299,6 @@ void KGALILEICenterApp::readOptions(void)
 	linkAlwaysSave->setChecked(Config->readBoolEntry("Always Save Links",true));
 	groupAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Groups",false));
 	groupAlwaysSave->setChecked(Config->readBoolEntry("Always Save Groups",true));
- 	groupHistorySave->setChecked(Config->readBoolEntry("History Save Groups",false));
 	docAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Docs",false));
 	docAlwaysSave->setChecked(Config->readBoolEntry("Always Save Docs",false));
 
@@ -343,7 +343,7 @@ void KGALILEICenterApp::readGALILEIOptions(void)
 		Conf.Read(StatsCalcManager);
 		Conf.Read(LinkCalcManager);
 		Conf.Read(PostDocManager);
-		Conf.Read(PostGroupManager);
+		Conf.Read(PostProfileManager);
 		Conf.Read(PostGroupManager);
 		Conf.Read(EngineManager);
 		Conf.Read(SessionParams);

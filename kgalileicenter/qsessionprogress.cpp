@@ -140,7 +140,7 @@ void QSessionThread::run(void)
 
 //-----------------------------------------------------------------------------
 QLoadSession::QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostGroupManager* pgmng, GEngineManager* emng)
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostProfileManager* ppmng, GPostGroupManager* pgmng, GEngineManager* emng)
 {
 	Langs=langs;
 	Umng=umng;
@@ -151,6 +151,7 @@ QLoadSession::QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyse
 	Smng=smng;
 	Lmng=lmng;
 	PDmng=pdmng;
+	PPmng=ppmng;
 	PGmng=pgmng;
 	Emng=emng;
 }
@@ -160,7 +161,7 @@ QLoadSession::QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyse
 void QLoadSession::DoIt(void)
 {
 	Parent->PutText("Connect (Loading Dicionnaries/Stoplists) ...");
-	Session->Connect(Langs,Umng,Dmng,Lmng,Pmng,Gmng,GCmng,Smng,PDmng,PGmng,Emng);
+	Session->Connect(Langs,Umng,Dmng,Lmng,Pmng,Gmng,GCmng,Smng,PDmng, PPmng,PGmng,Emng);
 	if(GSession::Break())
 		return;
 	Parent->PutText("Load Subject Tree ...");
@@ -532,7 +533,7 @@ void QComputeProfiles::DoIt(void)
 void QGroupProfiles::DoIt(void)
 {
 	Parent->PutText("Groups Profiles ...");
-	Session->GroupingProfiles(Parent,Modified,Save,SaveHistory);
+	Session->GroupingProfiles(Parent,Modified,Save);
 }
 
 
@@ -566,7 +567,7 @@ void QComputeAll::DoIt(void)
 	if(GSession::Break())
 		return;
 	Parent->PutText("Groups Profiles ...");
-	Session->GroupingProfiles(Parent,Modified,Save,SaveHistory);
+	Session->GroupingProfiles(Parent,Modified,Save);
 }
 
 
