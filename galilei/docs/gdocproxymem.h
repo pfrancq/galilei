@@ -51,7 +51,8 @@ protected:
 	GDoc* Obj;
 public:
 	GDocProxyMem(GDoc* obj) : GDocProxy(), Obj(obj) {}
-	virtual int Compare(const GDocProxy* ptr) const { return(Obj->Compare(dynamic_cast<const GDocProxyMem*>(ptr)->Obj)); }
+	virtual int Compare(const GDocProxy& ptr) const { return(Obj->Compare(*dynamic_cast<const GDocProxyMem&>(ptr).Obj)); }
+	virtual int Compare(const GDocProxy* ptr) const { return(Obj->Compare(*dynamic_cast<const GDocProxyMem*>(ptr)->Obj)); }
 	virtual int Compare(const unsigned int id) const { return(Obj->Compare(id)); }
 	virtual bool IsDefined(void) const {return(Obj->IsDefined());}
 	virtual R::RString GetURL(void) const {return(Obj->GetURL());}

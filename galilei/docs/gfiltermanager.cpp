@@ -113,7 +113,7 @@ GFilterManager::GFilterManager(RContainer<RString, true, false>* paths,bool dlg)
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/filters";
 		LoadPlugins<GFactoryFilter,GFactoryFilterInit,GFilterManager>(this,Path.Latin1(),API_FILTER_VERSION, dlg);
 	}

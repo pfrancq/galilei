@@ -119,7 +119,7 @@ public:
 	// Constructor and Compare methods.
 	GProfilesSim(GProfilesSims* manager,RCursor<GSubProfile> s,bool iff,GLang* lang) throw(std::bad_alloc, GException);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
-	int Compare(const GProfilesSim* profilesSim) const {return(Lang->Compare(profilesSim->Lang));}
+	int Compare(const GProfilesSim& profilesSim) const {return(Lang->Compare(*profilesSim.Lang));}
 
 	// compute the similarity betwwen tow subprofiles
 	// param nullsim: if true, the sim is set to 0.0 (but we know that the sim is not null and has to exist!)

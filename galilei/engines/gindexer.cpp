@@ -107,7 +107,7 @@ public:
 	RContainer<RString,true,true> Forms;
 	RString Name;
 	Stem(const RString& name) : Forms(10,10),Name(name) {}
-	int Compare(const Stem* ptr) const {return(Name.Compare(ptr->Name));}
+	int Compare(const Stem& ptr) const {return(Name.Compare(ptr.Name));}
 	int Compare(const RString& name) const {return(Name.Compare(name));}
 };
 
@@ -168,7 +168,7 @@ void GIndexer::RunQuery(R::RString query,R::RContainer<GInfo,true,false>& docs) 
 		RCursor<RString> Cur2(Cur()->Forms);
 		for(Cur2.Start(),Found=false;!Cur2.End();Cur2.Next())
 		{
-			word=GetPtr<RString>(Cur2());
+			word=GetPtr<RString>(*Cur2());
 			if(word)
 			{
 				word->FilterDocs(docs);

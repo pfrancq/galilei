@@ -57,7 +57,7 @@ GProfileCalcManager::GProfileCalcManager(RContainer<RString, true, false>* paths
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/profiling";
 		LoadPlugins<GFactoryProfileCalc,GFactoryProfileCalcInit,GProfileCalcManager>(this,Path.Latin1(),API_PROFILECALC_VERSION, dlg);
 	}

@@ -51,7 +51,8 @@ protected:
 	GSubProfile* Obj;
 public:
 	GSubProfileProxyMem(GSubProfile* obj) : GSubProfileProxy(), Obj(obj) {}
-	virtual int Compare(const GSubProfileProxy* ptr) const { return(Obj->Compare(dynamic_cast<const GSubProfileProxyMem*>(ptr)->Obj)); }
+	virtual int Compare(const GSubProfileProxy& ptr) const { return(Obj->Compare(*dynamic_cast<const GSubProfileProxyMem&>(ptr).Obj)); }
+	virtual int Compare(const GSubProfileProxy* ptr) const { return(Obj->Compare(*dynamic_cast<const GSubProfileProxyMem*>(ptr)->Obj)); }
 	virtual int Compare(const unsigned int id) const { return(Obj->Compare(id)); }
 	virtual void InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc) {Obj->InsertFdbk(fdbk);}
 	virtual unsigned int GetId(void) const {return(Obj->GetId());}

@@ -56,7 +56,7 @@ GGroupCalcManager::GGroupCalcManager(RContainer<RString, true, false>* paths,boo
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/groups";
 		LoadPlugins<GFactoryGroupCalc,GFactoryGroupCalcInit,GGroupCalcManager>(this,Path.Latin1(),API_GROUPCALC_VERSION, dlg);
 	}

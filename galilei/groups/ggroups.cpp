@@ -55,8 +55,8 @@ public:
 
 	// Constructor and Compare methods.
 	GFreeId(unsigned int id) : Id(id) {}
-	int Compare(const GFreeId* f) {return(Id-f->Id);}
-	int Compare(unsigned int id) {return(Id-id);}
+	int Compare(const GFreeId& f) const {return(Id-f.Id);}
+	int Compare(unsigned int id) const {return(Id-id);}
 
 	// Destructor
 	~GFreeId(void) {}
@@ -80,7 +80,7 @@ public:
 	// Constructor and Compare methods.
 	GGroupsLang(GLang* lang) throw(std::bad_alloc)
 		: RContainer<GGroup,false,true>(20,10), Lang(lang) {}
-	int Compare(const GGroupsLang* groups) const {return(Lang->Compare(groups->Lang));}
+	int Compare(const GGroupsLang& groups) const {return(Lang->Compare(*groups.Lang));}
 	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
 
 	// Get the group of a given subprofile

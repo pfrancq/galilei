@@ -69,7 +69,7 @@ int GLinks::Compare(const GLinks* lnk) const
 
 
 //------------------------------------------------------------------------------
-int GLinks::Compare(GLinks& lnk) const
+int GLinks::Compare(const GLinks& lnk) const
 {
 	return(Doc->GetId()- lnk.GetDoc()->GetId());
 }

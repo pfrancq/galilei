@@ -57,7 +57,7 @@ GPostGroupManager::GPostGroupManager(RContainer<RString, true, false>* paths,boo
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/postgroups";
 		LoadPlugins<GFactoryPostGroup,GFactoryPostGroupInit,GPostGroupManager>(this,Path.Latin1(),API_POSTGROUP_VERSION, dlg);
 	}
@@ -107,7 +107,7 @@ R::RCursor<GFactoryPostGroup> GPostGroupManager::GetPostGroupsCursor(void)
 void GPostGroupManager::ReadConfig(RXMLTag* t)
 {
 	R::RCursor<GFactoryPostGroup> Cur;
-	
+
 	if(!t) return;
 	Cur=GetPostGroupsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())

@@ -57,7 +57,7 @@ GLangManager::GLangManager(RContainer<RString, true, false>* paths,bool load,boo
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/langs";
 		LoadPlugins<GFactoryLang,GFactoryLangInit,GLangManager>(this,Path.Latin1(),API_LANG_VERSION, dlg);
 	}

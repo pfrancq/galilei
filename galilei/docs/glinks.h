@@ -100,7 +100,7 @@ public:
 	* @param lnk             List.
 	* @return int
 	*/
-	int Compare(GLinks& lnk) const;
+	int Compare(const GLinks& lnk) const;
 
 	/**
 	* Compare the idenfiticator of a weighted list with another one.

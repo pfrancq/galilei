@@ -116,7 +116,7 @@ public:
 	// Constructor and Compare methods.
 	GProfilesBehaviour(GProfilesBehaviours* manager,RCursor<GSubProfile> s,GLang* lang, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
-	int Compare(const GProfilesBehaviour* p) const {return(Lang->Compare(p->Lang));}
+	int Compare(const GProfilesBehaviour& p) const {return(Lang->Compare(*p.Lang));}
 
 
 	// Analyse the behaviour of the two subprofiles and insert it in behaviours if necessary.

@@ -57,7 +57,7 @@ GPostProfileManager::GPostProfileManager(RContainer<RString, true, false>* paths
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/postprofile";
 		LoadPlugins<GFactoryPostProfile,GFactoryPostProfileInit,GPostProfileManager>(this,Path.Latin1(),API_POSTGROUP_VERSION, dlg);
 	}
@@ -107,7 +107,7 @@ R::RCursor<GFactoryPostProfile> GPostProfileManager::GetPostProfileCursor(void)
 void GPostProfileManager::ReadConfig(RXMLTag* t)
 {
 	R::RCursor<GFactoryPostProfile> Cur;
-	
+
 	if(!t) return;
 	Cur=GetPostProfileCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())

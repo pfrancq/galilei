@@ -133,14 +133,6 @@ public:
 		{return(R::RString::HashIndex(word));}
 
 	/**
-	* Compute the first hash index of a string.
-	* @see R::RHashContainer
-	* @param name           String.
-	*/
-	static int HashIndex(const R::RString* word)
-		{return(R::RString::HashIndex(word));}
-
-	/**
 	* Compute the first hash index of an array of characters.
 	* @see R::RHashContainer
 	* @param name           Pointer to the array.
@@ -178,14 +170,6 @@ public:
 	* @param name           String.
 	*/
 	static int HashIndex2(const R::RString& word)
-		{return(R::RString::HashIndex2(word));}
-
-	/**
-	* Compute the second hash index of a string.
-	* @see R::RHashContainer
-	* @param name           String.
-	*/
-	static int HashIndex2(const R::RString* word)
 		{return(R::RString::HashIndex2(word));}
 
 	/**

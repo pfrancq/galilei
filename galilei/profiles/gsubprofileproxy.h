@@ -49,6 +49,7 @@ class GSubProfileProxy
 {
 public:
 	GSubProfileProxy(void) {}
+	virtual int Compare(const GSubProfileProxy& ptr) const=0;
 	virtual int Compare(const GSubProfileProxy* ptr) const=0;
 	virtual int Compare(const unsigned int id) const=0;
 	virtual void InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc)=0;

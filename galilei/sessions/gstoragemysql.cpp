@@ -715,7 +715,7 @@ void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException
 		RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2 FROM htmlsbyprofiles");
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
 		{
-			switch(fdbks[1][0].Unicode())
+			switch(fdbks[1][static_cast<size_t>(0)].Unicode())
 			{
 				case 'O':
 					jug=djOK;
@@ -730,18 +730,21 @@ void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException
 					jug=djUnknow;
 					break;
 			}
-			switch(fdbks[1][1].Unicode())
+			if(fdbks[1].GetLen()>1)
 			{
-				case 'H':
-					jug = tDocAssessment(jug | djHub);
-					break;
-				case 'A':
-					jug = tDocAssessment(jug | djAutority);
-					break;
-				//case 'U':
-					//break;
-				default:
-					break;
+				switch(fdbks[1][static_cast<size_t>(1)].Unicode())
+				{
+					case 'H':
+						jug = tDocAssessment(jug | djHub);
+						break;
+					case 'A':
+						jug = tDocAssessment(jug | djAutority);
+						break;
+					//case 'U':
+						//break;
+					default:
+						break;
+				}
 			}
 			session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),jug,RDate(fdbks[3]));
 		}

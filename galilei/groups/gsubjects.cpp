@@ -64,7 +64,6 @@ public:
 
 	// Constructor and Compare methods.
 	GGroupId(int RealId,int Position) : GrpId(RealId), position(Position) {}
-	int Compare(const GGroupId* grp) const {return(GrpId-grp->GrpId);}
 	int Compare(const int ID) const {return(GrpId-ID);}
 	int Compare(const GGroupId& grp) const {return(GrpId-grp.GrpId);}
 };
@@ -87,7 +86,7 @@ public:
 
 	// Constructor and Compare methods.
 	GroupScore(GGroup* grp) : Group(grp), Precision(0.0), Recall(0.0) {}
-	int Compare(const GroupScore* grp) const {return(Group->Compare(grp->Group));}
+	int Compare(const GroupScore& grp) const {return(Group->Compare(*grp.Group));}
 	int Compare(const GGroup* grp) const {return(Group->Compare(grp));}
 };
 
@@ -106,7 +105,7 @@ public:
 	GGroup* Group;
 
 	GroupLang(GLang* lang,GGroup* group) : Lang(lang), Group(group) {}
-	int Compare(const GroupLang* grp) const { return(Lang->Compare(grp->Lang));}
+	int Compare(const GroupLang& grp) const { return(Lang->Compare(*grp.Lang));}
 	int Compare(const GLang* lang) const { return(Lang->Compare(lang));}
 };
 

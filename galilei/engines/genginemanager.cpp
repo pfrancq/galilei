@@ -58,7 +58,7 @@ GEngineManager::GEngineManager(RContainer<RString, true, false>* paths,bool dlg)
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/engines";
 		LoadPlugins<GFactoryEngine,GFactoryEngineInit,GEngineManager>(this,Path.Latin1(),API_ENGINE_VERSION, dlg);
 	}
@@ -115,7 +115,7 @@ R::RCursor<GFactoryEngine> GEngineManager::GetEnginesCursor(void)
 void GEngineManager::ReadConfig(RXMLTag* t)
 {
 	R::RCursor<GFactoryEngine> Cur;
-	
+
 	if(!t) return;
 	Cur=GetEnginesCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())

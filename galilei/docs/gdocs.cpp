@@ -54,22 +54,22 @@ public:
 
 	GDocsLang(GLang* lang) throw(std::bad_alloc)
 		: RContainer<GDoc,false,true>(10000,5000), Lang(lang) {}
-	int Compare(const GDocsLang* docLang) const;
+	int Compare(const GDocsLang& docLang) const;
 	int Compare(const GLang* lang) const;
 	virtual ~GDocsLang(void) {}
 };
 
 
 //-----------------------------------------------------------------------------
-int GDocs::GDocsLang::Compare(const GDocsLang* docLang) const
+int GDocs::GDocsLang::Compare(const GDocsLang& docLang) const
 {
 	if(!Lang)
 	{
-		if(!docLang->Lang) return(0);
+		if(!docLang.Lang) return(0);
 		return(-1);
 	}
-	if(!docLang->Lang) return(1);
-	return(Lang->Compare(docLang->Lang));
+	if(!docLang.Lang) return(1);
+	return(Lang->Compare(*docLang.Lang));
 }
 
 
@@ -100,7 +100,7 @@ public:
 	GDoc* Doc;
 
 	GDocRefURL(GDoc* d) : Doc(d) {}
-	int Compare(const GDocRefURL* doc) const {return(Doc->GetURL().Compare(doc->Doc->GetURL()));}
+	int Compare(const GDocRefURL& doc) const {return(Doc->GetURL().Compare(doc.Doc->GetURL()));}
 	int Compare(const char* url) const  {return(Doc->GetURL().Compare(url));}
 	~GDocRefURL(void) {}
 };

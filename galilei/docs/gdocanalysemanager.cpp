@@ -57,7 +57,7 @@ GDocAnalyseManager::GDocAnalyseManager(RContainer<RString, true, false>* paths,b
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/docs";
 		LoadPlugins<GFactoryDocAnalyse,GFactoryDocAnalyseInit,GDocAnalyseManager>(this,Path.Latin1(),API_DOCANALYSE_VERSION, dlg);
 	}

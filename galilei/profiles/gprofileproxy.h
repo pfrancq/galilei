@@ -49,6 +49,7 @@ class GProfileProxy
 {
 public:
 	GProfileProxy(void) {}
+	virtual int Compare(const GProfileProxy& ptr) const=0;
 	virtual int Compare(const GProfileProxy* ptr) const=0;
 	virtual int Compare(const unsigned int id) const=0;
 	virtual unsigned int GetId(void) const=0;
@@ -60,6 +61,7 @@ public:
 	virtual GSubProfile* GetSubProfile(const GLang* lang) const=0;
 	virtual GSubProfile* GetInsertSubProfile(GLang* lang,GSession* s)=0;
 	virtual unsigned int GetNbAssessedDocs(const GLang* lang) const=0;
+	virtual unsigned int GetNbAssessedDocs(void) const=0;
 	virtual R::RCursor<GFdbk> GetFdbks(void)=0;
 	virtual R::RCursor<GSubProfile> GetSubProfilesCursor(void)=0;
 	virtual void InsertFdbk(unsigned int id,tDocAssessment assess,R::RDate date) throw(std::bad_alloc)=0;

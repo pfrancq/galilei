@@ -5,7 +5,7 @@
 
 	List of Links with an associated weight - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be))
@@ -32,6 +32,7 @@
 //------------------------------------------------------------------------------
 //include file for GALILEI
 #include <docs/gbalancedlinks.h>
+#include <docs/glink.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -72,7 +73,7 @@ int GBalancedLinks::Compare(const GBalancedLinks* lnk) const
 
 
 //------------------------------------------------------------------------------
-int GBalancedLinks::Compare(GBalancedLinks& lnk) const
+int GBalancedLinks::Compare(const GBalancedLinks& lnk) const
 {
 	return(Doc->GetId()- lnk.GetDoc()->GetId());
 }

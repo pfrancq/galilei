@@ -51,7 +51,8 @@ protected:
 	GProfile* Obj;
 public:
 	GProfileProxyMem(GProfile* obj) : GProfileProxy(), Obj(obj) {}
-	virtual int Compare(const GProfileProxy* ptr) const { return(Obj->Compare(dynamic_cast<const GProfileProxyMem*>(ptr)->Obj)); }
+	virtual int Compare(const GProfileProxy& ptr) const { return(Obj->Compare(*dynamic_cast<const GProfileProxyMem&>(ptr).Obj)); }
+	virtual int Compare(const GProfileProxy* ptr) const { return(Obj->Compare(*dynamic_cast<const GProfileProxyMem*>(ptr)->Obj)); }
 	virtual int Compare(const unsigned int id) const { return(Obj->Compare(id)); }
 	virtual unsigned int GetId(void) const {return(Obj->GetId());}
 	virtual void SetId(unsigned int id)  throw(GException) {Obj->SetId(id);}
@@ -62,6 +63,7 @@ public:
 	virtual GSubProfile* GetSubProfile(const GLang* lang) const {return(Obj->GetSubProfile(lang));}
 	virtual GSubProfile* GetInsertSubProfile(GLang* lang,GSession* s) {return(Obj->GetInsertSubProfile(lang,s));}
 	virtual unsigned int GetNbAssessedDocs(const GLang* lang) const {return(Obj->GetNbAssessedDocs(lang));}
+	virtual unsigned int GetNbAssessedDocs(void) const {return(Obj->GetNbAssessedDocs());}
 	virtual R::RCursor<GFdbk> GetFdbks(void) {return(Obj->GetFdbks());}
 	virtual R::RCursor<GSubProfile> GetSubProfilesCursor(void) {return(Obj->GetSubProfilesCursor());}
 	virtual void InsertFdbk(unsigned int id,tDocAssessment assess,R::RDate date) throw(std::bad_alloc) {Obj->InsertFdbk(id,assess,date);}

@@ -49,6 +49,7 @@ class GDocProxy
 {
 public:
 	GDocProxy(void) {}
+	virtual int Compare(const GDocProxy& ptr) const=0;
 	virtual int Compare(const GDocProxy* ptr) const=0;
 	virtual int Compare(const unsigned int id) const=0;
 	virtual bool IsDefined(void) const=0;

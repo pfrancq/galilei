@@ -108,7 +108,7 @@ public :
 	* @param lnk             Weighted list.
 	* @return int
 	*/
-	int Compare(GBalancedLinks& lnk) const;
+	int Compare(const GBalancedLinks& lnk) const;
 
 	/**
 	* Compare the idenfiticator of a weighted list with another one.

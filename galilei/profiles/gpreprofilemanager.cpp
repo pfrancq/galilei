@@ -57,7 +57,7 @@ GPreProfileManager::GPreProfileManager(RContainer<RString, true, false>* paths,b
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/preprofile";
 		LoadPlugins<GFactoryPreProfile,GFactoryPreProfileInit,GPreProfileManager>(this,Path.Latin1(),API_PREPROFILE_VERSION, dlg);
 	}
@@ -108,7 +108,7 @@ R::RCursor<GFactoryPreProfile> GPreProfileManager::GetPreProfileCursor(void)
 void GPreProfileManager::ReadConfig(RXMLTag* t)
 {
 	R::RCursor<GFactoryPreProfile> Cur;
-	
+
 	if(!t) return;
 	Cur=GetPreProfileCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())

@@ -58,7 +58,7 @@ GPostDocManager::GPostDocManager(RContainer<RString, true, false>* paths,bool dl
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/postdoc";
 		LoadPlugins<GFactoryPostDoc,GFactoryPostDocInit,GPostDocManager>(this,Path.Latin1(),API_POSTDOC_VERSION, dlg);
 	}
@@ -109,7 +109,7 @@ R::RCursor<GFactoryPostDoc> GPostDocManager::GetPostDocsCursor(void)
 void GPostDocManager::ReadConfig(RXMLTag* t)
 {
 	R::RCursor<GFactoryPostDoc> Cur;
-	
+
 	if(!t) return;
 	Cur=GetPostDocsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())

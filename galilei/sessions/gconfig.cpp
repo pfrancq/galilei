@@ -95,7 +95,7 @@ GConfig::GConfig(const char* f) throw(std::bad_alloc)
 	for(cur.Start();!cur.End();cur.Next())
 	{
 		n="";
-		n+=RChar::ToLower(cur()->GetName()[0]);
+		n+=RChar::ToLower(cur()->GetName()[static_cast<size_t>(0)]);
 		n+=cur()->GetName().Mid(1);
 		AddTag(Root,new RXMLTag("galileiconfig:"+n));
 	}
@@ -120,7 +120,7 @@ void GConfig::Load(void) throw(GException)
 		for(cur.Start();!cur.End();cur.Next())
 		{
 			n="";
-			n+=RChar::ToLower(cur()->GetName()[0]);
+			n+=RChar::ToLower(cur()->GetName()[static_cast<size_t>(0)]);
 			n+=cur()->GetName().Mid(1);
 			t=GetTop()->GetTag("galileiconfig:"+n);
 			cur()->ReadConfig(t);
@@ -147,7 +147,7 @@ void GConfig::Save(void) throw(GException)
 	for(cur.Start();!cur.End();cur.Next())
 	{
 		n="";
-		n+=RChar::ToLower(cur()->GetName()[0]);
+		n+=RChar::ToLower(cur()->GetName()[static_cast<size_t>(0)]);
 		n+=cur()->GetName().Mid(1);
 		t=GetTop()->GetTag("galileiconfig:"+n);
 		cur()->SaveConfig(this,t);

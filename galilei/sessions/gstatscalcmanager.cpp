@@ -59,7 +59,7 @@ GStatsCalcManager::GStatsCalcManager(RContainer<RString, true, false>* paths,boo
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/stats";
 		LoadPlugins<GFactoryStatsCalc,GFactoryStatsCalcInit,GStatsCalcManager>(this,Path.Latin1(),API_STATSCALC_VERSION, dlg);
 	}
@@ -122,7 +122,7 @@ R::RCursor<GFactoryStatsCalc> GStatsCalcManager::GetStatsCalcsCursor(void)
 void GStatsCalcManager::ReadConfig(RXMLTag* t)
 {
 	R::RCursor<GFactoryStatsCalc> Cur;
-	
+
 	if(!t) return;
 	Cur=GetStatsCalcsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())

@@ -68,7 +68,7 @@ public:
 
 	GSim(unsigned int id,double s,tObjState state = osUpToDate)
 		: SubId(id), Sim(s),State(state) {}
-	int Compare(const GSim* s) const {return(SubId-s->SubId);}
+	int Compare(const GSim& s) const {return(SubId-s.SubId);}
 	int Compare(const unsigned int id) const {return(SubId-id);}
 };
 
@@ -89,7 +89,7 @@ public:
 
 	GSims(unsigned int id,unsigned int max) throw(std::bad_alloc)
 		: RContainer<GSim,true,true>(max,max/2), DocId(id) {}
-	int Compare(const GSims* s) const {return(DocId-s->DocId);}
+	int Compare(const GSims& s) const {return(DocId-s.DocId);}
 	int Compare(const unsigned int id) const {return(DocId-id);}
 };
 
@@ -115,7 +115,7 @@ public:
 	// Constructor and Compare functions.
 	GDocProfSim(GDocProfSims* manager, GDocs* d, RCursor<GSubProfile> s,bool iff,GLang* l) throw(std::bad_alloc);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
-	int Compare(const GDocProfSim* docProfSim) const {return(Lang->Compare(docProfSim->Lang));}
+	int Compare(const GDocProfSim& docProfSim) const {return(Lang->Compare(*docProfSim.Lang));}
 
 	// Analyse the similarity of the two subprofiles and insert when necessary.
 	void AnalyseSim(GSims* sim,const GDoc* doc ,const GSubProfile* sub) throw(std::bad_alloc);

@@ -56,7 +56,7 @@ GLinkCalcManager::GLinkCalcManager(RContainer<RString, true, false>* paths,bool 
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/linking";
 		LoadPlugins<GFactoryLinkCalc,GFactoryLinkCalcInit,GLinkCalcManager>(this,Path.Latin1(),API_LINKCALC_VERSION, dlg);
 	}

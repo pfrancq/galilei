@@ -58,7 +58,7 @@ GMetaEngineManager::GMetaEngineManager(RContainer<RString, true, false>* paths,b
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/metaengines";
 		LoadPlugins<GFactoryMetaEngine,GFactoryMetaEngineInit,GMetaEngineManager>(this,Path.Latin1(),API_METAENGINE_VERSION, dlg);
 	}

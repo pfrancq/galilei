@@ -56,7 +56,7 @@ GGroupingManager::GGroupingManager(RContainer<RString, true, false>* paths,bool 
 	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString Path(Cur());
+		RString Path(*Cur());
 		Path+="/grouping";
 		LoadPlugins<GFactoryGrouping,GFactoryGroupingInit,GGroupingManager>(this,Path.Latin1(),API_GROUPING_VERSION, dlg);
 	}
