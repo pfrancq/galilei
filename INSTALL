@@ -1,3 +1,7 @@
+		 ===========================================
+		|| Compiling and installing KGALILEICENTER ||
+		 ===========================================
+
 Basic Installation
 ==================
 
@@ -20,7 +24,7 @@ be considered for the next release.  If at some point `config.cache'
 contains results you don't want to keep, you may remove or edit it.
 
    The file `configure.in' is used to create `configure' by a program
-called `autoconf'.  You only need `configure.in' if you want to change
+called `autoconf'.  You only need `configure.in.in' if you want to change
 it or regenerate `configure' using a newer version of `autoconf'.
 
 The simplest way to compile this package is:
@@ -42,6 +46,114 @@ The simplest way to compile this package is:
   4. You can remove the program binaries and object files from the
      source code directory by typing `make clean'.  
 
+Note for CVS checkouts
+======================
+
+  If you have checked this out from CVS, you need to have
+automake, autoconf and Libtoll installed.  Then,
+type "make -f Makefile.cvs" to build the needed configuration
+files and proceed as stated below.
+
+You will also probably need GNU m4 (perhaps installed as gm4).
+
+Requirements
+============
+
+  First of all, you will also need a recent C++ compiler, where recent
+means that the compilers are close to C++ standard conforming.
+
+libraries Needed by galilei_plugins
+-----------------------------------
+
+  Some libraries are needed by the galilei_plugins project. These libraries must
+  be present on the system. "configure" check for these libraries.
+
+  -o- LTMM include must be presents on the system. By default the configure scrip
+      looks for these files in [/usr/include/ltmm/ , /usr/local/include/ltmm/]. If
+      not found you can use the
+      --with-ltmm=DIR
+      option to specify the instalation path.
+
+  -o- R libraries and includes must be present on the system. By default configure
+      looks for these files in /usr/include/r /usr/local/include/r. If you have
+      installed the library with a 'special' prefix use the
+      --with-r-include and
+      --with-r-libs
+      options to specify your instalation path.
+
+  -o- GALILEI libraries and includes must be present on the system. By default configure
+      looks for these files in /usr/include/galilei /usr/local/include/galilei.
+      If you have installed the library with a 'special' prefix use the
+      --with-r-include and
+      --with-r-libs
+      options to specify your instalation path.
+
+  -o- GALILEI frontend must be present. If not, run GALILEI configure script again
+      with the option "--enable-kde=yes" and the make, make install
+
+
+
+Creating the Makefile
+=====================
+
+GALILEI can be configured using GNU autoconf utility which attempts to guess
+the configuration needed to suit your system.  The standard way to use it
+is described in the file INSTALL.autoconf.  In most cases you will be able
+to create the Makefile by typing
+
+  ./configure
+
+For more complicated cases, LyX configure takes the following specific
+flags:
+
+  o --with-ltmm=DIR allows to specify where the "ltmm include files" are
+    stocked. Default check are: /usr/include/ltmm/, /usr/local/include/ltmm/
+
+  o --with-r-include=DIR allow to specify where are the source files
+    for the "r project" if they are not found. Some default directory
+    are check like :"/usr/include/r , /usr/local/include/r,...". If
+    the source files are not found then use this option to specify
+    the location.
+
+  o --with-r-libs=DIR allow to specify where are the libraries of the
+    "r project" are installed. Some default directory are check like :
+    "/usr/lib/r , /usr/local/lib/r,...". If the libraries are not
+    found then use this option to specify the location.
+
+  o --with-galilei-include=DIR allow to specify where are the source files
+    for the "galilei project" if they are not found. Some default directory
+    are check like :"/usr/include/galilei , /usr/local/include/galilei,...".
+    If the source files are not found then use this option to specify the
+    location.
+
+  o --with-galilei-libs=DIR allow to specify where are the libraries of the
+    "r project" are installed. Some default directory are check like :
+    "/usr/lib/galilei , /usr/local/lib/galilei,...". If the libraries are not
+    found then use this option to specify the location.
+
+  o --with-qt-dir=DIR allow to specify where the root of Qt is installed
+
+  o --with-qt-includes=DIR allow to specify where the Qt includes are installed.
+
+  o --with-qt-libraries=DIR allow to specify where the Qt library is installed.
+
+  o --enable-debug will add debug information to your binary. This
+    requires a lot more disk space, but is a must if you want to try to
+    debug problems in GALILEI. The default is to have debug information
+    for development versions and prereleases only.
+
+  o --datadir=DIRECTORY gives the directory where all extra LyX
+    files (lyxrc example, documentation, templates and layouts
+    definitions) will be installed.
+    [defaults to ${prefix}/share/lyx${program_suffix}]
+
+  o --bindir=DIRECTORY gives the directory where the lyx binary
+    will be installed. [defaults to ${prefix}/bin]
+
+  o --prefix=DIRECTORY specifies the root directory to use for installation.
+     [defaults to /usr/local]
+
+
 Compilers and Options
 =====================
 
@@ -54,6 +166,22 @@ this:
 
 Or on systems that have the `env' program, you can do it like this:
      env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
+
+Compiling and installing LyX
+============================
+
+Once you've got the Makefile created, you just have to type:
+
+  make all
+  make install
+
+All should be OK ;)
+
+If configure fails for some strange reason
+==========================================
+
+Even when configure fails, it creates a Makefile.  You always can check
+the contents of this file, modify it and run 'make'.
 
 Compiling For Multiple Architectures
 ====================================
