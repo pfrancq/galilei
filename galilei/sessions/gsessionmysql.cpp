@@ -1119,6 +1119,6 @@ void GALILEI::GSessionMySQL::SaveDocSim(void)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GSessionMySQL::~GSessionMySQL()
+GALILEI::GSessionMySQL::~GSessionMySQL() throw(GException)
 {
 }

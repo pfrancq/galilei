@@ -294,7 +294,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GSessionMySQL(void);
+	virtual ~GSessionMySQL(void) throw(GException);
 };
 
 
