@@ -50,11 +50,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/gir.h>
-#include <groups/gchromoir.h>
-#include <groups/ginstir.h>
-#include <groups/ggroupinggga.h>
-#include <galilei/qggroupsir.h>
+#include <galilei.h>
 using namespace GALILEI;
 
 
@@ -89,7 +85,7 @@ class KViewStoreChromos : public KView
 	/**
 	* The solutions.
 	*/
-	QGGroupsIR* Sol;
+//	QGGroupsIR* Sol;
 
 	/**
 	* Identificator of the current showed solution.
@@ -99,7 +95,7 @@ class KViewStoreChromos : public KView
 	/**
 	* The GA that will be used.
 	*/
-	GInstIR* Instance;
+//	GInstIR* Instance;
 
 	/**
 	* SubProfiles that must be grouped again.
@@ -109,7 +105,7 @@ class KViewStoreChromos : public KView
 	/**
 	* Objects representing SubProfiles that must be grouped again.
 	*/
-	R::RObjs<GObjIR>* Objs;
+//	R::RObjs<GObjIR>* Objs;
 
 public:
 
@@ -117,13 +113,12 @@ public:
 	* Constructor for the view.
 	* @param doc            Document instance that the view represents.
 	* @param l              Lang to group.
-	* @param p              Parameters.
 	* @param global         Global Similarities.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewStoreChromos(KDoc* doc,const char* l,GIRParams* p,bool global,QWidget* parent,const char* name,int wflags);
+	KViewStoreChromos(KDoc* doc,const char* l,bool global,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.

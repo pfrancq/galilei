@@ -37,10 +37,10 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <langs/glang.h>
-#include <groups/gchromoir.h>
+/*#include <groups/gchromoir.h>
 #include <groups/ginstir.h>
 #include <groups/ggroupir.h>
-#include <groups/gobjir.h>
+#include <groups/gobjir.h>*/
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <profiles/gsubprofile.h>
@@ -71,11 +71,11 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewGA::KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), RGASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>(),
-	  CurId(0), Instance(0), SubProfiles(0), Objs(0), Gen(0), Params(p)
+KViewGA::KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* parent,const char* name,int wflags)
+	: KView(doc,parent,name,wflags), /*GASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>(),*/
+	  CurId(0), /*Instance(0),*/ SubProfiles(0), /*Objs(0),*/ Gen(0)
 {
-	static char tmp[100];
+/*	static char tmp[100];
 	GLang* lang;
 	GSubProfile* sub;
 	GGroupDataIR g;
@@ -167,18 +167,18 @@ KViewGA::KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,Q
 	TabWidget->insertTab(Sol,tmp);
 	connect(Sol,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	Ideal = new QGGroupsIR(TabWidget,IdealGroups->GetPtr<const GLang*>(lang),Objs);
-	TabWidget->insertTab(Ideal,"Ideal Solution");
+	TabWidget->insertTab(Ideal,"Ideal Solution");*/
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewGA::update(unsigned int /*cmd*/)
+void KViewGA::update(unsigned int)
 {
 }
 
 
 //---------------------------------------------------------------------------
-void KViewGA::receiveGenSig(GenSig* sig)
+/*void KViewGA::receiveGenSig(GenSig* sig)
 {
 	static char tmp[100];
 
@@ -195,36 +195,36 @@ void KViewGA::receiveGenSig(GenSig* sig)
 		sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,Params->PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
 	#endif
 	TabWidget->changeTab(Sol,tmp);
-}
+}*/
 
 
 //---------------------------------------------------------------------------
-void KViewGA::receiveInteractSig(InteractSig* /*sig*/)
+/*void KViewGA::receiveInteractSig(InteractSig*)
 {
 	KApplication::kApplication()->processEvents(1000);
-}
+}*/
 
 
 //---------------------------------------------------------------------------
-void KViewGA::receiveBestSig(BestSig* sig)
+/*void KViewGA::receiveBestSig(BestSig* sig)
 {
-	static char tmp[100];
+ 	static char tmp[100];
 
-	#ifdef RGADEBUG
-		sprintf(tmp,"Best Solution (Id=%u) - Fitness=%f",sig->Best->Id,sig->Best->GetGlobal());
-	#else
-		sprintf(tmp,"Best Solution (Id=%u) - Fitness=%f",sig->Best->Id,sig->Best->Fitness->Value);
-	#endif
-	TabWidget->changeTab(Best,tmp);
-	Best->setGroups(sig->Best);
-	Best->setChanged();
-}
+ 	#ifdef RGADEBUG
+ 		sprintf(tmp,"Best Solution (Id=%u) - Fitness=%f",sig->Best->Id,sig->Best->GetGlobal());
+ 	#else
+ 		sprintf(tmp,"Best Solution (Id=%u) - Fitness=%f",sig->Best->Id,sig->Best->Fitness->Value);
+ 	#endif
+ 	TabWidget->changeTab(Best,tmp);
+ 	Best->setGroups(sig->Best);
+ 	Best->setChanged();
+}*/
 
 
 //----------------------------------------------------------------------------
 void KViewGA::RunGA(void)
 {
-	if(Instance)
+/*	if(Instance)
 	{
 		try
 		{
@@ -246,14 +246,14 @@ void KViewGA::RunGA(void)
 		{
 			KMessageBox::error(this,QString(e.Msg));
 		}
-	}
+	}*/
 }
 
 
 //---------------------------------------------------------------------------
 void KViewGA::PauseGA(void)
 {
-	ExternBreak=true;
+//	ExternBreak=true;
 }
 
 
@@ -266,7 +266,7 @@ void KViewGA::StopGA(void)
 //---------------------------------------------------------------------------
 void KViewGA::SaveGA(void)
 {
-	GChromoIR** c;
+/*	GChromoIR** c;
 	unsigned int i;
 
 	if(!Instance) return;
@@ -274,80 +274,80 @@ void KViewGA::SaveGA(void)
 	Doc->GetSession()->ClearStoredChromos();
 	for(i=0,c=Instance->Chromosomes;i<Instance->PopSize;i++,c++)
 		Doc->GetSession()->SaveChromo((*c),i,Objs);
-	Doc->GetSession()->SaveChromo(Instance->BestChromosome,Instance->PopSize,Objs);
+	Doc->GetSession()->SaveChromo(Instance->BestChromosome,Instance->PopSize,Objs);*/
 }
 
 
 //---------------------------------------------------------------------------
 void KViewGA::keyReleaseEvent(QKeyEvent* e)
 {
-	static char tmp[100];
-//	QGoToPopDlg *dlg;
-
-	if(TabWidget->currentPage()!=Sol)
-	{
-		KView::keyReleaseEvent(e);
-		return;
-	}
-	switch(e->key())
-	{
-		case Key_PageUp:
-			if(CurId<Params->PopSize-1) CurId++; else CurId=0;
-			#ifdef RGADEBUG
-				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,Params->PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
-			#else
-				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,Params->PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
-			#endif
-			TabWidget->changeTab(Sol,tmp);
-			Sol->setGroups(Instance->Chromosomes[CurId]);
-			Sol->setChanged();
-			break;
-
-		case Key_PageDown:
-			if(CurId>0) CurId--; else CurId=Params->PopSize-1;
-			#ifdef RGADEBUG
-				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,Params->PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
-			#else
-				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,Params->PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
-			#endif
-			TabWidget->changeTab(Sol,tmp);
-			Sol->setGroups(Instance->Chromosomes[CurId]);
-			Sol->setChanged();
-			break;
-
-//		case Key_G:
-//			if(e->state()==ControlButton)
-//			{
-//				dlg= new QGoToPopDlg(Doc->getPopSize());
-//				if(dlg->exec())
-//				{
-//					CurId=dlg->PopIndex->value();
-//					slotNewChromo();
-//				}
-//				delete dlg;
-//			}
-//			break;
-
-		default:
-			e->ignore();
-	}
+// 	static char tmp[100];
+// //	QGoToPopDlg *dlg;
+// 
+// 	if(TabWidget->currentPage()!=Sol)
+// 	{
+// 		KView::keyReleaseEvent(e);
+// 		return;
+// 	}
+// 	switch(e->key())
+// 	{
+// 		case Key_PageUp:
+// 			if(CurId<Params->PopSize-1) CurId++; else CurId=0;
+// 			#ifdef RGADEBUG
+// 				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,Params->PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
+// 			#else
+// 				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,Params->PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
+// 			#endif
+// 			TabWidget->changeTab(Sol,tmp);
+// 			Sol->setGroups(Instance->Chromosomes[CurId]);
+// 			Sol->setChanged();
+// 			break;
+// 
+// 		case Key_PageDown:
+// 			if(CurId>0) CurId--; else CurId=Params->PopSize-1;
+// 			#ifdef RGADEBUG
+// 				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,Params->PopSize-1,Instance->Chromosomes[CurId]->GetGlobal());
+// 			#else
+// 				sprintf(tmp,"Solution (%u/%u) - Fitness=%f",CurId,Params->PopSize-1,Instance->Chromosomes[CurId]->Fitness->Value);
+// 			#endif
+// 			TabWidget->changeTab(Sol,tmp);
+// 			Sol->setGroups(Instance->Chromosomes[CurId]);
+// 			Sol->setChanged();
+// 			break;
+// 
+// //		case Key_G:
+// //			if(e->state()==ControlButton)
+// //			{
+// //				dlg= new QGoToPopDlg(Doc->getPopSize());
+// //				if(dlg->exec())
+// //				{
+// //					CurId=dlg->PopIndex->value();
+// //					slotNewChromo();
+// //				}
+// //				delete dlg;
+// //			}
+// //			break;
+// 
+// 		default:
+// 			e->ignore();
+// 	}
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewGA::resizeEvent(QResizeEvent*)
 {
-	TabWidget->resize(size());
+//	TabWidget->resize(size());
 }
 
 
 //-----------------------------------------------------------------------------
 KViewGA::~KViewGA(void)
 {
-	if(Instance)
+/*	if(Instance)
 		delete Instance;
 	if(SubProfiles)
 		delete SubProfiles;
 	if(Objs)
-		delete Objs;
+		delete Objs;*/
 }

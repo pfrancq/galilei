@@ -54,12 +54,6 @@ using namespace R;
 #include <profiles/gsubprofiledesc.h>
 #include <groups/ggrouping.h>
 #include <profiles/gprofilecalc.h>
-#include <galilei/qgroupingpluginconfsim.h>
-#include <galilei/qgroupingpluginconfgga.h>
-#include <galilei/qgroupingpluginconfkcos.h>
-#include <galilei/qgroupingpluginconfsupkmeans.h>
-#include <galilei/qgroupingpluginconfkprotos.h>
-#include <galilei/qgroupingpluginconfcure.h>
 #include <galilei/qgroupcalcpluginconfrelevant.h>
 #include <galilei/qgroupcalcpluginconfgravitation.h>
 #include <galilei/qlinkcalchitspluginconf.h>
@@ -177,6 +171,7 @@ void KGALILEICenterApp::slotPlugins(void)
 {
 	GFactoryFilterCursor Filter;
 	GFactoryProfileCalcCursor ProfileCalc;
+	GFactoryGroupingCursor Grouping;
 	QPlugins dlg(this,"Plugins Dialog");
 	QString str;
 	QListViewItem* def;
@@ -205,8 +200,9 @@ void KGALILEICenterApp::slotPlugins(void)
 
 	// Goes through the profiles computing method
 	def=cur=0;
-	ProfileCalc=ProfileCalcsManager.GetProfileCalcsCursor();
-	for(ProfileCalc.Start(),idx=0;!ProfileCalc.End();ProfileCalc.Next(),idx++)
+	ProfileCalc=ProfilingManager.GetProfileCalcsCursor();
+	dlg.CurrentProfileCalc->insertItem("None",0);
+	for(ProfileCalc.Start(),idx=1;!ProfileCalc.End();ProfileCalc.Next(),idx++)
 	{
 		str=ProfileCalc()->GetName();
 		str+=" [";
@@ -214,7 +210,7 @@ void KGALILEICenterApp::slotPlugins(void)
 		str+="]";
 		cur=new QProfileCalcItem(dlg.ProfileCalcs,ProfileCalc(),str);
 		dlg.CurrentProfileCalc->insertItem(ProfileCalc()->GetName(),idx);
-		if((ProfileCalc()->GetPlugin())&&(ProfileCalc()->GetPlugin()==ProfileCalcsManager.GetCurrentMethod()))
+		if((ProfileCalc()->GetPlugin())&&(ProfileCalc()->GetPlugin()==ProfilingManager.GetCurrentMethod()))
 			dlg.CurrentProfileCalc->setCurrentItem(idx);
 		if(!def)
 			def=cur;
@@ -225,6 +221,31 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.changeProfileCalc(def);
 		dlg.EnableProfileCalc->setEnabled(true);
 		dlg.CurrentProfileCalc->setEnabled(true);
+	}
+
+	// Goes through the grouping method
+	def=cur=0;
+	Grouping=GroupingManager.GetGroupingsCursor();
+	dlg.CurrentGrouping->insertItem("None",0);
+	for(Grouping.Start(),idx=1;!Grouping.End();Grouping.Next(),idx++)
+	{
+		str=Grouping()->GetName();
+		str+=" [";
+		str+=Grouping()->GetLib();
+		str+="]";
+		cur=new QGroupingItem(dlg.Groupings,Grouping(),str);
+		dlg.CurrentGrouping->insertItem(Grouping()->GetName(),idx);
+		if((Grouping()->GetPlugin())&&(Grouping()->GetPlugin()==GroupingManager.GetCurrentMethod()))
+			dlg.CurrentGrouping->setCurrentItem(idx);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.Groupings->setSelected(def,true);
+		dlg.changeGrouping(def);
+		dlg.EnableGrouping->setEnabled(true);
+		dlg.CurrentGrouping->setEnabled(true);
 	}
 
 	if(dlg.exec())
@@ -252,7 +273,26 @@ void KGALILEICenterApp::slotPlugins(void)
 		}
 		try
 		{
-			ProfileCalcsManager.SetCurrentMethod(dlg.CurrentProfileCalc->currentText());
+			ProfilingManager.SetCurrentMethod(dlg.CurrentProfileCalc->currentText());
+		}
+		catch(GException)
+		{
+		}
+
+
+		// Goes through grouping method
+		QGroupingItem* item3=dynamic_cast<QGroupingItem*>(dlg.Groupings->firstChild());
+		while(item3)
+		{
+			if(item3->Enable)
+				item3->Fac->Create();
+			else
+				item3->Fac->Delete();
+			item3=dynamic_cast<QGroupingItem*>(item3->itemBelow());
+		}
+		try
+		{
+			GroupingManager.SetCurrentMethod(dlg.CurrentGrouping->currentText());
 		}
 		catch(GException)
 		{
@@ -266,12 +306,6 @@ void KGALILEICenterApp::slotPlugins(void)
 void KGALILEICenterApp::slotOldPlugins(void)
 {
 	QPluginsDlg dlg(this,"Plugins Dialog");
-	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfSim(&SimParams));
-	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfGGA(&IRParams));
-	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKCos(&KMeansParams));
-	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfSupKMeans(&SupKMeansParams));
-	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfKProtos(&KProtosParams));
-	dlg.RegisterGroupingPluginConf(new QGroupingPluginConfCure(&CureParams));
 	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfRelevant(&CalcRelevantParams));
 	dlg.RegisterGroupCalcPluginConf(new QGroupCalcPluginConfGravitation(&CalcGravitationParams));
 	dlg.RegisterLinkCalcPluginConf(new QLinkCalcHITSPluginConf(&LinkCalcHITSParams));

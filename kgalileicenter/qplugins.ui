@@ -161,6 +161,9 @@
                                 <property name="text">
                                     <string>Current Method</string>
                                 </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Choose current method</string>
+                                </property>
                             </widget>
                             <spacer>
                                 <property name="name">
@@ -185,6 +188,9 @@
                                 </property>
                                 <property name="enabled">
                                     <bool>false</bool>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Choose current method</string>
                                 </property>
                             </widget>
                         </hbox>
@@ -261,6 +267,150 @@
                             <widget class="QCheckBox">
                                 <property name="name">
                                     <cstring>EnableProfileCalc</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>Enable method</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Grouping</string>
+                </attribute>
+                <vbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout5</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>textLabel1_2</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Current Method</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Choose current method</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer4_2</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Horizontal</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Fixed</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>20</width>
+                                        <height>20</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                            <widget class="QComboBox">
+                                <property name="name">
+                                    <cstring>CurrentGrouping</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Choose current method</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <widget class="QListView">
+                        <column>
+                            <property name="text">
+                                <string>Method</string>
+                            </property>
+                            <property name="clickable">
+                                <bool>true</bool>
+                            </property>
+                            <property name="resizable">
+                                <bool>true</bool>
+                            </property>
+                        </column>
+                        <property name="name">
+                            <cstring>Groupings</cstring>
+                        </property>
+                        <property name="resizePolicy">
+                            <enum>Manual</enum>
+                        </property>
+                        <property name="resizeMode">
+                            <enum>AllColumns</enum>
+                        </property>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout3_2</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>ConfigGrouping</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>Configure</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>AboutGrouping</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>About</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer3_2</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Horizontal</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>40</width>
+                                        <height>20</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>EnableGrouping</cstring>
                                 </property>
                                 <property name="enabled">
                                     <bool>false</bool>
@@ -415,6 +565,24 @@
         <receiver>QPlugins</receiver>
         <slot>slotProfileCalcEnable(bool)</slot>
     </connection>
+    <connection>
+        <sender>ConfigGrouping</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotConfigGrouping()</slot>
+    </connection>
+    <connection>
+        <sender>AboutGrouping</sender>
+        <signal>clicked()</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotAboutGrouping()</slot>
+    </connection>
+    <connection>
+        <sender>EnableGrouping</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>QPlugins</receiver>
+        <slot>slotGroupingEnable(bool)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">qplugins.ui.h</include>
@@ -428,6 +596,18 @@
     <slot>slotAboutProfileCalc()</slot>
     <slot>slotConfigProfileCalc()</slot>
     <slot>slotProfileCalcEnable( bool state )</slot>
+    <slot>changeGrouping( QListViewItem * item )</slot>
+    <slot>changeLinkCalc( QListViewItem * item )</slot>
+    <slot>changeGroupCalc( QListViewItem * item )</slot>
+    <slot>slotAboutGrouping()</slot>
+    <slot>slotAboutLinkCalc()</slot>
+    <slot>slotAboutGroupCalc()</slot>
+    <slot>slotConfigGrouping()</slot>
+    <slot>slotConfigLinkCalc()</slot>
+    <slot>slotConfigGroupCalc()</slot>
+    <slot>slotGroupingEnable( bool state )</slot>
+    <slot>slotGroupCalcEnable( bool state )</slot>
+    <slot>slotLinkCalcEnable( bool state )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -48,12 +48,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <groups/gir.h>
-#include <groups/ggroupingkcos.h>
-#include <groups/ggroupingsupkmeans.h>
-#include <groups/ggroupingkprotos.h>
-#include <groups/ggroupingcure.h>
-#include <groups/ggroupingsim.h>
 #include <groups/ggroupcalcrelevant.h>
 #include <groups/ggroupcalcgravitation.h>
 #include <docs/glinkcalchits.h>
@@ -61,6 +55,7 @@
 #include <docs/glinkcalcsalsa.h>
 #include <docs/glinkcalctresh.h>
 #include <profiles/gprofilecalcmanager.h>
+#include <groups/ggroupingmanager.h>
 #include <galilei/gurlmanagerkde.h>
 using namespace GALILEI;
 
@@ -122,44 +117,19 @@ class KGALILEICenterApp : public KMainWindow
 	GURLManagerKDE URLManager;
 
 	/**
-	* Profiles Computing Method Manager.
+	* Profiling Method Manager.
 	*/
-	GProfileCalcManager ProfileCalcsManager;
+	GProfileCalcManager ProfilingManager;
+
+	/**
+	* Grouping Method Manager.
+	*/
+	GGroupingManager GroupingManager;
 
 	/**
 	* The configuration object of the application.
 	*/
 	KConfig* Config;
-
-	/**
-	* Parameters of the GA.
-	*/
-	GIRParams IRParams;
-
-	/**
-	* Parameters of the KMeans.
-	*/
-	GKMeansParams KMeansParams;
-
-	/**
-	* Parameters of the KMeans.
-	*/
-	GSupKMeansParams SupKMeansParams;
-
-	/**
-	* Parameters of the KProtos.
-	*/
-	GKProtosParams KProtosParams;
-
-	/**
-	* Parameters of Cure.
-	*/
-	GCureParams CureParams;
-
-	/**
-	* Parameters of First-Fit.
-	*/
-	GSimParams SimParams;
 
 	/**
 	* Parameters for 'relevant' group description computing
@@ -195,11 +165,6 @@ class KGALILEICenterApp : public KMainWindow
 	* Current Profile Description Method
 	*/
 	R::RString CurrentProfileDesc;
-
-	/**
-	* Current Grouping Method
-	*/
-	R::RString CurrentGroupingMethod;
 
 	/**
 	* Current Group Descrition Method
@@ -275,16 +240,6 @@ public:
 	R::RContainer<R::RString,unsigned int,true,true>* ProfileDesc;
 
 	/**
-	* Container of computing method.
-	*/
-	R::RContainer<R::RString,unsigned int,true,true>* ComputingMethod;
-
-	/**
-	* Container of grouping method.
-	*/
-	R::RContainer<R::RString,unsigned int,true,true>* GroupingMethod;
-
-	/**
 	* Container of group description method.
 	*/
 	R::RContainer<R::RString,unsigned int,true,true>* GroupCalcMethod;
@@ -293,7 +248,6 @@ public:
 	* Container of link description method.
 	*/
 	R::RContainer<R::RString,unsigned int,true,true>* LinkCalcMethod;
-
 
 public:
 
@@ -318,16 +272,6 @@ public:
 	* Set the current subprofile description method used.
 	*/
 	void SetCurrentProfileDesc(R::RString str) {CurrentProfileDesc=str;}
-
-	/**
-	* Return the current grouping method used.
-	*/
-	R::RString GetCurrentGroupingMethod(void) {return(CurrentGroupingMethod);}
-
-	/**
-	* Set the current grouping method used.
-	*/
-	void SetCurrentGroupingMethod(R::RString str) {CurrentGroupingMethod=str;}
 
 	/**
 	* Return the Current group description method used.
@@ -384,36 +328,10 @@ protected:
 	void createClient(KDoc* doc,KView* view);
 
 	/**
-	* Write the option corresponding to a similarity measure.
-	* @param s              Pointer to the measure.
-	*/
-	void saveOptions(GSimMeasure* s);
-
-	/**
-	* Write the option corresponding to a promethee criterion.
-	* @param n              Name of the criterion.
-	* @param c              Pointer to the criterion.
-	*/
-	void saveOptions(const char* n,R::RPromCriterionParams& c);
-
-	/**
 	* Save general Options like all bar positions and status as well as the
 	* geometry and the recent file list to the configuration file.
 	*/
 	void saveOptions(void);
-
-	/**
-	* Read the option corresponding to a similarity measure.
-	* @param s              Pointer to the measure.
-	*/
-	void readOptions(GSimMeasure* s);
-
-	/**
-	* Read the option corresponding to a promethee criterion.
-	* @param n              Name of the criterion.
-	* @param c              Pointer to the criterion.
-	*/
-	void readOptions(const char* n,R::RPromCriterionParams& c);
 
 	/**
 	* Read general Options again and initialize all variables like the recent

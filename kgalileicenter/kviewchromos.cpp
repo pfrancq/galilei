@@ -50,7 +50,7 @@ using namespace R;
 // include files for GALILEI
 #include <langs/glang.h>
 #include <sessions/gsession.h>
-#include <groups/gchromoir.h>
+//#include <groups/gchromoir.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofilessim.h>
 #include <groups/ggroup.h>
@@ -151,7 +151,7 @@ void QListViewChromos::contentsMousePressEvent(QMouseEvent* e)
 class KViewChromos::Stat
 {
 public:
-	GChromoIR* Chromo;
+//	GChromoIR* Chromo;
 	tId Id;
 	double Precision;
 	double Recall;
@@ -160,7 +160,7 @@ public:
 	double E15;
 	double Global;
 
-	Stat(GChromoIR* c) : Chromo(c), Id(NullId), Precision(0.0), Recall(0.0),
+	Stat(/*GChromoIR* c*/void) : /*Chromo(c),*/ Id(NullId), Precision(0.0), Recall(0.0),
 	                     E1(0.0), E05(0.0), E15(0.0), Global(0.0) {}
 	int Compare(const Stat&) {return(-1);}
 	int Compare(const Stat*) {return(-1);}
@@ -175,11 +175,11 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewChromos::KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget* parent,const char* name,int wflags)
+KViewChromos::KViewChromos(KDoc* doc,const char* l,bool sim,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), Lang(Doc->GetSession()->GetLang(l)),
-	 Sim(sim), Stats(50,25), Params(p), Instance(0)
+	 Sim(sim), Stats(50,25)//, Instance(0)
 {
-	// Construct chromosomes
+/*	// Construct chromosomes
 	IdealGroups= new R::RContainer<GALILEI::GGroups, unsigned int, true, true> (2,1);
 	General = new QListViewChromos(this);
 	if(Sim)
@@ -297,7 +297,7 @@ KViewChromos::KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget
 			General->setColumnAlignment(i,Qt::AlignHCenter);
 		}
 		ConstructChromosomesRanking();
-	}
+	}*/
 }
 
 
@@ -314,286 +314,286 @@ void KViewChromos::PutDouble(QListViewItem* g,unsigned int col,double val)
 //-----------------------------------------------------------------------------
 void KViewChromos::ConstructChromosomesSim(void)
 {
-	GChromoIR* c;
-	unsigned int i;
-	QListViewItem* g;
-	char tmp[50];
-	GSubProfileCursor Cur=Doc->GetSession()->GetSubProfilesCursor(Lang);
-	RObjs<GObjIR> Objs(Cur.GetNb());
-	RContainer<GSubProfile,unsigned int,false,true> SubProfiles(Cur.GetNb(),50);
-	Stat* s;
-	GSubProfile* sub;
-
-	// Initialise the dialog box
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
-	d->Begin();
-
-	// Load Ideal Groups;
-	d->PutText("Load Ideal Groups");
-	IdealGroups=Doc->GetSession()->GetIdealGroups();
-
-	// Construct the GA Objects
-	d->PutText("Construct the GA Objects");
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		sub=Cur();
-		if(sub->IsDefined())
-			SubProfiles.InsertPtr(sub);
-	}
-	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
-			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
-
-	// Load the chromosomes from the db
-	d->PutText("Load chromosomes");
-	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,Params);
-	if(!Instance) return;
-	Instance->SetIdealGroups(IdealGroups);
-
-	// Display the chromosomes
-	for(i=0;i<=Instance->PopSize;i++)
-	{
-		if(i==Instance->PopSize)
-			c=Instance->BestChromosome;
-		else
-			c=Instance->Chromosomes[i];
-	
-		Stats.InsertPtr(s=new Stat(c));
-
-		s->Id=c->Id;
-		sprintf(tmp,"%u",c->Id);
-		d->receiveNextChromosome(c->Id);
-		g=new MyListViewItem(General,tmp);
-
-		c->CompareIdeal(Doc->GetSession(),IdealGroups);
-		s->Precision=c->GetPrecision();
-		sprintf(tmp,"%f",c->GetPrecision());
-		g->setText(1,tmp);
-		s->Recall=c->GetRecall();
-		sprintf(tmp,"%f",c->GetRecall());
-		g->setText(2,tmp);
-		if((s->Precision>0.0)&&(s->Recall>0.0))
-		{
-			s->E05=1-(1+(0.5*0.5))/((1/s->Precision)+((0.5*0.5)/s->Recall));
-			s->E1=1-2/((1/s->Precision)+(1/s->Recall));
-			s->E15=1-(1+(1.5*1.5))/((1/s->Precision)+((1.5*1.5)/s->Recall));
-		}
-		else
-		{
-			s->E05=0;
-			s->E1=0;
-			s->E15=0;
-		}
-		PutDouble(g,3,s->E05);
-		PutDouble(g,4,s->E1);
-		PutDouble(g,5,s->E15);
-		s->Global=c->GetGlobal();
-		sprintf(tmp,"%f",c->GetGlobal());
-		g->setText(6,tmp);
-
-		c->EvaluateSim(stAvgSim);
-		sprintf(tmp,"%f",c->GetSimAvgSim());
-		g->setText(7,tmp);
-
-		c->EvaluateSim(stJ);
-		sprintf(tmp,"%f",c->GetSimJ());
-		g->setText(8,tmp);
-
-		c->EvaluateSim(stAvgRatio);
-		sprintf(tmp,"%f",c->GetSimAvgRatio());
-		g->setText(9,tmp);
-
-		c->EvaluateSim(stMinRatio);
-		sprintf(tmp,"%f",c->GetSimMinRatio());
-		g->setText(10,tmp);
-
-		c->EvaluateSim(stRatio);
-		sprintf(tmp,"%f",c->GetSimRatio());
-		g->setText(11,tmp);
-
-		c->EvaluateSim(stWOverB);
-		sprintf(tmp,"%f",c->GetSimWOverB());
-		g->setText(12,tmp);
-
-		c->EvaluateSim(stSimWB);
-		sprintf(tmp,"%f",c->GetSimSimWB());
-		g->setText(13,tmp);
-
-		sprintf(tmp,"%u",c->Used.NbPtr);
-		g->setText(14,tmp);
-	}
-
-	// Finish.
-	d->Finish();
+// 	GChromoIR* c;
+// 	unsigned int i;
+// 	QListViewItem* g;
+// 	char tmp[50];
+// 	GSubProfileCursor Cur=Doc->GetSession()->GetSubProfilesCursor(Lang);
+// 	RObjs<GObjIR> Objs(Cur.GetNb());
+// 	RContainer<GSubProfile,unsigned int,false,true> SubProfiles(Cur.GetNb(),50);
+// 	Stat* s;
+// 	GSubProfile* sub;
+// 
+// 	// Initialise the dialog box
+// 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
+// 	d->Begin();
+// 
+// 	// Load Ideal Groups;
+// 	d->PutText("Load Ideal Groups");
+// 	IdealGroups=Doc->GetSession()->GetIdealGroups();
+// 
+// 	// Construct the GA Objects
+// 	d->PutText("Construct the GA Objects");
+// 	for(Cur.Start();!Cur.End();Cur.Next())
+// 	{
+// 		sub=Cur();
+// 		if(sub->IsDefined())
+// 			SubProfiles.InsertPtr(sub);
+// 	}
+// 	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
+// 			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
+// 
+// 	// Load the chromosomes from the db
+// 	d->PutText("Load chromosomes");
+// 	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,Params);
+// 	if(!Instance) return;
+// 	Instance->SetIdealGroups(IdealGroups);
+// 
+// 	// Display the chromosomes
+// 	for(i=0;i<=Instance->PopSize;i++)
+// 	{
+// 		if(i==Instance->PopSize)
+// 			c=Instance->BestChromosome;
+// 		else
+// 			c=Instance->Chromosomes[i];
+// 
+// 		Stats.InsertPtr(s=new Stat(c));
+// 
+// 		s->Id=c->Id;
+// 		sprintf(tmp,"%u",c->Id);
+// 		d->receiveNextChromosome(c->Id);
+// 		g=new MyListViewItem(General,tmp);
+// 
+// 		c->CompareIdeal(Doc->GetSession(),IdealGroups);
+// 		s->Precision=c->GetPrecision();
+// 		sprintf(tmp,"%f",c->GetPrecision());
+// 		g->setText(1,tmp);
+// 		s->Recall=c->GetRecall();
+// 		sprintf(tmp,"%f",c->GetRecall());
+// 		g->setText(2,tmp);
+// 		if((s->Precision>0.0)&&(s->Recall>0.0))
+// 		{
+// 			s->E05=1-(1+(0.5*0.5))/((1/s->Precision)+((0.5*0.5)/s->Recall));
+// 			s->E1=1-2/((1/s->Precision)+(1/s->Recall));
+// 			s->E15=1-(1+(1.5*1.5))/((1/s->Precision)+((1.5*1.5)/s->Recall));
+// 		}
+// 		else
+// 		{
+// 			s->E05=0;
+// 			s->E1=0;
+// 			s->E15=0;
+// 		}
+// 		PutDouble(g,3,s->E05);
+// 		PutDouble(g,4,s->E1);
+// 		PutDouble(g,5,s->E15);
+// 		s->Global=c->GetGlobal();
+// 		sprintf(tmp,"%f",c->GetGlobal());
+// 		g->setText(6,tmp);
+// 
+// 		c->EvaluateSim(stAvgSim);
+// 		sprintf(tmp,"%f",c->GetSimAvgSim());
+// 		g->setText(7,tmp);
+// 
+// 		c->EvaluateSim(stJ);
+// 		sprintf(tmp,"%f",c->GetSimJ());
+// 		g->setText(8,tmp);
+// 
+// 		c->EvaluateSim(stAvgRatio);
+// 		sprintf(tmp,"%f",c->GetSimAvgRatio());
+// 		g->setText(9,tmp);
+// 
+// 		c->EvaluateSim(stMinRatio);
+// 		sprintf(tmp,"%f",c->GetSimMinRatio());
+// 		g->setText(10,tmp);
+// 
+// 		c->EvaluateSim(stRatio);
+// 		sprintf(tmp,"%f",c->GetSimRatio());
+// 		g->setText(11,tmp);
+// 
+// 		c->EvaluateSim(stWOverB);
+// 		sprintf(tmp,"%f",c->GetSimWOverB());
+// 		g->setText(12,tmp);
+// 
+// 		c->EvaluateSim(stSimWB);
+// 		sprintf(tmp,"%f",c->GetSimSimWB());
+// 		g->setText(13,tmp);
+// 
+// 		sprintf(tmp,"%u",c->Used.NbPtr);
+// 		g->setText(14,tmp);
+// 	}
+// 
+// 	// Finish.
+// 	d->Finish();
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewChromos::ConstructChromosomesRanking(void)
 {
-	GChromoIR* c;
-	unsigned int i;
-	QListViewItem* g;
-	char tmp[50];
-	GSubProfileCursor Cur=Doc->GetSession()->GetSubProfilesCursor(Lang);
-	RObjs<GObjIR> Objs(Cur.GetNb());
-	RContainer<GSubProfile,unsigned int,false,true> SubProfiles(Cur.GetNb(),50);
-	Stat* s;
-	GSubProfile* sub;
-	unsigned int NbCols;
-
-	// Initialise the dialog box
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
-	d->Begin();
-
-	// Load Ideal Groups;
-	d->PutText("Load Ideal Groups");
-	IdealGroups=Doc->GetSession()->GetIdealGroups();
-
-	// Construct the GA Objects
-	d->PutText("Construct the GA Objects");
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		sub=Cur();
-		if(sub->IsDefined())
-			SubProfiles.InsertPtr(sub);
-	}
-	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
-			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
-
-	// Load the chromosomes from the db
-	d->PutText("Load Chromosomes");
-	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,Params);
-	if(!Instance) return;
-	Instance->SetIdealGroups(IdealGroups);
-	d->PutText("Evaluate the solutions");
-	Instance->Evaluate();
-	Instance->BestChromosome->Evaluate();
-	Instance->PostEvaluate();
-
-	// Display the chromosomes
-	for(i=0;i<=Instance->PopSize;i++)
-	{
-		if(i==Instance->PopSize)
-			c=Instance->BestChromosome;
-		else
-			c=Instance->Chromosomes[i];
-
-
-		Stats.InsertPtr(s=new Stat(c));
-
-		s->Id=c->Id;
-		sprintf(tmp,"%u",c->Id);
-		d->receiveNextChromosome(c->Id);
-		g=new MyListViewItem(General,tmp);
-
-		c->CompareIdeal(Doc->GetSession(),IdealGroups);
-		s->Precision=c->GetPrecision();
-		sprintf(tmp,"%f",c->GetPrecision());
-		g->setText(1,tmp);
-		s->Recall=c->GetRecall();
-		sprintf(tmp,"%f",c->GetRecall());
-		g->setText(2,tmp);
-		if((s->Precision>0.0)&&(s->Recall>0.0))
-		{
-			s->E05=1-(1+(0.5*0.5))/((1/s->Precision)+((0.5*0.5)/s->Recall));
-			s->E1=1-2/((1/s->Precision)+(1/s->Recall));
-			s->E15=1-(1+(1.5*1.5))/((1/s->Precision)+((1.5*1.5)/s->Recall));
-		}
-		else
-		{
-			s->E05=0;
-			s->E1=0;
-			s->E15=0;
-		}
-		PutDouble(g,3,s->E05);
-		PutDouble(g,4,s->E1);
-		PutDouble(g,5,s->E15);
-		s->Global=c->GetGlobal();
-		sprintf(tmp,"%f",c->GetGlobal());
-		g->setText(6,tmp);
-		sprintf(tmp,"%f",c->Fitness->Value);
-		g->setText(7,tmp);
-		NbCols=8;
-		if(Params->SimMeasures==sctCorl)
-		{
-			sprintf(tmp,"%f",c->GetSimCriterion());
-			g->setText(NbCols++,tmp);
-		}
-		else
-		{
-			if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
-			{
-				sprintf(tmp,"%f",c->GetSimAvgSim());
-				g->setText(NbCols++,tmp);
-			}
-			if(Params->Measures.GetPtr<const char*>("J")->Use)
-			{
-				sprintf(tmp,"%f",c->GetSimJ());
-				g->setText(NbCols++,tmp);
-			}
-			if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
-			{
-				sprintf(tmp,"%f",c->GetSimAvgRatio());
-				g->setText(NbCols++,tmp);
-			}
-			if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
-			{
-				sprintf(tmp,"%f",c->GetSimMinRatio());
-				g->setText(NbCols++,tmp);
-			}
-			if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
-			{
-				sprintf(tmp,"%f",c->GetSimRatio());
-				g->setText(NbCols++,tmp);
-			}
-			if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
-			{
-				sprintf(tmp,"%f",c->GetSimWOverB());
-				g->setText(NbCols++,tmp);
-			}
-			if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
-			{
-				sprintf(tmp,"%f",c->GetSimSimWB());
-				g->setText(NbCols++,tmp);
-			}
-		}
-		if(Params->ParamsInfo.Weight)
-		{
-			sprintf(tmp,"%f",c->GetInfoCriterion());
-			g->setText(NbCols++,tmp);
-		}
-		if(Params->ParamsEntropy.Weight)
-		{
-			sprintf(tmp,"%f",c->GetEntropyCriterion());
-			g->setText(NbCols++,tmp);
-		}
-		if(Params->ParamsSameFeedbacks.Weight)
-		{
-			sprintf(tmp,"%f",c->GetSameFeedbacksCriterion());
-			g->setText(NbCols++,tmp);
-		}
-		if(Params->ParamsDiffFeedbacks.Weight)
-		{
-			sprintf(tmp,"%f",c->GetDiffFeedbacksCriterion());
-			g->setText(NbCols++,tmp);
-		}
-		if(Params->ParamsSocial.Weight)
-		{
-			sprintf(tmp,"%f",c->GetSocialCriterion());
-			g->setText(NbCols++,tmp);
-		}
-		sprintf(tmp,"%f",c->GetFiPlus());
-		g->setText(NbCols++,tmp);
-		sprintf(tmp,"%f",c->GetFiMinus());
-		g->setText(NbCols++,tmp);
-		sprintf(tmp,"%f",c->GetFi());
-		g->setText(NbCols++,tmp);
-		sprintf(tmp,"%u",c->Used.NbPtr);
-		g->setText(NbCols,tmp);
-	}
-
-	// Finish.
-	d->Finish();
+// 	GChromoIR* c;
+// 	unsigned int i;
+// 	QListViewItem* g;
+// 	char tmp[50];
+// 	GSubProfileCursor Cur=Doc->GetSession()->GetSubProfilesCursor(Lang);
+// 	RObjs<GObjIR> Objs(Cur.GetNb());
+// 	RContainer<GSubProfile,unsigned int,false,true> SubProfiles(Cur.GetNb(),50);
+// 	Stat* s;
+// 	GSubProfile* sub;
+// 	unsigned int NbCols;
+// 
+// 	// Initialise the dialog box
+// 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Stored Chromosomes");
+// 	d->Begin();
+// 
+// 	// Load Ideal Groups;
+// 	d->PutText("Load Ideal Groups");
+// 	IdealGroups=Doc->GetSession()->GetIdealGroups();
+// 
+// 	// Construct the GA Objects
+// 	d->PutText("Construct the GA Objects");
+// 	for(Cur.Start();!Cur.End();Cur.Next())
+// 	{
+// 		sub=Cur();
+// 		if(sub->IsDefined())
+// 			SubProfiles.InsertPtr(sub);
+// 	}
+// 	for(SubProfiles.Start(),i=0;!SubProfiles.End();SubProfiles.Next(),i++)
+// 			Objs.InsertPtr(new GObjIR(i,SubProfiles()));
+// 
+// 	// Load the chromosomes from the db
+// 	d->PutText("Load Chromosomes");
+// 	Instance=Doc->GetSession()->LoadInstIR(Lang,&Objs,Params);
+// 	if(!Instance) return;
+// 	Instance->SetIdealGroups(IdealGroups);
+// 	d->PutText("Evaluate the solutions");
+// 	Instance->Evaluate();
+// 	Instance->BestChromosome->Evaluate();
+// 	Instance->PostEvaluate();
+// 
+// 	// Display the chromosomes
+// 	for(i=0;i<=Instance->PopSize;i++)
+// 	{
+// 		if(i==Instance->PopSize)
+// 			c=Instance->BestChromosome;
+// 		else
+// 			c=Instance->Chromosomes[i];
+// 
+// 
+// 		Stats.InsertPtr(s=new Stat(c));
+// 
+// 		s->Id=c->Id;
+// 		sprintf(tmp,"%u",c->Id);
+// 		d->receiveNextChromosome(c->Id);
+// 		g=new MyListViewItem(General,tmp);
+// 
+// 		c->CompareIdeal(Doc->GetSession(),IdealGroups);
+// 		s->Precision=c->GetPrecision();
+// 		sprintf(tmp,"%f",c->GetPrecision());
+// 		g->setText(1,tmp);
+// 		s->Recall=c->GetRecall();
+// 		sprintf(tmp,"%f",c->GetRecall());
+// 		g->setText(2,tmp);
+// 		if((s->Precision>0.0)&&(s->Recall>0.0))
+// 		{
+// 			s->E05=1-(1+(0.5*0.5))/((1/s->Precision)+((0.5*0.5)/s->Recall));
+// 			s->E1=1-2/((1/s->Precision)+(1/s->Recall));
+// 			s->E15=1-(1+(1.5*1.5))/((1/s->Precision)+((1.5*1.5)/s->Recall));
+// 		}
+// 		else
+// 		{
+// 			s->E05=0;
+// 			s->E1=0;
+// 			s->E15=0;
+// 		}
+// 		PutDouble(g,3,s->E05);
+// 		PutDouble(g,4,s->E1);
+// 		PutDouble(g,5,s->E15);
+// 		s->Global=c->GetGlobal();
+// 		sprintf(tmp,"%f",c->GetGlobal());
+// 		g->setText(6,tmp);
+// 		sprintf(tmp,"%f",c->Fitness->Value);
+// 		g->setText(7,tmp);
+// 		NbCols=8;
+// 		if(Params->SimMeasures==sctCorl)
+// 		{
+// 			sprintf(tmp,"%f",c->GetSimCriterion());
+// 			g->setText(NbCols++,tmp);
+// 		}
+// 		else
+// 		{
+// 			if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
+// 			{
+// 				sprintf(tmp,"%f",c->GetSimAvgSim());
+// 				g->setText(NbCols++,tmp);
+// 			}
+// 			if(Params->Measures.GetPtr<const char*>("J")->Use)
+// 			{
+// 				sprintf(tmp,"%f",c->GetSimJ());
+// 				g->setText(NbCols++,tmp);
+// 			}
+// 			if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
+// 			{
+// 				sprintf(tmp,"%f",c->GetSimAvgRatio());
+// 				g->setText(NbCols++,tmp);
+// 			}
+// 			if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
+// 			{
+// 				sprintf(tmp,"%f",c->GetSimMinRatio());
+// 				g->setText(NbCols++,tmp);
+// 			}
+// 			if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
+// 			{
+// 				sprintf(tmp,"%f",c->GetSimRatio());
+// 				g->setText(NbCols++,tmp);
+// 			}
+// 			if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
+// 			{
+// 				sprintf(tmp,"%f",c->GetSimWOverB());
+// 				g->setText(NbCols++,tmp);
+// 			}
+// 			if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
+// 			{
+// 				sprintf(tmp,"%f",c->GetSimSimWB());
+// 				g->setText(NbCols++,tmp);
+// 			}
+// 		}
+// 		if(Params->ParamsInfo.Weight)
+// 		{
+// 			sprintf(tmp,"%f",c->GetInfoCriterion());
+// 			g->setText(NbCols++,tmp);
+// 		}
+// 		if(Params->ParamsEntropy.Weight)
+// 		{
+// 			sprintf(tmp,"%f",c->GetEntropyCriterion());
+// 			g->setText(NbCols++,tmp);
+// 		}
+// 		if(Params->ParamsSameFeedbacks.Weight)
+// 		{
+// 			sprintf(tmp,"%f",c->GetSameFeedbacksCriterion());
+// 			g->setText(NbCols++,tmp);
+// 		}
+// 		if(Params->ParamsDiffFeedbacks.Weight)
+// 		{
+// 			sprintf(tmp,"%f",c->GetDiffFeedbacksCriterion());
+// 			g->setText(NbCols++,tmp);
+// 		}
+// 		if(Params->ParamsSocial.Weight)
+// 		{
+// 			sprintf(tmp,"%f",c->GetSocialCriterion());
+// 			g->setText(NbCols++,tmp);
+// 		}
+// 		sprintf(tmp,"%f",c->GetFiPlus());
+// 		g->setText(NbCols++,tmp);
+// 		sprintf(tmp,"%f",c->GetFiMinus());
+// 		g->setText(NbCols++,tmp);
+// 		sprintf(tmp,"%f",c->GetFi());
+// 		g->setText(NbCols++,tmp);
+// 		sprintf(tmp,"%u",c->Used.NbPtr);
+// 		g->setText(NbCols,tmp);
+// 	}
+// 
+// 	// Finish.
+// 	d->Finish();
 }
 
 
@@ -613,129 +613,129 @@ void KViewChromos::resizeEvent(QResizeEvent *)
 //-----------------------------------------------------------------------------
 void KViewChromos::slotMenu(int)
 {
-	RCursor<Stat,tId> Cur;
-	int dlg;
-	KURL url;
-
-	dlg=KMessageBox::No;
-	while(dlg!=KMessageBox::Yes)
-	{
-		url=KFileDialog::getSaveURL(QString::null,i18n("*.txt"), this, i18n("Save Statistics..."));
-		if(url.isEmpty()) return;
-		QFile Test(url.path().latin1());
-		if(Test.exists())
-		{
-			dlg=KMessageBox::warningYesNoCancel(this,"A Document with this Name exists.\nDo you want to overwrite it?","Warning");
-			if(dlg==KMessageBox::No) return;
-		}
-		else
-			dlg=KMessageBox::Yes;
-	}
-	RTextFile Res(url.path().latin1(),R::Create);
-	Res.SetSeparator("\t");
-
-	Res<<"Id"<<"Precision"<<"Recall"<<"E05"<<"E1"<<"E15"<<"Global";
-	if(Sim)
-		Res<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"WOverB"<<"SimWB";
-	else
-	{
-		Res<<"Ranking";
-		if(Params->SimMeasures==sctCorl)
-			Res<<"CritSim";
-		else
-		{
-			if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
-				Res<<"CritAvgSim";
-			if(Params->Measures.GetPtr<const char*>("J")->Use)
-				Res<<"CritJ";
-			if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
-				Res<<"CritAvgRatio";
-			if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
-				Res<<"CritMinRatio";
-			if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
-				Res<<"CritRatio";
-			if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
-				Res<<"CritWOverB";
-			if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
-				Res<<"CritSimWB";
-		}
-		if(Params->ParamsInfo.Weight)
-			Res<<"CritInfo";
-		if(Params->ParamsEntropy.Weight)
-			Res<<"CritEntropy";
-		if(Params->ParamsSameFeedbacks.Weight)
-			Res<<"CritSame";
-		if(Params->ParamsDiffFeedbacks.Weight)
-			Res<<"CritDiff";
-		if(Params->ParamsSocial.Weight)
-			Res<<"CritSocial";
-		Res<<"Fi+"<<"Fi-"<<"Fi";
-	}
-	Res<<"NbGroups"<<endl;
-	Cur.Set(Stats);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		Res<<Cur()->Id;
-		Res<<Cur()->Precision;
-		Res<<Cur()->Recall;
-		Res<<Cur()->E05;
-		Res<<Cur()->E1;
-		Res<<Cur()->E15;
-		Res<<Cur()->Global;
-		if(Sim)
-		{
-			Res<<Cur()->Chromo->GetSimAvgSim();
-			Res<<Cur()->Chromo->GetSimJ();
-			Res<<Cur()->Chromo->GetSimAvgRatio();
-			Res<<Cur()->Chromo->GetSimMinRatio();
-			Res<<Cur()->Chromo->GetSimRatio();
-			Res<<Cur()->Chromo->GetSimWOverB();
-			Res<<Cur()->Chromo->GetSimSimWB();
-		}
-		else
-		{
-			Res<<Cur()->Chromo->Fitness->Value;
-			if(Params->SimMeasures==sctCorl)
-				Res<<Cur()->Chromo->GetSimCriterion();
-			else
-			{
-				if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
-					Res<<Cur()->Chromo->GetSimAvgSim();
-				if(Params->Measures.GetPtr<const char*>("J")->Use)
-					Res<<Cur()->Chromo->GetSimJ();
-				if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
-					Res<<Cur()->Chromo->GetSimAvgRatio();
-				if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
-					Res<<Cur()->Chromo->GetSimMinRatio();
-				if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
-					Res<<Cur()->Chromo->GetSimRatio();
-				if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
-					Res<<Cur()->Chromo->GetSimWOverB();
-				if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
-					Res<<Cur()->Chromo->GetSimSimWB();
-			}
-			if(Params->ParamsInfo.Weight)
-				Res<<Cur()->Chromo->GetInfoCriterion();
-			if(Params->ParamsEntropy.Weight)
-				Res<<Cur()->Chromo->GetEntropyCriterion();
-			if(Params->ParamsSameFeedbacks.Weight)
-				Res<<Cur()->Chromo->GetSameFeedbacksCriterion();
-			if(Params->ParamsDiffFeedbacks.Weight)
-				Res<<Cur()->Chromo->GetDiffFeedbacksCriterion();
-			if(Params->ParamsSocial.Weight)
-				Res<<Cur()->Chromo->GetSocialCriterion();
-			Res<<Cur()->Chromo->GetFiPlus();
-			Res<<Cur()->Chromo->GetFiMinus();
-			Res<<Cur()->Chromo->GetFi();
-		}
-		Res<<Cur()->Chromo->Used.NbPtr<<endl;
-	}
+// 	RCursor<Stat,tId> Cur;
+// 	int dlg;
+// 	KURL url;
+// 
+// 	dlg=KMessageBox::No;
+// 	while(dlg!=KMessageBox::Yes)
+// 	{
+// 		url=KFileDialog::getSaveURL(QString::null,i18n("*.txt"), this, i18n("Save Statistics..."));
+// 		if(url.isEmpty()) return;
+// 		QFile Test(url.path().latin1());
+// 		if(Test.exists())
+// 		{
+// 			dlg=KMessageBox::warningYesNoCancel(this,"A Document with this Name exists.\nDo you want to overwrite it?","Warning");
+// 			if(dlg==KMessageBox::No) return;
+// 		}
+// 		else
+// 			dlg=KMessageBox::Yes;
+// 	}
+// 	RTextFile Res(url.path().latin1(),R::Create);
+// 	Res.SetSeparator("\t");
+// 
+// 	Res<<"Id"<<"Precision"<<"Recall"<<"E05"<<"E1"<<"E15"<<"Global";
+// 	if(Sim)
+// 		Res<<"AvgSim"<<"J"<<"AvgRatio"<<"MinRatio"<<"Ratio"<<"WOverB"<<"SimWB";
+// 	else
+// 	{
+// 		Res<<"Ranking";
+// 		if(Params->SimMeasures==sctCorl)
+// 			Res<<"CritSim";
+// 		else
+// 		{
+// 			if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
+// 				Res<<"CritAvgSim";
+// 			if(Params->Measures.GetPtr<const char*>("J")->Use)
+// 				Res<<"CritJ";
+// 			if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
+// 				Res<<"CritAvgRatio";
+// 			if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
+// 				Res<<"CritMinRatio";
+// 			if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
+// 				Res<<"CritRatio";
+// 			if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
+// 				Res<<"CritWOverB";
+// 			if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
+// 				Res<<"CritSimWB";
+// 		}
+// 		if(Params->ParamsInfo.Weight)
+// 			Res<<"CritInfo";
+// 		if(Params->ParamsEntropy.Weight)
+// 			Res<<"CritEntropy";
+// 		if(Params->ParamsSameFeedbacks.Weight)
+// 			Res<<"CritSame";
+// 		if(Params->ParamsDiffFeedbacks.Weight)
+// 			Res<<"CritDiff";
+// 		if(Params->ParamsSocial.Weight)
+// 			Res<<"CritSocial";
+// 		Res<<"Fi+"<<"Fi-"<<"Fi";
+// 	}
+// 	Res<<"NbGroups"<<endl;
+// 	Cur.Set(Stats);
+// 	for(Cur.Start();!Cur.End();Cur.Next())
+// 	{
+// 		Res<<Cur()->Id;
+// 		Res<<Cur()->Precision;
+// 		Res<<Cur()->Recall;
+// 		Res<<Cur()->E05;
+// 		Res<<Cur()->E1;
+// 		Res<<Cur()->E15;
+// 		Res<<Cur()->Global;
+// 		if(Sim)
+// 		{
+// 			Res<<Cur()->Chromo->GetSimAvgSim();
+// 			Res<<Cur()->Chromo->GetSimJ();
+// 			Res<<Cur()->Chromo->GetSimAvgRatio();
+// 			Res<<Cur()->Chromo->GetSimMinRatio();
+// 			Res<<Cur()->Chromo->GetSimRatio();
+// 			Res<<Cur()->Chromo->GetSimWOverB();
+// 			Res<<Cur()->Chromo->GetSimSimWB();
+// 		}
+// 		else
+// 		{
+// 			Res<<Cur()->Chromo->Fitness->Value;
+// 			if(Params->SimMeasures==sctCorl)
+// 				Res<<Cur()->Chromo->GetSimCriterion();
+// 			else
+// 			{
+// 				if(Params->Measures.GetPtr<const char*>("AvgSim")->Use)
+// 					Res<<Cur()->Chromo->GetSimAvgSim();
+// 				if(Params->Measures.GetPtr<const char*>("J")->Use)
+// 					Res<<Cur()->Chromo->GetSimJ();
+// 				if(Params->Measures.GetPtr<const char*>("AvgRatio")->Use)
+// 					Res<<Cur()->Chromo->GetSimAvgRatio();
+// 				if(Params->Measures.GetPtr<const char*>("MinRatio")->Use)
+// 					Res<<Cur()->Chromo->GetSimMinRatio();
+// 				if(Params->Measures.GetPtr<const char*>("Ratio")->Use)
+// 					Res<<Cur()->Chromo->GetSimRatio();
+// 				if(Params->Measures.GetPtr<const char*>("WOverB")->Use)
+// 					Res<<Cur()->Chromo->GetSimWOverB();
+// 				if(Params->Measures.GetPtr<const char*>("SimWB")->Use)
+// 					Res<<Cur()->Chromo->GetSimSimWB();
+// 			}
+// 			if(Params->ParamsInfo.Weight)
+// 				Res<<Cur()->Chromo->GetInfoCriterion();
+// 			if(Params->ParamsEntropy.Weight)
+// 				Res<<Cur()->Chromo->GetEntropyCriterion();
+// 			if(Params->ParamsSameFeedbacks.Weight)
+// 				Res<<Cur()->Chromo->GetSameFeedbacksCriterion();
+// 			if(Params->ParamsDiffFeedbacks.Weight)
+// 				Res<<Cur()->Chromo->GetDiffFeedbacksCriterion();
+// 			if(Params->ParamsSocial.Weight)
+// 				Res<<Cur()->Chromo->GetSocialCriterion();
+// 			Res<<Cur()->Chromo->GetFiPlus();
+// 			Res<<Cur()->Chromo->GetFiMinus();
+// 			Res<<Cur()->Chromo->GetFi();
+// 		}
+// 		Res<<Cur()->Chromo->Used.NbPtr<<endl;
+// 	}
 }
 
 
 //-----------------------------------------------------------------------------
 KViewChromos::~KViewChromos(void)
 {
-	if(Instance)
-		delete Instance;
+// 	if(Instance)
+// 		delete Instance;
 }

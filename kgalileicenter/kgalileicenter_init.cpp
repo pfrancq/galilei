@@ -38,7 +38,6 @@
 // include files for GALILEI
 #include <sessions/gsessionmysql.h>
 #include <sessions/gconfig.h>
-#include <groups/ggroupingsim.h>
 #include <docs/gdocoptions.h>
 using namespace GALILEI;
 using namespace R;
@@ -87,7 +86,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void)
 	: KMainWindow(0,"KGALILEICenterApp"), URLManager(getenv("GALILEI_PLUGINS_LIB")),
-	  ProfileCalcsManager(getenv("GALILEI_PLUGINS_LIB")),
+	  ProfilingManager(getenv("GALILEI_PLUGINS_LIB")), GroupingManager(getenv("GALILEI_PLUGINS_LIB")),
 	  dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0), DocOptions(0)
 {
 	Config=kapp->config();
@@ -227,23 +226,6 @@ void KGALILEICenterApp::createClient(KDoc* doc,KView* view)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::saveOptions(GSimMeasure* s)
-{
-	Config->writeEntry(QString(s->Name)+" Measure Weight",s->Weight);
-	Config->writeEntry(QString(s->Name)+" Measure Use",s->Use);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::saveOptions(const char* n,R::RPromCriterionParams& c)
-{
-	Config->writeEntry(QString(n)+" Weight",c.Weight);
-	Config->writeEntry(QString(n)+" P",c.P);
-	Config->writeEntry(QString(n)+" Q",c.Q);
-}
-
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::saveOptions(void)
 {
 	Config->setGroup("General Options");
@@ -287,74 +269,8 @@ void KGALILEICenterApp::saveOptions(void)
 	// Write Config of Session Options
 	Config->setGroup("Session Options");
 	Config->writeEntry("Description Method",GetCurrentProfileDesc());
-	Config->writeEntry("Grouping Method",GetCurrentGroupingMethod());
 	Config->writeEntry("Group Description Method",GetCurrentGroupCalcMethod());
 	Config->writeEntry("Link Description Method",GetCurrentLinkCalcMethod());
-
-	// Write Config of GA
-	Config->setGroup(IRParams.GetGroupingName());
-	Config->writeEntry("Population Size",IRParams.PopSize);
-	Config->writeEntry("Maximal Generations",IRParams.MaxGen);
-	Config->writeEntry("Step Mode",IRParams.Step);
-	Config->writeEntry("Step Generations",IRParams.StepGen);
-
-	Config->writeEntry("Minimum similarity",IRParams.MinSimLevel);
-	Config->writeEntry("Agreement Threshold",IRParams.MinCommonOK);
-	Config->writeEntry("Disagreement Threshold",IRParams.MinCommonDiff);
-	Config->writeEntry("Maximum K-Means Interation",IRParams.MaxKMeans);
-	Config->writeEntry("Type of Similarity Criterion",IRParams.SimMeasures);
-	for(IRParams.Measures.Start();!IRParams.Measures.End();IRParams.Measures.Next())
-		saveOptions(IRParams.Measures());
-	saveOptions("Similarity Criterion",IRParams.ParamsSim);
-	saveOptions("Information Criterion",IRParams.ParamsInfo);
-	saveOptions("Entropy Criterion",IRParams.ParamsEntropy);
-	saveOptions("Likelihood Criterion",IRParams.ParamsLikelihood);
-	saveOptions("Agreement Criterion",IRParams.ParamsSameFeedbacks);
-	saveOptions("Disagreement Criterion",IRParams.ParamsDiffFeedbacks);
-	saveOptions("Social Criterion",IRParams.ParamsSocial);
-	Config->writeEntry("Global Similarity",IRParams.GlobalSim);
-
-	// Write Config of First-Fit
-	Config->setGroup(SimParams.GetGroupingName());
-	Config->writeEntry("Full Similariry",SimParams.FullSim);
-	Config->writeEntry("Minium Similarity",SimParams.LevelSim);
-	Config->writeEntry("Global Similarity",SimParams.GlobalSim);
-
-	// Write Config of KMeans
-	Config->setGroup(KMeansParams.GetGroupingName());
-	Config->writeEntry("Number of Groups",KMeansParams.NbGroups);
-	Config->writeEntry("Maximum number of iterations",KMeansParams.NbIters);
-	Config->writeEntry("Number of subsamples",KMeansParams.NbSubSamples);
-	Config->writeEntry("Rate of element by subsample",KMeansParams.SubSamplesRate);
-	Config->writeEntry("Epsilon",KMeansParams.Epsilon);
-
-	// Write Config of KProto
-	Config->setGroup(KProtosParams.GetGroupingName());
-	Config->writeEntry("Number of Groups",KProtosParams.NbGroups);
-	Config->writeEntry("Number of Protos",KProtosParams.NbProtos);
-	Config->writeEntry("Maximum number of iterations",KProtosParams.MaxIters);
-	Config->writeEntry("Number of subsamples",KProtosParams.NbSubSamples);
-	Config->writeEntry("Rate of element by subsample",KProtosParams.SubSamplesRate);
-	Config->writeEntry("Distance Parameter",KProtosParams.Lambda);
-	Config->writeEntry("VerifyKMeans Limit",KProtosParams.VerifyKMeansLimit);
-
-	// Write Config of Cure
-	Config->setGroup(CureParams.GetGroupingName());
-	Config->writeEntry("Number of Groups",CureParams.NbGroups);
-	Config->writeEntry("Number of Prototyes per Group",CureParams.NbProtos);
-
-	// Write Config of SupKMeans
-	Config->setGroup(SupKMeansParams.GetGroupingName());
-	Config->writeEntry("UsedAsInitialization",SupKMeansParams.UsedAsInitialization);
-	Config->writeEntry("NbPcSame",SupKMeansParams.NbPcSame);
-	Config->writeEntry("NbPcDiff",SupKMeansParams.NbPcDiff);
-	Config->writeEntry("MinSim",SupKMeansParams.MinSim);
-	Config->writeEntry("NbIters",SupKMeansParams.NbIters);
-	Config->writeEntry("DoubleKMeans",SupKMeansParams.DoubleKMeans);
-	Config->writeEntry("SameGroupRate",SupKMeansParams.SameGroupRate);
-	Config->writeEntry("NbSamples",SupKMeansParams.NbSamples);
-	Config->writeEntry("InitMode",SupKMeansParams.InitMode);
-	Config->writeEntry("Debug",SupKMeansParams.Debug);
 
 	// Write Config of GroupCalcRelevant
 	Config->setGroup(CalcRelevantParams.GetComputingName());
@@ -406,25 +322,9 @@ void KGALILEICenterApp::saveOptions(void)
 	// Save Config
 	GConfig Conf("/etc/galilei/galilei.galileiconfig");
 	Conf.Store(URLManager);
-	Conf.Store(ProfileCalcsManager);
+	Conf.Store(ProfilingManager);
+	Conf.Store(GroupingManager);
 	Conf.Save();
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::readOptions(GSimMeasure* s)
-{
-	s->Weight=Config->readDoubleNumEntry(QString(s->Name)+" Measure Weight",0.0);
-	s->Use=Config->readBoolEntry(QString(s->Name)+" Measure Use",false);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::readOptions(const char* n,R::RPromCriterionParams& c)
-{
-	c.Weight=Config->readDoubleNumEntry(QString(n)+" Weight",1.0);
-	c.P=Config->readDoubleNumEntry(QString(n)+" P",0.2);
-	c.Q=Config->readDoubleNumEntry(QString(n)+" Q",0.05);
 }
 
 
@@ -487,14 +387,6 @@ void KGALILEICenterApp::readOptions(void)
 	DocOptions->UseRedirection=Config->readBoolEntry("Use Redirection",false);
 
 	// Read Session Options
-	GroupingMethod = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
-	GroupingMethod->InsertPtr(new R::RString("CURE"));
-	GroupingMethod->InsertPtr(new R::RString("First-Fit Heuristic"));
-	GroupingMethod->InsertPtr(new R::RString("GVCA"));
-	GroupingMethod->InsertPtr(new R::RString("KMeansCosinus"));
-	GroupingMethod->InsertPtr(new R::RString("SUPkMeans"));
-	GroupingMethod->InsertPtr(new R::RString("kMeansProtos"));
-	GroupingMethod->InsertPtr(new R::RString("Random Heuristic"));
 	ProfileDesc = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
 	ProfileDesc->InsertPtr(new R::RString("Vector space"));
 	GroupCalcMethod = new R::RContainer<R::RString,unsigned int,true,true>(3,3);
@@ -507,73 +399,8 @@ void KGALILEICenterApp::readOptions(void)
 	LinkCalcMethod->InsertPtr(new R::RString("Treshold Kleinberg Algorithm"));
 	Config->setGroup("Session Options");
 	CurrentProfileDesc=Config->readEntry("Description Method","Vector space");
-	CurrentGroupingMethod=Config->readEntry("Grouping Method","First-Fit Heuristic");
 	CurrentGroupCalcMethod=Config->readEntry("Group Description Method","Prototype");
 	CurrentLinkCalcMethod=Config->readEntry("Link Description Method","HITS Algorithm");
-
-	// Read Config of GA
-	Config->setGroup(IRParams.GetGroupingName());
-	IRParams.PopSize=Config->readNumEntry("Population Size",16);
-	IRParams.MaxGen=Config->readNumEntry("Maximal Generations",30);
-	IRParams.Step=Config->readBoolEntry("Step Mode",false);
-	IRParams.StepGen=Config->readNumEntry("Step Generations",0);
-	IRParams.MinSimLevel=Config->readDoubleNumEntry("Minimum similarity",0.1);
-	IRParams.MinCommonOK=Config->readDoubleNumEntry("Agreement Threshold",0.6);
-	IRParams.MinCommonDiff=Config->readDoubleNumEntry("Disagreement Threshold",0.6);
-	IRParams.MaxKMeans=Config->readNumEntry("Maximum K-Means Interation",60);
-	IRParams.SimMeasures=static_cast<SimCritType>(Config->readNumEntry("Type of Similarity Criterion",sctCrits));
-	for(IRParams.Measures.Start();!IRParams.Measures.End();IRParams.Measures.Next())
-		readOptions(IRParams.Measures());
-	readOptions("Similarity Criterion",IRParams.ParamsSim);
-	readOptions("Information Criterion",IRParams.ParamsInfo);
-	readOptions("Entropy Criterion",IRParams.ParamsEntropy);
-	readOptions("Likelihood Criterion",IRParams.ParamsLikelihood);
-	readOptions("Agreeement Criterion",IRParams.ParamsSameFeedbacks);
-	readOptions("Disagreement Criterion",IRParams.ParamsDiffFeedbacks);
-	readOptions("Social Criterion",IRParams.ParamsSocial);
-	IRParams.GlobalSim=Config->readBoolEntry("Global Similarity",true);
-
-	// Red Config of First-Fit
-	Config->setGroup(SimParams.GetGroupingName());
-	SimParams.FullSim=Config->readBoolEntry("Full Similariry",true);
-	SimParams.LevelSim=Config->readDoubleNumEntry("Minium Similarity",0.1);
-	SimParams.GlobalSim=Config->readBoolEntry("Global Similarity",true);
-
-	// Read Config of KMeans
-	Config->setGroup(KMeansParams.GetGroupingName());
-	KMeansParams.NbGroups=Config->readNumEntry("Number of Groups",13);
-	KMeansParams.NbIters=Config->readNumEntry("Maximum number of iterations",20);
-	KMeansParams.NbSubSamples=Config->readNumEntry("Number of subsamples",10);
-	KMeansParams.SubSamplesRate=Config->readNumEntry("Rate of element by subsample",80);
-	KMeansParams.Epsilon=Config->readDoubleNumEntry("Epsilon",0.005);
-
-	// Read Config of KProtos
-	Config->setGroup(KProtosParams.GetGroupingName());
-	KProtosParams.NbGroups=Config->readNumEntry("Number of Groups",13);
-	KProtosParams.NbProtos=Config->readNumEntry("Number of Protos",13);
-	KProtosParams.MaxIters=Config->readNumEntry("Maximum number of iterations",20);
-	KProtosParams.NbSubSamples=Config->readNumEntry("Number of subsamples",10);
-	KProtosParams.SubSamplesRate=Config->readNumEntry("Rate of element by subsample",80);
-	KProtosParams.Lambda=Config->readDoubleNumEntry("Distance Parameter",0.5);
-	KProtosParams.VerifyKMeansLimit=Config->readNumEntry("VerifyKMeans Limit",KProtosParams.VerifyKMeansLimit);
-
-	// Read Config of Cure
-	Config->setGroup(CureParams.GetGroupingName());
-	CureParams.NbGroups=Config->readNumEntry("Number of Groups",13);
-	CureParams.NbProtos=Config->readNumEntry("Number of Prototyes per Group",2);
-
-	// Read Config of SupKMeans
-	Config->setGroup(SupKMeansParams.GetGroupingName());
-	SupKMeansParams.UsedAsInitialization=Config->readBoolEntry("UsedAsInitialization",false);
-	SupKMeansParams.NbPcSame=Config->readNumEntry("NbPcSame",60);
-	SupKMeansParams.NbPcDiff=Config->readNumEntry("NbPcDiff",60);
-	SupKMeansParams.MinSim=Config->readDoubleNumEntry("MinSim",0.1);
-	SupKMeansParams.NbIters=Config->readNumEntry("NbIters",20);
-	SupKMeansParams.DoubleKMeans=Config->readBoolEntry("DoubleKMeans",false);
-	SupKMeansParams.SameGroupRate=Config->readNumEntry("SameGroupRate",100);
-	SupKMeansParams.NbSamples=Config->readNumEntry("NbSamples",10);
-	SupKMeansParams.InitMode=static_cast<GSupKMeansParams::Initial>(Config->readNumEntry("InitMode",GSupKMeansParams::Relevant));
-	SupKMeansParams.Debug=Config->readBoolEntry("Debug",false);
 
 	// Read Config of GroupCalcRelevant
 	Config->setGroup(CalcRelevantParams.GetComputingName());
@@ -622,11 +449,12 @@ void KGALILEICenterApp::readOptions(void)
 	LinkCalcTreshParams.FKTresh=Config->readBoolEntry("FKTresh",false);
 	LinkCalcTreshParams.Kvalue=Config->readNumEntry("Kvalue",60);
 
-	// Save Config
+	// Read Config
 	GConfig Conf("/etc/galilei/galilei.galileiconfig");
 	Conf.Load();
 	Conf.Read(URLManager);
-	Conf.Read(ProfileCalcsManager);
+	Conf.Read(ProfilingManager);
+	Conf.Read(GroupingManager);
 }
 
 

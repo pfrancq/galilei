@@ -43,6 +43,7 @@
 // include files for GALILEI
 #include <filters/gfilter.h>
 #include <profiles/gprofilecalc.h>
+#include <groups/ggrouping.h>
 using namespace GALILEI;
 
 
@@ -68,6 +69,18 @@ public:
 	GFactoryProfileCalc* Fac;
 	bool Enable;
 	QProfileCalcItem(QListView* lst,GFactoryProfileCalc* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+
+class QGroupingItem : public QListViewItem
+{
+public:
+	GFactoryGrouping* Fac;
+	bool Enable;
+	QGroupingItem(QListView* lst,GFactoryGrouping* fac,const char* desc)
 		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}

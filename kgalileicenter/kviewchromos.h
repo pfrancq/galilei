@@ -49,13 +49,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <groups/gchromoir.h>
-#include <groups/ggroups.h>
-#include <groups/gir.h>
-#include <groups/ginstir.h>
-#include <galilei/qggroupsir.h>
 using namespace GALILEI;
-using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -102,21 +96,16 @@ class KViewChromos : public KView
 	* Compute Similarities.
 	*/
 	bool Sim;
-	
+
 	/**
 	* Stored Statistics.
 	*/
 	RContainer<Stat,tId,true,false> Stats;
 
 	/**
-	* Parameters of the GA.
-	*/
-	GIRParams* Params;
-
-	/**
 	* Instance of the GA used to study the chromosomes.
 	*/
-	GInstIR* Instance;
+//	GInstIR* Instance;
 
 public:
 
@@ -124,13 +113,12 @@ public:
 	* Constructor for the view
 	* @param doc            Document instance that the view represents.
 	* @param l              Lang to group.
-	* @param p              Parameters.
 	* @param sim            Compute Similarities.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewChromos(KDoc* doc,const char* l,GIRParams* p,bool sim,QWidget* parent,const char* name,int wflags);
+	KViewChromos(KDoc* doc,const char* l,bool sim,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.

@@ -39,7 +39,6 @@
 namespace GALILEI
 {
 	class QProfileDescPluginConf;
-	class QGroupingPluginConf;
 	class QGroupCalcPluginConf;
 	class QLinkCalcPluginConf;
 }
@@ -106,11 +105,6 @@ class QPluginsDlg : public QDialog
 	QPushButton* buttonApply;
 
 	/**
-	* List of all configuration for the grouping of the profiles.
-	*/
-	R::RContainer<QGroupingPluginConf,unsigned int,true,true>* Groupings;
-
-	/**
 	* List of all configuration for the group description method.
 	*/
 	R::RContainer<QGroupCalcPluginConf,unsigned int,true,true>* GroupCalcs;
@@ -133,11 +127,6 @@ public:
 	* @param name           Name of the dialog box.
 	*/
 	QPluginsDlg(KGALILEICenterApp* app,const char* name=0);
-
-	/**
-	* Register a plugin to configure a grouping method.
-	*/
-	void RegisterGroupingPluginConf(QGroupingPluginConf* ins) throw(bad_alloc);
 
 	/**
 	* Register a plugin to configure a group description method.

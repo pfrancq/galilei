@@ -49,12 +49,8 @@ using namespace R;
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <groups/gir.h>
-#include <groups/gchromoir.h>
-#include <groups/ginstir.h>
-#include <groups/ggroupinggga.h>
-#include <galilei/qggroupsir.h>
+// include files for R Project
+#include <galilei.h>
 using namespace GALILEI;
 
 
@@ -77,7 +73,7 @@ using namespace GALILEI;
 * @version $Revision$
 * @short Window for GA.
 */
-class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>
+class KViewGA : public KView//, public RGASignalsReceiver<GInstIR,GChromoIR,GFitnessIR>
 {
 	Q_OBJECT
 
@@ -85,36 +81,36 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	* The tab widget.
 	*/
 	QTabWidget* TabWidget;
-	
+
 	/**
 	* The widget that handle statistics about the running GA.
 	*/
 	QGAMonitor* Monitor;
-	
+
 	/**
 	* The widget that handle the debug information of the running GA.
 	*/
 	QXMLContainer* Debug;
-	
+
 	/**
 	* The splitter that separate the monitor and the debug part.
 	*/
 	QSplitter* StatSplitter;
-	
+
 	/**
 	* The best solution.
 	*/
-	QGGroupsIR* Best;
-	
+//	QGGroupsIR* Best;
+
 	/**
 	* The solutions.
 	*/
-	QGGroupsIR* Sol;
+//	QGGroupsIR* Sol;
 
 	/**
 	* The ideal solution.
 	*/
-	QGGroupsIR* Ideal;
+//	QGGroupsIR* Ideal;
 
 	/**
 	* Identificator of the current showed solution.
@@ -124,7 +120,7 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	/**
 	* The GA that will be used.
 	*/
-	GInstIR* Instance;
+//	GInstIR* Instance;
 
 	/**
 	* SubProfiles that must be grouped again.
@@ -134,7 +130,7 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	/**
 	* Objects representing SubProfiles that must be grouped again.
 	*/
-	R::RObjs<GObjIR>* Objs;
+//	R::RObjs<GObjIR>* Objs;
 
 	/**
 	* Ideal Groups handled by the system.
@@ -146,25 +142,19 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	*/
 	unsigned int Gen;
 
-	/**
-	* Parameters of the GA used.
-	*/
-	GIRParams* Params;
-
 public:
 
 	/**
 	* Constructor for the view.
 	* @param doc            Document instance that the view represents.
 	* @param l              Lang to group.
-	* @param p              Parameters.
 	* @param global         Global Similarities.
 	* @param scratch        Compute the grouping from scratch.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewGA(KDoc* doc,const char* l,GIRParams* p,bool global,bool scratch,QWidget* parent,const char* name,int wflags);
+	KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.
@@ -180,17 +170,17 @@ public:
 	/**
 	* GA signal to indicate that a new generation has been done.
 	*/
-	virtual void receiveGenSig(GenSig* sig);
-	
+//	virtual void receiveGenSig(GenSig* sig);
+
 	/**
 	* GA signal to interact with the system.
 	*/
-	virtual void receiveInteractSig(InteractSig* sig);
+//	virtual void receiveInteractSig(InteractSig* sig);
 
 	/**
 	* GA signal to signify that the best chromosome has changed.
 	*/
-	virtual void receiveBestSig(BestSig *sig);
+//	virtual void receiveBestSig(BestSig *sig);
 
 	/**
 	* Run the GA.

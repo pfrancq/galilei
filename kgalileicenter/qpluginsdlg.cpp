@@ -35,9 +35,9 @@
 #include <groups/ggrouping.h>
 #include <groups/ggroupcalc.h>
 #include <profiles/gprofilecalc.h>
-#include <galilei/qgroupingpluginconf.h>
 #include <galilei/qgroupcalcpluginconf.h>
 #include <galilei/qlinkcalcpluginconf.h>
+using namespace R;
 
 
 //---------------------------------------------------------------------------
@@ -102,8 +102,6 @@ QPluginsDlg::QPluginListView::QPluginListView(KGALILEICenterApp* a,QCheckListIte
 		case 2:
 			break;
 		case 3:
-			if(RString(str)==(App->GetCurrentGroupingMethod()))
-				setOn(true);
 			break;
 		case 4:
 			if(RString(str)==(App->GetCurrentGroupCalcMethod()))
@@ -135,9 +133,6 @@ void QPluginsDlg::QPluginListView::activate(void)
 		case 2:
 			break;
 		case 3:
-            App->SetCurrentGroupingMethod(Name);
-			if(App->getDocument())
-				((App->getDocument())->GetSession())->SetCurrentGroupingMethod(App->GetCurrentGroupingMethod());
 			break;
 		case 4:
             App->SetCurrentGroupCalcMethod(Name);
@@ -162,12 +157,10 @@ void QPluginsDlg::QPluginListView::activate(void)
 
 //---------------------------------------------------------------------------
 QPluginsDlg::QPluginsDlg(KGALILEICenterApp* app,const char* name)
-	: QDialog(app,name,true,Qt::WStyle_ContextHelp), Cur(0), Conf(0), Groupings(0), App(app)
+	: QDialog(app,name,true,Qt::WStyle_ContextHelp), Cur(0), Conf(0), App(app)
 {
-	Groupings=new R::RContainer<QGroupingPluginConf,unsigned int,true,true>(3,3);
 	GroupCalcs=new R::RContainer<QGroupCalcPluginConf,unsigned int,true,true>(3,3);
 	LinkCalcs=new R::RContainer<QLinkCalcPluginConf,unsigned int,true,true>(3,3);
-
 
 	// Window initialisation
 	setIcon(QPixmap("/usr/share/icons/hicolor/16x16/actions/find.png"));
@@ -210,13 +203,6 @@ QPluginsDlg::QPluginsDlg(KGALILEICenterApp* app,const char* name)
 
 
 //---------------------------------------------------------------------------
-void QPluginsDlg::RegisterGroupingPluginConf(QGroupingPluginConf* ins) throw(bad_alloc)
-{
-	Groupings->InsertPtr(ins);
-}
-
-
-//---------------------------------------------------------------------------
 void QPluginsDlg::RegisterGroupCalcPluginConf(QGroupCalcPluginConf* ins) throw(bad_alloc)
 {
 	GroupCalcs->InsertPtr(ins);
@@ -239,10 +225,6 @@ void QPluginsDlg::ConstructPlugins(void) throw(bad_alloc)
 	item->setSelectable(false);
 	for(App->ProfileDesc->Start();!App->ProfileDesc->End();App->ProfileDesc->Next())
 		new QPluginListView(App,item,1,(*App->ProfileDesc)()->StrDup());
-	item=new QPluginListView(App,Plugins,0,"Grouping Methods");
-	item->setSelectable(false);
-	for(App->GroupingMethod->Start();!App->GroupingMethod->End();App->GroupingMethod->Next())
-		new QPluginListView(App,item,3,(*App->GroupingMethod)()->StrDup());
 	item=new QPluginListView(App,Plugins,0,"Group Descritpion Methods");
 	item->setSelectable(false);
 	for(App->GroupCalcMethod->Start();!App->GroupCalcMethod->End();App->GroupCalcMethod->Next())
@@ -275,7 +257,6 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 				case 2:
 					break;
 				case 3:
-					b=((QGroupingPluginConf*)Conf)->ConfigChanged();
 					break;
 				case 4:
 					b=((QGroupCalcPluginConf*)Conf)->ConfigChanged();
@@ -283,7 +264,7 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 				case 5:
 					b=((QLinkCalcPluginConf*)Conf)->ConfigChanged();
 					break;
-	
+
 			}
 			if(b)
 			{
@@ -311,7 +292,6 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
  		Main->removePage(Conf);
 		Conf->disconnect();
 	}
-	R::RString coucou=App->GetCurrentGroupingMethod();
 	sprintf(tmp,"Configure [%s]",(p->Name).StrDup());
 	switch(p->Type)
 	{
@@ -324,13 +304,6 @@ void QPluginsDlg::slotPlugin(QListViewItem* item)
 			break;
 
 		case 3:
-			Conf=NoConf;
-			Conf=Groupings->GetPtr<const char*>(p->Name);
-			if(!Conf)
-				Conf=NoConf;
-			else
-				((QGroupingPluginConf*)Conf)->Set();
-			Cur=p;
 			break;
 
 		case 4:
@@ -375,6 +348,5 @@ QPluginsDlg::~QPluginsDlg(void)
 {
 	Main->removePage(Conf);
 	if(NoConf) delete NoConf;
-	if(Groupings) delete Groupings;
 	if(GroupCalcs) delete GroupCalcs;
 }

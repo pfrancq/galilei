@@ -54,18 +54,10 @@ using namespace R;
 #include <docs/gdocoptions.h>
 #include <docs/glinkcalchits.h>
 #include <docs/glinkcalctresh.h>
-
 #include <sessions/gsessionmysql.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gsubprofiledesc.h>
 #include <profiles/gsubprofilevector.h>
-#include <groups/ggroupingsim.h>
-#include <groups/ggroupingrandom.h>
-#include <groups/ggroupinggga.h>
-#include <groups/ggroupingkcos.h>
-#include <groups/ggroupingkcos.h>
-#include <groups/ggroupingsupkmeans.h>
-#include <groups/ggroupingcure.h>
 #include <groups/ggroup.h>
 #include <groups/gidealgroup.h>
 #include <groups/ggroupcalcgravitation.h>
@@ -177,19 +169,12 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbPwd=dlg.txtPwd->text().latin1();
 		try
 		{
-			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&URLManager,&ProfileCalcsManager,DocOptions);
+			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&URLManager,&ProfilingManager,&GroupingManager,DocOptions);
 			unsigned int cmd=dlg.cbLoad->currentItem();
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(cmd);
 			Doc=new KDoc(this,Sess);
 			Sess->RegisterProfileDesc(new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile));
-			Sess->RegisterGroupingMethod(new GGroupingSim(Sess, &SimParams));
-			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess,&IRParams));
-			Sess->RegisterGroupingMethod(new GGroupingKCos(Sess, &KMeansParams));
-			Sess->RegisterGroupingMethod(new GGroupingSupKMeans(Sess, &SupKMeansParams, &KMeansParams));
-			Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess, &KProtosParams));
-			Sess->RegisterGroupingMethod(new GGroupingCure(Sess, &CureParams));
-			Sess->RegisterGroupingMethod(new GGroupingRandom(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess, &CalcGravitationParams));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess,&CalcRelevantParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess, &LinkCalcHITSParams));
@@ -197,7 +182,6 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
 			Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
 			Sess->SetCurrentProfileDesc(CurrentProfileDesc);
-			Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 			Sess->SetCurrentGroupCalcMethod(CurrentGroupCalcMethod);
 			Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 			sessionDisconnect->setEnabled(true);
@@ -247,18 +231,12 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 {
 	QConnectMySQL dlg(this,0,true);
 	GSessionMySQL* Sess;
-	Sess = new GSessionMySQL(host,user,passwd,db,&URLManager,&ProfileCalcsManager,DocOptions);
+	Sess = new GSessionMySQL(host,user,passwd,db,&URLManager,&ProfilingManager,&GroupingManager,DocOptions);
 	unsigned int cmd=dlg.cbLoad->currentItem();
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 	d->LoadSession(cmd);
 	Doc=new KDoc(this,Sess);
 	Sess->RegisterProfileDesc(new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile));
-	Sess->RegisterGroupingMethod(new GGroupingSim(Sess, &SimParams));
-	Sess->RegisterGroupingMethod(new GGroupingGGA(Sess,&IRParams));
-	Sess->RegisterGroupingMethod(new GGroupingKCos(Sess, &KMeansParams));
-	Sess->RegisterGroupingMethod(new GGroupingSupKMeans(Sess, &SupKMeansParams,&KMeansParams));
-	Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess, &KProtosParams));
-	Sess->RegisterGroupingMethod(new GGroupingCure(Sess, &CureParams));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess,&CalcGravitationParams));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess, &CalcRelevantParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess,&LinkCalcHITSParams));
@@ -266,7 +244,6 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
 	Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
 	Sess->SetCurrentProfileDesc(CurrentProfileDesc);
-	Sess->SetCurrentGroupingMethod(CurrentGroupingMethod);
 	Sess->SetCurrentGroupCalcMethod(CurrentGroupCalcMethod);
 	Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 	sessionDisconnect->setEnabled(true);
@@ -832,7 +809,7 @@ void KGALILEICenterApp::slotGAInit(void)
 		else
 			strcpy(tmp,"fr");
 		setDocParams(Doc);
-		createClient(Doc,new KViewGA(Doc,tmp,&IRParams,dlg.cbGlobal->isChecked(),dlg.cbScratch->isChecked(),pWorkspace,"Genetic Algorithm",0));
+		createClient(Doc,new KViewGA(Doc,tmp,dlg.cbGlobal->isChecked(),dlg.cbScratch->isChecked(),pWorkspace,"Genetic Algorithm",0));
 		gaPause->setEnabled(true);
 		gaStart->setEnabled(true);
 		gaStop->setEnabled(true);
@@ -904,7 +881,7 @@ void KGALILEICenterApp::slotGAAnalyse(void)
 		else
 			strcpy(tmp,"fr");
 		setDocParams(Doc);
-		createClient(Doc,new KViewChromos(Doc,tmp,&IRParams,dlg.cbSim->isChecked(),pWorkspace,"View Chromosomes",0));
+		createClient(Doc,new KViewChromos(Doc,tmp,dlg.cbSim->isChecked(),pWorkspace,"View Chromosomes",0));
 	}
 	catch(GException& e)
 	{
@@ -940,7 +917,7 @@ void KGALILEICenterApp::slotGAShow(void)
 		else
 			strcpy(tmp,"fr");
 		setDocParams(Doc);
-		createClient(Doc,new KViewStoreChromos(Doc,tmp,&IRParams,dlg.cbGlobal->isChecked(),pWorkspace,"Show Chromosomes",0));
+		createClient(Doc,new KViewStoreChromos(Doc,tmp,dlg.cbGlobal->isChecked(),pWorkspace,"Show Chromosomes",0));
 		gaPause->setEnabled(true);
 		gaStart->setEnabled(true);
 		gaStop->setEnabled(true);
@@ -1070,10 +1047,8 @@ void KGALILEICenterApp::slotRunProgram(void)
 	QString tmpfile;
 	char tmp[100];
 	KViewPrg* o;
-	GIRParams tmpIRParams;
 	GDocOptions tmpDocOptions;
 
-	tmpIRParams=IRParams;
 	tmpDocOptions = (*DocOptions);
 	KApplication::kApplication()->processEvents();
 	KURL url=KFileDialog::getOpenURL(QString(getpwuid(getuid())->pw_dir)+QString("/galilei/prg"),i18n("*.kprg|KGALILEICenter Programs"), this, i18n("Open File..."));
@@ -1107,7 +1082,6 @@ void KGALILEICenterApp::slotRunProgram(void)
 	{
 		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
 	}
-	IRParams=tmpIRParams;
 	(*Doc->GetSession()->GetDocOptions())=tmpDocOptions;
 	KIO::NetAccess::removeTempFile( tmpfile );
 }

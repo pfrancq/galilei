@@ -13,6 +13,7 @@
 
 void QPlugins::changeFilter(QListViewItem* item)
 {
+        	if(!item) return;
 	QFilterItem* f=dynamic_cast<QFilterItem*>(item);
 	EnableFilter->setChecked(f->Enable);
 	ConfigFilter->setEnabled(f->Fac->HasConfigure());
@@ -46,6 +47,7 @@ void QPlugins::slotFilterEnable( bool state )
 
 void QPlugins::changeProfileCalc( QListViewItem * item )
 {
+        	if(!item) return;
 	QProfileCalcItem* f=dynamic_cast<QProfileCalcItem*>(item);
 	EnableProfileCalc->setChecked(f->Enable);
 	ConfigProfileCalc->setEnabled(f->Fac->HasConfigure());
@@ -74,4 +76,86 @@ void QPlugins::slotProfileCalcEnable( bool state )
         	if(!ProfileCalcs->currentItem()) return;
 	QProfileCalcItem* f=dynamic_cast<QProfileCalcItem*>(ProfileCalcs->currentItem());
 	f->Enable=state;
+}
+
+
+void QPlugins::changeGrouping( QListViewItem * item)
+{
+        	if(!item) return;
+	QGroupingItem* f=dynamic_cast<QGroupingItem*>(item);
+	EnableGrouping->setChecked(f->Enable);
+	ConfigGrouping->setEnabled(f->Fac->HasConfigure());
+	AboutGrouping->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::changeLinkCalc( QListViewItem * item)
+{
+
+}
+
+
+void QPlugins::changeGroupCalc( QListViewItem * item )
+{
+
+}
+
+
+void QPlugins::slotAboutGrouping()
+{
+        	if(!Groupings->currentItem()) return;
+	QGroupingItem* f=dynamic_cast<QGroupingItem*>(Groupings->currentItem());
+	f->Fac->About();
+}
+
+
+void QPlugins::slotAboutLinkCalc()
+{
+
+}
+
+
+void QPlugins::slotAboutGroupCalc()
+{
+
+}
+
+
+void QPlugins::slotConfigGrouping()
+{
+        	if(!Groupings->currentItem()) return;
+QGroupingItem* f=dynamic_cast<QGroupingItem*>(Groupings->currentItem());
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotConfigLinkCalc()
+{
+
+}
+
+
+void QPlugins::slotConfigGroupCalc()
+{
+
+}
+
+
+void QPlugins::slotGroupingEnable( bool state )
+{
+        	if(!Groupings->currentItem()) return;
+	QGroupingItem* f=dynamic_cast<QGroupingItem*>(Groupings->currentItem());
+	f->Enable=state;
+}
+
+
+void QPlugins::slotGroupCalcEnable( bool state )
+{
+
+}
+
+
+void QPlugins::slotLinkCalcEnable( bool state )
+{
+
 }
