@@ -82,7 +82,7 @@ int GWeightInfosHistory::Compare(unsigned int id) const
 //------------------------------------------------------------------------------
 unsigned int GWeightInfosHistory::GetId(void) const
 {
-return(SubProfile->GetId());
+	return(SubProfile->GetId());
 }
 
 

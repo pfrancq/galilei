@@ -121,7 +121,8 @@ public:
 	int Compare(const GProfilesSim* profilesSim) const {return(Lang->Compare(profilesSim->Lang));}
 
 	// compute the similarity betwwen tow subprofiles
-	void AnalyseSim(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2) throw (GException);
+	// param nullsim: if true, the sim is set to 0.0 (but we know that the sim is not null and has to exist!)
+	void AnalyseSim(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2, bool nullsim=false) throw (GException);
 
 	// Get the similarities between two profiles.
 	double GetSim(const GSubProfile* s1,const GSubProfile* s2);
@@ -230,7 +231,7 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 
 
 //------------------------------------------------------------------------------
-void GProfilesSims::GProfilesSim::AnalyseSim(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2) throw (GException)
+void GProfilesSims::GProfilesSim::AnalyseSim(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2, bool nullsim) throw (GException)
 {
 	double tmp;
 	unsigned int pos;
@@ -243,7 +244,10 @@ void GProfilesSims::GProfilesSim::AnalyseSim(GSims* sim,const GSubProfile* sub1,
 	pos=sub2->GetProfile()->GetId();
 	if (pos >=sub1->GetProfile()->GetId())
 		throw (GException("Out of Range in Analyse similarities !"));
-	sim->InsertPtrAt(new GSim(pos,tmp,osUpdated), pos);
+	if (nullsim)
+		sim->InsertPtrAt(new GSim(pos,0.0,osUpdated), pos);
+	else
+		sim->InsertPtrAt(new GSim(pos,tmp,osUpdated), pos);
 
 }
 
@@ -365,13 +369,17 @@ GSims*  GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 	{
 		if (subcur()->GetProfile()->GetId()<sub->GetProfile()->GetId())
 		{
-			AnalyseSim(sims, sub,subcur());
+			// if the sim exists, it hs to be set to 0.0 not to influence devaition!
+			AnalyseSim(sims, sub,subcur(), true);
 		}
 		if (subcur()->GetProfile()->GetId()>sub->GetProfile()->GetId())
 		{
 			tmpsims=Sims->GetPtrAt(subcur()->GetProfile()->GetId());
 			if(tmpsims)
-				AnalyseSim(tmpsims, subcur(), sub);
+			{
+				// if the sim exists, it hs to be set to 0.0 not to influene devaition!
+				AnalyseSim(tmpsims, subcur(), sub,true);
+			}
 		}
 	}
 	return sims;
