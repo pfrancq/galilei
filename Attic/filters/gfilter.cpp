@@ -118,6 +118,7 @@ void GALILEI::GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 		// Seach sentence
 		NbWords=0;
 		EndSentence=false;
+
 		// If Only 1 word or no space between a punctation and the next
 		// word, no sentence created.
 		while((*ptr)&&(!EndSentence))
