@@ -46,6 +46,7 @@ using namespace R;
 #include <infos/glangmanager.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------

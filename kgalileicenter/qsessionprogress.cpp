@@ -80,7 +80,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char* c) throw(bad_alloc,RException)
+QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char* c) throw(std::bad_alloc,RException)
     : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), Session(s)
 {
 	resize(600, 78 );
@@ -106,7 +106,7 @@ QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char*
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::LoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(GException,bad_alloc)
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPostGroupManager* pgmng) throw(GException,std::bad_alloc)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -300,7 +300,7 @@ void QSessionProgressDlg::ComputeAll(bool modified,bool save)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextGroupLang(const GLang* lang) throw(bad_alloc,RException)
+void QSessionProgressDlg::NextGroupLang(const GLang* lang) throw(std::bad_alloc,RException)
 {
 	txtRem->setText(QString("Groups Profiles for '")+lang->GetName()+"' ...");
 	KApplication::kApplication()->processEvents();
@@ -308,7 +308,7 @@ void QSessionProgressDlg::NextGroupLang(const GLang* lang) throw(bad_alloc,RExce
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextDoc(const GDoc* doc) throw(bad_alloc,RException)
+void QSessionProgressDlg::receiveNextDoc(const GDoc* doc) throw(std::bad_alloc,RException)
 {
 	txtRem->setText(QString("Analyse Doc '")+doc->GetName().Latin1()+"' ...");
 	KApplication::kApplication()->processEvents();
@@ -316,7 +316,7 @@ void QSessionProgressDlg::receiveNextDoc(const GDoc* doc) throw(bad_alloc,RExcep
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextProfile(const GProfile* prof) throw(bad_alloc,RException)
+void QSessionProgressDlg::receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,RException)
 {
 	txtRem->setText(QString("Analyse Profile '")+prof->GetName().Latin1()+"' of User '"+prof->GetUser()->GetName().Latin1()+"' ...");
 	KApplication::kApplication()->processEvents();
@@ -324,7 +324,7 @@ void QSessionProgressDlg::receiveNextProfile(const GProfile* prof) throw(bad_all
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextChromosome(unsigned int id) throw(bad_alloc,RException)
+void QSessionProgressDlg::receiveNextChromosome(unsigned int id) throw(std::bad_alloc,RException)
 {
 	char tmp[50];
 

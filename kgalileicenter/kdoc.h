@@ -134,7 +134,7 @@ public:
 	* @param owner          Owner of the document.
 	* @param session        GALILEI session.
 	*/
-	KDoc(KGALILEICenterApp* owner,const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,R::RMySQLError);
+	KDoc(KGALILEICenterApp* owner,const char* host,const char* user,const char* pwd,const char* db) throw(std::bad_alloc,GException,R::RMySQLError);
 
 
 	/**

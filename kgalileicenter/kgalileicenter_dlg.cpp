@@ -35,12 +35,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainercursor.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdoc.h>
 #include <infos/glang.h>
@@ -55,6 +49,7 @@ using namespace R;
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
 using namespace GALILEI;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------

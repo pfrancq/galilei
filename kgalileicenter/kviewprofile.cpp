@@ -42,12 +42,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainercursor.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/glang.h>
 #include <galilei/qgprofile.h>
@@ -62,6 +56,7 @@ using namespace R;
 #include <galilei/qlistviewitemtype.h>
 #include <galilei/qgsubprofiledescs.h>
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------

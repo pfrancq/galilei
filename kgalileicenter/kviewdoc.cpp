@@ -42,7 +42,6 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainercursor.h>
 #include <rstd/rxmlfile.h>
 #include <rga/qxmlcontainer.h>
 using namespace R;

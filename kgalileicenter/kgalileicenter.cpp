@@ -61,6 +61,7 @@ using namespace R;
 #include <infos/glang.h>
 #include <infos/gdict.h>
 using namespace GALILEI;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
@@ -857,7 +858,7 @@ void KGALILEICenterApp::slotRunProgram(void)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
 	}
-	catch(bad_alloc)
+	catch(std::bad_alloc)
 	{
 		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
 	}
@@ -909,7 +910,7 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - RDB Exception",QString(e.GetMsg()));
 	}
-	catch(bad_alloc)
+	catch(std::bad_alloc)
 	{
 		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
 	}

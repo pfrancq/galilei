@@ -93,7 +93,7 @@ public:
 	* @param s              Session from which to load.
 	* @param c              Caption of the dialog box.
 	*/
-	QSessionProgressDlg(QWidget* parent,GSession* s,const char* c) throw(bad_alloc,RException);
+	QSessionProgressDlg(QWidget* parent,GSession* s,const char* c) throw(std::bad_alloc,RException);
 
 	/**
 	* Load a session.
@@ -108,7 +108,7 @@ public:
 	* @param lmng           Linking Manager.
 	*/
 	void LoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng,  GPostGroupManager* pgmng) throw(GException,bad_alloc);
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng,  GPostGroupManager* pgmng) throw(GException,std::bad_alloc);
 
 	/**
 	* Create a XML structure.
@@ -155,25 +155,25 @@ public:
 	* Method called by GGrouping each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
-	virtual void NextGroupLang(const GLang* lang) throw(bad_alloc,RException);
+	virtual void NextGroupLang(const GLang* lang) throw(std::bad_alloc,RException);
 
 	/**
 	* The traitment for a specific document will begin.
 	* @param doc            Document.
 	*/
-	virtual void receiveNextDoc(const GDoc* doc) throw(bad_alloc,RException);
+	virtual void receiveNextDoc(const GDoc* doc) throw(std::bad_alloc,RException);
 
 	/**
 	* The traitment for a specific profile will begin.
 	* @param prof           Profile.
 	*/
-	virtual void receiveNextProfile(const GProfile* prof) throw(bad_alloc,RException);
+	virtual void receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,RException);
 
 	/**
 	* The traitment for a specific chromosome will begin.
 	* @param id             Identificator of the chromosome.
 	*/
-	virtual void receiveNextChromosome(unsigned int id) throw(bad_alloc,RException);
+	virtual void receiveNextChromosome(unsigned int id) throw(std::bad_alloc,RException);
 
 	/**
 	* Put some text.
