@@ -70,7 +70,7 @@ public:
 protected:
 
 	/**
-	* This function skip spaces (Only used if read mode).
+	* This function skip spaces.
 	*/
 	inline void SkipSpaces(void)
 	{while((*Pos)&&isspace(*Pos)) Pos++;}
