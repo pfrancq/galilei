@@ -62,6 +62,8 @@
 #include <sessions/gsession.h>
 #include <historic/ggroupshistory.h>
 #include <historic/gweightinfoshistory.h>
+#include <engines/gindexer.h>
+#include <engines/gwordoccurs.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -253,6 +255,57 @@ void GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc
 					}
 					break;
 			}
+		}
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadIndexer(GIndexer* &indexer,GLangManager* langs)
+{
+	unsigned int MaxCount=100;
+	RString sSql;
+	RString tbl;
+	GWordOccurs* ptr;
+
+	try
+	{
+		// Search the values to initialise the indexer
+		for(char i='a';i<='z';i++)
+		{
+			sSql="SELECT COUNT(*) FROM kwds WHERE kwd LIKE '"+RString(i)+"'";
+			RQuery count(Db,sSql);
+			count.Start();
+			if(strtoul(count[0],0,10)>MaxCount) MaxCount=strtoul(count[0],0,10);
+		}
+		if(MaxCount==0) MaxCount=2000;
+
+		// Create and insert the dictionary
+		indexer=new GIndexer(MaxCount,langs);
+
+		// Load the stems from the database
+		sSql="SELECT kwd FROM kwds WHERE type='"+itou(infoWord)+"'";
+		RQuery stems(Db, sSql);
+		for(stems.Start();!stems.End();stems.Next())
+		{
+			indexer->InsertWord(stems[0]);
+		}
+
+		// Index the documents
+		RQuery sel(Db,"SELECT htmlid,kwd FROM htmlsbykwds,kwds WHERE kwds.kwdid=htmlsbykwds.kwdid");
+		for(sel.Start(),ptr=0;!sel.End();sel.Next())
+		{
+			// If not the same -> new wors
+			if((!ptr)||(ptr->Compare(sel[1])!=0))
+			{
+				// If valid document -> assign the information to it
+				ptr=indexer->GetWord(sel[1]);
+			}
+			ptr->AddDoc(atoi(sel[0]));
 		}
 	}
 	catch(RMySQLError e)
@@ -804,8 +857,6 @@ void GStorageMySQL::LoadDocs(GSession* session,GInfoList& list,GLang* lang) thro
 	GDoc* doc;
 //	GLang* lang;
 	R::RCursor<GFactoryLang> langs;
-	GDoc* d;
-	GSubject* s;
 	unsigned int i,idx,docid;
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
  	RString sSql;

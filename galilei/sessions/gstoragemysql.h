@@ -36,6 +36,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <memory.h>
+
+
+//------------------------------------------------------------------------------
 // include files for R Project
 #include <rdb/rmysql.h>
 
@@ -105,6 +110,11 @@ protected:
 public:
 
 	/**
+	* Get the database.
+	*/
+	R::RDb* GetDb(void) {return(Db.get());}
+
+	/**
 	* Compute the number of objects of a given type which are saved.
 	* @param type            Type of the objects.
 	* @return Number of objects.
@@ -125,6 +135,13 @@ public:
 	* @param s              Is it a stop list.
 	*/
 	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc,GException);
+
+	/**
+	* Load an indexer.
+	* @param indexer        Pointer to the indexer.
+	* @param langs          Pointer to the langs.
+	*/
+	virtual void LoadIndexer(GIndexer* &indexer,GLangManager* langs);
 
 	/**
 	* Load a specific word from a dictionary.

@@ -101,6 +101,13 @@ public:
 	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc,GException)=0;
 
 	/**
+	* Load an indexer.
+	* @param indexer        Pointer to the indexer.
+	* @param langs          Pointer to the langs.
+	*/
+	virtual void LoadIndexer(GIndexer* &indexer,GLangManager* langs)=0;
+
+	/**
 	* Load a specific word from a dictionary.
 	* @param id             Idenfificator of the word.
 	* @param code           Code of the languague.
