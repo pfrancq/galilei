@@ -62,9 +62,9 @@ GGroupsHistoryManager::GGroupsHistoryManager(unsigned int max) throw(std::bad_al
 
 
 //-------------------------------------------------------------------------------
-GGroupsHistoryCursor GGroupsHistoryManager::GetGroupsHistoryCursor(void)
+R::RCursor<GGroupsHistory> GGroupsHistoryManager::GetGroupsHistoryCursor(void)
 {
-	GGroupsHistoryCursor cur(this);
+	R::RCursor<GGroupsHistory> cur(this);
 	return(cur);
 }
 
@@ -72,7 +72,7 @@ GGroupsHistoryCursor GGroupsHistoryManager::GetGroupsHistoryCursor(void)
 //------------------------------------------------------------------------------
 void GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen) throw(std::bad_alloc)
 {
-	GGroupsHistoryCursor Cur(this);
+	R::RCursor<GGroupsHistory> Cur(this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->CheckModifiedGroups(minGen);
@@ -82,7 +82,7 @@ void GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen) throw(std::
 //------------------------------------------------------------------------------
 void GGroupsHistoryManager::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 {
-	GGroupsHistoryCursor Cur(this);
+	R::RCursor<GGroupsHistory> Cur(this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
@@ -95,7 +95,7 @@ void GGroupsHistoryManager::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GGroupsHistoryManager::CheckNewProfiles(void) throw(std::bad_alloc)
 {
-	GGroupsHistoryCursor Cur(this);
+	R::RCursor<GGroupsHistory> Cur(this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->CheckNewProfiles();
@@ -111,7 +111,7 @@ void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxge
 	GWeightInfosHistory* subprof;
 	bool treated;
 	unsigned int** tab;
-	GGroupsHistoryCursor Cur(this);
+	R::RCursor<GGroupsHistory> Cur(this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{

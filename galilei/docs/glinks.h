@@ -84,7 +84,7 @@ public:
 	* Get a cursor on the list of links.
 	* @return GLinkCursor.
 	*/
-	GLinkCursor GetLinkCursor(void);
+	R::RCursor<GLink> GetLinkCursor(void);
 
 	/**
 	* Compare two lists by comparing their identificator.
@@ -115,14 +115,6 @@ public:
 	*/
 	virtual ~GLinks(void);
 };
-
-
-//------------------------------------------------------------------------------
-/**
-* The GLinksCursor class provides a way to go trough a set of links.
-* @short Links Cursor
-*/
-CLASSCURSOR(GLinksCursor,GLinks);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

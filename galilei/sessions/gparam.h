@@ -564,7 +564,7 @@ public:
 	* @param v               Value of the parameter.
 	*/
 	virtual void Set(bool v);
-	
+
 	/**
 	* Set the content of the parameter.
 	* @param v               Value of the parameter.
@@ -576,14 +576,6 @@ public:
 	*/
 	virtual ~GParamBool(void);
 };
-
-
-//------------------------------------------------------------------------------
-/**
-* The GParamCursor class provides a way to go trough a set of parameters.
-* @short Parameters Cursor
-*/
-CLASSCURSOR(GParamCursor,GParam);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -96,7 +96,7 @@ public:
 	* Get a cursor over the profile computing methods managed.
 	* @return GFactoryProfileCalcCursor.
 	*/
-	GFactoryProfileCalcCursor GetProfileCalcsCursor(void);
+	R::RCursor<GFactoryProfileCalc> GetProfileCalcsCursor(void);
 
 	/**
 	* Destructor of the profile computing methods manager.

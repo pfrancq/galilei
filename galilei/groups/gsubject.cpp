@@ -6,7 +6,7 @@
 
 	Subject - Implementation.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be)
@@ -28,7 +28,7 @@
 	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	Boston, MA  02111-1307  USA
 
-*/ 
+*/
 
 
 
@@ -92,9 +92,9 @@ void GSubject::InsertDoc(GDoc* d) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GDocCursor GALILEI::GSubject::GetDocsCursor(void)
+R::RCursor<GDoc> GALILEI::GSubject::GetDocsCursor(void)
 {
-	GDocCursor cur(Docs);
+	R::RCursor<GDoc> cur(Docs);
 	return(cur);
 }
 

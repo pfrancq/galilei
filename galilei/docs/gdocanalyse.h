@@ -205,15 +205,6 @@ extern "C"                                                                      
 }
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryDocAnalyseCursor class provides a way to go trough a set of
-* factories of document analysis method.
-* @short Document Analysis Methods Factories Cursor
-*/
-CLASSCURSOR(GFactoryDocAnalyseCursor,GFactoryDocAnalyse);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

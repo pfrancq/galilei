@@ -149,7 +149,7 @@ void GConfig::Save(void) throw(GException)
 //------------------------------------------------------------------------------
 void GConfig::Read(GFilterManager* mng)
 {
-	GFactoryFilterCursor Cur;
+	R::RCursor<GFactoryFilter> Cur;
 
 	if(!Filters) return;
 	Cur=mng->GetFiltersCursor();
@@ -163,7 +163,7 @@ void GConfig::Read(GFilterManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Store(GFilterManager* mng)
 {
-	GFactoryFilterCursor Cur;
+	R::RCursor<GFactoryFilter> Cur;
 
 	Cur=mng->GetFiltersCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -176,7 +176,7 @@ void GConfig::Store(GFilterManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Read(GProfileCalcManager* mng)
 {
-	GFactoryProfileCalcCursor Cur;
+	R::RCursor<GFactoryProfileCalc> Cur;
 
 	if(!ProfileCalcs) return;
 	Cur=mng->GetProfileCalcsCursor();
@@ -197,7 +197,7 @@ void GConfig::Read(GProfileCalcManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Store(GProfileCalcManager* mng)
 {
-	GFactoryProfileCalcCursor Cur;
+	R::RCursor<GFactoryProfileCalc> Cur;
 	GProfileCalc* calc;
 
 	Cur=mng->GetProfileCalcsCursor();
@@ -216,7 +216,7 @@ void GConfig::Store(GProfileCalcManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Read(GGroupingManager* mng)
 {
-	GFactoryGroupingCursor Cur;
+	R::RCursor<GFactoryGrouping> Cur;
 
 	if(!Groupings) return;
 	Cur=mng->GetGroupingsCursor();
@@ -237,7 +237,7 @@ void GConfig::Read(GGroupingManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Store(GGroupingManager* mng)
 {
-	GFactoryGroupingCursor Cur;
+	R::RCursor<GFactoryGrouping> Cur;
 	GGrouping* calc;
 
 	Cur=mng->GetGroupingsCursor();
@@ -256,7 +256,7 @@ void GConfig::Store(GGroupingManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Read(GGroupCalcManager* mng)
 {
-	GFactoryGroupCalcCursor Cur;
+	R::RCursor<GFactoryGroupCalc> Cur;
 
 	if(!GroupCalcs) return;
 	Cur=mng->GetGroupCalcsCursor();
@@ -277,7 +277,7 @@ void GConfig::Read(GGroupCalcManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Store(GGroupCalcManager* mng)
 {
-	GFactoryGroupCalcCursor Cur;
+	R::RCursor<GFactoryGroupCalc> Cur;
 	GGroupCalc* calc;
 
 	Cur=mng->GetGroupCalcsCursor();
@@ -296,7 +296,7 @@ void GConfig::Store(GGroupCalcManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Read(GStatsCalcManager* mng)
 {
-	GFactoryStatsCalcCursor Cur;
+	R::RCursor<GFactoryStatsCalc> Cur;
 
 	if(!StatsCalcs) return;
 	Cur=mng->GetStatsCalcsCursor();
@@ -310,7 +310,7 @@ void GConfig::Read(GStatsCalcManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Store(GStatsCalcManager* mng)
 {
-	GFactoryStatsCalcCursor Cur;
+	R::RCursor<GFactoryStatsCalc> Cur;
 
 	Cur=mng->GetStatsCalcsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -323,7 +323,7 @@ void GConfig::Store(GStatsCalcManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Read(GLinkCalcManager* mng)
 {
-	GFactoryLinkCalcCursor Cur;
+	R::RCursor<GFactoryLinkCalc> Cur;
 
 	if(!LinkCalcs) return;
 	Cur=mng->GetLinkCalcsCursor();
@@ -344,7 +344,7 @@ void GConfig::Read(GLinkCalcManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Store(GLinkCalcManager* mng)
 {
-	GFactoryLinkCalcCursor Cur;
+	R::RCursor<GFactoryLinkCalc> Cur;
 	GLinkCalc* lcalc;
 
 	Cur=mng->GetLinkCalcsCursor();
@@ -363,7 +363,7 @@ void GConfig::Store(GLinkCalcManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Read(GPostGroupManager* mng)
 {
-	GFactoryPostGroupCursor Cur;
+	R::RCursor<GFactoryPostGroup> Cur;
 
 	if(!PostGroups) return;
 	Cur=mng->GetPostGroupsCursor();
@@ -377,7 +377,7 @@ void GConfig::Read(GPostGroupManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Store(GPostGroupManager* mng)
 {
-	GFactoryPostGroupCursor Cur;
+	R::RCursor<GFactoryPostGroup> Cur;
 
 	Cur=mng->GetPostGroupsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -390,7 +390,7 @@ void GConfig::Store(GPostGroupManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Read(GPostDocManager* mng)
 {
-	GFactoryPostDocCursor Cur;
+	R::RCursor<GFactoryPostDoc> Cur;
 
 	if(!PostDocs) return;
 	Cur=mng->GetPostDocsCursor();
@@ -404,7 +404,7 @@ void GConfig::Read(GPostDocManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Store(GPostDocManager* mng)
 {
-	GFactoryPostDocCursor Cur;
+	R::RCursor<GFactoryPostDoc> Cur;
 
 	Cur=mng->GetPostDocsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -417,7 +417,7 @@ void GConfig::Store(GPostDocManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Read(GLangManager* mng)
 {
-	GFactoryLangCursor Cur;
+	R::RCursor<GFactoryLang> Cur;
 
 	if(!Langs) return;
 	Cur=mng->GetLangsCursor();
@@ -431,7 +431,7 @@ void GConfig::Read(GLangManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Store(GLangManager* mng)
 {
-	GFactoryLangCursor Cur;
+	R::RCursor<GFactoryLang> Cur;
 
 	Cur=mng->GetLangsCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -444,7 +444,7 @@ void GConfig::Store(GLangManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Read(GDocAnalyseManager* mng)
 {
-	GFactoryDocAnalyseCursor Cur;
+	R::RCursor<GFactoryDocAnalyse> Cur;
 
 	if(!DocAnalyses) return;
 	Cur=mng->GetDocAnalysesCursor();
@@ -465,7 +465,7 @@ void GConfig::Read(GDocAnalyseManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Store(GDocAnalyseManager* mng)
 {
-	GFactoryDocAnalyseCursor Cur;
+	R::RCursor<GFactoryDocAnalyse> Cur;
 	GDocAnalyse* lcalc;
 
 	Cur=mng->GetDocAnalysesCursor();
@@ -484,10 +484,10 @@ void GConfig::Store(GDocAnalyseManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Read(GEngineManager* mng)
 {
-	GFactoryEngineCursor Cur;
-	GFactoryMetaEngineCursor CurM;
-	
-	if(Engines) 
+	R::RCursor<GFactoryEngine> Cur;
+	R::RCursor<GFactoryMetaEngine> CurM;
+
+	if(Engines)
 	{
 		Cur=mng->GetEnginesCursor();
 		for(Cur.Start();!Cur.End();Cur.Next())
@@ -495,7 +495,7 @@ void GConfig::Read(GEngineManager* mng)
 			Cur()->ReadConfig(Engines);
 		}
 	}
-	
+
 	if(!MetaEngines) return;
 	CurM=mng->GetMetaEnginesCursor();
 	for(CurM.Start();!CurM.End();CurM.Next())
@@ -515,10 +515,10 @@ void GConfig::Read(GEngineManager* mng)
 //------------------------------------------------------------------------------
 void GConfig::Store(GEngineManager* mng)
 {
-	GFactoryEngineCursor Cur;
-	GFactoryMetaEngineCursor CurM;
+	R::RCursor<GFactoryEngine> Cur;
+	R::RCursor<GFactoryMetaEngine> CurM;
 	GMetaEngine* meta;
-	
+
 	Cur=mng->GetEnginesCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{

@@ -159,14 +159,6 @@ public :
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GLinkCursor class provides a way to go trough a set of links.
-* @short Link Cursor
-*/
-CLASSCURSOR(GLinkCursor,GLink);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

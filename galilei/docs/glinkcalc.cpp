@@ -60,8 +60,8 @@ GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GLinkCalc::InitGraph(void) throw(GException)
 {
-	GDocCursor cur = Session->GetDocsCursor();
-	GLinkCursor lcur;
+	R::RCursor<GDoc> cur = Session->GetDocsCursor();
+	R::RCursor<GLink> lcur;
 	GLinks* links_out=0;
 	int size=0;
 
@@ -69,13 +69,13 @@ void GLinkCalc::InitGraph(void) throw(GException)
 	{
 		// Create a container of  outgoing links for all document present in the system
 		size = cur.GetNb() * sizeof(GLinks);
-		for (cur.Start();!cur.End();cur.Next())
+		for(cur.Start();!cur.End();cur.Next())
 		{
 			Links_Out->InsertPtr( new GLinks( cur() ));
 		}
 
 			// For each page p set all the pages qi pointed by p
-		for (cur.Start();!cur.End();cur.Next())
+		for(cur.Start();!cur.End();cur.Next())
 		{
 			if (!cur()->GetNbLinks()) continue;
 			links_out=Links_Out->GetPtr(cur()->GetId());
@@ -97,7 +97,7 @@ void GLinkCalc::InitGraph(void) throw(GException)
 //------------------------------------------------------------------------------
 void GLinkCalc::AddDoc(GDoc* doc) throw(GException)
 {
-	GLinkCursor lcur;
+	R::RCursor<GLink> lcur;
 	GLinks* links_out=0;
 
 	if (!doc->GetNbLinks()) return;

@@ -383,7 +383,7 @@ GProfilesBehaviours::GProfilesBehaviour::~GProfilesBehaviour(void)
 GProfilesBehaviours::GProfilesBehaviours(GSession* session,bool memory) throw(std::bad_alloc)
 	: Ratios(10,5), Session(session), Memory(memory)
 {
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 	unsigned int agree,disagree;
 
@@ -402,7 +402,7 @@ GProfilesBehaviours::GProfilesBehaviours(GSession* session,bool memory) throw(st
 //------------------------------------------------------------------------------
 void GProfilesBehaviours::ReInit(void) throw(std::bad_alloc)
 {
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 	unsigned int agree,disagree;
 
@@ -424,7 +424,7 @@ void GProfilesBehaviours::ReInit(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GProfilesBehaviours::Update(void) throw(std::bad_alloc)
 {
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 
 	Langs=Session->GetLangs()->GetLangsCursor();

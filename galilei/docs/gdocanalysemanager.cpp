@@ -66,7 +66,7 @@ GDocAnalyseManager::GDocAnalyseManager(const char* path,bool dlg) throw(std::bad
 //------------------------------------------------------------------------------
 void GDocAnalyseManager::Connect(GSession* session) throw(GException)
 {
-	GFactoryDocAnalyseCursor Cur;
+	R::RCursor<GFactoryDocAnalyse> Cur;
 	GDocAnalyse* calc;
 
 	Cur.Set(this);
@@ -82,7 +82,7 @@ void GDocAnalyseManager::Connect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GDocAnalyseManager::Disconnect(GSession* session) throw(GException)
 {
-	GFactoryDocAnalyseCursor Cur;
+	R::RCursor<GFactoryDocAnalyse> Cur;
 	GDocAnalyse* calc;
 
 	Cur.Set(this);
@@ -120,9 +120,9 @@ GDocAnalyse* GDocAnalyseManager::GetCurrentMethod(void)
 
 
 //------------------------------------------------------------------------------
-GFactoryDocAnalyseCursor GDocAnalyseManager::GetDocAnalysesCursor(void)
+R::RCursor<GFactoryDocAnalyse> GDocAnalyseManager::GetDocAnalysesCursor(void)
 {
-	GFactoryDocAnalyseCursor cur(this);
+	R::RCursor<GFactoryDocAnalyse> cur(this);
 	return(cur);
 }
 

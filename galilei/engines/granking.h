@@ -6,7 +6,7 @@
 
 	Class to represent the ranking of results from a Search engine - Header.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele (vavdaele@ulb.ac.be)
@@ -60,10 +60,10 @@ namespace GALILEI{
 /**
 * The GRanking class provides a representation for the ranking
 * of a page extracted from a search engine
-* @author Valery Vandaele 
+* @author Valery Vandaele
 * @short ranking for search engine results
 */
-class GRanking 
+class GRanking
 {
 private:
 
@@ -71,7 +71,7 @@ private:
 	* The ranking of this result
 	*/
 	int Rank;
-	
+
 	/**
 	* The search engine which has obtained this ranking
 	*/
@@ -80,53 +80,45 @@ private:
 public:
 
 	/**
-	* Construct the extractor for the Yahoo engine.
+	* Construct a ranking.
 	* @param path            Path to find the plugins.
 	* @param dlg             Should the dialog box be loaded.
 	*/
 	GRanking(int rank,R::RString engine);
-	
+
 	/**
 	* Get the name of the engine the ranking is associated with
-	*@return RString         The name of the search engine
+	* @return RString         The name of the search engine
 	*/
 	R::RString GetEngine(void) const {return Engine;};
-	
+
 	/**
 	* Get the rank of the current element
-	*@return int             the value of the ranking
+	* @return int             the value of the ranking
 	*/
 	int GetRank(void) const {return Rank;};
-	
+
 	/**
 	* Set a new ranking value
-	*@param                  the new ranking value
+	* @param                  the new ranking value
 	*/
 	void SetRank(int rank) {Rank=rank;};
-	
+
 	/**
 	* Compare method (not used)
 	*/
 	int Compare(const GRanking& r) const {return -1;};
-	
+
 	/**
 	* Compare method (not used)
 	*/
 	int Compare(const GRanking* r) const {return -1;};
-	
+
 	/**
-	* Destructor of the URL manager.
+	* Destructor of the ranking.
 	*/
 	virtual ~GRanking(void);
 };
-
-
-//------------------------------------------------------------------------------
-/**
-* The GRankingCursor class provides a way to go trough a set of Rankings.
-* @short Ranking Cursor
-*/
-CLASSCURSOR(GRankingCursor,GRanking);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -86,7 +86,7 @@ public:
 	* Get a cursor over the statistics methods managed.
 	* return GFactoryStatsCalcCursor.
 	*/
-	GFactoryStatsCalcCursor GetStatsCalcsCursor(void);
+	R::RCursor<GFactoryStatsCalc> GetStatsCalcsCursor(void);
 
 	/**
 	* Destructor of the statistics methods manager.

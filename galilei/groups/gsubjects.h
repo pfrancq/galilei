@@ -1,7 +1,7 @@
 /*
 
 	GALILEI Research Project
-	
+
 	GSubjects.h
 
 	Subjects - Header.
@@ -28,7 +28,7 @@
 	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	Boston, MA  02111-1307  USA
 
-*/ 
+*/
 
 
 
@@ -70,7 +70,6 @@ protected:
 	// Internal Classes
 	class GroupScore;
 	class GGroupId;
-	CLASSCURSOR(GroupScoreCursor,GroupScore);
 
 	/**
 	* Session.

@@ -250,15 +250,6 @@ extern "C"                                                                      
 }
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryFilterCursor class provides a way to go trough a set of factories
-* of filters.
-* @short Filters Factories Cursor
-*/
-CLASSCURSOR(GFactoryFilterCursor,GFactoryFilter);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

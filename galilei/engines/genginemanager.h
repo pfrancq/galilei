@@ -6,7 +6,7 @@
 
 	Generic Engine for extraction of results from the a search engine - Header.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele (vavdaele@ulb.ac.be)
@@ -52,22 +52,22 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short search engine Manager.
 */
-class GEngineManager : public R::RContainer<GFactoryMetaEngine,true,true>, public R::RContainer<GFactoryEngine,true,true> 
+class GEngineManager : public R::RContainer<GFactoryMetaEngine,true,true>, public R::RContainer<GFactoryEngine,true,true>
 {
 	/**
 	* Method currently selected.
 	*/
 	GMetaEngine* Current;
-	
+
 public:
 
-	/** 
+	/**
 	* Constructor of a manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
 	GEngineManager(const char* path,bool dlg=true) throw(std::bad_alloc,GException);
-	
+
 	/**
 	* Connect to a Session.
 	* @param session         The session.
@@ -84,13 +84,13 @@ public:
 	* Get a cursor over the factories handled by the manager.
 	* @return GFactoryEngineCursor
 	*/
-	GFactoryEngineCursor GetEnginesCursor(void);
-	
+	R::RCursor<GFactoryEngine> GetEnginesCursor(void);
+
 	/**
 	* Get a cursor over the meta engine factories handled by the manager.
 	* @return GFactoryEngineCursor
 	*/
-	GFactoryMetaEngineCursor GetMetaEnginesCursor(void);
+	R::RCursor<GFactoryMetaEngine> GetMetaEnginesCursor(void);
 
 	/**
 	* Set the current method.
@@ -103,20 +103,20 @@ public:
 	* @return Pointer to GDocAnalyse.
 	*/
 	GMetaEngine* GetCurrentMethod(void);
-	
+
 	/**
 	* Get the engine corresponding to the "name"
 	* @param name           The name of the engine
 	* @return GEngine       A pointer to the engine corresponding to the name
 	*/
 	GEngine* GetEngine(R::RString name);
-	
+
 	/**
 	* Insert a meta engine factory in the maanger
 	* @param ptr              Pointer to the meta engine factory
 	*/
 	void InsertPtr(GFactoryMetaEngine* ptr) throw(std::bad_alloc);
-	
+
 	/**
 	* Insert a engine factory in the maanger
 	* @param ptr              Pointer to the engine factory

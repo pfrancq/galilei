@@ -86,7 +86,7 @@ public:
 	* Create a cursor on the container of plugins representing the languages.
 	* @return GFactoryLangCursor.
 	*/
-	GFactoryLangCursor GetLangsCursor(void);
+	R::RCursor<GFactoryLang> GetLangsCursor(void);
 
 	/**
 	* Destructor of the manager.

@@ -6,7 +6,7 @@
 
 	Generic extractor of results from a search engine - Implementation.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele (vavdaele@ulb.ac.be)
@@ -59,7 +59,7 @@ GEngineManager::GEngineManager(const char* path,bool dlg) throw(std::bad_alloc,G
 	RString Path(path);
 	Path+="/metaengines";
 	LoadPlugins<GFactoryMetaEngine,GFactoryMetaEngineInit,GEngineManager>(this,Path.Latin1(),API_METAENGINE_VERSION, dlg);
-	
+
 	Path= path;
 	Path+="/engines";
 	LoadPlugins<GFactoryEngine,GFactoryEngineInit,GEngineManager>(this,Path.Latin1(),API_ENGINE_VERSION, dlg);
@@ -69,7 +69,7 @@ GEngineManager::GEngineManager(const char* path,bool dlg) throw(std::bad_alloc,G
 //------------------------------------------------------------------------------
 void GEngineManager::Connect(GSession* session) throw(GException)
 {
-	GFactoryEngineCursor Cur;
+	R::RCursor<GFactoryEngine> Cur;
 	GEngine* eng;
 
 	Cur.Set(this);
@@ -79,8 +79,8 @@ void GEngineManager::Connect(GSession* session) throw(GException)
 		if(eng)
 			eng->Connect(session);
 	}
-		
-	GFactoryMetaEngineCursor CurM;
+
+	R::RCursor<GFactoryMetaEngine> CurM;
 	GMetaEngine* meta;
 
 	CurM.Set(this);
@@ -96,7 +96,7 @@ void GEngineManager::Connect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GEngineManager::Disconnect(GSession* session) throw(GException)
 {
-	GFactoryEngineCursor Cur;
+	R::RCursor<GFactoryEngine> Cur;
 	GEngine* eng;
 
 	Cur.Set(this);
@@ -106,8 +106,8 @@ void GEngineManager::Disconnect(GSession* session) throw(GException)
 		if(eng)
 			eng->Disconnect(session);
 	}
-	
-	GFactoryMetaEngineCursor CurM;
+
+	R::RCursor<GFactoryMetaEngine> CurM;
 	GMetaEngine* meta;
 
 	CurM.Set(this);
@@ -166,17 +166,17 @@ void GEngineManager::InsertPtr(GFactoryEngine* ptr) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GFactoryEngineCursor GEngineManager::GetEnginesCursor(void)
+R::RCursor<GFactoryEngine> GEngineManager::GetEnginesCursor(void)
 {
-	GFactoryEngineCursor cur(this);
+	R::RCursor<GFactoryEngine> cur(this);
 	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-GFactoryMetaEngineCursor GEngineManager::GetMetaEnginesCursor(void)
+R::RCursor<GFactoryMetaEngine> GEngineManager::GetMetaEnginesCursor(void)
 {
-	GFactoryMetaEngineCursor cur(this);
+	R::RCursor<GFactoryMetaEngine> cur(this);
 	return(cur);
 }
 

@@ -6,7 +6,7 @@
 
 	Generic Engine for extraction of results from the a search engine - Header.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele (vavdaele@ulb.ac.be)
@@ -60,7 +60,7 @@ namespace GALILEI{
 /**
 * The GEngine class provides a representation for a results extractor
 * for Search Engine
-* @author Valery Vandaele 
+* @author Valery Vandaele
 * @short Results extractor for search engine
 */
 class GEngine : public GPlugin<GFactoryEngine>
@@ -71,7 +71,7 @@ protected:
 	* Session.
 	*/
 	GSession* Session;
-	
+
 	/**
 	* Pointer to an instance of the library.
 	*/
@@ -83,19 +83,19 @@ private:
 	* The owner of this class
 	*/
 	GMetaEngine* Owner;
-	
+
 	/*
 	* The name of the engine
 	*/
 	R::RString Name;
-	
+
 	/**
 	* The weigth associated to the engine
 	*/
 	float Weight;
 
 public:
-	
+
 	/**
 	* Construct the extractor for the Yahoo engine.
 	*/
@@ -112,7 +112,7 @@ public:
 	* @param session        Session.
 	*/
 	virtual void Disconnect(GSession* session) throw(GException);
-	
+
 	/**
 	* Construct the query based on the given keywords
 	* @param keyWords        The set of keywords to use to create the query
@@ -127,51 +127,51 @@ public:
 	* @param nbResutls       The number of results that must be extracted from the page
 	*/
 	virtual void Process(R::RContainer<R::RString,false,false> &keyWords) throw(GException)=0;
-	
+
 	/**
 	* Get the weight associated to this engine
 	*@return double         The weight.
 	*/
 	virtual double GetEngineWeight(void)=0;
-	
+
 	/**
 	* Get the Owner of the class
 	* @return GMetaEngine    The owner of this class
 	*/
 	GMetaEngine* GetOwner(void){return Owner;}
-	
+
 	/**
 	* Get the name of the engine
 	*/
 	R::RString GetName(void) const {return Name;}
-	
+
 	/**
 	* Get the weight associated to the engine
 	* @return float          The weight associated to the engine
 	*/
 	float GetEngineWeight(void) const {return Weight;};
-	
-	/** 
+
+	/**
 	* Associate a new weight to the engine
 	* @param w               The weight to associate to the engine
 	*/
 	void SetEngineWeight(float w) {Weight=w;};
-	
+
 	/**
 	* Compare this object with another one
 	*/
 	int Compare(const GEngine* eng) const;
-	
+
 	/**
 	* Compare this object with another one
 	*/
 	int Compare(const GEngine& eng) const;
-	
+
 	/**
 	* Compare this object with another one
 	*/
 	int Compare(const R::RString& name) const;
-	
+
 	/**
 	* Destructor of the search engine.
 	*/
@@ -197,7 +197,7 @@ public:
 	GFactoryEngine(GEngineManager* mng,const char* n,const char* f)
 		 : GFactoryPlugin<GFactoryEngine,GEngine,GEngineManager>(mng,n,f) {}
 
-	
+
 	/**
 	* Destructor.
 	*/
@@ -272,23 +272,6 @@ extern "C"                                                                      
 		return(TheFactory::CreateInst(mng,l));                                            \
 	}                                                                                     \
 }
-
-
-//------------------------------------------------------------------------------
-/**
-* The GEngineCursor class provides a way to go trough a set of search engine.
-* @short Search engine Cursor
-*/
-CLASSCURSOR(GEngineCursor,GEngine);
-
-
-//------------------------------------------------------------------------------
-/**
-* The GFactoryEngineCursor class provides a way to go trough a set of
-* factories of link methods.
-* @short Search engine Factories Cursor
-*/
-CLASSCURSOR(GFactoryEngineCursor,GFactoryEngine);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

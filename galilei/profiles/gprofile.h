@@ -371,14 +371,6 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GProfileCursor class provides a way to go trough a set of profiles.
-* @short Profiles Cursor
-*/
-CLASSCURSOR(GProfileCursor,GProfile);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

@@ -134,14 +134,6 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GUserCursor class provides a way to go trough a set of users.
-* @short users Cursor
-*/
-CLASSCURSOR(GUserCursor,GUser);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

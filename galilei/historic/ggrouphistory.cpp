@@ -104,9 +104,9 @@ int GGroupHistory::Compare(const unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-GGroupHistoryCursor GGroupHistory::GetChildrenCursor(void)
+R::RCursor<GGroupHistory> GGroupHistory::GetChildrenCursor(void)
 {
-	GGroupHistoryCursor cur(Childrens);
+	R::RCursor<GGroupHistory> cur(Childrens);
 	return(cur);
 }
 

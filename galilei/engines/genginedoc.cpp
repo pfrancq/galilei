@@ -6,7 +6,7 @@
 
 	Class to store the results of the extraction from a search engine - Implementation.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele (vavdaele@ulb.ac.be)
@@ -95,9 +95,9 @@ int GEngineDoc::Compare(const GEngineDoc& d) const
 
 
 //-----------------------------------------------------------------------------
-GRankingCursor GEngineDoc::GetRankingsCursor(void) throw(GException)
+R::RCursor<GRanking> GEngineDoc::GetRankingsCursor(void) throw(GException)
 {
-	GRankingCursor cur(Rankings);
+	R::RCursor<GRanking> cur(Rankings);
 	return(cur);
 }
 

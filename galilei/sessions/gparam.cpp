@@ -6,7 +6,7 @@
 
 	Parameter - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -87,7 +87,7 @@ int GParam::Compare(const RString& n) const
 //------------------------------------------------------------------------------
 void GParam::ReadConfig(RXMLTag* parent)
 {
-	R::RXMLTagCursor Cur=parent->GetXMLTagsCursor();
+	R::RCursor<R::RXMLTag> Cur=parent->GetXMLTagsCursor();
 	RXMLTag* tag=0;
 
 	// Find Tag

@@ -194,15 +194,6 @@ extern "C"                                                                      
 
 //------------------------------------------------------------------------------
 /**
-* The GFactoryPostGroupCursor class provides a way to go trough a set of
-* factories.
-* @short Post Groups Computing Methods Factories Cursor
-*/
-CLASSCURSOR(GFactoryPostGroupCursor,GFactoryPostGroup);
-
-
-//------------------------------------------------------------------------------
-/**
 * struture to order factory by their level
 */
 struct GFactoryPostGroupOrder

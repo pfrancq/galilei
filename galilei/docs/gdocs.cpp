@@ -122,18 +122,18 @@ GDocs::GDocs(unsigned int nb) throw(std::bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-GDocCursor GDocs::GetDocsCursor(void)
+R::RCursor<GDoc> GDocs::GetDocsCursor(void)
 {
-	GDocCursor cur(this);
+	R::RCursor<GDoc> cur(this);
 	return(cur);
 }
 
 
 //-----------------------------------------------------------------------------
-GDocCursor GDocs::GetDocsCursor(GLang* lang) throw(GException)
+R::RCursor<GDoc> GDocs::GetDocsCursor(GLang* lang) throw(GException)
 {
 	GDocsLang* ptr;
-	GDocCursor cur;
+	R::RCursor<GDoc> cur;
 
 	ptr=DocsLang.GetPtr<GLang*>(lang);
 	if(!ptr)

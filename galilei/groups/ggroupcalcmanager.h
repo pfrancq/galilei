@@ -95,7 +95,7 @@ public:
 	/**
 	* Get a cursor over the grouping computing methods.
 	*/
-	GFactoryGroupCalcCursor GetGroupCalcsCursor(void);
+	R::RCursor<GFactoryGroupCalc> GetGroupCalcsCursor(void);
 
 	/**
 	* Destructor of the group computing methods manager.

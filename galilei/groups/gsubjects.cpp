@@ -141,7 +141,7 @@ void GSubjects::Apply(void)
 //------------------------------------------------------------------------------
 void GSubjects::ChooseSubjects(void) throw(std::bad_alloc)
 {
-	GSubjectCursor Subs;
+	R::RCursor<GSubject> Subs;
 	unsigned int compt;
 	GSubject** tab;
 	GSubject** ptr;
@@ -174,13 +174,13 @@ void GSubjects::ChooseSubjects(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GSubjects::CreateSet(void) throw(std::bad_alloc)
 {
-	GSubjectCursor Subs;
+	R::RCursor<GSubject> Subs;
 	RCursor<GSubProfile> Prof;
 	unsigned int nbprof,nbsocial;
 //	GGroups* CurGrps;
 	GGroup* Grp;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
-	GFactoryLangCursor CurLang;
+	R::RCursor<GFactoryLang> CurLang;
 //	GLang* lang;
 
 	// Init Part
@@ -307,7 +307,7 @@ GGroup* GSubjects::GetIdealGroup(GSubProfile* sub) const throw(GException)
 //------------------------------------------------------------------------------
 void GSubjects::ComputeRecallPrecision(void)
 {
-	GroupScoreCursor Grp;
+	R::RCursor<GroupScore> Grp;
 	RCursor<GSubProfile> Sub;
 	GGroup* thGrp;
 	unsigned int NbGrp;
@@ -374,14 +374,14 @@ void GSubjects::ComputeRecallPrecision(void)
 //-----------------------------------------------------------------------------
 void GSubjects::ComputeTotal(void)
 {
-	GGroupCursor GroupsIdeal;                     // Pointer to the ideal groups for a given language
-	GGroupCursor GroupsComputed;                  // Pointer to the computed groups for a given language
+	R::RCursor<GGroup> GroupsIdeal;                     // Pointer to the ideal groups for a given language
+	R::RCursor<GGroup> GroupsComputed;                  // Pointer to the computed groups for a given language
 	GGroup* GroupComputed;                        // Pointer to a computed group
 	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
 	unsigned int MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
 	unsigned int NbProfiles;                      // Total Number of profiles
 	unsigned int NbTot;
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* lang;
 	unsigned int col;
 	double a,b,c,d,num,den,subtotal;
@@ -520,7 +520,7 @@ void GSubjects::CreateIdeal(bool Save) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GSubjects::FdbksCycle(bool Save) throw(std::bad_alloc)
 {
-	GGroupCursor Grps;
+	R::RCursor<GGroup> Grps;
 	RCursor<GSubProfile> SubProfile;
 	unsigned int i;
 
@@ -569,7 +569,7 @@ void GSubjects::FdbksCycle(bool Save) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GSubjects::AddAssessments(bool Save) throw(std::bad_alloc)
 {
-	GSubjectCursor Subs;
+	R::RCursor<GSubject> Subs;
 	RCursor<GSubProfile> Prof;
 	unsigned int i;
 	GDoc** ptr;
@@ -725,7 +725,7 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(std::bad_alloc)
 	unsigned int nbprof, nbsocial, nbprofilescreated;
 	GSubject* usedSubject;
 	RCursor<GSubProfile> Prof;
-	GGroupCursor CurGrps;
+	R::RCursor<GGroup> CurGrps;
 	GGroup* Grp;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
 	RCursor<GSubProfile> Sub;
@@ -830,7 +830,7 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(std::bad_alloc)
 double GSubjects::ComputePercAss(void)
 {
 	RCursor<GSubProfile> Cur1;
-	GProfileCursor Cur2;
+	R::RCursor<GProfile> Cur2;
 	GSubProfile* Sub;
 	unsigned int nb;
 	double PercAss;
@@ -900,7 +900,7 @@ void GSubjects::Clear(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GSubjects::Compare(void)
 {
-	GGroupCursor Cur;
+	R::RCursor<GGroup> Cur;
 
 	GroupsScore.Clear();
 	Cur=Session->GetGroupsCursor();

@@ -86,11 +86,11 @@ public:
 	virtual unsigned int GetNbLinks(void) {return(Obj->GetNbLinks());}
 	virtual void InsertLink(const GDoc* doc) throw(std::bad_alloc) {Obj->InsertLink(doc);}
 	virtual void InsertLink(const GDoc* doc, unsigned int nbOccurs) throw(std::bad_alloc) {Obj->InsertLink(doc,nbOccurs);}
-	virtual GLinkCursor GetLinkCursor(void) {return(Obj->GetLinkCursor());}
+	virtual R::RCursor<GLink> GetLinkCursor(void) {return(Obj->GetLinkCursor());}
 	virtual void InsertSubject(GSubject* s) {Obj->InsertSubject(s);}
 	virtual bool IsFromSubject(const GSubject* s) {return(Obj->IsFromSubject(s));}
 	virtual bool IsFromParentSubject(const GSubject* s) {return(Obj->IsFromParentSubject(s));}
-	virtual GSubjectCursor GetSubjectCursor(void) {return(Obj->GetSubjectCursor());}
+	virtual R::RCursor<GSubject> GetSubjectCursor(void) {return(Obj->GetSubjectCursor());}
 	virtual unsigned int GetNbSubjects(void) {return(Obj->GetNbSubjects());}
 	virtual void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed) {Obj->Update(lang,infos,computed);}
 	virtual ~GDocProxyMem(void) {}

@@ -212,15 +212,6 @@ extern "C"                                                                      
 }
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryStatsCalcCursor class provides a way to go trough a set of
-* factories.
-* @short Statss Computing Methods Factories Cursor
-*/
-CLASSCURSOR(GFactoryStatsCalcCursor,GFactoryStatsCalc);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

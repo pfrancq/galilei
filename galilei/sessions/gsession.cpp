@@ -209,33 +209,33 @@ void GSession::PostConnect(GLinkCalcManager* lmng) throw(std::bad_alloc,GExcepti
 
 
 //------------------------------------------------------------------------------
-GFactoryLinkCalcCursor GSession::GetLinkCalcsCursor(void)
+R::RCursor<GFactoryLinkCalc> GSession::GetLinkCalcsCursor(void)
 {
-	GFactoryLinkCalcCursor cur(LinkCalcMng);
+	R::RCursor<GFactoryLinkCalc> cur(LinkCalcMng);
 	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-GFactoryPostDocCursor GSession::GetPostDocsCursor(void)
+R::RCursor<GFactoryPostDoc> GSession::GetPostDocsCursor(void)
 {
-	GFactoryPostDocCursor cur(PostDocMng);
+	R::RCursor<GFactoryPostDoc> cur(PostDocMng);
 	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-GFactoryEngineCursor GSession::GetEnginesCursor(void)
+R::RCursor<GFactoryEngine> GSession::GetEnginesCursor(void)
 {
-	GFactoryEngineCursor cur(EngineMng);
+	R::RCursor<GFactoryEngine> cur(EngineMng);
 	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-GFactoryMetaEngineCursor GSession::GetMetaEnginesCursor(void)
+R::RCursor<GFactoryMetaEngine> GSession::GetMetaEnginesCursor(void)
 {
-	GFactoryMetaEngineCursor cur(EngineMng);
+	R::RCursor<GFactoryMetaEngine> cur(EngineMng);
 	return(cur);
 }
 
@@ -280,7 +280,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 {
 	bool undefLang;
 	GDocXML* xml=0;
-	GDocCursor Docs=GetDocsCursor();
+	R::RCursor<GDoc> Docs=GetDocsCursor();
 	RContainer<GDoc,false,true> tmpDocs(5,2);
 	GDocAnalyse* Analyse;
 	RString err;
@@ -374,7 +374,7 @@ void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save) throw(GExcepti
 {
 	bool undefLang;
 	GDocXML* xml=0;
-	GDocCursor Docs=GetDocsCursor();
+	R::RCursor<GDoc> Docs=GetDocsCursor();
 	RContainer<GDoc,false,true> tmpDocs(5,2);
 	GDocAnalyse* Analyse;
 	RString err;
@@ -466,7 +466,7 @@ void GSession::ComputePostDoc(GSlot* rec)  throw(GException)
 	char tmp[100];
 
 	// Run all post-group methods that are enabled
-	GFactoryPostDocCursor PostDocs=PostDocMng->GetPostDocsCursor();
+	R::RCursor<GFactoryPostDoc> PostDocs=PostDocMng->GetPostDocsCursor();
 
 	//first sort the plugins by level
 	RContainer<GFactoryPostDocOrder,true,true> ordered(PostDocs.GetNb());
@@ -633,7 +633,6 @@ double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate) throw
 	{
 		return(ProfilesSims->GetMinimumOfSimilarity(lang,deviationrate));
 	}
-
 }
 
 
@@ -641,7 +640,7 @@ double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate) throw
 void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks) throw(GException)
 {
 	RCursor<GSubProfile> Subs;
-	GProfileCursor Prof=GetProfilesCursor();
+	R::RCursor<GProfile> Prof=GetProfilesCursor();
 	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
 	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
 
@@ -720,7 +719,7 @@ void GSession::ComputePostGroup(GSlot* rec)  throw(GException)
 	char tmp[100];
 
 	// Run all post-group methods that are enabled
-	GFactoryPostGroupCursor PostGroups=PostGroupMng->GetPostGroupsCursor();
+	R::RCursor<GFactoryPostGroup> PostGroups=PostGroupMng->GetPostGroupsCursor();
 
 	//first sort the plugins by level
 	RContainer<GFactoryPostGroupOrder,true,true> ordered(PostGroups.GetNb());
@@ -778,7 +777,7 @@ void GSession::ClearFdbks(void)
 //------------------------------------------------------------------------------
 void GSession::CopyIdealGroups(bool save) throw(std::bad_alloc,GException)
 {
-	GGroupCursor Grps;
+	R::RCursor<GGroup> Grps;
 //	GGroupCursor Ideal;
 	RCursor<GSubProfile> Sub;
 //	GGroups* grps;
@@ -817,7 +816,7 @@ void GSession::CopyIdealGroups(bool save) throw(std::bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-GFactoryFilterCursor GSession::GetFiltersCursor(void)
+R::RCursor<GFactoryFilter> GSession::GetFiltersCursor(void)
 {
 	return(URLMng->GetFiltersCursor());
 }
@@ -842,7 +841,7 @@ void GSession::RunPrg(GSlot* rec,const char* filename) throw(GException)
 void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 {
 	//The number of word in current lang.
-	GDocCursor DocCursorTemp =GetDocsCursor();
+	R::RCursor<GDoc> DocCursorTemp =GetDocsCursor();
 	DocCursorTemp.Start();
 
 	int NbKwd;
@@ -860,7 +859,7 @@ void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 		j[i]=0;
 		k[i]=0;
 	}
-	GDocCursor DocCursor=GetDocsCursor();
+	R::RCursor<GDoc> DocCursor=GetDocsCursor();
 	for(DocCursor.Start();!DocCursor.End();DocCursor.Next())
 	{
 		GDoc* Doc=DocCursor();

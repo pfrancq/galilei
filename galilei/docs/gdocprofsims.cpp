@@ -139,7 +139,7 @@ public:
 GDocProfSims::GDocProfSim::GDocProfSim(GDocProfSims* manager, GDocs* d, RCursor<GSubProfile> s,bool iff,GLang* l) throw(std::bad_alloc)
 	: Sims(d->GetNbDocs(l)+2,d->GetNbDocs(l)/2 +1), IFF(iff),Lang(l), Manager(manager)
 {
-	GDocCursor Cur_d;
+	R::RCursor<GDoc> Cur_d;
 	RCursor<GSubProfile> Cur_p;
 	unsigned int nbrSubProf;
 	GSims* sim;
@@ -214,7 +214,7 @@ double GDocProfSims::GDocProfSim::GetSim(const GDoc* doc,const GSubProfile* sub)
 //------------------------------------------------------------------------------
 void  GDocProfSims::GDocProfSim::Update(GDocs* docs,GUsers* users) throw(std::bad_alloc)
 {
-	GDocCursor Cur_d;
+	R::RCursor<GDoc> Cur_d;
 	RCursor<GSubProfile> Cur_p;
 	unsigned int nbrSubProf;
 	GSims* sims;
@@ -292,7 +292,7 @@ void  GDocProfSims::GDocProfSim::Update(bool iff) throw (std::bad_alloc)
 GDocProfSims::GDocProfSims::GDocProfSims(GSession* session,bool iff,bool memory) throw(std::bad_alloc)
 	: Sims(10,5), Session(session), IFF(iff), Memory(memory)
 {
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 
 	Langs=Session->GetLangs()->GetLangsCursor();
@@ -310,7 +310,7 @@ void GDocProfSims::ReInit(void) throw(std::bad_alloc)
 {
 	if (!Memory) return;
 
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 
 	Sims.Clear();
@@ -327,7 +327,7 @@ void GDocProfSims::ReInit(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GDocProfSims::UseIFF(bool iff) throw(std::bad_alloc)
 {
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 
 	IFF=iff;

@@ -66,7 +66,7 @@ public :
 	* Get a cursor on the history of all groupments.
 	* @return GGroupCursor.
 	*/
-	GGroupsHistoryCursor GetGroupsHistoryCursor(void);
+	R::RCursor<GGroupsHistory> GetGroupsHistoryCursor(void);
 
 	/**
 	* Check which groups are modified.
@@ -209,14 +209,6 @@ public :
 	*/
 	~GGroupsHistory(void);
 };
-
-
-//------------------------------------------------------------------------------
-/**
-* The GGroupCursor class provides a way to go trough a set of group.
-* @short Group Cursor.
-*/
-CLASSCURSOR(GGroupsHistoryCursor,GGroupsHistory);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

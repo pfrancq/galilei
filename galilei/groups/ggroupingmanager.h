@@ -95,7 +95,7 @@ public:
 	/**
 	* Get a cursor over the grouping methods.
 	*/
-	GFactoryGroupingCursor GetGroupingsCursor(void);
+	R::RCursor<GFactoryGrouping> GetGroupingsCursor(void);
 
 	/**
 	* Destructor of a grouping methods manager.

@@ -97,7 +97,7 @@ public:
 	* Get a cursor over the factories handled by the manager.
 	* @return GFactoryDocAnalyseCursor.
 	*/
-	GFactoryDocAnalyseCursor GetDocAnalysesCursor(void);
+	R::RCursor<GFactoryDocAnalyse> GetDocAnalysesCursor(void);
 
 	/**
 	* Destructor of the manager.

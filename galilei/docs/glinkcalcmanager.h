@@ -96,7 +96,7 @@ public:
 	* Get a cursor over the factories handled by the manager.
 	* @return GFactoryLinkCalcCursor
 	*/
-	GFactoryLinkCalcCursor GetLinkCalcsCursor(void);
+	R::RCursor<GFactoryLinkCalc> GetLinkCalcsCursor(void);
 
 	/**
 	* Destructor of the manager.

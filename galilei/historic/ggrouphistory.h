@@ -170,7 +170,7 @@ public:
 	* Get a cursor on all children groups.
 	* @return GGroupHistoryCursor.
 	*/
-	GGroupHistoryCursor GetChildrenCursor(void);
+	R::RCursor<GGroupHistory> GetChildrenCursor(void);
 
 	/**
 	* Get the groupment containing the group.
@@ -183,15 +183,6 @@ public:
 	*/
 	~GGroupHistory(void);
 };
-
-
-//------------------------------------------------------------------------------
-/**
-* The GGroupHistoryCursor class provides a way to go trough a set of
-* GGroupHistory.
-* @short GroupHistory Cursor
-*/
-CLASSCURSOR(GGroupHistoryCursor,GGroupHistory);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -94,7 +94,7 @@ public:
 //------------------------------------------------------------------------------
 GGroup* GGroups::GGroupsLang::GetGroup(const GSubProfile* sub)
 {
-	GGroupCursor Groups;
+	R::RCursor<GGroup> Groups;
 
 	Groups.Set(this);
 	for(Groups.Start();!Groups.End();Groups.Next())
@@ -122,18 +122,18 @@ GGroups::GGroups(unsigned int g)
 
 
 //------------------------------------------------------------------------------
-GGroupCursor GGroups::GetGroupsCursor(void)
+R::RCursor<GGroup> GGroups::GetGroupsCursor(void)
 {
-	GGroupCursor cur(this);
+	R::RCursor<GGroup> cur(this);
 	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-GGroupCursor GGroups::GetGroupsCursor(GLang* lang) throw(GException)
+R::RCursor<GGroup> GGroups::GetGroupsCursor(GLang* lang) throw(GException)
 {
 	GGroupsLang* ptr;
-	GGroupCursor cur;
+	R::RCursor<GGroup> cur;
 
 	ptr=GroupsLang.GetPtr<GLang*>(lang);
 	if(!ptr)

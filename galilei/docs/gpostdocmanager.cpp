@@ -66,7 +66,7 @@ GPostDocManager::GPostDocManager(const char* path,bool dlg) throw(GException)
 //------------------------------------------------------------------------------
 void GPostDocManager::Connect(GSession* session) throw(GException)
 {
-	GFactoryPostDocCursor Cur;
+	R::RCursor<GFactoryPostDoc> Cur;
 	GPostDoc* calc;
 
 	Cur.Set(this);
@@ -82,7 +82,7 @@ void GPostDocManager::Connect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GPostDocManager::Disconnect(GSession* session) throw(GException)
 {
-	GFactoryPostDocCursor Cur;
+	R::RCursor<GFactoryPostDoc> Cur;
 	GPostDoc* calc;
 
 	Cur.Set(this);
@@ -96,9 +96,9 @@ void GPostDocManager::Disconnect(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
-GFactoryPostDocCursor GPostDocManager::GetPostDocsCursor(void)
+R::RCursor<GFactoryPostDoc> GPostDocManager::GetPostDocsCursor(void)
 {
-	GFactoryPostDocCursor cur(this);
+	R::RCursor<GFactoryPostDoc> cur(this);
 	return(cur);
 }
 

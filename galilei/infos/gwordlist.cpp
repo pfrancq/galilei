@@ -77,9 +77,9 @@ void GWordList::InsertWord(const GWord* word) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GWordCursor GWordList::GetWordCursor(void) throw(std::bad_alloc)
+R::RCursor<GWord> GWordList::GetWordCursor(void) throw(std::bad_alloc)
 {
-	GWordCursor cur(this);
+	R::RCursor<GWord> cur(this);
 	return(cur);
 }
 

@@ -170,9 +170,9 @@ GData* GDict::GetData(const unsigned int id) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-GDataCursor GDict::GetDataCursor(GInfoType type) throw(std::bad_alloc,GException)
+R::RCursor<GData> GDict::GetDataCursor(GInfoType type) throw(std::bad_alloc,GException)
 {
-	GDataCursor cur;
+	R::RCursor<GData> cur;
 	GDataTypes* tp;
 
 	tp=DataTypes.GetPtr<GInfoType>(type);

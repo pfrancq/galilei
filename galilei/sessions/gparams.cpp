@@ -53,7 +53,7 @@ GParams::GParams(const RString& n) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GParams::ReadConfig(RXMLTag* tag)
 {
-	GParamCursor Cur;
+	R::RCursor<GParam> Cur;
 
 	Cur.Set(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -64,7 +64,7 @@ void GParams::ReadConfig(RXMLTag* tag)
 //------------------------------------------------------------------------------
 void GParams::SaveConfig(RXMLStruct* xml,RXMLTag* tag)
 {
-	GParamCursor Cur;
+	R::RCursor<GParam> Cur;
 
 	Cur.Set(this);
 	for(Cur.Start();!Cur.End();Cur.Next())

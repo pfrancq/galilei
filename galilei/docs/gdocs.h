@@ -85,14 +85,14 @@ public:
 	* Get a cursor on all the documents.
 	* @return GDocCursor.
 	*/
-	GDocCursor GetDocsCursor(void);
+	R::RCursor<GDoc> GetDocsCursor(void);
 
 	/**
 	* Get a cursor on the documents of a given langage.
 	* @param lang            Language of the documents.
 	* @return GDocCursor.
 	*/
-	GDocCursor GetDocsCursor(GLang* lang) throw(GException);
+	R::RCursor<GDoc> GetDocsCursor(GLang* lang) throw(GException);
 
 	/**
 	* Fill a given array with all the documents of a given language. The array

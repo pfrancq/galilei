@@ -78,7 +78,7 @@ public:
 	/**
 	* Get a cursor on the factories handled by the manager.
 	*/
-	GFactoryPostDocCursor GetPostDocsCursor(void);
+	R::RCursor<GFactoryPostDoc> GetPostDocsCursor(void);
 
 	/**
 	* Destructor of the manager.

@@ -6,7 +6,7 @@
 
 	Widget to show a XML structure of a document - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Julien Lamoral (jlamoral@ulb.ac.be).
@@ -113,7 +113,7 @@ GALILEI::QGDocXML::QGDocXML(QWidget* parent,GDocXML* docxml)
 //-----------------------------------------------------------------------------
 void GALILEI::QGDocXML::ConstructTag(RXMLTag* t,QListViewItem* parent)
 {
-	RXMLTagCursor Cur=t->GetXMLTagsCursor();
+	R::RCursor<RXMLTag> Cur=t->GetXMLTagsCursor();
 	QListViewItem* ptr=0,*ptr2;
 	QListViewItem* prec=0;
 
@@ -142,7 +142,7 @@ void GALILEI::QGDocXML::ConstructTag(RXMLTag* t,QListViewItem* parent)
 void GALILEI::QGDocXML::slotSelectionTag(QListViewItem* item)
 {
 	QListViewItemXMLTag* t=(QListViewItemXMLTag*)item;
-	RXMLAttrCursor Cur;
+	R::RCursor<RXMLAttr> Cur;
 
 	if(t->Tag)
 	{

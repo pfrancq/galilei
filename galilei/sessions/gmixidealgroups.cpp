@@ -132,7 +132,7 @@ bool GALILEI::GMixIdealGroups::SplitGroups(void)
 	GGroup* g2;
 	GGroup** ptr;
 	GSubProfile** s;
-	GGroupCursor grpscur;
+	R::RCursor<GGroup> grpscur;
 	RCursor<GSubProfile> subcur;
 
 	// find  a group to split with at least two subprofiles
@@ -170,7 +170,7 @@ void GALILEI::GMixIdealGroups::RandomGroups(void)
 {
 	unsigned int r;
 	GGroup *igrp, *grp;
-	GGroupCursor igrpscur, grpscur;
+	R::RCursor<GGroup> igrpscur, grpscur;
 	RCursor<GSubProfile> subs;
 
 	MixedGroups->ClearGroups();
@@ -299,7 +299,7 @@ void GALILEI::GMixIdealGroups::Run(GSlot* g)
 void GALILEI::GMixIdealGroups::InitMixedGroups(unsigned int mingroups)
 {
 	GGroup *igrp, *grp;
-	GGroupCursor grpscur;
+	R::RCursor<GGroup> grpscur;
 	RCursor<GSubProfile> subs;
 
 	MixedGroups=new GGroups(10);
@@ -333,7 +333,7 @@ void GALILEI::GMixIdealGroups::RandOrderTab(void)
 	unsigned int i;
 
 	if(!CurrentLang) return;
-	GGroupCursor grpscur;
+	R::RCursor<GGroup> grpscur;
 	grpscur=MixedGroups->GetGroupsCursor(CurrentLang);
 	for (i=0, grpscur.Start(); !grpscur.End(); grpscur.Next(), i++)
 		Tab[i]=grpscur();

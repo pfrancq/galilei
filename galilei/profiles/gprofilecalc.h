@@ -204,15 +204,6 @@ extern "C"                                                                      
 }
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryProfileCalcCursor class provides a way to go trough a set of
-* factories.
-* @short Profiles Computing Methods Factories Cursor
-*/
-CLASSCURSOR(GFactoryProfileCalcCursor,GFactoryProfileCalc);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

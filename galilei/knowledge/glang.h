@@ -389,14 +389,6 @@ extern "C"                                                                      
 }
 
 
-//-----------------------------------------------------------------------------
-/**
-* The GFactoryLangCursor class provides a way to go trough a set of factories.
-* @short Language Factory Cursor
-*/
-CLASSCURSOR(GFactoryLangCursor,GFactoryLang);
-
-
 }  //-------- End of namespace GALILEI ----------------------------------------
 
 

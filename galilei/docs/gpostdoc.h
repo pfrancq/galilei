@@ -195,15 +195,6 @@ extern "C"                                                                      
 
 //------------------------------------------------------------------------------
 /**
-* The GFactoryPostDocCursor class provides a way to go trough a set of
-* factories of documets post-analysis methods.
-* @short Documents Post-Analysis Factories Cursor
-*/
-CLASSCURSOR(GFactoryPostDocCursor,GFactoryPostDoc);
-
-
-//------------------------------------------------------------------------------
-/**
 * struture to order factory by their level
 */
 struct GFactoryPostDocOrder

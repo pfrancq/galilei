@@ -80,7 +80,7 @@ public:
 	/**
 	* Get a cursor over the users used in the system.
 	*/
-	GUserCursor GetUsersCursor(void);
+	R::RCursor<GUser> GetUsersCursor(void);
 
 	/**
 	* Get the number of users treated by the system.
@@ -123,7 +123,7 @@ public:
 	/**
 	* Get a cursor over the profiles of the system.
 	*/
-	GProfileCursor GetProfilesCursor(void);
+	R::RCursor<GProfile> GetProfilesCursor(void);
 
 	/**
 	* Get the number of profiles defined in the system.

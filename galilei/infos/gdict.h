@@ -192,7 +192,7 @@ public:
 	* type.
 	* @param type            Information type.
 	*/
-	GDataCursor GetDataCursor(GInfoType type) throw(std::bad_alloc,GException);
+	R::RCursor<GData> GetDataCursor(GInfoType type) throw(std::bad_alloc,GException);
 
 	/**
 	* Get the name of the dictionary.

@@ -99,14 +99,6 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GWordCursor class provides a way to go trough a vector of words.
-* @short Word Cursor
-*/
-CLASSCURSOR(GWordCursor,GWord);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

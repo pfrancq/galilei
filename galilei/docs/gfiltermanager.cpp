@@ -113,13 +113,13 @@ GFilterManager::GFilterManager(const char* path,bool dlg) throw(std::bad_alloc,G
 	RString MIME;
 	Path+="/filters";
 	LoadPlugins<GFactoryFilter,GFactoryFilterInit,GFilterManager>(this,Path.Latin1(),API_FILTER_VERSION, dlg);
-	
+
 	// Try to open list of MIME types
 	try
 	{
 		RXMLStruct xml;
 		RXMLFile File("/etc/galilei/galilei.mimes",&xml);
-		RXMLTagCursor Cur,Cur2;
+		R::RCursor<RXMLTag> Cur,Cur2;
 
 		File.Process();
 
@@ -286,9 +286,9 @@ const char* GFilterManager::GetMIMEType(const char* mime) const
 
 
 //------------------------------------------------------------------------------
-GFactoryFilterCursor GFilterManager::GetFiltersCursor(void)
+R::RCursor<GFactoryFilter> GFilterManager::GetFiltersCursor(void)
 {
-	GFactoryFilterCursor cur(this);
+	R::RCursor<GFactoryFilter> cur(this);
 	return(cur);
 }
 

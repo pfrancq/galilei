@@ -66,7 +66,7 @@ GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(std::bad_a
 //------------------------------------------------------------------------------
 void GStatsCalcManager::Connect(GSession* session) throw(GException)
 {
-	GFactoryStatsCalcCursor Cur;
+	R::RCursor<GFactoryStatsCalc> Cur;
 	GStatsCalc* calc;
 
 	Cur.Set(this);
@@ -82,7 +82,7 @@ void GStatsCalcManager::Connect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GStatsCalcManager::Disconnect(GSession* session) throw(GException)
 {
-	GFactoryStatsCalcCursor Cur;
+	R::RCursor<GFactoryStatsCalc> Cur;
 	GStatsCalc* calc;
 
 	Cur.Set(this);
@@ -108,9 +108,9 @@ GStatsCalc* GStatsCalcManager::Get(const char* name)
 
 
 //------------------------------------------------------------------------------
-GFactoryStatsCalcCursor GStatsCalcManager::GetStatsCalcsCursor(void)
+R::RCursor<GFactoryStatsCalc> GStatsCalcManager::GetStatsCalcsCursor(void)
 {
-	GFactoryStatsCalcCursor cur(this);
+	R::RCursor<GFactoryStatsCalc> cur(this);
 	return(cur);
 }
 

@@ -64,7 +64,7 @@ GGroupingManager::GGroupingManager(const char* path,bool dlg) throw(std::bad_all
 //------------------------------------------------------------------------------
 void GGroupingManager::Connect(GSession* session) throw(GException)
 {
-	GFactoryGroupingCursor Cur;
+	R::RCursor<GFactoryGrouping> Cur;
 	GGrouping* calc;
 
 	Cur.Set(this);
@@ -80,7 +80,7 @@ void GGroupingManager::Connect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GGroupingManager::Disconnect(GSession* session) throw(GException)
 {
-	GFactoryGroupingCursor Cur;
+	R::RCursor<GFactoryGrouping> Cur;
 	GGrouping* calc;
 
 	Cur.Set(this);
@@ -118,9 +118,9 @@ GGrouping* GGroupingManager::GetCurrentMethod(void)
 
 
 //------------------------------------------------------------------------------
-GFactoryGroupingCursor GGroupingManager::GetGroupingsCursor(void)
+R::RCursor<GFactoryGrouping> GGroupingManager::GetGroupingsCursor(void)
 {
-	GFactoryGroupingCursor cur(this);
+	R::RCursor<GFactoryGrouping> cur(this);
 	return(cur);
 }
 

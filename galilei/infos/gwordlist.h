@@ -88,7 +88,7 @@ public:
 	* Create a cursor for the list of words.
 	* @return GWordCursor.
 	*/
-	GWordCursor GetWordCursor(void) throw(std::bad_alloc);
+	R::RCursor<GWord> GetWordCursor(void) throw(std::bad_alloc);
 
 	/**
 	* This method creates a copy of a list.

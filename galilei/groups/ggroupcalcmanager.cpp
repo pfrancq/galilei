@@ -64,7 +64,7 @@ GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(std::bad_a
 //------------------------------------------------------------------------------
 void GGroupCalcManager::Connect(GSession* session) throw(GException)
 {
-	GFactoryGroupCalcCursor Cur;
+	R::RCursor<GFactoryGroupCalc> Cur;
 	GGroupCalc* calc;
 
 	Cur.Set(this);
@@ -80,7 +80,7 @@ void GGroupCalcManager::Connect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GGroupCalcManager::Disconnect(GSession* session) throw(GException)
 {
-	GFactoryGroupCalcCursor Cur;
+	R::RCursor<GFactoryGroupCalc> Cur;
 	GGroupCalc* calc;
 
 	Cur.Set(this);
@@ -118,9 +118,9 @@ GGroupCalc* GGroupCalcManager::GetCurrentMethod(void)
 
 
 //------------------------------------------------------------------------------
-GFactoryGroupCalcCursor GGroupCalcManager::GetGroupCalcsCursor(void)
+R::RCursor<GFactoryGroupCalc> GGroupCalcManager::GetGroupCalcsCursor(void)
 {
-	GFactoryGroupCalcCursor cur(this);
+	R::RCursor<GFactoryGroupCalc> cur(this);
 	return(cur);
 }
 

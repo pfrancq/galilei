@@ -28,7 +28,7 @@
 	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	Boston, MA  02111-1307  USA
 
-*/ 
+*/
 
 
 
@@ -132,7 +132,7 @@ public:
 	* Get a cursor over the documents contained in the subject.
 	* @return GDocCursor.
 	*/
-	GDocCursor GetDocsCursor(void);
+	R::RCursor<GDoc> GetDocsCursor(void);
 
 	/**
 	* Get the number of documents associated to this subject.
@@ -168,15 +168,6 @@ public:
 	*/
 	~GSubject(void);
 };
-
-
-//------------------------------------------------------------------------------
-/**
-* The GSubjectCursor class provides a way to go trough a set of subjects.
-* @short Subject Cursor
-*/
-CLASSCURSOR(GSubjectCursor,GSubject);
-
 
 
 }; //-------- End of namespace GALILEI -----------------------------------------

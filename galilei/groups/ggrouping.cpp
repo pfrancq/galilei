@@ -89,10 +89,10 @@ void GGrouping::Disconnect(GSession*) throw(GException)
 //-----------------------------------------------------------------------------
 void GGrouping::Grouping(GSlot* rec,bool modified,bool save,bool savehistory) throw(GException)
 {
-	GFactoryLangCursor CurLang;
+	R::RCursor<GFactoryLang> CurLang;
 	GGroupCalc* CalcDesc;
 	RCursor<GSubProfile> cur;
-	GGroupCursor Groups;
+	R::RCursor<GGroup> Groups;
 
 	Modified=modified;
 

@@ -63,7 +63,7 @@ GLinkCalcManager::GLinkCalcManager(const char* path,bool dlg) throw(std::bad_all
 //------------------------------------------------------------------------------
 void GLinkCalcManager::Connect(GSession* session) throw(GException)
 {
-	GFactoryLinkCalcCursor Cur;
+	R::RCursor<GFactoryLinkCalc> Cur;
 	GLinkCalc* calc;
 
 	Cur.Set(this);
@@ -79,7 +79,7 @@ void GLinkCalcManager::Connect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GLinkCalcManager::Disconnect(GSession* session) throw(GException)
 {
-	GFactoryLinkCalcCursor Cur;
+	R::RCursor<GFactoryLinkCalc> Cur;
 	GLinkCalc* calc;
 
 	Cur.Set(this);
@@ -117,9 +117,9 @@ GLinkCalc* GLinkCalcManager::GetCurrentMethod(void)
 
 
 //------------------------------------------------------------------------------
-GFactoryLinkCalcCursor GLinkCalcManager::GetLinkCalcsCursor(void)
+R::RCursor<GFactoryLinkCalc> GLinkCalcManager::GetLinkCalcsCursor(void)
 {
-	GFactoryLinkCalcCursor cur(this);
+	R::RCursor<GFactoryLinkCalc> cur(this);
 	return(cur);
 }
 

@@ -78,7 +78,7 @@ public:
 	/**
 	* Get a cursor over the post-group computing methods.
 	*/
-	GFactoryPostGroupCursor GetPostGroupsCursor(void);
+	R::RCursor<GFactoryPostGroup> GetPostGroupsCursor(void);
 
 	/**
 	* Destruct the post-group computing methods manager.

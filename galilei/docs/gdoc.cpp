@@ -329,9 +329,9 @@ void GDoc::InsertLink(const GDoc* doc,unsigned int nbOccurs) throw(std::bad_allo
 
 
 //------------------------------------------------------------------------------
-GLinkCursor GDoc::GetLinkCursor(void)
+R::RCursor<GLink> GDoc::GetLinkCursor(void)
 {
-	GLinkCursor cur(LinkSet);
+	R::RCursor<GLink> cur(LinkSet);
 	return(cur);
 }
 
@@ -353,7 +353,7 @@ bool GDoc::IsFromSubject(const GSubject* s)
 //------------------------------------------------------------------------------
 bool GDoc::IsFromParentSubject(const GSubject* s)
 {
-	GSubjectCursor Sub;
+	R::RCursor<GSubject> Sub;
 
 	if(!s->Parent) return(false);
 	Sub.Set(s->Parent);
@@ -367,9 +367,9 @@ bool GDoc::IsFromParentSubject(const GSubject* s)
 
 
 //------------------------------------------------------------------------------
-GSubjectCursor GDoc::GetSubjectCursor(void)
+R::RCursor<GSubject> GDoc::GetSubjectCursor(void)
 {
-	GSubjectCursor cur(Subjects);
+	R::RCursor<GSubject> cur(Subjects);
 	return(cur);
 }
 

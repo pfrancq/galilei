@@ -324,25 +324,25 @@ public:
 	* Get a cursor over the factories of the link methods.
 	* @return GLinkCalcCursor.
 	*/
-	GFactoryLinkCalcCursor GetLinkCalcsCursor(void);
+	R::RCursor<GFactoryLinkCalc> GetLinkCalcsCursor(void);
 
 	/**
 	* Get a cursor over the factories of the document post-analysis methods.
 	* @return GPostDocCursor.
 	*/
-	GFactoryPostDocCursor GetPostDocsCursor(void);
+	R::RCursor<GFactoryPostDoc> GetPostDocsCursor(void);
 
 	/**
 	* Get a cursor over the factories of the search engines.
 	* @return GEngineCursor.
 	*/
-	GFactoryEngineCursor GetEnginesCursor(void);
+	R::RCursor<GFactoryEngine> GetEnginesCursor(void);
 
 	/**
 	* Get a cursor over the factories of the meta search engines.
 	* @return GMetaEngineCursor.
 	*/
-	GFactoryMetaEngineCursor GetMetaEnginesCursor(void);
+	R::RCursor<GFactoryMetaEngine> GetMetaEnginesCursor(void);
 
 	//--------------------------------------------------------------------------
 	// Assign identifier methods
@@ -533,7 +533,7 @@ public:
 	/**
 	* Get a cursor over the filters of the system.
 	*/
-	GFactoryFilterCursor GetFiltersCursor(void);
+	R::RCursor<GFactoryFilter> GetFiltersCursor(void);
 
 	/**
 	* Get the filter for a specific mime type.

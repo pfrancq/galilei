@@ -378,7 +378,7 @@ proxy:
 	* Get a cursor on the Links of the document.
 	* @return GLinkCursor.
 	*/
-	GLinkCursor GetLinkCursor(void);
+	R::RCursor<GLink> GetLinkCursor(void);
 
 	/**
 	* Insert a new subject for this document.
@@ -404,7 +404,7 @@ proxy:
 	* Get a Cursor on the subjects.
 	* @return GSubjectCursor.
 	*/
-	GSubjectCursor GetSubjectCursor(void);
+	R::RCursor<GSubject> GetSubjectCursor(void);
 
 	/**
 	* Get the number of subjects associated with the document.
@@ -428,14 +428,6 @@ public:
 	*/
 	virtual ~GDoc(void);
 };
-
-
-//------------------------------------------------------------------------------
-/**
-* The GDocCursor class provides a way to go trough a set of documents.
-* @short Documents Cursor
-*/
-CLASSCURSOR(GDocCursor,GDoc);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

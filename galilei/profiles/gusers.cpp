@@ -97,9 +97,9 @@ GUsers::GUsers(unsigned int u,unsigned int p) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GUserCursor GUsers::GetUsersCursor(void)
+R::RCursor<GUser> GUsers::GetUsersCursor(void)
 {
-	GUserCursor cur(this);
+	R::RCursor<GUser> cur(this);
 	return(cur);
 }
 
@@ -175,9 +175,9 @@ GProfile* GUsers::GetProfile(const unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-GProfileCursor GUsers::GetProfilesCursor(void)
+R::RCursor<GProfile> GUsers::GetProfilesCursor(void)
 {
-	GProfileCursor cur(Profiles);
+	R::RCursor<GProfile> cur(Profiles);
 	return(cur);
 }
 

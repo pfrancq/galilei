@@ -317,14 +317,6 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GDataCursor class provides a way to go trough a vector of words.
-* @short Word Cursor
-*/
-CLASSCURSOR(GDataCursor,GData);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

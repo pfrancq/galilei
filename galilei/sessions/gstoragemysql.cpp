@@ -304,7 +304,7 @@ void GStorageMySQL::LoadWordList(GWordList* w,GLang* lang) throw(std::bad_alloc,
 //------------------------------------------------------------------------------
 void GStorageMySQL::SaveWordList(GDict* dic,GWordList* w) throw(GException)
 {
-	GWordCursor Cur;
+	R::RCursor<GWord> Cur;
 
 	try
 	{
@@ -439,7 +439,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 	RString sSql;
 	GUser* usr;
 	GProfile* prof;
-	GFactoryLangCursor langs;
+	R::RCursor<GFactoryLang> langs;
 	GLang* lang;
 	GSubProfile* sub;
 	unsigned int userid,profileid,subid;
@@ -538,7 +538,7 @@ void GStorageMySQL::LoadIdealGroupment(GSession* session) throw(std::bad_alloc,G
 {
 	GGroups* groups;
 	GGroup* group;
-	GFactoryLangCursor langs;
+	R::RCursor<GFactoryLang> langs;
 	GLang* lang;
 	RString sSql;
 	GSubProfile* subp;
@@ -582,7 +582,7 @@ void GStorageMySQL::LoadIdealGroupment(GSession* session) throw(std::bad_alloc,G
 //------------------------------------------------------------------------------
 void GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup) throw(GException)
 {
-	GGroupCursor groups;
+	R::RCursor<GGroup> groups;
 	RCursor<GSubProfile> sub;
 	RString sSql;
 
@@ -689,7 +689,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 {
 	GDoc* doc;
 	GLang* lang;
-	GFactoryLangCursor langs;
+	R::RCursor<GFactoryLang> langs;
 	GDoc* d;
 	GSubject* s;
 	unsigned int i,idx,docid;
@@ -773,7 +773,7 @@ void GStorageMySQL::LoadNewDocs(GSession* session) throw(std::bad_alloc,GExcepti
 	GDoc* doc;
 	GLang* lang;
 	int docid;
-	GFactoryLangCursor langs;
+	R::RCursor<GFactoryLang> langs;
 
 	try
 	{
@@ -888,7 +888,7 @@ void GStorageMySQL::SaveDoc(GDoc* doc) throw(GException)
 	RString id;
 	RString f;
 	RCursor<GWeightInfo> Words;
-	GLinkCursor lcur;
+	R::RCursor<GLink> lcur;
 
 	try
 	{
@@ -992,9 +992,9 @@ void GStorageMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
 void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 {
 	RCursor<GWeightInfo> WordCur;
-	GGroupCursor GroupsCursor;
+	R::RCursor<GGroup> GroupsCursor;
 	RString sSql;
-	GFactoryLangCursor langs;
+	R::RCursor<GFactoryLang> langs;
 	GLang* lang;
 	RCursor<GSubProfile> Sub;
 
@@ -1043,7 +1043,7 @@ void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GStorageMySQL::SaveGroupsHistory(GSession* session) throw(GException)
 {
-	GGroupCursor GroupsCursor;
+	R::RCursor<GGroup> GroupsCursor;
 	RCursor<GSubProfile> Sub;
 	unsigned int historicID;
 	RString sSql;
@@ -1088,7 +1088,7 @@ void GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool h
 	RString sSql;
 	RString database;
 	RString field;
-	GGroupCursor grp;
+	R::RCursor<GGroup> grp;
 	RCursor<GSubProfile> Sub;
 
 	try
@@ -1137,7 +1137,7 @@ void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historic
 {
 	try
 	{
-		GProfileCursor curProf=session->GetProfilesCursor() ;
+		R::RCursor<GProfile> curProf=session->GetProfilesCursor() ;
 
 		// Save the Subprofile
 		for(curProf.Start();!curProf.End();curProf.Next())
@@ -1158,9 +1158,9 @@ void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historic
 void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GException)
 {
 	GGroup* group;
-	GGroupCursor GroupsCursor;
+	R::RCursor<GGroup> GroupsCursor;
 	GLang* lang;
-	GFactoryLangCursor langs;
+	R::RCursor<GFactoryLang> langs;
 	unsigned int groupid,idx,i;
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
 

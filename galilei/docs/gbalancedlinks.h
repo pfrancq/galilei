@@ -125,15 +125,6 @@ public :
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GLinksCursor class provides a way to go trough a set of a weighted list
-* of links.
-* @short Weighted List of Links Cursor
-*/
-CLASSCURSOR(GBalancedLinksCursor,GBalancedLinks);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

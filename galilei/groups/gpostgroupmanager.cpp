@@ -64,7 +64,7 @@ GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(std::bad_a
 //------------------------------------------------------------------------------
 void GPostGroupManager::Connect(GSession* session) throw(GException)
 {
-	GFactoryPostGroupCursor Cur;
+	R::RCursor<GFactoryPostGroup> Cur;
 	GPostGroup* calc;
 
 	Cur.Set(this);
@@ -80,7 +80,7 @@ void GPostGroupManager::Connect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GPostGroupManager::Disconnect(GSession* session) throw(GException)
 {
-	GFactoryPostGroupCursor Cur;
+	R::RCursor<GFactoryPostGroup> Cur;
 	GPostGroup* calc;
 
 	Cur.Set(this);
@@ -94,9 +94,9 @@ void GPostGroupManager::Disconnect(GSession* session) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-GFactoryPostGroupCursor GPostGroupManager::GetPostGroupsCursor(void)
+R::RCursor<GFactoryPostGroup> GPostGroupManager::GetPostGroupsCursor(void)
 {
-	GFactoryPostGroupCursor cur(this);
+	R::RCursor<GFactoryPostGroup> cur(this);
 	return(cur);
 }
 

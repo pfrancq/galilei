@@ -167,7 +167,7 @@ public:
 	* @returns GALILEI::tObjState value.
 	*/
 	tObjState GetState(void) const {return(State);}
-	
+
 	/**
 	* Set the state of the group.
 	* @param state          New state.
@@ -351,15 +351,6 @@ public:
 	*/
 	~GGroup(void);
 };
-
-
-//------------------------------------------------------------------------------
-/**
-* The GGroupCursor class provides a way to go trough a set of group.
-* @short Group Cursor.
-*/
-CLASSCURSOR(GGroupCursor,GGroup);
-
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -6,7 +6,7 @@
 
 	Class to store the results of the extraction from a search engine - Header.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele (vavdaele@ulb.ac.be)
@@ -62,10 +62,10 @@ namespace GALILEI{
 /**
 * The GEngineDoc class provides a representation for the storage of
 * the results extracted from a search engine
-* @author Valery Vandaele 
+* @author Valery Vandaele
 * @short storage of results from a search engine
 */
-class GEngineDoc 
+class GEngineDoc
 {
 private:
 
@@ -73,27 +73,27 @@ private:
 	* The url of the resulting page.
 	*/
 	R::RString Url;
-	
+
 	/**
 	* The title of the resulting page.
 	*/
 	R::RString Title;
-	
+
 	/**
 	* The description of the resulting page.
 	*/
 	R::RString Description;
-	
+
 	/**
 	* The global ranking for the curent document
 	*/
 	unsigned int GlobalRank;
-	
+
 	/**
 	* The global ranking for the curent document
 	*/
 	unsigned int GlobalRank2;
-	
+
 	/**
 	* Container of all rankings associated to this URL
 	*/
@@ -107,13 +107,13 @@ public:
 	* @param dlg             Should the dialog box be loaded.
 	*/
 	GEngineDoc(R::RString url,R::RString title,R::RString description,int rank, R::RString engine);
-	
+
 	/**
 	* Get the url of the document
 	* @return RString        the url of the document
 	*/
 	R::RString GetUrl(void) const {return Url;};
-	
+
 	/**
 	* Get the Title of the document
 	* @return RString        the title of the document
@@ -125,84 +125,76 @@ public:
 	* @return RString        the description of the document
 	*/
 	R::RString GetDescription(void) const {return Description;};
-	
+
 	/**
 	* Get the global ranking associated to this document
 	* #return uint           the global ranking
 	*/
 	unsigned int GetGlobalRanking(void) const {return GlobalRank;};
-	
+
 	/**
 	* Set the value of the global ranking
 	* @param r               the new value of the global ranking
 	*/
 	void SetGlobalRanking(unsigned int r) {GlobalRank=r;};
-	
+
 	/**
 	* Get the global ranking associated to this document
 	* #return uint           the global ranking
 	*/
 	unsigned int GetGlobalRanking2(void) const {return GlobalRank2;};
-	
+
 	/**
 	* Set the value of the global ranking
 	* @param r               the new value of the global ranking
 	*/
 	void SetGlobalRanking2(unsigned int r) {GlobalRank2=r;};
-	
+
 	/**
 	* Add new ranking for the current document
 	* @param r               the ranking
 	*/
 	void AddRanking(GRanking* r);
-	
+
 	/**
 	* Add new ranking for the current document
 	* @param rank               the rank
 	* @param engine             the engine
 	*/
 	void AddRanking(int rank,R::RString engine);
-	
+
 	/**
 	* Method to compare two GEngineDoc
 	* @param d           The element to compare
 	* @results int       The result of the comparaison
 	*/
 	int Compare(const GEngineDoc& d) const;
-	
+
 	/**
 	* Method to compare two GEngineDoc
 	* @param d           The element to compare
 	* @results int       The result of the comparaison
 	*/
 	int Compare(const GEngineDoc* d) const;
-	
+
 	/**
-	* Method to compare GEngineDoc 
+	* Method to compare GEngineDoc
 	* @param url         The url to compare
 	* @results int       The result of the comparaison
 	*/
 	int Compare(const R::RString url) const;
-	
+
 	/**
 	* Get a cursor on the ranking of the engineDoc.
 	* @return GRankingCursor.
 	*/
-	GRankingCursor GetRankingsCursor(void) throw(GException);
+	R::RCursor<GRanking> GetRankingsCursor(void) throw(GException);
 
 	/**
 	* Destructor of the URL manager.
 	*/
 	virtual ~GEngineDoc(void);
 };
-
-
-//------------------------------------------------------------------------------
-/**
-* The GEngineDocCursor class provides a way to go trough a set of GEngineDoc.
-* @short Engine Documents Cursor
-*/
-CLASSCURSOR(GEngineDocCursor,GEngineDoc);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

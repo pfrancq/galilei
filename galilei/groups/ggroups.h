@@ -82,14 +82,14 @@ public:
 	* Get a cursor on all the groups.
 	* @return GGroupCursor.
 	*/
-	GGroupCursor GetGroupsCursor(void);
+	R::RCursor<GGroup> GetGroupsCursor(void);
 
 	/**
 	* Get a cursor on the groups of a given langage.
 	* @param lang            Language of the groups.
 	* @return GGroupCursor.
 	*/
-	GGroupCursor GetGroupsCursor(GLang* lang) throw(GException);
+	R::RCursor<GGroup> GetGroupsCursor(GLang* lang) throw(GException);
 
 	/**
 	* Insert a group. The group is also stored in the container correspondong to

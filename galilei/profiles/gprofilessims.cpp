@@ -568,7 +568,7 @@ GProfilesSims::GProfilesSims(GSession* session,bool iff, bool memory) throw(std:
 	: Sims(10,5), Session(session), IFF(iff), Memory(memory),
 	  NullSimLevel(session->GetSessionParams()->GetDouble("NullSimLevel"))
 {
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 
 
@@ -584,7 +584,7 @@ GProfilesSims::GProfilesSims(GSession* session,bool iff, bool memory) throw(std:
 //------------------------------------------------------------------------------
 void GProfilesSims::ReInit(void) throw(std::bad_alloc)
 {
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 
 	if (!GetMemory()) return;
@@ -602,7 +602,7 @@ void GProfilesSims::ReInit(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GProfilesSims::UseIFF(bool iff) throw(std::bad_alloc)
 {
-	GFactoryLangCursor Langs;
+	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 
 	IFF=iff;
@@ -620,7 +620,7 @@ void GProfilesSims::UseIFF(bool iff) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GProfilesSims::Update(void)
 {
-	for (Sims.Start(); !Sims.End(); Sims.Next())
+	for(Sims.Start(); !Sims.End(); Sims.Next())
 		Sims()->Update();
 }
 
@@ -644,7 +644,6 @@ double GProfilesSims::GetMinimumOfSimilarity(GLang* lang, double deviationrate) 
 		throw GException("Language not defined");
 	profSim->UpdateDeviationAndMeanSim(Session->GetSubProfilesCursor(lang));
 	minSim=profSim->MeanSim+deviationrate*sqrt(profSim->Deviation);
-
 	return(minSim);
 }
 

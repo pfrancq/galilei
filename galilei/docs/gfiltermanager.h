@@ -142,7 +142,7 @@ public:
 	* Get a cursor over the filters of the system.
 	* @return GFactoryFilterCursor.
 	*/
-	GFactoryFilterCursor GetFiltersCursor(void);
+	R::RCursor<GFactoryFilter> GetFiltersCursor(void);
 
 	/**
 	* Destructor of filter manager.

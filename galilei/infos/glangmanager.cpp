@@ -65,7 +65,7 @@ GLangManager::GLangManager(const char* path,bool dlg) throw(std::bad_alloc,GExce
 //------------------------------------------------------------------------------
 void GLangManager::Connect(GSession* session) throw(GException)
 {
-	GFactoryLangCursor Cur;
+	R::RCursor<GFactoryLang> Cur;
 	GLang* lang;
 
 	Cur.Set(this);
@@ -81,7 +81,7 @@ void GLangManager::Connect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GLangManager::Disconnect(GSession* session) throw(GException)
 {
-	GFactoryLangCursor Cur;
+	R::RCursor<GFactoryLang> Cur;
 	GLang* lang;
 
 	Cur.Set(this);
@@ -109,9 +109,9 @@ GLang* GLangManager::GetLang(const char* code) const
 
 
 //------------------------------------------------------------------------------
-GFactoryLangCursor GLangManager::GetLangsCursor(void)
+R::RCursor<GFactoryLang> GLangManager::GetLangsCursor(void)
 {
-	GFactoryLangCursor cur(this);
+	R::RCursor<GFactoryLang> cur(this);
 	return(cur);
 }
 

@@ -213,15 +213,6 @@ extern "C"                                                                      
 }
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryLinkCalcCursor class provides a way to go trough a set of
-* factories of link methods.
-* @short Links Methods Factories Cursor
-*/
-CLASSCURSOR(GFactoryLinkCalcCursor,GFactoryLinkCalc);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

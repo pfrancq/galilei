@@ -65,7 +65,7 @@ GProfileCalcManager::GProfileCalcManager(const char* path,bool dlg) throw(std::b
 //------------------------------------------------------------------------------
 void GProfileCalcManager::Connect(GSession* session) throw(GException)
 {
-	GFactoryProfileCalcCursor Cur;
+	R::RCursor<GFactoryProfileCalc> Cur;
 	GProfileCalc* calc;
 
 	Cur.Set(this);
@@ -81,7 +81,7 @@ void GProfileCalcManager::Connect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GProfileCalcManager::Disconnect(GSession* session) throw(GException)
 {
-	GFactoryProfileCalcCursor Cur;
+	R::RCursor<GFactoryProfileCalc> Cur;
 	GProfileCalc* calc;
 
 	Cur.Set(this);
@@ -119,9 +119,9 @@ GProfileCalc* GProfileCalcManager::GetCurrentMethod(void)
 
 
 //------------------------------------------------------------------------------
-GFactoryProfileCalcCursor GProfileCalcManager::GetProfileCalcsCursor(void)
+R::RCursor<GFactoryProfileCalc> GProfileCalcManager::GetProfileCalcsCursor(void)
 {
-	GFactoryProfileCalcCursor cur(this);
+	R::RCursor<GFactoryProfileCalc> cur(this);
 	return(cur);
 }
 

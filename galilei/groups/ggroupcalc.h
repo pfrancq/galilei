@@ -204,15 +204,6 @@ extern "C"                                                                      
 }
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryGroupCalcCursor class provides a way to go trough a set of
-* factories.
-* @short Groups Computing Methods Factories Cursor
-*/
-CLASSCURSOR(GFactoryGroupCalcCursor,GFactoryGroupCalc);
-
-
 }  //-------- End of namespace GALILEI -----------------------------------------
 
 

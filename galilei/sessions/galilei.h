@@ -77,12 +77,9 @@ class GInfosWeightsHistory;
 class GLang;
 class GLangProxy;
 class GFactoryLang;
-class GFactoryLangCursor;
 class GLangManager;
 class GData;
-class GDataCursor;
 class GWord;
-class GWordCursor;
 class GWordList;
 class GDict;
 class GDicts;
@@ -92,32 +89,25 @@ class GDicts;
 // forward class declaration - Docs Part
 class GFilter;
 class GFactoryFilter;
-class GFactoryFilterCursor;
 class GFilterManager;
 class GDoc;
 class GDocProxy;
 class GDocAnalyse;
 class GDocAnalyseManager;
-class GDocCursor;
 class GPostDoc;
 class GPostDocManager;
 class GFactoryPostDoc;
-class GFactoryPostDocCursor;
 class GDocProfSims;
 class GDocs;
 class GDocSim;
 class GDocsSim;
 class GDocXML;
 class GFactoryDocAnalyse;
-class GFactoryDocAnalyseCursor;
 class GBalancedLinks;
-class GBalancedLinksCursor;
 class GFactoryLinkCalc;
-class GFactoryLinkCalcCursor;
 class GLink;
 class GLinkCalc;
 class GLinkCalcManager;
-class GLinkCursor;
 class GLinks;
 
 
@@ -125,13 +115,11 @@ class GLinks;
 // forward class declaration - Engines Part
 class GEngine;
 class GFactoryEngine;
-class GFactoryEngineCursor;
 class GEngineManager;
 class GEngineDoc;
 class GRanking;
 class GMetaEngine;
 class GFactoryMetaEngine;
-class GFactoryMetaEngineCursor;
 class GMetaEngineManager;
 
 
@@ -139,7 +127,6 @@ class GMetaEngineManager;
 // forward class declaration - Profiles Part
 class GUsers;
 class GUser;
-class GUserCursor;
 class GProfile;
 class GProfileProxy;
 class GSubProfile;
@@ -147,7 +134,6 @@ class GSubProfileProxy;
 class GFdbk;
 class GProfileCalc;
 class GFactoryProfileCalc;
-class GFactoryProfileCalcCursor;
 class GProfileCalcManager;
 class GProfilesSims;
 class GProfilesBehaviours;
@@ -157,33 +143,26 @@ class GProfilesBehaviours;
 // forward class declaration - Groups Part
 class GGroups;
 class GGroupsHistory;
-class GGroupsHistoryCursor;
 class GGroupsHistoryManager;
 class GGroup;
-class GGroupCursor;
 class GGroupHistory;
 class GGrouping;
 class GFactoryGrouping;
-class GFactoryGroupingCursor;
 class GGroupingManager;
 class GGroupCalc;
 class GFactoryGroupCalc;
-class GFactoryGroupCalcCursor;
 class GGroupCalcManager;
 class GSubject;
-class GSubjectCursor;
 class GSubjects;
 class GPostGroup;
 class GPostGroupManager;
 class GFactoryPostGroup;
-class GFactoryPostGroupCursor;
 
 
 //------------------------------------------------------------------------------
 // forward class declaration - Historic Part
 class GWeightInfosHistory;
 class GGroupHistory;
-class GGroupHistoryCursor;
 class GGroupsHistory;
 
 
@@ -196,7 +175,6 @@ class GSessionPrg;
 class GSlot;
 class GStatsCalc;
 class GFactoryStatsCalc;
-class GFactoryStatsCalcCursor;
 class GStatsCalcManager;
 class GMixedIdealGroups;
 class GParams;
