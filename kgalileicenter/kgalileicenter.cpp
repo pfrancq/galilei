@@ -332,13 +332,6 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 	}
 	DisableAllActions();
 	sessionConnect->setEnabled(true);
-	sessionDisconnect->setEnabled(false);
-	sessionCompute->setEnabled(false);
-	runProgram->setEnabled(false);
-	textFrench->setEnabled(false);
-	textEnglish->setEnabled(false);
-	plugins->setEnabled(false);
-	gaAnalyse->setEnabled(false);
 	statusBar()->changeItem("Not Connected !",1);
 }
 
