@@ -130,6 +130,7 @@ using namespace GALILEI;
 #include "kviewga.h"
 #include "kviewr.h"
 #include "kviewchromos.h"
+#include "kviewstorechromos.h"
 #include "qconnectmysql.h"
 #include "qsessionprogress.h"
 #include "qlanguages.h"
@@ -876,6 +877,29 @@ void KGALILEICenterApp::slotGAAnalyse(void)
 	catch(...)
 	{
 		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotGAShow(void)
+{
+	QLanguages dlg(this,0,true);
+	dlg.cbScratch->hide();
+	char tmp[3];
+
+	KApplication::kApplication()->processEvents();
+	if(dlg.exec())
+	{
+		if(dlg.cbLangs->currentItem()==0)
+			strcpy(tmp,"en");
+		else
+			strcpy(tmp,"fr");
+		setDocParams(Doc);
+		createClient(Doc,new KViewStoreChromos(Doc,tmp,&IRParams,dlg.cbGlobal->isChecked(),pWorkspace,"Show Chromosoems",0));
+		gaPause->setEnabled(true);
+		gaStart->setEnabled(true);
+		gaStop->setEnabled(true);
 	}
 }
 

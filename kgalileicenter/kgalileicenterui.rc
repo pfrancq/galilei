@@ -76,6 +76,7 @@
 		<Separator/>
 		<Action name="gaSave"/>
 		<Action name="gaAnalyse"/>
+		<Action name="gaShow"/>
 	</Menu>
 	<Menu name="settings"><text>&amp;Settings</text>
 		<Action name="plugins"/>

@@ -162,6 +162,7 @@ void KGALILEICenterApp::initActions(void)
 	gaStop=new KAction(i18n("S&top"),"stop",KKey("Alt+T").keyCodeQt(),this,SLOT(slotGAStop(void)),actionCollection(),"gaStop");
 	gaAnalyse=new KAction(i18n("&Analyse Stored Chromosomes"),"viewmag",0,this,SLOT(slotGAAnalyse(void)),actionCollection(),"gaAnalyse");
 	gaSave=new KAction(i18n("S&tore Chromosomes"),"save",0,this,SLOT(slotGASave(void)),actionCollection(),"gaSave");
+	gaShow=new KAction(i18n("Sho&w Chromosomes"),"save",0,this,SLOT(slotGAShow(void)),actionCollection(),"gaShow");
 
 	// Menu "Settings"
 	viewToolBar = KStdAction::showToolbar(this, SLOT(slotViewToolBar()), actionCollection());
@@ -598,6 +599,7 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 
 	// Menu "GA"
 	gaInit->setEnabled(Doc&&Doc->GetSession()->IsGroupsLoad()&&Doc->GetSession()->IsUsersLoad());
+	gaShow->setEnabled(true);
 }
 
 
@@ -628,6 +630,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	gaPause->setEnabled(false);
 	gaStart->setEnabled(false);
 	gaStop->setEnabled(false);
+	gaShow->setEnabled(false);
 	runProgram->setEnabled(false);
 	runInsts->setEnabled(false);
 	runQuery->setEnabled(false);

@@ -645,6 +645,11 @@ private slots:
 	void slotGASave(void);
 
 	/**
+	* Show the chromosomes stored.
+	*/
+	void slotGAShow(void);
+
+	/**
 	* Toggles the toolbar.
 	*/
 	void slotViewToolBar(void);
@@ -783,6 +788,7 @@ public:
 	KAction* gaStop;
 	KAction* gaSave;
 	KAction* gaAnalyse;
+	KAction* gaShow;
 
 	KAction* rRunR;
 
