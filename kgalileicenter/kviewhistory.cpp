@@ -98,12 +98,12 @@ KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	ToolBar->setGeometry(QRect(0, 0,(this->width()),30));
 	QPopupMenu* groupmenu;
 	groupmenu= new QPopupMenu();
-	groupmenu->insertItem(QString("Calc Modified Groups"),this, SLOT(slotEssai1()),0,1,-1) ;
+	groupmenu->insertItem(QString("Calc Modified Groups"),this, SLOT(slotCheckModifiedGroups()),0,1,-1) ;
 	ToolBar->insertItem("Group",groupmenu);
 	QPopupMenu* subprofmenu;
 	subprofmenu= new QPopupMenu();
-	subprofmenu->insertItem(QString("Calc bad-grouped Profiles"),this, SLOT(slotEssai2()),0,1,-1) ;
-	subprofmenu->insertItem(QString("Calc NewProfiles"),this, SLOT(slotEssai3()),0,2,-1) ;
+	subprofmenu->insertItem(QString("Calc bad-grouped Profiles"),this, SLOT(slotCheckWellGroupedSubProfs()),0,1,-1) ;
+	subprofmenu->insertItem(QString("Calc NewProfiles"),this, SLOT(slotCheckNewProfiles()),0,2,-1) ;
 	ToolBar->insertItem("SubProfiles",subprofmenu);
 	QPopupMenu* viewmenu;
 	viewmenu= new QPopupMenu();
@@ -131,6 +131,7 @@ KViewHistory::KViewHistory(KDoc* doc,const char* l,bool global,QWidget* parent,c
 	SimsView->addColumn("FirstSubProfile");
 	SimsView->addColumn("Second SubProfile");
 	SimsView->addColumn("Similarity");
+	SimsView->setResizeMode(QListView::AllColumns);
 	SimsView->hide();
 
 	// RelationShip ListView
@@ -235,9 +236,8 @@ void KViewHistory::resizeEvent(QResizeEvent*)
 
 
 //-----------------------------------------------------------------------------
-void KViewHistory::slotEssai1(void)
+void KViewHistory::slotCheckModifiedGroups(void)
 {
-	cout <<"slot check modified groups"<<endl;
 	for (Groups->Start(); !Groups->End(); Groups->Next())
 		CheckModifiedGroups((*Groups)());
 	ToolBar->setItemEnabled(1,false);
@@ -245,9 +245,8 @@ void KViewHistory::slotEssai1(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewHistory::slotEssai2(void)
+void KViewHistory::slotCheckWellGroupedSubProfs(void)
 {
-	cout <<"slot well grouped subprofiles"<<endl;
 	for (Groups->Start(); !Groups->End(); Groups->Next())
 	{
 			SetGroupsSubject((*Groups)());
@@ -258,9 +257,8 @@ void KViewHistory::slotEssai2(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewHistory::slotEssai3(void)
+void KViewHistory::slotCheckNewProfiles(void)
 {
-	cout <<"slot check new profiles"<<endl;
 	for (Groups->Start(); !Groups->End(); Groups->Next())
 		CheckNewProfiles((*Groups)());
 	ToolBar->setItemEnabled(3,false);
@@ -270,7 +268,6 @@ void KViewHistory::slotEssai3(void)
 //-----------------------------------------------------------------------------
 void KViewHistory::slotViewSimilarities(void)
 {
-	cout <<"slot view similarities"<<endl;
 	RelationShip->hide() ;
 	if (SimsView->isHidden())  SimsView->show();
 	else SimsView->hide();
@@ -280,7 +277,6 @@ void KViewHistory::slotViewSimilarities(void)
 //-----------------------------------------------------------------------------
 void KViewHistory::slotViewRelationShip(void)
 {
-	cout <<"slot view RelationShip"<<endl;
 	SimsView->hide();
 	if (RelationShip->isHidden())  RelationShip->show();
 	else RelationShip->hide();
@@ -571,10 +567,8 @@ void KViewHistory::CreateGroupsRelationship(void)
 				}
 				if(!treated)
 				{
-					cout << tab[i][0]<< "   "<< tab[i][0]<<endl;
 					tab[i][0]=subprof->GetParent()->GetId();
 					tab[i][1]++;
-					cout << tab[i][0]<< "   "<< tab[i][1]<<endl;
 					nbchildren++;
 				}
 			}
