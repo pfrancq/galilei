@@ -63,7 +63,7 @@
 #include <groups/gsubject.h>
 #include <sessions/gsession.h>
 #include <historic/ggroupshistory.h>
-#include <historic/giwordsweightshistory.h>
+#include <historic/gweightinfoshistory.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -1201,7 +1201,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsi
 	char sSql[200];
 	GGroupHistory* grp;
 	GGroupsHistory* grps;
-	GIWordsWeightsHistory* historicsubprof;
+	GWeightInfosHistory* historicsubprof;
 	unsigned int subprofid;
 	unsigned int groupid;
 	unsigned int v;
@@ -1231,7 +1231,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(RContainer<GSubProfile, unsi
 
 			// Create the historic subprofile and add it to the group
 			subprofid=atoi(grquery[1]);
-			historicsubprof=new GIWordsWeightsHistory(subprofiles->GetPtr(subprofid),100);
+			historicsubprof=new GWeightInfosHistory(subprofiles->GetPtr(subprofid),100);
 			grp->AddSubProfile(historicsubprof);
 
 			// fill the vector of the subprofile

@@ -37,7 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <historic/ggrouphistory.h>
-#include <historic/giwordsweightshistory.h>
+#include <historic/gweightinfoshistory.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -51,7 +51,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(std::bad_alloc)
-	: RContainer<GIWordsWeightsHistory,unsigned int,false,true>(20,10)
+	: RContainer<GWeightInfosHistory,unsigned int,false,true>(20,10)
 {
 	 Id=id;
 	 Lang=lang;
@@ -69,7 +69,7 @@ unsigned int GALILEI::GGroupHistory::GetId(void)
 }
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupHistory::AddSubProfile(GIWordsWeightsHistory* giwwh)
+void GALILEI::GGroupHistory::AddSubProfile(GWeightInfosHistory* giwwh)
 {
 	InsertPtr(giwwh);
 	giwwh->SetParent(this);

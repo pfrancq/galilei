@@ -37,7 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <historic/ggroupshistory.h>
-#include <historic/giwordsweightshistory.h>
+#include <historic/gweightinfoshistory.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -67,7 +67,7 @@ unsigned int GALILEI::GGroupsHistory::GetId(void)
 
 
 //-----------------------------------------------------------------------------
-GIWordsWeightsHistory* GALILEI::GGroupsHistory::GetSubProfile(unsigned int id)
+GWeightInfosHistory* GALILEI::GGroupsHistory::GetSubProfile(unsigned int id)
 {
 	GGroupHistory* grp;
 

@@ -88,7 +88,7 @@ public :
 	*  returns the subprofiles with Id=id;
 	* @param id             id to found.
 	*/
-	GIWordsWeightsHistory* GetSubProfile(unsigned int id);
+	GWeightInfosHistory* GetSubProfile(unsigned int id);
 
 	/**
 	* Compare method needed by R::RContainer.

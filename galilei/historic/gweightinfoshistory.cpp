@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GIWordsWeightsHistory.cpp
+	GWeightInfosHistory.cpp
 
 	Weights of a list of words - Implementation.
 
@@ -35,7 +35,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <historic/giwordsweightshistory.h>
+#include <historic/gweightinfoshistory.h>
 #include <profiles/gsubprofile.h>
 using namespace GALILEI;
 using namespace R;
@@ -44,12 +44,12 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 //
-//  GGIWordsWeightsHistory
+//  GGWeightInfosHistory
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GIWordsWeightsHistory::GIWordsWeightsHistory(GSubProfile* sub, unsigned int nb)
+GALILEI::GWeightInfosHistory::GWeightInfosHistory(GSubProfile* sub, unsigned int nb)
 	: GWeightInfos(nb)
 {
 	SubProfile=sub;
@@ -58,28 +58,28 @@ GALILEI::GIWordsWeightsHistory::GIWordsWeightsHistory(GSubProfile* sub, unsigned
 
 
 //-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GIWordsWeightsHistory::GetSubProfile(void)
+GSubProfile* GALILEI::GWeightInfosHistory::GetSubProfile(void)
 {
 	return SubProfile;
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GIWordsWeightsHistory::GetId(void)
+unsigned int GALILEI::GWeightInfosHistory::GetId(void)
 {
 	return SubProfile->GetId();
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIWordsWeightsHistory::SetParent(GGroupHistory* p)
+void GALILEI::GWeightInfosHistory::SetParent(GGroupHistory* p)
 {
 	Parent=p;
 }
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GIWordsWeightsHistory::IsWellGrouped(void)
+bool GALILEI::GWeightInfosHistory::IsWellGrouped(void)
 {
 	if (WellGrouped) return true;
 	 else return false;
@@ -87,56 +87,56 @@ bool GALILEI::GIWordsWeightsHistory::IsWellGrouped(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIWordsWeightsHistory::SetWellGrouped(bool b)
+void GALILEI::GWeightInfosHistory::SetWellGrouped(bool b)
 {
 	WellGrouped=b;
 }
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GIWordsWeightsHistory::IsNewSubProfile(void)
+bool GALILEI::GWeightInfosHistory::IsNewSubProfile(void)
 {
 	return(NewSubProfile==true);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GIWordsWeightsHistory::SetNewSubProfile(bool b)
+void GALILEI::GWeightInfosHistory::SetNewSubProfile(bool b)
 {
 	NewSubProfile=b;
 }
 
 
 //-----------------------------------------------------------------------------
-GGroupHistory* GALILEI::GIWordsWeightsHistory::GetParent(void)
+GGroupHistory* GALILEI::GWeightInfosHistory::GetParent(void)
 {
 	return Parent;
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GIWordsWeightsHistory::Compare(const GIWordsWeightsHistory& giwwh) const
+int GALILEI::GWeightInfosHistory::Compare(const GWeightInfosHistory& giwwh) const
 {
 	return(SubProfile->GetId()-giwwh.SubProfile->GetId());
 }
 
 
 //-----------------------------------------------------------------------------
- int GALILEI::GIWordsWeightsHistory::Compare(const GIWordsWeightsHistory* giwwh) const
+ int GALILEI::GWeightInfosHistory::Compare(const GWeightInfosHistory* giwwh) const
  {
 	 return(SubProfile->GetId()-giwwh->SubProfile->GetId());
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GIWordsWeightsHistory::Compare(unsigned int id) const
+int GALILEI::GWeightInfosHistory::Compare(unsigned int id) const
 {
 	return(SubProfile->GetId()-id);
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GIWordsWeightsHistory::~GIWordsWeightsHistory(void)
+GALILEI::GWeightInfosHistory::~GWeightInfosHistory(void)
 {
 }
 

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GIWordsWeightsHistory.h
+	GWeightInfosHistory.h
 
 	Weights of a list of words - Header.
 
@@ -35,14 +35,14 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GIWordsWeightsHistoryH
-#define GIWordsWeightsHistoryH
+#ifndef GWeightInfosHistoryH
+#define GWeightInfosHistoryH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/gweightinfos.h>
-#include <historic/giwordsweightshistory.h>
+#include <historic/gweightinfoshistory.h>
 
 
 //-----------------------------------------------------------------------------
@@ -56,7 +56,7 @@ namespace GALILEI{
 * @author David Wartel
 * @short historic subprofile.
 */
-class GIWordsWeightsHistory : public GWeightInfos
+class GWeightInfosHistory : public GWeightInfos
 {
 protected:
 
@@ -85,7 +85,7 @@ public :
 	/**
 	* constructor
 	*/
-	GIWordsWeightsHistory(GSubProfile* sub, unsigned int nb) ;
+	GWeightInfosHistory(GSubProfile* sub, unsigned int nb) ;
 
 	/**
 	* get the subprofile.
@@ -130,12 +130,12 @@ public :
 	/**
 	* Compare method needed by R::RContainer.
 	*/
-	int Compare(const GIWordsWeightsHistory& giwwh) const ;
+	int Compare(const GWeightInfosHistory& giwwh) const ;
 
 	/**
 	* Compare method needed by R::RContainer.
 	*/
-	 int Compare(const GIWordsWeightsHistory* giwwh) const ;
+	 int Compare(const GWeightInfosHistory* giwwh) const ;
 
 	/**
 	* Compare method needed by R::RContainer.
@@ -145,7 +145,7 @@ public :
 	/**
 	*   Destructor
 	*/
-	~GIWordsWeightsHistory(void);
+	~GWeightInfosHistory(void);
 
 };
 

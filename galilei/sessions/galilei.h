@@ -174,7 +174,7 @@ class GFactoryPostGroupCursor;
 
 //------------------------------------------------------------------------------
 // forward class declaration - Historic Part
-class GIWordsWeightsHistory;
+class GWeightInfosHistory;
 class GGroupHistory;
 class GGroupHistoryCursor;
 class GGroupsHistory;

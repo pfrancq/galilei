@@ -4,7 +4,7 @@ AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =
 SUBDIRS =
-libgalilei_historic_la_SOURCES = ggrouphistory.cpp ggroupshistory.cpp giwordsweightshistory.cpp
+libgalilei_historic_la_SOURCES = ggrouphistory.cpp ggroupshistory.cpp gweightinfoshistory.cpp
 historicincludedir = $(includedir)/galilei/historic
-historicinclude_HEADERS =  ggrouphistory.h  ggroupshistory.h  giwordsweightshistory.h
+historicinclude_HEADERS =  ggrouphistory.h  ggroupshistory.h  gweightinfoshistory.h
 

@@ -42,7 +42,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <historic/giwordsweightshistory.h>
+#include <historic/gweightinfoshistory.h>
 
 
 //-----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ namespace GALILEI{
 * @author David Wartel
 * @short GroupHistory.
 */
-class GGroupHistory : public R::RContainer<GIWordsWeightsHistory,unsigned int,false,true>
+class GGroupHistory : public R::RContainer<GWeightInfosHistory,unsigned int,false,true>
 {
 
 protected:
@@ -114,7 +114,7 @@ public:
 	/**
 	* Add a historic profile to the group.
 	*/
-	void AddSubProfile(GIWordsWeightsHistory* giwwh);
+	void AddSubProfile(GWeightInfosHistory* giwwh);
 
 	/**
 	* set the value of the "modified" parameter..
