@@ -4,7 +4,7 @@
 
 	GWeightInfo.h
 
-	Information entity representing a word associated with a weight - Header.
+	Weighted information entity - Header.
 
 	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
@@ -51,48 +51,77 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GWeightInfo class provides a representation for an informaation entity
-* representing a word associated with a weight.
+* The GWeightInfo class provides a representation for an information entity
+* associated with a weight.
 * @author Pascal Francq
-* @short Weighted Word Information.
+* @short Weighted Information Entity.
 */
 class GWeightInfo : public GInfo
 {
+protected:
+
 	/**
-	* Weight associated wih the word.
+	* Weight associated wih the information entity.
 	*/
 	double Weight;
 
 public:
 
 	/**
-	* Constructor of an information entity representing a weighted word. The
-	* weight is suppose to be null.
-	* @param id             Identificator of the word.
+	* Constructor of a weighed information entity. The weight is suppose to be
+	* null.
+	* @param id              Identificator of the information entity.
+	* @param type            Type of the information entity.
 	*/
-	GWeightInfo(const unsigned int id,GInfoType type=infoWord) throw(bad_alloc);
+	GWeightInfo(unsigned int id,GInfoType type=infoWord) throw(bad_alloc);
 
 	/**
-	* Constructor.
-	* @param id             Identificator of the word.
-	* @param w              Weight of the word.
+	* Constructor of a weighed information entity.
+	* @param id             Identificator of the information entity.
+	* @param w              Weight of the information entity.
 	* @param type           Type of the information.
 	*/
-	GWeightInfo(const unsigned id,double w,GInfoType type=infoWord) throw(bad_alloc);
+	GWeightInfo(unsigned int id,double w,GInfoType type=infoWord) throw(bad_alloc);
 
 	/**
-	* Constructor.
-	* @param w              Pointer to a word weight.
+	* Copy constructor of a weighed information entity.
+	* @param w              Pointer to a weighted information entity.
+	*/
+	GWeightInfo(const GWeightInfo& w) throw(bad_alloc);
+
+	/**
+	* Copy constructor of a weighed information entity.
+	* @param w              Pointer to a weighted information entity.
 	*/
 	GWeightInfo(const GWeightInfo* w) throw(bad_alloc);
 
 	/**
-	* Compare method used by R::RContainer.
+	* Copy constructor of a weighed information entity. The weight is suppose to be
+	* null.
+	* @param w              Pointer to an information entity.
+	*/
+	GWeightInfo(const GInfo& w) throw(bad_alloc);
+
+	/**
+	* Copy constructor of a weighed information entity. The weight is suppose to be
+	* null.
+	* @param w              Pointer to an information entity.
+	*/
+	GWeightInfo(const GInfo* w) throw(bad_alloc);
+
+	/**
+	* Compare two weighted information entities by comparing their identificator.
+	* @see R::RContainer
+	* @param i               Weighted information entity.
+	* @return int
 	*/
 	int Compare(const GWeightInfo& calc) const;
 
 	/**
-	* Compare method used by R::RContainer.
+	* Compare two weighted information entities by comparing their identificator.
+	* @see R::RContainer
+	* @param i               Pointer to a weighted information entity.
+	* @return int
 	*/
 	int Compare(const GWeightInfo* calc) const;
 
@@ -103,48 +132,59 @@ public:
 	double GetWeight(void) const {return(Weight);}
 
 	/**
-	* Get the weight of the word with the query expression for a specific
-	* dictionnary.
-	* @param ObjType        Type of the reference.
-	* @param dict           Dictionnary.
-	* @param max            Maximal value of the vector containing the word.
-	* @return double.
-	*/
-	double GetQueryWeight(tObjType ObjType,GDict* dict,double max) const;
-
-	/**
 	* Set the weight of the word.
 	* @param w              Weight.
 	*/
-	void SetWeight(double w) {Weight=w;}
+	void SetWeight(double w);
+
+	/**
+	* Assignment operator for weighted information entities.
+	* @param i               Weighted information entity.
+	*/
+	GWeightInfo& operator=(const GWeightInfo& i) throw(bad_alloc);
+
+	/**
+	* Assignment operator for weighted information entities. The weight is suppose to be
+	* null.
+	* @param i               Information entity.
+	*/
+	GWeightInfo& operator=(const GInfo& i) throw(bad_alloc);
 
 	/**
 	* Add a weight to the current one.
 	* @param w              Weight to add.
 	*/
-	void AddWeight(double w) {Weight+=w;}
+	GWeightInfo& operator+=(double w);
 
 	/**
 	* Substract a weight to the current one.
 	* @param w              Weight to add.
 	*/
-	void SubstractWeight(double w) {Weight-=w;}
+	GWeightInfo& operator-=(double w);
 
 	/**
-	* Destructor of an information entity representing a weighted word.
+	* Compute the transformed weight of a given information entity using a
+	* inverse frequency factor of the object type (idf,isf or ivf). The inverse
+	* frenquency of an informatio entity is linked to a specific language.
+	* @param ObjType        Type of the object.
+	* @param lang           Language (information entity space).
+	* @param max            Maximal value of the vector containing the word.
+	* @return double.
+	*/
+	double GetQueryWeight(tObjType ObjType,GLang* lang,double max) const throw(GException);
+
+	/**
+	* Destructor of a weighted information entity.
 	*/
 	virtual ~GWeightInfo(void);
-
-	// friend classes
-	friend class GWeightInfos;
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* The GWordWeightCursor class provides a way to go trough a vector of pairs
-* (keyword/weight).
-* @short Word Weight Cursor
+* The GWordWeightCursor class provides a way to go trough a container of
+* weighted information entities.
+* @short Weighted Information Entity Cursor.
 */
 CLASSCURSOR(GWeightInfoCursor,GWeightInfo,unsigned int)
 

@@ -4,9 +4,9 @@
 
 	GWeightInfos.h
 
-	Weights of a list of words - Header.
+	List of weighted information entities - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,136 +34,135 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GWeightInfosH
 #define GWeightInfosH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/ginfo.h>
+#include <galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GWeightInfos provides a representation for the words weights of a given
-* collection of words, for example a document or a set of documents.
-* It implements the vector representing a document/profile/group in the Vector
-* Model.
+* The GWeightInfos provides a representation for a list of information entities.
+* It implements the vector representing a document/subprofile/group in the
+* Vector Model.
 * @author Pascal Francq
-* @short Vector in Words Space.
+* @short Weighted Information Entity List.
 */
-class GWeightInfos : public R::RContainer<GWeightInfo,unsigned,true,true>
+class GWeightInfos : public R::RContainer<GWeightInfo,unsigned int,true,true>
 {
-	/**
-	* Total number of words in the set of documents analysed.
-	*/
-	double NbWordsDocs;
-
 public:
 
 	/**
-	* Constructor.
-	* @param nb             Maximal number of word created at initialisation.
+	* Constructor of a list of weighted information entities.
+	* @param max             Maximal number of word created at initialisation.
 	*/
-	GWeightInfos(unsigned int nb) throw(bad_alloc);
+	GWeightInfos(unsigned int max) throw(bad_alloc);
 
 	/**
-	* The assignement operator.
-	* @param src            Vector used as source.
+	* Copy constructor of a list of weighted information entities.
+	* @param max             List of weighted information entities.
 	*/
-	GWeightInfos& operator=(const GWeightInfos& src) throw(bad_alloc);
+	GWeightInfos(const GWeightInfos& w) throw(bad_alloc);
 
 	/**
-	* Static function used to ordered by frenquecy.
+	* Copy constructor of a list of weighted information entities.
+	* @param max             Pointer to a list of weighted information entities.
 	*/
-	static int sortOrder(const void *a,const void *b);
+	GWeightInfos(const GWeightInfos* w) throw(bad_alloc);
 
 	/**
-	* Clear the statistics.
+	* Assignement operator for lists of weighted information entities.
+	* @param src             List of weighted information entity.
+	*/
+	GWeightInfos& operator=(const GWeightInfos& w) throw(bad_alloc);
+
+	/**
+	* Static function used to order the information entities by weights.
+	*/
+	static int sortOrder(const void* a,const void* b);
+
+	/**
+	* Clear the container.
 	*/
 	void Clear(void);
 
 	/**
-	* Look if the list is empty.
+	* Verify if a list is empty.
+	* @return bool
 	*/
 	bool IsEmpty(void) const {return(!NbPtr);}
 
 	/**
-	* Compute the maximal weights in this list.
+	* Compute the maximal weight of the information entities in the list. The
+	* list may not be empty.
 	* @return double.
 	*/
-	double GetMaxWeight(void) const;
+	double GetMaxWeight(void) const throw(GException);
 
 	/**
-	* Compute similarity between two vectors.
-	* @param w              Vector to compare with.
+	* Compute a similarity between two lists of weighted information entities.
+	* The method uses the cosinus of the corresponding vectors build directly
+	* from the lists. If one of the list is empty, the similarity is null.
+	* @param w              Pointer to a list of weighted information entities.
 	*/
 	double Similarity(const GWeightInfos* w) const;
 
 	/**
-	* Compute similarity between two vectors by using the idf factors rather
-	* than the weights.
-	* @param w              Vector to compare with.
-	* @param ObjType        Type of the reference.
-	* @param lang           Language.
+	* Compute a similarity between two lists of weighted information entities.
+	* The method uses the cosinus of the corresponding vectors. A vector of a
+	* list is build using this list and a Inverse Frequence Factor (IFF) of the
+	* object type (idf, isf or ivf) for a given information entity space
+	* (language). If one of the list is empty, the similarity is null.
+	* @param w              Pointer to a list of weighted information entities.
+	* @param ObjType        Type of the object.
+	* @param lang           Information entity space (Language).
 	*/
-	double SimilarityIdfP(const GWeightInfos* w,tObjType ObjType,GLang* lang) const;
+	double SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang* lang) const throw(GException);
 
 	/**
-	* Compute similarity between two vectors by using the idf factors rather
-	* than the weights.
-	* @param w              Vector to compare with.
+	* Add the references for the information entities of the object type in a
+	* information entity space (language). This information is used for the
+	* inverse frequency factors.
 	* @param ObjType        Type of the reference.
-	* @param lang           Language.
+	* @param lang           Information entity space (Language).
 	*/
-	double SimilarityIdf(const GWeightInfos* w,tObjType ObjType,GLang* lang) const;
+	void AddRefs(tObjType ObjType,GLang* lang) const throw(GException);
 
 	/**
-	* Add the references for the words contained in the vector for a given
-	* object type.
+	* Delete the references for the information entities of the object type in a
+	* information entity space (language). This information is used for the
+	* inverse frequency factors.
 	* @param ObjType        Type of the reference.
-	* @param dic            Dictionnary.
+	* @param lang           Information entity space (Language).
 	*/
-	void AddRefs(tObjType ObjType,GDict* dic) const;
+	void DelRefs(tObjType ObjType,GLang* lang) const throw(GException);
 
 	/**
-	* Delete the references for the words contained in the vector for a given
-	* object type.
+	* Modify the list by applying for each information entity the Inverse
+	* Frequence Factor (IFF) of the object type (idf, isf or ivf) for a given
+	* information entity space (language).
 	* @param ObjType        Type of the reference.
-	* @param dic            Dictionnary.
+	* @param lang           Information entity space (Language).
 	*/
-	void DelRefs(tObjType ObjType,GDict* dic) const;
+	void RecomputeIFF(tObjType ObjType,GLang* lang) throw(GException);
 
 	/**
-	* Transform the vector from a independent weight to the form compatible
-	* with the vector model.
+	* Method used to recompute the weights of the information entities using the
+	* formula proposed by Salton and Buckley with the current weights used as
+	* initial values. Only the information entities referred at least in one
+	* object of the corresponding type are used.
 	* @param ObjType        Type of the reference.
-	* @param lang           Language.
+	* @param lang           Information entity space (Language).
 	*/
-	void Transform(tObjType ObjType,GLang* lang);
-
-	/**
-	* Method used to recompute the weights of the terms like the formula
-	* proposed by Salton and Buckley using the current weights as initial
-	* values. Only the index terms refered at least in one group are taken.
-	* @param ObjType        Type of the reference.
-	* @param lang           Language.
-	*/
-	void ModifyQueryGroups(tObjType ObjType,GLang* lang);
-
-	/**
-	* Method used to recompute the weights of the terms like the formula
-	* proposed by Salton and Buckley using the current weights as initial
-	* values.
-	* @param ObjType        Type of the reference.
-	* @param lang           Language.
-	*/
-	void ModifyQuery(tObjType ObjType,GLang* lang);
+	void RecomputeQuery(tObjType ObjType,GLang* lang) throw(GException);
 
 	/**
 	* Destructor.
@@ -172,8 +171,8 @@ public:
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

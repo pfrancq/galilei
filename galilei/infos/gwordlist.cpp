@@ -52,17 +52,17 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GWordList::GWordList(void)
-	: GWord(), List(2)
+/*GWordList::GWordList(void)
+	: GData(), List(2)
 {
 //	List=new RContainer<GWord,unsigned,false,true>(2);
 //	Type=infoWordList;
-}
+}*/
 
 
 //-----------------------------------------------------------------------------
 GWordList::GWordList(unsigned int word)
-	: GWord(itou(word)), List(2)
+	: GData(itou(word),infoWordList), RContainer<GWord,unsigned,false,true>(2)
 {
 //	List=new RContainer<GWord,unsigned,false,true>(2);
 //	Type=infoWordList;
@@ -71,7 +71,7 @@ GWordList::GWordList(unsigned int word)
 
 //-----------------------------------------------------------------------------
 GWordList::GWordList(unsigned int id,const RString& word)
-	: GWord(id,word), List(2)
+	: GData(id,word,infoWordList), RContainer<GWord,unsigned,false,true>(2)
 {
 //	List=new RContainer<GWord,unsigned,false,true>(2);
 //	Type=infoWordList;
@@ -103,8 +103,8 @@ GWordList::GWordList(unsigned int id,const RString& word)
 
 
 //-----------------------------------------------------------------------------
-GWordList::GWordList(GWordList* wordlist)
-	: GWord(wordlist->GetId(),wordlist->GetWord()), List(2)
+GWordList::GWordList(const GWordList* wordlist)
+	: GData(wordlist), RContainer<GWord,unsigned,false,true>(wordlist)
 {
 //	List=new RContainer<GWord,unsigned,false,true>(2);
 //	Type=infoWordList;
@@ -114,7 +114,7 @@ GWordList::GWordList(GWordList* wordlist)
 //-----------------------------------------------------------------------------
 void GWordList::InsertWord(GWord* word)
 {
-	List.InsertPtr(word);
+	InsertPtr(word);
 }
 
 
@@ -129,16 +129,26 @@ void GWordList::InsertWord(GWord* word)
 GWordCursor& GWordList::GetWordCursor(void)
 {
 	GWordCursor *cur=GWordCursor::GetTmpCursor();
-	cur->Set(List);
+	cur->Set(this);
 	return(*cur);
 }
 
 
 //-----------------------------------------------------------------------------
-void GWordList::SetId(unsigned int id)
+GData* GWordList::CreateCopy(void) const throw(bad_alloc)
 {
-	Id=id;
+	GWordList* ptr=new GWordList(this);
+	ptr->Id=cNoRef;
+	return(ptr);
 }
+
+
+//-----------------------------------------------------------------------------
+bool GWordList::IsEmpty(void) const
+{
+	return(NbPtr==0);
+}
+
 
 
 //-----------------------------------------------------------------------------

@@ -307,10 +307,10 @@ public:
 
 	/**
 	* Return the identifier of a new word of a dictionnary.
-	* @param word           Word to find.
+	* @param data           Word to find.
 	* @param dict           Dictionnary.
 	*/
-	virtual unsigned int GetDicNextId(const char* word,const GDict* dict)=0;
+	virtual unsigned int GetDicNextId(const GData* data,const GDict* dict)=0;
 
 	/**
 	* Loading a dictionnary/stoplist.

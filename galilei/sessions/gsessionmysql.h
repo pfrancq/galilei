@@ -125,7 +125,7 @@ protected:
 	* @param word           Word to find.
 	* @param dict           Dictionnary.
 	*/
-	virtual unsigned int GetDicNextId(const char* word,const GDict* dict);
+	virtual unsigned int GetDicNextId(const GData* data,const GDict* dict);
 
 	/**
 	* Loading a dictionnary/stoplist.

@@ -4,7 +4,7 @@
 
 	GInfoList.cpp
 
-	Information entity representing a list of words - Implementation.
+	List of information entities - Implementation.
 
 	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
@@ -49,8 +49,22 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GInfoList::GInfoList(void) throw(bad_alloc)
-	: GInfo(infoWordList), RContainer<GInfo,unsigned,true,true>(30,10)
+GInfoList::GInfoList(unsigned int id,GInfoType type) throw(bad_alloc)
+	: GInfo(id,type), RContainer<GInfo,unsigned,true,true>(30,10)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GInfoList::GInfoList(const GInfoList& i) throw(bad_alloc)
+	: GInfo(i), RContainer<GInfo,unsigned,true,true>(i)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GInfoList::GInfoList(const GInfoList* i) throw(bad_alloc)
+	: GInfo(i), RContainer<GInfo,unsigned,true,true>(i)
 {
 }
 
@@ -77,30 +91,11 @@ int GInfoList::Compare(const GInfoList& i) const
 
 
 //------------------------------------------------------------------------------
-const RString GInfoList::ClassName(void) const
+GInfoList& GInfoList::operator=(const GInfoList& i) throw(bad_alloc)
 {
-	return("GWordList");
-}
-
-
-//------------------------------------------------------------------------------
-const GInfoType GInfoList::InfoType(void) const
-{
-	return(infoWordList);
-}
-
-
-//------------------------------------------------------------------------------
-unsigned int GInfoList::GetId(void) const
-{
-	return(Id);
-}
-
-
-//------------------------------------------------------------------------------
-void GInfoList::SetId(unsigned int id)
-{
-	Id=id;
+	RContainer<GInfo,unsigned,true,true>::operator=(i);
+	GInfo::operator=(i);
+	return(*this);
 }
 
 

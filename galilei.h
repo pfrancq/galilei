@@ -82,6 +82,7 @@ class GFactoryFilterCursor;
 class GURLManager;
 class CodeToChar;
 
+
 //-----------------------------------------------------------------------------
 // forward class declaration - Information Part
 class GInfo;
@@ -89,14 +90,12 @@ class GWeightInfo;
 class GWeightInfoCursor;
 class GWeightInfos;
 class GInfosWeightsHistory;
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration - Language Part
 class GLang;
 class GFactoryLang;
 class GFactoryLangCursor;
 class GLangs;
+class GData;
+class GDataCursor;
 class GWord;
 class GWordList;
 class GDict;
@@ -187,6 +186,10 @@ class GGroupCalcManager;
 class GSubject;
 class GSubjectCursor;
 class GSubjectTree;
+class GPostGroup;
+class GPostGroupManager;
+class GFactoryPostGroup;
+class GFactoryPostGroupCursor;
 
 
 //-----------------------------------------------------------------------------
@@ -202,28 +205,7 @@ class GStatsCalc;
 class GFactoryStatsCalc;
 class GFactoryStatsCalcCursor;
 class GStatsCalcManager;
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration - Test Part
-class GSubjectTree;
-class GIdealGroup;
-class GGetFeedback;
-class GSubject;
 class GMixedIdealGroups;
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration - PostGroups
-class GPostGroup;
-class GPostGroupManager;
-class GFactoryPostGroup;
-class GFactoryPostGroupCursor;
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration - Parameters Part
-// Grouping parameters
 class GParams;
 class GParam;
 class GConfig;
@@ -243,19 +225,19 @@ const unsigned cNoRef=0xFFFFFFFF;
 */
 enum tObjType
 {
-	otNoClass               /** No specific class. */,
-	otSession               /** GALILEI Session. */,
-	otDoc                   /** Document. */,
-	otDocs                  /** Documents. */,
-	otUsers                 /** Users.*/,
-	otUser                  /** User.*/,
-	otProfile               /** Profile.*/,
-	otSubProfile            /** SubProfile.*/,
-	otGroups                /** Groups.*/,
-	otGroup                 /** Group.*/,
-	otDocSubProfile         /** Document or SubProfile.*/,
-	otDocGroup              /** Document or Group.*/,
-	otSubProfileGroup       /** SubProfile or Group.*/
+	otNoClass=0                  /** No specific class. */,
+	otSession=1                  /** GALILEI Session. */,
+	otDoc=2                      /** Document. */,
+	otDocs=3                     /** Documents. */,
+	otUsers=4                    /** Users.*/,
+	otUser=5                     /** User.*/,
+	otProfile=6                  /** Profile.*/,
+	otSubProfile=7               /** SubProfile.*/,
+	otGroups=8                   /** Groups.*/,
+	otGroup=9                    /** Group.*/,
+	otDocSubProfile=10           /** Document or SubProfile.*/,
+	otDocGroup=11                /** Document or Group.*/,
+	otSubProfileGroup=12         /** SubProfile or Group.*/
 };
 
 
@@ -265,13 +247,13 @@ enum tObjType
 */
 enum tObjState
 {
-	osUnknow                /** Unknow state.*/,
-	osCreated               /** Object was created.*/,
-	osUpToDate              /** Object is up to date.*/,
-	osModified              /** Object was modified and computation must be update.*/,
-	osUpdated               /** Object is updated and needs to be save.*/,
-	osDelete                /** Object must be deleted.*/,
-	osNotNeeded             /** Object is not needed.*/
+	osUnknow=0                /** Unknow state.*/,
+	osCreated=1               /** Object was created.*/,
+	osUpToDate=2              /** Object is up to date.*/,
+	osModified=3              /** Object was modified and computation must be update.*/,
+	osUpdated=4               /** Object is updated and needs to be save.*/,
+	osDelete=5                /** Object must be deleted.*/,
+	osNotNeeded=6             /** Object is not needed.*/
 };
 
 
@@ -302,8 +284,8 @@ enum tDocJudgement
 */
 enum tSubProfileDesc
 {
-	sdNothing               /** Unknow Model.*/,
-	sdVector                /** Vector Model.*/
+	sdNothing=0               /** Unknow Model.*/,
+	sdVector=1                /** Vector Model.*/
 };
 
 
@@ -313,9 +295,9 @@ enum tSubProfileDesc
 */
 enum GInfoType
 {
-	infoNothing                    /** No type defined.*/,
-	infoWord                       /** A word (or stem). */,
-	infoWordList                   /** List of words.*/
+	infoNothing=0                  /** No type defined.*/,
+	infoWord=1                     /** A word (or stem). */,
+	infoWordList=2                 /** List of words.*/
 };
 
 

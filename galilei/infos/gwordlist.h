@@ -56,21 +56,14 @@ namespace GALILEI{
 * @short List of words.
 */
 
-class GWordList : public GWord
+class GWordList : public GData, protected R::RContainer<GWord,unsigned,false,true>
 {
-protected:
-
-	/**
-	* Id of the two words of the list.
-	*/
-	R::RContainer<GWord,unsigned,false,true> List;
-
 public:
 
 	/**
 	* Constructor.
 	*/
-	GWordList(void);
+	//GWordList(void);
 
 	/**
 	* Constructor.
@@ -85,7 +78,7 @@ public:
 	/**
 	* Constructor.
 	*/
-	GWordList(GWordList* wordlist);
+	GWordList(const GWordList* wordlist);
 
 	/**
 	* Insert a new word in the list.
@@ -94,20 +87,20 @@ public:
 	void InsertWord(GWord* word);
 
 	/**
-	* Set the Type.
-	* @param type             type of the information.
-	*/
-//	void SetType(GInfoType type);
-
-	/**
 	*/
 	GWordCursor& GetWordCursor(void);
 
 	/**
-	* Set the id.
-	* @param id               id of the world list.
+	* This method creates a copy of a list.
+	* @return Pointer to a GData.
 	*/
-	void SetId(unsigned int id);
+	virtual GData* CreateCopy(void) const throw(bad_alloc);
+
+	/**
+	* Test if the list is empty.
+	* @return bool
+	*/
+	virtual bool IsEmpty(void) const;
 
 	/**
 	* Destructor.

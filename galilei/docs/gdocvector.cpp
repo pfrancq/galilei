@@ -122,7 +122,7 @@ double GALILEI::GDocVector::Similarity(const GDoc* doc) const
 //-----------------------------------------------------------------------------
 double GALILEI::GDocVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(GWeightInfos::SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otDoc,Lang));
+	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GDocVector*>(doc),otDoc,Lang));
 }
 
 
@@ -136,7 +136,7 @@ double GALILEI::GDocVector::Similarity(const GSubProfile* sub) const
 //-----------------------------------------------------------------------------
 double GALILEI::GDocVector::GlobalSimilarity(const GSubProfile* sub) const
 {
-	return(GWeightInfos::SimilarityIdf(dynamic_cast<const GSubProfileVector*>(sub),otDocSubProfile,Lang));
+	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GSubProfileVector*>(sub),otDocSubProfile,Lang));
 }
 
 
@@ -150,31 +150,23 @@ double GALILEI::GDocVector::Similarity(const GGroup* grp) const
 //-----------------------------------------------------------------------------
 double GALILEI::GDocVector::GlobalSimilarity(const GGroup* grp) const
 {
-	return(GWeightInfos::SimilarityIdf(dynamic_cast<const GGroupVector*>(grp),otDocGroup,Lang));
+	return(GWeightInfos::SimilarityIFF(dynamic_cast<const GGroupVector*>(grp),otDocGroup,Lang));
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GDocVector::UpdateRefs(void) const
 {
-	GDict* d;
-
 	if(!Lang) return;
-	d=Lang->GetDict();
-	if(d)
-		AddRefs(otDoc,d);
+	AddRefs(otDoc,Lang);
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GDocVector::RemoveRefs(void) const
 {
-	GDict* d;
-
 	if(!Lang) return;
-	d=Lang->GetDict();
-	if(d)
-		DelRefs(otDoc,d);
+	DelRefs(otDoc,Lang);
 }
 
 

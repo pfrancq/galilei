@@ -4,7 +4,7 @@
 
 	GDic.h
 
-	Dictionnary - Header.
+	Dictionary - Header.
 
 	Copyright 2001 by the Université Libre de Bruxelles.
 
@@ -59,21 +59,23 @@ namespace GALILEI{
 /**
 * The GDict class provides a representation for a dictionnary.
 * @author Pascal Francq
-* @short Dictionnary.
+* @short Dictionary.
 */
-class GDict : public R::RDblHashContainer<GWord,unsigned,27,27,true>
+class GDict : protected R::RDblHashContainer<GData,unsigned,27,27,true>
 {
+	class GDataTypes;
+
 	/**
-	* Session responsible for the dictionnary.
+	* Session responsible for the dictionary.
 	*/
 	GSession* Session;
 
 	/**
 	* Direct access to the words using an identificator.
 	*/
-	GWord** Direct;
+	GData** Direct;
 
-	unsigned NbGroupsList;
+	//unsigned NbGroupsList;
 
 	/**
 	* Maximal value of the identificator handled by Direct.
@@ -86,7 +88,7 @@ class GDict : public R::RDblHashContainer<GWord,unsigned,27,27,true>
 	unsigned UsedId;
 
 	/**
-	* Pointer to the language corresponding to the dictionnary.
+	* Pointer to the language corresponding to the dictionary.
 	*/
 	GLang *Lang;
 
@@ -126,9 +128,15 @@ class GDict : public R::RDblHashContainer<GWord,unsigned,27,27,true>
 	*/
 	unsigned int NbRefGroups[2];
 
-public:
+private :
 
-	R::RContainer<GWordList,unsigned,true,false> GroupsList;
+	/**
+	* Containers of double hash tables where the datas are categorized by
+	* information type.
+	*/
+	R::RContainer<GDataTypes,unsigned int,true,true> DataTypes;
+
+public:
 
 	/**
 	* Constructor of the dictionnary.
@@ -155,27 +163,23 @@ private:
 	* Put a word in direct.
 	* @param word           Pointer to the word to insert.
 	*/
-	void PutDirect(GWord* word) throw(bad_alloc);
+	void PutDirect(GData* word) throw(bad_alloc);
 
 public:
 
 	/**
-	* Put a string corresponding to a word and an identificator in the
-	* dictionnary.
+	* Insert a data in the dictionary. In practice, it is a copy of the data
+	* which is inserted.
+	* @param data            Data to insert.
+	* @return Identificator of the data inserted in the dictionary.
 	*/
-	void Put(unsigned id,const R::RString& word) throw(bad_alloc);
+	unsigned int InsertData(const GData* data) throw(bad_alloc, GException);
 
 	/**
-	* Insert a list of words in the dictionnary.
+	* Delete a given data from the dictionnary.
+	* @param data            Data to delete.
 	*/
-	void InsertNewWordList(GWordList& wordlist,bool save);
-
-	/**
-	* Get the identificator of the word corresponding to a string. If the word
-	* doesn't exist in the dictionnary, it is created.
-	* @return Identificator of the word.
-	*/
-	unsigned int GetId(const R::RString& word) throw(bad_alloc);
+	void DeleteData(GData* data) throw(bad_alloc, GException);
 
 	/**
 	* Get the maximal number of word actually supposed.
@@ -186,7 +190,14 @@ public:
 	* Get the list of the words currently defined in the dictionnary.
 	* @returns const Pointer to array of GWord*.
 	*/
-	GWord** GetWords(void) const {return(Direct);}
+	GData** GetDatas(void) const {return(Direct);}
+
+	/**
+	* Get a cursor on a unordered container of data of a particular information
+	* type.
+	* @param type            Information type.
+	*/
+	GDataCursor& GetDataCursor(GInfoType type) throw(bad_alloc,GException);
 
 	/**
 	* Get thye name of the dictionnary.
@@ -201,22 +212,34 @@ public:
 	GLang* GetLang(void) const {return(Lang);}
 
 	/**
-	* @return Word given by an identificator.
-	*/
-	const char* GetWord(const unsigned int id) const;
-
-	/**
 	* Get the element with a specific identificator.
 	* @param id             Identificator.
 	* @return Pointer to a GWord.
 	*/
-	GWord* GetElement(const unsigned int id) const;
+	GData* GetData(const unsigned int id) const;
+
+	/**
+	* Method giving the number of datas contained in the dictionary.
+	*/
+	unsigned int GetNbDatas(void) const {return(GetNb());}
+
+	/**
+	* Method giving the number of datas contained in the dictionary if a given
+	* information type.
+	* @param type            Information type.
+	*/
+	unsigned int GetNbDatas(GInfoType type) const throw(GException);
+
+	/**
+	* Look if a certain data is in the dictionary.
+	*/
+	bool IsIn(const R::RString& name) const;
 
 	/**
 	* Get the number of group of information entities.
 	* @returns Number of groups.
 	*/
-	unsigned int GetNbGroupsList(void) const;
+	//unsigned int GetNbGroupsList(void) const;
 
 	/**
 	* Test if the dictionnary is a stop list.

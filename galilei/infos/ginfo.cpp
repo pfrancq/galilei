@@ -57,6 +57,20 @@ GInfo::GInfo(unsigned int id,GInfoType type) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
+GInfo::GInfo(const GInfo& i) throw(bad_alloc)
+	: Id(i.Id), Type(i.Type)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GInfo::GInfo(const GInfo* i) throw(bad_alloc)
+	: Id(i->Id), Type(i->Type)
+{
+}
+
+
+//------------------------------------------------------------------------------
 int GInfo::Compare(const GInfo& i) const
 {
 	return(Id-i.Id);
@@ -67,6 +81,15 @@ int GInfo::Compare(const GInfo& i) const
 int GInfo::Compare(const GInfo* i) const
 {
 	return(Id-i->Id);
+}
+
+
+//------------------------------------------------------------------------------
+GInfo& GInfo::operator=(const GInfo& i) throw(bad_alloc)
+{
+	Id=i.Id;
+	Type=i.Type;
+	return(*this);
 }
 
 
@@ -95,34 +118,6 @@ float GInfo::DisSimilarity(const GInfo& i) const
 float GInfo::DisSimilarity(const GInfo* i) const
 {
 	return(Id-i->Id!=0);
-}
-
-
-//------------------------------------------------------------------------------
-unsigned int GInfo::GetId(void) const
-{
-	return(Id);
-}
-
-
-//------------------------------------------------------------------------------
-GInfoType GInfo::InfoType(void) const
-{
-	return(Type);
-}
-
-
-//------------------------------------------------------------------------------
-bool GInfo::SameType(const GInfo& i) const
-{
-	return(InfoType()==i.InfoType());
-}
-
-
-//------------------------------------------------------------------------------
-bool GInfo::SameType(const GInfo* i) const
-{
-	return(InfoType()==i->InfoType());
 }
 
 

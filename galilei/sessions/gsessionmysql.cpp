@@ -155,24 +155,24 @@ const char* GALILEI::GSessionMySQL::ValidSQLValue(const char* val,char* tmp)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* dict)
+unsigned int GALILEI::GSessionMySQL::GetDicNextId(const GData* data,const GDict* dict)
 {
 
 	// preliminary traitement of special words and composite like insert -> reinsert ...
 	#if Ins_spec
-		if (strstr(word,"insert"))
+		if (strstr(data->GetName(),"insert"))
 		{
 			return 1;
 		}
-		if (strstr(word,"delete"))
+		if (strstr(data->GetName(),"delete"))
 		{
 			return 2;
 		}
-		if (strstr(word,"update"))
+		if (strstr(data->GetName(),"update"))
 		{
 			return 3;
 		}
-		if (strstr(word,"select"))
+		if (strstr(data->GetName(),"select"))
 		{
 			return 4;
 		}
@@ -181,7 +181,7 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 	char sSql[600];
 	char tmp[100];
 	// Verify that the word didn't already exist.
-	sprintf(sSql,"SELECT kwdid FROM %skwds WHERE kwd='%s'",dict->GetLang()->GetCode(),word);
+	sprintf(sSql,"SELECT kwdid FROM %skwds WHERE kwd='%s'",dict->GetLang()->GetCode(),data->GetName().Latin1());
 	RQuery find(this,sSql);
 	if(find.GetNbRows())
 	{
@@ -189,10 +189,8 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 		return(strtoul(find[0],0,10));
 	}
 
-	// Get the existing word for derivate of 'insert' 'delete' 'update' 'delete'
-
 	// Insert the new word
-	sprintf(sSql,"INSERT INTO %skwds(kwd) VALUES(%s)",dict->GetLang()->GetCode(),ValidSQLValue(word,tmp));
+	sprintf(sSql,"INSERT INTO %skwds(kwd,type) VALUES(%s,%u)",dict->GetLang()->GetCode(),ValidSQLValue(data->GetName(),tmp),data->GetType());
 	RQuery insert(this,sSql);
 
 	// Get the next id
@@ -238,10 +236,28 @@ void GALILEI::GSessionMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_a
 		dic=new GDict(this,tbl,"Dictionnary",lang,MaxId,MaxCount,false);
 
 	// Load the dictionnary from the database
-	sprintf(sSql,"SELECT kwdid, kwd  FROM %s",tbl);
+	sprintf(sSql,"SELECT kwdid, kwd, type  FROM %s",tbl);
 	RQuery dicts (this, sSql);
 	for(dicts.Start();!dicts.End();dicts.Next())
-		dic->Put(atoi(dicts[0]), dicts[1]);
+	{
+		switch(atoi(dicts[2]))
+		{
+			case infoWord :
+				{
+					GWord w(atoi(dicts[0]),dicts[1]);
+					dic->InsertData(&w);
+				}
+				break;
+
+			case infoWordList :
+				{
+					GWordList w(atoi(dicts[0]),dicts[1]);
+					dic->InsertData(&w);
+				}
+				break;
+		}
+	}
+
 }
 
 
@@ -470,7 +486,7 @@ void GALILEI::GSessionMySQL::LoadUsers(bool wg,bool w) throw(bad_alloc,GExceptio
 				sub=GetSubProfile(atoi(sel[0]),lang);
 				if(sub)
 				{
-					if(lang->GetDict()->GetElement(atoi(sel[1]))->GetType()==infoWordList)
+					if(lang->GetDict()->GetData(atoi(sel[1]))->GetType()==infoWordList)
 					{
 						if(wg)
 							((GSubProfileVector*)sub)->AddWordList(atoi(sel[1]),atof(sel[2]));
@@ -683,7 +699,7 @@ void GALILEI::GSessionMySQL::LoadDocs(bool wg,bool w) throw(bad_alloc,GException
 			doc=dynamic_cast<GDocVector*>(GetDoc(atoi(sel[0])));
 			if(doc)
 			{
-				if(lang->GetDict()->GetElement(atoi(sel[1]))->GetType()==infoWordList)
+				if(lang->GetDict()->GetData(atoi(sel[1]))->GetType()==infoWordList)
 				{
 					if(wg)
 						doc->AddWordList(atoi(sel[1]),atof(sel[2]));
@@ -858,7 +874,7 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::DeleteWordsGroups(GDict* dict) throw(GException)
 {
-	GWordList *tmp,**cur;
+/*	GWordList *tmp,**cur;
 	char sSql[600];
 	unsigned nbwords;
 	sprintf(sSql,"DELETE FROM %skwdsbygroups ",dict->GetLang()->GetCode());
@@ -889,13 +905,8 @@ void GALILEI::GSessionMySQL::DeleteWordsGroups(GDict* dict) throw(GException)
 	}
 	cur=dict->GroupsList.Tab;
 	GWord* wrd;
-	while((*cur))
-	{
-			tmp=(*cur);
-			wrd=dict->GetElement(tmp->GetId());
-			dict->DeletePtr(wrd);
-			dict->GroupsList.DeletePtr(tmp);
-	}
+	while(*cur)
+		dict->DeleteData(*cur);
   sprintf(sSql,"SELECT COUNT(*) from %skwdsbygroups",dict->GetLang()->GetCode());
   RQuery autoinckbg(this,sSql);
   autoinckbg.Start();
@@ -931,14 +942,14 @@ void GALILEI::GSessionMySQL::DeleteWordsGroups(GDict* dict) throw(GException)
   nbwords=strtoul(autoincsbk[0],0,10);
   nbwords++;
 	sprintf(sSql,"ALTER TABLE %ssubprofilesbykwds AUTO_INCREMENT = %u ",dict->GetLang()->GetCode(),nbwords);
-	RQuery updateautoincrementsbk(this,sSql);
+	RQuery updateautoincrementsbk(this,sSql);*/
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::SaveWordsGroups(GDict* dict) throw(GException)
 {
-
+/*
 	GWordList* tmp;
 	GWordCursor Cur;
 
@@ -963,24 +974,24 @@ void GALILEI::GSessionMySQL::SaveWordsGroups(GDict* dict) throw(GException)
 //				cout << e.GetError()<< endl;
 			}
 		}
-	}
+	}*/
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::LoadWordsGroups(GDict* dict) throw(GException)
 {
-	GWordList *tmp;
+/*	GWordList *tmp;
 	char sSql[600];
 	sprintf(sSql,"SELECT grid, kwdid  FROM %skwdsbygroups",dict->GetLang()->GetCode());
 	RQuery loadwords (this, sSql);
 	for(loadwords.Start();!loadwords.End();loadwords.Next())
 	{
 		if(!dict->GroupsList.IsIn(atoi(loadwords[0])))
-			dict->GroupsList.InsertPtr(new GWordList(atoi(loadwords[0]),dict->GetWord(atoi(loadwords[0]))));
+			dict->GroupsList.InsertPtr(new GWordList(atoi(loadwords[0]),dict->GetData(atoi(loadwords[0]))->GetName()));
 		tmp=dict->GroupsList.GetPtr(atoi(loadwords[0]));
-		tmp->InsertWord(new GWord(atoi(loadwords[1]),dict->GetWord(atoi(loadwords[1]))));
-	}
+		tmp->InsertWord(new GWord(atoi(loadwords[1]),dict->GetData(atoi(loadwords[1]))->GetName()));
+	}*/
 }
 
 
@@ -1225,7 +1236,7 @@ void GALILEI::GSessionMySQL::LoadGroups(bool wg,bool w) throw(bad_alloc,GExcepti
 			RQuery sel(this,sSql);
 			for(sel.Start();!sel.End();sel.Next())
 			{
-				if(lang->GetDict()->GetElement(atoi(sel[0]))->GetType()==infoWordList)
+				if(lang->GetDict()->GetData(atoi(sel[0]))->GetType()==infoWordList)
 				{
 					if(wg)
 						group->AddWordList(atoi(sel[0]),atof(sel[1]));

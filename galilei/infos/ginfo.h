@@ -61,6 +61,7 @@ namespace GALILEI{
 class GInfo
 {
 protected:
+
 	/**
 	* Identificator of the information entity.
 	*/
@@ -81,6 +82,18 @@ public:
 	GInfo(unsigned int id,GInfoType type=infoWord) throw(bad_alloc);
 
 	/**
+	* Copy constructor for an information entity.
+	* @param i               Information entity.
+	*/
+	GInfo(const GInfo& i) throw(bad_alloc);
+
+	/**
+	* Copy constructor for an information entity.
+	* @param i               Pointer to an nformation entity.
+	*/
+	GInfo(const GInfo* i) throw(bad_alloc);
+
+	/**
 	* Compare two information entities by comparing their identificator.
 	* @see R::RContainer
 	* @param i               Information entity.
@@ -95,6 +108,12 @@ public:
 	* @return int
 	*/
 	virtual int Compare(const GInfo* i) const;
+
+	/**
+	* Assignment operator for information entities.
+	* @param i               Information entity.
+	*/
+	GInfo& operator=(const GInfo& i) throw(bad_alloc);
 
 	/**
 	* Compute a similarity between two information entities. In the default
@@ -132,27 +151,27 @@ public:
 	* Get the identificator of the information entity.
 	* @return unsigned int.
 	*/
-	unsigned int GetId(void) const;
+	unsigned int GetId(void) const {return(Id);}
 
 	/**
 	* Get the type of the information.
 	* @return GInfoType.
 	*/
-	GInfoType InfoType(void) const;
+	GInfoType InfoType(void) const {return(Type);}
 
 	/**
 	* Verifies if two information entities have the same type.
 	* @param i               Information entity.
 	* @return true if the two entities are from the same type, false else.
 	*/
-	virtual bool SameType(const GInfo& i) const;
+	virtual bool SameType(const GInfo& i) const {return(InfoType()==i.InfoType());}
 
 	/**
 	* Verifies if two information entities have the same type.
 	* @param i               Pointer an information entity.
 	* @return true if the two entities are from the same type, false else.
 	*/
-	virtual bool SameType(const GInfo* i) const;
+	virtual bool SameType(const GInfo* i) const {return(InfoType()==i->InfoType());}
 
 	/**
 	* Destructor of a generic information entity.

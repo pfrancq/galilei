@@ -4,7 +4,7 @@
 
 	GInfoList.h
 
-	Information entity representing a list of words - Header.
+	List of information entities - Header.
 
 	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
@@ -51,20 +51,34 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GInfoList class provides a representation for a list of words. In
-* particular, each list has an identificator, which can be used to build
-* containers of GInfoList.
+* The GInfoList class provides a representation for a list of information
+* entities. In particular, the list is also considered as a information entity.
 * @author Pascal Francq
-* @short Words List Information.
+* @short Information Entity List.
 */
 class GInfoList : public GInfo, public R::RContainer<GInfo,unsigned,true,true>
 {
 public:
 
 	/**
-	* Constructor of an information entity representing a list.
+	* Constructor of a list of information entities.
+	* @param id              Identificator of the information entity.
+	* @param type            Type of the information entity.
 	*/
-	GInfoList(void) throw(bad_alloc);
+	GInfoList(unsigned int id,GInfoType type=infoWordList) throw(bad_alloc);
+
+	/**
+	* Copy constructor for a list of information entities.
+	* @param i               Information entity representing a list.
+	*/
+	GInfoList(const GInfoList& i) throw(bad_alloc);
+
+	/**
+	* Copy constructor for a list of information entities.
+	* @param i               Pointer to an information entity representing a
+	*                        list.
+	*/
+	GInfoList(const GInfoList* i) throw(bad_alloc);
 
 	/**
 	* Compare an identificator with the corresponding one of the list.
@@ -92,28 +106,16 @@ public:
 	int Compare(const GInfoList& i) const;
 
 	/**
-	* Get the name of the class.
-	* @return R::String.
-	*/
-	virtual const R::RString ClassName(void) const;
-
-	/**
-	* Get the type of the information.
-	* @return GInfoType.
-	*/
-	virtual const GInfoType InfoType(void) const;
-
-	/**
-	* Get the identificator of the list.
+	* Get the identificator of the information entity.
 	* @return unsigned int.
 	*/
-	unsigned int GetId(void) const;
+	unsigned int GetId(void) const {return(Id);}
 
 	/**
-	* Set the identificator of the list.
-	* @param id             Identificator to assign.
+	* Assignment operator for lists of information entities.
+	* @param i               Information entity representing a list.
 	*/
-	void SetId(unsigned int id);
+	GInfoList& operator=(const GInfoList& i) throw(bad_alloc);
 
 	/**
 	* The method verifies if two lists contain exactly the same information
@@ -123,7 +125,7 @@ public:
 	bool IsSame(const GInfoList& i) const;
 
 	/**
-	* Destructor of an information entity representing a list.
+	* Desctuctor of a list of information entities.
 	*/
 	virtual ~GInfoList(void);
 };

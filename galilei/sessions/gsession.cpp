@@ -220,7 +220,7 @@ void GSession::AnalyseAssociation(bool save)
 //-----------------------------------------------------------------------------
 void GSession::RemoveAssociation()
 {
-	GDocCursor docs=GetDocsCursor();
+/*	GDocCursor docs=GetDocsCursor();
 	GDocVector* doc;
 	unsigned int i,n;
 	docs.Start();
@@ -237,9 +237,9 @@ void GSession::RemoveAssociation()
 				doc->DeletePtr((dic->GroupsList)()->GetId());
 		}
 		doc->UpdateRefs();
-		SaveUpDatedDoc(doc,n);/*n=First id to save.*/
+		SaveUpDatedDoc(doc,n);  //n=First id to save.
 	}
-	DeleteWordsGroups(dic);
+	DeleteWordsGroups(dic);*/
 }
 
 

@@ -41,6 +41,7 @@
 
 //---------------------------------------------------------------------------
 // include file for GALILEI
+#include <infos/gdata.h>
 #include <infos/gdict.h>
 #include <infos/gwordlist.h>
 #include <infos/glang.h>
@@ -52,15 +53,35 @@ using namespace R;
 
 //---------------------------------------------------------------------------
 //
+// class GDict::GDataTypes
+//
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+class GDict::GDataTypes : public R::RContainer<GData,unsigned int,false,false>
+{
+public:
+	GInfoType Type;
+
+	GDataTypes(unsigned int ml,GInfoType type)
+		: RContainer<GData,unsigned int,false,false>(ml+(ml/4),ml/4), Type(type) {}
+	int Compare(const GDataTypes& d) const {return(Type-d.Type);}
+	int Compare(const GDataTypes* d) const {return(Type-d->Type);}
+	int Compare(const GInfoType t) const {return(Type-t);}
+};
+
+
+//---------------------------------------------------------------------------
+//
 // class GDict
 //
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(bad_alloc)
-	: RDblHashContainer<GWord,unsigned,27,27,true>(ml+(ml/4),ml/4), Session(s), Direct(0),
-	  NbGroupsList(0), MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false), Stop(st),
-	  GroupsList(500)
+	: RDblHashContainer<GData,unsigned,27,27,true>(ml+(ml/4),ml/4), Session(s), Direct(0),
+	  /*NbGroupsList(0),*/ MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false), Stop(st),
+	  DataTypes(3)//, GroupsList(500)
 {
 	for(unsigned int i=0;i<2;i++)
 	{
@@ -68,135 +89,142 @@ GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang *lang,uns
 		NbRefSubProfiles[i]=0;
 		NbRefGroups[i]=0;
 	}
-	Direct=new GWord*[MaxId];
-	memset(Direct,0,MaxId*sizeof(GWord*));
+	Direct=new GData*[MaxId];
+	memset(Direct,0,MaxId*sizeof(GData*));
+	DataTypes.InsertPtr(new GDataTypes(ml,infoWord));
+	DataTypes.InsertPtr(new GDataTypes(ml,infoWordList));
 }
 
 
 //---------------------------------------------------------------------------
 void GDict::Clear(void)
 {
-	RDblHashContainer<GWord,unsigned,27,27,true>::Clear();
-	memset(Direct,0,MaxId*sizeof(GWord*));
+	RDblHashContainer<GData,unsigned,27,27,true>::Clear();
+	memset(Direct,0,MaxId*sizeof(GData*));
 	UsedId=0;
 	Loaded=false;
 }
 
 
 //---------------------------------------------------------------------------
-void GDict::PutDirect(GWord* word) throw(bad_alloc)
+void GDict::PutDirect(GData* word) throw(bad_alloc)
 {
-	GWord **tmp;
+	GData **tmp;
 	unsigned n;
 
-	if(word->Id>UsedId) UsedId=word->Id;
-	if(word->Id>=MaxId)
+	if(word->GetId()>UsedId) UsedId=word->GetId();
+	if(word->GetId()>=MaxId)
 	{
-		n=word->Id+1000;
-		tmp=new GWord*[n];
-		memcpy(tmp,Direct,MaxId*sizeof(GWord*));
+		n=word->GetId()+1000;
+		tmp=new GData*[n];
+		memcpy(tmp,Direct,MaxId*sizeof(GData*));
 		delete[] Direct;
 		Direct=tmp;
 		MaxId=n;
 	}
-	Direct[word->Id]=word;
+	Direct[word->GetId()]=word;
 }
 
 
 //---------------------------------------------------------------------------
-void GDict::Put(unsigned id,const R::RString& word) throw(bad_alloc)
+unsigned int GDict::InsertData(const GData* data) throw(bad_alloc, GException)
 {
-	GWordList* wordlist;
-	GWord Word(id,word),*ptr;
-	const RChar* tmp;
-	const RChar* tmp2;
-	RString grp("grouplist");
-	int i;
+	GData* ptr;
+	bool InDirect=false;
+	unsigned int Id;
 
-	if(word.IsEmpty()) return;
-	tmp=word();
-	tmp2=grp();
-	for(i=grp.GetLen()+1;(--i)&&(!tmp->IsNull());tmp++,tmp2++)
+	// Empty datas are not inserted
+	if(data->IsEmpty())
+		throw GException("Empty datas cannot be inserted into a dictionary");
+	if(data->GetType()==infoNothing)
+		throw GException("No typed data cannot be inserted into a dictionary");
+
+	// Look if the data exists in the dictionary. If not, create and insert it.
+	ptr=GetPtr<const GData*>(data);
+	if(!ptr)
 	{
-		if((*tmp)!=(*tmp2)) break;
+		ptr=data->CreateCopy();
+		InsertPtr(ptr);
+		DataTypes.GetPtr<GInfoType>(ptr->GetType())->InsertPtr(ptr);
+		InDirect=true;
 	}
-	if(!i)
+
+	// Look if data has an identificator. If not, assign one.
+	if(ptr->GetId()==cNoRef)
 	{
-		ptr=GetInsertPtr<GWord>(Word,true);
-		ptr->SetType(infoWordList);
-		wordlist=new GWordList(id,word);
-		wordlist->SetType(infoWordList);
-		GroupsList.InsertPtr(wordlist);
-		NbGroupsList++;
+		Id=Session->GetDicNextId(ptr,this);
+		ptr->SetId(Id);
+		InDirect=true;
 	}
 	else
-		ptr=GetInsertPtr<GWord>(Word,true);
-	PutDirect(ptr);
-}
+		Id=ptr->GetId();
 
-//---------------------------------------------------------------------------
-void GDict::InsertNewWordList(GWordList& wordlist,bool save)
-{
-	GWord *ptr;
-//	wordlist.Start();
-//	ptr=wordlist();
-//	RString temp(ptr->GeinfoWord());
-//	wordlist.Next();
-//	ptr=wordlist();
-//	temp+='&';
-//	temp+='&';
-//	temp+=ptr->GeinfoWord();
-//	GWord word(temp);
-
-	ptr=GetInsertPtr(wordlist);
-	if(ptr->Id == cNoRef)
-	{
-		if(save) ptr->Id=Session->GetDicNextId(wordlist.GetWord(),this);
-		else ptr->Id=UsedId+1;
-		ptr->SetType(infoWordList);
+	// Finally, if an identificator has been assigned and/or a new one -> Direct
+	if(InDirect)
 		PutDirect(ptr);
-		wordlist.SetId(ptr->Id);
-		GroupsList.InsertPtr(&wordlist);
-		NbGroupsList++;
-	}
 
+	return(Id);
 }
 
+
 //---------------------------------------------------------------------------
-unsigned GDict::GetId(const RString& word) throw(bad_alloc)
+void GDict::DeleteData(GData* data) throw(bad_alloc, GException)
 {
-	GWord Word(word),*ptr;
-
-	ptr=GetInsertPtr(Word);
-	if(ptr->Id == cNoRef)
-	{
-		ptr->Id=Session->GetDicNextId(word,this);
-		PutDirect(ptr);
-	}
-	return(ptr->Id);
+	if((!data)||(data->GetId()>MaxId))
+		throw GException("Cannot delete element");
+	Direct[data->GetId()]=0;
+	DataTypes.GetPtr<GInfoType>(data->GetType())->DeletePtr(data);
+	DeletePtr(data);
 }
 
 
 //---------------------------------------------------------------------------
-const char* GDict::GetWord(const unsigned int id) const
-{
-	return(Direct[id]->GetWord());
-}
-
-
-//---------------------------------------------------------------------------
-GWord* GDict::GetElement(const unsigned int id) const
+GData* GDict::GetData(const unsigned int id) const
 {
 	return(Direct[id]);
 }
 
 
 //---------------------------------------------------------------------------
-unsigned int GDict::GetNbGroupsList(void) const
+GDataCursor& GDict::GetDataCursor(GInfoType type) throw(bad_alloc,GException)
+{
+	GDataCursor* cur=GDataCursor::GetTmpCursor();
+	GDataTypes* tp;
+
+	tp=DataTypes.GetPtr<GInfoType>(type);
+	if(!tp)
+		throw GException("No cursor for unknown information type");
+	cur->Set(tp);
+	return(*cur);
+}
+
+
+//---------------------------------------------------------------------------
+unsigned int GDict::GetNbDatas(GInfoType type) const throw(GException)
+{
+	GDataTypes* tp;
+
+	tp=DataTypes.GetPtr<GInfoType>(type);
+	if(!tp)
+		throw GException("No cursor for unknown information type");
+	return(tp->NbPtr);
+}
+
+
+//---------------------------------------------------------------------------
+bool GDict::IsIn(const RString& name2) const
+{
+	RString name(name2);
+	return(RDblHashContainer<GData,unsigned,27,27,true>::IsIn<RString&>(name));
+}
+
+
+//---------------------------------------------------------------------------
+/*unsigned int GDict::GetNbGroupsList(void) const
 {
 	return(GroupsList.NbPtr);
 }
-
+*/
 
 //---------------------------------------------------------------------------
 bool GDict::IsStopList(void) const

@@ -162,10 +162,49 @@ GDict* GLang::GetStop(void) const
 
 
 //-----------------------------------------------------------------------------
+bool GLang::InStop(const RString& name) const
+{
+	return(Stop->IsIn(name));
+}
+
+
+//-----------------------------------------------------------------------------
+void GLang::IncRef(unsigned int id,tObjType ObjType,GInfoType WordType)
+{
+	if(!Dict) return;
+	Dict->IncRef(id,ObjType,WordType);
+}
+
+
+//-----------------------------------------------------------------------------
+void GLang::DecRef(unsigned int id,tObjType ObjType,GInfoType WordType)
+{
+	if(!Dict) return;
+	Dict->DecRef(id,ObjType,WordType);
+}
+
+
+//-----------------------------------------------------------------------------
 unsigned int GLang::GetRef(unsigned int id,tObjType ObjType)
 {
 	if(!Dict) return(0);
 	return(Dict->GetRef(id,ObjType));
+}
+
+
+//-----------------------------------------------------------------------------
+void GLang::IncRef(tObjType ObjType,GInfoType WordType)
+{
+	if(!Dict) return;
+	Dict->IncRef(ObjType,WordType);
+}
+
+
+//-----------------------------------------------------------------------------
+void GLang:: DecRef(tObjType ObjType,GInfoType WordType)
+{
+	if(!Dict) return;
+	Dict->DecRef(ObjType,WordType);
 }
 
 
@@ -181,15 +220,29 @@ unsigned int GLang::GetRef(tObjType ObjType,GInfoType WordType)
 unsigned int GLang::GetTotal(void) const
 {
 	if(!Dict) return(0);
-	return(Dict->GetNb());
+	return(Dict->GetNbDatas());
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GLang::GetNbWordList(void) const
+/*unsigned int GLang::GetNbWordList(void) const
 {
 	if(!Dict) return(0);
 	return(Dict->GetNbGroupsList());
+}*/
+
+
+//-----------------------------------------------------------------------------
+unsigned int GLang::GetMaxId(void) const
+{
+	return(Dict->GetMaxId());
+}
+
+
+//-----------------------------------------------------------------------------
+GData** GLang::GetDatas(void) const
+{
+	return(Dict->GetDatas());
 }
 
 

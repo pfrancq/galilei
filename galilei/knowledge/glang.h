@@ -154,12 +154,46 @@ public:
 	GDict* GetStop(void) const;
 
 	/**
+	* Look if a name corresponds to a data stored in the stoplist.
+	* @param name            Name to lookup.
+	* @return true if it was found in the stop list.
+	*/
+	bool InStop(const R::RString& name) const;
+
+	/**
+	* Increase the number of references on a word.
+	* @param id             Identificator.
+	* @param ObjType        Type of the reference.
+	*/
+	void IncRef(unsigned int id,tObjType ObjType,GInfoType WordType);
+
+	/**
+	* Decrease the number of references on a word.
+	* @param id             Identificator.
+	* @param ObjType        Type of the reference.
+	*/
+	void DecRef(unsigned int id,tObjType ObjType,GInfoType WordType);
+
+	/**
 	* Get the number of references on a word.
 	* @param id             Identificator.
 	* @param ObjType        Type of the reference.
 	* @returns unsigned int.
 	*/
 	unsigned int GetRef(unsigned int id,tObjType ObjType);
+
+	/**
+	* Increase the number of objects using the dictionnary.
+	* @param ObjType        Type of the reference.
+	*/
+	void IncRef(tObjType ObjType,GInfoType WordType);
+
+	/**
+	* Decrease the number of objects using the dictionnary.
+	* @param id             Identificator.
+	* @param ObjType        Type of the reference.
+	*/
+	void DecRef(tObjType ObjType,GInfoType WordType);
 
 	/**
 	* Get the total number of references.
@@ -178,7 +212,18 @@ public:
 	* Get the number of group of information entities.
 	* @returns Number of groups.
 	*/
-	unsigned int GetNbWordList(void) const;
+//	unsigned int GetNbWordList(void) const;
+
+	/**
+	* Get the maximal number of word actually supposed.
+	*/
+	unsigned int GetMaxId(void) const;
+
+	/**
+	* Get the list of the words currently defined in the dictionnary.
+	* @returns const Pointer to array of GWord*.
+	*/
+	GData** GetDatas(void) const;
 
 	/**
 	* Look if a given word is supposed to be skip.

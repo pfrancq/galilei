@@ -67,19 +67,14 @@ GGroupVector::GGroupVector(const unsigned int id,GLang* lang) throw(bad_alloc)
 //-----------------------------------------------------------------------------
 void GGroupVector::UpdateRefs(void) const
 {
-	GDict* d=Lang->GetDict();
-	if(d)
-		AddRefs(otGroup,d);
-
+	AddRefs(otGroup,Lang);
 }
 
 
 //-----------------------------------------------------------------------------
 void GGroupVector::RemoveRefs(void) const
 {
-	GDict* d=Lang->GetDict();
-	if(d)
-		DelRefs(otGroup,d);
+	DelRefs(otGroup,Lang);
 }
 
 
@@ -100,7 +95,7 @@ double GGroupVector::Similarity(const GGroup* desc) const
 //-----------------------------------------------------------------------------
 double GGroupVector::GlobalSimilarity(const GGroup* desc) const
 {
-	return(SimilarityIdf((dynamic_cast<const GGroupVector*>(desc)),otGroup,Lang));
+	return(SimilarityIFF((dynamic_cast<const GGroupVector*>(desc)),otGroup,Lang));
 }
 
 
@@ -114,7 +109,7 @@ double GGroupVector::Similarity(const GDoc* doc) const
 //-----------------------------------------------------------------------------
 double GGroupVector::GlobalSimilarity(const GDoc* doc) const
 {
-	return(SimilarityIdf(dynamic_cast<const GDocVector*>(doc),otDocGroup,Lang));
+	return(SimilarityIFF(dynamic_cast<const GDocVector*>(doc),otDocGroup,Lang));
 }
 
 
@@ -128,7 +123,7 @@ double GGroupVector::Similarity(const GSubProfile* doc) const
 //-----------------------------------------------------------------------------
 double GGroupVector::GlobalSimilarity(const GSubProfile* doc) const
 {
-	return(SimilarityIdf(dynamic_cast<const GSubProfileVector*>(doc),otSubProfileGroup,Lang));
+	return(SimilarityIFF(dynamic_cast<const GSubProfileVector*>(doc),otSubProfileGroup,Lang));
 }
 
 

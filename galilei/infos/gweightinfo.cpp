@@ -4,7 +4,7 @@
 
 	GWeightInfo.cpp
 
-	Information entity representing a word associated with a weight - Implementation.
+	Weighted information entity - Implementation.
 
 	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
@@ -42,7 +42,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include<infos/gweightinfo.h>
-#include<infos/gdict.h>
+#include<infos/glang.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -55,22 +55,42 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(unsigned id,GInfoType type) throw(bad_alloc)
+GWeightInfo::GWeightInfo(unsigned int id,GInfoType type) throw(bad_alloc)
   : GInfo(id,type), Weight(0.0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(unsigned id,double w,GInfoType type) throw(bad_alloc)
+GWeightInfo::GWeightInfo(unsigned int id,double w,GInfoType type) throw(bad_alloc)
   : GInfo(id,type), Weight(w)
 {
 }
 
 
 //------------------------------------------------------------------------------
+GWeightInfo::GWeightInfo(const GWeightInfo& w) throw(bad_alloc)
+  : GInfo(w.Id,w.Type), Weight(w.Weight)
+{
+}
+
+//------------------------------------------------------------------------------
 GWeightInfo::GWeightInfo(const GWeightInfo* w) throw(bad_alloc)
   : GInfo(w->Id,w->Type), Weight(w->Weight)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfo::GWeightInfo(const GInfo& w) throw(bad_alloc)
+  : GInfo(w), Weight(0.0)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfo::GWeightInfo(const GInfo* w) throw(bad_alloc)
+  : GInfo(w), Weight(0.0)
 {
 }
 
@@ -90,9 +110,50 @@ int GWeightInfo::Compare(const GWeightInfo* calc) const
 
 
 //------------------------------------------------------------------------------
-double GWeightInfo::GetQueryWeight(tObjType ObjType,GDict* dict,double max) const
+void GWeightInfo::SetWeight(double w)
 {
-	return((Weight/max)*log(static_cast<double>(dict->GetRef(ObjType,Type))/static_cast<double>(dict->GetRef(Id,ObjType))));
+	Weight=w;
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfo& GWeightInfo::operator=(const GWeightInfo& i) throw(bad_alloc)
+{
+	GInfo::operator=(i);
+	Weight=i.Weight;
+	return(*this);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfo& GWeightInfo::operator=(const GInfo& i) throw(bad_alloc)
+{
+	GInfo::operator=(i);
+	Weight=0.0;
+	return(*this);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfo& GWeightInfo::operator+=(double w)
+{
+	Weight+=w;
+	return(*this);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfo& GWeightInfo::operator-=(double w)
+{
+	Weight-=w;
+	return(*this);
+}
+
+
+//------------------------------------------------------------------------------
+double GWeightInfo::GetQueryWeight(tObjType ObjType,GLang* lang,double max) const throw(GException)
+{
+	return((Weight/max)*log(static_cast<double>(lang->GetRef(ObjType,Type))/static_cast<double>(lang->GetRef(Id,ObjType))));
 }
 
 

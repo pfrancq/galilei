@@ -4,9 +4,9 @@
 
 	GWord.h
 
-	Word - Header.
+	Word (or stem) - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,70 +34,39 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GWordH
 #define GWordH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <infos/gdata.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GWord class provides a representation for a word.
+* The GWord class provides a representation for a given word. In fact, it
+* represents a given stem. It is data which name is the word (or stem).
 * @author Pascal Francq
 * @short Word.
 */
-class GWord
+class GWord : public GData
 {
-protected :
-
-	/**
-	* Identificator of the word.
-	*/
-	unsigned int Id;
-
-	/**
-	* The word.
-	*/
-	R::RString Word;
-
-	/**
-	* The type
-	*/
-	GInfoType Type;
-
-	/**
-	* Number of references in documents.
-	*/
-	unsigned int NbRefDocs;
-
-	/**
-	* Number of references in subprofiles.
-	*/
-	unsigned int NbRefSubProfiles;
-
-	/**
-	* Number of references in groups.
-	*/
-	unsigned int NbRefGroups;
-
 public:
 
 	/**
-	* Default constructor for a word. The word is not a valid one.
+	* Default constructor.
 	*/
 	GWord(void) throw(bad_alloc);
 
 	/**
-	* Construct a word but without to know which will be its identificator.
+	* Construct a word. Its idenfiticator is invalid (cNoRef).
 	* @param word           Word.
 	*/
 	GWord(const R::RString& word) throw(bad_alloc);
@@ -107,144 +76,30 @@ public:
 	* @param id             Identificator of the word.
 	* @param word           Word.
 	*/
-	GWord(unsigned id,const R::RString& word) throw(bad_alloc);
+	GWord(unsigned int id,const R::RString& word) throw(bad_alloc);
 
 	/**
-	* Copy constructor.
-	* @param word           Word used as reference.
+	* Copy constructor of a word.
+	* @param word           Word.
 	*/
 	GWord(const GWord& word) throw(bad_alloc);
 
 	/**
-	* Copy constructor.
-	* @param word           Word used as reference.
+	* Copy constructor of a word.
+	* @param word           Pointer to a word.
 	*/
 	GWord(const GWord* word) throw(bad_alloc);
 
 	/**
-	* Compare method used by RStd::RContainer and RStd::RHashContainer.
+	* The methodes creates a copy of the word.
+	* @return Pointer to a GData.
 	*/
-	int Compare(const GWord& word) const;
-
-	/**
-	* Compare method used by RStd::RContainer and RStd::RHashContainer.
-	*/
-	int Compare(const GWord* word) const;
-
-	/**
-	* Compare method used by RStd::RContainer and RStd::RHashContainer.
-	*/
-	int Compare(const R::RString& word) const;
-
-	/**
-	* Compare method used by RStd::RContainer and RStd::RHashContainer.
-	*/
-	int Compare(const char* word) const;
-
-	/**
-	* Compare method used by RStd::RContainer and RStd::RHashContainer.
-	*/
-	int Compare(const unsigned int id) const;
-
-	/**
-	* Set the type.
-	*/
-	void SetType(GInfoType type);
-
-	/**
-	* Return the type.
-	*/
-	GInfoType GetType() {return(Type);}
-
-	/**
-	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the RStd::RHashContainer class.
-	*/
-	static int HashIndex(const GWord* w)
-		{return(R::RString::HashIndex(w->Word));}
-
-	/**
-	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the RStd::RHashContainer class.
-	*/
-	static int HashIndex(const GWord& w)
-		{return(R::RString::HashIndex(w.Word));}
-
-	/**
-	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the RStd::RHashContainer class.
-	*/
-	static int HashIndex(const R::RChar* word)
-		{return(R::RString::HashIndex(word));}
-
-	/**
-	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the RStd::RHashContainer class.
-	*/
-	static int HashIndex2(const GWord& w)
-		{return(R::RString::HashIndex2(w.Word));}
-
-	/**
-	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the RStd::RHashContainer class.
-	*/
-	static int HashIndex2(const GWord* w)
-		{return(R::RString::HashIndex2(w->Word));}
-
-	/**
-	* Return a number between 0 and 26 according to the first character of the
-	* string. It is used for the RStd::RHashContainer class.
-	*/
-	static int HashIndex2(const R::RChar* word)
-		{return(R::RString::HashIndex2(word));}
-
-	/**
-	* Set the Identificator of the word.
-	* @param id              Identificator of the word.
-	*/
-	void SetId(unsigned int id) {Id=id;}
-
-	/**
-	* @return Identificator of the word.
-	*/
-	unsigned int GetId(void) const {return(Id);}
-
-	/**
-	* @return A C string representing the word.
-	*/
-	const char* GetWord(void) const {return(Word);}
-
-	/**
-	* Increase the number of references on this word.
-	* @param ObjType        Type of the reference.
-	*/
-	void IncRef(tObjType ObjType);
-
-	/**
-	* Decrease the number of references on this word.
-	* @param ObjType        Type of the reference.
-	*/
-	void DecRef(tObjType ObjType);
-
-	/**
-	* Get the number of references on this word.
-	* @param ObjType        Type of the reference.
-	* @returns unsigned int.
-	*/
-	unsigned int GetRef(tObjType ObjType);
-
-	/**
-	* Clear the word.
-	*/
-	void Clear();
+	virtual GData* CreateCopy(void) const throw(bad_alloc);
 
 	/**
 	* Destructor.
 	*/
 	virtual ~GWord(void);
-
-	// friend classes
-	friend class GDict;
 };
 
 
@@ -256,8 +111,8 @@ public:
 CLASSCURSOR(GWordCursor,GWord,unsigned int)
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

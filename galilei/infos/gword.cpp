@@ -4,9 +4,9 @@
 
 	GWord.cpp
 
-	Word - Implementation.
+	 (or stem) - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -35,11 +35,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include file for ANSI C/C++
-#include <string.h>
-
-
-//-----------------------------------------------------------------------------
 // include file for Galilei
 #include <infos/gword.h>
 using namespace GALILEI;
@@ -54,65 +49,65 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(void) throw(bad_alloc)
-  : Id(cNoRef), Word(), Type(infoWord), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
+GWord::GWord(void) throw(bad_alloc)
+  : GData("",infoWord)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GWord::GWord(const RString& word) throw(bad_alloc)
-  : Id(cNoRef), Word(word), Type(infoWord), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
+  : GData(word,infoWord)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GWord::GWord(unsigned id,const RString& word) throw(bad_alloc)
-  : Id(id), Word(word), Type(infoWord), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
+  : GData(id,word,infoWord)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GWord::GWord(const GWord& word) throw(bad_alloc)
-  : Id(word.Id), Word(word.Word), Type(infoWord), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
+  : GData(word)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::GWord::GWord(const GWord* word) throw(bad_alloc)
-  : Id(word->Id), Word(word->Word), Type(infoWord), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0)
+  : GData(word)
 {
 }
 
-
+/*
 //-----------------------------------------------------------------------------
 int GALILEI::GWord::Compare(const GWord& word) const
 {
-	return(Word.Compare(word.Word));
+	return(Name.Compare(word.Name));
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GWord::Compare(const GWord* word) const
 {
-	return(Word.Compare(word->Word));
+	return(Name.Compare(word->Name));
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GWord::Compare(const RString& word) const
 {
-	return(Word.Compare(word));
+	return(Name.Compare(word));
 }
 
 
 //-----------------------------------------------------------------------------
 int GALILEI::GWord::Compare(const char* word) const
 {
-	return(Word.Compare(word));
+	return(Name.Compare(word));
 }
 
 
@@ -121,92 +116,15 @@ int GALILEI::GWord::Compare(const unsigned int id) const
 {
 	return(Id-id);
 }
-
-//---------------------------------------------------------------------------
-void GALILEI::GWord::SetType(GInfoType type)
-{
-	Type=type;
-}
-
-//-----------------------------------------------------------------------------
-void GALILEI::GWord::IncRef(tObjType ObjType)
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			NbRefDocs++;
-			break;
-		case otSubProfile:
-			NbRefSubProfiles++;
-			break;
-		case otGroup:
-			NbRefGroups++;
-			break;
-		default:
-			break;
-	}
-}
+*/
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GWord::DecRef(tObjType ObjType)
+GData* GWord::CreateCopy(void) const throw(bad_alloc)
 {
-	switch(ObjType)
-	{
-		case otDoc:
-			NbRefDocs--;
-			break;
-		case otSubProfile:
-			NbRefSubProfiles--;
-			break;
-		case otGroup:
-			NbRefGroups--;
-			break;
-		default:
-			break;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GWord::GetRef(tObjType ObjType)
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			return(NbRefDocs);
-			break;
-		case otSubProfile:
-			return(NbRefSubProfiles);
-			break;
-		case otGroup:
-			return(NbRefGroups);
-			break;
-		case otDocSubProfile:
-			return(NbRefDocs+NbRefSubProfiles);
-			break;
-		case otDocGroup:
-			return(NbRefDocs+NbRefGroups);
-			break;
-		case otSubProfileGroup:
-			return(NbRefSubProfiles+NbRefGroups);
-			break;
-		default:
-			return(NbRefDocs+NbRefSubProfiles+NbRefGroups);
-			break;
-	}
-	return(0);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GWord::Clear()
-{
-	Id=cNoRef;
-	Word();
-	NbRefDocs=0;
-	NbRefSubProfiles=0;
-	NbRefGroups=0;
+	GWord* ptr=new GWord(this);
+	ptr->Id=cNoRef;
+	return(ptr);
 }
 
 
