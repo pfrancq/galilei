@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#**************************************************************************************
+#
+#  author : Vandaele Valery     vavdaele@ulb.ac.be
+#
+#**************************************************************************************
+#
+# This script is use to create a new Empty database in the GALILEI environement!
+#
+#************************************************************************************** 
+#
+# This script must be executed with several arguments in this order :
+# createDb_mysql "DbName" "host" "user" "pass" "DbModele" "DbStopListe" DbUsers
+#     $0             $1     $2     $3      $4      $5        $6            $7
+#
+#**************************************************************************************
+
+dbName=$1
+host=$2
+user=$3
+pass=$4
+modele=$5
+stopList=$6
+users=$7
+
+
+#echo "CREATE database "$dbName | mysql -h $host -u $user --password=$pass
+
+mysql -u root -h $host --execute=" CREATE database  $dbName "
+echo "init database..." 
+
+mysql -h $host -u root --password=$pass  $dbName < $modele 
+echo "create database tables ..."
+
+mysql -h $host -u root --password=$pass  $dbName < $stopList 
+echo "fill stop list for each language"
+
+mysql -h $host -u root --password=$pass  $dbName < $users  
+echo "fill users table..."
+
+echo " Database created "
+
+
