@@ -64,7 +64,7 @@ using namespace RTimeDate;
 
 //-----------------------------------------------------------------------------
 // Constance
-const unsigned int MaxWordLen=500;
+const unsigned int MaxWordLen=50;
 
 
 
@@ -483,22 +483,6 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 	// Set the Variable of the document
 	doc->SetInfos(Lang,N,Ndiff,V,Vdiff,Words);
 	Words=0;
-//	doc->Lang=Lang;
-//	doc->N=N;
-//	doc->Ndiff=Ndiff;
-//	doc->V=V;
-//	doc->Vdiff=Vdiff;
-//	if(doc->Words)
-//		delete doc->Words;
-//
-//	// Make it 'Updated' and tell all the profiles that have judge this
-//	// document that they are 'Modified'.
-//	doc->Words=Words;
-//	Words=0;
-//	doc->State=osUpdated;
-//	doc->Computed.SetToday();
-//	for(doc->Fdbks.Start();!doc->Fdbks.End();doc->Fdbks.Next())
-//		doc->Fdbks()->GetProfile()->SetState(osModified);
 }
 
 
