@@ -82,10 +82,42 @@ public:
 	void RemoveRefs(void) const;
 
 	/**
+	* Get the number of elements of the vector that are not null.
+	*/
+	unsigned int GetNbNoNull(void) const;
+
+	/**
 	* Get the vector representing the sub-profile.
 	* @returns Pointer to GIWordsWeights.
 	*/
 	GIWordsWeights* GetVector(void) {return(this);}
+
+	/**
+	* Compute similarity between groups.
+	*/
+	virtual double Similarity(const GGroup* desc) const;
+
+	/**
+	* Compute similarity between groups using a global approach.
+	*/
+	virtual double GlobalSimilarity(const GGroup* desc) const;
+
+	/**
+	* Compute similarity between a subprofile and a document.
+	*/
+	virtual double Similarity(const GDoc* doc) const;
+
+	/**
+	* Compute similarity between a subprofile and a document using a global
+	* approach.
+	*/
+	virtual double GlobalSimilarity(const GDoc* doc) const;
+
+	/**
+	* Get a cursor over the vector.
+	* @return GIWordWeightCursor element.
+	*/
+	GIWordWeightCursor& GetVectorCursor(void);
 };
 
 

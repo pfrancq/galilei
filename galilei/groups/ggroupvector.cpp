@@ -39,7 +39,9 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <groups/ggroupvector.h>
+#include <docs/gdoc.h>
 #include <profiles/gsubprofile.h>
+#include <infos/giwordweight.h>
 #include <langs/glang.h>
 #include <langs/gdict.h>
 using namespace GALILEI;
@@ -75,4 +77,48 @@ void GALILEI::GGroupVector::RemoveRefs(void) const
 	GDict* d=Lang->GetDict();
 	if(d)
 		DelRefs(otGroup,d);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GGroupVector::GetNbNoNull(void) const
+{
+	return(GIWordsWeights::NbPtr);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroupVector::Similarity(const GGroup* desc) const
+{
+	return(GIWordsWeights::Similarity((static_cast<const GGroupVector*>(desc))));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroupVector::GlobalSimilarity(const GGroup* desc) const
+{
+	return(SimilarityIdf((static_cast<const GGroupVector*>(desc)),otSubProfile,Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroupVector::Similarity(const GDoc* doc) const
+{
+	return(GIWordsWeights::Similarity(doc));
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GGroupVector::GlobalSimilarity(const GDoc* doc) const
+{
+	return(SimilarityIdf(doc,otNoClass,Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+GIWordWeightCursor& GALILEI::GGroupVector::GetVectorCursor(void)
+{
+	GIWordWeightCursor *cur=GIWordWeightCursor::GetTmpCursor();
+	cur->Set(this);
+	return(*cur);
 }
