@@ -204,7 +204,7 @@ public:
 	* @param lmng           Linking Manager.
 	*/
 	void PostConnect(GLinkCalcManager* lmng) throw(bad_alloc,GException);
-	
+
 	/**
 	* Get the documents' analyser.
 	* @returns Pointer to a GDocAnalyse class.
@@ -419,30 +419,11 @@ public:
 	double GetMinimumOfSimilarity(R::RContainer<GSubProfile,unsigned int,false,true>* subprofiles, double deviationrate=1.5);
 
 	/**
-	* Initialise the table of similarity between documents and profiles
+	* Set if the Inverse Frequency Factor should be used for the similarities
+	* between documents and (sub)profiles.
+	* @param iff             Use Inverse Frequency Factor.
 	*/
-	void InitDocProfSims(void);
-
-	/**
-	* Update the state of similarity between a profile and a subProfiles for a given language.
-	* @param global         use the Global/Locale similarity
-	* @param lang           The lang of the document/subprofiles
-	*/
-	void ChangeDocProfState(bool global,GLang* lang)throw(bad_alloc);
-
-	/**
-	* Update the state of similarity between a profile and a subProfiles for all the langages contained in the system.
-	* @param global         use the Global/Locale similarity1
-	*/
-	void ChangeAllDocProfState(bool global)throw(bad_alloc);
-
-	/**
-	* Return the similarity between a document and a subProfiles for a given language.
-	* @param l              The language used
-	* @param id_doc            Identificator of the document
-	* @param id_sub            Identificator of the subprofile
-	*/
-	double GetSimDocProf(GLang* l,unsigned int id_doc, unsigned int id_sub);
+	void UseIFFDocProf(bool iff);
 
 	/**
 	* Return the similarity between a document and a subProfiles.

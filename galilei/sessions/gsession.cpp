@@ -58,7 +58,6 @@ using namespace R;
 #include <docs/gdocanalyse.h>
 #include <docs/gdocanalysemanager.h>
 #include <docs/gdocxml.h>
-#include <docs/gdocprofsim.h>
 #include <docs/gdocprofsims.h>
 #include <docs/glinkcalc.h>
 #include <docs/glinkcalcmanager.h>
@@ -109,8 +108,7 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	  Subjects(0), Fdbks(f+f/2,f/2),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
 	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0),
-	 Random(0),
-	  SessParams(sessparams)
+	  DocProfSims(0), Random(0),  SessParams(sessparams)
 {
 	// Init Part
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
@@ -124,6 +122,9 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	// Create SubjectTree
 	if(tests)
 		Subjects=new GSubjectTree(this);
+
+	// Create Similarities Managers
+	DocProfSims = new GDocProfSims(this,p,true);
 }
 
 
@@ -262,9 +263,11 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 
 
 	// opens and appends the Log File for all errors occuring in the filter or analyse phase.
-	err= "Documents Filtering and Analysis on Data Set : "+GetDbName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear());
 	if(rec)
+	{
+		err= "Documents Filtering and Analysis on Data Set : "+GetDbName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear());
 		rec->WriteStr(err.Latin1());
+	}
 
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
@@ -291,7 +294,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 				}
 				else
 					Docs()->IncFailed();
-			} 
+			}
 			SaveDoc(Docs());
 			if(Docs()->GetState()==osUpdated)
 				Docs()->SetState(osUpToDate);
@@ -320,75 +323,21 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GSession::InitDocProfSims(void)
+void GSession::UseIFFDocProf(bool iff)
 {
-	GFactoryLangCursor langs;
-	GLang* lang;
-	RContainer<GSubProfile,unsigned int,false,true>* subProf;
-	GDocProfSim* docProfSim;
-
-	DocProfSims = new GDocProfSims(100);
-
-	langs= Langs->GetLangsCursor();
-	for(langs.Start();!langs.End(); langs.Next())
-	{
-		lang=langs()->GetPlugin();
-		if(!lang) continue;
-		subProf = new RContainer<GSubProfile,unsigned int, false,true>(100,50);
-		GSubProfileCursor subProfCur = GetSubProfilesCursor(lang);
-
-		for(subProfCur.Start();!subProfCur.End();subProfCur.Next())
-		{
-			subProf->InsertPtr( subProfCur());
-		}
-		docProfSim= new GDocProfSim(this,subProf, false,lang);
-		DocProfSims->InsertPtr(docProfSim);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::ChangeDocProfState(bool global,GLang* lang)throw(bad_alloc)
-{
-	GDocProfSim* docProfSim = DocProfSims->GetPtr<GLang*>(lang);
-	docProfSim->UpdateDocProfSim(this,this, global);
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::ChangeAllDocProfState(bool global)throw(bad_alloc)
-{
-	GFactoryLangCursor langs;
-	GLang* lang;
-
-	langs = Langs->GetLangsCursor();
-	for(langs.Start();!langs.End();langs.Next())
-	{
-		lang=langs()->GetPlugin();
-		if(!lang) continue;
-		ChangeDocProfState(global,lang);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-double GSession::GetSimDocProf(GLang* l,unsigned int id_doc, unsigned int id_sub)
-{
-	GDocProfSim* docProfSim = DocProfSims->GetPtr<GLang*>(l);
-	return docProfSim->GetSim(this,this,id_doc,id_sub);
+	DocProfSims->UseIFF(iff);
 }
 
 
 //-----------------------------------------------------------------------------
 double GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub)
 {
-	GDocProfSim* docProfSim = DocProfSims->GetPtr<GLang*>(doc->GetLang());
-	return docProfSim->GetSim(doc,sub);
+	return(DocProfSims->GetSim(doc,sub));
 }
 
 
 //-----------------------------------------------------------------------------
-void GSession::InitProfilesSims(void) 
+void GSession::InitProfilesSims(void)
 {
 	GProfilesSim* profSim;
 	RContainer<GSubProfile,unsigned int,false,true>* subProfs;
@@ -411,7 +360,7 @@ void GSession::InitProfilesSims(void)
 			subProfs->InsertPtr( subProfCur());
 		}
 		//init the profsim with a global=false (can be 'true').
-		profSim= new GProfilesSim(subProfs, false,lang);
+		profSim= new GProfilesSim(subProfs, true,lang);
 		// insert the profsim in the container of profsims
 		ProfilesSims->InsertPtr(profSim);
 	}
@@ -899,9 +848,6 @@ void GSession::ReInit(bool)
 	// clean similarities between profiles
 	delete(ProfilesSims);
 
-	// clean similarities between documents and subprofiles
-	delete(DocProfSims);
-
 	// set group to 0 for subprofiles.
 	ClearSubProfilesGroups();
 
@@ -912,13 +858,16 @@ void GSession::ReInit(bool)
 	InitProfilesBehaviours();
 
 	// re-Init the sims between documents and subprofiles
-	InitDocProfSims();
+	DocProfSims->ReInit();
 }
 
 
 //-----------------------------------------------------------------------------
 GSession::~GSession(void) throw(GException)
 {
+	// Delete Similarities Managers
+	delete DocProfSims;
+
 	// Clear all entities
 	GGroupsMng::Clear();
 	GUsers::Clear();

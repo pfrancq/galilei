@@ -108,7 +108,6 @@ class GPostDoc;
 class GPostDocManager;
 class GFactoryPostDoc;
 class GFactoryPostDocCursor;
-class GDocProfSim;
 class GDocProfSims;
 class GDocs;
 class GDocSim;
