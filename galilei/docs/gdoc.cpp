@@ -155,7 +155,7 @@ int GALILEI::GDoc::AnalyseTagForStopKwd(RXMLTag* tag,GDict* stop)
 		ptr=tag->GetContent();
 		while(*ptr)
 		{
-			if((ExtractWord(ptr,word))&&(stop->IsIn(word)))
+			if((ExtractWord(ptr,word))&&(stop->IsIn<const char*>(word())))
 				nb++;
 		}
 	}
@@ -184,7 +184,7 @@ void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw
 			if(ExtractWord(ptr,word))
 			{
 				NbWords++;
-				if(!stop->IsIn(word))
+				if(!stop->IsIn<const char*>(word()))
 				{
 					stem=Lang->GetStemming(word);
 					Occur=Words.GetPtr(dic->GetId(stem));

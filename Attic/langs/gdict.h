@@ -168,7 +168,7 @@ public:
 	* @return Word given by an identificator.
 	*/
 	const char* GetWord(const unsigned int id) const
-		{return(Direct[id]->Word());}
+		{return(Direct[id]->GetWord());}
 
 	/**
 	* Test if the dictionnary is a stop list.

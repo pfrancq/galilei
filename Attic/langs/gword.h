@@ -97,10 +97,25 @@ public:
 	int Compare(const unsigned int id) const;
 
 	/**
-	* Hash inded method used by RStd::RHashContainer.
+	* Return a number between 0 and 26 according to the first character of the
+	* string. It is used for the RStd::RHashContainer class.
 	*/
-	char HashIndex(void) const
-		{ return(Word.HashIndex());}
+	static char HashIndex(const GWord* w)
+		{return(RStd::RString::HashIndex(w->Word));}
+
+	/**
+	* Return a number between 0 and 26 according to the first character of the
+	* string. It is used for the RStd::RHashContainer class.
+	*/
+	static char HashIndex(const GWord& w)
+		{return(RStd::RString::HashIndex(w.Word));}
+
+	/**
+	* Return a number between 0 and 26 according to the first character of the
+	* string. It is used for the RStd::RHashContainer class.
+	*/
+	static char HashIndex(const char* word)
+		{return(RStd::RString::HashIndex(word));}
 
 	/**
 	* @return Identificator of the word.
