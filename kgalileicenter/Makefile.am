@@ -4,7 +4,7 @@ bin_PROGRAMS = kgalileicenter
 ## INCLUDES were found outside kdevelop specific part
 
 kgalileicenter_SOURCES = kviewstorechromos.cpp qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui qcreatedatabase.ui qmixidealconfig.ui qviewchromos.ui kviewquery.cpp kviewchromos.cpp kviewevaluategroup.cpp kviewgroupsevaluation.cpp qlanguages.ui kviewr.cpp kviewprg.cpp qpluginsdlg.cpp kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewga.cpp kviewstems.cpp qsessionprogress.cpp qdocsoptionsdlg.ui qconnectmysql.ui kviewusers.cpp kviewthgroups.cpp kviewstat.cpp kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kview.cpp kdoc.cpp kgalileicenter.cpp main.cpp 
-kgalileicenter_LDADD   = ./galilei/docs/libdocs.a ./galilei/libgalilei.a ./galilei/filters/libfilters.a ./galilei/groups/libgroups.a ./galilei/infos/libinfos.a ./galilei/langs/liblangs.a ./galilei/profiles/libprofiles.a ./galilei/sessions/libsessions.a ./galilei/urlmanagers/liburlmanagers.a ./r/rstd/librstd.a ./r/rio/librio.a ./r/rxml/librxml.a ./r/rtimedate/librtimedate.a ./r/rinter/librinter.a ./r/rmysql/librmysql.a ./qtwidgets/rga/librga.a ./qtwidgets/galilei/libgalilei.a ./r/rga/librga.a ./r/rmath/librmath.a ./r/rgga/librgga.a ./r/rpromethee/librpromethee.a ./qtwidgets/rpromethee/librpromethee.a ./galilei/tests/libtests.a /usr/lib/libmysqlclient.so ${GCENTER}/galilei/sessions/libsessions.a ${GCENTER}/galilei/profiles/libprofiles.a ${GCENTER}/galilei/langs/liblangs.a ${GCENTER}/galilei/docs/libdocs.a ${GCENTER}/galilei/groups/libgroups.a ${GCENTER}/r/rinter/librinter.a ${GCENTER}/r/rxml/librxml.a ${GCENTER}/r/rio/librio.a ${GCENTER}/galilei/infos/libinfos.a ${GCENTER}/qtwidgets/rga/librga.a ${GCENTER}/r/rga/librga.a ${GCENTER}/galilei/filters/libfilters.a ${GCENTER}/r/rmysql/librmysql.a ${GCENTER}/r/rstd/librstd.a ${GCENTER}/r/rtimedate/librtimedate.a ${GCENTER}/r/rpromethee/librpromethee.a $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
+kgalileicenter_LDADD   = ./galilei/docs/libdocs.a ./galilei/libgalilei.a ./galilei/filters/libfilters.a ./galilei/groups/libgroups.a ./galilei/infos/libinfos.a ./galilei/langs/liblangs.a ./galilei/profiles/libprofiles.a ./galilei/sessions/libsessions.a ./galilei/urlmanagers/liburlmanagers.a ./r/rstd/librstd.a ./r/rio/librio.a ./r/rxml/librxml.a ./r/rtimedate/librtimedate.a ./r/rinter/librinter.a ./r/rmysql/librmysql.a ./qtwidgets/rga/librga.a ./qtwidgets/galilei/libgalilei.a ./r/rga/librga.a ./r/rmath/librmath.a ./r/rgga/librgga.a ./r/rpromethee/librpromethee.a ./qtwidgets/rpromethee/librpromethee.a ./galilei/tests/libtests.a ./galilei/postgroups/libpostgroups.a /usr/lib/libmysqlclient.so ${GCENTER}/galilei/sessions/libsessions.a ${GCENTER}/galilei/profiles/libprofiles.a ${GCENTER}/galilei/langs/liblangs.a ${GCENTER}/galilei/docs/libdocs.a ${GCENTER}/galilei/groups/libgroups.a ${GCENTER}/r/rinter/librinter.a ${GCENTER}/r/rxml/librxml.a ${GCENTER}/r/rio/librio.a ${GCENTER}/galilei/infos/libinfos.a ${GCENTER}/qtwidgets/rga/librga.a ${GCENTER}/r/rga/librga.a ${GCENTER}/galilei/filters/libfilters.a ${GCENTER}/r/rmysql/librmysql.a ${GCENTER}/r/rstd/librstd.a ${GCENTER}/r/rtimedate/librtimedate.a ${GCENTER}/r/rpromethee/librpromethee.a $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
 
 SUBDIRS = galilei r qtwidgets 
 
@@ -44,7 +44,7 @@ uninstall-local:
 # kde_wallpaperdir  Where general wallpapers should go to.
 
 # set the include path for X, qt and KDE
-INCLUDES= $(all_includes)
+INCLUDES = $(all_includes)
 
 METASOURCES = AUTO
 
@@ -60,3 +60,6 @@ messages: rc.cpp
 	 $(XGETTEXT) $$LIST -o $(podir)/kgalileicenter.pot; \
 	fi
 
+AM_CFLAGS = 
+AM_CXXFLAGS = -fexceptions -I$GCENTER/r -I$GCENTER/galilei  -I$GCENTER/qtwidgets
+AM_FFLAGS = 

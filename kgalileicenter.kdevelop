@@ -9,19 +9,25 @@
       <keyword>KDE</keyword>
       <keyword>Qt</keyword>
     </keywords>
+    <projectdirectory>.</projectdirectory>
+    <absoluteprojectpath>false</absoluteprojectpath>
+    <version></version>
+    <description></description>
+    <ignoreparts/>
   </general>
   <kdevautoproject>
     <general>
       <mainprogram>kgalileicenter</mainprogram>
+      <useconfiguration>default</useconfiguration>
     </general>
     <configure>
       <configargs>--prefix=/usr --enable-debug\s</configargs>
     </configure>
     <make>
-      <abortonerror/>
-      <numberofjobs/>
-      <dontact/>
-      <makebin/>
+      <abortonerror>false</abortonerror>
+      <numberofjobs>1</numberofjobs>
+      <dontact>false</dontact>
+      <makebin></makebin>
     </make>
     <compiler>
       <cflags/>
@@ -31,12 +37,31 @@
       <envvar value="1" name="WANT_AUTOCONF_2_5" />
       <envvar value="1" name="WANT_AUTOMAKE_1_6" />
     </makeenvvars>
+    <configurations>
+      <default>
+        <configargs></configargs>
+        <builddir></builddir>
+        <topsourcedir></topsourcedir>
+        <ccompiler>GccOptions</ccompiler>
+        <cxxcompiler>GppOptions</cxxcompiler>
+        <f77compiler>G77Options</f77compiler>
+        <ccompilerbinary></ccompilerbinary>
+        <cxxcompilerbinary></cxxcompilerbinary>
+        <f77compilerbinary></f77compilerbinary>
+        <cflags></cflags>
+        <cxxflags>-fexceptions -I$GCENTER/r -I$GCENTER/galilei  -I$GCENTER/qtwidgets</cxxflags>
+        <f77flags></f77flags>
+      </default>
+    </configurations>
+    <run>
+      <mainprogram>./kgalileicenter/kgalileicenter</mainprogram>
+      <programargs></programargs>
+    </run>
   </kdevautoproject>
   <kdevfileview>
     <groups>
       <group pattern="*kdoc*.h,*kview*.h,*kgalileicenter.h,*qsession*.h,*qplugins*.h" name="Headers" />
       <group pattern="*tests/*.h" name="Headers - Tests" />
-      <group pattern="*docs/*.h" name="Headers - Docs" />
       <group pattern="*/galilei/galilei.h,*/galilei/gplugin.h" name="Headers - GALILEI" />
       <group pattern="*r/rga/*.h" name="Headers R - GA" />
       <group pattern="*r/rgga/*.h" name="Headers R - GGA" />
@@ -79,6 +104,7 @@
       <group pattern="*.po" name="Translations" />
       <group pattern="AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,NEWS" name="GNU" />
       <group pattern="*rinter/*.h" name="Headers R - Inter" />
+      <group pattern="*docs/*.h" name="Headers - Docs" />
       <group pattern="*rxml/*.h" name="Headers R - XML" />
       <group pattern="*langs/*.h" name="Headers - Langs" />
       <group pattern="*" name="Others" />
@@ -96,10 +122,52 @@
       <toc>php</toc>
       <toc>perl</toc>
     </ignoretocs>
+    <projectdoc>
+      <userdocDir>/home/dwartel/prj/kgalileicenter/html/</userdocDir>
+      <apidocDir>/home/dwartel/prj/kgalileicenter/html/</apidocDir>
+    </projectdoc>
   </kdevdoctreeview>
   <kdevdebugger>
     <general>
       <dbgshell>libtool</dbgshell>
+      <programargs></programargs>
+      <gdbpath></gdbpath>
+      <breakonloadinglibs>true</breakonloadinglibs>
+      <separatetty>true</separatetty>
+      <floatingtoolbar>true</floatingtoolbar>
     </general>
+    <display>
+      <staticmembers>true</staticmembers>
+      <demanglenames>true</demanglenames>
+    </display>
   </kdevdebugger>
+  <kdevfilecreate>
+    <filetypes/>
+    <useglobaltypes/>
+  </kdevfilecreate>
+  <cppsupportpart>
+    <codecompletion/>
+    <filetemplates>
+      <choosefiles>false</choosefiles>
+      <interfaceURL></interfaceURL>
+      <implementationURL></implementationURL>
+      <interfacesuffix>.h</interfacesuffix>
+      <implementationsuffix>.cpp</implementationsuffix>
+      <lowercasefilenames>true</lowercasefilenames>
+    </filetemplates>
+  </cppsupportpart>
+  <kdevclassview>
+    <folderhierarchy>true</folderhierarchy>
+    <depthoffolders>2</depthoffolders>
+  </kdevclassview>
+  <kdevcvs>
+    <cvsoptions>-f</cvsoptions>
+    <commitoptions></commitoptions>
+    <updateoptions>-dP</updateoptions>
+    <addoptions></addoptions>
+    <removeoptions>-f</removeoptions>
+    <diffoptions>-u3 -p</diffoptions>
+    <logoptions></logoptions>
+    <rshoptions></rshoptions>
+  </kdevcvs>
 </kdevelop>
