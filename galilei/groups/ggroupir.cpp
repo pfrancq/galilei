@@ -641,54 +641,63 @@ double GALILEI::GGroupIR::ComputeEntropy(void)
 	GObjIR** ptr;
 	GObjIR** ptr2;
 	unsigned int i,l;
-	GProfDocCursor Fdbks;
-	tDocJudgement j;
+	GDocCursor Docs;
 	GLang* Lang=Owner->Instance->Lang;
 	GSubProfile* sub;
-	double Pjk,bPjk;
-	double SumDocs;
+	double njk;
+	double Sumnjk;
+	double SumLognjk;
+	bool Proposed;
 
 	if(!Changed) return(Entropy);
+	Docs=Owner->Instance->Session->GetDocsCursor(Lang);
 
-	// Compute the entropy for each objects of the group
+	// Compute the Entropy for each objects of the group
 	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),Entropy=0.0;--i;ptr++)
 	{
 		sub=(*ptr)->GetSubProfile();
 
-		// Go through each subprofile
-		for(l=NbSubObjects+1,ptr2=Owner->GetObjs(SubObjects);--l;ptr2++)
+		// Go through the documents
+		for(Docs.Start(),SumLognjk=Sumnjk=0.0;Docs.End();Docs.Next())
 		{
-			if((*ptr2)==(*ptr)) continue;
-			SumDocs=Owner->Instance->Session->GetNbDocs((*ptr2)->SubProfile->GetLang())-(*ptr2)->SubProfile->GetNbJudgedDocs();
+			// If Not same language -> continue
+			if(Docs()->GetLang()!=Lang) continue;
 
-			// Go through the judgments of subprofile (*ptr2)
-			Fdbks=(*ptr2)->GetSubProfile()->GetProfile()->GetProfDocCursor();
-			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+			// Verify if document was not judged by the subprofile sub
+			if(sub->GetProfile()->GetFeedback(Docs())) continue;
+
+			// Verify that document was judged by another subprofile of the group
+			for(l=NbSubObjects+1,ptr2=Owner->GetObjs(SubObjects),Proposed=false;--l;ptr2++)
 			{
-				// Must be the same language than the group.
-				if(Fdbks()->GetDoc()->GetLang()!=Lang) continue;
-
-				// Verify if document was not judged by the subprofile sub
-				if(sub->GetProfile()->GetFeedback(Fdbks()->GetDoc())) continue;
-
-				// If not -> add in to then entropy.
-				j=Fdbks()->GetFdbk();
-				if((j==djNav)||(j==djOK))
+				if((*ptr2)==(*ptr)) continue;
+				if((*ptr2)->GetSubProfile()->GetProfile()->GetFeedback(Docs()))
 				{
-					Pjk=(Owner->Instance->Session->GetSimDocProf(Fdbks()->GetDoc(),sub)+1)/2;
-					bPjk=(1-Owner->Instance->Session->GetSimDocProf(Fdbks()->GetDoc(),sub))/2;
-//					Pjk/=2*(*ptr)->SumPjk;
-//					bPjk/=2*(*ptr)->SumPjk;
-					Pjk/=SumDocs;
-					bPjk/=SumDocs;
-					if(Pjk>0.0)
-						Entropy-=Pjk*log(Pjk);
-					if(bPjk>0.0)
-						Entropy-=bPjk*log(bPjk);
+					Proposed=true;
+					break;
 				}
 			}
+
+			// Compute njk
+			if(Proposed)
+				njk=(1+Owner->Instance->Session->GetSimDocProf(Docs(),sub))/2;
+			else
+				njk=(1-Owner->Instance->Session->GetSimDocProf(Docs(),sub))/2;
+
+			// If njk is not null -> compute contribution of document j
+			if(njk!=0.0)
+			{
+				Sumnjk+=njk;
+				SumLognjk+=njk*log(njk);
+			}
+		}
+
+		// If at least one njk>0 -> Add Hk to the entropy of the group.
+		if(Sumnjk!=0)
+		{
+			Entropy-=(1/Sumnjk)*(SumLognjk-(Sumnjk*log(Sumnjk)));
 		}
 	}
+
 	Changed=false;
 	return(Entropy);
 }
