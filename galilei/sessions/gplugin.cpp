@@ -143,7 +143,7 @@ void GALILEI::FindPlugins(const RString dir,RContainer<RString,true,false>& plug
 	RString Name;
 
 	dp=opendir(Path);
-	Path+=RTextFile::GetDirSeparator();
+	Path+=RFile::GetDirSeparator();
 	if(!dp) return;
 	while((ep=readdir(dp)))
 	{
