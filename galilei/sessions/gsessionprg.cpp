@@ -152,6 +152,7 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 	InstTypes.InsertPtr(new InstType("LoadIdeal",LoadIdeal));
 	InstTypes.InsertPtr(new InstType("FdbksCycle",Fdbks));
 	InstTypes.InsertPtr(new InstType("StatsProfiles",StatProf));
+	InstTypes.InsertPtr(new InstType("ModifyProfiles",ModifyProf));
 
 	// Read Program File
 	RTextFile Prg(FileName);
@@ -330,6 +331,11 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			sprintf(tmp,"Execute Sql file '%s'",i->Param1());
 			Rec->WriteStr(tmp);
 			Session->ExecuteData(i->Param1());
+			break;
+
+		case ModifyProf:
+			FirstProfile=false;
+			Rec->WriteStr("Profiles are considered as modified");
 			break;
 
 		case Comp:
