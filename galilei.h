@@ -115,6 +115,7 @@ class GProfDocCursor;
 class GProfileCalc;
 class GProfileCalcCursor;
 class GProfilesSim;
+class GSubProfilesSameDocs;
 
 
 //-----------------------------------------------------------------------------
