@@ -123,6 +123,7 @@ using namespace GALILEI;
 #include "qconnectmysql.h"
 #include "qsessionprogress.h"
 #include "qlanguages.h"
+#include "qviewchromos.h"
 
 
 
@@ -698,11 +699,10 @@ void KGALILEICenterApp::slotGASave(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotGAAnalyse(void)
 {
-	QLanguages dlg(this,0,true);
+	QViewChromos dlg(this,0,true);
 	char tmp[3];
 
 	KApplication::kApplication()->processEvents();
-	dlg.cbScratch->hide();
 	if(dlg.exec())
 	{
 		if(dlg.cbLangs->currentItem()==0)
@@ -710,7 +710,7 @@ void KGALILEICenterApp::slotGAAnalyse(void)
 		else
 			strcpy(tmp,"fr");
 		setDocParams(Doc);
-		createClient(Doc,new KViewChromos(Doc,tmp,dlg.cbGlobal->isChecked(),pWorkspace,"View Chromosomes",0));
+		createClient(Doc,new KViewChromos(Doc,tmp,dlg.cbGlobal->isChecked(),dlg.cbSim->isChecked(),pWorkspace,"View Chromosomes",0));
 	}
 }
 
