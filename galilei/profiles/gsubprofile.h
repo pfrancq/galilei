@@ -36,14 +36,6 @@
 #define GSubProfileH
 
 
-
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcursor.h>
-#include <rtimedate/rdate.h>
-#include <rstd/rcontainer.h>
-
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
@@ -52,16 +44,6 @@
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GLang;
-class GProfDoc;
-class GProfile;
-class GSubProfileRef;
-class GGroup;
-
 
 //-----------------------------------------------------------------------------
 /**

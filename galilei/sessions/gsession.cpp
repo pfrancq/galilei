@@ -73,7 +73,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException)
-	: GLangs(2),GDocs(d),GUsers(u,p,2),Groups(g+g/2,g/2), Fdbks(f+f/2,f/2),
+	: GLangs(2),GDocs(d),GUsers(u,p),Groups(g+g/2,g/2), Fdbks(f+f/2,f/2),
 	  ProfileCalcs(0), ProfileCalc(0), Groupings(0), Grouping(0), Mng(mng), DocAnalyse(0),
 	  bGroups(false),bFdbks(false), DocOptions(0)
 	

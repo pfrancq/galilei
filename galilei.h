@@ -42,6 +42,7 @@
 #include <rstd/rstring.h>
 #include <rstd/rcontainer.h>
 #include <rstd/rcursor.h>
+#include <rtimedate/rdate.h>
 
 
 //-----------------------------------------------------------------------------
@@ -85,6 +86,7 @@ class GProfDoc;
 class GProfDocCursor;
 class GProfileCalc;
 class GProfileCalcCursor;
+class GSubProfiles;
 class GSubProfile;
 class GSubProfileCursor;
 class GSubProfileDesc;

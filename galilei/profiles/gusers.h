@@ -37,30 +37,13 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GUser;
-class GUserCursor;
-class GProfile;
-class GProfileCursor;
-class GSubProfile;
-class GSubProfileCursor;
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -78,7 +61,7 @@ class GUsers : public RStd::RContainer<GUser,unsigned,true,true>
 	/**
 	* SubProfiles handled by the system.
 	*/
-	RStd::RContainer<GSubProfile,unsigned int,true,true>* SubProfiles;
+	RStd::RContainer<GSubProfiles,unsigned int,true,true>* SubProfiles;
 
 protected:
 
@@ -93,9 +76,8 @@ public:
 	* Constructor of Users
 	* @param u              Initial number of users.
 	* @param p              Initial number of profiles.
-	* @param s              Initial number of subprofiles for a given profile.
 	*/
-	GUsers(unsigned int u,unsigned int p,unsigned int s) throw(bad_alloc);
+	GUsers(unsigned int u,unsigned int p) throw(bad_alloc);
 
 	/**
 	* Get a cursor over the users used in the system.
@@ -129,8 +111,8 @@ public:
 
 	/**
 	* Create a new profile.
-	* @param usr        Pointer to the user of the profile.
-	* @param desc       Description of the profile.
+	* @param usr            Pointer to the user of the profile.
+	* @param desc           Description of the profile.
 	* @returns Pointer to GProfile.
 	*/
 	virtual GProfile* NewProfile(GUser* usr,const char* desc) throw(bad_alloc,GException)=0;
@@ -143,7 +125,7 @@ public:
 
 	/**
 	* Get a profile with a specific identifier.
-	* @param id         Identifier.
+	* @param id             Identifier.
 	*/
 	GProfile* GetProfile(const unsigned int id) const;
 
@@ -154,7 +136,7 @@ public:
 
 	/**
 	* Save a profile.
-	* @param prof       Profile to save.
+	* @param prof           Profile to save.
 	*/
 	virtual void SaveProfile(GProfile* prof) throw(GException)=0;
 
@@ -166,14 +148,22 @@ public:
 
 	/**
 	* Get a subprofile with a specific identifier.
-	* @param id         Identifier.
+	* @param id             Identifier.
 	*/
 	GSubProfile* GetSubProfile(const unsigned int id) const;
 
 	/**
-	* Get a cursor over the subprofiles of the system.
+	* Get a subprofile with a specific identifier.
+	* @param id             Identifier.
+	* @param lang           Language.
 	*/
-	GSubProfileCursor& GetSubProfilesCursor(void);
+	GSubProfile* GetSubProfile(const unsigned int id,GLang* lang) const;
+
+	/**
+	* Get a cursor over the subprofiles of the system for a given language.
+	* @param lang           Language.
+	*/
+	GSubProfileCursor& GetSubProfilesCursor(GLang* lang);
 
 	/**
 	* Save information about the groupement (Group and attachment date) of
@@ -181,7 +171,6 @@ public:
 	* @param sub        Subprofile to save.
 	*/
 	virtual void SaveSubProfile(GSubProfile* sub) throw(GException)=0;
-
 
 protected:
 
@@ -204,4 +193,3 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
-

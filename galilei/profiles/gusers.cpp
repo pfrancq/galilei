@@ -43,6 +43,7 @@ using namespace RStd;
 #include<profiles/guser.h>
 #include<profiles/gprofile.h>
 #include<profiles/gsubprofile.h>
+#include<profiles/gsubprofiles.h>
 #include<profiles/gprofdoc.h>
 using namespace GALILEI;
 
@@ -50,16 +51,16 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-//  GGUsers
+//  GUsers
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GUsers::GUsers(unsigned int u,unsigned int p,unsigned int s) throw(bad_alloc)
+GALILEI::GUsers::GUsers(unsigned int u,unsigned int p) throw(bad_alloc)
 	: RContainer<GUser,unsigned,true,true>(u,u/2), bUsers(false)
 {
 	Profiles=new RContainer<GProfile,unsigned int,true,true>(p,p/2);
-	SubProfiles=new RContainer<GSubProfile,unsigned int,true,true>(p*s,(p/2)*s);
+	SubProfiles=new RContainer<GSubProfiles,unsigned int,true,true>(10,5);
 }
 
 
@@ -112,24 +113,46 @@ GProfileCursor& GALILEI::GUsers::GetProfilesCursor(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GUsers::InsertSubProfile(GSubProfile* s) throw(bad_alloc)
 {
-	SubProfiles->InsertPtr(s);
+	GLang* l;
+	GSubProfiles* list;
+
+	l=s->GetLang();
+	list=SubProfiles->GetPtr<const GLang*>(l);
+	if(!list)
+		SubProfiles->InsertPtr(list=new GSubProfiles(l,Profiles->MaxPtr));
+	list->InsertPtr(s);
 }
 
 
 //-----------------------------------------------------------------------------
 GSubProfile* GALILEI::GUsers::GetSubProfile(const unsigned int id) const
 {
-	return(SubProfiles->GetPtr<unsigned int>(id));
+	GSubProfilesCursor Cur;
+	GSubProfile* ptr;
+
+	Cur.Set(SubProfiles);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		ptr=Cur()->GetSubProfile(id);
+		if(ptr) return(ptr);
+	}
+	return(0);
 }
 
 
 //-----------------------------------------------------------------------------
-GSubProfileCursor& GALILEI::GUsers::GetSubProfilesCursor(void)
+GSubProfile* GALILEI::GUsers::GetSubProfile(const unsigned int id,GLang* lang) const
 {
-	GSubProfileCursor *cur=GSubProfileCursor::GetTmpCursor();
-	cur->Set(SubProfiles);
-	return(*cur);
+	return(SubProfiles->GetPtr<const GLang*>(lang)->GetSubProfile(id));
 }
+
+
+//-----------------------------------------------------------------------------
+GSubProfileCursor& GALILEI::GUsers::GetSubProfilesCursor(GLang* lang)
+{
+	return(SubProfiles->GetPtr<const GLang*>(lang)->GetSubProfilesCursor());
+}
+
 
 //-----------------------------------------------------------------------------
 GALILEI::GUsers::~GUsers(void)
