@@ -82,8 +82,8 @@ GLangFR::FrenchPorterRule::FrenchPorterRule(const char* os,const char* ns,int oo
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangFR::GLangFR(void) throw(bad_alloc)
-	: GLang("French","fr"), Rules1(0), Rules2(0), Rules3(0)
+GALILEI::GLangFR::GLangFR(GDict* dict) throw(bad_alloc)
+	: GLang("French","fr",dict), Rules1(0), Rules2(0), Rules3(0)
 {
 
 	Rules1=new RContainer<FrenchPorterRule,unsigned int,true,false>(130,10);

@@ -112,7 +112,7 @@ public:
 	/**
 	* Constructor of the english language.
 	*/
-	GLangEN(void) throw(bad_alloc);
+	GLangEN(GDict* dict) throw(bad_alloc);
 
 	/**
 	* Function that return stemming of a word. The Porter's algorithm is
