@@ -187,6 +187,12 @@ public:
 	bool IsSocial(void) const {return(Social);}
 
 	/**
+	* set if the profile is social.
+	* @param social         social  value.
+	*/
+	void SetSocial(bool social) {Social=social;}
+
+	/**
 	* Get the subprofile corresponding to a given language.
 	* @param lang           Pointer to the language.
 	* @return Pointer to the subprofile.

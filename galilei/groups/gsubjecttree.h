@@ -106,20 +106,21 @@ public:
 	
 	/**
 	* Constructor.
-	* @param nbOK        %of ok document.
-	* @param nbKO        %of ok document.
-	* @param nbusers     nb of users in the database.
+	* @param nbOK           %of ok document.
+	* @param nbKO           %of ok document.
+	* @param nbusers        nb of users in the database.
 	*/
 	GSubjectTree(unsigned int nbOk,unsigned int nbKo,unsigned int nbusers);
 
 	/**
 	* Executes the queries to create new profiles.
-	* @param ses         The Gailieli session
-	* @param rand        0 total random >0 restart the sequence of randum number
-	* @param nbmin       the minimal number of profiles by groups
-	* @param nbmax       the maximal number of profiles by groups
+	* @param ses            The Gailieli session
+	* @param rand           0 total random >0 restart the sequence of randum number
+	* @param nbmin          the minimal number of profiles by groups
+	* @param nbmax          the maximal number of profiles by groups
+	* @param presocial      the % of profiels who are social
 	*/
-	void Judgments(GSession* ses,int rand,int percok,int precko,int nbmin,int nbmax);
+	void Judgments(GSession* ses,int rand,int percok,int precko,int nbmin,int nbmax,unsigned int percsocial);
 
 	/**
 	* Judge documents from the susubject sub.

@@ -312,6 +312,7 @@ void GALILEI::GSessionMySQL::SaveProfile(GProfile* prof) throw(GException)
 	char supdated[15];
 	char scomputed[15];
 	unsigned int profid;
+	unsigned int social;
 	GSubProfileCursor CurSub=prof->GetSubProfilesCursor();
 
 	// Init
@@ -321,10 +322,13 @@ void GALILEI::GSessionMySQL::SaveProfile(GProfile* prof) throw(GException)
 	for(CurSub.Start();!CurSub.End();CurSub.Next())
 		SaveSubProfile(CurSub());
 
+
 	// Update profiles
-	sprintf(sSql,"UPDATE profiles SET description=%s,updated=%s,calculated=%s WHERE profileid=%u",
+	if (prof->IsSocial()) social=1;	
+	else social =0;
+	sprintf(sSql,"UPDATE profiles SET description=%s,updated=%s,calculated=%s,social=%u WHERE profileid=%u",
 	        ValidSQLValue(prof->GetName(),sname),GetDateToMySQL(prof->GetUpdated(),supdated),
-	        GetDateToMySQL(prof->GetComputed(),scomputed),profid);
+	        GetDateToMySQL(prof->GetComputed(),scomputed),social,profid);
 	RQuery updateprof(this,sSql);
 }
 
@@ -340,6 +344,7 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 	unsigned int userid,profileid,subid;
 	GGroup* grp;
 	GLangCursor Langs;
+	bool Social;
 
 	// Go through the users
 	try
@@ -348,13 +353,15 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 		for(users.Begin();users.IsMore();users++)
 		{
 			userid=atoi(users[0]);
-			sprintf(sSql,"SELECT profileid,description,updated,calculated FROM profiles WHERE userid=%u",userid);
+			sprintf(sSql,"SELECT profileid,description,updated,calculated,social FROM profiles WHERE userid=%u",userid);
 			RQuery profiles(this,sSql);
 			InsertUser(usr=new GUser(userid,users[1],users[2],profiles.GetNbRows()));
 			for(profiles.Begin();profiles.IsMore();profiles++)
 			{
 				profileid=atoi(profiles[0]);
-				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],true,profiles[2],profiles[3],GetNbLangs()));
+				Social=false;
+				if(atoi(profiles[4])==1) Social=true;
+				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,profiles[2],profiles[3],GetNbLangs()));
 				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid FROM subprofiles WHERE profileid=%u",profileid);
 				RQuery subprofil (this,sSql);
 				for(subprofil.Begin();subprofil.IsMore();subprofil++)

@@ -90,6 +90,11 @@ protected:
 	*/
 	unsigned int NbProfMin;
 
+	/**
+	* The % of profiles who are social	
+	*/
+	unsigned int PercSocial;
+
 public:
 
 	/**

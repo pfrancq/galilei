@@ -107,15 +107,17 @@ void GALILEI::GSubjectTree::InsertProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubjectTree::Judgments(GSession* ses,int ran,int percok,int percko,int nbmin,int nbmax)
+void GALILEI::GSubjectTree::Judgments(GSession* ses,int ran,int percok,int percko,int nbmin,int nbmax,unsigned int percsocial)
 {
 	int NbProfilesWhoJudgesDocuments;
+	unsigned int psocial;
 
 	NbDocsOk=percok;
 	NbDocsKo=percko;
 	if(ran!=0) Random->Reset(ran);
 	InitProfiles();
 	InitSubSubjects();                                    
+	GProfileCursor ProfCursor;
 
 	//Calculation of the total number of subsubjects.
 	int nbrsububjects=0;
@@ -127,7 +129,16 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int ran,int percok,int perck
 	tab=new int [nbrsububjects];
 	for (int i=0; i<nbrsububjects;i++)
 		tab[i]=0;
-
+	
+	
+	ProfCursor=ses->GetProfilesCursor();	
+	for(ProfCursor.Start();!ProfCursor.End();ProfCursor.Next())
+	{
+		psocial=Random->Value(100);
+		if(psocial<=percsocial)	ProfCursor()->SetSocial(true);
+		else  ProfCursor()->SetSocial(false);
+		ses->SaveProfile(ProfCursor());
+	}
 	for (this->Start(); !this->End(); this->Next())
 	{
 		GSubject* subject=(*this)();

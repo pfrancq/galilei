@@ -84,6 +84,7 @@ GALILEI::GIdealGroup::GIdealGroup(GSession* session)
 	Subjects->InsertProfiles();
 	NbProfMax=10;
 	NbProfMin=2;
+	PercSocial=100;
 }
 
 
@@ -103,8 +104,10 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 	// Clear the old feedback.
 	Session->ClearFdbks();
 
+	
+
 	// Create the different judgments.
-	Subjects->Judgments(Session,Rand,PercOK,PercKO,NbProfMin,NbProfMax);
+	Subjects->Judgments(Session,Rand,PercOK,PercKO,NbProfMin,NbProfMax,PercSocial);
 
 	// Create the ideal groupment corresponding to the precedent judgment.
 	Subjects->IdealGroupment(groups,Session,parent);
@@ -130,7 +133,7 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 {
 	static char tmp[100];
 
-	sprintf(tmp,"%u %u %i %u %u",PercOK,PercKO,Rand,NbProfMin,NbProfMax);
+	sprintf(tmp,"%u %u %i %u %u %u",PercOK,PercKO,Rand,NbProfMin,NbProfMax,PercSocial);
 
 	return(tmp);
 }
@@ -142,7 +145,7 @@ void GALILEI::GIdealGroup::SetSettings(const char* s)
 	unsigned int a,b;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %u %i %u %u",&PercOK,&PercKO,&Rand,&a,&b);
+	sscanf(s,"%u %u %i %u %u %u",&PercOK,&PercKO,&Rand,&a,&b,&PercSocial);
 	if (a<=b) NbProfMin=a;
 	if (b<=Session->GetNbUsers()) NbProfMax=b;
 	if (b==0) NbProfMax=Session->GetNbUsers(); 
