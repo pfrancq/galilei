@@ -285,6 +285,12 @@ protected:
 		*/
 		virtual void LoadDocs(void) throw(bad_alloc,GException)=0;
 
+		/**
+		* Save a document.
+		* @param doc            Document to save.
+		*/
+		virtual void Save(GDoc* doc) throw(GException)=0;
+
 public:
 
 		/**
@@ -329,7 +335,7 @@ public:
 		* created has to be desallocate by the caller.
 		* @param doc        Document to analyse.
 		*/
-		GDocXML* CreateDocXML(const GDoc* doc) throw(GException);
+		GDocXML* CreateDocXML(GDoc* doc) throw(GException);
 
 		/**
 		* Analyse all the necessary documents.

@@ -51,6 +51,11 @@ class GSessionMySQL : public RMySQL::RDb, public GSession
 	*/
 	char sTmpDate[10];
 
+	/**
+	* Temporary C String to hold a field value.
+	*/
+	char sTmpVal[500];
+
 public:
 	/**
 	* Constructor.
@@ -84,7 +89,12 @@ protected:
 	* @param d              Date to transform.
 	* @returns C String containing the date.
 	*/
-	const char* GetDateToMySQL(RTimeDate::RDate* d);
+	const char* GetDateToMySQL(const RTimeDate::RDate* d);
+
+	/**
+	* Parse a field and when see a quote, double it.
+	*/
+	const char* Validate(const char* val);
 
 	/**
 	* Return the identifier of a new word of a dictionnary.
@@ -108,9 +118,15 @@ protected:
 	virtual const char* LoadWord(const unsigned int id,const char* code);
 
 	/**
-	*  Load the documents.
+	* Load the documents.
 	*/
 	virtual void LoadDocs(void) throw(bad_alloc,GException);
+
+	/**
+	* Save a document.
+	* @param doc            Document to save.
+	*/
+	virtual void Save(GDoc* doc) throw(GException);
 
 	/**
 	*  Load the Users.

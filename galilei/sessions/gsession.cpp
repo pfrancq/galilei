@@ -149,7 +149,7 @@ void GALILEI::GSession::InitDocs(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-GDocXML* GALILEI::GSession::CreateDocXML(const GDoc* doc) throw(GException)
+GDocXML* GALILEI::GSession::CreateDocXML(GDoc* doc) throw(GException)
 {
 	return(Mng->CreateDocXML(doc));
 }
@@ -169,8 +169,11 @@ void GALILEI::GSession::AnalyseDocs(GSessionSignalsReceiver* rec) throw(GExcepti
 		try
 		{
 			xml=0;
+			cout<<"Create Doc";
 			xml=Mng->CreateDocXML(Docs());
+			cout<<"...OK"<<endl<<"Create Doc...";
 			Docs()->Analyse(xml,this);
+			cout<<"OK"<<endl;
 			delete xml;
 		}
 		catch(GException& e)
@@ -178,6 +181,9 @@ void GALILEI::GSession::AnalyseDocs(GSessionSignalsReceiver* rec) throw(GExcepti
 			if(xml)
 				delete xml;
 		}
+		cout<<"Save...";
+		Save(Docs());
+		cout<<"OK"<<endl;
 	}
 }
 

@@ -68,10 +68,17 @@ unsigned int GALILEI::GSessionMySQL::GetMax(const char* tbl,const char* fld)
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GSessionMySQL::GetDateToMySQL(RDate* d)
+const char* GALILEI::GSessionMySQL::GetDateToMySQL(const RDate* d)
 {
 	sprintf(sTmpDate,"%u-%u-%u",d->GetYear(),d->GetMonth(),d->GetDay());
 	return(sTmpDate);
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GSessionMySQL::Validate(const char* val)
+{
+
 }
 
 
@@ -247,19 +254,73 @@ void GALILEI::GSessionMySQL::LoadDocs(void) throw(bad_alloc,GException)
 	int docid;
 	char sSql[100];
 
-	sprintf(sSql,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title,mimetype,updated,calculated FROM htmls");
+	sprintf(sSql,"SELECT htmlid,html,langid,calculated,wordnumtot,wordnumdiff,title,mimetype,updated,calculated,failed FROM htmls");
 	RQuery quer (this,sSql);
 	for(quer.Begin();quer.IsMore();quer++)
 	{
 		docid=atoi(quer[0]);
 		lang=GetLang(quer[2]);
-		Docs.InsertPtr(doc=new GDoc(quer[1],quer[6],docid,lang,Mng->GetMIMEType(quer[7]),quer[8],quer[9],atoi(quer[4]),atoi(quer[5])));
+		Docs.InsertPtr(doc=new GDoc(quer[1],quer[6],docid,lang,Mng->GetMIMEType(quer[7]),quer[8],quer[9],atoi(quer[10]),atoi(quer[4]),atoi(quer[5])));
 		if(lang)
 		{
 			sprintf(sSql,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",lang->GetCode(),docid);
 			RQuery doc2(this,sSql);
 			for(doc2.Begin();doc2.IsMore();doc2++)
 				doc->AddWord(atoi(doc2[0]),atoi(doc2[1]));
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::Save(GDoc* doc) throw(GException)
+{
+	GIWordOccur* w;
+
+	char sSql[500];
+	if(doc->GetId()==cNoRef)
+	{
+		sprintf(sSql,"INSERT INTO htmls(html,title,mimetype) VALUES('%s','%s','%s')",doc->GetURL(),doc->GetName(),doc->GetMIMEType()->GetName());
+		RQuery insert(this,sSql);
+
+		//get the next id
+		sprintf(sSql,"SELECT last_insert_id() FROM htmls");
+		RQuery getinsert(this,sSql);
+		getinsert.Begin();
+		doc->SetId(strtoul(getinsert[0],0,10));
+	}
+	else
+	{
+		if(doc->GetState()==osUpdated)
+			doc->SetState(osUpToDate);
+		// Update the line
+		sprintf(sSql,"UPDATE htmls SET "
+		             "html='%s',title='%s',mimetype='%s',langid='%s',"
+		             "updated='%s',calculated='%s',"
+		             "wordnumtot=%u,wordnumdiff=%u,failed=%u"
+		             " WHERE htmlid=%u",
+		             doc->GetURL(),doc->GetName(),doc->GetMIMEType()->GetName(),doc->GetLang()->GetCode(),
+		             GetDateToMySQL(doc->GetUpdated()),GetDateToMySQL(doc->GetComputed()),
+		             doc->GetNbWords(),doc->GetNbDiffWords(),doc->GetFailed(),
+		             doc->GetId());
+		RQuery insert2(this,sSql);
+
+		// Delete keywords
+		if(doc->GetLang())
+		{
+			sprintf(sSql,"DELETE FROM %shtmlsbykwds WHERE htmlid=%u",doc->GetLang()->GetCode(),doc->GetId());
+			RQuery deletekwds(this,sSql);
+		}
+	}
+
+	// Insert keywords
+	if(doc->GetLang())
+	{
+		for(doc->WordsStart();!doc->WordsEnd();doc->WordsNext())
+		{
+			w=doc->GetCurWords();
+			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%u)",doc->GetLang()->GetCode(),doc->GetId(),w->GetId(),w->GetNbOccurs());
+			RQuery insertkwds(this,sSql);
 		}
 	}
 }
