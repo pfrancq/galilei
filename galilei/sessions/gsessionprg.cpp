@@ -650,6 +650,7 @@ void GWordsClusteringI::Run(GSessionPrg*,GSlot* r,R::RContainer<GPrgVar,unsigned
 }
 
 
+
 //-----------------------------------------------------------------------------
 //
 // class GPrgClassSession

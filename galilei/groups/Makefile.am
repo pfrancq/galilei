@@ -6,7 +6,7 @@ AM_FFLAGS =
 SUBDIRS =
 libgalilei_groups_la_SOURCES = gsubjecttree.cpp ggroup.cpp \
 					ggroupsmng.cpp ggroupcalc.cpp ggroupvector.cpp  ggrouping.cpp \
-					  ggroups.cpp gsubject.cpp g\
+					  ggroups.cpp gsubject.cpp \
 					ggroupingmanager.cpp ggroupcalcmanager.cpp
 groupsincludedir = $(includedir)/galilei/groups
 groupsinclude_HEADERS = ggroupcalc.h ggroups.h  \

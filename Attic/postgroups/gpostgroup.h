@@ -98,10 +98,9 @@ public:
 	virtual void Disconnect(GSession* session);
 
 	/**
-	* Compute a group.
-	* @param grp            Group to compute.
+	* runs the algorithm.
 	*/
-	virtual void Compute(GGroup* grp)=0;
+	virtual void Run(void)=0;
 
 	/**
 	* Destructor.

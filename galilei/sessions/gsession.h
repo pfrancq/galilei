@@ -136,7 +136,6 @@ protected:
 	*/
 	GPostGroupManager* PostGroupMng;
 
-
 	/**
 	* Words clustering Manager used by this session.
 	*/

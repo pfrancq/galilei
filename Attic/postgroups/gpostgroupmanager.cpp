@@ -71,7 +71,7 @@ GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(GException
 	int len;
 
 	loader<>& l=loader<>::instance();
-	Path+="/postgroup";
+	Path+="/postgroups";
 	dp=opendir(Path);
 	Path+="/";
 	if(!dp) return;

@@ -99,8 +99,8 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	: GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(0), Fdbks(f+f/2,f/2),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
-	  StatsCalcMng(0), LinkCalcMng(0),PostDocMng(0),PostGroupMng(0),
-	  bGroups(false),bFdbks(false),
+	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0),
+	  bGroups(false),bFdbks(false), Random(0),
 	  SessParams(sessparams)
 
 {
@@ -934,6 +934,7 @@ GSession::~GSession(void) throw(GException)
 
 	// Delete stuctures
 	if(SubProfileDescs) delete SubProfileDescs;
+	if(Random) delete Random;
 	if(Subjects) delete Subjects;
 }
 
