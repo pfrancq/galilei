@@ -345,7 +345,6 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	showGroups->setEnabled(true);
 	profileCalc->setEnabled(true);
 	profilesCalc->setEnabled(true);
-	sessionConnect->setEnabled(true);
 	sessionCompute->setEnabled(true);
 	groupingCompare->setEnabled(true);
 	groupingCompareFromFile->setEnabled(true);
@@ -376,7 +375,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	showGroups->setEnabled(false);
 	profileCalc->setEnabled(false);
 	profilesCalc->setEnabled(false);
-	sessionConnect->setEnabled(true);
 	sessionCompute->setEnabled(false);
 	groupingCompare->setEnabled(false);
 	groupingCompareFromFile->setEnabled(false);
