@@ -6,7 +6,10 @@
 
 	Groups for a given language - Header.
 
-	(C) 2001 by J. Lamoral
+	Copyright 2001 by the Université Libre de Bruxelles.
+
+	Authors:
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 
@@ -54,7 +57,7 @@ namespace GALILEI{
 * The GGroupsEvaluate class provides a representation for all the GroupEvaluates of a given
 * language. The GGroups are ordered by languages.
 * @author Lamoral Julien
-* @short Languages' GroupsEvaluate.
+* @short Languages GroupsEvaluate.
 */
 class GGroupsEvaluate:public RStd::RContainer<GGroupEvaluate,unsigned int,false,true>
 {

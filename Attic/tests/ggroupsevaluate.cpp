@@ -6,7 +6,10 @@
 
 	GroupsEvaluate for a given language - Implementation.
 
-	(C) 2001 by J. Lamoral.
+	Copyright 2001 by the Université Libre de Bruxelles.
+
+	Authors:
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 

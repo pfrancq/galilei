@@ -6,7 +6,10 @@
 
 	Group Description is Relevant SubProfile Point Computing Method - Implementation.
 
-	(C) 2002 by P. Francq.
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 

@@ -6,7 +6,10 @@
 
 	Chromosome for an IR Problem - Implementation
 
-	(C) 2002 by P. Francq.
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 
@@ -150,6 +153,38 @@ double GALILEI::GChromoIR::ComputeSumSim(GObjIR** grp,unsigned int nb,GObjIR* ob
 
 
 //---------------------------------------------------------------------------
+double GALILEI::GChromoIR::ComputeSumSim(GObjIR* obj)
+{
+	double SumSim;
+	GObjIRCursor Cur;
+
+	Cur=(*Objs);
+	for(Cur.Start(),SumSim=0.0;!Cur.End();Cur.Next())
+	{
+		if(Cur()==obj) continue;
+		SumSim+=Sims->GetSim(obj->GetSubProfile(),Cur()->GetSubProfile());
+	}
+	return(SumSim);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GChromoIR::ComputeSumDist(GObjIR** grp,unsigned int nb,GObjIR* obj)
+{
+	unsigned int i;
+	double Sum,tmp;
+
+	for(i=nb+1,Sum=0.0;--i;grp++)
+	{
+		if((*grp)==obj) continue;
+		tmp=1-Sims->GetSim(obj->GetSubProfile(),(*grp)->GetSubProfile());
+		Sum+=tmp*tmp;
+	}
+	return(Sum);
+}
+
+
+//---------------------------------------------------------------------------
 double GALILEI::GChromoIR::ComputeMaxSim(GObjIR** grp,unsigned int nb,GObjIR* obj)
 {
 	unsigned int i;
@@ -164,6 +199,7 @@ double GALILEI::GChromoIR::ComputeMaxSim(GObjIR** grp,unsigned int nb,GObjIR* ob
 	}
 	return(MaxSim);
 }
+
 
 //---------------------------------------------------------------------------
 double GALILEI::GChromoIR::ComputeMaxSim(GObjIR** rgrp,unsigned int rnb,GGroupIR* grp)
@@ -261,6 +297,38 @@ double GALILEI::GChromoIR::ComputeRelevantSum(GObjIR** grp,unsigned int nb,GSubP
 
 
 //---------------------------------------------------------------------------
+double GALILEI::GChromoIR::ComputeRelevantSumDist(GObjIR** grp,unsigned int nb,GSubProfile* &rel)
+{
+	unsigned int i;
+ 	double BestSumSim;
+	double BestSum;
+	double SumSim;
+	GObjIR** ptr;
+
+	// Suppose the first element is the most relevant.
+	rel=(*grp)->GetSubProfile();
+	ptr=grp;
+	BestSumSim=ComputeSumSim(grp,nb,*ptr);
+	BestSum=ComputeSumDist(grp,nb,*ptr);
+
+	// Look if in the other objects, there is a better one
+	for(i=nb;--i;ptr++)
+	{
+		SumSim=ComputeSumSim(grp,nb,*ptr);
+		if(SumSim>BestSumSim)
+		{
+			rel=(*ptr)->GetSubProfile();
+			BestSum=ComputeSumDist(grp,nb,*ptr);
+			BestSumSim=SumSim;
+		}
+	}
+
+	// Return results
+	return(BestSum);
+}
+
+
+//---------------------------------------------------------------------------
 double GALILEI::GChromoIR::ComputeRelevantMax(GObjIR** grp,unsigned int nb,GSubProfile* &rel)
 {
 	unsigned int i;
@@ -289,6 +357,61 @@ double GALILEI::GChromoIR::ComputeRelevantMax(GObjIR** grp,unsigned int nb,GSubP
 
 	// Return results
 	return(MaxSumSim);
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GChromoIR::ComputeRelevant(GObjIR** grp,unsigned int nb,GSubProfile* &rel)
+{
+	unsigned int i;
+	double BestSumSim;
+	double SumSim;
+	GObjIR** ptr;
+
+	// Suppose the first element is the most relevant.
+	rel=(*grp)->GetSubProfile();
+	ptr=grp;
+	BestSumSim=ComputeSumSim(grp,nb,*ptr);
+
+	// Look if in the other objects, there is a better one
+	for(i=nb;--i;ptr++)
+	{
+		SumSim=ComputeSumSim(grp,nb,*ptr);
+		if(SumSim>BestSumSim)
+		{
+			rel=(*ptr)->GetSubProfile();
+			BestSumSim=SumSim;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+GSubProfile* GALILEI::GChromoIR::ComputeGlobalRelevant(void)
+{
+	double BestSumSim;
+	double SumSim;
+	GObjIRCursor Cur;
+	GSubProfile* rel;
+
+	Cur=(*Objs);
+	Cur.Start();
+
+	// Suppose the first element is the most relevant.
+	rel=Cur()->GetSubProfile();
+	BestSumSim=ComputeSumSim(Cur());
+
+	// Look if in the other objects, there is a better one
+	for(Cur.Next();!Cur.End();Cur.Next())
+	{
+		SumSim=ComputeSumSim(Cur());
+		if(SumSim>BestSumSim)
+		{
+			rel=Cur()->GetSubProfile();
+			BestSumSim=SumSim;
+		}
+	}
+	return(rel);
 }
 
 
@@ -570,7 +693,7 @@ void GALILEI::GChromoIR::EvaluateAvgSim(GGroupIR* grp1,GGroupIR* grp2)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateSumRel(GGroupIR* grp1,GGroupIR* grp2)
+void GALILEI::GChromoIR::EvaluateJ(GGroupIR* grp1,GGroupIR* grp2)
 {
 	unsigned int i,j;
 	GGroupIRCursor Cur;
@@ -584,15 +707,21 @@ void GALILEI::GChromoIR::EvaluateSumRel(GGroupIR* grp1,GGroupIR* grp2)
 	Cur.Set(Used);
 	for(Cur.Start(),LocalAvgSim=AvgSim=0.0;!Cur.End();Cur.Next())
 	{
-		tmp=Cur()->ComputeRelevantSum();
+		tmp=Cur()->ComputeRelevantSumDist();
 		AvgSim+=tmp;
 		if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
 		LocalAvgSim+=tmp;
 	}
 	if(grp1)
-		LocalAvgSim+=ComputeRelevantSum(thObjs1,NbObjs1,rel1);
+	{
+		tmp=ComputeRelevantSumDist(thObjs1,NbObjs1,rel1);
+		LocalAvgSim+=tmp;
+	}
 	if(grp1&&(!grp2))
-		LocalAvgSim+=ComputeRelevantSum(thObjs2,NbObjs2,rel2);
+	{
+		tmp=ComputeRelevantSumDist(thObjs2,NbObjs2,rel2);
+		LocalAvgSim+=tmp;
+	}
 
 	// Compute Max intra for the configurations.
 	Cur.Set(Used);
@@ -601,7 +730,8 @@ void GALILEI::GChromoIR::EvaluateSumRel(GGroupIR* grp1,GGroupIR* grp2)
 	{
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
-			tmp=Sims->GetSim(Cur()->Relevant,Cur2()->Relevant);
+			tmp=1-Sims->GetSim(Cur()->Relevant,Cur2()->Relevant);
+			tmp=tmp*tmp;
 			if(tmp>max)
 				max=tmp;
 			if((grp1&&(Cur2()==grp1))||(grp2&&(Cur2()==grp2)))
@@ -613,40 +743,44 @@ void GALILEI::GChromoIR::EvaluateSumRel(GGroupIR* grp1,GGroupIR* grp2)
 		}
 		if(grp1)
 		{
-			tmp=Sims->GetSim(Cur()->Relevant,rel1);
+			tmp=1-Sims->GetSim(Cur()->Relevant,rel1);
+			tmp=tmp*tmp;
 			if(tmp>localmax)
 				localmax=tmp;
 		}
 		if(grp1&&(!grp2))
 		{
-			tmp=Sims->GetSim(Cur()->Relevant,rel2);
+			tmp=1-Sims->GetSim(Cur()->Relevant,rel2);
+			tmp=tmp*tmp;
 			if(tmp>localmax)
 				localmax=tmp;
 		}
 	}
 	if(grp1)
 	{
-		tmp=Sims->GetSim(Cur()->Relevant,rel1);
+		tmp=1-Sims->GetSim(Cur()->Relevant,rel1);
+		tmp=tmp*tmp;
 		if(tmp>localmax)
 			localmax=tmp;
 	}
 	if(grp1&&(!grp2))
 	{
-		tmp=Sims->GetSim(Cur()->Relevant,rel2);
+		tmp=1-Sims->GetSim(Cur()->Relevant,rel2);
+		tmp=tmp*tmp;
 		if(tmp>localmax)
 			localmax=tmp;
 	}
 
 	// Compute (Sum Intra)/(Max intra) for the configurations.
-	if(max)
-		AvgSim/=max;
-	if(localmax)
-		LocalAvgSim/=localmax;
+	if(AvgSim)
+		AvgSim=max/AvgSim;
+	if(LocalAvgSim)
+		LocalAvgSim=localmax/LocalAvgSim;
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateAvgMinMax(GGroupIR* grp1,GGroupIR* grp2)
+void GALILEI::GChromoIR::EvaluateAvgRatio(GGroupIR* grp1,GGroupIR* grp2)
 {
 	GGroupIRCursor Cur,Cur2;
 	double MinIntra,MaxInter,tmp;
@@ -726,7 +860,7 @@ void GALILEI::GChromoIR::EvaluateAvgMinMax(GGroupIR* grp1,GGroupIR* grp2)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateMinMinMax(GGroupIR* grp1,GGroupIR* grp2)
+void GALILEI::GChromoIR::EvaluateMinRatio(GGroupIR* grp1,GGroupIR* grp2)
 {
 	GGroupIRCursor Cur,Cur2;
 	double MinIntra,MaxInter,tmp;
@@ -811,7 +945,7 @@ void GALILEI::GChromoIR::EvaluateMinMinMax(GGroupIR* grp1,GGroupIR* grp2)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateMinRel(GGroupIR* grp1,GGroupIR* grp2)
+void GALILEI::GChromoIR::EvaluateRatio(GGroupIR* grp1,GGroupIR* grp2)
 {
 	unsigned int i,j;
 	GGroupIRCursor Cur;
@@ -846,7 +980,7 @@ void GALILEI::GChromoIR::EvaluateMinRel(GGroupIR* grp1,GGroupIR* grp2)
 			LocalAvgSim=tmp;
 	}
 
-	// Compute Max intra for the configurations.
+	// Compute Max inter for the configurations.
 	Cur.Set(Used);
 	Cur2.Set(Used);
 	for(Cur.Start(),i=0,j=Cur.GetNb(),max=0.0,localmax=0.0;--j;Cur.Next(),i++)
@@ -889,7 +1023,7 @@ void GALILEI::GChromoIR::EvaluateMinRel(GGroupIR* grp1,GGroupIR* grp2)
 			localmax=tmp;
 	}
 
-	// Compute (Sum Intra)/(Max intra) for the configurations.
+	// Compute (Minimum Intra)/(Max intra) for the configurations.
 	if(max)
 		AvgSim/=max;
 	if(localmax)
@@ -898,18 +1032,139 @@ void GALILEI::GChromoIR::EvaluateMinRel(GGroupIR* grp1,GGroupIR* grp2)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateAvgVarMinRel(GGroupIR* grp1,GGroupIR* grp2)
+void GALILEI::GChromoIR::EvaluateWOverB(GGroupIR* grp1,GGroupIR* grp2)
 {
-	AvgSim=LocalAvgSim=0.0;
-// Average(Var_intra)/Average(Var_inter)
+	GGroupIRCursor Cur;
+	double sb,localsb;
+	GSubProfile* rel1;
+	GSubProfile* rel2;
+	GSubProfile* rel;
+	double tmp;
+
+	// Compute Sb over Sw. Normally, the measure is Sw/Sb but is to minimized.
+
+	// Compute Sw
+	Cur.Set(Used);
+	for(Cur.Start(),LocalAvgSim=AvgSim=0.0;!Cur.End();Cur.Next())
+	{
+		tmp=Cur()->ComputeRelevantSumDist();
+		AvgSim+=tmp;
+		if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
+		LocalAvgSim+=tmp;
+	}
+	if(grp1)
+	{
+		tmp=ComputeRelevantSumDist(thObjs1,NbObjs1,rel1);
+		LocalAvgSim+=tmp;
+	}
+	if(grp1&&(!grp2))
+	{
+		tmp=ComputeRelevantSumDist(thObjs2,NbObjs2,rel2);
+		LocalAvgSim+=tmp;
+	}
+
+	// Compute Sb
+	rel=ComputeGlobalRelevant();
+	Cur.Set(Used);
+	for(Cur.Start(),sb=localsb=0.0;!Cur.End();Cur.Next())
+	{
+		if(rel==Cur()->Relevant) continue;
+		tmp=1-Sims->GetSim(rel,Cur()->Relevant);
+		tmp=tmp*tmp;
+		sb+=tmp;
+		if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2)))
+			continue;
+		localsb+=tmp;
+	}
+	if(grp1)
+	{
+		tmp=1-Sims->GetSim(rel,rel1);
+		localsb+=tmp*tmp;
+	}
+	if(grp1&&(!grp2))
+	{
+		tmp=1-Sims->GetSim(rel,rel2);
+		localsb+=tmp*tmp;
+	}
+	
+	// Compute Sb/Sw for the configurations.
+	if(AvgSim)
+		AvgSim=Used.NbPtr*sb/AvgSim;
+	if(LocalAvgSim)
+	{
+		if(grp1)
+		{
+			if(grp2)
+				LocalAvgSim=((double)Used.NbPtr-1)*localsb/LocalAvgSim;
+			else
+				LocalAvgSim=((double)Used.NbPtr+1)*localsb/LocalAvgSim;
+		}
+	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::EvaluateAvgVar(GGroupIR* grp1,GGroupIR* grp2)
+void GALILEI::GChromoIR::EvaluateSimWB(GGroupIR* grp1,GGroupIR* grp2)
 {
-	AvgSim=LocalAvgSim=0.0;
-// Average max_proto(intra)/min_proto(inter)"
+	GGroupIRCursor Cur;
+	double sb,localsb;
+	GSubProfile* rel1;
+	GSubProfile* rel2;
+	GSubProfile* rel;
+	double tmp;
+
+	// Compute Simw/Simb.
+
+	// Compute Simw
+	Cur.Set(Used);
+	for(Cur.Start(),LocalAvgSim=AvgSim=0.0;!Cur.End();Cur.Next())
+	{
+		tmp=Cur()->ComputeRelevantSum();
+		AvgSim+=tmp;
+		if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
+		LocalAvgSim+=tmp;
+	}
+	if(grp1)
+	{
+		tmp=ComputeRelevantSum(thObjs1,NbObjs1,rel1);
+		LocalAvgSim+=tmp;
+	}
+	if(grp1&&(!grp2))
+	{
+		tmp=ComputeRelevantSum(thObjs2,NbObjs2,rel2);
+		LocalAvgSim+=tmp;
+	}
+
+	// Compute Simb
+	rel=ComputeGlobalRelevant();
+	Cur.Set(Used);
+	for(Cur.Start(),sb=localsb=0.0;!Cur.End();Cur.Next())
+	{
+		if(rel==Cur()->Relevant) continue;
+		tmp=Sims->GetSim(rel,Cur()->Relevant);
+		sb+=tmp;
+		if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2)))
+			continue;
+		localsb+=tmp;
+	}
+	if(grp1)
+		localsb+=Sims->GetSim(rel,rel1);
+	if(grp1&&(!grp2))
+		localsb+=Sims->GetSim(rel,rel2);
+	
+	// Compute Simw/Simb for the configurations.
+	if(sb)
+		AvgSim/=Used.NbPtr*sb;
+	if(localsb)
+	{
+		if(grp1)
+		{
+			if(grp2)
+				LocalAvgSim/=((double)Used.NbPtr-1)*localsb;
+			else
+				LocalAvgSim/=((double)Used.NbPtr+1)*localsb;
+		}
+	}
 }
 
 
@@ -922,28 +1177,28 @@ void GALILEI::GChromoIR::EvaluateSim(GGroupIR* grp1,GGroupIR* grp2)
 			EvaluateAvgSim(grp1,grp2);
 			break;
 
-		case stSumRel:
-			EvaluateSumRel(grp1,grp2);
+		case stJ:
+			EvaluateJ(grp1,grp2);
 			break;
 
-		case stAvgMinMax:
-			EvaluateAvgMinMax(grp1,grp2);
+		case stAvgRatio:
+			EvaluateAvgRatio(grp1,grp2);
 			break;
 
-		case stMinMinMax:
-			EvaluateMinMinMax(grp1,grp2);
+		case stMinRatio:
+			EvaluateMinRatio(grp1,grp2);
 			break;
 
-		case stMinRel:
-			EvaluateMinRel(grp1,grp2);
+		case stRatio:
+			EvaluateRatio(grp1,grp2);
 			break;
 
-		case stAvgVarMinRel:
-			EvaluateAvgVarMinRel(grp1,grp2);
+		case stWOverB:
+			EvaluateWOverB(grp1,grp2);
 			break;
 
-		case stAvgVar:
-			EvaluateAvgVar(grp1,grp2);
+		case stSimWB:
+			EvaluateSimWB(grp1,grp2);
 			break;
 
 		default:
@@ -1112,7 +1367,6 @@ void GALILEI::GChromoIR::LocalOptimisation(void)
 			Set(Cur1()->Id,Cur2()->Id,true);
 
 	// Try to regroup groups until it is not possible anymore
-//	cout<<"\tRegroups... ";
 	for(Cont=true;Cont;)
 	{
 		Cont=false;
@@ -1126,7 +1380,6 @@ void GALILEI::GChromoIR::LocalOptimisation(void)
 				if(MergeGroups(Cur1(),Cur2(),3))
 				{
 					Cont=true;
-//					cout<<"Local Opti: Merge Done"<<endl;
 				}
 				else
 					Set(Cur1()->Id,Cur2()->Id,false);

@@ -6,7 +6,12 @@
 
 	GSubjectTree - Implementation.
 
-	(C) 2002 by the GALILEI Team
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
+		David Wartel (dwartel@ulb.ac.be).
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 

@@ -6,7 +6,11 @@
 
 	Correspondance between Code and characters in HTML - Header.
 
-	(C) 2001 by Pascal Francq and Lamoral Julien
+	Copyright 2001 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 

@@ -6,7 +6,10 @@
 
 	Heuristic for an IR Problem - Implemenation
 
-	(C) 2002 by By P. Francq.
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		
 
 	Version $Revision$
 

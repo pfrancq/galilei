@@ -6,7 +6,11 @@
 
 	GSubject - Implementation.
 
-	(C) 1999-2001 by J. Lamoral & D.Wartel
+	Copyright 1999-2001 by the Université Libre de Bruxelles.
+
+	Authors:
+		Julien Lamoral (jlamoral@ulb.ac.be).
+		David Wartel (dwartel@ulb.ac.be).
 
 	Version $Revision$
 

@@ -6,7 +6,10 @@
 
 	Group of an IR GA - Header.
 
-	(C) 2002 by P. Francq.
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 
@@ -149,6 +152,13 @@ public:
 	double ComputeSumSim(GObjIR* obj);
 
 	/**
+	* Compute the sum of the distances of a given profile to all the others.
+	* @param obj            Profile used as reference.
+	* @returns result.
+	*/
+	double ComputeSumDist(GObjIR* obj);
+
+	/**
 	* Compute the maximum similarity of a given profile to all the others.
 	* @param obj            Profile used as reference.
 	* @returns result.
@@ -201,6 +211,13 @@ public:
 	/**
 	* Compute the most relevant profile of the group, i.a. the profile which is
 	* the most similar to all the others profiles.
+	* @returns Sum of distances to the relevant profile.
+	*/
+	double ComputeRelevantSumDist(void);
+
+	/**
+	* Compute the most relevant profile of the group, i.a. the profile which is
+	* the most similar to all the others profiles.
 	* @returns Max of similarities to the relevant profile.
 	*/
 	double ComputeRelevantMax(void);
@@ -211,6 +228,12 @@ public:
 	* @returns Sum of similarities to the non-relevant profile.
 	*/
 	double ComputeNonRelevant(void);
+
+	/**
+	* Compute the most relevant profile of the group, i.a. the profile which is
+	* the most similar to all the others profiles.
+	*/
+	void ComputeRelevant(void);
 
 	/**
 	* Assignment operator.

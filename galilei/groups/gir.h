@@ -6,7 +6,10 @@
 
 	GA for the Information Retrieval Problem - Header.
 
-	(C) 2002 by Pascal Francq
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 
@@ -69,12 +72,12 @@ class GIRHeuristic;
 */
 enum SimType {
 	stAvgSim                /** Average Similarity.*/,
-	stSumRel                /** sum_proto(intra)/min_proto(inter).*/,
-	stAvgMinMax             /** Average min(intra)/max(inter).*/,
-	stMinMinMax             /** Min min(intra)/max(inter).*/,
-	stMinRel                /** Min max_proto(intra)/min_proto(inter).*/,
-	stAvgVarMinRel          /** Average max_proto(intra)/min_proto(inter).*/,
-	stAvgVar                /** Average(Var_intra)/Average(Var_inter).*/};
+	stJ                     /** sum_proto(intra)/min_proto(inter).*/,
+	stAvgRatio              /** Average min(intra)/max(inter).*/,
+	stMinRatio              /** Min min(intra)/max(inter).*/,
+	stRatio                 /** Min(intra)/Max(inter).*/,
+	stWOverB                /** Sb/Sw.*/,
+	stSimWB                 /** Simb/Simw.*/};
 
 
 //-----------------------------------------------------------------------------

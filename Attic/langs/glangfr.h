@@ -6,7 +6,11 @@
 
 	French Language - Header.
 
-	(C) 2001 by P. Francq and J. Lamoral.
+	Copyright 2001 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 

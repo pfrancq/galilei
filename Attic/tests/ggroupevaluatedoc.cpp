@@ -6,7 +6,10 @@
 
 	Representation of groups of dociles and groups of documents.
 
-	(C) 2002 by Julien Lamoral
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 

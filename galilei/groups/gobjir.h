@@ -112,6 +112,14 @@ public:
 };
 
 
+//-----------------------------------------------------------------------------
+/**
+* The GObjIRCursor class provides a way to go trough a set of GA objects.
+* @short GA Objects Cursor.
+*/
+CLASSCURSOR(GObjIRCursor,GObjIR,unsigned int)
+
+
 }  //------- End of namespace GALILEI -----------------------------------------
 
 

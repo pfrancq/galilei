@@ -6,7 +6,10 @@
 
 	Generic GALILEI Session - Implementation.
 
-	(C) 2001-2002 by GALILEI Team.
+	Copyright 2001-2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		
 
 	Version $Revision$
 

@@ -6,7 +6,10 @@
 
 	Get the jugments for the profiles
 
-	(C) 2002 by Lamoral Julien
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 
@@ -147,5 +150,4 @@ void GALILEI::GIdealGroup::SetSettings(const char* s)
 	if (a<=b) NbProfMin=a;
 	if (b<=Session->GetNbUsers()) NbProfMax=b;
 	if (b==0) NbProfMax=Session->GetNbUsers(); 
-	
 }

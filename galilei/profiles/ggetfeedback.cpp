@@ -6,7 +6,10 @@
 
 	Auto create feedback for users.
 
-	(C) 2002 by Lamoral Julien
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 

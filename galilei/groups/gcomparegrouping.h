@@ -6,7 +6,11 @@
 
 	Compare a ideal groupement with a computed one - Header.
 
-	(C) 2002 by P. Francq and J. Lamoral.
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 

@@ -6,7 +6,11 @@
 
 	Compare a ideal groupement with a computed one - Implementation
 
-	(C) 2002 by David Wartel & Julien Lamoral
+	Copyright 2002 by the Université Libre de Bruxelles.
+
+	Authors:
+		David Wartel (dwartel@ulb.ac.be).
+		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 
