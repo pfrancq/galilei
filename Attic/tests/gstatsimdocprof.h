@@ -4,13 +4,12 @@
 
 	GSatSimDocProf.h
 
-	Calc the similarity between subprofiles and documents using the ideal groupment - Header.
+	Similarities between Subprofiles/Documents - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 
@@ -52,15 +51,16 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The SatSimDocProf class provides a way to see similaritys between profiles.
-* @author Lamoral Julien 
-* @short Subprofiles and Documents Similarities Statistics.
+* The GStatSimDocProf class provides statistics on the subprofiles and
+* documents based on their similarities.
+* @author Pascal Francq
+* @short Subprofiles and Documents Similarities.
 */
 class GStatSimDocProf
 {
 protected:
-
 	class SimGroup;
+	class LocalStat;
 
 	/**
 	* Session.
@@ -68,126 +68,189 @@ protected:
 	GSession* Session;
 
 	/**
-	* The Mean of the Mean intra min group similarity.
+	* The Mean of the Mean intra group similarity (Local).
 	*/
-	double MeanIntraMin;
+	double MeanIntraML;
 
 	/**
-	* The Mean of the Mean extra max group similarity.
+	* The Mean of the Mean extra group similarity (Local).
 	*/
-	double MeanExtraMax;
+	double MeanExtraML;
 
 	/**
-	* The Mean of the Mean intra group similarity.
+	* Ratio Rie (Local).
 	*/
-	double MeanIntraM;
+	double RieL;
 
 	/**
-	* The Mean of the Mean extra group similarity.
+	* Global Overlap Factor (Local).
 	*/
-	double MeanExtraM;
+	double GOverlapL;
 
 	/**
-	* Ratio Rie.
+	* Overlap Factor (Local).
 	*/
-	double Rie;
+	double OverlapL;
 
 	/**
-	* Cost function.
+	* The Mean of the Mean intra group similarity (Global).
 	*/
-	double J;
+	double MeanIntraMG;
 
 	/**
-	* Overlap Factor.
+	* The Mean of the Mean extra group similarity (Global).
 	*/
-	double Overlap;
+	double MeanExtraMG;
 
 	/**
-	* Overlap Group Factor.
+	* Ratio Rie (Global).
 	*/
-	double GrpOverlap;
+	double RieG;
 
 	/**
-	* The Container of ideal group.
+	* Global Overlap Factor (Global).
 	*/
-	RContainer<GGroups,unsigned int,true,true>* IdealGroups;
+	double GOverlapG;
 
 	/**
-	* Global similaity used if true.
+	* Overlap Factor (Global).
+	*/
+	double OverlapG;
+
+	/**
+	* Precision Levels (Local)
+	*/
+	double PrecisionL[11];
+
+	/**
+	* Precision Levels (Global)
+	*/
+	double PrecisionG[11];
+
+	/**
+	* Global similaity must be calculated.
 	*/
 	bool Global;
 
+	/**
+	* Local similaity must be calculated.
+	*/
+	bool Local;
+
+	/**
+	* Statistics Output file.
+	*/
+	RIO::RTextFile* File;
+
+	/**
+	* Container of statistics on the subjects.
+	*/
+	RStd::RContainer<LocalStat,unsigned int,true,true> Sub;
+
+	/**
+	* Container of statistics on Precisions (Local).
+	*/
+	RStd::RContainer<SimGroup,unsigned int,true,true> DocsL;
+
+	/**
+	* Container of statistics on Precisions (Global).
+	*/
+	RStd::RContainer<SimGroup,unsigned int,true,true> DocsG;
 
 public:
 
 	/**
 	* Constructor.
 	* @param ses            The  galilei session.
-	* @param groups         Ideal groupement.
+	* @param f              File.
+	* @param g              Global Similarity.
+	* @param l              Local Similarity.
 	*/
-	GStatSimDocProf(GSession* ses,RContainer<GGroups,unsigned int,true,true>* ideal);
+	GStatSimDocProf(GSession* ses,RIO::RTextFile* f,bool g,bool l);
 
 	/**
 	* Static function used to ordered by similarity.
 	*/
 	static int sortOrder(const void *a,const void *b);
 
-
 	/**
-	* Get the average intra-group similarity.
+	* Get the average intra-group similarity (Local).
 	* @returns MeanIntraM.
 	*/
-	double GetAvgIntra(void) const {return(MeanIntraM);}
+	double GetAvgIntraL(void) const {return(MeanIntraML);}
 
 	/**
-	* Get the average inter-group similarity.
+	* Get the average inter-group similarity (Local).
 	* @returns MeanExtraM.
 	*/
-	double GetAvgInter(void) const {return(MeanExtraM);}
+	double GetAvgInterL(void) const {return(MeanExtraML);}
 
 	/**
-	* Get the avevarge overlap factor.
+	* Get the avevarge global overlap factor (Local).
 	* @returns AVGol.
 	*/
-	double GetAVGol(void) const {return(Overlap);}
+	double GetAVGGolL(void) const {return(GOverlapL);}
 
 	/**
-	* Get the avevarge  group overlap factor.
+	* Get the evevarge overlap factor (Local).
 	* @returns AVGol.
 	*/
-	double GetAVGGrpol(void) const {return(GrpOverlap);}
-
-
-	/**
-	* Get the Rie factor.
-	* @returns Rie factor.
-	*/
-	double GetRie(void) const {return(Rie);}
+	double GetAVGolL(void) const {return(OverlapL);}
 
 	/**
-	* Get the Rie factor.
+	* Get the Rie factor (Local).
 	* @returns Rie factor.
 	*/
-	double GetJ(void) const {return(J);}
+	double GetRieL(void) const {return(RieL);}
 
+	/**
+	* Get the average intra-group similarity (Global).
+	* @returns MeanIntraM.
+	*/
+	double GetAvgIntraG(void) const {return(MeanIntraMG);}
+
+	/**
+	* Get the average inter-group similarity (Global).
+	* @returns MeanExtraM.
+	*/
+	double GetAvgInterG(void) const {return(MeanExtraMG);}
+
+	/**
+	* Get the avevarge global overlap factor (Global).
+	* @returns AVGol.
+	*/
+	double GetAVGGolG(void) const {return(GOverlapG);}
+
+	/**
+	* Get the evevarge overlap factor (Global).
+	* @returns AVGol.
+	*/
+	double GetAVGolG(void) const {return(OverlapG);}
+
+	/**
+	* Get the Rie factor (Global).
+	* @returns Rie factor.
+	*/
+	double GetRieG(void) const {return(RieG);}
+
+	/**
+	* Get the Precision level (Local).
+	* @param level          Level.
+	* @return double
+	*/
+	double GetPrecisionL(unsigned int level) const {return(PrecisionL[level]);}
+
+	/**
+	* Get the Precision level (Global).
+	* @param level          Level.
+	* @return double
+	*/
+	double GetPrecisionG(unsigned int level) const {return(PrecisionG[level]);}
 
 	/**
 	* Construct the subprofile similarity.
 	*/
 	void Run(void);
-
-	/**
-	* Set the settings for the method using a string.
-	* "Global similarity if 1 normal else"
-	* @param s              C string coding the settings.
-	*/
-	void SetSettings(const char* s);
-
-	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
-	*/
-	char* GetSettings(void);
 
 	/**
 	* Destructor for the main view.

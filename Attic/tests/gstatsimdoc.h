@@ -4,13 +4,12 @@
 
 	GSatSimDoc.h
 
-	Calc the similarity between Documents using the ideal groupment - Header.
+	Similarities between Documents - Header.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 
@@ -52,13 +51,15 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GSatSimDoc class provides a way to see similaritys between Documents.
-* @author Lamoral Julien & Pascal Francq.
-* @short Documents Similarities Statistics.
+* The GStatSimSubProf class provides statistics on the documents based on their
+* similarities.
+* @author Pascal Francq.
+* @short Documents Similarities.
 */
 class GStatSimDoc
 {
 protected:
+	class LocalStat;
 
 	/**
 	* Session.
@@ -66,79 +67,150 @@ protected:
 	GSession* Session;
 
 	/**
-	* The Mean of the Mean intra group similarity.
+	* The Mean of the Mean intra group similarity (Local).
 	*/
-	double MeanIntraM;
+	double MeanIntraML;
 
 	/**
-	* The Mean of the Mean extra group similarity.
+	* The Mean of the Mean extra group similarity (Local).
 	*/
-	double MeanExtraM;
+	double MeanExtraML;
 
 	/**
-	* Ratio Rie.
+	* Ratio Rie (Local).
 	*/
-	double Rie;
+	double RieL;
 
 	/**
-	* Overlap Factor.
+	* Global Overlap Factor (Local).
 	*/
-	double Overlap;
+	double GOverlapL;
 
 	/**
-	* Global similaity used if true.
+	* Overlap Factor (Local).
+	*/
+	double OverlapL;
+
+	/**
+	* The Mean of the Mean intra group similarity (Global).
+	*/
+	double MeanIntraMG;
+
+	/**
+	* The Mean of the Mean extra group similarity (Global).
+	*/
+	double MeanExtraMG;
+
+	/**
+	* Ratio Rie (Global).
+	*/
+	double RieG;
+
+	/**
+	* Global Overlap Factor (Global).
+	*/
+	double GOverlapG;
+
+	/**
+	* Overlap Factor (Global).
+	*/
+	double OverlapG;
+
+	/**
+	* Global similaity must be calculated.
 	*/
 	bool Global;
+
+	/**
+	* Local similaity must be calculated.
+	*/
+	bool Local;
+
+	/**
+	* Statistics Output file.
+	*/
+	RIO::RTextFile* File;
+
+	/**
+	* Container of statistics on the subjects.
+	*/
+	RStd::RContainer<LocalStat,unsigned int,true,true> Sub;
 
 public:
 
 	/**
 	* Constructor.
 	* @param ses            The  galilei session.
+	* @param f              File.
+	* @param g              Global Similarity.
+	* @param l              Local Similarity.
 	*/
-	GStatSimDoc(GSession* ses);
+	GStatSimDoc(GSession* ses,RIO::RTextFile* f,bool g,bool l);
 
 	/**
-	* Get the average intra-group similarity.
+	* Get the average intra-group similarity (Local).
 	* @returns MeanIntraM.
 	*/
-	double GetAvgIntra(void) const {return(MeanIntraM);}
+	double GetAvgIntraL(void) const {return(MeanIntraML);}
 
 	/**
-	* Get the average inter-group similarity.
+	* Get the average inter-group similarity (Local).
 	* @returns MeanExtraM.
 	*/
-	double GetAvgInter(void) const {return(MeanExtraM);}
+	double GetAvgInterL(void) const {return(MeanExtraML);}
 
 	/**
-	* Get the evevarge overlap factor.
+	* Get the avevarge overlap factor (Local).
 	* @returns AVGol.
 	*/
-	double GetAVGol(void) const {return(Overlap);}
+	double GetAVGolL(void) const {return(OverlapL);}
 
 	/**
-	* Get the Rie factor.
+	* Get the avevarge global overlap factor (Local).
+	* @returns AVGol.
+	*/
+	double GetAVGGolL(void) const {return(GOverlapL);}
+
+	/**
+	* Get the Rie factor (Local).
 	* @returns Rie factor.
 	*/
-	double GetRie(void) const {return(Rie);}
+	double GetRieL(void) const {return(RieL);}
+
+	/**
+	* Get the average intra-group similarity (Global).
+	* @returns MeanIntraM.
+	*/
+	double GetAvgIntraG(void) const {return(MeanIntraMG);}
+
+	/**
+	* Get the average inter-group similarity (Global).
+	* @returns MeanExtraM.
+	*/
+	double GetAvgInterG(void) const {return(MeanExtraMG);}
+
+	/**
+	* Get the avevarge global overlap factor (Global).
+	* @returns AVGol.
+	*/
+	double GetAVGGolG(void) const {return(GOverlapG);}
+
+	/**
+	* Get the avevarge overlap factor (Global).
+	* @returns AVGol.
+	*/
+	double GetAVGolG(void) const {return(OverlapG);}
+
+	/**
+	* Get the Rie factor (Global).
+	* @returns Rie factor.
+	*/
+	double GetRieG(void) const {return(RieG);}
 
 	/**
 	* Construct the Docs Similarity.
 	*/
 	void Run(void);
-
-	/**
-	* Set the settings for the method using a string.
-	* "Global similarity if 1 normal else"
-	* @param s              C string coding the settings.
-	*/
-	void SetSettings(const char* s);
-
-	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
-	*/
-	char* GetSettings(void);
 
 	/**
 	* Destructor for the main view.

@@ -4,13 +4,12 @@
 
 	GSatSimSubProf.cpp
 
-	Calc the similarity between subprofiles using the ideal groupment - Implementation.
+	Similarities between Subprofiles - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 
@@ -43,13 +42,38 @@
 #include <tests/gstatsimid.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
+#include <langs/glang.h>
 #include <sessions/gsession.h>
 #include <profiles/gprofile.h>
 #include <infos/giwordsweights.h>
 #include <infos/giwordweight.h>
 #include <profiles/gprofilecalc.h>
 #include <tests/gstatsimsubprof.h>
+#if GALILEITEST
+	#include <groups/gsubject.h>
+#endif
 using namespace GALILEI;
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class Local
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class GALILEI::GStatSimSubProf::LocalStat
+{
+public:
+	GSubject* Sub;
+	bool OverlapL;
+	bool OverlapG;
+
+	LocalStat(GSubject* s) : Sub(s), OverlapL(false), OverlapG(false) {}
+	int Compare(const LocalStat* l) const {return(Sub->Compare(l->Sub));}
+	int Compare(const GSubject* s) const {return(Sub->Compare(s));}
+};
 
 
 
@@ -61,189 +85,172 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GStatSimSubProf::GStatSimSubProf(GSession* ses,RContainer<GGroups,unsigned int,true,true>* ideal)
-	: Session(ses), IdealGroups(ideal),Global(true)
+GALILEI::GStatSimSubProf::GStatSimSubProf(GSession* ses,RIO::RTextFile* f,bool g,bool l)
+	: Session(ses), Global(g), Local(l), File(f), Sub(100,50)
 {
+	if(File)
+	{
+		(*File)<<"SubProfileId";
+		if(Global) (*File)<<"RieGlobal";
+		if(Local) (*File)<<"RieLocal";
+		(*File)<<endl;
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GStatSimSubProf::Run(void)
 {
-
-	//The container of StatSimilarities.
-	RContainer<GSatSimId,unsigned int,true,true> StatsSim (100,50);
-
-	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
-	{
-		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
-		// For each SubGroup
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-		{
-			GGroup * Group=Cur2();
-			GSubProfileCursor SubCur1= Group->GetSubProfileCursor();
-			for(SubCur1.Start();!SubCur1.End();SubCur1.Next())
-			{
-				GSatSimId* temp=new GSatSimId(SubCur1()->GetId(),Group->GetId());
-				StatsSim.InsertPtr(temp);
-			}
-		}
-	}
-
-	// Calculation of SimId Contianer
-	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
-	{
-		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-		{
-			GGroup * Group=Cur2();
-			GSubProfileCursor SubCur1= Group->GetSubProfileCursor();
-			for(SubCur1.Start();!SubCur1.End();SubCur1.Next())
-			{
-				GSatSimId* temp1=StatsSim.GetPtr(SubCur1()->GetId());
-				for(StatsSim.Start();!StatsSim.End();StatsSim.Next())
-				{
-					double simtemp1temp2;
-					GSatSimId* temp2=StatsSim();
-					if(Global) simtemp1temp2= Session->GetSubProfile(temp1->GetId())->GlobalSimilarity(Session->GetSubProfile(temp2->GetId()));
-					else simtemp1temp2=Session->GetSubProfile(temp1->GetId())->Similarity(Session->GetSubProfile(temp2->GetId()));
-					if(temp1->GetId()!=temp2->GetId())
-					{
-						temp1->SetSim(simtemp1temp2,temp2->GetGrpId());
-						temp2->SetSim(simtemp1temp2,temp1->GetGrpId());
-					}
-				}
-			}
-		}
-	}
+#if GALILEITEST
+	GLangCursor Langs;
+	GSubProfileCursor Sub1;
+	GSubProfileCursor Sub2;
+	double SimIntraL;
+	double SimExtraL;
+	double SimIntraG;
+	double SimExtraG;
+	double tmp;
+	unsigned int nbIntra;
+	unsigned int nbExtra;
+	unsigned int nbSubProf;
+	bool Same;
+	double MinIntraL;
+	double MaxExtraL;
+	double MinIntraG;
+	double MaxExtraG;
+	LocalStat* t;
 
 	//Initialization
-	MeanIntraM=0.0;
-	MeanExtraM=0.0;
-	MeanIntraMin=0.0;
-	MeanExtraMax=0.0;
-	Overlap=0.0;
-	GrpOverlap=0.0;
+	OverlapL=MeanExtraML=MeanIntraML=0.0;
+	OverlapG=MeanExtraMG=MeanIntraMG=0.0;
+	nbSubProf=0;
+	Sub.Clear();
 
-	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
+	// Go through the languages
+	Langs=Session->GetLangsCursor();
+	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		Sub1=Session->GetSubProfilesCursor(Langs());
+		Sub2=Session->GetSubProfilesCursor(Langs());
+
+		// Go through each subprofile
+		for(Sub1.Start();!Sub1.End();Sub1.Next())
 		{
-			bool grpover=false;
-			for(StatsSim.Start();!StatsSim.End();StatsSim.Next())
+			// Verify if subprofile defined
+			if(!Sub1()->IsDefined()) continue;
+			nbSubProf++;
+
+			// Init Local Data
+			SimIntraG=SimExtraG=SimIntraL=SimExtraL=0.0;
+			nbIntra=nbExtra=0;
+			MinIntraG=MinIntraL=1.1;
+			MaxExtraG=MaxExtraL=-1.1;
+
+			// Go through to other subprofiles
+			for(Sub2.Start();!Sub2.End();Sub2.Next())
 			{
-				GSatSimId* temp=StatsSim();
-				if(temp->GetGrpId()==Cur2()->GetId())
+				if(Sub1()==Sub2()) continue;
+				if(!Sub2()->IsDefined()) continue;
+
+				// Look if Same topic
+				Same=(Sub1()->GetSubject()==Sub2()->GetSubject());
+				if(Same)
+					nbIntra++;
+				else
+					nbExtra++;
+
+				if(Global)
 				{
-					if(temp->GetMinIntra()<temp->GetMaxInter())
+					tmp=Sub1()->GlobalSimilarity(Sub2());
+					if(Same)
 					{
-						grpover=true;
+						SimIntraG+=tmp;
+						if(tmp<MinIntraG) MinIntraG=tmp;
+					}
+					else
+					{
+						SimExtraG+=tmp;
+						if(tmp>MaxExtraG) MaxExtraG=tmp;
+					}
+				}
+
+				if(Local)
+				{
+					tmp=Sub1()->Similarity(Sub2());
+					if(Same)
+					{
+						SimIntraL+=tmp;
+						if(tmp<MinIntraL) MinIntraL=tmp;
+					}
+					else
+					{
+						SimExtraL+=tmp;
+						if(tmp>MaxExtraL) MaxExtraL=tmp;
 					}
 				}
 			}
-			if(grpover) GrpOverlap++;
-		}
-	}
 
-	int ComptOverlap=0;
-	int CompProf=0;
-
-	for(StatsSim.Start();!StatsSim.End();StatsSim.Next())
-	{
-		GSatSimId* temp=StatsSim();
-		MeanIntraM+=temp->GetMeanIntra();
-		MeanExtraM+=temp->GetMeanInter();
-		CompProf++;
-		MeanIntraMin+=temp->GetMinIntra();
-		MeanExtraMax+=temp->GetMaxInter();
-		if(temp->GetMinIntra()<temp->GetMaxInter())
-		{
-			ComptOverlap++;
-		}
-		
-	}
-	
-	MeanIntraM/=CompProf;
-	MeanExtraM/=CompProf;
-	Overlap=100*ComptOverlap/CompProf;
-	Rie=(MeanIntraM-MeanExtraM)/MeanIntraM;
-
-	//Calculation of J.
-	double SW=0;
-	double Mb=1;
-	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
-	{
-		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
-		// For each SubGroup
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-		{
-			double SWtemp=0;
-			GGroup * Group=Cur2();
-			GSubProfile* relevant= Group->RelevantSubProfile(Global);
-			GSubProfileCursor SubCur1= Group->GetSubProfileCursor();
-			for(SubCur1.Start();!SubCur1.End();SubCur1.Next())
+			// Compute Overlap
+			t=Sub.GetInsertPtr<GSubject*>(Sub1()->GetSubject());
+			if(Global&&(MaxExtraG>MinIntraG))
 			{
+				OverlapG++;
+				t->OverlapG=true;
+			}
+			if(Local&&(MaxExtraL>MinIntraL))
+			{
+				OverlapL++;
+				t->OverlapL=true;
+			}
+
+			// Compute Rie for document Sub1
+			if(File)
+			{
+				(*File)<<Sub1()->GetId();
 				if(Global)
-					SWtemp+=(1-relevant->GlobalSimilarity(SubCur1()))*(1-relevant->GlobalSimilarity(SubCur1()));
-				else
-					SWtemp+=(1-relevant->Similarity(SubCur1()))*(1-relevant->GlobalSimilarity(SubCur1()));
-			}
-			SW+=SWtemp;
-		}
-	}
-	
-	for(IdealGroups->Start();!IdealGroups->End();IdealGroups->Next())
-	{
-		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
-		GGroupCursor Cur1=(*IdealGroups)()->GetGroupCursor();
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-		{
-			GGroup* Group2=Cur2();
-			GSubProfile* relevant= Group2->RelevantSubProfile(Global);
-			for(Cur1.Start();!Cur1.End();Cur1.Next())
-			{
-				GGroup* Group1=Cur1();
-				GSubProfile* relevant1=Group1->RelevantSubProfile(Global);
-				if(relevant1->GetId()!=relevant->GetId())
 				{
-					double temp;
-					if(Global)
-						temp=(1-relevant->GlobalSimilarity(relevant1))*(1-relevant->GlobalSimilarity(relevant1));
-					else
-						temp=(1-relevant->Similarity(relevant1))*(1-relevant->GlobalSimilarity(relevant1));
-					if(temp<Mb) Mb=temp;
+					SimIntraG/=nbIntra;
+					SimExtraG/=nbExtra;
+					MeanIntraMG+=SimIntraG;
+					MeanExtraMG+=SimExtraG;
+					tmp=(SimIntraG-SimExtraG)/SimIntraG;
+					(*File)<<tmp;
 				}
+				if(Local)
+				{
+					SimIntraL/=nbIntra;
+					SimExtraL/=nbExtra;
+					MeanIntraML+=SimIntraL;
+					MeanExtraML+=SimExtraL;
+					tmp=(SimIntraL-SimExtraL)/SimIntraL;
+					(*File)<<tmp;
+				}
+				(*File)<<endl;
 			}
 		}
 	}
-	J=Mb/SW;
-
-
-}
-
-
-//-----------------------------------------------------------------------------
-char* GALILEI::GStatSimSubProf::GetSettings(void)
-{
-	static char tmp[100];
-	char c;
-
-	if(Global) c='1'; else c='0';
-	sprintf(tmp,"%c",c);
-	return(tmp);
-
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GStatSimSubProf::SetSettings(const char* s)
-{
-	char c;
-
-	if(!(*s)) return;
-	sscanf(s,"%c",&c);
-	if(c=='1') Global=true; else Global=false;
+	if(Global)
+	{
+		MeanIntraMG/=nbSubProf;
+		MeanExtraMG/=nbSubProf;
+		RieG=(MeanIntraMG-MeanExtraMG)/MeanIntraMG;
+	}
+	if(Local)
+	{
+		MeanIntraML/=nbSubProf;
+		MeanExtraML/=nbSubProf;
+		RieL=(MeanIntraML-MeanExtraML)/MeanIntraML;
+	}
+	OverlapL/=nbSubProf;
+	OverlapG/=nbSubProf;
+	for(Sub.Start(),GOverlapG=0,GOverlapL=0;!Sub.End();Sub.Next())
+	{
+		if(Sub()->OverlapG) GOverlapG++;
+		if(Sub()->OverlapL) GOverlapL++;
+	}
+	GOverlapG/=Sub.NbPtr;
+	GOverlapL/=Sub.NbPtr;
+#endif
 }
 
 

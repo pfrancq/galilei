@@ -4,13 +4,12 @@
 
 	GSatSimDocGrp.cpp
 
-	Calc the similarity between subprofiles using the ideal groupment - Implementation.
+	Similarities between Documents and Groups - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 
@@ -50,7 +49,10 @@
 #include <groups/ggroupcalcrelevant.h>
 #include <groups/ggroupvector.h>
 #include <docs/gdoc.h>
-
+#include <langs/glang.h>
+#if GALILEITEST
+	#include <groups/gsubject.h>
+#endif
 using namespace GALILEI;
 
 
@@ -65,36 +67,34 @@ using namespace GALILEI;
 class GALILEI::GStatSimDocGrp::SimGroup
 {
 public:
-
-	bool Goodgrp;
+	bool Good;
 	double Sim;
-	
-	SimGroup(bool gdgrp,double sim);
-	
 
-	int Compare(const SimGroup& sim) const
-		{return(-1);}
-	int Compare(const SimGroup* sim) const
-		{return(-1);}
-
-	~SimGroup(void);
+	SimGroup(bool g,double s) : Good(g), Sim(s) {}
+	int Compare(const SimGroup&) const {return(-1);}
+	int Compare(const SimGroup*) const {return(-1);}
 };
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GStatSimDocGrp::SimGroup::SimGroup(bool gdgrp,double sim)
-{
-	Goodgrp=gdgrp;
-	Sim=sim;
-}
-
-
 
 //-----------------------------------------------------------------------------
-GALILEI::GStatSimDocGrp::SimGroup::~SimGroup(void)
-{
-}
+//
+// class Local
+//
+//-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
+class GALILEI::GStatSimDocGrp::LocalStat
+{
+public:
+	GSubject* Sub;
+	bool OverlapL;
+	bool OverlapG;
+
+	LocalStat(GSubject* s) : Sub(s), OverlapL(false), OverlapG(false) {}
+	int Compare(const LocalStat* l) const {return(Sub->Compare(l->Sub));}
+	int Compare(const GSubject* s) const {return(Sub->Compare(s));}
+};
 
 
 
@@ -104,11 +104,17 @@ GALILEI::GStatSimDocGrp::SimGroup::~SimGroup(void)
 //
 //-----------------------------------------------------------------------------
 
-
 //-----------------------------------------------------------------------------
-GALILEI::GStatSimDocGrp::GStatSimDocGrp(GSession* ses,RContainer<GGroups,unsigned int,true,true>* ideal)
-	: Session(ses), IdealGroups(ideal),Global(true),relevant(true)
+GALILEI::GStatSimDocGrp::GStatSimDocGrp(GSession* ses,RIO::RTextFile* f,bool g,bool l)
+	: Session(ses), Global(g), Local(l), File(f), Sub(100,50), DocsL(25000,10000), DocsG(25000,10000)
 {
+	if(File)
+	{
+		(*File)<<"GId";
+		if(Global) (*File)<<"RieGlobal\tR0_Global\tR10_Global\tR20_Global\tR30_Global\tR40_Global\tR50_Global\tR60_Global\tR70_Global\tR80_Global\tR90_Global\tR100_Global";
+		if(Local) (*File)<<"RieLocal\tR0_Local\tR10_Local\tR20_Local\tR30_Local\tR40_Local\tR50_Local\tR60_Local\tR70_Local\tR80_Local\tR90_Local\tR100_Local";
+		(*File)<<endl;
+	}
 }
 
 
@@ -130,245 +136,238 @@ int GALILEI::GStatSimDocGrp::sortOrder(const void *a,const void *b)
 //-----------------------------------------------------------------------------
 void GALILEI::GStatSimDocGrp::Run(void)
 {
+#if GALILEITEST
+	GGroupsCursor Grps;
+	GGroupCursor Grp1;
+	GDocCursor Doc2;
+	double SimIntraL;
+	double SimExtraL;
+	double SimIntraG;
+	double SimExtraG;
+	double tmp;
+	unsigned int nbIntra;
+	unsigned int nbExtra;
+	unsigned int nbGrp;
+	bool Same;
+	double MinIntraL;
+	double MaxExtraL;
+	double MinIntraG;
+	double MaxExtraG;
+	LocalStat* t;
+	unsigned int level;
+	unsigned int nbGood;
+	unsigned int nb;
+	unsigned int nbDocs;
+	double SPrecisionL[11];
+	double SPrecisionG[11];
+	GSubject* Subject;
 
-	GGroupCalc* CalcMethod;
-	//temp variable 
-	const int nbrecall=10;
-	
-	double MeanIntraAll;
-	double MeanExtraAll;
-	double MinIntra;
-	double MaxExtra;
-	double MeanIntraMAll;
-	double MeanExtraMAll;
-	double MeanIntraJug;
-	double MeanIntraMJug;
-	double MeanIntraNotJug;
-	double MeanIntraMNotJug;
-	double overlap;
-	double nbgrp;
-	double Thresold[nbrecall];
-	double Precision[nbrecall];
-	
-	//Ensemble of recal Precision and Thresold.
+	//Initialization
+	OverlapL=MeanExtraML=MeanIntraML=0.0;
+	OverlapG=MeanExtraMG=MeanIntraMG=0.0;
+	memset(PrecisionL,0x00,11*sizeof(double));
+	memset(PrecisionG,0x00,11*sizeof(double));
+	nbGrp=0;
+	Sub.Clear();
 
-
-	MeanIntraMAll=0.0;
-	MeanExtraMAll=0.0;
-	MeanIntraMJug=0.0;
-	MeanIntraMNotJug=0.0;
-	overlap=0.0;
-	nbgrp=0.0;
-	for(int i=0;i<nbrecall;i++)
+	// Go through the groups
+	Grps=Session->GetGroupsCursor();
+	for(Grps.Start();!Grps.End();Grps.Next())
 	{
-		Precision[i]=0.0;
-		Thresold[i]=(nbrecall*(i+1));
-	}
+		// Init cursors
+		Grp1=Grps()->GetGroupCursor();
+		Doc2=Session->GetDocsCursor(Grps()->GetLang());
 
-
-	// nuber of groups
-	int nbtot=0;
-
-	// calculation of the group whith relevant or gravitation methods.
-	if (relevant)
-		Session->SetCurrentGroupCalcMethod("Prototype");
-	else
-		Session->SetCurrentGroupCalcMethod("Gravitation");
-	CalcMethod=Session->GetCurrentGroupCalcMethod();
-
-	// the container of Documents
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc=Session->GetIdealDocs();
-
-	// For each language
-	for(IdealGroups->Start(),GroupsDoc->Start();!IdealGroups->End();IdealGroups->Next(),GroupsDoc->Next())
-	{
-		GGroupCursor Cur2=(*IdealGroups)()->GetGroupCursor();
-		GGroupEvaluateCursor Cur=(*GroupsDoc)()->GetGroupEvaluateCursor();
-		GGroupEvaluateCursor CurDocTemp=(*GroupsDoc)()->GetGroupEvaluateCursor();
-		// For each group of the current languages.
-		for(Cur2.Start(),Cur.Start();!Cur2.End();Cur2.Next(),Cur.Next())
+		// Go through each group
+		for(Grp1.Start();!Grp1.End();Grp1.Next())
 		{
-			RContainer<SimGroup,unsigned int,true,false>* sgrp=new RContainer<SimGroup,unsigned int,true,false> (100,100);  
-			//Initialization/
-			int comptiall=0;
-			int compteall=0;
-			int comptijug=0;
-			int comptinotjug=0;
-			double N=0;
-			MinIntra=10;
-			MaxExtra=0;
-			nbgrp++;
-			MeanIntraAll=0.0;
-			MeanExtraAll=0.0;
-			MeanIntraJug=0.0;
-			MeanIntraNotJug=0.0;
+			// Verify if group is empty
+			if(Grp1()->IsEmpty()) continue;
+			nbGrp++;
 
-			GGroup* Group=Cur2();
-			GGroupEvaluate* Grp=Cur();
-			GDocCursor docur=Session->GetDocsCursor();
+			// Suppose subject of the group is subject of the first subprofile
+			// contained
+			Subject=Grp1()->Tab[0]->GetSubject();
+		
+			// Init Local Data
+			SimIntraG=SimExtraG=SimIntraL=SimExtraL=0.0;
+			nbIntra=nbExtra=0;
+			MinIntraG=MinIntraL=1.1;
+			MaxExtraG=MaxExtraL=-1.1;
+			DocsL.Clear();
+			DocsG.Clear();
 
-			CalcMethod->Compute(Group);
-
-			N=Grp->NbPtr();
-
-			//Calcultation of the group's Recalls,precision Rie,...
-			for(Grp->Start();!Grp->End();Grp->Next())
+			// Go through to documents
+			for(Doc2.Start();!Doc2.End();Doc2.Next())
 			{
-				bool isjudged=false;
-				int idd=Grp->Current();
-				GDoc* document=Session->GetDoc(idd);
-				GSubProfileCursor profcur =Group->GetSubProfileCursor();
-				//Verify that the Group is judged by at least one profile in the group.
-				for(profcur.Start();!profcur.End();profcur.Next())
-				{
-					if(profcur()->GetProfile()->GetFeedback(document)!=0)
-					{
-						isjudged=true;
-					}
-				}
+				// Look if Same topic
+				Same=Doc2()->IsFromSubject(Subject);
+				if(Same)
+					nbIntra++;
+				else
+					nbExtra++;
 
-				double similarity;
-				if(Global)	similarity=static_cast<GGroupVector*>(Group)->GlobalSimilarity(document);
-				else similarity=static_cast<GGroupVector*>(Group)->Similarity(document);
-				if((similarity<10)&&(similarity>-10))
+				if(Global)
 				{
-					sgrp->InsertPtr(new SimGroup(true,similarity));
-					if(similarity<MinIntra) MinIntra=similarity;
-					if(isjudged)
+					tmp=Grp1()->GlobalSimilarity(Doc2());
+					DocsG.InsertPtr(new SimGroup(tmp,Same));
+					if(Same)
 					{
-						//The doc is judged by at least one profiles
-						comptiall++;
-						comptijug++;
-						MeanIntraAll+=similarity;
-						MeanIntraJug+=similarity;
+						SimIntraG+=tmp;
+						if(tmp<MinIntraG) MinIntraG=tmp;
 					}
 					else
 					{
-						//The doc is notjudged by at least one profiles
-						comptinotjug++;
-						MeanIntraNotJug+=similarity;
-						comptiall++;
-						MeanIntraAll+=similarity;
+						SimExtraG+=tmp;
+						if(tmp>MaxExtraG) MaxExtraG=tmp;
 					}
 				}
-			}
-			// For All the document that are not in the current group.
-			for(docur.Start();!docur.End();docur.Next())
-			{
-				unsigned int grpid;
-				bool samegroup=false;
-				GDoc* Document=docur();
 
-				//verify that the doc is not in the current group.
-
-				for(CurDocTemp.Start();!CurDocTemp.End();CurDocTemp.Next())
+				if(Local)
 				{
-					GGroupEvaluate* GrpTemp=CurDocTemp();
-					if(GrpTemp->IsIn(Document->GetId()))
+					tmp=Grp1()->Similarity(Doc2());
+					DocsL.InsertPtr(new SimGroup(tmp,Same));
+					if(Same)
 					{
-					 	grpid=GrpTemp->GetId();
+						SimIntraL+=tmp;
+						if(tmp<MinIntraL) MinIntraL=tmp;
 					}
-				}
-				
-				if(grpid==Group->GetId()) samegroup=true;
-
-				if(!samegroup)
-				{
-					double similarity;
-					if(Global)	similarity=static_cast<GGroupVector*>(Group)->GlobalSimilarity(Document);
-					else similarity=static_cast<GGroupVector*>(Group)->Similarity(Document);
-					if((similarity<10)&&(similarity>-10))
+					else
 					{
-						sgrp->InsertPtr(new SimGroup(false,similarity));
-						compteall++;
-						MeanExtraAll+=similarity;
+						SimExtraL+=tmp;
+						if(tmp>MaxExtraL) MaxExtraL=tmp;
 					}
 				}
 			}
-			qsort(static_cast<void*>(sgrp->Tab),sgrp->NbPtr,sizeof(SimGroup*),sortOrder);
 
-			//Calculation of recal,Precision
-
-			for(int i=0;i<nbrecall;i++)
+			// Compute Overlap
+			t=Sub.GetInsertPtr<GSubject*>(Subject);
+			if(Global&&(MaxExtraG>MinIntraG))
 			{
-				bool end=false;
-				double compt=0;
-				double nbgood=0;
-				double nbdoc=Thresold[i]*N/100;
-				cout<<"nbdoc "<<nbdoc<<endl;
-				for(sgrp->Start();(!end)&&(!sgrp->End());sgrp->Next())
-				{
-				  	
-					if((*sgrp)()->Goodgrp) nbgood++;
-					compt++;
-					if(nbgood>=(nbdoc-1)) end=true;
+				OverlapG++;
+				t->OverlapG=true;
+			}
+			if(Local&&(MaxExtraL>MinIntraL))
+			{
+				OverlapL++;
+				t->OverlapL=true;
+			}
+
+			// Ordered similarities
+			qsort(static_cast<void*>(DocsG.Tab),DocsG.NbPtr,sizeof(SimGroup*),sortOrder);
+			qsort(static_cast<void*>(DocsL.Tab),DocsL.NbPtr,sizeof(SimGroup*),sortOrder);
+
+			// Compute Precision at Recall Level 0%
+			if(Global)
+			{
+				if(DocsG.Tab[0]->Good)
+					SPrecisionG[0]=1.0;
+				else
+					SPrecisionG[0]=0.0;
+				PrecisionG[0]+=SPrecisionG[0];
+			}
+			if(Local)
+			{
+				if(DocsL.Tab[0]->Good)
+					SPrecisionL[0]=1.0;
+				else
+					SPrecisionL[0]=0.0;
+				PrecisionL[0]+=SPrecisionL[0];
+			}
+
+			// Compute Precision at Recall Level 10% -> 100%
+			for(level=1;level<11;level++)
+			{
+					nbDocs=static_cast<unsigned int>(0.1*level*Subject->GetNbDocs());
+
+					// Parse Global
+					if(Global)
+					{
+						for(DocsG.Start(),nb=0,nbGood=0;(nbGood<nbDocs)&&(!DocsG.End());DocsG.Next(),nb++)
+						{
+							if(DocsG()->Good)
+								nbGood++;
+						}
+						if(nb)
+							SPrecisionG[level]=static_cast<double>(nbGood)/static_cast<double>(nb);
+						else
+							SPrecisionG[level]=1.0;
+						PrecisionG[level]+=SPrecisionG[level];
+					}
+
+					// Parse Local
+					if(Local)
+					{
+						for(DocsL.Start(),nb=0,nbGood=0;(nbGood<nbDocs)&&(!DocsL.End());DocsL.Next(),nb++)
+						{
+							if(DocsL()->Good)
+								nbGood++;
+						}
+						if(nb!=0)
+							SPrecisionL[level]=static_cast<double>(nbGood)/static_cast<double>(nb);
+						else
+							SPrecisionL[level]=1.0;
+						PrecisionL[level]+=SPrecisionL[level];
+					}
 				}
-				cout<<"nbgood "<<nbgood<<" compt "<<compt<<endl;
-				if(compt!=0) Precision[i]+=(nbgood/compt);
-				else Precision[i]+=1;
-			}
 
-			//Transformation of results and add to all groups Mean's.
-			// if there are documents in the current group.
-			if(comptiall>0)
+			// Compute Rie for document Grp1
+			if(File)
 			{
-				MeanIntraAll/=comptiall;
-				MeanIntraJug/=comptijug;
-				MeanIntraNotJug/=comptinotjug;
-				MeanExtraAll/=compteall;
-				if(MaxExtra>=MinIntra) overlap++;
-				MeanIntraMAll+=MeanIntraAll;
-				MeanExtraMAll+=MeanExtraAll;
-				MeanIntraMJug+=MeanIntraJug;
-				MeanIntraMNotJug+=MeanIntraNotJug;
-				nbtot++;
+				(*File)<<Grp1()->GetId();
+				if(Global)
+				{
+					SimIntraG/=nbIntra;
+					SimExtraG/=nbExtra;
+					MeanIntraMG+=SimIntraG;
+					MeanExtraMG+=SimExtraG;
+					tmp=(SimIntraG-SimExtraG)/SimIntraG;
+					(*File)<<tmp;
+					for(level=0;level<11;level++)
+						(*File)<<SPrecisionG[level];
+				}
+				if(Local)
+				{
+					SimIntraL/=nbIntra;
+					SimExtraL/=nbExtra;
+					MeanIntraML+=SimIntraL;
+					MeanExtraML+=SimExtraL;
+					tmp=(SimIntraL-SimExtraL)/SimIntraL;
+					(*File)<<tmp;
+					for(level=0;level<11;level++)
+						(*File)<<SPrecisionL[level];
+				}
+				(*File)<<endl;
 			}
-			delete(sgrp);
 		}
 	}
-	overlap/=nbgrp;
-	MeanIntraMAll/=nbtot;
-	MeanExtraMAll/=nbtot;
-	MeanIntraMJug/=nbtot;
-	MeanIntraMNotJug/=nbtot;
-
-	cout<<"MeanIntraMAll"<<" "<<"MeanExtraMAll"<<" "<<"MeanIntraMJug"<<" "<<"MeanIntraMNotJug"<<" "<<"RIE"<<"overlapp "<<endl;
-	cout<<MeanIntraMAll<<" "<<MeanExtraMAll<<" "<<MeanIntraMJug<<" "<<MeanIntraMNotJug<<" "<<((MeanIntraMAll)-(MeanExtraMAll))/(MeanIntraMAll)<<" "<<overlap<<" "<<endl;
-	for(int i=0;i<nbrecall;i++)
+	if(Global)
 	{
-		Precision[i]/=nbtot;
-		cout<<"Recall 0."<<i<<" Precision "<<Precision[i]<<endl;
+		MeanIntraMG/=nbGrp;
+		MeanExtraMG/=nbGrp;
+		RieG=(MeanIntraMG-MeanExtraMG)/MeanIntraMG;
 	}
-}
-
-
-
-//-----------------------------------------------------------------------------
-char* GALILEI::GStatSimDocGrp::GetSettings(void)
-{
-	static char tmp[100];
-	char c;
-	char c1;
-
-	if(Global) c='1'; else c='0';
-	if(relevant) c1='1'; else c1='0';
-	sprintf(tmp,"%c %c",c,c1);
-	return(tmp);
-
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GStatSimDocGrp::SetSettings(const char* s)
-{
-	char c;
-	char c1;
-
-		//mettre le rerelevant
-	if(!(*s)) return;
-	sscanf(s,"%c %c",&c,&c1);
-	if(c=='1') Global=true; else Global=false;
-	if(c1=='1') relevant=true; else relevant=false;
+	if(Local)
+	{
+		MeanIntraML/=nbGrp;
+		MeanExtraML/=nbGrp;
+		RieL=(MeanIntraML-MeanExtraML)/MeanIntraML;
+	}
+	OverlapL/=nbGrp;
+	OverlapG/=nbGrp;
+	for(Sub.Start(),GOverlapG=0,GOverlapL=0;!Sub.End();Sub.Next())
+	{
+		if(Sub()->OverlapG) GOverlapG++;
+		if(Sub()->OverlapL) GOverlapL++;
+	}
+	GOverlapG/=Sub.NbPtr;
+	GOverlapL/=Sub.NbPtr;
+	for(level=0;level<11;level++)
+	{
+		if(Local) PrecisionL[level]/=nbGrp;
+		if(Global) PrecisionG[level]/=nbGrp;
+	}
+#endif
 }
 
 

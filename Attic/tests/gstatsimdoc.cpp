@@ -4,13 +4,12 @@
 
 	GSatSimDoc.cpp
 
-	Calc the similarity between Documents using the ideal groupment - Implementation.
+	Similarities between Documents - Implementation.
 
 	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	Version $Revision$
 
@@ -41,12 +40,37 @@
 #include <tests/ggroupevaluatesubprof.h>
 #include <tests/ggroupsevaluate.h>
 #include <sessions/gsession.h>
+#include <langs/glang.h>
 #include <infos/giwordsweights.h>
 #include <infos/giwordweight.h>
 #include <profiles/gprofilecalc.h>
 #include <tests/gstatsimdoc.h>
 #include <docs/gdoc.h>
+#if GALILEITEST
+	#include <groups/gsubject.h>
+#endif
 using namespace GALILEI;
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class Local
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class GALILEI::GStatSimDoc::LocalStat
+{
+public:
+	GSubject* Sub;
+	bool OverlapL;
+	bool OverlapG;
+
+	LocalStat(GSubject* s) : Sub(s), OverlapL(false), OverlapG(false) {}
+	int Compare(const LocalStat* l) const {return(Sub->Compare(l->Sub));}
+	int Compare(const GSubject* s) const {return(Sub->Compare(s));}
+};
 
 
 
@@ -56,139 +80,187 @@ using namespace GALILEI;
 //
 //-----------------------------------------------------------------------------
 
-
 //-----------------------------------------------------------------------------
-GALILEI::GStatSimDoc::GStatSimDoc(GSession* ses)
-	: Session(ses),Global(true)
+GALILEI::GStatSimDoc::GStatSimDoc(GSession* ses,RIO::RTextFile* f,bool g,bool l)
+	: Session(ses), Global(g), Local(l), File(f), Sub(100,50)
 {
+	if(File)
+	{
+		(*File)<<"DocId";
+		if(Global) (*File)<<"RieGlobal";
+		if(Local) (*File)<<"RieLocal";
+		(*File)<<endl;
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 void GALILEI::GStatSimDoc::Run(void)
 {
-	// temp Intra,extra similarity
-	double MinIntra;
-	double MaxExtra;
+#if GALILEITEST
+	GLangCursor Langs;
+	GDocCursor Doc1;
+	GDocCursor Doc2;
+	GSubjectCursor Sub1;
+	double SimIntraL;
+	double SimExtraL;
+	double SimIntraG;
+	double SimExtraG;
+	double tmp;
+	unsigned int nbIntra;
+	unsigned int nbExtra;
+	unsigned int nbDocs;
+	bool Same;
+	double MinIntraL;
+	double MaxExtraL;
+	double MinIntraG;
+	double MaxExtraG;
+	LocalStat* t;
 
 	//Initialization
-	MeanIntraM=0.0;
-	MeanExtraM=0.0;
-	Overlap=0.0;
+	OverlapL=MeanExtraML=MeanIntraML=0.0;
+	OverlapG=MeanExtraMG=MeanIntraMG=0.0;
+	nbDocs=0;
+	Sub.Clear();
 
-	int ComptIntra=0;
-	int ComptExtra=0;
-	int ComptOverlap=0;
-
-	//The container of documents.
-	RContainer<GGroupsEvaluate,unsigned int,false,false>* GroupsDoc = Session->GetIdealDocs();
-
-	// Load the ideal document container.
-
-	for(GroupsDoc->Start();!GroupsDoc->End();GroupsDoc->Next())
+	// Go through the languages
+	Langs=Session->GetLangsCursor();
+	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		GGroupEvaluateCursor Cur2=(*GroupsDoc)()->GetGroupEvaluateCursor();
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		Doc1=Session->GetDocsCursor(Langs());
+		Doc2=Session->GetDocsCursor(Langs());
+
+		// Go through each document
+		for(Doc1.Start();!Doc1.End();Doc1.Next())
 		{
-			// For each group... Initialization.
-			MinIntra=1.0;
-			MaxExtra=0.0;
+			nbDocs++;
 
-			GGroupEvaluate* Group=Cur2();
-			// A vector used to memorise the id of the documents
-			int* vector;
-			vector=new int[Group->NbPtr()];
-			unsigned int i=0;
-			for(Group->Start();!Group->End();Group->Next())
+			// Init Local Data
+			SimIntraG=SimExtraG=SimIntraL=SimExtraL=0.0;
+			nbIntra=nbExtra=0;
+			Sub1=Doc1()->GetSubjectCursor();
+			MinIntraG=MinIntraL=1.1;
+			MaxExtraG=MaxExtraL=-1.1;
+
+			// Go through to other documents
+			for(Doc2.Start();!Doc2.End();Doc2.Next())
 			{
-				vector[i]=Group->Current();
-				i++;
-			}
-			// For all the document in this group
-			for(i=0;i<Group->NbPtr();i++)
-			{
-				for(unsigned int j=0;j<Group->NbPtr();j++)
+				if(Doc1()==Doc2()) continue;
+
+				// Look if Same topic
+				Same=false;
+				for(Sub1.Start();(!Sub1.End())&&(!Same);Sub1.Next())
+					if(Doc2()->IsFromSubject(Sub1()))
+						Same=true;
+				if(Same)
+					nbIntra++;
+				else
+					nbExtra++;
+
+				if(Global)
 				{
-					double temp;
-					if(Global) temp=Group->GlobalSimilarity(vector[i],vector[j]);
-					else temp=Group->Similarity(vector[i],vector[j]);
- 					if((i!=j)&&(temp>-10)&&(temp<10))
+					tmp=Doc1()->GlobalSimilarity(Doc2());
+					if(Same)
 					{
-						MeanIntraM+=temp;
-						ComptIntra++;
-						if((temp<MinIntra)) MinIntra=temp;
+						SimIntraG+=tmp;
+						if(tmp<MinIntraG) MinIntraG=tmp;
+					}
+					else
+					{
+						SimExtraG+=tmp;
+						if(tmp>MaxExtraG) MaxExtraG=tmp;
+					}
+				}
+
+				if(Local)
+				{
+					tmp=Doc1()->Similarity(Doc2());
+					if(Same)
+					{
+						SimIntraL+=tmp;
+						if(tmp<MinIntraL) MinIntraL=tmp;
+					}
+					else
+					{
+						SimExtraL+=tmp;
+						if(tmp>MaxExtraL) MaxExtraL=tmp;
 					}
 				}
 			}
 
-			// Calc the similarity for all the document which are not in the current group.
-			GGroupEvaluateCursor Cur=(*GroupsDoc)()->GetGroupEvaluateCursor();
-			for(Cur.Start();!Cur.End();Cur.Next())
-			{
-				GGroupEvaluate* GroupExtra=Cur();
-				int* vectorextra;
-				vectorextra=new int[GroupExtra->NbPtr()];
-				int ii=0;
-				for(GroupExtra->Start();!GroupExtra->End();GroupExtra->Next())
+			// Compute Overlap
+				for(Sub1.Start();(!Sub1.End())&&(!Same);Sub1.Next())
 				{
-					vectorextra[ii]=GroupExtra->Current();
-					ii++;
+					t=Sub.GetInsertPtr<GSubject*>(Sub1());
 				}
-				if(GroupExtra->GetId()!=Group->GetId())
+
+			if(Global&&(MaxExtraG>MinIntraG))
+			{
+				OverlapG++;
+				for(Sub1.Start();(!Sub1.End())&&(!Same);Sub1.Next())
 				{
-					for(i=0;i<Group->NbPtr();i++)
-					{
-						for(unsigned int j=0;j<GroupExtra->NbPtr();j++)
-						{
-							double temp;
-							if(Global) temp=Group->GlobalSimilarity(vectorextra[j],vector[i]);
-							else temp=Group->Similarity(vectorextra[j],vector[i]);
-							if ((temp<0.98)&&(temp>-0.98))	
-							{
-								MeanExtraM+=temp;
-								ComptExtra++;
-							}
-							if((temp>MaxExtra)&&(temp<0.98))
-							{
-								MaxExtra=temp;
-							}
-						}
-					}
+					t=Sub.GetInsertPtr<GSubject*>(Sub1());
+					t->OverlapG=true;
 				}
 			}
-			ComptOverlap++;
-			if(MaxExtra>MinIntra) Overlap+=(MaxExtra-MinIntra);
+			if(Local&&(MaxExtraL>MinIntraL))
+			{
+				OverlapL++;
+				for(Sub1.Start();(!Sub1.End())&&(!Same);Sub1.Next())
+				{
+					t=Sub.GetInsertPtr<GSubject*>(Sub1());
+					t->OverlapL=true;
+				}
+			}
+
+			// Compute Rie for document Doc1
+			if(File)
+			{
+				(*File)<<Doc1()->GetId();
+				if(Global)
+				{
+					SimIntraG/=nbIntra;
+					SimExtraG/=nbExtra;
+					MeanIntraMG+=SimIntraG;
+					MeanExtraMG+=SimExtraG;
+					tmp=(SimIntraG-SimExtraG)/SimIntraG;
+					(*File)<<tmp;
+				}
+				if(Local)
+				{
+					SimIntraL/=nbIntra;
+					SimExtraL/=nbExtra;
+					MeanIntraML+=SimIntraL;
+					MeanExtraML+=SimExtraL;
+					tmp=(SimIntraL-SimExtraL)/SimIntraL;
+					(*File)<<tmp;
+				}
+				(*File)<<endl;
+			}
 		}
 	}
-	MeanIntraM/=ComptIntra;
-	MeanExtraM/=ComptExtra;
-	if(ComptOverlap>0)
-		Overlap/=ComptOverlap;
-	Rie=(MeanIntraM-MeanExtraM)/MeanIntraM;
-}
-
-
-//-----------------------------------------------------------------------------
-char* GALILEI::GStatSimDoc::GetSettings(void)
-{
-	static char tmp[100];
-	char c;
-
-	if(Global) c='1'; else c='0';
-	sprintf(tmp,"%c",c);
-	return(tmp);
-
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GStatSimDoc::SetSettings(const char* s)
-{
-	char c;
-
-	if(!(*s)) return;
-	sscanf(s,"%c",&c);
-	if(c=='1') Global=true; else Global=false;
+	if(Global)
+	{
+		MeanIntraMG/=nbDocs;
+		MeanExtraMG/=nbDocs;
+		RieG=(MeanIntraMG-MeanExtraMG)/MeanIntraMG;
+	}
+	if(Local)
+	{
+		MeanIntraML/=nbDocs;
+		MeanExtraML/=nbDocs;
+		RieL=(MeanIntraML-MeanExtraML)/MeanIntraML;
+	}
+	OverlapL/=nbDocs;
+	OverlapG/=nbDocs;
+	for(Sub.Start(),GOverlapG=0,GOverlapL=0;!Sub.End();Sub.Next())
+	{
+		if(Sub()->OverlapG) GOverlapG++;
+		if(Sub()->OverlapL) GOverlapL++;
+	}
+	GOverlapG/=Sub.NbPtr;
+	GOverlapL/=Sub.NbPtr;
+#endif
 }
 
 
