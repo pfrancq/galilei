@@ -1471,7 +1471,7 @@ type=HEADER
 sub_dirs=galilei,rga,rpromethee
 
 [kgalileicenter/qtwidgets/galilei/Makefile.am]
-files=kgalileicenter/qtwidgets/galilei/qgdocxml.cpp,kgalileicenter/qtwidgets/galilei/qgdocxml.h,kgalileicenter/qtwidgets/galilei/qgprofile.cpp,kgalileicenter/qtwidgets/galilei/qgprofile.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.h,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.h,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.h,kgalileicenter/qtwidgets/galilei/qggroupsir.h,kgalileicenter/qtwidgets/galilei/qggroupsir.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.h,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconf.h
+files=kgalileicenter/qtwidgets/galilei/qgdocxml.cpp,kgalileicenter/qtwidgets/galilei/qgdocxml.h,kgalileicenter/qtwidgets/galilei/qgprofile.cpp,kgalileicenter/qtwidgets/galilei/qgprofile.h,kgalileicenter/qtwidgets/galilei/qlistviewitemtype.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledesc.h,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofiledescs.h,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.cpp,kgalileicenter/qtwidgets/galilei/qgsubprofilevector.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconf.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconf.h,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qprofiledescpluginconf.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfstat.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconffeedback.h,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.cpp,kgalileicenter/qtwidgets/galilei/qcomputingpluginconfreweighting.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfsim.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfgga.h,kgalileicenter/qtwidgets/galilei/qggroupsir.h,kgalileicenter/qtwidgets/galilei/qggroupsir.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkcos.h,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.cpp,kgalileicenter/qtwidgets/galilei/qgroupingpluginconfkprotos.h,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconf.cpp,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconf.h,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfrelevant.cpp,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfrelevant.h,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfgravitation.cpp,kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfgravitation.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=galilei
 sub_dirs=
@@ -1568,6 +1568,30 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconf.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfgravitation.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfgravitation.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfrelevant.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/qtwidgets/galilei/qgroupcalcpluginconfrelevant.h]
 dist=true
 install=false
 install_location=
