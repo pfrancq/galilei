@@ -39,10 +39,10 @@ using namespace RStd;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GALILEI::GSession::GSession(const unsigned int d,const unsigned int u,GURLManager* mng) throw(bad_alloc,GException)
-	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(2,5), Mng(mng),
+GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int f,GURLManager* mng) throw(bad_alloc,GException)
+	: Langs(2),Stops(2),Dics(2),Users(u),Docs(d,this),Groups(2,5), Fdbks(f+f/2,f/2), Mng(mng),
 	  bDics(false), bDocs(false), bUsers(false), bGroups(false),
-	  bGroupsMember(false), bUsersFdbk(false)
+	  bGroupsMember(false), bFdbks(false)
 	
 {
 	GLang* l;
@@ -144,10 +144,19 @@ void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GSession::InitUsersFdbk(void) throw(bad_alloc,GException)
+GUser* GALILEI::GSession::CreateUser(const char* usr,const char* pwd,const char* name,const char* email,
+	                  const char* title,const char* org,const char* addr1,
+	                  const char* addr2,const char* city,const char* country) throw(bad_alloc)
+{
+	return(0);
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GSession::InitFdbks(void) throw(bad_alloc,GException)
 {
 	// If users' feedback already loaded, do nothing.
-	if(bUsersFdbk) return;
+	if(bFdbks) return;
 
 	// Verify that users and docs are loaded
 	if(!bUsers)
@@ -156,17 +165,19 @@ void GALILEI::GSession::InitUsersFdbk(void) throw(bad_alloc,GException)
 		InitDocs();
 
 	// Load the users
-	LoadUsersFdbk();
-	bUsersFdbk=true;
+	LoadFdbks();
+	bFdbks=true;
 }
 
 
 //---------------------------------------------------------------------------
-GUser* GALILEI::GSession::CreateUser(const char* usr,const char* pwd,const char* name,const char* email,
-	                  const char* title,const char* org,const char* addr1,
-	                  const char* addr2,const char* city,const char* country) throw(bad_alloc)
+void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,char j,const char* date) throw(bad_alloc)
 {
-	return(0);
+	GProfDoc* f;
+
+	Fdbks.InsertPtr(f=new GProfDoc(d,p,j,date));
+	p->AddJudgement(f);
+	d->AddJudgement(f);
 }
 
 

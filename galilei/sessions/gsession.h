@@ -86,6 +86,11 @@ protected:
 	RStd::RContainer<GGroups,unsigned int,true,true> Groups;
 
 	/**
+	* All the judgements.
+	*/
+	RContainer<GProfDoc,unsigned,true,true> Fdbks;
+
+	/**
 	* URL Manager used by this session.
 	*/
 	GURLManager* Mng;
@@ -116,9 +121,9 @@ protected:
 	bool bGroupsMember;
 
 	/**
-	* State of the User feedback.
+	* State of the User's feedbacks.
 	*/
-	bool bUsersFdbk;
+	bool bFdbks;
 
 public:
 
@@ -126,9 +131,10 @@ public:
 	* Constructor.
 	* @param d              Number of documents.
 	* @param u              Number of users.
+	* @param f              Number of Feedbacks.
 	* @param mng            URL Manager.
 	*/
-	GSession(const unsigned int d,const unsigned int u,GURLManager* mng) throw(bad_alloc,GException);
+	GSession(unsigned int d,unsigned int u,unsigned int f,GURLManager* mng) throw(bad_alloc,GException);
 
 	/**
 	* @name Method for Languages.
@@ -289,11 +295,6 @@ protected:
 		*/
 		virtual void LoadUsers(void) throw(bad_alloc,GException)=0;
 
-		/**
-		* Load the Users.
-		*/
-		virtual void LoadUsersFdbk(void) throw(bad_alloc,GException)=0;
-
 public:
 
 		/**
@@ -321,17 +322,6 @@ public:
 		void InitUsers(void) throw(bad_alloc,GException);
 
 		/**
-		* Verify if the users' feedback are loaded.
-		* @returns true, if loaded.
-		*/
-		bool IsUsersFdbkLoad(void) const {return(bUsers);}
-
-		/**
-		* Load the Users' feedback.
-		*/
-		void InitUsersFdbk(void) throw(bad_alloc,GException);
-
-		/**
 		* Create a new user in the system.
 		* @param usr            User.
 		* @param pwd            Password.
@@ -348,6 +338,42 @@ public:
 		GUser* CreateUser(const char* usr,const char* pwd,const char* name,const char* email,
 		                  const char* title,const char* org,const char* addr1,
 		                  const char* addr2,const char* city,const char* country) throw(bad_alloc);
+
+	//@}
+
+	/**
+	* @name Method for Feedbacks.
+	*/
+	//@{
+
+protected:
+
+		/**
+		* Load the Feedbacks.
+		*/
+		virtual void LoadFdbks(void) throw(bad_alloc,GException)=0;
+
+public:
+
+		/**
+		* Verify if the feedback are loaded.
+		* @returns true, if loaded.
+		*/
+		bool IsFdbksLoad(void) const {return(bFdbks);}
+
+		/**
+		* Load the Users' feedback.
+		*/
+		void InitFdbks(void) throw(bad_alloc,GException);
+
+		/**
+		* Insert a new Feedback.
+		* @param p          Pointer to the profile.
+		* @param d          Pointer to the document.
+		* @param j          Feedback.
+		* @param date       Date on the last feedback.
+		*/
+		void InsertFdbk(GProfile* p,GDoc* d,char j,const char* date) throw(bad_alloc);
 
 	//@}
 
