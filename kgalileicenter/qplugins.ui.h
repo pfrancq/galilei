@@ -247,3 +247,36 @@ void QPlugins::slotLangEnable( bool state )
 	QLangItem* f=dynamic_cast<QLangItem*>(Langs->currentItem());
 	f->Enable=state;
 }
+
+void QPlugins::changeDocAnalyse(QListViewItem* item)
+{
+        	if(!item) return;
+	QDocAnalyseItem* f=dynamic_cast<QDocAnalyseItem*>(item);
+	EnableDocAnalyse->setChecked(f->Enable);
+	ConfigDocAnalyse->setEnabled(f->Fac->HasConfigure());
+	AboutDocAnalyse->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::slotAboutDocAnalyse()
+{
+    	if(!DocAnalyses->currentItem()) return;
+	QDocAnalyseItem* f=dynamic_cast<QDocAnalyseItem*>(DocAnalyses->currentItem());
+	f->Fac->About();
+}
+
+
+void QPlugins::slotConfigDocAnalyse()
+{
+        	if(!DocAnalyses->currentItem()) return;
+	QDocAnalyseItem* f=dynamic_cast<QDocAnalyseItem*>(DocAnalyses->currentItem());
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotDocAnalyseEnable( bool state )
+{
+        	if(!DocAnalyses->currentItem()) return;
+	QDocAnalyseItem* f=dynamic_cast<QDocAnalyseItem*>(DocAnalyses->currentItem());
+	f->Enable=state;
+}

@@ -7,7 +7,7 @@ kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui \
 	qcreatedatabase.ui qmixidealconfig.ui \
 	kviewr.cpp kviewprg.cpp \
 	kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewstems.cpp \
-	qsessionprogress.cpp qdocsoptionsdlg.ui qconnectmysql.ui kviewusers.cpp kviewthgroups.cpp \
+	qsessionprogress.cpp qconnectmysql.ui kviewusers.cpp kviewthgroups.cpp \
 	kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kviewstats.cpp \
 	kview.cpp kdoc.cpp kgalileicenter.cpp main.cpp qplugins.ui qsessionoptions.ui
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
@@ -30,7 +30,7 @@ EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kg
 	kviewdoc.cpp kviewdoc.h kviewdocs.cpp kviewdocs.h kviewgroup.cpp kviewgroup.h \
 	kviewgroups.cpp kviewgroups.h kviewprofile.cpp kviewprofile.h \
 	kviewthgroups.cpp kviewthgroups.h kviewusers.cpp kviewusers.h qconnectmysql.ui \
-	qdocsoptionsdlg.ui qsessionprogress.cpp qsessionprogress.h kviewstems.cpp kviewstems.h \
+	qsessionprogress.cpp qsessionprogress.h kviewstems.cpp kviewstems.h \
 	kgalileicenter_dlg.cpp kgalileicenter_init.cpp \
 	kviewprg.cpp kviewprg.h kviewr.cpp kviewr.h  \
 	qmixidealconfig.ui\

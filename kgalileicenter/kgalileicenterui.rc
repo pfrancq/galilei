@@ -71,7 +71,6 @@
 	</Menu>
 	<Menu name="settings"><text>&amp;Settings</text>
 		<Action name="plugins"/>
-		<Action name="docsOptions"/>
 		<Action name="sessionOptions"/>
 	</Menu>
 	<Action name="window_menu"/>

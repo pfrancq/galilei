@@ -56,6 +56,7 @@
 #include <galilei/gurlmanagerkde.h>
 #include <langs/glangs.h>
 #include <sessions/gsession.h>
+#include <docs/gdocanalysemanager.h>
 using namespace GALILEI;
 
 
@@ -119,6 +120,11 @@ class KGALILEICenterApp : public KMainWindow
 	* URL Manager.
 	*/
 	GURLManagerKDE URLManager;
+
+	/**
+	* Doc Analyse Manager.
+	*/
+	GDocAnalyseManager DocAnalyseManager;
 
 	/**
 	* Profiling Method Manager.
@@ -197,11 +203,6 @@ class KGALILEICenterApp : public KMainWindow
 	KDoc* Doc;
 
 	/**
-	* Options of the documents.
-	*/
-	GDocOptions* DocOptions;
-
-	/**
 	* the list containing all the error messages
 	*/
 	QString ErrMsgList;
@@ -247,12 +248,6 @@ protected:
 	* MDI view area including any needed connections.
 	*/
 	void initView(void);
-
-	/**
-	* Set the parameters of the system to a document.
-	* @param doc            Document to assign.
-	*/
-	void setDocParams(KDoc* doc);
 
 	/**
 	* Creates a new child window. The document that will be connected to it has
@@ -516,11 +511,6 @@ private slots:
 	void slotRunProgram(void);
 
 	/**
-	* Called when the option about the profile's has to be changed.
-	*/
-	void slotDocsOptions(void);
-
-	/**
 	* Gets called when the window menu is activated; recreates the window menu
 	* with all opened window titles.
 	*/
@@ -620,7 +610,6 @@ public:
 	KAction* rRunR;
 
 	KAction* plugins;
-	KAction* docsOptions;
 	KAction* sessionOptions;
 
 	KAction* runProgram;

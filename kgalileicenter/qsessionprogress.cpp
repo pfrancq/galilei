@@ -94,7 +94,7 @@ QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char*
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangs* langs,GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(GException,bad_alloc)
 {
 	btnOk->setEnabled(false);
@@ -118,7 +118,7 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangs* langs,GURLManager
 
 	txtRem->setText("Connect (Loading Dicionnaries/Stoplists) ...");
 	KApplication::kApplication()->processEvents();
-	Session->Connect(langs,umng,pmng,gmng,gcmng,smng,lmng);
+	Session->Connect(langs,umng,dmng,pmng,gmng,gcmng,smng,lmng);
 
 	Session->LoadSubjectTree();
 
@@ -205,7 +205,7 @@ void QSessionProgressDlg::AnalyseXML(GDocXML* &xml,GDoc* doc)
 		txtRem->setText("Analysing XML Structure ...");
 		KApplication::kApplication()->processEvents();
 		//doc->Analyse(xml,Session);
-		Session->GetDocAnalyse()->Analyse(xml,doc);
+		Session->GetDocAnalyseMng()->GetCurrentMethod()->Analyse(xml,doc);
 		txtRem->setText("Finish");
 	}
 	catch(GException& e)

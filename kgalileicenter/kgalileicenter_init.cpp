@@ -38,7 +38,6 @@
 // include files for GALILEI
 #include <sessions/gsessionmysql.h>
 #include <sessions/gconfig.h>
-#include <docs/gdocoptions.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -86,14 +85,14 @@ using namespace R;
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void)
 	: KMainWindow(0,"KGALILEICenterApp"), Langs(getenv("GALILEI_PLUGINS_LIB")),URLManager(getenv("GALILEI_PLUGINS_LIB")),
+	  DocAnalyseManager(getenv("GALILEI_PLUGINS_LIB")),
 	  ProfilingManager(getenv("GALILEI_PLUGINS_LIB")), GroupingManager(getenv("GALILEI_PLUGINS_LIB")),
 	  GroupCalcManager(getenv("GALILEI_PLUGINS_LIB")), StatsCalcManager(getenv("GALILEI_PLUGINS_LIB")),
 	  LinkCalcManager(getenv("GALILEI_PLUGINS_LIB")),
-	  dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0), DocOptions(0)
+	  dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0)
 {
 	Config=kapp->config();
 	Printer = new QPrinter;
-	DocOptions=new GDocOptions();
 	initStatusBar();
 	initView();
 	initActions();
@@ -159,7 +158,6 @@ void KGALILEICenterApp::initActions(void)
 	viewStatusBar = KStdAction::showStatusbar(this, SLOT(slotViewStatusBar()), actionCollection());
 	viewToolBar->setStatusText(i18n("Enables/disables the toolbar"));
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
-	docsOptions=new KAction(i18n("&Documents Options"),"configure",0,this,SLOT(slotDocsOptions()),actionCollection(),"docsOptions");
 	plugins=new KAction(i18n("&Plugins"),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
 	sessionOptions=new KAction(i18n("&Session Options"),"configure",0,this,SLOT(slotSessionOptions()),actionCollection(),"sessionOptions");
 
@@ -191,14 +189,6 @@ void KGALILEICenterApp::initView(void)
 	pWorkspace = new QWorkspace(view_back);
 	connect(pWorkspace, SIGNAL(windowActivated(QWidget*)), this, SLOT(slotWindowActivated(QWidget*)));
 	setCentralWidget(view_back);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::setDocParams(KDoc* doc)
-{
-	if(!doc) return;
-	(*doc->GetSession()->GetDocOptions())=(*DocOptions);
 }
 
 
@@ -235,25 +225,6 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("User", dbUser());
 	Config->writeEntry("Password", dbPwd());
 
-	Config->setGroup("GALILEI Options");
-	Config->writeEntry("Static Language",DocOptions->StaticLang);
-	Config->writeEntry("Minimum Stop Percentage",DocOptions->MinStopWords);
-	Config->writeEntry("Minimum Word's Size",DocOptions->MinWordSize);
-	Config->writeEntry("Minimum Stem's Size",DocOptions->MinStemSize);
-	Config->writeEntry("Minimum Occurence",DocOptions->MinOccur);
-	Config->writeEntry("Accept Non-Letter words",DocOptions->NonLetterWords);
-	Config->writeEntry("Minimum Documents",DocOptions->MinDocs);
-	Config->writeEntry("Maximum Documents",DocOptions->MaxDocs);
-	Config->writeEntry("Minimum Occurence Clustering",DocOptions->MinOccurCluster);
-	Config->writeEntry("Iteration Number",DocOptions->NbIteration);
-	Config->writeEntry("Window Size",DocOptions->WindowSize);
-	Config->writeEntry("Minimum Confidence",DocOptions->MinConfidence);
-	Config->writeEntry("Using Document Structure",DocOptions->Distance);
-	Config->writeEntry("Minimum of Appearance",DocOptions->NbDocsMin);
-	Config->writeEntry("Use Link",DocOptions->UseLink);
-	Config->writeEntry("Use External Link",DocOptions->UseExternalLink);
-	Config->writeEntry("Use Redirection",DocOptions->UseRedirection);
-
 	// Write the session parameters
 	Config->setGroup(SessionParams.GetName());
 	Config->writeEntry("SameBehaviourMinDocs",SessionParams.GetUInt("SameBehaviourMinDocs"));
@@ -263,6 +234,7 @@ void KGALILEICenterApp::saveOptions(void)
 	GConfig Conf("/etc/galilei/galilei.galileiconfig");
 	Conf.Store(Langs);
 	Conf.Store(URLManager);
+	Conf.Store(DocAnalyseManager);
 	Conf.Store(ProfilingManager);
 	Conf.Store(GroupingManager);
 	Conf.Store(GroupCalcManager);
@@ -311,24 +283,6 @@ void KGALILEICenterApp::readOptions(void)
 	dbName=Config->readEntry("Name","hp");
 	dbUser=Config->readEntry("User","admin");
 	dbPwd=Config->readEntry("Password","gillian");
-	Config->setGroup("GALILEI Options");
-	DocOptions->StaticLang=Config->readBoolEntry("Static Language",true);
-	DocOptions->MinStopWords=Config->readDoubleNumEntry("Minimum Stop Percentage",0.1);
-	DocOptions->MinWordSize=Config->readUnsignedNumEntry("Minimum Word's Size",4);
-	DocOptions->MinStemSize=Config->readUnsignedNumEntry("Minimum Stem's Size",3);
-	DocOptions->MinOccur=Config->readUnsignedNumEntry("Minimum Occurence",1);
-	DocOptions->NonLetterWords=Config->readBoolEntry("Accept Non-Letter words",true);
-	DocOptions->MinDocs=Config->readUnsignedNumEntry("Minimum Documents",5);
-	DocOptions->MaxDocs=Config->readUnsignedNumEntry("Maximum Documents",300);
-	DocOptions->MinOccurCluster=Config->readUnsignedNumEntry("Minimum Occurence Clustering",1);
-	DocOptions->NbIteration=Config->readUnsignedNumEntry("Iteration Number",2);
-	DocOptions->WindowSize=Config->readUnsignedNumEntry("Window Size",10);
-	DocOptions->MinConfidence=Config->readDoubleNumEntry("Minimum Confidence",0.15);
-	DocOptions->Distance=Config->readBoolEntry("Using Document Structure",false);
-	DocOptions->NbDocsMin=Config->readUnsignedNumEntry("Minimum of Appearance",5);
-	DocOptions->UseLink=Config->readBoolEntry("Use Link",true);
-	DocOptions->UseExternalLink=Config->readBoolEntry("Use External Link",false);
-	DocOptions->UseRedirection=Config->readBoolEntry("Use Redirection",false);
 
 	// Read the Session Parameters
 	Config->setGroup(SessionParams.GetName());
@@ -340,6 +294,7 @@ void KGALILEICenterApp::readOptions(void)
 	Conf.Load();
 	Conf.Read(Langs);
 	Conf.Read(URLManager);
+	Conf.Read(DocAnalyseManager);
 	Conf.Read(ProfilingManager);
 	Conf.Read(GroupingManager);
 	Conf.Read(GroupCalcManager);

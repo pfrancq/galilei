@@ -48,6 +48,7 @@
 #include <sessions/gstatscalc.h>
 #include <docs/glinkcalc.h>
 #include <langs/glang.h>
+#include <docs/gdocanalyse.h>
 using namespace GALILEI;
 
 
@@ -133,6 +134,18 @@ public:
 	GFactoryLang* Fac;
 	bool Enable;
 	QLangItem(QListView* lst,GFactoryLang* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+
+class QDocAnalyseItem : public QListViewItem
+{
+public:
+	GFactoryDocAnalyse* Fac;
+	bool Enable;
+	QDocAnalyseItem(QListView* lst,GFactoryDocAnalyse* fac,const char* desc)
 		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}

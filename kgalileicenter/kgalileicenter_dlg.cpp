@@ -44,7 +44,6 @@ using namespace R;
 // include files for GALILEI
 #include <docs/gdoc.h>
 #include <langs/glang.h>
-#include <docs/gdocoptions.h>
 #include <galilei/gurlmanagerkde.h>
 #include <galilei/qlistviewitemtype.h>
 #include <sessions/gsession.h>
@@ -106,63 +105,6 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotDocsOptions(void)
-{
-	QString tmp;
-
-	QDocsOptionsDlg dlg(this,0,true);
-	dlg.cbStaticLang->setChecked(DocOptions->StaticLang);
-	tmp.setNum(DocOptions->MinStopWords);
-	dlg.txtMinStop->setText(tmp);
-	dlg.txtMinWordSize->setValue(DocOptions->MinWordSize);
-	dlg.txtMinStemSize->setValue(DocOptions->MinStemSize);
-	dlg.txtMinOcc->setValue(DocOptions->MinOccur);
-	dlg.txtMinDocs->setValue(DocOptions->MinDocs);
-	dlg.txtMaxDocs->setValue(DocOptions->MaxDocs);
-	dlg.txtMinOccC->setValue(DocOptions->MinOccurCluster);
-	dlg.txtNbIteration->setValue(DocOptions->NbIteration);
-	dlg.txtWindowSize->setValue(DocOptions->WindowSize);
-	dlg.txtNbDocsMin->setValue(DocOptions->NbDocsMin);
-	tmp.setNum(DocOptions->MinConfidence);
-	dlg.txtMinConf->setText(tmp);
-	dlg.cbDistance->setChecked(DocOptions->Distance);
-	dlg.cbNonWord->setChecked(DocOptions->NonLetterWords);
-	dlg.frameNonWord->setEnabled(DocOptions->NonLetterWords);
-	dlg.cbUseLink->setChecked(DocOptions->UseLink);
-	dlg.cbExternalLink->setChecked(DocOptions->UseExternalLink);
-	dlg.cbRedirection->setChecked(DocOptions->UseRedirection);
-
-	if(dlg.exec())
-	{
-		double d=dlg.txtMinStop->text().toDouble();
-		if((d>=0.0)&&(d<=1.0))
-			DocOptions->MinStopWords=d;
-		DocOptions->StaticLang=dlg.cbStaticLang->isChecked();
-		DocOptions->MinWordSize=dlg.txtMinWordSize->value();
-		DocOptions->MinStemSize=dlg.txtMinStemSize->value();
-		DocOptions->MinOccur=dlg.txtMinOcc->value();
-		DocOptions->MinDocs=dlg.txtMinDocs->value();
-		DocOptions->MaxDocs=dlg.txtMaxDocs->value();
-		DocOptions->MinOccurCluster=dlg.txtMinOccC->value();
-		DocOptions->NbIteration=dlg.txtNbIteration->value();
-		DocOptions->WindowSize=dlg.txtWindowSize->value();
-		DocOptions->NbDocsMin=dlg.txtNbDocsMin->value();
-		d=dlg.txtMinConf->text().toDouble();
-		if((d>=0.0)&&(d<=1.0))
-			DocOptions->MinConfidence=d;
-		DocOptions->Distance=dlg.cbDistance->isChecked();
-		DocOptions->NonLetterWords=dlg.cbNonWord->isChecked();
-		DocOptions->UseLink=dlg.cbUseLink->isChecked();
-		DocOptions->UseExternalLink=dlg.cbExternalLink->isChecked();
-		DocOptions->UseRedirection=dlg.cbRedirection->isChecked();
-
-		cout<< "use sturct : "<<DocOptions->Distance<<" et a la source : "<<dlg.cbDistance->isChecked()<<endl;
-		cout<< "option docs :  "<<DocOptions->UseLink<<" et a la source : "<< dlg.cbUseLink->isChecked() <<endl;;
-	}
-}                                
-
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotPlugins(void)
 {
 	GFactoryLangCursor Lang;
@@ -172,6 +114,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	GFactoryGroupCalcCursor GroupCalc;
 	GFactoryGroupingCursor Grouping;
 	GFactoryStatsCalcCursor StatsCalc;
+	GFactoryDocAnalyseCursor DocAnalyse;
 	QPlugins dlg(this,"Plugins Dialog");
 	QString str;
 	QListViewItem* def;
@@ -338,6 +281,30 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.EnableLang->setEnabled(true);
 	}
 
+	// Goes through the document analysis method
+	def=cur=0;
+	DocAnalyse=DocAnalyseManager.GetDocAnalysesCursor();
+	dlg.CurrentDocAnalyse->insertItem("None",0);
+	for(DocAnalyse.Start(),idx=1;!DocAnalyse.End();DocAnalyse.Next(),idx++)
+	{
+		str=DocAnalyse()->GetName();
+		str+=" [";
+		str+=DocAnalyse()->GetLib();
+		str+="]";
+		cur=new QDocAnalyseItem(dlg.DocAnalyses,DocAnalyse(),str);
+		dlg.CurrentDocAnalyse->insertItem(DocAnalyse()->GetName(),idx);
+		if((DocAnalyse()->GetPlugin())&&(DocAnalyse()->GetPlugin()==DocAnalyseManager.GetCurrentMethod()))
+			dlg.CurrentDocAnalyse->setCurrentItem(idx);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.DocAnalyses->setSelected(def,true);
+		dlg.changeDocAnalyse(def);
+		dlg.EnableDocAnalyse->setEnabled(true);
+		dlg.CurrentDocAnalyse->setEnabled(true);
+	}
 
 	if(dlg.exec())
 	{
@@ -444,6 +411,24 @@ void KGALILEICenterApp::slotPlugins(void)
 			else
 				item7->Fac->Delete(getSession());
 			item7=dynamic_cast<QLangItem*>(item7->itemBelow());
+		}
+
+		// Goes through groups computing method
+		QDocAnalyseItem* item8=dynamic_cast<QDocAnalyseItem*>(dlg.DocAnalyses->firstChild());
+		while(item8)
+		{
+			if(item8->Enable)
+				item8->Fac->Create(getSession());
+			else
+				item8->Fac->Delete(getSession());
+			item8=dynamic_cast<QDocAnalyseItem*>(item8->itemBelow());
+		}
+		try
+		{
+			DocAnalyseManager.SetCurrentMethod(dlg.CurrentDocAnalyse->currentText());
+		}
+		catch(GException)
+		{
 		}
 	}
 

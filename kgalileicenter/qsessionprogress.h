@@ -102,13 +102,14 @@ public:
 	* @param cmd            What to load.
 	* @param langs          Languages.
 	* @param umng           URL Manager.
+	* @param dmng           Document Analyse Manager.
 	* @param pmng           Profiling Manager.
 	* @param gmng           Grouping Manager.
 	* @param gcmng          Group Computing Manager.
 	* @param smng           Statistical Manager.
 	* @param lmng           Linking Manager.
 	*/
-	void LoadSession(unsigned int cmd,GLangs* langs,GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
+	void LoadSession(unsigned int cmd,GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(GException,bad_alloc);
 
 	/**

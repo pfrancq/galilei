@@ -51,7 +51,6 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdocxml.h>
-#include <docs/gdocoptions.h>
 #include <sessions/gsessionmysql.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gsubprofiledesc.h>
@@ -166,10 +165,10 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbPwd=dlg.txtPwd->text().latin1();
 		try
 		{
-			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,DocOptions,&SessionParams,true);
+			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&SessionParams,true);
 			unsigned int cmd=dlg.cbLoad->currentItem();
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
-			d->LoadSession(cmd,&Langs,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
+			d->LoadSession(cmd,&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
 			Doc=new KDoc(this,Sess);
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
@@ -213,10 +212,10 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 {
 	QConnectMySQL dlg(this,0,true);
 	GSessionMySQL* Sess;
-	Sess = new GSessionMySQL(host,user,passwd,db,DocOptions,&SessionParams,true);
+	Sess = new GSessionMySQL(host,user,passwd,db,&SessionParams,true);
 	unsigned int cmd=dlg.cbLoad->currentItem();
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
-	d->LoadSession(cmd,&Langs,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
+	d->LoadSession(cmd,&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
 	Doc=new KDoc(this,Sess);
 	sessionDisconnect->setEnabled(true);
 	sessionCompute->setEnabled(true);
@@ -237,7 +236,6 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionCompute(void)
 {
-	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Complete Session");
 	d->ComputeAll(!sessionAlwaysCalc->isChecked(),profileAlwaysSave->isChecked()||groupAlwaysSave->isChecked());
 	Doc->updateAllViews(0);
@@ -543,10 +541,8 @@ void KGALILEICenterApp::slotShowUsers(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfileCalc(void)
 {
-	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
 	KView* m = (KView*)pWorkspace->activeWindow();
 	if(m->getType()!=gProfile) return;
-	setDocParams(Doc);
 	((KViewProfile*)m)->ComputeProfile();
 }
 
@@ -554,8 +550,6 @@ void KGALILEICenterApp::slotProfileCalc(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfilesCalc(void)
 {
-	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
-	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Profiles");
 	d->ComputeProfiles(!profileAlwaysCalc->isChecked(),profileAlwaysSave->isChecked());
 	Doc->updateAllViews(1);
@@ -573,7 +567,6 @@ void KGALILEICenterApp::slotShowGroups(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotGroupsCalc(void)
 {
-	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Make Groups");
 	d->GroupProfiles(!groupAlwaysCalc->isChecked(),groupAlwaysSave->isChecked());
 	Doc->updateAllViews(2);
@@ -584,7 +577,6 @@ void KGALILEICenterApp::slotGroupsCalc(void)
 void KGALILEICenterApp::slotGroupingCompareFromFile(void)
 {
 	slotStatusMsg(i18n("Opening file..."));
-	setDocParams(Doc);
 	KApplication::kApplication()->processEvents();
 	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.grp|Ideal Groupement files"), this, i18n("Open File..."));
 	if(!url.isEmpty())
@@ -631,7 +623,6 @@ void KGALILEICenterApp::slotDocAnalyse(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotDocsAnalyse(void)
 {
-	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Analyse Documents");
 	d->AnalyseDocs(!docAlwaysCalc->isChecked());
 	Doc->updateAllViews(0);
@@ -643,7 +634,6 @@ void KGALILEICenterApp::slotCreateXML(void)
 {
 	KView* m = (KView*)pWorkspace->activeWindow();
 	if(m->getType()!=gDoc) return;
-	setDocParams(Doc);
 	((KViewDoc*)m)->CreateDocXML();
 	slotWindowActivated(m);
 }
@@ -680,7 +670,6 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 {
 	KView* m = (KView*)pWorkspace->activeWindow();
 	if(m->getType()!=gDoc) return;
-	setDocParams(Doc);
 	((KViewDoc*)m)->AnalyseDocXML();
 }
 
@@ -688,7 +677,6 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotWordsClustering()
 {
-	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
 	Doc->GetSession()->AnalyseAssociation(wordsClusteringSave->isChecked());
 }
 
@@ -696,7 +684,6 @@ void KGALILEICenterApp::slotWordsClustering()
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotRemoveCluster()
 {
-	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
 	Doc->GetSession()->RemoveAssociation();
 }
 
@@ -705,7 +692,6 @@ void KGALILEICenterApp::slotRemoveCluster()
 void KGALILEICenterApp::slotTextFrench(void)
 {
 	slotStatusMsg(i18n("Opening file..."));
-	setDocParams(Doc);
 	KApplication::kApplication()->processEvents();
 	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.mm|MMorph dictionnary files"), this, i18n("Open File..."));
 	if(!url.isEmpty())
@@ -720,7 +706,6 @@ void KGALILEICenterApp::slotTextFrench(void)
 void KGALILEICenterApp::slotTextEnglish(void)
 {
 	slotStatusMsg(i18n("Opening file..."));
-	setDocParams(Doc);
 	KApplication::kApplication()->processEvents();
 	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.mm|MMorph dictionnary files"), this, i18n("Open File..."));
 	if(!url.isEmpty())
@@ -754,7 +739,6 @@ void KGALILEICenterApp::slotShowHistory(void)
 	KApplication::kApplication()->processEvents();
 	if(dlg.exec())
 	{
-		setDocParams(Doc);
 		min=dlg.SBMinId->value() ;
 		max=dlg.SBMaxId->value();
 		createClient(Doc,new KViewHistory(Doc,dlg.CBLang->currentText(),dlg.CBGlobal->isChecked(),pWorkspace,"Show Chromosomes",0,min,max));
@@ -858,9 +842,7 @@ void KGALILEICenterApp::slotRunProgram(void)
 	QString tmpfile;
 	char tmp[100];
 	KViewPrg* o;
-	GDocOptions tmpDocOptions;
 
-	tmpDocOptions = (*DocOptions);
 	KApplication::kApplication()->processEvents();
 	KURL url=KFileDialog::getOpenURL(QString(getpwuid(getuid())->pw_dir)+QString("/galilei/prg"),i18n("*.kprg|KGALILEICenter Programs"), this, i18n("Open File..."));
 	if(url.isEmpty())
@@ -893,7 +875,6 @@ void KGALILEICenterApp::slotRunProgram(void)
 	{
 		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
 	}
-	(*Doc->GetSession()->GetDocOptions())=tmpDocOptions;
 	KIO::NetAccess::removeTempFile( tmpfile );
 }
 
@@ -1063,6 +1044,4 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 	delete Printer;
 	if(Doc)
 		delete Doc;
-	if(DocOptions)
-		delete(DocOptions);
 }
