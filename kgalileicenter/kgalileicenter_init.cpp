@@ -286,17 +286,17 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Grouping Method",GetCurrentGroupingMethod());
 	Config->writeEntry("Group Description Method",GetCurrentGroupCalcMethod());
 	Config->writeEntry("Link Description Method",GetCurrentLinkCalcMethod());
-	
+
 	// Write Config of GA
 	Config->setGroup(IRParams.GetGroupingName());
 	Config->writeEntry("Population Size",IRParams.PopSize);
 	Config->writeEntry("Maximal Generations",IRParams.MaxGen);
 	Config->writeEntry("Step Mode",IRParams.Step);
 	Config->writeEntry("Step Generations",IRParams.StepGen);
-	
+
 	Config->writeEntry("Minimum similarity",IRParams.MinSimLevel);
-	Config->writeEntry("Minimum Common OK",IRParams.MinCommonOK);
-	Config->writeEntry("Minimum Common Diff",IRParams.MinCommonDiff);
+	Config->writeEntry("Agreement Threshold",IRParams.MinCommonOK);
+	Config->writeEntry("Disagreement Threshold",IRParams.MinCommonDiff);
 	Config->writeEntry("Maximum K-Means Interation",IRParams.MaxKMeans);
 	Config->writeEntry("Type of Similarity Criterion",IRParams.SimMeasures);
 	for(IRParams.Measures.Start();!IRParams.Measures.End();IRParams.Measures.Next())
@@ -305,8 +305,8 @@ void KGALILEICenterApp::saveOptions(void)
 	saveOptions("Information Criterion",IRParams.ParamsInfo);
 	saveOptions("Entropy Criterion",IRParams.ParamsEntropy);
 	saveOptions("Likelihood Criterion",IRParams.ParamsLikelihood);
-	saveOptions("Same Feedbacks Criterion",IRParams.ParamsSameFeedbacks);
-	saveOptions("Different Feedbacks Criterion",IRParams.ParamsDiffFeedbacks);
+	saveOptions("Agreement Criterion",IRParams.ParamsSameFeedbacks);
+	saveOptions("Disagreement Criterion",IRParams.ParamsDiffFeedbacks);
 	saveOptions("Social Criterion",IRParams.ParamsSocial);
 	Config->writeEntry("Global Similarity",IRParams.GlobalSim);
 
@@ -517,8 +517,8 @@ void KGALILEICenterApp::readOptions(void)
 	IRParams.Step=Config->readBoolEntry("Step Mode",false);
 	IRParams.StepGen=Config->readNumEntry("Step Generations",0);
 	IRParams.MinSimLevel=Config->readDoubleNumEntry("Minimum similarity",0.1);
-	IRParams.MinCommonOK=Config->readDoubleNumEntry("Minimum Common OK",0.6);
-	IRParams.MinCommonDiff=Config->readDoubleNumEntry("Minimum Common Diff",0.6);
+	IRParams.MinCommonOK=Config->readDoubleNumEntry("Agreement Threshold",0.6);
+	IRParams.MinCommonDiff=Config->readDoubleNumEntry("Disagreement Threshold",0.6);
 	IRParams.MaxKMeans=Config->readNumEntry("Maximum K-Means Interation",60);
 	IRParams.SimMeasures=static_cast<SimCritType>(Config->readNumEntry("Type of Similarity Criterion",sctCrits));
 	for(IRParams.Measures.Start();!IRParams.Measures.End();IRParams.Measures.Next())
@@ -527,8 +527,8 @@ void KGALILEICenterApp::readOptions(void)
 	readOptions("Information Criterion",IRParams.ParamsInfo);
 	readOptions("Entropy Criterion",IRParams.ParamsEntropy);
 	readOptions("Likelihood Criterion",IRParams.ParamsLikelihood);
-	readOptions("Same Feedbacks Criterion",IRParams.ParamsSameFeedbacks);
-	readOptions("Different Feedbacks Criterion",IRParams.ParamsDiffFeedbacks);
+	readOptions("Agreeement Criterion",IRParams.ParamsSameFeedbacks);
+	readOptions("Disagreement Criterion",IRParams.ParamsDiffFeedbacks);
 	readOptions("Social Criterion",IRParams.ParamsSocial);
 	IRParams.GlobalSim=Config->readBoolEntry("Global Similarity",true);
 
