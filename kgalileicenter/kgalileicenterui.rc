@@ -44,6 +44,8 @@
 		</Menu>
 		<Separator/>
 		<Action name="mixIdealGroups"/>
+		<Separator/>
+		<Action name="showGroupsHistory"/>
 	</Menu>
 	<Menu name="Documents"><text>&amp;Documents</text>
 		<Action name="docAlwaysCalc"/>

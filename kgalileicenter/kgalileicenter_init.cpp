@@ -137,6 +137,7 @@ void KGALILEICenterApp::initActions(void)
 	groupingCompareFromFile=new KAction(i18n("From &File"),"fileopen",0,this,SLOT(slotGroupingCompareFromFile()),actionCollection(),"groupingCompareFromFile");
 	groupingCompare=new KAction(i18n("From &Memory"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
 	mixIdealGroups=new KAction(i18n("Load&Mix Ideal Groups"),"exec",0,this,SLOT(slotMixIdealGroups()),actionCollection(),"mixIdealGroups");
+	showGroupsHistory=new KAction(i18n("Show Groups History"),"exec",0,this,SLOT(slotShowHistory()),actionCollection(),"showGroupsHistory");
 
 	// Menu "Document"
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
@@ -635,6 +636,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	wordsClustering->setEnabled(false);
 	groupsCalc->setEnabled(false);
 	mixIdealGroups->setEnabled(false);
+	showGroupsHistory->setEnabled(false);
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);

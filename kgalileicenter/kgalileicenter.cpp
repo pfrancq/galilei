@@ -87,6 +87,8 @@ using namespace GALILEI;
 #include <qlineedit.h>
 #include <qcheckbox.h>
 #include <qradiobutton.h>
+#include <qcombobox.h>
+#include <qspinbox.h>
 
 
 //-----------------------------------------------------------------------------
@@ -131,6 +133,7 @@ using namespace GALILEI;
 #include "kviewr.h"
 #include "kviewchromos.h"
 #include "kviewstorechromos.h"
+#include "kviewhistory.h"
 #include "qconnectmysql.h"
 #include "qsessionprogress.h"
 #include "qlanguages.h"
@@ -138,6 +141,7 @@ using namespace GALILEI;
 #include "qmixidealconfig.h"
 #include "qcreatedatabase.h"
 #include "qfilldatabase.h"
+#include "qhistorydlg.h"
 
 
 
@@ -200,6 +204,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			sessionCompute->setEnabled(true);
 			sessionConnect->setEnabled(false);
 			wordsClustering->setEnabled(true);
+			showGroupsHistory->setEnabled(true);
  			rRunR->setEnabled(true);
 			textFrench->setEnabled(true);
 			textEnglish->setEnabled(true);
@@ -264,6 +269,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	sessionCompute->setEnabled(true);
 	sessionConnect->setEnabled(false);
 	wordsClustering->setEnabled(true);
+	showGroupsHistory->setEnabled(true);
  	rRunR->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
@@ -903,13 +909,38 @@ void KGALILEICenterApp::slotGAShow(void)
 		else
 			strcpy(tmp,"fr");
 		setDocParams(Doc);
-		createClient(Doc,new KViewStoreChromos(Doc,tmp,&IRParams,dlg.cbGlobal->isChecked(),pWorkspace,"Show Chromosoems",0));
+		createClient(Doc,new KViewStoreChromos(Doc,tmp,&IRParams,dlg.cbGlobal->isChecked(),pWorkspace,"Show Chromosomes",0));
 		gaPause->setEnabled(true);
 		gaStart->setEnabled(true);
 		gaStop->setEnabled(true);
 	}
 }
 
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotShowHistory(void)
+{
+	GLangCursor curlang;
+	unsigned int size, min, max;
+
+	curlang=Doc->GetSession()->GetLangsCursor();
+	size=Doc->GetSession()->GetHistorySize();
+
+	QHistoryDlg dlg(this,0,true);
+	dlg.TLMaxHistory->setText(QString("Max Historic ID (<")+QString(itoa(size))+QString(")"));
+	dlg.SBMaxId->setMaxValue(size-1);
+	for (curlang.Start(); !curlang.End(); curlang.Next())
+		dlg.CBLang->insertItem(curlang()->GetCode());
+
+	KApplication::kApplication()->processEvents();
+	if(dlg.exec())
+	{
+		setDocParams(Doc);
+		min=dlg.SBMinId->value() ;
+		max=dlg.SBMaxId->value();
+		createClient(Doc,new KViewHistory(Doc,dlg.CBLang->currentText(),dlg.CBGlobal->isChecked(),pWorkspace,"Show Chromosomes",0,min,max));
+	}
+}
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotViewToolBar(void)

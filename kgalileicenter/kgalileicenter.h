@@ -655,6 +655,11 @@ private slots:
 	void slotGAShow(void);
 
 	/**
+	* Show the chromosomes stored.
+	*/
+	void slotShowHistory(void);
+
+	/**
 	* Toggles the toolbar.
 	*/
 	void slotViewToolBar(void);
@@ -774,6 +779,7 @@ public:
 	KAction* groupingCompare;
 	KAction* groupsEvaluation;
 	KAction* mixIdealGroups;
+	KAction* showGroupsHistory;
 
 	KToggleAction* docAlwaysCalc;
 	KToggleAction* wordsClusteringSave;
