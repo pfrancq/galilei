@@ -143,6 +143,11 @@ class KViewGA : public KView, public RGASignalsReceiver<GInstIR,GChromoIR,GFitne
 	unsigned int StepGen;
 
 	/**
+	* Maximal Number of KMeans.
+	*/
+	unsigned int MaxKMeans;
+
+	/**
 	* Execute GA by steps.
 	*/
 	bool Step;

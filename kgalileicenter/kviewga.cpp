@@ -90,8 +90,8 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* paren
 
 	// Values
 	sscanf(Doc->GetSession()->GetGroupingMethodSettings("Grouping Genetic Algorithms"),
-           "%u %c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-	       &t,&c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
+           "%u %c %u %u %c %u %lf %lf %lf %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	       &t,&c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,&MaxKMeans,
 	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
 	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,
 	       &ParamsOK.P,&ParamsOK.Q,&ParamsOK.Weight,
@@ -154,6 +154,7 @@ KViewGA::KViewGA(KDoc* doc,const char* l,bool global,bool scratch,QWidget* paren
 		Instance->SetCriterionParam("Diff Feedbacks",ParamsDiff.P,ParamsDiff.Q,ParamsDiff.Weight);
 		Instance->SetCriterionParam("Social",ParamsSocial.P,ParamsSocial.Q,ParamsSocial.Weight);
 		Instance->SetMinRatios(MinCommonOK,MinCommonDiff);
+		Instance->SetMaxKMeans(MaxKMeans);
 		Instance->AddReceiver(this);
 		Instance->Init(&g);
 		Instance->SetIdealGroups(&IdealGroups);
