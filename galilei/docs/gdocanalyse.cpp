@@ -283,15 +283,15 @@ BeginExtract:
 	// If len null, return (nothing else to extract)
 	if(!len) return(false);
 
-	// if len=1, extract next word.
-	if(len==1)
+	// if len<4, extract next word.
+	if(len<4)
 	{
 		Letter=false;
 		goto BeginExtract;
 	}
 
-	// If just numbers or special characters, extract next word.
-	if(!Letter)
+	// If just numbers or special characters or it begins with a number, extract next word.
+	if((!Letter)||(isdigit(*begin)))
 		goto BeginExtract;
 
 	// Copy result in word, make it lower case and return true.
@@ -367,6 +367,10 @@ void GALILEI::GDocAnalyse::Analyse(GDocXML* xml,GDoc* doc) throw(GException)
 			}
 		}
 		if(!Lang) return;
+	}
+	else
+	{
+		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
 	}
 
 	// Set the Variable of the document
