@@ -115,7 +115,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GStatsSims(GFactoryStatsCalc* fac) throw(bad_alloc);
+	GStatsSims(GFactoryStatsCalc* fac) throw(std::bad_alloc);
 
 	/**
 	* Configurations were applied from the factory.

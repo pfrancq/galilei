@@ -44,6 +44,7 @@
 #include <profiles/gprofile.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
+using namespace std;
 
 
 

@@ -56,9 +56,9 @@
 #include <gstatsimprofgrp.h>
 #include <groups/gsubjects.h>
 #include <sessions/gsession.h>
-
 using namespace R;
 using namespace GALILEI;
+using namespace std;
 
 
 
