@@ -362,9 +362,6 @@ bool GALILEI::GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRu
 	{
 		ptr=(*rules)();
 
-		// Verify if the minimum root size is Ok.
-		if(ptr->MinRootSize>WordSize) continue;
-
 		// If the word is leng enough, find the potentiel end suffix and put it
 		// in ending. If the ending isn't corresponding to the rule's suffix,
 		// go to the next rule.
@@ -373,6 +370,13 @@ bool GALILEI::GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRu
 		if(strcmp(ending,ptr->OldSuffix)) continue;
 		tmp=*ending;
 		(*ending)=0;
+
+		// Verify if the minimum root size is Ok.
+		if(ptr->MinRootSize>=WordSize)
+		{
+			(*ending)=tmp;
+			continue;
+		}
 
 		// Replace the old suffix by the new one, update len and return 'Next'.
 		strcat(kwd,ptr->NewSuffix);
