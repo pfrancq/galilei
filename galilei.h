@@ -107,51 +107,59 @@ class GURLManager;
 
 
 //-----------------------------------------------------------------------------
-// General constant
-const unsigned cNoRef=0xFFFFFFFF;        // A undefined identificator reference
+/**
+* The cNoRef constant represented an undefined identificator reference.
+*/
+const unsigned cNoRef=0xFFFFFFFF;
 
 
 //-----------------------------------------------------------------------------
 /**
-* Represent different state of a GALILEI object.
+* Types of GALILEI objects.
 */
-enum tObjState{osUnknow   /** Unknow state.*/,
-               osCreated  /** Object was created.*/,
-               osUpToDate /** Object is up to date.*/,
-               osModified /** Object was modified and computation must be update.*/,
-               osUpdated  /** Object is updated and needs to be save.*/};
+enum tObjType{
+	otSession               /** GALILEI Session. */,
+	otDoc                   /** Document. */,
+	otDocs                  /** Documents. */,
+	otUsers                 /** Users.*/,
+	otUser                  /** User.*/,
+	otProfile               /** Profile.*/,
+	otSubProfile            /** SubProfile.*/,
+	otGroups                /** Groups.*/,
+	otGroup                 /** Group.*/};
 
 
 //-----------------------------------------------------------------------------
 /**
-* Represent different judgment on a document.
+* States of a given GALILEI object.
 */
-enum tDocJudgement{djUnknow   /** Unknow judgement.*/,
-                   djOK       /** Document is OK.*/,
-                   djKO       /** Document is KO.*/,
-                   djNav      /** Document is an interesting navigation document.*/,
-                   djOutScope /** Document is out of scope.*/};
+enum tObjState{
+	osUnknow                /** Unknow state.*/,
+	osCreated               /** Object was created.*/,
+	osUpToDate              /** Object is up to date.*/,
+	osModified              /** Object was modified and computation must be update.*/,
+	osUpdated               /** Object is updated and needs to be save.*/};
 
 
 //-----------------------------------------------------------------------------
 /**
-* Represent different methods to describe subprofiles.
+* Judgments over a document.
 */
-enum tSubProfileDesc{sdNothing=0,sdVector=1};
+enum tDocJudgement{
+	djUnknow                /** Unknow judgement.*/,
+	djOK                    /** Document is OK.*/,
+	djKO                    /** Document is KO.*/,
+	djNav                   /** Document is an interesting navigation document.*/,
+	djOutScope              /** Document is out of scope.*/};
 
 
 //-----------------------------------------------------------------------------
 /**
-* Represent different methods to compute the subpeofiles for the vector space.
+* Models used to describe subprofiles.
 */
-enum tVectorMethod{vmNothing=0,vmQueryExpansion=1,vmDirectReweighting=2};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Represent different methods to group the profiles.
-*/
-enum tProfilesGroup{pgNothing=0,pgHeuristicSim=1,pgGA=2};
+enum tSubProfileDesc{
+	sdNothing               /** Unknow Model.*/,
+	sdVector                /** Vector Model.*/};
 
 
 //-----------------------------------------------------------------------------
