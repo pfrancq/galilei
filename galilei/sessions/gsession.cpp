@@ -91,12 +91,12 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
 	GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng,
-	GDocOptions* opt) throw(bad_alloc,GException)
+	GDocOptions* opt, GSessionParams* sessparams) throw(bad_alloc,GException)
 	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(), Fdbks(f+f/2,f/2),
 	 URLMng(umng), ProfilingMng(pmng), GroupingMng(gmng),
-	  DocAnalyse(0),
-	  bGroups(false),bFdbks(false), DocOptions(opt)
+	  DocAnalyse(0), bGroups(false),bFdbks(false),
+	  DocOptions(opt),SessParams(sessparams)
 
 {
 	GLangCursor Langs;
@@ -623,7 +623,7 @@ void GALILEI::GSession::InitProfilesBehaviours(void)
 		{
 			subProfs->InsertPtr(subProfCur());
 		}
-		profBehaviour= new GProfilesBehaviour(subProfs,langs());
+		profBehaviour= new GProfilesBehaviour(subProfs,langs(),SessParams->GetUInt("SameBehaviourMinDocs"), SessParams->GetUInt("DiffBehaviourMinDocs"));
 		ProfilesBehaviours->InsertPtr(profBehaviour);
 	}
 }
@@ -652,7 +652,7 @@ void GALILEI::GSession::ChangeAllProfilesBehaviourState(void) throw(bad_alloc)
 double GALILEI::GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold)
 {
 	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(sub1->GetLang());
-	return profBehaviour->GetAgreementRatio(sub1,sub2, threshold);
+	return profBehaviour->GetAgreementRatio(sub1,sub2);
 }
 
 
@@ -660,7 +660,7 @@ double GALILEI::GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,
 double GALILEI::GSession::GetDisAgreementRatio(GSubProfile* sub1,GSubProfile* sub2,unsigned int threshold)
 {
 	GProfilesBehaviour* profBehaviour = ProfilesBehaviours->GetPtr<const GLang*>(sub1->GetLang());
-	return profBehaviour->GetDisAgreementRatio(sub1,sub2, threshold);
+	return profBehaviour->GetDisAgreementRatio(sub1,sub2);
 }
 
 
@@ -1085,3 +1085,16 @@ GALILEI::GSession::~GSession(void) throw(GException)
 	if(IdealGroups) delete IdealGroups;
 	if(IdealDocs) delete IdealDocs;
 }
+
+
+//-----------------------------------------------------------------------------
+// class GSessionParams
+//-----------------------------------------------------------------------------
+GALILEI::GSessionParams::GSessionParams(void)
+	: GParams("Session Parameters")
+{
+	GParam* p;
+	InsertPtr(p=new GParamUInt("SameBehaviourMinDocs"));
+	InsertPtr(p=new GParamUInt("DiffBehaviourMinDocs"));
+}
+

@@ -72,8 +72,8 @@ GALILEI::GBehaviours::GBehaviours(unsigned int id,unsigned int max) throw(bad_al
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfilesBehaviour::GProfilesBehaviour(RContainer<GSubProfile,unsigned int,false,true>* s,GLang* l) throw(bad_alloc)
-	: Lang(l)
+GALILEI::GProfilesBehaviour::GProfilesBehaviour(RContainer<GSubProfile,unsigned int,false,true>* s,GLang* l, unsigned int minsamedocs, unsigned int mindiffdocs) throw(bad_alloc)
+	: Lang(l), MinSameDocs(minsamedocs), MinDiffDocs(mindiffdocs)
 {
 	GSubProfileCursor Cur1, Cur2;
 	unsigned int i,j, pos;
@@ -114,25 +114,24 @@ void GALILEI::GProfilesBehaviour::AnalyseBehaviour(GBehaviours* behaviours,GSubP
 	nbsame=sub1->GetCommonOKDocs(sub2);
 	nbdiff=sub1->GetCommonDiffDocs(sub2);
 	nbcommon=sub1->GetCommonDocs(sub2);
-	if (nbcommon)
-	{
+	if (nbcommon&&nbcommon>=MinDiffDocs)
 		pcdiff=100.0*(nbdiff/nbcommon);
+	if (nbcommon&&nbcommon>=MinSameDocs)
 		pcsame=100.0*(nbsame/nbcommon);
-	}
-
 	pos=sub2->GetProfile()->GetId();
 	behaviours->InsertPtrAt(new GBehaviour(pos,pcsame, pcdiff,osUpdated), pos);
 }
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GProfilesBehaviour::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2, unsigned int threshold)
+double GALILEI::GProfilesBehaviour::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 {
 	GBehaviours* b;
 	GBehaviour* b2;
 	int i,j,tmp;
 	double okratio, diffratio, nbcommon;
 
+	okratio=diffratio=nbcommon=0.0;
 	i = sub1->GetProfile()->GetId();
 	j = sub2->GetProfile()->GetId();
 
@@ -156,11 +155,10 @@ double GALILEI::GProfilesBehaviour::GetAgreementRatio(GSubProfile* sub1,GSubProf
 		okratio=diffratio=0.0;
 		b2->SetState(osUpToDate);
 		nbcommon=sub1->GetCommonDocs(sub2);
-		if(nbcommon>=threshold)
-		{
+		if (nbcommon&&nbcommon>=MinSameDocs)
 			okratio=100.0*(sub1->GetCommonOKDocs(sub2)/nbcommon);
+		if (nbcommon&&nbcommon>=MinDiffDocs)
 			diffratio=100.0*(sub1->GetCommonDiffDocs(sub2)/nbcommon);
-		}
 		 b2->SetAgreementRatio(okratio);
 		 b2->SetDisAgreementRatio(diffratio);
  		 return (okratio);
@@ -174,13 +172,14 @@ double GALILEI::GProfilesBehaviour::GetAgreementRatio(GSubProfile* sub1,GSubProf
 
 
 //-----------------------------------------------------------------------------
-double GALILEI::GProfilesBehaviour::GetDisAgreementRatio(GSubProfile* sub1,GSubProfile* sub2, unsigned int threshold)
+double GALILEI::GProfilesBehaviour::GetDisAgreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 {
 	GBehaviours* b;
 	GBehaviour* b2;
 	int i,j,tmp;
 	double diffratio, okratio, nbcommon;
 
+	okratio=diffratio=nbcommon=0.0;
 	i = sub1->GetProfile()->GetId();
 	j = sub2->GetProfile()->GetId();
 
@@ -205,11 +204,10 @@ double GALILEI::GProfilesBehaviour::GetDisAgreementRatio(GSubProfile* sub1,GSubP
 		okratio=diffratio=0.0;
 		b2->SetState(osUpToDate);
 		nbcommon=sub1->GetCommonDocs(sub2);
-		if(nbcommon>=threshold)
-		{
+		if (nbcommon&&nbcommon>=MinSameDocs)
 			okratio=100.0*(sub1->GetCommonOKDocs(sub2)/nbcommon);
+		if (nbcommon&&nbcommon>=MinDiffDocs)
 			diffratio=100.0*(sub1->GetCommonDiffDocs(sub2)/nbcommon);
-		}
 		 b2->SetAgreementRatio(okratio);
 		 b2->SetDisAgreementRatio(diffratio);
  		 return (diffratio);

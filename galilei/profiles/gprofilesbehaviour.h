@@ -80,13 +80,15 @@ class GBehaviour
 	tObjState State;
 
 
+
+
 public:
 
 	/**
 	* construtor
 	*/
-	GBehaviour(unsigned int id,double agree, double disagree,tObjState state = osUpToDate) : Id(id), AgreementRatio(agree), DisAgreementRatio(disagree),State(state)  {}
-
+	GBehaviour(unsigned int id,double agree, double disagree,tObjState state = osUpToDate) : Id(id), AgreementRatio(agree),
+DisAgreementRatio(disagree),State(state)  {}
 	/**
 	* comparison function
 	*/
@@ -165,6 +167,7 @@ public:
 	int Compare(const GBehaviours& b) const {return(Id-b.Id);}
 	int Compare(const unsigned int id) const {return(Id-id);}
 
+
 	/**
 	* destructor
 	*/
@@ -206,6 +209,16 @@ class GProfilesBehaviour
 	*/
 	unsigned int NbModified;
 
+	/**
+	* minimum of documents to tale the same behaviour into account
+	*/
+	unsigned int MinSameDocs;
+
+	/**
+	* minimum of documents to tale the diff behaviour into account
+	*/
+	unsigned int MinDiffDocs;
+
 public:
 
 	/**
@@ -214,7 +227,7 @@ public:
 	* @param global         Global approach.
 	* @param lang           Lang of the profilesSim
 	*/
-	GProfilesBehaviour(R::RContainer<GSubProfile,unsigned int,false,true>* s,GLang* lang=0) throw(bad_alloc);
+	GProfilesBehaviour(R::RContainer<GSubProfile,unsigned int,false,true>* s,GLang* lang, unsigned int minsamedocs, unsigned int mindiffdocs) throw(bad_alloc);
 
 	/**
 	* Analyse the behaviourof the two subprofiles and insert it in behaviours if necessary.
@@ -226,10 +239,9 @@ public:
 	* language.
 	* @param s1             Pointer to the first subprofile.
 	* @param s2             Pointer to second subprofile.
-	* @param threshold       minimum of common documents
 	* @return double.
 	*/
-	double GetAgreementRatio(GSubProfile* s1,GSubProfile* s2,unsigned int threshold=0);
+	double GetAgreementRatio(GSubProfile* s1,GSubProfile* s2);
 
 	/**
 	* Get the disagreement between two profiles, i.e. the subprofiles of a same
@@ -239,7 +251,7 @@ public:
 	* @param threshold       minimum of common documents
 	* @return double.
 	*/
-	double GetDisAgreementRatio(GSubProfile* s1,GSubProfile* s2,unsigned int threshold=0);
+	double GetDisAgreementRatio(GSubProfile* s1,GSubProfile* s2);
 
 	/**
 	* return the state of the behaviour between two profiles

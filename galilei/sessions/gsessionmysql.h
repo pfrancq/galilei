@@ -90,7 +90,7 @@ public:
 	*/
 	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
 		GURLManager* umng,GProfileCalcManager* pmng, GGroupingManager* gmng,
-		GDocOptions* opt) throw(bad_alloc,GException,R::RMySQLError);
+		GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException,R::RMySQLError);
 
 	/**
 	* Count the number of rows of a table.

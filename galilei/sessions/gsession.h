@@ -52,6 +52,7 @@
 #include <groups/ggroupsmng.h>
 #include <groups/gsubjecttree.h>
 #include <docs/glinkcalc.h>
+#include <sessions/gparams.h>
 
 
 
@@ -186,6 +187,11 @@ protected:
 	*/
 	R::RRandom* Random;
 
+	/**
+	* Session Parameters
+	*/
+	GSessionParams* SessParams;
+
 public:
 
 	/**
@@ -201,7 +207,7 @@ public:
 	*/
 	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
 		GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng,
-		GDocOptions* opt) throw(bad_alloc,GException);
+		GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException);
 
 	/**
 	* Get the documents' analyser.
@@ -771,6 +777,29 @@ public:
 	* Destructor.
 	*/
 	virtual ~GSession(void) throw(GException);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GSessionParams represents  the parameter used to create the session.
+* @short GSession Parameters.
+*/
+class GSessionParams : public GParams
+{
+
+public:
+
+	/**
+	* constuctor
+	*/
+	GSessionParams(void);
+
+	/**
+	* Destructor
+	*/
+	~GSessionParams(void) {};
+
 };
 
 
