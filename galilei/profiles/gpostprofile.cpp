@@ -6,7 +6,7 @@
 
 	Generic Post-Profiling Computing Method - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel(dwartel@ulb.ac.be).
@@ -88,27 +88,27 @@ GFactoryPostProfile::GFactoryPostProfile(GPostProfileManager* mng,const char* n,
 
 
 //------------------------------------------------------------------------------
-int GFactoryPostProfile::Compare(const GFactoryPostProfile& f) const 
+int GFactoryPostProfile::Compare(const GFactoryPostProfile& f) const
 {
 	int a=GetUInt("Level")-f.GetUInt("Level");
-	if(!a) 
+	if(!a)
 		a=Name.Compare(f.Name);
 	return(a);
 }
 
 
 //------------------------------------------------------------------------------
-int GFactoryPostProfile::Compare(const GFactoryPostProfile* f) const 
+int GFactoryPostProfile::Compare(const GFactoryPostProfile* f) const
 {
 	int a=GetUInt("Level")-f->GetUInt("Level");
-	if(!a) 
+	if(!a)
 		a=Name.Compare(f->Name);
 	return(a);
 }
 
 
 //------------------------------------------------------------------------------
-int GFactoryPostProfile::Compare(unsigned int level) const 
+int GFactoryPostProfile::Compare(unsigned int level) const
 {
 	return(GetUInt("Level")-level);
 }
