@@ -62,7 +62,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterTXT::GFilterTXT(GURLManager* mng,bool b)
+GFilterTXT::GFilterTXT(GURLManager* mng,bool /*b*/)
 	: GFilter(mng,"TXT Filter","text/plain","$Revision$"), Buffer(0)//,
 		//BlankLines(b)
 {

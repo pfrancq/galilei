@@ -46,7 +46,6 @@
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofdoc.h>
-#include <postgroups/gpointofview.h>
 using namespace GALILEI;
 using namespace R;
 
