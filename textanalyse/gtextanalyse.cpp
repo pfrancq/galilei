@@ -42,7 +42,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcursor.h>
-using namespace RStd;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -61,8 +61,6 @@ using namespace RStd;
 #include <profiles/gprofdoc.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
-using namespace RXML;
-using namespace RTimeDate;
 
 
 //-----------------------------------------------------------------------------
@@ -98,18 +96,18 @@ public:
 		{return(strcmp(Word,word));}
 
 	static char HashIndex(const WordWeight* w)
-		{return(RStd::RString::HashIndex(w->Word));}
+		{return(RString::HashIndex(w->Word));}
 	static char HashIndex(const WordWeight& w)
-		{return(RStd::RString::HashIndex(w.Word));}
+		{return(RString::HashIndex(w.Word));}
 	static char HashIndex(const char* word)
-		{return(RStd::RString::HashIndex(word));}
+		{return(RString::HashIndex(word));}
 
 	static char HashIndex2(const WordWeight* w)
-		{return(RStd::RString::HashIndex2(w->Word));}
+		{return(RString::HashIndex2(w->Word));}
 	static char HashIndex2(const WordWeight& w)
-		{return(RStd::RString::HashIndex2(w.Word));}
+		{return(RString::HashIndex2(w.Word));}
 	static char HashIndex2(const char* word)
-		{return(RStd::RString::HashIndex2(word));}
+		{return(RString::HashIndex2(word));}
 
 	~WordWeight(void);
 };
