@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 {
 	KAboutData aboutData( "kgalileicenter", I18N_NOOP("KGALILEICenter"),
 		VERSION, description, KAboutData::License_GPL,
-		"(c) 1998-2002, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://www.ulb.ac.be/polytech/cfao", "pfrancq@ulb.ac.be");
+		"(c) 1998-2002, UniversitÃ© Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Project Manager"), "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Nicolas Kumps",I18N_NOOP("Researcher"), "nkumps@ulb.ac.be");
 	aboutData.addAuthor("Marjorie Paternostre",I18N_NOOP("Researcher"), "Marjorie.Paternostre@ulb.ac.be");
