@@ -288,6 +288,14 @@ double GALILEI::GGroupIR::ComputeAvgSim(GObjIR* obj)
 
 
 //---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeRelSim(GObjIR* obj)
+{
+	if(!Relevant) return(0.0);
+	return(Owner->Instance->GetSim(obj->GetSubProfile(),Relevant->GetSubProfile()));
+}
+
+
+//---------------------------------------------------------------------------
 double GALILEI::GGroupIR::ComputeMaxSim(GGroupIR* grp)
 {
 	unsigned int i;

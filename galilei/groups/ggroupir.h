@@ -181,11 +181,20 @@ public:
 	double ComputeMinSim(GObjIR* obj);
 
 	/**
-	* Compute the average of the similarities of a given profile to the one of the group.
+	* Compute the average of the similarities of a given profile to the one of the
+	* group.
 	* @param obj            Profile used as reference.
 	* @returns result.
 	*/
 	double ComputeAvgSim(GObjIR* obj);
+
+	/**
+	* Compute the similarities of a given profile to the relevant profile of the
+	* group.
+	* @param obj            Profile used as reference.
+	* @returns result.
+	*/
+	double ComputeRelSim(GObjIR* obj);
 
 	/**
 	* Compute the maximum similarity between subprofiles of two groups.

@@ -567,13 +567,6 @@ void GALILEI::GChromoIR::EvaluateSim(void)
 				break;
 		}
 	}
-	// Hardcoded Polynomial correlation
-//	EvaluateSim(stAvgSim);
-//	EvaluateSim(stWOverB);
-//	EvaluateSim(stSimWB);
-//	CritSim =  (-1.796606040414872)+(2.281376990510303*CritSimAvgSim);
-//	CritSim += (0.1229260457129461*CritSimWOverB)+(0.3908263843188372*CritSimSimWB);
-//	CritSim += (CritSimWOverB-12.56794383250004)*((CritSimSimWB-4.23746030799999)*0.03116537691826378);
 }
 
 
@@ -711,6 +704,9 @@ void GALILEI::GChromoIR::ReAllocate(void) throw(RGA::eGA)
 	GSubProfile* sub;
 	GGroupIR* grp;
 	GObjIR** Cur;
+	bool FindAgreement;             // Find group with Agreement constraint respected?
+	bool CanIn;                     // Can the object goes in the current group
+	bool Agreement;                 // Agreement constraint respected with current group?
 
 	// Put the prototypes in Protos
 	Protos.Clear();
@@ -742,54 +738,60 @@ void GALILEI::GChromoIR::ReAllocate(void) throw(RGA::eGA)
 		// Find the subprofile
 		sub=(*Cur)->GetSubProfile();
 
-		// Parse all the group to find all the group corresponding to the hard constraint
+		// Go through each groups
 		Grp.Set(Used);
-		for(Grp.Start(),maxsim=-1.0,grp=0;!Grp.End();Grp.Next())
+		for(Grp.Start(),FindAgreement=false,maxsim=-1.0,grp=0;!Grp.End();Grp.Next())
 		{
-			if(!Grp()->CanInsert(*Cur)) continue;
-			sim=Instance->GetSim(sub,Grp()->Relevant->GetSubProfile());
+			// Compute Maximum agreement ratio of the current profile with the profiles of
+			// the group.
 			ratio=Grp()->GetMaxRatioSame(*Cur);
-			if(ratio>=Instance->Params->MinCommonOK)
+
+			// If all the hard constraints are not respected -> skip the group.
+			// Rem: Agreement constraint is the more importante one.
+			CanIn=Grp()->CanInsert(*Cur);
+			Agreement=(ratio>=Instance->Params->MinCommonOK);
+			if((!Agreement)&&(!CanIn)) continue;
+
+			// Compute similarity with the relevant profile of the group.
+			sim=Grp()->ComputeRelSim(*Cur);
+
+			// Test Agreement constraint.
+			if(Agreement)
 			{
-				// Take the group with the highest similarity
+				// If agreement constraint respected
+				if(!FindAgreement)
+				{
+					FindAgreement=true;
+					maxsim=-1.0;
+				}
+
+				// Take the group with the highest sim.
 				if(sim>maxsim)
- 				{
- 					maxsim=sim;
- 					grp=Grp();
-	 			}
+				{
+					maxsim=sim;
+					grp=Grp();
+				}
 			}
-	 	}
-
-		// If a group was found -> Insert the subprofile in it.
-		if(grp)
-		{
-			 grp->Insert(*Cur);
-			 continue;
-		}
-
-		// Go throught the prototypes to find the most similar in a valid group.
-		for(i=Protos.NbPtr+1,ptr=Protos.Tab,maxsim=-1.0;--i;ptr++)
-		{
-			if(!GetGroup(*ptr)->CanInsert(*Cur)) continue;
-			sim=Instance->GetSim((*ptr)->GetSubProfile(),sub);
-			if(sim>maxsim)
+			else
 			{
-				maxsim=sim;
-				grp=GetGroup(*ptr);
+				if((sim>maxsim)&&(!FindAgreement)&&(CanIn))
+				{
+					maxsim=sim;
+					grp=Grp();
+				}
 			}
 		}
 
-		// If a group was found -> Insert the subprofile in it.
-		if(grp)
+		// If no group find -> Create a new group and make the current subprofile the
+		// prototype of it.
+		if(!grp)
 		{
-			 grp->Insert(*Cur);
-			 continue;
+			grp=ReserveGroup();
+			grp->Relevant=(*Cur);
 		}
 
-		// Create a new group and make the current subprofile the prototype of it.
-		grp=ReserveGroup();
+		// Insert the subprofile in the current group.
 		grp->Insert(*Cur);
-		grp->Relevant=(*Cur);
 	}
 }
 

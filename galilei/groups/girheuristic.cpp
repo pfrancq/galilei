@@ -77,34 +77,52 @@ GGroupIR* GALILEI::GIRHeuristic::FindGroup(void) throw(RGA::eGA)
 	double maxratio;
 	double sim;
 	GGroupIRCursor Cur;
+	bool CanIn;                     // Can the object goes in the current group
+	bool Agreement;                 // Agreement constraint respected with current group?
 
+	// Go through each groups
 	Cur.Set(Groups->Used);
 	for(Cur.Start(),maxsim=maxratio=-1.0,grp=0;!Cur.End();Cur.Next())
 	{
-		if(!Cur()->CanInsert(CurObj)) continue;
-		sim=Cur()->ComputeAvgSim(CurObj);
+		// Compute Maximum agreement ratio of the current profile with the profiles of
+		// the group.
 		ratio=Cur()->GetMaxRatioSame(CurObj);
-		if(ratio>=Groups->Instance->Params->MinCommonOK)
+
+		// If all the hard constraints are not respected -> skip the group.
+		// Rem: Agreement constraint is the more importante one.
+		CanIn=Cur()->CanInsert(CurObj);
+		Agreement=(ratio>=Groups->Instance->Params->MinCommonOK);
+		if((!Agreement)&&(!CanIn)) continue;
+
+		// Compute average similarity with the profiles already in the group.
+		sim=Cur()->ComputeAvgSim(CurObj);
+
+		// Test Agreement constraint.
+		if(Agreement)
 		{
-			// Take the group with the highest ratio
+			// If agreement constraint respected -> take the group with the highest ratio.
 			if(ratio>maxratio)
 			{
 				maxratio=ratio;
 				grp=Cur();
-				maxsim=2.0;
+				maxsim=2.0; // Never overwrite for "normal" groups.
 			}
 		}
 		else
 		{
-			if(sim>maxsim)
+			if((sim>maxsim)&&CanIn)
 			{
 				maxsim=sim;
 				grp=Cur();
 			}
 		}
 	}
+
+	// If no group find -> Reserve another one.
 	if(!grp)
 		grp=Groups->ReserveGroup();
+
+	// Return the group.
 	return(grp);
 }
 

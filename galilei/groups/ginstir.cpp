@@ -169,14 +169,14 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 		{
 			tmp=Cur1()->GetSubProfile()->GetCommonDocs(Cur2()->GetSubProfile());
 			nb=Cur1()->GetSubProfile()->GetCommonOKDocs(Cur2()->GetSubProfile());
-			if(nb)
+			if((nb>0.0)&&(tmp>10.0))
 			{
-				SameFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
+				SameFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetSubProfile()->GetId(),Cur2()->GetSubProfile()->GetId(),nb/tmp));
 			}
 			nb=Cur1()->GetSubProfile()->GetCommonDiffDocs(Cur2()->GetSubProfile());
-			if(nb)
+			if((nb>0.0)&&(tmp>10.0))
 			{
-				DiffFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
+				DiffFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetSubProfile()->GetId(),Cur2()->GetSubProfile()->GetId(),nb/tmp));
 			}
 		}
 	}
@@ -231,14 +231,14 @@ GALILEI::GInstIR::GInstIR(GSession* ses,GLang* l,GGroups* grps,RGA::RObjs<GObjIR
 		{
 			tmp=Cur1()->GetSubProfile()->GetCommonDocs(Cur2()->GetSubProfile());
 			nb=Cur1()->GetSubProfile()->GetCommonOKDocs(Cur2()->GetSubProfile());
-			if(nb)
+			if((nb>0.0)&&(tmp>5.0))
 			{
-				SameFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
+				SameFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetSubProfile()->GetId(),Cur2()->GetSubProfile()->GetId(),nb/tmp));
 			}
 			nb=Cur1()->GetSubProfile()->GetCommonDiffDocs(Cur2()->GetSubProfile());
-			if(nb)
+			if((nb>0.0)&&(tmp>5.0))
 			{
-				DiffFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetId(),Cur2()->GetId(),nb/tmp));
+				DiffFeedbacks.InsertPtr(sdocs=new GSubProfilesSameDocs(Cur1()->GetSubProfile()->GetId(),Cur2()->GetSubProfile()->GetId(),nb/tmp));
 			}
 		}
 	}
