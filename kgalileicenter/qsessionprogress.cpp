@@ -116,7 +116,6 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd)
 		txtRem->setText("Loading Documents ...");
 		KApplication::kApplication()->processEvents();
 		Session->InitDocs();
-		Session->LoadIdealDocument();
 	}
 
 	// Look if groups must be loaded
