@@ -44,6 +44,8 @@
 #include <profiles/gprofdoc.h>
 #include <profiles/gsubprofilevector.h>
 #include <infos/gweightinfo.h>
+#include <sessions/gobjref.h>
+#include <sessions/gsession.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
@@ -226,13 +228,13 @@ void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_all
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(GException)
+void GProfileCalcFeedback::Compute(GSubProfileRef subprofile) throw(GException)
 {
 	// Compute the global vectors.
-	ComputeGlobal(subprofile);
+	ComputeGlobal(dynamic_cast<GSubProfileVector*>(Session->GetSubProfile(subprofile.GetId())));
 
 	// Compute the vector for each subprofile
-	ComputeSubProfile((GSubProfileVector*)subprofile);
+	ComputeSubProfile(dynamic_cast<GSubProfileVector*>(Session->GetSubProfile(subprofile.GetId())));
 }
 
 
