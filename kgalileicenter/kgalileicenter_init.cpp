@@ -516,7 +516,7 @@ void KGALILEICenterApp::readOptions(void)
 	SupKMeansParams.DoubleKMeans=Config->readBoolEntry("DoubleKMeans",false);
 	SupKMeansParams.SameGroupRate=Config->readNumEntry("SameGroupRate",100);
 	SupKMeansParams.NbSamples=Config->readNumEntry("NbSamples",10);
-	SupKMeansParams.InitMode=Config->readNumEntry("InitMode",GSupKMeansParams::Relevant);
+	SupKMeansParams.InitMode=static_cast<GSupKMeansParams::Initial>(Config->readNumEntry("InitMode",GSupKMeansParams::Relevant));
 	SupKMeansParams.Debug=Config->readBoolEntry("Debug",false);
 
 	// Read Config of GroupCalcRelevant
