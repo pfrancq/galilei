@@ -455,7 +455,10 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 				Social=false;
 				if(atoi(profiles[2])==1) Social=true;
 				InsertProfile(prof=new GProfile(usr,profileid,profiles[1],Social,GetNbLangs()));
-				prof->SetSubject(s);
+				#if GALILEITEST
+					if(s)
+						prof->SetSubject(s);
+				#endif
 				sprintf(sSql,"SELECT subprofileid,langid,attached,groupid, state, calculated FROM subprofiles WHERE profileid=%u",profileid);
 				RQuery subprofil (this,sSql);
 				for(subprofil.Start();!subprofil.End();subprofil.Next())
@@ -468,13 +471,13 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 						grp=0;
 					InsertSubProfile(sub=new GSubProfileVector(prof,subid,lang,grp,subprofil[2], (static_cast<tObjState>(atoi(subprofil[4]))), subprofil[5]));
 					#if GALILEITEST
-						if(sub->GetLang()==s->GetLang())
+						if((s)&&(sub->GetLang()==s->GetLang()))
 						{
 							sub->SetSubject(s);
 							s->InsertSubProfile(sub);
 						}
 					#endif
-				}   
+				}
 			}
 		}
 
