@@ -349,6 +349,7 @@ void GALILEI::GFilterHTML::AnalyseLink(char* params,char* block,bool ins)
 {
 	RXMLTag* metalink;
 
+
 	metalink = AnalyseLinkParams(params);
 	if(metalink)
 	{
@@ -443,7 +444,6 @@ void GALILEI::GFilterHTML::AnalyseBase(char* params)
 			ptr++;
 			params=ptr;
 	}
-	cout<< "la base : "<<Base<<endl;
 }
 
 
@@ -880,7 +880,6 @@ beginread:
 		if(bParams)
 		{
 			Params=Pos;
-			//cout << "les parametres: "<< Params<<endl;  //+++ val
 			//cerr << " les parametres "<< Params<<"   "<< *Params <<endl;
 			while((*Pos)&&((*Pos)!='>')&&(!(((*Pos)=='/')&&((*(Pos+1))=='>'))))
 			{
@@ -907,6 +906,7 @@ beginread:
 		TagLen++;
 		Pos++;
 	}
+
 }
 
 
