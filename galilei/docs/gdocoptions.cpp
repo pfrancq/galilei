@@ -51,7 +51,7 @@ using namespace GALILEI;
 GALILEI::GDocOptions::GDocOptions(void)
 	: StaticLang(false), MinStopWords(0.1), MinWordSize(4), MinStemSize(3),
 	  MinOccur(1), MinDocs(5), MaxDocs(300), MinOccurCluster(2), NbIteration(2),
-	  NonLetterWords(false), UseLink(false), UseExternalLink(false), LimitLink(false), NbLinks(200)
+	  NonLetterWords(false), UseLink(false), UseExternalLink(false), UseRedirection(false)
 {
 }
 
@@ -63,7 +63,7 @@ GALILEI::GDocOptions::GDocOptions(const GDocOptions& opt)
 	  MinStemSize(opt.MinStemSize), MinOccur(opt.MinOccur), MinDocs(opt.MinDocs),
 	  MaxDocs(opt.MaxDocs),MinOccurCluster(opt.MinOccurCluster), NbIteration(opt.NbIteration),
 	  NonLetterWords(opt.NonLetterWords), UseLink(opt.UseLink), UseExternalLink(opt.UseExternalLink),
-	  LimitLink(opt.LimitLink), NbLinks(opt.NbLinks)
+	  UseRedirection(opt.UseRedirection)
 {
 }
 
@@ -74,7 +74,7 @@ GALILEI::GDocOptions::GDocOptions(const GDocOptions* opt)
 	  MinStemSize(opt->MinStemSize), MinOccur(opt->MinOccur), MinDocs(opt->MinDocs),
 	  MaxDocs(opt->MaxDocs),MinOccurCluster(opt->MinOccurCluster), NbIteration(opt->NbIteration),
 	  NonLetterWords(opt->NonLetterWords), UseLink(opt->UseLink), UseExternalLink(opt->UseExternalLink),
-	  LimitLink(opt->LimitLink), NbLinks(opt->NbLinks)
+	  UseRedirection(opt->UseRedirection)
 {
 }
 
@@ -94,7 +94,6 @@ GDocOptions& GALILEI::GDocOptions::operator=(const GDocOptions& opt)
 	NonLetterWords=opt.NonLetterWords;
 	UseLink=opt.UseLink;
 	UseExternalLink=opt.UseExternalLink;
-	LimitLink=opt.LimitLink;
-	NbLinks=opt.NbLinks;
+	UseRedirection=opt.UseRedirection;
 	return(*this);
 }

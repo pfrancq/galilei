@@ -63,8 +63,10 @@ GALILEI::GLinkCalcItAlgoParams::GLinkCalcItAlgoParams(void)
 const char* GALILEI::GLinkCalcItAlgoParams::GetSettings(void)
 {
 	static char tmp[300];
+	char c;
 
-	sprintf(tmp,"%u %u",NbIteration,NbResults);
+	if(LimitLink) c='1'; else c='0';
+	sprintf(tmp,"%u %u %c %u",NbIteration,NbResults,c,NbLinks);
 	return(tmp);
 }
 
@@ -72,8 +74,12 @@ const char* GALILEI::GLinkCalcItAlgoParams::GetSettings(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GLinkCalcItAlgoParams::SetSettings(const char* s)
 {
+	char c;
+
 	if(!(*s)) return;
-	sscanf(s,"%u %u",&NbIteration,&NbResults);
+	sscanf(s,"%u %u %c %u",&NbIteration,&NbResults,&c,&NbLinks);
+	if(c=='1') LimitLink=true; else LimitLink=false;
+
 }
 
 

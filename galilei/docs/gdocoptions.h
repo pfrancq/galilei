@@ -127,14 +127,9 @@ public:
 	bool UseExternalLink;
 
 	/**
-	* Determine if a maximum number of link to an URL is used or not.
+	* Determine if redirection must be used.
 	*/
-	bool LimitLink;
-
-	/**
-	* Determine the maximum number of link to an URL.
-	*/
-	unsigned int NbLinks;
+	bool UseRedirection;
 
 	/**
 	* Default Constructor.

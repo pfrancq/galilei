@@ -392,6 +392,14 @@ public:
 	void InsertLink(const GDoc* doc) throw(bad_alloc);
 
 	/**
+	* Add a new link to the document
+	* @params doc           The Document representing the link to be inserted.
+	* @param format         The mime type of the Link.
+	* @param type           The type of the link.
+	*/
+	void InsertLink(const GDoc* doc,char* format,char* type) throw(bad_alloc);
+
+	/**
 	* Get a cursor on the Links of the document.
 	* @return GLinkCursor.
 	*/

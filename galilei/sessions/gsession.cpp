@@ -58,6 +58,7 @@ using namespace RIO;
 #include <docs/gdocprofsims.h>
 #include <docs/gwordsclustering.h>
 #include <docs/glinkcalc.h>
+#include <docs/glink.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -397,19 +398,6 @@ void GALILEI::GSession::AnalyseDocs(GSlot* rec,bool modified) throw(GException)
 	GDocCursor Docs=GetDocsCursor();
 	RContainer<GDoc,unsigned int,false,true>* tmpDocs = new RContainer<GDoc,unsigned int,false,true>(5,2);
 
-//	cout <<"------------------------------"<<endl;
-//  for(Docs.Start();!Docs.End();Docs.Next())
-//	{
-//		cout<< "id du doc : "<< Docs()->GetId()<<" id docRef "<<GetDoc(Docs()->GetURL())->GetId() <<" url : "<<Docs()->GetURL()<<endl;
-//		GSubjectCursor Scur=Docs()->GetSubjectCursor();
-//		cout << "Subjects : " << endl;
-//		for (Scur.Start();!Scur.End();Scur.Next())
-//		{
-//			cout<< Scur()->GetName() <<endl;
-//		}
-//	}
-//	cout <<"------------------------------"<<endl;
-//	
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		if(modified&&(Docs()->GetState()==osUpToDate)) continue;

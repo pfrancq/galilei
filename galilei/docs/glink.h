@@ -69,6 +69,16 @@ private:
 	*/
 	unsigned int Occurs;
 
+	/**
+	* The mimetype of the link.
+	*/
+	RStd::RString Format;
+
+	/**
+	* The type of the link.
+	*/
+	RStd::RString  Type;
+
 public :
 
 	/**
@@ -129,6 +139,30 @@ public :
 	* @return RString     the url of the link.
 	*/
 	RStd::RString GetUrl(void) {return DocTO->GetURL();};
+
+	/**
+	* Get the format of the link.
+	* @return RString     the format of the link.
+	*/
+	RStd::RString GetFormat(void) {return Format;};
+
+	/**
+	* Get the type of the link.
+	* @return RString     the type of the link.
+	*/
+	RStd::RString GetType(void) {return Type;};
+
+	/**
+	* Set the format of the link.
+	* @param format       The format to assign to the link.
+	*/
+	void SetFormat(char* format);
+
+	/**
+	* Set the type of the link.
+	* @param type         The type to assign to the link.
+	*/
+	void SetType(char* type);
 
 	/**
 	* Get the doc pointed by the link

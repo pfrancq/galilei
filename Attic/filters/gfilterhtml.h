@@ -140,6 +140,11 @@ class GFilterHTML: public GFilter
 	*/
 	unsigned int MinOpenLevel;
 
+	/**
+	* Base of the document for URL of the links.
+	*/
+	char* Base;
+
 public:
 
 	/**
@@ -185,12 +190,11 @@ protected:
 	*/
 	void AnalyseLink(char* params,char* content);
 
-//  /**
-//	* Function who analyze the tag "LINKS" of the html document
-//	* @param params        the parameters of the BASE tag
-//	* @param metaData      XML Tag representing the meta data of the document
-//	*/
-//	void AnalyseBase(char* params,RXMLTag* metaData);
+  /**
+	* Function who analyze the tag "LINKS" of the html document
+	* @param params        the parameters of the BASE tag
+	*/
+	void AnalyseBase(char* params);
 	
 	/**
 	* Function who reconstruct the partial url of a link

@@ -94,7 +94,7 @@ public:
 //---------------------------------------------------------------------------
 GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 	: GFilter(mng,"HTML Filter","text/html","$Revision$"), Tags(0),
-	 Buffer(0), Chars(50,5)
+	 Buffer(0), Chars(50,5),Base(0)
 {
 	AddMIME(mng,"text/html");
 	InitCharContainer();
@@ -103,6 +103,7 @@ GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 	Tags->InsertPtr(new Tag("SCRIPT","",Tag::tSCRIPT,true,8,false));
 	Tags->InsertPtr(new Tag("META","",Tag::tMETA,true,8,true));
 	Tags->InsertPtr(new Tag("TITLE","docxml:title",Tag::tTITLE,true,8,true));
+	Tags->InsertPtr(new Tag("BASE","",Tag::tBASE,true,8,true));
 	Tags->InsertPtr(new Tag("BODY","",Tag::tBODY,false,8,false));
 	Tags->InsertPtr(new Tag("H1","docxml:h1",Tag::tH1,false,1,true));
 	Tags->InsertPtr(new Tag("H2","docxml:h2",Tag::tH2,false,2,true));
@@ -115,7 +116,7 @@ GALILEI::GFilterHTML::GFilterHTML(GURLManager* mng)
 //	Tags->InsertPtr(new Tag("LI","docxml:p",Tag::tTD,false,7,true));
 	Tags->InsertPtr(new Tag("DIV","docxml:p",Tag::tP,false,7,true));
 	Tags->InsertPtr(new Tag("A","",Tag::tLINK,false,8,true));
-	Tags->InsertPtr(new Tag("BASE","",Tag::tBASE,false,8,true));
+
 	
 }
 
@@ -127,6 +128,7 @@ bool GALILEI::GFilterHTML::Analyze(GDocXML* doc)
 	struct stat statbuf;
 
 	// Initialisation
+	Base=0;
 	Doc=doc;
 	accessmode=O_RDONLY;
 	#ifndef _BSD_SOURCE
@@ -264,7 +266,7 @@ void GALILEI::GFilterHTML::InitCharContainer(void)
 void GALILEI::GFilterHTML::AnalyseBody(void)
 {
 	RXMLTag* content;
-	RXMLTag* links;        //++ val
+	RXMLTag* links;        
 	RXMLTag* act;
 	RXMLTag* Open[9];    // Remember all tag open.
 	RXMLTag** ptr;
@@ -404,7 +406,7 @@ void GALILEI::GFilterHTML::AnalyseHeader(void)
 				ReadMetaTag(OldParams,meta);
 				break;
 			case Tag::tBASE:
-//				AnalyseBase(OldParams,meta);
+				AnalyseBase(OldParams);
 				break;
 			default:
 				break;
@@ -422,47 +424,55 @@ void GALILEI::GFilterHTML::AnalyseHeader(void)
 	}
 }
 
-////---------------------------------------------------------------------------
-//void GALILEI::GFilterHTML::AnalyseBase(char* params,meta)
-//{
-//	char* ptr;
-//	char delimiter;
-//	char* content;
-//
-//	if (!params) return;
-//	ptr= params;
-//
-//		// Read the name of the tag
-//	while ((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
-//		(*(ptr++))=RString::ToUpper(*ptr);
-//	bSpaces=isspace(*ptr);
-//	(*(ptr++))=0;
-//	if (bSpaces)
-//	{
-//		while((*ptr)&&((*ptr)!='='))
-//			ptr++;
-//		ptr++;    // Skip '=';
-//	}
-//	if((!(*ptr))||(strcmp(params,"HREF"))) return ;      //!!!
-//
-//	// Skip spaces and read the delimiter which must be a ' or a "
-//	while((*ptr)&&(isspace(*ptr)))
-//		ptr++;
-//	delimiter=(*(ptr++));
-//	if((delimiter!='\'')&&(delimiter!='"')) return;
-//
-//   // Read the content of HREF or CLASS
-//	content=ptr;
-//	while((*ptr)&&((*ptr)!=delimiter))
-//		ptr++ ;
-//
-//	(*(ptr++))=0;  // Skip the second delimiter
-//
-//	 if ((!strcmp(params,"HREF"))
-//	 {
-//		 Doc->AddBase
-//	 }
-//}
+
+//---------------------------------------------------------------------------
+void GALILEI::GFilterHTML::AnalyseBase(char* params)
+{
+	char* ptr;
+	char delimiter;
+	char* content;
+	bool bSpaces;
+
+	if (!params) return;
+	ptr= params;
+
+	while (*ptr){
+		// Read the name of the tag
+		while ((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
+			(*(ptr++))=RString::ToUpper(*ptr);
+		bSpaces=isspace(*ptr);
+		(*(ptr++))=0;
+		if (bSpaces)
+		{
+			while((*ptr)&&((*ptr)!='='))
+				ptr++;
+			ptr++;    // Skip '=';
+		}
+		if((!(*ptr))||(strcmp(params,"HREF"))) {cout <<"another tag"<<endl;}
+
+		// Skip spaces and read the delimiter which must be a ' or a "
+		while((*ptr)&&(isspace(*ptr)))
+			ptr++;
+		delimiter=(*(ptr++));
+		if((delimiter!='\'')&&(delimiter!='"')) return;
+
+   // Read the content of HREF or CLASS
+		content=ptr;
+		while((*ptr)&&((*ptr)!=delimiter))
+			ptr++ ;
+
+		(*(ptr++))=0;  // Skip the second delimiter
+	
+		 if (!strcmp(params,"HREF"))
+		{
+			 Base=content;
+		}
+		while((*ptr)&&(isspace(*ptr)))
+			ptr++;
+			params=ptr;
+	}
+	cout<< "la base : "<<Base<<endl;
+}
 
 //---------------------------------------------------------------------------
 RXMLTag* GALILEI::GFilterHTML::AnalyseLinkParams(char* params)
@@ -556,27 +566,35 @@ char* GALILEI::GFilterHTML::ConstructURL(char* u)
 	char* endBase=0;
 	
 	RString urlTmp;
+	urlG=new char[200];
 
-	// var initialisation
-	urlTmp = Doc->GetURL();
-	base = new char[urlTmp.GetLen()+1];
-	strcpy(base,urlTmp);
-  urlG=new char[200];
-
-	endBase= base;
-	// find end of string
-	while (*endBase)
+	if (!Base)
 	{
-		endBase++;
-	}
-  // find the URL base (base -fileName ex:  /var/www/.../content/file.html -> /var/www/.../content )
-	while ((*endBase) != '/')
-	{
-		endBase--;
-	}
-	//base= endBase;
-	(*endBase)=0;           
+		// var initialisation
+		urlTmp = Doc->GetURL();
+		base = new char[urlTmp.GetLen()+1];
+		strcpy(base,urlTmp);
 
+		endBase= base;
+		// find end of string
+		while (*endBase)
+		{
+			endBase++;
+		}
+		// find the URL base (base -fileName ex:  /var/www/.../content/file.html -> /var/www/.../content )
+		while ((*(endBase-1)) != '/')
+		{
+			endBase--;
+		}
+		(*endBase)=0;           
+	}
+	else
+	{
+		base=strdup(Base);
+		endBase=base;
+		//endBase=base=Base;
+	}
+  
 	ptr=u;
 
 	// Skip spaces
@@ -606,7 +624,9 @@ char* GALILEI::GFilterHTML::ConstructURL(char* u)
 		else if (!strncmp(ptr,"./",2))
 		{
 			ptr+=2;
-			while ((*endBase)!='/')
+			if ((*(endBase-1)) =='/')
+				endBase--;
+			while ((*(endBase-1))!='/')
 			{
 				endBase--;
 			}
@@ -615,7 +635,6 @@ char* GALILEI::GFilterHTML::ConstructURL(char* u)
 	}
 
 	strcpy(urlG,base);
-	strcat(urlG,"/");
 	strcat(urlG,ptr);
 	delete[] base;
 
@@ -626,6 +645,7 @@ char* GALILEI::GFilterHTML::ConstructURL(char* u)
 //------------------------------------------------------------------------
 void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 {
+	RXMLTag* link=0;
 	char* ptr;
 	char delimiter;
 	char* name;    // Name of the tag.
@@ -690,6 +710,20 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* /*metaData*/)
 		if (!strcmp(name,"REFRESH"))
 		{
 			//Doc->AddType(content)   // voir comment gerer les refresh!!
+			while (strncmp(content,"URL",3))
+			{
+				content++;
+			}
+			content+=3;
+			while (((*content)== '=')||(isspace(*content)))
+			{
+				content++;
+			}
+			link= Doc->AddLink();
+			content = ConstructURL(content);
+			Doc->AddIdentifier(content,link);
+			Doc->AddFormat("text/html",link);
+			Doc->AddType("REFRESH",link);
 		}
 	}
 	else if (!strcmp(params,"NAME"))  //metaData with parameter "NAME"

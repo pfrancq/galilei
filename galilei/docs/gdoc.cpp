@@ -235,6 +235,18 @@ void GALILEI::GDoc::InsertLink(const GDoc* doc) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GDoc::InsertLink(const GDoc* doc,char* format,char* type) throw(bad_alloc)
+{
+	GLink* link ;
+	link = LinkSet->GetInsertPtr(doc);
+	link->AddOccurence();
+	if (format) link->SetFormat(format);
+	if (type) link->SetType(type);
+}
+
+
+
+//-----------------------------------------------------------------------------
 GLinkCursor& GALILEI::GDoc::GetLinkCursor(void)
 {
 	GLinkCursor *cur = GLinkCursor::GetTmpCursor();

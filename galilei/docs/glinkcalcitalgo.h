@@ -70,6 +70,16 @@ public:
 	unsigned int NbResults;
 
 	/**
+	* Determine if the number of link to the same URL must be limited.
+	*/
+	bool LimitLink;
+
+	/**
+	* Determine the number of link to the same page.
+	*/
+	unsigned int NbLinks;
+
+	/**
 	* Get the settings of the method coded in a string.
 	* return Pointer to a C string.
 	*/
