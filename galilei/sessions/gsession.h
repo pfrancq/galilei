@@ -108,6 +108,16 @@ protected:
 	GGrouping* Grouping;
 
 	/**
+	* Container of group description method.
+	*/
+	RStd::RContainer<GGroupCalc,RStd::tId,true,true>* GroupCalcs;
+
+	/**
+	* Current group description method used.
+	*/
+	GGroupCalc* GroupCalc;
+
+	/**
 	* URL Manager used by this session.
 	*/
 	GURLManager* Mng;
@@ -247,6 +257,44 @@ public:
 	* @return Return a GGoupingCursor.
 	*/
 	GGroupingCursor& GetGroupingsCursor(void);
+
+	/**
+	* Register a group description method.
+	* @param grp            Description method to register.
+	*/
+	void RegisterGroupCalcMethod(GGroupCalc* grp) throw(bad_alloc);
+
+	/**
+	* Set the current group description method.
+	* @param name           Name of the group description method.
+	*/
+	void SetCurrentGroupCalcMethod(const char* name) throw(GException);
+
+	/**
+	* Set the settings for the current group description method.
+	* @param s              Settings of the current group description method.
+	*/
+	void SetCurrentGroupCalcMethodSettings(const char* s) throw(GException);
+
+	/**
+	* Get the settings of a given group description method.
+	* @param n              Name of the group description method.
+	* @returns C String representing the settings of the given group
+	* description method.
+	*/
+	const char* GetGroupCalcMethodSettings(const char* n) throw(GException);
+
+	/**
+	* Get the current group description method.
+	* @returns Pointer to a GGroupCalc class.
+	*/
+	GGroupCalc* GetCurrentGroupCalcMethod(void) {return(GroupCalc);}
+
+	/**
+	* Get a cursor to the group description methods registered.
+	* @return Return a GGroupCalcCursor.
+	*/
+	GGroupCalcCursor& GetGroupCalcsCursor(void);
 
 	/**
 	* Create a XML structure of the content of a document. The structure

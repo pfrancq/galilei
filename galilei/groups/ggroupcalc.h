@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalc.h
+	GGroupCalc.h
 
-	Generic Profile Computing Method - Header.
+	Generic Group Description Computing Method - Header.
 
-	(C) 2001-2002 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -32,8 +32,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GProfileCalcH
-#define GProfileCalcH
+#ifndef GGroupCalcH
+#define GGroupCalcH
 
 
 //-----------------------------------------------------------------------------
@@ -47,12 +47,12 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GProfileCalc class provides a representation for a method to compute a
-* specific profile, i.e. its sub-profiles.
+* The GGroupCalc class provides a representation for a method to compute the
+* description of a specific group.
 * @author Pascal Francq
-* @short Generic Profile Computing Method.
+* @short Generic Group Description Computing Method.
 */
-class GProfileCalc
+class GGroupCalc
 {
 	/**
 	* Name of the computing method.
@@ -73,13 +73,13 @@ public:
 	* @param name           Name.
 	* @param session        Session.
 	*/
-	GProfileCalc(const char* name,GSession* session) throw(bad_alloc);
+	GGroupCalc(const char* name,GSession* session) throw(bad_alloc);
 
 	/**
-	* Compute a profile.
-	* @param profile        Profile to compute.
+	* Compute a group.
+	* @param grp            Group to compute.
 	*/
-	virtual void Compute(GProfile* profile)=0;
+	virtual void Compute(GGroup* grp)=0;
 
 	/**
 	* Get the name of the computing method.
@@ -102,12 +102,12 @@ public:
 	/**
 	* Compare methods used by RStd::RContainer.
 	*/
-	int Compare(const GProfileCalc& desc) const;
+	int Compare(const GGroupCalc& desc) const;
 
 	/**
 	* Compare methods used by RStd::RContainer.
 	*/
-	int Compare(const GProfileCalc* desc) const;
+	int Compare(const GGroupCalc* desc) const;
 
 	/**
 	* Compare methods used by RStd::RContainer.
@@ -115,32 +115,25 @@ public:
 	int Compare(const char* name) const;
 
 	/**
-	* Compare methods used by RStd::RContainer.
+	* Get the name of the model used for the description.
+	* @return C String.
 	*/
-	int Compare(const tSubProfileDesc t) const;
-
-	/**
-	* Get the type of the method implemented. This is used to find the
-	* correspondance between a profiles description and the compute method
-	* associated.
-	* @returns tSubProfileDesc enum type.
-	*/
-	virtual tSubProfileDesc GetType(void) const=0;
+	virtual const char* GetModelName(void) const=0;
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GProfileCalc(void);
+	virtual ~GGroupCalc(void);
 };
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GProfileCalcCursor class provides a way to go trough a set of computing
-* method for the profiles.
-* @short Profiles Computing Methods Cursor
+* The GGroupCalcCursor class provides a way to go trough a set of group
+* description method.
+* @short Group Description Methods Cursor
 */
-CLASSCURSOR(GProfileCalcCursor,GProfileCalc,unsigned int)
+CLASSCURSOR(GGroupCalcCursor,GGroupCalc,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

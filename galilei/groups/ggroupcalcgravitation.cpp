@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalc.cpp
+	GGroupCalcGravitation.cpp
 
-	Generic Profile Computing Method - Implementation.
+	Group Description is Gravitational Point Computing Method - Implementation.
 
-	(C) 2001-2002 by P. Francq.
+	(C) 2002 by P. Francq.
 
 	Version $Revision$
 
@@ -33,7 +33,8 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include <profiles/gprofilecalc.h>
+#include <groups/ggroupcalcgravitation.h>
+#include <groups/ggroup.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 
@@ -41,46 +42,37 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-//  GProfileCalc
+//  class GGroupCalcGravitation
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::GProfileCalc(const char* name,GSession* session) throw(bad_alloc)
-	: ComputingName(name),Session(session)
+GALILEI::GGroupCalcGravitation::GGroupCalcGravitation(GSession* session) throw(bad_alloc)
+	: GGroupCalc("Gravitational Point",session)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc& desc) const
+void GALILEI::GGroupCalcGravitation::Compute(GGroup* /*grp*/)
 {
-	return(ComputingName.Compare(desc.ComputingName));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc* desc) const
+const char* GALILEI::GGroupCalcGravitation::GetSettings(void)
 {
-	return(ComputingName.Compare(desc->ComputingName));
+	return("");
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const char* name) const
+void GALILEI::GGroupCalcGravitation::SetSettings(const char*)
 {
-	return(ComputingName.Compare(name));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const tSubProfileDesc t) const
-{
-	return(GetType()-t);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::~GProfileCalc(void)
+GALILEI::GGroupCalcGravitation::~GGroupCalcGravitation(void)
 {
 }

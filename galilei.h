@@ -121,6 +121,8 @@ class GGroupCursor;
 class GGroupVector;
 class GGrouping;
 class GGroupingCursor;
+class GGroupCalc;
+class GGroupCalcCursor;
 
 
 //-----------------------------------------------------------------------------

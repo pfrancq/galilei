@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GProfileCalc.cpp
+	GGroupCalc.cpp
 
-	Generic Profile Computing Method - Implementation.
+	Generic Group Description Computing Method - Implementation.
 
-	(C) 2001-2002 by P. Francq.
+	(C) 2001 by P. Francq.
 
 	Version $Revision$
 
@@ -33,7 +33,7 @@
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include <profiles/gprofilecalc.h>
+#include <groups/ggroupcalc.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 
@@ -41,46 +41,39 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-//  GProfileCalc
+//  GGroupCalc
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::GProfileCalc(const char* name,GSession* session) throw(bad_alloc)
-	: ComputingName(name),Session(session)
+GALILEI::GGroupCalc::GGroupCalc(const char* name,GSession* session) throw(bad_alloc)
+	: ComputingName(name), Session(session)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc& desc) const
+int GALILEI::GGroupCalc::Compare(const GGroupCalc& desc) const
 {
 	return(ComputingName.Compare(desc.ComputingName));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const GProfileCalc* desc) const
+int GALILEI::GGroupCalc::Compare(const GGroupCalc* desc) const
 {
 	return(ComputingName.Compare(desc->ComputingName));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const char* name) const
+int GALILEI::GGroupCalc::Compare(const char* name) const
 {
 	return(ComputingName.Compare(name));
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GProfileCalc::Compare(const tSubProfileDesc t) const
-{
-	return(GetType()-t);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GProfileCalc::~GProfileCalc(void)
+GALILEI::GGroupCalc::~GGroupCalc(void)
 {
 }

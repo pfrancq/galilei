@@ -57,6 +57,7 @@ using namespace RIO;
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <groups/ggrouping.h>
+#include <groups/ggroupcalc.h>
 #include <profiles/gprofilecalc.h>
 #include <urlmanagers/gurlmanager.h>
 #include <filters/gfilter.h>
@@ -86,6 +87,7 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	ProfileCalcs=new RContainer<GProfileCalc,unsigned int,true,true>(3,3);
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
 	Groupings=new RContainer<GGrouping,RStd::tId,true,true>(3,3);
+	GroupCalcs=new RContainer<GGroupCalc,RStd::tId,true,true>(2,3);
 	DocOptions=new GDocOptions();
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
 }
@@ -199,6 +201,54 @@ GGroupingCursor& GALILEI::GSession::GetGroupingsCursor(void)
 {
 	GGroupingCursor *cur=GGroupingCursor::GetTmpCursor();
 	cur->Set(Groupings);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::RegisterGroupCalcMethod(GGroupCalc* grp) throw(bad_alloc)
+{
+	GroupCalcs->InsertPtr(grp);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::SetCurrentGroupCalcMethod(const char* name) throw(GException)
+{
+	GGroupCalc* tmp;
+
+	tmp=GroupCalcs->GetPtr<const char*>(name);
+	if(!tmp)
+		throw GException(RString("Group Description method '")+name+"' doesn't exists.");
+	GroupCalc=tmp;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::SetCurrentGroupCalcMethodSettings(const char* s) throw(GException)
+{
+	if((!GroupCalc)||(!(*s))) return;
+	GroupCalc->SetSettings(s);
+}
+
+
+//-----------------------------------------------------------------------------
+const char* GALILEI::GSession::GetGroupCalcMethodSettings(const char* n) throw(GException)
+{
+	GGroupCalc* tmp;
+
+	tmp=GroupCalcs->GetPtr<const char*>(n);
+	if(!tmp)
+		return(0);
+	return(tmp->GetSettings());
+}
+
+
+//-----------------------------------------------------------------------------
+GGroupCalcCursor& GALILEI::GSession::GetGroupCalcsCursor(void)
+{
+	GGroupCalcCursor *cur=GGroupCalcCursor::GetTmpCursor();
+	cur->Set(GroupCalcs);
 	return(*cur);
 }
 
@@ -445,6 +495,7 @@ GALILEI::GSession::~GSession(void) throw(GException)
 	if(DocAnalyse) delete DocAnalyse;
 	if(DocOptions) delete DocOptions;
 	if(Groupings) delete Groupings;
+ 	if(GroupCalcs) delete GroupCalcs;
 	if(SubProfileDescs) delete SubProfileDescs;
 	if(ProfileCalcs) delete ProfileCalcs;
 }
