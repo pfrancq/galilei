@@ -9,7 +9,7 @@
 	Copyright 2002 by the Université Libre de Bruxelles.
 
 	Authors:
-		
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public

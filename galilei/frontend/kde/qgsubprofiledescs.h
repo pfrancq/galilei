@@ -9,7 +9,7 @@
 	Copyright 2001-2002 by the Université Libre de Bruxelles.
 
 	Authors:
-		
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -70,7 +70,6 @@ class QGSubProfileDesc;
 * description type. It handles a set of GALILEI::QGSubProfileDesc widgets to
 * hold the information for each language.
 * @author Pascal Francq
-* @version $Revision$
 * @short SubProfiles' Widget.
 */
 class QGSubProfileDescs : public QWidget

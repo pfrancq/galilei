@@ -56,7 +56,6 @@ namespace GALILEI{
 /**
 * The QGGroupsHistory class provides a widget to show a given groupement of the GA.
 * @author Pascal Francq
-* @version $Revision$
 * @short GA Groups Widget.
 */
 class QGGroupsHistory  :  public QListView

@@ -10,7 +10,7 @@
 	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
-		
+		Pascal Francq (pfrancq@ulb.ac.be).
 		Julien Lamoral (jlamoral@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
