@@ -45,10 +45,6 @@ using namespace RStd;
 #include <rxml/rxmlfile.h>
 #include <rxml/rxmlstruct.h>
 using namespace RXML;
-
-
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
 #include <rio/rtextfile.h>
 using namespace RIO;
 
