@@ -447,7 +447,7 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save, bool savehis
 
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
-	Grouping->Grouping(rec,modified,save, savehistory);
+	Grouping->Grouping(rec,modified,true, 0);
 
 	// Run all post-group methods that are enabled
 	GFactoryPostGroupCursor PostGroups=PostGroupMng->GetPostGroupsCursor();
@@ -674,15 +674,20 @@ int GSession::GetCurrentRandomValue(unsigned int max)
 
 
 //------------------------------------------------------------------------------
-void GSession::LoadHistoricGroups (unsigned int mingen, unsigned int maxgen)
+void GSession::LoadHistoricGroupsById(unsigned int mingen, unsigned int maxgen)
 {
 	unsigned int i;
-	GGroupsHistory* hgrps;
-	RContainer<GGroupsHistory, unsigned int, false,true>* historicalgroups;
 
 	// fill the container
 	for (i=mingen; i<maxgen+1; i++)
 		GroupsHistoryMng->InsertGroupsHistory(Storage->LoadAnHistoricGroups(this, i));
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::LoadHistoricGroupsByDate(RString mindate,RString maxdate)
+{
+	Storage->LoadHistoricGroupsByDate(this,mindate,maxdate);
 }
 
 

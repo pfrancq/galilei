@@ -91,11 +91,6 @@ protected:
 	*/
 	R::RContainer<GGroupHistory, unsigned int, false,true>* Childrens;
 
-	/**
-	* Container of parents.
-	*/
-	R::RContainer<GGroupHistory, unsigned int, false,true>* Parents;
-
 public:
 
 	/**
@@ -145,11 +140,6 @@ public:
 	*/
 	 void InsertChildren(GGroupHistory* grp);
 
-	/**
-	* insert a parent itno the container of parents
-	*/
-	 void InsertParent(GGroupHistory* grp);
-
 	 /**
 	* Compare method needed by R::RContainer.
 	*/
@@ -169,11 +159,6 @@ public:
 	* cursor on childrens.
 	*/
 	GGroupHistoryCursor& GetChildrenCursor(void);
-
-	/**
-	* cursor on parents.
-	*/
-	GGroupHistoryCursor& GetParentsCursor(void);
 
 	/**
 	* get the parent of the group

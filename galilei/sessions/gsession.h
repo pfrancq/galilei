@@ -490,7 +490,12 @@ public:
 	/**
 	* load the historic groups.
 	*/
-	void LoadHistoricGroups (unsigned int mingen, unsigned int maxgen);
+	void LoadHistoricGroupsById(unsigned int mingen, unsigned int maxgen);
+
+	/**
+	* load the historic groups.
+	*/
+	void LoadHistoricGroupsByDate(R::RString mindate, R::RString maxdate);
 
 	/**
 	* Re-init the session (clear all containers).

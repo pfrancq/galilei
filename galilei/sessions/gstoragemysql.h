@@ -276,6 +276,11 @@ public:
 	GGroupsHistory* LoadAnHistoricGroups(GSession* session, unsigned int historicaID) throw(std::bad_alloc,GException);
 
 	/**
+	* load the historic groups.
+	*/
+	void LoadHistoricGroupsByDate(GSession* session, R::RString mindate, R::RString maxdate);
+
+	/**
 	*returns the number of historic groups stored in database.
 	*/
 	virtual unsigned int GetHistorySize(void) throw(GException);

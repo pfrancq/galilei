@@ -1055,7 +1055,7 @@ void GStorageMySQL::SaveGroupsHistory(GSession* session) throw(GException)
 			Sub=GroupsCursor()->GetSubProfilesCursor();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
-				sprintf(sSql,"INSERT INTO historicgroups SET historicid=%u, groupid=%u, subprofileid=%u, lang='%s'",
+				sprintf(sSql,"INSERT INTO historicgroups SET date=CurDate(), historicid=%u, groupid=%u, subprofileid=%u, lang='%s'",
 				historicid,GroupsCursor()->GetId(),Sub()->GetId(),GroupsCursor()->GetLang()->GetCode());
 				RQuery history(this,sSql);
 			}
@@ -1249,10 +1249,14 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(GSession* session,unsigned i
 	{
 		// Init part
 		groupid=cNoRef;
-		grps=new GGroupsHistory(historicid);
+
+		sprintf(sSql,"SELECT date FROM historicgroups WHERE  historicid=%u",historicid);
+		RQuery date(this,sSql);
+		date.Start();
+		grps=new GGroupsHistory(historicid, date[0]);
 
 		//read the groupment.
-		sprintf(sSql,"SELECT groupid,subprofileid,lang FROM historicgroups WHERE  historicid=%u ORDER by historicid,groupid",historicid);
+		sprintf(sSql,"SELECT groupid,subprofileid,lang, date FROM historicgroups WHERE  historicid=%u ORDER by historicid,groupid",historicid);
 		RQuery grquery(this,sSql);
 		for(grquery.Start(),grp=0;!grquery.End();grquery.Next())
 		{
@@ -1291,6 +1295,18 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(GSession* session,unsigned i
 	{
 		throw GException(e.GetMsg());
 	}
+}
+
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadHistoricGroupsByDate(GSession* session, R::RString mindate, R::RString maxdate)
+{
+	char sSql[200];
+	sprintf(sSql, "SELECT DISTINCT historicid from historicgroups where date>'%s' AND date<'%s' ORDER BY date,historicid", mindate.Latin1(), maxdate.Latin1());
+	RQuery ids(this,sSql);
+	for (ids.Start(); !ids.End(); ids.Next())
+                session->GetGroupsHistoryManager()->InsertGroupsHistory(LoadAnHistoricGroups(session, atoi(ids[0])));
 }
 
 

@@ -120,7 +120,10 @@ private :
 	*/
 	unsigned int Id;
 
-
+	/**
+	*  historic date
+	*/
+	R::RDate Date;
 
 	/*
 	* manager
@@ -131,13 +134,20 @@ public :
 
 	/**
 	* constructor
+	* @param id             id of the historic.
+	* @param date           date of the historic.
 	*/
-	GGroupsHistory(unsigned int id);
+	GGroupsHistory(unsigned int id, R::RString date);
 
 	/**
 	* get the id
 	*/
 	unsigned int GetId(void);
+
+	/**
+	* get the date
+	*/
+	R::RDate GetDate(void) {return Date;}
 
 	/**
 	*  returns the subprofiles with Id=id;

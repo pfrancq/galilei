@@ -51,14 +51,13 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(std::bad_alloc)
-	: RContainer<GWeightInfosHistory,unsigned int,false,true>(20,10)//, Childrens(2,1), Parents(2,1)
+	: RContainer<GWeightInfosHistory,unsigned int,false,true>(20,10)
 {
 	 Id=id;
 	 Lang=lang;
 	 Modified=false;
 	 Parent=grps;
 	 Childrens=new  RContainer<GGroupHistory,unsigned int,false,true>(2,1);
-	 Parents=new  RContainer<GGroupHistory,unsigned int,false,true>(2,1);
 }
 
 //-----------------------------------------------------------------------------
@@ -107,14 +106,6 @@ GSubject* GALILEI::GGroupHistory::GetSubject(void)
 void GALILEI::GGroupHistory::InsertChildren(GGroupHistory* grp)
 {
 	Childrens->InsertPtr(grp);
-	grp->InsertParent(this);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupHistory::InsertParent(GGroupHistory* grp)
-{
-	Parents->InsertPtr(grp); 
 }
 
 
@@ -149,14 +140,8 @@ GGroupHistoryCursor& GALILEI::GGroupHistory::GetChildrenCursor(void)
 
 
 //-----------------------------------------------------------------------------
-GGroupHistoryCursor& GALILEI::GGroupHistory::GetParentsCursor(void)
-{
-	GGroupHistoryCursor* cur=GGroupHistoryCursor::GetTmpCursor();
-	cur->Set(Parents);
-	return(*cur);
-}
-
-//-----------------------------------------------------------------------------
 GALILEI::GGroupHistory::~GGroupHistory(void)
 {
+	if(Childrens)
+		delete Childrens;
 }

@@ -35,6 +35,12 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R
+#include<rstd/rdate.h>
+using namespace R;
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <historic/ggroupshistory.h>
 #include <historic/gweightinfoshistory.h>
@@ -42,7 +48,6 @@
 #include <profiles/gsubprofile.h>
 #include <groups/gsubject.h>
 using namespace GALILEI;
-using namespace R;
 
 
 
@@ -113,10 +118,11 @@ void GALILEI::GGroupsHistoryManager::InsertGroupsHistory(GGroupsHistory* gh)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupsHistory::GGroupsHistory(unsigned int id)
+GALILEI::GGroupsHistory::GGroupsHistory(unsigned int id, RString date)
 	: RContainer<GGroupHistory,unsigned int,true,true>(20,10)
 {
 	Id=id;
+	Date=RDate(date.Latin1());
 }
 
 
