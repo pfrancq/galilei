@@ -226,7 +226,7 @@ public:
 	* @param tag            Tag to analyse.
 	* @param stop           Stoplist to use.
 	*/
-	int AnalyseTagForStopKwd(RXML::RXMLTag* tag,GDict* stop);
+	int AnalyseTagForStopKwd(RXML::RXMLTag* tag,GDict* stop) throw(GException);
 
 	/**
 	* Analyse a content tag.

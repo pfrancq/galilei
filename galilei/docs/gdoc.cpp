@@ -154,7 +154,7 @@ BeginExtract:
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GDoc::AnalyseTagForStopKwd(RXMLTag* tag,GDict* stop)
+int GALILEI::GDoc::AnalyseTagForStopKwd(RXMLTag* tag,GDict* stop) throw(GException)
 {
 	unsigned nb=0;
 	const char* ptr;
