@@ -80,7 +80,6 @@ public:
 GALILEI::QGSubProfiles::SubProfile::SubProfile(QWidget* parent,GSession* session,GSubProfile* desc)
 	: QWidget(parent), Session(session), Desc(desc)
 {
-	char tmp[20];
 	char sDate[20];
 	RDate d;
 
@@ -114,7 +113,6 @@ GALILEI::QGSubProfiles::SubProfile::SubProfile(QWidget* parent,GSession* session
 //-----------------------------------------------------------------------------
 void GALILEI::QGSubProfiles::SubProfile::Construct(void)
 {
-	char tmp[20];
 	class LocalItem : QListViewItem
 	{
 	public:
