@@ -36,13 +36,15 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qwidget.h>
-#include <qlistview.h>
+// include files for R Library
+#include <rstd/rcontainer.h>
+
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <qgsubprofiledesc.h>
+// include files for Qt
+#include <qtabwidget.h>
+#include <qlistview.h>
+#include <qcombobox.h>
 
 
 //-----------------------------------------------------------------------------
@@ -52,8 +54,8 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 // forward class declaration
-class GIWordWeigth;
-class GSubProfileVector;
+class GProfile;
+class GSession;
 
 
 //-----------------------------------------------------------------------------
@@ -61,65 +63,75 @@ class GSubProfileVector;
 * The QGSubProfileVector class provides a widget to represent the
 * description of a subprofile in the vector model.
 * @author Pascal Francq
-* @short Vector Subprofile Description Widget.
+* @short Subprofiles Description Widget.
 */
-class QGSubProfileVector : public QGSubProfileDesc
+class QGSubProfiles : public QWidget
 {
 	Q_OBJECT
 
-	/**
-	* Description of the SubProfile.
-	*/
-	GSubProfileVector* Desc;
+	class SubProfile;
 
 	/**
-	* Information on the sub-profile.
+	* Session.
 	*/
-	QListView* Info;
+	GSession* Session;
 
 	/**
-	* Vector representing the sub-profile.
+	* Corresponding profile.
 	*/
-	QListView* Vector;
+	GProfile* Profile;
 
 	/**
-	* Temporary C string used to construct a word.
+	* Container of subprofile's widget.
 	*/
-	char tmpWord[50];
+	R::RContainer<SubProfile,true,false> Desc;
+
+	/**
+	* Current SubProfile showed.
+	*/
+	SubProfile* Current;
+
+	/**                                                                                
+	*  Combo Box to choose the language of the profile.
+	*/
+	QComboBox* Lang;
 
 public:
 
 	/**
-	* Constructor.
-	* @param parent         Parent widget.
+	* Constructor 
+	* @param parent         parent widget.
 	* @param session        Session.
-	* @param desc           Description.
+	* @param profile        Profile.
 	*/
-	QGSubProfileVector(QWidget* parent,GSession* session,GSubProfileVector* desc);
+	QGSubProfiles(QTabWidget* parent,GSession* session,GProfile* profile);
+
+protected:
 
 	/**
-	* Get the type of the description.
-	* @returns tSubProfileDesc enum type.
+	* Called when the main window is resize by the user.
 	*/
-	virtual tSubProfileDesc GetType(void) const {return(sdVector);}
+	void resizeEvent(QResizeEvent *);
+
+public slots:
 
 	/**
-	* Get the name of the type.
-	* @returns Pointer to a C string.
+	* Slot called when the language was changed.
+	* @param index          Index of the language choosen.
 	*/
-	virtual const char* GetTypeName(void) const {return("Vector Description");}
+	void slotLangChanged(int index);
+
+	/**
+	* Slot called when the profile was changed after a computation.
+	*/
+	void slotProfileChanged(void);
 
 public:
-
-	/**
-	* Construct the the subprofile.
-	*/
-	virtual void Construct(void);
-
+	
 	/**
 	* Destructor
 	*/
-	~QGSubProfileVector(void);
+	~QGSubProfiles(void);
 };
 
 

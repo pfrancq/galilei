@@ -43,8 +43,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/glang.h>
-#include <qgsubprofilevector.h>
-#include <profiles/gsubprofilevector.h>
+#include <frontend/kde/qgsubprofiles.h>
+#include <profiles/gsubprofile.h>
 #include <infos/gweightinfo.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
@@ -52,16 +52,32 @@ using namespace GALILEI;
 using namespace R;
 
 
-
 //-----------------------------------------------------------------------------
 //
-// class QGSubProfileVector
+// struct QGSubProfiles::SubProfile
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::QGSubProfileVector::QGSubProfileVector(QWidget* parent,GSession* session,GSubProfileVector* desc)
-	: QGSubProfileDesc(parent,session), Desc(desc)
+class QGSubProfiles::SubProfile : public QWidget
+{
+	QListView* Info;
+	QListView* Vector;
+	GSession* Session;
+	GSubProfile* Desc;
+	char tmpWord[50];
+
+public:
+	
+	SubProfile(QWidget* parent,GSession* session,GSubProfile* desc);
+	void Construct(void);
+	int Compare(const SubProfile*) const {return(-1);}
+	int Compare(const SubProfile&) const {return(-1);}
+};
+
+//-----------------------------------------------------------------------------
+GALILEI::QGSubProfiles::SubProfile::SubProfile(QWidget* parent,GSession* session,GSubProfile* desc)
+	: QWidget(parent), Session(session), Desc(desc)
 {
 	char tmp[20];
 	char sDate[20];
@@ -98,7 +114,7 @@ GALILEI::QGSubProfileVector::QGSubProfileVector(QWidget* parent,GSession* sessio
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::QGSubProfileVector::Construct(void)
+void GALILEI::QGSubProfiles::SubProfile::Construct(void)
 {
 	GWeightInfoCursor Cur;
 	char tmp[20];
@@ -136,7 +152,94 @@ void GALILEI::QGSubProfileVector::Construct(void)
 }
 
 
+
 //-----------------------------------------------------------------------------
-GALILEI::QGSubProfileVector::~QGSubProfileVector(void)
+//
+// class QGSubProfiles
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GALILEI::QGSubProfiles::QGSubProfiles(QTabWidget* parent,GSession* session,GProfile* profile)
+	: QWidget(parent,"QGSubProfiles"), Session(session), Profile(profile), Desc(profile->NbPtr,5)
+{
+	QSize act=size(),tmp, cbsize;
+	GSubProfileCursor s;
+	SubProfile* w;
+
+	// Construct the combo box
+	Lang=new QComboBox(this);
+	tmp=Lang->size();
+	cbsize=Lang->size();
+	Lang->resize(act.width(),tmp.height());
+	Lang->setEditable(false);
+	connect(Lang,SIGNAL(activated(int)),this,SLOT(slotLangChanged(int)));
+
+	// For each subprofile create a widget
+	s=Profile->GetSubProfilesCursor();
+	for(s.Start();!s.End();s.Next())
+	{
+		// If language is not handled -> do not treat it
+		if(!s()->GetLang()) 
+			continue;
+		w=new SubProfile(this,Session,s());
+		break;
+
+		if(!w) return;
+		Desc.InsertPtr(w);
+		Lang->insertItem(ToQString(s()->GetLang()->GetName()),Desc.GetNb()-1);
+		w->move(0,cbsize.height());
+		w->resize(act.width(),act.height()-cbsize.height());
+		if(Desc.GetNb()==1)
+		{
+			Current=w;
+			Lang->setCurrentItem(Desc.GetNb()-1);
+			w->show();
+		}
+		else
+			w->hide();
+	}
+	parent->insertTab(this,"Description");
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::QGSubProfiles::slotLangChanged(int index)
+{
+	Current->hide();
+	Current=Desc.Tab[index];
+	Current->show();
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::QGSubProfiles::slotProfileChanged(void)
+{
+	RCursor<SubProfile> Cur(Desc);
+
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Construct();
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::QGSubProfiles::resizeEvent(QResizeEvent *)
+{
+	RCursor<SubProfile> Cur(Desc);
+	QSize act=size(),tmp;
+	tmp=Lang->size();
+
+	// Resize Combo box Lang.
+	Lang->resize(act.width(),tmp.height());
+
+	// Resize SubProfiles.
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->resize(act.width(),act.height()-tmp.height());
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::QGSubProfiles::~QGSubProfiles(void)
 {
 }
+

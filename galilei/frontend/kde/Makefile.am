@@ -9,12 +9,12 @@ SUBDIRS =
 libkde_galilei_la_METASOURCES = AUTO
 
 galileiincludedir = $(includedir)/frontend/kde
-galileiinclude_HEADERS = qgprofile.h qgsubprofiledescs.h qgdocxml.h qgsubprofilevector.h \
-		qlistviewitemtype.h qggroupshistory.h qgsubprofiledesc.h gfiltermanagerkde.h
+galileiinclude_HEADERS = qgprofile.h  qgdocxml.h qgsubprofiles.h \
+		qlistviewitemtype.h qggroupshistory.h gfiltermanagerkde.h
 
-libkde_galilei_la_SOURCES =  qgprofile.cpp qgsubprofiledescs.cpp qgdocxml.cpp  \
-				qgsubprofilevector.cpp qlistviewitemtype.cpp qggroupshistory.cpp \
-				qgsubprofiledesc.cpp gfiltermanagerkde.cpp
+libkde_galilei_la_SOURCES =  qgprofile.cpp qgdocxml.cpp  \
+				qgsubprofiles.cpp qlistviewitemtype.cpp qggroupshistory.cpp \
+				gfiltermanagerkde.cpp
 
 
 minipicsdir = $(kde_icondir)/hicolor/16x16/actions/
