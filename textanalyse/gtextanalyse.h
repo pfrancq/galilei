@@ -6,7 +6,7 @@
 
 	Analyse a document - Header.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Universit�Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).

@@ -6,12 +6,10 @@
 
 	Analyse a document - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2004 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-
-	Last Modify: $Date$
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
