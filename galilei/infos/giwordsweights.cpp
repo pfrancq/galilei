@@ -280,7 +280,7 @@ void GALILEI::GIWordsWeights::ModifyQuery(tObjType ObjType,GLang* lang)
 	for(i=lang->GetDict()->GetMaxId()+1,words=lang->GetDict()->GetWords();--i;words++)
 	{
 		if(!(*words)) continue;
-		nbref=lang->GetRef(ptr->GetId(),ObjType);
+		nbref=lang->GetRef((*words)->GetId(),ObjType);
 		if(!nbref) continue;
 		ptr=GetPtr<const unsigned int>((*words)->GetId());
 		if(!ptr)
