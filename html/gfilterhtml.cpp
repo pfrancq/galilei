@@ -330,7 +330,7 @@ void GALILEI::GFilterHTML::AnalyseBody(void)
 
 		// Analyse the block and insert it in the current DocXML tag.
 		// If block contains only spaces -> do not insert it.
-		if(bBlockIns)
+		if(bBlockIns&&Block)
 		{
 			// If this tag is the content -> a new tag must be created
 			if(act==content)
