@@ -509,7 +509,7 @@ bool  GALILEI::GGroupingSupKMeans::IsAPcSameValidGroup(GGroup* group, GSubProfil
 				if (profdoc1()->GetDoc()->GetId()==profdoc2()->GetDoc()->GetId())
 				{
 					nbcomp++;              // number of common documents
-					if ((profdoc1()->GetFdbk() ==djOK)&&(profdoc2()->GetFdbk()==djOK))
+					if ((profdoc1()->GetFdbk() & djOK)&&(profdoc2()->GetFdbk() & djOK))
 					{
 						percent++;       // number of same judgements on a common document
 						if (Params->Debug) cout << "same judgements"<<endl;

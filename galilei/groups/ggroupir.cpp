@@ -632,7 +632,7 @@ void GALILEI::GGroupIR::NotJudgedDocsRelList(RStd::RContainer<GDocSim,unsigned,t
 
 			// If not -> insert it in docs if relevant.
 			j=Fdbks()->GetFdbk();
-			if((j==djNav)||(j==djOK))
+			if((j & djNav)||(j & djOK))
 			{
 				if(global)
 					docs->InsertPtr(new GDocSim(Fdbks()->GetDoc(),sub->GlobalSimilarity(Fdbks()->GetDoc())));
