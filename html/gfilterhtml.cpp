@@ -48,6 +48,7 @@
 //------------------------------------------------------------------------------
 // include files for R
 #include <ghtmlconverter.h>
+#include <rstd/rxmlfile.h>
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
@@ -87,6 +88,7 @@ bool GFilterHTML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 
 		//Delete Empty Tags
 		Doc->GetContent()->DeleteEmptyTags(Doc);
+		
 	}
 	catch(RIOException& e)
 	{

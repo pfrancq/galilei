@@ -709,14 +709,12 @@ void GHTMLConverter::BeginTag(const RString& namespaceURI, const RString& lName,
 {
 	RString htmlName;
 	Tag* tag;
-
 	// if HTML closing tag found -> Nothing to do
 	if(FoundClosingHTML)
 		return;
 
 	// HTML is not case sensitive
 	htmlName=name.ToLower();
-
 	//Test if it is a link
 	if(!htmlName.Compare("a"))
 	{
