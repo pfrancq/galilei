@@ -1777,7 +1777,7 @@ type=HEADER
 dist=true
 install=false
 install_location=
-type=HEADER
+type=SOURCE
 
 [kgalileicenter/r/rgga/rfirstfitheuristic.h]
 dist=true
