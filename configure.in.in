@@ -1,5 +1,4 @@
 #MIN_CONFIG(3.0.0)
-
 #------------------------------------------------------------------------------#
 #                                                                              #
 #          This script was written by Valery VANDAELE vavdaele@ulb.ac.be       #
@@ -75,12 +74,12 @@ AC_ARG_WITH(r-includes,
 if test "x$R_LIB" != "x" ; then
 	R_LIB_PATH=$R_LIB
 else
-	R_LIB_PATH="/usr/lib /usr/lib/r /usr/local/lib /usr/local/lib/r ${prefix}/lib/r"
+	R_LIB_PATH="/usr/lib /usr/lib/r /usr/local /usr/local/lib /usr/local/lib/r/ ${prefix}/lib/r"
 fi
 AC_ARG_WITH(r-libs,
 	AC_HELP_STRING(
 		[--with-r-libs=DIR],
-		[where the R libraries are installed, like [/usr/lib]. ]),
+		[where the R libraries are installed, like [/usr/lib/r]. ]),
 	R_LIB_PATH="$withval")
 
 
@@ -146,9 +145,9 @@ for l in rdb rga rga2d rgga rmath rprg rpromethee rstd; do
 
 	#AC_MSG_CHECKING(for lib$l)
 	for i in $R_LIB_PATH ; do
-		R_LIB_CHK($i/$l,$l)  #check for local presence
-		R_LIB_CHK($i,$l)
-		R_LIB_CHK($i/r,$l)
+		R_LIB_CHK($i/$l,$l)
+		R_LIB_CHK($i/lib/,$l)
+		R_LIB_CHK($i/lib/r,$l)
 	done
 	AC_MSG_CHECKING(for lib$l)
 	if test -z "$R_LIB_DIR"; then
@@ -196,7 +195,7 @@ AC_ARG_WITH(galilei-includes,
 if test "x$GALILEI_LIB" != "x" ; then
 	GALILEI_LIB_PATH=$GALILEI_LIB
 else
-	GALILEI_LIB_PATH="/usr/lib /usr/lib/galilei /usr/local /usr/local/lib /usr/local/lib/galilei ${prefix}/lib/galilei"
+	GALILEI_LIB_PATH="/usr/lib /usr/lib/galilei /usr/local /usr/local/lib /usr/local/lib/galilei/ ${prefix}/lib/galilei"
 fi
 AC_ARG_WITH(galilei-libs,
 	AC_HELP_STRING(
@@ -228,7 +227,7 @@ AC_DEFUN(GALILEI_INC_CHK,[
 		test -f $i/$str                    && GALILEI_INC_DIR=$i/$1 && break
 		#test -f $i/galilei/$str              && GALILEI_INC_DIR=$i/galilei/$1 && break
 	done
-	AC_MSG_CHECKING(checking for $1/$2)
+	AC_MSG_CHECKING(for $1/$2)
 	if test -z "$GALILEI_INC_DIR"; then
 		if test "x$GALILEI_INC_PATH" != "x"; then
 			AC_MSG_RESULT(no)
@@ -244,6 +243,7 @@ AC_DEFUN(GALILEI_INC_CHK,[
 		CPPFLAGS="-I$i $CPPFLAGS"
 	fi
 	PAST_GALILEI_INC_DIR="$i"
+
 ])
 # --- end def function -----
 
@@ -255,16 +255,17 @@ GALILEI_INC_CHK(infos,gdict.h)
 GALILEI_INC_CHK(profiles, gprofile.h)
 GALILEI_INC_CHK(sessions,gsession.h)
 
+
 # ---- check the presence of all GALILEI libraries
 for l in docs groups historic infos profiles sessions; do
 
-	#AC_MSG_CHECKING(checking for lib$l)
+	#AC_MSG_CHECKING(for lib$l)
 	for i in $GALILEI_LIB_PATH ; do
 		GALILEI_LIB_CHK($i/$l,$l)
-		GALILEI_LIB_CHK($i,$l)
+		GALILEI_LIB_CHK($i/,$l)
 		GALILEI_LIB_CHK($i/galilei,$l)
 	done
-	AC_MSG_CHECKING(checking for lib$l)
+	AC_MSG_CHECKING(for lib$l)
 	if test -z "$GALILEI_LIB_DIR"; then
 		AC_MSG_RESULT(no)
 		AC_MSG_ERROR(Cannot find lib$l)
@@ -279,12 +280,13 @@ for l in docs groups historic infos profiles sessions; do
 
 done
 
+
 #--------------------- END GALILEI LIB -----------------------------
 
 AC_SUBST(UPGALILEI_ADD)
 
 AM_INIT_AUTOMAKE(upgalilei, 1.0)
 AC_C_BIGENDIAN
-#AC_CHECK_KDEMAXPATHLEN
+AC_CHECK_KDEMAXPATHLEN
 
 CXXFLAGS="$CXXFLAGS $USE_EXCEPTIONS"
