@@ -776,8 +776,18 @@ void GALILEI::GSessionMySQL::SaveGroups(void)
 			}
 
 		}
-	}        
+	}
 
+	// Update References of the loaded groups.
+	GroupsCursor=this->GetGroupsCursor();
+	for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
+	{
+		groups=GroupsCursor();
+		for(groups->Start();!groups->End();groups->Next())
+		{
+			static_cast<GGroupVector*>((*groups)())->UpdateRefs();
+		}
+	}
 }
 
 
