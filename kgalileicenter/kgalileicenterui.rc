@@ -88,6 +88,7 @@
 		<Action name="oldplugins"/>
 		<Action name="plugins"/>
 		<Action name="docsOptions"/>
+		<Action name="sessionOptions"/>
 	</Menu>
 	<Action name="window_menu"/>
 </MenuBar>
