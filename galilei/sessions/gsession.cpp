@@ -107,7 +107,6 @@ GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,u
 	// Init Part
 	GLangCursor Langs;
 	IdealGroups= new RContainer<GGroups, unsigned int, true, true> (g+g/2,g/2);
-	IdealDocs=new RContainer<GDocsLang, unsigned int, false, false> (2,1);
 	Langs=GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Groups.InsertPtr(new GGroups(Langs()));
@@ -142,22 +141,6 @@ GGroupsCursor& GSession::GetIdealGroupsCursor(void)
 {
 	GGroupsCursor *cur=GGroupsCursor::GetTmpCursor();
 	cur->Set(IdealGroups);
-	return(*cur);
-}
-
-
-//-----------------------------------------------------------------------------
-RContainer<GDocsLang,unsigned int,false,false>* GSession::GetIdealDocs(void)
-{
-	return(IdealDocs);
-}
-
-
-//-----------------------------------------------------------------------------
-GDocsLangCursor& GSession::GetIdealDocsCursor(void)
-{
-	GDocsLangCursor *cur=GDocsLangCursor::GetTmpCursor();
-	cur->Set(IdealDocs);
 	return(*cur);
 }
 
@@ -978,7 +961,6 @@ GSession::~GSession(void) throw(GException)
 	if(DocOptions) delete DocOptions;
 	if(SubProfileDescs) delete SubProfileDescs;
 	if(IdealGroups) delete IdealGroups;
-	if(IdealDocs) delete IdealDocs;
 }
 
 

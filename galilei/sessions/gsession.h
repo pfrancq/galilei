@@ -78,11 +78,6 @@ protected:
 	R::RContainer<GGroups,unsigned int,true,true>* IdealGroups;
 
 	/**
-	* Pointer to the ideal Docs
-	*/
-	R::RContainer<GDocsLang,unsigned int,false,false>* IdealDocs;
-
-	/**
 	* Pointer to a tree of subject
 	*/
 	GSubjectTree Subjects;
@@ -250,16 +245,6 @@ public:
 	* Get a cursor over the ideal groups of the system.
 	*/
 	GGroupsCursor& GetIdealGroupsCursor(void);
-
-	/**
-	* Get a pointer to the ideal docs
-	*/
-	R::RContainer<GDocsLang,unsigned int,false,false>* GetIdealDocs(void);
-
-	/**
-	* Get a cursor over the ideal documents of the system.
-	*/
-	GDocsLangCursor& GetIdealDocsCursor(void);
 
 	/**
 	* Return a pointer to a tree of subjects
