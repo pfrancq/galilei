@@ -49,7 +49,7 @@ using namespace RStd;
 #include <qtooltip.h>
 #include <qprinter.h>
 #include <qworkspace.h>
-
+#include <qlabel.h>
 
 
 //-----------------------------------------------------------------------------
@@ -62,6 +62,9 @@ using namespace RStd;
 #include <klocale.h>
 #include <kconfig.h>
 #include <kstdaction.h>
+#include <kshortcut.h>
+#include <kstatusbar.h>
+#include <kpopupmenu.h>
 
 
 //-----------------------------------------------------------------------------
@@ -145,10 +148,10 @@ void KGALILEICenterApp::initActions(void)
 	rRunR=new KAction(i18n("Run &R"),0,this,SLOT(slotRRunR()),actionCollection(),"rRunR");
 
 	// Menu "GA"
-	gaInit=new KAction(i18n("&Initialize"),"reload",KAccel::stringToKey("Alt+I"),this,SLOT(slotGAInit(void)),actionCollection(),"gaInit");
-	gaStart=new KAction(i18n("&Start"),"exec",KAccel::stringToKey("Alt+S"),this,SLOT(slotGAStart(void)),actionCollection(),"gaStart");
-	gaPause=new KAction(i18n("&Pause"),"player_pause",KAccel::stringToKey("Alt+P"),this,SLOT(slotGAPause(void)),actionCollection(),"gaPause");
-	gaStop=new KAction(i18n("&Stop"),"stop",KAccel::stringToKey("Alt+T"),this,SLOT(slotGAStop(void)),actionCollection(),"gaStop");
+	gaInit=new KAction(i18n("&Initialize"),"reload",KKey("Alt+I").keyCodeQt(),this,SLOT(slotGAInit(void)),actionCollection(),"gaInit");
+	gaStart=new KAction(i18n("&Start"),"exec",KKey("Alt+S").keyCodeQt(),this,SLOT(slotGAStart(void)),actionCollection(),"gaStart");
+	gaPause=new KAction(i18n("&Pause"),"player_pause",KKey("Alt+P").keyCodeQt(),this,SLOT(slotGAPause(void)),actionCollection(),"gaPause");
+	gaStop=new KAction(i18n("&Stop"),"stop",KKey("Alt+T").keyCodeQt(),this,SLOT(slotGAStop(void)),actionCollection(),"gaStop");
 
 	// Menu "Settings"
 	viewToolBar = KStdAction::showToolbar(this, SLOT(slotViewToolBar()), actionCollection());

@@ -210,17 +210,17 @@ void KViewGA::RunGA(void)
 	{
 		try
 		{
-//			if(Doc->GetMaxGen()>Gen)
-//			{
-//				if(Doc->GetStepGen()==0)
-//					Gen=Doc->GetMaxGen();
-//				else
-//				{
-//					Gen+=Doc->GetStepGen();
-//					if(Gen>Doc->GetMaxGen()) Gen=Doc->GetMaxGen();
-//				}
-//			}
-//			Instance->MaxGen=60;
+			if(MaxGen>Gen)
+			{
+				if(!StepGen)
+					Gen=MaxGen;
+				else
+				{
+					Gen+=StepGen;
+					if(Gen>MaxGen) Gen=MaxGen;
+				}
+			}
+			Instance->SetMaxGen(Gen);
 			Instance->Run();
 			KMessageBox::information(this,"Done");
 		}

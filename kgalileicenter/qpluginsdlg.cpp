@@ -172,7 +172,6 @@ QPluginsDlg::QPluginsDlg(GSession* s,QWidget* parent,const char* name)
 	Plugins->setRootIsDecorated(true);
 	NoConf=new QTextView(0,"No Configuration");
 	NoConf->setText("<H3><B>No Configurable Options Available</B></H3><BR>Sorry, non configurable options are available for the current selected plugin.");
-	NoConf->setPaperColorGroup(colorGroup());
 	QPluginsDlgLayout->addWidget(Main);
 
 	QHBoxLayout* Layout1 = new QHBoxLayout;

@@ -53,6 +53,7 @@ using namespace GALILEI;
 // include files for Qt
 class QWorkspace;
 class QListViewItem;
+class QLabel;
 
 
 //-----------------------------------------------------------------------------

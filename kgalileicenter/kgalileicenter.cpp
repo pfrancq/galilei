@@ -73,6 +73,8 @@ using namespace GALILEI;
 #include <klocale.h>
 #include <kio/job.h>
 #include <kio/netaccess.h>
+#include <kpopupmenu.h>
+#include <kstatusbar.h>
 
 
 //-----------------------------------------------------------------------------
