@@ -204,6 +204,7 @@ void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw
 		{
 			if(ExtractWord(ptr,word))
 			{
+				TotalWords++;
 				if((!stop->IsIn<const char*>(word()))&&(Lang->ValidWord(word)))
 				{
 					stem=Lang->GetStemming(word);
@@ -233,7 +234,6 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	int max,act;
 	GDict* stop;
 	GDict* dic;
-	unsigned tot=0;
 
 	// Verify that xml structure exists.
 	if(!xml)
@@ -244,25 +244,27 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	content=xml->GetContent();
 	RAssert(content);
 
-	// Find Language with the maximal number of words of the stoplist contained
-	// in the document.
 	if(Lang&&session->IsStaticLang())
 	{
+		// Static Language
 		stop=session->GetStop(Lang);
 	}
 	else
 	{
+		// Find Language with the maximal number of words of the stoplist contained
+		// in the document.
 		max=0;
 		for(CurLang.Start();!CurLang.End();CurLang.Next())
 		{
 			TotalWords=0;
 			act=AnalyseTagForStopKwd(content,dic=session->GetStop(CurLang()));
-			if(act>max)
+			// The document must contain a minimum of stopwords to be considered
+			// to be of the current language.
+			if((act)&&(act>max)&&(((double)act)/((double)TotalWords))>=session->GetMinStopWords())
 			{
 				Lang=CurLang();
 				max=act;
 				stop=dic;
-				tot=TotalWords;
 			}
 		}
 		if(!Lang) return;
@@ -270,8 +272,7 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 
 	// Analyse it
 	Words->Clear();
-	TotalWords=tot;
-	NbWords=NbDiffWords=0;
+	TotalWords=NbWords=NbDiffWords=0;
 	AnalyseContentTag(content,stop,session->GetDic(Lang));
 
 	// Make it 'Updated' and tell all the profiles that have judge this
