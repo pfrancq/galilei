@@ -195,7 +195,7 @@ void GALILEI::GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 
 		// Search the next keywords.
 		len=0;
-		while((*ptr)&&(!isspace(*ptr)&&((*ptr)!=sep))
+		while((*ptr)&&(!isspace(*ptr))&&((*ptr)!=sep))
 		{
 			ptr++;
 			len++;
