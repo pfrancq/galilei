@@ -61,6 +61,13 @@
 
 
 //-----------------------------------------------------------------------------
+// Defines
+#ifndef GALILEITEST
+	#define GALILEITEST 1
+#endif
+
+
+//-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
@@ -135,6 +142,11 @@ class GGroupingRandom;
 class GGroupingCursor;
 class GGroupCalc;
 class GGroupCalcCursor;
+#if GALILEITEST
+	class GSubject;
+	class GSubjectCursor;
+	class GSubjectTree;
+#endif
 
 
 //-----------------------------------------------------------------------------
