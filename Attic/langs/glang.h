@@ -71,6 +71,15 @@ namespace GALILEI{
 class GLang : public R::RLang, public GPlugin<GFactoryLang>
 {
 protected:
+	class SkipWord
+	{
+	public:
+		R::RString Word;
+		SkipWord(const char* w) : Word(w) {}
+		int Compare(const SkipWord* w) {return(Word.Compare(w->Word));}
+		int Compare(const SkipWord& w) {return(Word.Compare(w.Word));}
+		int Compare(const char* w) {return(Word.Compare(w));}
+	};
 
 	/**
 	* Dictionnary.
@@ -83,23 +92,9 @@ protected:
 	GDict* Stop;
 
 	/**
-	* This class represents words that must be skipped when numbers are
-	* presented. For example: 16nd, or 12h20.
+	* List of word that must be skipped when there are part of a sequence
+	* beginning with a number.
 	*/
-	class SkipWord
-	{
-	public:
-		R::RString Word;
-
-		SkipWord(const char* w) : Word(w) {}
-		int Compare(const SkipWord* w)
-			{return(Word.Compare(w->Word));}
-		int Compare(const SkipWord& w)
-			{return(Word.Compare(w.Word));}
-		int Compare(const char* w)
-			{return(Word.Compare(w));}
-	};
-
 	R::RContainer<SkipWord,unsigned int,true,true> SkipWords;
 
 public:
@@ -150,12 +145,6 @@ public:
 	virtual R::RString& GetStemming(const R::RString& kwd);
 
 	/**
-	* See if a given word is a valid one, don't content text and numbers that
-	* are to skip.
-	*/
-	bool ValidWord(const R::RString& kwd);
-
-	/**
 	* Get the dictionnary attached to the language.
 	* @return Pointer to GDict.
 	*/
@@ -193,6 +182,12 @@ public:
 	* @returns Number of groups.
 	*/
 	unsigned int GetNbWordList(void) const;
+
+	/**
+	* Look if a given word is supposed to be skip.
+	* @param wd              Word to test.
+	*/
+	bool ToSkip(const char* wd);
 
 	/**
 	* Destructor.

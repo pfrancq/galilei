@@ -155,48 +155,6 @@ RString& GLang::GetStemming(const RString& _kwd)
 
 
 //-----------------------------------------------------------------------------
-bool GLang::ValidWord(const RString& kwd)
-{
-	char look[10];
-	const char* ptr=kwd();
-	char* ptr2;
-	char len;
-	bool v;
-
-	// The first character must be a number.
-	if(!isdigit(*ptr)) return(true);
-
-	// Analyse word
-	v=true;
-	while(*ptr)
-	{
-		// Look for a number
-		while((*ptr)&&(isdigit(*ptr)))
-			ptr++;
-		if(!(*ptr)) return(true);     // If not number found -> Valid word
-
-		// put letters in look with maximal 10
-		ptr2=look;
-		len=0;
-		while((*ptr)&&(!isdigit(*ptr))&&(!ispunct(*ptr)))
-		{
-			if(len<9)
-				(*(ptr2++))=(*ptr);
-			ptr++;
-		}
-		if(len<9)
-		{
-			// Look if it is a skipword
-			(*ptr2)=0;
-			v=!(SkipWords.IsIn<const char*>(look));
-			if(v) return(true);
-		}
-	}
-	return(v);
-}
-
-
-//-----------------------------------------------------------------------------
 GDict* GLang::GetDict(void) const
 {
 	return(Dict);
@@ -239,6 +197,13 @@ unsigned int GLang::GetNbWordList(void) const
 {
 	if(!Dict) return(0);
 	return(Dict->GetNbGroupsList());
+}
+
+
+//-----------------------------------------------------------------------------
+bool GLang::ToSkip(const char* wd)
+{
+	return(SkipWords.IsIn<const char*>(wd));
 }
 
 
