@@ -46,9 +46,10 @@ using namespace RGA;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <infos/giwordweight.h>
+#include <infos/giwordsweights.h>
 #include <galilei/qlistviewitemtype.h>
 #include <galilei/qgdocxml.h>
-#include <infos/giwordoccur.h>
 #include <docs/gdoc.h>
 #include <docs/gdocxml.h>
 #include <profiles/guser.h>
@@ -178,11 +179,11 @@ void KViewDoc::ConstructFdbks(void)
 //-----------------------------------------------------------------------------
 void KViewDoc::ConstructResults(void)
 {
-	GIWordOccurCursor Words=Document->GetWordOccurCursor();
+	GIWordWeightCursor Words=Document->GetWordWeightCursor();
 
 	for (Words.Start();!Words.End();Words.Next())
 	{
-		new QListViewItem(Results,Doc->GetSession()->GetWord(Words()->GetId(),Document->GetLang()), QString(itoa(Words()->GetNbOccurs())));
+		new QListViewItem(Results,Doc->GetSession()->GetWord(Words()->GetId(),Document->GetLang()), QString(dtoa(Words()->GetWeight())));
 	}
 }
 

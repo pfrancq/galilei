@@ -476,7 +476,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/infos/Makefile.am]
-files=kgalileicenter/galilei/infos/ginfo.cpp,kgalileicenter/galilei/infos/ginfo.h,kgalileicenter/galilei/infos/giword.cpp,kgalileicenter/galilei/infos/giword.h,kgalileicenter/galilei/infos/giwordlist.cpp,kgalileicenter/galilei/infos/giwordlist.h,kgalileicenter/galilei/infos/giwordoccur.cpp,kgalileicenter/galilei/infos/giwordoccur.h,kgalileicenter/galilei/infos/giwordoccurs.cpp,kgalileicenter/galilei/infos/giwordoccurs.h,kgalileicenter/galilei/infos/giwordsweights.cpp,kgalileicenter/galilei/infos/giwordsweights.h,kgalileicenter/galilei/infos/giwordweight.cpp,kgalileicenter/galilei/infos/giwordweight.h
+files=kgalileicenter/galilei/infos/ginfo.cpp,kgalileicenter/galilei/infos/ginfo.h,kgalileicenter/galilei/infos/giword.cpp,kgalileicenter/galilei/infos/giword.h,kgalileicenter/galilei/infos/giwordlist.cpp,kgalileicenter/galilei/infos/giwordlist.h,kgalileicenter/galilei/infos/giwordsweights.cpp,kgalileicenter/galilei/infos/giwordsweights.h,kgalileicenter/galilei/infos/giwordweight.cpp,kgalileicenter/galilei/infos/giwordweight.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=infos
 sub_dirs=
@@ -513,30 +513,6 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/infos/giwordlist.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/galilei/infos/giwordoccur.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/galilei/infos/giwordoccur.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[kgalileicenter/galilei/infos/giwordoccurs.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kgalileicenter/galilei/infos/giwordoccurs.h]
 dist=true
 install=false
 install_location=
