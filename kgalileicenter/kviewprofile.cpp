@@ -151,7 +151,36 @@ void KViewProfile::ConstructFdbks(void)
 	QListViewItemType* hs= new QListViewItemType(Fdbks, "HS Judgements");
 	hs->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/stop.png"));
 
-	// Add Judgements
+	// Add Judgements from profiles.
+	Docs=Profile->GetProfDocCursor();
+	for(Docs.Start();!Docs.End();Docs.Next())
+	{
+		switch(Docs()->GetFdbk())
+		{
+			case djOK:
+				p=ok;
+				break;
+			case djKO:
+				p=ko;
+				break;
+			case djNav:
+				p=n;
+				break;
+			case djOutScope:
+				p=hs;
+				break;
+			default:
+				p=0;
+				break;
+		}
+		if(!p) continue;
+		d=Docs()->GetUpdated();
+		sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
+		QListViewItemType* prof = new QListViewItemType(Docs()->GetDoc(),p,Docs()->GetDoc()->GetName(),Docs()->GetDoc()->GetURL(),sDate);
+		prof->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/apps/konqueror.png"));
+	}
+	
+	// Add Judgements from subprofiles.
 	SubCur=Profile->GetSubProfilesCursor();
 	for (SubCur.Start(); !SubCur.End(); SubCur.Next())
 	{
