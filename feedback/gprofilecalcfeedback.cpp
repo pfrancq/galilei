@@ -187,7 +187,7 @@ void GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) throw(bad_all
 {
 	GWeightInfo** ptr;
 	unsigned int i,nb;
-	GWeightInfos* Vector=s->GetVector();
+	GWeightInfos* Vector=s;
 
 	// Clear the Vector.
 	s->RemoveRefs();
