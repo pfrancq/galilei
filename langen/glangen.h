@@ -40,12 +40,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rstd/rcontainer.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <langs/glang.h>
 
 
