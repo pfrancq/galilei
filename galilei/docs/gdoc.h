@@ -318,6 +318,12 @@ public:
 	GProfDocCursor& GetProfDocCursor(void);
 
 	/**
+	* Get the number of judgments on the document.
+	* @return unsigned int
+	*/
+	unsigned int GetNbFdbks(void) const;
+
+	/**
 	* Compute the similarity between documents.
 	*/
 	virtual double Similarity(const GDoc* doc) const;

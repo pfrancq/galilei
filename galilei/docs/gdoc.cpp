@@ -142,6 +142,13 @@ void GALILEI::GDoc::SetInfos(GLang *l,unsigned int n,unsigned int nd,unsigned in
 
 
 //-----------------------------------------------------------------------------
+unsigned int GALILEI::GDoc::GetNbFdbks(void) const
+{
+	return(Fdbks.NbPtr);
+}
+
+
+//-----------------------------------------------------------------------------
 GProfDocCursor& GALILEI::GDoc::GetProfDocCursor(void)
 {
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
