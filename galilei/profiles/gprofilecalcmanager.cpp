@@ -68,7 +68,7 @@ GProfileCalcManager::GProfileCalcManager(const char* path) throw(GException)
 	RString Msg;
 
 	loader<>& l=loader<>::instance();
-	Path+="/profiles";
+	Path+="/profiling";
 	l.addto_search_path(Path());
 	dp=opendir(Path);
 	if(!dp) return;
