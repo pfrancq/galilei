@@ -355,12 +355,9 @@ bool GWeightInfos::SimilarityBool(const GWeightInfos* w,unsigned int nb) const
 		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
 		{
 			j--;
-			if(((*ptr)->GetWeight()>0)||((*ptr2)->GetWeight()>0))
-			{
-				same++;
-				if(same>=nb)
-					return(true);
-			}
+			same++;
+			if(same>=nb)
+				return(true);
 			ptr2++;
 		}
 		ptr++;
