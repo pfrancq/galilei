@@ -76,7 +76,7 @@ GSubject::GSubject(RString name,unsigned int id)
 {
 	IsJudged=0;
 	IsUsed=false;
-	urls=new RContainer<GDoc,unsigned,false,false> (10,5);
+	urls=new RContainer<GDoc,unsigned,false,false> (100,50);
 	Name=name;
 	Id=id;
 }
@@ -86,6 +86,13 @@ GSubject::GSubject(RString name,unsigned int id)
 void GSubject::InsertDoc(GDoc* d) throw(bad_alloc)
 {
 	urls->InsertPtr(d);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GSubject::GetNbDocs(void) const
+{
+	return(urls->NbPtr);
 }
 
 

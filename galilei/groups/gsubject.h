@@ -156,6 +156,11 @@ public:
 	void InsertDoc(GDoc* d) throw(bad_alloc);
 
 	/**
+	* Return the number of documents associated to this subject.
+	*/
+	unsigned int GetNbDocs(void) const;
+
+	/**
 	* Compare a subject with a given name.
 	* @param name           Name used for the comparaison.
 	* @returns 0 if the same, -1 or +1 if different.
