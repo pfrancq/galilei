@@ -131,7 +131,7 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd)
 	// Look if users' feedback must be loaded
 	if((cmd==0)||(cmd==2))
 	{
-		txtRem->setText("Load Users' Feedbacks ...");
+		txtRem->setText("Load Users Feedbacks ...");
 		KApplication::kApplication()->processEvents();
 		Session->InitFdbks();
 	}
@@ -228,7 +228,7 @@ void QSessionProgressDlg::ComputeProfile(GProfile* prof)
 
 	try
 	{
-		txtRem->setText(QString("Compute Profile'")+prof->GetName()+"' ...");
+		txtRem->setText(QString("Compute Profile '")+prof->GetName()+"' ...");
 		KApplication::kApplication()->processEvents();
 		Session->CalcProfile(prof);
 		txtRem->setText("Finish");
