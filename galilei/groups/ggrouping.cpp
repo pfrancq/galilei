@@ -45,6 +45,7 @@ using namespace RStd;
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
 #include <profiles/gprofile.h>
+#include <profiles/gsubprofiles.h>
 #include <sessions/gsession.h>
 #include <sessions/gslot.h>
 using namespace GALILEI;
@@ -139,8 +140,7 @@ void GALILEI::GGrouping::DeleteGroup(GGroup* grp)
 void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
-	GProfileCursor cur;
-	GSubProfile* sub;
+	GSubProfileCursor cur;
 	GGroup* Grp;
 	GGroup** Tab;
 	unsigned int i;
@@ -169,12 +169,11 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 
 		// Go through the profiles corresponding to the language and that are
 		// to inserted.
-		cur=Session->GetProfilesCursor();
+		cur=Session->GetSubProfilesCursor(CurLang());
 		for(cur.Start();!cur.End();cur.Next())
 		{
-			sub=cur()->GetSubProfile(CurLang());
-			if(sub->IsDefined())
-				SubProfiles.InsertPtr(sub);
+			if(cur()->IsDefined())
+				SubProfiles.InsertPtr(cur());
 		}
 
 		// Make the grouping
