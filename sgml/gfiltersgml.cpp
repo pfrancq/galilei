@@ -335,7 +335,7 @@ void GALILEI::GFilterSGML::AnalyseContent(void)
 			}
 			if ((CurTag->Type == Tag::tTEXT)&&(bEndTag) )
 			{
-				contentT->DeleteEmptyTags();
+				contentT->DeleteEmptyTags(Doc);
 				return; // fin du text!!
 			}
 		}

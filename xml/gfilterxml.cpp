@@ -280,6 +280,7 @@ void GALILEI::GFilterXML::InitCharContainer(void)
 	
 }
 
+
 //---------------------------------------------------------------------------
 void GALILEI::GFilterXML::AnalyseMeta(void)
 {
@@ -324,9 +325,7 @@ void GALILEI::GFilterXML::AnalyseMeta(void)
 }
 
 
-
-
-
+//---------------------------------------------------------------------------
 void GALILEI::GFilterXML::AnalyseContent(void)
 {
 	RXMLTag *actuelT, *contentT;
@@ -336,7 +335,7 @@ void GALILEI::GFilterXML::AnalyseContent(void)
 	char *oldBlock, *insert;
 	int level;
 
-// Init Part
+	// Init Part
 	memset(openT,0,9*sizeof(RXMLTag*));
 	openT[0]=contentT=Doc->GetContent();
 	level= MinOpenLevel= 0;
@@ -372,7 +371,7 @@ void GALILEI::GFilterXML::AnalyseContent(void)
 			}
 			if ((CurTag->Type == Tag::tTEXT)&&(bEndTag) )
 			{
-				contentT->DeleteEmptyTags();
+				contentT->DeleteEmptyTags(Doc);
 				return; // fin du text!!
 			}
 		}
