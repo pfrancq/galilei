@@ -173,7 +173,7 @@ public:
 	* Compute a profile.
 	* @param profile        Profile to compute.
 	*/
-	virtual void Compute(GSubProfileRef subprofile) throw(GException);
+	virtual void Compute(GSubProfile* subprofile) throw(GException);
 
 	/**
 	* Get the type of the method implemented. This method is used for the
