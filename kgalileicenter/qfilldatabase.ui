@@ -1,0 +1,317 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>QFillEmptyDatabase</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>QFillEmptyDatabase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>406</width>
+            <height>429</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Fill Database from Directory</string>
+    </property>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButton2_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>160</x>
+                <y>380</y>
+                <width>92</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>GroupBox1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>250</y>
+                <width>380</width>
+                <height>120</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>Box</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
+        </property>
+        <property name="title">
+            <string>Configuration</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>30</y>
+                    <width>150</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Path to Directory :</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>70</y>
+                    <width>150</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Path to script (.py) :</string>
+            </property>
+        </widget>
+        <widget class="KURLRequester">
+            <property name="name">
+                <cstring>KUDirectory</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>170</x>
+                    <y>30</y>
+                    <width>200</width>
+                    <height>28</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="KURLRequester">
+            <property name="name">
+                <cstring>KUScript</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>170</x>
+                    <y>70</y>
+                    <width>200</width>
+                    <height>28</height>
+                </rect>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>GroupBox2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>380</width>
+                <height>230</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Database Parameters</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_3</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>40</y>
+                    <width>150</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Database Name :</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_4</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>80</y>
+                    <width>150</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Host :</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_5</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>120</y>
+                    <width>150</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>User :</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>LEName</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>170</x>
+                    <y>40</y>
+                    <width>190</width>
+                    <height>24</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>LEHost</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>170</x>
+                    <y>80</y>
+                    <width>190</width>
+                    <height>24</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>LEUser</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>170</x>
+                    <y>120</y>
+                    <width>190</width>
+                    <height>24</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>LEPassword</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>170</x>
+                    <y>160</y>
+                    <width>190</width>
+                    <height>24</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_6_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>190</y>
+                    <width>150</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>lang :</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_6</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>160</y>
+                    <width>150</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Password :</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <item>
+                <property name="text">
+                    <string>en</string>
+                </property>
+            </item>
+            <item>
+                <property name="text">
+                    <string>fr</string>
+                </property>
+            </item>
+            <property name="name">
+                <cstring>CBLang</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>307</x>
+                    <y>190</y>
+                    <width>50</width>
+                    <height>24</height>
+                </rect>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButton2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>290</x>
+                <y>380</y>
+                <width>92</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
+        </property>
+    </widget>
+</widget>
+<connections>
+    <connection>
+        <sender>PushButton2</sender>
+        <signal>pressed()</signal>
+        <receiver>QFillEmptyDatabase</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton2_2</sender>
+        <signal>pressed()</signal>
+        <receiver>QFillEmptyDatabase</receiver>
+        <slot>reject()</slot>
+    </connection>
+</connections>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
