@@ -152,6 +152,11 @@ class KGALILEICenterApp : public KMainWindow
 	GLinkCalcManager LinkCalcManager;
 
 	/**
+	* Linking Manager.
+	*/
+	GPostDocManager PostDocManager;
+
+	/**
 	* The configuration object of the application.
 	*/
 	KConfig* Config;

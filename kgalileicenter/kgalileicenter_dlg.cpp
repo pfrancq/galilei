@@ -113,6 +113,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	GFactoryGroupCalcCursor GroupCalc;
 	GFactoryGroupingCursor Grouping;
 	GFactoryStatsCalcCursor StatsCalc;
+	GFactoryPostDocCursor PostDoc;
 	GFactoryDocAnalyseCursor DocAnalyse;
 	QPlugins dlg(this,"Plugins Dialog");
 	QString str;
@@ -260,6 +261,31 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.CurrentLinkCalc->setEnabled(true);
 	}
 
+	// Goes through the PostDoc method
+	def=cur=0;
+	PostDoc=PostDocManager.GetPostDocsCursor();
+	dlg.CurrentPostDoc->insertItem("None",0);
+	for(PostDoc.Start(),idx=1;!PostDoc.End();PostDoc.Next(),idx++)
+	{
+		str=PostDoc()->GetName();
+		str+=" [";
+		str+=PostDoc()->GetLib();
+		str+="]";
+		cur=new QPostDocItem(dlg.PostDocs,PostDoc(),str);
+		dlg.CurrentPostDoc->insertItem(PostDoc()->GetName(),idx);
+		if((PostDoc()->GetPlugin())&&(PostDoc()->GetPlugin()==PostDocManager.GetCurrentMethod()))
+			dlg.CurrentPostDoc->setCurrentItem(idx);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.PostDocs->setSelected(def,true);
+		dlg.changePostDoc(def);
+		dlg.EnablePostDoc->setEnabled(true);
+		dlg.CurrentPostDoc->setEnabled(true);
+	}
+
 	// Goes through languages
 	def=cur=0;
 	Lang=Langs.GetLangsCursor();
@@ -401,26 +427,44 @@ void KGALILEICenterApp::slotPlugins(void)
 		{
 		}
 
-		// Goes through the languages method
-		QLangItem* item7=dynamic_cast<QLangItem*>(dlg.Langs->firstChild());
+		// Goes through the PostDoc method
+		QPostDocItem* item7=dynamic_cast<QPostDocItem*>(dlg.PostDocs->firstChild());
 		while(item7)
 		{
 			if(item7->Enable)
 				item7->Fac->Create(getSession());
 			else
 				item7->Fac->Delete(getSession());
-			item7=dynamic_cast<QLangItem*>(item7->itemBelow());
+			item7=dynamic_cast<QPostDocItem*>(item7->itemBelow());
+		}
+		try
+		{
+			PostDocManager.SetCurrentMethod(dlg.CurrentPostDoc->currentText());
+		}
+		catch(GException)
+		{
 		}
 
-		// Goes through groups computing method
-		QDocAnalyseItem* item8=dynamic_cast<QDocAnalyseItem*>(dlg.DocAnalyses->firstChild());
+		// Goes through the languages method
+		QLangItem* item8=dynamic_cast<QLangItem*>(dlg.Langs->firstChild());
 		while(item8)
 		{
 			if(item8->Enable)
 				item8->Fac->Create(getSession());
 			else
 				item8->Fac->Delete(getSession());
-			item8=dynamic_cast<QDocAnalyseItem*>(item8->itemBelow());
+			item8=dynamic_cast<QLangItem*>(item8->itemBelow());
+		}
+
+		// Goes through groups computing method
+		QDocAnalyseItem* item9=dynamic_cast<QDocAnalyseItem*>(dlg.DocAnalyses->firstChild());
+		while(item9)
+		{
+			if(item9->Enable)
+				item9->Fac->Create(getSession());
+			else
+				item9->Fac->Delete(getSession());
+			item9=dynamic_cast<QDocAnalyseItem*>(item9->itemBelow());
 		}
 		try
 		{

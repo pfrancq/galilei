@@ -215,6 +215,37 @@ void QPlugins::slotStatCalcEnable( bool state )
 }
 
 
+void QPlugins::slotPostDocEnable( bool state )
+{
+    if(!PostDocs->currentItem()) return;
+    QPostDocItem* f=dynamic_cast<QPostDocItem*>(PostDocs->currentItem());
+    f->Enable=state;
+}
+
+void QPlugins::slotConfigPostDoc()
+{
+    if(!PostDocs->currentItem()) return;
+    QPostDocItem* f=dynamic_cast<QPostDocItem*>(PostDocs->currentItem());
+    f->Fac->Configure();
+}
+
+void QPlugins::changePostDoc( QListViewItem * item )
+{
+              if(!item) return;
+	QPostDocItem* f=dynamic_cast<QPostDocItem*>(item);
+	EnablePostDoc->setChecked(f->Enable);
+	ConfigPostDoc->setEnabled(f->Fac->HasConfigure());
+	AboutPostDoc->setEnabled(f->Fac->HasAbout());
+}
+
+void QPlugins::slotAboutPostDoc()
+{
+    if(!PostDocs->currentItem()) return;
+    QPostDocItem* f=dynamic_cast<QPostDocItem*>(PostDocs->currentItem());
+    f->Fac->About();
+}
+
+
 void QPlugins::changeLang(QListViewItem* item)
 {
         	if(!item) return;

@@ -110,7 +110,7 @@ public:
 	* @param lmng           Linking Manager.
 	*/
 	void LoadSession(unsigned int cmd,GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(GException,bad_alloc);
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng) throw(GException,bad_alloc);
 
 	/**
 	* Create a XML structure.

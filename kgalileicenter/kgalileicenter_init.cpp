@@ -88,7 +88,7 @@ KGALILEICenterApp::KGALILEICenterApp(void)
 	  DocAnalyseManager(getenv("GALILEI_PLUGINS_LIB")),
 	  ProfilingManager(getenv("GALILEI_PLUGINS_LIB")), GroupingManager(getenv("GALILEI_PLUGINS_LIB")),
 	  GroupCalcManager(getenv("GALILEI_PLUGINS_LIB")), StatsCalcManager(getenv("GALILEI_PLUGINS_LIB")),
-	  LinkCalcManager(getenv("GALILEI_PLUGINS_LIB")),
+	  LinkCalcManager(getenv("GALILEI_PLUGINS_LIB")),PostDocManager(getenv("GALILEI_PLUGINS_LIB")),
 	  dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0)
 {
 	Config=kapp->config();
@@ -240,6 +240,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Conf.Store(GroupCalcManager);
 	Conf.Store(StatsCalcManager);
 	Conf.Store(LinkCalcManager);
+	Conf.Store(PostDocManager);
 	Conf.Save();
 }
 
@@ -302,6 +303,7 @@ void KGALILEICenterApp::readOptions(void)
 		Conf.Read(GroupCalcManager);
 		Conf.Read(StatsCalcManager);
 		Conf.Read(LinkCalcManager);
+		Conf.Read(PostDocManager);
 	}
 	catch(...)
 	{

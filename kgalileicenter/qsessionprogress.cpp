@@ -95,7 +95,7 @@ QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char*
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangs* langs,GURLManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng) throw(GException,bad_alloc)
+		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng) throw(GException,bad_alloc)
 {
 	btnOk->setEnabled(false);
 	show();
@@ -118,7 +118,7 @@ void QSessionProgressDlg::LoadSession(unsigned int cmd,GLangs* langs,GURLManager
 
 	txtRem->setText("Connect (Loading Dicionnaries/Stoplists) ...");
 	KApplication::kApplication()->processEvents();
-	Session->Connect(langs,umng,dmng,pmng,gmng,gcmng,smng,lmng);
+	Session->Connect(langs,umng,dmng,pmng,gmng,gcmng,smng,lmng,pdmng);
 
 	Session->LoadSubjectTree();
 

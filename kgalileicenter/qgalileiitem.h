@@ -47,6 +47,7 @@
 #include <groups/ggroupcalc.h>
 #include <sessions/gstatscalc.h>
 #include <docs/glinkcalc.h>
+#include <docs/gpostdoc.h>
 #include <langs/glang.h>
 #include <docs/gdocanalyse.h>
 using namespace GALILEI;
@@ -122,6 +123,18 @@ public:
 	GFactoryLinkCalc* Fac;
 	bool Enable;
 	QLinkCalcItem(QListView* lst,GFactoryLinkCalc* fac,const char* desc)
+		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+
+class QPostDocItem : public QListViewItem
+{
+public:
+	GFactoryPostDoc* Fac;
+	bool Enable;
+	QPostDocItem(QListView* lst,GFactoryPostDoc* fac,const char* desc)
 		: QListViewItem(lst,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
