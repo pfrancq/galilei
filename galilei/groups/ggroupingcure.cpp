@@ -339,15 +339,14 @@ double  GALILEI::GGroupingCure::CostFunction(RContainer<GGroup,unsigned int,fals
 	}
 	intra/=SubProfiles.NbPtr;
 	return(intra);
-
-	inter=1.0;
-	for(g1=grps->Tab,i=grps->NbPtr;--i;g1++)
-		for(g2=g1+1,j=i+1;--j;g2++)
-			if(SubProfDistance((*g1)->RelevantSubProfile(0),(*g2)->RelevantSubProfile(0))<inter)
-				inter=SubProfDistance((*g1)->RelevantSubProfile(0),(*g2)->RelevantSubProfile(0));
-
+//
+//	inter=1.0;
+//	for(g1=grps->Tab,i=grps->NbPtr;--i;g1++)
+//		for(g2=g1+1,j=i+1;--j;g2++)
+//			if(SubProfDistance((*g1)->RelevantSubProfile(0),(*g2)->RelevantSubProfile(0))<inter)
+//				inter=SubProfDistance((*g1)->RelevantSubProfile(0),(*g2)->RelevantSubProfile(0));
+//
 //	return(intra/inter);
-
 }
 
 
