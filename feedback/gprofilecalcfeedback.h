@@ -70,21 +70,29 @@ class GProfileCalcFeedback : public GProfileCalc
 protected:
 
 	/**
-	* List of words' frequences in the "OK" and "N" documents for the different
-	* languages.
+	* Gloabal vectors computed.
 	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> OK;
-
-	/**
-	* List of words' frequences in the "KO" documents for the different
-	* languages.
-	*/
-	RStd::RContainer<GIWordsWeights,unsigned int,true,true> KO;
+	RStd::RContainer<GIWordsWeights,unsigned int,true,true> Vectors;
 
 	/**
 	* Maximal number of the non-zero weights in the vector.
 	*/
 	unsigned int MaxNonZero;
+
+	/**
+	* "Beta" Parameter of the standard user feedback theory.
+	*/
+	double Beta;
+
+	/**
+	* "Gamma" Parameter of the standard user feedback theory.
+	*/
+	double Gamma;
+
+	/**
+	* Add the informations from the KO doc or substract them.
+	*/
+	bool AddKO;
 
 public:
 
@@ -118,10 +126,48 @@ public:
 	void SetMaxNonZero(unsigned int n) {MaxNonZero=n;}
 
 	/**
-	* Computes the OK and KO lists for a profile.
+	* Get the "Beta" Parameter.
+	* @returns double value of the "beta" parameter.
+	*/
+	double GetBeta(void) const {return(Beta);}
+
+	/**
+	* Set the "Beta" Parameter.
+	* @param b              Value of the "gamma" parameter.
+	*/
+	void SetBeta(double b) {Beta=b;}
+
+	/**
+	* Get the "Gamma" Parameter.
+	* @returns double value of the "gamma" parameter.
+	*/
+	double GetGamma(void) const {return(Gamma);}
+
+	/**
+	* Set the "Gamma" Parameter.
+	* @param g              Value of the "gamma" parameter.
+	*/
+	void SetGamma(double g) {Gamma=g;}
+
+	/**
+	* See if the KO documents are added or substract while compiling the
+	* profile.
+	* @returns true if there are added.
+	*/
+	bool GetAddKO(void) const {return(AddKO);}
+
+	/**
+	* Set if the KO documents are added or substract while compiling the
+	* profile.
+	* @param b              true if there are added.
+	*/
+	void SetAddKO(bool b) {AddKO=b;}
+
+	/**
+	* Compute the global vectors.
 	* @param profile        Profile to compute.
 	*/
-	void ComputeOKKO(GProfile* profile) throw(bad_alloc);
+	void ComputeGlobal(GProfile* profile) throw(bad_alloc);
 
 	/**
 	* Computes the subprofile of a profile.
