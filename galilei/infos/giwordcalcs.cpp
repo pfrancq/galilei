@@ -57,6 +57,14 @@ const GInfo::GInfoType GALILEI::GIWordCalcs::InfoType(void) const
 
 
 //---------------------------------------------------------------------------
+void GALILEI::GIWordCalcs::Clear(void)
+{
+	RContainer<GIWordCalc,unsigned,true,true>::Clear();
+	NbWordsDocs=0.0;
+}
+
+
+//---------------------------------------------------------------------------
 void GALILEI::GIWordCalcs::Analyse(GDoc *doc)
 {
 	GIWordCalc* w;

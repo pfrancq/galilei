@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	gprofile.h
+	GProfile.h
 
-	Basic Information - Implementation.
+	Profile - Implementation.
 
 	(C) 2001 by P. Francq.
 
@@ -31,7 +31,7 @@
 
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 #ifndef GProfileH
 #define GProfileH
 
@@ -41,58 +41,59 @@
 #include <time.h>
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //include files for R Project
 #include <rstd/rcontainer.h>
 #include <rstd/rstring.h>
-using namespace RStd;
-
-
-//---------------------------------------------------------------------------
-// include files for GALILEI
-#include <gprofiles/gsubprofile.h>
-#include <gprofiles/gprofdoc.h>
-#include <gprofiles/guser.h>
-using namespace GALILEI ;
 
 
 //-----------------------------------------------------------------------------
-//include file for ANSI C/C++
-#include <time.h>
+// include files for GALILEI
+#include <gprofiles/gsubprofile.h>
+#include <gprofiles/gprofdoc.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
+//-----------------------------------------------------------------------------
 
-class GUser;
-//class GWordCalcs;
 
 //-----------------------------------------------------------------------------
-// class GProfile
+// Forward class declaration
+class GUser;
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GProfile class provides a representation of a profile. In fact, it is a
+* container of subprofiles, each subprofile corresponding to a language.
+* @author Pascal Francq
+* @short Profile.
+*/
 class GProfile : public RStd::RContainer<GSubProfile,unsigned,true,true>
 {
-public:
-
 	/**
 	* The owner of the profile.
 	*/
-	GUser *Owner;
+	GUser* Owner;
 
 	/**
-	* Identifier
+	* Identificator of the profile.
 	*/
 	unsigned Id;
 
 	/**
-	* name
+	* Name of the profile.
 	*/
-	RString Name;
+	RStd::RString Name;
 
 	/**
 	* Profile modified since last analyse ? (T/F)
 	*/
 	bool Modified;
-	
+
+public:
+
 	/**
 	* Documents juged by profile
 	*/
@@ -104,37 +105,57 @@ public:
 	time_t	Updated;
 
 	/**
-	* Default Constructor.
+	* Constructor.
+	* @param owner          User of the profile.
 	*/
     GProfile(GUser *owner) throw(bad_alloc);
 	
     /**
 	* Constructor og GProfile
-	* @param owner          the owner of the profile.
-	* @param id             id of the profile.
-	* @param name           name of the profile.
+	* @param owner          User of the profile.
+	* @param id             Identificator of the profile.
+	* @param name           Name of the profile.
 	*/
-	GProfile(GUser *owner,unsigned int id,RString &name) throw(bad_alloc);
+	GProfile(GUser *owner,const unsigned int id,const char* name) throw(bad_alloc);
 	
 	/**
 	* Comparaison function
 	*/
-	int Compare(const unsigned int &id);
+	int Compare(const unsigned int &id) const;
 	
 	/**
 	* Comparaison function
 	*/
-	int Compare(const GProfile &profile);
+	int Compare(const GProfile &profile) const;
 	
 	/**
 	* Comparaison function
 	*/
-	int Compare(const GProfile *profile);
+	int Compare(const GProfile *profile) const;
 
 	/**
-	* Calculation of the profile
+	* Get the identificator of the profile.
+	* @return Identificator.
 	*/
-	void Calc(void);
+	unsigned int GetId(void) const {return(Id);}
+
+	/**
+	* Get the name of the profile.
+	* @return Pointer to a C String.
+	*/
+	const char* GetName(void) const {return(Name());}
+
+	/**
+	* Get the user of the profile.
+	* @return Pointer to the user.
+	*/
+	const GUser* GetUser(void) const {return(Owner);}
+
+	/**
+	* Test if the profile was modified.
+	* @returns Boolean.
+	*/
+	bool IsModified(void) const {return(Modified);}
 
 	/**
 	* Start the iterator to go trough the documents judged.

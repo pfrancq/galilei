@@ -65,8 +65,8 @@ public:
 
   // Dictionnaries
   virtual void LoadDics(void) throw(bad_alloc,GException)=0;
-  GDict* GetDic(GLang *lang) throw(GException);
-  GDict* GetStop(GLang *lang) throw(GException);
+  GDict* GetDic(const GLang* lang) throw(GException);
+  GDict* GetStop(const GLang* lang) throw(GException);
   void ClearDics(void) throw(GException);
   void ClearStops(void) throw(GException);
 	virtual unsigned DicNextId(const RString& word)=0;

@@ -52,12 +52,10 @@ class GProfile;
 */
 class GSubProfile
 {
-public:
-
 	/**
 	* Owner profile of the subprofile.
 	*/
-	GProfile *Owner;
+	GProfile* Owner;
 
 	/**
 	* Identifier of the subprofile.
@@ -67,7 +65,7 @@ public:
 	/**
 	* Language of the subprofile.
 	*/
-	GLang *Lang;
+	GLang* Lang;
 
 	/**
 	* List OK.
@@ -83,13 +81,20 @@ public:
 	* List Common.
 	*/
 	GIWordList* Common;
-	
+
+public:
+
 	/**
 	* Must Attach to group ? (T/F).
 	*/
 	bool bToAttach;
 
+	/**
+	* Time when attached.
+	*/
 	time_t Attached;
+
+public:
 
 	/**
 	* Default Constructor.
@@ -97,31 +102,69 @@ public:
 	GSubProfile(void) throw(bad_alloc);
 
 
-	/** Constructor of the subprofile.
+	/**
+	* Constructor of the subprofile.
 	* @param owner          owner profile
 	* @param id             identifier
 	* @param lang           Language of the subprofile
 	*/
-	GSubProfile(GProfile *owner,unsigned int id,GLang *lang) throw(bad_alloc);
-
-	/** boolean functions for calculation of OK, KO and Common lists.
-	*/
-	bool NeedOK(unsigned int NbOK);
-	bool NeedKO(unsigned int NbKO);
+	GSubProfile(GProfile* owner,unsigned int id,GLang* lang) throw(bad_alloc);
 
 	/**
-	* Comparaison functions
+	* Compare methods used by RStd::RContainer.
 	*/
-	int Compare(const unsigned int id);
-	int Compare(const GLang* lang);
-	int Compare(const GSubProfile &subprofile);
-	int Compare(const GSubProfile *subprofile);	
+	int Compare(const unsigned int id) const;
 
 	/**
-	* Analyse of the subprofile
+	* Compare methods used by RStd::RContainer.
 	*/
-	void Analyse(GProfDoc *profdoc);
-	void Analyse(void);
+	int Compare(const GLang* lang) const;
+
+	/**
+	* Compare methods used by RStd::RContainer.
+	*/
+	int Compare(const GSubProfile &subprofile) const;
+
+	/**
+	* Compare methods used by RStd::RContainer.
+	*/
+	int Compare(const GSubProfile *subprofile) const;
+	
+	/**
+	* Get the identifier of the subprofile.
+	* @return Identificator.
+	*/
+	unsigned int GetId(void) const {return(Id);}
+
+	/**
+	* Get the language of the subprofile.
+	* @return Pointer to the language.
+	*/
+	GLang* GetLang(void) const {return(Lang);}
+
+	/**
+	* Get the corresponding profile.
+	* @return Pointer to the profile.
+	*/
+	const GProfile* GetProfile(void) const {return(Owner);}
+
+	/**
+	* Get the list of word for OK.
+	* @return Pointer to the list.
+	*/
+	GIWordList* GetOK(void) const {return(OK);}
+
+	/**
+	* Get the list of word for KO.
+	* @return Pointer to the list.
+	*/
+	GIWordList* GetKO(void) const {return(KO);}
+
+	/**
+	* Get the list of word for Common.
+	* @return Pointer to the list.
+	*/
+	GIWordList* GetCommon(void) const {return(Common);}
 
 	/**
 	* Boolean function for calculation of similarity between SubProfiles.

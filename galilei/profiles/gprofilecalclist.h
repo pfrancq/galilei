@@ -40,8 +40,6 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-// class GUsers
-//-----------------------------------------------------------------------------
 /**
 * The GProfileCalcList class provides a representation for a method to compute
 * a specific profile, i.e. its sub-profiles by using the "lists" method base on
@@ -63,13 +61,19 @@ class GProfileCalcList : public GProfileCalc
 	*/
 	RStd::RContainer<GIWordCalcs,unsigned int,true,true> KO;
 
+	/**
+	* Size of the OK and KO lists of the profiles.
+	*/
+	unsigned int Size;
+
 public:
 
 	/**
 	* Constructor.
 	* @param session        Session.
+	* @param size           Size of the OK and KO lists of the profiles.
 	*/
-	GProfileCalcList(GSession* session) throw(bad_alloc);
+	GProfileCalcList(GSession* session,const unsigned int size) throw(bad_alloc);
 
 	/**
 	* Compute a profile.

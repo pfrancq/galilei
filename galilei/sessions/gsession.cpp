@@ -59,20 +59,20 @@ GSession::GSession(void) throw(bad_alloc,GException)
 
 
 //---------------------------------------------------------------------------
-GDict* GSession::GetDic(GLang *lang) throw(GException)
+GDict* GSession::GetDic(const GLang *lang) throw(GException)
 {
   if(!lang) throw(GException("Error in ""GSession::GetDic"": Language not defined"));
   if(!Dics) throw(GException("Error in ""GSession::GetDic"": Dictionnaries not created"));
-  return(Dics->GetPtr<GLang*>(lang,false));
+  return(Dics->GetPtr<const GLang*>(lang,false));
 }
 
 
 //---------------------------------------------------------------------------
-GDict* GSession::GetStop(GLang *lang) throw(GException)
+GDict* GSession::GetStop(const GLang *lang) throw(GException)
 {
   if(!lang) throw(GException("Error in ""GSession::GetStop"": Language not defined"));
   if(!Stops) throw(GException("Error in ""GSession::GetStop"": StopLists not created"));
-  return(Stops->GetPtr<GLang*>(lang,false));
+  return(Stops->GetPtr<const GLang*>(lang,false));
 }
 
 

@@ -117,6 +117,7 @@ public:
 
 	/**
 	*/
+	void Clear(void);
 	void Analyse(GDoc *doc);
 	void EndCalc(void);
 

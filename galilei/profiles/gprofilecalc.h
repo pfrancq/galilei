@@ -41,8 +41,14 @@ namespace GALILEI{
 */
 class GProfileCalc
 {
-public:
+protected:
+
+	/**
+	* Session.
+	*/
 	GSession *Session;
+
+public:
 
 	/**
 	* Constructor.
