@@ -351,7 +351,8 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 		case CmpIdeal:
 			if(!Groups)
 				throw GException("No Ideal Groups Defined");
-			sprintf(tmp,"Compare with Ideal Groups",i->Param1());
+			strcpy(tmp,"Compare with Ideal Groups");
+			Rec->WriteStr(tmp);
 			GCompareGrouping Comp(Session,Groups);
 			Comp.Compare(0);
 			Precision=Comp.GetPrecision();
