@@ -321,6 +321,11 @@ public:
 	GProfDocCursor& GetProfDocCursor(void);
 
 	/**
+	* Compute similarity between document.
+	*/
+	double Similarity(const GDoc* doc) const;
+
+	/**
 	* Add a judgement for this document.
 	* @param j              Judgement.
 	*/

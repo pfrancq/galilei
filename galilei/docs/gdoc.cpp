@@ -34,6 +34,7 @@
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
+#include <math.h>
 
 
 //-----------------------------------------------------------------------------
@@ -164,6 +165,46 @@ GProfDocCursor& GALILEI::GDoc::GetProfDocCursor(void)
 	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
 	cur->Set(Fdbks);
 	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
+double GALILEI::GDoc::Similarity(const GDoc* doc) const
+{
+	double Sim=0.0;
+	GIWordWeight** ptr=Words->Tab;
+	GIWordWeight** ptr2=doc->Words->Tab;
+	unsigned int i=Words->NbPtr+1;
+	unsigned int j=doc->Words->NbPtr;
+	double norm1=0.0;
+	double norm2=0.0;
+
+	while(--i)
+	{
+		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
+		{
+			j--;
+			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+			ptr2++;
+		}
+		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
+		{
+			j--;
+			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+			Sim+=(*ptr)->GetWeight()*(*ptr2)->GetWeight();
+			ptr2++;
+		}
+		norm1+=(*ptr)->GetWeight()*(*ptr)->GetWeight();
+		ptr++;
+	}
+	while(j)
+	{
+		j--;
+		norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+		ptr2++;
+	}
+	Sim/=(sqrt(norm1)*sqrt(norm2));
+	return(Sim);
 }
 
 
