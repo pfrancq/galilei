@@ -105,6 +105,10 @@ void GALILEI::GIdealGroup::CreateJudgement(RStd::RContainer<GGroupIdParentId,uns
 
 	// Create the ideal groupment corresponding to the precedent judgment.
 	Subjects->IdealGroupment(groups,Session,parent);
+	
+	Session->SaveFdbks();
+	
+	// Save the ideal groupment into the database.
 	Session->SaveIdealGroupment(groups);
 }
 
@@ -124,7 +128,7 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 void GALILEI::GIdealGroup::SetSettings(const char* s)
 {
 	if(!(*s)) return;
-	sscanf(s,"%u %u %u",&PercOK,&PercKO,&Rand);
+	sscanf(s,"%u %u %i",&PercOK,&PercKO,&Rand);
 }
 
 

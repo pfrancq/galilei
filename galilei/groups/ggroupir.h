@@ -78,6 +78,7 @@ public:
 class GGroupIR : public RGGA::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
 {
 protected:
+	bool Done;
 
 	/**
 	* Average similarity between the profiles of the group.

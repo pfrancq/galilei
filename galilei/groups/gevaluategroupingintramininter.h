@@ -6,7 +6,7 @@
 
 	Compare a ideal groupement with a computed one - Header.
 
-	(C) 2002 by David Wartel
+	(C) 2002 by David Wartel and Lamoral Julien
 
 	Version $Revision$
 
@@ -65,39 +65,23 @@ public:
 	* @param s              Session.
 	* @param groups         Ideal groupement.
 	*/
-	GEvaluateGroupingIntraMinInter(GSession* s,RContainer<GGroups,unsigned int,true,true>* groups) throw(bad_alloc);
+	GEvaluateGroupingIntraMinInter(GSession* s,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups) throw(bad_alloc);
 
 
 
 public:
 
-    /**
+	/**
 	* runs the evaluation of the clustering..
 	*/
 	virtual double Run(void);
 
 
 	/**
-	* returns the most relevant profile (centroid) of  a group;
-	*/
-	GSubProfile* RelevantSubProfile(GGroup* grp);
-
-	/**
-	* calculates the clainsky index ( criterion to determine 
+	* calculates the clainsky index ( criterion to determine
 	* the number of clusters).
 	*/
 	double CalcIntraMinInter(void);
-
-	/**
-	* returns the similarity between a subprofile and its group.
-	*/
-	double GroupSumSimilarity(GSubProfile * s, GGroup *grp);
-
-	/**
-	* returns the sum of similarities between a subprofile and 
-	* all the other subprofiles.
-	*/
-	double SumSimilarity(GSubProfile * s);
 
 	/**
 	* returns the number of groups in the clustering.

@@ -32,11 +32,13 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
-#include<groups/gevaluategroupingcalinski.h>
-#include<groups/ggroup.h>
-#include<groups/ggroups.h>
-#include<profiles/gsubprofile.h>
+// include files for GALILEI
+#include <groups/gevaluategroupingcalinski.h>
+#include <tests/ggroupsevaluate.h>
+#include <tests/ggroupevaluate.h>
+#include <groups/ggroup.h>
+#include <groups/ggroups.h>
+#include <profiles/gsubprofile.h>
 using namespace GALILEI;
 
 
@@ -48,7 +50,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GEvaluateGroupingCalinski::GEvaluateGroupingCalinski(GSession* s
-			,RContainer<GGroups,unsigned int,true,true>* groups)  throw(bad_alloc)
+			,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups)  throw(bad_alloc)
 	: GEvaluateGrouping("Calinski Index", s, groups, 1)
 {
 
@@ -62,94 +64,68 @@ double GALILEI::GEvaluateGroupingCalinski::Run(void)
 }
 
 
-
-//-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GEvaluateGroupingCalinski::RelevantSubProfile(GGroup* grp)
-{
-	GSubProfile* finalsub;
-	GSubProfile* sub1;
-	double refsum=0.0;
-	for(grp->Start(); !grp->End(); grp->Next())
-	{
-		sub1 = (*grp)();
-		double sum=GroupSumSimilarity(sub1, grp);
-		if (sum>=refsum)
-		{
-			finalsub=sub1;
-			refsum=sum;
-		}	
-	}
-	return(finalsub);
-}
-
-
-//-----------------------------------------------------------------------------
-double GALILEI::GEvaluateGroupingCalinski::GroupSumSimilarity(GSubProfile * s, GGroup *grp)
-{
-	double sum=0.0;
-	GSubProfile** sub1;
-	unsigned i;
-	for(sub1=grp->Tab,i=grp->NbPtr;--i;sub1++)
-		sum=sum+s->Similarity((*sub1));
-	return(sum);
-}
-
-
-
 //-----------------------------------------------------------------------------
 double GALILEI::GEvaluateGroupingCalinski::CalcCalinski()
 {                                 
-	GSubProfile* mean;
-	double refsum=0.0, ssw=0.0, ssb=0.0;
+	unsigned int mean;
+	double refsum=-1.0, ssw=0.0, ssb=0.0;
+	double sum;
 	double cal;
 	unsigned int k=GetNbGroups();
-	int n=SubProfiles.NbPtr;
+	int n;
 
-	for (SubProfiles.Start();!SubProfiles.End(); SubProfiles.Next())
+	n=0;
+	for (Groups->Start(); !Groups->End(); Groups->Next())
 	{
-		double sum=SumSimilarity((SubProfiles)());
-		if (sum>refsum)
+		GGroupsEvaluate* grs=(*Groups)();
+		for (grs->Start(); !grs->End();grs->Next())
 		{
-			refsum=sum;
-			mean=(SubProfiles)();
-		} 
+		n+=(*grs)()->NbProfDoc();
+		}
 	}
 
-   // ssw & ssb calculation 
+	for (Groups->Start(); !Groups->End(); Groups->Next())
+	{
+		GGroupsEvaluate* grs=(*Groups)();
+		for (grs->Start(); !grs->End();grs->Next())
+		{
+			GGroupEvaluate* gr=(*grs)();
+			for(gr->Start(); !gr->End();gr->Next())
+			{
+				sum=gr->SumSimilarity(gr->Current());
+				cout<<sum<<" sum "<<gr->Current()<<endl;
+				if (sum>refsum)
+				{
+					refsum=sum;
+					mean=gr->Current();
+				}
+			}
+		}
+	}
+	// ssw & ssb calculation
 	for (Groups->Start(); !Groups->End(); Groups->Next())
 	{
 		if ((*Groups)()->NbPtr==0) continue;
 		for ((*Groups)()->Start(); !(*Groups)()->End(); (*Groups)()->Next())
 		{
-			GGroup* gr=(*(*Groups)())();
-			GSubProfile* center= RelevantSubProfile(gr);
+			GGroupEvaluate* gr=(*(*Groups)())();
+			unsigned int center=gr->RelevantSubDoc();
 			for (gr->Start(); !gr->End(); gr->Next())
 			{
-				double dist=(1.0)-(*gr)()->Similarity(center);
+				double dist=(1.0)-gr->Similarity(center,gr->Current());
 				ssw=ssw+(dist*dist);
 			}
-			double dist2=(1.0)-(center->Similarity(mean));
-			ssb=ssb+((gr->NbPtr)*(dist2*dist2));
+			double dist2=(1.0)-(gr->Similarity(mean,center));
+			ssb=ssb+((gr->NbPtr())*(dist2*dist2));
 		}
 	}
 
 	//index calculation
-	cal=(ssb/(k-1))/(ssw/(n-k)); 
+	cal=(ssb/(k-1))/(ssw/(n-k));
 	return(cal);
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GEvaluateGroupingCalinski::SumSimilarity(GSubProfile * s)
-{
-	double sum=0.0;
-	unsigned i;
-	GSubProfile** sub1;
-
-	for (sub1=SubProfiles.Tab,i=SubProfiles.NbPtr;--i;sub1++)
-		sum=sum+s->Similarity((*sub1));
-	return(sum);
-}
 
 //-----------------------------------------------------------------------------
 int GALILEI::GEvaluateGroupingCalinski::GetNbGroups(void)
@@ -157,8 +133,7 @@ int GALILEI::GEvaluateGroupingCalinski::GetNbGroups(void)
 	unsigned int k=0;
 
 	for (Groups->Start(); !Groups->End(); Groups->Next())
-		k+=(*Groups)()->NbPtr; 
-	cout << "nb groupes:="<<k<<endl;
+		k+=(*Groups)()->NbPtr;
 	return(k);
 }
 

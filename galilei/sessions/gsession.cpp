@@ -356,6 +356,7 @@ void GALILEI::GSession::InsertFdbk(GProfile* p,GDoc* d,tDocJudgement j,const cha
 	Fdbks.InsertPtr(f=new GProfDoc(d,p,j,date));
 	p->AddJudgement(f);
 	d->AddJudgement(f);
+	p->SetState(osUpdated);
 }
 
 

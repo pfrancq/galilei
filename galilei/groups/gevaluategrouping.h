@@ -83,13 +83,7 @@ protected:
 	/**
 	* Ideal Groups.
 	*/
-	RContainer<GGroups,unsigned int,true,true>* Groups;
-
-
-	/**
-	* all subprofiles grouped..
-	*/
-	RStd::RContainer<GSubProfile,unsigned int,false,true> SubProfiles;
+	RContainer<GGroupsEvaluate,unsigned int,true,true>* Groups;
 
 
 
@@ -101,7 +95,7 @@ public:
 	* @param s              Session.
 	* @param groups         Ideal groupement.
 	*/
-	GEvaluateGrouping(RString name, GSession* s,RContainer<GGroups,unsigned int,true,true>* groups, unsigned int i) throw(bad_alloc);
+	GEvaluateGrouping(RString name, GSession* s,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups, unsigned int i) throw(bad_alloc);
 
 
 public:

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GEvaluateGroupingVariance.h
+	GGroupEvaluate.cpp
 
-	Compare a ideal groupement with a computed one - Header.
+	Representation of groups of subprofiles and groups of documents.
 
-	(C) 2002 by David Wartel & Julien Lamoral
+	(C) 2002 by Julien Lamoral
 
 	Version $Revision$
 
@@ -32,67 +32,41 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GEvaluateGroupingVarianceH
-#define GEvaluateGroupingVarianceH
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
-#include <groups/gevaluategrouping.h>
+#include <tests/ggroupevaluate.h>
+using namespace GALILEI;
+
+
+
+//-----------------------------------------------------------------------------
+//
+//  GGroupEvaluate
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GALILEI::GGroupEvaluate::GGroupEvaluate(GLang* lang)
+	:  Lang(lang)
+{
+}
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
+int GALILEI::GGroupEvaluate::Compare(const GGroupEvaluate& ) const
+{
+	return(-1);
+}
+
 
 //-----------------------------------------------------------------------------
-/**
-* The GEvaluateGroupingVariance provides a way to evaluate a clustering by
-* providing the variance.
-* @author David Wartel & Julien Lamoral
-* @short Clustering Evaluation x.
-*/
-class GEvaluateGroupingVariance : public GEvaluateGrouping
+int GALILEI::GGroupEvaluate::Compare(const GGroupEvaluate* ) const
+{
+	return(-1);
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GGroupEvaluate::~GGroupEvaluate(void)
 {
 
-
-public:
-
-	/**
-	* Constructor.
-	* @param s              Session.
-	* @param groups         Groupement of profile or document.
-	*/
-	GEvaluateGroupingVariance(GSession* s,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups) throw(bad_alloc);
-
-protected:
-
-
-
-public:
-
-	/**
-	* runs the evaluation of the clustering..
-	*/
-	virtual double Run(void);
-
-	/**
-	* calculates the clainsky index ( criterion to determine
-	* the number of clusters).
-	*/
-	double CalcVariance(void);
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GEvaluateGroupingVariance(void);
-};
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
-
-
-//-----------------------------------------------------------------------------
-#endif
-
+}

@@ -32,12 +32,15 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
-#include<groups/gevaluategroupingintramininter.h>
-#include<groups/ggroup.h>
-#include<groups/ggroups.h>
-#include<profiles/gsubprofile.h>
+// include files for GALILEI
+#include <groups/gevaluategroupingintramininter.h>
+#include <tests/ggroupsevaluate.h>
+#include <tests/ggroupevaluate.h>
+#include <groups/ggroup.h>
+#include <groups/ggroups.h>
+#include <profiles/gsubprofile.h>
 using namespace GALILEI;
+
 
 
 //-----------------------------------------------------------------------------
@@ -48,7 +51,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GEvaluateGroupingIntraMinInter::GEvaluateGroupingIntraMinInter(GSession* s
-			,RContainer<GGroups,unsigned int,true,true>* groups)  throw(bad_alloc)
+			,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups)  throw(bad_alloc)
 	: GEvaluateGrouping("Intra / Min(Inter)", s, groups, 3)
 {
 
@@ -64,62 +67,31 @@ double GALILEI::GEvaluateGroupingIntraMinInter::Run(void)
 
 
 //-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GEvaluateGroupingIntraMinInter::RelevantSubProfile(GGroup* grp)
-{
-	GSubProfile* finalsub;
-	GSubProfile* sub1;
-	double refsum=0.0;
-	for(grp->Start(); !grp->End(); grp->Next())
-	{
-		sub1 = (*grp)();
-		double sum=GroupSumSimilarity(sub1, grp);
-		if (sum>=refsum)
-		{
-			finalsub=sub1;
-			refsum=sum;
-		}	
-	}
-	return(finalsub);
-}
-
-
-//-----------------------------------------------------------------------------
-double GALILEI::GEvaluateGroupingIntraMinInter::GroupSumSimilarity(GSubProfile * s, GGroup *grp)
-{
-	double sum=0.0;
-	GSubProfile** sub1;
-	unsigned i;
-
-	for(sub1=grp->Tab,i=grp->NbPtr;--i;sub1++)
-		sum=sum+s->Similarity((*sub1));
-	return(sum);
-}
-
-
-
-//-----------------------------------------------------------------------------
 double GALILEI::GEvaluateGroupingIntraMinInter::CalcIntraMinInter()
-{                                 
-	double intra, inter=1.0;
+{
+	double intra=0.0, inter=1.0;
 	int nbsubprofiles=0;
-	GSubProfile **s1, **s2;
-	unsigned int i, j;
-
-	RContainer<GSubProfile,unsigned int,false,false>* protos;
-	protos = new RContainer<GSubProfile,unsigned int,false,false> (25, 10);
+	unsigned int i,j,s1,s2;
+	
+	int* protos;
+	protos=new int [GetNbGroups()];
+	for (int i=0; i<GetNbGroups();i++)
+	protos[i]=-1;
 
 	// calculation of 'intra'
-	for (Groups->Start(); !Groups->End(); Groups->Next())
+	i=0;
+	for (Groups->Start();!Groups->End();Groups->Next())
 	{
 		if ((*Groups)()->NbPtr==0) continue;
 		for ((*Groups)()->Start(); !(*Groups)()->End(); (*Groups)()->Next())
 		{
-			GGroup* grp=(*(*Groups)())() ;
-			GSubProfile* s1= RelevantSubProfile(grp);
-			protos->InsertPtr(s1);
+			GGroupEvaluate* grp=(*(*Groups)())();
+			unsigned int s=grp->RelevantSubDoc();
+			protos[i]=s;
+			i++;
 			for (grp->Start(); !grp->End(); grp->Next())
 			{
-				double dist=(1.0)-((*grp)()->Similarity(s1));
+				double dist=(1.0)-(grp->Similarity(s,grp->Current()));
 				intra=intra+(dist*dist);
 				nbsubprofiles++;
 			}
@@ -128,34 +100,35 @@ double GALILEI::GEvaluateGroupingIntraMinInter::CalcIntraMinInter()
 	intra/=nbsubprofiles;
 
 	// calculation of 'min(inter)'
-	
-	for(s1=protos->Tab,i=protos->NbPtr;--i;s1++)
+
+	for(s1=0, i=GetNbGroups();--i;s1++)
 	{
 		for(s2=s1+1,j=i+1;--j;s2++)
 		{
-			double dist=((1-0)-(*s1)->Similarity(*s2));
-			dist=dist*dist;
-			if(dist<=inter)
-				inter=dist;
+			for (Groups->Start();!Groups->End();Groups->Next())
+			{
+				if ((*Groups)()->NbPtr==0) continue;
+				for ((*Groups)()->Start(); !(*Groups)()->End(); (*Groups)()->Next())
+				{
+					GGroupEvaluate* grp=(*(*Groups)())() ;
+					if(grp->IsIn(protos[s2]))
+					{
+						double dist=(1.0)-grp->Similarity(protos[s1],protos[s2]);
+						dist=dist*dist;
+						if(dist<=inter&&dist!=0)
+						{
+							inter=dist;
+						}
+ 					}
+				}
+			}
 		}
 	}
-
 	return(intra/(inter*GetNbGroups()));
 	
 }
 
 
-//-----------------------------------------------------------------------------
-double GALILEI::GEvaluateGroupingIntraMinInter::SumSimilarity(GSubProfile * s)
-{
-	double sum=0.0;
-	GSubProfile** sub1;
-	unsigned i;
-
-	for (sub1=SubProfiles.Tab,i=SubProfiles.NbPtr;--i;sub1++)
-		sum=sum+s->Similarity((*sub1));
-	return(sum);
-}
 
 //-----------------------------------------------------------------------------
 int GALILEI::GEvaluateGroupingIntraMinInter::GetNbGroups(void)
@@ -163,9 +136,7 @@ int GALILEI::GEvaluateGroupingIntraMinInter::GetNbGroups(void)
 	unsigned int k=0;
 
 	for (Groups->Start(); !Groups->End(); Groups->Next())
-		k+=(*Groups)()->NbPtr; 
-	cout << "nb groupes:="<<k<<endl;
-
+		k+=(*Groups)()->NbPtr;
 	return(k);
 }
 

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GEvaluateGroupingVariance.h
+	GGroupsEvaluate.cpp
 
-	Compare a ideal groupement with a computed one - Header.
+	GroupsEvaluate for a given language - Implementation.
 
-	(C) 2002 by David Wartel & Julien Lamoral
+	(C) 2001 by J. Lamoral.
 
 	Version $Revision$
 
@@ -32,67 +32,46 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GEvaluateGroupingVarianceH
-#define GEvaluateGroupingVarianceH
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
-#include <groups/gevaluategrouping.h>
+#include <tests/ggroupsevaluate.h>
+#include <tests/ggroupevaluate.h>
+#include <langs/glang.h>
+using namespace GALILEI;
+using namespace RStd;
+
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
+//
+// class GGroupsEvaluate
+//
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-/**
-* The GEvaluateGroupingVariance provides a way to evaluate a clustering by
-* providing the variance.
-* @author David Wartel & Julien Lamoral
-* @short Clustering Evaluation x.
-*/
-class GEvaluateGroupingVariance : public GEvaluateGrouping
+GALILEI::GGroupsEvaluate::GGroupsEvaluate(GLang* lang) throw(bad_alloc)
+	: RContainer<GGroupEvaluate,unsigned int,false,true>(20,10), Lang(lang)
 {
-
-
-public:
-
-	/**
-	* Constructor.
-	* @param s              Session.
-	* @param groups         Groupement of profile or document.
-	*/
-	GEvaluateGroupingVariance(GSession* s,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups) throw(bad_alloc);
-
-protected:
-
-
-
-public:
-
-	/**
-	* runs the evaluation of the clustering..
-	*/
-	virtual double Run(void);
-
-	/**
-	* calculates the clainsky index ( criterion to determine
-	* the number of clusters).
-	*/
-	double CalcVariance(void);
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GEvaluateGroupingVariance(void);
-};
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
+}
 
 
 //-----------------------------------------------------------------------------
-#endif
+int GALILEI::GGroupsEvaluate::Compare(const GGroupsEvaluate& groups) const
+{
+	return(Lang->Compare(groups.Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GGroupsEvaluate::Compare(const GGroupsEvaluate* groups) const
+{
+	return(Lang->Compare(groups->Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GGroupsEvaluate::Compare(const GLang* lang) const
+{
+	return(Lang->Compare(lang));
+}
+
 

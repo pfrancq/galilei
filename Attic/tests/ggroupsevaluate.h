@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GEvaluateGroupingVariance.h
+	GGroupsEvaluate.h
 
-	Compare a ideal groupement with a computed one - Header.
+	Groups for a given language - Header.
 
-	(C) 2002 by David Wartel & Julien Lamoral
+	(C) 2001 by J. Lamoral
 
 	Version $Revision$
 
@@ -32,14 +32,13 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GEvaluateGroupingVarianceH
-#define GEvaluateGroupingVarianceH
+#ifndef GGroupsEvaluateH
+#define GGroupsEvaluateH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <groups/gevaluategrouping.h>
 
 
 //-----------------------------------------------------------------------------
@@ -48,45 +47,47 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GEvaluateGroupingVariance provides a way to evaluate a clustering by
-* providing the variance.
-* @author David Wartel & Julien Lamoral
-* @short Clustering Evaluation x.
+* The GGroupsEvaluate class provides a representation for all the GroupEvaluates of a given
+* language. The GGroups are ordered by languages.
+* @author Lamoral Julien
+* @short Languages' GroupsEvaluate.
 */
-class GEvaluateGroupingVariance : public GEvaluateGrouping
+class GGroupsEvaluate:public RStd::RContainer<GGroupEvaluate,unsigned int,false,true>
 {
-
+	/**
+	* Language corresponding to the set of groups.
+	*/
+	GLang* Lang;
 
 public:
 
 	/**
 	* Constructor.
-	* @param s              Session.
-	* @param groups         Groupement of profile or document.
+	* @param lang           Pointer to the corresponding language.
 	*/
-	GEvaluateGroupingVariance(GSession* s,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups) throw(bad_alloc);
-
-protected:
-
-
-
-public:
+	GGroupsEvaluate(GLang* lang) throw(bad_alloc);
 
 	/**
-	* runs the evaluation of the clustering..
+	* Compare method needed by RStd::RContainer.
 	*/
-	virtual double Run(void);
+	int Compare(const GGroupsEvaluate& groups) const;
 
 	/**
-	* calculates the clainsky index ( criterion to determine
-	* the number of clusters).
+	* Compare method needed by RStd::RContainer.
 	*/
-	double CalcVariance(void);
+	int Compare(const GGroupsEvaluate* groups) const;
 
 	/**
-	* Destructor.
+	* Compare method needed by RStd::RContainer.
 	*/
-	virtual ~GEvaluateGroupingVariance(void);
+	int Compare(const GLang* lang) const;
+
+	/**
+	* Get the language of the set of groups.
+	* @return Pointer to the language.
+	*/
+	GLang* GetLang(void) const {return(Lang);}
+
 };
 
 
@@ -95,4 +96,3 @@ public:
 
 //-----------------------------------------------------------------------------
 #endif
-

@@ -6,7 +6,7 @@
 
 	Compare a ideal groupement with a computed one - Implementation
 
-	(C) 2002 by David Wartel
+	(C) 2002 by David Wartel & Julien Lamoral
 
 	Version $Revision$
 
@@ -32,13 +32,13 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
-#include<groups/gevaluategroupingvariance.h>
-#include<groups/ggroup.h>
-#include<groups/ggroups.h>
-#include<profiles/gsubprofile.h>
-
+// include files for GALILEI
+#include <groups/gevaluategroupingvariance.h>
+#include <tests/ggroupevaluate.h>
+#include <tests/ggroupsevaluate.h>
+#include <profiles/gsubprofile.h>
 using namespace GALILEI;
+
 
 
 //-----------------------------------------------------------------------------
@@ -49,7 +49,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GEvaluateGroupingVariance::GEvaluateGroupingVariance(GSession* s
-			,RContainer<GGroups,unsigned int,true,true>* groups)  throw(bad_alloc)
+			,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups)  throw(bad_alloc)
 	: GEvaluateGrouping("Variance", s, groups, 2)
 {
 
@@ -66,8 +66,8 @@ double GALILEI::GEvaluateGroupingVariance::Run(void)
 
 //-----------------------------------------------------------------------------
 double GALILEI::GEvaluateGroupingVariance::CalcVariance()
-{                                 
-	double var;
+{
+	double var=0;
 	int nbsubprofiles=0;
 	// calculation of variance
 	for (Groups->Start(); !Groups->End(); Groups->Next())
@@ -75,51 +75,20 @@ double GALILEI::GEvaluateGroupingVariance::CalcVariance()
 		if ((*Groups)()->NbPtr==0) continue;
 		for ((*Groups)()->Start(); !(*Groups)()->End(); (*Groups)()->Next())
 		{
-			GGroup* grp=(*(*Groups)())() ;
-			GSubProfile* s1= RelevantSubProfile(grp);
+			GGroupEvaluate* grp=(*(*Groups)())() ;
+			unsigned int s1= grp->RelevantSubDoc();
 			for (grp->Start(); !grp->End(); grp->Next())
 			{
-				double dist=(1.0)-((*grp)()->Similarity(s1));
+				double dist=(1.0)-grp->Similarity(s1,grp->Current());
 				var+=dist;
 				nbsubprofiles++;
 			}
 		}
 	}
+	var/=nbsubprofiles;
 	return(var);
 }
 
-//-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GEvaluateGroupingVariance::RelevantSubProfile(GGroup* grp)
-{
-	GSubProfile* finalsub;
-	GSubProfile* sub1;
-	double refsum=0.0;
-
-	for(grp->Start(); !grp->End(); grp->Next())
-	{
-		sub1 = (*grp)();
-		double sum=GroupSumSimilarity(sub1, grp);
-		if (sum>=refsum)
-		{
-			finalsub=sub1;
-			refsum=sum;
-		}	
-	}
-	return(finalsub);
-}
-
-
-//-----------------------------------------------------------------------------
-double GALILEI::GEvaluateGroupingVariance::GroupSumSimilarity(GSubProfile * s, GGroup *grp)
-{
-	double sum=0.0;
-	GSubProfile** sub1;
-	unsigned i;
-
-	for(sub1=grp->Tab,i=grp->NbPtr;--i;sub1++)
-		sum=sum+s->Similarity((*sub1));
-	return(sum);
-}
 
 
 //-----------------------------------------------------------------------------

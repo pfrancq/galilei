@@ -119,6 +119,7 @@ void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,t
 		}
 	}
 	delete docs;
+	Session->SaveFdbks();
 }
 
 

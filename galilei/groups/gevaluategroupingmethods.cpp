@@ -32,16 +32,16 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
-#include<groups/gevaluategroupingmethods.h>
-
-using namespace GALILEI;
-
-
-//-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rcontainercursor.h>
 using namespace RStd;
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <groups/gevaluategroupingmethods.h>
+using namespace GALILEI;
+
 
 
 //-----------------------------------------------------------------------------

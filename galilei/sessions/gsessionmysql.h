@@ -166,6 +166,12 @@ public:
 	virtual void LoadSubjectTree(GSubjectTree* subjects);
 
 	/**
+	* Load the ideal groupment of document.
+	* @param idealgroup   The ideal container of GroupsEvaluate	
+	*/
+	virtual void LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,true,true>* idealgroup);
+
+	/**
 	* Load the ideal groupment.
 	* @param idealgroup   The ideal container of group	
 	*/

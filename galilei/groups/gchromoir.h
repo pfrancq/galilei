@@ -39,6 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rgga/rchromog.h>
+#include <rpromethee/rpromkernel.h>
 
 
 //-----------------------------------------------------------------------------
@@ -59,6 +60,8 @@ namespace GALILEI {
 */
 class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
 {
+	class GroupsPair;
+
 	/**
 	* Similarities between the subprofiles to group.
 	*/
@@ -92,6 +95,28 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 	double DiffFactor;
 
 	/**
+	* Average similarity of the groups.
+	*/
+	double LocalAvgSim;
+
+	/**
+	* Average number of profiles in the groups.
+	*/
+	double LocalAvgProf;
+
+	/**
+	* Factor representing the part of subprofiles having common OK documents
+	* and that are in the same group.
+	*/
+	double LocalOKFactor;
+
+	/**
+	* Factor representing the part of subprofiles having common documents but
+	* with different judgements and that are in the same group.
+	*/
+	double LocalDiffFactor;
+
+	/**
 	* Temporary array of Objects (Thread dependent data).
 	*/
 	GObjIR** thObjs1;
@@ -100,6 +125,20 @@ class GChromoIR : public RGGA::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadData
 	* Temporary array of Objects (Thread dependent data).
 	*/
 	GObjIR** thObjs2;
+	unsigned int NbObjs1;
+	unsigned int NbObjs2;
+
+	bool** Pairs;
+
+	unsigned int NbRows;
+
+	RPromethee::RPromKernel* Prom;
+	RPromethee::RPromCriterion* CritSim;
+	RPromethee::RPromCriterion* CritNb;
+	RPromethee::RPromCriterion* CritOKDocs;
+	RPromethee::RPromCriterion* CritDiffDocs;
+	RPromethee::RPromSol* Sol1;
+	RPromethee::RPromSol* Sol2;
 
 public:
 
@@ -149,6 +188,18 @@ public:
 	virtual void Evaluate(void);
 
 	/**
+	* Evaluation of the chromosomes. Actually, it is just the average of the
+	* intern similarities.
+	*/
+	virtual void LocalEvaluate(unsigned int id);
+
+	/**
+	* Evaluation of the chromosomes. Actually, it is just the average of the
+	* intern similarities.
+	*/
+	virtual void LocalEvaluate(unsigned int id1,unsigned int id2);
+
+	/**
 	* Do the standard crossover of the GGA and do a reorganisation after.
 	*/
 	virtual bool Crossover(GChromoIR* parent1,GChromoIR* parent2);
@@ -157,6 +208,12 @@ public:
 	* Do the standard mutation of the GGA and do a reorganisation after.
 	*/
 	virtual bool Mutation(void);
+
+	void Set(unsigned int id1,unsigned int id2,bool s);
+
+	bool Get(unsigned int id1,unsigned int id2);
+
+	void Set(unsigned int id1,bool s);
 
 	/**
 	* Does a reorganisation of the chromosome.

@@ -47,7 +47,7 @@ using namespace RIO;
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
+// include files for GALILEI
 #include <sessions/gsessionmysql.h>
 #include <langs/glang.h>
 #include <langs/gdict.h>
@@ -62,6 +62,8 @@ using namespace RIO;
 #include <docs/gdocs.h>
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
+#include <tests/ggroupsevaluate.h>
+#include <tests/ggroupevaluatedoc.h>
 #include <groups/gsubjecttree.h>
 #include <filters/gmimefilter.h>
 #include <urlmanagers/gurlmanager.h>
@@ -401,6 +403,38 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,true,true>* idealgroup)
+{
+
+	char sSql[100];
+	GGroupsEvaluate* groups;
+	GGroupEvaluateDoc* group;
+	GLangCursor Langs;
+	idealgroup->Clear();
+	Langs=GetLangsCursor();
+	for(Langs.Start();!Langs.End();Langs.Next())
+	{
+		groups = new GGroupsEvaluate(Langs());
+		sprintf(sSql,"SELECT distinct groupid FROM idealgroup WHERE langid='%s'",Langs()->GetCode());
+		RQuery sel(this,sSql);
+		for(sel.Begin();sel.IsMore();sel++)
+		{
+			RContainer<GDoc,unsigned int,false,true>* doc=new RContainer<GDoc,unsigned int,false,true>(100,50);
+			sprintf(sSql,"SELECT htmlid FROM htmls where subsubjectid=%u",atoi(sel[0]));
+			RQuery sub(this,sSql);
+			for(sub.Begin();sub.IsMore();sub++)
+			{
+				doc->InsertPtr(GetDoc(atoi(sub[0])));
+			}
+			group=new GGroupEvaluateDoc(atoi(sel[0]),Langs(),doc,this);
+			groups->InsertPtr(group);
+		}
+		idealgroup->InsertPtr(groups);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::LoadIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup)
 {
 	GGroups* groups;
@@ -415,7 +449,7 @@ void GALILEI::GSessionMySQL::LoadIdealGroupment(RContainer<GGroups,unsigned int,
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		groups = new GGroups(Langs());
-		sprintf(sSql,"SELECT groupid FROM idealgroup WHERE langid='%s'",Langs()->GetCode());
+		sprintf(sSql,"SELECT distinct groupid FROM idealgroup WHERE langid='%s'",Langs()->GetCode());
 		RQuery sel(this,sSql);
 		for(sel.Begin();sel.IsMore();sel++)
 		{
@@ -627,8 +661,9 @@ void GALILEI::GSessionMySQL::SaveFdbks(void) throw(GException)
 			default:
 				throw GException("No Valid Judgement");
 		}
-		sprintf(sSql,"INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES(%u,%c,%u,CURDATE())",
+		sprintf(sSql,"INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES(%u,'%c',%u,CURDATE())",
 		        Fdbks()->GetDoc()->GetId(),j,Fdbks()->GetProfile()->GetId());
+		cout<<sSql<<endl;
 		RQuery fdbks(this,sSql);
 
 	}

@@ -48,17 +48,9 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GEvaluateGrouping::GEvaluateGrouping(RString name, GSession* s,RContainer<GGroups,unsigned int,true,true>* groups, unsigned int i) throw(bad_alloc)
-	: Name(name), Id(i), Session(s), Groups(groups), SubProfiles(100,20)
+GALILEI::GEvaluateGrouping::GEvaluateGrouping(RString name, GSession* s,RContainer<GGroupsEvaluate,unsigned int,true,true>* groups, unsigned int i) throw(bad_alloc)
+	: Name(name), Id(i), Session(s), Groups(groups)
 {
-	// fill the subprofiles Container
-	for (Groups->Start(); !Groups->End(); Groups->Next())
-		for ((*Groups)()->Start(); !(*Groups)()->End(); (*Groups)()->Next())
-		{
-			GGroup* grp=(*(*Groups)())() ;
-			for (grp->Start(); !grp->End(); grp->Next())
-				SubProfiles.InsertPtr((*grp)());
-		}
 }
 
 

@@ -78,10 +78,19 @@ public:
 	*/
 	GGroupIdParentId(int RealId,int parentid) : GrpId(RealId), ParentId(parentid) {}
 
+	/**
+	* Compare method needed by RStd::RContainer.
+	*/
 	int Compare(const GGroupIdParentId* grp) const {return(GrpId-grp->GrpId);}
 
+	/**
+	* Compare method needed by RStd::RContainer.
+	*/
 	int Compare(const int ID) const {return(GrpId-ID);}
 
+	/**
+	* Compare method needed by RStd::RContainer.
+	*/
 	int Compare(const GGroupIdParentId& grp) const {return(GrpId-grp.GrpId);}
 	
 };
@@ -140,20 +149,20 @@ public:
 
 	/**
 	* Compare two subject.
-	* @param id            Tag used for the comparaison.
+	* @param sub            Subject used for the comparaison.
 	* @returns 0 if the same, -1 or +1 if different.
 	*/
 	int Compare(const GSubject *sub) {return(Name.Compare(sub->Name));}
 
 	/**
 	* Compare two subject.
-	* @param id            Tag used for the comparaison.
+	* @param sub            Subject used for the comparaison.
 	* @returns 0 if the same, -1 or +1 if different.
 	*/
 	int Compare(const GSubject &sub) {return(Name.Compare(sub.Name));}
 
 	/**
-	* Comparaison function.
+	* Comparaison two id.
 	* @param id            id used for the comparaison.
 	* @returns 0 if the same, -1 or +1 if different.
 	*/
@@ -167,12 +176,13 @@ public:
 
 	/**
 	* Return the id of the Subject.
-	* @returns a string containing the name.
+	* @returns The id of the subject.
 	*/
 	int GetId(void) {return(Id);};
 
 	/**
-	* Return isjudged.
+	* Return true if the subject is judged
+	* @returns IsJudged.
 	*/
 	bool isJudged(void) {return(IsJudged);}
 
@@ -194,13 +204,13 @@ public:
 
 	/**
 	* Return the Lang of the Subject.
-	* @returns a string containing the lang.
+	* @param lg              The lang of the subject.
 	*/
 	void SetLang(const char* lg) {Lang=lg;}
 
 	/**
 	* Return the Lang of the Subject.
-	* @returns a string containing the lang.
+	* @param lang              The lang of the subject.
 	*/
 	void SetLang(const GLang* lang);
 

@@ -417,10 +417,21 @@ public:
 	virtual void LoadIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup)=0;
 
 	/**
+	* Load the ideal groupment of document.
+	* @param idealgroup   The ideal container of group	
+	*/
+	virtual void LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,true,true>* idealgroup)=0;
+
+	/**
 	* Save the ideal groupment
 	* @param idealgroup   The ideal container of group	
 	*/
 	virtual void SaveIdealGroupment(RContainer<GGroups,unsigned int,true,true>* idealgroup)=0;
+
+	/**
+	* Save the feedbaks
+	*/
+	virtual void SaveFdbks(void)=0;
 
 	/**
 	* Run a "program" for this session.

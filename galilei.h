@@ -111,6 +111,8 @@ class GSubjectTree;
 class GIdealGroup;
 class GGroupIdParentId;
 class GGetFeedback;
+class GGroupEvaluate;
+class GGroupsEvaluate;
 
 
 //-----------------------------------------------------------------------------
