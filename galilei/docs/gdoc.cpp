@@ -12,7 +12,7 @@
 
 //---------------------------------------------------------------------------
 // include files for Galilei
-#include "gdoc.h"
+#include <gdocs/gdoc.h>
 #include "gsession.h"
 //#include <HyperPRISME/mysql/mysqlHyperPRISME.h> // for debug only!!!!!!!!!!!!
 using namespace Galilei
