@@ -165,15 +165,10 @@ public:
 	/**
 	* Constructor.
 	* @param str             Storage manager.
-	* @param d               Number of documents.
-	* @param u               Number of users.
-	* @param p               Number of profiles.
-	* @param f               Number of feedbacks.
-	* @param g               Number of groups.
+	* @param sessparams      Parameters of the session.
 	* @param test            Test mode.
 	*/
-	GSession(GStorage* str,unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
-		GSessionParams* sessparams,bool tests) throw(bad_alloc,GException);
+	GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(bad_alloc,GException);
 
 	/**
 	* Connect the session to managers.

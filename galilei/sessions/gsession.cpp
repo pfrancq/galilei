@@ -100,10 +100,11 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSession::GSession(GStorage* str,unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
- GSessionParams* sessparams,bool tests) throw(bad_alloc,GException)
-	: GDocs(d), GUsers(u,p), GGroups(g),
-	  Subjects(0), Fdbks(f+f/2,f/2),
+GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests) throw(bad_alloc,GException)
+	: GDocs(str->GetNbSaved(otDoc)), GUsers(str->GetNbSaved(otUser),str->GetNbSaved(otProfile)),
+	  GGroups(str->GetNbSaved(otGroup)), Subjects(0), Fdbks(str->GetNbSaved(otFdbk)+str->GetNbSaved(otFdbk)/2,str->GetNbSaved(otFdbk)/2),
+//	: GDocs(2000), GUsers(2000,2000),
+//	  GGroups(200), Subjects(0), Fdbks(100,50),
 	  Langs(0), URLMng(0), ProfilingMng(0), GroupingMng(0), GroupCalcMng(0),
 	  StatsCalcMng(0), LinkCalcMng(0), PostGroupMng(0), PostDocMng(0), DocAnalyseMng(0),
 	  ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),  SessParams(sessparams), Storage(str)

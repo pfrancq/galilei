@@ -224,7 +224,8 @@ enum tObjType
 	otGroup=9                    /** Group.*/,
 	otDocSubProfile=10           /** Document or SubProfile.*/,
 	otDocGroup=11                /** Document or Group.*/,
-	otSubProfileGroup=12         /** SubProfile or Group.*/
+	otSubProfileGroup=12         /** SubProfile or Group.*/,
+	otFdbk=13                    /** Assessment of a document by a profile.*/
 };
 
 

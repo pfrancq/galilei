@@ -76,6 +76,13 @@ public:
 	GStorage(const char* n) throw(bad_alloc,GException);
 
 	/**
+	* Compute the number of objects of a given type which are saved.
+	* @param type            Type of the objects.
+	* @return Number of objects.
+	*/
+	virtual unsigned int GetNbSaved(tObjType type) throw(GException)=0;
+
+	/**
 	* Assign an identifier to a new data of a given dictionary.
 	* @param data           Data.
 	* @param dict           Dictionary.

@@ -149,6 +149,39 @@ const char* GStorageMySQL::ValidSQLValue(const char* val,char* tmp) throw(RMySQL
 
 
 //------------------------------------------------------------------------------
+unsigned int GStorageMySQL::GetNbSaved(tObjType type) throw(GException)
+{
+	try
+	{
+		switch(type)
+		{
+			case otDoc:
+				return(GetCount("htmls"));
+
+			case otUser:
+				return(GetCount("users"));
+
+			case otProfile:
+				return(GetCount("profiles"));
+
+			case otGroup:
+				return(GetCount("groups"));
+
+			case otFdbk:
+				return(GetCount("htmlsbyprofiles"));
+
+			default:
+				return(0);
+		}
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GStorageMySQL::AssignId(GData* data,const GDict* dict) throw(GException)
 {
 	try

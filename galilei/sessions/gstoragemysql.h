@@ -61,7 +61,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short MySQL-based Storage Manager.
 */
-class GStorageMySQL : public R::RDb, public GStorage
+class GStorageMySQL : private R::RDb, public GStorage
 {
 	/**
 	* String representing the null value.
@@ -111,7 +111,14 @@ protected:
 	*/
 	const char* ValidSQLValue(const char* val,char* tmp) throw(R::RMySQLError);
 
-public :
+public:
+
+	/**
+	* Compute the number of objects of a given type which are saved.
+	* @param type            Type of the objects.
+	* @return Number of objects.
+	*/
+	virtual unsigned int GetNbSaved(tObjType type) throw(GException);
 
 	/**
 	* Assign an identifier to a new data of a given dictionary.
