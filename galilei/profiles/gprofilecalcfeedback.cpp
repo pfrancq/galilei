@@ -142,7 +142,7 @@ const char* GALILEI::GProfileCalcFeedback::GetSettings(void)
 
 	if(AddFuzzy) c='1'; else c='0';
 	if(IdfFactor) c2='1'; else c2='0';
-	sprintf(tmp,"%u %lf %lf %lf %c %c",MaxNonZero,RelFactor,FuzzyFactor,NoRelFactor,c,c2);
+	sprintf(tmp,"%u %f %f %f %c %c",MaxNonZero,RelFactor,FuzzyFactor,NoRelFactor,c,c2);
 	return(tmp);
 }
 
@@ -153,7 +153,7 @@ void GALILEI::GProfileCalcFeedback::SetSettings(const char* s)
 	char c,c2;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %lf %lf %lf %c %c",&MaxNonZero,&RelFactor,&FuzzyFactor,&NoRelFactor,&c,&c2);
+	sscanf(s,"%u %f %f %f %c %c",&MaxNonZero,&RelFactor,&FuzzyFactor,&NoRelFactor,&c,&c2);
 	if(c=='1') AddFuzzy=true; else AddFuzzy=false;
  	if(c2=='1') IdfFactor=true; else IdfFactor=false;
 }

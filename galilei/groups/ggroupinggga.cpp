@@ -87,7 +87,7 @@ const char* GALILEI::GGroupingGGA::GetSettings(void)
 
 	if(Step) c='1'; else c='0';
 	if(GlobalSim) c1='1'; else c1='0';
-	sprintf(tmp,"%u %c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	sprintf(tmp,"%u %c %u %u %c %u %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
 	        SimMeasure,c1,PopSize,MaxGen,c,StepGen,MinSimLevel,MinCommonOK,MinCommonDiff,
 	        ParamsSim.P,ParamsSim.Q,ParamsSim.Weight,
 	        ParamsNb.P,ParamsNb.Q,ParamsNb.Weight,
@@ -105,7 +105,7 @@ void GALILEI::GGroupingGGA::SetSettings(const char* s)
 	unsigned int t;
 
 	if(!(*s)) return;
-	sscanf(s,"%u %c %u %u %c %u %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+	sscanf(s,"%u %c %u %u %c %u %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
 	       &t,&c1,&PopSize,&MaxGen,&c,&StepGen,&MinSimLevel,&MinCommonOK,&MinCommonDiff,
 	       &ParamsSim.P,&ParamsSim.Q,&ParamsSim.Weight,
 	       &ParamsNb.P,&ParamsNb.Q,&ParamsNb.Weight,

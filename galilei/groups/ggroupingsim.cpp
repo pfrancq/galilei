@@ -81,7 +81,7 @@ const char* GALILEI::GGroupingSim::GetSettings(void)
 
 	if(FullSim) c='1'; else c='0';
 	if(GlobalSim) c1='1'; else c1='0';
-	sprintf(tmp,"%c %lf %c",c,LevelSim,c1);
+	sprintf(tmp,"%c %f %c",c,LevelSim,c1);
 	return(tmp);
 }
 
@@ -91,7 +91,7 @@ void GALILEI::GGroupingSim::SetSettings(const char* s)
 	char c,c1;
 
 	if(!(*s)) return;
-	sscanf(s,"%c %lf %c",&c,&LevelSim,&c1);
+	sscanf(s,"%c %f %c",&c,&LevelSim,&c1);
 	if(c=='1') FullSim=true; else FullSim=false;
 	if(c1=='1') GlobalSim=true; else GlobalSim=false;
 }

@@ -90,7 +90,7 @@ const char* GALILEI::GGroupingKCos::GetSettings(void)
 	if (GlobalSim) f='1'; else f='0';
 	if (FullSim) g='1'; else g='0';
 
-	 sprintf(tmp,"%c %u %u %c %c %lf %c %c",c, IterNumber, NbTests, d, e, LevelSim, f, g);
+	 sprintf(tmp,"%c %u %u %c %c %f %c %c",c, IterNumber, NbTests, d, e, LevelSim, f, g);
 	return(tmp);
 }
 
@@ -102,7 +102,7 @@ void GALILEI::GGroupingKCos::SetSettings(const char* s)
 	char c, d, e, f,g;
 
 	if(!(*s)) return;
-	sscanf(s,"%c %u %u %c %c %lf %c %c",&c, &IterNumber, &NbTests, &d, &e, &LevelSim, &f, &g);
+	sscanf(s,"%c %u %u %c %c %f %c %c",&c, &IterNumber, &NbTests, &d, &e, &LevelSim, &f, &g);
 	if(c=='1') Random=true; else Random=false;
 	if(d=='1') FindGroupsNumber=true; else FindGroupsNumber=false;
 	if(e=='1') GlobalSimi=true; else GlobalSimi=false;
