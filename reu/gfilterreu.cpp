@@ -52,7 +52,7 @@
 //---------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterreu.h>
-#include <filters/gurlmanager.h>
+#include <docs/gfiltermanager.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;
@@ -97,7 +97,7 @@ GALILEI::GFilterReu::GFilterReu(GFactoryFilter* fac)
 	: GFilter(fac), Tags(0),
 	 Buffer(0), Chars(50,5)
 {
-	AddMIME(fac->GetMng(),"text/reu");
+	AddMIME("text/reu");
 	InitCharContainer();
 	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
 	Tags->InsertPtr(new Tag("HEAD","",Tag::tHEAD,true,8,false));
@@ -119,7 +119,7 @@ GALILEI::GFilterReu::GFilterReu(GFactoryFilter* fac)
 
 
 //---------------------------------------------------------------------------
-bool GALILEI::GFilterReu::Analyze(GDocXML* doc)
+bool GALILEI::GFilterReu::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 {
 	int accessmode,handle;
 	struct stat statbuf;

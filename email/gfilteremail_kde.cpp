@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gfilter.h>
+#include <docs/gfilter.h>
 using namespace GALILEI;
 
 

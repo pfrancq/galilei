@@ -50,7 +50,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfiltertxt.h>
-#include <filters/gurlmanager.h>
+#include <docs/gfiltermanager.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;
@@ -67,12 +67,12 @@ using namespace R;
 GFilterTXT::GFilterTXT(GFactoryFilter* fac)
 	: GFilter(fac), Buffer(0)
 {
-	AddMIME(fac->GetMng(),"text/plain");
+	AddMIME("text/plain");
 }
 
 
 //-----------------------------------------------------------------------------
-bool GFilterTXT::Analyze(GDocXML* doc)
+bool GFilterTXT::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 {
 	RXMLTag* part;
 	RXMLTag* tag;

@@ -45,7 +45,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <filters/gfilter.h>
+#include <docs/gfilter.h>
 
 
 
@@ -109,7 +109,7 @@ public:
 	* Actually, only local files can be treated.
 	* @param doc            XML Structure that will represent the email.
 	*/
-	virtual bool Analyze(GDocXML* doc);
+	virtual bool Analyze(GDocXML* doc) throw(bad_alloc,GException);
 
 	/**
 	* Determine if blank lines are allowed between two commands.

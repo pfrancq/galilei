@@ -68,7 +68,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterpdf.h>
-#include <filters/gurlmanager.h>
+#include <docs/gfiltermanager.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;
@@ -85,14 +85,14 @@ using namespace R;
 GFilterPDF::GFilterPDF(GFactoryFilter* fac)
 	: GFilter(fac)
 {
-	AddMIME(fac->GetMng(),"text/pdf");
-	AddMIME(fac->GetMng(),"text/x-pdf");
-	AddMIME(fac->GetMng(),"application/pdf");
+	AddMIME("text/pdf");
+	AddMIME("text/x-pdf");
+	AddMIME("application/pdf");
 }
 
 
 //------------------------------------------------------------------------------
-bool GFilterPDF::Analyze(GDocXML* doc)
+bool GFilterPDF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 {
 	RXMLTag* part;
 	RXMLTag* tag;

@@ -55,7 +55,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdocxml.h>
-#include <filters/gurlmanager.h>
+#include <docs/gfiltermanager.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -72,7 +72,7 @@ GFilterEMail::GFilterEMail(GFactoryFilter* fac)
 	: GFilter(fac), Buffer(0),
 	  BlankLines(false)
 {
-	AddMIME(fac->GetMng(),"text/email");
+	AddMIME("text/email");
 }
 
 
@@ -139,7 +139,7 @@ bool GFilterEMail::ExtractCmd(char* line,RXMLTag* /*metaData*/)
 
 
 //-----------------------------------------------------------------------------
-bool GFilterEMail::Analyze(GDocXML* doc)
+bool GFilterEMail::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 {
 	RXMLTag* part;
 	RXMLTag* tag;

@@ -45,10 +45,10 @@ ___libpdf_la_SOURCES = gfilterpdf.cpp \
 	xpdf/Annot.cc \
 	xpdf/PSTokenizer.cc \
 	xpdf/XRef.cc
-___libpdf_la_LIBADD=$(GALILEI_LIB)/filters/libgalilei_filters.la
+___libpdf_la_LIBADD=$(GALILEI_LIB)/docs/libgalilei_docs.la
 ___libpdf_dlg_la_LDFLAGS = -module -avoid-version
 ___libpdf_dlg_la_SOURCES = gfilterpdf_kde.cpp
-___libpdf_dlg_la_LIBADD=$(GALILEI_LIB)/filters/libgalilei_filters.la
+___libpdf_dlg_la_LIBADD=$(GALILEI_LIB)/docs/libgalilei_docs.la
 AM_CFLAGS = -DHAVE_CONFIG_H
 AM_CXXFLAGS = -DHAVE_CONFIG_H
 AM_FFLAGS =

@@ -46,7 +46,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterps.h>
-#include <filters/gurlmanager.h>
+#include <docs/gfiltermanager.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;
@@ -167,8 +167,8 @@ static void handler(int x) {
 GFilterPS::GFilterPS(GFactoryFilter* fac)
 	: GFilter(fac)
 {
-	AddMIME(fac->GetMng(),"application/x-postscript");
-	AddMIME(fac->GetMng(),"application/postscript");
+	AddMIME("application/x-postscript");
+	AddMIME("application/postscript");
 }
 
 
@@ -193,7 +193,7 @@ void GFilterPS::StrToBuffer(const char* str)
 
 
 //------------------------------------------------------------------------------
-bool GFilterPS::Analyze(GDocXML* doc)
+bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 {
 	RXMLTag* part;
 	RXMLTag* tag;

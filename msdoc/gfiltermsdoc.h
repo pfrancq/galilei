@@ -46,7 +46,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <filters/gfilter.h>
+#include <docs/gfilter.h>
 
 //-----------------------------------------------------------------------------
 // include files for wvWare Project
@@ -190,7 +190,7 @@ public:
 	* about its content.
 	* @param doc            XML Structure that will represent the document.
 	*/
-	virtual bool Analyze(GDocXML* doc)throw(GException);
+	virtual bool Analyze(GDocXML* doc) throw(bad_alloc,GException);
 
 protected:
 

@@ -34,11 +34,6 @@
 
 
 
-//------------------------------------------------------------------------------
-// include files for GALILEI
-#include <filters/gfilter.h>
-using namespace GALILEI;
-
 
 //-----------------------------------------------------------------------------
 // include files for KDE

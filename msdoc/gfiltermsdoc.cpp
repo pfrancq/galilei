@@ -55,7 +55,7 @@
 // include files for GALILEI
 #include <gfiltermsdoc.h>
 #include <docs/gdocxml.h>
-#include <filters/gurlmanager.h>
+#include <docs/gfiltermanager.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -72,7 +72,7 @@ GFilterMSDoc::GFilterMSDoc(GFactoryFilter* fac)
 	: GFilter(fac)
 {
 
- 	AddMIME(fac->GetMng(),"application/msword");
+ 	AddMIME("application/msword");
 }
 
 
@@ -206,7 +206,7 @@ void GFilterMSDoc::WriteParagraph(RString par)
 
 
 //------------------------------------------------------------------------------
-bool GFilterMSDoc::Analyze(GDocXML* doc) throw(GException)
+bool GFilterMSDoc::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 {
 	//RXMLTag* tag;
 	RString *fileName;

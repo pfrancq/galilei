@@ -54,7 +54,7 @@
 //---------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfiltersgml.h>
-#include <filters/gurlmanager.h>
+#include <docs/gfiltermanager.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;
@@ -99,7 +99,7 @@ GALILEI::GFilterSGML::GFilterSGML(GFactoryFilter* fac)
 	: GFilter(fac/*"SGML Filter",*/), Tags(0),
 	 Buffer(0), Chars(50,5)
 {
-	AddMIME(fac->GetMng(),"text/sgml");
+	AddMIME("text/sgml");
 	InitCharContainer();
 	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
 	Tags->InsertPtr(new Tag("DOC","",Tag::tDOC,false,8,false));
@@ -241,7 +241,7 @@ void GALILEI::GFilterSGML::AnalyseDoc(void)
 
 
 //---------------------------------------------------------------------------
-bool GALILEI::GFilterSGML::Analyze(GDocXML* doc)
+bool GALILEI::GFilterSGML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 {
 	int accessmode,handle;
 	struct stat statbuf;
