@@ -127,7 +127,7 @@ void GALILEI::GGrouping::Grouping(GSlot* rec,bool modified)
 		for(cur.Start();!cur.End();cur.Next())
 		{
 			sub=cur()->GetSubProfile(CurLang());
-			if((!sub->GetGroup())&&(sub->IsDefined()))
+			if(sub->IsDefined())
 				SubProfiles.InsertPtr(sub);
 		}
 

@@ -72,7 +72,7 @@ protected:
 	GGroups* Groups;
 
 	/**
-	* SubProfiles that where changed and must be grouped again.
+	* SubProfiles that must be grouped again.
 	*/
 	RStd::RContainer<GSubProfile,unsigned int,false,false> SubProfiles;
 

@@ -160,6 +160,7 @@ void GALILEI::GGroupingSim::Run(void)
 	for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 	{
 		s=SubProfiles();
+		if(s->GetGroup()) continue;  // If already grouped -> next one.
 		g=0;
 
 		// Find the first group able to receive the subprofile.
