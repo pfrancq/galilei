@@ -705,11 +705,12 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		}
 
 		// Load the document description
-		RQuery sel(Db,"SELECT htmlid,kwdid,SUM(occurs) FROM htmlsbykwds GROUP BY htmlid,kwdid");
+		RQuery sel(Db,"SELECT htmlid,kwdid,langid,occurs FROM htmlsbykwds ORDER BY htmlid,kwdid");
 		for(sel.Start(),docid=cNoRef;!sel.End();sel.Next(),i++)
 		{
 			// Get the id
 			idx=atoi(sel[0]);
+			lang=session->GetLangs()->GetLang(sel[2]);
 
 			// If not the same -> new doc
 			if(idx!=docid)
@@ -727,7 +728,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 				i=0;
 			}
 
-			Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[2]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
+			Infos.InsertPtrAt(new GWeightInfo(atoi(sel[1]),atof(sel[3]),lang->GetDict()->GetData(atoi(sel[1]))->GetType()),i,false);
 		}
 		if(docid!=cNoRef)
 		{
