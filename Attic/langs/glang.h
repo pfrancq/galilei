@@ -1,30 +1,24 @@
 
-//#ifndef wordsG
-//#define wordsG
+#ifndef GLangH
+#define GLangH
 
 
 
-// #pragma warn -ccc
-//  #pragma warn -rch
-//#endif
-#include <rstd/rcontainer.h>
-#include <rstd/rhashcontainer.h>
-//#ifdef __BORLANDC__
-//  #pragma warn .ccc
-//  #pragma warn .rch
-//#endif
+
 #include <rstd/rstring.h>
+
 using namespace RStd;
 
 
 //---------------------------------------------------------------------------
-// include files for HyperPRISME
-#include "Galilei.h"
-using namespace Galilei;
+// include files for Galilei
+
+#include <galilei.h>
+
 
 
 //---------------------------------------------------------------------------
-namespace Galilei{
+namespace GALILEI{
 //---------------------------------------------------------------------------
 
 

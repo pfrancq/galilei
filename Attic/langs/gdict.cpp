@@ -5,9 +5,12 @@
 #include <string.h>
 
 //---------------------------------------------------------------------------
-// include file for HyperPRISME
-#include "Gdict.h"
-using namespace HyperPRISME;
+// include file for galilei
+
+#include "gdict.h"
+#include  <gdocs/gword.h>
+#include <glangs/glang.h>
+using namespace GALILEI;
 
 
 

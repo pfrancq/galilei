@@ -1,51 +1,46 @@
 
+
+//---------------------------------------------------------------------------
+// include file for ANSI C/C++
 #include <string.h>
 
 //---------------------------------------------------------------------------
 // include file for Galilei
-#include "gdicts.h"
-#include <glangs/gdict>
-
+#include "gwordref.h"
 using namespace GALILEI;
 
 
-
 //---------------------------------------------------------------------------
 //
-// class GDicts
+// class GWordRef
 //
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-GDicts::GDicts(unsigned nb,GSession *session) throw(bad_alloc)
-  : RContainer<GDict,unsigned,true,true>(nb,nb/2),Session(session)
+GWordRef::GWordRef(void)
+  : Id(cNoRef)
 {
-}
-
-//---------------------------------------------------------------------------
-void GDicts::Load(bool dep,bool del) throw(bad_alloc,GException)
-{
-  unsigned i;
-  GDict **ptr;
-
-  for(i=NbPtr+1,ptr=Tab;--i;ptr++)
-  {
-    if((dep&&(*ptr)->Lang->Activ)||(!dep))
-      (*ptr)->Load();
-    else
-      if(del) (*ptr)->Clear();
-  }
 }
 
 
 //---------------------------------------------------------------------------
-void GDicts::Clear(void)
+GWordRef::GWordRef(unsigned int id)
+  : Id(id)
 {
-  unsigned i;
-  GDict **ptr;
+}
 
-  for(i=NbPtr+1,ptr=Tab;--i;ptr++)
-    (*ptr)->Clear();
+
+//---------------------------------------------------------------------------
+int GWordRef::Compare(const GWordRef& ref)
+{
+  return(Id-ref.Id);
+}
+
+
+//---------------------------------------------------------------------------
+int GWordRef::Compare(GWordRef *ref)
+{
+  return(Id-ref->Id);
 }
 
 

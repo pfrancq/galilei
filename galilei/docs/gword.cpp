@@ -8,7 +8,7 @@
 //---------------------------------------------------------------------------
 // include file for Galilei
 #include "gword.h"
-using namespace Galilei;
+using namespace GALILEI;
 
 
 

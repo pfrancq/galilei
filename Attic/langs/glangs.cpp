@@ -6,8 +6,10 @@
 
 //---------------------------------------------------------------------------
 // include file for Galilei
-#include "GLangs.h"
-using namespace Galilei;
+
+#include "glangs.h"
+
+using namespace GALILEI;
 
 
 

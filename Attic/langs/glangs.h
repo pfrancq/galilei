@@ -2,35 +2,30 @@
 
 
 //---------------------------------------------------------------------------
-#ifndef wordsG
-#define wordsG
+#ifndef GLangsH
+#define GLangsH
 
 
 //---------------------------------------------------------------------------
 // include files for Rainbow
-#ifdef __BORLANDC__
-  #pragma warn -ccc
-  #pragma warn -rch
-#endif
+
 #include <rstd/rcontainer.h>
 #include <rstd/rhashcontainer.h>
-#ifdef __BORLANDC__
-  #pragma warn .ccc
-  #pragma warn .rch
-#endif
 #include <rstd/rstring.h>
+
 using namespace RStd;
 
 
 //---------------------------------------------------------------------------
 // include files for Galilei
-#include "Galilei.h"
-#include "GLang.h"
-using namespace Galilei;
+#include <galilei.h>
+#include "glang.h"
+#include <glangs/gdicts.h>
+
 
 
 //---------------------------------------------------------------------------
-namespace Galilei{
+namespace GALILEI{
 //---------------------------------------------------------------------------
 
 

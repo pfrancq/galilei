@@ -1,8 +1,8 @@
 
 
 //---------------------------------------------------------------------------
-#ifndef docsG
-#define docsG
+#ifndef GDocH
+#define GDocH
 
 
 //---------------------------------------------------------------------------
@@ -14,18 +14,19 @@ using namespace RStd;
 
 //---------------------------------------------------------------------------
 // include files for Galilei
-#include "galilei.h"
-#include "gwordoccurs.h"
-#include "glang.h"
-#include "gdocs.h"
-#include "gdoc.h"
+
+#include <galilei.h>
+#include <gdocs/gwordoccurs.h>
+#include <glangs/glang.h>
+#include <gdocs/gdocs.h>
+
 
 
 
 //---------------------------------------------------------------------------
 
-//
-namespace Galilei{
+namespace GALILEI{
+
 //---------------------------------------------------------------------------
 
 

@@ -1,20 +1,3 @@
-/*
-
-  GLang.cpp
-
-  Words Handling - Implementation.
-
-  (C) 1998-2000 by P. Francq.
-
-  Version $Revision$
-
-  Last Modify: $Date$
-
-  HyperPRISME base library
-
-*/
-
-
 
 //---------------------------------------------------------------------------
 // include file for ANSI C/C++
@@ -22,9 +5,9 @@
 
 //---------------------------------------------------------------------------
 // include file for HyperPRISME
-#include "GLang.h"
+#include "glang.h"
 
-using namespace Galilei;
+using namespace GALILEIi;
 
 
 

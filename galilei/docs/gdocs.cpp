@@ -15,12 +15,11 @@
 
 
 //---------------------------------------------------------------------------
-
-#include "docs.h"
+// include files for Galilei
 #include "gdocs.h"
-#include "gsession.h"
-//#include <HyperPRISME/mysql/mysqlHyperPRISME.h> // for debug only!!!!!!!!!!!!
-using namespace Galilei
+#include <gsessions/gsession.h>
+
+using namespace GALILEI
 
 
 

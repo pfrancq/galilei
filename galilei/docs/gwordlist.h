@@ -1,54 +1,51 @@
 
 
+
+
 //---------------------------------------------------------------------------
-#ifndef GWordH
-#define GWordH
+#ifndef GWordListH
+#define GWordListH
 
 
 //---------------------------------------------------------------------------
 // include files for Rainbow
 
+
 #include <rstd/rcontainer.h>
 #include <rstd/rhashcontainer.h>
+
+
 #include <rstd/rstring.h>
 using namespace RStd;
 
 
 //---------------------------------------------------------------------------
-// include files for HyperPRISME
+// include files for Galilei
+#include <galilei.h>
 
-#include <Galilei.h>
-
-using namespace GALILEI;
 
 
 //---------------------------------------------------------------------------
-namespace Galilei{
+namespace GALILEI{
 //---------------------------------------------------------------------------
 
+
+
+
 //---------------------------------------------------------------------------
-// class GWord
-class GWord
+// class GWordList
+
+class GWordList : public RContainer<HWordRef,unsigned,true,true>
 {
 public:
-  unsigned Id;       // Id of the word
-  RString Word;           // The word
+  unsigned Id;
 
-  // Constructors
-  GWord(void);
-  GWord(const RString& word);
-  GWord(unsigned id,const RString& word);
-  GWord(const GWord& word);
-
-  // Functions needed by GDict (-> RHashContainer)
-  int Compare(const GWord& word);
-  int Compare(GWord* word);
-  int Compare(const RString& word);
-  int Compare(GWordRef* ref);
-  char HashIndex(void) const { return(Word.HashIndex()); }// vois si c pas GWORD
+  GWordList(void) throw(bad_alloc);
 };
 
 
-}
+}  //-------- End of namespace Galilei-----------------------------------
 
+
+//---------------------------------------------------------------------------
 #endif
