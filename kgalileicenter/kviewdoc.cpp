@@ -146,7 +146,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	  bDelDoc(true), bDocXML(false)
 {
 	// Construct the document
-	Document=new GDocVector(file,file,cNoRef,0,Doc->GetSession()->GetMIMEType(mime),0,0,0,0,0,0,0);
+	Document=new GDocVector(file,file,cNoRef,0,Doc->GetSession()->GetMIMEType(mime),0,0,0);
 
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
@@ -279,16 +279,12 @@ void KViewDoc::ConstructGeneral(void)
 	new QListViewItem(General,"ID",itou(Document->GetId()).Latin1());
 	new QListViewItem(General,"URL",Document->GetURL().Latin1());
 	new QListViewItem(General,"Name",Document->GetName().Latin1());
-	new QListViewItem(General,"MIME",Document->GetMIMEType());
+	new QListViewItem(General,"MIME",Document->GetMIMEType().Latin1());
 	l=Document->GetLang();
 	if(l)
 		new QListViewItem(General,"Language",l->GetName());
 	else
 		new QListViewItem(General,"Language","Unknow");
-	new QListViewItem(General,"Total number of words",itou(Document->GetN()).Latin1());
-	new QListViewItem(General,"Number of different words",itou(Document->GetNdiff()).Latin1());
-	new QListViewItem(General,"Total number of valid words",itou(Document->GetV()).Latin1());
-	new QListViewItem(General,"Number of different valid words",itou(Document->GetVdiff()).Latin1());
 	d=Document->GetUpdated();
 	sprintf(sDate,"%i/%i/%i",d->GetDay(),d->GetMonth(),d->GetYear());
 	new QListViewItem(General,"Last Updated",sDate);
