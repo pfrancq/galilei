@@ -52,6 +52,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <profiles/gprofdoc.h>
 
 
 //-----------------------------------------------------------------------------
@@ -63,7 +64,6 @@ namespace GALILEI{
 // forward class declaration
 class GUser;
 class GSubProfile;
-class GProfDoc;
 class GLang;
 
 
@@ -201,25 +201,10 @@ public:
 	void UpdateFinished(void);
 
 	/**
-	* Start the iterator to go trough the documents judged.
+	* Get a Cursor on the feedback for the profile.
+	* @return GProfDocCursor.
 	*/
-	void DocsStart(void);
-
-	/**
-	* Test if the end of the container of documents judged is reached.
-	*/
-	bool DocsEnd(void) const;
-
-	/**
-	* Goto the next element, if the end is reached, go to the beginning.
-	*/
-	void DocsNext(void);
-
-	/**
-	* Get the current document judge.
-	* @returns Pointer to the current document udge.
-	*/
-	GProfDoc* GetCurDocs(void);
+	GProfDocCursor& GetProfDocCursor(void);
 
 	/**
 	* Add a judgement for this profile.
@@ -232,7 +217,7 @@ public:
 //-----------------------------------------------------------------------------
 /**
 * The GProfileCursor class provides a way to go trough a set of profiles.
-* @short Profiles' Cursor
+* @short Profiles Cursor
 */
 CLASSCURSOR(GProfileCursor,GProfile,unsigned int)
 

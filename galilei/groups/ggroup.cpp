@@ -48,7 +48,7 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroup::GGroup(const unsigned int id,GLang* lang) throw(bad_alloc)
-	: RContainer<GSubProfile,unsigned int,false,false>(20,10), Id(id),
+	: RContainer<GSubProfile,unsigned int,false,true>(20,10), Id(id),
 	  State(osUpToDate), Lang(lang)
 {
 }

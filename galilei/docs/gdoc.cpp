@@ -121,58 +121,20 @@ void GALILEI::GDoc::AddWord(const unsigned int id,const unsigned int nb)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GDoc::WordsStart(void)
+GIWordOccurCursor& GALILEI::GDoc::GetWordOccurCursor(void)
 {
-	Words->Start();
+	GIWordOccurCursor *cur=GIWordOccurCursor::GetTmpCursor();
+	cur->Set(Words);
+	return(*cur);
 }
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GDoc::WordsEnd(void) const
+GProfDocCursor& GALILEI::GDoc::GetProfDocCursor(void)
 {
-	return(Words->End());
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GDoc::WordsNext(void)
-{
-	Words->Next();
-}
-
-
-//-----------------------------------------------------------------------------
-GIWordOccur* GALILEI::GDoc::GetCurWords(void)
-{
-	return((*Words)());
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GDoc::ProfilesStart(void)
-{
-	Fdbks.Start();
-}
-
-
-//-----------------------------------------------------------------------------
-bool GALILEI::GDoc::ProfilesEnd(void) const
-{
-	return(Fdbks.End());
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GDoc::ProfilesNext(void)
-{
-	Fdbks.Next();
-}
-
-
-//-----------------------------------------------------------------------------
-GProfDoc* GALILEI::GDoc::GetCurProfiles(void)
-{
-	return(Fdbks());
+	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
+	cur->Set(Fdbks);
+	return(*cur);
 }
 
 

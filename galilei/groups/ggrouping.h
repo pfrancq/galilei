@@ -102,6 +102,11 @@ protected:
 	*/
 	RStd::RContainer<GSubProfile,unsigned int,false,false> SubProfiles;
 
+	/**
+	* Type of the description used to group.
+	*/
+	tSubProfileDesc SubProfileDesc;
+
 public:
 
 	/**
@@ -135,10 +140,11 @@ public:
 
 	/**
 	* Make the groups.
+	* @param t              Type of the description to use.
 	* @param rec            Receiver of the signals.
-	* @param modified   Recompute only modified elements or all.
+	* @param modified       Recompute only modified elements or all.
 	*/
-	void Grouping(GGroupingSignalsReceiver* rec=0,bool modified=true);
+	void Grouping(tSubProfileDesc t,GGroupingSignalsReceiver* rec=0,bool modified=true);
 
 	/**
 	* Destructor.

@@ -39,7 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rtimedate/rdate.h>
-
+#include <rstd/rcursor.h>
 
 
 //-----------------------------------------------------------------------------
@@ -127,6 +127,14 @@ public:
 	*/
 	const RTimeDate::RDate* GetUpdated(void) const {return(&Updated);}
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GProfDocCursor class provides a way to go trough a set of feedbacks.
+* @short Feedbacks Cursor
+*/
+CLASSCURSOR(GProfDocCursor,GProfDoc,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

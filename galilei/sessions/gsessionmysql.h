@@ -143,24 +143,6 @@ protected:
 	virtual void LoadDocs(void) throw(bad_alloc,GException);
 
 	/**
-	* Save a list of words for a specific subprofile.
-	* @param list           List to save.
-	* @param id             SubProfile id.
-	* @param name           Name of the list (ok,com,ko).
-	* @param lang           Code of the language.
-	*/
-	void Save(GIWordList* list,unsigned int id,const char* name,const char* lang) throw(GException);
-
-	/**
-	* Load a list of words for a specific subprofile.
-	* @param list           List to save.
-	* @param id             SubProfile id.
-	* @param name           Name of the list (ok,com,ko).
-	* @param lang           Code of the language.
-	*/
-	void Load(GIWordList* list,unsigned int id,const char* name,const char* lang) throw(GException);
-
-	/**
 	*  Load the Users.
 	*/
 	virtual void LoadUsers(void) throw(bad_alloc,GException);

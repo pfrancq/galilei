@@ -79,7 +79,7 @@ class GProfileCalcVector : public GProfileCalc
 	RStd::RContainer<GIWordsWeights,unsigned int,true,true> KO;
 
 	/**
-	* Size of the OK and KO lists of the profiles.
+	* Size of the vector used for the description.
 	*/
 	unsigned int Size;
 
@@ -112,7 +112,7 @@ public:
 	unsigned int GetSize(void) const {return(Size);}
 
 	/**
-	* Set the size of the lists OK/KO.
+	* Set the size of the vector corresponding to the description.
 	* @param size           Size to use for futher computation.
 	*/
 	void SetSize(unsigned int size) {Size=size;}

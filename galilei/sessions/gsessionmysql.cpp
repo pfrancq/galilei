@@ -263,24 +263,6 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::Save(GIWordList* list,unsigned int id,const char* name,const char* lang) throw(GException)
-{
-	char sSql[100];
-
-	// Delete list
-	sprintf(sSql,"delete FROM %s%skwds WHERE subprofileid=%u",lang,name,id);
-	RQuery del(this,sSql);
-
-	// Insert It
-	for(list->Start();!list->End();list->Next())
-	{
-		sprintf(sSql,"INSERT INTO %s%skwds(subprofileid,kwdid) VALUES(%u,%u)",lang,name,id,(*list)()->GetId());
-		RQuery ins(this,sSql);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::Save(const GSubProfile* sub) throw(GException)
 {
 	char sSql[200];
@@ -330,9 +312,6 @@ void GALILEI::GSessionMySQL::Save(const GProfile* prof) throw(GException)
 		Save(CurSub());
 		lang=CurSub()->GetLang()->GetCode();
 		subid=CurSub()->GetId();
-		Save(CurSub()->GetOK(),subid,"ok",lang);
-		Save(CurSub()->GetKO(),subid,"ko",lang);
-		Save(CurSub()->GetCommon(),subid,"com",lang);
 	}
 
 	// Update profiles
@@ -340,18 +319,6 @@ void GALILEI::GSessionMySQL::Save(const GProfile* prof) throw(GException)
 	        ValidSQLValue(prof->GetName(),sname),GetDateToMySQL(prof->GetUpdated(),supdated),
 	        GetDateToMySQL(prof->GetComputed(),scomputed),profid);
 	RQuery updateprof(this,sSql);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::Load(GIWordList* list,unsigned int id,const char* name,const char* lang) throw(GException)
-{
-	char sSql[200];
-
-	sprintf(sSql,"SELECT kwdid FROM %s%skwds WHERE subprofileid=%u",lang,name,id);
-	RQuery select(this,sSql);
-	for(select.Begin();select.IsMore();select++)
-		list->InsertPtr(new GIWord(atoi(select[0])));
 }
 
 
@@ -391,9 +358,6 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 					else
 						grp=0;
 					SubProfiles->InsertPtr(sub=new GSubProfile(prof,subid,lang,grp,subprofil[2]));
-					Load(sub->GetOK(),subid,"ok",lang->GetCode());
-					Load(sub->GetKO(),subid,"ko",lang->GetCode());
-					Load(sub->GetCommon(),subid,"com",lang->GetCode());
 				}
 			}
 		}
@@ -501,7 +465,6 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 //-----------------------------------------------------------------------------
 void GALILEI::GSessionMySQL::Save(GDoc* doc) throw(GException)
 {
-	GIWordOccur* w;
 	char sSql[1000];
 	const char* l=0;
 	unsigned int id;
@@ -514,6 +477,7 @@ void GALILEI::GSessionMySQL::Save(GDoc* doc) throw(GException)
 	char sname[200];
 	char supdated[15];
 	char scomputed[15];
+	GIWordOccurCursor Words;
 
 	// Delete keywords
 	if(doc->GetLang())
@@ -521,10 +485,10 @@ void GALILEI::GSessionMySQL::Save(GDoc* doc) throw(GException)
 		l=doc->GetLang()->GetCode();
 		sprintf(sSql,"DELETE FROM %shtmlsbykwds WHERE htmlid=%u",l,id);
 		RQuery deletekwds(this,sSql);
-		for(doc->WordsStart();!doc->WordsEnd();doc->WordsNext())
+		Words=doc->GetWordOccurCursor();
+		for(Words.Start();!Words.End();Words.Next())
 		{
-			w=doc->GetCurWords();
-			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%u)",l,id,w->GetId(),w->GetNbOccurs());
+			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%u)",l,id,Words()->GetId(),Words()->GetNbOccurs());
 			RQuery insertkwds(this,sSql);
 		}
 		l=ValidSQLValue(l,slang);

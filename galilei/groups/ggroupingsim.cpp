@@ -44,6 +44,7 @@ using namespace RStd;
 #include<groups/ggroup.h>
 #include<profiles/guser.h>
 #include<profiles/gsubprofile.h>
+#include<profiles/gsubprofiledesc.h>
 #include<langs/glang.h>
 #include<sessions/gsession.h>
 using namespace GALILEI;
@@ -80,7 +81,7 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 	{
 		for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
 			for(s2=s1+1,j=i+1;--j;s2++)
-				if((*s1)->Similarity(*s2)<Level)
+				if((*s1)->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity((*s2)->GetPtr<const tSubProfileDesc>(SubProfileDesc))<Level)
 					return(false);
 		return(true);
 	}
@@ -88,7 +89,7 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 	{
 		for(s1=grp->Tab,i=grp->NbPtr;--i;s1++)
 			for(s2=s1+1,j=i+1;--j;s2++)
-				if((*s1)->Similarity(*s2)>=Level)
+				if((*s1)->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity((*s2)->GetPtr<const tSubProfileDesc>(SubProfileDesc))>=Level)
 					return(true);
 		return(false);
 	}
@@ -98,19 +99,19 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp) const
 //-----------------------------------------------------------------------------
 bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp,const GSubProfile* sub) const
 {
-	RContainerCursor<GSubProfile,unsigned int,false,false> cur(grp);
+	RContainerCursor<GSubProfile,unsigned int,false,true> cur(grp);
 
 	if(Full)
 	{
 		for(cur.Start();!cur.End();cur.Next())
-			if(cur()->Similarity(sub)<Level)
+			if(cur()->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity(sub->GetPtr<const tSubProfileDesc>(SubProfileDesc))<Level)
 				return(false);
 		return(true);
 	}
 	else
 	{
 		for(cur.Start();!cur.End();cur.Next())
-			if(cur()->Similarity(sub)>=Level)
+			if(cur()->GetPtr<const tSubProfileDesc>(SubProfileDesc)->Similarity(sub->GetPtr<const tSubProfileDesc>(SubProfileDesc))>=Level)
 				return(true);
 		return(false);
 	}
@@ -120,6 +121,14 @@ bool GALILEI::GGroupingSim::IsCoherent(const GGroup* grp,const GSubProfile* sub)
 //-----------------------------------------------------------------------------
 bool GALILEI::GGroupingSim::IsValid(GGroup* grp)
 {
+	RContainerCursor<GSubProfile,unsigned int,false,true> cur(grp);
+	bool ndef=true;
+
+	// At least one subprofile must be defined
+	for(cur.Start();(!cur.End())&&ndef;cur.Next())
+		ndef=cur()->GetPtr<const tSubProfileDesc>(SubProfileDesc)->IsDefined();
+	if(ndef)
+		return(false);
 	return(IsCoherent(grp));
 }
 

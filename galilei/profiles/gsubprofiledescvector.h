@@ -114,7 +114,13 @@ public:
 	unsigned int GetNbNoNull(void) const;
 
 	/**
-	*Destructor.
+	* Get the vector representing the sub-profile.
+	* @returns Pointer to GIWordsWeights.
+	*/
+	GIWordsWeights* GetVector(void) {return(Vector);}
+
+	/**
+	* Destructor.
 	*/
 	~GSubProfileDescVector(void);
 };

@@ -40,13 +40,14 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 //include files for GALILEI
-#include<groups/ggrouping.h>
-#include<groups/ggroup.h>
-#include<groups/ggroups.h>
-#include<profiles/guser.h>
-#include<profiles/gprofile.h>
-#include<profiles/gsubprofile.h>
-#include<sessions/gsession.h>
+#include <groups/ggrouping.h>
+#include <groups/ggroup.h>
+#include <groups/ggroups.h>
+#include <profiles/guser.h>
+#include <profiles/gprofile.h>
+#include <profiles/gsubprofile.h>
+#include <profiles/gsubprofiledesc.h>
+#include <sessions/gsession.h>
 using namespace GALILEI;
 
 
@@ -90,7 +91,7 @@ void GALILEI::GGrouping::Init(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGrouping::Grouping(GGroupingSignalsReceiver* rec,bool modified)
+void GALILEI::GGrouping::Grouping(tSubProfileDesc t,GGroupingSignalsReceiver* rec,bool modified)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Session->GetLangs());
 	GProfileCursor cur;
@@ -98,6 +99,9 @@ void GALILEI::GGrouping::Grouping(GGroupingSignalsReceiver* rec,bool modified)
 	GGroup* Grp;
 	GGroup** Tab;
 	unsigned int i;
+
+	// Description
+	SubProfileDesc=t;
 
 	// Go trough each language.
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
@@ -126,7 +130,7 @@ void GALILEI::GGrouping::Grouping(GGroupingSignalsReceiver* rec,bool modified)
 		for(cur.Start();!cur.End();cur.Next())
 		{
 			sub=cur()->GetSubProfile(CurLang());
-			if((!sub->GetGroup())&&(sub->IsDefined()))
+			if((!sub->GetGroup())&&(sub->GetPtr<const tSubProfileDesc>(SubProfileDesc)->IsDefined()))
 				SubProfiles.InsertPtr(sub);
 		}
 

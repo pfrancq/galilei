@@ -240,6 +240,15 @@ GProfileCursor& GALILEI::GSession::GetProfilesCursor(void)
 
 
 //-----------------------------------------------------------------------------
+GSubProfileCursor& GALILEI::GSession::GetSubProfilesCursor(void)
+{
+	GSubProfileCursor *cur=GSubProfileCursor::GetTmpCursor();
+	cur->Set(SubProfiles);
+	return(*cur);
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 {
 	// If users already loaded, do nothing.

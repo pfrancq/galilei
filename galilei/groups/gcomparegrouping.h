@@ -118,6 +118,11 @@ protected:
 	double Recall;
 
 	/**
+	* Total comparaison between for groupment.
+	*/
+	double Total;
+
+	/**
 	* SubProfiles that where changed and must be grouped again.
 	*/
 	RContainer<GroupScore,unsigned int,true,true>* GroupsScore;
@@ -131,13 +136,27 @@ public:
 	*/
 	GCompareGrouping(GSession* s,RContainer<GGroups,unsigned int,true,true>* groups) throw(bad_alloc);
 
-public:
+protected:
 
 	/**
 	* Get the ideal group of the subprofile.
 	* @param sub            SubProfile.
 	*/
 	GGroup* GetIdealGroup(GSubProfile* sub) const;
+
+	/**
+	* Compute the Recall and the Precision.
+	* @param rec            Receiver of the signals.
+	*/
+	void ComputeRecallPrecision(GCompareGroupingSignalsReceiver* rec=0);
+
+	/**
+	* Compute the Total Evaluation.
+	* @param rec            Receiver of the signals.
+	*/
+	void ComputeTotal(GCompareGroupingSignalsReceiver* rec=0);
+
+public:
 
 	/**
 	* Make the groups.
@@ -155,6 +174,11 @@ public:
 	* Get the total recall of the groupement.
 	*/
 	double GetRecall(void) const {return(Recall);}
+
+	/**
+	* Get the total recall of the groupement.
+	*/
+	double GetTotal(void) const {return(Total);}
 
 	/**
 	* Get the precision of a group.

@@ -37,8 +37,6 @@
 #include<profiles/gsubprofiledescvector.h>
 #include<profiles/gprofile.h>
 #include<langs/glang.h>
-#include<infos/giword.h>
-#include<infos/giwordlist.h>
 #include<profiles/gprofdoc.h>
 #include<groups/ggroup.h>
 using namespace GALILEI;
@@ -55,11 +53,8 @@ using namespace RStd;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a) throw(bad_alloc)
-  :  RContainer<GSubProfileDesc,unsigned,true,true>(2,1),Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a), OK(0), KO(0), Common(0)
+  :  RContainer<GSubProfileDesc,unsigned,true,true>(2,1),Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a)
 {
-	OK=new GIWordList();
-	KO=new GIWordList();
-	Common=new GIWordList();
 	InsertPtr(new GSubProfileDescVector(this,grp,a));
 	Profile->InsertPtr(this);
 	if(grp)
@@ -96,40 +91,6 @@ int GALILEI::GSubProfile::Compare(const GSubProfile* subprofile) const
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GSubProfile::IsDefined(void) const
-{
-	// The OK and Common lists can't be empty.
-	return((OK->NbPtr)||(Common->NbPtr));
-}
-
-
-//-----------------------------------------------------------------------------
-double GALILEI::GSubProfile::Similarity(const GSubProfile *sub) const
-{
-	double Sim=0;
-	unsigned int NbComp;
-
-	for(OK->Start();!OK->End();OK->Next())
-	{
-		for(sub->OK->Start();!sub->OK->End();sub->OK->Next())
-			if((*OK)()->GetId()==(*sub->OK)()->GetId()) Sim++;
-		for(sub->Common->Start();!sub->Common->End();sub->Common->Next())
-			if((*OK)()->GetId()==(*sub->Common)()->GetId()) Sim++;
-	}
-	for(Common->Start();!Common->End();Common->Next())
-	{
-		for(sub->OK->Start();!sub->OK->End();sub->OK->Next())
-			if((*Common)()->GetId()==(*sub->OK)()->GetId()) Sim++;
-		for(sub->Common->Start();!sub->Common->End();sub->Common->Next())
-			if((*Common)()->GetId()==(*sub->Common)()->GetId()) Sim++;
-	}
-	NbComp=OK->NbPtr+Common->NbPtr+sub->OK->NbPtr+sub->Common->NbPtr;
-	Sim=(2.0*Sim)/static_cast<double>(NbComp);
-	return(Sim);
-}
-
-
-//-----------------------------------------------------------------------------
 void GALILEI::GSubProfile::SetGroup(GGroup* grp)
 {
 	Group=grp;
@@ -148,7 +109,4 @@ bool GALILEI::GSubProfile::IsUpdated(void) const
 //-----------------------------------------------------------------------------
 GALILEI::GSubProfile::~GSubProfile(void)
 {
-	if(OK) delete OK;
-	if(KO) delete KO;
-	if(Common) delete Common;
 }

@@ -57,7 +57,6 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 // forward class declaration
 class GLang;
-class GIWordList;
 class GProfDoc;
 class GProfile;
 class GSubProfileRef;
@@ -99,21 +98,6 @@ class GSubProfile : public RStd::RContainer<GSubProfileDesc,unsigned,true,true>
 	* Date of attachment to the group.
 	*/
 	RTimeDate::RDate Attached;
-
-	/**
-	* List OK.
-	*/
-	GIWordList* OK;
-
-	/**
-	* List KO.
-	*/
-	GIWordList* KO;
-
-	/**
-	* List Common.
-	*/
-	GIWordList* Common;
 
 public:
 
@@ -184,24 +168,6 @@ public:
 	void SetGroup(GGroup* grp);
 
 	/**
-	* Get the list of word for OK.
-	* @return Pointer to the list.
-	*/
-	GIWordList* GetOK(void) const {return(OK);}
-
-	/**
-	* Get the list of word for KO.
-	* @return Pointer to the list.
-	*/
-	GIWordList* GetKO(void) const {return(KO);}
-
-	/**
-	* Get the list of word for Common.
-	* @return Pointer to the list.
-	*/
-	GIWordList* GetCommon(void) const {return(Common);}
-
-	/**
 	* Get the date of the last attachment.
 	* @returns Pointer to date.
 	*/
@@ -212,17 +178,6 @@ public:
 	* @returns Boolean.
 	*/
 	bool IsUpdated(void) const;
-
-	/**
-	* See if the subprpfile is defined, i.e. if it is computed. A subprofile
-	* that isn't computed, isn't attached.
-	*/
-	bool IsDefined(void) const;
-
-	/**
-	* Compute similarity between SubProfiles.
-	*/
-	double Similarity(const GSubProfile *sub) const;
 
 	/**
 	*Destructor

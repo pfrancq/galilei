@@ -109,12 +109,13 @@ void GALILEI::GIWordsWeights::Clear(void)
 void GALILEI::GIWordsWeights::Analyse(GDoc* doc)
 {
 	GIWordWeight* w;
+	GIWordOccurCursor Words=doc->GetWordOccurCursor();
 
 	NbWordsDocs+=doc->GetV();
-	for(doc->WordsStart();!doc->WordsEnd();doc->WordsNext())
+	for(Words.Start();!Words.End();Words.Next())
 	{
-		w=GetInsertPtr<unsigned int>(doc->GetCurWords()->GetId());
-		w->Weight+=doc->GetCurWords()->GetNbOccurs();
+		w=GetInsertPtr<unsigned int>(Words()->GetId());
+		w->Weight+=Words()->GetNbOccurs();
 	}
 }
 
@@ -134,15 +135,8 @@ int GALILEI::GIWordsWeights::sortOrder(const void *a,const void *b)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GIWordsWeights::EndCalc(void)
+void GALILEI::GIWordsWeights::Sort(void)
 {
-	GIWordWeight **c;
-	unsigned int i;
-
-	// Calculate Frequences
-	for(i=NbPtr+1,c=Tab;--i;c++)
-		(*c)->Weight/=NbWordsDocs;
-
 	// ReOrder by Frequence
 	if(Order) delete[] Order;
 	Order=new GIWordWeight*[NbPtr+1];
@@ -157,9 +151,33 @@ void GALILEI::GIWordsWeights::EndCalc(void)
 
 
 //---------------------------------------------------------------------------
-unsigned int GALILEI::GIWordsWeights::NextWord(void)
+void GALILEI::GIWordsWeights::EndCalc(void)
 {
-	return((*(CurOrder++))->GetId());
+	GIWordWeight **c;
+	unsigned int i;
+
+	// Calculate Frequences
+	for(i=NbPtr+1,c=Tab;--i;c++)
+		(*c)->Weight/=NbWordsDocs;
+
+	Sort();
+}
+
+
+//---------------------------------------------------------------------------
+void GALILEI::GIWordsWeights::InitWord(void)
+{
+	CurOrder=Order;
+}
+
+
+//---------------------------------------------------------------------------
+GIWordWeight* GALILEI::GIWordsWeights::NextWord(void)
+{
+	if(*CurOrder)
+		return(*(CurOrder++));
+	else
+		return(0);
 }
 
 

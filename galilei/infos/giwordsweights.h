@@ -142,15 +142,25 @@ public:
 	void Analyse(GDoc* doc);
 
 	/**
+	* Construct an ordered view of the vector.
+	*/
+	void Sort(void);
+
+	/**
 	* When all the documents are analysed, call this method to compute the frequencies.
 	*/
 	void EndCalc(void);
 
 	/**
-	* Get the identificator of the next word in the ordered list by frequencies.
-	* @returns Identificator of the word.
+	* Move the pointer in the ordered list to the beginning.
 	*/
-	unsigned int NextWord(void);
+	void InitWord(void);
+
+	/**
+	* Get the identificator of the next word in the ordered list by frequencies.
+	* @returns Pointer to GIWordWeight.
+	*/
+	GIWordWeight* NextWord(void);
 
 	/**
 	* Look if there a word to treat.

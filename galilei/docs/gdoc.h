@@ -46,7 +46,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-
+#include <profiles/gprofdoc.h>
+#include <infos/giwordoccur.h>
 
 
 //-----------------------------------------------------------------------------
@@ -63,7 +64,6 @@ class GIWordOccurs;
 class GIWordOccur;
 class GMIMEFilter;
 class GLang;
-class GProfDoc;
 class GDict;
 
 
@@ -307,47 +307,16 @@ public:
 	void DecFailed(void) {Failed--;}
 
 	/**
-	* Start the iterator to go trough the word.
+	* Get a Cursor on the occurences of the document.
+	* @return GProfDocCursor.
 	*/
-	void WordsStart(void);
+	GIWordOccurCursor& GetWordOccurCursor(void);
 
 	/**
-	* Test if the end of the container of words is reached.
+	* Get a Cursor on the feedback for the profile.
+	* @return GProfDocCursor.
 	*/
-	bool WordsEnd(void) const;
-
-	/**
-	* Goto the next element, if the end is reached, go to the beginning.
-	*/
-	void WordsNext(void);
-
-	/**
-	* Get the current word.
-	* @returns Pointer to the current word.
-	*/
-	GIWordOccur* GetCurWords(void);
-
-	/**
-	* Start the iterator to go trough the profiles judging the document.
-	*/
-	void ProfilesStart(void);
-
-	/**
-	* Test if the end of the container of profiles judging the document is
-	* reached.
-	*/
-	bool ProfilesEnd(void) const;
-
-	/**
-	* Goto the next element, if the end is reached, go to the beginning.
-	*/
-	void ProfilesNext(void);
-
-	/**
-	* Get the current profile judging the document.
-	* @returns Pointer to the current profile.
-	*/
-	GProfDoc* GetCurProfiles(void);
+	GProfDocCursor& GetProfDocCursor(void);
 
 	/**
 	* Add a judgement for this document.

@@ -6,7 +6,7 @@
 
 	Profile - Implementation.
 
-	(C) 2001 by P. Francq.
+	(C) 2001-2002 by P. Francq.
 
 	Version $Revision$
 
@@ -125,30 +125,11 @@ void GALILEI::GProfile::UpdateFinished(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GProfile::DocsStart(void)
+GProfDocCursor& GALILEI::GProfile::GetProfDocCursor(void)
 {
-	Fdbks.Start();
-}
-
-
-//-----------------------------------------------------------------------------
-bool GALILEI::GProfile::DocsEnd(void) const
-{
-	return(Fdbks.End());
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GProfile::DocsNext(void)
-{
-	Fdbks.Next();
-}
-
-
-//-----------------------------------------------------------------------------
-GProfDoc* GALILEI::GProfile::GetCurDocs(void)
-{
-	return(Fdbks());
+	GProfDocCursor *cur=GProfDocCursor::GetTmpCursor();
+	cur->Set(Fdbks);
+	return(*cur);
 }
 
 

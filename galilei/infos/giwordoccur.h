@@ -37,6 +37,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R Project
+#include <rstd/rcursor.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/giword.h>
 
@@ -155,6 +160,15 @@ public:
 	*/
 	virtual ~GIWordOccur(void);
 };
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GWordOccurCursor class provides a way to go trough a vector of pairs
+* (keyword/occurences).
+* @short Word Occurences Cursor
+*/
+CLASSCURSOR(GIWordOccurCursor,GIWordOccur,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

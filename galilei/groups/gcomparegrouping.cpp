@@ -32,12 +32,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-//#include <rstd/rcontainercursor.h>
-//using namespace RStd;
-
-
-//-----------------------------------------------------------------------------
 //include files for GALILEI
 #include<groups/gcomparegrouping.h>
 #include<groups/ggroup.h>
@@ -125,12 +119,14 @@ GGroup* GALILEI::GCompareGrouping::GetIdealGroup(GSubProfile* sub) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GCompareGrouping::Compare(GCompareGroupingSignalsReceiver* rec)
+void GALILEI::GCompareGrouping::ComputeRecallPrecision(GCompareGroupingSignalsReceiver* rec)
 {
 	GroupScoreCursor Grp;
 	GSubProfileCursor Sub;
-	GGroup* grp;
+	GGroup* thGrp;
 	unsigned int NbGrp;
+	unsigned int InGrp;
+	unsigned int InthGrp;
 
 	Precision=Recall=0.0;
 	Grp.Set(GroupsScore);
@@ -138,32 +134,34 @@ void GALILEI::GCompareGrouping::Compare(GCompareGroupingSignalsReceiver* rec)
 	{
 		NbGrp=Grp()->Group->NbPtr;
 		Grp()->Precision=Grp()->Recall=0.0;
+		if(!NbGrp) continue;
 		if(NbGrp==1)
 		{
-			grp=GetIdealGroup(Grp()->Group->Tab[0]);
-			if((!grp)||(grp->GetLang()!=Grp()->Group->GetLang())) continue;
+			thGrp=GetIdealGroup(Grp()->Group->Tab[0]);
+			if((!thGrp)||(thGrp->GetLang()!=Grp()->Group->GetLang())) continue;
 			Grp()->Precision=1.0;
-			if(grp->NbPtr==1)
+			if(thGrp->NbPtr==1)
 				Grp()->Recall=1.0;
-			else
-				Grp()->Recall=1.0/((double)(grp->NbPtr-1));
 		}
 		else
 		{
 			Sub=Grp()->Group->GetSubProfileCursor();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
-				grp=GetIdealGroup(Sub());
-				if((!grp)||(grp->GetLang()!=Grp()->Group->GetLang())) continue;
-				if(grp->NbPtr==1)
+				thGrp=GetIdealGroup(Sub());
+				if((!thGrp)||(thGrp->GetLang()!=Grp()->Group->GetLang())) continue;
+				if(thGrp->NbPtr==1)
 				{
-					Grp()->Precision+=1.0/((double)(NbGrp-1));
 					Grp()->Recall+=1.0;
 				}
 				else
 				{
-					Grp()->Precision+=(NbGrp-1)/((double)(grp->GetNbSubProfiles(Grp()->Group)-1));
-					Grp()->Recall+=(grp->NbPtr-1)/((double)(Grp()->Group->GetNbSubProfiles(grp)-1));
+					InthGrp=thGrp->GetNbSubProfiles(Grp()->Group)-1;
+					if(InthGrp)
+						Grp()->Precision+=((double)(InthGrp))/((double)(NbGrp-1));
+					InGrp=Grp()->Group->GetNbSubProfiles(thGrp)-1;
+					if(InGrp)
+						Grp()->Recall+=((double)(InGrp))/((double)(thGrp->NbPtr-1));
 				}
 			}
 			Grp()->Precision/=NbGrp;
@@ -172,8 +170,63 @@ void GALILEI::GCompareGrouping::Compare(GCompareGroupingSignalsReceiver* rec)
 		Precision+=Grp()->Precision;
 		Recall+=Grp()->Recall;
 	}
-	Precision/=(double)GroupsScore->NbPtr;
-	Recall/=(double)GroupsScore->NbPtr;
+	if(GroupsScore->NbPtr)
+	{
+		Precision/=(double)GroupsScore->NbPtr;
+		Recall/=(double)GroupsScore->NbPtr;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GCompareGrouping::ComputeTotal(GCompareGroupingSignalsReceiver* rec)
+{
+	GGroup* thGrp;
+	GGroup* thGrp2;
+	unsigned int NbComp;
+	bool IsInGrp,IsInthGrp;
+	GSubProfile** Prof1;
+	GSubProfile* P1;
+	GSubProfile** Prof2;
+	GSubProfile* P2;
+	unsigned int i,j;
+
+	Total=0.0;
+	NbComp=0;
+	for(i=Session->GetSubProfiles()->NbPtr,Prof1=Session->GetSubProfiles()->Tab;--i;Prof1++)
+	{
+		P1=(*Prof1);
+		thGrp=GetIdealGroup(P1);
+		if(!P1->GetGroup())
+		{
+			if(thGrp)
+				NbComp+=thGrp->NbPtr-1;
+			continue;
+		}
+		for(j=i+1,Prof2=Prof1+1;--j;Prof2++)
+		{
+			P2=(*Prof2);
+			if((P1->GetLang()!=P2->GetLang())||(!P2->GetGroup())) continue;
+			thGrp2=GetIdealGroup(P2);
+			if(!thGrp2) continue;
+			NbComp++;
+			IsInGrp=P1->GetGroup()->IsIn<const GSubProfile*>(P2);
+			IsInthGrp=thGrp->IsIn<const GSubProfile*>(P2);
+			if((IsInGrp&&IsInthGrp)||((!IsInGrp)&&(!IsInthGrp))) Total+=1.0;
+		}
+	}
+	if(NbComp)
+		Total/=NbComp;
+	else
+		Total=1.0;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GCompareGrouping::Compare(GCompareGroupingSignalsReceiver* rec)
+{
+	ComputeRecallPrecision(rec);
+	ComputeTotal(rec);
 }
 
 

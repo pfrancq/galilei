@@ -43,6 +43,7 @@ using namespace RStd;
 #include <docs/gdoc.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
+#include <profiles/gsubprofiledescvector.h>
 #include <profiles/gprofdoc.h>
 #include <infos/giword.h>
 #include <infos/giwordlist.h>
@@ -76,15 +77,12 @@ GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session,unsigned int s
 //-----------------------------------------------------------------------------
 void GALILEI::GProfileCalcVector::Compute(GProfile* profile)
 {
-	GProfDoc *d;
 	GSubProfile* s;
-	unsigned int kwdid;
-	GIWord *ref;
-	GIWordsWeights* MOK;               // OK Docs' Stats for a given language.
-	GIWordsWeights* MKO;               // KO Docs' Stats for a given language.
-	GIWordList* SubOK;              // OK List of a given subprofile.
-	GIWordList* SubKO;              // KO List of a given subprofile.
-	GIWordList* SubCommon;          // Common List of a given subprofile.
+	GIWordsWeights* MOK;               // OK Docs Stats for a given language.
+	GIWordsWeights* MKO;               // KO Docs Stats for a given language.
+	GIWordWeight* ptr;
+	GProfDocCursor Docs;
+	GIWordsWeights* Vector;
 
 	// Clear
 	for(OK.Start();!OK.End();OK.Next())
@@ -93,24 +91,23 @@ void GALILEI::GProfileCalcVector::Compute(GProfile* profile)
 			KO()->Clear();
 
 	// Go through all documents judged
-	for(profile->DocsStart();!profile->DocsEnd();profile->DocsNext())
+	Docs=profile->GetProfDocCursor();
+	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		d=profile->GetCurDocs();
-
 		// If the document hasn't a language, don't treat for the profiles' computing.
-		if(!d->GetDoc()->GetLang())
+		if(!Docs()->GetDoc()->GetLang())
 			continue;
 
 		// Verify Feedback
-		switch(d->GetFdbk())
+		switch(Docs()->GetFdbk())
 		{
 			case 'O':
 			case 'N':
-				OK.GetPtr<GLang*>(d->GetDoc()->GetLang())->Analyse(d->GetDoc());
+				OK.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
 				break;
 			
 			case 'K':
-				KO.GetPtr<GLang*>(d->GetDoc()->GetLang())->Analyse(d->GetDoc());
+				KO.GetPtr<GLang*>(Docs()->GetDoc()->GetLang())->Analyse(Docs()->GetDoc());
 				break;
 		}
 	}
@@ -126,55 +123,19 @@ void GALILEI::GProfileCalcVector::Compute(GProfile* profile)
 	{
 		// Init Local variables
 		s=(*profile)();
-		SubOK=s->GetOK();
-		SubKO=s->GetKO();
-		SubCommon=s->GetCommon();
+		Vector=((GSubProfileDescVector*)s->GetPtr<const tSubProfileDesc>(sdVector))->GetVector();
 		MOK=OK.GetPtr<GLang*>(s->GetLang());
 		MKO=KO.GetPtr<GLang*>(s->GetLang());
 
-		// Clear the lists 'OK','KO' and 'Common' of the current subprofile.
-		SubOK->Clear();
-		SubKO->Clear();
-		SubCommon->Clear();
-
-		// Construct the lists while:
-		//  1°) The MOK and MKO lists are not both empty (IsNextWord() methods).
-		//  2°) The length of both lists OK and KO are not equal to the maximal
-		//      size (SubOK->NbPtr and SubKO->NbPtr values).
-		while(((MOK->IsNextWord())&&(SubOK->NbPtr<Size))||((MKO->IsNextWord())&&(SubKO->NbPtr<Size)))
+		// Construct the vector
+		Vector->Clear();
+		for(unsigned int Nb=Size+1;--Nb;)
 		{
-			// Look if the OK list needs some words. If yes, look if the next
-			// word to add is already in the KO list. If so, delete it from KO
-			// and insert it in Common, else insert it in the OK list.
-			if((MOK->IsNextWord())&&(SubOK->NbPtr<Size))
-			{
-				kwdid=MOK->NextWord();
-				ref=s->GetKO()->GetPtr<unsigned int>(kwdid);
-				if(ref)
-				{
-					s->GetKO()->DeletePtr(ref);
-					s->GetCommon()->InsertPtr(new GIWord(kwdid));
-				}
-				else
-					s->GetOK()->InsertPtr(new GIWord(kwdid));
-			}
-
-			// Look if the KO list needs some words. If yes, look if the next
-			// word to add is already in the OK list. If so, delete it from OK
-			// and insert it in Common, else insert it in the KO list.
-			if((MKO->IsNextWord())&&(SubKO->NbPtr<Size))
-			{
-				kwdid=MKO->NextWord();
-				ref=s->GetOK()->GetPtr<unsigned int>(kwdid);
-				if(ref)
-				{
-					s->GetOK()->DeletePtr(ref);
-					s->GetCommon()->InsertPtr(new GIWord(kwdid));
-				}
-				else
-					s->GetKO()->InsertPtr(new GIWord(kwdid));
-			}
+			if(!MOK->IsNextWord()) break;
+			ptr=MOK->NextWord();
+			Vector->InsertPtr(new GIWordWeight(ptr->GetId(),1.0));
 		}
+		Vector->Sort();
 	}
 
 	// Tell the profile that the udpate is finished.

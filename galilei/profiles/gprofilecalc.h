@@ -66,7 +66,7 @@ protected:
 	/**
 	* Session.
 	*/
-	GSession *Session;
+	GSession* Session;
 
 public:
 

@@ -67,7 +67,7 @@ class GSubProfileCursor;
 * @author Pascal Francq
 * @short Group.
 */
-class GGroup : public RStd::RContainer<GSubProfile,unsigned int,false,false>
+class GGroup : public RStd::RContainer<GSubProfile,unsigned int,false,true>
 {
 	/**
 	* identifier

@@ -47,6 +47,7 @@
 #include <langs/glangs.h>
 #include <langs/gdicts.h>
 #include <profiles/gusers.h>
+#include <profiles/gsubprofile.h>
 #include <docs/gdocs.h>
 
 
@@ -516,6 +517,16 @@ public:
 		* Get a cursor over the profiles used in the system.
 		*/
 		GProfileCursor& GetProfilesCursor(void);
+
+		/**
+		* Get a cursor over the profiles used in the system.
+		*/
+		GSubProfileCursor& GetSubProfilesCursor(void);
+
+		/**
+		* Get a pointer to subprofiles int the system.
+		*/
+		RStd::RContainer<GSubProfile,unsigned int,true,true>* GetSubProfiles(void) {return(SubProfiles);};
 
 		/**
 		* Get the number of users treated by the system.
