@@ -306,14 +306,14 @@ public:
 	void AnalyseDocs(GSlot* rec=0,bool modified=true) throw(GException);
 
 	/**
-	* Return the identifier of a new word of a dictionnary.
+	* Return the identifier of a new word of a dictionary.
 	* @param data           Word to find.
-	* @param dict           Dictionnary.
+	* @param dict           Dictionary.
 	*/
 	virtual unsigned int GetDicNextId(const GData* data,const GDict* dict)=0;
 
 	/**
-	* Loading a dictionnary/stoplist.
+	* Loading a dictionary/stoplist.
 	* @param dic            Pointer to the dictionary.
 	* @param lang           Languague.
 	* @param stop           Is it a stop list.
@@ -321,7 +321,7 @@ public:
 	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException)=0;
 
 	/**
-	* Load a specific word from a dictionnary.
+	* Load a specific word from a dictionary.
 	* @param id             Idenfificator of the word.
 	* @param code           Code of the languague.
 	*/
@@ -601,13 +601,13 @@ public:
 
 	/**
 	* Delete clusters of words.
-	* @param dict           Dictionnary.
+	* @param dict           Dictionary.
 	*/
 	virtual void DeleteWordsGroups(GDict* dict)=0;
 
 	/**
 	* Save clusters of words.
-	* @param dict           Dictionnary.
+	* @param dict           Dictionary.
 	*/
 	virtual void SaveWordsGroups(GDict* dict)=0;
 

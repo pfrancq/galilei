@@ -121,22 +121,22 @@ protected:
 	const char* ValidSQLValue(const char* val,char* tmp);
 
 	/**
-	* Return the identifier of a new word of a dictionnary.
+	* Return the identifier of a new word of a dictionary.
 	* @param word           Word to find.
-	* @param dict           Dictionnary.
+	* @param dict           Dictionary.
 	*/
 	virtual unsigned int GetDicNextId(const GData* data,const GDict* dict);
 
 	/**
-	* Loading a dictionnary/stoplist.
-	* @param dic            Pointer to the dictionnary.
+	* Loading a dictionary/stoplist.
+	* @param dic            Pointer to the dictionary.
 	* @param code           Languague.
 	* @param stop           Is it a stop list.
 	*/
 	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_alloc,GException);
 
 	/**
-	* Load a specific word from a dictionnary.
+	* Load a specific word from a dictionary.
 	* @param id             Idenfificator of the word.
 	* @param code           Code of the languague.
 	*/
@@ -200,19 +200,19 @@ public:
 
 	/**
 	* Delete clusters of words.
-	* @param dict           Dictionnary.
+	* @param dict           Dictionary.
 	*/
 	virtual void DeleteWordsGroups(GDict* dict) throw(GException);
 
 	/**
 	* Save clusters of words.
-	* @param dict           Dictionnary.
+	* @param dict           Dictionary.
 	*/
 	virtual void SaveWordsGroups(GDict* dict)throw(GException);
 
 	/**
 	* Load clusters of words.
-	* @param dict           Dictionnary.
+	* @param dict           Dictionary.
 	*/
 	virtual void LoadWordsGroups(GDict* dict) throw(GException);
 

@@ -165,7 +165,7 @@ public:
 	void RecomputeQuery(tObjType ObjType,GLang* lang) throw(GException);
 
 	/**
-	* Destructor.
+	* Destructor of a list of weighted information entities.
 	*/
 	virtual ~GWeightInfos(void);
 };

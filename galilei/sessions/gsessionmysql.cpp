@@ -47,6 +47,7 @@
 #include <infos/glangs.h>
 #include <infos/gdict.h>
 #include <infos/gwordlist.h>
+#include <infos/gword.h>
 #include <infos/gweightinfo.h>
 #include <historic/giwordsweightshistory.h>
 #include <profiles/guser.h>
@@ -216,7 +217,7 @@ void GALILEI::GSessionMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_a
 	else
 		sprintf(tbl,"%skwds",lang->GetCode());
 
-	// Search the values to initialise the dictionnary
+	// Search the values to initialise the dictionary
 	for(char i='a';i<='z';i++)
 	{
 		sprintf(sSql,"SELECT COUNT(*) FROM %s WHERE kwd LIKE '%c%%'",tbl,i);
@@ -229,13 +230,13 @@ void GALILEI::GSessionMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(bad_a
 	if(!MaxId)
 		MaxId=2000;
 
-	// Create and insert the dictionnary
+	// Create and insert the dictionary
 	if(s)
-		dic=new GDict(this,tbl,"Stop List",lang,MaxId,MaxCount,true);
+		dic=new GDict(tbl,"Stop List",lang,MaxId,MaxCount,true);
 	else
-		dic=new GDict(this,tbl,"Dictionnary",lang,MaxId,MaxCount,false);
+		dic=new GDict(tbl,"Dictionary",lang,MaxId,MaxCount,false);
 
-	// Load the dictionnary from the database
+	// Load the dictionary from the database
 	sprintf(sSql,"SELECT kwdid, kwd, type  FROM %s",tbl);
 	RQuery dicts (this, sSql);
 	for(dicts.Start();!dicts.End();dicts.Next())

@@ -4,9 +4,9 @@
 
 	GLangs.h
 
-	List of the languages - Header.
+	Manager for language plugins - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,23 +34,25 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GLangsH
 #define GLangsH
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 /**
-* The GLangs class provides a representation for a list of languages that are
-* handle by the system.
+* The GLangs class provides a representation for a manager for the languages
+* handled by the system. In fact, each language is a plugin.
 * @author Pascal Francq
 * @short Languages.
 */
@@ -59,45 +61,46 @@ class GLangs : public R::RContainer<GFactoryLang,unsigned,true,true>
 public:
 
 	/**
-	* Constructor.
+	* Constructor of the manager.
 	* @param path            Path to find the plugins.
 	* @param dlg             Load the existing dialog.
 	*/
-	GLangs(const char* path,bool dlg=true) throw(GException);
+	GLangs(const char* path,bool dlg=true) throw(bad_alloc,GException);
 
 	/**
 	* Connect to a Session.
-	* @param session         The session.
+	* @param session         Session.
 	*/
-	void Connect(GSession* session);
+	void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
-	* @param session         The session.
+	* @param session         Session.
 	*/
-	void Disconnect(GSession* session);
+	void Disconnect(GSession* session) throw(GException);
 
 	/**
-	* Get a pointer to a language while having its code.
+	* Find the language corresponding to a given code.
 	* @param code             Code of the language.
-	* @returns Pointer to the language.
+	* @returns Pointer to GLang.
 	*/
 	GLang* GetLang(const char* code) const;
 
 	/**
-	* Get a cursor over the profiles used in the system.
+	* Create a cursor on the container of plugins representing the languages.
+	* @param GFactoryLangCursor.
 	*/
 	GFactoryLangCursor& GetLangsCursor(void);
 
 	/**
-	* Destructor.
+	* Destructor of the manager.
 	*/
 	virtual ~GLangs(void);
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

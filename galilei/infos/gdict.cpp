@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GDic.cpp
+	GDict.cpp
 
-	Dictionnary - Implementation.
+	Dictionary - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,12 +34,7 @@
 
 
 
-//---------------------------------------------------------------------------
-// include file for ANSI C/C++
-#include <string.h>
-
-
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include file for GALILEI
 #include <infos/gdata.h>
 #include <infos/gdict.h>
@@ -51,13 +46,13 @@ using namespace R;
 
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 // class GDict::GDataTypes
 //
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class GDict::GDataTypes : public R::RContainer<GData,unsigned int,false,false>
 {
 public:
@@ -71,24 +66,19 @@ public:
 };
 
 
-//---------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 //
 // class GDict
 //
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
-GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(bad_alloc)
-	: RDblHashContainer<GData,unsigned,27,27,true>(ml+(ml/4),ml/4), Session(s), Direct(0),
-	  /*NbGroupsList(0),*/ MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false), Stop(st),
-	  DataTypes(3)//, GroupsList(500)
+//------------------------------------------------------------------------------
+GDict::GDict(const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(bad_alloc)
+	: RDblHashContainer<GData,unsigned,27,27,true>(ml+(ml/4),ml/4), Direct(0),
+	  MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false),
+	  Stop(st), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0), DataTypes(3)
 {
-	for(unsigned int i=0;i<2;i++)
-	{
-		NbRefDocs[i]=0;
-		NbRefSubProfiles[i]=0;
-		NbRefGroups[i]=0;
-	}
 	Direct=new GData*[MaxId];
 	memset(Direct,0,MaxId*sizeof(GData*));
 	DataTypes.InsertPtr(new GDataTypes(ml,infoWord));
@@ -96,7 +86,7 @@ GDict::GDict(GSession* s,const RString& name,const RString& desc,GLang *lang,uns
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GDict::Clear(void)
 {
 	RDblHashContainer<GData,unsigned,27,27,true>::Clear();
@@ -106,36 +96,36 @@ void GDict::Clear(void)
 }
 
 
-//---------------------------------------------------------------------------
-void GDict::PutDirect(GData* word) throw(bad_alloc)
+//------------------------------------------------------------------------------
+void GDict::PutDirect(GData* data) throw(bad_alloc)
 {
 	GData **tmp;
 	unsigned n;
 
-	if(word->GetId()>UsedId) UsedId=word->GetId();
-	if(word->GetId()>=MaxId)
+	if(data->GetId()>UsedId) UsedId=data->GetId();
+	if(data->GetId()>=MaxId)
 	{
-		n=word->GetId()+1000;
+		n=data->GetId()+1000;
 		tmp=new GData*[n];
 		memcpy(tmp,Direct,MaxId*sizeof(GData*));
 		delete[] Direct;
 		Direct=tmp;
 		MaxId=n;
 	}
-	Direct[word->GetId()]=word;
+	Direct[data->GetId()]=data;
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 unsigned int GDict::InsertData(const GData* data) throw(bad_alloc, GException)
 {
 	GData* ptr;
 	bool InDirect=false;
 	unsigned int Id;
 
-	// Empty datas are not inserted
+	// Empty data are not inserted
 	if(data->IsEmpty())
-		throw GException("Empty datas cannot be inserted into a dictionary");
+		throw GException("Empty data cannot be inserted into a dictionary");
 	if(data->GetType()==infoNothing)
 		throw GException("No typed data cannot be inserted into a dictionary");
 
@@ -152,7 +142,7 @@ unsigned int GDict::InsertData(const GData* data) throw(bad_alloc, GException)
 	// Look if data has an identificator. If not, assign one.
 	if(ptr->GetId()==cNoRef)
 	{
-		Id=Session->GetDicNextId(ptr,this);
+		Id=Lang->GetSession()->GetDicNextId(ptr,this);
 		ptr->SetId(Id);
 		InDirect=true;
 	}
@@ -167,25 +157,27 @@ unsigned int GDict::InsertData(const GData* data) throw(bad_alloc, GException)
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GDict::DeleteData(GData* data) throw(bad_alloc, GException)
 {
 	if((!data)||(data->GetId()>MaxId))
-		throw GException("Cannot delete element");
+		throw GException("Cannot delete data");
 	Direct[data->GetId()]=0;
 	DataTypes.GetPtr<GInfoType>(data->GetType())->DeletePtr(data);
 	DeletePtr(data);
 }
 
 
-//---------------------------------------------------------------------------
-GData* GDict::GetData(const unsigned int id) const
+//------------------------------------------------------------------------------
+GData* GDict::GetData(const unsigned int id) const throw(GException)
 {
+	if(id>MaxId)
+		throw GException("Cannot access data");
 	return(Direct[id]);
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GDataCursor& GDict::GetDataCursor(GInfoType type) throw(bad_alloc,GException)
 {
 	GDataCursor* cur=GDataCursor::GetTmpCursor();
@@ -193,151 +185,137 @@ GDataCursor& GDict::GetDataCursor(GInfoType type) throw(bad_alloc,GException)
 
 	tp=DataTypes.GetPtr<GInfoType>(type);
 	if(!tp)
-		throw GException("No cursor for unknown information type");
+		throw GException("Unknown information type");
 	cur->Set(tp);
 	return(*cur);
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+RString& GDict::GetName(void) const throw(bad_alloc)
+{
+	RString* tmp=RString::GetString();
+
+	(*tmp)=Name;
+	return(*tmp);
+}
+
+
+//------------------------------------------------------------------------------
 unsigned int GDict::GetNbDatas(GInfoType type) const throw(GException)
 {
 	GDataTypes* tp;
 
 	tp=DataTypes.GetPtr<GInfoType>(type);
 	if(!tp)
-		throw GException("No cursor for unknown information type");
+		throw GException("Unknown information type");
 	return(tp->NbPtr);
 }
 
 
-//---------------------------------------------------------------------------
-bool GDict::IsIn(const RString& name2) const
+//------------------------------------------------------------------------------
+bool GDict::IsIn(const RString& name) const
 {
-	RString name(name2);
-	return(RDblHashContainer<GData,unsigned,27,27,true>::IsIn<RString&>(name));
+	return(RDblHashContainer<GData,unsigned,27,27,true>::IsIn<const RString>(name));
 }
 
 
-//---------------------------------------------------------------------------
-/*unsigned int GDict::GetNbGroupsList(void) const
+//------------------------------------------------------------------------------
+void GDict::IncRef(unsigned int id,tObjType ObjType) throw(GException)
 {
-	return(GroupsList.NbPtr);
-}
-*/
-
-//---------------------------------------------------------------------------
-bool GDict::IsStopList(void) const
-{
-	return(Stop);
-}
-
-
-//---------------------------------------------------------------------------
-int GDict::Compare(const GDict* dict) const
-{
-	return(Name.Compare(dict->Name));
-}
-
-
-//---------------------------------------------------------------------------
-int GDict::Compare(const GDict& dict) const
-{
-	return(Name.Compare(dict.Name));
-}
-
-
-//---------------------------------------------------------------------------
-int GDict::Compare(const GLang* lang) const
-{
-	return(Lang->Compare(lang));
-}
-
-
-//-----------------------------------------------------------------------------
-void GDict::IncRef(unsigned int id,tObjType ObjType,GInfoType /*WordType*/)
-{
+	if(id>MaxId)
+		throw GException("Cannot access data");
 	Direct[id]->IncRef(ObjType);
 }
 
 
-//-----------------------------------------------------------------------------
-void GDict::DecRef(unsigned int id,tObjType ObjType,GInfoType /*WordType*/)
+//------------------------------------------------------------------------------
+void GDict::DecRef(unsigned int id,tObjType ObjType) throw(GException)
 {
+	if(id>MaxId)
+		throw GException("Cannot access data");
 	Direct[id]->DecRef(ObjType);
 }
 
 
-//-----------------------------------------------------------------------------
-void GDict::IncRef(tObjType ObjType,GInfoType WordType)
+//------------------------------------------------------------------------------
+unsigned int GDict::GetRef(unsigned int id,tObjType ObjType) throw(GException)
 {
-	switch(ObjType)
-	{
-		case otDoc:
-			NbRefDocs[WordType]++;
-			break;
-		case otSubProfile:
-			NbRefSubProfiles[WordType]++;
-			break;
-		case otGroup:
-			NbRefGroups[WordType]++;
-			break;
-		default:
-			break;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GDict::DecRef(tObjType ObjType,GInfoType WordType)
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			NbRefDocs[WordType]--;
-			break;
-		case otSubProfile:
-			NbRefSubProfiles[WordType]--;
-			break;
-		case otGroup:
-			NbRefGroups[WordType]--;
-			break;
-		default:
-			break;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-unsigned int GDict::GetRef(unsigned int id,tObjType ObjType)
-{
+	if(id>MaxId)
+		throw GException("Cannot access data");
 	return(Direct[id]->GetRef(ObjType));
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GDict::GetRef(tObjType ObjType,GInfoType WordType)
+//------------------------------------------------------------------------------
+void GDict::IncRef(tObjType ObjType)
 {
 	switch(ObjType)
 	{
 		case otDoc:
-			return(NbRefDocs[WordType]);
+			NbRefDocs++;
 			break;
 		case otSubProfile:
-			return(NbRefSubProfiles[WordType]);
+			NbRefSubProfiles++;
 			break;
 		case otGroup:
-			return(NbRefGroups[WordType]);
+			NbRefGroups++;
 			break;
 		default:
-			return(NbRefDocs[WordType]+NbRefSubProfiles[WordType]+NbRefGroups[WordType]);
+			break;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GDict::DecRef(tObjType ObjType) throw(GException)
+{
+	switch(ObjType)
+	{
+		case otDoc:
+			if(!NbRefDocs)
+				throw GException("Cannot decrease null number of references");
+			NbRefDocs--;
+			break;
+		case otSubProfile:
+			if(!NbRefSubProfiles)
+				throw GException("Cannot decrease null number of references");
+			NbRefSubProfiles--;
+			break;
+		case otGroup:
+			if(!NbRefGroups)
+				throw GException("Cannot decrease null number of references");
+			NbRefGroups--;
+			break;
+		default:
+			break;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GDict::GetRef(tObjType ObjType)
+{
+	switch(ObjType)
+	{
+		case otDoc:
+			return(NbRefDocs);
+			break;
+		case otSubProfile:
+			return(NbRefSubProfiles);
+			break;
+		case otGroup:
+			return(NbRefGroups);
+			break;
+		default:
+			return(NbRefDocs+NbRefSubProfiles+NbRefGroups);
 			break;
 	}
 	return(0);
 }
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GDict::~GDict(void)
 {
 	if(Direct) delete[] Direct;

@@ -4,7 +4,7 @@
 
 	GWord.cpp
 
-	 (or stem) - Implementation.
+	Word (or stem) - Implementation.
 
 	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
@@ -81,42 +81,6 @@ GALILEI::GWord::GWord(const GWord* word) throw(bad_alloc)
   : GData(word)
 {
 }
-
-/*
-//-----------------------------------------------------------------------------
-int GALILEI::GWord::Compare(const GWord& word) const
-{
-	return(Name.Compare(word.Name));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GWord::Compare(const GWord* word) const
-{
-	return(Name.Compare(word->Name));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GWord::Compare(const RString& word) const
-{
-	return(Name.Compare(word));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GWord::Compare(const char* word) const
-{
-	return(Name.Compare(word));
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GWord::Compare(const unsigned int id) const
-{
-	return(Id-id);
-}
-*/
 
 
 //-----------------------------------------------------------------------------

@@ -4,9 +4,9 @@
 
 	GLang.h
 
-	Basic Language - Header.
+	Generic Language - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,59 +32,63 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GLangH
 #define GLangH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rlang.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <sessions/gplugin.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // API VERSION
 #define API_LANG_VERSION "1.0"
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GLang class provides a representation for a basic language. The virtual
-* function GetStemming must be implemented for the different languages.
+* The GLang class provides a representation for a generic language. Each
+* language has to be implemented as a plugin. The virtual function GetStemming
+* must be implemented for the different languages.
+*
+* Each language is composed from :
+* - A name ("English") and a code ("en") ;
+* - A dictionary of data (words, list of words, ...);
+* - A dictionary of stopwords ("of", "the", "or", "le", ...);
+* - A list of words to skip during the analysis.
 * @author Pascal Francq.
 * @short Generic Language.
 */
 class GLang : public R::RLang, public GPlugin<GFactoryLang>
 {
 protected:
-	class SkipWord
-	{
-	public:
-		R::RString Word;
-		SkipWord(const char* w) : Word(w) {}
-		int Compare(const SkipWord* w) {return(Word.Compare(w->Word));}
-		int Compare(const SkipWord& w) {return(Word.Compare(w.Word));}
-		int Compare(const R::RChar* w) {return(Word.Compare(w));}
-	};
+	class SkipWord;
 
 	/**
-	* Dictionnary.
+	* Session responsible for the dictionary.
+	*/
+	GSession* Session;
+
+	/**
+	* Dictionary of data.
 	*/
 	GDict* Dict;
 
 	/**
-	* Stop words.
+	* Dictionary of stopwords.
 	*/
 	GDict* Stop;
 
@@ -98,7 +102,7 @@ public:
 
 	/**
 	* Constructor of a language.
-	* @param fac            Factory;
+	* @param fac            Factory.
 	* @param lang           Name of the language.
 	* @param code           Code of the language.
 	*/
@@ -108,128 +112,147 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session);
+	virtual void Connect(GSession* session) throw(GException);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session);
+	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
-	* Comparaison function used by the Container.
-	* @param lang           Pointer of the language used for comparaison.
+	* Compare two languages by comparing their code.
+	* @see R::RContainer
+	* @param lang            Language.
+	* @return int
 	*/
 	int Compare(const GLang& lang) const;
 
 	/**
-	* Comparaison function used by the Container.
-	* @param lang           Language used of the comparaison.
+	* Compare two languages by comparing their code.
+	* @see R::RContainer
+	* @param lang            Pointer to a language.
+	* @return int
 	*/
 	int Compare(const GLang* lang) const;
 
 	/**
-	* Compare function like strcmp used in particular for RContainer class.
-	* @param code           Code used for the comparaison.
+	* Compare a code of a language with a string representing a code.
+	* @see R::RContainer
+	* @param code            Code.
+	* @return int
 	*/
 	int Compare(const char* code) const;
 
 	/**
-	* Function that return stemming of a word.
-	* @param kwd            Word to find the stemming.
-	* @return The stemming of the word.
+	* During the analysis of a document, some words beginning with a number may
+	* appear as valid with respect to the rules, but these words do not
+	* represent usefull content (such as "1th", "2nd", "3nd", ...). Therefore,
+	* it is possible to skip these words.
+	*
+	* This method add a word to the list to skip. In fact, only the sequence
+	* after the numbers must be given (example "nd" for "2nd", "3nd", ...).
+	* @param word            Word to skip.
 	*/
-	virtual R::RString& GetStemming(const R::RString& kwd);
+	void SkipSequence(const R::RString& word) throw(bad_alloc);
 
 	/**
-	* Get the dictionnary attached to the language.
+	* Function that computes the stem of a word. Of course, this method must be
+	* overloaded by the child classes.
+	* @param kwd            Word for which the stem must be computed.
+	* @return A R::RString representing the stem of the word.
+	*/
+	virtual R::RString& GetStemming(const R::RString& kwd) throw(GException);
+
+	/**
+	* Get the session.
+	* @return Pointer to GSession.
+	*/
+	GSession* GetSession(void) const {return(Session);}
+
+	/**
+	* Get the dictionary of data attached to the language.
 	* @return Pointer to GDict.
 	*/
 	GDict* GetDict(void) const;
 
 	/**
-	* Get the soptlist attached to the language.
+	* Get the dictionary of stopwords attached to the language.
 	* @return Pointer to GDict.
 	*/
 	GDict* GetStop(void) const;
 
 	/**
-	* Look if a name corresponds to a data stored in the stoplist.
+	* Look if a name corresponds to a data stored in the dictionary of
+	* stopwords.
 	* @param name            Name to lookup.
-	* @return true if it was found in the stop list.
+	* @return true if it was found in the dictionary of stopwords.
 	*/
-	bool InStop(const R::RString& name) const;
+	bool InStop(const R::RString& name) const throw(GException);
 
 	/**
-	* Increase the number of references on a word.
-	* @param id             Identificator.
-	* @param ObjType        Type of the reference.
+	* Increase the number of objects of a given type that make a reference to a
+	* data.
+	* @param id             Identificator of the data.
+	* @param ObjType        Type of the object.
 	*/
-	void IncRef(unsigned int id,tObjType ObjType,GInfoType WordType);
+	void IncRef(unsigned int id,tObjType ObjType) throw(GException);
 
 	/**
-	* Decrease the number of references on a word.
-	* @param id             Identificator.
-	* @param ObjType        Type of the reference.
+	* Decrease the number of objects of a given type that make a reference to a
+	* data.
+	* @param id             Identificator of the data.
+	* @param ObjType        Type of the object.
 	*/
-	void DecRef(unsigned int id,tObjType ObjType,GInfoType WordType);
+	void DecRef(unsigned int id,tObjType ObjType) throw(GException);
 
 	/**
-	* Get the number of references on a word.
-	* @param id             Identificator.
-	* @param ObjType        Type of the reference.
+	* Get the number of objects of a given type that make a reference to a data.
+	* @param id             Identificator of the data.
+	* @param ObjType        Type of the object.
+	* @return unsigned int.
+	*/
+	unsigned int GetRef(unsigned int id,tObjType ObjType) throw(GException);
+
+	/**
+	* Increase the number of objects of a given type using the dictionary of the
+	* language.
+	* @param ObjType        Type of the object.
+	*/
+	void IncRef(tObjType ObjType) throw(GException);
+
+	/**
+	* Decrease the number of objects of a given type using the dictionary of the
+	* language.
+	* @param ObjType        Type of the object.
+	*/
+	void DecRef(tObjType ObjType) throw(GException);
+
+	/**
+	* Get the number of objects of a given type using the dictionary of the
+	* language.
+	* @param ObjType        Type of the object.
+	*/
+	unsigned int GetRef(tObjType ObjType) throw(GException);
+
+	/**
+	* Get the number of elements contained in the dictionary of data.
 	* @returns unsigned int.
 	*/
-	unsigned int GetRef(unsigned int id,tObjType ObjType);
+	unsigned int GetTotal(void) const throw(GException);
 
 	/**
-	* Increase the number of objects using the dictionnary.
-	* @param ObjType        Type of the reference.
+	* Get the list of the elements currently defined in the dictionary of data.
+	* @returns const pointer to array of GWord*.
 	*/
-	void IncRef(tObjType ObjType,GInfoType WordType);
+	const GData** GetDatas(void) const throw(GException);
 
 	/**
-	* Decrease the number of objects using the dictionnary.
-	* @param id             Identificator.
-	* @param ObjType        Type of the reference.
+	* Look if a given sequence must be skipped.
+	* @param seq             Sequence.
+	* @return true if the sequence must be skipped.
 	*/
-	void DecRef(tObjType ObjType,GInfoType WordType);
-
-	/**
-	* Get the total number of references.
-	* @param ObjType        Type of the reference.
-	* @returns unsigned int.
-	*/
-	unsigned int GetRef(tObjType ObjType,GInfoType WordType);
-
-	/**
-	* Get the number of elements in the hash container.
-	* @returns Number of elements.
-	*/
-	unsigned int GetTotal(void) const;
-
-	/**
-	* Get the number of group of information entities.
-	* @returns Number of groups.
-	*/
-//	unsigned int GetNbWordList(void) const;
-
-	/**
-	* Get the maximal number of word actually supposed.
-	*/
-	unsigned int GetMaxId(void) const;
-
-	/**
-	* Get the list of the words currently defined in the dictionnary.
-	* @returns const Pointer to array of GWord*.
-	*/
-	GData** GetDatas(void) const;
-
-	/**
-	* Look if a given word is supposed to be skip.
-	* @param wd              Word to test.
-	*/
-	bool ToSkip(const R::RChar* wd);
+	bool MustSkipSequence(const R::RChar* seq) throw(GException);
 
 	/**
 	* Destructor.

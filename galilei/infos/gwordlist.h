@@ -2,13 +2,14 @@
 
 	GALILEI Research Project
 
-	gwordlist.h
+	GWordList.h
 
-	Representation of a list of words - Header.
+	List of words - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be)
 		Nicolas Kumps (nkumps@ulb.ac.be).
 
 	Version $Revision$
@@ -34,25 +35,27 @@
 
 
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef GWordListH
 #define GWordListH
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/gword.h>
+#include <infos/gdata.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace GALILEI{
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GWordList class provides a representation for a list of words.
-* @author Nicolas Kumps
+* The GWordList class provides a representation for a list of words (or stems).
+* Moreover, these lists are also considered to be a data that may be contained
+* in documents (they are used as information entities).
+* @author Pascal Francq and Nicolas Kumps
 * @short List of words.
 */
 
@@ -61,34 +64,35 @@ class GWordList : public GData, protected R::RContainer<GWord,unsigned,false,tru
 public:
 
 	/**
-	* Constructor.
+	* Constructor of a list of words.
+	* @param id              Identificator of the list.
+	* @param name            Name of the list.
 	*/
-	//GWordList(void);
+	GWordList(unsigned int id,const R::RString& name) throw(bad_alloc);
 
 	/**
-	* Constructor.
+	* Copy constructor fot a list of words.
+	* @param list            List.
 	*/
-	GWordList(unsigned int word);
+	GWordList(const GWordList& list) throw(bad_alloc);
 
 	/**
-	* Constructor.
+	* Copy constructor fot a list of words.
+	* @param list            Pointer to a list.
 	*/
-	GWordList(unsigned int id,const R::RString& word);
-
-	/**
-	* Constructor.
-	*/
-	GWordList(const GWordList* wordlist);
+	GWordList(const GWordList* list) throw(bad_alloc);
 
 	/**
 	* Insert a new word in the list.
-	* @param word             word to insert to the list.
+	* @param word             Pointer to the word to insert.
 	*/
-	void InsertWord(GWord* word);
+	void InsertWord(const GWord* word) throw(bad_alloc);
 
 	/**
+	* Create a cursor for the list of words.
+	* @return GWordCursor.
 	*/
-	GWordCursor& GetWordCursor(void);
+	GWordCursor& GetWordCursor(void) throw(bad_alloc);
 
 	/**
 	* This method creates a copy of a list.
@@ -100,10 +104,10 @@ public:
 	* Test if the list is empty.
 	* @return bool
 	*/
-	virtual bool IsEmpty(void) const;
+	virtual bool IsEmpty(void) const {return(NbPtr==0);}
 
 	/**
-	* Destructor.
+	* Destructor of a list of word.
 	*/
 	virtual ~GWordList(void);
 

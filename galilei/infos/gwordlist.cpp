@@ -2,13 +2,14 @@
 
 	GALILEI Research Project
 
-	gwordlist.cpp
+	GWordList.cpp
 
-	Representation of a list of words - Implementation.
+	List of words - Implementation.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be)
 		Nicolas Kumps (nkumps@ulb.ac.be).
 
 	Version $Revision$
@@ -33,100 +34,54 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include file for ANSI C/C++
 #include <string.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include file for Galilei
 #include <infos/gwordlist.h>
+#include <infos/gword.h>
 using namespace GALILEI;
 using namespace R;
 
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 //
 // class GWordList
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-/*GWordList::GWordList(void)
-	: GData(), List(2)
+//------------------------------------------------------------------------------
+GWordList::GWordList(unsigned int id,const RString& name) throw(bad_alloc)
+	: GData(id,name,infoWordList), RContainer<GWord,unsigned,false,true>(2)
 {
-//	List=new RContainer<GWord,unsigned,false,true>(2);
-//	Type=infoWordList;
-}*/
-
-
-//-----------------------------------------------------------------------------
-GWordList::GWordList(unsigned int word)
-	: GData(itou(word),infoWordList), RContainer<GWord,unsigned,false,true>(2)
-{
-//	List=new RContainer<GWord,unsigned,false,true>(2);
-//	Type=infoWordList;
 }
 
 
-//-----------------------------------------------------------------------------
-GWordList::GWordList(unsigned int id,const RString& word)
-	: GData(id,word,infoWordList), RContainer<GWord,unsigned,false,true>(2)
+//------------------------------------------------------------------------------
+GWordList::GWordList(const GWordList& list) throw(bad_alloc)
+	: GData(list), RContainer<GWord,unsigned,false,true>(list)
 {
-//	List=new RContainer<GWord,unsigned,false,true>(2);
-//	Type=infoWordList;
-//	WordsId[0]=cNoRef;
-//	WordsId[1]=cNoRef;
-//	Type=tWordList;
-//	Id=id;
-//	Word=word;
-//	RString tmp;
-//	unsigned int len=0;
-//	unsigned int i=0;
-//	bool end=false;
-//	char* begin;
-//	char* ptr=word.StrDup();
-//	begin=ptr;
-//	while((*ptr)&& !(end))
-//	{
-//		if((strchr("&",*ptr)))
-//		{
-//			tmp.Copy(begin,len);
-//			end=true;
-//			WordsId[i++]=dic->GetId(tmp);
-//		}
-//		ptr++;
-//		len++;
-//	}
-//	WordsId[i]=dic->GetId(ptr);
 }
 
-
-//-----------------------------------------------------------------------------
-GWordList::GWordList(const GWordList* wordlist)
-	: GData(wordlist), RContainer<GWord,unsigned,false,true>(wordlist)
+//------------------------------------------------------------------------------
+GWordList::GWordList(const GWordList* list) throw(bad_alloc)
+	: GData(list), RContainer<GWord,unsigned,false,true>(list)
 {
-//	List=new RContainer<GWord,unsigned,false,true>(2);
-//	Type=infoWordList;
 }
 
-
-//-----------------------------------------------------------------------------
-void GWordList::InsertWord(GWord* word)
+//------------------------------------------------------------------------------
+void GWordList::InsertWord(const GWord* word) throw(bad_alloc)
 {
 	InsertPtr(word);
 }
 
 
-//-----------------------------------------------------------------------------
-/*void GWordList::SetType(GInfoType type)
-{
-	Type=type;
-}*/
-
-
-//-----------------------------------------------------------------------------
-GWordCursor& GWordList::GetWordCursor(void)
+//------------------------------------------------------------------------------
+GWordCursor& GWordList::GetWordCursor(void) throw(bad_alloc)
 {
 	GWordCursor *cur=GWordCursor::GetTmpCursor();
 	cur->Set(this);
@@ -134,7 +89,7 @@ GWordCursor& GWordList::GetWordCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GData* GWordList::CreateCopy(void) const throw(bad_alloc)
 {
 	GWordList* ptr=new GWordList(this);
@@ -143,15 +98,7 @@ GData* GWordList::CreateCopy(void) const throw(bad_alloc)
 }
 
 
-//-----------------------------------------------------------------------------
-bool GWordList::IsEmpty(void) const
-{
-	return(NbPtr==0);
-}
-
-
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GWordList::~GWordList(void)
 {
 }

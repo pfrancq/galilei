@@ -153,7 +153,7 @@ GWeightInfo& GWeightInfo::operator-=(double w)
 //------------------------------------------------------------------------------
 double GWeightInfo::GetQueryWeight(tObjType ObjType,GLang* lang,double max) const throw(GException)
 {
-	return((Weight/max)*log(static_cast<double>(lang->GetRef(ObjType,Type))/static_cast<double>(lang->GetRef(Id,ObjType))));
+	return((Weight/max)*log(static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef(Id,ObjType))));
 }
 
 

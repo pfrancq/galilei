@@ -821,7 +821,7 @@ void GSession::DocsFilter(int nbdocs,int nboccurs) throw(GException)
 
 	int NbKwd;
 	GDict* CurDic=DocCursorTemp()->GetLang()->GetDict();
-	NbKwd=CurDic->GetMaxId();
+	NbKwd=CurDic->GetDataMaxId();
 
 	int* j;
 	int* k;

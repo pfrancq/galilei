@@ -4,9 +4,9 @@
 
 	GLangs.h
 
-	List of the languages - Implementation.
+	Manager for language plugins - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,7 +34,7 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include file for ANSI C/C++
 #include <string.h>
 #include <ctype.h>
@@ -42,7 +42,7 @@
 #include <dirent.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include file for Galilei
 #include <infos/glangs.h>
 #include <infos/glang.h>
@@ -51,14 +51,15 @@ using namespace R;
 using namespace ltmm;
 
 
-//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 //
 // class GLangs
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GLangs::GLangs(const char* path,bool dlg) throw(GException)
+//------------------------------------------------------------------------------
+GLangs::GLangs(const char* path,bool dlg) throw(bad_alloc,GException)
   : RContainer<GFactoryLang,unsigned,true,true>(10,5)
 {
 	DIR* dp;
@@ -125,8 +126,9 @@ GLangs::GLangs(const char* path,bool dlg) throw(GException)
 		throw(GException(Msg));
 }
 
-//-----------------------------------------------------------------------------
-void GLangs::Connect(GSession* session)
+
+//------------------------------------------------------------------------------
+void GLangs::Connect(GSession* session) throw(GException)
 {
 	GFactoryLangCursor Cur;
 	GLang* lang;
@@ -141,8 +143,8 @@ void GLangs::Connect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
-void GLangs::Disconnect(GSession* session)
+//------------------------------------------------------------------------------
+void GLangs::Disconnect(GSession* session) throw(GException)
 {
 	GFactoryLangCursor Cur;
 	GLang* lang;
@@ -157,7 +159,7 @@ void GLangs::Disconnect(GSession* session)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLang* GLangs::GetLang(const char* code) const
 {
 	GFactoryLang* fac;
@@ -171,7 +173,7 @@ GLang* GLangs::GetLang(const char* code) const
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GFactoryLangCursor& GLangs::GetLangsCursor(void)
 {
 	GFactoryLangCursor *cur=GFactoryLangCursor::GetTmpCursor();
@@ -180,7 +182,7 @@ GFactoryLangCursor& GLangs::GetLangsCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLangs::~GLangs(void)
 {
 }

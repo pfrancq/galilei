@@ -252,18 +252,10 @@ public:
 		{return(R::RString::HashIndex2(name));}
 
 	/**
-	* Return the type.
+	* Get the type of the data.
+	* @return GInfoType.
 	*/
 	GInfoType GetType(void) const {return(Type);}
-
-/********************************/
-/* A VIRER !!!!!!!!!!!!!!       */
-/*                              */
-/*                              */
-	void SetType(GInfoType type) {Type=type;}
-/*                              */
-/*                              */
-/********************************/
 
 	/**
 	* Set the Identificator of the word.
@@ -307,7 +299,7 @@ public:
 
 	/**
 	* This method creates a copy of himself. This method must be overaloaded by
-	* the descending classes. It is used by the dictionnary to insert a data the
+	* the descending classes. It is used by the dictionary to insert a data the
 	* first time it find its.
 	* @return Pointer to a GData.
 	*/

@@ -39,6 +39,7 @@
 #include <infos/gweightinfos.h>
 #include <infos/gweightinfo.h>
 #include <infos/glang.h>
+#include <infos/gdict.h>
 #include <infos/gword.h>
 using namespace GALILEI;
 using namespace R;
@@ -187,7 +188,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 	double norm2=0.0;
 	double max1=GetMaxWeight();
 	double max2=w->GetMaxWeight();
-	double w1,w2,frac;
+	double w1,w2,iff;
 
 	if(!lang)
 		throw GException("No Language defined");
@@ -199,13 +200,13 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 	// Compute Similarity
 	while(--i)
 	{
-		frac=static_cast<double>(lang->GetRef(ObjType,(*ptr)->InfoType()))/static_cast<double>(lang->GetRef((*ptr)->GetId(),ObjType));
-		w1=((*ptr)->GetWeight()/max1)*log(frac);
+		iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef((*ptr)->GetId(),ObjType));
+		w1=((*ptr)->GetWeight()/max1)*log(iff);
 		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
 		{
 			j--;
-			frac=static_cast<double>(lang->GetRef(ObjType,(*ptr2)->InfoType()))/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
-			w2=((*ptr2)->GetWeight()/max2)*log(frac);
+			iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
+			w2=((*ptr2)->GetWeight()/max2)*log(iff);
 			norm2+=w2*w2;
 			ptr2++;
 		}
@@ -214,8 +215,8 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 			j--;
 			if(((*ptr)->GetWeight()>0)||((*ptr2)->GetWeight()>0))
 			{
-				frac=static_cast<double>(lang->GetRef(ObjType,(*ptr2)->InfoType()))/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
-				w2=((*ptr2)->GetWeight()/max2)*log(frac);
+				iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
+				w2=((*ptr2)->GetWeight()/max2)*log(iff);
 				norm2+=w2*w2;
 				norm1+=w1*w1;
 				Sim+=w1*w2;
@@ -229,8 +230,8 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos* w,tObjType ObjType,GLang*
 	while(j)
 	{
 		j--;
-		frac=static_cast<double>(lang->GetRef(ObjType,(*ptr2)->InfoType()))/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
-		w2=((*ptr2)->GetWeight()/max2)*log(frac);
+		iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef((*ptr2)->GetId(),ObjType));
+		w2=((*ptr2)->GetWeight()/max2)*log(iff);
 		norm2+=w2*w2;
 		ptr2++;
 	}
@@ -247,11 +248,10 @@ void GWeightInfos::AddRefs(tObjType ObjType,GLang* lang) const throw(GException)
 
 	if(!lang)
 		throw GException("No Language defined");
-	lang->IncRef(ObjType,infoWord);
-	lang->IncRef(ObjType,infoWordList);
+	lang->IncRef(ObjType);
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
 	{
-		lang->IncRef((*ptr)->GetId(),ObjType,(*ptr)->InfoType());
+		lang->IncRef((*ptr)->GetId(),ObjType);
 	}
 }
 
@@ -264,11 +264,10 @@ void GWeightInfos::DelRefs(tObjType ObjType,GLang* lang) const throw(GException)
 
 	if(!lang)
 		throw GException("No Language defined");
-	lang->DecRef(ObjType,infoWord);
-	lang->DecRef(ObjType,infoWordList);
+	lang->DecRef(ObjType);
 	for(i=NbPtr+1,ptr=Tab;--i;ptr++)
 	{
-		lang->DecRef((*ptr)->GetId(),ObjType,(*ptr)->InfoType());
+		lang->DecRef((*ptr)->GetId(),ObjType);
 	}
 }
 
@@ -278,14 +277,14 @@ void GWeightInfos::RecomputeIFF(tObjType ObjType,GLang* lang) throw(GException)
 {
 	GWeightInfo** ptr;
 	unsigned int i;
-	double max,frac;
+	double max,iff;
 
 	if(!lang)
 		throw GException("No Language defined");
 	for(i=NbPtr+1,ptr=Tab,max=GetMaxWeight();--i;ptr++)
 	{
-		frac=static_cast<double>(lang->GetRef(ObjType,(*ptr)->InfoType()))/static_cast<double>(lang->GetRef((*ptr)->GetId(),ObjType));
-		(*ptr)->SetWeight(((*ptr)->GetWeight()/max)*log(frac));
+		iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef((*ptr)->GetId(),ObjType));
+		(*ptr)->SetWeight(((*ptr)->GetWeight()/max)*log(iff));
 	}
 }
 
@@ -299,11 +298,11 @@ void GWeightInfos::RecomputeQuery(tObjType ObjType,GLang* lang) throw(GException
 	double TotalRef;
 	double idffactor,nbref;
 	double freq;
-	GData** words;
+	const GData** words;
 
 	if(!lang)
 		throw GException("No Language defined");
-	for(i=lang->GetMaxId()+1,words=lang->GetDatas();--i;words++)
+	for(i=lang->GetDict()->GetDataMaxId()+1,words=lang->GetDatas();--i;words++)
 	{
 		if((!(*words))||(!lang->GetRef((*words)->GetId(),ObjType))) continue;
 		nbref=lang->GetRef((*words)->GetId(),ObjType);
@@ -312,7 +311,7 @@ void GWeightInfos::RecomputeQuery(tObjType ObjType,GLang* lang) throw(GException
 		if(!ptr)
 			InsertPtr(ptr=new GWeightInfo((*words)->GetId()));
 		freq=0.5+((0.5*ptr->GetWeight())/max);
-		TotalRef=lang->GetRef(ObjType,ptr->InfoType());
+		TotalRef=lang->GetRef(ObjType);
 		idffactor=log(TotalRef/nbref);
 		ptr->SetWeight(freq*idffactor);
 	}

@@ -97,6 +97,7 @@ class GLangs;
 class GData;
 class GDataCursor;
 class GWord;
+class GWordCursor;
 class GWordList;
 class GDict;
 class GDicts;
