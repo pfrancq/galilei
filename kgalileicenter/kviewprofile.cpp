@@ -321,15 +321,6 @@ void KViewProfile::resizeEvent(QResizeEvent *)
 }
 
 
-//-----------------------------------------------------------------------------
-void KViewProfile::ComputeProfile(void)
-{
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Profile");
-	d->ComputeProfile(Profile);
-	Desc->slotProfileChanged();
-	General->slotProfileChanged();
-}
-
 
 //-----------------------------------------------------------------------------
 void KViewProfile::ConstructPov(GProfile* /*profile*/)

@@ -51,7 +51,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdocxml.h>
-#include <sessions/gsessionmysql.h>
+#include <sessions/gstoragemysql.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gsubprofilevector.h>
 #include <groups/ggroup.h>
@@ -148,7 +148,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 {
 	QConnectMySQL dlg(this,0,true);
 	QString method;
-	GSessionMySQL* Sess;
+	GSession* Sess;
 	char status[100];
 
 	dlg.txtDb->setText(dbName.Latin1());
@@ -164,12 +164,13 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbPwd=dlg.txtPwd->text().latin1();
 		try
 		{
-			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&SessionParams,true);
+			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName);
+			Sess = new GSession(Doc,2000,2000,2000,2000,2000,&SessionParams,true);
+			Doc->SetSession(Sess);
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,
 			&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager,&PostDocManager,
 			&PostGroupManager);
-			Doc=new KDoc(this,Sess);
 			sessionConnect->setEnabled(false);
 			UpdateMenusEntries();
 			dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
@@ -204,12 +205,13 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	try
 	{
 		QConnectMySQL dlg(this,0,true);
-		GSessionMySQL* Sess;
-		Sess = new GSessionMySQL(host,user,passwd,db,&SessionParams,true);
+		GSession* Sess;
+		Doc=new KDoc(this,host,user,passwd,db);
+		Sess = new GSession(Doc,2000,2000,2000,2000,2000,&SessionParams,true);
+		Doc->SetSession(Sess);
 		QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 		d->LoadSession(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
 		&GroupCalcManager,&StatsCalcManager,&LinkCalcManager, &PostDocManager, &PostGroupManager);
-		Doc=new KDoc(this,Sess);
 		sessionConnect->setEnabled(false);
 		UpdateMenusEntries();
 		dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
@@ -539,15 +541,6 @@ void KGALILEICenterApp::slotShowUsers(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotProfileCalc(void)
-{
-	KView* m = (KView*)pWorkspace->activeWindow();
-	if(m->getType()!=gProfile) return;
-	((KViewProfile*)m)->ComputeProfile();
-}
-
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfilesCalc(void)
 {
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Profiles");
@@ -556,14 +549,6 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 
 }
 
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotPostGroupCalc(void)
-{
-	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Computing Post-Groupment Treatment");
-	d->PostGroupCalc();
-
-}
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotShowGroups(void)
@@ -683,34 +668,6 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotWordsClustering(void)
-{
-	try
-	{
-		Doc->GetSession()->AnalyseAssociation();
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotRemoveCluster(void)
-{
-	try
-	{
-		Doc->GetSession()->RemoveAssociation();
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotTextFrench(void)
 {
 	slotStatusMsg(i18n("Opening file..."));
@@ -741,7 +698,7 @@ void KGALILEICenterApp::slotTextEnglish(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotShowHistory(void)
 {
-	GFactoryLangCursor curlang;
+/*	GFactoryLangCursor curlang;
 	GLang* lang;
 	unsigned int size, min, max;
 
@@ -764,7 +721,7 @@ void KGALILEICenterApp::slotShowHistory(void)
 		min=dlg.SBMinId->value() ;
 		max=dlg.SBMaxId->value();
 		createClient(Doc,new KViewHistory(Doc,dlg.CBLang->currentText(),dlg.CBGlobal->isChecked(),pWorkspace,"Show Chromosomes",0,min,max));
-	}
+	}*/
 }
 
 //-----------------------------------------------------------------------------
@@ -981,42 +938,36 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 			createXML->setEnabled(false);
 			saveXML->setEnabled(false);
 			analyseXML->setEnabled(false);
-			profileCalc->setEnabled(false);
 			break;
 
 		case gDocs:
 			createXML->setEnabled(false);
 			saveXML->setEnabled(false);
 			analyseXML->setEnabled(false);
-			profileCalc->setEnabled(false);
 			break;
 
 		case gDoc:
 			createXML->setEnabled(!(((KViewDoc*)m)->IsDocXML()));
 			saveXML->setEnabled(((KViewDoc*)m)->IsDocXML());
 			analyseXML->setEnabled(((KViewDoc*)m)->IsDocXML());
-			profileCalc->setEnabled(false);
 			break;
 
 		case gProfile:
 			createXML->setEnabled(false);
 			saveXML->setEnabled(false);
 			analyseXML->setEnabled(false);
-			profileCalc->setEnabled(true);
 			break;
 
 		case gGroups:
 			saveXML->setEnabled(false);
 			createXML->setEnabled(false);
 			analyseXML->setEnabled(false);
-			profileCalc->setEnabled(false);
 			break;
 
 		case gGA:
 			createXML->setEnabled(false);
 			saveXML->setEnabled(false);
 			analyseXML->setEnabled(false);
-			profileCalc->setEnabled(false);
 			break;
 
 		case gNothing:
@@ -1024,7 +975,6 @@ void KGALILEICenterApp::slotWindowActivated(QWidget*)
 			createXML->setEnabled(false);
 			saveXML->setEnabled(false);
 			analyseXML->setEnabled(false);
-			profileCalc->setEnabled(false);
 			break;
 	}
 }

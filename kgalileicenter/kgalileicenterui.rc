@@ -25,10 +25,6 @@
 		<Separator/>
 		<Action name="showUsers"/>
 		<Action name="profilesCalc"/>
-		<Separator/>
-		<Action name="profileCalc"/>
-		<Separator/>
-		<Action name="postgroupCalc"/>
 	</Menu>
 	<Menu name="Groups"><text>&amp;Groups</text>
 		<Action name="groupAlwaysCalc"/>
@@ -51,15 +47,12 @@
 		<Separator/>
 		<Action name="showDocs"/>
 		<separator/>
-		<Action name="docAnalyse"/>
 		<Action name="docsAnalyse"/>
 		<separator/>
+		<Action name="docAnalyse"/>
 		<Action name="createXML"/>
  		<Action name="saveXML"/>
 		<Action name="analyseXML"/>
-		<separator/>
-		<Action name="wordsClustering"/>
-		<Action name="removeCluster"/>
 	</Menu>
 	<Menu name="Text"><text>&amp;Text</text>
 		<Separator/>
@@ -76,11 +69,12 @@
 	<Action name="sessionConnect"/>
 	<Separator/>
 	<Action name="showUsers"/>
-	<Action name="profilecalc"/>
+	<Action name="profilesCalc"/>
 	<Separator/>
 	<Action name="showGroups"/>
 	<Action name="groupsCalc"/>
 	<Separator/>
+	<Action name="docsAnalyse"/>
 	<Action name="showDocs"/>
 	<Action name="createXML"/>
 	<Action name="analyseXML"/>

@@ -68,8 +68,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KDoc::KDoc(KGALILEICenterApp* owner,GSession* session)
-	: QObject(), Session(session), WinDocs(0),
+KDoc::KDoc(KGALILEICenterApp* owner,const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,R::RMySQLError)
+	: QObject(), GStorageMySQL(host,user,pwd,db), Session(0), WinDocs(0),
 	  WinUsers(0), WinGroups(0), Owner(owner)
 {
 	pViewList = new QList<KView>;
@@ -203,7 +203,7 @@ bool KDoc::canCloseFrame(KView* /*pFrame*/)
 
 
 //-----------------------------------------------------------------------------
-KDoc::~KDoc(void)
+KDoc::~KDoc(void) throw(GException)
 {
 	delete pViewList;
 	delete Session;

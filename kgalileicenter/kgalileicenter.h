@@ -403,19 +403,9 @@ private slots:
 	void slotShowUsers(void);
 
 	/**
-	* Compute a profile.
-	*/
-	void slotProfileCalc(void);
-
-	/**
 	* slot to calculate all the profiles
 	*/
 	void slotProfilesCalc(void);
-
-	/**
-	* slot to calculate all the profiles
-	*/
-	void slotPostGroupCalc(void);
 
 	/**
 	* Show the groups window.
@@ -471,16 +461,6 @@ private slots:
 	* Analyse the XML structure of the current document.
 	*/
 	void slotAnalyseXML(void);
-
-	/**
-	* Create clusters of words.
-	*/
-	void slotWordsClustering(void);
-
-	/**
-	* Remove clusters of words.
-	*/
-	void slotRemoveCluster(void);
 
 	/**
 	* Do some computing on the stems in french.
@@ -589,8 +569,6 @@ public:
 	KToggleAction* profileAlwaysSave;
 	KAction* showUsers;
 	KAction* profilesCalc;
-	KAction* profileCalc;
-	KAction* postgroupCalc;
 
 	KToggleAction* groupAlwaysCalc;
 	KToggleAction* groupAlwaysSave;
@@ -608,8 +586,6 @@ public:
 	KAction* createXML;
 	KAction* saveXML;
 	KAction* analyseXML;
-	KAction* wordsClustering;
-	KAction* removeCluster;
 
 	KAction* textFrench;
 	KAction* textEnglish;

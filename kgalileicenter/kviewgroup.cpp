@@ -45,6 +45,7 @@ using namespace R;
 // include files for GALILEI
 #include <infos/glang.h>
 #include <sessions/gsession.h>
+#include <sessions/gstorage.h>
 #include <profiles/gprofdoc.h>
 #include <docs/gdocvector.h>
 #include <groups/ggroupvector.h>
@@ -267,7 +268,7 @@ void KViewGroup::ConstructDescription(void)
 	Cur=static_cast<GGroupVector*>(Group)->GetWeightInfoCursor();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		new LocalItem(Vector,Doc->GetSession()->LoadWord(Cur()->GetId(),Group->GetLang()->GetCode()),Cur()->GetWeight());
+		new LocalItem(Vector,Doc->GetSession()->GetStorage()->LoadWord(Cur()->GetId(),Group->GetLang()->GetCode()),Cur()->GetWeight());
 	}
 }
 
@@ -349,7 +350,7 @@ void KViewGroup::slotMenu(int)
 			memcpy(tab,doc->Tab,size*sizeof(GWeightInfo*));
 			qsort(static_cast<void*>(tab),size,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
 			for(j=21,size++,tmp=tab;(--j)&&(--size);tmp++)
-				Res<<"\t\t\t<Include Attribute=\""<<Doc->GetSession()->LoadWord((*tmp)->GetId(),theDocs()->GetLang()->GetCode())<<"\"/>\n";
+				Res<<"\t\t\t<Include Attribute=\""<<Doc->GetSession()->GetStorage()->LoadWord((*tmp)->GetId(),theDocs()->GetLang()->GetCode())<<"\"/>\n";
 		}
 		Res<<"\t\t</Object>\n";
 	}

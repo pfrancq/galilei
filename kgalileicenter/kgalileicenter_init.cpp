@@ -36,7 +36,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gsessionmysql.h>
+#include <sessions/gstoragemysql.h>
 #include <sessions/gconfig.h>
 using namespace GALILEI;
 using namespace R;
@@ -119,8 +119,6 @@ void KGALILEICenterApp::initActions(void)
 	profileAlwaysSave=new KToggleAction(i18n("Enables/disables users Saving"),0,0,0,actionCollection(),"profileAlwaysSave");
 	showUsers=new KAction(i18n("&Show Users"),"kdmconfig",0,this,SLOT(slotShowUsers()),actionCollection(),"showUsers");
 	profilesCalc=new KAction(i18n("&Calc Profiles"),"run",0,this,SLOT(slotProfilesCalc()),actionCollection(),"profilesCalc");
-	profileCalc=new KAction(i18n("&Calc Profile"),"run",0,this,SLOT(slotProfileCalc()),actionCollection(),"profilecalc");
-	postgroupCalc=new KAction(i18n("Calc PostGroup"),"exec",0,this,SLOT(slotPostGroupCalc()),actionCollection(),"postgroupCalc");
 
 	// Menu "Groups"
 	groupAlwaysCalc=new KToggleAction(i18n("Enables/disables groups Recomputing"),0,0,0,actionCollection(),"groupAlwaysCalc");
@@ -136,12 +134,10 @@ void KGALILEICenterApp::initActions(void)
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
 	showDocs=new KAction(i18n("&Show Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
 	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
-	docsAnalyse=new KAction(i18n("&Analyse Documents"),0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
+	docsAnalyse=new KAction(i18n("&Analyse Documents"),"kfind",0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
 	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
 	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
 	analyseXML=new KAction(i18n("&Analyse XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
-	wordsClustering=new KAction(i18n("&Words Clustering"),0,this,SLOT(slotWordsClustering()),actionCollection(),"wordsClustering");
-	removeCluster=new KAction(i18n("&Remove Cluster"),0,this,SLOT(slotRemoveCluster()),actionCollection(),"removeCluster");
 
 	// Menu "Texts"
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
@@ -333,15 +329,12 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	sessionDisconnect->setEnabled(true);
 	showUsers->setEnabled(true);
 	showGroups->setEnabled(true);
-	profileCalc->setEnabled(true);
 	profilesCalc->setEnabled(true);
 	sessionCompute->setEnabled(true);
 	groupingCompare->setEnabled(true);
 	groupingCompareFromFile->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
-	wordsClustering->setEnabled(true);
-	removeCluster->setEnabled(true);
 	groupsCalc->setEnabled(true);
 	mixIdealGroups->setEnabled(true);
 	showGroupsHistory->setEnabled(true);
@@ -350,7 +343,6 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	docsAnalyse->setEnabled(true);
 	runProgram->setEnabled(true);
 	sessionStats->setEnabled(true);
-	postgroupCalc->setEnabled(true);
 }
 
 
@@ -360,7 +352,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	sessionDisconnect->setEnabled(false);
 	showUsers->setEnabled(false);
 	showGroups->setEnabled(false);
-	profileCalc->setEnabled(false);
 	profilesCalc->setEnabled(false);
 	sessionCompute->setEnabled(false);
 	groupingCompare->setEnabled(false);
@@ -370,8 +361,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	createXML->setEnabled(false);
 	saveXML->setEnabled(false);
 	analyseXML->setEnabled(false);
-	wordsClustering->setEnabled(false);
-	removeCluster->setEnabled(false);
 	groupsCalc->setEnabled(false);
 	mixIdealGroups->setEnabled(false);
 	showGroupsHistory->setEnabled(false);
@@ -380,7 +369,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	docsAnalyse->setEnabled(false);
 	runProgram->setEnabled(false);
 	sessionStats->setEnabled(false);
-	postgroupCalc->setEnabled(false);
 }
 
 

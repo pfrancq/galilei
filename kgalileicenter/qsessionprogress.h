@@ -131,22 +131,11 @@ public:
 	void AnalyseDocs(bool modified=true);
 
 	/**
-	* Compute a profile.
-	* @param prof           Profile to compute.
-	*/
-	void ComputeProfile(GProfile* prof);
-
-	/**
 	* Compute the profiles.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
 	*/
 	void ComputeProfiles(bool modified,bool save);
-
-	/**
-	* Apply the postgroup treatment.
-	*/
-	void PostGroupCalc(void);
 
 	/**
 	* Groups the profiles.

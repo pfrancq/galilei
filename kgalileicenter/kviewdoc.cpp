@@ -61,6 +61,7 @@ using namespace R;
 #include <profiles/gprofdoc.h>
 #include <infos/glang.h>
 #include <sessions/gsession.h>
+#include <sessions/gstorage.h>
 using namespace GALILEI;
 
 
@@ -264,7 +265,7 @@ void KViewDoc::ConstructResults(void)
 	GWeightInfoCursor Words=Document->GetWeightInfoCursor();
 	for (Words.Start();!Words.End();Words.Next())
 	{
-		new LocalItem(Results,Doc->GetSession()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode()), Words()->GetWeight());
+		new LocalItem(Results,Doc->GetSession()->GetStorage()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode()), Words()->GetWeight());
 	}
 }
 

@@ -47,10 +47,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-namespace GALILEI
-{
-	class GSession;
-}
+#include <sessions/gstoragemysql.h>
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
@@ -85,7 +83,7 @@ class KGALILEICenterApp;
 * @author Pascal Francq
 * @version $Revision$
 */
-class KDoc : public QObject
+class KDoc : public QObject, public GStorageMySQL
 {
 	Q_OBJECT
 
@@ -131,7 +129,14 @@ public:
 	* @param owner          Owner of the document.
 	* @param session        GALILEI session.
 	*/
-	KDoc(KGALILEICenterApp* owner,GALILEI::GSession* session);
+	KDoc(KGALILEICenterApp* owner,const char* host,const char* user,const char* pwd,const char* db) throw(bad_alloc,GException,R::RMySQLError);
+
+
+	/**
+	* Set the session corresponding of the document.
+	* @param session         Pointer to the session.
+	*/
+	void SetSession(GSession* session) {Session=session;}
 
 	/**
 	* Get the session corresponding of the document.
@@ -236,7 +241,7 @@ public:
 	/**
 	* Destructor for the fileclass of the application.
 	*/
-	~KDoc(void);
+	virtual ~KDoc(void) throw(GException);
 };
 
 

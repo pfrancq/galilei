@@ -49,6 +49,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gsession.h>
+#include <sessions/gstorage.h>
 #include <docs/gdoc.h>
 #include <infos/glang.h>
 #include <docs/gdocanalyse.h>
@@ -110,31 +111,29 @@ void QSessionProgressDlg::LoadSession(GLangManager* langs,GFilterManager* umng, 
 	btnOk->setEnabled(false);
 	show();
 	KApplication::kApplication()->processEvents();
-	bool wordsgroups=false;
-	bool words=true;
 
 	txtRem->setText("Connect (Loading Dicionnaries/Stoplists) ...");
 	KApplication::kApplication()->processEvents();
 	Session->Connect(langs,umng,dmng,pmng,gmng,gcmng,smng,pdmng, pgmng);
 
-	Session->LoadSubjectTree();
+	Session->GetStorage()->LoadSubjectTree(Session);
 
 	txtRem->setText("Loading Documents ...");
 	KApplication::kApplication()->processEvents();
-	Session->LoadDocs(wordsgroups,words);
+	Session->GetStorage()->LoadDocs(Session);
 
 	txtRem->setText("Load Groups ...");
 	KApplication::kApplication()->processEvents();
-	Session->LoadGroups(wordsgroups,words);
+	Session->GetStorage()->LoadGroups(Session);
 
 	txtRem->setText("Load Users/Profiles/SubProfiles ...");
 	KApplication::kApplication()->processEvents();
-	Session->LoadUsers(wordsgroups,words);
-	Session->LoadIdealGroupment();
+	Session->GetStorage()->LoadUsers(Session);
+	Session->GetStorage()->LoadIdealGroupment(Session);
 
 	txtRem->setText("Load Users Feedbacks ...");
 	KApplication::kApplication()->processEvents();
-	Session->LoadFdbks();
+	Session->GetStorage()->LoadFdbks(Session);
 
 	txtRem->setText("Post Connect ...");
 	KApplication::kApplication()->processEvents();
@@ -227,50 +226,6 @@ void QSessionProgressDlg::AnalyseDocs(bool modified)
 	btnOk->setEnabled(true);
 }
 
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::ComputeProfile(GProfile* prof)
-{
-	btnOk->setEnabled(false);
-	show();
-	KApplication::kApplication()->processEvents();
-
-	try
-	{
-		txtRem->setText(QString("Compute Profile '")+prof->GetName().Latin1()+"' ...");
-		KApplication::kApplication()->processEvents();
-		Session->CalcProfile(prof);
-		txtRem->setText("Finish");
-	}
-	catch(GException& e)
-	{
-		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
-	}
-	btnOk->setEnabled(true);
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::PostGroupCalc()
-{
-	btnOk->setEnabled(false);
-	show();
-	KApplication::kApplication()->processEvents();
-
-	try
-	{
-		txtRem->setText(QString("Applying PostGroup Treatment..."));
-		KApplication::kApplication()->processEvents();
-		Session->CalcPostGroup();
-		txtRem->setText("Finish");
-	}
-	catch(GException& e)
-	{
-		txtRem->setText((RString("Error: ")+e.GetMsg()).Latin1());
-	}
-	btnOk->setEnabled(true);
-
-}
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::ComputeProfiles(bool modified,bool save)
