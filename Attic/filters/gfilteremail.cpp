@@ -119,6 +119,7 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 	RXMLTag* tag;
 	bool Header;
 	bool Paragraph;
+	char tmp;
 	char* findstr;
 	int accessmode,handle;
 	struct stat statbuf;
@@ -137,7 +138,6 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 	close(handle);
 	SkipSpaces();
 	Begin=Pos;
-
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
 	Doc->AddIdentifier(Doc->GetURL());
@@ -150,6 +150,7 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 		// Read a line and Analyse it for a command.
 		while((*Pos)&&((*Pos)!='\n')&&((*Pos)!='\r'))
 			Pos++;
+		tmp=(*Pos);
 		(*(Pos++))=0;      // Skip the end of line.
 		Header=ExtractCmd(Begin,part);
 
@@ -161,6 +162,7 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 			Begin=Pos;
 		}
 	}
+	(*(Pos-1))=tmp;
 
 	// Look if the email is signed.
 	findstr=strstr(Begin,("-----BEGIN PGP SIGNED MESSAGE-----"));
@@ -171,7 +173,7 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 		findstr=strstr(Begin,"-----BEGIN PGP SIGNATURE-----");
 		if(findstr)
 			(*findstr)=0;
-	}
+	}   
 	else
 		Begin[strlen(Begin)-1]='\n';
 
