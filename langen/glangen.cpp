@@ -186,7 +186,7 @@ GALILEI::GLangEN::GLangEN(void) throw(bad_alloc)
 	// Rules 5a
 	Rules5a=new RContainer<PorterRule,unsigned int,true,false>(2,5);
 	Rules5a->InsertPtr(new PorterRule("e","",0,-1,1));
-	Rules5a->InsertPtr(new PorterRule("e","",0,-1,-1));
+	Rules5a->InsertPtr(new PorterRule("e","",0,-1,-1,PorterRule::CondRemoveAnE));
 
 	// Rules 5b
 	Rules5b=new RContainer<PorterRule,unsigned int,true,false>(1,5);
@@ -245,16 +245,15 @@ bool GALILEI::GLangEN::ContainsVowel(const char* kwd)
 bool GALILEI::GLangEN::EndsWithCVC(char* kwd,char* &end)
 {
 	int length;
+	bool b;
 
 	if((length=strlen(kwd))<2)
 		return(false);
-	else
-	{
-		end=kwd+length-1;
-		return((!strchr("aeiouwxy",(*end)--))&&    // Consonant
-			(!strchr("aeiouy",(*end)--))&&         // Vowel
-			(strchr("aeiou",(*end))));             // Consonant
-	}
+	end=kwd+length-1;
+	return(  (!strchr("aeiouwxy",*end--))  &&     // Consonant
+	         (strchr("aeiouy",*end--))     &&     // Vowel
+	         (!strchr("aeiou",*end))              // Consonant
+	      );
 }
 
 //-----------------------------------------------------------------------------
@@ -266,14 +265,10 @@ bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,uns
 	char tmp;
 	int len;
 
-	WordSize=GetWordSize(kwd);
 	len=strlen(kwd);
 	for(rules->Start();!rules->End();rules->Next())
 	{
 		ptr=(*rules)();
-
-		// Verify if the minimum root size is Ok.
-		if(ptr->MinRootSize>WordSize) continue;
 
 		// If the word is leng enough, find the potentiel end suffix and put it
 		// in ending. If the ending isn't corresponding to the rule's suffix,
@@ -283,18 +278,38 @@ bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,uns
 		if(strcmp(ending,ptr->OldSuffix)) continue;
 		tmp=*ending;
 		(*ending)=0;
+		WordSize=GetWordSize(kwd);
+
+		// Verify if the minimum root size is Ok.
+		if(ptr->MinRootSize>=WordSize)
+		{
+			(*ending)=tmp;
+			continue;
+		}
 
 		// If there is a condition verify it.
 		switch(ptr->Condition)
 		{
 			case PorterRule::CondContainsVowel:
-				if(!ContainsVowel(kwd)) continue;
+				if(!ContainsVowel(kwd))
+				{
+					(*ending)=tmp;
+					return(ptr->Next);
+				}
 				break;
 			case PorterRule::CondAddAnE:
-				if(!((WordSize==1)&&(EndsWithCVC(kwd,end)))) continue;
+				if((WordSize!=1)||(EndsWithCVC(kwd,end)))
+				{
+					(*ending)=tmp;
+					return(ptr->Next);
+				}
 				break;
 			case PorterRule::CondRemoveAnE:
-				if(!((WordSize==1)&&(!EndsWithCVC(kwd,end)))) continue;
+				if((WordSize!=1)||(EndsWithCVC(kwd,end)))
+				{
+					(*ending)=tmp;
+					return(ptr->Next);
+				}
 				break;
 			default:
 				break;
