@@ -196,8 +196,13 @@ void QSessionProgressDlg::AnalyseXML(GDocXML* &xml,GDoc* doc)
 		txtRem->setText("Analysing XML Structure ...");
 		KApplication::kApplication()->processEvents();
 		//doc->Analyse(xml,Session);
-		Session->GetDocAnalyseMng()->GetCurrentMethod()->Analyse(xml,doc);
-		txtRem->setText("Finish");
+		if(!Session->GetDocAnalyseMng()->GetCurrentMethod())
+			 txtRem->setText( RString("Error: No Text Analyse method chosen.").Latin1());
+		else
+		{
+			Session->GetDocAnalyseMng()->GetCurrentMethod()->Analyse(xml,doc);
+			txtRem->setText("Finish");
+		}
 	}
 	catch(GException& e)
 	{
