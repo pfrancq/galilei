@@ -289,6 +289,11 @@ public:
 	unsigned int GetFailed(void) const {return(Failed);}
 
 	/**
+	* Initialise the number of attemps to 0.
+	*/
+	void InitFailed(void) {Failed=0;}
+
+	/**
 	* Increase the number of failed attemp.
 	*/
 	void IncFailed(void) {Failed++;}
