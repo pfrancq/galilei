@@ -457,11 +457,13 @@ void GSession::CalcProfile(GProfile* prof) throw(GException)
 
 	Subs=prof->GetSubProfilesCursor();
 	for (Subs.Start(); !Subs.End(); Subs.Next())
+	{
 		if(LinkCalc)
 		{
 			LinkCalc->Compute(Subs());
 		}
 		Profiling->Compute(Subs());
+	}
 }
 
 
