@@ -48,10 +48,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <docs/glinkcalchits.h>
-#include <docs/glinkcalccorrespondence.h>
-#include <docs/glinkcalcsalsa.h>
-#include <docs/glinkcalctresh.h>
+#include <docs/glinkcalcmanager.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalcmanager.h>
@@ -138,39 +135,19 @@ class KGALILEICenterApp : public KMainWindow
 	GStatsCalcManager StatsCalcManager;
 
 	/**
+	* Linking Manager.
+	*/
+	GLinkCalcManager LinkCalcManager;
+
+	/**
 	* The configuration object of the application.
 	*/
 	KConfig* Config;
 
 	/**
-	* Parameters for 'HITS Algorithm' link description computing
-	*/
-	GLinkCalcHITSParams LinkCalcHITSParams;
-
-	/**
-	* Parameters for 'Correspondence Algorithm' link description computing
-	*/
-	GLinkCalcCorrespondenceParams LinkCalcCorrespondenceParams;
-
-	/**
-	* Parameters for 'SALSA Algorithm' link description computing
-	*/
-	GLinkCalcSALSAParams LinkCalcSALSAParams;
-
-	/**
-	* Parameters for 'Treshold Kleinberg Algorithm' link description computing
-	*/
-	GLinkCalcTreshParams LinkCalcTreshParams;
-
-	/**
 	* Parameters of the session.
 	*/
 	GSessionParams SessionParams;
-
-	/**
-	* Current Group Descrition Method
-	*/
-	R::RString CurrentLinkCalcMethod;
 
 	/**
 	* Database server's host.
@@ -231,13 +208,6 @@ class KGALILEICenterApp : public KMainWindow
 public:
 
 	/**
-	* Container of link description method.
-	*/
-	R::RContainer<R::RString,unsigned int,true,true>* LinkCalcMethod;
-
-public:
-
-	/**
 	* Construtor of KGALILEICenterApp, calls all init functions to create the
 	* application.
 	* @see initMenuBar initToolBar
@@ -248,16 +218,6 @@ public:
 	* Returns a pointer to the document connected to the view.
 	*/
 	KDoc* getDocument(void) const;
-
-	/**
-	* Return the Current link description method used.
-	*/
-	R::RString GetCurrentLinkCalcMethod(void) {return (CurrentLinkCalcMethod);}
-
-	/**
-	* Set the Current link description method used.
-	*/
-	void SetCurrentLinkCalcMethod(R::RString str) {CurrentLinkCalcMethod=str;}
 
 protected:
 
@@ -653,7 +613,6 @@ public:
 	KAction* sessionOptions;
 
 	KAction* runProgram;
-	KAction* runQuery;
 
 	KAction* windowTile;
 	KAction* windowCascade;

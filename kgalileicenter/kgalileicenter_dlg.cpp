@@ -165,6 +165,7 @@ void KGALILEICenterApp::slotPlugins(void)
 {
 	GFactoryFilterCursor Filter;
 	GFactoryProfileCalcCursor ProfileCalc;
+	GFactoryLinkCalcCursor LinkCalc;
 	GFactoryGroupCalcCursor GroupCalc;
 	GFactoryGroupingCursor Grouping;
 	GFactoryStatsCalcCursor StatsCalc;
@@ -289,6 +290,31 @@ void KGALILEICenterApp::slotPlugins(void)
 		dlg.EnableStat->setEnabled(true);
 	}
 
+	// Goes through the linking method
+	def=cur=0;
+	LinkCalc=LinkCalcManager.GetLinkCalcsCursor();
+	dlg.CurrentLinkCalc->insertItem("None",0);
+	for(LinkCalc.Start(),idx=1;!LinkCalc.End();LinkCalc.Next(),idx++)
+	{
+		str=LinkCalc()->GetName();
+		str+=" [";
+		str+=LinkCalc()->GetLib();
+		str+="]";
+		cur=new QLinkCalcItem(dlg.LinkCalcs,LinkCalc(),str);
+		dlg.CurrentLinkCalc->insertItem(LinkCalc()->GetName(),idx);
+		if((LinkCalc()->GetPlugin())&&(LinkCalc()->GetPlugin()==LinkCalcManager.GetCurrentMethod()))
+			dlg.CurrentLinkCalc->setCurrentItem(idx);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.LinkCalcs->setSelected(def,true);
+		dlg.changeLinkCalc(def);
+		dlg.EnableLinkCalc->setEnabled(true);
+		dlg.CurrentLinkCalc->setEnabled(true);
+	}
+
 	if(dlg.exec())
 	{
 		// Goes through filters
@@ -368,6 +394,23 @@ void KGALILEICenterApp::slotPlugins(void)
 			item5=dynamic_cast<QStatsCalcItem*>(item5->itemBelow());
 		}
 
+		// Goes through the linking method
+		QLinkCalcItem* item6=dynamic_cast<QLinkCalcItem*>(dlg.LinkCalcs->firstChild());
+		while(item6)
+		{
+			if(item6->Enable)
+				item6->Fac->Create();
+			else
+				item6->Fac->Delete();
+			item6=dynamic_cast<QLinkCalcItem*>(item6->itemBelow());
+		}
+		try
+		{
+			LinkCalcManager.SetCurrentMethod(dlg.CurrentLinkCalc->currentText());
+		}
+		catch(GException)
+		{
+		}
 	}
 
 }

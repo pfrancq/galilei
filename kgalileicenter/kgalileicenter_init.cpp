@@ -88,6 +88,7 @@ KGALILEICenterApp::KGALILEICenterApp(void)
 	: KMainWindow(0,"KGALILEICenterApp"), URLManager(getenv("GALILEI_PLUGINS_LIB")),
 	  ProfilingManager(getenv("GALILEI_PLUGINS_LIB")), GroupingManager(getenv("GALILEI_PLUGINS_LIB")),
 	  GroupCalcManager(getenv("GALILEI_PLUGINS_LIB")), StatsCalcManager(getenv("GALILEI_PLUGINS_LIB")),
+	  LinkCalcManager(getenv("GALILEI_PLUGINS_LIB")),
 	  dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0), DocOptions(0)
 {
 	Config=kapp->config();
@@ -129,7 +130,6 @@ void KGALILEICenterApp::initActions(void)
 	groupAlwaysSave=new KToggleAction(i18n("Enables/disables groups Saving"),0,0,0,actionCollection(),"groupAlwaysSave");
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
-	runQuery=new KAction(i18n("Run &Query"),"help",0,this,SLOT(slotRunQuery()),actionCollection(),"runQuery");
 	groupingCompareFromFile=new KAction(i18n("From &File"),"fileopen",0,this,SLOT(slotGroupingCompareFromFile()),actionCollection(),"groupingCompareFromFile");
 	groupingCompare=new KAction(i18n("From &Memory"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
 	mixIdealGroups=new KAction(i18n("Load&Mix Ideal Groups"),"exec",0,this,SLOT(slotMixIdealGroups()),actionCollection(),"mixIdealGroups");
@@ -266,6 +266,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Conf.Store(GroupingManager);
 	Conf.Store(GroupCalcManager);
 	Conf.Store(StatsCalcManager);
+	Conf.Store(LinkCalcManager);
 	Conf.Save();
 }
 
@@ -341,6 +342,7 @@ void KGALILEICenterApp::readOptions(void)
 	Conf.Read(GroupingManager);
 	Conf.Read(GroupCalcManager);
 	Conf.Read(StatsCalcManager);
+	Conf.Read(LinkCalcManager);
 }
 
 
@@ -419,7 +421,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);
 	runProgram->setEnabled(false);
-	runQuery->setEnabled(false);
 	rRunR->setEnabled(false);
 }
 

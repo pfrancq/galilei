@@ -52,8 +52,6 @@ using namespace R;
 // include files for GALILEI
 #include <docs/gdocxml.h>
 #include <docs/gdocoptions.h>
-#include <docs/glinkcalchits.h>
-#include <docs/glinkcalctresh.h>
 #include <sessions/gsessionmysql.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gsubprofiledesc.h>
@@ -158,16 +156,11 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbPwd=dlg.txtPwd->text().latin1();
 		try
 		{
-			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,DocOptions,&SessionParams);
+			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager,DocOptions,&SessionParams);
 			unsigned int cmd=dlg.cbLoad->currentItem();
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(cmd);
 			Doc=new KDoc(this,Sess);
-			Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess, &LinkCalcHITSParams));
-			Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess, &LinkCalcCorrespondenceParams));
-			Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
-			Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
-			Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
 			sessionConnect->setEnabled(false);
@@ -178,7 +171,6 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			textFrench->setEnabled(true);
 			textEnglish->setEnabled(true);
 			runProgram->setEnabled(true);
-			runQuery->setEnabled(true);
 			UpdateMenusEntries();
 			dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
 
@@ -213,16 +205,11 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 {
 	QConnectMySQL dlg(this,0,true);
 	GSessionMySQL* Sess;
-	Sess = new GSessionMySQL(host,user,passwd,db,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,DocOptions,&SessionParams);
+	Sess = new GSessionMySQL(host,user,passwd,db,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager,DocOptions,&SessionParams);
 	unsigned int cmd=dlg.cbLoad->currentItem();
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 	d->LoadSession(cmd);
 	Doc=new KDoc(this,Sess);
-	Sess->RegisterLinkCalcMethod(new GLinkCalcHITS(Sess,&LinkCalcHITSParams));
-	Sess->RegisterLinkCalcMethod(new GLinkCalcCorrespondence(Sess,&LinkCalcCorrespondenceParams));
-	Sess->RegisterLinkCalcMethod(new GLinkCalcSALSA(Sess, &LinkCalcSALSAParams));
-	Sess->RegisterLinkCalcMethod(new GLinkCalcTresh(Sess, &LinkCalcTreshParams));
-	Sess->SetCurrentLinkCalcMethod(CurrentLinkCalcMethod);
 	sessionDisconnect->setEnabled(true);
 	sessionCompute->setEnabled(true);
 	sessionConnect->setEnabled(false);
@@ -233,7 +220,6 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
 	runProgram->setEnabled(true);
-	runQuery->setEnabled(true);
 	UpdateMenusEntries();
 	dbStatus->setPixmap(QPixmap("/usr/share/icons/hicolor/16x16/actions/connect_established.png"));
 

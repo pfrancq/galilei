@@ -91,7 +91,11 @@ void QPlugins::changeGrouping( QListViewItem * item)
 
 void QPlugins::changeLinkCalc( QListViewItem * item)
 {
-
+    if(!item) return;
+	QLinkCalcItem* f=dynamic_cast<QLinkCalcItem*>(item);
+	EnableLinkCalc->setChecked(f->Enable);
+	ConfigLinkCalc->setEnabled(f->Fac->HasConfigure());
+	AboutLinkCalc->setEnabled(f->Fac->HasAbout());
 }
 
 
@@ -115,7 +119,9 @@ void QPlugins::slotAboutGrouping()
 
 void QPlugins::slotAboutLinkCalc()
 {
-
+    	if(!LinkCalcs->currentItem()) return;
+	QLinkCalcItem* f=dynamic_cast<QLinkCalcItem*>(LinkCalcs->currentItem());
+	f->Fac->About();
 }
 
 
@@ -137,7 +143,9 @@ void QPlugins::slotConfigGrouping()
 
 void QPlugins::slotConfigLinkCalc()
 {
-
+        	if(!LinkCalcs->currentItem()) return;
+	QLinkCalcItem* f=dynamic_cast<QLinkCalcItem*>(LinkCalcs->currentItem());
+	f->Fac->Configure();
 }
 
 
@@ -167,7 +175,9 @@ void QPlugins::slotGroupCalcEnable( bool state )
 
 void QPlugins::slotLinkCalcEnable( bool state )
 {
-
+        	if(!LinkCalcs->currentItem()) return;
+	QLinkCalcItem* f=dynamic_cast<QLinkCalcItem*>(LinkCalcs->currentItem());
+	f->Enable=state;
 }
 
 
