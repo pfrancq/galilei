@@ -102,6 +102,7 @@ class GTests;
 class GSession;
 class GSlot;
 class GFilter;
+class GFilterCursor;
 class GMIMEFilter;
 class GURLManager;
 
