@@ -45,8 +45,6 @@
 #include <profiles/gprofile.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
-#include <groups/ggroupcalcgravitation.h>
-#include <groups/ggroupcalcrelevant.h>
 #include <groups/ggroupvector.h>
 #include <docs/gdoc.h>
 #include <langs/glang.h>

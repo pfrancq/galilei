@@ -84,6 +84,11 @@ class GConfig : R::RXMLStruct
 	*/
 	R::RXMLTag* Groupings;
 
+	/**
+	* Tag holding the group computation methods.
+	*/
+	R::RXMLTag* GroupCalcs;
+
 public:
 
 	/**
@@ -137,6 +142,18 @@ public:
 	* @param mng             Manager.
 	*/
 	void Store(GGroupingManager& mng);
+
+	/**
+	* Read the groups computing methods from the structure.
+	* @param mng             Manager.
+	*/
+	void Read(GGroupCalcManager& mng);
+
+	/**
+	* Store the groups computing methods in the structure.
+	* @param mng             Manager.
+	*/
+	void Store(GGroupCalcManager& mng);
 
 	/**
 	* Destructor.

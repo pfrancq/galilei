@@ -40,13 +40,26 @@
 
 
 //-----------------------------------------------------------------------------
+// include file for LibTool--
+#include <ltmm/loader.hh>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <sessions/gplugin.h>
+#include <groups/ggroupcalcmanager.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+// API VERSION
+#define API_GROUPCALC_VERSION "1.0"
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -55,13 +68,8 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Group Description Computing Method.
 */
-class GGroupCalc
+class GGroupCalc : public GPlugin<GFactoryGroupCalc>
 {
-	/**
-	* Name of the computing method.
-	*/
-	R::RString ComputingName;
-
 protected:
 
 	/**
@@ -73,49 +81,27 @@ public:
 
 	/**
 	* Constructor.
-	* @param name           Name.
-	* @param session        Session.
+	* @param fac             Factory of the plugin.
 	*/
-	GGroupCalc(const char* name,GSession* session) throw(bad_alloc);
+	GGroupCalc(GFactoryGroupCalc* fac) throw(bad_alloc);
+
+	/**
+	* Connect to a Session.
+	* @param session         The session.
+	*/
+	virtual void Connect(GSession* session);
+
+	/**
+	* Disconnect from a Session.
+	* @param session         The session.
+	*/
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Compute a group.
 	* @param grp            Group to compute.
 	*/
 	virtual void Compute(GGroup* grp)=0;
-
-	/**
-	* Get the name of the computing method.
-	* @returns Pointer to a C string.
-	*/
-	const char* GetComputingName(void) const {return(ComputingName());}
-
-	/**
-	* Get the settings of the method coded in a string.
-	* return Pointer to a C string.
-	*/
-	virtual const char* GetSettings(void) {return("");}
-
-	/**
-	* Set the settings for the method using a string.
-	* @param char*          C string coding the settings.
-	*/
-	virtual void SetSettings(const char*) {}
-
-	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const GGroupCalc& desc) const;
-
-	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const GGroupCalc* desc) const;
-
-	/**
-	* Compare methods used by R::RContainer.
-	*/
-	int Compare(const char* name) const;
 
 	/**
 	* Get the name of the model used for the description.
@@ -131,12 +117,93 @@ public:
 
 
 //-----------------------------------------------------------------------------
+class GFactoryGroupCalc : public GFactoryPlugin<GFactoryGroupCalc,GGroupCalc,GGroupCalcManager>
+{
+public:
+	/**
+	* Constructor.
+	* @param mng             Manager of the plugin.
+	* @param n               Name of the Factory/Plugin.
+	* @param f               Lib of the Factory/Plugin.
+	*/
+	GFactoryGroupCalc(GGroupCalcManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryGroupCalc,GGroupCalc,GGroupCalcManager>(mng,n,f) {}
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GFactoryGroupCalc(void) {}
+};
+
+
+//-----------------------------------------------------------------------------
+typedef GFactoryGroupCalc*(*GFactoryGroupCalcInit)(GGroupCalcManager*,const char*);
+
+
+//------------------------------------------------------------------------------
+#define CREATE_GROUPCALC_FACTORY(name,C,about,config)                                         \
+class TheFactory : public GFactoryGroupCalc                                                   \
+{                                                                                               \
+private:                                                                                        \
+	static GFactoryGroupCalc* Inst;                                                           \
+	TheFactory(GGroupCalcManager* mng,const char* l) : GFactoryGroupCalc(mng,name,l)        \
+	{                                                                                           \
+		C::CreateParams(this);                                                                  \
+	}                                                                                           \
+	virtual ~TheFactory(void) {}                                                                \
+public:                                                                                         \
+	static GFactoryGroupCalc* CreateInst(GGroupCalcManager* mng,const char* l)              \
+	{                                                                                           \
+		if(!Inst)                                                                               \
+			Inst = new TheFactory(mng,l);                                                       \
+		return(Inst);                                                                           \
+	}                                                                                           \
+	virtual void About(void) {C::About();}                                                      \
+	virtual bool HasAbout(void) const {return(about);}                                          \
+	virtual void Configure(void) {C::Configure(this);}                                          \
+	virtual bool HasConfigure(void) const {return(config);}                                     \
+	virtual const char* GetAPIVersion(void) const {return(API_GROUPCALC_VERSION);}            \
+	virtual void Create(void) throw(GException)                                                 \
+	{                                                                                           \
+		if(Plugin) return;                                                                      \
+		Plugin=new C(this);                                                                     \
+		Plugin->ApplyConfig();                                                                  \
+	}                                                                                           \
+	virtual void Delete(void) throw(GException)                                                 \
+	{                                                                                           \
+		if(!Plugin) return;                                                                     \
+		delete Plugin;                                                                          \
+		Plugin=0;                                                                               \
+	}                                                                                           \
+};                                                                                              \
+                                                                                                \
+GFactoryGroupCalc* TheFactory::Inst = 0;                                                      \
+                                                                                                \
+extern "C"                                                                                      \
+{                                                                                               \
+	GFactoryGroupCalc* FactoryCreate(GGroupCalcManager* mng,const char* l)                  \
+	{                                                                                           \
+		return(TheFactory::CreateInst(mng,l));                                                  \
+	}                                                                                           \
+}
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GGroupCalcCursor class provides a way to go trough a set of group
 * description method.
 * @short Group Description Methods Cursor
 */
 CLASSCURSOR(GGroupCalcCursor,GGroupCalc,unsigned int)
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GFactoryGroupCalcCursor class provides a way to go trough a set of
+* factories.
+* @short Groups Computing Methods Factories Cursor
+*/
+CLASSCURSOR(GFactoryGroupCalcCursor,GFactoryGroupCalc,unsigned int)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

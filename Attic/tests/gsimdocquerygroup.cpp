@@ -50,7 +50,6 @@
 #include <langs/gdict.h>
 #include <profiles/gprofile.h>
 #include <groups/ggroupvector.h>
-#include <groups/ggroupcalcgravitation.h>
 using namespace GALILEI;
 
 

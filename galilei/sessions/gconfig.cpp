@@ -51,6 +51,8 @@ using namespace R;
 #include <profiles/gprofilecalc.h>
 #include <groups/ggroupingmanager.h>
 #include <groups/ggrouping.h>
+#include <groups/ggroupcalcmanager.h>
+#include <groups/ggroupcalc.h>
 using namespace GALILEI;
 
 
@@ -72,6 +74,7 @@ GConfig::GConfig(const char* f) throw(bad_alloc)
 	AddNode(t,Filters=new RXMLTag("galileiconfig:filters"));
 	AddNode(t,ProfileCalcs=new RXMLTag("galileiconfig:profileCalcs"));
 	AddNode(t,Groupings=new RXMLTag("galileiconfig:groupings"));
+	AddNode(t,GroupCalcs=new RXMLTag("galileiconfig:groupCalcs"));
 }
 
 
@@ -85,6 +88,7 @@ void GConfig::Load(void)
 		Filters=GetTop()->GetTag("galileiconfig:filters");
 		ProfileCalcs=GetTop()->GetTag("galileiconfig:profileCalcs");
 		Groupings=GetTop()->GetTag("galileiconfig:groupings");
+		GroupCalcs=GetTop()->GetTag("galileiconfig:groupCalcs");
 	}
 	catch(...)
 	{
@@ -205,6 +209,46 @@ void GConfig::Store(GGroupingManager& mng)
 		Groupings->InsertAttr("Current",calc->GetFactory()->GetName());
 	else
 		Groupings->InsertAttr("Current","None");
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Read(GGroupCalcManager& mng)
+{
+	GFactoryGroupCalcCursor Cur;
+
+	if(!GroupCalcs) return;
+	Cur=mng.GetGroupCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->ReadConfig(GroupCalcs);
+	}
+	try
+	{
+		mng.SetCurrentMethod(GroupCalcs->GetAttrValue("Current"));
+	}
+	catch(GException)
+	{
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GConfig::Store(GGroupCalcManager& mng)
+{
+	GFactoryGroupCalcCursor Cur;
+	GGroupCalc* calc;
+
+	Cur=mng.GetGroupCalcsCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Cur()->SaveConfig(GroupCalcs);
+	}
+	calc=mng.GetCurrentMethod();
+	if(calc)
+		GroupCalcs->InsertAttr("Current",calc->GetFactory()->GetName());
+	else
+		GroupCalcs->InsertAttr("Current","None");
 }
 
 

@@ -87,9 +87,10 @@ public:
 	* @param umng           URL Manager.
 	* @param pmng           Profiling Manager.
 	* @param gmng           Grouping Manager.
+	* @param gcmng          Group Computing Manager.
 	*/
 	GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
-		GURLManager* umng,GProfileCalcManager* pmng, GGroupingManager* gmng,
+		GURLManager* umng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException,R::RMySQLError);
 
 	/**

@@ -108,16 +108,6 @@ protected:
 	GSubProfileDesc* SubProfileDesc;
 
 	/**
-	* Container of group description method.
-	*/
-	R::RContainer<GGroupCalc,R::tId,true,true>* GroupCalcs;
-
-	/**
-	* Current group description method used.
-	*/
-	GGroupCalc* GroupCalc;
-
-	/**
 	* Container of link description method.
 	*/
 	R::RContainer<GLinkCalc,unsigned int,true,true>* LinkCalcs;
@@ -141,6 +131,11 @@ protected:
 	* Grouping Manager used by this session.
 	*/
 	GGroupingManager* GroupingMng;
+
+	/**
+	* Group Computing Manager used by this session.
+	*/
+	GGroupCalcManager* GroupCalcMng;
 
 	/**
 	* Analyser used for the document.
@@ -204,9 +199,10 @@ public:
 	* @param umng           URL Manager.
 	* @param pmng           Profiling Manager.
 	* @param gmng           Grouping Manager.
+	* @param gcmng          Group Computing Manager.
 	*/
 	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
-		GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng,
+		GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 		GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException);
 
 	/**
@@ -224,6 +220,11 @@ public:
 	* Get the grouping manager used by this session.
 	*/
 	GGroupingManager* GetGroupingMng(void) {return(GroupingMng);}
+
+	/**
+	* Get the group computing manager used by this session.
+	*/
+	GGroupCalcManager* GetGroupCalcMng(void) {return(GroupCalcMng);}
 
 	/**
 	* Get a pointer to the document options.
@@ -280,44 +281,6 @@ public:
 	* @return Return a GProfileDescCursor.
 	*/
 	GSubProfileDescCursor& GetProfileDescsCursor(void);
-
-	/**
-	* Register a group description method.
-	* @param grp            Description method to register.
-	*/
-	void RegisterGroupCalcMethod(GGroupCalc* grp) throw(bad_alloc);
-
-	/**
-	* Set the current group description method.
-	* @param name           Name of the group description method.
-	*/
-	void SetCurrentGroupCalcMethod(const char* name) throw(GException);
-
-	/**
-	* Set the settings for the current group description method.
-	* @param s              Settings of the current group description method.
-	*/
-	void SetCurrentGroupCalcMethodSettings(const char* s) throw(GException);
-
-	/**
-	* Get the settings of a given group description method.
-	* @param n              Name of the group description method.
-	* @returns C String representing the settings of the given group
-	* description method.
-	*/
-	const char* GetGroupCalcMethodSettings(const char* n) throw(GException);
-
-	/**
-	* Get the current group description method.
-	* @returns Pointer to a GGroupCalc class.
-	*/
-	GGroupCalc* GetCurrentGroupCalcMethod(void) {return(GroupCalc);}
-
-	/**
-	* Get a cursor to the group description methods registered.
-	* @return Return a GGroupCalcCursor.
-	*/
-	GGroupCalcCursor& GetGroupCalcsCursor(void);
 
 	/**
 	* Register a link description method.

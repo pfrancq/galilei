@@ -174,6 +174,9 @@ class GFactoryGroupingCursor;
 class GGroupingManager;
 class GGroupCalc;
 class GGroupCalcCursor;
+class GFactoryGroupCalc;
+class GFactoryGroupCalcCursor;
+class GGroupCalcManager;
 #if GALILEITEST
 	class GSubject;
 	class GSubjectCursor;

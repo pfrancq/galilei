@@ -190,7 +190,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool /*save*/)
 		Run();
 
 		// Compute the description of the groups and Save the information.
-		CalcDesc=Session->GetCurrentGroupCalcMethod();
+		CalcDesc=Session->GetGroupCalcMng()->GetCurrentMethod();
 		for(Groups->Start();!Groups->End();Groups->Next())
 			CalcDesc->Compute((*Groups)());
 	}

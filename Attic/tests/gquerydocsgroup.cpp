@@ -52,7 +52,7 @@
 #include <profiles/gprofile.h>
 #include <profiles/gprofdoc.h>
 #include <groups/ggroupvector.h>
-#include <groups/ggroupcalcgravitation.h>
+#include <groups/ggroupcalc.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -114,7 +114,7 @@ void GALILEI::GQueryDocsGroup::Run(unsigned int first,unsigned int nb,bool trans
 	GDocVector* DocV;
 	GIWordsWeights QueryWord(5000);
 	GIWordsWeights QueryWord1(5);
-	GGroupCalc* Calc=Session->GetCurrentGroupCalcMethod();
+	GGroupCalc* Calc=Session->GetGroupCalcMng()->GetCurrentMethod();
 	GGroupsEvaluateCursor IdealDocs=Session->GetIdealDocsCursor();
 	GGroupsCursor IdealGroups=Session->GetIdealGroupsCursor();
 

@@ -50,34 +50,27 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GGroupCalc::GGroupCalc(const char* name,GSession* session) throw(bad_alloc)
-	: ComputingName(name), Session(session)
+GGroupCalc::GGroupCalc(GFactoryGroupCalc* fac) throw(bad_alloc)
+	: GPlugin<GFactoryGroupCalc>(fac), Session(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GGroupCalc::Compare(const GGroupCalc& desc) const
+void GGroupCalc::Connect(GSession* session)
 {
-	return(ComputingName.Compare(desc.ComputingName));
+	Session=session;
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GGroupCalc::Compare(const GGroupCalc* desc) const
+void GGroupCalc::Disconnect(GSession*)
 {
-	return(ComputingName.Compare(desc->ComputingName));
+	Session=0;
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GGroupCalc::Compare(const char* name) const
-{
-	return(ComputingName.Compare(name));
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GGroupCalc::~GGroupCalc(void)
+GGroupCalc::~GGroupCalc(void)
 {
 }

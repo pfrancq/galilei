@@ -90,11 +90,11 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,
-	GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng,
+	GURLManager* umng, GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
 	GDocOptions* opt, GSessionParams* sessparams) throw(bad_alloc,GException)
 	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(), Fdbks(f+f/2,f/2),
-	 URLMng(umng), ProfilingMng(pmng), GroupingMng(gmng),
+	  URLMng(umng), ProfilingMng(pmng), GroupingMng(gmng), GroupCalcMng(gcmng),
 	  DocAnalyse(0), bGroups(false),bFdbks(false),
 	  DocOptions(opt),SessParams(sessparams)
 
@@ -106,7 +106,6 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Groups.InsertPtr(new GGroups(Langs()));
 	SubProfileDescs=new RContainer<GSubProfileDesc,unsigned int,true,true>(3,3);
-	GroupCalcs=new RContainer<GGroupCalc,R::tId,true,true>(2,3);
 	LinkCalcs=new RContainer<GLinkCalc,unsigned int,true,true>(3,2);
 	DocOptions=new GDocOptions(opt);
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
@@ -172,54 +171,6 @@ GGroupsEvaluateCursor& GALILEI::GSession::GetIdealDocsCursor(void)
 {
 	GGroupsEvaluateCursor *cur=GGroupsEvaluateCursor::GetTmpCursor();
 	cur->Set(IdealDocs);
-	return(*cur);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::RegisterGroupCalcMethod(GGroupCalc* grp) throw(bad_alloc)
-{
-	GroupCalcs->InsertPtr(grp);
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::SetCurrentGroupCalcMethod(const char* name) throw(GException)
-{
-	GGroupCalc* tmp;
-
-	tmp=GroupCalcs->GetPtr<const char*>(name);
-	if(!tmp)
-		throw GException(RString("Group Description method '")+name+"' doesn't exists.");
-	GroupCalc=tmp;
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GSession::SetCurrentGroupCalcMethodSettings(const char* s) throw(GException)
-{
-	if((!GroupCalc)||(!(*s))) return;
-	GroupCalc->SetSettings(s);
-}
-
-
-//-----------------------------------------------------------------------------
-const char* GALILEI::GSession::GetGroupCalcMethodSettings(const char* n) throw(GException)
-{
-	GGroupCalc* tmp;
-
-	tmp=GroupCalcs->GetPtr<const char*>(n);
-	if(!tmp)
-		return(0);
-	return(tmp->GetSettings());
-}
-
-
-//-----------------------------------------------------------------------------
-GGroupCalcCursor& GALILEI::GSession::GetGroupCalcsCursor(void)
-{
-	GGroupCalcCursor *cur=GGroupCalcCursor::GetTmpCursor();
-	cur->Set(GroupCalcs);
 	return(*cur);
 }
 
@@ -878,7 +829,7 @@ void GALILEI::GSession::CopyIdealGroups(void) throw(bad_alloc,GException)
 	GGroupCalc* CalcDesc;
 
 	// Get current grouping description method
-	CalcDesc=GetCurrentGroupCalcMethod();
+	CalcDesc=GroupCalcMng->GetCurrentMethod();
 
 	// Go through each languages
 	Grps=GetIdealGroupsCursor();
@@ -1081,7 +1032,6 @@ GALILEI::GSession::~GSession(void) throw(GException)
 	GroupingMng->Disconnect(this);
 	if(DocAnalyse) delete DocAnalyse;
 	if(DocOptions) delete DocOptions;
-	if(GroupCalcs) delete GroupCalcs;
 	if(SubProfileDescs) delete SubProfileDescs;
 	if(IdealGroups) delete IdealGroups;
 	if(IdealDocs) delete IdealDocs;

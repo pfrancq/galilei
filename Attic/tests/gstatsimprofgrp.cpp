@@ -49,8 +49,7 @@
 #include <profiles/gsubprofile.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
-#include <groups/ggroupcalcgravitation.h>
-#include <groups/ggroupcalcrelevant.h>
+#include <groups/ggroupcalc.h>
 #include <groups/ggroupvector.h>
 #include <docs/gdoc.h>
 using namespace GALILEI;
@@ -91,11 +90,11 @@ void GALILEI::GStatSimProfGrp::Run(void)
 
 	// David
 	GGroupCalc* CalcMethod;
-	if (relevant)
-		Session->SetCurrentGroupCalcMethod("Protype");
+	if(relevant)
+		Session->GetGroupCalcMng()->SetCurrentMethod("Protype");
 	else
-		Session->SetCurrentGroupCalcMethod("Relevant");
-	CalcMethod=Session->GetCurrentGroupCalcMethod();
+		Session->GetGroupCalcMng()->SetCurrentMethod("Relevant");
+	CalcMethod=Session->GetGroupCalcMng()->GetCurrentMethod();
 
 
 	int nbtot=0;

@@ -74,7 +74,6 @@ using namespace R;
 #include <filters/gurlmanager.h>
 #include <groups/gsubject.h>
 #include <groups/ggroup.h>
-#include <groups/ggroupcalcgravitation.h>
 #include <postgroups/gstandartinoutput.h>
 #include <postgroups/ginoutputbase.h>
 #include <postgroups/gdispatchpov.h>
@@ -98,10 +97,10 @@ const char GALILEI::GSessionMySQL::SQLNULL[5]="NULL";
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionMySQL::GSessionMySQL(const char* host,const char* user,const char* pwd,const char* db,
-	GURLManager* umng,GProfileCalcManager* pmng,GGroupingManager* gmng,
+	GURLManager* umng,GProfileCalcManager* pmng,GGroupingManager* gmng, GGroupCalcManager* gcmng,
 	GDocOptions* opt,GSessionParams* sessparams) throw(bad_alloc,GException,RMySQLError)
 	: RDb(host,user,pwd,db),
-	  GSession(GetCount("htmls"),GetCount("users"),GetCount("profiles"),GetCount("htmlsbyprofiles"),GetCount("groups"),umng,pmng,gmng,opt,sessparams)
+	  GSession(GetCount("htmls"),GetCount("users"),GetCount("profiles"),GetCount("htmlsbyprofiles"),GetCount("groups"),umng,pmng,gmng,gcmng,opt,sessparams)
 {
 	DbName=db;
 }
