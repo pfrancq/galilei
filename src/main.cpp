@@ -44,6 +44,9 @@
 //------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <iostream>
+#include <ltmm/loader.hh>
+#include <cstdlib>
+#include <stdexcept>
 using namespace std;
 
 
@@ -57,171 +60,107 @@ using namespace R;
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <galilei/gurlmanagerkde.h>
+#include <filters/gurlmanagercurl.h>
+#include <docs/glinkcalcmanager.h>
+#include <profiles/gprofilecalcmanager.h>
+#include <profiles/gprofilecalc.h>
+#include <groups/ggroupingmanager.h>
+#include <groups/ggroupcalcmanager.h>
+#include <sessions/gstatscalcmanager.h>
 #include <sessions/gsessionmysql.h>
+#include <sessions/gconfig.h>
 #include <sessions/gslotlog.h>
-#include <profiles/gsubprofiledesc.h>
-#include <profiles/gsubprofilevector.h>
-#include <profiles/gprofilecalcfeedback.h>
-#include <groups/ggroupinggga.h>
-#include <groups/ggroupcalcgravitation.h>
-#include <docs/glinkcalchits.h>
 #include <docs/gdocoptions.h>
 using namespace GALILEI;
-
-
-//------------------------------------------------------------------------------
-// include files fro QT/KDE
-#include <kcmdlineargs.h>
-#include <kapp.h>
-#include <kaboutdata.h>
-
-
-//-----------------------------------------------------------------------------
-// Arguments to add at the command prompt
-static KCmdLineOptions options[] =
-{
-  { 0, 0, 0 }
-};
+using namespace R;
 
 
 //------------------------------------------------------------------------------
 // Global Variables
 RXMLStruct Config;
 GSlotLog* Log=0;
-GIRParams IRParams;
-GFeedbackParams FeedbackParams;
-GCalcGravitationParams CalcGravitationParams;
-GLinkCalcHITSParams LinkCalcHITSParams;
-
-
-//------------------------------------------------------------------------------
-// Init Promethee
-void InitProm(RPromCriterionParams& p,double w)
-{
-	p.P=0.2;
-	p.Q=0.05;
-	p.Weight=w;
-}
-
-
-//------------------------------------------------------------------------------
-// Load Congigs
-void LoadConfig(void) throw(GException)
-{
-}
-
 
 
 //------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
 	// Init Part
+	map<string,ltmm::symbol_list>& preloaded =ltmm::loader<>::preloaded();
 	cout<<"GALILEI Update Version "<<VERSION<<endl;
 	cout<<"Copyright 1999-2003 by the UniversitÈ Libre de Bruxelles"<<endl;
-	IRParams.PopSize=16;
-	IRParams.MaxGen=30;
-	IRParams.Step=false;
-	IRParams.StepGen=0;
-	IRParams.MinCommonOK=0.6;
-	IRParams.MinCommonDiff=0.6;
-	IRParams.MaxKMeans=30;
-	IRParams.SimMeasures=sctCrits;
-	InitProm(IRParams.ParamsSim,1.0);
-	InitProm(IRParams.ParamsInfo,0.0);
-	InitProm(IRParams.ParamsEntropy,0.0);
-	InitProm(IRParams.ParamsLikelihood,0.0);
-	InitProm(IRParams.ParamsSameFeedbacks,1.0);
-	InitProm(IRParams.ParamsDiffFeedbacks,1.0);
-	InitProm(IRParams.ParamsSocial,1.0);
-	IRParams.GlobalSim=true;
-	IRParams.Measures.GetPtr<const char*>("J")->Use=true;
-	FeedbackParams.MaxNonZero=100;
-	FeedbackParams.RelFactor=1.0;
-	FeedbackParams.FuzzyFactor=0.25;
-	FeedbackParams.NoRelFactor=0.75;
-	FeedbackParams.AddFuzzy=false;
-	FeedbackParams.IdfFactor=true;
-	CalcGravitationParams.MaxNonZero=100;
-
 	try
 	{
+		//------------------------------------------------------------------------------
+		// Managers
+ 		GURLManagerCURL URLManager("/home/pfrancq/prj/galilei_plugins",false);
+ 		GProfileCalcManager ProfilingManager("/home/pfrancq/prj/galilei_plugins",false);
+ 		GGroupingManager GroupingManager("/home/pfrancq/prj/galilei_plugins",false);
+ 		GGroupCalcManager GroupCalcManager("/home/pfrancq/prj/galilei_plugins",false);
+ 		GStatsCalcManager StatsCalcManager ("/home/pfrancq/prj/galilei_plugins",false);
+ 		GLinkCalcManager LinkCalcManager("/home/pfrancq/prj/galilei_plugins",false);
+
+		// Read Config
+		cout<<"Read Config"<<endl;
 		RXMLFile ConfigFile("/etc/galilei/galilei.conf",&Config,R::Read);
-	}
-	catch(...)
-	{
-		cout<<"Error while loading config file"<<endl;
-		return(EXIT_SUCCESS);
-	}
+		GConfig Conf(Config.GetTag("Config")->GetAttrValue("File"));
+		Conf.Load();
+		Conf.Read(URLManager);
+		Conf.Read(ProfilingManager);
+		Conf.Read(GroupingManager);
+		Conf.Read(GroupCalcManager);
+		Conf.Read(StatsCalcManager);
+		Conf.Read(LinkCalcManager);
 
-	// Run GALILEI
-	try
-	{
-		// Create Config files
+		// Options
+		GDocOptions DocOptions;
+		DocOptions.MinStopWords=0.01;
+		DocOptions.MinWordSize=4;
+		DocOptions.MinStemSize=3;
+		DocOptions.MinOccur=1;
+		DocOptions.MinDocs=5;
+		DocOptions.MaxDocs=300;
+		DocOptions.MinOccurCluster=2;
+		DocOptions.NbIteration=2;
+		DocOptions.NonLetterWords=true;
+		DocOptions.UseLink=false;
+		DocOptions.UseExternalLink=false;
+		DocOptions.UseRedirection=false;
+		GSessionParams SessionParams;
+		SessionParams.Set("SameBehaviourMinDocs",15);
+		SessionParams.Set("DiffBehaviourMinDocs",15);
+
+		// Create Log files
 		Log=new GSlotLog(Config.GetTag("Log")->GetAttrValue("File"));
 		Log->WriteLog("GALILEI Update started");
 		cout<<"Connect to Session"<<endl;
 
 		// Init Session
-		GURLManagerKDE* URLMng=new GURLManagerKDE();
 		GSessionMySQL Session(Config.GetTag("World")->GetAttrValue("Host"),
 							Config.GetTag("World")->GetAttrValue("User"),
 							Config.GetTag("World")->GetAttrValue("Pwd"),
 							Config.GetTag("World")->GetAttrValue("Name"),
-							URLMng);
+							&DocOptions,&SessionParams,false);
 		Log->WriteLog("Session created");
-		Session.GetDocOptions()->MinStopWords=0.01;
-		Session.GetDocOptions()->MinWordSize=4;
-		Session.GetDocOptions()->MinStemSize=3;
-		Session.GetDocOptions()->MinOccur=1;
-		Session.GetDocOptions()->MinDocs=5;
-		Session.GetDocOptions()->MaxDocs=300;
-		Session.GetDocOptions()->MinOccurCluster=2;
-		Session.GetDocOptions()->NbIteration=2;
-		Session.GetDocOptions()->NonLetterWords=true;
-		Session.GetDocOptions()->UseLink=false;
-		Session.GetDocOptions()->UseExternalLink=false;
-		Session.GetDocOptions()->UseRedirection=false;
+
 
 		// Load Data from MySQL database
 		Session.InitDics();
-		Session.InitDocs();
-		Session.InitGroups();
-		Session.InitUsers();
+		Session.InitDocs(false,true);
+		Session.InitGroups(false,true);
+		Session.InitUsers(false,true);
 		Session.InitFdbks();
+		Session.Connect(&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
 		Log->WriteLog("Data loaded");
 
-		//
-		LoadConfig();
-		Session.RegisterProfileDesc(new GSubProfileDesc("Vector space",GSubProfileVector::NewSubProfile));
-		Session.RegisterComputingMethod(new GProfileCalcFeedback(&Session, &FeedbackParams));
-		Session.RegisterGroupingMethod(new GGroupingGGA(&Session,&IRParams));
-		Session.RegisterGroupCalcMethod(new GGroupCalcGravitation(&Session, &CalcGravitationParams));
-		Session.RegisterLinkCalcMethod(new GLinkCalcHITS(&Session,&LinkCalcHITSParams));
-		Session.SetCurrentProfileDesc("Vector space");
-		Session.SetCurrentGroupingMethod("GVCA");
-		Session.SetCurrentComputingMethod("User Feedback");
-		Session.SetCurrentGroupCalcMethod("Gravitation");
-		Session.SetCurrentLinkCalcMethod("HITS Algorithm");
-
-		// Compute all the sessions
-			KAboutData aboutData( "upgalilei", "UpGALILEI",
-		"0.1", "One Shot Server", KAboutData::License_GPL,
-		"(c) 1998-2003, Universit√© Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-
-		KCmdLineArgs::init( argc, argv, &aboutData );
-		KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
-		KApplication app;
-		if(app.isRestored()) return(EXIT_SUCCESS);
-		try
+// 		try
 		{
 			cout<<"Analyse Documents."<<endl;
 			Session.AnalyseDocs(0,true);
 		}
-		catch(GException& e)
-		{
-			Log->WriteLog(RString("Error: ")+e.GetMsg());
-		}
+//		catch(GException& e)
+//		{
+//			Log->WriteLog(RString("Error: ")+e.GetMsg());
+//		}
 		cout<<"Compute Profiles."<<endl;
 		Session.CalcProfiles(0,true,true);
 		cout<<"Groups Profiles."<<endl;
@@ -230,16 +169,30 @@ int main(int argc, char *argv[])
 
 		// End Session
 		Log->WriteLog("GALILEI Update stopped");
-		delete URLMng;
 		delete Log;
+
+		// Destroy Managers
+// 		delete URLManager;
+// 		delete ProfilingManager;
+// 		delete GroupingManager;
+// 		delete GroupCalcManager;
+// 		delete StatsCalcManager;
+// 		delete LinkCalcManager;
 	}
 	catch(GException& e)
 	{
+		cout<<"Error: "<<e.GetMsg()<<endl;
 		Log->WriteLog(RString("Error: ")+e.GetMsg());
 	}
 	catch(R::RMySQLError& e)
 	{
+		cout<<"Error: "<<e.GetError()<<endl;
 		Log->WriteLog(RString("Error: ")+e.GetError());
+	}
+	catch(std::exception& e)
+	{
+		cout<<"Error: "<<e.what()<<endl;
+		Log->WriteLog(RString("Error: ")+e.what());
 	}
 	catch(...)
 	{
