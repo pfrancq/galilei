@@ -1051,7 +1051,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/sessions/Makefile.am]
-files=kgalileicenter/galilei/sessions/gsession.cpp,kgalileicenter/galilei/sessions/gsession.h,kgalileicenter/galilei/sessions/gsessionmysql.cpp,kgalileicenter/galilei/sessions/gsessionmysql.h,kgalileicenter/galilei/sessions/gdataloader.cpp,kgalileicenter/galilei/sessions/gdataloader.h,kgalileicenter/galilei/sessions/gtest.cpp,kgalileicenter/galilei/sessions/gtest.h,kgalileicenter/galilei/sessions/gtests.cpp,kgalileicenter/galilei/sessions/gtests.h,kgalileicenter/galilei/sessions/gsessionprg.cpp,kgalileicenter/galilei/sessions/gsessionprg.h,kgalileicenter/galilei/sessions/gslot.cpp,kgalileicenter/galilei/sessions/gslot.h
+files=kgalileicenter/galilei/sessions/gsession.cpp,kgalileicenter/galilei/sessions/gsession.h,kgalileicenter/galilei/sessions/gsessionmysql.cpp,kgalileicenter/galilei/sessions/gsessionmysql.h,kgalileicenter/galilei/sessions/gdataloader.cpp,kgalileicenter/galilei/sessions/gdataloader.h,kgalileicenter/galilei/sessions/gtest.cpp,kgalileicenter/galilei/sessions/gtest.h,kgalileicenter/galilei/sessions/gtests.cpp,kgalileicenter/galilei/sessions/gtests.h,kgalileicenter/galilei/sessions/gsessionprg.cpp,kgalileicenter/galilei/sessions/gsessionprg.h,kgalileicenter/galilei/sessions/gslot.cpp,kgalileicenter/galilei/sessions/gslot.h,kgalileicenter/galilei/sessions/gprginst.cpp,kgalileicenter/galilei/sessions/gprginst.h,kgalileicenter/galilei/sessions/gprgvar.cpp,kgalileicenter/galilei/sessions/gprgvar.h
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=sessions
 sub_dirs=
@@ -1064,6 +1064,30 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/sessions/gdataloader.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/sessions/gprginst.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/sessions/gprginst.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/sessions/gprgvar.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/sessions/gprgvar.h]
 dist=true
 install=false
 install_location=

@@ -839,6 +839,14 @@ void KGALILEICenterApp::slotRunProgram(void)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",QString(e.GetError()));
 	}
+	catch(bad_alloc)
+	{
+		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
+	}
+	catch(...)
+	{
+		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
+	}
 	KIO::NetAccess::removeTempFile( tmpfile );
 }
 
