@@ -272,12 +272,14 @@ void GSessionMySQL::LoadDocs(void)
 	for(quer.Begin();quer.IsMore();quer++)
 	{
 		docid=atoi(quer[0]);
-		Docs->InsertPtr(doc=new GDoc(quer[1],quer[1],docid,Langs->GetLang(quer[2]),atoi(quer[4]),atoi(quer[5])));
+
+
+		Docs->InsertPtr(doc=new GDoc(quer[1],quer[6],docid,Langs->GetLang(quer[2]),atoi(quer[4]),atoi(quer[5])));
 		sprintf(sSql3,"SELECT COUNT(*) FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
 		RQuery count(db,sSql3);
 		count.Begin();
 		sprintf(sSql4,"SELECT kwdid,occurs FROM %shtmlsbykwds WHERE htmlid=%u",quer[2],docid);
-		RQuery doc2(db,sSql4);                               
+		RQuery doc2(db,sSql4);
 		for(doc2.Begin();doc2.IsMore();doc2++)
 		{
 			doc->AddWord(atoi(doc2[0]),atoi(doc2[1]));
