@@ -215,6 +215,28 @@ public:
 	virtual void ExecuteData(const char* filename) throw(GException);
 
 	/**
+	* Export the words,document matrix into a file.
+	*/
+	virtual void ExportDM(void);
+
+	/**
+	* IMPORT the words,document matrix from a file.
+	* @param url            The url of the matrix file.
+	*/
+	virtual void ImportDC(const char* url);
+
+	/**
+	* Export the prolife,word matrix into a file.
+	*/
+	virtual void ExportP(void);
+
+	/**
+	* Import the groupment matrix from a file.
+	* @param url            The url of the matrix file.
+	*/
+	virtual void ImportG(const char* url);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSessionMySQL(void);
