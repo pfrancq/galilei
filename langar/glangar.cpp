@@ -78,7 +78,7 @@ public:
 	bool NextLevel; // must go to next level if rule is applied
 	ArabicRule(unsigned int id, unsigned int level, RString os, RString ns, int before_pos, int after_pos,
 		unsigned int nb_min_letters, int equality_pos, RString equality, int forbidden_pos, RString forbidden_letter, bool cycle_rule, bool next_level);
-	int Compare(const ArabicRule*) {return(-1);} // force rules to be sorted as entered;
+	int Compare(const ArabicRule&) const {return(-1);} // force rules to be sorted as entered;
 	bool Apply(RString& kwd); //function to apply the rule -> returns true if a stemmer is applied
 	int CheckConditions(RString kwd); // return (-1) if condtions are not verified, else return the position of the old suffix in the word kwd
 	~ArabicRule(void);

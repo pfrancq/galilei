@@ -67,7 +67,7 @@ public:
 	bool Next;
 
 	DutchPorterRule(const char* os,const char* ns,int oo,int no,int mr=-1,tCondition c=CondNothing,bool n=false);
-	int Compare(const DutchPorterRule*) {return(-1);}
+	int Compare(const DutchPorterRule&) const {return(-1);}
 	~DutchPorterRule(void);
 };
 

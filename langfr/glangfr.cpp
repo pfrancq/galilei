@@ -63,7 +63,7 @@ public:
 	int MinRootSize;
 
 	FrenchPorterRule(const char* os,const char* ns,int oo,int no,int mr=-1);
-	int Compare(const FrenchPorterRule*) {return(-1);}
+	int Compare(const FrenchPorterRule&) const {return(-1);}
 	~FrenchPorterRule(void);
 };
 

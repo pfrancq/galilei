@@ -67,7 +67,7 @@ public:
 	bool Next;
 
 	PorterRule(const char* os,const char* ns,int oo,int no,int mr=-1,tCondition c=CondNothing,bool n=false);
-	int Compare(const PorterRule*) {return(-1);}
+	int Compare(const PorterRule&) const {return(-1);}
 	~PorterRule(void);
 };
 
@@ -355,7 +355,8 @@ RString GALILEI::GLangEN::GetStemming(const RString& _kwd) throw(GException)
 
 	// Transform _kwd in lowercase and store it in kwd.
 	res=_kwd.ToLower();
-	if(res.GetLen()>50) return(*res);
+	if(res.GetLen()>50)
+		return(res);
 	strcpy(kwd,res);
 	len=_kwd.GetLen()-1;
 	end=&kwd[len];
