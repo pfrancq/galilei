@@ -88,7 +88,7 @@ protected:
 	class InternVector;
 
 	/**
-	* Gloabal vectors computed.
+	* Global vectors computed.
 	*/
 	RStd::RContainer<InternVector,unsigned int,true,true> Vectors;
 

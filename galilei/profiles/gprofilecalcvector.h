@@ -51,13 +51,6 @@ using namespace RStd;
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-// forward class declaration
-class GIWordsWeights;
-class GSubProfileVector;
-
-
 //-----------------------------------------------------------------------------
 /**
 * The GProfileCalcVector class provides an implementation of the computing

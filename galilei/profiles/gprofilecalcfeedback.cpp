@@ -50,8 +50,8 @@ using namespace RStd;
 #include <langs/gdict.h>
 #include <langs/glang.h>
 #include <profiles/gprofile.h>
-#include <profiles/gsubprofilevector.h>
 #include <profiles/gprofdoc.h>
+#include <profiles/gsubprofilevector.h>
 #include <infos/giword.h>
 #include <infos/giwordlist.h>
 #include <infos/giwordweight.h>
