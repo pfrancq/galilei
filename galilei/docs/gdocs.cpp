@@ -120,18 +120,20 @@ void GALILEI::GDocs::InsertDoc(GDoc* d) throw(bad_alloc)
 		docsLang->InsertDoc(d);
 }
 
+
+//-----------------------------------------------------------------------------
 void GALILEI::GDocs::MoveDoc(GDoc* d) throw(bad_alloc)
 {
 	GLang* l =0;
 	GDocsLang* docsLang;
 
 	// remove doc from container of docs with no language
-	 docsLang= DocsLang.GetPtr(l);
-	 docsLang->DeletePtr(d);
+	docsLang= DocsLang.GetPtr(l);
+	docsLang->DeletePtr(d);
 
 	// move doc to container of appropriated language.
-	 docsLang=DocsLang.GetInsertPtr(d->GetLang());
-	 docsLang->InsertPtr(d);
+	docsLang=DocsLang.GetInsertPtr(d->GetLang());
+	docsLang->InsertPtr(d);
 }
 
 
