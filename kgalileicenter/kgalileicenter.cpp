@@ -57,7 +57,6 @@ using namespace R;
 #include <profiles/gsubprofiledesc.h>
 #include <profiles/gsubprofilevector.h>
 #include <groups/ggroup.h>
-#include <groups/gidealgroup.h>
 #include <groups/gsubject.h>
 #include <groups/gsubjecttree.h>
 #include <sessions/gmixidealgroups.h>
@@ -167,10 +166,11 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbPwd=dlg.txtPwd->text().latin1();
 		try
 		{
-			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager,DocOptions,&SessionParams);
+			Sess = new GSessionMySQL(dbHost,dbUser,dbPwd,dbName,DocOptions,&SessionParams,true);
 			unsigned int cmd=dlg.cbLoad->currentItem();
 			QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 			d->LoadSession(cmd);
+			Sess->Connect(&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
 			Doc=new KDoc(this,Sess);
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
@@ -214,10 +214,11 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 {
 	QConnectMySQL dlg(this,0,true);
 	GSessionMySQL* Sess;
-	Sess = new GSessionMySQL(host,user,passwd,db,&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager,DocOptions,&SessionParams);
+	Sess = new GSessionMySQL(host,user,passwd,db,DocOptions,&SessionParams,true);
 	unsigned int cmd=dlg.cbLoad->currentItem();
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Sess,"Loading from Database");
 	d->LoadSession(cmd);
+	Sess->Connect(&URLManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
 	Doc=new KDoc(this,Sess);
 	sessionDisconnect->setEnabled(true);
 	sessionCompute->setEnabled(true);
@@ -544,7 +545,6 @@ void KGALILEICenterApp::slotShowUsers(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfileCalc(void)
 {
-	bool tmp = Doc->GetSession()->GetDocOptions()->UseLink;
 	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
 	KView* m = (KView*)pWorkspace->activeWindow();
 	if(m->getType()!=gProfile) return;
@@ -556,7 +556,6 @@ void KGALILEICenterApp::slotProfileCalc(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfilesCalc(void)
 {
-	bool tmp = Doc->GetSession()->GetDocOptions()->UseLink;
 	(*Doc->GetSession()->GetDocOptions())=(*DocOptions);
 	setDocParams(Doc);
 	QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Compute Profiles");
@@ -601,8 +600,8 @@ void KGALILEICenterApp::slotGroupingCompareFromFile(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotGroupingCompare(void)
 {
-	if(Doc->GetSession()->GetIdealGroups())
-		createClient(Doc,new KViewThGroups(Doc,Doc->GetSession()->GetIdealGroups(),pWorkspace,"View Theoritical Groups",0));
+	if(Doc->GetSession()->GetSubjects())
+		createClient(Doc,new KViewThGroups(Doc,Doc->GetSession()->GetSubjects()->GetIdealGroups(),pWorkspace,"View Theoritical Groups",0));
 }
 
 
@@ -924,7 +923,7 @@ void KGALILEICenterApp::slotMixIdealGroups(void)
 
 		// Create new solution
 		d->PutText("Create new solutions");
-		mix = new GMixIdealGroups(Doc->GetSession(),(Doc->GetSession()->GetIdealGroups()), atoi(nbgroups), atoi(level), merge, split, random,ideal);
+		mix = new GMixIdealGroups(Doc->GetSession(),(Doc->GetSession()->GetSubjects()->GetIdealGroups()), atoi(nbgroups), atoi(level), merge, split, random,ideal);
 		mix->Run(d);
 		d->Finish();
 	}

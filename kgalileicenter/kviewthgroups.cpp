@@ -50,7 +50,7 @@ using namespace R;
 #include <profiles/gsubprofile.h>
 #include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
-#include <groups/gcomparegrouping.h>
+#include <groups/gsubjecttree.h>
 #include <galilei/qlistviewitemtype.h>
 using namespace GALILEI;
 
@@ -229,12 +229,11 @@ void KViewThGroups::ConstructThGroups(void)
 void KViewThGroups::ConstructGroups(void)
 {
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(Doc->GetSession()->GetLangs());
-	GCompareGrouping Comp(Doc->GetSession(),Groups);
 	char tmp1[70];
 	char tmp2[30];
 
-	Comp.Compare(0);
-	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Comp.GetPrecision(),Comp.GetRecall(),Comp.GetTotal());
+	Doc->GetSession()->GetSubjects()->Compare(0);
+	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());
 	setCaption(tmp1);
 	prGroups->clear();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
@@ -245,8 +244,8 @@ void KViewThGroups::ConstructGroups(void)
 		for (grs->Start(); !grs->End(); grs->Next())
 		{
 			GGroup* gr=(*grs)();
-			sprintf(tmp1,"Precision: %1.3f",Comp.GetPrecision(gr));
-			sprintf(tmp2,"Recall: %1.3f",Comp.GetRecall(gr));
+			sprintf(tmp1,"Precision: %1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(gr));
+			sprintf(tmp2,"Recall: %1.3f",Doc->GetSession()->GetSubjects()->GetRecall(gr));
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group",tmp1,tmp2);
 			gritem->setPixmap(0,QPixmap("/usr/share/icons/hicolor/16x16/actions/window_new.png"));
 			for(gr->Start(); !gr->End(); gr->Next())
