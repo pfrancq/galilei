@@ -116,7 +116,7 @@ public:
 
 //-----------------------------------------------------------------------------
 GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_alloc,GException)
-	: FileName(f), Session(s), Rec(r), InstTypes(20), Insts(40), OFile(0),
+	: FileName(f), Session(s), Rec(r), InstTypes(20), Insts(40), OFile(0),  GOFile(0),
 	  Groups(0), IdealMethod(0), FdbksMethod(0), Parents(0), AutoSave(false)
 	
 {
@@ -135,6 +135,7 @@ GALILEI::GSessionPrg::GSessionPrg(RString f,GSession* s,GSlot* r) throw(bad_allo
 
 	// Instructions
 	InstTypes.InsertPtr(new InstType("SetOutput",Output));
+	InstTypes.InsertPtr(new InstType("SetGraphOutput",GOutput));
 	InstTypes.InsertPtr(new InstType("SetAutoSave",SetAutoSave));
 	InstTypes.InsertPtr(new InstType("Test",Test));
 	InstTypes.InsertPtr(new InstType("Log",Log));
@@ -267,6 +268,17 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			(*OFile)<<"Sets\tRecall\tPrecision\tTotal"<<endl;
 			break;
 
+		case GOutput:
+			sprintf(tmp,"Create Graph Output file '%s'",i->Param1());
+			Rec->WriteStr(tmp);
+			if(OFile)
+			{
+				delete GOFile;
+				GOFile=0;
+			}
+			GOFile=new RTextFile(i->Param1,RTextFile::Create);
+			break;
+
 		case SetAutoSave:
 			if(i->Param1.GetLen()==1)
 			{
@@ -384,6 +396,8 @@ void GALILEI::GSessionPrg::Run(const Inst* i) throw(GException)
 			Rec->WriteStr(tmp);
 			if(OFile)
 				(*OFile)<<TestName<<"\t"<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
+			if(GOFile)
+				(*GOFile)<<Recall<<"\t"<<Precision<<"\t"<<Total<<endl;
 			break;
 	}
 }

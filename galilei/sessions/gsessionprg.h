@@ -68,7 +68,7 @@ protected:
 	/**
 	* Represent the different instruction allowed.
 	*/
-	enum tInst{Log,Output,Sql,Comp,Group,CreateIdeal,LoadIdeal,Test,CmpIdeal,Fdbks,SetAutoSave};
+	enum tInst{Log,Output, GOutput,Sql,Comp,Group,CreateIdeal,LoadIdeal,Test,CmpIdeal,Fdbks,SetAutoSave};
 
 	/**
 	* Name of the file to execute.
@@ -104,6 +104,11 @@ protected:
 	* Output file.
 	*/
 	RIO::RTextFile* OFile;
+
+	/**
+	* Graph Output file.
+	*/
+	RIO::RTextFile* GOFile;
 
 	/**
 	* Ideal Groups.
