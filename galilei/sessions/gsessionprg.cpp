@@ -297,15 +297,21 @@ void GStatsProfilesI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,uns
 	r->WriteStr(tmp);
 	GStatSimSubProf ProfStats(Owner->Session,Owner->SOFile,g,l);
 	ProfStats.Run();
-	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f",
-	        ProfStats.GetAvgIntraG(),ProfStats.GetAvgInterG(),ProfStats.GetAVGolG(),ProfStats.GetAVGGolG(),ProfStats.GetRieG());
-	r->WriteStr(tmp);
-	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f",
-	        ProfStats.GetAvgIntraL(),ProfStats.GetAvgInterL(),ProfStats.GetAVGolL(),ProfStats.GetAVGGolL(),ProfStats.GetRieL());
-	r->WriteStr(tmp);
-	if(Owner->OFile)
+	if(g)
+	{
+		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f",
+		        ProfStats.GetAvgIntraG(),ProfStats.GetAvgInterG(),ProfStats.GetAVGolG(),ProfStats.GetAVGGolG(),ProfStats.GetRieG());
+		r->WriteStr(tmp);
+	}
+	if(l)
+	{
+		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f",
+		        ProfStats.GetAvgIntraL(),ProfStats.GetAvgInterL(),ProfStats.GetAVGolL(),ProfStats.GetAVGGolL(),ProfStats.GetRieL());
+		r->WriteStr(tmp);
+	}
+	if(Owner->OFile&&g)
 		(*Owner->OFile)<<ProfStats.GetAvgIntraG()<<ProfStats.GetAvgInterG()<<ProfStats.GetAVGolG()<<ProfStats.GetAVGGolG()<<ProfStats.GetRieG()<<endl;
-	if(Owner->OFile)
+	if(Owner->OFile&&l)
 		(*Owner->OFile)<<ProfStats.GetAvgIntraL()<<ProfStats.GetAvgInterL()<<ProfStats.GetAVGolL()<<ProfStats.GetAVGGolL()<<ProfStats.GetRieL()<<endl;
 }
 
@@ -323,15 +329,21 @@ void GStatsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigne
 	r->WriteStr(tmp);
 	GStatSimDoc DocStats(Owner->Session,Owner->SOFile,g,l);
 	DocStats.Run();
-	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f ",
-	        DocStats.GetAvgIntraG(),DocStats.GetAvgInterG(),DocStats.GetAVGolG(),DocStats.GetRieG());
-	r->WriteStr(tmp);
-	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f ",
-	        DocStats.GetAvgIntraL(),DocStats.GetAvgInterL(),DocStats.GetAVGolL(),DocStats.GetRieL());
-	r->WriteStr(tmp);
-	if(Owner->OFile)
+	if(g)
+	{
+		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f ",
+		        DocStats.GetAvgIntraG(),DocStats.GetAvgInterG(),DocStats.GetAVGolG(),DocStats.GetRieG());
+		r->WriteStr(tmp);
+	}
+	if(l)
+	{
+		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  Rie: %f ",
+		        DocStats.GetAvgIntraL(),DocStats.GetAvgInterL(),DocStats.GetAVGolL(),DocStats.GetRieL());
+		r->WriteStr(tmp);
+	}
+	if(Owner->OFile&&g)
 		(*Owner->OFile)<<DocStats.GetAvgIntraG()<<DocStats.GetAvgInterG()<<DocStats.GetAVGolG()<<DocStats.GetRieG()<<endl;
-	if(Owner->OFile)
+	if(Owner->OFile&&l)
 		(*Owner->OFile)<<DocStats.GetAvgIntraL()<<DocStats.GetAvgInterL()<<DocStats.GetAVGolL()<<DocStats.GetRieL()<<endl;
 }
 
@@ -383,23 +395,29 @@ void GStatsProfilesDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar
 	r->WriteStr(tmp);
 	GStatSimDocProf ProfDocStats(Owner->Session,Owner->SOFile,g,l);
 	ProfDocStats.Run();
-	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
-	            "  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
-                "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
-	        ProfDocStats.GetAvgIntraG(),ProfDocStats.GetAvgInterG(),ProfDocStats.GetAVGolG(),ProfDocStats.GetAVGGolG(),ProfDocStats.GetRieG(),
-	        ProfDocStats.GetPrecisionG(0),ProfDocStats.GetPrecisionG(1),ProfDocStats.GetPrecisionG(2),ProfDocStats.GetPrecisionG(3),
-	        ProfDocStats.GetPrecisionG(4),ProfDocStats.GetPrecisionG(5),ProfDocStats.GetPrecisionG(6),ProfDocStats.GetPrecisionG(7),
-	        ProfDocStats.GetPrecisionG(8),ProfDocStats.GetPrecisionG(9),ProfDocStats.GetPrecisionG(10));
-	r->WriteStr(tmp);
-	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
-	            "-  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
-                "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
-	        ProfDocStats.GetAvgIntraL(),ProfDocStats.GetAvgInterL(),ProfDocStats.GetAVGolL(),ProfDocStats.GetAVGGolL(),ProfDocStats.GetRieL(),
-	        ProfDocStats.GetPrecisionL(0),ProfDocStats.GetPrecisionL(1),ProfDocStats.GetPrecisionL(2),ProfDocStats.GetPrecisionL(3),
-	        ProfDocStats.GetPrecisionL(4),ProfDocStats.GetPrecisionL(5),ProfDocStats.GetPrecisionL(6),ProfDocStats.GetPrecisionL(7),
-	        ProfDocStats.GetPrecisionL(8),ProfDocStats.GetPrecisionL(9),ProfDocStats.GetPrecisionL(10));
-	r->WriteStr(tmp);
-	if(Owner->OFile)
+	if(g)
+	{
+		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
+		            "  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
+		            "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
+		            ProfDocStats.GetAvgIntraG(),ProfDocStats.GetAvgInterG(),ProfDocStats.GetAVGolG(),ProfDocStats.GetAVGGolG(),ProfDocStats.GetRieG(),
+		            ProfDocStats.GetPrecisionG(0),ProfDocStats.GetPrecisionG(1),ProfDocStats.GetPrecisionG(2),ProfDocStats.GetPrecisionG(3),
+		            ProfDocStats.GetPrecisionG(4),ProfDocStats.GetPrecisionG(5),ProfDocStats.GetPrecisionG(6),ProfDocStats.GetPrecisionG(7),
+		            ProfDocStats.GetPrecisionG(8),ProfDocStats.GetPrecisionG(9),ProfDocStats.GetPrecisionG(10));
+		r->WriteStr(tmp);
+	}
+	if(l)
+	{
+		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
+		            "-  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
+		            "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
+		            ProfDocStats.GetAvgIntraL(),ProfDocStats.GetAvgInterL(),ProfDocStats.GetAVGolL(),ProfDocStats.GetAVGGolL(),ProfDocStats.GetRieL(),
+		            ProfDocStats.GetPrecisionL(0),ProfDocStats.GetPrecisionL(1),ProfDocStats.GetPrecisionL(2),ProfDocStats.GetPrecisionL(3),
+		            ProfDocStats.GetPrecisionL(4),ProfDocStats.GetPrecisionL(5),ProfDocStats.GetPrecisionL(6),ProfDocStats.GetPrecisionL(7),
+		            ProfDocStats.GetPrecisionL(8),ProfDocStats.GetPrecisionL(9),ProfDocStats.GetPrecisionL(10));
+		r->WriteStr(tmp);
+	}
+	if(Owner->OFile&&g)
 	{
 		(*Owner->OFile)<<ProfDocStats.GetAvgIntraG()<<ProfDocStats.GetAvgInterG();
 		(*Owner->OFile)<<ProfDocStats.GetAVGolG()<<ProfDocStats.GetAVGGolG()<<ProfDocStats.GetRieG();
@@ -407,7 +425,7 @@ void GStatsProfilesDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar
 			(*Owner->OFile)<<ProfDocStats.GetPrecisionG(i);
 		(*Owner->OFile)<<endl;
 	}
-	if(Owner->OFile)
+	if(Owner->OFile&&l)
 	{
 		(*Owner->OFile)<<ProfDocStats.GetAvgIntraL()<<ProfDocStats.GetAvgInterL();
 		(*Owner->OFile)<<ProfDocStats.GetAVGolL()<<ProfDocStats.GetAVGGolL()<<ProfDocStats.GetRieL();
@@ -433,23 +451,29 @@ void GStatsGroupsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,u
 	r->WriteStr(tmp);
 	GStatSimDocGrp GrpDocStats(Owner->Session,Owner->SOFile,g,l);
 	GrpDocStats.Run();
-	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
-	            "  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
-                "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
-	        GrpDocStats.GetAvgIntraG(),GrpDocStats.GetAvgInterG(),GrpDocStats.GetAVGolG(),GrpDocStats.GetAVGGolG(),GrpDocStats.GetRieG(),
-	        GrpDocStats.GetPrecisionG(0),GrpDocStats.GetPrecisionG(1),GrpDocStats.GetPrecisionG(2),GrpDocStats.GetPrecisionG(3),
-	        GrpDocStats.GetPrecisionG(4),GrpDocStats.GetPrecisionG(5),GrpDocStats.GetPrecisionG(6),GrpDocStats.GetPrecisionG(7),
-	        GrpDocStats.GetPrecisionG(8),GrpDocStats.GetPrecisionG(9),GrpDocStats.GetPrecisionG(10));
-	r->WriteStr(tmp);
-	sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
-	            "-  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
-                "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
-	        GrpDocStats.GetAvgIntraL(),GrpDocStats.GetAvgInterL(),GrpDocStats.GetAVGolL(),GrpDocStats.GetAVGGolL(),GrpDocStats.GetRieL(),
-	        GrpDocStats.GetPrecisionL(0),GrpDocStats.GetPrecisionL(1),GrpDocStats.GetPrecisionL(2),GrpDocStats.GetPrecisionL(3),
-	        GrpDocStats.GetPrecisionL(4),GrpDocStats.GetPrecisionL(5),GrpDocStats.GetPrecisionL(6),GrpDocStats.GetPrecisionL(7),
-	        GrpDocStats.GetPrecisionL(8),GrpDocStats.GetPrecisionL(9),GrpDocStats.GetPrecisionL(10));
-	r->WriteStr(tmp);
-	if(Owner->OFile)
+	if(g)
+	{
+		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
+		            "  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
+	                "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
+		        GrpDocStats.GetAvgIntraG(),GrpDocStats.GetAvgInterG(),GrpDocStats.GetAVGolG(),GrpDocStats.GetAVGGolG(),GrpDocStats.GetRieG(),
+		        GrpDocStats.GetPrecisionG(0),GrpDocStats.GetPrecisionG(1),GrpDocStats.GetPrecisionG(2),GrpDocStats.GetPrecisionG(3),
+		        GrpDocStats.GetPrecisionG(4),GrpDocStats.GetPrecisionG(5),GrpDocStats.GetPrecisionG(6),GrpDocStats.GetPrecisionG(7),
+		        GrpDocStats.GetPrecisionG(8),GrpDocStats.GetPrecisionG(9),GrpDocStats.GetPrecisionG(10));
+		r->WriteStr(tmp);
+	}
+	if(l)
+	{
+		sprintf(tmp,"AVGintra: %f  -  AVGinter: %f  -  AVGol: %f  -  AVGGol: %f  -  Rie: %f"
+		            "-  P(R0): %f  -  P(R10): %f  -  P(R20): %f  -  P(R30): %f  -  P(R40): %f  -  P(R50): %f"
+	                "  -  P(R60): %f  -  P(R70): %f  -  P(R80): %f  -  P(R90): %f  -  P(R100): %f",
+		        GrpDocStats.GetAvgIntraL(),GrpDocStats.GetAvgInterL(),GrpDocStats.GetAVGolL(),GrpDocStats.GetAVGGolL(),GrpDocStats.GetRieL(),
+		        GrpDocStats.GetPrecisionL(0),GrpDocStats.GetPrecisionL(1),GrpDocStats.GetPrecisionL(2),GrpDocStats.GetPrecisionL(3),
+		        GrpDocStats.GetPrecisionL(4),GrpDocStats.GetPrecisionL(5),GrpDocStats.GetPrecisionL(6),GrpDocStats.GetPrecisionL(7),
+		        GrpDocStats.GetPrecisionL(8),GrpDocStats.GetPrecisionL(9),GrpDocStats.GetPrecisionL(10));
+		r->WriteStr(tmp);
+	}
+	if(Owner->OFile&&g)
 	{
 		(*Owner->OFile)<<GrpDocStats.GetAvgIntraG()<<GrpDocStats.GetAvgInterG();
 		(*Owner->OFile)<<GrpDocStats.GetAVGolG()<<GrpDocStats.GetAVGGolG()<<GrpDocStats.GetRieG();
@@ -457,7 +481,7 @@ void GStatsGroupsDocsI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,u
 			(*Owner->OFile)<<GrpDocStats.GetPrecisionG(i);
 		(*Owner->OFile)<<endl;
 	}
-	if(Owner->OFile)
+	if(Owner->OFile&&l)
 	{
 		(*Owner->OFile)<<GrpDocStats.GetAvgIntraL()<<GrpDocStats.GetAvgInterL();
 		(*Owner->OFile)<<GrpDocStats.GetAVGolL()<<GrpDocStats.GetAVGGolL()<<GrpDocStats.GetRieL();
