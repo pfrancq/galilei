@@ -131,6 +131,7 @@ void  GALILEI::GGroupingCure::InitGroups(void)
 	int i;
 	GGroup* newgroup;
 
+	Grps->Clear();
 	// create groups containing one subprofile
 	for (i=0,SubProfiles.Start(); !SubProfiles.End(); SubProfiles.Next(),i++)
 	{
@@ -144,6 +145,7 @@ void  GALILEI::GGroupingCure::InitGroups(void)
 //-----------------------------------------------------------------------------
 void  GALILEI::GGroupingCure::InitProtos(void)
 {
+	Prototypes->Clear();
 	for (SubProfiles.Start(); !SubProfiles.End(); SubProfiles.Next())
 		Prototypes->InsertPtr(SubProfiles());
 }
@@ -190,7 +192,7 @@ void  GALILEI::GGroupingCure::Run(void) throw(GException)
 //		cout << "closest groups found : " << gr1->GetId() << "and "<< gr2->GetId() <<endl;
 		//merge the groups
 		MergeGroups(gr1, gr2);
-//		cout << "number of group at this time = " << Grps->NbPtr<<endl;
+		cout << "number of group at this time = " << Grps->NbPtr<<endl;
 //		GEvaluateGroupsNumber* eval= new GEvaluateGroupsNumber(Grps,Session);
 //		cout<< eval->CalculateSDbw()<<","<<endl;
 //		delete eval;
