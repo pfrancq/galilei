@@ -268,7 +268,7 @@ double GALILEI::GChromoIR::ComputeMinSim(GObjIR** grp,unsigned int nb)
 
 
 //---------------------------------------------------------------------------
-double GALILEI::GChromoIR::ComputeRelevantSum(GObjIR** grp,unsigned int nb,GSubProfile* &rel)
+double GALILEI::GChromoIR::ComputeRelevantSum(GObjIR** grp,unsigned int nb,GObjIR* &rel)
 {
 	unsigned int i;
 	double BestSumSim;
@@ -276,7 +276,7 @@ double GALILEI::GChromoIR::ComputeRelevantSum(GObjIR** grp,unsigned int nb,GSubP
 	GObjIR** ptr;
 
 	// Suppose the first element is the most relevant.
-	rel=(*grp)->GetSubProfile();
+	rel=(*grp);
 	ptr=grp;
 	BestSumSim=ComputeSumSim(grp,nb,*ptr);
 
@@ -286,7 +286,7 @@ double GALILEI::GChromoIR::ComputeRelevantSum(GObjIR** grp,unsigned int nb,GSubP
 		SumSim=ComputeSumSim(grp,nb,*ptr);
 		if(SumSim>BestSumSim)
 		{
-			rel=(*ptr)->GetSubProfile();
+			rel=(*ptr);
 			BestSumSim=SumSim;
 		}
 	}
@@ -297,7 +297,7 @@ double GALILEI::GChromoIR::ComputeRelevantSum(GObjIR** grp,unsigned int nb,GSubP
 
 
 //---------------------------------------------------------------------------
-double GALILEI::GChromoIR::ComputeRelevantSumDist(GObjIR** grp,unsigned int nb,GSubProfile* &rel)
+double GALILEI::GChromoIR::ComputeRelevantSumDist(GObjIR** grp,unsigned int nb,GObjIR* &rel)
 {
 	unsigned int i;
  	double BestSumSim;
@@ -306,7 +306,7 @@ double GALILEI::GChromoIR::ComputeRelevantSumDist(GObjIR** grp,unsigned int nb,G
 	GObjIR** ptr;
 
 	// Suppose the first element is the most relevant.
-	rel=(*grp)->GetSubProfile();
+	rel=(*grp);
 	ptr=grp;
 	BestSumSim=ComputeSumSim(grp,nb,*ptr);
 	BestSum=ComputeSumDist(grp,nb,*ptr);
@@ -317,7 +317,7 @@ double GALILEI::GChromoIR::ComputeRelevantSumDist(GObjIR** grp,unsigned int nb,G
 		SumSim=ComputeSumSim(grp,nb,*ptr);
 		if(SumSim>BestSumSim)
 		{
-			rel=(*ptr)->GetSubProfile();
+			rel=(*ptr);
 			BestSum=ComputeSumDist(grp,nb,*ptr);
 			BestSumSim=SumSim;
 		}
@@ -329,7 +329,7 @@ double GALILEI::GChromoIR::ComputeRelevantSumDist(GObjIR** grp,unsigned int nb,G
 
 
 //---------------------------------------------------------------------------
-double GALILEI::GChromoIR::ComputeRelevantMin(GObjIR** grp,unsigned int nb,GSubProfile* &rel)
+double GALILEI::GChromoIR::ComputeRelevantMin(GObjIR** grp,unsigned int nb,GObjIR* &rel)
 {
 	unsigned int i;
 	double BestSumSim;
@@ -338,7 +338,7 @@ double GALILEI::GChromoIR::ComputeRelevantMin(GObjIR** grp,unsigned int nb,GSubP
 	GObjIR** ptr;
 
 	// Suppose the first element is the most relevant.
-	rel=(*grp)->GetSubProfile();
+	rel=(*grp);
 	ptr=grp;
 	BestSumSim=ComputeSumSim(grp,nb,*ptr);
 	MinSumSim=ComputeMinSim(grp,nb,*ptr);
@@ -349,7 +349,7 @@ double GALILEI::GChromoIR::ComputeRelevantMin(GObjIR** grp,unsigned int nb,GSubP
 		SumSim=ComputeSumSim(grp,nb,*ptr);
 		if(SumSim>BestSumSim)
 		{
-			rel=(*ptr)->GetSubProfile();
+			rel=(*ptr);
 			BestSumSim=SumSim;
 			MinSumSim=ComputeMinSim(grp,nb,*ptr);
 		}
@@ -361,7 +361,7 @@ double GALILEI::GChromoIR::ComputeRelevantMin(GObjIR** grp,unsigned int nb,GSubP
 
 
 //---------------------------------------------------------------------------
-double GALILEI::GChromoIR::ComputeRelevantMax(GObjIR** grp,unsigned int nb,GSubProfile* &rel)
+double GALILEI::GChromoIR::ComputeRelevantMax(GObjIR** grp,unsigned int nb,GObjIR* &rel)
 {
 	unsigned int i;
 	double BestSumSim;
@@ -370,7 +370,7 @@ double GALILEI::GChromoIR::ComputeRelevantMax(GObjIR** grp,unsigned int nb,GSubP
 	GObjIR** ptr;
 
 	// Suppose the first element is the most relevant.
-	rel=(*grp)->GetSubProfile();
+	rel=(*grp);
 	ptr=grp;
 	BestSumSim=ComputeSumSim(grp,nb,*ptr);
 	MaxSumSim=ComputeMaxSim(grp,nb,*ptr);
@@ -381,7 +381,7 @@ double GALILEI::GChromoIR::ComputeRelevantMax(GObjIR** grp,unsigned int nb,GSubP
 		SumSim=ComputeSumSim(grp,nb,*ptr);
 		if(SumSim>BestSumSim)
 		{
-			rel=(*ptr)->GetSubProfile();
+			rel=(*ptr);
 			BestSumSim=SumSim;
 			MaxSumSim=ComputeMaxSim(grp,nb,*ptr);
 		}
@@ -393,7 +393,7 @@ double GALILEI::GChromoIR::ComputeRelevantMax(GObjIR** grp,unsigned int nb,GSubP
 
 
 //---------------------------------------------------------------------------
-void GALILEI::GChromoIR::ComputeRelevant(GObjIR** grp,unsigned int nb,GSubProfile* &rel)
+void GALILEI::GChromoIR::ComputeRelevant(GObjIR** grp,unsigned int nb,GObjIR* &rel)
 {
 	unsigned int i;
 	double BestSumSim;
@@ -401,7 +401,7 @@ void GALILEI::GChromoIR::ComputeRelevant(GObjIR** grp,unsigned int nb,GSubProfil
 	GObjIR** ptr;
 
 	// Suppose the first element is the most relevant.
-	rel=(*grp)->GetSubProfile();
+	rel=(*grp);
 	ptr=grp;
 	BestSumSim=ComputeSumSim(grp,nb,*ptr);
 
@@ -411,7 +411,7 @@ void GALILEI::GChromoIR::ComputeRelevant(GObjIR** grp,unsigned int nb,GSubProfil
 		SumSim=ComputeSumSim(grp,nb,*ptr);
 		if(SumSim>BestSumSim)
 		{
-			rel=(*ptr)->GetSubProfile();
+			rel=(*ptr);
 			BestSumSim=SumSim;
 		}
 	}
@@ -419,18 +419,18 @@ void GALILEI::GChromoIR::ComputeRelevant(GObjIR** grp,unsigned int nb,GSubProfil
 
 
 //-----------------------------------------------------------------------------
-GSubProfile* GALILEI::GChromoIR::ComputeGlobalRelevant(void)
+GObjIR* GALILEI::GChromoIR::ComputeGlobalRelevant(void)
 {
 	double BestSumSim;
 	double SumSim;
 	GObjIRCursor Cur;
-	GSubProfile* rel;
+	GObjIR*  rel;
 
 	Cur=(*Objs);
 	Cur.Start();
 
 	// Suppose the first element is the most relevant.
-	rel=Cur()->GetSubProfile();
+	rel=Cur();
 	BestSumSim=ComputeSumSim(Cur());
 
 	// Look if in the other objects, there is a better one
@@ -439,7 +439,7 @@ GSubProfile* GALILEI::GChromoIR::ComputeGlobalRelevant(void)
 		SumSim=ComputeSumSim(Cur());
 		if(SumSim>BestSumSim)
 		{
-			rel=Cur()->GetSubProfile();
+			rel=Cur();
 			BestSumSim=SumSim;
 		}
 	}
@@ -676,6 +676,7 @@ void GALILEI::GChromoIR::EvaluateAvgSim(GGroupIR* grp1,GGroupIR* grp2)
 	double tmp;
 
 	LocalAvgSim=0.0;
+
 	// Compute Avg Similarity for grp1
 	if(grp1)
 	{
@@ -731,8 +732,8 @@ void GALILEI::GChromoIR::EvaluateJ(GGroupIR* grp1,GGroupIR* grp2)
 	GGroupIRCursor Cur;
 	double max,localmax;
 	GGroupIRCursor Cur2;
-	GSubProfile* rel1;
-	GSubProfile* rel2;
+	GObjIR* rel1;
+	GObjIR* rel2;
 	double tmp;
 
 	// Compute (Sum Intra) for the configurations.
@@ -762,7 +763,7 @@ void GALILEI::GChromoIR::EvaluateJ(GGroupIR* grp1,GGroupIR* grp2)
 	{
 		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 		{
-			tmp=1-Sims->GetSim(Cur()->Relevant,Cur2()->Relevant);
+			tmp=1-Sims->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
 			tmp=tmp*tmp;
 			if(tmp>max)
 				max=tmp;
@@ -775,14 +776,14 @@ void GALILEI::GChromoIR::EvaluateJ(GGroupIR* grp1,GGroupIR* grp2)
 		}
 		if(grp1)
 		{
-			tmp=1-Sims->GetSim(Cur()->Relevant,rel1);
+			tmp=1-Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel1->GetSubProfile());
 			tmp=tmp*tmp;
 			if(tmp>localmax)
 				localmax=tmp;
 		}
 		if(grp1&&(!grp2))
 		{
-			tmp=1-Sims->GetSim(Cur()->Relevant,rel2);
+			tmp=1-Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel2->GetSubProfile());
 			tmp=tmp*tmp;
 			if(tmp>localmax)
 				localmax=tmp;
@@ -790,14 +791,14 @@ void GALILEI::GChromoIR::EvaluateJ(GGroupIR* grp1,GGroupIR* grp2)
 	}
 	if(grp1)
 	{
-		tmp=1-Sims->GetSim(Cur()->Relevant,rel1);
+		tmp=1-Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel1->GetSubProfile());
 		tmp=tmp*tmp;
 		if(tmp>localmax)
 			localmax=tmp;
 	}
 	if(grp1&&(!grp2))
 	{
-		tmp=1-Sims->GetSim(Cur()->Relevant,rel2);
+		tmp=1-Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel2->GetSubProfile());
 		tmp=tmp*tmp;
 		if(tmp>localmax)
 			localmax=tmp;
@@ -816,17 +817,30 @@ void GALILEI::GChromoIR::EvaluateAvgRatio(GGroupIR* grp1,GGroupIR* grp2)
 {
 	GGroupIRCursor Cur,Cur2;
 	double MinIntra,MaxInter,tmp;
+	GObjIR* rel1;
+	GObjIR* rel2;
+
+	// Compute Relevant Profiles.
+	Cur.Set(Used);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->ComputeRelevant();
+	if(grp1)
+	{
+		ComputeRelevant(thObjs1,NbObjs1,rel1);
+		if(!grp2)
+			ComputeRelevant(thObjs2,NbObjs2,rel2);
+	}
 
 	// Average min(intra)/max(inter)
 	Cur.Set(Used);
 	Cur2.Set(Used);
 	for(Cur.Start(),AvgSim=LocalAvgSim=0.0;!Cur.End();Cur.Next())
 	{
-		MinIntra=Cur()->ComputeMinSim();
+		MinIntra=Cur()->ComputeMinSim(Cur()->Relevant);
 		for(Cur2.Start(),MaxInter=0.0;!Cur2.End();Cur2.Next())
 		{
 			if(Cur()==Cur2()) continue;
-			tmp=Cur()->ComputeMaxSim(Cur2());
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
@@ -834,31 +848,32 @@ void GALILEI::GChromoIR::EvaluateAvgRatio(GGroupIR* grp1,GGroupIR* grp2)
 		{
 			if(!grp2)
 			{
-				tmp=Cur()->ComputeMaxSim(thObjs2,NbObjs2);
+				tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel2->GetSubProfile());
 				if(tmp>MaxInter)
 					MaxInter=tmp;
 			}
-			tmp=Cur()->ComputeMaxSim(thObjs1,NbObjs1);
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel1->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
-		AvgSim+=MinIntra/MaxInter;
+		tmp=MinIntra/MaxInter;
+		AvgSim+=tmp;
 		if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
-		LocalAvgSim+=MinIntra/MaxInter;
+		LocalAvgSim+=tmp;
 	}
 	if(grp1)
 	{
-		MinIntra=ComputeMinSim(thObjs1,NbObjs1);
-		for(Cur2.Start(),MaxInter=0.0;!Cur2.End();Cur2.Next())
+		MinIntra=ComputeMinSim(thObjs1,NbObjs1,rel1);
+		for(Cur.Start(),MaxInter=0.0;!Cur.End();Cur.Next())
 		{
-			if(Cur()==Cur2()) continue;
-			tmp=ComputeMaxSim(thObjs1,NbObjs1,Cur2());
+			if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel1->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
 		if(!grp2)
 		{
-			tmp=ComputeMaxSim(thObjs1,NbObjs1,thObjs2,NbObjs2);
+			tmp=Sims->GetSim(rel2->GetSubProfile(),rel1->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
@@ -866,15 +881,15 @@ void GALILEI::GChromoIR::EvaluateAvgRatio(GGroupIR* grp1,GGroupIR* grp2)
 	}
 	if(grp1&&(!grp2))
 	{
-		MinIntra=ComputeMinSim(thObjs2,NbObjs2);
-		for(Cur2.Start(),MaxInter=0.0;!Cur2.End();Cur2.Next())
+		MinIntra=ComputeMinSim(thObjs2,NbObjs2,rel2);
+		for(Cur.Start(),MaxInter=0.0;!Cur.End();Cur.Next())
 		{
-			if(Cur()==Cur2()) continue;
-			tmp=ComputeMaxSim(thObjs2,NbObjs2,Cur2());
+			if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel2->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
-		tmp=ComputeMaxSim(thObjs2,NbObjs2,thObjs1,NbObjs1);
+		tmp=Sims->GetSim(rel2->GetSubProfile(),rel1->GetSubProfile());
 		if(tmp>MaxInter)
 			MaxInter=tmp;
 		LocalAvgSim+=MinIntra/MaxInter;
@@ -896,18 +911,31 @@ void GALILEI::GChromoIR::EvaluateMinRatio(GGroupIR* grp1,GGroupIR* grp2)
 {
 	GGroupIRCursor Cur,Cur2;
 	double MinIntra,MaxInter,tmp;
-	unsigned int i;
+	GObjIR* rel1;
+	GObjIR* rel2;
+	bool first,localfirst;
+
+	// Compute Relevant Profiles.
+	Cur.Set(Used);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->ComputeRelevant();
+	if(grp1)
+	{
+		ComputeRelevant(thObjs1,NbObjs1,rel1);
+		if(!grp2)
+			ComputeRelevant(thObjs2,NbObjs2,rel2);
+	}
 
 	// Min min(intra)/max(inter)
 	Cur.Set(Used);
 	Cur2.Set(Used);
-	for(Cur.Start(),AvgSim=LocalAvgSim=0.0,i=0;!Cur.End();Cur.Next(),i++)
+	for(Cur.Start(),AvgSim=LocalAvgSim=0.0,localfirst=first=true;!Cur.End();Cur.Next())
 	{
-		MinIntra=Cur()->ComputeMinSim();
+		MinIntra=Cur()->ComputeMinSim(Cur()->Relevant);
 		for(Cur2.Start(),MaxInter=0.0;!Cur2.End();Cur2.Next())
 		{
 			if(Cur()==Cur2()) continue;
-			tmp=Cur()->ComputeMaxSim(Cur2());
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
@@ -915,62 +943,80 @@ void GALILEI::GChromoIR::EvaluateMinRatio(GGroupIR* grp1,GGroupIR* grp2)
 		{
 			if(!grp2)
 			{
-				tmp=Cur()->ComputeMaxSim(thObjs2,NbObjs2);
+				tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel2->GetSubProfile());
 				if(tmp>MaxInter)
 					MaxInter=tmp;
 			}
-			tmp=Cur()->ComputeMaxSim(thObjs1,NbObjs1);
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel1->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
 		tmp=MinIntra/MaxInter;
-		if(!i)
+		if(first)
+		{
 			AvgSim=tmp;
+			first=false;
+		}
 		else
 			if(tmp<AvgSim)
 				AvgSim=tmp;
 		if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
-		if(!i)
+		if(localfirst)
+		{
 			LocalAvgSim=tmp;
+			localfirst=false;
+		}
 		else
-			if(tmp<AvgSim)
+			if(tmp<LocalAvgSim)
 				LocalAvgSim=tmp;
 	}
 	if(grp1)
 	{
-		MinIntra=ComputeMinSim(thObjs1,NbObjs1);
-		for(Cur2.Start(),MaxInter=0.0;!Cur2.End();Cur2.Next())
+		MinIntra=ComputeMinSim(thObjs1,NbObjs1,rel1);
+		for(Cur.Start(),MaxInter=0.0;!Cur.End();Cur.Next())
 		{
-			if(Cur()==Cur2()) continue;
-			tmp=ComputeMaxSim(thObjs1,NbObjs1,Cur2());
+			if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel1->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
 		if(!grp2)
 		{
-			tmp=ComputeMaxSim(thObjs1,NbObjs1,thObjs2,NbObjs2);
+			tmp=Sims->GetSim(rel2->GetSubProfile(),rel1->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
 		tmp=MinIntra/MaxInter;
-		if(tmp<AvgSim)
+		if(localfirst)
+		{
 			LocalAvgSim=tmp;
+			localfirst=false;
+		}
+		else
+			if(tmp<LocalAvgSim)
+				LocalAvgSim=tmp;
 	}
 	if(grp1&&(!grp2))
 	{
-		MinIntra=ComputeMinSim(thObjs2,NbObjs2);
-		for(Cur2.Start(),MaxInter=0.0;!Cur2.End();Cur2.Next())
+		MinIntra=ComputeMinSim(thObjs2,NbObjs2,rel2);
+		for(Cur.Start(),MaxInter=0.0;!Cur.End();Cur.Next())
 		{
-			if(Cur()==Cur2()) continue;
-			tmp=ComputeMaxSim(thObjs2,NbObjs2,Cur2());
+			if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel2->GetSubProfile());
 			if(tmp>MaxInter)
 				MaxInter=tmp;
 		}
-		tmp=ComputeMaxSim(thObjs2,NbObjs2,thObjs1,NbObjs1);
+		tmp=Sims->GetSim(rel2->GetSubProfile(),rel1->GetSubProfile());
 		if(tmp>MaxInter)
 			MaxInter=tmp;
-			tmp=MinIntra/MaxInter;
-			if(tmp<AvgSim)
+		tmp=MinIntra/MaxInter;
+		if(localfirst)
+		{
+			LocalAvgSim=tmp;
+			localfirst=false;
+		}
+		else
+			if(tmp<LocalAvgSim)
 				LocalAvgSim=tmp;
 	}
 }
@@ -979,87 +1025,102 @@ void GALILEI::GChromoIR::EvaluateMinRatio(GGroupIR* grp1,GGroupIR* grp2)
 //-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::EvaluateRatio(GGroupIR* grp1,GGroupIR* grp2)
 {
-	unsigned int i,j;
-	GGroupIRCursor Cur;
-	double max,localmax;
-	GGroupIRCursor Cur2;
-	GSubProfile* rel1;
-	GSubProfile* rel2;
-	double tmp;
+	GGroupIRCursor Cur,Cur2;
+	double MinIntra,MaxInter;
+	double LocalMinIntra,LocalMaxInter;
+	double tmpMin,tmpMax,tmp;
+	GObjIR* rel1;
+	GObjIR* rel2;
 
-	// Compute Minimum (Intra) for the configurations.
+	// Compute Relevant Profiles.
 	Cur.Set(Used);
-	for(Cur.Start(),LocalAvgSim=AvgSim=1.0;!Cur.End();Cur.Next())
-	{
-		tmp=Cur()->ComputeRelevantMin();
-		if(tmp<AvgSim);
-			AvgSim=tmp;
-		if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2)))
-			continue;
-		if(tmp<LocalAvgSim)
-			LocalAvgSim=tmp;
-	}
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->ComputeRelevant();
 	if(grp1)
 	{
-		tmp=ComputeRelevantMin(thObjs1,NbObjs1,rel1);
-		if(tmp<LocalAvgSim)
-			LocalAvgSim=tmp;
-	}
-	if(grp1&&(!grp2))
-	{
-		tmp=ComputeRelevantMin(thObjs2,NbObjs2,rel2);
-		if(tmp<LocalAvgSim)
-			LocalAvgSim=tmp;
+		ComputeRelevant(thObjs1,NbObjs1,rel1);
+		if(!grp2)
+			ComputeRelevant(thObjs2,NbObjs2,rel2);
 	}
 
-	// Compute Max inter for the configurations.
+	// Determine overall min(intra) and overall max(inter)
 	Cur.Set(Used);
 	Cur2.Set(Used);
-	for(Cur.Start(),i=0,j=Cur.GetNb(),max=0.0,localmax=0.0;--j;Cur.Next(),i++)
+	for(Cur.Start(),MaxInter=LocalMaxInter=AvgSim=LocalAvgSim=0.0,MinIntra=LocalMinIntra=1.0;!Cur.End();Cur.Next())
 	{
-		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
+		tmpMin=Cur()->ComputeMinSim(Cur()->Relevant);
+		if(tmpMin<MinIntra)
+			MinIntra=tmpMin;
+		for(Cur2.Start(),tmpMax=0.0;!Cur2.End();Cur2.Next())
 		{
-			tmp=Sims->GetSim(Cur()->Relevant,Cur2()->Relevant);
-			if(tmp>max)
-				max=tmp;
-			if((grp1&&(Cur2()==grp1))||(grp2&&(Cur2()==grp2)))
-				continue;
-			if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2)))
-				continue;
-			if(tmp>localmax)
-				localmax=tmp;
+			if(Cur()==Cur2()) continue;
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),Cur2()->Relevant->GetSubProfile());
+			if(tmp>tmpMax)
+				tmpMax=tmp;
 		}
 		if(grp1)
 		{
-			tmp=Sims->GetSim(Cur()->Relevant,rel1);
-			if(tmp>localmax)
-				localmax=tmp;
+			if(!grp2)
+			{
+				tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel2->GetSubProfile());
+				if(tmp>tmpMax)
+					tmpMax=tmp;
+			}
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel1->GetSubProfile());
+			if(tmp>tmpMax)
+				tmpMax=tmp;
 		}
-		if(grp1&&(!grp2))
-		{
-			tmp=Sims->GetSim(Cur()->Relevant,rel2);
-			if(tmp>localmax)
-				localmax=tmp;
-		}
+		if(tmpMax>MaxInter)
+			MaxInter=tmpMax;
+		if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
+		if(tmpMin<LocalMinIntra)
+			LocalMinIntra=tmpMin;
+		if(tmpMax>LocalMaxInter)
+			LocalMaxInter=tmpMax;
 	}
 	if(grp1)
 	{
-		tmp=Sims->GetSim(Cur()->Relevant,rel1);
-		if(tmp>localmax)
-			localmax=tmp;
+		tmpMin=ComputeMinSim(thObjs1,NbObjs1,rel1);
+		if(tmpMin<LocalMinIntra)
+			LocalMinIntra=tmpMin;
+		for(Cur.Start(),tmpMax=0.0;!Cur.End();Cur.Next())
+		{
+			if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel1->GetSubProfile());
+			if(tmp>tmpMax)
+				tmpMax=tmp;
+		}
+		if(!grp2)
+		{
+			tmp=Sims->GetSim(rel2->GetSubProfile(),rel1->GetSubProfile());
+			if(tmp>tmpMax)
+				tmpMax=tmp;
+		}
+		if(tmpMax>LocalMaxInter)
+			LocalMaxInter=tmpMax;
 	}
 	if(grp1&&(!grp2))
 	{
-		tmp=Sims->GetSim(Cur()->Relevant,rel2);
-		if(tmp>localmax)
-			localmax=tmp;
+		tmpMin=ComputeMinSim(thObjs2,NbObjs2,rel2);
+		if(tmpMin<LocalMinIntra)
+			LocalMinIntra=tmpMin;
+		for(Cur.Start(),tmpMax=0.0;!Cur.End();Cur.Next())
+		{
+			if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2))) continue;
+			tmp=Sims->GetSim(Cur()->Relevant->GetSubProfile(),rel2->GetSubProfile());
+			if(tmp>tmpMax)
+				tmpMax=tmp;
+		}
+		tmp=Sims->GetSim(rel2->GetSubProfile(),rel1->GetSubProfile());
+		if(tmp>tmpMax)
+			tmpMax=tmp;
+		if(tmpMax>LocalMaxInter)
+			LocalMaxInter=tmpMax;
 	}
-
-	// Compute (Minimum Intra)/(Max intra) for the configurations.
-	if(max)
-		AvgSim/=max;
-	if(localmax)
-		LocalAvgSim/=localmax;
+	if(MaxInter)
+		AvgSim=MinIntra/MaxInter;
+	if(LocalMaxInter)
+		LocalAvgSim=LocalMinIntra/LocalMaxInter;
 }
 
 
@@ -1068,9 +1129,9 @@ void GALILEI::GChromoIR::EvaluateWOverB(GGroupIR* grp1,GGroupIR* grp2)
 {
 	GGroupIRCursor Cur;
 	double sb,localsb;
-	GSubProfile* rel1;
-	GSubProfile* rel2;
-	GSubProfile* rel;
+	GObjIR* rel1;
+	GObjIR* rel2;
+	GObjIR* rel;
 	double tmp;
 
 	// Compute Sb over Sw. Normally, the measure is Sw/Sb but is to minimized.
@@ -1101,7 +1162,7 @@ void GALILEI::GChromoIR::EvaluateWOverB(GGroupIR* grp1,GGroupIR* grp2)
 	for(Cur.Start(),sb=localsb=0.0;!Cur.End();Cur.Next())
 	{
 		if(rel==Cur()->Relevant) continue;
-		tmp=1-Sims->GetSim(rel,Cur()->Relevant);
+		tmp=1-Sims->GetSim(rel->GetSubProfile(),Cur()->Relevant->GetSubProfile());
 		tmp=tmp*tmp;
 		sb+=tmp;
 		if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2)))
@@ -1110,12 +1171,12 @@ void GALILEI::GChromoIR::EvaluateWOverB(GGroupIR* grp1,GGroupIR* grp2)
 	}
 	if(grp1)
 	{
-		tmp=1-Sims->GetSim(rel,rel1);
+		tmp=1-Sims->GetSim(rel->GetSubProfile(),rel1->GetSubProfile());
 		localsb+=tmp*tmp;
 	}
 	if(grp1&&(!grp2))
 	{
-		tmp=1-Sims->GetSim(rel,rel2);
+		tmp=1-Sims->GetSim(rel->GetSubProfile(),rel2->GetSubProfile());
 		localsb+=tmp*tmp;
 	}
 	
@@ -1140,9 +1201,9 @@ void GALILEI::GChromoIR::EvaluateSimWB(GGroupIR* grp1,GGroupIR* grp2)
 {
 	GGroupIRCursor Cur;
 	double sb,localsb;
-	GSubProfile* rel1;
-	GSubProfile* rel2;
-	GSubProfile* rel;
+	GObjIR* rel1;
+	GObjIR* rel2;
+	GObjIR* rel;
 	double tmp;
 
 	// Compute SimW/SimB.
@@ -1173,16 +1234,16 @@ void GALILEI::GChromoIR::EvaluateSimWB(GGroupIR* grp1,GGroupIR* grp2)
 	for(Cur.Start(),sb=localsb=0.0;!Cur.End();Cur.Next())
 	{
 		if(rel==Cur()->Relevant) continue;
-		tmp=Sims->GetSim(rel,Cur()->Relevant);
+		tmp=Sims->GetSim(rel->GetSubProfile(),Cur()->Relevant->GetSubProfile());
 		sb+=tmp;
 		if((grp1&&(Cur()==grp1))||(grp2&&(Cur()==grp2)))
 			continue;
 		localsb+=tmp;
 	}
 	if(grp1)
-		localsb+=Sims->GetSim(rel,rel1);
+		localsb+=Sims->GetSim(rel->GetSubProfile(),rel1->GetSubProfile());
 	if(grp1&&(!grp2))
-		localsb+=Sims->GetSim(rel,rel2);
+		localsb+=Sims->GetSim(rel->GetSubProfile(),rel2->GetSubProfile());
 	
 	// Compute SimW/SimB for the configurations.
 	if(sb)

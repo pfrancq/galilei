@@ -293,7 +293,7 @@ public:
 	* @rel                  Relevant subprofile computed.
 	* @returns Sum of similarities to the relevant subprofile.
 	*/
-	double ComputeRelevantSum(GObjIR** grp,unsigned int nb,GSubProfile* &rel);
+	double ComputeRelevantSum(GObjIR** grp,unsigned int nb,GObjIR*  &rel);
 
 	/**
 	* Compute the relevant subprofile of the group, i.a. the subprofile which
@@ -303,7 +303,7 @@ public:
 	* @rel                  Relevant subprofile computed.
 	* @returns Sum of distances to the relevant subprofile.
 	*/
-	double ComputeRelevantSumDist(GObjIR** grp,unsigned int nb,GSubProfile* &rel);
+	double ComputeRelevantSumDist(GObjIR** grp,unsigned int nb,GObjIR*  &rel);
 
 	/**
 	* Compute the relevant subprofile of the group, i.a. the subprofile which
@@ -312,14 +312,14 @@ public:
 	* @param nb             Number of subprofiles.
 	* @rel                  Relevant subprofile computed.
 	*/
-	void ComputeRelevant(GObjIR** grp,unsigned int nb,GSubProfile* &rel);
+	void ComputeRelevant(GObjIR** grp,unsigned int nb,GObjIR*  &rel);
 
 	/**
 	* Compute the most relevant subprofile of the chromosome, i.a. the
 	* subprofile which is the most similar to all the others subprofiles.
 	* @return Pointer to the most relevant one.
 	*/
-	GSubProfile* ComputeGlobalRelevant(void);
+	GObjIR* ComputeGlobalRelevant(void);
 
 	/**
 	* Compute the relevant subprofile of the group, i.a. the subprofile which
@@ -329,7 +329,7 @@ public:
 	* @rel                  Relevant subprofile computed.
 	* @returns Minimum of similarities to the relevant subprofile.
 	*/
-	double ComputeRelevantMin(GObjIR** grp,unsigned int nb,GSubProfile* &rel);
+	double ComputeRelevantMin(GObjIR** grp,unsigned int nb,GObjIR*  &rel);
 
 	/**
 	* Compute the relevant subprofile of the group, i.a. the subprofile which
@@ -339,7 +339,7 @@ public:
 	* @rel                  Relevant subprofile computed.
 	* @returns Maximum similarity to the relevant subprofile.
 	*/
-	double ComputeRelevantMax(GObjIR** grp,unsigned int nb,GSubProfile* &rel);
+	double ComputeRelevantMax(GObjIR** grp,unsigned int nb,GObjIR*  &rel);
 
 	/**
 	* Look if two groups were merged together.
