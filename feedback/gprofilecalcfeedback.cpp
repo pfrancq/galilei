@@ -40,8 +40,7 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gprofilecalcfeedback.h>
-#include <docs/gdoc.h>
-#include <profiles/gprofdoc.h>
+#include <docs/gdocproxy.h>
 #include <profiles/gsubprofile.h>
 #include <infos/gweightinfo.h>
 #include <sessions/gsession.h>
@@ -97,8 +96,8 @@ void GProfileCalcFeedback::Disconnect(GSession* session) throw(GException)
 void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_alloc,GException)
 {
 	GWeightInfoCursor Words;
-	GProfDocCursor Docs;
-	GDoc* CurDoc;
+	RCursor<GFdbk> Docs;
+	GDocProxy* CurDoc;
 	GWeightInfo* w;
 	bool Add;
 	tDocAssessment Fdbk;
@@ -113,7 +112,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 
 	// Go through all documents, to compute the number of documents "OK", "KO"
 	// and "N" for each language and the number of documents for each index term.
-	Docs=subprofile->GetProfDocCursor();
+	Docs=subprofile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		// If the assessment of the document  is not relevant
@@ -136,7 +135,7 @@ void GProfileCalcFeedback::ComputeGlobal(GSubProfile* subprofile) throw(bad_allo
 
 	// Go through all documents, add the frequences of the words of "OK"
 	// documents and substract the frequences of the words of "KO" documents.
-	Docs=subprofile->GetProfDocCursor();
+	Docs=subprofile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		CurDoc=Docs()->GetDoc();
