@@ -6,7 +6,7 @@
 
 	Subprofile - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -253,6 +253,12 @@ proxy:
 	* @returns Boolean.
 	*/
 	bool IsUpdated(void) const;
+
+	/**
+	* Look if a given document has the same description since the last time it
+	* was used to compute the subprofile.
+	*/
+	bool SameDescription(const GFdbk* fdbk) const;
 
 	/**
 	* Get the number of common OK document between two subprofiles. In

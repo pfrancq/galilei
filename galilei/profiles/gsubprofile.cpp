@@ -6,7 +6,7 @@
 
 	Subprofile - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2004 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -112,32 +112,22 @@ int GSubProfile::Compare(const GLang* lang) const
 void GSubProfile::InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc)
 {
 	Fdbks.InsertPtr(fdbk);
-}
 
-
-//------------------------------------------------------------------------------
-/*void GSubProfile::InsertFdbk(GFdbk* j) throw(std::bad_alloc)
-{
-	Fdbks.InsertPtr(j);
-
-	// The profile is modified only if a assessment was made later
-	if(j->GetUpdated()>=Updated)
+	// If the subprofiles is not modified -> verify if it becomes modified
+	if((State!=osModified)&&(State!=osCreated))
 	{
-		State=osModified;
-		Updated.SetToday();
+		// It is modified in two cases:
+		// 1. The assessment is newer than the profile.
+		// 2. The document assessed was recomputed after the profile.
+		bool Up=fdbk->GetUpdated()>=Updated;
+		if(Up||(fdbk->GetDoc()->GetComputed()>=Computed))
+		{
+			State=osModified;
+			if(Up)
+				Updated.SetToday();
+		}
 	}
 }
-
-
-//------------------------------------------------------------------------------
-void GSubProfile::DeleteFdbk(GFdbk* j) throw(std::bad_alloc)
-{
-	Fdbks.DeletePtr(j);
-
-	// When an assessment is removed -> the profile is always modified
-	State=osModified;
-	Updated.SetToday();
-}*/
 
 
 //------------------------------------------------------------------------------
@@ -221,6 +211,13 @@ RDate GSubProfile::GetComputed(void) const
 bool GSubProfile::IsUpdated(void) const
 {
 	return(Attached<Updated);
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubProfile::SameDescription(const GFdbk* fdbk) const
+{
+	return((fdbk->GetUpdated()<Computed)&&(fdbk->GetDoc()->GetComputed()<Computed));
 }
 
 
