@@ -79,10 +79,18 @@ void QFillEmptyDatabase::ChooseParentName()
 		
 		if(dlg.exec())
 		{
+			RString tmp("");
 			t=dlg.TopicsView->selectedItem();
 			if(t)
 			{
-				ParentName->setText(t->text(0));
+				tmp=FromQString(t->text(0));
+				t=t->parent();
+				while(t)
+				{
+					tmp=FromQString(t->text(0))+"/"+tmp;
+					t=t->parent();
+				}
+				ParentName->setText(ToQString(tmp));
 			}
 		}
 	}
