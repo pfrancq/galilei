@@ -208,7 +208,7 @@ public:
 	* @param g              Number of groups.
 	* @param mng            URL Manager.
 	*/
-	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException);
+	GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng, GDocOptions* opt) throw(bad_alloc,GException);
 
 	/**
 	* Get the documents' analyser.

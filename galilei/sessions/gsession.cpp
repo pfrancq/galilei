@@ -89,11 +89,11 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng) throw(bad_alloc,GException)
-	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g), 
+GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigned int f,unsigned int g,GURLManager* mng, GDocOptions* opt) throw(bad_alloc,GException)
+	: GLangs(2), GDocs(d), GUsers(u,p), GGroupsMng(g),
 	  Subjects(), Fdbks(f+f/2,f/2),
 	  ProfileCalcs(0), ProfileCalc(0), Groupings(0), Grouping(0), Mng(mng), DocAnalyse(0),
-	  bGroups(false),bFdbks(false), DocOptions(0)
+	  bGroups(false),bFdbks(false), DocOptions(opt)
 	
 {
 	GLangCursor Langs;
@@ -107,7 +107,7 @@ GALILEI::GSession::GSession(unsigned int d,unsigned int u,unsigned int p,unsigne
 	Groupings=new RContainer<GGrouping,R::tId,true,true>(3,3);
 	GroupCalcs=new RContainer<GGroupCalc,R::tId,true,true>(2,3);
 	LinkCalcs=new RContainer<GLinkCalc,unsigned int,true,true>(3,2);
-	DocOptions=new GDocOptions();
+	DocOptions=new GDocOptions(opt);
 	DocAnalyse=new GDocAnalyse(this,DocOptions);
 	CurrentRandom=0;
 	Random = new RRandomGood(CurrentRandom);
