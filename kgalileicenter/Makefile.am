@@ -9,7 +9,7 @@ kgalileicenter_SOURCES = kviewstorechromos.cpp qhistorydlg.ui kviewhistory.cpp q
 	qpluginsdlg.cpp kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewga.cpp kviewstems.cpp \
 	qsessionprogress.cpp qdocsoptionsdlg.ui qconnectmysql.ui kviewusers.cpp kviewthgroups.cpp \
 	kviewstat.cpp kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp \
-	kview.cpp kdoc.cpp kgalileicenter.cpp main.cpp qplugins.ui
+	kview.cpp kdoc.cpp kgalileicenter.cpp main.cpp qplugins.ui qsessionoptions.ui
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
 kgalileicenter_LDADD = $(GALILEI_LIB)/postgroups/libgalilei_postgroups.la /usr/lib/libmysqlclient.la \
 	$(QTWIDGETS_LIB)/galilei/libkde_galilei.la $(QTWIDGETS_LIB)/rpromethee/libkde_rpromethee.la \
