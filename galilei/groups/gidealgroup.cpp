@@ -521,23 +521,48 @@ unsigned int GALILEI::GIdealGroup::AddProfiles(unsigned int minprofiles, unsigne
 double GALILEI::GIdealGroup::ComputePercAss(void)
 {
 	GSubProfileCursor Cur1;
-	GSubProfileCursor Cur2;
-	unsigned int i,j,nb;
+	GProfileCursor Cur2;
+	GSubProfile* Sub;
+	unsigned int nb;
 	double PercAss;
+	GLang* Lang;
 
 	Cur1.Set(LastAdded);
-	Cur2.Set(LastAdded);
-	if(Cur1.GetNb()<2) return(1.0);
-	for(Cur1.Start(),PercAss=0.0,nb=0,i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
+	Cur2=Session->GetProfilesCursor();
+	if(Cur1.GetNb()<1)
 	{
-		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
+		PercAss=1.0;
+		return(1.0);
+	}
+
+	// Go through the new created subprofiles
+	for(Cur1.Start(),PercAss=0.0,nb=0;!Cur1.End();Cur1.Next())
+	{
+		Lang=Cur1()->GetLang();
+
+		// Go through all the subprofiles
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
+			// Get the subprofile corresponding to Lang and verify
+			// that it is defined
+			Sub=Cur2()->GetSubProfile(Lang);
+			if(!Sub->IsDefined()) continue;
+
+			// If same subprofile, skip it.
+			if(Cur1()==Sub) continue;
+
+			// If both subprofiles are not related to the same topic, skip it.
+			if(Cur1()->GetSubject()!=Sub->GetSubject()) continue;
+
+			// Make comparaisons
 			nb++;
-			if(Cur1()->GetGroup()==Cur2()->GetGroup())
-				PercAss+=1.0;
+			if(Cur1()->GetGroup()==Sub->GetGroup()) PercAss+=1.0;
 		}
 	}
-	PercAss/=nb;
+	if(!nb)
+		PercAss=1.0;
+	else
+		PercAss/=nb;
 	return(PercAss);
 }
 
