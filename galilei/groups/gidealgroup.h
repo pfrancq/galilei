@@ -128,6 +128,11 @@ protected:
 	*/
 	char today[12];
 
+	/**
+	* Container of last added subprofiles.
+	*/
+	RStd::RContainer<GSubProfile,unsigned int,false,true> LastAdded;
+
 public:
 
 	/**
@@ -178,7 +183,7 @@ public:
 	* @param Save           Save the results.
 	* @return true if a not used topic was found.
 	*/
-	bool AddJudgement(bool Save);
+	bool AddTopic(bool Save);
 
 	/**
 	* Add judgements for some new not used profiles.
@@ -186,6 +191,18 @@ public:
 	* @param maxprofiles           maximum number of new profiles to create.
 	*/
 	unsigned int AddProfiles(unsigned int minprofiles, unsigned int maxprofiles, bool Save);
+
+	/**
+	* Computed the percentage of correct assignments for the subprofiles last
+	* added.
+	* @return double;
+	*/
+	double ComputePercAss(void);
+
+	/**
+	* Clear the container of last added subprofiles.
+	*/
+	void ClearLastAdded(void);
 
 	/**
 	* Get the settings of the method coded in a string.

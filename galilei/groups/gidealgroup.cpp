@@ -78,7 +78,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 GALILEI::GIdealGroup::GIdealGroup(GSession* session)
-	: Session(session), Docs(0), NbDocs(0)
+	: Session(session), Docs(0), NbDocs(0), LastAdded(50,25)
 {
 	RTimeDate::RDate date;
 
@@ -158,6 +158,7 @@ void GALILEI::GIdealGroup::CreateSet(void)
 	GLangCursor CurLang;
 
 	// Init Part
+	LastAdded.Clear();
 	IdealGroups=Session->GetIdealGroups();
 	IdealGroups->Clear();
 	CurLang=Session->GetLangsCursor();
@@ -327,7 +328,7 @@ void GALILEI::GIdealGroup::ProfileJudges(GProfile* prof,GSubject* sub,unsigned i
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GIdealGroup::AddJudgement(bool Save)
+bool GALILEI::GIdealGroup::AddTopic(bool Save)
 {
 	GSubject** tab;
 	GSubject** ptr;
@@ -397,8 +398,9 @@ bool GALILEI::GIdealGroup::AddJudgement(bool Save)
 		else
 			Prof()->GetProfile()->SetSocial(false);
 		
-		// Insert current subprofile in the ideal group
+		// Insert current subprofile in the ideal group and are hold as last inserted.
 		Grp->InsertPtr(Prof());
+		LastAdded.InsertPtr(Prof());
 
 		// Judges documents
 		ProfileJudges(Prof()->GetProfile(),newSubject,maxDocsOK,maxDocsKO,maxDocsH);
@@ -427,7 +429,7 @@ unsigned int GALILEI::GIdealGroup::AddProfiles(unsigned int minprofiles, unsigne
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
 
 	//Randomly choose the number of profiles.
-	nbprof=Session->GetCurrentRandomValue(maxprofiles-minprofiles+1)+maxprofiles;
+	nbprof=Session->GetCurrentRandomValue(maxprofiles-minprofiles+1)+minprofiles;
 
 	// Randomly mix the subjects in tab
 	Subjects=Session->GetSubjects();
@@ -435,10 +437,9 @@ unsigned int GALILEI::GIdealGroup::AddProfiles(unsigned int minprofiles, unsigne
 	memcpy(tab,Subjects->Tab,sizeof(GSubject*)*(Subjects->NbPtr));
 	Session->GetRandom()->RandOrder<GSubject*>(tab,Subjects->NbPtr);
 
-	// Find the first not used subject having at least NbDocPerGrp documents.
+	// Find the first used subject having at least NbDocPerGrp documents.
 	for(ptr=tab,i=Subjects->NbPtr+1,usedSubject=0;--i;ptr++)
 	{
-		if((*ptr)->GetNbDocs()<NbDocPerGrp) continue;
 		if(!(*ptr)->IsUsed()) continue;  //check if the subject is already in use..
 		usedSubject=(*ptr);
 		break;
@@ -492,8 +493,9 @@ unsigned int GALILEI::GIdealGroup::AddProfiles(unsigned int minprofiles, unsigne
 		else
 			Prof()->GetProfile()->SetSocial(false);
 
-		// Insert current subprofile in the ideal group
+		// Insert current subprofile in the ideal group and are hold as last inserted.
 		Grp->InsertPtr(Prof());
+		LastAdded.InsertPtr(Prof());
 
 		// Judges documents
 		ProfileJudges(Prof()->GetProfile(),usedSubject,maxDocsOK,maxDocsKO,maxDocsH);
@@ -514,6 +516,37 @@ unsigned int GALILEI::GIdealGroup::AddProfiles(unsigned int minprofiles, unsigne
 	return(nbprofilescreated);
 }
 
+
+//-----------------------------------------------------------------------------
+double GALILEI::GIdealGroup::ComputePercAss(void)
+{
+	GSubProfileCursor Cur1;
+	GSubProfileCursor Cur2;
+	unsigned int i,j,nb;
+	double PercAss;
+
+	Cur1.Set(LastAdded);
+	Cur2.Set(LastAdded);
+	if(Cur1.GetNb()<2) return(1.0);
+	for(Cur1.Start(),PercAss=0.0,nb=0,i=0,j=Cur1.GetNb();--j;Cur1.Next(),i++)
+	{
+		for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
+		{
+			nb++;
+			if(Cur1()->GetGroup()==Cur2()->GetGroup())
+				PercAss+=1.0;
+		}
+	}
+	PercAss/=nb;
+	return(PercAss);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GIdealGroup::ClearLastAdded(void)
+{
+	LastAdded.Clear();
+}
 
 
 //-----------------------------------------------------------------------------
