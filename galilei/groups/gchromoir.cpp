@@ -570,14 +570,11 @@ void GALILEI::GChromoIR::ReAllocate(void) throw(RGA::eGA)
 	GObjIR* best;
 	GSubProfile* sub;
 
-	// Computed the prototypes for each groups and put them in Protos
+	// Put the protyopes in Protos
 	Protos.Clear();
 	Grp.Set(Used);
 	for(Grp.Start();!Grp.End();Grp.Next())
-	{
-		Grp()->ComputeRelevant();
 		Protos.InsertPtr(Grp()->Relevant);
-	}
 
 	// Clear the chromosome
 	Clear();
@@ -643,7 +640,14 @@ void GALILEI::GChromoIR::DoKMeans(void) throw(RGA::eGA)
 	unsigned int itermax;
 	int error;
 	unsigned int IterNumber;
+	GGroupIRCursor Grp;
 
+	// Computed the prototypes for each groups
+	Grp.Set(Used);
+	for(Grp.Start();!Grp.End();Grp.Next())
+		Grp()->ComputeRelevant();
+
+	// Max Iterations
 	for(itermax=0,error=1,IterNumber=6;(itermax<IterNumber)&&(error!=0);itermax++)
 	{
 		ReAllocate();
