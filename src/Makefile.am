@@ -18,13 +18,13 @@ bin_PROGRAMS = upgalilei
 # the application source, library search path, and link libraries
 upgalilei_SOURCES = main.cpp
 upgalilei_LDFLAGS = -export-dynamic $(KDE_RPATH) $(all_libraries) 
-upgalilei_LDADD = $(GALILEI_LIB)/postgroups/libgalilei_postgroups.la /usr/lib/libmysqlclient.la \
+upgalilei_LDADD = /usr/lib/libmysqlclient.la \
 	$(GALILEI_LIB)/sessions/libgalilei_sessions.la $(GALILEI_LIB)/profiles/libgalilei_profiles.la \
-	$(GALILEI_LIB)/langs/libgalilei_langs.la $(GALILEI_LIB)/infos/libgalilei_infos.la \
+	$(GALILEI_LIB)/infos/libgalilei_infos.la \
 	$(GALILEI_LIB)/groups/libgalilei_groups.la $(GALILEI_LIB)/historic/libgalilei_historic.la \
-	$(GALILEI_LIB)/filters/libgalilei_filters.la $(GALILEI_LIB)/docs/libgalilei_docs.la \
+	$(GALILEI_LIB)/docs/libgalilei_docs.la \
 	$(R_LIB)/rgga/librgga.la $(R_LIB)/rpromethee/librpromethee.la $(R_LIB)/rstd/librstd.la \
-	$(R_LIB)/rga/librga.la $(R_LIB)/rdb/librdb.la \
+	$(R_LIB)/rga/librga.la $(R_LIB)/rdb/librdb.la $(R_LIB)/rprg/librprg.la \
 	$(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET) \
 	-lcurl -lltdl -dlopen self
 

@@ -59,8 +59,8 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
-#include <filters/gurlmanagercurl.h>
+#include <sessions/galilei.h>
+#include <docs/gfiltermanagercurl.h>
 #include <docs/glinkcalcmanager.h>
 #include <profiles/gprofilecalcmanager.h>
 #include <profiles/gprofilecalc.h>
@@ -70,8 +70,10 @@ using namespace R;
 #include <sessions/gsessionmysql.h>
 #include <sessions/gconfig.h>
 #include <sessions/gslotlog.h>
+#include <groups/gpostgroupmanager.h>
+#include <docs/gpostdocmanager.h>
 #include <docs/gdocanalysemanager.h>
-#include <langs/glangs.h>
+#include <infos/glangmanager.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -93,14 +95,16 @@ int main(int argc, char *argv[])
 	{
 		//------------------------------------------------------------------------------
 		// Managers
- 		GURLManagerCURL URLManager("/home/pfrancq/prj/galilei_plugins",false);
- 		GProfileCalcManager ProfilingManager("/home/pfrancq/prj/galilei_plugins",false);
- 		GGroupingManager GroupingManager("/home/pfrancq/prj/galilei_plugins",false);
- 		GGroupCalcManager GroupCalcManager("/home/pfrancq/prj/galilei_plugins",false);
- 		GStatsCalcManager StatsCalcManager ("/home/pfrancq/prj/galilei_plugins",false);
- 		GLinkCalcManager LinkCalcManager("/home/pfrancq/prj/galilei_plugins",false);
-		GLangs Langs("/home/pfrancq/prj/galilei_plugins",false);
+		GFilterManagerCURL URLManager("/home/pfrancq/prj/galilei_plugins",false);
+		GProfileCalcManager ProfilingManager("/home/pfrancq/prj/galilei_plugins",false);
+		GGroupingManager GroupingManager("/home/pfrancq/prj/galilei_plugins",false);
+		GGroupCalcManager GroupCalcManager("/home/pfrancq/prj/galilei_plugins",false);
+		GStatsCalcManager StatsCalcManager ("/home/pfrancq/prj/galilei_plugins",false);
+		GLinkCalcManager LinkCalcManager("/home/pfrancq/prj/galilei_plugins",false);
+		GLangManager Langs("/home/pfrancq/prj/galilei_plugins",false);
 		GDocAnalyseManager DocAnalyseManager("/home/pfrancq/prj/galilei_plugins",false);
+		GPostDocManager PostDocManager("/home/pfrancq/prj/galilei_plugins",false);
+		GPostGroupManager PostGroupManager("/home/pfrancq/prj/galilei_plugins",false);
 
 		// Read Config
 		cout<<"Read Config"<<endl;
@@ -115,6 +119,8 @@ int main(int argc, char *argv[])
 		Conf.Read(GroupCalcManager);
 		Conf.Read(StatsCalcManager);
 		Conf.Read(LinkCalcManager);
+		Conf.Read(PostDocManager);
+		Conf.Read(PostGroupManager);
 
 		// Options
 		GSessionParams SessionParams;
@@ -136,11 +142,16 @@ int main(int argc, char *argv[])
 
 
 		// Load Data from MySQL database
-		Session.Connect(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,&GroupCalcManager,&StatsCalcManager,&LinkCalcManager);
-		Session.InitDocs(false,true);
-		Session.InitGroups(false,true);
-		Session.InitUsers(false,true);
-		Session.InitFdbks();
+		Session.Connect(&Langs,&URLManager,&DocAnalyseManager,&ProfilingManager,&GroupingManager,
+			&GroupCalcManager,&StatsCalcManager,&PostDocManager,&PostGroupManager);
+		Session.LoadDocs(false,true);
+		Session.LoadGroups(false,true);
+		Session.LoadUsers(false,true);
+		Session.LoadFdbks();
+		Session.PostConnect(&LinkCalcManager);
+		Session.InitProfilesSims();
+		Session.InitProfilesBehaviours();
+		Session.InitDocProfSims();
 		Log->WriteLog("Data loaded");
 
 // 		try
