@@ -127,6 +127,7 @@ class GGroupCursor;
 class GGroupVector;
 class GGrouping;
 class GGroupingKCos;
+class GGroupingCure;
 class GGroupingGGA;
 class GGroupingSim;
 class GGroupingRandom;
