@@ -67,6 +67,7 @@ using namespace RIO;
 #include <groups/gsubjecttree.h>
 #include <filters/gmimefilter.h>
 #include <urlmanagers/gurlmanager.h>
+#include <groups/gsubject.h>
 using namespace GALILEI;
 using namespace RMySQL;
 using namespace RTimeDate;
@@ -156,7 +157,6 @@ const char* GALILEI::GSessionMySQL::ValidSQLValue(const char* val,char* tmp)
 unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* dict)
 {
 	char sSql[600];
-
 	// Verify that the word didn't already exist.
 	sprintf(sSql,"SELECT kwdid FROM %skwds WHERE kwd='%s'",dict->GetLang()->GetCode(),word);
 	RQuery find(this,sSql);
@@ -175,7 +175,6 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 	RQuery getinsert(this,sSql);
 	getinsert.Begin();
 	return(strtoul(getinsert[0],0,10));
-	
 }
 
 
@@ -406,7 +405,7 @@ void GALILEI::GSessionMySQL::LoadUsers() throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,true,true>* idealgroup)
+void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup)
 {
 
 	char sSql[100];
@@ -429,7 +428,20 @@ void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsign
 			{
 				doc->InsertPtr(GetDoc(atoi(sub[0])));
 			}
-			group=new GGroupEvaluateDoc(atoi(sel[0]),Langs(),doc,this);
+			sprintf(sSql,"SELECT subsubjectname,subjectid FROM subsubject where subsubjectid=%u",atoi(sel[0]));
+			RQuery subname(this,sSql);
+			for(subname.Begin();subname.IsMore();subname++)
+			{
+				sprintf(sSql,"SELECT subjectname FROM subject where subjectid=%u",atoi(subname[1]));
+				RQuery name(this,sSql);
+				for(name.Begin();name.IsMore();name++)
+				{
+					RString temp(name[0]);
+					temp+="/";
+					temp+=subname[0];
+					group=new GGroupEvaluateDoc(atoi(sel[0]),Langs(),doc,this,temp);
+				}
+			}
 			groups->InsertPtr(group);
 		}
 		idealgroup->InsertPtr(groups);

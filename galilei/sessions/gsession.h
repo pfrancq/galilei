@@ -431,7 +431,7 @@ public:
 	* Load the ideal groupment of document.
 	* @param idealgroup   The ideal container of group	
 	*/
-	virtual void LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,true,true>* idealgroup)=0;
+	virtual void LoadIdealDocument(RContainer<GGroupsEvaluate,unsigned int,false,false>* idealgroup)=0;
 
 	/**
 	* Save the ideal groupment
