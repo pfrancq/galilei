@@ -64,8 +64,6 @@ void GALILEI::GProfileCalcList::Compute(GProfile* profile)
 	GIWordList* SubKO;              // KO List of a given subprofile.
 	GIWordList* SubCommon;          // Common List of a given subprofile.
 
-	if(profile->GetState()==osUpToDate) return;
-
 	// Clear
 	for(OK.Start();!OK.End();OK.Next())
 			OK()->Clear();
@@ -76,6 +74,12 @@ void GALILEI::GProfileCalcList::Compute(GProfile* profile)
 	for(profile->DocsStart();!profile->DocsEnd();profile->DocsNext())
 	{
 		d=profile->GetCurDocs();
+
+		// If the document hasn't a language, don't treat for the profiles' computing.
+		if(!d->GetDoc()->GetLang())
+			continue;
+
+		// Verify Feedback
 		switch(d->GetFdbk())
 		{
 			case 'O':
