@@ -284,6 +284,11 @@ public:
 	unsigned int GetSdiff(unsigned int l) {return(Sldiff[l]);}
 
 	/**
+	*  update the feedback of the profiles and subprofiles
+	*/
+	void UpdateFdbks(GLang* oldlang, GLang* newlang);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GDocAnalyse(void);
