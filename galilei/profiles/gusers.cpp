@@ -37,6 +37,7 @@
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <infos/glang.h>
+#include <infos/gweightinfo.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -64,7 +65,7 @@ public:
 	int Compare(const GSubProfiles* s) const {return(Lang->Compare(s->Lang));}
 
 	// Get a cursor over the subprofiles of the system.
-	GSubProfileCursor GetSubProfilesCursor(void);
+	RCursor<GSubProfile> GetSubProfilesCursor(void);
 
 	// Destructor.
 	virtual ~GSubProfiles(void) {}
@@ -72,9 +73,9 @@ public:
 
 
 //------------------------------------------------------------------------------
-GSubProfileCursor GUsers::GSubProfiles::GetSubProfilesCursor(void)
+RCursor<GSubProfile> GUsers::GSubProfiles::GetSubProfilesCursor(void)
 {
-	GSubProfileCursor cur(this);
+	RCursor<GSubProfile> cur(this);
 	return(cur);
 }
 
@@ -230,12 +231,12 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id,GLang* lang) const thro
 
 
 //------------------------------------------------------------------------------
-GSubProfileCursor GUsers::GetSubProfilesCursor(GLang* lang) throw(GException)
+RCursor<GSubProfile> GUsers::GetSubProfilesCursor(GLang* lang) throw(GException)
 {
 	GSubProfiles* ptr=SubProfiles->GetPtr<const GLang*>(lang);
 	if(ptr)
 		return(ptr->GetSubProfilesCursor());
-	GSubProfileCursor cur;
+	RCursor<GSubProfile> cur;
 	return(cur);
 }
 
@@ -243,12 +244,18 @@ GSubProfileCursor GUsers::GetSubProfilesCursor(GLang* lang) throw(GException)
 //------------------------------------------------------------------------------
 void GUsers::ClearSubProfiles(void)
 {
+	// Empty information
+	R::RContainer<GWeightInfo,false,true> Empty(60,30);
+
 	RCursor<GSubProfiles> Cur;
+	RCursor<GSubProfile> Cur2;
 
 	Cur.Set(SubProfiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->Clear();
+		Cur2.Set(Cur());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+			Cur2()->Update(&Empty,true);
 	}
 }
 
