@@ -172,7 +172,10 @@ int GALILEI::GDoc::AnalyseTagForStopKwd(RXMLTag* tag,GDict* stop)
 	else
 	{
 		for(tag->Start();!tag->End();tag->Next())
+		{
+			RAssert((*tag)());
 			nb+=AnalyseTagForStopKwd((*tag)(),stop);
+		}
 	}
 	return(nb);
 }
@@ -209,7 +212,10 @@ void GALILEI::GDoc::AnalyseContentTag(RXMLTag* tag,GDict* stop,GDict* dic) throw
 	else
 	{
 		for(tag->Start();!tag->End();tag->Next())
+		{
+			RAssert((*tag)());
 			AnalyseContentTag((*tag)(),stop,dic);
+		}
 	}
 }
 
@@ -226,7 +232,7 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 	if(!xml)
 		throw GException("No XML Structure for document '"+URL+"'");
 
-	if(State==osUpToDate) return;
+	if((State==osUpToDate)||(State==osUpdated)) return;
 
 	RContainerCursor<GLang,unsigned int,true,true> CurLang(session->GetLangs());
 
@@ -235,25 +241,37 @@ void GALILEI::GDoc::Analyse(GDocXML* xml,GSession* session) throw(GException)
 
 	// Find Language with the maximal number of words of the stoplist contained
 	// in the document.
-	max=0;
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
+	if(Lang)
 	{
-		act=AnalyseTagForStopKwd(content,dic=session->GetStop(CurLang()));
-		if(act>max)
-		{
-			Lang=CurLang();
-			max=act;
-			stop=dic;
-		}
+		stop=session->GetStop(Lang);
 	}
-	if(!Lang) return;
+	else
+	{
+		max=0;
+		for(CurLang.Start();!CurLang.End();CurLang.Next())
+		{
+			act=AnalyseTagForStopKwd(content,dic=session->GetStop(CurLang()));
+			if(act>max)
+			{
+				Lang=CurLang();
+				max=act;
+				stop=dic;
+			}
+		}
+		if(!Lang) return;
+	}
 
 	// Analyse it
 	Words.Clear();
 	NbWords=NbDiffWords=0;
 	AnalyseContentTag(content,stop,session->GetDic(Lang));
+
+	// Make it 'Updated' and tell all the profiles that have judge this
+	// document that they are 'Modified'.
 	State=osUpdated;
 	Computed.SetToday();
+	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+		Fdbks()->GetProfile()->SetState(osModified);
 }
 
 

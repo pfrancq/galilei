@@ -192,10 +192,16 @@ public:
 	GMIMEFilter* GetMIMEType(void) const {return(Type);}
 
 	/**
-	* Returnt he state of the document.
+	* Return the state of the document.
 	* @returns GALILEI::tObjState value.
 	*/
 	tObjState GetState(void) const {return(State);}
+
+	/**
+	* Set the state of the document.
+	* @param state          New state.
+	*/
+	void SetState(tObjState state) {State=state;}
 
 protected:
 
