@@ -40,6 +40,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <langs/glang.h>
+#include <langs/gdict.h>
 using namespace GALILEI;
 using namespace RStd;
 
@@ -165,6 +166,22 @@ bool GALILEI::GLang::ValidWord(const RStd::RString& kwd)
 void GALILEI::GLang::AssignDict(GDict* dict)
 {
 	Dict=dict;
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GLang::GetRef(unsigned int id,tObjType ObjType)
+{
+	if(!Dict) return(0);
+	return(Dict->GetRef(id,ObjType));
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GALILEI::GLang::GetRef(tObjType ObjType)
+{
+	if(!Dict) return(0);
+	return(Dict->GetRef(ObjType));
 }
 
 

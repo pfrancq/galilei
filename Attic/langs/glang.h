@@ -145,6 +145,21 @@ public:
 	GDict* GetDict(void) {return(Dict);}
 
 	/**
+	* Get the number of references on a word.
+	* @param id             Identificator.
+	* @param ObjType        Type of the reference.
+	* @returns unsigned int.
+	*/
+	unsigned int GetRef(unsigned int id,tObjType ObjType);
+
+	/**
+	* Get the total number of references.
+	* @param ObjType        Type of the reference.
+	* @returns unsigned int.
+	*/
+	unsigned int GetRef(tObjType ObjType);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GLang(void);
