@@ -121,6 +121,11 @@ class GIRProm : public RPromethee::RPromKernel
 	RPromethee::RPromCriterion* CritEntropy;
 
 	/**
+	* Criteria representing the likelihood of a solution.
+	*/
+	RPromethee::RPromCriterion* CritLikelihood;
+
+	/**
 	* Criteria representing the factor depending on the subprofiles having
 	* common OK documents.
 	*/

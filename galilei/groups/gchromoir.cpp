@@ -79,7 +79,8 @@ GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
 	: RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
 	  Sims(0), CritSim(0.0), CritSimAvgSim(0.0), CritSimJ(0.0), CritSimAvgRatio(0.0),
 	  CritSimMinRatio(0.0), CritSimRatio(0.0), CritSimWOverB(0.0), CritSimSimWB(0.0),
-	  CritInfo(0.0), CritEntropy(0.0), CritSameFeedbacks(0.0), CritDiffFeedbacks(1.0), CritSocial(1.0), Protos(Used.MaxPtr),
+	  CritInfo(0.0), CritEntropy(0.0), CritLikelihood(0.0), CritSameFeedbacks(0.0),
+	  CritDiffFeedbacks(1.0), CritSocial(1.0), Protos(Used.MaxPtr),
 	  thProm(0), thSols(0), Docs(100,50)
 {
 	#if GALILEITEST
@@ -599,6 +600,20 @@ void GALILEI::GChromoIR::EvaluateEntropy(void)
 
 
 //-----------------------------------------------------------------------------
+void GALILEI::GChromoIR::EvaluateLikelihood(void)
+{
+	GGroupIRCursor Cur;
+
+	// Computed the entropy of each group
+	Cur.Set(Used);
+	for(Cur.Start(),CritLikelihood=0.0;!Cur.End();Cur.Next())
+	{
+		CritLikelihood+=Cur()->ComputeLikelihood();
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::GChromoIR::EvaluateSameFeedbacks(void)
 {
 	GSubProfilesSameDocs* same;
@@ -675,6 +690,8 @@ void GALILEI::GChromoIR::Evaluate(void) throw(RGA::eGA)
 		EvaluateInfo();
 	if(Instance->Params->ParamsEntropy.Weight)
 		EvaluateEntropy();
+	if(Instance->Params->ParamsLikelihood.Weight)
+		EvaluateLikelihood();
 	if(Instance->Params->ParamsSameFeedbacks.Weight)
 		EvaluateSameFeedbacks();
 	if(Instance->Params->ParamsDiffFeedbacks.Weight)
@@ -1019,6 +1036,8 @@ GChromoIR& GALILEI::GChromoIR::operator=(const GChromoIR& chromo)
 	CritSimWOverB=chromo.CritSimWOverB;
 	CritSimSimWB=chromo.CritSimSimWB;
 	CritInfo=chromo.CritInfo;
+	CritEntropy=chromo.CritEntropy;
+	CritLikelihood=chromo.CritLikelihood;
 	CritSameFeedbacks=chromo.CritSameFeedbacks;
 	CritDiffFeedbacks=chromo.CritDiffFeedbacks;
 	CritSocial=chromo.CritSocial;

@@ -645,7 +645,8 @@ double GALILEI::GGroupIR::ComputeEntropy(void)
 	tDocJudgement j;
 	GLang* Lang=Owner->Instance->Lang;
 	GSubProfile* sub;
-	double Pjk;
+	double Pjk,bPjk;
+	double SumDocs;
 
 	if(!Changed) return(Entropy);
 
@@ -658,6 +659,7 @@ double GALILEI::GGroupIR::ComputeEntropy(void)
 		for(l=NbSubObjects+1,ptr2=Owner->GetObjs(SubObjects);--l;ptr2++)
 		{
 			if((*ptr2)==(*ptr)) continue;
+			SumDocs=Owner->Instance->Session->GetNbDocs((*ptr2)->SubProfile->GetLang())-(*ptr2)->SubProfile->GetNbJudgedDocs();
 
 			// Go through the judgments of subprofile (*ptr2)
 			Fdbks=(*ptr2)->GetSubProfile()->GetProfile()->GetProfDocCursor();
@@ -674,14 +676,84 @@ double GALILEI::GGroupIR::ComputeEntropy(void)
 				if((j==djNav)||(j==djOK))
 				{
 					Pjk=(Owner->Instance->Session->GetSimDocProf(Fdbks()->GetDoc(),sub)+1)/2;
-					Pjk/=(*ptr)->SumPjk;
-					Entropy-=Pjk*log(Pjk);
+					bPjk=(1-Owner->Instance->Session->GetSimDocProf(Fdbks()->GetDoc(),sub))/2;
+//					Pjk/=2*(*ptr)->SumPjk;
+//					bPjk/=2*(*ptr)->SumPjk;
+					Pjk/=SumDocs;
+					bPjk/=SumDocs;
+					if(Pjk>0.0)
+						Entropy-=Pjk*log(Pjk);
+					if(bPjk>0.0)
+						Entropy-=bPjk*log(bPjk);
 				}
 			}
 		}
 	}
 	Changed=false;
 	return(Entropy);
+}
+
+
+//---------------------------------------------------------------------------
+double GALILEI::GGroupIR::ComputeLikelihood(void)
+{
+	GObjIR** ptr;
+	GObjIR** ptr2;
+	unsigned int i,l;
+	GDocCursor Docs;
+	GLang* Lang=Owner->Instance->Lang;
+	GSubProfile* sub;
+	double Pjk;
+	bool Proposed;
+
+	if(!Changed) return(Likelihood);
+	Docs=Owner->Instance->Session->GetDocsCursor(Lang);
+
+	// Compute the likelihood for each objects of the group
+	for(i=NbSubObjects+1,ptr=Owner->GetObjs(SubObjects),Likelihood=0.0;--i;ptr++)
+	{
+		sub=(*ptr)->GetSubProfile();
+
+		// Go through the documents
+		for(Docs.Start();Docs.End();Docs.Next())
+		{
+			// If Not same language -> continue
+			if(Docs()->GetLang()!=Lang) continue;
+
+			// Verify if document was not judged by the subprofile sub
+			if(sub->GetProfile()->GetFeedback(Docs())) continue;
+
+			// Verify that document was judged by another subprofile of the group
+			for(l=NbSubObjects+1,ptr2=Owner->GetObjs(SubObjects),Proposed=false;--l;ptr2++)
+			{
+				if((*ptr2)==(*ptr)) continue;
+				if((*ptr2)->GetSubProfile()->GetProfile()->GetFeedback(Docs()))
+				{
+					Proposed=true;
+					break;
+				}
+			}
+
+			// Compute Pjk and add either log(pjk) (Proposed) or log(1-pjk) (Not proposed)
+			Pjk=(Owner->Instance->Session->GetSimDocProf(Docs(),sub)+1)/2;
+			if(Proposed)
+			{
+				if(Pjk==0.0)
+					Likelihood-=100;
+				else
+					Likelihood-=log(Pjk);
+			}
+			else
+			{
+				if(Pjk==1.0)
+					Likelihood-=100;
+				else
+					Likelihood-=log(1-Pjk);
+			}
+		}
+	}
+	Changed=false;
+	return(Likelihood);
 }
 
 

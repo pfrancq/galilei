@@ -102,6 +102,11 @@ protected:
 	*/
 	double Entropy;
 
+	/**
+	* Likelihood of the objects of the group.
+	*/
+	double Likelihood;
+
 public:
 
 	/**
@@ -290,11 +295,18 @@ public:
 	void NotJudgedDocsRelList(RStd::RContainer<GDocSim,unsigned,true,false>* docs, GObjIR* s);
 
 	/**
-	* Compute the Entropy of objects of the group if ti was changed, else use
+	* Compute the Entropy of objects of the group if it was changed, else use
 	* the value computed before.
 	* @return double.
 	*/
 	double ComputeEntropy(void);
+
+	/**
+	* Compute the Likelihood of objects of the group if it was changed, else
+	* use the value computed before.
+	* @return double.
+	*/
+	double ComputeLikelihood(void);
 
 	/**
 	* Destruct the group.

@@ -64,7 +64,8 @@ GALILEI::GIRProm::GIRProm(GIRParams* p) throw(bad_alloc)
 	: RPromKernel("GALILEI",20,10), Params(p), CritSim(0), CritSimAvgSim(0),
 	  CritSimJ(0), CritSimAvgRatio(0),CritSimMinRatio(0),CritSimRatio(0),
 	  CritSimWOverB(0), CritSimSimWB(0), CritInfo(0), CritEntropy(0),
-	  CritSameFeedbacks(0), CritDiffFeedbacks(0), CritSocial(0)
+	  CritLikelihood(0), CritSameFeedbacks(0), CritDiffFeedbacks(0),
+	  CritSocial(0)
 {
 	// Init Criterion and Solutions of the PROMETHEE part
 	if(Params->SimMeasures==sctCorl)
@@ -90,6 +91,8 @@ GALILEI::GIRProm::GIRProm(GIRParams* p) throw(bad_alloc)
 		CritInfo=NewCriterion(Minimize,"Information",Params->ParamsInfo.P,Params->ParamsInfo.Q,Params->ParamsInfo.Weight);
 	if(Params->ParamsEntropy.Weight)
 		CritEntropy=NewCriterion(Minimize,"Entropy",Params->ParamsEntropy.P,Params->ParamsEntropy.Q,Params->ParamsEntropy.Weight);
+	if(Params->ParamsLikelihood.Weight)
+		CritLikelihood=NewCriterion(Minimize,"Likelihood",Params->ParamsLikelihood.P,Params->ParamsLikelihood.Q,Params->ParamsLikelihood.Weight);
 	if(Params->ParamsSameFeedbacks.Weight)
 		CritSameFeedbacks=NewCriterion(Maximize,"Same Feedbacks",Params->ParamsSameFeedbacks.P,Params->ParamsSameFeedbacks.Q,Params->ParamsSameFeedbacks.Weight);
 	if(Params->ParamsDiffFeedbacks.Weight)
@@ -112,6 +115,7 @@ void GALILEI::GIRProm::Assign(RPromethee::RPromSol* s,GChromoIR* c)
 	RPromKernel::Assign(s,CritSimSimWB,c->CritSimSimWB);
 	RPromKernel::Assign(s,CritInfo,c->CritInfo);
 	RPromKernel::Assign(s,CritEntropy,c->CritEntropy);
+	RPromKernel::Assign(s,CritLikelihood,c->CritLikelihood);
 	RPromKernel::Assign(s,CritSameFeedbacks,c->CritSameFeedbacks);
 	RPromKernel::Assign(s,CritDiffFeedbacks,c->CritDiffFeedbacks);
 	RPromKernel::Assign(s,CritSocial,c->CritSocial);

@@ -260,9 +260,14 @@ public:
 	RPromethee::RPromCriterionParams ParamsInfo;
 
 	/**
-	* Parameter for the criterion "Information".
+	* Parameter for the criterion "Entropy".
 	*/
 	RPromethee::RPromCriterionParams ParamsEntropy;
+
+	/**
+	* Parameter for the criterion "Likelihood".
+	*/
+	RPromethee::RPromCriterionParams ParamsLikelihood;
 
 	/**
 	* Parameter for the criterion "Same Feedbacks".
