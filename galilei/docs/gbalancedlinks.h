@@ -6,7 +6,7 @@
 
 	List of Links with an associated weight - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be)
@@ -131,7 +131,7 @@ public :
 * of links.
 * @short Weighted List of Links Cursor
 */
-CLASSCURSOR(GBalancedLinksCursor,GBalancedLinks,unsigned int);
+CLASSCURSOR(GBalancedLinksCursor,GBalancedLinks);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

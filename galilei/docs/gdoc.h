@@ -98,7 +98,7 @@ protected:
 	/**
 	* Profiles which have assessed the document.
 	*/
-	R::RContainer<GProfDoc,unsigned,false,true> Fdbks;
+	R::RContainer<GProfDoc,false,true> Fdbks;
 
 	/**
 	* Count the number of downloads failed.
@@ -108,13 +108,13 @@ protected:
 	/**
 	* Links "out" of the document.
 	*/
-	R::RContainer<GLink,unsigned int,true,true> LinkSet;
+	R::RContainer<GLink,true,true> LinkSet;
 
 #if GALILEITEST
 	/**
 	* Subjects of the document.
 	*/
-	R::RContainer<GSubject,unsigned int,false,true> Subjects;
+	R::RContainer<GSubject,false,true> Subjects;
 #endif
 
 public:
@@ -432,7 +432,7 @@ public:
 * The GDocCursor class provides a way to go trough a set of documents.
 * @short Documents Cursor
 */
-CLASSCURSOR(GDocCursor,GDoc,unsigned int);
+CLASSCURSOR(GDocCursor,GDoc);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

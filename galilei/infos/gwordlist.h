@@ -6,7 +6,7 @@
 
 	List of words - Header.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be)
@@ -55,7 +55,7 @@ namespace GALILEI{
 * @short List of words.
 */
 
-class GWordList : public GData, protected R::RContainer<GWord,unsigned,false,true>
+class GWordList : public GData, protected R::RContainer<GWord,false,true>
 {
 public:
 

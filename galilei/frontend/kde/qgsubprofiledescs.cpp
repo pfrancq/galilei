@@ -135,7 +135,7 @@ void GALILEI::QGSubProfileDescs::slotLangChanged(int index)
 //---------------------------------------------------------------------------
 void GALILEI::QGSubProfileDescs::slotProfileChanged(void)
 {
-	RCursor<QGSubProfileDesc,unsigned int> Cur(SubProfilesDesc);
+	RCursor<QGSubProfileDesc> Cur(SubProfilesDesc);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Construct();
@@ -145,7 +145,7 @@ void GALILEI::QGSubProfileDescs::slotProfileChanged(void)
 //-----------------------------------------------------------------------------
 void GALILEI::QGSubProfileDescs::resizeEvent(QResizeEvent *)
 {
-	RCursor<QGSubProfileDesc,unsigned int> Cur(SubProfilesDesc);
+	RCursor<QGSubProfileDesc> Cur(SubProfilesDesc);
 	QSize act=size(),tmp;
 	tmp=Lang->size();
 

@@ -6,7 +6,7 @@
 
 	Group - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -79,7 +79,7 @@ public:
 
 //------------------------------------------------------------------------------
 GGroup::GGroup(unsigned int id,GLang* lang,bool com) throw(std::bad_alloc)
-	: RContainer<GSubProfile,unsigned int,false,true>(20,10), Id(id),
+	: RContainer<GSubProfile,false,true>(20,10), Id(id),
 	  State(osUpToDate), Lang(lang), Community(com)
 {
 }
@@ -87,7 +87,7 @@ GGroup::GGroup(unsigned int id,GLang* lang,bool com) throw(std::bad_alloc)
 
 //------------------------------------------------------------------------------
 GGroup::GGroup(GLang* lang,bool com) throw(std::bad_alloc)
-	: RContainer<GSubProfile,unsigned int,false,true>(20,10), Id(cNoRef),
+	: RContainer<GSubProfile,false,true>(20,10), Id(cNoRef),
 	  State(osCreated), Lang(lang), Community(com)
 {
 }
@@ -161,7 +161,7 @@ void GGroup::SetState(tObjState state)
 //------------------------------------------------------------------------------
 bool GGroup::IsIn(const GSubProfile* sp) const
 {
-	return(R::RContainer<GSubProfile,unsigned int,false,true>::IsIn(sp));
+	return(R::RContainer<GSubProfile,false,true>::IsIn(sp));
 }
 
 
@@ -178,7 +178,7 @@ void GGroup::DeleteSubProfile(GSubProfile* sp) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GGroup::InsertSubProfile(GSubProfile* sp) throw(std::bad_alloc)
 {
-	R::RContainer<GSubProfile,unsigned int,false,true>::InsertPtr(sp);
+	R::RContainer<GSubProfile,false,true>::InsertPtr(sp);
 	State=osUpdated;
 	if(Community)
 		sp->SetGroup(this);
@@ -245,7 +245,7 @@ unsigned int GGroup::GetNbSubProfiles(void) const
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc)
+void GGroup::NotJudgedDocsList(RContainer<GProfDoc,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc)
 {
 	GSubProfile** tab;
 	unsigned int i;
@@ -300,13 +300,13 @@ void GGroup::NotJudgedDocsList(RContainer<GProfDoc,unsigned,false,true>* docs, G
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc)
+void GGroup::NotJudgedDocsRelList(RContainer<GProfDoc,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc)
 {
 	GSubProfile** tab;
 	unsigned int i;
 	GProfDocCursor Fdbks;
 	tDocAssessment j;
-	RContainer<GProfDocRef,unsigned int,true,false> Docs(50,25);
+	RContainer<GProfDocRef,true,false> Docs(50,25);
 
 	// Clear container.
 	docs->Clear();

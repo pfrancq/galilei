@@ -6,7 +6,7 @@
 
 	Manager to handle group computing method - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -51,7 +51,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryGroupCalc,unsigned int,true,true>(10,5), Current(0)
+	: RContainer<GFactoryGroupCalc,true,true>(10,5), Current(0)
 {
 	RString Path(path);
 	Path+="/groups";

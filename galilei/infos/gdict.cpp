@@ -6,7 +6,7 @@
 
 	Dictionary - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -49,13 +49,13 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GDict::GDataTypes : public R::RContainer<GData,unsigned int,false,false>
+class GDict::GDataTypes : public R::RContainer<GData,false,false>
 {
 public:
 	GInfoType Type;
 
 	GDataTypes(unsigned int ml,GInfoType type)
-		: RContainer<GData,unsigned int,false,false>(ml+(ml/4),ml/4), Type(type) {}
+		: RContainer<GData,false,false>(ml+(ml/4),ml/4), Type(type) {}
 	int Compare(const GDataTypes& d) const {return(Type-d.Type);}
 	int Compare(const GDataTypes* d) const {return(Type-d->Type);}
 	int Compare(const GInfoType t) const {return(Type-t);}
@@ -71,7 +71,7 @@ public:
 
 //------------------------------------------------------------------------------
 GDict::GDict(const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(std::bad_alloc)
-	: RDblHashContainer<GData,unsigned,27,27,true>(ml+(ml/4),ml/4), Direct(0),
+	: RDblHashContainer<GData,27,27,true>(ml+(ml/4),ml/4), Direct(0),
 	  MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false),
 	  Stop(st), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0), DataTypes(3)
 {
@@ -85,7 +85,7 @@ GDict::GDict(const RString& name,const RString& desc,GLang *lang,unsigned m,unsi
 //------------------------------------------------------------------------------
 void GDict::Clear(void)
 {
-	RDblHashContainer<GData,unsigned,27,27,true>::Clear();
+	RDblHashContainer<GData,27,27,true>::Clear();
 	memset(Direct,0,MaxId*sizeof(GData*));
 	UsedId=0;
 	Loaded=false;
@@ -205,7 +205,7 @@ unsigned int GDict::GetNbDatas(GInfoType type) const throw(GException)
 //------------------------------------------------------------------------------
 bool GDict::IsIn(const RString& name) const
 {
-	return(RDblHashContainer<GData,unsigned,27,27,true>::IsIn<const RString>(name));
+	return(RDblHashContainer<GData,27,27,true>::IsIn<const RString>(name));
 }
 
 

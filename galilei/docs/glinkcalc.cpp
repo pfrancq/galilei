@@ -6,7 +6,7 @@
 
 	Generic Link Method - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be)
@@ -52,7 +52,7 @@ using namespace R;
 GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(std::bad_alloc)
 	: GPlugin<GFactoryLinkCalc>(fac), Session(0), Links_Out(0)
 {
-	Links_Out = new RContainer<GLinks,unsigned int,true,true> (100,50);
+	Links_Out = new RContainer<GLinks,true,true> (100,50);
 	Inited=false;
 }
 

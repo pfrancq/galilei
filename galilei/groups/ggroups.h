@@ -6,7 +6,7 @@
 
 	Groups - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Session Groups.
 */
-class GGroups : protected R::RContainer<GGroup,unsigned int,true,true>
+class GGroups : protected R::RContainer<GGroup,true,true>
 {
 protected:
 
@@ -63,12 +63,12 @@ protected:
 	/**
 	* Groups ordered by language and identificator.
 	*/
-	R::RContainer<GGroupsLang,unsigned int,true,true> GroupsLang;
+	R::RContainer<GGroupsLang,true,true> GroupsLang;
 
 	/**
 	* List of all "free" identificators that could be used for a group.
 	*/
-	R::RContainer<GFreeId,unsigned int,true,true> FreeIds;
+	R::RContainer<GFreeId,true,true> FreeIds;
 
 public:
 

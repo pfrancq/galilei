@@ -6,7 +6,7 @@
 
 	List of SubProfiles for a given Language - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -61,7 +61,7 @@ class GProfilesSims
 	/**
 	* Similarities.
 	*/
-	R::RContainer<GProfilesSim,unsigned int,true,true> Sims;
+	R::RContainer<GProfilesSim,true,true> Sims;
 
 	/**
 	* Session managing the (sub)profiles and the documents.

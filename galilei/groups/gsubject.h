@@ -6,7 +6,7 @@
 
 	Subject - Header.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be)
@@ -78,7 +78,7 @@ protected:
 	/**
 	* Documents in the subject.
 	*/
-	R::RContainer<GDoc,unsigned,false,true> Docs;
+	R::RContainer<GDoc,false,true> Docs;
 
 public:
 
@@ -175,7 +175,7 @@ public:
 * The GSubjectCursor class provides a way to go trough a set of subjects.
 * @short Subject Cursor
 */
-CLASSCURSOR(GSubjectCursor,GSubject,unsigned int);
+CLASSCURSOR(GSubjectCursor,GSubject);
 
 
 

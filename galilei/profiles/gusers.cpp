@@ -6,7 +6,7 @@
 
 	Users - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -51,7 +51,7 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 // Set of subprofiles of a given language.
-class GUsers::GSubProfiles : public R::RContainer<GSubProfile,unsigned int,true,true>
+class GUsers::GSubProfiles : public R::RContainer<GSubProfile,true,true>
 {
 public:
 
@@ -59,7 +59,7 @@ public:
 
 	// Constructor and Compare methods.
 	GSubProfiles(GLang* lang,unsigned int s) throw(std::bad_alloc)
-		: RContainer<GSubProfile,unsigned int,true,true>(s,s/2), Lang(lang) {}
+		: RContainer<GSubProfile,true,true>(s,s/2), Lang(lang) {}
 	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
 	int Compare(const GSubProfiles& s) const {return(Lang->Compare(s.Lang));}
 	int Compare(const GSubProfiles* s) const {return(Lang->Compare(s->Lang));}
@@ -89,9 +89,9 @@ GSubProfileCursor GUsers::GSubProfiles::GetSubProfilesCursor(void)
 
 //------------------------------------------------------------------------------
 GUsers::GUsers(unsigned int u,unsigned int p) throw(std::bad_alloc)
-	: RContainer<GUser,unsigned,true,true>(u,u/2),
-	  Profiles(new RContainer<GProfile,unsigned int,true,true>(p,p/2)),
-	  SubProfiles(new RContainer<GSubProfiles,unsigned int,true,true>(p,p/2))
+	: RContainer<GUser,true,true>(u,u/2),
+	  Profiles(new RContainer<GProfile,true,true>(p,p/2)),
+	  SubProfiles(new RContainer<GSubProfiles,true,true>(p,p/2))
 {
 }
 
@@ -122,7 +122,7 @@ GUser* GUsers::GetUser(unsigned int id) const
 unsigned int GUsers::GetNewId(tObjType obj) throw(GException)
 {
 	unsigned int id,i;
-	RCursor<GSubProfiles,unsigned int> Cur;
+	RCursor<GSubProfiles> Cur;
 
 	switch(obj)
 	{
@@ -206,7 +206,7 @@ void GUsers::InsertSubProfile(GSubProfile* s) throw(std::bad_alloc,GException)
 //------------------------------------------------------------------------------
 GSubProfile* GUsers::GetSubProfile(const unsigned int id) const throw(GException)
 {
-	RCursor<GSubProfiles,unsigned int> Cur;
+	RCursor<GSubProfiles> Cur;
 	GSubProfile* ptr;
 
 	Cur.Set(*SubProfiles);
@@ -241,7 +241,7 @@ GSubProfileCursor GUsers::GetSubProfilesCursor(GLang* lang) throw(GException)
 //------------------------------------------------------------------------------
 void GUsers::ClearSubProfilesGroups(void) throw(GException)
 {
-	RCursor<GSubProfiles,unsigned int> Cur;
+	RCursor<GSubProfiles> Cur;
 	GSubProfileCursor Cur2;
 
 	Cur.Set(*SubProfiles);

@@ -6,7 +6,7 @@
 
 	List of words - Implementation.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be)
@@ -52,20 +52,20 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GWordList::GWordList(unsigned int id,const RString& name) throw(std::bad_alloc)
-	: GData(id,name,infoWordList), RContainer<GWord,unsigned,false,true>(2)
+	: GData(id,name,infoWordList), RContainer<GWord,false,true>(2)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GWordList::GWordList(const GWordList& list) throw(std::bad_alloc)
-	: GData(list), RContainer<GWord,unsigned,false,true>(list)
+	: GData(list), RContainer<GWord,false,true>(list)
 {
 }
 
 //------------------------------------------------------------------------------
 GWordList::GWordList(const GWordList* list) throw(std::bad_alloc)
-	: GData(list), RContainer<GWord,unsigned,false,true>(list)
+	: GData(list), RContainer<GWord,false,true>(list)
 {
 }
 

@@ -6,7 +6,7 @@
 
 	Subjects - Implementation.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -431,7 +431,7 @@ void GSubjects::ComputeTotal(void)
 		if((!NbRows)||(!NbCols)) continue;
 
 		// Construction of the container for relation between id and column in the matrix.
-		RContainer<GGroupId,unsigned int,true,true> GroupsId(NbCols,NbCols/2);
+		RContainer<GGroupId,true,true> GroupsId(NbCols,NbCols/2);
 		for(GroupsComputed.Start(),col=0;!GroupsComputed.End();GroupsComputed.Next())
 			GroupsId.InsertPtr(new GGroupId((GroupsComputed())->GetId(),col++));
 

@@ -6,7 +6,7 @@
 
 	Weighted information entity - Header.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -194,7 +194,7 @@ public:
 * weighted information entities.
 * @short Weighted Information Entity Cursor.
 */
-CLASSCURSOR(GWeightInfoCursor,GWeightInfo,unsigned int);
+CLASSCURSOR(GWeightInfoCursor,GWeightInfo);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -6,7 +6,7 @@
 
 	Profile's Assessment on a document - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -202,7 +202,7 @@ public:
 * The GProfDocCursor class provides a way to go trough a set of feedbacks.
 * @short Feedbacks Cursor
 */
-CLASSCURSOR(GProfDocCursor,GProfDoc,unsigned int);
+CLASSCURSOR(GProfDocCursor,GProfDoc);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

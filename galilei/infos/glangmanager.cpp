@@ -6,7 +6,7 @@
 
 	Manager for language plugins - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,7 +52,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GLangManager::GLangManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-  : RContainer<GFactoryLang,unsigned,true,true>(10,5)
+  : RContainer<GFactoryLang,true,true>(10,5)
 {
 
 	RString Path(path);

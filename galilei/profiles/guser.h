@@ -6,7 +6,7 @@
 
 	User - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short User.
 */
-class GUser : public R::RContainer<GProfile,unsigned,false,true>
+class GUser : public R::RContainer<GProfile,false,true>
 {
 	/**
 	* Identificator of the user.
@@ -139,7 +139,7 @@ public:
 * The GUserCursor class provides a way to go trough a set of users.
 * @short users Cursor
 */
-CLASSCURSOR(GUserCursor,GUser,unsigned int);
+CLASSCURSOR(GUserCursor,GUser);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

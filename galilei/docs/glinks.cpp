@@ -5,7 +5,7 @@
 
 	List of Links - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be))
@@ -46,7 +46,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GLinks::GLinks(GDoc* d) throw(std::bad_alloc, GException)
-	: RContainer<GLink,unsigned int,false,true>(3,2), Doc(d)
+	: RContainer<GLink,false,true>(3,2), Doc(d)
 {
 	if(!d)
 		throw GException("Document cannot be null for a list of links");

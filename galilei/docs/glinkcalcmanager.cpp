@@ -6,7 +6,7 @@
 
 	Link Methods Manager - Implementation.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be).
@@ -51,7 +51,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GLinkCalcManager::GLinkCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryLinkCalc,unsigned int,true,true>(10,5), Current(0)
+	: RContainer<GFactoryLinkCalc,true,true>(10,5), Current(0)
 {
 	RString Path(path);
 	Path+="/linking";

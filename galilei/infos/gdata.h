@@ -6,7 +6,7 @@
 
 	Generic data - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -322,7 +322,7 @@ public:
 * The GDataCursor class provides a way to go trough a vector of words.
 * @short Word Cursor
 */
-CLASSCURSOR(GDataCursor,GData,unsigned int);
+CLASSCURSOR(GDataCursor,GData);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

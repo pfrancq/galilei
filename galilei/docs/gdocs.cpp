@@ -6,7 +6,7 @@
 
 	Documents managed by a session - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -47,13 +47,13 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GDocs::GDocsLang : public R::RContainer<GDoc,unsigned int,false,true>
+class GDocs::GDocsLang : public R::RContainer<GDoc,false,true>
 {
 public:
 	GLang* Lang;
 
 	GDocsLang(GLang* lang) throw(std::bad_alloc)
-		: RContainer<GDoc,unsigned int,false,true>(10000,5000), Lang(lang) {}
+		: RContainer<GDoc,false,true>(10000,5000), Lang(lang) {}
 	int Compare(const GDocsLang* docLang) const;
 	int Compare(const GLang* lang) const;
 	virtual ~GDocsLang(void) {}
@@ -115,7 +115,7 @@ public:
 
 //-----------------------------------------------------------------------------
 GDocs::GDocs(unsigned int nb) throw(std::bad_alloc)
-	: RContainer<GDoc,unsigned int,true,true>(nb+(nb/2),nb/2), DocsLang(2,1),
+	: RContainer<GDoc,true,true>(nb+(nb/2),nb/2), DocsLang(2,1),
 	  DocsRefUrl(nb+(nb/2),nb/2)
 {
 }
@@ -232,7 +232,7 @@ void GDocs::Clear(void)
 {
 	DocsLang.Clear();
 	DocsRefUrl.Clear();
-	R::RContainer<GDoc,unsigned int,true,true>::Clear();
+	R::RContainer<GDoc,true,true>::Clear();
 }
 
 

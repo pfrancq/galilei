@@ -6,7 +6,7 @@
 
 	Word (or stem) - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -104,7 +104,7 @@ public:
 * The GWordCursor class provides a way to go trough a vector of words.
 * @short Word Cursor
 */
-CLASSCURSOR(GWordCursor,GWord,unsigned int);
+CLASSCURSOR(GWordCursor,GWord);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

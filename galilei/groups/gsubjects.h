@@ -6,7 +6,7 @@
 
 	Subjects - Header.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -70,7 +70,7 @@ protected:
 	// Internal Classes
 	class GroupScore;
 	class GGroupId;
-	CLASSCURSOR(GroupScoreCursor,GroupScore,unsigned int);
+	CLASSCURSOR(GroupScoreCursor,GroupScore);
 
 	/**
 	* Session.
@@ -136,12 +136,12 @@ protected:
 	/**
 	* New documents to assess.
 	*/
-	R::RContainer<GProfDoc,unsigned,false,false> NewDocs;
+	R::RContainer<GProfDoc,false,false> NewDocs;
 
 	/**
 	* Lastest added subprofiles.
 	*/
-	R::RContainer<GSubProfile,unsigned int,false,true> LastAdded;
+	R::RContainer<GSubProfile,false,true> LastAdded;
 
 	/**
 	* Number of documents to be assessed during a feeddback process.
@@ -176,7 +176,7 @@ protected:
 	/**
 	* SubProfiles that where changed and must be grouped again.
 	*/
-	R::RContainer<GroupScore,unsigned int,true,true> GroupsScore;
+	R::RContainer<GroupScore,true,true> GroupsScore;
 
 public:
 
@@ -253,14 +253,14 @@ public:
 
 	/**
 	* Add profiles of a new not used topic.
-	* @param Save           Save the results.
+	* @param Save      Save the results.
 	* @return true if a not used topic was found.
 	*/
 	bool AddTopic(bool Save) throw(std::bad_alloc);
 
 	/**
 	* Add judgements for some new not used profiles.
-	* @param Save           Save the results.
+	* @param Save      Save the results.
 	* @return Number of profiles created.
 	*/
 	unsigned int AddProfiles(bool Save) throw(std::bad_alloc);
@@ -323,7 +323,7 @@ public:
 
 	/**
 	* Get the ideal groups of the session
-	* @return Pointer to R::RContainer<GGroups,unsigned int,true,true>.
+	* @return Pointer to R::RContainer<GGroups,true,true>.
 	*/
 	GGroups* GetIdealGroups(void);
 

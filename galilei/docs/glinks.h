@@ -5,7 +5,7 @@
 
 	List of Links - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be)
@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short List of Links.
 */
-class GLinks : public R::RContainer<GLink,unsigned,false,true>
+class GLinks : public R::RContainer<GLink,false,true>
 {
 protected:
 
@@ -122,7 +122,7 @@ public:
 * The GLinksCursor class provides a way to go trough a set of links.
 * @short Links Cursor
 */
-CLASSCURSOR(GLinksCursor,GLinks,unsigned int);
+CLASSCURSOR(GLinksCursor,GLinks);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

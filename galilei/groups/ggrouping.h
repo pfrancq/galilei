@@ -6,7 +6,7 @@
 
 	Generic Grouping Method - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -80,7 +80,7 @@ protected:
 	/**
 	* SubProfiles that must be grouped.
 	*/
-	R::RContainer<GSubProfile,unsigned int,false,true> SubProfiles;
+	R::RContainer<GSubProfile,false,true> SubProfiles;
 
 	/**
 	* Should the method starts from the current clustering.
@@ -246,7 +246,7 @@ extern "C"                                                                      
 * factories.
 * @short Grouping Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryGroupingCursor,GFactoryGrouping,unsigned int);
+CLASSCURSOR(GFactoryGroupingCursor,GFactoryGrouping);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

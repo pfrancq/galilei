@@ -6,7 +6,7 @@
 
 	Link Methods Manager - Header.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short Link Methods Manager.
 */
-class GLinkCalcManager : public R::RContainer<GFactoryLinkCalc,unsigned int,true,true>
+class GLinkCalcManager : public R::RContainer<GFactoryLinkCalc,true,true>
 {
 	/**
 	* Method currently selected.

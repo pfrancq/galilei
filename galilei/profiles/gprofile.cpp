@@ -6,7 +6,7 @@
 
 	Profile - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -51,7 +51,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GProfile::GProfile(GUser *usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf) throw(std::bad_alloc)
-  : RContainer<GSubProfile,unsigned,false,true>(nb,nb/2), User(usr),Id(id),Name(name),
+  : RContainer<GSubProfile,false,true>(nb,nb/2), User(usr),Id(id),Name(name),
     Fdbks(nbf+nbf/2,nbf/2), Social(s)
 {
 	User->InsertPtr(this);

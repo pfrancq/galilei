@@ -6,7 +6,7 @@
 
 	Agreement and DisAgreement Ratios for subprofiles - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -79,13 +79,13 @@ public:
 
 //------------------------------------------------------------------------------
 // Class representing all the ratios for a given subprofile.
-class GBehaviours : public R::RContainer<GBehaviour,unsigned int,true,false>
+class GBehaviours : public R::RContainer<GBehaviour,true,false>
 {
 public:
 	unsigned int SubId;         // Identifier of the first profile
 
 	GBehaviours(unsigned int id,unsigned int max) throw(std::bad_alloc)
-		: RContainer<GBehaviour,unsigned int,true,false>(max,max/2), SubId(id) {}
+		: RContainer<GBehaviour,true,false>(max,max/2), SubId(id) {}
 	int Compare(const GBehaviours* b) const {return(SubId-b->SubId);}
 	int Compare(const unsigned int id) const {return(SubId-id);}
 };
@@ -104,14 +104,14 @@ class GProfilesBehaviours::GProfilesBehaviour
 {
 public:
 
-	R::RContainer<GBehaviours,unsigned int,true,false>* Behaviours;     // Ratios
+	R::RContainer<GBehaviours,true,false>* Behaviours;     // Ratios
 	GLang* Lang;                                                        // Language.
 	unsigned int NbModified;                                            // Number of modified subprofiles
 	unsigned int MinSameDocs;                                           // Minimum number fo documents for Agreement
 	unsigned int MinDiffDocs;                                           // Minimum number fo documents for Disagreement
 	GProfilesBehaviours* Manager;                                       //manger
 	// Identificators of modified profiles
-	RContainer<GSubProfile,unsigned int,false,true>* ModifiedProfs;
+	RContainer<GSubProfile,false,true>* ModifiedProfs;
 
 	// Constructor and Compare methods.
 	GProfilesBehaviour(GProfilesBehaviours* manager,GSubProfileCursor s,GLang* lang, unsigned int minsamedocs, unsigned int mindiffdocs) throw(std::bad_alloc);
@@ -156,10 +156,10 @@ GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GProfilesBehaviours*
 	for (s.Start(), i=0; !s.End(); s.Next())
 		if (s()->GetProfile()->GetId()>i)
 			i=s()->GetProfile()->GetId();
-	Behaviours=new RContainer<GBehaviours,unsigned int,true,false>(i+1,1);
+	Behaviours=new RContainer<GBehaviours,true,false>(i+1,1);
 
 	//initialize table of modified subprofiles;
-	ModifiedProfs=new RContainer<GSubProfile,unsigned int,false,true>(5,1);
+	ModifiedProfs=new RContainer<GSubProfile,false,true>(5,1);
 
 	//builds the left inferior triangular matrix.
 	Cur1=s;
@@ -320,8 +320,9 @@ void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(std::bad_alloc
 					AnalyseBehaviour(behaviours, subscur(), subscur2());
 			}
 		}
-		for (behaviours->Start(); !behaviours->End(); behaviours->Next())
-				(*behaviours)()->State=osModified;
+		RCursor<GBehaviour> Cur(behaviours);
+		for(Cur.Start();!Cur.End();Cur.Next())
+				Cur()->State=osModified;
 	}
 
 	//reset the number of modified subprofiles.

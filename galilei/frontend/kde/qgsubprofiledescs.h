@@ -89,7 +89,7 @@ class QGSubProfileDescs : public QWidget
 	/**
 	* Container of subprofile's widget.
 	*/
-	R::RContainer<QGSubProfileDesc,unsigned int,true,false> SubProfilesDesc;
+	R::RContainer<QGSubProfileDesc,true,false> SubProfilesDesc;
 
 	/**
 	* Current SubProfile showed.

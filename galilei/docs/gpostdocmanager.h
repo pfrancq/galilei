@@ -6,7 +6,7 @@
 
 	Documents Post-Analysis Methods Manager - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Documents Post-Analysis Methods Manager.
 */
-class GPostDocManager : public R::RContainer<GFactoryPostDoc,unsigned int,true,true>
+class GPostDocManager : public R::RContainer<GFactoryPostDoc,true,true>
 {
 public:
 

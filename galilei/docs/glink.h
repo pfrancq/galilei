@@ -5,7 +5,7 @@
 
 	Link - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors
 		 Vandaele valery(vavdaele@ulb.ac.be)
@@ -164,7 +164,7 @@ public :
 * The GLinkCursor class provides a way to go trough a set of links.
 * @short Link Cursor
 */
-CLASSCURSOR(GLinkCursor,GLink,unsigned int);
+CLASSCURSOR(GLinkCursor,GLink);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

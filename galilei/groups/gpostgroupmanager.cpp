@@ -6,7 +6,7 @@
 
 	Post-Group Computing Methods Manager- Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be).
@@ -52,7 +52,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryPostGroup,unsigned int,true,true>(10,5)
+	: RContainer<GFactoryPostGroup,true,true>(10,5)
 {
 	RString Path(path);
 	Path+="/postgroups";

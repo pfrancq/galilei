@@ -6,7 +6,7 @@
 
 	Profile Computing Methods Manager - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Profile Computing Methods Manager.
 */
-class GProfileCalcManager : public R::RContainer<GFactoryProfileCalc,unsigned int,true,true>
+class GProfileCalcManager : public R::RContainer<GFactoryProfileCalc,true,true>
 {
 	/**
 	* Method currently selected.

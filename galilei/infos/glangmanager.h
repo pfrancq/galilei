@@ -6,7 +6,7 @@
 
 	Manager for language plugins - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Languages.
 */
-class GLangManager : public R::RContainer<GFactoryLang,unsigned,true,true>
+class GLangManager : public R::RContainer<GFactoryLang,true,true>
 {
 public:
 

@@ -6,7 +6,7 @@
 
 	Set of parameters - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Set of Parameters.
 */
-class GParams : public R::RContainer<GParam,unsigned int,true,true>
+class GParams : public R::RContainer<GParam,true,true>
 {
 protected:
 

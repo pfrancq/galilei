@@ -6,7 +6,7 @@
 
 	Generic Group Computing Method - Header.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -205,7 +205,7 @@ extern "C"                                                                      
 * factories.
 * @short Groups Computing Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryGroupCalcCursor,GFactoryGroupCalc,unsigned int);
+CLASSCURSOR(GFactoryGroupCalcCursor,GFactoryGroupCalc);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -6,7 +6,7 @@
 
 	Profile Computing Methods Manager - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,7 +52,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GProfileCalcManager::GProfileCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryProfileCalc,unsigned int,true,true>(10,5), Current(0)
+	: RContainer<GFactoryProfileCalc,true,true>(10,5), Current(0)
 {
 	RString Path(path);
 	Path+="/profiling";

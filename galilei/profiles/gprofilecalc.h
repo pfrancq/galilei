@@ -6,7 +6,7 @@
 
 	Generic Profile Computing Method - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -200,7 +200,7 @@ extern "C"                                                                      
 * factories.
 * @short Profiles Computing Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryProfileCalcCursor,GFactoryProfileCalc,unsigned int);
+CLASSCURSOR(GFactoryProfileCalcCursor,GFactoryProfileCalc);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

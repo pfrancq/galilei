@@ -6,7 +6,7 @@
 
 	Generic filter manager handling URL - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -106,7 +106,7 @@ public:
 
 //------------------------------------------------------------------------------
 GFilterManager::GFilterManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: R::RContainer<GFactoryFilter,unsigned int,true,true>(10,5), MIMES(50,25),
+	: R::RContainer<GFactoryFilter,true,true>(10,5), MIMES(50,25),
 	  Exts(50,25)
 {
 	RString Path(path);
@@ -151,7 +151,7 @@ void GFilterManager::Download(const char*,RString&) throw(GException)
 //------------------------------------------------------------------------------
 const char* GFilterManager::DetermineMIMEType(const char* tmpfile) throw(GException)
 {
-	RCursor<GMIMEExt,unsigned int> Cur(Exts);
+	RCursor<GMIMEExt> Cur(Exts);
 
 	// Go through each extension
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -258,7 +258,7 @@ void GFilterManager::AddMIME(const char* mime,GFilter* f) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GFilterManager::DelMIMES(GFilter* f)
 {
-	RContainer<GMIMEFilter,unsigned int,false,false> Rem(5,5);
+	RContainer<GMIMEFilter,false,false> Rem(5,5);
 
 	// Find All MIMES types to deleted
 	for(MIMES.Start();!MIMES.End();MIMES.Next())

@@ -6,7 +6,7 @@
 
 	Grouping Methods Manager - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Grouping Methods Manager.
 */
-class GGroupingManager : public R::RContainer<GFactoryGrouping,unsigned int,true,true>
+class GGroupingManager : public R::RContainer<GFactoryGrouping,true,true>
 {
 	/**
 	* Method currently selected.

@@ -6,7 +6,7 @@
 
 	Generic Documents Post-Analysis Method - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors
 		 Kumps Nicolas (nkumps@ulb.ac.be)
@@ -199,7 +199,7 @@ extern "C"                                                                      
 * factories of documets post-analysis methods.
 * @short Documents Post-Analysis Factories Cursor
 */
-CLASSCURSOR(GFactoryPostDocCursor,GFactoryPostDoc,unsigned int);
+CLASSCURSOR(GFactoryPostDocCursor,GFactoryPostDoc);
 
 
 //------------------------------------------------------------------------------

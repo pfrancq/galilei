@@ -6,7 +6,7 @@
 
 	Sstatistics Methods Manager - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Statistics Methods Manager.
 */
-class GStatsCalcManager : public R::RContainer<GFactoryStatsCalc,unsigned int,true,true>
+class GStatsCalcManager : public R::RContainer<GFactoryStatsCalc,true,true>
 {
 public:
 

@@ -6,7 +6,7 @@
 
 	Dictionary - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -53,7 +53,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Dictionary.
 */
-class GDict : protected R::RDblHashContainer<GData,unsigned,27,27,true>
+class GDict : protected R::RDblHashContainer<GData,27,27,true>
 {
 	class GDataTypes;
 
@@ -118,7 +118,7 @@ private :
 	/**
 	* Set of containers where the data are categorized by information type.
 	*/
-	R::RContainer<GDataTypes,unsigned int,true,true> DataTypes;
+	R::RContainer<GDataTypes,true,true> DataTypes;
 
 public:
 

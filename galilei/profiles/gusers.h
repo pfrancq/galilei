@@ -6,7 +6,7 @@
 
 	Users - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Users.
 */
-class GUsers : public R::RContainer<GUser,unsigned,true,true>
+class GUsers : public R::RContainer<GUser,true,true>
 {
 	// Internal class
 	class GSubProfiles;
@@ -59,12 +59,12 @@ class GUsers : public R::RContainer<GUser,unsigned,true,true>
 	/**
 	* Profiles handled by the system.
 	*/
-	std::auto_ptr< R::RContainer<GProfile,unsigned int,true,true> > Profiles;
+	std::auto_ptr< R::RContainer<GProfile,true,true> > Profiles;
 
 	/**
 	* SubProfiles handled by the system.
 	*/
-	std::auto_ptr< R::RContainer<GSubProfiles,unsigned int,true,true> > SubProfiles;
+	std::auto_ptr< R::RContainer<GSubProfiles,true,true> > SubProfiles;
 
 public:
 

@@ -6,7 +6,7 @@
 
 	Generic Document Analysis - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -98,7 +98,7 @@ public:
 	* @param doc            Corresponding document.
 	* @param tmpDocs        Container that will hold the added docs.
 	*/
-	virtual void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,unsigned int,false,true>* tmpDocs=0) throw(GException)=0;
+	virtual void Analyse(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,false,true>* tmpDocs=0) throw(GException)=0;
 
 	/**
 	* Update the feedbacks of the profiles and subprofiles.
@@ -213,7 +213,7 @@ extern "C"                                                                      
 * factories of document analysis method.
 * @short Document Analysis Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryDocAnalyseCursor,GFactoryDocAnalyse,unsigned int);
+CLASSCURSOR(GFactoryDocAnalyseCursor,GFactoryDocAnalyse);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

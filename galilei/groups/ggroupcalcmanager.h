@@ -6,7 +6,7 @@
 
 	Group Comuting Methods Manager - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Group Comuting Methods Manager.
 */
-class GGroupCalcManager : public R::RContainer<GFactoryGroupCalc,unsigned int,true,true>
+class GGroupCalcManager : public R::RContainer<GFactoryGroupCalc,true,true>
 {
 	/**
 	* Method currently selected.

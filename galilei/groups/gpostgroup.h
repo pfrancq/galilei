@@ -6,10 +6,10 @@
 
 	Generic Post-Group Computing Method - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
-		Vandaele Vaélery(vavdaele@ulb.ac.be).
+		Vandaele Vaï¿½ery(vavdaele@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -198,7 +198,7 @@ extern "C"                                                                      
 * factories.
 * @short Post Groups Computing Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryPostGroupCursor,GFactoryPostGroup,unsigned int);
+CLASSCURSOR(GFactoryPostGroupCursor,GFactoryPostGroup);
 
 
 //------------------------------------------------------------------------------

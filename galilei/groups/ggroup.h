@@ -6,7 +6,7 @@
 
 	Group - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Group.
 */
-class GGroup : protected R::RContainer<GSubProfile,unsigned int,false,true>
+class GGroup : protected R::RContainer<GSubProfile,false,true>
 {
 protected:
 
@@ -247,7 +247,7 @@ public:
 	* @param docs           Documents not assessed.
 	* @param s              Subprofile.
 	*/
-	void NotJudgedDocsList(R::RContainer<GProfDoc,unsigned,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc);
+	void NotJudgedDocsList(R::RContainer<GProfDoc,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc);
 
 	/**
 	* Construct the list of all relevant documents of the subprofiles of a
@@ -258,7 +258,7 @@ public:
 	* @param session        Session.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(R::RContainer<GProfDoc,unsigned,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc);
+	void NotJudgedDocsRelList(R::RContainer<GProfDoc,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc);
 
 	/**
 	* Compute the relevant subprofile, i.e. the subprofiles whith the highest
@@ -341,7 +341,7 @@ public:
 * The GGroupCursor class provides a way to go trough a set of group.
 * @short Group Cursor.
 */
-CLASSCURSOR(GGroupCursor,GGroup,unsigned int);
+CLASSCURSOR(GGroupCursor,GGroup);
 
 
 

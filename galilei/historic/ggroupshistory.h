@@ -6,7 +6,7 @@
 
 	History of Groups for a given language - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author David Wartel
 * @short Histories of Subprofiles Groupment.
 */
-class GGroupsHistoryManager : public R::RContainer<GGroupsHistory,unsigned int,true,true>
+class GGroupsHistoryManager : public R::RContainer<GGroupsHistory,true,true>
 {
 public :
 
@@ -109,7 +109,7 @@ public :
 * @author David Wartel
 * @short History of a Subprofiles Groupment.
 */
-class GGroupsHistory : public R::RContainer<GGroupHistory,unsigned int,true,true>
+class GGroupsHistory : public R::RContainer<GGroupHistory,true,true>
 {
 	/**
 	* Identificator of the history.
@@ -216,7 +216,7 @@ public :
 * The GGroupCursor class provides a way to go trough a set of group.
 * @short Group Cursor.
 */
-CLASSCURSOR(GGroupsHistoryCursor,GGroupsHistory,unsigned int);
+CLASSCURSOR(GGroupsHistoryCursor,GGroupsHistory);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

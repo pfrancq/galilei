@@ -6,7 +6,7 @@
 
 	Generic Filter for documents - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -256,7 +256,7 @@ extern "C"                                                                      
 * of filters.
 * @short Filters Factories Cursor
 */
-CLASSCURSOR(GFactoryFilterCursor,GFactoryFilter,unsigned int);
+CLASSCURSOR(GFactoryFilterCursor,GFactoryFilter);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -6,7 +6,7 @@
 
 	Program running a Session object  - Implementation.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -81,7 +81,7 @@ class GSetRandI : public GSM
 {
 public:
 	GSetRandI(GPrgClassSession* o) : GSM("SetRand",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 //------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ class GOutputI : public GSM
 {
 public:
 	GOutputI(GPrgClassSession* o) : GSM("SetOutput",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -98,7 +98,7 @@ class GGOutputI : public GSM
 {
 public:
 	GGOutputI(GPrgClassSession* o) : GSM("SetGraphOutput",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -107,7 +107,7 @@ class GSOutputI : public GSM
 {
 public:
 	GSOutputI(GPrgClassSession* o) : GSM("SetStatsOutput",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -116,7 +116,7 @@ class GSetLinksMethodI : public GSM
 {
 public:
 	GSetLinksMethodI(GPrgClassSession* o) : GSM("SetLinksMethod",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -125,7 +125,7 @@ class GSetAutoSaveI : public GSM
 {
 public:
 	GSetAutoSaveI(GPrgClassSession* o) : GSM("SetAutoSave",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 //------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ class GSetAutoSaveLinksI : public GSM
 {
 public:
 	GSetAutoSaveLinksI(GPrgClassSession* o) : GSM("SetAutoSaveLinks",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -142,7 +142,7 @@ class GSetSaveGroupsHistoryl : public GSM
 {
 public:
 	GSetSaveGroupsHistoryl(GPrgClassSession* o) : GSM("SetSaveGroupsHistory",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -151,7 +151,7 @@ class GSetSaveProfilesHistoryl : public GSM
 {
 public:
 	GSetSaveProfilesHistoryl(GPrgClassSession* o) : GSM("SetSaveProfilesHistory",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -160,7 +160,7 @@ class GTestI : public GSM
 {
 public:
 	GTestI(GPrgClassSession* o) : GSM("Test",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -169,7 +169,7 @@ class GLogI : public GSM
 {
 public:
 	GLogI(GPrgClassSession* o) : GSM("Log",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -178,7 +178,7 @@ class GSqlI : public GSM
 {
 public:
 	GSqlI(GPrgClassSession* o) : GSM("ExecSql",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -187,7 +187,7 @@ class GModifyProfilesI : public GSM
 {
 public:
 	GModifyProfilesI(GPrgClassSession* o) : GSM("ModifyProfiles",o) {}
-	virtual void Run(R::RPrg*,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg*,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -196,7 +196,7 @@ class GComputeProfilesI : public GSM
 {
 public:
 	GComputeProfilesI(GPrgClassSession* o) : GSM("ComputeProfiles",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -205,7 +205,7 @@ class GGroupProfilesI : public GSM
 {
 public:
 	GGroupProfilesI(GPrgClassSession* o) : GSM("GroupProfiles",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 //------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ class GCreateIdealI : public GSM
 {
 public:
 	GCreateIdealI(GPrgClassSession* o) : GSM("CreateIdeal",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -222,7 +222,7 @@ class GMixIdealI : public GSM
 {
 public:
 	GMixIdealI(GPrgClassSession* o) : GSM("MixIdeal",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -231,7 +231,7 @@ class GFdbksCycleI : public GSM
 {
 public:
 	GFdbksCycleI(GPrgClassSession* o) : GSM("FdbksCycle",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -240,7 +240,7 @@ class GCompareIdealI : public GSM
 {
 public:
 	GCompareIdealI(GPrgClassSession* o) : GSM("CompareIdeal",o) {}
-	virtual void Run(R::RPrg*,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg*,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -249,7 +249,7 @@ class GSetSubjectsParamI : public GSM
 {
 public:
 	GSetSubjectsParamI(GPrgClassSession* o) : GSM("SetSubjectsParam",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -258,7 +258,7 @@ class GSetComputingParamI : public GSM
 {
 public:
 	GSetComputingParamI(GPrgClassSession* o) : GSM("SetComputingParam",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -267,7 +267,7 @@ class GSetGroupingParamI : public GSM
 {
 public:
 	GSetGroupingParamI(GPrgClassSession* o) : GSM("SetGroupingParam",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -276,7 +276,7 @@ class GAddIdealI : public GSM
 {
 public:
 	GAddIdealI(GPrgClassSession* o) : GSM("AddIdeal",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -285,7 +285,7 @@ class GAddProfilesI : public GSM
 {
 public:
 	GAddProfilesI(GPrgClassSession* o) : GSM("AddProfiles",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -297,7 +297,7 @@ class GRealLifeI : public GSM
 	void CommonTasks(R::RPrgOutput* o) throw(RException);
 public:
 	GRealLifeI(GPrgClassSession* o) : GSM("RealLife",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -306,7 +306,7 @@ class GAddAssessmentsI : public GSM
 {
 public:
 	GAddAssessmentsI(GPrgClassSession* o) : GSM("AddAssessments",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -315,7 +315,7 @@ class GTrackNewProfilesI : public GSM
 {
 public:
 	GTrackNewProfilesI(GPrgClassSession* o) : GSM("TrackNewProfiles",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -324,7 +324,7 @@ class GClearNewProfilesI : public GSM
 {
 public:
 	GClearNewProfilesI(GPrgClassSession* o) : GSM("ClearNewProfiles",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -333,7 +333,7 @@ class GStoreInHistoryI : public GSM
 {
 public:
 	GStoreInHistoryI(GPrgClassSession* o) : GSM("StoreInHistory",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -342,7 +342,7 @@ class GResetTimeI : public GSM
 {
 public:
 	GResetTimeI(GPrgClassSession* o) : GSM("ResetTime",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -351,7 +351,7 @@ class GComputeTimeI : public GSM
 {
 public:
 	GComputeTimeI(GPrgClassSession* o) : GSM("ComputeTime",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,unsigned int,true,false>* args) throw(RException);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args) throw(RException);
 };
 
 
@@ -363,7 +363,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GSetRandI::Run(RPrg* prg,RPrgOutput* o,RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSetRandI::Run(RPrg* prg,RPrgOutput* o,RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	int Rand;
 
@@ -381,7 +381,7 @@ void GSetRandI::Run(RPrg* prg,RPrgOutput* o,RContainer<RPrgVar,unsigned int,true
 
 
 //------------------------------------------------------------------------------
-void GOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("A filename must be specified.");
@@ -404,7 +404,7 @@ void GOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int
 
 
 //------------------------------------------------------------------------------
-void GGOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GGOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("A filename must be specified.");
@@ -421,7 +421,7 @@ void GGOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned in
 
 
 //------------------------------------------------------------------------------
-void GSOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("A filename must be specified.");
@@ -438,7 +438,7 @@ void GSOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned in
 
 
 //------------------------------------------------------------------------------
-void GSetLinksMethodI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSetLinksMethodI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("The method needs one parameter to specify the name of the link computing method (or \"None\").");
@@ -450,7 +450,7 @@ void GSetLinksMethodI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsi
 
 
 //------------------------------------------------------------------------------
-void GSetAutoSaveI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSetAutoSaveI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the results must be stored.");
@@ -467,7 +467,7 @@ void GSetAutoSaveI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigne
 }
 
 //------------------------------------------------------------------------------
-void GSetAutoSaveLinksI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSetAutoSaveLinksI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the links results must be stored.");
@@ -485,7 +485,7 @@ void GSetAutoSaveLinksI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,un
 
 
 //------------------------------------------------------------------------------
-void GSetSaveGroupsHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSetSaveGroupsHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the results must be stored.");
@@ -503,7 +503,7 @@ void GSetSaveGroupsHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVa
 
 
 //------------------------------------------------------------------------------
-void GSetSaveProfilesHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSetSaveProfilesHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the results must be stored.");
@@ -520,7 +520,7 @@ void GSetSaveProfilesHistoryl::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrg
 }
 
 //------------------------------------------------------------------------------
-void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("The method needs the name of the test.");
@@ -533,7 +533,7 @@ void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,t
 
 
 //------------------------------------------------------------------------------
-void GLogI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GLogI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("The method needs the name of the log file.");
@@ -543,7 +543,7 @@ void GLogI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,tr
 
 
 //------------------------------------------------------------------------------
-void GSqlI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSqlI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("The method needs the name of the SQL file.");
@@ -554,7 +554,7 @@ void GSqlI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,tr
 
 
 //------------------------------------------------------------------------------
-void GModifyProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GModifyProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr)
 		throw RException("The method needs no parameters.");
@@ -564,7 +564,7 @@ void GModifyProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned
 
 
 //------------------------------------------------------------------------------
-void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr>1)
 		throw RException("The method needs maximum one parameter.");
@@ -586,7 +586,7 @@ void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,uns
 
 
 //------------------------------------------------------------------------------
-void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr>1)
 		throw RException("The method needs maximum one parameter.");
@@ -614,7 +614,7 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsig
 
 
 //------------------------------------------------------------------------------
-void GCreateIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GCreateIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr)
 		throw RException("Method needs no parameters.");
@@ -626,7 +626,7 @@ void GCreateIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned in
 
 
 //------------------------------------------------------------------------------
-void GMixIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GMixIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr>1)
 		throw RException("The method needs maximum one parameter.");
@@ -643,7 +643,7 @@ void GMixIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned i
 
 
 //------------------------------------------------------------------------------
-void GFdbksCycleI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GFdbksCycleI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr)
 		throw RException("Method needs no parameters.");
@@ -654,7 +654,7 @@ void GFdbksCycleI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int
 
 
 //------------------------------------------------------------------------------
-void GCompareIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GCompareIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr)
 		throw RException("Method needs no parameters.");
@@ -689,7 +689,7 @@ void GCompareIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned i
 
 
 //------------------------------------------------------------------------------
-void GSetSubjectsParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSetSubjectsParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=2)
 		throw RException("Method needs two parameters.");
@@ -698,7 +698,7 @@ void GSetSubjectsParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,unsi
 
 
 //------------------------------------------------------------------------------
-void GSetComputingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSetComputingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	GProfileCalc* calc;
 
@@ -712,7 +712,7 @@ void GSetComputingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,uns
 
 
 //------------------------------------------------------------------------------
-void GSetGroupingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GSetGroupingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	GGrouping* calc;
 
@@ -726,7 +726,7 @@ void GSetGroupingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,unsi
 
 
 //------------------------------------------------------------------------------
-void GAddIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GAddIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr)
 		throw RException("Method needs no parameters.");
@@ -737,7 +737,7 @@ void GAddIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,t
 
 
 //------------------------------------------------------------------------------
-void GAddProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GAddProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr)
 		throw RException("Method needs no parameters.");
@@ -774,7 +774,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o) throw(RException)
 	// Store History
 	if(History)
 	{
-		sprintf(tmp,"Store History n°%u",Owner->NbHistory);
+		sprintf(tmp,"Store History n%u",Owner->NbHistory);
 		o->WriteStr(tmp);
 		Owner->Session->GetStorage()->SaveMixedGroups(Owner->Session,Owner->NbHistory++);
 	}
@@ -795,7 +795,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o) throw(RException)
 
 
 //------------------------------------------------------------------------------
-void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	unsigned int MaxStep;
 	unsigned int MinFBStep;
@@ -910,7 +910,7 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned i
 
 
 //------------------------------------------------------------------------------
-void GAddAssessmentsI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GAddAssessmentsI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr)
 		throw RException("Method needs no parameters.");
@@ -921,7 +921,7 @@ void GAddAssessmentsI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned
 
 
 //------------------------------------------------------------------------------
-void GTrackNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GTrackNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr!=1)
 		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the profiles must be tracked.");
@@ -942,7 +942,7 @@ void GTrackNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,un
 
 
 //------------------------------------------------------------------------------
-void GClearNewProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GClearNewProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr)
 		throw RException("Method needs no parameter.");
@@ -952,11 +952,11 @@ void GClearNewProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsign
 
 
 //------------------------------------------------------------------------------
-void GStoreInHistoryI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GStoreInHistoryI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr)
 		throw RException("Method needs no parameter.");
-	sprintf(tmp,"Store History n°%u",Owner->NbHistory);
+	sprintf(tmp,"Store History n%u",Owner->NbHistory);
 	o->WriteStr(tmp);
 	Owner->Session->GetStorage()->SaveMixedGroups(Owner->Session,Owner->NbHistory, true);
 	Owner->Session->GetStorage()->SaveHistoricProfiles(Owner->Session,Owner->NbHistory++);
@@ -964,7 +964,7 @@ void GStoreInHistoryI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned
 
 
 //------------------------------------------------------------------------------
-void GResetTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GResetTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	if(args->NbPtr)
 		throw RException("Method needs no parameter.");
@@ -974,7 +974,7 @@ void GResetTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,
 
 
 //------------------------------------------------------------------------------
-void GComputeTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,unsigned int,true,false>* args) throw(RException)
+void GComputeTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
 	time_t end;
 	double cpu_time;

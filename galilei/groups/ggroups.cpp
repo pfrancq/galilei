@@ -6,7 +6,7 @@
 
 	Groups - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -71,7 +71,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GGroups::GGroupsLang : public R::RContainer<GGroup,unsigned int,false,true>
+class GGroups::GGroupsLang : public R::RContainer<GGroup,false,true>
 {
 public:
 
@@ -79,7 +79,7 @@ public:
 
 	// Constructor and Compare methods.
 	GGroupsLang(GLang* lang) throw(std::bad_alloc)
-		: RContainer<GGroup,unsigned int,false,true>(20,10), Lang(lang) {}
+		: RContainer<GGroup,false,true>(20,10), Lang(lang) {}
 	int Compare(const GGroupsLang* groups) const {return(Lang->Compare(groups->Lang));}
 	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
 
@@ -115,7 +115,7 @@ GGroup* GGroups::GGroupsLang::GetGroup(const GSubProfile* sub)
 
 //------------------------------------------------------------------------------
 GGroups::GGroups(unsigned int g)
-	: RContainer<GGroup,unsigned int,true,true>(g+(g/2),g/2), GroupsLang(2,1),
+	: RContainer<GGroup,true,true>(g+(g/2),g/2), GroupsLang(2,1),
 	  FreeIds(50,25)
 {
 }

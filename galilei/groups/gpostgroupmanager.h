@@ -6,7 +6,7 @@
 
 	Post-Group Computing Methods Manager - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short Post-Group Computing Methods Manager.
 */
-class GPostGroupManager : public R::RContainer<GFactoryPostGroup,unsigned int,true,true>
+class GPostGroupManager : public R::RContainer<GFactoryPostGroup,true,true>
 {
 public:
 

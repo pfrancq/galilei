@@ -6,7 +6,7 @@
 
 	Documents managed by a session - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -58,7 +58,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Session Documents.
 */
-class GDocs : protected R::RContainer<GDoc,unsigned int,true,true>
+class GDocs : protected R::RContainer<GDoc,true,true>
 {
 	class GDocsLang;
 	class GDocRefURL;
@@ -66,12 +66,12 @@ class GDocs : protected R::RContainer<GDoc,unsigned int,true,true>
 	/**
 	* Documents ordered by language and identificator.
 	*/
-	R::RContainer<GDocsLang,unsigned int,true,true> DocsLang;
+	R::RContainer<GDocsLang,true,true> DocsLang;
 
 	/**
 	* Documents ordered by URL.
 	*/
-	R::RContainer<GDocRefURL,unsigned int,true,true> DocsRefUrl;
+	R::RContainer<GDocRefURL,true,true> DocsRefUrl;
 
 public:
 

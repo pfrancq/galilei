@@ -6,7 +6,7 @@
 
 	Sstatistics Methods Manager   - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -54,7 +54,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GStatsCalcManager::GStatsCalcManager(const char* path,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryStatsCalc,unsigned int,true,true>(10,5)
+	: RContainer<GFactoryStatsCalc,true,true>(10,5)
 {
 	RString Path(path);
 	Path+="/stats";

@@ -6,7 +6,7 @@
 
 	List of information entities - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Information Entity List.
 */
-class GInfoList : public GInfo, public R::RContainer<GInfo,unsigned,true,true>
+class GInfoList : public GInfo, public R::RContainer<GInfo,true,true>
 {
 public:
 

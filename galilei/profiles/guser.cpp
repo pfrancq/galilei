@@ -6,7 +6,7 @@
 
 	User - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -49,7 +49,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GUser::GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb) throw(std::bad_alloc)
-	: RContainer<GProfile,unsigned,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
+	: RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
 	  FullName(fullname)
 {
 }

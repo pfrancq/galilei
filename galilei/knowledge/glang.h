@@ -6,7 +6,7 @@
 
 	Generic Language - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -94,7 +94,7 @@ protected:
 	* List of word that must be skipped when there are part of a sequence
 	* beginning with a number.
 	*/
-	R::RContainer<SkipWord,unsigned int,true,true> SkipWords;
+	R::RContainer<SkipWord,true,true> SkipWords;
 
 public:
 
@@ -382,7 +382,7 @@ extern "C"                                                                      
 * The GFactoryLangCursor class provides a way to go trough a set of factories.
 * @short Language Factory Cursor
 */
-CLASSCURSOR(GFactoryLangCursor,GFactoryLang,unsigned int);
+CLASSCURSOR(GFactoryLangCursor,GFactoryLang);
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

@@ -6,7 +6,7 @@
 
 	Generic Link Method - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be)
@@ -68,7 +68,7 @@ protected :
 	/**
 	* Container of outgoing links.
 	*/
-	R::RContainer<GLinks,unsigned int,true,true>* Links_Out;
+	R::RContainer<GLinks,true,true>* Links_Out;
 
 	/**
 	* Status of the graph.
@@ -219,7 +219,7 @@ extern "C"                                                                      
 * factories of link methods.
 * @short Links Methods Factories Cursor
 */
-CLASSCURSOR(GFactoryLinkCalcCursor,GFactoryLinkCalc,unsigned int);
+CLASSCURSOR(GFactoryLinkCalcCursor,GFactoryLinkCalc);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -70,7 +70,7 @@ protected:
 	/**
 	* All the assessments.
 	*/
-	R::RContainer<GProfDoc,unsigned,true,true> Fdbks;
+	R::RContainer<GProfDoc,true,true> Fdbks;
 
 	/**
 	* Languages Manager.

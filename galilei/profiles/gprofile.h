@@ -6,7 +6,7 @@
 
 	Profile - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Profile.
 */
-class GProfile : public R::RContainer<GSubProfile,unsigned,false,true>
+class GProfile : public R::RContainer<GSubProfile,false,true>
 {
 protected:
 
@@ -74,7 +74,7 @@ protected:
 	/**
 	* Documents assessed by profile.
 	*/
-	R::RContainer<GProfDoc,unsigned,false,true> Fdbks;
+	R::RContainer<GProfDoc,false,true> Fdbks;
 
 	/**
 	* Determine if the profile is social, i.e. prefer to be grouped with
@@ -256,7 +256,7 @@ public:
 * The GProfileCursor class provides a way to go trough a set of profiles.
 * @short Profiles Cursor
 */
-CLASSCURSOR(GProfileCursor,GProfile,unsigned int);
+CLASSCURSOR(GProfileCursor,GProfile);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

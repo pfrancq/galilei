@@ -6,7 +6,7 @@
 
 	Parameter - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -583,7 +583,7 @@ public:
 * The GParamCursor class provides a way to go trough a set of parameters.
 * @short Parameters Cursor
 */
-CLASSCURSOR(GParamCursor,GParam,unsigned int);
+CLASSCURSOR(GParamCursor,GParam);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

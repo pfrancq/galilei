@@ -6,7 +6,7 @@
 
 	Similarities between documents and subprofiles - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -61,7 +61,7 @@ class GDocProfSims
 	/**
 	* Similarities.
 	*/
- 	R::RContainer<GDocProfSim,unsigned int,true,true> Sims;
+ 	R::RContainer<GDocProfSim,true,true> Sims;
 
 	/**
 	* Session managing the (sub)profiles and the documents.

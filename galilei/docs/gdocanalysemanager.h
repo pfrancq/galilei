@@ -6,7 +6,7 @@
 
 	Document Analysis Methods Manager - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -53,7 +53,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Doc Analysis Method Manager.
 */
-class GDocAnalyseManager : public R::RContainer<GFactoryDocAnalyse,unsigned int,true,true>
+class GDocAnalyseManager : public R::RContainer<GFactoryDocAnalyse,true,true>
 {
 	/**
 	* Method currently selected.

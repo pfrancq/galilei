@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Implementation.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 
@@ -235,7 +235,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 	bool undefLang;
 	GDocXML* xml=0;
 	GDocCursor Docs=GetDocsCursor();
-	RContainer<GDoc,unsigned int,false,true> tmpDocs(5,2);
+	RContainer<GDoc,false,true> tmpDocs(5,2);
 	GDocAnalyse* Analyse;
 	RString err;
 	bool Cont;               // Continue the analysuis
@@ -303,7 +303,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save) throw(GException)
 
 		// Add the new documents.
 		// Continue the analysis if documents were added.
-		RCursor<GDoc,unsigned int> Cur(tmpDocs);
+		RCursor<GDoc> Cur(tmpDocs);
 		Cont=tmpDocs.NbPtr;
 		for(Cur.Start();!Cur.End();Cur.Next())
 			InsertDoc(Cur());
@@ -324,8 +324,8 @@ void GSession::ComputePostDoc(GSlot* rec)  throw(GException)
 	// Run all post-group methods that are enabled
 	GFactoryPostDocCursor PostDocs=PostDocMng->GetPostDocsCursor();
 	//first sort the plugins by level
-	RContainer<GFactoryPostDocOrder, unsigned int, true, true>* ordered;
-	ordered=new RContainer<GFactoryPostDocOrder, unsigned int, true, true>(PostDocs.GetNb());
+	RContainer<GFactoryPostDocOrder,true,true>* ordered;
+	ordered=new RContainer<GFactoryPostDocOrder,true,true>(PostDocs.GetNb());
 	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
 	{
 		GFactoryPostDocOrder* order=new GFactoryPostDocOrder;
@@ -546,8 +546,8 @@ void GSession::ComputePostGroup(GSlot* rec)  throw(GException)
 	// Run all post-group methods that are enabled
 	GFactoryPostGroupCursor PostGroups=PostGroupMng->GetPostGroupsCursor();
 	//first sort the plugins by level
-	RContainer<GFactoryPostGroupOrder, unsigned int, true, true>* ordered;
-	ordered=new RContainer<GFactoryPostGroupOrder, unsigned int, true, true>(PostGroups.GetNb());
+	RContainer<GFactoryPostGroupOrder,true,true>* ordered;
+	ordered=new RContainer<GFactoryPostGroupOrder,true,true>(PostGroups.GetNb());
 	for(PostGroups.Start();!PostGroups.End();PostGroups.Next())
 	{
 		GFactoryPostGroupOrder* order=new GFactoryPostGroupOrder;

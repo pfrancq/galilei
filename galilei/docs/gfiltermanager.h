@@ -6,7 +6,7 @@
 
 	Generic filter manager handling URL - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -56,7 +56,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic URL Manager.
 */
-class GFilterManager : public R::RContainer<GFactoryFilter,unsigned int,true,true>
+class GFilterManager : public R::RContainer<GFactoryFilter,true,true>
 {
 protected:
 
@@ -66,12 +66,12 @@ protected:
 	/**
 	* List of all pairs (MIME type,filter) available.
 	*/
-	R::RContainer<GMIMEFilter,unsigned int,true,true> MIMES;
+	R::RContainer<GMIMEFilter,true,true> MIMES;
 
 	/**
 	* List of all pairs (extension, MIME type) available.
 	*/
-	R::RContainer<GMIMEExt,unsigned int,true,true> Exts;
+	R::RContainer<GMIMEExt,true,true> Exts;
 
 public:
 

@@ -6,7 +6,7 @@
 
 	Subprofile - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -98,7 +98,7 @@ protected:
 	/**
 	* Documents assessed by the subprofile.
 	*/
-	R::RContainer<GProfDoc,unsigned,false,true> Fdbks;
+	R::RContainer<GProfDoc,false,true> Fdbks;
 
 #if GALILEITEST
 	/**
@@ -383,7 +383,7 @@ public:
 * The GSubProfileCursor class provides a way to go trough a set of subprofiles.
 * @short SubProfiles Cursor
 */
-CLASSCURSOR(GSubProfileCursor,GSubProfile,unsigned int);
+CLASSCURSOR(GSubProfileCursor,GSubProfile);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -6,7 +6,7 @@
 
 	History of Groups for a given language - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -56,7 +56,7 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 GGroupsHistoryManager::GGroupsHistoryManager(unsigned int max) throw(std::bad_alloc)
-	: RContainer<GGroupsHistory,unsigned int,true,true>(max,max/2)
+	: RContainer<GGroupsHistory,true,true>(max,max/2)
 {
 }
 
@@ -199,7 +199,7 @@ GGroupsHistoryManager::~GGroupsHistoryManager(void)
 
 //------------------------------------------------------------------------------
 GGroupsHistory::GGroupsHistory(unsigned int id, RString date) throw(std::bad_alloc)
-	: RContainer<GGroupHistory,unsigned int,true,true>(20,10)
+	: RContainer<GGroupHistory,true,true>(20,10)
 {
 	Id=id;
 	Date=RDate(date.Latin1());
@@ -260,7 +260,7 @@ void GGroupsHistory::SetManager(GGroupsHistoryManager* m)
 //------------------------------------------------------------------------------
 void GGroupsHistory::CheckModifiedGroups(unsigned int minGen) throw(std::bad_alloc)
 {
-	RContainer<GWeightInfosHistory, unsigned int, false, true>* lastsubs;
+	RContainer<GWeightInfosHistory,false,true>* lastsubs;
 	GGroupsHistory* lastgroups;
 	GGroupHistory* grp, *lastgroup;
 	GWeightInfosHistory* sub, *lastsub;
@@ -270,7 +270,7 @@ void GGroupsHistory::CheckModifiedGroups(unsigned int minGen) throw(std::bad_all
 	if (this->GetId()==minGen) return;
 
 	//get the last groups and put its profiles in a container
-	lastsubs=new R::RContainer<GWeightInfosHistory, unsigned int, false, true>(10,5);
+	lastsubs=new R::RContainer<GWeightInfosHistory,false,true>(10,5);
 	lastgroups=Manager->GetPtr(this->GetId()-1);
 	if (!lastgroups) return;
 	for (lastgroups->Start(); !lastgroups->End(); lastgroups->Next())
@@ -328,7 +328,7 @@ void GGroupsHistory::SetGroupsSubject(void) throw(std::bad_alloc)
 	GGroupHistory* grp;
 	GSubject* mainsubject;
 	unsigned int occur, maxoccur,knownsubject;
-	R::RContainer<GSubject, unsigned int, false, true>* subjects;
+	R::RContainer<GSubject,false,true>* subjects;
 
 
 	//find the dominant subject
@@ -338,7 +338,7 @@ void GGroupsHistory::SetGroupsSubject(void) throw(std::bad_alloc)
 		maxoccur=knownsubject=0;
 
 		// find all the subjects contained in the group.
-		subjects=new R::RContainer<GSubject, unsigned int, false, true>(5,2);
+		subjects=new R::RContainer<GSubject,false,true>(5,2);
 		for (grp->Start(); !grp->End(); grp->Next())
 		{
 			subjects->InsertPtr((*grp)()->GetSubProfile()->GetSubject());
@@ -387,12 +387,12 @@ void GGroupsHistory::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GGroupsHistory::CheckNewProfiles(void) throw(std::bad_alloc)
 {
-	R::RContainer<GWeightInfosHistory, unsigned int, false, true>* lastsubs;
+	R::RContainer<GWeightInfosHistory,false,true>* lastsubs;
 	GGroupsHistory* lastgroups;
 	GGroupHistory* grp;
 
 	//get the last groups and put its profiles in a container
-	lastsubs=new R::RContainer<GWeightInfosHistory, unsigned int, false, true>(10,5);
+	lastsubs=new R::RContainer<GWeightInfosHistory,false,true>(10,5);
 	lastgroups=Manager->GetPtr(this->GetId()-1);
 	if (!lastgroups) return;
 	for (lastgroups->Start(); !lastgroups->End(); lastgroups->Next())

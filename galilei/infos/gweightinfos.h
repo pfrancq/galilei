@@ -6,7 +6,7 @@
 
 	List of weighted information entities - Header.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -53,7 +53,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Weighted Information Entity List.
 */
-class GWeightInfos : public R::RContainer<GWeightInfo,unsigned int,true,true>
+class GWeightInfos : public R::RContainer<GWeightInfo,true,true>
 {
 public:
 

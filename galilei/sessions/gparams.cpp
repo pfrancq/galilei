@@ -6,7 +6,7 @@
 
 	Set of parameters - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -45,7 +45,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GParams::GParams(const RString& n) throw(std::bad_alloc)
-	: RContainer<GParam,unsigned int,true,true>(10,5), Name(n)
+	: RContainer<GParam,true,true>(10,5), Name(n)
 {
 }
 

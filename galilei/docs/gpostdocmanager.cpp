@@ -6,7 +6,7 @@
 
 	Documents Post-Analysis Methods Manager - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -53,7 +53,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GPostDocManager::GPostDocManager(const char* path,bool dlg) throw(GException)
-	: RContainer<GFactoryPostDoc,unsigned int,true,true>(10,5)
+	: RContainer<GFactoryPostDoc,true,true>(10,5)
 {
 
 	RString Path(path);

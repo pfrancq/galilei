@@ -6,7 +6,7 @@
 
 	Similarities between documents and subprofiles - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -77,13 +77,13 @@ public:
 
 //------------------------------------------------------------------------------
 // Class representing all the similarities for a given document.
-class GSims : public RContainer<GSim,unsigned int,true,true>
+class GSims : public RContainer<GSim,true,true>
 {
 public:
 	unsigned int DocId;      // Identifier of the document
 
 	GSims(unsigned int id,unsigned int max) throw(std::bad_alloc)
-		: RContainer<GSim,unsigned int,true,true>(max,max/2), DocId(id) {}
+		: RContainer<GSim,true,true>(max,max/2), DocId(id) {}
 	int Compare(const GSims* s) const {return(DocId-s->DocId);}
 	int Compare(const unsigned int id) const {return(DocId-id);}
 };
@@ -102,7 +102,7 @@ public:
 class GDocProfSims::GDocProfSim
 {
 public:
-	R::RContainer<GSims,unsigned int,true,true> Sims;  // Similarities.
+	R::RContainer<GSims,true,true> Sims;  // Similarities.
 	bool IFF;                                          // Use IFF factor.
 	GLang* Lang;                                       // Language.
 	GDocProfSims* Manager;                             // Owner.

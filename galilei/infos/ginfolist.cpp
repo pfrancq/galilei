@@ -6,7 +6,7 @@
 
 	List of information entities - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -46,21 +46,21 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GInfoList::GInfoList(unsigned int id,GInfoType type) throw(std::bad_alloc)
-	: GInfo(id,type), RContainer<GInfo,unsigned,true,true>(30,10)
+	: GInfo(id,type), RContainer<GInfo,true,true>(30,10)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GInfoList::GInfoList(const GInfoList& i) throw(std::bad_alloc)
-	: GInfo(i), RContainer<GInfo,unsigned,true,true>(i)
+	: GInfo(i), RContainer<GInfo,true,true>(i)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GInfoList::GInfoList(const GInfoList* i) throw(std::bad_alloc)
-	: GInfo(i), RContainer<GInfo,unsigned,true,true>(i)
+	: GInfo(i), RContainer<GInfo,true,true>(i)
 {
 }
 
@@ -89,7 +89,7 @@ int GInfoList::Compare(const GInfoList& i) const
 //------------------------------------------------------------------------------
 GInfoList& GInfoList::operator=(const GInfoList& i) throw(std::bad_alloc)
 {
-	RContainer<GInfo,unsigned,true,true>::operator=(i);
+	RContainer<GInfo,true,true>::operator=(i);
 	GInfo::operator=(i);
 	return(*this);
 }

@@ -6,7 +6,7 @@
 
 	List of weighted information entities - Implementation.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -50,21 +50,21 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GWeightInfos::GWeightInfos(unsigned int max) throw(std::bad_alloc)
-	: RContainer<GWeightInfo,unsigned,true,true>(max,50)
+	: RContainer<GWeightInfo,true,true>(max,50)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GWeightInfos::GWeightInfos(const GWeightInfos& w) throw(std::bad_alloc)
-	: RContainer<GWeightInfo,unsigned,true,true>(w)
+	: RContainer<GWeightInfo,true,true>(w)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GWeightInfos::GWeightInfos(const GWeightInfos* w) throw(std::bad_alloc)
-	: RContainer<GWeightInfo,unsigned,true,true>(w)
+	: RContainer<GWeightInfo,true,true>(w)
 {
 }
 
@@ -72,7 +72,7 @@ GWeightInfos::GWeightInfos(const GWeightInfos* w) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 GWeightInfos& GWeightInfos::operator=(const GWeightInfos::GWeightInfos& w) throw(std::bad_alloc)
 {
-	RContainer<GWeightInfo,unsigned,true,true>::operator=(w);
+	RContainer<GWeightInfo,true,true>::operator=(w);
 	return(*this);
 }
 
@@ -94,7 +94,7 @@ int GWeightInfos::sortOrder(const void* a,const void* b)
 //------------------------------------------------------------------------------
 void GWeightInfos::Clear(void)
 {
-	RContainer<GWeightInfo,unsigned,true,true>::Clear();
+	RContainer<GWeightInfo,true,true>::Clear();
 }
 
 

@@ -6,7 +6,7 @@
 
 	History of a given group - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be)..
@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author David Wartel
 * @short History of a Group.
 */
-class GGroupHistory : public R::RContainer<GWeightInfosHistory,unsigned int,false,true>
+class GGroupHistory : public R::RContainer<GWeightInfosHistory,false,true>
 {
 protected:
 
@@ -83,7 +83,7 @@ protected:
 	/**
 	* List of groups of the next step to be formed started from this group.
 	*/
-	R::RContainer<GGroupHistory, unsigned int, false,true> Childrens;
+	R::RContainer<GGroupHistory,false,true> Childrens;
 
 public:
 
@@ -191,7 +191,7 @@ public:
 * GGroupHistory.
 * @short GroupHistory Cursor
 */
-CLASSCURSOR(GGroupHistoryCursor,GGroupHistory,unsigned int);
+CLASSCURSOR(GGroupHistoryCursor,GGroupHistory);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

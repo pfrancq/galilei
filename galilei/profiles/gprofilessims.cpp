@@ -6,7 +6,7 @@
 
 	List of SubProfiles for a given Language - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -75,13 +75,13 @@ public:
 
 //------------------------------------------------------------------------------
 // Class representing all the similarities for a given subprofile.
-class GSims : public RContainer<GSim,unsigned int,true,false>
+class GSims : public RContainer<GSim,true,false>
 {
 public:
 	unsigned int SubId;         // Identifier of the first profile
 
 	GSims(unsigned int id,unsigned int max) throw(std::bad_alloc)
-		: RContainer<GSim,unsigned int,true,false>(max,max/2), SubId(id) {}
+		: RContainer<GSim,true,false>(max,max/2), SubId(id) {}
 	int Compare(const GSims* s) const {return(SubId-s->SubId);}
 	int Compare(const unsigned int id) const {return(SubId-id);}
 };
@@ -101,7 +101,7 @@ class GProfilesSims::GProfilesSim
 {
 public:
 
-	R::RContainer<GSims,unsigned int,true,false>* Sims;  // Similarities
+	R::RContainer<GSims,true,false>* Sims;  // Similarities
 	bool IFF;                                             // Inverse Frequency Factor
 	GLang* Lang;                                          // Language
 	double MeanSim;                                       // Mean of similarities
@@ -109,7 +109,7 @@ public:
 	unsigned int OldNbComp;                               // Old number of comparisons
 	GProfilesSims* Manager;                               //manger of the gprofsim
 	// Identificators of modified (and defined) )profiles
-	RContainer<GSubProfile,unsigned int,false,true>* ModifiedProfs;
+	RContainer<GSubProfile,false,true>* ModifiedProfs;
 
 	// Constructor and Compare methods.
 	GProfilesSim(GProfilesSims* manager,GSubProfileCursor s,bool iff,GLang* lang) throw(std::bad_alloc, GException);
@@ -151,8 +151,9 @@ public:
 
 //------------------------------------------------------------------------------
 GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCursor s,bool iff,GLang* l) throw(std::bad_alloc, GException)
-	:  IFF(iff),Lang(l),Manager(manager)
+	:  IFF(iff),Lang(l), MeanSim(0.0), Deviation(0.0), OldNbComp(0), Manager(manager)
 {
+
 	GSubProfileCursor Cur1, Cur2;
 	unsigned int i,j, pos, nbcomp;
 	double simssum, deviation, tmpsim;
@@ -168,10 +169,10 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 	for (s.Start(), i=0; !s.End(); s.Next())
 		if (s()->GetProfile()->GetId()>i)
 			i=s()->GetProfile()->GetId();
-	Sims=new RContainer<GSims,unsigned int,true,false>(i+1,1);
+	Sims=new RContainer<GSims,true,false>(i+1,1);
 
 	//initialize table of modified subprofiles;
-	ModifiedProfs=new RContainer<GSubProfile,unsigned int,false,true>(5,1);
+	ModifiedProfs=new RContainer<GSubProfile,false,true>(5,1);
 
 	//builds the left inferior triangular matrix.
 	Cur1=s;
@@ -354,10 +355,12 @@ void GProfilesSims::GProfilesSim::Update(void) throw(std::bad_alloc)
 
 	if (IFF) //if IFF all sims must be set to osModified since at least one sub is modified.
 	{
-		for (Sims->Start(); !Sims->End(); Sims->Next())
+		RCursor<GSims> Cur(Sims);
+		for (Cur.Start();!Cur.End();Cur.Next())
 		{
-			for ((*Sims)()->Start(); !(*Sims)()->End(); (*Sims)()->Next())
-				(*(*Sims)())()->State=osModified;
+			RCursor<GSim> Cur2(Cur());
+			for(Cur2.Start();!Cur2.End();Cur2.Next())
+				Cur2()->State=osModified;
 		}
 	}
 
@@ -379,9 +382,13 @@ void GProfilesSims::GProfilesSim::Update(bool iff) throw(std::bad_alloc)
 		// since sims are calculated each time
 		if(!Manager->GetMemory())
 			return;
-		 for (Sims->Start(); !Sims->End(); Sims->Next())
-		 	for ((*Sims)()->Start(); !(*Sims)()->End(); (*Sims)()->Next())
-				(*(*Sims)())()->State=osModified;
+		RCursor<GSims> Cur(Sims);
+		for (Cur.Start();!Cur.End();Cur.Next())
+		{
+			RCursor<GSim> Cur2(Cur());
+			for(Cur2.Start();!Cur2.End();Cur2.Next())
+				Cur2()->State=osModified;
+		}
 	}
 }
 

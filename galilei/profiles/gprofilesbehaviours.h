@@ -6,7 +6,7 @@
 
 	Agreement and DisAgreement Ratios for subprofiles - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -60,7 +60,7 @@ class GProfilesBehaviours
 
 	/**
 	*/
-	R::RContainer<GProfilesBehaviour,unsigned int,true,true> Ratios;
+	R::RContainer<GProfilesBehaviour,true,true> Ratios;
 
 	/**
 	* Session managing the (sub)profiles and the documents.
