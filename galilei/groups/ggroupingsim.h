@@ -33,10 +33,10 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GGrouping provides a representation for a generic method to group some
-* subprofiles.
+* The GGroupingSim provides a representation for a method to group some
+* subprofiles using the notion of similarity.
 * @author Pascal Francq
-* @short Generic Grouping.
+* @short Similarity Grouping.
 */
 class GGroupingSim : public GGrouping
 {
@@ -66,6 +66,30 @@ public:
 	* Initialisation of the method.
 	*/
 	virtual void Init(void) throw(bad_alloc);
+
+	/**
+	* Get the level of similarity used.
+	* @return Double.
+	*/
+	double GetLevel(void) const {return(Level);}
+
+	/**
+	* See if the similarity is full.
+	* @return Boolean.
+	*/
+	bool GetFull(void) const {return(Full);}
+
+	/**
+	* Set if the similarity has to be full.
+	* @param full           Boolean value.
+	*/
+	void SetFull(bool full) {Full=full;}
+
+	/**
+	* Set the level of similarity used.
+	* @param level          Level to use.
+	*/
+	void SetLevel(double level) {Level=level;}
 
 protected:
 
