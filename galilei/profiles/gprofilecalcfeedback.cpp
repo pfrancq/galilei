@@ -86,7 +86,7 @@ const char* GALILEI::GFeedbackParams::GetSettings(void)
 	if (IdfFactor) c2='1'; else c2='0';
 
 
-	sprintf(tmp,"%u %u %f %f %f %c %c", MaxOrderSize, MaxNonZero, RelFactor, FuzzyFactor, NoRelFactor, c1, c2);
+	sprintf(tmp,"%u %f %f %f %c %c", MaxNonZero, RelFactor, FuzzyFactor, NoRelFactor, c1, c2);
 	return(tmp);
 }
 
@@ -96,7 +96,7 @@ void GALILEI::GFeedbackParams::SetSettings(const char* s)
 {
 	if(!(*s)) return;
 	char c1,c2;
-	sscanf(s,"%u %u %lf %lf %lf %c %c", &MaxOrderSize, &MaxNonZero, &RelFactor, &FuzzyFactor, &NoRelFactor, &c1, &c2) ;
+	sscanf(s," %u %lf %lf %lf %c %c",&MaxNonZero, &RelFactor, &FuzzyFactor, &NoRelFactor, &c1, &c2) ;
 	if(c1=='1') AddFuzzy=true; else AddFuzzy=false;
  	if(c2=='1') IdfFactor=true; else IdfFactor=false;	
 }
@@ -155,10 +155,9 @@ public:
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session, GFeedbackParams* p) throw(bad_alloc)
 	: GProfileCalc("User Feedback",session), Params(p), Vectors(Session->GetNbLangs()),
-	  NbDocsWords(Session->GetNbLangs()), NbDocsLangs(Session->GetNbLangs())
+	  NbDocsWords(Session->GetNbLangs()), NbDocsLangs(Session->GetNbLangs()), MaxOrderSize(5000)
 {
 	GLangCursor Langs;
-	Params->MaxOrderSize=5000;
 
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
@@ -167,7 +166,7 @@ GALILEI::GProfileCalcFeedback::GProfileCalcFeedback(GSession* session, GFeedback
 		NbDocsWords.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 		NbDocsLangs.InsertPtr(new GNbDocsLangs(Langs()));
 	}
-	Order=new GIWordWeight*[Params->MaxOrderSize];
+	Order=new GIWordWeight*[MaxOrderSize];
 }
 
 
@@ -357,11 +356,11 @@ void GALILEI::GProfileCalcFeedback::ComputeSubProfile(GSubProfileVector* s) thro
 	if(Global->IsEmpty()) return;
 
 	// Put in Order an ordered version of Global
-	if(Global->NbPtr+1>Params->MaxOrderSize)
+	if(Global->NbPtr+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		Params->MaxOrderSize=static_cast<unsigned int>((Global->NbPtr+1)*1.1);
-		Order=new GIWordWeight*[Params->MaxOrderSize];
+		MaxOrderSize=static_cast<unsigned int>((Global->NbPtr+1)*1.1);
+		Order=new GIWordWeight*[MaxOrderSize];
 	}
 	memcpy(Order,Global->Tab,Global->NbPtr*sizeof(GIWordWeight*));
 	qsort(static_cast<void*>(Order),Global->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);

@@ -120,12 +120,9 @@ public:
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcReWeighting::GProfileCalcReWeighting(GSession* session, GReWeightingParams* p) throw(bad_alloc)
 	: GProfileCalc("Direct Reweighting",session), Params(p),  OK(Session->GetNbLangs()), KO(Session->GetNbLangs()),
-	  Order(0)
+	  Order(0), MaxOrderSize(5000)
 {
 	GLangCursor Langs;
-
-	Params->MaxOrderSize=5000;
-	Params->MaxNonZero=60;
 
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
@@ -133,7 +130,7 @@ GALILEI::GProfileCalcReWeighting::GProfileCalcReWeighting(GSession* session, GRe
 		OK.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 		KO.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 	}
-	Order=new GIWordWeight*[Params->MaxOrderSize];
+	Order=new GIWordWeight*[MaxOrderSize];
 }
 
 
@@ -200,11 +197,11 @@ void GALILEI::GProfileCalcReWeighting::ComputeSubProfile(GSubProfileVector* s) t
 	Vector->Clear();
 
 	// Put in Order an ordered version of MOK
-	if(MOK->NbPtr>Params->MaxOrderSize)
+	if(MOK->NbPtr>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		Params->MaxOrderSize=static_cast<unsigned int>((MOK->NbPtr+1)*1.1);
-		Order=new GIWordWeight*[Params->MaxOrderSize];
+		MaxOrderSize=static_cast<unsigned int>((MOK->NbPtr+1)*1.1);
+		Order=new GIWordWeight*[MaxOrderSize];
 	}
 	memcpy(Order,MOK->Tab,MOK->NbPtr*sizeof(GIWordWeight*));
 	qsort(static_cast<void*>(Order),MOK->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);

@@ -96,14 +96,9 @@ void GALILEI::GCalcRelevantParams::SetSettings(const char* s)
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupCalcRelevant::GGroupCalcRelevant(GSession* session, GCalcRelevantParams* p) throw(bad_alloc)
-	: GGroupCalc("Prototype",session), Params(p), Order(0)
+	: GGroupCalc("Prototype",session), Params(p), Order(0), MaxOrderSize(5000)
 {
-	//init parameters
-	Params->GlobalSim=true;
-	Params->MaxNonZero=60;
-	Params->MaxOrderSize=5000;
-
-	Order=new GIWordWeight*[Params->MaxOrderSize];
+	Order=new GIWordWeight*[MaxOrderSize];
 }
 
 
@@ -164,11 +159,11 @@ void GALILEI::GGroupCalcRelevant::Compute(GGroup* grp)
 	// Copy the information of the relevant subprofile to the group.
 	Ref=static_cast<GSubProfileVector*>(Relevant)->GetVector();
 	if(Ref->IsEmpty()) return;
-	if(Ref->NbPtr+1>Params->MaxOrderSize)
+	if(Ref->NbPtr+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		Params->MaxOrderSize=static_cast<unsigned int>((Ref->NbPtr+1)*1.1);
-		Order=new GIWordWeight*[Params->MaxOrderSize];
+		MaxOrderSize=static_cast<unsigned int>((Ref->NbPtr+1)*1.1);
+		Order=new GIWordWeight*[MaxOrderSize];
 	}
 	memcpy(Order,Ref->Tab,Ref->NbPtr*sizeof(GIWordWeight*));
 	qsort(static_cast<void*>(Order),Ref->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);

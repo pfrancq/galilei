@@ -153,13 +153,10 @@ public:
 //-----------------------------------------------------------------------------
 GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session, GStatisticalParams* p) throw(bad_alloc)
 	: GProfileCalc("Statistical",session), Params(p), Vector(Session->GetNbLangs()),
-	  NbDocsWords(Session->GetNbLangs()), NbDocsLangs(Session->GetNbLangs()), Order(0)
+	  NbDocsWords(Session->GetNbLangs()), NbDocsLangs(Session->GetNbLangs()), Order(0), MaxOrderSize(5000)
 {
 	GLangCursor Langs;
 
-	Params->MaxOrderSize=5000;
-	Params->MaxNonZero=60;
-	Params->IdfFactor=true;
 
 	Langs=Session->GetLangsCursor();
 	for(Langs.Start();!Langs.End();Langs.Next())
@@ -168,7 +165,7 @@ GALILEI::GProfileCalcVector::GProfileCalcVector(GSession* session, GStatisticalP
 		NbDocsWords.InsertPtr(new InternVector(Langs(),Session->GetDic(Langs())->GetMaxId()));
 		NbDocsLangs.InsertPtr(new GNbDocsLangs(Langs()));
 	}
-	Order=new GIWordWeight*[Params->MaxOrderSize];
+	Order=new GIWordWeight*[MaxOrderSize];
 }
 
 
@@ -284,11 +281,11 @@ void GALILEI::GProfileCalcVector::ComputeSubProfile(GSubProfileVector* s) throw(
 	if(LangVector->IsEmpty()) return;
 
 	// Put in Order an ordered version of LangVector
-	if(LangVector->NbPtr+1>Params->MaxOrderSize)
+	if(LangVector->NbPtr+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		Params->MaxOrderSize=static_cast<unsigned int>((LangVector->NbPtr+1)*1.1);
-		Order=new GIWordWeight*[Params->MaxOrderSize];
+		MaxOrderSize=static_cast<unsigned int>((LangVector->NbPtr+1)*1.1);
+		Order=new GIWordWeight*[MaxOrderSize];
 	}
 	memcpy(Order,LangVector->Tab,LangVector->NbPtr*sizeof(GIWordWeight*));
 	qsort(static_cast<void*>(Order),LangVector->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);

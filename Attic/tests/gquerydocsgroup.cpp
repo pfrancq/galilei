@@ -207,7 +207,6 @@ void GALILEI::GQueryDocsGroup::AddQuery(unsigned int pos,unsigned level)
 		{
 			Query.InsertPtr(new GIWordWeight(Order[*idx]->GetId(),2.0));
 		}
-		cout<<endl;
 		queries++;
 		DoQuery(Query);
 	}

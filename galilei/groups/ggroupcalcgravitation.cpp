@@ -94,14 +94,10 @@ void GALILEI::GCalcGravitationParams::SetSettings(const char* s)
 
 //-----------------------------------------------------------------------------
 GALILEI::GGroupCalcGravitation::GGroupCalcGravitation(GSession* session, GCalcGravitationParams* p) throw(bad_alloc)
-	: GGroupCalc("Gravitation",session), Params(p), Order(0), Vector(0)
+	: GGroupCalc("Gravitation",session), Params(p), Order(0), Vector(0), MaxOrderSize(5000)
 {
-	//init parameters
-	Params->MaxNonZero=60;
-	Params->MaxOrderSize=5000;
-
-	Order=new GIWordWeight*[Params->MaxOrderSize];
-	Vector=new GIWordsWeights(60);
+	Order=new GIWordWeight*[MaxOrderSize];
+	Vector=new GIWordsWeights(Params->MaxNonZero);
 }
 
 
@@ -136,11 +132,11 @@ void GALILEI::GGroupCalcGravitation::Compute(GGroup* grp)
 	}
 
 	// Copy the information of the relevant subprofile to the group.
-	if(Vector->NbPtr+1>Params->MaxOrderSize)
+	if(Vector->NbPtr+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		Params->MaxOrderSize=static_cast<unsigned int>((Vector->NbPtr+1)*1.1);
-		Order=new GIWordWeight*[Params->MaxOrderSize];
+		MaxOrderSize=static_cast<unsigned int>((Vector->NbPtr+1)*1.1);
+		Order=new GIWordWeight*[MaxOrderSize];
 	}
 	memcpy(Order,Vector->Tab,Vector->NbPtr*sizeof(GIWordWeight*));
 	qsort(static_cast<void*>(Order),Vector->NbPtr,sizeof(GIWordWeight*),GIWordsWeights::sortOrder);

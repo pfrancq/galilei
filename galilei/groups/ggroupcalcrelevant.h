@@ -71,11 +71,6 @@ public:
 	unsigned int MaxNonZero;
 
 	/**
-	* Maximal size allocate for a profile.
-	*/
-	unsigned int MaxOrderSize;
-
-	/**
 	* Get the settings of the method coded in a string.
 	* return Pointer to a C string.
 	*/
@@ -120,6 +115,10 @@ class GGroupCalcRelevant : public GGroupCalc
 	*/
 	GIWordWeight** Order;
 
+	/**
+	* Maximal size allocate for a profile.
+	*/
+	unsigned int MaxOrderSize;
 
 public:
 

@@ -62,11 +62,6 @@ class GReWeightingParams : public GCalcParams
 public:
 
 	/**
-	* Maximal size allocate for a profile.
-	*/
-	unsigned int MaxOrderSize;
-
-	/**
 	* Maximal number of the non-zero weights in the vector.
 	*/
 	unsigned int MaxNonZero;
@@ -128,6 +123,10 @@ protected:
 	*/
 	GIWordWeight** Order;
 
+	/**
+	* Maximal size allocate for a profile.
+	*/
+	unsigned int MaxOrderSize;
 
 public:
 
