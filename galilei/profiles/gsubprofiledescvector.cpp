@@ -32,7 +32,12 @@
 
 
 //-----------------------------------------------------------------------------
-//include files for GALILEI
+// include files for ANSI C/C++
+#include <math.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
 #include<profiles/gsubprofile.h>
 #include<profiles/gsubprofiledescvector.h>
 #include<langs/glang.h>
@@ -76,17 +81,39 @@ void GALILEI::GSubProfileDescVector::AddWord(unsigned int id,double w) throw(bad
 //-----------------------------------------------------------------------------
 double GALILEI::GSubProfileDescVector::Similarity(const GSubProfileDesc* desc) const
 {
-	double Sim=0;
-	unsigned int NbComp;
-	GIWordsWeights* CompVector=((GSubProfileDescVector*)desc)->Vector;
-	
-	for(Vector->Start();!Vector->End();Vector->Next())
+	double Sim=0.0;
+	GIWordWeight** ptr=Vector->Tab;
+	GIWordWeight** ptr2=((GSubProfileDescVector*)desc)->Vector->Tab;
+	unsigned int i=Vector->NbPtr+1;
+	unsigned int j=((GSubProfileDescVector*)desc)->Vector->NbPtr;
+	double norm1=0.0;
+	double norm2=0.0;
+
+	while(--i)
 	{
-		for(CompVector->Start();!CompVector->End();CompVector->Next())
-			if((*Vector)()->GetId()==(*CompVector)()->GetId()) Sim++;
+		while(j&&((*ptr2)->GetId()<(*ptr)->GetId()))
+		{
+			j--;
+			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+			ptr2++;
+		}
+		if(j&&((*ptr2)->GetId()==(*ptr)->GetId()))
+		{
+			j--;
+			norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+			Sim+=(*ptr)->GetWeight()*(*ptr2)->GetWeight();
+			ptr2++;
+		}
+		norm1+=(*ptr)->GetWeight()*(*ptr)->GetWeight();
+		ptr++;
 	}
-	NbComp=Vector->NbPtr+CompVector->NbPtr;
-	Sim=(2.0*Sim)/static_cast<double>(NbComp);
+	while(j)
+	{
+		j--;
+		norm2+=(*ptr2)->GetWeight()*(*ptr2)->GetWeight();
+		ptr2++;
+	}
+	Sim/=(sqrt(norm1)*sqrt(norm2));
 	return(Sim);
 }
 

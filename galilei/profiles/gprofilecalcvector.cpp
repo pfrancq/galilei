@@ -133,7 +133,7 @@ void GALILEI::GProfileCalcVector::Compute(GProfile* profile)
 		{
 			if(!MOK->IsNextWord()) break;
 			ptr=MOK->NextWord();
-			Vector->InsertPtr(new GIWordWeight(ptr->GetId(),1.0));
+			Vector->InsertPtr(new GIWordWeight(ptr->GetId(),ptr->GetWeight()));
 		}
 		Vector->Sort();
 	}
