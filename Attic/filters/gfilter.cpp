@@ -115,9 +115,13 @@ void GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 		}
 
 		// Insert sentence
-		attach->AddTag(sent=new RXMLTag("sentence"));
-		sent->InsertAttr("value",block);
-		block=ptr;
+		if(*block)
+		{
+			attach->AddTag(sent=new RXMLTag("Sentence"));
+			//sent->InsertAttr("Value",block);
+			sent->AddContent(block);
+			block=ptr;
+		}
 	}
 }
 
@@ -141,10 +145,10 @@ void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 			ptr++;
 		if(list!=ptr)
 		{
-			attach->AddTag(kwd=new RXMLTag("keyword"));
+			attach->AddTag(kwd=new RXMLTag("Keyword"));
 			if(*ptr)
 				(*(ptr++))=0;          // Skip separator.
-			kwd->InsertAttr("value",list);
+			kwd->InsertAttr("Value",list);
 		}
 	}
 }
