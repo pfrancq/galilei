@@ -280,6 +280,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Maximal Generations",IRParams.MaxGen);
 	Config->writeEntry("Step Mode",IRParams.Step);
 	Config->writeEntry("Step Generations",IRParams.StepGen);
+	
 	Config->writeEntry("Minimum similarity",IRParams.MinSimLevel);
 	Config->writeEntry("Minimum Common OK",IRParams.MinCommonOK);
 	Config->writeEntry("Minimum Common Diff",IRParams.MinCommonDiff);
@@ -313,7 +314,6 @@ void KGALILEICenterApp::saveOptions(void)
 	// Write Config of KMeans
 	Config->setGroup(KProtosParams.GetGroupingName());
 	Config->writeEntry("Number of Groups",KProtosParams.NbGroups);
-	cout <<KProtosParams.NbGroups<<endl;
 	Config->writeEntry("Number of Protos",KProtosParams.NbProtos);
 	Config->writeEntry("Maximum number of iterations",KProtosParams.MaxIters);
 	Config->writeEntry("Number of subsamples",KProtosParams.NbSubSamples);
@@ -325,6 +325,14 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->setGroup(CureParams.GetGroupingName());
 	Config->writeEntry("Number of Groups",CureParams.NbGroups);
 	Config->writeEntry("Number of Prototyes per Group",CureParams.NbProtos);
+
+	// Write Config of SupKMeans
+	Config->setGroup(SupKMeansParams.GetGroupingName());
+	Config->writeEntry("NbPcSame",SupKMeansParams.NbPcSame);
+	Config->writeEntry("NbPcDiff",SupKMeansParams.NbPcDiff);
+	Config->writeEntry("MinSim",SupKMeansParams.MinSim);
+	Config->writeEntry("NbIters",SupKMeansParams.NbIters);
+	Config->writeEntry("DoubleKMeans",SupKMeansParams.DoubleKMeans);
 
 	// Write Config of GroupCalcRelevant
 	Config->setGroup(CalcRelevantParams.GetComputingName());
@@ -424,6 +432,7 @@ void KGALILEICenterApp::readOptions(void)
 	GroupingMethod->InsertPtr(new RStd::RString("First-Fit Heuristic"));
 	GroupingMethod->InsertPtr(new RStd::RString("Grouping Genetic Algorithms"));
 	GroupingMethod->InsertPtr(new RStd::RString("KMeansCosinus"));
+	GroupingMethod->InsertPtr(new RStd::RString("SUPKMeans"));
 	GroupingMethod->InsertPtr(new RStd::RString("KMeans Prototypes"));
 	GroupingMethod->InsertPtr(new RStd::RString("Random Heuristic"));
 	ComputingMethod = new RStd::RContainer<RStd::RString,unsigned int,true,true>(3,3);
@@ -487,11 +496,19 @@ void KGALILEICenterApp::readOptions(void)
 	KProtosParams.Lambda=Config->readDoubleNumEntry("Distance Parameter",0.5);
 	KProtosParams.VerifyKMeansLimit=Config->readNumEntry("VerifyKMeans Limit",KProtosParams.VerifyKMeansLimit);
 
-
 	// Read Config of Cure
 	Config->setGroup(CureParams.GetGroupingName());
 	CureParams.NbGroups=Config->readNumEntry("Number of Groups",13);
 	CureParams.NbProtos=Config->readNumEntry("Number of Prototyes per Group",2);
+
+	// Read Config of SupKMeans
+	Config->setGroup(SupKMeansParams.GetGroupingName());
+	cout <<SupKMeansParams.GetGroupingName()<<endl;
+	SupKMeansParams.NbPcSame=Config->readNumEntry("NbPcSame",60);
+	SupKMeansParams.NbPcDiff=Config->readNumEntry("NbPcDiff",60);
+	SupKMeansParams.MinSim=Config->readDoubleNumEntry("MinSim",0.1);
+	SupKMeansParams.NbIters=Config->readNumEntry("NbIters",20);
+	SupKMeansParams.DoubleKMeans=Config->readBoolEntry("DoubleKMeans",false);
 
 	// Read Config of GroupCalcRelevant
 	Config->setGroup(CalcRelevantParams.GetComputingName());

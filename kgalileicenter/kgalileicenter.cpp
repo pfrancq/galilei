@@ -1,4 +1,4 @@
-/*
+	/*
 
 	GALILEI Research Project
 
@@ -64,7 +64,8 @@ using namespace RStd;
 #include <groups/ggroupingrandom.h>
 #include <groups/ggroupinggga.h>
 #include <groups/ggroupingkcos.h>
-#include <groups/ggroupingkprotos.h>
+#include <groups/ggroupingkcos.h>
+#include <groups/ggroupingsupkmeans.h>
 #include <groups/ggroupingcure.h>
 #include <groups/ggroup.h>
 #include <groups/gidealgroup.h>
@@ -184,6 +185,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterGroupingMethod(new GGroupingSim(Sess, &SimParams));
 			Sess->RegisterGroupingMethod(new GGroupingGGA(Sess,&IRParams));
 			Sess->RegisterGroupingMethod(new GGroupingKCos(Sess, &KMeansParams));
+			Sess->RegisterGroupingMethod(new GGroupingSupKMeans(Sess, &SupKMeansParams, &KMeansParams));
 			Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess, &KProtosParams));
 			Sess->RegisterGroupingMethod(new GGroupingCure(Sess, &CureParams));
 			Sess->RegisterGroupingMethod(new GGroupingRandom(Sess));
@@ -247,6 +249,7 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
 	Sess->RegisterGroupingMethod(new GGroupingSim(Sess, &SimParams));
 	Sess->RegisterGroupingMethod(new GGroupingGGA(Sess,&IRParams));
 	Sess->RegisterGroupingMethod(new GGroupingKCos(Sess, &KMeansParams));
+	Sess->RegisterGroupingMethod(new GGroupingSupKMeans(Sess, &SupKMeansParams,&KMeansParams));
 	Sess->RegisterGroupingMethod(new GGroupingKProtos(Sess, &KProtosParams));
 	Sess->RegisterGroupingMethod(new GGroupingCure(Sess, &CureParams));
 	Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess,&CalcGravitationParams));
@@ -301,6 +304,7 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionTest(void)
 {
+
 }
 
 
@@ -494,6 +498,7 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 	dlg.KUScript->setURL("$HOME/prj/kgalileicenter/kgalileicenter/CreateDbFromDir.py");
 	dlg.KUDirectory->setMode(KFile::Directory);
 	dlg.LEHost->setText("127.0.0.1");
+	dlg.LEUser->setText("root");
 
 	if(dlg.exec())
 	{
@@ -504,6 +509,10 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 		QString user = dlg.LEUser->text();
 		QString password = dlg.LEPassword->text();
 		QString lang = dlg.CBLang->currentText();
+		QString mime = dlg.CBMimeType->currentText();
+
+		if (password=="")
+			password="no";
 
 		RString cmdline = RString("");
 		cmdline+= "python  ";
@@ -511,9 +520,15 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 		cmdline+=" ";
 		cmdline+= name;
 		cmdline+= " ";
+		cmdline+= host;
+		cmdline+= " ";
 		cmdline+= user;
 		cmdline+= " ";
+		cmdline+= password;
+		cmdline+= " ";
 		cmdline+= lang;
+		cmdline+= " ";
+		cmdline+= mime;
 		cmdline+= " ";
 		cmdline+= catdirectory;
 		cmdline+= "\n";
@@ -533,7 +548,7 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotStdout(KProcess* /*proc*/,char* buffer,int buflen)
 {
-	char tmp[250];
+	char tmp[500];
   strncpy(tmp,buffer,buflen);
   tmp[buflen-1] = '\0';
 	d->PutText(tmp);
