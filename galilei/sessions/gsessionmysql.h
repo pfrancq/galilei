@@ -252,6 +252,23 @@ public:
 	virtual void ExecuteData(const char* filename) throw(GException);
 
 	/**
+	* Save A Chromosome into the database.
+	* @param chromo         The chromosome to save.
+	* @param id             An id to find the chromosome after saving. 
+	* @param objs           Objects.
+	* @param lang           The lang of the subprofiles in the chromosome.
+	*/
+	virtual void SaveChromo(GChromoIR* chromo,unsigned int id,RGA::RObjs<GObjIR>* objs);
+
+	/**
+	* Load a instance of chromosome for statisical use only.
+	* @param lang           The lang of the subprofiles in the chromosome.
+	* @param objs           Objects.
+	* @return pointer to a Ginstir
+	*/
+	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSessionMySQL(void);

@@ -43,6 +43,7 @@
 #include <profiles/gusers.h>
 #include <profiles/gsubprofile.h>
 #include <docs/gdocs.h>
+#include <groups/ggroupir.h>
 
 
 
@@ -496,6 +497,23 @@ public:
 	* Save the feedbaks
 	*/
 	virtual void SaveFdbks(void)=0;
+
+	/**
+	* Save A Chromosome into the database.
+	* @param chromo         The chromosome to save.
+	* @param id             An id to find the chromosome after saving.
+	* @param objs           Objects.
+	* @param lang           The lang of the subprofiles in the chromosome. 
+	*/
+	virtual void SaveChromo(GChromoIR* chromo,unsigned int id,RGA::RObjs<GObjIR>* objs)=0;
+
+	/**
+	* Load a instance of chromosome for statisical use only.
+	* @param lang           The lang of the subprofiles in the chromosome.
+	* @param objs           Objects.
+	* @return pointer to a Ginstir
+	*/
+	virtual GInstIR* LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs)=0;
 
 	/**
 	* Run a "program" for this session.
