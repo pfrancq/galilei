@@ -1,4 +1,4 @@
-	/*
+/*
 
 	GALILEI Research Project
 
@@ -323,10 +323,10 @@ void KGALILEICenterApp::slotSessionQuit(void)
 	close();
 }
 
+
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotCreateDatabase(void)
 {
-
 //	RString arg = RString(" ");
 	QString strTmp;
 	QString modeleDb , stopList , users;
@@ -343,7 +343,7 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 	dlg.moreGroup->hide();
 	dlg.adjustSize();
 
-       // after ok button clicked
+	// after ok button clicked
 	if(dlg.exec())
 	{
 		QString dbName = dlg.DbName->text().latin1();
@@ -352,13 +352,14 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 		QString pass = dlg.password->text().latin1();
 		if (pass.length() == 0){pass="\\  ";} // put a space caracter if no password is entered
 
-      // if the database name field is empty -> ERROR
+		// if the database name field is empty -> ERROR
 		if( dbName.length() == 0)
-    {
+	    {
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a name for the database! "));
-      return;
-    }
-     // if the user or host is not specified -> ERROR
+			return;
+		}
+
+		// if the user or host is not specified -> ERROR
 		if( (host.length()== 0) || (user.length() == 0))
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a user and a host for the database! "));
@@ -366,10 +367,9 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 		}
 
      
-//************************* ------------- Find a Database Modele -----------------------*************************
-//
+		//************************* ------------- Find a Database Modele -----------------------*************************
 		strTmp = dlg.DBdatabasesql->url();
-     // if no url is specified then return error
+		// if no url is specified then return error
 		if (strTmp.length() == 0)
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must select a database shema file ! "));
@@ -391,9 +391,9 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 			modeleDb = tmp.latin1();
 		}
 
-//************************* ------------- Find a kwds Stop List  -----------------------*************************
+		//************************* ------------- Find a kwds Stop List  -----------------------*************************
 		strTmp = dlg.DBstoplistsql->url();
-      // if no url is specified then return error
+		// if no url is specified then return error
 		if (strTmp.length() == 0)
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must select a Database Stop List File ! "));
@@ -418,9 +418,9 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 		}
 
 
-//************************* ------------- Find a  List of Users -----------------------*************************
+		//************************* ------------- Find a  List of Users -----------------------*************************
 		strTmp = dlg.DBUserssql->url();
-      // if no url is specified then return error
+		// if no url is specified then return error
 		if (strTmp.length() == 0)
 		{
 			QMessageBox::critical(this,"KGALILEICenter",QString("You must select a Database Users File ! "));
@@ -444,7 +444,7 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 			users = tmp.latin1();
 		}
 
-//************************* ---------find the OS used----------*************************
+		//************************* ---------find the OS used----------*************************
 		cout <<"text="<<dlg.execFile->currentText().latin1()<<endl; //scriptName
 		strTmp = dlg.execFile->currentText().latin1(); //scriptName
 		if (strTmp.find("Linux",0) <0)
@@ -453,8 +453,8 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 			return;
 		}
 
-       // enter all the arg in this sequence:
-       // scriptName "DbName" "host" "user" "pass" "DbModele" "DbStopList  "DbUsers"  ...
+		// enter all the arg in this sequence:
+		// scriptName "DbName" "host" "user" "pass" "DbModele" "DbStopList  "DbUsers"  ...
 		RString cmdline = RString("");
 		cmdline+= "./DbCreation-mysql ";
 		cmdline+=" ";
@@ -474,7 +474,7 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 
 		cmdline+= "\n";
 
-    // creation of the database using a shell script.
+		// creation of the database using a shell script.
 		KShellProcess *process = new KShellProcess("/bin/bash");
 
 		connect(process,SIGNAL(receivedStdout(KProcess*,char*,int)),this,SLOT(slotStdout(KProcess*,char*,int)));
@@ -540,10 +540,10 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 		connect(process,SIGNAL(receivedStderr(KProcess*,char*,int)),this,SLOT(slotStderr(KProcess*,char*,int)));
 		connect(process,SIGNAL(processExited(KProcess*)),this,SLOT(slotProcessExited(KProcess*)));
 		*process << cmdline;
-	 	process->start(KProcess::NotifyOnExit,KProcess::All);
+		process->start(KProcess::NotifyOnExit,KProcess::All);
 	}
-
 }
+
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotStdout(KProcess* /*proc*/,char* buffer,int buflen)
@@ -575,7 +575,6 @@ void KGALILEICenterApp::slotProcessExited(KProcess*)
 	}
   else
 	d->Finish();
-
 }
 
 
