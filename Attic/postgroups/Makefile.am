@@ -7,3 +7,6 @@ SUBDIRS =
 libgalilei_postgroups_la_SOURCES = gpostgroup.cpp gpostgroupmanager.cpp
 postgroupsincludedir = $(includedir)/galilei/postgroups
 postgroupsinclude_HEADERS =  gpostgroup.h gpostgroupmanager.h
+
+self:
+	touch $@

@@ -60,7 +60,7 @@ using namespace ltmm;
 
 //-----------------------------------------------------------------------------
 GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(GException)
-	: RContainer<GFactoryPostGroup,unsigned int,true,true>(10,5)
+	: RContainer<GFactoryPostGroup,unsigned int,true,true>(10,5), Current(0)
 {
 	DIR* dp;
 	struct dirent* ep;
@@ -78,6 +78,7 @@ GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(GException
 	while((ep=readdir(dp)))
 	{
 		len=strlen(ep->d_name);
+		if(len<3) continue;
 		if(strcmp(&ep->d_name[len-3],".la")) continue;
 		if(!strcmp(&ep->d_name[len-7],"_dlg.la")) continue;
 		try
@@ -110,6 +111,7 @@ GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(GException
 			{
 			}
 		}
+		//catch(backend_error& e)
 		catch(std::exception& e)
 		{
 			Msg+=ep->d_name;
@@ -123,7 +125,6 @@ GPostGroupManager::GPostGroupManager(const char* path,bool dlg) throw(GException
 	// If something in Msg -> error
 	if(Msg.GetLen())
 	{
-		cout<<Msg<<endl;
 		throw(GException(Msg));
 	}
 }
@@ -157,6 +158,30 @@ void GPostGroupManager::Disconnect(GSession* session)
 		if(calc)
 			calc->Disconnect(session);
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GPostGroupManager::SetCurrentMethod(const char* name) throw(GException)
+{
+	GFactoryPostGroup* fac;
+	GPostGroup* tmp;
+
+	fac=GetPtr<const char*>(name);
+	if(fac)
+		tmp=fac->GetPlugin();
+	else
+		tmp=0;
+	Current=tmp;
+	if(!tmp)
+		throw GException(RString("PostGroup method '")+name+"' doesn't exists.");
+}
+
+
+//-----------------------------------------------------------------------------
+GPostGroup* GPostGroupManager::GetCurrentMethod(void)
+{
+	return(Current);
 }
 
 

@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 // include file for LibTool--
-#include <ltmm/loader.hh>
+//#include <ltmm/loader.hh>
 
 
 //-----------------------------------------------------------------------------
@@ -86,6 +86,11 @@ public:
 	GPostGroup(GFactoryPostGroup* fac) throw(bad_alloc);
 
 	/**
+	* runs the algorithm.
+	*/
+	virtual void Compute() throw(GException)=0 ;
+
+	/**
 	* Connect to a Session.
 	* @param session         The session.
 	*/
@@ -97,10 +102,7 @@ public:
 	*/
 	virtual void Disconnect(GSession* session);
 
-	/**
-	* runs the algorithm.
-	*/
-	virtual void Run(void)=0;
+
 
 	/**
 	* Destructor.

@@ -64,6 +64,12 @@ namespace GALILEI{
 */
 class GPostGroupManager : public R::RContainer<GFactoryPostGroup,unsigned int,true,true>
 {
+
+	/**
+	* Method currently selected.
+	*/
+	GPostGroup* Current;
+
 public:
 
 	/**
@@ -84,6 +90,18 @@ public:
 	* @param session         The session.
 	*/
 	void Disconnect(GSession* session);
+
+	/**
+	* Set the current method.
+	* @param name            Name of the method.
+	*/
+	void SetCurrentMethod(const char* name) throw(GException);
+
+	/**
+	* Get the current method.
+	* @return Pointer to GProfileCalc.
+	*/
+	GPostGroup* GetCurrentMethod(void);
 
 	/**
 	* Get a cursor over the filters of the system.
