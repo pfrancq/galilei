@@ -225,11 +225,15 @@ void GALILEI::GSession::CalcProfiles(GSessionSignalsReceiver* rec,GProfileCalc* 
 		{
 			prof=(*Users())();
 			s=prof->GetState();
-			if((s==osUpToDate)||(s==osUpdated)) continue;
+			if(s==osUpToDate) continue;
 			rec->receiveNextProfile(prof);
 			try
 			{
-				method->Compute(prof);
+				if(s!=osUpdated)
+					method->Compute(prof);
+				Save(prof);
+				if(s==osUpdated)
+					prof->SetState(osUpToDate);
 			}
 			catch(GException& e)
 			{

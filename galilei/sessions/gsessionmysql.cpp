@@ -208,6 +208,7 @@ GProfile* GALILEI::GSessionMySQL::NewProfile(GUser* usr,const char* desc) throw(
 	selectprofile.Begin();
 	id=strtoul(selectprofile[0],0,10);
 	prof=new GProfile(usr,id,desc,selectprofile[1],0,GetNbLangs());
+	usr->InsertPtr(prof);
 
 	// Construct SubProfiles
 	for(Langs.Start();!Langs.End();Langs.Next())
@@ -387,6 +388,7 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 	char sSql[1000];
 	char surl[200];
 	char sname[200];
+	GDoc *doc;
 
 	// Insert it
 	sprintf(sSql,"INSERT INTO htmls(html,title,mimetype,updated) VALUES(%s,%s,'%s',CURDATE())",
@@ -394,10 +396,12 @@ GDoc* GALILEI::GSessionMySQL::NewDoc(const char* url,const char* name,const char
 	RQuery insertdoc(this,sSql);
 
 	// Get Id and updated
-	sprintf(sSql,"SELECT htmlid,updated FROM htmls WHERE htmltid=LAST_INSERT_ID()");
+	sprintf(sSql,"SELECT htmlid,updated FROM htmls WHERE htmlid=LAST_INSERT_ID()");
 	RQuery selectdoc(this,sSql);
 	selectdoc.Begin();
-	return(new GDoc(url,name,strtoul(selectdoc[0],0,10),0,Mng->GetMIMEType(mime),selectdoc[1],0,0,0,0));
+	doc=new GDoc(url,name,strtoul(selectdoc[0],0,10),0,Mng->GetMIMEType(mime),selectdoc[1],0,0,0,0);
+	Docs.InsertPtr(doc);
+	return(doc);
 }
 
 
