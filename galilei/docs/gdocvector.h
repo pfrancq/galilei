@@ -173,6 +173,12 @@ public:
 	void RemoveRefs(void) const;
 
 	/**
+	* Get the vector representing the document.
+	* @returns Pointer to GIWordsWeights.
+	*/
+	GIWordsWeights* GetVector(void) {return(this);}
+
+	/**
 	* Destruct the document.
 	*/
 	virtual ~GDocVector(void);
