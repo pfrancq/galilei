@@ -121,8 +121,18 @@ public:
 	*
 	*/
 	void FillDict(GDict* dict) ;
-
 	
+	/**
+	*  loading docs ...
+	*/
+	void LoadDocs(void);
+
+
+	/**
+	*  downloading doc ...
+	*/
+	
+	void DownloadDoc(const RString& URL) ;
 	
 };
 
