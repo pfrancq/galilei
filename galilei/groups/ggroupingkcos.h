@@ -41,9 +41,11 @@
 #include <rstd/rcontainercursor.h>
 using namespace RStd;
 
+
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/ggrouping.h>
+#include <groups/ggroupingsim.h>
+#include <profiles/gprofilessim.h>
 
 
 //-----------------------------------------------------------------------------
@@ -57,15 +59,22 @@ class GGroup;
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupingKCos provides a representation for a method to group some
+* The GGroupingKCos provides a representation for a method to group
+some
 * subprofiles using the KMeans algorithm adapted to cosinus distance.
 * @author David Wartel
 * @short KMeansCos Grouping.
 */
 
-class GGroupingKCos : public GGrouping
+class GGroupingKCos :   public GGroupingSim
 {
+
 protected:
+
+	/**
+	* value for decimals error
+	*/
+	double Epsilon;
 
 	/**
 	* Random initial conditions or not.
@@ -103,6 +112,11 @@ protected:
 	unsigned int MinNbGroups;
 
 	/**
+	* check if the global similarity is required for the KMeansCos algorithm..
+	*/
+	bool GlobalSimi;
+
+	/**
 	* Container of subprofiles considered as prototypes
 	*/
 	RContainer<GSubProfile,unsigned int,false,false>* protos;
@@ -127,6 +141,12 @@ protected:
 	* Container of the final groupment
 	*/
 	RContainer<GGroup,unsigned int,false,false>* grpsfinal;
+
+	/*
+	* Similarities between all profiles;
+	*/
+	GProfilesSim* ProfSim;
+
 
 public:
 
@@ -154,9 +174,14 @@ public:
 	virtual void Init(void) throw(bad_alloc);
 
 	/**
+	* return true if the subprofile is a valid proto;
+	*/
+	bool IsValidProto(GSubProfile* s) throw(bad_alloc);
+
+	/**
 	* returns the 'nbsub' most relevant subprofiles.
-	*/	
-    void RelevantInitSubProfiles(int nbsub);
+	*/
+	void RelevantInitSubProfiles(int nbsub);
 
 	/**
 	* Get the status of the 'random' criterion
@@ -171,28 +196,16 @@ public:
 	int GetFindGroupsNumber(void) {return(FindGroupsNumber);}
 
 	/**
-	* Get the number of groups
-	* @return int value.
-	*/
-	int GetGroupsNumber(void) const {return(GroupsNumber);}
-
-	/**
-	* Get the maximum number of groups
-	* @return int value.
-	*/
-	int GetMaxNbGroups(void) const {return(MaxNbGroups);}
-
-	/**
-	* Get the minimum number of groups
-	* @return int value.
-	*/
-	int GetMinNbGroups(void) const {return(MinNbGroups);}
-
-	/**
 	* Get the number of tests
 	* @return int value.
 	*/
 	int GetTestsNumber(void) const {return(NbTests);}
+
+	/**
+	* Get the status of the 'GlobalSim' criterion
+	* @return bool value.
+	*/
+	bool GetGlobalSimi(void) const {return(GlobalSimi);}
 
 	/**
 	* Get the maximum number of iterations.
@@ -209,32 +222,21 @@ public:
 	/**
 	* Set the status of 'FindGroupsNumber' criterion.
 	* @param s              Find Groups Number?
-	*/
-	void SetFindGroupsNumber(bool s) {FindGroupsNumber=s;}
+       */
+	 void SetFindGroupsNumber(bool s) {FindGroupsNumber=s;}
 
-	/**
-	* Set the number of groups
-	* @param i              number to set.
-	*/
-	void SetGroupsNumber(int  i) {GroupsNumber=i;}
 
-	/**
-	* Set the maximum number of groups.
-	* @param i              max number to set.
-	*/
-	void SetMaxNbGroups(int  i) {MaxNbGroups=i;}
-
-	/**
-	* Set the minimum number of groups.
-	* @param i              min number to set.
-	*/
-	void SetMinNbGroups(int  i) {MinNbGroups=i;}
-
-	/**
+	 /**
 	* Set the number of tests
 	* @param i              number to set.
 	*/
 	void SetTestsNumber(int  i) {NbTests=i;}
+
+	/**
+	* Set the status of the 'GlobalSim' criterion.
+	* @param s              global?
+	*/
+	void SetGlobalSimi(bool s) {GlobalSimi=s;}
 
 	/**
 	* Set the number of iteration.
@@ -246,6 +248,16 @@ public:
 	* returns the group containing the subprofile s;
 	*/
 	GGroup* FindGroup(GSubProfile* s);
+
+	/**
+	* evalute the number of groups by first fit
+	*/
+	void EvaluateGroupsNumber(void);
+
+	/**
+	* find the maximum and minimum number of group;
+	*/
+	void FindGroupsNumberLimits(void);
 
 	/**
 	* Calculates the cost function for a kmeanscos clustering
@@ -278,10 +290,9 @@ public:
 	double GroupSumSimilarity(GSubProfile * s, GGroup *g) ;
 
 	/**
-	* returns the most relevant subprofile from a group
-	* @param g              group containing the subprofiles
+	* return the chosen similarity between two subprofiles
 	*/
-	GSubProfile* RelevantSubProfile(GGroup* g);
+	double Similarity(GSubProfile* s1, GSubProfile* s2);
 
 	/**
 	* returns the Calinsky index for the clustering
@@ -289,14 +300,26 @@ public:
 	double CalcCalinsky(void);
 
 	/**
-	* returns the (intra/min(inter)) measure.
+	* returns the knearestneighboors measure.
 	*/
-	double TestMeasure(void);
+	double TestMeasure(int k);
 
 	/**
 	* returns the "recouvrement" rate.
 	*/
 	double StatMeasure(void);
+
+	/**
+	*  returns the variance of a grouping.
+	*/
+	double Variance(RContainer<GGroup,unsigned int,false,false>* grps)  ;
+
+
+	/**
+	* pal measure
+	*/
+	double PalMeasure(void);
+
 
 protected:
 
@@ -304,12 +327,13 @@ protected:
 	* Test if a group is valid. If a group isn't not valid, the group is
 	* deleted and all profiles are to be inserted again.
 	*/
-	virtual bool IsValid(GGroup* /*grp*/){return (true);};
+	virtual bool IsValid(GGroup* /*grp*/){return (false);};
 
 	/**
 	* Make the grouping for a specific Language.
 	*/
 	virtual void Run(void) throw(GException);
+
 
 public:
 
@@ -320,8 +344,9 @@ public:
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+}  //-------- End of namespace GALILEI----------------------------------------
 
 
 //-----------------------------------------------------------------------------
 #endif
+
