@@ -203,7 +203,6 @@ unsigned int GALILEI::GSessionMySQL::GetDicNextId(const char* word,const GDict* 
 
 	// Get the existing word for derivate of 'insert' 'delete' 'update' 'delete'
 
-
 	// Insert the new word
 	sprintf(sSql,"INSERT INTO %skwds(kwd) VALUES('%s')",dict->GetLang()->GetCode(),word);
 	RQuery insert(this,sSql);
@@ -750,7 +749,6 @@ void GALILEI::GSessionMySQL::SaveDoc(GDoc* doc) throw(GException)
 
 
 			sprintf(sSql,"INSERT INTO %shtmlsbykwds(htmlid,kwdid,occurs) VALUES (%u,%u,%f)",l,id,Words()->GetId(),Words()->GetWeight());
-//			cout << sSql<<endl;
 			RQuery insertkwds(this,sSql);
 		}
 		l=ValidSQLValue(l,slang);
@@ -791,7 +789,7 @@ void GALILEI::GSessionMySQL::SaveWordsGroups(GDict* dict) throw(GException)
 		{
 			sprintf(sSql,"INSERT INTO %skwdsbygroups(grid,kwdid) VALUES (%u,%u)",dict->GetLang()->GetCode(),tmp->GetId(),
 			(*(tmp->List))()->GetId()) ;
-      try
+ 			try
 			{
 				RQuery insertword(this,sSql);
 			}
@@ -1309,7 +1307,7 @@ GGroupsHistory* GALILEI::GSessionMySQL::LoadAnHistoricGroups(RContainer<GSubProf
 		if((v!=groupid))
 		{
 			groupid=v;
-			grp=new GGroupHistory(groupid, lang);
+			grp=new GGroupHistory(groupid, lang, grps);
 			//insert group in the container of groups.
 			grps->InsertPtr(grp);
 		}
