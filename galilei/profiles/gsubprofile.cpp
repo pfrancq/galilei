@@ -106,7 +106,7 @@ double GALILEI::GSubProfile::Similarity(const GSubProfile *sub) const
 			if((*Common)()->GetId()==(*sub->Common)()->GetId()) Sim++;
 	}
 	NbComp=OK->NbPtr+Common->NbPtr+sub->OK->NbPtr+sub->Common->NbPtr;
-	Sim=(4.0*Sim)/static_cast<double>(NbComp);
+	Sim=(2.0*Sim)/static_cast<double>(NbComp);
 	return(Sim);
 }
 
