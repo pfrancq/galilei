@@ -370,43 +370,129 @@ void GALILEI::GDocAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GExcepti
 }
 
 
+////-----------------------------------------------------------------------------
+//void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
+//{
+//	const char* ptr;
+//	const char* endPtr;
+//	GDoc* tmpDoc=0;
+//
+//	endPtr=ptr=0;
+//
+//	if (tag->GetName()=="dc:identifier")
+//	{
+//		ptr=tag->GetContent();
+//
+//		// keep only html links (-> whith html extension)
+//		endPtr=ptr;
+//		while (*endPtr)
+//		{
+//			endPtr++;
+//		}
+//		while ((*endPtr)!='.')
+//		{
+//			endPtr--;
+//		}
+//		if ((!strncasecmp(endPtr,".html",5)) || (!strncasecmp(endPtr,".htm",4)))
+//		{
+//			tmpDoc = Session->GetDoc(ptr);   //where ptr is the url.
+//			if (! tmpDoc)
+//			{
+//				if (externalLinks)
+//				{
+//					DocsToAdd->InsertPtr(tmpDoc=Session->NewDoc(ptr,ptr,"text/html"));
+//					tmpDoc->SetState(osNotNeeded);
+//				}
+//			}
+//			else
+//			{
+//				Doc->InsertLink(tmpDoc);
+//			}
+//		}
+//	}
+//	else
+//	{
+//		for (tag->Start();!tag->End();tag->Next())
+//			AnalyseLinksTag((*tag)(),externalLinks,DocsToAdd);
+//	}
+//#pragma warn "ici il faut rajouter les proprietes des liens." ;
+//}
+
+
 //-----------------------------------------------------------------------------
 void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
 {
 	const char* ptr;
 	const char* endPtr;
+	char* url;
+	char* type;
+	char* format;
 	GDoc* tmpDoc=0;
+	bool bUrl;
 
 	endPtr=ptr=0;
-
-	if (tag->GetName()=="dc:identifier")
+	bUrl=false;
+	url=new char[250];
+	type=new char[100];
+	format=new char[100];
+	
+	if (tag->GetName()== "docxml:metaData")
 	{
-		ptr=tag->GetContent();
-
-		// keep only html links (-> whith html extension)
-		endPtr=ptr;
-		while (*endPtr)
+		bUrl=false;
+		
+		type=0;
+		format=0;
+		for (tag->Start();!tag->End();tag->Next())
 		{
-			endPtr++;
-		}
-		while ((*endPtr)!='.')
-		{
-			endPtr--;
-		}
-		if ((!strncasecmp(endPtr,".html",5)) || (!strncasecmp(endPtr,".htm",4)))
-		{
-			tmpDoc = Session->GetDoc(ptr);   //where ptr is the url.
-			if (! tmpDoc)
+			if ((*tag)()->GetName()=="dc:identifier")
 			{
-				if (externalLinks)
+				bUrl=true;
+				url=(*tag)()->GetContent();
+			}
+			if ((*tag)()->GetName()=="dc:format")
+			{
+				format=(*tag)()->GetContent();
+			}
+			if ((*tag)()->GetName()=="dc:type")
+			{
+				type=(*tag)()->GetContent();
+				if (!strcmp(type,"REFRESH"))
 				{
-					DocsToAdd->InsertPtr(tmpDoc=Session->NewDoc(ptr,ptr,"text/html"));
-					tmpDoc->SetState(osNotNeeded);
+					if (!Options->UseRedirection)
+					{
+						bUrl=false;
+					}
 				}
 			}
-			else
+		}
+		if (bUrl) 
+		{
+			ptr=strdup(url);
+			// keep only html links (-> whith html extension)
+			endPtr=ptr;
+			while (*endPtr)
 			{
-				Doc->InsertLink(tmpDoc);
+				endPtr++;
+			}
+			while ((*endPtr)!='.')
+			{
+				endPtr--;
+			}
+			if ((!strncasecmp(endPtr,".html",5)) || (!strncasecmp(endPtr,".htm",4)))
+			{
+				tmpDoc = Session->GetDoc(ptr);   //where ptr is the url.
+				if (! tmpDoc)
+				{
+					if (externalLinks)
+					{
+						DocsToAdd->InsertPtr(tmpDoc=Session->NewDoc(ptr,ptr,"text/html"));
+						tmpDoc->SetState(osNotNeeded);
+					}
+				}
+				else
+				{
+					Doc->InsertLink(tmpDoc,format,type);
+				}
 			}
 		}
 	}
@@ -417,6 +503,7 @@ void GALILEI::GDocAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RCon
 	}
 #pragma warn "ici il faut rajouter les proprietes des liens." ;
 }
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
