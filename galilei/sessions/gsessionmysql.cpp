@@ -970,7 +970,7 @@ GInstIR* GALILEI::GSessionMySQL::LoadInstIR(GLang* lang,RGA::RObjs<GObjIR>* objs
 	popsize=atoi(count[0]);
 	if(!popsize) return(0);
 
-	InstIR=new GInstIR(this,lang,0,objs,sim,p,0);
+	InstIR=new GInstIR(this,lang,0,objs,sim,p,popsize,0);
 	InstIR->Init(&data);
 	sprintf(sSql,"SELECT chromoid,groupid,subprofileid FROM tempchromo WHERE lang='%s' ORDER by chromoid,groupid",lang->GetCode());
 	RQuery GA(this,sSql);
