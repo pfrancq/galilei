@@ -554,7 +554,16 @@ void GRealLifeI::CommonTasks(GSlot* r) throw(GException)
 		algo->SetIdealGroups(Owner->Session->GetIdealGroups());
 	}
 	Owner->Session->GroupingProfiles(r,Owner->FirstGroup,Owner->AutoSave);
+
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
+
+	// Store History
+	if(History)
+	{
+		sprintf(tmp,"Store History n°%u",Owner->NbHistory);
+		r->WriteStr(tmp);
+		Owner->Session->SaveMixedGroups(Owner->Session->GetGroups(),Owner->NbHistory++);
+	}
 
 	// Compare Ideal
 	r->WriteStr("Compare with Ideal Groups");
@@ -584,16 +593,18 @@ void GRealLifeI::Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned
 	unsigned int nb;
 	unsigned int NewProf;
 
-	if(args->NbPtr!=4)
-		throw GException("Method needs four parameters");
-	sprintf(tmp,"Real Life: Settings=\"%s\",\"%s\",\"%s\",\"%s\"",
-	        args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg),args->Tab[2]->GetValue(prg),args->Tab[3]->GetValue(prg));
+	if(args->NbPtr!=5)
+		throw GException("Method needs five parameters");
+	sprintf(tmp,"Real Life: Settings=\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+	        args->Tab[0]->GetValue(prg),args->Tab[1]->GetValue(prg),args->Tab[2]->GetValue(prg),
+	        args->Tab[3]->GetValue(prg),args->Tab[4]->GetValue(prg));
 	r->WriteStr(tmp);
 	Random=Owner->Session->GetRandom();
 	MaxStep=atoi(args->Tab[0]->GetValue(prg));
 	MinFBStep=atoi(args->Tab[1]->GetValue(prg));
 	MaxFBStep=atoi(args->Tab[2]->GetValue(prg))-MinFBStep+1;
 	Proba=atof(args->Tab[3]->GetValue(prg));
+	History=atoi(args->Tab[4]->GetValue(prg));
 	What[1]=0;
 	for(NbStep=0;;)
 	{
@@ -701,11 +712,20 @@ void GClearNewProfilesI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsi
 {
 	if(args->NbPtr!=0)
 		throw GException("Method needs no parameter");
-	strcpy(tmp,"Create Ideal Groups");
 	r->WriteStr("Clear New Profiles");
 	Owner->GetIdealMethod()->ClearLastAdded();
 }
 
+
+//-----------------------------------------------------------------------------
+void GStoreInHistoryI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException)
+{
+	if(args->NbPtr!=0)
+		throw GException("Method needs no parameter");
+	sprintf(tmp,"Store History n°%u",Owner->NbHistory);
+	r->WriteStr(tmp);
+	Owner->Session->SaveMixedGroups(Owner->Session->GetGroups(),Owner->NbHistory++);
+}
 
 
 //-----------------------------------------------------------------------------
@@ -717,7 +737,7 @@ void GClearNewProfilesI::Run(GSessionPrg*,GSlot* r,RStd::RContainer<GPrgVar,unsi
 //-----------------------------------------------------------------------------
 GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	: GPrgClass("Session"), IdealMethod(0), Session(s), OFile(0),
-	  GOFile(0), SOFile(0), AutoSave(false), TrackNewProfiles(false) 
+	  GOFile(0), SOFile(0), NbHistory(0), AutoSave(false), TrackNewProfiles(false) 
 {
 	Methods.InsertPtr(new GOutputI(this));
 	Methods.InsertPtr(new GGOutputI(this));
@@ -746,6 +766,7 @@ GALILEI::GPrgClassSession::GPrgClassSession(GSession* s) throw(bad_alloc)
 	Methods.InsertPtr(new GAddAssessmentsI(this));
 	Methods.InsertPtr(new GTrackNewProfilesI(this));
 	Methods.InsertPtr(new GClearNewProfilesI(this));
+	Methods.InsertPtr(new GStoreInHistoryI(this));
 };
 
 

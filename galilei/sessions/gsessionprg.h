@@ -104,6 +104,11 @@ public:
 	RIO::RTextFile* SOFile;
 
 	/**
+	* Number of histories stored.
+	*/
+	unsigned int NbHistory;
+
+	/**
 	* Precision of the current groupement.
 	*/
 	double Precision;
@@ -385,6 +390,7 @@ class GRealLifeI : public GSM
 {
 	GGetFeedback FdbksMethod;
 	char What[2];
+	bool History;
 	void CommonTasks(GSlot* r) throw(GException);
 public:
 	GRealLifeI(GPrgClassSession* o) : GSM("RealLife",o),FdbksMethod(Owner->Session) {}
@@ -418,6 +424,14 @@ public:
 	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
 };
 
+
+//-----------------------------------------------------------------------------
+class GStoreInHistoryI : public GSM
+{
+public:
+	GStoreInHistoryI(GPrgClassSession* o) : GSM("StoreInHistory",o) {}
+	virtual void Run(GSessionPrg* prg,GSlot* r,RStd::RContainer<GPrgVar,unsigned int,true,false>* args) throw(GException);
+};
 
 
 //-----------------------------------------------------------------------------
