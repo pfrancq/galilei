@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gprofilecalcfeedback.h>
+#include <profiles/gprofilecalc.h>
 using namespace GALILEI;
 
 
@@ -71,13 +71,11 @@ static const char *description =
 
 
 //------------------------------------------------------------------------------
-//
-// class GProfileCalcFeedback
-//
+extern "C" {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GProfileCalcFeedback::About(void)
+void About(void)
 {
 	KAboutData aboutData( "feedback", I18N_NOOP("Feedback Subprofile Computing Method "),
 		"1.0", description, KAboutData::License_GPL,
@@ -89,7 +87,7 @@ void GProfileCalcFeedback::About(void)
 
 
 //------------------------------------------------------------------------------
-void GProfileCalcFeedback::Configure(GFactoryProfileCalc* params)
+void Configure(GFactoryProfileCalc* params)
 {
  	DlgConfig_Qt dlg;
 
@@ -110,3 +108,8 @@ void GProfileCalcFeedback::Configure(GFactoryProfileCalc* params)
  		params->Apply();
  	}
 }
+
+
+//------------------------------------------------------------------------------
+}     // end of extern
+//------------------------------------------------------------------------------

@@ -192,17 +192,6 @@ public:
 	virtual tSubProfileDesc GetType(void) const {return(sdVector);}
 
 	/**
-	* Show 'about' information.
-	*/
-	static void About(void);
-
-	/**
-	* Configure the parameters.
-	* @param params          Parameters to configure.
-	*/
-	static void Configure(GFactoryProfileCalc* params);
-
-	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/

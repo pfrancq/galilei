@@ -272,4 +272,4 @@ GProfileCalcFeedback::~GProfileCalcFeedback(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_PROFILECALC_FACTORY("Optimist and Pessimist Feedback Method",GProfileCalcFeedback,true,true)
+CREATE_PROFILECALC_FACTORY("Optimist and Pessimist Feedback Method",GProfileCalcFeedback)
