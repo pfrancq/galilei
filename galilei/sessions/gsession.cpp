@@ -478,9 +478,9 @@ void GALILEI::GSession::InitUsers(void) throw(bad_alloc,GException)
 
 	// Load the users
 	LoadUsers();
-  bUsers=true;
+	bUsers=true;
 
-  // Initialise the profiles sims  
+	// Initialise the profiles sims  
 	InitProfilesSims();
 
 	// Initialise the sims between documents and subprofiles
@@ -623,7 +623,7 @@ double GALILEI::GSession::GetMinimumOfSimilarity(RStd::RContainer<GSubProfile,un
 	deviation=profSim->GetDeviation();
 	minSim=meanSim+deviationrate*sqrt(deviation);
 
-//	cout << "Minimum of Similarity from Session = "<<minSim<<endl;
+	cout << "Minimum of Similarity from Session = "<<minSim<<endl;
 	return(minSim);
 }
 
@@ -939,6 +939,29 @@ RStd::RContainer<GGroupsHistory, unsigned int, false,true>* GALILEI::GSession::L
 	}
 
 	return(historicalgroups);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GSession::ReInit(bool)
+{
+	//clean subprofiles = clear the feedbacles & the content of the profiles.
+	ClearFdbks();
+
+	// clean similarities between profiles
+	delete(ProfilesSims);
+
+	// clean similarities between documents and subprofiles
+	delete(DocProfSims);
+
+	// set group to 0 for subprofiles.
+	ClearSubProfilesGroups();
+
+	//re-init similarities between profiles;
+	InitProfilesSims();
+
+	// re-Init the sims between documents and subprofiles
+	InitDocProfSims();  
 }
 
 

@@ -757,6 +757,12 @@ public:
 	virtual unsigned int GetHistorySize(void) =0;
 
 	/**
+	* re-init the session (clear all containers).
+	* @param Save           must the reinit be saved?
+	*/
+	void ReInit(bool Save);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSession(void) throw(GException);
