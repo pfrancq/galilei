@@ -38,8 +38,8 @@
 // include files for GALILEI
 #include <docs/gdoc.h>
 #include <infos/glang.h>
-#include <galilei/gfiltermanagerkde.h>
-#include <galilei/qlistviewitemtype.h>
+#include <frontend/kde/gfiltermanagerkde.h>
+#include <frontend/kde/qlistviewitemtype.h>
 #include <sessions/gsession.h>
 #include <profiles/guser.h>
 #include <profiles/gprofdoc.h>

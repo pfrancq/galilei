@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei/qlistviewitemtype.h>
+#include <frontend/kde/qlistviewitemtype.h>
 using namespace GALILEI;
 
 

@@ -44,7 +44,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/glang.h>
-#include <galilei/qgprofile.h>
+#include <frontend/kde/qgprofile.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -53,8 +53,8 @@
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
 #include <sessions/gsession.h>
-#include <galilei/qlistviewitemtype.h>
-#include <galilei/qgsubprofiledescs.h>
+#include <frontend/kde/qlistviewitemtype.h>
+#include <frontend/kde/qgsubprofiledescs.h>
 using namespace GALILEI;
 using namespace R;
 

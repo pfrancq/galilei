@@ -52,7 +52,7 @@ using namespace R;
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
-#include <galilei/qlistviewitemtype.h>
+#include <frontend/kde/qlistviewitemtype.h>
 #include <infos/gweightinfo.h>
 using namespace GALILEI;
 

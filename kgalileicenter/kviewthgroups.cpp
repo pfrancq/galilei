@@ -51,7 +51,7 @@ using namespace R;
 #include <groups/ggroupvector.h>
 #include <groups/ggroups.h>
 #include <groups/gsubjects.h>
-#include <galilei/qlistviewitemtype.h>
+#include <frontend/kde/qlistviewitemtype.h>
 using namespace GALILEI;
 
 

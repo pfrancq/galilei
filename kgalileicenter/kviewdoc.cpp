@@ -51,8 +51,8 @@ using namespace R;
 // include files for GALILEI
 #include <infos/gweightinfo.h>
 #include <infos/gweightinfos.h>
-#include <galilei/qlistviewitemtype.h>
-#include <galilei/qgdocxml.h>
+#include <frontend/kde/qlistviewitemtype.h>
+#include <frontend/kde/qgdocxml.h>
 #include <docs/gdocvector.h>
 #include <docs/gdocxml.h>
 #include <profiles/guser.h>

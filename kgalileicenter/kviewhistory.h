@@ -58,8 +58,8 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for QtWidgets
-#include <galilei/qggroupshistory.h>
-#include <galilei/qlistviewitemtype.h>
+#include <frontend/kde/qggroupshistory.h>
+#include <frontend/kde/qlistviewitemtype.h>
 
 
 //-----------------------------------------------------------------------------

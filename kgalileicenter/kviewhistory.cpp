@@ -63,7 +63,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for qtwidgetsI
-#include <galilei/qlistviewitemtype.h>
+#include <frontend/kde/qlistviewitemtype.h>
 
 
 //-----------------------------------------------------------------------------

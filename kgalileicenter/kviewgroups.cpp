@@ -44,7 +44,7 @@
 #include <infos/glang.h>
 #include <groups/ggroups.h>
 #include <sessions/gsession.h>
-#include <galilei/qlistviewitemtype.h>
+#include <frontend/kde/qlistviewitemtype.h>
 using namespace GALILEI;
 using namespace R;
 

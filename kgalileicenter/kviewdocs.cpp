@@ -37,7 +37,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei/qlistviewitemtype.h>
+#include <frontend/kde/qlistviewitemtype.h>
 #include <docs/gdoc.h>
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
