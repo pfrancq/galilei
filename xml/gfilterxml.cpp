@@ -98,7 +98,7 @@ GALILEI::GFilterXML::GFilterXML(GFactoryFilter* fac)
 	: GFilter(fac), Tags(0),
 	 Buffer(0), Chars(50,5)
 {
-	AddMIME("text/xml");
+	AddMIME("text/xmlReu");
 	InitCharContainer();
 	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
 	
@@ -241,7 +241,7 @@ bool GALILEI::GFilterXML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	handle=open(Doc->GetFile(),accessmode);
 	fstat(handle, &statbuf);
 	if(handle==-1)
-		throw GException("file not found");
+		throw GException("file not found : "+Doc->GetFile());
 	Block=Pos=Buffer=new char[statbuf.st_size+1];
 	TagLen=0;
 	read(handle,Buffer,statbuf.st_size);
@@ -746,4 +746,4 @@ GALILEI::GFilterXML::~GFilterXML()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("XML Filter",GFilterXML)
+CREATE_FILTER_FACTORY("Reuters Corpus XML Filter",GFilterXML)

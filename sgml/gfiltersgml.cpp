@@ -99,7 +99,7 @@ GALILEI::GFilterSGML::GFilterSGML(GFactoryFilter* fac)
 	: GFilter(fac/*"SGML Filter",*/), Tags(0),
 	 Buffer(0), Chars(50,5)
 {
-	AddMIME("text/sgml");
+	AddMIME("text/sgmlTrec");
 	InitCharContainer();
 	Tags=new RContainer<Tag,unsigned int,true,true>(10,5);
 	Tags->InsertPtr(new Tag("DOC","",Tag::tDOC,false,8,false));
@@ -254,7 +254,7 @@ bool GALILEI::GFilterSGML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	#endif
 	handle=open(Doc->GetFile(),accessmode);
 	if(handle==-1)
-		throw GException("file not found");
+		throw GException("file not found : "+Doc->GetFile());
 	fstat(handle, &statbuf);
 	Block=Pos=Buffer=new char[statbuf.st_size+1];
 	TagLen=0;
@@ -600,4 +600,4 @@ GALILEI::GFilterSGML::~GFilterSGML()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("SGML Filter",GFilterSGML)
+CREATE_FILTER_FACTORY("Trec SGML Filter",GFilterSGML)

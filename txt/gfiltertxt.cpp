@@ -88,7 +88,7 @@ bool GFilterTXT::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	#endif
 	handle=open(Doc->GetFile(),accessmode);
 	if(handle==-1)
-		throw GException("file not found");
+		throw GException("file not found : "+Doc->GetFile());
 	fstat(handle, &statbuf);
 	Begin=Pos=Buffer=new char[statbuf.st_size+1];
 	read(handle,Buffer,statbuf.st_size);
