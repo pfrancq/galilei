@@ -634,7 +634,7 @@ install_location=
 type=HEADER
 
 [kgalileicenter/galilei/profiles/Makefile.am]
-files=kgalileicenter/galilei/profiles/gprofdoc.cpp,kgalileicenter/galilei/profiles/gprofdoc.h,kgalileicenter/galilei/profiles/gprofile.cpp,kgalileicenter/galilei/profiles/gprofile.h,kgalileicenter/galilei/profiles/gprofilecalc.cpp,kgalileicenter/galilei/profiles/gprofilecalc.h,kgalileicenter/galilei/profiles/gprofilecalcvector.cpp,kgalileicenter/galilei/profiles/gprofilecalcvector.h,kgalileicenter/galilei/profiles/gsubprofile.cpp,kgalileicenter/galilei/profiles/gsubprofile.h,kgalileicenter/galilei/profiles/gsubprofiledesc.cpp,kgalileicenter/galilei/profiles/gsubprofiledesc.h,kgalileicenter/galilei/profiles/guser.cpp,kgalileicenter/galilei/profiles/guser.h,kgalileicenter/galilei/profiles/gusers.cpp,kgalileicenter/galilei/profiles/gusers.h,kgalileicenter/galilei/profiles/gsubprofilevector.cpp,kgalileicenter/galilei/profiles/gsubprofilevector.h,kgalileicenter/galilei/profiles/gprofilecalcfeedback.cpp,kgalileicenter/galilei/profiles/gprofilecalcfeedback.h,kgalileicenter/galilei/profiles/gprofilecalcreweighting.cpp,kgalileicenter/galilei/profiles/gprofilecalcreweighting.h
+files=kgalileicenter/galilei/profiles/gprofdoc.cpp,kgalileicenter/galilei/profiles/gprofdoc.h,kgalileicenter/galilei/profiles/gprofile.cpp,kgalileicenter/galilei/profiles/gprofile.h,kgalileicenter/galilei/profiles/gprofilecalc.cpp,kgalileicenter/galilei/profiles/gprofilecalc.h,kgalileicenter/galilei/profiles/gprofilecalcvector.cpp,kgalileicenter/galilei/profiles/gprofilecalcvector.h,kgalileicenter/galilei/profiles/gsubprofile.cpp,kgalileicenter/galilei/profiles/gsubprofile.h,kgalileicenter/galilei/profiles/gsubprofiledesc.cpp,kgalileicenter/galilei/profiles/gsubprofiledesc.h,kgalileicenter/galilei/profiles/guser.cpp,kgalileicenter/galilei/profiles/guser.h,kgalileicenter/galilei/profiles/gusers.cpp,kgalileicenter/galilei/profiles/gusers.h,kgalileicenter/galilei/profiles/gsubprofilevector.cpp,kgalileicenter/galilei/profiles/gsubprofilevector.h,kgalileicenter/galilei/profiles/gprofilecalcfeedback.cpp,kgalileicenter/galilei/profiles/gprofilecalcfeedback.h,kgalileicenter/galilei/profiles/gprofilecalcreweighting.cpp,kgalileicenter/galilei/profiles/gprofilecalcreweighting.h,kgalileicenter/galilei/profiles/gprofilessim.h,kgalileicenter/galilei/profiles/gprofilessim.cpp
 sharedlib_LDFLAGS=-version-info 0:0:1
 sharedlib_rootname=profiles
 sub_dirs=
@@ -707,6 +707,18 @@ install_location=
 type=SOURCE
 
 [kgalileicenter/galilei/profiles/gprofilecalcvector.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[kgalileicenter/galilei/profiles/gprofilessim.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kgalileicenter/galilei/profiles/gprofilessim.h]
 dist=true
 install=false
 install_location=
