@@ -151,7 +151,7 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 {
 	static char tmp[100];
 
-	sprintf(tmp,"%u %u %u %i %u %u %u %u %u %u",PercOK,PercKO,PercHS,Rand,NbProfMin,NbProfMax,PercSocial,PercErr,PercGrp,NbDocPerGrp);
+	sprintf(tmp,"%f %f %f %i %u %u %f %f %f %u",PercOK,PercKO,PercHS,Rand,NbProfMin,NbProfMax,PercSocial,PercErr,PercGrp,NbDocPerGrp);
 
 	return(tmp);
 }
@@ -160,9 +160,10 @@ const char* GALILEI::GIdealGroup::GetSettings(void)
 //-----------------------------------------------------------------------------
 void GALILEI::GIdealGroup::SetSettings(const char* s)
 {
-	unsigned int a,b;
+	unsigned int a;
+	unsigned int b;
 	if(!(*s)) return;
-	sscanf(s,"%u %u %u %i %u %u %u %u %u %u",&PercOK,&PercKO,&PercHS,&Rand,&a,&b,&PercSocial,&PercErr,&PercGrp,&NbDocPerGrp);
+	sscanf(s,"%lf %lf %lf %i %u %u %lf %lf %lf %u",&PercOK,&PercKO,&PercHS,&Rand,&a,&b,&PercSocial,&PercErr,&PercGrp,&NbDocPerGrp);
 	if (a<=b) NbProfMin=a;
 	if (b<=Session->GetNbUsers()) NbProfMax=b;
 	if (b==0) NbProfMax=Session->GetNbUsers();

@@ -130,13 +130,13 @@ void GALILEI::GGetFeedback::Run(RStd::RContainer<GGroupIdParentId,unsigned int,t
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GGetFeedback::JudgType(GSubProfile* SubProf,GDoc* Doc)
+unsigned int GALILEI::GGetFeedback::JudgType(GSubProfile* SubProf,GDoc* Doc)
 {
-
-	int GrpDocId;
-	int GrpProfId;
-	int tempres=3;
-	int nbgrp=0;
+	unsigned int GrpDocId;
+	unsigned int GrpProfId;
+	unsigned int tempres=3;
+	unsigned int nbgrp=0;
+	unsigned int compt=0;
 
 	for(IdealGroup->Start();!IdealGroup->End();IdealGroup->Next())
 	{
@@ -147,12 +147,10 @@ int GALILEI::GGetFeedback::JudgType(GSubProfile* SubProf,GDoc* Doc)
 		}
 	}
 	
-	int* tab;
-	tab=new int [nbgrp];
-	for (int i=0; i<nbgrp;i++)
+	unsigned int* tab;
+	tab=new unsigned int [nbgrp];
+	for (unsigned int i=0; i<nbgrp;i++)
 		tab[i]=0;
-
-	int compt=0;
 
 	// Find The id of the group where the document is.
 	for(IdealDoc->Start();! IdealDoc->End();  IdealDoc->Next())
@@ -190,7 +188,7 @@ int GALILEI::GGetFeedback::JudgType(GSubProfile* SubProf,GDoc* Doc)
 	{
 		// Compare his two id.
 		// Same grp.  
-		for(int i=0;i<nbgrp;i++)
+		for(unsigned int i=0;i<nbgrp;i++)
 		{
 			if(tab[i]!=0)
 			{
@@ -203,7 +201,7 @@ int GALILEI::GGetFeedback::JudgType(GSubProfile* SubProf,GDoc* Doc)
 		if(tempres==3)
 		{
 			unsigned int b=Parent->GetPtr(GrpProfId)->ParentId;
-			for(int i=0;i<nbgrp;i++)
+			for(unsigned  int i=0;i<nbgrp;i++)
 			{
 				if(tab[i]!=0)
 				{
@@ -229,7 +227,7 @@ int GALILEI::GGetFeedback::JudgType(GSubProfile* SubProf,GDoc* Doc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGetFeedback::CreateNewFeedback(int fdbk,GSubProfile* sub,GDoc* doc)
+void GALILEI::GGetFeedback::CreateNewFeedback(unsigned int fdbk,GSubProfile* sub,GDoc* doc)
 {
 	//Auto create Judgement for prof11 on a % of ok, ko or hs documents from prof22.
 	char today[12];

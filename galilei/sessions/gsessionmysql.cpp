@@ -425,7 +425,6 @@ void GALILEI::GSessionMySQL::LoadIdealDocument(RContainer<GGroupsEvaluate,unsign
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		groups = new GGroupsEvaluate(Langs());
-	//	sprintf(sSql,"SELECT distinct subsubjectid FROM subjectbyhtmls WHERE langid='%s'",Langs()->GetCode());
 		sprintf(sSql,"SELECT distinct subsubjectid FROM subsubject WHERE langid='%s'",Langs()->GetCode());
 		RQuery sel(this,sSql);
 		for(sel.Start();!sel.End();sel.Next())

@@ -74,17 +74,17 @@ protected:
 	/**
 	* Number of documents Ok per profile.
 	*/
-	unsigned int NbDocsOk;
+	double NbDocsOk;
 
 	/**
 	* Number of documents Ko per profile.
 	*/
-	unsigned int NbDocsKo;
+	double NbDocsKo;
 
 	/**
 	* Number of documents Hs per profile.
 	*/
-	unsigned int NbDocsHs;
+	double NbDocsHs;
 
 	/**
 	* Number of users in database;.
@@ -130,7 +130,7 @@ public:
 	* @param nbKO           %of ok document.
 	* @param nbusers        nb of users in the database.
 	*/
-	GSubjectTree(unsigned int nbOk,unsigned int nbKo,unsigned int nbusers);
+	GSubjectTree(double nbOk,double nbKo,unsigned int nbusers);
 
 	/**
 	* Static function used to ordered by frenquecy.
@@ -143,7 +143,7 @@ public:
 	* @param precgrp        The perc of group who will be in the session.
 	* @param NBDocPerGrp    The minimal number of document per group to keep the group.
 	*/
-	void ChooseSubject(GSession* ses,unsigned int percgrp,unsigned int NbDocPerGrp);
+	void ChooseSubject(GSession* ses,double percgrp,unsigned int NbDocPerGrp);
 
 	/**
 	* Executes the queries to create new profiles.
@@ -156,7 +156,7 @@ public:
 	* @param presocial      The % of profiels who are social
 	* @param precerr        The perc of document who will judge the profile non specialy conforming to the ideal groupment.
 	*/
-	void Judgments(GSession* ses,int percok,int precko,int prechs,unsigned int nbmin,unsigned int nbmax,unsigned int percsocial,int precerr);
+ 	void Judgments(GSession* ses,double percok,double precko,double prechs,unsigned int nbmin,unsigned int nbmax,double percsocial,double precerr);
 
 	/**
 	* Judge documents from the susubject sub.
@@ -165,7 +165,7 @@ public:
 	* @param i              I=1 for OK judgement, i=2 for KO judgment i=3 for hs documents.
 	* @param precerr        The perc of document who will judge the profile non specialy conforming to the ideal groupment.
 	*/
-	void JudgeDocuments(int profid,GSubject* sub,int i, GSession* ses,int precerr);
+	void JudgeDocuments(unsigned int profid,GSubject* sub,unsigned int i, GSession* ses,double precerr);
 
 	/**
 	* Write the ideal groupment into a file

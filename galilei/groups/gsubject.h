@@ -68,19 +68,19 @@ public:
 	/**
 	*The id of the groupment.
 	*/
-	int GrpId;
+	unsigned int GrpId;
 
 	/**
-	*The position of the group.
+	*The Id of the parent of the group.
 	*/
-	int ParentId;
+	unsigned int ParentId;
 
 	/**
 	* Construct the Real ID .
 	* @RealId              the id of the groupment.
 	* @parentid Id          the id of the parent
 	*/
-	GGroupIdParentId(int RealId,int parentid) : GrpId(RealId), ParentId(parentid) {}
+	GGroupIdParentId(unsigned int RealId, unsigned int parentid) : GrpId(RealId), ParentId(parentid) {}
 
 	/**
 	* Compare method needed by RStd::RContainer.
@@ -126,7 +126,7 @@ protected:
 	bool IsJudged;
 
 	/**
-	* true if the subsubject is used.
+	* true if the subsubject is used .
 	*/
 	bool IsUsed;
 

@@ -70,31 +70,31 @@ protected:
 	/**
 	* The percentage of ok documents.
 	*/
-	unsigned int PercOK;
+	double PercOK;
 
 	/**
 	* The percentage of ko documents.
 	*/
-	unsigned int PercKO;
+	double PercKO;
 
 	/**
 	* The percentage of hs documents compare to Ok documents.
 	*/
-	unsigned int PercHS;
+	double PercHS;
 
 
 	/**
 	* The Percentage of documents judged whith error.
 	*/
-	unsigned int PercErr;
+	double PercErr;
 
 	/**
 	* The Percentage of Group to use.
 	*/
-	unsigned int PercGrp;
+	double PercGrp;
 
 	/**
-	* The Percentage of Group to use.
+	* The minimal number of docs in the group to keep it.
 	*/
 	unsigned int NbDocPerGrp;
 
@@ -117,7 +117,7 @@ protected:
 	/**
 	* The % of profiles who are social	
 	*/
-	unsigned int PercSocial;
+	double PercSocial;
 
 public:
 

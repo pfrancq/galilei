@@ -78,7 +78,7 @@ protected:
 	unsigned int NbDoc;
 
 	/**
-	* The number of documents judget by user feeddback.
+	* The Similarity used to calc document to judge.
 	*/
 	bool Global;
 
@@ -110,7 +110,7 @@ protected:
 	* @param Subprof          the subprofiles who judg the document.
 	* @param Doc              the Document who will be judged.
 	*/
-	int JudgType(GSubProfile* SubProf,GDoc* Doc);
+	unsigned int JudgType(GSubProfile* SubProf,GDoc* Doc);
 
 	/**
 	* Create a feedback for the user whith profil id prof1 whith the documents doc.
@@ -118,7 +118,7 @@ protected:
 	* @param sub              the subprofile.
 	* @param doc              the doc who will be judged
 	*/
-	void CreateNewFeedback(int fdbk,GSubProfile* sub,GDoc* doc);
+	void CreateNewFeedback(unsigned int fdbk,GSubProfile* sub,GDoc* doc);
 
 public:
 

@@ -75,7 +75,7 @@ using namespace RStd;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GSubjectTree::GSubjectTree(unsigned int NbOk,unsigned int NbKo,unsigned int nbusers)
+GALILEI::GSubjectTree::GSubjectTree(double NbOk,double NbKo,unsigned int nbusers)
 	: RTree<GSubject,true,false>(100,50)
 {
 
@@ -93,7 +93,7 @@ GALILEI::GSubjectTree::GSubjectTree(unsigned int NbOk,unsigned int NbKo,unsigned
 //-----------------------------------------------------------------------------
 void GALILEI::GSubjectTree::InsertProfiles(void)
 {
-	int profid=1, subid=1;
+	unsigned int profid=1, subid=1;
 	unsigned int i;
 
 	for (i=0; i<NbUsers; i++)
@@ -117,21 +117,21 @@ void GALILEI::GSubjectTree::InsertProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubjectTree::ChooseSubject(GSession* ses,unsigned int percgrp,unsigned int NbDocPerGrp)
+void GALILEI::GSubjectTree::ChooseSubject(GSession* ses,double percgrp,unsigned int NbDocPerGrp)
 {
 	ses->LoadIdealDocument(IdealDoc);
-	int PercGrp=percgrp;
-	int nbrsububjects=0;
-	int compt=0;
+	double PercGrp=percgrp;
+	unsigned int nbrsububjects=0;
+	unsigned int compt=0;
 	for (this->Start();!this->End(); this->Next())
 	{
 		nbrsububjects=nbrsububjects+(*this)()->NbPtr;
 	}
-	int* tab;
-	int* tab1;
+	unsigned int* tab;
+	unsigned int* tab1;
 	unsigned int* tab2;
-	tab=new int [nbrsububjects];
-	tab1=new int [nbrsububjects];
+	tab=new unsigned int [nbrsububjects];
+	tab1=new unsigned int [nbrsububjects];
 	tab2=new unsigned int [nbrsububjects];
 	for(IdealDoc->Start();!IdealDoc->End();IdealDoc->Next())
 	{
@@ -142,18 +142,17 @@ void GALILEI::GSubjectTree::ChooseSubject(GSession* ses,unsigned int percgrp,uns
 			compt++;
 		}
 	}
-   	for (int i=0; i<nbrsububjects;i++)
+   	for (unsigned int i=0; i<nbrsububjects;i++)
 	{
 		tab[i]=ses->GetCurrentRandomValue(100);
 		tab1[i]=tab[i];
 	}
 	qsort(tab, nbrsububjects, sizeof(int),sortOrder);
-	int nb=int(nbrsububjects*PercGrp/100);
-	if(nb<0) nb=0;
+	unsigned int nb= int(nbrsububjects*PercGrp/100);
 	if(nb>nbrsububjects-1) nb=nbrsububjects-1;
-	int minvalue=tab[nb];
+	unsigned int minvalue=tab[nb];
 	compt=0;
-	int comptused=0;
+	unsigned int comptused=0;
 	for (this->Start(); !this->End(); this->Next())
 	{
 		GSubject* subject=(*this)();
@@ -186,10 +185,10 @@ int GALILEI::GSubjectTree::sortOrder(const void * a, const void * b)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int perchs,unsigned int nbmin,unsigned int nbmax,unsigned int percsocial,int percerr)
+void GALILEI::GSubjectTree::Judgments(GSession* ses,double percok,double percko,double perchs,unsigned int nbmin,unsigned int nbmax,double percsocial,double percerr)
 {
-	int NbProfilesWhoJudgesDocuments;
-	unsigned int psocial;
+	unsigned int NbProfilesWhoJudgesDocuments;
+	double psocial;
 
 	NbDocsOk=percok;
 	NbDocsKo=percko;
@@ -199,24 +198,24 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int pe
 	GProfileCursor ProfCursor;
 
 	//Calculation of the total number of subsubjects.
-	int nbrsububjects=0;
+	unsigned int nbrsububjects=0;
 	for (this->Start();!this->End(); this->Next())
 	{
 		nbrsububjects=nbrsububjects+(*this)()->NbPtr;
 	}
 
-	int* tab;
-	tab=new int [nbrsububjects];
-	for (int i=0; i<nbrsububjects;i++)
+	unsigned int* tab;
+	tab=new unsigned int [nbrsububjects];
+	for (unsigned int i=0; i<nbrsububjects;i++)
 		tab[i]=0;
 
-	int* tabs;
-	tabs=new int [nbrsububjects];
-	for (int i=0; i<nbrsububjects;i++)
+	unsigned int* tabs;
+	tabs=new unsigned int [nbrsububjects];
+	for (unsigned int i=0; i<nbrsububjects;i++)
 		tabs[i]=0;
 
 
-	int compt=0;
+	unsigned int compt=0;
 	for (this->Start(); !this->End(); this->Next())
 	{
 		GSubject* subject=(*this)();
@@ -255,11 +254,11 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int pe
 				sub1->setIsJudged(true);
 			
 				// For each subprofiles who can judge documents/
-				for (int i=0;i<NbProfilesWhoJudgesDocuments;i++)
+				for (unsigned int i=0;i<NbProfilesWhoJudgesDocuments;i++)
 				{
 					// Create the judgement.
 					// First, find the profile who can judge the docs
-					int profid=(tab[sub1->GetId()-1])*nbrsububjects+sub1->GetId();
+					unsigned int profid=(tab[sub1->GetId()-1])*nbrsububjects+sub1->GetId();
 					GProfile* proftemp=profiles->GetPtr(profid);
 					proftemp->SetState(osUpdated);
 					tab[sub1->GetId()-1]=tab[sub1->GetId()-1]+1;
@@ -268,12 +267,12 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int pe
 					JudgeDocuments(profid,sub1,1,ses,percerr);
 
 					// The Number of Ok documents judged by this profiles.
-					int nbDocok = int(((double(NbDocsOk*sub1->urls->NbPtr)/100))+0.5);
+					unsigned int nbDocok =int(((double(NbDocsOk*sub1->urls->NbPtr)/100))+0.5);
 
 					// Documents KO.
 					//If the subsuject enables the KO judgement of documents.
-					int* tabko;
-					tabko=new int [subject->NbPtr];
+					unsigned int* tabko;
+					tabko=new unsigned int [subject->NbPtr];
 					for (unsigned int i=0; i<subject->NbPtr;i++)
 						tabko[i]=0;
 
@@ -297,8 +296,8 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int pe
 						// Judge NBDocsHs percent of NbDocok
 						for (int i=1;i<int(NbDocsHs*nbDocok/100);i++)
 						{
-							int DocIdToJug=(ses->GetCurrentRandomValue(ses->GetNbDocs())+1);
-							int GrpDocId=0;
+							unsigned int DocIdToJug=(ses->GetCurrentRandomValue(ses->GetNbDocs())+1);
+							unsigned int GrpDocId=0;
 
 							GDoc* doc=ses->GetDoc(DocIdToJug);
 
@@ -326,7 +325,7 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int pe
 								if(ses->GetProfile(profid)->GetFeedback(doc)==0)
 								{
 									// the default value is HS
-									int tempjug=3;
+									unsigned int tempjug=3;
 
 									//But if their is random error
 									if(ses->GetCurrentRandomValue(100)<int(percerr))
@@ -361,11 +360,11 @@ void GALILEI::GSubjectTree::Judgments(GSession* ses,int percok,int percko,int pe
   
 
 //-----------------------------------------------------------------------------
-void GALILEI::GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSession* ses,int PercErr )
+void GALILEI::GSubjectTree::JudgeDocuments(unsigned int profileid,GSubject* sub,unsigned int i,GSession* ses,double PercErr )
 {
 
-	int NbDocs;
-	int judgement;
+	unsigned int NbDocs;
+	unsigned int judgement;
 
 	//If i juge ok.
 	if (i==1)
@@ -383,18 +382,19 @@ void GALILEI::GSubjectTree::JudgeDocuments(int profileid,GSubject* sub,int i,GSe
 
 
 	RContainer<GDoc,unsigned,false,false>* judgedDocs=new RContainer<GDoc,unsigned,false,false>(10,5);
-	int j=0;  while (j<NbDocs)
+	unsigned int j=0;
+	while (j<NbDocs)
 	{
 		sub->urls->Start();
-		int url=(ses->GetCurrentRandomValue(sub->urls->NbPtr));
+		unsigned int url=(ses->GetCurrentRandomValue(sub->urls->NbPtr));
 		GDoc* doc=sub->urls->GetPtrAt(url);
 		if (!judgedDocs->GetPtr(doc->GetId()))
 		{
-			int tempjug=judgement;
+			unsigned int tempjug=judgement;
 			// If there is Random change the judgment.
 			if(ses->GetCurrentRandomValue(100)<int(PercErr))
 			{
-				tempjug=int(ses->GetCurrentRandomValue(3)+1);
+				tempjug= int(ses->GetCurrentRandomValue(3)+1);
 			}
 			if(tempjug==1)
 			{
@@ -425,7 +425,7 @@ void GALILEI::GSubjectTree::IdealGroupmentFile(const char* url)
 	RTextFile* textfile = new RTextFile (url, RIO::Create);
 
 	//calculation of the number of goups (ie the number of judged soubsubjects)
-	int nbrsubsubjects=0;
+	unsigned int nbrsubsubjects=0;
     for (Start(); !End(); Next())
 	{
 		GSubject* sub= (*this)();
@@ -452,14 +452,14 @@ void GALILEI::GSubjectTree::IdealGroupmentFile(const char* url)
 			{
 				textfile->WriteStr(sub->GetLang());
 				textfile->WriteStr("\t");
-				int* tab;
-				tab= new int[profiles->NbPtr];
+				unsigned int* tab;
+				tab= new unsigned int[profiles->NbPtr];
 				unsigned int k;
 				for (k=0; k<(profiles->NbPtr); k++)
 				{
 				 	tab[k]=0;
 				}
-				int c=0;
+				unsigned int c=0;
 				for (profiles->Start(); !profiles->End(); profiles->Next())
 				{
 					GProfile* profile= (*profiles)();
@@ -479,7 +479,7 @@ void GALILEI::GSubjectTree::IdealGroupmentFile(const char* url)
 					}
 				}
 				textfile->WriteStr(itoa(c));
-				int temp=0 ;
+				unsigned int temp=0 ;
 				while (tab[temp]!=0)
 				{
 					textfile->WriteStr(itoa(tab[temp]));
@@ -509,7 +509,7 @@ void GALILEI::GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int
 	GLangCursor CurLang;
 
 	//Calculation of the number of goups (ie the number of judged soubsubjects).
-	int nbrsubsubjects=0;
+	unsigned int nbrsubsubjects=0;
 	for (Start(); !End(); Next())
 	{
 		GSubject* sub= (*this)();
@@ -541,14 +541,14 @@ void GALILEI::GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int
 				if (sub->isJudged())
 				{
 					lang=ses->GetLang(sub->GetLang());
-					int* tab;
-					tab=new int[profiles->NbPtr];
+					unsigned int* tab;
+					tab=new unsigned int[profiles->NbPtr];
 					unsigned int k;
 					for (k=0; k<(profiles->NbPtr); k++)
 					{
 						tab[k]=0;
 					}
-					int c=0;
+					unsigned int c=0;
 					// find the profiles who are in the subsubject.
 					for (profiles->Start(); !profiles->End(); profiles->Next())
 					{
@@ -565,7 +565,7 @@ void GALILEI::GSubjectTree::IdealGroupment(RStd::RContainer<GGroups,unsigned int
 					group=new GGroupVector(sub->GetId(),lang);
 					//parent->InsertPtr(new GGroupIdParentId(ii,subject->GetId()));
 					groups->InsertPtr(group);
-					int temp=0 ;
+					unsigned int temp=0 ;
 					while (tab[temp]!=0)
 					{
 						id=tab[temp];
