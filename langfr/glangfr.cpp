@@ -35,6 +35,7 @@
 // include files for ANSI C/C++
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 
 //-----------------------------------------------------------------------------
@@ -62,6 +63,7 @@ public:
 	
 	FrenchPorterRule(const char* os,const char* ns,int oo,int no,int mr=-1);
 	int Compare(const FrenchPorterRule*) {return(-1);}
+	~FrenchPorterRule(void);
 };
 
 
@@ -71,6 +73,13 @@ GLangFR::FrenchPorterRule::FrenchPorterRule(const char* os,const char* ns,int oo
 {
 	OldSuffix=strdup(os);
 	NewSuffix=strdup(ns);
+}
+
+//-----------------------------------------------------------------------------
+GLangFR::FrenchPorterRule::~FrenchPorterRule(void)
+{
+	if(OldSuffix) free(OldSuffix);
+	if(NewSuffix) free(NewSuffix);
 }
 
 
