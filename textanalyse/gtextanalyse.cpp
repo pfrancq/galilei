@@ -181,6 +181,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 	bool *is;
 	unsigned int* tmp1;
 	unsigned int* tmp2;
+	bool* InStop;
 
 	// Find the section of double hash table concerned by the current word.
 	Section=Occurs->Hash[WordOccur::HashIndex(word)][WordOccur::HashIndex2(word)];
@@ -204,7 +205,7 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 		// Look for each language if the word is in the stop list.
 		if(FindLang)
 		{
-			for(CurLangs.Start(),is=w->InStop,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),is++,tmp1++,tmp2++)
+			for(CurLangs.Start(),is=w->InStop,tmp1=Sldiff,tmp2=Sl,InStop=w->InStop;!CurLangs.End();CurLangs.Next(),is++,tmp1++,tmp2++,InStop++)
 			{
 				(*is)=Session->GetStop(CurLangs())->IsIn<const char*>(word);
 				if(*is)
@@ -212,7 +213,10 @@ void GALILEI::GDocAnalyse::AddWord(const char* word) throw(bad_alloc)
 					// In the stoplist -> Inc different words of the stop lists.
 					(*tmp1)++;
 					(*tmp2)++;
+					(*InStop)=true;
 				}
+				else
+					(*InStop)=false;
 			}
 		}
 	}
@@ -352,11 +356,13 @@ unsigned int GALILEI::GDocAnalyse::DetermineLang(void) throw(GException)
 void GALILEI::GDocAnalyse::ConstructInfos(unsigned int LangIndex) throw(GException)
 {
 	WordOccur** wrd;
+	GIWordOccur** Tab;
 	GIWordOccur* Occur;
-	unsigned int i;
+	unsigned int i,MinOccur;
 	RString stem(50);
 	GDict* dic;
 
+	// Insert all the occurences of the valid words
 	dic=Session->GetDic(Lang);
 	if(Words)
 		Words->Clear();
@@ -383,6 +389,19 @@ void GALILEI::GDocAnalyse::ConstructInfos(unsigned int LangIndex) throw(GExcepti
 				Vdiff++;
 			V+=(*wrd)->Nb;
 			Occur->AddNbOccurs((*wrd)->Nb);
+		}
+	}
+
+	// Verify that each occurences is not under the minimal.
+	MinOccur=Session->GetMinOccur();
+	if(MinOccur<2) return;
+	for(i=Words->NbPtr+1,Tab=Words->Tab;--i;Tab++)
+	{
+		Occur=(*Tab);
+		if(Occur->GetNbOccurs()<MinOccur)
+		{
+			Words->DeletePtr(Occur);
+			Tab--;
 		}
 	}
 }
