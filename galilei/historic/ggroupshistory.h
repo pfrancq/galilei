@@ -52,144 +52,161 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GGroupsHistoryManager class manage the history of groument for the session
+* The GGroupsHistoryManager class manages the history of subprofiles groupments.
 * @author David Wartel
-* @short Languages GroupsHistory.
+* @short Histories of Subprofiles Groupment.
 */
 class GGroupsHistoryManager : public R::RContainer<GGroupsHistory,unsigned int,true,true>
 {
 public :
 
 	/**
-	* Constructor
+	* Constructor.
+	* @param max             Maximal number of word created at initialisation.
 	*/
-	GGroupsHistoryManager(unsigned int i);
-
-	/*
-	* insert a groupshistory
-	*/
-	void InsertGroupsHistory(GGroupsHistory* gh);
+	GGroupsHistoryManager(unsigned int max) throw(std::bad_alloc);
 
 	/**
-	* Get a cursor on all the hsitoric groups.
+	* Get a cursor on the history of all groupments.
 	* @return GGroupCursor.
 	*/
 	GGroupsHistoryCursor& GetGroupsHistoryCursor(void);
 
 	/**
-	* check the modified groups
+	* Check which groups are modified.
 	*/
-	void CheckModifiedGroups(unsigned int minGen);
+	void CheckModifiedGroups(unsigned int minGen)  throw(std::bad_alloc);
 
 	/**
-	*  check the well grouped subprofiles.
+	* Check which subprofiles are correctly grouped.
 	*/
-	void CheckWellGroupedSubProfs(void);
+	void CheckWellGroupedSubProfs(void)  throw(std::bad_alloc);
 
 	/**
-	*  check for new profiles.
+	* Check which subprofiles are new.
 	*/
-	void CheckNewProfiles(void);
+	void CheckNewProfiles(void)  throw(std::bad_alloc);
 
 	/**
-	*   Destructor
+	* Creates relationship between historic groups.
+	* #param maxgen          Identificators of the last history to use.
 	*/
-	~GGroupsHistoryManager(void){};
+	void CreateGroupsRelationship(unsigned int maxgen) throw(std::bad_alloc);
+
+	/**
+	* Insert a history of a groupment.
+	* @param gh              History of a groupment.
+	*/
+	void InsertGroupsHistory(GGroupsHistory* gh)  throw(std::bad_alloc);
+
+	/**
+	*   Destructor.
+	*/
+	~GGroupsHistoryManager(void);
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GGroupsHistory class provides a representation for all the historic groups of a given
-* language. The GGroupsHistory are ordered by IDs.
+* The GGroupsHistory class provides a representation for a history of a given
+* subprofiles groupment.
 * @author David Wartel
-* @short Languages GroupsHistory.
+* @short History of a Subprofiles Groupment.
 */
 class GGroupsHistory : public R::RContainer<GGroupHistory,unsigned int,true,true>
 {
-
-private :
-
 	/**
-	*historic  identificator
+	* Identificator of the history.
 	*/
 	unsigned int Id;
 
 	/**
-	*  historic date
+	* Date.
 	*/
 	R::RDate Date;
 
-	/*
-	* manager
+	/**
+	* Manager that handles all histories of groupment.
 	*/
 	GGroupsHistoryManager* Manager;
 
 public :
 
 	/**
-	* constructor
-	* @param id             id of the historic.
-	* @param date           date of the historic.
+	* Constructor of a history of a groupment.
+	* @param id              Identificator of the historic.
+	* @param date            Date of the history.
 	*/
-	GGroupsHistory(unsigned int id, R::RString date);
+	GGroupsHistory(unsigned int id, R::RString date) throw(std::bad_alloc);
 
 	/**
-	* get the id
+	* Get the identificator of the groupment.
+	* @return unsigned int.
 	*/
-	unsigned int GetId(void);
+	unsigned int GetId(void) const {return(Id);}
 
 	/**
-	* get the date
+	* Get the date where this groupment was computed.
+	* @return R::RDate.
 	*/
-	R::RDate GetDate(void) {return Date;}
+	R::RDate& GetDate(void) const;
 
 	/**
-	*  returns the subprofiles with Id=id;
-	* @param id             id to found.
+	* Get the history of a subprofile corresponding to a given identificator.
+	* @param id              Identificator.
+	* @return Pointer to a GWeightInfosHistory.
 	*/
-	GWeightInfosHistory* GetSubProfile(unsigned int id);
+	GWeightInfosHistory* GetSubProfile(unsigned int id) throw(GException);
 
 	/**
-	* Compare method needed by R::RContainer.
+	* Compare two histories of groupment by comparing their identificator.
+	* @see R::RContainer
+	* @param groups          History of groupment.
+	* @return int
 	*/
 	int Compare(const GGroupsHistory& groups) const;
 
 	/**
-	* Compare method needed by R::RContainer.
+	* Compare two histories of groupment by comparing their identificator.
+	* @see R::RContainer
+	* @param groups          Pointer to a history of groupment.
+	* @return int
 	*/
 	int Compare(const GGroupsHistory* groups) const;
 
 	/**
-	* Compare method needed by R::RContainer.
+	* Compare the identificator of a history of groupment with another one.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
 	*/
-	int Compare(unsigned int id) const ;
+	int Compare(unsigned int id) const;
 
 	/**
-	* set the manager
+	* Set the manager of the history.
+	* @param m               Pointer to the manager.
 	*/
-	void SetManager(GGroupsHistoryManager* m) {Manager=m;}
-
-
-	/**
-	* check the modified groups
-	*/
-	void CheckModifiedGroups(unsigned int minGen);
+	void SetManager(GGroupsHistoryManager* m);
 
 	/**
-	*  set the main subject to each historic group
+	* Check which groups are modified.
 	*/
-	void SetGroupsSubject(void);
+	void CheckModifiedGroups(unsigned int minGen) throw(std::bad_alloc);
 
 	/**
-	*  check the well grouped subprofiles.
+	* Set the main topic associated to each history of groupment.
 	*/
-	void CheckWellGroupedSubProfs(void);
+	void SetGroupsSubject(void) throw(std::bad_alloc);
 
 	/**
-	*  check for new profiles.
+	* Check which subprofiles are correctly grouped.
 	*/
-	void CheckNewProfiles(void);
+	void CheckWellGroupedSubProfs(void) throw(std::bad_alloc);
+
+	/**
+	* Check which subprofiles are new.
+	*/
+	void CheckNewProfiles(void) throw(std::bad_alloc);
 
 	/**
 	*   Destructor
@@ -205,8 +222,9 @@ public :
 */
 CLASSCURSOR(GGroupsHistoryCursor,GGroupsHistory,unsigned int)
 
-}  //-------- End of namespace GALILEI ----------------------------------------
+
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif

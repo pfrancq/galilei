@@ -51,10 +51,10 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GWeightInfosHistory class provides a representation for a list of weighted
-* information entities used to hold a history.
+* The GWeightInfosHistory class provides a representation for a history of a
+* list of weighted information entities used to hold a history of a subprofile.
 * @author David Wartel
-* @short Weighted Information Entity List for History.
+* @short History of a Weighted Information Entity List.
 */
 class GWeightInfosHistory : public GWeightInfos
 {
@@ -66,7 +66,7 @@ protected:
 	GSubProfile* SubProfile;
 
 	/**
-	* Historical group containing the subprofile.
+	* Group containing the subprofile.
 	*/
 	GGroupHistory* Parent;
 

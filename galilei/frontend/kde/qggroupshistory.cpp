@@ -97,7 +97,7 @@ void GALILEI::QGGroupsHistory::setGroups(GGroupsHistory* grps)
 		sprintf(tmp,"Group %u  (%u)",gr->GetId(), gr->NbPtr);
 		QListViewItemType* gritem= new QListViewItemType(gr,this,tmp) ;//, gr->GetSubject()->GetName());
 		// manage the color of the item
-		if (gr->GetModified()==true) gritem->Level=1; else gritem->Level=0;
+		if (gr->IsModified()==true) gritem->Level=1; else gritem->Level=0;
 		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 		for(gr->Start();!gr->End();gr->Next())
 		{

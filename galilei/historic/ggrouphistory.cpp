@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GGroupHistoryHistory.cpp
+	GGroupHistory.cpp
 
-	History of Group for a given language  - Implementation.
+	History of a given group  - Implementation.
 
 	Copyright 2003 by the Université Libre de Bruxelles.
 
@@ -34,7 +34,7 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <historic/ggrouphistory.h>
 #include <historic/gweightinfoshistory.h>
@@ -43,95 +43,72 @@ using namespace R;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GGroupHistory
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-GALILEI::GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(std::bad_alloc)
-	: RContainer<GWeightInfosHistory,unsigned int,false,true>(20,10)
+//------------------------------------------------------------------------------
+GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(std::bad_alloc)
+	: RContainer<GWeightInfosHistory,unsigned int,false,true>(20,10), Id(id), Lang(lang),
+	  Modified(false), Parent(grps), Childrens(2,2)
 {
-	 Id=id;
-	 Lang=lang;
-	 Modified=false;
-	 Parent=grps;
-	 Childrens=new  RContainer<GGroupHistory,unsigned int,false,true>(2,1);
-}
-
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GGroupHistory::GetId(void)
-{
-	return Id;
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupHistory::AddSubProfile(GWeightInfosHistory* giwwh)
+//------------------------------------------------------------------------------
+void GGroupHistory::AddSubProfile(GWeightInfosHistory* giwwh)
 {
 	InsertPtr(giwwh);
 	giwwh->SetParent(this);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupHistory::SetModified(bool b)
+//------------------------------------------------------------------------------
+void GGroupHistory::SetModified(bool b)
 {
 	Modified=b;
 }
 
-//-----------------------------------------------------------------------------
-bool GALILEI::GGroupHistory::GetModified(void)
-{
-	return Modified;
-}
 
-
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupHistory::SetSubject(GSubject* sub)
+//------------------------------------------------------------------------------
+void GGroupHistory::SetSubject(GSubject* sub)
 {
 	Subject=sub;
 }
 
 
-//-----------------------------------------------------------------------------
-GSubject* GALILEI::GGroupHistory::GetSubject(void)
+//------------------------------------------------------------------------------
+void GGroupHistory::InsertChildren(GGroupHistory* grp)
 {
-	return Subject;
+	Childrens.InsertPtr(grp);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupHistory::InsertChildren(GGroupHistory* grp)
-{
-	Childrens->InsertPtr(grp);
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GGroupHistory::Compare(const unsigned int id) const
-{
-	return(Id-id);
-}
-
-
-//-----------------------------------------------------------------------------
-int GALILEI::GGroupHistory::Compare(const GGroupHistory& grouph) const
+//------------------------------------------------------------------------------
+int GGroupHistory::Compare(const GGroupHistory& grouph) const
 {
 	return(Id-grouph.Id);
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GGroupHistory::Compare(const GGroupHistory* grouph) const
+//------------------------------------------------------------------------------
+int GGroupHistory::Compare(const GGroupHistory* grouph) const
 {
 	return(Id-grouph->Id);
 }
 
 
-//-----------------------------------------------------------------------------
-GGroupHistoryCursor& GALILEI::GGroupHistory::GetChildrenCursor(void)
+//------------------------------------------------------------------------------
+int GGroupHistory::Compare(const unsigned int id) const
+{
+	return(Id-id);
+}
+
+
+//------------------------------------------------------------------------------
+GGroupHistoryCursor& GGroupHistory::GetChildrenCursor(void)
 {
 	GGroupHistoryCursor* cur=GGroupHistoryCursor::GetTmpCursor();
 	cur->Set(Childrens);
@@ -139,9 +116,7 @@ GGroupHistoryCursor& GALILEI::GGroupHistory::GetChildrenCursor(void)
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GGroupHistory::~GGroupHistory(void)
+//------------------------------------------------------------------------------
+GGroupHistory::~GGroupHistory(void)
 {
-	if(Childrens)
-		delete Childrens;
 }

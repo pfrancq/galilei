@@ -34,13 +34,13 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for R
 #include<rstd/rdate.h>
 using namespace R;
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <historic/ggroupshistory.h>
 #include <historic/gweightinfoshistory.h>
@@ -51,22 +51,22 @@ using namespace GALILEI;
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
 //  GGroupsHistoryManager
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GGroupsHistoryManager::GGroupsHistoryManager(unsigned int i)
-	: RContainer<GGroupsHistory,unsigned int,true,true>(i,i/2)
+//------------------------------------------------------------------------------
+GGroupsHistoryManager::GGroupsHistoryManager(unsigned int max) throw(std::bad_alloc)
+	: RContainer<GGroupsHistory,unsigned int,true,true>(max,max/2)
 {
 }
 
 
-//------------------------------------------------------------------------------
-GGroupsHistoryCursor& GALILEI::GGroupsHistoryManager::GetGroupsHistoryCursor(void)
+//-------------------------------------------------------------------------------
+GGroupsHistoryCursor& GGroupsHistoryManager::GetGroupsHistoryCursor(void)
 {
 	GGroupsHistoryCursor *cur=GGroupsHistoryCursor::GetTmpCursor();
 	cur->Set(this);
@@ -74,51 +74,138 @@ GGroupsHistoryCursor& GALILEI::GGroupsHistoryManager::GetGroupsHistoryCursor(voi
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen)
+//------------------------------------------------------------------------------
+void GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen) throw(std::bad_alloc)
 {
-	for (Start(); !End(); Next())
-		(*this)()->CheckModifiedGroups(minGen);
+	GGroupsHistoryCursor Cur;
+
+	Cur.Set(this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->CheckModifiedGroups(minGen);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupsHistoryManager::CheckWellGroupedSubProfs(void)
+//------------------------------------------------------------------------------
+void GGroupsHistoryManager::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 {
-	for (Start(); !End();Next())
+	GGroupsHistoryCursor Cur;
+
+	Cur.Set(this);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		(*this)()->SetGroupsSubject();
-		(*this)()->CheckWellGroupedSubProfs();
+		Cur()->SetGroupsSubject();
+		Cur()->CheckWellGroupedSubProfs();
 	}
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupsHistoryManager::CheckNewProfiles(void)
+//------------------------------------------------------------------------------
+void GGroupsHistoryManager::CheckNewProfiles(void) throw(std::bad_alloc)
 {
-	for (Start(); !End(); Next())
-		(*this)()->CheckNewProfiles();
+	GGroupsHistoryCursor Cur;
+
+	Cur.Set(this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->CheckNewProfiles();
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupsHistoryManager::InsertGroupsHistory(GGroupsHistory* gh)
+void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxgen) throw(std::bad_alloc)
+{
+	unsigned int  i, maxoccurs, nbchildren;
+	GGroupsHistory* curgrps, *nextgrps;
+	GGroupHistory* grp;
+	GWeightInfosHistory* subprof;
+	bool treated;
+	unsigned int** tab;
+
+	for (Start(); !End(); Next())
+	{
+		//if the groups is the last one, no child
+		if ((*this)()->GetId()==maxgen) continue;
+
+		curgrps=(*this)();
+		nextgrps=this->GetPtr(curgrps->GetId()+1);
+		if (!nextgrps)
+			return;
+
+		for (curgrps->Start(); !curgrps->End(); curgrps->Next())
+		{
+			grp=(*curgrps)();
+			nbchildren=0;
+			//initialize the table od groupid / nboccurs
+			tab= new unsigned int* [grp->NbPtr];
+			for (i=0; i<grp->NbPtr; i++)
+				tab[i]=new unsigned int [2];
+			for (i=0; i<grp->NbPtr; i++)
+				tab[i][0]=tab[i][1]=0;
+
+			//fill the table
+			for (grp->Start(); !grp->End(); grp->Next())
+			{
+				subprof=nextgrps->GetSubProfile((*grp)()->GetId());
+				treated=false;
+				i=0;
+				while(!treated&&i<nbchildren)
+				{
+					if (tab[i][0]==subprof->GetParent()->GetId())
+					{
+						tab[i][1]++;
+						treated=true;
+					}
+					i++;
+				}
+				if(!treated)
+				{
+					tab[i][0]=subprof->GetParent()->GetId();
+					tab[i][1]++;
+					nbchildren++;
+				}
+			}
+
+			//analyse table;
+			maxoccurs=0;
+			for (i=0; i<grp->NbPtr;i++)
+				if (tab[i][1]>maxoccurs)
+					maxoccurs=tab[i][1];
+			//and find the childrens
+			for (i=0; i<grp->NbPtr;i++)
+				if (tab[i][1]==maxoccurs)
+					grp->InsertChildren(nextgrps->GetPtr(tab[i][0]));
+			//delete the table
+			for (i=0; i<grp->NbPtr; i++)
+				delete [] tab[i];
+			delete [] tab;
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GGroupsHistoryManager::InsertGroupsHistory(GGroupsHistory* gh) throw(std::bad_alloc)
 {
 	this->InsertPtr(gh);
 	gh->SetManager(this);
 }
 
 
+//------------------------------------------------------------------------------
+GGroupsHistoryManager::~GGroupsHistoryManager(void)
+{
+}
 
-//-----------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //
 //  GGroupsHistory
 //
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GGroupsHistory::GGroupsHistory(unsigned int id, RString date)
+//------------------------------------------------------------------------------
+GGroupsHistory::GGroupsHistory(unsigned int id, RString date) throw(std::bad_alloc)
 	: RContainer<GGroupHistory,unsigned int,true,true>(20,10)
 {
 	Id=id;
@@ -126,15 +213,18 @@ GALILEI::GGroupsHistory::GGroupsHistory(unsigned int id, RString date)
 }
 
 
-//-----------------------------------------------------------------------------
-unsigned int GALILEI::GGroupsHistory::GetId(void)
+//------------------------------------------------------------------------------
+R::RDate& GGroupsHistory::GetDate(void) const
 {
-	return Id;
+	RDate* d=RDate::GetDate();
+
+	(*d)=Date;
+	return(*d);
 }
 
 
-//-----------------------------------------------------------------------------
-GWeightInfosHistory* GALILEI::GGroupsHistory::GetSubProfile(unsigned int id)
+//------------------------------------------------------------------------------
+GWeightInfosHistory* GGroupsHistory::GetSubProfile(unsigned int id) throw(GException)
 {
 	GGroupHistory* grp;
 
@@ -149,29 +239,36 @@ GWeightInfosHistory* GALILEI::GGroupsHistory::GetSubProfile(unsigned int id)
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GGroupsHistory::Compare(const GGroupsHistory& groups) const
+//------------------------------------------------------------------------------
+int GGroupsHistory::Compare(const GGroupsHistory& groups) const
 {
 	return(Id-groups.Id);
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GGroupsHistory::Compare(const GGroupsHistory* groups) const
+//------------------------------------------------------------------------------
+int GGroupsHistory::Compare(const GGroupsHistory* groups) const
 {
 	return(Id-groups->Id);
 }
 
 
-//-----------------------------------------------------------------------------
-int GALILEI::GGroupsHistory::Compare(unsigned int id) const
+//------------------------------------------------------------------------------
+int GGroupsHistory::Compare(unsigned int id) const
 {
 	return(Id-id);
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupsHistory::CheckModifiedGroups(unsigned int minGen)
+//------------------------------------------------------------------------------
+void GGroupsHistory::SetManager(GGroupsHistoryManager* m)
+{
+	Manager=m;
+}
+
+
+//------------------------------------------------------------------------------
+void GGroupsHistory::CheckModifiedGroups(unsigned int minGen) throw(std::bad_alloc)
 {
 	RContainer<GWeightInfosHistory, unsigned int, false, true>* lastsubs;
 	GGroupsHistory* lastgroups;
@@ -211,7 +308,7 @@ void GALILEI::GGroupsHistory::CheckModifiedGroups(unsigned int minGen)
 		//if a couple of subprofiles doesn't belong to a same group in the current and historic groups
 		// then the group is modified.
 		lastcurid=lastsub->GetParent()->GetId();
-		while(grp->GetModified()==false&&!grp->End())
+		while(grp->IsModified()==false&&!grp->End())
 		{
 			lastsub=lastsubs->GetPtr((*grp)()->GetId());
 			// if the subprofiles is a new one, group is modified
@@ -226,8 +323,10 @@ void GALILEI::GGroupsHistory::CheckModifiedGroups(unsigned int minGen)
 	delete lastsubs;
 }
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupsHistory::SetGroupsSubject(void)
+
+
+//------------------------------------------------------------------------------
+void GGroupsHistory::SetGroupsSubject(void) throw(std::bad_alloc)
 {
 	GGroupHistory* grp;
 	GSubject* mainsubject;
@@ -272,8 +371,8 @@ void GALILEI::GGroupsHistory::SetGroupsSubject(void)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupsHistory::CheckWellGroupedSubProfs(void)
+//------------------------------------------------------------------------------
+void GGroupsHistory::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 {
 	GGroupHistory* grp;
 	for (Start(); !End(); Next())
@@ -288,8 +387,8 @@ void GALILEI::GGroupsHistory::CheckWellGroupedSubProfs(void)
 }
 
 
-//-----------------------------------------------------------------------------
-void GALILEI::GGroupsHistory::CheckNewProfiles(void)
+//------------------------------------------------------------------------------
+void GGroupsHistory::CheckNewProfiles(void) throw(std::bad_alloc)
 {
 	R::RContainer<GWeightInfosHistory, unsigned int, false, true>* lastsubs;
 	GGroupsHistory* lastgroups;
@@ -317,8 +416,8 @@ void GALILEI::GGroupsHistory::CheckNewProfiles(void)
 }
 
 
-//-----------------------------------------------------------------------------
-GALILEI::GGroupsHistory::~GGroupsHistory(void)
+//------------------------------------------------------------------------------
+GGroupsHistory::~GGroupsHistory(void)
 {
 }
 

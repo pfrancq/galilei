@@ -4,7 +4,7 @@
 
 	GGroupHistory.h
 
-	History of Group for a given language - Header.
+	History of a given group - Header.
 
 	Copyright 2003 by the Université Libre de Bruxelles.
 
@@ -51,10 +51,9 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* This class represent a historical group of sub-profiles. In fact, it is
-* implemented as aa  container of GSubProfile.
+* This class represent a history for a given group of subprofiles.
 * @author David Wartel
-* @short Historical Group.
+* @short History of a Group.
 */
 class GGroupHistory : public R::RContainer<GWeightInfosHistory,unsigned int,false,true>
 {
@@ -71,24 +70,24 @@ protected:
 	GLang* Lang;
 
 	/**
-	* Is the group modified since previous step.
+	* Was the group modified since previous step.
 	*/
 	bool Modified;
 
 	/**
-	* Subject associated to the group.
+	* Main topic associated with this group.
 	*/
 	GSubject* Subject;
 
 	/**
-	* Parent.
+	* History of groupment holding this group.
 	*/
 	GGroupsHistory* Parent;
 
 	/**
-	* Container of childrens.
+	* List of groups of the next step to be formed started from this group.
 	*/
-	R::RContainer<GGroupHistory, unsigned int, false,true>* Childrens;
+	R::RContainer<GGroupHistory, unsigned int, false,true> Childrens;
 
 public:
 
@@ -96,92 +95,111 @@ public:
 	* Construct a group with a specific identificator.
 	* @param id             Identificator.
 	* @param lang           Language.
+	* @param grps           Parent.
 	*/
 	GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(std::bad_alloc);
 
 	/**
-	* get the id
+	* Get the identificator of the group.
+	* @return unsigned int.
 	*/
-	unsigned int GetId(void);
+	unsigned int GetId(void) const {return(Id);}
 
 	/**
-	* returns the lang of the historical group
+	* Get the lang of the group.
+	* @return Pointer to GLang.
 	*/
-	GLang* GetLang(void){return Lang;}
+	GLang* GetLang(void) const {return(Lang);}
 
 	/**
-	* Add a historic profile to the group.
+	* Add a history of a subprofile into the group.
+	* @param giwwh           Pointer to a history of a subprofile.
 	*/
 	void AddSubProfile(GWeightInfosHistory* giwwh);
 
 	/**
-	* set the value of the "modified" parameter..
+	* Set if the groups is considered as modified.
+	* @param b               Modified?
 	*/
 	void SetModified(bool b);
 
 	/**
-	* get the value of the "modified" parameter..
+	* Is the group modified?
 	*/
-	bool GetModified(void);
+	bool IsModified(void) const {return(Modified);}
 
 	/**
-	* set the subject of the group..
+	* Set the main topic of the group.
+	* @param sub             Pointer to the topic.
 	*/
 	void SetSubject(GSubject* sub);
 
 	/**
-	* get the value of the "modified" parameter..
+	* Get the topic of the group.
+	* @return Pointer to GSubject.
 	*/
-	GSubject*  GetSubject(void);
+	GSubject* GetSubject(void) const {return(Subject);}
 
 	/**
-	* insert a child into the container of children
+	* Insert a group derived from the current one.
+	* @param grp             POinter to a child group.
 	*/
-	 void InsertChildren(GGroupHistory* grp);
-
-	 /**
-	* Compare method needed by R::RContainer.
-	*/
-	int Compare(const unsigned int id) const;
+	void InsertChildren(GGroupHistory* grp);
 
 	/**
-	* Compare method needed by R::RContainer.
+	* Compare two historied of groups by comparing their identificator.
+	* @see R::RContainer
+	* @param grouph          History of group.
+	* @return int
 	*/
 	int Compare(const GGroupHistory& grouph) const;
 
 	/**
-	* Compare method needed by R::RContainer.
+	* Compare two groups by comparing their identificator.
+	* @see R::RContainer
+	* @param grouph          Pointer to a history of group.
+	* @return int
 	*/
-	int Compare(const GGroupHistory* grouph) const;;
+	int Compare(const GGroupHistory* grouph) const;
 
 	/**
-	* cursor on childrens.
+	* Compare the idenfiticator of a history of group with another one.
+	* @see R::RContainer
+	* @param id              Identificator.
+	* @return int
+	*/
+	int Compare(const unsigned int id) const;
+
+	/**
+	* Get a cursor on all children groups.
+	* @return GGroupHistoryCursor.
 	*/
 	GGroupHistoryCursor& GetChildrenCursor(void);
 
 	/**
-	* get the parent of the group
+	* Get the groupment containing the group.
+	* @return Pointer to GGroupsHistory.
 	*/
-	GGroupsHistory* GetParent(void) {return(Parent);}
+	GGroupsHistory* GetParent(void) const {return(Parent);}
 
 	/**
-	* Destructor
+	* Destructor of history of group.
 	*/
 	~GGroupHistory(void);
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The GGroupHistoryCursor class provides a way to go trough a set of GGroupHistory.
+* The GGroupHistoryCursor class provides a way to go trough a set of
+* GGroupHistory.
 * @short GroupHistory Cursor
 */
 CLASSCURSOR(GGroupHistoryCursor,GGroupHistory,unsigned int)
 
 
+}  //-------- End of namespace GALILEI -----------------------------------------
 
-}  //-------- End of namespace GALILEI ----------------------------------------
 
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #endif
