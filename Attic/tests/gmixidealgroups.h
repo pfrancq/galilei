@@ -10,6 +10,7 @@
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	Version $Revision$
 
@@ -67,7 +68,6 @@ class GMixIdealGroups
 {
 protected:
 
-
 	/**
 	* Random number.
 	*/
@@ -87,6 +87,21 @@ protected:
 	* Container used to create subjects catagories.
 	*/
 	RContainer<GGroupIdParentId,unsigned int,true,true>* Parents;
+
+	/**
+	* Current Language.
+	*/
+	GGroups* Current;
+
+	/**
+	* Tamporary array of pointer to groups.
+	*/
+	GGroup** Tab;
+
+	/**
+	* Temporary array of pointer to languages.
+	*/
+	GGroups** Tabs;
 
 	/**
 	* Session.
@@ -134,7 +149,8 @@ public:
 	* Constructor
 	* @param sess           opened session
 	* @param idealgroups    groups to mix
-	* @param nbgroups       number of groups needed
+	* @param nbgroups       Number of groups needed
+	* @param nbsubprofiles  Number of subprofiles.
 	* @param level          maximum number of each type of mix.
 	* @param ms             merge same category?
 	* @param md             merge different category?
@@ -150,14 +166,16 @@ public:
 
 	/**
 	* Merge groups.
-	* @param i              groups from same category?
+	* @param sametheme      groups from same category?
+	* @returns true if merge possible.
 	*/
-	void MergeGroups(bool i);
+	bool MergeGroups(bool sametheme);
 	
 	/**
 	* Split groups in two groups.
+	* @returns true if split possible.
 	*/
-	void SplitGroups(void);
+	bool SplitGroups(void);
 
 	/**
 	* Random groups.
@@ -166,19 +184,26 @@ public:
 
 	/**
 	* Mix the groups.
+	* @param g              Slot to receive messages.
 	*/
-	void Run(void);
+	void Run(GSlot* g);
 
 	/**
 	* Copy the ideal groupment in the mixedgroups container.
+	* @param mingroups      Minimal number of groups needed.
 	*/
-	void InitMixedGroups(void);
+	void InitMixedGroups(unsigned int mingroups);
 
 	/**
 	* save the mixed groups in database.
 	* @param nbmixedgroups  number of the mixed groups.
 	*/
 	void StockInDatabase(int nbmixedgroups);
+
+	/**
+	* Randomly reorder the groups of Current in Tabs.
+	*/
+	void RandOrderTab(void);
 
 	void IShow(void);
 
