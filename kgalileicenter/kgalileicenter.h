@@ -721,6 +721,11 @@ private slots:
 	/**
 	* Configure all the plugins of the system.
 	*/
+	void slotOldPlugins(void);
+
+	/**
+	* Configure all the plugins of the system.
+	*/
 	void slotPlugins(void);
 
 	/**
@@ -856,6 +861,7 @@ public:
 	KAction* rRunR;
 
 	KAction* plugins;
+	KAction* oldPlugins;
 	KAction* docsOptions;
 
 	KAction* runProgram;

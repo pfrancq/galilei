@@ -31,6 +31,11 @@
 */
 
 
+#include <ltmm/loader.hh>
+#include <cstdlib>
+#include <stdexcept>
+#include <iostream>
+using namespace std;
 
 //-----------------------------------------------------------------------------
 // include files for KDE
@@ -65,6 +70,8 @@ static KCmdLineOptions options[] =
 //-----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
+	map<string,ltmm::symbol_list>& preloaded =ltmm::loader<>::preloaded();
+
 	KAboutData aboutData( "kgalileicenter", I18N_NOOP("KGALILEICenter"),
 		VERSION, description, KAboutData::License_GPL,
 		"(c) 1998-2002, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");

@@ -86,7 +86,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void)
-	: KMainWindow(0,"KGALILEICenterApp"), GURLManagerKDE(),
+	: KMainWindow(0,"KGALILEICenterApp"), GURLManagerKDE("/home/pfrancq/prj/galilei_plugins"),
 	  dbHost(""),dbName(""),dbUser(""),dbPwd(""),Doc(0), DocOptions(0)
 {
 	Config=kapp->config();
@@ -173,6 +173,7 @@ void KGALILEICenterApp::initActions(void)
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
 	docsOptions=new KAction(i18n("&Documents Options"),"configure",0,this,SLOT(slotDocsOptions()),actionCollection(),"docsOptions");
 	plugins=new KAction(i18n("&Plugins"),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
+	oldPlugins=new KAction(i18n("&Old Plugins"),"wizard",0,this,SLOT(slotOldPlugins()),actionCollection(),"oldplugins");
 
 	// Menu "Window"
 	windowTile = new KAction(i18n("&Tile"), 0, this, SLOT(slotWindowTile()), actionCollection(),"window_tile");

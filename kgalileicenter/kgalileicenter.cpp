@@ -216,7 +216,6 @@ void KGALILEICenterApp::slotSessionConnect(void)
  			rRunR->setEnabled(true);
 			textFrench->setEnabled(true);
 			textEnglish->setEnabled(true);
-			plugins->setEnabled(true);
 			gaAnalyse->setEnabled(true);
 			runProgram->setEnabled(true);
 			runInsts->setEnabled(true);
@@ -290,7 +289,6 @@ void KGALILEICenterApp::slotSessionAutoConnect(const char* host,const char* user
  	rRunR->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
-	plugins->setEnabled(true);
 	gaAnalyse->setEnabled(true);
 	runProgram->setEnabled(true);
 	runInsts->setEnabled(true);

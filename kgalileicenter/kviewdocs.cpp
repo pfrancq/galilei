@@ -43,7 +43,6 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <filters/gmimefilter.h>
 #include <galilei/qlistviewitemtype.h>
 #include <docs/gdoc.h>
 #include <langs/glang.h>
@@ -158,7 +157,7 @@ void KViewDocs::CreateDocsListView(void)
 	GLangCursor CurLang=Doc->GetSession()->GetLangsCursor();
 
 	RContainer<LangItem,unsigned int,true,true> LangItems(Doc->GetSession()->GetNbLangs());
-	const GMIMEFilter* t;
+	const char* t;
 	const char det[]="Unknown";
 	const char* ptr;
 
@@ -172,7 +171,7 @@ void KViewDocs::CreateDocsListView(void)
 	{
 		t=CurDocs()->GetMIMEType();
 		if(t)
-			ptr=t->GetName();
+			ptr=t;
 		else
 			ptr=det;
 		QListViewItemType* docitem= new QListViewItemType(CurDocs(),LangItems.GetPtr<const GLang*>(CurDocs()->GetLang())->Item,CurDocs()->GetName(),CurDocs()->GetURL(),ptr);

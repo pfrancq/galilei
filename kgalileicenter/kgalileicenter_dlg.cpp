@@ -48,8 +48,6 @@ using namespace R;
 #include <galilei/gurlmanagerkde.h>
 #include <galilei/qlistviewitemtype.h>
 #include <sessions/gsession.h>
-#include <filters/gfilter.h>
-#include <filters/gmimefilter.h>
 #include <profiles/guser.h>
 #include <profiles/gprofdoc.h>
 #include <profiles/gprofile.h>
@@ -71,7 +69,6 @@ using namespace R;
 #include <galilei/qlinkcalccorrespondencepluginconf.h>
 #include <galilei/qlinkcalcsalsapluginconf.h>
 #include <galilei/qlinkcalctreshpluginconf.h>
-
 using namespace GALILEI;
 
 
@@ -110,6 +107,8 @@ using namespace GALILEI;
 #include "kviewprofile.h"
 #include "qdocsoptionsdlg.h"
 #include "qpluginsdlg.h"
+#include "qplugins.h"
+#include "qgalileiitem.h"
 
 
 
@@ -142,8 +141,6 @@ void KGALILEICenterApp::slotDocsOptions(void)
 	dlg.cbDistance->setChecked(DocOptions->Distance);
 	dlg.cbNonWord->setChecked(DocOptions->NonLetterWords);
 	dlg.frameNonWord->setEnabled(DocOptions->NonLetterWords);
-	for(Filters.Start();!Filters.End();Filters.Next())
-		new QListViewItem(dlg.lvFilters,Filters()->GetName(),Filters()->GetMIMES(),Filters()->GetVersion());
 	dlg.cbUseLink->setChecked(DocOptions->UseLink);
 	dlg.cbExternalLink->setChecked(DocOptions->UseExternalLink);
 	dlg.cbRedirection->setChecked(DocOptions->UseRedirection);
@@ -180,6 +177,50 @@ void KGALILEICenterApp::slotDocsOptions(void)
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotPlugins(void)
+{
+	GFactoryFilterCursor Cur;
+	QPlugins dlg(this,"Plugins Dialog");
+	QString str;
+	QListViewItem* def=0;
+	QListViewItem* cur=0;
+
+	// Goes through filters
+	Cur=GetFiltersCursor();
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		str=Cur()->GetName();
+		str+=" [";
+		str+=Cur()->GetLib();
+		str+=" ]";
+		cur=new QFilterItem(dlg.Filters,Cur(),str);
+		if(!def)
+			def=cur;
+	}
+	if(def)
+	{
+		dlg.Filters->setSelected(def,true);
+		dlg.changeFilter(def);
+		dlg.EnableFilter->setEnabled(true);
+	}
+	if(dlg.exec())
+	{
+		// Goes through filters
+		QFilterItem* item=dynamic_cast<QFilterItem*>(dlg.Filters->firstChild());
+		while(item)
+		{
+			if(item->Enable)
+				item->Fac->Create();
+			else
+				item->Fac->Delete();
+			item=dynamic_cast<QFilterItem*>(item->itemBelow());
+		}
+	}
+
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotOldPlugins(void)
 {
 	QPluginsDlg dlg(this,"Plugins Dialog");
 	dlg.RegisterComputingPluginConf(new QComputingPluginConfStat(&StatisticalParams));
