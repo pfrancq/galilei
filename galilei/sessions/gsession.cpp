@@ -637,7 +637,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 	R::RCursor<GProfile> Prof=GetProfilesCursor();
 	GProfileCalc* Profiling=ProfilingMng->GetCurrentMethod();
 	GLinkCalc* LinkCalc=LinkCalcMng->GetCurrentMethod();
-
+	
 	if(!Profiling)
 		throw GException("No computing method chosen.");
 
@@ -646,19 +646,21 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 		if(rec)
 			rec->receiveNextProfile(Prof());
 		Prof()->Update();
+		//Calc Links on the profile description
+		if(LinkCalc)
+			LinkCalc->Compute(Prof());
 		Subs=Prof()->GetSubProfilesCursor();
 		for(Subs.Start();!Subs.End();Subs.Next())
 		{
 			if(rec)
 				rec->Interact();
+
 			if(ExternBreak) return;
 			if(modified&&(Subs()->GetState()==osUpToDate)) continue;
 			try
 			{
 				if((!modified)||(Subs()->GetState()!=osUpdated))
 				{
-					if(LinkCalc)
-						LinkCalc->Compute(Subs());
 					Profiling->Compute(Subs());
 
 					if(save)

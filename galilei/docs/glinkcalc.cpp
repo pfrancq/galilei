@@ -67,6 +67,7 @@ void GLinkCalc::InitGraph(void) throw(GException)
 
 	if(!Inited)
 	{
+		cout<<"Init Graph"<<endl;
 		// Create a container of  outgoing links for all document present in the system
 		size = cur.GetNb() * sizeof(GLinks);
 		for(cur.Start();!cur.End();cur.Next())

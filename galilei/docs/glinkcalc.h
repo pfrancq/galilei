@@ -87,7 +87,7 @@ public :
 	* Compute the links for a given subprofile.
 	* @param subprof        Reference to the subprofile to compute.
 	*/
-	virtual void Compute(GSubProfile* subprof) throw(GException)=0;
+	virtual void Compute(GProfile* prof) throw(GException)=0;
 
 	/**
 	* Connect to a Session.
