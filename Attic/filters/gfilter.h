@@ -24,7 +24,6 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rstd/rstring.h>
-using namespace RStd;
 
 
 //-----------------------------------------------------------------------------
@@ -47,6 +46,7 @@ class GURLManager;
 * The GFilter class provides a representation of a document to filter in a XML
 * structure.
 * @author Pascal Francq
+* @short Generic Filter.
 */
 class GFilter
 {	
@@ -62,13 +62,33 @@ protected:
 	*/
 	GDocXML* Doc;
 
+	/**
+	* Name of the filter.
+	*/
+	RStd::RString Name;
+
+	/**
+	* Mimetypes handle by the Filters separated by a semi-colon.
+	*
+	* Example: text/html;text/xml
+	*/
+	RStd::RString MIMES;
+
+	/**
+	* Version of the filter.
+	*/
+	RStd::RString Version;
+
 public:
 
 	/**
 	* Construct the filter for a specific document.
 	* @param mng            Manager.
+	* @param name           Name of the filter.
+	* @param mimes          MIME Types of the filter.
+	* @param vers           Version of the filter.
 	*/
-	GFilter(GURLManager* mng);
+	GFilter(GURLManager* mng,const char* name,const char* mimes,const char* ver);
 
 	/**
 	* Compare method used by RContainer.
@@ -81,18 +101,30 @@ public:
 	int Compare(const GFilter& f) const {return(-1);}
 
 	/**
+	* Get the name of the filter.
+	* @returns Pointer to a C String.
+	*/
+	const char* GetName(void) const {return(Name());}
+
+	/**
+	* Get the Mime Types of the filter.
+	* @returns Pointer to a C String.
+	*/
+	const char* GetMIMES(void) const {return(MIMES());}
+
+	/**
+	* Get the version of the filter.
+	* @returns Pointer to a C String.
+	*/
+	const char* GetVersion(void) const {return(Version());}
+
+protected:
+
+	/**
 	* Add a specific MIME-Type for this filter.
 	* @param mime           Name of the MIME-Type.
 	*/
 	void AddMIME(const char* mime);
-
-	/**
-	* Analyze the document and fill the XML structure with the information
-	* about its content. This method must be reimplemented in the child
-	* classes.
-	* @param doc            XML Structure that will represent the document.
-	*/
-	virtual bool Analyze(GDocXML* doc)=0;
 
 	/**
 	* @return true if the character represent a end of sentence.
@@ -116,6 +148,16 @@ public:
 	* @param attach         XML tag where the sentences must be attach.
 	*/
 	void AnalyzeKeywords(char* list,char sep,RXMLTag* attach);
+
+public:
+
+	/**
+	* Analyze the document and fill the XML structure with the information
+	* about its content. This method must be reimplemented in the child
+	* classes.
+	* @param doc            XML Structure that will represent the document.
+	*/
+	virtual bool Analyze(GDocXML* doc)=0;
 
 	/**
 	* Destructor of the filter.

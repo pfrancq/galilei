@@ -51,21 +51,17 @@ namespace GALILEI{
 /**
 * The GFilterHTML class provides a representation of a document to filter in a
 * XML structure.
-* @author Pascal Francq
+* @author Julien Lamoral
+* @short HTML's Filter.
 */
 
 
 class GFilterHTML: public GFilter
 {
-
-public:
-
 	/**
-	* Buffer containing all the email.
+	* Buffer containing all the document.
 	*/
 	char* Buffer;
-
-private:
 
 	/**
 	* Pointer to the current position in the buffer.

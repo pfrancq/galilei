@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GDocXML.h
+	GFilterEMail.h
 
-	A XML representation of a document - Header.
+	Filter for Mails - Header.
 
 	(C) 2001 by P. Francq.
 
@@ -40,6 +40,7 @@ namespace GALILEI{
 * The GFilterEMail class provides a representation of a document to filter in a
 * XML structure.
 * @author Pascal Francq
+* @short EMails' Filter.
 */
 class GFilterEMail : public GFilter
 {
