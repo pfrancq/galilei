@@ -368,7 +368,7 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* metaData)
 	if(!params) return;
 	ptr=params;
 	while((*ptr)&&((*ptr)!='=')&&(!isspace(*ptr)))
-		(*(ptr++))=toupper(*ptr);
+		(*(ptr++))=RString::ToUpper(*ptr);
 	bSpaces=isspace(*ptr);
 	(*(ptr++))=0;
 	if(bSpaces)
@@ -390,11 +390,11 @@ void GALILEI::GFilterHTML::ReadMetaTag(char* params,RXMLTag* metaData)
 	// Read the type of HTTP-EQUIV
 	name=ptr;
 	while((*ptr)&&((*ptr)!=delimiter))
-		(*(ptr++))=toupper(*ptr);
+		(*(ptr++))=RString::ToUpper(*ptr);
 	(*(ptr++))=0;  // Skip the second delimiter
 
 	// Search for 'CONTENT'
-	while((*ptr)&&(toupper(*ptr)!='C'))
+	while((*ptr)&&(RString::ToUpper(*ptr)!='C'))
 		ptr++;
 	if((!(*ptr))||strncasecmp(ptr,"CONTENT",7)) return;
 	ptr+=7;
@@ -548,7 +548,7 @@ beginread:
 	{
 		if((*Pos)=='&')
 			ReplaceCode();
-		(*(Pos++))=toupper(*Pos);
+		(*(Pos++))=RString::ToUpper(*Pos);
 		TagLen++;
 	}
 	bParams=isspace(*Pos); // If name ending with a space -> Possible parameters.
