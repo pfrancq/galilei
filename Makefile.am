@@ -17,6 +17,9 @@ package-messages:
 
 EXTRA_DIST = admin COPYING configure.in.in
 
+install-data-local:
+	$(INSTALL_DATA) $(srcdir)/libgalilei.m4 /usr/share/aclocal/libgalilei.m4
+	
 dist-hook:
 	cd $(top_distdir) && perl admin/am_edit -padmin
 	cd $(top_distdir) && $(MAKE) -f admin/Makefile.common subdirs
