@@ -45,61 +45,82 @@ using namespace RIO;
 
 //-----------------------------------------------------------------------------
 //
-// class GSim
+// class GDocsSim::GSim
 //
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-class GALILEI::GDocsSim::GSim
-{
-public:
-	unsigned int Id1;
-	unsigned int Id2;
-	double Sim;
 
-	GSim(void) : Id1(0), Id2(0), Sim(0.0) {}
-	GSim(const GSim& r) : Id1(r.Id1), Id2(r.Id2), Sim(r.Sim) {}
-	GSim(unsigned int id1,unsigned id2,double s) : Id1(0), Id2(0), Sim(s)
+//-----------------------------------------------------------------------------
+GALILEI::GDocsSim::GSim::GSim(void)
+	: Id1(0), Id2(0), Sim(0.0)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GDocsSim::GSim::GSim(const GSim& r)
+	: Id1(r.Id1), Id2(r.Id2), Sim(r.Sim)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GDocsSim::GSim::GSim(unsigned int id1,unsigned id2,double s)
+	: Id1(0), Id2(0), Sim(s)
+{
+	if(id1<id2)
 	{
-		if(id1<id2)
-		{
-			Id1=id1;
-			Id2=id2;
-		}
-		else
-		{
-			Id1=id2;
-			Id2=id1;
-		}
+		Id1=id1;
+		Id2=id2;
 	}
-	int Compare(const GSim* rec) const
+	else
 	{
-		int i=Id1-rec->Id1;
-		if(i) return(i);
-		return(Id2-rec->Id2);
+		Id1=id2;
+		Id2=id1;
 	}
-	int Compare(const GSim& rec) const
-	{
-		int i=Id1-rec.Id1;
-		if(i) return(i);
-		return(Id2-rec.Id2);
-	}
-	GSim& operator=(const GSim& src)
-	{
-		Id1=src.Id1;
-		Id2=src.Id2;
-		Sim=src.Sim;
-		return(*this);
-	}
-	void Write(RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f)
-	{
-		f<<Id1<<Id2<<Sim;
-	}
-	void Read(RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f)
-	{
-		f>>Id1>>Id2>>Sim;
-	}
-};
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GDocsSim::GSim::Compare(const GSim* rec) const
+{
+	int i=Id1-rec->Id1;
+	if(i) return(i);
+	return(Id2-rec->Id2);
+}
+
+
+//-----------------------------------------------------------------------------
+int GALILEI::GDocsSim::GSim::Compare(const GSim& rec) const
+{
+	int i=Id1-rec.Id1;
+	if(i) return(i);
+	return(Id2-rec.Id2);
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::GDocsSim::GSim& GALILEI::GDocsSim::GSim::operator=(const GSim& src)
+{
+	Id1=src.Id1;
+	Id2=src.Id2;
+	Sim=src.Sim;
+	return(*this);
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocsSim::GSim::Write(RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f) throw(RString)
+{
+	f<<Id1<<Id2<<Sim;
+}
+
+
+//-----------------------------------------------------------------------------
+void GALILEI::GDocsSim::GSim::Read(RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f) throw(RString)
+{
+	f>>Id1>>Id2>>Sim;
+}
 
 
 

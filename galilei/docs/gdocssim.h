@@ -63,7 +63,71 @@ namespace GALILEI{
 */
 class GDocsSim
 {
-	class GSim;
+public:
+
+	/**
+	* Class representing a specific similarity between two documents.
+	*/
+	class GSim
+	{
+	public:
+		/**
+		* Identificator of the first document.
+		*/
+		unsigned int Id1;
+
+		/**
+		* Identificator of the second document.
+		*/
+		unsigned int Id2;
+
+		/**
+		* Similarity.
+		*/
+		double Sim;
+
+		/**
+		* Default constructor.
+		*/
+		GSim(void);
+
+		/**
+		* Copy constructor.
+		*/
+		GSim(const GSim& r);
+
+		/**
+		* Constructor.
+		*/
+		GSim(unsigned int id1,unsigned id2,double s);
+
+		/**
+		* Compare method needed by RIO::RRecFile.
+		*/
+		int Compare(const GSim* rec) const;
+
+		/**
+		* Compare method needed by RIO::RRecFile.
+		*/
+		int Compare(const GSim& rec) const;
+
+		/**
+		* Assignment operator.
+		*/
+		GSim& operator=(const GSim& src);
+
+		/**
+		* Write a record to a RIO::RRecFile.
+		*/
+		void Write(RIO::RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f) throw(RStd::RString);
+
+		/**
+		* Read a record from a RIO::RRecFile.
+		*/
+		void Read(RIO::RRecFile<GSim,sizeof(double)+2*sizeof(unsigned int),true>& f) throw(RStd::RString);
+	};
+
+private:
 
 	/**
 	* The similarities.
