@@ -79,8 +79,9 @@ public:
 	/**
 	* Construct a URL manager.
 	* @param path            Path to find the plugins.
+	* @param dlg             Should the dialog box be loaded.
 	*/
-	GURLManager(const char* path) throw(GException);
+	GURLManager(const char* path,bool dlg=true) throw(GException);
 
 protected:
 

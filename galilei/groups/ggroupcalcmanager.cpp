@@ -96,6 +96,7 @@ GGroupCalcManager::GGroupCalcManager(const char* path,bool dlg) throw(GException
 			InsertPtr(myfactory);
 
 			// Look if dialog boxes are available
+			if(!dlg) continue;
 			try
 			{
 				if(!dlg) continue;

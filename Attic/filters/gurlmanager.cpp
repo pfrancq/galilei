@@ -83,7 +83,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GURLManager::GURLManager(const char* path) throw(GException)
+GALILEI::GURLManager::GURLManager(const char* path,bool dlg) throw(GException)
 	: R::RContainer<GFactoryFilter,unsigned int,true,true>(10,5), MIMES(50,25)
 {
 	DIR* dp;
@@ -120,6 +120,7 @@ GALILEI::GURLManager::GURLManager(const char* path) throw(GException)
 			InsertPtr(myfactory);
 
 			// Look if dialog boxes are available
+			if(!dlg) continue;
 			try
 			{
 				strcpy(DlgLib,Name());
