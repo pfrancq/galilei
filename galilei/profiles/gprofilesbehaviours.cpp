@@ -171,7 +171,7 @@ GProfilesBehaviours::GProfilesBehaviour::GProfilesBehaviour(GProfilesBehaviours*
 	for(Cur1.Start(), i=0; !Cur1.End();Cur1.Next(),i++)
 	{
 		pos=Cur1()->GetProfile()->GetId();
-		behaviours=new GBehaviours(Cur1()->GetProfile()->GetId(),pos-1);
+		behaviours=new GBehaviours(Cur1()->GetProfile()->GetId(),pos);
 		Behaviours->InsertPtrAt(behaviours,pos);
 		for(Cur2.Start(), j=0;j<i;Cur2.Next(),j++)
  			behaviours->InsertPtrAt(new GBehaviour(Cur2()->GetProfile()->GetId(),0.0,0.0,osModified),Cur2()->GetProfile()->GetId());
@@ -291,6 +291,7 @@ void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(bad_alloc)
 	// change status of modified subprofiles and add Behaviours of created subprofiles
 	for (ModifiedProfs->Start(); !ModifiedProfs->End(); ModifiedProfs->Next())
 	{
+		if (!(*ModifiedProfs)()->IsDefined()) continue;
 		behaviours = Behaviours->GetPtrAt((*ModifiedProfs)()->GetProfile()->GetId());
 		if(!behaviours)
 			behaviours=AddNewBehaviours((*ModifiedProfs)());

@@ -122,7 +122,7 @@ class GConfig : R::RXMLStruct
 	/**
 	* Document Analysis Methods.
 	*/
-	R::RXMLTag* Session;
+	R::RXMLTag* SessionParams;
 
 public:
 

@@ -763,8 +763,8 @@ GSessionParams::GSessionParams(void)
 	: GParams("Session Parameters")
 {
 	GParam* p;
-	InsertPtr(p=new GParamUInt("SameBehaviourMinDocs"));
-	InsertPtr(p=new GParamUInt("DiffBehaviourMinDocs"));
-	InsertPtr(p=new GParamDouble("NullSimLevel"));
+	InsertPtr(p=new GParamUInt("SameBehaviourMinDocs",7));
+	InsertPtr(p=new GParamUInt("DiffBehaviourMinDocs",4));
+	InsertPtr(p=new GParamDouble("NullSimLevel",0.00001));
 }
 

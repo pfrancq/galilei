@@ -115,8 +115,6 @@ public:
 	// Identificators of modified profiles
 	RContainer<GSubProfile,unsigned int,false,true>* ModifiedProfs;
 
-	R::RTextFile* debug;
-
 	// Constructor and Compare methods.
 	GProfilesSim(GProfilesSims* manager,GSubProfileCursor& s,bool iff,GLang* lang) throw(bad_alloc, GException);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
@@ -188,25 +186,12 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 		pos=Cur1()->GetProfile()->GetId();
 		sim=new GSims(pos,pos);
 		Sims->InsertPtrAt(sim,pos);
-		for(Cur2.Start(), j=0;j<i&&!Cur2.End();Cur2.Next(),j++)
+		for(Cur2.Start(), j=0;j<i;Cur2.Next(),j++)
 		{
 			if (!Cur2()->IsDefined()) continue;
 		 	AnalyseSim(sim,Cur1(),Cur2());
 		}
 	}
-
-	//tmp debug
-	debug=new RTextFile("../../../debug.txt", R::Append);
-	(*debug)<<"******************************** Lang = "<< Lang->GetCode()<<" *******************************"<<endl;
-	for (Sims->Start(); !Sims->End(); Sims->Next())
-	{
-		if (!(*Sims)()->NbPtr)
-			(*debug)<<"("<<(*Sims)()->SubId<<",X) = 0 elements"<<endl;
-		for ((*Sims)()->Start(); !(*Sims)()->End(); (*Sims)()->Next())
-			(*debug)<<"("<<(*Sims)()->SubId<<","<<(*(*Sims)())()->SubId<<")="<<(*(*Sims)())()->Sim<<"  ";;
-		(*debug)<<endl;
-	}
-
 
 
 	//mean calculation & deviation calculation
@@ -237,7 +222,6 @@ GProfilesSims::GProfilesSim::GProfilesSim(GProfilesSims* manager, GSubProfileCur
 		MeanSim=Deviation=0.0;
 	if(Deviation<0)
 		throw("Negative Deviation in creating profiles similarities !");
-
 }
 
 
@@ -247,15 +231,13 @@ void GProfilesSims::GProfilesSim::AnalyseSim(GSims* sim,const GSubProfile* sub1,
 	double tmp;
 	unsigned int pos;
 
-//	cout <<" ----------------------------------analysing sim bewteen "<<sub1->GetId()<<" and "<<sub2->GetId()<<endl;
-
 	if(IFF)
 		tmp=sub1->SimilarityIFF(sub2);
 	else
 		tmp=sub1->Similarity(sub2);
 	if(fabs(tmp)<Manager->GetNullSimLevel()) return;
 	pos=sub2->GetProfile()->GetId();
-	if (pos >=sub1->GetId())
+	if (pos >=sub1->GetProfile()->GetId())
 		throw (GException("Out of Range in Analyse similarities !"));
 	sim->InsertPtrAt(new GSim(pos,tmp,osUpdated), pos);
 
@@ -282,12 +264,14 @@ double GProfilesSims::GProfilesSim::GetSim(const GSubProfile* sub1,const GSubPro
 	j = sub2->GetProfile()->GetId();
 
 	if(i==j) return (1.0);
+	// the first indice i must be the highest one
 	if (i<j)
 	{
 		tmp=i;
 		i=j;
 		j=tmp;
 	}
+
 	s=Sims->GetPtrAt(i);
 	if(!s) return(0.0);
 	s2=s->GetPtrAt(j);
@@ -329,10 +313,10 @@ void GProfilesSims::GProfilesSim::Update(void) throw(bad_alloc)
 	// change status of modified subprofiles and add sims of created subprofiles
 	for (ModifiedProfs->Start(); !ModifiedProfs->End(); ModifiedProfs->Next())
 	{
+		if(!(*ModifiedProfs)()->IsDefined()) continue;
 		sims = Sims->GetPtrAt((*ModifiedProfs)()->GetProfile()->GetId());
 		if(!sims)
 			sims=AddNewSims((*ModifiedProfs)());
-		if(!sims) continue;
 		for (sims->Start(); !sims->End(); sims->Next())
 			(*sims)()->State=osModified;
 	}
@@ -368,8 +352,8 @@ GSims*  GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 	GSims* sims, *tmpsims;
 	GSubProfileCursor subcur;
 
-	if (!sub->IsDefined()) return(0);
-	sims=new GSims(sub->GetProfile()->GetId(),sub->GetProfile()->GetId()-1);
+	if (!sub->IsDefined()) return 0;
+	sims=new GSims(sub->GetProfile()->GetId(),sub->GetProfile()->GetId());
 	Sims->InsertPtrAt(sims, sub->GetProfile()->GetId());
         subcur=Manager->GetSession()->GetSubProfilesCursor(Lang);
 
@@ -404,27 +388,27 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor& subprofile
 {
 	GSim* sim;
 	GSims* sims;
-	unsigned int nbcomp,i,j;
+	unsigned int nbcomp; //number of comparison
+	unsigned i,j;
 	double oldsim,newsim;
 	double newmean, oldmean, newdev, olddev;
 	GSubProfileCursor subprofiles2;
 
+	nbcomp=0;
 	oldmean=MeanSim; olddev=Deviation;
-
-	//manage number of comparisons.
-	nbcomp=(subprofiles.GetNb())*(subprofiles.GetNb()-1)/2;
-
 	newmean=OldNbComp*oldmean;
 	newdev=OldNbComp*(olddev+(oldmean*oldmean));
-
 	subprofiles2=subprofiles;
-	for(subprofiles.Start(),i=0,j=subprofiles.GetNb();--j;subprofiles.Next(),i++)
+
+	for(subprofiles.Start(),i=0;!subprofiles.End();subprofiles.Next(),i++)
 	{
 		if(!(subprofiles)()->IsDefined()) continue;
+		nbcomp++;
+		if(subprofiles()->GetProfile()->GetId()==1) continue;
 		sims=Sims->GetPtrAt(subprofiles()->GetProfile()->GetId());
 		if (!sims)
 			throw(GException("Sims not present in Update Mean similarities"));
-		for(subprofiles2.Start(),j=0;!subprofiles2.End()&&j<i;subprofiles2.Next(),j++)
+		for(subprofiles2.Start(),j=0;(j<i)&&(!subprofiles2.End());subprofiles2.Next(),j++)
 		{
 			if(!(subprofiles2)()->IsDefined()) continue;
 			sim=sims->GetPtrAt(subprofiles2()->GetProfile()->GetId());
@@ -445,6 +429,7 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor& subprofile
 			}
 		}
 	}
+	nbcomp=nbcomp*(nbcomp-1)/2;
 	newmean/=nbcomp;
 	newdev/=nbcomp;
 	newdev-=(newmean*newmean);
@@ -452,8 +437,13 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor& subprofile
 	//re-affect thhe global parameters
 	MeanSim=newmean;
 	Deviation=newdev;
-	if (Deviation <0)
+	if (fabs(Deviation)<0.00001)
+		Deviation=0.0;
+	if (Deviation <0.0)
+	{
+		cout <<"Negative Deviation in profiles similarities : "<< Deviation<<endl;
 		throw(GException("Negative Deviation in profiles similarities"));
+	}
 	OldNbComp=nbcomp;
 }
 
@@ -461,42 +451,53 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(GSubProfileCursor& subprofile
 //------------------------------------------------------------------------------
 void GProfilesSims::GProfilesSim::RecomputeDevMeanSim(GSubProfileCursor& subprofiles) throw (GException)
 {
-	double mean, dev;
-	unsigned int nbcomp,i,j;
-	GSubProfileCursor subprofiles2;
+	unsigned int i,j, pos, nbcomp;
+	double simssum, deviation, tmpsim;
+	GSubProfileCursor s2;
 
-	subprofiles2=subprofiles;
-	nbcomp=(subprofiles.GetNb())*(subprofiles.GetNb()-1)/2;
-	mean=dev=0.0;
-
-	for(subprofiles.Start(),i=0,j=subprofiles.GetNb();--j;subprofiles.Next(),i++)
-		for(subprofiles2.GoTo(i+1);!subprofiles2.End();subprofiles2.Next())
-			mean+=GetSim(subprofiles(),subprofiles2());
-	mean/=nbcomp;
+	simssum=deviation=0.0;
+	nbcomp=0;
+	s2=subprofiles;
 
 	for(subprofiles.Start(),i=0,j=subprofiles.GetNb();--j;subprofiles.Next(),i++)
-		for(subprofiles2.GoTo(i+1);!subprofiles2.End();subprofiles2.Next())
-			dev+=fabs(GetSim(subprofiles(),subprofiles2()));
-	dev/=nbcomp;
+	{
+		if (!subprofiles()->IsDefined()) continue;
+		for(s2.GoTo(i+1);!s2.End();s2.Next())
+		{
+			if (!s2()->IsDefined()) continue;
+			tmpsim=GetSim(subprofiles(),s2());
+			simssum+=tmpsim;
+			deviation+=tmpsim*tmpsim;
+			nbcomp++;
+		}
+	}
 
-	//re-affect thhe global parameters
-	MeanSim=mean;
-	Deviation=dev;
-	if (Deviation <0)
+	if (nbcomp)
+	{
+		MeanSim=simssum/double(nbcomp);
+		deviation/=double(nbcomp);
+		deviation-=MeanSim*MeanSim;
+		Deviation=deviation;
+	}
+	else
+		MeanSim=Deviation=0.0;
+	if (Deviation <0.0)
 		throw(GException("Negative Deviation in profiles similarities"));
 }
 
 //------------------------------------------------------------------------------
 void GProfilesSims::GProfilesSim::AddModifiedProfile(GSubProfile* s)
 {
-	ModifiedProfs->InsertPtr(s);
+	if (Manager->GetMemory())
+		ModifiedProfs->InsertPtr(s);
 }
-
 
 
 //------------------------------------------------------------------------------
 GProfilesSims::GProfilesSim::~GProfilesSim(void)
 {
+	if (Sims)
+		delete Sims;
 	if(ModifiedProfs)
 		delete ModifiedProfs;
 }
@@ -589,6 +590,7 @@ double GProfilesSims::GetMinimumOfSimilarity(GLang* lang, double deviationrate) 
 		throw GException("Language not defined");
 	profSim->UpdateDeviationAndMeanSim(Session->GetSubProfilesCursor(lang));
 	minSim=profSim->MeanSim+deviationrate*sqrt(profSim->Deviation);
+
 	return(minSim);
 }
 

@@ -95,7 +95,7 @@ GConfig::GConfig(const char* f) throw(bad_alloc)
 	AddNode(t,Langs=new RXMLTag("galileiconfig:langs"));
 	AddNode(t,DocAnalyses=new RXMLTag("galileiconfig:docanalyses"));
 	AddNode(t,PostGroups=new RXMLTag("galileiconfig:postgroups"));
-	AddNode(t,Session=new RXMLTag("galileiconfig:session"));
+	AddNode(t,SessionParams=new RXMLTag("galileiconfig:session"));
 }
 
 
@@ -116,6 +116,7 @@ void GConfig::Load(void) throw(GException)
 		Langs=GetTop()->GetTag("galileiconfig:langs");
 		DocAnalyses=GetTop()->GetTag("galileiconfig:docanalyses");
 		PostGroups=GetTop()->GetTag("galileiconfig:postgroups");
+		SessionParams=GetTop()->GetTag("galileiconfig:sessionparams");
 	}
 	catch(...)
 	{
@@ -504,10 +505,10 @@ void GConfig::Store(GDocAnalyseManager& mng)
 //------------------------------------------------------------------------------
 void GConfig::Read(GSessionParams& p)
 {
-	if (!Session) return;
+	if (!SessionParams) return;
 	try
 	{
-		p.ReadConfig(Session);
+		p.ReadConfig(SessionParams);
 	}
 	catch(GException)
 	{
@@ -518,8 +519,8 @@ void GConfig::Read(GSessionParams& p)
 //------------------------------------------------------------------------------
 void GConfig::Store(GSessionParams& p)
 {
-	if (!Session) return;
-	p.SaveConfig(Session);
+	if (!SessionParams) return;
+	p.SaveConfig(SessionParams);
 }
 
 

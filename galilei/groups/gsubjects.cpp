@@ -410,6 +410,7 @@ void GSubjects::ComputeTotal(void)
 		if(NbRows>MaxRows) MaxRows=NbRows;
 		if(NbCols>MaxCols) MaxCols=NbCols;
 	}
+
 	if((!MaxRows)||(!MaxCols)) return;
 	VectorRows=new double[MaxRows];
 	VectorCols=new double[MaxCols];
@@ -451,7 +452,11 @@ void GSubjects::ComputeTotal(void)
 			GroupIdeal=(GroupsIdeal)();
 			for(GroupIdeal->Start();!GroupIdeal->End();GroupIdeal->Next())
 			{
-				GroupComputed=(*GroupIdeal)()->GetGroup();
+				GroupComputed=0;
+				for(GroupsComputed.Start();!GroupsComputed.End()&&!GroupComputed;GroupsComputed.Next())
+					if ((GroupsComputed)()->IsIn((*GroupIdeal)()))
+						GroupComputed=(GroupsComputed)();
+				//GroupComputed=(*GroupIdeal)()->GetGroup();//GroupsComputed->GetGroup((*GroupIdeal)());
 				if(GroupComputed)
 				{
 					position=GroupsId.GetPtr(GroupComputed->GetId())->position;

@@ -91,7 +91,6 @@ void GParam::ReadConfig(RXMLTag* parent)
 {
 	R::RXMLTagCursor Cur=parent->GetXMLTagsCursor();
 	RXMLTag* tag=0;
-
 	// Find Tag
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
