@@ -288,6 +288,51 @@ void KGALILEICenterApp::saveOptions(void)
 	saveOptions("Different Feedbacks Criterion",IRParams.ParamsDiffFeedbacks);
 	saveOptions("Social Criterion",IRParams.ParamsSocial);
 	Config->writeEntry("Global Similarity",IRParams.GlobalSim);
+
+	//Write Config of KMeans
+	Config->setGroup(KMeansParams.GetGroupingName());
+	Config->writeEntry("Number of Groups",KMeansParams.NbGroups);
+	Config->writeEntry("Maximum number of iterations",KMeansParams.NbIters);
+	Config->writeEntry("Number of subsamples",KMeansParams.NbSubSamples);
+	Config->writeEntry("Rate of element by subsample",KMeansParams.SubSamplesRate);
+	Config->writeEntry("Epsilon",KMeansParams.Epsilon);
+
+	//Write Config of Cure
+	Config->setGroup(CureParams.GetGroupingName());
+	Config->writeEntry("Number of Groups",CureParams.NbGroups);
+	Config->writeEntry("Number of Prototyes per Group",CureParams.NbProtos);
+
+	//Write Config of GroupCalcRelevant
+	Config->setGroup(CalcRelevantParams.GetComputingName());
+	Config->writeEntry("Global Similarity",CalcRelevantParams.GlobalSim);
+	Config->writeEntry("MaxNonZero",CalcRelevantParams.MaxNonZero);
+	Config->writeEntry("MaxOrderSize",CalcRelevantParams.MaxOrderSize);
+
+	//Write Config of GroupCalcGravitation
+	Config->setGroup(CalcGravitationParams.GetComputingName());
+	Config->writeEntry("MaxNonZero",CalcGravitationParams.MaxNonZero);
+	Config->writeEntry("MaxOrderSize",CalcGravitationParams.MaxOrderSize);
+
+	//Write Config of ProfileCalcFeedback
+	Config->setGroup(FeedbackParams.GetComputingName());
+	Config->writeEntry("MaxNonZero",FeedbackParams.MaxNonZero);
+	Config->writeEntry("MaxOrderSize",FeedbackParams.MaxOrderSize);
+	Config->writeEntry("RelFactor",FeedbackParams.RelFactor);
+	Config->writeEntry("FuzzyFactor",FeedbackParams.FuzzyFactor);
+	Config->writeEntry("NoRelFactor",FeedbackParams.NoRelFactor);
+	Config->writeEntry("AddFuzzy",FeedbackParams.AddFuzzy);
+	Config->writeEntry("IdfFactor",FeedbackParams.IdfFactor);
+
+	//Write Config of ProfileCalcVector
+	Config->setGroup(StatisticalParams.GetComputingName());
+	Config->writeEntry("MaxNonZero",StatisticalParams.MaxNonZero);
+	Config->writeEntry("MaxOrderSize",StatisticalParams.MaxOrderSize);
+ 	Config->writeEntry("IdfFactor",StatisticalParams.MaxOrderSize);
+
+	//Write Config of ProfileCalcReWeighting
+	Config->setGroup(ReWeightingParams.GetComputingName());
+	Config->writeEntry("MaxNonZero",ReWeightingParams.MaxNonZero);
+	Config->writeEntry("MaxOrderSize",ReWeightingParams.MaxOrderSize);
 }
 
 
@@ -374,6 +419,51 @@ void KGALILEICenterApp::readOptions(void)
 	readOptions("Different Feedbacks Criterion",IRParams.ParamsDiffFeedbacks);
 	readOptions("Social Criterion",IRParams.ParamsSocial);
 	IRParams.GlobalSim=Config->readBoolEntry("Global Similarity",true);
+
+	//Read Config of KMeans
+	Config->setGroup(KMeansParams.GetGroupingName());
+	KMeansParams.NbGroups=Config->readNumEntry("Number of Groups",13);
+	KMeansParams.NbIters=Config->readNumEntry("Maximum number of iterations",20);
+	KMeansParams.NbSubSamples=Config->readNumEntry("Number of subsamples",10);
+	KMeansParams.SubSamplesRate=Config->readNumEntry("Rate of element by subsample",80);
+	KMeansParams.Epsilon=Config->readDoubleNumEntry("Epsilon",0.005);
+
+	//Read Config of Cure
+	Config->setGroup(CureParams.GetGroupingName());
+	CureParams.NbGroups=Config->readNumEntry("Number of Groups",13);
+	CureParams.NbProtos=Config->readNumEntry("Number of Prototyes per Group",2);
+
+	//Read Config of GroupCalcRelevant
+	Config->setGroup(CalcRelevantParams.GetComputingName());
+	CalcRelevantParams.GlobalSim=Config->readBoolEntry("Global Similarity",1);
+	CalcRelevantParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
+	CalcRelevantParams.MaxOrderSize=Config->readNumEntry("MaxOrderSize",500);
+
+	//Read Config of GroupCalcGravitation
+	Config->setGroup(CalcGravitationParams.GetComputingName());
+	CalcGravitationParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
+	CalcGravitationParams.MaxOrderSize=Config->readNumEntry("MaxOrderSize",500);
+
+	//Read Config of ProfileCalcFeedback
+	Config->setGroup(FeedbackParams.GetComputingName());
+	FeedbackParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
+	FeedbackParams.MaxOrderSize=Config->readNumEntry("MaxOrderSize",500);
+	FeedbackParams.RelFactor=Config->readDoubleNumEntry("RelFactor",1);
+	FeedbackParams.FuzzyFactor=Config->readDoubleNumEntry("FuzzyFactor",1);
+	FeedbackParams.NoRelFactor=Config->readDoubleNumEntry("NoRelFactor",0);
+	FeedbackParams.AddFuzzy=Config->readBoolEntry("AddFuzzy",1);
+	FeedbackParams.IdfFactor=Config->readBoolEntry("IdfFactor",0);
+
+	//Read Config of ProfileCalcVector
+	Config->setGroup(StatisticalParams.GetComputingName());
+	StatisticalParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
+	StatisticalParams.MaxOrderSize=Config->readNumEntry("MaxOrderSize",500);
+ 	StatisticalParams.MaxOrderSize=Config->readBoolEntry("IdfFactor",1);
+
+	//Read Config of ProfileCalcReWeighting
+	Config->setGroup(ReWeightingParams.GetComputingName());
+	ReWeightingParams.MaxNonZero=Config->readNumEntry("MaxNonZero",500);
+	ReWeightingParams.MaxOrderSize=Config->readNumEntry("MaxOrderSize",500);
 }
 
 

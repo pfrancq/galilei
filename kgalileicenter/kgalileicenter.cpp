@@ -174,27 +174,27 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess->RegisterGroupingMethod(new GGroupingRandom(Sess));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcGravitation(Sess, &CalcGravitationParams));
 			Sess->RegisterGroupCalcMethod(new GGroupCalcRelevant(Sess,&CalcRelevantParams));
-			Config->setGroup("Session Options");
-			method=Config->readEntry("Description Method","Vector space");
-			Sess->SetCurrentProfileDesc(method);
-			method=Config->readEntry("Grouping Method","First-Fit Heuristic");
-			Sess->SetCurrentGroupingMethod(method);
-			method=Config->readEntry("Computing Method","Statistical");
-			Sess->SetCurrentComputingMethod(method);
-			method=Config->readEntry("Group Description Method","Relevant SubProfile");
-			Sess->SetCurrentGroupCalcMethod(method);
-			Config->setGroup("Computing Options");
-			GProfileCalcCursor Computings=Sess->GetComputingsCursor();
-			for(Computings.Start();!Computings.End();Computings.Next())
-				Computings()->SetSettings(Config->readEntry(Computings()->GetComputingName(),""));
-			Config->setGroup("Grouping Options");
-			GGroupingCursor Groupings=Sess->GetGroupingsCursor();
-			for(Groupings.Start();!Groupings.End();Groupings.Next())
-				Groupings()->SetSettings(Config->readEntry(Groupings()->GetGroupingName(),""));
-			Config->setGroup("Group Description Options");
-			GGroupCalcCursor GroupCalcs=Sess->GetGroupCalcsCursor();
-			for(GroupCalcs.Start();!GroupCalcs.End();GroupCalcs.Next())
-				GroupCalcs()->SetSettings(Config->readEntry(GroupCalcs()->GetComputingName(),""));
+//			Config->setGroup("Session Options");
+//			method=Config->readEntry("Description Method","Vector space");
+//			Sess->SetCurrentProfileDesc(method);
+//			method=Config->readEntry("Grouping Method","First-Fit Heuristic");
+//			Sess->SetCurrentGroupingMethod(method);
+//			method=Config->readEntry("Computing Method","Statistical");
+//			Sess->SetCurrentComputingMethod(method);
+//			method=Config->readEntry("Group Description Method","Relevant SubProfile");
+//			Sess->SetCurrentGroupCalcMethod(method);
+//			Config->setGroup("Computing Options");
+//			GProfileCalcCursor Computings=Sess->GetComputingsCursor();
+//			for(Computings.Start();!Computings.End();Computings.Next())
+//				Computings()->SetSettings(Config->readEntry(Computings()->GetComputingName(),""));
+//			Config->setGroup("Grouping Options");
+//			GGroupingCursor Groupings=Sess->GetGroupingsCursor();
+//			for(Groupings.Start();!Groupings.End();Groupings.Next())
+//				Groupings()->SetSettings(Config->readEntry(Groupings()->GetGroupingName(),""));
+//			Config->setGroup("Group Description Options");
+//			GGroupCalcCursor GroupCalcs=Sess->GetGroupCalcsCursor();
+//			for(GroupCalcs.Start();!GroupCalcs.End();GroupCalcs.Next())
+//				GroupCalcs()->SetSettings(Config->readEntry(GroupCalcs()->GetComputingName(),""));
 			sessionDisconnect->setEnabled(true);
 			sessionCompute->setEnabled(true);
 			sessionConnect->setEnabled(false);
