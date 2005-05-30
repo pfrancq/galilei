@@ -169,9 +169,13 @@ void GSession::Connect(void)
 	// Create Similarities Managers (IFF used by default)
 	if(SessParams)
 	{
-		if(!SessParams->GetBool("DebugSim"))
+		DebugSim=SessParams->GetBool("DebugSim");
+		DebugBehaviour=SessParams->GetBool("DebugBehaviour");
+		DebugMinSim=SessParams->GetBool("DebugMinSim");
+		AutomaticMinSim=SessParams->GetBool("AutomaticMinSim");
+		if(!DebugSim)
 			ProfilesSims = new GProfilesSims(this,true, true);
-		if(!SessParams->GetBool("DebugBehaviour"))
+		if(!DebugBehaviour)
 			ProfilesBehaviours = new GProfilesBehaviours(this,true);
 	}
 	DocProfSims = new GDocProfSims(this,true,false);
@@ -441,7 +445,7 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 //------------------------------------------------------------------------------
 void GSession::UpdateBehaviours(void)
 {
-	if (!SessParams->GetBool("DebugBehaviour"))
+	if(!DebugBehaviour)
 		ProfilesBehaviours->Update();
 }
 
@@ -449,7 +453,7 @@ void GSession::UpdateBehaviours(void)
 //------------------------------------------------------------------------------
 void GSession::UpdateProfilesSims(void)
 {
-	if (!SessParams->GetBool("DebugSim"))
+	if(!DebugSim)
 		ProfilesSims->Update();
 }
 
@@ -495,7 +499,7 @@ void GSession::UseIFFProfs(bool iff)
 //------------------------------------------------------------------------------
 double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
 {
-	if (SessParams->GetBool("DebugSim"))
+	if(DebugSim)
 		return(sub1->SimilarityIFF(sub2));
 	return(ProfilesSims->GetSim(sub1,sub2));
 
@@ -507,12 +511,13 @@ double GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 {
 	double nbcommon, okratio;
 
-	if (SessParams->GetBool("DebugBehaviour"))
+	if(DebugBehaviour)
 	{
 		nbcommon=sub1->GetCommonDocs(sub2);
-		if (nbcommon&&nbcommon>=SessParams->GetUInt("SameBehaviourMinDocs"))
+		if(nbcommon&&nbcommon>=SessParams->GetUInt("SameBehaviourMinDocs"))
 			okratio=sub1->GetCommonOKDocs(sub2)/nbcommon;
- 		else okratio=0.0;
+ 		else
+			okratio=0.0;
 		return okratio;
 	}
 	else
@@ -525,7 +530,7 @@ double GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 {
 	double nbcommon, diffratio;
 
-	if (SessParams->GetBool("DebugBehaviour"))
+	if(DebugBehaviour)
 	{
 		nbcommon=sub1->GetCommonDocs(sub2);
 		if (nbcommon&&nbcommon>=SessParams->GetUInt("DiffBehaviourMinDocs"))
@@ -541,23 +546,20 @@ double GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2)
 //------------------------------------------------------------------------------
 double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate)
 {
-	double tmpsim, simssum, deviation, MeanSim;
-	unsigned int nbcomp, i, j;
-	RCursor<GSubProfile> s, s2;
-
 	//if min sim is not automatic, returnthe fixed value
-	if (!SessParams->GetBool("AutomaticMinSim"))
+	if(!AutomaticMinSim)
 	{
 		return(SessParams->GetDouble("MinSim"));
 	}
 
-	//else return the computed min sim
-	s=this->GetSubProfilesCursor(lang);
-	s2=this->GetSubProfilesCursor(lang);
-
 	//if debug mode, force min sim recomputing
-	if (SessParams->GetBool("DebugMinSim"))
+	if(DebugMinSim)
 	{
+		double tmpsim, simssum, deviation, MeanSim;
+		unsigned int nbcomp, i, j;
+		RCursor<GSubProfile> s(this->GetSubProfilesCursor(lang));
+		RCursor<GSubProfile> s2(this->GetSubProfilesCursor(lang));
+
 		simssum=deviation=0.0;
 		nbcomp=0;
 
@@ -634,9 +636,9 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 					// add the mofified profile to the list of modified profiles (if it is defined!)
 					if (Subs()->IsDefined())
 					{
-						if (!SessParams->GetBool("DebugSim"))
+						if(!DebugSim)
 							ProfilesSims->AddModifiedProfile(Subs());
-						if (!SessParams->GetBool("DebugBehaviour"))
+						if(!DebugBehaviour)
 							ProfilesBehaviours->AddModifiedProfile(Subs());
 					}
 				}
@@ -652,11 +654,11 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 		Storage->SaveLinks(this);
 
 	// update the state of all the sims.
-	if (!SessParams->GetBool("DebugSim"))
+	if(!DebugSim)
 		ProfilesSims->Update();
 
 	//update the state of the behaviours
-	if (!SessParams->GetBool("DebugBehaviour"))
+	if (!DebugBehaviour)
 		ProfilesBehaviours->Update();
 
 	//runs the post profiling methds;

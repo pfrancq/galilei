@@ -119,6 +119,26 @@ protected:
 	*/
 	static bool ExternBreak;
 
+	/**
+	* Debug mode for computing similarities.
+	*/
+	bool DebugSim;
+
+	/**
+	* Debug mode for computing behaviors.
+	*/
+	bool DebugBehaviour;
+
+	/**
+	* Debug mode for computing the minimum of similarity.
+	*/
+	bool DebugMinSim;
+
+	/**
+	* Is the minimum similarity fixed?
+	*/
+	bool AutomaticMinSim;
+
 public:
 
 /**
