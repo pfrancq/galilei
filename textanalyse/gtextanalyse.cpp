@@ -358,7 +358,7 @@ void GTextAnalyse::AddWord(const RString word,double weight) throw(bad_alloc)
 	Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
 
 	// Find the index where the word is or must be.
-	Index=Section->GetId<const RString>(word,Find);
+	Index=Section->GetIndex<const RString>(word,Find);
 
 	// If the word wasn't found, insert it and look for each language if it's
 	// in the corresponding stoplist.
@@ -369,7 +369,7 @@ void GTextAnalyse::AddWord(const RString word,double weight) throw(bad_alloc)
 
 		// Create the word and insert it in the Occurs.
 		w=Direct[Ndiff++];
-		Section->InsertPtrOrderAt(w,Index);
+		Section->InsertPtrAt(w,Index);
 		w->OnlyLetters=OnlyLetters;
 		w->Word=word;
 
