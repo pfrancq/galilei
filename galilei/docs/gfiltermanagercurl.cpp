@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gfiltermanagercurl.h>
+#include <docs/gfilter.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -95,7 +96,7 @@ const char* GFilterManagerCURL::DetermineMIMEType(const char* tmpfile) throw(GEx
 
 	curl_easy_getinfo(Lib,CURLINFO_CONTENT_TYPE,MIME);
 	if(MIME)
-		return(MIME); 
+		return(MIME);
 	return(GFilterManager::DetermineMIMEType(tmpfile));
 }
 

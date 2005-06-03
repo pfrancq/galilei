@@ -349,7 +349,7 @@ public:
 	/**
 	* Destructor of a group.
 	*/
-	~GGroup(void);
+	virtual ~GGroup(void);
 };
 
 

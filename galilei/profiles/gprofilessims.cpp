@@ -287,11 +287,11 @@ double GProfilesSims::GProfilesSim::GetSim(const GSubProfile* sub1,const GSubPro
 		j=tmp;
 	}
 
-	if(Sims->GetMaxPos()<i+1)
+	if(Sims->GetMaxPos()<i)
 		return(0.0);
 	s=(*Sims)[i];
 	if(!s) return(0.0);
-	if(s->GetMaxPos()<j+1)
+	if(s->GetMaxPos()<j)
 		return(0.0);
 	s2=(*s)[j];
 	if(!s2) return(0.0);
@@ -341,7 +341,7 @@ void GProfilesSims::GProfilesSim::Update(void) throw(std::bad_alloc)
 	{
 		if(!subscur()->IsDefined())
 			continue;
-		if(Sims->GetMaxPos()<subscur()->GetProfile()->GetId()+1)
+		if(Sims->GetMaxPos()<subscur()->GetProfile()->GetId())
 			sims=AddNewSims(subscur());
 		else
 		{
@@ -355,7 +355,7 @@ void GProfilesSims::GProfilesSim::Update(void) throw(std::bad_alloc)
 					if(!subscur2()->IsDefined()) continue;
 					//take only less ID
 					if(!(subscur()->GetProfile()->GetId()>subscur2()->GetProfile()->GetId())) continue;
-					if(sims->GetMaxPos()<subscur2()->GetProfile()->GetId()+1)
+					if(sims->GetMaxPos()<subscur2()->GetProfile()->GetId())
 						AnalyseSim(sims, subscur(), subscur2(),true);
 					else
 					{
@@ -432,7 +432,7 @@ GSims*  GProfilesSims::GProfilesSim::AddNewSims(GSubProfile* sub)
 		}
 		if (subcur()->GetProfile()->GetId()>sub->GetProfile()->GetId())
 		{
-			if(Sims->GetMaxPos()<subcur()->GetProfile()->GetId()+1)
+			if(Sims->GetMaxPos()<subcur()->GetProfile()->GetId())
 				continue;
 			tmpsims=(*Sims)[subcur()->GetProfile()->GetId()];
 			if(tmpsims)
@@ -484,7 +484,7 @@ void GProfilesSims::GProfilesSim::UpdateDevMeanSim(RCursor<GSubProfile> subprofi
 		for(subprofiles2.Start(),j=0;(j<i)&&(!subprofiles2.End());subprofiles2.Next(),j++)
 		{
 			if(!(subprofiles2)()->IsDefined()) continue;
-			if(sims->GetMaxPos()<subprofiles2()->GetProfile()->GetId()+1)
+			if(sims->GetMaxPos()<subprofiles2()->GetProfile()->GetId())
 				continue;
 			sim=(*sims)[subprofiles2()->GetProfile()->GetId()];
 			// if the similarity isn't in profsim, continue

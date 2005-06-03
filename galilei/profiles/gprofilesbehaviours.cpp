@@ -225,12 +225,12 @@ GBehaviour* GProfilesBehaviours::GProfilesBehaviour::GetRatio(GSubProfile* sub1,
 		i=j;
 		j=tmp;
 	}
-	if(Behaviours->GetMaxPos()<i+1)
+	if(Behaviours->GetMaxPos()<i)
 		return(0);
 	b=(*Behaviours)[i];
 	if(!b)
 		return(0);
-	if(b->GetMaxPos()<j+1)
+	if(b->GetMaxPos()<j)
 		return(0);
 	b2=(*b)[j];
 	if(!b2)
@@ -314,7 +314,7 @@ void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(std::bad_alloc
 	for (subscur.Start(); !subscur.End(); subscur.Next())
 	{
 		if (!subscur()->IsDefined()) continue;
-		if(Behaviours->GetMaxPos()<subscur()->GetProfile()->GetId()+1)
+		if(Behaviours->GetMaxPos()<subscur()->GetProfile()->GetId())
 			behaviours=AddNewBehaviours(subscur());
 		else
 		{
@@ -328,7 +328,7 @@ void  GProfilesBehaviours::GProfilesBehaviour::Update(void) throw(std::bad_alloc
 					if (!subscur2()->IsDefined()) continue;
 					//take only less ID
 					if (!(subscur()->GetProfile()->GetId()>subscur2()->GetProfile()->GetId())) continue;
-					if(behaviours->GetMaxPos()<subscur2()->GetProfile()->GetId()+1)
+					if(behaviours->GetMaxPos()<subscur2()->GetProfile()->GetId())
 						AnalyseBehaviour(behaviours, subscur(), subscur2());
 					else
 					{
@@ -371,7 +371,7 @@ GBehaviours*  GProfilesBehaviours::GProfilesBehaviour::AddNewBehaviours(GSubProf
 		}
 		if(subcur()->GetProfile()->GetId()>sub->GetProfile()->GetId())
 		{
-			if(Behaviours->GetMaxPos()<subcur()->GetProfile()->GetId()+1)
+			if(Behaviours->GetMaxPos()<subcur()->GetProfile()->GetId())
 				continue;
 			tmpbehaviours=(*Behaviours)[subcur()->GetProfile()->GetId()];
 			if(tmpbehaviours)

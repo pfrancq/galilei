@@ -6,7 +6,7 @@
 
 	Manager to handle URL file in a KDE environment - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -33,6 +33,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfiltermanagerkde.h>
+#include <docs/gfilter.h>
 #include <frontend/kde/rqt.h>
 using namespace GALILEI;
 using namespace R;

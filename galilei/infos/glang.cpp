@@ -54,9 +54,9 @@ class GLang::SkipWord
 public:
 	R::RString Word;
 	SkipWord(const RString& w) : Word(w) {}
-	int Compare(const SkipWord* w) {return(Word.Compare(w->Word));}
-	int Compare(const SkipWord& w) {return(Word.Compare(w.Word));}
-	int Compare(const R::RChar* w) {return(Word.Compare(w));}
+	int Compare(const SkipWord* w) const {return(Word.Compare(w->Word));}
+	int Compare(const SkipWord& w) const {return(Word.Compare(w.Word));}
+	int Compare(const R::RChar* w) const {return(Word.Compare(w));}
 };
 
 

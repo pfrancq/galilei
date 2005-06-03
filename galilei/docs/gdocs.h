@@ -113,6 +113,12 @@ public:
 	unsigned int GetNbDocs(void) const {return(GetNb());}
 
 	/**
+	* Get the maximum position of documents handled.
+	* @returns Number of documents.
+	*/
+	unsigned int GetMaxPosDoc(void) const {return(GetMaxPos());}
+
+	/**
 	* Get the number of documents handled for a given langage.
 	* @param lang          Langage of the documents
 	* @returns Number of documents of this language.

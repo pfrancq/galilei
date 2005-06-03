@@ -161,7 +161,7 @@ void GSubjects::ChooseSubjects(void) throw(std::bad_alloc)
 {
 	R::RCursor<GSubject> Subs;
 	unsigned int compt;
-	GSubject** tab;
+	GSubject** tab(0);
 	GSubject** ptr;
 	unsigned int i;
 
@@ -171,7 +171,7 @@ void GSubjects::ChooseSubjects(void) throw(std::bad_alloc)
 		Subs()->SetUsed(false);
 
 	// Randomly mix the subjects in tab
-	tab=new GSubject*[RTree<GSubject,true,false>::GetMaxPos()];
+	tab=new GSubject*[RTree<GSubject,true,false>::GetMaxPos()+1];
 	RTree<GSubject,true,false>::GetTab(tab);
 	Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
@@ -202,9 +202,8 @@ void GSubjects::CreateSet(void) throw(std::bad_alloc)
 	// Init Part
 	LastAdded.Clear();
 	if(!tmpDocs)
-		tmpDocs=new GDoc*[Session->GetNbDocs()];
+		tmpDocs=new GDoc*[Session->GetMaxPosDoc()+1];
 	Session->ReInit(false);
-	IdealGroups->ClearGroups();
 
 	// Go through all the subjects which are used
 	Subs.Set(*this);
@@ -537,7 +536,7 @@ void GSubjects::CreateIdeal(bool Save) throw(std::bad_alloc)
 	// re-init the session
 	Session->ReInit(Save);
 	if(!tmpDocs)
-		tmpDocs=new GDoc*[Session->GetNbDocs()];
+		tmpDocs=new GDoc*[Session->GetMaxPosDoc()+1];
 	ChooseSubjects();
 	CreateSet();
 	if(Save)
@@ -997,7 +996,7 @@ void GSubjects::InsertDocSubject(GDoc* doc,unsigned int subjectid)
 	if(!subject)
 		return;
 	R::RContainer<GSubject,false,false>* line;
-	if(Docs.GetMaxPos()<doc->GetId()+1)
+	if(Docs.GetMaxPos()<doc->GetId())
 	{
 		line=new R::RContainer<GSubject,false,false>(10,5);
 		Docs.InsertPtrAt(line,doc->GetId(),true);
@@ -1026,7 +1025,7 @@ bool GSubjects::IsFromSubject(GDoc* doc,const GSubject* s)
 //------------------------------------------------------------------------------
 bool GSubjects::IsFromSubject(unsigned int docid,const GSubject* s)
 {
-	if(Docs.GetMaxPos()<docid+1)
+	if(Docs.GetMaxPos()<docid)
 		return(false);
 	R::RContainer<GSubject,false,false>* line=Docs[docid];
 	if(!line)
@@ -1047,7 +1046,7 @@ bool GSubjects::IsFromParentSubject(unsigned int docid,const GSubject* s)
 {
 	if(!s->Parent)
 		return(false);
-	if(Docs.GetMaxPos()<docid+1)
+	if(Docs.GetMaxPos()<docid)
 		return(false);
 	R::RContainer<GSubject,false,false>* line=Docs[docid];
 	if(!line)

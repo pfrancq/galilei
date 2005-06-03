@@ -590,9 +590,6 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 			if(sub)
 				sub->Update(&Infos,false);
 		}
-
-		// Load the ideal Groups.
-		LoadIdealGroupment(session);
 	}
 	catch(RMySQLError& e)
 	{
@@ -778,7 +775,8 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		{
 			docid=atoi(quer[0]);
 			lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(quer[4]);
-			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8])));
+			doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8]));
+			session->InsertDoc(doc);
 		}
 
 		// Load the links of the document loaded.
