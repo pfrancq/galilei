@@ -84,9 +84,50 @@ GSlotLog* Log=0;
 //------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
+	bool DoDocs(true);
+	bool DoProfiles(true);
+	bool DoGroups(true);
+	bool Param=false;
+
 	// Init Part
 	cout<<"GALILEI Update Version "<<VERSION<<endl;
-	cout<<"Copyright 1999-2004 by the Universit�Libre de Bruxelles"<<endl;
+	cout<<"Copyright 1999-2004 by the Université Libre de Bruxelles"<<endl;
+
+	// Analyze parameters
+	for(int i=0;i<argc;i++)
+	{
+		if(!strcmp(argv[i],"--only-docs"))
+		{
+			if(!Param)
+			{
+				DoProfiles=false;
+				DoGroups=false;
+				Param=true;
+			}
+			DoDocs=true;
+		}
+		if(!strcmp(argv[i],"--only-profiles"))
+		{
+			if(!Param)
+			{
+				DoDocs=false;
+				DoGroups=false;
+				Param=true;
+			}
+			DoProfiles=true;
+		}
+		if(!strcmp(argv[i],"--only-groups"))
+		{
+			if(!Param)
+			{
+				DoDocs=false;
+				DoProfiles=false;
+				Param=true;
+			}
+			DoGroups=true;
+		}
+	}
+
 	try
 	{
 		RContainer<RString,true,false> lib(10,5);
@@ -142,45 +183,62 @@ int main(int argc, char *argv[])
 		Log->WriteLog("Session created");
 
 		// Load Data from MySQL database
-		Str.LoadDocs(&Session);
-		Str.LoadGroups(&Session);
-		Str.LoadUsers(&Session);
-		Str.LoadFdbks(&Session);
+		if(DoDocs||DoProfiles)
+			Str.LoadDocs(&Session);
+		if(DoGroups)
+			Str.LoadGroups(&Session);
+		if(DoProfiles||DoGroups)
+		{
+			Str.LoadUsers(&Session);
+			Str.LoadFdbks(&Session);
+		}
 		Log->WriteLog("Data loaded");
 
-		cout<<"Analyse Documents ..."<<endl;
-		Session.AnalyseDocs(Log,true);
-		cout<<"Compute Profiles ..."<<endl;
-		Session.CalcProfiles(Log,true,true,true);
-		cout<<"Groups Profiles ..."<<endl;
-		Session.GroupingProfiles(Log,true,true);
+		if(DoDocs)
+		{
+			cout<<"Analyse Documents ...";
+			Session.AnalyseDocs(Log,true);
+			cout<<"OK"<<endl;
+		}
+		if(DoProfiles)
+		{
+			cout<<"Compute Profiles ...";
+			Session.CalcProfiles(Log,true,true,true);
+			cout<<"OK"<<endl;
+		}
+		if(DoGroups)
+		{
+			cout<<"Groups Profiles ...";
+			Session.GroupingProfiles(Log,true,true);
+			cout<<"OK"<<endl;
+		}
 		Log->WriteLog("Session updated");
 
 		// End Session
 		Log->WriteLog("GALILEI Update stopped");
 		delete Log;
-	}
+	 }
 	catch(GException& e)
 	{
-		cout<<"Error: "<<e.GetMsg()<<endl;
+		cout<<endl<<"Error: "<<e.GetMsg()<<endl;
 		if(Log)
 			Log->WriteLog(RString("Error: ")+e.GetMsg());
 	}
 	catch(RException& e)
 	{
-		cout<<"Error: "<<e.GetMsg()<<endl;
+		cout<<endl<<"Error: "<<e.GetMsg()<<endl;
 		if(Log)
 			Log->WriteLog(RString("Error: ")+e.GetMsg());
 	}
 	catch(std::exception& e)
 	{
-		cout<<"Error: "<<e.what()<<endl;
+		cout<<endl<<"Error: "<<e.what()<<endl;
 		if(Log)
 			Log->WriteLog(RString("Error: ")+e.what());
 	}
 	catch(...)
 	{
-		cout<<"Error while processing"<<endl;
+		cout<<endl<<"Error while processing"<<endl;
 		if(Log)
 			Log->WriteLog("Error while processing");
 	}
