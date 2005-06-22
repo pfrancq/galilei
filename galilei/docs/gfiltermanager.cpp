@@ -110,13 +110,7 @@ GFilterManager::GFilterManager(RContainer<RString, true, false>* paths,bool dlg)
 	  Exts(50,25)
 {
 	RString MIME;
-	RCursor<RString> Cur(*paths);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RString Path(*Cur());
-		Path+="/filters";
-		LoadPlugins<GFactoryFilter,GFactoryFilterInit,GFilterManager>(this,Path.Latin1(),API_FILTER_VERSION, dlg);
-	}
+	LoadPlugins<GFactoryFilter,GFactoryFilterInit,GFilterManager>("GFactoryFilter",this,*paths,API_FILTER_VERSION, dlg);
 
 	// Try to open list of MIME types
 	try

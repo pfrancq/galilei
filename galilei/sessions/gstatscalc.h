@@ -134,7 +134,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryStatsCalc(GStatsCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryStatsCalc,GStatsCalc,GStatsCalcManager>(mng,n,f) {}
+		 : GFactoryPlugin<GFactoryStatsCalc,GStatsCalc,GStatsCalcManager>(mng,n,f,"GFactoryStatsCalc") {}
 
 	/**
 	* Destructor.

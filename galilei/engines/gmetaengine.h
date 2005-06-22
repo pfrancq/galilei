@@ -147,7 +147,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryMetaEngine(GMetaEngineManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryMetaEngine,GMetaEngine,GMetaEngineManager>(mng,n,f) {}
+		 : GFactoryPlugin<GFactoryMetaEngine,GMetaEngine,GMetaEngineManager>(mng,n,f,"GFactoryMetaEngine") {}
 
 	/**
 	* Destructor.

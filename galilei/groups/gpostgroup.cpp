@@ -79,7 +79,7 @@ GPostGroup::~GPostGroup(void)
 
 //------------------------------------------------------------------------------
 GFactoryPostGroup::GFactoryPostGroup(GPostGroupManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f)
+		 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f,"GFactoryPostGroup")
 {
 	//insert a "Level" parameter
 	InsertPtr(new GParamUInt("Level",mng->GetNb()));
@@ -87,27 +87,27 @@ GFactoryPostGroup::GFactoryPostGroup(GPostGroupManager* mng,const char* n,const 
 
 
 //------------------------------------------------------------------------------
-int GFactoryPostGroup::Compare(const GFactoryPostGroup& f) const 
+int GFactoryPostGroup::Compare(const GFactoryPostGroup& f) const
 {
 	int a=GetUInt("Level")-f.GetUInt("Level");
-	if(!a) 
+	if(!a)
 		a=Name.Compare(f.Name);
 	return(a);
 }
 
 
 //------------------------------------------------------------------------------
-int GFactoryPostGroup::Compare(const GFactoryPostGroup* f) const 
+int GFactoryPostGroup::Compare(const GFactoryPostGroup* f) const
 {
 	int a=GetUInt("Level")-f->GetUInt("Level");
-	if(!a) 
+	if(!a)
 		a=Name.Compare(f->Name);
 	return(a);
 }
 
 
 //------------------------------------------------------------------------------
-int GFactoryPostGroup::Compare(unsigned int level) const 
+int GFactoryPostGroup::Compare(unsigned int level) const
 {
 	return(GetUInt("Level")-level);
 }

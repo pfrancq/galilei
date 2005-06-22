@@ -54,14 +54,9 @@ using namespace R;
 GPostGroupManager::GPostGroupManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryPostGroup,true,true>(10,5),GPluginManager("PostGroup",paths)
 {
-	RCursor<RString> Cur(*paths);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RString Path(*Cur());
-		Path+="/postgroups";
-		LoadPlugins<GFactoryPostGroup,GFactoryPostGroupInit,GPostGroupManager>(this,Path.Latin1(),API_POSTGROUP_VERSION, dlg);
-	}
+	LoadPlugins<GFactoryPostGroup,GFactoryPostGroupInit,GPostGroupManager>("GFactoryPostGroup",this,*paths,API_POSTGROUP_VERSION, dlg);
 }
+
 
 //------------------------------------------------------------------------------
 void GPostGroupManager::Connect(GSession* session) throw(GException)

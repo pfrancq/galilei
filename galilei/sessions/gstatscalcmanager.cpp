@@ -56,13 +56,7 @@ using namespace R;
 GStatsCalcManager::GStatsCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryStatsCalc,true,true>(10,5),GPluginManager("StatsCalc",paths)
 {
-	RCursor<RString> Cur(*paths);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RString Path(*Cur());
-		Path+="/stats";
-		LoadPlugins<GFactoryStatsCalc,GFactoryStatsCalcInit,GStatsCalcManager>(this,Path.Latin1(),API_STATSCALC_VERSION, dlg);
-	}
+	LoadPlugins<GFactoryStatsCalc,GFactoryStatsCalcInit,GStatsCalcManager>("GFactoryStatsCalc",this,*paths,API_STATSCALC_VERSION, dlg);
 }
 
 

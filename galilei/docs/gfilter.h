@@ -187,7 +187,8 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryFilter(GFilterManager* mng,RString n,RString f) : GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>(mng,n,f) {}
+	GFactoryFilter(GFilterManager* mng,RString n,RString f)
+		: GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>(mng,n,f,"GFactoryFilter") {}
 
 	/**
 	* Destructor.

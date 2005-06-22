@@ -79,7 +79,7 @@ GPostDoc::~GPostDoc(void)
 
 //------------------------------------------------------------------------------
 GFactoryPostDoc::GFactoryPostDoc(GPostDocManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryPostDoc,GPostDoc,GPostDocManager>(mng,n,f)
+		 : GFactoryPlugin<GFactoryPostDoc,GPostDoc,GPostDocManager>(mng,n,f,"GFactoryPostDoc")
 {
 	//insert a "Level" parameter
 	InsertPtr(new GParamUInt("Level",mng->GetNb()));
@@ -87,27 +87,27 @@ GFactoryPostDoc::GFactoryPostDoc(GPostDocManager* mng,const char* n,const char* 
 
 
 //------------------------------------------------------------------------------
-int GFactoryPostDoc::Compare(const GFactoryPostDoc& f) const 
+int GFactoryPostDoc::Compare(const GFactoryPostDoc& f) const
 {
 	int a=GetUInt("Level")-f.GetUInt("Level");
-	if(!a) 
+	if(!a)
 		a=Name.Compare(f.Name);
 	return(a);
 }
 
 
 //------------------------------------------------------------------------------
-int GFactoryPostDoc::Compare(const GFactoryPostDoc* f) const 
+int GFactoryPostDoc::Compare(const GFactoryPostDoc* f) const
 {
 	int a=GetUInt("Level")-f->GetUInt("Level");
-	if(!a) 
+	if(!a)
 		a=Name.Compare(f->Name);
 	return(a);
 }
 
 
 //------------------------------------------------------------------------------
-int GFactoryPostDoc::Compare(unsigned int level) const 
+int GFactoryPostDoc::Compare(unsigned int level) const
 {
 	return(GetUInt("Level")-level);
 }

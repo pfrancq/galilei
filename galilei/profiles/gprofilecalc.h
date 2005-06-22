@@ -126,7 +126,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryProfileCalc(GProfileCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryProfileCalc,GProfileCalc,GProfileCalcManager>(mng,n,f) {}
+		 : GFactoryPlugin<GFactoryProfileCalc,GProfileCalc,GProfileCalcManager>(mng,n,f,"GFactoryProfileCalc") {}
 
 	/**
 	* Destructor.

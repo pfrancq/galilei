@@ -55,13 +55,7 @@ using namespace R;
 GMetaEngineManager::GMetaEngineManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryMetaEngine,true,true>(10,5),GPluginManager("MetaEngine",paths),Current(0)
 {
-	RCursor<RString> Cur(*paths);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RString Path(*Cur());
-		Path+="/metaengines";
-		LoadPlugins<GFactoryMetaEngine,GFactoryMetaEngineInit,GMetaEngineManager>(this,Path.Latin1(),API_METAENGINE_VERSION, dlg);
-	}
+	LoadPlugins<GFactoryMetaEngine,GFactoryMetaEngineInit,GMetaEngineManager>("GFactoryMetaEngine",this,*paths,API_METAENGINE_VERSION, dlg);
 }
 
 

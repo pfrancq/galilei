@@ -242,6 +242,11 @@ protected:
 	R::RString Lib;
 
 	/**
+	* Category of the library.
+	*/
+	R::RString CatLib;
+
+	/**
 	* Pointer to a function showing the about box.
 	*/
 	About_t AboutDlg;
@@ -269,9 +274,10 @@ public:
 	* @param m               Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
+	* @param c               Category of the Factory/Plugin.
 	*/
-	GFactoryPlugin(mng* m,const char* n,const char* f)
-		: GParams(n), Mng(m), Plugin(0), Lib(f), AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0) {}
+	GFactoryPlugin(mng* m,const char* n,const char* f,const char* c)
+		: GParams(n), Mng(m), Plugin(0), Lib(f), CatLib(c), AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0) {}
 
 	/**
 	* Get the manager of the factory.
@@ -397,6 +403,11 @@ public:
 	RString GetLib(void) const {return(Lib);}
 
 	/**
+	* Get the category of the plugin.
+	*/
+	RString GetCatLib(void) const {return(CatLib);}
+
+	/**
 	* Return the version of the plugin.
 	*/
 	const char* GetVersion(void) const {return(this->Version);}
@@ -487,6 +498,7 @@ R::RString FindPlugin(const R::RString plugin,const R::RContainer<R::RString,tru
 * @param factory            Generic Factory.
 * @param factoryInit        Type of the function used to initialize a factory.
 * @param manager            Type of the manager.
+* @param cat                Category of the plug-in.
 * @param mng                Pointer to the manager.
 * @param path               Path of the directory to look at.
 * @param API_version        The API version of the plugins handled.
@@ -494,9 +506,8 @@ R::RString FindPlugin(const R::RString plugin,const R::RContainer<R::RString,tru
 *                           loaded (true) or not (false).
 */
 template<class factory,class factoryInit,class manager>
-	void LoadPlugins(manager* mng, const char* path, const char* API_version,bool dlg) throw(std::bad_alloc, GException)
+	void LoadPlugins(const R::RString& cat,manager* mng,R::RContainer<R::RString,true,false>& dirs, const char* API_version,bool dlg) throw(std::bad_alloc, GException)
 {
-	RString Path(path);
 	RString Msg;
 	RString Dlg;
 	RString Short;
@@ -505,7 +516,9 @@ template<class factory,class factoryInit,class manager>
 	char* error;
 
 	// Find the plugins
-	FindPlugins(path,PlugIns,Dlgs);
+	R::RCursor<RString> Path(dirs);
+	for(Path.Start();!Path.End();Path.Next())
+		FindPlugins(*Path(),PlugIns,Dlgs);
 
 	// Go through the main plug-ins
 	R::RCursor<RString> Cur(PlugIns);
@@ -530,6 +543,10 @@ template<class factory,class factoryInit,class manager>
 		}
 		Short=Cur()->Mid(Cur()->Find(RTextFile::GetDirSeparator(),-1)+1);
 		factory *myfactory= initFac(mng,Short);
+
+		// Verify if it is the right category
+		if(cat.Compare(myfactory->GetCatLib()))
+			continue;
 
 		// Verify the versions of the factory and the session
 		if(strcmp(API_version,myfactory->GetAPIVersion()))

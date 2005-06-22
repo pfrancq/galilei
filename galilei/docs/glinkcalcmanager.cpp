@@ -53,13 +53,7 @@ using namespace R;
 GLinkCalcManager::GLinkCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryLinkCalc,true,true>(10,5),GPluginManager("LinkCalc",paths), Current(0)
 {
-	RCursor<RString> Cur(*paths);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RString Path(*Cur());
-		Path+="/linking";
-		LoadPlugins<GFactoryLinkCalc,GFactoryLinkCalcInit,GLinkCalcManager>(this,Path.Latin1(),API_LINKCALC_VERSION, dlg);
-	}
+	LoadPlugins<GFactoryLinkCalc,GFactoryLinkCalcInit,GLinkCalcManager>("GFactoryLinkCalc",this,*paths,API_LINKCALC_VERSION, dlg);
 }
 
 

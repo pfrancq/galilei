@@ -54,14 +54,9 @@ using namespace R;
 GPostProfileManager::GPostProfileManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryPostProfile,true,true>(10,5),GPluginManager("PostProfile",paths)
 {
-	RCursor<RString> Cur(*paths);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RString Path(*Cur());
-		Path+="/postprofile";
-		LoadPlugins<GFactoryPostProfile,GFactoryPostProfileInit,GPostProfileManager>(this,Path.Latin1(),API_POSTGROUP_VERSION, dlg);
-	}
+	LoadPlugins<GFactoryPostProfile,GFactoryPostProfileInit,GPostProfileManager>("GFactoryPostProfile",this,*paths,API_POSTGROUP_VERSION, dlg);
 }
+
 
 //------------------------------------------------------------------------------
 void GPostProfileManager::Connect(GSession* session) throw(GException)

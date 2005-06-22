@@ -55,13 +55,14 @@ using namespace R;
 GEngineManager::GEngineManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: R::RContainer<GFactoryEngine,true,true>(10,5),GPluginManager("Engine",paths)
 {
-	RCursor<RString> Cur(*paths);
+	LoadPlugins<GFactoryEngine,GFactoryEngineInit,GEngineManager>("GFactoryEngine",this,*paths,API_ENGINE_VERSION, dlg);
+/*	RCursor<RString> Cur(*paths);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		RString Path(*Cur());
 		Path+="/engines";
 		LoadPlugins<GFactoryEngine,GFactoryEngineInit,GEngineManager>(this,Path.Latin1(),API_ENGINE_VERSION, dlg);
-	}
+	}*/
 }
 
 

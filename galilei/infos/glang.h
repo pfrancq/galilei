@@ -293,7 +293,7 @@ public:
 	* @param c               Code of the language.
 	*/
 	GFactoryLang(GLangManager* mng,const char* n,const char* f,const char* c)
-		: GFactoryPlugin<GFactoryLang,GLang,GLangManager>(mng,n,f) {strcpy(Code,c);}
+		: GFactoryPlugin<GFactoryLang,GLang,GLangManager>(mng,n,f,"GFactoryLang") {strcpy(Code,c);}
 
 	/**
 	* Compare function like strcmp used in particular for RContainer class.

@@ -162,7 +162,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryGrouping(GGroupingManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>(mng,n,f) {}
+		 : GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>(mng,n,f,"GFactoryGrouping") {}
 
 	/**
 	* Destructor.

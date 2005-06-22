@@ -54,13 +54,7 @@ using namespace R;
 GLangManager::GLangManager(RContainer<RString, true, false>* paths,bool load,bool dlg) throw(std::bad_alloc,GException)
   : RContainer<GFactoryLang,true,true>(10,5),GPluginManager("Lang",paths), Load(load)
 {
-	RCursor<RString> Cur(*paths);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RString Path(*Cur());
-		Path+="/langs";
-		LoadPlugins<GFactoryLang,GFactoryLangInit,GLangManager>(this,Path.Latin1(),API_LANG_VERSION, dlg);
-	}
+	LoadPlugins<GFactoryLang,GFactoryLangInit,GLangManager>("GFactoryLang",this,*paths,API_LANG_VERSION, dlg);
 }
 
 

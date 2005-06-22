@@ -53,14 +53,7 @@ using namespace R;
 GGroupingManager::GGroupingManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryGrouping,true,true>(10,5), GPluginManager("Grouping",paths),Current(0)
 {
-	RCursor<RString> Cur(*paths);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RString Path(*Cur());
-		Path+="/grouping";
-		LoadPlugins<GFactoryGrouping,GFactoryGroupingInit,GGroupingManager>(this,Path.Latin1(),API_GROUPING_VERSION, dlg);
-	}
-
+	LoadPlugins<GFactoryGrouping,GFactoryGroupingInit,GGroupingManager>("GFactoryGrouping",this,*paths,API_GROUPING_VERSION, dlg);
 }
 
 

@@ -127,7 +127,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryDocAnalyse(GDocAnalyseManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryDocAnalyse,GDocAnalyse,GDocAnalyseManager>(mng,n,f) {}
+		 : GFactoryPlugin<GFactoryDocAnalyse,GDocAnalyse,GDocAnalyseManager>(mng,n,f,"GFactoryDocAnalyse") {}
 
 	/**
 	* Destructor.

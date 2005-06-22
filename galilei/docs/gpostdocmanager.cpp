@@ -55,13 +55,7 @@ using namespace R;
 GPostDocManager::GPostDocManager(RContainer<RString, true, false>* paths,bool dlg) throw(GException)
 	: RContainer<GFactoryPostDoc,true,true>(10,5) ,GPluginManager("PostDoc",paths)
 {
-	RCursor<RString> Cur(*paths);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RString Path(*Cur());
-		Path+="/postdoc";
-		LoadPlugins<GFactoryPostDoc,GFactoryPostDocInit,GPostDocManager>(this,Path.Latin1(),API_POSTDOC_VERSION, dlg);
-	}
+	LoadPlugins<GFactoryPostDoc,GFactoryPostDocInit,GPostDocManager>("GFactoryPostDoc",this,*paths,API_POSTDOC_VERSION, dlg);
 }
 
 

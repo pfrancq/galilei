@@ -54,15 +54,9 @@ using namespace R;
 GPreProfileManager::GPreProfileManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
 	: RContainer<GFactoryPreProfile,true,true>(10,5),GPluginManager("PreProfile",paths)
 {
-	RCursor<RString> Cur(*paths);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RString Path(*Cur());
-		Path+="/preprofile";
-		LoadPlugins<GFactoryPreProfile,GFactoryPreProfileInit,GPreProfileManager>(this,Path.Latin1(),API_PREPROFILE_VERSION, dlg);
-	}
-
+	LoadPlugins<GFactoryPreProfile,GFactoryPreProfileInit,GPreProfileManager>("GFactoryPreProfile",this,*paths,API_PREPROFILE_VERSION, dlg);
 }
+
 
 //------------------------------------------------------------------------------
 void GPreProfileManager::Connect(GSession* session) throw(GException)

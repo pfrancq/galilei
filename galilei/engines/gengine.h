@@ -172,7 +172,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryEngine(GEngineManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryEngine,GEngine,GEngineManager>(mng,n,f) {}
+		 : GFactoryPlugin<GFactoryEngine,GEngine,GEngineManager>(mng,n,f,"GFactoryEngine") {}
 
 
 	/**

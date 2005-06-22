@@ -135,7 +135,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryLinkCalc(GLinkCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryLinkCalc,GLinkCalc,GLinkCalcManager>(mng,n,f) {}
+		 : GFactoryPlugin<GFactoryLinkCalc,GLinkCalc,GLinkCalcManager>(mng,n,f,"GFactoryLinkCalc") {}
 
 	/**
 	* Destructor.
