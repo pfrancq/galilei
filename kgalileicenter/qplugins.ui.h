@@ -564,20 +564,20 @@ void QPlugins::updateLevels(void)
     {
 	QPostDocItem* f=dynamic_cast<QPostDocItem*>(it2.current());
 	f->Fac->Set("Level",level);
-    } 
+    }
      QListViewItemIterator it3(PreProfile);
      for (level=0; it3.current();++it3, level++)
     {
 	QPreProfileItem* f=dynamic_cast<QPreProfileItem*>(it3.current());
 	f->Fac->Set("Level",level);
-    } 
-     
+    }
+
       QListViewItemIterator it4(PostProfile);
      for (level=0; it4.current();++it4, level++)
     {
 	QPostProfileItem* f=dynamic_cast<QPostProfileItem*>(it4.current());
 	f->Fac->Set("Level",level);
-    } 
+    }
 }
 
 void QPlugins::changeEngine(QListViewItem* item)
