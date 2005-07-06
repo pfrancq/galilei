@@ -137,7 +137,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 			Words=Docs()->GetDoc()->GetWeightInfoCursor();
 			for(Words.Start();!Words.End();Words.Next())
 			{
-				w=NbDocsWords.GetInsertPtr<GInfo*>(Words());
+				w=NbDocsWords.GetInsertPtr(*Words());
 				(*w)+=1.0;
 			}
 		}
@@ -179,7 +179,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 		MaxFreq=Docs()->GetDoc()->GetMaxWeight();
 		for(Words.Start();!Words.End();Words.Next())
 		{
-			w=Vectors.GetInsertPtr<GInfo*>(Words());
+			w=Vectors.GetInsertPtr(*Words());
 			Freq=Words()->GetWeight()/MaxFreq;
 
 			// If local isf is needed, multiply the frequence by it
@@ -228,7 +228,7 @@ void GProfileCalcFeedback::ComputeSubProfile(void) throw(bad_alloc,GException)
 	else
 		nb=Vectors.GetNb();
 	for(i=nb+1,ptr=Order;(--i)&&(*ptr);ptr++)
-		Infos.InsertPtr(new GWeightInfo(*ptr));
+		Infos.InsertPtr(new GWeightInfo(**ptr));
 }
 
 
@@ -255,7 +255,7 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(GException)
 		TotalRef=subprofile->GetLang()->GetRef(otDoc);
 		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
 		{
-			Infos.InsertPtrAt(ptr=new GWeightInfo(Cur()),i);
+			Infos.InsertPtrAt(ptr=new GWeightInfo(*Cur()),i);
 			if(ptr&&idf)
 			{
 				(*ptr)/=log(TotalRef/static_cast<double>(subprofile->GetLang()->GetRef(Cur()->GetId(),otDoc)));
