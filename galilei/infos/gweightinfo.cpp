@@ -6,7 +6,7 @@
 
 	Weighted information entity - Implementation.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -51,57 +51,38 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(unsigned int id,GInfoType type) throw(std::bad_alloc)
+GWeightInfo::GWeightInfo(unsigned int id,GInfoType type)
   : GInfo(id,type), Weight(0.0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(unsigned int id,double w,GInfoType type) throw(std::bad_alloc)
+GWeightInfo::GWeightInfo(unsigned int id,double w,GInfoType type)
   : GInfo(id,type), Weight(w)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GWeightInfo& w) throw(std::bad_alloc)
+GWeightInfo::GWeightInfo(const GWeightInfo& w)
   : GInfo(w.Id,w.Type), Weight(w.Weight)
 {
 }
 
-//------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GWeightInfo* w) throw(std::bad_alloc)
-  : GInfo(w->Id,w->Type), Weight(w->Weight)
-{
-}
-
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GInfo& w) throw(std::bad_alloc)
+GWeightInfo::GWeightInfo(const GInfo& w)
   : GInfo(w), Weight(0.0)
 {
 }
 
-
-//------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GInfo* w) throw(std::bad_alloc)
-  : GInfo(w), Weight(0.0)
-{
-}
 
 
 //------------------------------------------------------------------------------
 int GWeightInfo::Compare(const GWeightInfo& calc) const
 {
   return(Id-calc.Id);
-}
-
-
-//------------------------------------------------------------------------------
-int GWeightInfo::Compare(const GWeightInfo* calc) const
-{
-  return(Id-calc->Id);
 }
 
 
@@ -113,7 +94,7 @@ void GWeightInfo::SetWeight(double w)
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator=(const GWeightInfo& i) throw(std::bad_alloc)
+GWeightInfo& GWeightInfo::operator=(const GWeightInfo& i)
 {
 	GInfo::operator=(i);
 	Weight=i.Weight;
@@ -122,7 +103,7 @@ GWeightInfo& GWeightInfo::operator=(const GWeightInfo& i) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator=(const GInfo& i) throw(std::bad_alloc)
+GWeightInfo& GWeightInfo::operator=(const GInfo& i)
 {
 	GInfo::operator=(i);
 	Weight=0.0;
@@ -163,7 +144,7 @@ GWeightInfo& GWeightInfo::operator/=(double w)
 
 
 //------------------------------------------------------------------------------
-double GWeightInfo::GetQueryWeight(tObjType ObjType,GLang* lang,double max) const throw(GException)
+double GWeightInfo::GetQueryWeight(tObjType ObjType,GLang* lang,double max) const
 {
 	return((Weight/max)*log(static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef(Id,ObjType))));
 }

@@ -6,7 +6,7 @@
 
 	Information entity - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -75,19 +75,13 @@ public:
 	* @param id              Identificator of the information entity.
 	* @param type            Type of the information entity.
 	*/
-	GInfo(unsigned int id,GInfoType type=infoWord) throw(std::bad_alloc);
+	GInfo(unsigned int id,GInfoType type=infoWord);
 
 	/**
 	* Copy constructor for an information entity.
 	* @param i               Information entity.
 	*/
-	GInfo(const GInfo& i) throw(std::bad_alloc);
-
-	/**
-	* Copy constructor for an information entity.
-	* @param i               Pointer to an nformation entity.
-	*/
-	GInfo(const GInfo* i) throw(std::bad_alloc);
+	GInfo(const GInfo& i);
 
 	/**
 	* Compare two information entities by comparing their identificator.
@@ -98,18 +92,10 @@ public:
 	virtual int Compare(const GInfo& i) const;
 
 	/**
-	* Compare two information entities by comparing their identificator.
-	* @see R::RContainer
-	* @param i               Pointer an information entity.
-	* @return int
-	*/
-	virtual int Compare(const GInfo* i) const;
-
-	/**
 	* Assignment operator for information entities.
 	* @param i               Information entity.
 	*/
-	GInfo& operator=(const GInfo& i) throw(std::bad_alloc);
+	GInfo& operator=(const GInfo& i);
 
 	/**
 	* Compute a similarity between two information entities. In the default

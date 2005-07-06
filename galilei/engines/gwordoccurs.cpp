@@ -105,19 +105,19 @@ void GWordOccurs::FilterDocs(R::RContainer<GInfo,true,false>& docs) const
 		}*/
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			if(Docs.IsIn(Cur()))
+			if(Docs.IsIn(*Cur()))
 				Rem.InsertPtr(Cur());
 		}
 		Cur.Set(Rem);
 		for(Cur.Start();!Cur.End();Cur.Next())
-			docs.DeletePtr(Cur());
+			docs.DeletePtr(*Cur());
 	}
 	else
 	{
 		// Insert all the documents of Docs in docs.
 		RCursor<GInfo> Cur(Docs);
 		for(Cur.Start();!Cur.End();Cur.Next())
-			docs.InsertPtr(new GInfo(Cur()));
+			docs.InsertPtr(new GInfo(*Cur()));
 	}
 }
 

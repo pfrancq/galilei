@@ -228,8 +228,10 @@ void GGroups::Clear(GLang* lang)
 
 	// Go through the groups and delete all invalid groups.
 	if(!grps) return;
+	cout<<"   "<<lang->GetCode()<<": "<<grps->GetNb()<<endl;
 	for(i=grps->GetNb()+1;--i;)
 	{
+		cout<<"       "<<i<<endl;
 		grp=(*grps)[0];
  		grp->DeleteSubProfiles();
 		DeletePtr(grp);
@@ -241,6 +243,7 @@ void GGroups::Clear(GLang* lang)
 //------------------------------------------------------------------------------
 void GGroups::ClearGroups(void)
 {
+	cout<<"ClearGroups"<<endl;
 	RCursor<GGroupsLang> Groups(GroupsLang);
 	for(Groups.Start();!Groups.End();Groups.Next())
 	{

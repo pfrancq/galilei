@@ -6,7 +6,7 @@
 
 	Information entity - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -46,22 +46,15 @@ using namespace R;
 
 
 //------------------------------------------------------------------------------
-GInfo::GInfo(unsigned int id,GInfoType type) throw(std::bad_alloc)
+GInfo::GInfo(unsigned int id,GInfoType type)
 	: Id(id), Type(type)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GInfo::GInfo(const GInfo& i) throw(std::bad_alloc)
+GInfo::GInfo(const GInfo& i)
 	: Id(i.Id), Type(i.Type)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GInfo::GInfo(const GInfo* i) throw(std::bad_alloc)
-	: Id(i->Id), Type(i->Type)
 {
 }
 
@@ -74,14 +67,7 @@ int GInfo::Compare(const GInfo& i) const
 
 
 //------------------------------------------------------------------------------
-int GInfo::Compare(const GInfo* i) const
-{
-	return(Id-i->Id);
-}
-
-
-//------------------------------------------------------------------------------
-GInfo& GInfo::operator=(const GInfo& i) throw(std::bad_alloc)
+GInfo& GInfo::operator=(const GInfo& i)
 {
 	Id=i.Id;
 	Type=i.Type;

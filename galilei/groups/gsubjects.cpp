@@ -203,7 +203,6 @@ void GSubjects::CreateSet(void) throw(std::bad_alloc)
 	LastAdded.Clear();
 	if(!tmpDocs)
 		tmpDocs=new GDoc*[Session->GetMaxPosDoc()+1];
-	Session->ReInit(false);
 
 	// Go through all the subjects which are used
 	Subs.Set(*this);

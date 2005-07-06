@@ -69,7 +69,7 @@ public:
 	* @param id              Identificator of the information entity.
 	* @param type            Type of the information entity.
 	*/
-	GWeightInfo(unsigned int id,GInfoType type=infoWord) throw(std::bad_alloc);
+	GWeightInfo(unsigned int id,GInfoType type=infoWord);
 
 	/**
 	* Constructor of a weighed information entity.
@@ -77,33 +77,20 @@ public:
 	* @param w              Weight of the information entity.
 	* @param type           Type of the information.
 	*/
-	GWeightInfo(unsigned int id,double w,GInfoType type=infoWord) throw(std::bad_alloc);
+	GWeightInfo(unsigned int id,double w,GInfoType type=infoWord);
 
 	/**
 	* Copy constructor of a weighed information entity.
 	* @param w              Pointer to a weighted information entity.
 	*/
-	GWeightInfo(const GWeightInfo& w) throw(std::bad_alloc);
-
-	/**
-	* Copy constructor of a weighed information entity.
-	* @param w              Pointer to a weighted information entity.
-	*/
-	GWeightInfo(const GWeightInfo* w) throw(std::bad_alloc);
+	GWeightInfo(const GWeightInfo& w);
 
 	/**
 	* Copy constructor of a weighed information entity. The weight is suppose to be
 	* null.
 	* @param w              Pointer to an information entity.
 	*/
-	GWeightInfo(const GInfo& w) throw(std::bad_alloc);
-
-	/**
-	* Copy constructor of a weighed information entity. The weight is suppose to be
-	* null.
-	* @param w              Pointer to an information entity.
-	*/
-	GWeightInfo(const GInfo* w) throw(std::bad_alloc);
+	GWeightInfo(const GInfo& w);
 
 	/**
 	* Compare two weighted information entities by comparing their identificator.
@@ -112,14 +99,6 @@ public:
 	* @return int
 	*/
 	int Compare(const GWeightInfo& calc) const;
-
-	/**
-	* Compare two weighted information entities by comparing their identificator.
-	* @see R::RContainer
-	* @param calc            Pointer to a weighted information entity.
-	* @return int
-	*/
-	int Compare(const GWeightInfo* calc) const;
 
 	/**
 	* Get the weight of the word.
@@ -137,14 +116,14 @@ public:
 	* Assignment operator for weighted information entities.
 	* @param i               Weighted information entity.
 	*/
-	GWeightInfo& operator=(const GWeightInfo& i) throw(std::bad_alloc);
+	GWeightInfo& operator=(const GWeightInfo& i);
 
 	/**
 	* Assignment operator for weighted information entities. The weight is suppose to be
 	* null.
 	* @param i               Information entity.
 	*/
-	GWeightInfo& operator=(const GInfo& i) throw(std::bad_alloc);
+	GWeightInfo& operator=(const GInfo& i);
 
 	/**
 	* Add a weight to the current one.
@@ -179,7 +158,7 @@ public:
 	* @param max            Maximal value of the vector containing the word.
 	* @return double.
 	*/
-	double GetQueryWeight(tObjType ObjType,GLang* lang,double max) const throw(GException);
+	double GetQueryWeight(tObjType ObjType,GLang* lang,double max) const;
 
 	/**
 	* Destructor of a weighted information entity.

@@ -905,7 +905,7 @@ void GSession::DocsFilter(int nbdocs,int nboccurs)
 			if(!test[i])
 			{
 				GWeightInfo* WW=Doc->GetPtr<const unsigned int>(i);
-				if(WW) Doc->DeletePtr(WW);
+				if(WW) Doc->DeletePtr(*WW);
 			}
 		}
 	}

@@ -136,7 +136,7 @@ void GWeightInfos::InsertInfo(GWeightInfo* info) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GWeightInfos::DeleteInfo(GWeightInfo* info) throw(std::bad_alloc)
 {
-	DeletePtr(info);
+	DeletePtr(*info);
 }
 
 
