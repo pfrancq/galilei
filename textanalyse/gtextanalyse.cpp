@@ -804,7 +804,7 @@ void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 	{
 		if(Cur()->GetWeight()<MinOccur)
 		{
-			Infos.DeletePtr(Cur());
+			Infos.DeletePtr(*Cur());
 		}
 		else
 			Cur.Next();
