@@ -532,8 +532,12 @@ void GSubjects::CreateIdeal(bool Save) throw(std::bad_alloc)
 	// Apply Config
 	Apply();
 
-	// re-init the session
+	// Re-init the session
 	Session->ReInit(Save);
+
+	// Remove the ideal clustering
+	IdealGroups->ClearGroups();
+
 	if(!tmpDocs)
 		tmpDocs=new GDoc*[Session->GetMaxPosDoc()+1];
 	ChooseSubjects();
