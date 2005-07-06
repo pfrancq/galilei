@@ -472,7 +472,7 @@ void GGroup::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
 	// Remove its references
 	if(Lang)
-		DelRefs(otSubProfile,Lang);
+		DelRefs(otGroup,Lang);
 
 	// Assign information
 	GWeightInfos::Clear();
@@ -487,7 +487,7 @@ void GGroup::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 
 	// Update its references
 	if(Lang)
-		AddRefs(otSubProfile,Lang);
+		AddRefs(otGroup,Lang);
 }
 
 
