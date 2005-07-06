@@ -206,7 +206,6 @@ void GGroup::DeleteSubProfiles(void) throw(std::bad_alloc)
 		for(Sub.Start();!Sub.End();Sub.Next())
 			Sub()->SetGroup(0);
 	}
-	Clear();
 }
 
 
@@ -471,7 +470,7 @@ void GGroup::Clear(void)
 void GGroup::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
 	// Remove its references
-	if(Lang)
+	if(Lang&&Community)
 		DelRefs(otGroup,Lang);
 
 	// Assign information
@@ -486,7 +485,7 @@ void GGroup::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 	infos->Clear();
 
 	// Update its references
-	if(Lang)
+	if(Lang&&Community)
 		AddRefs(otGroup,Lang);
 }
 
@@ -509,10 +508,9 @@ GGroup::~GGroup(void)
 			Sub.Set(*this);
 			for(Sub.Start();!Sub.End();Sub.Next())
 				Sub()->SetGroup(0);
+			if(Lang)
+				DelRefs(otGroup,Lang);
 		}
-		// Remove its references
-		if(Lang)
-			DelRefs(otGroup,Lang);
 	}
 	catch(...)
 	{
