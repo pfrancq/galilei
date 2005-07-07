@@ -418,7 +418,7 @@ public:
 	*/
 	void ReadConfig(R::RXMLTag* parent)
 	{
-		R::RCursor<R::RXMLTag> Cur=parent->GetXMLTagsCursor();
+		R::RCursor<R::RXMLTag> Cur(parent->GetNodes());
 		R::RXMLTag* tag=0;
 
 		// Find Tag

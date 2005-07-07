@@ -113,7 +113,7 @@ GALILEI::QGDocXML::QGDocXML(QWidget* parent,GDocXML* docxml)
 //-----------------------------------------------------------------------------
 void GALILEI::QGDocXML::ConstructTag(RXMLTag* t,QListViewItem* parent)
 {
-	R::RCursor<RXMLTag> Cur=t->GetXMLTagsCursor();
+	R::RCursor<RXMLTag> Cur(t->GetNodes());
 	QListViewItem* ptr=0,*ptr2;
 	QListViewItem* prec=0;
 
@@ -148,7 +148,7 @@ void GALILEI::QGDocXML::slotSelectionTag(QListViewItem* item)
 	{
 		TagInfos->setTabEnabled(TagAttributes,true);
 		TagAttributes->clear();
-		Cur=t->Tag->GetXMLAttrCursor();
+		Cur=t->Tag->GetAttr();
 		for(Cur.Start();!Cur.End();Cur.Next())
 			new QListViewItem(TagAttributes,ToQString(Cur()->GetName()),ToQString(Cur()->GetValue()));
 		TagInfos->setTabEnabled(TagContent,false);

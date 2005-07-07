@@ -122,13 +122,13 @@ GFilterManager::GFilterManager(RContainer<RString, true, false>* paths,bool dlg)
 		File.Open(R::RIO::Read);
 
 		// Go trough all MIME types
-		Cur=xml.GetTag("mimeTypes")->GetXMLTagsCursor();
+		Cur=xml.GetTag("mimeTypes")->GetNodes();
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			MIME=Cur()->GetAttrValue("code");
 
 			// Go through all file extension
-			Cur2=Cur()->GetXMLTagsCursor();
+			Cur2=Cur()->GetNodes();
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
 				Exts.InsertPtr(new GMIMEExt(MIME,Cur2()->GetAttrValue("ext")));
 		}

@@ -87,7 +87,7 @@ int GParam::Compare(const RString& n) const
 //------------------------------------------------------------------------------
 void GParam::ReadConfig(RXMLTag* parent)
 {
-	R::RCursor<R::RXMLTag> Cur=parent->GetXMLTagsCursor();
+	R::RCursor<R::RXMLTag> Cur(parent->GetNodes());
 	RXMLTag* tag=0;
 
 	// Find Tag
