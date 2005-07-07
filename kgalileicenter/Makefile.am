@@ -3,14 +3,13 @@ bin_PROGRAMS = kgalileicenter
 
 ## INCLUDES were found outside kdevelop specific part
 
-kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui qchooseparent.ui\
-	qcreatedatabase.ui qmixidealconfig.ui qexportmatrixdlg.ui \
-	kviewprg.cpp \
-	kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewstems.cpp \
-	qsessionprogress.cpp qconnectmysql.ui kviewusers.cpp kviewthgroups.cpp \
-	kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kviewstats.cpp \
-	kview.cpp kdoc.cpp kviewsom.cpp ksommap.cpp kviewmetaengine.cpp kgalileicenter.cpp main.cpp qplugins.ui qsessionoptions.ui \
-	qchoosemap.ui qsommapconfig.ui 
+kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui \
+	qchooseparent.ui	qcreatedatabase.ui qmixidealconfig.ui qexportmatrixdlg.ui 	kviewprg.cpp \
+		kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewstems.cpp 	qsessionprogress.cpp \
+	qconnectmysql.ui kviewusers.cpp kviewthgroups.cpp 	kviewprofile.cpp kviewgroups.cpp \
+	kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kviewstats.cpp 	kview.cpp kdoc.cpp \
+	kviewsom.cpp ksommap.cpp kviewmetaengine.cpp kgalileicenter.cpp main.cpp qplugins.ui \
+	qsessionoptions.ui 	qchoosemap.ui qsommapconfig.ui qsimulationdlg.ui
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
 kgalileicenter_LDADD = /usr/lib/libmysqlclient.la $(LIB_R) $(LIB_GALILEI) \
 	$(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)

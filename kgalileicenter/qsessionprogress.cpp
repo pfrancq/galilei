@@ -73,6 +73,7 @@
 #include <profiles/gprofilecalc.h>
 #include <groups/ggrouping.h>
 #include <groups/ggroup.h>
+#include <groups/gsubjects.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -576,10 +577,36 @@ void QComputeProfiles::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
+void QComputeProfile::DoIt(void)
+{
+	Parent->PutText("Compute Profile ...");
+	Session->CalcProfile(Parent,Profile,Modified,Save,SaveLinks);
+}
+
+
+//-----------------------------------------------------------------------------
 void QGroupProfiles::DoIt(void)
 {
 	Parent->PutText("Groups Profiles ...");
 	Session->GroupingProfiles(Parent,Modified,Save);
+}
+
+
+//-----------------------------------------------------------------------------
+void QCreateIdealGroups::DoIt(void)
+{
+	Parent->PutText("Create Ideal Groups ...");
+	Session->GetSubjects()->Apply();
+	Session->GetSubjects()->CreateIdeal(Save);
+}
+
+
+//-----------------------------------------------------------------------------
+void QMakeFdbks::DoIt(void)
+{
+	Parent->PutText("Make feedbacks ...");
+	Session->GetSubjects()->Apply();
+	Session->GetSubjects()->FdbksCycle(Save);
 }
 
 

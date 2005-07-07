@@ -439,9 +439,14 @@ private slots:
 	void slotShowUsers(void);
 
 	/**
-	* slot to calculate all the profiles
+	* slot to calculate all the profiles.
 	*/
 	void slotProfilesCalc(void);
+
+	/**
+	* slot to calculate the current profile.
+	*/
+	void slotProfileCalc(void);
 
 	/**
 	* slot to choose the self organizing map
@@ -465,6 +470,21 @@ private slots:
 
 	/**
 	* Compute the groups.
+	*/
+	void slotSimulationDlg(void);
+
+	/**
+	* Create ideal groups.
+	*/
+	void slotGroupsCreate(void);
+
+	/**
+	* Make a feedback cycle.
+	*/
+	void slotDoFdbks(void);
+
+	/**
+	* Compute the post-groups.
 	*/
 	void slotPostGroupCalc(void);
 
@@ -637,6 +657,7 @@ public:
 	KToggleAction* profileAlwaysSave;
 	KToggleAction* linkAlwaysSave;
 	KAction* showUsers;
+	KAction* profileCalc;
 	KAction* profilesCalc;
 
 	KToggleAction* groupAlwaysCalc;
@@ -645,6 +666,9 @@ public:
 	KAction* groupsCalc;
 	KAction* postgroupCalc;
 	KAction* somView;
+	KAction* simulationDlg;
+	KAction* groupingCreate;
+	KAction* doFdbks;
 	KAction* groupingCompareFromFile;
 	KAction* groupingCompare;
 	KAction* mixIdealGroups;

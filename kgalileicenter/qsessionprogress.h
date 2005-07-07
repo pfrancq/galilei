@@ -236,6 +236,25 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
+* Compute a given profile.
+* @param modified       Recompute only modified elements or all.
+* @param save           Save modified elements.
+* @param saveLinks      Save modified links informations
+*/
+class QComputeProfile : public QSessionThread
+{
+	GProfile* Profile;
+	bool Modified;
+	bool Save;
+	bool SaveLinks;
+public:
+	QComputeProfile(GProfile* profile,bool modified,bool save,bool saveLinks) : Profile(profile), Modified(modified), Save(save), SaveLinks(saveLinks) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * Groups the profiles.
 * @param modified       Recompute only modified elements or all.
 * @param save           Save modified elements.
@@ -246,6 +265,34 @@ class QGroupProfiles : public QSessionThread
 	bool Save;
 public:
 	QGroupProfiles(bool modified,bool save) : Modified(modified), Save(save){}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Create the ideal groups.
+* @param save           Save modified elements.
+*/
+class QCreateIdealGroups : public QSessionThread
+{
+	bool Save;
+public:
+	QCreateIdealGroups(bool save) : Save(save){}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Make a feedback cycle.
+* @param save           Save modified elements.
+*/
+class QMakeFdbks : public QSessionThread
+{
+	bool Save;
+public:
+	QMakeFdbks(bool save) : Save(save){}
 	virtual void DoIt(void);
 };
 

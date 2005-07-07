@@ -345,7 +345,7 @@ char* KViewProfile::GetNameDoc(char* /*longname*/)
 //-----------------------------------------------------------------------------
 void KViewProfile::ConstructPov2(GProfile* /*profile*/)
 {
-/**	GInOutputBase *datainput = NULL;
+/*	GInOutputBase *datainput = NULL;
 	GInOutputBase *listdoc;
 	GStandardInOutPutCursor Outpt;
 	GStandardInOutPutCursor  scan;
@@ -436,6 +436,16 @@ void KViewProfile::GetListSubPov(GInOutputBase* /*datainput*/)
 
 //tableau contenant les Qlist
 
+
+//-----------------------------------------------------------------------------
+void KViewProfile::ComputeProfile(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Profile");
+	if(!Dlg.Run(new QComputeProfile(Profile,false,false,false)))
+		return;
+	General->slotProfileChanged();
+	Desc->slotProfileChanged();
+}
 
 
 //-----------------------------------------------------------------------------

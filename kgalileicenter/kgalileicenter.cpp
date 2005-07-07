@@ -120,6 +120,7 @@ using namespace std;
 #include "qhistorydlg.h"
 #include "qexportmatrixdlg.h"
 #include "qchoosemap.h"
+#include "qsimulationdlg.h"
 
 
 
@@ -467,6 +468,16 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotProfileCalc(void)
+{
+	KView* m = (KView*)pWorkspace->activeWindow();
+	if(m->getType()!=gProfile) return;
+	((KViewProfile*)m)->ComputeProfile();
+	slotWindowActivated(m);
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotShowGroups(void)
 {
 	createClient(Doc,new KViewGroups(Doc,pWorkspace,"View Groups",0));
@@ -480,6 +491,55 @@ void KGALILEICenterApp::slotGroupsCalc(void)
 	if(!Dlg.Run(new QGroupProfiles(!groupAlwaysCalc->isChecked(),groupAlwaysSave->isChecked())))
 		return;
 	Doc->updateAllViews(2);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotSimulationDlg(void)
+{
+	QSimulationDlg dlg(this);
+
+	dlg.PercOK->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercOK")));
+	dlg.PercKO->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercKO")));
+	dlg.PercH->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercH")));
+	dlg.PercErr->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercErr")));
+	dlg.NbProfMin->setText(QString::number(Doc->GetSession()->GetSubjects()->GetUInt("NbProfMin")));
+	dlg.NbProfMax->setText(QString::number(Doc->GetSession()->GetSubjects()->GetUInt("NbProfMax")));
+	dlg.PercSocial->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercSocial")));
+	dlg.PercSubjects->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercSubjects")));
+	dlg.NbMinDocsSubject->setText(QString::number(Doc->GetSession()->GetSubjects()->GetUInt("NbMinDocsSubject")));
+	dlg.NbDocsAssess->setText(QString::number(Doc->GetSession()->GetSubjects()->GetUInt("NbDocsAssess")));
+	if(dlg.exec())
+	{
+		Doc->GetSession()->GetSubjects()->Set("PercOK",dlg.PercOK->text().toDouble());
+		Doc->GetSession()->GetSubjects()->Set("PercKO",dlg.PercKO->text().toDouble());
+		Doc->GetSession()->GetSubjects()->Set("PercH",dlg.PercH->text().toDouble());
+		Doc->GetSession()->GetSubjects()->Set("PercErr",dlg.PercErr->text().toDouble());
+		Doc->GetSession()->GetSubjects()->Set("NbProfMin",dlg.NbProfMin->text().toUInt());
+		Doc->GetSession()->GetSubjects()->Set("NbProfMax",dlg.NbProfMax->text().toUInt());
+		Doc->GetSession()->GetSubjects()->Set("PercSocial",dlg.PercSocial->text().toDouble());
+		Doc->GetSession()->GetSubjects()->Set("PercSubjects",dlg.PercSubjects->text().toDouble());
+		Doc->GetSession()->GetSubjects()->Set("NbMinDocsSubject",dlg.NbMinDocsSubject->text().toUInt());
+		Doc->GetSession()->GetSubjects()->Set("NbDocsAssess",dlg.NbDocsAssess->text().toUInt());
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotGroupsCreate(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Ideal Groups");
+	Dlg.Run(new QCreateIdealGroups(groupAlwaysSave->isChecked()));
+	Doc->updateAllViews(2);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotDoFdbks(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Feedback Cycle");
+	Dlg.Run(new QMakeFdbks(profileAlwaysSave->isChecked()));
+	Doc->updateAllViews(1);
 }
 
 

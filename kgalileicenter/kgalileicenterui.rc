@@ -28,6 +28,8 @@
 		<Action name="linkAlwaysSave"/>
 		<Separator/>
 		<Action name="showUsers"/>
+		<Separator/>
+		<Action name="profileCalc"/>
 		<Action name="profilesCalc"/>
 	</Menu>
 	<Menu name="Groups"><text>&amp;Groups</text>
@@ -36,17 +38,11 @@
 		<Separator/>
 		<Action name="showGroups"/>
 		<Action name="groupsCalc"/>
-		<Menu name="Post-Clustering"><text>&amp;Post Clustering</text>
-			<Action name="postgroupCalc"/>
-			<Action name="somView"/>
-		</Menu>
 		<Separator/>
-		<Menu name="Compare"><text>&amp;Compare</text>
-			<Action name="groupingCompareFromFile"/>
-			<Action name="groupingCompare"/>
-		</Menu>
-		<Separator/>
-		<Action name="mixIdealGroups"/>
+		<!--<Menu name="Post-Clustering"><text>&amp;Post Clustering</text>-->
+		<Action name="postgroupCalc"/>
+		<!--	<Action name="somView"/>-->
+		<!--</Menu>-->
 		<Separator/>
 		<Action name="showGroupsHistory"/>
 	</Menu>
@@ -68,7 +64,16 @@
 		<separator/>
 		<Action name="fillMIMETypes"/>
 	</Menu>
-	<Menu name="Text"><text>&amp;Text</text>
+	<Menu name="Debug"><text>D&amp;ebug</text>
+		<Action name="simulationDlg"/>
+		<Separator/>
+		<Action name="groupingCreate"/>
+		<Action name="doFdbks"/>
+		<Separator/>
+		<Action name="groupingCompareFromFile"/>
+		<Action name="groupingCompare"/>
+		<Separator/>
+		<Action name="mixIdealGroups"/>
 		<Separator/>
 		<Action name="textFrench"/>
 		<Action name="textEnglish"/>

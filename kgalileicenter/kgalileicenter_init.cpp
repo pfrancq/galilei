@@ -143,6 +143,7 @@ void KGALILEICenterApp::initActions(void)
 	linkAlwaysSave=new KToggleAction(i18n("Enables/disables links Saving"),0,0,0,actionCollection(),"linkAlwaysSave");
 	showUsers=new KAction(i18n("&Show Users"),"kdmconfig",0,this,SLOT(slotShowUsers()),actionCollection(),"showUsers");
 	profilesCalc=new KAction(i18n("&Calc Profiles"),"run",0,this,SLOT(slotProfilesCalc()),actionCollection(),"profilesCalc");
+	profileCalc=new KAction(i18n("Calc &Profile"),"run",0,this,SLOT(slotProfileCalc()),actionCollection(),"profileCalc");
 
 	// Menu "Groups"
 	groupAlwaysCalc=new KToggleAction(i18n("Enables/disables groups Recomputing"),0,0,0,actionCollection(),"groupAlwaysCalc");
@@ -151,9 +152,6 @@ void KGALILEICenterApp::initActions(void)
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
 	postgroupCalc=new KAction(i18n("Compute &PostGroup"),"exec",0,this,SLOT(slotPostGroupCalc()),actionCollection(),"postgroupCalc");
 	somView=new KAction(i18n("View Self-Organizing Map"),"exec",0,this,SLOT(slotChooseSOM()),actionCollection(),"somView");
-	groupingCompareFromFile=new KAction(i18n("From &File"),"fileopen",0,this,SLOT(slotGroupingCompareFromFile()),actionCollection(),"groupingCompareFromFile");
-	groupingCompare=new KAction(i18n("From &Memory"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
-	mixIdealGroups=new KAction(i18n("Load&Mix Ideal Groups"),"exec",0,this,SLOT(slotMixIdealGroups()),actionCollection(),"mixIdealGroups");
 	showGroupsHistory=new KAction(i18n("Show Groups &History"),"exec",0,this,SLOT(slotShowHistory	()),actionCollection(),"showGroupsHistorys");
 
 	// Menu "Document"
@@ -169,9 +167,16 @@ void KGALILEICenterApp::initActions(void)
 	queryMetaEngine=new KAction(i18n("&Query Meta Engine"),"find",0,this,SLOT(slotQueryMetaEngine()),actionCollection(),"queryMetaEngine");
 	fillMIMETypes=new KAction(i18n("Construct &MIME types from KDE"),"desktop",0,this,SLOT(slotFillMIMETypes()),actionCollection(),"fillMIMETypes");
 
-	// Menu "Texts"
+	// Menu "Debug"
+	simulationDlg=new KAction(i18n("Simulation &Parameters"),0,this,SLOT(slotSimulationDlg()),actionCollection(),"simulationDlg");
+	groupingCreate=new KAction(i18n("&Create Ideal Groups"),0,0,this,SLOT(slotGroupsCreate()),actionCollection(),"groupingCreate");
+	doFdbks=new KAction(i18n("&Feedback Cycle"),0,0,this,SLOT(slotDoFdbks()),actionCollection(),"doFdbks");
+	groupingCompareFromFile=new KAction(i18n("Ideal clustering from &File"),"fileopen",0,this,SLOT(slotGroupingCompareFromFile()),actionCollection(),"groupingCompareFromFile");
+	groupingCompare=new KAction(i18n("Ideal clustering  from &Memory"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
+	mixIdealGroups=new KAction(i18n("Load&Mix Ideal Groups"),"exec",0,this,SLOT(slotMixIdealGroups()),actionCollection(),"mixIdealGroups");
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
+
 
 	// Menu "Settings"
 	viewToolBar = KStdAction::showToolbar(this, SLOT(slotViewToolBar()), actionCollection());
@@ -399,14 +404,18 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	showUsers->setEnabled(true);
 	showGroups->setEnabled(true);
 	profilesCalc->setEnabled(true);
+	profileCalc->setEnabled(true);
+	simulationDlg->setEnabled(true);
 	sessionCompute->setEnabled(true);
 	sessionExportMatrix->setEnabled(true);
+	doFdbks->setEnabled(true);
 	groupingCompare->setEnabled(true);
 	groupingCompareFromFile->setEnabled(true);
 	somView->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
 	groupsCalc->setEnabled(true);
+	groupingCreate->setEnabled(true);
 	postgroupCalc->setEnabled(true);
 	mixIdealGroups->setEnabled(true);
 	showGroupsHistory->setEnabled(true);
@@ -427,8 +436,11 @@ void KGALILEICenterApp::DisableAllActions(void)
 	showUsers->setEnabled(false);
 	showGroups->setEnabled(false);
 	profilesCalc->setEnabled(false);
+	profileCalc->setEnabled(false);
+	simulationDlg->setEnabled(false);
 	sessionCompute->setEnabled(false);
 	sessionExportMatrix->setEnabled(false);
+	doFdbks->setEnabled(false);
 	groupingCompare->setEnabled(false);
 	groupingCompareFromFile->setEnabled(false);
 	somView->setEnabled(false);
@@ -438,6 +450,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	saveXML->setEnabled(false);
 	analyseXML->setEnabled(false);
 	groupsCalc->setEnabled(false);
+	groupingCreate->setEnabled(false);
 	postgroupCalc->setEnabled(false);
 	mixIdealGroups->setEnabled(false);
 	showGroupsHistory->setEnabled(false);
