@@ -137,8 +137,12 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 			Words=Docs()->GetDoc()->GetWeightInfoCursor();
 			for(Words.Start();!Words.End();Words.Next())
 			{
-				w=NbDocsWords.GetInsertPtr(*Words());
+				w=NbDocsWords.GetInsertPtr(GInfo(*Words()));
 				(*w)+=1.0;
+				if((Words()->GetId()==14)||(Words()->GetId()==23192))
+				{
+					cout<<Words()->GetId()<<": "<<w->GetWeight()<<endl;
+				}
 			}
 		}
 	}
@@ -179,7 +183,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 		MaxFreq=Docs()->GetDoc()->GetMaxWeight();
 		for(Words.Start();!Words.End();Words.Next())
 		{
-			w=Vectors.GetInsertPtr(*Words());
+			w=Vectors.GetInsertPtr(GInfo(*Words()));
 			Freq=Words()->GetWeight()/MaxFreq;
 
 			// If local isf is needed, multiply the frequence by it
