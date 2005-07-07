@@ -397,7 +397,7 @@ void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag) throw(bad_alloc,GExc
 	if(!(currentTag->GetName() == "xmlConverter")) return;
 
 	//Read filter name
-	xmlAttrCur=currentTag->GetXMLAttrCursor();
+	xmlAttrCur=currentTag->GetAttr();
 	for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 	{
 		if(xmlAttrCur()->GetName() == "name")
@@ -414,7 +414,7 @@ void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag) throw(bad_alloc,GExc
 
 	//Treat current tag CHILDREN
 	//--------------------------
-	tagCur=currentTag->GetXMLTagsCursor();
+	tagCur=currentTag->GetNodes();
 	for(tagCur.Start();!tagCur.End();tagCur.Next())
 	{
 		if(tagCur()->GetName() == "mimeTypes")
@@ -440,13 +440,13 @@ void GFilterXML::FillTagsDefinition(RXMLTag* currentTag,Def* def) throw(GExcepti
 	Tag* t;
 
 
-	tagCur=currentTag->GetXMLTagsCursor();
+	tagCur=currentTag->GetNodes();
 	for(tagCur.Start();!tagCur.End();tagCur.Next())
 	{
 		if(tagCur()->GetName()=="tag")
 		{
 			tagName=docxmlName=parentName="";
-			xmlAttrCur=tagCur()->GetXMLAttrCursor();
+			xmlAttrCur=tagCur()->GetAttr();
 			for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 			{
 				if( xmlAttrCur()->GetName()=="name")
@@ -486,13 +486,13 @@ void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag) throw(GE
 	Attribut* attr;
 
 	//Parse sub tags of the current one
-	tagCur=currentTag->GetXMLTagsCursor();
+	tagCur=currentTag->GetNodes();
 	for(tagCur.Start();!tagCur.End();tagCur.Next())
 	{
 		if(tagCur()->GetName()=="attribut")
 		{
 			tagName=docxmlName=value="";
-			xmlAttrCur=tagCur()->GetXMLAttrCursor();
+			xmlAttrCur=tagCur()->GetAttr();
 			for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 			{
 				if( xmlAttrCur()->GetName()=="name")
@@ -514,13 +514,13 @@ void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag) throw(GE
 				tag->InsertAttribute(attr=new Attribut(tagName,ConvertRStringtoTagEnum(docxmlName),value));
 
 				//treat sub tags which are attributes of the current Tag
-				subTagCur=tagCur()->GetXMLTagsCursor();
+				subTagCur=tagCur()->GetNodes();
 				for(subTagCur.Start();!subTagCur.End();subTagCur.Next())
 				{
 					if(subTagCur()->GetName()=="attribut")
 					{
 						tagName=docxmlName=value="";
-						xmlAttrCur=subTagCur()->GetXMLAttrCursor();
+						xmlAttrCur=subTagCur()->GetAttr();
 						for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 						{
 							if( xmlAttrCur()->GetName()=="name")
@@ -555,13 +555,13 @@ void GFilterXML::FillMimeDefinition(RXMLTag* currentTag,Def* def) throw(GExcepti
 	R::RCursor<RXMLAttr> xmlAttrCur;
 	R::RCursor<RXMLTag> tagCur;
 
-	tagCur=currentTag->GetXMLTagsCursor();
+	tagCur=currentTag->GetNodes();
 	for(tagCur.Start();!tagCur.End();tagCur.Next())
 	{
 		//Tag Read must have the name "mimeType"
 		if(tagCur()->GetName()=="mimeType")
 		{
-			xmlAttrCur=tagCur()->GetXMLAttrCursor();
+			xmlAttrCur=tagCur()->GetAttr();
 			for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 			{
 				//Attribut name contents the name of the current mimeType
@@ -741,7 +741,7 @@ void GFilterXML::AnalyseTag(RXMLTag* currentTag,RXMLTag* currentTagParent ,RXMLT
 
 	//Treat current tag CHILDREN if the current one is not skipped
 	//--------------------------
-	tagCur=currentTag->GetXMLTagsCursor();
+	tagCur=currentTag->GetNodes();
 	for(tagCur.Start();!tagCur.End();tagCur.Next())
 	{
 		if(newTag)
