@@ -305,6 +305,15 @@ public:
 	void CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks);
 
 	/**
+	* Compute a profile.
+	* @param rec            Receiver for the signals.
+	* @param modified       Recompute only modified elements or all.
+	* @param save           Save modified elements.
+	* @param saveLinks      Save links informations.
+	*/
+	void CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,bool saveLinks);
+
+	/**
 	* run pre-profiling methods are called.
 	* @param rec            Receiver of the signals.
 	*/

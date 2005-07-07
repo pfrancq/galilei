@@ -667,6 +667,75 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 
 
 //------------------------------------------------------------------------------
+void GSession::CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,bool saveLinks)
+{
+	GProfileCalc* Profiling=(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod();
+	GLinkCalc* LinkCalc=(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod();
+
+	//runs the pre profiling methods;
+//	ComputePreProfile(rec);
+
+
+	if(!Profiling)
+		throw GException("No computing method chosen.");
+	if(rec)
+		rec->receiveNextProfile(profile);
+	profile->Update();
+	//Calc Links on the profile description
+	if(LinkCalc)
+		LinkCalc->Compute(profile);
+	RCursor<GSubProfile> Subs(profile->GetSubProfilesCursor());
+	for(Subs.Start();!Subs.End();Subs.Next())
+	{
+		if(rec)
+			rec->Interact();
+
+		if(ExternBreak) return;
+		if(modified&&(Subs()->GetState()==osUpToDate)) continue;
+		try
+		{
+			if((!modified)||(Subs()->GetState()!=osUpdated))
+			{
+				Profiling->Compute(Subs());
+
+				if(save)
+				{
+					Storage->SaveSubProfile(Subs());
+				}
+
+				// add the mofified profile to the list of modified profiles (if it is defined!)
+				if (Subs()->IsDefined())
+				{
+					if(!DebugSim)
+						ProfilesSims->AddModifiedProfile(Subs());
+					if(!DebugBehaviour)
+						ProfilesBehaviours->AddModifiedProfile(Subs());
+				}
+			}
+		}
+		catch(GException& e)
+		{
+		}
+	}
+
+	//Save the best computed Links (As Hub and Authority)
+	if((saveLinks) &&(LinkCalc))
+		Storage->SaveLinks(this);
+
+	// update the state of all the sims.
+	if(!DebugSim)
+		ProfilesSims->Update();
+
+	//update the state of the behaviours
+	if (!DebugBehaviour)
+		ProfilesBehaviours->Update();
+
+	//runs the post profiling methds;
+//	ComputePostProfile(rec);
+}
+
+
+//------------------------------------------------------------------------------
 void GSession::ComputePreProfile(GSlot* rec)
 {
 	char tmp[100];
