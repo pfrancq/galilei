@@ -282,7 +282,7 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 //------------------------------------------------------------------------------
 void GDoc::InsertFdbk(unsigned int id) throw(std::bad_alloc)
 {
-	Fdbks.InsertPtr(New<GProfileProxy>(id));
+	Fdbks.InsertPtr(GALILEI::New<GProfileProxy>(id));
 }
 
 
