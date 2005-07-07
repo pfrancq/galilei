@@ -101,7 +101,7 @@ void KViewStats::update(unsigned int /*cmd*/)
 //-----------------------------------------------------------------------------
 void KViewStats::ConstructTag(RXMLTag* t,QListViewItem* parent)
 {
-	R::RCursor<RXMLTag> Cur=t->GetXMLTagsCursor();
+	R::RCursor<RXMLTag> Cur(t->GetNodes());
 	QListViewItem* ptr=0,*ptr2;
 	QListViewItem* prec=0;
 	RString Val;
