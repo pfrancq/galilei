@@ -65,6 +65,7 @@ using namespace R;
 #include <sessions/gstatscalcmanager.h>
 #include <sessions/gstoragemysql.h>
 #include <sessions/gsession.h>
+#include <sessions/gplugins.h>
 #include <sessions/gconfig.h>
 #include <sessions/gslotlog.h>
 #include <groups/gpostgroupmanager.h>
@@ -144,17 +145,7 @@ int main(int argc, char *argv[])
 
 		//------------------------------------------------------------------------------
 		// Managers
-		GFilterManagerCURL URLManager(&lib,false);
-		GProfileCalcManager ProfilingManager(&lib,false);
-		GGroupingManager GroupingManager(&lib,false);
-		GGroupCalcManager GroupCalcManager(&lib,false);
-		GStatsCalcManager StatsCalcManager(&lib,false);
-		GLinkCalcManager LinkCalcManager(&lib,false);
-		GLangManager Langs(&lib,true,false);
-		GDocAnalyseManager DocAnalyseManager(&lib,false);
-		GPostDocManager PostDocManager(&lib,false);
-		GPostGroupManager PostGroupManager(&lib,false);
-		GPostProfileManager PostProfileManager(&lib,false);
+		PluginManagers.Load(lib,false);
 
 		Tag=Config.GetTag("Config");
 		if(!Tag)
