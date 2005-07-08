@@ -75,36 +75,12 @@ public:
 //-----------------------------------------------------------------------------
 /**
 * Load a session.
-* @param cmd            What to load.
-* @param langs          Languages.
-* @param umng           URL Manager.
-* @param dmng           Document Analyse Manager.
-* @param pmng           Profiling Manager.
-* @param gmng           Grouping Manager.
-* @param gcmng          Group Computing Manager.
-* @param smng           Statistical Manager.
-* @param lmng           Linking Manager.
-* @param emng           Engine Manager.
 */
 class QLoadSession : public QSessionThread
 {
-	GLangManager* Langs;
-	GFilterManager* Umng;
-	GDocAnalyseManager* Dmng;
-	GProfileCalcManager* Pmng;
-	GGroupingManager* Gmng;
-	GGroupCalcManager* GCmng;
-	GStatsCalcManager* Smng;
-	GLinkCalcManager* Lmng;
-	GPostDocManager* PDmng;
-	GPreProfileManager* PrPmng;
-	GPostProfileManager* PPmng;
-	GPostGroupManager* PGmng;
-	GEngineManager* Emng;
-	GMetaEngineManager* MEmng;
+
 public:
-	QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng,  GPreProfileManager* prpmng, GPostProfileManager* ppmng, GPostGroupManager* pgmng, GEngineManager* emng,GMetaEngineManager* memng);
+	QLoadSession(void);
 	virtual void DoIt(void);
 };
 

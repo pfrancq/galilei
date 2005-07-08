@@ -40,7 +40,7 @@
 // include files for GALILEI
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
-
+#include <sessions/gplugins.h>
 #include <engines/genginedoc.h>
 #include <engines/gmetaengine.h>
 #include <frontend/kde/rqt.h>
@@ -114,7 +114,7 @@ KViewMetaEngine::KViewMetaEngine(KDoc* doc,QWidget* parent,const char* name,int 
 	NbRes = new KIntSpinBox( groupBoxSearch, "NbRes" );
 	NbRes->setMaxValue(1000);
 	//Set Value: default = the value from meta engine option
-	unsigned int tmp=dynamic_cast<GMetaEngineManager*>(GPluginManager::GetManager("MetaEngine"))->GetCurrentMethod()->GetNbResUsed();
+	unsigned int tmp=dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine"))->GetCurrentMethod()->GetNbResUsed();
 	if(tmp==-1)
 		NbRes->setValue(100);
 	else
@@ -189,7 +189,7 @@ GEngineDoc* KViewMetaEngine::GetCurrentEngineDoc(void)
 void KViewMetaEngine::CreateMetaEngineResultsListView(void)
 {
 	R::RCursor<GEngineDoc> engCur;
-	engCur=(dynamic_cast<GMetaEngineManager*>(GPluginManager::GetManager("MetaEngine")))->GetCurrentMethod()->GetEngineDocsCursor();
+	engCur=(dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine")))->GetCurrentMethod()->GetEngineDocsCursor();
 	QListViewItemType* urlitem=0, *afteritem=0;
 	QListViewItemType* desc;
 	unsigned int i=1;

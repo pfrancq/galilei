@@ -44,6 +44,7 @@ using namespace R;
 #include <sessions/gsession.h>
 #include <sessions/gstatscalcmanager.h>
 #include <sessions/gstatscalc.h>
+#include <sessions/gplugins.h>
 using namespace GALILEI;
 
 
@@ -143,7 +144,7 @@ void KViewStats::ComputeStats(void)
 	RXMLTag* Root;
 
 	int i;
-	GStatsCalcManager* Mng=(dynamic_cast<GStatsCalcManager*>(GPluginManager::GetManager("StatsCalc")));
+	GStatsCalcManager* Mng=(dynamic_cast<GStatsCalcManager*>(GPluginManagers::PluginManagers.GetManager("StatsCalc")));
 
 	if(!Mng)
 	{

@@ -74,6 +74,7 @@
 #include <groups/ggrouping.h>
 #include <groups/ggroup.h>
 #include <groups/gsubjects.h>
+#include <sessions/gplugins.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -140,23 +141,8 @@ void QSessionThread::run(void)
 
 
 //-----------------------------------------------------------------------------
-QLoadSession::QLoadSession(GLangManager* langs,GFilterManager* umng, GDocAnalyseManager* dmng,GProfileCalcManager* pmng, GGroupingManager* gmng, GGroupCalcManager* gcmng,
-		GStatsCalcManager* smng, GLinkCalcManager* lmng, GPostDocManager* pdmng, GPreProfileManager* prpmng, GPostProfileManager* ppmng, GPostGroupManager* pgmng, GEngineManager* emng,GMetaEngineManager* memng)
+QLoadSession::QLoadSession(void)
 {
-	Langs=langs;
-	Umng=umng;
-	Dmng=dmng;
-	Pmng=pmng;
-	Gmng=gmng;
-	GCmng=gcmng;
-	Smng=smng;
-	Lmng=lmng;
-	PDmng=pdmng;
-	PrPmng=prpmng;
-	PPmng=ppmng;
-	PGmng=pgmng;
-	Emng=emng;
-	MEmng=memng;
 }
 
 
@@ -554,9 +540,9 @@ void QAnalyzeXML::DoIt(void)
 	if(GSession::Break())
 		return;
 	Parent->PutText("Analysing XML Structure ...");
-	if(!(dynamic_cast<GDocAnalyseManager*>(GPluginManager::GetManager("DocAnalyse")))->GetCurrentMethod())
+	if(!(dynamic_cast<GDocAnalyseManager*>(GPluginManagers::PluginManagers.GetManager("DocAnalyse")))->GetCurrentMethod())
 		throw GException("Error: No Text Analyse method chosen.");
-	(dynamic_cast<GDocAnalyseManager*>(GPluginManager::GetManager("DocAnalyse")))->GetCurrentMethod()->Analyze(XML,Doc);
+	(dynamic_cast<GDocAnalyseManager*>(GPluginManagers::PluginManagers.GetManager("DocAnalyse")))->GetCurrentMethod()->Analyze(XML,Doc);
 }
 
 

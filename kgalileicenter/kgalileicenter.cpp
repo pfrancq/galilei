@@ -60,6 +60,7 @@ using namespace R;
 #include <infos/glang.h>
 #include <infos/gdict.h>
 #include <infos/gweightinfo.h>
+#include <sessions/gplugins.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -173,9 +174,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess = new GSession(Doc->GetStorage(),&SessionParams,true);
 			Doc->SetSession(Sess);
 			QSessionProgressDlg dlg(this,Sess,"Loading from Database");
-			if(dlg.Run(new QLoadSession(Langs,URLManager,DocAnalyseManager,ProfilingManager,
-			GroupingManager,GroupCalcManager,StatsCalcManager,LinkCalcManager,PostDocManager,
-			PreProfileManager, PostProfileManager,PostGroupManager,EngineManager,MetaEngineManager)))
+			if(dlg.Run(new QLoadSession()))
 			{
 				sessionConnect->setEnabled(false);
 				UpdateMenusEntries();
@@ -217,7 +216,7 @@ void KGALILEICenterApp::slotSessionCompute(void)
 	Doc->updateAllViews(1);
 	Doc->updateAllViews(2);
 
-	if(LinkCalcManager->GetCurrentMethod())
+	if(dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc"))->GetCurrentMethod())
 	{
 		Doc->updateAllViews(3);
 	}
@@ -345,7 +344,7 @@ void KGALILEICenterApp::slotExportMatrix(void)
 {
 	QExportMatrixDlg dlg(this, 0, true);
 	R::RCursor<GFactoryLang> langs;
-	langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for (langs.Start(); !langs.End(); langs.Next())
 	{
 		if (!langs()->GetPlugin()) continue;
@@ -365,7 +364,7 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			if(!strcmp(dlg.ProfilesFile->url(),""))
 				return;
 			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Profiles");
-			if(!Dlg.Run(new QExportMatrix("Profiles", dlg.ProfilesFile->url(), (dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+			if(!Dlg.Run(new QExportMatrix("Profiles", dlg.ProfilesFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
 				return;
 		}
 
@@ -375,7 +374,7 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			if(!strcmp(dlg.DocumentsFile->url(),""))
 				return;
 			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Documents");
-			if(!Dlg.Run(new QExportMatrix("Documents", dlg.DocumentsFile->url(), (dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+			if(!Dlg.Run(new QExportMatrix("Documents", dlg.DocumentsFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
 				return;
 		}
 
@@ -385,7 +384,7 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			if(!strcmp(dlg.GroupsFile->url(),""))
 				return;
 			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Groups");
-			if(!Dlg.Run(new QExportMatrix("Groups", dlg.GroupsFile->url(), (dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+			if(!Dlg.Run(new QExportMatrix("Groups", dlg.GroupsFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
 				return;
 		}
 	}
@@ -437,7 +436,7 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 		}
 
 		QSessionProgressDlg Dlg(this,0,"Fill Database");
-		if(!Dlg.Run(new QFillDB(dbname,host,user,password,catDirectory,depth,parentName,URLManager)))
+		if(!Dlg.Run(new QFillDB(dbname,host,user,password,catDirectory,depth,parentName,dynamic_cast<GFilterManagerKDE*>(GPluginManagers::PluginManagers.GetManager("Filter")))))
 			return;
 	}
 }
@@ -459,7 +458,7 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 	Doc->updateAllViews(1);
 	//test whether a linking method has been used during Profile computation.
 	//if true -->refresh Links
-	if(LinkCalcManager->GetCurrentMethod())
+	if(dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc"))->GetCurrentMethod())
 	{
 		Doc->updateAllViews(3);
 	}
@@ -576,7 +575,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 	{
 		if((*select)[2]=="groups")
 		{
-			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -592,7 +591,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 		}
 		if((*select)[2]=="profiles")
 		{
-			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -608,7 +607,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 		}
 		if((*select)[2]=="documents")
 		{
-			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -802,7 +801,7 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotQueryMetaEngine(void)
 {
-	if(!(dynamic_cast<GMetaEngineManager*>(GPluginManager::GetManager("MetaEngine"))->GetCurrentMethod()))
+	if(!(dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine"))->GetCurrentMethod()))
 	{
 		QMessageBox::information(this," Error "," No Meta Engine Method selected!!");
 		return;
@@ -853,7 +852,7 @@ void KGALILEICenterApp::slotShowHistory(void)
 	R::RCursor<GFactoryLang> curlang;
 	unsigned int size, min, max;
 
-	curlang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	curlang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	size=Doc->GetSession()->GetStorage()->GetHistorySize();
 
 	if (!size)
@@ -1166,19 +1165,4 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
 	}
-
-	if (Langs) delete Langs;
-	if (URLManager) delete URLManager;
-	if (DocAnalyseManager) delete DocAnalyseManager;
-	if(ProfilingManager) delete ProfilingManager;
-	if(GroupingManager) delete GroupingManager;
-	if(GroupCalcManager) delete GroupCalcManager;
-	if(StatsCalcManager) delete StatsCalcManager;
-	if(LinkCalcManager) delete LinkCalcManager;
-	if(PostDocManager) delete PostDocManager;
-	if(PostProfileManager) delete PostProfileManager;
-	if(PostGroupManager) delete PostGroupManager;
-	if(EngineManager) delete EngineManager;
-	if(MetaEngineManager) delete MetaEngineManager;
-	if(pluginsPath) delete pluginsPath;
 }

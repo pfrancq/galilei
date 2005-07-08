@@ -39,6 +39,7 @@
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
 #include <sessions/gsession.h>
+#include <sessions/gplugins.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -152,15 +153,15 @@ GDoc* KViewDocs::GetCurrentDoc(void)
 void KViewDocs::CreateDocsListView(void)
 {
 	R::RCursor<GDoc> CurDocs=Doc->GetSession()->GetDocsCursor();
-	R::RCursor<GFactoryLang> CurLang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	R::RCursor<GFactoryLang> CurLang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	GLang* lang;
-	RContainer<LangItem,true,true> LangItems((dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetNb());
+	RContainer<LangItem,true,true> LangItems((dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetNb());
 	const char* t;
 	const char det[]="Unknown";
 	const char* ptr;
 
 	// Go trough each language and create a Item.
-	CurLang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	CurLang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(CurLang.Start(); !CurLang.End(); CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();

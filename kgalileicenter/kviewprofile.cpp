@@ -51,6 +51,7 @@
 #include <frontend/kde/qlistviewitemtype.h>
 #include <frontend/kde/qgsubprofiles.h>
 #include <frontend/kde/rqt.h>
+#include <sessions/gplugins.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -248,7 +249,7 @@ void KViewProfile::ConstructGroups(void)
 	RCursor<GSubProfile> Sub;
 
 	Groups->clear();
-	CurLang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	CurLang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();

@@ -34,6 +34,7 @@
 // include files for GALILEI
 #include <sessions/gstoragemysql.h>
 #include <sessions/gconfig.h>
+#include <sessions/gplugins.h>
 #include <profiles/gpreprofilemanager.h>
 #include <profiles/gpostprofilemanager.h>
 using namespace GALILEI;
@@ -82,7 +83,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
-	: KMainWindow(0,"KGALILEICenterApp"), dbHost(),dbName(),dbUser(),dbPwd(),Doc(0)
+	: KMainWindow(0,"KGALILEICenterApp"), dbHost(),dbName(),dbUser(),dbPwd(),pluginsPath(10,5),Doc(0)
 {
 	Config=kapp->config();
 	initStatusBar();
@@ -90,26 +91,10 @@ KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
 	initActions();
 
 	//read the kgalileicenter options
-	pluginsPath=new RContainer<RString, true, false>(2,1);
 	readOptions();
 	try
 	{
-		//init the plugins managers;
-		Langs=new GLangManager(pluginsPath,true);
-		URLManager=new GFilterManagerKDE(pluginsPath);
-		DocAnalyseManager=new GDocAnalyseManager(pluginsPath),
-		ProfilingManager=new GProfileCalcManager(pluginsPath);
-		GroupingManager=new GGroupingManager(pluginsPath);
-		GroupCalcManager=new GGroupCalcManager(pluginsPath);
-		StatsCalcManager=new GStatsCalcManager(pluginsPath);
-		LinkCalcManager=new GLinkCalcManager(pluginsPath);
-		PostDocManager=new GPostDocManager(pluginsPath);
-		PreProfileManager=new GPreProfileManager(pluginsPath);
-		PostProfileManager=new GPostProfileManager(pluginsPath);
-		PostGroupManager=new GPostGroupManager(pluginsPath);
-		EngineManager=new GEngineManager(pluginsPath);
-		MetaEngineManager=new GMetaEngineManager(pluginsPath);
-
+		GPluginManagers::PluginManagers.Load(pluginsPath);
 	}
 	catch(GException e)
 	{
@@ -246,7 +231,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Always Save Groups",groupAlwaysSave->isChecked());
 	Config->writeEntry("Always Calc Docs",docAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Docs",docAlwaysSave->isChecked());
-	RCursor<RString> cPath(*pluginsPath);
+	RCursor<RString> cPath(pluginsPath);
 	for(cPath.Start();!cPath.End();cPath.Next())
 		paths+=(*cPath())+RString(";");
 	Config->writeEntry("PluginsPath", paths);
@@ -317,12 +302,12 @@ void KGALILEICenterApp::readOptions(void)
 	while(findindex!=-1)
 	{
 		if (!pluginsPaths.Mid(0,findindex).IsEmpty())
-			pluginsPath->InsertPtr(new RString(pluginsPaths.Mid(0,findindex)));
+			pluginsPath.InsertPtr(new RString(pluginsPaths.Mid(0,findindex)));
 		pluginsPaths=pluginsPaths.Mid(findindex+1);
 		findindex=pluginsPaths.FindStr(";",0);
 	}
 	if (!pluginsPaths.IsEmpty())
-		pluginsPath->InsertPtr(new RString(pluginsPaths));
+		pluginsPath.InsertPtr(new RString(pluginsPaths));
 
 	// Size
 	QSize size=Config->readSizeEntry("Geometry");

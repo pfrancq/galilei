@@ -111,76 +111,6 @@ class KGALILEICenterApp : public KMainWindow
 	Q_OBJECT
 
 	/**
-	* Languages.
-	*/
-	GLangManager* Langs;
-
-	/**
-	* URL Manager.
-	*/
-	GFilterManagerKDE* URLManager;
-
-	/**
-	* Doc Analyse Manager.
-	*/
-	GDocAnalyseManager* DocAnalyseManager;
-
-	/**
-	* Profiling Method Manager.
-	*/
-	GProfileCalcManager* ProfilingManager;
-
-	/**
-	* Grouping Method Manager.
-	*/
-	GGroupingManager* GroupingManager;
-
-	/**
-	* Computing Method Manager.
-	*/
-	GGroupCalcManager* GroupCalcManager;
-
-	/**
-	* Statistics Manager.
-	*/
-	GStatsCalcManager* StatsCalcManager;
-
-	/**
-	* Linking Manager.
-	*/
-	GLinkCalcManager* LinkCalcManager;
-
-	/**
-	* PostDocManager Manager.
-	*/
-	GPostDocManager* PostDocManager;
-
-	/**
-	* PostProfileManager Manager.
-	*/
-	GPreProfileManager* PreProfileManager;
-
-	/**
-	* PostProfileManager Manager.
-	*/
-	GPostProfileManager* PostProfileManager;
-
-	/**
-	* PostGroup Manager.
-	*/
-	GPostGroupManager* PostGroupManager;
-
-	/**
-	* Engine engine Manager.
-	*/
-	GEngineManager* EngineManager;
-
-	/**
-	* Meta engine Manager.
-	*/
-	GMetaEngineManager* MetaEngineManager;
-
-	/**
 	* The configuration object of the application.
 	*/
 	KConfig* Config;
@@ -218,7 +148,7 @@ class KGALILEICenterApp : public KMainWindow
 	/**
 	* path to plugins.
 	*/
-	R::RContainer<RString, true,false>* pluginsPath;
+	R::RContainer<RString, true,false> pluginsPath;
 
 	/**
 	* the path where the sql file for the database creation are stored

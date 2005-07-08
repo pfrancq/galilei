@@ -42,6 +42,7 @@ using namespace R;
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
 #include <sessions/gsession.h>
+#include <sessions/gplugins.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -139,7 +140,7 @@ KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget*
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
 	char tmp[10];
 
-	GLangManager* langMng=dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang"));
+	GLangManager* langMng=dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang"));
 	Lang=langMng->GetLang(code);
 
 	// initialisation of the tab widget
