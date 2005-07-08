@@ -31,6 +31,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for GALILEI
+#include <sessions/gplugins.h>
+
+
+//------------------------------------------------------------------------------
 /**
 * The GStatSimElements template provides statistics on the elemets based on
 * their similarities.
@@ -227,7 +232,7 @@ template<class E,class C>
 	RXMLTag* LangTag;
 
 	// Go through the languages
-	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		LangTag=0;

@@ -38,6 +38,7 @@
 #include <profiles/gprofile.h>
 #include <sessions/gsession.h>
 #include <sessions/gstatscalc.h>
+#include <sessions/gplugins.h>
 
 
 //------------------------------------------------------------------------------
@@ -100,7 +101,7 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 	Docs = Session->GetDocsCursor();
 	Profs1= Session->GetProfilesCursor();
 	Profs2= Session->GetProfilesCursor();
-	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 
 	// Compute the average of number of profiles having juged the same doc.
 
