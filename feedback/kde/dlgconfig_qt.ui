@@ -85,6 +85,58 @@
                         </widget>
                     </hbox>
                 </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout3bis</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel1bis</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Number of irrelevant entities</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Number of irrelevant entities.</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Specify the number of irrelvant weighted information entities used for the description of the subprofile.</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer2bis</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="KIntNumInput">
+                            <property name="name">
+                                <cstring>NegSize</cstring>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Number of irrelevant entities.</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Specify the number of irrelvant weighted information entities used for the description of the subprofile.</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
                 <widget class="QCheckBox">
                     <property name="name">
                         <cstring>Localisf</cstring>

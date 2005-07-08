@@ -59,9 +59,9 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac) throw(bad_alloc)
-	: GProfileCalc(fac), Infos(5000,2500), MaxNonZero(60), RelFactor(1.0), FuzzyFactor(0.25),
-	  IrrelFactor(0.75), Positive(false), Localisf(false), idf(true), Vectors(5000),
-	  NbDocsWords(5000), NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
+	: GProfileCalc(fac), Infos(5000,2500), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
+	  FuzzyFactor(0.25), IrrelFactor(0.75), Positive(false), Localisf(false), idf(true),
+	  Vectors(5000), NbDocsWords(5000), NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
 }
@@ -71,6 +71,9 @@ GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac) throw(bad_a
 void GProfileCalcFeedback::ApplyConfig(void)
 {
 	MaxNonZero=Factory->GetUInt("MaxSize");
+	NegNonZero=Factory->GetUInt("NegSize");
+	if(NegNonZero>MaxNonZero)
+		MaxNonZero=NegNonZero;
 	RelFactor=Factory->GetDouble("RelFactor");
 	FuzzyFactor=Factory->GetDouble("FuzzyFactor");
 	IrrelFactor=Factory->GetDouble("IrrelFactor");
@@ -208,7 +211,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 void GProfileCalcFeedback::ComputeSubProfile(void) throw(bad_alloc,GException)
 {
 	GWeightInfo** ptr;
-	unsigned int i,nb;
+	unsigned int i,nb,nb2;
 
 	// Choose the elements to stay.
 	if(Vectors.IsEmpty())
@@ -224,14 +227,29 @@ void GProfileCalcFeedback::ComputeSubProfile(void) throw(bad_alloc,GException)
 	Vectors.GetTab(Order);
 	if(Vectors.GetNb())
 		qsort(static_cast<void*>(Order),Vectors.GetNb(),sizeof(GWeightInfo*),GWeightInfos::sortOrder);
-	Order[Vectors.GetNb()]=0;
 
 	//If MaxNonZero is null -> take all the words.
 	if(MaxNonZero)
-		nb=MaxNonZero;
+	{
+		nb=MaxNonZero-NegNonZero;
+		if(nb>Vectors.GetNb())
+			nb=Vectors.GetNb();
+		nb2=NegNonZero;
+		if(nb2>Vectors.GetNb()-nb)
+			nb2=Vectors.GetNb()-nb;
+	}
 	else
+	{
 		nb=Vectors.GetNb();
-	for(i=nb+1,ptr=Order;(--i)&&(*ptr);ptr++)
+		nb2=0;
+	}
+
+	// Copy the relevant entities
+	for(i=nb+1,ptr=Order;--i;ptr++)
+		Infos.InsertPtr(new GWeightInfo(**ptr));
+
+	// Copy the irrelevant entities
+	for(i=nb2+1,ptr=&Order[Vectors.GetNb()-1];--i;ptr--)
 		Infos.InsertPtr(new GWeightInfo(**ptr));
 }
 
@@ -282,6 +300,7 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(GException)
 void GProfileCalcFeedback::CreateParams(GParams* params)
 {
 	params->InsertPtr(new GParamUInt("MaxSize",60));
+	params->InsertPtr(new GParamUInt("NegSize",0));
 	params->InsertPtr(new GParamDouble("RelFactor",1.0));
 	params->InsertPtr(new GParamDouble("FuzzyFactor",0.25));
 	params->InsertPtr(new GParamDouble("IrrelFactor",0.75));

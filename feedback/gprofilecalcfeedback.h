@@ -88,6 +88,11 @@ protected:
 	unsigned int MaxNonZero;
 
 	/**
+	* Number of the non-zero weights for irrelevant entities in the vector.
+	*/
+	unsigned int NegNonZero;
+
+	/**
 	* Factor of the vectors corresponding to the relevant part.
 	*/
 	double RelFactor;

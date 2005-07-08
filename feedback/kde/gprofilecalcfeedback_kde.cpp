@@ -88,6 +88,7 @@ void Configure(GFactoryProfileCalc* params)
  	DlgConfig_Qt dlg;
 
 	dlg.MaxSize->setValue(params->GetUInt("MaxSize"));
+	dlg.NegSize->setValue(params->GetUInt("NegSize"));
 	dlg.Localisf->setChecked(params->GetBool("Localisf"));
 	dlg.idf->setChecked(params->GetBool("idf"));
 	dlg.Positive->setChecked(params->GetBool("Positive"));
@@ -98,6 +99,7 @@ void Configure(GFactoryProfileCalc* params)
 	if(dlg.exec())
 	{
 		params->Set("MaxSize",dlg.MaxSize->value());
+		params->Set("NegSize",dlg.NegSize->value());
 		params->Set("Localisf",dlg.Localisf->isChecked());
 		params->Set("idf",dlg.idf->isChecked());
 		params->Set("Positive",dlg.Positive->isChecked());
